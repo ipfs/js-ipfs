@@ -6,6 +6,9 @@ function Peer(id, other) {
   if (!(this instanceof Peer))
     return new Peer(id, other)
 
+  if (id instanceof Peer)
+    return id
+
   if (!(id instanceof Buffer))
     id = new Buffer(id, 'hex')
 

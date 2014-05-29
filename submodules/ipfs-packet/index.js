@@ -19,8 +19,8 @@ pkt.schemas = mapv(pkt.protos, protobufStream)
 pkt.Packet = require('./js/packet')
 pkt.Frame = require('./js/frame')
 pkt.PacketFrame = require('./js/packet-frame')
-// pkt.NetworkFrame = require('js/network-frame')
-// pkt.IntegrityFrame = require('js/integrity-frame')
+pkt.NetworkFrame = require('./js/network-frame')
+// pkt.IntegrityFrame = require('./js/integrity-frame')
 pkt.DataMessage = require('./js/data-message')
 
 // Register classes with PacketFrame, so that it can
