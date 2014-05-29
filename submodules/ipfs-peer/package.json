@@ -1,0 +1,19 @@
+{
+  "name": "ipfs-peer",
+  "version": "0.1.0",
+  "description": "ipfs peer",
+  "main": "index.js",
+  "dependencies": {
+    "multihashes": "~0.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "ipfs",
+    "peer"
+  ],
+  "author": "Juan Benet <juan@benet.ai> (http://juan.benet.ai/)",
+  "license": "MIT"
+}
