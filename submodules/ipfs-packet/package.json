@@ -1,0 +1,26 @@
+{
+  "name": "ipfs-packet",
+  "version": "0.1.0",
+  "description": "ipfs packets",
+  "main": "index.js",
+  "dependencies": {
+    "map-values": "~1.0.1",
+    "multihashes": "~0.1.1",
+    "protocol-buffers": "~1.0.0",
+    "proto2json": "~0.2.0",
+    "underscore": "~1.6.0",
+    "inherits": "~2.0.1",
+    "protobufjs": "~2.0.5",
+    "protobufjs-stream": "~0.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"no test yet\" && exit -1"
+  },
+  "keywords": [
+    "ipfs",
+    "packets"
+  ],
+  "author": "Juan Benet <juan@benet.ai> (http://juan.benet.ai/)",
+  "license": "MIT"
+}
