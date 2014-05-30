@@ -1,3 +1,4 @@
+var _ = require('underscore')
 var mh = require('multihashes')
 
 module.exports = Peer
@@ -22,5 +23,31 @@ function Peer(id, other) {
   other = other || {}
   this.id = id
   this.pubkey = other.pubkey
-  this.addresses = other.addresses
+  this.addresses = other.addresses || []
+}
+
+// return best address for given network
+Peer.prototype.networkAddress = function(net) {
+  return _.find(this.addresses, function(addr) {
+    return Peer.addrProtocol(addr) == net
+  })
+}
+
+Peer.addrProtocol = function(addr) {
+  return addr.split(':')[0];
+}
+
+Peer.addrUrlToObject = function(addr) {
+  var p0 = addr.split('://')
+  var p1 = p0[1].split(':')
+  return {
+    protocol: p0[0],
+    family: /4$/.test(p0[0]) ? 'IPv4' : 'IPv6',
+    address: p1[0],
+    port: parseInt(p1[1], 10),
+  }
+}
+
+Peer.addrObjectToUrl = function(addr) {
+  return addr.protocol + '://' + addr.address + ':' + addr.port
 }
