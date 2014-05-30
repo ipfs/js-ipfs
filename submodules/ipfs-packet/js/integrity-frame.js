@@ -39,7 +39,7 @@ IntegrityFrame.prototype.validateChecksum = function() {
     this.checksumFn = multihash.decode(this.checksum).code
 
   var sum = this.calculateChecksum()
-  if (this.checksum !== sum)
+  if (!bufEq(this.checksum, sum))
     return new Error("checksum incorrect. "
       + "expected: " + sum.toString('hex') +
       ", got: " + this.checksum.toString('hex'))
@@ -66,3 +66,12 @@ IntegrityFrame.prototype.decodeData = function(data) {
   this.checksum = data.checksum.hash
   // this.checksumFn will be set when we validate.
 }
+
+IntegrityFrame.prototype.toString = function() {
+  var ok = (this.validateChecksum() == undefined) ? 'ok' : 'fail';
+  var hash = this.checksum.toString('hex').substr(0, 6)
+  var fn = this.checksumFn
+  return "<IntegrityFrame 0x"+fn+" "+hash+" "+ok+">"
+}
+
+function bufEq(a, b) { return a >= b && a <= b; }

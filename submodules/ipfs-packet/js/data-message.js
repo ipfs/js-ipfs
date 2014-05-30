@@ -29,3 +29,7 @@ DataMessage.prototype.decodeData = function(data) {
   // no super because Packet doesn't do anything.
   this.payload = data.payload
 }
+
+DataMessage.prototype.toString = function() {
+  return "<DataMessage "+ this.payload.toString().substr(0, 20) +">"
+}

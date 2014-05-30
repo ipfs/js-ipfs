@@ -16,6 +16,11 @@ function NetworkFrame(src, dst, payload) {
 
 Packet.inherits(NetworkFrame, Frame)
 
+NetworkFrame.prototype.toString = function() {
+  var from = this.source.id.toString('hex').substr(0, 6)
+  var to = this.destination.id.toString('hex').substr(0, 6)
+  return "<NetworkFrame "+from+" -> "+to+">"
+}
 
 NetworkFrame.prototype.validate = function() {
   var err = Frame.prototype.validate.apply(this)

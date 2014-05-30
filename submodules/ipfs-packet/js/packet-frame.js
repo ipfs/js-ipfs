@@ -48,6 +48,11 @@ PacketFrame.prototype.decodeData = function(data) {
   this.payloadType = this.type.Cls
 }
 
+PacketFrame.prototype.toString = function() {
+  return "<PacketFrame "+ this.payloadType.name +">"
+}
+
+
 
 // register payloadPacketType classes here.
 PacketFrame.payloadPacketTypes = {}
