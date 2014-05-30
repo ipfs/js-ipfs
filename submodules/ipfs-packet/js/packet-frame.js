@@ -18,9 +18,9 @@ function PacketFrame(payload, type) {
   if (payload && !type)
     throw new Error('must have valid type')
 
-  Frame.apply(this, [payload])
-  this.type = payloadType(type)
-  this.payloadType = this.type.Cls
+  type = payloadType(type)
+  Frame.apply(this, [payload, type.Cls])
+  this.type = type
 }
 
 Packet.inherits(PacketFrame, Frame)
@@ -56,7 +56,7 @@ PacketFrame.payloadPacketTypes = {}
 Frame.defaultPayloadType = PacketFrame
 
 function nameFromType(Type) {
-  var types = pkt.PacketFrame.payloadPacketTypes
+  var types = PacketFrame.payloadPacketTypes
   for (var name in types) {
     if (types[name] === Type)
       return name

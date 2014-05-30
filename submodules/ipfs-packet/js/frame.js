@@ -5,13 +5,20 @@ module.exports = Frame
 // A Frame is a packet that carries another Packet
 // as a payload. This is usually a PacketFrame.
 // It provides nice helpers for encoding/decoding.
-function Frame(payload) {
+function Frame(payload, PayloadType) {
   if (!(this instanceof Frame))
-    return new Frame(payload)
+    return new Frame(payload, PayloadType)
+
+  PayloadType = PayloadType || Frame.defaultPayloadType
+
+  if (payload && !(payload instanceof Buffer) &&
+                 !(payload instanceof PayloadType)) {
+    payload = PayloadType(payload)
+  }
 
   Packet.apply(this)
   this.payload = payload
-  this.payloadType = Frame.defaultPayloadType
+  this.payloadType = PayloadType
 }
 
 Packet.inherits(Frame, Packet)
