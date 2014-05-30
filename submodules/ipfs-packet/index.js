@@ -1,4 +1,5 @@
 var _ = require('underscore')
+var fs = require('fs')
 var inherits = require('inherits')
 var multihash = require('multihashes')
 // var protobuf = require('protocol-buffers')
@@ -10,9 +11,10 @@ var mapv = require('map-values')
 var pkt = module.exports = {}
 
 // encoders/decoders
-// pkt.protos = proto2json.parse(fs.readFileSync('messages.proto', 'utf-8'))
+var protoFile = fs.readFileSync(__dirname + '/messages.proto', 'utf-8')
+// pkt.protos = proto2json.parse(protoFile)
 // pkt.schemas = mapv(pkt.protos.messages, function(v, k) { return protobuf(v) })
-pkt.protos = protobuf.loadProtoFile('messages.proto').result.messages
+pkt.protos = protobuf.loadProto(protoFile).result.messages
 pkt.schemas = mapv(pkt.protos, protobufStream)
 
 // packet classes

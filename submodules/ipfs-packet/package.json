@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "ipfs packets",
   "main": "index.js",
+  "test": "node test.js",
   "dependencies": {
     "map-values": "~1.0.1",
     "multihashes": "~0.1.1",
