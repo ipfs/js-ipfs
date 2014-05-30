@@ -26,10 +26,10 @@ NetworkFrame.prototype.validate = function() {
   var err = Frame.prototype.validate.apply(this)
   if (err) return err
 
-  if (!this.data.source || !(this.data.source instanceof Peer))
+  if (!this.source || !(this.source instanceof Peer))
     return new Error("no or invalid source")
 
-  if (!this.data.destination || !(this.data.destination instanceof Peer))
+  if (!this.destination || !(this.destination instanceof Peer))
     return new Error("no or invalid destination")
 }
 
