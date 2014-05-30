@@ -23,6 +23,9 @@ pkt.NetworkFrame = require('./js/network-frame')
 pkt.IntegrityFrame = require('./js/integrity-frame')
 pkt.DataMessage = require('./js/data-message')
 
+// utilities
+pkt.peek = require('./js/peek')
+
 // Register classes with PacketFrame, so that it can
 // instantiate them when decoding.
 for (var name in pkt) {
