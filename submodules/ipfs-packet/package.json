@@ -11,7 +11,8 @@
     "underscore": "~1.6.0",
     "inherits": "~2.0.1",
     "protobufjs": "~2.0.5",
-    "protobufjs-stream": "~0.1.1"
+    "protobufjs-stream": "~0.1.1",
+    "multihashing": "~0.1.0"
   },
   "devDependencies": {},
   "scripts": {

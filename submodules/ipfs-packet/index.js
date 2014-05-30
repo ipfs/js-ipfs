@@ -20,7 +20,7 @@ pkt.Packet = require('./js/packet')
 pkt.Frame = require('./js/frame')
 pkt.PacketFrame = require('./js/packet-frame')
 pkt.NetworkFrame = require('./js/network-frame')
-// pkt.IntegrityFrame = require('./js/integrity-frame')
+pkt.IntegrityFrame = require('./js/integrity-frame')
 pkt.DataMessage = require('./js/data-message')
 
 // Register classes with PacketFrame, so that it can
@@ -35,6 +35,6 @@ for (var name in pkt) {
 for (var name in pkt.schemas) {
   if (pkt[name])
     pkt[name].schema = pkt.schemas[name]
-  else
-    console.log('ignoring schema: ' + name)
+  // else
+  //   console.log('ignoring schema: ' + name)
 }
