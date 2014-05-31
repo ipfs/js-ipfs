@@ -35,11 +35,11 @@ function PacketStream(dgrams, source, opts) {
   this.source = source
 
   this.dgrams.on('data', function(dgram) {
-    self.emit('data', dgram2ipfs(dgram))
+    self.push(dgram2ipfs(dgram))
   })
 
   this.dgrams.on('end', function() {
-    self.emit('end')
+    self.push(null)
   })
 
 }
