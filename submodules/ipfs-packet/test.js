@@ -1,6 +1,6 @@
 var pkt = require('./')
+var bufeq = require('buffer-equal')
 
-var bufeq = function(a, b) { return a <= b && a >= b; }
 var msgeq = function(a, b) { return bufeq(a.encode(), b.encode()); }
 var tmsgeq = function(a, b) {
   if (msgeq(a, b))

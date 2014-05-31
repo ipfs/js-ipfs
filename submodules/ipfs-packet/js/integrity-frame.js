@@ -1,3 +1,4 @@
+var bufeq = require('buffer-equal')
 var Packet = require('./packet')
 var Frame = require('./frame')
 var multihash = require('multihashes')
@@ -39,7 +40,7 @@ IntegrityFrame.prototype.validateChecksum = function() {
     this.checksumFn = multihash.decode(this.checksum).code
 
   var sum = this.calculateChecksum()
-  if (!bufEq(this.checksum, sum))
+  if (!bufeq(this.checksum, sum))
     return new Error("checksum incorrect. "
       + "expected: " + sum.toString('hex') +
       ", got: " + this.checksum.toString('hex'))
@@ -73,5 +74,3 @@ IntegrityFrame.prototype.toString = function() {
   var fn = this.checksumFn
   return "<IntegrityFrame 0x"+fn+" "+hash+" "+ok+">"
 }
-
-function bufEq(a, b) { return a >= b && a <= b; }

@@ -1,3 +1,4 @@
+var bufeq = require('buffer-equal')
 var protobuf = require('protobufjs')
 var protobufStream = require('protobufjs-stream')
 var ps = protobuf.loadProtoFile('messages.proto')
@@ -9,7 +10,7 @@ var b = schemas.DataMessage.encode({payload: new Buffer('ababababcd', 'hex')})
 schemas.DataMessage.decode(b)
 
 
-var bufeq = function(a, b) { return a <= b && a >= b; }
+
 var msgeq = function(a, b) { return bufeq(a.encode(), b.encode()); }
 var pkt = require('./')
 
@@ -29,3 +30,4 @@ var p = pf.encode()
 msgeq(pkt.peek.network(p), nf)
 msgeq(pkt.peek.integrity(p), tf)
 msgeq(pkt.peek.packetType(p, pkt.DataMessage), dm)
+console.log('ok')

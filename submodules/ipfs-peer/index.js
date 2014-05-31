@@ -1,5 +1,6 @@
 var _ = require('underscore')
 var mh = require('multihashes')
+var bufeq = require('buffer-equal')
 
 module.exports = Peer
 
@@ -35,7 +36,7 @@ Peer.prototype.networkAddress = function(net) {
 
 // equality check for peers
 Peer.prototype.equals = function(peer) {
-  return bufEq(this.id, peer.id)
+  return bufeq(this.id, peer.id)
 }
 
 
@@ -57,5 +58,3 @@ Peer.addrUrlToObject = function(addr) {
 Peer.addrObjectToUrl = function(addr) {
   return addr.protocol + '://' + addr.address + ':' + addr.port
 }
-
-function bufEq(a, b) { return a >= b && a <= b }
