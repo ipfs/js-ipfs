@@ -1,11 +1,10 @@
 var util = require('./util')
 var Pkt = require('../../ipfs-packet')
-var sendStream = require('../js/network-sender-stream')
-var recvStream = require('../js/network-receiver-stream')
+var netStream = require('../js/network-stream')
 
 function setupPeer(id, addr) {
   var p = util.setupPeer(id, addr)
-  p.stream = util.duplexWrap(sendStream(p.peer), p.stream, recvStream(p.peer))
+  p.stream = netStream(p.peer, p.stream)
 
   // use the 'data' event for receiving ipfs packets.
   p.stream.on('data', function(pkt) {

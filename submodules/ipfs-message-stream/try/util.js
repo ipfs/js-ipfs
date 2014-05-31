@@ -1,5 +1,4 @@
 var dgram = require('dgram')
-var duplexer = require('duplexer')
 var packetStream = require('../js/packet-stream')
 var Peer = require('../../ipfs-peer')
 var Pkt = require('../../ipfs-packet')
@@ -30,14 +29,4 @@ util.pktToString = function pktToString(ipfsPacket, s) {
   if (ipfsPacket.decodePayload)
     s += pktToString(ipfsPacket.decodePayload());
   return s;
-}
-
-util.duplexWrap = function(writable, stream, readable) {
-  writable.pipe(stream)
-
-  stream.on('data', function (data) {
-    readable.write(data)
-  })
-
-  return duplexer(writable, readable)
 }
