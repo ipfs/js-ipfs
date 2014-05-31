@@ -31,10 +31,7 @@ function dataMessage(to, from, data) {
 function corruptIntegrity(pkt) {
   pkt = Pkt.IntegrityFrame(pkt, 'sha1')
   pkt.checksum = pkt.calculateChecksum()
-  console.log(pkt.checksum)
   pkt.checksum[10] = pkt.checksum[10] + 2
-  console.log(pkt.checksum)
-  console.log(pkt.validateChecksum())
   return Pkt.PayloadFrame(pkt)
 }
 
