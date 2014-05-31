@@ -22,8 +22,8 @@ msgeq(pkt.NetworkFrame.decode(nf.encode()), nf)
 var tf = pkt.IntegrityFrame(nf, 'sha1')
 msgeq(pkt.IntegrityFrame.decode(tf.encode()), tf)
 
-var pf = pkt.PacketFrame(tf)
-msgeq(pkt.PacketFrame.decode(pf.encode()), pf)
+var pf = pkt.PayloadFrame(tf)
+msgeq(pkt.PayloadFrame.decode(pf.encode()), pf)
 
 var p = pf.encode()
 msgeq(pkt.peek.network(p), nf)

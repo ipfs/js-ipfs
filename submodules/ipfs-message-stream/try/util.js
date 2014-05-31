@@ -25,7 +25,7 @@ util.shortPeerId = function(peer) {
 
 util.pktToString = function pktToString(ipfsPacket, s) {
   var s = ''
-  if (!(ipfsPacket instanceof Pkt.PacketFrame))
+  if (!(ipfsPacket instanceof Pkt.PayloadFrame))
     s += ' / ' + ipfsPacket.toString();
   if (ipfsPacket.decodePayload)
     s += pktToString(ipfsPacket.decodePayload());

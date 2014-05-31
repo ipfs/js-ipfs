@@ -1,14 +1,14 @@
 
 package messages;
 
-// A basic IPFS frame.
+// A self-identifying payload frame.
 // It includes a type to identify its payload packet.
 // This is how encapsulation is done.
 // This frame isn't included directly into the others
 // (instead, we use `bytes`), because we need to be
 // able to run operations on the encoded buffers
 // (checksum, decrypt, encrypt, sign, etc).
-message PacketFrame {
+message PayloadFrame {
   enum PayloadType {
     NetworkFrame = 1;
     IntegrityFrame = 2;
@@ -25,14 +25,14 @@ message PacketFrame {
 message NetworkFrame {
   optional bytes source = 1;
   optional bytes destination = 2;
-  optional bytes payload = 3; // a PacketFrame
+  optional bytes payload = 3; // a PayloadFrame
 }
 
 // A packet of data that is integrity-checked.
 // Meaning, it includes a checksum (multihash).
 message IntegrityFrame {
   optional Multihash checksum = 1;
-  optional bytes payload = 2; // a PacketFrame
+  optional bytes payload = 2; // a PayloadFrame
 }
 
 // A DataMessage is a raw data buffer payload.

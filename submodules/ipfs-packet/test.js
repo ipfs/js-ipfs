@@ -20,8 +20,8 @@ tmsgeq(pkt.NetworkFrame.decode(nf.encode()), nf)
 var tf = pkt.IntegrityFrame(nf, 'sha1')
 tmsgeq(pkt.IntegrityFrame.decode(tf.encode()), tf)
 
-var pf = pkt.PacketFrame(tf)
-tmsgeq(pkt.PacketFrame.decode(pf.encode()), pf)
+var pf = pkt.PayloadFrame(tf)
+tmsgeq(pkt.PayloadFrame.decode(pf.encode()), pf)
 
 var p = pf.encode()
 tmsgeq(pkt.peek.network(p), nf)

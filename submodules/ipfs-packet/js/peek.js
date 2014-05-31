@@ -2,7 +2,7 @@
 var _ = require('underscore')
 var Packet = require('./packet')
 var Frame = require('./frame')
-var PacketFrame = require('./packet-frame')
+var PayloadFrame = require('./payload-frame')
 var NetworkFrame = require('./network-frame')
 var IntegrityFrame = require('./integrity-frame')
 var DataMessage = require('./data-message')
@@ -24,10 +24,10 @@ function RecursivePeek(pkt, Types, action) {
 
   // if encoded,
   if (pkt instanceof Buffer)
-    pkt = PacketFrame.decode(pkt)
+    pkt = PayloadFrame.decode(pkt)
 
   // if packet frame, use payload packet
-  if (pkt instanceof PacketFrame)
+  if (pkt instanceof PayloadFrame)
     pkt = pkt.decodePayload(pkt)
 
   // if types match, try to run action

@@ -17,7 +17,7 @@ module.exports = function(peer) {
     }
 
     var net = Pkt.NetworkFrame(peer, packet.to, packet.payload)
-    this.push(Pkt.PacketFrame(net))
+    this.push(Pkt.PayloadFrame(net))
     next()
   }
 }

@@ -20,7 +20,7 @@ pkt.schemas = mapv(pkt.protos, protobufStream)
 // packet classes
 pkt.Packet = require('./js/packet')
 pkt.Frame = require('./js/frame')
-pkt.PacketFrame = require('./js/packet-frame')
+pkt.PayloadFrame = require('./js/payload-frame')
 pkt.NetworkFrame = require('./js/network-frame')
 pkt.IntegrityFrame = require('./js/integrity-frame')
 pkt.DataMessage = require('./js/data-message')
@@ -28,11 +28,11 @@ pkt.DataMessage = require('./js/data-message')
 // utilities
 pkt.peek = require('./js/peek')
 
-// Register classes with PacketFrame, so that it can
+// Register classes with PayloadFrame, so that it can
 // instantiate them when decoding.
 for (var name in pkt) {
   if (/(Message|Frame)$/.test(name))
-    pkt.PacketFrame.payloadPacketTypes[name] = pkt[name]
+    pkt.PayloadFrame.payloadPacketTypes[name] = pkt[name]
 }
 
 // Setup imported schemas. Done here, instead of in

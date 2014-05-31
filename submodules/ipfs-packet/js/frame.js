@@ -3,7 +3,7 @@ var Packet = require('./packet')
 module.exports = Frame
 
 // A Frame is a packet that carries another Packet
-// as a payload. This is usually a PacketFrame.
+// as a payload. This is usually a PayloadFrame.
 // It provides nice helpers for encoding/decoding.
 function Frame(payload, PayloadType) {
   if (!(this instanceof Frame))

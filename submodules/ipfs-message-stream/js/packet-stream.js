@@ -69,7 +69,7 @@ function ipfs2dgram(ipfsPkt) {
 }
 
 function dgram2ipfs(dgramPkt) {
-  return Pkt.PacketFrame.decode(dgramPkt.payload)
+  return Pkt.PayloadFrame.decode(dgramPkt.payload)
 }
 
 function peerDgramAddr(peer) {

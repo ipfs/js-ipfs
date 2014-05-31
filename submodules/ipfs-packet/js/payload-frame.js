@@ -2,15 +2,15 @@ var _ = require('underscore')
 var Packet = require('./packet')
 var Frame = require('./frame')
 
-module.exports = PacketFrame
+module.exports = PayloadFrame
 
 
-// PacketFrame is the encapsulating frame
+// PayloadFrame is the encapsulating frame
 // that carries around every other type of
 // packet. This is a sort of meta packet.
-function PacketFrame(payload, type) {
-  if (!(this instanceof PacketFrame))
-    return new PacketFrame(payload, type)
+function PayloadFrame(payload, type) {
+  if (!(this instanceof PayloadFrame))
+    return new PayloadFrame(payload, type)
 
   if (!type && payload instanceof Packet)
     type = codeFromName(nameFromType(payload.constructor))
@@ -23,9 +23,9 @@ function PacketFrame(payload, type) {
   this.type = type
 }
 
-Packet.inherits(PacketFrame, Frame)
+Packet.inherits(PayloadFrame, Frame)
 
-PacketFrame.prototype.validate = function() {
+PayloadFrame.prototype.validate = function() {
   var err = Frame.prototype.validate.apply(this)
   if (err) return err
 
@@ -36,32 +36,32 @@ PacketFrame.prototype.validate = function() {
     return new Error("empty payload")
 }
 
-PacketFrame.prototype.encodeData = function() {
+PayloadFrame.prototype.encodeData = function() {
   var data = Frame.prototype.encodeData.apply(this)
   data.type = this.type.code
   return data
 }
 
-PacketFrame.prototype.decodeData = function(data) {
+PayloadFrame.prototype.decodeData = function(data) {
   Frame.prototype.decodeData.apply(this, arguments)
   this.type = payloadType(data.type)
   this.payloadType = this.type.Cls
 }
 
-PacketFrame.prototype.toString = function() {
-  return "<PacketFrame "+ this.payloadType.name +">"
+PayloadFrame.prototype.toString = function() {
+  return "<PayloadFrame "+ this.payloadType.name +">"
 }
 
 
 
 // register payloadPacketType classes here.
-PacketFrame.payloadPacketTypes = {}
+PayloadFrame.payloadPacketTypes = {}
 
 // switch Frame defaultPacketType.
-Frame.defaultPayloadType = PacketFrame
+Frame.defaultPayloadType = PayloadFrame
 
 function nameFromType(Type) {
-  var types = PacketFrame.payloadPacketTypes
+  var types = PayloadFrame.payloadPacketTypes
   for (var name in types) {
     if (types[name] === Type)
       return name
@@ -69,11 +69,11 @@ function nameFromType(Type) {
 }
 
 function nameFromCode(code) {
-  return _.invert(PacketFrame.schema.proto.PayloadType)[code]
+  return _.invert(PayloadFrame.schema.proto.PayloadType)[code]
 }
 
 function codeFromName(name) {
-  return PacketFrame.schema.proto.PayloadType[name]
+  return PayloadFrame.schema.proto.PayloadType[name]
 }
 
 function payloadType(code) {
@@ -81,6 +81,6 @@ function payloadType(code) {
   return {
     code: code,
     name: name,
-    Cls: PacketFrame.payloadPacketTypes[name],
+    Cls: PayloadFrame.payloadPacketTypes[name],
   }
 }
