@@ -9,7 +9,7 @@ IS.UnwrapStream = UnwrapStream
 // integrity stream "wraps" (pipes) a duplex packet stream
 // with integrity checksums + verification
 function IntegrityStream(checksumFn, stream) {
-  return transDuplex(WrapStream(checksumFn), stream, UnwrapStream())
+  return transDuplex.obj(WrapStream(checksumFn), stream, UnwrapStream())
 }
 
 

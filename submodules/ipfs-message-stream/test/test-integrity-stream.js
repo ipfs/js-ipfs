@@ -59,8 +59,8 @@ test('test send', function(t) {
 
     if (Object.keys(sent).length == 0) { // done
       console.log('should end')
-      eve.rawStream.write(null) // should be just stream.
-      bob.rawStream.write(null) // should be just stream
+      eve.stream.end()
+      bob.stream.end()
     }
   })
 
@@ -104,7 +104,7 @@ test('test send bad', function(t) {
     t.equal(recv.length, 10, 'ended without seeing any bad')
     t.end()
 
-    eve.rawStream.write(null) // should be just stream.
-    bob.rawStream.write(null) // should be just stream
+    eve.stream.end()
+    bob.stream.end()
   }, 200)
 })

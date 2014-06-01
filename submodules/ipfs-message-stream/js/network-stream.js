@@ -10,7 +10,7 @@ NS.ReceiverStream = ReceiverStream
 // network-duplex stream "wraps" a duplex packet stream
 // with sender + receiver transform streams (pipe)
 function NetworkStream(peer, stream) {
-  return transDuplex(SenderStream(peer), stream, ReceiverStream(peer))
+  return transDuplex.obj(SenderStream(peer), stream, ReceiverStream(peer))
 }
 
 function SenderStream(peer) {

@@ -28,7 +28,7 @@ function extractData(p) { // network packet
 
 
 test('test write', function(t) {
-  t.plan(14)
+  t.plan(13)
 
   var sent = { bob: {}, alc: {}}
   var eve = setupPeer('110a33667000f223ce8b688d', 'udp4://localhost:1234')
@@ -50,9 +50,9 @@ test('test write', function(t) {
       if (Object.keys(sent).length == 0) { // done
         t.ok(Object.keys(sent).length == 0, 'done receiving')
         console.log('should end')
-        eve.stream.write(null)
-        bob.stream.write(null)
-        alc.stream.write(null)
+        eve.stream.end()
+        bob.stream.end()
+        alc.stream.end()
       }
     }
   }

@@ -55,9 +55,9 @@ test('test send', function(t) {
 
       if (Object.keys(sent).length == 0) { // done
         console.log('should end')
-        eve.rawStream.write(null) // should be just stream.
-        bob.rawStream.write(null) // should be just stream
-        alc.rawStream.write(null) // should be just stream
+        eve.stream.end()
+        bob.stream.end()
+        alc.stream.end()
       }
     }
   }
@@ -132,9 +132,9 @@ test('test send bad', function(t) {
     t.equal(recv.stv, undefined, 'ended without any for stv')
     t.end()
 
-    eve.rawStream.write(null) // should be just stream.
-    bob.rawStream.write(null) // should be just stream
-    stv.rawStream.write(null) // should be just stream.
-    alc.rawStream.write(null) // should be just stream.
+    eve.stream.end()
+    bob.stream.end()
+    stv.stream.end()
+    alc.stream.end()
   }, 200)
 })
