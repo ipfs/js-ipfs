@@ -11,18 +11,11 @@ function Peer(id, other) {
   if (id instanceof Peer)
     return id
 
-  if (!(id instanceof Buffer))
-    id = new Buffer(id, 'hex')
-
   if (!id)
     throw new Error('peer id is required')
 
-  var err = mh.validate(id)
-  if (err)
-    throw new Error('peer id must be a valid multihash. ' + err)
-
   other = other || {}
-  this.id = id
+  this.id = Peer.peerId(id)
   this.pubkey = other.pubkey
   this.addresses = other.addresses || []
 }
@@ -57,4 +50,15 @@ Peer.addrUrlToObject = function(addr) {
 
 Peer.addrObjectToUrl = function(addr) {
   return addr.protocol + '://' + addr.address + ':' + addr.port
+}
+
+Peer.peerId = function(id) {
+  if (!(id instanceof Buffer))
+    id = new Buffer(id, 'hex')
+
+  var err = mh.validate(id)
+  if (err)
+    throw new Error('peer id must be a valid multihash. ' + err)
+
+  return id
 }
