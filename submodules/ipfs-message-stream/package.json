@@ -10,7 +10,9 @@
     "through2": "~0.4.2",
     "duplex-transform": "~0.1.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "tape": "~2.13.1"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
