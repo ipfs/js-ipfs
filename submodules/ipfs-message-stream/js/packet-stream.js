@@ -68,6 +68,12 @@ function ipfs2dgram(ipfsPkt) {
   }
 }
 
+PacketStream.prototype.end = function() {
+  this.dgrams.end()
+  Duplex.prototype.end.apply(this, arguments)
+}
+
+
 function dgram2ipfs(dgramPkt) {
   return Pkt.PayloadFrame.decode(dgramPkt.payload)
 }
