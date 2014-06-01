@@ -46,6 +46,10 @@ IntegrityFrame.prototype.validateChecksum = function() {
       ", got: " + this.checksum.toString('hex'))
 }
 
+IntegrityFrame.prototype.validChecksum = function() {
+  return !!this.validateChecksum()
+}
+
 IntegrityFrame.prototype.validate = function() {
   var err = Frame.prototype.validate.apply(this)
   if (err) return err
