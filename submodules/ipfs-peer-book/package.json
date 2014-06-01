@@ -1,0 +1,16 @@
+{
+  "name": "ipfs-peer-book",
+  "version": "0.0.0",
+  "description": "ipfs peer collection",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "ipfs",
+    "peer",
+    "collection"
+  ],
+  "author": "Juan Benet <juan@benet.ai> (http://juan.benet.ai/)",
+  "license": "MIT"
+}
