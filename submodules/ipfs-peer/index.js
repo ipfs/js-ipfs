@@ -14,6 +14,11 @@ function Peer(id, other) {
   if (!id)
     throw new Error('peer id is required')
 
+  if (id && id.id && !other) {
+    other = id
+    id = id.id
+  }
+
   other = other || {}
   this.id = Peer.peerId(id)
   this.pubkey = other.pubkey
