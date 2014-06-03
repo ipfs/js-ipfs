@@ -33,6 +33,6 @@ function IPFS(config) {
   // the block exchange + strategy. recommend ipfs-bitswap
   // this.bitswap = BitSwap(config.bitswap)
 
-  // the name system, resolves paths to hashes.
+  // the name system, resolves paths to hashes
   // this.namesys = NameSystem(config.namesys)
 }

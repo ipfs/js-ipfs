@@ -31,7 +31,7 @@ function encode(data, enc, next) {
 }
 
 function decode(data, enc, next) {
-  data = data.decodePayload().decodePayload() // DataMessage
+  data = data.decodePayload() // DataMessage
   this.push(data.payload)
   next()
 }

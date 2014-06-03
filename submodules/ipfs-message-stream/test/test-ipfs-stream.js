@@ -22,7 +22,7 @@ function dataMessage(to, data) {
 }
 
 function extractData(p) { // network packet
-  p = p.decodePayload().decodePayload() // data message
+  p = p.decodePayload() // data message
   return p.payload
 }
 

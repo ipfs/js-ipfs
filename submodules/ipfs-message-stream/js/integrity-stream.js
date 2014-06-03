@@ -18,7 +18,7 @@ function WrapStream(checksumFn) {
   return through2.obj(write)
 
   function write (packet, enc, next) {
-    this.push(Pkt.PayloadFrame(Pkt.IntegrityFrame(packet, checksumFn)))
+    this.push(Pkt.IntegrityFrame(packet, checksumFn))
     next()
   }
 }
@@ -32,7 +32,7 @@ function UnwrapStream(acceptFns) {
   return through2.obj(write)
 
   function write(packet, enc, next) {
-    var integrity = packet.decodePayload()
+    var integrity = packet
     var err = integrity.validate()
     if (err) {
       this.emit('invalid', { packet: integrity, error: err })

@@ -12,8 +12,8 @@ function setupPeer(name, id, addr) {
     console.log(name + ': ' + util.pktToString(p))
   })
 
-  peer.stream.on('invalid', function(p) {
-    console.log('caught bad packet: ' + util.pktToString(p))
+  peer.stream.incoming.on('invalid', function(err) {
+    console.log('caught bad packet: ' + util.pktToString(err.packet))
   })
 
   return peer
@@ -32,7 +32,7 @@ function corruptIntegrity(pkt) {
   pkt = Pkt.IntegrityFrame(pkt, 'sha1')
   pkt.checksum = pkt.calculateChecksum()
   pkt.checksum[10] = pkt.checksum[10] + 2
-  return Pkt.PayloadFrame(pkt)
+  return pkt
 }
 
 // ipfs-stream automatically fills in:

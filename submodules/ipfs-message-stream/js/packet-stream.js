@@ -59,23 +59,22 @@ PacketStream.prototype._write = function (ipfsPacket, enc, next) {
 
 PacketStream.prototype._read = function () {}
 
-function ipfs2dgram(ipfsPkt) {
-  var net = Pkt.peek.network(ipfsPkt)
-  return {
-    to: peerDgramAddr(net.destination),
-    // from: peerDgramAddr(source),
-    payload: ipfsPkt.encode(),
-  }
-}
-
 PacketStream.prototype.end = function() {
   this.dgrams.end()
   Duplex.prototype.end.apply(this, arguments)
 }
 
+function ipfs2dgram(ipfsPkt) {
+  var net = Pkt.peek.network(ipfsPkt)
+  return {
+    to: peerDgramAddr(net.destination),
+    // from: peerDgramAddr(source),
+    payload: Pkt.PayloadFrame(ipfsPkt).encode(),
+  }
+}
 
 function dgram2ipfs(dgramPkt) {
-  return Pkt.PayloadFrame.decode(dgramPkt.payload)
+  return Pkt.PayloadFrame.decode(dgramPkt.payload).decodePayload()
 }
 
 function peerDgramAddr(peer) {

@@ -28,7 +28,7 @@ function SenderStream(peer) {
     }
 
     var net = Pkt.NetworkFrame(peer, packet.to, packet.payload)
-    this.push(Pkt.PayloadFrame(net))
+    this.push(net)
     next()
   }
 }
@@ -40,7 +40,7 @@ function ReceiverStream(peer) {
   return through2.obj(write)
 
   function write (packet, enc, next) {
-    var net = packet.decodePayload()
+    var net = packet
     var err = net.validate()
     if (err) {
       this.emit('error', {packet: net, error: err})

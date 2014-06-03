@@ -34,12 +34,11 @@ function corrupt(pkt) {
   pkt = Pkt.IntegrityFrame(pkt, 'sha1')
   pkt.checksum = pkt.calculateChecksum()
   pkt.checksum[10] = pkt.checksum[10] + 2
-  return Pkt.PayloadFrame(pkt)
+  return pkt
 }
 
-function extractData(p) {
-  p = p.decodePayload() // network frame
-  p = p.decodePayload().decodePayload() // data message
+function extractData(p) { // network frame
+  p = p.decodePayload() // data message
   return p.payload
 }
 
@@ -83,6 +82,12 @@ test('test send bad', function(t) {
     console.log('bob got: ' + s)
     recv.push(s)
     t.ok(/good/.test(s), 'received good data.')
+  })
+
+  bob.stream.incoming.on('invalid', function(err) {
+    var s = extractData(err.packet)
+    console.log('bob stopped bad pkt: ' + s)
+    t.ok(/bad/.test(s), 'stopped bad data.')
   })
 
   // send 20. 10 good, 10 bad.

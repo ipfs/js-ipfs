@@ -21,14 +21,12 @@ function dataMessage(to, from, data) {
   var p = Pkt.DataMessage(data)
   p = Pkt.NetworkFrame((to.peer || to), (from.peer || from), p)
   p = Pkt.IntegrityFrame(p, 'sha1')
-  p = Pkt.PayloadFrame(p)
   return p
 }
 
-function extractData(p) {
-  p = p.decodePayload() // integrity frame
-  p = p.decodePayload().decodePayload() // network frame
-  p = p.decodePayload().decodePayload() // data message
+function extractData(p) { // integrity frame
+  p = p.decodePayload() // network frame
+  p = p.decodePayload() // data message
   return p.payload
 }
 

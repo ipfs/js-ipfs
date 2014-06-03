@@ -17,7 +17,6 @@ function dataMessage(to, from, data) {
   var p = Pkt.DataMessage(data)
   p = Pkt.NetworkFrame((to.peer || to), (from.peer || from), p)
   p = Pkt.IntegrityFrame(p, 'sha1')
-  p = Pkt.PayloadFrame(p)
   return p
 }
 
