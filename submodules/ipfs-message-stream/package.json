@@ -8,7 +8,7 @@
     "inherits": "~2.0.1",
     "defaults": "~1.0.0",
     "through2": "~0.4.2",
-    "duplex-transform": "~0.1.1"
+    "duplex-transform": "~0.1.3"
   },
   "devDependencies": {
     "tape": "~2.13.1"

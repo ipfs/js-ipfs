@@ -16,5 +16,8 @@
     "underscore": "~1.6.0",
     "multihashing": "~0.1.1",
     "duplex-transform": "~0.1.1"
+  },
+  "dependencies": {
+    "duplex-transform": "~0.1.3"
   }
 }
