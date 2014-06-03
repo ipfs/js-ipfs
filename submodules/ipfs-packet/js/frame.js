@@ -43,6 +43,10 @@ Frame.prototype.decodePayload = function() {
   if (payload instanceof Buffer)
     payload = this.payloadType.decode(payload)
 
+  // remove double payload wrapping
+  if (payload instanceof Frame.defaultPayloadType)
+    payload = payload.decodePayload()
+
   if (payload instanceof Packet)
     return payload
 
