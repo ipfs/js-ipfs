@@ -9,10 +9,6 @@ module.exports = DHTRouting
 function DHTRouting(localPeer, dht) {
   this.peer = localPeer
   this.dht = dht
-
-  // the blocks to periodically announce as providing
-  // Note: should probably query live storage.
-  this.provide = {}
 }
 
 // findPeer looks for a particular peer with given id
@@ -58,7 +54,6 @@ DHTRouting.prototype.provideValue = function provideValue(key, value, cb) {
   this.provide[key] = value
   this.dht.setSloppyValue(key, value, cb)
 }
-
 
 // utilities
 
