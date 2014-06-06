@@ -14,7 +14,10 @@ var tmsgeq = function(a, b) {
 var dm = pkt.DataMessage(new Buffer('abcd', 'hex'))
 tmsgeq(pkt.DataMessage.decode(dm.encode()), dm)
 
-var nf = pkt.NetworkFrame('1102aaaa', '1102bbbb', dm)
+var of = pkt.NonceFrame(dm, new Buffer('5519851984', 'hex'))
+tmsgeq(pkt.NonceFrame.decode(of.encode()), of)
+
+var nf = pkt.NetworkFrame('1102aaaa', '1102bbbb', of)
 tmsgeq(pkt.NetworkFrame.decode(nf.encode()), nf)
 
 var tf = pkt.IntegrityFrame(nf, 'sha1')

@@ -23,6 +23,7 @@ pkt.Frame = require('./js/frame')
 pkt.PayloadFrame = require('./js/payload-frame')
 pkt.NetworkFrame = require('./js/network-frame')
 pkt.IntegrityFrame = require('./js/integrity-frame')
+pkt.NonceFrame = require('./js/nonce-frame')
 pkt.DataMessage = require('./js/data-message')
 
 // utilities

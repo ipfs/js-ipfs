@@ -17,7 +17,10 @@ var pkt = require('./')
 var dm = pkt.DataMessage(new Buffer('abcd', 'hex'))
 msgeq(pkt.DataMessage.decode(dm.encode()), dm)
 
-var nf = pkt.NetworkFrame('1102aaaa', '1102bbbb', dm)
+var of = pkt.NonceFrame(dm, new Buffer('5519851984', 'hex'))
+msgeq(pkt.NonceFrame.decode(of.encode()), of)
+
+var nf = pkt.NetworkFrame('1102aaaa', '1102bbbb', of)
 msgeq(pkt.NetworkFrame.decode(nf.encode()), nf)
 
 var tf = pkt.IntegrityFrame(nf, 'sha1')
