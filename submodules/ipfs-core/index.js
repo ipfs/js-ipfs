@@ -1,6 +1,7 @@
 var Peer = require('../ipfs-peer')
 var PeerBook = require('../ipfs-peer-book')
 var ipfsStream = require('../ipfs-message-stream')
+var ipfsBlockService = require('./blocks.js')
 
 module.exports = IPFS
 
@@ -32,6 +33,9 @@ function IPFS(config) {
 
   // the block exchange + strategy. recommend ipfs-bitswap
   // this.bitswap = BitSwap(config.bitswap)
+
+  // the block service, get/add blocks
+  this.blocks = ipfsBlockService(this.storage, this.bitswap)
 
   // the name system, resolves paths to hashes
   // this.namesys = NameSystem(config.namesys)
