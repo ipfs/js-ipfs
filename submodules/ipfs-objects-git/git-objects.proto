@@ -1,0 +1,41 @@
+// IPFS Git-like Objects
+
+// The formats below are only the "body" (data) part
+// of an IPFS Object structure.
+
+// Note: since links are stored in the IPFS Object
+// structure itself, references below are indices into
+// the IPFS Object Links list.
+
+enum GitObject {
+  BLOCK = 0;
+  LIST = 1;
+  TREE = 2;
+  COMMIT = 3;
+}
+
+message Block {
+  optional bytes data = 1; // opaque data
+}
+
+message List {
+  repeated uint32 item = 1; // link indices.
+}
+
+message Tree {
+  // Rest of the reference already in the Object's Links
+  message TreeEntry {
+    optional uint32 index = 1;   // index into links
+    optional GitObject type = 2; // so we can ls nicely
+  }
+
+  repeated TreeEntry entry = 1;
+}
+
+message Commit {
+  optional bytes parent = 1;     // parent Commit hash
+  optional GitObject type = 2;   // unlike Git, can be anything.
+  optional bytes author = 3;     // author hash
+  optional string date = 4;      // iso datetime in UTC
+  optional string message = 5;   // message text
+}
