@@ -1,0 +1,16 @@
+{
+  "name": "ipfs-storage",
+  "version": "0.0.0",
+  "description": "IPFS nodes only require a very simple key-value store.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Juan Benet <juan@benet.ai> (http://juan.benet.ai/)",
+  "license": "MIT",
+  "dependencies": {
+    "leveldown-prebuilt": "^0.10.2",
+    "levelup": "^0.18.3",
+    "xtend": "^3.0.0"
+  }
+}
