@@ -1,0 +1,19 @@
+{
+  "name": "ipfs-object",
+  "version": "0.0.0",
+  "description": "ipfs object",
+  "main": "index.js",
+  "dependencies": {
+    "msgproto": "^0.1.4",
+    "multihashing": "^0.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "ipfs"
+  ],
+  "author": "Juan Benet <juan@benet.ai> (http://juan.benet.ai/)",
+  "license": "MIT"
+}

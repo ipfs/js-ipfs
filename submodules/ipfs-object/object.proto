@@ -1,0 +1,12 @@
+// An IPFS Object
+message Object {
+  optional bytes data = 1; // opaque data
+  repeated Link links = 2; // refs to other objects
+}
+
+// An IPFS Link
+message Link {
+  optional bytes hash = 1;
+  optional string name = 2;
+  optional uint64 size = 3; // cumulative
+}
