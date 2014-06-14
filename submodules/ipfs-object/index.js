@@ -1,5 +1,6 @@
 var fs = require('fs')
-var msgproto = require('msgproto')
+var inherits = require('inherits')
+var protobuf = require('ipfs-protobuf-codec')
 var multihashing = require('multihashing')
 
 module.exports = ipfsObject
@@ -15,8 +16,17 @@ function ipfsObject(data) {
   this.buffer = data
 }
 
+ipfsObject.inherits = function(child, parent) {
+  return inherits(child, parent || ipfsObject)
+}
 
+// override this to provide custom behavior to
+// objects. Lists can concatenate, for example.
 ipfsObject.prototype.data = function() {
+  return this.rawData()
+}
+
+ipfsObject.prototype.rawData = function() {
   return this.decode().data
 }
 
@@ -41,5 +51,5 @@ ipfsObject.encode = function encode(data) {
 }
 
 var src = fs.readFileSync(__dirname + '/object.proto', 'utf-8')
-var protos = msgproto.ProtobufCodec.fromProtoSrc(src)
+var protos = protobuf.fromProtoSrc(src)
 ipfsObject.codec = protos.Object
