@@ -10,8 +10,19 @@ var b3 = Block({data: new Buffer("b1b1b1")})
 
 var l1 = List([b1, b2, b3])
 var l2 = List([b1, b2, b3])
-var l3 = List({data: {item: [0, 1, 2]}, links: [b1.link(), b2.link(), b3.link()]})
+var l3 = List({data: {items: [0, 1, 2]}, links: [b1.link(), b2.link(), b3.link()]})
 var l4 = List([b1, b2, b2, b2, b3, b3])
+
+
+var c1 = Commit({
+  parent: b1,
+  object: b2,
+  author: b3,
+  date: new Date(),
+  type: 'block',
+  message: 'foo',
+})
+
 
 // call + log
 function logCall(func) {

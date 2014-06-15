@@ -19,7 +19,7 @@ message Block {
 }
 
 message List {
-  repeated uint32 item = 1; // link indices.
+  repeated uint32 items = 1; // link indices.
 }
 
 message Tree {
@@ -33,9 +33,12 @@ message Tree {
 }
 
 message Commit {
-  optional bytes parent = 1;     // parent Commit hash
-  optional GitObject type = 2;   // unlike Git, can be anything.
-  optional bytes author = 3;     // author hash
-  optional string date = 4;      // iso datetime in UTC
-  optional string message = 5;   // message text
+  optional GitObject type = 3;   // unlike Git, object can be any object.
+  optional string date = 5;      // iso datetime in UTC
+  optional string message = 6;   // message text
+
+  // don't need to include the actual hashes, because they're links 0, 1, and 2.
+  // optional bytes parent = 1;     // parent Commit hash (link 0)
+  // optional bytes object = 2;     // target Object hash (link 1)
+  // optional bytes author = 4;     // author hash (link 2)
 }

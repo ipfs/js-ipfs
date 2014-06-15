@@ -23,6 +23,8 @@ ipfsObject.inherits = function(child, parent) {
 // override this to provide custom behavior to
 // objects. Lists can concatenate, for example.
 ipfsObject.prototype.data = function() {
+  if (this.constructor.codec)
+    return this.constructor.codec.decode(this.rawData())
   return this.rawData()
 }
 
@@ -70,11 +72,30 @@ ipfsObject.encode = function encode(data) {
 
 ipfsObject.link = function(hash, name, size) {
   var o = {}
-  if (hash) o.hash = hash
+  o.hash = assertMultihash(hash)
   if (name) o.name = name
   if (size) o.size = size
   return o
 }
+
+ipfsObject.assertMultihash = assertMultihash
+function assertMultihash(hash) {
+  var err = multihashing.multihash.validate(hash)
+  if (err) throw err
+  return hash
+}
+
+ipfsObject.coerceLink = coerceLink
+function coerceLink(obj) {
+  if (typeof(obj.link) == 'function')
+    obj = obj.link()
+  else if (obj instanceof Buffer)
+    obj = ipfsObject.link(obj) // what about size + name ???
+  else if (!obj.hash)
+    throw new Error('Link error: must include hash property.')
+  return obj
+}
+
 
 var src = fs.readFileSync(__dirname + '/object.proto', 'utf-8')
 var protos = protobuf.fromProtoSrc(src)

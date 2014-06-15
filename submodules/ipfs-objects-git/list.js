@@ -5,7 +5,7 @@ var multihash = require('multihashes')
 
 module.exports = List
 
-// a list just holds a bunch of links to objects.
+// a list holds: [ <link to list or object>, ... ]
 function List(data) {
   if (!(this instanceof List))
     return new List(data)
@@ -15,20 +15,17 @@ function List(data) {
     data = listArrayToData(data)
 
   // need to encode list data?
-  if (data.data && Array.isArray(data.data.item))
+  if (data.data && Array.isArray(data.data.items))
     data.data = List.codec.encode(data.data)
 
+  // todo: validate data
   ipfsObject.call(this, data)
 }
 
 ipfsObject.inherits(List)
 
-// override this to provide custom behavior to objects.
-// concatenate objects.
-List.prototype.data = function() {
-  return List.codec.decode(this.rawData())
-}
 
+// turn data an array of ipfsObjects into corresponding list data
 function listArrayToData(array) {
   var links = {}
   var indices = []
@@ -51,7 +48,7 @@ function listArrayToData(array) {
 
     indices.push(links[hash]) // add index
   }
-  obj.data = { item: indices }
+  obj.data = { items: indices }
   return obj
 }
 
