@@ -25,7 +25,6 @@ function Commit(data) {
 
 ipfsObject.inherits(Commit)
 
-// turn data an array of ipfsObjects into corresponding list data
 function commitObjectToData(commit) {
   var type = commit.object.constructor.name.toLowerCase()
 

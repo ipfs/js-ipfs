@@ -27,29 +27,25 @@ ipfsObject.inherits(List)
 
 // turn data an array of ipfsObjects into corresponding list data
 function listArrayToData(array) {
+  var data = { data: { items: [] }, links: [] }
   var links = {}
-  var indices = []
-  var obj = { links: [] }
+
+  // get link index (can add link)
+  function linkIndex(obj) {
+    var hash = obj.multihash()
+    if (links[hash] === undefined) {
+      links[hash] = data.links.length
+      data.links.push(obj.link())
+    }
+    return links[hash]
+  }
 
   for (var i in array) {
     var item = array[i]
-
-    // not an ipfs object? bail.
-    if (typeof(item.multihash) != 'function')
-      throw new Error("TypeError: list item not object or multihash. " + item)
-
-    var hash = item.multihash()
-
-    // no link yet available? add it.
-    if (!links[hash]) {
-      links[hash] = obj.links.length // setup index.
-      obj.links.push(item.link())
-    }
-
-    indices.push(links[hash]) // add index
+    data.data.items.push(linkIndex(item))
   }
-  obj.data = { items: indices }
-  return obj
+
+  return data
 }
 
 var src = fs.readFileSync(__dirname + '/git-objects.proto', 'utf-8')

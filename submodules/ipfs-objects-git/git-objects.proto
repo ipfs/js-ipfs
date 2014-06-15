@@ -29,7 +29,7 @@ message Tree {
     optional GitObject type = 2; // so we can ls nicely
   }
 
-  repeated TreeEntry entry = 1;
+  repeated TreeEntry entries = 1;
 }
 
 message Commit {
