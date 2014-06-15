@@ -6,7 +6,7 @@ var b = Object({ data: new Buffer("bbb") })
 var c = Object({
   data: new Buffer("ccc"),
   links: [
-    {hash: a.multihash(), name: "a", size: 10 },
+    Object.link(a.multihash(), "a", 10),
     {hash: b.multihash(), name: "b", size: 10 },
   ]
 })

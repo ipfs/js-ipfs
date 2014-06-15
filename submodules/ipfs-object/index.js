@@ -26,12 +26,24 @@ ipfsObject.prototype.data = function() {
   return this.rawData()
 }
 
+// returns the data of this object raw, encoded.
 ipfsObject.prototype.rawData = function() {
   return this.decode().data
 }
 
+// returns all the links within this object
 ipfsObject.prototype.links = function() {
   return this.decode().links
+}
+
+// returns size of this object (encoded)
+ipfsObject.prototype.size = function() {
+  return this.buffer.length
+}
+
+// returns link to _this_ object
+ipfsObject.prototype.link = function(name) {
+  return ipfsObject.link(this.multihash(), name, this.size())
 }
 
 ipfsObject.prototype.decode = function() {
@@ -43,11 +55,25 @@ ipfsObject.prototype.encode = function() {
 }
 
 ipfsObject.prototype.multihash = function() {
-  return multihashing(this.buffer, 'sha1')
+  if (!this._multihash) // lazy construction.
+    this._multihash = multihashing(this.buffer, 'sha1')
+  return this._multihash
 }
 
 ipfsObject.encode = function encode(data) {
-  return ipfsObject.codec.encode(data)
+  try {
+    return ipfsObject.codec.encode(data)
+  } catch (e) {
+    throw new Error("Encoding ipfs object: " + e)
+  }
+}
+
+ipfsObject.link = function(hash, name, size) {
+  var o = {}
+  if (hash) o.hash = hash
+  if (name) o.name = name
+  if (size) o.size = size
+  return o
 }
 
 var src = fs.readFileSync(__dirname + '/object.proto', 'utf-8')
