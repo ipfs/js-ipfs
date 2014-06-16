@@ -30,19 +30,12 @@ function listArrayToData(array) {
   var data = { data: { items: [] }, links: [] }
   var links = {}
 
-  // get link index (can add link)
-  function linkIndex(obj) {
-    var hash = obj.multihash()
-    if (links[hash] === undefined) {
-      links[hash] = data.links.length
-      data.links.push(obj.link())
-    }
-    return links[hash]
-  }
-
   for (var i in array) {
-    var item = array[i]
-    data.data.items.push(linkIndex(item))
+    var val = array[i]
+    var link = val.link()
+    link.name = "" + i
+    data.links.push(link)
+    data.data.items.push(data.links.length - 1)
   }
 
   return data
