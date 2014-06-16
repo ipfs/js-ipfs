@@ -11,12 +11,13 @@ var git = require('ipfs-objects-git')
 
 var b1 = git.Block({data: new Buffer("b1b1b1")})
 var b2 = git.Block({data: new Buffer("b1b1b1")})
+var b3 = git.Block({data: new Buffer("b3b3b3")})
 
-var l1 = List([b1, b2, b3])
-var l2 = List([l1, b1, b1, b2, b3])
+var l1 = git.List([b1, b2, b3])
+var l2 = git.List([l1, b1, b1, b2, b3])
 
-var t1 = Tree({'b1': b1, 'l1': l1, 'b3': b3})
-var t3 = Tree({'b1': b1, 'l2': b2, 't1': t1})
+var t1 = git.Tree({'b1': b1, 'l1': l1, 'b3': b3})
+var t3 = git.Tree({'b1': b1, 'l2': b2, 't1': t1})
 ```
 
 Let's store them + resolve paths:
