@@ -38,6 +38,20 @@ ipfsObject.prototype.links = function() {
   return this.decode().links
 }
 
+// returns the hash of the child object linked by name
+ipfsObject.prototype.child = function(name) {
+  var links = this.links()
+  if (typeof(name) === 'number')
+    return links[name].hash
+
+  for (var i in links) {
+    if (links[i].name === name)
+      return links[i].hash
+  }
+
+  return undefined
+}
+
 // returns size of this object (encoded)
 ipfsObject.prototype.size = function() {
   return this.buffer.length
