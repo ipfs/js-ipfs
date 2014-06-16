@@ -4,6 +4,7 @@
   "description": "ipfs object",
   "main": "index.js",
   "dependencies": {
+    "buffer-equal": "0.0.1",
     "inherits": "^2.0.1",
     "ipfs-protobuf-codec": "0.0.0",
     "multihashing": "^0.1.2"

@@ -1,6 +1,7 @@
 var fs = require('fs')
 var inherits = require('inherits')
 var protobuf = require('ipfs-protobuf-codec')
+var bufeq = require('buffer-equal')
 var multihashing = require('multihashing')
 
 module.exports = ipfsObject
@@ -76,6 +77,14 @@ ipfsObject.prototype.multihash = function() {
   if (!this._multihash) // lazy construction.
     this._multihash = multihashing(this.buffer, 'sha1')
   return this._multihash
+}
+
+ipfsObject.prototype.equals = function(obj) {
+  return bufeq(this.multihash(), obj.multihash())
+}
+
+ipfsObject.prototype.inspect = function() {
+  return "<IPFS Object " + this.multihash().toString('hex') + ">"
 }
 
 ipfsObject.encode = function encode(data) {
