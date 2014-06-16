@@ -27,8 +27,6 @@ function Path(data) {
 
   data = cleanPathInput(data)
 
-  if (data.length < 1)
-    throw new Error('path depth min 1 not satisfied')
   if (data.length > Path.MAX_DEPTH)
     throw new Error('path depth max ' + Path.MAX_DEPTH + ' exceeded')
 
@@ -48,6 +46,10 @@ Path.prototype.toString = function() {
 
 Path.prototype.length = function() {
   return this.parts.length
+}
+
+Path.prototype.isRoot = function() {
+  return this.parts.length == 0
 }
 
 Path.prototype.first = function() {
