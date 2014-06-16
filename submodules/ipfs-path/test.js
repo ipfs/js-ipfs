@@ -27,12 +27,12 @@ log(p2)
 // components
 log(p2.first()) // t1
 log(p2.last())  // 1
-log(p2.split()) // ['t1', '0', '1']
+log(p2.parts) // ['t1', '0', '1']
 
 var p3 = p2.prepend(t3)
 log(p3)
 log(p3.equals(p1))
 
 // partial resolution step.
-var t1hash = t3.child(p2.first())
-log(t1hash)
+// var t1hash = t3.child(p2.first())
+// log(t1hash)

@@ -1,5 +1,0 @@
-// An IPFS Path
-message Path {
-  repeated bytes parts = 0;
-  // mulihashes, or string names, offsets
-}

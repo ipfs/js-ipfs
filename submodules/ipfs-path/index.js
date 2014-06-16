@@ -8,140 +8,120 @@ var multihash = require('multihashes')
 
 module.exports = Path
 
+
+// for now, Path is always absolute.
+// for now, Path buffers are encoded with base58check
 function Path(data) {
   if (!(this instanceof Path))
     return new Path(data)
 
-  if (arguments.length == 1) {
-    if (data instanceof Path)
-      data = data.buffer
-
-    if (data instanceof Buffer) {
-      this.buffer = new Buffer(data) // copy
-      return
-    }
-
-    if (typeof(data) === 'string' || data instanceof String)
-      data = splitStringPath(data)
-  }
-
-  if (!Array.isArray(data))
+  if (arguments.length > 1)
     data = Array.prototype.slice.call(arguments, 0)
 
-  if (data.length > Path.MAX_DEPTH)
-    throw new Error('path depth ' + Path.MAX_DEPTH + ' exceeded')
+  if (data instanceof Path)
+    data = data.parts
+  else if (typeof(data) === 'string' || data instanceof String)
+    data = splitStringPath(data)
+  else if (!Array.isArray(data))
+    data = [data]
 
   data = cleanPathInput(data)
-  this.buffer = Path.encode(data)
+
+  if (data.length < 1)
+    throw new Error('path depth min 1 not satisfied')
+  if (data.length > Path.MAX_DEPTH)
+    throw new Error('path depth max ' + Path.MAX_DEPTH + ' exceeded')
+
+  this.parts = data
 }
+
+// what's a sane limit here? TODO
+Path.MAX_DEPTH = 128
 
 Path.prototype.inspect = function() {
   return "<IPFS Path "+ this.toString() +">"
 }
 
 Path.prototype.toString = function() {
-  return Path.decode(this.buffer)
+  return '/' + this.parts.join('/')
 }
 
 Path.prototype.length = function() {
-  return this.split().length
-}
-
-Path.prototype.split = function() {
-  return this.toString().split(path.sep).slice(1) // remove first empty elem
-}
-
-Path.prototype.bufsplit = function() {
-  return Path.codec.decode(this.buffer).parts
+  return this.parts.length
 }
 
 Path.prototype.first = function() {
-  return this.split().shift()
+  return this.parts[0]
 }
 
 Path.prototype.last = function() {
-  return this.split().pop()
+  return this.parts[this.parts.length - 1]
 }
 
 Path.prototype.child = function(name) {
-  return Path(this.bufsplit().concat([name]))
+  return Path(this.parts.concat([name]))
 }
 
 Path.prototype.parent = function() {
-  var a = this.bufsplit()
-  return Path(a.slice(0, a.length - 2))
+  return this.slice(0, a.length - 2)
 }
 
 Path.prototype.prepend = function(p) {
-  p = Path(p)
-  return Path(p.bufsplit().concat(this.bufsplit()))
+  return Path(p).concat(this)
 }
 
 Path.prototype.append = function(p) {
-  p = Path(p)
-  return Path(this.bufsplit().concat(p.bufsplit()))
+  return this.concat(p)
 }
 
 Path.prototype.slice = function() {
-  var a = this.bufsplit()
-  return Path(a.slice.apply(a, arguments))
+  return Path(this.parts.slice.apply(this.parts, arguments))
+}
+
+Path.prototype.concat = function(p) {
+  return Path(this.parts.concat(Path(p).parts))
 }
 
 Path.prototype.equals = function(p) {
-  return bufeq(this.buffer, p.buffer)
-}
-
-Path.decode = function(buf) {
-  var parts = Path.codec.decode(buf).parts
-  parts = map(parts, decodePathComponent)
-  return path.sep + parts.join(path.sep)
-}
-
-Path.encode = function(parts) {
-  if (!Array.isArray(parts)) {
-    parts = parts.split(path.sep)
-    if (parts[0] == '') parts.shift()
-  }
-  parts = map(parts, encodePathComponent)
-  return Path.codec.encode({ parts: parts })
+  return this.toString() == p.toString()
 }
 
 function splitStringPath(p) {
-  p = path.normalize(p)
-  p = p.split(path.sep)
+  // normalize, which is platform dependent.
+  p = p.split('/')
+  p = path.join.apply(path, p)
+  p = path.normalize(p).split(path.sep)
+
+  // for now all ipfs paths are absolute, w/o trailing slash
   if (p[0] == '') p.shift()
+  if (p[p.length - 1] == '') p.pop()
   return p
 }
 
 function cleanPathInput(input) {
-  return map(input, encodePathComponent)
+  return map(input, cleanPathComponent)
 }
 
-function encodePathComponent(e) {
-  if (e instanceof Path)
-    return e.buffer
+function cleanPathComponent(e) {
+  if (e && typeof(e.multihash) === 'function')
+    e = e.multihash()
 
   if (e instanceof Buffer)
-    return e
-
-  if (e && typeof(e.multihash) === 'function')
-    return e.multihash()
+    return Path.encodeBinary(e)
 
   if (typeof(e) === 'string' || e instanceof String) {
     if (e.indexOf(path.sep) >= 0)
       throw new Error("invalid path component: has path sep: " + e)
-    return new Buffer(e)
+    return e
   }
 
   throw new Error("invalid path component: " + e)
 }
 
-function decodePathComponent(e) {
-  if (!multihash.validate(e)) // if no errors (is multihash)
-    return base58.encode(e)
-
-  return e.toString()
+Path.encodeBinary = function(buf) {
+  return base58.encode(buf)
 }
 
-var src = fs.readFileSync(__dirname + '/path.proto', 'utf-8')
-Path.codec = protobuf.fromProtoSrc(src).Path
+Path.decodeBinary = function(s) {
+  return base58.decode(s)
+}
