@@ -1,11 +1,14 @@
-var errors = require('ipfs-errors')
+var errors = require('../ipfs-errors')
 var bufeq = require('buffer-equal')
 
 module.exports = Block
 
 function Block(buf) {
+  if (!(this instanceof Block))
+    return new Block(buf)
+
   if (!buf || !(buf instanceof Buffer))
-    throw  errors.RequiresValueBufferError
+    throw errors.RequiresValueBufferError
 
   if (buf.length > Block.MaxLength)
     throw errors.MaxSizeExceededError
