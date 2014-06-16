@@ -3,6 +3,9 @@ module.exports = {
   // signals that a value is of size greater than the allowed maximum
   MaxSizeExceededError: new Error('maximum size exceeded'),
 
+  // signal that an item was not found
+  NotFoundError: new Error('not found'),
+
   // signal that a function is not yet implemented
   NotImplementedError: new Error('not implemented'),
 
