@@ -1,7 +1,6 @@
 var fs = require('fs')
 var ipfsObject = require('../ipfs-object')
 var protobuf = require('ipfs-protobuf-codec')
-var multihash = require('multihashes')
 var types = require('./types')
 
 module.exports = Tree
@@ -29,20 +28,13 @@ function treeObjectToData(tree) {
   var data = { data: { entries: [] }, links: [] }
   var links = {}
 
-  // get link index (can add link)
-  function linkIndex(obj) {
-    var hash = obj.multihash()
-    if (links[hash] === undefined) {
-      links[hash] = data.links.length
-      data.links.push(obj.link())
-    }
-    return links[hash]
-  }
-
   for (var key in tree) {
     var val = tree[key]
     var type = types[val.constructor.name.toLowerCase()]
-    data.data.entries.push({ index: linkIndex(val), type: type })
+    var link = val.link()
+    link.name = key
+    data.links.push(link)
+    data.data.entries.push({ index: (data.links.length - 1), type: type })
   }
 
   return data
