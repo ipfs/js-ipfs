@@ -1,10 +1,7 @@
 var Path = require('../ipfs-path')
 var errors = require('../ipfs-errors')
 
-module.exports = function(storage) {
-  var r = Resolver(storage)
-  return r.resolve.bind(r)
-}
+module.exports = Resolver
 
 function Resolver(storage) {
   if (!(this instanceof Resolver))
@@ -39,17 +36,17 @@ Resolver.prototype.resolve = function(path, cb) {
     throw new Error('resolve requires callback function')
 
   path = Path(path)
-  var splitPath = path.bufsplit()
-  var hash = splitPath.shift()
+
+  // get the first path as a hash (must decode from base58)
+  var hash = Path.decodeBinary(path.first())
 
   // errContext gets returned in callback if error happens.
   var errContext = {last: null, remainder: path}
 
-  console.log(hash)
+  var self = this
   this.storage.getObject(hash, function(err, obj) {
     if (err) return cb(err, errContext)
-    console.log(Path(splitPath))
-    this.linkResolve(obj, Path(splitPath), cb)
+    self.linkResolve(obj, path.slice(1), cb)
   })
   return errors.ReturnCallbackError
 }
@@ -60,9 +57,10 @@ Resolver.prototype.linkResolve = function linkResolve(object, path, cb) {
   if (!object) throw new Error('linkResolve requires object.')
   if (!cb || !(typeof(cb) == 'function'))
     throw new Error('linkResolve requires callback function')
+  path = Path(path)
 
   // base case. if no more to resolve, done!
-  if (!path || path.toString() == '/') {
+  if (path.isRoot()) {
     cb(null, object)
     return errors.ReturnCallbackError
   }
@@ -71,20 +69,17 @@ Resolver.prototype.linkResolve = function linkResolve(object, path, cb) {
   var errContext = {last: object, remainder: path}
 
   // get hash of next object from link structure
-  path = Path(path)
-  var splitPath = path.split()
-  var next = splitPath.shift()
-  var child = object.child(next)
-  if (!child) {
+  var hash = object.child(path.first())
+  if (!hash) {
     cb(errors.NotFoundError, errContext)
     return errors.ReturnCallbackError
   }
 
   // get object from storage.
   var self = this
-  this.storage.getObject(child, function(err, obj) {
+  this.storage.getObject(hash, function(err, obj) {
     if (err) return cb(err, errContext)
-    self.linkResolve(obj, Path(splitPath), cb) // keep resolving recursively
+    self.linkResolve(obj, path.slice(1), cb) // keep resolving recursively
   })
 
   return errors.ReturnCallbackError

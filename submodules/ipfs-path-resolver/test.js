@@ -2,7 +2,7 @@ var git = require('../ipfs-objects-git')
 var path = require('../ipfs-path')
 var memdown = require('memdown')
 var storage = require('../ipfs-storage')({levelup: {db: memdown}})
-var resolve = require('./')(storage)
+var resolver = require('./')(storage)
 var log = console.log
 
 var b1 = git.Block({data: new Buffer("b1b1b1")})
@@ -21,29 +21,61 @@ storage.putObject(l1)
 storage.putObject(l2)
 storage.putObject(t1)
 storage.putObject(t3, function(err) {
-  if (err) return console.log(err)
+  if (err) return log(err)
+  step1()
+})
+
+function step1() {
 
   // resolve an ipfs-path
   var p1 = path([t3, 't1', 'b1']) // /<hash-of-t3>/t1/b1
-  resolve(p1, function(err, obj) {
-    if (err) return console.log(err)
-    if (!obj.equals(t1))
+  log('resolving: ' + p1.inspect())
+  resolver.resolve(p1, function(err, obj) {
+    if (err) return log(err)
+    if (!obj.equals(b1)) {
+      log(p1)
+      log(obj)
+      log(b1)
       throw new Error('failed to resolve')
+    }
+    step2() // continue
   })
+}
+
+function step2() {
 
   // resolve a string path
+  var p1 = path([t3, 't1', 'b1']) // /<hash-of-t3>/t1/b1
   var sp1 = p1.toString() // /<hash-of-t3>/t1/b1
-  resolve(sp1, function(err, obj) {
-    if (err) return console.log(err)
-    if (!obj.equals(t1))
+  log('resolving: ' + sp1)
+  resolver.resolve(sp1, function(err, obj) {
+    if (err) return log(err)
+    if (!obj.equals(b1)) {
+      log(sp1)
+      log(obj)
+      log(b1)
       throw new Error('failed to resolve')
+    }
+    step3() // continue
   })
+}
 
-  // resolve from an object
-  // resolve(t3, "t1/l1/1", function(err, obj) {
-  //   if (err) return console.log(err)
-  //   if (!obj.equals(b2))
-  //     throw new Error('failed to resolve')
-  // })
+function step3() {
+  // resolve a link from an object
+  var p = "t1/l1/1"
+  log('resolving: ' + t3.inspect() + ' link '+ p)
+  resolver.linkResolve(t3, p, function(err, obj) {
+    if (err) {
+      log(obj)
+      return log(err)
+    }
 
-})
+    if (!obj.equals(b2)) {
+      log(p)
+      log(obj)
+      log(b2)
+
+      throw new Error('failed to resolve')
+    }
+  })
+}
