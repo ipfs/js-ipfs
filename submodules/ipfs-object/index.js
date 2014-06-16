@@ -63,7 +63,9 @@ ipfsObject.prototype.link = function(name) {
 }
 
 ipfsObject.prototype.decode = function() {
-  return ipfsObject.codec.decode(this.buffer)
+  if (!this._decoded) // cache.
+    this._decoded = ipfsObject.codec.decode(this.buffer)
+  return this._decoded
 }
 
 ipfsObject.prototype.encode = function() {
