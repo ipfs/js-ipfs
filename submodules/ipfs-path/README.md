@@ -9,6 +9,7 @@ var path = require('ipfs-path')
 
 var b1 = git.Block({data: new Buffer("b1b1b1")})
 var b2 = git.Block({data: new Buffer("b1b1b1")})
+var b3 = git.Block({data: new Buffer("b3b3b3")})
 
 var l1 = List([b1, b2, b3])
 var l2 = List([l1, b1, b1, b2, b3])
