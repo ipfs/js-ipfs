@@ -17,6 +17,9 @@ var p1 = path([t3, 't1', '0', '1'])
 log(p1)
 // /<t3-multihash>/t1/0/1  ---means--> b2
 
+if (p1.length() != 4)
+  throw new Error('length error: ' + p1.length())
+
 var p2 = p1.slice(1)
 log(p2)
 // /<t3-multihash>/t1/0

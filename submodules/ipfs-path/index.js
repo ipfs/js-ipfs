@@ -12,13 +12,24 @@ function Path(data) {
   if (!(this instanceof Path))
     return new Path(data)
 
-  if (data instanceof Buffer && arguments.length == 1) {
-    this.buffer = data
-    return
+  if (arguments.length == 1) {
+    if (data instanceof Path)
+      data = data.buffer
+
+    if (data instanceof Buffer) {
+      this.buffer = new Buffer(data) // copy
+      return
+    }
+
+    if (typeof(data) === 'string' || data instanceof String)
+      data = splitStringPath(data)
   }
 
   if (!Array.isArray(data))
     data = Array.prototype.slice.call(arguments, 0)
+
+  if (data.length > Path.MAX_DEPTH)
+    throw new Error('path depth ' + Path.MAX_DEPTH + ' exceeded')
 
   data = cleanPathInput(data)
   this.buffer = Path.encode(data)
@@ -30,6 +41,10 @@ Path.prototype.inspect = function() {
 
 Path.prototype.toString = function() {
   return Path.decode(this.buffer)
+}
+
+Path.prototype.length = function() {
+  return this.split().length
 }
 
 Path.prototype.split = function() {
@@ -83,10 +98,19 @@ Path.decode = function(buf) {
 }
 
 Path.encode = function(parts) {
-  if (!Array.isArray(parts))
+  if (!Array.isArray(parts)) {
     parts = parts.split(path.sep)
+    if (parts[0] == '') parts.shift()
+  }
   parts = map(parts, encodePathComponent)
   return Path.codec.encode({ parts: parts })
+}
+
+function splitStringPath(p) {
+  p = path.normalize(p)
+  p = p.split(path.sep)
+  if (p[0] == '') p.shift()
+  return p
 }
 
 function cleanPathInput(input) {
@@ -94,14 +118,20 @@ function cleanPathInput(input) {
 }
 
 function encodePathComponent(e) {
+  if (e instanceof Path)
+    return e.buffer
+
   if (e instanceof Buffer)
     return e
 
   if (e && typeof(e.multihash) === 'function')
     return e.multihash()
 
-  if (typeof(e) === 'string' || e instanceof String)
+  if (typeof(e) === 'string' || e instanceof String) {
+    if (e.indexOf(path.sep) >= 0)
+      throw new Error("invalid path component: has path sep: " + e)
     return new Buffer(e)
+  }
 
   throw new Error("invalid path component: " + e)
 }
