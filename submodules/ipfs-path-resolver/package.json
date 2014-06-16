@@ -1,0 +1,22 @@
+{
+  "name": "ipfs-path-resolver",
+  "version": "0.0.0",
+  "description": "ipfs path resolver",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "ipfs",
+    "path",
+    "resolution"
+  ],
+  "author": "Juan Benet <juan@benet.ai> (http://juan.benet.ai/)",
+  "license": "MIT",
+  "devDependencies": {
+    "memdown": "^0.10.1"
+  },
+  "dependencies": {
+    "multihashes": "^0.1.2"
+  }
+}
