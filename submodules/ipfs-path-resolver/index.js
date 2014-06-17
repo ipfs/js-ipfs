@@ -10,6 +10,7 @@ function Resolver(storage) {
   this.storage = storage
 }
 
+Resolver.errors = errors
 
 // ipfs path resolution algorithm:
 // - first component is always the multihash of an object
@@ -44,7 +45,7 @@ Resolver.prototype.resolve = function(path, cb) {
   var errContext = {last: null, remainder: path}
 
   var self = this
-  this.storage.getObject(hash, function(err, obj) {
+  this.storage.getObject(hash, function(err, key, obj) {
     if (err) return cb(err, errContext)
     self.linkResolve(obj, path.slice(1), cb)
   })
@@ -77,7 +78,7 @@ Resolver.prototype.linkResolve = function linkResolve(object, path, cb) {
 
   // get object from storage.
   var self = this
-  this.storage.getObject(hash, function(err, obj) {
+  this.storage.getObject(hash, function(err, key, obj) {
     if (err) return cb(err, errContext)
     self.linkResolve(obj, path.slice(1), cb) // keep resolving recursively
   })

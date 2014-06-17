@@ -28,9 +28,9 @@ ipfsBlocks.prototype.getBlock = function blocksGet(key, cb) {
   validateKey(key)
   validateCallback(cb)
 
-  this.storage.get(key, function(err, val) {
-    if (err) return cb(err)
-    cb(null, ipfsBlock(val))
+  this.storage.get(key, function(err, key, val) {
+    if (err) return cb(err, key)
+    cb(null, key, ipfsBlock(val))
   })
 
   return errors.ReturnCallbackError
@@ -50,11 +50,11 @@ ipfsBlocks.prototype.getObject = function(key, cb) {
   validateKey(key)
   validateCallback(cb)
 
-  return this.getBlock(key, function(err, val) {
-    if (err) return cb(err)
+  return this.getBlock(key, function(err, key, val) {
+    if (err) return cb(err, key)
     var obj = ipfsObject(val.buffer)
     // console.log('get object: ' + obj.inspect())
-    cb(null, obj)
+    cb(null, key, obj)
   })
 }
 

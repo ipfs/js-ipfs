@@ -38,8 +38,8 @@ ipfsStorage.prototype.get = function(key, cb) {
   key = encodeKey(key)
 
   this.db.get(key, function(err, val) {
-    if (err) return cb(errors.NotFoundError)
-    cb(null, val)
+    if (err) return cb(errors.NotFoundError, key)
+    cb(null, key, val)
   })
   return errors.ReturnCallbackError
 }
@@ -56,7 +56,10 @@ ipfsStorage.prototype.put = function(key, val, cb) {
   // levelup write opts
   var writeOpts = {sync: true}
 
-  this.db.put(key, val, writeOpts, cb)
+  this.db.put(key, val, writeOpts, function(err, val) {
+    if (err) return cb && cb(err, key)
+    cb && cb(err, key, val)
+  })
   return errors.ReturnCallbackError
 }
 
