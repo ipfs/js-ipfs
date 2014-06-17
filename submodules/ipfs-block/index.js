@@ -8,7 +8,7 @@ function Block(buf) {
     return new Block(buf)
 
   if (!buf || !(buf instanceof Buffer))
-    throw errors.RequiresValueBufferError
+    throw new Error('requires buf Buffer')
 
   if (buf.length > Block.MaxLength)
     throw errors.MaxSizeExceededError
