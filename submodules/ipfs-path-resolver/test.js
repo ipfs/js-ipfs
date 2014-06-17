@@ -15,12 +15,17 @@ var l2 = git.List([l1, b1, b1, b2, b3])
 var t1 = git.Tree({'b1': b1, 'l1': l1, 'b3': b3})
 var t3 = git.Tree({'b1': b1, 'l2': b2, 't1': t1})
 
-storage.putObject(b1)
-storage.putObject(b2)
-storage.putObject(l1)
-storage.putObject(l2)
-storage.putObject(t1)
-storage.putObject(t3, function(err) {
+function put(obj, cb) {
+  console.log('putting: ' + obj.inspect())
+  storage.putObject(obj, cb)
+}
+
+put(b1)
+put(b2)
+put(l1)
+put(l2)
+put(t1)
+put(t3, function(err) {
   if (err) return log(err)
   step1()
 })
