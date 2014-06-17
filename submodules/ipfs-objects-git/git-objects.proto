@@ -14,9 +14,10 @@ enum GitObject {
   COMMIT = 3;
 }
 
-message Block {
-  optional bytes data = 1; // opaque data
-}
+// no need to serialize block
+//message Block {
+//  optional bytes data = 1; // opaque data
+//}
 
 message List {
   repeated uint32 items = 1; // link indices.

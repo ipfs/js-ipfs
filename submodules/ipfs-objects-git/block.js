@@ -10,10 +10,10 @@ function Block(data) {
   if (!(this instanceof Block))
     return new Block(data)
 
+  if (data.blockData)
+    data = {data: {data: data.blockData}}
+
   ipfsObject.call(this, data)
 }
 
 ipfsObject.inherits(Block)
-
-var src = fs.readFileSync(__dirname + '/git-objects.proto', 'utf-8')
-Block.codec = protobuf.fromProtoSrc(src).Block

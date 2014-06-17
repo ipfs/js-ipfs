@@ -11,6 +11,9 @@ function ipfsObject(data) {
     return new ipfsObject(data)
 
   data = data || new Buffer(0)
+  if (data.data && !(data.data instanceof Buffer))
+    data.data = this.encodeData(data.data)
+
   if (!(data instanceof Buffer))
     data = ipfsObject.encode(data)
 
@@ -24,9 +27,7 @@ ipfsObject.inherits = function(child, parent) {
 // override this to provide custom behavior to
 // objects. Lists can concatenate, for example.
 ipfsObject.prototype.data = function() {
-  if (this.constructor.codec)
-    return this.constructor.codec.decode(this.rawData())
-  return this.rawData()
+  return this.decodeData(this.rawData())
 }
 
 // returns the data of this object raw, encoded.
@@ -85,6 +86,18 @@ ipfsObject.prototype.equals = function(obj) {
 
 ipfsObject.prototype.inspect = function() {
   return "<IPFS Object " + this.multihash().toString('hex') + ">"
+}
+
+ipfsObject.prototype.encodeData = function(data) {
+  if (this.constructor.codec != ipfsObject.codec)
+    return this.constructor.codec.encode(data)
+  return new Buffer(data)
+}
+
+ipfsObject.prototype.decodeData = function(data) {
+  if (this.constructor.codec != ipfsObject.codec)
+    return this.constructor.codec.decode(data)
+  return data
 }
 
 ipfsObject.encode = function encode(data) {
