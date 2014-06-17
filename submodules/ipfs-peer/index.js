@@ -1,5 +1,5 @@
 var _ = require('underscore')
-var mh = require('multihashes')
+var mh = require('multihashing')
 var bufeq = require('buffer-equal')
 
 module.exports = Peer
@@ -61,9 +61,16 @@ Peer.peerId = function(id) {
   if (!(id instanceof Buffer))
     id = new Buffer(id, 'hex')
 
-  var err = mh.validate(id)
+  var err = mh.multihash.validate(id)
   if (err)
     throw new Error('peer id must be a valid multihash. ' + err)
 
   return id
+}
+
+Peer.genPeerId = function(seed) {
+  var buf = new Buffer(0)
+  buf.write(seed)
+  buf.write('generate peer id')
+  return mh(buf, 'sha2-256')
 }

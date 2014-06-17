@@ -4,7 +4,7 @@
   "description": "ipfs peer",
   "main": "index.js",
   "dependencies": {
-    "multihashes": "~0.1.2",
+    "multihashing": "^0.1.2",
     "underscore": "~1.6.0"
   },
   "devDependencies": {},
