@@ -1,6 +1,6 @@
 # ipfs-path-resolver
 
-Resolves ipfs paths to objects, using ipfs-storage. The resolver will retrieve (`get`) all necessary blocks in order to resolve the path.
+Resolves ipfs paths to objects, using ipfs-blocks. The resolver will retrieve (`get`) all necessary blocks in order to resolve the path.
 
 ## Examples
 
@@ -25,6 +25,7 @@ Let's store them + resolve paths:
 ```js
 var path = require('ipfs-path')
 var storage = require('ipfs-storage')(...)
+var blocks = require('ipfs-blocks')(storage)
 var resolver = require('ipfs-path-resolver')(storage)
 
 storage.put([b1, b2, l1, l2, t1, t3], functon(err) {

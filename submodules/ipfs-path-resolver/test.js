@@ -1,8 +1,11 @@
 var git = require('../ipfs-objects-git')
 var path = require('../ipfs-path')
+
+// setup
 var memdown = require('memdown')
 var storage = require('../ipfs-storage')({levelup: {db: memdown}})
-var resolver = require('./')(storage)
+var blocks = require('../ipfs-blocks')(storage)
+var resolver = require('./')(blocks)
 var log = console.log
 
 var b1 = git.Block({data: new Buffer("b1b1b1")})
@@ -17,7 +20,7 @@ var t3 = git.Tree({'b1': b1, 'l2': b2, 't1': t1})
 
 function put(obj, cb) {
   console.log('putting: ' + obj.inspect())
-  storage.putObject(obj, cb)
+  blocks.putObject(obj, cb)
 }
 
 put(b1)

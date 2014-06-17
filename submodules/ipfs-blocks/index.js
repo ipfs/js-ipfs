@@ -1,36 +1,71 @@
-var errors = require('ipfs-errors')
 var multihashes = require('multihashes')
+var ipfsObject = require('../ipfs-object')
+var ipfsBlock = require('../ipfs-block')
+var errors = require('../ipfs-errors')
 
 module.exports = ipfsBlocks
 
 // ipfs-blocks is the block service for ipfs.
-// it's really just an interface around bitswap.
-function ipfsBlocks(storage, bitswap) {
-  if (!bitswap) throw new Error('bitswap module required')
-  this.bitswap = bitswap
+// it's really just an interface around a datastore
+function ipfsBlocks(storage) {
+  if (!(this instanceof ipfsBlocks))
+    return new ipfsBlocks(storage)
+
+  if (!storage) throw new Error('storage required')
+  this.storage = storage
 }
 
 ipfsBlocks.errors = {
-  RequiresKeyMultihashError: RequiresKeyMultihashError,
-  RequiresCallbackError: RequiresCallbackError,
-  ReturnCallbackError: ReturnCallbackError,
+  RequiresBlockError: errors.RequiresBlockError,
+  RequiresKeyMultihashError: errors.RequiresKeyMultihashError,
+  RequiresCallbackError: errors.RequiresCallbackError,
+  ReturnCallbackError: errors.ReturnCallbackError,
 }
 
-ipfsBlocks.prototype.getBlock = function blocksGet(key, callback) {
+// blocks
+
+ipfsBlocks.prototype.getBlock = function blocksGet(key, cb) {
   validateKey(key)
-  validateCallback(callback)
+  validateCallback(cb)
 
-  this.bitswap.getBlock(key, callback)
+  this.storage.get(key, function(err, val) {
+    if (err) return cb(err)
+    cb(null, ipfsBlock(val))
+  })
+
   return errors.ReturnCallbackError
 }
 
-ipfsBlocks.prototype.putBlock = function blocksPut(block, callback) {
+ipfsBlocks.prototype.putBlock = function blocksPut(block, cb) {
   validateBlock(block)
-  validateCallback(callback)
+  validateCallback(cb)
 
-  this.bitswap.putBlock(block, callback)
+  this.storage.put(block.key(), block.buffer, cb)
   return errors.ReturnCallbackError
 }
+
+// objects
+
+ipfsBlocks.prototype.getObject = function(key, cb) {
+  validateKey(key)
+  validateCallback(cb)
+
+  return this.getBlock(key, function(err, val) {
+    if (err) return cb(err)
+    var obj = ipfsObject(val.buffer)
+    // console.log('get object: ' + obj.inspect())
+    cb(null, obj)
+  })
+}
+
+
+ipfsBlocks.prototype.putObject = function(object, cb) {
+  validateObject(object)
+
+  this.storage.put(object.multihash(), object.buffer, cb)
+  return errors.ReturnCallbackError
+}
+
 
 function validateKey(key) {
   if (!key) throw errors.RequiresKeyMultihashError
@@ -43,7 +78,12 @@ function validateBlock(block) {
     throw errors.RequiresBlockError
 }
 
-function validateCallback(key) {
-  if (!callback || !typeof(callback) == 'function')
-    throw errors.RequiresCallbackError
+function validateObject(object) {
+  if (!object || typeof(object.multihash) !== 'function')
+    throw errors.RequiresBlockError
+}
+
+function validateCallback(cb) {
+  if (!cb || typeof(cb) !== 'function')
+    throw new Error('requires callback')
 }
