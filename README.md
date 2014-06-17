@@ -2,9 +2,10 @@
 
 See: https://github.com/jbenet/ipfs
 
-Please put all issues regarding IPFS in the
+Please put all issues regarding IPFS _design_ in the
 [ipfs repo issues](https://github.com/jbenet/ipfs/issues).
 
+Please put all issues regarding node IPFS _implementation_ in [this repo](https://github.com/jbenet/node-ipfs/issues).
 
 ## submodules
 
@@ -12,7 +13,8 @@ Please put all issues regarding IPFS in the
 - ipfs - (this repo) master library, puts it all together
 - ipfs-netmux - manages connections to multiple networks
 - ipfs-peer - manages relationships with other nodes
-- ipfs-stream - stream of ipfs packets
+- ipfs-packet - ipfs packet coding
+- ipfs-message-stream - stream of ipfs message packets
 - ipfs-routing - ipfs routing module interface
 - ipfs-routing-kad - a dht/dsht routing implmenetation
 - ipfs-routing-coral - a dsht routing implementation (Coral)
