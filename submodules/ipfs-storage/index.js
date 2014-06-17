@@ -12,6 +12,7 @@ function ipfsStorage(opts, callback) {
 
   // setup option defaults
   opts = extend(ipfsStorage.defaults, opts || {})
+  opts.levelup = extend(ipfsStorage.defaults.levelup, opts.levelup)
   opts.levelup.db = opts.levelup.db || require('memdown')
 
   this.opts = opts
@@ -55,7 +56,6 @@ ipfsStorage.prototype.put = function(key, val, cb) {
 
   // levelup write opts
   var writeOpts = {sync: true}
-
   this.db.put(key, val, writeOpts, function(err, val) {
     if (err) return cb && cb(err, key)
     cb && cb(err, key, val)
