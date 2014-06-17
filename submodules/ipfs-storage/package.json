@@ -13,5 +13,8 @@
     "levelup": "^0.18.3",
     "multihashes": "^0.1.2",
     "xtend": "^3.0.0"
+  },
+  "devDependencies": {
+    "memdown": "^0.10.1"
   }
 }

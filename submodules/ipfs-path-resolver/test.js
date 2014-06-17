@@ -2,8 +2,7 @@ var git = require('../ipfs-objects-git')
 var path = require('../ipfs-path')
 
 // setup
-var memdown = require('memdown')
-var storage = require('../ipfs-storage')({levelup: {db: memdown}})
+var storage = require('../ipfs-storage')()
 var blocks = require('../ipfs-blocks')(storage)
 var resolver = require('./')(blocks)
 var log = console.log

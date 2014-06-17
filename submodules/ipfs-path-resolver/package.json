@@ -13,9 +13,6 @@
   ],
   "author": "Juan Benet <juan@benet.ai> (http://juan.benet.ai/)",
   "license": "MIT",
-  "devDependencies": {
-    "memdown": "^0.10.1"
-  },
   "dependencies": {
     "multihashes": "^0.1.2"
   }

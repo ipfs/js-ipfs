@@ -12,7 +12,7 @@ function ipfsStorage(opts, callback) {
 
   // setup option defaults
   opts = extend(ipfsStorage.defaults, opts || {})
-  opts.levelup.db = opts.levelup.db || require('leveldown-prebuilt')
+  opts.levelup.db = opts.levelup.db || require('memdown')
 
   this.opts = opts
   this.db = levelup(opts.path, extend(opts.levelup), callback)
