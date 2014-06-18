@@ -39,12 +39,11 @@ var ipfs = Core(ipfsConfig)
 
 // run command
 var cmd = argv._[0]
-var args = argv._.slice(1)
 if (!cmd || !commands[cmd])
   usage(0)
 
-commands[cmd](ipfs, args)
-
+argv._args = argv._.slice(1)
+commands[cmd](ipfs, argv)
 
 
 // functions
