@@ -22,9 +22,8 @@ function ls(ipfs, argv) {
 function printLinks(links) {
   for (var l in links) {
     var link = links[l]
-
     var hash = base58.encode(link.hash)
-    console.log(hash + ' ' + size + ' ' + name)
+    console.log(hash + ' ' + link.size.toString() + ' ' + link.name)
   }
 }
 

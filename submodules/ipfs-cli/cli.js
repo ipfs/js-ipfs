@@ -7,7 +7,7 @@ var mkdirp = require('mkdirp').sync
 var untildify = require('untildify')
 var leveldown = require('leveldown-prebuilt')
 var argv = require('minimist')(process.argv.slice(2), {
-  boolean: ['debug'],
+  boolean: ['debug', 'r', 'recursive'],
 })
 
 var Peer = require('../ipfs-peer')
