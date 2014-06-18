@@ -1,4 +1,5 @@
 var fs = require('fs')
+var Long = require('long')
 var inherits = require('inherits')
 var protobuf = require('ipfs-protobuf-codec')
 var bufeq = require('buffer-equal')
@@ -56,7 +57,13 @@ ipfsObject.prototype.child = function(name) {
 
 // returns size of this object (encoded)
 ipfsObject.prototype.size = function() {
-  return this.buffer.length
+  var size = this.buffer.length
+  var links = this.links()
+  for (var i in links) {
+    var s = parseInt(links[i].size, 10) || 0
+    if (s > 0) size += s
+  }
+  return size
 }
 
 // returns link to _this_ object
@@ -138,3 +145,17 @@ function coerceLink(obj) {
 var src = fs.readFileSync(__dirname + '/object.proto', 'utf-8')
 var protos = protobuf.fromProtoSrc(src)
 ipfsObject.codec = protos.Object
+
+// longfix decode
+ipfsObject.codec.decode = (function(decode) {
+  return function(buf) {
+    var ret = decode.apply(this, arguments)
+    for (var l in ret.links) {
+      var link = ret.links[l]
+      var s = link.size
+      if (typeof(s) == 'object')
+        link.size = new Long(s.low, s.high, s.unsigned).toString()
+    }
+    return ret
+  }
+})(ipfsObject.codec.decode)
