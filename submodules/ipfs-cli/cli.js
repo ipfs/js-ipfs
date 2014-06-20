@@ -14,6 +14,7 @@ var Peer = require('../ipfs-peer')
 var Core = require('../ipfs-core')
 
 var commands = {
+  refs: require('./refs'),
   add: require('./add'),
   cat: require('./cat'),
   ls: require('./ls'),
