@@ -1,6 +1,6 @@
 var Peer = require('../ipfs-peer')
 var PeerBook = require('../ipfs-peer-book')
-var ipfsStream = require('../ipfs-message-stream')
+// var ipfsStream = require('msgproto')
 var Storage = require('../ipfs-storage')
 var BlockService = require('../ipfs-blocks')
 var PathResolver = require('../ipfs-path-resolver')
