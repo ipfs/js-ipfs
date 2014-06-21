@@ -59,7 +59,9 @@ DHT.prototype.findNode = function findNode(nodeId, cb) {
 // callback errors: {TimeoutExceeded}
 DHT.prototype.pingNode = function ping(peer, timeout, cb) {
   timeout = timeout || this.config.pingWait
-  throw NotImplemented
+  this.request(peer, pkt.Ping(), function(err, res) {
+
+  })
 }
 
 // getValue looks for a particular key and returns the associated value

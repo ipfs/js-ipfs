@@ -7,6 +7,7 @@ For now, this is easier + keeps all interop versions locked.
 
 needed for first version:
 - ipfs-mount - mounts all ipfs under /ipfs
+x ipfs-cli - simple file manipulations: add, cat, ls
 - ipfs-filesystem - filesystem interface
 x ipfs-path-resolver - resolve paths from ipfs storage
 x ipfs-path - paths for ipfs objects

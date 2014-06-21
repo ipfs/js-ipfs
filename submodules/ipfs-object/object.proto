@@ -1,7 +1,7 @@
 // An IPFS Object
 message Object {
-  optional bytes data = 1; // opaque data
   repeated Link links = 2; // refs to other objects
+  optional bytes data = 1; // opaque data
 }
 
 // An IPFS Link

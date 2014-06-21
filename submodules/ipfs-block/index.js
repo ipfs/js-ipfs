@@ -10,8 +10,8 @@ function Block(buf) {
   if (!buf || !(buf instanceof Buffer))
     throw new Error('requires buf Buffer')
 
-  if (buf.length > Block.MaxLength)
-    throw errors.MaxSizeExceededError
+  // if (buf.length > Block.MaxLength)
+  //   throw errors.MaxSizeExceededError
 
   this.buffer = buf
   this._hash = undefined
