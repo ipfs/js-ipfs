@@ -7,6 +7,95 @@ Please put all issues regarding IPFS _design_ in the
 
 Please put all issues regarding node IPFS _implementation_ in [this repo](https://github.com/jbenet/node-ipfs/issues).
 
+## Install
+
+WARNING: this does nothing useful yet!
+
+```
+git clone
+cd node-ipfs/submodules/ipfs-cli
+npm link
+ipfs
+```
+
+## Example
+
+Suppose we have some files
+
+```
+> tree foo
+foo
+├── bam
+│   └── bam
+├── bar
+└── baz
+
+1 directory, 3 files
+
+> cat foo/bar foo/baz foo/bam/bam
+bar
+baz
+bam
+```
+
+Let's add them to ipfs
+
+```
+> ipfs add foo
+foo: ignored (use -r for recursive)
+
+> ipfs add -r foo
+foo/baz: added block /XLM1ZETht3wv8vUPXMkx3JZGP5T9txAz782
+foo/bar: added block /XLMCA8WXBNRBwFhzRnHgHFLwGmQzkAQELH7
+foo/bam/bam: added block /XLaGqmCUX7sk52P4pkth8S5wV4NMztnf9zd
+foo/bam: added tree /XLMLiUaCc7jh3eGFsNR8AhvRSSFySSvTaNb
+foo: added tree /XLaoVHd834v62UsW56jew8Mp6FgZBXnZEeL
+```
+
+This added each file + directiory as `block` and `tree` objects, including the hash addresses.
+
+
+We can list the directories (foo/ and foo/bam)
+
+```
+> ipfs ls /XLaoVHd834v62UsW56jew8Mp6FgZBXnZEeL
+XLMLiUaCc7jh3eGFsNR8AhvRSSFySSvTaNb 47 bam
+XLMCA8WXBNRBwFhzRnHgHFLwGmQzkAQELH7 6 bar
+XLM1ZETht3wv8vUPXMkx3JZGP5T9txAz782 6 baz
+
+> ipfs ls XLMLiUaCc7jh3eGFsNR8AhvRSSFySSvTaNb
+XLaGqmCUX7sk52P4pkth8S5wV4NMztnf9zd 6 bam
+```
+
+We can `cat` the files.
+
+```
+> ipfs cat XLaGqmCUX7sk52P4pkth8S5wV4NMztnf9zd
+bam
+
+> ipfs cat XLMCA8WXBNRBwFhzRnHgHFLwGmQzkAQELH7
+bar
+```
+
+And we can resolve paths through the `trees` :)
+
+```
+> ipfs cat /XLaoVHd834v62UsW56jew8Mp6FgZBXnZEeL/bar
+bar
+
+> ipfs cat /XLaoVHd834v62UsW56jew8Mp6FgZBXnZEeL/bam/bam
+bam
+```
+
+```
+> ipfs refs -r /XLaoVHd834v62UsW56jew8Mp6FgZBXnZEeL
+XLMLiUaCc7jh3eGFsNR8AhvRSSFySSvTaNb
+XLMCA8WXBNRBwFhzRnHgHFLwGmQzkAQELH7
+XLM1ZETht3wv8vUPXMkx3JZGP5T9txAz782
+XLaGqmCUX7sk52P4pkth8S5wV4NMztnf9zd
+```
+
+
 ## [submodules](submodules/)
 
 In progress:
