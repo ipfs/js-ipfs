@@ -14,6 +14,7 @@ var Peer = require('../ipfs-peer')
 var Core = require('../ipfs-core')
 
 var commands = {
+  mount: require('./mount'),
   refs: require('./refs'),
   add: require('./add'),
   cat: require('./cat'),
@@ -91,4 +92,3 @@ function loadConfig(configFile) {
 
   return extend(defaults, config)
 }
-

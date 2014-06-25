@@ -1,5 +1,6 @@
 var extend = require('xtend')
 var levelup = require('levelup')
+var through2 = require('through2')
 var errors = require('../ipfs-errors')
 
 module.exports = ipfsStorage
@@ -60,6 +61,47 @@ ipfsStorage.prototype.put = function(key, val, cb) {
     if (err) return cb && cb(err, key)
     cb && cb(err, key, val)
   })
+  return errors.ReturnCallbackError
+}
+
+// list -- lists object paths in local storage
+ipfsStorage.prototype.list = function(parent, cb) {
+  if (!cb && parent) {
+    cb = parent
+    parent = undefined
+  }
+
+  // todo: do smart things, use start + end, etc.
+  var filter = function(p) {
+
+    // add trailing slash if needed
+    if (p[p.length - 1] != '/')
+      p += '/'
+
+    // if not descendant, filter out.
+    if (p.indexOf(parent) != 0)
+      return false
+
+    // remove parent from key
+    p = p.substr(0, parent.length)
+
+    // if grandchild, filter out.
+    if (p.indexOf('/') >= 0)
+      return false
+
+    return p // just the name
+  }
+
+  // filter out uninteresting keys
+  var ks = this.db.createKeyStream()
+  var ls = through2.obj(function(key, enc, next) {
+    var name = filter(key)
+    if (name) this.push(name)
+    return next()
+  })
+
+  ks.pipe(ls)
+  cb(null, ls)
   return errors.ReturnCallbackError
 }
 

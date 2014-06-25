@@ -12,6 +12,7 @@
     "leveldown-prebuilt": "^0.10.2",
     "levelup": "^0.18.3",
     "multihashes": "^0.1.2",
+    "through2": "^0.5.1",
     "xtend": "^3.0.0"
   },
   "devDependencies": {
