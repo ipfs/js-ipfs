@@ -2,7 +2,7 @@
 
 Mount ipfs paths via FUSE.
 
-Thanks to the FUSE, Fuse4js, and the awesome [mafintosh/torrent-mount](https://github.com/mafintosh/torrent-mount), upon which this module is based.
+Thanks to FUSE, Fuse4js, and the awesome [mafintosh/torrent-mount](https://github.com/mafintosh/torrent-mount), upon which this module is based.
 
 ## Install
 

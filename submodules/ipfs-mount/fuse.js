@@ -34,7 +34,7 @@ function ipfsMount(ipfs, ipfsPath, osPath) {
   this.ipfs = ipfs
   this.osPath = osPath
   this.ipfsPath = ipfsPath
-  this.files = {}
+  this.files = {}  // { path : { obj: object, fds: [] } }
   this.mount()
 }
 
@@ -59,13 +59,13 @@ ipfsMount.prototype.terminate = function() {
 }
 
 ipfsMount.prototype._handlers = function() {
-  var self = this
+  var mount = this // for ref inside functions.
   var handlers = {}
 
   function resolvePath(path, cb) {
-    self.ipfs.resolver.resolve(path, function(err, obj) {
+    mount.ipfs.resolver.resolve(path, function(err, obj) {
       if (err) {
-        if (err != ipfs.resolver.errors.NotFoundError)
+        if (err != mount.ipfs.resolver.errors.NotFoundError)
           console.log('ipfs.resolver error: ' + err)
 
         console.log('ipfs.resolver not found: ' + path)
@@ -81,7 +81,11 @@ ipfsMount.prototype._handlers = function() {
     if (path == '/')
       return cb(ENOENT)
 
-    console.log('getPath ' + path)
+    console.log('ipfs.mount get ' + path)
+
+    if (mount.files[path])
+      return cb(0, mount.files[path].obj)
+
     try {
       resolvePath(path, cb)
     } catch(e) {
@@ -94,7 +98,7 @@ ipfsMount.prototype._handlers = function() {
 
   handlers.getattr = function(path, cb) {
     if (path == '/')
-      return cb(0, { size: 4096, mode: 040555 })
+      return cb(0, { size: 4096, mode: 040111 })
 
     getPath(path, function(err, obj) {
       if (err === ENOENT) return cb(ENOENT)
@@ -113,59 +117,72 @@ ipfsMount.prototype._handlers = function() {
         stat.size = obj.data().length // todo add a .dataSize() to obj
         stat.mode = 0100444 // +r
       }
-      console.log(stat)
       cb(0, stat)
     })
   }
 
   handlers.open = function(path, flags, cb) {
-    var files = self.files
+    var files = mount.files
     getPath(path, function(err, obj) {
       if (err === ENOENT) return cb(ENOENT)
       if (err) throw err
       if (!obj) throw new Error('expected object')
 
-      var fds = files[path] = files[path] || []
-      var fd = fds.indexOf(null) // reuse fd
-      if (fd === -1) fd = fds.length // alloc new fd
+      // only need to hang on to obj once :)
+      var file = files[path] = files[path] || { obj: obj, fds: [] }
+      var fd = file.fds.indexOf(null) // reuse fd
+      if (fd === -1) fd = file.fds.length // alloc new fd
 
-      fds[fd] = {offset:0}
+      // assign specific fd to this open call
+      file.fds[fd] = true
       cb(0, fd)
     })
   }
 
   handlers.release = function(path, handle, cb) {
-    var fds = self.files[path] || []
+    var fds = (mount.files[path] || {}).fds
+    if (!fds) return cb(ENOENT) // maybe cb(0)?
+
     var fd = fds[handle]
-    // if (fd && fd.obj) delete fd.obj
+    if (!fds[handle]) return cb(ENOENT) // maybe cb(0)?
     fds[handle] = null
+
+    // if no more fds actuve, release object altogether
+    if (!any(fds))
+      delete mount.files[path]
+
     cb(0)
   }
 
   handlers.readdir = function(path, cb) {
+    // note: this is hideous. fix it.
     if (path ===  '/') { // root? then list local files.
-      self.ipfs.storage.list('/', function(err, list) {
-        var names = []
-        list
-          .on('data', function(key) {
-            var name = base58.encode(key)
-            console.log(name)
-            names.push(name)
-          })
-          .on('error', function(err) {
-            console.log('ipfs mount error: ' + err) // todo fix
-            cb(ENOENT)
-          })
-          .on('end', function() {
-            if (names.length > 0)
-              cb(0, names)
-            else
-              cb(ENOENT)
-          })
-        // list.unpause()
-      })
-      return
+      return cb(ENOENT)
     }
+
+    // not even needed atm because getattr returns mode 0111 for now.
+    //   mount.ipfs.storage.list('/', function(err, list) {
+    //     var names = []
+    //     list
+    //       .on('data', function(key) {
+    //         var name = base58.encode(key)
+    //         console.log(name)
+    //         names.push(name)
+    //       })
+    //       .on('error', function(err) {
+    //         console.log('ipfs mount error: ' + err) // todo fix
+    //         cb(ENOENT)
+    //       })
+    //       .on('end', function() {
+    //         if (names.length > 0)
+    //           cb(0, names)
+    //         else
+    //           cb(ENOENT)
+    //       })
+    //     // list.unpause()
+    //   })
+    //   return
+    // }
 
     getPath(path, function(err, obj) {
       if (err === ENOENT) return cb(ENOENT)
@@ -182,28 +199,20 @@ ipfsMount.prototype._handlers = function() {
   }
 
   handlers.read = function(path, offset, len, buf, handle, cb) {
-    var files = self.files
-    getPath(path, function(err, obj) {
-      if (err === ENOENT) return cb(ENOENT)
-      if (err) throw err
-      if (!obj) throw new Error('expected object')
+    var file = mount.files[path]
+    if (!file || !file.obj) return cb(ENOENT)
+    if (!file.fds[handle]) return cb(ENOENT)
+    // consider offset checks here
 
-      var fds = files[path] || []
-      var fd = fds[handle]
+    // will need streaming logic here for lists, etc.
+    // for now, just dump out the block data.
+    var data = file.obj.data()
+    if (len + offset > data.length)
+      len = data.length - offset
 
-      if (!fd) return cb(ENOENT)
-
-      // will need streaming logic here for lists, etc.
-      // for now, just dump out the block data.
-
-      var data = obj.data()
-      if (len + offset > data.length)
-        len = data.length - offset
-
-      var slice = data.slice(offset, len)
-      slice.copy(buf)
-      cb(result)
-    })
+    var slice = data.slice(offset, offset + len)
+    slice.copy(buf)
+    cb(slice.length)
   }
 
   handlers.write = function(path, offset, len, buf, handle, cb) {
@@ -258,7 +267,8 @@ ipfsMount.prototype._handlers = function() {
     cb()
   }
 
-  return logHandlers(handlers)
+  return handlers
+  // return logHandlers(handlers) // for debugging
 }
 
 function logHandlers(handlers) {
@@ -275,4 +285,17 @@ function logHandlers(handlers) {
     newHandlers[n] = newh(n, handlers[n])
   }
   return newHandlers
+}
+
+// no lodash.any :(
+function any(fds, filter) {
+  filter = filter || function(e) {
+    return !(e == null || e === undefined)
+  }
+
+  for (var fd in fds) {
+    if (filter(fds[fd]))
+      return true
+  }
+  return false
 }

@@ -11,6 +11,7 @@ function Resolver(storage) {
 }
 
 Resolver.errors = errors
+Resolver.prototype.errors = errors
 
 // ipfs path resolution algorithm:
 // - first component is always the multihash of an object
@@ -39,7 +40,13 @@ Resolver.prototype.resolve = function(path, cb) {
   path = Path(path)
 
   // get the first path as a hash (must decode from base58)
-  var hash = Path.decodeBinary(path.first())
+  try {
+    var hash = Path.decodeBinary(path.first())
+  } catch (e) {
+    // can't get hash? not valid path.
+    cb(errors.NotFoundError)
+    return errors.ReturnCallbackError
+  }
 
   // errContext gets returned in callback if error happens.
   var errContext = {last: null, remainder: path}
