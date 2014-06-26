@@ -4,6 +4,7 @@ var path = require('path')
 var f4js = require('fuse4js')
 var proc = require('child_process')
 var mkdirp = require('mkdirp')
+var base58 = require('base58-native').base58Check
 var umount = require('./umount')
 
 var ENOENT = -2
@@ -23,7 +24,7 @@ function ipfsMount(ipfs, ipfsPath, osPath) {
 
   // defaults
   if (!osPath) {
-    osPath = ipfsPath || '/'
+    osPath = ipfsPath || '/ipfs'
     ipfsPath = '/'
   }
 
@@ -40,6 +41,7 @@ function ipfsMount(ipfs, ipfsPath, osPath) {
 ipfsMount.prototype.mount = function(cb) {
   var osPath = this.osPath
   var handlers = this._handlers()
+  console.log(osPath)
   umount(osPath, function() {
     mkdirp(osPath, function() {
       f4js.start(osPath, handlers, false, [])
@@ -145,7 +147,9 @@ ipfsMount.prototype._handlers = function() {
       self.ipfs.storage.list('/', function(err, list) {
         var names = []
         list
-          .on('data', function(name) {
+          .on('data', function(key) {
+            var name = base58.encode(key)
+            console.log(name)
             names.push(name)
           })
           .on('error', function(err) {
@@ -254,5 +258,21 @@ ipfsMount.prototype._handlers = function() {
     cb()
   }
 
-  return handlers
+  return logHandlers(handlers)
+}
+
+function logHandlers(handlers) {
+  function newh(n, oldh) {
+    return function() {
+      var args = Array.prototype.slice.call(arguments, 0)
+      console.log('calling ' + n + ': ' + args)
+      return oldh.apply(this, arguments)
+    }
+  }
+
+  var newHandlers = {}
+  for (var n in handlers) {
+    newHandlers[n] = newh(n, handlers[n])
+  }
+  return newHandlers
 }
