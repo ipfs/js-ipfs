@@ -1,0 +1,17 @@
+// An IPFS Message
+message Message {
+  optional bytes source = 1; // peer address
+  optional bytes destination = 2; // peer address
+  repeated Payload payload = 3; // protocol payloads
+}
+
+message Payload {
+  optional Protocol protocol = 1;
+  optional bytes data = 2;
+}
+
+enum Protocol {
+  Identity = 1;
+  Routing = 2;  // dht
+  Exchange = 3; // bitswap
+}
