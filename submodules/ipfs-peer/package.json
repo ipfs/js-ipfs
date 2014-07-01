@@ -4,10 +4,15 @@
   "description": "ipfs peer",
   "main": "index.js",
   "dependencies": {
+    "buffer-equal": "0.0.1",
+    "lodash.map": "^2.4.1",
+    "multiaddr": "^0.1.2",
     "multihashing": "^0.1.2",
     "underscore": "~1.6.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "tape": "^2.13.3"
+  },
   "scripts": {
     "test": "node test.js"
   },

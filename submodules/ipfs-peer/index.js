@@ -1,6 +1,7 @@
-var _ = require('underscore')
 var mh = require('multihashing')
+var map = require('lodash.map')
 var bufeq = require('buffer-equal')
+var multiaddr = require('multiaddr')
 
 module.exports = Peer
 
@@ -22,39 +23,23 @@ function Peer(id, other) {
   other = other || {}
   this.id = Peer.peerId(id)
   this.pubkey = other.pubkey
-  this.addresses = other.addresses || []
+  this.addresses = other.addresses || [] // multiaddrs
 }
 
 // return best address for given network
 Peer.prototype.networkAddress = function(net) {
-  return _.find(this.addresses, function(addr) {
-    return Peer.addrProtocol(addr) == net
-  })
+  for (var a in this.addresses) {
+    var addr = this.addresses[a]
+    var idx = addr.protoNames().indexOf(net)
+    if (idx >= 0)
+      return addr
+  }
+  return undefined
 }
 
 // equality check for peers
 Peer.prototype.equals = function(peer) {
   return bufeq(this.id, peer.id)
-}
-
-
-Peer.addrProtocol = function(addr) {
-  return addr.split(':')[0];
-}
-
-Peer.addrUrlToObject = function(addr) {
-  var p0 = addr.split('://')
-  var p1 = p0[1].split(':')
-  return {
-    protocol: p0[0],
-    family: /4$/.test(p0[0]) ? 'IPv4' : 'IPv6',
-    address: p1[0],
-    port: parseInt(p1[1], 10),
-  }
-}
-
-Peer.addrObjectToUrl = function(addr) {
-  return addr.protocol + '://' + addr.address + ':' + addr.port
 }
 
 Peer.peerId = function(id) {
