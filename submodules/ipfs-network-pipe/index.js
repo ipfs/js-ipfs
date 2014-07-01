@@ -1,38 +1,46 @@
 var dgrams = require('dgram-stream')
-var Message = require('../ipfs-message')
 var segment = require('pipe-segment')
 var segcodec = require('pipe-segment-codec')
-var msgproto = require('msgproto')
-var integrity = require('ipfs-msgproto-integrity')
-var scopred = require('scoped-transform-stream')
+var through2 = require('through2')
+var addrseg = require('./addr')
+var wireseg = require('./wire')
+
 
 module.exports = netPipe
 
 function netPipe(opts, peerbook) {
   opts = opts || {}
 
-  function connect(a, b) {
-    a.pipe(b).pipe(a)
-  }
+  // errors stream
+  var errors = through2.obj(function(data, enc, cb) {
+    cb(null, data.toString())
+  })
+  errors.pipe(process.stderr)
 
   // setup network socket
   var socks = dgrams('udp4')
-  socks.bind(6130)
+  socks.bind(opts.port || 6130)
 
   // address translation node dgram <-> peerid
-  var addrts = addrSegment()
+  var addrts = addrseg(peerbook)
   connect(addrts.encoded, socks)
+  addrts.encodeErrors.pipe(errors)
+  addrts.decodeErrors.pipe(errors)
 
   // scoped transform pipeline (payloads)
-  var wire = wireSegment()
-  connect(wire.remote, addrts.decoded)
+  var wire = wireseg()
+  connect(wire.buffers, addrts.decoded)
+  wire.wire.packingErrors.pipe(errors)
+  wire.wire.unpackingErrors.pipe(errors)
 
   // wrap msg codec
   var wrapmsg = wrapMessages()
-  connect(wrapmsg.encoded, wire.local)
+  connect(wrapmsg.encoded, wire.messages)
+  wrapmsg.encodeErrors.pipe(errors)
+  wrapmsg.decodeErrors.pipe(errors)
 
   return segment({
-    wire: wire,
+    dgrams: socks,
     messages: wrapmsg.decoded,
   })
 }
@@ -50,40 +58,8 @@ function wrapMessages() {
   }
 }
 
-function wireSegment() {
-  // setup integrity checks (later signatures)
-  var intg = integrity.Protocol()
-  var wire = msgproto.WireProtocol(Message)
-  connect(intg.payloads, wire.buffers)
 
-  return segment({
-    // scoped because we need to convert only the payload
-    local: scoped(wire.frames, '/payload'),
-    remote: scoped(intg.frames, '/payload'),
-  })
-}
 
-function addrSegment(peerbook) {
-  if (!peerbook)
-    throw new Error('addrSegment requires peerbook')
-
-  return segcodec(encode, decode)
-
-  function encode(data) {
-    var peer = peerbook.get(data.to)
-    var addr = item.peer.networkAddress('udp')
-    if (!addr)
-      throw new Error('ipfs net pipe: no udp addr for peer ' + item.peer.id)
-    data.to = addr.nodeAddress()
-    return data
-  }
-
-  function decode(data) {
-    var addr = multiaddr.fromNodeAddress(data.to, 'udp')
-    var peer = peerbook.getByAddress(addr)
-    if (!peer)
-      throw new Error('ipfs net pipe: no peer for udp addr ' + item.peer.id)
-    data.to = peer.id
-    return data
-  }
+function connect(a, b) {
+  a.pipe(b).pipe(a)
 }

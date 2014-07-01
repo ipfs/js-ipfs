@@ -4,15 +4,15 @@ var Message = msgproto.Message
 
 module.exports = ipfsMessage
 
-function ipfsMessage() {
+function ipfsMessage(src, dst, payloads) {
   if (!(this instanceof Message))
-    return new ipfsMessage()
+    return new ipfsMessage(src, dst, payloads)
 
   Message.call(this)
 
-  this.source = new Buffer(0)
-  this.destination = new Buffer(0)
-  this.payload = []
+  this.source = src || new Buffer(0)
+  this.destination = dst || new Buffer(0)
+  this.payload = payloads || []
 }
 
 Message.inherits(ipfsMessage, Message)

@@ -26,6 +26,16 @@ function Peer(id, other) {
   this.addresses = other.addresses || [] // multiaddrs
 }
 
+// add address for this peer
+Peer.prototype.addAddress = function(addr) {
+  if (!addr) throw new Error('requires multiaddr format addr')
+  if (typeof(addr) == 'string' || addr instanceof String)
+    addr = multiaddr(addr)
+
+  this.addresses.push(addr)
+  return addr
+}
+
 // return best address for given network
 Peer.prototype.networkAddress = function(net) {
   for (var a in this.addresses) {

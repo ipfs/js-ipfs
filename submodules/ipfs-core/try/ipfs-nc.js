@@ -3,10 +3,12 @@ var ipfs = require('../.')
 var Peer = require('../../ipfs-peer')
 var Pkt = require('../../ipfs-packet')
 var multihashing = require('multihashing')
+var multiaddr = require('multiaddr')
 var transDuplex = require('duplex-transform')
 
 function setupPeer(addr) {
-  var p = Peer(multihashing(new Buffer(addr), 'sha1'))
+  addr = multiaddr(addr)
+  var p = Peer(multihashing(addr.buffer, 'sha1'))
   p.addresses.push(addr)
   return p
 }
