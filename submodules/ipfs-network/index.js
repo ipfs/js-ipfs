@@ -1,6 +1,9 @@
 var xtend = require('xtend')
 var stream = require('readable-stream')
+var segment = require('pipe-segment')
 var netpipe = require('../ipfs-network-pipe')
+var Message = require('../ipfs-message')
+var through2 = require('through2')
 var noop = function() {}
 
 module.exports = ipfsNetwork
@@ -12,27 +15,27 @@ var sopts = {objectMode: true, highWaterMark: 16}
 //  dht --->                                                   ---> dht
 // xchg ---> outgoing --> join --> wire --> split --> incoming ---> xchng
 // idnt --->                                                   ---> idnt
-function ipfsNetwork(opts, protocolStreams) {
+function ipfsNetwork(opts, peerbook, protocolStreams) {
+  opts = opts || {}
 
   // main network pipe
-  var wire = netpipe(opts)
+  var wire = netpipe(opts, peerbook)
 
   // make the multiplexing pipes
   var unknown = stream.PassThrough(sopts)
   var outgoing = stream.PassThrough(sopts)
   var incoming = stream.Writable(sopts)
   incoming._write = multiplexInput
-  outgoing._read = noop
 
   // wire pipes
-  outgoing.pipe(joinPayloads()).pipe(wire)
-  wire.pipe(splitPayloads()).pipe(incoming)
+  outgoing.pipe(joinPayloads()).pipe(wire.messages)
+  wire.messages.pipe(splitPayloads()).pipe(incoming)
 
   // proto pipes (using numbers)
   var protocols = {}
   for (var k in protocolStreams) {
     var s = protocolStreams[k]
-    protocols[protoTable[k]] = s
+    protocols[k] = s
     s.pipe(outgoing) // pipe all into outgoing
   }
 
@@ -43,11 +46,11 @@ function ipfsNetwork(opts, protocolStreams) {
   })
 
   function multiplexInput(item, enc, next) {
-    var proto = protocols[item.protocol]
+    var proto = protocols[protoTable[item.protocol]]
     if (proto) {
-      proto.push(item)
+      proto.write(item)
     } else {
-      unknown.push({
+      unknown.write({
         error: new Error('unknown protocol'),
         message: item,
       })
@@ -57,9 +60,9 @@ function ipfsNetwork(opts, protocolStreams) {
 }
 
 var protoTable = {
-  identity: 1,
-  routing: 2,
-  exchange: 3,
+  1: 'identity',
+  2: 'routing',
+  3: 'exchange',
 }
 
 // splits all the payloads in each message
@@ -82,7 +85,7 @@ function splitPayloads() {
 // for now, one payload / pkt. coalesce smartly later.
 function joinPayloads() {
   return through2.obj(function(p, enc, next) {
-    this.push(ipfsMessage(p.source, p.destination,
+    this.push(Message(p.source, p.destination,
         [ {data: p.data, protocol: p.protocol} ]))
     next()
   })

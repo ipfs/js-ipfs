@@ -1,50 +1,94 @@
 var test = require('tape')
 var Peer = require('../ipfs-peer')
+var PeerBook = require('../ipfs-peer-book')
 var bufeq = require('buffer-equal')
 var stream = require('readable-stream')
 var ipfsNetwork = require('./')
 var ipfsMessage = require('../ipfs-message')
-
+var duplexer2 = require('duplexer2.jbenet')
 
 
 function protoSegment() {
-  var a = stream.PassThrough({objectMode: true})
-  var b = stream.PassThrough({objectMode: true})
-  var side1 = duplexer2({objectMode: true}, a, b)
-  var side2 = duplexer2({objectMode: true}, b, a)
+  var o = {objectMode: true}
+  var a = stream.PassThrough(o)
+  var b = stream.PassThrough(o)
+  var side1 = duplexer2(o, a, b)
+  var side2 = duplexer2(o, b, a)
   side1.side2 = side2
   return side1
 }
 
-function setupNetwork() {
-  return ipfsNetwork({}, {
+function setupNetwork(port, peers) {
+  var peerbook = PeerBook(peers)
+  var net = ipfsNetwork({port: port}, peerbook, {
     routing: protoSegment(),
     exchange: protoSegment(),
     identity: protoSegment(),
   })
+  net.wire.errors.pipe(process.stdout)
+  net.peerbook = peerbook
+  return net
+}
+
+function makeMessage(src, dst, payloads) {
+  var m = Message()
+  m.source = src.id
+  m.destination = dst.id
+  for (var p in payloads) {
+    var pp = payloads[p]
+    m.payload[p] = { protocol: pp[0], data: new Buffer(pp[1]) }
+  }
+  return m
 }
 
 
-var m = ipfsMessage()
-m.source = Peer.genPeerId('alice')
-m.destination = Peer.genPeerId('bob')
+test('2 nets talk to each other', function(t) {
+  var p1 = Peer('11148843d7f92416211de9ebb963ff41111111111111')
+  var p2 = Peer('11148843d7f92416211de9ebb963ff40000000000000')
+  p1.addAddress('/ip4/127.0.0.1/udp/1234')
+  p2.addAddress('/ip4/127.0.0.1/udp/2345')
 
-m.payload[0] = { protocol: 1, data: new Buffer('beep boop') }
-m.payload[1] = { protocol: 1, data: new Buffer('poob peeb') }
-m.payload[2] = { protocol: 2, data: new Buffer('bpee oopb') }
-m.payload[1] = { protocol: 3, data: new Buffer('BEEP BOOP') }
+  var net1 = setupNetwork(1234, [p2])
+  var net2 = setupNetwork(2345, [p1])
 
-test('net addrs match', function(t) {
-  var data = m.encode()
-  var m2 = ipfsMessage.decode(data)
-  t.ok(bufeq(m.source, m2.source), 'sources match')
-  t.ok(bufeq(m.destination, m2.destination), 'destinations match')
-  t.end()
-})
+  var done = 0
+  function donedone() {
+    net1.protocols.routing.side2.end()
+    net1.protocols.identity.side2.end()
+    net1.protocols.exchange.side2.end()
+    net2.protocols.routing.side2.end()
+    net2.protocols.identity.side2.end()
+    net2.protocols.exchange.side2.end()
+    t.end()
+  }
 
-test('payloads match', function(t) {
-  var m2 = ipfsMessage.decode(m.encode())
-  for (var i in m.payload)
-    t.ok(bufeq(m.payload[i].data, m2.payload[i].data), 'data matches')
-  t.end()
+  net1.protocols.routing.side2.on('data', function(msg) {
+    t.ok(Peer(msg.source).equals(p2), 'destination check')
+    t.ok(Peer(msg.destination).equals(p1), 'destination check')
+    t.equal(msg.protocol, 2, 'protocol check')
+    t.equal(msg.data.toString(), 'boop')
+    if (++done == 2) donedone()
+  })
+
+  net2.protocols.exchange.side2.on('data', function(msg) {
+    t.ok(Peer(msg.source).equals(p1), 'destination check')
+    t.ok(Peer(msg.destination).equals(p2), 'destination check')
+    t.equal(msg.protocol, 3, 'protocol check')
+    t.equal(msg.data.toString(), 'beep')
+    if (++done == 2) donedone()
+  })
+
+  net1.protocols.exchange.side2.write({
+    source: p1.id,
+    destination: p2.id,
+    protocol: 3,
+    data: new Buffer('beep')
+  })
+
+  net2.protocols.routing.side2.write({
+    source: p2.id,
+    destination: p1.id,
+    protocol: 2,
+    data: new Buffer('boop')
+  })
 })

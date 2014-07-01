@@ -10,6 +10,8 @@ function addrSeg(peerbook) {
 
   function encode(data) {
     var peer = peerbook.get(data.to)
+    if (!peer)
+      throw new Error('ipfs net pipe: peerbook has no peer for id ' + data.to.toString('hex'))
     var addr = peer.networkAddress('udp')
     if (!addr)
       throw new Error('ipfs net pipe: no udp addr for peer ' + item.peer.id)

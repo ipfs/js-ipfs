@@ -9,6 +9,7 @@ function setupPipe(port, peers) {
   var pb = PeerBook(peers)
   var pipe = NetPipe({port: port}, pb)
   pipe.peerbook = pb
+  pipe.errors.pipe(process.stderr)
   return pipe
 }
 

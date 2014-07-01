@@ -15,7 +15,6 @@ function netPipe(opts, peerbook) {
   var errors = through2.obj(function(data, enc, cb) {
     cb(null, data.toString())
   })
-  errors.pipe(process.stderr)
 
   // setup network socket
   var socks = dgrams('udp4')
@@ -42,6 +41,7 @@ function netPipe(opts, peerbook) {
   return segment({
     dgrams: socks,
     messages: wrapmsg.decoded,
+    errors: errors,
   })
 }
 
