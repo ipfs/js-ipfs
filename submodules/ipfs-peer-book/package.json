@@ -1,6 +1,6 @@
 {
   "name": "ipfs-peer-book",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "ipfs peer collection",
   "main": "index.js",
   "scripts": {
@@ -12,5 +12,14 @@
     "collection"
   ],
   "author": "Juan Benet <juan@benet.ai> (http://juan.benet.ai/)",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "buffer-equal": "0.0.1",
+    "multiaddr": "^0.1.2",
+    "multihashing": "^0.1.2",
+    "tape": "^2.13.3"
+  },
+  "dependencies": {
+    "multiaddr": "^0.1.2"
+  }
 }
