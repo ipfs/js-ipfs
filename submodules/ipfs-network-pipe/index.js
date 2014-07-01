@@ -58,8 +58,6 @@ function wrapMessages() {
   }
 }
 
-
-
 function connect(a, b) {
   a.pipe(b).pipe(a)
 }
