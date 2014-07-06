@@ -4,7 +4,7 @@ var path = require('path')
 var f4js = require('fuse4js')
 var proc = require('child_process')
 var mkdirp = require('mkdirp')
-var base58 = require('base58-native').base58Check
+var base58 = require('base58-native')
 var umount = require('./umount')
 
 var ENOENT = -2

@@ -1,4 +1,4 @@
-var base58 = require('base58-native').base58Check
+var base58 = require('base58-native')
 
 module.exports = refs
 

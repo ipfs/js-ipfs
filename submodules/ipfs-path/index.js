@@ -2,7 +2,7 @@ var fs = require('fs')
 var map = require('lodash.map')
 var path = require('path')
 var bufeq = require('buffer-equal')
-var base58 = require('base58-native').base58Check
+var base58 = require('base58-native')
 var protobuf = require('ipfs-protobuf-codec')
 var multihash = require('multihashes')
 
