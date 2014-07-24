@@ -12,10 +12,20 @@ Please put all issues regarding node IPFS _implementation_ in [this repo](https:
 WARNING: this does nothing useful yet!
 
 ```
-git clone
-cd node-ipfs/submodules/ipfs-cli
-npm link
+git clone https://github.com/jbenet/node-ipfs
+cd node-ipfs
+make
 ipfs
+```
+
+The Makefile basically does:
+
+```
+# npm install all deps
+cd submodules && ./npm-install.sh && cd ..
+
+# link cli
+cd submodules/ipfs-cli && npm link
 ```
 
 ## Example
