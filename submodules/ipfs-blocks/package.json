@@ -1,0 +1,19 @@
+{
+  "name": "ipfs-blocks",
+  "version": "0.0.0",
+  "description": "ipfs blocks",
+  "main": "index.js",
+  "dependencies": {
+    "multihashes": "^0.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "ipfs",
+    "blocks"
+  ],
+  "author": "Juan Benet <juan@benet.ai> (http://juan.benet.ai/)",
+  "license": "MIT"
+}
