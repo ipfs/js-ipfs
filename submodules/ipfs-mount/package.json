@@ -1,0 +1,22 @@
+{
+  "name": "ipfs-fuse",
+  "version": "0.0.0",
+  "description": "ipfs fuse",
+  "main": "index.js",
+  "dependencies": {
+    "lodash.map": "^2.4.1",
+    "fuse4js": "^0.1.9",
+    "mkdirp": "^0.5.0",
+    "base58-native": "^0.1.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "ipfs",
+    "fuse"
+  ],
+  "author": "Juan Benet <juan@benet.ai> (http://juan.benet.ai/)",
+  "license": "MIT"
+}
