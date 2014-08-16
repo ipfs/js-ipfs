@@ -17,9 +17,12 @@
     "untildify": "^0.1.0",
     "xtend": "^3.0.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "tap": "^0.4.12",
+    "tape": "^2.14.0"
+  },
   "scripts": {
-    "test": "node test.js"
+    "test": "tap test/index.js"
   },
   "keywords": [
     "ipfs",

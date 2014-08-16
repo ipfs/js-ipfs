@@ -34,7 +34,7 @@ Adder.prototype.addPath = function(p, cb) {
       if (self.opts.recursive)
         self.addTree(p, cb)
       else
-        console.log(p + ': ignored (use -r for recursive)')
+        console.error(p + ': ignored (use -r for recursive)')
     }
     else if (stat.isFile())
       self.addBlock(p, cb)
