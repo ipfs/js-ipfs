@@ -54,7 +54,31 @@ module.exports = function(address) {
     })
   }
 
+  function add(file, cb) {
+    if(typeof file === 'string') {
+      request('add', [file], cb)
+
+    } else if(Buffer.isBuffer(file)) {
+      var filename = Math.abs(Math.random() * 1e20 | 0).toString(36)
+      // TOOD: delete file when done
+      fs.writeFile(filename, file, function(err) {
+        if(err) return cb(err)
+        fs.realpath(filename, function(err, path) {
+          if(err) return cb(err)
+          console.log(path)
+          add(path, cb)
+        })
+      })
+    }
+  }
+
+  function cat(id, cb) {
+    request('cat', [id], cb)
+  }
+
   return {
-    request: request
+    request: request,
+    add: add,
+    cat: cat
   }
 }
