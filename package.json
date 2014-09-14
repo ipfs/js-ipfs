@@ -4,7 +4,8 @@
   "description": "An client library for IPFS RPC services",
   "main": "index.js",
   "dependencies": {
-    "multiaddr": "~0.1.2"
+    "multiaddr": "~0.1.2",
+    "temp": "^0.8.1"
   },
   "devDependencies": {},
   "scripts": {

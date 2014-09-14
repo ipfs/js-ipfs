@@ -2,6 +2,7 @@ var net = require('net')
 var fs = require('fs')
 var assert = require('assert')
 var Multiaddr = require('multiaddr')
+var temp = require('temp')
 
 module.exports = function(address) {
   assert(address, 'Must specify an address')
@@ -59,14 +60,15 @@ module.exports = function(address) {
       request('add', [file], cb)
 
     } else if(Buffer.isBuffer(file)) {
-      var filename = Math.abs(Math.random() * 1e20 | 0).toString(36)
-      // TOOD: delete file when done
-      fs.writeFile(filename, file, function(err) {
+      temp.open('ipfs', function(err, t) {
         if(err) return cb(err)
-        fs.realpath(filename, function(err, path) {
+        fs.write(t.fd, file, 0, file.length, null, function(err) {
+          console.log('wrote temp file', t.path)
           if(err) return cb(err)
-          console.log(path)
-          add(path, cb)
+          fs.close(t.fd, function(err) {
+            if(err) return cb(err)
+            add(t.path, cb)
+          })
         })
       })
     }
@@ -82,3 +84,6 @@ module.exports = function(address) {
     cat: cat
   }
 }
+
+temp.track()
+setInterval(temp.cleanup, 60 * 1000)
