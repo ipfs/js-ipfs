@@ -1,6 +1,6 @@
 {
   "name": "ipfs-rpc",
-  "version": "0.0.0",
+  "version": "0.0.0-1",
   "description": "An client library for IPFS RPC services",
   "main": "index.js",
   "dependencies": {

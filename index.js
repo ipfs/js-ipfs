@@ -78,10 +78,15 @@ module.exports = function(address) {
     request('cat', [id], cb)
   }
 
+  function peers(cb) {
+    request('peers', [], cb)
+  }
+
   return {
     request: request,
     add: add,
-    cat: cat
+    cat: cat,
+    peers: peers
   }
 }
 
