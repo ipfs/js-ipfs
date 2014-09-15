@@ -79,7 +79,10 @@ module.exports = function(address) {
   }
 
   function peers(cb) {
-    request('peers', [], cb)
+    request('peers', [], function(err, res) {
+      if(err) return cb(err)
+      cb(null, JSON.parse(res.toString()))
+    })
   }
 
   return {
