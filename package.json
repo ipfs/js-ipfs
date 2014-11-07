@@ -1,7 +1,7 @@
 {
   "name": "ipfs-rpc",
-  "version": "0.0.0-3",
-  "description": "An client library for IPFS RPC services",
+  "version": "0.0.1",
+  "description": "An client library for the IPFS API",
   "main": "index.js",
   "dependencies": {
     "request": "^2.47.0"
@@ -14,5 +14,5 @@
     "ipfs"
   ],
   "author": "Matt Bell <mappum@gmail.com>",
-  "license": "GPL"
+  "license": "MIT"
 }
