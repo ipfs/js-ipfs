@@ -1,14 +1,15 @@
 var net = require('net')
 var fs = require('fs')
+var stream = require('stream')
 var assert = require('assert')
-var Multiaddr = require('multiaddr')
-var temp = require('temp')
+var request = require('request')
+
+var API_PATH = "/api/v0/"
 
 module.exports = function(address) {
   assert(address, 'Must specify an address')
-  address = new Multiaddr(address)
 
-  function request(command, args, opts, cb) {
+  function send(path, args, opts, cb) {
     if(typeof args === 'function') {
       cb = args;
       args = null;
@@ -19,79 +20,77 @@ module.exports = function(address) {
       cb = function(){}
     }
 
-    if(!command)
-      return cb('Must specify a command')
-    if(!typeof command === 'string')
+    if(!path)
+      return cb('Must specify a command path')
+    if(!typeof path === 'string')
       return cb('Command must be a string')
-    if(args != null && !Array.isArray(args))
-      return cb('Args must be an array')
+    //if(args != null && !Array.isArray(args) && !(args instanceof stream.Readable))
+    //  return cb('Args must be an array or reable stream')
     if(opts != null && typeof opts !== 'object')
       return cb('Opts must be an object')
     if(!typeof cb === 'function')
       return cb('Callback must be a function')
 
-    var req = new Buffer(JSON.stringify({
-      Command: command,
-      Args: args,
-      Opts: opts
-    }))
+    if(Array.isArray(path)) path = path.join('/')
 
-    var socket = net.connect(address.nodeAddress(), function() {
-      var data = [], length = 0
+    if(!opts) opts = {}
+    if(Array.isArray(args)) opts.arg = args
 
-      socket.on('error', cb)
+    var req = request({
+      uri: 'http://' + address + API_PATH + path,
+      qs: opts,
+      useQuerystring: true,
+      method: 'POST'
+    }, function(err, res, data) {
+      if(err) {
+        try {
+          return cb(JSON.parse(err), null, res)
+        } catch(e) {
+          return cb(new Error(err), null, res)
+        }
+      }
 
-      socket.on('data', function(chunk) {
-        data.push(chunk)
-        length += chunk.length
-      })
-
-      socket.on('end', function() {
-        var res = Buffer.concat(data, length)
-        cb(null, res)
-      })
-
-      socket.write(req)
+      try {
+        return cb(null, JSON.parse(data), res)
+      } catch(e) {
+        return cb(null, data, res)
+      }
     })
+
+    if(args instanceof stream.Readable) args.pipe(req)
+    else if(Buffer.isBuffer(args)) req.end(args)
+
+    return req
   }
 
   function add(file, cb) {
+    var args
+
+    // TODO: handle multiple files, directories (one we have multipart stream support in go daemon)
+
     if(typeof file === 'string') {
-      request('add', [file], cb)
+      args = fs.createReadStream(file)
 
     } else if(Buffer.isBuffer(file)) {
-      temp.open('ipfs', function(err, t) {
-        if(err) return cb(err)
-        fs.write(t.fd, file, 0, file.length, null, function(err) {
-          console.log('wrote temp file', t.path)
-          if(err) return cb(err)
-          fs.close(t.fd, function(err) {
-            if(err) return cb(err)
-            add(t.path, cb)
-          })
-        })
-      })
+      args = file
     }
+
+    send('add', args, function(err, data) {
+      return cb(err, data)
+    })
   }
 
-  function cat(id, cb) {
-    request('cat', [id], cb)
-  }
+  function cat(objects, cb) {
+    if(!Array.isArray(objects)) objects = [objects]
 
-  function peers(cb) {
-    request('peers', [], function(err, res) {
-      if(err) return cb(err)
-      cb(null, JSON.parse(res.toString()))
+    send('cat', objects, function(err, data) {
+      return cb(err, data)
     })
   }
 
   return {
-    request: request,
+    send: send,
     add: add,
-    cat: cat,
-    peers: peers
+    cat: cat
   }
 }
-
-temp.track()
-setInterval(temp.cleanup, 60 * 1000)
