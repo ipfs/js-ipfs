@@ -1,96 +1,135 @@
-var net = require('net')
-var fs = require('fs')
-var stream = require('stream')
-var assert = require('assert')
-var request = require('request')
+var net = require('net');
+var fs = require('fs');
+var stream = require('stream');
+var assert = require('assert');
+var needle = require('needle');
+var qs = require('querystring');
 
-var API_PATH = "/api/v0/"
+var API_PATH = "/api/v0/";
 
 module.exports = function(address) {
-  assert(address, 'Must specify an address')
+  assert(address, 'Must specify an address');
 
-  function send(path, args, opts, cb) {
-    if(typeof args === 'function') {
-      cb = args;
-      args = null;
-    } else if(typeof opts === 'function') {
-      cb = opts;
-      opts = null;
-    } else if(!cb) {
-      cb = function(){}
-    }
+  function send(path, args, opts, files, cb) {
+    if(Array.isArray(path)) path = path.join('/');
 
-    if(!path)
-      return cb('Must specify a command path')
-    if(!typeof path === 'string')
-      return cb('Command must be a string')
-    //if(args != null && !Array.isArray(args) && !(args instanceof stream.Readable))
-    //  return cb('Args must be an array or reable stream')
-    if(opts != null && typeof opts !== 'object')
-      return cb('Opts must be an object')
-    if(!typeof cb === 'function')
-      return cb('Callback must be a function')
+    opts = opts || {};
+    if(args && !Array.isArray(args)) args = [args];
+    if(args) opts.arg = args;
+    var query = qs.stringify(opts);
 
-    if(Array.isArray(path)) path = path.join('/')
+    var data = getFileArgs(files);
 
-    if(!opts) opts = {}
-    if(Array.isArray(args)) opts.arg = args
+    var uri = 'http://' + address + API_PATH + path + '?' + query;
 
-    var req = request({
-      uri: 'http://' + address + API_PATH + path,
-      qs: opts,
-      useQuerystring: true,
-      method: 'POST'
+    needle.post(uri, data, {
+      multipart: files != null,
+      user_agent: '/node-ipfs-rpc/0.0.0/'
     }, function(err, res, data) {
-      if(err) {
-        try {
-          return cb(JSON.parse(err), null, res)
-        } catch(e) {
-          return cb(new Error(err), null, res)
-        }
-      }
-
-      try {
-        return cb(null, JSON.parse(data), res)
-      } catch(e) {
-        return cb(null, data, res)
-      }
-    })
-
-    if(args instanceof stream.Readable) args.pipe(req)
-    else if(Buffer.isBuffer(args)) req.end(args)
-
-    return req
+      return cb(err, data);
+    });
   }
 
-  function add(file, cb) {
-    var args
+  // TODO: build a multipart readable stream out of other readable streams
+  function getFileArgs(files) {
+    var output = {};
 
-    // TODO: handle multiple files, directories (one we have multipart stream support in go daemon)
+    if(!Array.isArray(files)) files = [files];
 
-    if(typeof file === 'string') {
-      args = fs.createReadStream(file)
+    for(var i in files) {
+      var file = files[i];
 
-    } else if(Buffer.isBuffer(file)) {
-      args = file
+      if(typeof file === 'string') {
+        // TODO: get actual content type
+        output[i] = {
+          file: file,
+          content_type: 'application/octet-stream'
+        };
+
+      } else if(Buffer.isBuffer(file)) {
+        output[i] = {
+          buffer: file,
+          content_type: 'application/octet-stream'
+        };
+      }
     }
 
-    send('add', args, function(err, data) {
-      return cb(err, data)
-    })
+    return output;
   }
 
-  function cat(objects, cb) {
-    if(!Array.isArray(objects)) objects = [objects]
+  function command(name) {
+    return function(cb) {
+      send(name, null, null, null, cb);
+    }
+  }
 
-    send('cat', objects, function(err, data) {
-      return cb(err, data)
-    })
+  function argCommand(name) {
+    return function(arg, cb) {
+      send(name, arg, null, null, cb);
+    }
   }
 
   return {
     send: send,
-    add: add,
-    cat: cat
+
+    add: function(file, cb) {
+      send('add', null, null, file, cb);
+    },
+    cat: argCommand('cat'),
+    ls: argCommand('ls'),
+
+    config: {
+      get: argCommand('config'),
+      set: function(key, value, cb) {
+        send('config', [key, value], null, null, cb)
+      },
+      show: command('config/show')
+    },
+
+    update: {
+      apply: command('update'),
+      check: command('update/check'),
+      log: command('update/log')
+    },
+    version: command('version'),
+    commands: command('commands'),
+
+    mount: function(ipfs, ipns, cb) {
+      if(typeof ipfs === 'function') {
+        cb = ipfs;
+        ipfs = null;
+      } else if(typeof ipns === 'function') {
+        cb = ipns;
+        ipns = null;
+      }
+      var opts = {};
+      if(ipfs) opts.f = ipfs;
+      if(ipns) opts.n = ipns;
+      send('mount', null, opts, null, cb);
+    },
+
+    diag: {
+      net: command('diag/net')
+    },
+
+    block: {
+      get: argCommand('block/get'),
+      put: function(file, cb) {
+        if(Array.isArray(file))
+          return cb(null, new Error('block.put() only accepts 1 file'));
+        send('block/put', null, null, file, cb);
+      },
+    },
+
+    object: {
+      get: argCommand('object/get'),
+      put: function(file, encoding, cb) {
+        if(typeof encoding === 'function')
+            return cb(null, new Error('Must specify an object encoding ("json" or "protobuf")'))
+        send('block/put', encoding, null, file, cb);
+      },
+      data: argCommand('object/data'),
+      links: argCommand('object/links')
+    }
   }
 }
