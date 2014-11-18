@@ -5,6 +5,8 @@ var assert = require('assert');
 var needle = require('needle');
 var qs = require('querystring');
 
+var package = JSON.parse(fs.readFileSync(__dirname + '/package.json'));
+
 var API_PATH = "/api/v0/";
 
 module.exports = function(address) {
@@ -24,7 +26,7 @@ module.exports = function(address) {
 
     needle.post(uri, data, {
       multipart: files != null,
-      user_agent: '/node-ipfs-rpc/0.0.0/'
+      user_agent: '/node-'+package.name+'/'+package.version+'/'
     }, function(err, res, data) {
       return cb(err, data);
     });
