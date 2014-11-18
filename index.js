@@ -2,15 +2,21 @@ var net = require('net');
 var fs = require('fs');
 var stream = require('stream');
 var assert = require('assert');
-var request = require('request');
+var http = require('http');
 var Multipart = require('multipart-stream');
+var qs = require('querystring');
 
-var package = JSON.parse(fs.readFileSync(__dirname + '/package.json'));
+try {
+  var package = JSON.parse(fs.readFileSync(__dirname + '/package.json'));
+} catch(e) {
+  var package = { name: 'ipfs-api-browserify', version: '?' };
+}
 
 var API_PATH = "/api/v0/";
 
-module.exports = function(address) {
-  assert(address, 'Must specify an address');
+module.exports = function(host, port) {
+  if(!host) host = 'localhost';
+  if(!port) port = 5001;
 
   function send(path, args, opts, files, cb) {
     if(Array.isArray(path)) path = path.join('/');
@@ -18,28 +24,55 @@ module.exports = function(address) {
     opts = opts || {};
     if(args && !Array.isArray(args)) args = [args];
     if(args) opts.arg = args;
+    var query = qs.stringify(opts);
 
-    return request.post({
-      uri: 'http://' + address + API_PATH + path,
-      qs: opts,
-      useQuerystring: true,
+    if(files) {
+      var boundary = randomString();
+      var contentType = 'multipart/form-data; boundary=' + boundary;
+    }
+
+    var req = http.request({
+      method: 'POST',
+      host: host,
+      port: port,
+      path: API_PATH + path + '?' + query,
       headers: {
-        'User-Agent': '/node-'+package.name+'/'+package.version+'/'
-      },
-      formData: getFileForm(files)
-    }, function(err, res, data) {
-      try {
-        return cb(JSON.parse(err || 'null'), JSON.parse(data || 'null'));
-      } catch(e) {
-        return cb(err, data);
+        'User-Agent': '/node-'+package.name+'/'+package.version+'/',
+        'Content-Type': contentType || 'application/octet-stream'
       }
+    }, function(res) {
+      var data = '';
+      res.on('data', function(chunk) {
+        data += chunk;
+      });
+      res.on('end', function() {
+        try {
+          var parsed = JSON.parse(data);
+          data = parsed;
+        } catch(e){}
+
+        if(res.statusCode >= 400) {
+          return cb(data, null);
+        }
+        return cb(null, data);
+      });
+      res.on('error', function(err) {
+        return cb(err, null)
+      });
     });
+
+    if(files) {
+      var stream = getFileStream(files, boundary);
+      stream.pipe(req);
+    } else {
+      req.end();
+    }
   }
 
-  function getFileForm(files) {
+  function getFileStream(files, boundary) {
     if(!files) return null;
 
-    var output = {};
+    var mp = new Multipart(boundary);
     if(!Array.isArray(files)) files = [files];
 
     for(var i in files) {
@@ -47,26 +80,26 @@ module.exports = function(address) {
 
       if(typeof file === 'string') {
         // TODO: get actual content type
-        output[i] = {
-          value: fs.createReadStream(file),
-          options: {
-            contentType: 'application/octet-stream',
-            filename: file
+        mp.addPart({
+          body: fs.createReadStream(file),
+          headers: {
+            'Content-Type': 'application/octet-stream',
+            'Content-Disposition': 'file; name="file"; filename="'+file+'"'
           }
-        };
+        });
 
       } else if(Buffer.isBuffer(file)) {
-        output[i] = {
-          value: file,
-          options: {
-            contentType: 'application/octet-stream',
-            filename: ''
+        mp.addPart({
+          body: file,
+          headers: {
+            'Content-Type': 'application/octet-stream',
+            'Content-Disposition': 'file; name="file"; filename=""'
           } 
-        };
+        });
       }
     }
 
-    return output;
+    return mp;
   }
 
   function command(name) {
@@ -144,4 +177,8 @@ module.exports = function(address) {
       links: argCommand('object/links')
     }
   }
+}
+
+function randomString() {
+  return Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
 }

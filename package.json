@@ -1,11 +1,10 @@
 {
   "name": "ipfs-api",
-  "version": "0.0.2",
+  "version": "0.0.3-1",
   "description": "An client library for the IPFS API",
   "main": "index.js",
   "dependencies": {
-    "multipart-stream": "^1.0.0",
-    "request": "^2.48.0"
+    "multipart-stream": "^1.0.0"
   },
   "devDependencies": {},
   "scripts": {
