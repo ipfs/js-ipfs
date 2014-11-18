@@ -180,7 +180,8 @@ module.exports = function(host, port) {
     swarm: {
       peers: command('swarm/peers'),
       connect: argCommand('swarm/peers')
-    }
+    },
+    id: command('id')
   }
 }
 
