@@ -32,13 +32,13 @@ module.exports = function(host, port) {
     }
 
     var req = http.request({
-      method: 'POST',
+      method: files ? 'POST' : 'GET',
       host: host,
       port: port,
       path: API_PATH + path + '?' + query,
       headers: {
         'User-Agent': '/node-'+package.name+'/'+package.version+'/',
-        'Content-Type': contentType || 'application/octet-stream'
+        'Content-Type': contentType
       }
     }, function(res) {
       var data = '';
@@ -175,6 +175,11 @@ module.exports = function(host, port) {
       },
       data: argCommand('object/data'),
       links: argCommand('object/links')
+    },
+
+    swarm: {
+      peers: command('swarm/peers'),
+      connect: argCommand('swarm/peers')
     }
   }
 }
