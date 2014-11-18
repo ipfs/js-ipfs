@@ -2,8 +2,8 @@ var net = require('net');
 var fs = require('fs');
 var stream = require('stream');
 var assert = require('assert');
-var needle = require('needle');
-var qs = require('querystring');
+var request = require('request');
+var Multipart = require('multipart-stream');
 
 var package = JSON.parse(fs.readFileSync(__dirname + '/package.json'));
 
@@ -18,24 +18,28 @@ module.exports = function(address) {
     opts = opts || {};
     if(args && !Array.isArray(args)) args = [args];
     if(args) opts.arg = args;
-    var query = qs.stringify(opts);
 
-    var data = getFileArgs(files);
-
-    var uri = 'http://' + address + API_PATH + path + '?' + query;
-
-    needle.post(uri, data, {
-      multipart: files != null,
-      user_agent: '/node-'+package.name+'/'+package.version+'/'
+    return request.post({
+      uri: 'http://' + address + API_PATH + path,
+      qs: opts,
+      useQuerystring: true,
+      headers: {
+        'User-Agent': '/node-'+package.name+'/'+package.version+'/'
+      },
+      formData: getFileForm(files)
     }, function(err, res, data) {
-      return cb(err, data);
+      try {
+        return cb(JSON.parse(err || 'null'), JSON.parse(data || 'null'));
+      } catch(e) {
+        return cb(err, data);
+      }
     });
   }
 
-  // TODO: build a multipart readable stream out of other readable streams
-  function getFileArgs(files) {
-    var output = {};
+  function getFileForm(files) {
+    if(!files) return null;
 
+    var output = {};
     if(!Array.isArray(files)) files = [files];
 
     for(var i in files) {
@@ -44,14 +48,20 @@ module.exports = function(address) {
       if(typeof file === 'string') {
         // TODO: get actual content type
         output[i] = {
-          file: file,
-          content_type: 'application/octet-stream'
+          value: fs.createReadStream(file),
+          options: {
+            contentType: 'application/octet-stream',
+            filename: file
+          }
         };
 
       } else if(Buffer.isBuffer(file)) {
         output[i] = {
-          buffer: file,
-          content_type: 'application/octet-stream'
+          value: file,
+          options: {
+            contentType: 'application/octet-stream',
+            filename: ''
+          } 
         };
       }
     }
