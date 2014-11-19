@@ -39,7 +39,8 @@ module.exports = function(host, port) {
       headers: {
         'User-Agent': '/node-'+package.name+'/'+package.version+'/',
         'Content-Type': contentType
-      }
+      },
+      withCredentials: false
     }, function(res) {
       var data = '';
       res.on('data', function(chunk) {
