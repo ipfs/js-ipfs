@@ -1,7 +1,4 @@
-var net = require('net');
 var fs = require('fs');
-var stream = require('stream');
-var assert = require('assert');
 var http = require('http');
 var Multipart = require('multipart-stream');
 var qs = require('querystring');
