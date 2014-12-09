@@ -179,7 +179,13 @@ module.exports = function(host, port) {
       peers: command('swarm/peers'),
       connect: argCommand('swarm/peers')
     },
-    id: command('id'),
+    id: function(id, cb) {
+      if(typeof id === 'function') {
+        cb = id;
+        id = null;
+      }
+      send('id', id, null, null, cb);
+    },
     pin: {
       add: argCommand('pin/add'),
       remove: argCommand('pin/rm'),
