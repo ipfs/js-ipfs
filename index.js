@@ -49,7 +49,8 @@ module.exports = function(host, port) {
           data = parsed;
         } catch(e){}
 
-        if(res.statusCode >= 400) {
+        if(res.statusCode >= 400 || !res.statusCode) {
+          if(!data) data = new Error;
           return cb(data, null);
         }
         return cb(null, data);
