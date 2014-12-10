@@ -190,7 +190,15 @@ module.exports = function(host, port) {
     pin: {
       add: argCommand('pin/add'),
       remove: argCommand('pin/rm'),
-      list: command('pin/ls'),
+      list: function(type, cb) {
+        if(typeof type === 'function') {
+          cb = type;
+          type = null;
+        }
+        var opts = null;
+        if(type) opts = { type: type }
+        send('pin/ls', null, opts, null, cb);
+      },
     }
   }
 }
