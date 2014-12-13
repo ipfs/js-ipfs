@@ -127,7 +127,10 @@ module.exports = function(host, port) {
       set: function(key, value, cb) {
         send('config', [key, value], null, null, cb)
       },
-      show: command('config/show')
+      show: command('config/show'),
+      replace: function(file, cb) {
+        send('config/replace', null, null, file, cb)
+      }
     },
 
     update: {
