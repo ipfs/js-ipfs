@@ -202,6 +202,11 @@ module.exports = function(host, port) {
         if(type) opts = { type: type }
         send('pin/ls', null, opts, null, cb);
       },
+    },
+
+    gateway: {
+      enable: command('gateway/enable'),
+      disable: command('gateway/disable')
     }
   }
 }
