@@ -21,6 +21,7 @@ module.exports = function(host, port) {
     opts = opts || {};
     if(args && !Array.isArray(args)) args = [args];
     if(args) opts.arg = args;
+    opts['stream-channels'] = true;
     var query = qs.stringify(opts);
 
     if(files) {
@@ -39,15 +40,32 @@ module.exports = function(host, port) {
       },
       withCredentials: false
     }, function(res) {
+      var chunkedObjects = !!res.headers['x-chunked-output'];
+
       var data = '';
+      var objects = [];
+
       res.on('data', function(chunk) {
-        data += chunk;
+        if(!chunkedObjects) return data += chunk;
+
+        try {
+          var obj = JSON.parse(chunk.toString());
+          objects.push(obj);
+        } catch(e) {
+          chunkedObjects = false;
+          data += chunk;
+        }
       });
       res.on('end', function() {
-        try {
-          var parsed = JSON.parse(data);
-          data = parsed;
-        } catch(e){}
+        if(!chunkedObjects) {
+          try {
+            var parsed = JSON.parse(data);
+            data = parsed;
+          } catch(e){}
+
+        } else {
+          data = objects;
+        }
 
         if(res.statusCode >= 400 || !res.statusCode) {
           if(!data) data = new Error;
