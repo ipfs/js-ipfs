@@ -40,6 +40,9 @@ module.exports = function(host, port) {
       },
       withCredentials: false
     }, function(res) {
+      var stream = !!res.headers['x-stream-output'];
+      if(stream) return cb(null, res);
+
       var chunkedObjects = !!res.headers['x-chunked-output'];
 
       var data = '';
@@ -74,7 +77,7 @@ module.exports = function(host, port) {
         return cb(null, data);
       });
       res.on('error', function(err) {
-        return cb(err, null)
+        return cb(err, null);
       });
     });
 
