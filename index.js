@@ -15,7 +15,7 @@ module.exports = function(host, port) {
   if(!host) host = 'localhost';
   if(!port) port = 5001;
 
-  function send(path, args, opts, files, cb) {
+  function send(path, args, opts, files, buffer, cb) {
     if(Array.isArray(path)) path = path.join('/');
 
     opts = opts || {};
@@ -27,6 +27,11 @@ module.exports = function(host, port) {
     if(files) {
       var boundary = randomString();
       var contentType = 'multipart/form-data; boundary=' + boundary;
+    }
+
+    if(typeof buffer === 'function') {
+      cb = buffer;
+      buffer = false;
     }
 
     var req = http.request({
@@ -41,7 +46,7 @@ module.exports = function(host, port) {
       withCredentials: false
     }, function(res) {
       var stream = !!res.headers['x-stream-output'];
-      if(stream) return cb(null, res);
+      if(stream && !buffer) return cb(null, res);
 
       var chunkedObjects = !!res.headers['x-chunked-output'];
 
@@ -148,7 +153,9 @@ module.exports = function(host, port) {
       set: function(key, value, cb) {
         send('config', [key, value], null, null, cb)
       },
-      show: command('config/show'),
+      show: function(cb) {
+        send('config/show', null, null, null, true, cb);
+      },
       replace: function(file, cb) {
         send('config/replace', null, null, file, cb)
       }
