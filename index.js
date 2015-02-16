@@ -49,6 +49,7 @@ module.exports = function(host, port) {
       if(stream && !buffer) return cb(null, res);
 
       var chunkedObjects = !!res.headers['x-chunked-output'];
+      if(chunkedObjects && buffer) return cb(null, res);
 
       var data = '';
       var objects = [];
@@ -92,6 +93,8 @@ module.exports = function(host, port) {
     } else {
       req.end();
     }
+
+    return req;
   }
 
   function getFileStream(files, boundary) {
@@ -129,13 +132,13 @@ module.exports = function(host, port) {
 
   function command(name) {
     return function(cb) {
-      send(name, null, null, null, cb);
+      return send(name, null, null, null, cb);
     }
   }
 
   function argCommand(name) {
     return function(arg, cb) {
-      send(name, arg, null, null, cb);
+      return send(name, arg, null, null, cb);
     }
   }
 
@@ -143,7 +146,7 @@ module.exports = function(host, port) {
     send: send,
 
     add: function(file, cb) {
-      send('add', null, null, file, cb);
+      return send('add', null, null, file, cb);
     },
     cat: argCommand('cat'),
     ls: argCommand('ls'),
@@ -151,13 +154,13 @@ module.exports = function(host, port) {
     config: {
       get: argCommand('config'),
       set: function(key, value, cb) {
-        send('config', [key, value], null, null, cb)
+        return send('config', [key, value], null, null, cb)
       },
       show: function(cb) {
-        send('config/show', null, null, null, true, cb);
+        return send('config/show', null, null, null, true, cb);
       },
       replace: function(file, cb) {
-        send('config/replace', null, null, file, cb)
+        return send('config/replace', null, null, file, cb)
       }
     },
 
@@ -180,7 +183,7 @@ module.exports = function(host, port) {
       var opts = {};
       if(ipfs) opts.f = ipfs;
       if(ipns) opts.n = ipns;
-      send('mount', null, opts, null, cb);
+      return send('mount', null, opts, null, cb);
     },
 
     diag: {
@@ -192,7 +195,7 @@ module.exports = function(host, port) {
       put: function(file, cb) {
         if(Array.isArray(file))
           return cb(null, new Error('block.put() only accepts 1 file'));
-        send('block/put', null, null, file, cb);
+        return send('block/put', null, null, file, cb);
       },
     },
 
@@ -201,7 +204,7 @@ module.exports = function(host, port) {
       put: function(file, encoding, cb) {
         if(typeof encoding === 'function')
             return cb(null, new Error('Must specify an object encoding ("json" or "protobuf")'))
-        send('block/put', encoding, null, file, cb);
+        return send('block/put', encoding, null, file, cb);
       },
       data: argCommand('object/data'),
       links: argCommand('object/links')
@@ -212,7 +215,7 @@ module.exports = function(host, port) {
       connect: argCommand('swarm/peers')
     },
     ping: function(id, cb) {
-      send('ping', id, { n: 1 }, null, function(err, res) {
+      return send('ping', id, { n: 1 }, null, function(err, res) {
         if(err) return cb(err, null);
         cb(null, res[1]);
       });
@@ -223,7 +226,7 @@ module.exports = function(host, port) {
         cb = id;
         id = null;
       }
-      send('id', id, null, null, cb);
+      return send('id', id, null, null, cb);
     },
     pin: {
       add: argCommand('pin/add'),
@@ -235,13 +238,19 @@ module.exports = function(host, port) {
         }
         var opts = null;
         if(type) opts = { type: type }
-        send('pin/ls', null, opts, null, cb);
+        return send('pin/ls', null, opts, null, cb);
       },
     },
 
     gateway: {
       enable: command('gateway/enable'),
       disable: command('gateway/disable')
+    },
+
+    log: {
+      tail: function(cb) {
+        return send('log/tail', null, {enc: 'text'}, null, true, cb);
+      }
     }
   }
 }
