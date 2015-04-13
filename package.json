@@ -1,0 +1,22 @@
+{
+  "name": "ipfs",
+  "version": "0.1.0",
+  "description": "ipfs implementation in node",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jbenet/node-ipfs.git"
+  },
+  "keywords": [
+    "ipfs"
+  ],
+  "author": "Juan Benet <juan@benet.ai> (http://juan.benet.ai/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jbenet/node-ipfs/issues"
+  },
+  "homepage": "https://github.com/jbenet/node-ipfs"
+}

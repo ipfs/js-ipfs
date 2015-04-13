@@ -1,0 +1,1 @@
+module.exports = new Error("implementation not ready yet. help out at github.com/ipfs/ipfs")
