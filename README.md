@@ -1,5 +1,12 @@
 # ipfs implementation in node.
 
+
+# This is a work in progress. it's not ready yet. we'll be pushing efforts into this implementation shortly. stay tuned + come hang out on irc.
+
+`#ipfs` on freenode.
+
+----
+
 See: https://github.com/jbenet/ipfs
 
 Please put all issues regarding IPFS _design_ in the
