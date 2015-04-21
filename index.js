@@ -24,9 +24,10 @@ module.exports = function(host, port) {
     opts['stream-channels'] = true;
     var query = qs.stringify(opts);
 
+    var contentType = 'application/json';
     if(files) {
       var boundary = randomString();
-      var contentType = 'multipart/form-data; boundary=' + boundary;
+      contentType = 'multipart/form-data; boundary=' + boundary;
     }
 
     if(typeof buffer === 'function') {
