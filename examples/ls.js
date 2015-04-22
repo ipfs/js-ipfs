@@ -1,6 +1,6 @@
 var ipfs = require('../')('localhost', 5001);
 
-var hash = ["QmYpzDExiYfibP8DFnh2gkrtw8LrxPmCUbq1Dockk8ASjn" , "QmdbHK6gMiecyjjSoPnfJg6iKMF7v6E2NkoBgGpmyCoevh"]
+var hash = ["QmdbHK6gMiecyjjSoPnfJg6iKMF7v6E2NkoBgGpmyCoevh"]
 
 ipfs.ls(hash, function(err, res) {
 	if(err || !res) return console.log(err)
