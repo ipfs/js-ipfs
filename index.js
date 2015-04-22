@@ -230,8 +230,22 @@ module.exports = function(host, port) {
       return send('id', id, null, null, cb);
     },
     pin: {
-      add: argCommand('pin/add'),
-      remove: argCommand('pin/rm'),
+      add: function(hash, opts, cb) {
+        if(typeof opts === 'function') {
+          cb = opts;
+          opts = null;
+        }
+
+        send('pin/add', hash, opts, null, cb);
+      },
+      remove: function(hash, opts, cb) {
+        if(typeof opts === 'function') {
+          cb = opts;
+          opts = null;
+        }
+
+        send('pin/rm', hash, opts, null, cb);
+      },
       list: function(type, cb) {
         if(typeof type === 'function') {
           cb = type;
