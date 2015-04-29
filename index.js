@@ -123,7 +123,7 @@ module.exports = function(host, port) {
           headers: {
             'Content-Type': 'application/octet-stream',
             'Content-Disposition': 'file; name="file"; filename=""'
-          } 
+          }
         });
       }
     }
@@ -205,9 +205,10 @@ module.exports = function(host, port) {
       put: function(file, encoding, cb) {
         if(typeof encoding === 'function')
             return cb(null, new Error('Must specify an object encoding ("json" or "protobuf")'))
-        return send('block/put', encoding, null, file, cb);
+        return send('object/put', encoding, null, file, cb);
       },
       data: argCommand('object/data'),
+      stat: argCommand('object/stat'),
       links: argCommand('object/links')
     },
 
