@@ -44,7 +44,7 @@ curl 'http://localhost:5001/api/v0/add?stream-cannels=true' \
 ```
 
 **Response**
-```json
+```
 [{
     Hash: string,
     Name: string
@@ -146,7 +146,7 @@ curl 'http://localhost:5001/api/v0/object/get?arg=QmYEqnfCZp7a39Gxrgyv3qRS4MoCTG
 ```
 
 **Response**
-```json
+```
 {
     Links: [{
         Name: string,
