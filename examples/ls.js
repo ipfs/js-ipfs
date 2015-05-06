@@ -1,16 +1,18 @@
-var ipfs = require('../')('localhost', 5001);
+'use strict'
 
-var hash = ["QmdbHK6gMiecyjjSoPnfJg6iKMF7v6E2NkoBgGpmyCoevh"]
+var ipfs = require('../')('localhost', 5001)
 
-ipfs.ls(hash, function(err, res) {
-	if(err || !res) return console.log(err)
+var hash = ['QmdbHK6gMiecyjjSoPnfJg6iKMF7v6E2NkoBgGpmyCoevh']
 
-	res.Objects.forEach(function(node) {
-		console.log(node.Hash)
+ipfs.ls(hash, function (err, res) {
+  if (err || !res) return console.log(err)
 
-		console.log("Links [%d]", node.Links.length)
-		node.Links.forEach(function(link, i) {
-			console.log("[%d]", i, link)
-		})
-   })
+  res.Objects.forEach(function (node) {
+    console.log(node.Hash)
+
+    console.log('Links [%d]', node.Links.length)
+    node.Links.forEach(function (link, i) {
+      console.log('[%d]', i, link)
+    })
+  })
 })

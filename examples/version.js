@@ -1,5 +1,8 @@
-var ipfs = require('../')('localhost', 5001);
+'use strict'
 
-ipfs.commands(function(err, res) {
-	console.log(res)
+var ipfs = require('../')('localhost', 5001)
+
+ipfs.commands(function (err, res) {
+  if (err) throw err
+  console.log(res)
 })
