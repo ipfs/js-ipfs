@@ -10,10 +10,17 @@
   "contributors": [
     "Travis Person <travis.person@gmail.com>"
   ],
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "devDependencies": {
+    "standard": "^3.3.2",
+    "pre-commit": "^1.0.6"
   },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "git diff --name-only --cached --relative | egrep .js$ | xargs --no-run-if-empty standard"
+  },
+  "pre-commit": [
+    "lint"
+  ],
   "keywords": [
     "ipfs"
   ],
