@@ -273,6 +273,14 @@ module.exports = function (host, port) {
       tail: function (cb) {
         return send('log/tail', null, {enc: 'text'}, null, true, cb)
       }
+    },
+
+    name: {
+      resolve: argCommand('name/resolve')
+    },
+
+    dht: {
+      findprovs: argCommand('dht/findprovs')
     }
   }
 }
