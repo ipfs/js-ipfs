@@ -29,7 +29,7 @@ module.exports = function (host, port) {
     var contentType = 'application/json'
     if (files) {
       var boundary = randomString()
-      contentType = 'multipart/form-data boundary=' + boundary
+      contentType = 'multipart/form-data; boundary=' + boundary
     }
 
     if (typeof buffer === 'function') {
@@ -117,7 +117,7 @@ module.exports = function (host, port) {
           body: fs.createReadStream(file),
           headers: {
             'Content-Type': 'application/octet-stream',
-            'Content-Disposition': 'file name=\'file\' filename=\'' + file + '\''
+            'Content-Disposition': 'file; name="file"; filename="' + file + '"'
           }
         })
 
@@ -126,7 +126,7 @@ module.exports = function (host, port) {
           body: file,
           headers: {
             'Content-Type': 'application/octet-stream',
-            'Content-Disposition': 'file name=\'file\' filename=\'\''
+            'Content-Disposition': 'file; name="file"; filename=""'
           }
         })
       }
