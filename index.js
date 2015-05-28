@@ -4,6 +4,7 @@ var fs = require('fs')
 var http = require('http')
 var Multipart = require('multipart-stream')
 var qs = require('querystring')
+var multiaddr = require('multiaddr')
 
 try {
   var pkg = JSON.parse(fs.readFileSync(__dirname + '/package.json'))
@@ -13,7 +14,16 @@ try {
 
 var API_PATH = '/api/v0/'
 
-module.exports = function (host, port) {
+module.exports = function (host_or_multiaddr, port) {
+  var host
+  try {
+    var maddr = multiaddr(host_or_multiaddr).nodeAddress()
+    host = maddr.address
+    port = maddr.port
+  } catch (e) {
+    host = host_or_multiaddr
+  }
+
   if (!host) host = 'localhost'
   if (!port) port = 5001
 

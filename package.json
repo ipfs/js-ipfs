@@ -1,9 +1,10 @@
 {
   "name": "ipfs-api",
-  "version": "1.1.5",
+  "version": "1.1.8",
   "description": "A client library for the IPFS API",
   "main": "index.js",
   "dependencies": {
+    "multiaddr": "^0.1.2",
     "multipart-stream": "^1.0.0"
   },
   "repository": {
@@ -15,6 +16,7 @@
   ],
   "devDependencies": {
     "standard": "^3.3.2",
+    "ipfsd-ctl": "0.1.7",
     "pre-commit": "^1.0.6"
   },
   "scripts": {
