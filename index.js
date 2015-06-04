@@ -2,9 +2,11 @@
 
 var fs = require('fs')
 var http = require('http')
-var Multipart = require('multipart-stream')
 var qs = require('querystring')
 var multiaddr = require('multiaddr')
+var File = require('vinyl')
+var MultipartDir = require('./multipartdir.js')
+var stream = require('stream')
 
 try {
   var pkg = JSON.parse(fs.readFileSync(__dirname + '/package.json'))
@@ -28,18 +30,21 @@ module.exports = function (host_or_multiaddr, port) {
   if (!port) port = 5001
 
   function send (path, args, opts, files, buffer, cb) {
+    var query, stream, contentType = 'application/json'
+
     if (Array.isArray(path)) path = path.join('/')
 
     opts = opts || {}
+
     if (args && !Array.isArray(args)) args = [args]
     if (args) opts.arg = args
-    opts['stream-channels'] = true
-    var query = qs.stringify(opts)
 
-    var contentType = 'application/json'
+    opts['stream-channels'] = true
+    query = qs.stringify(opts)
+
     if (files) {
-      var boundary = randomString()
-      contentType = 'multipart/form-data; boundary=' + boundary
+      stream = getFileStream(files)
+      contentType = 'multipart/form-data; boundary=' + stream.boundary
     }
 
     if (typeof buffer === 'function') {
@@ -58,14 +63,12 @@ module.exports = function (host_or_multiaddr, port) {
       },
       withCredentials: false
     }, function (res) {
+      var data = '', objects = []
       var stream = !!res.headers['x-stream-output']
-      if (stream && !buffer) return cb(null, res)
-
       var chunkedObjects = !!res.headers['x-chunked-output']
-      if (chunkedObjects && buffer) return cb(null, res)
 
-      var data = ''
-      var objects = []
+      if (stream && !buffer) return cb(null, res)
+      if (chunkedObjects && buffer) return cb(null, res)
 
       res.on('data', function (chunk) {
         if (!chunkedObjects) {
@@ -82,9 +85,11 @@ module.exports = function (host_or_multiaddr, port) {
         }
       })
       res.on('end', function () {
+        var parsed
+
         if (!chunkedObjects) {
           try {
-            var parsed = JSON.parse(data)
+            parsed = JSON.parse(data)
             data = parsed
           } catch (e) {}
         } else {
@@ -102,8 +107,7 @@ module.exports = function (host_or_multiaddr, port) {
       })
     })
 
-    if (files) {
-      var stream = getFileStream(files, boundary)
+    if (stream) {
       stream.pipe(req)
     } else {
       req.end()
@@ -112,37 +116,31 @@ module.exports = function (host_or_multiaddr, port) {
     return req
   }
 
-  function getFileStream (files, boundary) {
+  function getFileStream (files) {
     if (!files) return null
-
-    var mp = new Multipart(boundary)
     if (!Array.isArray(files)) files = [files]
 
-    for (var i in files) {
-      var file = files[i]
+    var file
 
-      if (typeof file === 'string') {
-        // TODO: get actual content type
-        mp.addPart({
-          body: fs.createReadStream(file),
-          headers: {
-            'Content-Type': 'application/octet-stream',
-            'Content-Disposition': 'file; name="file"; filename="' + file + '"'
-          }
-        })
-
-      } else if (Buffer.isBuffer(file)) {
-        mp.addPart({
-          body: file,
-          headers: {
-            'Content-Type': 'application/octet-stream',
-            'Content-Disposition': 'file; name="file"; filename=""'
-          }
+    for (var i = 0; i < files.length; i++) {
+      file = files[i]
+      if (file instanceof stream.Stream || Buffer.isBuffer(file)) {
+        file = new File({
+          cwd: '/',
+          base: '/',
+          path: '/',
+          contents: file
         })
       }
+
+      if (!file instanceof File) {
+        return null
+      }
+
+      files[i] = file
     }
 
-    return mp
+    return MultipartDir(files)
   }
 
   function command (name) {
@@ -293,8 +291,4 @@ module.exports = function (host_or_multiaddr, port) {
       findprovs: argCommand('dht/findprovs')
     }
   }
-}
-
-function randomString () {
-  return Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2)
 }
