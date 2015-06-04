@@ -2,6 +2,8 @@ var ipfsd = require('ipfsd-ctl')
 var ipfsApi = require('../index.js')
 var assert = require('assert')
 var fs = require('fs')
+var path = require('path')
+var File = require('vinyl')
 
 /*global describe, before, it*/
 
@@ -25,7 +27,13 @@ describe('ipfs node api', function () {
   var fileName = __dirname + '/testfile.txt'
 
   before(function (done) {
-    ipfs.add(fileName, function (err, res) {
+    var file = new File({
+      cwd: path.dirname(fileName),
+      base: path.dirname(fileName),
+      path: fileName,
+     contents: fs.createReadStream(fileName)
+    })
+    ipfs.add(file, function (err, res) {
       if (err) throw err
       fileAdded = res
       done()
@@ -34,7 +42,7 @@ describe('ipfs node api', function () {
 
   it('add file', function () {
     assert.equal(fileAdded[0].Hash, 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
-    assert.equal(fileAdded[0].Name, fileName)
+    assert.equal(fileAdded[0].Name, path.basename(fileName))
   })
 
   var bufferAdded
