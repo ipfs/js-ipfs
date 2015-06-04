@@ -1,0 +1,12 @@
+* broken
+config replace
+* left to test
+** mount
+needs unmount command?
+** diag
+** object put protobuf
+** swarm
+** dht
+** ping
+** name
+resolve depends on publish
