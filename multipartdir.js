@@ -5,19 +5,13 @@ var stream = require('stream')
 module.exports = function MultipartDir (files) {
   if (files.length === 0) return null
 
-  var base = files[0].base
   var root = {
     files: new Multipart(randomString()),
     folders: {}
   }
 
   for (var i = 0; i < files.length; i++) {
-    var file = files[i]
-
-    // All files must share the same base
-    if (file.base !== base) return null
-
-    addFile(root, file)
+    addFile(root, files[i])
   }
 
   collapse(root)
@@ -59,7 +53,7 @@ function constructPath (curr, path) {
 }
 
 function addFile (root, file) {
-  var relative = Path.relative(file.cwd, file.path)
+  var relative = Path.relative(file.base, file.path)
   var relative_dir = Path.dirname(relative)
   var folder, info
 
