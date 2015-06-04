@@ -15,12 +15,13 @@
     "Travis Person <travis.person@gmail.com>"
   ],
   "devDependencies": {
-    "standard": "^3.3.2",
     "ipfsd-ctl": "0.1.7",
-    "pre-commit": "^1.0.6"
+    "mocha": "^2.2.5",
+    "pre-commit": "^1.0.6",
+    "standard": "^3.3.2"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node_modules/.bin/mocha",
     "lint": "git diff --name-only --cached --relative | egrep .js$ | xargs --no-run-if-empty standard"
   },
   "pre-commit": [
