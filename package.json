@@ -6,7 +6,7 @@
   "dependencies": {
     "multiaddr": "^0.1.2",
     "multipart-stream": "^1.0.0",
-    "vinyl": "^0.4.6"
+    "vinyl": "^0.5.0"
   },
   "repository": {
     "type": "git",
