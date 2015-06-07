@@ -16,7 +16,7 @@
     "Travis Person <travis.person@gmail.com>"
   ],
   "devDependencies": {
-    "ipfsd-ctl": "0.1.7",
+    "ipfsd-ctl": "0.2.3",
     "mocha": "^2.2.5",
     "pre-commit": "^1.0.6",
     "standard": "^3.3.2"
