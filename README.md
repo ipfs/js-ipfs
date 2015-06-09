@@ -11,7 +11,7 @@ $ npm install --save ipfs-api
 Level 1 commands are simple commands
 
 ### Add
-Add a file (where file is any data) to ipfs returning the hash and name.The
+Add a file (where file is any data) to ipfs returning the hash and name. The
 name value will only be set if you are actually sending a file. A single or
 array of files can be used.
 
@@ -55,7 +55,7 @@ curl 'http://localhost:5001/api/v0/add?stream-cannels=true' \
 
 
 ### cat
-Retreieve the contents of a single, or array of hashes
+Retrieve the contents of a single, or array of hashes
 
 **Usage**
 ```javascript
@@ -82,7 +82,7 @@ curl "http://localhost:5001/api/v0/cat?arg=<hash>&stream-channels=true"
 The response is either a readable stream, or a string.
 
 ### ls
-Get the node struchure of a hash, included in it is a hash and array to links.
+Get the node structure of a hash, included in it is a hash and array to links.
 
 **Usage**
 ```javascript
