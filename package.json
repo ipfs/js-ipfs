@@ -2,9 +2,10 @@
   "name": "ipfs",
   "version": "0.0.0",
   "description": "ipfs implementation in node",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "IPFS_LOG=* node src/index.js | ./node_modules/.bin/bunyan -o short"
   },
   "repository": {
     "type": "git",
@@ -24,8 +25,11 @@
   },
   "dependencies": {
     "bs58": "^2.0.1",
+    "bunyan": "^1.4.0",
+    "k-bucket": "^0.5.0",
     "multiaddr": "^0.1.2",
     "multicast-dns": "^2.2.0",
-    "multihashing": "^0.1.2"
+    "multihashing": "^0.1.2",
+    "network": "^0.1.3"
   }
 }

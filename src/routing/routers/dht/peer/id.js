@@ -6,7 +6,7 @@ var multihashing = require('multihashing')
 var base58 = require('bs58')
 var crypto = require('crypto')
 
-exports = module.exports
+exports = module.exports = Id
 
 function Id (id, pubKey, privKey) {
   var self = this
@@ -24,8 +24,8 @@ function Id (id, pubKey, privKey) {
   self.toPrint = function () {
     return {
       id: id.toHexString(),
-      privKey = privKey.toString('hex'),
-      pubKey = pubKey.toString('hex')
+      privKey: privKey.toString('hex'),
+      pubKey: pubKey.toString('hex')
     }
   }
 
