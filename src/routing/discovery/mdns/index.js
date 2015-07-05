@@ -2,6 +2,7 @@ var mdns = require('multicast-dns')()
 var Id = require('./../../routers/dht/peer/id')
 var Peer = require('./../../routers/dht/peer')
 var Multiaddr = require('multiaddr')
+var log = require('ipfs-logger').group('discovery')
 
 exports = module.exports = sonar
 
@@ -46,6 +47,7 @@ function sonar (cb) {
       multiaddrs.push(new Multiaddr('/ip4/' + a.data + '/tcp/' + port))
     })
 
+    log.info('peer found -', b58Id)
     var peerId = Id.createFromB58String(b58Id)
     cb(null, new Peer(peerId, multiaddrs))
   })
