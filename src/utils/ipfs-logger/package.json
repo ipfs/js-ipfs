@@ -1,0 +1,20 @@
+{
+  "name": "ipfs-logger",
+  "version": "0.0.0",
+  "description": "IPFS logging module (wrapper of bunyan) for the Node.js implementation of IPFS",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "IPFS"
+  ],
+  "author": "David Dias <daviddias@ipfs.io>",
+  "license": "MIT",
+  "dependencies": {
+    "bunyan": "^1.4.0"
+  },
+  "devDependencies": {
+    "standard": "^4.5.2"
+  }
+}
