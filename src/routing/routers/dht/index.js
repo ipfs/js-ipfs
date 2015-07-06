@@ -3,6 +3,7 @@
  */
 
 var KBucket = require('k-bucket')
+var log = require('ipfs-logger').group('router')
 
 exports = module.exports = DHT
 
@@ -19,7 +20,9 @@ function DHT (peerSelf) {
   })
 
   kBucket.on('ping', function (oldContacts, newContact) {
-    console.log('kbucket ping')
+    log.info('kbucket ping')
+    log.info('old', oldContacts)
+    log.info('new', newContact)
     // 1. ping each oldContact
     // 2. those who respond should be readded (kBucket.add)
     // 3. those who didn't respond should be removed (kBucket.remove)
@@ -27,6 +30,7 @@ function DHT (peerSelf) {
   })
 
   self.addPeer = function (peer) {
+    log.info('New DHT candidate -', peer.id.toB58String())
     kBucket.add({
       id: peer.id.toBytes(),
       peer: peer

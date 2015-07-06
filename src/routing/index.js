@@ -47,6 +47,7 @@ function Routing () {
   self.getValue = function (key) {}
   self.provide = function (key) {}
   self.findPeer = function (key) {}
+  self.ping = function (key) {}
 
   // select strategies (plugins) used
 
@@ -63,7 +64,7 @@ function Routing () {
       if (err) {
         return console.log('mDNS Discovery err: ', err)
       }
-      // TODO(daviddias) add peer to the DHT
+      self.router.addPeer(peer)
     })
   }
 

@@ -19,7 +19,7 @@ exports.group = function (name) {
   return loggers[name]
 
   function createLogger () {
-    var logger = bunyan.createLogger({name: name})
+    var logger = bunyan.createLogger({name: name + '\t'})
     loggers[name] = logger
     return logger
   }
