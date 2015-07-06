@@ -65,7 +65,7 @@ exports.createFromBytes = function (buf) {
 }
 
 exports.createFromB58String = function (str) {
-  return new Id(base58.decode(str))
+  return new Id(new Buffer(base58.decode(str)))
 }
 
 exports.createFromPubKey = function (pubKey) {
