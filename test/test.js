@@ -13,8 +13,11 @@ describe('ipfs node api', function () {
     this.timeout(20000)
     ipfsd.disposable(function (err, node) {
       if (err) throw err
-      ipfs = ipfsApi(node.opts['Addresses.API'])
-      done()
+      node.startDaemon(function (err, ignore) {
+        if (err) throw err
+        ipfs = ipfsApi(node.apiAddr)
+        done()
+      })
     })
   })
 
