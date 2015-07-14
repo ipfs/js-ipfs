@@ -7,6 +7,23 @@ Install Via NPM:
 $ npm install --save ipfs-api
 ```
 
+Initialize with:
+```javascript
+//load module
+var ipfs_api = require('ipfs-api');
+
+//connect to ipfs daemon API server
+var ipfs = ipfs_api('localhost', '5001'); //leaving out the arguments will default to these values
+```
+
+### CORS Error Note
+If are using this module in a browser with something like browserify, then you will get an error saying that the origin is not allowed.  This would be a CORS ("Cross Origin Resource Sharing") failure. The ipfs server rejects requests from unknown domains by default.  You can whitelist the domain that you are calling from by exporting API_ORIGIN and restarting the daemon, like:
+
+```bash
+export API_ORIGIN="http://localhost:8080"
+ipfs daemon
+```
+
 ## Level 1 Commands
 Level 1 commands are simple commands
 
