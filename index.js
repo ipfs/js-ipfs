@@ -7,6 +7,7 @@ var multiaddr = require('multiaddr')
 var File = require('vinyl')
 var MultipartDir = require('./multipartdir.js')
 var stream = require('stream')
+var streamifier = require('streamifier')
 
 try {
   var pkg = JSON.parse(fs.readFileSync(__dirname + '/package.json'))
@@ -123,17 +124,24 @@ module.exports = function (host_or_multiaddr, port) {
     var file
 
     for (var i = 0; i < files.length; i++) {
+
       file = files[i]
-      if (file instanceof stream.Stream || Buffer.isBuffer(file)) {
+
+      if (Buffer.isBuffer(file)) {
+        file = new File({
+          cwd: '/',
+          base: '/',
+          path: '/',
+          contents: streamifier.createReadStream(file)
+        })
+      } else if (file instanceof stream.Stream) {
         file = new File({
           cwd: '/',
           base: '/',
           path: '/',
           contents: file
         })
-      }
-
-      if (!file instanceof File) {
+      } else if (!file instanceof File) {
         return null
       }
 
