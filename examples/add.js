@@ -2,8 +2,8 @@
 
 var ipfs = require('../')('localhost', 5001)
 
-var f1 = 'Hello',
-  f2 = 'World'
+var f1 = 'Hello'
+var f2 = 'World'
 
 ipfs.add([new Buffer(f1), new Buffer(f2)], function (err, res) {
   if (err || !res) return console.log(err)

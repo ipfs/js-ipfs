@@ -34,7 +34,7 @@ describe('ipfs node api', function () {
       cwd: path.dirname(fileName),
       base: path.dirname(fileName),
       path: fileName,
-     contents: fs.createReadStream(fileName)
+      contents: fs.createReadStream(fileName)
     })
     ipfs.add(file, function (err, res) {
       if (err) throw err
