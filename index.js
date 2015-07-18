@@ -1,6 +1,7 @@
 'use strict'
 
 var fs = require('fs')
+var path = require('path')
 var http = require('http')
 var qs = require('querystring')
 var multiaddr = require('multiaddr')
@@ -130,7 +131,14 @@ module.exports = function (host_or_multiaddr, port) {
 
       file = files[i]
 
-      if (Buffer.isBuffer(file)) {
+      if (typeof file === 'string') {
+        file = new File({
+          cwd: path.dirname(file),
+          base: path.dirname(file),
+          path: file,
+          contents: fs.createReadStream(file)
+        })
+      } else if (Buffer.isBuffer(file)) {
         file = new File({
           cwd: '/',
           base: '/',

@@ -53,6 +53,10 @@ function constructPath (curr, path) {
 }
 
 function addFile (root, file) {
+  if (!file.base || !file.path) {
+    throw new Error('addFile takes vinyl files')
+  }
+
   var relative = Path.relative(file.base, file.path)
   var relative_dir = Path.dirname(relative)
   var folder, info

@@ -62,6 +62,19 @@ describe('ipfs node api', function () {
     assert.equal(bufferAdded[0].Hash, 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
   })
 
+  var filePathAdded
+  before(function (done) {
+    ipfs.add(fileName, function (err, res) {
+      if (err) throw err
+      filePathAdded = res
+      done()
+    })
+  })
+
+  it('add path', function () {
+    assert.equal(filePathAdded[0].Hash, 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+  })
+
   var catted
   before(function (done) {
     ipfs.cat('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', function (err, stream) {
