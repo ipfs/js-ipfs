@@ -1,6 +1,7 @@
 'use strict'
 
 var fs = require('fs')
+var path = require('path')
 var http = require('http')
 var qs = require('querystring')
 var multiaddr = require('multiaddr')
@@ -9,10 +10,11 @@ var MultipartDir = require('./multipartdir.js')
 var stream = require('stream')
 var streamifier = require('streamifier')
 
+var pkg
 try {
-  var pkg = JSON.parse(fs.readFileSync(__dirname + '/package.json'))
+  pkg = JSON.parse(fs.readFileSync(__dirname + '/package.json'))
 } catch(e) {
-  var pkg = { name: 'ipfs-api-browserify', version: '?' }
+  pkg = { name: 'ipfs-api-browserify', version: '?' }
 }
 
 var API_PATH = '/api/v0/'
@@ -31,7 +33,8 @@ module.exports = function (host_or_multiaddr, port) {
   if (!port) port = 5001
 
   function send (path, args, opts, files, buffer, cb) {
-    var query, stream, contentType = 'application/json'
+    var query, stream, contentType
+    contentType = 'application/json'
 
     if (Array.isArray(path)) path = path.join('/')
 
@@ -64,7 +67,8 @@ module.exports = function (host_or_multiaddr, port) {
       },
       withCredentials: false
     }, function (res) {
-      var data = '', objects = []
+      var data = ''
+      var objects = []
       var stream = !!res.headers['x-stream-output']
       var chunkedObjects = !!res.headers['x-chunked-output']
 
@@ -127,7 +131,14 @@ module.exports = function (host_or_multiaddr, port) {
 
       file = files[i]
 
-      if (Buffer.isBuffer(file)) {
+      if (typeof file === 'string') {
+        file = new File({
+          cwd: path.dirname(file),
+          base: path.dirname(file),
+          path: file,
+          contents: fs.createReadStream(file)
+        })
+      } else if (Buffer.isBuffer(file)) {
         file = new File({
           cwd: '/',
           base: '/',

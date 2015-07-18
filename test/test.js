@@ -34,7 +34,7 @@ describe('ipfs node api', function () {
       cwd: path.dirname(fileName),
       base: path.dirname(fileName),
       path: fileName,
-     contents: fs.createReadStream(fileName)
+      contents: fs.createReadStream(fileName)
     })
     ipfs.add(file, function (err, res) {
       if (err) throw err
@@ -60,6 +60,19 @@ describe('ipfs node api', function () {
 
   it('add buffer', function () {
     assert.equal(bufferAdded[0].Hash, 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+  })
+
+  var filePathAdded
+  before(function (done) {
+    ipfs.add(fileName, function (err, res) {
+      if (err) throw err
+      filePathAdded = res
+      done()
+    })
+  })
+
+  it('add path', function () {
+    assert.equal(filePathAdded[0].Hash, 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
   })
 
   var catted
