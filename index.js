@@ -307,7 +307,20 @@ module.exports = function (host_or_multiaddr, port) {
     },
 
     dht: {
-      findprovs: argCommand('dht/findprovs')
+      findprovs: argCommand('dht/findprovs'),
+
+      get: function(key, cb) {
+        return send('dht/get', key, null, null, function(err, res) {
+          if (res[0].Type === 5)
+            cb(null, res[0].Extra);
+          else
+            cb(res);
+        });
+       },
+
+      put: function(key, value, cb) {
+        return send('dht/put', [key, value], null, null, cb);
+      }
     }
   }
 }
