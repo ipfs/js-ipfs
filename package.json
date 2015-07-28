@@ -9,6 +9,11 @@
     "streamifier": "^0.1.1",
     "vinyl": "^0.5.0"
   },
+  "browserify": {
+    "transform": [
+      "brfs"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ipfs/node-ipfs-api"
@@ -17,14 +22,17 @@
     "Travis Person <travis.person@gmail.com>"
   ],
   "devDependencies": {
+    "browserify": "^11.0.0",
     "ipfsd-ctl": "0.3.0",
     "mocha": "^2.2.5",
     "pre-commit": "^1.0.6",
-    "standard": "^3.3.2"
+    "standard": "^3.3.2",
+    "uglify-js": "^2.4.24"
   },
   "scripts": {
-    "test": "node_modules/.bin/mocha",
-    "lint": "git diff --name-only --cached --relative | egrep .js$ | xargs node_modules/.bin/standard"
+    "test": "./node_modules/.bin/mocha",
+    "lint": "git diff --name-only --cached --relative | egrep .js$ | xargs node_modules/.bin/standard",
+    "build": "./node_modules/.bin/browserify -t brfs -s ipfsAPI -e ./index.js | ./node_modules/.bin/uglifyjs -m > ipfsapi.min.js"
   },
   "pre-commit": [
     "lint"
