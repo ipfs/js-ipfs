@@ -1,6 +1,17 @@
-# IPFS API via NodeJS
+IPFS API via NodeJS
+===================
 
-A client library for the IPFS API.
+[![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io) [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/) [![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
+
+> A client library for the IPFS API.
+
+# Usage
+
+### Note: non browserify users
+
+If you're NOT using browserify, then use the included standalone file ipfsapi.min.js. This exports a ipfsAPI constructor on window.
+
+### Installing 
 
 Install Via NPM:
 ```bash
