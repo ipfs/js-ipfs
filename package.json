@@ -7,7 +7,7 @@
     "multiaddr": "^0.1.2",
     "multipart-stream": "^1.0.0",
     "streamifier": "^0.1.1",
-    "vinyl": "^0.5.0"
+    "vinyl": "wearefractal/vinyl#0d19456"
   },
   "browserify": {
     "transform": [
@@ -19,7 +19,8 @@
     "url": "https://github.com/ipfs/node-ipfs-api"
   },
   "contributors": [
-    "Travis Person <travis.person@gmail.com>"
+    "Travis Person <travis.person@gmail.com>",
+	"Jeromy Jonson <why@ipfs.io>"
   ],
   "devDependencies": {
     "browserify": "^11.0.0",

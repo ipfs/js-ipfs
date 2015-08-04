@@ -8,7 +8,6 @@ var multiaddr = require('multiaddr')
 var File = require('vinyl')
 var MultipartDir = require('./multipartdir.js')
 var stream = require('stream')
-var streamifier = require('streamifier')
 
 var pkg
 try {
@@ -143,7 +142,7 @@ module.exports = function (host_or_multiaddr, port) {
           cwd: '/',
           base: '/',
           path: '/',
-          contents: streamifier.createReadStream(file)
+          contents: file
         })
       } else if (file instanceof stream.Stream) {
         file = new File({
@@ -309,18 +308,20 @@ module.exports = function (host_or_multiaddr, port) {
     dht: {
       findprovs: argCommand('dht/findprovs'),
 
-      get: function(key, cb) {
-        return send('dht/get', key, null, null, function(err, res) {
-          if (res[0].Type === 5)
-            cb(null, res[0].Extra);
-          else
-            cb(res);
-        });
-       },
+      get: function (key, cb) {
+        return send('dht/get', key, null, null, function (err, res) {
+          if (err || !res) console.log(err)
+          if (res[0].Type === 5) {
+            cb(null, res[0].Extra)
+          } else {
+            cb(res)
+          }
+        })
+      },
 
-      put: function(key, value, cb) {
-        return send('dht/put', [key, value], null, null, cb);
+      put: function (key, value, cb) {
+        return send('dht/put', [key, value], null, null, cb)
       }
-    }
+	}
   }
 }
