@@ -127,7 +127,6 @@ module.exports = function (host_or_multiaddr, port) {
     var file
 
     for (var i = 0; i < files.length; i++) {
-
       file = files[i]
 
       if (typeof file === 'string') {
@@ -235,7 +234,7 @@ module.exports = function (host_or_multiaddr, port) {
       get: argCommand('object/get'),
       put: function (file, encoding, cb) {
         if (typeof encoding === 'function') {
-          return cb(null, new Error('Must specify an object encoding (\'json\' or \'protobuf\')'))
+          return cb(null, new Error("Must specify an object encoding ('json' or 'protobuf')"))
         }
         return send('object/put', encoding, null, file, cb)
       },
@@ -322,6 +321,6 @@ module.exports = function (host_or_multiaddr, port) {
       put: function (key, value, cb) {
         return send('dht/put', [key, value], null, null, cb)
       }
-	}
+    }
   }
 }
