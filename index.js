@@ -8,7 +8,6 @@ var multiaddr = require('multiaddr')
 var File = require('vinyl')
 var MultipartDir = require('./multipartdir.js')
 var stream = require('stream')
-var streamifier = require('streamifier')
 
 var pkg
 try {
@@ -128,7 +127,6 @@ module.exports = function (host_or_multiaddr, port) {
     var file
 
     for (var i = 0; i < files.length; i++) {
-
       file = files[i]
 
       if (typeof file === 'string') {
@@ -143,7 +141,7 @@ module.exports = function (host_or_multiaddr, port) {
           cwd: '/',
           base: '/',
           path: '/',
-          contents: streamifier.createReadStream(file)
+          contents: file
         })
       } else if (file instanceof stream.Stream) {
         file = new File({
@@ -236,7 +234,7 @@ module.exports = function (host_or_multiaddr, port) {
       get: argCommand('object/get'),
       put: function (file, encoding, cb) {
         if (typeof encoding === 'function') {
-          return cb(null, new Error('Must specify an object encoding (\'json\' or \'protobuf\')'))
+          return cb(null, new Error("Must specify an object encoding ('json' or 'protobuf')"))
         }
         return send('object/put', encoding, null, file, cb)
       },
@@ -309,17 +307,32 @@ module.exports = function (host_or_multiaddr, port) {
     dht: {
       findprovs: argCommand('dht/findprovs'),
 
-      get: function(key, cb) {
-        return send('dht/get', key, null, null, function(err, res) {
-          if (res[0].Type === 5)
-            cb(null, res[0].Extra);
-          else
-            cb(res);
-        });
-       },
+      get: function (key, opts, cb) {
+        if (typeof (opts) === 'function' && !cb) {
+          cb = opts
+          opts = null
+        }
 
-      put: function(key, value, cb) {
-        return send('dht/put', [key, value], null, null, cb);
+        return send('dht/get', key, opts, null, function (err, res) {
+          if (err) return cb(err)
+          if (!res) return cb(new Error('empty response'))
+          if (res.length === 0) return cb(new Error('no value returned for key'))
+
+          if (res[0].Type === 5) {
+            cb(null, res[0].Extra)
+          } else {
+            cb(res)
+          }
+        })
+      },
+
+      put: function (key, value, opts, cb) {
+        if (typeof (opts) === 'function' && !cb) {
+          cb = opts
+          opts = null
+        }
+
+        return send('dht/put', [key, value], opts, null, cb)
       }
     }
   }

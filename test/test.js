@@ -238,24 +238,31 @@ describe('ipfs node api', function () {
     // naja
     assert(id.ID)
     assert(id.PublicKey)
-  }),
+  })
 
-  it("returns an error when getting a non-existent key from the DHT",
+  it('returns an error when getting a non-existent key from the DHT',
     function (done) {
-    ipfs.dht.get('non-existent', function (error, value) {
-      assert(error);
-      done();
-    });
-  });
+      ipfs.dht.get('non-existent', {timeout: '100ms'}, function (err, value) {
+        assert(err)
+        done()
+      })
+    })
 
-  it("puts and gets a key value pair in the DHT", function (done) {
-    this.timeout(5 * 1000);
+  it('puts and gets a key value pair in the DHT', function (done) {
+    this.timeout(10 * 1000)
 
-    ipfs.dht.put('scope', 'interplanetary', function () {
-      ipfs.dht.get('scope', function (error, value) {
-        assert.equal(value, 'interplanetary');
-        done();
-      });
-    });
-  });
+    ipfs.dht.put('scope', 'interplanetary', function (err, cb) {
+      assert(!err)
+      if (err) {
+        done()
+        return
+      }
+
+      ipfs.dht.get('scope', function (err, value) {
+        if (err) console.error(err)
+        assert.equal(value, 'interplanetary')
+        done()
+      })
+    })
+  })
 })
