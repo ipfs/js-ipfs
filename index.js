@@ -314,7 +314,10 @@ module.exports = function (host_or_multiaddr, port) {
         }
 
         return send('dht/get', key, opts, null, function (err, res) {
-          if (err || !res) return cb(err)
+          if (err) return cb(err)
+          if (!res) return cb(new Error('empty response'))
+          if (res.length === 0) return cb(new Error('no value returned for key'))
+
           if (res[0].Type === 5) {
             cb(null, res[0].Extra)
           } else {
