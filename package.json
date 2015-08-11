@@ -22,6 +22,7 @@
     "Jeromy Jonson <why@ipfs.io>"
   ],
   "devDependencies": {
+    "brfs": "^1.4.0",
     "browserify": "^11.0.0",
     "ipfsd-ctl": "0.3.0",
     "mocha": "^2.2.5",
