@@ -1,8 +1,7 @@
 'use strict'
 
 var fs = require('fs')
-var merge = require('merge-stream')
-var path = require('path')
+var Merge = require('merge-stream')
 var http = require('http')
 var qs = require('querystring')
 var multiaddr = require('multiaddr')
@@ -48,9 +47,9 @@ module.exports = function (host_or_multiaddr, port) {
     query = qs.stringify(opts)
 
     if (files) {
-      stream = getFileStream(files)
+      stream = getFileStream(files, opts)
       if (!stream.boundary) {
-        throw new Error("no boundary in multipart stream")
+        throw new Error('no boundary in multipart stream')
       }
       contentType = 'multipart/form-data; boundary=' + stream.boundary
     }
@@ -60,7 +59,7 @@ module.exports = function (host_or_multiaddr, port) {
       buffer = false
     }
 
-    var req = http.request({
+    var reqo = {
       method: files ? 'POST' : 'GET',
       host: host,
       port: port,
@@ -70,7 +69,9 @@ module.exports = function (host_or_multiaddr, port) {
         'Content-Type': contentType
       },
       withCredentials: false
-    }, function (res) {
+    }
+
+    var req = http.request(reqo, function (res) {
       var data = ''
       var objects = []
       var stream = !!res.headers['x-stream-output']
@@ -140,8 +141,13 @@ module.exports = function (host_or_multiaddr, port) {
   return {
     send: send,
 
-    add: function (file, cb) {
-      return send('add', null, null, file, cb)
+    add: function (files, opts, cb) {
+      if (typeof (opts) === 'function' && cb === undefined) {
+        cb = opts
+        opts = {}
+      }
+
+      return send('add', null, opts, files, cb)
     },
     cat: argCommand('cat'),
     ls: argCommand('ls'),
@@ -303,28 +309,37 @@ module.exports = function (host_or_multiaddr, port) {
   }
 }
 
-
-function getFileStream (files) {
+function getFileStream (files, opts) {
   if (!files) return null
   if (!Array.isArray(files)) files = [files]
 
-  var adder = new merge()
+  // merge all inputs into one stream
+  var adder = new Merge()
+
+  // single stream for pushing directly
+  var single = new stream.PassThrough({objectMode: true})
+  adder.add(single)
 
   for (var i = 0; i < files.length; i++) {
     var file = files[i]
 
-    if (typeof(file) === 'string') {
-      adder.add(vinylfs.src(file))
+    if (typeof (file) === 'string') {
+      adder.add(vinylfs.src(file)) // add the file or dir itself
+      if (opts.r || opts.recursive) {
+        adder.add(vinylfs.src(file + '/**/*')) // if recursive, glob the contents
+      }
+
     } else if (Buffer.isBuffer(file)) {
-      adder.push(new File({ cwd: '/', base: '/', path: '/', contents: file }))
+      single.push(new File({ cwd: '/', base: '/', path: '', contents: file }))
     } else if (file instanceof stream.Stream) {
-      adder.push(new File({ cwd: '/', base: '/', path: '/', contents: file }))
+      single.push(new File({ cwd: '/', base: '/', path: '', contents: file }))
     } else if (file instanceof File) {
-      adder.push(file)
+      single.push(file)
     } else {
-      return new Error("unable to process file" + file)
+      return new Error('unable to process file' + file)
     }
   }
 
+  single.end()
   return adder.pipe(vmps())
 }
