@@ -4,10 +4,13 @@
   "description": "A client library for the IPFS API",
   "main": "index.js",
   "dependencies": {
+    "brfs": "^1.4.0",
+    "merge-stream": "^1.0.0",
     "multiaddr": "^0.1.2",
     "multipart-stream": "^1.0.0",
     "vinyl": "^0.5.1",
-    "brfs": "^1.4.0"
+    "vinyl-fs-that-respects-files": "^1.0.1",
+    "vinyl-multipart-stream": "^1.2.3"
   },
   "browserify": {
     "transform": [

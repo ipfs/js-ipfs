@@ -1,12 +1,14 @@
 'use strict'
 
 var fs = require('fs')
+var merge = require('merge-stream')
 var path = require('path')
 var http = require('http')
 var qs = require('querystring')
 var multiaddr = require('multiaddr')
 var File = require('vinyl')
-var MultipartDir = require('./multipartdir.js')
+var vinylfs = require('vinyl-fs-that-respects-files')
+var vmps = require('vinyl-multipart-stream')
 var stream = require('stream')
 
 var pkg
@@ -47,6 +49,9 @@ module.exports = function (host_or_multiaddr, port) {
 
     if (files) {
       stream = getFileStream(files)
+      if (!stream.boundary) {
+        throw new Error("no boundary in multipart stream")
+      }
       contentType = 'multipart/form-data; boundary=' + stream.boundary
     }
 
@@ -118,46 +123,6 @@ module.exports = function (host_or_multiaddr, port) {
     }
 
     return req
-  }
-
-  function getFileStream (files) {
-    if (!files) return null
-    if (!Array.isArray(files)) files = [files]
-
-    var file
-
-    for (var i = 0; i < files.length; i++) {
-      file = files[i]
-
-      if (typeof file === 'string') {
-        file = new File({
-          cwd: path.dirname(file),
-          base: path.dirname(file),
-          path: file,
-          contents: fs.createReadStream(file)
-        })
-      } else if (Buffer.isBuffer(file)) {
-        file = new File({
-          cwd: '/',
-          base: '/',
-          path: '/',
-          contents: file
-        })
-      } else if (file instanceof stream.Stream) {
-        file = new File({
-          cwd: '/',
-          base: '/',
-          path: '/',
-          contents: file
-        })
-      } else if (!file instanceof File) {
-        return null
-      }
-
-      files[i] = file
-    }
-
-    return MultipartDir(files)
   }
 
   function command (name) {
@@ -336,4 +301,30 @@ module.exports = function (host_or_multiaddr, port) {
       }
     }
   }
+}
+
+
+function getFileStream (files) {
+  if (!files) return null
+  if (!Array.isArray(files)) files = [files]
+
+  var adder = new merge()
+
+  for (var i = 0; i < files.length; i++) {
+    var file = files[i]
+
+    if (typeof(file) === 'string') {
+      adder.add(vinylfs.src(file))
+    } else if (Buffer.isBuffer(file)) {
+      adder.push(new File({ cwd: '/', base: '/', path: '/', contents: file }))
+    } else if (file instanceof stream.Stream) {
+      adder.push(new File({ cwd: '/', base: '/', path: '/', contents: file }))
+    } else if (file instanceof File) {
+      adder.push(file)
+    } else {
+      return new Error("unable to process file" + file)
+    }
+  }
+
+  return adder.pipe(vmps())
 }
