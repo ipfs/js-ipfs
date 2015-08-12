@@ -6,7 +6,8 @@
   "dependencies": {
     "multiaddr": "^0.1.2",
     "multipart-stream": "^1.0.0",
-    "vinyl": "^0.5.1"
+    "vinyl": "^0.5.1",
+    "brfs": "^1.4.0"
   },
   "browserify": {
     "transform": [
@@ -22,7 +23,6 @@
     "Jeromy Jonson <why@ipfs.io>"
   ],
   "devDependencies": {
-    "brfs": "^1.4.0",
     "browserify": "^11.0.0",
     "ipfsd-ctl": "0.3.0",
     "mocha": "^2.2.5",
