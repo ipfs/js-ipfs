@@ -7,14 +7,28 @@ var File = require('vinyl')
 
 /*global describe, before, it*/
 
+function log () {
+  var args = ['    #']
+  args = args.concat(Array.prototype.slice.call(arguments))
+  console.log.apply(console, args)
+}
+
+var testfile = __dirname + '/testfile.txt'
+
 describe('ipfs node api', function () {
   var ipfs
   before(function (done) {
     this.timeout(20000)
+    log('ipfs node setup')
+
     ipfsd.disposable(function (err, node) {
       if (err) throw err
+      log('ipfs init done')
+
       node.startDaemon(function (err, ignore) {
         if (err) throw err
+        log('ipfs daemon running')
+
         ipfs = ipfsApi(node.apiAddr)
         done()
       })
@@ -26,57 +40,54 @@ describe('ipfs node api', function () {
     assert(ipfs.id)
   })
 
-  var fileAdded
-  var fileName = __dirname + '/testfile.txt'
+  it('add file', function (done) {
+    this.timeout(10000)
 
-  before(function (done) {
     var file = new File({
-      cwd: path.dirname(fileName),
-      base: path.dirname(fileName),
-      path: fileName,
-      contents: fs.createReadStream(fileName)
+      cwd: path.dirname(testfile),
+      base: path.dirname(testfile),
+      path: testfile,
+      contents: fs.createReadStream(testfile)
     })
+
     ipfs.add(file, function (err, res) {
       if (err) throw err
-      fileAdded = res
+
+      var added = res[0]
+      assert.equal(added.Hash, 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+      assert.equal(added.Name, path.basename(testfile))
       done()
     })
   })
 
-  it('add file', function () {
-    assert.equal(fileAdded[0].Hash, 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
-    assert.equal(fileAdded[0].Name, path.basename(fileName))
-  })
+  it('add buffer', function (done) {
+    this.timeout(10000)
 
-  var bufferAdded
-  before(function (done) {
-    var buf = Buffer(fs.readFileSync(fileName))
+    var buf = new Buffer(fs.readFileSync(testfile))
     ipfs.add(buf, function (err, res) {
       if (err) throw err
-      bufferAdded = res
+
+      assert.equal(res.length, 1)
+      assert.equal(res[0].Hash, 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
       done()
     })
   })
 
-  it('add buffer', function () {
-    assert.equal(bufferAdded[0].Hash, 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
-  })
+  it('add path', function (done) {
+    this.timeout(10000)
 
-  var filePathAdded
-  before(function (done) {
-    ipfs.add(fileName, function (err, res) {
+    ipfs.add(testfile, function (err, res) {
       if (err) throw err
-      filePathAdded = res
+
+      var added = res[0]
+      assert.equal(added.Hash, 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
       done()
     })
   })
 
-  it('add path', function () {
-    assert.equal(filePathAdded[0].Hash, 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
-  })
+  it('cat', function (done) {
+    this.timeout(10000)
 
-  var catted
-  before(function (done) {
     ipfs.cat('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', function (err, stream) {
       if (err) throw err
       var buf = ''
@@ -84,30 +95,26 @@ describe('ipfs node api', function () {
         .on('error', function (err) { throw err })
         .on('data', function (data) { buf += data })
         .on('end', function () {
-          catted = buf
+          assert.equal(buf, fs.readFileSync(testfile))
           done()
         })
     })
   })
 
-  it('cat', function () {
-    assert.equal(catted, fs.readFileSync(fileName))
-  })
+  it('ls', function (done) {
+    this.timeout(10000)
 
-  var dir
-  before(function (done) {
     ipfs.ls('Qmcqtw8FfrVSBaRmbWwHxt3AuySBhJLcvmFYi3Lbc4xnwj', function (err, res) {
       if (err) throw err
-      dir = res
+
+      var dir = res.Objects[0]
+      assert.equal(dir.Hash, 'Qmcqtw8FfrVSBaRmbWwHxt3AuySBhJLcvmFYi3Lbc4xnwj')
+      assert.equal(dir.Links.length, 6)
+      assert.equal(dir.Links[0].Name, 'about')
+      assert.equal(dir.Links[5].Name, 'security-notes')
+
       done()
     })
-  })
-
-  it('ls', function () {
-    assert.equal(dir.Objects[0].Hash, 'Qmcqtw8FfrVSBaRmbWwHxt3AuySBhJLcvmFYi3Lbc4xnwj')
-    assert.equal(dir.Objects[0].Links.length, 6)
-    assert.equal(dir.Objects[0].Links[0].Name, 'about')
-    assert.equal(dir.Objects[0].Links[5].Name, 'security-notes')
   })
 
   // var testConfPath = __dirname + '/testconfig.json'
@@ -129,119 +136,102 @@ describe('ipfs node api', function () {
   //                readConf)
   // })
 
-  var confKey = 'arbitrary'
-  var confVal = 'arbitrary'
-  var confGot
+  it('config set/get', function (done) {
+    this.timeout(10000)
 
-  before(function (done) {
+    var confKey = 'arbitraryKey'
+    var confVal = 'arbitraryVal'
+
     ipfs.config.set(confKey, confVal, function (err, res) {
       if (err) throw err
       ipfs.config.get(confKey, function (err, res) {
         if (err) throw err
-        confGot = res
+        assert.equal(res.Value, confVal)
         done()
       })
     })
   })
 
-  it('config set/get', function () {
-    assert.equal(confGot.Value, confVal)
-  })
+  var blorb = Buffer('blorb')
+  var blorbKey = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
+  it('block.put', function (done) {
+    this.timeout(10000)
 
-  var store, retrieve
-
-  before(function (done) {
-    var blorb = Buffer('blorb')
     ipfs.block.put(blorb, function (err, res) {
       if (err) throw err
-      store = res.Key
-
-      ipfs.block.get(res.Key, function (err, res) {
-        if (err) throw err
-        var buf = ''
-        res
-          .on('data', function (data) { buf += data })
-          .on('end', function () {
-            retrieve = buf
-            done()
-          })
-      })
-    })
-  })
-  it('block.put', function () {
-    assert.equal(store, 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
-  })
-  it('block.get', function () {
-    assert.equal(retrieve, 'blorb')
-  })
-
-  var toAdd = Buffer(JSON.stringify({Data: 'testdata', Links: []}))
-  var putObject
-  var gotObject
-  var objHash = 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD'
-
-  before(function (done) {
-    ipfs.object.put(toAdd, 'json', function (err, res) {
-      if (err) throw err
-      putObject = res
+      var store = res.Key
+      assert.equal(store, 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
       done()
     })
   })
 
-  it('object.put', function () {
-    assert.equal(putObject.Hash, objHash)
-    assert.equal(putObject.Links.length, 0)
+  it('block.get', function (done) {
+    this.timeout(10000)
+
+    ipfs.block.get(blorbKey, function (err, res) {
+      if (err) throw err
+      var buf = ''
+      res
+        .on('data', function (data) { buf += data })
+        .on('end', function () {
+          assert.equal(buf, 'blorb')
+          done()
+        })
+    })
   })
 
-  before(function (done) {
-    ipfs.object.get(objHash, function (err, res) {
+  var testObject = Buffer(JSON.stringify({Data: 'testdata', Links: []}))
+  var testObjectHash = 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD'
+
+  it('object.put', function (done) {
+    ipfs.object.put(testObject, 'json', function (err, res) {
       if (err) throw err
-      gotObject = res
+      var obj = res
+      assert.equal(obj.Hash, testObjectHash)
+      assert.equal(obj.Links.length, 0)
       done()
     })
   })
 
-  it('object.get', function () {
-    assert.equal(gotObject.Data, 'testdata')
-    assert.equal(gotObject.Links.length, 0)
+  it('object.get', function (done) {
+    ipfs.object.get(testObjectHash, function (err, res) {
+      if (err) throw err
+      var obj = res
+      assert.equal(obj.Data, 'testdata')
+      assert.equal(obj.Links.length, 0)
+      done()
+    })
   })
 
-  var data
-  before(function (done) {
-    ipfs.object.data(objHash, function (err, stream) {
+  it('object.data', function (done) {
+    this.timeout(10000)
+    ipfs.object.data(testObjectHash, function (err, stream) {
       if (err) throw err
       var buf = ''
       stream
         .on('error', function (err) { throw err })
         .on('data', function (data) { buf += data })
         .on('end', function () {
-          data = buf
+          assert.equal(buf, 'testdata')
           done()
         })
     })
   })
 
-  it('object.data', function () {
-    assert.equal(data, 'testdata')
-  })
-
-  var id
-  before(function (done) {
+  it('id', function (done) {
+    this.timeout(10000)
     ipfs.id(function (err, res) {
       if (err) throw err
-      id = res
+      var id = res
+      assert(id.ID)
+      assert(id.PublicKey)
       done()
     })
   })
 
-  it('id', function () {
-    // naja
-    assert(id.ID)
-    assert(id.PublicKey)
-  })
-
   it('returns an error when getting a non-existent key from the DHT',
     function (done) {
+      this.timeout(20000)
       ipfs.dht.get('non-existent', {timeout: '100ms'}, function (err, value) {
         assert(err)
         done()
@@ -249,7 +239,7 @@ describe('ipfs node api', function () {
     })
 
   it('puts and gets a key value pair in the DHT', function (done) {
-    this.timeout(10 * 1000)
+    this.timeout(20000)
 
     ipfs.dht.put('scope', 'interplanetary', function (err, cb) {
       assert(!err)

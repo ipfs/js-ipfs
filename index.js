@@ -1,12 +1,13 @@
 'use strict'
 
 var fs = require('fs')
-var path = require('path')
+var Merge = require('merge-stream')
 var http = require('http')
 var qs = require('querystring')
 var multiaddr = require('multiaddr')
 var File = require('vinyl')
-var MultipartDir = require('./multipartdir.js')
+var vinylfs = require('vinyl-fs-that-respects-files')
+var vmps = require('vinyl-multipart-stream')
 var stream = require('stream')
 
 var pkg
@@ -46,7 +47,10 @@ module.exports = function (host_or_multiaddr, port) {
     query = qs.stringify(opts)
 
     if (files) {
-      stream = getFileStream(files)
+      stream = getFileStream(files, opts)
+      if (!stream.boundary) {
+        throw new Error('no boundary in multipart stream')
+      }
       contentType = 'multipart/form-data; boundary=' + stream.boundary
     }
 
@@ -55,7 +59,7 @@ module.exports = function (host_or_multiaddr, port) {
       buffer = false
     }
 
-    var req = http.request({
+    var reqo = {
       method: files ? 'POST' : 'GET',
       host: host,
       port: port,
@@ -65,7 +69,9 @@ module.exports = function (host_or_multiaddr, port) {
         'Content-Type': contentType
       },
       withCredentials: false
-    }, function (res) {
+    }
+
+    var req = http.request(reqo, function (res) {
       var data = ''
       var objects = []
       var stream = !!res.headers['x-stream-output']
@@ -120,46 +126,6 @@ module.exports = function (host_or_multiaddr, port) {
     return req
   }
 
-  function getFileStream (files) {
-    if (!files) return null
-    if (!Array.isArray(files)) files = [files]
-
-    var file
-
-    for (var i = 0; i < files.length; i++) {
-      file = files[i]
-
-      if (typeof file === 'string') {
-        file = new File({
-          cwd: path.dirname(file),
-          base: path.dirname(file),
-          path: file,
-          contents: fs.createReadStream(file)
-        })
-      } else if (Buffer.isBuffer(file)) {
-        file = new File({
-          cwd: '/',
-          base: '/',
-          path: '/',
-          contents: file
-        })
-      } else if (file instanceof stream.Stream) {
-        file = new File({
-          cwd: '/',
-          base: '/',
-          path: '/',
-          contents: file
-        })
-      } else if (!file instanceof File) {
-        return null
-      }
-
-      files[i] = file
-    }
-
-    return MultipartDir(files)
-  }
-
   function command (name) {
     return function (cb) {
       return send(name, null, null, null, cb)
@@ -175,8 +141,13 @@ module.exports = function (host_or_multiaddr, port) {
   return {
     send: send,
 
-    add: function (file, cb) {
-      return send('add', null, null, file, cb)
+    add: function (files, opts, cb) {
+      if (typeof (opts) === 'function' && cb === undefined) {
+        cb = opts
+        opts = {}
+      }
+
+      return send('add', null, opts, files, cb)
     },
     cat: argCommand('cat'),
     ls: argCommand('ls'),
@@ -336,4 +307,39 @@ module.exports = function (host_or_multiaddr, port) {
       }
     }
   }
+}
+
+function getFileStream (files, opts) {
+  if (!files) return null
+  if (!Array.isArray(files)) files = [files]
+
+  // merge all inputs into one stream
+  var adder = new Merge()
+
+  // single stream for pushing directly
+  var single = new stream.PassThrough({objectMode: true})
+  adder.add(single)
+
+  for (var i = 0; i < files.length; i++) {
+    var file = files[i]
+
+    if (typeof (file) === 'string') {
+      adder.add(vinylfs.src(file)) // add the file or dir itself
+      if (opts.r || opts.recursive) {
+        adder.add(vinylfs.src(file + '/**/*')) // if recursive, glob the contents
+      }
+
+    } else if (Buffer.isBuffer(file)) {
+      single.push(new File({ cwd: '/', base: '/', path: '', contents: file }))
+    } else if (file instanceof stream.Stream) {
+      single.push(new File({ cwd: '/', base: '/', path: '', contents: file }))
+    } else if (file instanceof File) {
+      single.push(file)
+    } else {
+      return new Error('unable to process file' + file)
+    }
+  }
+
+  single.end()
+  return adder.pipe(vmps())
 }
