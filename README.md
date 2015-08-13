@@ -1,5 +1,5 @@
-IPFS API via NodeJS
-===================
+IPFS API wrapper library for Node.js and the browser
+====================================================
 
 [![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io) [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/) [![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs) [![Dependency Status](https://david-dm.org/ipfs/node-ipfs-api.svg?style=flat-square)](https://david-dm.org/ipfs/node-ipfs-api)
 
@@ -7,27 +7,35 @@ IPFS API via NodeJS
 
 # Usage
 
-### Note: non browserify users
+## Installing the module
 
-If you're NOT using browserify, then use the included standalone file ipfsapi.min.js. This exports a ipfsAPI constructor on window.
+### In Node.js Through npm
 
-### Installing 
-
-Install Via NPM:
 ```bash
 $ npm install --save ipfs-api
 ```
 
-Initialize with:
 ```javascript
-//load module
-var ipfs_api = require('ipfs-api');
+var ipfsAPI = require('ipfs-api')
 
-//connect to ipfs daemon API server
-var ipfs = ipfs_api('localhost', '5001'); //leaving out the arguments will default to these values
+// connect to ipfs daemon API server
+var ipfs = ipfsAPI('localhost', '5001') // leaving out the arguments will default to these values
 ```
 
-### CORS Error Note
+### In the Browser through browserify
+
+Same as in Node.js, you just have to browserify the code before serving it.
+
+### In the Browser through `<script>` tag
+
+Make the [ipfsapi.min.js](/ipfsapi.min.js) available through your server and load it using a normal `<script>` tag, this will exporrt the `ipfsAPI` constructor on the `window` object, such that:
+
+```
+var ipfs = window.ipfsAPI('localhost', '5001')
+```
+
+## CORS
+
 If are using this module in a browser with something like browserify, then you will get an error saying that the origin is not allowed.  This would be a CORS ("Cross Origin Resource Sharing") failure. The ipfs server rejects requests from unknown domains by default.  You can whitelist the domain that you are calling from by exporting API_ORIGIN and restarting the daemon, like:
 
 ```bash
@@ -35,10 +43,13 @@ export API_ORIGIN="http://localhost:8080"
 ipfs daemon
 ```
 
-## Level 1 Commands
+## API
+
+### Level 1 Commands
 Level 1 commands are simple commands
 
-### Add
+#### add
+
 Add a file (where file is any data) to ipfs returning the hash and name. The
 name value will only be set if you are actually sending a file. A single or
 array of files can be used.
@@ -82,7 +93,8 @@ curl 'http://localhost:5001/api/v0/add?stream-cannels=true' \
 
 
 
-### cat
+#### cat
+
 Retrieve the contents of a single, or array of hashes
 
 **Usage**
@@ -109,7 +121,7 @@ curl "http://localhost:5001/api/v0/cat?arg=<hash>&stream-channels=true"
 
 The response is either a readable stream, or a string.
 
-### ls
+#### ls
 Get the node structure of a hash, included in it is a hash and array to links.
 
 **Usage**
@@ -154,20 +166,21 @@ curl "http://localhost:5001/api/v0/ls?arg=<hash>&stream-channels=true"
 
 **commands**
 
-## Level 2 Commands
+### Level 2 Commands
 Level 2 commands are simply named spaced wrapped commands
 
-### Config
+#### Config
 
-### Update
+#### Update
 
-### Mount
+#### Mount
 
-### Diag
+#### Diag
 
-### Block
+#### Block
 
-### Object
+#### Object
+
 **Curl**
 ```
 curl 'http://localhost:5001/api/v0/object/get?arg=QmYEqnfCZp7a39Gxrgyv3qRS4MoCTGjegKV6zroU3Rvr52&stream-channels=true' --compressed
@@ -185,8 +198,8 @@ curl 'http://localhost:5001/api/v0/object/get?arg=QmYEqnfCZp7a39Gxrgyv3qRS4MoCTG
 ```
 *Data is base64 encoded*
 
-### Swarm
+#### Swarm
 
-### Pin
+#### Pin
 
-### Gateway
+#### Gateway
