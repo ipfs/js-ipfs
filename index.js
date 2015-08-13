@@ -324,9 +324,12 @@ function getFileStream (files, opts) {
     var file = files[i]
 
     if (typeof (file) === 'string') {
-      adder.add(vinylfs.src(file)) // add the file or dir itself
+      // add the file or dir itself
+      adder.add(vinylfs.src(file, {buffer: false}))
+
+      // if recursive, glob the contents
       if (opts.r || opts.recursive) {
-        adder.add(vinylfs.src(file + '/**/*')) // if recursive, glob the contents
+        adder.add(vinylfs.src(file + '/**/*', {buffer: false}))
       }
 
     } else if (Buffer.isBuffer(file)) {
