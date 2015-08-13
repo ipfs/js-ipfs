@@ -7,7 +7,7 @@
     "brfs": "^1.4.0",
     "merge-stream": "^1.0.0",
     "multiaddr": "^1.0.0",
-    "multipart-stream": "^1.0.0",
+    "multipart-stream": "^2.0.0",
     "vinyl": "^0.5.1",
     "vinyl-fs-that-respects-files": "^1.0.1",
     "vinyl-multipart-stream": "^1.2.5"
