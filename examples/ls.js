@@ -1,6 +1,6 @@
 'use strict'
 
-var ipfs = require('../')('localhost', 5001)
+var ipfs = require('../src')('localhost', 5001)
 
 var hash = ['QmdbHK6gMiecyjjSoPnfJg6iKMF7v6E2NkoBgGpmyCoevh']
 

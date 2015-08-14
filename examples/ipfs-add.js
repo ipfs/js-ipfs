@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var ipfs = require('./index')('localhost', 5001)
+var ipfs = require('../src')('localhost', 5001)
 var files = process.argv.slice(2)
 
 ipfs.add(files, {recursive: true}, function (err, res) {
