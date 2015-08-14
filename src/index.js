@@ -1,9 +1,6 @@
 var multiaddr = require('multiaddr')
 var config = require('./config')
-// var send = require('./request-api')
-var qs = require('querystring')
-var getFilesStream = require('./get-files-stream')
-var http = require('http')
+var requestAPI = require('./request-api')
 
 module.exports = function (host_or_multiaddr, port) {
   var host
@@ -21,118 +18,20 @@ module.exports = function (host_or_multiaddr, port) {
   config.host = host
   config.port = port
 
-  // -
-
-  function send (path, args, opts, files, buffer, cb) {
-    var query, stream, contentType
-    contentType = 'application/json'
-
-    if (Array.isArray(path)) path = path.join('/')
-
-    opts = opts || {}
-
-    if (args && !Array.isArray(args)) args = [args]
-    if (args) opts.arg = args
-
-    opts['stream-channels'] = true
-    query = qs.stringify(opts)
-
-    if (files) {
-      stream = getFilesStream(files, opts)
-      if (!stream.boundary) {
-        throw new Error('no boundary in multipart stream')
-      }
-      contentType = 'multipart/form-data; boundary=' + stream.boundary
-    }
-
-    if (typeof buffer === 'function') {
-      cb = buffer
-      buffer = false
-    }
-
-    var reqo = {
-      method: files ? 'POST' : 'GET',
-      host: host,
-      port: port,
-      path: config['api-path'] + path + '?' + query,
-      headers: {
-        'User-Agent': config['user-agent'],
-        'Content-Type': contentType
-      },
-      withCredentials: false
-    }
-
-    var req = http.request(reqo, function (res) {
-      var data = ''
-      var objects = []
-      var stream = !!res.headers['x-stream-output']
-      var chunkedObjects = !!res.headers['x-chunked-output']
-
-      if (stream && !buffer) return cb(null, res)
-      if (chunkedObjects && buffer) return cb(null, res)
-
-      res.on('data', function (chunk) {
-        if (!chunkedObjects) {
-          data += chunk
-          return data
-        }
-
-        try {
-          var obj = JSON.parse(chunk.toString())
-          objects.push(obj)
-        } catch(e) {
-          chunkedObjects = false
-          data += chunk
-        }
-      })
-      res.on('end', function () {
-        var parsed
-
-        if (!chunkedObjects) {
-          try {
-            parsed = JSON.parse(data)
-            data = parsed
-          } catch (e) {}
-        } else {
-          data = objects
-        }
-
-        if (res.statusCode >= 400 || !res.statusCode) {
-          if (!data) data = new Error()
-          return cb(data, null)
-        }
-        return cb(null, data)
-      })
-      res.on('error', function (err) {
-        return cb(err, null)
-      })
-    })
-
-    if (stream) {
-      stream.pipe(req)
-    } else {
-      req.end()
-    }
-
-    return req
-  }
-
-  // -
-
   function command (name) {
     return function (cb) {
-      return send(name, null, null, null, cb)
+      return requestAPI(name, null, null, null, cb)
     }
   }
 
   function argCommand (name) {
     return function (arg, cb) {
-      return send(name, arg, null, null, cb)
+      return requestAPI(name, arg, null, null, cb)
     }
   }
 
   return {
-    send: send,
+    send: requestAPI,
 
     add: function (files, opts, cb) {
       if (typeof (opts) === 'function' && cb === undefined) {
@@ -140,7 +39,7 @@ module.exports = function (host_or_multiaddr, port) {
         opts = {}
       }
 
-      return send('add', null, opts, files, cb)
+      return requestAPI('add', null, opts, files, cb)
     },
     cat: argCommand('cat'),
     ls: argCommand('ls'),
@@ -148,13 +47,13 @@ module.exports = function (host_or_multiaddr, port) {
     config: {
       get: argCommand('config'),
       set: function (key, value, cb) {
-        return send('config', [key, value], null, null, cb)
+        return requestAPI('config', [key, value], null, null, cb)
       },
       show: function (cb) {
-        return send('config/show', null, null, null, true, cb)
+        return requestAPI('config/show', null, null, null, true, cb)
       },
       replace: function (file, cb) {
-        return send('config/replace', null, null, file, cb)
+        return requestAPI('config/replace', null, null, file, cb)
       }
     },
 
@@ -177,7 +76,7 @@ module.exports = function (host_or_multiaddr, port) {
       var opts = {}
       if (ipfs) opts.f = ipfs
       if (ipns) opts.n = ipns
-      return send('mount', null, opts, null, cb)
+      return requestAPI('mount', null, opts, null, cb)
     },
 
     diag: {
@@ -190,7 +89,7 @@ module.exports = function (host_or_multiaddr, port) {
         if (Array.isArray(file)) {
           return cb(null, new Error('block.put() only accepts 1 file'))
         }
-        return send('block/put', null, null, file, cb)
+        return requestAPI('block/put', null, null, file, cb)
       }
     },
 
@@ -200,7 +99,7 @@ module.exports = function (host_or_multiaddr, port) {
         if (typeof encoding === 'function') {
           return cb(null, new Error("Must specify an object encoding ('json' or 'protobuf')"))
         }
-        return send('object/put', encoding, null, file, cb)
+        return requestAPI('object/put', encoding, null, file, cb)
       },
       data: argCommand('object/data'),
       stat: argCommand('object/stat'),
@@ -212,7 +111,7 @@ module.exports = function (host_or_multiaddr, port) {
       connect: argCommand('swarm/peers')
     },
     ping: function (id, cb) {
-      return send('ping', id, { n: 1 }, null, function (err, res) {
+      return requestAPI('ping', id, { n: 1 }, null, function (err, res) {
         if (err) return cb(err, null)
         cb(null, res[1])
       })
@@ -223,7 +122,7 @@ module.exports = function (host_or_multiaddr, port) {
         cb = id
         id = null
       }
-      return send('id', id, null, null, cb)
+      return requestAPI('id', id, null, null, cb)
     },
     pin: {
       add: function (hash, opts, cb) {
@@ -232,7 +131,7 @@ module.exports = function (host_or_multiaddr, port) {
           opts = null
         }
 
-        send('pin/add', hash, opts, null, cb)
+        requestAPI('pin/add', hash, opts, null, cb)
       },
       remove: function (hash, opts, cb) {
         if (typeof opts === 'function') {
@@ -240,7 +139,7 @@ module.exports = function (host_or_multiaddr, port) {
           opts = null
         }
 
-        send('pin/rm', hash, opts, null, cb)
+        requestAPI('pin/rm', hash, opts, null, cb)
       },
       list: function (type, cb) {
         if (typeof type === 'function') {
@@ -249,7 +148,7 @@ module.exports = function (host_or_multiaddr, port) {
         }
         var opts = null
         if (type) opts = { type: type }
-        return send('pin/ls', null, opts, null, cb)
+        return requestAPI('pin/ls', null, opts, null, cb)
       }
     },
 
@@ -260,7 +159,7 @@ module.exports = function (host_or_multiaddr, port) {
 
     log: {
       tail: function (cb) {
-        return send('log/tail', null, {enc: 'text'}, null, true, cb)
+        return requestAPI('log/tail', null, {enc: 'text'}, null, true, cb)
       }
     },
 
@@ -277,7 +176,7 @@ module.exports = function (host_or_multiaddr, port) {
           opts = null
         }
 
-        return send('dht/get', key, opts, null, function (err, res) {
+        return requestAPI('dht/get', key, opts, null, function (err, res) {
           if (err) return cb(err)
           if (!res) return cb(new Error('empty response'))
           if (res.length === 0) return cb(new Error('no value returned for key'))
@@ -296,7 +195,7 @@ module.exports = function (host_or_multiaddr, port) {
           opts = null
         }
 
-        return send('dht/put', [key, value], opts, null, cb)
+        return requestAPI('dht/put', [key, value], opts, null, cb)
       }
     }
   }
