@@ -1,5 +1,5 @@
 var File = require('vinyl')
-var vinylfs = require('vinyl-fs-that-respects-files')
+var vinylfs = require('vinyl-fs-browser')
 var vmps = require('vinyl-multipart-stream')
 var stream = require('stream')
 var Merge = require('merge-stream')
