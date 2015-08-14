@@ -2,21 +2,17 @@ var multiaddr = require('multiaddr')
 var config = require('./config')
 var requestAPI = require('./request-api')
 
-module.exports = function (host_or_multiaddr, port) {
-  var host
+exports = module.exports = IpfsAPI
+
+function IpfsAPI (host_or_multiaddr, port) {
   try {
     var maddr = multiaddr(host_or_multiaddr).nodeAddress()
-    host = maddr.address
-    port = maddr.port
+    config.host = maddr.address
+    config.port = maddr.port
   } catch (e) {
-    host = host_or_multiaddr
+    config.host = host_or_multiaddr
+    config.port = port || config.port
   }
-
-  if (!host) host = 'localhost'
-  if (!port) port = 5001
-
-  config.host = host
-  config.port = port
 
   function command (name) {
     return function (cb) {
