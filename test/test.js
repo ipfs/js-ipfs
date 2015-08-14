@@ -5,6 +5,7 @@ var fs = require('fs')
 var path = require('path')
 var File = require('vinyl')
 
+// this comment is used by mocha, do not delete
 /*global describe, before, it*/
 
 function log () {
