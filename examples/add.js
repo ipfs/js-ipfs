@@ -1,6 +1,6 @@
 'use strict'
 
-var ipfs = require('../')('localhost', 5001)
+var ipfs = require('../src')('localhost', 5001)
 
 var f1 = 'Hello'
 var f2 = 'World'

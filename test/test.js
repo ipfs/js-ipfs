@@ -1,5 +1,5 @@
 var ipfsd = require('ipfsd-ctl')
-var ipfsApi = require('../index.js')
+var ipfsApi = require('../src/index.js')
 var assert = require('assert')
 var fs = require('fs')
 var path = require('path')

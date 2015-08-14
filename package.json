@@ -2,7 +2,7 @@
   "name": "ipfs-api",
   "version": "2.1.5",
   "description": "A client library for the IPFS API",
-  "main": "index.js",
+  "main": "src/index.js",
   "dependencies": {
     "brfs": "^1.4.0",
     "merge-stream": "^1.0.0",
@@ -21,10 +21,6 @@
     "type": "git",
     "url": "https://github.com/ipfs/node-ipfs-api"
   },
-  "contributors": [
-    "Travis Person <travis.person@gmail.com>",
-    "Jeromy Jonson <why@ipfs.io>"
-  ],
   "devDependencies": {
     "browserify": "^11.0.0",
     "ipfsd-ctl": "^0.3.3",
@@ -45,12 +41,13 @@
     "ipfs"
   ],
   "author": "Matt Bell <mappum@gmail.com>",
+  "contributors": [
+    "Travis Person <travis.person@gmail.com>",
+    "Jeromy Jonson <why@ipfs.io>"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ipfs/node-ipfs-api/issues"
   },
-  "homepage": "https://github.com/ipfs/node-ipfs-api",
-  "directories": {
-    "example": "examples"
-  }
+  "homepage": "https://github.com/ipfs/node-ipfs-api"
 }

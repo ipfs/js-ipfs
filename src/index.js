@@ -1,23 +1,9 @@
-'use strict'
-
-var fs = require('fs')
-var Merge = require('merge-stream')
-var http = require('http')
-var qs = require('querystring')
 var multiaddr = require('multiaddr')
-var File = require('vinyl')
-var vinylfs = require('vinyl-fs-that-respects-files')
-var vmps = require('vinyl-multipart-stream')
-var stream = require('stream')
-
-var pkg
-try {
-  pkg = JSON.parse(fs.readFileSync(__dirname + '/package.json'))
-} catch(e) {
-  pkg = { name: 'ipfs-api-browserify', version: '?' }
-}
-
-var API_PATH = '/api/v0/'
+var config = require('./config')
+// var send = require('./request-api')
+var qs = require('querystring')
+var getFilesStream = require('./get-files-stream')
+var http = require('http')
 
 module.exports = function (host_or_multiaddr, port) {
   var host
@@ -31,6 +17,11 @@ module.exports = function (host_or_multiaddr, port) {
 
   if (!host) host = 'localhost'
   if (!port) port = 5001
+
+  config.host = host
+  config.port = port
+
+  // -
 
   function send (path, args, opts, files, buffer, cb) {
     var query, stream, contentType
@@ -47,7 +38,7 @@ module.exports = function (host_or_multiaddr, port) {
     query = qs.stringify(opts)
 
     if (files) {
-      stream = getFileStream(files, opts)
+      stream = getFilesStream(files, opts)
       if (!stream.boundary) {
         throw new Error('no boundary in multipart stream')
       }
@@ -63,9 +54,9 @@ module.exports = function (host_or_multiaddr, port) {
       method: files ? 'POST' : 'GET',
       host: host,
       port: port,
-      path: API_PATH + path + '?' + query,
+      path: config['api-path'] + path + '?' + query,
       headers: {
-        'User-Agent': '/node-' + pkg.name + '/' + pkg.version + '/',
+        'User-Agent': config['user-agent'],
         'Content-Type': contentType
       },
       withCredentials: false
@@ -125,6 +116,8 @@ module.exports = function (host_or_multiaddr, port) {
 
     return req
   }
+
+  // -
 
   function command (name) {
     return function (cb) {
@@ -307,42 +300,4 @@ module.exports = function (host_or_multiaddr, port) {
       }
     }
   }
-}
-
-function getFileStream (files, opts) {
-  if (!files) return null
-  if (!Array.isArray(files)) files = [files]
-
-  // merge all inputs into one stream
-  var adder = new Merge()
-
-  // single stream for pushing directly
-  var single = new stream.PassThrough({objectMode: true})
-  adder.add(single)
-
-  for (var i = 0; i < files.length; i++) {
-    var file = files[i]
-
-    if (typeof (file) === 'string') {
-      // add the file or dir itself
-      adder.add(vinylfs.src(file, {buffer: false}))
-
-      // if recursive, glob the contents
-      if (opts.r || opts.recursive) {
-        adder.add(vinylfs.src(file + '/**/*', {buffer: false}))
-      }
-
-    } else if (Buffer.isBuffer(file)) {
-      single.push(new File({ cwd: '/', base: '/', path: '', contents: file }))
-    } else if (file instanceof stream.Stream) {
-      single.push(new File({ cwd: '/', base: '/', path: '', contents: file }))
-    } else if (file instanceof File) {
-      single.push(file)
-    } else {
-      return new Error('unable to process file' + file)
-    }
-  }
-
-  single.end()
-  return adder.pipe(vmps())
 }
