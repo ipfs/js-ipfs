@@ -1,5 +1,5 @@
 var File = require('vinyl')
-var vinylfs = require('vinyl-fs-that-respects-files')
+var vinylfs = require('vinyl-fs-browser')
 var vmps = require('vinyl-multipart-stream')
 var stream = require('stream')
 var Merge = require('merge-stream')
@@ -28,18 +28,54 @@ function getFilesStream (files, opts) {
       if (opts.r || opts.recursive) {
         adder.add(vinylfs.src(file + '/**/*', {buffer: false}))
       }
-
-    } else if (Buffer.isBuffer(file)) {
-      single.push(new File({ cwd: '/', base: '/', path: '', contents: file }))
-    } else if (file instanceof stream.Stream) {
-      single.push(new File({ cwd: '/', base: '/', path: '', contents: file }))
-    } else if (file instanceof File) {
-      single.push(file)
     } else {
-      return new Error('unable to process file' + file)
+      // try to create a single vinyl file, and push it.
+      // throws if cannot use the file.
+      single.push(vinylFile(file))
     }
   }
 
   single.end()
   return adder.pipe(vmps())
+}
+
+// vinylFile tries to cast a file object to a vinyl file.
+// it's agressive. If it _cannot_ be converted to a file,
+// it returns null.
+function vinylFile (file) {
+  if (file instanceof File) {
+    return file // it's a vinyl file.
+  }
+
+  // let's try to make a vinyl file?
+  var f = {cwd: '/', base: '/', path: ''}
+  if (file.contents && file.path) {
+    // set the cwd + base, if there.
+    f.path = file.path
+    f.cwd = file.cwd || f.cwd
+    f.base = file.base || f.base
+    f.contents = file.contents
+  } else {
+    // ok maybe we just have contents?
+    f.contents = file
+  }
+
+  // ensure the contents are safe to pass.
+  // throws if vinyl cannot use the contents
+  f.contents = vinylContentsSafe(f.contents)
+  return new File(f)
+}
+
+function vinylContentsSafe (c) {
+  if (Buffer.isBuffer(c)) return c
+  if (typeof (c) === 'string') return c
+  if (c instanceof stream.Stream) return c
+  if (typeof (c.pipe) === 'function') {
+    // hey, looks like a stream. but vinyl won't detect it.
+    // pipe it to a PassThrough, and use that
+    var s = new stream.PassThrough()
+    return c.pipe(s)
+  }
+
+  throw new Error('vinyl will not accept: ' + c)
 }

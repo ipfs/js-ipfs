@@ -9,7 +9,7 @@
     "multiaddr": "^1.0.0",
     "multipart-stream": "^2.0.0",
     "vinyl": "^0.5.1",
-    "vinyl-fs-that-respects-files": "^1.0.1",
+    "vinyl-fs-browser": "^0.1.0",
     "vinyl-multipart-stream": "^1.2.5"
   },
   "browserify": {
