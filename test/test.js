@@ -102,14 +102,27 @@ describe('ipfs node api', function () {
     })
   })
 
+  var initDocs = 'Qmcqtw8FfrVSBaRmbWwHxt3AuySBhJLcvmFYi3Lbc4xnwj'
+  var initDocsLs = {
+    'help': 'QmY5heUM5qgRubMDD1og9fhCPA6QdkMp3QCwd4s7gJsyE7',
+    'about': 'QmfE3nUohq2nEYwieF7YFnJF1VfiL4i3wDxkMq8aGUg8Mt',
+    'readme': 'QmUFtMrBHqdjTtbebsL6YGebvjShh3Jud1insUv12fEVdA',
+    'contact': 'QmYCvbfNbCwFR45HiNP45rwJgvatpiW38D961L5qAhUM5Y',
+    'quick-start': 'QmeEqpsKrvdhuuuVsguHaVdJcPnnUHHZ5qEWjCHavYbNqU',
+    'security-notes': 'QmTumTjvcYCAvRRwQ8sDRxh8ezmrcr88YFU7iYNroGGTBZ'
+  }
   it('ls', function (done) {
     this.timeout(10000)
 
-    ipfs.ls('Qmcqtw8FfrVSBaRmbWwHxt3AuySBhJLcvmFYi3Lbc4xnwj', function (err, res) {
+    ipfs.ls(initDocs, function (err, res) {
       if (err) throw err
 
       var dir = res.Objects[0]
-      assert.equal(dir.Hash, 'Qmcqtw8FfrVSBaRmbWwHxt3AuySBhJLcvmFYi3Lbc4xnwj')
+      for (var i in dir.Links) {
+        var link = dir.Links[i]
+        assert.equal(link.Hash, initDocsLs[link.Name])
+      }
+      assert.equal(dir.Hash, initDocs)
       assert.equal(dir.Links.length, 6)
       assert.equal(dir.Links[0].Name, 'about')
       assert.equal(dir.Links[5].Name, 'security-notes')
@@ -216,6 +229,22 @@ describe('ipfs node api', function () {
           assert.equal(buf, 'testdata')
           done()
         })
+    })
+  })
+
+  it('refs', function (done) {
+    this.timeout(10000)
+    ipfs.refs(initDocs, {'format': '<src> <dst> <linkname>'}, function (err, objs) {
+      if (err) throw err
+      for (var i in objs) {
+        var ref = objs[i]
+        var refp = ref.Ref.replace('\n', '').split(' ')
+        assert.equal(refp[0], initDocs)
+        assert(initDocsLs[refp[2]])
+        assert.equal(refp[1], initDocsLs[refp[2]])
+        assert.equal(ref.Err, '')
+      }
+      done()
     })
   })
 
