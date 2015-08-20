@@ -23,14 +23,22 @@ function IpfsAPI (host_or_multiaddr, port) {
   // -- Internal
 
   function command (name) {
-    return function (cb) {
-      return requestAPI(name, null, null, null, cb)
+    return function (opts, cb) {
+      if (typeof (opts) === 'function') {
+        cb = opts
+        opts = {}
+      }
+      return requestAPI(name, null, opts, null, cb)
     }
   }
 
   function argCommand (name) {
-    return function (arg, cb) {
-      return requestAPI(name, arg, null, null, cb)
+    return function (arg, opts, cb) {
+      if (typeof (opts) === 'function') {
+        cb = opts
+        opts = {}
+      }
+      return requestAPI(name, arg, opts, null, cb)
     }
   }
 
@@ -52,8 +60,12 @@ function IpfsAPI (host_or_multiaddr, port) {
 
   self.config = {
     get: argCommand('config'),
-    set: function (key, value, cb) {
-      return requestAPI('config', [key, value], null, null, cb)
+    set: function (key, value, opts, cb) {
+      if (typeof (opts) === 'function') {
+        cb = opts
+        opts = {}
+      }
+      return requestAPI('config', [key, value], opts, null, cb)
     },
     show: function (cb) {
       return requestAPI('config/show', null, null, null, true, cb)
