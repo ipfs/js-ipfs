@@ -47,8 +47,8 @@ function requestAPI (path, args, opts, files, buffer, cb) {
   var req = http.request(reqo, function (res) {
     var data = ''
     var objects = []
-    var stream = !!res.headers['x-stream-output']
-    var chunkedObjects = !!res.headers['x-chunked-output']
+    var stream = !!res.headers && !!res.headers['x-stream-output']
+    var chunkedObjects = !!res.headers && !!res.headers['x-chunked-output']
 
     if (stream && !buffer) return cb(null, res)
     if (chunkedObjects && buffer) return cb(null, res)
@@ -88,6 +88,10 @@ function requestAPI (path, args, opts, files, buffer, cb) {
     res.on('error', function (err) {
       return cb(err, null)
     })
+  })
+
+  req.on('error', function (err) {
+    return cb(err, null)
   })
 
   if (stream) {
