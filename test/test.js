@@ -17,7 +17,7 @@ function log () {
 var testfile = __dirname + '/testfile.txt'
 
 describe('ipfs node api', function () {
-  var ipfs
+  var ipfs, ipfsNode
   before(function (done) {
     this.timeout(20000)
     log('ipfs node setup')
@@ -25,12 +25,13 @@ describe('ipfs node api', function () {
     ipfsd.disposable(function (err, node) {
       if (err) throw err
       log('ipfs init done')
+      ipfsNode = node
 
-      node.startDaemon(function (err, ignore) {
+      ipfsNode.startDaemon(function (err, ignore) {
         if (err) throw err
         log('ipfs daemon running')
 
-        ipfs = ipfsApi(node.apiAddr)
+        ipfs = ipfsApi(ipfsNode.apiAddr)
         done()
       })
     })
@@ -285,4 +286,18 @@ describe('ipfs node api', function () {
       })
     })
   })
+
+  it('test for error after daemon stops', function (done) {
+    var nodeStopped
+    ipfsNode.stopDaemon(function () {
+      if (!nodeStopped) {
+        nodeStopped = true
+        ipfs.id(function (err, res) {
+          assert.equal(err.code, 'ECONNREFUSED')
+          done()
+        })
+      }
+    })
+  })
+
 })
