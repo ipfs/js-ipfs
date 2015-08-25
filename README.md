@@ -1,7 +1,14 @@
-# ipfs implementation in node.
+# THIS REPO IS DEPRECATED
+
+### Check the new node-ipfs roadmap and respective code at: https://github.com/ipfs/node-ipfs
 
 
-# This is a work in progress. it's not ready yet. we'll be pushing efforts into this implementation shortly. stay tuned + come hang out on irc.
+===================================
+
+
+
+
+> This is a work in progress. it's not ready yet. we'll be pushing efforts into this implementation shortly. stay tuned + come hang out on irc.
 
 `#ipfs` on freenode.
 
