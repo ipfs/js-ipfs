@@ -288,6 +288,7 @@ describe('ipfs node api', function () {
   })
 
   it('test for error after daemon stops', function (done) {
+    this.timeout(6000)
     var nodeStopped
     ipfsNode.stopDaemon(function () {
       if (!nodeStopped) {
