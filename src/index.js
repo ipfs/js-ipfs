@@ -25,7 +25,7 @@ function IpfsAPI (host_or_multiaddr, port) {
     window && window.location) {
     var split = window.location.host.split(':')
     config.host = split[0]
-    config.port = split[1] || 80
+    config.port = split[1]
   }
 
   // -- Internal
