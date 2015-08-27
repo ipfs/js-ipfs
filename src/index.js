@@ -185,6 +185,7 @@ function IpfsAPI (host_or_multiaddr, port) {
   }
 
   self.name = {
+    publish: argCommand('name/publish'),
     resolve: argCommand('name/resolve')
   }
 
