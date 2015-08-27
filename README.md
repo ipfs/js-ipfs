@@ -36,5 +36,6 @@ This repo (will) contains the entry point for the Node.js implementation of IPFS
   - [ ] bitswap
 - MerkleDAG
   - [ ] MerkleDAG node implementation (needs IPLD)
+    - [ ] https://github.com/diasdavid/node-ipld
 - Spec 
   - https://github.com/ipfs/specs/pull/19
