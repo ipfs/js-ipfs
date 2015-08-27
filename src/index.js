@@ -20,6 +20,14 @@ function IpfsAPI (host_or_multiaddr, port) {
     config.port = port || config.port
   }
 
+  // autoconfigure in browser
+  if (!config.host &&
+    window && window.location) {
+    var split = window.location.host.split(':')
+    config.host = split[0]
+    config.port = split[1]
+  }
+
   // -- Internal
 
   function command (name) {
