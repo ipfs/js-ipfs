@@ -32,7 +32,7 @@
   "scripts": {
     "test": "./node_modules/.bin/mocha",
     "lint": "./node_modules/.bin/standard --format",
-    "build": "./node_modules/.bin/browserify -t brfs -s ipfsAPI -e ./src/index.js | ./node_modules/.bin/uglifyjs -m > ipfsapi.min.js"
+    "build": "./node_modules/.bin/browserify -t brfs -s ipfsAPI -e ./src/index.js | tee dist/ipfsapi.js | ./node_modules/.bin/uglifyjs -m > dist/ipfsapi.min.js"
   },
   "pre-commit": [
     "lint"
