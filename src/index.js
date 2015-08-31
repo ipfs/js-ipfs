@@ -197,6 +197,8 @@ function IpfsAPI (host_or_multiaddr, port) {
     resolve: argCommand('name/resolve')
   }
 
+  self.Buffer = Buffer
+
   self.refs = argCommand('refs')
   self.refs.local = command('refs/local')
 
