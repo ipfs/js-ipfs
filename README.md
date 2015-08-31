@@ -34,6 +34,18 @@ Make the [ipfsapi.min.js](/ipfsapi.min.js) available through your server and loa
 var ipfs = window.ipfsAPI('localhost', '5001')
 ```
 
+If you omit the host and port, the api will parse window.host, and use this information. I.e, this also works:
+
+```
+var ipfs = window.ipfsAPI()
+```
+
+This can be useful if you want to write apps that can be run from multiple different gateways.
+
+#### Gotchas
+
+When using the api from script tag for things that require buffers (ipfs.add, for example), you will have to use either the exposed ipfs.Buffer, that works just like a node buffer, or use this [browser buffer](https://github.com/feross/buffer)
+
 ## CORS
 
 If are using this module in a browser with something like browserify, then you will get an error saying that the origin is not allowed.  This would be a CORS ("Cross Origin Resource Sharing") failure. The ipfs server rejects requests from unknown domains by default.  You can whitelist the domain that you are calling from by exporting API_ORIGIN and restarting the daemon, like:
