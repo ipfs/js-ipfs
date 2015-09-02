@@ -17,7 +17,7 @@ This repo (will) contains the entry point for the Node.js implementation of IPFS
 - Network
   - [ ] libp2p
     - [ ] Peer Routing
-      - [x] kad-routing
+      - [x] kad-routing https://github.com/diasdavid/node-ipfs-kad-router
         - discovery mechanisms
           - [x] mDNS-discovery (https://github.com/diasdavid/node-ipfs-mdns)
           - [ ] random-walk (https://github.com/diasdavid/node-ipfs-random-walk)
