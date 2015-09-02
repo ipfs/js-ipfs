@@ -28,14 +28,15 @@ This repo (will) contains the entry point for the Node.js implementation of IPFS
       - [x] protocol muxer (https://github.com/diasdavid/node-multistream
       - [x] Identify (https://github.com/diasdavid/node-ipfs-swarm/tree/master/src/identify)
     - [ ] Distributed Record Store
-      - [ ] record (needs MerkleDAG node)
+      - [ ] record (needs MerkleDAG node) https://github.com/diasdavid/node-ipfs-record
       - [ ] distributed record store
-      - [ ] kad-record-store
+      - [ ] kad-record-store (implements abstract record store)
       - [ ] abstract-record-store
 - Exchange
   - [ ] bitswap
 - MerkleDAG
-  - [ ] MerkleDAG node implementation (needs IPLD)
-    - [ ] https://github.com/diasdavid/node-ipld
+  - [x] MerkleDAG node implementation (needs IPLD)
+    - [x] https://github.com/diasdavid/node-ipld
+    - [x] MerkleDAGStore https://github.com/diasdavid/node-merkledag-store 
 - Spec 
   - https://github.com/ipfs/specs/pull/19
