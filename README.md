@@ -27,7 +27,7 @@ IPFS in Node is a work in progress. As such, there's a few things you can do rig
 # Roadmap
 
 - Network
-  - [ ] libp2p
+  - [ ] libp2p (the entry point) https://github.com/diasdavid/node-libp2p
     - Peer Routing
       - [x] kad-routing https://github.com/diasdavid/node-ipfs-kad-router
         - discovery mechanisms
