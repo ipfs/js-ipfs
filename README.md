@@ -27,6 +27,7 @@ IPFS in Node is a work in progress. As such, there's a few things you can do rig
 # Roadmap
 
 - Network
+  - [ ] libp2p website https://github.com/diasdavid/libp2p-website
   - [ ] libp2p (the entry point) https://github.com/diasdavid/node-libp2p
     - Peer Routing
       - [x] kad-routing https://github.com/diasdavid/node-ipfs-kad-router
@@ -39,6 +40,7 @@ IPFS in Node is a work in progress. As such, there's a few things you can do rig
       - [x] stream muxer (https://github.com/diasdavid/node-spdy-stream-muxer)
       - [x] protocol muxer (https://github.com/diasdavid/node-multistream
       - [x] Identify (https://github.com/diasdavid/node-ipfs-swarm/tree/master/src/identify)
+      - [x] Ping https://github.com/diasdavid/node-ipfs-ping
     - [ ] Distributed Record Store
       - [x] record (needs MerkleDAG node) https://github.com/diasdavid/node-ipfs-record
       - [x] distributed record store https://github.com/diasdavid/node-ipfs-distributed-record-store
@@ -50,6 +52,10 @@ IPFS in Node is a work in progress. As such, there's a few things you can do rig
   - [x] MerkleDAG node implementation (needs IPLD)
     - [x] https://github.com/diasdavid/node-ipld
     - [x] MerkleDAGStore https://github.com/diasdavid/node-merkledag-store
+ - Supporting modules
+   - [ ] WebCrypto https://github.com/diasdavid/webcrypto
+   - [ ] multistream https://github.com/diasdavid/node-multistream
+   - [ ] https://github.com/diasdavid/abstract-stream-muxer
 - Spec
   - https://github.com/ipfs/specs/pull/19
 
