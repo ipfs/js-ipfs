@@ -52,10 +52,10 @@ IPFS in Node is a work in progress. As such, there's a few things you can do rig
   - [x] MerkleDAG node implementation (needs IPLD)
     - [x] https://github.com/diasdavid/node-ipld
     - [x] MerkleDAGStore https://github.com/diasdavid/node-merkledag-store
- - Supporting modules
-   - [ ] WebCrypto https://github.com/diasdavid/webcrypto
-   - [ ] multistream https://github.com/diasdavid/node-multistream
-   - [ ] https://github.com/diasdavid/abstract-stream-muxer
+- Supporting modules
+  - [ ] WebCrypto https://github.com/diasdavid/webcrypto
+  - [x] multistream https://github.com/diasdavid/node-multistream
+  - [x] https://github.com/diasdavid/abstract-stream-muxer
 - Spec
   - https://github.com/ipfs/specs/pull/19
 
