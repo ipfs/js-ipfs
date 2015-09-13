@@ -28,7 +28,7 @@ IPFS in Node is a work in progress. As such, there's a few things you can do rig
 
 - Network
   - [ ] libp2p
-    - [ ] Peer Routing
+    - Peer Routing
       - [x] kad-routing https://github.com/diasdavid/node-ipfs-kad-router
         - discovery mechanisms
           - [x] mDNS-discovery (https://github.com/diasdavid/node-ipfs-mdns)
@@ -45,7 +45,7 @@ IPFS in Node is a work in progress. As such, there's a few things you can do rig
       - [x] kad-record-store (implements abstract record store) https://github.com/diasdavid/node-ipfs-kad-record-store
       - [x] abstract-record-store https://github.com/diasdavid/abstract-record-store
 - Exchange
-  - [ ] bitswap
+  - [ ] bitswap https://github.com/diasdavid/node-bitswap
 - MerkleDAG
   - [x] MerkleDAG node implementation (needs IPLD)
     - [x] https://github.com/diasdavid/node-ipld
