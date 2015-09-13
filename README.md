@@ -56,6 +56,9 @@ IPFS in Node is a work in progress. As such, there's a few things you can do rig
   - [ ] WebCrypto https://github.com/diasdavid/webcrypto
   - [x] multistream https://github.com/diasdavid/node-multistream
   - [x] https://github.com/diasdavid/abstract-stream-muxer
+  - [x] https://github.com/jbenet/node-multihash
+  - [x] https://github.com/jbenet/node-multihashing
+  - [x] https://github.com/jbenet/node-multiaddr
 - Spec
   - https://github.com/ipfs/specs/pull/19
 
