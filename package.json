@@ -17,6 +17,9 @@
       "brfs"
     ]
   },
+  "engines": {
+    "node": "^4.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ipfs/node-ipfs-api"
@@ -26,13 +29,18 @@
     "ipfsd-ctl": "^0.3.3",
     "mocha": "^2.2.5",
     "pre-commit": "^1.0.6",
-    "standard": "^3.3.2",
+    "standard": "^5.2.2",
     "uglify-js": "^2.4.24"
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha",
-    "lint": "./node_modules/.bin/standard --format",
+    "lint": "./node_modules/.bin/standard",
     "build": "./node_modules/.bin/browserify -t brfs -s ipfsAPI -e ./src/index.js | tee dist/ipfsapi.js | ./node_modules/.bin/uglifyjs -m > dist/ipfsapi.min.js"
+  },
+  "standard": {
+    "ignore": [
+      "dist/*"
+    ]
   },
   "pre-commit": [
     "lint"

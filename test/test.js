@@ -300,5 +300,4 @@ describe('ipfs node api', function () {
       }
     })
   })
-
 })

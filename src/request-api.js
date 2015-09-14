@@ -62,7 +62,7 @@ function requestAPI (path, args, opts, files, buffer, cb) {
       try {
         var obj = JSON.parse(chunk.toString())
         objects.push(obj)
-      } catch(e) {
+      } catch (e) {
         chunkedObjects = false
         data += chunk
       }
