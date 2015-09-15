@@ -27,38 +27,38 @@ IPFS in Node is a work in progress. As such, there's a few things you can do rig
 # Roadmap
 
 - Network
-  - [ ] libp2p website https://github.com/diasdavid/libp2p-website
-  - [ ] libp2p (the entry point) https://github.com/diasdavid/node-libp2p
+  - [ ] [libp2p-website](https://github.com/diasdavid/libp2p-website).
+  - [ ] [node-libp2p](https://github.com/diasdavid/node-libp2p) _(the entry point)_.
     - Peer Routing
-      - [x] kad-routing https://github.com/diasdavid/node-ipfs-kad-router
+      - [x] [node-ipfs-kad-router](https://github.com/diasdavid/node-ipfs-kad-router). [Discussion issue](https://github.com/ipfs/node-ipfs/issues/18).
         - discovery mechanisms
-          - [x] mDNS-discovery (https://github.com/diasdavid/node-ipfs-mdns)
-          - [ ] random-walk (https://github.com/diasdavid/node-ipfs-random-walk)
-          - [x] bootstrap-list (https://github.com/diasdavid/node-ipfs-railing)
+          - [x] [node-ipfs-mdns](https://github.com/diasdavid/node-ipfs-mdns) _mDNS-discovery_. [Discussion issue](https://github.com/ipfs/node-ipfs/issues/19).
+          - [ ] [node-ipfs-random-walk](https://github.com/diasdavid/node-ipfs-random-walk). [Discussion issue](https://github.com/ipfs/node-ipfs/issues/20).
+          - [x] [node-ipfs-railing](https://github.com/diasdavid/node-ipfs-railing) _Bootstrap-list_. [Discussion issue](https://github.com/ipfs/node-ipfs/issues/21).
       - [ ] mDNS-routing
-    - [x] swarm (https://github.com/diasdavid/node-ipfs-swarm)
-      - [x] stream muxer (https://github.com/diasdavid/node-spdy-stream-muxer)
-      - [x] protocol muxer (https://github.com/diasdavid/node-multistream
-      - [x] Identify (https://github.com/diasdavid/node-ipfs-swarm/tree/master/src/identify)
-      - [x] Ping https://github.com/diasdavid/node-ipfs-ping
-    - [ ] Distributed Record Store
-      - [x] record (needs MerkleDAG node) https://github.com/diasdavid/node-ipfs-record
-      - [x] distributed record store https://github.com/diasdavid/node-ipfs-distributed-record-store
-      - [x] kad-record-store (implements abstract record store) https://github.com/diasdavid/node-ipfs-kad-record-store
-      - [x] abstract-record-store https://github.com/diasdavid/abstract-record-store
+    - [x] Swarm. [node-ipfs-swarm](https://github.com/diasdavid/node-ipfs-swarm). [Discussion issue](https://github.com/ipfs/node-ipfs/issues/22).
+      - [x] [node-spdy-stream-muxer](https://github.com/diasdavid/node-spdy-stream-muxer) _stream muxer_. [Discussion issue](https://github.com/ipfs/node-ipfs/issues/23).
+      - [x] [node-multistream](https://github.com/diasdavid/node-multistream) _protocol muxer_. [Discussion issue](https://github.com/ipfs/node-ipfs/issues/24).
+      - [x] [identify](https://github.com/diasdavid/node-ipfs-swarm/tree/master/src/identify).
+      - [x] [node-ipfs-ping](https://github.com/diasdavid/node-ipfs-ping).
+    - [ ] Distributed Record Store. [Discussion issue](https://github.com/ipfs/node-ipfs/issues/25).
+      - [x] [node-ipfs-record](https://github.com/diasdavid/node-ipfs-record) _record (needs MerkleDAG node)_.
+      - [x] [node-ipfs-distributed-record-store](https://github.com/diasdavid/node-ipfs-distributed-record-store).
+      - [x] [node-ipfs-kad-record-store](https://github.com/diasdavid/node-ipfs-kad-record-store) _implements abstract record store_.
+      - [x] [abstract-record-store](https://github.com/diasdavid/abstract-record-store).
 - Exchange
-  - [ ] bitswap https://github.com/diasdavid/node-bitswap
+  - [ ] [node-bitswap](https://github.com/diasdavid/node-bitswap). [Discussion issue](https://github.com/ipfs/node-ipfs/issues/17).
 - MerkleDAG
-  - [x] MerkleDAG node implementation (needs IPLD)
-    - [x] https://github.com/diasdavid/node-ipld
-    - [x] MerkleDAGStore https://github.com/diasdavid/node-merkledag-store
+  - [x] MerkleDAG node implementation (needs IPLD).
+    - [x] [node-ipld](https://github.com/diasdavid/node-ipld).
+    - [x] [node-merkledag-store](https://github.com/diasdavid/node-merkledag-store).
 - Supporting modules
-  - [ ] WebCrypto https://github.com/diasdavid/webcrypto
-  - [x] multistream https://github.com/diasdavid/node-multistream
-  - [x] https://github.com/diasdavid/abstract-stream-muxer
-  - [x] https://github.com/jbenet/node-multihash
-  - [x] https://github.com/jbenet/node-multihashing
-  - [x] https://github.com/jbenet/node-multiaddr
+  - [ ] [webcrypto](https://github.com/diasdavid/webcrypto). [Discussion issue](https://github.com/ipfs/node-ipfs/issues/27).
+  - [x] [node-multistream](https://github.com/diasdavid/node-multistream).
+  - [x] [abstract-stream-muxer](https://github.com/diasdavid/abstract-stream-muxer).
+  - [x] [node-multihash](https://github.com/jbenet/node-multihash). [Discussion issue](https://github.com/ipfs/node-ipfs/issues/26).
+  - [x] [node-multihashing](https://github.com/jbenet/node-multihashing). [Discussion issue](https://github.com/ipfs/node-ipfs/issues/26).
+  - [x] [node-multiaddr](https://github.com/jbenet/node-multiaddr).
 - Spec
-  - https://github.com/ipfs/specs/pull/19
+  - [specs/19](https://github.com/ipfs/specs/pull/19).
 
