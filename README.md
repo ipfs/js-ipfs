@@ -50,8 +50,10 @@ IPFS in Node is a work in progress. As such, there's a few things you can do rig
       - transports
         - [x] every transport must follow [abstract-transport](https://github.com/diasdavid/abstract-transport)
         - [x] [libp2p-tcp](https://github.com/diasdavid/node-libp2p-tcp)
-        - [ ] [libp2p-udp](https://github.com/diasdavid/node-libp2p-udt)
-        - [ ] [libp2p-udt](https://github.com/diasdavid/node-libp2p-udp)
+        - [ ] [libp2p-udp](https://github.com/diasdavid/node-libp2p-udp)
+        - [ ] [libp2p-udt](https://github.com/diasdavid/node-libp2p-udt)
+        - [ ] [libp2p-utp](https://github.com/diasdavid/node-libp2p-utp)
+        - [ ] libp2p-webrtc
     - [ ] Distributed Record Store. [Discussion issue](https://github.com/ipfs/node-ipfs/issues/25).
       - [x] [node-ipfs-record](https://github.com/diasdavid/node-ipfs-record) _record (needs MerkleDAG node)_.
       - [x] [node-ipfs-distributed-record-store](https://github.com/diasdavid/node-ipfs-distributed-record-store).
