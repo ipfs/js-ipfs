@@ -21,14 +21,15 @@ IPFS in Node is a work in progress. As such, there's a few things you can do rig
 
 # Usage
 
-> Not ready for prime time yet
-
+> **Not ready for prime time yet**
 
 # Roadmap
 
 - Network
   - [ ] [libp2p-website](https://github.com/diasdavid/libp2p-website).
   - [ ] [node-libp2p](https://github.com/diasdavid/node-libp2p) _(the entry point)_.
+    - [x] [PeerInfo](https://github.com/diasdavid/node-peer-info)
+    - [x] [PeerId](https://github.com/diasdavid/node-peer-id)
     - Peer Routing
       - [x] [node-ipfs-kad-router](https://github.com/diasdavid/node-ipfs-kad-router). [Discussion issue](https://github.com/ipfs/node-ipfs/issues/18).
         - discovery mechanisms
@@ -38,9 +39,19 @@ IPFS in Node is a work in progress. As such, there's a few things you can do rig
       - [ ] mDNS-routing
     - [x] Swarm. [node-ipfs-swarm](https://github.com/diasdavid/node-ipfs-swarm). [Discussion issue](https://github.com/ipfs/node-ipfs/issues/22).
       - [x] [node-spdy-stream-muxer](https://github.com/diasdavid/node-spdy-stream-muxer) _stream muxer_. [Discussion issue](https://github.com/ipfs/node-ipfs/issues/23).
+      
       - [x] [node-multistream](https://github.com/diasdavid/node-multistream) _protocol muxer_. [Discussion issue](https://github.com/ipfs/node-ipfs/issues/24).
       - [x] [identify](https://github.com/diasdavid/node-ipfs-swarm/tree/master/src/identify).
       - [x] [node-ipfs-ping](https://github.com/diasdavid/node-ipfs-ping).
+      - upgrades 
+       - [x] every upgrade must follow [abstract-connection](https://github.com/diasdavid/abstract-connection)
+       - [x] [libp2p-spdy](https://github.com/diasdavid/node-libp2p-spdy/blob/master/src/index.js) _stream muxer upgrade_
+       - [ ] libp2p-tls
+      - transports
+        - [x] every transport must follow [abstract-transport](https://github.com/diasdavid/abstract-transport)
+        - [x] [libp2p-tcp](https://github.com/diasdavid/node-libp2p-tcp)
+        - [ ] [libp2p-udp](https://github.com/diasdavid/node-libp2p-udt)
+        - [ ] [libp2p-udt](https://github.com/diasdavid/node-libp2p-udp)
     - [ ] Distributed Record Store. [Discussion issue](https://github.com/ipfs/node-ipfs/issues/25).
       - [x] [node-ipfs-record](https://github.com/diasdavid/node-ipfs-record) _record (needs MerkleDAG node)_.
       - [x] [node-ipfs-distributed-record-store](https://github.com/diasdavid/node-ipfs-distributed-record-store).
