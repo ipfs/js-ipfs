@@ -22,7 +22,7 @@ function IpfsAPI (host_or_multiaddr, port) {
 
   // autoconfigure in browser
   if (!config.host &&
-    window && window.location) {
+    typeof window !== 'undefined') {
     var split = window.location.host.split(':')
     config.host = split[0]
     config.port = split[1]
