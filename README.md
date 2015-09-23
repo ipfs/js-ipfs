@@ -49,6 +49,7 @@ IPFS in Node is a work in progress. As such, there's a few things you can do rig
         - [ ] [libp2p-udt](https://github.com/diasdavid/node-libp2p-udt)
         - [ ] [libp2p-utp](https://github.com/diasdavid/node-libp2p-utp)
         - [ ] libp2p-webrtc
+        - [ ] libp2p-cjdns
       - Upgrades
         - [ ] libp2p-tls
       - Stream Muxing
