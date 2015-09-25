@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "browserify": "^11.0.0",
-    "ipfsd-ctl": "^0.3.3",
+    "ipfsd-ctl": "^0.5.1",
     "mocha": "^2.2.5",
     "pre-commit": "^1.0.6",
     "standard": "^5.2.2",
