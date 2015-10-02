@@ -16,9 +16,6 @@ function requestAPI (path, args, opts, files, buffer, cb) {
   if (args && !Array.isArray(args)) args = [args]
   if (args) opts.arg = args
 
-  opts['stream-channels'] = true
-  query = qs.stringify(opts)
-
   if (files) {
     stream = getFilesStream(files, opts)
     if (!stream.boundary) {
@@ -31,6 +28,12 @@ function requestAPI (path, args, opts, files, buffer, cb) {
     cb = buffer
     buffer = false
   }
+
+  // this option is only used internally, not passed to daemon
+  delete opts.followSymlinks
+
+  opts['stream-channels'] = true
+  query = qs.stringify(opts)
 
   var reqo = {
     method: files ? 'POST' : 'GET',
