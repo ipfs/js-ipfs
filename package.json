@@ -1,6 +1,6 @@
 {
   "name": "ipfs-api",
-  "version": "2.3.2",
+  "version": "2.4.0",
   "description": "A client library for the IPFS API",
   "main": "src/index.js",
   "dependencies": {
@@ -9,7 +9,7 @@
     "multiaddr": "^1.0.0",
     "multipart-stream": "^2.0.0",
     "vinyl": "^0.5.1",
-    "vinyl-fs-browser": "^0.1.0",
+    "vinyl-fs-browser": "^2.1.1-1",
     "vinyl-multipart-stream": "^1.2.5"
   },
   "browserify": {
@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "browserify": "^11.0.0",
-    "ipfsd-ctl": "^0.3.3",
+    "ipfsd-ctl": "^0.5.1",
     "mocha": "^2.2.5",
     "pre-commit": "^1.0.6",
     "standard": "^5.2.2",

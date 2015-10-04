@@ -21,12 +21,18 @@ function getFilesStream (files, opts) {
     var file = files[i]
 
     if (typeof (file) === 'string') {
+      var srcOpts = {
+        buffer: false,
+        stripBOM: false,
+        followSymlinks: opts.followSymlinks != null ? opts.followSymlinks : true
+      }
+
       // add the file or dir itself
-      adder.add(vinylfs.src(file, {buffer: false}))
+      adder.add(vinylfs.src(file, srcOpts))
 
       // if recursive, glob the contents
       if (opts.r || opts.recursive) {
-        adder.add(vinylfs.src(file + '/**/*', {buffer: false}))
+        adder.add(vinylfs.src(file + '/**/*', srcOpts))
       }
     } else {
       // try to create a single vinyl file, and push it.

@@ -1,6 +1,4 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.ipfsAPI = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-
-},{}],2:[function(require,module,exports){
 // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
 //
 // THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!
@@ -361,15 +359,161 @@ var objectKeys = Object.keys || function (obj) {
   return keys;
 };
 
-},{"util/":46}],3:[function(require,module,exports){
-arguments[4][1][0].apply(exports,arguments)
-},{"dup":1}],4:[function(require,module,exports){
+},{"util/":90}],2:[function(require,module,exports){
+var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+;(function (exports) {
+	'use strict';
+
+  var Arr = (typeof Uint8Array !== 'undefined')
+    ? Uint8Array
+    : Array
+
+	var PLUS   = '+'.charCodeAt(0)
+	var SLASH  = '/'.charCodeAt(0)
+	var NUMBER = '0'.charCodeAt(0)
+	var LOWER  = 'a'.charCodeAt(0)
+	var UPPER  = 'A'.charCodeAt(0)
+	var PLUS_URL_SAFE = '-'.charCodeAt(0)
+	var SLASH_URL_SAFE = '_'.charCodeAt(0)
+
+	function decode (elt) {
+		var code = elt.charCodeAt(0)
+		if (code === PLUS ||
+		    code === PLUS_URL_SAFE)
+			return 62 // '+'
+		if (code === SLASH ||
+		    code === SLASH_URL_SAFE)
+			return 63 // '/'
+		if (code < NUMBER)
+			return -1 //no match
+		if (code < NUMBER + 10)
+			return code - NUMBER + 26 + 26
+		if (code < UPPER + 26)
+			return code - UPPER
+		if (code < LOWER + 26)
+			return code - LOWER + 26
+	}
+
+	function b64ToByteArray (b64) {
+		var i, j, l, tmp, placeHolders, arr
+
+		if (b64.length % 4 > 0) {
+			throw new Error('Invalid string. Length must be a multiple of 4')
+		}
+
+		// the number of equal signs (place holders)
+		// if there are two placeholders, than the two characters before it
+		// represent one byte
+		// if there is only one, then the three characters before it represent 2 bytes
+		// this is just a cheap hack to not do indexOf twice
+		var len = b64.length
+		placeHolders = '=' === b64.charAt(len - 2) ? 2 : '=' === b64.charAt(len - 1) ? 1 : 0
+
+		// base64 is 4/3 + up to two characters of the original data
+		arr = new Arr(b64.length * 3 / 4 - placeHolders)
+
+		// if there are placeholders, only get up to the last complete 4 chars
+		l = placeHolders > 0 ? b64.length - 4 : b64.length
+
+		var L = 0
+
+		function push (v) {
+			arr[L++] = v
+		}
+
+		for (i = 0, j = 0; i < l; i += 4, j += 3) {
+			tmp = (decode(b64.charAt(i)) << 18) | (decode(b64.charAt(i + 1)) << 12) | (decode(b64.charAt(i + 2)) << 6) | decode(b64.charAt(i + 3))
+			push((tmp & 0xFF0000) >> 16)
+			push((tmp & 0xFF00) >> 8)
+			push(tmp & 0xFF)
+		}
+
+		if (placeHolders === 2) {
+			tmp = (decode(b64.charAt(i)) << 2) | (decode(b64.charAt(i + 1)) >> 4)
+			push(tmp & 0xFF)
+		} else if (placeHolders === 1) {
+			tmp = (decode(b64.charAt(i)) << 10) | (decode(b64.charAt(i + 1)) << 4) | (decode(b64.charAt(i + 2)) >> 2)
+			push((tmp >> 8) & 0xFF)
+			push(tmp & 0xFF)
+		}
+
+		return arr
+	}
+
+	function uint8ToBase64 (uint8) {
+		var i,
+			extraBytes = uint8.length % 3, // if we have 1 byte left, pad 2 bytes
+			output = "",
+			temp, length
+
+		function encode (num) {
+			return lookup.charAt(num)
+		}
+
+		function tripletToBase64 (num) {
+			return encode(num >> 18 & 0x3F) + encode(num >> 12 & 0x3F) + encode(num >> 6 & 0x3F) + encode(num & 0x3F)
+		}
+
+		// go through the array every three bytes, we'll deal with trailing stuff later
+		for (i = 0, length = uint8.length - extraBytes; i < length; i += 3) {
+			temp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
+			output += tripletToBase64(temp)
+		}
+
+		// pad the end with zeros, but make sure to not forget the extra bytes
+		switch (extraBytes) {
+			case 1:
+				temp = uint8[uint8.length - 1]
+				output += encode(temp >> 2)
+				output += encode((temp << 4) & 0x3F)
+				output += '=='
+				break
+			case 2:
+				temp = (uint8[uint8.length - 2] << 8) + (uint8[uint8.length - 1])
+				output += encode(temp >> 10)
+				output += encode((temp >> 4) & 0x3F)
+				output += encode((temp << 2) & 0x3F)
+				output += '='
+				break
+		}
+
+		return output
+	}
+
+	exports.toByteArray = b64ToByteArray
+	exports.fromByteArray = uint8ToBase64
+}(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
+
+},{}],3:[function(require,module,exports){
+
+},{}],4:[function(require,module,exports){
+arguments[4][3][0].apply(exports,arguments)
+},{"dup":3}],5:[function(require,module,exports){
+var Buffer = require('buffer').Buffer; // for use with browserify
+
+module.exports = function (a, b) {
+    if (!Buffer.isBuffer(a)) return undefined;
+    if (!Buffer.isBuffer(b)) return undefined;
+    if (typeof a.equals === 'function') return a.equals(b);
+    if (a.length !== b.length) return false;
+    
+    for (var i = 0; i < a.length; i++) {
+        if (a[i] !== b[i]) return false;
+    }
+    
+    return true;
+};
+
+},{"buffer":6}],6:[function(require,module,exports){
+(function (global){
 /*!
  * The buffer module from node.js, for the browser.
  *
  * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
  * @license  MIT
  */
+/* eslint-disable no-proto */
 
 var base64 = require('base64-js')
 var ieee754 = require('ieee754')
@@ -409,20 +553,22 @@ var rootParent = {}
  * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
  * get the Object implementation, which is slower but behaves correctly.
  */
-Buffer.TYPED_ARRAY_SUPPORT = (function () {
-  function Bar () {}
-  try {
-    var arr = new Uint8Array(1)
-    arr.foo = function () { return 42 }
-    arr.constructor = Bar
-    return arr.foo() === 42 && // typed array instances can be augmented
-        arr.constructor === Bar && // constructor can be set
-        typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
-        arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
-  } catch (e) {
-    return false
-  }
-})()
+Buffer.TYPED_ARRAY_SUPPORT = global.TYPED_ARRAY_SUPPORT !== undefined
+  ? global.TYPED_ARRAY_SUPPORT
+  : (function () {
+      function Bar () {}
+      try {
+        var arr = new Uint8Array(1)
+        arr.foo = function () { return 42 }
+        arr.constructor = Bar
+        return arr.foo() === 42 && // typed array instances can be augmented
+            arr.constructor === Bar && // constructor can be set
+            typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
+            arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
+      } catch (e) {
+        return false
+      }
+    })()
 
 function kMaxLength () {
   return Buffer.TYPED_ARRAY_SUPPORT
@@ -578,10 +724,16 @@ function fromJsonObject (that, object) {
   return that
 }
 
+if (Buffer.TYPED_ARRAY_SUPPORT) {
+  Buffer.prototype.__proto__ = Uint8Array.prototype
+  Buffer.__proto__ = Uint8Array
+}
+
 function allocate (that, length) {
   if (Buffer.TYPED_ARRAY_SUPPORT) {
     // Return an augmented `Uint8Array` instance, for best performance
     that = Buffer._augment(new Uint8Array(length))
+    that.__proto__ = Buffer.prototype
   } else {
     // Fallback: Return an object instance of the Buffer class
     that.length = length
@@ -989,20 +1141,99 @@ function base64Slice (buf, start, end) {
 }
 
 function utf8Slice (buf, start, end) {
-  var res = ''
-  var tmp = ''
   end = Math.min(buf.length, end)
+  var res = []
 
-  for (var i = start; i < end; i++) {
-    if (buf[i] <= 0x7F) {
-      res += decodeUtf8Char(tmp) + String.fromCharCode(buf[i])
-      tmp = ''
-    } else {
-      tmp += '%' + buf[i].toString(16)
+  var i = start
+  while (i < end) {
+    var firstByte = buf[i]
+    var codePoint = null
+    var bytesPerSequence = (firstByte > 0xEF) ? 4
+      : (firstByte > 0xDF) ? 3
+      : (firstByte > 0xBF) ? 2
+      : 1
+
+    if (i + bytesPerSequence <= end) {
+      var secondByte, thirdByte, fourthByte, tempCodePoint
+
+      switch (bytesPerSequence) {
+        case 1:
+          if (firstByte < 0x80) {
+            codePoint = firstByte
+          }
+          break
+        case 2:
+          secondByte = buf[i + 1]
+          if ((secondByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0x1F) << 0x6 | (secondByte & 0x3F)
+            if (tempCodePoint > 0x7F) {
+              codePoint = tempCodePoint
+            }
+          }
+          break
+        case 3:
+          secondByte = buf[i + 1]
+          thirdByte = buf[i + 2]
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | (thirdByte & 0x3F)
+            if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
+              codePoint = tempCodePoint
+            }
+          }
+          break
+        case 4:
+          secondByte = buf[i + 1]
+          thirdByte = buf[i + 2]
+          fourthByte = buf[i + 3]
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | (fourthByte & 0x3F)
+            if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
+              codePoint = tempCodePoint
+            }
+          }
+      }
     }
+
+    if (codePoint === null) {
+      // we did not generate a valid codePoint so insert a
+      // replacement char (U+FFFD) and advance only 1 byte
+      codePoint = 0xFFFD
+      bytesPerSequence = 1
+    } else if (codePoint > 0xFFFF) {
+      // encode to utf16 (surrogate pair dance)
+      codePoint -= 0x10000
+      res.push(codePoint >>> 10 & 0x3FF | 0xD800)
+      codePoint = 0xDC00 | codePoint & 0x3FF
+    }
+
+    res.push(codePoint)
+    i += bytesPerSequence
   }
 
-  return res + decodeUtf8Char(tmp)
+  return decodeCodePointsArray(res)
+}
+
+// Based on http://stackoverflow.com/a/22747272/680742, the browser with
+// the lowest limit is Chrome, with 0x10000 args.
+// We go 1 magnitude less, for safety
+var MAX_ARGUMENTS_LENGTH = 0x1000
+
+function decodeCodePointsArray (codePoints) {
+  var len = codePoints.length
+  if (len <= MAX_ARGUMENTS_LENGTH) {
+    return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
+  }
+
+  // Decode in chunks to avoid "call stack size exceeded".
+  var res = ''
+  var i = 0
+  while (i < len) {
+    res += String.fromCharCode.apply(
+      String,
+      codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
+    )
+  }
+  return res
 }
 
 function asciiSlice (buf, start, end) {
@@ -1708,28 +1939,15 @@ function utf8ToBytes (string, units) {
   var length = string.length
   var leadSurrogate = null
   var bytes = []
-  var i = 0
 
-  for (; i < length; i++) {
+  for (var i = 0; i < length; i++) {
     codePoint = string.charCodeAt(i)
 
     // is surrogate component
     if (codePoint > 0xD7FF && codePoint < 0xE000) {
       // last char was a lead
-      if (leadSurrogate) {
-        // 2 leads in a row
-        if (codePoint < 0xDC00) {
-          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-          leadSurrogate = codePoint
-          continue
-        } else {
-          // valid surrogate pair
-          codePoint = leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00 | 0x10000
-          leadSurrogate = null
-        }
-      } else {
+      if (!leadSurrogate) {
         // no lead yet
-
         if (codePoint > 0xDBFF) {
           // unexpected trail
           if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
@@ -1738,17 +1956,29 @@ function utf8ToBytes (string, units) {
           // unpaired lead
           if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
           continue
-        } else {
-          // valid lead
-          leadSurrogate = codePoint
-          continue
         }
+
+        // valid lead
+        leadSurrogate = codePoint
+
+        continue
       }
+
+      // 2 leads in a row
+      if (codePoint < 0xDC00) {
+        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+        leadSurrogate = codePoint
+        continue
+      }
+
+      // valid surrogate pair
+      codePoint = leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00 | 0x10000
     } else if (leadSurrogate) {
       // valid bmp char, but last char was a lead
       if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-      leadSurrogate = null
     }
+
+    leadSurrogate = null
 
     // encode utf8
     if (codePoint < 0x80) {
@@ -1767,7 +1997,7 @@ function utf8ToBytes (string, units) {
         codePoint >> 0x6 & 0x3F | 0x80,
         codePoint & 0x3F | 0x80
       )
-    } else if (codePoint < 0x200000) {
+    } else if (codePoint < 0x110000) {
       if ((units -= 4) < 0) break
       bytes.push(
         codePoint >> 0x12 | 0xF0,
@@ -1820,262 +2050,248 @@ function blitBuffer (src, dst, offset, length) {
   return i
 }
 
-function decodeUtf8Char (str) {
-  try {
-    return decodeURIComponent(str)
-  } catch (err) {
-    return String.fromCharCode(0xFFFD) // UTF 8 invalid char
-  }
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"base64-js":2,"ieee754":16,"is-array":20}],7:[function(require,module,exports){
+module.exports = {
+  "100": "Continue",
+  "101": "Switching Protocols",
+  "102": "Processing",
+  "200": "OK",
+  "201": "Created",
+  "202": "Accepted",
+  "203": "Non-Authoritative Information",
+  "204": "No Content",
+  "205": "Reset Content",
+  "206": "Partial Content",
+  "207": "Multi-Status",
+  "300": "Multiple Choices",
+  "301": "Moved Permanently",
+  "302": "Moved Temporarily",
+  "303": "See Other",
+  "304": "Not Modified",
+  "305": "Use Proxy",
+  "307": "Temporary Redirect",
+  "308": "Permanent Redirect",
+  "400": "Bad Request",
+  "401": "Unauthorized",
+  "402": "Payment Required",
+  "403": "Forbidden",
+  "404": "Not Found",
+  "405": "Method Not Allowed",
+  "406": "Not Acceptable",
+  "407": "Proxy Authentication Required",
+  "408": "Request Time-out",
+  "409": "Conflict",
+  "410": "Gone",
+  "411": "Length Required",
+  "412": "Precondition Failed",
+  "413": "Request Entity Too Large",
+  "414": "Request-URI Too Large",
+  "415": "Unsupported Media Type",
+  "416": "Requested Range Not Satisfiable",
+  "417": "Expectation Failed",
+  "418": "I'm a teapot",
+  "422": "Unprocessable Entity",
+  "423": "Locked",
+  "424": "Failed Dependency",
+  "425": "Unordered Collection",
+  "426": "Upgrade Required",
+  "428": "Precondition Required",
+  "429": "Too Many Requests",
+  "431": "Request Header Fields Too Large",
+  "500": "Internal Server Error",
+  "501": "Not Implemented",
+  "502": "Bad Gateway",
+  "503": "Service Unavailable",
+  "504": "Gateway Time-out",
+  "505": "HTTP Version Not Supported",
+  "506": "Variant Also Negotiates",
+  "507": "Insufficient Storage",
+  "509": "Bandwidth Limit Exceeded",
+  "510": "Not Extended",
+  "511": "Network Authentication Required"
 }
-
-},{"base64-js":5,"ieee754":6,"is-array":7}],5:[function(require,module,exports){
-var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-
-;(function (exports) {
-	'use strict';
-
-  var Arr = (typeof Uint8Array !== 'undefined')
-    ? Uint8Array
-    : Array
-
-	var PLUS   = '+'.charCodeAt(0)
-	var SLASH  = '/'.charCodeAt(0)
-	var NUMBER = '0'.charCodeAt(0)
-	var LOWER  = 'a'.charCodeAt(0)
-	var UPPER  = 'A'.charCodeAt(0)
-	var PLUS_URL_SAFE = '-'.charCodeAt(0)
-	var SLASH_URL_SAFE = '_'.charCodeAt(0)
-
-	function decode (elt) {
-		var code = elt.charCodeAt(0)
-		if (code === PLUS ||
-		    code === PLUS_URL_SAFE)
-			return 62 // '+'
-		if (code === SLASH ||
-		    code === SLASH_URL_SAFE)
-			return 63 // '/'
-		if (code < NUMBER)
-			return -1 //no match
-		if (code < NUMBER + 10)
-			return code - NUMBER + 26 + 26
-		if (code < UPPER + 26)
-			return code - UPPER
-		if (code < LOWER + 26)
-			return code - LOWER + 26
-	}
-
-	function b64ToByteArray (b64) {
-		var i, j, l, tmp, placeHolders, arr
-
-		if (b64.length % 4 > 0) {
-			throw new Error('Invalid string. Length must be a multiple of 4')
-		}
-
-		// the number of equal signs (place holders)
-		// if there are two placeholders, than the two characters before it
-		// represent one byte
-		// if there is only one, then the three characters before it represent 2 bytes
-		// this is just a cheap hack to not do indexOf twice
-		var len = b64.length
-		placeHolders = '=' === b64.charAt(len - 2) ? 2 : '=' === b64.charAt(len - 1) ? 1 : 0
-
-		// base64 is 4/3 + up to two characters of the original data
-		arr = new Arr(b64.length * 3 / 4 - placeHolders)
-
-		// if there are placeholders, only get up to the last complete 4 chars
-		l = placeHolders > 0 ? b64.length - 4 : b64.length
-
-		var L = 0
-
-		function push (v) {
-			arr[L++] = v
-		}
-
-		for (i = 0, j = 0; i < l; i += 4, j += 3) {
-			tmp = (decode(b64.charAt(i)) << 18) | (decode(b64.charAt(i + 1)) << 12) | (decode(b64.charAt(i + 2)) << 6) | decode(b64.charAt(i + 3))
-			push((tmp & 0xFF0000) >> 16)
-			push((tmp & 0xFF00) >> 8)
-			push(tmp & 0xFF)
-		}
-
-		if (placeHolders === 2) {
-			tmp = (decode(b64.charAt(i)) << 2) | (decode(b64.charAt(i + 1)) >> 4)
-			push(tmp & 0xFF)
-		} else if (placeHolders === 1) {
-			tmp = (decode(b64.charAt(i)) << 10) | (decode(b64.charAt(i + 1)) << 4) | (decode(b64.charAt(i + 2)) >> 2)
-			push((tmp >> 8) & 0xFF)
-			push(tmp & 0xFF)
-		}
-
-		return arr
-	}
-
-	function uint8ToBase64 (uint8) {
-		var i,
-			extraBytes = uint8.length % 3, // if we have 1 byte left, pad 2 bytes
-			output = "",
-			temp, length
-
-		function encode (num) {
-			return lookup.charAt(num)
-		}
-
-		function tripletToBase64 (num) {
-			return encode(num >> 18 & 0x3F) + encode(num >> 12 & 0x3F) + encode(num >> 6 & 0x3F) + encode(num & 0x3F)
-		}
-
-		// go through the array every three bytes, we'll deal with trailing stuff later
-		for (i = 0, length = uint8.length - extraBytes; i < length; i += 3) {
-			temp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
-			output += tripletToBase64(temp)
-		}
-
-		// pad the end with zeros, but make sure to not forget the extra bytes
-		switch (extraBytes) {
-			case 1:
-				temp = uint8[uint8.length - 1]
-				output += encode(temp >> 2)
-				output += encode((temp << 4) & 0x3F)
-				output += '=='
-				break
-			case 2:
-				temp = (uint8[uint8.length - 2] << 8) + (uint8[uint8.length - 1])
-				output += encode(temp >> 10)
-				output += encode((temp >> 4) & 0x3F)
-				output += encode((temp << 2) & 0x3F)
-				output += '='
-				break
-		}
-
-		return output
-	}
-
-	exports.toByteArray = b64ToByteArray
-	exports.fromByteArray = uint8ToBase64
-}(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
-
-},{}],6:[function(require,module,exports){
-exports.read = function (buffer, offset, isLE, mLen, nBytes) {
-  var e, m
-  var eLen = nBytes * 8 - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var nBits = -7
-  var i = isLE ? (nBytes - 1) : 0
-  var d = isLE ? -1 : 1
-  var s = buffer[offset + i]
-
-  i += d
-
-  e = s & ((1 << (-nBits)) - 1)
-  s >>= (-nBits)
-  nBits += eLen
-  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-
-  m = e & ((1 << (-nBits)) - 1)
-  e >>= (-nBits)
-  nBits += mLen
-  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-
-  if (e === 0) {
-    e = 1 - eBias
-  } else if (e === eMax) {
-    return m ? NaN : ((s ? -1 : 1) * Infinity)
-  } else {
-    m = m + Math.pow(2, mLen)
-    e = e - eBias
-  }
-  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
-}
-
-exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
-  var e, m, c
-  var eLen = nBytes * 8 - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
-  var i = isLE ? 0 : (nBytes - 1)
-  var d = isLE ? 1 : -1
-  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
-
-  value = Math.abs(value)
-
-  if (isNaN(value) || value === Infinity) {
-    m = isNaN(value) ? 1 : 0
-    e = eMax
-  } else {
-    e = Math.floor(Math.log(value) / Math.LN2)
-    if (value * (c = Math.pow(2, -e)) < 1) {
-      e--
-      c *= 2
-    }
-    if (e + eBias >= 1) {
-      value += rt / c
-    } else {
-      value += rt * Math.pow(2, 1 - eBias)
-    }
-    if (value * c >= 2) {
-      e++
-      c /= 2
-    }
-
-    if (e + eBias >= eMax) {
-      m = 0
-      e = eMax
-    } else if (e + eBias >= 1) {
-      m = (value * c - 1) * Math.pow(2, mLen)
-      e = e + eBias
-    } else {
-      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
-      e = 0
-    }
-  }
-
-  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
-
-  e = (e << mLen) | m
-  eLen += mLen
-  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
-
-  buffer[offset + i - d] |= s * 128
-}
-
-},{}],7:[function(require,module,exports){
-
-/**
- * isArray
- */
-
-var isArray = Array.isArray;
-
-/**
- * toString
- */
-
-var str = Object.prototype.toString;
-
-/**
- * Whether or not the given `val`
- * is an array.
- *
- * example:
- *
- *        isArray([]);
- *        // > true
- *        isArray(arguments);
- *        // > false
- *        isArray('');
- *        // > false
- *
- * @param {mixed} val
- * @return {bool}
- */
-
-module.exports = isArray || function (val) {
-  return !! val && '[object Array]' == str.call(val);
-};
 
 },{}],8:[function(require,module,exports){
+var Stat = require('fs').Stats
+
+module.exports = cloneStats
+
+function cloneStats(stats) {
+  var replacement = new Stat
+
+  Object.keys(stats).forEach(function(key) {
+    replacement[key] = stats[key]
+  })
+
+  return replacement
+}
+
+},{"fs":4}],9:[function(require,module,exports){
+(function (Buffer){
+var clone = (function() {
+'use strict';
+
+/**
+ * Clones (copies) an Object using deep copying.
+ *
+ * This function supports circular references by default, but if you are certain
+ * there are no circular references in your object, you can save some CPU time
+ * by calling clone(obj, false).
+ *
+ * Caution: if `circular` is false and `parent` contains circular references,
+ * your program may enter an infinite loop and crash.
+ *
+ * @param `parent` - the object to be cloned
+ * @param `circular` - set to true if the object to be cloned may contain
+ *    circular references. (optional - true by default)
+ * @param `depth` - set to a number if the object is only to be cloned to
+ *    a particular depth. (optional - defaults to Infinity)
+ * @param `prototype` - sets the prototype to be used when cloning an object.
+ *    (optional - defaults to parent prototype).
+*/
+function clone(parent, circular, depth, prototype) {
+  var filter;
+  if (typeof circular === 'object') {
+    depth = circular.depth;
+    prototype = circular.prototype;
+    filter = circular.filter;
+    circular = circular.circular
+  }
+  // maintain two arrays for circular references, where corresponding parents
+  // and children have the same index
+  var allParents = [];
+  var allChildren = [];
+
+  var useBuffer = typeof Buffer != 'undefined';
+
+  if (typeof circular == 'undefined')
+    circular = true;
+
+  if (typeof depth == 'undefined')
+    depth = Infinity;
+
+  // recurse this function so we don't reset allParents and allChildren
+  function _clone(parent, depth) {
+    // cloning null always returns null
+    if (parent === null)
+      return null;
+
+    if (depth == 0)
+      return parent;
+
+    var child;
+    var proto;
+    if (typeof parent != 'object') {
+      return parent;
+    }
+
+    if (clone.__isArray(parent)) {
+      child = [];
+    } else if (clone.__isRegExp(parent)) {
+      child = new RegExp(parent.source, __getRegExpFlags(parent));
+      if (parent.lastIndex) child.lastIndex = parent.lastIndex;
+    } else if (clone.__isDate(parent)) {
+      child = new Date(parent.getTime());
+    } else if (useBuffer && Buffer.isBuffer(parent)) {
+      child = new Buffer(parent.length);
+      parent.copy(child);
+      return child;
+    } else {
+      if (typeof prototype == 'undefined') {
+        proto = Object.getPrototypeOf(parent);
+        child = Object.create(proto);
+      }
+      else {
+        child = Object.create(prototype);
+        proto = prototype;
+      }
+    }
+
+    if (circular) {
+      var index = allParents.indexOf(parent);
+
+      if (index != -1) {
+        return allChildren[index];
+      }
+      allParents.push(parent);
+      allChildren.push(child);
+    }
+
+    for (var i in parent) {
+      var attrs;
+      if (proto) {
+        attrs = Object.getOwnPropertyDescriptor(proto, i);
+      }
+
+      if (attrs && attrs.set == null) {
+        continue;
+      }
+      child[i] = _clone(parent[i], depth - 1);
+    }
+
+    return child;
+  }
+
+  return _clone(parent, depth);
+}
+
+/**
+ * Simple flat clone using prototype, accepts only objects, usefull for property
+ * override on FLAT configuration object (no nested props).
+ *
+ * USE WITH CAUTION! This may not behave as you wish if you do not know how this
+ * works.
+ */
+clone.clonePrototype = function clonePrototype(parent) {
+  if (parent === null)
+    return null;
+
+  var c = function () {};
+  c.prototype = parent;
+  return new c();
+};
+
+// private utility functions
+
+function __objToStr(o) {
+  return Object.prototype.toString.call(o);
+};
+clone.__objToStr = __objToStr;
+
+function __isDate(o) {
+  return typeof o === 'object' && __objToStr(o) === '[object Date]';
+};
+clone.__isDate = __isDate;
+
+function __isArray(o) {
+  return typeof o === 'object' && __objToStr(o) === '[object Array]';
+};
+clone.__isArray = __isArray;
+
+function __isRegExp(o) {
+  return typeof o === 'object' && __objToStr(o) === '[object RegExp]';
+};
+clone.__isRegExp = __isRegExp;
+
+function __getRegExpFlags(re) {
+  var flags = '';
+  if (re.global) flags += 'g';
+  if (re.ignoreCase) flags += 'i';
+  if (re.multiline) flags += 'm';
+  return flags;
+};
+clone.__getRegExpFlags = __getRegExpFlags;
+
+return clone;
+})();
+
+if (typeof module === 'object' && module.exports) {
+  module.exports = clone;
+}
+
+}).call(this,require("buffer").Buffer)
+},{"buffer":6}],10:[function(require,module,exports){
 module.exports={
   "O_RDONLY": 0,
   "O_WRONLY": 1,
@@ -2255,7 +2471,420 @@ module.exports={
   "NPN_ENABLED": 1
 }
 
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
+(function (Buffer){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// NOTE: These type checking functions intentionally don't use `instanceof`
+// because it is fragile and can be easily faked with `Object.create()`.
+function isArray(ar) {
+  return Array.isArray(ar);
+}
+exports.isArray = isArray;
+
+function isBoolean(arg) {
+  return typeof arg === 'boolean';
+}
+exports.isBoolean = isBoolean;
+
+function isNull(arg) {
+  return arg === null;
+}
+exports.isNull = isNull;
+
+function isNullOrUndefined(arg) {
+  return arg == null;
+}
+exports.isNullOrUndefined = isNullOrUndefined;
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+exports.isNumber = isNumber;
+
+function isString(arg) {
+  return typeof arg === 'string';
+}
+exports.isString = isString;
+
+function isSymbol(arg) {
+  return typeof arg === 'symbol';
+}
+exports.isSymbol = isSymbol;
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
+exports.isUndefined = isUndefined;
+
+function isRegExp(re) {
+  return isObject(re) && objectToString(re) === '[object RegExp]';
+}
+exports.isRegExp = isRegExp;
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+exports.isObject = isObject;
+
+function isDate(d) {
+  return isObject(d) && objectToString(d) === '[object Date]';
+}
+exports.isDate = isDate;
+
+function isError(e) {
+  return isObject(e) &&
+      (objectToString(e) === '[object Error]' || e instanceof Error);
+}
+exports.isError = isError;
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+exports.isFunction = isFunction;
+
+function isPrimitive(arg) {
+  return arg === null ||
+         typeof arg === 'boolean' ||
+         typeof arg === 'number' ||
+         typeof arg === 'string' ||
+         typeof arg === 'symbol' ||  // ES6 symbol
+         typeof arg === 'undefined';
+}
+exports.isPrimitive = isPrimitive;
+
+function isBuffer(arg) {
+  return Buffer.isBuffer(arg);
+}
+exports.isBuffer = isBuffer;
+
+function objectToString(o) {
+  return Object.prototype.toString.call(o);
+}
+}).call(this,{"isBuffer":require("/media/d/projects/node-ipfs-api/node_modules/is-buffer/index.js")})
+},{"/media/d/projects/node-ipfs-api/node_modules/is-buffer/index.js":21}],12:[function(require,module,exports){
+(function (process,Buffer){
+var stream = require('readable-stream')
+var eos = require('end-of-stream')
+var util = require('util')
+
+var SIGNAL_FLUSH = new Buffer([0])
+
+var onuncork = function(self, fn) {
+  if (self._corked) self.once('uncork', fn)
+  else fn()
+}
+
+var destroyer = function(self, end) {
+  return function(err) {
+    if (err) self.destroy(err.message === 'premature close' ? null : err)
+    else if (end && !self._ended) self.end()
+  }
+}
+
+var end = function(ws, fn) {
+  if (!ws) return fn()
+  if (ws._writableState && ws._writableState.finished) return fn()
+  if (ws._writableState) return ws.end(fn)
+  ws.end()
+  fn()
+}
+
+var toStreams2 = function(rs) {
+  return new (stream.Readable)({objectMode:true, highWaterMark:16}).wrap(rs)
+}
+
+var Duplexify = function(writable, readable, opts) {
+  if (!(this instanceof Duplexify)) return new Duplexify(writable, readable, opts)
+  stream.Duplex.call(this, opts)
+
+  this._writable = null
+  this._readable = null
+  this._readable2 = null
+
+  this._forwardDestroy = !opts || opts.destroy !== false
+  this._forwardEnd = !opts || opts.end !== false
+  this._corked = 1 // start corked
+  this._ondrain = null
+  this._drained = false
+  this._forwarding = false
+  this._unwrite = null
+  this._unread = null
+  this._ended = false
+
+  this.destroyed = false
+
+  if (writable) this.setWritable(writable)
+  if (readable) this.setReadable(readable)
+}
+
+util.inherits(Duplexify, stream.Duplex)
+
+Duplexify.obj = function(writable, readable, opts) {
+  if (!opts) opts = {}
+  opts.objectMode = true
+  opts.highWaterMark = 16
+  return new Duplexify(writable, readable, opts)
+}
+
+Duplexify.prototype.cork = function() {
+  if (++this._corked === 1) this.emit('cork')
+}
+
+Duplexify.prototype.uncork = function() {
+  if (this._corked && --this._corked === 0) this.emit('uncork')
+}
+
+Duplexify.prototype.setWritable = function(writable) {
+  if (this._unwrite) this._unwrite()
+
+  if (this.destroyed) {
+    if (writable && writable.destroy) writable.destroy()
+    return
+  }
+
+  if (writable === null || writable === false) {
+    this.end()
+    return
+  }
+
+  var self = this
+  var unend = eos(writable, {writable:true, readable:false}, destroyer(this, this._forwardEnd))
+
+  var ondrain = function() {
+    var ondrain = self._ondrain
+    self._ondrain = null
+    if (ondrain) ondrain()
+  }
+
+  var clear = function() {
+    self._writable.removeListener('drain', ondrain)
+    unend()
+  }
+
+  if (this._unwrite) process.nextTick(ondrain) // force a drain on stream reset to avoid livelocks
+
+  this._writable = writable
+  this._writable.on('drain', ondrain)
+  this._unwrite = clear
+
+  this.uncork() // always uncork setWritable
+}
+
+Duplexify.prototype.setReadable = function(readable) {
+  if (this._unread) this._unread()
+
+  if (this.destroyed) {
+    if (readable && readable.destroy) readable.destroy()
+    return
+  }
+
+  if (readable === null || readable === false) {
+    this.push(null)
+    this.resume()
+    return
+  }
+
+  var self = this
+  var unend = eos(readable, {writable:false, readable:true}, destroyer(this))
+
+  var onreadable = function() {
+    self._forward()
+  }
+
+  var onend = function() {
+    self.push(null)
+  }
+
+  var clear = function() {
+    self._readable2.removeListener('readable', onreadable)
+    self._readable2.removeListener('end', onend)
+    unend()
+  }
+
+  this._drained = true
+  this._readable = readable
+  this._readable2 = readable._readableState ? readable : toStreams2(readable)
+  this._readable2.on('readable', onreadable)
+  this._readable2.on('end', onend)
+  this._unread = clear
+
+  this._forward()
+}
+
+Duplexify.prototype._read = function() {
+  this._drained = true
+  this._forward()
+}
+
+Duplexify.prototype._forward = function() {
+  if (this._forwarding || !this._readable2 || !this._drained) return
+  this._forwarding = true
+
+  var data
+  var state = this._readable2._readableState
+
+  while ((data = this._readable2.read(state.buffer.length ? state.buffer[0].length : state.length)) !== null) {
+    this._drained = this.push(data)
+  }
+
+  this._forwarding = false
+}
+
+Duplexify.prototype.destroy = function(err) {
+  if (this.destroyed) return
+  this.destroyed = true
+
+  var self = this
+  process.nextTick(function() {
+    self._destroy(err)
+  })
+}
+
+Duplexify.prototype._destroy = function(err) {
+  if (err) {
+    var ondrain = this._ondrain
+    this._ondrain = null
+    if (ondrain) ondrain(err)
+    else this.emit('error', err)
+  }
+
+  if (this._forwardDestroy) {
+    if (this._readable && this._readable.destroy) this._readable.destroy()
+    if (this._writable && this._writable.destroy) this._writable.destroy()
+  }
+
+  this.emit('close')
+}
+
+Duplexify.prototype._write = function(data, enc, cb) {
+  if (this.destroyed) return cb()
+  if (this._corked) return onuncork(this, this._write.bind(this, data, enc, cb))
+  if (data === SIGNAL_FLUSH) return this._finish(cb)
+  if (!this._writable) return cb()
+
+  if (this._writable.write(data) === false) this._ondrain = cb
+  else cb()
+}
+
+
+Duplexify.prototype._finish = function(cb) {
+  var self = this
+  this.emit('preend')
+  onuncork(this, function() {
+    end(self._forwardEnd && self._writable, function() {
+      // haxx to not emit prefinish twice
+      if (self._writableState.prefinished === false) self._writableState.prefinished = true
+      self.emit('prefinish')
+      onuncork(self, cb)
+    })
+  })
+}
+
+Duplexify.prototype.end = function(data, enc, cb) {
+  if (typeof data === 'function') return this.end(null, null, data)
+  if (typeof enc === 'function') return this.end(data, null, enc)
+  this._ended = true
+  if (data) this.write(data)
+  if (!this._writableState.ending) this.write(SIGNAL_FLUSH)
+  return stream.Writable.prototype.end.call(this, cb)
+}
+
+module.exports = Duplexify
+}).call(this,require('_process'),require("buffer").Buffer)
+},{"_process":64,"buffer":6,"end-of-stream":13,"readable-stream":76,"util":90}],13:[function(require,module,exports){
+var once = require('once');
+
+var noop = function() {};
+
+var isRequest = function(stream) {
+	return stream.setHeader && typeof stream.abort === 'function';
+};
+
+var eos = function(stream, opts, callback) {
+	if (typeof opts === 'function') return eos(stream, null, opts);
+	if (!opts) opts = {};
+
+	callback = once(callback || noop);
+
+	var ws = stream._writableState;
+	var rs = stream._readableState;
+	var readable = opts.readable || (opts.readable !== false && stream.readable);
+	var writable = opts.writable || (opts.writable !== false && stream.writable);
+
+	var onlegacyfinish = function() {
+		if (!stream.writable) onfinish();
+	};
+
+	var onfinish = function() {
+		writable = false;
+		if (!readable) callback();
+	};
+
+	var onend = function() {
+		readable = false;
+		if (!writable) callback();
+	};
+
+	var onclose = function() {
+		if (readable && !(rs && rs.ended)) return callback(new Error('premature close'));
+		if (writable && !(ws && ws.ended)) return callback(new Error('premature close'));
+	};
+
+	var onrequest = function() {
+		stream.req.on('finish', onfinish);
+	};
+
+	if (isRequest(stream)) {
+		stream.on('complete', onfinish);
+		stream.on('abort', onclose);
+		if (stream.req) onrequest();
+		else stream.on('request', onrequest);
+	} else if (writable && !ws) { // legacy streams
+		stream.on('end', onlegacyfinish);
+		stream.on('close', onlegacyfinish);
+	}
+
+	stream.on('end', onend);
+	stream.on('finish', onfinish);
+	if (opts.error !== false) stream.on('error', callback);
+	stream.on('close', onclose);
+
+	return function() {
+		stream.removeListener('complete', onfinish);
+		stream.removeListener('abort', onclose);
+		stream.removeListener('request', onrequest);
+		if (stream.req) stream.req.removeListener('finish', onfinish);
+		stream.removeListener('end', onlegacyfinish);
+		stream.removeListener('close', onlegacyfinish);
+		stream.removeListener('finish', onfinish);
+		stream.removeListener('end', onend);
+		stream.removeListener('error', callback);
+		stream.removeListener('close', onclose);
+	};
+};
+
+module.exports = eos;
+},{"once":60}],14:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -2558,7 +3187,128 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],10:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
+
+var hasOwn = Object.prototype.hasOwnProperty;
+var toString = Object.prototype.toString;
+
+module.exports = function forEach (obj, fn, ctx) {
+    if (toString.call(fn) !== '[object Function]') {
+        throw new TypeError('iterator must be a function');
+    }
+    var l = obj.length;
+    if (l === +l) {
+        for (var i = 0; i < l; i++) {
+            fn.call(ctx, obj[i], i, obj);
+        }
+    } else {
+        for (var k in obj) {
+            if (hasOwn.call(obj, k)) {
+                fn.call(ctx, obj[k], k, obj);
+            }
+        }
+    }
+};
+
+
+},{}],16:[function(require,module,exports){
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+  var e, m
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
+
+  i += d
+
+  e = s & ((1 << (-nBits)) - 1)
+  s >>= (-nBits)
+  nBits += eLen
+  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  m = e & ((1 << (-nBits)) - 1)
+  e >>= (-nBits)
+  nBits += mLen
+  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  if (e === 0) {
+    e = 1 - eBias
+  } else if (e === eMax) {
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
+  } else {
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
+  }
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+}
+
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+
+  value = Math.abs(value)
+
+  if (isNaN(value) || value === Infinity) {
+    m = isNaN(value) ? 1 : 0
+    e = eMax
+  } else {
+    e = Math.floor(Math.log(value) / Math.LN2)
+    if (value * (c = Math.pow(2, -e)) < 1) {
+      e--
+      c *= 2
+    }
+    if (e + eBias >= 1) {
+      value += rt / c
+    } else {
+      value += rt * Math.pow(2, 1 - eBias)
+    }
+    if (value * c >= 2) {
+      e++
+      c /= 2
+    }
+
+    if (e + eBias >= eMax) {
+      m = 0
+      e = eMax
+    } else if (e + eBias >= 1) {
+      m = (value * c - 1) * Math.pow(2, mLen)
+      e = e + eBias
+    } else {
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
+    }
+  }
+
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+  e = (e << mLen) | m
+  eLen += mLen
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+  buffer[offset + i - d] |= s * 128
+}
+
+},{}],17:[function(require,module,exports){
+
+var indexOf = [].indexOf;
+
+module.exports = function(arr, obj){
+  if (indexOf) return arr.indexOf(obj);
+  for (var i = 0; i < arr.length; ++i) {
+    if (arr[i] === obj) return i;
+  }
+  return -1;
+};
+},{}],18:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -2583,12 +3333,2677 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],11:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
+var ip = exports,
+    Buffer = require('buffer').Buffer,
+    os = require('os');
+
+ip.toBuffer = function toBuffer(ip, buff, offset) {
+  offset = ~~offset;
+
+  var result;
+
+  if (/^(\d{1,3}\.){3,3}\d{1,3}$/.test(ip)) {
+    result = buff || new Buffer(offset + 4);
+    ip.split(/\./g).map(function(byte) {
+      result[offset++] = parseInt(byte, 10) & 0xff;
+    });
+  } else if (/^[a-f0-9:]+$/.test(ip)) {
+    var s = ip.split(/::/g, 2),
+        head = (s[0] || '').split(/:/g, 8),
+        tail = (s[1] || '').split(/:/g, 8);
+
+    if (tail.length === 0) {
+      // xxxx::
+      while (head.length < 8) head.push('0000');
+    } else if (head.length === 0) {
+      // ::xxxx
+      while (tail.length < 8) tail.unshift('0000');
+    } else {
+      // xxxx::xxxx
+      while (head.length + tail.length < 8) head.push('0000');
+    }
+
+    result = buff || new Buffer(offset + 16);
+    head.concat(tail).map(function(word) {
+      word = parseInt(word, 16);
+      result[offset++] = (word >> 8) & 0xff;
+      result[offset++] = word & 0xff;
+    });
+  } else {
+    throw Error('Invalid ip address: ' + ip);
+  }
+
+  return result;
+};
+
+ip.toString = function toString(buff, offset, length) {
+  offset = ~~offset;
+  length = length || (buff.length - offset);
+
+  var result = [];
+  if (length === 4) {
+    // IPv4
+    for (var i = 0; i < length; i++) {
+      result.push(buff[offset + i]);
+    }
+    result = result.join('.');
+  } else if (length === 16) {
+    // IPv6
+    for (var i = 0; i < length; i += 2) {
+      result.push(buff.readUInt16BE(offset + i).toString(16));
+    }
+    result = result.join(':');
+    result = result.replace(/(^|:)0(:0)*:0(:|$)/, '$1::$3');
+    result = result.replace(/:{3,4}/, '::');
+  }
+
+  return result;
+};
+
+ip.fromPrefixLen = function fromPrefixLen(prefixlen, family) {
+  if (prefixlen > 32) {
+    family = 'ipv6';
+  } else {
+    family = _normalizeFamily(family);
+  }
+
+  var len = 4;
+  if (family === 'ipv6') {
+    len = 16;
+  }
+  var buff = new Buffer(len);
+
+  for (var i = 0, n = buff.length; i < n; ++i) {
+    var bits = 8;
+    if (prefixlen < 8) {
+      bits = prefixlen;
+    }
+    prefixlen -= bits;
+
+    buff[i] = ~(0xff >> bits);
+  }
+
+  return ip.toString(buff);
+};
+
+ip.mask = function mask(addr, mask) {
+  addr = ip.toBuffer(addr);
+  mask = ip.toBuffer(mask);
+
+  var result = new Buffer(Math.max(addr.length, mask.length));
+
+  // Same protocol - do bitwise and
+  if (addr.length === mask.length) {
+    for (var i = 0; i < addr.length; i++) {
+      result[i] = addr[i] & mask[i];
+    }
+  } else if (mask.length === 4) {
+    // IPv6 address and IPv4 mask
+    // (Mask low bits)
+    for (var i = 0; i < mask.length; i++) {
+      result[i] = addr[addr.length - 4  + i] & mask[i];
+    }
+  } else {
+    // IPv6 mask and IPv4 addr
+    for (var i = 0; i < result.length - 6; i++) {
+      result[i] = 0;
+    }
+
+    // ::ffff:ipv4
+    result[10] = 0xff;
+    result[11] = 0xff;
+    for (var i = 0; i < addr.length; i++) {
+      result[i + 12] = addr[i] & mask[i + 12];
+    }
+  }
+
+  return ip.toString(result);
+};
+
+ip.cidr = function cidr(cidrString) {
+  var cidrParts = cidrString.split('/');
+
+  if (cidrParts.length != 2)
+    throw new Error('invalid CIDR subnet: ' + addr);
+
+  var addr = cidrParts[0];
+  var mask = ip.fromPrefixLen(parseInt(cidrParts[1], 10));
+
+  return ip.mask(addr, mask);
+}
+
+ip.subnet = function subnet(addr, mask) {
+  var networkAddress = ip.toLong(ip.mask(addr, mask));
+
+  // Calculate the mask's length.
+  var maskBuffer = ip.toBuffer(mask);
+  var maskLength = 0;
+
+  for (var i = 0; i < maskBuffer.length; i++) {
+    if (maskBuffer[i] == 0xff) {
+      maskLength += 8;
+    } else {
+      var octet = maskBuffer[i] & 0xff;
+      while (octet) {
+        octet = (octet << 1) & 0xff;
+        maskLength++;
+      }
+    }
+  }
+
+  var numberOfAddresses = Math.pow(2, 32 - maskLength);
+
+  return {
+    networkAddress: ip.fromLong(networkAddress),
+    firstAddress: numberOfAddresses <= 2 ?
+                    ip.fromLong(networkAddress) :
+                    ip.fromLong(networkAddress + 1),
+    lastAddress: numberOfAddresses <= 2 ?
+                    ip.fromLong(networkAddress + numberOfAddresses - 1) :
+                    ip.fromLong(networkAddress + numberOfAddresses - 2),
+    broadcastAddress: ip.fromLong(networkAddress + numberOfAddresses - 1),
+    subnetMask: mask,
+    subnetMaskLength: maskLength,
+    numHosts: numberOfAddresses <= 2 ?
+                numberOfAddresses : numberOfAddresses - 2,
+    length: numberOfAddresses
+  };
+}
+
+ip.cidrSubnet = function cidrSubnet(cidrString) {
+  var cidrParts = cidrString.split('/');
+
+  if (cidrParts.length !== 2)
+    throw new Error('invalid CIDR subnet: ' + addr);
+
+  var addr = cidrParts[0];
+  var mask = ip.fromPrefixLen(parseInt(cidrParts[1], 10));
+
+  return ip.subnet(addr, mask);
+}
+
+ip.not = function not(addr) {
+  var buff = ip.toBuffer(addr);
+  for (var i = 0; i < buff.length; i++) {
+    buff[i] = 0xff ^ buff[i];
+  }
+  return ip.toString(buff);
+};
+
+ip.or = function or(a, b) {
+  a = ip.toBuffer(a);
+  b = ip.toBuffer(b);
+
+  // same protocol
+  if (a.length == b.length) {
+    for (var i = 0; i < a.length; ++i) {
+      a[i] |= b[i];
+    }
+    return ip.toString(a);
+
+  // mixed protocols
+  } else {
+    var buff = a;
+    var other = b;
+    if (b.length > a.length) {
+      buff = b;
+      other = a;
+    }
+
+    var offset = buff.length - other.length;
+    for (var i = offset; i < buff.length; ++i) {
+      buff[i] |= other[i - offset];
+    }
+
+    return ip.toString(buff);
+  }
+};
+
+ip.isEqual = function isEqual(a, b) {
+  a = ip.toBuffer(a);
+  b = ip.toBuffer(b);
+
+  // Same protocol
+  if (a.length === b.length) {
+    for (var i = 0; i < a.length; i++) {
+      if (a[i] !== b[i]) return false;
+    }
+    return true;
+  }
+
+  // Swap
+  if (b.length === 4) {
+    var t = b;
+    b = a;
+    a = t;
+  }
+
+  // a - IPv4, b - IPv6
+  for (var i = 0; i < 10; i++) {
+    if (b[i] !== 0) return false;
+  }
+
+  var word = b.readUInt16BE(10);
+  if (word !== 0 && word !== 0xffff) return false;
+
+  for (var i = 0; i < 4; i++) {
+    if (a[i] !== b[i + 12]) return false;
+  }
+
+  return true;
+};
+
+ip.isPrivate = function isPrivate(addr) {
+  return addr.match(/^10\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})/) != null ||
+    addr.match(/^192\.168\.([0-9]{1,3})\.([0-9]{1,3})/) != null ||
+    addr.match(
+        /^172\.(1[6-9]|2\d|30|31)\.([0-9]{1,3})\.([0-9]{1,3})/) != null ||
+    addr.match(/^127\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})/) != null ||
+    addr.match(/^169\.254\.([0-9]{1,3})\.([0-9]{1,3})/) != null ||
+    addr.match(/^fc00:/) != null || addr.match(/^fe80:/) != null ||
+    addr.match(/^::1$/) != null || addr.match(/^::$/) != null;
+};
+
+ip.isPublic = function isPublic(addr) {
+  return !ip.isPrivate(addr);
+}
+
+ip.isLoopback = function isLoopback(addr) {
+  return /^127\.0\.0\.1$/.test(addr)
+    || /^fe80::1$/.test(addr)
+    || /^::1$/.test(addr)
+    || /^::$/.test(addr);
+};
+
+ip.loopback = function loopback(family) {
+  //
+  // Default to `ipv4`
+  //
+  family = _normalizeFamily(family);
+
+  if (family !== 'ipv4' && family !== 'ipv6') {
+    throw new Error('family must be ipv4 or ipv6');
+  }
+
+  return family === 'ipv4'
+    ? '127.0.0.1'
+    : 'fe80::1';
+};
+
+//
+// ### function address (name, family)
+// #### @name {string|'public'|'private'} **Optional** Name or security
+//      of the network interface.
+// #### @family {ipv4|ipv6} **Optional** IP family of the address (defaults
+//      to ipv4).
+//
+// Returns the address for the network interface on the current system with
+// the specified `name`:
+//   * String: First `family` address of the interface.
+//             If not found see `undefined`.
+//   * 'public': the first public ip address of family.
+//   * 'private': the first private ip address of family.
+//   * undefined: First address with `ipv4` or loopback addres `127.0.0.1`.
+//
+ip.address = function address(name, family) {
+  var interfaces = os.networkInterfaces(),
+      all;
+
+  //
+  // Default to `ipv4`
+  //
+  family = _normalizeFamily(family);
+
+  //
+  // If a specific network interface has been named,
+  // return the address.
+  //
+  if (name && !~['public', 'private'].indexOf(name)) {
+    return interfaces[name].filter(function (details) {
+      details.family = details.family.toLowerCase();
+      return details.family === family;
+    })[0].address;
+  }
+
+  var all = Object.keys(interfaces).map(function (nic) {
+    //
+    // Note: name will only be `public` or `private`
+    // when this is called.
+    //
+    var addresses = interfaces[nic].filter(function (details) {
+      details.family = details.family.toLowerCase();
+      if (details.family !== family || ip.isLoopback(details.address)) {
+        return false;
+      }
+      else if (!name) {
+        return true;
+      }
+
+      return name === 'public'
+        ? !ip.isPrivate(details.address)
+        : ip.isPrivate(details.address)
+    });
+
+    return addresses.length
+      ? addresses[0].address
+      : undefined;
+  }).filter(Boolean);
+
+  return !all.length
+    ? ip.loopback(family)
+    : all[0];
+};
+
+ip.toLong = function toInt(ip){
+  var ipl=0;
+  ip.split('.').forEach(function( octet ) {
+      ipl<<=8;
+      ipl+=parseInt(octet);
+  });
+  return(ipl >>>0);
+};
+
+ip.fromLong = function fromInt(ipl){
+  return ( (ipl>>>24) +'.' +
+      (ipl>>16 & 255) +'.' +
+      (ipl>>8 & 255) +'.' +
+      (ipl & 255) );
+};
+
+function _normalizeFamily(family) {
+  return family ? family.toLowerCase() : 'ipv4';
+}
+
+},{"buffer":6,"os":61}],20:[function(require,module,exports){
+
+/**
+ * isArray
+ */
+
+var isArray = Array.isArray;
+
+/**
+ * toString
+ */
+
+var str = Object.prototype.toString;
+
+/**
+ * Whether or not the given `val`
+ * is an array.
+ *
+ * example:
+ *
+ *        isArray([]);
+ *        // > true
+ *        isArray(arguments);
+ *        // > false
+ *        isArray('');
+ *        // > false
+ *
+ * @param {mixed} val
+ * @return {bool}
+ */
+
+module.exports = isArray || function (val) {
+  return !! val && '[object Array]' == str.call(val);
+};
+
+},{}],21:[function(require,module,exports){
+/**
+ * Determine if an object is Buffer
+ *
+ * Author:   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * License:  MIT
+ *
+ * `npm install is-buffer`
+ */
+
+module.exports = function (obj) {
+  return !!(obj != null &&
+    (obj._isBuffer || // For Safari 5-7 (missing Object.prototype.constructor)
+      (obj.constructor &&
+      typeof obj.constructor.isBuffer === 'function' &&
+      obj.constructor.isBuffer(obj))
+    ))
+}
+
+},{}],22:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
 
-},{}],12:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/** Used to pool arrays and objects used internally */
+var arrayPool = [];
+
+module.exports = arrayPool;
+
+},{}],24:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var baseCreate = require('lodash._basecreate'),
+    isObject = require('lodash.isobject'),
+    setBindData = require('lodash._setbinddata'),
+    slice = require('lodash._slice');
+
+/**
+ * Used for `Array` method references.
+ *
+ * Normally `Array.prototype` would suffice, however, using an array literal
+ * avoids issues in Narwhal.
+ */
+var arrayRef = [];
+
+/** Native method shortcuts */
+var push = arrayRef.push;
+
+/**
+ * The base implementation of `_.bind` that creates the bound function and
+ * sets its meta data.
+ *
+ * @private
+ * @param {Array} bindData The bind data array.
+ * @returns {Function} Returns the new bound function.
+ */
+function baseBind(bindData) {
+  var func = bindData[0],
+      partialArgs = bindData[2],
+      thisArg = bindData[4];
+
+  function bound() {
+    // `Function#bind` spec
+    // http://es5.github.io/#x15.3.4.5
+    if (partialArgs) {
+      // avoid `arguments` object deoptimizations by using `slice` instead
+      // of `Array.prototype.slice.call` and not assigning `arguments` to a
+      // variable as a ternary expression
+      var args = slice(partialArgs);
+      push.apply(args, arguments);
+    }
+    // mimic the constructor's `return` behavior
+    // http://es5.github.io/#x13.2.2
+    if (this instanceof bound) {
+      // ensure `new bound` is an instance of `func`
+      var thisBinding = baseCreate(func.prototype),
+          result = func.apply(thisBinding, args || arguments);
+      return isObject(result) ? result : thisBinding;
+    }
+    return func.apply(thisArg, args || arguments);
+  }
+  setBindData(bound, bindData);
+  return bound;
+}
+
+module.exports = baseBind;
+
+},{"lodash._basecreate":25,"lodash._setbinddata":35,"lodash._slice":37,"lodash.isobject":45}],25:[function(require,module,exports){
+(function (global){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var isNative = require('lodash._isnative'),
+    isObject = require('lodash.isobject'),
+    noop = require('lodash.noop');
+
+/* Native method shortcuts for methods with the same name as other `lodash` methods */
+var nativeCreate = isNative(nativeCreate = Object.create) && nativeCreate;
+
+/**
+ * The base implementation of `_.create` without support for assigning
+ * properties to the created object.
+ *
+ * @private
+ * @param {Object} prototype The object to inherit from.
+ * @returns {Object} Returns the new object.
+ */
+function baseCreate(prototype, properties) {
+  return isObject(prototype) ? nativeCreate(prototype) : {};
+}
+// fallback for browsers without `Object.create`
+if (!nativeCreate) {
+  baseCreate = (function() {
+    function Object() {}
+    return function(prototype) {
+      if (isObject(prototype)) {
+        Object.prototype = prototype;
+        var result = new Object;
+        Object.prototype = null;
+      }
+      return result || global.Object();
+    };
+  }());
+}
+
+module.exports = baseCreate;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"lodash._isnative":31,"lodash.isobject":45,"lodash.noop":48}],26:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var bind = require('lodash.bind'),
+    identity = require('lodash.identity'),
+    setBindData = require('lodash._setbinddata'),
+    support = require('lodash.support');
+
+/** Used to detected named functions */
+var reFuncName = /^\s*function[ \n\r\t]+\w/;
+
+/** Used to detect functions containing a `this` reference */
+var reThis = /\bthis\b/;
+
+/** Native method shortcuts */
+var fnToString = Function.prototype.toString;
+
+/**
+ * The base implementation of `_.createCallback` without support for creating
+ * "_.pluck" or "_.where" style callbacks.
+ *
+ * @private
+ * @param {*} [func=identity] The value to convert to a callback.
+ * @param {*} [thisArg] The `this` binding of the created callback.
+ * @param {number} [argCount] The number of arguments the callback accepts.
+ * @returns {Function} Returns a callback function.
+ */
+function baseCreateCallback(func, thisArg, argCount) {
+  if (typeof func != 'function') {
+    return identity;
+  }
+  // exit early for no `thisArg` or already bound by `Function#bind`
+  if (typeof thisArg == 'undefined' || !('prototype' in func)) {
+    return func;
+  }
+  var bindData = func.__bindData__;
+  if (typeof bindData == 'undefined') {
+    if (support.funcNames) {
+      bindData = !func.name;
+    }
+    bindData = bindData || !support.funcDecomp;
+    if (!bindData) {
+      var source = fnToString.call(func);
+      if (!support.funcNames) {
+        bindData = !reFuncName.test(source);
+      }
+      if (!bindData) {
+        // checks if `func` references the `this` keyword and stores the result
+        bindData = reThis.test(source);
+        setBindData(func, bindData);
+      }
+    }
+  }
+  // exit early if there are no `this` references or `func` is bound
+  if (bindData === false || (bindData !== true && bindData[1] & 1)) {
+    return func;
+  }
+  switch (argCount) {
+    case 1: return function(value) {
+      return func.call(thisArg, value);
+    };
+    case 2: return function(a, b) {
+      return func.call(thisArg, a, b);
+    };
+    case 3: return function(value, index, collection) {
+      return func.call(thisArg, value, index, collection);
+    };
+    case 4: return function(accumulator, value, index, collection) {
+      return func.call(thisArg, accumulator, value, index, collection);
+    };
+  }
+  return bind(func, thisArg);
+}
+
+module.exports = baseCreateCallback;
+
+},{"lodash._setbinddata":35,"lodash.bind":38,"lodash.identity":43,"lodash.support":50}],27:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var baseCreate = require('lodash._basecreate'),
+    isObject = require('lodash.isobject'),
+    setBindData = require('lodash._setbinddata'),
+    slice = require('lodash._slice');
+
+/**
+ * Used for `Array` method references.
+ *
+ * Normally `Array.prototype` would suffice, however, using an array literal
+ * avoids issues in Narwhal.
+ */
+var arrayRef = [];
+
+/** Native method shortcuts */
+var push = arrayRef.push;
+
+/**
+ * The base implementation of `createWrapper` that creates the wrapper and
+ * sets its meta data.
+ *
+ * @private
+ * @param {Array} bindData The bind data array.
+ * @returns {Function} Returns the new function.
+ */
+function baseCreateWrapper(bindData) {
+  var func = bindData[0],
+      bitmask = bindData[1],
+      partialArgs = bindData[2],
+      partialRightArgs = bindData[3],
+      thisArg = bindData[4],
+      arity = bindData[5];
+
+  var isBind = bitmask & 1,
+      isBindKey = bitmask & 2,
+      isCurry = bitmask & 4,
+      isCurryBound = bitmask & 8,
+      key = func;
+
+  function bound() {
+    var thisBinding = isBind ? thisArg : this;
+    if (partialArgs) {
+      var args = slice(partialArgs);
+      push.apply(args, arguments);
+    }
+    if (partialRightArgs || isCurry) {
+      args || (args = slice(arguments));
+      if (partialRightArgs) {
+        push.apply(args, partialRightArgs);
+      }
+      if (isCurry && args.length < arity) {
+        bitmask |= 16 & ~32;
+        return baseCreateWrapper([func, (isCurryBound ? bitmask : bitmask & ~3), args, null, thisArg, arity]);
+      }
+    }
+    args || (args = arguments);
+    if (isBindKey) {
+      func = thisBinding[key];
+    }
+    if (this instanceof bound) {
+      thisBinding = baseCreate(func.prototype);
+      var result = func.apply(thisBinding, args);
+      return isObject(result) ? result : thisBinding;
+    }
+    return func.apply(thisBinding, args);
+  }
+  setBindData(bound, bindData);
+  return bound;
+}
+
+module.exports = baseCreateWrapper;
+
+},{"lodash._basecreate":25,"lodash._setbinddata":35,"lodash._slice":37,"lodash.isobject":45}],28:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var forIn = require('lodash.forin'),
+    getArray = require('lodash._getarray'),
+    isFunction = require('lodash.isfunction'),
+    objectTypes = require('lodash._objecttypes'),
+    releaseArray = require('lodash._releasearray');
+
+/** `Object#toString` result shortcuts */
+var argsClass = '[object Arguments]',
+    arrayClass = '[object Array]',
+    boolClass = '[object Boolean]',
+    dateClass = '[object Date]',
+    numberClass = '[object Number]',
+    objectClass = '[object Object]',
+    regexpClass = '[object RegExp]',
+    stringClass = '[object String]';
+
+/** Used for native method references */
+var objectProto = Object.prototype;
+
+/** Used to resolve the internal [[Class]] of values */
+var toString = objectProto.toString;
+
+/** Native method shortcuts */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * The base implementation of `_.isEqual`, without support for `thisArg` binding,
+ * that allows partial "_.where" style comparisons.
+ *
+ * @private
+ * @param {*} a The value to compare.
+ * @param {*} b The other value to compare.
+ * @param {Function} [callback] The function to customize comparing values.
+ * @param {Function} [isWhere=false] A flag to indicate performing partial comparisons.
+ * @param {Array} [stackA=[]] Tracks traversed `a` objects.
+ * @param {Array} [stackB=[]] Tracks traversed `b` objects.
+ * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
+ */
+function baseIsEqual(a, b, callback, isWhere, stackA, stackB) {
+  // used to indicate that when comparing objects, `a` has at least the properties of `b`
+  if (callback) {
+    var result = callback(a, b);
+    if (typeof result != 'undefined') {
+      return !!result;
+    }
+  }
+  // exit early for identical values
+  if (a === b) {
+    // treat `+0` vs. `-0` as not equal
+    return a !== 0 || (1 / a == 1 / b);
+  }
+  var type = typeof a,
+      otherType = typeof b;
+
+  // exit early for unlike primitive values
+  if (a === a &&
+      !(a && objectTypes[type]) &&
+      !(b && objectTypes[otherType])) {
+    return false;
+  }
+  // exit early for `null` and `undefined` avoiding ES3's Function#call behavior
+  // http://es5.github.io/#x15.3.4.4
+  if (a == null || b == null) {
+    return a === b;
+  }
+  // compare [[Class]] names
+  var className = toString.call(a),
+      otherClass = toString.call(b);
+
+  if (className == argsClass) {
+    className = objectClass;
+  }
+  if (otherClass == argsClass) {
+    otherClass = objectClass;
+  }
+  if (className != otherClass) {
+    return false;
+  }
+  switch (className) {
+    case boolClass:
+    case dateClass:
+      // coerce dates and booleans to numbers, dates to milliseconds and booleans
+      // to `1` or `0` treating invalid dates coerced to `NaN` as not equal
+      return +a == +b;
+
+    case numberClass:
+      // treat `NaN` vs. `NaN` as equal
+      return (a != +a)
+        ? b != +b
+        // but treat `+0` vs. `-0` as not equal
+        : (a == 0 ? (1 / a == 1 / b) : a == +b);
+
+    case regexpClass:
+    case stringClass:
+      // coerce regexes to strings (http://es5.github.io/#x15.10.6.4)
+      // treat string primitives and their corresponding object instances as equal
+      return a == String(b);
+  }
+  var isArr = className == arrayClass;
+  if (!isArr) {
+    // unwrap any `lodash` wrapped values
+    var aWrapped = hasOwnProperty.call(a, '__wrapped__'),
+        bWrapped = hasOwnProperty.call(b, '__wrapped__');
+
+    if (aWrapped || bWrapped) {
+      return baseIsEqual(aWrapped ? a.__wrapped__ : a, bWrapped ? b.__wrapped__ : b, callback, isWhere, stackA, stackB);
+    }
+    // exit for functions and DOM nodes
+    if (className != objectClass) {
+      return false;
+    }
+    // in older versions of Opera, `arguments` objects have `Array` constructors
+    var ctorA = a.constructor,
+        ctorB = b.constructor;
+
+    // non `Object` object instances with different constructors are not equal
+    if (ctorA != ctorB &&
+          !(isFunction(ctorA) && ctorA instanceof ctorA && isFunction(ctorB) && ctorB instanceof ctorB) &&
+          ('constructor' in a && 'constructor' in b)
+        ) {
+      return false;
+    }
+  }
+  // assume cyclic structures are equal
+  // the algorithm for detecting cyclic structures is adapted from ES 5.1
+  // section 15.12.3, abstract operation `JO` (http://es5.github.io/#x15.12.3)
+  var initedStack = !stackA;
+  stackA || (stackA = getArray());
+  stackB || (stackB = getArray());
+
+  var length = stackA.length;
+  while (length--) {
+    if (stackA[length] == a) {
+      return stackB[length] == b;
+    }
+  }
+  var size = 0;
+  result = true;
+
+  // add `a` and `b` to the stack of traversed objects
+  stackA.push(a);
+  stackB.push(b);
+
+  // recursively compare objects and arrays (susceptible to call stack limits)
+  if (isArr) {
+    // compare lengths to determine if a deep comparison is necessary
+    length = a.length;
+    size = b.length;
+    result = size == length;
+
+    if (result || isWhere) {
+      // deep compare the contents, ignoring non-numeric properties
+      while (size--) {
+        var index = length,
+            value = b[size];
+
+        if (isWhere) {
+          while (index--) {
+            if ((result = baseIsEqual(a[index], value, callback, isWhere, stackA, stackB))) {
+              break;
+            }
+          }
+        } else if (!(result = baseIsEqual(a[size], value, callback, isWhere, stackA, stackB))) {
+          break;
+        }
+      }
+    }
+  }
+  else {
+    // deep compare objects using `forIn`, instead of `forOwn`, to avoid `Object.keys`
+    // which, in this case, is more costly
+    forIn(b, function(value, key, b) {
+      if (hasOwnProperty.call(b, key)) {
+        // count the number of properties.
+        size++;
+        // deep compare each property value.
+        return (result = hasOwnProperty.call(a, key) && baseIsEqual(a[key], value, callback, isWhere, stackA, stackB));
+      }
+    });
+
+    if (result && !isWhere) {
+      // ensure both objects have the same number of properties
+      forIn(a, function(value, key, a) {
+        if (hasOwnProperty.call(a, key)) {
+          // `size` will be `-1` if `a` has more properties than `b`
+          return (result = --size > -1);
+        }
+      });
+    }
+  }
+  stackA.pop();
+  stackB.pop();
+
+  if (initedStack) {
+    releaseArray(stackA);
+    releaseArray(stackB);
+  }
+  return result;
+}
+
+module.exports = baseIsEqual;
+
+},{"lodash._getarray":30,"lodash._objecttypes":33,"lodash._releasearray":34,"lodash.forin":41,"lodash.isfunction":44}],29:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var baseBind = require('lodash._basebind'),
+    baseCreateWrapper = require('lodash._basecreatewrapper'),
+    isFunction = require('lodash.isfunction'),
+    slice = require('lodash._slice');
+
+/**
+ * Used for `Array` method references.
+ *
+ * Normally `Array.prototype` would suffice, however, using an array literal
+ * avoids issues in Narwhal.
+ */
+var arrayRef = [];
+
+/** Native method shortcuts */
+var push = arrayRef.push,
+    unshift = arrayRef.unshift;
+
+/**
+ * Creates a function that, when called, either curries or invokes `func`
+ * with an optional `this` binding and partially applied arguments.
+ *
+ * @private
+ * @param {Function|string} func The function or method name to reference.
+ * @param {number} bitmask The bitmask of method flags to compose.
+ *  The bitmask may be composed of the following flags:
+ *  1 - `_.bind`
+ *  2 - `_.bindKey`
+ *  4 - `_.curry`
+ *  8 - `_.curry` (bound)
+ *  16 - `_.partial`
+ *  32 - `_.partialRight`
+ * @param {Array} [partialArgs] An array of arguments to prepend to those
+ *  provided to the new function.
+ * @param {Array} [partialRightArgs] An array of arguments to append to those
+ *  provided to the new function.
+ * @param {*} [thisArg] The `this` binding of `func`.
+ * @param {number} [arity] The arity of `func`.
+ * @returns {Function} Returns the new function.
+ */
+function createWrapper(func, bitmask, partialArgs, partialRightArgs, thisArg, arity) {
+  var isBind = bitmask & 1,
+      isBindKey = bitmask & 2,
+      isCurry = bitmask & 4,
+      isCurryBound = bitmask & 8,
+      isPartial = bitmask & 16,
+      isPartialRight = bitmask & 32;
+
+  if (!isBindKey && !isFunction(func)) {
+    throw new TypeError;
+  }
+  if (isPartial && !partialArgs.length) {
+    bitmask &= ~16;
+    isPartial = partialArgs = false;
+  }
+  if (isPartialRight && !partialRightArgs.length) {
+    bitmask &= ~32;
+    isPartialRight = partialRightArgs = false;
+  }
+  var bindData = func && func.__bindData__;
+  if (bindData && bindData !== true) {
+    // clone `bindData`
+    bindData = slice(bindData);
+    if (bindData[2]) {
+      bindData[2] = slice(bindData[2]);
+    }
+    if (bindData[3]) {
+      bindData[3] = slice(bindData[3]);
+    }
+    // set `thisBinding` is not previously bound
+    if (isBind && !(bindData[1] & 1)) {
+      bindData[4] = thisArg;
+    }
+    // set if previously bound but not currently (subsequent curried functions)
+    if (!isBind && bindData[1] & 1) {
+      bitmask |= 8;
+    }
+    // set curried arity if not yet set
+    if (isCurry && !(bindData[1] & 4)) {
+      bindData[5] = arity;
+    }
+    // append partial left arguments
+    if (isPartial) {
+      push.apply(bindData[2] || (bindData[2] = []), partialArgs);
+    }
+    // append partial right arguments
+    if (isPartialRight) {
+      unshift.apply(bindData[3] || (bindData[3] = []), partialRightArgs);
+    }
+    // merge flags
+    bindData[1] |= bitmask;
+    return createWrapper.apply(null, bindData);
+  }
+  // fast path for `_.bind`
+  var creater = (bitmask == 1 || bitmask === 17) ? baseBind : baseCreateWrapper;
+  return creater([func, bitmask, partialArgs, partialRightArgs, thisArg, arity]);
+}
+
+module.exports = createWrapper;
+
+},{"lodash._basebind":24,"lodash._basecreatewrapper":27,"lodash._slice":37,"lodash.isfunction":44}],30:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var arrayPool = require('lodash._arraypool');
+
+/**
+ * Gets an array from the array pool or creates a new one if the pool is empty.
+ *
+ * @private
+ * @returns {Array} The array from the pool.
+ */
+function getArray() {
+  return arrayPool.pop() || [];
+}
+
+module.exports = getArray;
+
+},{"lodash._arraypool":23}],31:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/** Used for native method references */
+var objectProto = Object.prototype;
+
+/** Used to resolve the internal [[Class]] of values */
+var toString = objectProto.toString;
+
+/** Used to detect if a method is native */
+var reNative = RegExp('^' +
+  String(toString)
+    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    .replace(/toString| for [^\]]+/g, '.*?') + '$'
+);
+
+/**
+ * Checks if `value` is a native function.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if the `value` is a native function, else `false`.
+ */
+function isNative(value) {
+  return typeof value == 'function' && reNative.test(value);
+}
+
+module.exports = isNative;
+
+},{}],32:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/** Used as the max size of the `arrayPool` and `objectPool` */
+var maxPoolSize = 40;
+
+module.exports = maxPoolSize;
+
+},{}],33:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/** Used to determine if values are of the language type Object */
+var objectTypes = {
+  'boolean': false,
+  'function': true,
+  'object': true,
+  'number': false,
+  'string': false,
+  'undefined': false
+};
+
+module.exports = objectTypes;
+
+},{}],34:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var arrayPool = require('lodash._arraypool'),
+    maxPoolSize = require('lodash._maxpoolsize');
+
+/**
+ * Releases the given array back to the array pool.
+ *
+ * @private
+ * @param {Array} [array] The array to release.
+ */
+function releaseArray(array) {
+  array.length = 0;
+  if (arrayPool.length < maxPoolSize) {
+    arrayPool.push(array);
+  }
+}
+
+module.exports = releaseArray;
+
+},{"lodash._arraypool":23,"lodash._maxpoolsize":32}],35:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var isNative = require('lodash._isnative'),
+    noop = require('lodash.noop');
+
+/** Used as the property descriptor for `__bindData__` */
+var descriptor = {
+  'configurable': false,
+  'enumerable': false,
+  'value': null,
+  'writable': false
+};
+
+/** Used to set meta data on functions */
+var defineProperty = (function() {
+  // IE 8 only accepts DOM elements
+  try {
+    var o = {},
+        func = isNative(func = Object.defineProperty) && func,
+        result = func(o, o, o) && func;
+  } catch(e) { }
+  return result;
+}());
+
+/**
+ * Sets `this` binding data on a given function.
+ *
+ * @private
+ * @param {Function} func The function to set data on.
+ * @param {Array} value The data array to set.
+ */
+var setBindData = !defineProperty ? noop : function(func, value) {
+  descriptor.value = value;
+  defineProperty(func, '__bindData__', descriptor);
+};
+
+module.exports = setBindData;
+
+},{"lodash._isnative":31,"lodash.noop":48}],36:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var objectTypes = require('lodash._objecttypes');
+
+/** Used for native method references */
+var objectProto = Object.prototype;
+
+/** Native method shortcuts */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * A fallback implementation of `Object.keys` which produces an array of the
+ * given object's own enumerable property names.
+ *
+ * @private
+ * @type Function
+ * @param {Object} object The object to inspect.
+ * @returns {Array} Returns an array of property names.
+ */
+var shimKeys = function(object) {
+  var index, iterable = object, result = [];
+  if (!iterable) return result;
+  if (!(objectTypes[typeof object])) return result;
+    for (index in iterable) {
+      if (hasOwnProperty.call(iterable, index)) {
+        result.push(index);
+      }
+    }
+  return result
+};
+
+module.exports = shimKeys;
+
+},{"lodash._objecttypes":33}],37:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/**
+ * Slices the `collection` from the `start` index up to, but not including,
+ * the `end` index.
+ *
+ * Note: This function is used instead of `Array#slice` to support node lists
+ * in IE < 9 and to ensure dense arrays are returned.
+ *
+ * @private
+ * @param {Array|Object|string} collection The collection to slice.
+ * @param {number} start The start index.
+ * @param {number} end The end index.
+ * @returns {Array} Returns the new array.
+ */
+function slice(array, start, end) {
+  start || (start = 0);
+  if (typeof end == 'undefined') {
+    end = array ? array.length : 0;
+  }
+  var index = -1,
+      length = end - start || 0,
+      result = Array(length < 0 ? 0 : length);
+
+  while (++index < length) {
+    result[index] = array[start + index];
+  }
+  return result;
+}
+
+module.exports = slice;
+
+},{}],38:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var createWrapper = require('lodash._createwrapper'),
+    slice = require('lodash._slice');
+
+/**
+ * Creates a function that, when called, invokes `func` with the `this`
+ * binding of `thisArg` and prepends any additional `bind` arguments to those
+ * provided to the bound function.
+ *
+ * @static
+ * @memberOf _
+ * @category Functions
+ * @param {Function} func The function to bind.
+ * @param {*} [thisArg] The `this` binding of `func`.
+ * @param {...*} [arg] Arguments to be partially applied.
+ * @returns {Function} Returns the new bound function.
+ * @example
+ *
+ * var func = function(greeting) {
+ *   return greeting + ' ' + this.name;
+ * };
+ *
+ * func = _.bind(func, { 'name': 'fred' }, 'hi');
+ * func();
+ * // => 'hi fred'
+ */
+function bind(func, thisArg) {
+  return arguments.length > 2
+    ? createWrapper(func, 17, slice(arguments, 2), null, thisArg)
+    : createWrapper(func, 1, null, null, thisArg);
+}
+
+module.exports = bind;
+
+},{"lodash._createwrapper":29,"lodash._slice":37}],39:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.3 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var baseCreateCallback = require('lodash._basecreatecallback'),
+    baseIsEqual = require('lodash._baseisequal'),
+    isObject = require('lodash.isobject'),
+    keys = require('lodash.keys'),
+    property = require('lodash.property');
+
+/**
+ * Produces a callback bound to an optional `thisArg`. If `func` is a property
+ * name the created callback will return the property value for a given element.
+ * If `func` is an object the created callback will return `true` for elements
+ * that contain the equivalent object properties, otherwise it will return `false`.
+ *
+ * @static
+ * @memberOf _
+ * @category Utilities
+ * @param {*} [func=identity] The value to convert to a callback.
+ * @param {*} [thisArg] The `this` binding of the created callback.
+ * @param {number} [argCount] The number of arguments the callback accepts.
+ * @returns {Function} Returns a callback function.
+ * @example
+ *
+ * var characters = [
+ *   { 'name': 'barney', 'age': 36 },
+ *   { 'name': 'fred',   'age': 40 }
+ * ];
+ *
+ * // wrap to create custom callback shorthands
+ * _.createCallback = _.wrap(_.createCallback, function(func, callback, thisArg) {
+ *   var match = /^(.+?)__([gl]t)(.+)$/.exec(callback);
+ *   return !match ? func(callback, thisArg) : function(object) {
+ *     return match[2] == 'gt' ? object[match[1]] > match[3] : object[match[1]] < match[3];
+ *   };
+ * });
+ *
+ * _.filter(characters, 'age__gt38');
+ * // => [{ 'name': 'fred', 'age': 40 }]
+ */
+function createCallback(func, thisArg, argCount) {
+  var type = typeof func;
+  if (func == null || type == 'function') {
+    return baseCreateCallback(func, thisArg, argCount);
+  }
+  // handle "_.pluck" style callback shorthands
+  if (type != 'object') {
+    return property(func);
+  }
+  var props = keys(func),
+      key = props[0],
+      a = func[key];
+
+  // handle "_.where" style callback shorthands
+  if (props.length == 1 && a === a && !isObject(a)) {
+    // fast path the common case of providing an object with a single
+    // property containing a primitive value
+    return function(object) {
+      var b = object[key];
+      return a === b && (a !== 0 || (1 / a == 1 / b));
+    };
+  }
+  return function(object) {
+    var length = props.length,
+        result = false;
+
+    while (length--) {
+      if (!(result = baseIsEqual(object[props[length]], func[props[length]], null, true))) {
+        break;
+      }
+    }
+    return result;
+  };
+}
+
+module.exports = createCallback;
+
+},{"lodash._basecreatecallback":26,"lodash._baseisequal":28,"lodash.isobject":45,"lodash.keys":46,"lodash.property":49}],40:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var createCallback = require('lodash.createcallback'),
+    forOwn = require('lodash.forown');
+
+/**
+ * Iterates over elements of a collection, returning an array of all elements
+ * the callback returns truey for. The callback is bound to `thisArg` and
+ * invoked with three arguments; (value, index|key, collection).
+ *
+ * If a property name is provided for `callback` the created "_.pluck" style
+ * callback will return the property value of the given element.
+ *
+ * If an object is provided for `callback` the created "_.where" style callback
+ * will return `true` for elements that have the properties of the given object,
+ * else `false`.
+ *
+ * @static
+ * @memberOf _
+ * @alias select
+ * @category Collections
+ * @param {Array|Object|string} collection The collection to iterate over.
+ * @param {Function|Object|string} [callback=identity] The function called
+ *  per iteration. If a property name or object is provided it will be used
+ *  to create a "_.pluck" or "_.where" style callback, respectively.
+ * @param {*} [thisArg] The `this` binding of `callback`.
+ * @returns {Array} Returns a new array of elements that passed the callback check.
+ * @example
+ *
+ * var evens = _.filter([1, 2, 3, 4, 5, 6], function(num) { return num % 2 == 0; });
+ * // => [2, 4, 6]
+ *
+ * var characters = [
+ *   { 'name': 'barney', 'age': 36, 'blocked': false },
+ *   { 'name': 'fred',   'age': 40, 'blocked': true }
+ * ];
+ *
+ * // using "_.pluck" callback shorthand
+ * _.filter(characters, 'blocked');
+ * // => [{ 'name': 'fred', 'age': 40, 'blocked': true }]
+ *
+ * // using "_.where" callback shorthand
+ * _.filter(characters, { 'age': 36 });
+ * // => [{ 'name': 'barney', 'age': 36, 'blocked': false }]
+ */
+function filter(collection, callback, thisArg) {
+  var result = [];
+  callback = createCallback(callback, thisArg, 3);
+
+  var index = -1,
+      length = collection ? collection.length : 0;
+
+  if (typeof length == 'number') {
+    while (++index < length) {
+      var value = collection[index];
+      if (callback(value, index, collection)) {
+        result.push(value);
+      }
+    }
+  } else {
+    forOwn(collection, function(value, index, collection) {
+      if (callback(value, index, collection)) {
+        result.push(value);
+      }
+    });
+  }
+  return result;
+}
+
+module.exports = filter;
+
+},{"lodash.createcallback":39,"lodash.forown":42}],41:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var baseCreateCallback = require('lodash._basecreatecallback'),
+    objectTypes = require('lodash._objecttypes');
+
+/**
+ * Iterates over own and inherited enumerable properties of an object,
+ * executing the callback for each property. The callback is bound to `thisArg`
+ * and invoked with three arguments; (value, key, object). Callbacks may exit
+ * iteration early by explicitly returning `false`.
+ *
+ * @static
+ * @memberOf _
+ * @type Function
+ * @category Objects
+ * @param {Object} object The object to iterate over.
+ * @param {Function} [callback=identity] The function called per iteration.
+ * @param {*} [thisArg] The `this` binding of `callback`.
+ * @returns {Object} Returns `object`.
+ * @example
+ *
+ * function Shape() {
+ *   this.x = 0;
+ *   this.y = 0;
+ * }
+ *
+ * Shape.prototype.move = function(x, y) {
+ *   this.x += x;
+ *   this.y += y;
+ * };
+ *
+ * _.forIn(new Shape, function(value, key) {
+ *   console.log(key);
+ * });
+ * // => logs 'x', 'y', and 'move' (property order is not guaranteed across environments)
+ */
+var forIn = function(collection, callback, thisArg) {
+  var index, iterable = collection, result = iterable;
+  if (!iterable) return result;
+  if (!objectTypes[typeof iterable]) return result;
+  callback = callback && typeof thisArg == 'undefined' ? callback : baseCreateCallback(callback, thisArg, 3);
+    for (index in iterable) {
+      if (callback(iterable[index], index, collection) === false) return result;
+    }
+  return result
+};
+
+module.exports = forIn;
+
+},{"lodash._basecreatecallback":26,"lodash._objecttypes":33}],42:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var baseCreateCallback = require('lodash._basecreatecallback'),
+    keys = require('lodash.keys'),
+    objectTypes = require('lodash._objecttypes');
+
+/**
+ * Iterates over own enumerable properties of an object, executing the callback
+ * for each property. The callback is bound to `thisArg` and invoked with three
+ * arguments; (value, key, object). Callbacks may exit iteration early by
+ * explicitly returning `false`.
+ *
+ * @static
+ * @memberOf _
+ * @type Function
+ * @category Objects
+ * @param {Object} object The object to iterate over.
+ * @param {Function} [callback=identity] The function called per iteration.
+ * @param {*} [thisArg] The `this` binding of `callback`.
+ * @returns {Object} Returns `object`.
+ * @example
+ *
+ * _.forOwn({ '0': 'zero', '1': 'one', 'length': 2 }, function(num, key) {
+ *   console.log(key);
+ * });
+ * // => logs '0', '1', and 'length' (property order is not guaranteed across environments)
+ */
+var forOwn = function(collection, callback, thisArg) {
+  var index, iterable = collection, result = iterable;
+  if (!iterable) return result;
+  if (!objectTypes[typeof iterable]) return result;
+  callback = callback && typeof thisArg == 'undefined' ? callback : baseCreateCallback(callback, thisArg, 3);
+    var ownIndex = -1,
+        ownProps = objectTypes[typeof iterable] && keys(iterable),
+        length = ownProps ? ownProps.length : 0;
+
+    while (++ownIndex < length) {
+      index = ownProps[ownIndex];
+      if (callback(iterable[index], index, collection) === false) return result;
+    }
+  return result
+};
+
+module.exports = forOwn;
+
+},{"lodash._basecreatecallback":26,"lodash._objecttypes":33,"lodash.keys":46}],43:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/**
+ * This method returns the first argument provided to it.
+ *
+ * @static
+ * @memberOf _
+ * @category Utilities
+ * @param {*} value Any value.
+ * @returns {*} Returns `value`.
+ * @example
+ *
+ * var object = { 'name': 'fred' };
+ * _.identity(object) === object;
+ * // => true
+ */
+function identity(value) {
+  return value;
+}
+
+module.exports = identity;
+
+},{}],44:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/**
+ * Checks if `value` is a function.
+ *
+ * @static
+ * @memberOf _
+ * @category Objects
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if the `value` is a function, else `false`.
+ * @example
+ *
+ * _.isFunction(_);
+ * // => true
+ */
+function isFunction(value) {
+  return typeof value == 'function';
+}
+
+module.exports = isFunction;
+
+},{}],45:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var objectTypes = require('lodash._objecttypes');
+
+/**
+ * Checks if `value` is the language type of Object.
+ * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @static
+ * @memberOf _
+ * @category Objects
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if the `value` is an object, else `false`.
+ * @example
+ *
+ * _.isObject({});
+ * // => true
+ *
+ * _.isObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isObject(1);
+ * // => false
+ */
+function isObject(value) {
+  // check if the value is the ECMAScript language type of Object
+  // http://es5.github.io/#x8
+  // and avoid a V8 bug
+  // http://code.google.com/p/v8/issues/detail?id=2291
+  return !!(value && objectTypes[typeof value]);
+}
+
+module.exports = isObject;
+
+},{"lodash._objecttypes":33}],46:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var isNative = require('lodash._isnative'),
+    isObject = require('lodash.isobject'),
+    shimKeys = require('lodash._shimkeys');
+
+/* Native method shortcuts for methods with the same name as other `lodash` methods */
+var nativeKeys = isNative(nativeKeys = Object.keys) && nativeKeys;
+
+/**
+ * Creates an array composed of the own enumerable property names of an object.
+ *
+ * @static
+ * @memberOf _
+ * @category Objects
+ * @param {Object} object The object to inspect.
+ * @returns {Array} Returns an array of property names.
+ * @example
+ *
+ * _.keys({ 'one': 1, 'two': 2, 'three': 3 });
+ * // => ['one', 'two', 'three'] (property order is not guaranteed across environments)
+ */
+var keys = !nativeKeys ? shimKeys : function(object) {
+  if (!isObject(object)) {
+    return [];
+  }
+  return nativeKeys(object);
+};
+
+module.exports = keys;
+
+},{"lodash._isnative":31,"lodash._shimkeys":36,"lodash.isobject":45}],47:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var createCallback = require('lodash.createcallback'),
+    forOwn = require('lodash.forown');
+
+/**
+ * Creates an array of values by running each element in the collection
+ * through the callback. The callback is bound to `thisArg` and invoked with
+ * three arguments; (value, index|key, collection).
+ *
+ * If a property name is provided for `callback` the created "_.pluck" style
+ * callback will return the property value of the given element.
+ *
+ * If an object is provided for `callback` the created "_.where" style callback
+ * will return `true` for elements that have the properties of the given object,
+ * else `false`.
+ *
+ * @static
+ * @memberOf _
+ * @alias collect
+ * @category Collections
+ * @param {Array|Object|string} collection The collection to iterate over.
+ * @param {Function|Object|string} [callback=identity] The function called
+ *  per iteration. If a property name or object is provided it will be used
+ *  to create a "_.pluck" or "_.where" style callback, respectively.
+ * @param {*} [thisArg] The `this` binding of `callback`.
+ * @returns {Array} Returns a new array of the results of each `callback` execution.
+ * @example
+ *
+ * _.map([1, 2, 3], function(num) { return num * 3; });
+ * // => [3, 6, 9]
+ *
+ * _.map({ 'one': 1, 'two': 2, 'three': 3 }, function(num) { return num * 3; });
+ * // => [3, 6, 9] (property order is not guaranteed across environments)
+ *
+ * var characters = [
+ *   { 'name': 'barney', 'age': 36 },
+ *   { 'name': 'fred',   'age': 40 }
+ * ];
+ *
+ * // using "_.pluck" callback shorthand
+ * _.map(characters, 'name');
+ * // => ['barney', 'fred']
+ */
+function map(collection, callback, thisArg) {
+  var index = -1,
+      length = collection ? collection.length : 0;
+
+  callback = createCallback(callback, thisArg, 3);
+  if (typeof length == 'number') {
+    var result = Array(length);
+    while (++index < length) {
+      result[index] = callback(collection[index], index, collection);
+    }
+  } else {
+    result = [];
+    forOwn(collection, function(value, key, collection) {
+      result[++index] = callback(value, key, collection);
+    });
+  }
+  return result;
+}
+
+module.exports = map;
+
+},{"lodash.createcallback":39,"lodash.forown":42}],48:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/**
+ * A no-operation function.
+ *
+ * @static
+ * @memberOf _
+ * @category Utilities
+ * @example
+ *
+ * var object = { 'name': 'fred' };
+ * _.noop(object) === undefined;
+ * // => true
+ */
+function noop() {
+  // no operation performed
+}
+
+module.exports = noop;
+
+},{}],49:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/**
+ * Creates a "_.pluck" style function, which returns the `key` value of a
+ * given object.
+ *
+ * @static
+ * @memberOf _
+ * @category Utilities
+ * @param {string} key The name of the property to retrieve.
+ * @returns {Function} Returns the new function.
+ * @example
+ *
+ * var characters = [
+ *   { 'name': 'fred',   'age': 40 },
+ *   { 'name': 'barney', 'age': 36 }
+ * ];
+ *
+ * var getName = _.property('name');
+ *
+ * _.map(characters, getName);
+ * // => ['barney', 'fred']
+ *
+ * _.sortBy(characters, getName);
+ * // => [{ 'name': 'barney', 'age': 36 }, { 'name': 'fred',   'age': 40 }]
+ */
+function property(key) {
+  return function(object) {
+    return object[key];
+  };
+}
+
+module.exports = property;
+
+},{}],50:[function(require,module,exports){
+(function (global){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var isNative = require('lodash._isnative');
+
+/** Used to detect functions containing a `this` reference */
+var reThis = /\bthis\b/;
+
+/**
+ * An object used to flag environments features.
+ *
+ * @static
+ * @memberOf _
+ * @type Object
+ */
+var support = {};
+
+/**
+ * Detect if functions can be decompiled by `Function#toString`
+ * (all but PS3 and older Opera mobile browsers & avoided in Windows 8 apps).
+ *
+ * @memberOf _.support
+ * @type boolean
+ */
+support.funcDecomp = !isNative(global.WinRTError) && reThis.test(function() { return this; });
+
+/**
+ * Detect if `Function#name` is supported (all but IE).
+ *
+ * @memberOf _.support
+ * @type boolean
+ */
+support.funcNames = typeof Function.name == 'string';
+
+module.exports = support;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"lodash._isnative":31}],51:[function(require,module,exports){
+'use strict';
+
+var PassThrough = require('readable-stream/passthrough')
+
+module.exports = function (/*streams...*/) {
+  var sources = []
+  var output  = new PassThrough({objectMode: true})
+
+  output.setMaxListeners(0)
+
+  output.add = add
+  output.isEmpty = isEmpty
+
+  output.on('unpipe', remove)
+
+  Array.prototype.slice.call(arguments).forEach(add)
+
+  return output
+
+  function add (source) {
+    if (Array.isArray(source)) {
+      source.forEach(add)
+      return this
+    }
+
+    sources.push(source);
+    source.once('end', remove.bind(null, source))
+    source.pipe(output, {end: false})
+    return this
+  }
+
+  function isEmpty () {
+    return sources.length == 0;
+  }
+
+  function remove (source) {
+    sources = sources.filter(function (it) { return it !== source })
+    if (!sources.length && output.readable) { output.end() }
+  }
+}
+
+},{"readable-stream/passthrough":75}],52:[function(require,module,exports){
+(function (Buffer){
+var map = require('lodash.map')
+var filter = require('lodash.filter')
+var log = console.log
+var convert = require('./convert')
+var protocols = require('./protocols')
+
+// export codec
+var codec = module.exports = {
+  stringToStringTuples: stringToStringTuples,
+  stringTuplesToString: stringTuplesToString,
+
+  tuplesToStringTuples: tuplesToStringTuples,
+  stringTuplesToTuples: stringTuplesToTuples,
+
+  bufferToTuples: bufferToTuples,
+  tuplesToBuffer: tuplesToBuffer,
+
+  bufferToString: bufferToString,
+  stringToBuffer: stringToBuffer,
+
+  fromString: fromString,
+  fromBuffer: fromBuffer,
+  validateBuffer: validateBuffer,
+  isValidBuffer: isValidBuffer,
+  cleanPath: cleanPath,
+
+  ParseError: ParseError,
+  protoFromTuple: protoFromTuple,
+}
+
+// string -> [[str name, str addr]... ]
+function stringToStringTuples(str) {
+  var tuples = []
+  var parts = str.split('/').slice(1) // skip first empty elem
+  if (parts.length == 1 && parts[0] == '')
+    return []
+
+  for (var p = 0; p < parts.length; p++) {
+    var part = parts[p]
+    var proto = protocols(part)
+    if (proto.size == 0)
+      return [part]
+
+    p++ // advance addr part
+    if (p >= parts.length)
+      throw ParseError("invalid address: " + str)
+
+    tuples.push([part, parts[p]])
+  }
+  return tuples
+}
+
+// [[str name, str addr]... ] -> string
+function stringTuplesToString(tuples) {
+  var parts = []
+  map(tuples, function(tup) {
+    var proto = protoFromTuple(tup)
+    parts.push(proto.name)
+    if (tup.length > 1)
+      parts.push(tup[1])
+  })
+  return "/" + parts.join("/")
+}
+
+
+// [[str name, str addr]... ] -> [[int code, Buffer]... ]
+function stringTuplesToTuples(tuples) {
+  return map(tuples, function(tup) {
+    var proto = protoFromTuple(tup)
+    if (tup.length > 1)
+      return [proto.code, convert.toBuffer(proto.code, tup[1])]
+    return [proto.code]
+  })
+}
+
+// [[int code, Buffer]... ] -> [[str name, str addr]... ]
+function tuplesToStringTuples(tuples) {
+  return map(tuples, function(tup) {
+    var proto = protoFromTuple(tup)
+    if (tup.length > 1)
+      return [proto.code, convert.toString(proto.code, tup[1])]
+    return [proto.code]
+  })
+}
+
+// [[int code, Buffer ]... ] -> Buffer
+function tuplesToBuffer(tuples) {
+  return fromBuffer(Buffer.concat(map(tuples, function(tup) {
+    var proto = protoFromTuple(tup)
+    var buf = new Buffer([proto.code])
+    if (tup.length > 1)
+      buf = Buffer.concat([buf, tup[1]]) // add address buffer
+    return buf
+  })))
+}
+
+// Buffer -> [[int code, Buffer ]... ]
+function bufferToTuples(buf) {
+  var tuples = []
+  for (var i = 0; i < buf.length; ) {
+    var code = buf[i]
+    var proto = protocols(code)
+    if (!proto)
+      throw ParseError("Invalid protocol code: " + code)
+
+    var size = (proto.size / 8)
+    var code = 0 + buf[i]
+    var addr = buf.slice(i + 1, i + 1 + size)
+    i += 1 + size
+    if (i > buf.length) // did not end _exactly_ at buffer.length
+      throw ParseError("Invalid address buffer: " + buf.toString('hex'))
+
+    // ok, tuple seems good.
+    tuples.push([code, addr])
+  }
+  return tuples
+}
+
+// Buffer -> String
+function bufferToString(buf) {
+  var a = bufferToTuples(buf)
+  var b = tuplesToStringTuples(a)
+  return stringTuplesToString(b)
+}
+
+// String -> Buffer
+function stringToBuffer(str) {
+  str = cleanPath(str)
+  var a = stringToStringTuples(str)
+  var b = stringTuplesToTuples(a)
+  return tuplesToBuffer(b)
+}
+
+// String -> Buffer
+function fromString(str) {
+  return stringToBuffer(str)
+}
+
+// Buffer -> Buffer
+function fromBuffer(buf) {
+  var err = validateBuffer(buf)
+  if (err) throw err
+  return new Buffer(buf) // copy
+}
+
+function validateBuffer(buf) {
+  bufferToTuples(buf) // try to parse. will throw if breaks
+}
+
+function isValidBuffer(buf) {
+  try {
+    validateBuffer(buf) // try to parse. will throw if breaks
+    return true
+  } catch(e) {
+    return false
+  }
+}
+
+function cleanPath(str) {
+  return '/' + filter(str.trim().split('/')).join('/')
+}
+
+function ParseError(str) {
+  return new Error("Error parsing address: " + str)
+}
+
+function protoFromTuple(tup) {
+  var proto = protocols(tup[0])
+  if (tup.length > 1 && proto.size == 0)
+    throw ParseError("tuple has address but protocol size is 0")
+  return proto
+}
+
+}).call(this,require("buffer").Buffer)
+},{"./convert":53,"./protocols":56,"buffer":6,"lodash.filter":40,"lodash.map":47}],53:[function(require,module,exports){
+(function (Buffer){
+var ip = require('ip')
+var protocols = require('./protocols')
+
+module.exports = Convert
+
+// converts (serializes) addresses
+function Convert(proto, a) {
+  if (a instanceof Buffer)
+    return Convert.toString(proto, a)
+  else
+    return Convert.toBuffer(proto, a)
+}
+
+Convert.toString = function convertToString(proto, buf) {
+  proto = protocols(proto)
+  switch (proto.code) {
+  case 4: // ipv4
+  case 41: // ipv6
+    return ip.toString(buf)
+
+  case 6: // tcp
+  case 17: // udp
+  case 33: // dccp
+  case 132: // sctp
+    return buf2port(buf)
+  }
+  return buf.toString('hex') // no clue. convert to hex
+}
+
+Convert.toBuffer = function convertToBuffer(proto, str) {
+  proto = protocols(proto)
+  switch (proto.code) {
+  case 4: // ipv4
+  case 41: // ipv6
+    return ip.toBuffer(str)
+
+  case 6: // tcp
+  case 17: // udp
+  case 33: // dccp
+  case 132: // sctp
+    return port2buf(parseInt(str, 10))
+  }
+  return new Buffer(str, 'hex') // no clue. convert from hex
+}
+
+function port2buf(port) {
+  var buf = new Buffer(2)
+  buf.writeUInt16BE(port, 0);
+  return buf
+}
+
+function buf2port(buf) {
+  return buf.readUInt16BE(0)
+}
+
+}).call(this,require("buffer").Buffer)
+},{"./protocols":56,"buffer":6,"ip":19}],54:[function(require,module,exports){
+(function (Buffer){
+var map = require('lodash.map')
+var extend = require('xtend')
+var codec = require('./codec')
+var bufeq = require('buffer-equal')
+var protocols = require('./protocols')
+var NotImplemented = new Error("Sorry, Not Implemented Yet.")
+
+module.exports = Multiaddr
+
+function Multiaddr(addr) {
+  if (!(this instanceof Multiaddr))
+    return new Multiaddr(addr)
+
+  // defaults
+  if (!addr)
+    addr = ''
+
+  if (addr instanceof Buffer)
+    this.buffer = codec.fromBuffer(addr)
+  else if (typeof(addr) == 'string' || addr instanceof String)
+    this.buffer = codec.fromString(addr)
+  else if (addr.buffer && addr.protos && addr.protoCodes) // Multiaddr
+    this.buffer = codec.fromBuffer(addr.buffer) // validate + copy buffer
+  else
+    throw new Error('addr must be a string, Buffer, or Multiaddr')
+}
+
+// get the multiaddr protocols
+Multiaddr.prototype.toString = function toString() {
+  return codec.bufferToString(this.buffer)
+}
+
+// get the multiaddr as a convinent options object to be dropped in net.createConnection
+Multiaddr.prototype.toOptions = function toOptions() {
+  var opts = {}
+  var parsed = this.toString().split('/')
+  opts.family = parsed[1] === 'ip4' ? 'ipv4' : 'ipv6'
+  opts.host = parsed[2]
+  opts.port = parsed[4]
+  return opts
+}
+
+// get the multiaddr protocols
+Multiaddr.prototype.inspect = function inspect() {
+  return "<Mutliaddr "+
+    this.buffer.toString('hex') + " - " +
+    codec.bufferToString(this.buffer) + ">"
+}
+
+// get the multiaddr protocols
+Multiaddr.prototype.protos = function protos() {
+  return map(this.protoCodes(), function(code) {
+    return extend(protocols(code))
+    // copy to prevent users from modifying the internal objs.
+  });
+}
+
+// get the multiaddr protocols
+Multiaddr.prototype.protos = function protos() {
+  return map(this.protoCodes(), function(code) {
+    return extend(protocols(code))
+    // copy to prevent users from modifying the internal objs.
+  });
+}
+
+// get the multiaddr protocol codes
+Multiaddr.prototype.protoCodes = function protoCodes() {
+  var codes = []
+  for (var i = 0; i < this.buffer.length; i++) {
+    var code = 0 + this.buffer[i]
+    var size = protocols(code).size / 8
+    i += size // skip over proto data
+    codes.push(code)
+  }
+  return codes
+}
+
+// get the multiaddr protocol string names
+Multiaddr.prototype.protoNames = function protoNames() {
+  return map(this.protos(), function(proto) {
+    return proto.name
+  })
+}
+
+// Returns a tuple of parts:
+Multiaddr.prototype.tuples = function tuples() {
+  return codec.bufferToTuples(this.buffer)
+}
+
+// Returns a tuple of string parts:
+Multiaddr.prototype.stringTuples = function stringTuples() {
+  var t = codec.bufferToTuples(this.buffer)
+  return codec.tuplesToStringTuples(t)
+}
+
+
+Multiaddr.prototype.encapsulate = function encapsulate(addr) {
+  addr = Multiaddr(addr)
+  return Multiaddr(this.toString() + addr.toString())
+}
+
+Multiaddr.prototype.decapsulate = function decapsulate(addr) {
+  addr = addr.toString()
+  var s = this.toString()
+  var i = s.lastIndexOf(addr)
+  if (i < 0)
+    throw new Error("Address " +this+" does not contain subaddress: " +addr)
+  return Multiaddr(s.slice(0, i))
+}
+
+Multiaddr.prototype.equals = function equals(addr) {
+  return bufeq(this.buffer, addr.buffer)
+}
+
+// get a node friendly address object
+Multiaddr.prototype.nodeAddress = function nodeAddress() {
+  if (!this.isThinWaistAddress())
+    throw new Error('Multiaddr must be "thin waist" address for nodeAddress.')
+
+  var codes = this.protoCodes()
+  var parts = this.toString().split('/').slice(1)
+  return {
+    family: (codes[0] == 41) ? "IPv6" : "IPv4",
+    address: parts[1], // ip addr
+    port: parts[3], // tcp or udp port
+  }
+}
+
+// from a node friendly address object
+Multiaddr.fromNodeAddress = function fromNodeAddress(addr, transport) {
+  if (!addr) throw new Error('requires node address object')
+  if (!transport) throw new Error('requires transport protocol')
+  var ip = (addr.family == "IPv6") ? 'ip6' : 'ip4'
+  return Multiaddr('/' + [ip, addr.address, transport, addr.port].join('/'))
+}
+
+
+// returns whether this address is a standard combination:
+// /{IPv4, IPv6}/{TCP, UDP}
+Multiaddr.prototype.isThinWaistAddress = function isThinWaistAddress(addr) {
+  var protos = (addr || this).protos()
+  if (protos.length != 2) return false
+  if (protos[0].code != 4 && protos[0].code != 41) return false
+  if (protos[1].code != 6 && protos[1].code != 17) return false
+  return true
+}
+
+
+// parses the "stupid string" format:
+// <proto><IPv>://<IP Addr>[:<proto port>]
+// udp4://1.2.3.4:5678
+Multiaddr.prototype.fromStupidString = function fromStupidString(str) {
+  throw NotImplemented
+}
+
+// patch this in
+Multiaddr.protocols = protocols
+
+}).call(this,require("buffer").Buffer)
+},{"./codec":52,"./protocols":56,"buffer":6,"buffer-equal":5,"lodash.map":47,"xtend":55}],55:[function(require,module,exports){
+module.exports = extend
+
+function extend() {
+    var target = {}
+
+    for (var i = 0; i < arguments.length; i++) {
+        var source = arguments[i]
+
+        for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+                target[key] = source[key]
+            }
+        }
+    }
+
+    return target
+}
+
+},{}],56:[function(require,module,exports){
+var map = require('lodash.map')
+
+module.exports = Protocols
+
+function Protocols(proto) {
+  if (typeof(proto) == 'number') {
+    if (Protocols.codes[proto])
+      return Protocols.codes[proto]
+
+    throw new Error("no protocol with code: " + proto)
+  }
+  else if (typeof(proto) == 'string' || proto instanceof String) {
+    if (Protocols.names[proto])
+      return Protocols.names[proto]
+
+    throw new Error("no protocol with name: " + proto)
+  }
+
+  throw new Error("invalid protocol id type: " + proto)
+}
+
+// replicating table here to:
+// 1. avoid parsing the csv
+// 2. ensuring errors in the csv don't screw up code.
+// 3. changing a number has to happen in two places.
+
+Protocols.table = [
+  [4,  32,  'ip4'],
+  [6,  16,  'tcp'],
+  [17, 16,  'udp'],
+  [33, 16,  'dccp'],
+  [41, 128, 'ip6'],
+  // these require varint:
+  [132, 16, 'sctp'],
+  // [480, 0, 'http'],
+  // [443, 0, 'https'],
+]
+
+Protocols.names = {}
+Protocols.codes = {}
+
+// populate tables
+map(Protocols.table, function(e) {
+  var proto = p.apply(this, e)
+  Protocols.codes[proto.code] = proto
+  Protocols.names[proto.name] = proto
+})
+
+Protocols.object = p
+
+function p(code, size, name) {
+  return {code: code, size: size, name: name}
+}
+
+},{"lodash.map":47}],57:[function(require,module,exports){
+var Sandwich = require('sandwich-stream').SandwichStream
+var stream = require('stream')
+var inherits = require('inherits')
+
+var CRNL = '\r\n'
+
+module.exports = Multipart
+
+/**
+ * Multipart request constructor.
+ * @constructor
+ * @param {object} [opts]
+ * @param {string} [opts.boundary] - The boundary to be used. If omitted one is generated.
+ * @returns {function} Returns the multipart stream.
+ */
+function Multipart(boundary) {
+	if(!this instanceof Multipart) {
+		return new Multipart(boundary)
+	}
+
+	this.boundary = boundary || Math.random().toString(36).slice(2)
+
+	Sandwich.call(this, {
+		head: '--' + this.boundary + CRNL,
+		tail: CRNL + '--' + this.boundary + '--',
+		separator: CRNL + '--' + this.boundary + CRNL
+	})
+
+	this._add = this.add
+	this.add = this.addPart
+}
+
+inherits(Multipart, Sandwich)
+
+/**
+ * Adds a new part to the request.
+ * @param {object} [part={}]
+ * @param {object} [part.headers={}]
+ * @param {string|buffer|stream} [part.body=\r\n]
+ * @returns {function} Returns the multipart stream.
+ */
+Multipart.prototype.addPart = function(part) {
+	part = part || {}
+	var partStream = new stream.PassThrough()
+
+	if(part.headers) {
+		for(var key in part.headers) {
+			var header = part.headers[key]
+			partStream.write(key + ': ' + header + CRNL)
+		}
+	}
+
+	partStream.write(CRNL)
+
+	if(part.body instanceof stream.Stream) {
+		part.body.pipe(partStream)
+	} else {
+		partStream.end(part.body)
+	}
+
+	this._add(partStream)
+}
+},{"inherits":18,"sandwich-stream":80,"stream":81}],58:[function(require,module,exports){
+'use strict';
+
+// modified from https://github.com/es-shims/es5-shim
+var has = Object.prototype.hasOwnProperty;
+var toStr = Object.prototype.toString;
+var slice = Array.prototype.slice;
+var isArgs = require('./isArguments');
+var hasDontEnumBug = !({ 'toString': null }).propertyIsEnumerable('toString');
+var hasProtoEnumBug = function () {}.propertyIsEnumerable('prototype');
+var dontEnums = [
+	'toString',
+	'toLocaleString',
+	'valueOf',
+	'hasOwnProperty',
+	'isPrototypeOf',
+	'propertyIsEnumerable',
+	'constructor'
+];
+var equalsConstructorPrototype = function (o) {
+	var ctor = o.constructor;
+	return ctor && ctor.prototype === o;
+};
+var blacklistedKeys = {
+	$window: true,
+	$console: true,
+	$parent: true,
+	$self: true,
+	$frames: true,
+	$webkitIndexedDB: true,
+	$webkitStorageInfo: true
+};
+var hasAutomationEqualityBug = (function () {
+	/* global window */
+	if (typeof window === 'undefined') { return false; }
+	for (var k in window) {
+		if (!blacklistedKeys['$' + k] && has.call(window, k) && window[k] !== null && typeof window[k] === 'object') {
+			try {
+				equalsConstructorPrototype(window[k]);
+			} catch (e) {
+				return true;
+			}
+		}
+	}
+	return false;
+}());
+var equalsConstructorPrototypeIfNotBuggy = function (o) {
+	/* global window */
+	if (typeof window === 'undefined' && !hasAutomationEqualityBug) {
+		return equalsConstructorPrototype(o);
+	}
+	try {
+		return equalsConstructorPrototype(o);
+	} catch (e) {
+		return false;
+	}
+};
+
+var keysShim = function keys(object) {
+	var isObject = object !== null && typeof object === 'object';
+	var isFunction = toStr.call(object) === '[object Function]';
+	var isArguments = isArgs(object);
+	var isString = isObject && toStr.call(object) === '[object String]';
+	var theKeys = [];
+
+	if (!isObject && !isFunction && !isArguments) {
+		throw new TypeError('Object.keys called on a non-object');
+	}
+
+	var skipProto = hasProtoEnumBug && isFunction;
+	if (isString && object.length > 0 && !has.call(object, 0)) {
+		for (var i = 0; i < object.length; ++i) {
+			theKeys.push(String(i));
+		}
+	}
+
+	if (isArguments && object.length > 0) {
+		for (var j = 0; j < object.length; ++j) {
+			theKeys.push(String(j));
+		}
+	} else {
+		for (var name in object) {
+			if (!(skipProto && name === 'prototype') && has.call(object, name)) {
+				theKeys.push(String(name));
+			}
+		}
+	}
+
+	if (hasDontEnumBug) {
+		var skipConstructor = equalsConstructorPrototypeIfNotBuggy(object);
+
+		for (var k = 0; k < dontEnums.length; ++k) {
+			if (!(skipConstructor && dontEnums[k] === 'constructor') && has.call(object, dontEnums[k])) {
+				theKeys.push(dontEnums[k]);
+			}
+		}
+	}
+	return theKeys;
+};
+
+keysShim.shim = function shimObjectKeys() {
+	if (!Object.keys) {
+		Object.keys = keysShim;
+	} else {
+		var keysWorksWithArguments = (function () {
+			// Safari 5.0 bug
+			return (Object.keys(arguments) || '').length === 2;
+		}(1, 2));
+		if (!keysWorksWithArguments) {
+			var originalKeys = Object.keys;
+			Object.keys = function keys(object) {
+				if (isArgs(object)) {
+					return originalKeys(slice.call(object));
+				} else {
+					return originalKeys(object);
+				}
+			};
+		}
+	}
+	return Object.keys || keysShim;
+};
+
+module.exports = keysShim;
+
+},{"./isArguments":59}],59:[function(require,module,exports){
+'use strict';
+
+var toStr = Object.prototype.toString;
+
+module.exports = function isArguments(value) {
+	var str = toStr.call(value);
+	var isArgs = str === '[object Arguments]';
+	if (!isArgs) {
+		isArgs = str !== '[object Array]' &&
+			value !== null &&
+			typeof value === 'object' &&
+			typeof value.length === 'number' &&
+			value.length >= 0 &&
+			toStr.call(value.callee) === '[object Function]';
+	}
+	return isArgs;
+};
+
+},{}],60:[function(require,module,exports){
+var wrappy = require('wrappy')
+module.exports = wrappy(once)
+
+once.proto = once(function () {
+  Object.defineProperty(Function.prototype, 'once', {
+    value: function () {
+      return once(this)
+    },
+    configurable: true
+  })
+})
+
+function once (fn) {
+  var f = function () {
+    if (f.called) return f.value
+    f.called = true
+    return f.value = fn.apply(this, arguments)
+  }
+  f.called = false
+  return f
+}
+
+},{"wrappy":103}],61:[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
 exports.hostname = function () {
@@ -2635,7 +6050,7 @@ exports.tmpdir = exports.tmpDir = function () {
 
 exports.EOL = '\n';
 
-},{}],13:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -2863,7 +6278,24 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":14}],14:[function(require,module,exports){
+},{"_process":64}],63:[function(require,module,exports){
+(function (process){
+'use strict';
+module.exports = nextTick;
+
+function nextTick(fn) {
+  var args = new Array(arguments.length - 1);
+  var i = 0;
+  while (i < args.length) {
+    args[i++] = arguments[i];
+  }
+  process.nextTick(function afterTick() {
+    fn.apply(null, args);
+  });
+}
+
+}).call(this,require('_process'))
+},{"_process":64}],64:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -2896,7 +6328,9 @@ function drainQueue() {
         currentQueue = queue;
         queue = [];
         while (++queueIndex < len) {
-            currentQueue[queueIndex].run();
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
         }
         queueIndex = -1;
         len = queue.length;
@@ -2948,14 +6382,13 @@ process.binding = function (name) {
     throw new Error('process.binding is not supported');
 };
 
-// TODO(shtylman)
 process.cwd = function () { return '/' };
 process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 process.umask = function() { return 0; };
 
-},{}],15:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 (function (global){
 /*! https://mths.be/punycode v1.3.2 by @mathias */
 ;(function(root) {
@@ -3489,7 +6922,7 @@ process.umask = function() { return 0; };
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],16:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -3575,7 +7008,7 @@ var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],17:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -3662,16 +7095,16 @@ var objectKeys = Object.keys || function (obj) {
   return res;
 };
 
-},{}],18:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 'use strict';
 
 exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
 
-},{"./decode":16,"./encode":17}],19:[function(require,module,exports){
+},{"./decode":66,"./encode":67}],69:[function(require,module,exports){
 module.exports = require("./lib/_stream_duplex.js")
 
-},{"./lib/_stream_duplex.js":20}],20:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":70}],70:[function(require,module,exports){
 // a duplex stream is just a stream that is both readable and writable.
 // Since JS doesn't have multiple prototypal inheritance, this class
 // prototypally inherits from Readable, and then parasitically from
@@ -3755,7 +7188,7 @@ function forEach (xs, f) {
   }
 }
 
-},{"./_stream_readable":22,"./_stream_writable":24,"core-util-is":25,"inherits":10,"process-nextick-args":26}],21:[function(require,module,exports){
+},{"./_stream_readable":72,"./_stream_writable":74,"core-util-is":11,"inherits":18,"process-nextick-args":63}],71:[function(require,module,exports){
 // a passthrough stream.
 // basically just the most minimal sort of Transform stream.
 // Every written chunk gets output as-is.
@@ -3784,7 +7217,7 @@ PassThrough.prototype._transform = function(chunk, encoding, cb) {
   cb(null, chunk);
 };
 
-},{"./_stream_transform":23,"core-util-is":25,"inherits":10}],22:[function(require,module,exports){
+},{"./_stream_transform":73,"core-util-is":11,"inherits":18}],72:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -4747,7 +8180,7 @@ function indexOf (xs, x) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":20,"_process":14,"buffer":4,"core-util-is":25,"events":9,"inherits":10,"isarray":11,"process-nextick-args":26,"string_decoder/":42,"util":3}],23:[function(require,module,exports){
+},{"./_stream_duplex":70,"_process":64,"buffer":6,"core-util-is":11,"events":14,"inherits":18,"isarray":22,"process-nextick-args":63,"string_decoder/":86,"util":3}],73:[function(require,module,exports){
 // a transform stream is a readable/writable stream where you do
 // something with the data.  Sometimes it's called a "filter",
 // but that's not a great name for it, since that implies a thing where
@@ -4946,7 +8379,7 @@ function done(stream, er) {
   return stream.push(null);
 }
 
-},{"./_stream_duplex":20,"core-util-is":25,"inherits":10}],24:[function(require,module,exports){
+},{"./_stream_duplex":70,"core-util-is":11,"inherits":18}],74:[function(require,module,exports){
 // A bit simpler than readable streams.
 // Implement an async ._write(chunk, cb), and it'll handle all
 // the drain event emission and buffering.
@@ -5468,203 +8901,10 @@ function endWritable(stream, state, cb) {
   state.ended = true;
 }
 
-},{"./_stream_duplex":20,"buffer":4,"core-util-is":25,"events":9,"inherits":10,"process-nextick-args":26,"util-deprecate":27}],25:[function(require,module,exports){
-(function (Buffer){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-// NOTE: These type checking functions intentionally don't use `instanceof`
-// because it is fragile and can be easily faked with `Object.create()`.
-function isArray(ar) {
-  return Array.isArray(ar);
-}
-exports.isArray = isArray;
-
-function isBoolean(arg) {
-  return typeof arg === 'boolean';
-}
-exports.isBoolean = isBoolean;
-
-function isNull(arg) {
-  return arg === null;
-}
-exports.isNull = isNull;
-
-function isNullOrUndefined(arg) {
-  return arg == null;
-}
-exports.isNullOrUndefined = isNullOrUndefined;
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-exports.isNumber = isNumber;
-
-function isString(arg) {
-  return typeof arg === 'string';
-}
-exports.isString = isString;
-
-function isSymbol(arg) {
-  return typeof arg === 'symbol';
-}
-exports.isSymbol = isSymbol;
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
-exports.isUndefined = isUndefined;
-
-function isRegExp(re) {
-  return isObject(re) && objectToString(re) === '[object RegExp]';
-}
-exports.isRegExp = isRegExp;
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-exports.isObject = isObject;
-
-function isDate(d) {
-  return isObject(d) && objectToString(d) === '[object Date]';
-}
-exports.isDate = isDate;
-
-function isError(e) {
-  return isObject(e) &&
-      (objectToString(e) === '[object Error]' || e instanceof Error);
-}
-exports.isError = isError;
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-exports.isFunction = isFunction;
-
-function isPrimitive(arg) {
-  return arg === null ||
-         typeof arg === 'boolean' ||
-         typeof arg === 'number' ||
-         typeof arg === 'string' ||
-         typeof arg === 'symbol' ||  // ES6 symbol
-         typeof arg === 'undefined';
-}
-exports.isPrimitive = isPrimitive;
-
-function isBuffer(arg) {
-  return Buffer.isBuffer(arg);
-}
-exports.isBuffer = isBuffer;
-
-function objectToString(o) {
-  return Object.prototype.toString.call(o);
-}
-}).call(this,require("buffer").Buffer)
-},{"buffer":4}],26:[function(require,module,exports){
-(function (process){
-'use strict';
-module.exports = nextTick;
-
-function nextTick(fn) {
-  var args = new Array(arguments.length - 1);
-  var i = 0;
-  while (i < arguments.length) {
-    args[i++] = arguments[i];
-  }
-  process.nextTick(function afterTick() {
-    fn.apply(null, args);
-  });
-}
-
-}).call(this,require('_process'))
-},{"_process":14}],27:[function(require,module,exports){
-(function (global){
-
-/**
- * Module exports.
- */
-
-module.exports = deprecate;
-
-/**
- * Mark that a method should not be used.
- * Returns a modified function which warns once by default.
- *
- * If `localStorage.noDeprecation = true` is set, then it is a no-op.
- *
- * If `localStorage.throwDeprecation = true` is set, then deprecated functions
- * will throw an Error when invoked.
- *
- * If `localStorage.traceDeprecation = true` is set, then deprecated functions
- * will invoke `console.trace()` instead of `console.error()`.
- *
- * @param {Function} fn - the function to deprecate
- * @param {String} msg - the string to print to the console when `fn` is invoked
- * @returns {Function} a new "deprecated" version of `fn`
- * @api public
- */
-
-function deprecate (fn, msg) {
-  if (config('noDeprecation')) {
-    return fn;
-  }
-
-  var warned = false;
-  function deprecated() {
-    if (!warned) {
-      if (config('throwDeprecation')) {
-        throw new Error(msg);
-      } else if (config('traceDeprecation')) {
-        console.trace(msg);
-      } else {
-        console.warn(msg);
-      }
-      warned = true;
-    }
-    return fn.apply(this, arguments);
-  }
-
-  return deprecated;
-}
-
-/**
- * Checks `localStorage` for boolean values for the given `name`.
- *
- * @param {String} name
- * @returns {Boolean}
- * @api private
- */
-
-function config (name) {
-  if (!global.localStorage) return false;
-  var val = global.localStorage[name];
-  if (null == val) return false;
-  return String(val).toLowerCase() === 'true';
-}
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],28:[function(require,module,exports){
+},{"./_stream_duplex":70,"buffer":6,"core-util-is":11,"events":14,"inherits":18,"process-nextick-args":63,"util-deprecate":88}],75:[function(require,module,exports){
 module.exports = require("./lib/_stream_passthrough.js")
 
-},{"./lib/_stream_passthrough.js":21}],29:[function(require,module,exports){
+},{"./lib/_stream_passthrough.js":71}],76:[function(require,module,exports){
 var Stream = (function (){
   try {
     return require('st' + 'ream'); // hack to fix a circular dependency issue when used with browserify
@@ -5678,13 +8918,131 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":20,"./lib/_stream_passthrough.js":21,"./lib/_stream_readable.js":22,"./lib/_stream_transform.js":23,"./lib/_stream_writable.js":24}],30:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":70,"./lib/_stream_passthrough.js":71,"./lib/_stream_readable.js":72,"./lib/_stream_transform.js":73,"./lib/_stream_writable.js":74}],77:[function(require,module,exports){
 module.exports = require("./lib/_stream_transform.js")
 
-},{"./lib/_stream_transform.js":23}],31:[function(require,module,exports){
+},{"./lib/_stream_transform.js":73}],78:[function(require,module,exports){
 module.exports = require("./lib/_stream_writable.js")
 
-},{"./lib/_stream_writable.js":24}],32:[function(require,module,exports){
+},{"./lib/_stream_writable.js":74}],79:[function(require,module,exports){
+var path = require('path');
+
+module.exports = function(npath, ext) {
+  if (typeof npath !== 'string') return npath;
+  if (npath.length === 0) return npath;
+
+  var nFileName = path.basename(npath, path.extname(npath))+ext;
+  return path.join(path.dirname(npath), nFileName);
+};
+},{"path":62}],80:[function(require,module,exports){
+var Readable = require('stream').Readable;
+var PassThrough = require('stream').PassThrough;
+
+function SandwichStream(options) {
+  Readable.call(this, options);
+  options = options || {};
+  this._streamsActive = false;
+  this._streamsAdded = false;
+  this._streams = [];
+  this._currentStream = undefined;
+  this._errorsEmitted = false;
+
+  if (options.head) {
+    this._head = options.head;
+  }
+  if (options.tail) {
+    this._tail = options.tail;
+  }
+  if (options.separator) {
+    this._separator = options.separator;
+  }
+}
+
+SandwichStream.prototype = Object.create(Readable.prototype, {
+  constructor: SandwichStream
+});
+
+SandwichStream.prototype._read = function () {
+  if (!this._streamsActive) {
+    this._streamsActive = true;
+    this._pushHead();
+    this._streamNextStream();
+  }
+};
+
+SandwichStream.prototype.add = function (newStream) {
+  if (!this._streamsActive) {
+    this._streamsAdded = true;
+    this._streams.push(newStream);
+    newStream.on('error', this._substreamOnError.bind(this));
+  }
+  else {
+    throw new Error('SandwichStream error adding new stream while streaming');
+  }
+};
+
+SandwichStream.prototype._substreamOnError = function (error) {
+  this._errorsEmitted = true;
+  this.emit('error', error);
+};
+
+SandwichStream.prototype._pushHead = function () {
+  if (this._head) {
+    this.push(this._head);
+  }
+};
+
+SandwichStream.prototype._streamNextStream = function () {
+  if (this._nextStream()) {
+    this._bindCurrentStreamEvents();
+  }
+  else {
+    this._pushTail();
+    this.push(null);
+  }
+};
+
+SandwichStream.prototype._nextStream = function () {
+  this._currentStream = this._streams.shift();
+  return this._currentStream !== undefined;
+};
+
+SandwichStream.prototype._bindCurrentStreamEvents = function () {
+  this._currentStream.on('readable', this._currentStreamOnReadable.bind(this));
+  this._currentStream.on('end', this._currentStreamOnEnd.bind(this));
+};
+
+SandwichStream.prototype._currentStreamOnReadable = function () {
+  this.push(this._currentStream.read() || '');
+};
+
+SandwichStream.prototype._currentStreamOnEnd = function () {
+  this._pushSeparator();
+  this._streamNextStream();
+};
+
+SandwichStream.prototype._pushSeparator = function () {
+  if (this._streams.length > 0 && this._separator) {
+    this.push(this._separator);
+  }
+};
+
+SandwichStream.prototype._pushTail = function () {
+  if (this._tail) {
+    this.push(this._tail);
+  }
+};
+
+function sandwichStream(options) {
+  var stream = new SandwichStream(options);
+  return stream;
+}
+
+sandwichStream.SandwichStream = SandwichStream;
+
+module.exports = sandwichStream;
+
+},{"stream":81}],81:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -5813,7 +9171,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":9,"inherits":10,"readable-stream/duplex.js":19,"readable-stream/passthrough.js":28,"readable-stream/readable.js":29,"readable-stream/transform.js":30,"readable-stream/writable.js":31}],33:[function(require,module,exports){
+},{"events":14,"inherits":18,"readable-stream/duplex.js":69,"readable-stream/passthrough.js":75,"readable-stream/readable.js":76,"readable-stream/transform.js":77,"readable-stream/writable.js":78}],82:[function(require,module,exports){
 var ClientRequest = require('./lib/request')
 var extend = require('xtend')
 var statusCodes = require('builtin-status-codes')
@@ -5827,19 +9185,19 @@ http.request = function (opts, cb) {
 	else
 		opts = extend(opts)
 
-	// Split opts.host into its components
-	var hostHostname = opts.host ? opts.host.split(':')[0] : null
-	var hostPort = opts.host ? parseInt(opts.host.split(':')[1], 10) : null
+	var protocol = opts.protocol || ''
+	var host = opts.hostname || opts.host
+	var port = opts.port
+	var path = opts.path || '/'
 
-	opts.method = opts.method || 'GET'
+	// Necessary for IPv6 addresses
+	if (host && host.indexOf(':') !== -1)
+		host = '[' + host + ']'
+
+	// This may be a relative url. The browser should always be able to interpret it correctly.
+	opts.url = (host ? (protocol + '//' + host) : '') + (port ? ':' + port : '') + path
+	opts.method = (opts.method || 'GET').toUpperCase()
 	opts.headers = opts.headers || {}
-	opts.path = opts.path || '/'
-	opts.protocol = opts.protocol || window.location.protocol
-	// If the hostname is provided, use the default port for the protocol. If
-	// the url is instead relative, use window.location.port
-	var defaultPort = (opts.hostname || hostHostname) ? (opts.protocol === 'https:' ? 443 : 80) : window.location.port
-	opts.hostname = opts.hostname || hostHostname || window.location.hostname
-	opts.port = opts.port || hostPort || defaultPort
 
 	// Also valid opts.auth, opts.mode
 
@@ -5888,8 +9246,9 @@ http.METHODS = [
 	'UNLOCK',
 	'UNSUBSCRIBE'
 ]
-},{"./lib/request":35,"builtin-status-codes":37,"url":44,"xtend":47}],34:[function(require,module,exports){
-exports.fetch = isFunction(window.fetch) && isFunction(window.ReadableByteStream)
+},{"./lib/request":84,"builtin-status-codes":7,"url":87,"xtend":104}],83:[function(require,module,exports){
+(function (global){
+exports.fetch = isFunction(global.fetch) && isFunction(global.ReadableByteStream)
 
 exports.blobConstructor = false
 try {
@@ -5897,8 +9256,10 @@ try {
 	exports.blobConstructor = true
 } catch (e) {}
 
-var xhr = new window.XMLHttpRequest()
-xhr.open('GET', '/')
+var xhr = new global.XMLHttpRequest()
+// If location.host is empty, e.g. if this page/worker was loaded
+// from a Blob, then use example.com to avoid an error
+xhr.open('GET', global.location.host ? '/' : 'https://example.com')
 
 function checkTypeSupport (type) {
 	try {
@@ -5908,14 +9269,19 @@ function checkTypeSupport (type) {
 	return false
 }
 
-var haveArrayBuffer = isFunction(window.ArrayBuffer)
-var haveSlice = haveArrayBuffer && isFunction(window.ArrayBuffer.prototype.slice)
+// For some strange reason, Safari 7.0 reports typeof global.ArrayBuffer === 'object'.
+// Safari 7.1 appears to have fixed this bug.
+var haveArrayBuffer = typeof global.ArrayBuffer !== 'undefined'
+var haveSlice = haveArrayBuffer && isFunction(global.ArrayBuffer.prototype.slice)
 
 exports.arraybuffer = haveArrayBuffer && checkTypeSupport('arraybuffer')
-exports.msstream = haveSlice && checkTypeSupport('ms-stream')
-exports.mozchunkedarraybuffer = haveArrayBuffer && checkTypeSupport('moz-chunked-arraybuffer')
+// These next two tests unavoidably show warnings in Chrome. Since fetch will always
+// be used if it's available, just return false for these to avoid the warnings.
+exports.msstream = !exports.fetch && haveSlice && checkTypeSupport('ms-stream')
+exports.mozchunkedarraybuffer = !exports.fetch && haveArrayBuffer &&
+	checkTypeSupport('moz-chunked-arraybuffer')
 exports.overrideMimeType = isFunction(xhr.overrideMimeType)
-exports.vbArray = isFunction(window.VBArray)
+exports.vbArray = isFunction(global.VBArray)
 
 function isFunction (value) {
   return typeof value === 'function'
@@ -5923,8 +9289,9 @@ function isFunction (value) {
 
 xhr = null // Help gc
 
-},{}],35:[function(require,module,exports){
-(function (process,Buffer){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],84:[function(require,module,exports){
+(function (process,global,Buffer){
 // var Base64 = require('Base64')
 var capability = require('./capability')
 var foreach = require('foreach')
@@ -5958,7 +9325,6 @@ var ClientRequest = module.exports = function (opts) {
 	stream.Writable.call(self)
 
 	self._opts = opts
-	self._url = opts.protocol + '//' + opts.hostname + ':' + opts.port + opts.path
 	self._body = []
 	self._headers = {}
 	if (opts.auth)
@@ -5969,14 +9335,15 @@ var ClientRequest = module.exports = function (opts) {
 
 	var preferBinary
 	if (opts.mode === 'prefer-streaming') {
-		// If streaming is a high priority but binary compatibility isn't
+		// If streaming is a high priority but binary compatibility and
+		// the accuracy of the 'content-type' header aren't
 		preferBinary = false
-	} else if (opts.mode === 'prefer-fast') {
-		// If binary is preferred for speed
-		preferBinary = true
-	} else if (!opts.mode || opts.mode === 'default') {
-		// By default, use binary if text streaming may corrupt data
+	} else if (opts.mode === 'allow-wrong-content-type') {
+		// If streaming is more important than preserving the 'content-type' header
 		preferBinary = !capability.overrideMimeType
+	} else if (!opts.mode || opts.mode === 'default' || opts.mode === 'prefer-fast') {
+		// Use binary if text streaming may corrupt data or the content-type header, or for speed
+		preferBinary = true
 	} else {
 		throw new Error('Invalid value for opts.mode')
 	}
@@ -6025,7 +9392,7 @@ ClientRequest.prototype._onFinish = function () {
 	var body
 	if (opts.method === 'POST' || opts.method === 'PUT') {
 		if (capability.blobConstructor) {
-			body = new window.Blob(self._body.map(function (buffer) {
+			body = new global.Blob(self._body.map(function (buffer) {
 				return buffer.toArrayBuffer()
 			}), {
 				type: (headersObj['content-type'] || {}).value || ''
@@ -6041,7 +9408,7 @@ ClientRequest.prototype._onFinish = function () {
 			return [headersObj[name].name, headersObj[name].value]
 		})
 
-		window.fetch(self._url, {
+		global.fetch(self._opts.url, {
 			method: self._opts.method,
 			headers: headers,
 			body: body,
@@ -6054,9 +9421,9 @@ ClientRequest.prototype._onFinish = function () {
 			self.emit('error', reason)
 		})
 	} else {
-		var xhr = self._xhr = new window.XMLHttpRequest()
+		var xhr = self._xhr = new global.XMLHttpRequest()
 		try {
-			xhr.open(self._opts.method, self._url, true)
+			xhr.open(self._opts.method, self._opts.url, true)
 		} catch (err) {
 			process.nextTick(function () {
 				self.emit('error', err)
@@ -6204,9 +9571,9 @@ var unsafeHeaders = [
 	'via'
 ]
 
-}).call(this,require('_process'),require("buffer").Buffer)
-},{"./capability":34,"./response":36,"_process":14,"buffer":4,"foreach":38,"indexof":39,"inherits":10,"object-keys":40,"stream":32}],36:[function(require,module,exports){
-(function (process,Buffer){
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
+},{"./capability":83,"./response":85,"_process":64,"buffer":6,"foreach":15,"indexof":17,"inherits":18,"object-keys":58,"stream":81}],85:[function(require,module,exports){
+(function (process,global,Buffer){
 var capability = require('./capability')
 var foreach = require('foreach')
 var inherits = require('inherits')
@@ -6316,7 +9683,7 @@ IncomingMessage.prototype._onXHRProgress = function () {
 				break
 			try {
 				// This fails in IE8
-				response = new window.VBArray(xhr.responseBody).toArray()
+				response = new global.VBArray(xhr.responseBody).toArray()
 			} catch (e) {}
 			if (response !== null) {
 				self.push(new Buffer(response))
@@ -6360,7 +9727,7 @@ IncomingMessage.prototype._onXHRProgress = function () {
 			response = xhr.response
 			if (xhr.readyState !== rStates.LOADING)
 				break
-			var reader = new window.MSStreamReader()
+			var reader = new global.MSStreamReader()
 			reader.onprogress = function () {
 				if (reader.result.byteLength > self._pos) {
 					self.push(new Buffer(new Uint8Array(reader.result.slice(self._pos))))
@@ -6381,210 +9748,8 @@ IncomingMessage.prototype._onXHRProgress = function () {
 	}
 }
 
-}).call(this,require('_process'),require("buffer").Buffer)
-},{"./capability":34,"_process":14,"buffer":4,"foreach":38,"inherits":10,"stream":32}],37:[function(require,module,exports){
-module.exports = {
-  "100": "Continue",
-  "101": "Switching Protocols",
-  "102": "Processing",
-  "200": "OK",
-  "201": "Created",
-  "202": "Accepted",
-  "203": "Non-Authoritative Information",
-  "204": "No Content",
-  "205": "Reset Content",
-  "206": "Partial Content",
-  "207": "Multi-Status",
-  "300": "Multiple Choices",
-  "301": "Moved Permanently",
-  "302": "Moved Temporarily",
-  "303": "See Other",
-  "304": "Not Modified",
-  "305": "Use Proxy",
-  "307": "Temporary Redirect",
-  "308": "Permanent Redirect",
-  "400": "Bad Request",
-  "401": "Unauthorized",
-  "402": "Payment Required",
-  "403": "Forbidden",
-  "404": "Not Found",
-  "405": "Method Not Allowed",
-  "406": "Not Acceptable",
-  "407": "Proxy Authentication Required",
-  "408": "Request Time-out",
-  "409": "Conflict",
-  "410": "Gone",
-  "411": "Length Required",
-  "412": "Precondition Failed",
-  "413": "Request Entity Too Large",
-  "414": "Request-URI Too Large",
-  "415": "Unsupported Media Type",
-  "416": "Requested Range Not Satisfiable",
-  "417": "Expectation Failed",
-  "418": "I'm a teapot",
-  "422": "Unprocessable Entity",
-  "423": "Locked",
-  "424": "Failed Dependency",
-  "425": "Unordered Collection",
-  "426": "Upgrade Required",
-  "428": "Precondition Required",
-  "429": "Too Many Requests",
-  "431": "Request Header Fields Too Large",
-  "500": "Internal Server Error",
-  "501": "Not Implemented",
-  "502": "Bad Gateway",
-  "503": "Service Unavailable",
-  "504": "Gateway Time-out",
-  "505": "HTTP Version Not Supported",
-  "506": "Variant Also Negotiates",
-  "507": "Insufficient Storage",
-  "509": "Bandwidth Limit Exceeded",
-  "510": "Not Extended",
-  "511": "Network Authentication Required"
-}
-
-},{}],38:[function(require,module,exports){
-
-var hasOwn = Object.prototype.hasOwnProperty;
-var toString = Object.prototype.toString;
-
-module.exports = function forEach (obj, fn, ctx) {
-    if (toString.call(fn) !== '[object Function]') {
-        throw new TypeError('iterator must be a function');
-    }
-    var l = obj.length;
-    if (l === +l) {
-        for (var i = 0; i < l; i++) {
-            fn.call(ctx, obj[i], i, obj);
-        }
-    } else {
-        for (var k in obj) {
-            if (hasOwn.call(obj, k)) {
-                fn.call(ctx, obj[k], k, obj);
-            }
-        }
-    }
-};
-
-
-},{}],39:[function(require,module,exports){
-
-var indexOf = [].indexOf;
-
-module.exports = function(arr, obj){
-  if (indexOf) return arr.indexOf(obj);
-  for (var i = 0; i < arr.length; ++i) {
-    if (arr[i] === obj) return i;
-  }
-  return -1;
-};
-},{}],40:[function(require,module,exports){
-'use strict';
-
-// modified from https://github.com/es-shims/es5-shim
-var has = Object.prototype.hasOwnProperty;
-var toStr = Object.prototype.toString;
-var slice = Array.prototype.slice;
-var isArgs = require('./isArguments');
-var hasDontEnumBug = !({ 'toString': null }).propertyIsEnumerable('toString');
-var hasProtoEnumBug = function () {}.propertyIsEnumerable('prototype');
-var dontEnums = [
-	'toString',
-	'toLocaleString',
-	'valueOf',
-	'hasOwnProperty',
-	'isPrototypeOf',
-	'propertyIsEnumerable',
-	'constructor'
-];
-
-var keysShim = function keys(object) {
-	var isObject = object !== null && typeof object === 'object';
-	var isFunction = toStr.call(object) === '[object Function]';
-	var isArguments = isArgs(object);
-	var isString = isObject && toStr.call(object) === '[object String]';
-	var theKeys = [];
-
-	if (!isObject && !isFunction && !isArguments) {
-		throw new TypeError('Object.keys called on a non-object');
-	}
-
-	var skipProto = hasProtoEnumBug && isFunction;
-	if (isString && object.length > 0 && !has.call(object, 0)) {
-		for (var i = 0; i < object.length; ++i) {
-			theKeys.push(String(i));
-		}
-	}
-
-	if (isArguments && object.length > 0) {
-		for (var j = 0; j < object.length; ++j) {
-			theKeys.push(String(j));
-		}
-	} else {
-		for (var name in object) {
-			if (!(skipProto && name === 'prototype') && has.call(object, name)) {
-				theKeys.push(String(name));
-			}
-		}
-	}
-
-	if (hasDontEnumBug) {
-		var ctor = object.constructor;
-		var skipConstructor = ctor && ctor.prototype === object;
-
-		for (var k = 0; k < dontEnums.length; ++k) {
-			if (!(skipConstructor && dontEnums[k] === 'constructor') && has.call(object, dontEnums[k])) {
-				theKeys.push(dontEnums[k]);
-			}
-		}
-	}
-	return theKeys;
-};
-
-keysShim.shim = function shimObjectKeys() {
-	if (!Object.keys) {
-		Object.keys = keysShim;
-	} else {
-		var keysWorksWithArguments = (function () {
-			// Safari 5.0 bug
-			return (Object.keys(arguments) || '').length === 2;
-		}(1, 2));
-		if (!keysWorksWithArguments) {
-			var originalKeys = Object.keys;
-			Object.keys = function keys(object) {
-				if (isArgs(object)) {
-					return originalKeys(slice.call(object));
-				} else {
-					return originalKeys(object);
-				}
-			};
-		}
-	}
-	return Object.keys || keysShim;
-};
-
-module.exports = keysShim;
-
-},{"./isArguments":41}],41:[function(require,module,exports){
-'use strict';
-
-var toStr = Object.prototype.toString;
-
-module.exports = function isArguments(value) {
-	var str = toStr.call(value);
-	var isArgs = str === '[object Arguments]';
-	if (!isArgs) {
-		isArgs = str !== '[object Array]' &&
-			value !== null &&
-			typeof value === 'object' &&
-			typeof value.length === 'number' &&
-			value.length >= 0 &&
-			toStr.call(value.callee) === '[object Function]';
-	}
-	return isArgs;
-};
-
-},{}],42:[function(require,module,exports){
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
+},{"./capability":83,"_process":64,"buffer":6,"foreach":15,"inherits":18,"stream":81}],86:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -6807,84 +9972,7 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":4}],43:[function(require,module,exports){
-var nextTick = require('process/browser.js').nextTick;
-var apply = Function.prototype.apply;
-var slice = Array.prototype.slice;
-var immediateIds = {};
-var nextImmediateId = 0;
-
-// DOM APIs, for completeness
-
-exports.setTimeout = function() {
-  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
-};
-exports.setInterval = function() {
-  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
-};
-exports.clearTimeout =
-exports.clearInterval = function(timeout) { timeout.close(); };
-
-function Timeout(id, clearFn) {
-  this._id = id;
-  this._clearFn = clearFn;
-}
-Timeout.prototype.unref = Timeout.prototype.ref = function() {};
-Timeout.prototype.close = function() {
-  this._clearFn.call(window, this._id);
-};
-
-// Does not start the time, just sets up the members needed.
-exports.enroll = function(item, msecs) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = msecs;
-};
-
-exports.unenroll = function(item) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = -1;
-};
-
-exports._unrefActive = exports.active = function(item) {
-  clearTimeout(item._idleTimeoutId);
-
-  var msecs = item._idleTimeout;
-  if (msecs >= 0) {
-    item._idleTimeoutId = setTimeout(function onTimeout() {
-      if (item._onTimeout)
-        item._onTimeout();
-    }, msecs);
-  }
-};
-
-// That's not how node.js implements it but the exposed api is the same.
-exports.setImmediate = typeof setImmediate === "function" ? setImmediate : function(fn) {
-  var id = nextImmediateId++;
-  var args = arguments.length < 2 ? false : slice.call(arguments, 1);
-
-  immediateIds[id] = true;
-
-  nextTick(function onNextTick() {
-    if (immediateIds[id]) {
-      // fn.call() is faster so we optimize for the common use-case
-      // @see http://jsperf.com/call-apply-segu
-      if (args) {
-        fn.apply(null, args);
-      } else {
-        fn.call(null);
-      }
-      // Prevent ids from leaking
-      exports.clearImmediate(id);
-    }
-  });
-
-  return id;
-};
-
-exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate : function(id) {
-  delete immediateIds[id];
-};
-},{"process/browser.js":14}],44:[function(require,module,exports){
+},{"buffer":6}],87:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -7593,14 +10681,80 @@ function isNullOrUndefined(arg) {
   return  arg == null;
 }
 
-},{"punycode":15,"querystring":18}],45:[function(require,module,exports){
+},{"punycode":65,"querystring":68}],88:[function(require,module,exports){
+(function (global){
+
+/**
+ * Module exports.
+ */
+
+module.exports = deprecate;
+
+/**
+ * Mark that a method should not be used.
+ * Returns a modified function which warns once by default.
+ *
+ * If `localStorage.noDeprecation = true` is set, then it is a no-op.
+ *
+ * If `localStorage.throwDeprecation = true` is set, then deprecated functions
+ * will throw an Error when invoked.
+ *
+ * If `localStorage.traceDeprecation = true` is set, then deprecated functions
+ * will invoke `console.trace()` instead of `console.error()`.
+ *
+ * @param {Function} fn - the function to deprecate
+ * @param {String} msg - the string to print to the console when `fn` is invoked
+ * @returns {Function} a new "deprecated" version of `fn`
+ * @api public
+ */
+
+function deprecate (fn, msg) {
+  if (config('noDeprecation')) {
+    return fn;
+  }
+
+  var warned = false;
+  function deprecated() {
+    if (!warned) {
+      if (config('throwDeprecation')) {
+        throw new Error(msg);
+      } else if (config('traceDeprecation')) {
+        console.trace(msg);
+      } else {
+        console.warn(msg);
+      }
+      warned = true;
+    }
+    return fn.apply(this, arguments);
+  }
+
+  return deprecated;
+}
+
+/**
+ * Checks `localStorage` for boolean values for the given `name`.
+ *
+ * @param {String} name
+ * @returns {Boolean}
+ * @api private
+ */
+
+function config (name) {
+  if (!global.localStorage) return false;
+  var val = global.localStorage[name];
+  if (null == val) return false;
+  return String(val).toLowerCase() === 'true';
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],89:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],46:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -8190,2817 +11344,1307 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":45,"_process":14,"inherits":10}],47:[function(require,module,exports){
-module.exports = extend
+},{"./support/isBuffer":89,"_process":64,"inherits":18}],91:[function(require,module,exports){
+var Path = require('path')
 
-function extend() {
-    var target = {}
+module.exports = collect
 
-    for (var i = 0; i < arguments.length; i++) {
-        var source = arguments[i]
+function collect(stream, cb) {
 
-        for (var key in source) {
-            if (source.hasOwnProperty(key)) {
-                target[key] = source[key]
-            }
-        }
+  // we create a collection of objects, where
+  // - names is a list of all paths
+  // - there are per-file objects: { file: <vinyl file>, children [ paths ] }
+  // - named is a map { path: fo }
+  var files = {
+    paths: [],
+    named: {}, // wrapped files.
+    unnamed: [], // wrapped files.
+  }
+
+  function get(name) {
+    if (!files.named[name]) {
+      files.named[name] = {
+        children: [],
+      }
+    }
+    return files.named[name]
+  }
+
+  stream.on('data', function(file) {
+    if (cb === null) {
+      // already errored, or no way to externalize result
+      stream.on('data', function() {}) // de-register
+      return // do nothing.
     }
 
-    return target
-}
-
-},{}],48:[function(require,module,exports){
-'use strict';
-
-var PassThrough = require('readable-stream/passthrough')
-
-module.exports = function (/*streams...*/) {
-  var sources = []
-  var output  = new PassThrough({objectMode: true})
-
-  output.setMaxListeners(0)
-
-  output.add = add
-  output.isEmpty = isEmpty
-
-  output.on('unpipe', remove)
-
-  Array.prototype.slice.call(arguments).forEach(add)
-
-  return output
-
-  function add (source) {
-    if (Array.isArray(source)) {
-      source.forEach(add)
-      return this
-    }
-
-    sources.push(source);
-    source.once('end', remove.bind(null, source))
-    source.pipe(output, {end: false})
-    return this
-  }
-
-  function isEmpty () {
-    return sources.length == 0;
-  }
-
-  function remove (source) {
-    sources = sources.filter(function (it) { return it !== source })
-    if (!sources.length && output.readable) { output.end() }
-  }
-}
-
-},{"readable-stream/passthrough":60}],49:[function(require,module,exports){
-arguments[4][20][0].apply(exports,arguments)
-},{"./_stream_readable":51,"./_stream_writable":53,"core-util-is":54,"dup":20,"inherits":55,"process-nextick-args":57}],50:[function(require,module,exports){
-arguments[4][21][0].apply(exports,arguments)
-},{"./_stream_transform":52,"core-util-is":54,"dup":21,"inherits":55}],51:[function(require,module,exports){
-arguments[4][22][0].apply(exports,arguments)
-},{"./_stream_duplex":49,"_process":14,"buffer":4,"core-util-is":54,"dup":22,"events":9,"inherits":55,"isarray":56,"process-nextick-args":57,"string_decoder/":58,"util":3}],52:[function(require,module,exports){
-arguments[4][23][0].apply(exports,arguments)
-},{"./_stream_duplex":49,"core-util-is":54,"dup":23,"inherits":55}],53:[function(require,module,exports){
-arguments[4][24][0].apply(exports,arguments)
-},{"./_stream_duplex":49,"buffer":4,"core-util-is":54,"dup":24,"events":9,"inherits":55,"process-nextick-args":57,"util-deprecate":59}],54:[function(require,module,exports){
-arguments[4][25][0].apply(exports,arguments)
-},{"buffer":4,"dup":25}],55:[function(require,module,exports){
-arguments[4][10][0].apply(exports,arguments)
-},{"dup":10}],56:[function(require,module,exports){
-arguments[4][11][0].apply(exports,arguments)
-},{"dup":11}],57:[function(require,module,exports){
-arguments[4][26][0].apply(exports,arguments)
-},{"_process":14,"dup":26}],58:[function(require,module,exports){
-arguments[4][42][0].apply(exports,arguments)
-},{"buffer":4,"dup":42}],59:[function(require,module,exports){
-arguments[4][27][0].apply(exports,arguments)
-},{"dup":27}],60:[function(require,module,exports){
-arguments[4][28][0].apply(exports,arguments)
-},{"./lib/_stream_passthrough.js":50,"dup":28}],61:[function(require,module,exports){
-(function (Buffer){
-var map = require('lodash.map')
-var filter = require('lodash.filter')
-var log = console.log
-var convert = require('./convert')
-var protocols = require('./protocols')
-
-// export codec
-var codec = module.exports = {
-  stringToStringTuples: stringToStringTuples,
-  stringTuplesToString: stringTuplesToString,
-
-  tuplesToStringTuples: tuplesToStringTuples,
-  stringTuplesToTuples: stringTuplesToTuples,
-
-  bufferToTuples: bufferToTuples,
-  tuplesToBuffer: tuplesToBuffer,
-
-  bufferToString: bufferToString,
-  stringToBuffer: stringToBuffer,
-
-  fromString: fromString,
-  fromBuffer: fromBuffer,
-  validateBuffer: validateBuffer,
-  isValidBuffer: isValidBuffer,
-  cleanPath: cleanPath,
-
-  ParseError: ParseError,
-  protoFromTuple: protoFromTuple,
-}
-
-// string -> [[str name, str addr]... ]
-function stringToStringTuples(str) {
-  var tuples = []
-  var parts = str.split('/').slice(1) // skip first empty elem
-  if (parts.length == 1 && parts[0] == '')
-    return []
-
-  for (var p = 0; p < parts.length; p++) {
-    var part = parts[p]
-    var proto = protocols(part)
-    if (proto.size == 0)
-      return [part]
-
-    p++ // advance addr part
-    if (p >= parts.length)
-      throw ParseError("invalid address: " + str)
-
-    tuples.push([part, parts[p]])
-  }
-  return tuples
-}
-
-// [[str name, str addr]... ] -> string
-function stringTuplesToString(tuples) {
-  var parts = []
-  map(tuples, function(tup) {
-    var proto = protoFromTuple(tup)
-    parts.push(proto.name)
-    if (tup.length > 1)
-      parts.push(tup[1])
-  })
-  return "/" + parts.join("/")
-}
-
-
-// [[str name, str addr]... ] -> [[int code, Buffer]... ]
-function stringTuplesToTuples(tuples) {
-  return map(tuples, function(tup) {
-    var proto = protoFromTuple(tup)
-    if (tup.length > 1)
-      return [proto.code, convert.toBuffer(proto.code, tup[1])]
-    return [proto.code]
-  })
-}
-
-// [[int code, Buffer]... ] -> [[str name, str addr]... ]
-function tuplesToStringTuples(tuples) {
-  return map(tuples, function(tup) {
-    var proto = protoFromTuple(tup)
-    if (tup.length > 1)
-      return [proto.code, convert.toString(proto.code, tup[1])]
-    return [proto.code]
-  })
-}
-
-// [[int code, Buffer ]... ] -> Buffer
-function tuplesToBuffer(tuples) {
-  return fromBuffer(Buffer.concat(map(tuples, function(tup) {
-    var proto = protoFromTuple(tup)
-    var buf = new Buffer([proto.code])
-    if (tup.length > 1)
-      buf = Buffer.concat([buf, tup[1]]) // add address buffer
-    return buf
-  })))
-}
-
-// Buffer -> [[int code, Buffer ]... ]
-function bufferToTuples(buf) {
-  var tuples = []
-  for (var i = 0; i < buf.length; ) {
-    var code = buf[i]
-    var proto = protocols(code)
-    if (!proto)
-      throw ParseError("Invalid protocol code: " + code)
-
-    var size = (proto.size / 8)
-    var code = 0 + buf[i]
-    var addr = buf.slice(i + 1, i + 1 + size)
-    i += 1 + size
-    if (i > buf.length) // did not end _exactly_ at buffer.length
-      throw ParseError("Invalid address buffer: " + buf.toString('hex'))
-
-    // ok, tuple seems good.
-    tuples.push([code, addr])
-  }
-  return tuples
-}
-
-// Buffer -> String
-function bufferToString(buf) {
-  var a = bufferToTuples(buf)
-  var b = tuplesToStringTuples(a)
-  return stringTuplesToString(b)
-}
-
-// String -> Buffer
-function stringToBuffer(str) {
-  str = cleanPath(str)
-  var a = stringToStringTuples(str)
-  var b = stringTuplesToTuples(a)
-  return tuplesToBuffer(b)
-}
-
-// String -> Buffer
-function fromString(str) {
-  return stringToBuffer(str)
-}
-
-// Buffer -> Buffer
-function fromBuffer(buf) {
-  var err = validateBuffer(buf)
-  if (err) throw err
-  return new Buffer(buf) // copy
-}
-
-function validateBuffer(buf) {
-  bufferToTuples(buf) // try to parse. will throw if breaks
-}
-
-function isValidBuffer(buf) {
-  try {
-    validateBuffer(buf) // try to parse. will throw if breaks
-    return true
-  } catch(e) {
-    return false
-  }
-}
-
-function cleanPath(str) {
-  return '/' + filter(str.trim().split('/')).join('/')
-}
-
-function ParseError(str) {
-  return new Error("Error parsing address: " + str)
-}
-
-function protoFromTuple(tup) {
-  var proto = protocols(tup[0])
-  if (tup.length > 1 && proto.size == 0)
-    throw ParseError("tuple has address but protocol size is 0")
-  return proto
-}
-
-}).call(this,require("buffer").Buffer)
-},{"./convert":62,"./protocols":195,"buffer":4,"lodash.filter":66,"lodash.map":130}],62:[function(require,module,exports){
-(function (Buffer){
-var ip = require('ip')
-var protocols = require('./protocols')
-
-module.exports = Convert
-
-// converts (serializes) addresses
-function Convert(proto, a) {
-  if (a instanceof Buffer)
-    return Convert.toString(proto, a)
-  else
-    return Convert.toBuffer(proto, a)
-}
-
-Convert.toString = function convertToString(proto, buf) {
-  proto = protocols(proto)
-  switch (proto.code) {
-  case 4: // ipv4
-  case 41: // ipv6
-    return ip.toString(buf)
-
-  case 6: // tcp
-  case 17: // udp
-  case 33: // dccp
-  case 132: // sctp
-    return buf2port(buf)
-  }
-  return buf.toString('hex') // no clue. convert to hex
-}
-
-Convert.toBuffer = function convertToBuffer(proto, str) {
-  proto = protocols(proto)
-  switch (proto.code) {
-  case 4: // ipv4
-  case 41: // ipv6
-    return ip.toBuffer(str)
-
-  case 6: // tcp
-  case 17: // udp
-  case 33: // dccp
-  case 132: // sctp
-    return port2buf(parseInt(str, 10))
-  }
-  return new Buffer(str, 'hex') // no clue. convert from hex
-}
-
-function port2buf(port) {
-  var buf = new Buffer(2)
-  buf.writeUInt16BE(port, 0);
-  return buf
-}
-
-function buf2port(buf) {
-  return buf.readUInt16BE(0)
-}
-
-}).call(this,require("buffer").Buffer)
-},{"./protocols":195,"buffer":4,"ip":65}],63:[function(require,module,exports){
-(function (Buffer){
-var map = require('lodash.map')
-var extend = require('xtend')
-var codec = require('./codec')
-var bufeq = require('buffer-equal')
-var protocols = require('./protocols')
-var NotImplemented = new Error("Sorry, Not Implemented Yet.")
-
-module.exports = Multiaddr
-
-function Multiaddr(addr) {
-  if (!(this instanceof Multiaddr))
-    return new Multiaddr(addr)
-
-  // defaults
-  if (!addr)
-    addr = ''
-
-  if (addr instanceof Buffer)
-    this.buffer = codec.fromBuffer(addr)
-  else if (typeof(addr) == 'string' || addr instanceof String)
-    this.buffer = codec.fromString(addr)
-  else if (addr.buffer && addr.protos && addr.protoCodes) // Multiaddr
-    this.buffer = codec.fromBuffer(addr.buffer) // validate + copy buffer
-  else
-    throw new Error('addr must be a string, Buffer, or Multiaddr')
-}
-
-// get the multiaddr protocols
-Multiaddr.prototype.toString = function toString() {
-  return codec.bufferToString(this.buffer)
-}
-
-// get the multiaddr as a convinent options object to be dropped in net.createConnection
-Multiaddr.prototype.toOptions = function toOptions() {
-  var opts = {}
-  var parsed = this.toString().split('/')
-  opts.family = parsed[1] === 'ip4' ? 'ipv4' : 'ipv6'
-  opts.host = parsed[2]
-  opts.port = parsed[4]
-  return opts
-}
-
-// get the multiaddr protocols
-Multiaddr.prototype.inspect = function inspect() {
-  return "<Mutliaddr "+
-    this.buffer.toString('hex') + " - " +
-    codec.bufferToString(this.buffer) + ">"
-}
-
-// get the multiaddr protocols
-Multiaddr.prototype.protos = function protos() {
-  return map(this.protoCodes(), function(code) {
-    return extend(protocols(code))
-    // copy to prevent users from modifying the internal objs.
-  });
-}
-
-// get the multiaddr protocols
-Multiaddr.prototype.protos = function protos() {
-  return map(this.protoCodes(), function(code) {
-    return extend(protocols(code))
-    // copy to prevent users from modifying the internal objs.
-  });
-}
-
-// get the multiaddr protocol codes
-Multiaddr.prototype.protoCodes = function protoCodes() {
-  var codes = []
-  for (var i = 0; i < this.buffer.length; i++) {
-    var code = 0 + this.buffer[i]
-    var size = protocols(code).size / 8
-    i += size // skip over proto data
-    codes.push(code)
-  }
-  return codes
-}
-
-// get the multiaddr protocol string names
-Multiaddr.prototype.protoNames = function protoNames() {
-  return map(this.protos(), function(proto) {
-    return proto.name
-  })
-}
-
-// Returns a tuple of parts:
-Multiaddr.prototype.tuples = function tuples() {
-  return codec.bufferToTuples(this.buffer)
-}
-
-// Returns a tuple of string parts:
-Multiaddr.prototype.stringTuples = function stringTuples() {
-  var t = codec.bufferToTuples(this.buffer)
-  return codec.tuplesToStringTuples(t)
-}
-
-
-Multiaddr.prototype.encapsulate = function encapsulate(addr) {
-  addr = Multiaddr(addr)
-  return Multiaddr(this.toString() + addr.toString())
-}
-
-Multiaddr.prototype.decapsulate = function decapsulate(addr) {
-  addr = addr.toString()
-  var s = this.toString()
-  var i = s.lastIndexOf(addr)
-  if (i < 0)
-    throw new Error("Address " +this+" does not contain subaddress: " +addr)
-  return Multiaddr(s.slice(0, i))
-}
-
-Multiaddr.prototype.equals = function equals(addr) {
-  return bufeq(this.buffer, addr.buffer)
-}
-
-// get a node friendly address object
-Multiaddr.prototype.nodeAddress = function nodeAddress() {
-  if (!this.isThinWaistAddress())
-    throw new Error('Multiaddr must be "thin waist" address for nodeAddress.')
-
-  var codes = this.protoCodes()
-  var parts = this.toString().split('/').slice(1)
-  return {
-    family: (codes[0] == 41) ? "IPv6" : "IPv4",
-    address: parts[1], // ip addr
-    port: parts[3], // tcp or udp port
-  }
-}
-
-// from a node friendly address object
-Multiaddr.fromNodeAddress = function fromNodeAddress(addr, transport) {
-  if (!addr) throw new Error('requires node address object')
-  if (!transport) throw new Error('requires transport protocol')
-  var ip = (addr.family == "IPv6") ? 'ip6' : 'ip4'
-  return Multiaddr('/' + [ip, addr.address, transport, addr.port].join('/'))
-}
-
-
-// returns whether this address is a standard combination:
-// /{IPv4, IPv6}/{TCP, UDP}
-Multiaddr.prototype.isThinWaistAddress = function isThinWaistAddress(addr) {
-  var protos = (addr || this).protos()
-  if (protos.length != 2) return false
-  if (protos[0].code != 4 && protos[0].code != 41) return false
-  if (protos[1].code != 6 && protos[1].code != 17) return false
-  return true
-}
-
-
-// parses the "stupid string" format:
-// <proto><IPv>://<IP Addr>[:<proto port>]
-// udp4://1.2.3.4:5678
-Multiaddr.prototype.fromStupidString = function fromStupidString(str) {
-  throw NotImplemented
-}
-
-// patch this in
-Multiaddr.protocols = protocols
-
-}).call(this,require("buffer").Buffer)
-},{"./codec":61,"./protocols":195,"buffer":4,"buffer-equal":64,"lodash.map":130,"xtend":194}],64:[function(require,module,exports){
-var Buffer = require('buffer').Buffer; // for use with browserify
-
-module.exports = function (a, b) {
-    if (!Buffer.isBuffer(a)) return undefined;
-    if (!Buffer.isBuffer(b)) return undefined;
-    if (typeof a.equals === 'function') return a.equals(b);
-    if (a.length !== b.length) return false;
-    
-    for (var i = 0; i < a.length; i++) {
-        if (a[i] !== b[i]) return false;
-    }
-    
-    return true;
-};
-
-},{"buffer":4}],65:[function(require,module,exports){
-var ip = exports,
-    Buffer = require('buffer').Buffer,
-    os = require('os');
-
-ip.toBuffer = function toBuffer(ip, buff, offset) {
-  offset = ~~offset;
-
-  var result;
-
-  if (/^(\d{1,3}\.){3,3}\d{1,3}$/.test(ip)) {
-    result = buff || new Buffer(offset + 4);
-    ip.split(/\./g).map(function(byte) {
-      result[offset++] = parseInt(byte, 10) & 0xff;
-    });
-  } else if (/^[a-f0-9:]+$/.test(ip)) {
-    var s = ip.split(/::/g, 2),
-        head = (s[0] || '').split(/:/g, 8),
-        tail = (s[1] || '').split(/:/g, 8);
-
-    if (tail.length === 0) {
-      // xxxx::
-      while (head.length < 8) head.push('0000');
-    } else if (head.length === 0) {
-      // ::xxxx
-      while (tail.length < 8) tail.unshift('0000');
+    if (file.path) {
+      // add file to named
+      var fo = get(file.path)
+      fo.file = file
+
+      // add reference to file at parent
+      var po = get(Path.dirname(file.path))
+      if (fo !== po) po.children.push(fo)
+
+      // add name to names list.
+      files.paths.push(file.path)
     } else {
-      // xxxx::xxxx
-      while (head.length + tail.length < 8) head.push('0000');
+      files.unnamed.push({ file: file, children: [] })
     }
+  })
 
-    result = buff || new Buffer(offset + 16);
-    head.concat(tail).map(function(word) {
-      word = parseInt(word, 16);
-      result[offset++] = (word >> 8) & 0xff;
-      result[offset++] = word & 0xff;
-    });
-  } else {
-    throw Error('Invalid ip address: ' + ip);
-  }
+  stream.on('error', function(err) {
+    cb && cb(err)
+    cb = null
+  })
 
-  return result;
-};
-
-ip.toString = function toString(buff, offset, length) {
-  offset = ~~offset;
-  length = length || (buff.length - offset);
-
-  var result = [];
-  if (length === 4) {
-    // IPv4
-    for (var i = 0; i < length; i++) {
-      result.push(buff[offset + i]);
-    }
-    result = result.join('.');
-  } else if (length === 16) {
-    // IPv6
-    for (var i = 0; i < length; i += 2) {
-      result.push(buff.readUInt16BE(offset + i).toString(16));
-    }
-    result = result.join(':');
-    result = result.replace(/(^|:)0(:0)*:0(:|$)/, '$1::$3');
-    result = result.replace(/:{3,4}/, '::');
-  }
-
-  return result;
-};
-
-ip.fromPrefixLen = function fromPrefixLen(prefixlen, family) {
-  if (prefixlen > 32) {
-    family = 'ipv6';
-  } else {
-    family = _normalizeFamily(family);
-  }
-
-  var len = 4;
-  if (family === 'ipv6') {
-    len = 16;
-  }
-  var buff = new Buffer(len);
-
-  for (var i = 0, n = buff.length; i < n; ++i) {
-    var bits = 8;
-    if (prefixlen < 8) {
-      bits = prefixlen;
-    }
-    prefixlen -= bits;
-
-    buff[i] = ~(0xff >> bits);
-  }
-
-  return ip.toString(buff);
-};
-
-ip.mask = function mask(addr, mask) {
-  addr = ip.toBuffer(addr);
-  mask = ip.toBuffer(mask);
-
-  var result = new Buffer(Math.max(addr.length, mask.length));
-
-  // Same protocol - do bitwise and
-  if (addr.length === mask.length) {
-    for (var i = 0; i < addr.length; i++) {
-      result[i] = addr[i] & mask[i];
-    }
-  } else if (mask.length === 4) {
-    // IPv6 address and IPv4 mask
-    // (Mask low bits)
-    for (var i = 0; i < mask.length; i++) {
-      result[i] = addr[addr.length - 4  + i] & mask[i];
-    }
-  } else {
-    // IPv6 mask and IPv4 addr
-    for (var i = 0; i < result.length - 6; i++) {
-      result[i] = 0;
-    }
-
-    // ::ffff:ipv4
-    result[10] = 0xff;
-    result[11] = 0xff;
-    for (var i = 0; i < addr.length; i++) {
-      result[i + 12] = addr[i] & mask[i + 12];
-    }
-  }
-
-  return ip.toString(result);
-};
-
-ip.cidr = function cidr(cidrString) {
-  var cidrParts = cidrString.split('/');
-
-  if (cidrParts.length != 2)
-    throw new Error('invalid CIDR subnet: ' + addr);
-
-  var addr = cidrParts[0];
-  var mask = ip.fromPrefixLen(parseInt(cidrParts[1], 10));
-
-  return ip.mask(addr, mask);
+  stream.on('end', function() {
+    cb && cb(null, files)
+    cb = null
+  })
 }
 
-ip.subnet = function subnet(addr, mask) {
-  var networkAddress = ip.toLong(ip.mask(addr, mask));
+},{"path":62}],92:[function(require,module,exports){
+var x = module.exports = {}
+x.randomString = randomString
+x.cleanPath = cleanPath
 
-  // Calculate the mask's length.
-  var maskBuffer = ip.toBuffer(mask);
-  var maskLength = 0;
-
-  for (var i = 0; i < maskBuffer.length; i++) {
-    if (maskBuffer[i] == 0xff) {
-      maskLength += 8;
-    } else {
-      var octet = maskBuffer[i] & 0xff;
-      while (octet) {
-        octet = (octet << 1) & 0xff;
-        maskLength++;
-      }
-    }
-  }
-
-  var numberOfAddresses = Math.pow(2, 32 - maskLength);
-
-  return {
-    networkAddress: ip.fromLong(networkAddress),
-    firstAddress: numberOfAddresses <= 2 ?
-                    ip.fromLong(networkAddress) :
-                    ip.fromLong(networkAddress + 1),
-    lastAddress: numberOfAddresses <= 2 ?
-                    ip.fromLong(networkAddress + numberOfAddresses - 1) :
-                    ip.fromLong(networkAddress + numberOfAddresses - 2),
-    broadcastAddress: ip.fromLong(networkAddress + numberOfAddresses - 1),
-    subnetMask: mask,
-    subnetMaskLength: maskLength,
-    numHosts: numberOfAddresses <= 2 ?
-                numberOfAddresses : numberOfAddresses - 2,
-    length: numberOfAddresses
-  };
+function randomString () {
+  return Math.random().toString(36).slice(2) +
+    Math.random().toString(36).slice(2) +
+    Math.random().toString(36).slice(2) +
+    Math.random().toString(36).slice(2)
 }
 
-ip.cidrSubnet = function cidrSubnet(cidrString) {
-  var cidrParts = cidrString.split('/');
+function cleanPath(path, base) {
+  if (!path) return ''
+  if (!base) return path
 
-  if (cidrParts.length !== 2)
-    throw new Error('invalid CIDR subnet: ' + addr);
+  if (base[base.length-1] != '/') {
+    base += "/"
+  }
 
-  var addr = cidrParts[0];
-  var mask = ip.fromPrefixLen(parseInt(cidrParts[1], 10));
-
-  return ip.subnet(addr, mask);
+  // remove base from path
+  path = path.replace(base, '')
+  path = path.replace(/[\/]+/g, '/')
+  return path
 }
 
-ip.not = function not(addr) {
-  var buff = ip.toBuffer(addr);
-  for (var i = 0; i < buff.length; i++) {
-    buff[i] = 0xff ^ buff[i];
-  }
-  return ip.toString(buff);
-};
-
-ip.or = function or(a, b) {
-  a = ip.toBuffer(a);
-  b = ip.toBuffer(b);
-
-  // same protocol
-  if (a.length == b.length) {
-    for (var i = 0; i < a.length; ++i) {
-      a[i] |= b[i];
-    }
-    return ip.toString(a);
-
-  // mixed protocols
-  } else {
-    var buff = a;
-    var other = b;
-    if (b.length > a.length) {
-      buff = b;
-      other = a;
-    }
-
-    var offset = buff.length - other.length;
-    for (var i = offset; i < buff.length; ++i) {
-      buff[i] |= other[i - offset];
-    }
-
-    return ip.toString(buff);
-  }
-};
-
-ip.isEqual = function isEqual(a, b) {
-  a = ip.toBuffer(a);
-  b = ip.toBuffer(b);
-
-  // Same protocol
-  if (a.length === b.length) {
-    for (var i = 0; i < a.length; i++) {
-      if (a[i] !== b[i]) return false;
-    }
-    return true;
-  }
-
-  // Swap
-  if (b.length === 4) {
-    var t = b;
-    b = a;
-    a = t;
-  }
-
-  // a - IPv4, b - IPv6
-  for (var i = 0; i < 10; i++) {
-    if (b[i] !== 0) return false;
-  }
-
-  var word = b.readUInt16BE(10);
-  if (word !== 0 && word !== 0xffff) return false;
-
-  for (var i = 0; i < 4; i++) {
-    if (a[i] !== b[i + 12]) return false;
-  }
-
-  return true;
-};
-
-ip.isPrivate = function isPrivate(addr) {
-  return addr.match(/^10\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})/) != null ||
-    addr.match(/^192\.168\.([0-9]{1,3})\.([0-9]{1,3})/) != null ||
-    addr.match(
-        /^172\.(1[6-9]|2\d|30|31)\.([0-9]{1,3})\.([0-9]{1,3})/) != null ||
-    addr.match(/^127\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})/) != null ||
-    addr.match(/^169\.254\.([0-9]{1,3})\.([0-9]{1,3})/) != null ||
-    addr.match(/^fc00:/) != null || addr.match(/^fe80:/) != null ||
-    addr.match(/^::1$/) != null || addr.match(/^::$/) != null;
-};
-
-ip.isPublic = function isPublic(addr) {
-  return !ip.isPrivate(addr);
-}
-
-ip.isLoopback = function isLoopback(addr) {
-  return /^127\.0\.0\.1$/.test(addr)
-    || /^fe80::1$/.test(addr)
-    || /^::1$/.test(addr)
-    || /^::$/.test(addr);
-};
-
-ip.loopback = function loopback(family) {
-  //
-  // Default to `ipv4`
-  //
-  family = _normalizeFamily(family);
-
-  if (family !== 'ipv4' && family !== 'ipv6') {
-    throw new Error('family must be ipv4 or ipv6');
-  }
-
-  return family === 'ipv4'
-    ? '127.0.0.1'
-    : 'fe80::1';
-};
-
-//
-// ### function address (name, family)
-// #### @name {string|'public'|'private'} **Optional** Name or security
-//      of the network interface.
-// #### @family {ipv4|ipv6} **Optional** IP family of the address (defaults
-//      to ipv4).
-//
-// Returns the address for the network interface on the current system with
-// the specified `name`:
-//   * String: First `family` address of the interface.
-//             If not found see `undefined`.
-//   * 'public': the first public ip address of family.
-//   * 'private': the first private ip address of family.
-//   * undefined: First address with `ipv4` or loopback addres `127.0.0.1`.
-//
-ip.address = function address(name, family) {
-  var interfaces = os.networkInterfaces(),
-      all;
-
-  //
-  // Default to `ipv4`
-  //
-  family = _normalizeFamily(family);
-
-  //
-  // If a specific network interface has been named,
-  // return the address.
-  //
-  if (name && !~['public', 'private'].indexOf(name)) {
-    return interfaces[name].filter(function (details) {
-      details.family = details.family.toLowerCase();
-      return details.family === family;
-    })[0].address;
-  }
-
-  var all = Object.keys(interfaces).map(function (nic) {
-    //
-    // Note: name will only be `public` or `private`
-    // when this is called.
-    //
-    var addresses = interfaces[nic].filter(function (details) {
-      details.family = details.family.toLowerCase();
-      if (details.family !== family || ip.isLoopback(details.address)) {
-        return false;
-      }
-      else if (!name) {
-        return true;
-      }
-
-      return name === 'public'
-        ? !ip.isPrivate(details.address)
-        : ip.isPrivate(details.address)
-    });
-
-    return addresses.length
-      ? addresses[0].address
-      : undefined;
-  }).filter(Boolean);
-
-  return !all.length
-    ? ip.loopback(family)
-    : all[0];
-};
-
-ip.toLong = function toInt(ip){
-  var ipl=0;
-  ip.split('.').forEach(function( octet ) {
-      ipl<<=8;
-      ipl+=parseInt(octet);
-  });
-  return(ipl >>>0);
-};
-
-ip.fromLong = function fromInt(ipl){
-  return ( (ipl>>>24) +'.' +
-      (ipl>>16 & 255) +'.' +
-      (ipl>>8 & 255) +'.' +
-      (ipl & 255) );
-};
-
-function _normalizeFamily(family) {
-  return family ? family.toLowerCase() : 'ipv4';
-}
-
-},{"buffer":4,"os":12}],66:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var createCallback = require('lodash.createcallback'),
-    forOwn = require('lodash.forown');
-
-/**
- * Iterates over elements of a collection, returning an array of all elements
- * the callback returns truey for. The callback is bound to `thisArg` and
- * invoked with three arguments; (value, index|key, collection).
- *
- * If a property name is provided for `callback` the created "_.pluck" style
- * callback will return the property value of the given element.
- *
- * If an object is provided for `callback` the created "_.where" style callback
- * will return `true` for elements that have the properties of the given object,
- * else `false`.
- *
- * @static
- * @memberOf _
- * @alias select
- * @category Collections
- * @param {Array|Object|string} collection The collection to iterate over.
- * @param {Function|Object|string} [callback=identity] The function called
- *  per iteration. If a property name or object is provided it will be used
- *  to create a "_.pluck" or "_.where" style callback, respectively.
- * @param {*} [thisArg] The `this` binding of `callback`.
- * @returns {Array} Returns a new array of elements that passed the callback check.
- * @example
- *
- * var evens = _.filter([1, 2, 3, 4, 5, 6], function(num) { return num % 2 == 0; });
- * // => [2, 4, 6]
- *
- * var characters = [
- *   { 'name': 'barney', 'age': 36, 'blocked': false },
- *   { 'name': 'fred',   'age': 40, 'blocked': true }
- * ];
- *
- * // using "_.pluck" callback shorthand
- * _.filter(characters, 'blocked');
- * // => [{ 'name': 'fred', 'age': 40, 'blocked': true }]
- *
- * // using "_.where" callback shorthand
- * _.filter(characters, { 'age': 36 });
- * // => [{ 'name': 'barney', 'age': 36, 'blocked': false }]
- */
-function filter(collection, callback, thisArg) {
-  var result = [];
-  callback = createCallback(callback, thisArg, 3);
-
-  var index = -1,
-      length = collection ? collection.length : 0;
-
-  if (typeof length == 'number') {
-    while (++index < length) {
-      var value = collection[index];
-      if (callback(value, index, collection)) {
-        result.push(value);
-      }
-    }
-  } else {
-    forOwn(collection, function(value, index, collection) {
-      if (callback(value, index, collection)) {
-        result.push(value);
-      }
-    });
-  }
-  return result;
-}
-
-module.exports = filter;
-
-},{"lodash.createcallback":67,"lodash.forown":103}],67:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.3 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var baseCreateCallback = require('lodash._basecreatecallback'),
-    baseIsEqual = require('lodash._baseisequal'),
-    isObject = require('lodash.isobject'),
-    keys = require('lodash.keys'),
-    property = require('lodash.property');
-
-/**
- * Produces a callback bound to an optional `thisArg`. If `func` is a property
- * name the created callback will return the property value for a given element.
- * If `func` is an object the created callback will return `true` for elements
- * that contain the equivalent object properties, otherwise it will return `false`.
- *
- * @static
- * @memberOf _
- * @category Utilities
- * @param {*} [func=identity] The value to convert to a callback.
- * @param {*} [thisArg] The `this` binding of the created callback.
- * @param {number} [argCount] The number of arguments the callback accepts.
- * @returns {Function} Returns a callback function.
- * @example
- *
- * var characters = [
- *   { 'name': 'barney', 'age': 36 },
- *   { 'name': 'fred',   'age': 40 }
- * ];
- *
- * // wrap to create custom callback shorthands
- * _.createCallback = _.wrap(_.createCallback, function(func, callback, thisArg) {
- *   var match = /^(.+?)__([gl]t)(.+)$/.exec(callback);
- *   return !match ? func(callback, thisArg) : function(object) {
- *     return match[2] == 'gt' ? object[match[1]] > match[3] : object[match[1]] < match[3];
- *   };
- * });
- *
- * _.filter(characters, 'age__gt38');
- * // => [{ 'name': 'fred', 'age': 40 }]
- */
-function createCallback(func, thisArg, argCount) {
-  var type = typeof func;
-  if (func == null || type == 'function') {
-    return baseCreateCallback(func, thisArg, argCount);
-  }
-  // handle "_.pluck" style callback shorthands
-  if (type != 'object') {
-    return property(func);
-  }
-  var props = keys(func),
-      key = props[0],
-      a = func[key];
-
-  // handle "_.where" style callback shorthands
-  if (props.length == 1 && a === a && !isObject(a)) {
-    // fast path the common case of providing an object with a single
-    // property containing a primitive value
-    return function(object) {
-      var b = object[key];
-      return a === b && (a !== 0 || (1 / a == 1 / b));
-    };
-  }
-  return function(object) {
-    var length = props.length,
-        result = false;
-
-    while (length--) {
-      if (!(result = baseIsEqual(object[props[length]], func[props[length]], null, true))) {
-        break;
-      }
-    }
-    return result;
-  };
-}
-
-module.exports = createCallback;
-
-},{"lodash._basecreatecallback":68,"lodash._baseisequal":87,"lodash.isobject":96,"lodash.keys":98,"lodash.property":102}],68:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var bind = require('lodash.bind'),
-    identity = require('lodash.identity'),
-    setBindData = require('lodash._setbinddata'),
-    support = require('lodash.support');
-
-/** Used to detected named functions */
-var reFuncName = /^\s*function[ \n\r\t]+\w/;
-
-/** Used to detect functions containing a `this` reference */
-var reThis = /\bthis\b/;
-
-/** Native method shortcuts */
-var fnToString = Function.prototype.toString;
-
-/**
- * The base implementation of `_.createCallback` without support for creating
- * "_.pluck" or "_.where" style callbacks.
- *
- * @private
- * @param {*} [func=identity] The value to convert to a callback.
- * @param {*} [thisArg] The `this` binding of the created callback.
- * @param {number} [argCount] The number of arguments the callback accepts.
- * @returns {Function} Returns a callback function.
- */
-function baseCreateCallback(func, thisArg, argCount) {
-  if (typeof func != 'function') {
-    return identity;
-  }
-  // exit early for no `thisArg` or already bound by `Function#bind`
-  if (typeof thisArg == 'undefined' || !('prototype' in func)) {
-    return func;
-  }
-  var bindData = func.__bindData__;
-  if (typeof bindData == 'undefined') {
-    if (support.funcNames) {
-      bindData = !func.name;
-    }
-    bindData = bindData || !support.funcDecomp;
-    if (!bindData) {
-      var source = fnToString.call(func);
-      if (!support.funcNames) {
-        bindData = !reFuncName.test(source);
-      }
-      if (!bindData) {
-        // checks if `func` references the `this` keyword and stores the result
-        bindData = reThis.test(source);
-        setBindData(func, bindData);
-      }
-    }
-  }
-  // exit early if there are no `this` references or `func` is bound
-  if (bindData === false || (bindData !== true && bindData[1] & 1)) {
-    return func;
-  }
-  switch (argCount) {
-    case 1: return function(value) {
-      return func.call(thisArg, value);
-    };
-    case 2: return function(a, b) {
-      return func.call(thisArg, a, b);
-    };
-    case 3: return function(value, index, collection) {
-      return func.call(thisArg, value, index, collection);
-    };
-    case 4: return function(accumulator, value, index, collection) {
-      return func.call(thisArg, accumulator, value, index, collection);
-    };
-  }
-  return bind(func, thisArg);
-}
-
-module.exports = baseCreateCallback;
-
-},{"lodash._setbinddata":69,"lodash.bind":72,"lodash.identity":84,"lodash.support":85}],69:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var isNative = require('lodash._isnative'),
-    noop = require('lodash.noop');
-
-/** Used as the property descriptor for `__bindData__` */
-var descriptor = {
-  'configurable': false,
-  'enumerable': false,
-  'value': null,
-  'writable': false
-};
-
-/** Used to set meta data on functions */
-var defineProperty = (function() {
-  // IE 8 only accepts DOM elements
-  try {
-    var o = {},
-        func = isNative(func = Object.defineProperty) && func,
-        result = func(o, o, o) && func;
-  } catch(e) { }
-  return result;
-}());
-
-/**
- * Sets `this` binding data on a given function.
- *
- * @private
- * @param {Function} func The function to set data on.
- * @param {Array} value The data array to set.
- */
-var setBindData = !defineProperty ? noop : function(func, value) {
-  descriptor.value = value;
-  defineProperty(func, '__bindData__', descriptor);
-};
-
-module.exports = setBindData;
-
-},{"lodash._isnative":70,"lodash.noop":71}],70:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-
-/** Used for native method references */
-var objectProto = Object.prototype;
-
-/** Used to resolve the internal [[Class]] of values */
-var toString = objectProto.toString;
-
-/** Used to detect if a method is native */
-var reNative = RegExp('^' +
-  String(toString)
-    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    .replace(/toString| for [^\]]+/g, '.*?') + '$'
-);
-
-/**
- * Checks if `value` is a native function.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if the `value` is a native function, else `false`.
- */
-function isNative(value) {
-  return typeof value == 'function' && reNative.test(value);
-}
-
-module.exports = isNative;
-
-},{}],71:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-
-/**
- * A no-operation function.
- *
- * @static
- * @memberOf _
- * @category Utilities
- * @example
- *
- * var object = { 'name': 'fred' };
- * _.noop(object) === undefined;
- * // => true
- */
-function noop() {
-  // no operation performed
-}
-
-module.exports = noop;
-
-},{}],72:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var createWrapper = require('lodash._createwrapper'),
-    slice = require('lodash._slice');
-
-/**
- * Creates a function that, when called, invokes `func` with the `this`
- * binding of `thisArg` and prepends any additional `bind` arguments to those
- * provided to the bound function.
- *
- * @static
- * @memberOf _
- * @category Functions
- * @param {Function} func The function to bind.
- * @param {*} [thisArg] The `this` binding of `func`.
- * @param {...*} [arg] Arguments to be partially applied.
- * @returns {Function} Returns the new bound function.
- * @example
- *
- * var func = function(greeting) {
- *   return greeting + ' ' + this.name;
- * };
- *
- * func = _.bind(func, { 'name': 'fred' }, 'hi');
- * func();
- * // => 'hi fred'
- */
-function bind(func, thisArg) {
-  return arguments.length > 2
-    ? createWrapper(func, 17, slice(arguments, 2), null, thisArg)
-    : createWrapper(func, 1, null, null, thisArg);
-}
-
-module.exports = bind;
-
-},{"lodash._createwrapper":73,"lodash._slice":83}],73:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var baseBind = require('lodash._basebind'),
-    baseCreateWrapper = require('lodash._basecreatewrapper'),
-    isFunction = require('lodash.isfunction'),
-    slice = require('lodash._slice');
-
-/**
- * Used for `Array` method references.
- *
- * Normally `Array.prototype` would suffice, however, using an array literal
- * avoids issues in Narwhal.
- */
-var arrayRef = [];
-
-/** Native method shortcuts */
-var push = arrayRef.push,
-    unshift = arrayRef.unshift;
-
-/**
- * Creates a function that, when called, either curries or invokes `func`
- * with an optional `this` binding and partially applied arguments.
- *
- * @private
- * @param {Function|string} func The function or method name to reference.
- * @param {number} bitmask The bitmask of method flags to compose.
- *  The bitmask may be composed of the following flags:
- *  1 - `_.bind`
- *  2 - `_.bindKey`
- *  4 - `_.curry`
- *  8 - `_.curry` (bound)
- *  16 - `_.partial`
- *  32 - `_.partialRight`
- * @param {Array} [partialArgs] An array of arguments to prepend to those
- *  provided to the new function.
- * @param {Array} [partialRightArgs] An array of arguments to append to those
- *  provided to the new function.
- * @param {*} [thisArg] The `this` binding of `func`.
- * @param {number} [arity] The arity of `func`.
- * @returns {Function} Returns the new function.
- */
-function createWrapper(func, bitmask, partialArgs, partialRightArgs, thisArg, arity) {
-  var isBind = bitmask & 1,
-      isBindKey = bitmask & 2,
-      isCurry = bitmask & 4,
-      isCurryBound = bitmask & 8,
-      isPartial = bitmask & 16,
-      isPartialRight = bitmask & 32;
-
-  if (!isBindKey && !isFunction(func)) {
-    throw new TypeError;
-  }
-  if (isPartial && !partialArgs.length) {
-    bitmask &= ~16;
-    isPartial = partialArgs = false;
-  }
-  if (isPartialRight && !partialRightArgs.length) {
-    bitmask &= ~32;
-    isPartialRight = partialRightArgs = false;
-  }
-  var bindData = func && func.__bindData__;
-  if (bindData && bindData !== true) {
-    // clone `bindData`
-    bindData = slice(bindData);
-    if (bindData[2]) {
-      bindData[2] = slice(bindData[2]);
-    }
-    if (bindData[3]) {
-      bindData[3] = slice(bindData[3]);
-    }
-    // set `thisBinding` is not previously bound
-    if (isBind && !(bindData[1] & 1)) {
-      bindData[4] = thisArg;
-    }
-    // set if previously bound but not currently (subsequent curried functions)
-    if (!isBind && bindData[1] & 1) {
-      bitmask |= 8;
-    }
-    // set curried arity if not yet set
-    if (isCurry && !(bindData[1] & 4)) {
-      bindData[5] = arity;
-    }
-    // append partial left arguments
-    if (isPartial) {
-      push.apply(bindData[2] || (bindData[2] = []), partialArgs);
-    }
-    // append partial right arguments
-    if (isPartialRight) {
-      unshift.apply(bindData[3] || (bindData[3] = []), partialRightArgs);
-    }
-    // merge flags
-    bindData[1] |= bitmask;
-    return createWrapper.apply(null, bindData);
-  }
-  // fast path for `_.bind`
-  var creater = (bitmask == 1 || bitmask === 17) ? baseBind : baseCreateWrapper;
-  return creater([func, bitmask, partialArgs, partialRightArgs, thisArg, arity]);
-}
-
-module.exports = createWrapper;
-
-},{"lodash._basebind":74,"lodash._basecreatewrapper":78,"lodash._slice":83,"lodash.isfunction":82}],74:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var baseCreate = require('lodash._basecreate'),
-    isObject = require('lodash.isobject'),
-    setBindData = require('lodash._setbinddata'),
-    slice = require('lodash._slice');
-
-/**
- * Used for `Array` method references.
- *
- * Normally `Array.prototype` would suffice, however, using an array literal
- * avoids issues in Narwhal.
- */
-var arrayRef = [];
-
-/** Native method shortcuts */
-var push = arrayRef.push;
-
-/**
- * The base implementation of `_.bind` that creates the bound function and
- * sets its meta data.
- *
- * @private
- * @param {Array} bindData The bind data array.
- * @returns {Function} Returns the new bound function.
- */
-function baseBind(bindData) {
-  var func = bindData[0],
-      partialArgs = bindData[2],
-      thisArg = bindData[4];
-
-  function bound() {
-    // `Function#bind` spec
-    // http://es5.github.io/#x15.3.4.5
-    if (partialArgs) {
-      // avoid `arguments` object deoptimizations by using `slice` instead
-      // of `Array.prototype.slice.call` and not assigning `arguments` to a
-      // variable as a ternary expression
-      var args = slice(partialArgs);
-      push.apply(args, arguments);
-    }
-    // mimic the constructor's `return` behavior
-    // http://es5.github.io/#x13.2.2
-    if (this instanceof bound) {
-      // ensure `new bound` is an instance of `func`
-      var thisBinding = baseCreate(func.prototype),
-          result = func.apply(thisBinding, args || arguments);
-      return isObject(result) ? result : thisBinding;
-    }
-    return func.apply(thisArg, args || arguments);
-  }
-  setBindData(bound, bindData);
-  return bound;
-}
-
-module.exports = baseBind;
-
-},{"lodash._basecreate":75,"lodash._setbinddata":69,"lodash._slice":83,"lodash.isobject":96}],75:[function(require,module,exports){
-(function (global){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var isNative = require('lodash._isnative'),
-    isObject = require('lodash.isobject'),
-    noop = require('lodash.noop');
-
-/* Native method shortcuts for methods with the same name as other `lodash` methods */
-var nativeCreate = isNative(nativeCreate = Object.create) && nativeCreate;
-
-/**
- * The base implementation of `_.create` without support for assigning
- * properties to the created object.
- *
- * @private
- * @param {Object} prototype The object to inherit from.
- * @returns {Object} Returns the new object.
- */
-function baseCreate(prototype, properties) {
-  return isObject(prototype) ? nativeCreate(prototype) : {};
-}
-// fallback for browsers without `Object.create`
-if (!nativeCreate) {
-  baseCreate = (function() {
-    function Object() {}
-    return function(prototype) {
-      if (isObject(prototype)) {
-        Object.prototype = prototype;
-        var result = new Object;
-        Object.prototype = null;
-      }
-      return result || global.Object();
-    };
-  }());
-}
-
-module.exports = baseCreate;
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"lodash._isnative":76,"lodash.isobject":96,"lodash.noop":77}],76:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],77:[function(require,module,exports){
-arguments[4][71][0].apply(exports,arguments)
-},{"dup":71}],78:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var baseCreate = require('lodash._basecreate'),
-    isObject = require('lodash.isobject'),
-    setBindData = require('lodash._setbinddata'),
-    slice = require('lodash._slice');
-
-/**
- * Used for `Array` method references.
- *
- * Normally `Array.prototype` would suffice, however, using an array literal
- * avoids issues in Narwhal.
- */
-var arrayRef = [];
-
-/** Native method shortcuts */
-var push = arrayRef.push;
-
-/**
- * The base implementation of `createWrapper` that creates the wrapper and
- * sets its meta data.
- *
- * @private
- * @param {Array} bindData The bind data array.
- * @returns {Function} Returns the new function.
- */
-function baseCreateWrapper(bindData) {
-  var func = bindData[0],
-      bitmask = bindData[1],
-      partialArgs = bindData[2],
-      partialRightArgs = bindData[3],
-      thisArg = bindData[4],
-      arity = bindData[5];
-
-  var isBind = bitmask & 1,
-      isBindKey = bitmask & 2,
-      isCurry = bitmask & 4,
-      isCurryBound = bitmask & 8,
-      key = func;
-
-  function bound() {
-    var thisBinding = isBind ? thisArg : this;
-    if (partialArgs) {
-      var args = slice(partialArgs);
-      push.apply(args, arguments);
-    }
-    if (partialRightArgs || isCurry) {
-      args || (args = slice(arguments));
-      if (partialRightArgs) {
-        push.apply(args, partialRightArgs);
-      }
-      if (isCurry && args.length < arity) {
-        bitmask |= 16 & ~32;
-        return baseCreateWrapper([func, (isCurryBound ? bitmask : bitmask & ~3), args, null, thisArg, arity]);
-      }
-    }
-    args || (args = arguments);
-    if (isBindKey) {
-      func = thisBinding[key];
-    }
-    if (this instanceof bound) {
-      thisBinding = baseCreate(func.prototype);
-      var result = func.apply(thisBinding, args);
-      return isObject(result) ? result : thisBinding;
-    }
-    return func.apply(thisBinding, args);
-  }
-  setBindData(bound, bindData);
-  return bound;
-}
-
-module.exports = baseCreateWrapper;
-
-},{"lodash._basecreate":79,"lodash._setbinddata":69,"lodash._slice":83,"lodash.isobject":96}],79:[function(require,module,exports){
-arguments[4][75][0].apply(exports,arguments)
-},{"dup":75,"lodash._isnative":80,"lodash.isobject":96,"lodash.noop":81}],80:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],81:[function(require,module,exports){
-arguments[4][71][0].apply(exports,arguments)
-},{"dup":71}],82:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-
-/**
- * Checks if `value` is a function.
- *
- * @static
- * @memberOf _
- * @category Objects
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if the `value` is a function, else `false`.
- * @example
- *
- * _.isFunction(_);
- * // => true
- */
-function isFunction(value) {
-  return typeof value == 'function';
-}
-
-module.exports = isFunction;
-
-},{}],83:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-
-/**
- * Slices the `collection` from the `start` index up to, but not including,
- * the `end` index.
- *
- * Note: This function is used instead of `Array#slice` to support node lists
- * in IE < 9 and to ensure dense arrays are returned.
- *
- * @private
- * @param {Array|Object|string} collection The collection to slice.
- * @param {number} start The start index.
- * @param {number} end The end index.
- * @returns {Array} Returns the new array.
- */
-function slice(array, start, end) {
-  start || (start = 0);
-  if (typeof end == 'undefined') {
-    end = array ? array.length : 0;
-  }
-  var index = -1,
-      length = end - start || 0,
-      result = Array(length < 0 ? 0 : length);
-
-  while (++index < length) {
-    result[index] = array[start + index];
-  }
-  return result;
-}
-
-module.exports = slice;
-
-},{}],84:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-
-/**
- * This method returns the first argument provided to it.
- *
- * @static
- * @memberOf _
- * @category Utilities
- * @param {*} value Any value.
- * @returns {*} Returns `value`.
- * @example
- *
- * var object = { 'name': 'fred' };
- * _.identity(object) === object;
- * // => true
- */
-function identity(value) {
-  return value;
-}
-
-module.exports = identity;
-
-},{}],85:[function(require,module,exports){
-(function (global){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var isNative = require('lodash._isnative');
-
-/** Used to detect functions containing a `this` reference */
-var reThis = /\bthis\b/;
-
-/**
- * An object used to flag environments features.
- *
- * @static
- * @memberOf _
- * @type Object
- */
-var support = {};
-
-/**
- * Detect if functions can be decompiled by `Function#toString`
- * (all but PS3 and older Opera mobile browsers & avoided in Windows 8 apps).
- *
- * @memberOf _.support
- * @type boolean
- */
-support.funcDecomp = !isNative(global.WinRTError) && reThis.test(function() { return this; });
-
-/**
- * Detect if `Function#name` is supported (all but IE).
- *
- * @memberOf _.support
- * @type boolean
- */
-support.funcNames = typeof Function.name == 'string';
-
-module.exports = support;
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"lodash._isnative":86}],86:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],87:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var forIn = require('lodash.forin'),
-    getArray = require('lodash._getarray'),
-    isFunction = require('lodash.isfunction'),
-    objectTypes = require('lodash._objecttypes'),
-    releaseArray = require('lodash._releasearray');
-
-/** `Object#toString` result shortcuts */
-var argsClass = '[object Arguments]',
-    arrayClass = '[object Array]',
-    boolClass = '[object Boolean]',
-    dateClass = '[object Date]',
-    numberClass = '[object Number]',
-    objectClass = '[object Object]',
-    regexpClass = '[object RegExp]',
-    stringClass = '[object String]';
-
-/** Used for native method references */
-var objectProto = Object.prototype;
-
-/** Used to resolve the internal [[Class]] of values */
-var toString = objectProto.toString;
-
-/** Native method shortcuts */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * The base implementation of `_.isEqual`, without support for `thisArg` binding,
- * that allows partial "_.where" style comparisons.
- *
- * @private
- * @param {*} a The value to compare.
- * @param {*} b The other value to compare.
- * @param {Function} [callback] The function to customize comparing values.
- * @param {Function} [isWhere=false] A flag to indicate performing partial comparisons.
- * @param {Array} [stackA=[]] Tracks traversed `a` objects.
- * @param {Array} [stackB=[]] Tracks traversed `b` objects.
- * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
- */
-function baseIsEqual(a, b, callback, isWhere, stackA, stackB) {
-  // used to indicate that when comparing objects, `a` has at least the properties of `b`
-  if (callback) {
-    var result = callback(a, b);
-    if (typeof result != 'undefined') {
-      return !!result;
-    }
-  }
-  // exit early for identical values
-  if (a === b) {
-    // treat `+0` vs. `-0` as not equal
-    return a !== 0 || (1 / a == 1 / b);
-  }
-  var type = typeof a,
-      otherType = typeof b;
-
-  // exit early for unlike primitive values
-  if (a === a &&
-      !(a && objectTypes[type]) &&
-      !(b && objectTypes[otherType])) {
-    return false;
-  }
-  // exit early for `null` and `undefined` avoiding ES3's Function#call behavior
-  // http://es5.github.io/#x15.3.4.4
-  if (a == null || b == null) {
-    return a === b;
-  }
-  // compare [[Class]] names
-  var className = toString.call(a),
-      otherClass = toString.call(b);
-
-  if (className == argsClass) {
-    className = objectClass;
-  }
-  if (otherClass == argsClass) {
-    otherClass = objectClass;
-  }
-  if (className != otherClass) {
-    return false;
-  }
-  switch (className) {
-    case boolClass:
-    case dateClass:
-      // coerce dates and booleans to numbers, dates to milliseconds and booleans
-      // to `1` or `0` treating invalid dates coerced to `NaN` as not equal
-      return +a == +b;
-
-    case numberClass:
-      // treat `NaN` vs. `NaN` as equal
-      return (a != +a)
-        ? b != +b
-        // but treat `+0` vs. `-0` as not equal
-        : (a == 0 ? (1 / a == 1 / b) : a == +b);
-
-    case regexpClass:
-    case stringClass:
-      // coerce regexes to strings (http://es5.github.io/#x15.10.6.4)
-      // treat string primitives and their corresponding object instances as equal
-      return a == String(b);
-  }
-  var isArr = className == arrayClass;
-  if (!isArr) {
-    // unwrap any `lodash` wrapped values
-    var aWrapped = hasOwnProperty.call(a, '__wrapped__'),
-        bWrapped = hasOwnProperty.call(b, '__wrapped__');
-
-    if (aWrapped || bWrapped) {
-      return baseIsEqual(aWrapped ? a.__wrapped__ : a, bWrapped ? b.__wrapped__ : b, callback, isWhere, stackA, stackB);
-    }
-    // exit for functions and DOM nodes
-    if (className != objectClass) {
-      return false;
-    }
-    // in older versions of Opera, `arguments` objects have `Array` constructors
-    var ctorA = a.constructor,
-        ctorB = b.constructor;
-
-    // non `Object` object instances with different constructors are not equal
-    if (ctorA != ctorB &&
-          !(isFunction(ctorA) && ctorA instanceof ctorA && isFunction(ctorB) && ctorB instanceof ctorB) &&
-          ('constructor' in a && 'constructor' in b)
-        ) {
-      return false;
-    }
-  }
-  // assume cyclic structures are equal
-  // the algorithm for detecting cyclic structures is adapted from ES 5.1
-  // section 15.12.3, abstract operation `JO` (http://es5.github.io/#x15.12.3)
-  var initedStack = !stackA;
-  stackA || (stackA = getArray());
-  stackB || (stackB = getArray());
-
-  var length = stackA.length;
-  while (length--) {
-    if (stackA[length] == a) {
-      return stackB[length] == b;
-    }
-  }
-  var size = 0;
-  result = true;
-
-  // add `a` and `b` to the stack of traversed objects
-  stackA.push(a);
-  stackB.push(b);
-
-  // recursively compare objects and arrays (susceptible to call stack limits)
-  if (isArr) {
-    // compare lengths to determine if a deep comparison is necessary
-    length = a.length;
-    size = b.length;
-    result = size == length;
-
-    if (result || isWhere) {
-      // deep compare the contents, ignoring non-numeric properties
-      while (size--) {
-        var index = length,
-            value = b[size];
-
-        if (isWhere) {
-          while (index--) {
-            if ((result = baseIsEqual(a[index], value, callback, isWhere, stackA, stackB))) {
-              break;
-            }
-          }
-        } else if (!(result = baseIsEqual(a[size], value, callback, isWhere, stackA, stackB))) {
-          break;
-        }
-      }
-    }
-  }
-  else {
-    // deep compare objects using `forIn`, instead of `forOwn`, to avoid `Object.keys`
-    // which, in this case, is more costly
-    forIn(b, function(value, key, b) {
-      if (hasOwnProperty.call(b, key)) {
-        // count the number of properties.
-        size++;
-        // deep compare each property value.
-        return (result = hasOwnProperty.call(a, key) && baseIsEqual(a[key], value, callback, isWhere, stackA, stackB));
-      }
-    });
-
-    if (result && !isWhere) {
-      // ensure both objects have the same number of properties
-      forIn(a, function(value, key, a) {
-        if (hasOwnProperty.call(a, key)) {
-          // `size` will be `-1` if `a` has more properties than `b`
-          return (result = --size > -1);
-        }
-      });
-    }
-  }
-  stackA.pop();
-  stackB.pop();
-
-  if (initedStack) {
-    releaseArray(stackA);
-    releaseArray(stackB);
-  }
-  return result;
-}
-
-module.exports = baseIsEqual;
-
-},{"lodash._getarray":88,"lodash._objecttypes":90,"lodash._releasearray":91,"lodash.forin":94,"lodash.isfunction":95}],88:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var arrayPool = require('lodash._arraypool');
-
-/**
- * Gets an array from the array pool or creates a new one if the pool is empty.
- *
- * @private
- * @returns {Array} The array from the pool.
- */
-function getArray() {
-  return arrayPool.pop() || [];
-}
-
-module.exports = getArray;
-
-},{"lodash._arraypool":89}],89:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-
-/** Used to pool arrays and objects used internally */
-var arrayPool = [];
-
-module.exports = arrayPool;
-
-},{}],90:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-
-/** Used to determine if values are of the language type Object */
-var objectTypes = {
-  'boolean': false,
-  'function': true,
-  'object': true,
-  'number': false,
-  'string': false,
-  'undefined': false
-};
-
-module.exports = objectTypes;
-
-},{}],91:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var arrayPool = require('lodash._arraypool'),
-    maxPoolSize = require('lodash._maxpoolsize');
-
-/**
- * Releases the given array back to the array pool.
- *
- * @private
- * @param {Array} [array] The array to release.
- */
-function releaseArray(array) {
-  array.length = 0;
-  if (arrayPool.length < maxPoolSize) {
-    arrayPool.push(array);
-  }
-}
-
-module.exports = releaseArray;
-
-},{"lodash._arraypool":92,"lodash._maxpoolsize":93}],92:[function(require,module,exports){
-arguments[4][89][0].apply(exports,arguments)
-},{"dup":89}],93:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-
-/** Used as the max size of the `arrayPool` and `objectPool` */
-var maxPoolSize = 40;
-
-module.exports = maxPoolSize;
-
-},{}],94:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var baseCreateCallback = require('lodash._basecreatecallback'),
-    objectTypes = require('lodash._objecttypes');
-
-/**
- * Iterates over own and inherited enumerable properties of an object,
- * executing the callback for each property. The callback is bound to `thisArg`
- * and invoked with three arguments; (value, key, object). Callbacks may exit
- * iteration early by explicitly returning `false`.
- *
- * @static
- * @memberOf _
- * @type Function
- * @category Objects
- * @param {Object} object The object to iterate over.
- * @param {Function} [callback=identity] The function called per iteration.
- * @param {*} [thisArg] The `this` binding of `callback`.
- * @returns {Object} Returns `object`.
- * @example
- *
- * function Shape() {
- *   this.x = 0;
- *   this.y = 0;
- * }
- *
- * Shape.prototype.move = function(x, y) {
- *   this.x += x;
- *   this.y += y;
- * };
- *
- * _.forIn(new Shape, function(value, key) {
- *   console.log(key);
- * });
- * // => logs 'x', 'y', and 'move' (property order is not guaranteed across environments)
- */
-var forIn = function(collection, callback, thisArg) {
-  var index, iterable = collection, result = iterable;
-  if (!iterable) return result;
-  if (!objectTypes[typeof iterable]) return result;
-  callback = callback && typeof thisArg == 'undefined' ? callback : baseCreateCallback(callback, thisArg, 3);
-    for (index in iterable) {
-      if (callback(iterable[index], index, collection) === false) return result;
-    }
-  return result
-};
-
-module.exports = forIn;
-
-},{"lodash._basecreatecallback":68,"lodash._objecttypes":90}],95:[function(require,module,exports){
-arguments[4][82][0].apply(exports,arguments)
-},{"dup":82}],96:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var objectTypes = require('lodash._objecttypes');
-
-/**
- * Checks if `value` is the language type of Object.
- * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
- *
- * @static
- * @memberOf _
- * @category Objects
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if the `value` is an object, else `false`.
- * @example
- *
- * _.isObject({});
- * // => true
- *
- * _.isObject([1, 2, 3]);
- * // => true
- *
- * _.isObject(1);
- * // => false
- */
-function isObject(value) {
-  // check if the value is the ECMAScript language type of Object
-  // http://es5.github.io/#x8
-  // and avoid a V8 bug
-  // http://code.google.com/p/v8/issues/detail?id=2291
-  return !!(value && objectTypes[typeof value]);
-}
-
-module.exports = isObject;
-
-},{"lodash._objecttypes":97}],97:[function(require,module,exports){
-arguments[4][90][0].apply(exports,arguments)
-},{"dup":90}],98:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var isNative = require('lodash._isnative'),
-    isObject = require('lodash.isobject'),
-    shimKeys = require('lodash._shimkeys');
-
-/* Native method shortcuts for methods with the same name as other `lodash` methods */
-var nativeKeys = isNative(nativeKeys = Object.keys) && nativeKeys;
-
-/**
- * Creates an array composed of the own enumerable property names of an object.
- *
- * @static
- * @memberOf _
- * @category Objects
- * @param {Object} object The object to inspect.
- * @returns {Array} Returns an array of property names.
- * @example
- *
- * _.keys({ 'one': 1, 'two': 2, 'three': 3 });
- * // => ['one', 'two', 'three'] (property order is not guaranteed across environments)
- */
-var keys = !nativeKeys ? shimKeys : function(object) {
-  if (!isObject(object)) {
-    return [];
-  }
-  return nativeKeys(object);
-};
-
-module.exports = keys;
-
-},{"lodash._isnative":99,"lodash._shimkeys":100,"lodash.isobject":96}],99:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],100:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var objectTypes = require('lodash._objecttypes');
-
-/** Used for native method references */
-var objectProto = Object.prototype;
-
-/** Native method shortcuts */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * A fallback implementation of `Object.keys` which produces an array of the
- * given object's own enumerable property names.
- *
- * @private
- * @type Function
- * @param {Object} object The object to inspect.
- * @returns {Array} Returns an array of property names.
- */
-var shimKeys = function(object) {
-  var index, iterable = object, result = [];
-  if (!iterable) return result;
-  if (!(objectTypes[typeof object])) return result;
-    for (index in iterable) {
-      if (hasOwnProperty.call(iterable, index)) {
-        result.push(index);
-      }
-    }
-  return result
-};
-
-module.exports = shimKeys;
-
-},{"lodash._objecttypes":101}],101:[function(require,module,exports){
-arguments[4][90][0].apply(exports,arguments)
-},{"dup":90}],102:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-
-/**
- * Creates a "_.pluck" style function, which returns the `key` value of a
- * given object.
- *
- * @static
- * @memberOf _
- * @category Utilities
- * @param {string} key The name of the property to retrieve.
- * @returns {Function} Returns the new function.
- * @example
- *
- * var characters = [
- *   { 'name': 'fred',   'age': 40 },
- *   { 'name': 'barney', 'age': 36 }
- * ];
- *
- * var getName = _.property('name');
- *
- * _.map(characters, getName);
- * // => ['barney', 'fred']
- *
- * _.sortBy(characters, getName);
- * // => [{ 'name': 'barney', 'age': 36 }, { 'name': 'fred',   'age': 40 }]
- */
-function property(key) {
-  return function(object) {
-    return object[key];
-  };
-}
-
-module.exports = property;
-
-},{}],103:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var baseCreateCallback = require('lodash._basecreatecallback'),
-    keys = require('lodash.keys'),
-    objectTypes = require('lodash._objecttypes');
-
-/**
- * Iterates over own enumerable properties of an object, executing the callback
- * for each property. The callback is bound to `thisArg` and invoked with three
- * arguments; (value, key, object). Callbacks may exit iteration early by
- * explicitly returning `false`.
- *
- * @static
- * @memberOf _
- * @type Function
- * @category Objects
- * @param {Object} object The object to iterate over.
- * @param {Function} [callback=identity] The function called per iteration.
- * @param {*} [thisArg] The `this` binding of `callback`.
- * @returns {Object} Returns `object`.
- * @example
- *
- * _.forOwn({ '0': 'zero', '1': 'one', 'length': 2 }, function(num, key) {
- *   console.log(key);
- * });
- * // => logs '0', '1', and 'length' (property order is not guaranteed across environments)
- */
-var forOwn = function(collection, callback, thisArg) {
-  var index, iterable = collection, result = iterable;
-  if (!iterable) return result;
-  if (!objectTypes[typeof iterable]) return result;
-  callback = callback && typeof thisArg == 'undefined' ? callback : baseCreateCallback(callback, thisArg, 3);
-    var ownIndex = -1,
-        ownProps = objectTypes[typeof iterable] && keys(iterable),
-        length = ownProps ? ownProps.length : 0;
-
-    while (++ownIndex < length) {
-      index = ownProps[ownIndex];
-      if (callback(iterable[index], index, collection) === false) return result;
-    }
-  return result
-};
-
-module.exports = forOwn;
-
-},{"lodash._basecreatecallback":104,"lodash._objecttypes":125,"lodash.keys":126}],104:[function(require,module,exports){
-arguments[4][68][0].apply(exports,arguments)
-},{"dup":68,"lodash._setbinddata":105,"lodash.bind":108,"lodash.identity":122,"lodash.support":123}],105:[function(require,module,exports){
-arguments[4][69][0].apply(exports,arguments)
-},{"dup":69,"lodash._isnative":106,"lodash.noop":107}],106:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],107:[function(require,module,exports){
-arguments[4][71][0].apply(exports,arguments)
-},{"dup":71}],108:[function(require,module,exports){
-arguments[4][72][0].apply(exports,arguments)
-},{"dup":72,"lodash._createwrapper":109,"lodash._slice":121}],109:[function(require,module,exports){
-arguments[4][73][0].apply(exports,arguments)
-},{"dup":73,"lodash._basebind":110,"lodash._basecreatewrapper":115,"lodash._slice":121,"lodash.isfunction":120}],110:[function(require,module,exports){
-arguments[4][74][0].apply(exports,arguments)
-},{"dup":74,"lodash._basecreate":111,"lodash._setbinddata":105,"lodash._slice":121,"lodash.isobject":114}],111:[function(require,module,exports){
-arguments[4][75][0].apply(exports,arguments)
-},{"dup":75,"lodash._isnative":112,"lodash.isobject":114,"lodash.noop":113}],112:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],113:[function(require,module,exports){
-arguments[4][71][0].apply(exports,arguments)
-},{"dup":71}],114:[function(require,module,exports){
-arguments[4][96][0].apply(exports,arguments)
-},{"dup":96,"lodash._objecttypes":125}],115:[function(require,module,exports){
-arguments[4][78][0].apply(exports,arguments)
-},{"dup":78,"lodash._basecreate":116,"lodash._setbinddata":105,"lodash._slice":121,"lodash.isobject":119}],116:[function(require,module,exports){
-arguments[4][75][0].apply(exports,arguments)
-},{"dup":75,"lodash._isnative":117,"lodash.isobject":119,"lodash.noop":118}],117:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],118:[function(require,module,exports){
-arguments[4][71][0].apply(exports,arguments)
-},{"dup":71}],119:[function(require,module,exports){
-arguments[4][96][0].apply(exports,arguments)
-},{"dup":96,"lodash._objecttypes":125}],120:[function(require,module,exports){
-arguments[4][82][0].apply(exports,arguments)
-},{"dup":82}],121:[function(require,module,exports){
-arguments[4][83][0].apply(exports,arguments)
-},{"dup":83}],122:[function(require,module,exports){
-arguments[4][84][0].apply(exports,arguments)
-},{"dup":84}],123:[function(require,module,exports){
-arguments[4][85][0].apply(exports,arguments)
-},{"dup":85,"lodash._isnative":124}],124:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],125:[function(require,module,exports){
-arguments[4][90][0].apply(exports,arguments)
-},{"dup":90}],126:[function(require,module,exports){
-arguments[4][98][0].apply(exports,arguments)
-},{"dup":98,"lodash._isnative":127,"lodash._shimkeys":128,"lodash.isobject":129}],127:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],128:[function(require,module,exports){
-arguments[4][100][0].apply(exports,arguments)
-},{"dup":100,"lodash._objecttypes":125}],129:[function(require,module,exports){
-arguments[4][96][0].apply(exports,arguments)
-},{"dup":96,"lodash._objecttypes":125}],130:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var createCallback = require('lodash.createcallback'),
-    forOwn = require('lodash.forown');
-
-/**
- * Creates an array of values by running each element in the collection
- * through the callback. The callback is bound to `thisArg` and invoked with
- * three arguments; (value, index|key, collection).
- *
- * If a property name is provided for `callback` the created "_.pluck" style
- * callback will return the property value of the given element.
- *
- * If an object is provided for `callback` the created "_.where" style callback
- * will return `true` for elements that have the properties of the given object,
- * else `false`.
- *
- * @static
- * @memberOf _
- * @alias collect
- * @category Collections
- * @param {Array|Object|string} collection The collection to iterate over.
- * @param {Function|Object|string} [callback=identity] The function called
- *  per iteration. If a property name or object is provided it will be used
- *  to create a "_.pluck" or "_.where" style callback, respectively.
- * @param {*} [thisArg] The `this` binding of `callback`.
- * @returns {Array} Returns a new array of the results of each `callback` execution.
- * @example
- *
- * _.map([1, 2, 3], function(num) { return num * 3; });
- * // => [3, 6, 9]
- *
- * _.map({ 'one': 1, 'two': 2, 'three': 3 }, function(num) { return num * 3; });
- * // => [3, 6, 9] (property order is not guaranteed across environments)
- *
- * var characters = [
- *   { 'name': 'barney', 'age': 36 },
- *   { 'name': 'fred',   'age': 40 }
- * ];
- *
- * // using "_.pluck" callback shorthand
- * _.map(characters, 'name');
- * // => ['barney', 'fred']
- */
-function map(collection, callback, thisArg) {
-  var index = -1,
-      length = collection ? collection.length : 0;
-
-  callback = createCallback(callback, thisArg, 3);
-  if (typeof length == 'number') {
-    var result = Array(length);
-    while (++index < length) {
-      result[index] = callback(collection[index], index, collection);
-    }
-  } else {
-    result = [];
-    forOwn(collection, function(value, key, collection) {
-      result[++index] = callback(value, key, collection);
-    });
-  }
-  return result;
-}
-
-module.exports = map;
-
-},{"lodash.createcallback":131,"lodash.forown":167}],131:[function(require,module,exports){
-arguments[4][67][0].apply(exports,arguments)
-},{"dup":67,"lodash._basecreatecallback":132,"lodash._baseisequal":151,"lodash.isobject":160,"lodash.keys":162,"lodash.property":166}],132:[function(require,module,exports){
-arguments[4][68][0].apply(exports,arguments)
-},{"dup":68,"lodash._setbinddata":133,"lodash.bind":136,"lodash.identity":148,"lodash.support":149}],133:[function(require,module,exports){
-arguments[4][69][0].apply(exports,arguments)
-},{"dup":69,"lodash._isnative":134,"lodash.noop":135}],134:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],135:[function(require,module,exports){
-arguments[4][71][0].apply(exports,arguments)
-},{"dup":71}],136:[function(require,module,exports){
-arguments[4][72][0].apply(exports,arguments)
-},{"dup":72,"lodash._createwrapper":137,"lodash._slice":147}],137:[function(require,module,exports){
-arguments[4][73][0].apply(exports,arguments)
-},{"dup":73,"lodash._basebind":138,"lodash._basecreatewrapper":142,"lodash._slice":147,"lodash.isfunction":146}],138:[function(require,module,exports){
-arguments[4][74][0].apply(exports,arguments)
-},{"dup":74,"lodash._basecreate":139,"lodash._setbinddata":133,"lodash._slice":147,"lodash.isobject":160}],139:[function(require,module,exports){
-arguments[4][75][0].apply(exports,arguments)
-},{"dup":75,"lodash._isnative":140,"lodash.isobject":160,"lodash.noop":141}],140:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],141:[function(require,module,exports){
-arguments[4][71][0].apply(exports,arguments)
-},{"dup":71}],142:[function(require,module,exports){
-arguments[4][78][0].apply(exports,arguments)
-},{"dup":78,"lodash._basecreate":143,"lodash._setbinddata":133,"lodash._slice":147,"lodash.isobject":160}],143:[function(require,module,exports){
-arguments[4][75][0].apply(exports,arguments)
-},{"dup":75,"lodash._isnative":144,"lodash.isobject":160,"lodash.noop":145}],144:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],145:[function(require,module,exports){
-arguments[4][71][0].apply(exports,arguments)
-},{"dup":71}],146:[function(require,module,exports){
-arguments[4][82][0].apply(exports,arguments)
-},{"dup":82}],147:[function(require,module,exports){
-arguments[4][83][0].apply(exports,arguments)
-},{"dup":83}],148:[function(require,module,exports){
-arguments[4][84][0].apply(exports,arguments)
-},{"dup":84}],149:[function(require,module,exports){
-arguments[4][85][0].apply(exports,arguments)
-},{"dup":85,"lodash._isnative":150}],150:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],151:[function(require,module,exports){
-arguments[4][87][0].apply(exports,arguments)
-},{"dup":87,"lodash._getarray":152,"lodash._objecttypes":154,"lodash._releasearray":155,"lodash.forin":158,"lodash.isfunction":159}],152:[function(require,module,exports){
-arguments[4][88][0].apply(exports,arguments)
-},{"dup":88,"lodash._arraypool":153}],153:[function(require,module,exports){
-arguments[4][89][0].apply(exports,arguments)
-},{"dup":89}],154:[function(require,module,exports){
-arguments[4][90][0].apply(exports,arguments)
-},{"dup":90}],155:[function(require,module,exports){
-arguments[4][91][0].apply(exports,arguments)
-},{"dup":91,"lodash._arraypool":156,"lodash._maxpoolsize":157}],156:[function(require,module,exports){
-arguments[4][89][0].apply(exports,arguments)
-},{"dup":89}],157:[function(require,module,exports){
-arguments[4][93][0].apply(exports,arguments)
-},{"dup":93}],158:[function(require,module,exports){
-arguments[4][94][0].apply(exports,arguments)
-},{"dup":94,"lodash._basecreatecallback":132,"lodash._objecttypes":154}],159:[function(require,module,exports){
-arguments[4][82][0].apply(exports,arguments)
-},{"dup":82}],160:[function(require,module,exports){
-arguments[4][96][0].apply(exports,arguments)
-},{"dup":96,"lodash._objecttypes":161}],161:[function(require,module,exports){
-arguments[4][90][0].apply(exports,arguments)
-},{"dup":90}],162:[function(require,module,exports){
-arguments[4][98][0].apply(exports,arguments)
-},{"dup":98,"lodash._isnative":163,"lodash._shimkeys":164,"lodash.isobject":160}],163:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],164:[function(require,module,exports){
-arguments[4][100][0].apply(exports,arguments)
-},{"dup":100,"lodash._objecttypes":165}],165:[function(require,module,exports){
-arguments[4][90][0].apply(exports,arguments)
-},{"dup":90}],166:[function(require,module,exports){
-arguments[4][102][0].apply(exports,arguments)
-},{"dup":102}],167:[function(require,module,exports){
-arguments[4][103][0].apply(exports,arguments)
-},{"dup":103,"lodash._basecreatecallback":168,"lodash._objecttypes":189,"lodash.keys":190}],168:[function(require,module,exports){
-arguments[4][68][0].apply(exports,arguments)
-},{"dup":68,"lodash._setbinddata":169,"lodash.bind":172,"lodash.identity":186,"lodash.support":187}],169:[function(require,module,exports){
-arguments[4][69][0].apply(exports,arguments)
-},{"dup":69,"lodash._isnative":170,"lodash.noop":171}],170:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],171:[function(require,module,exports){
-arguments[4][71][0].apply(exports,arguments)
-},{"dup":71}],172:[function(require,module,exports){
-arguments[4][72][0].apply(exports,arguments)
-},{"dup":72,"lodash._createwrapper":173,"lodash._slice":185}],173:[function(require,module,exports){
-arguments[4][73][0].apply(exports,arguments)
-},{"dup":73,"lodash._basebind":174,"lodash._basecreatewrapper":179,"lodash._slice":185,"lodash.isfunction":184}],174:[function(require,module,exports){
-arguments[4][74][0].apply(exports,arguments)
-},{"dup":74,"lodash._basecreate":175,"lodash._setbinddata":169,"lodash._slice":185,"lodash.isobject":178}],175:[function(require,module,exports){
-arguments[4][75][0].apply(exports,arguments)
-},{"dup":75,"lodash._isnative":176,"lodash.isobject":178,"lodash.noop":177}],176:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],177:[function(require,module,exports){
-arguments[4][71][0].apply(exports,arguments)
-},{"dup":71}],178:[function(require,module,exports){
-arguments[4][96][0].apply(exports,arguments)
-},{"dup":96,"lodash._objecttypes":189}],179:[function(require,module,exports){
-arguments[4][78][0].apply(exports,arguments)
-},{"dup":78,"lodash._basecreate":180,"lodash._setbinddata":169,"lodash._slice":185,"lodash.isobject":183}],180:[function(require,module,exports){
-arguments[4][75][0].apply(exports,arguments)
-},{"dup":75,"lodash._isnative":181,"lodash.isobject":183,"lodash.noop":182}],181:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],182:[function(require,module,exports){
-arguments[4][71][0].apply(exports,arguments)
-},{"dup":71}],183:[function(require,module,exports){
-arguments[4][96][0].apply(exports,arguments)
-},{"dup":96,"lodash._objecttypes":189}],184:[function(require,module,exports){
-arguments[4][82][0].apply(exports,arguments)
-},{"dup":82}],185:[function(require,module,exports){
-arguments[4][83][0].apply(exports,arguments)
-},{"dup":83}],186:[function(require,module,exports){
-arguments[4][84][0].apply(exports,arguments)
-},{"dup":84}],187:[function(require,module,exports){
-arguments[4][85][0].apply(exports,arguments)
-},{"dup":85,"lodash._isnative":188}],188:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],189:[function(require,module,exports){
-arguments[4][90][0].apply(exports,arguments)
-},{"dup":90}],190:[function(require,module,exports){
-arguments[4][98][0].apply(exports,arguments)
-},{"dup":98,"lodash._isnative":191,"lodash._shimkeys":192,"lodash.isobject":193}],191:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],192:[function(require,module,exports){
-arguments[4][100][0].apply(exports,arguments)
-},{"dup":100,"lodash._objecttypes":189}],193:[function(require,module,exports){
-arguments[4][96][0].apply(exports,arguments)
-},{"dup":96,"lodash._objecttypes":189}],194:[function(require,module,exports){
-arguments[4][47][0].apply(exports,arguments)
-},{"dup":47}],195:[function(require,module,exports){
-var map = require('lodash.map')
-
-module.exports = Protocols
-
-function Protocols(proto) {
-  if (typeof(proto) == 'number') {
-    if (Protocols.codes[proto])
-      return Protocols.codes[proto]
-
-    throw new Error("no protocol with code: " + proto)
-  }
-  else if (typeof(proto) == 'string' || proto instanceof String) {
-    if (Protocols.names[proto])
-      return Protocols.names[proto]
-
-    throw new Error("no protocol with name: " + proto)
-  }
-
-  throw new Error("invalid protocol id type: " + proto)
-}
-
-// replicating table here to:
-// 1. avoid parsing the csv
-// 2. ensuring errors in the csv don't screw up code.
-// 3. changing a number has to happen in two places.
-
-Protocols.table = [
-  [4,  32,  'ip4'],
-  [6,  16,  'tcp'],
-  [17, 16,  'udp'],
-  [33, 16,  'dccp'],
-  [41, 128, 'ip6'],
-  // these require varint:
-  [132, 16, 'sctp'],
-  // [480, 0, 'http'],
-  // [443, 0, 'https'],
-]
-
-Protocols.names = {}
-Protocols.codes = {}
-
-// populate tables
-map(Protocols.table, function(e) {
-  var proto = p.apply(this, e)
-  Protocols.codes[proto.code] = proto
-  Protocols.names[proto.name] = proto
-})
-
-Protocols.object = p
-
-function p(code, size, name) {
-  return {code: code, size: size, name: name}
-}
-
-},{"lodash.map":130}],196:[function(require,module,exports){
-var Sandwich = require('sandwich-stream').SandwichStream
+},{}],93:[function(require,module,exports){
+var flat = require('./mp2v_flat')
+var tree = require('./mp2v_tree')
+
+var x = module.exports = tree
+x.flat = flat
+x.tree = tree
+
+},{"./mp2v_flat":94,"./mp2v_tree":95}],94:[function(require,module,exports){
+var Multipart = require('multipart-stream')
+var duplexify = require('duplexify')
 var stream = require('stream')
-var inherits = require('inherits')
+var common = require('./common')
+randomString = common.randomString
 
-var CRNL = '\r\n'
+module.exports = v2mpFlat
 
-module.exports = Multipart
+// we'll create three streams:
+// - w: a writable stream. it receives vinyl files
+// - mp: a multipart stream
+// - r: a readable stream. it outputs multipart data
+function v2mpFlat(opts) {
+  opts = opts || {}
+  opts.boundary = opts.boundary || randomString()
 
-/**
- * Multipart request constructor.
- * @constructor
- * @param {object} [opts]
- * @param {string} [opts.boundary] - The boundary to be used. If omitted one is generated.
- * @returns {function} Returns the multipart stream.
- */
-function Multipart(boundary) {
-	if(!this instanceof Multipart) {
-		return new Multipart(boundary)
-	}
+  var w = new stream.Writable({objectMode: true})
+  var r = new stream.PassThrough({objectMode: true})
+  var mp = new Multipart(opts.boundary)
 
-	this.boundary = boundary || Math.random().toString(36).slice(2)
+  // connect w -> mp
+  w._write = function(file, enc, cb) {
+    writePart(mp, file, cb)
+  }
 
-	Sandwich.call(this, {
-		head: '--' + this.boundary + CRNL,
-		tail: CRNL + '--' + this.boundary + '--',
-		separator: CRNL + '--' + this.boundary + CRNL
-	})
+  // connect mp -> r
+  w.on('finish', function() {
+    // apparently cannot add parts while streaming :(
+    mp.pipe(r)
+  })
 
-	this._add = this.add
-	this.add = this.addPart
+  var out = duplexify.obj(w, r)
+  out.boundary = opts.boundary
+  return out
 }
 
-inherits(Multipart, Sandwich)
+function writePart(mp, file, cb) {
+  var c = file.contents
+  if (c === null)
+    c = emptyStream()
 
-/**
- * Adds a new part to the request.
- * @param {object} [part={}]
- * @param {object} [part.headers={}]
- * @param {string|buffer|stream} [part.body=\r\n]
- * @returns {function} Returns the multipart stream.
- */
-Multipart.prototype.addPart = function(part) {
-	part = part || {}
-	var partStream = new stream.PassThrough()
-
-	if(part.headers) {
-		for(var key in part.headers) {
-			var header = part.headers[key]
-			partStream.write(key + ': ' + header + CRNL)
-		}
-	}
-
-	partStream.write(CRNL)
-
-	if(part.body instanceof stream.Stream) {
-		part.body.pipe(partStream)
-	} else {
-		partStream.end(part.body)
-	}
-
-	this._add(partStream)
-}
-},{"inherits":197,"sandwich-stream":198,"stream":32}],197:[function(require,module,exports){
-arguments[4][10][0].apply(exports,arguments)
-},{"dup":10}],198:[function(require,module,exports){
-var Readable = require('stream').Readable;
-var PassThrough = require('stream').PassThrough;
-
-function SandwichStream(options) {
-  Readable.call(this, options);
-  options = options || {};
-  this._streamsActive = false;
-  this._streamsAdded = false;
-  this._streams = [];
-  this._currentStream = undefined;
-  this._errorsEmitted = false;
-
-  if (options.head) {
-    this._head = options.head;
-  }
-  if (options.tail) {
-    this._tail = options.tail;
-  }
-  if (options.separator) {
-    this._separator = options.separator;
-  }
+  mp.addPart({
+    body: file.contents,
+    headers: headersForFile(file),
+  })
+  cb(null)
+  // TODO: call cb when file.contents ends instead.
 }
 
-SandwichStream.prototype = Object.create(Readable.prototype, {
-  constructor: SandwichStream
+function emptyStream() {
+  var s = new stream.PassThrough({objectMode: true})
+  s.write(null)
+  return s
+}
+
+function headersForFile(file) {
+  var fpath = common.cleanPath(file.path, file.base)
+
+  var h = {}
+  h['Content-Disposition'] = 'file; filename="' +fpath+ '"'
+
+  if (file.isDirectory()) {
+    h['Content-Type'] = 'text/directory'
+  } else {
+    h['Content-Type'] = 'application/octet-stream'
+  }
+
+  return h
+}
+
+function randomString () {
+  return Math.random().toString(36).slice(2) +
+    Math.random().toString(36).slice(2) +
+    Math.random().toString(36).slice(2) +
+    Math.random().toString(36).slice(2)
+}
+
+},{"./common":92,"duplexify":12,"multipart-stream":57,"stream":81}],95:[function(require,module,exports){
+var Multipart = require('multipart-stream')
+var duplexify = require('duplexify')
+var stream = require('stream')
+var Path = require('path')
+var collect = require('./collect')
+var common = require('./common')
+randomString = common.randomString
+
+module.exports = v2mpTree
+
+// we'll create three streams:
+// - w: a writable stream. it receives vinyl files
+// - mps: a multipart stream in between.
+// - r: a readable stream. it outputs text. needed to
+//      give the caller something, while w finishes.
+//
+// we do all processing on the incoming vinyl metadata
+// before we transform to multipart, that's becasue we
+// need a complete view of the filesystem. (/ the code
+// i lifted did that and it's convoluted enough not to
+// want to change it...)
+function v2mpTree(opts) {
+  opts = opts || {}
+  opts.boundary = opts.boundary || randomString()
+
+  var r = new stream.PassThrough({objectMode: true})
+  var w = new stream.PassThrough({objectMode: true})
+  var out = duplexify.obj(w, r)
+  out.boundary = opts.boundary
+
+  collect(w, function(err, files) {
+    if (err) {
+      r.emit('error', err)
+      return
+    }
+
+    try {
+      // construct the multipart streams from these files
+      var mp = streamForCollection(opts.boundary, files)
+
+      // let the user know what the content-type header is.
+      // this is because multipart is such a grossly defined protocol :(
+      out.multipartHdr = "Content-Type: multipart/mixed; boundary=" + mp.boundary
+      if (opts.writeHeader) {
+        r.write(out.multipartHdr + "\r\n")
+        r.write("\r\n")
+      }
+
+      // now we pipe the multipart stream to
+      // the readable thing we returned.
+      // now the user will start receiving data.
+      mp.pipe(r)
+    } catch (e) {
+      r.emit('error', e)
+    }
+  })
+
+  return out
+}
+
+function streamForCollection(boundary, files) {
+  var parts = []
+
+  // walk through all the named files in order.
+  files.paths.sort()
+  for (var i = 0; i < files.paths.length; i++) {
+    var n = files.paths[i]
+    var s = streamForPath(files, n)
+    if (!s) continue // already processed.
+    parts.push({ body: s, headers: headersForFile(files.named[n])})
+  }
+
+  // then add all the unnamed files.
+  for (var i = 0; i < files.unnamed.length; i++) {
+    var f = files.unnamed[i] // raw vinyl files.
+    var s = streamForWrapped(files, f)
+    if (!s) continue // already processed.
+    parts.push({ body: s, headers: headersForFile(f)})
+  }
+
+  if (parts.length == 0) { // avoid multipart bug.
+    var s = streamForString("--" + boundary + "--\r\n") // close multipart.
+    s.boundary = boundary
+    return s
+  }
+
+  // write out multipart.
+  var mp = new Multipart(boundary)
+  for (var i = 0; i < parts.length; i++) {
+    mp.addPart(parts[i])
+  }
+  return mp
+}
+
+function streamForString(str) {
+  var s = new stream.PassThrough()
+  s.end(str)
+  return s
+}
+
+function streamForPath(files, path) {
+  var o = files.named[path]
+  if (!o) {
+    throw new Error("no object for path. lib error.")
+  }
+
+  if (!o.file) { // no vinyl file, so no need to process this one.
+    return
+  }
+
+  // avoid processing twice.
+  if (o.done) return null // already processed it
+  o.done = true // mark it as already processed.
+
+  return streamForWrapped(files, o)
+}
+
+function streamForWrapped(files, f) {
+  if (f.file.isDirectory()) {
+    return multipartForDir(files, f)
+  }
+
+  // stream for a file
+  if (f.children.length > 0) { // sanity check
+    throw new Error("non-directory has children. lib error")
+  }
+
+  return f.file.contents
+}
+
+function multipartForDir(files, dir) {
+   // we still write the boundary for the headers
+  dir.boundary = randomString()
+
+  if (!dir.children || dir.children.length < 1) {
+    // we have to intercept this here and return an empty stream.
+    // because multipart lib fails if there are no parts. see
+    // https://github.com/hendrikcech/multipart-stream/issues/1
+    return streamForString("--" + dir.boundary + "--\r\n") // close multipart.
+  }
+
+  var mp = new Multipart(dir.boundary)
+  for (var i = 0; i < dir.children.length; i++) {
+    var child = dir.children[i]
+    if (!child.file) {
+      throw new Error("child has no file. lib error")
+    }
+
+    var s = streamForPath(files, child.file.path)
+    mp.addPart({ body: s, headers: headersForFile(child) })
+  }
+  return mp
+}
+
+function headersForFile(o) {
+  var fpath = common.cleanPath(o.file.path, o.file.base)
+
+  var h = {}
+  h['Content-Disposition'] = 'file; filename="' + fpath + '"'
+
+  if (o.file.isDirectory()) {
+    h['Content-Type'] = 'multipart/mixed; boundary=' + o.boundary
+  } else {
+    h['Content-Type'] = 'application/octet-stream'
+  }
+
+  return h
+}
+
+},{"./collect":91,"./common":92,"duplexify":12,"multipart-stream":57,"path":62,"stream":81}],96:[function(require,module,exports){
+(function (process){
+var path = require('path');
+var clone = require('clone');
+var cloneStats = require('clone-stats');
+var cloneBuffer = require('./lib/cloneBuffer');
+var isBuffer = require('./lib/isBuffer');
+var isStream = require('./lib/isStream');
+var isNull = require('./lib/isNull');
+var inspectStream = require('./lib/inspectStream');
+var Stream = require('stream');
+var replaceExt = require('replace-ext');
+
+function File(file) {
+  if (!file) file = {};
+
+  // record path change
+  var history = file.path ? [file.path] : file.history;
+  this.history = history || [];
+
+  this.cwd = file.cwd || process.cwd();
+  this.base = file.base || this.cwd;
+
+  // stat = files stats object
+  this.stat = file.stat || null;
+
+  // contents = stream, buffer, or null if not read
+  this.contents = file.contents || null;
+
+  this._isVinyl = true;
+}
+
+File.prototype.isBuffer = function() {
+  return isBuffer(this.contents);
+};
+
+File.prototype.isStream = function() {
+  return isStream(this.contents);
+};
+
+File.prototype.isNull = function() {
+  return isNull(this.contents);
+};
+
+// TODO: should this be moved to vinyl-fs?
+File.prototype.isDirectory = function() {
+  return this.isNull() && this.stat && this.stat.isDirectory();
+};
+
+File.prototype.clone = function(opt) {
+  if (typeof opt === 'boolean') {
+    opt = {
+      deep: opt,
+      contents: true
+    };
+  } else if (!opt) {
+    opt = {
+      deep: true,
+      contents: true
+    };
+  } else {
+    opt.deep = opt.deep === true;
+    opt.contents = opt.contents !== false;
+  }
+
+  // clone our file contents
+  var contents;
+  if (this.isStream()) {
+    contents = this.contents.pipe(new Stream.PassThrough());
+    this.contents = this.contents.pipe(new Stream.PassThrough());
+  } else if (this.isBuffer()) {
+    contents = opt.contents ? cloneBuffer(this.contents) : this.contents;
+  }
+
+  var file = new File({
+    cwd: this.cwd,
+    base: this.base,
+    stat: (this.stat ? cloneStats(this.stat) : null),
+    history: this.history.slice(),
+    contents: contents
+  });
+
+  // clone our custom properties
+  Object.keys(this).forEach(function(key) {
+    // ignore built-in fields
+    if (key === '_contents' || key === 'stat' ||
+      key === 'history' || key === 'path' ||
+      key === 'base' || key === 'cwd') {
+      return;
+    }
+    file[key] = opt.deep ? clone(this[key], true) : this[key];
+  }, this);
+  return file;
+};
+
+File.prototype.pipe = function(stream, opt) {
+  if (!opt) opt = {};
+  if (typeof opt.end === 'undefined') opt.end = true;
+
+  if (this.isStream()) {
+    return this.contents.pipe(stream, opt);
+  }
+  if (this.isBuffer()) {
+    if (opt.end) {
+      stream.end(this.contents);
+    } else {
+      stream.write(this.contents);
+    }
+    return stream;
+  }
+
+  // isNull
+  if (opt.end) stream.end();
+  return stream;
+};
+
+File.prototype.inspect = function() {
+  var inspect = [];
+
+  // use relative path if possible
+  var filePath = (this.base && this.path) ? this.relative : this.path;
+
+  if (filePath) {
+    inspect.push('"'+filePath+'"');
+  }
+
+  if (this.isBuffer()) {
+    inspect.push(this.contents.inspect());
+  }
+
+  if (this.isStream()) {
+    inspect.push(inspectStream(this.contents));
+  }
+
+  return '<File '+inspect.join(' ')+'>';
+};
+
+File.isVinyl = function(file) {
+  return file && file._isVinyl === true;
+};
+
+// virtual attributes
+// or stuff with extra logic
+Object.defineProperty(File.prototype, 'contents', {
+  get: function() {
+    return this._contents;
+  },
+  set: function(val) {
+    if (!isBuffer(val) && !isStream(val) && !isNull(val)) {
+      throw new Error('File.contents can only be a Buffer, a Stream, or null.');
+    }
+    this._contents = val;
+  }
 });
 
-SandwichStream.prototype._read = function () {
-  if (!this._streamsActive) {
-    this._streamsActive = true;
-    this._pushHead();
-    this._streamNextStream();
+// TODO: should this be moved to vinyl-fs?
+Object.defineProperty(File.prototype, 'relative', {
+  get: function() {
+    if (!this.base) throw new Error('No base specified! Can not get relative.');
+    if (!this.path) throw new Error('No path specified! Can not get relative.');
+    return path.relative(this.base, this.path);
+  },
+  set: function() {
+    throw new Error('File.relative is generated from the base and path attributes. Do not modify it.');
   }
-};
+});
 
-SandwichStream.prototype.add = function (newStream) {
-  if (!this._streamsActive) {
-    this._streamsAdded = true;
-    this._streams.push(newStream);
-    newStream.on('error', this._substreamOnError.bind(this));
+Object.defineProperty(File.prototype, 'dirname', {
+  get: function() {
+    if (!this.path) throw new Error('No path specified! Can not get dirname.');
+    return path.dirname(this.path);
+  },
+  set: function(dirname) {
+    if (!this.path) throw new Error('No path specified! Can not set dirname.');
+    this.path = path.join(dirname, path.basename(this.path));
   }
-  else {
-    throw new Error('SandwichStream error adding new stream while streaming');
+});
+
+Object.defineProperty(File.prototype, 'basename', {
+  get: function() {
+    if (!this.path) throw new Error('No path specified! Can not get basename.');
+    return path.basename(this.path);
+  },
+  set: function(basename) {
+    if (!this.path) throw new Error('No path specified! Can not set basename.');
+    this.path = path.join(path.dirname(this.path), basename);
   }
-};
+});
 
-SandwichStream.prototype._substreamOnError = function (error) {
-  this._errorsEmitted = true;
-  this.emit('error', error);
-};
-
-SandwichStream.prototype._pushHead = function () {
-  if (this._head) {
-    this.push(this._head);
+Object.defineProperty(File.prototype, 'extname', {
+  get: function() {
+    if (!this.path) throw new Error('No path specified! Can not get extname.');
+    return path.extname(this.path);
+  },
+  set: function(extname) {
+    if (!this.path) throw new Error('No path specified! Can not set extname.');
+    this.path = replaceExt(this.path, extname);
   }
-};
+});
 
-SandwichStream.prototype._streamNextStream = function () {
-  if (this._nextStream()) {
-    this._bindCurrentStreamEvents();
+Object.defineProperty(File.prototype, 'path', {
+  get: function() {
+    return this.history[this.history.length - 1];
+  },
+  set: function(path) {
+    if (typeof path !== 'string') throw new Error('path should be string');
+
+    // record history only when path changed
+    if (path && path !== this.path) {
+      this.history.push(path);
+    }
   }
-  else {
-    this._pushTail();
-    this.push(null);
+});
+
+module.exports = File;
+
+}).call(this,require('_process'))
+},{"./lib/cloneBuffer":97,"./lib/inspectStream":98,"./lib/isBuffer":99,"./lib/isNull":100,"./lib/isStream":101,"_process":64,"clone":9,"clone-stats":8,"path":62,"replace-ext":79,"stream":81}],97:[function(require,module,exports){
+var Buffer = require('buffer').Buffer;
+
+module.exports = function(buf) {
+  var out = new Buffer(buf.length);
+  buf.copy(out);
+  return out;
+};
+
+},{"buffer":6}],98:[function(require,module,exports){
+var isStream = require('./isStream');
+
+module.exports = function(stream) {
+  if (!isStream(stream)) return;
+
+  var streamType = stream.constructor.name;
+  // avoid StreamStream
+  if (streamType === 'Stream') streamType = '';
+
+  return '<'+streamType+'Stream>';
+};
+
+},{"./isStream":101}],99:[function(require,module,exports){
+module.exports = require('buffer').Buffer.isBuffer;
+
+},{"buffer":6}],100:[function(require,module,exports){
+module.exports = function(v) {
+  return v === null;
+};
+
+},{}],101:[function(require,module,exports){
+var Stream = require('stream').Stream;
+
+module.exports = function(o) {
+  return !!o && o instanceof Stream;
+};
+},{"stream":81}],102:[function(require,module,exports){
+var indexOf = require('indexof');
+
+var Object_keys = function (obj) {
+    if (Object.keys) return Object.keys(obj)
+    else {
+        var res = [];
+        for (var key in obj) res.push(key)
+        return res;
+    }
+};
+
+var forEach = function (xs, fn) {
+    if (xs.forEach) return xs.forEach(fn)
+    else for (var i = 0; i < xs.length; i++) {
+        fn(xs[i], i, xs);
+    }
+};
+
+var defineProp = (function() {
+    try {
+        Object.defineProperty({}, '_', {});
+        return function(obj, name, value) {
+            Object.defineProperty(obj, name, {
+                writable: true,
+                enumerable: false,
+                configurable: true,
+                value: value
+            })
+        };
+    } catch(e) {
+        return function(obj, name, value) {
+            obj[name] = value;
+        };
+    }
+}());
+
+var globals = ['Array', 'Boolean', 'Date', 'Error', 'EvalError', 'Function',
+'Infinity', 'JSON', 'Math', 'NaN', 'Number', 'Object', 'RangeError',
+'ReferenceError', 'RegExp', 'String', 'SyntaxError', 'TypeError', 'URIError',
+'decodeURI', 'decodeURIComponent', 'encodeURI', 'encodeURIComponent', 'escape',
+'eval', 'isFinite', 'isNaN', 'parseFloat', 'parseInt', 'undefined', 'unescape'];
+
+function Context() {}
+Context.prototype = {};
+
+var Script = exports.Script = function NodeScript (code) {
+    if (!(this instanceof Script)) return new Script(code);
+    this.code = code;
+};
+
+Script.prototype.runInContext = function (context) {
+    if (!(context instanceof Context)) {
+        throw new TypeError("needs a 'context' argument.");
+    }
+    
+    var iframe = document.createElement('iframe');
+    if (!iframe.style) iframe.style = {};
+    iframe.style.display = 'none';
+    
+    document.body.appendChild(iframe);
+    
+    var win = iframe.contentWindow;
+    var wEval = win.eval, wExecScript = win.execScript;
+
+    if (!wEval && wExecScript) {
+        // win.eval() magically appears when this is called in IE:
+        wExecScript.call(win, 'null');
+        wEval = win.eval;
+    }
+    
+    forEach(Object_keys(context), function (key) {
+        win[key] = context[key];
+    });
+    forEach(globals, function (key) {
+        if (context[key]) {
+            win[key] = context[key];
+        }
+    });
+    
+    var winKeys = Object_keys(win);
+
+    var res = wEval.call(win, this.code);
+    
+    forEach(Object_keys(win), function (key) {
+        // Avoid copying circular objects like `top` and `window` by only
+        // updating existing context properties or new properties in the `win`
+        // that was only introduced after the eval.
+        if (key in context || indexOf(winKeys, key) === -1) {
+            context[key] = win[key];
+        }
+    });
+
+    forEach(globals, function (key) {
+        if (!(key in context)) {
+            defineProp(context, key, win[key]);
+        }
+    });
+    
+    document.body.removeChild(iframe);
+    
+    return res;
+};
+
+Script.prototype.runInThisContext = function () {
+    return eval(this.code); // maybe...
+};
+
+Script.prototype.runInNewContext = function (context) {
+    var ctx = Script.createContext(context);
+    var res = this.runInContext(ctx);
+
+    forEach(Object_keys(ctx), function (key) {
+        context[key] = ctx[key];
+    });
+
+    return res;
+};
+
+forEach(Object_keys(Script.prototype), function (name) {
+    exports[name] = Script[name] = function (code) {
+        var s = Script(code);
+        return s[name].apply(s, [].slice.call(arguments, 1));
+    };
+});
+
+exports.createScript = function (code) {
+    return exports.Script(code);
+};
+
+exports.createContext = Script.createContext = function (context) {
+    var copy = new Context();
+    if(typeof context === 'object') {
+        forEach(Object_keys(context), function (key) {
+            copy[key] = context[key];
+        });
+    }
+    return copy;
+};
+
+},{"indexof":17}],103:[function(require,module,exports){
+// Returns a wrapper function that returns a wrapped callback
+// The wrapper function should do some stuff, and return a
+// presumably different callback function.
+// This makes sure that own properties are retained, so that
+// decorations and such are not lost along the way.
+module.exports = wrappy
+function wrappy (fn, cb) {
+  if (fn && cb) return wrappy(fn)(cb)
+
+  if (typeof fn !== 'function')
+    throw new TypeError('need wrapper function')
+
+  Object.keys(fn).forEach(function (k) {
+    wrapper[k] = fn[k]
+  })
+
+  return wrapper
+
+  function wrapper() {
+    var args = new Array(arguments.length)
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i]
+    }
+    var ret = fn.apply(this, args)
+    var cb = args[args.length-1]
+    if (typeof ret === 'function' && ret !== cb) {
+      Object.keys(cb).forEach(function (k) {
+        ret[k] = cb[k]
+      })
+    }
+    return ret
   }
-};
-
-SandwichStream.prototype._nextStream = function () {
-  this._currentStream = this._streams.shift();
-  return this._currentStream !== undefined;
-};
-
-SandwichStream.prototype._bindCurrentStreamEvents = function () {
-  this._currentStream.on('readable', this._currentStreamOnReadable.bind(this));
-  this._currentStream.on('end', this._currentStreamOnEnd.bind(this));
-};
-
-SandwichStream.prototype._currentStreamOnReadable = function () {
-  this.push(this._currentStream.read() || '');
-};
-
-SandwichStream.prototype._currentStreamOnEnd = function () {
-  this._pushSeparator();
-  this._streamNextStream();
-};
-
-SandwichStream.prototype._pushSeparator = function () {
-  if (this._streams.length > 0 && this._separator) {
-    this.push(this._separator);
-  }
-};
-
-SandwichStream.prototype._pushTail = function () {
-  if (this._tail) {
-    this.push(this._tail);
-  }
-};
-
-function sandwichStream(options) {
-  var stream = new SandwichStream(options);
-  return stream;
 }
 
-sandwichStream.SandwichStream = SandwichStream;
+},{}],104:[function(require,module,exports){
+arguments[4][55][0].apply(exports,arguments)
+},{"dup":55}],105:[function(require,module,exports){
+module.exports={
+  "name": "ipfs-api",
+  "version": "2.3.3",
+  "description": "A client library for the IPFS API",
+  "main": "src/index.js",
+  "dependencies": {
+    "brfs": "^1.4.0",
+    "merge-stream": "^1.0.0",
+    "multiaddr": "^1.0.0",
+    "multipart-stream": "^2.0.0",
+    "vinyl": "^0.5.1",
+    "vinyl-fs-browser": "^2.1.1-1",
+    "vinyl-multipart-stream": "^1.2.5"
+  },
+  "browserify": {
+    "transform": [
+      "brfs"
+    ]
+  },
+  "engines": {
+    "node": "^4.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ipfs/node-ipfs-api"
+  },
+  "devDependencies": {
+    "browserify": "^11.0.0",
+    "ipfsd-ctl": "^0.5.1",
+    "mocha": "^2.2.5",
+    "pre-commit": "^1.0.6",
+    "standard": "^5.2.2",
+    "uglify-js": "^2.4.24"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/mocha",
+    "lint": "./node_modules/.bin/standard",
+    "build": "./node_modules/.bin/browserify -t brfs -s ipfsAPI -e ./src/index.js | tee dist/ipfsapi.js | ./node_modules/.bin/uglifyjs -m > dist/ipfsapi.min.js"
+  },
+  "standard": {
+    "ignore": [
+      "dist/*"
+    ]
+  },
+  "pre-commit": [
+    "lint"
+  ],
+  "keywords": [
+    "ipfs"
+  ],
+  "author": "Matt Bell <mappum@gmail.com>",
+  "contributors": [
+    "Travis Person <travis.person@gmail.com>",
+    "Jeromy Jonson <why@ipfs.io>"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ipfs/node-ipfs-api/issues"
+  },
+  "homepage": "https://github.com/ipfs/node-ipfs-api"
+}
 
-module.exports = sandwichStream;
+},{}],106:[function(require,module,exports){
+var pkg = require('../package.json')
 
-},{"stream":32}],199:[function(require,module,exports){
+exports = module.exports = {
+  'api-path': '/api/v0/',
+  'user-agent': '/node-' + pkg.name + '/' + pkg.version + '/',
+  'host': 'localhost',
+  'port': '5001'
+}
+
+},{"../package.json":105}],107:[function(require,module,exports){
+(function (Buffer){
+var File = require('vinyl')
+var vinylfs = require('vinyl-fs-browser')
+var vmps = require('vinyl-multipart-stream')
+var stream = require('stream')
+var Merge = require('merge-stream')
+
+exports = module.exports = getFilesStream
+
+function getFilesStream (files, opts) {
+  if (!files) return null
+  if (!Array.isArray(files)) files = [files]
+
+  // merge all inputs into one stream
+  var adder = new Merge()
+
+  // single stream for pushing directly
+  var single = new stream.PassThrough({objectMode: true})
+  adder.add(single)
+
+  for (var i = 0; i < files.length; i++) {
+    var file = files[i]
+
+    if (typeof (file) === 'string') {
+      var srcOpts = {
+        buffer: false,
+        stripBOM: false,
+        followSymlinks: opts.followSymlinks != null ? opts.followSymlinks : true
+      }
+
+      // add the file or dir itself
+      adder.add(vinylfs.src(file, srcOpts))
+
+      // if recursive, glob the contents
+      if (opts.r || opts.recursive) {
+        adder.add(vinylfs.src(file + '/**/*', srcOpts))
+      }
+    } else {
+      // try to create a single vinyl file, and push it.
+      // throws if cannot use the file.
+      single.push(vinylFile(file))
+    }
+  }
+
+  single.end()
+  return adder.pipe(vmps())
+}
+
+// vinylFile tries to cast a file object to a vinyl file.
+// it's agressive. If it _cannot_ be converted to a file,
+// it returns null.
+function vinylFile (file) {
+  if (file instanceof File) {
+    return file // it's a vinyl file.
+  }
+
+  // let's try to make a vinyl file?
+  var f = {cwd: '/', base: '/', path: ''}
+  if (file.contents && file.path) {
+    // set the cwd + base, if there.
+    f.path = file.path
+    f.cwd = file.cwd || f.cwd
+    f.base = file.base || f.base
+    f.contents = file.contents
+  } else {
+    // ok maybe we just have contents?
+    f.contents = file
+  }
+
+  // ensure the contents are safe to pass.
+  // throws if vinyl cannot use the contents
+  f.contents = vinylContentsSafe(f.contents)
+  return new File(f)
+}
+
+function vinylContentsSafe (c) {
+  if (Buffer.isBuffer(c)) return c
+  if (typeof (c) === 'string') return c
+  if (c instanceof stream.Stream) return c
+  if (typeof (c.pipe) === 'function') {
+    // hey, looks like a stream. but vinyl won't detect it.
+    // pipe it to a PassThrough, and use that
+    var s = new stream.PassThrough()
+    return c.pipe(s)
+  }
+
+  throw new Error('vinyl will not accept: ' + c)
+}
+
+}).call(this,{"isBuffer":require("/media/d/projects/node-ipfs-api/node_modules/is-buffer/index.js")})
+},{"/media/d/projects/node-ipfs-api/node_modules/is-buffer/index.js":21,"merge-stream":51,"stream":81,"vinyl":96,"vinyl-fs-browser":110,"vinyl-multipart-stream":93}],108:[function(require,module,exports){
+(function (Buffer){
+var multiaddr = require('multiaddr')
+var config = require('./config')
+var requestAPI = require('./request-api')
+
+exports = module.exports = IpfsAPI
+
+function IpfsAPI (host_or_multiaddr, port) {
+  var self = this
+
+  if (!(self instanceof IpfsAPI)) {
+    return new IpfsAPI(host_or_multiaddr, port)
+  }
+
+  try {
+    var maddr = multiaddr(host_or_multiaddr).nodeAddress()
+    config.host = maddr.address
+    config.port = maddr.port
+  } catch (e) {
+    config.host = host_or_multiaddr
+    config.port = port || config.port
+  }
+
+  // autoconfigure in browser
+  if (!config.host &&
+    typeof window !== 'undefined') {
+    var split = window.location.host.split(':')
+    config.host = split[0]
+    config.port = split[1]
+  }
+
+  // -- Internal
+
+  function command (name) {
+    return function (opts, cb) {
+      if (typeof (opts) === 'function') {
+        cb = opts
+        opts = {}
+      }
+      return requestAPI(name, null, opts, null, cb)
+    }
+  }
+
+  function argCommand (name) {
+    return function (arg, opts, cb) {
+      if (typeof (opts) === 'function') {
+        cb = opts
+        opts = {}
+      }
+      return requestAPI(name, arg, opts, null, cb)
+    }
+  }
+
+  // -- Interface
+
+  self.send = requestAPI
+
+  self.add = function (files, opts, cb) {
+    if (typeof (opts) === 'function' && cb === undefined) {
+      cb = opts
+      opts = {}
+    }
+
+    return requestAPI('add', null, opts, files, cb)
+  }
+
+  self.cat = argCommand('cat')
+  self.ls = argCommand('ls')
+
+  self.config = {
+    get: argCommand('config'),
+    set: function (key, value, opts, cb) {
+      if (typeof (opts) === 'function') {
+        cb = opts
+        opts = {}
+      }
+      return requestAPI('config', [key, value], opts, null, cb)
+    },
+    show: function (cb) {
+      return requestAPI('config/show', null, null, null, true, cb)
+    },
+    replace: function (file, cb) {
+      return requestAPI('config/replace', null, null, file, cb)
+    }
+  }
+
+  self.update = {
+    apply: command('update'),
+    check: command('update/check'),
+    log: command('update/log')
+  }
+
+  self.version = command('version')
+  self.commands = command('commands')
+
+  self.mount = function (ipfs, ipns, cb) {
+    if (typeof ipfs === 'function') {
+      cb = ipfs
+      ipfs = null
+    } else if (typeof ipns === 'function') {
+      cb = ipns
+      ipns = null
+    }
+    var opts = {}
+    if (ipfs) opts.f = ipfs
+    if (ipns) opts.n = ipns
+    return requestAPI('mount', null, opts, null, cb)
+  }
+
+  self.diag = {
+    net: command('diag/net')
+  }
+
+  self.block = {
+    get: argCommand('block/get'),
+    put: function (file, cb) {
+      if (Array.isArray(file)) {
+        return cb(null, new Error('block.put() only accepts 1 file'))
+      }
+      return requestAPI('block/put', null, null, file, cb)
+    }
+  }
+
+  self.object = {
+    get: argCommand('object/get'),
+    put: function (file, encoding, cb) {
+      if (typeof encoding === 'function') {
+        return cb(null, new Error("Must specify an object encoding ('json' or 'protobuf')"))
+      }
+      return requestAPI('object/put', encoding, null, file, cb)
+    },
+    data: argCommand('object/data'),
+    stat: argCommand('object/stat'),
+    links: argCommand('object/links')
+  }
+
+  self.swarm = {
+    peers: command('swarm/peers'),
+    connect: argCommand('swarm/peers')
+  }
+
+  self.ping = function (id, cb) {
+    return requestAPI('ping', id, { n: 1 }, null, function (err, res) {
+      if (err) return cb(err, null)
+      cb(null, res[1])
+    })
+  }
+
+  self.id = function (id, cb) {
+    if (typeof id === 'function') {
+      cb = id
+      id = null
+    }
+    return requestAPI('id', id, null, null, cb)
+  }
+
+  self.pin = {
+    add: function (hash, opts, cb) {
+      if (typeof opts === 'function') {
+        cb = opts
+        opts = null
+      }
+
+      requestAPI('pin/add', hash, opts, null, cb)
+    },
+    remove: function (hash, opts, cb) {
+      if (typeof opts === 'function') {
+        cb = opts
+        opts = null
+      }
+
+      requestAPI('pin/rm', hash, opts, null, cb)
+    },
+    list: function (type, cb) {
+      if (typeof type === 'function') {
+        cb = type
+        type = null
+      }
+      var opts = null
+      if (type) opts = { type: type }
+      return requestAPI('pin/ls', null, opts, null, cb)
+    }
+  }
+
+  self.gateway = {
+    enable: command('gateway/enable'),
+    disable: command('gateway/disable')
+  }
+
+  self.log = {
+    tail: function (cb) {
+      return requestAPI('log/tail', null, {enc: 'text'}, null, true, cb)
+    }
+  }
+
+  self.name = {
+    publish: argCommand('name/publish'),
+    resolve: argCommand('name/resolve')
+  }
+
+  self.Buffer = Buffer
+
+  self.refs = argCommand('refs')
+  self.refs.local = command('refs/local')
+
+  self.dht = {
+    findprovs: argCommand('dht/findprovs'),
+
+    get: function (key, opts, cb) {
+      if (typeof (opts) === 'function' && !cb) {
+        cb = opts
+        opts = null
+      }
+
+      return requestAPI('dht/get', key, opts, null, function (err, res) {
+        if (err) return cb(err)
+        if (!res) return cb(new Error('empty response'))
+        if (res.length === 0) return cb(new Error('no value returned for key'))
+
+        if (res[0].Type === 5) {
+          cb(null, res[0].Extra)
+        } else {
+          cb(res)
+        }
+      })
+    },
+
+    put: function (key, value, opts, cb) {
+      if (typeof (opts) === 'function' && !cb) {
+        cb = opts
+        opts = null
+      }
+
+      return requestAPI('dht/put', [key, value], opts, null, cb)
+    }
+  }
+}
+
+}).call(this,require("buffer").Buffer)
+},{"./config":106,"./request-api":109,"buffer":6,"multiaddr":54}],109:[function(require,module,exports){
+var http = require('http')
+var qs = require('querystring')
+var getFilesStream = require('./get-files-stream')
+var config = require('./config')
+
+exports = module.exports = requestAPI
+
+function requestAPI (path, args, opts, files, buffer, cb) {
+  var query, stream, contentType
+  contentType = 'application/json'
+
+  if (Array.isArray(path)) path = path.join('/')
+
+  opts = opts || {}
+
+  if (args && !Array.isArray(args)) args = [args]
+  if (args) opts.arg = args
+
+  if (files) {
+    stream = getFilesStream(files, opts)
+    if (!stream.boundary) {
+      throw new Error('no boundary in multipart stream')
+    }
+    contentType = 'multipart/form-data; boundary=' + stream.boundary
+  }
+
+  if (typeof buffer === 'function') {
+    cb = buffer
+    buffer = false
+  }
+
+  // this option is only used internally, not passed to daemon
+  delete opts.followSymlinks
+
+  opts['stream-channels'] = true
+  query = qs.stringify(opts)
+
+  var reqo = {
+    method: files ? 'POST' : 'GET',
+    host: config.host,
+    port: config.port,
+    path: config['api-path'] + path + '?' + query,
+    headers: {
+      'User-Agent': config['user-agent'],
+      'Content-Type': contentType
+    },
+    withCredentials: false
+  }
+
+  var req = http.request(reqo, function (res) {
+    var data = ''
+    var objects = []
+    var stream = !!res.headers && !!res.headers['x-stream-output']
+    var chunkedObjects = !!res.headers && !!res.headers['x-chunked-output']
+
+    if (stream && !buffer) return cb(null, res)
+    if (chunkedObjects && buffer) return cb(null, res)
+
+    res.on('data', function (chunk) {
+      if (!chunkedObjects) {
+        data += chunk
+        return data
+      }
+
+      try {
+        var obj = JSON.parse(chunk.toString())
+        objects.push(obj)
+      } catch (e) {
+        chunkedObjects = false
+        data += chunk
+      }
+    })
+    res.on('end', function () {
+      var parsed
+
+      if (!chunkedObjects) {
+        try {
+          parsed = JSON.parse(data)
+          data = parsed
+        } catch (e) {}
+      } else {
+        data = objects
+      }
+
+      if (res.statusCode >= 400 || !res.statusCode) {
+        if (!data) data = new Error()
+        return cb(data, null)
+      }
+      return cb(null, data)
+    })
+    res.on('error', function (err) {
+      return cb(err, null)
+    })
+  })
+
+  req.on('error', function (err) {
+    return cb(err, null)
+  })
+
+  if (stream) {
+    stream.pipe(req)
+  } else {
+    req.end()
+  }
+
+  return req
+}
+
+},{"./config":106,"./get-files-stream":107,"http":82,"querystring":68}],110:[function(require,module,exports){
 'use strict';
 
 module.exports = {
   src: require('./lib/src'),
   dest: require('./lib/dest'),
-  symlink: require('./lib/symlink'),
-  watch: require('glob-watcher')
+  symlink: require('./lib/symlink')
 };
 
-},{"./lib/dest":200,"./lib/src":211,"./lib/symlink":213,"glob-watcher":270}],200:[function(require,module,exports){
+},{"./lib/dest":111,"./lib/src":124,"./lib/symlink":126}],111:[function(require,module,exports){
+(function (process){
 'use strict';
 
 var through2 = require('through2');
+var sourcemaps = process.browser ? null : require('gulp-sourcemaps');
+var duplexify = require('duplexify');
 var prepareWrite = require('../prepareWrite');
 var writeContents = require('./writeContents');
 
@@ -11018,18 +12662,29 @@ function dest(outFolder, opt) {
     });
   }
 
-  return through2.obj(saveFile);
+  var saveStream = through2.obj(saveFile);
+  if (!opt.sourcemaps) {
+    return saveStream;
+  }
+
+  var mapStream = sourcemaps.write(opt.sourcemaps.path, opt.sourcemaps);
+  var outputStream = duplexify.obj(mapStream, saveStream);
+  mapStream.pipe(saveStream);
+
+  return outputStream;
 }
 
 module.exports = dest;
 
-},{"../prepareWrite":206,"./writeContents":201,"through2":310}],201:[function(require,module,exports){
+}).call(this,require('_process'))
+},{"../prepareWrite":118,"./writeContents":112,"_process":64,"duplexify":127,"gulp-sourcemaps":188,"through2":248}],112:[function(require,module,exports){
 'use strict';
 
 
 var writeDir = require('./writeDir');
 var writeStream = require('./writeStream');
 var writeBuffer = require('./writeBuffer');
+var writeSymbolicLink = require('./writeSymbolicLink');
 
 function writeContents(writePath, file, cb) {
   // if directory then mkdirp it
@@ -11040,6 +12695,11 @@ function writeContents(writePath, file, cb) {
   // stream it to disk yo
   if (file.isStream()) {
     return writeStream(writePath, file, written);
+  }
+
+  // write it as a symlink
+  if (file.symlink) {
+    return writeSymbolicLink(writePath, file, written);
   }
 
   // write it like normal
@@ -11062,7 +12722,7 @@ function writeContents(writePath, file, cb) {
       return complete(err);
     }
 
-    if (!file.stat || typeof file.stat.mode !== 'number') {
+    if (!file.stat || typeof file.stat.mode !== 'number' || file.symlink) {
       return complete();
     }
 
@@ -11096,10 +12756,11 @@ function writeContents(writePath, file, cb) {
 
 module.exports = writeContents;
 
-},{"./writeBuffer":202,"./writeDir":203,"./writeStream":204}],202:[function(require,module,exports){
+},{"./writeBuffer":113,"./writeDir":114,"./writeStream":115,"./writeSymbolicLink":116}],113:[function(require,module,exports){
+(function (process){
 'use strict';
 
-
+var fs = process.browser ? require('fs') : require('graceful-fs');
 
 function writeBuffer(writePath, file, cb) {
   var opt = {
@@ -11112,7 +12773,8 @@ function writeBuffer(writePath, file, cb) {
 
 module.exports = writeBuffer;
 
-},{}],203:[function(require,module,exports){
+}).call(this,require('_process'))
+},{"_process":64,"fs":4,"graceful-fs":185}],114:[function(require,module,exports){
 'use strict';
 
 var mkdirp = require('mkdirp');
@@ -11123,11 +12785,12 @@ function writeDir(writePath, file, cb) {
 
 module.exports = writeDir;
 
-},{"mkdirp":294}],204:[function(require,module,exports){
+},{"mkdirp":230}],115:[function(require,module,exports){
+(function (process){
 'use strict';
 
 var streamFile = require('../../src/getContents/streamFile');
-
+var fs = process.browser ? require('fs') : require('graceful-fs');
 
 function writeStream(writePath, file, cb) {
   var opt = {
@@ -11158,7 +12821,27 @@ function writeStream(writePath, file, cb) {
 
 module.exports = writeStream;
 
-},{"../../src/getContents/streamFile":210}],205:[function(require,module,exports){
+}).call(this,require('_process'))
+},{"../../src/getContents/streamFile":123,"_process":64,"fs":4,"graceful-fs":185}],116:[function(require,module,exports){
+(function (process){
+'use strict';
+
+var fs = process.browser ? require('fs') : require('graceful-fs');
+
+function writeSymbolicLink(writePath, file, cb) {
+  fs.symlink(file.symlink, writePath, function (err) {
+    if (err && err.code !== 'EEXIST') {
+      return cb(err);
+    }
+
+    cb(null, file);
+  });
+}
+
+module.exports = writeSymbolicLink;
+
+}).call(this,require('_process'))
+},{"_process":64,"fs":4,"graceful-fs":185}],117:[function(require,module,exports){
 'use strict';
 
 var filter = require('through2-filter');
@@ -11175,14 +12858,22 @@ module.exports = function(d) {
     return file.stat && file.stat.mtime > d;
   });
 };
-},{"through2-filter":296}],206:[function(require,module,exports){
+},{"through2-filter":234}],118:[function(require,module,exports){
 (function (process){
 'use strict';
 
 var assign = require('object-assign');
 var path = require('path');
 var mkdirp = require('mkdirp');
+var fs = process.browser ? require('fs') : require('graceful-fs');
 
+function booleanOrFunc(v, file) {
+  if (typeof v !== 'boolean' && typeof v !== 'function') {
+    return null;
+  }
+
+  return typeof v === 'boolean' ? v : v(file);
+}
 
 function stringOrFunc(v, file) {
   if (typeof v !== 'string' && typeof v !== 'function') {
@@ -11199,7 +12890,8 @@ function prepareWrite(outFolder, file, opt, cb) {
     dirMode: null,
     overwrite: true
   }, opt);
-  options.flag = (options.overwrite ? 'w' : 'wx');
+  var overwrite = booleanOrFunc(options.overwrite, file);
+  options.flag = (overwrite ? 'w' : 'wx');
 
   var cwd = path.resolve(options.cwd);
   var outFolderPath = stringOrFunc(outFolder, file);
@@ -11235,28 +12927,38 @@ function prepareWrite(outFolder, file, opt, cb) {
 module.exports = prepareWrite;
 
 }).call(this,require('_process'))
-},{"_process":14,"mkdirp":294,"object-assign":295,"path":13}],207:[function(require,module,exports){
+},{"_process":64,"fs":4,"graceful-fs":185,"mkdirp":230,"object-assign":231,"path":62}],119:[function(require,module,exports){
+(function (process){
 'use strict';
 
-
+var fs = process.browser ? require('fs') : require('graceful-fs');
+var stripBom = require('strip-bom');
 
 function bufferFile(file, opt, cb) {
   fs.readFile(file.path, function(err, data) {
     if (err) {
       return cb(err);
     }
-    file.contents = data;
+
+    if (opt.stripBOM){
+      file.contents = stripBom(data);
+    } else {
+      file.contents = data;
+    }
+
     cb(null, file);
   });
 }
 
 module.exports = bufferFile;
 
-},{}],208:[function(require,module,exports){
+}).call(this,require('_process'))
+},{"_process":64,"fs":4,"graceful-fs":185,"strip-bom":233}],120:[function(require,module,exports){
 'use strict';
 
 var through2 = require('through2');
 var readDir = require('./readDir');
+var readSymbolicLink = require('./readSymbolicLink');
 var bufferFile = require('./bufferFile');
 var streamFile = require('./streamFile');
 
@@ -11265,6 +12967,11 @@ function getContents(opt) {
     // don't fail to read a directory
     if (file.isDirectory()) {
       return readDir(file, opt, cb);
+    }
+
+    // process symbolic links included with `followSymlinks` option
+    if (file.stat && file.stat.isSymbolicLink()) {
+      return readSymbolicLink(file, opt, cb);
     }
 
     // read and pass full contents
@@ -11279,7 +12986,7 @@ function getContents(opt) {
 
 module.exports = getContents;
 
-},{"./bufferFile":207,"./readDir":209,"./streamFile":210,"through2":310}],209:[function(require,module,exports){
+},{"./bufferFile":119,"./readDir":121,"./readSymbolicLink":122,"./streamFile":123,"through2":248}],121:[function(require,module,exports){
 'use strict';
 
 function readDir(file, opt, cb) {
@@ -11289,19 +12996,50 @@ function readDir(file, opt, cb) {
 
 module.exports = readDir;
 
-},{}],210:[function(require,module,exports){
+},{}],122:[function(require,module,exports){
+(function (process){
 'use strict';
 
+var fs = process.browser ? require('fs') : require('graceful-fs');
 
+function readLink(file, opt, cb) {
+  fs.readlink(file.path, function (err, target) {
+    if (err) {
+      return cb(err);
+    }
+
+    // store the link target path
+    file.symlink = target;
+
+    return cb(null, file);
+  });
+}
+
+module.exports = readLink;
+
+}).call(this,require('_process'))
+},{"_process":64,"fs":4,"graceful-fs":185}],123:[function(require,module,exports){
+(function (process){
+'use strict';
+
+var fs = process.browser ? require('fs') : require('graceful-fs');
+var stripBom = require('strip-bom-stream');
 
 function streamFile(file, opt, cb) {
   file.contents = fs.createReadStream(file.path);
+
+  if (opt.stripBOM) {
+    file.contents = file.contents.pipe(stripBom());
+  }
+
   cb(null, file);
 }
 
 module.exports = streamFile;
 
-},{}],211:[function(require,module,exports){
+}).call(this,require('_process'))
+},{"_process":64,"fs":4,"graceful-fs":185,"strip-bom-stream":232}],124:[function(require,module,exports){
+(function (process){
 'use strict';
 
 var assign = require('object-assign');
@@ -11310,6 +13048,7 @@ var gs = require('glob-stream');
 var File = require('vinyl');
 var duplexify = require('duplexify');
 var merge = require('merge-stream');
+var sourcemaps = process.browser ? null : require('gulp-sourcemaps');
 var filterSince = require('../filterSince');
 var isValidGlob = require('is-valid-glob');
 
@@ -11324,8 +13063,10 @@ function src(glob, opt) {
   var options = assign({
     read: true,
     buffer: true,
+    stripBOM: true,
     sourcemaps: false,
-    passthrough: false
+    passthrough: false,
+    followSymlinks: true
   }, opt);
 
   var inputPass;
@@ -11337,7 +13078,7 @@ function src(glob, opt) {
   var globStream = gs.create(glob, options);
 
   var outputStream = globStream
-    .pipe(resolveSymlinks())
+    .pipe(resolveSymlinks(options))
     .pipe(through.obj(createFile));
 
   if (options.since != null) {
@@ -11354,57 +13095,66 @@ function src(glob, opt) {
     inputPass = through.obj();
     outputStream = duplexify.obj(inputPass, merge(outputStream, inputPass));
   }
+  if (options.sourcemaps === true) {
+    outputStream = outputStream
+      .pipe(sourcemaps.init({loadMaps: true}));
+  }
   globStream.on('error', outputStream.emit.bind(outputStream, 'error'));
   return outputStream;
 }
 
 module.exports = src;
 
-},{"../filterSince":205,"./getContents":208,"./resolveSymlinks":212,"duplexify":214,"glob-stream":230,"is-valid-glob":281,"merge-stream":282,"object-assign":295,"through2":310,"vinyl":332}],212:[function(require,module,exports){
+}).call(this,require('_process'))
+},{"../filterSince":117,"./getContents":120,"./resolveSymlinks":125,"_process":64,"duplexify":127,"glob-stream":144,"gulp-sourcemaps":188,"is-valid-glob":216,"merge-stream":217,"object-assign":231,"through2":248,"vinyl":249}],125:[function(require,module,exports){
+(function (process){
 'use strict';
 
 var through2 = require('through2');
-
+var fs = process.browser ? require('fs') : require('graceful-fs');
 var path = require('path');
 
-function resolveSymlinks() {
-  return through2.obj(resolveFile);
-}
+function resolveSymlinks(options) {
 
-// a stat property is exposed on file objects as a (wanted) side effect
-function resolveFile(globFile, enc, cb) {
-  fs.lstat(globFile.path, function (err, stat) {
-    if (err) {
-      return cb(err);
-    }
-
-    globFile.stat = stat;
-
-    if (!stat.isSymbolicLink()) {
-      return cb(null, globFile);
-    }
-
-    fs.realpath(globFile.path, function (err, filePath) {
+  // a stat property is exposed on file objects as a (wanted) side effect
+  function resolveFile(globFile, enc, cb) {
+    fs.lstat(globFile.path, function (err, stat) {
       if (err) {
         return cb(err);
       }
 
-      globFile.base = path.dirname(filePath);
-      globFile.path = filePath;
+      globFile.stat = stat;
 
-      // recurse to get real file stat
-      resolveFile(globFile, enc, cb);
+      if (!stat.isSymbolicLink() || !options.followSymlinks) {
+        return cb(null, globFile);
+      }
+
+      fs.realpath(globFile.path, function (err, filePath) {
+        if (err) {
+          return cb(err);
+        }
+
+        globFile.base = path.dirname(filePath);
+        globFile.path = filePath;
+
+        // recurse to get real file stat
+        resolveFile(globFile, enc, cb);
+      });
     });
-  });
+  }
+
+  return through2.obj(resolveFile);
 }
 
 module.exports = resolveSymlinks;
 
-},{"path":13,"through2":310}],213:[function(require,module,exports){
+}).call(this,require('_process'))
+},{"_process":64,"fs":4,"graceful-fs":185,"path":62,"through2":248}],126:[function(require,module,exports){
+(function (process){
 'use strict';
 
 var through2 = require('through2');
-
+var fs = process.browser ? require('fs') : require('graceful-fs');
 var prepareWrite = require('../prepareWrite');
 
 function symlink(outFolder, opt) {
@@ -11432,392 +13182,137 @@ function symlink(outFolder, opt) {
 
 module.exports = symlink;
 
-},{"../prepareWrite":206,"through2":310}],214:[function(require,module,exports){
-(function (process,Buffer){
-var stream = require('readable-stream')
-var eos = require('end-of-stream')
-var util = require('util')
+}).call(this,require('_process'))
+},{"../prepareWrite":118,"_process":64,"fs":4,"graceful-fs":185,"through2":248}],127:[function(require,module,exports){
+arguments[4][12][0].apply(exports,arguments)
+},{"_process":64,"buffer":6,"dup":12,"end-of-stream":128,"readable-stream":142,"util":90}],128:[function(require,module,exports){
+arguments[4][13][0].apply(exports,arguments)
+},{"dup":13,"once":130}],129:[function(require,module,exports){
+arguments[4][103][0].apply(exports,arguments)
+},{"dup":103}],130:[function(require,module,exports){
+arguments[4][60][0].apply(exports,arguments)
+},{"dup":60,"wrappy":129}],131:[function(require,module,exports){
+arguments[4][70][0].apply(exports,arguments)
+},{"./_stream_readable":133,"./_stream_writable":135,"core-util-is":136,"dup":70,"inherits":137,"process-nextick-args":139}],132:[function(require,module,exports){
+arguments[4][71][0].apply(exports,arguments)
+},{"./_stream_transform":134,"core-util-is":136,"dup":71,"inherits":137}],133:[function(require,module,exports){
+arguments[4][72][0].apply(exports,arguments)
+},{"./_stream_duplex":131,"_process":64,"buffer":6,"core-util-is":136,"dup":72,"events":14,"inherits":137,"isarray":138,"process-nextick-args":139,"string_decoder/":140,"util":3}],134:[function(require,module,exports){
+arguments[4][73][0].apply(exports,arguments)
+},{"./_stream_duplex":131,"core-util-is":136,"dup":73,"inherits":137}],135:[function(require,module,exports){
+arguments[4][74][0].apply(exports,arguments)
+},{"./_stream_duplex":131,"buffer":6,"core-util-is":136,"dup":74,"events":14,"inherits":137,"process-nextick-args":139,"util-deprecate":141}],136:[function(require,module,exports){
+arguments[4][11][0].apply(exports,arguments)
+},{"/media/d/projects/node-ipfs-api/node_modules/is-buffer/index.js":21,"dup":11}],137:[function(require,module,exports){
+arguments[4][18][0].apply(exports,arguments)
+},{"dup":18}],138:[function(require,module,exports){
+arguments[4][22][0].apply(exports,arguments)
+},{"dup":22}],139:[function(require,module,exports){
+arguments[4][63][0].apply(exports,arguments)
+},{"_process":64,"dup":63}],140:[function(require,module,exports){
+arguments[4][86][0].apply(exports,arguments)
+},{"buffer":6,"dup":86}],141:[function(require,module,exports){
+arguments[4][88][0].apply(exports,arguments)
+},{"dup":88}],142:[function(require,module,exports){
+arguments[4][76][0].apply(exports,arguments)
+},{"./lib/_stream_duplex.js":131,"./lib/_stream_passthrough.js":132,"./lib/_stream_readable.js":133,"./lib/_stream_transform.js":134,"./lib/_stream_writable.js":135,"dup":76}],143:[function(require,module,exports){
+(function (Buffer){
+'use strict';
+var util = require('util');
+var Transform = require('stream').Transform;
 
-var SIGNAL_FLUSH = new Buffer([0])
+function ctor(options, transform) {
+	util.inherits(FirstChunk, Transform);
 
-var onuncork = function(self, fn) {
-  if (self._corked) self.once('uncork', fn)
-  else fn()
-}
-
-var destroyer = function(self, end) {
-  return function(err) {
-    if (err) self.destroy(err.message === 'premature close' ? null : err)
-    else if (end && !self._ended) self.end()
-  }
-}
-
-var end = function(ws, fn) {
-  if (!ws) return fn()
-  if (ws._writableState && ws._writableState.finished) return fn()
-  if (ws._writableState) return ws.end(fn)
-  ws.end()
-  fn()
-}
-
-var toStreams2 = function(rs) {
-  return new (stream.Readable)({objectMode:true, highWaterMark:16}).wrap(rs)
-}
-
-var Duplexify = function(writable, readable, opts) {
-  if (!(this instanceof Duplexify)) return new Duplexify(writable, readable, opts)
-  stream.Duplex.call(this, opts)
-
-  this._writable = null
-  this._readable = null
-  this._readable2 = null
-
-  this._forwardDestroy = !opts || opts.destroy !== false
-  this._forwardEnd = !opts || opts.end !== false
-  this._corked = 1 // start corked
-  this._ondrain = null
-  this._drained = false
-  this._forwarding = false
-  this._unwrite = null
-  this._unread = null
-  this._ended = false
-
-  this.destroyed = false
-
-  if (writable) this.setWritable(writable)
-  if (readable) this.setReadable(readable)
-}
-
-util.inherits(Duplexify, stream.Duplex)
-
-Duplexify.obj = function(writable, readable, opts) {
-  if (!opts) opts = {}
-  opts.objectMode = true
-  opts.highWaterMark = 16
-  return new Duplexify(writable, readable, opts)
-}
-
-Duplexify.prototype.cork = function() {
-  if (++this._corked === 1) this.emit('cork')
-}
-
-Duplexify.prototype.uncork = function() {
-  if (this._corked && --this._corked === 0) this.emit('uncork')
-}
-
-Duplexify.prototype.setWritable = function(writable) {
-  if (this._unwrite) this._unwrite()
-
-  if (this.destroyed) {
-    if (writable && writable.destroy) writable.destroy()
-    return
-  }
-
-  if (writable === null || writable === false) {
-    this.end()
-    return
-  }
-
-  var self = this
-  var unend = eos(writable, {writable:true, readable:false}, destroyer(this, this._forwardEnd))
-
-  var ondrain = function() {
-    var ondrain = self._ondrain
-    self._ondrain = null
-    if (ondrain) ondrain()
-  }
-
-  var clear = function() {
-    self._writable.removeListener('drain', ondrain)
-    unend()
-  }
-
-  if (this._unwrite) process.nextTick(ondrain) // force a drain on stream reset to avoid livelocks
-
-  this._writable = writable
-  this._writable.on('drain', ondrain)
-  this._unwrite = clear
-
-  this.uncork() // always uncork setWritable
-}
-
-Duplexify.prototype.setReadable = function(readable) {
-  if (this._unread) this._unread()
-
-  if (this.destroyed) {
-    if (readable && readable.destroy) readable.destroy()
-    return
-  }
-
-  if (readable === null || readable === false) {
-    this.push(null)
-    this.resume()
-    return
-  }
-
-  var self = this
-  var unend = eos(readable, {writable:false, readable:true}, destroyer(this))
-
-  var onreadable = function() {
-    self._forward()
-  }
-
-  var onend = function() {
-    self.push(null)
-  }
-
-  var clear = function() {
-    self._readable2.removeListener('readable', onreadable)
-    self._readable2.removeListener('end', onend)
-    unend()
-  }
-
-  this._drained = true
-  this._readable = readable
-  this._readable2 = readable._readableState ? readable : toStreams2(readable)
-  this._readable2.on('readable', onreadable)
-  this._readable2.on('end', onend)
-  this._unread = clear
-
-  this._forward()
-}
-
-Duplexify.prototype._read = function() {
-  this._drained = true
-  this._forward()
-}
-
-Duplexify.prototype._forward = function() {
-  if (this._forwarding || !this._readable2 || !this._drained) return
-  this._forwarding = true
-
-  var data
-  var state = this._readable2._readableState
-
-  while ((data = this._readable2.read(state.buffer.length ? state.buffer[0].length : state.length)) !== null) {
-    this._drained = this.push(data)
-  }
-
-  this._forwarding = false
-}
-
-Duplexify.prototype.destroy = function(err) {
-  if (this.destroyed) return
-  this.destroyed = true
-
-  var self = this
-  process.nextTick(function() {
-    self._destroy(err)
-  })
-}
-
-Duplexify.prototype._destroy = function(err) {
-  if (err) {
-    var ondrain = this._ondrain
-    this._ondrain = null
-    if (ondrain) ondrain(err)
-    else this.emit('error', err)
-  }
-
-  if (this._forwardDestroy) {
-    if (this._readable && this._readable.destroy) this._readable.destroy()
-    if (this._writable && this._writable.destroy) this._writable.destroy()
-  }
-
-  this.emit('close')
-}
-
-Duplexify.prototype._write = function(data, enc, cb) {
-  if (this.destroyed) return cb()
-  if (this._corked) return onuncork(this, this._write.bind(this, data, enc, cb))
-  if (data === SIGNAL_FLUSH) return this._finish(cb)
-  if (!this._writable) return cb()
-
-  if (this._writable.write(data) === false) this._ondrain = cb
-  else cb()
-}
-
-
-Duplexify.prototype._finish = function(cb) {
-  var self = this
-  this.emit('preend')
-  onuncork(this, function() {
-    end(self._forwardEnd && self._writable, function() {
-      // haxx to not emit prefinish twice
-      if (self._writableState.prefinished === false) self._writableState.prefinished = true
-      self.emit('prefinish')
-      onuncork(self, cb)
-    })
-  })
-}
-
-Duplexify.prototype.end = function(data, enc, cb) {
-  if (typeof data === 'function') return this.end(null, null, data)
-  if (typeof enc === 'function') return this.end(data, null, enc)
-  this._ended = true
-  if (data) this.write(data)
-  if (!this._writableState.ending) this.write(SIGNAL_FLUSH)
-  return stream.Writable.prototype.end.call(this, cb)
-}
-
-module.exports = Duplexify
-}).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":14,"buffer":4,"end-of-stream":215,"readable-stream":229,"util":46}],215:[function(require,module,exports){
-var once = require('once');
-
-var noop = function() {};
-
-var isRequest = function(stream) {
-	return stream.setHeader && typeof stream.abort === 'function';
-};
-
-var eos = function(stream, opts, callback) {
-	if (typeof opts === 'function') return eos(stream, null, opts);
-	if (!opts) opts = {};
-
-	callback = once(callback || noop);
-
-	var ws = stream._writableState;
-	var rs = stream._readableState;
-	var readable = opts.readable || (opts.readable !== false && stream.readable);
-	var writable = opts.writable || (opts.writable !== false && stream.writable);
-
-	var onlegacyfinish = function() {
-		if (!stream.writable) onfinish();
-	};
-
-	var onfinish = function() {
-		writable = false;
-		if (!readable) callback();
-	};
-
-	var onend = function() {
-		readable = false;
-		if (!writable) callback();
-	};
-
-	var onclose = function() {
-		if (readable && !(rs && rs.ended)) return callback(new Error('premature close'));
-		if (writable && !(ws && ws.ended)) return callback(new Error('premature close'));
-	};
-
-	var onrequest = function() {
-		stream.req.on('finish', onfinish);
-	};
-
-	if (isRequest(stream)) {
-		stream.on('complete', onfinish);
-		stream.on('abort', onclose);
-		if (stream.req) onrequest();
-		else stream.on('request', onrequest);
-	} else if (writable && !ws) { // legacy streams
-		stream.on('end', onlegacyfinish);
-		stream.on('close', onlegacyfinish);
+	if (typeof options === 'function') {
+		transform = options;
+		options = {};
 	}
 
-	stream.on('end', onend);
-	stream.on('finish', onfinish);
-	if (opts.error !== false) stream.on('error', callback);
-	stream.on('close', onclose);
+	if (typeof transform !== 'function') {
+		throw new Error('transform function required');
+	}
 
-	return function() {
-		stream.removeListener('complete', onfinish);
-		stream.removeListener('abort', onclose);
-		stream.removeListener('request', onrequest);
-		if (stream.req) stream.req.removeListener('finish', onfinish);
-		stream.removeListener('end', onlegacyfinish);
-		stream.removeListener('close', onlegacyfinish);
-		stream.removeListener('finish', onfinish);
-		stream.removeListener('end', onend);
-		stream.removeListener('error', callback);
-		stream.removeListener('close', onclose);
+	function FirstChunk(options2) {
+		if (!(this instanceof FirstChunk)) {
+			return new FirstChunk(options2);
+		}
+
+		Transform.call(this, options2);
+
+		this._firstChunk = true;
+		this._transformCalled = false;
+		this._minSize = options.minSize;
+	}
+
+	FirstChunk.prototype._transform = function (chunk, enc, cb) {
+		this._enc = enc;
+
+		if (this._firstChunk) {
+			this._firstChunk = false;
+
+			if (this._minSize == null) {
+				transform.call(this, chunk, enc, cb);
+				this._transformCalled = true;
+				return;
+			}
+
+			this._buffer = chunk;
+			cb();
+			return;
+		}
+
+		if (this._minSize == null) {
+			this.push(chunk);
+			cb();
+			return;
+		}
+
+		if (this._buffer.length < this._minSize) {
+			this._buffer = Buffer.concat([this._buffer, chunk]);
+			cb();
+			return;
+		}
+
+		if (this._buffer.length >= this._minSize) {
+			transform.call(this, this._buffer.slice(), enc, function () {
+				this.push(chunk);
+				cb();
+			}.bind(this));
+			this._transformCalled = true;
+			this._buffer = false;
+			return;
+		}
+
+		this.push(chunk);
+		cb();
 	};
+
+	FirstChunk.prototype._flush = function (cb) {
+		if (!this._buffer) {
+			cb();
+			return;
+		}
+
+		if (this._transformCalled) {
+			this.push(this._buffer);
+			cb();
+		} else {
+			transform.call(this, this._buffer.slice(), this._enc, cb);
+		}
+	};
+
+	return FirstChunk;
+}
+
+module.exports = function () {
+	return ctor.apply(ctor, arguments)();
 };
 
-module.exports = eos;
-},{"once":217}],216:[function(require,module,exports){
-// Returns a wrapper function that returns a wrapped callback
-// The wrapper function should do some stuff, and return a
-// presumably different callback function.
-// This makes sure that own properties are retained, so that
-// decorations and such are not lost along the way.
-module.exports = wrappy
-function wrappy (fn, cb) {
-  if (fn && cb) return wrappy(fn)(cb)
+module.exports.ctor = ctor;
 
-  if (typeof fn !== 'function')
-    throw new TypeError('need wrapper function')
-
-  Object.keys(fn).forEach(function (k) {
-    wrapper[k] = fn[k]
-  })
-
-  return wrapper
-
-  function wrapper() {
-    var args = new Array(arguments.length)
-    for (var i = 0; i < args.length; i++) {
-      args[i] = arguments[i]
-    }
-    var ret = fn.apply(this, args)
-    var cb = args[args.length-1]
-    if (typeof ret === 'function' && ret !== cb) {
-      Object.keys(cb).forEach(function (k) {
-        ret[k] = cb[k]
-      })
-    }
-    return ret
-  }
-}
-
-},{}],217:[function(require,module,exports){
-var wrappy = require('wrappy')
-module.exports = wrappy(once)
-
-once.proto = once(function () {
-  Object.defineProperty(Function.prototype, 'once', {
-    value: function () {
-      return once(this)
-    },
-    configurable: true
-  })
-})
-
-function once (fn) {
-  var f = function () {
-    if (f.called) return f.value
-    f.called = true
-    return f.value = fn.apply(this, arguments)
-  }
-  f.called = false
-  return f
-}
-
-},{"wrappy":216}],218:[function(require,module,exports){
-arguments[4][20][0].apply(exports,arguments)
-},{"./_stream_readable":220,"./_stream_writable":222,"core-util-is":223,"dup":20,"inherits":224,"process-nextick-args":226}],219:[function(require,module,exports){
-arguments[4][21][0].apply(exports,arguments)
-},{"./_stream_transform":221,"core-util-is":223,"dup":21,"inherits":224}],220:[function(require,module,exports){
-arguments[4][22][0].apply(exports,arguments)
-},{"./_stream_duplex":218,"_process":14,"buffer":4,"core-util-is":223,"dup":22,"events":9,"inherits":224,"isarray":225,"process-nextick-args":226,"string_decoder/":227,"util":3}],221:[function(require,module,exports){
-arguments[4][23][0].apply(exports,arguments)
-},{"./_stream_duplex":218,"core-util-is":223,"dup":23,"inherits":224}],222:[function(require,module,exports){
-arguments[4][24][0].apply(exports,arguments)
-},{"./_stream_duplex":218,"buffer":4,"core-util-is":223,"dup":24,"events":9,"inherits":224,"process-nextick-args":226,"util-deprecate":228}],223:[function(require,module,exports){
-arguments[4][25][0].apply(exports,arguments)
-},{"buffer":4,"dup":25}],224:[function(require,module,exports){
-arguments[4][10][0].apply(exports,arguments)
-},{"dup":10}],225:[function(require,module,exports){
-arguments[4][11][0].apply(exports,arguments)
-},{"dup":11}],226:[function(require,module,exports){
-arguments[4][26][0].apply(exports,arguments)
-},{"_process":14,"dup":26}],227:[function(require,module,exports){
-arguments[4][42][0].apply(exports,arguments)
-},{"buffer":4,"dup":42}],228:[function(require,module,exports){
-arguments[4][27][0].apply(exports,arguments)
-},{"dup":27}],229:[function(require,module,exports){
-arguments[4][29][0].apply(exports,arguments)
-},{"./lib/_stream_duplex.js":218,"./lib/_stream_passthrough.js":219,"./lib/_stream_readable.js":220,"./lib/_stream_transform.js":221,"./lib/_stream_writable.js":222,"dup":29}],230:[function(require,module,exports){
+}).call(this,require("buffer").Buffer)
+},{"buffer":6,"stream":81,"util":90}],144:[function(require,module,exports){
 (function (process){
 /*jslint node: true */
 
@@ -11983,7 +13478,7 @@ function globIsSingular(glob) {
 module.exports = gs;
 
 }).call(this,require('_process'))
-},{"_process":14,"glob":232,"glob2base":240,"minimatch":242,"ordered-read-streams":246,"path":13,"through2":268,"unique-stream":269}],231:[function(require,module,exports){
+},{"_process":64,"glob":146,"glob2base":154,"minimatch":156,"ordered-read-streams":160,"path":62,"through2":182,"unique-stream":183}],145:[function(require,module,exports){
 (function (process){
 exports.alphasort = alphasort
 exports.alphasorti = alphasorti
@@ -12232,7 +13727,7 @@ function childrenIgnored (self, path) {
 }
 
 }).call(this,require('_process'))
-},{"_process":14,"minimatch":242,"path":13,"path-is-absolute":238}],232:[function(require,module,exports){
+},{"_process":64,"minimatch":156,"path":62,"path-is-absolute":152}],146:[function(require,module,exports){
 (function (process){
 // Approach:
 //
@@ -12988,7 +14483,7 @@ Glob.prototype._stat2 = function (f, abs, er, stat, cb) {
 }
 
 }).call(this,require('_process'))
-},{"./common.js":231,"./sync.js":239,"_process":14,"assert":2,"events":9,"fs":1,"inflight":233,"inherits":235,"minimatch":242,"once":237,"path":13,"path-is-absolute":238,"util":46}],233:[function(require,module,exports){
+},{"./common.js":145,"./sync.js":153,"_process":64,"assert":1,"events":14,"fs":4,"inflight":147,"inherits":149,"minimatch":156,"once":151,"path":62,"path-is-absolute":152,"util":90}],147:[function(require,module,exports){
 (function (process){
 var wrappy = require('wrappy')
 var reqs = Object.create(null)
@@ -13036,15 +14531,15 @@ function slice (args) {
 }
 
 }).call(this,require('_process'))
-},{"_process":14,"once":237,"wrappy":234}],234:[function(require,module,exports){
-arguments[4][216][0].apply(exports,arguments)
-},{"dup":216}],235:[function(require,module,exports){
-arguments[4][10][0].apply(exports,arguments)
-},{"dup":10}],236:[function(require,module,exports){
-arguments[4][216][0].apply(exports,arguments)
-},{"dup":216}],237:[function(require,module,exports){
-arguments[4][217][0].apply(exports,arguments)
-},{"dup":217,"wrappy":236}],238:[function(require,module,exports){
+},{"_process":64,"once":151,"wrappy":148}],148:[function(require,module,exports){
+arguments[4][103][0].apply(exports,arguments)
+},{"dup":103}],149:[function(require,module,exports){
+arguments[4][18][0].apply(exports,arguments)
+},{"dup":18}],150:[function(require,module,exports){
+arguments[4][103][0].apply(exports,arguments)
+},{"dup":103}],151:[function(require,module,exports){
+arguments[4][60][0].apply(exports,arguments)
+},{"dup":60,"wrappy":150}],152:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -13068,7 +14563,7 @@ module.exports.posix = posix;
 module.exports.win32 = win32;
 
 }).call(this,require('_process'))
-},{"_process":14}],239:[function(require,module,exports){
+},{"_process":64}],153:[function(require,module,exports){
 (function (process){
 module.exports = globSync
 globSync.GlobSync = GlobSync
@@ -13532,7 +15027,7 @@ GlobSync.prototype._makeAbs = function (f) {
 }
 
 }).call(this,require('_process'))
-},{"./common.js":231,"./glob.js":232,"_process":14,"assert":2,"fs":1,"minimatch":242,"path":13,"path-is-absolute":238,"util":46}],240:[function(require,module,exports){
+},{"./common.js":145,"./glob.js":146,"_process":64,"assert":1,"fs":4,"minimatch":156,"path":62,"path-is-absolute":152,"util":90}],154:[function(require,module,exports){
 'use strict';
 
 var path = require('path');
@@ -13593,7 +15088,7 @@ module.exports = function(glob) {
   return basePath;
 };
 
-},{"find-index":241,"path":13}],241:[function(require,module,exports){
+},{"find-index":155,"path":62}],155:[function(require,module,exports){
 function findIndex(array, predicate, self) {
   var len = array.length;
   var i;
@@ -13621,7 +15116,7 @@ function findIndex(array, predicate, self) {
 
 module.exports = findIndex
 
-},{}],242:[function(require,module,exports){
+},{}],156:[function(require,module,exports){
 module.exports = minimatch
 minimatch.Minimatch = Minimatch
 
@@ -14535,7 +16030,7 @@ function regExpEscape (s) {
   return s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 }
 
-},{"brace-expansion":243,"path":13}],243:[function(require,module,exports){
+},{"brace-expansion":157,"path":62}],157:[function(require,module,exports){
 var concatMap = require('concat-map');
 var balanced = require('balanced-match');
 
@@ -14728,7 +16223,7 @@ function expand(str, isTop) {
 }
 
 
-},{"balanced-match":244,"concat-map":245}],244:[function(require,module,exports){
+},{"balanced-match":158,"concat-map":159}],158:[function(require,module,exports){
 module.exports = balanced;
 function balanced(a, b, str) {
   var bal = 0;
@@ -14768,7 +16263,7 @@ function balanced(a, b, str) {
   }
 }
 
-},{}],245:[function(require,module,exports){
+},{}],159:[function(require,module,exports){
 module.exports = function (xs, fn) {
     var res = [];
     for (var i = 0; i < xs.length; i++) {
@@ -14783,7 +16278,7 @@ var isArray = Array.isArray || function (xs) {
     return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],246:[function(require,module,exports){
+},{}],160:[function(require,module,exports){
 var Readable = require('readable-stream').Readable;
 var isReadable = require('isstream').isReadable;
 var util = require('util');
@@ -14867,7 +16362,7 @@ OrderedStreams.prototype._read = function () {};
 
 module.exports = OrderedStreams;
 
-},{"isstream":247,"readable-stream":257,"util":46}],247:[function(require,module,exports){
+},{"isstream":161,"readable-stream":171,"util":90}],161:[function(require,module,exports){
 var stream = require('stream')
 
 
@@ -14896,7 +16391,7 @@ module.exports.isReadable = isReadable
 module.exports.isWritable = isWritable
 module.exports.isDuplex   = isDuplex
 
-},{"stream":32}],248:[function(require,module,exports){
+},{"stream":81}],162:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -14989,7 +16484,7 @@ function forEach (xs, f) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_readable":250,"./_stream_writable":252,"_process":14,"core-util-is":253,"inherits":254}],249:[function(require,module,exports){
+},{"./_stream_readable":164,"./_stream_writable":166,"_process":64,"core-util-is":167,"inherits":168}],163:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -15037,7 +16532,7 @@ PassThrough.prototype._transform = function(chunk, encoding, cb) {
   cb(null, chunk);
 };
 
-},{"./_stream_transform":251,"core-util-is":253,"inherits":254}],250:[function(require,module,exports){
+},{"./_stream_transform":165,"core-util-is":167,"inherits":168}],164:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -15992,7 +17487,7 @@ function indexOf (xs, x) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":248,"_process":14,"buffer":4,"core-util-is":253,"events":9,"inherits":254,"isarray":255,"stream":32,"string_decoder/":256,"util":3}],251:[function(require,module,exports){
+},{"./_stream_duplex":162,"_process":64,"buffer":6,"core-util-is":167,"events":14,"inherits":168,"isarray":169,"stream":81,"string_decoder/":170,"util":3}],165:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -16203,7 +17698,7 @@ function done(stream, er) {
   return stream.push(null);
 }
 
-},{"./_stream_duplex":248,"core-util-is":253,"inherits":254}],252:[function(require,module,exports){
+},{"./_stream_duplex":162,"core-util-is":167,"inherits":168}],166:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -16684,15 +18179,15 @@ function endWritable(stream, state, cb) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":248,"_process":14,"buffer":4,"core-util-is":253,"inherits":254,"stream":32}],253:[function(require,module,exports){
-arguments[4][25][0].apply(exports,arguments)
-},{"buffer":4,"dup":25}],254:[function(require,module,exports){
-arguments[4][10][0].apply(exports,arguments)
-},{"dup":10}],255:[function(require,module,exports){
+},{"./_stream_duplex":162,"_process":64,"buffer":6,"core-util-is":167,"inherits":168,"stream":81}],167:[function(require,module,exports){
 arguments[4][11][0].apply(exports,arguments)
-},{"dup":11}],256:[function(require,module,exports){
-arguments[4][42][0].apply(exports,arguments)
-},{"buffer":4,"dup":42}],257:[function(require,module,exports){
+},{"/media/d/projects/node-ipfs-api/node_modules/is-buffer/index.js":21,"dup":11}],168:[function(require,module,exports){
+arguments[4][18][0].apply(exports,arguments)
+},{"dup":18}],169:[function(require,module,exports){
+arguments[4][22][0].apply(exports,arguments)
+},{"dup":22}],170:[function(require,module,exports){
+arguments[4][86][0].apply(exports,arguments)
+},{"buffer":6,"dup":86}],171:[function(require,module,exports){
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = require('stream');
 exports.Readable = exports;
@@ -16701,9 +18196,9 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":248,"./lib/_stream_passthrough.js":249,"./lib/_stream_readable.js":250,"./lib/_stream_transform.js":251,"./lib/_stream_writable.js":252,"stream":32}],258:[function(require,module,exports){
-arguments[4][248][0].apply(exports,arguments)
-},{"./_stream_readable":259,"./_stream_writable":261,"_process":14,"core-util-is":262,"dup":248,"inherits":263}],259:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":162,"./lib/_stream_passthrough.js":163,"./lib/_stream_readable.js":164,"./lib/_stream_transform.js":165,"./lib/_stream_writable.js":166,"stream":81}],172:[function(require,module,exports){
+arguments[4][162][0].apply(exports,arguments)
+},{"./_stream_readable":173,"./_stream_writable":175,"_process":64,"core-util-is":176,"dup":162,"inherits":177}],173:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -17689,7 +19184,7 @@ function indexOf (xs, x) {
 }
 
 }).call(this,require('_process'))
-},{"_process":14,"buffer":4,"core-util-is":262,"events":9,"inherits":263,"isarray":264,"stream":32,"string_decoder/":265}],260:[function(require,module,exports){
+},{"_process":64,"buffer":6,"core-util-is":176,"events":14,"inherits":177,"isarray":178,"stream":81,"string_decoder/":179}],174:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -17901,7 +19396,7 @@ function done(stream, er) {
   return stream.push(null);
 }
 
-},{"./_stream_duplex":258,"core-util-is":262,"inherits":263}],261:[function(require,module,exports){
+},{"./_stream_duplex":172,"core-util-is":176,"inherits":177}],175:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -18291,19 +19786,19 @@ function endWritable(stream, state, cb) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":258,"_process":14,"buffer":4,"core-util-is":262,"inherits":263,"stream":32}],262:[function(require,module,exports){
-arguments[4][25][0].apply(exports,arguments)
-},{"buffer":4,"dup":25}],263:[function(require,module,exports){
-arguments[4][10][0].apply(exports,arguments)
-},{"dup":10}],264:[function(require,module,exports){
+},{"./_stream_duplex":172,"_process":64,"buffer":6,"core-util-is":176,"inherits":177,"stream":81}],176:[function(require,module,exports){
 arguments[4][11][0].apply(exports,arguments)
-},{"dup":11}],265:[function(require,module,exports){
-arguments[4][42][0].apply(exports,arguments)
-},{"buffer":4,"dup":42}],266:[function(require,module,exports){
-arguments[4][30][0].apply(exports,arguments)
-},{"./lib/_stream_transform.js":260,"dup":30}],267:[function(require,module,exports){
-arguments[4][47][0].apply(exports,arguments)
-},{"dup":47}],268:[function(require,module,exports){
+},{"/media/d/projects/node-ipfs-api/node_modules/is-buffer/index.js":21,"dup":11}],177:[function(require,module,exports){
+arguments[4][18][0].apply(exports,arguments)
+},{"dup":18}],178:[function(require,module,exports){
+arguments[4][22][0].apply(exports,arguments)
+},{"dup":22}],179:[function(require,module,exports){
+arguments[4][86][0].apply(exports,arguments)
+},{"buffer":6,"dup":86}],180:[function(require,module,exports){
+arguments[4][77][0].apply(exports,arguments)
+},{"./lib/_stream_transform.js":174,"dup":77}],181:[function(require,module,exports){
+arguments[4][55][0].apply(exports,arguments)
+},{"dup":55}],182:[function(require,module,exports){
 (function (process){
 var Transform = require('readable-stream/transform')
   , inherits  = require('util').inherits
@@ -18403,7 +19898,7 @@ module.exports.obj = through2(function (options, transform, flush) {
 })
 
 }).call(this,require('_process'))
-},{"_process":14,"readable-stream/transform":266,"util":46,"xtend":267}],269:[function(require,module,exports){
+},{"_process":64,"readable-stream/transform":180,"util":90,"xtend":181}],183:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -18453,1620 +19948,1268 @@ function unique(propName, keyStore) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"through2-filter":296}],270:[function(require,module,exports){
-var gaze = require('gaze');
-var EventEmitter = require('events').EventEmitter;
+},{"through2-filter":234}],184:[function(require,module,exports){
+'use strict'
 
-function onWatch(out, cb){
-  return function(err, rwatcher){
-    if (err) out.emit('error', err);
-    rwatcher.on('all', function(evt, path, old){
-      var outEvt = {type: evt, path: path};
-      if(old) outEvt.old = old;
-      out.emit('change', outEvt);
-      if(cb) cb();
-    });
-  }
-}
+var fs = require('fs')
 
-module.exports = function(glob, opts, cb) {
-  var out = new EventEmitter();
+module.exports = clone(fs)
 
-  if (typeof opts === 'function') {
-    cb = opts;
-    opts = {};
-  }
+function clone (obj) {
+  if (obj === null || typeof obj !== 'object')
+    return obj
 
-  var watcher = gaze(glob, opts, onWatch(out, cb));
+  if (obj instanceof Object)
+    var copy = { __proto__: obj.__proto__ }
+  else
+    var copy = Object.create(null)
 
-  watcher.on('end', out.emit.bind(out, 'end'));
-  watcher.on('error', out.emit.bind(out, 'error'));
-  watcher.on('ready', out.emit.bind(out, 'ready'));
-  watcher.on('nomatch', out.emit.bind(out, 'nomatch'));
-
-  out.end = function(){
-    return watcher.close();
-  };
-  out.add = function(glob, cb){
-    return watcher.add(glob, onWatch(out, cb));
-  };
-  out.remove = function(glob){
-    return watcher.remove(glob);
-  };
-  out._watcher = watcher;
-
-  return out;
-};
-
-},{"events":9,"gaze":271}],271:[function(require,module,exports){
-(function (process){
-/*
- * gaze
- * https://github.com/shama/gaze
- *
- * Copyright (c) 2013 Kyle Robinson Young
- * Licensed under the MIT license.
- */
-
-'use strict';
-
-// libs
-var util = require('util');
-var EE = require('events').EventEmitter;
-var fs = require('fs');
-var path = require('path');
-var globule = require('globule');
-var helper = require('./helper');
-
-// shim setImmediate for node v0.8
-var setImmediate = require('timers').setImmediate;
-if (typeof setImmediate !== 'function') {
-  setImmediate = process.nextTick;
-}
-
-// globals
-var delay = 10;
-
-// `Gaze` EventEmitter object to return in the callback
-function Gaze(patterns, opts, done) {
-  var self = this;
-  EE.call(self);
-
-  // If second arg is the callback
-  if (typeof opts === 'function') {
-    done = opts;
-    opts = {};
-  }
-
-  // Default options
-  opts = opts || {};
-  opts.mark = true;
-  opts.interval = opts.interval || 100;
-  opts.debounceDelay = opts.debounceDelay || 500;
-  opts.cwd = opts.cwd || process.cwd();
-  this.options = opts;
-
-  // Default done callback
-  done = done || function() {};
-
-  // Remember our watched dir:files
-  this._watched = Object.create(null);
-
-  // Store watchers
-  this._watchers = Object.create(null);
-
-  // Store watchFile listeners
-  this._pollers = Object.create(null);
-
-  // Store patterns
-  this._patterns = [];
-
-  // Cached events for debouncing
-  this._cached = Object.create(null);
-
-  // Set maxListeners
-  if (this.options.maxListeners) {
-    this.setMaxListeners(this.options.maxListeners);
-    Gaze.super_.prototype.setMaxListeners(this.options.maxListeners);
-    delete this.options.maxListeners;
-  }
-
-  // Initialize the watch on files
-  if (patterns) {
-    this.add(patterns, done);
-  }
-
-  // keep the process alive
-  this._keepalive = setInterval(function() {}, 200);
-
-  return this;
-}
-util.inherits(Gaze, EE);
-
-// Main entry point. Start watching and call done when setup
-module.exports = function gaze(patterns, opts, done) {
-  return new Gaze(patterns, opts, done);
-};
-module.exports.Gaze = Gaze;
-
-// Override the emit function to emit `all` events
-// and debounce on duplicate events per file
-Gaze.prototype.emit = function() {
-  var self = this;
-  var args = arguments;
-
-  var e = args[0];
-  var filepath = args[1];
-  var timeoutId;
-
-  // If not added/deleted/changed/renamed then just emit the event
-  if (e.slice(-2) !== 'ed') {
-    Gaze.super_.prototype.emit.apply(self, args);
-    return this;
-  }
-
-  // Detect rename event, if added and previous deleted is in the cache
-  if (e === 'added') {
-    Object.keys(this._cached).forEach(function(oldFile) {
-      if (self._cached[oldFile].indexOf('deleted') !== -1) {
-        args[0] = e = 'renamed';
-        [].push.call(args, oldFile);
-        delete self._cached[oldFile];
-        return false;
-      }
-    });
-  }
-
-  // If cached doesnt exist, create a delay before running the next
-  // then emit the event
-  var cache = this._cached[filepath] || [];
-  if (cache.indexOf(e) === -1) {
-    helper.objectPush(self._cached, filepath, e);
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(function() {
-      delete self._cached[filepath];
-    }, this.options.debounceDelay);
-    // Emit the event and `all` event
-    Gaze.super_.prototype.emit.apply(self, args);
-    Gaze.super_.prototype.emit.apply(self, ['all', e].concat([].slice.call(args, 1)));
-  }
-
-  // Detect if new folder added to trigger for matching files within folder
-  if (e === 'added') {
-    if (helper.isDir(filepath)) {
-      fs.readdirSync(filepath).map(function(file) {
-        return path.join(filepath, file);
-      }).filter(function(file) {
-        return globule.isMatch(self._patterns, file, self.options);
-      }).forEach(function(file) {
-        self.emit('added', file);
-      });
-    }
-  }
-
-  return this;
-};
-
-// Close watchers
-Gaze.prototype.close = function(_reset) {
-  var self = this;
-  _reset = _reset === false ? false : true;
-  Object.keys(self._watchers).forEach(function(file) {
-    self._watchers[file].close();
-  });
-  self._watchers = Object.create(null);
-  Object.keys(this._watched).forEach(function(dir) {
-    self._unpollDir(dir);
-  });
-  if (_reset) {
-    self._watched = Object.create(null);
-    setTimeout(function() {
-      self.emit('end');
-      self.removeAllListeners();
-      clearInterval(self._keepalive);
-    }, delay + 100);
-  }
-  return self;
-};
-
-// Add file patterns to be watched
-Gaze.prototype.add = function(files, done) {
-  if (typeof files === 'string') { files = [files]; }
-  this._patterns = helper.unique.apply(null, [this._patterns, files]);
-  files = globule.find(this._patterns, this.options);
-  this._addToWatched(files);
-  this.close(false);
-  this._initWatched(done);
-};
-
-// Dont increment patterns and dont call done if nothing added
-Gaze.prototype._internalAdd = function(file, done) {
-  var files = [];
-  if (helper.isDir(file)) {
-    files = [helper.markDir(file)].concat(globule.find(this._patterns, this.options));
-  } else {
-    if (globule.isMatch(this._patterns, file, this.options)) {
-      files = [file];
-    }
-  }
-  if (files.length > 0) {
-    this._addToWatched(files);
-    this.close(false);
-    this._initWatched(done);
-  }
-};
-
-// Remove file/dir from `watched`
-Gaze.prototype.remove = function(file) {
-  var self = this;
-  if (this._watched[file]) {
-    // is dir, remove all files
-    this._unpollDir(file);
-    delete this._watched[file];
-  } else {
-    // is a file, find and remove
-    Object.keys(this._watched).forEach(function(dir) {
-      var index = self._watched[dir].indexOf(file);
-      if (index !== -1) {
-        self._unpollFile(file);
-        self._watched[dir].splice(index, 1);
-        return false;
-      }
-    });
-  }
-  if (this._watchers[file]) {
-    this._watchers[file].close();
-  }
-  return this;
-};
-
-// Return watched files
-Gaze.prototype.watched = function() {
-  return this._watched;
-};
-
-// Returns `watched` files with relative paths to process.cwd()
-Gaze.prototype.relative = function(dir, unixify) {
-  var self = this;
-  var relative = Object.create(null);
-  var relDir, relFile, unixRelDir;
-  var cwd = this.options.cwd || process.cwd();
-  if (dir === '') { dir = '.'; }
-  dir = helper.markDir(dir);
-  unixify = unixify || false;
-  Object.keys(this._watched).forEach(function(dir) {
-    relDir = path.relative(cwd, dir) + path.sep;
-    if (relDir === path.sep) { relDir = '.'; }
-    unixRelDir = unixify ? helper.unixifyPathSep(relDir) : relDir;
-    relative[unixRelDir] = self._watched[dir].map(function(file) {
-      relFile = path.relative(path.join(cwd, relDir) || '', file || '');
-      if (helper.isDir(file)) {
-        relFile = helper.markDir(relFile);
-      }
-      if (unixify) {
-        relFile = helper.unixifyPathSep(relFile);
-      }
-      return relFile;
-    });
-  });
-  if (dir && unixify) {
-    dir = helper.unixifyPathSep(dir);
-  }
-  return dir ? relative[dir] || [] : relative;
-};
-
-// Adds files and dirs to watched
-Gaze.prototype._addToWatched = function(files) {
-  for (var i = 0; i < files.length; i++) {
-    var file = files[i];
-    var filepath = path.resolve(this.options.cwd, file);
-
-    var dirname = (helper.isDir(file)) ? filepath : path.dirname(filepath);
-    dirname = helper.markDir(dirname);
-
-    // If a new dir is added
-    if (helper.isDir(file) && !(filepath in this._watched)) {
-      helper.objectPush(this._watched, filepath, []);
-    }
-
-    if (file.slice(-1) === '/') { filepath += path.sep; }
-    helper.objectPush(this._watched, path.dirname(filepath) + path.sep, filepath);
-
-    // add folders into the mix
-    var readdir = fs.readdirSync(dirname);
-    for (var j = 0; j < readdir.length; j++) {
-      var dirfile = path.join(dirname, readdir[j]);
-      if (fs.statSync(dirfile).isDirectory()) {
-        helper.objectPush(this._watched, dirname, dirfile + path.sep);
-      }
-    }
-  }
-  return this;
-};
-
-Gaze.prototype._watchDir = function(dir, done) {
-  var self = this;
-  var timeoutId;
-  try {
-    this._watchers[dir] = fs.watch(dir, function(event) {
-      // race condition. Let's give the fs a little time to settle down. so we
-      // don't fire events on non existent files.
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(function() {
-        // race condition. Ensure that this directory is still being watched
-        // before continuing.
-        if ((dir in self._watchers) && fs.existsSync(dir)) {
-          done(null, dir);
-        }
-      }, delay + 100);
-    });
-  } catch (err) {
-    return this._handleError(err);
-  }
-  return this;
-};
-
-Gaze.prototype._unpollFile = function(file) {
-  if (this._pollers[file]) {
-    fs.unwatchFile(file, this._pollers[file] );
-    delete this._pollers[file];
-  }
-  return this;
-};
-
-Gaze.prototype._unpollDir = function(dir) {
-  this._unpollFile(dir);
-  for (var i = 0; i < this._watched[dir].length; i++) {
-    this._unpollFile(this._watched[dir][i]);
-  }
-};
-
-Gaze.prototype._pollFile = function(file, done) {
-  var opts = { persistent: true, interval: this.options.interval };
-  if (!this._pollers[file]) {
-    this._pollers[file] = function(curr, prev) {
-      done(null, file);
-    };
-    try {
-      fs.watchFile(file, opts, this._pollers[file]);
-    } catch (err) {
-      return this._handleError(err);
-    }
-  }
-  return this;
-};
-
-// Initialize the actual watch on `watched` files
-Gaze.prototype._initWatched = function(done) {
-  var self = this;
-  var cwd = this.options.cwd || process.cwd();
-  var curWatched = Object.keys(self._watched);
-
-  // if no matching files
-  if (curWatched.length < 1) {
-    // Defer to emitting to give a chance to attach event handlers.
-    setImmediate(function () {
-      self.emit('ready', self);
-      if (done) { done.call(self, null, self); }
-      self.emit('nomatch');
-    });
-    return;
-  }
-
-  helper.forEachSeries(curWatched, function(dir, next) {
-    dir = dir || '';
-    var files = self._watched[dir];
-    // Triggered when a watched dir has an event
-    self._watchDir(dir, function(event, dirpath) {
-      var relDir = cwd === dir ? '.' : path.relative(cwd, dir);
-      relDir = relDir || '';
-
-      fs.readdir(dirpath, function(err, current) {
-        if (err) { return self.emit('error', err); }
-        if (!current) { return; }
-
-        try {
-          // append path.sep to directories so they match previous.
-          current = current.map(function(curPath) {
-            if (fs.existsSync(path.join(dir, curPath)) && fs.statSync(path.join(dir, curPath)).isDirectory()) {
-              return curPath + path.sep;
-            } else {
-              return curPath;
-            }
-          });
-        } catch (err) {
-          // race condition-- sometimes the file no longer exists
-        }
-
-        // Get watched files for this dir
-        var previous = self.relative(relDir);
-
-        // If file was deleted
-        previous.filter(function(file) {
-          return current.indexOf(file) < 0;
-        }).forEach(function(file) {
-          if (!helper.isDir(file)) {
-            var filepath = path.join(dir, file);
-            self.remove(filepath);
-            self.emit('deleted', filepath);
-          }
-        });
-
-        // If file was added
-        current.filter(function(file) {
-          return previous.indexOf(file) < 0;
-        }).forEach(function(file) {
-          // Is it a matching pattern?
-          var relFile = path.join(relDir, file);
-          // Add to watch then emit event
-          self._internalAdd(relFile, function() {
-            self.emit('added', path.join(dir, file));
-          });
-        });
-
-      });
-    });
-
-    // Watch for change/rename events on files
-    files.forEach(function(file) {
-      if (helper.isDir(file)) { return; }
-      self._pollFile(file, function(err, filepath) {
-        // Only emit changed if the file still exists
-        // Prevents changed/deleted duplicate events
-        if (fs.existsSync(filepath)) {
-          self.emit('changed', filepath);
-        }
-      });
-    });
-
-    next();
-  }, function() {
-
-    // Return this instance of Gaze
-    // delay before ready solves a lot of issues
-    setTimeout(function() {
-      self.emit('ready', self);
-      if (done) { done.call(self, null, self); }
-    }, delay + 100);
-
-  });
-};
-
-// If an error, handle it here
-Gaze.prototype._handleError = function(err) {
-  if (err.code === 'EMFILE') {
-    return this.emit('error', new Error('EMFILE: Too many opened files.'));
-  }
-  return this.emit('error', err);
-};
-
-}).call(this,require('_process'))
-},{"./helper":272,"_process":14,"events":9,"fs":1,"globule":273,"path":13,"timers":43,"util":46}],272:[function(require,module,exports){
-(function (process){
-'use strict';
-
-var path = require('path');
-var helper = module.exports = {};
-
-// Returns boolean whether filepath is dir terminated
-helper.isDir = function isDir(dir) {
-  if (typeof dir !== 'string') { return false; }
-  return (dir.slice(-(path.sep.length)) === path.sep);
-};
-
-// Create a `key:[]` if doesnt exist on `obj` then push or concat the `val`
-helper.objectPush = function objectPush(obj, key, val) {
-  if (obj[key] == null) { obj[key] = []; }
-  if (Array.isArray(val)) { obj[key] = obj[key].concat(val); }
-  else if (val) { obj[key].push(val); }
-  return obj[key] = helper.unique(obj[key]);
-};
-
-// Ensures the dir is marked with path.sep
-helper.markDir = function markDir(dir) {
-  if (typeof dir === 'string' &&
-    dir.slice(-(path.sep.length)) !== path.sep &&
-    dir !== '.') {
-    dir += path.sep;
-  }
-  return dir;
-};
-
-// Changes path.sep to unix ones for testing
-helper.unixifyPathSep = function unixifyPathSep(filepath) {
-  return (process.platform === 'win32') ? String(filepath).replace(/\\/g, '/') : filepath;
-};
-
-/**
- * Lo-Dash 1.0.1 <http://lodash.com/>
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.4.4 <http://underscorejs.org/>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud Inc.
- * Available under MIT license <http://lodash.com/license>
- */
-helper.unique = function unique() { var array = Array.prototype.concat.apply(Array.prototype, arguments); var result = []; for (var i = 0; i < array.length; i++) { if (result.indexOf(array[i]) === -1) { result.push(array[i]); } } return result; };
-
-/**
- * Copyright (c) 2010 Caolan McMahon
- * Available under MIT license <https://raw.github.com/caolan/async/master/LICENSE>
- */
-helper.forEachSeries = function forEachSeries(arr, iterator, callback) {
-  if (!arr.length) { return callback(); }
-  var completed = 0;
-  var iterate = function() {
-    iterator(arr[completed], function (err) {
-      if (err) {
-        callback(err);
-        callback = function() {};
-      } else {
-        completed += 1;
-        if (completed === arr.length) {
-          callback(null);
-        } else {
-          iterate();
-        }
-      }
-    });
-  };
-  iterate();
-};
-
-}).call(this,require('_process'))
-},{"_process":14,"path":13}],273:[function(require,module,exports){
-/*
- * globule
- * https://github.com/cowboy/node-globule
- *
- * Copyright (c) 2013 "Cowboy" Ben Alman
- * Licensed under the MIT license.
- */
-
-'use strict';
-
-var fs = require('fs');
-var path = require('path');
-
-var _ = require('lodash');
-var glob = require('glob');
-var minimatch = require('minimatch');
-
-// The module.
-var globule = exports;
-
-// Process specified wildcard glob patterns or filenames against a
-// callback, excluding and uniquing files in the result set.
-function processPatterns(patterns, fn) {
-  return _.flatten(patterns).reduce(function(result, pattern) {
-    if (pattern.indexOf('!') === 0) {
-      // If the first character is ! all matches via this pattern should be
-      // removed from the result set.
-      pattern = pattern.slice(1);
-      return _.difference(result, fn(pattern));
-    } else {
-      // Otherwise, add all matching filepaths to the result set.
-      return _.union(result, fn(pattern));
-    }
-  }, []);
-}
-
-// Match a filepath or filepaths against one or more wildcard patterns. Returns
-// all matching filepaths. This behaves just like minimatch.match, but supports
-// any number of patterns.
-globule.match = function(patterns, filepaths, options) {
-  // Return empty set if either patterns or filepaths was omitted.
-  if (patterns == null || filepaths == null) { return []; }
-  // Normalize patterns and filepaths to arrays.
-  if (!_.isArray(patterns)) { patterns = [patterns]; }
-  if (!_.isArray(filepaths)) { filepaths = [filepaths]; }
-  // Return empty set if there are no patterns or filepaths.
-  if (patterns.length === 0 || filepaths.length === 0) { return []; }
-  // Return all matching filepaths.
-  return processPatterns(patterns, function(pattern) {
-    return minimatch.match(filepaths, pattern, options || {});
-  });
-};
-
-// Match a filepath or filepaths against one or more wildcard patterns. Returns
-// true if any of the patterns match.
-globule.isMatch = function() {
-  return globule.match.apply(null, arguments).length > 0;
-};
-
-// Return an array of all file paths that match the given wildcard patterns.
-globule.find = function() {
-  var args = _.toArray(arguments);
-  // If the last argument is an options object, remove it from args.
-  var options = _.isPlainObject(args[args.length - 1]) ? args.pop() : {};
-  // Use the first argument if it's an Array, otherwise use all arguments.
-  var patterns = _.isArray(args[0]) ? args[0] : args;
-  // Return empty set if there are no patterns or filepaths.
-  if (patterns.length === 0) { return []; }
-  var srcBase = options.srcBase || options.cwd;
-  // Create glob-specific options object.
-  var globOptions = _.extend({}, options);
-  if (srcBase) {
-    globOptions.cwd = srcBase;
-  }
-  // Get all matching filepaths.
-  var matches = processPatterns(patterns, function(pattern) {
-    return glob.sync(pattern, globOptions);
-  });
-  // If srcBase and prefixBase were specified, prefix srcBase to matched paths.
-  if (srcBase && options.prefixBase) {
-    matches = matches.map(function(filepath) {
-      return path.join(srcBase, filepath);
-    });
-  }
-  // Filter result set?
-  if (options.filter) {
-    matches = matches.filter(function(filepath) {
-      // If srcBase was specified but prefixBase was NOT, prefix srcBase
-      // temporarily, for filtering.
-      if (srcBase && !options.prefixBase) {
-        filepath = path.join(srcBase, filepath);
-      }
-      try {
-        if (_.isFunction(options.filter)) {
-          return options.filter(filepath, options);
-        } else {
-          // If the file is of the right type and exists, this should work.
-          return fs.statSync(filepath)[options.filter]();
-        }
-      } catch(err) {
-        // Otherwise, it's probably not the right type.
-        return false;
-      }
-    });
-  }
-  return matches;
-};
-
-var pathSeparatorRe = /[\/\\]/g;
-var extDotRe = {
-  first: /(\.[^\/]*)?$/,
-  last: /(\.[^\/\.]*)?$/,
-};
-function rename(dest, options) {
-  // Flatten path?
-  if (options.flatten) {
-    dest = path.basename(dest);
-  }
-  // Change the extension?
-  if (options.ext) {
-    dest = dest.replace(extDotRe[options.extDot], options.ext);
-  }
-  // Join dest and destBase?
-  if (options.destBase) {
-    dest = path.join(options.destBase, dest);
-  }
-  return dest;
-}
-
-// Build a mapping of src-dest filepaths from the given set of filepaths.
-globule.mapping = function(filepaths, options) {
-  // Return empty set if filepaths was omitted.
-  if (filepaths == null) { return []; }
-  options = _.defaults({}, options, {
-    extDot: 'first',
-    rename: rename,
-  });
-  var files = [];
-  var fileByDest = {};
-  // Find all files matching pattern, using passed-in options.
-  filepaths.forEach(function(src) {
-    // Generate destination filename.
-    var dest = options.rename(src, options);
-    // Prepend srcBase to all src paths.
-    if (options.srcBase) {
-      src = path.join(options.srcBase, src);
-    }
-    // Normalize filepaths to be unix-style.
-    dest = dest.replace(pathSeparatorRe, '/');
-    src = src.replace(pathSeparatorRe, '/');
-    // Map correct src path to dest path.
-    if (fileByDest[dest]) {
-      // If dest already exists, push this src onto that dest's src array.
-      fileByDest[dest].src.push(src);
-    } else {
-      // Otherwise create a new src-dest file mapping object.
-      files.push({
-        src: [src],
-        dest: dest,
-      });
-      // And store a reference for later use.
-      fileByDest[dest] = files[files.length - 1];
-    }
-  });
-  return files;
-};
-
-// Return a mapping of src-dest filepaths from files matching the given
-// wildcard patterns.
-globule.findMapping = function(patterns, options) {
-  return globule.mapping(globule.find(patterns, options), options);
-};
-
-},{"fs":1,"glob":274,"lodash":277,"minimatch":278,"path":13}],274:[function(require,module,exports){
-(function (process){
-// Approach:
-//
-// 1. Get the minimatch set
-// 2. For each pattern in the set, PROCESS(pattern)
-// 3. Store matches per-set, then uniq them
-//
-// PROCESS(pattern)
-// Get the first [n] items from pattern that are all strings
-// Join these together.  This is PREFIX.
-//   If there is no more remaining, then stat(PREFIX) and
-//   add to matches if it succeeds.  END.
-// readdir(PREFIX) as ENTRIES
-//   If fails, END
-//   If pattern[n] is GLOBSTAR
-//     // handle the case where the globstar match is empty
-//     // by pruning it out, and testing the resulting pattern
-//     PROCESS(pattern[0..n] + pattern[n+1 .. $])
-//     // handle other cases.
-//     for ENTRY in ENTRIES (not dotfiles)
-//       // attach globstar + tail onto the entry
-//       PROCESS(pattern[0..n] + ENTRY + pattern[n .. $])
-//
-//   else // not globstar
-//     for ENTRY in ENTRIES (not dotfiles, unless pattern[n] is dot)
-//       Test ENTRY against pattern[n]
-//       If fails, continue
-//       If passes, PROCESS(pattern[0..n] + item + pattern[n+1 .. $])
-//
-// Caveat:
-//   Cache all stats and readdirs results to minimize syscall.  Since all
-//   we ever care about is existence and directory-ness, we can just keep
-//   `true` for files, and [children,...] for directories, or `false` for
-//   things that don't exist.
-
-
-
-module.exports = glob
-
-var fs = require("graceful-fs")
-, minimatch = require("minimatch")
-, Minimatch = minimatch.Minimatch
-, inherits = require("inherits")
-, EE = require("events").EventEmitter
-, path = require("path")
-, isDir = {}
-, assert = require("assert").ok
-
-function glob (pattern, options, cb) {
-  if (typeof options === "function") cb = options, options = {}
-  if (!options) options = {}
-
-  if (typeof options === "number") {
-    deprecated()
-    return
-  }
-
-  var g = new Glob(pattern, options, cb)
-  return g.sync ? g.found : g
-}
-
-glob.fnmatch = deprecated
-
-function deprecated () {
-  throw new Error("glob's interface has changed. Please see the docs.")
-}
-
-glob.sync = globSync
-function globSync (pattern, options) {
-  if (typeof options === "number") {
-    deprecated()
-    return
-  }
-
-  options = options || {}
-  options.sync = true
-  return glob(pattern, options)
-}
-
-
-glob.Glob = Glob
-inherits(Glob, EE)
-function Glob (pattern, options, cb) {
-  if (!(this instanceof Glob)) {
-    return new Glob(pattern, options, cb)
-  }
-
-  if (typeof cb === "function") {
-    this.on("error", cb)
-    this.on("end", function (matches) {
-      cb(null, matches)
-    })
-  }
-
-  options = options || {}
-
-  this.EOF = {}
-  this._emitQueue = []
-
-  this.maxDepth = options.maxDepth || 1000
-  this.maxLength = options.maxLength || Infinity
-  this.statCache = options.statCache || {}
-
-  this.changedCwd = false
-  var cwd = process.cwd()
-  if (!options.hasOwnProperty("cwd")) this.cwd = cwd
-  else {
-    this.cwd = options.cwd
-    this.changedCwd = path.resolve(options.cwd) !== cwd
-  }
-
-  this.root = options.root || path.resolve(this.cwd, "/")
-  this.root = path.resolve(this.root)
-  if (process.platform === "win32")
-    this.root = this.root.replace(/\\/g, "/")
-
-  this.nomount = !!options.nomount
-
-  if (!pattern) {
-    throw new Error("must provide pattern")
-  }
-
-  // base-matching: just use globstar for that.
-  if (options.matchBase && -1 === pattern.indexOf("/")) {
-    if (options.noglobstar) {
-      throw new Error("base matching requires globstar")
-    }
-    pattern = "**/" + pattern
-  }
-
-  this.strict = options.strict !== false
-  this.dot = !!options.dot
-  this.mark = !!options.mark
-  this.sync = !!options.sync
-  this.nounique = !!options.nounique
-  this.nonull = !!options.nonull
-  this.nosort = !!options.nosort
-  this.nocase = !!options.nocase
-  this.stat = !!options.stat
-
-  this.debug = !!options.debug || !!options.globDebug
-  if (this.debug)
-    this.log = console.error
-
-  this.silent = !!options.silent
-
-  var mm = this.minimatch = new Minimatch(pattern, options)
-  this.options = mm.options
-  pattern = this.pattern = mm.pattern
-
-  this.error = null
-  this.aborted = false
-
-  EE.call(this)
-
-  // process each pattern in the minimatch set
-  var n = this.minimatch.set.length
-
-  // The matches are stored as {<filename>: true,...} so that
-  // duplicates are automagically pruned.
-  // Later, we do an Object.keys() on these.
-  // Keep them as a list so we can fill in when nonull is set.
-  this.matches = new Array(n)
-
-  this.minimatch.set.forEach(iterator.bind(this))
-  function iterator (pattern, i, set) {
-    this._process(pattern, 0, i, function (er) {
-      if (er) this.emit("error", er)
-      if (-- n <= 0) this._finish()
-    })
-  }
-}
-
-Glob.prototype.log = function () {}
-
-Glob.prototype._finish = function () {
-  assert(this instanceof Glob)
-
-  var nou = this.nounique
-  , all = nou ? [] : {}
-
-  for (var i = 0, l = this.matches.length; i < l; i ++) {
-    var matches = this.matches[i]
-    this.log("matches[%d] =", i, matches)
-    // do like the shell, and spit out the literal glob
-    if (!matches) {
-      if (this.nonull) {
-        var literal = this.minimatch.globSet[i]
-        if (nou) all.push(literal)
-        else all[literal] = true
-      }
-    } else {
-      // had matches
-      var m = Object.keys(matches)
-      if (nou) all.push.apply(all, m)
-      else m.forEach(function (m) {
-        all[m] = true
-      })
-    }
-  }
-
-  if (!nou) all = Object.keys(all)
-
-  if (!this.nosort) {
-    all = all.sort(this.nocase ? alphasorti : alphasort)
-  }
-
-  if (this.mark) {
-    // at *some* point we statted all of these
-    all = all.map(function (m) {
-      var sc = this.statCache[m]
-      if (!sc)
-        return m
-      var isDir = (Array.isArray(sc) || sc === 2)
-      if (isDir && m.slice(-1) !== "/") {
-        return m + "/"
-      }
-      if (!isDir && m.slice(-1) === "/") {
-        return m.replace(/\/+$/, "")
-      }
-      return m
-    }, this)
-  }
-
-  this.log("emitting end", all)
-
-  this.EOF = this.found = all
-  this.emitMatch(this.EOF)
-}
-
-function alphasorti (a, b) {
-  a = a.toLowerCase()
-  b = b.toLowerCase()
-  return alphasort(a, b)
-}
-
-function alphasort (a, b) {
-  return a > b ? 1 : a < b ? -1 : 0
-}
-
-Glob.prototype.abort = function () {
-  this.aborted = true
-  this.emit("abort")
-}
-
-Glob.prototype.pause = function () {
-  if (this.paused) return
-  if (this.sync)
-    this.emit("error", new Error("Can't pause/resume sync glob"))
-  this.paused = true
-  this.emit("pause")
-}
-
-Glob.prototype.resume = function () {
-  if (!this.paused) return
-  if (this.sync)
-    this.emit("error", new Error("Can't pause/resume sync glob"))
-  this.paused = false
-  this.emit("resume")
-  this._processEmitQueue()
-  //process.nextTick(this.emit.bind(this, "resume"))
-}
-
-Glob.prototype.emitMatch = function (m) {
-  this._emitQueue.push(m)
-  this._processEmitQueue()
-}
-
-Glob.prototype._processEmitQueue = function (m) {
-  while (!this._processingEmitQueue &&
-         !this.paused) {
-    this._processingEmitQueue = true
-    var m = this._emitQueue.shift()
-    if (!m) {
-      this._processingEmitQueue = false
-      break
-    }
-
-    this.log('emit!', m === this.EOF ? "end" : "match")
-
-    this.emit(m === this.EOF ? "end" : "match", m)
-    this._processingEmitQueue = false
-  }
-}
-
-Glob.prototype._process = function (pattern, depth, index, cb_) {
-  assert(this instanceof Glob)
-
-  var cb = function cb (er, res) {
-    assert(this instanceof Glob)
-    if (this.paused) {
-      if (!this._processQueue) {
-        this._processQueue = []
-        this.once("resume", function () {
-          var q = this._processQueue
-          this._processQueue = null
-          q.forEach(function (cb) { cb() })
-        })
-      }
-      this._processQueue.push(cb_.bind(this, er, res))
-    } else {
-      cb_.call(this, er, res)
-    }
-  }.bind(this)
-
-  if (this.aborted) return cb()
-
-  if (depth > this.maxDepth) return cb()
-
-  // Get the first [n] parts of pattern that are all strings.
-  var n = 0
-  while (typeof pattern[n] === "string") {
-    n ++
-  }
-  // now n is the index of the first one that is *not* a string.
-
-  // see if there's anything else
-  var prefix
-  switch (n) {
-    // if not, then this is rather simple
-    case pattern.length:
-      prefix = pattern.join("/")
-      this._stat(prefix, function (exists, isDir) {
-        // either it's there, or it isn't.
-        // nothing more to do, either way.
-        if (exists) {
-          if (prefix && isAbsolute(prefix) && !this.nomount) {
-	    if (prefix.charAt(0) === "/") {
-              prefix = path.join(this.root, prefix)
-	    } else {
-	      prefix = path.resolve(this.root, prefix)
-	    }
-          }
-
-          if (process.platform === "win32")
-            prefix = prefix.replace(/\\/g, "/")
-
-          this.matches[index] = this.matches[index] || {}
-          this.matches[index][prefix] = true
-          this.emitMatch(prefix)
-        }
-        return cb()
-      })
-      return
-
-    case 0:
-      // pattern *starts* with some non-trivial item.
-      // going to readdir(cwd), but not include the prefix in matches.
-      prefix = null
-      break
-
-    default:
-      // pattern has some string bits in the front.
-      // whatever it starts with, whether that's "absolute" like /foo/bar,
-      // or "relative" like "../baz"
-      prefix = pattern.slice(0, n)
-      prefix = prefix.join("/")
-      break
-  }
-
-  // get the list of entries.
-  var read
-  if (prefix === null) read = "."
-  else if (isAbsolute(prefix) || isAbsolute(pattern.join("/"))) {
-    if (!prefix || !isAbsolute(prefix)) {
-      prefix = path.join("/", prefix)
-    }
-    read = prefix = path.resolve(prefix)
-
-    // if (process.platform === "win32")
-    //   read = prefix = prefix.replace(/^[a-zA-Z]:|\\/g, "/")
-
-    this.log('absolute: ', prefix, this.root, pattern, read)
-  } else {
-    read = prefix
-  }
-
-  this.log('readdir(%j)', read, this.cwd, this.root)
-
-  return this._readdir(read, function (er, entries) {
-    if (er) {
-      // not a directory!
-      // this means that, whatever else comes after this, it can never match
-      return cb()
-    }
-
-    // globstar is special
-    if (pattern[n] === minimatch.GLOBSTAR) {
-      // test without the globstar, and with every child both below
-      // and replacing the globstar.
-      var s = [ pattern.slice(0, n).concat(pattern.slice(n + 1)) ]
-      entries.forEach(function (e) {
-        if (e.charAt(0) === "." && !this.dot) return
-        // instead of the globstar
-        s.push(pattern.slice(0, n).concat(e).concat(pattern.slice(n + 1)))
-        // below the globstar
-        s.push(pattern.slice(0, n).concat(e).concat(pattern.slice(n)))
-      }, this)
-
-      // now asyncForEach over this
-      var l = s.length
-      , errState = null
-      s.forEach(function (gsPattern) {
-        this._process(gsPattern, depth + 1, index, function (er) {
-          if (errState) return
-          if (er) return cb(errState = er)
-          if (--l <= 0) return cb()
-        })
-      }, this)
-
-      return
-    }
-
-    // not a globstar
-    // It will only match dot entries if it starts with a dot, or if
-    // dot is set.  Stuff like @(.foo|.bar) isn't allowed.
-    var pn = pattern[n]
-    if (typeof pn === "string") {
-      var found = entries.indexOf(pn) !== -1
-      entries = found ? entries[pn] : []
-    } else {
-      var rawGlob = pattern[n]._glob
-      , dotOk = this.dot || rawGlob.charAt(0) === "."
-
-      entries = entries.filter(function (e) {
-        return (e.charAt(0) !== "." || dotOk) &&
-               (typeof pattern[n] === "string" && e === pattern[n] ||
-                e.match(pattern[n]))
-      })
-    }
-
-    // If n === pattern.length - 1, then there's no need for the extra stat
-    // *unless* the user has specified "mark" or "stat" explicitly.
-    // We know that they exist, since the readdir returned them.
-    if (n === pattern.length - 1 &&
-        !this.mark &&
-        !this.stat) {
-      entries.forEach(function (e) {
-        if (prefix) {
-          if (prefix !== "/") e = prefix + "/" + e
-          else e = prefix + e
-        }
-        if (e.charAt(0) === "/" && !this.nomount) {
-          e = path.join(this.root, e)
-        }
-
-        if (process.platform === "win32")
-          e = e.replace(/\\/g, "/")
-
-        this.matches[index] = this.matches[index] || {}
-        this.matches[index][e] = true
-        this.emitMatch(e)
-      }, this)
-      return cb.call(this)
-    }
-
-
-    // now test all the remaining entries as stand-ins for that part
-    // of the pattern.
-    var l = entries.length
-    , errState = null
-    if (l === 0) return cb() // no matches possible
-    entries.forEach(function (e) {
-      var p = pattern.slice(0, n).concat(e).concat(pattern.slice(n + 1))
-      this._process(p, depth + 1, index, function (er) {
-        if (errState) return
-        if (er) return cb(errState = er)
-        if (--l === 0) return cb.call(this)
-      })
-    }, this)
+  Object.getOwnPropertyNames(obj).forEach(function (key) {
+    Object.defineProperty(copy, key, Object.getOwnPropertyDescriptor(obj, key))
   })
 
+  return copy
 }
 
-Glob.prototype._stat = function (f, cb) {
-  assert(this instanceof Glob)
-  var abs = f
-  if (f.charAt(0) === "/") {
-    abs = path.join(this.root, f)
-  } else if (this.changedCwd) {
-    abs = path.resolve(this.cwd, f)
-  }
-  this.log('stat', [this.cwd, f, '=', abs])
-  if (f.length > this.maxLength) {
-    var er = new Error("Path name too long")
-    er.code = "ENAMETOOLONG"
-    er.path = f
-    return this._afterStat(f, abs, cb, er)
+},{"fs":4}],185:[function(require,module,exports){
+(function (process){
+var fs = require('fs')
+var polyfills = require('./polyfills.js')
+var legacy = require('./legacy-streams.js')
+var queue = []
+
+var util = require('util')
+
+function noop () {}
+
+var debug = noop
+if (util.debuglog)
+  debug = util.debuglog('gfs4')
+else if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || ''))
+  debug = function() {
+    var m = util.format.apply(util, arguments)
+    m = 'GFS4: ' + m.split(/\n/).join('\nGFS4: ')
+    console.error(m)
   }
 
-  if (this.statCache.hasOwnProperty(f)) {
-    var exists = this.statCache[f]
-    , isDir = exists && (Array.isArray(exists) || exists === 2)
-    if (this.sync) return cb.call(this, !!exists, isDir)
-    return process.nextTick(cb.bind(this, !!exists, isDir))
-  }
+if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || '')) {
+  process.on('exit', function() {
+    debug(queue)
+    require('assert').equal(queue.length, 0)
+  })
+}
 
-  if (this.sync) {
-    var er, stat
-    try {
-      stat = fs.statSync(abs)
-    } catch (e) {
-      er = e
+module.exports = patch(require('./fs.js'))
+if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH) {
+  module.exports = patch(fs)
+}
+
+// Always patch fs.close/closeSync, because we want to
+// retry() whenever a close happens *anywhere* in the program.
+// This is essential when multiple graceful-fs instances are
+// in play at the same time.
+fs.close = (function (fs$close) { return function (fd, cb) {
+  return fs$close.call(fs, fd, function (err) {
+    if (!err)
+      retry()
+
+    if (typeof cb === 'function')
+      cb.apply(this, arguments)
+  })
+}})(fs.close)
+
+fs.closeSync = (function (fs$closeSync) { return function (fd) {
+  // Note that graceful-fs also retries when fs.closeSync() fails.
+  // Looks like a bug to me, although it's probably a harmless one.
+  var rval = fs$closeSync.apply(fs, arguments)
+  retry()
+  return rval
+}})(fs.closeSync)
+
+function patch (fs) {
+  // Everything that references the open() function needs to be in here
+  polyfills(fs)
+  fs.gracefulify = patch
+  fs.FileReadStream = ReadStream;  // Legacy name.
+  fs.FileWriteStream = WriteStream;  // Legacy name.
+  fs.createReadStream = createReadStream
+  fs.createWriteStream = createWriteStream
+  var fs$readFile = fs.readFile
+  fs.readFile = readFile
+  function readFile (path, options, cb) {
+    if (typeof options === 'function')
+      cb = options, options = null
+
+    return go$readFile(path, options, cb)
+
+    function go$readFile (path, options, cb) {
+      return fs$readFile(path, options, function (err) {
+        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+          enqueue([go$readFile, [path, options, cb]])
+        else {
+          if (typeof cb === 'function')
+            cb.apply(this, arguments)
+          retry()
+        }
+      })
     }
-    this._afterStat(f, abs, cb, er, stat)
-  } else {
-    fs.stat(abs, this._afterStat.bind(this, f, abs, cb))
-  }
-}
-
-Glob.prototype._afterStat = function (f, abs, cb, er, stat) {
-  var exists
-  assert(this instanceof Glob)
-
-  if (abs.slice(-1) === "/" && stat && !stat.isDirectory()) {
-    this.log("should be ENOTDIR, fake it")
-
-    er = new Error("ENOTDIR, not a directory '" + abs + "'")
-    er.path = abs
-    er.code = "ENOTDIR"
-    stat = null
   }
 
-  if (er || !stat) {
-    exists = false
-  } else {
-    exists = stat.isDirectory() ? 2 : 1
-  }
-  this.statCache[f] = this.statCache[f] || exists
-  cb.call(this, !!exists, exists === 2)
-}
+  var fs$writeFile = fs.writeFile
+  fs.writeFile = writeFile
+  function writeFile (path, data, options, cb) {
+    if (typeof options === 'function')
+      cb = options, options = null
 
-Glob.prototype._readdir = function (f, cb) {
-  assert(this instanceof Glob)
-  var abs = f
-  if (f.charAt(0) === "/") {
-    abs = path.join(this.root, f)
-  } else if (isAbsolute(f)) {
-    abs = f
-  } else if (this.changedCwd) {
-    abs = path.resolve(this.cwd, f)
-  }
+    return go$writeFile(path, data, options, cb)
 
-  this.log('readdir', [this.cwd, f, abs])
-  if (f.length > this.maxLength) {
-    var er = new Error("Path name too long")
-    er.code = "ENAMETOOLONG"
-    er.path = f
-    return this._afterReaddir(f, abs, cb, er)
-  }
-
-  if (this.statCache.hasOwnProperty(f)) {
-    var c = this.statCache[f]
-    if (Array.isArray(c)) {
-      if (this.sync) return cb.call(this, null, c)
-      return process.nextTick(cb.bind(this, null, c))
+    function go$writeFile (path, data, options, cb) {
+      return fs$writeFile(path, data, options, function (err) {
+        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+          enqueue([go$writeFile, [path, data, options, cb]])
+        else {
+          if (typeof cb === 'function')
+            cb.apply(this, arguments)
+          retry()
+        }
+      })
     }
-
-    if (!c || c === 1) {
-      // either ENOENT or ENOTDIR
-      var code = c ? "ENOTDIR" : "ENOENT"
-      , er = new Error((c ? "Not a directory" : "Not found") + ": " + f)
-      er.path = f
-      er.code = code
-      this.log(f, er)
-      if (this.sync) return cb.call(this, er)
-      return process.nextTick(cb.bind(this, er))
-    }
-
-    // at this point, c === 2, meaning it's a dir, but we haven't
-    // had to read it yet, or c === true, meaning it's *something*
-    // but we don't have any idea what.  Need to read it, either way.
   }
 
-  if (this.sync) {
-    var er, entries
-    try {
-      entries = fs.readdirSync(abs)
-    } catch (e) {
-      er = e
+  var fs$appendFile = fs.appendFile
+  if (fs$appendFile)
+    fs.appendFile = appendFile
+  function appendFile (path, data, options, cb) {
+    if (typeof options === 'function')
+      cb = options, options = null
+
+    return go$appendFile(path, data, options, cb)
+
+    function go$appendFile (path, data, options, cb) {
+      return fs$appendFile(path, data, options, function (err) {
+        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+          enqueue([go$appendFile, [path, data, options, cb]])
+        else {
+          if (typeof cb === 'function')
+            cb.apply(this, arguments)
+          retry()
+        }
+      })
     }
-    return this._afterReaddir(f, abs, cb, er, entries)
   }
 
-  fs.readdir(abs, this._afterReaddir.bind(this, f, abs, cb))
+  var fs$readdir = fs.readdir
+  fs.readdir = readdir
+  function readdir (path, cb) {
+    return go$readdir(path, cb)
+
+    function go$readdir () {
+      return fs$readdir(path, function (err, files) {
+        if (files && files.sort)
+          files.sort();  // Backwards compatibility with graceful-fs.
+
+        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+          enqueue([go$readdir, [path, cb]])
+        else {
+          if (typeof cb === 'function')
+            cb.apply(this, arguments)
+          retry()
+        }
+      })
+    }
+  }
+
+
+  if (process.version.substr(0, 4) === 'v0.8') {
+    var legStreams = legacy(fs)
+    ReadStream = legStreams.ReadStream
+    WriteStream = legStreams.WriteStream
+  }
+
+  var fs$ReadStream = fs.ReadStream
+  ReadStream.prototype = Object.create(fs$ReadStream.prototype)
+  ReadStream.prototype.open = ReadStream$open
+
+  var fs$WriteStream = fs.WriteStream
+  WriteStream.prototype = Object.create(fs$WriteStream.prototype)
+  WriteStream.prototype.open = WriteStream$open
+
+  fs.ReadStream = ReadStream
+  fs.WriteStream = WriteStream
+
+  function ReadStream (path, options) {
+    if (this instanceof ReadStream)
+      return fs$ReadStream.apply(this, arguments), this
+    else
+      return ReadStream.apply(Object.create(ReadStream.prototype), arguments)
+  }
+
+  function ReadStream$open () {
+    var that = this
+    open(that.path, that.flags, that.mode, function (err, fd) {
+      if (err) {
+        if (that.autoClose)
+          that.destroy()
+
+        that.emit('error', err)
+      } else {
+        that.fd = fd
+        that.emit('open', fd)
+        that.read()
+      }
+    })
+  }
+
+  function WriteStream (path, options) {
+    if (this instanceof WriteStream)
+      return fs$WriteStream.apply(this, arguments), this
+    else
+      return WriteStream.apply(Object.create(WriteStream.prototype), arguments)
+  }
+
+  function WriteStream$open () {
+    var that = this
+    open(that.path, that.flags, that.mode, function (err, fd) {
+      if (err) {
+        that.destroy()
+        that.emit('error', err)
+      } else {
+        that.fd = fd
+        that.emit('open', fd)
+      }
+    })
+  }
+
+  function createReadStream (path, options) {
+    return new ReadStream(path, options)
+  }
+
+  function createWriteStream (path, options) {
+    return new WriteStream(path, options)
+  }
+
+  var fs$open = fs.open
+  fs.open = open
+  function open (path, flags, mode, cb) {
+    if (typeof mode === 'function')
+      cb = mode, mode = null
+
+    return go$open(path, flags, mode, cb)
+
+    function go$open (path, flags, mode, cb) {
+      return fs$open(path, flags, mode, function (err, fd) {
+        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+          enqueue([go$open, [path, flags, mode, cb]])
+        else {
+          if (typeof cb === 'function')
+            cb.apply(this, arguments)
+          retry()
+        }
+      })
+    }
+  }
+
+  return fs
 }
 
-Glob.prototype._afterReaddir = function (f, abs, cb, er, entries) {
-  assert(this instanceof Glob)
-  if (entries && !er) {
-    this.statCache[f] = entries
-    // if we haven't asked to stat everything for suresies, then just
-    // assume that everything in there exists, so we can avoid
-    // having to stat it a second time.  This also gets us one step
-    // further into ELOOP territory.
-    if (!this.mark && !this.stat) {
-      entries.forEach(function (e) {
-        if (f === "/") e = f + e
-        else e = f + "/" + e
-        this.statCache[e] = true
-      }, this)
-    }
-
-    return cb.call(this, er, entries)
-  }
-
-  // now handle errors, and cache the information
-  if (er) switch (er.code) {
-    case "ENOTDIR": // totally normal. means it *does* exist.
-      this.statCache[f] = 1
-      return cb.call(this, er)
-    case "ENOENT": // not terribly unusual
-    case "ELOOP":
-    case "ENAMETOOLONG":
-    case "UNKNOWN":
-      this.statCache[f] = false
-      return cb.call(this, er)
-    default: // some unusual error.  Treat as failure.
-      this.statCache[f] = false
-      if (this.strict) this.emit("error", er)
-      if (!this.silent) console.error("glob error", er)
-      return cb.call(this, er)
-  }
+function enqueue (elem) {
+  debug('ENQUEUE', elem[0].name, elem[1])
+  queue.push(elem)
 }
 
-var isAbsolute = process.platform === "win32" ? absWin : absUnix
-
-function absWin (p) {
-  if (absUnix(p)) return true
-  // pull off the device/UNC bit from a windows path.
-  // from node's lib/path.js
-  var splitDeviceRe =
-      /^([a-zA-Z]:|[\\\/]{2}[^\\\/]+[\\\/]+[^\\\/]+)?([\\\/])?([\s\S]*?)$/
-    , result = splitDeviceRe.exec(p)
-    , device = result[1] || ''
-    , isUnc = device && device.charAt(1) !== ':'
-    , isAbsolute = !!result[2] || isUnc // UNC paths are always absolute
-
-  return isAbsolute
-}
-
-function absUnix (p) {
-  return p.charAt(0) === "/" || p === ""
+function retry () {
+  var elem = queue.shift()
+  if (elem) {
+    debug('RETRY', elem[0].name, elem[1])
+    elem[0].apply(null, elem[1])
+  }
 }
 
 }).call(this,require('_process'))
-},{"_process":14,"assert":2,"events":9,"graceful-fs":275,"inherits":276,"minimatch":278,"path":13}],275:[function(require,module,exports){
+},{"./fs.js":184,"./legacy-streams.js":186,"./polyfills.js":187,"_process":64,"assert":1,"fs":4,"util":90}],186:[function(require,module,exports){
 (function (process){
-// this keeps a queue of opened file descriptors, and will make
-// fs operations wait until some have closed before trying to open more.
+var Stream = require('stream').Stream
 
-var fs = exports = module.exports = {}
-fs._originalFs = require("fs")
+module.exports = legacy
 
-Object.getOwnPropertyNames(fs._originalFs).forEach(function(prop) {
-  var desc = Object.getOwnPropertyDescriptor(fs._originalFs, prop)
-  Object.defineProperty(fs, prop, desc)
-})
+function legacy (fs) {
+  return {
+    ReadStream: ReadStream,
+    WriteStream: WriteStream
+  }
 
-var queue = []
-  , constants = require("constants")
+  function ReadStream (path, options) {
+    if (!(this instanceof ReadStream)) return new ReadStream(path, options);
 
-fs._curOpen = 0
+    Stream.call(this);
 
-fs.MIN_MAX_OPEN = 64
-fs.MAX_OPEN = 1024
+    var self = this;
 
-// prevent EMFILE errors
-function OpenReq (path, flags, mode, cb) {
+    this.path = path;
+    this.fd = null;
+    this.readable = true;
+    this.paused = false;
+
+    this.flags = 'r';
+    this.mode = 438; /*=0666*/
+    this.bufferSize = 64 * 1024;
+
+    options = options || {};
+
+    // Mixin options into this
+    var keys = Object.keys(options);
+    for (var index = 0, length = keys.length; index < length; index++) {
+      var key = keys[index];
+      this[key] = options[key];
+    }
+
+    if (this.encoding) this.setEncoding(this.encoding);
+
+    if (this.start !== undefined) {
+      if ('number' !== typeof this.start) {
+        throw TypeError('start must be a Number');
+      }
+      if (this.end === undefined) {
+        this.end = Infinity;
+      } else if ('number' !== typeof this.end) {
+        throw TypeError('end must be a Number');
+      }
+
+      if (this.start > this.end) {
+        throw new Error('start must be <= end');
+      }
+
+      this.pos = this.start;
+    }
+
+    if (this.fd !== null) {
+      process.nextTick(function() {
+        self._read();
+      });
+      return;
+    }
+
+    fs.open(this.path, this.flags, this.mode, function (err, fd) {
+      if (err) {
+        self.emit('error', err);
+        self.readable = false;
+        return;
+      }
+
+      self.fd = fd;
+      self.emit('open', fd);
+      self._read();
+    })
+  }
+
+  function WriteStream (path, options) {
+    if (!(this instanceof WriteStream)) return new WriteStream(path, options);
+
+    Stream.call(this);
+
+    this.path = path;
+    this.fd = null;
+    this.writable = true;
+
+    this.flags = 'w';
+    this.encoding = 'binary';
+    this.mode = 438; /*=0666*/
+    this.bytesWritten = 0;
+
+    options = options || {};
+
+    // Mixin options into this
+    var keys = Object.keys(options);
+    for (var index = 0, length = keys.length; index < length; index++) {
+      var key = keys[index];
+      this[key] = options[key];
+    }
+
+    if (this.start !== undefined) {
+      if ('number' !== typeof this.start) {
+        throw TypeError('start must be a Number');
+      }
+      if (this.start < 0) {
+        throw new Error('start must be >= zero');
+      }
+
+      this.pos = this.start;
+    }
+
+    this.busy = false;
+    this._queue = [];
+
+    if (this.fd === null) {
+      this._open = fs.open;
+      this._queue.push([this._open, this.path, this.flags, this.mode, undefined]);
+      this.flush();
+    }
+  }
+}
+
+}).call(this,require('_process'))
+},{"_process":64,"stream":81}],187:[function(require,module,exports){
+(function (process){
+var fs = require('./fs.js')
+var constants = require('constants')
+
+var origCwd = process.cwd
+var cwd = null
+process.cwd = function() {
+  if (!cwd)
+    cwd = origCwd.call(process)
+  return cwd
+}
+try {
+  process.cwd()
+} catch (er) {}
+
+var chdir = process.chdir
+process.chdir = function(d) {
+  cwd = null
+  chdir.call(process, d)
+}
+
+module.exports = patch
+
+function patch (fs) {
+  // (re-)implement some things that are known busted or missing.
+
+  // lchmod, broken prior to 0.6.2
+  // back-port the fix here.
+  if (constants.hasOwnProperty('O_SYMLINK') &&
+      process.version.match(/^v0\.6\.[0-2]|^v0\.5\./)) {
+    patchLchmod(fs)
+  }
+
+  // lutimes implementation, or no-op
+  if (!fs.lutimes) {
+    patchLutimes(fs)
+  }
+
+  // https://github.com/isaacs/node-graceful-fs/issues/4
+  // Chown should not fail on einval or eperm if non-root.
+  // It should not fail on enosys ever, as this just indicates
+  // that a fs doesn't support the intended operation.
+
+  fs.chown = chownFix(fs.chown)
+  fs.fchown = chownFix(fs.fchown)
+  fs.lchown = chownFix(fs.lchown)
+
+  fs.chmod = chownFix(fs.chmod)
+  fs.fchmod = chownFix(fs.fchmod)
+  fs.lchmod = chownFix(fs.lchmod)
+
+  fs.chownSync = chownFixSync(fs.chownSync)
+  fs.fchownSync = chownFixSync(fs.fchownSync)
+  fs.lchownSync = chownFixSync(fs.lchownSync)
+
+  fs.chmodSync = chownFix(fs.chmodSync)
+  fs.fchmodSync = chownFix(fs.fchmodSync)
+  fs.lchmodSync = chownFix(fs.lchmodSync)
+
+  // if lchmod/lchown do not exist, then make them no-ops
+  if (!fs.lchmod) {
+    fs.lchmod = function (path, mode, cb) {
+      process.nextTick(cb)
+    }
+    fs.lchmodSync = function () {}
+  }
+  if (!fs.lchown) {
+    fs.lchown = function (path, uid, gid, cb) {
+      process.nextTick(cb)
+    }
+    fs.lchownSync = function () {}
+  }
+
+  // on Windows, A/V software can lock the directory, causing this
+  // to fail with an EACCES or EPERM if the directory contains newly
+  // created files.  Try again on failure, for up to 1 second.
+  if (process.platform === "win32") {
+    fs.rename = (function (fs$rename) { return function (from, to, cb) {
+      var start = Date.now()
+      fs$rename(from, to, function CB (er) {
+        if (er
+            && (er.code === "EACCES" || er.code === "EPERM")
+            && Date.now() - start < 1000) {
+          return fs$rename(from, to, CB)
+        }
+        if (cb) cb(er)
+      })
+    }})(fs.rename)
+  }
+
+  // if read() returns EAGAIN, then just try it again.
+  fs.read = (function (fs$read) { return function (fd, buffer, offset, length, position, callback_) {
+    var callback
+    if (callback_ && typeof callback_ === 'function') {
+      var eagCounter = 0
+      callback = function (er, _, __) {
+        if (er && er.code === 'EAGAIN' && eagCounter < 10) {
+          eagCounter ++
+          return fs$read.call(fs, fd, buffer, offset, length, position, callback)
+        }
+        callback_.apply(this, arguments)
+      }
+    }
+    return fs$read.call(fs, fd, buffer, offset, length, position, callback)
+  }})(fs.read)
+
+  fs.readSync = (function (fs$readSync) { return function (fd, buffer, offset, length, position) {
+    var eagCounter = 0
+    while (true) {
+      try {
+        return fs$readSync.call(fs, fd, buffer, offset, length, position)
+      } catch (er) {
+        if (er.code === 'EAGAIN' && eagCounter < 10) {
+          eagCounter ++
+          continue
+        }
+        throw er
+      }
+    }
+  }})(fs.readSync)
+}
+
+function patchLchmod (fs) {
+  fs.lchmod = function (path, mode, callback) {
+    callback = callback || noop
+    fs.open( path
+           , constants.O_WRONLY | constants.O_SYMLINK
+           , mode
+           , function (err, fd) {
+      if (err) {
+        callback(err)
+        return
+      }
+      // prefer to return the chmod error, if one occurs,
+      // but still try to close, and report closing errors if they occur.
+      fs.fchmod(fd, mode, function (err) {
+        fs.close(fd, function(err2) {
+          callback(err || err2)
+        })
+      })
+    })
+  }
+
+  fs.lchmodSync = function (path, mode) {
+    var fd = fs.openSync(path, constants.O_WRONLY | constants.O_SYMLINK, mode)
+
+    // prefer to return the chmod error, if one occurs,
+    // but still try to close, and report closing errors if they occur.
+    var threw = true
+    var ret
+    try {
+      ret = fs.fchmodSync(fd, mode)
+      threw = false
+    } finally {
+      if (threw) {
+        try {
+          fs.closeSync(fd)
+        } catch (er) {}
+      } else {
+        fs.closeSync(fd)
+      }
+    }
+    return ret
+  }
+}
+
+function patchLutimes (fs) {
+  if (constants.hasOwnProperty("O_SYMLINK")) {
+    fs.lutimes = function (path, at, mt, cb) {
+      fs.open(path, constants.O_SYMLINK, function (er, fd) {
+        cb = cb || noop
+        if (er) return cb(er)
+        fs.futimes(fd, at, mt, function (er) {
+          fs.close(fd, function (er2) {
+            return cb(er || er2)
+          })
+        })
+      })
+    }
+
+    fs.lutimesSync = function (path, at, mt) {
+      var fd = fs.openSync(path, constants.O_SYMLINK)
+      var ret
+      var threw = true
+      try {
+        ret = fs.futimesSync(fd, at, mt)
+        threw = false
+      } finally {
+        if (threw) {
+          try {
+            fs.closeSync(fd)
+          } catch (er) {}
+        } else {
+          fs.closeSync(fd)
+        }
+      }
+      return ret
+    }
+
+  } else {
+    fs.lutimes = function (_a, _b, _c, cb) { process.nextTick(cb) }
+    fs.lutimesSync = function () {}
+  }
+}
+
+function chownFix (orig) {
+  if (!orig) return orig
+  return function (target, uid, gid, cb) {
+    return orig.call(fs, target, uid, gid, function (er, res) {
+      if (chownErOk(er)) er = null
+      cb(er, res)
+    })
+  }
+}
+
+function chownFixSync (orig) {
+  if (!orig) return orig
+  return function (target, uid, gid) {
+    try {
+      return orig.call(fs, target, uid, gid)
+    } catch (er) {
+      if (!chownErOk(er)) throw er
+    }
+  }
+}
+
+// ENOSYS means that the fs doesn't support the op. Just ignore
+// that, because it doesn't matter.
+//
+// if there's no getuid, or if getuid() is something other
+// than 0, and the error is EINVAL or EPERM, then just ignore
+// it.
+//
+// This specific case is a silent failure in cp, install, tar,
+// and most other unix tools that manage permissions.
+//
+// When running as root, or if other types of errors are
+// encountered, then it's strict.
+function chownErOk (er) {
+  if (!er)
+    return true
+
+  if (er.code === "ENOSYS")
+    return true
+
+  var nonroot = !process.getuid || process.getuid() !== 0
+  if (nonroot) {
+    if (er.code === "EINVAL" || er.code === "EPERM")
+      return true
+  }
+
+  return false
+}
+
+}).call(this,require('_process'))
+},{"./fs.js":184,"_process":64,"constants":10}],188:[function(require,module,exports){
+(function (Buffer){
+'use strict';
+var through = require('through2');
+var fs = require('graceful-fs');
+var path = require('path');
+var File = require('vinyl');
+var convert = require('convert-source-map');
+var stripBom = require('strip-bom');
+
+var PLUGIN_NAME = 'gulp-sourcemap';
+var urlRegex = /^https?:\/\//;
+
+/**
+ * Initialize source mapping chain
+ */
+module.exports.init = function init(options) {
+  function sourceMapInit(file, encoding, callback) {
+    /*jshint validthis:true */
+
+    if (file.isNull()) {
+      this.push(file);
+      return callback();
+    }
+
+    if (file.isStream()) {
+      return callback(new Error(PLUGIN_NAME + '-init: Streaming not supported'));
+    }
+
+    var fileContent = file.contents.toString();
+    var sourceMap;
+
+    if (options && options.loadMaps) {
+      var sourcePath = ''; //root path for the sources in the map
+
+      // Try to read inline source map
+      sourceMap = convert.fromSource(fileContent);
+      if (sourceMap) {
+        sourceMap = sourceMap.toObject();
+        // sources in map are relative to the source file
+        sourcePath = path.dirname(file.path);
+        fileContent = convert.removeComments(fileContent);
+      } else {
+        // look for source map comment referencing a source map file
+        var mapComment = convert.mapFileCommentRegex.exec(fileContent);
+
+        var mapFile;
+        if (mapComment) {
+          mapFile = path.resolve(path.dirname(file.path), mapComment[1] || mapComment[2]);
+          fileContent = convert.removeMapFileComments(fileContent);
+        // if no comment try map file with same name as source file
+        } else {
+          mapFile = file.path + '.map';
+        }
+
+        // sources in external map are relative to map file
+        sourcePath = path.dirname(mapFile);
+
+        try {
+          sourceMap = JSON.parse(stripBom(fs.readFileSync(mapFile, 'utf8')));
+        } catch(e) {}
+      }
+
+      // fix source paths and sourceContent for imported source map
+      if (sourceMap) {
+        sourceMap.sourcesContent = sourceMap.sourcesContent || [];
+        sourceMap.sources.forEach(function(source, i) {
+          if (source.match(urlRegex)) {
+            sourceMap.sourcesContent[i] = sourceMap.sourcesContent[i] || null;
+            return;
+          }
+          var absPath = path.resolve(sourcePath, source);
+          sourceMap.sources[i] = unixStylePath(path.relative(file.base, absPath));
+
+          if (!sourceMap.sourcesContent[i]) {
+            var sourceContent = null;
+            if (sourceMap.sourceRoot) {
+              if (sourceMap.sourceRoot.match(urlRegex)) {
+                sourceMap.sourcesContent[i] = null;
+                return;
+              }
+              absPath = path.resolve(sourcePath, sourceMap.sourceRoot, source);
+            }
+
+            // if current file: use content
+            if (absPath === file.path) {
+              sourceContent = fileContent;
+
+            // else load content from file
+            } else {
+              try {
+                if (options.debug)
+                  console.log(PLUGIN_NAME + '-init: No source content for "' + source + '". Loading from file.');
+                sourceContent = stripBom(fs.readFileSync(absPath, 'utf8'));
+              } catch (e) {
+                if (options.debug)
+                  console.warn(PLUGIN_NAME + '-init: source file not found: ' + absPath);
+              }
+            }
+            sourceMap.sourcesContent[i] = sourceContent;
+          }
+        });
+
+        // remove source map comment from source
+        file.contents = new Buffer(fileContent, 'utf8');
+      }
+    }
+
+    if (!sourceMap) {
+      // Make an empty source map
+      sourceMap = {
+        version : 3,
+        names: [],
+        mappings: '',
+        sources: [unixStylePath(file.relative)],
+        sourcesContent: [fileContent]
+      };
+    }
+
+    sourceMap.file = unixStylePath(file.relative);
+    file.sourceMap = sourceMap;
+
+    this.push(file);
+    callback();
+  }
+
+  return through.obj(sourceMapInit);
+};
+
+/**
+ * Write the source map
+ *
+ * @param options options to change the way the source map is written
+ *
+ */
+module.exports.write = function write(destPath, options) {
+  if (options === undefined && Object.prototype.toString.call(destPath) === '[object Object]') {
+    options = destPath;
+    destPath = undefined;
+  }
+  options = options || {};
+
+  // set defaults for options if unset
+  if (options.includeContent === undefined)
+    options.includeContent = true;
+  if (options.addComment === undefined)
+    options.addComment = true;
+
+  function sourceMapWrite(file, encoding, callback) {
+    /*jshint validthis:true */
+
+    if (file.isNull() || !file.sourceMap) {
+      this.push(file);
+      return callback();
+    }
+
+    if (file.isStream()) {
+      return callback(new Error(PLUGIN_NAME + '-write: Streaming not supported'));
+    }
+
+    var sourceMap = file.sourceMap;
+    // fix paths if Windows style paths
+    sourceMap.file = unixStylePath(file.relative);
+    sourceMap.sources = sourceMap.sources.map(function(filePath) {
+      return unixStylePath(filePath);
+    });
+
+    if (options.sourceRoot) {
+      if (typeof options.sourceRoot === 'function') {
+        sourceMap.sourceRoot = options.sourceRoot(file);
+      } else {
+        sourceMap.sourceRoot = options.sourceRoot;
+      }
+    }
+
+    if (options.includeContent) {
+      sourceMap.sourcesContent = sourceMap.sourcesContent || [];
+
+      // load missing source content
+      for (var i = 0; i < file.sourceMap.sources.length; i++) {
+        if (!sourceMap.sourcesContent[i]) {
+          var sourcePath = path.resolve(sourceMap.sourceRoot || file.base, sourceMap.sources[i]);
+          try {
+            if (options.debug)
+              console.log(PLUGIN_NAME + '-write: No source content for "' + sourceMap.sources[i] + '". Loading from file.');
+            sourceMap.sourcesContent[i] = stripBom(fs.readFileSync(sourcePath, 'utf8'));
+          } catch (e) {
+            if (options.debug)
+              console.warn(PLUGIN_NAME + '-write: source file not found: ' + sourcePath);
+          }
+        }
+      }
+      sourceMap.sourceRoot = sourceMap.sourceRoot || '/source/';
+    } else {
+      delete sourceMap.sourcesContent;
+    }
+
+    var extension = file.relative.split('.').pop();
+    var commentFormatter;
+
+    switch (extension) {
+      case 'css':
+        commentFormatter = function(url) { return "\n/*# sourceMappingURL=" + url + " */"; };
+        break;
+      case 'js':
+        commentFormatter = function(url) { return "\n//# sourceMappingURL=" + url; };
+        break;
+      default:
+        commentFormatter = function(url) { return ""; };
+    }
+
+    var comment, sourceMappingURLPrefix;
+    if (!destPath) {
+      // encode source map into comment
+      var base64Map = new Buffer(JSON.stringify(sourceMap)).toString('base64');
+      comment = commentFormatter('data:application/json;base64,' + base64Map);
+    } else {
+      // add new source map file to stream
+      var sourceMapFile = new File({
+        cwd: file.cwd,
+        base: file.base,
+        path: path.join(file.base, destPath, file.relative) + '.map',
+        contents: new Buffer(JSON.stringify(sourceMap))
+      });
+      this.push(sourceMapFile);
+
+      comment = commentFormatter(unixStylePath(path.join(path.relative(path.dirname(file.path), file.base), destPath, file.relative) + '.map'));
+
+      if (options.sourceMappingURLPrefix) {
+        if (typeof options.sourceMappingURLPrefix === 'function') {
+          sourceMappingURLPrefix = options.sourceMappingURLPrefix(file);
+        } else {
+          sourceMappingURLPrefix = options.sourceMappingURLPrefix;
+        }
+        comment = comment.replace(/sourceMappingURL=\.*/, 'sourceMappingURL=' + sourceMappingURLPrefix);
+      }
+    }
+
+    // append source map comment
+    if (options.addComment)
+      file.contents = Buffer.concat([file.contents, new Buffer(comment)]);
+
+    this.push(file);
+    callback();
+  }
+
+  return through.obj(sourceMapWrite);
+};
+
+function unixStylePath(filePath) {
+  return filePath.split(path.sep).join('/');
+}
+
+}).call(this,require("buffer").Buffer)
+},{"buffer":6,"convert-source-map":189,"graceful-fs":191,"path":62,"strip-bom":193,"through2":206,"vinyl":207}],189:[function(require,module,exports){
+(function (Buffer){
+'use strict';
+var fs = require('fs');
+var path = require('path');
+
+var commentRx = /^\s*\/(?:\/|\*)[@#]\s+sourceMappingURL=data:(?:application|text)\/json;(?:charset[:=]\S+;)?base64,(.*)$/mg;
+var mapFileCommentRx =
+  // //# sourceMappingURL=foo.js.map                       
+  /(?:\/\/[@#][ \t]+sourceMappingURL=([^\s'"]+?)[ \t]*$)|(?:\/\*[@#][ \t]+sourceMappingURL=([^\*]+?)[ \t]*(?:\*\/){1}[ \t]*$)/mg
+
+function decodeBase64(base64) {
+  return new Buffer(base64, 'base64').toString();
+}
+
+function stripComment(sm) {
+  return sm.split(',').pop();
+}
+
+function readFromFileMap(sm, dir) {
+  // NOTE: this will only work on the server since it attempts to read the map file
+
+  var r = mapFileCommentRx.exec(sm);
+  mapFileCommentRx.lastIndex = 0;
+  
+  // for some odd reason //# .. captures in 1 and /* .. */ in 2
+  var filename = r[1] || r[2];
+  var filepath = path.join(dir, filename);
+
+  try {
+    return fs.readFileSync(filepath, 'utf8');
+  } catch (e) {
+    throw new Error('An error occurred while trying to read the map file at ' + filepath + '\n' + e);
+  }
+}
+
+function Converter (sm, opts) {
+  opts = opts || {};
+
+  if (opts.isFileComment) sm = readFromFileMap(sm, opts.commentFileDir);
+  if (opts.hasComment) sm = stripComment(sm);
+  if (opts.isEncoded) sm = decodeBase64(sm);
+  if (opts.isJSON || opts.isEncoded) sm = JSON.parse(sm);
+
+  this.sourcemap = sm;
+}
+
+function convertFromLargeSource(content){
+  var lines = content.split('\n');
+  var line;
+  // find first line which contains a source map starting at end of content 
+  for (var i = lines.length - 1; i > 0; i--) {
+    line = lines[i]
+    if (~line.indexOf('sourceMappingURL=data:')) return exports.fromComment(line);
+  }
+}
+
+Converter.prototype.toJSON = function (space) {
+  return JSON.stringify(this.sourcemap, null, space);
+};
+
+Converter.prototype.toBase64 = function () {
+  var json = this.toJSON();
+  return new Buffer(json).toString('base64');
+};
+
+Converter.prototype.toComment = function (options) {
+  var base64 = this.toBase64();
+  var data = 'sourceMappingURL=data:application/json;base64,' + base64;
+  return options && options.multiline ? '/*# ' + data + ' */' : '//# ' + data;
+};
+
+// returns copy instead of original
+Converter.prototype.toObject = function () {
+  return JSON.parse(this.toJSON());
+};
+
+Converter.prototype.addProperty = function (key, value) {
+  if (this.sourcemap.hasOwnProperty(key)) throw new Error('property %s already exists on the sourcemap, use set property instead');
+  return this.setProperty(key, value);
+};
+
+Converter.prototype.setProperty = function (key, value) {
+  this.sourcemap[key] = value;
+  return this;
+};
+
+Converter.prototype.getProperty = function (key) {
+  return this.sourcemap[key];
+};
+
+exports.fromObject = function (obj) {
+  return new Converter(obj);
+};
+
+exports.fromJSON = function (json) {
+  return new Converter(json, { isJSON: true });
+};
+
+exports.fromBase64 = function (base64) {
+  return new Converter(base64, { isEncoded: true });
+};
+
+exports.fromComment = function (comment) {
+  comment = comment
+    .replace(/^\/\*/g, '//')
+    .replace(/\*\/$/g, '');
+
+  return new Converter(comment, { isEncoded: true, hasComment: true });
+};
+
+exports.fromMapFileComment = function (comment, dir) {
+  return new Converter(comment, { commentFileDir: dir, isFileComment: true, isJSON: true });
+};
+
+// Finds last sourcemap comment in file or returns null if none was found
+exports.fromSource = function (content, largeSource) {
+  if (largeSource) return convertFromLargeSource(content);
+
+  var m = content.match(commentRx);
+  commentRx.lastIndex = 0;
+  return m ? exports.fromComment(m.pop()) : null;
+};
+
+// Finds last sourcemap comment in file or returns null if none was found
+exports.fromMapFileSource = function (content, dir) {
+  var m = content.match(mapFileCommentRx);
+  mapFileCommentRx.lastIndex = 0;
+  return m ? exports.fromMapFileComment(m.pop(), dir) : null;
+};
+
+exports.removeComments = function (src) {
+  commentRx.lastIndex = 0;
+  return src.replace(commentRx, '');
+};
+
+exports.removeMapFileComments = function (src) {
+  mapFileCommentRx.lastIndex = 0;
+  return src.replace(mapFileCommentRx, '');
+};
+
+Object.defineProperty(exports, 'commentRegex', {
+  get: function getCommentRegex () {
+    commentRx.lastIndex = 0;
+    return commentRx;
+  }
+});
+
+Object.defineProperty(exports, 'mapFileCommentRegex', {
+  get: function getMapFileCommentRegex () {
+    mapFileCommentRx.lastIndex = 0;
+    return mapFileCommentRx;
+  }
+});
+
+}).call(this,require("buffer").Buffer)
+},{"buffer":6,"fs":4,"path":62}],190:[function(require,module,exports){
+(function (process,__filename,__dirname){
+// eeeeeevvvvviiiiiiillllll
+// more evil than monkey-patching the native builtin?
+// Not sure.
+
+var mod = require("module")
+var pre = '(function (exports, require, module, __filename, __dirname) { '
+var post = '});'
+var src = pre + process.binding('natives').fs + post
+var vm = require('vm')
+var fn = vm.runInThisContext(src)
+fn(exports, require, module, __filename, __dirname)
+
+}).call(this,require('_process'),"/../vinyl-fs/node_modules/gulp-sourcemaps/node_modules/graceful-fs/fs.js","/../vinyl-fs/node_modules/gulp-sourcemaps/node_modules/graceful-fs")
+},{"_process":64,"module":4,"vm":102}],191:[function(require,module,exports){
+(function (process){
+// Monkey-patching the fs module.
+// It's ugly, but there is simply no other way to do this.
+var fs = module.exports = require('./fs.js')
+
+var assert = require('assert')
+
+// fix up some busted stuff, mostly on windows and old nodes
+require('./polyfills.js')
+
+var util = require('util')
+
+function noop () {}
+
+var debug = noop
+if (util.debuglog)
+  debug = util.debuglog('gfs')
+else if (/\bgfs\b/i.test(process.env.NODE_DEBUG || ''))
+  debug = function() {
+    var m = util.format.apply(util, arguments)
+    m = 'GFS: ' + m.split(/\n/).join('\nGFS: ')
+    console.error(m)
+  }
+
+if (/\bgfs\b/i.test(process.env.NODE_DEBUG || '')) {
+  process.on('exit', function() {
+    debug('fds', fds)
+    debug(queue)
+    assert.equal(queue.length, 0)
+  })
+}
+
+
+var originalOpen = fs.open
+fs.open = open
+
+function open(path, flags, mode, cb) {
+  if (typeof mode === "function") cb = mode, mode = null
+  if (typeof cb !== "function") cb = noop
+  new OpenReq(path, flags, mode, cb)
+}
+
+function OpenReq(path, flags, mode, cb) {
   this.path = path
   this.flags = flags
   this.mode = mode
   this.cb = cb
+  Req.call(this)
 }
 
-function noop () {}
+util.inherits(OpenReq, Req)
 
-fs.open = gracefulOpen
+OpenReq.prototype.process = function() {
+  originalOpen.call(fs, this.path, this.flags, this.mode, this.done)
+}
 
-function gracefulOpen (path, flags, mode, cb) {
-  if (typeof mode === "function") cb = mode, mode = null
+var fds = {}
+OpenReq.prototype.done = function(er, fd) {
+  debug('open done', er, fd)
+  if (fd)
+    fds['fd' + fd] = this.path
+  Req.prototype.done.call(this, er, fd)
+}
+
+
+var originalReaddir = fs.readdir
+fs.readdir = readdir
+
+function readdir(path, cb) {
   if (typeof cb !== "function") cb = noop
-
-  if (fs._curOpen >= fs.MAX_OPEN) {
-    queue.push(new OpenReq(path, flags, mode, cb))
-    setTimeout(flush)
-    return
-  }
-  open(path, flags, mode, function (er, fd) {
-    if (er && er.code === "EMFILE" && fs._curOpen > fs.MIN_MAX_OPEN) {
-      // that was too many.  reduce max, get back in queue.
-      // this should only happen once in a great while, and only
-      // if the ulimit -n is set lower than 1024.
-      fs.MAX_OPEN = fs._curOpen - 1
-      return fs.open(path, flags, mode, cb)
-    }
-    cb(er, fd)
-  })
+  new ReaddirReq(path, cb)
 }
 
-function open (path, flags, mode, cb) {
-  cb = cb || noop
-  fs._curOpen ++
-  fs._originalFs.open.call(fs, path, flags, mode, function (er, fd) {
-    if (er) onclose()
-    cb(er, fd)
-  })
+function ReaddirReq(path, cb) {
+  this.path = path
+  this.cb = cb
+  Req.call(this)
 }
 
-fs.openSync = function (path, flags, mode) {
-  var ret
-  ret = fs._originalFs.openSync.call(fs, path, flags, mode)
-  fs._curOpen ++
-  return ret
+util.inherits(ReaddirReq, Req)
+
+ReaddirReq.prototype.process = function() {
+  originalReaddir.call(fs, this.path, this.done)
 }
 
-function onclose () {
-  fs._curOpen --
-  flush()
+ReaddirReq.prototype.done = function(er, files) {
+  if (files && files.sort)
+    files = files.sort()
+  Req.prototype.done.call(this, er, files)
+  onclose()
 }
 
-function flush () {
-  while (fs._curOpen < fs.MAX_OPEN) {
-    var req = queue.shift()
-    if (!req) return
-    switch (req.constructor.name) {
-      case 'OpenReq':
-        open(req.path, req.flags || "r", req.mode || 0777, req.cb)
-        break
-      case 'ReaddirReq':
-        readdir(req.path, req.cb)
-        break
-      case 'ReadFileReq':
-        readFile(req.path, req.options, req.cb)
-        break
-      case 'WriteFileReq':
-        writeFile(req.path, req.data, req.options, req.cb)
-        break
-      default:
-        throw new Error('Unknown req type: ' + req.constructor.name)
-    }
-  }
-}
 
-fs.close = function (fd, cb) {
-  cb = cb || noop
-  fs._originalFs.close.call(fs, fd, function (er) {
+var originalClose = fs.close
+fs.close = close
+
+function close (fd, cb) {
+  debug('close', fd)
+  if (typeof cb !== "function") cb = noop
+  delete fds['fd' + fd]
+  originalClose.call(fs, fd, function(er) {
     onclose()
     cb(er)
   })
 }
 
-fs.closeSync = function (fd) {
+
+var originalCloseSync = fs.closeSync
+fs.closeSync = closeSync
+
+function closeSync (fd) {
   try {
-    return fs._originalFs.closeSync.call(fs, fd)
+    return originalCloseSync(fd)
   } finally {
     onclose()
   }
 }
 
 
-// readdir takes a fd as well.
-// however, the sync version closes it right away, so
-// there's no need to wrap.
-// It would be nice to catch when it throws an EMFILE,
-// but that's relatively rare anyway.
+// Req class
+function Req () {
+  // start processing
+  this.done = this.done.bind(this)
+  this.failures = 0
+  this.process()
+}
 
-fs.readdir = gracefulReaddir
-
-function gracefulReaddir (path, cb) {
-  if (fs._curOpen >= fs.MAX_OPEN) {
-    queue.push(new ReaddirReq(path, cb))
-    setTimeout(flush)
-    return
+Req.prototype.done = function (er, result) {
+  var tryAgain = false
+  if (er) {
+    var code = er.code
+    var tryAgain = code === "EMFILE" || code === "ENFILE"
+    if (process.platform === "win32")
+      tryAgain = tryAgain || code === "OK"
   }
 
-  readdir(path, function (er, files) {
-    if (er && er.code === "EMFILE" && fs._curOpen > fs.MIN_MAX_OPEN) {
-      fs.MAX_OPEN = fs._curOpen - 1
-      return fs.readdir(path, cb)
-    }
-    cb(er, files)
-  })
-}
-
-function readdir (path, cb) {
-  cb = cb || noop
-  fs._curOpen ++
-  fs._originalFs.readdir.call(fs, path, function (er, files) {
-    onclose()
-    cb(er, files)
-  })
-}
-
-function ReaddirReq (path, cb) {
-  this.path = path
-  this.cb = cb
-}
-
-
-fs.readFile = gracefulReadFile
-
-function gracefulReadFile(path, options, cb) {
-  if (typeof options === "function") cb = options, options = null
-  if (typeof cb !== "function") cb = noop
-
-  if (fs._curOpen >= fs.MAX_OPEN) {
-    queue.push(new ReadFileReq(path, options, cb))
-    setTimeout(flush)
-    return
+  if (tryAgain) {
+    this.failures ++
+    enqueue(this)
+  } else {
+    var cb = this.cb
+    cb(er, result)
   }
-
-  readFile(path, options, function (er, data) {
-    if (er && er.code === "EMFILE" && fs._curOpen > fs.MIN_MAX_OPEN) {
-      fs.MAX_OPEN = fs._curOpen - 1
-      return fs.readFile(path, options, cb)
-    }
-    cb(er, data)
-  })
 }
 
-function readFile (path, options, cb) {
-  cb = cb || noop
-  fs._curOpen ++
-  fs._originalFs.readFile.call(fs, path, options, function (er, data) {
-    onclose()
-    cb(er, data)
-  })
+var queue = []
+
+function enqueue(req) {
+  queue.push(req)
+  debug('enqueue %d %s', queue.length, req.constructor.name, req)
 }
 
-function ReadFileReq (path, options, cb) {
-  this.path = path
-  this.options = options
-  this.cb = cb
-}
-
-
-
-
-fs.writeFile = gracefulWriteFile
-
-function gracefulWriteFile(path, data, options, cb) {
-  if (typeof options === "function") cb = options, options = null
-  if (typeof cb !== "function") cb = noop
-
-  if (fs._curOpen >= fs.MAX_OPEN) {
-    queue.push(new WriteFileReq(path, data, options, cb))
-    setTimeout(flush)
-    return
+function onclose() {
+  var req = queue.shift()
+  if (req) {
+    debug('process', req.constructor.name, req)
+    req.process()
   }
-
-  writeFile(path, data, options, function (er) {
-    if (er && er.code === "EMFILE" && fs._curOpen > fs.MIN_MAX_OPEN) {
-      fs.MAX_OPEN = fs._curOpen - 1
-      return fs.writeFile(path, data, options, cb)
-    }
-    cb(er)
-  })
 }
 
-function writeFile (path, data, options, cb) {
-  cb = cb || noop
-  fs._curOpen ++
-  fs._originalFs.writeFile.call(fs, path, data, options, function (er) {
-    onclose()
-    cb(er)
-  })
-}
+}).call(this,require('_process'))
+},{"./fs.js":190,"./polyfills.js":192,"_process":64,"assert":1,"util":90}],192:[function(require,module,exports){
+(function (process){
+var fs = require('./fs.js')
+var constants = require('constants')
 
-function WriteFileReq (path, data, options, cb) {
-  this.path = path
-  this.data = data
-  this.options = options
-  this.cb = cb
+var origCwd = process.cwd
+var cwd = null
+process.cwd = function() {
+  if (!cwd)
+    cwd = origCwd.call(process)
+  return cwd
 }
-
+var chdir = process.chdir
+process.chdir = function(d) {
+  cwd = null
+  chdir.call(process, d)
+}
 
 // (re-)implement some things that are known busted or missing.
-
-var constants = require("constants")
 
 // lchmod, broken prior to 0.6.2
 // back-port the fix here.
@@ -20168,14 +21311,24 @@ if (!fs.lutimes) {
 
 // https://github.com/isaacs/node-graceful-fs/issues/4
 // Chown should not fail on einval or eperm if non-root.
+// It should not fail on enosys ever, as this just indicates
+// that a fs doesn't support the intended operation.
 
 fs.chown = chownFix(fs.chown)
 fs.fchown = chownFix(fs.fchown)
 fs.lchown = chownFix(fs.lchown)
 
+fs.chmod = chownFix(fs.chmod)
+fs.fchmod = chownFix(fs.fchmod)
+fs.lchmod = chownFix(fs.lchmod)
+
 fs.chownSync = chownFixSync(fs.chownSync)
 fs.fchownSync = chownFixSync(fs.fchownSync)
 fs.lchownSync = chownFixSync(fs.lchownSync)
+
+fs.chmodSync = chownFix(fs.chmodSync)
+fs.fchmodSync = chownFix(fs.fchmodSync)
+fs.lchmodSync = chownFix(fs.lchmodSync)
 
 function chownFix (orig) {
   if (!orig) return orig
@@ -20198,15 +21351,32 @@ function chownFixSync (orig) {
   }
 }
 
+// ENOSYS means that the fs doesn't support the op. Just ignore
+// that, because it doesn't matter.
+//
+// if there's no getuid, or if getuid() is something other
+// than 0, and the error is EINVAL or EPERM, then just ignore
+// it.
+//
+// This specific case is a silent failure in cp, install, tar,
+// and most other unix tools that manage permissions.
+//
+// When running as root, or if other types of errors are
+// encountered, then it's strict.
 function chownErOk (er) {
-  // if there's no getuid, or if getuid() is something other than 0,
-  // and the error is EINVAL or EPERM, then just ignore it.
-  // This specific case is a silent failure in cp, install, tar,
-  // and most other unix tools that manage permissions.
-  // When running as root, or if other types of errors are encountered,
-  // then it's strict.
-  if (!er || (!process.getuid || process.getuid() !== 0)
-      && (er.code === "EINVAL" || er.code === "EPERM")) return true
+  if (!er)
+    return true
+
+  if (er.code === "ENOSYS")
+    return true
+
+  var nonroot = !process.getuid || process.getuid() !== 0
+  if (nonroot) {
+    if (er.code === "EINVAL" || er.code === "EPERM")
+      return true
+  }
+
+  return false
 }
 
 
@@ -20239,7 +21409,7 @@ if (process.platform === "win32") {
           && Date.now() - start < 1000) {
         return rename_(from, to, CB)
       }
-      cb(er)
+      if(cb) cb(er)
     })
   }
 }
@@ -20278,7053 +21448,139 @@ fs.readSync = function (fd, buffer, offset, length, position) {
   }
 }
 
-}).call(this,require('_process'))
-},{"_process":14,"constants":8,"fs":1}],276:[function(require,module,exports){
-arguments[4][10][0].apply(exports,arguments)
-},{"dup":10}],277:[function(require,module,exports){
-(function (global){
-/**
- * @license
- * Lo-Dash 1.0.2 (Custom Build) <http://lodash.com/>
- * Build: `lodash modern -o ./dist/lodash.js`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.4.4 <http://underscorejs.org/>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud Inc.
- * Available under MIT license <http://lodash.com/license>
- */
-;(function(window, undefined) {
-
-  /** Detect free variable `exports` */
-  var freeExports = typeof exports == 'object' && exports;
-
-  /** Detect free variable `module` */
-  var freeModule = typeof module == 'object' && module && module.exports == freeExports && module;
-
-  /** Detect free variable `global` and use it as `window` */
-  var freeGlobal = typeof global == 'object' && global;
-  if (freeGlobal.global === freeGlobal) {
-    window = freeGlobal;
-  }
-
-  /** Used for array and object method references */
-  var arrayRef = [],
-      objectRef = {};
-
-  /** Used to generate unique IDs */
-  var idCounter = 0;
-
-  /** Used internally to indicate various things */
-  var indicatorObject = objectRef;
-
-  /** Used by `cachedContains` as the default size when optimizations are enabled for large arrays */
-  var largeArraySize = 30;
-
-  /** Used to restore the original `_` reference in `noConflict` */
-  var oldDash = window._;
-
-  /** Used to match HTML entities */
-  var reEscapedHtml = /&(?:amp|lt|gt|quot|#39);/g;
-
-  /** Used to match empty string literals in compiled template source */
-  var reEmptyStringLeading = /\b__p \+= '';/g,
-      reEmptyStringMiddle = /\b(__p \+=) '' \+/g,
-      reEmptyStringTrailing = /(__e\(.*?\)|\b__t\)) \+\n'';/g;
-
-  /** Used to match regexp flags from their coerced string values */
-  var reFlags = /\w*$/;
-
-  /** Used to detect if a method is native */
-  var reNative = RegExp('^' +
-    (objectRef.valueOf + '')
-      .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      .replace(/valueOf|for [^\]]+/g, '.+?') + '$'
-  );
-
-  /**
-   * Used to match ES6 template delimiters
-   * http://people.mozilla.org/~jorendorff/es6-draft.html#sec-7.8.6
-   */
-  var reEsTemplate = /\$\{([^\\}]*(?:\\.[^\\}]*)*)\}/g;
-
-  /** Used to match "interpolate" template delimiters */
-  var reInterpolate = /<%=([\s\S]+?)%>/g;
-
-  /** Used to ensure capturing order of template delimiters */
-  var reNoMatch = /($^)/;
-
-  /** Used to match HTML characters */
-  var reUnescapedHtml = /[&<>"']/g;
-
-  /** Used to match unescaped characters in compiled string literals */
-  var reUnescapedString = /['\n\r\t\u2028\u2029\\]/g;
-
-  /** Used to make template sourceURLs easier to identify */
-  var templateCounter = 0;
-
-  /** Native method shortcuts */
-  var ceil = Math.ceil,
-      concat = arrayRef.concat,
-      floor = Math.floor,
-      getPrototypeOf = reNative.test(getPrototypeOf = Object.getPrototypeOf) && getPrototypeOf,
-      hasOwnProperty = objectRef.hasOwnProperty,
-      push = arrayRef.push,
-      toString = objectRef.toString;
-
-  /* Native method shortcuts for methods with the same name as other `lodash` methods */
-  var nativeBind = reNative.test(nativeBind = slice.bind) && nativeBind,
-      nativeIsArray = reNative.test(nativeIsArray = Array.isArray) && nativeIsArray,
-      nativeIsFinite = window.isFinite,
-      nativeIsNaN = window.isNaN,
-      nativeKeys = reNative.test(nativeKeys = Object.keys) && nativeKeys,
-      nativeMax = Math.max,
-      nativeMin = Math.min,
-      nativeRandom = Math.random;
-
-  /** `Object#toString` result shortcuts */
-  var argsClass = '[object Arguments]',
-      arrayClass = '[object Array]',
-      boolClass = '[object Boolean]',
-      dateClass = '[object Date]',
-      funcClass = '[object Function]',
-      numberClass = '[object Number]',
-      objectClass = '[object Object]',
-      regexpClass = '[object RegExp]',
-      stringClass = '[object String]';
-
-  /** Detect various environments */
-  var isIeOpera = !!window.attachEvent,
-      isV8 = nativeBind && !/\n|true/.test(nativeBind + isIeOpera);
-
-  /* Detect if `Function#bind` exists and is inferred to be fast (all but V8) */
-  var isBindFast = nativeBind && !isV8;
-
-  /* Detect if `Object.keys` exists and is inferred to be fast (IE, Opera, V8) */
-  var isKeysFast = nativeKeys && (isIeOpera || isV8);
-
-  /** Used to identify object classifications that `_.clone` supports */
-  var cloneableClasses = {};
-  cloneableClasses[funcClass] = false;
-  cloneableClasses[argsClass] = cloneableClasses[arrayClass] =
-  cloneableClasses[boolClass] = cloneableClasses[dateClass] =
-  cloneableClasses[numberClass] = cloneableClasses[objectClass] =
-  cloneableClasses[regexpClass] = cloneableClasses[stringClass] = true;
-
-  /** Used to lookup a built-in constructor by [[Class]] */
-  var ctorByClass = {};
-  ctorByClass[arrayClass] = Array;
-  ctorByClass[boolClass] = Boolean;
-  ctorByClass[dateClass] = Date;
-  ctorByClass[objectClass] = Object;
-  ctorByClass[numberClass] = Number;
-  ctorByClass[regexpClass] = RegExp;
-  ctorByClass[stringClass] = String;
-
-  /** Used to determine if values are of the language type Object */
-  var objectTypes = {
-    'boolean': false,
-    'function': true,
-    'object': true,
-    'number': false,
-    'string': false,
-    'undefined': false
-  };
-
-  /** Used to escape characters for inclusion in compiled string literals */
-  var stringEscapes = {
-    '\\': '\\',
-    "'": "'",
-    '\n': 'n',
-    '\r': 'r',
-    '\t': 't',
-    '\u2028': 'u2028',
-    '\u2029': 'u2029'
-  };
-
-  /*--------------------------------------------------------------------------*/
-
-  /**
-   * Creates a `lodash` object, that wraps the given `value`, to enable method
-   * chaining.
-   *
-   * In addition to Lo-Dash methods, wrappers also have the following `Array` methods:
-   * `concat`, `join`, `pop`, `push`, `reverse`, `shift`, `slice`, `sort`, `splice`,
-   * and `unshift`
-   *
-   * The chainable wrapper functions are:
-   * `after`, `assign`, `bind`, `bindAll`, `bindKey`, `chain`, `compact`, `compose`,
-   * `concat`, `countBy`, `debounce`, `defaults`, `defer`, `delay`, `difference`,
-   * `filter`, `flatten`, `forEach`, `forIn`, `forOwn`, `functions`, `groupBy`,
-   * `initial`, `intersection`, `invert`, `invoke`, `keys`, `map`, `max`, `memoize`,
-   * `merge`, `min`, `object`, `omit`, `once`, `pairs`, `partial`, `partialRight`,
-   * `pick`, `pluck`, `push`, `range`, `reject`, `rest`, `reverse`, `shuffle`,
-   * `slice`, `sort`, `sortBy`, `splice`, `tap`, `throttle`, `times`, `toArray`,
-   * `union`, `uniq`, `unshift`, `values`, `where`, `without`, `wrap`, and `zip`
-   *
-   * The non-chainable wrapper functions are:
-   * `clone`, `cloneDeep`, `contains`, `escape`, `every`, `find`, `has`, `identity`,
-   * `indexOf`, `isArguments`, `isArray`, `isBoolean`, `isDate`, `isElement`, `isEmpty`,
-   * `isEqual`, `isFinite`, `isFunction`, `isNaN`, `isNull`, `isNumber`, `isObject`,
-   * `isPlainObject`, `isRegExp`, `isString`, `isUndefined`, `join`, `lastIndexOf`,
-   * `mixin`, `noConflict`, `pop`, `random`, `reduce`, `reduceRight`, `result`,
-   * `shift`, `size`, `some`, `sortedIndex`, `template`, `unescape`, and `uniqueId`
-   *
-   * The wrapper functions `first` and `last` return wrapped values when `n` is
-   * passed, otherwise they return unwrapped values.
-   *
-   * @name _
-   * @constructor
-   * @category Chaining
-   * @param {Mixed} value The value to wrap in a `lodash` instance.
-   * @returns {Object} Returns a `lodash` instance.
-   */
-  function lodash(value) {
-    // exit early if already wrapped, even if wrapped by a different `lodash` constructor
-    if (value && typeof value == 'object' && value.__wrapped__) {
-      return value;
-    }
-    // allow invoking `lodash` without the `new` operator
-    if (!(this instanceof lodash)) {
-      return new lodash(value);
-    }
-    this.__wrapped__ = value;
-  }
-
-  /**
-   * By default, the template delimiters used by Lo-Dash are similar to those in
-   * embedded Ruby (ERB). Change the following template settings to use alternative
-   * delimiters.
-   *
-   * @static
-   * @memberOf _
-   * @type Object
-   */
-  lodash.templateSettings = {
-
-    /**
-     * Used to detect `data` property values to be HTML-escaped.
-     *
-     * @memberOf _.templateSettings
-     * @type RegExp
-     */
-    'escape': /<%-([\s\S]+?)%>/g,
-
-    /**
-     * Used to detect code to be evaluated.
-     *
-     * @memberOf _.templateSettings
-     * @type RegExp
-     */
-    'evaluate': /<%([\s\S]+?)%>/g,
-
-    /**
-     * Used to detect `data` property values to inject.
-     *
-     * @memberOf _.templateSettings
-     * @type RegExp
-     */
-    'interpolate': reInterpolate,
-
-    /**
-     * Used to reference the data object in the template text.
-     *
-     * @memberOf _.templateSettings
-     * @type String
-     */
-    'variable': '',
-
-    /**
-     * Used to import variables into the compiled template.
-     *
-     * @memberOf _.templateSettings
-     * @type Object
-     */
-    'imports': {
-
-      /**
-       * A reference to the `lodash` function.
-       *
-       * @memberOf _.templateSettings.imports
-       * @type Function
-       */
-      '_': lodash
-    }
-  };
-
-  /*--------------------------------------------------------------------------*/
-
-  /**
-   * The template used to create iterator functions.
-   *
-   * @private
-   * @param {Obect} data The data object used to populate the text.
-   * @returns {String} Returns the interpolated text.
-   */
-  var iteratorTemplate = function(obj) {
-    
-    var __p = 'var index, iterable = ' +
-    (obj.firstArg ) +
-    ', result = iterable;\nif (!iterable) return result;\n' +
-    (obj.top ) +
-    ';\n';
-     if (obj.arrays) {
-    __p += 'var length = iterable.length; index = -1;\nif (' +
-    (obj.arrays ) +
-    ') {\n  while (++index < length) {\n    ' +
-    (obj.loop ) +
-    '\n  }\n}\nelse {  ';
-     } ;
-    
-     if (obj.isKeysFast && obj.useHas) {
-    __p += '\n  var ownIndex = -1,\n      ownProps = objectTypes[typeof iterable] ? nativeKeys(iterable) : [],\n      length = ownProps.length;\n\n  while (++ownIndex < length) {\n    index = ownProps[ownIndex];\n    ' +
-    (obj.loop ) +
-    '\n  }  ';
-     } else {
-    __p += '\n  for (index in iterable) {';
-        if (obj.useHas) {
-    __p += '\n    if (';
-          if (obj.useHas) {
-    __p += 'hasOwnProperty.call(iterable, index)';
-     }    ;
-    __p += ') {    ';
-     } ;
-    __p += 
-    (obj.loop ) +
-    ';    ';
-     if (obj.useHas) {
-    __p += '\n    }';
-     } ;
-    __p += '\n  }  ';
-     } ;
-    
-     if (obj.arrays) {
-    __p += '\n}';
-     } ;
-    __p += 
-    (obj.bottom ) +
-    ';\nreturn result';
-    
-    
-    return __p
-  };
-
-  /** Reusable iterator options for `assign` and `defaults` */
-  var defaultsIteratorOptions = {
-    'args': 'object, source, guard',
-    'top':
-      'var args = arguments,\n' +
-      '    argsIndex = 0,\n' +
-      "    argsLength = typeof guard == 'number' ? 2 : args.length;\n" +
-      'while (++argsIndex < argsLength) {\n' +
-      '  iterable = args[argsIndex];\n' +
-      '  if (iterable && objectTypes[typeof iterable]) {',
-    'loop': "if (typeof result[index] == 'undefined') result[index] = iterable[index]",
-    'bottom': '  }\n}'
-  };
-
-  /** Reusable iterator options shared by `each`, `forIn`, and `forOwn` */
-  var eachIteratorOptions = {
-    'args': 'collection, callback, thisArg',
-    'top': "callback = callback && typeof thisArg == 'undefined' ? callback : createCallback(callback, thisArg)",
-    'arrays': "typeof length == 'number'",
-    'loop': 'if (callback(iterable[index], index, collection) === false) return result'
-  };
-
-  /** Reusable iterator options for `forIn` and `forOwn` */
-  var forOwnIteratorOptions = {
-    'top': 'if (!objectTypes[typeof iterable]) return result;\n' + eachIteratorOptions.top,
-    'arrays': false
-  };
-
-  /*--------------------------------------------------------------------------*/
-
-  /**
-   * Creates a function optimized to search large arrays for a given `value`,
-   * starting at `fromIndex`, using strict equality for comparisons, i.e. `===`.
-   *
-   * @private
-   * @param {Array} array The array to search.
-   * @param {Mixed} value The value to search for.
-   * @param {Number} [fromIndex=0] The index to search from.
-   * @param {Number} [largeSize=30] The length at which an array is considered large.
-   * @returns {Boolean} Returns `true`, if `value` is found, else `false`.
-   */
-  function cachedContains(array, fromIndex, largeSize) {
-    fromIndex || (fromIndex = 0);
-
-    var length = array.length,
-        isLarge = (length - fromIndex) >= (largeSize || largeArraySize);
-
-    if (isLarge) {
-      var cache = {},
-          index = fromIndex - 1;
-
-      while (++index < length) {
-        // manually coerce `value` to a string because `hasOwnProperty`, in some
-        // older versions of Firefox, coerces objects incorrectly
-        var key = array[index] + '';
-        (hasOwnProperty.call(cache, key) ? cache[key] : (cache[key] = [])).push(array[index]);
-      }
-    }
-    return function(value) {
-      if (isLarge) {
-        var key = value + '';
-        return hasOwnProperty.call(cache, key) && indexOf(cache[key], value) > -1;
-      }
-      return indexOf(array, value, fromIndex) > -1;
-    }
-  }
-
-  /**
-   * Used by `_.max` and `_.min` as the default `callback` when a given
-   * `collection` is a string value.
-   *
-   * @private
-   * @param {String} value The character to inspect.
-   * @returns {Number} Returns the code unit of given character.
-   */
-  function charAtCallback(value) {
-    return value.charCodeAt(0);
-  }
-
-  /**
-   * Used by `sortBy` to compare transformed `collection` values, stable sorting
-   * them in ascending order.
-   *
-   * @private
-   * @param {Object} a The object to compare to `b`.
-   * @param {Object} b The object to compare to `a`.
-   * @returns {Number} Returns the sort order indicator of `1` or `-1`.
-   */
-  function compareAscending(a, b) {
-    var ai = a.index,
-        bi = b.index;
-
-    a = a.criteria;
-    b = b.criteria;
-
-    // ensure a stable sort in V8 and other engines
-    // http://code.google.com/p/v8/issues/detail?id=90
-    if (a !== b) {
-      if (a > b || typeof a == 'undefined') {
-        return 1;
-      }
-      if (a < b || typeof b == 'undefined') {
-        return -1;
-      }
-    }
-    return ai < bi ? -1 : 1;
-  }
-
-  /**
-   * Creates a function that, when called, invokes `func` with the `this` binding
-   * of `thisArg` and prepends any `partialArgs` to the arguments passed to the
-   * bound function.
-   *
-   * @private
-   * @param {Function|String} func The function to bind or the method name.
-   * @param {Mixed} [thisArg] The `this` binding of `func`.
-   * @param {Array} partialArgs An array of arguments to be partially applied.
-   * @param {Object} [rightIndicator] Used to indicate partially applying arguments from the right.
-   * @returns {Function} Returns the new bound function.
-   */
-  function createBound(func, thisArg, partialArgs, rightIndicator) {
-    var isFunc = isFunction(func),
-        isPartial = !partialArgs,
-        key = thisArg;
-
-    // juggle arguments
-    if (isPartial) {
-      partialArgs = thisArg;
-    }
-    if (!isFunc) {
-      thisArg = func;
-    }
-
-    function bound() {
-      // `Function#bind` spec
-      // http://es5.github.com/#x15.3.4.5
-      var args = arguments,
-          thisBinding = isPartial ? this : thisArg;
-
-      if (!isFunc) {
-        func = thisArg[key];
-      }
-      if (partialArgs.length) {
-        args = args.length
-          ? (args = slice(args), rightIndicator ? args.concat(partialArgs) : partialArgs.concat(args))
-          : partialArgs;
-      }
-      if (this instanceof bound) {
-        // ensure `new bound` is an instance of `bound` and `func`
-        noop.prototype = func.prototype;
-        thisBinding = new noop;
-        noop.prototype = null;
-
-        // mimic the constructor's `return` behavior
-        // http://es5.github.com/#x13.2.2
-        var result = func.apply(thisBinding, args);
-        return isObject(result) ? result : thisBinding;
-      }
-      return func.apply(thisBinding, args);
-    }
-    return bound;
-  }
-
-  /**
-   * Produces a callback bound to an optional `thisArg`. If `func` is a property
-   * name, the created callback will return the property value for a given element.
-   * If `func` is an object, the created callback will return `true` for elements
-   * that contain the equivalent object properties, otherwise it will return `false`.
-   *
-   * @private
-   * @param {Mixed} [func=identity] The value to convert to a callback.
-   * @param {Mixed} [thisArg] The `this` binding of the created callback.
-   * @param {Number} [argCount=3] The number of arguments the callback accepts.
-   * @returns {Function} Returns a callback function.
-   */
-  function createCallback(func, thisArg, argCount) {
-    if (func == null) {
-      return identity;
-    }
-    var type = typeof func;
-    if (type != 'function') {
-      if (type != 'object') {
-        return function(object) {
-          return object[func];
-        };
-      }
-      var props = keys(func);
-      return function(object) {
-        var length = props.length,
-            result = false;
-        while (length--) {
-          if (!(result = isEqual(object[props[length]], func[props[length]], indicatorObject))) {
-            break;
-          }
-        }
-        return result;
-      };
-    }
-    if (typeof thisArg != 'undefined') {
-      if (argCount === 1) {
-        return function(value) {
-          return func.call(thisArg, value);
-        };
-      }
-      if (argCount === 2) {
-        return function(a, b) {
-          return func.call(thisArg, a, b);
-        };
-      }
-      if (argCount === 4) {
-        return function(accumulator, value, index, object) {
-          return func.call(thisArg, accumulator, value, index, object);
-        };
-      }
-      return function(value, index, object) {
-        return func.call(thisArg, value, index, object);
-      };
-    }
-    return func;
-  }
-
-  /**
-   * Creates compiled iteration functions.
-   *
-   * @private
-   * @param {Object} [options1, options2, ...] The compile options object(s).
-   *  arrays - A string of code to determine if the iterable is an array or array-like.
-   *  useHas - A boolean to specify using `hasOwnProperty` checks in the object loop.
-   *  args - A string of comma separated arguments the iteration function will accept.
-   *  top - A string of code to execute before the iteration branches.
-   *  loop - A string of code to execute in the object loop.
-   *  bottom - A string of code to execute after the iteration branches.
-   *
-   * @returns {Function} Returns the compiled function.
-   */
-  function createIterator() {
-    var data = {
-      // support properties
-      'isKeysFast': isKeysFast,
-
-      // iterator options
-      'arrays': 'isArray(iterable)',
-      'bottom': '',
-      'loop': '',
-      'top': '',
-      'useHas': true
-    };
-
-    // merge options into a template data object
-    for (var object, index = 0; object = arguments[index]; index++) {
-      for (var key in object) {
-        data[key] = object[key];
-      }
-    }
-    var args = data.args;
-    data.firstArg = /^[^,]+/.exec(args)[0];
-
-    // create the function factory
-    var factory = Function(
-        'createCallback, hasOwnProperty, isArguments, isArray, isString, ' +
-        'objectTypes, nativeKeys',
-      'return function(' + args + ') {\n' + iteratorTemplate(data) + '\n}'
-    );
-    // return the compiled function
-    return factory(
-      createCallback, hasOwnProperty, isArguments, isArray, isString,
-      objectTypes, nativeKeys
-    );
-  }
-
-  /**
-   * A function compiled to iterate `arguments` objects, arrays, objects, and
-   * strings consistenly across environments, executing the `callback` for each
-   * element in the `collection`. The `callback` is bound to `thisArg` and invoked
-   * with three arguments; (value, index|key, collection). Callbacks may exit
-   * iteration early by explicitly returning `false`.
-   *
-   * @private
-   * @type Function
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {Function} [callback=identity] The function called per iteration.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Array|Object|String} Returns `collection`.
-   */
-  var each = createIterator(eachIteratorOptions);
-
-  /**
-   * Used by `template` to escape characters for inclusion in compiled
-   * string literals.
-   *
-   * @private
-   * @param {String} match The matched character to escape.
-   * @returns {String} Returns the escaped character.
-   */
-  function escapeStringChar(match) {
-    return '\\' + stringEscapes[match];
-  }
-
-  /**
-   * Used by `escape` to convert characters to HTML entities.
-   *
-   * @private
-   * @param {String} match The matched character to escape.
-   * @returns {String} Returns the escaped character.
-   */
-  function escapeHtmlChar(match) {
-    return htmlEscapes[match];
-  }
-
-  /**
-   * Checks if `value` is a DOM node in IE < 9.
-   *
-   * @private
-   * @param {Mixed} value The value to check.
-   * @returns {Boolean} Returns `true` if the `value` is a DOM node, else `false`.
-   */
-  function isNode(value) {
-    // IE < 9 presents DOM nodes as `Object` objects except they have `toString`
-    // methods that are `typeof` "string" and still can coerce nodes to strings
-    return typeof value.toString != 'function' && typeof (value + '') == 'string';
-  }
-
-  /**
-   * A no-operation function.
-   *
-   * @private
-   */
-  function noop() {
-    // no operation performed
-  }
-
-  /**
-   * Slices the `collection` from the `start` index up to, but not including,
-   * the `end` index.
-   *
-   * Note: This function is used, instead of `Array#slice`, to support node lists
-   * in IE < 9 and to ensure dense arrays are returned.
-   *
-   * @private
-   * @param {Array|Object|String} collection The collection to slice.
-   * @param {Number} start The start index.
-   * @param {Number} end The end index.
-   * @returns {Array} Returns the new array.
-   */
-  function slice(array, start, end) {
-    start || (start = 0);
-    if (typeof end == 'undefined') {
-      end = array ? array.length : 0;
-    }
-    var index = -1,
-        length = end - start || 0,
-        result = Array(length < 0 ? 0 : length);
-
-    while (++index < length) {
-      result[index] = array[start + index];
-    }
-    return result;
-  }
-
-  /**
-   * Used by `unescape` to convert HTML entities to characters.
-   *
-   * @private
-   * @param {String} match The matched character to unescape.
-   * @returns {String} Returns the unescaped character.
-   */
-  function unescapeHtmlChar(match) {
-    return htmlUnescapes[match];
-  }
-
-  /*--------------------------------------------------------------------------*/
-
-  /**
-   * Checks if `value` is an `arguments` object.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Mixed} value The value to check.
-   * @returns {Boolean} Returns `true`, if the `value` is an `arguments` object, else `false`.
-   * @example
-   *
-   * (function() { return _.isArguments(arguments); })(1, 2, 3);
-   * // => true
-   *
-   * _.isArguments([1, 2, 3]);
-   * // => false
-   */
-  function isArguments(value) {
-    return toString.call(value) == argsClass;
-  }
-
-  /**
-   * Iterates over `object`'s own and inherited enumerable properties, executing
-   * the `callback` for each property. The `callback` is bound to `thisArg` and
-   * invoked with three arguments; (value, key, object). Callbacks may exit iteration
-   * early by explicitly returning `false`.
-   *
-   * @static
-   * @memberOf _
-   * @type Function
-   * @category Objects
-   * @param {Object} object The object to iterate over.
-   * @param {Function} [callback=identity] The function called per iteration.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Object} Returns `object`.
-   * @example
-   *
-   * function Dog(name) {
-   *   this.name = name;
-   * }
-   *
-   * Dog.prototype.bark = function() {
-   *   alert('Woof, woof!');
-   * };
-   *
-   * _.forIn(new Dog('Dagny'), function(value, key) {
-   *   alert(key);
-   * });
-   * // => alerts 'name' and 'bark' (order is not guaranteed)
-   */
-  var forIn = createIterator(eachIteratorOptions, forOwnIteratorOptions, {
-    'useHas': false
-  });
-
-  /**
-   * Iterates over an object's own enumerable properties, executing the `callback`
-   * for each property. The `callback` is bound to `thisArg` and invoked with three
-   * arguments; (value, key, object). Callbacks may exit iteration early by explicitly
-   * returning `false`.
-   *
-   * @static
-   * @memberOf _
-   * @type Function
-   * @category Objects
-   * @param {Object} object The object to iterate over.
-   * @param {Function} [callback=identity] The function called per iteration.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Object} Returns `object`.
-   * @example
-   *
-   * _.forOwn({ '0': 'zero', '1': 'one', 'length': 2 }, function(num, key) {
-   *   alert(key);
-   * });
-   * // => alerts '0', '1', and 'length' (order is not guaranteed)
-   */
-  var forOwn = createIterator(eachIteratorOptions, forOwnIteratorOptions);
-
-  /**
-   * Checks if `value` is an array.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Mixed} value The value to check.
-   * @returns {Boolean} Returns `true`, if the `value` is an array, else `false`.
-   * @example
-   *
-   * (function() { return _.isArray(arguments); })();
-   * // => false
-   *
-   * _.isArray([1, 2, 3]);
-   * // => true
-   */
-  var isArray = nativeIsArray || function(value) {
-    // `instanceof` may cause a memory leak in IE 7 if `value` is a host object
-    // http://ajaxian.com/archives/working-aroung-the-instanceof-memory-leak
-    return value instanceof Array || toString.call(value) == arrayClass;
-  };
-
-  /**
-   * Creates an array composed of the own enumerable property names of `object`.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Object} object The object to inspect.
-   * @returns {Array} Returns a new array of property names.
-   * @example
-   *
-   * _.keys({ 'one': 1, 'two': 2, 'three': 3 });
-   * // => ['one', 'two', 'three'] (order is not guaranteed)
-   */
-  var keys = !nativeKeys ? shimKeys : function(object) {
-    if (!isObject(object)) {
-      return [];
-    }
-    return nativeKeys(object);
-  };
-
-  /**
-   * A fallback implementation of `isPlainObject` that checks if a given `value`
-   * is an object created by the `Object` constructor, assuming objects created
-   * by the `Object` constructor have no inherited enumerable properties and that
-   * there are no `Object.prototype` extensions.
-   *
-   * @private
-   * @param {Mixed} value The value to check.
-   * @returns {Boolean} Returns `true`, if `value` is a plain object, else `false`.
-   */
-  function shimIsPlainObject(value) {
-    // avoid non-objects and false positives for `arguments` objects
-    var result = false;
-    if (!(value && typeof value == 'object') || isArguments(value)) {
-      return result;
-    }
-    // check that the constructor is `Object` (i.e. `Object instanceof Object`)
-    var ctor = value.constructor;
-    if ((!isFunction(ctor)) || ctor instanceof ctor) {
-      // In most environments an object's own properties are iterated before
-      // its inherited properties. If the last iterated property is an object's
-      // own property then there are no inherited enumerable properties.
-      forIn(value, function(value, key) {
-        result = key;
-      });
-      return result === false || hasOwnProperty.call(value, result);
-    }
-    return result;
-  }
-
-  /**
-   * A fallback implementation of `Object.keys` that produces an array of the
-   * given object's own enumerable property names.
-   *
-   * @private
-   * @param {Object} object The object to inspect.
-   * @returns {Array} Returns a new array of property names.
-   */
-  function shimKeys(object) {
-    var result = [];
-    forOwn(object, function(value, key) {
-      result.push(key);
-    });
-    return result;
-  }
-
-  /**
-   * Used to convert characters to HTML entities:
-   *
-   * Though the `>` character is escaped for symmetry, characters like `>` and `/`
-   * don't require escaping in HTML and have no special meaning unless they're part
-   * of a tag or an unquoted attribute value.
-   * http://mathiasbynens.be/notes/ambiguous-ampersands (under "semi-related fun fact")
-   */
-  var htmlEscapes = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;'
-  };
-
-  /** Used to convert HTML entities to characters */
-  var htmlUnescapes = invert(htmlEscapes);
-
-  /*--------------------------------------------------------------------------*/
-
-  /**
-   * Assigns own enumerable properties of source object(s) to the destination
-   * object. Subsequent sources will overwrite propery assignments of previous
-   * sources. If a `callback` function is passed, it will be executed to produce
-   * the assigned values. The `callback` is bound to `thisArg` and invoked with
-   * two arguments; (objectValue, sourceValue).
-   *
-   * @static
-   * @memberOf _
-   * @type Function
-   * @alias extend
-   * @category Objects
-   * @param {Object} object The destination object.
-   * @param {Object} [source1, source2, ...] The source objects.
-   * @param {Function} [callback] The function to customize assigning values.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Object} Returns the destination object.
-   * @example
-   *
-   * _.assign({ 'name': 'moe' }, { 'age': 40 });
-   * // => { 'name': 'moe', 'age': 40 }
-   *
-   * var defaults = _.partialRight(_.assign, function(a, b) {
-   *   return typeof a == 'undefined' ? b : a;
-   * });
-   *
-   * var food = { 'name': 'apple' };
-   * defaults(food, { 'name': 'banana', 'type': 'fruit' });
-   * // => { 'name': 'apple', 'type': 'fruit' }
-   */
-  var assign = createIterator(defaultsIteratorOptions, {
-    'top':
-      defaultsIteratorOptions.top.replace(';',
-        ';\n' +
-        "if (argsLength > 3 && typeof args[argsLength - 2] == 'function') {\n" +
-        '  var callback = createCallback(args[--argsLength - 1], args[argsLength--], 2);\n' +
-        "} else if (argsLength > 2 && typeof args[argsLength - 1] == 'function') {\n" +
-        '  callback = args[--argsLength];\n' +
-        '}'
-      ),
-    'loop': 'result[index] = callback ? callback(result[index], iterable[index]) : iterable[index]'
-  });
-
-  /**
-   * Creates a clone of `value`. If `deep` is `true`, nested objects will also
-   * be cloned, otherwise they will be assigned by reference. If a `callback`
-   * function is passed, it will be executed to produce the cloned values. If
-   * `callback` returns `undefined`, cloning will be handled by the method instead.
-   * The `callback` is bound to `thisArg` and invoked with one argument; (value).
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Mixed} value The value to clone.
-   * @param {Boolean} [deep=false] A flag to indicate a deep clone.
-   * @param {Function} [callback] The function to customize cloning values.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @param- {Array} [stackA=[]] Internally used to track traversed source objects.
-   * @param- {Array} [stackB=[]] Internally used to associate clones with source counterparts.
-   * @returns {Mixed} Returns the cloned `value`.
-   * @example
-   *
-   * var stooges = [
-   *   { 'name': 'moe', 'age': 40 },
-   *   { 'name': 'larry', 'age': 50 }
-   * ];
-   *
-   * var shallow = _.clone(stooges);
-   * shallow[0] === stooges[0];
-   * // => true
-   *
-   * var deep = _.clone(stooges, true);
-   * deep[0] === stooges[0];
-   * // => false
-   *
-   * _.mixin({
-   *   'clone': _.partialRight(_.clone, function(value) {
-   *     return _.isElement(value) ? value.cloneNode(false) : undefined;
-   *   })
-   * });
-   *
-   * var clone = _.clone(document.body);
-   * clone.childNodes.length;
-   * // => 0
-   */
-  function clone(value, deep, callback, thisArg, stackA, stackB) {
-    var result = value;
-
-    // allows working with "Collections" methods without using their `callback`
-    // argument, `index|key`, for this method's `callback`
-    if (typeof deep == 'function') {
-      thisArg = callback;
-      callback = deep;
-      deep = false;
-    }
-    if (typeof callback == 'function') {
-      callback = typeof thisArg == 'undefined' ? callback : createCallback(callback, thisArg, 1);
-      result = callback(result);
-
-      var done = typeof result != 'undefined';
-      if (!done) {
-        result = value;
-      }
-    }
-    // inspect [[Class]]
-    var isObj = isObject(result);
-    if (isObj) {
-      var className = toString.call(result);
-      if (!cloneableClasses[className]) {
-        return result;
-      }
-      var isArr = isArray(result);
-    }
-    // shallow clone
-    if (!isObj || !deep) {
-      return isObj && !done
-        ? (isArr ? slice(result) : assign({}, result))
-        : result;
-    }
-    var ctor = ctorByClass[className];
-    switch (className) {
-      case boolClass:
-      case dateClass:
-        return done ? result : new ctor(+result);
-
-      case numberClass:
-      case stringClass:
-        return done ? result : new ctor(result);
-
-      case regexpClass:
-        return done ? result : ctor(result.source, reFlags.exec(result));
-    }
-    // check for circular references and return corresponding clone
-    stackA || (stackA = []);
-    stackB || (stackB = []);
-
-    var length = stackA.length;
-    while (length--) {
-      if (stackA[length] == value) {
-        return stackB[length];
-      }
-    }
-    // init cloned object
-    if (!done) {
-      result = isArr ? ctor(result.length) : {};
-
-      // add array properties assigned by `RegExp#exec`
-      if (isArr) {
-        if (hasOwnProperty.call(value, 'index')) {
-          result.index = value.index;
-        }
-        if (hasOwnProperty.call(value, 'input')) {
-          result.input = value.input;
-        }
-      }
-    }
-    // add the source value to the stack of traversed objects
-    // and associate it with its clone
-    stackA.push(value);
-    stackB.push(result);
-
-    // recursively populate clone (susceptible to call stack limits)
-    (isArr ? forEach : forOwn)(done ? result : value, function(objValue, key) {
-      result[key] = clone(objValue, deep, callback, undefined, stackA, stackB);
-    });
-
-    return result;
-  }
-
-  /**
-   * Creates a deep clone of `value`. If a `callback` function is passed, it will
-   * be executed to produce the cloned values. If `callback` returns the value it
-   * was passed, cloning will be handled by the method instead. The `callback` is
-   * bound to `thisArg` and invoked with one argument; (value).
-   *
-   * Note: This function is loosely based on the structured clone algorithm. Functions
-   * and DOM nodes are **not** cloned. The enumerable properties of `arguments` objects and
-   * objects created by constructors other than `Object` are cloned to plain `Object` objects.
-   * See http://www.w3.org/TR/html5/infrastructure.html#internal-structured-cloning-algorithm.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Mixed} value The value to deep clone.
-   * @param {Function} [callback] The function to customize cloning values.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Mixed} Returns the deep cloned `value`.
-   * @example
-   *
-   * var stooges = [
-   *   { 'name': 'moe', 'age': 40 },
-   *   { 'name': 'larry', 'age': 50 }
-   * ];
-   *
-   * var deep = _.cloneDeep(stooges);
-   * deep[0] === stooges[0];
-   * // => false
-   *
-   * var view = {
-   *   'label': 'docs',
-   *   'node': element
-   * };
-   *
-   * var clone = _.cloneDeep(view, function(value) {
-   *   return _.isElement(value) ? value.cloneNode(true) : value;
-   * });
-   *
-   * clone.node == view.node;
-   * // => false
-   */
-  function cloneDeep(value, callback, thisArg) {
-    return clone(value, true, callback, thisArg);
-  }
-
-  /**
-   * Assigns own enumerable properties of source object(s) to the destination
-   * object for all destination properties that resolve to `undefined`. Once a
-   * property is set, additional defaults of the same property will be ignored.
-   *
-   * @static
-   * @memberOf _
-   * @type Function
-   * @category Objects
-   * @param {Object} object The destination object.
-   * @param {Object} [source1, source2, ...] The source objects.
-   * @param- {Object} [guard] Internally used to allow working with `_.reduce`
-   *  without using its callback's `key` and `object` arguments as sources.
-   * @returns {Object} Returns the destination object.
-   * @example
-   *
-   * var food = { 'name': 'apple' };
-   * _.defaults(food, { 'name': 'banana', 'type': 'fruit' });
-   * // => { 'name': 'apple', 'type': 'fruit' }
-   */
-  var defaults = createIterator(defaultsIteratorOptions);
-
-  /**
-   * Creates a sorted array of all enumerable properties, own and inherited,
-   * of `object` that have function values.
-   *
-   * @static
-   * @memberOf _
-   * @alias methods
-   * @category Objects
-   * @param {Object} object The object to inspect.
-   * @returns {Array} Returns a new array of property names that have function values.
-   * @example
-   *
-   * _.functions(_);
-   * // => ['all', 'any', 'bind', 'bindAll', 'clone', 'compact', 'compose', ...]
-   */
-  function functions(object) {
-    var result = [];
-    forIn(object, function(value, key) {
-      if (isFunction(value)) {
-        result.push(key);
-      }
-    });
-    return result.sort();
-  }
-
-  /**
-   * Checks if the specified object `property` exists and is a direct property,
-   * instead of an inherited property.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Object} object The object to check.
-   * @param {String} property The property to check for.
-   * @returns {Boolean} Returns `true` if key is a direct property, else `false`.
-   * @example
-   *
-   * _.has({ 'a': 1, 'b': 2, 'c': 3 }, 'b');
-   * // => true
-   */
-  function has(object, property) {
-    return object ? hasOwnProperty.call(object, property) : false;
-  }
-
-  /**
-   * Creates an object composed of the inverted keys and values of the given `object`.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Object} object The object to invert.
-   * @returns {Object} Returns the created inverted object.
-   * @example
-   *
-   *  _.invert({ 'first': 'moe', 'second': 'larry' });
-   * // => { 'moe': 'first', 'larry': 'second' } (order is not guaranteed)
-   */
-  function invert(object) {
-    var index = -1,
-        props = keys(object),
-        length = props.length,
-        result = {};
-
-    while (++index < length) {
-      var key = props[index];
-      result[object[key]] = key;
-    }
-    return result;
-  }
-
-  /**
-   * Checks if `value` is a boolean value.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Mixed} value The value to check.
-   * @returns {Boolean} Returns `true`, if the `value` is a boolean value, else `false`.
-   * @example
-   *
-   * _.isBoolean(null);
-   * // => false
-   */
-  function isBoolean(value) {
-    return value === true || value === false || toString.call(value) == boolClass;
-  }
-
-  /**
-   * Checks if `value` is a date.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Mixed} value The value to check.
-   * @returns {Boolean} Returns `true`, if the `value` is a date, else `false`.
-   * @example
-   *
-   * _.isDate(new Date);
-   * // => true
-   */
-  function isDate(value) {
-    return value instanceof Date || toString.call(value) == dateClass;
-  }
-
-  /**
-   * Checks if `value` is a DOM element.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Mixed} value The value to check.
-   * @returns {Boolean} Returns `true`, if the `value` is a DOM element, else `false`.
-   * @example
-   *
-   * _.isElement(document.body);
-   * // => true
-   */
-  function isElement(value) {
-    return value ? value.nodeType === 1 : false;
-  }
-
-  /**
-   * Checks if `value` is empty. Arrays, strings, or `arguments` objects with a
-   * length of `0` and objects with no own enumerable properties are considered
-   * "empty".
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Array|Object|String} value The value to inspect.
-   * @returns {Boolean} Returns `true`, if the `value` is empty, else `false`.
-   * @example
-   *
-   * _.isEmpty([1, 2, 3]);
-   * // => false
-   *
-   * _.isEmpty({});
-   * // => true
-   *
-   * _.isEmpty('');
-   * // => true
-   */
-  function isEmpty(value) {
-    var result = true;
-    if (!value) {
-      return result;
-    }
-    var className = toString.call(value),
-        length = value.length;
-
-    if ((className == arrayClass || className == stringClass ||
-        className == argsClass) ||
-        (className == objectClass && typeof length == 'number' && isFunction(value.splice))) {
-      return !length;
-    }
-    forOwn(value, function() {
-      return (result = false);
-    });
-    return result;
-  }
-
-  /**
-   * Performs a deep comparison between two values to determine if they are
-   * equivalent to each other. If `callback` is passed, it will be executed to
-   * compare values. If `callback` returns `undefined`, comparisons will be handled
-   * by the method instead. The `callback` is bound to `thisArg` and invoked with
-   * two arguments; (a, b).
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Mixed} a The value to compare.
-   * @param {Mixed} b The other value to compare.
-   * @param {Function} [callback] The function to customize comparing values.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @param- {Object} [stackA=[]] Internally used track traversed `a` objects.
-   * @param- {Object} [stackB=[]] Internally used track traversed `b` objects.
-   * @returns {Boolean} Returns `true`, if the values are equvalent, else `false`.
-   * @example
-   *
-   * var moe = { 'name': 'moe', 'age': 40 };
-   * var copy = { 'name': 'moe', 'age': 40 };
-   *
-   * moe == copy;
-   * // => false
-   *
-   * _.isEqual(moe, copy);
-   * // => true
-   *
-   * var words = ['hello', 'goodbye'];
-   * var otherWords = ['hi', 'goodbye'];
-   *
-   * _.isEqual(words, otherWords, function(a, b) {
-   *   var reGreet = /^(?:hello|hi)$/i,
-   *       aGreet = _.isString(a) && reGreet.test(a),
-   *       bGreet = _.isString(b) && reGreet.test(b);
-   *
-   *   return (aGreet || bGreet) ? (aGreet == bGreet) : undefined;
-   * });
-   * // => true
-   */
-  function isEqual(a, b, callback, thisArg, stackA, stackB) {
-    // used to indicate that when comparing objects, `a` has at least the properties of `b`
-    var whereIndicator = callback === indicatorObject;
-    if (callback && !whereIndicator) {
-      callback = typeof thisArg == 'undefined' ? callback : createCallback(callback, thisArg, 2);
-      var result = callback(a, b);
-      if (typeof result != 'undefined') {
-        return !!result;
-      }
-    }
-    // exit early for identical values
-    if (a === b) {
-      // treat `+0` vs. `-0` as not equal
-      return a !== 0 || (1 / a == 1 / b);
-    }
-    var type = typeof a,
-        otherType = typeof b;
-
-    // exit early for unlike primitive values
-    if (a === a &&
-        (!a || (type != 'function' && type != 'object')) &&
-        (!b || (otherType != 'function' && otherType != 'object'))) {
-      return false;
-    }
-    // exit early for `null` and `undefined`, avoiding ES3's Function#call behavior
-    // http://es5.github.com/#x15.3.4.4
-    if (a == null || b == null) {
-      return a === b;
-    }
-    // compare [[Class]] names
-    var className = toString.call(a),
-        otherClass = toString.call(b);
-
-    if (className == argsClass) {
-      className = objectClass;
-    }
-    if (otherClass == argsClass) {
-      otherClass = objectClass;
-    }
-    if (className != otherClass) {
-      return false;
-    }
-    switch (className) {
-      case boolClass:
-      case dateClass:
-        // coerce dates and booleans to numbers, dates to milliseconds and booleans
-        // to `1` or `0`, treating invalid dates coerced to `NaN` as not equal
-        return +a == +b;
-
-      case numberClass:
-        // treat `NaN` vs. `NaN` as equal
-        return a != +a
-          ? b != +b
-          // but treat `+0` vs. `-0` as not equal
-          : (a == 0 ? (1 / a == 1 / b) : a == +b);
-
-      case regexpClass:
-      case stringClass:
-        // coerce regexes to strings (http://es5.github.com/#x15.10.6.4)
-        // treat string primitives and their corresponding object instances as equal
-        return a == b + '';
-    }
-    var isArr = className == arrayClass;
-    if (!isArr) {
-      // unwrap any `lodash` wrapped values
-      if (a.__wrapped__ || b.__wrapped__) {
-        return isEqual(a.__wrapped__ || a, b.__wrapped__ || b, callback, thisArg, stackA, stackB);
-      }
-      // exit for functions and DOM nodes
-      if (className != objectClass) {
-        return false;
-      }
-      // in older versions of Opera, `arguments` objects have `Array` constructors
-      var ctorA = a.constructor,
-          ctorB = b.constructor;
-
-      // non `Object` object instances with different constructors are not equal
-      if (ctorA != ctorB && !(
-            isFunction(ctorA) && ctorA instanceof ctorA &&
-            isFunction(ctorB) && ctorB instanceof ctorB
-          )) {
-        return false;
-      }
-    }
-    // assume cyclic structures are equal
-    // the algorithm for detecting cyclic structures is adapted from ES 5.1
-    // section 15.12.3, abstract operation `JO` (http://es5.github.com/#x15.12.3)
-    stackA || (stackA = []);
-    stackB || (stackB = []);
-
-    var length = stackA.length;
-    while (length--) {
-      if (stackA[length] == a) {
-        return stackB[length] == b;
-      }
-    }
-    var size = 0;
-    result = true;
-
-    // add `a` and `b` to the stack of traversed objects
-    stackA.push(a);
-    stackB.push(b);
-
-    // recursively compare objects and arrays (susceptible to call stack limits)
-    if (isArr) {
-      length = a.length;
-      size = b.length;
-
-      // compare lengths to determine if a deep comparison is necessary
-      result = size == a.length;
-      if (!result && !whereIndicator) {
-        return result;
-      }
-      // deep compare the contents, ignoring non-numeric properties
-      while (size--) {
-        var index = length,
-            value = b[size];
-
-        if (whereIndicator) {
-          while (index--) {
-            if ((result = isEqual(a[index], value, callback, thisArg, stackA, stackB))) {
-              break;
-            }
-          }
-        } else if (!(result = isEqual(a[size], value, callback, thisArg, stackA, stackB))) {
-          break;
-        }
-      }
-      return result;
-    }
-    // deep compare objects using `forIn`, instead of `forOwn`, to avoid `Object.keys`
-    // which, in this case, is more costly
-    forIn(b, function(value, key, b) {
-      if (hasOwnProperty.call(b, key)) {
-        // count the number of properties.
-        size++;
-        // deep compare each property value.
-        return (result = hasOwnProperty.call(a, key) && isEqual(a[key], value, callback, thisArg, stackA, stackB));
-      }
-    });
-
-    if (result && !whereIndicator) {
-      // ensure both objects have the same number of properties
-      forIn(a, function(value, key, a) {
-        if (hasOwnProperty.call(a, key)) {
-          // `size` will be `-1` if `a` has more properties than `b`
-          return (result = --size > -1);
-        }
-      });
-    }
-    return result;
-  }
-
-  /**
-   * Checks if `value` is, or can be coerced to, a finite number.
-   *
-   * Note: This is not the same as native `isFinite`, which will return true for
-   * booleans and empty strings. See http://es5.github.com/#x15.1.2.5.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Mixed} value The value to check.
-   * @returns {Boolean} Returns `true`, if the `value` is finite, else `false`.
-   * @example
-   *
-   * _.isFinite(-101);
-   * // => true
-   *
-   * _.isFinite('10');
-   * // => true
-   *
-   * _.isFinite(true);
-   * // => false
-   *
-   * _.isFinite('');
-   * // => false
-   *
-   * _.isFinite(Infinity);
-   * // => false
-   */
-  function isFinite(value) {
-    return nativeIsFinite(value) && !nativeIsNaN(parseFloat(value));
-  }
-
-  /**
-   * Checks if `value` is a function.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Mixed} value The value to check.
-   * @returns {Boolean} Returns `true`, if the `value` is a function, else `false`.
-   * @example
-   *
-   * _.isFunction(_);
-   * // => true
-   */
-  function isFunction(value) {
-    return typeof value == 'function';
-  }
-  // fallback for older versions of Chrome and Safari
-  if (isFunction(/x/)) {
-    isFunction = function(value) {
-      return value instanceof Function || toString.call(value) == funcClass;
-    };
-  }
-
-  /**
-   * Checks if `value` is the language type of Object.
-   * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Mixed} value The value to check.
-   * @returns {Boolean} Returns `true`, if the `value` is an object, else `false`.
-   * @example
-   *
-   * _.isObject({});
-   * // => true
-   *
-   * _.isObject([1, 2, 3]);
-   * // => true
-   *
-   * _.isObject(1);
-   * // => false
-   */
-  function isObject(value) {
-    // check if the value is the ECMAScript language type of Object
-    // http://es5.github.com/#x8
-    // and avoid a V8 bug
-    // http://code.google.com/p/v8/issues/detail?id=2291
-    return value ? objectTypes[typeof value] : false;
-  }
-
-  /**
-   * Checks if `value` is `NaN`.
-   *
-   * Note: This is not the same as native `isNaN`, which will return `true` for
-   * `undefined` and other values. See http://es5.github.com/#x15.1.2.4.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Mixed} value The value to check.
-   * @returns {Boolean} Returns `true`, if the `value` is `NaN`, else `false`.
-   * @example
-   *
-   * _.isNaN(NaN);
-   * // => true
-   *
-   * _.isNaN(new Number(NaN));
-   * // => true
-   *
-   * isNaN(undefined);
-   * // => true
-   *
-   * _.isNaN(undefined);
-   * // => false
-   */
-  function isNaN(value) {
-    // `NaN` as a primitive is the only value that is not equal to itself
-    // (perform the [[Class]] check first to avoid errors with some host objects in IE)
-    return isNumber(value) && value != +value
-  }
-
-  /**
-   * Checks if `value` is `null`.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Mixed} value The value to check.
-   * @returns {Boolean} Returns `true`, if the `value` is `null`, else `false`.
-   * @example
-   *
-   * _.isNull(null);
-   * // => true
-   *
-   * _.isNull(undefined);
-   * // => false
-   */
-  function isNull(value) {
-    return value === null;
-  }
-
-  /**
-   * Checks if `value` is a number.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Mixed} value The value to check.
-   * @returns {Boolean} Returns `true`, if the `value` is a number, else `false`.
-   * @example
-   *
-   * _.isNumber(8.4 * 5);
-   * // => true
-   */
-  function isNumber(value) {
-    return typeof value == 'number' || toString.call(value) == numberClass;
-  }
-
-  /**
-   * Checks if a given `value` is an object created by the `Object` constructor.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Mixed} value The value to check.
-   * @returns {Boolean} Returns `true`, if `value` is a plain object, else `false`.
-   * @example
-   *
-   * function Stooge(name, age) {
-   *   this.name = name;
-   *   this.age = age;
-   * }
-   *
-   * _.isPlainObject(new Stooge('moe', 40));
-   * // => false
-   *
-   * _.isPlainObject([1, 2, 3]);
-   * // => false
-   *
-   * _.isPlainObject({ 'name': 'moe', 'age': 40 });
-   * // => true
-   */
-  var isPlainObject = !getPrototypeOf ? shimIsPlainObject : function(value) {
-    if (!(value && typeof value == 'object')) {
-      return false;
-    }
-    var valueOf = value.valueOf,
-        objProto = typeof valueOf == 'function' && (objProto = getPrototypeOf(valueOf)) && getPrototypeOf(objProto);
-
-    return objProto
-      ? value == objProto || (getPrototypeOf(value) == objProto && !isArguments(value))
-      : shimIsPlainObject(value);
-  };
-
-  /**
-   * Checks if `value` is a regular expression.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Mixed} value The value to check.
-   * @returns {Boolean} Returns `true`, if the `value` is a regular expression, else `false`.
-   * @example
-   *
-   * _.isRegExp(/moe/);
-   * // => true
-   */
-  function isRegExp(value) {
-    return value instanceof RegExp || toString.call(value) == regexpClass;
-  }
-
-  /**
-   * Checks if `value` is a string.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Mixed} value The value to check.
-   * @returns {Boolean} Returns `true`, if the `value` is a string, else `false`.
-   * @example
-   *
-   * _.isString('moe');
-   * // => true
-   */
-  function isString(value) {
-    return typeof value == 'string' || toString.call(value) == stringClass;
-  }
-
-  /**
-   * Checks if `value` is `undefined`.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Mixed} value The value to check.
-   * @returns {Boolean} Returns `true`, if the `value` is `undefined`, else `false`.
-   * @example
-   *
-   * _.isUndefined(void 0);
-   * // => true
-   */
-  function isUndefined(value) {
-    return typeof value == 'undefined';
-  }
-
-  /**
-   * Recursively merges own enumerable properties of the source object(s), that
-   * don't resolve to `undefined`, into the destination object. Subsequent sources
-   * will overwrite propery assignments of previous sources. If a `callback` function
-   * is passed, it will be executed to produce the merged values of the destination
-   * and source properties. If `callback` returns `undefined`, merging will be
-   * handled by the method instead. The `callback` is bound to `thisArg` and
-   * invoked with two arguments; (objectValue, sourceValue).
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Object} object The destination object.
-   * @param {Object} [source1, source2, ...] The source objects.
-   * @param {Function} [callback] The function to customize merging properties.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @param- {Object} [deepIndicator] Internally used to indicate that `stackA`
-   *  and `stackB` are arrays of traversed objects instead of source objects.
-   * @param- {Array} [stackA=[]] Internally used to track traversed source objects.
-   * @param- {Array} [stackB=[]] Internally used to associate values with their
-   *  source counterparts.
-   * @returns {Object} Returns the destination object.
-   * @example
-   *
-   * var names = {
-   *   'stooges': [
-   *     { 'name': 'moe' },
-   *     { 'name': 'larry' }
-   *   ]
-   * };
-   *
-   * var ages = {
-   *   'stooges': [
-   *     { 'age': 40 },
-   *     { 'age': 50 }
-   *   ]
-   * };
-   *
-   * _.merge(names, ages);
-   * // => { 'stooges': [{ 'name': 'moe', 'age': 40 }, { 'name': 'larry', 'age': 50 }] }
-   *
-   * var food = {
-   *   'fruits': ['apple'],
-   *   'vegetables': ['beet']
-   * };
-   *
-   * var otherFood = {
-   *   'fruits': ['banana'],
-   *   'vegetables': ['carrot']
-   * };
-   *
-   * _.merge(food, otherFood, function(a, b) {
-   *   return _.isArray(a) ? a.concat(b) : undefined;
-   * });
-   * // => { 'fruits': ['apple', 'banana'], 'vegetables': ['beet', 'carrot] }
-   */
-  function merge(object, source, deepIndicator) {
-    var args = arguments,
-        index = 0,
-        length = 2;
-
-    if (!isObject(object)) {
-      return object;
-    }
-    if (deepIndicator === indicatorObject) {
-      var callback = args[3],
-          stackA = args[4],
-          stackB = args[5];
-    } else {
-      stackA = [];
-      stackB = [];
-
-      // allows working with `_.reduce` and `_.reduceRight` without
-      // using their `callback` arguments, `index|key` and `collection`
-      if (typeof deepIndicator != 'number') {
-        length = args.length;
-      }
-      if (length > 3 && typeof args[length - 2] == 'function') {
-        callback = createCallback(args[--length - 1], args[length--], 2);
-      } else if (length > 2 && typeof args[length - 1] == 'function') {
-        callback = args[--length];
-      }
-    }
-    while (++index < length) {
-      (isArray(args[index]) ? forEach : forOwn)(args[index], function(source, key) {
-        var found,
-            isArr,
-            result = source,
-            value = object[key];
-
-        if (source && ((isArr = isArray(source)) || isPlainObject(source))) {
-          // avoid merging previously merged cyclic sources
-          var stackLength = stackA.length;
-          while (stackLength--) {
-            if ((found = stackA[stackLength] == source)) {
-              value = stackB[stackLength];
-              break;
-            }
-          }
-          if (!found) {
-            value = isArr
-              ? (isArray(value) ? value : [])
-              : (isPlainObject(value) ? value : {});
-
-            if (callback) {
-              result = callback(value, source);
-              if (typeof result != 'undefined') {
-                value = result;
-              }
-            }
-            // add `source` and associated `value` to the stack of traversed objects
-            stackA.push(source);
-            stackB.push(value);
-
-            // recursively merge objects and arrays (susceptible to call stack limits)
-            if (!callback) {
-              value = merge(value, source, indicatorObject, callback, stackA, stackB);
-            }
-          }
-        }
-        else {
-          if (callback) {
-            result = callback(value, source);
-            if (typeof result == 'undefined') {
-              result = source;
-            }
-          }
-          if (typeof result != 'undefined') {
-            value = result;
-          }
-        }
-        object[key] = value;
-      });
-    }
-    return object;
-  }
-
-  /**
-   * Creates a shallow clone of `object` excluding the specified properties.
-   * Property names may be specified as individual arguments or as arrays of
-   * property names. If a `callback` function is passed, it will be executed
-   * for each property in the `object`, omitting the properties `callback`
-   * returns truthy for. The `callback` is bound to `thisArg` and invoked
-   * with three arguments; (value, key, object).
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Object} object The source object.
-   * @param {Function|String} callback|[prop1, prop2, ...] The properties to omit
-   *  or the function called per iteration.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Object} Returns an object without the omitted properties.
-   * @example
-   *
-   * _.omit({ 'name': 'moe', 'age': 40 }, 'age');
-   * // => { 'name': 'moe' }
-   *
-   * _.omit({ 'name': 'moe', 'age': 40 }, function(value) {
-   *   return typeof value == 'number';
-   * });
-   * // => { 'name': 'moe' }
-   */
-  function omit(object, callback, thisArg) {
-    var isFunc = typeof callback == 'function',
-        result = {};
-
-    if (isFunc) {
-      callback = createCallback(callback, thisArg);
-    } else {
-      var props = concat.apply(arrayRef, arguments);
-    }
-    forIn(object, function(value, key, object) {
-      if (isFunc
-            ? !callback(value, key, object)
-            : indexOf(props, key, 1) < 0
-          ) {
-        result[key] = value;
-      }
-    });
-    return result;
-  }
-
-  /**
-   * Creates a two dimensional array of the given object's key-value pairs,
-   * i.e. `[[key1, value1], [key2, value2]]`.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Object} object The object to inspect.
-   * @returns {Array} Returns new array of key-value pairs.
-   * @example
-   *
-   * _.pairs({ 'moe': 30, 'larry': 40 });
-   * // => [['moe', 30], ['larry', 40]] (order is not guaranteed)
-   */
-  function pairs(object) {
-    var index = -1,
-        props = keys(object),
-        length = props.length,
-        result = Array(length);
-
-    while (++index < length) {
-      var key = props[index];
-      result[index] = [key, object[key]];
-    }
-    return result;
-  }
-
-  /**
-   * Creates a shallow clone of `object` composed of the specified properties.
-   * Property names may be specified as individual arguments or as arrays of property
-   * names. If `callback` is passed, it will be executed for each property in the
-   * `object`, picking the properties `callback` returns truthy for. The `callback`
-   * is bound to `thisArg` and invoked with three arguments; (value, key, object).
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Object} object The source object.
-   * @param {Array|Function|String} callback|[prop1, prop2, ...] The function called
-   *  per iteration or properties to pick, either as individual arguments or arrays.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Object} Returns an object composed of the picked properties.
-   * @example
-   *
-   * _.pick({ 'name': 'moe', '_userid': 'moe1' }, 'name');
-   * // => { 'name': 'moe' }
-   *
-   * _.pick({ 'name': 'moe', '_userid': 'moe1' }, function(value, key) {
-   *   return key.charAt(0) != '_';
-   * });
-   * // => { 'name': 'moe' }
-   */
-  function pick(object, callback, thisArg) {
-    var result = {};
-    if (typeof callback != 'function') {
-      var index = 0,
-          props = concat.apply(arrayRef, arguments),
-          length = isObject(object) ? props.length : 0;
-
-      while (++index < length) {
-        var key = props[index];
-        if (key in object) {
-          result[key] = object[key];
-        }
-      }
-    } else {
-      callback = createCallback(callback, thisArg);
-      forIn(object, function(value, key, object) {
-        if (callback(value, key, object)) {
-          result[key] = value;
-        }
-      });
-    }
-    return result;
-  }
-
-  /**
-   * Creates an array composed of the own enumerable property values of `object`.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Object} object The object to inspect.
-   * @returns {Array} Returns a new array of property values.
-   * @example
-   *
-   * _.values({ 'one': 1, 'two': 2, 'three': 3 });
-   * // => [1, 2, 3]
-   */
-  function values(object) {
-    var index = -1,
-        props = keys(object),
-        length = props.length,
-        result = Array(length);
-
-    while (++index < length) {
-      result[index] = object[props[index]];
-    }
-    return result;
-  }
-
-  /*--------------------------------------------------------------------------*/
-
-  /**
-   * Creates an array of elements from the specified indexes, or keys, of the
-   * `collection`. Indexes may be specified as individual arguments or as arrays
-   * of indexes.
-   *
-   * @static
-   * @memberOf _
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {Array|Number|String} [index1, index2, ...] The indexes of
-   *  `collection` to retrieve, either as individual arguments or arrays.
-   * @returns {Array} Returns a new array of elements corresponding to the
-   *  provided indexes.
-   * @example
-   *
-   * _.at(['a', 'b', 'c', 'd', 'e'], [0, 2, 4]);
-   * // => ['a', 'c', 'e']
-   *
-   * _.at(['moe', 'larry', 'curly'], 0, 2);
-   * // => ['moe', 'curly']
-   */
-  function at(collection) {
-    var index = -1,
-        props = concat.apply(arrayRef, slice(arguments, 1)),
-        length = props.length,
-        result = Array(length);
-
-    while(++index < length) {
-      result[index] = collection[props[index]];
-    }
-    return result;
-  }
-
-  /**
-   * Checks if a given `target` element is present in a `collection` using strict
-   * equality for comparisons, i.e. `===`. If `fromIndex` is negative, it is used
-   * as the offset from the end of the collection.
-   *
-   * @static
-   * @memberOf _
-   * @alias include
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {Mixed} target The value to check for.
-   * @param {Number} [fromIndex=0] The index to search from.
-   * @returns {Boolean} Returns `true` if the `target` element is found, else `false`.
-   * @example
-   *
-   * _.contains([1, 2, 3], 1);
-   * // => true
-   *
-   * _.contains([1, 2, 3], 1, 2);
-   * // => false
-   *
-   * _.contains({ 'name': 'moe', 'age': 40 }, 'moe');
-   * // => true
-   *
-   * _.contains('curly', 'ur');
-   * // => true
-   */
-  function contains(collection, target, fromIndex) {
-    var index = -1,
-        length = collection ? collection.length : 0,
-        result = false;
-
-    fromIndex = (fromIndex < 0 ? nativeMax(0, length + fromIndex) : fromIndex) || 0;
-    if (typeof length == 'number') {
-      result = (isString(collection)
-        ? collection.indexOf(target, fromIndex)
-        : indexOf(collection, target, fromIndex)
-      ) > -1;
-    } else {
-      each(collection, function(value) {
-        if (++index >= fromIndex) {
-          return !(result = value === target);
-        }
-      });
-    }
-    return result;
-  }
-
-  /**
-   * Creates an object composed of keys returned from running each element of the
-   * `collection` through the given `callback`. The corresponding value of each key
-   * is the number of times the key was returned by the `callback`. The `callback`
-   * is bound to `thisArg` and invoked with three arguments; (value, index|key, collection).
-   *
-   * If a property name is passed for `callback`, the created "_.pluck" style
-   * callback will return the property value of the given element.
-   *
-   * If an object is passed for `callback`, the created "_.where" style callback
-   * will return `true` for elements that have the propeties of the given object,
-   * else `false`.
-   *
-   * @static
-   * @memberOf _
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {Function|Object|String} [callback=identity] The function called per
-   *  iteration. If a property name or object is passed, it will be used to create
-   *  a "_.pluck" or "_.where" style callback, respectively.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Object} Returns the composed aggregate object.
-   * @example
-   *
-   * _.countBy([4.3, 6.1, 6.4], function(num) { return Math.floor(num); });
-   * // => { '4': 1, '6': 2 }
-   *
-   * _.countBy([4.3, 6.1, 6.4], function(num) { return this.floor(num); }, Math);
-   * // => { '4': 1, '6': 2 }
-   *
-   * _.countBy(['one', 'two', 'three'], 'length');
-   * // => { '3': 2, '5': 1 }
-   */
-  function countBy(collection, callback, thisArg) {
-    var result = {};
-    callback = createCallback(callback, thisArg);
-
-    forEach(collection, function(value, key, collection) {
-      key = callback(value, key, collection) + '';
-      (hasOwnProperty.call(result, key) ? result[key]++ : result[key] = 1);
-    });
-    return result;
-  }
-
-  /**
-   * Checks if the `callback` returns a truthy value for **all** elements of a
-   * `collection`. The `callback` is bound to `thisArg` and invoked with three
-   * arguments; (value, index|key, collection).
-   *
-   * If a property name is passed for `callback`, the created "_.pluck" style
-   * callback will return the property value of the given element.
-   *
-   * If an object is passed for `callback`, the created "_.where" style callback
-   * will return `true` for elements that have the propeties of the given object,
-   * else `false`.
-   *
-   * @static
-   * @memberOf _
-   * @alias all
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {Function|Object|String} [callback=identity] The function called per
-   *  iteration. If a property name or object is passed, it will be used to create
-   *  a "_.pluck" or "_.where" style callback, respectively.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Boolean} Returns `true` if all elements pass the callback check,
-   *  else `false`.
-   * @example
-   *
-   * _.every([true, 1, null, 'yes'], Boolean);
-   * // => false
-   *
-   * var stooges = [
-   *   { 'name': 'moe', 'age': 40 },
-   *   { 'name': 'larry', 'age': 50 }
-   * ];
-   *
-   * // using "_.pluck" callback shorthand
-   * _.every(stooges, 'age');
-   * // => true
-   *
-   * // using "_.where" callback shorthand
-   * _.every(stooges, { 'age': 50 });
-   * // => false
-   */
-  function every(collection, callback, thisArg) {
-    var result = true;
-    callback = createCallback(callback, thisArg);
-
-    if (isArray(collection)) {
-      var index = -1,
-          length = collection.length;
-
-      while (++index < length) {
-        if (!(result = !!callback(collection[index], index, collection))) {
-          break;
-        }
-      }
-    } else {
-      each(collection, function(value, index, collection) {
-        return (result = !!callback(value, index, collection));
-      });
-    }
-    return result;
-  }
-
-  /**
-   * Examines each element in a `collection`, returning an array of all elements
-   * the `callback` returns truthy for. The `callback` is bound to `thisArg` and
-   * invoked with three arguments; (value, index|key, collection).
-   *
-   * If a property name is passed for `callback`, the created "_.pluck" style
-   * callback will return the property value of the given element.
-   *
-   * If an object is passed for `callback`, the created "_.where" style callback
-   * will return `true` for elements that have the propeties of the given object,
-   * else `false`.
-   *
-   * @static
-   * @memberOf _
-   * @alias select
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {Function|Object|String} [callback=identity] The function called per
-   *  iteration. If a property name or object is passed, it will be used to create
-   *  a "_.pluck" or "_.where" style callback, respectively.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Array} Returns a new array of elements that passed the callback check.
-   * @example
-   *
-   * var evens = _.filter([1, 2, 3, 4, 5, 6], function(num) { return num % 2 == 0; });
-   * // => [2, 4, 6]
-   *
-   * var food = [
-   *   { 'name': 'apple',  'organic': false, 'type': 'fruit' },
-   *   { 'name': 'carrot', 'organic': true,  'type': 'vegetable' }
-   * ];
-   *
-   * // using "_.pluck" callback shorthand
-   * _.filter(food, 'organic');
-   * // => [{ 'name': 'carrot', 'organic': true, 'type': 'vegetable' }]
-   *
-   * // using "_.where" callback shorthand
-   * _.filter(food, { 'type': 'fruit' });
-   * // => [{ 'name': 'apple', 'organic': false, 'type': 'fruit' }]
-   */
-  function filter(collection, callback, thisArg) {
-    var result = [];
-    callback = createCallback(callback, thisArg);
-
-    if (isArray(collection)) {
-      var index = -1,
-          length = collection.length;
-
-      while (++index < length) {
-        var value = collection[index];
-        if (callback(value, index, collection)) {
-          result.push(value);
-        }
-      }
-    } else {
-      each(collection, function(value, index, collection) {
-        if (callback(value, index, collection)) {
-          result.push(value);
-        }
-      });
-    }
-    return result;
-  }
-
-  /**
-   * Examines each element in a `collection`, returning the first that the `callback`
-   * returns truthy for. The `callback` is bound to `thisArg` and invoked with three
-   * arguments; (value, index|key, collection).
-   *
-   * If a property name is passed for `callback`, the created "_.pluck" style
-   * callback will return the property value of the given element.
-   *
-   * If an object is passed for `callback`, the created "_.where" style callback
-   * will return `true` for elements that have the propeties of the given object,
-   * else `false`.
-   *
-   * @static
-   * @memberOf _
-   * @alias detect
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {Function|Object|String} [callback=identity] The function called per
-   *  iteration. If a property name or object is passed, it will be used to create
-   *  a "_.pluck" or "_.where" style callback, respectively.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Mixed} Returns the element that passed the callback check,
-   *  else `undefined`.
-   * @example
-   *
-   * var even = _.find([1, 2, 3, 4, 5, 6], function(num) { return num % 2 == 0; });
-   * // => 2
-   *
-   * var food = [
-   *   { 'name': 'apple',  'organic': false, 'type': 'fruit' },
-   *   { 'name': 'banana', 'organic': true,  'type': 'fruit' },
-   *   { 'name': 'beet',   'organic': false, 'type': 'vegetable' },
-   *   { 'name': 'carrot', 'organic': true,  'type': 'vegetable' }
-   * ];
-   *
-   * // using "_.where" callback shorthand
-   * var veggie = _.find(food, { 'type': 'vegetable' });
-   * // => { 'name': 'beet', 'organic': false, 'type': 'vegetable' }
-   *
-   * // using "_.pluck" callback shorthand
-   * var healthy = _.find(food, 'organic');
-   * // => { 'name': 'banana', 'organic': true, 'type': 'fruit' }
-   */
-  function find(collection, callback, thisArg) {
-    var result;
-    callback = createCallback(callback, thisArg);
-
-    forEach(collection, function(value, index, collection) {
-      if (callback(value, index, collection)) {
-        result = value;
-        return false;
-      }
-    });
-    return result;
-  }
-
-  /**
-   * Iterates over a `collection`, executing the `callback` for each element in
-   * the `collection`. The `callback` is bound to `thisArg` and invoked with three
-   * arguments; (value, index|key, collection). Callbacks may exit iteration early
-   * by explicitly returning `false`.
-   *
-   * @static
-   * @memberOf _
-   * @alias each
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {Function} [callback=identity] The function called per iteration.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Array|Object|String} Returns `collection`.
-   * @example
-   *
-   * _([1, 2, 3]).forEach(alert).join(',');
-   * // => alerts each number and returns '1,2,3'
-   *
-   * _.forEach({ 'one': 1, 'two': 2, 'three': 3 }, alert);
-   * // => alerts each number value (order is not guaranteed)
-   */
-  function forEach(collection, callback, thisArg) {
-    if (callback && typeof thisArg == 'undefined' && isArray(collection)) {
-      var index = -1,
-          length = collection.length;
-
-      while (++index < length) {
-        if (callback(collection[index], index, collection) === false) {
-          break;
-        }
-      }
-    } else {
-      each(collection, callback, thisArg);
-    }
-    return collection;
-  }
-
-  /**
-   * Creates an object composed of keys returned from running each element of the
-   * `collection` through the `callback`. The corresponding value of each key is
-   * an array of elements passed to `callback` that returned the key. The `callback`
-   * is bound to `thisArg` and invoked with three arguments; (value, index|key, collection).
-   *
-   * If a property name is passed for `callback`, the created "_.pluck" style
-   * callback will return the property value of the given element.
-   *
-   * If an object is passed for `callback`, the created "_.where" style callback
-   * will return `true` for elements that have the propeties of the given object,
-   * else `false`
-   *
-   * @static
-   * @memberOf _
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {Function|Object|String} [callback=identity] The function called per
-   *  iteration. If a property name or object is passed, it will be used to create
-   *  a "_.pluck" or "_.where" style callback, respectively.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Object} Returns the composed aggregate object.
-   * @example
-   *
-   * _.groupBy([4.2, 6.1, 6.4], function(num) { return Math.floor(num); });
-   * // => { '4': [4.2], '6': [6.1, 6.4] }
-   *
-   * _.groupBy([4.2, 6.1, 6.4], function(num) { return this.floor(num); }, Math);
-   * // => { '4': [4.2], '6': [6.1, 6.4] }
-   *
-   * // using "_.pluck" callback shorthand
-   * _.groupBy(['one', 'two', 'three'], 'length');
-   * // => { '3': ['one', 'two'], '5': ['three'] }
-   */
-  function groupBy(collection, callback, thisArg) {
-    var result = {};
-    callback = createCallback(callback, thisArg);
-
-    forEach(collection, function(value, key, collection) {
-      key = callback(value, key, collection) + '';
-      (hasOwnProperty.call(result, key) ? result[key] : result[key] = []).push(value);
-    });
-    return result;
-  }
-
-  /**
-   * Invokes the method named by `methodName` on each element in the `collection`,
-   * returning an array of the results of each invoked method. Additional arguments
-   * will be passed to each invoked method. If `methodName` is a function, it will
-   * be invoked for, and `this` bound to, each element in the `collection`.
-   *
-   * @static
-   * @memberOf _
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {Function|String} methodName The name of the method to invoke or
-   *  the function invoked per iteration.
-   * @param {Mixed} [arg1, arg2, ...] Arguments to invoke the method with.
-   * @returns {Array} Returns a new array of the results of each invoked method.
-   * @example
-   *
-   * _.invoke([[5, 1, 7], [3, 2, 1]], 'sort');
-   * // => [[1, 5, 7], [1, 2, 3]]
-   *
-   * _.invoke([123, 456], String.prototype.split, '');
-   * // => [['1', '2', '3'], ['4', '5', '6']]
-   */
-  function invoke(collection, methodName) {
-    var args = slice(arguments, 2),
-        index = -1,
-        isFunc = typeof methodName == 'function',
-        length = collection ? collection.length : 0,
-        result = Array(typeof length == 'number' ? length : 0);
-
-    forEach(collection, function(value) {
-      result[++index] = (isFunc ? methodName : value[methodName]).apply(value, args);
-    });
-    return result;
-  }
-
-  /**
-   * Creates an array of values by running each element in the `collection`
-   * through the `callback`. The `callback` is bound to `thisArg` and invoked with
-   * three arguments; (value, index|key, collection).
-   *
-   * If a property name is passed for `callback`, the created "_.pluck" style
-   * callback will return the property value of the given element.
-   *
-   * If an object is passed for `callback`, the created "_.where" style callback
-   * will return `true` for elements that have the propeties of the given object,
-   * else `false`.
-   *
-   * @static
-   * @memberOf _
-   * @alias collect
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {Function|Object|String} [callback=identity] The function called per
-   *  iteration. If a property name or object is passed, it will be used to create
-   *  a "_.pluck" or "_.where" style callback, respectively.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Array} Returns a new array of the results of each `callback` execution.
-   * @example
-   *
-   * _.map([1, 2, 3], function(num) { return num * 3; });
-   * // => [3, 6, 9]
-   *
-   * _.map({ 'one': 1, 'two': 2, 'three': 3 }, function(num) { return num * 3; });
-   * // => [3, 6, 9] (order is not guaranteed)
-   *
-   * var stooges = [
-   *   { 'name': 'moe', 'age': 40 },
-   *   { 'name': 'larry', 'age': 50 }
-   * ];
-   *
-   * // using "_.pluck" callback shorthand
-   * _.map(stooges, 'name');
-   * // => ['moe', 'larry']
-   */
-  function map(collection, callback, thisArg) {
-    var index = -1,
-        length = collection ? collection.length : 0,
-        result = Array(typeof length == 'number' ? length : 0);
-
-    callback = createCallback(callback, thisArg);
-    if (isArray(collection)) {
-      while (++index < length) {
-        result[index] = callback(collection[index], index, collection);
-      }
-    } else {
-      each(collection, function(value, key, collection) {
-        result[++index] = callback(value, key, collection);
-      });
-    }
-    return result;
-  }
-
-  /**
-   * Retrieves the maximum value of an `array`. If `callback` is passed,
-   * it will be executed for each value in the `array` to generate the
-   * criterion by which the value is ranked. The `callback` is bound to
-   * `thisArg` and invoked with three arguments; (value, index, collection).
-   *
-   * If a property name is passed for `callback`, the created "_.pluck" style
-   * callback will return the property value of the given element.
-   *
-   * If an object is passed for `callback`, the created "_.where" style callback
-   * will return `true` for elements that have the propeties of the given object,
-   * else `false`.
-   *
-   * @static
-   * @memberOf _
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {Function|Object|String} [callback=identity] The function called per
-   *  iteration. If a property name or object is passed, it will be used to create
-   *  a "_.pluck" or "_.where" style callback, respectively.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Mixed} Returns the maximum value.
-   * @example
-   *
-   * _.max([4, 2, 8, 6]);
-   * // => 8
-   *
-   * var stooges = [
-   *   { 'name': 'moe', 'age': 40 },
-   *   { 'name': 'larry', 'age': 50 }
-   * ];
-   *
-   * _.max(stooges, function(stooge) { return stooge.age; });
-   * // => { 'name': 'larry', 'age': 50 };
-   *
-   * // using "_.pluck" callback shorthand
-   * _.max(stooges, 'age');
-   * // => { 'name': 'larry', 'age': 50 };
-   */
-  function max(collection, callback, thisArg) {
-    var computed = -Infinity,
-        result = computed;
-
-    if (!callback && isArray(collection)) {
-      var index = -1,
-          length = collection.length;
-
-      while (++index < length) {
-        var value = collection[index];
-        if (value > result) {
-          result = value;
-        }
-      }
-    } else {
-      callback = !callback && isString(collection)
-        ? charAtCallback
-        : createCallback(callback, thisArg);
-
-      each(collection, function(value, index, collection) {
-        var current = callback(value, index, collection);
-        if (current > computed) {
-          computed = current;
-          result = value;
-        }
-      });
-    }
-    return result;
-  }
-
-  /**
-   * Retrieves the minimum value of an `array`. If `callback` is passed,
-   * it will be executed for each value in the `array` to generate the
-   * criterion by which the value is ranked. The `callback` is bound to `thisArg`
-   * and invoked with three arguments; (value, index, collection).
-   *
-   * If a property name is passed for `callback`, the created "_.pluck" style
-   * callback will return the property value of the given element.
-   *
-   * If an object is passed for `callback`, the created "_.where" style callback
-   * will return `true` for elements that have the propeties of the given object,
-   * else `false`.
-   *
-   * @static
-   * @memberOf _
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {Function|Object|String} [callback=identity] The function called per
-   *  iteration. If a property name or object is passed, it will be used to create
-   *  a "_.pluck" or "_.where" style callback, respectively.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Mixed} Returns the minimum value.
-   * @example
-   *
-   * _.min([4, 2, 8, 6]);
-   * // => 2
-   *
-   * var stooges = [
-   *   { 'name': 'moe', 'age': 40 },
-   *   { 'name': 'larry', 'age': 50 }
-   * ];
-   *
-   * _.min(stooges, function(stooge) { return stooge.age; });
-   * // => { 'name': 'moe', 'age': 40 };
-   *
-   * // using "_.pluck" callback shorthand
-   * _.min(stooges, 'age');
-   * // => { 'name': 'moe', 'age': 40 };
-   */
-  function min(collection, callback, thisArg) {
-    var computed = Infinity,
-        result = computed;
-
-    if (!callback && isArray(collection)) {
-      var index = -1,
-          length = collection.length;
-
-      while (++index < length) {
-        var value = collection[index];
-        if (value < result) {
-          result = value;
-        }
-      }
-    } else {
-      callback = !callback && isString(collection)
-        ? charAtCallback
-        : createCallback(callback, thisArg);
-
-      each(collection, function(value, index, collection) {
-        var current = callback(value, index, collection);
-        if (current < computed) {
-          computed = current;
-          result = value;
-        }
-      });
-    }
-    return result;
-  }
-
-  /**
-   * Retrieves the value of a specified property from all elements in the `collection`.
-   *
-   * @static
-   * @memberOf _
-   * @type Function
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {String} property The property to pluck.
-   * @returns {Array} Returns a new array of property values.
-   * @example
-   *
-   * var stooges = [
-   *   { 'name': 'moe', 'age': 40 },
-   *   { 'name': 'larry', 'age': 50 }
-   * ];
-   *
-   * _.pluck(stooges, 'name');
-   * // => ['moe', 'larry']
-   */
-  var pluck = map;
-
-  /**
-   * Reduces a `collection` to a value that is the accumulated result of running
-   * each element in the `collection` through the `callback`, where each successive
-   * `callback` execution consumes the return value of the previous execution.
-   * If `accumulator` is not passed, the first element of the `collection` will be
-   * used as the initial `accumulator` value. The `callback` is bound to `thisArg`
-   * and invoked with four arguments; (accumulator, value, index|key, collection).
-   *
-   * @static
-   * @memberOf _
-   * @alias foldl, inject
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {Function} [callback=identity] The function called per iteration.
-   * @param {Mixed} [accumulator] Initial value of the accumulator.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Mixed} Returns the accumulated value.
-   * @example
-   *
-   * var sum = _.reduce([1, 2, 3], function(sum, num) {
-   *   return sum + num;
-   * });
-   * // => 6
-   *
-   * var mapped = _.reduce({ 'a': 1, 'b': 2, 'c': 3 }, function(result, num, key) {
-   *   result[key] = num * 3;
-   *   return result;
-   * }, {});
-   * // => { 'a': 3, 'b': 6, 'c': 9 }
-   */
-  function reduce(collection, callback, accumulator, thisArg) {
-    var noaccum = arguments.length < 3;
-    callback = createCallback(callback, thisArg, 4);
-
-    if (isArray(collection)) {
-      var index = -1,
-          length = collection.length;
-
-      if (noaccum) {
-        accumulator = collection[++index];
-      }
-      while (++index < length) {
-        accumulator = callback(accumulator, collection[index], index, collection);
-      }
-    } else {
-      each(collection, function(value, index, collection) {
-        accumulator = noaccum
-          ? (noaccum = false, value)
-          : callback(accumulator, value, index, collection)
-      });
-    }
-    return accumulator;
-  }
-
-  /**
-   * This method is similar to `_.reduce`, except that it iterates over a
-   * `collection` from right to left.
-   *
-   * @static
-   * @memberOf _
-   * @alias foldr
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {Function} [callback=identity] The function called per iteration.
-   * @param {Mixed} [accumulator] Initial value of the accumulator.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Mixed} Returns the accumulated value.
-   * @example
-   *
-   * var list = [[0, 1], [2, 3], [4, 5]];
-   * var flat = _.reduceRight(list, function(a, b) { return a.concat(b); }, []);
-   * // => [4, 5, 2, 3, 0, 1]
-   */
-  function reduceRight(collection, callback, accumulator, thisArg) {
-    var iterable = collection,
-        length = collection ? collection.length : 0,
-        noaccum = arguments.length < 3;
-
-    if (typeof length != 'number') {
-      var props = keys(collection);
-      length = props.length;
-    }
-    callback = createCallback(callback, thisArg, 4);
-    forEach(collection, function(value, index, collection) {
-      index = props ? props[--length] : --length;
-      accumulator = noaccum
-        ? (noaccum = false, iterable[index])
-        : callback(accumulator, iterable[index], index, collection);
-    });
-    return accumulator;
-  }
-
-  /**
-   * The opposite of `_.filter`, this method returns the elements of a
-   * `collection` that `callback` does **not** return truthy for.
-   *
-   * If a property name is passed for `callback`, the created "_.pluck" style
-   * callback will return the property value of the given element.
-   *
-   * If an object is passed for `callback`, the created "_.where" style callback
-   * will return `true` for elements that have the propeties of the given object,
-   * else `false`.
-   *
-   * @static
-   * @memberOf _
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {Function|Object|String} [callback=identity] The function called per
-   *  iteration. If a property name or object is passed, it will be used to create
-   *  a "_.pluck" or "_.where" style callback, respectively.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Array} Returns a new array of elements that did **not** pass the
-   *  callback check.
-   * @example
-   *
-   * var odds = _.reject([1, 2, 3, 4, 5, 6], function(num) { return num % 2 == 0; });
-   * // => [1, 3, 5]
-   *
-   * var food = [
-   *   { 'name': 'apple',  'organic': false, 'type': 'fruit' },
-   *   { 'name': 'carrot', 'organic': true,  'type': 'vegetable' }
-   * ];
-   *
-   * // using "_.pluck" callback shorthand
-   * _.reject(food, 'organic');
-   * // => [{ 'name': 'apple', 'organic': false, 'type': 'fruit' }]
-   *
-   * // using "_.where" callback shorthand
-   * _.reject(food, { 'type': 'fruit' });
-   * // => [{ 'name': 'carrot', 'organic': true, 'type': 'vegetable' }]
-   */
-  function reject(collection, callback, thisArg) {
-    callback = createCallback(callback, thisArg);
-    return filter(collection, function(value, index, collection) {
-      return !callback(value, index, collection);
-    });
-  }
-
-  /**
-   * Creates an array of shuffled `array` values, using a version of the
-   * Fisher-Yates shuffle. See http://en.wikipedia.org/wiki/Fisher-Yates_shuffle.
-   *
-   * @static
-   * @memberOf _
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to shuffle.
-   * @returns {Array} Returns a new shuffled collection.
-   * @example
-   *
-   * _.shuffle([1, 2, 3, 4, 5, 6]);
-   * // => [4, 1, 6, 3, 5, 2]
-   */
-  function shuffle(collection) {
-    var index = -1,
-        length = collection ? collection.length : 0,
-        result = Array(typeof length == 'number' ? length : 0);
-
-    forEach(collection, function(value) {
-      var rand = floor(nativeRandom() * (++index + 1));
-      result[index] = result[rand];
-      result[rand] = value;
-    });
-    return result;
-  }
-
-  /**
-   * Gets the size of the `collection` by returning `collection.length` for arrays
-   * and array-like objects or the number of own enumerable properties for objects.
-   *
-   * @static
-   * @memberOf _
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to inspect.
-   * @returns {Number} Returns `collection.length` or number of own enumerable properties.
-   * @example
-   *
-   * _.size([1, 2]);
-   * // => 2
-   *
-   * _.size({ 'one': 1, 'two': 2, 'three': 3 });
-   * // => 3
-   *
-   * _.size('curly');
-   * // => 5
-   */
-  function size(collection) {
-    var length = collection ? collection.length : 0;
-    return typeof length == 'number' ? length : keys(collection).length;
-  }
-
-  /**
-   * Checks if the `callback` returns a truthy value for **any** element of a
-   * `collection`. The function returns as soon as it finds passing value, and
-   * does not iterate over the entire `collection`. The `callback` is bound to
-   * `thisArg` and invoked with three arguments; (value, index|key, collection).
-   *
-   * If a property name is passed for `callback`, the created "_.pluck" style
-   * callback will return the property value of the given element.
-   *
-   * If an object is passed for `callback`, the created "_.where" style callback
-   * will return `true` for elements that have the propeties of the given object,
-   * else `false`.
-   *
-   * @static
-   * @memberOf _
-   * @alias any
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {Function|Object|String} [callback=identity] The function called per
-   *  iteration. If a property name or object is passed, it will be used to create
-   *  a "_.pluck" or "_.where" style callback, respectively.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Boolean} Returns `true` if any element passes the callback check,
-   *  else `false`.
-   * @example
-   *
-   * _.some([null, 0, 'yes', false], Boolean);
-   * // => true
-   *
-   * var food = [
-   *   { 'name': 'apple',  'organic': false, 'type': 'fruit' },
-   *   { 'name': 'carrot', 'organic': true,  'type': 'vegetable' }
-   * ];
-   *
-   * // using "_.pluck" callback shorthand
-   * _.some(food, 'organic');
-   * // => true
-   *
-   * // using "_.where" callback shorthand
-   * _.some(food, { 'type': 'meat' });
-   * // => false
-   */
-  function some(collection, callback, thisArg) {
-    var result;
-    callback = createCallback(callback, thisArg);
-
-    if (isArray(collection)) {
-      var index = -1,
-          length = collection.length;
-
-      while (++index < length) {
-        if ((result = callback(collection[index], index, collection))) {
-          break;
-        }
-      }
-    } else {
-      each(collection, function(value, index, collection) {
-        return !(result = callback(value, index, collection));
-      });
-    }
-    return !!result;
-  }
-
-  /**
-   * Creates an array of elements, sorted in ascending order by the results of
-   * running each element in the `collection` through the `callback`. This method
-   * performs a stable sort, that is, it will preserve the original sort order of
-   * equal elements. The `callback` is bound to `thisArg` and invoked with three
-   * arguments; (value, index|key, collection).
-   *
-   * If a property name is passed for `callback`, the created "_.pluck" style
-   * callback will return the property value of the given element.
-   *
-   * If an object is passed for `callback`, the created "_.where" style callback
-   * will return `true` for elements that have the propeties of the given object,
-   * else `false`.
-   *
-   * @static
-   * @memberOf _
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {Function|Object|String} [callback=identity] The function called per
-   *  iteration. If a property name or object is passed, it will be used to create
-   *  a "_.pluck" or "_.where" style callback, respectively.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Array} Returns a new array of sorted elements.
-   * @example
-   *
-   * _.sortBy([1, 2, 3], function(num) { return Math.sin(num); });
-   * // => [3, 1, 2]
-   *
-   * _.sortBy([1, 2, 3], function(num) { return this.sin(num); }, Math);
-   * // => [3, 1, 2]
-   *
-   * // using "_.pluck" callback shorthand
-   * _.sortBy(['banana', 'strawberry', 'apple'], 'length');
-   * // => ['apple', 'banana', 'strawberry']
-   */
-  function sortBy(collection, callback, thisArg) {
-    var index = -1,
-        length = collection ? collection.length : 0,
-        result = Array(typeof length == 'number' ? length : 0);
-
-    callback = createCallback(callback, thisArg);
-    forEach(collection, function(value, key, collection) {
-      result[++index] = {
-        'criteria': callback(value, key, collection),
-        'index': index,
-        'value': value
-      };
-    });
-
-    length = result.length;
-    result.sort(compareAscending);
-    while (length--) {
-      result[length] = result[length].value;
-    }
-    return result;
-  }
-
-  /**
-   * Converts the `collection` to an array.
-   *
-   * @static
-   * @memberOf _
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to convert.
-   * @returns {Array} Returns the new converted array.
-   * @example
-   *
-   * (function() { return _.toArray(arguments).slice(1); })(1, 2, 3, 4);
-   * // => [2, 3, 4]
-   */
-  function toArray(collection) {
-    if (collection && typeof collection.length == 'number') {
-      return  slice(collection);
-    }
-    return values(collection);
-  }
-
-  /**
-   * Examines each element in a `collection`, returning an array of all elements
-   * that have the given `properties`. When checking `properties`, this method
-   * performs a deep comparison between values to determine if they are equivalent
-   * to each other.
-   *
-   * @static
-   * @memberOf _
-   * @type Function
-   * @category Collections
-   * @param {Array|Object|String} collection The collection to iterate over.
-   * @param {Object} properties The object of property values to filter by.
-   * @returns {Array} Returns a new array of elements that have the given `properties`.
-   * @example
-   *
-   * var stooges = [
-   *   { 'name': 'moe', 'age': 40 },
-   *   { 'name': 'larry', 'age': 50 }
-   * ];
-   *
-   * _.where(stooges, { 'age': 40 });
-   * // => [{ 'name': 'moe', 'age': 40 }]
-   */
-  var where = filter;
-
-  /*--------------------------------------------------------------------------*/
-
-  /**
-   * Creates an array with all falsey values of `array` removed. The values
-   * `false`, `null`, `0`, `""`, `undefined` and `NaN` are all falsey.
-   *
-   * @static
-   * @memberOf _
-   * @category Arrays
-   * @param {Array} array The array to compact.
-   * @returns {Array} Returns a new filtered array.
-   * @example
-   *
-   * _.compact([0, 1, false, 2, '', 3]);
-   * // => [1, 2, 3]
-   */
-  function compact(array) {
-    var index = -1,
-        length = array ? array.length : 0,
-        result = [];
-
-    while (++index < length) {
-      var value = array[index];
-      if (value) {
-        result.push(value);
-      }
-    }
-    return result;
-  }
-
-  /**
-   * Creates an array of `array` elements not present in the other arrays
-   * using strict equality for comparisons, i.e. `===`.
-   *
-   * @static
-   * @memberOf _
-   * @category Arrays
-   * @param {Array} array The array to process.
-   * @param {Array} [array1, array2, ...] Arrays to check.
-   * @returns {Array} Returns a new array of `array` elements not present in the
-   *  other arrays.
-   * @example
-   *
-   * _.difference([1, 2, 3, 4, 5], [5, 2, 10]);
-   * // => [1, 3, 4]
-   */
-  function difference(array) {
-    var index = -1,
-        length = array ? array.length : 0,
-        flattened = concat.apply(arrayRef, arguments),
-        contains = cachedContains(flattened, length),
-        result = [];
-
-    while (++index < length) {
-      var value = array[index];
-      if (!contains(value)) {
-        result.push(value);
-      }
-    }
-    return result;
-  }
-
-  /**
-   * Gets the first element of the `array`. If a number `n` is passed, the first
-   * `n` elements of the `array` are returned. If a `callback` function is passed,
-   * the first elements the `callback` returns truthy for are returned. The `callback`
-   * is bound to `thisArg` and invoked with three arguments; (value, index, array).
-   *
-   * If a property name is passed for `callback`, the created "_.pluck" style
-   * callback will return the property value of the given element.
-   *
-   * If an object is passed for `callback`, the created "_.where" style callback
-   * will return `true` for elements that have the propeties of the given object,
-   * else `false`.
-   *
-   * @static
-   * @memberOf _
-   * @alias head, take
-   * @category Arrays
-   * @param {Array} array The array to query.
-   * @param {Function|Object|Number|String} [callback|n] The function called
-   *  per element or the number of elements to return. If a property name or
-   *  object is passed, it will be used to create a "_.pluck" or "_.where"
-   *  style callback, respectively.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Mixed} Returns the first element(s) of `array`.
-   * @example
-   *
-   * _.first([1, 2, 3]);
-   * // => 1
-   *
-   * _.first([1, 2, 3], 2);
-   * // => [1, 2]
-   *
-   * _.first([1, 2, 3], function(num) {
-   *   return num < 3;
-   * });
-   * // => [1, 2]
-   *
-   * var food = [
-   *   { 'name': 'banana', 'organic': true },
-   *   { 'name': 'beet',   'organic': false },
-   * ];
-   *
-   * // using "_.pluck" callback shorthand
-   * _.first(food, 'organic');
-   * // => [{ 'name': 'banana', 'organic': true }]
-   *
-   * var food = [
-   *   { 'name': 'apple',  'type': 'fruit' },
-   *   { 'name': 'banana', 'type': 'fruit' },
-   *   { 'name': 'beet',   'type': 'vegetable' }
-   * ];
-   *
-   * // using "_.where" callback shorthand
-   * _.first(food, { 'type': 'fruit' });
-   * // => [{ 'name': 'apple', 'type': 'fruit' }, { 'name': 'banana', 'type': 'fruit' }]
-   */
-  function first(array, callback, thisArg) {
-    if (array) {
-      var n = 0,
-          length = array.length;
-
-      if (typeof callback != 'number' && callback != null) {
-        var index = -1;
-        callback = createCallback(callback, thisArg);
-        while (++index < length && callback(array[index], index, array)) {
-          n++;
-        }
-      } else {
-        n = callback;
-        if (n == null || thisArg) {
-          return array[0];
-        }
-      }
-      return slice(array, 0, nativeMin(nativeMax(0, n), length));
-    }
-  }
-
-  /**
-   * Flattens a nested array (the nesting can be to any depth). If `shallow` is
-   * truthy, `array` will only be flattened a single level.
-   *
-   * @static
-   * @memberOf _
-   * @category Arrays
-   * @param {Array} array The array to compact.
-   * @param {Boolean} shallow A flag to indicate only flattening a single level.
-   * @returns {Array} Returns a new flattened array.
-   * @example
-   *
-   * _.flatten([1, [2], [3, [[4]]]]);
-   * // => [1, 2, 3, 4];
-   *
-   * _.flatten([1, [2], [3, [[4]]]], true);
-   * // => [1, 2, 3, [[4]]];
-   */
-  function flatten(array, shallow) {
-    var index = -1,
-        length = array ? array.length : 0,
-        result = [];
-
-    while (++index < length) {
-      var value = array[index];
-
-      // recursively flatten arrays (susceptible to call stack limits)
-      if (isArray(value)) {
-        push.apply(result, shallow ? value : flatten(value));
-      } else {
-        result.push(value);
-      }
-    }
-    return result;
-  }
-
-  /**
-   * Gets the index at which the first occurrence of `value` is found using
-   * strict equality for comparisons, i.e. `===`. If the `array` is already
-   * sorted, passing `true` for `fromIndex` will run a faster binary search.
-   *
-   * @static
-   * @memberOf _
-   * @category Arrays
-   * @param {Array} array The array to search.
-   * @param {Mixed} value The value to search for.
-   * @param {Boolean|Number} [fromIndex=0] The index to search from or `true` to
-   *  perform a binary search on a sorted `array`.
-   * @returns {Number} Returns the index of the matched value or `-1`.
-   * @example
-   *
-   * _.indexOf([1, 2, 3, 1, 2, 3], 2);
-   * // => 1
-   *
-   * _.indexOf([1, 2, 3, 1, 2, 3], 2, 3);
-   * // => 4
-   *
-   * _.indexOf([1, 1, 2, 2, 3, 3], 2, true);
-   * // => 2
-   */
-  function indexOf(array, value, fromIndex) {
-    var index = -1,
-        length = array ? array.length : 0;
-
-    if (typeof fromIndex == 'number') {
-      index = (fromIndex < 0 ? nativeMax(0, length + fromIndex) : fromIndex || 0) - 1;
-    } else if (fromIndex) {
-      index = sortedIndex(array, value);
-      return array[index] === value ? index : -1;
-    }
-    while (++index < length) {
-      if (array[index] === value) {
-        return index;
-      }
-    }
-    return -1;
-  }
-
-  /**
-   * Gets all but the last element of `array`. If a number `n` is passed, the
-   * last `n` elements are excluded from the result. If a `callback` function
-   * is passed, the last elements the `callback` returns truthy for are excluded
-   * from the result. The `callback` is bound to `thisArg` and invoked with three
-   * arguments; (value, index, array).
-   *
-   * If a property name is passed for `callback`, the created "_.pluck" style
-   * callback will return the property value of the given element.
-   *
-   * If an object is passed for `callback`, the created "_.where" style callback
-   * will return `true` for elements that have the propeties of the given object,
-   * else `false`.
-   *
-   * @static
-   * @memberOf _
-   * @category Arrays
-   * @param {Array} array The array to query.
-   * @param {Function|Object|Number|String} [callback|n=1] The function called
-   *  per element or the number of elements to exclude. If a property name or
-   *  object is passed, it will be used to create a "_.pluck" or "_.where"
-   *  style callback, respectively.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Array} Returns a slice of `array`.
-   * @example
-   *
-   * _.initial([1, 2, 3]);
-   * // => [1, 2]
-   *
-   * _.initial([1, 2, 3], 2);
-   * // => [1]
-   *
-   * _.initial([1, 2, 3], function(num) {
-   *   return num > 1;
-   * });
-   * // => [1]
-   *
-   * var food = [
-   *   { 'name': 'beet',   'organic': false },
-   *   { 'name': 'carrot', 'organic': true }
-   * ];
-   *
-   * // using "_.pluck" callback shorthand
-   * _.initial(food, 'organic');
-   * // => [{ 'name': 'beet',   'organic': false }]
-   *
-   * var food = [
-   *   { 'name': 'banana', 'type': 'fruit' },
-   *   { 'name': 'beet',   'type': 'vegetable' },
-   *   { 'name': 'carrot', 'type': 'vegetable' }
-   * ];
-   *
-   * // using "_.where" callback shorthand
-   * _.initial(food, { 'type': 'vegetable' });
-   * // => [{ 'name': 'banana', 'type': 'fruit' }]
-   */
-  function initial(array, callback, thisArg) {
-    if (!array) {
-      return [];
-    }
-    var n = 0,
-        length = array.length;
-
-    if (typeof callback != 'number' && callback != null) {
-      var index = length;
-      callback = createCallback(callback, thisArg);
-      while (index-- && callback(array[index], index, array)) {
-        n++;
-      }
-    } else {
-      n = (callback == null || thisArg) ? 1 : callback || n;
-    }
-    return slice(array, 0, nativeMin(nativeMax(0, length - n), length));
-  }
-
-  /**
-   * Computes the intersection of all the passed-in arrays using strict equality
-   * for comparisons, i.e. `===`.
-   *
-   * @static
-   * @memberOf _
-   * @category Arrays
-   * @param {Array} [array1, array2, ...] Arrays to process.
-   * @returns {Array} Returns a new array of unique elements that are present
-   *  in **all** of the arrays.
-   * @example
-   *
-   * _.intersection([1, 2, 3], [101, 2, 1, 10], [2, 1]);
-   * // => [1, 2]
-   */
-  function intersection(array) {
-    var args = arguments,
-        argsLength = args.length,
-        cache = { '0': {} },
-        index = -1,
-        length = array ? array.length : 0,
-        isLarge = length >= 100,
-        result = [],
-        seen = result;
-
-    outer:
-    while (++index < length) {
-      var value = array[index];
-      if (isLarge) {
-        var key = value + '';
-        var inited = hasOwnProperty.call(cache[0], key)
-          ? !(seen = cache[0][key])
-          : (seen = cache[0][key] = []);
-      }
-      if (inited || indexOf(seen, value) < 0) {
-        if (isLarge) {
-          seen.push(value);
-        }
-        var argsIndex = argsLength;
-        while (--argsIndex) {
-          if (!(cache[argsIndex] || (cache[argsIndex] = cachedContains(args[argsIndex], 0, 100)))(value)) {
-            continue outer;
-          }
-        }
-        result.push(value);
-      }
-    }
-    return result;
-  }
-
-  /**
-   * Gets the last element of the `array`. If a number `n` is passed, the last
-   * `n` elements of the `array` are returned. If a `callback` function is passed,
-   * the last elements the `callback` returns truthy for are returned. The `callback`
-   * is bound to `thisArg` and invoked with three arguments; (value, index, array).
-   *
-   *
-   * If a property name is passed for `callback`, the created "_.pluck" style
-   * callback will return the property value of the given element.
-   *
-   * If an object is passed for `callback`, the created "_.where" style callback
-   * will return `true` for elements that have the propeties of the given object,
-   * else `false`.
-   *
-   * @static
-   * @memberOf _
-   * @category Arrays
-   * @param {Array} array The array to query.
-   * @param {Function|Object|Number|String} [callback|n] The function called
-   *  per element or the number of elements to return. If a property name or
-   *  object is passed, it will be used to create a "_.pluck" or "_.where"
-   *  style callback, respectively.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Mixed} Returns the last element(s) of `array`.
-   * @example
-   *
-   * _.last([1, 2, 3]);
-   * // => 3
-   *
-   * _.last([1, 2, 3], 2);
-   * // => [2, 3]
-   *
-   * _.last([1, 2, 3], function(num) {
-   *   return num > 1;
-   * });
-   * // => [2, 3]
-   *
-   * var food = [
-   *   { 'name': 'beet',   'organic': false },
-   *   { 'name': 'carrot', 'organic': true }
-   * ];
-   *
-   * // using "_.pluck" callback shorthand
-   * _.last(food, 'organic');
-   * // => [{ 'name': 'carrot', 'organic': true }]
-   *
-   * var food = [
-   *   { 'name': 'banana', 'type': 'fruit' },
-   *   { 'name': 'beet',   'type': 'vegetable' },
-   *   { 'name': 'carrot', 'type': 'vegetable' }
-   * ];
-   *
-   * // using "_.where" callback shorthand
-   * _.last(food, { 'type': 'vegetable' });
-   * // => [{ 'name': 'beet', 'type': 'vegetable' }, { 'name': 'carrot', 'type': 'vegetable' }]
-   */
-  function last(array, callback, thisArg) {
-    if (array) {
-      var n = 0,
-          length = array.length;
-
-      if (typeof callback != 'number' && callback != null) {
-        var index = length;
-        callback = createCallback(callback, thisArg);
-        while (index-- && callback(array[index], index, array)) {
-          n++;
-        }
-      } else {
-        n = callback;
-        if (n == null || thisArg) {
-          return array[length - 1];
-        }
-      }
-      return slice(array, nativeMax(0, length - n));
-    }
-  }
-
-  /**
-   * Gets the index at which the last occurrence of `value` is found using strict
-   * equality for comparisons, i.e. `===`. If `fromIndex` is negative, it is used
-   * as the offset from the end of the collection.
-   *
-   * @static
-   * @memberOf _
-   * @category Arrays
-   * @param {Array} array The array to search.
-   * @param {Mixed} value The value to search for.
-   * @param {Number} [fromIndex=array.length-1] The index to search from.
-   * @returns {Number} Returns the index of the matched value or `-1`.
-   * @example
-   *
-   * _.lastIndexOf([1, 2, 3, 1, 2, 3], 2);
-   * // => 4
-   *
-   * _.lastIndexOf([1, 2, 3, 1, 2, 3], 2, 3);
-   * // => 1
-   */
-  function lastIndexOf(array, value, fromIndex) {
-    var index = array ? array.length : 0;
-    if (typeof fromIndex == 'number') {
-      index = (fromIndex < 0 ? nativeMax(0, index + fromIndex) : nativeMin(fromIndex, index - 1)) + 1;
-    }
-    while (index--) {
-      if (array[index] === value) {
-        return index;
-      }
-    }
-    return -1;
-  }
-
-  /**
-   * Creates an object composed from arrays of `keys` and `values`. Pass either
-   * a single two dimensional array, i.e. `[[key1, value1], [key2, value2]]`, or
-   * two arrays, one of `keys` and one of corresponding `values`.
-   *
-   * @static
-   * @memberOf _
-   * @category Arrays
-   * @param {Array} keys The array of keys.
-   * @param {Array} [values=[]] The array of values.
-   * @returns {Object} Returns an object composed of the given keys and
-   *  corresponding values.
-   * @example
-   *
-   * _.object(['moe', 'larry'], [30, 40]);
-   * // => { 'moe': 30, 'larry': 40 }
-   */
-  function object(keys, values) {
-    var index = -1,
-        length = keys ? keys.length : 0,
-        result = {};
-
-    while (++index < length) {
-      var key = keys[index];
-      if (values) {
-        result[key] = values[index];
-      } else {
-        result[key[0]] = key[1];
-      }
-    }
-    return result;
-  }
-
-  /**
-   * Creates an array of numbers (positive and/or negative) progressing from
-   * `start` up to but not including `end`.
-   *
-   * @static
-   * @memberOf _
-   * @category Arrays
-   * @param {Number} [start=0] The start of the range.
-   * @param {Number} end The end of the range.
-   * @param {Number} [step=1] The value to increment or descrement by.
-   * @returns {Array} Returns a new range array.
-   * @example
-   *
-   * _.range(10);
-   * // => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-   *
-   * _.range(1, 11);
-   * // => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-   *
-   * _.range(0, 30, 5);
-   * // => [0, 5, 10, 15, 20, 25]
-   *
-   * _.range(0, -10, -1);
-   * // => [0, -1, -2, -3, -4, -5, -6, -7, -8, -9]
-   *
-   * _.range(0);
-   * // => []
-   */
-  function range(start, end, step) {
-    start = +start || 0;
-    step = +step || 1;
-
-    if (end == null) {
-      end = start;
-      start = 0;
-    }
-    // use `Array(length)` so V8 will avoid the slower "dictionary" mode
-    // http://youtu.be/XAqIpGU8ZZk#t=17m25s
-    var index = -1,
-        length = nativeMax(0, ceil((end - start) / step)),
-        result = Array(length);
-
-    while (++index < length) {
-      result[index] = start;
-      start += step;
-    }
-    return result;
-  }
-
-  /**
-   * The opposite of `_.initial`, this method gets all but the first value of `array`.
-   * If a number `n` is passed, the first `n` values are excluded from the result.
-   * If a `callback` function is passed, the first elements the `callback` returns
-   * truthy for are excluded from the result. The `callback` is bound to `thisArg`
-   * and invoked with three arguments; (value, index, array).
-   *
-   * If a property name is passed for `callback`, the created "_.pluck" style
-   * callback will return the property value of the given element.
-   *
-   * If an object is passed for `callback`, the created "_.where" style callback
-   * will return `true` for elements that have the propeties of the given object,
-   * else `false`.
-   *
-   * @static
-   * @memberOf _
-   * @alias drop, tail
-   * @category Arrays
-   * @param {Array} array The array to query.
-   * @param {Function|Object|Number|String} [callback|n=1] The function called
-   *  per element or the number of elements to exclude. If a property name or
-   *  object is passed, it will be used to create a "_.pluck" or "_.where"
-   *  style callback, respectively.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Array} Returns a slice of `array`.
-   * @example
-   *
-   * _.rest([1, 2, 3]);
-   * // => [2, 3]
-   *
-   * _.rest([1, 2, 3], 2);
-   * // => [3]
-   *
-   * _.rest([1, 2, 3], function(num) {
-   *   return num < 3;
-   * });
-   * // => [3]
-   *
-   * var food = [
-   *   { 'name': 'banana', 'organic': true },
-   *   { 'name': 'beet',   'organic': false },
-   * ];
-   *
-   * // using "_.pluck" callback shorthand
-   * _.rest(food, 'organic');
-   * // => [{ 'name': 'beet', 'organic': false }]
-   *
-   * var food = [
-   *   { 'name': 'apple',  'type': 'fruit' },
-   *   { 'name': 'banana', 'type': 'fruit' },
-   *   { 'name': 'beet',   'type': 'vegetable' }
-   * ];
-   *
-   * // using "_.where" callback shorthand
-   * _.rest(food, { 'type': 'fruit' });
-   * // => [{ 'name': 'beet', 'type': 'vegetable' }]
-   */
-  function rest(array, callback, thisArg) {
-    if (typeof callback != 'number' && callback != null) {
-      var n = 0,
-          index = -1,
-          length = array ? array.length : 0;
-
-      callback = createCallback(callback, thisArg);
-      while (++index < length && callback(array[index], index, array)) {
-        n++;
-      }
-    } else {
-      n = (callback == null || thisArg) ? 1 : nativeMax(0, callback);
-    }
-    return slice(array, n);
-  }
-
-  /**
-   * Uses a binary search to determine the smallest index at which the `value`
-   * should be inserted into `array` in order to maintain the sort order of the
-   * sorted `array`. If `callback` is passed, it will be executed for `value` and
-   * each element in `array` to compute their sort ranking. The `callback` is
-   * bound to `thisArg` and invoked with one argument; (value).
-   *
-   * If a property name is passed for `callback`, the created "_.pluck" style
-   * callback will return the property value of the given element.
-   *
-   * If an object is passed for `callback`, the created "_.where" style callback
-   * will return `true` for elements that have the propeties of the given object,
-   * else `false`.
-   *
-   * @static
-   * @memberOf _
-   * @category Arrays
-   * @param {Array} array The array to iterate over.
-   * @param {Mixed} value The value to evaluate.
-   * @param {Function|Object|String} [callback=identity] The function called per
-   *  iteration. If a property name or object is passed, it will be used to create
-   *  a "_.pluck" or "_.where" style callback, respectively.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Number} Returns the index at which the value should be inserted
-   *  into `array`.
-   * @example
-   *
-   * _.sortedIndex([20, 30, 50], 40);
-   * // => 2
-   *
-   * // using "_.pluck" callback shorthand
-   * _.sortedIndex([{ 'x': 20 }, { 'x': 30 }, { 'x': 50 }], { 'x': 40 }, 'x');
-   * // => 2
-   *
-   * var dict = {
-   *   'wordToNumber': { 'twenty': 20, 'thirty': 30, 'fourty': 40, 'fifty': 50 }
-   * };
-   *
-   * _.sortedIndex(['twenty', 'thirty', 'fifty'], 'fourty', function(word) {
-   *   return dict.wordToNumber[word];
-   * });
-   * // => 2
-   *
-   * _.sortedIndex(['twenty', 'thirty', 'fifty'], 'fourty', function(word) {
-   *   return this.wordToNumber[word];
-   * }, dict);
-   * // => 2
-   */
-  function sortedIndex(array, value, callback, thisArg) {
-    var low = 0,
-        high = array ? array.length : low;
-
-    // explicitly reference `identity` for better inlining in Firefox
-    callback = callback ? createCallback(callback, thisArg, 1) : identity;
-    value = callback(value);
-
-    while (low < high) {
-      var mid = (low + high) >>> 1;
-      callback(array[mid]) < value
-        ? low = mid + 1
-        : high = mid;
-    }
-    return low;
-  }
-
-  /**
-   * Computes the union of the passed-in arrays using strict equality for
-   * comparisons, i.e. `===`.
-   *
-   * @static
-   * @memberOf _
-   * @category Arrays
-   * @param {Array} [array1, array2, ...] Arrays to process.
-   * @returns {Array} Returns a new array of unique values, in order, that are
-   *  present in one or more of the arrays.
-   * @example
-   *
-   * _.union([1, 2, 3], [101, 2, 1, 10], [2, 1]);
-   * // => [1, 2, 3, 101, 10]
-   */
-  function union() {
-    return uniq(concat.apply(arrayRef, arguments));
-  }
-
-  /**
-   * Creates a duplicate-value-free version of the `array` using strict equality
-   * for comparisons, i.e. `===`. If the `array` is already sorted, passing `true`
-   * for `isSorted` will run a faster algorithm. If `callback` is passed, each
-   * element of `array` is passed through a callback` before uniqueness is computed.
-   * The `callback` is bound to `thisArg` and invoked with three arguments; (value, index, array).
-   *
-   * If a property name is passed for `callback`, the created "_.pluck" style
-   * callback will return the property value of the given element.
-   *
-   * If an object is passed for `callback`, the created "_.where" style callback
-   * will return `true` for elements that have the propeties of the given object,
-   * else `false`.
-   *
-   * @static
-   * @memberOf _
-   * @alias unique
-   * @category Arrays
-   * @param {Array} array The array to process.
-   * @param {Boolean} [isSorted=false] A flag to indicate that the `array` is already sorted.
-   * @param {Function|Object|String} [callback=identity] The function called per
-   *  iteration. If a property name or object is passed, it will be used to create
-   *  a "_.pluck" or "_.where" style callback, respectively.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Array} Returns a duplicate-value-free array.
-   * @example
-   *
-   * _.uniq([1, 2, 1, 3, 1]);
-   * // => [1, 2, 3]
-   *
-   * _.uniq([1, 1, 2, 2, 3], true);
-   * // => [1, 2, 3]
-   *
-   * _.uniq([1, 2, 1.5, 3, 2.5], function(num) { return Math.floor(num); });
-   * // => [1, 2, 3]
-   *
-   * _.uniq([1, 2, 1.5, 3, 2.5], function(num) { return this.floor(num); }, Math);
-   * // => [1, 2, 3]
-   *
-   * // using "_.pluck" callback shorthand
-   * _.uniq([{ 'x': 1 }, { 'x': 2 }, { 'x': 1 }], 'x');
-   * // => [{ 'x': 1 }, { 'x': 2 }]
-   */
-  function uniq(array, isSorted, callback, thisArg) {
-    var index = -1,
-        length = array ? array.length : 0,
-        result = [],
-        seen = result;
-
-    // juggle arguments
-    if (typeof isSorted == 'function') {
-      thisArg = callback;
-      callback = isSorted;
-      isSorted = false;
-    }
-    // init value cache for large arrays
-    var isLarge = !isSorted && length >= 75;
-    if (isLarge) {
-      var cache = {};
-    }
-    if (callback) {
-      seen = [];
-      callback = createCallback(callback, thisArg);
-    }
-    while (++index < length) {
-      var value = array[index],
-          computed = callback ? callback(value, index, array) : value;
-
-      if (isLarge) {
-        var key = computed + '';
-        var inited = hasOwnProperty.call(cache, key)
-          ? !(seen = cache[key])
-          : (seen = cache[key] = []);
-      }
-      if (isSorted
-            ? !index || seen[seen.length - 1] !== computed
-            : inited || indexOf(seen, computed) < 0
-          ) {
-        if (callback || isLarge) {
-          seen.push(computed);
-        }
-        result.push(value);
-      }
-    }
-    return result;
-  }
-
-  /**
-   * Creates an array with all occurrences of the passed values removed using
-   * strict equality for comparisons, i.e. `===`.
-   *
-   * @static
-   * @memberOf _
-   * @category Arrays
-   * @param {Array} array The array to filter.
-   * @param {Mixed} [value1, value2, ...] Values to remove.
-   * @returns {Array} Returns a new filtered array.
-   * @example
-   *
-   * _.without([1, 2, 1, 0, 3, 1, 4], 0, 1);
-   * // => [2, 3, 4]
-   */
-  function without(array) {
-    var index = -1,
-        length = array ? array.length : 0,
-        contains = cachedContains(arguments, 1),
-        result = [];
-
-    while (++index < length) {
-      var value = array[index];
-      if (!contains(value)) {
-        result.push(value);
-      }
-    }
-    return result;
-  }
-
-  /**
-   * Groups the elements of each array at their corresponding indexes. Useful for
-   * separate data sources that are coordinated through matching array indexes.
-   * For a matrix of nested arrays, `_.zip.apply(...)` can transpose the matrix
-   * in a similar fashion.
-   *
-   * @static
-   * @memberOf _
-   * @category Arrays
-   * @param {Array} [array1, array2, ...] Arrays to process.
-   * @returns {Array} Returns a new array of grouped elements.
-   * @example
-   *
-   * _.zip(['moe', 'larry'], [30, 40], [true, false]);
-   * // => [['moe', 30, true], ['larry', 40, false]]
-   */
-  function zip(array) {
-    var index = -1,
-        length = array ? max(pluck(arguments, 'length')) : 0,
-        result = Array(length);
-
-    while (++index < length) {
-      result[index] = pluck(arguments, index);
-    }
-    return result;
-  }
-
-  /*--------------------------------------------------------------------------*/
-
-  /**
-   * Creates a function that is restricted to executing `func` only after it is
-   * called `n` times. The `func` is executed with the `this` binding of the
-   * created function.
-   *
-   * @static
-   * @memberOf _
-   * @category Functions
-   * @param {Number} n The number of times the function must be called before
-   * it is executed.
-   * @param {Function} func The function to restrict.
-   * @returns {Function} Returns the new restricted function.
-   * @example
-   *
-   * var renderNotes = _.after(notes.length, render);
-   * _.forEach(notes, function(note) {
-   *   note.asyncSave({ 'success': renderNotes });
-   * });
-   * // `renderNotes` is run once, after all notes have saved
-   */
-  function after(n, func) {
-    if (n < 1) {
-      return func();
-    }
-    return function() {
-      if (--n < 1) {
-        return func.apply(this, arguments);
-      }
-    };
-  }
-
-  /**
-   * Creates a function that, when called, invokes `func` with the `this`
-   * binding of `thisArg` and prepends any additional `bind` arguments to those
-   * passed to the bound function.
-   *
-   * @static
-   * @memberOf _
-   * @category Functions
-   * @param {Function} func The function to bind.
-   * @param {Mixed} [thisArg] The `this` binding of `func`.
-   * @param {Mixed} [arg1, arg2, ...] Arguments to be partially applied.
-   * @returns {Function} Returns the new bound function.
-   * @example
-   *
-   * var func = function(greeting) {
-   *   return greeting + ' ' + this.name;
-   * };
-   *
-   * func = _.bind(func, { 'name': 'moe' }, 'hi');
-   * func();
-   * // => 'hi moe'
-   */
-  function bind(func, thisArg) {
-    // use `Function#bind` if it exists and is fast
-    // (in V8 `Function#bind` is slower except when partially applied)
-    return isBindFast || (nativeBind && arguments.length > 2)
-      ? nativeBind.call.apply(nativeBind, arguments)
-      : createBound(func, thisArg, slice(arguments, 2));
-  }
-
-  /**
-   * Binds methods on `object` to `object`, overwriting the existing method.
-   * Method names may be specified as individual arguments or as arrays of method
-   * names. If no method names are provided, all the function properties of `object`
-   * will be bound.
-   *
-   * @static
-   * @memberOf _
-   * @category Functions
-   * @param {Object} object The object to bind and assign the bound methods to.
-   * @param {String} [methodName1, methodName2, ...] Method names on the object to bind.
-   * @returns {Object} Returns `object`.
-   * @example
-   *
-   * var view = {
-   *  'label': 'docs',
-   *  'onClick': function() { alert('clicked ' + this.label); }
-   * };
-   *
-   * _.bindAll(view);
-   * jQuery('#docs').on('click', view.onClick);
-   * // => alerts 'clicked docs', when the button is clicked
-   */
-  function bindAll(object) {
-    var funcs = concat.apply(arrayRef, arguments),
-        index = funcs.length > 1 ? 0 : (funcs = functions(object), -1),
-        length = funcs.length;
-
-    while (++index < length) {
-      var key = funcs[index];
-      object[key] = bind(object[key], object);
-    }
-    return object;
-  }
-
-  /**
-   * Creates a function that, when called, invokes the method at `object[key]`
-   * and prepends any additional `bindKey` arguments to those passed to the bound
-   * function. This method differs from `_.bind` by allowing bound functions to
-   * reference methods that will be redefined or don't yet exist.
-   * See http://michaux.ca/articles/lazy-function-definition-pattern.
-   *
-   * @static
-   * @memberOf _
-   * @category Functions
-   * @param {Object} object The object the method belongs to.
-   * @param {String} key The key of the method.
-   * @param {Mixed} [arg1, arg2, ...] Arguments to be partially applied.
-   * @returns {Function} Returns the new bound function.
-   * @example
-   *
-   * var object = {
-   *   'name': 'moe',
-   *   'greet': function(greeting) {
-   *     return greeting + ' ' + this.name;
-   *   }
-   * };
-   *
-   * var func = _.bindKey(object, 'greet', 'hi');
-   * func();
-   * // => 'hi moe'
-   *
-   * object.greet = function(greeting) {
-   *   return greeting + ', ' + this.name + '!';
-   * };
-   *
-   * func();
-   * // => 'hi, moe!'
-   */
-  function bindKey(object, key) {
-    return createBound(object, key, slice(arguments, 2));
-  }
-
-  /**
-   * Creates a function that is the composition of the passed functions,
-   * where each function consumes the return value of the function that follows.
-   * For example, composing the functions `f()`, `g()`, and `h()` produces `f(g(h()))`.
-   * Each function is executed with the `this` binding of the composed function.
-   *
-   * @static
-   * @memberOf _
-   * @category Functions
-   * @param {Function} [func1, func2, ...] Functions to compose.
-   * @returns {Function} Returns the new composed function.
-   * @example
-   *
-   * var greet = function(name) { return 'hi ' + name; };
-   * var exclaim = function(statement) { return statement + '!'; };
-   * var welcome = _.compose(exclaim, greet);
-   * welcome('moe');
-   * // => 'hi moe!'
-   */
-  function compose() {
-    var funcs = arguments;
-    return function() {
-      var args = arguments,
-          length = funcs.length;
-
-      while (length--) {
-        args = [funcs[length].apply(this, args)];
-      }
-      return args[0];
-    };
-  }
-
-  /**
-   * Creates a function that will delay the execution of `func` until after
-   * `wait` milliseconds have elapsed since the last time it was invoked. Pass
-   * `true` for `immediate` to cause debounce to invoke `func` on the leading,
-   * instead of the trailing, edge of the `wait` timeout. Subsequent calls to
-   * the debounced function will return the result of the last `func` call.
-   *
-   * @static
-   * @memberOf _
-   * @category Functions
-   * @param {Function} func The function to debounce.
-   * @param {Number} wait The number of milliseconds to delay.
-   * @param {Boolean} immediate A flag to indicate execution is on the leading
-   *  edge of the timeout.
-   * @returns {Function} Returns the new debounced function.
-   * @example
-   *
-   * var lazyLayout = _.debounce(calculateLayout, 300);
-   * jQuery(window).on('resize', lazyLayout);
-   */
-  function debounce(func, wait, immediate) {
-    var args,
-        result,
-        thisArg,
-        timeoutId;
-
-    function delayed() {
-      timeoutId = null;
-      if (!immediate) {
-        result = func.apply(thisArg, args);
-      }
-    }
-    return function() {
-      var isImmediate = immediate && !timeoutId;
-      args = arguments;
-      thisArg = this;
-
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(delayed, wait);
-
-      if (isImmediate) {
-        result = func.apply(thisArg, args);
-      }
-      return result;
-    };
-  }
-
-  /**
-   * Executes the `func` function after `wait` milliseconds. Additional arguments
-   * will be passed to `func` when it is invoked.
-   *
-   * @static
-   * @memberOf _
-   * @category Functions
-   * @param {Function} func The function to delay.
-   * @param {Number} wait The number of milliseconds to delay execution.
-   * @param {Mixed} [arg1, arg2, ...] Arguments to invoke the function with.
-   * @returns {Number} Returns the `setTimeout` timeout id.
-   * @example
-   *
-   * var log = _.bind(console.log, console);
-   * _.delay(log, 1000, 'logged later');
-   * // => 'logged later' (Appears after one second.)
-   */
-  function delay(func, wait) {
-    var args = slice(arguments, 2);
-    return setTimeout(function() { func.apply(undefined, args); }, wait);
-  }
-
-  /**
-   * Defers executing the `func` function until the current call stack has cleared.
-   * Additional arguments will be passed to `func` when it is invoked.
-   *
-   * @static
-   * @memberOf _
-   * @category Functions
-   * @param {Function} func The function to defer.
-   * @param {Mixed} [arg1, arg2, ...] Arguments to invoke the function with.
-   * @returns {Number} Returns the `setTimeout` timeout id.
-   * @example
-   *
-   * _.defer(function() { alert('deferred'); });
-   * // returns from the function before `alert` is called
-   */
-  function defer(func) {
-    var args = slice(arguments, 1);
-    return setTimeout(function() { func.apply(undefined, args); }, 1);
-  }
-  // use `setImmediate` if it's available in Node.js
-  if (isV8 && freeModule && typeof setImmediate == 'function') {
-    defer = bind(setImmediate, window);
-  }
-
-  /**
-   * Creates a function that memoizes the result of `func`. If `resolver` is
-   * passed, it will be used to determine the cache key for storing the result
-   * based on the arguments passed to the memoized function. By default, the first
-   * argument passed to the memoized function is used as the cache key. The `func`
-   * is executed with the `this` binding of the memoized function.
-   *
-   * @static
-   * @memberOf _
-   * @category Functions
-   * @param {Function} func The function to have its output memoized.
-   * @param {Function} [resolver] A function used to resolve the cache key.
-   * @returns {Function} Returns the new memoizing function.
-   * @example
-   *
-   * var fibonacci = _.memoize(function(n) {
-   *   return n < 2 ? n : fibonacci(n - 1) + fibonacci(n - 2);
-   * });
-   */
-  function memoize(func, resolver) {
-    var cache = {};
-    return function() {
-      var key = (resolver ? resolver.apply(this, arguments) : arguments[0]) + '';
-      return hasOwnProperty.call(cache, key)
-        ? cache[key]
-        : (cache[key] = func.apply(this, arguments));
-    };
-  }
-
-  /**
-   * Creates a function that is restricted to execute `func` once. Repeat calls to
-   * the function will return the value of the first call. The `func` is executed
-   * with the `this` binding of the created function.
-   *
-   * @static
-   * @memberOf _
-   * @category Functions
-   * @param {Function} func The function to restrict.
-   * @returns {Function} Returns the new restricted function.
-   * @example
-   *
-   * var initialize = _.once(createApplication);
-   * initialize();
-   * initialize();
-   * // `initialize` executes `createApplication` once
-   */
-  function once(func) {
-    var ran,
-        result;
-
-    return function() {
-      if (ran) {
-        return result;
-      }
-      ran = true;
-      result = func.apply(this, arguments);
-
-      // clear the `func` variable so the function may be garbage collected
-      func = null;
-      return result;
-    };
-  }
-
-  /**
-   * Creates a function that, when called, invokes `func` with any additional
-   * `partial` arguments prepended to those passed to the new function. This
-   * method is similar to `_.bind`, except it does **not** alter the `this` binding.
-   *
-   * @static
-   * @memberOf _
-   * @category Functions
-   * @param {Function} func The function to partially apply arguments to.
-   * @param {Mixed} [arg1, arg2, ...] Arguments to be partially applied.
-   * @returns {Function} Returns the new partially applied function.
-   * @example
-   *
-   * var greet = function(greeting, name) { return greeting + ' ' + name; };
-   * var hi = _.partial(greet, 'hi');
-   * hi('moe');
-   * // => 'hi moe'
-   */
-  function partial(func) {
-    return createBound(func, slice(arguments, 1));
-  }
-
-  /**
-   * This method is similar to `_.partial`, except that `partial` arguments are
-   * appended to those passed to the new function.
-   *
-   * @static
-   * @memberOf _
-   * @category Functions
-   * @param {Function} func The function to partially apply arguments to.
-   * @param {Mixed} [arg1, arg2, ...] Arguments to be partially applied.
-   * @returns {Function} Returns the new partially applied function.
-   * @example
-   *
-   * var defaultsDeep = _.partialRight(_.merge, _.defaults);
-   *
-   * var options = {
-   *   'variable': 'data',
-   *   'imports': { 'jq': $ }
-   * };
-   *
-   * defaultsDeep(options, _.templateSettings);
-   *
-   * options.variable
-   * // => 'data'
-   *
-   * options.imports
-   * // => { '_': _, 'jq': $ }
-   */
-  function partialRight(func) {
-    return createBound(func, slice(arguments, 1), null, indicatorObject);
-  }
-
-  /**
-   * Creates a function that, when executed, will only call the `func`
-   * function at most once per every `wait` milliseconds. If the throttled
-   * function is invoked more than once during the `wait` timeout, `func` will
-   * also be called on the trailing edge of the timeout. Subsequent calls to the
-   * throttled function will return the result of the last `func` call.
-   *
-   * @static
-   * @memberOf _
-   * @category Functions
-   * @param {Function} func The function to throttle.
-   * @param {Number} wait The number of milliseconds to throttle executions to.
-   * @returns {Function} Returns the new throttled function.
-   * @example
-   *
-   * var throttled = _.throttle(updatePosition, 100);
-   * jQuery(window).on('scroll', throttled);
-   */
-  function throttle(func, wait) {
-    var args,
-        result,
-        thisArg,
-        timeoutId,
-        lastCalled = 0;
-
-    function trailingCall() {
-      lastCalled = new Date;
-      timeoutId = null;
-      result = func.apply(thisArg, args);
-    }
-    return function() {
-      var now = new Date,
-          remaining = wait - (now - lastCalled);
-
-      args = arguments;
-      thisArg = this;
-
-      if (remaining <= 0) {
-        clearTimeout(timeoutId);
-        timeoutId = null;
-        lastCalled = now;
-        result = func.apply(thisArg, args);
-      }
-      else if (!timeoutId) {
-        timeoutId = setTimeout(trailingCall, remaining);
-      }
-      return result;
-    };
-  }
-
-  /**
-   * Creates a function that passes `value` to the `wrapper` function as its
-   * first argument. Additional arguments passed to the function are appended
-   * to those passed to the `wrapper` function. The `wrapper` is executed with
-   * the `this` binding of the created function.
-   *
-   * @static
-   * @memberOf _
-   * @category Functions
-   * @param {Mixed} value The value to wrap.
-   * @param {Function} wrapper The wrapper function.
-   * @returns {Function} Returns the new function.
-   * @example
-   *
-   * var hello = function(name) { return 'hello ' + name; };
-   * hello = _.wrap(hello, function(func) {
-   *   return 'before, ' + func('moe') + ', after';
-   * });
-   * hello();
-   * // => 'before, hello moe, after'
-   */
-  function wrap(value, wrapper) {
-    return function() {
-      var args = [value];
-      push.apply(args, arguments);
-      return wrapper.apply(this, args);
-    };
-  }
-
-  /*--------------------------------------------------------------------------*/
-
-  /**
-   * Converts the characters `&`, `<`, `>`, `"`, and `'` in `string` to their
-   * corresponding HTML entities.
-   *
-   * @static
-   * @memberOf _
-   * @category Utilities
-   * @param {String} string The string to escape.
-   * @returns {String} Returns the escaped string.
-   * @example
-   *
-   * _.escape('Moe, Larry & Curly');
-   * // => 'Moe, Larry &amp; Curly'
-   */
-  function escape(string) {
-    return string == null ? '' : (string + '').replace(reUnescapedHtml, escapeHtmlChar);
-  }
-
-  /**
-   * This function returns the first argument passed to it.
-   *
-   * @static
-   * @memberOf _
-   * @category Utilities
-   * @param {Mixed} value Any value.
-   * @returns {Mixed} Returns `value`.
-   * @example
-   *
-   * var moe = { 'name': 'moe' };
-   * moe === _.identity(moe);
-   * // => true
-   */
-  function identity(value) {
-    return value;
-  }
-
-  /**
-   * Adds functions properties of `object` to the `lodash` function and chainable
-   * wrapper.
-   *
-   * @static
-   * @memberOf _
-   * @category Utilities
-   * @param {Object} object The object of function properties to add to `lodash`.
-   * @example
-   *
-   * _.mixin({
-   *   'capitalize': function(string) {
-   *     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-   *   }
-   * });
-   *
-   * _.capitalize('moe');
-   * // => 'Moe'
-   *
-   * _('moe').capitalize();
-   * // => 'Moe'
-   */
-  function mixin(object) {
-    forEach(functions(object), function(methodName) {
-      var func = lodash[methodName] = object[methodName];
-
-      lodash.prototype[methodName] = function() {
-        var args = [this.__wrapped__];
-        push.apply(args, arguments);
-        return new lodash(func.apply(lodash, args));
-      };
-    });
-  }
-
-  /**
-   * Reverts the '_' variable to its previous value and returns a reference to
-   * the `lodash` function.
-   *
-   * @static
-   * @memberOf _
-   * @category Utilities
-   * @returns {Function} Returns the `lodash` function.
-   * @example
-   *
-   * var lodash = _.noConflict();
-   */
-  function noConflict() {
-    window._ = oldDash;
-    return this;
-  }
-
-  /**
-   * Produces a random number between `min` and `max` (inclusive). If only one
-   * argument is passed, a number between `0` and the given number will be returned.
-   *
-   * @static
-   * @memberOf _
-   * @category Utilities
-   * @param {Number} [min=0] The minimum possible value.
-   * @param {Number} [max=1] The maximum possible value.
-   * @returns {Number} Returns a random number.
-   * @example
-   *
-   * _.random(0, 5);
-   * // => a number between 0 and 5
-   *
-   * _.random(5);
-   * // => also a number between 0 and 5
-   */
-  function random(min, max) {
-    if (min == null && max == null) {
-      max = 1;
-    }
-    min = +min || 0;
-    if (max == null) {
-      max = min;
-      min = 0;
-    }
-    return min + floor(nativeRandom() * ((+max || 0) - min + 1));
-  }
-
-  /**
-   * Resolves the value of `property` on `object`. If `property` is a function,
-   * it will be invoked and its result returned, else the property value is
-   * returned. If `object` is falsey, then `null` is returned.
-   *
-   * @static
-   * @memberOf _
-   * @category Utilities
-   * @param {Object} object The object to inspect.
-   * @param {String} property The property to get the value of.
-   * @returns {Mixed} Returns the resolved value.
-   * @example
-   *
-   * var object = {
-   *   'cheese': 'crumpets',
-   *   'stuff': function() {
-   *     return 'nonsense';
-   *   }
-   * };
-   *
-   * _.result(object, 'cheese');
-   * // => 'crumpets'
-   *
-   * _.result(object, 'stuff');
-   * // => 'nonsense'
-   */
-  function result(object, property) {
-    var value = object ? object[property] : undefined;
-    return isFunction(value) ? object[property]() : value;
-  }
-
-  /**
-   * A micro-templating method that handles arbitrary delimiters, preserves
-   * whitespace, and correctly escapes quotes within interpolated code.
-   *
-   * Note: In the development build, `_.template` utilizes sourceURLs for easier
-   * debugging. See http://www.html5rocks.com/en/tutorials/developertools/sourcemaps/#toc-sourceurl
-   *
-   * Note: Lo-Dash may be used in Chrome extensions by either creating a `lodash csp`
-   * build and using precompiled templates, or loading Lo-Dash in a sandbox.
-   *
-   * For more information on precompiling templates see:
-   * http://lodash.com/#custom-builds
-   *
-   * For more information on Chrome extension sandboxes see:
-   * http://developer.chrome.com/stable/extensions/sandboxingEval.html
-   *
-   * @static
-   * @memberOf _
-   * @category Utilities
-   * @param {String} text The template text.
-   * @param {Obect} data The data object used to populate the text.
-   * @param {Object} options The options object.
-   *  escape - The "escape" delimiter regexp.
-   *  evaluate - The "evaluate" delimiter regexp.
-   *  interpolate - The "interpolate" delimiter regexp.
-   *  sourceURL - The sourceURL of the template's compiled source.
-   *  variable - The data object variable name.
-   *
-   * @returns {Function|String} Returns a compiled function when no `data` object
-   *  is given, else it returns the interpolated text.
-   * @example
-   *
-   * // using a compiled template
-   * var compiled = _.template('hello <%= name %>');
-   * compiled({ 'name': 'moe' });
-   * // => 'hello moe'
-   *
-   * var list = '<% _.forEach(people, function(name) { %><li><%= name %></li><% }); %>';
-   * _.template(list, { 'people': ['moe', 'larry'] });
-   * // => '<li>moe</li><li>larry</li>'
-   *
-   * // using the "escape" delimiter to escape HTML in data property values
-   * _.template('<b><%- value %></b>', { 'value': '<script>' });
-   * // => '<b>&lt;script&gt;</b>'
-   *
-   * // using the ES6 delimiter as an alternative to the default "interpolate" delimiter
-   * _.template('hello ${ name }', { 'name': 'curly' });
-   * // => 'hello curly'
-   *
-   * // using the internal `print` function in "evaluate" delimiters
-   * _.template('<% print("hello " + epithet); %>!', { 'epithet': 'stooge' });
-   * // => 'hello stooge!'
-   *
-   * // using custom template delimiters
-   * _.templateSettings = {
-   *   'interpolate': /{{([\s\S]+?)}}/g
-   * };
-   *
-   * _.template('hello {{ name }}!', { 'name': 'mustache' });
-   * // => 'hello mustache!'
-   *
-   * // using the `sourceURL` option to specify a custom sourceURL for the template
-   * var compiled = _.template('hello <%= name %>', null, { 'sourceURL': '/basic/greeting.jst' });
-   * compiled(data);
-   * // => find the source of "greeting.jst" under the Sources tab or Resources panel of the web inspector
-   *
-   * // using the `variable` option to ensure a with-statement isn't used in the compiled template
-   * var compiled = _.template('hi <%= data.name %>!', null, { 'variable': 'data' });
-   * compiled.source;
-   * // => function(data) {
-   *   var __t, __p = '', __e = _.escape;
-   *   __p += 'hi ' + ((__t = ( data.name )) == null ? '' : __t) + '!';
-   *   return __p;
-   * }
-   *
-   * // using the `source` property to inline compiled templates for meaningful
-   * // line numbers in error messages and a stack trace
-   * fs.writeFileSync(path.join(cwd, 'jst.js'), '\
-   *   var JST = {\
-   *     "main": ' + _.template(mainText).source + '\
-   *   };\
-   * ');
-   */
-  function template(text, data, options) {
-    // based on John Resig's `tmpl` implementation
-    // http://ejohn.org/blog/javascript-micro-templating/
-    // and Laura Doktorova's doT.js
-    // https://github.com/olado/doT
-    var settings = lodash.templateSettings;
-    text || (text = '');
-
-    // avoid missing dependencies when `iteratorTemplate` is not defined
-    options = defaults({}, options, settings);
-
-    var imports = defaults({}, options.imports, settings.imports),
-        importsKeys = keys(imports),
-        importsValues = values(imports);
-
-    var isEvaluating,
-        index = 0,
-        interpolate = options.interpolate || reNoMatch,
-        source = "__p += '";
-
-    // compile regexp to match each delimiter
-    var reDelimiters = RegExp(
-      (options.escape || reNoMatch).source + '|' +
-      interpolate.source + '|' +
-      (interpolate === reInterpolate ? reEsTemplate : reNoMatch).source + '|' +
-      (options.evaluate || reNoMatch).source + '|$'
-    , 'g');
-
-    text.replace(reDelimiters, function(match, escapeValue, interpolateValue, esTemplateValue, evaluateValue, offset) {
-      interpolateValue || (interpolateValue = esTemplateValue);
-
-      // escape characters that cannot be included in string literals
-      source += text.slice(index, offset).replace(reUnescapedString, escapeStringChar);
-
-      // replace delimiters with snippets
-      if (escapeValue) {
-        source += "' +\n__e(" + escapeValue + ") +\n'";
-      }
-      if (evaluateValue) {
-        isEvaluating = true;
-        source += "';\n" + evaluateValue + ";\n__p += '";
-      }
-      if (interpolateValue) {
-        source += "' +\n((__t = (" + interpolateValue + ")) == null ? '' : __t) +\n'";
-      }
-      index = offset + match.length;
-
-      // the JS engine embedded in Adobe products requires returning the `match`
-      // string in order to produce the correct `offset` value
-      return match;
-    });
-
-    source += "';\n";
-
-    // if `variable` is not specified and the template contains "evaluate"
-    // delimiters, wrap a with-statement around the generated code to add the
-    // data object to the top of the scope chain
-    var variable = options.variable,
-        hasVariable = variable;
-
-    if (!hasVariable) {
-      variable = 'obj';
-      source = 'with (' + variable + ') {\n' + source + '\n}\n';
-    }
-    // cleanup code by stripping empty strings
-    source = (isEvaluating ? source.replace(reEmptyStringLeading, '') : source)
-      .replace(reEmptyStringMiddle, '$1')
-      .replace(reEmptyStringTrailing, '$1;');
-
-    // frame code as the function body
-    source = 'function(' + variable + ') {\n' +
-      (hasVariable ? '' : variable + ' || (' + variable + ' = {});\n') +
-      "var __t, __p = '', __e = _.escape" +
-      (isEvaluating
-        ? ', __j = Array.prototype.join;\n' +
-          "function print() { __p += __j.call(arguments, '') }\n"
-        : ';\n'
-      ) +
-      source +
-      'return __p\n}';
-
-    // Use a sourceURL for easier debugging and wrap in a multi-line comment to
-    // avoid issues with Narwhal, IE conditional compilation, and the JS engine
-    // embedded in Adobe products.
-    // http://www.html5rocks.com/en/tutorials/developertools/sourcemaps/#toc-sourceurl
-    var sourceURL = '\n/*\n//@ sourceURL=' + (options.sourceURL || '/lodash/template/source[' + (templateCounter++) + ']') + '\n*/';
-
-    try {
-      var result = Function(importsKeys, 'return ' + source + sourceURL).apply(undefined, importsValues);
-    } catch(e) {
-      e.source = source;
-      throw e;
-    }
-    if (data) {
-      return result(data);
-    }
-    // provide the compiled function's source via its `toString` method, in
-    // supported environments, or the `source` property as a convenience for
-    // inlining compiled templates during the build process
-    result.source = source;
-    return result;
-  }
-
-  /**
-   * Executes the `callback` function `n` times, returning an array of the results
-   * of each `callback` execution. The `callback` is bound to `thisArg` and invoked
-   * with one argument; (index).
-   *
-   * @static
-   * @memberOf _
-   * @category Utilities
-   * @param {Number} n The number of times to execute the callback.
-   * @param {Function} callback The function called per iteration.
-   * @param {Mixed} [thisArg] The `this` binding of `callback`.
-   * @returns {Array} Returns a new array of the results of each `callback` execution.
-   * @example
-   *
-   * var diceRolls = _.times(3, _.partial(_.random, 1, 6));
-   * // => [3, 6, 4]
-   *
-   * _.times(3, function(n) { mage.castSpell(n); });
-   * // => calls `mage.castSpell(n)` three times, passing `n` of `0`, `1`, and `2` respectively
-   *
-   * _.times(3, function(n) { this.cast(n); }, mage);
-   * // => also calls `mage.castSpell(n)` three times
-   */
-  function times(n, callback, thisArg) {
-    n = +n || 0;
-    var index = -1,
-        result = Array(n);
-
-    while (++index < n) {
-      result[index] = callback.call(thisArg, index);
-    }
-    return result;
-  }
-
-  /**
-   * The opposite of `_.escape`, this method converts the HTML entities
-   * `&amp;`, `&lt;`, `&gt;`, `&quot;`, and `&#39;` in `string` to their
-   * corresponding characters.
-   *
-   * @static
-   * @memberOf _
-   * @category Utilities
-   * @param {String} string The string to unescape.
-   * @returns {String} Returns the unescaped string.
-   * @example
-   *
-   * _.unescape('Moe, Larry &amp; Curly');
-   * // => 'Moe, Larry & Curly'
-   */
-  function unescape(string) {
-    return string == null ? '' : (string + '').replace(reEscapedHtml, unescapeHtmlChar);
-  }
-
-  /**
-   * Generates a unique ID. If `prefix` is passed, the ID will be appended to it.
-   *
-   * @static
-   * @memberOf _
-   * @category Utilities
-   * @param {String} [prefix] The value to prefix the ID with.
-   * @returns {String} Returns the unique ID.
-   * @example
-   *
-   * _.uniqueId('contact_');
-   * // => 'contact_104'
-   *
-   * _.uniqueId();
-   * // => '105'
-   */
-  function uniqueId(prefix) {
-    var id = ++idCounter;
-    return (prefix == null ? '' : prefix + '') + id;
-  }
-
-  /*--------------------------------------------------------------------------*/
-
-  /**
-   * Invokes `interceptor` with the `value` as the first argument, and then
-   * returns `value`. The purpose of this method is to "tap into" a method chain,
-   * in order to perform operations on intermediate results within the chain.
-   *
-   * @static
-   * @memberOf _
-   * @category Chaining
-   * @param {Mixed} value The value to pass to `interceptor`.
-   * @param {Function} interceptor The function to invoke.
-   * @returns {Mixed} Returns `value`.
-   * @example
-   *
-   * _([1, 2, 3, 4])
-   *  .filter(function(num) { return num % 2 == 0; })
-   *  .tap(alert)
-   *  .map(function(num) { return num * num; })
-   *  .value();
-   * // => // [2, 4] (alerted)
-   * // => [4, 16]
-   */
-  function tap(value, interceptor) {
-    interceptor(value);
-    return value;
-  }
-
-  /**
-   * Produces the `toString` result of the wrapped value.
-   *
-   * @name toString
-   * @memberOf _
-   * @category Chaining
-   * @returns {String} Returns the string result.
-   * @example
-   *
-   * _([1, 2, 3]).toString();
-   * // => '1,2,3'
-   */
-  function wrapperToString() {
-    return this.__wrapped__ + '';
-  }
-
-  /**
-   * Extracts the wrapped value.
-   *
-   * @name valueOf
-   * @memberOf _
-   * @alias value
-   * @category Chaining
-   * @returns {Mixed} Returns the wrapped value.
-   * @example
-   *
-   * _([1, 2, 3]).valueOf();
-   * // => [1, 2, 3]
-   */
-  function wrapperValueOf() {
-    return this.__wrapped__;
-  }
-
-  /*--------------------------------------------------------------------------*/
-
-  // add functions that return wrapped values when chaining
-  lodash.after = after;
-  lodash.assign = assign;
-  lodash.at = at;
-  lodash.bind = bind;
-  lodash.bindAll = bindAll;
-  lodash.bindKey = bindKey;
-  lodash.compact = compact;
-  lodash.compose = compose;
-  lodash.countBy = countBy;
-  lodash.debounce = debounce;
-  lodash.defaults = defaults;
-  lodash.defer = defer;
-  lodash.delay = delay;
-  lodash.difference = difference;
-  lodash.filter = filter;
-  lodash.flatten = flatten;
-  lodash.forEach = forEach;
-  lodash.forIn = forIn;
-  lodash.forOwn = forOwn;
-  lodash.functions = functions;
-  lodash.groupBy = groupBy;
-  lodash.initial = initial;
-  lodash.intersection = intersection;
-  lodash.invert = invert;
-  lodash.invoke = invoke;
-  lodash.keys = keys;
-  lodash.map = map;
-  lodash.max = max;
-  lodash.memoize = memoize;
-  lodash.merge = merge;
-  lodash.min = min;
-  lodash.object = object;
-  lodash.omit = omit;
-  lodash.once = once;
-  lodash.pairs = pairs;
-  lodash.partial = partial;
-  lodash.partialRight = partialRight;
-  lodash.pick = pick;
-  lodash.pluck = pluck;
-  lodash.range = range;
-  lodash.reject = reject;
-  lodash.rest = rest;
-  lodash.shuffle = shuffle;
-  lodash.sortBy = sortBy;
-  lodash.tap = tap;
-  lodash.throttle = throttle;
-  lodash.times = times;
-  lodash.toArray = toArray;
-  lodash.union = union;
-  lodash.uniq = uniq;
-  lodash.values = values;
-  lodash.where = where;
-  lodash.without = without;
-  lodash.wrap = wrap;
-  lodash.zip = zip;
-
-  // add aliases
-  lodash.collect = map;
-  lodash.drop = rest;
-  lodash.each = forEach;
-  lodash.extend = assign;
-  lodash.methods = functions;
-  lodash.select = filter;
-  lodash.tail = rest;
-  lodash.unique = uniq;
-
-  // add functions to `lodash.prototype`
-  mixin(lodash);
-
-  /*--------------------------------------------------------------------------*/
-
-  // add functions that return unwrapped values when chaining
-  lodash.clone = clone;
-  lodash.cloneDeep = cloneDeep;
-  lodash.contains = contains;
-  lodash.escape = escape;
-  lodash.every = every;
-  lodash.find = find;
-  lodash.has = has;
-  lodash.identity = identity;
-  lodash.indexOf = indexOf;
-  lodash.isArguments = isArguments;
-  lodash.isArray = isArray;
-  lodash.isBoolean = isBoolean;
-  lodash.isDate = isDate;
-  lodash.isElement = isElement;
-  lodash.isEmpty = isEmpty;
-  lodash.isEqual = isEqual;
-  lodash.isFinite = isFinite;
-  lodash.isFunction = isFunction;
-  lodash.isNaN = isNaN;
-  lodash.isNull = isNull;
-  lodash.isNumber = isNumber;
-  lodash.isObject = isObject;
-  lodash.isPlainObject = isPlainObject;
-  lodash.isRegExp = isRegExp;
-  lodash.isString = isString;
-  lodash.isUndefined = isUndefined;
-  lodash.lastIndexOf = lastIndexOf;
-  lodash.mixin = mixin;
-  lodash.noConflict = noConflict;
-  lodash.random = random;
-  lodash.reduce = reduce;
-  lodash.reduceRight = reduceRight;
-  lodash.result = result;
-  lodash.size = size;
-  lodash.some = some;
-  lodash.sortedIndex = sortedIndex;
-  lodash.template = template;
-  lodash.unescape = unescape;
-  lodash.uniqueId = uniqueId;
-
-  // add aliases
-  lodash.all = every;
-  lodash.any = some;
-  lodash.detect = find;
-  lodash.foldl = reduce;
-  lodash.foldr = reduceRight;
-  lodash.include = contains;
-  lodash.inject = reduce;
-
-  forOwn(lodash, function(func, methodName) {
-    if (!lodash.prototype[methodName]) {
-      lodash.prototype[methodName] = function() {
-        var args = [this.__wrapped__];
-        push.apply(args, arguments);
-        return func.apply(lodash, args);
-      };
-    }
-  });
-
-  /*--------------------------------------------------------------------------*/
-
-  // add functions capable of returning wrapped and unwrapped values when chaining
-  lodash.first = first;
-  lodash.last = last;
-
-  // add aliases
-  lodash.take = first;
-  lodash.head = first;
-
-  forOwn(lodash, function(func, methodName) {
-    if (!lodash.prototype[methodName]) {
-      lodash.prototype[methodName]= function(callback, thisArg) {
-        var result = func(this.__wrapped__, callback, thisArg);
-        return callback == null || (thisArg && typeof callback != 'function')
-          ? result
-          : new lodash(result);
-      };
-    }
-  });
-
-  /*--------------------------------------------------------------------------*/
-
-  /**
-   * The semantic version number.
-   *
-   * @static
-   * @memberOf _
-   * @type String
-   */
-  lodash.VERSION = '1.0.2';
-
-  // add "Chaining" functions to the wrapper
-  lodash.prototype.toString = wrapperToString;
-  lodash.prototype.value = wrapperValueOf;
-  lodash.prototype.valueOf = wrapperValueOf;
-
-  // add `Array` functions that return unwrapped values
-  each(['join', 'pop', 'shift'], function(methodName) {
-    var func = arrayRef[methodName];
-    lodash.prototype[methodName] = function() {
-      return func.apply(this.__wrapped__, arguments);
-    };
-  });
-
-  // add `Array` functions that return the wrapped value
-  each(['push', 'reverse', 'sort', 'unshift'], function(methodName) {
-    var func = arrayRef[methodName];
-    lodash.prototype[methodName] = function() {
-      func.apply(this.__wrapped__, arguments);
-      return this;
-    };
-  });
-
-  // add `Array` functions that return new wrapped values
-  each(['concat', 'slice', 'splice'], function(methodName) {
-    var func = arrayRef[methodName];
-    lodash.prototype[methodName] = function() {
-      return new lodash(func.apply(this.__wrapped__, arguments));
-    };
-  });
-
-  /*--------------------------------------------------------------------------*/
-
-  // expose Lo-Dash
-  // some AMD build optimizers, like r.js, check for specific condition patterns like the following:
-  if (typeof define == 'function' && typeof define.amd == 'object' && define.amd) {
-    // Expose Lo-Dash to the global object even when an AMD loader is present in
-    // case Lo-Dash was injected by a third-party script and not intended to be
-    // loaded as a module. The global assignment can be reverted in the Lo-Dash
-    // module via its `noConflict()` method.
-    window._ = lodash;
-
-    // define as an anonymous module so, through path mapping, it can be
-    // referenced as the "underscore" module
-    define(function() {
-      return lodash;
-    });
-  }
-  // check for `exports` after `define` in case a build optimizer adds an `exports` object
-  else if (freeExports) {
-    // in Node.js or RingoJS v0.8.0+
-    if (freeModule) {
-      (freeModule.exports = lodash)._ = lodash;
-    }
-    // in Narwhal or RingoJS v0.7.0-
-    else {
-      freeExports._ = lodash;
-    }
-  }
-  else {
-    // in a browser or Rhino
-    window._ = lodash;
-  }
-}(this));
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],278:[function(require,module,exports){
-(function (process){
-;(function (require, exports, module, platform) {
-
-if (module) module.exports = minimatch
-else exports.minimatch = minimatch
-
-if (!require) {
-  require = function (id) {
-    switch (id) {
-      case "sigmund": return function sigmund (obj) {
-        return JSON.stringify(obj)
-      }
-      case "path": return { basename: function (f) {
-        f = f.split(/[\/\\]/)
-        var e = f.pop()
-        if (!e) e = f.pop()
-        return e
-      }}
-      case "lru-cache": return function LRUCache () {
-        // not quite an LRU, but still space-limited.
-        var cache = {}
-        var cnt = 0
-        this.set = function (k, v) {
-          cnt ++
-          if (cnt >= 100) cache = {}
-          cache[k] = v
-        }
-        this.get = function (k) { return cache[k] }
-      }
-    }
-  }
-}
-
-minimatch.Minimatch = Minimatch
-
-var LRU = require("lru-cache")
-  , cache = minimatch.cache = new LRU({max: 100})
-  , GLOBSTAR = minimatch.GLOBSTAR = Minimatch.GLOBSTAR = {}
-  , sigmund = require("sigmund")
-
-var path = require("path")
-  // any single thing other than /
-  // don't need to escape / when using new RegExp()
-  , qmark = "[^/]"
-
-  // * => any number of characters
-  , star = qmark + "*?"
-
-  // ** when dots are allowed.  Anything goes, except .. and .
-  // not (^ or / followed by one or two dots followed by $ or /),
-  // followed by anything, any number of times.
-  , twoStarDot = "(?:(?!(?:\\\/|^)(?:\\.{1,2})($|\\\/)).)*?"
-
-  // not a ^ or / followed by a dot,
-  // followed by anything, any number of times.
-  , twoStarNoDot = "(?:(?!(?:\\\/|^)\\.).)*?"
-
-  // characters that need to be escaped in RegExp.
-  , reSpecials = charSet("().*{}+?[]^$\\!")
-
-// "abc" -> { a:true, b:true, c:true }
-function charSet (s) {
-  return s.split("").reduce(function (set, c) {
-    set[c] = true
-    return set
-  }, {})
-}
-
-// normalizes slashes.
-var slashSplit = /\/+/
-
-minimatch.filter = filter
-function filter (pattern, options) {
-  options = options || {}
-  return function (p, i, list) {
-    return minimatch(p, pattern, options)
-  }
-}
-
-function ext (a, b) {
-  a = a || {}
-  b = b || {}
-  var t = {}
-  Object.keys(b).forEach(function (k) {
-    t[k] = b[k]
-  })
-  Object.keys(a).forEach(function (k) {
-    t[k] = a[k]
-  })
-  return t
-}
-
-minimatch.defaults = function (def) {
-  if (!def || !Object.keys(def).length) return minimatch
-
-  var orig = minimatch
-
-  var m = function minimatch (p, pattern, options) {
-    return orig.minimatch(p, pattern, ext(def, options))
-  }
-
-  m.Minimatch = function Minimatch (pattern, options) {
-    return new orig.Minimatch(pattern, ext(def, options))
-  }
-
-  return m
-}
-
-Minimatch.defaults = function (def) {
-  if (!def || !Object.keys(def).length) return Minimatch
-  return minimatch.defaults(def).Minimatch
-}
-
-
-function minimatch (p, pattern, options) {
-  if (typeof pattern !== "string") {
-    throw new TypeError("glob pattern string required")
-  }
-
-  if (!options) options = {}
-
-  // shortcut: comments match nothing.
-  if (!options.nocomment && pattern.charAt(0) === "#") {
-    return false
-  }
-
-  // "" only matches ""
-  if (pattern.trim() === "") return p === ""
-
-  return new Minimatch(pattern, options).match(p)
-}
-
-function Minimatch (pattern, options) {
-  if (!(this instanceof Minimatch)) {
-    return new Minimatch(pattern, options, cache)
-  }
-
-  if (typeof pattern !== "string") {
-    throw new TypeError("glob pattern string required")
-  }
-
-  if (!options) options = {}
-  pattern = pattern.trim()
-
-  // windows: need to use /, not \
-  // On other platforms, \ is a valid (albeit bad) filename char.
-  if (platform === "win32") {
-    pattern = pattern.split("\\").join("/")
-  }
-
-  // lru storage.
-  // these things aren't particularly big, but walking down the string
-  // and turning it into a regexp can get pretty costly.
-  var cacheKey = pattern + "\n" + sigmund(options)
-  var cached = minimatch.cache.get(cacheKey)
-  if (cached) return cached
-  minimatch.cache.set(cacheKey, this)
-
-  this.options = options
-  this.set = []
-  this.pattern = pattern
-  this.regexp = null
-  this.negate = false
-  this.comment = false
-  this.empty = false
-
-  // make the set of regexps etc.
-  this.make()
-}
-
-Minimatch.prototype.debug = function() {}
-
-Minimatch.prototype.make = make
-function make () {
-  // don't do it more than once.
-  if (this._made) return
-
-  var pattern = this.pattern
-  var options = this.options
-
-  // empty patterns and comments match nothing.
-  if (!options.nocomment && pattern.charAt(0) === "#") {
-    this.comment = true
-    return
-  }
-  if (!pattern) {
-    this.empty = true
-    return
-  }
-
-  // step 1: figure out negation, etc.
-  this.parseNegate()
-
-  // step 2: expand braces
-  var set = this.globSet = this.braceExpand()
-
-  if (options.debug) this.debug = console.error
-
-  this.debug(this.pattern, set)
-
-  // step 3: now we have a set, so turn each one into a series of path-portion
-  // matching patterns.
-  // These will be regexps, except in the case of "**", which is
-  // set to the GLOBSTAR object for globstar behavior,
-  // and will not contain any / characters
-  set = this.globParts = set.map(function (s) {
-    return s.split(slashSplit)
-  })
-
-  this.debug(this.pattern, set)
-
-  // glob --> regexps
-  set = set.map(function (s, si, set) {
-    return s.map(this.parse, this)
-  }, this)
-
-  this.debug(this.pattern, set)
-
-  // filter out everything that didn't compile properly.
-  set = set.filter(function (s) {
-    return -1 === s.indexOf(false)
-  })
-
-  this.debug(this.pattern, set)
-
-  this.set = set
-}
-
-Minimatch.prototype.parseNegate = parseNegate
-function parseNegate () {
-  var pattern = this.pattern
-    , negate = false
-    , options = this.options
-    , negateOffset = 0
-
-  if (options.nonegate) return
-
-  for ( var i = 0, l = pattern.length
-      ; i < l && pattern.charAt(i) === "!"
-      ; i ++) {
-    negate = !negate
-    negateOffset ++
-  }
-
-  if (negateOffset) this.pattern = pattern.substr(negateOffset)
-  this.negate = negate
-}
-
-// Brace expansion:
-// a{b,c}d -> abd acd
-// a{b,}c -> abc ac
-// a{0..3}d -> a0d a1d a2d a3d
-// a{b,c{d,e}f}g -> abg acdfg acefg
-// a{b,c}d{e,f}g -> abdeg acdeg abdeg abdfg
-//
-// Invalid sets are not expanded.
-// a{2..}b -> a{2..}b
-// a{b}c -> a{b}c
-minimatch.braceExpand = function (pattern, options) {
-  return new Minimatch(pattern, options).braceExpand()
-}
-
-Minimatch.prototype.braceExpand = braceExpand
-function braceExpand (pattern, options) {
-  options = options || this.options
-  pattern = typeof pattern === "undefined"
-    ? this.pattern : pattern
-
-  if (typeof pattern === "undefined") {
-    throw new Error("undefined pattern")
-  }
-
-  if (options.nobrace ||
-      !pattern.match(/\{.*\}/)) {
-    // shortcut. no need to expand.
-    return [pattern]
-  }
-
-  var escaping = false
-
-  // examples and comments refer to this crazy pattern:
-  // a{b,c{d,e},{f,g}h}x{y,z}
-  // expected:
-  // abxy
-  // abxz
-  // acdxy
-  // acdxz
-  // acexy
-  // acexz
-  // afhxy
-  // afhxz
-  // aghxy
-  // aghxz
-
-  // everything before the first \{ is just a prefix.
-  // So, we pluck that off, and work with the rest,
-  // and then prepend it to everything we find.
-  if (pattern.charAt(0) !== "{") {
-    this.debug(pattern)
-    var prefix = null
-    for (var i = 0, l = pattern.length; i < l; i ++) {
-      var c = pattern.charAt(i)
-      this.debug(i, c)
-      if (c === "\\") {
-        escaping = !escaping
-      } else if (c === "{" && !escaping) {
-        prefix = pattern.substr(0, i)
-        break
-      }
-    }
-
-    // actually no sets, all { were escaped.
-    if (prefix === null) {
-      this.debug("no sets")
-      return [pattern]
-    }
-
-   var tail = braceExpand.call(this, pattern.substr(i), options)
-    return tail.map(function (t) {
-      return prefix + t
-    })
-  }
-
-  // now we have something like:
-  // {b,c{d,e},{f,g}h}x{y,z}
-  // walk through the set, expanding each part, until
-  // the set ends.  then, we'll expand the suffix.
-  // If the set only has a single member, then'll put the {} back
-
-  // first, handle numeric sets, since they're easier
-  var numset = pattern.match(/^\{(-?[0-9]+)\.\.(-?[0-9]+)\}/)
-  if (numset) {
-    this.debug("numset", numset[1], numset[2])
-    var suf = braceExpand.call(this, pattern.substr(numset[0].length), options)
-      , start = +numset[1]
-      , end = +numset[2]
-      , inc = start > end ? -1 : 1
-      , set = []
-    for (var i = start; i != (end + inc); i += inc) {
-      // append all the suffixes
-      for (var ii = 0, ll = suf.length; ii < ll; ii ++) {
-        set.push(i + suf[ii])
-      }
-    }
-    return set
-  }
-
-  // ok, walk through the set
-  // We hope, somewhat optimistically, that there
-  // will be a } at the end.
-  // If the closing brace isn't found, then the pattern is
-  // interpreted as braceExpand("\\" + pattern) so that
-  // the leading \{ will be interpreted literally.
-  var i = 1 // skip the \{
-    , depth = 1
-    , set = []
-    , member = ""
-    , sawEnd = false
-    , escaping = false
-
-  function addMember () {
-    set.push(member)
-    member = ""
-  }
-
-  this.debug("Entering for")
-  FOR: for (i = 1, l = pattern.length; i < l; i ++) {
-    var c = pattern.charAt(i)
-    this.debug("", i, c)
-
-    if (escaping) {
-      escaping = false
-      member += "\\" + c
-    } else {
-      switch (c) {
-        case "\\":
-          escaping = true
-          continue
-
-        case "{":
-          depth ++
-          member += "{"
-          continue
-
-        case "}":
-          depth --
-          // if this closes the actual set, then we're done
-          if (depth === 0) {
-            addMember()
-            // pluck off the close-brace
-            i ++
-            break FOR
-          } else {
-            member += c
-            continue
-          }
-
-        case ",":
-          if (depth === 1) {
-            addMember()
-          } else {
-            member += c
-          }
-          continue
-
-        default:
-          member += c
-          continue
-      } // switch
-    } // else
-  } // for
-
-  // now we've either finished the set, and the suffix is
-  // pattern.substr(i), or we have *not* closed the set,
-  // and need to escape the leading brace
-  if (depth !== 0) {
-    this.debug("didn't close", pattern)
-    return braceExpand.call(this, "\\" + pattern, options)
-  }
-
-  // x{y,z} -> ["xy", "xz"]
-  this.debug("set", set)
-  this.debug("suffix", pattern.substr(i))
-  var suf = braceExpand.call(this, pattern.substr(i), options)
-  // ["b", "c{d,e}","{f,g}h"] ->
-  //   [["b"], ["cd", "ce"], ["fh", "gh"]]
-  var addBraces = set.length === 1
-  this.debug("set pre-expanded", set)
-  set = set.map(function (p) {
-    return braceExpand.call(this, p, options)
-  }, this)
-  this.debug("set expanded", set)
-
-
-  // [["b"], ["cd", "ce"], ["fh", "gh"]] ->
-  //   ["b", "cd", "ce", "fh", "gh"]
-  set = set.reduce(function (l, r) {
-    return l.concat(r)
-  })
-
-  if (addBraces) {
-    set = set.map(function (s) {
-      return "{" + s + "}"
-    })
-  }
-
-  // now attach the suffixes.
-  var ret = []
-  for (var i = 0, l = set.length; i < l; i ++) {
-    for (var ii = 0, ll = suf.length; ii < ll; ii ++) {
-      ret.push(set[i] + suf[ii])
-    }
-  }
-  return ret
-}
-
-// parse a component of the expanded set.
-// At this point, no pattern may contain "/" in it
-// so we're going to return a 2d array, where each entry is the full
-// pattern, split on '/', and then turned into a regular expression.
-// A regexp is made at the end which joins each array with an
-// escaped /, and another full one which joins each regexp with |.
-//
-// Following the lead of Bash 4.1, note that "**" only has special meaning
-// when it is the *only* thing in a path portion.  Otherwise, any series
-// of * is equivalent to a single *.  Globstar behavior is enabled by
-// default, and can be disabled by setting options.noglobstar.
-Minimatch.prototype.parse = parse
-var SUBPARSE = {}
-function parse (pattern, isSub) {
-  var options = this.options
-
-  // shortcuts
-  if (!options.noglobstar && pattern === "**") return GLOBSTAR
-  if (pattern === "") return ""
-
-  var re = ""
-    , hasMagic = !!options.nocase
-    , escaping = false
-    // ? => one single character
-    , patternListStack = []
-    , plType
-    , stateChar
-    , inClass = false
-    , reClassStart = -1
-    , classStart = -1
-    // . and .. never match anything that doesn't start with .,
-    // even when options.dot is set.
-    , patternStart = pattern.charAt(0) === "." ? "" // anything
-      // not (start or / followed by . or .. followed by / or end)
-      : options.dot ? "(?!(?:^|\\\/)\\.{1,2}(?:$|\\\/))"
-      : "(?!\\.)"
-    , self = this
-
-  function clearStateChar () {
-    if (stateChar) {
-      // we had some state-tracking character
-      // that wasn't consumed by this pass.
-      switch (stateChar) {
-        case "*":
-          re += star
-          hasMagic = true
-          break
-        case "?":
-          re += qmark
-          hasMagic = true
-          break
-        default:
-          re += "\\"+stateChar
-          break
-      }
-      self.debug('clearStateChar %j %j', stateChar, re)
-      stateChar = false
-    }
-  }
-
-  for ( var i = 0, len = pattern.length, c
-      ; (i < len) && (c = pattern.charAt(i))
-      ; i ++ ) {
-
-    this.debug("%s\t%s %s %j", pattern, i, re, c)
-
-    // skip over any that are escaped.
-    if (escaping && reSpecials[c]) {
-      re += "\\" + c
-      escaping = false
-      continue
-    }
-
-    SWITCH: switch (c) {
-      case "/":
-        // completely not allowed, even escaped.
-        // Should already be path-split by now.
-        return false
-
-      case "\\":
-        clearStateChar()
-        escaping = true
-        continue
-
-      // the various stateChar values
-      // for the "extglob" stuff.
-      case "?":
-      case "*":
-      case "+":
-      case "@":
-      case "!":
-        this.debug("%s\t%s %s %j <-- stateChar", pattern, i, re, c)
-
-        // all of those are literals inside a class, except that
-        // the glob [!a] means [^a] in regexp
-        if (inClass) {
-          this.debug('  in class')
-          if (c === "!" && i === classStart + 1) c = "^"
-          re += c
-          continue
-        }
-
-        // if we already have a stateChar, then it means
-        // that there was something like ** or +? in there.
-        // Handle the stateChar, then proceed with this one.
-        self.debug('call clearStateChar %j', stateChar)
-        clearStateChar()
-        stateChar = c
-        // if extglob is disabled, then +(asdf|foo) isn't a thing.
-        // just clear the statechar *now*, rather than even diving into
-        // the patternList stuff.
-        if (options.noext) clearStateChar()
-        continue
-
-      case "(":
-        if (inClass) {
-          re += "("
-          continue
-        }
-
-        if (!stateChar) {
-          re += "\\("
-          continue
-        }
-
-        plType = stateChar
-        patternListStack.push({ type: plType
-                              , start: i - 1
-                              , reStart: re.length })
-        // negation is (?:(?!js)[^/]*)
-        re += stateChar === "!" ? "(?:(?!" : "(?:"
-        this.debug('plType %j %j', stateChar, re)
-        stateChar = false
-        continue
-
-      case ")":
-        if (inClass || !patternListStack.length) {
-          re += "\\)"
-          continue
-        }
-
-        clearStateChar()
-        hasMagic = true
-        re += ")"
-        plType = patternListStack.pop().type
-        // negation is (?:(?!js)[^/]*)
-        // The others are (?:<pattern>)<type>
-        switch (plType) {
-          case "!":
-            re += "[^/]*?)"
-            break
-          case "?":
-          case "+":
-          case "*": re += plType
-          case "@": break // the default anyway
-        }
-        continue
-
-      case "|":
-        if (inClass || !patternListStack.length || escaping) {
-          re += "\\|"
-          escaping = false
-          continue
-        }
-
-        clearStateChar()
-        re += "|"
-        continue
-
-      // these are mostly the same in regexp and glob
-      case "[":
-        // swallow any state-tracking char before the [
-        clearStateChar()
-
-        if (inClass) {
-          re += "\\" + c
-          continue
-        }
-
-        inClass = true
-        classStart = i
-        reClassStart = re.length
-        re += c
-        continue
-
-      case "]":
-        //  a right bracket shall lose its special
-        //  meaning and represent itself in
-        //  a bracket expression if it occurs
-        //  first in the list.  -- POSIX.2 2.8.3.2
-        if (i === classStart + 1 || !inClass) {
-          re += "\\" + c
-          escaping = false
-          continue
-        }
-
-        // finish up the class.
-        hasMagic = true
-        inClass = false
-        re += c
-        continue
-
-      default:
-        // swallow any state char that wasn't consumed
-        clearStateChar()
-
-        if (escaping) {
-          // no need
-          escaping = false
-        } else if (reSpecials[c]
-                   && !(c === "^" && inClass)) {
-          re += "\\"
-        }
-
-        re += c
-
-    } // switch
-  } // for
-
-
-  // handle the case where we left a class open.
-  // "[abc" is valid, equivalent to "\[abc"
-  if (inClass) {
-    // split where the last [ was, and escape it
-    // this is a huge pita.  We now have to re-walk
-    // the contents of the would-be class to re-translate
-    // any characters that were passed through as-is
-    var cs = pattern.substr(classStart + 1)
-      , sp = this.parse(cs, SUBPARSE)
-    re = re.substr(0, reClassStart) + "\\[" + sp[0]
-    hasMagic = hasMagic || sp[1]
-  }
-
-  // handle the case where we had a +( thing at the *end*
-  // of the pattern.
-  // each pattern list stack adds 3 chars, and we need to go through
-  // and escape any | chars that were passed through as-is for the regexp.
-  // Go through and escape them, taking care not to double-escape any
-  // | chars that were already escaped.
-  var pl
-  while (pl = patternListStack.pop()) {
-    var tail = re.slice(pl.reStart + 3)
-    // maybe some even number of \, then maybe 1 \, followed by a |
-    tail = tail.replace(/((?:\\{2})*)(\\?)\|/g, function (_, $1, $2) {
-      if (!$2) {
-        // the | isn't already escaped, so escape it.
-        $2 = "\\"
-      }
-
-      // need to escape all those slashes *again*, without escaping the
-      // one that we need for escaping the | character.  As it works out,
-      // escaping an even number of slashes can be done by simply repeating
-      // it exactly after itself.  That's why this trick works.
-      //
-      // I am sorry that you have to see this.
-      return $1 + $1 + $2 + "|"
-    })
-
-    this.debug("tail=%j\n   %s", tail, tail)
-    var t = pl.type === "*" ? star
-          : pl.type === "?" ? qmark
-          : "\\" + pl.type
-
-    hasMagic = true
-    re = re.slice(0, pl.reStart)
-       + t + "\\("
-       + tail
-  }
-
-  // handle trailing things that only matter at the very end.
-  clearStateChar()
-  if (escaping) {
-    // trailing \\
-    re += "\\\\"
-  }
-
-  // only need to apply the nodot start if the re starts with
-  // something that could conceivably capture a dot
-  var addPatternStart = false
-  switch (re.charAt(0)) {
-    case ".":
-    case "[":
-    case "(": addPatternStart = true
-  }
-
-  // if the re is not "" at this point, then we need to make sure
-  // it doesn't match against an empty path part.
-  // Otherwise a/* will match a/, which it should not.
-  if (re !== "" && hasMagic) re = "(?=.)" + re
-
-  if (addPatternStart) re = patternStart + re
-
-  // parsing just a piece of a larger pattern.
-  if (isSub === SUBPARSE) {
-    return [ re, hasMagic ]
-  }
-
-  // skip the regexp for non-magical patterns
-  // unescape anything in it, though, so that it'll be
-  // an exact match against a file etc.
-  if (!hasMagic) {
-    return globUnescape(pattern)
-  }
-
-  var flags = options.nocase ? "i" : ""
-    , regExp = new RegExp("^" + re + "$", flags)
-
-  regExp._glob = pattern
-  regExp._src = re
-
-  return regExp
-}
-
-minimatch.makeRe = function (pattern, options) {
-  return new Minimatch(pattern, options || {}).makeRe()
-}
-
-Minimatch.prototype.makeRe = makeRe
-function makeRe () {
-  if (this.regexp || this.regexp === false) return this.regexp
-
-  // at this point, this.set is a 2d array of partial
-  // pattern strings, or "**".
-  //
-  // It's better to use .match().  This function shouldn't
-  // be used, really, but it's pretty convenient sometimes,
-  // when you just want to work with a regex.
-  var set = this.set
-
-  if (!set.length) return this.regexp = false
-  var options = this.options
-
-  var twoStar = options.noglobstar ? star
-      : options.dot ? twoStarDot
-      : twoStarNoDot
-    , flags = options.nocase ? "i" : ""
-
-  var re = set.map(function (pattern) {
-    return pattern.map(function (p) {
-      return (p === GLOBSTAR) ? twoStar
-           : (typeof p === "string") ? regExpEscape(p)
-           : p._src
-    }).join("\\\/")
-  }).join("|")
-
-  // must match entire pattern
-  // ending in a * or ** will make it less strict.
-  re = "^(?:" + re + ")$"
-
-  // can match anything, as long as it's not this.
-  if (this.negate) re = "^(?!" + re + ").*$"
-
-  try {
-    return this.regexp = new RegExp(re, flags)
-  } catch (ex) {
-    return this.regexp = false
-  }
-}
-
-minimatch.match = function (list, pattern, options) {
-  var mm = new Minimatch(pattern, options)
-  list = list.filter(function (f) {
-    return mm.match(f)
-  })
-  if (options.nonull && !list.length) {
-    list.push(pattern)
-  }
-  return list
-}
-
-Minimatch.prototype.match = match
-function match (f, partial) {
-  this.debug("match", f, this.pattern)
-  // short-circuit in the case of busted things.
-  // comments, etc.
-  if (this.comment) return false
-  if (this.empty) return f === ""
-
-  if (f === "/" && partial) return true
-
-  var options = this.options
-
-  // windows: need to use /, not \
-  // On other platforms, \ is a valid (albeit bad) filename char.
-  if (platform === "win32") {
-    f = f.split("\\").join("/")
-  }
-
-  // treat the test path as a set of pathparts.
-  f = f.split(slashSplit)
-  this.debug(this.pattern, "split", f)
-
-  // just ONE of the pattern sets in this.set needs to match
-  // in order for it to be valid.  If negating, then just one
-  // match means that we have failed.
-  // Either way, return on the first hit.
-
-  var set = this.set
-  this.debug(this.pattern, "set", set)
-
-  var splitFile = path.basename(f.join("/")).split("/")
-
-  for (var i = 0, l = set.length; i < l; i ++) {
-    var pattern = set[i], file = f
-    if (options.matchBase && pattern.length === 1) {
-      file = splitFile
-    }
-    var hit = this.matchOne(file, pattern, partial)
-    if (hit) {
-      if (options.flipNegate) return true
-      return !this.negate
-    }
-  }
-
-  // didn't get any hits.  this is success if it's a negative
-  // pattern, failure otherwise.
-  if (options.flipNegate) return false
-  return this.negate
-}
-
-// set partial to true to test if, for example,
-// "/a/b" matches the start of "/*/b/*/d"
-// Partial means, if you run out of file before you run
-// out of pattern, then that's fine, as long as all
-// the parts match.
-Minimatch.prototype.matchOne = function (file, pattern, partial) {
-  var options = this.options
-
-  this.debug("matchOne",
-              { "this": this
-              , file: file
-              , pattern: pattern })
-
-  this.debug("matchOne", file.length, pattern.length)
-
-  for ( var fi = 0
-          , pi = 0
-          , fl = file.length
-          , pl = pattern.length
-      ; (fi < fl) && (pi < pl)
-      ; fi ++, pi ++ ) {
-
-    this.debug("matchOne loop")
-    var p = pattern[pi]
-      , f = file[fi]
-
-    this.debug(pattern, p, f)
-
-    // should be impossible.
-    // some invalid regexp stuff in the set.
-    if (p === false) return false
-
-    if (p === GLOBSTAR) {
-      this.debug('GLOBSTAR', [pattern, p, f])
-
-      // "**"
-      // a/**/b/**/c would match the following:
-      // a/b/x/y/z/c
-      // a/x/y/z/b/c
-      // a/b/x/b/x/c
-      // a/b/c
-      // To do this, take the rest of the pattern after
-      // the **, and see if it would match the file remainder.
-      // If so, return success.
-      // If not, the ** "swallows" a segment, and try again.
-      // This is recursively awful.
-      //
-      // a/**/b/**/c matching a/b/x/y/z/c
-      // - a matches a
-      // - doublestar
-      //   - matchOne(b/x/y/z/c, b/**/c)
-      //     - b matches b
-      //     - doublestar
-      //       - matchOne(x/y/z/c, c) -> no
-      //       - matchOne(y/z/c, c) -> no
-      //       - matchOne(z/c, c) -> no
-      //       - matchOne(c, c) yes, hit
-      var fr = fi
-        , pr = pi + 1
-      if (pr === pl) {
-        this.debug('** at the end')
-        // a ** at the end will just swallow the rest.
-        // We have found a match.
-        // however, it will not swallow /.x, unless
-        // options.dot is set.
-        // . and .. are *never* matched by **, for explosively
-        // exponential reasons.
-        for ( ; fi < fl; fi ++) {
-          if (file[fi] === "." || file[fi] === ".." ||
-              (!options.dot && file[fi].charAt(0) === ".")) return false
-        }
-        return true
-      }
-
-      // ok, let's see if we can swallow whatever we can.
-      WHILE: while (fr < fl) {
-        var swallowee = file[fr]
-
-        this.debug('\nglobstar while',
-                    file, fr, pattern, pr, swallowee)
-
-        // XXX remove this slice.  Just pass the start index.
-        if (this.matchOne(file.slice(fr), pattern.slice(pr), partial)) {
-          this.debug('globstar found match!', fr, fl, swallowee)
-          // found a match.
-          return true
-        } else {
-          // can't swallow "." or ".." ever.
-          // can only swallow ".foo" when explicitly asked.
-          if (swallowee === "." || swallowee === ".." ||
-              (!options.dot && swallowee.charAt(0) === ".")) {
-            this.debug("dot detected!", file, fr, pattern, pr)
-            break WHILE
-          }
-
-          // ** swallows a segment, and continue.
-          this.debug('globstar swallow a segment, and continue')
-          fr ++
-        }
-      }
-      // no match was found.
-      // However, in partial mode, we can't say this is necessarily over.
-      // If there's more *pattern* left, then 
-      if (partial) {
-        // ran out of file
-        this.debug("\n>>> no match, partial?", file, fr, pattern, pr)
-        if (fr === fl) return true
-      }
-      return false
-    }
-
-    // something other than **
-    // non-magic patterns just have to match exactly
-    // patterns with magic have been turned into regexps.
-    var hit
-    if (typeof p === "string") {
-      if (options.nocase) {
-        hit = f.toLowerCase() === p.toLowerCase()
-      } else {
-        hit = f === p
-      }
-      this.debug("string match", p, f, hit)
-    } else {
-      hit = f.match(p)
-      this.debug("pattern match", p, f, hit)
-    }
-
-    if (!hit) return false
-  }
-
-  // Note: ending in / means that we'll get a final ""
-  // at the end of the pattern.  This can only match a
-  // corresponding "" at the end of the file.
-  // If the file ends in /, then it can only match a
-  // a pattern that ends in /, unless the pattern just
-  // doesn't have any more for it. But, a/b/ should *not*
-  // match "a/b/*", even though "" matches against the
-  // [^/]*? pattern, except in partial mode, where it might
-  // simply not be reached yet.
-  // However, a/b/ should still satisfy a/*
-
-  // now either we fell off the end of the pattern, or we're done.
-  if (fi === fl && pi === pl) {
-    // ran out of pattern and filename at the same time.
-    // an exact hit!
-    return true
-  } else if (fi === fl) {
-    // ran out of file, but still had pattern left.
-    // this is ok if we're doing the match as part of
-    // a glob fs traversal.
-    return partial
-  } else if (pi === pl) {
-    // ran out of pattern, still have file left.
-    // this is only acceptable if we're on the very last
-    // empty segment of a file with a trailing slash.
-    // a/* should match a/b/
-    var emptyFileEnd = (fi === fl - 1) && (file[fi] === "")
-    return emptyFileEnd
-  }
-
-  // should be unreachable.
-  throw new Error("wtf?")
-}
-
-
-// replace stuff like \* with *
-function globUnescape (s) {
-  return s.replace(/\\(.)/g, "$1")
-}
-
-
-function regExpEscape (s) {
-  return s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
-}
-
-})( typeof require === "function" ? require : null,
-    this,
-    typeof module === "object" ? module : null,
-    typeof process === "object" ? process.platform : "win32"
-  )
 
 }).call(this,require('_process'))
-},{"_process":14,"lru-cache":279,"path":13,"sigmund":280}],279:[function(require,module,exports){
-;(function () { // closure for web browsers
-
-if (typeof module === 'object' && module.exports) {
-  module.exports = LRUCache
-} else {
-  // just set the global for non-node platforms.
-  this.LRUCache = LRUCache
-}
-
-function hOP (obj, key) {
-  return Object.prototype.hasOwnProperty.call(obj, key)
-}
-
-function naiveLength () { return 1 }
-
-function LRUCache (options) {
-  if (!(this instanceof LRUCache))
-    return new LRUCache(options)
-
-  if (typeof options === 'number')
-    options = { max: options }
-
-  if (!options)
-    options = {}
-
-  this._max = options.max
-  // Kind of weird to have a default max of Infinity, but oh well.
-  if (!this._max || !(typeof this._max === "number") || this._max <= 0 )
-    this._max = Infinity
-
-  this._lengthCalculator = options.length || naiveLength
-  if (typeof this._lengthCalculator !== "function")
-    this._lengthCalculator = naiveLength
-
-  this._allowStale = options.stale || false
-  this._maxAge = options.maxAge || null
-  this._dispose = options.dispose
-  this.reset()
-}
-
-// resize the cache when the max changes.
-Object.defineProperty(LRUCache.prototype, "max",
-  { set : function (mL) {
-      if (!mL || !(typeof mL === "number") || mL <= 0 ) mL = Infinity
-      this._max = mL
-      if (this._length > this._max) trim(this)
-    }
-  , get : function () { return this._max }
-  , enumerable : true
-  })
-
-// resize the cache when the lengthCalculator changes.
-Object.defineProperty(LRUCache.prototype, "lengthCalculator",
-  { set : function (lC) {
-      if (typeof lC !== "function") {
-        this._lengthCalculator = naiveLength
-        this._length = this._itemCount
-        for (var key in this._cache) {
-          this._cache[key].length = 1
-        }
-      } else {
-        this._lengthCalculator = lC
-        this._length = 0
-        for (var key in this._cache) {
-          this._cache[key].length = this._lengthCalculator(this._cache[key].value)
-          this._length += this._cache[key].length
-        }
-      }
-
-      if (this._length > this._max) trim(this)
-    }
-  , get : function () { return this._lengthCalculator }
-  , enumerable : true
-  })
-
-Object.defineProperty(LRUCache.prototype, "length",
-  { get : function () { return this._length }
-  , enumerable : true
-  })
-
-
-Object.defineProperty(LRUCache.prototype, "itemCount",
-  { get : function () { return this._itemCount }
-  , enumerable : true
-  })
-
-LRUCache.prototype.forEach = function (fn, thisp) {
-  thisp = thisp || this
-  var i = 0
-  var itemCount = this._itemCount
-
-  for (var k = this._mru - 1; k >= 0 && i < itemCount; k--) if (this._lruList[k]) {
-    i++
-    var hit = this._lruList[k]
-    if (isStale(this, hit)) {
-      del(this, hit)
-      if (!this._allowStale) hit = undefined
-    }
-    if (hit) {
-      fn.call(thisp, hit.value, hit.key, this)
-    }
-  }
-}
-
-LRUCache.prototype.keys = function () {
-  var keys = new Array(this._itemCount)
-  var i = 0
-  for (var k = this._mru - 1; k >= 0 && i < this._itemCount; k--) if (this._lruList[k]) {
-    var hit = this._lruList[k]
-    keys[i++] = hit.key
-  }
-  return keys
-}
-
-LRUCache.prototype.values = function () {
-  var values = new Array(this._itemCount)
-  var i = 0
-  for (var k = this._mru - 1; k >= 0 && i < this._itemCount; k--) if (this._lruList[k]) {
-    var hit = this._lruList[k]
-    values[i++] = hit.value
-  }
-  return values
-}
-
-LRUCache.prototype.reset = function () {
-  if (this._dispose && this._cache) {
-    for (var k in this._cache) {
-      this._dispose(k, this._cache[k].value)
-    }
-  }
-
-  this._cache = Object.create(null) // hash of items by key
-  this._lruList = Object.create(null) // list of items in order of use recency
-  this._mru = 0 // most recently used
-  this._lru = 0 // least recently used
-  this._length = 0 // number of items in the list
-  this._itemCount = 0
-}
-
-// Provided for debugging/dev purposes only. No promises whatsoever that
-// this API stays stable.
-LRUCache.prototype.dump = function () {
-  return this._cache
-}
-
-LRUCache.prototype.dumpLru = function () {
-  return this._lruList
-}
-
-LRUCache.prototype.set = function (key, value, maxAge) {
-  maxAge = maxAge || this._maxAge
-  var now = maxAge ? Date.now() : 0
-
-  if (hOP(this._cache, key)) {
-    // dispose of the old one before overwriting
-    if (this._dispose)
-      this._dispose(key, this._cache[key].value)
-
-    this._cache[key].now = now
-    this._cache[key].maxAge = maxAge
-    this._cache[key].value = value
-    this.get(key)
-    return true
-  }
-
-  var len = this._lengthCalculator(value)
-  var hit = new Entry(key, value, this._mru++, len, now, maxAge)
-
-  // oversized objects fall out of cache automatically.
-  if (hit.length > this._max) {
-    if (this._dispose) this._dispose(key, value)
-    return false
-  }
-
-  this._length += hit.length
-  this._lruList[hit.lu] = this._cache[key] = hit
-  this._itemCount ++
-
-  if (this._length > this._max)
-    trim(this)
-
-  return true
-}
-
-LRUCache.prototype.has = function (key) {
-  if (!hOP(this._cache, key)) return false
-  var hit = this._cache[key]
-  if (isStale(this, hit)) {
-    return false
-  }
-  return true
-}
-
-LRUCache.prototype.get = function (key) {
-  return get(this, key, true)
-}
-
-LRUCache.prototype.peek = function (key) {
-  return get(this, key, false)
-}
-
-LRUCache.prototype.pop = function () {
-  var hit = this._lruList[this._lru]
-  del(this, hit)
-  return hit || null
-}
-
-LRUCache.prototype.del = function (key) {
-  del(this, this._cache[key])
-}
-
-function get (self, key, doUse) {
-  var hit = self._cache[key]
-  if (hit) {
-    if (isStale(self, hit)) {
-      del(self, hit)
-      if (!self._allowStale) hit = undefined
-    } else {
-      if (doUse) use(self, hit)
-    }
-    if (hit) hit = hit.value
-  }
-  return hit
-}
-
-function isStale(self, hit) {
-  if (!hit || (!hit.maxAge && !self._maxAge)) return false
-  var stale = false;
-  var diff = Date.now() - hit.now
-  if (hit.maxAge) {
-    stale = diff > hit.maxAge
-  } else {
-    stale = self._maxAge && (diff > self._maxAge)
-  }
-  return stale;
-}
-
-function use (self, hit) {
-  shiftLU(self, hit)
-  hit.lu = self._mru ++
-  self._lruList[hit.lu] = hit
-}
-
-function trim (self) {
-  while (self._lru < self._mru && self._length > self._max)
-    del(self, self._lruList[self._lru])
-}
-
-function shiftLU (self, hit) {
-  delete self._lruList[ hit.lu ]
-  while (self._lru < self._mru && !self._lruList[self._lru]) self._lru ++
-}
-
-function del (self, hit) {
-  if (hit) {
-    if (self._dispose) self._dispose(hit.key, hit.value)
-    self._length -= hit.length
-    self._itemCount --
-    delete self._cache[ hit.key ]
-    shiftLU(self, hit)
-  }
-}
-
-// classy, since V8 prefers predictable objects.
-function Entry (key, value, lu, length, now, maxAge) {
-  this.key = key
-  this.value = value
-  this.lu = lu
-  this.length = length
-  this.now = now
-  if (maxAge) this.maxAge = maxAge
-}
-
-})()
-
-},{}],280:[function(require,module,exports){
-module.exports = sigmund
-function sigmund (subject, maxSessions) {
-    maxSessions = maxSessions || 10;
-    var notes = [];
-    var analysis = '';
-    var RE = RegExp;
-
-    function psychoAnalyze (subject, session) {
-        if (session > maxSessions) return;
-
-        if (typeof subject === 'function' ||
-            typeof subject === 'undefined') {
-            return;
-        }
-
-        if (typeof subject !== 'object' || !subject ||
-            (subject instanceof RE)) {
-            analysis += subject;
-            return;
-        }
-
-        if (notes.indexOf(subject) !== -1 || session === maxSessions) return;
-
-        notes.push(subject);
-        analysis += '{';
-        Object.keys(subject).forEach(function (issue, _, __) {
-            // pseudo-private values.  skip those.
-            if (issue.charAt(0) === '_') return;
-            var to = typeof subject[issue];
-            if (to === 'function' || to === 'undefined') return;
-            analysis += issue;
-            psychoAnalyze(subject[issue], session + 1);
-        });
-    }
-    psychoAnalyze(subject, 0);
-    return analysis;
-}
-
-// vim: set softtabstop=4 shiftwidth=4:
-
-},{}],281:[function(require,module,exports){
+},{"./fs.js":190,"_process":64,"constants":10}],193:[function(require,module,exports){
+(function (Buffer){
 'use strict';
+var isUtf8 = require('is-utf8');
 
-module.exports = function isValidGlob(glob) {
-  if (typeof glob === 'string' && glob.length > 0) {
-    return true;
-  }
-  if (Array.isArray(glob)) {
-    return glob.length !== 0 && every(glob);
-  }
-  return false;
-};
-
-function every(arr) {
-  var len = arr.length;
-  while (len--) {
-    if (typeof arr[len] !== 'string' || arr[len].length <= 0) {
-      return false;
-    }
-  }
-  return true;
-}
-
-},{}],282:[function(require,module,exports){
-'use strict';
-
-var through = require('through2')
-
-module.exports = function (/*streams...*/) {
-  var sources = []
-  var output  = through.obj()
-
-  output.setMaxListeners(0)
-
-  output.add = add
-  output.isEmpty = isEmpty
-
-  output.on('unpipe', remove)
-
-  Array.prototype.slice.call(arguments).forEach(add)
-
-  return output
-
-  function add (source) {
-    if (Array.isArray(source)) {
-      source.forEach(add)
-      return this
-    }
-
-    sources.push(source);
-    source.once('end', remove.bind(null, source))
-    source.pipe(output, {end: false})
-    return this
-  }
-
-  function isEmpty () {
-    return sources.length == 0;
-  }
-
-  function remove (source) {
-    sources = sources.filter(function (it) { return it !== source })
-    if (!sources.length && output.readable) { output.end() }
-  }
-}
-
-},{"through2":293}],283:[function(require,module,exports){
-arguments[4][248][0].apply(exports,arguments)
-},{"./_stream_readable":284,"./_stream_writable":286,"_process":14,"core-util-is":287,"dup":248,"inherits":288}],284:[function(require,module,exports){
-arguments[4][259][0].apply(exports,arguments)
-},{"_process":14,"buffer":4,"core-util-is":287,"dup":259,"events":9,"inherits":288,"isarray":289,"stream":32,"string_decoder/":290}],285:[function(require,module,exports){
-arguments[4][260][0].apply(exports,arguments)
-},{"./_stream_duplex":283,"core-util-is":287,"dup":260,"inherits":288}],286:[function(require,module,exports){
-arguments[4][261][0].apply(exports,arguments)
-},{"./_stream_duplex":283,"_process":14,"buffer":4,"core-util-is":287,"dup":261,"inherits":288,"stream":32}],287:[function(require,module,exports){
-arguments[4][25][0].apply(exports,arguments)
-},{"buffer":4,"dup":25}],288:[function(require,module,exports){
-arguments[4][10][0].apply(exports,arguments)
-},{"dup":10}],289:[function(require,module,exports){
-arguments[4][11][0].apply(exports,arguments)
-},{"dup":11}],290:[function(require,module,exports){
-arguments[4][42][0].apply(exports,arguments)
-},{"buffer":4,"dup":42}],291:[function(require,module,exports){
-arguments[4][30][0].apply(exports,arguments)
-},{"./lib/_stream_transform.js":285,"dup":30}],292:[function(require,module,exports){
-arguments[4][47][0].apply(exports,arguments)
-},{"dup":47}],293:[function(require,module,exports){
-arguments[4][268][0].apply(exports,arguments)
-},{"_process":14,"dup":268,"readable-stream/transform":291,"util":46,"xtend":292}],294:[function(require,module,exports){
-(function (process){
-var path = require('path');
-var fs = require('fs');
-var _0777 = parseInt('0777', 8);
-
-module.exports = mkdirP.mkdirp = mkdirP.mkdirP = mkdirP;
-
-function mkdirP (p, opts, f, made) {
-    if (typeof opts === 'function') {
-        f = opts;
-        opts = {};
-    }
-    else if (!opts || typeof opts !== 'object') {
-        opts = { mode: opts };
-    }
-    
-    var mode = opts.mode;
-    var xfs = opts.fs || fs;
-    
-    if (mode === undefined) {
-        mode = _0777 & (~process.umask());
-    }
-    if (!made) made = null;
-    
-    var cb = f || function () {};
-    p = path.resolve(p);
-    
-    xfs.mkdir(p, mode, function (er) {
-        if (!er) {
-            made = made || p;
-            return cb(null, made);
-        }
-        switch (er.code) {
-            case 'ENOENT':
-                mkdirP(path.dirname(p), opts, function (er, made) {
-                    if (er) cb(er, made);
-                    else mkdirP(p, opts, cb, made);
-                });
-                break;
-
-            // In the case of any other error, just see if there's a dir
-            // there already.  If so, then hooray!  If not, then something
-            // is borked.
-            default:
-                xfs.stat(p, function (er2, stat) {
-                    // if the stat fails, then that's super weird.
-                    // let the original error be the failure reason.
-                    if (er2 || !stat.isDirectory()) cb(er, made)
-                    else cb(null, made);
-                });
-                break;
-        }
-    });
-}
-
-mkdirP.sync = function sync (p, opts, made) {
-    if (!opts || typeof opts !== 'object') {
-        opts = { mode: opts };
-    }
-    
-    var mode = opts.mode;
-    var xfs = opts.fs || fs;
-    
-    if (mode === undefined) {
-        mode = _0777 & (~process.umask());
-    }
-    if (!made) made = null;
-
-    p = path.resolve(p);
-
-    try {
-        xfs.mkdirSync(p, mode);
-        made = made || p;
-    }
-    catch (err0) {
-        switch (err0.code) {
-            case 'ENOENT' :
-                made = sync(path.dirname(p), opts, made);
-                sync(p, opts, made);
-                break;
-
-            // In the case of any other error, just see if there's a dir
-            // there already.  If so, then hooray!  If not, then something
-            // is borked.
-            default:
-                var stat;
-                try {
-                    stat = xfs.statSync(p);
-                }
-                catch (err1) {
-                    throw err0;
-                }
-                if (!stat.isDirectory()) throw err0;
-                break;
-        }
-    }
-
-    return made;
-};
-
-}).call(this,require('_process'))
-},{"_process":14,"fs":1,"path":13}],295:[function(require,module,exports){
-'use strict';
-var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-function ToObject(val) {
-	if (val == null) {
-		throw new TypeError('Object.assign cannot be called with null or undefined');
+var stripBom = module.exports = function (arg) {
+	if (typeof arg === 'string') {
+		return arg.replace(/^\ufeff/g, '');
 	}
 
-	return Object(val);
-}
-
-function ownEnumerableKeys(obj) {
-	var keys = Object.getOwnPropertyNames(obj);
-
-	if (Object.getOwnPropertySymbols) {
-		keys = keys.concat(Object.getOwnPropertySymbols(obj));
+	if (Buffer.isBuffer(arg) && isUtf8(arg) &&
+		arg[0] === 0xef && arg[1] === 0xbb && arg[2] === 0xbf) {
+		return arg.slice(3);
 	}
 
-	return keys.filter(function (key) {
-		return propIsEnumerable.call(obj, key);
+	return arg;
+};
+
+stripBom.stream = function () {
+	var firstChunk = require('first-chunk-stream');
+
+	return firstChunk({minSize: 3}, function (chunk, enc, cb) {
+		this.push(stripBom(chunk));
+		cb();
 	});
-}
-
-module.exports = Object.assign || function (target, source) {
-	var from;
-	var keys;
-	var to = ToObject(target);
-
-	for (var s = 1; s < arguments.length; s++) {
-		from = arguments[s];
-		keys = ownEnumerableKeys(Object(from));
-
-		for (var i = 0; i < keys.length; i++) {
-			to[keys[i]] = from[keys[i]];
-		}
-	}
-
-	return to;
 };
 
-},{}],296:[function(require,module,exports){
-"use strict";
+}).call(this,{"isBuffer":require("/media/d/projects/node-ipfs-api/node_modules/is-buffer/index.js")})
+},{"/media/d/projects/node-ipfs-api/node_modules/is-buffer/index.js":21,"first-chunk-stream":194,"is-utf8":195}],194:[function(require,module,exports){
+arguments[4][143][0].apply(exports,arguments)
+},{"buffer":6,"dup":143,"stream":81,"util":90}],195:[function(require,module,exports){
 
-module.exports = make
-module.exports.ctor = ctor
-module.exports.objCtor = objCtor
-module.exports.obj = obj
+exports = module.exports = function(bytes)
+{
+    var i = 0;
+    while(i < bytes.length)
+    {
+        if(     (// ASCII
+                    bytes[i] == 0x09 ||
+                    bytes[i] == 0x0A ||
+                    bytes[i] == 0x0D ||
+                    (0x20 <= bytes[i] && bytes[i] <= 0x7E)
+                )
+          ) {
+              i += 1;
+              continue;
+          }
 
-var through2 = require("through2")
-var xtend = require("xtend")
+        if(     (// non-overlong 2-byte
+                    (0xC2 <= bytes[i] && bytes[i] <= 0xDF) &&
+                    (0x80 <= bytes[i+1] && bytes[i+1] <= 0xBF)
+                )
+          ) {
+              i += 2;
+              continue;
+          }
 
-function ctor(options, fn) {
-  if (typeof options == "function") {
-    fn = options
-    options = {}
-  }
+        if(     (// excluding overlongs
+                    bytes[i] == 0xE0 &&
+                    (0xA0 <= bytes[i + 1] && bytes[i + 1] <= 0xBF) &&
+                    (0x80 <= bytes[i + 2] && bytes[i + 2] <= 0xBF)
+                ) ||
+                (// straight 3-byte
+                 ((0xE1 <= bytes[i] && bytes[i] <= 0xEC) ||
+                  bytes[i] == 0xEE ||
+                  bytes[i] == 0xEF) &&
+                 (0x80 <= bytes[i + 1] && bytes[i+1] <= 0xBF) &&
+                 (0x80 <= bytes[i+2] && bytes[i+2] <= 0xBF)
+                ) ||
+                (// excluding surrogates
+                 bytes[i] == 0xED &&
+                 (0x80 <= bytes[i+1] && bytes[i+1] <= 0x9F) &&
+                 (0x80 <= bytes[i+2] && bytes[i+2] <= 0xBF)
+                )
+          ) {
+              i += 3;
+              continue;
+          }
 
-  var Filter = through2.ctor(options, function (chunk, encoding, callback) {
-    if (this.options.wantStrings) chunk = chunk.toString()
-    if (fn.call(this, chunk, this._index++)) this.push(chunk)
-    return callback()
-  })
-  Filter.prototype._index = 0
-  return Filter
+        if(     (// planes 1-3
+                    bytes[i] == 0xF0 &&
+                    (0x90 <= bytes[i + 1] && bytes[i + 1] <= 0xBF) &&
+                    (0x80 <= bytes[i + 2] && bytes[i + 2] <= 0xBF) &&
+                    (0x80 <= bytes[i + 3] && bytes[i + 3] <= 0xBF)
+                ) ||
+                (// planes 4-15
+                 (0xF1 <= bytes[i] && bytes[i] <= 0xF3) &&
+                 (0x80 <= bytes[i + 1] && bytes[i + 1] <= 0xBF) &&
+                 (0x80 <= bytes[i + 2] && bytes[i + 2] <= 0xBF) &&
+                 (0x80 <= bytes[i + 3] && bytes[i + 3] <= 0xBF)
+                ) ||
+                (// plane 16
+                 bytes[i] == 0xF4 &&
+                 (0x80 <= bytes[i + 1] && bytes[i + 1] <= 0x8F) &&
+                 (0x80 <= bytes[i + 2] && bytes[i + 2] <= 0xBF) &&
+                 (0x80 <= bytes[i + 3] && bytes[i + 3] <= 0xBF)
+                )
+          ) {
+              i += 4;
+              continue;
+          }
+
+        return false;
+    }
+
+    return true;
 }
 
-function objCtor(options, fn) {
-  if (typeof options === "function") {
-    fn = options
-    options = {}
-  }
-  options = xtend({objectMode: true, highWaterMark: 16}, options)
-  return ctor(options, fn)
-}
-
-function make(options, fn) {
-  return ctor(options, fn)()
-}
-
-function obj(options, fn) {
-  if (typeof options === "function") {
-    fn = options
-    options = {}
-  }
-  options = xtend({objectMode: true, highWaterMark: 16}, options)
-  return make(options, fn)
-}
-
-},{"through2":310,"xtend":297}],297:[function(require,module,exports){
-arguments[4][47][0].apply(exports,arguments)
-},{"dup":47}],298:[function(require,module,exports){
-arguments[4][20][0].apply(exports,arguments)
-},{"./_stream_readable":299,"./_stream_writable":301,"core-util-is":302,"dup":20,"inherits":303,"process-nextick-args":305}],299:[function(require,module,exports){
-arguments[4][22][0].apply(exports,arguments)
-},{"./_stream_duplex":298,"_process":14,"buffer":4,"core-util-is":302,"dup":22,"events":9,"inherits":303,"isarray":304,"process-nextick-args":305,"string_decoder/":306,"util":3}],300:[function(require,module,exports){
-arguments[4][23][0].apply(exports,arguments)
-},{"./_stream_duplex":298,"core-util-is":302,"dup":23,"inherits":303}],301:[function(require,module,exports){
-arguments[4][24][0].apply(exports,arguments)
-},{"./_stream_duplex":298,"buffer":4,"core-util-is":302,"dup":24,"events":9,"inherits":303,"process-nextick-args":305,"util-deprecate":307}],302:[function(require,module,exports){
-arguments[4][25][0].apply(exports,arguments)
-},{"buffer":4,"dup":25}],303:[function(require,module,exports){
-arguments[4][10][0].apply(exports,arguments)
-},{"dup":10}],304:[function(require,module,exports){
+},{}],196:[function(require,module,exports){
+arguments[4][162][0].apply(exports,arguments)
+},{"./_stream_readable":197,"./_stream_writable":199,"_process":64,"core-util-is":200,"dup":162,"inherits":201}],197:[function(require,module,exports){
+arguments[4][173][0].apply(exports,arguments)
+},{"_process":64,"buffer":6,"core-util-is":200,"dup":173,"events":14,"inherits":201,"isarray":202,"stream":81,"string_decoder/":203}],198:[function(require,module,exports){
+arguments[4][174][0].apply(exports,arguments)
+},{"./_stream_duplex":196,"core-util-is":200,"dup":174,"inherits":201}],199:[function(require,module,exports){
+arguments[4][175][0].apply(exports,arguments)
+},{"./_stream_duplex":196,"_process":64,"buffer":6,"core-util-is":200,"dup":175,"inherits":201,"stream":81}],200:[function(require,module,exports){
 arguments[4][11][0].apply(exports,arguments)
-},{"dup":11}],305:[function(require,module,exports){
-arguments[4][26][0].apply(exports,arguments)
-},{"_process":14,"dup":26}],306:[function(require,module,exports){
-arguments[4][42][0].apply(exports,arguments)
-},{"buffer":4,"dup":42}],307:[function(require,module,exports){
-arguments[4][27][0].apply(exports,arguments)
-},{"dup":27}],308:[function(require,module,exports){
-arguments[4][30][0].apply(exports,arguments)
-},{"./lib/_stream_transform.js":300,"dup":30}],309:[function(require,module,exports){
-arguments[4][47][0].apply(exports,arguments)
-},{"dup":47}],310:[function(require,module,exports){
-arguments[4][268][0].apply(exports,arguments)
-},{"_process":14,"dup":268,"readable-stream/transform":308,"util":46,"xtend":309}],311:[function(require,module,exports){
-var Path = require('path')
-
-module.exports = collect
-
-function collect(stream, cb) {
-
-  // we create a collection of objects, where
-  // - names is a list of all paths
-  // - there are per-file objects: { file: <vinyl file>, children [ paths ] }
-  // - named is a map { path: fo }
-  var files = {
-    paths: [],
-    named: {}, // wrapped files.
-    unnamed: [], // wrapped files.
-  }
-
-  function get(name) {
-    if (!files.named[name]) {
-      files.named[name] = {
-        children: [],
-      }
-    }
-    return files.named[name]
-  }
-
-  stream.on('data', function(file) {
-    if (cb === null) {
-      // already errored, or no way to externalize result
-      stream.on('data', function() {}) // de-register
-      return // do nothing.
-    }
-
-    if (file.path) {
-      // add file to named
-      var fo = get(file.path)
-      fo.file = file
-
-      // add reference to file at parent
-      var po = get(Path.dirname(file.path))
-      if (fo !== po) po.children.push(fo)
-
-      // add name to names list.
-      files.paths.push(file.path)
-    } else {
-      files.unnamed.push({ file: file, children: [] })
-    }
-  })
-
-  stream.on('error', function(err) {
-    cb && cb(err)
-    cb = null
-  })
-
-  stream.on('end', function() {
-    cb && cb(null, files)
-    cb = null
-  })
-}
-
-},{"path":13}],312:[function(require,module,exports){
-var x = module.exports = {}
-x.randomString = randomString
-x.cleanPath = cleanPath
-
-function randomString () {
-  return Math.random().toString(36).slice(2) +
-    Math.random().toString(36).slice(2) +
-    Math.random().toString(36).slice(2) +
-    Math.random().toString(36).slice(2)
-}
-
-function cleanPath(path, base) {
-  if (!path) return ''
-  if (!base) return path
-
-  if (base[base.length-1] != '/') {
-    base += "/"
-  }
-
-  // remove base from path
-  path = path.replace(base, '')
-  path = path.replace(/[\/]+/g, '/')
-  return path
-}
-
-},{}],313:[function(require,module,exports){
-var flat = require('./mp2v_flat')
-var tree = require('./mp2v_tree')
-
-var x = module.exports = tree
-x.flat = flat
-x.tree = tree
-
-},{"./mp2v_flat":314,"./mp2v_tree":315}],314:[function(require,module,exports){
-var Multipart = require('multipart-stream')
-var duplexify = require('duplexify')
-var stream = require('stream')
-var common = require('./common')
-randomString = common.randomString
-
-module.exports = v2mpFlat
-
-// we'll create three streams:
-// - w: a writable stream. it receives vinyl files
-// - mp: a multipart stream
-// - r: a readable stream. it outputs multipart data
-function v2mpFlat(opts) {
-  opts = opts || {}
-  opts.boundary = opts.boundary || randomString()
-
-  var w = new stream.Writable({objectMode: true})
-  var r = new stream.PassThrough({objectMode: true})
-  var mp = new Multipart(opts.boundary)
-
-  // connect w -> mp
-  w._write = function(file, enc, cb) {
-    writePart(mp, file, cb)
-  }
-
-  // connect mp -> r
-  w.on('finish', function() {
-    // apparently cannot add parts while streaming :(
-    mp.pipe(r)
-  })
-
-  var out = duplexify.obj(w, r)
-  out.boundary = opts.boundary
-  return out
-}
-
-function writePart(mp, file, cb) {
-  var c = file.contents
-  if (c === null)
-    c = emptyStream()
-
-  mp.addPart({
-    body: file.contents,
-    headers: headersForFile(file),
-  })
-  cb(null)
-  // TODO: call cb when file.contents ends instead.
-}
-
-function emptyStream() {
-  var s = new stream.PassThrough({objectMode: true})
-  s.write(null)
-  return s
-}
-
-function headersForFile(file) {
-  var fpath = common.cleanPath(file.path, file.base)
-
-  var h = {}
-  h['Content-Disposition'] = 'file; filename="' +fpath+ '"'
-
-  if (file.isDirectory()) {
-    h['Content-Type'] = 'text/directory'
-  } else {
-    h['Content-Type'] = 'application/octet-stream'
-  }
-
-  return h
-}
-
-function randomString () {
-  return Math.random().toString(36).slice(2) +
-    Math.random().toString(36).slice(2) +
-    Math.random().toString(36).slice(2) +
-    Math.random().toString(36).slice(2)
-}
-
-},{"./common":312,"duplexify":316,"multipart-stream":196,"stream":32}],315:[function(require,module,exports){
-var Multipart = require('multipart-stream')
-var duplexify = require('duplexify')
-var stream = require('stream')
-var Path = require('path')
-var collect = require('./collect')
-var common = require('./common')
-randomString = common.randomString
-
-module.exports = v2mpTree
-
-// we'll create three streams:
-// - w: a writable stream. it receives vinyl files
-// - mps: a multipart stream in between.
-// - r: a readable stream. it outputs text. needed to
-//      give the caller something, while w finishes.
-//
-// we do all processing on the incoming vinyl metadata
-// before we transform to multipart, that's becasue we
-// need a complete view of the filesystem. (/ the code
-// i lifted did that and it's convoluted enough not to
-// want to change it...)
-function v2mpTree(opts) {
-  opts = opts || {}
-  opts.boundary = opts.boundary || randomString()
-
-  var r = new stream.PassThrough({objectMode: true})
-  var w = new stream.PassThrough({objectMode: true})
-  var out = duplexify.obj(w, r)
-  out.boundary = opts.boundary
-
-  collect(w, function(err, files) {
-    if (err) {
-      r.emit('error', err)
-      return
-    }
-
-    try {
-      // construct the multipart streams from these files
-      var mp = streamForCollection(opts.boundary, files)
-
-      // let the user know what the content-type header is.
-      // this is because multipart is such a grossly defined protocol :(
-      out.multipartHdr = "Content-Type: multipart/mixed; boundary=" + mp.boundary
-      if (opts.writeHeader) {
-        r.write(out.multipartHdr + "\r\n")
-        r.write("\r\n")
-      }
-
-      // now we pipe the multipart stream to
-      // the readable thing we returned.
-      // now the user will start receiving data.
-      mp.pipe(r)
-    } catch (e) {
-      r.emit('error', e)
-    }
-  })
-
-  return out
-}
-
-function streamForCollection(boundary, files) {
-  var parts = []
-
-  // walk through all the named files in order.
-  files.paths.sort()
-  for (var i = 0; i < files.paths.length; i++) {
-    var n = files.paths[i]
-    var s = streamForPath(files, n)
-    if (!s) continue // already processed.
-    parts.push({ body: s, headers: headersForFile(files.named[n])})
-  }
-
-  // then add all the unnamed files.
-  for (var i = 0; i < files.unnamed.length; i++) {
-    var f = files.unnamed[i] // raw vinyl files.
-    var s = streamForWrapped(files, f)
-    if (!s) continue // already processed.
-    parts.push({ body: s, headers: headersForFile(f)})
-  }
-
-  if (parts.length == 0) { // avoid multipart bug.
-    var s = streamForString("--" + boundary + "--\r\n") // close multipart.
-    s.boundary = boundary
-    return s
-  }
-
-  // write out multipart.
-  var mp = new Multipart(boundary)
-  for (var i = 0; i < parts.length; i++) {
-    mp.addPart(parts[i])
-  }
-  return mp
-}
-
-function streamForString(str) {
-  var s = new stream.PassThrough()
-  s.end(str)
-  return s
-}
-
-function streamForPath(files, path) {
-  var o = files.named[path]
-  if (!o) {
-    throw new Error("no object for path. lib error.")
-  }
-
-  if (!o.file) { // no vinyl file, so no need to process this one.
-    return
-  }
-
-  // avoid processing twice.
-  if (o.done) return null // already processed it
-  o.done = true // mark it as already processed.
-
-  return streamForWrapped(files, o)
-}
-
-function streamForWrapped(files, f) {
-  if (f.file.isDirectory()) {
-    return multipartForDir(files, f)
-  }
-
-  // stream for a file
-  if (f.children.length > 0) { // sanity check
-    throw new Error("non-directory has children. lib error")
-  }
-
-  return f.file.contents
-}
-
-function multipartForDir(files, dir) {
-   // we still write the boundary for the headers
-  dir.boundary = randomString()
-
-  if (!dir.children || dir.children.length < 1) {
-    // we have to intercept this here and return an empty stream.
-    // because multipart lib fails if there are no parts. see
-    // https://github.com/hendrikcech/multipart-stream/issues/1
-    return streamForString("--" + dir.boundary + "--\r\n") // close multipart.
-  }
-
-  var mp = new Multipart(dir.boundary)
-  for (var i = 0; i < dir.children.length; i++) {
-    var child = dir.children[i]
-    if (!child.file) {
-      throw new Error("child has no file. lib error")
-    }
-
-    var s = streamForPath(files, child.file.path)
-    mp.addPart({ body: s, headers: headersForFile(child) })
-  }
-  return mp
-}
-
-function headersForFile(o) {
-  var fpath = common.cleanPath(o.file.path, o.file.base)
-
-  var h = {}
-  h['Content-Disposition'] = 'file; filename="' + fpath + '"'
-
-  if (o.file.isDirectory()) {
-    h['Content-Type'] = 'multipart/mixed; boundary=' + o.boundary
-  } else {
-    h['Content-Type'] = 'application/octet-stream'
-  }
-
-  return h
-}
-
-},{"./collect":311,"./common":312,"duplexify":316,"multipart-stream":196,"path":13,"stream":32}],316:[function(require,module,exports){
-arguments[4][214][0].apply(exports,arguments)
-},{"_process":14,"buffer":4,"dup":214,"end-of-stream":317,"readable-stream":331,"util":46}],317:[function(require,module,exports){
-arguments[4][215][0].apply(exports,arguments)
-},{"dup":215,"once":319}],318:[function(require,module,exports){
-arguments[4][216][0].apply(exports,arguments)
-},{"dup":216}],319:[function(require,module,exports){
-arguments[4][217][0].apply(exports,arguments)
-},{"dup":217,"wrappy":318}],320:[function(require,module,exports){
-arguments[4][20][0].apply(exports,arguments)
-},{"./_stream_readable":322,"./_stream_writable":324,"core-util-is":325,"dup":20,"inherits":326,"process-nextick-args":328}],321:[function(require,module,exports){
-arguments[4][21][0].apply(exports,arguments)
-},{"./_stream_transform":323,"core-util-is":325,"dup":21,"inherits":326}],322:[function(require,module,exports){
+},{"/media/d/projects/node-ipfs-api/node_modules/is-buffer/index.js":21,"dup":11}],201:[function(require,module,exports){
+arguments[4][18][0].apply(exports,arguments)
+},{"dup":18}],202:[function(require,module,exports){
 arguments[4][22][0].apply(exports,arguments)
-},{"./_stream_duplex":320,"_process":14,"buffer":4,"core-util-is":325,"dup":22,"events":9,"inherits":326,"isarray":327,"process-nextick-args":328,"string_decoder/":329,"util":3}],323:[function(require,module,exports){
-arguments[4][23][0].apply(exports,arguments)
-},{"./_stream_duplex":320,"core-util-is":325,"dup":23,"inherits":326}],324:[function(require,module,exports){
-arguments[4][24][0].apply(exports,arguments)
-},{"./_stream_duplex":320,"buffer":4,"core-util-is":325,"dup":24,"events":9,"inherits":326,"process-nextick-args":328,"util-deprecate":330}],325:[function(require,module,exports){
-arguments[4][25][0].apply(exports,arguments)
-},{"buffer":4,"dup":25}],326:[function(require,module,exports){
-arguments[4][10][0].apply(exports,arguments)
-},{"dup":10}],327:[function(require,module,exports){
-arguments[4][11][0].apply(exports,arguments)
-},{"dup":11}],328:[function(require,module,exports){
-arguments[4][26][0].apply(exports,arguments)
-},{"_process":14,"dup":26}],329:[function(require,module,exports){
-arguments[4][42][0].apply(exports,arguments)
-},{"buffer":4,"dup":42}],330:[function(require,module,exports){
-arguments[4][27][0].apply(exports,arguments)
-},{"dup":27}],331:[function(require,module,exports){
-arguments[4][29][0].apply(exports,arguments)
-},{"./lib/_stream_duplex.js":320,"./lib/_stream_passthrough.js":321,"./lib/_stream_readable.js":322,"./lib/_stream_transform.js":323,"./lib/_stream_writable.js":324,"dup":29}],332:[function(require,module,exports){
+},{"dup":22}],203:[function(require,module,exports){
+arguments[4][86][0].apply(exports,arguments)
+},{"buffer":6,"dup":86}],204:[function(require,module,exports){
+arguments[4][77][0].apply(exports,arguments)
+},{"./lib/_stream_transform.js":198,"dup":77}],205:[function(require,module,exports){
+arguments[4][55][0].apply(exports,arguments)
+},{"dup":55}],206:[function(require,module,exports){
+arguments[4][182][0].apply(exports,arguments)
+},{"_process":64,"dup":182,"readable-stream/transform":204,"util":90,"xtend":205}],207:[function(require,module,exports){
 (function (process){
 var path = require('path');
 var clone = require('clone');
@@ -27335,7 +21591,6 @@ var isStream = require('./lib/isStream');
 var isNull = require('./lib/isNull');
 var inspectStream = require('./lib/inspectStream');
 var Stream = require('stream');
-var replaceExt = require('replace-ext');
 
 function File(file) {
   if (!file) file = {};
@@ -27381,7 +21636,7 @@ File.prototype.clone = function(opt) {
     };
   } else if (!opt) {
     opt = {
-      deep: true,
+      deep: false,
       contents: true
     };
   } else {
@@ -27487,39 +21742,6 @@ Object.defineProperty(File.prototype, 'relative', {
   }
 });
 
-Object.defineProperty(File.prototype, 'dirname', {
-  get: function() {
-    if (!this.path) throw new Error('No path specified! Can not get dirname.');
-    return path.dirname(this.path);
-  },
-  set: function(dirname) {
-    if (!this.path) throw new Error('No path specified! Can not set dirname.');
-    this.path = path.join(dirname, path.basename(this.path));
-  }
-});
-
-Object.defineProperty(File.prototype, 'basename', {
-  get: function() {
-    if (!this.path) throw new Error('No path specified! Can not get basename.');
-    return path.basename(this.path);
-  },
-  set: function(basename) {
-    if (!this.path) throw new Error('No path specified! Can not set basename.');
-    this.path = path.join(path.dirname(this.path), basename);
-  }
-});
-
-Object.defineProperty(File.prototype, 'extname', {
-  get: function() {
-    if (!this.path) throw new Error('No path specified! Can not get extname.');
-    return path.extname(this.path);
-  },
-  set: function(extname) {
-    if (!this.path) throw new Error('No path specified! Can not set extname.');
-    this.path = replaceExt(this.path, extname);
-  }
-});
-
 Object.defineProperty(File.prototype, 'path', {
   get: function() {
     return this.history[this.history.length - 1];
@@ -27537,61 +21759,56 @@ Object.defineProperty(File.prototype, 'path', {
 module.exports = File;
 
 }).call(this,require('_process'))
-},{"./lib/cloneBuffer":333,"./lib/inspectStream":334,"./lib/isBuffer":335,"./lib/isNull":336,"./lib/isStream":337,"_process":14,"clone":339,"clone-stats":338,"path":13,"replace-ext":340,"stream":32}],333:[function(require,module,exports){
-var Buffer = require('buffer').Buffer;
+},{"./lib/cloneBuffer":208,"./lib/inspectStream":209,"./lib/isBuffer":210,"./lib/isNull":211,"./lib/isStream":212,"_process":64,"clone":214,"clone-stats":213,"path":62,"stream":81}],208:[function(require,module,exports){
+arguments[4][97][0].apply(exports,arguments)
+},{"buffer":6,"dup":97}],209:[function(require,module,exports){
+arguments[4][98][0].apply(exports,arguments)
+},{"./isStream":212,"dup":98}],210:[function(require,module,exports){
+var buf = require('buffer');
+var Buffer = buf.Buffer;
 
-module.exports = function(buf) {
-  var out = new Buffer(buf.length);
-  buf.copy(out);
-  return out;
-};
-
-},{"buffer":4}],334:[function(require,module,exports){
-var isStream = require('./isStream');
-
-module.exports = function(stream) {
-  if (!isStream(stream)) return;
-
-  var streamType = stream.constructor.name;
-  // avoid StreamStream
-  if (streamType === 'Stream') streamType = '';
-
-  return '<'+streamType+'Stream>';
-};
-
-},{"./isStream":337}],335:[function(require,module,exports){
-module.exports = require('buffer').Buffer.isBuffer;
-
-},{"buffer":4}],336:[function(require,module,exports){
-module.exports = function(v) {
-  return v === null;
-};
-
-},{}],337:[function(require,module,exports){
-var Stream = require('stream').Stream;
-
+// could use Buffer.isBuffer but this is the same exact thing...
 module.exports = function(o) {
-  return !!o && o instanceof Stream;
+  return typeof o === 'object' && o instanceof Buffer;
 };
-},{"stream":32}],338:[function(require,module,exports){
-var Stat = require('fs').Stats
+},{"buffer":6}],211:[function(require,module,exports){
+arguments[4][100][0].apply(exports,arguments)
+},{"dup":100}],212:[function(require,module,exports){
+arguments[4][101][0].apply(exports,arguments)
+},{"dup":101,"stream":81}],213:[function(require,module,exports){
+arguments[4][8][0].apply(exports,arguments)
+},{"dup":8,"fs":4}],214:[function(require,module,exports){
+(function (Buffer){
+'use strict';
 
-module.exports = cloneStats
-
-function cloneStats(stats) {
-  var replacement = new Stat
-
-  Object.keys(stats).forEach(function(key) {
-    replacement[key] = stats[key]
-  })
-
-  return replacement
+function objectToString(o) {
+  return Object.prototype.toString.call(o);
 }
 
-},{"fs":1}],339:[function(require,module,exports){
-(function (Buffer){
-var clone = (function() {
-'use strict';
+// shim for Node's 'util' package
+// DO NOT REMOVE THIS! It is required for compatibility with EnderJS (http://enderjs.com/).
+var util = {
+  isArray: function (ar) {
+    return Array.isArray(ar) || (typeof ar === 'object' && objectToString(ar) === '[object Array]');
+  },
+  isDate: function (d) {
+    return typeof d === 'object' && objectToString(d) === '[object Date]';
+  },
+  isRegExp: function (re) {
+    return typeof re === 'object' && objectToString(re) === '[object RegExp]';
+  },
+  getRegExpFlags: function (re) {
+    var flags = '';
+    re.global && (flags += 'g');
+    re.ignoreCase && (flags += 'i');
+    re.multiline && (flags += 'm');
+    return flags;
+  }
+};
+
+
+if (typeof module === 'object')
+  module.exports = clone;
 
 /**
  * Clones (copies) an Object using deep copying.
@@ -27611,14 +21828,8 @@ var clone = (function() {
  * @param `prototype` - sets the prototype to be used when cloning an object.
  *    (optional - defaults to parent prototype).
 */
+
 function clone(parent, circular, depth, prototype) {
-  var filter;
-  if (typeof circular === 'object') {
-    depth = circular.depth;
-    prototype = circular.prototype;
-    filter = circular.filter;
-    circular = circular.circular
-  }
   // maintain two arrays for circular references, where corresponding parents
   // and children have the same index
   var allParents = [];
@@ -27647,12 +21858,12 @@ function clone(parent, circular, depth, prototype) {
       return parent;
     }
 
-    if (clone.__isArray(parent)) {
+    if (util.isArray(parent)) {
       child = [];
-    } else if (clone.__isRegExp(parent)) {
-      child = new RegExp(parent.source, __getRegExpFlags(parent));
+    } else if (util.isRegExp(parent)) {
+      child = new RegExp(parent.source, util.getRegExpFlags(parent));
       if (parent.lastIndex) child.lastIndex = parent.lastIndex;
-    } else if (clone.__isDate(parent)) {
+    } else if (util.isDate(parent)) {
       child = new Date(parent.getTime());
     } else if (useBuffer && Buffer.isBuffer(parent)) {
       child = new Buffer(parent.length);
@@ -27684,7 +21895,7 @@ function clone(parent, circular, depth, prototype) {
       if (proto) {
         attrs = Object.getOwnPropertyDescriptor(proto, i);
       }
-
+      
       if (attrs && attrs.set == null) {
         continue;
       }
@@ -27704,7 +21915,7 @@ function clone(parent, circular, depth, prototype) {
  * USE WITH CAUTION! This may not behave as you wish if you do not know how this
  * works.
  */
-clone.clonePrototype = function clonePrototype(parent) {
+clone.clonePrototype = function(parent) {
   if (parent === null)
     return null;
 
@@ -27713,550 +21924,327 @@ clone.clonePrototype = function clonePrototype(parent) {
   return new c();
 };
 
-// private utility functions
+}).call(this,require("buffer").Buffer)
+},{"buffer":6}],215:[function(require,module,exports){
+arguments[4][195][0].apply(exports,arguments)
+},{"dup":195}],216:[function(require,module,exports){
+'use strict';
 
-function __objToStr(o) {
-  return Object.prototype.toString.call(o);
+module.exports = function isValidGlob(glob) {
+  if (typeof glob === 'string' && glob.length > 0) {
+    return true;
+  }
+  if (Array.isArray(glob)) {
+    return glob.length !== 0 && every(glob);
+  }
+  return false;
 };
-clone.__objToStr = __objToStr;
 
-function __isDate(o) {
-  return typeof o === 'object' && __objToStr(o) === '[object Date]';
-};
-clone.__isDate = __isDate;
-
-function __isArray(o) {
-  return typeof o === 'object' && __objToStr(o) === '[object Array]';
-};
-clone.__isArray = __isArray;
-
-function __isRegExp(o) {
-  return typeof o === 'object' && __objToStr(o) === '[object RegExp]';
-};
-clone.__isRegExp = __isRegExp;
-
-function __getRegExpFlags(re) {
-  var flags = '';
-  if (re.global) flags += 'g';
-  if (re.ignoreCase) flags += 'i';
-  if (re.multiline) flags += 'm';
-  return flags;
-};
-clone.__getRegExpFlags = __getRegExpFlags;
-
-return clone;
-})();
-
-if (typeof module === 'object' && module.exports) {
-  module.exports = clone;
+function every(arr) {
+  var len = arr.length;
+  while (len--) {
+    if (typeof arr[len] !== 'string' || arr[len].length <= 0) {
+      return false;
+    }
+  }
+  return true;
 }
 
-}).call(this,require("buffer").Buffer)
-},{"buffer":4}],340:[function(require,module,exports){
+},{}],217:[function(require,module,exports){
+arguments[4][51][0].apply(exports,arguments)
+},{"dup":51,"readable-stream/passthrough":229}],218:[function(require,module,exports){
+arguments[4][70][0].apply(exports,arguments)
+},{"./_stream_readable":220,"./_stream_writable":222,"core-util-is":223,"dup":70,"inherits":224,"process-nextick-args":226}],219:[function(require,module,exports){
+arguments[4][71][0].apply(exports,arguments)
+},{"./_stream_transform":221,"core-util-is":223,"dup":71,"inherits":224}],220:[function(require,module,exports){
+arguments[4][72][0].apply(exports,arguments)
+},{"./_stream_duplex":218,"_process":64,"buffer":6,"core-util-is":223,"dup":72,"events":14,"inherits":224,"isarray":225,"process-nextick-args":226,"string_decoder/":227,"util":3}],221:[function(require,module,exports){
+arguments[4][73][0].apply(exports,arguments)
+},{"./_stream_duplex":218,"core-util-is":223,"dup":73,"inherits":224}],222:[function(require,module,exports){
+arguments[4][74][0].apply(exports,arguments)
+},{"./_stream_duplex":218,"buffer":6,"core-util-is":223,"dup":74,"events":14,"inherits":224,"process-nextick-args":226,"util-deprecate":228}],223:[function(require,module,exports){
+arguments[4][11][0].apply(exports,arguments)
+},{"/media/d/projects/node-ipfs-api/node_modules/is-buffer/index.js":21,"dup":11}],224:[function(require,module,exports){
+arguments[4][18][0].apply(exports,arguments)
+},{"dup":18}],225:[function(require,module,exports){
+arguments[4][22][0].apply(exports,arguments)
+},{"dup":22}],226:[function(require,module,exports){
+arguments[4][63][0].apply(exports,arguments)
+},{"_process":64,"dup":63}],227:[function(require,module,exports){
+arguments[4][86][0].apply(exports,arguments)
+},{"buffer":6,"dup":86}],228:[function(require,module,exports){
+arguments[4][88][0].apply(exports,arguments)
+},{"dup":88}],229:[function(require,module,exports){
+arguments[4][75][0].apply(exports,arguments)
+},{"./lib/_stream_passthrough.js":219,"dup":75}],230:[function(require,module,exports){
+(function (process){
 var path = require('path');
+var fs = require('fs');
+var _0777 = parseInt('0777', 8);
 
-module.exports = function(npath, ext) {
-  if (typeof npath !== 'string') return npath;
-  if (npath.length === 0) return npath;
+module.exports = mkdirP.mkdirp = mkdirP.mkdirP = mkdirP;
 
-  var nFileName = path.basename(npath, path.extname(npath))+ext;
-  return path.join(path.dirname(npath), nFileName);
-};
-},{"path":13}],341:[function(require,module,exports){
-module.exports={
-  "name": "ipfs-api",
-  "version": "2.3.2",
-  "description": "A client library for the IPFS API",
-  "main": "src/index.js",
-  "dependencies": {
-    "brfs": "^1.4.0",
-    "merge-stream": "^1.0.0",
-    "multiaddr": "^1.0.0",
-    "multipart-stream": "^2.0.0",
-    "vinyl": "^0.5.1",
-    "vinyl-fs-browser": "^0.1.0",
-    "vinyl-multipart-stream": "^1.2.5"
-  },
-  "browserify": {
-    "transform": [
-      "brfs"
-    ]
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ipfs/node-ipfs-api"
-  },
-  "devDependencies": {
-    "browserify": "^11.0.0",
-    "ipfsd-ctl": "^0.3.3",
-    "mocha": "^2.2.5",
-    "pre-commit": "^1.0.6",
-    "standard": "^3.3.2",
-    "uglify-js": "^2.4.24"
-  },
-  "scripts": {
-    "test": "./node_modules/.bin/mocha",
-    "lint": "./node_modules/.bin/standard --format",
-    "build": "./node_modules/.bin/browserify -t brfs -s ipfsAPI -e ./src/index.js | tee dist/ipfsapi.js | ./node_modules/.bin/uglifyjs -m > dist/ipfsapi.min.js"
-  },
-  "pre-commit": [
-    "lint"
-  ],
-  "keywords": [
-    "ipfs"
-  ],
-  "author": "Matt Bell <mappum@gmail.com>",
-  "contributors": [
-    "Travis Person <travis.person@gmail.com>",
-    "Jeromy Jonson <why@ipfs.io>"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ipfs/node-ipfs-api/issues"
-  },
-  "homepage": "https://github.com/ipfs/node-ipfs-api"
-}
-
-},{}],342:[function(require,module,exports){
-var pkg = require('../package.json')
-
-exports = module.exports = {
-  'api-path': '/api/v0/',
-  'user-agent': '/node-' + pkg.name + '/' + pkg.version + '/',
-  'host': 'localhost',
-  'port': '5001'
-}
-
-},{"../package.json":341}],343:[function(require,module,exports){
-(function (Buffer){
-var File = require('vinyl')
-var vinylfs = require('vinyl-fs-browser')
-var vmps = require('vinyl-multipart-stream')
-var stream = require('stream')
-var Merge = require('merge-stream')
-
-exports = module.exports = getFilesStream
-
-function getFilesStream (files, opts) {
-  if (!files) return null
-  if (!Array.isArray(files)) files = [files]
-
-  // merge all inputs into one stream
-  var adder = new Merge()
-
-  // single stream for pushing directly
-  var single = new stream.PassThrough({objectMode: true})
-  adder.add(single)
-
-  for (var i = 0; i < files.length; i++) {
-    var file = files[i]
-
-    if (typeof (file) === 'string') {
-      // add the file or dir itself
-      adder.add(vinylfs.src(file, {buffer: false}))
-
-      // if recursive, glob the contents
-      if (opts.r || opts.recursive) {
-        adder.add(vinylfs.src(file + '/**/*', {buffer: false}))
-      }
-    } else {
-      // try to create a single vinyl file, and push it.
-      // throws if cannot use the file.
-      single.push(vinylFile(file))
+function mkdirP (p, opts, f, made) {
+    if (typeof opts === 'function') {
+        f = opts;
+        opts = {};
     }
-  }
-
-  single.end()
-  return adder.pipe(vmps())
-}
-
-// vinylFile tries to cast a file object to a vinyl file.
-// it's agressive. If it _cannot_ be converted to a file,
-// it returns null.
-function vinylFile (file) {
-  if (file instanceof File) {
-    return file // it's a vinyl file.
-  }
-
-  // let's try to make a vinyl file?
-  var f = {cwd: '/', base: '/', path: ''}
-  if (file.contents && file.path) {
-    // set the cwd + base, if there.
-    f.path = file.path
-    f.cwd = file.cwd || f.cwd
-    f.base = file.base || f.base
-    f.contents = file.contents
-  } else {
-    // ok maybe we just have contents?
-    f.contents = file
-  }
-
-  // ensure the contents are safe to pass.
-  // throws if vinyl cannot use the contents
-  f.contents = vinylContentsSafe(f.contents)
-  return new File(f)
-}
-
-function vinylContentsSafe (c) {
-  if (Buffer.isBuffer(c)) return c
-  if (typeof (c) === 'string') return c
-  if (c instanceof stream.Stream) return c
-  if (typeof (c.pipe) === 'function') {
-    // hey, looks like a stream. but vinyl won't detect it.
-    // pipe it to a PassThrough, and use that
-    var s = new stream.PassThrough()
-    return c.pipe(s)
-  }
-
-  throw new Error('vinyl will not accept: ' + c)
-}
-
-}).call(this,require("buffer").Buffer)
-},{"buffer":4,"merge-stream":48,"stream":32,"vinyl":332,"vinyl-fs-browser":199,"vinyl-multipart-stream":313}],344:[function(require,module,exports){
-(function (Buffer){
-var multiaddr = require('multiaddr')
-var config = require('./config')
-var requestAPI = require('./request-api')
-
-exports = module.exports = IpfsAPI
-
-function IpfsAPI (host_or_multiaddr, port) {
-  var self = this
-
-  if (!(self instanceof IpfsAPI)) {
-    return new IpfsAPI(host_or_multiaddr, port)
-  }
-
-  try {
-    var maddr = multiaddr(host_or_multiaddr).nodeAddress()
-    config.host = maddr.address
-    config.port = maddr.port
-  } catch (e) {
-    config.host = host_or_multiaddr
-    config.port = port || config.port
-  }
-
-  // autoconfigure in browser
-  if (!config.host &&
-    window && window.location) {
-    var split = window.location.host.split(':')
-    config.host = split[0]
-    config.port = split[1]
-  }
-
-  // -- Internal
-
-  function command (name) {
-    return function (opts, cb) {
-      if (typeof (opts) === 'function') {
-        cb = opts
-        opts = {}
-      }
-      return requestAPI(name, null, opts, null, cb)
+    else if (!opts || typeof opts !== 'object') {
+        opts = { mode: opts };
     }
-  }
-
-  function argCommand (name) {
-    return function (arg, opts, cb) {
-      if (typeof (opts) === 'function') {
-        cb = opts
-        opts = {}
-      }
-      return requestAPI(name, arg, opts, null, cb)
+    
+    var mode = opts.mode;
+    var xfs = opts.fs || fs;
+    
+    if (mode === undefined) {
+        mode = _0777 & (~process.umask());
     }
-  }
-
-  // -- Interface
-
-  self.send = requestAPI
-
-  self.add = function (files, opts, cb) {
-    if (typeof (opts) === 'function' && cb === undefined) {
-      cb = opts
-      opts = {}
-    }
-
-    return requestAPI('add', null, opts, files, cb)
-  }
-
-  self.cat = argCommand('cat')
-  self.ls = argCommand('ls')
-
-  self.config = {
-    get: argCommand('config'),
-    set: function (key, value, opts, cb) {
-      if (typeof (opts) === 'function') {
-        cb = opts
-        opts = {}
-      }
-      return requestAPI('config', [key, value], opts, null, cb)
-    },
-    show: function (cb) {
-      return requestAPI('config/show', null, null, null, true, cb)
-    },
-    replace: function (file, cb) {
-      return requestAPI('config/replace', null, null, file, cb)
-    }
-  }
-
-  self.update = {
-    apply: command('update'),
-    check: command('update/check'),
-    log: command('update/log')
-  }
-
-  self.version = command('version')
-  self.commands = command('commands')
-
-  self.mount = function (ipfs, ipns, cb) {
-    if (typeof ipfs === 'function') {
-      cb = ipfs
-      ipfs = null
-    } else if (typeof ipns === 'function') {
-      cb = ipns
-      ipns = null
-    }
-    var opts = {}
-    if (ipfs) opts.f = ipfs
-    if (ipns) opts.n = ipns
-    return requestAPI('mount', null, opts, null, cb)
-  }
-
-  self.diag = {
-    net: command('diag/net')
-  }
-
-  self.block = {
-    get: argCommand('block/get'),
-    put: function (file, cb) {
-      if (Array.isArray(file)) {
-        return cb(null, new Error('block.put() only accepts 1 file'))
-      }
-      return requestAPI('block/put', null, null, file, cb)
-    }
-  }
-
-  self.object = {
-    get: argCommand('object/get'),
-    put: function (file, encoding, cb) {
-      if (typeof encoding === 'function') {
-        return cb(null, new Error("Must specify an object encoding ('json' or 'protobuf')"))
-      }
-      return requestAPI('object/put', encoding, null, file, cb)
-    },
-    data: argCommand('object/data'),
-    stat: argCommand('object/stat'),
-    links: argCommand('object/links')
-  }
-
-  self.swarm = {
-    peers: command('swarm/peers'),
-    connect: argCommand('swarm/peers')
-  }
-
-  self.ping = function (id, cb) {
-    return requestAPI('ping', id, { n: 1 }, null, function (err, res) {
-      if (err) return cb(err, null)
-      cb(null, res[1])
-    })
-  }
-
-  self.id = function (id, cb) {
-    if (typeof id === 'function') {
-      cb = id
-      id = null
-    }
-    return requestAPI('id', id, null, null, cb)
-  }
-
-  self.pin = {
-    add: function (hash, opts, cb) {
-      if (typeof opts === 'function') {
-        cb = opts
-        opts = null
-      }
-
-      requestAPI('pin/add', hash, opts, null, cb)
-    },
-    remove: function (hash, opts, cb) {
-      if (typeof opts === 'function') {
-        cb = opts
-        opts = null
-      }
-
-      requestAPI('pin/rm', hash, opts, null, cb)
-    },
-    list: function (type, cb) {
-      if (typeof type === 'function') {
-        cb = type
-        type = null
-      }
-      var opts = null
-      if (type) opts = { type: type }
-      return requestAPI('pin/ls', null, opts, null, cb)
-    }
-  }
-
-  self.gateway = {
-    enable: command('gateway/enable'),
-    disable: command('gateway/disable')
-  }
-
-  self.log = {
-    tail: function (cb) {
-      return requestAPI('log/tail', null, {enc: 'text'}, null, true, cb)
-    }
-  }
-
-  self.name = {
-    publish: argCommand('name/publish'),
-    resolve: argCommand('name/resolve')
-  }
-
-  self.Buffer = Buffer
-
-  self.refs = argCommand('refs')
-  self.refs.local = command('refs/local')
-
-  self.dht = {
-    findprovs: argCommand('dht/findprovs'),
-
-    get: function (key, opts, cb) {
-      if (typeof (opts) === 'function' && !cb) {
-        cb = opts
-        opts = null
-      }
-
-      return requestAPI('dht/get', key, opts, null, function (err, res) {
-        if (err) return cb(err)
-        if (!res) return cb(new Error('empty response'))
-        if (res.length === 0) return cb(new Error('no value returned for key'))
-
-        if (res[0].Type === 5) {
-          cb(null, res[0].Extra)
-        } else {
-          cb(res)
+    if (!made) made = null;
+    
+    var cb = f || function () {};
+    p = path.resolve(p);
+    
+    xfs.mkdir(p, mode, function (er) {
+        if (!er) {
+            made = made || p;
+            return cb(null, made);
         }
-      })
-    },
+        switch (er.code) {
+            case 'ENOENT':
+                mkdirP(path.dirname(p), opts, function (er, made) {
+                    if (er) cb(er, made);
+                    else mkdirP(p, opts, cb, made);
+                });
+                break;
 
-    put: function (key, value, opts, cb) {
-      if (typeof (opts) === 'function' && !cb) {
-        cb = opts
-        opts = null
-      }
-
-      return requestAPI('dht/put', [key, value], opts, null, cb)
-    }
-  }
+            // In the case of any other error, just see if there's a dir
+            // there already.  If so, then hooray!  If not, then something
+            // is borked.
+            default:
+                xfs.stat(p, function (er2, stat) {
+                    // if the stat fails, then that's super weird.
+                    // let the original error be the failure reason.
+                    if (er2 || !stat.isDirectory()) cb(er, made)
+                    else cb(null, made);
+                });
+                break;
+        }
+    });
 }
 
-}).call(this,require("buffer").Buffer)
-},{"./config":342,"./request-api":345,"buffer":4,"multiaddr":63}],345:[function(require,module,exports){
-var http = require('http')
-var qs = require('querystring')
-var getFilesStream = require('./get-files-stream')
-var config = require('./config')
-
-exports = module.exports = requestAPI
-
-function requestAPI (path, args, opts, files, buffer, cb) {
-  var query, stream, contentType
-  contentType = 'application/json'
-
-  if (Array.isArray(path)) path = path.join('/')
-
-  opts = opts || {}
-
-  if (args && !Array.isArray(args)) args = [args]
-  if (args) opts.arg = args
-
-  opts['stream-channels'] = true
-  query = qs.stringify(opts)
-
-  if (files) {
-    stream = getFilesStream(files, opts)
-    if (!stream.boundary) {
-      throw new Error('no boundary in multipart stream')
+mkdirP.sync = function sync (p, opts, made) {
+    if (!opts || typeof opts !== 'object') {
+        opts = { mode: opts };
     }
-    contentType = 'multipart/form-data; boundary=' + stream.boundary
-  }
+    
+    var mode = opts.mode;
+    var xfs = opts.fs || fs;
+    
+    if (mode === undefined) {
+        mode = _0777 & (~process.umask());
+    }
+    if (!made) made = null;
 
-  if (typeof buffer === 'function') {
-    cb = buffer
-    buffer = false
-  }
+    p = path.resolve(p);
 
-  var reqo = {
-    method: files ? 'POST' : 'GET',
-    host: config.host,
-    port: config.port,
-    path: config['api-path'] + path + '?' + query,
-    headers: {
-      'User-Agent': config['user-agent'],
-      'Content-Type': contentType
-    },
-    withCredentials: false
-  }
+    try {
+        xfs.mkdirSync(p, mode);
+        made = made || p;
+    }
+    catch (err0) {
+        switch (err0.code) {
+            case 'ENOENT' :
+                made = sync(path.dirname(p), opts, made);
+                sync(p, opts, made);
+                break;
 
-  var req = http.request(reqo, function (res) {
-    var data = ''
-    var objects = []
-    var stream = !!res.headers && !!res.headers['x-stream-output']
-    var chunkedObjects = !!res.headers && !!res.headers['x-chunked-output']
+            // In the case of any other error, just see if there's a dir
+            // there already.  If so, then hooray!  If not, then something
+            // is borked.
+            default:
+                var stat;
+                try {
+                    stat = xfs.statSync(p);
+                }
+                catch (err1) {
+                    throw err0;
+                }
+                if (!stat.isDirectory()) throw err0;
+                break;
+        }
+    }
 
-    if (stream && !buffer) return cb(null, res)
-    if (chunkedObjects && buffer) return cb(null, res)
+    return made;
+};
 
-    res.on('data', function (chunk) {
-      if (!chunkedObjects) {
-        data += chunk
-        return data
-      }
+}).call(this,require('_process'))
+},{"_process":64,"fs":4,"path":62}],231:[function(require,module,exports){
+/* eslint-disable no-unused-vars */
+'use strict';
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
-      try {
-        var obj = JSON.parse(chunk.toString())
-        objects.push(obj)
-      } catch(e) {
-        chunkedObjects = false
-        data += chunk
-      }
-    })
-    res.on('end', function () {
-      var parsed
+function toObject(val) {
+	if (val === null || val === undefined) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
 
-      if (!chunkedObjects) {
-        try {
-          parsed = JSON.parse(data)
-          data = parsed
-        } catch (e) {}
-      } else {
-        data = objects
-      }
-
-      if (res.statusCode >= 400 || !res.statusCode) {
-        if (!data) data = new Error()
-        return cb(data, null)
-      }
-      return cb(null, data)
-    })
-    res.on('error', function (err) {
-      return cb(err, null)
-    })
-  })
-
-  req.on('error', function (err) {
-    return cb(err, null)
-  })
-
-  if (stream) {
-    stream.pipe(req)
-  } else {
-    req.end()
-  }
-
-  return req
+	return Object(val);
 }
 
-},{"./config":342,"./get-files-stream":343,"http":33,"querystring":18}]},{},[344])(344)
+module.exports = Object.assign || function (target, source) {
+	var from;
+	var to = toObject(target);
+	var symbols;
+
+	for (var s = 1; s < arguments.length; s++) {
+		from = Object(arguments[s]);
+
+		for (var key in from) {
+			if (hasOwnProperty.call(from, key)) {
+				to[key] = from[key];
+			}
+		}
+
+		if (Object.getOwnPropertySymbols) {
+			symbols = Object.getOwnPropertySymbols(from);
+			for (var i = 0; i < symbols.length; i++) {
+				if (propIsEnumerable.call(from, symbols[i])) {
+					to[symbols[i]] = from[symbols[i]];
+				}
+			}
+		}
+	}
+
+	return to;
+};
+
+},{}],232:[function(require,module,exports){
+'use strict';
+var firstChunk = require('first-chunk-stream');
+var stripBom = require('strip-bom');
+
+module.exports = function () {
+	return firstChunk({minSize: 3}, function (chunk, enc, cb) {
+		this.push(stripBom(chunk));
+		cb();
+	});
+};
+
+},{"first-chunk-stream":143,"strip-bom":233}],233:[function(require,module,exports){
+(function (Buffer){
+'use strict';
+var isUtf8 = require('is-utf8');
+
+module.exports = function (x) {
+	// Catches EFBBBF (UTF-8 BOM) because the buffer-to-string
+	// conversion translates it to FEFF (UTF-16 BOM)
+	if (typeof x === 'string' && x.charCodeAt(0) === 0xFEFF) {
+		return x.slice(1);
+	}
+
+	if (Buffer.isBuffer(x) && isUtf8(x) &&
+		x[0] === 0xEF && x[1] === 0xBB && x[2] === 0xBF) {
+		return x.slice(3);
+	}
+
+	return x;
+};
+
+}).call(this,{"isBuffer":require("/media/d/projects/node-ipfs-api/node_modules/is-buffer/index.js")})
+},{"/media/d/projects/node-ipfs-api/node_modules/is-buffer/index.js":21,"is-utf8":215}],234:[function(require,module,exports){
+"use strict";
+
+module.exports = make
+module.exports.ctor = ctor
+module.exports.objCtor = objCtor
+module.exports.obj = obj
+
+var through2 = require("through2")
+var xtend = require("xtend")
+
+function ctor(options, fn) {
+  if (typeof options == "function") {
+    fn = options
+    options = {}
+  }
+
+  var Filter = through2.ctor(options, function (chunk, encoding, callback) {
+    if (this.options.wantStrings) chunk = chunk.toString()
+    if (fn.call(this, chunk, this._index++)) this.push(chunk)
+    return callback()
+  })
+  Filter.prototype._index = 0
+  return Filter
+}
+
+function objCtor(options, fn) {
+  if (typeof options === "function") {
+    fn = options
+    options = {}
+  }
+  options = xtend({objectMode: true, highWaterMark: 16}, options)
+  return ctor(options, fn)
+}
+
+function make(options, fn) {
+  return ctor(options, fn)()
+}
+
+function obj(options, fn) {
+  if (typeof options === "function") {
+    fn = options
+    options = {}
+  }
+  options = xtend({objectMode: true, highWaterMark: 16}, options)
+  return make(options, fn)
+}
+
+},{"through2":248,"xtend":235}],235:[function(require,module,exports){
+arguments[4][55][0].apply(exports,arguments)
+},{"dup":55}],236:[function(require,module,exports){
+arguments[4][70][0].apply(exports,arguments)
+},{"./_stream_readable":237,"./_stream_writable":239,"core-util-is":240,"dup":70,"inherits":241,"process-nextick-args":243}],237:[function(require,module,exports){
+arguments[4][72][0].apply(exports,arguments)
+},{"./_stream_duplex":236,"_process":64,"buffer":6,"core-util-is":240,"dup":72,"events":14,"inherits":241,"isarray":242,"process-nextick-args":243,"string_decoder/":244,"util":3}],238:[function(require,module,exports){
+arguments[4][73][0].apply(exports,arguments)
+},{"./_stream_duplex":236,"core-util-is":240,"dup":73,"inherits":241}],239:[function(require,module,exports){
+arguments[4][74][0].apply(exports,arguments)
+},{"./_stream_duplex":236,"buffer":6,"core-util-is":240,"dup":74,"events":14,"inherits":241,"process-nextick-args":243,"util-deprecate":245}],240:[function(require,module,exports){
+arguments[4][11][0].apply(exports,arguments)
+},{"/media/d/projects/node-ipfs-api/node_modules/is-buffer/index.js":21,"dup":11}],241:[function(require,module,exports){
+arguments[4][18][0].apply(exports,arguments)
+},{"dup":18}],242:[function(require,module,exports){
+arguments[4][22][0].apply(exports,arguments)
+},{"dup":22}],243:[function(require,module,exports){
+arguments[4][63][0].apply(exports,arguments)
+},{"_process":64,"dup":63}],244:[function(require,module,exports){
+arguments[4][86][0].apply(exports,arguments)
+},{"buffer":6,"dup":86}],245:[function(require,module,exports){
+arguments[4][88][0].apply(exports,arguments)
+},{"dup":88}],246:[function(require,module,exports){
+arguments[4][77][0].apply(exports,arguments)
+},{"./lib/_stream_transform.js":238,"dup":77}],247:[function(require,module,exports){
+arguments[4][55][0].apply(exports,arguments)
+},{"dup":55}],248:[function(require,module,exports){
+arguments[4][182][0].apply(exports,arguments)
+},{"_process":64,"dup":182,"readable-stream/transform":246,"util":90,"xtend":247}],249:[function(require,module,exports){
+arguments[4][96][0].apply(exports,arguments)
+},{"./lib/cloneBuffer":250,"./lib/inspectStream":251,"./lib/isBuffer":252,"./lib/isNull":253,"./lib/isStream":254,"_process":64,"clone":256,"clone-stats":255,"dup":96,"path":62,"replace-ext":257,"stream":81}],250:[function(require,module,exports){
+arguments[4][97][0].apply(exports,arguments)
+},{"buffer":6,"dup":97}],251:[function(require,module,exports){
+arguments[4][98][0].apply(exports,arguments)
+},{"./isStream":254,"dup":98}],252:[function(require,module,exports){
+arguments[4][99][0].apply(exports,arguments)
+},{"buffer":6,"dup":99}],253:[function(require,module,exports){
+arguments[4][100][0].apply(exports,arguments)
+},{"dup":100}],254:[function(require,module,exports){
+arguments[4][101][0].apply(exports,arguments)
+},{"dup":101,"stream":81}],255:[function(require,module,exports){
+arguments[4][8][0].apply(exports,arguments)
+},{"dup":8,"fs":4}],256:[function(require,module,exports){
+arguments[4][9][0].apply(exports,arguments)
+},{"buffer":6,"dup":9}],257:[function(require,module,exports){
+arguments[4][79][0].apply(exports,arguments)
+},{"dup":79,"path":62}]},{},[108])(108)
 });
