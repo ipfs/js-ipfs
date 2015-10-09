@@ -25,31 +25,29 @@ var ipfs = ipfsAPI('localhost', '5001') // leaving out the arguments will defaul
 
 ### In the Browser through browserify
 
-Same as in Node.js, you just have to browserify the code before serving it.
+Same as in Node.js, you just have to [browserify](https://github.com/substack/node-browserify) the code before serving it. See the browserify repo for how to do that.
 
 ### In the Browser through `<script>` tag
 
-Make the [ipfsapi.min.js](/ipfsapi.min.js) available through your server and load it using a normal `<script>` tag, this will exporrt the `ipfsAPI` constructor on the `window` object, such that:
+Make the [ipfsapi.min.js](/ipfsapi.min.js) available through your server and load it using a normal `<script>` tag, this will export the `ipfsAPI` constructor on the `window` object, such that:
 
 ```
 var ipfs = window.ipfsAPI('localhost', '5001')
 ```
 
-If you omit the host and port, the api will parse window.host, and use this information. I.e, this also works:
+If you omit the host and port, the api will parse `window.host`, and use this information. This also works, and can be useful if you want to write apps that can be run from multiple different gateways:
 
 ```
 var ipfs = window.ipfsAPI()
 ```
 
-This can be useful if you want to write apps that can be run from multiple different gateways.
-
 #### Gotchas
 
-When using the api from script tag for things that require buffers (ipfs.add, for example), you will have to use either the exposed ipfs.Buffer, that works just like a node buffer, or use this [browser buffer](https://github.com/feross/buffer)
+When using the api from script tag for things that require buffers (`ipfs.add`, for example), you will have to use either the exposed `ipfs.Buffer`, that works just like a node buffer, or use this [browser buffer](https://github.com/feross/buffer).
 
 ## CORS
 
-If are using this module in a browser with something like browserify, then you will get an error saying that the origin is not allowed.  This would be a CORS ("Cross Origin Resource Sharing") failure. The ipfs server rejects requests from unknown domains by default.  You can whitelist the domain that you are calling from by exporting API_ORIGIN and restarting the daemon, like:
+If are using this module in a browser with something like browserify, then you will get an error saying that the origin is not allowed. This would be a CORS ("Cross Origin Resource Sharing") failure. The ipfs server rejects requests from unknown domains by default. You can whitelist the domain that you are calling from by exporting `API_ORIGIN` and restarting the daemon, like:
 
 ```bash
 export API_ORIGIN="http://localhost:8080"
@@ -82,13 +80,13 @@ ipfs.add(files, function(err, res) {
 also acceptable.
 
 Example
-```
+```js
 var files = ["../files/hello.txt", new Buffer("ipfs!")]
 var files = "../files/hello.txt"
 ```
 
 **Curl**
-```
+```sh
 curl 'http://localhost:5001/api/v0/add?stream-channels=true' \
 -H 'content-type: multipart/form-data; boundary=a831rwxi1a3gzaorw1w2z49dlsor' \
 -H 'Connection: keep-alive' \
@@ -96,19 +94,19 @@ curl 'http://localhost:5001/api/v0/add?stream-channels=true' \
 ```
 
 **Response**
-```
+```js
 [{
     Hash: string,
     Name: string
 }, ...]
 ```
-*The name value will only be set for actual files*
+*The name value will only be set for actual files.*
 
 
 
 #### cat
 
-Retrieve the contents of a single, or array of hashes
+Retrieve the contents of a single hash, or array of hashes.
 
 **Usage**
 ```javascript
@@ -126,7 +124,7 @@ ipfs.cat(hashs, function(err, res) {
 ```
 
 **Curl**
-```
+```sh
 curl "http://localhost:5001/api/v0/cat?arg=<hash>&stream-channels=true"
 ```
 
@@ -135,7 +133,7 @@ curl "http://localhost:5001/api/v0/cat?arg=<hash>&stream-channels=true"
 The response is either a readable stream, or a string.
 
 #### ls
-Get the node structure of a hash, included in it is a hash and array to links.
+Get the node structure of a hash. Included in it is a hash and array to links.
 
 **Usage**
 ```javascript
@@ -153,12 +151,12 @@ ipfs.ls(hashs, function(err, res) {
 ```
 
 **Curl**
-```
+```sh
 curl "http://localhost:5001/api/v0/ls?arg=<hash>&stream-channels=true"
 ```
 
 **Response**
-```
+```js
 {
     Objects: [
         { 
@@ -195,12 +193,12 @@ Level 2 commands are simply named spaced wrapped commands
 #### Object
 
 **Curl**
-```
+```sh
 curl 'http://localhost:5001/api/v0/object/get?arg=QmYEqnfCZp7a39Gxrgyv3qRS4MoCTGjegKV6zroU3Rvr52&stream-channels=true' --compressed
 ```
 
 **Response**
-```
+```js
 {
     Links: [{
         Name: string,
@@ -208,8 +206,9 @@ curl 'http://localhost:5001/api/v0/object/get?arg=QmYEqnfCZp7a39Gxrgyv3qRS4MoCTG
         Size: number
     }, ...],
     Data: string
+}
 ```
-*Data is base64 encoded*
+*Data is base64 encoded.*
 
 #### Swarm
 
