@@ -14,7 +14,6 @@ describe('.files', function () {
     this.timeout(20000)
 
     apiClients['a'].files.mkdir('/test-folder', function (err) {
-      console.log('->', err)
       assert(!err)
       if (err) {
         return done()
