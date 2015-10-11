@@ -236,3 +236,62 @@ curl "http://localhost:5001/api/v0/ls?arg=<hash>&stream-channels=true"
 -------------------------------------------------------
 
 ### Network
+
+
+---------
+
+#### Files
+
+##### mkdir
+
+```JavaScript
+ipfs.files.mkdir(<folderName>, function (err) {})
+```
+
+##### cp
+
+```JavaScript
+ipfs.files.cp([<pathSrc>, <pathDst>], function (err) {})
+```
+
+##### ls
+
+```JavaScript
+ipfs.files.ls(<path>, function (err, res) {})
+```
+
+##### stat
+
+```JavaScript
+ipfs.files.stat(<path>, function (err, res) {})
+```
+
+##### rm
+
+```JavaScript
+ipfs.files.rm(<path>, [<options>],  function (err) {})
+```
+
+For `rm -r` pass a options obj with `r: true`
+
+##### read
+
+```JavaScript
+ipfs.files.read(<path>, function (err, res) {
+  if(res.readable) {
+    // Returned as a stream
+    res.pipe(process.stdout)
+  } else {
+    // Returned as a string
+    console.log(res)
+  }
+})
+```
+
+##### write
+
+##### mv
+
+```JavaScript
+ipfs.files.mv([<pathSrc>, <pathDst>], function (err) {})
+```
