@@ -244,18 +244,11 @@ curl "http://localhost:5001/api/v0/ls?arg=<hash>&stream-channels=true"
 
 ##### mkdir
 
-bash:
-`curl "http://localhost:5001/api/v0/files/mkdir?arg=%2F<folder name>`"
-
-response: (it returns empty when successful)
-```
-```
-
-javascript:
 ```JavaScript
 ipfs.files.mkdir(<folderName>, function (err) {})
 ```
 
+<<<<<<< b7595adb6e402164a28c2ec8193249182e62b592
 <<<<<<< 4308ddc1ef008e123922a46bad67f5ad758e66fb
 ##### cp
 
@@ -304,23 +297,58 @@ ipfs.files.read(<path>, function (err, res) {
 ```JavaScript
 ipfs.files.mv([<pathSrc>, <pathDst>], function (err) {})
 ```
-=======
+
 response: (it returns empty when successful)
-```
-```
 
 ##### cp
 
+```JavaScript
+ipfs.files.cp([<pathSrc>, <pathDst>], function (err) {})
+```
+
 ##### ls
+
+```JavaScript
+ipfs.files.ls(<path>, function (err, res) {})
+```
 
 ##### stat
 
+```JavaScript
+ipfs.files.stat(<path>, function (err, res) {})
+```
+
 ##### rm
 
+```JavaScript
+ipfs.files.rm(<path>, [<options>],  function (err) {})
+```
+
+For `rm -r` pass a options obj with `r: true`
+
 ##### read
+
+```JavaScript
+ipfs.files.read(<path>, function (err, res) {
+  if(res.readable) {
+    // Returned as a stream
+    res.pipe(process.stdout)
+  } else {
+    // Returned as a string
+    console.log(res)
+  }
+})
+```
 
 ##### write
 
 ##### mv
+<<<<<<< b7595adb6e402164a28c2ec8193249182e62b592
 curl "http://localhost:5001/api/v0/files/mkdir?arg=%2Ffolder4"
 >>>>>>> files api tests
+=======
+
+```JavaScript
+ipfs.files.mv([<pathSrc>, <pathDst>], function (err) {})
+```
+>>>>>>> add readme documentation for files
