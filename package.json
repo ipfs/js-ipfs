@@ -10,7 +10,7 @@
     "multipart-stream": "^2.0.0",
     "vinyl": "^0.5.1",
     "vinyl-fs-browser": "^2.1.1-1",
-    "vinyl-multipart-stream": "^1.2.5"
+    "vinyl-multipart-stream": "^1.2.6"
   },
   "browserify": {
     "transform": [
