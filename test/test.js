@@ -1,9 +1,14 @@
-// var ipfsd = require('ipfsd-ctl')
+var isNode = !global.window
+
 var ipfsApi = require('../src/index.js')
 var assert = require('assert')
 var fs = require('fs')
 var path = require('path')
 var File = require('vinyl')
+
+if (isNode) {
+  var ipfsd = require('ipfsd-ctl')
+}
 
 // this comment is used by mocha, do not delete
 /*global describe, before, it*/
@@ -19,24 +24,28 @@ var testfile = fs.readFileSync(__dirname + '/testfile.txt')
 
 describe('ipfs node api', function () {
   var ipfs, ipfsNode
-  before(function () {
+  before(function (done) {
     log('ipfs node setup')
-    ipfs = ipfsApi('localhost', '5001')
 
-    // this.timeout(20000)
-    // ipfsd.disposable(function (err, node) {
-    //   if (err) throw err
-    //   log('ipfs init done')
-    //   ipfsNode = node
+    if (isNode) {
+      this.timeout(20000)
+      ipfsd.disposable(function (err, node) {
+        if (err) throw err
+        log('ipfs init done')
+        ipfsNode = node
 
-    //   ipfsNode.startDaemon(function (err, ignore) {
-    //     if (err) throw err
-    //     log('ipfs daemon running')
+        ipfsNode.startDaemon(function (err, ignore) {
+          if (err) throw err
+          log('ipfs daemon running')
 
-    //     ipfs = ipfsApi(ipfsNode.apiAddr)
-    //     done()
-    //   })
-    // })
+          ipfs = ipfsApi(ipfsNode.apiAddr)
+          done()
+        })
+      })
+    } else {
+      ipfs = ipfsApi('localhost', '5001')
+      done()
+    }
   })
 
   it('has the api object', function () {
@@ -317,18 +326,20 @@ describe('ipfs node api', function () {
     })
   })
 
-  // Not available in the browser
-  it.skip('test for error after daemon stops', function (done) {
-    this.timeout(6000)
-    var nodeStopped
-    ipfsNode.stopDaemon(function () {
-      if (!nodeStopped) {
-        nodeStopped = true
-        ipfs.id(function (err, res) {
-          assert.equal(err.code, 'ECONNREFUSED')
-          done()
-        })
-      }
+  if (isNode) {
+    // Not available in the browser
+    it('test for error after daemon stops', function (done) {
+      this.timeout(6000)
+      var nodeStopped
+      ipfsNode.stopDaemon(function () {
+        if (!nodeStopped) {
+          nodeStopped = true
+          ipfs.id(function (err, res) {
+            assert.equal(err.code, 'ECONNREFUSED')
+            done()
+          })
+        }
+      })
     })
-  })
+  }
 })

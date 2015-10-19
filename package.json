@@ -32,6 +32,7 @@
     "karma": "^0.13.11",
     "karma-browserify": "^4.4.0",
     "karma-chrome-launcher": "^0.2.1",
+    "karma-firefox-launcher": "^0.1.6",
     "karma-mocha": "^0.2.0",
     "mocha": "^2.3.3",
     "pre-commit": "^1.0.6",
@@ -39,8 +40,9 @@
     "uglify-js": "^2.4.24"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha",
-    "test:browser": "API_ORIGIN=\"*\" ./node_modules/.bin/concurrent --kill-others \"ipfs daemon\" \"./node_modules/.bin/karma start --single-run=true karma.conf.js\"",
+    "test": "npm run test:node && npm run test:browser",
+    "test:node": "./node_modules/.bin/mocha",
+    "test:browser": "API_ORIGIN=\"*\" ./node_modules/.bin/concurrent --kill-others \"node_modules/.bin/ipfs daemon\" \"./node_modules/.bin/karma start --single-run=true karma.conf.js\"",
     "lint": "./node_modules/.bin/standard",
     "build": "./node_modules/.bin/browserify -t brfs -s ipfsAPI -e ./src/index.js | tee dist/ipfsapi.js | ./node_modules/.bin/uglifyjs -m > dist/ipfsapi.min.js"
   },
