@@ -27,6 +27,7 @@
   "devDependencies": {
     "brfs": "^1.4.1",
     "browserify": "^11.0.0",
+    "concurrently": "^0.1.1",
     "ipfsd-ctl": "^0.5.1",
     "karma": "^0.13.11",
     "karma-browserify": "^4.4.0",
@@ -39,7 +40,7 @@
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha",
-    "test:browser": "./node_modules/.bin/karma start karma.conf.js",
+    "test:browser": "API_ORIGIN=\"*\" ./node_modules/.bin/concurrent --kill-others \"ipfs daemon\" \"./node_modules/.bin/karma start --single-run=true karma.conf.js\"",
     "lint": "./node_modules/.bin/standard",
     "build": "./node_modules/.bin/browserify -t brfs -s ipfsAPI -e ./src/index.js | tee dist/ipfsapi.js | ./node_modules/.bin/uglifyjs -m > dist/ipfsapi.min.js"
   },
