@@ -40,9 +40,9 @@
     "uglify-js": "^2.4.24"
   },
   "scripts": {
-    "test": "npm run test:node && npm run test:browser",
+    "test": "ls -la node_modules/.bin && npm run test:node && npm run test:browser",
     "test:node": "./node_modules/.bin/mocha",
-    "test:browser": "API_ORIGIN=\"*\" ./node_modules/.bin/concurrent --kill-others \"./node_modules/.bin/ipfs daemon\" \"./node_modules/.bin/karma start --single-run=true karma.conf.js\"",
+    "test:browser": "API_ORIGIN=\"*\" ./node_modules/.bin/concurrent --kill-others \"./node_modules/go-ipfs/bin/ipfs daemon\" \"./node_modules/.bin/karma start --single-run=true karma.conf.js\"",
     "lint": "./node_modules/.bin/standard",
     "build": "./node_modules/.bin/browserify -t brfs -s ipfsAPI -e ./src/index.js | tee dist/ipfsapi.js | ./node_modules/.bin/uglifyjs -m > dist/ipfsapi.min.js"
   },
