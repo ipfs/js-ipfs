@@ -28,7 +28,7 @@
     "brfs": "^1.4.1",
     "browserify": "^11.0.0",
     "concurrently": "^0.1.1",
-    "go-ipfs": "^0.3.6",
+    "go-ipfs": "^0.3.7-3",
     "ipfsd-ctl": "^0.5.1",
     "karma": "^0.13.11",
     "karma-browserify": "^4.4.0",

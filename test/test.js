@@ -88,7 +88,7 @@ describe('ipfs node api', function () {
   })
 
   // Not working due to fs.lstat not being available in the browser
-  it.skip('add path', function (done) {
+  it('add path', function (done) {
     this.timeout(10000)
 
     ipfs.add(testfilePath, function (err, res) {
@@ -270,7 +270,7 @@ describe('ipfs node api', function () {
     })
   })
 
-  it.skip('refs', function (done) {
+  it('refs', function (done) {
     this.timeout(10000)
     ipfs.refs(initDocs, {'format': '<src> <dst> <linkname>'}, function (err, objs) {
       if (err) throw err
@@ -298,7 +298,7 @@ describe('ipfs node api', function () {
   })
 
   // No idea why this fails
-  it.skip('returns an error when getting a non-existent key from the DHT',
+  it('returns an error when getting a non-existent key from the DHT',
     function (done) {
       this.timeout(20000)
       ipfs.dht.get('non-existent', {timeout: '100ms'}, function (err, value) {
@@ -308,7 +308,7 @@ describe('ipfs node api', function () {
     })
 
   // No idea why this fails
-  it.skip('puts and gets a key value pair in the DHT', function (done) {
+  it('puts and gets a key value pair in the DHT', function (done) {
     this.timeout(20000)
 
     ipfs.dht.put('scope', 'interplanetary', function (err, cb) {
