@@ -1,108 +1,123 @@
-var http = require('http')
-var qs = require('querystring')
-var getFilesStream = require('./get-files-stream')
+'use strict'
+
+const request = require('request')
+const getFilesStream = require('./get-files-stream')
+
+const isNode = !global.window
+
+// -- Internal
+
+function onEnd (buffer, result, cb) {
+  return (err, res, body) => {
+    if (err) {
+      return cb(err)
+    }
+
+    if (res.statusCode >= 400 || !res.statusCode) {
+      return cb(new Error(`Server responded with ${res.statusCode}: ${body}`))
+    }
+
+    if ((result.stream && !buffer) ||
+        (result.chunkedObjects && buffer)) {
+      return cb(null, body)
+    }
+
+    if (result.chunkedObjects) return cb(null, result.objects)
+
+    try {
+      const parsedBody = JSON.parse(body)
+      cb(null, parsedBody)
+    } catch (e) {
+      cb(null, body)
+    }
+  }
+}
+
+function onData (result) {
+  return chunk => {
+    if (!result.chunkedObjects) return
+
+    try {
+      const obj = JSON.parse(chunk.toString())
+      result.objects.push(obj)
+    } catch (e) {
+      result.chunkedObjects = false
+    }
+  }
+}
+
+function onResponse (result) {
+  return res => {
+    result.stream = !!res.headers['x-stream-output']
+    result.chunkedObjects = !!res.headers['x-chunked-output']
+  }
+}
+
+function makeRequest (opts, buffer, cb) {
+  // this option is only used internally, not passed to daemon
+  delete opts.qs.followSymlinks
+
+  const result = {
+    stream: false,
+    chunkedObjects: false,
+    objects: []
+  }
+
+  return request(opts, onEnd(buffer, result, cb))
+    .on('data', onData(result))
+    .on('response', onResponse(result))
+}
+
+function requestAPI (config, path, args, qs, files, buffer, cb) {
+  qs = qs || {}
+  if (Array.isArray(path)) path = path.join('/')
+  if (args && !Array.isArray(args)) args = [args]
+  if (args) qs.arg = args
+  if (files && !Array.isArray(files)) files = [files]
+
+  if (typeof buffer === 'function') {
+    cb = buffer
+    buffer = false
+  }
+
+  if (qs.r) qs.recursive = qs.r
+
+  if (!isNode && qs.recursive && path === 'add') {
+    return cb(new Error('Recursive uploads are not supported in the browser'))
+  }
+
+  qs['stream-channels'] = true
+
+  const opts = {
+    method: files ? 'POST' : 'GET',
+    uri: `http://${config.host}:${config.port}${config['api-path']}${path}`,
+    qs: qs,
+    useQuerystring: true,
+    headers: {},
+    withCredentials: false,
+    gzip: true
+  }
+
+  if (isNode) {
+    // Browsers do not allow you to modify the user agent
+    opts.headers['User-Agent'] = config['user-agent']
+  }
+
+  if (files) {
+    const stream = getFilesStream(files, qs)
+    if (!stream.boundary) {
+      return cb(new Error('No boundary in multipart stream'))
+    }
+
+    opts.headers['Content-Type'] = `multipart/form-data; boundary=${stream.boundary}`
+    stream.pipe(makeRequest(opts, buffer, cb))
+  } else {
+    makeRequest(opts, buffer, cb)
+  }
+}
+
+// -- Interface
 
 exports = module.exports = function getRequestAPI (config) {
-  return requestAPI
-
-  function requestAPI (path, args, opts, files, buffer, cb) {
-    var query, stream, contentType
-    contentType = 'application/json'
-
-    if (Array.isArray(path)) path = path.join('/')
-
-    opts = opts || {}
-
-    if (args && !Array.isArray(args)) args = [args]
-    if (args) opts.arg = args
-
-    if (files) {
-      stream = getFilesStream(files, opts)
-      if (!stream.boundary) {
-        throw new Error('no boundary in multipart stream')
-      }
-      contentType = 'multipart/form-data; boundary=' + stream.boundary
-    }
-
-    if (typeof buffer === 'function') {
-      cb = buffer
-      buffer = false
-    }
-
-    // this option is only used internally, not passed to daemon
-    delete opts.followSymlinks
-
-    opts['stream-channels'] = true
-    query = qs.stringify(opts)
-
-    var reqo = {
-      method: files ? 'POST' : 'GET',
-      host: config.host,
-      port: config.port,
-      path: config['api-path'] + path + '?' + query,
-      headers: {
-        'User-Agent': config['user-agent'],
-        'Content-Type': contentType
-      },
-      withCredentials: false
-    }
-
-    var req = http.request(reqo, function (res) {
-      var data = ''
-      var objects = []
-      var stream = !!res.headers && !!res.headers['x-stream-output']
-      var chunkedObjects = !!res.headers && !!res.headers['x-chunked-output']
-
-      if (stream && !buffer) return cb(null, res)
-      if (chunkedObjects && buffer) return cb(null, res)
-
-      res.on('data', function (chunk) {
-        if (!chunkedObjects) {
-          data += chunk
-          return data
-        }
-
-        try {
-          var obj = JSON.parse(chunk.toString())
-          objects.push(obj)
-        } catch (e) {
-          chunkedObjects = false
-          data += chunk
-        }
-      })
-      res.on('end', function () {
-        var parsed
-
-        if (!chunkedObjects) {
-          try {
-            parsed = JSON.parse(data)
-            data = parsed
-          } catch (e) {}
-        } else {
-          data = objects
-        }
-
-        if (res.statusCode >= 400 || !res.statusCode) {
-          if (!data) data = new Error()
-          return cb(data, null)
-        }
-        return cb(null, data)
-      })
-      res.on('error', function (err) {
-        return cb(err, null)
-      })
-    })
-
-    req.on('error', function (err) {
-      return cb(err, null)
-    })
-
-    if (stream) {
-      stream.pipe(req)
-    } else {
-      req.end()
-    }
-
-    return req
-  }
+  return requestAPI.bind(null, config)
 }

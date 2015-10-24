@@ -8,7 +8,6 @@ exports = module.exports = getFilesStream
 
 function getFilesStream (files, opts) {
   if (!files) return null
-  if (!Array.isArray(files)) files = [files]
 
   // merge all inputs into one stream
   var adder = new Merge()
@@ -31,7 +30,7 @@ function getFilesStream (files, opts) {
       adder.add(vinylfs.src(file, srcOpts))
 
       // if recursive, glob the contents
-      if (opts.r || opts.recursive) {
+      if (opts.recursive) {
         adder.add(vinylfs.src(file + '/**/*', srcOpts))
       }
     } else {
