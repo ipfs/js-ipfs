@@ -82,8 +82,50 @@ describe('ipfs node api', function () {
     }
   })
 
-  it('connect Node a to b and c', function () {
+  it('connect Node a to b and c', function (done) {
+    var addrs = {}
+    var counter = 0
+    collectAddr('b', finish)
+    collectAddr('c', finish)
 
+    function finish () {
+      counter++
+      if (counter === 2) {
+        dial()
+      }
+    }
+
+    function collectAddr (key, cb) {
+      apiClients[key].id(function (err, id) {
+        if (err) {
+          throw err
+        }
+        addrs[key] = ipfsNodes[key].apiAddr + '/ipfs/' + id.ID
+        cb()
+      })
+    }
+
+    function dial () {
+      apiClients['a'].swarm.connect(addrs['b'], function (err) {
+        if (err) {
+          throw err
+        }
+        apiClients['a'].swarm.connect(addrs['c'], function (err) {
+          if (err) {
+            throw err
+          }
+          done()
+        })
+      })
+    }
+    // apiClients['a'].id(function (err, id) {
+    //   if (err) {
+    //     throw err
+    //  }
+    //   console.log(id)
+    // })
+    // console.log(ipfsNodes['a'].apiAddr)
+    // localDaemon.swarm.connect(CUBE_NODE, function (err) {})
   })
 
   it('has the api object', function () {
