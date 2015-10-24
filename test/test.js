@@ -118,14 +118,6 @@ describe('IPFS Node.js API wrapper tests', function () {
         })
       })
     }
-    // apiClients['a'].id(function (err, id) {
-    //   if (err) {
-    //     throw err
-    //  }
-    //   console.log(id)
-    // })
-    // console.log(ipfsNodes['a'].apiAddr)
-    // localDaemon.swarm.connect(CUBE_NODE, function (err) {})
   })
 
   it('has the api object', function () {
