@@ -134,6 +134,7 @@ describe('IPFS Node.js API wrapper tests', function () {
   })
 
   describe('.send', function () {
+    it('used by every command')
   })
 
   describe('.add', function () {
@@ -209,7 +210,9 @@ describe('IPFS Node.js API wrapper tests', function () {
           })
       })
     })
+  })
 
+  describe('.ls', function () {
     var initDocs = 'Qmcqtw8FfrVSBaRmbWwHxt3AuySBhJLcvmFYi3Lbc4xnwj'
     var initDocsLs = {
       'help': 'QmY5heUM5qgRubMDD1og9fhCPA6QdkMp3QCwd4s7gJsyE7',
@@ -240,11 +243,8 @@ describe('IPFS Node.js API wrapper tests', function () {
     })
   })
 
-  describe('.ls', function () {
-  })
-
   describe('.config', function () {
-    it('config set/get', function (done) {
+    it('.config.{set, get}', function (done) {
       this.timeout(10000)
 
       var confKey = 'arbitraryKey'
@@ -259,9 +259,15 @@ describe('IPFS Node.js API wrapper tests', function () {
         })
       })
     })
+
+    it('.config.show')
+    it('.config.replace')
   })
 
   describe('.update', function () {
+    it('.update.apply')
+    it('.update.check')
+    it('.update.log')
   })
 
   describe('.version', function () {
@@ -274,6 +280,7 @@ describe('IPFS Node.js API wrapper tests', function () {
   })
 
   describe('.diag', function () {
+    it('.diag.net')
   })
 
   describe('.block', function () {
@@ -365,9 +372,17 @@ describe('IPFS Node.js API wrapper tests', function () {
           })
       })
     })
+
+    it('object.stat')
+    it('object.links')
   })
 
   describe('.swarm', function () {
+    it('.swarm.peers')
+    it('.swarm.connect', function (done) {
+      // Done in the before part
+      done()
+    })
   })
 
   describe('.ping', function () {
@@ -387,15 +402,23 @@ describe('IPFS Node.js API wrapper tests', function () {
   })
 
   describe('.pin', function () {
+    it('.pin.add')
+    it('.pin.remove')
+    it('.pin.list')
   })
 
   describe('.gateway', function () {
+    it('.gateway.disable')
+    it('.gateway.enable')
   })
 
   describe('.log', function () {
+    it('.log.tail')
   })
 
   describe('.name', function () {
+    it('.name.publish')
+    it('.name.resolve')
   })
 
   describe('.refs', function () {
@@ -453,6 +476,8 @@ describe('IPFS Node.js API wrapper tests', function () {
         })
       })
     })
+
+    it('.dht.findproovs')
   })
 
   describe('closing tests', function () {
