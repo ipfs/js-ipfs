@@ -1,17 +1,17 @@
-var isNode = !global.window
-
-var ipfsApi = require('../src/index.js')
+var ipfsAPI = require('../src/index.js')
 var assert = require('assert')
 var fs = require('fs')
 var path = require('path')
 var File = require('vinyl')
+
+var isNode = !global.window
 
 if (isNode) {
   var ipfsd = require('ipfsd-ctl')
 }
 
 // this comment is used by mocha, do not delete
-/*global describe, before, it*/
+/* global describe, before, it */
 
 function log () {
   var args = ['    #']
@@ -23,34 +23,45 @@ var testfilePath = __dirname + '/testfile.txt'
 var testfile = fs.readFileSync(__dirname + '/testfile.txt')
 
 describe('ipfs node api', function () {
-  var ipfs, ipfsNode
+  var apiClients = {} // a, b, c
+  var ipfsNodes = {} // a, b, c
+
   before(function (done) {
+    this.timeout(20000)
     log('ipfs node setup')
 
     if (isNode) {
-      this.timeout(20000)
-      ipfsd.disposable(function (err, node) {
-        if (err) throw err
-        log('ipfs init done')
-        ipfsNode = node
+      startIndependentNode(ipfsNodes, apiClients, 'a', done)
+    } else {
+      apiClients['a'] = ipfsAPI('localhost', '5001')
+      done()
+    }
 
-        ipfsNode.startDaemon(function (err, ignore) {
-          if (err) throw err
+    function startIndependentNode (ipfsNodes, apiClients, key, cb) {
+      ipfsd.disposable(function (err, node) {
+        if (err) {
+          throw err
+        }
+
+        log('ipfs init done')
+        ipfsNodes[key] = node
+
+        ipfsNodes[key].startDaemon(function (err, ignore) {
+          if (err) {
+            throw err
+          }
           log('ipfs daemon running')
 
-          ipfs = ipfsApi(ipfsNode.apiAddr)
-          done()
+          apiClients[key] = ipfsAPI(ipfsNodes[key].apiAddr)
+          cb()
         })
       })
-    } else {
-      ipfs = ipfsApi('localhost', '5001')
-      done()
     }
   })
 
   it('has the api object', function () {
-    assert(ipfs)
-    assert(ipfs.id)
+    assert(apiClients['a'])
+    assert(apiClients['a'].id)
   })
 
   it('add file', function (done) {
@@ -63,7 +74,7 @@ describe('ipfs node api', function () {
       contents: new Buffer(testfile)
     })
 
-    ipfs.add(file, function (err, res) {
+    apiClients['a'].add(file, function (err, res) {
       if (err) throw err
 
       var added = res[0] != null ? res[0] : res
@@ -77,7 +88,7 @@ describe('ipfs node api', function () {
     this.timeout(10000)
 
     var buf = new Buffer(testfile)
-    ipfs.add(buf, function (err, res) {
+    apiClients['a'].add(buf, function (err, res) {
       if (err) throw err
 
       // assert.equal(res.length, 1)
@@ -91,7 +102,7 @@ describe('ipfs node api', function () {
   it('add path', function (done) {
     this.timeout(10000)
 
-    ipfs.add(testfilePath, function (err, res) {
+    apiClients['a'].add(testfilePath, function (err, res) {
       if (err) throw err
 
       var added = res[0] != null ? res[0] : res
@@ -103,7 +114,7 @@ describe('ipfs node api', function () {
   it('cat', function (done) {
     this.timeout(10000)
 
-    ipfs.cat('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', function (err, res) {
+    apiClients['a'].cat('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', function (err, res) {
       if (err) throw err
 
       if (typeof res === 'string') {
@@ -136,7 +147,7 @@ describe('ipfs node api', function () {
   it('ls', function (done) {
     this.timeout(10000)
 
-    ipfs.ls(initDocs, function (err, res) {
+    apiClients['a'].ls(initDocs, function (err, res) {
       if (err) throw err
 
       var dir = res.Objects[0]
@@ -178,9 +189,9 @@ describe('ipfs node api', function () {
     var confKey = 'arbitraryKey'
     var confVal = 'arbitraryVal'
 
-    ipfs.config.set(confKey, confVal, function (err, res) {
+    apiClients['a'].config.set(confKey, confVal, function (err, res) {
       if (err) throw err
-      ipfs.config.get(confKey, function (err, res) {
+      apiClients['a'].config.get(confKey, function (err, res) {
         if (err) throw err
         assert.equal(res.Value, confVal)
         done()
@@ -193,7 +204,7 @@ describe('ipfs node api', function () {
   it('block.put', function (done) {
     this.timeout(10000)
 
-    ipfs.block.put(blorb, function (err, res) {
+    apiClients['a'].block.put(blorb, function (err, res) {
       if (err) throw err
       var store = res.Key
       assert.equal(store, 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
@@ -204,7 +215,7 @@ describe('ipfs node api', function () {
   it('block.get', function (done) {
     this.timeout(10000)
 
-    ipfs.block.get(blorbKey, function (err, res) {
+    apiClients['a'].block.get(blorbKey, function (err, res) {
       if (err) throw err
 
       if (typeof res === 'string') {
@@ -228,7 +239,7 @@ describe('ipfs node api', function () {
   var testObjectHash = 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD'
 
   it('object.put', function (done) {
-    ipfs.object.put(testObject, 'json', function (err, res) {
+    apiClients['a'].object.put(testObject, 'json', function (err, res) {
       if (err) throw err
       var obj = res
       assert.equal(obj.Hash, testObjectHash)
@@ -238,7 +249,7 @@ describe('ipfs node api', function () {
   })
 
   it('object.get', function (done) {
-    ipfs.object.get(testObjectHash, function (err, res) {
+    apiClients['a'].object.get(testObjectHash, function (err, res) {
       if (err) throw err
       var obj = res
       assert.equal(obj.Data, 'testdata')
@@ -249,7 +260,7 @@ describe('ipfs node api', function () {
 
   it('object.data', function (done) {
     this.timeout(10000)
-    ipfs.object.data(testObjectHash, function (err, res) {
+    apiClients['a'].object.data(testObjectHash, function (err, res) {
       if (err) throw err
 
       if (typeof res === 'string') {
@@ -272,7 +283,7 @@ describe('ipfs node api', function () {
 
   it('refs', function (done) {
     this.timeout(10000)
-    ipfs.refs(initDocs, {'format': '<src> <dst> <linkname>'}, function (err, objs) {
+    apiClients['a'].refs(initDocs, {'format': '<src> <dst> <linkname>'}, function (err, objs) {
       if (err) throw err
       for (var i in objs) {
         var ref = objs[i]
@@ -288,7 +299,7 @@ describe('ipfs node api', function () {
 
   it('id', function (done) {
     this.timeout(10000)
-    ipfs.id(function (err, res) {
+    apiClients['a'].id(function (err, res) {
       if (err) throw err
       var id = res
       assert(id.ID)
@@ -301,7 +312,7 @@ describe('ipfs node api', function () {
   it('returns an error when getting a non-existent key from the DHT',
     function (done) {
       this.timeout(20000)
-      ipfs.dht.get('non-existent', {timeout: '100ms'}, function (err, value) {
+      apiClients['a'].dht.get('non-existent', {timeout: '100ms'}, function (err, value) {
         assert(err)
         done()
       })
@@ -311,14 +322,14 @@ describe('ipfs node api', function () {
   it('puts and gets a key value pair in the DHT', function (done) {
     this.timeout(20000)
 
-    ipfs.dht.put('scope', 'interplanetary', function (err, cb) {
+    apiClients['a'].dht.put('scope', 'interplanetary', function (err, cb) {
       assert(!err)
       if (err) {
         done()
         return
       }
 
-      ipfs.dht.get('scope', function (err, value) {
+      apiClients['a'].dht.get('scope', function (err, value) {
         if (err) console.error(err)
         assert.equal(value, 'interplanetary')
         done()
@@ -330,16 +341,20 @@ describe('ipfs node api', function () {
     // Not available in the browser
     it('test for error after daemon stops', function (done) {
       this.timeout(6000)
-      var nodeStopped
-      ipfsNode.stopDaemon(function () {
-        if (!nodeStopped) {
-          nodeStopped = true
-          ipfs.id(function (err, res) {
-            assert.equal(err.code, 'ECONNREFUSED')
-            done()
-          })
-        }
-      })
+      stopIPFSNode(ipfsNodes, apiClients, 'a', done)
+
+      function stopIPFSNode (ipfsNodes, apiClients, key, cb) {
+        var nodeStopped
+        ipfsNodes[key].stopDaemon(function () {
+          if (!nodeStopped) {
+            nodeStopped = true
+            apiClients[key].id(function (err, res) {
+              assert.equal(err.code, 'ECONNREFUSED')
+              cb()
+            })
+          }
+        })
+      }
     })
   }
 })
