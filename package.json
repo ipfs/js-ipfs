@@ -37,6 +37,7 @@
     "karma-sauce-launcher": "^0.3.0",
     "mocha": "^2.3.3",
     "pre-commit": "^1.0.6",
+    "run-sequence": "^1.1.4",
     "standard": "^5.2.2",
     "uglify-js": "^2.4.24"
   },
@@ -44,7 +45,6 @@
     "test": "./node_modules/.bin/gulp",
     "test:node": "./node_modules/.bin/gulp test:node",
     "test:browser": "./node_modules/.bin/gulp test:browser",
-
     "lint": "./node_modules/.bin/standard",
     "build": "./node_modules/.bin/browserify -t brfs -s ipfsAPI -e ./src/index.js | tee dist/ipfsapi.js | ./node_modules/.bin/uglifyjs -m > dist/ipfsapi.min.js"
   },

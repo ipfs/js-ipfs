@@ -3,9 +3,13 @@ var Server = require('karma').Server
 var mocha = require('gulp-mocha')
 var ipfsd = require('ipfsd-ctl')
 var fs = require('fs')
+var runSequence = require('run-sequence')
 
-gulp.task('default', function () {
-  gulp.start('test:node', 'test:browser')
+gulp.task('default', function (done) {
+  runSequence(
+    'test:node',
+    // 'test:browser',
+    done)
 })
 
 gulp.task('test:node', function (done) {
@@ -19,16 +23,25 @@ gulp.task('test:node', function (done) {
       .once('end', function () {
         stopDisposableDaemons(daemons, function () {
           process.exit()
+          // done()
         })
       })
   })
 })
 
 gulp.task('test:browser', function (done) {
-  new Server({
-    configFile: __dirname + '/karma.conf.js',
-    singleRun: true
-  }, done).start()
+  startDisposableDaemons(function (daemons) {
+    new Server({
+      configFile: __dirname + '/karma.conf.js',
+      singleRun: true
+    }, finish).start()
+
+    function finish () {
+      stopDisposableDaemons(daemons, function () {
+        done()
+      })
+    }
+  })
 })
 
 function startDisposableDaemons (callback) {
@@ -54,10 +67,9 @@ function startDisposableDaemons (callback) {
         throw err
       }
 
-      console.log('ipfs init done - ' + key)
       ipfsNodes[key] = node
 
-      console.log('ipfs config (bootstrap and mdns off) - ' + key)
+      console.log('  ipfs init done - (bootstrap and mdns off) - ' + key)
 
       ipfsNodes[key].setConfig('Bootstrap', null, function (err) {
         if (err) {

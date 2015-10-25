@@ -39,7 +39,7 @@ module.exports = function (config) {
     basePath: '',
     frameworks: ['browserify', 'mocha'],
     files: [
-      'test/test.js'
+      'test/tests.js'
     ],
     exclude: [],
     preprocessors: {

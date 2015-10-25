@@ -138,7 +138,7 @@ function IpfsAPI (host_or_multiaddr, port) {
 
   self.swarm = {
     peers: command('swarm/peers'),
-    connect: argCommand('swarm/peers')
+    connect: argCommand('swarm/connect')
   }
 
   self.ping = function (id, cb) {

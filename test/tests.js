@@ -50,7 +50,9 @@ describe('IPFS Node.js API wrapper tests', function () {
     }
 
     function dial () {
-      apiClients['a'].swarm.connect(addrs['b'], function (err) {
+      console.log(addrs)
+      apiClients['a'].swarm.connect(addrs['b'], function (err, res) {
+        console.log('->', res)
         if (err) {
           throw err
         }
