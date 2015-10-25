@@ -453,9 +453,19 @@ describe('IPFS Node.js API wrapper tests', function () {
   })
 
   describe('.swarm', function () {
-    it('.swarm.peers')
+    it('.swarm.peers', function (done) {
+      apiClients['a'].swarm.peers(function (err, res) {
+        if (err) {
+          throw err
+        }
+
+        console.log('should have 2 nodes', res)
+        assert(res.length >= 2)
+        done()
+      })
+    })
     it('.swarm.connect', function (done) {
-      // Done in the before part
+      // Done in the 'before' segment
       done()
     })
   })
