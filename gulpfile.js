@@ -5,7 +5,7 @@ var ipfsd = require('ipfsd-ctl')
 var fs = require('fs')
 
 gulp.task('default', function () {
-  gulp.start('test:node')
+  gulp.start('test:node', 'test:browser')
 })
 
 gulp.task('test:node', function (done) {
