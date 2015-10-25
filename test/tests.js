@@ -4,82 +4,26 @@ var fs = require('fs')
 var path = require('path')
 var File = require('vinyl')
 
-var isNode = !global.window
-
-if (isNode) {
-  var ipfsd = require('ipfsd-ctl')
-}
+// var isNode = !global.window
 
 // this comment is used by mocha, do not delete
 /* global describe, before, it */
-
-function log () {
-  var args = ['    #']
-  args = args.concat(Array.prototype.slice.call(arguments))
-  console.log.apply(console, args)
-}
 
 var testfilePath = __dirname + '/testfile.txt'
 var testfile = fs.readFileSync(__dirname + '/testfile.txt')
 
 describe('IPFS Node.js API wrapper tests', function () {
   var apiClients = {} // a, b, c
-  var ipfsNodes = {} // a, b, c
+  var apiAddrs = require('./tmp-disposable-nodes-addrs.json')
 
   before(function (done) {
     this.timeout(20000)
-    log('ipfs node setup')
-    var counter = 0
 
-    if (isNode) {
-      startIndependentNode(ipfsNodes, apiClients, 'a', finish)
-      startIndependentNode(ipfsNodes, apiClients, 'b', finish)
-      startIndependentNode(ipfsNodes, apiClients, 'c', finish)
-    } else {
-      apiClients['a'] = ipfsAPI('localhost', '5001')
-      done()
-    }
+    Object.keys(apiAddrs).forEach(function (key) {
+      apiClients[key] = ipfsAPI(apiAddrs[key])
+    })
 
-    function finish () {
-      counter++
-      if (counter === 3) {
-        done()
-      }
-    }
-
-    function startIndependentNode (ipfsNodes, apiClients, key, cb) {
-      ipfsd.disposable(function (err, node) {
-        if (err) {
-          throw err
-        }
-
-        log('ipfs init done - ' + key)
-        ipfsNodes[key] = node
-
-        log('ipfs config (bootstrap and mdns off) - ' + key)
-
-        ipfsNodes[key].setConfig('Bootstrap', null, function (err) {
-          if (err) {
-            throw err
-          }
-          ipfsNodes[key].setConfig('Mdns', false, function (err) {
-            if (err) {
-              throw err
-            }
-
-            ipfsNodes[key].startDaemon(function (err, ignore) {
-              if (err) {
-                throw err
-              }
-              log('ipfs daemon running - ' + key)
-
-              apiClients[key] = ipfsAPI(ipfsNodes[key].apiAddr)
-              cb()
-            })
-          })
-        })
-      })
-    }
+    done()
   })
 
   it('connect Node a to b and c', function (done) {
@@ -100,7 +44,7 @@ describe('IPFS Node.js API wrapper tests', function () {
         if (err) {
           throw err
         }
-        addrs[key] = ipfsNodes[key].apiAddr + '/ipfs/' + id.ID
+        addrs[key] = apiAddrs[key] + '/ipfs/' + id.ID
         cb()
       })
     }
@@ -564,7 +508,7 @@ describe('IPFS Node.js API wrapper tests', function () {
 
     it('.dht.findproovs')
   })
-
+/*
   describe('closing tests', function () {
     if (isNode) {
       // Not available in the browser
@@ -601,4 +545,5 @@ describe('IPFS Node.js API wrapper tests', function () {
       })
     }
   })
+  */
 })
