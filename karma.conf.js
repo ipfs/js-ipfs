@@ -65,10 +65,10 @@ module.exports = function (config) {
     reporters: ['progress', 'saucelabs'],
     port: 9876,
     colors: true,
-    logLevel: config.LOG_INFO,
+    logLevel: process.env.DEBUG ? config.LOG_DEBUG : config.LOG_INFO,
     autoWatch: false,
     customLaunchers: customLaunchers,
-    browsers: Object.keys(customLaunchers),
+    browsers: process.env.DEBUG ? ['Chrome'] : Object.keys(customLaunchers),
     singleRun: false,
     concurrency: 2
   })
