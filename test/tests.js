@@ -44,15 +44,13 @@ describe('IPFS Node.js API wrapper tests', function () {
         if (err) {
           throw err
         }
-        addrs[key] = apiAddrs[key] + '/ipfs/' + id.ID
+        addrs[key] = id.Addresses[0] // apiAddrs[key] + '/ipfs/' + id.ID
         cb()
       })
     }
 
     function dial () {
-      console.log(addrs)
       apiClients['a'].swarm.connect(addrs['b'], function (err, res) {
-        console.log('->', res)
         if (err) {
           throw err
         }
@@ -399,14 +397,13 @@ describe('IPFS Node.js API wrapper tests', function () {
   })
 
   describe('.swarm', function () {
-    it.skip('.swarm.peers', function (done) {
+    it('.swarm.peers', function (done) {
       apiClients['a'].swarm.peers(function (err, res) {
         if (err) {
           throw err
         }
 
-        console.log('should have 2 nodes', res)
-        assert(res.length >= 2)
+        assert(res.Strings.length >= 2)
         done()
       })
     })
@@ -501,7 +498,9 @@ describe('IPFS Node.js API wrapper tests', function () {
         }
 
         apiClients['a'].dht.get('scope', function (err, value) {
-          if (err) console.error(err)
+          if (err) {
+            throw err
+          }
           assert.equal(value, 'interplanetary')
           done()
         })
