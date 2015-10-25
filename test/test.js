@@ -286,9 +286,29 @@ describe('IPFS Node.js API wrapper tests', function () {
   })
 
   describe('.version', function () {
+    it('checks the version', function (done) {
+      this.timeout(10000)
+      apiClients['a'].version(function (err, res) {
+        if (err) {
+          throw err
+        }
+        assert(res)
+        done()
+      })
+    })
   })
 
   describe('.commands', function () {
+    it('lists commands', function (done) {
+      this.timeout(10000)
+      apiClients['a'].commands(function (err, res) {
+        if (err) {
+          throw err
+        }
+        assert(res)
+        done()
+      })
+    })
   })
 
   describe('.mount', function () {
