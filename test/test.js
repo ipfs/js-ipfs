@@ -312,10 +312,20 @@ describe('IPFS Node.js API wrapper tests', function () {
   })
 
   describe('.mount', function () {
+    // requires FUSE to be installed, not practical for testing
   })
 
   describe('.diag', function () {
-    it('.diag.net')
+    it('.diag.net', function (done) {
+      this.timeout(1000000)
+      apiClients['a'].diag.net(function (err, res) {
+        if (err) {
+          throw err
+        }
+        assert(res)
+        done()
+      })
+    })
   })
 
   describe('.block', function () {
