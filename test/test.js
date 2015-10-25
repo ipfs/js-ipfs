@@ -176,6 +176,19 @@ describe('IPFS Node.js API wrapper tests', function () {
         done()
       })
     })
+
+    it('add a nested dir', function (done) {
+      this.timeout(10000)
+
+      apiClients['a'].add(__dirname + '/test-folder', { recursive: true }, function (err, res) {
+        if (err) {
+          throw err
+        }
+        var added = res[res.length - 1]
+        assert.equal(added.Hash, 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q')
+        done()
+      })
+    })
   })
 
   describe('.cat', function () {
