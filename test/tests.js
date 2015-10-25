@@ -333,9 +333,9 @@ describe('IPFS Node.js API wrapper tests', function () {
 
   describe('.object', function () {
     var testObject =
-      Buffer(JSON.stringify({Data: 'testdata', Links: []}))
+    Buffer(JSON.stringify({Data: 'testdata', Links: []}))
     var testObjectHash =
-      'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD'
+    'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD'
 
     it('object.put', function (done) {
       apiClients['a'].object.put(testObject, 'json', function (err, res) {
@@ -433,8 +433,7 @@ describe('IPFS Node.js API wrapper tests', function () {
     })
   })
 
-  describe('.ping', function () {
-  })
+  describe('.ping', function () {})
 
   describe('.id', function () {
     it('id', function (done) {
@@ -470,32 +469,31 @@ describe('IPFS Node.js API wrapper tests', function () {
   })
 
   describe('.refs', function () {
-    var initDocs = 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q'
-    var initDocsLs = {
-      'help': 'QmY5heUM5qgRubMDD1og9fhCPA6QdkMp3QCwd4s7gJsyE7',
-      'about': 'QmfE3nUohq2nEYwieF7YFnJF1VfiL4i3wDxkMq8aGUg8Mt',
-      'readme': 'QmUFtMrBHqdjTtbebsL6YGebvjShh3Jud1insUv12fEVdA',
-      'contact': 'QmYCvbfNbCwFR45HiNP45rwJgvatpiW38D961L5qAhUM5Y',
-      'quick-start': 'QmeEqpsKrvdhuuuVsguHaVdJcPnnUHHZ5qEWjCHavYbNqU',
-      'security-notes': 'QmTumTjvcYCAvRRwQ8sDRxh8ezmrcr88YFU7iYNroGGTBZ'
-    }
+    var folder = 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q'
 
-    it.skip('refs', function (done) {
+    it('refs', function (done) {
       this.timeout(10000)
-      apiClients['a'].refs(initDocs, {'format': '<src> <dst> <linkname>'}, function (err, objs) {
-        if (err) { 
+      apiClients['a'].refs(folder, {'format': '<src> <dst> <linkname>'}, function (err, objs) {
+        if (err) {
           throw err
         }
-        console.log(objs)
 
-        for (var i in objs) {
-          var ref = objs[i]
-          var refp = ref.Ref.replace('\n', '').split(' ')
-          assert.equal(refp[0], initDocs)
-          assert(initDocsLs[refp[2]])
-          assert.equal(refp[1], initDocsLs[refp[2]])
-          assert.equal(ref.Err, '')
-        }
+        var result = [{
+          Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmaeuuKLHzirbVoTjb3659fyyV381amjaGrU2pecHEWPrN add.js\n',
+          Err: '' },
+          { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmTQhTtDWeaaP9pttDd1CuoVTLQm1w51ABfjgmGUbCUF6i cat.js\n',
+          Err: '' },
+          { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmTYFLz5vsdMpq4XXw1a1pSxujJc9Z5V3Aw1Qg64d849Zy files\n',
+          Err: '' },
+          { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmTjXxUemcuMAZ2KNN3iJGWHwrkMsW8SWEwkYVSBi1nFD9 ipfs-add.js\n',
+          Err: '' },
+          { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmXYUXDFNNh1wgwtX5QDG7MsuhAAcE9NzDYnz8SjnhvQrK ls.js\n',
+          Err: '' },
+          { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmUmDmH4hZgN5THnVP1VjJ1YWh5kWuhLGUihch8nFiD9iy version.js\n',
+          Err: '' } ]
+
+        assert.deepEqual(objs, result)
+
         done()
       })
     })
