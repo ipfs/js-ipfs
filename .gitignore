@@ -2,3 +2,4 @@ node_modules
 some-test.js
 npm-debug.log
 sauce_connect.log
+test/tmp-disposable-nodes-addrs.json

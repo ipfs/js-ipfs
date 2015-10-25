@@ -79,7 +79,12 @@ function startDisposableDaemons (callback) {
           if (err) {
             throw err
           }
-
+          /*
+          ipfsNodes[key].setConfig('API.HTTPHeaders', 'Access-Control-Allow-Origin=*', function (err) {
+            if (err) {
+              throw err
+            }
+          */
           ipfsNodes[key].startDaemon(function (err, ignore) {
             if (err) {
               throw err
@@ -88,6 +93,7 @@ function startDisposableDaemons (callback) {
             apiAddrs[key] = ipfsNodes[key].apiAddr
             cb()
           })
+          // })
         })
       })
     })
