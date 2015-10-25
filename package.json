@@ -28,6 +28,8 @@
     "brfs": "^1.4.1",
     "browserify": "^11.0.0",
     "concurrently": "^0.1.1",
+    "gulp": "^3.9.0",
+    "gulp-mocha": "^2.1.3",
     "ipfsd-ctl": "^0.5.5",
     "karma": "^0.13.11",
     "karma-browserify": "^4.4.0",
@@ -39,9 +41,10 @@
     "uglify-js": "^2.4.24"
   },
   "scripts": {
-    "test": "npm run test:node && npm run test:browser",
-    "test:node": "./node_modules/.bin/mocha",
-    "test:browser": "./node_modules/ipfsd-ctl/node_modules/go-ipfs/bin/ipfs init && API_ORIGIN=\"*\" ./node_modules/.bin/concurrent --kill-others \"./node_modules/.bin/ipfs daemon\" \"./node_modules/.bin/karma start --single-run=true karma.conf.js\"",
+    "test": "./node_modules/.bin/gulp",
+    "test:node": "./node_modules/.bin/gulp test:node",
+    "test:browser": "./node_modules/.bin/gulp test:browser",
+
     "lint": "./node_modules/.bin/standard",
     "build": "./node_modules/.bin/browserify -t brfs -s ipfsAPI -e ./src/index.js | tee dist/ipfsapi.js | ./node_modules/.bin/uglifyjs -m > dist/ipfsapi.min.js"
   },
@@ -59,7 +62,9 @@
   "author": "Matt Bell <mappum@gmail.com>",
   "contributors": [
     "Travis Person <travis.person@gmail.com>",
-    "Jeromy Jonson <why@ipfs.io>"
+    "Jeromy Jonson <why@ipfs.io>",
+    "David Dias <daviddias@ipfs.io>",
+    "Juan Benet <juanbenet@ipfs.io>"
   ],
   "license": "MIT",
   "bugs": {

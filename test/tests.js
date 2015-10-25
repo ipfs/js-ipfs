@@ -453,7 +453,7 @@ describe('IPFS Node.js API wrapper tests', function () {
   })
 
   describe('.swarm', function () {
-    it('.swarm.peers', function (done) {
+    it.skip('.swarm.peers', function (done) {
       apiClients['a'].swarm.peers(function (err, res) {
         if (err) {
           throw err
