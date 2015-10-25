@@ -418,7 +418,24 @@ describe('IPFS Node.js API wrapper tests', function () {
       })
     })
 
-    it('object.stat')
+    it('object.stat', function (done) {
+      this.timeout(10000)
+      apiClients['a'].object.stat(testObjectHash, function (err, res) {
+        if (err) {
+          throw err
+        }
+        assert.deepEqual(res, {
+          Hash: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
+          NumLinks: 0,
+          BlockSize: 10,
+          LinksSize: 2,
+          DataSize: 8,
+          CumulativeSize: 10
+        })
+        done()
+      })
+    })
+
     it('object.links')
   })
 
