@@ -44,7 +44,8 @@ describe('IPFS Node.js API wrapper tests', function () {
         if (err) {
           throw err
         }
-        addrs[key] = id.Addresses[0] // apiAddrs[key] + '/ipfs/' + id.ID
+        // note to self: HTTP API port !== Node port
+        addrs[key] = id.Addresses[0]
         cb()
       })
     }
@@ -162,31 +163,50 @@ describe('IPFS Node.js API wrapper tests', function () {
   })
 
   describe('.ls', function () {
-    var initDocs = 'Qmcqtw8FfrVSBaRmbWwHxt3AuySBhJLcvmFYi3Lbc4xnwj'
-    var initDocsLs = {
-      'help': 'QmY5heUM5qgRubMDD1og9fhCPA6QdkMp3QCwd4s7gJsyE7',
-      'about': 'QmfE3nUohq2nEYwieF7YFnJF1VfiL4i3wDxkMq8aGUg8Mt',
-      'readme': 'QmUFtMrBHqdjTtbebsL6YGebvjShh3Jud1insUv12fEVdA',
-      'contact': 'QmYCvbfNbCwFR45HiNP45rwJgvatpiW38D961L5qAhUM5Y',
-      'quick-start': 'QmeEqpsKrvdhuuuVsguHaVdJcPnnUHHZ5qEWjCHavYbNqU',
-      'security-notes': 'QmTumTjvcYCAvRRwQ8sDRxh8ezmrcr88YFU7iYNroGGTBZ'
-    }
-    it.skip('ls', function (done) {
-      this.timeout(10000)
+    var folder = 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q'
+    it('ls', function (done) {
+      this.timeout(100000)
 
-      apiClients['a'].ls(initDocs, function (err, res) {
-        if (err) throw err
-
-        var dir = res.Objects[0]
-        for (var i in dir.Links) {
-          var link = dir.Links[i]
-          assert.equal(link.Hash, initDocsLs[link.Name])
+      apiClients['a'].ls(folder, function (err, res) {
+        if (err) {
+          throw err
         }
-        assert.equal(dir.Hash, initDocs)
-        assert.equal(dir.Links.length, 6)
-        assert.equal(dir.Links[0].Name, 'about')
-        assert.equal(dir.Links[5].Name, 'security-notes')
 
+        var objs = {
+          Hash: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q',
+          Links: [{
+            Name: 'add.js',
+            Hash: 'QmaeuuKLHzirbVoTjb3659fyyV381amjaGrU2pecHEWPrN',
+            Size: 481,
+            Type: 2
+          }, {
+            Name: 'cat.js',
+            Hash: 'QmTQhTtDWeaaP9pttDd1CuoVTLQm1w51ABfjgmGUbCUF6i',
+            Size: 364,
+            Type: 2
+          }, {
+            Name: 'files',
+            Hash: 'QmTYFLz5vsdMpq4XXw1a1pSxujJc9Z5V3Aw1Qg64d849Zy',
+            Size: 132,
+            Type: 1
+          }, {
+            Name: 'ipfs-add.js',
+            Hash: 'QmTjXxUemcuMAZ2KNN3iJGWHwrkMsW8SWEwkYVSBi1nFD9',
+            Size: 315,
+            Type: 2
+          }, {
+            Name: 'ls.js',
+            Hash: 'QmXYUXDFNNh1wgwtX5QDG7MsuhAAcE9NzDYnz8SjnhvQrK',
+            Size: 428,
+            Type: 2
+          }, {
+            Name: 'version.js',
+            Hash: 'QmUmDmH4hZgN5THnVP1VjJ1YWh5kWuhLGUihch8nFiD9iy',
+            Size: 153,
+            Type: 2 }]
+        }
+
+        assert.deepEqual(res.Objects[0], objs)
         done()
       })
     })
@@ -450,7 +470,7 @@ describe('IPFS Node.js API wrapper tests', function () {
   })
 
   describe('.refs', function () {
-    var initDocs = 'Qmcqtw8FfrVSBaRmbWwHxt3AuySBhJLcvmFYi3Lbc4xnwj'
+    var initDocs = 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q'
     var initDocsLs = {
       'help': 'QmY5heUM5qgRubMDD1og9fhCPA6QdkMp3QCwd4s7gJsyE7',
       'about': 'QmfE3nUohq2nEYwieF7YFnJF1VfiL4i3wDxkMq8aGUg8Mt',
@@ -463,7 +483,11 @@ describe('IPFS Node.js API wrapper tests', function () {
     it.skip('refs', function (done) {
       this.timeout(10000)
       apiClients['a'].refs(initDocs, {'format': '<src> <dst> <linkname>'}, function (err, objs) {
-        if (err) throw err
+        if (err) { 
+          throw err
+        }
+        console.log(objs)
+
         for (var i in objs) {
           var ref = objs[i]
           var refp = ref.Ref.replace('\n', '').split(' ')
