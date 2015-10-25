@@ -1,5 +1,5 @@
 var gulp = require('gulp')
-// var Server = require('karma').Server;
+var Server = require('karma').Server
 var mocha = require('gulp-mocha')
 var ipfsd = require('ipfsd-ctl')
 var fs = require('fs')
@@ -22,6 +22,13 @@ gulp.task('test:node', function (done) {
         })
       })
   })
+})
+
+gulp.task('test:browser', function (done) {
+  new Server({
+    configFile: __dirname + '/karma.conf.js',
+    singleRun: true
+  }, done).start()
 })
 
 function startDisposableDaemons (callback) {
@@ -101,12 +108,3 @@ function stopDisposableDaemons (daemons, callback) {
     })
   }
 }
-
-/*
-gulp.task('test', function (done) {
-  new Server({
-    configFile: __dirname + '/karma.conf.js',
-    singleRun: true
-  }, done).start();
-});
-*/
