@@ -1,11 +1,12 @@
 var multiaddr = require('multiaddr')
-var config = require('./config')
-var requestAPI = require('./request-api')
+var getConfig = require('./config')
+var getRequestAPI = require('./request-api')
 
 exports = module.exports = IpfsAPI
 
 function IpfsAPI (host_or_multiaddr, port) {
   var self = this
+  var config = getConfig()
 
   if (!(self instanceof IpfsAPI)) {
     return new IpfsAPI(host_or_multiaddr, port)
@@ -27,6 +28,8 @@ function IpfsAPI (host_or_multiaddr, port) {
     config.host = split[0]
     config.port = split[1]
   }
+
+  var requestAPI = getRequestAPI(config)
 
   // -- Internal
 
