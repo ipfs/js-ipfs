@@ -265,11 +265,21 @@ describe('IPFS Node.js API wrapper tests', function () {
       })
     })
 
-    it('.config.show')
+    it('.config.show', function (done) {
+      this.timeout(10000)
+
+      apiClients['c'].config.show(function (err, res) {
+        if (err) {
+          throw err
+        }
+        assert(res)
+        done()
+      })
+    })
     it('.config.replace')
   })
 
-  describe('.update', function () {
+  describe('.update (currently disabled, wait for IPFS 0.4.0 release', function () {
     it('.update.apply')
     it('.update.check')
     it('.update.log')
