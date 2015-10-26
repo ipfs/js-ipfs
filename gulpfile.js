@@ -22,8 +22,8 @@ gulp.task('test:node', function (done) {
       })
       .once('end', function () {
         stopDisposableDaemons(daemons, function () {
-          // process.exit()
-          done()
+          process.exit()
+          // done()
         })
       })
   })
