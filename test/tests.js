@@ -4,7 +4,7 @@ var fs = require('fs')
 var path = require('path')
 var File = require('vinyl')
 
-// var isNode = !global.window
+var isNode = !global.window
 
 // this comment is used by mocha, do not delete
 /* global describe, before, it */
@@ -76,6 +76,10 @@ describe('IPFS Node.js API wrapper tests', function () {
 
   describe('.add', function () {
     it('add file', function (done) {
+      if (!isNode) {
+        return done()
+      }
+
       this.timeout(10000)
 
       var file = new File({
@@ -109,8 +113,11 @@ describe('IPFS Node.js API wrapper tests', function () {
       })
     })
 
-    // Not working due to fs.lstat not being available in the browser
     it('add path', function (done) {
+      if (!isNode) {
+        return done()
+      }
+
       this.timeout(10000)
 
       apiClients['a'].add(testfilePath, function (err, res) {
@@ -123,6 +130,9 @@ describe('IPFS Node.js API wrapper tests', function () {
     })
 
     it('add a nested dir', function (done) {
+      if (!isNode) {
+        return done()
+      }
       this.timeout(10000)
 
       apiClients['a'].add(__dirname + '/test-folder', { recursive: true }, function (err, res) {
@@ -165,6 +175,10 @@ describe('IPFS Node.js API wrapper tests', function () {
   describe('.ls', function () {
     var folder = 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q'
     it('ls', function (done) {
+      if (!isNode) {
+        return done()
+      }
+
       this.timeout(100000)
 
       apiClients['a'].ls(folder, function (err, res) {
