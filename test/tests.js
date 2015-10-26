@@ -482,36 +482,38 @@ describe('IPFS Node.js API wrapper tests', function () {
     it('.name.resolve')
   })
 
-  describe('.refs', function () {
-    var folder = 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q'
+  if (isNode) {
+    describe('.refs', function () {
+      var folder = 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q'
 
-    it('refs', function (done) {
-      this.timeout(10000)
-      apiClients['a'].refs(folder, {'format': '<src> <dst> <linkname>'}, function (err, objs) {
-        if (err) {
-          throw err
-        }
+      it('refs', function (done) {
+        this.timeout(10000)
+        apiClients['a'].refs(folder, {'format': '<src> <dst> <linkname>'}, function (err, objs) {
+          if (err) {
+            throw err
+          }
 
-        var result = [{
-          Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmaeuuKLHzirbVoTjb3659fyyV381amjaGrU2pecHEWPrN add.js\n',
-          Err: '' },
-          { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmTQhTtDWeaaP9pttDd1CuoVTLQm1w51ABfjgmGUbCUF6i cat.js\n',
-          Err: '' },
-          { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmTYFLz5vsdMpq4XXw1a1pSxujJc9Z5V3Aw1Qg64d849Zy files\n',
-          Err: '' },
-          { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmTjXxUemcuMAZ2KNN3iJGWHwrkMsW8SWEwkYVSBi1nFD9 ipfs-add.js\n',
-          Err: '' },
-          { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmXYUXDFNNh1wgwtX5QDG7MsuhAAcE9NzDYnz8SjnhvQrK ls.js\n',
-          Err: '' },
-          { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmUmDmH4hZgN5THnVP1VjJ1YWh5kWuhLGUihch8nFiD9iy version.js\n',
-          Err: '' } ]
+          var result = [{
+            Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmaeuuKLHzirbVoTjb3659fyyV381amjaGrU2pecHEWPrN add.js\n',
+            Err: '' },
+                        { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmTQhTtDWeaaP9pttDd1CuoVTLQm1w51ABfjgmGUbCUF6i cat.js\n',
+                          Err: '' },
+                        { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmTYFLz5vsdMpq4XXw1a1pSxujJc9Z5V3Aw1Qg64d849Zy files\n',
+                          Err: '' },
+                        { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmTjXxUemcuMAZ2KNN3iJGWHwrkMsW8SWEwkYVSBi1nFD9 ipfs-add.js\n',
+                          Err: '' },
+                        { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmXYUXDFNNh1wgwtX5QDG7MsuhAAcE9NzDYnz8SjnhvQrK ls.js\n',
+                          Err: '' },
+                        { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmUmDmH4hZgN5THnVP1VjJ1YWh5kWuhLGUihch8nFiD9iy version.js\n',
+                          Err: '' } ]
 
-        assert.deepEqual(objs, result)
+          assert.deepEqual(objs, result)
 
-        done()
+          done()
+        })
       })
     })
-  })
+  }
 
   describe('.dht', function () {
     it('returns an error when getting a non-existent key from the DHT',
