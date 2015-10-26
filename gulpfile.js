@@ -8,7 +8,7 @@ var runSequence = require('run-sequence')
 gulp.task('default', function (done) {
   runSequence(
     'test:node',
-    'test:browser',
+    // 'test:browser',
     done)
 })
 

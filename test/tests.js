@@ -486,6 +486,10 @@ describe('IPFS Node.js API wrapper tests', function () {
     var folder = 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q'
 
     it('refs', function (done) {
+      if (!isNode) {
+        return done()
+      }
+
       this.timeout(10000)
       apiClients['a'].refs(folder, {'format': '<src> <dst> <linkname>'}, function (err, objs) {
         if (err) {
