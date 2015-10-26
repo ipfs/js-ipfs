@@ -8,6 +8,8 @@ IPFS API wrapper library for Node.js and the browser
 
 # Usage
 
+### NOTE - Current version only supports IPFS 0.3.7
+
 ## Installing the module
 
 ### In Node.js Through npm
