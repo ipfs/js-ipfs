@@ -8,7 +8,7 @@ var runSequence = require('run-sequence')
 gulp.task('default', function (done) {
   runSequence(
     'test:node',
-    // 'test:browser',
+    'test:browser',
     done)
 })
 
@@ -22,8 +22,8 @@ gulp.task('test:node', function (done) {
       })
       .once('end', function () {
         stopDisposableDaemons(daemons, function () {
-          process.exit()
-          // done()
+          // process.exit()
+          done()
         })
       })
   })
@@ -79,21 +79,21 @@ function startDisposableDaemons (callback) {
           if (err) {
             throw err
           }
-          /*
-          ipfsNodes[key].setConfig('API.HTTPHeaders', 'Access-Control-Allow-Origin=*', function (err) {
-            if (err) {
-              throw err
-            }
-          */
-          ipfsNodes[key].startDaemon(function (err, ignore) {
+
+          ipfsNodes[key].setConfig('API', '{"HTTPHeaders": {"Access-Control-Allow-Origin": ["*"]}}', function (err) {
             if (err) {
               throw err
             }
 
-            apiAddrs[key] = ipfsNodes[key].apiAddr
-            cb()
+            ipfsNodes[key].startDaemon(function (err, ignore) {
+              if (err) {
+                throw err
+              }
+
+              apiAddrs[key] = ipfsNodes[key].apiAddr
+              cb()
+            })
           })
-          // })
         })
       })
     })
