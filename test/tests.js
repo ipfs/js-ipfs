@@ -545,42 +545,4 @@ describe('IPFS Node.js API wrapper tests', function () {
 
     it('.dht.findproovs')
   })
-/*
-  describe('closing tests', function () {
-    if (isNode) {
-      // Not available in the browser
-      it('test for error after daemon stops', function (done) {
-        this.timeout(6000)
-        stopIPFSNode(ipfsNodes, apiClients, 'a', finish)
-        stopIPFSNode(ipfsNodes, apiClients, 'b', finish)
-        stopIPFSNode(ipfsNodes, apiClients, 'c', finish)
-
-        var counter = 0
-
-        function finish () {
-          counter++
-          if (counter === 3) {
-            done()
-          }
-        }
-
-        function stopIPFSNode (ipfsNodes, apiClients, key, cb) {
-          var nodeStopped
-          ipfsNodes[key].stopDaemon(function (err) {
-            if (err) {
-              throw err
-            }
-            if (!nodeStopped) {
-              nodeStopped = true
-              apiClients[key].id(function (err, res) {
-                assert.equal(err.code, 'ECONNREFUSED')
-                cb()
-              })
-            }
-          })
-        }
-      })
-    }
-  })
-  */
 })
