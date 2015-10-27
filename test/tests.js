@@ -6,9 +6,6 @@ var File = require('vinyl')
 
 var isNode = !global.window
 
-// this comment is used by mocha, do not delete
-/* global describe, before, it */
-
 var testfilePath = __dirname + '/testfile.txt'
 var testfile = fs.readFileSync(__dirname + '/testfile.txt')
 
@@ -27,6 +24,8 @@ describe('IPFS Node.js API wrapper tests', function () {
   })
 
   it('connect Node a to b and c', function (done) {
+    this.timeout(5000)
+
     var addrs = {}
     var counter = 0
     collectAddr('b', finish)
@@ -447,6 +446,8 @@ describe('IPFS Node.js API wrapper tests', function () {
 
   describe('.swarm', function () {
     it('.swarm.peers', function (done) {
+      this.timeout(5000)
+
       apiClients['a'].swarm.peers(function (err, res) {
         if (err) {
           throw err
@@ -462,23 +463,27 @@ describe('IPFS Node.js API wrapper tests', function () {
     })
   })
 
-  describe('.ping', function () {
-    it('ping another peer', function (done) {
-      apiClients['b'].id(function (err, id) {
-        if (err) {
-          throw err
-        }
-        apiClients['a'].ping(id.ID, function (err, res) {
+  if (isNode) {
+    // Ping returns streaming json in the browser
+    // which breaks the parser atm. See https://github.com/ipfs/node-ipfs-api/issues/86
+    describe('.ping', function () {
+      it('ping another peer', function (done) {
+        apiClients['b'].id(function (err, id) {
           if (err) {
             throw err
           }
-          assert(res)
-          assert(res.Success)
-          done()
+          apiClients['a'].ping(id.ID, function (err, res) {
+            if (err) {
+              throw err
+            }
+            assert(res)
+            assert(res.Success)
+            done()
+          })
         })
       })
     })
-  })
+  }
 
   describe('.id', function () {
     it('id', function (done) {
@@ -495,6 +500,8 @@ describe('IPFS Node.js API wrapper tests', function () {
 
   describe('.pin', function () {
     it('.pin.add', function (done) {
+      this.timeout(5000)
+
       apiClients['b'].pin.add('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', function (err, res) {
         if (err) {
           throw err
@@ -505,6 +512,8 @@ describe('IPFS Node.js API wrapper tests', function () {
     })
 
     it('.pin.list', function (done) {
+      this.timeout(5000)
+
       apiClients['b'].pin.list(function (err, res) {
         if (err) {
           throw err
@@ -515,6 +524,8 @@ describe('IPFS Node.js API wrapper tests', function () {
     })
 
     it('.pin.remove', function (done) {
+      this.timeout(5000)
+
       apiClients['b'].pin.remove('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {recursive: true}, function (err, res) {
         if (err) {
           throw err

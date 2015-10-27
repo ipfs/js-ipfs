@@ -72,6 +72,7 @@ module.exports = function (config) {
     customLaunchers: customLaunchers,
     browsers: process.env.DEBUG ? ['Chrome'] : Object.keys(customLaunchers),
     singleRun: false,
-    concurrency: 2
+    concurrency: 2,
+    browserNoActivityTimeout: 600000
   })
 }
