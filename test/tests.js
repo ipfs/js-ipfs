@@ -533,12 +533,42 @@ describe('IPFS Node.js API wrapper tests', function () {
   })
 
   describe('.log', function () {
-    it('.log.tail')
+    // TODO news 0.3.9 ndjson stuff
+    it.skip('.log.tail', function (done) {
+      apiClients['a'].log.tail(function (err, res) {
+        if (err) {
+          throw err
+        }
+
+        console.log('->', res)
+        done()
+      })
+    })
   })
 
   describe('.name', function () {
-    it('.name.publish')
-    it('.name.resolve')
+    var name
+    it('.name.publish', function (done) {
+      apiClients['a'].name.publish('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', function (err, res) {
+        if (err) {
+          throw err
+        }
+        assert(res)
+        name = res
+        done()
+      })
+    })
+    it('.name.resolve', function (done) {
+      apiClients['a'].name.resolve(name.Name, function (err, res) {
+        if (err) {
+          throw err
+        }
+
+        assert(res)
+        assert.deepEqual(res, { Path: '/ipfs/' + name.Value })
+        done()
+      })
+    })
   })
 
   if (isNode) {
