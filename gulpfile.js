@@ -75,7 +75,7 @@ function startDisposableDaemons (callback) {
         if (err) {
           throw err
         }
-        ipfsNodes[key].setConfig('Mdns', false, function (err) {
+        ipfsNodes[key].setConfig('Discovery', '{}', function (err) {
           if (err) {
             throw err
           }
