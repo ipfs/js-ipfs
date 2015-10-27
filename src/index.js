@@ -214,8 +214,13 @@ function IpfsAPI (host_or_multiaddr, port) {
         if (!res) return cb(new Error('empty response'))
         if (res.length === 0) return cb(new Error('no value returned for key'))
 
-        if (res[0].Type === 5) {
-          cb(null, res[0].Extra)
+        // Inconsistent return values in the browser vs node
+        if (Array.isArray(res)) {
+          res = res[0]
+        }
+
+        if (res.Type === 5) {
+          cb(null, res.Extra)
         } else {
           cb(res)
         }
