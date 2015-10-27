@@ -462,7 +462,23 @@ describe('IPFS Node.js API wrapper tests', function () {
     })
   })
 
-  describe('.ping', function () {})
+  describe('.ping', function () {
+    it('ping another peer', function (done) {
+      apiClients['b'].id(function (err, id) {
+        if (err) {
+          throw err
+        }
+        apiClients['a'].ping(id.ID, function (err, res) {
+          if (err) {
+            throw err
+          }
+          assert(res)
+          assert(res.Success)
+          done()
+        })
+      })
+    })
+  })
 
   describe('.id', function () {
     it('id', function (done) {
