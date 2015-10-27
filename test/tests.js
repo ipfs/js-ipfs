@@ -532,11 +532,6 @@ describe('IPFS Node.js API wrapper tests', function () {
     })
   })
 
-  describe('.gateway', function () {
-    it('.gateway.disable')
-    it('.gateway.enable')
-  })
-
   describe('.log', function () {
     it('.log.tail')
   })

@@ -184,11 +184,6 @@ function IpfsAPI (host_or_multiaddr, port) {
     }
   }
 
-  self.gateway = {
-    enable: command('gateway/enable'),
-    disable: command('gateway/disable')
-  }
-
   self.log = {
     tail: function (cb) {
       return requestAPI('log/tail', null, {enc: 'text'}, null, true, cb)
