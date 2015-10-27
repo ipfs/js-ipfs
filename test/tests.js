@@ -580,6 +580,14 @@ describe('IPFS Node.js API wrapper tests', function () {
       })
     })
 
-    it('.dht.findproovs')
+    it('.dht.findprovs', function (done) {
+      apiClients['a'].dht.findprovs('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', function (err, res) {
+        if (err) {
+          throw err
+        }
+        assert.equal(res)
+        done()
+      })
+    })
   })
 })
