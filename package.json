@@ -46,6 +46,7 @@
     "uglify-js": "^2.4.24"
   },
   "scripts": {
+    "testD": "DEBUG=true gulp test:browser",
     "test": "gulp test",
     "test:node": "gulp test:node",
     "test:browser": "gulp test:browser",
