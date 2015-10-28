@@ -1,11 +1,12 @@
 var multiaddr = require('multiaddr')
-var config = require('./config')
-var requestAPI = require('./request-api')
+var getConfig = require('./config')
+var getRequestAPI = require('./request-api')
 
 exports = module.exports = IpfsAPI
 
 function IpfsAPI (host_or_multiaddr, port) {
   var self = this
+  var config = getConfig()
 
   if (!(self instanceof IpfsAPI)) {
     return new IpfsAPI(host_or_multiaddr, port)
@@ -27,6 +28,8 @@ function IpfsAPI (host_or_multiaddr, port) {
     config.host = split[0]
     config.port = split[1]
   }
+
+  var requestAPI = getRequestAPI(config)
 
   // -- Internal
 
@@ -135,7 +138,7 @@ function IpfsAPI (host_or_multiaddr, port) {
 
   self.swarm = {
     peers: command('swarm/peers'),
-    connect: argCommand('swarm/peers')
+    connect: argCommand('swarm/connect')
   }
 
   self.ping = function (id, cb) {
@@ -181,11 +184,6 @@ function IpfsAPI (host_or_multiaddr, port) {
     }
   }
 
-  self.gateway = {
-    enable: command('gateway/enable'),
-    disable: command('gateway/disable')
-  }
-
   self.log = {
     tail: function (cb) {
       return requestAPI('log/tail', null, {enc: 'text'}, null, true, cb)
@@ -216,8 +214,13 @@ function IpfsAPI (host_or_multiaddr, port) {
         if (!res) return cb(new Error('empty response'))
         if (res.length === 0) return cb(new Error('no value returned for key'))
 
-        if (res[0].Type === 5) {
-          cb(null, res[0].Extra)
+        // Inconsistent return values in the browser vs node
+        if (Array.isArray(res)) {
+          res = res[0]
+        }
+
+        if (res.Type === 5) {
+          cb(null, res.Extra)
         } else {
           cb(res)
         }
