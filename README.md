@@ -1,11 +1,11 @@
-node-ipfs
+js-ipfs
 =========
 
-> IPFS Node.js entry point and implementation roadmap
+> IPFS JavaScript implementation  entry point and roadmap
 
 # Description
 
-This repo will contain the entry point for the Node.js implementation of IPFS spec, similar to [go-ipfs](https://github.com/ipfs/go-ipfs). Right now, it holds the roadmap for the development of modules for node-ipfs, as well as their current state.
+This repo will contain the entry point for the JavaScript implementation of IPFS spec, similar to [go-ipfs](https://github.com/ipfs/go-ipfs). Right now, it holds the roadmap for the development of modules for node-ipfs, as well as their current state.
 
 We are building node-ipfs because it will inform how go-ipfs works, separate concerns, and allow a complete in-browser-tab implementation with no install friction. Most of the work for IPFS does happen elsewhere, but this is an equally important part of our roadmap to lead to a permanent, IPFSed web.
 
@@ -27,54 +27,54 @@ IPFS in Node is a work in progress. As such, there's a few things you can do rig
 
 - Network
   - [ ] [libp2p-website](https://github.com/diasdavid/libp2p-website).
-  - [ ] [node-libp2p](https://github.com/diasdavid/node-libp2p) _(the entry point)_.
-    - [x] [PeerInfo](https://github.com/diasdavid/node-peer-info)
-    - [x] [PeerId](https://github.com/diasdavid/node-peer-id)
+  - [ ] [js-libp2p](https://github.com/diasdavid/js-libp2p) _(the entry point)_.
+    - [x] [PeerInfo](https://github.com/diasdavid/js-peer-info)
+    - [x] [PeerId](https://github.com/diasdavid/js-peer-id)
     - Peer Routing
-      - [x] [node-ipfs-kad-router](https://github.com/diasdavid/node-ipfs-kad-router). [Discussion issue](https://github.com/ipfs/node-ipfs/issues/18).
+      - [x] [js-ipfs-kad-router](https://github.com/diasdavid/js-ipfs-kad-router). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/18).
         - discovery mechanisms
-          - [x] [node-ipfs-mdns](https://github.com/diasdavid/node-ipfs-mdns) _mDNS-discovery_. [Discussion issue](https://github.com/ipfs/node-ipfs/issues/19).
-          - [ ] [node-ipfs-random-walk](https://github.com/diasdavid/node-ipfs-random-walk). [Discussion issue](https://github.com/ipfs/node-ipfs/issues/20).
-          - [x] [node-ipfs-railing](https://github.com/diasdavid/node-ipfs-railing) _Bootstrap-list_. [Discussion issue](https://github.com/ipfs/node-ipfs/issues/21).
+          - [x] [js-ipfs-mdns](https://github.com/diasdavid/js-ipfs-mdns) _mDNS-discovery_. [Discussion issue](https://github.com/ipfs/js-ipfs/issues/19).
+          - [ ] [js-ipfs-random-walk](https://github.com/diasdavid/js-ipfs-random-walk). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/20).
+          - [x] [js-ipfs-railing](https://github.com/diasdavid/js-ipfs-railing) _Bootstrap-list_. [Discussion issue](https://github.com/ipfs/js-ipfs/issues/21).
       - [ ] mDNS-routing
     - [x] Swarm. 
-      - Main repo [node-libp2p-swarm](https://github.com/diasdavid/node-libp2p-swarm). [Discussion issue](https://github.com/ipfs/node-ipfs/issues/22).
-      - [x] Identify Protocol [identify](https://github.com/diasdavid/node-libp2p-swarm/tree/master/src/identify).
-      - [x] [node-ipfs-ping](https://github.com/diasdavid/node-ipfs-ping).
+      - Main repo [js-libp2p-swarm](https://github.com/diasdavid/js-libp2p-swarm). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/22).
+      - [x] Identify Protocol [identify](https://github.com/diasdavid/js-libp2p-swarm/tree/master/src/identify).
+      - [x] [js-ipfs-ping](https://github.com/diasdavid/js-ipfs-ping).
       - [x] Connection Interface [abstract-connection](https://github.com/diasdavid/abstract-connection)
       - Transports
         - [x] Transport Interface [abstract-transport](https://github.com/diasdavid/abstract-transport)
-        - [x] [libp2p-tcp](https://github.com/diasdavid/node-libp2p-tcp)
-        - [ ] [libp2p-udp](https://github.com/diasdavid/node-libp2p-udp)
-        - [ ] [libp2p-udt](https://github.com/diasdavid/node-libp2p-udt)
-        - [ ] [libp2p-utp](https://github.com/diasdavid/node-libp2p-utp)
+        - [x] [libp2p-tcp](https://github.com/diasdavid/js-libp2p-tcp)
+        - [ ] [libp2p-udp](https://github.com/diasdavid/js-libp2p-udp)
+        - [ ] [libp2p-udt](https://github.com/diasdavid/js-libp2p-udt)
+        - [ ] [libp2p-utp](https://github.com/diasdavid/js-libp2p-utp)
         - [ ] libp2p-webrtc
         - [ ] libp2p-cjdns
       - Upgrades
         - [ ] libp2p-tls
       - Stream Muxing
         - [x] [abstract-stream-muxer](https://github.com/diasdavid/abstract-stream-muxer).
-        - [x] [node-spdy-stream-muxer](https://github.com/diasdavid/node-spdy-stream-muxer) _stream muxer_. [Discussion issue](https://github.com/ipfs/node-ipfs/issues/23).
-        - [x] [libp2p-spdy](https://github.com/diasdavid/node-libp2p-spdy/blob/master/src/index.js) _stream muxer upgrade_
+        - [x] [js-spdy-stream-muxer](https://github.com/diasdavid/js-spdy-stream-muxer) _stream muxer_. [Discussion issue](https://github.com/ipfs/js-ipfs/issues/23).
+        - [x] [libp2p-spdy](https://github.com/diasdavid/js-libp2p-spdy/blob/master/src/index.js) _stream muxer upgrade_
       - Protocol Muxing
-        - [x] [node-multistream](https://github.com/diasdavid/node-multistream) _protocol muxer_. [Discussion issue](https://github.com/ipfs/node-ipfs/issues/24).
-        - [x] [node-multistream](https://github.com/diasdavid/node-multistream).
-    - [ ] Distributed Record Store. [Discussion issue](https://github.com/ipfs/node-ipfs/issues/25).
-      - [x] [node-ipfs-record](https://github.com/diasdavid/node-ipfs-record) _record (needs MerkleDAG node)_.
-      - [x] [node-ipfs-distributed-record-store](https://github.com/diasdavid/node-ipfs-distributed-record-store).
-      - [x] [node-ipfs-kad-record-store](https://github.com/diasdavid/node-ipfs-kad-record-store) _implements abstract record store_.
+        - [x] [js-multistream](https://github.com/diasdavid/js-multistream) _protocol muxer_. [Discussion issue](https://github.com/ipfs/js-ipfs/issues/24).
+        - [x] [js-multistream](https://github.com/diasdavid/js-multistream).
+    - [ ] Distributed Record Store. [Discussion issue](https://github.com/ipfs/js-ipfs/issues/25).
+      - [x] [js-ipfs-record](https://github.com/diasdavid/js-ipfs-record) _record (needs MerkleDAG node)_.
+      - [x] [js-ipfs-distributed-record-store](https://github.com/diasdavid/js-ipfs-distributed-record-store).
+      - [x] [js-ipfs-kad-record-store](https://github.com/diasdavid/js-ipfs-kad-record-store) _implements abstract record store_.
       - [x] [abstract-record-store](https://github.com/diasdavid/abstract-record-store).
 - Exchange
-  - [ ] [node-bitswap](https://github.com/diasdavid/node-bitswap). [Discussion issue](https://github.com/ipfs/node-ipfs/issues/17).
+  - [ ] [js-bitswap](https://github.com/diasdavid/js-bitswap). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/17).
 - MerkleDAG
   - [x] MerkleDAG node implementation (needs IPLD).
-    - [x] [node-ipld](https://github.com/diasdavid/node-ipld).
-    - [x] [node-merkledag-store](https://github.com/diasdavid/node-merkledag-store).
+    - [x] [js-ipld](https://github.com/diasdavid/js-ipld).
+    - [x] [js-merkledag-store](https://github.com/diasdavid/js-merkledag-store).
 - Supporting modules
-  - [ ] [webcrypto](https://github.com/diasdavid/webcrypto). [Discussion issue](https://github.com/ipfs/node-ipfs/issues/27).
-  - [x] [node-multihash](https://github.com/jbenet/node-multihash). [Discussion issue](https://github.com/ipfs/node-ipfs/issues/26).
-  - [x] [node-multihashing](https://github.com/jbenet/node-multihashing). [Discussion issue](https://github.com/ipfs/node-ipfs/issues/26).
-  - [x] [node-multiaddr](https://github.com/jbenet/node-multiaddr).
+  - [ ] [webcrypto](https://github.com/diasdavid/webcrypto). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/27).
+  - [x] [js-multihash](https://github.com/jbenet/js-multihash). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/26).
+  - [x] [js-multihashing](https://github.com/jbenet/js-multihashing). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/26).
+  - [x] [js-multiaddr](https://github.com/jbenet/js-multiaddr).
 - Spec
   - [specs/19](https://github.com/ipfs/specs/pull/19).
 
