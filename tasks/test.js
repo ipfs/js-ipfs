@@ -8,7 +8,7 @@ require('./daemons')
 gulp.task('test', function (done) {
   runSequence(
     'test:node',
-    'test:browser',
+    // 'test:browser',
     done
   )
 })

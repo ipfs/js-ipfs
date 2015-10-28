@@ -1,3 +1,4 @@
+/* global describe it before */
 var ipfsAPI = require('../src/index.js')
 var assert = require('assert')
 var fs = require('fs')
