@@ -22,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ipfs/node-ipfs-api"
+    "url": "https://github.com/ipfs/js-ipfs-api"
   },
   "devDependencies": {
     "brfs": "^1.4.1",
@@ -69,7 +69,7 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ipfs/node-ipfs-api/issues"
+    "url": "https://github.com/ipfs/js-ipfs-api/issues"
   },
-  "homepage": "https://github.com/ipfs/node-ipfs-api"
+  "homepage": "https://github.com/ipfs/js-ipfs-api"
 }
