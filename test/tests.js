@@ -140,7 +140,7 @@ describe('IPFS Node.js API wrapper tests', function () {
           throw err
         }
         var added = res[res.length - 1]
-        assert.equal(added.Hash, 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q')
+        assert.equal(added.Hash, 'QmZdsefMGMeG6bL719gX44XSVQrL6psEgRZdw1SGadFaK2')
         done()
       })
     })
@@ -505,7 +505,7 @@ describe('IPFS Node.js API wrapper tests', function () {
     it('.pin.add', function (done) {
       this.timeout(5000)
 
-      apiClients['b'].pin.add('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', function (err, res) {
+      apiClients['b'].pin.add('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {recursive: false}, function (err, res) {
         if (err) {
           throw err
         }
@@ -529,12 +529,12 @@ describe('IPFS Node.js API wrapper tests', function () {
     it('.pin.remove', function (done) {
       this.timeout(5000)
 
-      apiClients['b'].pin.remove('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {recursive: true}, function (err, res) {
+      apiClients['b'].pin.remove('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {recursive: false}, function (err, res) {
         if (err) {
           throw err
         }
         assert(res)
-        apiClients['b'].pin.list(function (err, res) {
+        apiClients['b'].pin.list('direct', function (err, res) {
           if (err) {
             throw err
           }
@@ -601,17 +601,17 @@ describe('IPFS Node.js API wrapper tests', function () {
           }
 
           var result = [{
-            Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmaeuuKLHzirbVoTjb3659fyyV381amjaGrU2pecHEWPrN add.js\n',
+            Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmaeuuKLHzirbVoTjb3659fyyV381amjaGrU2pecHEWPrN add.js',
             Err: '' },
-            { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmTQhTtDWeaaP9pttDd1CuoVTLQm1w51ABfjgmGUbCUF6i cat.js\n',
+            { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmTQhTtDWeaaP9pttDd1CuoVTLQm1w51ABfjgmGUbCUF6i cat.js',
             Err: '' },
-            { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmTYFLz5vsdMpq4XXw1a1pSxujJc9Z5V3Aw1Qg64d849Zy files\n',
+            { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmTYFLz5vsdMpq4XXw1a1pSxujJc9Z5V3Aw1Qg64d849Zy files',
             Err: '' },
-            { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmTjXxUemcuMAZ2KNN3iJGWHwrkMsW8SWEwkYVSBi1nFD9 ipfs-add.js\n',
+            { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmTjXxUemcuMAZ2KNN3iJGWHwrkMsW8SWEwkYVSBi1nFD9 ipfs-add.js',
             Err: '' },
-            { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmXYUXDFNNh1wgwtX5QDG7MsuhAAcE9NzDYnz8SjnhvQrK ls.js\n',
+            { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmXYUXDFNNh1wgwtX5QDG7MsuhAAcE9NzDYnz8SjnhvQrK ls.js',
             Err: '' },
-            { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmUmDmH4hZgN5THnVP1VjJ1YWh5kWuhLGUihch8nFiD9iy version.js\n',
+            { Ref: 'QmaMTzaGBmdLrispnPRTESta4yDQdK4uKSVcQez2No4h6q QmUmDmH4hZgN5THnVP1VjJ1YWh5kWuhLGUihch8nFiD9iy version.js',
             Err: '' } ]
 
           assert.deepEqual(objs, result)
