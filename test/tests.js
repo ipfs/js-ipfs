@@ -286,6 +286,8 @@ describe('IPFS Node.js API wrapper tests', function () {
           throw err
         }
         assert(res)
+        assert(res.Version)
+        console.log('      - running against version', res.Version)
         done()
       })
     })
