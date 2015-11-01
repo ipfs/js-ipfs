@@ -31,11 +31,11 @@ IPFS implementation in JavaScript is a work in progress. As such, there's a few 
     - [x] [PeerInfo](https://github.com/diasdavid/js-peer-info)
     - [x] [PeerId](https://github.com/diasdavid/js-peer-id)
     - Peer Routing
-      - [x] [js-ipfs-kad-router](https://github.com/diasdavid/js-ipfs-kad-router). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/18).
+      - [x] [js-libp2p-kad-routing](https://github.com/diasdavid/js-libp2p-kad-routing). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/18).
         - discovery mechanisms
-          - [x] [js-ipfs-mdns](https://github.com/diasdavid/js-ipfs-mdns) _mDNS-discovery_. [Discussion issue](https://github.com/ipfs/js-ipfs/issues/19).
-          - [ ] [js-ipfs-random-walk](https://github.com/diasdavid/js-ipfs-random-walk). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/20).
-          - [x] [js-ipfs-railing](https://github.com/diasdavid/js-ipfs-railing) _Bootstrap-list_. [Discussion issue](https://github.com/ipfs/js-ipfs/issues/21).
+          - [x] [js-libp2p-mdns-discovery](https://github.com/diasdavid/js-libp2p-mdns-discovery) _mDNS-discovery_. [Discussion issue](https://github.com/ipfs/js-ipfs/issues/19).
+          - [ ] [js-libp2p-random-walk](https://github.com/diasdavid/js-libp2p-random-walk). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/20).
+          - [x] [js-libp2p-railing](https://github.com/diasdavid/js-libp2p-railing) _Bootstrap-list_. [Discussion issue](https://github.com/ipfs/js-ipfs/issues/21).
       - [ ] mDNS-routing
     - [x] Swarm. 
       - Main repo [js-libp2p-swarm](https://github.com/diasdavid/js-libp2p-swarm). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/22).
@@ -60,9 +60,9 @@ IPFS implementation in JavaScript is a work in progress. As such, there's a few 
         - [x] [js-multistream](https://github.com/diasdavid/js-multistream) _protocol muxer_. [Discussion issue](https://github.com/ipfs/js-ipfs/issues/24).
         - [x] [js-multistream](https://github.com/diasdavid/js-multistream).
     - [ ] Distributed Record Store. [Discussion issue](https://github.com/ipfs/js-ipfs/issues/25).
-      - [x] [js-ipfs-record](https://github.com/diasdavid/js-ipfs-record) _record (needs MerkleDAG node)_.
-      - [x] [js-ipfs-distributed-record-store](https://github.com/diasdavid/js-ipfs-distributed-record-store).
-      - [x] [js-ipfs-kad-record-store](https://github.com/diasdavid/js-ipfs-kad-record-store) _implements abstract record store_.
+      - [x] [js-libp2p-record](https://github.com/diasdavid/js-libp2p-record) _record (needs MerkleDAG node)_.
+      - [x] [js-libp2p-distributed-record-store](https://github.com/diasdavid/js-libp2p-distributed-record-store).
+      - [x] [js-libp2p-kad-record-store](https://github.com/diasdavid/js-libp2p-kad-record-store) _implements abstract record store_.
       - [x] [abstract-record-store](https://github.com/diasdavid/abstract-record-store).
 - Exchange
   - [ ] [js-bitswap](https://github.com/diasdavid/js-bitswap). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/17).
