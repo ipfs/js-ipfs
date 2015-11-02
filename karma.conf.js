@@ -51,7 +51,8 @@ module.exports = function (config) {
     browserify: {
       debug: true,
       transform: [
-        'brfs'
+        'brfs',
+        ['babelify', {presets: ['es2015']}]
       ]
     },
 
