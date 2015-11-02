@@ -156,23 +156,21 @@ describe('IPFS Node.js API wrapper tests', function () {
           throw err
         }
 
-        if (isNode) {
-          var buf = ''
-          res
-            .on('error', function (err) { throw err })
-            .on('data', function (data) { buf += data })
-            .on('end', function () {
-              assert.equal(buf, testfile)
-              done()
-            })
-        } else {
-          if (typeof res === 'string') {
-            // Just  a string
-            assert.equal(res, testfile)
-            done()
-            return
-          }
+        if (typeof res === 'string') {
+          // Just  a string
+          assert.equal(res, testfile)
+          done()
+          return
         }
+
+        var buf = ''
+        res
+          .on('error', function (err) { throw err })
+          .on('data', function (data) { buf += data })
+          .on('end', function () {
+            assert.equal(buf, testfile)
+            done()
+          })
       })
     })
   })
