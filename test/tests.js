@@ -475,6 +475,7 @@ describe('IPFS Node.js API wrapper tests', function () {
           if (err) {
             throw err
           }
+
           apiClients['a'].ping(id.ID, function (err, res) {
             if (err) {
               throw err
@@ -635,19 +636,31 @@ describe('IPFS Node.js API wrapper tests', function () {
     it('puts and gets a key value pair in the DHT', function (done) {
       this.timeout(20000)
 
-      apiClients['a'].dht.put('scope', 'interplanetary', function (err, cb) {
-        assert(!err)
+      // starting from 0.3.9 https://github.com/ipfs/go-ipfs/issues/1923#issuecomment-152919886
+
+      apiClients['a'].id(function (err, res) {
         if (err) {
-          done()
-          return
+          throw err
         }
 
-        apiClients['a'].dht.get('scope', function (err, value) {
+        var b58PubKeyHash = res.ID
+
+        apiClients['a'].dht.put(b58PubKeyHash, 'interplanetary', function (err, res) {
+          console.log('->', err)
           if (err) {
             throw err
           }
-          assert.equal(value, 'interplanetary')
-          done()
+
+          console.log('res', res)
+
+          apiClients['a'].dht.get(b58PubKeyHash, function (err, value) {
+            console.log('->>', err, value)
+            if (err) {
+              throw err
+            }
+            assert.equal(value, 'interplanetary')
+            done()
+          })
         })
       })
     })
