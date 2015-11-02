@@ -130,18 +130,19 @@ describe('IPFS Node.js API wrapper tests', function () {
     })
 
     it('add a nested dir', function (done) {
-      if (!isNode) {
-        return done()
-      }
       this.timeout(10000)
 
       apiClients['a'].add(__dirname + '/test-folder', { recursive: true }, function (err, res) {
-        if (err) {
-          throw err
+        if (isNode) {
+          if (err) throw err
+
+          var added = res[res.length - 1]
+          assert.equal(added.Hash, 'QmZdsefMGMeG6bL719gX44XSVQrL6psEgRZdw1SGadFaK2')
+          done()
+        } else {
+          assert.equal(err.message, 'Recursive uploads are not supported in the browser')
+          done()
         }
-        var added = res[res.length - 1]
-        assert.equal(added.Hash, 'QmZdsefMGMeG6bL719gX44XSVQrL6psEgRZdw1SGadFaK2')
-        done()
       })
     })
   })

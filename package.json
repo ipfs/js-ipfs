@@ -8,6 +8,7 @@
     "merge-stream": "^1.0.0",
     "multiaddr": "^1.0.0",
     "multipart-stream": "^2.0.0",
+    "request": "^2.65.0",
     "vinyl": "^0.5.1",
     "vinyl-fs-browser": "^2.1.1-1",
     "vinyl-multipart-stream": "^1.2.6"
@@ -25,7 +26,7 @@
     "url": "https://github.com/ipfs/js-ipfs-api"
   },
   "devDependencies": {
-    "brfs": "^1.4.1",
+    "babel-eslint": "^4.1.3",
     "browserify": "^11.0.0",
     "concurrently": "^0.1.1",
     "eslint-config-standard": "^4.4.0",
