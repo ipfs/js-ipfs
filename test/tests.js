@@ -645,7 +645,7 @@ describe('IPFS Node.js API wrapper tests', function () {
 
         var b58PubKeyHash = res.ID
 
-        apiClients['a'].dht.put(b58PubKeyHash, 'interplanetary', function (err, res) {
+        apiClients['a'].dht.put('/ipns/' + b58PubKeyHash, 'interplanetary', function (err, res) {
           console.log('->', err)
           if (err) {
             throw err
@@ -653,7 +653,7 @@ describe('IPFS Node.js API wrapper tests', function () {
 
           console.log('res', res)
 
-          apiClients['a'].dht.get(b58PubKeyHash, function (err, value) {
+          apiClients['a'].dht.get('/ipns/' + b58PubKeyHash, function (err, value) {
             console.log('->>', err, value)
             if (err) {
               throw err
