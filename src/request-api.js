@@ -2,12 +2,13 @@
 
 const request = require('request')
 const getFilesStream = require('./get-files-stream')
+const stream = require('stream')
 
 const isNode = !global.window
 
 // -- Internal
 
-function onEnd (buffer, result, cb) {
+function onEnd (buffer, result, passThrough, cb) {
   return (err, res, body) => {
     if (err) {
       return cb(err)
@@ -15,6 +16,13 @@ function onEnd (buffer, result, cb) {
 
     if (res.statusCode >= 400 || !res.statusCode) {
       return cb(new Error(`Server responded with ${res.statusCode}: ${body}`))
+    }
+
+    if (result.stream) {
+      cb(null, passThrough)
+      passThrough.resume()
+      passThrough.end()
+      return
     }
 
     if ((result.stream && !buffer) ||
@@ -33,8 +41,12 @@ function onEnd (buffer, result, cb) {
   }
 }
 
-function onData (result) {
+function onData (result, passThrough) {
   return chunk => {
+    if (result.stream) {
+      passThrough.write(chunk)
+      return
+    }
     if (!result.chunkedObjects) return
 
     try {
@@ -63,8 +75,10 @@ function makeRequest (opts, buffer, cb) {
     objects: []
   }
 
-  return request(opts, onEnd(buffer, result, cb))
-    .on('data', onData(result))
+  var passThrough = new stream.PassThrough()
+
+  return request(opts, onEnd(buffer, result, passThrough, cb))
+    .on('data', onData(result, passThrough))
     .on('response', onResponse(result))
 }
 

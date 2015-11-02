@@ -152,7 +152,9 @@ describe('IPFS Node.js API wrapper tests', function () {
       this.timeout(10000)
 
       apiClients['a'].cat('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', function (err, res) {
-        if (err) throw err
+        if (err) {
+          throw err
+        }
 
         if (typeof res === 'string') {
           // Just  a string
