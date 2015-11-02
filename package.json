@@ -56,7 +56,8 @@
     "build": "./node_modules/.bin/browserify -t brfs -s ipfsAPI -e ./src/index.js | tee dist/ipfsapi.js | ./node_modules/.bin/uglifyjs -m > dist/ipfsapi.min.js"
   },
   "pre-commit": [
-    "lint"
+    "lint",
+    "test:node"
   ],
   "keywords": [
     "ipfs"
