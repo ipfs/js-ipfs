@@ -368,7 +368,7 @@ describe('IPFS Node.js API wrapper tests', function () {
   describe('.object', function () {
     var testObject = Buffer(JSON.stringify({Data: 'testdata', Links: []}))
     var testObjectHash = 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD'
-    var testPatchObject = Buffer(JSON.stringify({Data: 'new test data', Links: []}))
+    var testPatchObject = Buffer(JSON.stringify({Data: 'new test data'}))
     var testPatchObjectHash = 'QmWJDtdQWQSajQPx1UVAGWKaSGrHVWdjnrNhbooHP7LuF2'
 
     it('object.put', function (done) {
@@ -455,18 +455,29 @@ describe('IPFS Node.js API wrapper tests', function () {
         if (err) {
           throw err
         }
-
-        apiClients['a'].object.patch(testObjectHash, ['add-link', 'newTestObjectName', testPatchObjectHash], function (err, res) {
+        apiClients['a'].object.patch(testObjectHash, ['add-link', 'next', testPatchObjectHash], function (err, res) {
           if (err) {
             throw err
           }
-
           var o = JSON.parse(res)
           assert.deepEqual(o, {
-            Hash: 'QmYWw3rGW3m6oZUqPPi8x5s7J993Y5cueuaE7QFBoVsGbv',
+            Hash: 'QmZFdJ3CQsY4kkyQtjoUo8oAzsEs5BNguxBhp8sjQMpgkd',
             Links: null
           })
-          done()
+          apiClients['a'].object.get(o.Hash, function (err, res) {
+            if (err) {
+              throw err
+            }
+            assert.deepEqual(JSON.parse(res), {
+              Data: 'testdata',
+              Links: [{
+                Name: 'next',
+                Hash: 'QmWJDtdQWQSajQPx1UVAGWKaSGrHVWdjnrNhbooHP7LuF2',
+                Size: 15
+              }]
+            })
+            done()
+          })
         })
       })
     })
