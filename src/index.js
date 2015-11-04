@@ -133,7 +133,10 @@ function IpfsAPI (host_or_multiaddr, port) {
     },
     data: argCommand('object/data'),
     stat: argCommand('object/stat'),
-    links: argCommand('object/links')
+    links: argCommand('object/links'),
+    patch: function (file, opts, cb) {
+      return requestAPI('object/patch', [file].concat(opts), null, null, cb)
+    }
   }
 
   self.swarm = {
