@@ -21,10 +21,34 @@ IPFS implementation in JavaScript is a work in progress. As such, there's a few 
 
 # Usage
 
-> **Not ready for prime time yet**
+> **Disclamer: Currently, js-ipfs is not a full IPFS node, it delegates all of its operations to a IPFS node available in the network, see "Getting jsipfs ready" below for more details.
+
+### Installation
+
+```bash
+$ npm i ipfs --save
+```
+
+```JavaScript
+var IPFS = require('ipfs')
+
+var node = new IPFS()
+```
+
+### Command line tool
+
+In order to use js-ipfs as a CLI, you must install it with the -g flag.
+
+```bash
+$ npm i ipfs -g
+```
+
+The cli is availble through `jsipfs` in your terminal
+
+### API
 
 
-# Getting jsipfs out the door
+# Getting jsipfs ready
 
 In order to start enabling applications to use the IPFS JavaScript library sooner, we are releasing a version that presents the full API one could expect from a IPFS node, but delegating all the operations on an IPFS node inside the network, using the js-ipfs-api module. The next will be replacing the internal components as the necessary layers for IPFS get developed.
 
