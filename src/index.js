@@ -1,4 +1,5 @@
 var ipfsAPIclt = require('ipfs-api')
+var extend = require('extend')
 
 exports = module.exports = IPFS
 
@@ -22,6 +23,9 @@ function IPFS () {
   }
 
   var api = ipfsAPIclt(config.url)
+  extend(self, api)
 
-  return api
+  self.init = function (bits, force, empty) {
+    throw new Error('Not available yet')
+  }
 }
