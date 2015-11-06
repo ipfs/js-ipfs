@@ -21,7 +21,7 @@ test('start disposable deamon', function (t) {
   })
 })
 
-test('instatiate JS IPFS', function (t) {
+test('create an JS IPFS node', function (t) {
   node = new IPFS()
   t.ok(node)
   t.end()
@@ -30,6 +30,7 @@ test('instatiate JS IPFS', function (t) {
 // basic commands
 
 test('init', function (t) {
+  t.throws(node.init)
   t.end()
 })
 

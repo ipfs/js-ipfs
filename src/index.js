@@ -22,7 +22,6 @@ function IPFS () {
     config.url = process.env.APIURL
   }
 
-  console.log(config)
   var api = ipfsAPIclt(config.url)
   extend(self, api)
 
