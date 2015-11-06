@@ -7,8 +7,9 @@
   },
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "standard"
+    "test:node": "node tests/jsipfs-test.js",
+    "lint": "standard",
+    "test": "npm run test:node"
   },
   "pre-commit": [
     "lint"
@@ -27,6 +28,7 @@
   },
   "homepage": "https://github.com/ipfs/js-ipfs#readme",
   "devDependencies": {
+    "ipfsd-ctl": "^0.6.1",
     "pre-commit": "^1.1.2",
     "standard": "^5.3.1",
     "tape": "^4.2.2"
