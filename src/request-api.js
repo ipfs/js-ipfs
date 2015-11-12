@@ -94,7 +94,10 @@ function requestAPI (config, path, args, qs, files, buffer, cb) {
     buffer = false
   }
 
-  if (qs.r) qs.recursive = qs.r
+  if (qs.r) {
+    qs.recursive = qs.r
+    delete qs.r // From IPFS 0.4.0, it throw an error when both r and recursive are passed
+  }
 
   if (!isNode && qs.recursive && path === 'add') {
     return cb(new Error('Recursive uploads are not supported in the browser'))
