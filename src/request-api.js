@@ -15,7 +15,11 @@ function onEnd (buffer, result, passThrough, cb) {
     }
 
     if (res.statusCode >= 400 || !res.statusCode) {
-      return cb(new Error(`Server responded with ${res.statusCode}: ${body}`))
+      var error = new Error(`Server responded with ${res.statuscode}: ${body}`)
+      body = JSON.parse(body)
+      error.code = body.Code
+      error.message = body.Message
+      return cb(error)
     }
 
     if (result.stream) {
