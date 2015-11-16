@@ -9,7 +9,8 @@ var $ = require('gulp-load-plugins')()
 function getBrowserify () {
   return browserify({
     entries: ['./src/index.js'],
-    debug: true
+    debug: true,
+    standalone: 'ipfsAPI'
   })
     .transform('brfs')
     .transform('babelify', {presets: ['es2015']})
