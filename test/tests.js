@@ -145,6 +145,19 @@ describe('IPFS Node.js API wrapper tests', function () {
         }
       })
     })
+    it('adds a url', function (done) {
+      this.timeout(10000)
+
+      var url = 'https://raw.githubusercontent.com/ipfs/js-ipfs-api/2a9cc63d7427353f2145af6b1a768a69e67c0588/README.md'
+      apiClients['a'].add(url, function (err, res) {
+        if (err) throw err
+
+        var added = res[0]
+
+        assert.equal(added.Hash, 'QmZmHgEX9baxUn3qMjsEXQzG6DyNcrVnwieQQTrpDdrFvt')
+        done()
+      })
+    })
   })
 
   describe('.cat', function () {
