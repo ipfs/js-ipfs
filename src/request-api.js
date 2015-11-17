@@ -40,12 +40,14 @@ function onEnd (buffer, result, passThrough, cb) {
 
     if (result.chunkedObjects) return cb(null, result.objects)
 
+    let parsedBody
     try {
-      const parsedBody = JSON.parse(body)
-      cb(null, parsedBody)
+      parsedBody = JSON.parse(body)
     } catch (e) {
-      cb(null, body)
+      parsedBody = body
     }
+
+    cb(null, parsedBody)
   }
 }
 
