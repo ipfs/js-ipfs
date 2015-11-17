@@ -65,7 +65,10 @@ function IpfsAPI (host_or_multiaddr, port) {
     }
 
     if (typeof files === 'string' && files.startsWith('http')) {
-      files = request(files)
+      files = request.get({
+        url: files,
+        withCredentials: false
+      })
     }
 
     return requestAPI('add', null, opts, files, cb)
