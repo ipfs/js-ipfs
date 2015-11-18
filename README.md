@@ -28,7 +28,7 @@ IPFS implementation in JavaScript is a work in progress. As such, there's a few 
 - **Network layer**
   - The network layer of IPFS is now known as libp2p, follow https://github.com/diasdavid/js-libp2p
 - **Exchange**
-  - [ ] [js-bitswap](https://github.com/diasdavid/js-bitswap). [![](https://img.shields.io/badge/discuss--blue.svg?style=flat-square)](https://github.com/ipfs/js-ipfs/issues/17) - ![](https://img.shields.io/badge/status-has%20not%20started%20yet-brown.svg?style=flat-square)
+  - [ ] [js-bitswap](https://github.com/diasdavid/js-bitswap). [![](https://img.shields.io/badge/discuss--blue.svg?style=flat-square)](https://github.com/ipfs/js-ipfs/issues/17)![](https://img.shields.io/badge/status-has%20not%20started%20yet-brown.svg?style=flat-square)
   - [x] MerkleDAG node implementation (needs IPLD).
     - [x] [js-ipld](https://github.com/diasdavid/js-ipld) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
     - [x] [js-merkledag-store](https://github.com/diasdavid/js-merkledag-store) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
