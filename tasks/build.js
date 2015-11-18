@@ -1,44 +1,29 @@
-var browserify = require('browserify')
-var gulp = require('gulp')
-var source = require('vinyl-source-stream')
-var buffer = require('vinyl-buffer')
-var runSequence = require('run-sequence')
-var rimraf = require('rimraf')
-var $ = require('gulp-load-plugins')()
+const gulp = require('gulp')
+const $ = require('gulp-load-plugins')()
+const webpack = require('webpack-stream')
+const rimraf = require('rimraf')
+const runSequence = require('run-sequence')
 
-function getBrowserify () {
-  return browserify({
-    entries: ['./src/index.js'],
-    debug: true,
-    standalone: 'ipfsAPI'
-  })
-    .transform('brfs')
-    .transform('babelify', {presets: ['es2015']})
-}
+const config = require('./config')
 
 gulp.task('clean', function (done) {
   rimraf('./dist', done)
 })
 
 gulp.task('build:nonminified', function () {
-  return getBrowserify().bundle()
-    .pipe(source('./ipfsapi.js'))
-    .pipe(buffer())
+  return gulp.src('src/index.js')
+    .pipe(webpack(config.webpack.dev))
     .pipe($.size())
-    .pipe(gulp.dest('./dist/'))
+    .pipe(gulp.dest('dist/'))
 })
 
 gulp.task('build:minified', function () {
-  return getBrowserify().bundle()
-    .pipe(source('./ipfsapi.min.js'))
-    .pipe(buffer())
-    .pipe($.sourcemaps.init({loadMaps: true}))
-        // Add transformation tasks to the pipeline here.
-        .pipe($.uglify())
-        .on('error', $.util.log)
-    .pipe($.sourcemaps.write('./'))
-    .pipe($.size({showFiles: true}))
-    .pipe(gulp.dest('./dist/'))
+  config.webpack.prod.output.filename = 'ipfsapi.min.js'
+
+  return gulp.src('src/index.js')
+    .pipe(webpack(config.webpack.prod))
+    .pipe($.size())
+    .pipe(gulp.dest('dist/'))
 })
 
 gulp.task('build', ['clean'], function (done) {

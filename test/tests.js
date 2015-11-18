@@ -1,7 +1,6 @@
 /* global describe it before */
 var ipfsAPI = require('../src/index.js')
 var assert = require('assert')
-var fs = require('fs')
 var path = require('path')
 var File = require('vinyl')
 var Readable = require('stream').Readable
@@ -9,7 +8,12 @@ var Readable = require('stream').Readable
 var isNode = !global.window
 
 var testfilePath = __dirname + '/testfile.txt'
-var testfile = fs.readFileSync(__dirname + '/testfile.txt')
+var testfile
+if (isNode) {
+  testfile = require('fs').readFileSync(__dirname + '/testfile.txt')
+} else {
+  testfile = require('raw!./testfile.txt')
+}
 
 describe('IPFS Node.js API wrapper tests', function () {
   var apiClients = {} // a, b, c
@@ -92,7 +96,7 @@ describe('IPFS Node.js API wrapper tests', function () {
 
       apiClients['a'].add(file, function (err, res) {
         if (err) throw err
-
+        console.log(arguments)
         var added = res[0] != null ? res[0] : res
         assert.equal(added.Hash, 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
         assert.equal(added.Name, path.basename(testfilePath))
@@ -185,9 +189,9 @@ describe('IPFS Node.js API wrapper tests', function () {
           throw err
         }
 
-        if (typeof res === 'string') {
+        if (!res.on) {
           // Just  a string
-          assert.equal(res, testfile)
+          assert.equal(res.toString(), testfile)
           done()
           return
         }
@@ -282,10 +286,12 @@ describe('IPFS Node.js API wrapper tests', function () {
         if (err) {
           throw err
         }
+
         assert(res)
         done()
       })
     })
+
     it('.config.replace', function (done) {
       this.timeout(10000)
 
@@ -376,9 +382,9 @@ describe('IPFS Node.js API wrapper tests', function () {
       apiClients['a'].block.get(blorbKey, function (err, res) {
         if (err) throw err
 
-        if (typeof res === 'string') {
+        if (!res.on) {
           // Just  a string
-          assert.equal(res, 'blorb')
+          assert.equal(res.toString(), 'blorb')
           done()
           return
         }
@@ -427,9 +433,9 @@ describe('IPFS Node.js API wrapper tests', function () {
       apiClients['a'].object.data(testObjectHash, function (err, res) {
         if (err) throw err
 
-        if (typeof res === 'string') {
+        if (!res.on) {
           // Just  a string
-          assert.equal(res, 'testdata')
+          assert.equal(res.toString(), 'testdata')
           done()
           return
         }

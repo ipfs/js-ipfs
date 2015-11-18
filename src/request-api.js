@@ -1,95 +1,57 @@
 'use strict'
 
-const request = require('request')
+const Wreck = require('wreck')
+const Qs = require('qs')
 const getFilesStream = require('./get-files-stream')
-const stream = require('stream')
 
 const isNode = !global.window
 
 // -- Internal
 
-function onEnd (buffer, result, passThrough, cb) {
-  return (err, res, body) => {
+function onEnd (buffer, cb) {
+  return (err, res) => {
     if (err) {
       return cb(err)
     }
 
+    const stream = !!res.headers['x-stream-output']
+    const chunkedObjects = !!res.headers['x-chunked-output']
+
     if (res.statusCode >= 400 || !res.statusCode) {
-      var error = new Error(`Server responded with ${res.statuscode}: ${body}`)
+      var error = new Error(`Server responded with ${res.statusCode}`)
+
+      Wreck.read(res, {json: true}, (err, payload) => {
+        if (err) {
+          error.code = payload.Code
+          error.message = payload.Message
+        }
+        cb(error)
+      })
+    }
+
+    if (stream && !buffer) return cb(null, res)
+
+    if (chunkedObjects) {
+      const parsed = []
+      res.on('data', chunk => parsed.push(JSON.parse(chunk)))
+      res.on('end', () => cb(null, parsed))
+      return
+    }
+
+    Wreck.read(res, null, (err, payload) => {
+      if (err) return cb(err)
+
+      let parsed
+
       try {
-        body = JSON.parse(body)
-        error.code = body.Code
-        error.message = body.Message
-      } catch (e) {
-        error.body = body
+        parsed = JSON.parse(payload.toString())
+      } catch (err2) {
+        parsed = payload.toString()
       }
-      return cb(error)
-    }
 
-    if (result.stream) {
-      cb(null, passThrough)
-      passThrough.resume()
-      passThrough.end()
-      return
-    }
-
-    if ((result.stream && !buffer) ||
-        (result.chunkedObjects && buffer)) {
-      return cb(null, body)
-    }
-
-    if (result.chunkedObjects) return cb(null, result.objects)
-
-    let parsedBody
-    try {
-      parsedBody = JSON.parse(body)
-    } catch (e) {
-      parsedBody = body
-    }
-
-    cb(null, parsedBody)
+      cb(null, parsed)
+    })
   }
-}
-
-function onData (result, passThrough) {
-  return chunk => {
-    if (result.stream) {
-      passThrough.write(chunk)
-      return
-    }
-    if (!result.chunkedObjects) return
-
-    try {
-      const obj = JSON.parse(chunk.toString())
-      result.objects.push(obj)
-    } catch (e) {
-      result.chunkedObjects = false
-    }
-  }
-}
-
-function onResponse (result) {
-  return res => {
-    result.stream = !!res.headers['x-stream-output']
-    result.chunkedObjects = !!res.headers['x-chunked-output']
-  }
-}
-
-function makeRequest (opts, buffer, cb) {
-  // this option is only used internally, not passed to daemon
-  delete opts.qs.followSymlinks
-
-  const result = {
-    stream: false,
-    chunkedObjects: false,
-    objects: []
-  }
-
-  var passThrough = new stream.PassThrough()
-
-  return request(opts, onEnd(buffer, result, passThrough, cb))
-    .on('data', onData(result, passThrough))
-    .on('response', onResponse(result))
 }
 
 function requestAPI (config, path, args, qs, files, buffer, cb) {
@@ -115,14 +77,18 @@ function requestAPI (config, path, args, qs, files, buffer, cb) {
 
   qs['stream-channels'] = true
 
+  let stream
+  if (files) {
+    stream = getFilesStream(files, qs)
+  }
+
+  // this option is only used internally, not passed to daemon
+  delete qs.followSymlinks
+
   const opts = {
     method: files ? 'POST' : 'GET',
-    uri: `http://${config.host}:${config.port}${config['api-path']}${path}`,
-    qs: qs,
-    useQuerystring: true,
-    headers: {},
-    withCredentials: false,
-    gzip: true
+    uri: `http://${config.host}:${config.port}${config['api-path']}${path}?${Qs.stringify(qs, {arrayFormat: 'repeat'})}`,
+    headers: {}
   }
 
   if (isNode) {
@@ -131,16 +97,16 @@ function requestAPI (config, path, args, qs, files, buffer, cb) {
   }
 
   if (files) {
-    const stream = getFilesStream(files, qs)
     if (!stream.boundary) {
       return cb(new Error('No boundary in multipart stream'))
     }
 
     opts.headers['Content-Type'] = `multipart/form-data; boundary=${stream.boundary}`
-    stream.pipe(makeRequest(opts, buffer, cb))
-  } else {
-    makeRequest(opts, buffer, cb)
+    opts.downstreamRes = stream
+    opts.payload = stream
   }
+
+  Wreck.request(opts.method, opts.uri, opts, onEnd(buffer, cb))
 }
 
 // -- Interface
