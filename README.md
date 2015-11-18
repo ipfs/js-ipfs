@@ -25,56 +25,18 @@ IPFS implementation in JavaScript is a work in progress. As such, there's a few 
 
 # Roadmap
 
-- Network
-  - [ ] [libp2p-website](https://github.com/diasdavid/libp2p-website).
-  - [ ] [js-libp2p](https://github.com/diasdavid/js-libp2p) _(the entry point)_.
-    - [x] [PeerInfo](https://github.com/diasdavid/js-peer-info)
-    - [x] [PeerId](https://github.com/diasdavid/js-peer-id)
-    - Peer Routing
-      - [x] [js-libp2p-kad-routing](https://github.com/diasdavid/js-libp2p-kad-routing). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/18).
-        - discovery mechanisms
-          - [x] [js-libp2p-mdns-discovery](https://github.com/diasdavid/js-libp2p-mdns-discovery) _mDNS-discovery_. [Discussion issue](https://github.com/ipfs/js-ipfs/issues/19).
-          - [ ] [js-libp2p-random-walk](https://github.com/diasdavid/js-libp2p-random-walk). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/20).
-          - [x] [js-libp2p-railing](https://github.com/diasdavid/js-libp2p-railing) _Bootstrap-list_. [Discussion issue](https://github.com/ipfs/js-ipfs/issues/21).
-      - [ ] mDNS-routing
-    - [x] Swarm. 
-      - Main repo [js-libp2p-swarm](https://github.com/diasdavid/js-libp2p-swarm). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/22).
-      - [x] Identify Protocol [identify](https://github.com/diasdavid/js-libp2p-swarm/tree/master/src/identify).
-      - [x] [js-ipfs-ping](https://github.com/diasdavid/js-ipfs-ping).
-      - [x] Connection Interface [abstract-connection](https://github.com/diasdavid/abstract-connection)
-      - Transports
-        - [x] Transport Interface [abstract-transport](https://github.com/diasdavid/abstract-transport)
-        - [x] [libp2p-tcp](https://github.com/diasdavid/js-libp2p-tcp)
-        - [ ] [libp2p-udp](https://github.com/diasdavid/js-libp2p-udp)
-        - [ ] [libp2p-udt](https://github.com/diasdavid/js-libp2p-udt)
-        - [ ] [libp2p-utp](https://github.com/diasdavid/js-libp2p-utp)
-        - [ ] libp2p-webrtc
-        - [ ] libp2p-cjdns
-      - Upgrades
-        - [ ] libp2p-tls
-      - Stream Muxing
-        - [x] [abstract-stream-muxer](https://github.com/diasdavid/abstract-stream-muxer).
-        - [x] [js-spdy-stream-muxer](https://github.com/diasdavid/js-spdy-stream-muxer) _stream muxer_. [Discussion issue](https://github.com/ipfs/js-ipfs/issues/23).
-        - [x] [libp2p-spdy](https://github.com/diasdavid/js-libp2p-spdy/blob/master/src/index.js) _stream muxer upgrade_
-      - Protocol Muxing
-        - [x] [js-multistream](https://github.com/diasdavid/js-multistream) _protocol muxer_. [Discussion issue](https://github.com/ipfs/js-ipfs/issues/24).
-        - [x] [js-multistream](https://github.com/diasdavid/js-multistream).
-    - [ ] Distributed Record Store. [Discussion issue](https://github.com/ipfs/js-ipfs/issues/25).
-      - [x] [js-libp2p-record](https://github.com/diasdavid/js-libp2p-record) _record (needs MerkleDAG node)_.
-      - [x] [js-libp2p-distributed-record-store](https://github.com/diasdavid/js-libp2p-distributed-record-store).
-      - [x] [js-libp2p-kad-record-store](https://github.com/diasdavid/js-libp2p-kad-record-store) _implements abstract record store_.
-      - [x] [abstract-record-store](https://github.com/diasdavid/abstract-record-store).
-- Exchange
-  - [ ] [js-bitswap](https://github.com/diasdavid/js-bitswap). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/17).
-- MerkleDAG
+- **Network layer**
+  - The network layer of IPFS is now known as libp2p, follow https://github.com/diasdavid/js-libp2p
+- **Exchange**
+  - [ ] [js-bitswap](https://github.com/diasdavid/js-bitswap). [![](https://img.shields.io/badge/discuss--blue.svg?style=flat-square)]](https://github.com/ipfs/js-ipfs/issues/17) - ![](https://img.shields.io/badge/status-has%20not%20started%20yet-brown.svg?style=flat-square)
   - [x] MerkleDAG node implementation (needs IPLD).
-    - [x] [js-ipld](https://github.com/diasdavid/js-ipld).
-    - [x] [js-merkledag-store](https://github.com/diasdavid/js-merkledag-store).
-- Supporting modules
-  - [ ] [webcrypto](https://github.com/diasdavid/webcrypto). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/27).
-  - [x] [js-multihash](https://github.com/jbenet/js-multihash). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/26).
-  - [x] [js-multihashing](https://github.com/jbenet/js-multihashing). [Discussion issue](https://github.com/ipfs/js-ipfs/issues/26).
-  - [x] [js-multiaddr](https://github.com/jbenet/js-multiaddr).
-- Spec
-  - [specs/19](https://github.com/ipfs/specs/pull/19).
+    - [x] [js-ipld](https://github.com/diasdavid/js-ipld) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
+    - [x] [js-merkledag-store](https://github.com/diasdavid/js-merkledag-store) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
+- [**Spec**](https://github.com/ipfs/specs/tree/master/protocol/network) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
 
+### status badges
+
+- ![](https://img.shields.io/badge/status-has%20not%20started%20yet-brown.svg?style=flat-square)
+- ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
+- ![](https://img.shields.io/badge/status-ready-green.svg?style=flat-square)
+- [![](https://img.shields.io/badge/discuss--blue.svg?style=flat-square)]](LINK HERE)
