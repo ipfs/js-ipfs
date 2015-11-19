@@ -96,7 +96,7 @@ describe('IPFS Node.js API wrapper tests', function () {
 
       apiClients['a'].add(file, function (err, res) {
         if (err) throw err
-        console.log(arguments)
+
         var added = res[0] != null ? res[0] : res
         assert.equal(added.Hash, 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
         assert.equal(added.Name, path.basename(testfilePath))
