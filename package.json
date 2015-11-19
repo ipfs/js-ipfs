@@ -49,6 +49,7 @@
     "require-dir": "^0.3.0",
     "rimraf": "^2.4.3",
     "run-sequence": "^1.1.4",
+    "stream-http": "^2.0.2",
     "uglify-js": "^2.4.24",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
