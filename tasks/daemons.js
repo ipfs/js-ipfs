@@ -57,7 +57,14 @@ function startDisposableDaemons (callback) {
             throw err
           }
 
-          ipfsNodes[key].setConfig('API', '{"HTTPHeaders": {"Access-Control-Allow-Origin": ["*"]}}', err => {
+          const headers = {
+            HTTPHeaders: {
+              'Access-Control-Allow-Origin': ['*'],
+              'Access-Control-Allow-Headers': ['X-Stream-Output, X-Chunked-Output'],
+              'Access-Control-Expose-Headers': ['X-Stream-Output, X-Chunked-Output']
+            }
+          }
+          ipfsNodes[key].setConfig('API', JSON.stringify(headers), err => {
             if (err) {
               throw err
             }
