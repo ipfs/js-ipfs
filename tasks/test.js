@@ -1,19 +1,21 @@
-var gulp = require('gulp')
-var Server = require('karma').Server
-var $ = require('gulp-load-plugins')()
-var runSequence = require('run-sequence')
+'use strict'
+
+const gulp = require('gulp')
+const Server = require('karma').Server
+const $ = require('gulp-load-plugins')()
+const runSequence = require('run-sequence')
 
 require('./daemons')
 
-gulp.task('test', function (done) {
+gulp.task('test', done => {
   runSequence(
     'test:node',
-    // 'test:browser',
+    'test:browser',
     done
   )
 })
 
-gulp.task('test:node', function (done) {
+gulp.task('test:node', done => {
   runSequence(
     'daemons:start',
     'mocha',
@@ -22,7 +24,7 @@ gulp.task('test:node', function (done) {
   )
 })
 
-gulp.task('test:browser', function (done) {
+gulp.task('test:browser', done => {
   runSequence(
     'daemons:start',
     'karma',
@@ -31,12 +33,12 @@ gulp.task('test:browser', function (done) {
   )
 })
 
-gulp.task('mocha', function () {
+gulp.task('mocha', () => {
   return gulp.src('test/tests.js')
     .pipe($.mocha())
 })
 
-gulp.task('karma', function (done) {
+gulp.task('karma', done => {
   new Server({
     configFile: __dirname + '/../karma.conf.js',
     singleRun: true

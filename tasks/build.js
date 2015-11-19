@@ -1,3 +1,5 @@
+'use strict'
+
 const gulp = require('gulp')
 const $ = require('gulp-load-plugins')()
 const webpack = require('webpack-stream')
@@ -6,18 +8,18 @@ const runSequence = require('run-sequence')
 
 const config = require('./config')
 
-gulp.task('clean', function (done) {
+gulp.task('clean', done => {
   rimraf('./dist', done)
 })
 
-gulp.task('build:nonminified', function () {
+gulp.task('build:nonminified', () => {
   return gulp.src('src/index.js')
     .pipe(webpack(config.webpack.dev))
     .pipe($.size())
     .pipe(gulp.dest('dist/'))
 })
 
-gulp.task('build:minified', function () {
+gulp.task('build:minified', () => {
   config.webpack.prod.output.filename = 'ipfsapi.min.js'
 
   return gulp.src('src/index.js')
@@ -26,7 +28,7 @@ gulp.task('build:minified', function () {
     .pipe(gulp.dest('dist/'))
 })
 
-gulp.task('build', ['clean'], function (done) {
+gulp.task('build', ['clean'], done => {
   runSequence(
     'build:nonminified',
     'build:minified',

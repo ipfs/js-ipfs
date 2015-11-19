@@ -1,8 +1,8 @@
 'use strict'
 
-var ipfs = require('../src')('localhost', 5001)
+const ipfs = require('../src')('localhost', 5001)
 
-var hash = ['QmdbHK6gMiecyjjSoPnfJg6iKMF7v6E2NkoBgGpmyCoevh']
+const hash = ['QmdbHK6gMiecyjjSoPnfJg6iKMF7v6E2NkoBgGpmyCoevh']
 
 ipfs.ls(hash, function (err, res) {
   if (err || !res) return console.log(err)

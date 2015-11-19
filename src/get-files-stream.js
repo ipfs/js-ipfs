@@ -1,8 +1,10 @@
-var File = require('vinyl')
-var vinylfs = require('vinyl-fs-browser')
-var vmps = require('vinyl-multipart-stream')
-var stream = require('stream')
-var Merge = require('merge-stream')
+'use strict'
+
+const File = require('vinyl')
+const vinylfs = require('vinyl-fs-browser')
+const vmps = require('vinyl-multipart-stream')
+const stream = require('stream')
+const Merge = require('merge-stream')
 
 exports = module.exports = getFilesStream
 
@@ -10,17 +12,17 @@ function getFilesStream (files, opts) {
   if (!files) return null
 
   // merge all inputs into one stream
-  var adder = new Merge()
+  const adder = new Merge()
 
   // single stream for pushing directly
-  var single = new stream.PassThrough({objectMode: true})
+  const single = new stream.PassThrough({objectMode: true})
   adder.add(single)
 
-  for (var i = 0; i < files.length; i++) {
-    var file = files[i]
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i]
 
     if (typeof (file) === 'string') {
-      var srcOpts = {
+      const srcOpts = {
         buffer: false,
         stripBOM: false,
         followSymlinks: opts.followSymlinks != null ? opts.followSymlinks : true
@@ -53,7 +55,7 @@ function vinylFile (file) {
   }
 
   // let's try to make a vinyl file?
-  var f = {cwd: '/', base: '/', path: ''}
+  const f = {cwd: '/', base: '/', path: ''}
   if (file.contents && file.path) {
     // set the cwd + base, if there.
     f.path = file.path
@@ -78,7 +80,7 @@ function vinylContentsSafe (c) {
   if (typeof (c.pipe) === 'function') {
     // hey, looks like a stream. but vinyl won't detect it.
     // pipe it to a PassThrough, and use that
-    var s = new stream.PassThrough()
+    const s = new stream.PassThrough()
     return c.pipe(s)
   }
 
