@@ -1,7 +1,7 @@
 var multiaddr = require('multiaddr')
 var getConfig = require('./config')
 var getRequestAPI = require('./request-api')
-var request = require('request')
+var Wreck = require('wreck')
 
 exports = module.exports = IpfsAPI
 
@@ -65,13 +65,16 @@ function IpfsAPI (host_or_multiaddr, port) {
     }
 
     if (typeof files === 'string' && files.startsWith('http')) {
-      files = request.get({
-        url: files,
-        withCredentials: false
+      Wreck.request('GET', files, null, (err, res) => {
+        if (err) return cb(err)
+
+        requestAPI('add', null, opts, res, cb)
       })
+
+      return
     }
 
-    return requestAPI('add', null, opts, files, cb)
+    requestAPI('add', null, opts, files, cb)
   }
 
   self.cat = argCommand('cat')

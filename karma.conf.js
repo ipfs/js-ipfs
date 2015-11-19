@@ -1,9 +1,15 @@
+var webpackConfig = require('./tasks/config').webpack
+
 module.exports = function (config) {
-  if (!process.env.DEBUG) {
+  var reporters = ['progress']
+
+  if (process.env.TRAVIS) {
     if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_ACCESS_KEY) {
       console.log('Make sure the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables are set.')
       process.exit(1)
     }
+
+    reporters.push('saucelabs')
   }
 
   // Browsers to run on Sauce Labs
@@ -39,21 +45,19 @@ module.exports = function (config) {
 
   config.set({
     basePath: '',
-    frameworks: ['browserify', 'mocha'],
+    frameworks: ['mocha'],
     files: [
       'test/tests.js'
     ],
     exclude: [],
     preprocessors: {
-      'test/**/*.js': ['browserify']
+      'test/**/*.js': ['webpack']
     },
 
-    browserify: {
-      debug: true,
-      transform: [
-        'brfs',
-        ['babelify', {presets: ['es2015']}]
-      ]
+    webpack: webpackConfig.dev,
+
+    webpackMiddleware: {
+      noInfo: true
     },
 
     sauceLabs: {
@@ -65,13 +69,13 @@ module.exports = function (config) {
       }
     },
 
-    reporters: ['progress', 'saucelabs'],
+    reporters: reporters,
     port: 9876,
     colors: true,
     logLevel: process.env.DEBUG ? config.LOG_DEBUG : config.LOG_INFO,
     autoWatch: false,
     customLaunchers: customLaunchers,
-    browsers: process.env.DEBUG ? ['Chrome'] : Object.keys(customLaunchers),
+    browsers: process.env.TRAVIS ? Object.keys(customLaunchers) : ['Chrome'],
     singleRun: false,
     concurrency: 2,
     browserNoActivityTimeout: 600000
