@@ -1,7 +1,9 @@
-var gulp = require('gulp')
-var $ = require('gulp-load-plugins')()
+'use strict'
 
-gulp.task('lint', function () {
+const gulp = require('gulp')
+const $ = require('gulp-load-plugins')()
+
+gulp.task('lint', () => {
   return gulp.src([
     '*.js',
     'test/**/*.js',

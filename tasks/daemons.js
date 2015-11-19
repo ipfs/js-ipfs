@@ -1,29 +1,31 @@
-var gulp = require('gulp')
-var fs = require('fs')
+'use strict'
 
-var daemons
+const gulp = require('gulp')
+const fs = require('fs')
 
-gulp.task('daemons:start', function (done) {
-  startDisposableDaemons(function (d) {
+let daemons
+
+gulp.task('daemons:start', done => {
+  startDisposableDaemons(d => {
     daemons = d
     done()
   })
 })
 
-gulp.task('daemons:stop', function (done) {
-  stopDisposableDaemons(daemons, function () {
+gulp.task('daemons:stop', done => {
+  stopDisposableDaemons(daemons, () => {
     daemons = null
     done()
   })
 })
 
 function startDisposableDaemons (callback) {
-  var ipfsd = require('ipfsd-ctl')
+  const ipfsd = require('ipfsd-ctl')
 
-  var ipfsNodes = {} // a, b, c
-  var apiAddrs = {} // a, b, c
+  const ipfsNodes = {} // a, b, c
+  const apiAddrs = {} // a, b, c
 
-  var counter = 0
+  let counter = 0
   startIndependentNode(ipfsNodes, apiAddrs, 'a', finish)
   startIndependentNode(ipfsNodes, apiAddrs, 'b', finish)
   startIndependentNode(ipfsNodes, apiAddrs, 'c', finish)
@@ -37,7 +39,7 @@ function startDisposableDaemons (callback) {
   }
 
   function startIndependentNode (ipfsNodes, apiAddrs, key, cb) {
-    ipfsd.disposable(function (err, node) {
+    ipfsd.disposable((err, node) => {
       if (err) {
         throw err
       }
@@ -46,21 +48,21 @@ function startDisposableDaemons (callback) {
 
       console.log('  ipfs init done - (bootstrap and mdns off) - ' + key)
 
-      ipfsNodes[key].setConfig('Bootstrap', null, function (err) {
+      ipfsNodes[key].setConfig('Bootstrap', null, err => {
         if (err) {
           throw err
         }
-        ipfsNodes[key].setConfig('Discovery', '{}', function (err) {
+        ipfsNodes[key].setConfig('Discovery', '{}', err => {
           if (err) {
             throw err
           }
 
-          ipfsNodes[key].setConfig('API', '{"HTTPHeaders": {"Access-Control-Allow-Origin": ["*"]}}', function (err) {
+          ipfsNodes[key].setConfig('API', '{"HTTPHeaders": {"Access-Control-Allow-Origin": ["*"]}}', err => {
             if (err) {
               throw err
             }
 
-            ipfsNodes[key].startDaemon(function (err, ignore) {
+            ipfsNodes[key].startDaemon((err, ignore) => {
               if (err) {
                 throw err
               }
@@ -80,7 +82,7 @@ function stopDisposableDaemons (daemons, callback) {
   stopIPFSNode(daemons, 'b', finish)
   stopIPFSNode(daemons, 'c', finish)
 
-  var counter = 0
+  let counter = 0
   function finish () {
     counter++
     if (counter === 3) {
@@ -89,8 +91,8 @@ function stopDisposableDaemons (daemons, callback) {
   }
 
   function stopIPFSNode (daemons, key, cb) {
-    var nodeStopped
-    daemons[key].stopDaemon(function (err) {
+    let nodeStopped
+    daemons[key].stopDaemon(err => {
       if (err) {
         throw err
       }

@@ -1,20 +1,22 @@
-var multiaddr = require('multiaddr')
-var getConfig = require('./config')
-var getRequestAPI = require('./request-api')
-var Wreck = require('wreck')
+'use strict'
+
+const multiaddr = require('multiaddr')
+const getConfig = require('./config')
+const getRequestAPI = require('./request-api')
+const Wreck = require('wreck')
 
 exports = module.exports = IpfsAPI
 
 function IpfsAPI (host_or_multiaddr, port) {
-  var self = this
-  var config = getConfig()
+  const self = this
+  const config = getConfig()
 
   if (!(self instanceof IpfsAPI)) {
     return new IpfsAPI(host_or_multiaddr, port)
   }
 
   try {
-    var maddr = multiaddr(host_or_multiaddr).nodeAddress()
+    const maddr = multiaddr(host_or_multiaddr).nodeAddress()
     config.host = maddr.address
     config.port = maddr.port
   } catch (e) {
@@ -25,17 +27,17 @@ function IpfsAPI (host_or_multiaddr, port) {
   // autoconfigure in browser
   if (!config.host &&
     typeof window !== 'undefined') {
-    var split = window.location.host.split(':')
+    const split = window.location.host.split(':')
     config.host = split[0]
     config.port = split[1]
   }
 
-  var requestAPI = getRequestAPI(config)
+  const requestAPI = getRequestAPI(config)
 
   // -- Internal
 
   function command (name) {
-    return function (opts, cb) {
+    return (opts, cb) => {
       if (typeof (opts) === 'function') {
         cb = opts
         opts = {}
@@ -45,7 +47,7 @@ function IpfsAPI (host_or_multiaddr, port) {
   }
 
   function argCommand (name) {
-    return function (arg, opts, cb) {
+    return (arg, opts, cb) => {
       if (typeof (opts) === 'function') {
         cb = opts
         opts = {}
@@ -58,7 +60,7 @@ function IpfsAPI (host_or_multiaddr, port) {
 
   self.send = requestAPI
 
-  self.add = function (files, opts, cb) {
+  self.add = (files, opts, cb) => {
     if (typeof (opts) === 'function' && cb === undefined) {
       cb = opts
       opts = {}
@@ -82,17 +84,17 @@ function IpfsAPI (host_or_multiaddr, port) {
 
   self.config = {
     get: argCommand('config'),
-    set: function (key, value, opts, cb) {
+    set (key, value, opts, cb) {
       if (typeof (opts) === 'function') {
         cb = opts
         opts = {}
       }
       return requestAPI('config', [key, value], opts, null, cb)
     },
-    show: function (cb) {
+    show (cb) {
       return requestAPI('config/show', null, null, null, true, cb)
     },
-    replace: function (file, cb) {
+    replace (file, cb) {
       return requestAPI('config/replace', null, null, file, cb)
     }
   }
@@ -106,7 +108,7 @@ function IpfsAPI (host_or_multiaddr, port) {
   self.version = command('version')
   self.commands = command('commands')
 
-  self.mount = function (ipfs, ipns, cb) {
+  self.mount = (ipfs, ipns, cb) => {
     if (typeof ipfs === 'function') {
       cb = ipfs
       ipfs = null
@@ -114,7 +116,7 @@ function IpfsAPI (host_or_multiaddr, port) {
       cb = ipns
       ipns = null
     }
-    var opts = {}
+    const opts = {}
     if (ipfs) opts.f = ipfs
     if (ipns) opts.n = ipns
     return requestAPI('mount', null, opts, null, cb)
@@ -126,7 +128,7 @@ function IpfsAPI (host_or_multiaddr, port) {
 
   self.block = {
     get: argCommand('block/get'),
-    put: function (file, cb) {
+    put (file, cb) {
       if (Array.isArray(file)) {
         return cb(null, new Error('block.put() only accepts 1 file'))
       }
@@ -136,7 +138,7 @@ function IpfsAPI (host_or_multiaddr, port) {
 
   self.object = {
     get: argCommand('object/get'),
-    put: function (file, encoding, cb) {
+    put (file, encoding, cb) {
       if (typeof encoding === 'function') {
         return cb(null, new Error("Must specify an object encoding ('json' or 'protobuf')"))
       }
@@ -145,7 +147,7 @@ function IpfsAPI (host_or_multiaddr, port) {
     data: argCommand('object/data'),
     stat: argCommand('object/stat'),
     links: argCommand('object/links'),
-    patch: function (file, opts, cb) {
+    patch (file, opts, cb) {
       return requestAPI('object/patch', [file].concat(opts), null, null, cb)
     }
   }
@@ -155,14 +157,14 @@ function IpfsAPI (host_or_multiaddr, port) {
     connect: argCommand('swarm/connect')
   }
 
-  self.ping = function (id, cb) {
+  self.ping = (id, cb) => {
     return requestAPI('ping', id, { n: 1 }, null, function (err, res) {
       if (err) return cb(err, null)
       cb(null, res[1])
     })
   }
 
-  self.id = function (id, cb) {
+  self.id = (id, cb) => {
     if (typeof id === 'function') {
       cb = id
       id = null
@@ -171,7 +173,7 @@ function IpfsAPI (host_or_multiaddr, port) {
   }
 
   self.pin = {
-    add: function (hash, opts, cb) {
+    add (hash, opts, cb) {
       if (typeof opts === 'function') {
         cb = opts
         opts = null
@@ -179,7 +181,7 @@ function IpfsAPI (host_or_multiaddr, port) {
 
       requestAPI('pin/add', hash, opts, null, cb)
     },
-    remove: function (hash, opts, cb) {
+    remove (hash, opts, cb) {
       if (typeof opts === 'function') {
         cb = opts
         opts = null
@@ -187,19 +189,19 @@ function IpfsAPI (host_or_multiaddr, port) {
 
       requestAPI('pin/rm', hash, opts, null, cb)
     },
-    list: function (type, cb) {
+    list (type, cb) {
       if (typeof type === 'function') {
         cb = type
         type = null
       }
-      var opts = null
+      let opts = null
       if (type) opts = { type: type }
       return requestAPI('pin/ls', null, opts, null, cb)
     }
   }
 
   self.log = {
-    tail: function (cb) {
+    tail (cb) {
       return requestAPI('log/tail', null, {enc: 'text'}, null, true, cb)
     }
   }
@@ -217,13 +219,13 @@ function IpfsAPI (host_or_multiaddr, port) {
   self.dht = {
     findprovs: argCommand('dht/findprovs'),
 
-    get: function (key, opts, cb) {
+    get (key, opts, cb) {
       if (typeof (opts) === 'function' && !cb) {
         cb = opts
         opts = null
       }
 
-      return requestAPI('dht/get', key, opts, null, function (err, res) {
+      return requestAPI('dht/get', key, opts, null, (err, res) => {
         if (err) return cb(err)
         if (!res) return cb(new Error('empty response'))
         if (res.length === 0) return cb(new Error('no value returned for key'))
@@ -241,7 +243,7 @@ function IpfsAPI (host_or_multiaddr, port) {
       })
     },
 
-    put: function (key, value, opts, cb) {
+    put (key, value, opts, cb) {
       if (typeof (opts) === 'function' && !cb) {
         cb = opts
         opts = null

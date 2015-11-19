@@ -8,7 +8,7 @@ const isNode = !global.window
 
 // -- Internal
 
-function onEnd (buffer, cb) {
+function onRes (buffer, cb) {
   return (err, res) => {
     if (err) {
       return cb(err)
@@ -18,7 +18,7 @@ function onEnd (buffer, cb) {
     const chunkedObjects = !!res.headers['x-chunked-output']
 
     if (res.statusCode >= 400 || !res.statusCode) {
-      var error = new Error(`Server responded with ${res.statusCode}`)
+      const error = new Error(`Server responded with ${res.statusCode}`)
 
       Wreck.read(res, {json: true}, (err, payload) => {
         if (err) {
@@ -106,7 +106,7 @@ function requestAPI (config, path, args, qs, files, buffer, cb) {
     opts.payload = stream
   }
 
-  Wreck.request(opts.method, opts.uri, opts, onEnd(buffer, cb))
+  Wreck.request(opts.method, opts.uri, opts, onRes(buffer, cb))
 }
 
 // -- Interface

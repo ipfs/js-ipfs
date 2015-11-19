@@ -1,7 +1,7 @@
-var webpackConfig = require('./tasks/config').webpack
+const webpackConfig = require('./tasks/config').webpack
 
 module.exports = function (config) {
-  var reporters = ['progress']
+  const reporters = ['progress']
 
   if (process.env.TRAVIS) {
     if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_ACCESS_KEY) {
@@ -14,7 +14,7 @@ module.exports = function (config) {
 
   // Browsers to run on Sauce Labs
   // Check out https://saucelabs.com/platforms for all browser/OS combos
-  var customLaunchers = {
+  const customLaunchers = {
     'SL_Chrome': {
       base: 'SauceLabs',
       platform: 'OS X 10.11',

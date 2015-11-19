@@ -1,8 +1,8 @@
 'use strict'
 
-var ipfs = require('../src')('localhost', 5001)
+const ipfs = require('../src')('localhost', 5001)
 
-var hash = [
+const hash = [
   'QmdFyxZXsFiP4csgfM5uPu99AvFiKH62CSPDw5TP92nr7w',
   'QmY9cxiHqTFoWamkQVkpmmqzBrY3hCBEL2XNu3NtX74Fuu'
 ]

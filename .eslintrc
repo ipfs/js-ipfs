@@ -1,4 +1,7 @@
 {
   "parser": "babel-eslint",
-  "extends": "standard"
+  "extends": "standard",
+  "rules": {
+    "no-var": 2
+  }
 }

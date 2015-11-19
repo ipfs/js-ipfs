@@ -1,9 +1,11 @@
-var pkg = require('../package.json')
+'use strict'
 
-exports = module.exports = function getConfig () {
+const pkg = require('../package.json')
+
+exports = module.exports = () => {
   return {
     'api-path': '/api/v0/',
-    'user-agent': '/node-' + pkg.name + '/' + pkg.version + '/',
+    'user-agent': `/node-$pkg.name}/${pkg.version}/`,
     'host': 'localhost',
     'port': '5001'
   }
