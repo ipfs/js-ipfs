@@ -3,14 +3,14 @@ const webpackConfig = require('./tasks/config').webpack
 module.exports = function (config) {
   const reporters = ['progress']
 
-  if (process.env.TRAVIS) {
-    if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_ACCESS_KEY) {
-      console.log('Make sure the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables are set.')
-      process.exit(1)
-    }
+  // if (process.env.TRAVIS) {
+  //   if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_ACCESS_KEY) {
+  //     console.log('Make sure the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables are set.')
+  //     process.exit(1)
+  //   }
 
-    reporters.push('saucelabs')
-  }
+  //   reporters.push('saucelabs')
+  // }
 
   // Browsers to run on Sauce Labs
   // Check out https://saucelabs.com/platforms for all browser/OS combos
@@ -75,7 +75,7 @@ module.exports = function (config) {
     logLevel: process.env.DEBUG ? config.LOG_DEBUG : config.LOG_INFO,
     autoWatch: false,
     customLaunchers: customLaunchers,
-    browsers: process.env.TRAVIS ? Object.keys(customLaunchers) : ['Chrome'],
+    browsers: process.env.TRAVIS ? ['Firefox'] /* Object.keys(customLaunchers)*/ : ['Chrome'],
     singleRun: false,
     concurrency: 2,
     browserNoActivityTimeout: 600000
