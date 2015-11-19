@@ -17,15 +17,6 @@ const shared = {
   module: {
     loaders: [{
       test: /\.js$/,
-      exclude: /node_modules/,
-      loader: 'babel',
-      query: {
-        presets: ['es2015'],
-        plugins: ['transform-runtime']
-      }
-    }, {
-      test: /\.js$/,
-      include: /node_modules\/(hoek|qs|wreck)/,
       loader: 'babel',
       query: {
         presets: ['es2015'],
