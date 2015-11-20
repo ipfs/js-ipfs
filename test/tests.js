@@ -619,15 +619,18 @@ describe('IPFS Node.js API wrapper tests', () => {
   })
 
   describe('.log', function () {
-    // TODO news 0.3.9 ndjson stuff
-    it.skip('.log.tail', function (done) {
+    it('.log.tail', function (done) {
+      this.timeout(10000)
+
       apiClients['a'].log.tail((err, res) => {
         if (err) {
           throw err
         }
-
-        console.log('->', res)
-        done()
+        res.once('data', obj => {
+          assert(obj)
+          assert.equal(typeof obj, 'object')
+          done()
+        })
       })
     })
   })
