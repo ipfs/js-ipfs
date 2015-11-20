@@ -368,6 +368,18 @@ describe('IPFS Node.js API wrapper tests', () => {
         done()
       })
     })
+
+    it('.diag.sys', function (done) {
+      apiClients['a'].diag.sys((err, res) => {
+        if (err) {
+          throw err
+        }
+        assert(res)
+        assert(res.memory)
+        assert(res.diskinfo)
+        done()
+      })
+    })
   })
 
   describe('.block', function () {

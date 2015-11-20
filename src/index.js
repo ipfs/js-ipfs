@@ -123,7 +123,8 @@ function IpfsAPI (host_or_multiaddr, port) {
   }
 
   self.diag = {
-    net: command('diag/net')
+    net: command('diag/net'),
+    sys: command('diag/sys')
   }
 
   self.block = {
