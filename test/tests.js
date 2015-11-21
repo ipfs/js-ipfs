@@ -12,11 +12,14 @@ const isNode = !global.window
 
 const testfilePath = __dirname + '/testfile.txt'
 let testfile
+let testfileBig
 
 if (isNode) {
   testfile = require('fs').readFileSync(__dirname + '/testfile.txt')
+  testfileBig = require('fs').readFileSync(__dirname + '/100mb.random')
 } else {
   testfile = require('raw!./testfile.txt')
+  testfileBig = require('raw!./100mb.random')
 }
 
 describe('IPFS Node.js API wrapper tests', () => {
@@ -116,8 +119,22 @@ describe('IPFS Node.js API wrapper tests', () => {
         if (err) throw err
 
         // assert.equal(res.length, 1)
-        const added = res[0] != null ? res[0] : res
+        const added = res[0] !== null ? res[0] : res
         assert.equal(added.Hash, 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+        done()
+      })
+    })
+
+    it('add BIG buffer', function (done) {
+      this.timeout(10000)
+
+      let buf = new Buffer(testfileBig)
+      apiClients['a'].add(buf, (err, res) => {
+        if (err) throw err
+
+        // assert.equal(res.length, 1)
+        const added = res[0] !== null ? res[0] : res
+        assert.equal(added.Hash, 'Qmaw8jKK2vdd1gxiYqfyXJgVwfibiXiH3H81eVViJRXMJj')
         done()
       })
     })
@@ -199,6 +216,25 @@ describe('IPFS Node.js API wrapper tests', () => {
           .on('data', data => buf += data)
           .on('end', () => {
             assert.equal(buf, testfile)
+            done()
+          })
+      })
+    })
+
+    it('cat BIG file', function (done) {
+      this.timeout(10000)
+
+      apiClients['a'].cat('Qmaw8jKK2vdd1gxiYqfyXJgVwfibiXiH3H81eVViJRXMJj', (err, res) => {
+        if (err) {
+          throw err
+        }
+
+        let buf = ''
+        res
+          .on('error', err => { throw err })
+          .on('data', data => buf += data)
+          .on('end', () => {
+            assert.equal(buf, testfileBig)
             done()
           })
       })
