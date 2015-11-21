@@ -30,6 +30,8 @@ function onRes (buffer, cb) {
       })
     }
 
+    console.log('stream:', stream, ' chunked:', chunkedObjects)
+
     if (stream && !buffer) return cb(null, res)
 
     if (chunkedObjects) {
