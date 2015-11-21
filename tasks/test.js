@@ -4,8 +4,6 @@ const gulp = require('gulp')
 const Server = require('karma').Server
 const $ = require('gulp-load-plugins')()
 const runSequence = require('run-sequence')
-const parseKarmaConfig = require('karma/lib/config').parseConfig
-const karmaConfig = parseKarmaConfig(__dirname + '/../karma.conf.js', {})
 
 require('./daemons')
 
@@ -36,9 +34,7 @@ gulp.task('test:browser', done => {
 })
 
 gulp.task('mocha', () => {
-  return gulp.src(karmaConfig.files.map(function (fileObj) {
-    return fileObj.pattern
-  }))
+  return gulp.src('test/*.spec.js')
     .pipe($.mocha())
 })
 
