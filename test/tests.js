@@ -193,13 +193,6 @@ describe('IPFS Node.js API wrapper tests', () => {
           throw err
         }
 
-        if (!res.on) {
-          // Just  a string
-          assert.equal(res.toString(), testfile)
-          done()
-          return
-        }
-
         let buf = ''
         res
           .on('error', err => { throw err })
@@ -313,7 +306,7 @@ describe('IPFS Node.js API wrapper tests', () => {
           throw err
         }
 
-        assert.equal(res, '')
+        assert.equal(res, null)
         done()
       })
     })
@@ -403,13 +396,6 @@ describe('IPFS Node.js API wrapper tests', () => {
       apiClients['a'].block.get(blorbKey, (err, res) => {
         if (err) throw err
 
-        if (!res.on) {
-          // Just  a string
-          assert.equal(res.toString(), 'blorb')
-          done()
-          return
-        }
-
         let buf = ''
         res
           .on('data', function (data) { buf += data })
@@ -453,13 +439,6 @@ describe('IPFS Node.js API wrapper tests', () => {
       this.timeout(10000)
       apiClients['a'].object.data(testObjectHash, (err, res) => {
         if (err) throw err
-
-        if (!res.on) {
-          // Just  a string
-          assert.equal(res.toString(), 'testdata')
-          done()
-          return
-        }
 
         let buf = ''
         res
@@ -741,6 +720,8 @@ describe('IPFS Node.js API wrapper tests', () => {
           throw err
         }
 
+        assert.equal(typeof res, 'object')
+
         return done()
 
         // non ipns or pk hashes fail to fetch, known bug
@@ -761,6 +742,8 @@ describe('IPFS Node.js API wrapper tests', () => {
         if (err) {
           throw err
         }
+
+        assert.equal(typeof res, 'object')
         assert(res)
         done()
       })

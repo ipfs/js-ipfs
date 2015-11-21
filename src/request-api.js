@@ -16,6 +16,7 @@ function onRes (buffer, cb) {
 
     const stream = !!res.headers['x-stream-output']
     const chunkedObjects = !!res.headers['x-chunked-output']
+    const isJson = res.headers['content-type'] === 'application/json'
 
     if (res.statusCode >= 400 || !res.statusCode) {
       const error = new Error(`Server responded with ${res.statusCode}`)
@@ -33,24 +34,18 @@ function onRes (buffer, cb) {
 
     if (chunkedObjects) {
       const parsed = []
-      res.on('data', chunk => parsed.push(JSON.parse(chunk)))
+      res.on('data', chunk => {
+        try {
+          parsed.push(JSON.parse(chunk))
+        } catch (err) {
+          // Browser quirks emit more than needed sometimes
+        }
+      })
       res.on('end', () => cb(null, parsed))
       return
     }
 
-    Wreck.read(res, null, (err, payload) => {
-      if (err) return cb(err)
-
-      let parsed
-
-      try {
-        parsed = JSON.parse(payload.toString())
-      } catch (err2) {
-        parsed = payload.toString()
-      }
-
-      cb(null, parsed)
-    })
+    Wreck.read(res, {json: isJson}, cb)
   }
 }
 
