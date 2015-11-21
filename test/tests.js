@@ -19,7 +19,8 @@ if (isNode) {
   testfileBig = require('fs').readFileSync(__dirname + '/100mb.random')
 } else {
   testfile = require('raw!./testfile.txt')
-  testfileBig = require('raw!./100mb.random')
+  // browser goes nuts with a 100mb in memory
+  // testfileBig = require('raw!./100mb.random')
 }
 
 describe('IPFS Node.js API wrapper tests', () => {
@@ -126,6 +127,9 @@ describe('IPFS Node.js API wrapper tests', () => {
     })
 
     it('add BIG buffer', function (done) {
+      if (!isNode) {
+        return done()
+      }
       this.timeout(10000)
 
       let buf = new Buffer(testfileBig)
@@ -222,6 +226,9 @@ describe('IPFS Node.js API wrapper tests', () => {
     })
 
     it('cat BIG file', function (done) {
+      if (!isNode) {
+        return done()
+      }
       this.timeout(10000)
 
       apiClients['a'].cat('Qmaw8jKK2vdd1gxiYqfyXJgVwfibiXiH3H81eVViJRXMJj', (err, res) => {
