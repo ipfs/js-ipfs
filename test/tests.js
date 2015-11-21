@@ -3,6 +3,7 @@
 /* global describe it before */
 
 const ipfsAPI = require('../src/index.js')
+const streamEqual = require('stream-equal')
 const assert = require('assert')
 const path = require('path')
 const File = require('vinyl')
@@ -16,7 +17,8 @@ let testfileBig
 
 if (isNode) {
   testfile = require('fs').readFileSync(__dirname + '/testfile.txt')
-  testfileBig = require('fs').readFileSync(__dirname + '/15mb.random')
+  testfileBig = require('fs').createReadStream(__dirname + '/15mb.random', { bufferSize: 128 })
+  // testfileBig = require('fs').createReadStream(__dirname + '/100mb.random', { bufferSize: 128 })
 } else {
   testfile = require('raw!./testfile.txt')
   // browser goes nuts with a 100mb in memory
@@ -132,8 +134,7 @@ describe('IPFS Node.js API wrapper tests', () => {
       }
       this.timeout(10000)
 
-      let buf = new Buffer(testfileBig)
-      apiClients['a'].add(buf, (err, res) => {
+      apiClients['a'].add(testfileBig, (err, res) => {
         if (err) throw err
 
         // assert.equal(res.length, 1)
@@ -229,22 +230,20 @@ describe('IPFS Node.js API wrapper tests', () => {
       if (!isNode) {
         return done()
       }
-      this.timeout(10000)
+      this.timeout(60000)
 
       apiClients['a'].cat('Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq', (err, res) => {
         if (err) {
           throw err
         }
-
-        let buf = ''
-        res
-          .on('error', err => { throw err })
-          .on('data', data => buf += data)
-          .on('end', () => {
-            // assert.equal(buf, testfileBig)
-            assert.equal(buf.length, testfileBig.length)
-            done()
-          })
+        
+        // Do not blow out the memory of nodejs :)
+        streamEqual(res, testfileBig, (err, equal) => {
+          console.log('compare done', err, equal)
+          if (err) throw err
+          assert(equal)
+          done()
+        })
       })
     })
   })

@@ -8,6 +8,18 @@ const isNode = !global.window
 
 // -- Internal
 
+function parseChunkedJson (res, cb) {
+  const parsed = []
+  res.on('data', chunk => {
+    try {
+      parsed.push(JSON.parse(chunk))
+    } catch (err) {
+      // Browser quirks emit more than needed sometimes
+    }
+  })
+  res.on('end', () => cb(null, parsed))
+}
+
 function onRes (buffer, cb) {
   return (err, res) => {
     if (err) {
@@ -35,16 +47,9 @@ function onRes (buffer, cb) {
     if (stream && !buffer) return cb(null, res)
 
     if (chunkedObjects) {
-      const parsed = []
-      res.on('data', chunk => {
-        try {
-          parsed.push(JSON.parse(chunk))
-        } catch (err) {
-          // Browser quirks emit more than needed sometimes
-        }
-      })
-      res.on('end', () => cb(null, parsed))
-      return
+      if (isJson) return parseChunkedJson(res, cb)
+
+      return Wreck.read(res, null, cb)
     }
 
     Wreck.read(res, {json: isJson}, cb)
