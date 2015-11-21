@@ -22,7 +22,13 @@ $ npm install --save ipfs-api
 var ipfsAPI = require('ipfs-api')
 
 // connect to ipfs daemon API server
-var ipfs = ipfsAPI('localhost', '5001') // leaving out the arguments will default to these values
+var ipfs = ipfsAPI('localhost', '5001', {protocol: 'http'}) // leaving out the arguments will default to these values
+
+// or connect with multiaddr
+var ipfs = ipfsAPI('/ip4/127.0.0.1/tcp/5001')
+
+// or using options
+var ipfs = ipfsAPI({host: 'localhost', port: '5001', procotol: 'http'})
 ```
 
 ### In the Browser through browserify
