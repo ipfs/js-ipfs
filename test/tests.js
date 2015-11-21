@@ -3,6 +3,7 @@
 /* global describe it before */
 
 const ipfsAPI = require('../src/index.js')
+const streamEqual = require('stream-equal')
 const assert = require('assert')
 const path = require('path')
 const File = require('vinyl')
@@ -12,11 +13,16 @@ const isNode = !global.window
 
 const testfilePath = __dirname + '/testfile.txt'
 let testfile
+let testfileBig
 
 if (isNode) {
   testfile = require('fs').readFileSync(__dirname + '/testfile.txt')
+  testfileBig = require('fs').createReadStream(__dirname + '/15mb.random', { bufferSize: 128 })
+  // testfileBig = require('fs').createReadStream(__dirname + '/100mb.random', { bufferSize: 128 })
 } else {
   testfile = require('raw!./testfile.txt')
+  // browser goes nuts with a 100mb in memory
+  // testfileBig = require('raw!./100mb.random')
 }
 
 describe('IPFS Node.js API wrapper tests', () => {
@@ -116,8 +122,24 @@ describe('IPFS Node.js API wrapper tests', () => {
         if (err) throw err
 
         // assert.equal(res.length, 1)
-        const added = res[0] != null ? res[0] : res
+        const added = res[0] !== null ? res[0] : res
         assert.equal(added.Hash, 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+        done()
+      })
+    })
+
+    it('add BIG buffer', function (done) {
+      if (!isNode) {
+        return done()
+      }
+      this.timeout(10000)
+
+      apiClients['a'].add(testfileBig, (err, res) => {
+        if (err) throw err
+
+        // assert.equal(res.length, 1)
+        const added = res[0] !== null ? res[0] : res
+        assert.equal(added.Hash, 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq')
         done()
       })
     })
@@ -201,6 +223,28 @@ describe('IPFS Node.js API wrapper tests', () => {
             assert.equal(buf, testfile)
             done()
           })
+      })
+    })
+
+    it('cat BIG file', function (done) {
+      if (!isNode) {
+        return done()
+      }
+      this.timeout(1000000)
+
+      apiClients['a'].cat('Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq', (err, res) => {
+        if (err) {
+          throw err
+        }
+
+        testfileBig = require('fs').createReadStream(__dirname + '/15mb.random', { bufferSize: 128 })
+
+        // Do not blow out the memory of nodejs :)
+        streamEqual(res, testfileBig, (err, equal) => {
+          if (err) throw err
+          assert(equal)
+          done()
+        })
       })
     })
   })
