@@ -1,5 +1,10 @@
 {
   "env": {
     "mocha": true
+  },
+  "globals": {
+    "apiClients": true,
+    "isNode": true,
+    "assert": true
   }
 }

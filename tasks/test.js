@@ -34,7 +34,10 @@ gulp.task('test:browser', done => {
 })
 
 gulp.task('mocha', () => {
-  return gulp.src('test/*.spec.js')
+  return gulp.src([
+    'test/setup.js',
+    'test/**/*.spec.js'
+  ])
     .pipe($.mocha())
 })
 
