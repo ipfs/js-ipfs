@@ -230,16 +230,17 @@ describe('IPFS Node.js API wrapper tests', () => {
       if (!isNode) {
         return done()
       }
-      this.timeout(60000)
+      this.timeout(1000000)
 
       apiClients['a'].cat('Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq', (err, res) => {
         if (err) {
           throw err
         }
 
+        testfileBig = require('fs').createReadStream(__dirname + '/15mb.random', { bufferSize: 128 })
+
         // Do not blow out the memory of nodejs :)
         streamEqual(res, testfileBig, (err, equal) => {
-          console.log('compare done', err, equal)
           if (err) throw err
           assert(equal)
           done()
