@@ -236,7 +236,7 @@ describe('IPFS Node.js API wrapper tests', () => {
         if (err) {
           throw err
         }
-        
+
         // Do not blow out the memory of nodejs :)
         streamEqual(res, testfileBig, (err, equal) => {
           console.log('compare done', err, equal)
