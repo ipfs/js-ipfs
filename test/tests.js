@@ -620,7 +620,7 @@ describe('IPFS Node.js API wrapper tests', () => {
 
   describe('.log', function () {
     it('.log.tail', function (done) {
-      this.timeout(10000)
+      this.timeout(20000)
 
       apiClients['a'].log.tail((err, res) => {
         if (err) {
