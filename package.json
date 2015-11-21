@@ -7,6 +7,7 @@
     "merge-stream": "^1.0.0",
     "multiaddr": "^1.0.0",
     "multipart-stream": "^2.0.0",
+    "ndjson": "^1.4.3",
     "qs": "^6.0.0",
     "vinyl": "^1.1.0",
     "vinyl-fs-browser": "^2.1.1-1",

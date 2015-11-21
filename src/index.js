@@ -4,6 +4,7 @@ const multiaddr = require('multiaddr')
 const getConfig = require('./config')
 const getRequestAPI = require('./request-api')
 const Wreck = require('wreck')
+const ndjson = require('ndjson')
 
 exports = module.exports = IpfsAPI
 
@@ -203,7 +204,10 @@ function IpfsAPI (host_or_multiaddr, port) {
 
   self.log = {
     tail (cb) {
-      return requestAPI('log/tail', null, {enc: 'text'}, null, true, cb)
+      requestAPI('log/tail', null, {}, null, false, (err, res) => {
+        if (err) return cb(err)
+        cb(null, res.pipe(ndjson.parse()))
+      })
     }
   }
 
