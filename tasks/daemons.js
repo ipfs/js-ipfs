@@ -60,6 +60,7 @@ function startDisposableDaemons (callback) {
           const headers = {
             HTTPHeaders: {
               'Access-Control-Allow-Origin': ['*'],
+              // TODO: When ipfs/go-ipfs#1979 is merged drop these
               'Access-Control-Allow-Headers': ['X-Stream-Output, X-Chunked-Output'],
               'Access-Control-Expose-Headers': ['X-Stream-Output, X-Chunked-Output']
             }
