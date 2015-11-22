@@ -1,7 +1,7 @@
 const webpackConfig = require('./tasks/config').webpack
 
 module.exports = function (config) {
-  const reporters = ['progress']
+  const reporters = ['mocha']
 
   // if (process.env.TRAVIS) {
   //   if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_ACCESS_KEY) {
@@ -47,7 +47,8 @@ module.exports = function (config) {
     basePath: '',
     frameworks: ['mocha'],
     files: [
-      'test/*.spec.js'
+      'test/setup.js',
+      'test/**/*.spec.js'
     ],
     exclude: [],
     preprocessors: {
