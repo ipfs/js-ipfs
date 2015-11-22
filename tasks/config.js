@@ -40,7 +40,8 @@ const shared = {
     net: '{}',
     fs: '{}',
     tls: '{}',
-    console: '{}'
+    console: '{}',
+    'require-dir': '{}'
   }
 }
 
