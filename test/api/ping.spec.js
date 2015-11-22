@@ -12,7 +12,7 @@ describe('.ping', function () {
           throw err
         }
         // TODO: remove before merge
-        console.log(err, res)
+        console.log(' ping ->', err, res)
         assert(res)
         assert(res.Success)
         done()
