@@ -2,7 +2,7 @@
 
 describe('.log', function () {
   it('.log.tail', function (done) {
-    this.timeout(20000)
+    this.timeout(60000)
 
     apiClients['a'].log.tail((err, res) => {
       if (err) {

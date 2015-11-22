@@ -11,6 +11,8 @@ describe('.ping', function () {
         if (err) {
           throw err
         }
+        // TODO: remove before merge
+        console.log(err, res)
         assert(res)
         assert(res.Success)
         done()
