@@ -9,6 +9,7 @@ describe('.refs', function () {
     }
 
     this.timeout(10000)
+
     apiClients['a'].refs(folder, {'format': '<src> <dst> <linkname>'}, (err, objs) => {
       if (err) {
         throw err
