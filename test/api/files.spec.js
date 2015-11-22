@@ -1,7 +1,6 @@
 'use strict'
 
 let testfile
-let testfileBig
 
 if (isNode) {
   testfile = require('fs').readFileSync(__dirname + '/../testfile.txt')
@@ -27,12 +26,12 @@ describe('.files', function () {
 
     apiClients['a'].files
       .cp(['/ipfs/Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', '/test-folder/test-file'], function (err) {
-      assert(!err)
-      if (err) {
-        return done()
-      }
-      done()
-    })
+        assert(!err)
+        if (err) {
+          return done()
+        }
+        done()
+      })
   })
 
   it('files.ls', function (done) {
@@ -74,7 +73,7 @@ describe('.files', function () {
 
     apiClients['a'].files.read('/test-folder/test-file', function (err, stream) {
       if (err) throw err
-      var buf = ''
+      let buf = ''
       stream
         .on('error', function (err) { throw err })
         .on('data', function (data) { buf += data })
@@ -91,8 +90,7 @@ describe('.files', function () {
     this.timeout(20000)
 
     apiClients['a'].files.rm('/test-folder', { 'recursive': true }, function (err) {
-      // files API likes to return 500 when removing
-      if (err) {}
+      assert(!err)
       done()
     })
   })

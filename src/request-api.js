@@ -28,10 +28,9 @@ function onRes (buffer, cb) {
     const isJson = res.headers['content-type'] === 'application/json'
 
     if (res.statusCode >= 400 || !res.statusCode) {
-      const error = new Error(`Server responded with ${res.statusCode}`)
+      let error = new Error(`Server responded with ${res.statusCode}`)
 
       Wreck.read(res, {json: true}, (err, payload) => {
-        console.log('WRECK')
         if (err) {
           return cb(err)
         }
