@@ -48,7 +48,6 @@ module.exports = function (config) {
     frameworks: ['mocha'],
     files: [
       'test/setup.js',
-      'test/nodes.spec.js',
       'test/**/*.spec.js'
     ],
     exclude: [],
