@@ -47,7 +47,7 @@ module.exports = function (config) {
     basePath: '',
     frameworks: ['mocha'],
     files: [
-      'test/tests.js'
+      'test/*.spec.js'
     ],
     exclude: [],
     preprocessors: {

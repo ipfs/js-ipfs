@@ -89,7 +89,7 @@ function requestAPI (config, path, args, qs, files, buffer, cb) {
 
   const opts = {
     method: files ? 'POST' : 'GET',
-    uri: `http://${config.host}:${config.port}${config['api-path']}${path}?${Qs.stringify(qs, {arrayFormat: 'repeat'})}`,
+    uri: `${config.protocol}://${config.host}:${config.port}${config['api-path']}${path}?${Qs.stringify(qs, {arrayFormat: 'repeat'})}`,
     headers: {}
   }
 

@@ -8,12 +8,12 @@ const ndjson = require('ndjson')
 
 exports = module.exports = IpfsAPI
 
-function IpfsAPI (host_or_multiaddr, port) {
+function IpfsAPI (host_or_multiaddr, port, opts) {
   const self = this
   const config = getConfig()
 
   if (!(self instanceof IpfsAPI)) {
-    return new IpfsAPI(host_or_multiaddr, port)
+    return new IpfsAPI(host_or_multiaddr, port, opts)
   }
 
   try {
@@ -21,9 +21,19 @@ function IpfsAPI (host_or_multiaddr, port) {
     config.host = maddr.address
     config.port = maddr.port
   } catch (e) {
-    config.host = host_or_multiaddr
-    config.port = port || config.port
+    if (typeof host_or_multiaddr === 'string') {
+      config.host = host_or_multiaddr
+      config.port = port && typeof port !== 'object' ? port : config.port
+    }
   }
+
+  let lastIndex = arguments.length
+  while (!opts && lastIndex-- > 0) {
+    opts = arguments[lastIndex]
+    if (opts) break
+  }
+
+  Object.assign(config, opts)
 
   // autoconfigure in browser
   if (!config.host &&
