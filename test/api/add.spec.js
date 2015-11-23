@@ -52,8 +52,8 @@ describe('.add', function () {
     apiClients['a'].add(buf, (err, res) => {
       if (err) throw err
 
-      // assert.equal(res.length, 1)
-      const added = res[0] !== null ? res[0] : res
+      assert.equal(res.length, 1)
+      const added = res[0]
       assert.equal(added.Hash, 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
       done()
     })
@@ -68,8 +68,8 @@ describe('.add', function () {
     apiClients['a'].add(testfileBig, (err, res) => {
       if (err) throw err
 
-      // assert.equal(res.length, 1)
-      const added = res[0] !== null ? res[0] : res
+      assert.equal(res.length, 1)
+      const added = res[0]
       assert.equal(added.Hash, 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq')
       done()
     })
