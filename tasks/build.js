@@ -13,6 +13,8 @@ gulp.task('clean', done => {
 })
 
 gulp.task('build:nonminified', () => {
+  config.webpack.dev.output.filename = 'ipfsapi.js'
+
   return gulp.src('src/index.js')
     .pipe(webpack(config.webpack.dev))
     .pipe($.size())
