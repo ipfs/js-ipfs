@@ -5,22 +5,27 @@ const $ = require('gulp-load-plugins')()
 const runSequence = require('run-sequence')
 const semver = require('semver')
 const fs = require('fs')
-const exec = require('child_process').exec
+const spawn = require('child_process').spawn
 
 function getCurrentVersion () {
   return JSON.parse(fs.readFileSync('./package.json', 'utf8')).version
 }
 
-function npmPublish (done) {
-  exec('npm publish', (err, stdout, stderr) => {
-    if (err) throw err
-    $.util.log('Published to npm')
-  })
-}
-
 function fail (msg) {
   $.util.log($.util.colors.red(msg))
   process.exit(1)
+}
+
+function npmPublish (done) {
+  const publish = spawn('npm', ['publish'])
+  publish.stdout.pipe(process.stdout)
+  publish.stderr.pipe(process.stderr)
+  publish.on('close', code => {
+    if (code !== 0) return fail(`npm publish. Exiting with ${code}.`)
+
+    $.util.log('Published to npm.')
+    done()
+  })
 }
 
 function getType () {
@@ -51,7 +56,7 @@ gulp.task('release:bump', () => {
 
 gulp.task('release:push', done => {
   const remote = $.util.remote || 'origin'
-
+  $.util.log('Pushing to git...')
   $.git.push(remote, 'master', {args: '--tags'}, err => {
     if (err) return fail(err.message)
 
@@ -70,6 +75,7 @@ gulp.task('release:publish', done => {
       return fail('Dirt workspace, cannot push to npm')
     }
 
+    $.util.log('Publishing to npm...')
     npmPublish(done)
   })
 })
