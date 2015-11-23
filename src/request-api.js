@@ -35,7 +35,7 @@ function onRes (buffer, cb) {
 
       Wreck.read(res, {json: true}, (err, payload) => {
         if (err) {
-          cb(err)
+          return cb(err)
         }
         if (payload) {
           error.code = payload.Code
