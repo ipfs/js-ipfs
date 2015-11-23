@@ -50,7 +50,7 @@ gulp.task('release:bump', () => {
 })
 
 gulp.task('release:push', () => {
-  const remote = $.util.remote || 'upstream'
+  const remote = $.util.remote || 'origin'
 
   $.git.push(remote, 'master', {args: '--tags'}, err => {
     if (err) return fail(err.message)
