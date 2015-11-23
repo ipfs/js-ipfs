@@ -49,13 +49,14 @@ gulp.task('release:bump', () => {
     .pipe($.tagVersion())
 })
 
-gulp.task('release:push', () => {
+gulp.task('release:push', done => {
   const remote = $.util.remote || 'origin'
 
   $.git.push(remote, 'master', {args: '--tags'}, err => {
     if (err) return fail(err.message)
 
     $.util.log(`Pushed to git ${remote}:master`)
+    done()
   })
 })
 
