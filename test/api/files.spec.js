@@ -66,7 +66,17 @@ describe('.files', function () {
     })
   })
 
-  // -
+  it('files.stat file that does not exist', function (done) {
+    this.timeout(20000)
+
+    apiClients['a'].files.stat('/test-folder/does-not-exist', function (err, res) {
+      assert(err)
+      if (err.code === 0) {
+        return done()
+      }
+      throw err
+    })
+  })
 
   it('files.read', function (done) {
     this.timeout(20000)
