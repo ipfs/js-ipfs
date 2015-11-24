@@ -1,8 +1,6 @@
 'use strict'
 
 describe('.object', function () {
-  this.timeout(60000)
-
   const testObject = Buffer(JSON.stringify({Data: 'testdata', Links: []}))
   const testObjectHash = 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD'
   const testPatchObject = Buffer(JSON.stringify({Data: 'new test data'}))

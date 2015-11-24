@@ -1,7 +1,6 @@
 'use strict'
 
 describe('.config', function () {
-  this.timeout(60000)
   it('.config.{set, get}', function (done) {
     const confKey = 'arbitraryKey'
     const confVal = 'arbitraryVal'

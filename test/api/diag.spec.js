@@ -1,8 +1,6 @@
 'use strict'
 
 describe('.diag', function () {
-  this.timeout(1000000)
-
   it('.diag.net', function (done) {
     apiClients['a'].diag.net((err, res) => {
       if (err) {

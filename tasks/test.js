@@ -38,7 +38,9 @@ gulp.task('mocha', () => {
     'test/setup.js',
     'test/**/*.spec.js'
   ])
-    .pipe($.mocha())
+    .pipe($.mocha({
+      timeout: 60000
+    }))
 })
 
 gulp.task('karma', done => {

@@ -1,7 +1,6 @@
 'use strict'
 
 describe('.pin', function () {
-  this.timeout(10000)
   it('.pin.add', function (done) {
     apiClients['b'].pin.add('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {recursive: false}, (err, res) => {
       if (err) {

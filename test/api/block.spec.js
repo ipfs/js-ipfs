@@ -1,8 +1,6 @@
 'use strict'
 
 describe('.block', function () {
-  this.timeout(60000)
-
   const blorbKey = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
   const blorb = Buffer('blorb')
 

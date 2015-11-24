@@ -21,8 +21,6 @@ if (isNode) {
 }
 
 describe('.add', function () {
-  this.timeout(60000)
-
   it('add file', function (done) {
     if (!isNode) {
       return done()

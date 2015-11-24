@@ -13,7 +13,6 @@ if (isNode) {
 }
 
 describe('.cat', function () {
-  this.timeout(600000)
   it('cat', function (done) {
     apiClients['a'].cat('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', (err, res) => {
       if (err) {

@@ -1,7 +1,6 @@
 'use strict'
 
 describe('.refs', function () {
-  this.timeout(10000)
   const folder = 'QmSzLpCVbWnEm3XoTWnv6DT6Ju5BsVoLhzvxKXZeQ2cmdg'
 
   it('refs', function (done) {

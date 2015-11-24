@@ -1,7 +1,6 @@
 'use strict'
 
 describe('.dht', function () {
-  this.timeout(600000)
   it('returns an error when getting a non-existent key from the DHT',
      function (done) {
        apiClients['a'].dht.get('non-existent', {timeout: '100ms'}, (err, value) => {
