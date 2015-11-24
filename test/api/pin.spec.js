@@ -1,9 +1,8 @@
 'use strict'
 
 describe('.pin', function () {
+  this.timeout(10000)
   it('.pin.add', function (done) {
-    this.timeout(5000)
-
     apiClients['b'].pin.add('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {recursive: false}, (err, res) => {
       if (err) {
         throw err
@@ -14,8 +13,6 @@ describe('.pin', function () {
   })
 
   it('.pin.list', function (done) {
-    this.timeout(5000)
-
     apiClients['b'].pin.list((err, res) => {
       if (err) {
         throw err
@@ -26,8 +23,6 @@ describe('.pin', function () {
   })
 
   it('.pin.remove', function (done) {
-    this.timeout(5000)
-
     apiClients['b'].pin.remove('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {recursive: false}, (err, res) => {
       if (err) {
         throw err

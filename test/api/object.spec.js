@@ -1,6 +1,8 @@
 'use strict'
 
 describe('.object', function () {
+  this.timeout(60000)
+
   const testObject = Buffer(JSON.stringify({Data: 'testdata', Links: []}))
   const testObjectHash = 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD'
   const testPatchObject = Buffer(JSON.stringify({Data: 'new test data'}))
@@ -29,7 +31,6 @@ describe('.object', function () {
   })
 
   it('object.data', function (done) {
-    this.timeout(10000)
     apiClients['a'].object.data(testObjectHash, (err, res) => {
       if (err) throw err
 
@@ -45,7 +46,6 @@ describe('.object', function () {
   })
 
   it('object.stat', function (done) {
-    this.timeout(10000)
     apiClients['a'].object.stat(testObjectHash, (err, res) => {
       if (err) {
         throw err
@@ -63,7 +63,6 @@ describe('.object', function () {
   })
 
   it('object.links', function (done) {
-    this.timeout(10000)
     apiClients['a'].object.links(testObjectHash, (err, res) => {
       if (err) {
         throw err
@@ -78,7 +77,6 @@ describe('.object', function () {
   })
 
   it('object.patch', function (done) {
-    this.timeout(10000)
     apiClients['a'].object.put(testPatchObject, 'json', (err, res) => {
       if (err) {
         throw err

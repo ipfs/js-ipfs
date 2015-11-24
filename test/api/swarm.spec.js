@@ -1,9 +1,9 @@
 'use strict'
 
 describe('.swarm', function () {
-  it('.swarm.peers', function (done) {
-    this.timeout(5000)
+  this.timeout(10000)
 
+  it('.swarm.peers', function (done) {
     apiClients['a'].swarm.peers((err, res) => {
       if (err) {
         throw err

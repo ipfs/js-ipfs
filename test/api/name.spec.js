@@ -1,6 +1,7 @@
 'use strict'
 
 describe('.name', function () {
+  this.timeout(60000)
   let name
 
   it('.name.publish', function (done) {

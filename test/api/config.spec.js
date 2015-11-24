@@ -1,9 +1,8 @@
 'use strict'
 
 describe('.config', function () {
+  this.timeout(60000)
   it('.config.{set, get}', function (done) {
-    this.timeout(10000)
-
     const confKey = 'arbitraryKey'
     const confVal = 'arbitraryVal'
 
@@ -18,8 +17,6 @@ describe('.config', function () {
   })
 
   it('.config.show', function (done) {
-    this.timeout(10000)
-
     apiClients['c'].config.show((err, res) => {
       if (err) {
         throw err
@@ -31,8 +28,6 @@ describe('.config', function () {
   })
 
   it('.config.replace', function (done) {
-    this.timeout(10000)
-
     if (!isNode) {
       return done()
     }

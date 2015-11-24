@@ -1,9 +1,9 @@
 'use strict'
 
 describe('.dht', function () {
+  this.timeout(600000)
   it('returns an error when getting a non-existent key from the DHT',
      function (done) {
-       this.timeout(20000)
        apiClients['a'].dht.get('non-existent', {timeout: '100ms'}, (err, value) => {
          assert(err)
          done()
@@ -11,8 +11,6 @@ describe('.dht', function () {
      })
 
   it('puts and gets a key value pair in the DHT', function (done) {
-    this.timeout(20000)
-
     apiClients['a'].dht.put('scope', 'interplanetary', (err, res) => {
       if (err) {
         throw err
