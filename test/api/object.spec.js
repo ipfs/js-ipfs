@@ -1,12 +1,12 @@
 'use strict'
 
-describe('.object', function () {
+describe('.object', () => {
   const testObject = Buffer(JSON.stringify({Data: 'testdata', Links: []}))
   const testObjectHash = 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD'
   const testPatchObject = Buffer(JSON.stringify({Data: 'new test data'}))
   const testPatchObjectHash = 'QmWJDtdQWQSajQPx1UVAGWKaSGrHVWdjnrNhbooHP7LuF2'
 
-  it('object.put', function (done) {
+  it('object.put', done => {
     apiClients['a'].object.put(testObject, 'json', (err, res) => {
       if (err) throw err
       const obj = res
@@ -16,7 +16,7 @@ describe('.object', function () {
     })
   })
 
-  it('object.get', function (done) {
+  it('object.get', done => {
     apiClients['a'].object.get(testObjectHash, (err, res) => {
       if (err) {
         throw err
@@ -28,7 +28,7 @@ describe('.object', function () {
     })
   })
 
-  it('object.data', function (done) {
+  it('object.data', done => {
     apiClients['a'].object.data(testObjectHash, (err, res) => {
       if (err) throw err
 
@@ -43,7 +43,7 @@ describe('.object', function () {
     })
   })
 
-  it('object.stat', function (done) {
+  it('object.stat', done => {
     apiClients['a'].object.stat(testObjectHash, (err, res) => {
       if (err) {
         throw err
@@ -60,7 +60,7 @@ describe('.object', function () {
     })
   })
 
-  it('object.links', function (done) {
+  it('object.links', done => {
     apiClients['a'].object.links(testObjectHash, (err, res) => {
       if (err) {
         throw err
@@ -74,7 +74,7 @@ describe('.object', function () {
     })
   })
 
-  it('object.patch', function (done) {
+  it('object.patch', done => {
     apiClients['a'].object.put(testPatchObject, 'json', (err, res) => {
       if (err) {
         throw err

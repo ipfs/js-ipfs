@@ -1,7 +1,7 @@
 'use strict'
 
-describe('.ping', function () {
-  it('ping another peer', function (done) {
+describe('.ping', () => {
+  it('ping another peer', done => {
     // TODO remove this when https://github.com/ipfs/js-ipfs-api/issues/135 is resolved
     if (!isNode) {
       return done()

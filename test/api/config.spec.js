@@ -1,7 +1,7 @@
 'use strict'
 
-describe('.config', function () {
-  it('.config.{set, get}', function (done) {
+describe('.config', () => {
+  it('.config.{set, get}', done => {
     const confKey = 'arbitraryKey'
     const confVal = 'arbitraryVal'
 
@@ -15,7 +15,7 @@ describe('.config', function () {
     })
   })
 
-  it('.config.show', function (done) {
+  it('.config.show', done => {
     apiClients['c'].config.show((err, res) => {
       if (err) {
         throw err
@@ -26,7 +26,7 @@ describe('.config', function () {
     })
   })
 
-  it('.config.replace', function (done) {
+  it('.config.replace', done => {
     if (!isNode) {
       return done()
     }

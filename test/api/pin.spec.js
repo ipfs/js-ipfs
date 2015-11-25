@@ -1,7 +1,7 @@
 'use strict'
 
-describe('.pin', function () {
-  it('.pin.add', function (done) {
+describe('.pin', () => {
+  it('.pin.add', done => {
     apiClients['b'].pin.add('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {recursive: false}, (err, res) => {
       if (err) {
         throw err
@@ -11,7 +11,7 @@ describe('.pin', function () {
     })
   })
 
-  it('.pin.list', function (done) {
+  it('.pin.list', done => {
     apiClients['b'].pin.list((err, res) => {
       if (err) {
         throw err
@@ -21,7 +21,7 @@ describe('.pin', function () {
     })
   })
 
-  it('.pin.remove', function (done) {
+  it('.pin.remove', done => {
     apiClients['b'].pin.remove('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {recursive: false}, (err, res) => {
       if (err) {
         throw err

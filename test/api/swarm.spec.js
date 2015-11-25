@@ -1,7 +1,7 @@
 'use strict'
 
-describe('.swarm', function () {
-  it('.swarm.peers', function (done) {
+describe('.swarm', () => {
+  it('.swarm.peers', done => {
     apiClients['a'].swarm.peers((err, res) => {
       if (err) {
         throw err
@@ -11,7 +11,7 @@ describe('.swarm', function () {
       done()
     })
   })
-  it('.swarm.connect', function (done) {
+  it('.swarm.connect', done => {
     // Done in the 'before' segment
     done()
   })

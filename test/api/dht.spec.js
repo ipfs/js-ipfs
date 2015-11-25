@@ -1,15 +1,15 @@
 'use strict'
 
-describe('.dht', function () {
+describe('.dht', () => {
   it('returns an error when getting a non-existent key from the DHT',
-     function (done) {
+     done => {
        apiClients['a'].dht.get('non-existent', {timeout: '100ms'}, (err, value) => {
          assert(err)
          done()
        })
      })
 
-  it('puts and gets a key value pair in the DHT', function (done) {
+  it('puts and gets a key value pair in the DHT', done => {
     apiClients['a'].dht.put('scope', 'interplanetary', (err, res) => {
       if (err) {
         throw err
@@ -32,7 +32,7 @@ describe('.dht', function () {
     })
   })
 
-  it('.dht.findprovs', function (done) {
+  it('.dht.findprovs', done => {
     apiClients['a'].dht.findprovs('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', (err, res) => {
       if (err) {
         throw err

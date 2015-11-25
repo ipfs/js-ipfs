@@ -1,7 +1,7 @@
 'use strict'
 
-describe('.commands', function () {
-  it('lists commands', function (done) {
+describe('.commands', () => {
+  it('lists commands', done => {
     apiClients['a'].commands((err, res) => {
       if (err) {
         throw err

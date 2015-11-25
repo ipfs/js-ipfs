@@ -1,9 +1,9 @@
 'use strict'
 
-describe('.name', function () {
+describe('.name', () => {
   let name
 
-  it('.name.publish', function (done) {
+  it('.name.publish', done => {
     apiClients['a'].name.publish('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', (err, res) => {
       if (err) {
         throw err
@@ -14,7 +14,7 @@ describe('.name', function () {
     })
   })
 
-  it('.name.resolve', function (done) {
+  it('.name.resolve', done => {
     apiClients['a'].name.resolve(name.Name, (err, res) => {
       if (err) {
         throw err

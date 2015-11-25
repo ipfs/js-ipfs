@@ -1,7 +1,7 @@
 'use strict'
 
-describe('.version', function () {
-  it('checks the version', function (done) {
+describe('.version', () => {
+  it('checks the version', done => {
     apiClients['a'].version((err, res) => {
       if (err) {
         throw err

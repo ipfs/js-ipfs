@@ -1,9 +1,9 @@
 'use strict'
 
-describe('.refs', function () {
+describe('.refs', () => {
   const folder = 'QmSzLpCVbWnEm3XoTWnv6DT6Ju5BsVoLhzvxKXZeQ2cmdg'
 
-  it('refs', function (done) {
+  it('refs', done => {
     if (!isNode) {
       return done()
     }

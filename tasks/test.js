@@ -41,7 +41,7 @@ gulp.task('mocha', () => {
     'test/**/*.spec.js'
   ])
     .pipe($.mocha({
-      timeout: config.timeout
+      timeout: config.webpack.dev.timeout
     }))
 })
 

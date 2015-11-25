@@ -1,7 +1,7 @@
 'use strict'
 
-describe('.id', function () {
-  it('id', function (done) {
+describe('.id', () => {
+  it('id', done => {
     apiClients['a'].id((err, res) => {
       if (err) throw err
       const id = res
