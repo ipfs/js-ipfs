@@ -12,10 +12,8 @@ if (isNode) {
   testfile = require('raw!../testfile.txt')
 }
 
-describe('.cat', function () {
-  it('cat', function (done) {
-    this.timeout(10000)
-
+describe('.cat', () => {
+  it('cat', done => {
     apiClients['a'].cat('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', (err, res) => {
       if (err) {
         throw err
@@ -32,11 +30,10 @@ describe('.cat', function () {
     })
   })
 
-  it('cat BIG file', function (done) {
+  it('cat BIG file', done => {
     if (!isNode) {
       return done()
     }
-    this.timeout(1000000)
 
     apiClients['a'].cat('Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq', (err, res) => {
       if (err) {

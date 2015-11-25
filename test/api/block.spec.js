@@ -1,12 +1,10 @@
 'use strict'
 
-describe('.block', function () {
+describe('.block', () => {
   const blorbKey = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
   const blorb = Buffer('blorb')
 
-  it('block.put', function (done) {
-    this.timeout(10000)
-
+  it('block.put', done => {
     apiClients['a'].block.put(blorb, (err, res) => {
       if (err) throw err
       const store = res.Key
@@ -15,9 +13,7 @@ describe('.block', function () {
     })
   })
 
-  it('block.get', function (done) {
-    this.timeout(10000)
-
+  it('block.get', done => {
     apiClients['a'].block.get(blorbKey, (err, res) => {
       if (err) throw err
 

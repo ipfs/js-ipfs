@@ -1,9 +1,7 @@
 'use strict'
 
-describe('.log', function () {
-  it('.log.tail', function (done) {
-    this.timeout(60000)
-
+describe('.log', () => {
+  it('.log.tail', done => {
     apiClients['a'].log.tail((err, res) => {
       if (err) {
         throw err

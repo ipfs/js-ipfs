@@ -5,6 +5,8 @@ const Server = require('karma').Server
 const $ = require('gulp-load-plugins')()
 const runSequence = require('run-sequence')
 
+const config = require('./config')
+
 require('./daemons')
 
 gulp.task('test', done => {
@@ -38,7 +40,9 @@ gulp.task('mocha', () => {
     'test/setup.js',
     'test/**/*.spec.js'
   ])
-    .pipe($.mocha())
+    .pipe($.mocha({
+      timeout: config.webpack.dev.timeout
+    }))
 })
 
 gulp.task('karma', done => {

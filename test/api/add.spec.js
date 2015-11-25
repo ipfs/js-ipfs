@@ -20,13 +20,11 @@ if (isNode) {
   // testfileBig = require('raw!../100mb.random')
 }
 
-describe('.add', function () {
-  it('add file', function (done) {
+describe('.add', () => {
+  it('add file', done => {
     if (!isNode) {
       return done()
     }
-
-    this.timeout(10000)
 
     const file = new File({
       cwd: path.dirname(testfilePath),
@@ -45,9 +43,7 @@ describe('.add', function () {
     })
   })
 
-  it('add buffer', function (done) {
-    this.timeout(10000)
-
+  it('add buffer', done => {
     let buf = new Buffer(testfile)
     apiClients['a'].add(buf, (err, res) => {
       if (err) throw err
@@ -59,11 +55,10 @@ describe('.add', function () {
     })
   })
 
-  it('add BIG buffer', function (done) {
+  it('add BIG buffer', done => {
     if (!isNode) {
       return done()
     }
-    this.timeout(10000)
 
     apiClients['a'].add(testfileBig, (err, res) => {
       if (err) throw err
@@ -75,12 +70,10 @@ describe('.add', function () {
     })
   })
 
-  it('add path', function (done) {
+  it('add path', done => {
     if (!isNode) {
       return done()
     }
-
-    this.timeout(10000)
 
     apiClients['a'].add(testfilePath, (err, res) => {
       if (err) throw err
@@ -91,9 +84,7 @@ describe('.add', function () {
     })
   })
 
-  it('add a nested dir', function (done) {
-    this.timeout(10000)
-
+  it('add a nested dir', done => {
     apiClients['a'].add(__dirname + '/../test-folder', { recursive: true }, (err, res) => {
       if (isNode) {
         if (err) throw err
@@ -108,9 +99,7 @@ describe('.add', function () {
     })
   })
 
-  it('add stream', function (done) {
-    this.timeout(10000)
-
+  it('add stream', done => {
     const stream = new Readable()
     stream.push('Hello world')
     stream.push(null)
@@ -123,9 +112,7 @@ describe('.add', function () {
     })
   })
 
-  it('add url', function (done) {
-    this.timeout(10000)
-
+  it('add url', done => {
     const url = 'https://raw.githubusercontent.com/ipfs/js-ipfs-api/2a9cc63d7427353f2145af6b1a768a69e67c0588/README.md'
     apiClients['a'].add(url, (err, res) => {
       if (err) throw err

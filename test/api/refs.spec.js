@@ -1,14 +1,12 @@
 'use strict'
 
-describe('.refs', function () {
+describe('.refs', () => {
   const folder = 'QmSzLpCVbWnEm3XoTWnv6DT6Ju5BsVoLhzvxKXZeQ2cmdg'
 
-  it('refs', function (done) {
+  it('refs', done => {
     if (!isNode) {
       return done()
     }
-
-    this.timeout(10000)
 
     apiClients['a'].refs(folder, {'format': '<src> <dst> <linkname>'}, (err, objs) => {
       if (err) {

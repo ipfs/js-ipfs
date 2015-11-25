@@ -46,6 +46,11 @@ module.exports = function (config) {
   config.set({
     basePath: '',
     frameworks: ['mocha'],
+    client: {
+      mocha: {
+        timeout: webpackConfig.dev.timeout
+      }
+    },
     files: [
       'test/setup.js',
       'test/**/*.spec.js'
