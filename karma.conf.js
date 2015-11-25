@@ -48,7 +48,7 @@ module.exports = function (config) {
     frameworks: ['mocha'],
     client: {
       mocha: {
-        timeout: 60000
+        timeout: webpackConfig.dev.timeout
       }
     },
     files: [

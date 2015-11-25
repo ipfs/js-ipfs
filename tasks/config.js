@@ -42,7 +42,8 @@ const shared = {
     tls: '{}',
     console: '{}',
     'require-dir': '{}'
-  }
+  },
+  timeout: 60000
 }
 
 const dev = Object.assign({}, shared, {
