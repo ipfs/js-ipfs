@@ -37,7 +37,7 @@ Same as in Node.js, you just have to [browserify](https://github.com/substack/js
 
 ### In the Browser through `<script>` tag
 
-Make the [ipfsapi.min.js](/ipfsapi.min.js) available through your server and load it using a normal `<script>` tag, this will export the `ipfsAPI` constructor on the `window` object, such that:
+Make the [ipfsapi.min.js](https://github.com/ipfs/js-ipfs-api/blob/master/dist/ipfsapi.min.js) available through your server and load it using a normal `<script>` tag, this will export the `ipfsAPI` constructor on the `window` object, such that:
 
 ```
 var ipfs = window.ipfsAPI('localhost', '5001')
