@@ -3,7 +3,7 @@
 const ipfsAPI = require('../src/index.js')
 const apiAddrs = require('./tmp-disposable-nodes-addrs.json')
 
-global.assert = require('assert')
+global.expect = require('chai').expect
 global.apiClients = {} // a, b, c
 global.isNode = !global.window
 

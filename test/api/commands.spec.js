@@ -3,10 +3,8 @@
 describe('.commands', () => {
   it('lists commands', done => {
     apiClients['a'].commands((err, res) => {
-      if (err) {
-        throw err
-      }
-      assert(res)
+      expect(err).to.not.exist
+      expect(res).to.exist
       done()
     })
   })

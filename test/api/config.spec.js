@@ -6,10 +6,10 @@ describe('.config', () => {
     const confVal = 'arbitraryVal'
 
     apiClients['a'].config.set(confKey, confVal, (err, res) => {
-      if (err) throw err
+      expect(err).to.not.exist
       apiClients['a'].config.get(confKey, (err, res) => {
-        if (err) throw err
-        assert.equal(res.Value, confVal)
+        expect(err).to.not.exist
+        expect(res).to.have.a.property('Value', confVal)
         done()
       })
     })
@@ -17,11 +17,8 @@ describe('.config', () => {
 
   it('.config.show', done => {
     apiClients['c'].config.show((err, res) => {
-      if (err) {
-        throw err
-      }
-
-      assert(res)
+      expect(err).to.not.exist
+      expect(res).to.exist
       done()
     })
   })
@@ -32,11 +29,8 @@ describe('.config', () => {
     }
 
     apiClients['c'].config.replace(__dirname + '/../r-config.json', (err, res) => {
-      if (err) {
-        throw err
-      }
-
-      assert.equal(res, null)
+      expect(err).to.not.exist
+      expect(res).to.be.equal(null)
       done()
     })
   })

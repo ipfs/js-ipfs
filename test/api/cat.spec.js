@@ -44,8 +44,8 @@ describe('.cat', () => {
 
       // Do not blow out the memory of nodejs :)
       streamEqual(res, testfileBig, (err, equal) => {
-        if (err) throw err
-        assert(equal)
+        expect(err).to.not.exist
+        expect(equal).to.be.true
         done()
       })
     })
