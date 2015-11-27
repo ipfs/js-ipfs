@@ -8,17 +8,11 @@ describe('.ping', () => {
     }
 
     apiClients['b'].id((err, id) => {
-      if (err) {
-        throw err
-      }
+      expect(err).to.not.exist
 
       apiClients['a'].ping(id.ID, (err, res) => {
-        if (err) {
-          throw err
-        }
-
-        assert(res)
-        assert(res.Success)
+        expect(err).to.not.exist
+        expect(res).to.have.a.property('Success')
         done()
       })
     })

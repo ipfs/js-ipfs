@@ -3,12 +3,10 @@
 describe('.log', () => {
   it('.log.tail', done => {
     apiClients['a'].log.tail((err, res) => {
-      if (err) {
-        throw err
-      }
+      expect(err).to.not.exist
+
       res.once('data', obj => {
-        assert(obj)
-        assert.equal(typeof obj, 'object')
+        expect(obj).to.be.an('object')
         done()
       })
     })
