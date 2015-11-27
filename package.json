@@ -30,8 +30,7 @@
   "devDependencies": {
     "ipfsd-ctl": "^0.6.1",
     "pre-commit": "^1.1.2",
-    "standard": "^5.3.1",
-    "tape": "^4.2.2"
+    "standard": "^5.3.1"
   },
   "dependencies": {
     "hapi": "^11.1.2",
