@@ -34,6 +34,7 @@
     "tape": "^4.2.2"
   },
   "dependencies": {
+    "hapi": "^11.1.2",
     "ipfs-api": "^2.7.0",
     "ronin": "^0.3.11",
     "vinyl": "^0.5.1"
