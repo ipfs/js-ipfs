@@ -4,7 +4,6 @@ describe('.dht', () => {
   it('returns an error when getting a non-existent key from the DHT',
      done => {
        apiClients['a'].dht.get('non-existent', {timeout: '100ms'}, (err, value) => {
-         console.log(err, value)
          expect(err).to.be.an.instanceof(Error)
          done()
        })
