@@ -3,22 +3,18 @@
 describe('.diag', () => {
   it('.diag.net', done => {
     apiClients['a'].diag.net((err, res) => {
-      if (err) {
-        throw err
-      }
-      assert(res)
+      expect(err).to.not.exist
+      expect(res).to.exist
       done()
     })
   })
 
   it('.diag.sys', done => {
     apiClients['a'].diag.sys((err, res) => {
-      if (err) {
-        throw err
-      }
-      assert(res)
-      assert(res.memory)
-      assert(res.diskinfo)
+      expect(err).to.not.exist
+      expect(res).to.exist
+      expect(res).to.have.a.property('memory')
+      expect(res).to.have.a.property('diskinfo')
       done()
     })
   })

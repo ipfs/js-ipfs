@@ -8,36 +8,32 @@ describe('.object', () => {
 
   it('object.put', done => {
     apiClients['a'].object.put(testObject, 'json', (err, res) => {
-      if (err) throw err
-      const obj = res
-      assert.equal(obj.Hash, testObjectHash)
-      assert.equal(obj.Links.length, 0)
+      expect(err).to.not.exist
+      expect(res).to.have.a.property('Hash', testObjectHash)
+      expect(res.Links).to.be.empty
       done()
     })
   })
 
   it('object.get', done => {
     apiClients['a'].object.get(testObjectHash, (err, res) => {
-      if (err) {
-        throw err
-      }
-      const obj = res
-      assert.equal(obj.Data, 'testdata')
-      assert.equal(obj.Links.length, 0)
+      expect(err).to.not.exist
+      expect(res).to.have.a.property('Data', 'testdata')
+      expect(res.Links).to.be.empty
       done()
     })
   })
 
   it('object.data', done => {
     apiClients['a'].object.data(testObjectHash, (err, res) => {
-      if (err) throw err
+      expect(err).to.not.exist
 
       let buf = ''
       res
         .on('error', err => { throw err })
         .on('data', data => buf += data)
         .on('end', () => {
-          assert.equal(buf, 'testdata')
+          expect(buf).to.equal('testdata')
           done()
         })
     })
@@ -45,10 +41,8 @@ describe('.object', () => {
 
   it('object.stat', done => {
     apiClients['a'].object.stat(testObjectHash, (err, res) => {
-      if (err) {
-        throw err
-      }
-      assert.deepEqual(res, {
+      expect(err).to.not.exist
+      expect(res).to.be.eql({
         Hash: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
         NumLinks: 0,
         BlockSize: 10,
@@ -62,11 +56,9 @@ describe('.object', () => {
 
   it('object.links', done => {
     apiClients['a'].object.links(testObjectHash, (err, res) => {
-      if (err) {
-        throw err
-      }
+      expect(err).to.not.exist
 
-      assert.deepEqual(res, {
+      expect(res).to.be.eql({
         Hash: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
         Links: []
       })
@@ -76,23 +68,16 @@ describe('.object', () => {
 
   it('object.patch', done => {
     apiClients['a'].object.put(testPatchObject, 'json', (err, res) => {
-      if (err) {
-        throw err
-      }
+      expect(err).to.not.exist
       apiClients['a'].object.patch(testObjectHash, ['add-link', 'next', testPatchObjectHash], (err, res) => {
-        if (err) {
-          throw err
-        }
-
-        assert.deepEqual(res, {
+        expect(err).to.not.exist
+        expect(res).to.be.eql({
           Hash: 'QmZFdJ3CQsY4kkyQtjoUo8oAzsEs5BNguxBhp8sjQMpgkd',
           Links: null
         })
         apiClients['a'].object.get(res.Hash, (err, res2) => {
-          if (err) {
-            throw err
-          }
-          assert.deepEqual(res2, {
+          expect(err).to.not.exist
+          expect(res2).to.be.eql({
             Data: 'testdata',
             Links: [{
               Name: 'next',

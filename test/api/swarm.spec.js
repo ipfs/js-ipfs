@@ -3,11 +3,9 @@
 describe('.swarm', () => {
   it('.swarm.peers', done => {
     apiClients['a'].swarm.peers((err, res) => {
-      if (err) {
-        throw err
-      }
+      expect(err).to.not.exist
 
-      assert(res.Strings.length >= 2)
+      expect(res.Strings).to.have.length.above(1)
       done()
     })
   })

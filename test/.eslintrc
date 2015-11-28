@@ -5,6 +5,6 @@
   "globals": {
     "apiClients": true,
     "isNode": true,
-    "assert": true
+    "expect": true
   }
 }

@@ -1,7 +1,6 @@
 'use strict'
 
 const ipfsAPI = require('../src/index.js')
-const assert = require('assert')
 
 describe('ipfsAPI constructor tests', () => {
   describe('parameter permuations', () => {
@@ -9,11 +8,11 @@ describe('ipfsAPI constructor tests', () => {
     const apiAddr = apiAddrs.a.split('/')
 
     function clientWorks (client, done) {
-      client.id((err, res) => {
-        if (err) throw err
-        const id = res
-        assert(id.ID)
-        assert(id.PublicKey)
+      client.id((err, id) => {
+        expect(err).to.not.exist
+
+        expect(id).to.have.a.property('ID')
+        expect(id).to.have.a.property('PublicKey')
         done()
       })
     }

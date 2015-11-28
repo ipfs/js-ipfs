@@ -2,7 +2,7 @@
 
 describe('API', () => {
   it('has the api object', () => {
-    assert(apiClients['a'])
-    assert(apiClients['a'].id)
+    expect(apiClients['a']).to.exist
+    expect(apiClients['a']).to.have.a.property('id')
   })
 })
