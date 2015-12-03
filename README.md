@@ -33,7 +33,7 @@ var ipfs = ipfsAPI({host: 'localhost', port: '5001', procotol: 'http'})
 
 ### In the Browser through browserify
 
-Same as in Node.js, you just have to [browserify](https://github.com/substack/js-browserify) the code before serving it. See the browserify repo for how to do that.
+Same as in Node.js, you just have to [browserify](http://browserify.org) the code before serving it. See the browserify repo for how to do that.
 
 ### In the Browser through `<script>` tag
 
