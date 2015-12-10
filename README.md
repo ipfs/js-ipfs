@@ -50,13 +50,19 @@ The cli is availble through `jsipfs` in your terminal
 ### API
 
 
-# Getting jsipfs ready
+# Project structure
 
-In order to start enabling applications to use the IPFS JavaScript library sooner, we are releasing a version that presents the full API one could expect from a IPFS node, but delegating all the operations on an IPFS node inside the network, using the js-ipfs-api module. The next will be replacing the internal components as the necessary layers for IPFS get developed.
-
-- [ ] Implement IPFS api in JS and use a network node for the operations
-- [ ] Build a jsipfs cli with feature parity to go-ipfs cli
-- [ ] Build bitswap to work over HTTP to talk with the gateways. Performance can be gained through doing the same requests to several nodes and then presenting our want list and stream from several nodes at the same time. Hash checksum is done on the JS itself
+```
+┌───┐    ┌───────────────┐    ┌──────────────┐
+│CLI│───▶│   HTTP API    ├───▶│IPFS Node Impl│
+└───┘    └───────────────┘    └──────────────┘
+                 △                    △
+                 └──────────┬─────────┘
+                            │
+                         ┌─────┐
+                         │Tests│
+                         └─────┘
+```
 
 # Roadmap for the full IPFS implementation in JavaScript
 
@@ -65,9 +71,17 @@ In order to start enabling applications to use the IPFS JavaScript library soone
   - The network layer of IPFS is now known as libp2p, follow https://github.com/diasdavid/js-libp2p
 - **Exchange**
   - [ ] [js-bitswap](https://github.com/diasdavid/js-bitswap). [![](https://img.shields.io/badge/discuss--blue.svg?style=flat-square)](https://github.com/ipfs/js-ipfs/issues/17)![](https://img.shields.io/badge/status-has%20not%20started%20yet-brown.svg?style=flat-square)
+  - [ ] [js-ipfs-repo](https://github.com/ipfs/js-ipfs-repo)
+    - [ ] [keys](https://github.com/ipfs/js-ipfs-repo/issues/4)
+    - [ ] [version](https://github.com/ipfs/js-ipfs-repo/issues/5)
+    - [ ] [datastore](https://github.com/ipfs/js-ipfs-repo/issues/6)
+    - [ ] [config](https://github.com/ipfs/js-ipfs-repo/issues/7)
+    - [ ] [logs](https://github.com/ipfs/js-ipfs-repo/issues/8)
+    - [ ] [locks](https://github.com/ipfs/js-ipfs-repo/issues/9)
   - [x] MerkleDAG node implementation (needs IPLD).
     - [x] [js-ipld](https://github.com/diasdavid/js-ipld) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
     - [x] [js-merkledag-store](https://github.com/diasdavid/js-merkledag-store) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
+  - [ ] js-ipfs [follow the roadmap](https://github.com/ipfs/pm/blob/js-ipfs/roadmap/ROADMAP.js-ipfs.md)
 - [**Spec**](https://github.com/ipfs/specs/tree/master/protocol/network) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
 
 ### status badges
