@@ -38,8 +38,8 @@ describe('IPFS Repo Tests', function () {
     done()
   })
 
-  it('check node version', function (done) {
-    node.version(function (err, version) {
+  it('check repo version', function (done) {
+    node.repo.version(function (err, version) {
       expect(err).to.equal(null)
       expect(version).to.be.a('string')
       expect(Number(version)).to.be.a('number')

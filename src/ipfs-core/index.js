@@ -6,6 +6,7 @@ var config = require('./config')
 var IPFSRepo = require('ipfs-repo')
 
 exports = module.exports = IPFS
+exports.config = config
 
 function IPFS () {
   var self = this
@@ -29,12 +30,7 @@ function IPFS () {
   // var api = ipfsAPIclt(config.url)
   // extend(self, api)
 
-  self.repo = new IPFSRepo(config.repoPath)
-
-  self.init = function (bits, force, empty, callback) {
-    // 1. check if repo already exists
-
-  }
+  var repo = new IPFSRepo(config.repoPath)
 
   self.daemon = function (callback) {
     // 1. read repo to get peer data
@@ -45,12 +41,38 @@ function IPFS () {
       callback = opts
       opts = {}
     }
-    if (!self.repo.exists()) {
-      callback(new Error('Repo does not exist, you must init repo first'))
-    } else { self.repo.load() }
 
-    self.repo.version.read(callback)
+    if (!repo.exists()) {
+      callback(new Error('Repo does not exist, you must init repo first'))
+    } else { repo.load() }
+
+    repo.config.read(function (err, config) {
+      if (err) {
+        return callback(err)
+      }
+      callback(null, config.Version.Current)
+    })
   }
 
   self.id = function (format, callback) {}
+
+  self.repo = {
+    init: function (bits, force, empty, callback) {
+      // 1. check if repo already exists
+    },
+
+    version: function (opts, callback) {
+      if (typeof opts === 'function') {
+        callback = opts
+        opts = {}
+      }
+      if (!repo.exists()) {
+        callback(new Error('Repo does not exist, you must init repo first'))
+      } else { repo.load() }
+
+      repo.version.read(callback)
+    },
+
+    gc: function () {}
+  }
 }
