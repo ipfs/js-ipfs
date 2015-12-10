@@ -1,0 +1,48 @@
+{
+  "name": "js-ipfs",
+  "version": "0.0.1",
+  "description": "JavaScript implementation of the IPFS specification",
+  "bin": {
+    "jsipfs": "src/cli/bin.js"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "standard",
+    "coverage": "istanbul cover --print both -- _mocha tests/*-test.js",
+    "test": "mocha tests/*-test.js"
+  },
+  "pre-commit": [
+    "lint"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
+  "keywords": [
+    "IPFS"
+  ],
+  "author": "David Dias <daviddias@ipfs.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ipfs/js-ipfs/issues"
+  },
+  "homepage": "https://github.com/ipfs/js-ipfs#readme",
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "ipfsd-ctl": "^0.6.1",
+    "istanbul": "^0.4.1",
+    "mocha": "^2.3.4",
+    "ncp": "^2.0.0",
+    "pre-commit": "^1.1.2",
+    "rimraf": "^2.4.4",
+    "standard": "^5.3.1"
+  },
+  "dependencies": {
+    "hapi": "^11.1.2",
+    "ipfs-api": "^2.7.0",
+    "ipfs-repo": "^0.1.0",
+    "peer-id": "^0.4.0",
+    "peer-info": "^0.4.0",
+    "ronin": "^0.3.11"
+  }
+}

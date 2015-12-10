@@ -1,11 +1,13 @@
 js-ipfs
-=========
+=======
+
+[![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io) [[![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs) ![Build Status](https://travis-ci.org/diasdavid/js-ipfs.svg?style=flat-square)](https://travis-ci.org/diasdavid/js-ipfs) ![](https://img.shields.io/badge/coverage-%3F-yellow.svg?style=flat-square) [![Dependency Status](https://david-dm.org/diasdavid/js-ipfs.svg?style=flat-square)](https://david-dm.org/diasdavid/js-ipfs) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
 
 > IPFS JavaScript implementation  entry point and roadmap
 
 # Description
 
-This repo will contain the entry point for the JavaScript implementation of IPFS spec, similar to [go-ipfs](https://github.com/ipfs/go-ipfs). Right now, it holds the roadmap for the development of modules for js-ipfs, as well as their current state.
+This repo will contain the entry point for the JavaScript implementation of IPFS spec, similar to [go-ipfs](https://github.com/ipfs/go-ipfs). 
 
 We are building js-ipfs because it will inform how go-ipfs works, separate concerns, and allow a complete in-browser-tab implementation with no install friction. Most of the work for IPFS does happen elsewhere, but this is an equally important part of our roadmap to lead to a permanent, IPFSed web.
 
@@ -21,17 +23,65 @@ IPFS implementation in JavaScript is a work in progress. As such, there's a few 
 
 # Usage
 
-> **Not ready for prime time yet**
+> **Disclamer: Currently, js-ipfs is not a full IPFS node, it delegates all of its operations to a IPFS node available in the network, see "Getting jsipfs ready" below for more details.
 
-# Roadmap
+### Installation
+
+```bash
+$ npm i ipfs --save
+```
+
+```JavaScript
+var IPFS = require('ipfs')
+
+var node = new IPFS()
+```
+
+### Command line tool
+
+In order to use js-ipfs as a CLI, you must install it with the -g flag.
+
+```bash
+$ npm i ipfs -g
+```
+
+The cli is availble through `jsipfs` in your terminal
+
+### API
+
+
+# Project structure
+
+```
+┌───┐    ┌───────────────┐    ┌──────────────┐
+│CLI│───▶│   HTTP API    ├───▶│IPFS Node Impl│
+└───┘    └───────────────┘    └──────────────┘
+                 △                    △
+                 └──────────┬─────────┘
+                            │
+                         ┌─────┐
+                         │Tests│
+                         └─────┘
+```
+
+# Roadmap for the full IPFS implementation in JavaScript
+
 
 - **Network layer**
   - The network layer of IPFS is now known as libp2p, follow https://github.com/diasdavid/js-libp2p
 - **Exchange**
   - [ ] [js-bitswap](https://github.com/diasdavid/js-bitswap). [![](https://img.shields.io/badge/discuss--blue.svg?style=flat-square)](https://github.com/ipfs/js-ipfs/issues/17)![](https://img.shields.io/badge/status-has%20not%20started%20yet-brown.svg?style=flat-square)
+  - [ ] [js-ipfs-repo](https://github.com/ipfs/js-ipfs-repo)
+    - [ ] [keys](https://github.com/ipfs/js-ipfs-repo/issues/4)
+    - [ ] [version](https://github.com/ipfs/js-ipfs-repo/issues/5)
+    - [ ] [datastore](https://github.com/ipfs/js-ipfs-repo/issues/6)
+    - [ ] [config](https://github.com/ipfs/js-ipfs-repo/issues/7)
+    - [ ] [logs](https://github.com/ipfs/js-ipfs-repo/issues/8)
+    - [ ] [locks](https://github.com/ipfs/js-ipfs-repo/issues/9)
   - [x] MerkleDAG node implementation (needs IPLD).
     - [x] [js-ipld](https://github.com/diasdavid/js-ipld) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
     - [x] [js-merkledag-store](https://github.com/diasdavid/js-merkledag-store) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
+  - [ ] js-ipfs [follow the roadmap](https://github.com/ipfs/pm/blob/js-ipfs/roadmap/ROADMAP.js-ipfs.md)
 - [**Spec**](https://github.com/ipfs/specs/tree/master/protocol/network) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
 
 ### status badges
