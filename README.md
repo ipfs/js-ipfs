@@ -66,7 +66,6 @@ The cli is availble through `jsipfs` in your terminal
 
 # Roadmap for the full IPFS implementation in JavaScript
 
-
 - **Network layer**
   - The network layer of IPFS is now known as libp2p, follow https://github.com/diasdavid/js-libp2p
 - **Exchange**
@@ -79,9 +78,110 @@ The cli is availble through `jsipfs` in your terminal
     - [ ] [logs](https://github.com/ipfs/js-ipfs-repo/issues/8)
     - [ ] [locks](https://github.com/ipfs/js-ipfs-repo/issues/9)
   - [x] MerkleDAG node implementation (needs IPLD).
-    - [x] [js-ipld](https://github.com/diasdavid/js-ipld) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
-    - [x] [js-merkledag-store](https://github.com/diasdavid/js-merkledag-store) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
+    - [js-ipld](https://github.com/diasdavid/js-ipld) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
+      - [ ] Update to latest version of IPLD
+    - [js-merkledag-store](https://github.com/diasdavid/js-merkledag-store) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
+      - [ ] Update to be mounted on top of js-ipfs-repo
+  - Importer (what converts files to MerkleDAGs, using different chunking algorithms)
+    - [ ] importer interface
+    - [ ] fixed sized chunks
+    - [ ] jsipfs tar
+    - [ ] rabin fingerprinting
   - [ ] js-ipfs [follow the roadmap](https://github.com/ipfs/pm/blob/js-ipfs/roadmap/ROADMAP.js-ipfs.md)
+- **Commands**
+  - core
+    - version
+    - node
+      - id
+      - start
+      - stop
+    - block
+      - get
+      - put
+      - stat
+    - object - Basic manipulation of the DAG
+      - data
+      - get
+      - links
+      - new
+      - patch
+      - put
+      - stat
+    - refs - Listing of references. (Essentially, walking around the graph).
+      - local
+    - repo - Basic manipulation of the repo
+      - init
+      - stat
+      - gc
+      - config get
+      - config put
+    - pin - Basic manipulation of the pin set
+      - add
+      - ls
+      - rm
+    - log
+      - level
+      - tail
+    - name (ipns)
+      - name publish
+      - resolve
+  - extensions
+    - dns
+    - resolve
+    - tar
+      - add
+      - cat
+    - tour
+      - list
+      - next
+      - restart
+    - files
+      - add
+      - cat
+      - get
+    - stat - Statistics about everything
+      - bw
+    - mount
+    - bootstrap
+      - add
+      - list
+      - rm
+   - tools
+     - commands
+     - update
+     - init - sugar around ipfs repo init
+    - config
+      - edit
+      - replace
+      - show
+    - daemon
+    - diag
+      - net
+      - sys
+   - libp2p (exposed by libp2p)
+    - ping
+    - dht
+      - findpeer
+      - findprovs
+      - get
+      - put
+      - query
+    - swarm
+      - addrs
+      - addrs local
+      - connect
+      - disconnect
+      - filters
+      - filters add
+      - filters rm
+      - peers
+    - record (IPRS)
+      - put
+      - get
+    - bitswap
+      - stat
+      - unwant
+      - wantlist
 - [**Spec**](https://github.com/ipfs/specs/tree/master/protocol/network) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
 
 ### status badges
