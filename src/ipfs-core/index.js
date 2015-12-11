@@ -41,10 +41,7 @@ function IPFS () {
       callback = opts
       opts = {}
     }
-
-    if (!repo.exists()) {
-      callback(new Error('Repo does not exist, you must init repo first'))
-    } else { repo.load() }
+    repoExists(callback)
 
     repo.config.read(function (err, config) {
       if (err) {
@@ -54,7 +51,27 @@ function IPFS () {
     })
   }
 
-  self.id = function (format, callback) {}
+  self.id = function (opts, callback) {
+    if (typeof opts === 'function') {
+      callback = opts
+      opts = {}
+    }
+    repoExists(callback)
+
+    repo.config.read(function (err, config) {
+      if (err) {
+        return callback(err)
+      }
+      callback(null, {
+        ID: config.Identity.PeerID,
+        // TODO needs https://github.com/diasdavid/js-peer-id/blob/master/src/index.js#L76
+        PublicKey: '',
+        Addresses: config.Addresses,
+        AgentVersion: 'js-ipfs',
+        ProtocolVersion: '9000'
+      })
+    })
+  }
 
   self.repo = {
     init: function (bits, force, empty, callback) {
@@ -66,13 +83,17 @@ function IPFS () {
         callback = opts
         opts = {}
       }
-      if (!repo.exists()) {
-        callback(new Error('Repo does not exist, you must init repo first'))
-      } else { repo.load() }
+      repoExists(callback)
 
       repo.version.read(callback)
     },
 
     gc: function () {}
+  }
+
+  function repoExists (callback) {
+    if (!repo.exists()) {
+      callback(new Error('Repo does not exist, you must init repo first'))
+    } else { repo.load() }
   }
 }
