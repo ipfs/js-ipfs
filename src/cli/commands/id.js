@@ -17,7 +17,7 @@ module.exports = Command.extend({
       if (err) {
         return console.error(err)
       }
-      console.log(JSON.stringify(id))
+      console.log(id)
     })
   }
 })

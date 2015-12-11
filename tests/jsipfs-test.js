@@ -46,4 +46,12 @@ describe('IPFS Repo Tests', function () {
       done()
     })
   })
+
+  it('check id info', function (done) {
+    node.id(function (err, id) {
+      expect(err).to.equal(null)
+      expect(id).to.be.a('object')
+      done()
+    })
+  })
 })
