@@ -158,7 +158,7 @@ The cli is availble through `jsipfs` in your terminal
     - diag
       - net
       - sys
-   - libp2p (exposed by libp2p)
+  - libp2p (exposed by libp2p)
     - ping
     - dht
       - findpeer
