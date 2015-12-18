@@ -2,6 +2,7 @@
 
 const Wreck = require('wreck')
 const Qs = require('qs')
+const ndjson = require('ndjson')
 const getFilesStream = require('./get-files-stream')
 
 const isNode = !global.window
@@ -10,14 +11,10 @@ const isNode = !global.window
 
 function parseChunkedJson (res, cb) {
   const parsed = []
-  res.on('data', chunk => {
-    try {
-      parsed.push(JSON.parse(chunk))
-    } catch (err) {
-      // Browser quirks emit more than needed sometimes
-    }
-  })
-  res.on('end', () => cb(null, parsed))
+  res
+    .pipe(ndjson.parse())
+    .on('data', parsed.push.bind(parsed))
+    .on('end', () => cb(null, parsed))
 }
 
 function onRes (buffer, cb) {
