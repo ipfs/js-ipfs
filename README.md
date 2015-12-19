@@ -55,11 +55,10 @@ When using the api from script tag for things that require buffers (`ipfs.add`, 
 
 ## CORS
 
-If are using this module in a browser with something like browserify, then you will get an error saying that the origin is not allowed. This would be a CORS ("Cross Origin Resource Sharing") failure. The ipfs server rejects requests from unknown domains by default. You can whitelist the domain that you are calling from by exporting `API_ORIGIN` and restarting the daemon, like:
+If are using this module in a browser with something like browserify, then you will get an error saying that the origin is not allowed. This would be a CORS ("Cross Origin Resource Sharing") failure. The ipfs server rejects requests from unknown domains by default. You can whitelist the domain that you are calling from by changing your ipfs config like this:
 
 ```bash
-export API_ORIGIN="http://localhost:8080"
-ipfs daemon
+$ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin "[\"http://example.com\"]"
 ```
 
 ## API
