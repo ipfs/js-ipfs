@@ -1,6 +1,6 @@
 {
   "name": "ipfs-api",
-  "version": "2.9.14",
+  "version": "2.9.15",
   "description": "A client library for the IPFS API",
   "main": "src/index.js",
   "dependencies": {
