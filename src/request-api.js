@@ -87,9 +87,11 @@ function requestAPI (config, path, args, qs, files, buffer, cb) {
   // this option is only used internally, not passed to daemon
   delete qs.followSymlinks
 
+  const port = config.port ? `:${config.port}` : ''
+
   const opts = {
     method: files ? 'POST' : 'GET',
-    uri: `${config.protocol}://${config.host}:${config.port}${config['api-path']}${path}?${Qs.stringify(qs, {arrayFormat: 'repeat'})}`,
+    uri: `${config.protocol}://${config.host}${port}${config['api-path']}${path}?${Qs.stringify(qs, {arrayFormat: 'repeat'})}`,
     headers: {}
   }
 
