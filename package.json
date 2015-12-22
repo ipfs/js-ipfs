@@ -57,7 +57,7 @@
     "mocha": "^2.3.3",
     "pre-commit": "^1.0.6",
     "raw-loader": "^0.5.1",
-    "rimraf": "^2.4.3",
+    "rimraf": "^2.4.5",
     "run-sequence": "^1.1.4",
     "semver": "^5.1.0",
     "stream-equal": "^0.1.7",
