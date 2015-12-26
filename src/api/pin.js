@@ -8,7 +8,7 @@ module.exports = send => {
         opts = null
       }
 
-      send('pin/add', hash, opts, null, cb)
+      return send('pin/add', hash, opts, null, cb)
     },
     remove (hash, opts, cb) {
       if (typeof opts === 'function') {
@@ -16,7 +16,7 @@ module.exports = send => {
         opts = null
       }
 
-      send('pin/rm', hash, opts, null, cb)
+      return send('pin/rm', hash, opts, null, cb)
     },
     list (type, cb) {
       if (typeof type === 'function') {

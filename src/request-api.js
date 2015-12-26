@@ -110,7 +110,7 @@ function requestAPI (config, path, args, qs, files, buffer, cb) {
     opts.payload = stream
   }
 
-  Wreck.request(opts.method, opts.uri, opts, onRes(buffer, cb))
+  return Wreck.request(opts.method, opts.uri, opts, onRes(buffer, cb))
 }
 
 // -- Interface
