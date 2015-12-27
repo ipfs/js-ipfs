@@ -84,6 +84,7 @@ describe('.add', () => {
     apiClients['a'].add(__dirname + '/../test-folder', { recursive: true }, (err, res) => {
       if (isNode) {
         expect(err).to.not.exist
+        console.log('Jeromy ->', res)
 
         const added = res[res.length - 1]
         expect(added).to.have.property('Hash', 'QmSzLpCVbWnEm3XoTWnv6DT6Ju5BsVoLhzvxKXZeQ2cmdg')
