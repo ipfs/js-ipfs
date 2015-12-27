@@ -80,7 +80,7 @@ describe('.files', function () {
           buf += data
         })
         .on('end', function () {
-          expect(buf.toString()).to.equal(testfile)
+          expect(new Buffer(buf)).to.deep.equal(testfile)
           done()
         })
     })
