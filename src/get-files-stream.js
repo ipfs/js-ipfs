@@ -43,7 +43,7 @@ function getFilesStream (files, opts) {
   }
 
   single.end()
-  return adder.pipe(vmps())
+  return adder.pipe(vmps.flat())
 }
 
 // vinylFile tries to cast a file object to a vinyl file.
