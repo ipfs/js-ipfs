@@ -28,7 +28,7 @@ function onRes (buffer, cb) {
     const isJson = res.headers['content-type'] === 'application/json'
 
     if (res.statusCode >= 400 || !res.statusCode) {
-      let error = new Error(`Server responded with ${res.statusCode}`)
+      const error = new Error(`Server responded with ${res.statusCode}`)
 
       Wreck.read(res, {json: true}, (err, payload) => {
         if (err) {
@@ -42,8 +42,6 @@ function onRes (buffer, cb) {
       })
       return
     }
-
-    // console.log('stream:', stream, ' chunked:', chunkedObjects)
 
     if (stream && !buffer) return cb(null, res)
 
