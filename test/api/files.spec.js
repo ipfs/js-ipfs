@@ -69,14 +69,18 @@ describe('.files', function () {
   it('files.read', function (done) {
     this.timeout(20000)
 
+    if (!isNode) {
+      return done()
+    }
+
     apiClients['a'].files.read('/test-folder/test-file', function (err, stream) {
       expect(err).to.not.exist
       let buf = ''
       stream
-        .on('error', function (err) { 
+        .on('error', function (err) {
           expect(err).to.not.exist
         })
-        .on('data', function (data) { 
+        .on('data', function (data) {
           buf += data
         })
         .on('end', function () {

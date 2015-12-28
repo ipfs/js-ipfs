@@ -1,88 +1,104 @@
 'use strict'
 
-const File = require('vinyl')
-const vinylfs = require('vinyl-fs-browser')
-const vmps = require('vinyl-multipart-stream')
-const stream = require('stream')
-const Merge = require('merge-stream')
+const isNode = require('detect-node')
+const Multipart = require('multipart-stream')
+const flatmap = require('flatmap')
 
-exports = module.exports = getFilesStream
+function headers (file) {
+  const name = file.path || ''
+  const header = {
+    'Content-Disposition': `file; filename="${name}"`
+  }
+
+  if (file.dir) {
+    header['Content-Type'] = 'application/x-directory'
+  } else {
+    header['Content-Type'] = 'application/octet-stream'
+  }
+
+  return header
+}
+
+function strip (name, base) {
+  const smallBase = base
+        .split('/')
+        .slice(0, -1)
+        .join('/') + '/'
+  return name.replace(smallBase, '')
+}
+
+function loadPaths (opts, file) {
+  const path = require('path')
+  const fs = require('fs')
+  const glob = require('glob')
+
+  const followSymlinks = opts.followSymlinks != null ? opts.followSymlinks : true
+
+  file = path.resolve(file)
+  const stats = fs.statSync(file)
+
+  if (stats.isDirectory() && !opts.recursive) {
+    throw new Error('Can only add directories using --recursive')
+  }
+
+  if (stats.isDirectory() && opts.recursive) {
+    const mg = new glob.sync.GlobSync(`${file}/**/*`, {
+      follow: followSymlinks
+    })
+
+    return mg.found.map(name => {
+      if (mg.cache[name] === 'FILE') {
+        return {
+          path: strip(name, file),
+          dir: false,
+          content: fs.createReadStream(name)
+        }
+      } else {
+        return {
+          path: strip(name, file),
+          dir: true
+        }
+      }
+    })
+  }
+
+  return {
+    path: file,
+    content: fs.createReadStream(file)
+  }
+}
 
 function getFilesStream (files, opts) {
   if (!files) return null
 
-  // merge all inputs into one stream
-  const adder = new Merge()
+  const mp = new Multipart()
 
-  // single stream for pushing directly
-  const single = new stream.PassThrough({objectMode: true})
-  adder.add(single)
-
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i]
-
-    if (typeof (file) === 'string') {
-      const srcOpts = {
-        buffer: false,
-        stripBOM: false,
-        followSymlinks: opts.followSymlinks != null ? opts.followSymlinks : true
+  flatmap(files, file => {
+    if (typeof file === 'string') {
+      if (!isNode) {
+        throw new Error('Can not add paths in node')
       }
 
-      // add the file or dir itself
-      adder.add(vinylfs.src(file, srcOpts))
-
-      // if recursive, glob the contents
-      if (opts.recursive) {
-        adder.add(vinylfs.src(file + '/**/*', srcOpts))
-      }
-    } else {
-      // try to create a single vinyl file, and push it.
-      // throws if cannot use the file.
-      single.push(vinylFile(file))
+      return loadPaths(opts, file)
     }
-  }
 
-  single.end()
-  return adder.pipe(vmps.flat())
+    if (file.path && (file.content || file.dir)) {
+      return file
+    }
+
+    return {
+      path: '',
+      dir: false,
+      content: file
+    }
+  }).forEach(file => {
+    mp.addPart({
+      headers: headers(file),
+      body: file.content
+    })
+  })
+
+  return mp
 }
 
-// vinylFile tries to cast a file object to a vinyl file.
-// it's agressive. If it _cannot_ be converted to a file,
-// it returns null.
-function vinylFile (file) {
-  if (file instanceof File) {
-    return file // it's a vinyl file.
-  }
-
-  // let's try to make a vinyl file?
-  const f = {cwd: '/', base: '/', path: ''}
-  if (file.contents && file.path) {
-    // set the cwd + base, if there.
-    f.path = file.path
-    f.cwd = file.cwd || f.cwd
-    f.base = file.base || f.base
-    f.contents = file.contents
-  } else {
-    // ok maybe we just have contents?
-    f.contents = file
-  }
-
-  // ensure the contents are safe to pass.
-  // throws if vinyl cannot use the contents
-  f.contents = vinylContentsSafe(f.contents)
-  return new File(f)
-}
-
-function vinylContentsSafe (c) {
-  if (Buffer.isBuffer(c)) return c
-  if (typeof (c) === 'string') return c
-  if (c instanceof stream.Stream) return c
-  if (typeof (c.pipe) === 'function') {
-    // hey, looks like a stream. but vinyl won't detect it.
-    // pipe it to a PassThrough, and use that
-    const s = new stream.PassThrough()
-    return c.pipe(s)
-  }
-
-  throw new Error('vinyl will not accept: ' + c)
-}
+exports = module.exports = getFilesStream

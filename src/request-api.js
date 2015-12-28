@@ -5,7 +5,7 @@ const Qs = require('qs')
 const ndjson = require('ndjson')
 const getFilesStream = require('./get-files-stream')
 
-const isNode = !global.window
+const isNode = require('detect-node')
 
 // -- Internal
 

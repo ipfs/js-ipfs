@@ -4,15 +4,13 @@
   "description": "A client library for the IPFS API",
   "main": "src/index.js",
   "dependencies": {
-    "merge-stream": "^1.0.0",
+    "detect-node": "^2.0.3",
+    "flatmap": "0.0.3",
+    "glob": "^6.0.2",
     "multiaddr": "^1.0.0",
-    "multipart-stream": "^2.0.0",
+    "multipart-stream": "github:dignifiedquire/multipart-stream#a1a4e9c4d41d1f78dcf32279affbbb0bfd930c28",
     "ndjson": "^1.4.3",
     "qs": "^6.0.0",
-    "require-dir": "^0.3.0",
-    "vinyl": "^1.1.0",
-    "vinyl-fs-browser": "^2.1.1-1",
-    "vinyl-multipart-stream": "^1.2.6",
     "wreck": "^7.0.0"
   },
   "engines": {
@@ -63,8 +61,6 @@
     "stream-equal": "^0.1.7",
     "stream-http": "^2.1.0",
     "uglify-js": "^2.4.24",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0",
     "webpack-stream": "^3.1.0"
   },
   "scripts": {

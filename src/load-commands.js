@@ -1,10 +1,6 @@
 'use strict'
 
-const isNode = !global.window
-
 function requireCommands () {
-  if (isNode) return require('require-dir')('./api')
-
   return {
     add: require('./api/add'),
     block: require('./api/block'),
@@ -14,6 +10,7 @@ function requireCommands () {
     dht: require('./api/dht'),
     diag: require('./api/diag'),
     id: require('./api/id'),
+    files: require('./api/files'),
     log: require('./api/log'),
     ls: require('./api/ls'),
     mount: require('./api/mount'),
