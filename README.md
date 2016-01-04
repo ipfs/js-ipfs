@@ -82,7 +82,8 @@ The cli is availble through `jsipfs` in your terminal
       - [ ] Update to latest version of IPLD
     - [js-merkledag-store](https://github.com/diasdavid/js-merkledag-store) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
       - [ ] Update to be mounted on top of js-ipfs-repo
-  - Importer (what converts files to MerkleDAGs, using different chunking algorithms)
+  - [Data Importing](https://github.com:diasdavid/js-ipfs-data-importing)
+    - [ ] spec - https://github.com/ipfs/specs/pull/57/files
     - [ ] importer interface
     - [ ] fixed sized chunks
     - [ ] jsipfs tar
