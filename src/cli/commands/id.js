@@ -15,7 +15,7 @@ module.exports = Command.extend({
   },
 
   run: name => {
-    let node = new IPFS()
+    const node = new IPFS()
     node.id((err, id) => {
       if (err) { return log.error(err) }
       console.log(id)
