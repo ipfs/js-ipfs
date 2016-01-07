@@ -3,7 +3,7 @@
 const Command = require('ronin').Command
 const httpAPI = require('../../http-api')
 const debug = require('debug')
-let log = debug('cli:daemon')
+const log = debug('cli:daemon')
 log.error = debug('cli:damon:error')
 
 module.exports = Command.extend({

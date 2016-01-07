@@ -3,7 +3,7 @@
 const Command = require('ronin').Command
 const IPFS = require('../../ipfs-core')
 const debug = require('debug')
-let log = debug('cli:version')
+const log = debug('cli:version')
 log.error = debug('cli:version:error')
 
 module.exports = Command.extend({

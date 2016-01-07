@@ -13,7 +13,7 @@ function IPFS () {
 
   var repo = new IPFSRepo(config.repoPath)
 
-  this.daemon = (callback) => {
+  this.daemon = callback => {
     // 1. read repo to get peer data
   }
 

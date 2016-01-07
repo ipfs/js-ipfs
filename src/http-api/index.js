@@ -3,7 +3,7 @@
 const Hapi = require('hapi')
 const IPFS = require('../ipfs-core')
 const debug = require('debug')
-let log = debug('api')
+const log = debug('api')
 log.error = debug('api:error')
 
 exports = module.exports
