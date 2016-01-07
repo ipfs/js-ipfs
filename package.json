@@ -8,11 +8,12 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "standard",
-    "coverage": "istanbul cover --print both -- _mocha tests/*-test.js",
+    "coverage": "istanbul cover --print both -- _mocha tests/test-*/test-*.js",
     "test": "mocha tests/test-*/test-*.js"
   },
   "pre-commit": [
-    "lint"
+    "lint",
+    "test"
   ],
   "repository": {
     "type": "git",
