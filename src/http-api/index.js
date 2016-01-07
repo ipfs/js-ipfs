@@ -1,11 +1,14 @@
-var Hapi = require('hapi')
-var IPFS = require('../ipfs-core')
-var debug = require('debug')
-var log = debug('api')
+'use strict'
+
+const Hapi = require('hapi')
+const IPFS = require('../ipfs-core')
+const debug = require('debug')
+let log = debug('api')
+log.error = debug('api:error')
 
 exports = module.exports
 
-exports.start = function (callback) {
+exports.start = callback => {
   // start IPFS and exports.ipfs = new IPFS()
 
   exports.ipfs = new IPFS()
@@ -25,13 +28,13 @@ exports.start = function (callback) {
   // load routes
   require('./routes/version.js')
 
-  server.start(function (err) {
+  server.start(err => {
     if (err) { return callback(err) }
     log('server started: ' + server.info.uri)
     callback()
   })
 }
 
-exports.stop = function () {
+exports.stop = () => {
 
 }

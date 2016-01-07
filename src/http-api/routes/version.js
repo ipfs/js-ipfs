@@ -1,5 +1,7 @@
-var server = require('./../index.js').server
-var resources = require('./../resources')
+'use strict'
+
+const server = require('./../index.js').server
+const resources = require('./../resources')
 
 server.route({
   method: 'GET',

@@ -1,12 +1,18 @@
-var Command = require('ronin').Command
-var httpAPI = require('../../http-api')
+'use strict'
+
+const Command = require('ronin').Command
+const httpAPI = require('../../http-api')
+const debug = require('debug')
+let log = debug('cli:daemon')
+log.error = debug('cli:damon:error')
 
 module.exports = Command.extend({
   desc: 'Start a long-running daemon process',
 
-  run: function (name) {
-    httpAPI.start()
-    // start API, using core
-    //
+  run: name => {
+    httpAPI.start((err) => {
+      if (err) { return log.error(err) }
+      log('daemon started')
+    })
   }
 })

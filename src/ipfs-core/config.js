@@ -1,4 +1,6 @@
-var os = require('os')
+'use strict'
+
+const os = require('os')
 
 exports = module.exports
 

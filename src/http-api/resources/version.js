@@ -1,13 +1,13 @@
-var ipfs = require('./../index.js').ipfs
-var boom = require('boom')
+'use strict'
+
+const ipfs = require('./../index.js').ipfs
+const boom = require('boom')
 
 exports = module.exports
 
-exports.get = function handler (request, reply) {
-  ipfs.version(function (err, version) {
-    if (err) {
-      return reply(boom.badRequest(err))
-    }
+exports.get = (request, reply) => {
+  ipfs.version((err, version) => {
+    if (err) { return reply(boom.badRequest(err)) }
     return reply(version)
   })
 }
