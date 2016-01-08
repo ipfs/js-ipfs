@@ -1,10 +1,9 @@
-var Command = require('ronin').Command
-// var help = require('../src/help-menu.js')
+'use strict'
+
+const Command = require('ronin').Command
 
 module.exports = Command.extend({
   desc: 'Initialize ipfs local configuration',
-
-  // help: help,
 
   options: {
     bits: {
@@ -25,7 +24,5 @@ module.exports = Command.extend({
     }
   },
 
-  run: function (name) {
-    console.log('NA - https://github.com/ipfs/js-ipfs/tree/jsipfs#getting-jsipfs-ready')
-  }
+  run: name => {}
 })

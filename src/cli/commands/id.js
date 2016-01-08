@@ -1,5 +1,8 @@
-var Command = require('ronin').Command
-var IPFS = require('../../ipfs-core')
+const Command = require('ronin').Command
+const IPFS = require('../../ipfs-core')
+const debug = require('debug')
+const log = debug('cli:id')
+log.error = debug('cli:id:error')
 
 module.exports = Command.extend({
   desc: 'Shows IPFS Node ID info',
@@ -11,12 +14,10 @@ module.exports = Command.extend({
     }
   },
 
-  run: function (name) {
-    var node = new IPFS()
-    node.id(function (err, id) {
-      if (err) {
-        return console.error(err)
-      }
+  run: name => {
+    const node = new IPFS()
+    node.id((err, id) => {
+      if (err) { return log.error(err) }
       console.log(id)
     })
   }
