@@ -26,7 +26,7 @@ exports.start = callback => {
   })
 
   // load routes
-  require('./routes/version.js')
+  require('./routes')
 
   server.start(err => {
     if (err) { return callback(err) }
@@ -35,6 +35,6 @@ exports.start = callback => {
   })
 }
 
-exports.stop = () => {
-
+exports.stop = callback => {
+  exports.server.stop(callback)
 }
