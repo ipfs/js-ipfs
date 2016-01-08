@@ -76,4 +76,10 @@ function IPFS () {
 
     gc: function () {}
   }
+
+  this.bootstrap = {
+    list: () => {},
+    add: () => {},
+    rm: () => {}
+  }
 }
