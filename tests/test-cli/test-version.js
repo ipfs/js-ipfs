@@ -1,10 +1,11 @@
 /* globals describe, it */
+
 'use strict'
 
 const expect = require('chai').expect
 const nexpect = require('nexpect')
 
-describe('cli: version', () => {
+describe('version', () => {
   it('get the version', done => {
     nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'version'])
      .expect('0.4.0-dev')

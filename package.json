@@ -8,8 +8,11 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "standard",
-    "coverage": "istanbul cover --print both -- _mocha tests/test-*/test-*.js",
-    "test": "mocha tests/test-*/test-*.js"
+    "coverage": "istanbul cover --print both -- _mocha tests/test-*/index.js",
+    "test": "mocha tests/test-*/index.js",
+    "test:core": "mocha tests/test-core/index.js",
+    "test:cli": "mocha tests/test-cli/index.js",
+    "test:cli-offline": "mocha tests/test-cli-offline/index.js"
   },
   "pre-commit": [
     "lint",
