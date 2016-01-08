@@ -42,7 +42,7 @@ function IPFS () {
     repo.exists((err, exists) => {
       if (err) { return callback(err) }
 
-      repo.config.read((err, config) => {
+      repo.config.get((err, config) => {
         if (err) {
           return callback(err)
         }
