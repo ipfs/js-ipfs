@@ -11,7 +11,7 @@ function IPFS () {
     throw new Error('Must be instantiated with new')
   }
 
-  var repo = new IPFSRepo(config.repoPath)
+  var repo = new IPFSRepo(config.repoPath())
 
   this.daemon = callback => {
     // 1. read repo to get peer data

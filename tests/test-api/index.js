@@ -4,21 +4,32 @@
 
 const fs = require('fs')
 const expect = require('chai').expect
-process.env.IPFS_PATH = process.cwd() + '/tests/repo-example'
 const api = require('../../src/http-api')
+const ncp = require('ncp').ncp
+const rimraf = require('rimraf')
 
 describe('api', () => {
+  const repoExample = process.cwd() + '/tests/repo-example'
+  const repoTests = process.cwd() + '/tests/repo-tests' + Date.now()
+  process.env.IPFS_PATH = repoTests
+
   before(done => {
-    api.start(err => {
+    ncp(repoExample, repoTests, err => {
       expect(err).to.not.exist
-      done()
+      api.start(err => {
+        expect(err).to.not.exist
+        done()
+      })
     })
   })
 
   after(done => {
     api.stop((err) => {
       expect(err).to.not.exist
-      done()
+      rimraf(repoTests, err => {
+        expect(err).to.not.exist
+        done()
+      })
     })
   })
 
