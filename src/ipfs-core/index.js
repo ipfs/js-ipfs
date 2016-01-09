@@ -84,7 +84,29 @@ function IPFS () {
         callback(null, config.Bootstrap)
       })
     },
-    add: () => {},
-    rm: () => {}
+    add: (multiaddr, callback) => {
+      repo.config.get((err, config) => {
+        if (err) { return callback(err) }
+        config.Bootstrap.push(multiaddr)
+        repo.config.set(config, err => {
+          if (err) { return callback(err) }
+          callback()
+        })
+      })
+    },
+    rm: (multiaddr, callback) => {
+      repo.config.get((err, config) => {
+        if (err) { return callback(err) }
+        config.Bootstrap = config.Bootstrap.filter(mh => {
+          if (mh === multiaddr) {
+            return false
+          } else { return true }
+        })
+        repo.config.set(config, err => {
+          if (err) { return callback(err) }
+          callback()
+        })
+      })
+    }
   }
 }
