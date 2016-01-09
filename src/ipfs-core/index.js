@@ -78,7 +78,12 @@ function IPFS () {
   }
 
   this.bootstrap = {
-    list: () => {},
+    list: (callback) => {
+      repo.config.get((err, config) => {
+        if (err) { return callback(err) }
+        callback(null, config.Bootstrap)
+      })
+    },
     add: () => {},
     rm: () => {}
   }
