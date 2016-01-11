@@ -11,7 +11,7 @@ function IPFS () {
     throw new Error('Must be instantiated with new')
   }
 
-  var repo = new IPFSRepo(config.repoPath)
+  var repo = new IPFSRepo(config.repoPath())
 
   this.daemon = callback => {
     // 1. read repo to get peer data
@@ -75,5 +75,39 @@ function IPFS () {
     },
 
     gc: function () {}
+  }
+
+  this.bootstrap = {
+    list: (callback) => {
+      repo.config.get((err, config) => {
+        if (err) { return callback(err) }
+        callback(null, config.Bootstrap)
+      })
+    },
+    add: (multiaddr, callback) => {
+      repo.config.get((err, config) => {
+        if (err) { return callback(err) }
+        config.Bootstrap.push(multiaddr)
+        repo.config.set(config, err => {
+          if (err) { return callback(err) }
+
+          callback()
+        })
+      })
+    },
+    rm: (multiaddr, callback) => {
+      repo.config.get((err, config) => {
+        if (err) { return callback(err) }
+        config.Bootstrap = config.Bootstrap.filter(mh => {
+          if (mh === multiaddr) {
+            return false
+          } else { return true }
+        })
+        repo.config.set(config, err => {
+          if (err) { return callback(err) }
+          callback()
+        })
+      })
+    }
   }
 }
