@@ -11,12 +11,12 @@ server.route({
 
 server.route({
   method: 'POST',
-  path: '/api/v0/boostrap',
+  path: '/api/v0/bootstrap',
   handler: resources.version.add
 })
 
 server.route({
   method: 'DELETE',
-  path: '/api/v0/boostrap',
+  path: '/api/v0/bootstrap',
   handler: resources.version.add
 })
