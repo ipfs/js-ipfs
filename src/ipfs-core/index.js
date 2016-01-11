@@ -90,6 +90,7 @@ function IPFS () {
         config.Bootstrap.push(multiaddr)
         repo.config.set(config, err => {
           if (err) { return callback(err) }
+
           callback()
         })
       })

@@ -1,36 +1,20 @@
 'use strict'
 
 const Command = require('ronin').Command
-const IPFS = require('../../ipfs-core')
+const IPFS = require('../../../ipfs-core')
 const debug = require('debug')
 const log = debug('cli:version')
 log.error = debug('cli:version:error')
 
 module.exports = Command.extend({
-  desc: 'Shows IPFS version information',
+  desc: 'Show peers in the bootstrap list',
 
-  options: {
-    number: {
-      alias: 'n',
-      type: 'boolean',
-      default: false
-    },
-    commit: {
-      type: 'boolean',
-      default: false
-    },
-    repo: {
-      type: 'boolean',
-      default: false
-    }
-  },
+  options: {},
 
-  run: (name) => {
+  run: (multiaddr) => {
     var node = new IPFS()
-    node.version((err, version) => {
+    node.bootstrap.rm(multiaddr, (err, list) => {
       if (err) { return log.error(err) }
-
-      console.log(version)
     })
   }
 })
