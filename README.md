@@ -47,9 +47,6 @@ $ npm i ipfs -g
 
 The cli is availble through `jsipfs` in your terminal
 
-### API
-
-
 # Project structure
 
 ```
@@ -64,130 +61,123 @@ The cli is availble through `jsipfs` in your terminal
                          └─────┘
 ```
 
-# Roadmap for the full IPFS implementation in JavaScript
+# Usage
 
-- **Network layer**
-  - The network layer of IPFS is now known as libp2p, follow https://github.com/diasdavid/js-libp2p
-- **Exchange**
-  - [ ] [js-bitswap](https://github.com/diasdavid/js-bitswap). [![](https://img.shields.io/badge/discuss--blue.svg?style=flat-square)](https://github.com/ipfs/js-ipfs/issues/17)![](https://img.shields.io/badge/status-has%20not%20started%20yet-brown.svg?style=flat-square)
-  - [ ] [js-ipfs-repo](https://github.com/ipfs/js-ipfs-repo)
-    - [ ] [keys](https://github.com/ipfs/js-ipfs-repo/issues/4)
-    - [ ] [version](https://github.com/ipfs/js-ipfs-repo/issues/5)
-    - [ ] [datastore](https://github.com/ipfs/js-ipfs-repo/issues/6)
-    - [ ] [config](https://github.com/ipfs/js-ipfs-repo/issues/7)
-    - [ ] [logs](https://github.com/ipfs/js-ipfs-repo/issues/8)
-    - [ ] [locks](https://github.com/ipfs/js-ipfs-repo/issues/9)
-  - [x] MerkleDAG node implementation (needs IPLD).
-    - [js-ipld](https://github.com/diasdavid/js-ipld) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
-      - [ ] Update to latest version of IPLD
-    - [js-merkledag-store](https://github.com/diasdavid/js-merkledag-store) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
-      - [ ] Update to be mounted on top of js-ipfs-repo
-  - [Data Importing](https://github.com:diasdavid/js-ipfs-data-importing)
-    - [ ] spec - https://github.com/ipfs/specs/pull/57/files
-    - [ ] importer interface
-    - [ ] fixed sized chunks
-    - [ ] jsipfs tar
-    - [ ] rabin fingerprinting
-  - [ ] js-ipfs [follow the roadmap](https://github.com/ipfs/pm/blob/js-ipfs/roadmap/ROADMAP.js-ipfs.md)
-- **Commands**
-  - core
-    - version
-    - node
-      - id
-      - start
-      - stop
-    - block
-      - get
-      - put
-      - stat
-    - object - Basic manipulation of the DAG
-      - data
-      - get
-      - links
-      - new
-      - patch
-      - put
-      - stat
-    - refs - Listing of references. (Essentially, walking around the graph).
-      - local
-    - repo - Basic manipulation of the repo
-      - init
-      - stat
-      - gc
-      - config get
-      - config put
-    - pin - Basic manipulation of the pin set
-      - add
-      - ls
-      - rm
-    - log
-      - level
-      - tail
-    - name (ipns)
-      - name publish
-      - resolve
-  - extensions
-    - dns
-    - resolve
-    - tar
-      - add
-      - cat
-    - tour
-      - list
-      - next
-      - restart
-    - files
-      - add
-      - cat
-      - get
-    - stat - Statistics about everything
-      - bw
-    - mount
-    - bootstrap
-      - add
-      - list
-      - rm
-   - tools
-     - commands
-     - update
-     - init - sugar around ipfs repo init
-    - config
-      - edit
-      - replace
-      - show
-    - daemon
-    - diag
-      - net
-      - sys
-  - libp2p (exposed by libp2p)
-    - ping
-    - dht
-      - findpeer
-      - findprovs
-      - get
-      - put
-      - query
-    - swarm
-      - addrs
-      - addrs local
-      - connect
-      - disconnect
-      - filters
-      - filters add
-      - filters rm
-      - peers
-    - record (IPRS)
-      - put
-      - get
-    - bitswap
-      - stat
-      - unwant
-      - wantlist
-- [**Spec**](https://github.com/ipfs/specs/tree/master/protocol/network) ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
+> WIP
 
-### status badges
+# Project Status
 
-- ![](https://img.shields.io/badge/status-has%20not%20started%20yet-brown.svg?style=flat-square)
-- ![](https://img.shields.io/badge/status-in%20progress-yellow.svg?style=flat-square)
-- ![](https://img.shields.io/badge/status-ready-green.svg?style=flat-square)
-- [![](https://img.shields.io/badge/discuss--blue.svg?style=flat-square)](LINK HERE)
+### Per component view
+
+- **Network layer** - See hhttps://github.com/diasdavid/js-libp2p
+- ipfs-repo - [spec](https://github.com/ipfs/specs/tree/master/repo) - [impl](https://github.com/ipfs/js-ipfs-repo)
+  - keys
+  - version
+  - datastore.legacy
+  - datastore
+  - config
+  - logs
+  - locks
+- ipfs-data-importing - [spec](https://github.com/ipfs/specs/pull/57) - [impl](https://github.com/ipfs/js-ipfs-data-importing)
+  - fixed size chunker
+  - rabin chunking
+  - tar importer
+  - MerkleDAG layout (protobufs)
+  - IPLD layout (json + cbor)
+- bitswap - [spec](https://github.com/ipfs/specs/pull/53) - [impl](https://github.com/ipfs/js-ipfs-bitswap)
+
+### Per feature view
+
+- **core**
+  - [x] version
+  - [ ] node (previously known as daemon)
+    - [x] id
+    - [ ] start
+    - [ ] stop
+  - [ ] block
+    - [ ] get
+    - [ ] put
+    - [ ] stat
+  - [ ] object - Basic manipulation of the DAG
+    - [ ] data
+    - [ ] get
+    - [ ] links
+    - [ ] new
+    - [ ] patch
+    - [ ] put
+    - [ ] stat
+  - [ ] refs - Listing of references. (alking around the graph)
+    - [ ] local
+  - [ ] repo
+    - [ ] init
+    - [ ] stat
+    - [ ] gc
+    - [ ] config get
+    - [ ] config put
+  - [ ] pin
+    - [ ] add
+    - [ ] ls
+    - [ ] rm
+  - [ ] log
+    - [ ] level
+    - [ ] tail
+- **extensions**
+  - [ ] name (IPNS)
+    - [ ] publish
+    - [ ] resolve
+  - [ ] dns
+    - [ ] resolve
+  - [ ] tar
+    - [ ] add
+    - [ ] cat
+  - [ ] tour
+    - [ ] list
+    - [ ] next
+    - [ ] restart
+  - [ ] files
+    - [ ] add
+    - [ ] cat
+    - [ ] get
+  - [ ] stat - Statistics about everything
+    - [ ] bw
+  - [ ] mount
+  - [x] bootstrap
+    - [x] add
+    - [x] list
+    - [x] rm
+  - [ ] bitswap
+    - [ ] stat
+    - [ ] unwant
+    - [ ] wantlist
+- **tooling**
+  - [ ] commands
+  - [ ] update
+  - [ ] init - sugar around ipfs repo init
+  - [ ] config
+    - [ ] edit
+    - [ ] replace
+    - [ ] show
+  - [ ] daemon
+  - [ ] diag
+    - [ ] net
+    - [ ] sys
+- **network** (bubbles up from libp2p)
+  - [ ] ping
+  - [ ] dht
+    - [ ] findpeer
+    - [ ] findprovs
+    - [ ] get
+    - [ ] put
+    - [ ] query
+  - [ ] swarm
+    - [ ] addrs
+    - [ ] addrs local
+    - [ ] connect
+    - [ ] disconnect
+    - [ ] filters
+    - [ ] filters add
+    - [ ] filters rm
+    - [ ] peers
+  - [ ] records (IPRS)
+    - [ ] put
+    - [ ] get
