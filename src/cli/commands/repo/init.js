@@ -7,6 +7,5 @@ module.exports = Command.extend({
   options: {
   },
 
-  run: function (name) {
-  }
+  run: function (name) {}
 })

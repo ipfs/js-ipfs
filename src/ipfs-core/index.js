@@ -110,4 +110,18 @@ function IPFS () {
       })
     }
   }
+
+  this.config = {
+    // cli only feature built with show and replace
+    // edit: (callback) => {},
+    replace: (config, callback) => {
+      repo.config.set(config, callback)
+    },
+    show: callback => {
+      repo.config.get((err, config) => {
+        if (err) { return callback(err) }
+        callback(null, config)
+      })
+    }
+  }
 }

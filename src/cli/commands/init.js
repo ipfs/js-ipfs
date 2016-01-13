@@ -20,9 +20,10 @@ module.exports = Command.extend({
     'empty-repo': {
       alias: 'e',
       type: 'boolean',
-      desc: 'Don\'t add and pin help files to the local storage'
+      desc: "Don't add and pin help files to the local storage"
     }
   },
 
-  run: name => {}
+  run: name => {
+  }
 })

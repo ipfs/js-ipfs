@@ -15,7 +15,9 @@ module.exports = Command.extend({
     var node = new IPFS()
     node.bootstrap.list((err, list) => {
       if (err) { return log.error(err) }
-      list.forEach(node => { console.log(node) })
+      list.forEach(node => {
+        console.log(node)
+      })
     })
   }
 })
