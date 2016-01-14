@@ -22,7 +22,7 @@ describe('block', () => {
   it.skip('put', done => {
     done()
   })
-  it.skip('put', done => {
+  it.skip('rm', done => {
     done()
   })
   it.skip('stat', done => {
