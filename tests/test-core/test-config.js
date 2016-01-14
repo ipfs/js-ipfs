@@ -75,11 +75,18 @@ describe('config', () => {
     })
   })
 
-  it.skip('replace', done => {
+  it('replace', done => {
     let ipfs = new IPFS()
-    ipfs.config((err, config) => {
+    ipfs.config.replace({}, err => {
       expect(err).to.not.exist
-      done()
+      ipfs.config.show((err, config) => {
+        expect(err).to.not.exist
+        expect(config).to.deep.equal({})
+        ipfs.config.replace(defaultConfig, err => {
+          expect(err).to.not.exist
+          done()
+        })
+      })
     })
   })
 
