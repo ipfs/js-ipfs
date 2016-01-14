@@ -3,21 +3,23 @@
 const Command = require('ronin').Command
 const IPFS = require('../../../ipfs-core')
 const debug = require('debug')
+const path = require('path')
 const log = debug('cli:version')
 log.error = debug('cli:version:error')
 
 module.exports = Command.extend({
-  desc: 'Show peers in the bootstrap list',
+  desc: 'Replaces the config with <file>',
 
   options: {},
 
-  run: (name) => {
+  run: (configPath) => {
     var node = new IPFS()
-    node.bootstrap.list((err, list) => {
+    var config = require(path.resolve(process.cwd(), configPath))
+
+    node.config.replace(config, (err, version) => {
       if (err) { return log.error(err) }
-      list.forEach(node => {
-        console.log(node)
-      })
+
+      console.log(version)
     })
   }
 })

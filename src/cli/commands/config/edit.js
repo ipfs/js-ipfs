@@ -7,17 +7,30 @@ const log = debug('cli:version')
 log.error = debug('cli:version:error')
 
 module.exports = Command.extend({
-  desc: 'Show peers in the bootstrap list',
+  desc: 'Shows IPFS version information',
 
-  options: {},
+  options: {
+    number: {
+      alias: 'n',
+      type: 'boolean',
+      default: false
+    },
+    commit: {
+      type: 'boolean',
+      default: false
+    },
+    repo: {
+      type: 'boolean',
+      default: false
+    }
+  },
 
   run: (name) => {
     var node = new IPFS()
-    node.bootstrap.list((err, list) => {
+    node.version((err, version) => {
       if (err) { return log.error(err) }
-      list.forEach(node => {
-        console.log(node)
-      })
+
+      console.log(version)
     })
   }
 })

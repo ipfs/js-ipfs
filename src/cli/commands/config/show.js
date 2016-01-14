@@ -7,17 +7,16 @@ const log = debug('cli:version')
 log.error = debug('cli:version:error')
 
 module.exports = Command.extend({
-  desc: 'Show peers in the bootstrap list',
+  desc: 'Outputs the content of the config file',
 
   options: {},
 
-  run: (name) => {
+  run: () => {
     var node = new IPFS()
-    node.bootstrap.list((err, list) => {
+    node.config.show((err, config) => {
       if (err) { return log.error(err) }
-      list.forEach(node => {
-        console.log(node)
-      })
+
+      console.log(JSON.stringify(config, null, 4))
     })
   }
 })

@@ -11,4 +11,3 @@ exports.get = (request, reply) => {
     return reply(id)
   })
 }
-
