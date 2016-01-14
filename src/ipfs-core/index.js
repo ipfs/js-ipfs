@@ -1,6 +1,7 @@
 'use strict'
 
 const defaultRepo = require('./default-repo')
+const bl = require('bl')
 
 exports = module.exports = IPFS
 
@@ -123,5 +124,15 @@ function IPFS (repo) {
         callback(null, config)
       })
     }
+  }
+
+  this.block = {
+    get: (multihash, callback) => {
+      repo.datastore.createReadStream(multihash)
+        .pipe(bl(callback))
+    },
+    put: (multihash, callback) => {},
+    del: (multihash, callback) => {},
+    stat: (multihash, callback) => {}
   }
 }
