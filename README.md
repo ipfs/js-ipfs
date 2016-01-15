@@ -155,8 +155,8 @@ The cli is availble through `jsipfs` in your terminal
   - [ ] init - sugar around ipfs repo init
   - [ ] config
     - [ ] edit
-    - [ ] replace
-    - [ ] show
+    - [x] replace
+    - [x] show
   - [ ] daemon
   - [ ] diag
     - [ ] net
