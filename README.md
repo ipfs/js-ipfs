@@ -69,9 +69,19 @@ The tests folder also contains great examples that can be used to understand how
 
 ### Core
 
-##### Block
+##### version
 
-##### Object
+- [examples](https://github.com/ipfs/js-ipfs-api/blob/master/test/api/version.spec.js)
+
+##### node
+
+> node start and stop are not implemented in the API
+
+- [examples](https://github.com/ipfs/js-ipfs-api/blob/master/test/api/id.spec.js)
+
+##### block
+
+##### object
 
 **Curl**
 ```sh
@@ -91,7 +101,7 @@ curl 'http://localhost:5001/api/v0/object/get?arg=QmYEqnfCZp7a39Gxrgyv3qRS4MoCTG
 ```
 *Data is base64 encoded.*
 
-##### Pin
+##### pin
 
 
 -------------------------------------------------------
@@ -146,8 +156,6 @@ curl 'http://localhost:5001/api/v0/add?stream-channels=true' \
 }, ...]
 ```
 *The name value will only be set for actual files.*
-
-
 
 ##### cat
 
@@ -219,7 +227,7 @@ curl "http://localhost:5001/api/v0/ls?arg=<hash>&stream-channels=true"
 }
 ```
 
-##### Update
+##### update
 
 -------------------------------------------------------
 
