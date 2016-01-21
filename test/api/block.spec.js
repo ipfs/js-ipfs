@@ -25,4 +25,13 @@ describe('.block', () => {
         })
     })
   })
+
+  it('block.stat', done => {
+    apiClients['a'].block.stat(blorbKey, (err, res) => {
+      expect(err).to.not.exist
+      expect(res).to.have.property('Key')
+      expect(res).to.have.property('Size')
+      done()
+    })
+  })
 })
