@@ -61,7 +61,7 @@
     "run-sequence": "^1.1.4",
     "semver": "^5.1.0",
     "stream-equal": "^0.1.7",
-    "stream-http": "^2.0.4",
+    "stream-http": "^2.1.0",
     "uglify-js": "^2.4.24",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
