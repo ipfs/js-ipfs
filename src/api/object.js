@@ -12,8 +12,9 @@ module.exports = send => {
       return send('object/put', encoding, null, file, cb)
     },
     data: argCommand(send, 'object/data'),
-    stat: argCommand(send, 'object/stat'),
     links: argCommand(send, 'object/links'),
+    stat: argCommand(send, 'object/stat'),
+    new: argCommand(send, 'object/new'),
     patch (file, opts, cb) {
       return send('object/patch', [file].concat(opts), null, null, cb)
     }

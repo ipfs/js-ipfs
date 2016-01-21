@@ -103,6 +103,8 @@ curl 'http://localhost:5001/api/v0/object/get?arg=QmYEqnfCZp7a39Gxrgyv3qRS4MoCTG
 ```
 *Data is base64 encoded.*
 
+- [examples](https://github.com/ipfs/js-ipfs-api/blob/master/test/api/object.spec.js)
+
 ##### pin
 
 
