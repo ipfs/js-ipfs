@@ -8,15 +8,13 @@ module.exports = send => {
     }
 
     if (typeof files === 'string' && files.startsWith('http')) {
-      Wreck.request('GET', files, null, (err, res) => {
+      return Wreck.request('GET', files, null, (err, res) => {
         if (err) return cb(err)
 
         send('add', null, opts, res, cb)
       })
-
-      return
     }
 
-    send('add', null, opts, files, cb)
+    return send('add', null, opts, files, cb)
   }
 }
