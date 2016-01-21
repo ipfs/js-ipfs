@@ -33,7 +33,7 @@
     "concurrently": "^1.0.0",
     "eslint-config-standard": "^4.4.0",
     "eslint-plugin-standard": "^1.3.1",
-    "glob-stream": "5.2.0",
+    "glob-stream": "5.3.1",
     "gulp": "^3.9.0",
     "gulp-bump": "^1.0.0",
     "gulp-eslint": "^1.0.0",
