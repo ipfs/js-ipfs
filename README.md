@@ -61,12 +61,49 @@ If are using this module in a browser with something like browserify, then you w
 $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin "[\"http://example.com\"]"
 ```
 
-## API
+## Usage
 
-### Level 1 Commands
-Level 1 commands are simple commands
+We classify the API calls by 'core', 'extensions', 'tooling', and 'network', following the same API spec organization available at [ipfs/specs](https://github.com/ipfs/specs/blob/ipfs/api/api/core/README.md)
 
-#### add
+The tests folder also contains great examples that can be used to understand how this client library interacts with the HTTP-API. You can find the tests here: https://github.com/ipfs/js-ipfs-api/tree/master/test/api
+
+### Core
+
+##### Block
+
+##### Object
+
+**Curl**
+```sh
+curl 'http://localhost:5001/api/v0/object/get?arg=QmYEqnfCZp7a39Gxrgyv3qRS4MoCTGjegKV6zroU3Rvr52&stream-channels=true' --compressed
+```
+
+**Response**
+```js
+{
+    Links: [{
+        Name: string,
+        Hash: string,
+        Size: number
+    }, ...],
+    Data: string
+}
+```
+*Data is base64 encoded.*
+
+##### Pin
+
+
+-------------------------------------------------------
+
+### Extensions
+
+
+-------------------------------------------------------
+
+### Tooling
+
+##### add
 
 Add a file (where file is any data) to ipfs returning the hash and name. The
 name value will only be set if you are actually sending a file. A single or
@@ -83,6 +120,7 @@ ipfs.add(files, function(err, res) {
     })
 })
 ```
+
 `files` can be a mixed array of filenames or buffers of data. A single value is
 also acceptable.
 
@@ -111,11 +149,12 @@ curl 'http://localhost:5001/api/v0/add?stream-channels=true' \
 
 
 
-#### cat
+##### cat
 
 Retrieve the contents of a single hash, or array of hashes.
 
 **Usage**
+
 ```javascript
 ipfs.cat(hashs, function(err, res) {
     if(err || !res) return console.error(err)
@@ -131,6 +170,7 @@ ipfs.cat(hashs, function(err, res) {
 ```
 
 **Curl**
+
 ```sh
 curl "http://localhost:5001/api/v0/cat?arg=<hash>&stream-channels=true"
 ```
@@ -139,7 +179,7 @@ curl "http://localhost:5001/api/v0/cat?arg=<hash>&stream-channels=true"
 
 The response is either a readable stream, or a string.
 
-#### ls
+##### ls
 Get the node structure of a hash. Included in it is a hash and array to links.
 
 **Usage**
@@ -179,46 +219,12 @@ curl "http://localhost:5001/api/v0/ls?arg=<hash>&stream-channels=true"
 }
 ```
 
+##### Update
 
-**version**
+-------------------------------------------------------
 
-**commands**
+### Network
 
-### Level 2 Commands
-Level 2 commands are simply named spaced wrapped commands
 
-#### Config
 
-#### Update
-
-#### Mount
-
-#### Diag
-
-#### Block
-
-#### Object
-
-**Curl**
-```sh
-curl 'http://localhost:5001/api/v0/object/get?arg=QmYEqnfCZp7a39Gxrgyv3qRS4MoCTGjegKV6zroU3Rvr52&stream-channels=true' --compressed
-```
-
-**Response**
-```js
-{
-    Links: [{
-        Name: string,
-        Hash: string,
-        Size: number
-    }, ...],
-    Data: string
-}
-```
-*Data is base64 encoded.*
-
-#### Swarm
-
-#### Pin
-
-#### Gateway
+-------------------------------------------------------
