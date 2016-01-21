@@ -90,4 +90,15 @@ describe('.object', () => {
       })
     })
   })
+
+  it('object.new', done => {
+    apiClients['a'].object.new('unixfs-dir', (err, res) => {
+      expect(err).to.not.exist
+      expect(res).to.deep.equal({
+        Hash: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn',
+        Links: null
+      })
+      done()
+    })
+  })
 })
