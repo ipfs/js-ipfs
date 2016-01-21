@@ -81,6 +81,8 @@ The tests folder also contains great examples that can be used to understand how
 
 ##### block
 
+- [examples](https://github.com/ipfs/js-ipfs-api/blob/master/test/api/block.spec.js)
+
 ##### object
 
 **Curl**
