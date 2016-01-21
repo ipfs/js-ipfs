@@ -85,12 +85,12 @@ The tests folder also contains great examples that can be used to understand how
 
 ##### object
 
-**Curl**
+*curl*
 ```sh
 curl 'http://localhost:5001/api/v0/object/get?arg=QmYEqnfCZp7a39Gxrgyv3qRS4MoCTGjegKV6zroU3Rvr52&stream-channels=true' --compressed
 ```
 
-**Response**
+*response*
 ```js
 {
     Links: [{
@@ -121,7 +121,7 @@ Add a file (where file is any data) to ipfs returning the hash and name. The
 name value will only be set if you are actually sending a file. A single or
 array of files can be used.
 
-**Usage**
+*usage*
 ```javascript
 ipfs.add(files, function(err, res) {
     if(err || !res) return console.error(err)
@@ -142,7 +142,7 @@ var files = ["../files/hello.txt", new Buffer("ipfs!")]
 var files = "../files/hello.txt"
 ```
 
-**Curl**
+*curl*
 ```sh
 curl 'http://localhost:5001/api/v0/add?stream-channels=true' \
 -H 'content-type: multipart/form-data; boundary=a831rwxi1a3gzaorw1w2z49dlsor' \
@@ -150,7 +150,7 @@ curl 'http://localhost:5001/api/v0/add?stream-channels=true' \
 --data-binary $'--a831rwxi1a3gzaorw1w2z49dlsor\r\nContent-Type: application/octet-stream\r\nContent-Disposition: file; name="file"; filename="Hello.txt"\r\n\r\nhello--a831rwxi1a3gzaorw1w2z49dlsor--' --compressed
 ```
 
-**Response**
+*response*
 ```js
 [{
     Hash: string,
@@ -163,7 +163,7 @@ curl 'http://localhost:5001/api/v0/add?stream-channels=true' \
 
 Retrieve the contents of a single hash, or array of hashes.
 
-**Usage**
+**usage**
 
 ```javascript
 ipfs.cat(hashs, function(err, res) {
@@ -179,20 +179,20 @@ ipfs.cat(hashs, function(err, res) {
 })
 ```
 
-**Curl**
+*curl*
 
 ```sh
 curl "http://localhost:5001/api/v0/cat?arg=<hash>&stream-channels=true"
 ```
 
-**Response**
+*response*
 
 The response is either a readable stream, or a string.
 
 ##### ls
 Get the node structure of a hash. Included in it is a hash and array to links.
 
-**Usage**
+*Usage*
 ```javascript
 ipfs.ls(hashs, function(err, res) {
     if(err || !res) return console.error(err)
@@ -207,12 +207,12 @@ ipfs.ls(hashs, function(err, res) {
 })
 ```
 
-**Curl**
+*Curl*
 ```sh
 curl "http://localhost:5001/api/v0/ls?arg=<hash>&stream-channels=true"
 ```
 
-**Response**
+*Response*
 ```js
 {
     Objects: [
