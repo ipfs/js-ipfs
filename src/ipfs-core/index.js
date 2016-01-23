@@ -134,8 +134,28 @@ function IPFS (repo) {
     get: (multihash, callback) => {
       bs.getBlock(multihash, callback)
     },
+<<<<<<< 712c6909108f5dcf37f3856a04bcd1a4f690b2d8
     put: (multihash, callback) => {},
     del: (multihash, callback) => {},
     stat: (multihash, callback) => {}
+=======
+    put: (block, callback) => {
+      bs.addBlock(block, callback)
+    },
+    del: (multihash, callback) => {
+      bs.deleteBlock(multihash, callback)
+    },
+    stat: (multihash, callback) => {
+      bs.getBlock(multihash, (err, block) => {
+        if (err) {
+          return callback(err)
+        }
+        callback(null, {
+          Key: multihash,
+          Size: block.data.length
+        })
+      })
+    }
+>>>>>>> finish block on js-ipfs-core impl + tests
   }
 }

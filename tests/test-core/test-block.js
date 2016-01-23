@@ -22,10 +22,32 @@ describe('block', () => {
   it.skip('put', done => {
     done()
   })
-  it.skip('rm', done => {
-    done()
+
+  it('rm', done => {
+    var b = new Block('I will not last long enough')
+    ipfs.block.put(b, function (err) {
+      expect(err).to.not.exist
+      ipfs.block.get(b.key, function (err, block) {
+        expect(err).to.not.exist
+        ipfs.block.del(b.key, function (err) {
+          expect(err).to.not.exist
+          ipfs.block.get(b.key, function (err, block) {
+            expect(err).to.exist
+            done()
+          })
+        })
+      })
+    })
   })
-  it.skip('stat', done => {
-    done()
+
+  it('stat', done => {
+    const mh = new Buffer(base58
+        .decode('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG'))
+    ipfs.block.stat(mh, (err, stats) => {
+      expect(err).to.not.exist
+      expect(stats.Key.equals(mh)).to.equal(true)
+      expect(stats.Size).to.equal(309)
+      done()
+    })
   })
 })
