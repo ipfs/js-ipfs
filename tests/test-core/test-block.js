@@ -14,7 +14,7 @@ describe('block', () => {
     const mh = new Buffer(base58.decode(b58mh))
     ipfs.block.get(mh, (err, block) => {
       expect(err).to.not.exist
-      const eq = fs.readFileSync(process.cwd() + '/tests/repo-example/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data').equals(block)
+      const eq = fs.readFileSync(process.cwd() + '/tests/repo-example/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data').equals(block.data)
       expect(eq).to.equal(true)
       done()
     })
