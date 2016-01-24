@@ -67,7 +67,7 @@ describe('config', () => {
   }
 
   it('show', done => {
-    let ipfs = new IPFS()
+    const ipfs = new IPFS()
     ipfs.config.show((err, config) => {
       expect(err).to.not.exist
       expect(config).to.deep.equal(defaultConfig)
@@ -76,7 +76,7 @@ describe('config', () => {
   })
 
   it('replace', done => {
-    let ipfs = new IPFS()
+    const ipfs = new IPFS()
     ipfs.config.replace({}, err => {
       expect(err).to.not.exist
       ipfs.config.show((err, config) => {
@@ -92,7 +92,7 @@ describe('config', () => {
 
   // cli only feature built with show and replace
   // it.skip('edit', done => {
-  //   let ipfs = new IPFS()
+  //   const ipfs = new IPFS()
   //  ipfs.config((err, config) => {
   //    expect(err).to.not.exist
   //    done()

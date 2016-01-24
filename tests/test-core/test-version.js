@@ -9,7 +9,7 @@ const IPFS = require('../../src/ipfs-core')
 
 describe('version', () => {
   it('get version', done => {
-    let ipfs = new IPFS()
+    const ipfs = new IPFS()
     ipfs.version((err, version) => {
       expect(err).to.not.exist
       expect(version).to.equal('0.4.0-dev')

@@ -1,17 +1,17 @@
 'use strict'
 
-const config = require('./config')
-const IPFSRepo = require('ipfs-repo')
+const defaultRepo = require('./default-repo')
 
 exports = module.exports = IPFS
-exports.config = config
 
-function IPFS () {
+function IPFS (repo) {
   if (!(this instanceof IPFS)) {
     throw new Error('Must be instantiated with new')
   }
 
-  var repo = new IPFSRepo(config.repoPath())
+  if (!repo) {
+    repo = defaultRepo()
+  }
 
   this.daemon = callback => {
     // 1. read repo to get peer data
