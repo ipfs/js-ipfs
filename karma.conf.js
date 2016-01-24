@@ -19,13 +19,18 @@ module.exports = function (config) {
 
     webpack: {
       resolve: {
-        extensions: ['', '.js']
+        extensions: ['', '.js', '.json']
       },
       externals: {
         fs: '{}'
       },
       node: {
         Buffer: true
+      },
+      module: {
+        loaders: [
+          { test: /\.json$/, loader: 'json' }
+        ]
       }
     },
 
