@@ -9,7 +9,7 @@ const IPFS = require('../../src/ipfs-core')
 
 describe('id', () => {
   it('get id', done => {
-    let ipfs = new IPFS()
+    const ipfs = new IPFS()
     ipfs.id((err, id) => {
       expect(err).to.not.exist
       expect(id).to.deep.equal({ ID: 'QmQ2zigjQikYnyYUSXZydNXrDRhBut2mubwJBaLXobMt3A',

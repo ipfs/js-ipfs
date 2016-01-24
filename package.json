@@ -9,7 +9,9 @@
   "scripts": {
     "lint": "standard",
     "coverage": "istanbul cover --print both -- _mocha tests/test-*/index.js",
-    "test": "mocha tests/test-*/index.js",
+    "test": "npm run test:node && npm run test:browser",
+    "test:node": "mocha tests/test-*/index.js",
+    "test:browser": "karma start karma.conf.js",
     "test:core": "mocha tests/test-core/index.js",
     "test:cli": "mocha tests/test-cli/index.js",
     "test:cli-offline": "mocha tests/test-cli-offline/index.js"
@@ -32,20 +34,33 @@
   },
   "homepage": "https://github.com/ipfs/js-ipfs#readme",
   "devDependencies": {
+    "async": "^1.5.2",
     "chai": "^3.4.1",
+    "fs-blob-store": "^5.2.1",
     "istanbul": "^0.4.1",
+    "karma": "^0.13.19",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-cli": "^0.1.2",
+    "karma-firefox-launcher": "^0.1.7",
+    "karma-mocha": "^0.2.1",
+    "karma-spec-reporter": "0.0.23",
+    "karma-webpack": "^1.7.0",
+    "local-storage-blob-store": "0.0.2",
+    "lodash": "^4.0.0",
     "mocha": "^2.3.4",
     "ncp": "^2.0.0",
     "nexpect": "^0.5.0",
     "pre-commit": "^1.1.2",
+    "raw-loader": "^0.5.1",
     "rimraf": "^2.4.4",
-    "standard": "^5.3.1"
+    "standard": "^5.4.1",
+    "webpack": "^1.12.11"
   },
   "dependencies": {
     "boom": "^3.1.1",
     "debug": "^2.2.0",
     "hapi": "^12.0.0",
-    "ipfs-repo": "^0.2.2",
+    "ipfs-repo": "^0.4.1",
     "lodash.get": "^4.0.0",
     "lodash.set": "^4.0.0",
     "ronin": "^0.3.11"

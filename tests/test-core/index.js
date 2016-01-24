@@ -28,7 +28,7 @@ describe('core', () => {
 
   const tests = fs.readdirSync(__dirname)
   tests.filter(file => {
-    if (file === 'index.js') {
+    if (file === 'index.js' || file === 'browser.js') {
       return false
     } else {
       return true
