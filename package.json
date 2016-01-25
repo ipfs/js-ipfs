@@ -38,6 +38,7 @@
     "chai": "^3.4.1",
     "fs-blob-store": "^5.2.1",
     "istanbul": "^0.4.1",
+    "json-loader": "^0.5.4",
     "karma": "^0.13.19",
     "karma-chrome-launcher": "^0.2.2",
     "karma-cli": "^0.1.2",
