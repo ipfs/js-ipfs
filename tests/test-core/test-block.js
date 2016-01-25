@@ -26,9 +26,6 @@ describe('block', () => {
     const mh = new Buffer(base58.decode(b58mh))
     ipfs.block.get(mh, (err, block) => {
       expect(err).to.not.exist
-      console.log('->', fileA.length)
-      console.log('->', block.data.length)
-
       const eq = fileA.equals(block.data)
       expect(eq).to.equal(true)
       done()

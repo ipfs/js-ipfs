@@ -13,9 +13,6 @@ describe('core', function () {
 
     var repoData = []
     repoContext.keys().forEach(function (key) {
-      // console.log(key)
-      var value = new Buffer(require('binary!./../repo-example/' + key.replace('./', '')), 'binary')
-      console.log('+>', value.length)
       repoData.push({
         key: key.replace('./', ''),
         value: new Buffer(require('binary!./../repo-example/' + key.replace('./', '')), 'binary')
