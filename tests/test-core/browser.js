@@ -5,7 +5,7 @@ const async = require('async')
 const store = require('local-storage-blob-store')
 const _ = require('lodash')
 
-var repoContext = require.context('raw!../repo-example', true)
+var repoContext = require.context('binary!../repo-example', true)
 
 describe('core', function () {
   before(function (done) {
@@ -15,7 +15,7 @@ describe('core', function () {
     repoContext.keys().forEach(function (key) {
       repoData.push({
         key: key.replace('./', ''),
-        value: repoContext(key)
+        value: new Buffer(require('binary!./../repo-example/' + key.replace('./', '')), 'binary')
       })
     })
 

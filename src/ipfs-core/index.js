@@ -1,6 +1,10 @@
 'use strict'
 
 const defaultRepo = require('./default-repo')
+// const bl = require('bl')
+const MerkleDAG = require('ipfs-merkle-dag')
+const BlockService = MerkleDAG.BlockService
+// const Block = MerkleDAG.Block
 
 exports = module.exports = IPFS
 
@@ -12,6 +16,7 @@ function IPFS (repo) {
   if (!repo) {
     repo = defaultRepo()
   }
+  const bs = new BlockService(repo)
 
   this.daemon = callback => {
     // 1. read repo to get peer data
@@ -121,6 +126,29 @@ function IPFS (repo) {
       repo.config.get((err, config) => {
         if (err) { return callback(err) }
         callback(null, config)
+      })
+    }
+  }
+
+  this.block = {
+    get: (multihash, callback) => {
+      bs.getBlock(multihash, callback)
+    },
+    put: (block, callback) => {
+      bs.addBlock(block, callback)
+    },
+    del: (multihash, callback) => {
+      bs.deleteBlock(multihash, callback)
+    },
+    stat: (multihash, callback) => {
+      bs.getBlock(multihash, (err, block) => {
+        if (err) {
+          return callback(err)
+        }
+        callback(null, {
+          Key: multihash,
+          Size: block.data.length
+        })
       })
     }
   }
