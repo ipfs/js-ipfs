@@ -9,7 +9,7 @@
   "scripts": {
     "lint": "standard",
     "coverage": "istanbul cover --print both -- _mocha tests/test-*/index.js",
-    "test": "npm run test:node && npm run test:browser",
+    "test": "npm run test:node",
     "test:node": "mocha tests/test-*/index.js",
     "test:browser": "karma start karma.conf.js",
     "test:core": "mocha tests/test-core/index.js",
