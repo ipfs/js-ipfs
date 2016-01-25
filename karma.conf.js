@@ -23,8 +23,7 @@ module.exports = function (config) {
       },
       module: {
         loaders: [
-          { test: /\.json$/, loader: 'json' },
-          { test: /\.js$/, loader: 'transform?brfs' }
+          { test: /\.json$/, loader: 'json' }
         ]
       }
     },

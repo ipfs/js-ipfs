@@ -35,6 +35,7 @@
   "homepage": "https://github.com/ipfs/js-ipfs#readme",
   "devDependencies": {
     "async": "^1.5.2",
+    "binary-loader": "0.0.1",
     "brfs": "^1.4.3",
     "chai": "^3.4.1",
     "fs-blob-store": "^5.2.1",
