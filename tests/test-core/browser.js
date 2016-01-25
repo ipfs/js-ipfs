@@ -13,6 +13,7 @@ describe('core', function () {
 
     var repoData = []
     repoContext.keys().forEach(function (key) {
+      console.log(key)
       repoData.push({
         key: key.replace('./', ''),
         value: repoContext(key)

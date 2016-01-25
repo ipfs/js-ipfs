@@ -145,8 +145,6 @@ function IPFS (repo) {
         if (err) {
           return callback(err)
         }
-        console.log('->', block.data.length)
-        console.log('->', block.data)
         callback(null, {
           Key: multihash,
           Size: block.data.length

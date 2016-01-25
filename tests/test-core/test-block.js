@@ -8,11 +8,10 @@ const fs = require('fs')
 const IPFS = require('../../src/ipfs-core')
 const Block = require('ipfs-merkle-dag').Block
 
-const isNode = !global.window
+// const isNode = !global.window
 
-const fileA = isNode
-  ? fs.readFileSync(process.cwd() + '/tests/repo-example/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data')
-  : new Buffer(require('raw!./../repo-example/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data'))
+const fileA = fs.readFileSync(process.cwd() + '/tests/repo-example/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data')
+  // : new Buffer(require('raw!./../repo-example/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data'))
 
 console.log('=>', fileA)
 
