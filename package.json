@@ -55,7 +55,7 @@
     "raw-loader": "^0.5.1",
     "rimraf": "^2.4.4",
     "standard": "^5.4.1",
-    "webpack": "^1.12.11"
+    "webpack": "diasdavid/webpack#81f5994"
   },
   "dependencies": {
     "bl": "^1.0.0",
