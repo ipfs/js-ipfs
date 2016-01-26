@@ -112,8 +112,6 @@ The cli is availble through `jsipfs` in your terminal
     - [ ] init
     - [ ] stat
     - [ ] gc
-    - [ ] config get
-    - [ ] config put
   - [ ] pin
     - [ ] add
     - [ ] ls
