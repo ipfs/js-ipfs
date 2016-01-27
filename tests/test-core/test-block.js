@@ -27,6 +27,7 @@ describe('block', () => {
     ipfs.block.get(mh, (err, block) => {
       expect(err).to.not.exist
       const eq = fileA.equals(block.data)
+      console.log(block)
       expect(eq).to.equal(true)
       done()
     })
