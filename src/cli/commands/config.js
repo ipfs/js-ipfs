@@ -24,7 +24,7 @@ module.exports = Command.extend({
 
   run: (bool, json, key, value) => {
     if (!key) {
-      throw new Error('argument \'key\' is required')
+      throw new Error("argument 'key' is required")
     }
 
     var node = new IPFS()

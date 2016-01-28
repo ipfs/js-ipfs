@@ -61,7 +61,7 @@ describe('block', function () {
 
   it('stat', function (done) {
     const mh = new Buffer(base58
-        .decode('QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVzxTt3qVe'))
+      .decode('QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVzxTt3qVe'))
     ipfs.block.stat(mh, (err, stats) => {
       expect(err).to.not.exist
       expect(stats.Key.equals(mh)).to.equal(true)

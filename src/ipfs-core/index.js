@@ -2,10 +2,11 @@
 
 const defaultRepo = require('./default-repo')
 // const bl = require('bl')
-// const MerkleDAG = require('ipfs-merkle-dag')
 const blocks = require('ipfs-blocks')
 const BlockService = blocks.BlockService
+const Block = blocks.Block
 // const Block = MerkleDAG.Block
+const mDAG = require('ipfs-merkle-dag')
 
 exports = module.exports = IPFS
 
@@ -152,5 +153,37 @@ function IPFS (repo) {
         })
       })
     }
+  }
+
+  this.object = {
+    // named `new` in go-ipfs
+    create: (template, callback) => {
+      if (!callback) {
+        callback = template
+      }
+      var node = new mDAG.DAGNode()
+      var block = new Block(node.marshal())
+      bs.addBlock(block, function (err) {
+        if (err) {
+          return callback(err)
+        }
+        callback(null, {
+          Hash: block.key,
+          Size: node.size(),
+          Name: ''
+        })
+      })
+    },
+    patch: (multihash, options, callback) => {},
+    data: (multihash, callback) => {},
+    links: (multihash, callback) => {},
+    get: (multihash, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
+      }
+    },
+    put: (multihash, options, callback) => {},
+    stat: (multihash, options, callback) => {}
   }
 }
