@@ -1,6 +1,6 @@
 'use strict'
 
-const localStorage = require('local-storage-blob-store')
+const localStorage = require('idb-plus-blob-store')
 const IPFSRepo = require('ipfs-repo')
 
 const options = {
