@@ -10,20 +10,15 @@ const Block = require('ipfs-merkle-dag').Block
 
 const isNode = !global.window
 
-// FIXME remove this (it is only here because otherwise webpack is not loading Buffer and it is needed to the tests bellow)
-const noop = new Buffer([]) // eslint-disable-line
-
 const fileA = isNode
   ? fs.readFileSync(process.cwd() + '/tests/repo-example/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data')
   : require('buffer!./../repo-example/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data')
 
-// console.log('=>', fileA)
-// console.log('=>', fileA.length)
-
-describe('block', () => {
+// TODO use arrow funtions again when https://github.com/webpack/webpack/issues/1944 is fixed
+describe('block', function () {
   var ipfs
 
-  it('get', done => {
+  it('get', function (done) {
     ipfs = new IPFS()
     const b58mh = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVzxTt3qVe'
     const mh = new Buffer(base58.decode(b58mh))
@@ -64,7 +59,7 @@ describe('block', () => {
     })
   })
 
-  it('stat', done => {
+  it('stat', function (done) {
     const mh = new Buffer(base58
         .decode('QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVzxTt3qVe'))
     ipfs.block.stat(mh, (err, stats) => {
