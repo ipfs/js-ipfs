@@ -10,9 +10,12 @@ const Block = require('ipfs-merkle-dag').Block
 
 const isNode = !global.window
 
+// FIXME remove this (it is only here because otherwise webpack is not loading Buffer and it is needed to the tests bellow)
+const noop = new Buffer([]) // eslint-disable-line
+
 const fileA = isNode
   ? fs.readFileSync(process.cwd() + '/tests/repo-example/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data')
-  : new Buffer(require('binary!./../repo-example/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data'), 'binary')
+  : require('buffer!./../repo-example/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data')
 
 // console.log('=>', fileA)
 // console.log('=>', fileA.length)
@@ -27,7 +30,6 @@ describe('block', () => {
     ipfs.block.get(mh, (err, block) => {
       expect(err).to.not.exist
       const eq = fileA.equals(block.data)
-      console.log(block)
       expect(eq).to.equal(true)
       done()
     })
