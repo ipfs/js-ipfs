@@ -2,8 +2,9 @@
 
 const defaultRepo = require('./default-repo')
 // const bl = require('bl')
-const MerkleDAG = require('ipfs-merkle-dag')
-const BlockService = MerkleDAG.BlockService
+// const MerkleDAG = require('ipfs-merkle-dag')
+const blocks = require('ipfs-blocks')
+const BlockService = blocks.BlockService
 // const Block = MerkleDAG.Block
 
 exports = module.exports = IPFS
