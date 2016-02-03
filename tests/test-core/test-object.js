@@ -5,7 +5,8 @@
 const expect = require('chai').expect
 const IPFS = require('../../src/ipfs-core')
 const bs58 = require('bs58')
-// const Block = require('ipfs-merkle-dag').Block
+const mDAG = require('ipfs-merkle-dag')
+const DAGNode = mDAG.DAGNode
 
 // TODO use arrow funtions again when https://github.com/webpack/webpack/issues/1944 is fixed
 describe('object', function () {
@@ -71,18 +72,23 @@ describe('object', function () {
 
   })
 
-  it.skip('get', function (done) {
-
+  it('get', function (done) {
+    const mh = new Buffer(bs58.decode('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'))
+    ipfs.object.get(mh, function (err, obj) {
+      expect(err).to.not.exist
+      expect(obj.size()).to.equal(0)
+      expect(obj).to.have.property('data')
+      expect(obj).to.have.property('links')
+      done()
+    })
   })
 
-  it.skip('get cycle', function (done) {
-    // 1. get a go-ipfs marshaled DAG Node
-    // 2. store it and fetch it again
-    // 3. check if still matches (ipfs-merkle-dag should not mangle it)
-  })
-
-  it.skip('put', function (done) {
-
+  it('put', function (done) {
+    const node = new DAGNode(new Buffer('Hello, is it me you are looking for'))
+    ipfs.object.put(node, function (err) {
+      expect(err).to.not.exist
+      done()
+    })
   })
 
   it.skip('stat', function (done) {

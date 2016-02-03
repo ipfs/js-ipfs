@@ -5,8 +5,9 @@ const defaultRepo = require('./default-repo')
 const blocks = require('ipfs-blocks')
 const BlockService = blocks.BlockService
 const Block = blocks.Block
-// const Block = MerkleDAG.Block
 const mDAG = require('ipfs-merkle-dag')
+const DAGNode = mDAG.DAGNode
+const DAGService = mDAG.DAGService
 
 exports = module.exports = IPFS
 
@@ -19,6 +20,7 @@ function IPFS (repo) {
     repo = defaultRepo()
   }
   const bs = new BlockService(repo)
+  const ds = new DAGService(bs)
 
   this.daemon = callback => {
     // 1. read repo to get peer data
@@ -161,7 +163,7 @@ function IPFS (repo) {
       if (!callback) {
         callback = template
       }
-      var node = new mDAG.DAGNode()
+      var node = new DAGNode()
       var block = new Block(node.marshal())
       bs.addBlock(block, function (err) {
         if (err) {
@@ -182,8 +184,20 @@ function IPFS (repo) {
         callback = options
         options = {}
       }
+      ds.get(multihash, callback)
     },
-    put: (multihash, options, callback) => {},
-    stat: (multihash, options, callback) => {}
+    put: (dagNode, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
+      }
+      ds.add(dagNode, callback)
+    },
+    stat: (multihash, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
+      }
+    }
   }
 }
