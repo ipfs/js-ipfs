@@ -19,8 +19,8 @@ function IPFS (repo) {
   if (!repo) {
     repo = defaultRepo()
   }
-  const bs = new BlockService(repo)
-  const ds = new DAGService(bs)
+  const blockS = new BlockService(repo)
+  const dagS = new DAGService(blockS)
 
   this.daemon = callback => {
     // 1. read repo to get peer data
@@ -136,16 +136,16 @@ function IPFS (repo) {
 
   this.block = {
     get: (multihash, callback) => {
-      bs.getBlock(multihash, callback)
+      blockS.getBlock(multihash, callback)
     },
     put: (block, callback) => {
-      bs.addBlock(block, callback)
+      blockS.addBlock(block, callback)
     },
     del: (multihash, callback) => {
-      bs.deleteBlock(multihash, callback)
+      blockS.deleteBlock(multihash, callback)
     },
     stat: (multihash, callback) => {
-      bs.getBlock(multihash, (err, block) => {
+      blockS.getBlock(multihash, (err, block) => {
         if (err) {
           return callback(err)
         }
@@ -164,7 +164,7 @@ function IPFS (repo) {
       }
       var node = new DAGNode()
       var block = new Block(node.marshal())
-      bs.addBlock(block, function (err) {
+      blockS.addBlock(block, function (err) {
         if (err) {
           return callback(err)
         }
@@ -180,8 +180,10 @@ function IPFS (repo) {
         this.object.get(multihash, (err, obj) => {
           if (err) { return callback(err) }
           obj.data = Buffer.concat([obj.data, data])
-          ds.add(obj, (err) => {
-            if (err) { return callback(err) }
+          dagS.add(obj, (err) => {
+            if (err) {
+              return callback(err)
+            }
             callback(null, obj.multihash())
           })
         })
@@ -190,8 +192,10 @@ function IPFS (repo) {
         this.object.get(multihash, (err, obj) => {
           if (err) { return callback(err) }
           obj.addRawLink(link)
-          ds.add(obj, (err) => {
-            if (err) { return callback(err) }
+          dagS.add(obj, (err) => {
+            if (err) {
+              return callback(err)
+            }
             callback(null, obj.multihash())
           })
         })
@@ -202,12 +206,13 @@ function IPFS (repo) {
           obj.links = obj.links.filter((link) => {
             if (link.hash.equals(multihashLink)) {
               return false
-            } else {
-              return true
             }
+            return true
           })
-          ds.add(obj, (err) => {
-            if (err) { return callback(err) }
+          dagS.add(obj, (err) => {
+            if (err) {
+              return callback(err)
+            }
             callback(null, obj.multihash())
           })
         })
@@ -216,8 +221,10 @@ function IPFS (repo) {
         this.object.get(multihash, (err, obj) => {
           if (err) { return callback(err) }
           obj.data = data
-          ds.add(obj, (err) => {
-            if (err) { return callback(err) }
+          dagS.add(obj, (err) => {
+            if (err) {
+              return callback(err)
+            }
             callback(null, obj.multihash())
           })
         })
@@ -225,13 +232,17 @@ function IPFS (repo) {
     },
     data: (multihash, callback) => {
       this.object.get(multihash, (err, obj) => {
-        if (err) { return callback(err) }
+        if (err) {
+          return callback(err)
+        }
         callback(null, obj.data)
       })
     },
     links: (multihash, callback) => {
       this.object.get(multihash, (err, obj) => {
-        if (err) { return callback(err) }
+        if (err) {
+          return callback(err)
+        }
         callback(null, obj.links)
       })
     },
@@ -240,14 +251,14 @@ function IPFS (repo) {
         callback = options
         options = {}
       }
-      ds.get(multihash, callback)
+      dagS.get(multihash, callback)
     },
     put: (dagNode, options, callback) => {
       if (typeof options === 'function') {
         callback = options
         options = {}
       }
-      ds.add(dagNode, callback)
+      dagS.add(dagNode, callback)
     },
     stat: (multihash, options, callback) => {
       if (typeof options === 'function') {
@@ -256,7 +267,9 @@ function IPFS (repo) {
       }
 
       this.object.get(multihash, (err, obj) => {
-        if (err) { return callback(err) }
+        if (err) {
+          return callback(err)
+        }
         var res = {
           NumLinks: obj.links.length,
           BlockSize: obj.marshal().length,
