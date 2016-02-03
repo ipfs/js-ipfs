@@ -64,8 +64,13 @@ describe('object', function () {
 
   })
 
-  it.skip('data', function (done) {
-
+  it('data', function (done) {
+    const mh = new Buffer(bs58.decode('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG'))
+    ipfs.object.data(mh, function (err, data) {
+      expect(err).to.not.exist
+      expect(data).to.deep.equal(new Buffer('\u0008\u0001'))
+      done()
+    })
   })
 
   it('links', function (done) {

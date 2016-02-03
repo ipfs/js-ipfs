@@ -177,7 +177,12 @@ function IPFS (repo) {
       })
     },
     patch: (multihash, options, callback) => {},
-    data: (multihash, callback) => {},
+    data: (multihash, callback) => {
+      this.object.get(multihash, (err, obj) => {
+        if (err) { return callback(err) }
+        callback(null, obj.data)
+      })
+    },
     links: (multihash, callback) => {
       this.object.get(multihash, (err, obj) => {
         if (err) { return callback(err) }
