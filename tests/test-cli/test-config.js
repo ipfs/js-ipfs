@@ -66,7 +66,7 @@ describe('config', () => {
   it('set a config key with invalid json', done => {
     nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', '{"bar: 0}', '--json'])
       .run((err, stdout, exitcode) => {
-        const expected = 'error	invalid JSON provided'
+        const expected = 'error\tinvalid JSON provided'
         expect(stdout[0]).to.equal(expected)
         expect(err).to.not.exist
         expect(exitcode).to.equal(1)
@@ -77,7 +77,7 @@ describe('config', () => {
   it('call config with no arguments', done => {
     nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config'])
       .run((err, stdout, exitcode) => {
-        const expected = "error	argument 'key' is required"
+        const expected = "error\targument 'key' is required"
         expect(stdout[0]).to.equal(expected)
         expect(err).to.not.exist
         expect(exitcode).to.equal(1)
