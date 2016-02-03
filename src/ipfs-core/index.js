@@ -178,7 +178,12 @@ function IPFS (repo) {
     },
     patch: (multihash, options, callback) => {},
     data: (multihash, callback) => {},
-    links: (multihash, callback) => {},
+    links: (multihash, callback) => {
+      this.object.get(multihash, (err, obj) => {
+        if (err) { return callback(err) }
+        callback(null, obj.links)
+      })
+    },
     get: (multihash, options, callback) => {
       if (typeof options === 'function') {
         callback = options
@@ -198,6 +203,25 @@ function IPFS (repo) {
         callback = options
         options = {}
       }
+
+      // NumLinks: 367
+      // BlockSize: 19394
+      // LinksSize: 19392
+      // DataSize: 2
+      // CumulativeSize: 26375427
+      this.object.get(multihash, (err, obj) => {
+        if (err) { return callback(err) }
+        var res = {
+          NumLinks: obj.links.length,
+          BlockSize: obj.marshal().length,
+          LinksSize: obj.links.reduce((prev, link) => {
+            return prev + link.size
+          }, 0),
+          DataSize: obj.data.length,
+          CumulativeSize: ''
+        }
+        callback(null, res)
+      })
     }
   }
 }

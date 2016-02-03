@@ -68,8 +68,13 @@ describe('object', function () {
 
   })
 
-  it.skip('links', function (done) {
-
+  it('links', function (done) {
+    const mh = new Buffer(bs58.decode('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG'))
+    ipfs.object.links(mh, function (err, links) {
+      expect(err).to.not.exist
+      expect(links.length).to.equal(6)
+      done()
+    })
   })
 
   it('get', function (done) {
@@ -91,7 +96,20 @@ describe('object', function () {
     })
   })
 
-  it.skip('stat', function (done) {
+  it('stat', function (done) {
+    const mh = new Buffer(bs58.decode('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG'))
+    ipfs.object.stat(mh, function (err, stats) {
+      expect(err).to.not.exist
 
+      var expected = {
+        NumLinks: 6,
+        BlockSize: 309,
+        LinksSize: 6067,
+        DataSize: 2,
+        CumulativeSize: ''
+      }
+      expect(stats).to.deep.equal(expected)
+      done()
+    })
   })
 })
