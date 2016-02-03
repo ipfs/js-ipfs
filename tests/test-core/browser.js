@@ -7,9 +7,9 @@ const _ = require('lodash')
 const repoContext = require.context('buffer!./../repo-example', true)
 
 const idb = window.indexedDB ||
-        window.mozIndexedDB ||
-        window.webkitIndexedDB ||
-        window.msIndexedDB
+  window.mozIndexedDB ||
+  window.webkitIndexedDB ||
+  window.msIndexedDB
 
 idb.deleteDatabase('ipfs')
 idb.deleteDatabase('ipfs/blocks')

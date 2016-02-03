@@ -90,12 +90,12 @@ describe('config', () => {
     })
   })
 
-  // cli only feature built with show and replace
-  // it.skip('edit', done => {
-  //   const ipfs = new IPFS()
-  //  ipfs.config((err, config) => {
-  //    expect(err).to.not.exist
-  //    done()
-  //  })
-  // })
+// cli only feature built with show and replace
+// it.skip('edit', done => {
+//   const ipfs = new IPFS()
+//  ipfs.config((err, config) => {
+//    expect(err).to.not.exist
+//    done()
+//  })
+// })
 })
