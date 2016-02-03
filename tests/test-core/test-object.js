@@ -7,6 +7,7 @@ const IPFS = require('../../src/ipfs-core')
 const bs58 = require('bs58')
 const mDAG = require('ipfs-merkle-dag')
 const DAGNode = mDAG.DAGNode
+const DAGLink = mDAG.DAGLink
 
 // TODO use arrow funtions again when https://github.com/webpack/webpack/issues/1944 is fixed
 describe('object', function () {
@@ -17,8 +18,8 @@ describe('object', function () {
     done()
   })
 
-  it('create', function (done) {
-    ipfs.object.create(function (err, obj) {
+  it('new', function (done) {
+    ipfs.object.new(function (err, obj) {
       expect(err).to.not.exist
       expect(obj).to.have.property('Size')
       expect(obj.Size).to.equal(0)
@@ -32,36 +33,45 @@ describe('object', function () {
     })
   })
 
-  it.skip('patch append-data', function (done) {
+  it('patch append-data', function (done) {
+    const mh = new Buffer(bs58.decode('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG'))
 
+    ipfs.object.patch.appendData(mh, new Buffer('data data'), function (err, multihash) {
+      expect(err).to.not.exist
+      expect(mh).to.not.deep.equal(multihash)
+      done()
+    })
   })
 
-  it.skip('patch add-link', function (done) {
+  it('patch add-link', function (done) {
+    const mh = new Buffer(bs58.decode('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG'))
 
+    ipfs.object.patch.addLink(mh, new DAGLink('prev', 0, mh), function (err, multihash) {
+      expect(err).to.not.exist
+      expect(mh).to.not.deep.equal(multihash)
+      done()
+    })
   })
 
-  it.skip('patch rm-link', function (done) {
+  it('patch rm-link', function (done) {
+    const rmmh = new Buffer(bs58.decode('QmZTR5bcpQD7cFgTorqxZDYaew1Wqgfbd2ud9QqGPAkK2V'))
+    const mh = new Buffer(bs58.decode('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG'))
 
+    ipfs.object.patch.rmLink(mh, rmmh, function (err, multihash) {
+      expect(err).to.not.exist
+      expect(mh).to.not.deep.equal(multihash)
+      done()
+    })
   })
 
-  it.skip('patch set-data', function (done) {
+  it('patch set-data', function (done) {
+    const mh = new Buffer(bs58.decode('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG'))
 
-  })
-
-  it.skip('patch append-data go-ipfs mDAG obj', function (done) {
-
-  })
-
-  it.skip('patch add-link go-ipfs mDAG obj', function (done) {
-
-  })
-
-  it.skip('patch rm-link go-ipfs mDAG obj', function (done) {
-
-  })
-
-  it.skip('patch set-data go-ipfs mDAG obj', function (done) {
-
+    ipfs.object.patch.setData(mh, new Buffer('data data data'), function (err, multihash) {
+      expect(err).to.not.exist
+      expect(mh).to.not.deep.equal(multihash)
+      done()
+    })
   })
 
   it('data', function (done) {

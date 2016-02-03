@@ -158,8 +158,7 @@ function IPFS (repo) {
   }
 
   this.object = {
-    // named `new` in go-ipfs
-    create: (template, callback) => {
+    new: (template, callback) => {
       if (!callback) {
         callback = template
       }
@@ -176,7 +175,54 @@ function IPFS (repo) {
         })
       })
     },
-    patch: (multihash, options, callback) => {},
+    patch: {
+      appendData: (multihash, data, callback) => {
+        this.object.get(multihash, (err, obj) => {
+          if (err) { return callback(err) }
+          obj.data = Buffer.concat([obj.data, data])
+          ds.add(obj, (err) => {
+            if (err) { return callback(err) }
+            callback(null, obj.multihash())
+          })
+        })
+      },
+      addLink: (multihash, link, callback) => {
+        this.object.get(multihash, (err, obj) => {
+          if (err) { return callback(err) }
+          obj.addRawLink(link)
+          ds.add(obj, (err) => {
+            if (err) { return callback(err) }
+            callback(null, obj.multihash())
+          })
+        })
+      },
+      rmLink: (multihash, multihashLink, callback) => {
+        this.object.get(multihash, (err, obj) => {
+          if (err) { return callback(err) }
+          obj.links = obj.links.filter((link) => {
+            if (link.hash.equals(multihashLink)) {
+              return false
+            } else {
+              return true
+            }
+          })
+          ds.add(obj, (err) => {
+            if (err) { return callback(err) }
+            callback(null, obj.multihash())
+          })
+        })
+      },
+      setData: (multihash, data, callback) => {
+        this.object.get(multihash, (err, obj) => {
+          if (err) { return callback(err) }
+          obj.data = data
+          ds.add(obj, (err) => {
+            if (err) { return callback(err) }
+            callback(null, obj.multihash())
+          })
+        })
+      }
+    },
     data: (multihash, callback) => {
       this.object.get(multihash, (err, obj) => {
         if (err) { return callback(err) }
@@ -209,11 +255,6 @@ function IPFS (repo) {
         options = {}
       }
 
-      // NumLinks: 367
-      // BlockSize: 19394
-      // LinksSize: 19392
-      // DataSize: 2
-      // CumulativeSize: 26375427
       this.object.get(multihash, (err, obj) => {
         if (err) { return callback(err) }
         var res = {
