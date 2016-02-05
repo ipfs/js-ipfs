@@ -63,11 +63,6 @@ function requestAPI (config, path, args, qs, files, buffer, cb) {
   if (args) qs.arg = args
   if (files && !Array.isArray(files)) files = [files]
 
-  if (typeof buffer === 'function') {
-    cb = buffer
-    buffer = false
-  }
-
   if (qs.r) {
     qs.recursive = qs.r
     delete qs.r // From IPFS 0.4.0, it throw an error when both r and recursive are passed
@@ -116,5 +111,21 @@ function requestAPI (config, path, args, qs, files, buffer, cb) {
 // -- Interface
 
 exports = module.exports = function getRequestAPI (config) {
-  return requestAPI.bind(null, config)
+  return function (path, args, qs, files, buffer, cb) {
+    if (typeof buffer === 'function') {
+      cb = buffer
+      buffer = false
+    }
+
+    if (typeof cb !== 'function' && typeof Promise !== 'undefined') {
+      return new Promise(function (resolve, reject) {
+        requestAPI(config, path, args, qs, files, buffer, function (err, res) {
+          if (err) return reject(err)
+          resolve(res)
+        })
+      })
+    }
+
+    return requestAPI(config, path, args, qs, files, buffer, cb)
+  }
 }

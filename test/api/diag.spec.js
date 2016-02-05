@@ -18,4 +18,22 @@ describe('.diag', () => {
       done()
     })
   })
+
+  describe('promise', () => {
+    it('.diag.net', () => {
+      return apiClients['a'].diag.net()
+        .then(res => {
+          expect(res).to.exist
+        })
+    })
+
+    it('.diag.sys', () => {
+      return apiClients['a'].diag.sys()
+        .then(res => {
+          expect(res).to.exist
+          expect(res).to.have.a.property('memory')
+          expect(res).to.have.a.property('diskinfo')
+        })
+    })
+  })
 })

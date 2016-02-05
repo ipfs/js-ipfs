@@ -9,4 +9,14 @@ describe('.id', () => {
       done()
     })
   })
+
+  describe('promise', () => {
+    it('id', () => {
+      return apiClients['a'].id()
+        .then(res => {
+          expect(res).to.have.a.property('ID')
+          expect(res).to.have.a.property('PublicKey')
+        })
+    })
+  })
 })

@@ -46,4 +46,20 @@ describe('.cat', () => {
       })
     })
   })
+
+  describe('promise', () => {
+    it('cat', done => {
+      return apiClients['a'].cat('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+        .then(res => {
+          let buf = ''
+          res
+            .on('error', err => { throw err })
+            .on('data', data => buf += data)
+            .on('end', () => {
+              expect(buf).to.be.equal(testfile.toString())
+              done()
+            })
+        })
+    })
+  })
 })

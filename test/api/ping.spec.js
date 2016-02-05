@@ -12,4 +12,16 @@ describe('.ping', () => {
       })
     })
   })
+
+  describe('promise', () => {
+    it('ping another peer', () => {
+      return apiClients['b'].id()
+        .then(id => {
+          return apiClients['a'].ping(id.ID)
+        })
+        .then(res => {
+          expect(res).to.have.a.property('Success')
+        })
+    })
+  })
 })
