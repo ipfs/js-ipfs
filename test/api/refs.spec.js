@@ -25,7 +25,7 @@ describe('.refs', () => {
     Err: ''
   }]
 
-  it('refs', done => {
+  it('refs', (done) => {
     if (!isNode) {
       return done()
     }
@@ -44,7 +44,7 @@ describe('.refs', () => {
       if (!isNode) return
 
       return apiClients['a'].refs(folder, {'format': '<src> <dst> <linkname>'})
-        .then(objs => {
+        .then((objs) => {
           expect(objs).to.eql(result)
         })
     })

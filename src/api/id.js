@@ -1,6 +1,6 @@
 'use strict'
 
-module.exports = send => {
+module.exports = (send) => {
   return function id (idParam, cb) {
     if (typeof idParam === 'function') {
       cb = idParam

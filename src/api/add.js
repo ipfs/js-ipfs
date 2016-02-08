@@ -1,6 +1,6 @@
 const Wreck = require('wreck')
 
-module.exports = send => {
+module.exports = (send) => {
   return function add (files, opts, cb) {
     if (typeof (opts) === 'function' && cb === undefined) {
       cb = opts

@@ -1,7 +1,7 @@
 'use strict'
 
 describe('.commands', () => {
-  it('lists commands', done => {
+  it('lists commands', (done) => {
     apiClients['a'].commands((err, res) => {
       expect(err).to.not.exist
       expect(res).to.exist
@@ -12,9 +12,9 @@ describe('.commands', () => {
   describe('promise', () => {
     it('lists commands', () => {
       return apiClients['a'].commands()
-      .then(res => {
-        expect(res).to.exist
-      })
+        .then((res) => {
+          expect(res).to.exist
+        })
     })
   })
 })

@@ -2,7 +2,7 @@
 
 const argCommand = require('../cmd-helpers').argCommand
 
-module.exports = send => {
+module.exports = (send) => {
   return {
     findprovs: argCommand(send, 'dht/findprovs'),
     get (key, opts, cb) {
@@ -37,8 +37,8 @@ module.exports = send => {
 
         return send('dht/get', key, opts)
           .then(
-            res => handleResult(done, null, res),
-            err => handleResult(done, err)
+            (res) => handleResult(done, null, res),
+            (err) => handleResult(done, err)
           )
       }
 

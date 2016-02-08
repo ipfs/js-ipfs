@@ -1,6 +1,6 @@
 'use strict'
 
-module.exports = send => {
+module.exports = (send) => {
   return function mount (ipfs, ipns, cb) {
     if (typeof ipfs === 'function') {
       cb = ipfs
