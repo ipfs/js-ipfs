@@ -34,4 +34,37 @@ describe('.config', () => {
       done()
     })
   })
+
+  describe('promise', () => {
+    it('.config.{set, get}', () => {
+      const confKey = 'arbitraryKey'
+      const confVal = 'arbitraryVal'
+
+      return apiClients['a'].config.set(confKey, confVal)
+        .then(res => {
+          return apiClients['a'].config.get(confKey)
+        })
+        .then(res => {
+          expect(res).to.have.a.property('Value', confVal)
+        })
+    })
+
+    it('.config.show', () => {
+      return apiClients['c'].config.show()
+        .then(res => {
+          expect(res).to.exist
+        })
+    })
+
+    it('.config.replace', () => {
+      if (!isNode) {
+        return
+      }
+
+      return apiClients['c'].config.replace(__dirname + '/../r-config.json')
+        .then(res => {
+          expect(res).to.be.equal(null)
+        })
+    })
+  })
 })

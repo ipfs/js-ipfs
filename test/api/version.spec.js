@@ -42,4 +42,24 @@ describe('.version', () => {
       done()
     })
   })
+
+  describe('promise', () => {
+    it('checks the version', () => {
+      return apiClients['a'].version()
+        .then(res => {
+          expect(res).to.have.a.property('Version')
+          expect(res).to.have.a.property('Commit')
+          expect(res).to.have.a.property('Repo')
+        })
+    })
+
+    it('with number option', () => {
+      return apiClients['a'].version({number: true})
+        .then(res => {
+          expect(res).to.have.a.property('Version')
+          expect(res).to.have.a.property('Commit')
+          expect(res).to.have.a.property('Repo')
+        })
+    })
+  })
 })

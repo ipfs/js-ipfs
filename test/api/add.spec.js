@@ -118,4 +118,15 @@ describe('.add', () => {
       done()
     })
   })
+
+  describe('promise', () => {
+    it('add buffer', () => {
+      let buf = new Buffer(testfile)
+      return apiClients['a'].add(buf)
+        .then(res => {
+          expect(res).to.have.length(1)
+          expect(res[0]).to.have.property('Hash', 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+        })
+    })
+  })
 })

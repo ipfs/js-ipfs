@@ -11,10 +11,10 @@ module.exports = send => {
         opts = null
       }
 
-      return send('dht/get', key, opts, null, (err, res) => {
-        if (err) return cb(err)
-        if (!res) return cb(new Error('empty response'))
-        if (res.length === 0) return cb(new Error('no value returned for key'))
+      const handleResult = (done, err, res) => {
+        if (err) return done(err)
+        if (!res) return done(new Error('empty response'))
+        if (res.length === 0) return done(new Error('no value returned for key'))
 
         // Inconsistent return values in the browser vs node
         if (Array.isArray(res)) {
@@ -22,12 +22,27 @@ module.exports = send => {
         }
 
         if (res.Type === 5) {
-          cb(null, res.Extra)
+          done(null, res.Extra)
         } else {
           let error = new Error('key was not found (type 6)')
-          cb(error)
+          done(error)
         }
-      })
+      }
+
+      if (typeof cb !== 'function' && typeof Promise !== 'undefined') {
+        const done = (err, res) => {
+          if (err) throw err
+          return res
+        }
+
+        return send('dht/get', key, opts)
+          .then(
+            res => handleResult(done, null, res),
+            err => handleResult(done, err)
+          )
+      }
+
+      return send('dht/get', key, opts, null, handleResult.bind(null, cb))
     },
     put (key, value, opts, cb) {
       if (typeof (opts) === 'function' && !cb) {

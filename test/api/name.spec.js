@@ -22,4 +22,24 @@ describe('.name', () => {
       done()
     })
   })
+
+  describe('promise', () => {
+    it('.name.publish', () => {
+      return apiClients['a'].name.publish('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+        .then(res => {
+          name = res
+          expect(name).to.exist
+        })
+    })
+
+    it('.name.resolve', () => {
+      return apiClients['a'].name.resolve(name.Name)
+        .then(res => {
+          expect(res).to.exist
+          expect(res).to.be.eql({
+            Path: '/ipfs/' + name.Value
+          })
+        })
+    })
+  })
 })

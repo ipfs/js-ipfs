@@ -8,4 +8,13 @@ describe('.commands', () => {
       done()
     })
   })
+
+  describe('promise', () => {
+    it('lists commands', () => {
+      return apiClients['a'].commands()
+      .then(res => {
+        expect(res).to.exist
+      })
+    })
+  })
 })

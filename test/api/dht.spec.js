@@ -36,4 +36,27 @@ describe('.dht', () => {
       done()
     })
   })
+
+  describe('promise', () => {
+    it('returns an error when getting a non-existent key from the DHT', () => {
+      return apiClients['a'].dht.get('non-existent', {timeout: '100ms'})
+        .catch(err => {
+          expect(err).to.be.an.instanceof(Error)
+        })
+    })
+
+    it('puts a key value pair in the DHT', () => {
+      return apiClients['a'].dht.put('scope', 'interplanetary')
+        .then(res => {
+          expect(res).to.be.an('array')
+        })
+    })
+
+    it('.dht.findprovs', () => {
+      return apiClients['a'].dht.findprovs('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+        .then(res => {
+          expect(res).to.be.an('array')
+        })
+    })
+  })
 })
