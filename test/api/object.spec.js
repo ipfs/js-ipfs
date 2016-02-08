@@ -6,7 +6,7 @@ describe('.object', () => {
   const testPatchObject = Buffer(JSON.stringify({Data: 'new test data'}))
   const testPatchObjectHash = 'QmWJDtdQWQSajQPx1UVAGWKaSGrHVWdjnrNhbooHP7LuF2'
 
-  it('object.put', done => {
+  it('object.put', (done) => {
     apiClients['a'].object.put(testObject, 'json', (err, res) => {
       expect(err).to.not.exist
       expect(res).to.have.a.property('Hash', testObjectHash)
@@ -15,7 +15,7 @@ describe('.object', () => {
     })
   })
 
-  it('object.get', done => {
+  it('object.get', (done) => {
     apiClients['a'].object.get(testObjectHash, (err, res) => {
       expect(err).to.not.exist
       expect(res).to.have.a.property('Data', 'testdata')
@@ -24,14 +24,18 @@ describe('.object', () => {
     })
   })
 
-  it('object.data', done => {
+  it('object.data', (done) => {
     apiClients['a'].object.data(testObjectHash, (err, res) => {
       expect(err).to.not.exist
 
       let buf = ''
       res
-        .on('error', err => { throw err })
-        .on('data', data => buf += data)
+        .on('error', (err) => {
+          throw err
+        })
+        .on('data', (data) => {
+          buf += data
+        })
         .on('end', () => {
           expect(buf).to.equal('testdata')
           done()
@@ -39,7 +43,7 @@ describe('.object', () => {
     })
   })
 
-  it('object.stat', done => {
+  it('object.stat', (done) => {
     apiClients['a'].object.stat(testObjectHash, (err, res) => {
       expect(err).to.not.exist
       expect(res).to.be.eql({
@@ -54,7 +58,7 @@ describe('.object', () => {
     })
   })
 
-  it('object.links', done => {
+  it('object.links', (done) => {
     apiClients['a'].object.links(testObjectHash, (err, res) => {
       expect(err).to.not.exist
 
@@ -66,7 +70,7 @@ describe('.object', () => {
     })
   })
 
-  it('object.patch', done => {
+  it('object.patch', (done) => {
     apiClients['a'].object.put(testPatchObject, 'json', (err, res) => {
       expect(err).to.not.exist
       apiClients['a'].object.patch(testObjectHash, ['add-link', 'next', testPatchObjectHash], (err, res) => {
@@ -91,7 +95,7 @@ describe('.object', () => {
     })
   })
 
-  it('object.new', done => {
+  it('object.new', (done) => {
     apiClients['a'].object.new('unixfs-dir', (err, res) => {
       expect(err).to.not.exist
       expect(res).to.deep.equal({
@@ -105,7 +109,7 @@ describe('.object', () => {
   describe('promise', () => {
     it('object.put', () => {
       return apiClients['a'].object.put(testObject, 'json')
-        .then(res => {
+        .then((res) => {
           expect(res).to.have.a.property('Hash', testObjectHash)
           expect(res.Links).to.be.empty
         })
@@ -113,19 +117,23 @@ describe('.object', () => {
 
     it('object.get', () => {
       return apiClients['a'].object.get(testObjectHash)
-        .then(res => {
+        .then((res) => {
           expect(res).to.have.a.property('Data', 'testdata')
           expect(res.Links).to.be.empty
         })
     })
 
-    it('object.data', done => {
+    it('object.data', (done) => {
       return apiClients['a'].object.data(testObjectHash)
-        .then(res => {
+        .then((res) => {
           let buf = ''
           res
-            .on('error', err => { throw err })
-            .on('data', data => buf += data)
+            .on('error', (err) => {
+              throw err
+            })
+            .on('data', (data) => {
+              buf += data
+            })
             .on('end', () => {
               expect(buf).to.equal('testdata')
               done()
@@ -135,7 +143,7 @@ describe('.object', () => {
 
     it('object.stat', () => {
       return apiClients['a'].object.stat(testObjectHash)
-        .then(res => {
+        .then((res) => {
           expect(res).to.be.eql({
             Hash: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
             NumLinks: 0,
@@ -149,7 +157,7 @@ describe('.object', () => {
 
     it('object.links', () => {
       return apiClients['a'].object.links(testObjectHash)
-        .then(res => {
+        .then((res) => {
           expect(res).to.be.eql({
             Hash: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
             Links: []
@@ -159,18 +167,18 @@ describe('.object', () => {
 
     it('object.patch', () => {
       return apiClients['a'].object.put(testPatchObject, 'json')
-        .then(res => {
+        .then((res) => {
           return apiClients['a'].object
             .patch(testObjectHash, ['add-link', 'next', testPatchObjectHash])
         })
-        .then(res => {
+        .then((res) => {
           expect(res).to.be.eql({
             Hash: 'QmZFdJ3CQsY4kkyQtjoUo8oAzsEs5BNguxBhp8sjQMpgkd',
             Links: null
           })
           return apiClients['a'].object.get(res.Hash)
         })
-        .then(res => {
+        .then((res) => {
           expect(res).to.be.eql({
             Data: 'testdata',
             Links: [{
@@ -184,7 +192,7 @@ describe('.object', () => {
 
     it('object.new', () => {
       return apiClients['a'].object.new('unixfs-dir')
-        .then(res => {
+        .then((res) => {
           expect(res).to.deep.equal({
             Hash: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn',
             Links: null

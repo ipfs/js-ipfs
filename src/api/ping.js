@@ -1,10 +1,10 @@
 'use strict'
 
-module.exports = send => {
+module.exports = (send) => {
   return function ping (id, cb) {
     if (typeof cb !== 'function' && typeof Promise !== 'undefined') {
       return send('ping', id, {n: 1}, null)
-        .then(res => res[1])
+        .then((res) => res[1])
     }
 
     return send('ping', id, { n: 1 }, null, function (err, res) {

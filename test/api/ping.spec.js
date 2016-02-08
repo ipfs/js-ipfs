@@ -1,7 +1,7 @@
 'use strict'
 
 describe('.ping', () => {
-  it('ping another peer', done => {
+  it('ping another peer', (done) => {
     apiClients['b'].id((err, id) => {
       expect(err).to.not.exist
 
@@ -16,10 +16,10 @@ describe('.ping', () => {
   describe('promise', () => {
     it('ping another peer', () => {
       return apiClients['b'].id()
-        .then(id => {
+        .then((id) => {
           return apiClients['a'].ping(id.ID)
         })
-        .then(res => {
+        .then((res) => {
           expect(res).to.have.a.property('Success')
         })
     })

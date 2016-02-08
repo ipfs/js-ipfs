@@ -6,14 +6,14 @@ const Readable = require('stream').Readable
 
 const isNode = !global.window
 
-const testfilePath = __dirname + '/../testfile.txt'
+const testfilePath = path.join(__dirname, '/../testfile.txt')
 let testfile
 let testfileBig
 
 if (isNode) {
-  testfile = require('fs').readFileSync(__dirname + '/../testfile.txt')
-  testfileBig = require('fs').createReadStream(__dirname + '/../15mb.random', { bufferSize: 128 })
-  // testfileBig = require('fs').createReadStream(__dirname + '/../100mb.random', { bufferSize: 128 })
+  testfile = require('fs').readFileSync(path.join(__dirname, '/../testfile.txt'))
+  testfileBig = require('fs').createReadStream(path.join(__dirname, '/../15mb.random'), { bufferSize: 128 })
+  // testfileBig = require('fs').createReadStream(path.join(__dirname, '/../100mb.random'), { bufferSize: 128 })
 } else {
   testfile = require('raw!../testfile.txt')
   // browser goes nuts with a 100mb in memory
@@ -21,7 +21,7 @@ if (isNode) {
 }
 
 describe('.add', () => {
-  it('add file', done => {
+  it('add file', (done) => {
     if (!isNode) {
       return done()
     }
@@ -43,7 +43,7 @@ describe('.add', () => {
     })
   })
 
-  it('add buffer', done => {
+  it('add buffer', (done) => {
     let buf = new Buffer(testfile)
     apiClients['a'].add(buf, (err, res) => {
       expect(err).to.not.exist
@@ -53,7 +53,7 @@ describe('.add', () => {
     })
   })
 
-  it('add BIG buffer', done => {
+  it('add BIG buffer', (done) => {
     if (!isNode) {
       return done()
     }
@@ -66,7 +66,7 @@ describe('.add', () => {
     })
   })
 
-  it('add path', done => {
+  it('add path', (done) => {
     if (!isNode) {
       return done()
     }
@@ -80,8 +80,8 @@ describe('.add', () => {
     })
   })
 
-  it('add a nested dir', done => {
-    apiClients['a'].add(__dirname + '/../test-folder', { recursive: true }, (err, res) => {
+  it('add a nested dir', (done) => {
+    apiClients['a'].add(path.join(__dirname, '/../test-folder'), { recursive: true }, (err, res) => {
       if (isNode) {
         expect(err).to.not.exist
 
@@ -95,7 +95,7 @@ describe('.add', () => {
     })
   })
 
-  it('add stream', done => {
+  it('add stream', (done) => {
     const stream = new Readable()
     stream.push('Hello world')
     stream.push(null)
@@ -108,7 +108,7 @@ describe('.add', () => {
     })
   })
 
-  it('add url', done => {
+  it('add url', (done) => {
     const url = 'https://raw.githubusercontent.com/ipfs/js-ipfs-api/2a9cc63d7427353f2145af6b1a768a69e67c0588/README.md'
     apiClients['a'].add(url, (err, res) => {
       expect(err).to.not.exist
@@ -123,7 +123,7 @@ describe('.add', () => {
     it('add buffer', () => {
       let buf = new Buffer(testfile)
       return apiClients['a'].add(buf)
-        .then(res => {
+        .then((res) => {
           expect(res).to.have.length(1)
           expect(res[0]).to.have.property('Hash', 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
         })

@@ -2,14 +2,14 @@
 
 describe('.dht', () => {
   it('returns an error when getting a non-existent key from the DHT',
-     done => {
+     (done) => {
        apiClients['a'].dht.get('non-existent', {timeout: '100ms'}, (err, value) => {
          expect(err).to.be.an.instanceof(Error)
          done()
        })
      })
 
-  it('puts and gets a key value pair in the DHT', done => {
+  it('puts and gets a key value pair in the DHT', (done) => {
     apiClients['a'].dht.put('scope', 'interplanetary', (err, res) => {
       expect(err).to.not.exist
 
@@ -28,7 +28,7 @@ describe('.dht', () => {
     })
   })
 
-  it('.dht.findprovs', done => {
+  it('.dht.findprovs', (done) => {
     apiClients['a'].dht.findprovs('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', (err, res) => {
       expect(err).to.not.exist
 
@@ -40,21 +40,21 @@ describe('.dht', () => {
   describe('promise', () => {
     it('returns an error when getting a non-existent key from the DHT', () => {
       return apiClients['a'].dht.get('non-existent', {timeout: '100ms'})
-        .catch(err => {
+        .catch((err) => {
           expect(err).to.be.an.instanceof(Error)
         })
     })
 
     it('puts a key value pair in the DHT', () => {
       return apiClients['a'].dht.put('scope', 'interplanetary')
-        .then(res => {
+        .then((res) => {
           expect(res).to.be.an('array')
         })
     })
 
     it('.dht.findprovs', () => {
       return apiClients['a'].dht.findprovs('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
-        .then(res => {
+        .then((res) => {
           expect(res).to.be.an('array')
         })
     })

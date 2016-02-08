@@ -2,17 +2,18 @@
 
 const gulp = require('gulp')
 const fs = require('fs')
+const path = require('path')
 
 let daemons
 
-gulp.task('daemons:start', done => {
-  startDisposableDaemons(d => {
+gulp.task('daemons:start', (done) => {
+  startDisposableDaemons((d) => {
     daemons = d
     done()
   })
 })
 
-gulp.task('daemons:stop', done => {
+gulp.task('daemons:stop', (done) => {
   stopDisposableDaemons(daemons, () => {
     daemons = null
     done()
@@ -33,7 +34,8 @@ function startDisposableDaemons (callback) {
   function finish () {
     counter++
     if (counter === 3) {
-      fs.writeFileSync(__dirname + '/../test/tmp-disposable-nodes-addrs.json', JSON.stringify(apiAddrs))
+      const targetPath = path.join(__dirname, '/../test/tmp-disposable-nodes-addrs.json')
+      fs.writeFileSync(targetPath, JSON.stringify(apiAddrs))
       callback(ipfsNodes)
     }
   }
@@ -48,11 +50,11 @@ function startDisposableDaemons (callback) {
 
       console.log('  ipfs init done - (bootstrap and mdns off) - ' + key)
 
-      ipfsNodes[key].setConfig('Bootstrap', null, err => {
+      ipfsNodes[key].setConfig('Bootstrap', null, (err) => {
         if (err) {
           throw err
         }
-        ipfsNodes[key].setConfig('Discovery', '{}', err => {
+        ipfsNodes[key].setConfig('Discovery', '{}', (err) => {
           if (err) {
             throw err
           }
@@ -62,7 +64,7 @@ function startDisposableDaemons (callback) {
               'Access-Control-Allow-Origin': ['*']
             }
           }
-          ipfsNodes[key].setConfig('API', JSON.stringify(headers), err => {
+          ipfsNodes[key].setConfig('API', JSON.stringify(headers), (err) => {
             if (err) {
               throw err
             }
@@ -97,7 +99,7 @@ function stopDisposableDaemons (daemons, callback) {
 
   function stopIPFSNode (daemons, key, cb) {
     let nodeStopped
-    daemons[key].stopDaemon(err => {
+    daemons[key].stopDaemon((err) => {
       if (err) {
         throw err
       }

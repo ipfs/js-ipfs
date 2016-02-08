@@ -20,7 +20,7 @@ function npmPublish (done) {
   const publish = spawn('npm', ['publish'])
   publish.stdout.pipe(process.stdout)
   publish.stderr.pipe(process.stderr)
-  publish.on('close', code => {
+  publish.on('close', (code) => {
     if (code !== 0) return fail(`npm publish. Exiting with ${code}.`)
 
     $.util.log('Published to npm.')
@@ -54,10 +54,10 @@ gulp.task('release:bump', () => {
     .pipe($.tagVersion())
 })
 
-gulp.task('release:push', done => {
+gulp.task('release:push', (done) => {
   const remote = $.util.remote || 'origin'
   $.util.log('Pushing to git...')
-  $.git.push(remote, 'master', {args: '--tags'}, err => {
+  $.git.push(remote, 'master', {args: '--tags'}, (err) => {
     if (err) return fail(err.message)
 
     $.util.log(`Pushed to git ${remote}:master`)
@@ -65,7 +65,7 @@ gulp.task('release:push', done => {
   })
 })
 
-gulp.task('release:publish', done => {
+gulp.task('release:publish', (done) => {
   $.git.status({args: '-s'}, (err, stdout) => {
     if (err) return fail(err.message)
 
@@ -80,7 +80,7 @@ gulp.task('release:publish', done => {
   })
 })
 
-gulp.task('release', done => {
+gulp.task('release', (done) => {
   runSequence(
     'lint',
     'test',

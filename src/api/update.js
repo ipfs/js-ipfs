@@ -2,7 +2,7 @@
 
 const command = require('../cmd-helpers').command
 
-module.exports = send => {
+module.exports = (send) => {
   return {
     apply: command(send, 'update'),
     check: command(send, 'update/check'),

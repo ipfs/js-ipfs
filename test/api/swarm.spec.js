@@ -1,7 +1,7 @@
 'use strict'
 
 describe('.swarm', () => {
-  it('.swarm.peers', done => {
+  it('.swarm.peers', (done) => {
     apiClients['a'].swarm.peers((err, res) => {
       expect(err).to.not.exist
 
@@ -10,7 +10,7 @@ describe('.swarm', () => {
     })
   })
 
-  it('.swarm.connect', done => {
+  it('.swarm.connect', (done) => {
     // Done in the 'before' segment
     done()
   })
@@ -18,7 +18,7 @@ describe('.swarm', () => {
   describe('promise', () => {
     it('.swarm.peers', () => {
       return apiClients['a'].swarm.peers()
-        .then(res => {
+        .then((res) => {
           expect(res.Strings).to.have.length.above(1)
         })
     })

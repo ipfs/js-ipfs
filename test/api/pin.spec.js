@@ -1,7 +1,7 @@
 'use strict'
 
 describe('.pin', () => {
-  it('.pin.add', done => {
+  it('.pin.add', (done) => {
     apiClients['b'].pin.add('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {recursive: false}, (err, res) => {
       expect(err).to.not.exist
       expect(res.Pinned[0]).to.be.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
@@ -9,7 +9,7 @@ describe('.pin', () => {
     })
   })
 
-  it('.pin.list', done => {
+  it('.pin.list', (done) => {
     apiClients['b'].pin.list((err, res) => {
       expect(err).to.not.exist
       expect(res).to.exist
@@ -17,7 +17,7 @@ describe('.pin', () => {
     })
   })
 
-  it('.pin.remove', done => {
+  it('.pin.remove', (done) => {
     apiClients['b'].pin.remove('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {recursive: false}, (err, res) => {
       expect(err).to.not.exist
       expect(res).to.exist
@@ -34,14 +34,14 @@ describe('.pin', () => {
     it('.pin.add', () => {
       return apiClients['b'].pin
         .add('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {recursive: false})
-        .then(res => {
+        .then((res) => {
           expect(res.Pinned[0]).to.be.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
         })
     })
 
     it('.pin.list', () => {
       return apiClients['b'].pin.list()
-        .then(res => {
+        .then((res) => {
           expect(res).to.exist
         })
     })
@@ -49,11 +49,11 @@ describe('.pin', () => {
     it('.pin.remove', () => {
       return apiClients['b'].pin
         .remove('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {recursive: false})
-        .then(res => {
+        .then((res) => {
           expect(res).to.exist
           return apiClients['b'].pin.list('direct')
         })
-        .then(res => {
+        .then((res) => {
           expect(res).to.exist
           expect(res.Keys).to.be.empty
         })
