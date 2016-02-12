@@ -15,6 +15,7 @@ idb.deleteDatabase('ipfs')
 idb.deleteDatabase('ipfs/blocks')
 
 describe('IPFS Repo Tests on the Browser', function () {
+  this.timeout(10000)
   before(function (done) {
     var repoData = []
     repoContext.keys().forEach(function (key) {
@@ -34,7 +35,6 @@ describe('IPFS Repo Tests on the Browser', function () {
 
       const blocks = _.startsWith(file.key, 'blocks/')
       const blob = blocks ? blocksBlob : mainBlob
-
       const key = blocks ? file.key.replace(/^blocks\//, '') : file.key
 
       blob.createWriteStream({

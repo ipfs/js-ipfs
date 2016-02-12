@@ -38,6 +38,7 @@
     "brfs": "^1.4.3",
     "buffer-loader": "0.0.1",
     "chai": "^3.4.1",
+    "expose-loader": "^0.7.1",
     "fs-blob-store": "^5.2.1",
     "idb-plus-blob-store": "^1.0.0",
     "istanbul": "^0.4.1",
@@ -71,6 +72,7 @@
     "ipfs-repo": "^0.5.0",
     "lodash.get": "^4.0.0",
     "lodash.set": "^4.0.0",
+    "peer-id": "github:nginnever/js-peer-id",
     "ronin": "^0.3.11"
   }
 }
