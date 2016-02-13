@@ -59,7 +59,7 @@
     "rimraf": "^2.4.4",
     "standard": "^5.4.1",
     "transform-loader": "^0.2.3",
-    "webpack": "^2.0.5-beta"
+    "webpack": "^2.0.7-beta"
   },
   "dependencies": {
     "bl": "^1.0.0",
