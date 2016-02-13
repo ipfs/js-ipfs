@@ -3,13 +3,13 @@ node_js:
   - "4"
   - "5"
 
-branches:
-  only:
-    - master
-
 before_install:
   - npm i -g npm
   # Workaround for a permissions issue with Travis virtual machine images
+
+addons:
+  firefox: 'latest'
+
 script:
   - npm test
 

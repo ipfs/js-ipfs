@@ -21,7 +21,8 @@ module.exports = function (config) {
       },
       externals: {
         fs: '{}',
-        'node-forge': 'forge'
+        'node-forge': 'forge',
+        'ipfs-data-importing': '{ import: {} }'
       },
       node: {
         Buffer: true

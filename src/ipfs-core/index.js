@@ -11,6 +11,7 @@ const DAGService = mDAG.DAGService
 const Id = require('peer-id')
 const Info = require('peer-info')
 const multiaddr = require('multiaddr')
+const importer = require('ipfs-data-importing').import
 
 exports = module.exports = IPFS
 
@@ -319,6 +320,14 @@ function IPFS (repo) {
     routing: {},
     records: {},
     ping: notImpl
+  }
+
+  this.files = {
+    add: (path, options, callback) => {
+      options.path = path
+      options.dagService = dagS
+      importer(options, callback)
+    }
   }
 }
 
