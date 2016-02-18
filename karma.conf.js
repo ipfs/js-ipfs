@@ -45,6 +45,7 @@ module.exports = function (config) {
     logLevel: config.LOG_INFO,
     autoWatch: false,
     browsers: process.env.TRAVIS ? ['Firefox'] : ['Chrome'],
+    captureTimeout: 60000,
     singleRun: true
   })
 }
