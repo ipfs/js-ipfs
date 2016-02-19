@@ -1,9 +1,13 @@
 module.exports = function (config) {
+  var path = require('path')
+  var nodeForgePath = path.resolve(__dirname, 'node_modules/peer-id/deps/forge.bundle.js')
+
   config.set({
     basePath: '',
     frameworks: ['mocha'],
 
     files: [
+      nodeForgePath,
       'tests/test-core/browser.js'
     ],
 
@@ -16,7 +20,8 @@ module.exports = function (config) {
         extensions: ['', '.js', '.json']
       },
       externals: {
-        fs: '{}'
+        fs: '{}',
+        'node-forge': 'forge'
       },
       node: {
         Buffer: true

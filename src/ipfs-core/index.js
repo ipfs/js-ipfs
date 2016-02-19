@@ -8,6 +8,7 @@ const Block = blocks.Block
 const mDAG = require('ipfs-merkle-dag')
 const DAGNode = mDAG.DAGNode
 const DAGService = mDAG.DAGService
+const peerId = require('peer-id')
 
 exports = module.exports = IPFS
 
@@ -55,10 +56,10 @@ function IPFS (repo) {
         if (err) {
           return callback(err)
         }
+        var pid = peerId.createFromPrivKey(config.Identity.PrivKey)
         callback(null, {
           ID: config.Identity.PeerID,
-          // TODO needs https://github.com/diasdavid/js-peer-id/blob/master/src/index.js#L76
-          PublicKey: '',
+          PublicKey: pid.pubKey,
           Addresses: config.Addresses,
           AgentVersion: 'js-ipfs',
           ProtocolVersion: '9000'
