@@ -39,6 +39,9 @@ exports.start = (callback) => {
     const api = config.Addresses.API.split('/')
     const gateway = config.Addresses.Gateway.split('/')
 
+    // for the CLI to know the where abouts of the API
+    fs.writeFileSync(repoPath + '/api', config.Addresses.API)
+
     // select which connection with server.select(<label>) to add routes
     server.connection({ host: api[2], port: api[4], labels: 'API' })
     server.connection({ host: gateway[2], port: gateway[4], labels: 'Gateway' })
