@@ -3,15 +3,25 @@
 const Hapi = require('hapi')
 const IPFS = require('../ipfs-core')
 const debug = require('debug')
+const fs = require('fs')
+const os = require('os')
 const log = debug('api')
 log.error = debug('api:error')
 
 exports = module.exports
 
-exports.start = callback => {
-  // start IPFS and exports.ipfs = new IPFS()
+const repoPath = process.env.IPFS_PATH || os.homedir() + '/.ipfs'
 
+exports.start = callback => {
   const ipfs = exports.ipfs = new IPFS()
+
+  try {
+    fs.statSync(repoPath + '/api')
+    console.log('This repo is currently being used by another daemon')
+    process.exit(1)
+  } catch (err) {
+    fs.writeFileSync(repoPath + '/api', 'api is on by js-ipfs')
+  }
 
   ipfs.config.show((err, config) => {
     if (err) {
@@ -50,5 +60,6 @@ exports.start = callback => {
 }
 
 exports.stop = callback => {
+  fs.unlinkSync(repoPath + '/api')
   exports.server.stop(callback)
 }

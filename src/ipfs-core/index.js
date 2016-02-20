@@ -23,10 +23,6 @@ function IPFS (repo) {
   const blockS = new BlockService(repo)
   const dagS = new DAGService(blockS)
 
-  this.daemon = callback => {
-    // 1. read repo to get peer data
-  }
-
   this.version = (opts, callback) => {
     if (typeof opts === 'function') {
       callback = opts
@@ -113,7 +109,7 @@ function IPFS (repo) {
             return false
           } else { return true }
         })
-        repo.config.set(config, err => {
+        repo.config.set(config, (err) => {
           if (err) { return callback(err) }
           callback()
         })
