@@ -12,7 +12,7 @@ exports = module.exports
 
 const repoPath = process.env.IPFS_PATH || os.homedir() + '/.ipfs'
 
-exports.start = callback => {
+exports.start = (callback) => {
   const ipfs = exports.ipfs = new IPFS()
 
   try {
