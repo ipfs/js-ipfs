@@ -10,11 +10,13 @@
     "lint": "standard",
     "coverage": "istanbul cover --print both -- _mocha tests/test-*/index.js",
     "test": "npm run test:node && npm run test:browser",
-    "test:node": "mocha tests/test-*/index.js",
+    "test:node": "npm run test:node:core && npm run test:node:http-api && npm run test:node:cli",
+    "test:node:cli": "mocha tests/test-cli/index.js",
+    "test:node:core": "mocha tests/test-core/index.js",
+    "test:node:http-api": "mocha tests/test-http-api/index.js",
     "test:browser": "karma start karma.conf.js",
     "test:core": "mocha tests/test-core/index.js",
-    "test:cli": "mocha tests/test-cli/index.js",
-    "test:cli-offline": "mocha tests/test-cli-offline/index.js"
+    "test:cli": "mocha tests/test-cli/index.js"
   },
   "pre-commit": [
     "lint",
@@ -67,9 +69,11 @@
     "bs58": "^3.0.0",
     "debug": "^2.2.0",
     "hapi": "^12.0.0",
+    "ipfs-api": "^2.13.0",
     "ipfs-blocks": "^0.1.0",
     "ipfs-merkle-dag": "^0.2.1",
     "ipfs-repo": "^0.5.0",
+    "joi": "^8.0.2",
     "lodash.get": "^4.0.0",
     "lodash.set": "^4.0.0",
     "peer-id": "^0.5.0",

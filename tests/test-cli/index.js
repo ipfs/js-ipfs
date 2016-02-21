@@ -9,7 +9,7 @@ const expect = require('chai').expect
 
 describe('cli', () => {
   const repoExample = process.cwd() + '/tests/repo-example'
-  const repoTests = exports.repoTests = process.cwd() + '/tests/repo-tests' + Date.now()
+  const repoTests = exports.repoTests = process.cwd() + '/tests/repo-tests-run'
 
   before(done => {
     ncp(repoExample, repoTests, err => {

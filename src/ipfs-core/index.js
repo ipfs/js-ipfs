@@ -20,6 +20,7 @@ function IPFS (repo) {
   if (!repo) {
     repo = defaultRepo()
   }
+
   const blockS = new BlockService(repo)
   const dagS = new DAGService(blockS)
 

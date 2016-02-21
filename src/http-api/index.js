@@ -10,17 +10,16 @@ log.error = debug('api:error')
 
 exports = module.exports
 
-const repoPath = process.env.IPFS_PATH || os.homedir() + '/.ipfs'
-
 exports.start = (callback) => {
   const ipfs = exports.ipfs = new IPFS()
 
+  const repoPath = process.env.IPFS_PATH || os.homedir() + '/.ipfs'
   try {
     fs.statSync(repoPath + '/api')
     console.log('This repo is currently being used by another daemon')
     process.exit(1)
   } catch (err) {
-    fs.writeFileSync(repoPath + '/api', 'api is on by js-ipfs')
+    fs.writeFileSync(repoPath + '/api', 'api is on by js-ipfs', {flag: 'w+'})
   }
 
   ipfs.config.show((err, config) => {
@@ -63,6 +62,7 @@ exports.start = (callback) => {
 }
 
 exports.stop = callback => {
+  const repoPath = process.env.IPFS_PATH || os.homedir() + '/.ipfs'
   fs.unlinkSync(repoPath + '/api')
   exports.server.stop(callback)
 }
