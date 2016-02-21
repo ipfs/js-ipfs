@@ -19,7 +19,9 @@ describe('version', () => {
         method: 'GET',
         url: '/api/v0/version'
       }, res => {
-        expect(res.result).to.equal('0.4.0-dev')
+        expect(res.result.Version).to.equal('0.4.0-dev')
+        expect(res.result).to.have.a.property('Commit')
+        expect(res.result).to.have.a.property('Repo')
         done()
       })
     })
@@ -38,9 +40,11 @@ describe('version', () => {
     })
 
     it('get the version', (done) => {
-      ctl.version((err, version) => {
+      ctl.version((err, result) => {
         expect(err).to.not.exist
-        console.log(version)
+        expect(result).to.have.a.property('Version')
+        expect(result).to.have.a.property('Commit')
+        expect(result).to.have.a.property('Repo')
         done()
       })
     })

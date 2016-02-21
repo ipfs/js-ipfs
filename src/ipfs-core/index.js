@@ -77,7 +77,7 @@ function IPFS (repo) {
       }
       repo.exists((err, res) => {
         if (err) { return callback(err) }
-        repo.version.read(callback)
+        repo.version.get(callback)
       })
     },
 
