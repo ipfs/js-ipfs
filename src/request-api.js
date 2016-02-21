@@ -25,7 +25,7 @@ function onRes (buffer, cb) {
 
     const stream = !!res.headers['x-stream-output']
     const chunkedObjects = !!res.headers['x-chunked-output']
-    const isJson = res.headers['content-type'] === 'application/json'
+    const isJson = res.headers['content-type'].indexOf('application/json') === 0
 
     if (res.statusCode >= 400 || !res.statusCode) {
       const error = new Error(`Server responded with ${res.statusCode}`)
