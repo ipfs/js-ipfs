@@ -14,14 +14,11 @@ exports.get = (request, reply) => {
         return reply(boom.badRequest(err))
       }
 
-      console.log('--------->')
-
       reply({
         Version: ipfsVersion,
         Commit: '',
         Repo: repoVersion
       }).header('Transfer-Encoding', 'chunked')
-        // .header('Trailer', 'X-Stream-Error')
         .type('application/json')
     })
   })
