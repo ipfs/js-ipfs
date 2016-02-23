@@ -1,4 +1,4 @@
-/* globals describe, before */
+/* eslint-env mocha */
 
 const async = require('async')
 const store = require('idb-plus-blob-store')

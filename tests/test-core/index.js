@@ -1,6 +1,4 @@
-/* globals describe, before, after */
-
-'use strict'
+/* eslint-env mocha */
 
 const fs = require('fs')
 const ncp = require('ncp').ncp

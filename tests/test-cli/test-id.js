@@ -1,6 +1,4 @@
-/* globals describe, before, after, it */
-
-'use strict'
+/* eslint-env mocha */
 
 const expect = require('chai').expect
 const nexpect = require('nexpect')
