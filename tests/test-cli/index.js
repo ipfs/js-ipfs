@@ -1,6 +1,4 @@
-/* globals describe, before, after */
-
-'use strict'
+/* eslint-env mocha */
 
 const fs = require('fs')
 const ncp = require('ncp').ncp
@@ -9,7 +7,7 @@ const expect = require('chai').expect
 
 describe('cli', () => {
   const repoExample = process.cwd() + '/tests/repo-example'
-  const repoTests = exports.repoTests = process.cwd() + '/tests/repo-tests' + Date.now()
+  const repoTests = exports.repoTests = process.cwd() + '/tests/repo-tests-run'
 
   before(done => {
     ncp(repoExample, repoTests, err => {
@@ -28,7 +26,7 @@ describe('cli', () => {
 
   const tests = fs.readdirSync(__dirname)
   tests.filter(file => {
-    if (file === 'index.js') {
+    if (file === 'index.js' || file === 'api.js') {
       return false
     } else {
       return true

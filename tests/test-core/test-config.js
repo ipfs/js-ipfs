@@ -1,6 +1,4 @@
-/* globals describe, it */
-
-'use strict'
+/* eslint-env mocha */
 
 const expect = require('chai').expect
 const IPFS = require('../../src/ipfs-core')
@@ -18,8 +16,8 @@ describe('config', () => {
       Params: null,
     NoSync: false },
     Addresses: { Swarm: [ '/ip4/0.0.0.0/tcp/4001', '/ip6/::/tcp/4001' ],
-      API: '/ip4/127.0.0.1/tcp/5001',
-    Gateway: '/ip4/127.0.0.1/tcp/8080' },
+      API: '/ip4/127.0.0.1/tcp/6001',
+    Gateway: '/ip4/127.0.0.1/tcp/9090' },
     Mounts: { IPFS: '/ipfs', IPNS: '/ipns', FuseAllowOther: false },
     Version: { Current: '0.4.0-dev',
       Check: 'error',

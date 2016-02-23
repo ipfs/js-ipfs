@@ -20,12 +20,9 @@ function IPFS (repo) {
   if (!repo) {
     repo = defaultRepo()
   }
+
   const blockS = new BlockService(repo)
   const dagS = new DAGService(blockS)
-
-  this.daemon = callback => {
-    // 1. read repo to get peer data
-  }
 
   this.version = (opts, callback) => {
     if (typeof opts === 'function') {
@@ -80,7 +77,7 @@ function IPFS (repo) {
       }
       repo.exists((err, res) => {
         if (err) { return callback(err) }
-        repo.version.read(callback)
+        repo.version.get(callback)
       })
     },
 
@@ -113,7 +110,7 @@ function IPFS (repo) {
             return false
           } else { return true }
         })
-        repo.config.set(config, err => {
+        repo.config.set(config, (err) => {
           if (err) { return callback(err) }
           callback()
         })
