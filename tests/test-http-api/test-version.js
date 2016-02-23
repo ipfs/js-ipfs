@@ -27,9 +27,7 @@ describe('version', () => {
     })
   })
 
-  describe('gateway', () => {
-    // TODO
-  })
+  describe('gateway', () => {})
 
   describe('using js-ipfs-api', () => {
     var ctl

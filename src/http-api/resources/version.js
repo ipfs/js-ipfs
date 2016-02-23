@@ -16,8 +16,6 @@ exports.get = (request, reply) => {
         return reply(boom.badRequest(err))
       }
 
-      console.log('bumbas')
-
       reply({
         Version: ipfsVersion,
         Commit: '',
