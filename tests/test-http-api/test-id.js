@@ -33,7 +33,7 @@ describe('id', () => {
       done()
     })
 
-    it('get the version', (done) => {
+    it('get the id', (done) => {
       ctl.id((err, result) => {
         expect(err).to.not.exist
         expect(result).to.deep.equal(idResult)

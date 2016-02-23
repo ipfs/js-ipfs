@@ -35,7 +35,7 @@ describe('id', () => {
 
   describe('api running', () => {
     before((done) => {
-      httpAPI.start(err => {
+      httpAPI.start((err) => {
         expect(err).to.not.exist
         done()
       })

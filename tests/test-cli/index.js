@@ -26,7 +26,7 @@ describe('cli', () => {
 
   const tests = fs.readdirSync(__dirname)
   tests.filter(file => {
-    if (file === 'index.js') {
+    if (file === 'index.js' || file === 'api.js') {
       return false
     } else {
       return true

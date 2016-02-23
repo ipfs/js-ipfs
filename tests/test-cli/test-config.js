@@ -2,29 +2,10 @@
 
 const expect = require('chai').expect
 const nexpect = require('nexpect')
-const httpAPI = require('../../src/http-api')
 const fs = require('fs')
 
 describe('config', () => {
   describe('api offline', () => {
-    // TODO
-  })
-
-  describe('api running', () => {
-    before((done) => {
-      httpAPI.start(err => {
-        expect(err).to.not.exist
-        done()
-      })
-    })
-
-    after((done) => {
-      httpAPI.stop((err) => {
-        expect(err).to.not.exist
-        done()
-      })
-    })
-
     const repoTests = require('./index').repoTests
     const configPath = repoTests + '/config'
 
@@ -102,5 +83,9 @@ describe('config', () => {
           done()
         })
     })
+  })
+
+  describe('api running', () => {
+    // TODO
   })
 })

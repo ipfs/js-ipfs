@@ -2,7 +2,6 @@
 
 const expect = require('chai').expect
 const nexpect = require('nexpect')
-const httpAPI = require('../../src/http-api')
 
 describe('id', () => {
   describe('api offline', () => {
@@ -75,18 +74,6 @@ describe('id', () => {
   })
 
   describe('api running', () => {
-    before((done) => {
-      httpAPI.start(err => {
-        expect(err).to.not.exist
-        done()
-      })
-    })
-
-    after((done) => {
-      httpAPI.stop((err) => {
-        expect(err).to.not.exist
-        done()
-      })
-    })
+    // TODO
   })
 })
