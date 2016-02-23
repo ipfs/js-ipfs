@@ -42,7 +42,7 @@ var node = new IPFS()
 In order to use js-ipfs as a CLI, you must install it with the -g flag.
 
 ```bash
-$ npm i ipfs -g
+$ npm install ipfs --global
 ```
 
 The cli is availble through `jsipfs` in your terminal
@@ -53,8 +53,8 @@ The cli is availble through `jsipfs` in your terminal
 ┌───┐    ┌───────────────┐    ┌──────────────┐
 │CLI│───▶│   HTTP API    ├───▶│IPFS Core Impl│
 └───┘    └───────────────┘    └──────────────┘
-                 △                    △
-                 └──────────┬─────────┘
+  △              △                    △
+  └──────────────└──────────┬─────────┘
                             │
                          ┌─────┐
                          │Tests│
@@ -150,43 +150,38 @@ Importer are a set of layouts (e.g. UnixFS) and chunkers (e.g: fixed-size, rabin
 
 ### Per component view
 
-- **Network layer** - See hhttps://github.com/diasdavid/js-libp2p
-- ipfs-repo - [spec](https://github.com/ipfs/specs/tree/master/repo) - [impl](https://github.com/ipfs/js-ipfs-repo)
-  - keys
-  - version
-  - datastore.legacy
-  - datastore
-  - config
-  - logs
-  - locks
-- ipfs-data-importing - [spec](https://github.com/ipfs/specs/pull/57) - [impl](https://github.com/ipfs/js-ipfs-data-importing)
-  - fixed size chunker
-  - rabin chunking
-  - tar importer
-  - MerkleDAG layout (protobufs)
-  - IPLD layout (json + cbor)
-- bitswap - [spec](https://github.com/ipfs/specs/pull/53) - [impl](https://github.com/ipfs/js-ipfs-bitswap)
+| Name | Spec | Disc |
+| :----| :----| :----|
+| data importing | https://github.com/ipfs/specs/pull/57 | https://github.com/ipfs/js-ipfs/issues/41
+| repo | https://github.com/ipfs/specs/tree/master/repo | https://github.com/ipfs/js-ipfs/issues/51
+| network layer | https://github.com/ipfs/specs/tree/master/libp2p | https://github.com/diasdavid/js-libp2p/issues
+| bitswap | https://github.com/ipfs/js-ipfs/issues/51 | https://github.com/ipfs/js-ipfs/issues/51
+| pin | | https://github.com/ipfs/js-ipfs/issues/59
+| files | | https://github.com/ipfs/js-ipfs/issues/60
+| daemon | | https://github.com/ipfs/js-ipfs/issues/57
+| object | | https://github.com/ipfs/js-ipfs/issues/58
+| block | |  https://github.com/ipfs/js-ipfs/issues/50
+| bootstrap | | https://github.com/ipfs/js-ipfs/issues/46
+| init | | https://github.com/ipfs/js-ipfs/issues/42
 
 ### Per feature view
 
 - **core**
   - [x] version
-  - [ ] node (previously known as daemon)
-    - [x] id
-    - [ ] start
-    - [ ] stop
-  - [ ] block
-    - [ ] get
-    - [ ] put
-    - [ ] stat
-  - [ ] object - Basic manipulation of the DAG
-    - [ ] data
-    - [ ] get
-    - [ ] links
-    - [ ] new
-    - [ ] patch
-    - [ ] put
-    - [ ] stat
+  - [x] daemon
+  - [x] id
+  - [x] block
+    - [x] get
+    - [x] put
+    - [x] stat
+  - [x] object - Basic manipulation of the DAG
+    - [x] data
+    - [x] get
+    - [x] links
+    - [x] new
+    - [x] patch
+    - [x] put
+    - [x] stat
   - [ ] refs - Listing of references. (alking around the graph)
     - [ ] local
   - [ ] repo
@@ -236,10 +231,6 @@ Importer are a set of layouts (e.g. UnixFS) and chunkers (e.g: fixed-size, rabin
     - [ ] edit
     - [x] replace
     - [x] show
-  - [ ] daemon
-  - [ ] diag
-    - [ ] net
-    - [ ] sys
 - **network** (bubbles up from libp2p)
   - [ ] ping
   - [ ] dht
