@@ -1,5 +1,3 @@
-'use strict'
-
 const api = require('./../index.js').server.select('API')
 const resources = require('./../resources')
 

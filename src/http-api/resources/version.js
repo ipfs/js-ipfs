@@ -1,5 +1,3 @@
-'use strict'
-
 const ipfs = require('./../index.js').ipfs
 const boom = require('boom')
 
