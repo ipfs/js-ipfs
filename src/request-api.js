@@ -30,7 +30,7 @@ function onRes (buffer, cb) {
     if (res.statusCode >= 400 || !res.statusCode) {
       const error = new Error(`Server responded with ${res.statusCode}`)
 
-      Wreck.read(res, {json: true}, (err, payload) => {
+      return Wreck.read(res, {json: true}, (err, payload) => {
         if (err) {
           return cb(err)
         }
