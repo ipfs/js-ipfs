@@ -1,4 +1,4 @@
-'use strict'
+/* eslint-env mocha */
 
 const isNode = !global.window
 
@@ -6,12 +6,12 @@ describe('ls', function () {
   it('should correctly retrieve links', function (done) {
     if (!isNode) return done()
 
-    apiClients['a'].ls('QmSzLpCVbWnEm3XoTWnv6DT6Ju5BsVoLhzvxKXZeQ2cmdg', (err, res) => {
+    apiClients['a'].ls('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG', (err, res) => {
       expect(err).to.not.exist
 
       expect(res).to.have.a.property('Objects')
       expect(res.Objects[0]).to.have.a.property('Links')
-      expect(res.Objects[0]).to.have.property('Hash', 'QmSzLpCVbWnEm3XoTWnv6DT6Ju5BsVoLhzvxKXZeQ2cmdg')
+      expect(res.Objects[0]).to.have.property('Hash', 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG')
       done()
     })
   })
@@ -38,11 +38,11 @@ describe('ls', function () {
     it('should correctly retrieve links', () => {
       if (!isNode) return
 
-      return apiClients['a'].ls('QmSzLpCVbWnEm3XoTWnv6DT6Ju5BsVoLhzvxKXZeQ2cmdg')
+      return apiClients['a'].ls('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG')
         .then((res) => {
           expect(res).to.have.a.property('Objects')
           expect(res.Objects[0]).to.have.a.property('Links')
-          expect(res.Objects[0]).to.have.property('Hash', 'QmSzLpCVbWnEm3XoTWnv6DT6Ju5BsVoLhzvxKXZeQ2cmdg')
+          expect(res.Objects[0]).to.have.property('Hash', 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG')
         })
     })
 
