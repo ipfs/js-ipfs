@@ -2,6 +2,6 @@
 
 const command = require('../cmd-helpers').command
 
-module.exports = send => {
+module.exports = (send) => {
   return command(send, 'version')
 }

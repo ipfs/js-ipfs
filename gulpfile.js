@@ -5,7 +5,7 @@ const runSequence = require('run-sequence')
 
 require('require-dir')('tasks')
 
-gulp.task('default', done => {
+gulp.task('default', (done) => {
   runSequence(
     'lint',
     'test',

@@ -1,6 +1,6 @@
 'use strict'
 
-module.exports = send => {
+module.exports = (send) => {
   return {
     add (hash, opts, cb) {
       if (typeof opts === 'function') {

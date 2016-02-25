@@ -2,7 +2,7 @@
 
 const argCommand = require('../cmd-helpers').argCommand
 
-module.exports = send => {
+module.exports = (send) => {
   return {
     get: argCommand(send, 'object/get'),
     put (file, encoding, cb) {

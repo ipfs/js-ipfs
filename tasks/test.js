@@ -4,12 +4,13 @@ const gulp = require('gulp')
 const Server = require('karma').Server
 const $ = require('gulp-load-plugins')()
 const runSequence = require('run-sequence')
+const path = require('path')
 
 const config = require('./config')
 
 require('./daemons')
 
-gulp.task('test', done => {
+gulp.task('test', (done) => {
   runSequence(
     'test:node',
     'test:browser',
@@ -17,7 +18,7 @@ gulp.task('test', done => {
   )
 })
 
-gulp.task('test:node', done => {
+gulp.task('test:node', (done) => {
   runSequence(
     'daemons:start',
     'mocha',
@@ -26,7 +27,7 @@ gulp.task('test:node', done => {
   )
 })
 
-gulp.task('test:browser', done => {
+gulp.task('test:browser', (done) => {
   runSequence(
     'daemons:start',
     'karma',
@@ -45,9 +46,9 @@ gulp.task('mocha', () => {
     }))
 })
 
-gulp.task('karma', done => {
+gulp.task('karma', (done) => {
   new Server({
-    configFile: __dirname + '/../karma.conf.js',
+    configFile: path.join(__dirname, '/../karma.conf.js'),
     singleRun: true
   }, done).start()
 })

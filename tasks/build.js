@@ -8,7 +8,7 @@ const runSequence = require('run-sequence')
 
 const config = require('./config')
 
-gulp.task('clean', done => {
+gulp.task('clean', (done) => {
   rimraf('./dist', done)
 })
 
@@ -30,7 +30,7 @@ gulp.task('build:minified', () => {
     .pipe(gulp.dest('dist/'))
 })
 
-gulp.task('build', ['clean'], done => {
+gulp.task('build', ['clean'], (done) => {
   runSequence(
     'build:nonminified',
     'build:minified',

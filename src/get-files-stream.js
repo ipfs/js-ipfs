@@ -46,7 +46,7 @@ function loadPaths (opts, file) {
       follow: followSymlinks
     })
 
-    return mg.found.map(name => {
+    return mg.found.map((name) => {
       if (mg.cache[name] === 'FILE') {
         return {
           path: strip(name, file),
@@ -73,7 +73,7 @@ function getFilesStream (files, opts) {
 
   const mp = new Multipart()
 
-  flatmap(files, file => {
+  flatmap(files, (file) => {
     if (typeof file === 'string') {
       if (!isNode) {
         throw new Error('Can not add paths in node')
@@ -91,7 +91,7 @@ function getFilesStream (files, opts) {
       dir: false,
       content: file
     }
-  }).forEach(file => {
+  }).forEach((file) => {
     mp.addPart({
       headers: headers(file),
       body: file.content

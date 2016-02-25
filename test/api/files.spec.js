@@ -1,9 +1,11 @@
 'use strict'
 
+const path = require('path')
+
 let testfile
 
 if (isNode) {
-  testfile = require('fs').readFileSync(__dirname + '/../testfile.txt')
+  testfile = require('fs').readFileSync(path.join(__dirname, '/../testfile.txt'))
 } else {
   testfile = require('raw!../testfile.txt')
 }
