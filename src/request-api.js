@@ -36,7 +36,7 @@ function onRes (buffer, cb) {
         }
         if (payload) {
           error.code = payload.Code
-          error.message = payload.Message
+          error.message = payload.Message || payload.toString()
         }
         cb(error)
       })
