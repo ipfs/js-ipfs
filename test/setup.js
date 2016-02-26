@@ -36,7 +36,7 @@ function connectNodes (done) {
       if (err) {
         throw err
       }
-      apiClients['a'].swarm.connect(addrs['c'], err => {
+      apiClients['a'].swarm.connect(addrs['c'], (err) => {
         if (err) {
           throw err
         }
@@ -49,7 +49,7 @@ function connectNodes (done) {
 before(function (done) {
   this.timeout(20000)
 
-  Object.keys(apiAddrs).forEach(key => {
+  Object.keys(apiAddrs).forEach((key) => {
     global.apiClients[key] = ipfsAPI(apiAddrs[key])
   })
 

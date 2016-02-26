@@ -2,7 +2,7 @@
 
 const argCommand = require('../cmd-helpers').argCommand
 
-module.exports = send => {
+module.exports = (send) => {
   return {
     get: argCommand(send, 'object/get'),
     put (file, encoding, cb) {
@@ -15,8 +15,19 @@ module.exports = send => {
     links: argCommand(send, 'object/links'),
     stat: argCommand(send, 'object/stat'),
     new: argCommand(send, 'object/new'),
-    patch (file, opts, cb) {
-      return send('object/patch', [file].concat(opts), null, null, cb)
+    patch: {
+      rmLink: (root, link, cb) => {
+        return send('object/patch/rm-link', [root, link], null, null, cb)
+      },
+      setData: (root, data, cb) => {
+        return send('object/patch/set-data', [root], null, data, cb)
+      },
+      appendData: (root, data, cb) => {
+        return send('object/patch/append-data', [root], null, data, cb)
+      },
+      addLink: (root, name, ref, cb) => {
+        return send('object/patch/add-link', [root, name, ref], null, null, cb)
+      }
     }
   }
 }

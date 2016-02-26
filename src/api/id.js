@@ -1,11 +1,11 @@
 'use strict'
 
-module.exports = send => {
-  return function id (id, cb) {
-    if (typeof id === 'function') {
-      cb = id
-      id = null
+module.exports = (send) => {
+  return function id (idParam, cb) {
+    if (typeof idParam === 'function') {
+      cb = idParam
+      idParam = null
     }
-    return send('id', id, null, null, cb)
+    return send('id', idParam, null, null, cb)
   }
 }

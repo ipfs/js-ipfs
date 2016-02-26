@@ -29,7 +29,7 @@ function loadCommands (send) {
   const files = requireCommands()
   const cmds = {}
 
-  Object.keys(files).forEach(file => {
+  Object.keys(files).forEach((file) => {
     cmds[file] = files[file](send)
   })
 

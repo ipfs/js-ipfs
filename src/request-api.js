@@ -25,12 +25,12 @@ function onRes (buffer, cb) {
 
     const stream = !!res.headers['x-stream-output']
     const chunkedObjects = !!res.headers['x-chunked-output']
-    const isJson = res.headers['content-type'] === 'application/json'
+    const isJson = res.headers['content-type'].indexOf('application/json') === 0
 
     if (res.statusCode >= 400 || !res.statusCode) {
       const error = new Error(`Server responded with ${res.statusCode}`)
 
-      Wreck.read(res, {json: true}, (err, payload) => {
+      return Wreck.read(res, {json: true}, (err, payload) => {
         if (err) {
           return cb(err)
         }
@@ -40,7 +40,6 @@ function onRes (buffer, cb) {
         }
         cb(error)
       })
-      return
     }
 
     if (stream && !buffer) return cb(null, res)
@@ -61,11 +60,6 @@ function requestAPI (config, path, args, qs, files, buffer, cb) {
   if (args && !Array.isArray(args)) args = [args]
   if (args) qs.arg = args
   if (files && !Array.isArray(files)) files = [files]
-
-  if (typeof buffer === 'function') {
-    cb = buffer
-    buffer = false
-  }
 
   if (qs.r) {
     qs.recursive = qs.r
@@ -115,5 +109,21 @@ function requestAPI (config, path, args, qs, files, buffer, cb) {
 // -- Interface
 
 exports = module.exports = function getRequestAPI (config) {
-  return requestAPI.bind(null, config)
+  return function (path, args, qs, files, buffer, cb) {
+    if (typeof buffer === 'function') {
+      cb = buffer
+      buffer = false
+    }
+
+    if (typeof cb !== 'function' && typeof Promise !== 'undefined') {
+      return new Promise(function (resolve, reject) {
+        requestAPI(config, path, args, qs, files, buffer, function (err, res) {
+          if (err) return reject(err)
+          resolve(res)
+        })
+      })
+    }
+
+    return requestAPI(config, path, args, qs, files, buffer, cb)
+  }
 }
