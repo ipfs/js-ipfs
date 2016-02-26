@@ -9,6 +9,7 @@
   "scripts": {
     "lint": "standard",
     "coverage": "istanbul cover --print both -- _mocha tests/test-core/index.js",
+    "coverage:http-api": "istanbul cover --print both -- _mocha tests/test-http-api/index.js",
     "test": "npm run test:node && npm run test:browser",
     "test:node": "npm run test:node:core && npm run test:node:http-api && npm run test:node:cli",
     "test:node:cli": "mocha tests/test-cli/index.js",
