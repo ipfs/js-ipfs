@@ -10,6 +10,15 @@ module.exports = (send) => {
         cb = opts
         opts = {}
       }
+
+      if (typeof (value) === 'object') {
+        value = JSON.stringify(value)
+        opts = { json: true }
+      } else if (typeof (value) === 'boolean') {
+        value = value.toString()
+        opts = { bool: true }
+      }
+
       return send('config', [key, value], opts, null, cb)
     },
     show (cb) {
