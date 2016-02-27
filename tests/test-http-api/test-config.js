@@ -1,12 +1,17 @@
 /* eslint-env mocha */
+'use strict'
 
 const expect = require('chai').expect
 const fs = require('fs')
 const APIctl = require('ipfs-api')
+const FormData = require('form-data')
+const streamToPromise = require('stream-to-promise')
 
 describe('config', () => {
   const configPath = process.cwd() + '/tests/repo-tests-run/config'
+  const originalConfigPath = process.cwd() + '/tests/repo-example/config'
   const updatedConfig = () => JSON.parse(fs.readFileSync(configPath, 'utf8'))
+  const restoreConfig = () => fs.writeFileSync(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8')
 
   describe('api', () => {
     var api
@@ -143,6 +148,69 @@ describe('config', () => {
         done()
       })
     })
+
+    describe('/config/replace', () => {
+      it('returns 400 if no config is provided', (done) => {
+        const form = new FormData()
+        const headers = form.getHeaders()
+
+        streamToPromise(form).then(payload => {
+          api.inject({
+            method: 'POST',
+            url: '/api/v0/config/replace',
+            headers: headers,
+            payload: payload
+          }, res => {
+            expect(res.statusCode).to.equal(400)
+            done()
+          })
+        })
+      })
+
+      it('returns 500 if the config is invalid', (done) => {
+        const form = new FormData()
+        const filePath = 'tests/badconfig'
+        form.append('file', fs.createReadStream(filePath))
+        const headers = form.getHeaders()
+
+        streamToPromise(form).then(payload => {
+          api.inject({
+            method: 'POST',
+            url: '/api/v0/config/replace',
+            headers: headers,
+            payload: payload
+          }, res => {
+            expect(res.statusCode).to.equal(500)
+            done()
+          })
+        })
+      })
+
+      it('updates value', (done) => {
+        const form = new FormData()
+        const filePath = 'tests/otherconfig'
+        form.append('file', fs.createReadStream(filePath))
+        const headers = form.getHeaders()
+        const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))
+
+        streamToPromise(form).then(payload => {
+          api.inject({
+            method: 'POST',
+            url: '/api/v0/config/replace',
+            headers: headers,
+            payload: payload
+          }, res => {
+            expect(res.statusCode).to.equal(200)
+            expect(updatedConfig()).to.deep.equal(expectedConfig)
+            done()
+          })
+        })
+      })
+
+      after(() => {
+        restoreConfig()
+      })
+    })
   })
 
   describe('using js-ipfs-api', () => {
@@ -238,6 +306,18 @@ describe('config', () => {
         expect(err).not.to.exist
         expect(res).to.deep.equal(updatedConfig())
         done()
+      })
+    })
+
+    describe('ipfs.config.replace', () => {
+      it.skip('updates value', (done) => {
+        const file = 'tests/otherconfig'
+        ctl.config.replace(file, (err, res) => {
+          console.log(err, res)
+          expect(err).not.to.exist
+          expect(res).to.deep.equal(updatedConfig())
+          done()
+        })
       })
     })
   })

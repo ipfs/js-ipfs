@@ -42,6 +42,7 @@
     "buffer-loader": "0.0.1",
     "chai": "^3.4.1",
     "expose-loader": "^0.7.1",
+    "form-data": "^1.0.0-rc3",
     "fs-blob-store": "^5.2.1",
     "idb-plus-blob-store": "^1.0.0",
     "istanbul": "^0.4.1",
@@ -61,6 +62,7 @@
     "pre-commit": "^1.1.2",
     "rimraf": "^2.4.4",
     "standard": "^5.4.1",
+    "stream-to-promise": "^1.1.0",
     "transform-loader": "^0.2.3",
     "webpack": "^2.0.7-beta"
   },
