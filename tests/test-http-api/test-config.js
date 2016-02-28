@@ -132,6 +132,17 @@ describe('config', () => {
         })
       })
     })
+
+    it('/config/show', (done) => {
+      api.inject({
+        method: 'POST',
+        url: '/api/v0/config/show'
+      }, res => {
+        expect(res.statusCode).to.equal(200)
+        expect(res.result).to.deep.equal(updatedConfig())
+        done()
+      })
+    })
   })
 
   describe('using js-ipfs-api', () => {
@@ -219,6 +230,14 @@ describe('config', () => {
 
           done()
         })
+      })
+    })
+
+    it('ipfs.config.show', (done) => {
+      ctl.config.show((err, res) => {
+        expect(err).not.to.exist
+        expect(res).to.deep.equal(updatedConfig())
+        done()
       })
     })
   })

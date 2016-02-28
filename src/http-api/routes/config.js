@@ -11,3 +11,9 @@ api.route({
     handler: resources.config.getOrSet.handler
   }
 })
+
+api.route({
+  method: '*',
+  path: '/api/v0/config/show',
+  handler: resources.config.show
+})
