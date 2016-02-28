@@ -110,3 +110,17 @@ exports.getOrSet = {
     }
   }
 }
+
+exports.show = (request, reply) => {
+  return ipfs.config.show((err, config) => {
+    if (err) {
+      log.error(err)
+      return reply({
+        Message: 'Failed to get config value: ' + err,
+        Code: 0
+      }).code(500)
+    }
+
+    return reply(config)
+  })
+}
