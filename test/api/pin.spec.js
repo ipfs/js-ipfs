@@ -17,6 +17,14 @@ describe('.pin', () => {
     })
   })
 
+  it('.pin.list hash', (done) => {
+    apiClients['b'].pin.list({hash: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'}, (err, res) => {
+      expect(err).to.not.exist
+      expect(res).to.exist
+      done()
+    })
+  })
+
   it('.pin.remove', (done) => {
     apiClients['b'].pin.remove('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {recursive: false}, (err, res) => {
       expect(err).to.not.exist
@@ -41,6 +49,15 @@ describe('.pin', () => {
 
     it('.pin.list', () => {
       return apiClients['b'].pin.list()
+        .then((res) => {
+          expect(res).to.exist
+        })
+    })
+
+    it('.pin.list hash', () => {
+      return apiClients['b'].pin.list({
+        hash: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
+      })
         .then((res) => {
           expect(res).to.exist
         })
