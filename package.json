@@ -7,7 +7,10 @@
     "test": "mocha test/index.js",
     "lint": "standard --verbose | snazzy"
   },
-  "pre-commit": ["test", "lint"],
+  "pre-commit": [
+    "test",
+    "lint"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/xicombd/ipfs-multipart.git"
@@ -30,6 +33,7 @@
     "ipfs-api": "^2.13.1",
     "mocha": "^2.4.5",
     "pre-commit": "^1.1.2",
+    "request": "^2.69.0",
     "snazzy": "^3.0.0",
     "standard": "^6.0.7"
   }

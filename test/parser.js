@@ -5,6 +5,7 @@ const expect = require('chai').expect
 const APIctl = require('ipfs-api')
 const http = require('http')
 const fs = require('fs')
+const request = require('request')
 const IPFSMultipart = require('..')
 
 describe('parser', () => {
@@ -25,19 +26,20 @@ describe('parser', () => {
       res.writeHead(404)
       res.end()
     }).listen(PORT, () => {
-      ctl = APIctl('/ip4/127.0.0.1/tcp/6001')
+      ctl = APIctl(`/ip4/127.0.0.1/tcp/${PORT}`)
       done()
     })
   })
 
-  it('parses ctl.config.replace correctly', (done) => {
+  describe('single file', () => {
     const filePath = 'test/fixtures/config'
     const fileContent = fs.readFileSync(filePath, 'utf8')
-    const files = []
 
     handler = (req, cb) => {
       expect(req.headers['content-type']).to.be.a('string')
       const parser = IPFSMultipart.reqParser(req)
+
+      const files = []
 
       parser.on('file', (fileName, fileStream) => {
         const file = { fileName: fileName, content: '' }
@@ -57,9 +59,22 @@ describe('parser', () => {
       })
     }
 
-    ctl.config.replace(filePath, (err, res) => {
-      expect(err).not.to.exist
-      done()
+    it('parses ctl.config.replace correctly', (done) => {
+      ctl.config.replace(filePath, (err, res) => {
+        expect(err).not.to.exist
+        done()
+      })
+    })
+
+    it('parses regular multipart requests correctly', (done) => {
+      const formData = {
+        file: fs.createReadStream(filePath)
+      }
+
+      request.post({ url: `http://localhost:${PORT}`, formData: formData }, (err, httpResponse, body) => {
+        expect(err).not.to.exist
+        done()
+      })
     })
   })
 })
