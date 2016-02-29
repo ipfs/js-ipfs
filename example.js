@@ -1,21 +1,5 @@
-ipfs-multipart
-====
-
-[![build status](https://secure.travis-ci.org/xicombd/ipfs-multipart.png)](http://travis-ci.org/xicombd/ipfs-multipart)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)
-
-A set of utilities to help dealing with [IPFS](https://ipfs.io/) multipart.
-
-
-## Install
-```
-npm i --save ipfs-multipart
-```
-
-## Usage
-```javascript
 const http = require('http')
-const IPFSMultipart = require('ipfs-multipart')
+const IPFSMultipart = require('.')
 
 http.createServer((req, res) => {
   if (req.method === 'POST' && req.headers['content-type']) {
@@ -47,8 +31,3 @@ http.createServer((req, res) => {
 }).listen(5001, () => {
   console.log('server listening on port 5001')
 })
-```
-
-## License
-
-MIT

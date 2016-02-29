@@ -1,0 +1,36 @@
+{
+  "name": "ipfs-multipart",
+  "version": "0.0.1",
+  "description": "A set of utilities to help dealing with IPFS multipart.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "mocha test/index.js",
+    "lint": "standard --verbose | snazzy"
+  },
+  "pre-commit": ["test", "lint"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xicombd/ipfs-multipart.git"
+  },
+  "keywords": [
+    "ipfs",
+    "multipart",
+    "files"
+  ],
+  "author": "Francisco Dias <francisco@baiodias.com> (http://franciscodias.net/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xicombd/ipfs-multipart/issues"
+  },
+  "homepage": "https://github.com/xicombd/ipfs-multipart#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "content": "^3.0.0",
+    "dicer": "^0.2.5",
+    "ipfs-api": "^2.13.1",
+    "mocha": "^2.4.5",
+    "pre-commit": "^1.1.2",
+    "snazzy": "^3.0.0",
+    "standard": "^6.0.7"
+  }
+}
