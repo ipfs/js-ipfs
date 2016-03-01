@@ -28,13 +28,15 @@
   "homepage": "https://github.com/xicombd/ipfs-multipart#readme",
   "devDependencies": {
     "chai": "^3.5.0",
-    "content": "^3.0.0",
-    "dicer": "^0.2.5",
-    "ipfs-api": "^2.13.1",
+    "ipfs-api": "github:xicombd/js-ipfs-api#a994abc",
     "mocha": "^2.4.5",
     "pre-commit": "^1.1.2",
     "request": "^2.69.0",
     "snazzy": "^3.0.0",
     "standard": "^6.0.7"
+  },
+  "dependencies": {
+    "content": "^3.0.0",
+    "dicer": "^0.2.5"
   }
 }

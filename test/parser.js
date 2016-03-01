@@ -4,6 +4,7 @@
 const expect = require('chai').expect
 const APIctl = require('ipfs-api')
 const http = require('http')
+const path = require('path')
 const fs = require('fs')
 const request = require('request')
 const IPFSMultipart = require('..')
@@ -32,32 +33,34 @@ describe('parser', () => {
   })
 
   describe('single file', () => {
-    const filePath = 'test/fixtures/config'
+    const filePath = path.resolve(__dirname, 'fixtures/config')
     const fileContent = fs.readFileSync(filePath, 'utf8')
 
-    handler = (req, cb) => {
-      expect(req.headers['content-type']).to.be.a('string')
-      const parser = IPFSMultipart.reqParser(req)
+    before(() => {
+      handler = (req, cb) => {
+        expect(req.headers['content-type']).to.be.a('string')
+        const parser = IPFSMultipart.reqParser(req)
 
-      const files = []
+        const files = []
 
-      parser.on('file', (fileName, fileStream) => {
-        const file = { fileName: fileName, content: '' }
-        fileStream.on('data', (data) => {
-          file.content = data.toString()
+        parser.on('file', (fileName, fileStream) => {
+          const file = { fileName: fileName, content: '' }
+          fileStream.on('data', (data) => {
+            file.content = data.toString()
+          })
+          fileStream.on('end', (data) => {
+            files.push(file)
+          })
         })
-        fileStream.on('end', (data) => {
-          files.push(file)
-        })
-      })
 
-      parser.on('end', () => {
-        expect(files.length).to.equal(1)
-        expect(files[0].fileName).to.equal('config')
-        expect(files[0].content).to.equal(fileContent)
-        cb()
-      })
-    }
+        parser.on('end', () => {
+          expect(files.length).to.equal(1)
+          expect(files[0].fileName).to.contain('config')
+          expect(files[0].content).to.equal(fileContent)
+          cb()
+        })
+      }
+    })
 
     it('parses ctl.config.replace correctly', (done) => {
       ctl.config.replace(filePath, (err, res) => {
@@ -73,6 +76,44 @@ describe('parser', () => {
 
       request.post({ url: `http://localhost:${PORT}`, formData: formData }, (err, httpResponse, body) => {
         expect(err).not.to.exist
+        done()
+      })
+    })
+  })
+
+  describe('directory', () => {
+    const dirPath = path.resolve(__dirname, 'fixtures')
+
+    before(() => {
+      handler = (req, cb) => {
+        expect(req.headers['content-type']).to.be.a('string')
+        const parser = IPFSMultipart.reqParser(req)
+
+        const files = []
+
+        parser.on('file', (fileName, fileStream) => {
+          const file = { fileName: fileName, content: '' }
+          fileStream.on('data', (data) => {
+            file.content = data.toString()
+          })
+          fileStream.on('end', (data) => {
+            files.push(file)
+          })
+        })
+
+        parser.on('end', () => {
+          expect(files.length).to.equal(3)
+          expect(files[0].fileName).to.contain('fixtures/config')
+          expect(files[1].fileName).to.equal('fixtures/otherfile')
+          expect(files[2].fileName).to.equal('fixtures/subfolder/deepfile')
+          cb()
+        })
+      }
+    })
+
+    it('parses ctl.add correctly', (done) => {
+      ctl.add(dirPath, { recursive: true }, (err, res) => {
+        expect(err).to.not.exist
         done()
       })
     })
