@@ -41,5 +41,24 @@ describe('ipfsAPI request tests', () => {
         protocol: 'http'
       }).id(noop)
     })
+
+    it('does not crash if no content-type header is provided', (done) => {
+      if (!isNode) {
+        return done()
+      }
+
+      // go-ipfs always (currently) adds a content-type header, even if no content is present,
+      // the standard behaviour for an http-api is to omit this header if no content is present
+      const server = require('http').createServer((req, res) => {
+        res.writeHead(200)
+        res.end()
+      }).listen(6001, () => {
+        ipfsAPI('/ip4/127.0.0.1/tcp/6001')
+          .config.replace('test/r-config.json', (err) => {
+            expect(err).to.be.equal(null)
+            server.close(done)
+          })
+      })
+    })
   })
 })
