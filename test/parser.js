@@ -84,12 +84,13 @@ describe('parser', () => {
   describe('directory', () => {
     const dirPath = path.resolve(__dirname, 'fixtures')
 
+    let files = []
+    let symlinks = []
+
     before(() => {
       handler = (req, cb) => {
         expect(req.headers['content-type']).to.be.a('string')
         const parser = IPFSMultipart.reqParser(req)
-
-        const files = []
 
         parser.on('file', (fileName, fileStream) => {
           const file = { fileName: fileName, content: '' }
@@ -101,19 +102,45 @@ describe('parser', () => {
           })
         })
 
-        parser.on('end', () => {
-          expect(files.length).to.equal(3)
-          expect(files[0].fileName).to.contain('fixtures/config')
-          expect(files[1].fileName).to.equal('fixtures/otherfile')
-          expect(files[2].fileName).to.equal('fixtures/subfolder/deepfile')
-          cb()
+        parser.on('symlink', (fileName, target) => {
+          symlinks.push({ fileName: fileName, target: target })
         })
+
+        parser.on('end', cb)
       }
     })
 
+    beforeEach(() => {
+      files = []
+      symlinks = []
+    })
+
     it('parses ctl.add correctly', (done) => {
+      ctl.add(dirPath, { recursive: true, followSymlinks: false }, (err, res) => {
+        expect(err).to.not.exist
+
+        expect(files.length).to.equal(3)
+        expect(files[0].fileName).to.equal('fixtures/config')
+        expect(files[1].fileName).to.equal('fixtures/otherfile')
+        expect(files[2].fileName).to.equal('fixtures/subfolder/deepfile')
+
+        expect(symlinks.length).to.equal(2)
+        expect(symlinks[0].fileName).to.equal('fixtures/folderlink')
+        expect(symlinks[1].fileName).to.equal('fixtures/link')
+        expect(symlinks[0].target).to.equal('subfolder')
+        expect(symlinks[1].target).to.equal('subfolder/deepfile')
+
+        done()
+      })
+    })
+
+    it('parses ctl.add following symlinks correctly', (done) => {
       ctl.add(dirPath, { recursive: true }, (err, res) => {
         expect(err).to.not.exist
+
+        expect(files.length).to.equal(5)
+        expect(symlinks.length).to.equal(0)
+
         done()
       })
     })
