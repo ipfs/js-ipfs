@@ -78,13 +78,37 @@ describe('.add', () => {
     })
   })
 
-  it('add a nested dir', (done) => {
+  it('add a nested dir following symlinks', (done) => {
     apiClients['a'].add(path.join(__dirname, '/../test-folder'), { recursive: true }, (err, res) => {
       if (isNode) {
         expect(err).to.not.exist
 
         const added = res[res.length - 1]
-        expect(added).to.have.property('Hash', 'QmTDH2RXGn8XyDAo9YyfbZAUXwL1FCr44YJCN9HBZmL9Gj')
+        expect(added).to.have.property('Hash', 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6')
+
+        // check that the symlink was replaced by the target file
+        const linkPath = 'test-folder/hello-link'
+        const filePath = 'test-folder/files/hello.txt'
+        const linkHash = res.filter((e) => e.Name === linkPath)[0].Hash
+        const fileHash = res.filter((e) => e.Name === filePath)[0].Hash
+        expect(linkHash).to.equal(fileHash)
+
+        done()
+      } else {
+        expect(err.message).to.be.equal('Recursive uploads are not supported in the browser')
+        done()
+      }
+    })
+  })
+
+  it('add a nested dir without following symlinks', (done) => {
+    apiClients['a'].add(path.join(__dirname, '/../test-folder'), { recursive: true, followSymlinks: false }, (err, res) => {
+      if (isNode) {
+        expect(err).to.not.exist
+
+        const added = res[res.length - 1]
+        // same hash as the result from the cli (ipfs add test/test-folder -r)
+        expect(added).to.have.property('Hash', 'QmRArDYd8Rk7Zb7K2699KqmQM1uUoejn1chtEAcqkvjzGg')
         done()
       } else {
         expect(err.message).to.be.equal('Recursive uploads are not supported in the browser')

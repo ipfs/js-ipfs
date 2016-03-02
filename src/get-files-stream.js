@@ -12,6 +12,8 @@ function headers (file) {
 
   if (file.dir) {
     header['Content-Type'] = 'application/x-directory'
+  } else if (file.symlink) {
+    header['Content-Type'] = 'application/symlink'
   } else {
     header['Content-Type'] = 'application/octet-stream'
   }
@@ -46,20 +48,41 @@ function loadPaths (opts, file) {
       follow: followSymlinks
     })
 
-    return mg.found.map((name) => {
-      if (mg.cache[name] === 'FILE') {
-        return {
-          path: strip(name, file),
-          dir: false,
-          content: fs.createReadStream(name)
+    return mg.found
+      .map((name) => {
+        // symlinks
+        if (mg.symlinks[name] === true) {
+          return {
+            path: strip(name, file),
+            symlink: true,
+            dir: false,
+            content: fs.readlinkSync(name)
+          }
         }
-      } else {
-        return {
-          path: strip(name, file),
-          dir: true
+
+        // files
+        if (mg.cache[name] === 'FILE') {
+          return {
+            path: strip(name, file),
+            symlink: false,
+            dir: false,
+            content: fs.createReadStream(name)
+          }
         }
-      }
-    })
+
+        // directories
+        if (mg.cache[name] === 'DIR' || mg.cache[name] instanceof Array) {
+          return {
+            path: strip(name, file),
+            symlink: false,
+            dir: true
+          }
+        }
+
+        // files inside symlinks and others
+        return
+      })
+      .filter((file) => !!file) // filter out null files
   }
 
   return {
@@ -88,6 +111,7 @@ function getFilesStream (files, opts) {
 
     return {
       path: '',
+      symlink: false,
       dir: false,
       content: file
     }

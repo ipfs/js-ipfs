@@ -27,7 +27,7 @@ describe('ls', function () {
   it('should correctly handle a nonexisting path', function (done) {
     if (!isNode) return done()
 
-    apiClients['a'].ls('QmTDH2RXGn8XyDAo9YyfbZAUXwL1FCr44YJCN9HBZmL9Gj/folder_that_isnt_there', (err, res) => {
+    apiClients['a'].ls('QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6/folder_that_isnt_there', (err, res) => {
       expect(err).to.exist
       expect(res).to.not.exist
       done()
@@ -56,7 +56,7 @@ describe('ls', function () {
     it('should correctly handle a nonexisting path', () => {
       if (!isNode) return
 
-      return apiClients['a'].ls('QmTDH2RXGn8XyDAo9YyfbZAUXwL1FCr44YJCN9HBZmL9Gj/folder_that_isnt_there')
+      return apiClients['a'].ls('QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6/folder_that_isnt_there')
         .catch((err) => {
           expect(err).to.exist
         })
