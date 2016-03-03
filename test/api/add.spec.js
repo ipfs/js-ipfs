@@ -117,6 +117,37 @@ describe('.add', () => {
     })
   })
 
+  it('add a nested dir as array', (done) => {
+    if (!isNode) return done()
+    const fs = require('fs')
+    const base = path.join(__dirname, '../test-folder')
+    const content = (name) => ({
+      path: `test-folder/${name}`,
+      content: fs.readFileSync(path.join(base, name))
+    })
+    const dirs = [
+      content('add.js'),
+      content('cat.js'),
+      content('ls.js'),
+      content('ipfs-add.js'),
+      content('version.js'),
+      content('files/hello.txt'),
+      content('files/ipfs.txt'),
+      {
+        path: 'test-folder',
+        dir: true
+      }
+    ]
+
+    apiClients['a'].add(dirs, { recursive: true }, (err, res) => {
+      expect(err).to.not.exist
+
+      const added = res[res.length - 1]
+      expect(added).to.have.property('Hash', 'QmTDH2RXGn8XyDAo9YyfbZAUXwL1FCr44YJCN9HBZmL9Gj')
+      done()
+    })
+  })
+
   it('add stream', (done) => {
     const stream = new Readable()
     stream.push('Hello world')
