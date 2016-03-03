@@ -75,6 +75,7 @@
     "ipfs-api": "^2.13.1",
     "ipfs-blocks": "^0.1.0",
     "ipfs-merkle-dag": "^0.2.1",
+    "ipfs-multipart": "0.0.1",
     "ipfs-repo": "^0.5.0",
     "joi": "^8.0.2",
     "lodash.get": "^4.0.0",

@@ -310,12 +310,22 @@ describe('config', () => {
     })
 
     describe('ipfs.config.replace', () => {
-      it.skip('updates value', (done) => {
-        const file = 'tests/otherconfig'
-        ctl.config.replace(file, (err, res) => {
-          console.log(err, res)
+      it('returns error if the config is invalid', (done) => {
+        const filePath = 'tests/badconfig'
+
+        ctl.config.replace(filePath, (err) => {
+          expect(err).to.exist
+          done()
+        })
+      })
+
+      it('updates value', (done) => {
+        const filePath = 'tests/otherconfig'
+        const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))
+
+        ctl.config.replace(filePath, (err) => {
           expect(err).not.to.exist
-          expect(res).to.deep.equal(updatedConfig())
+          expect(expectedConfig).to.deep.equal(updatedConfig())
           done()
         })
       })

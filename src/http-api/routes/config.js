@@ -22,6 +22,10 @@ api.route({
   method: '*',
   path: '/api/v0/config/replace',
   config: {
+    payload: {
+      parse: false,
+      output: 'stream'
+    },
     pre: [
       { method: resources.config.replace.parseArgs, assign: 'args' }
     ],
