@@ -145,4 +145,22 @@ describe('parser', () => {
       })
     })
   })
+
+  describe('empty', () => {
+    before(() => {
+      handler = (req, cb) => {
+        expect(req.headers['content-type']).to.be.a('string')
+        const parser = IPFSMultipart.reqParser(req)
+
+        parser.on('end', cb)
+      }
+    })
+
+    it('does not block', (done) => {
+      request.post({ url: `http://localhost:${PORT}` }, (err, httpResponse, body) => {
+        expect(err).not.to.exist
+        done()
+      })
+    })
+  })
 })
