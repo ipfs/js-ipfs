@@ -61,7 +61,7 @@ exports.start = (callback) => {
   })
 }
 
-exports.stop = callback => {
+exports.stop = (callback) => {
   const repoPath = process.env.IPFS_PATH || os.homedir() + '/.ipfs'
   fs.unlinkSync(repoPath + '/api')
   exports.server.stop(callback)

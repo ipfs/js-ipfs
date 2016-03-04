@@ -26,7 +26,7 @@ describe('config', () => {
         api.inject({
           method: 'POST',
           url: '/api/v0/config'
-        }, res => {
+        }, (res) => {
           expect(res.statusCode).to.equal(400)
           done()
         })
@@ -36,7 +36,7 @@ describe('config', () => {
         api.inject({
           method: 'POST',
           url: '/api/v0/config?arg=kitten'
-        }, res => {
+        }, (res) => {
           expect(res.statusCode).to.equal(500)
           expect(res.result.Code).to.equal(0)
           expect(res.result.Message).to.be.a('string')
@@ -48,7 +48,7 @@ describe('config', () => {
         api.inject({
           method: 'POST',
           url: '/api/v0/config?arg=API.HTTPHeaders'
-        }, res => {
+        }, (res) => {
           expect(res.statusCode).to.equal(200)
           expect(res.result.Key).to.equal('API.HTTPHeaders')
           expect(res.result.Value).to.equal(null)
@@ -60,7 +60,7 @@ describe('config', () => {
         api.inject({
           method: 'POST',
           url: '/api/v0/config/API.HTTPHeaders'
-        }, res => {
+        }, (res) => {
           expect(res.statusCode).to.equal(200)
           expect(res.result.Key).to.equal('API.HTTPHeaders')
           expect(res.result.Value).to.equal(null)
@@ -72,7 +72,7 @@ describe('config', () => {
         api.inject({
           method: 'POST',
           url: '/api/v0/config?arg=Datastore.Path&arg=kitten'
-        }, res => {
+        }, (res) => {
           expect(res.statusCode).to.equal(200)
           expect(res.result.Key).to.equal('Datastore.Path')
           expect(res.result.Value).to.equal('kitten')
@@ -86,7 +86,7 @@ describe('config', () => {
         api.inject({
           method: 'POST',
           url: '/api/v0/config?arg=Datastore.Path&arg=kitten&json'
-        }, res => {
+        }, (res) => {
           expect(res.statusCode).to.equal(500)
           expect(res.result.Code).to.equal(0)
           expect(res.result.Message).to.be.a('string')
@@ -99,7 +99,7 @@ describe('config', () => {
         api.inject({
           method: 'POST',
           url: '/api/v0/config?arg=Datastore.Path&arg={\"kitten\": true}&json'
-        }, res => {
+        }, (res) => {
           expect(res.statusCode).to.equal(200)
           expect(res.result.Key).to.equal('Datastore.Path')
           expect(res.result.Value).to.deep.equal({ kitten: true })
@@ -113,7 +113,7 @@ describe('config', () => {
         api.inject({
           method: 'POST',
           url: '/api/v0/config?arg=Datastore.Path&arg=true&bool'
-        }, res => {
+        }, (res) => {
           expect(res.statusCode).to.equal(200)
           expect(res.result.Key).to.equal('Datastore.Path')
           expect(res.result.Value).to.deep.equal(true)
@@ -127,7 +127,7 @@ describe('config', () => {
         api.inject({
           method: 'POST',
           url: '/api/v0/config?arg=Datastore.Path&arg=false&bool'
-        }, res => {
+        }, (res) => {
           expect(res.statusCode).to.equal(200)
           expect(res.result.Key).to.equal('Datastore.Path')
           expect(res.result.Value).to.deep.equal(false)
@@ -142,7 +142,7 @@ describe('config', () => {
       api.inject({
         method: 'POST',
         url: '/api/v0/config/show'
-      }, res => {
+      }, (res) => {
         expect(res.statusCode).to.equal(200)
         expect(res.result).to.deep.equal(updatedConfig())
         done()

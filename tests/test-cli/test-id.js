@@ -48,7 +48,7 @@ describe('id', () => {
       })
     })
 
-    it('get the id', done => {
+    it('get the id', (done) => {
       nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'id'])
         .run((err, stdout, exitcode) => {
           var expected = [ "{ ID: 'QmQ2zigjQikYnyYUSXZydNXrDRhBut2mubwJBaLXobMt3A',",

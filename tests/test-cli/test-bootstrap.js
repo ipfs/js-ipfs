@@ -30,7 +30,7 @@ describe('id', () => {
       '/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT'
     ]
 
-    it('list the bootstrap nodes', done => {
+    it('list the bootstrap nodes', (done) => {
       nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bootstrap', 'list'])
         .run((err, stdout, exitcode) => {
           expect(stdout).to.deep.equal(defaultList)
@@ -40,7 +40,7 @@ describe('id', () => {
         })
     })
 
-    it('add another bootstrap node', done => {
+    it('add another bootstrap node', (done) => {
       nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bootstrap', 'add', '/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT'])
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
@@ -56,7 +56,7 @@ describe('id', () => {
         })
     })
 
-    it('rm a bootstrap node', done => {
+    it('rm a bootstrap node', (done) => {
       nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bootstrap', 'rm', '/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT'])
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist

@@ -11,7 +11,7 @@ describe('http api', () => {
   const repoTests = process.cwd() + '/tests/repo-tests-run'
   process.env.IPFS_PATH = repoTests
 
-  before(done => {
+  before((done) => {
     ncp(repoExample, repoTests, (err) => {
       expect(err).to.not.exist
       api.start((err) => {
@@ -21,7 +21,7 @@ describe('http api', () => {
     })
   })
 
-  after(done => {
+  after((done) => {
     api.stop((err) => {
       expect(err).to.not.exist
       rimraf(repoTests, (err) => {
@@ -32,13 +32,13 @@ describe('http api', () => {
   })
 
   var tests = fs.readdirSync(__dirname)
-  tests.filter(file => {
+  tests.filter((file) => {
     if (file === 'index.js') {
       return false
     } else {
       return true
     }
-  }).forEach(file => {
+  }).forEach((file) => {
     require('./' + file)
   })
 })

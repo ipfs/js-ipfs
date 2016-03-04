@@ -64,7 +64,7 @@ describe('config', () => {
     }
   }
 
-  it('show', done => {
+  it('show', (done) => {
     const ipfs = new IPFS()
     ipfs.config.show((err, config) => {
       expect(err).to.not.exist
@@ -73,14 +73,14 @@ describe('config', () => {
     })
   })
 
-  it('replace', done => {
+  it('replace', (done) => {
     const ipfs = new IPFS()
-    ipfs.config.replace({}, err => {
+    ipfs.config.replace({}, (err) => {
       expect(err).to.not.exist
       ipfs.config.show((err, config) => {
         expect(err).to.not.exist
         expect(config).to.deep.equal({})
-        ipfs.config.replace(defaultConfig, err => {
+        ipfs.config.replace(defaultConfig, (err) => {
           expect(err).to.not.exist
           done()
         })
@@ -89,7 +89,7 @@ describe('config', () => {
   })
 
 // cli only feature built with show and replace
-// it.skip('edit', done => {
+// it.skip('edit', (done) => {
 //   const ipfs = new IPFS()
 //  ipfs.config((err, config) => {
 //    expect(err).to.not.exist

@@ -7,7 +7,7 @@
   },
   "main": "src/index.js",
   "scripts": {
-    "lint": "standard",
+    "lint": "standard --verbose | snazzy",
     "coverage": "istanbul cover --print both -- _mocha tests/test-core/index.js",
     "coverage:http-api": "istanbul cover --print both -- _mocha tests/test-http-api/index.js",
     "test": "npm run test:node && npm run test:browser",
@@ -61,7 +61,8 @@
     "nexpect": "^0.5.0",
     "pre-commit": "^1.1.2",
     "rimraf": "^2.4.4",
-    "standard": "^5.4.1",
+    "snazzy": "^3.0.0",
+    "standard": "^6.0.7",
     "stream-to-promise": "^1.1.0",
     "transform-loader": "^0.2.3",
     "webpack": "^2.0.7-beta"
