@@ -1,9 +1,12 @@
+'use strict'
+
 const ipfs = require('./../index.js').ipfs
 const debug = require('debug')
 const get = require('lodash.get')
 const set = require('lodash.set')
 const log = debug('http-api:config')
 log.error = debug('http-api:config:error')
+const multipart = require('ipfs-multipart')
 
 exports = module.exports
 
@@ -123,4 +126,62 @@ exports.show = (request, reply) => {
 
     return reply(config)
   })
+}
+
+exports.replace = {
+  // pre request handler that parses the args and returns `config` which is assigned to `request.pre.args`
+  parseArgs: (request, reply) => {
+    if (!request.payload) {
+      return reply({
+        Message: "Argument 'file' is required",
+        Code: 1123
+
+      }).code(400).takeover()
+    }
+
+    const parser = multipart.reqParser(request.payload)
+    let file
+
+    parser.on('file', (fileName, fileStream) => {
+      fileStream.on('data', (data) => {
+        file = data
+      })
+    })
+
+    parser.on('end', () => {
+      if (!file) {
+        return reply({
+          Message: "Argument 'file' is required",
+          Code: 1123
+
+        }).code(400).takeover()
+      }
+
+      try {
+        return reply({
+          config: JSON.parse(file.toString())
+        })
+      } catch (err) {
+        return reply({
+          Message: 'Failed to decode file as config: ' + err,
+          Code: 0
+        }).code(500).takeover()
+      }
+    })
+  },
+
+  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+  handler: (request, reply) => {
+    return ipfs.config.replace(request.pre.args.config, (err) => {
+      if (err) {
+        log.error(err)
+        return reply({
+          Message: 'Failed to save config: ' + err,
+          Code: 0
+        }).code(500)
+      }
+
+      return reply()
+    })
+  }
 }
