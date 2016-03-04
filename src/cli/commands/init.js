@@ -24,6 +24,6 @@ module.exports = Command.extend({
     }
   },
 
-  run: name => {
+  run: (name) => {
   }
 })

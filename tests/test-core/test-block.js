@@ -27,7 +27,7 @@ describe('block', function () {
       done()
     })
   })
-  it('put', done => {
+  it('put', (done) => {
     var b = new Block('random data')
     ipfs.block.put(b, function (err) {
       expect(err).to.not.exist
@@ -40,7 +40,7 @@ describe('block', function () {
     })
   })
 
-  it('rm', done => {
+  it('rm', (done) => {
     var b = new Block('I will not last long enough')
     ipfs.block.put(b, function (err) {
       expect(err).to.not.exist

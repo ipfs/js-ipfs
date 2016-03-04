@@ -9,7 +9,7 @@ log.error = debug('cli:daemon:error')
 module.exports = Command.extend({
   desc: 'Start a long-running daemon process',
 
-  run: name => {
+  run: (name) => {
     console.log('Initializing daemon...')
     httpAPI.start((err) => {
       if (err) {

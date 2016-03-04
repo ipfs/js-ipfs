@@ -6,7 +6,7 @@ process.env.IPFS_PATH = process.cwd() + '/tests/repo-example'
 const IPFS = require('../../src/ipfs-core')
 
 describe('id', () => {
-  it('get id', done => {
+  it('get id', (done) => {
     const ipfs = new IPFS()
     ipfs.id((err, id) => {
       expect(err).to.not.exist

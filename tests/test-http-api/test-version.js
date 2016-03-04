@@ -16,7 +16,7 @@ describe('version', () => {
       api.inject({
         method: 'GET',
         url: '/api/v0/version'
-      }, res => {
+      }, (res) => {
         expect(res.result.Version).to.equal('0.4.0-dev')
         expect(res.result).to.have.a.property('Commit')
         expect(res.result).to.have.a.property('Repo')

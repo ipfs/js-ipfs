@@ -95,7 +95,7 @@ function IPFS (repo) {
       repo.config.get((err, config) => {
         if (err) { return callback(err) }
         config.Bootstrap.push(multiaddr)
-        repo.config.set(config, err => {
+        repo.config.set(config, (err) => {
           if (err) { return callback(err) }
 
           callback()
@@ -105,7 +105,7 @@ function IPFS (repo) {
     rm: (multiaddr, callback) => {
       repo.config.get((err, config) => {
         if (err) { return callback(err) }
-        config.Bootstrap = config.Bootstrap.filter(mh => {
+        config.Bootstrap = config.Bootstrap.filter((mh) => {
           if (mh === multiaddr) {
             return false
           } else { return true }
@@ -124,7 +124,7 @@ function IPFS (repo) {
     replace: (config, callback) => {
       repo.config.set(config, callback)
     },
-    show: callback => {
+    show: (callback) => {
       repo.config.get((err, config) => {
         if (err) { return callback(err) }
         callback(null, config)

@@ -7,7 +7,7 @@ const ronin = require('ronin')
 module.exports = Command.extend({
   desc: '',
 
-  run: name => {
+  run: (name) => {
     const cli = ronin(path.resolve(__dirname, '..'))
 
     cli.setupCommands()

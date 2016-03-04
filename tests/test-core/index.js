@@ -9,29 +9,29 @@ describe('core', () => {
   const repoExample = process.cwd() + '/tests/repo-example'
   const repoTests = process.cwd() + '/tests/repo-tests-run'
 
-  before(done => {
-    ncp(repoExample, repoTests, err => {
+  before((done) => {
+    ncp(repoExample, repoTests, (err) => {
       process.env.IPFS_PATH = repoTests
       expect(err).to.equal(null)
       done()
     })
   })
 
-  after(done => {
-    rimraf(repoTests, err => {
+  after((done) => {
+    rimraf(repoTests, (err) => {
       expect(err).to.equal(null)
       done()
     })
   })
 
   const tests = fs.readdirSync(__dirname)
-  tests.filter(file => {
+  tests.filter((file) => {
     if (file === 'index.js' || file === 'browser.js') {
       return false
     } else {
       return true
     }
-  }).forEach(file => {
+  }).forEach((file) => {
     require('./' + file)
   })
 })
