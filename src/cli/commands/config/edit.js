@@ -1,36 +1,108 @@
 'use strict'
 
 const Command = require('ronin').Command
+const spawn = require('child_process').spawn
+const fs = require('fs')
+const temp = require('temp')
+const async = require('async')
 const IPFS = require('../../../ipfs-core')
 const debug = require('debug')
 const log = debug('cli:version')
 log.error = debug('cli:version:error')
 
 module.exports = Command.extend({
-  desc: 'Shows IPFS version information',
-
-  options: {
-    number: {
-      alias: 'n',
-      type: 'boolean',
-      default: false
-    },
-    commit: {
-      type: 'boolean',
-      default: false
-    },
-    repo: {
-      type: 'boolean',
-      default: false
-    }
-  },
+  desc: 'Opens the config file for editing in $EDITOR',
 
   run: (name) => {
-    var node = new IPFS()
-    node.version((err, version) => {
-      if (err) { return log.error(err) }
+    const node = new IPFS()
+    const editor = process.env.EDITOR
 
-      console.log(version)
+    if (!editor) {
+      throw new Error('ENV variable $EDITOR not set')
+    }
+
+    function getConfig (next) {
+      node.config.show((err, config) => {
+        if (err) {
+          log.error(err)
+          next(new Error('failed to get the config'))
+        }
+
+        next(null, config)
+      })
+    }
+
+    function saveTempConfig (config, next) {
+      temp.open('ipfs-config', (err, info) => {
+        if (err) {
+          log.error(err)
+          next(new Error('failed to open the config'))
+        }
+
+        fs.write(info.fd, JSON.stringify(config, null, 2))
+        fs.close(info.fd, (err) => {
+          if (err) {
+            log.error(err)
+            next(new Error('failed to open the config'))
+          }
+        })
+
+        next(null, info.path)
+      })
+    }
+
+    function openEditor (path, next) {
+      const child = spawn(editor, [path], {
+        stdio: 'inherit'
+      })
+
+      child.on('exit', (err, code) => {
+        if (err) {
+          log.error(err)
+          throw new Error('error on the editor')
+        }
+
+        next(null, path)
+      })
+    }
+
+    function readTempConfig (path, next) {
+      fs.readFile(path, 'utf8', (err, data) => {
+        if (err) {
+          log.error(err)
+          next(new Error('failed to get the updated config'))
+        }
+
+        try {
+          next(null, JSON.parse(data))
+        } catch (err) {
+          log.error(err)
+          next(new Error(`failed to parse the updated config "${err.message}"`))
+        }
+      })
+    }
+
+    function saveConfig (config, next) {
+      node.config.replace(config, (err) => {
+        if (err) {
+          log.error(err)
+          next(new Error('failed to save the config'))
+        }
+
+        next()
+      })
+    }
+
+    async.waterfall([
+      getConfig,
+      saveTempConfig,
+      openEditor,
+      readTempConfig,
+      saveConfig
+    ], (err) => {
+      if (err) {
+        throw err
+      }
     })
   }
 })
