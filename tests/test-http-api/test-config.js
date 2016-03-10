@@ -154,13 +154,13 @@ describe('config', () => {
         const form = new FormData()
         const headers = form.getHeaders()
 
-        streamToPromise(form).then(payload => {
+        streamToPromise(form).then((payload) => {
           api.inject({
             method: 'POST',
             url: '/api/v0/config/replace',
             headers: headers,
             payload: payload
-          }, res => {
+          }, (res) => {
             expect(res.statusCode).to.equal(400)
             done()
           })
@@ -173,13 +173,13 @@ describe('config', () => {
         form.append('file', fs.createReadStream(filePath))
         const headers = form.getHeaders()
 
-        streamToPromise(form).then(payload => {
+        streamToPromise(form).then((payload) => {
           api.inject({
             method: 'POST',
             url: '/api/v0/config/replace',
             headers: headers,
             payload: payload
-          }, res => {
+          }, (res) => {
             expect(res.statusCode).to.equal(500)
             done()
           })
@@ -193,13 +193,13 @@ describe('config', () => {
         const headers = form.getHeaders()
         const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
-        streamToPromise(form).then(payload => {
+        streamToPromise(form).then((payload) => {
           api.inject({
             method: 'POST',
             url: '/api/v0/config/replace',
             headers: headers,
             payload: payload
-          }, res => {
+          }, (res) => {
             expect(res.statusCode).to.equal(200)
             expect(updatedConfig()).to.deep.equal(expectedConfig)
             done()

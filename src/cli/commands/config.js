@@ -9,7 +9,7 @@ const log = debug('cli:config')
 log.error = debug('cli:config:error')
 
 module.exports = Command.extend({
-  desc: 'Controls configuration variables.',
+  desc: 'Get and set IPFS config values',
 
   options: {
     bool: {

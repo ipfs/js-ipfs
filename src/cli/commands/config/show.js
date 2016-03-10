@@ -3,8 +3,8 @@
 const Command = require('ronin').Command
 const IPFS = require('../../../ipfs-core')
 const debug = require('debug')
-const log = debug('cli:version')
-log.error = debug('cli:version:error')
+const log = debug('cli:config')
+log.error = debug('cli:config:error')
 
 module.exports = Command.extend({
   desc: 'Outputs the content of the config file',

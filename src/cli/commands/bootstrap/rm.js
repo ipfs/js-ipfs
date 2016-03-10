@@ -3,11 +3,11 @@
 const Command = require('ronin').Command
 const IPFS = require('../../../ipfs-core')
 const debug = require('debug')
-const log = debug('cli:version')
-log.error = debug('cli:version:error')
+const log = debug('cli:bootstrap')
+log.error = debug('cli:bootstrap:error')
 
 module.exports = Command.extend({
-  desc: 'Show peers in the bootstrap list',
+  desc: 'Removes peers from the bootstrap list',
 
   options: {},
 
