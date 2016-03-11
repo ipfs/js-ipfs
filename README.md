@@ -49,20 +49,6 @@ If you omit the host and port, the api will parse `window.host`, and use this in
 var ipfs = window.ipfsAPI()
 ```
 
-### Using Promises
-
-If you do not pass in a callback all api functions will return a `Promise`, for example
-
-```js
-ipfs.id()
-  .then(function (id) {
-    console.log('my id is: ', id)
-  })
-```
-
-This relies on a global `Promise` object. If you are in an environemnt where that is not
-yet available you need to bring your own polyfill.
-
 #### Gotchas
 
 When using the api from script tag for things that require buffers (`ipfs.add`, for example), you will have to use either the exposed `ipfs.Buffer`, that works just like a node buffer, or use this [browser buffer](https://github.com/feross/buffer).
@@ -77,4 +63,4 @@ $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin "[\"http://exam
 
 ## Usage
 
-See [API.md](API.md) and `tests/api` for details on available methods.
+See [API.md](API.md) and [`tests/api`](test/api) for details on available methods.

@@ -1,286 +1,223 @@
-# API
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-## Usage
+- [API](#api)
+  - [Callbacks and promises](#callbacks-and-promises)
+  - [Reference](#reference)
+    - [Core](#core)
+      - [`version([callback])`](#versioncallback)
+      - [`id([callback])`](#idcallback)
+      - [`block`](#block)
+        - [`block.put(buffer, [callback])`](#blockputbuffer-callback)
+        - [`block.get(hash, [callback])`](#blockgethash-callback)
+        - [`block.stat(hash, [callback])`](#blockstathash-callback)
+      - [`object`](#object)
+        - [`object.put(buffer, encoding, [callback])`](#objectputbuffer-encoding-callback)
+        - [`object.get(hash, [callback])`](#objectgethash-callback)
+        - [`object.data(hash, [callback])`](#objectdatahash-callback)
+        - [`object.stat(hash, [callback])`](#objectstathash-callback)
+        - [`object.links(hash, [callback])`](#objectlinkshash-callback)
+        - [`object.new(hash, [callback])`](#objectnewhash-callback)
+        - [`object.patch`](#objectpatch)
+          - [`object.patch.addLink(hash, name, ref, [callback])`](#objectpatchaddlinkhash-name-ref-callback)
+          - [`object.patch.rmLink(hash, name, [callback])`](#objectpatchrmlinkhash-name-callback)
+          - [`object.patch.setData(hash, data, [callback])`](#objectpatchsetdatahash-data-callback)
+          - [`object.patch.appendData(hash, data, ref, [callback])`](#objectpatchappenddatahash-data-ref-callback)
+      - [`refs(hash, options, [callback])`](#refshash-options-callback)
+        - [`refs.local(hash, [callback])`](#refslocalhash-callback)
+      - [`pin`](#pin)
+        - [`pin.add(hash, options, [callback])`](#pinaddhash-options-callback)
+        - [`pin.remove(hash, options, [callback])`](#pinremovehash-options-callback)
+        - [`pin.list(hash, options, [callback])`](#pinlisthash-options-callback)
+      - [`log`](#log)
+        - [`log.tail([callback])`](#logtailcallback)
+    - [Extensions](#extensions)
+      - [`add(arrayOrBufferOrStream, [callback])`](#addarrayorbufferorstream-callback)
+      - [`name`](#name)
+        - [`name.publish(hash, [callback])`](#namepublishhash-callback)
+        - [`name.resolve(hash, [callback])`](#nameresolvehash-callback)
+      - [`files`](#files)
+        - [`files.cp(src, target, [callback])`](#filescpsrc-target-callback)
+        - [`files.ls(folder, [callback])`](#fileslsfolder-callback)
+        - [`files.mkdir(folder, [options, callback])`](#filesmkdirfolder-options-callback)
+        - [`files.stat(fileOrFolder, [callback])`](#filesstatfileorfolder-callback)
+        - [`files.rm(fileOrFolder, [options, callback])`](#filesrmfileorfolder-options-callback)
+        - [`files.read(fileOrFolder, [callback])`](#filesreadfileorfolder-callback)
+        - [`files.write(file, bufferOrArray, [options, callback])`](#fileswritefile-bufferorarray-options-callback)
+        - [`files.mv(src, target, [callback])`](#filesmvsrc-target-callback)
+      - [`mount(ipfs, ipns, [callback])`](#mountipfs-ipns-callback)
+    - [Tooling](#tooling)
+      - [`commands([callback])`](#commandscallback)
+      - [`update`](#update)
+        - [`update.apply([callback])`](#updateapplycallback)
+        - [`update.check([callback])`](#updatecheckcallback)
+        - [`update.log([callback])`](#updatelogcallback)
+      - [`diag`](#diag)
+        - [`diag.net([callback])`](#diagnetcallback)
+        - [`diag.sys([callback])`](#diagsyscallback)
+        - [`diag.cmds([callback])`](#diagcmdscallback)
+    - [Network](#network)
+      - [`ping(id, [callback])`](#pingid-callback)
+      - [`dht`](#dht)
+        - [`dht.findprovs([callback])`](#dhtfindprovscallback)
+        - [`dht.get(key, [options, callback])`](#dhtgetkey-options-callback)
+        - [`dht.put(key, value, [options, callback])`](#dhtputkey-value-options-callback)
+      - [`swarm`](#swarm)
+        - [`swarm.peers([callback])`](#swarmpeerscallback)
+        - [`swarm.connect(address, [callback])`](#swarmconnectaddress-callback)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+# API
 
 We classify the API calls by 'core', 'extensions', 'tooling', and 'network', following the same API spec organization available at [ipfs/specs](https://github.com/ipfs/specs/tree/master/api).
 
-The tests folder also contains great examples that can be used to understand how this client library interacts with the HTTP-API. You can find the [tests here](tests/api).
+The tests folder also contains great examples that can be used to understand how this client library interacts with the HTTP-API. You can find the [tests here](test/api).
+
+
+## Callbacks and promises
+
+If you do not pass in a callback all api functions will return a `Promise`, for example
+
+```js
+ipfs.id()
+  .then(function (id) {
+    console.log('my id is: ', id)
+  })
+```
+
+This relies on a global `Promise` object. If you are in an environemnt where that is not
+yet available you need to bring your own polyfill.
+
+## Reference
 
 ### Core
 
-##### version
+#### `version([callback])`
 
-- [examples](https://github.com/ipfs/js-ipfs-api/blob/master/test/api/version.spec.js)
+- [tests](test/api/version.spec.js)
 
-##### node
+#### `id([callback])`
 
-> node start and stop are not implemented in the API
+- [tests](test/api/id.spec.js)
 
-- [examples](https://github.com/ipfs/js-ipfs-api/blob/master/test/api/id.spec.js)
+#### `block`
 
-##### block
+- [tests](test/api/block.spec.js)
 
-- [examples](https://github.com/ipfs/js-ipfs-api/blob/master/test/api/block.spec.js)
+##### `block.put(buffer, [callback])`
+##### `block.get(hash, [callback])`
+##### `block.stat(hash, [callback])`
 
-##### object
+#### `object`
 
-*curl*
-```sh
-curl 'http://localhost:5001/api/v0/object/get?arg=QmYEqnfCZp7a39Gxrgyv3qRS4MoCTGjegKV6zroU3Rvr52&stream-channels=true' --compressed
-```
+- [tests](test/api/object.spec.js)
 
-*response*
-```js
-{
-    Links: [{
-        Name: string,
-        Hash: string,
-        Size: number
-    }, ...],
-    Data: string
-}
-```
-*Data is base64 encoded.*
+##### `object.put(buffer, encoding, [callback])`
+##### `object.get(hash, [callback])`
+##### `object.data(hash, [callback])`
+##### `object.stat(hash, [callback])`
+##### `object.links(hash, [callback])`
+##### `object.new(hash, [callback])`
 
-- [examples](https://github.com/ipfs/js-ipfs-api/blob/master/test/api/object.spec.js)
+##### `object.patch`
 
-##### pin
+###### `object.patch.addLink(hash, name, ref, [callback])`
+###### `object.patch.rmLink(hash, name, [callback])`
+###### `object.patch.setData(hash, data, [callback])`
+###### `object.patch.appendData(hash, data, ref, [callback])`
+
+#### `refs(hash, options, [callback])`
+
+- [tests](test/api/refs.spec.js)
+
+##### `refs.local(hash, [callback])`
 
 
--------------------------------------------------------
+#### `pin`
+
+- [tests](test/api/pin.spec.js)
+
+##### `pin.add(hash, options, [callback])`
+##### `pin.remove(hash, options, [callback])`
+##### `pin.list(hash, options, [callback])`
+
+#### `log`
+
+- [tests](test/api/log.spec.js)
+
+##### `log.tail([callback])`
 
 ### Extensions
 
+#### `add(arrayOrBufferOrStream, [callback])`
 
--------------------------------------------------------
+- [tests](test/api/add.spec.js)
+
+#### `name`
+
+- [tests](test/api/name.spec.js)
+
+##### `name.publish(hash, [callback])`
+##### `name.resolve(hash, [callback])`
+
+#### `files`
+
+- [tests](test/api/files.spec.js)
+
+##### `files.cp(src, target, [callback])`
+##### `files.ls(folder, [callback])`
+##### `files.mkdir(folder, [options, callback])`
+##### `files.stat(fileOrFolder, [callback])`
+##### `files.rm(fileOrFolder, [options, callback])`
+##### `files.read(fileOrFolder, [callback])`
+##### `files.write(file, bufferOrArray, [options, callback])`
+##### `files.mv(src, target, [callback])`
+
+#### `mount(ipfs, ipns, [callback])`
+
+- [tests](test/api/mount.spec.js)
 
 ### Tooling
 
-##### add
+#### `commands([callback])`
 
-Add a file (where file is any data) to ipfs returning the hash and name. The
-name value will only be set if you are actually sending a file. A single or
-array of files can be used.
+- [tests](test/api/commands.spec.js)
 
-*usage*
-```javascript
-ipfs.add(files, function(err, res) {
-    if(err || !res) return console.error(err)
+#### `update`
 
-    res.forEach(function(file) {
-        console.log(file.Hash)
-        console.log(file.Name)
-    })
-})
-```
+- [tests](test/api/update.spec.js)
 
-`files` can be a mixed array of filenames or buffers of data. A single value is
-also acceptable.
+##### `update.apply([callback])`
+##### `update.check([callback])`
+##### `update.log([callback])`
 
-Example
-```js
-var files = ["../files/hello.txt", new Buffer("ipfs!")]
-var files = "../files/hello.txt"
-```
+#### `diag`
 
-*curl*
-```sh
-curl 'http://localhost:5001/api/v0/add?stream-channels=true' \
--H 'content-type: multipart/form-data; boundary=a831rwxi1a3gzaorw1w2z49dlsor' \
--H 'Connection: keep-alive' \
---data-binary $'--a831rwxi1a3gzaorw1w2z49dlsor\r\nContent-Type: application/octet-stream\r\nContent-Disposition: file; name="file"; filename="Hello.txt"\r\n\r\nhello--a831rwxi1a3gzaorw1w2z49dlsor--' --compressed
-```
+- [tests](test/api/diag.spec.js)
 
-*response*
-```js
-[{
-    Hash: string,
-    Name: string
-}, ...]
-```
-*The name value will only be set for actual files.*
-
-##### cat
-
-Retrieve the contents of a single hash, or array of hashes.
-
-**usage**
-
-```javascript
-ipfs.cat(hashs, function(err, res) {
-    if(err || !res) return console.error(err)
-
-    if(res.readable) {
-        // Returned as a stream
-        res.pipe(process.stdout)
-    } else {
-        // Returned as a string
-        console.log(res)
-    }
-})
-```
-
-*curl*
-
-```sh
-curl "http://localhost:5001/api/v0/cat?arg=<hash>&stream-channels=true"
-```
-
-*response*
-
-The response is either a readable stream, or a string.
-
-##### ls
-Get the node structure of a hash. Included in it is a hash and array to links.
-
-*Usage*
-```javascript
-ipfs.ls(hashs, function(err, res) {
-    if(err || !res) return console.error(err)
-
-    res.Objects.forEach(function(node) {
-        console.log(node.Hash)
-        console.log("Links [%d]", node.Links.length)
-        node.Links.forEach(function(link, i) {
-            console.log("[%d]", i, link)
-        })
-    })
-})
-```
-
-*Curl*
-```sh
-curl "http://localhost:5001/api/v0/ls?arg=<hash>&stream-channels=true"
-```
-
-*Response*
-```js
-{
-    Objects: [
-        {
-            Hash: string,
-            Links: [{
-                Name: string,
-                Hash: string,
-                Size: number
-            }, ...]
-        },
-        ....
-    ]
-}
-```
-
-##### update
-
--------------------------------------------------------
+##### `diag.net([callback])`
+##### `diag.sys([callback])`
+##### `diag.cmds([callback])`
 
 ### Network
 
+#### `ping(id, [callback])`
 
----------
+- [tests](test/api/ping.spec.js)
 
-#### Files
+#### `dht`
 
-##### mkdir
+- [tests](test/api/dht.spec.js)
 
-```JavaScript
-ipfs.files.mkdir(<folderName>, function (err) {})
-```
+##### `dht.findprovs([callback])`
+##### `dht.get(key, [options, callback])`
+##### `dht.put(key, value, [options, callback])`
 
-##### cp
+#### `swarm`
 
-```JavaScript
-ipfs.files.cp([<pathSrc>, <pathDst>], function (err) {})
-```
+- [tests](test/api/swarm.spec.js)
 
-##### ls
-
-```JavaScript
-ipfs.files.ls(<path>, function (err, res) {})
-```
-
-##### stat
-
-```JavaScript
-ipfs.files.stat(<path>, function (err, res) {})
-```
-
-##### rm
-
-```JavaScript
-ipfs.files.rm(<path>, [<options>],  function (err) {})
-```
-
-For `rm -r` pass a options obj with `r: true`
-
-##### read
-
-```JavaScript
-ipfs.files.read(<path>, function (err, res) {
-  if(res.readable) {
-    // Returned as a stream
-    res.pipe(process.stdout)
-  } else {
-    // Returned as a string
-    console.log(res)
-  }
-})
-```
-
-##### write
-
-##### mv
-
-```JavaScript
-ipfs.files.mv([<pathSrc>, <pathDst>], function (err) {})
-```
-
-response: (it returns empty when successful)
-
-##### cp
-
-```JavaScript
-ipfs.files.cp([<pathSrc>, <pathDst>], function (err) {})
-```
-
-##### ls
-
-```JavaScript
-ipfs.files.ls(<path>, function (err, res) {})
-```
-
-##### stat
-
-```JavaScript
-ipfs.files.stat(<path>, function (err, res) {})
-```
-
-##### rm
-
-```JavaScript
-ipfs.files.rm(<path>, [<options>],  function (err) {})
-```
-
-For `rm -r` pass a options obj with `r: true`
-
-##### read
-
-```JavaScript
-ipfs.files.read(<path>, function (err, res) {
-  if(res.readable) {
-    // Returned as a stream
-    res.pipe(process.stdout)
-  } else {
-    // Returned as a string
-    console.log(res)
-  }
-})
-```
-
-##### write
-
-##### mv
-curl "http://localhost:5001/api/v0/files/mkdir?arg=%2Ffolder4"
-
-```JavaScript
-ipfs.files.mv([<pathSrc>, <pathDst>], function (err) {})
+##### `swarm.peers([callback])`
+##### `swarm.connect(address, [callback])`
