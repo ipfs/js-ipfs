@@ -70,7 +70,7 @@ describe('.object', () => {
     })
   })
 
-  describe('object.path', () => {
+  describe('object.patch', () => {
     before((done) => {
       apiClients['a'].object.put(testPatchObject, 'json', (err, res) => {
         expect(err).to.not.exist
