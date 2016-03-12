@@ -1,7 +1,6 @@
 'use strict'
 
 const defaultRepo = require('./default-repo')
-// const bl = require('bl')
 const blocks = require('ipfs-blocks')
 const BlockService = blocks.BlockService
 const Block = blocks.Block
@@ -13,6 +12,7 @@ const PeerInfo = require('peer-info')
 const multiaddr = require('multiaddr')
 const importer = require('ipfs-data-importing').import
 const libp2p = require('libp2p-ipfs')
+const init = require('./init')
 
 exports = module.exports = IPFS
 
@@ -106,6 +106,8 @@ function IPFS (repo) {
 
     gc: function () {}
   }
+
+  this.init = (opts, callback) => { init(repo, opts, callback) }
 
   this.bootstrap = {
     list: (callback) => {

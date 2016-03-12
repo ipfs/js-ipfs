@@ -48,12 +48,7 @@ describe('IPFS Repo Tests on the Browser', function () {
     testsContext
       .keys()
       .filter((key) => {
-        if (key === './test-swarm-node.js' ||
-            key === './test-swarm-node') {
-          return false
-        } else {
-          return true
-        }
+        return !(key.endsWith('-node.js') || key.endsWith('-node'))
       })
       .forEach((key) => {
         testsContext(key)
