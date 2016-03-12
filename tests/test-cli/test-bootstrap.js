@@ -3,7 +3,7 @@
 const expect = require('chai').expect
 const nexpect = require('nexpect')
 
-describe('id', () => {
+describe('bootstrap', () => {
   describe('api offline', () => {
     const defaultList = [
       '/ip4/104.131.131.82/tcp/4001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ',
