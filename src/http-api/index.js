@@ -46,7 +46,7 @@ exports.start = (callback) => {
     server.connection({ host: gateway[2], port: gateway[4], labels: 'Gateway' })
 
     // load routes
-    require('./routes')
+    require('./routes')(server)
 
     server.start((err) => {
       if (err) {

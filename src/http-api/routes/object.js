@@ -1,10 +1,12 @@
-const api = require('./../index.js').server.select('API')
 const resources = require('./../resources')
 
 // TODO
+module.exports = (server) => {
+  const api = server.select('API')
 
-api.route({
-  method: 'GET',
-  path: '/api/v0/object',
-  handler: resources.object
-})
+  api.route({
+    method: 'GET',
+    path: '/api/v0/object',
+    handler: resources.object
+  })
+}
