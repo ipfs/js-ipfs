@@ -1,7 +1,7 @@
 'use strict'
 
 const Command = require('ronin').Command
-const IPFS = require('../../ipfs-core')
+const utils = require('../utils')
 const debug = require('debug')
 const log = debug('cli:version')
 log.error = debug('cli:version:error')
@@ -26,11 +26,16 @@ module.exports = Command.extend({
   },
 
   run: (name) => {
-    var node = new IPFS()
-    node.version((err, version) => {
+    var ipfs = utils.getIPFS()
+    ipfs.version((err, version) => {
       if (err) { return log.error(err) }
 
-      console.log(version)
+      if (typeof version === 'object') { // js-ipfs-api output
+        console.log('ipfs version', version.Version)
+        return
+      }
+
+      console.log('ipfs version', version)
     })
   }
 })

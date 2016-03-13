@@ -18,8 +18,7 @@ exports.get = (request, reply) => {
         Version: ipfsVersion,
         Commit: '',
         Repo: repoVersion
-      }).header('Transfer-Encoding', 'chunked')
-        .type('application/json')
+      })
     })
   })
 }
