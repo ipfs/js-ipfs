@@ -3,7 +3,7 @@ module.exports = (server) => {
   require('./id')(server)
   require('./bootstrap')(server)
   // require('./block')(server)
-  // require('./object')(server)
+  require('./object')(server)
   // require('./repo')(server)
   require('./config')(server)
 }
