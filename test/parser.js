@@ -163,4 +163,39 @@ describe('parser', () => {
       })
     })
   })
+
+  describe('buffer', () => {
+    let files = []
+
+    before(() => {
+      handler = (req, cb) => {
+        expect(req.headers['content-type']).to.be.a('string')
+        const parser = IPFSMultipart.reqParser(req)
+
+        parser.on('file', (fileName, fileStream) => {
+          const file = { fileName: fileName, content: '' }
+          fileStream.on('data', (data) => {
+            file.content = data.toString()
+          })
+          fileStream.on('end', (data) => {
+            files.push(file)
+          })
+        })
+
+        parser.on('end', cb)
+      }
+    })
+
+    it('parses ctl.add buffer correctly', (done) => {
+      ctl.add(new Buffer('hello world'), (err, res) => {
+        expect(err).to.not.exist
+
+        expect(files.length).to.equal(1)
+        expect(files[0].fileName).to.equal('')
+        expect(files[0].content).to.equal('hello world')
+
+        done()
+      })
+    })
+  })
 })
