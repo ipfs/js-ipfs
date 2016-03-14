@@ -68,7 +68,7 @@
     "webpack": "^2.0.7-beta"
   },
   "dependencies": {
-    "bl": "^1.0.0",
+    "bl": "^1.1.2",
     "boom": "^3.1.1",
     "bs58": "^3.0.0",
     "debug": "^2.2.0",
@@ -76,7 +76,7 @@
     "ipfs-api": "^2.13.1",
     "ipfs-blocks": "^0.1.0",
     "ipfs-merkle-dag": "^0.2.1",
-    "ipfs-multipart": "0.0.1",
+    "ipfs-multipart": "^0.1.0",
     "ipfs-repo": "^0.5.0",
     "joi": "^8.0.2",
     "lodash.get": "^4.0.0",
