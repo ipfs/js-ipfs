@@ -1,6 +1,6 @@
 {
   "name": "ipfs-multipart",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A set of utilities to help dealing with IPFS multipart.",
   "main": "lib/index.js",
   "scripts": {
