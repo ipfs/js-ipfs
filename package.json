@@ -8,7 +8,7 @@
     "flatmap": "0.0.3",
     "glob": "^7.0.3",
     "multiaddr": "^1.0.0",
-    "multipart-stream": "github:dignifiedquire/multipart-stream#a1a4e9c4d41d1f78dcf32279affbbb0bfd930c28",
+    "multipart-stream": "^2.0.1",
     "ndjson": "^1.4.3",
     "qs": "^6.0.0",
     "wreck": "^7.0.0"
