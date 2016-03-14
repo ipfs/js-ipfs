@@ -28,7 +28,7 @@
   "homepage": "https://github.com/xicombd/ipfs-multipart#readme",
   "devDependencies": {
     "chai": "^3.5.0",
-    "ipfs-api": "github:ipfs/js-ipfs-api#524ebfc",
+    "ipfs-api": "github:ipfs/js-ipfs-api#1fd9749",
     "mocha": "^2.4.5",
     "pre-commit": "^1.1.2",
     "request": "^2.69.0",
