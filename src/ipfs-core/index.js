@@ -56,7 +56,7 @@ function IPFS (repo) {
         var pid = peerId.createFromPrivKey(config.Identity.PrivKey)
         callback(null, {
           ID: config.Identity.PeerID,
-          PublicKey: pid.pubKey,
+          PublicKey: pid.pubKey.toString('base64'),
           Addresses: config.Addresses,
           AgentVersion: 'js-ipfs',
           ProtocolVersion: '9000'
