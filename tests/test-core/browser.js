@@ -43,8 +43,10 @@ describe('IPFS Repo Tests on the Browser', function () {
     }, done)
   })
 
-  const testsContext = require.context('.', true, /test-*/)
-  testsContext
-    .keys()
-    .forEach((key) => testsContext(key))
+  it('', () => {
+    const testsContext = require.context('.', true, /test-*/)
+    testsContext
+      .keys()
+      .forEach((key) => testsContext(key))
+  })
 })

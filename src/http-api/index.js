@@ -48,6 +48,8 @@ exports.start = (callback) => {
     // load routes
     require('./routes')(server)
 
+    // TODO start libp2p.Node
+
     server.start((err) => {
       if (err) {
         return callback(err)
@@ -64,5 +66,6 @@ exports.start = (callback) => {
 exports.stop = (callback) => {
   const repoPath = process.env.IPFS_PATH || os.homedir() + '/.ipfs'
   fs.unlinkSync(repoPath + '/api')
+  // TODO stop libp2p
   exports.server.stop(callback)
 }
