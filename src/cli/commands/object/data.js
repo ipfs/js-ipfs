@@ -1,5 +1,3 @@
-'use strict'
-
 const Command = require('ronin').Command
 const utils = require('../../utils')
 const bs58 = require('bs58')
@@ -17,25 +15,28 @@ module.exports = Command.extend({
       throw new Error("Argument 'key' is required")
     }
 
-    var ipfs = utils.getIPFS()
-
-    const mh = utils.isDaemonOn()
-      ? key
-      : new Buffer(bs58.decode(key))
-
-    ipfs.object.data(mh, (err, data) => {
+    utils.getIPFS((err, ipfs) => {
       if (err) {
-        log.error(err)
         throw err
       }
+      const mh = utils.isDaemonOn()
+        ? key
+        : new Buffer(bs58.decode(key))
 
-      if (data instanceof Buffer) {
-        console.log(data.toString())
-        return
-      }
+      ipfs.object.data(mh, (err, data) => {
+        if (err) {
+          log.error(err)
+          throw err
+        }
 
-      // js-ipfs-api output (http stream)
-      data.pipe(process.stdout)
+        if (data instanceof Buffer) {
+          console.log(data.toString())
+          return
+        }
+
+        // js-ipfs-api output (http stream)
+        data.pipe(process.stdout)
+      })
     })
   }
 })

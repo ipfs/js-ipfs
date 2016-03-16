@@ -10,7 +10,7 @@ describe('id', () => {
 
   before((done) => {
     ipfs = new IPFS()
-    setTimeout(done, 200)
+    ipfs.load(done)
   })
 
   it('get id', (done) => {

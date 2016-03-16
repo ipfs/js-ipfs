@@ -1,11 +1,9 @@
-var Command = require('ronin').Command
-// var IPFS = require('../../ipfs-core')
+const Command = require('ronin').Command
 
 module.exports = Command.extend({
   desc: '',
 
-  options: {
-  },
+  options: {},
 
-  run: function (name) {}
+  run: function () {}
 })

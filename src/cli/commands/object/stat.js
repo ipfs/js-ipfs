@@ -17,22 +17,25 @@ module.exports = Command.extend({
       throw new Error("Argument 'key' is required")
     }
 
-    var ipfs = utils.getIPFS()
-
-    const mh = utils.isDaemonOn()
-      ? key
-      : new Buffer(bs58.decode(key))
-
-    ipfs.object.stat(mh, (err, stats) => {
+    utils.getIPFS((err, ipfs) => {
       if (err) {
-        log.error(err)
         throw err
       }
+      const mh = utils.isDaemonOn()
+        ? key
+        : new Buffer(bs58.decode(key))
 
-      delete stats.Hash // only for js-ipfs-api output
+      ipfs.object.stat(mh, (err, stats) => {
+        if (err) {
+          log.error(err)
+          throw err
+        }
 
-      Object.keys(stats).forEach((key) => {
-        console.log(`${key}: ${stats[key]}`)
+        delete stats.Hash // only for js-ipfs-api output
+
+        Object.keys(stats).forEach((key) => {
+          console.log(`${key}: ${stats[key]}`)
+        })
       })
     })
   }

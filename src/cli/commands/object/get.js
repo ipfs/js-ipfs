@@ -1,5 +1,3 @@
-'use strict'
-
 const Command = require('ronin').Command
 const utils = require('../../utils')
 const bs58 = require('bs58')
@@ -17,34 +15,37 @@ module.exports = Command.extend({
       throw new Error("Argument 'key' is required")
     }
 
-    var ipfs = utils.getIPFS()
+    utils.getIPFS((err, ipfs) => {
+      if (err) {
+        throw err
+      }
+      if (utils.isDaemonOn()) {
+        return ipfs.object.get(key, (err, obj) => {
+          if (err) {
+            log.error(err)
+            throw err
+          }
 
-    if (utils.isDaemonOn()) {
-      return ipfs.object.get(key, (err, obj) => {
+          console.log(JSON.stringify(obj))
+        })
+      }
+
+      const mh = new Buffer(bs58.decode(key))
+      ipfs.object.get(mh, (err, obj) => {
         if (err) {
           log.error(err)
           throw err
         }
 
-        console.log(JSON.stringify(obj))
+        console.log(JSON.stringify({
+          Links: obj.links.map((link) => ({
+            Name: link.name,
+            Hash: bs58.encode(link.hash).toString(),
+            Size: link.size
+          })),
+          Data: obj.data.toString()
+        }))
       })
-    }
-
-    const mh = new Buffer(bs58.decode(key))
-    ipfs.object.get(mh, (err, obj) => {
-      if (err) {
-        log.error(err)
-        throw err
-      }
-
-      console.log(JSON.stringify({
-        Links: obj.links.map((link) => ({
-          Name: link.name,
-          Hash: bs58.encode(link.hash).toString(),
-          Size: link.size
-        })),
-        Data: obj.data.toString()
-      }))
     })
   }
 })

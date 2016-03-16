@@ -28,9 +28,7 @@ function IPFS (repo) {
   var peerInfo
   // var libp2pNode
 
-  // TODO populate peerInfo
-  loadPeerInfo()
-  function loadPeerInfo () {
+  this.load = (callback) => {
     repo.exists((err, exists) => {
       if (err) {
         throw err
@@ -45,6 +43,7 @@ function IPFS (repo) {
         config.Addresses.Swarm.forEach((addr) => {
           peerInfo.multiaddr.add(multiaddr(addr))
         })
+        callback()
       })
     })
   }

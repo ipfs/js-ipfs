@@ -13,7 +13,7 @@ describe('object', () => {
 
   before((done) => {
     ipfs = new IPFS()
-    done()
+    ipfs.load(done)
   })
 
   it('new', (done) => {

@@ -1,7 +1,7 @@
 'use strict'
 
 const Command = require('ronin').Command
-const IPFS = require('../../../ipfs-core')
+const utils = require('../../utils')
 const debug = require('debug')
 const log = debug('cli:bootstrap')
 log.error = debug('cli:bootstrap:error')
@@ -11,12 +11,18 @@ module.exports = Command.extend({
 
   options: {},
 
-  run: (name) => {
-    var node = new IPFS()
-    node.bootstrap.list((err, list) => {
-      if (err) { return log.error(err) }
-      list.forEach((node) => {
-        console.log(node)
+  run: () => {
+    utils.getIPFS((err, ipfs) => {
+      if (err) {
+        throw err
+      }
+      ipfs.bootstrap.list((err, list) => {
+        if (err) {
+          throw err
+        }
+        list.forEach((node) => {
+          console.log(node)
+        })
       })
     })
   }

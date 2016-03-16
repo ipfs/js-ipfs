@@ -1,5 +1,3 @@
-'use strict'
-
 const Command = require('ronin').Command
 
 module.exports = Command.extend({
@@ -24,6 +22,5 @@ module.exports = Command.extend({
     }
   },
 
-  run: (name) => {
-  }
+  run: () => {}
 })

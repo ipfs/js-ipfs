@@ -15,13 +15,17 @@ module.exports = Command.extend({
   },
 
   run: (name) => {
-    var ipfs = utils.getIPFS()
-
-    ipfs.id((err, id) => {
+    utils.getIPFS((err, ipfs) => {
       if (err) {
-        return log.error(err)
+        throw err
       }
-      console.log(id)
+
+      ipfs.id((err, id) => {
+        if (err) {
+          return log.error(err)
+        }
+        console.log(id)
+      })
     })
   }
 })

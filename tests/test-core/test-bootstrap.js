@@ -6,7 +6,12 @@ process.env.IPFS_PATH = process.cwd() + '/tests/repo-example'
 const IPFS = require('../../src/ipfs-core')
 
 describe('bootstrap', () => {
-  const ipfs = new IPFS()
+  var ipfs
+
+  before((done) => {
+    ipfs = new IPFS()
+    ipfs.load(done)
+  })
 
   const defaultList = [
     '/ip4/104.131.131.82/tcp/4001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ',

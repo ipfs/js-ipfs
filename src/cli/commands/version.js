@@ -1,5 +1,3 @@
-'use strict'
-
 const Command = require('ronin').Command
 const utils = require('../utils')
 const debug = require('debug')
@@ -25,17 +23,21 @@ module.exports = Command.extend({
     }
   },
 
-  run: (name) => {
-    var ipfs = utils.getIPFS()
-    ipfs.version((err, version) => {
-      if (err) { return log.error(err) }
-
-      if (typeof version === 'object') { // js-ipfs-api output
-        console.log('ipfs version', version.Version)
-        return
+  run: () => {
+    utils.getIPFS((err, ipfs) => {
+      if (err) {
+        throw err
       }
+      ipfs.version((err, version) => {
+        if (err) { return log.error(err) }
 
-      console.log('ipfs version', version)
+        if (typeof version === 'object') { // js-ipfs-api output
+          console.log('ipfs version', version.Version)
+          return
+        }
+
+        console.log('ipfs version', version)
+      })
     })
   }
 })

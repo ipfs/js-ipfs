@@ -1,11 +1,9 @@
-'use strict'
-
 const Command = require('ronin').Command
-const IPFS = require('../../../ipfs-core')
 const debug = require('debug')
 const path = require('path')
 const log = debug('cli:config')
 log.error = debug('cli:config:error')
+const utils = require('utils')
 
 module.exports = Command.extend({
   desc: 'Replaces the config with <file>',
@@ -13,13 +11,19 @@ module.exports = Command.extend({
   options: {},
 
   run: (configPath) => {
-    var node = new IPFS()
-    var config = require(path.resolve(process.cwd(), configPath))
+    utils.getIPFS((err, ipfs) => {
+      if (err) {
+        throw err
+      }
+      const config = require(path.resolve(process.cwd(), configPath))
 
-    node.config.replace(config, (err, version) => {
-      if (err) { return log.error(err) }
+      ipfs.config.replace(config, (err, version) => {
+        if (err) {
+          throw err
+        }
 
-      console.log(version)
+        console.log(version)
+      })
     })
   }
 })

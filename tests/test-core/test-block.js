@@ -16,8 +16,12 @@ const fileA = isNode
 describe('block', function () {
   var ipfs
 
-  it('get', function (done) {
+  before((done) => {
     ipfs = new IPFS()
+    ipfs.load(done)
+  })
+
+  it('get', function (done) {
     const b58mh = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVzxTt3qVe'
     const mh = new Buffer(base58.decode(b58mh))
     ipfs.block.get(mh, (err, block) => {
@@ -27,6 +31,7 @@ describe('block', function () {
       done()
     })
   })
+
   it('put', (done) => {
     var b = new Block('random data')
     ipfs.block.put(b, function (err) {

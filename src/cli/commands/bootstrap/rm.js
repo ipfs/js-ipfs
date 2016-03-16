@@ -1,10 +1,10 @@
 'use strict'
 
 const Command = require('ronin').Command
-const IPFS = require('../../../ipfs-core')
 const debug = require('debug')
 const log = debug('cli:bootstrap')
 log.error = debug('cli:bootstrap:error')
+const utils = require('../../utils')
 
 module.exports = Command.extend({
   desc: 'Removes peers from the bootstrap list',
@@ -12,9 +12,15 @@ module.exports = Command.extend({
   options: {},
 
   run: (multiaddr) => {
-    var node = new IPFS()
-    node.bootstrap.rm(multiaddr, (err, list) => {
-      if (err) { return log.error(err) }
+    utils.getIPFS((err, ipfs) => {
+      if (err) {
+        throw err
+      }
+      ipfs.bootstrap.rm(multiaddr, (err, list) => {
+        if (err) {
+          return log.error(err)
+        }
+      })
     })
   }
 })

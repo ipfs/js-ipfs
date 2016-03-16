@@ -33,10 +33,14 @@ function getAPICtl () {
   return APIctl(apiAddr.toString())
 }
 
-exports.getIPFS = () => {
+exports.getIPFS = (callback) => {
   if (!isDaemonOn()) {
-    return new IPFS()
+    const ipfs = new IPFS()
+    ipfs.load(() => {
+      callback(null, ipfs)
+    })
+    return
   }
 
-  return getAPICtl()
+  callback(null, getAPICtl())
 }

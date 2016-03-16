@@ -1,5 +1,3 @@
-'use strict'
-
 const Command = require('ronin').Command
 const utils = require('../../utils')
 const bs58 = require('bs58')
@@ -13,20 +11,23 @@ module.exports = Command.extend({
   options: {},
 
   run: (template) => {
-    var ipfs = utils.getIPFS()
-
-    ipfs.object.new(template, (err, obj) => {
+    utils.getIPFS((err, ipfs) => {
       if (err) {
-        log.error(err)
         throw err
       }
+      ipfs.object.new(template, (err, obj) => {
+        if (err) {
+          log.error(err)
+          throw err
+        }
 
-      if (typeof obj.Hash === 'string') { // js-ipfs-api output
-        console.log(obj.Hash)
-        return
-      }
+        if (typeof obj.Hash === 'string') { // js-ipfs-api output
+          console.log(obj.Hash)
+          return
+        }
 
-      console.log(bs58.encode(obj.Hash).toString())
+        console.log(bs58.encode(obj.Hash).toString())
+      })
     })
   }
 })
