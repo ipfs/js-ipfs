@@ -47,6 +47,16 @@ describe('IPFS Repo Tests on the Browser', function () {
     const testsContext = require.context('.', true, /test-*/)
     testsContext
       .keys()
-      .forEach((key) => testsContext(key))
+      .filter((key) => {
+        if (key === './test-swarm-node.js' ||
+            key === './test-swarm-node') {
+          return false
+        } else {
+          return true
+        }
+      })
+      .forEach((key) => {
+        testsContext(key)
+      })
   })
 })

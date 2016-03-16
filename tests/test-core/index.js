@@ -26,7 +26,9 @@ describe('core', () => {
 
   const tests = fs.readdirSync(__dirname)
   tests.filter((file) => {
-    if (file === 'index.js' || file === 'browser.js') {
+    if (file === 'index.js' ||
+        file === 'browser.js' ||
+        file === 'test-swarm-browser.js') {
       return false
     } else {
       return true
