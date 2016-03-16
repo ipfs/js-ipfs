@@ -8,8 +8,8 @@ const Block = blocks.Block
 const mDAG = require('ipfs-merkle-dag')
 const DAGNode = mDAG.DAGNode
 const DAGService = mDAG.DAGService
-const Id = require('peer-id')
-const Info = require('peer-info')
+const peerId = require('peer-id')
+const PeerInfo = require('peer-info')
 const multiaddr = require('multiaddr')
 const importer = require('ipfs-data-importing').import
 const libp2p = require('libp2p-ipfs')
@@ -40,8 +40,8 @@ function IPFS (repo) {
         if (err) {
           throw err
         }
-        const pid = Id.createFromPrivKey(config.Identity.PrivKey)
-        peerInfo = new Info(pid)
+        const pid = peerId.createFromPrivKey(config.Identity.PrivKey)
+        peerInfo = new PeerInfo(pid)
         config.Addresses.Swarm.forEach((addr) => {
           peerInfo.multiaddr.add(multiaddr(addr))
         })
