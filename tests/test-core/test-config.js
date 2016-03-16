@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 const expect = require('chai').expect
-const IPFS = require('../../src/ipfs-core')
+const IPFS = require('../../src/core')
 
 describe('config', () => {
   var defaultConfig = {
