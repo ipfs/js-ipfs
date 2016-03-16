@@ -8,7 +8,9 @@ const Block = blocks.Block
 const mDAG = require('ipfs-merkle-dag')
 const DAGNode = mDAG.DAGNode
 const DAGService = mDAG.DAGService
-const peerId = require('peer-id')
+const Id = require('peer-id')
+const Info = require('peer-info')
+const multiaddr = require('multiaddr')
 
 exports = module.exports = IPFS
 
@@ -23,6 +25,28 @@ function IPFS (repo) {
 
   const blockS = new BlockService(repo)
   const dagS = new DAGService(blockS)
+  var peerInfo
+  // var libp2pNode
+
+  this.load = (callback) => {
+    repo.exists((err, exists) => {
+      if (err) {
+        throw err
+      }
+
+      repo.config.get((err, config) => {
+        if (err) {
+          throw err
+        }
+        const pid = Id.createFromPrivKey(config.Identity.PrivKey)
+        peerInfo = new Info(pid)
+        config.Addresses.Swarm.forEach((addr) => {
+          peerInfo.multiaddr.add(multiaddr(addr))
+        })
+        callback()
+      })
+    })
+  }
 
   this.version = (opts, callback) => {
     if (typeof opts === 'function') {
@@ -46,23 +70,20 @@ function IPFS (repo) {
       callback = opts
       opts = {}
     }
-    repo.exists((err, exists) => {
-      if (err) { return callback(err) }
-
-      repo.config.get((err, config) => {
-        if (err) {
-          return callback(err)
-        }
-        var pid = peerId.createFromPrivKey(config.Identity.PrivKey)
-        callback(null, {
-          ID: config.Identity.PeerID,
-          PublicKey: pid.pubKey.toString('base64'),
-          Addresses: config.Addresses,
-          AgentVersion: 'js-ipfs',
-          ProtocolVersion: '9000'
-        })
+    if (!peerInfo) { // because of split second warmup
+      setTimeout(ready, 100)
+    } else {
+      ready()
+    }
+    function ready () {
+      callback(null, {
+        ID: peerInfo.id.toB58String(),
+        PublicKey: peerInfo.id.pubKey.toString('base64'),
+        Addresses: peerInfo.multiaddrs.map((ma) => { return ma.toString() }),
+        AgentVersion: 'js-ipfs',
+        ProtocolVersion: '9000'
       })
-    })
+    }
   }
 
   this.repo = {
@@ -281,4 +302,26 @@ function IPFS (repo) {
       })
     }
   }
+
+  this.libp2p = {
+    start: () => {
+
+    },
+    stop: () => {
+    },
+    swarm: {
+      peers: notImpl,
+      addrs: notImpl,
+      connect: notImpl,
+      disconnect: notImpl,
+      filters: notImpl
+    },
+    routing: {},
+    records: {},
+    ping: notImpl
+  }
+}
+
+function notImpl () {
+  throw new Error('Not implemented yet')
 }

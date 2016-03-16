@@ -73,7 +73,5 @@ describe('bootstrap', () => {
     })
   })
 
-  describe('api running', () => {
-    // TODO
-  })
+  describe('api running', () => {})
 })

@@ -85,7 +85,5 @@ describe('config', () => {
     })
   })
 
-  describe('api running', () => {
-    // TODO
-  })
+  describe('api running', () => {})
 })

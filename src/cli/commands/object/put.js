@@ -1,5 +1,3 @@
-'use strict'
-
 const Command = require('ronin').Command
 const utils = require('../../utils')
 const bs58 = require('bs58')
@@ -29,28 +27,31 @@ function parseJSONBuffer (buf) {
 }
 
 function parseAndAddNode (buf) {
-  var ipfs = utils.getIPFS()
+  utils.getIPFS((err, ipfs) => {
+    if (err) {
+      throw err
+    }
+    if (utils.isDaemonOn()) {
+      return ipfs.object.put(buf, 'json', (err, obj) => {
+        if (err) {
+          log.error(err)
+          throw err
+        }
 
-  if (utils.isDaemonOn()) {
-    return ipfs.object.put(buf, 'json', (err, obj) => {
+        console.log('added', obj.Hash)
+      })
+    }
+
+    const parsed = parseJSONBuffer(buf)
+    const dagNode = new DAGNode(parsed.data, parsed.links)
+    ipfs.object.put(dagNode, (err, obj) => {
       if (err) {
         log.error(err)
         throw err
       }
 
-      console.log('added', obj.Hash)
+      console.log('added', bs58.encode(dagNode.multihash()).toString())
     })
-  }
-
-  const parsed = parseJSONBuffer(buf)
-  const dagNode = new DAGNode(parsed.data, parsed.links)
-  ipfs.object.put(dagNode, (err, obj) => {
-    if (err) {
-      log.error(err)
-      throw err
-    }
-
-    console.log('added', bs58.encode(dagNode.multihash()).toString())
   })
 }
 

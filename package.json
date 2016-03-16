@@ -79,9 +79,11 @@
     "ipfs-multipart": "^0.1.0",
     "ipfs-repo": "^0.5.0",
     "joi": "^8.0.2",
+    "libp2p-ipfs": "^0.1.0",
     "lodash.get": "^4.0.0",
     "lodash.set": "^4.0.0",
     "peer-id": "^0.6.0",
+    "peer-info": "^0.6.0",
     "ronin": "^0.3.11",
     "temp": "^0.8.3"
   }

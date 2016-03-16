@@ -64,8 +64,14 @@ describe('config', () => {
     }
   }
 
+  var ipfs
+
+  before((done) => {
+    ipfs = new IPFS()
+    ipfs.load(done)
+  })
+
   it('show', (done) => {
-    const ipfs = new IPFS()
     ipfs.config.show((err, config) => {
       expect(err).to.not.exist
       expect(config).to.deep.equal(defaultConfig)

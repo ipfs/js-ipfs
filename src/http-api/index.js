@@ -12,51 +12,54 @@ exports = module.exports
 
 exports.start = (callback) => {
   const ipfs = exports.ipfs = new IPFS()
-
-  const repoPath = process.env.IPFS_PATH || os.homedir() + '/.ipfs'
-  try {
-    fs.statSync(repoPath + '/api')
-    console.log('This repo is currently being used by another daemon')
-    process.exit(1)
-  } catch (err) {
-    fs.writeFileSync(repoPath + '/api', 'api is on by js-ipfs', {flag: 'w+'})
-  }
-
-  ipfs.config.show((err, config) => {
-    if (err) {
-      return callback(err)
+  ipfs.load(() => {
+    const repoPath = process.env.IPFS_PATH || os.homedir() + '/.ipfs'
+    try {
+      fs.statSync(repoPath + '/api')
+      console.log('This repo is currently being used by another daemon')
+      process.exit(1)
+    } catch (err) {
+      fs.writeFileSync(repoPath + '/api', 'api is on by js-ipfs', {flag: 'w+'})
     }
 
-    // TODO: set up cors correctly, following config
-    var server = exports.server = new Hapi.Server({
-      connections: {
-        routes: {
-          cors: true
-        }
-      }
-    })
-    const api = config.Addresses.API.split('/')
-    const gateway = config.Addresses.Gateway.split('/')
-
-    // for the CLI to know the where abouts of the API
-    fs.writeFileSync(repoPath + '/api', config.Addresses.API)
-
-    // select which connection with server.select(<label>) to add routes
-    server.connection({ host: api[2], port: api[4], labels: 'API' })
-    server.connection({ host: gateway[2], port: gateway[4], labels: 'Gateway' })
-
-    // load routes
-    require('./routes')(server)
-
-    server.start((err) => {
+    ipfs.config.show((err, config) => {
       if (err) {
         return callback(err)
       }
-      const api = server.select('API')
-      const gateway = server.select('Gateway')
-      console.log('API is listening on: ' + api.info.uri)
-      console.log('Gateway (readonly) is listening on: ' + gateway.info.uri)
-      callback()
+
+      // TODO: set up cors correctly, following config
+      var server = exports.server = new Hapi.Server({
+        connections: {
+          routes: {
+            cors: true
+          }
+        }
+      })
+      const api = config.Addresses.API.split('/')
+      const gateway = config.Addresses.Gateway.split('/')
+
+      // for the CLI to know the where abouts of the API
+      fs.writeFileSync(repoPath + '/api', config.Addresses.API)
+
+      // select which connection with server.select(<label>) to add routes
+      server.connection({ host: api[2], port: api[4], labels: 'API' })
+      server.connection({ host: gateway[2], port: gateway[4], labels: 'Gateway' })
+
+      // load routes
+      require('./routes')(server)
+
+      // TODO start libp2p.Node
+
+      server.start((err) => {
+        if (err) {
+          return callback(err)
+        }
+        const api = server.select('API')
+        const gateway = server.select('Gateway')
+        console.log('API is listening on: ' + api.info.uri)
+        console.log('Gateway (readonly) is listening on: ' + gateway.info.uri)
+        callback()
+      })
     })
   })
 }
@@ -64,5 +67,6 @@ exports.start = (callback) => {
 exports.stop = (callback) => {
   const repoPath = process.env.IPFS_PATH || os.homedir() + '/.ipfs'
   fs.unlinkSync(repoPath + '/api')
+  // TODO stop libp2p
   exports.server.stop(callback)
 }
