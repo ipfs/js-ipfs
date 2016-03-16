@@ -2,7 +2,6 @@
 
 const expect = require('chai').expect
 
-process.env.IPFS_PATH = process.cwd() + '/tests/repo-example'
 const IPFS = require('../../src/core')
 
 describe('swarm', () => {

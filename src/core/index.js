@@ -323,11 +323,15 @@ function IPFS (repo) {
       libp2pNode.swarm.close(callback)
     },
     swarm: {
-      peers: () => {},
+      peers: (callback) => {
+        callback(null, [])
+      },
+      // all the addrs we know
       addrs: notImpl,
+      localAddrs: notImpl,
       connect: notImpl,
       disconnect: notImpl,
-      filters: notImpl
+      filters: notImpl // TODO
     },
     routing: {},
     records: {},
