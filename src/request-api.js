@@ -23,8 +23,8 @@ function onRes (buffer, cb) {
       return cb(err)
     }
 
-    const stream = !!res.headers['x-stream-output']
-    const chunkedObjects = !!res.headers['x-chunked-output']
+    const stream = Boolean(res.headers['x-stream-output'])
+    const chunkedObjects = Boolean(res.headers['x-chunked-output'])
     const isJson = res.headers['content-type'] && res.headers['content-type'].indexOf('application/json') === 0
 
     if (res.statusCode >= 400 || !res.statusCode) {
@@ -63,7 +63,8 @@ function requestAPI (config, path, args, qs, files, buffer, cb) {
 
   if (qs.r) {
     qs.recursive = qs.r
-    delete qs.r // From IPFS 0.4.0, it throw an error when both r and recursive are passed
+    // From IPFS 0.4.0, it throws an error when both r and recursive are passed
+    delete qs.r
   }
 
   if (!isNode && qs.recursive && path === 'add') {

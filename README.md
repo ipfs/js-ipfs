@@ -1,7 +1,7 @@
 IPFS API wrapper library in JavaScript
 ======================================
 
-[![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io) [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/) [![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
+[![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io) [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/) [![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs) [![dignified.js](https://img.shields.io/badge/follows-dignified.js-blue.svg?style=flat-square)](https://github.com/dignifiedquire/dignified.js)
 [![Dependency Status](https://david-dm.org/ipfs/js-ipfs-api.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-api)
 [![Travis CI](https://travis-ci.org/ipfs/js-ipfs-api.svg?branch=master)](https://travis-ci.org/ipfs/js-ipfs-api)
 [![Circle CI](https://circleci.com/gh/ipfs/js-ipfs-api.svg?style=svg)](https://circleci.com/gh/ipfs/js-ipfs-api)
@@ -37,7 +37,13 @@ Same as in Node.js, you just have to [browserify](http://browserify.org) the cod
 
 ### In the Browser through `<script>` tag
 
-Make the [ipfsapi.min.js](https://github.com/ipfs/js-ipfs-api/blob/master/dist/ipfsapi.min.js) available through your server and load it using a normal `<script>` tag, this will export the `ipfsAPI` constructor on the `window` object, such that:
+You can use [npmcdn](https://npmcdn.com/) to get the latest built version, like this
+
+```html
+<script src="https://npmcdn.com/ipfs-api/dist/ipfsapi.min.js"></script>
+```
+
+This will export the `ipfsAPI` constructor on the `window` object, such that:
 
 ```
 var ipfs = window.ipfsAPI('localhost', '5001')
@@ -48,10 +54,6 @@ If you omit the host and port, the api will parse `window.host`, and use this in
 ```
 var ipfs = window.ipfsAPI()
 ```
-
-#### Gotchas
-
-When using the api from script tag for things that require buffers (`ipfs.add`, for example), you will have to use either the exposed `ipfs.Buffer`, that works just like a node buffer, or use this [browser buffer](https://github.com/feross/buffer).
 
 ## CORS
 

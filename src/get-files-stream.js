@@ -82,7 +82,8 @@ function loadPaths (opts, file) {
         // files inside symlinks and others
         return
       })
-      .filter((file) => !!file) // filter out null files
+      // filter out null files
+      .filter(Boolean)
   }
 
   return {

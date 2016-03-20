@@ -1,5 +1,9 @@
+/* eslint-env mocha */
+/* globals apiClients */
 'use strict'
 
+const expect = require('chai').expect
+const isNode = require('detect-node')
 const path = require('path')
 
 describe('.config', () => {
@@ -48,7 +52,7 @@ describe('.config', () => {
   })
 
   it('.config.show', (done) => {
-    apiClients['c'].config.show((err, res) => {
+    apiClients.c.config.show((err, res) => {
       expect(err).to.not.exist
       expect(res).to.exist
       done()
@@ -60,7 +64,7 @@ describe('.config', () => {
       return done()
     }
 
-    apiClients['c'].config.replace(path.join(__dirname, '/../r-config.json'), (err, res) => {
+    apiClients.c.config.replace(path.join(__dirname, '/../r-config.json'), (err, res) => {
       expect(err).to.not.exist
       expect(res).to.be.equal(null)
       done()
@@ -110,7 +114,7 @@ describe('.config', () => {
     })
 
     it('.config.show', () => {
-      return apiClients['c'].config.show()
+      return apiClients.c.config.show()
         .then((res) => {
           expect(res).to.exist
         })
@@ -121,7 +125,7 @@ describe('.config', () => {
         return
       }
 
-      return apiClients['c'].config.replace(path.join(__dirname, '/../r-config.json'))
+      return apiClients.c.config.replace(path.join(__dirname, '/../r-config.json'))
         .then((res) => {
           expect(res).to.be.equal(null)
         })

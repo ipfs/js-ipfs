@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 'use strict'
 
 describe('.update (currently disabled, wait for IPFS 0.4.0)', () => {

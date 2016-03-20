@@ -6,6 +6,101 @@ const path = require('path')
 
 let daemons
 
+function startDisposableDaemons (callback) {
+  const ipfsd = require('ipfsd-ctl')
+
+  // a, b, c
+  const ipfsNodes = {}
+
+  // a, b, c
+  const apiAddrs = {}
+
+  let counter = 0
+
+  function finish () {
+    counter++
+    if (counter === 3) {
+      const targetPath = path.join(__dirname, '/../test/tmp-disposable-nodes-addrs.json')
+      fs.writeFileSync(targetPath, JSON.stringify(apiAddrs))
+      callback(ipfsNodes)
+    }
+  }
+
+  function startIndependentNode (nodes, addrs, key, cb) {
+    ipfsd.disposable((err, node) => {
+      if (err) {
+        throw err
+      }
+
+      nodes[key] = node
+
+      console.log('  ipfs init done - (bootstrap and mdns off) - ' + key)
+
+      nodes[key].setConfig('Bootstrap', null, (err) => {
+        if (err) {
+          throw err
+        }
+        nodes[key].setConfig('Discovery', '{}', (err) => {
+          if (err) {
+            throw err
+          }
+
+          const headers = {
+            HTTPHeaders: {
+              'Access-Control-Allow-Origin': ['*']
+            }
+          }
+          nodes[key].setConfig('API', JSON.stringify(headers), (err) => {
+            if (err) {
+              throw err
+            }
+
+            nodes[key].startDaemon((err, ignore) => {
+              if (err) {
+                throw err
+              }
+
+              addrs[key] = nodes[key].apiAddr
+              cb()
+            })
+          })
+        })
+      })
+    })
+  }
+
+  startIndependentNode(ipfsNodes, apiAddrs, 'a', finish)
+  startIndependentNode(ipfsNodes, apiAddrs, 'b', finish)
+  startIndependentNode(ipfsNodes, apiAddrs, 'c', finish)
+}
+
+function stopDisposableDaemons (ds, callback) {
+  let counter = 0
+  function finish () {
+    counter++
+    if (counter === 3) {
+      callback()
+    }
+  }
+
+  function stopIPFSNode (list, key, cb) {
+    let nodeStopped
+    list[key].stopDaemon((err) => {
+      if (err) {
+        throw err
+      }
+      if (!nodeStopped) {
+        nodeStopped = true
+        cb()
+      }
+    })
+  }
+
+  stopIPFSNode(ds, 'a', finish)
+  stopIPFSNode(ds, 'b', finish)
+  stopIPFSNode(ds, 'c', finish)
+}
+
 gulp.task('daemons:start', (done) => {
   startDisposableDaemons((d) => {
     daemons = d
@@ -19,94 +114,3 @@ gulp.task('daemons:stop', (done) => {
     done()
   })
 })
-
-function startDisposableDaemons (callback) {
-  const ipfsd = require('ipfsd-ctl')
-
-  const ipfsNodes = {} // a, b, c
-  const apiAddrs = {} // a, b, c
-
-  let counter = 0
-  startIndependentNode(ipfsNodes, apiAddrs, 'a', finish)
-  startIndependentNode(ipfsNodes, apiAddrs, 'b', finish)
-  startIndependentNode(ipfsNodes, apiAddrs, 'c', finish)
-
-  function finish () {
-    counter++
-    if (counter === 3) {
-      const targetPath = path.join(__dirname, '/../test/tmp-disposable-nodes-addrs.json')
-      fs.writeFileSync(targetPath, JSON.stringify(apiAddrs))
-      callback(ipfsNodes)
-    }
-  }
-
-  function startIndependentNode (ipfsNodes, apiAddrs, key, cb) {
-    ipfsd.disposable((err, node) => {
-      if (err) {
-        throw err
-      }
-
-      ipfsNodes[key] = node
-
-      console.log('  ipfs init done - (bootstrap and mdns off) - ' + key)
-
-      ipfsNodes[key].setConfig('Bootstrap', null, (err) => {
-        if (err) {
-          throw err
-        }
-        ipfsNodes[key].setConfig('Discovery', '{}', (err) => {
-          if (err) {
-            throw err
-          }
-
-          const headers = {
-            HTTPHeaders: {
-              'Access-Control-Allow-Origin': ['*']
-            }
-          }
-          ipfsNodes[key].setConfig('API', JSON.stringify(headers), (err) => {
-            if (err) {
-              throw err
-            }
-
-            ipfsNodes[key].startDaemon((err, ignore) => {
-              if (err) {
-                throw err
-              }
-
-              apiAddrs[key] = ipfsNodes[key].apiAddr
-              cb()
-            })
-          })
-        })
-      })
-    })
-  }
-}
-
-function stopDisposableDaemons (daemons, callback) {
-  stopIPFSNode(daemons, 'a', finish)
-  stopIPFSNode(daemons, 'b', finish)
-  stopIPFSNode(daemons, 'c', finish)
-
-  let counter = 0
-  function finish () {
-    counter++
-    if (counter === 3) {
-      callback()
-    }
-  }
-
-  function stopIPFSNode (daemons, key, cb) {
-    let nodeStopped
-    daemons[key].stopDaemon((err) => {
-      if (err) {
-        throw err
-      }
-      if (!nodeStopped) {
-        nodeStopped = true
-        cb()
-      }
-    })
-  }
-}

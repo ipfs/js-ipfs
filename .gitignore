@@ -1,5 +1,5 @@
 node_modules
-some-test.js
-npm-debug.log
-sauce_connect.log
+*.log
 test/tmp-disposable-nodes-addrs.json
+dist
+lib
