@@ -1,7 +1,7 @@
 'use strict'
 
 const Command = require('ronin').Command
-const IPFS = require('../../../ipfs-core')
+const IPFS = require('../../../core')
 const debug = require('debug')
 const log = debug('cli:version')
 log.error = debug('cli:version:error')
