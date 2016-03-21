@@ -209,7 +209,7 @@ Importer are a set of layouts (e.g. UnixFS) and chunkers (e.g: fixed-size, rabin
     - [ ] next
     - [ ] restart
   - [ ] files
-    - [ ] add
+    - [x] add
     - [ ] cat
     - [ ] get
   - [ ] stat - Statistics about everything
@@ -224,11 +224,11 @@ Importer are a set of layouts (e.g. UnixFS) and chunkers (e.g: fixed-size, rabin
     - [ ] unwant
     - [ ] wantlist
 - **tooling**
-  - [ ] commands
+  - [x] commands
   - [ ] update
-  - [ ] init - sugar around ipfs repo init
-  - [ ] config
-    - [ ] edit
+  - [ ] init - sugar on top of ipfs repo init
+  - [x] config
+    - [x] edit
     - [x] replace
     - [x] show
 - **network** (bubbles up from libp2p)
@@ -241,12 +241,9 @@ Importer are a set of layouts (e.g. UnixFS) and chunkers (e.g: fixed-size, rabin
     - [ ] query
   - [ ] swarm
     - [ ] addrs
-    - [ ] addrs local
     - [ ] connect
     - [ ] disconnect
     - [ ] filters
-    - [ ] filters add
-    - [ ] filters rm
     - [ ] peers
   - [ ] records (IPRS)
     - [ ] put
