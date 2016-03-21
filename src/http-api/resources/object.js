@@ -104,7 +104,7 @@ exports.put = {
     }
 
     const parser = multipart.reqParser(request.payload)
-    let file
+    var file
 
     parser.on('file', (fileName, fileStream) => {
       fileStream.on('data', (data) => {
