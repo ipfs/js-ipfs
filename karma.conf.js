@@ -22,7 +22,8 @@ module.exports = function (config) {
       externals: {
         fs: '{}',
         'node-forge': 'forge',
-        'ipfs-data-importing': '{ import: {} }'
+        'ipfs-data-importing': '{ import: {} }',
+        'libp2p-ipfs': {} // to be 'libp2p-ipfs-browser'
       },
       node: {
         Buffer: true
