@@ -5,7 +5,7 @@
   "bin": {
     "jsipfs": "src/cli/bin.js"
   },
-  "main": "src/index.js",
+  "main": "src/core/index.js",
   "scripts": {
     "lint": "standard --verbose | snazzy",
     "coverage": "istanbul cover --print both -- _mocha tests/test-core/index.js",
