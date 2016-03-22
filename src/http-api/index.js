@@ -1,7 +1,7 @@
 'use strict'
 
 const Hapi = require('hapi')
-const IPFS = require('../ipfs-core')
+const IPFS = require('../core')
 const debug = require('debug')
 const fs = require('fs')
 const os = require('os')

@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 const expect = require('chai').expect
-const IPFS = require('../../src/ipfs-core')
+const IPFS = require('../../src/core')
 const bs58 = require('bs58')
 const mDAG = require('ipfs-merkle-dag')
 const DAGNode = mDAG.DAGNode

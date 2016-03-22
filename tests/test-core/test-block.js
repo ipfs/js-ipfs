@@ -3,7 +3,7 @@
 const expect = require('chai').expect
 const base58 = require('bs58')
 const fs = require('fs')
-const IPFS = require('../../src/ipfs-core')
+const IPFS = require('../../src/core')
 const Block = require('ipfs-blocks').Block
 
 const isNode = !global.window
