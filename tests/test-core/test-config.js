@@ -17,7 +17,7 @@ describe('config', () => {
     NoSync: false },
     Addresses: { Swarm: [ '/ip4/0.0.0.0/tcp/0' ],
       API: '/ip4/127.0.0.1/tcp/6001',
-    Gateway: '/ip4/127.0.0.1/tcp/9095' },
+    Gateway: '/ip4/127.0.0.1/tcp/0' },
     Mounts: { IPFS: '/ipfs', IPNS: '/ipns', FuseAllowOther: false },
     Version: { Current: '0.4.0-dev',
       Check: 'error',
