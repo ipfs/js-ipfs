@@ -1,6 +1,7 @@
 const Command = require('ronin').Command
 const IpfsRepo = require('ipfs-repo')
 const Ipfs = require('../../core')
+const fsBlobStore = require('fs-blob-store')
 
 module.exports = Command.extend({
   desc: 'Initialize a local IPFS local node',
@@ -25,20 +26,14 @@ module.exports = Command.extend({
   },
 
   run: (bits, force, empty) => {
-    // TODO: what blob store do I use for browser? indexdb, right?
-    // well, this IS cli, and there's no browser cli :P
-    var someBlobStore = require('fs-blob-store')
-
-    // TODO: --force + --empty-repo will keep your default assets, right?
-    // TODO: where to init at? $IPFS_PATH var? homedir/.ipfs otherwise? sounds like a helper method job
     const repo = new IpfsRepo('/tmp/my-little-repo', {
       stores: {
-        keys: someBlobStore,
-        config: someBlobStore,
-        datastore: someBlobStore,
-        logs: someBlobStore,
-        locks: someBlobStore,
-        version: someBlobStore
+        keys: fsBlobStore,
+        config: fsBlobStore,
+        datastore: fsBlobStore,
+        logs: fsBlobStore,
+        locks: fsBlobStore,
+        version: fsBlobStore
       }
     })
 
@@ -52,9 +47,6 @@ module.exports = Command.extend({
         console.error(err.toString())
         process.exit(1)
       }
-
-      // TODO: what console output is desirable? any? mimick go-ipfs?
-      console.log('res', res)
     })
   }
 })
