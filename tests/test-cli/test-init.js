@@ -5,9 +5,10 @@ const nexpect = require('nexpect')
 const rimraf = require('rimraf')
 const path = require('path')
 const fs = require('fs')
+const utils = require('../../src/cli/utils')
 
 function repoExistsSync (p) {
-  return fs.existsSync(path.join(process.env.IPFS_PATH, p))
+  return fs.existsSync(path.join(utils.getRepoPath(), p))
 }
 
 describe('init', function () {
