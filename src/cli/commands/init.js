@@ -5,7 +5,7 @@ const fsBlobStore = require('fs-blob-store')
 const utils = require('../utils')
 
 module.exports = Command.extend({
-  desc: 'Initialize a local IPFS local node',
+  desc: 'Initialize a local IPFS node',
 
   options: {
     bits: {

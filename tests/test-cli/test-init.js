@@ -3,20 +3,25 @@
 const expect = require('chai').expect
 const nexpect = require('nexpect')
 const rimraf = require('rimraf')
+const path = require('path')
+const fs = require('fs')
+
+function repoExistsSync (p) {
+  return fs.existsSync(path.join(process.env.IPFS_PATH, p))
+}
 
 describe('init', function () {
   this.timeout(10000)
 
   var oldRepoPath = process.env.IPFS_PATH
-  before((done) => {
+  beforeEach((done) => {
     oldRepoPath = process.env.IPFS_PATH
-    console.log('old', oldRepoPath)
     const repoPath = '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8) + '/'
     process.env.IPFS_PATH = repoPath
     done()
   })
 
-  after((done) => {
+  afterEach((done) => {
     rimraf(process.env.IPFS_PATH, (err) => {
       expect(err).to.not.exist
       process.env.IPFS_PATH = oldRepoPath
@@ -28,6 +33,9 @@ describe('init', function () {
     nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'init'])
       .run((err, stdout, exitcode) => {
         expect(err).to.not.exist
+        expect(repoExistsSync('blocks')).to.equal(true)
+        expect(repoExistsSync('config')).to.equal(true)
+        expect(repoExistsSync('version')).to.equal(true)
         done()
       })
   })
@@ -44,6 +52,9 @@ describe('init', function () {
     nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'init', '--bits', '64', '--empty-repo', 'true'])
       .run((err, stdout, exitcode) => {
         expect(err).to.not.exist
+        expect(repoExistsSync('blocks')).to.equal(false)
+        expect(repoExistsSync('config')).to.equal(true)
+        expect(repoExistsSync('version')).to.equal(true)
         done()
       })
   })
