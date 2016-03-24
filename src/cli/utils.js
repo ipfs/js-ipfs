@@ -9,12 +9,10 @@ log.error = debug('cli:error')
 
 exports = module.exports
 
-const repoPath = process.env.IPFS_PATH || os.homedir() + '/.ipfs'
-
 exports.isDaemonOn = isDaemonOn
 function isDaemonOn () {
   try {
-    fs.readFileSync(repoPath + '/api')
+    fs.readFileSync(exports.getRepoPath() + '/api')
     log('daemon is on')
     return true
   } catch (err) {
@@ -29,7 +27,7 @@ function getAPICtl () {
     throw new Error('daemon is not on')
   }
 
-  const apiAddr = multiaddr(fs.readFileSync(repoPath + '/api').toString())
+  const apiAddr = multiaddr(fs.readFileSync(exports.getRepoPath() + '/api').toString())
   return APIctl(apiAddr.toString())
 }
 
@@ -46,5 +44,5 @@ exports.getIPFS = (callback) => {
 }
 
 exports.getRepoPath = () => {
-  return repoPath
+  return process.env.IPFS_PATH || os.homedir() + '/.ipfs'
 }
