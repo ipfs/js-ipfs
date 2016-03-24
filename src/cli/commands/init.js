@@ -2,6 +2,7 @@ const Command = require('ronin').Command
 const IpfsRepo = require('ipfs-repo')
 const Ipfs = require('../../core')
 const fsBlobStore = require('fs-blob-store')
+const utils = require('../utils')
 
 module.exports = Command.extend({
   desc: 'Initialize a local IPFS local node',
@@ -26,7 +27,9 @@ module.exports = Command.extend({
   },
 
   run: (bits, force, empty) => {
-    const repo = new IpfsRepo('/tmp/my-little-repo', {
+    const path = utils.getRepoPath()
+
+    const repo = new IpfsRepo(path, {
       stores: {
         keys: fsBlobStore,
         config: fsBlobStore,

@@ -2,8 +2,28 @@
 
 const expect = require('chai').expect
 const nexpect = require('nexpect')
+const rimraf = require('rimraf')
 
-describe('init', () => {
+describe('init', function () {
+  this.timeout(10000)
+
+  var oldRepoPath = process.env.IPFS_PATH
+  before((done) => {
+    oldRepoPath = process.env.IPFS_PATH
+    console.log('old', oldRepoPath)
+    const repoPath = '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8) + '/'
+    process.env.IPFS_PATH = repoPath
+    done()
+  })
+
+  after((done) => {
+    rimraf(process.env.IPFS_PATH, (err) => {
+      expect(err).to.not.exist
+      process.env.IPFS_PATH = oldRepoPath
+      done()
+    })
+  })
+
   it('basic', (done) => {
     nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'init'])
       .run((err, stdout, exitcode) => {

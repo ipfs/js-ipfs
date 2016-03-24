@@ -44,3 +44,7 @@ exports.getIPFS = (callback) => {
 
   callback(null, getAPICtl())
 }
+
+exports.getRepoPath = () => {
+  return repoPath
+}
