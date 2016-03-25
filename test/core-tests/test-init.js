@@ -53,23 +53,4 @@ describe('init', function () {
       })
     })
   })
-
-  it('force init (overwrite)', (done) => {
-    var repo = createTempRepo()
-    const ipfs1 = new IPFS(repo)
-    const ipfs2 = new IPFS(repo)
-    ipfs1.init({ bits: 128, emptyRepo: true }, (err) => {
-      expect(err).to.not.exist
-
-      ipfs2.init({ bits: 128, force: false }, (err) => {
-        expect(err).to.exist
-
-        ipfs2.init({ force: true }, (err) => {
-          expect(err).to.not.exist
-
-          repo.teardown(done)
-        })
-      })
-    })
-  })
 })

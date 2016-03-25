@@ -89,7 +89,7 @@ function IPFS (repo) {
   }
 
   this.repo = {
-    init: (bits, force, empty, callback) => {
+    init: (bits, empty, callback) => {
       // 1. check if repo already exists
     },
 
