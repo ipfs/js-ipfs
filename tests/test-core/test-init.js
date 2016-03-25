@@ -2,61 +2,13 @@
 
 const expect = require('chai').expect
 const IPFS = require('../../src/core')
-const IPFSRepo = require('ipfs-repo')
-
-function createTestRepo () {
-  const repoPath = '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8) + '/'
-
-  var store
-  var teardown
-
-  const isNode = !global.window
-  if (isNode) {
-    store = require('fs-blob-store')
-    teardown = (done) => {
-      const rimraf = require('rimraf')
-      rimraf(repoPath, (err) => {
-        expect(err).to.not.exist
-        done()
-      })
-    }
-  } else {
-    const idb = window.indexedDB ||
-            window.mozIndexedDB ||
-            window.webkitIndexedDB ||
-            window.msIndexedDB
-    store = require('idb-plus-blob-store')
-    teardown = (done) => {
-      idb.deleteDatabase(repoPath)
-      idb.deleteDatabase(repoPath + '/blocks')
-      done()
-    }
-  }
-
-  const options = {
-    bits: 64,
-    stores: {
-      keys: store,
-      config: store,
-      datastore: store,
-      logs: store,
-      locks: store,
-      version: store
-    }
-  }
-
-  var repo = new IPFSRepo(repoPath, options)
-
-  repo.teardown = teardown
-
-  return repo
-}
+const createTempRepo = require('../temp-repo')
 
 describe('init', function () {
   this.timeout(10000)
 
   it('basic', (done) => {
-    var repo = createTestRepo()
+    var repo = createTempRepo()
     const ipfs = new IPFS(repo)
     ipfs.init({ emptyRepo: true }, (err) => {
       expect(err).to.not.exist
@@ -76,8 +28,8 @@ describe('init', function () {
   })
 
   it('set # of bits in key', (done) => {
-    var repo1 = createTestRepo()
-    var repo2 = createTestRepo()
+    var repo1 = createTempRepo()
+    var repo2 = createTempRepo()
     const ipfsShort = new IPFS(repo1)
     const ipfsLong = new IPFS(repo2)
     ipfsShort.init({ bits: 128, emptyRepo: true }, (err) => {
@@ -103,7 +55,7 @@ describe('init', function () {
   })
 
   it('force init (overwrite)', (done) => {
-    var repo = createTestRepo()
+    var repo = createTempRepo()
     const ipfs1 = new IPFS(repo)
     const ipfs2 = new IPFS(repo)
     ipfs1.init({ bits: 128, emptyRepo: true }, (err) => {
