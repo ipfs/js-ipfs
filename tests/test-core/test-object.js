@@ -32,9 +32,9 @@ describe('object', () => {
   it('patch append-data', (done) => {
     const mh = new Buffer(bs58.decode('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG'))
 
-    ipfs.object.patch.appendData(mh, new Buffer('data data'), (err, multihash) => {
+    ipfs.object.patch.appendData(mh, new Buffer('data data'), (err, obj) => {
       expect(err).to.not.exist
-      expect(mh).to.not.deep.equal(multihash)
+      expect(mh).to.not.deep.equal(obj.multihash())
       done()
     })
   })
@@ -42,30 +42,43 @@ describe('object', () => {
   it('patch add-link', (done) => {
     const mh = new Buffer(bs58.decode('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG'))
 
-    ipfs.object.patch.addLink(mh, new DAGLink('prev', 0, mh), (err, multihash) => {
+    ipfs.object.patch.addLink(mh, new DAGLink('prev', 0, mh), (err, obj) => {
       expect(err).to.not.exist
-      expect(mh).to.not.deep.equal(multihash)
+      expect(mh).to.not.deep.equal(obj.multihash())
       done()
     })
   })
 
-  it('patch rm-link', (done) => {
-    const rmmh = new Buffer(bs58.decode('QmZTR5bcpQD7cFgTorqxZDYaew1Wqgfbd2ud9QqGPAkK2V'))
-    const mh = new Buffer(bs58.decode('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG'))
+  describe('patch rm-link', () => {
+    it('remove link by name', (done) => {
+      const name = 'about'
+      const mh = new Buffer(bs58.decode('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG'))
 
-    ipfs.object.patch.rmLink(mh, rmmh, (err, multihash) => {
-      expect(err).to.not.exist
-      expect(mh).to.not.deep.equal(multihash)
-      done()
+      ipfs.object.patch.rmLink(mh, name, (err, obj) => {
+        expect(err).to.not.exist
+        expect(mh).to.not.deep.equal(obj.multihash())
+        done()
+      })
+    })
+
+    it('remove link by multihash', (done) => {
+      const rmmh = new Buffer(bs58.decode('QmZTR5bcpQD7cFgTorqxZDYaew1Wqgfbd2ud9QqGPAkK2V'))
+      const mh = new Buffer(bs58.decode('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG'))
+
+      ipfs.object.patch.rmLink(mh, rmmh, (err, obj) => {
+        expect(err).to.not.exist
+        expect(mh).to.not.deep.equal(obj.multihash())
+        done()
+      })
     })
   })
 
   it('patch set-data', (done) => {
     const mh = new Buffer(bs58.decode('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG'))
 
-    ipfs.object.patch.setData(mh, new Buffer('data data data'), (err, multihash) => {
+    ipfs.object.patch.setData(mh, new Buffer('data data data'), (err, obj) => {
       expect(err).to.not.exist
-      expect(mh).to.not.deep.equal(multihash)
+      expect(mh).to.not.deep.equal(obj.multihash())
       done()
     })
   })

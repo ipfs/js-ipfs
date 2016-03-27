@@ -4,6 +4,7 @@ const ipfs = require('./../index.js').ipfs
 const bs58 = require('bs58')
 const multipart = require('ipfs-multipart')
 const mDAG = require('ipfs-merkle-dag')
+const DAGLink = mDAG.DAGLink
 const debug = require('debug')
 const log = debug('http-api:object')
 log.error = debug('http-api:object:error')
@@ -235,6 +236,230 @@ exports.links = {
       return reply({
         Hash: bs58.encode(key).toString(),
         Links: links.map((link) => ({
+          Name: link.name,
+          Hash: bs58.encode(link.hash).toString(),
+          Size: link.size
+        }))
+      })
+    })
+  }
+}
+
+// common pre request handler that parses the args and returns `data` & `key` which are assigned to `request.pre.args`
+exports.parseKeyAndData = (request, reply) => {
+  if (!request.query.arg) {
+    return reply("Argument 'root' is required").code(400).takeover()
+  }
+
+  if (!request.payload) {
+    return reply("File argument 'data' is required").code(400).takeover()
+  }
+
+  const parser = multipart.reqParser(request.payload)
+  let file
+
+  parser.on('file', (fileName, fileStream) => {
+    fileStream.on('data', (data) => {
+      file = data
+    })
+  })
+
+  parser.on('end', () => {
+    if (!file) {
+      return reply("File argument 'data' is required").code(400).takeover()
+    }
+
+    try {
+      return reply({
+        data: file,
+        key: new Buffer(bs58.decode(request.query.arg)) // TODO: support ipfs paths: https://github.com/ipfs/http-api-spec/pull/68/files#diff-2625016b50d68d922257f74801cac29cR3880
+      })
+    } catch (err) {
+      return reply({
+        Message: 'invalid ipfs ref path',
+        Code: 0
+      }).code(500).takeover()
+    }
+  })
+}
+
+exports.patchAppendData = {
+  // uses common parseKeyAndData method that returns a `data` & `key`
+  parseArgs: exports.parseKeyAndData,
+
+  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+  handler: (request, reply) => {
+    const key = request.pre.args.key
+    const data = request.pre.args.data
+
+    ipfs.object.patch.appendData(key, data, (err, obj) => {
+      if (err) {
+        log.error(err)
+
+        return reply({
+          Message: 'Failed to apend data to object: ' + err,
+          Code: 0
+        }).code(500)
+      }
+
+      return reply({
+        Hash: bs58.encode(obj.multihash()).toString(),
+        Links: obj.links.map((link) => ({
+          Name: link.name,
+          Hash: bs58.encode(link.hash).toString(),
+          Size: link.size
+        }))
+      })
+    })
+  }
+}
+
+exports.patchSetData = {
+  // uses common parseKeyAndData method that returns a `data` & `key`
+  parseArgs: exports.parseKeyAndData,
+
+  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+  handler: (request, reply) => {
+    const key = request.pre.args.key
+    const data = request.pre.args.data
+
+    ipfs.object.patch.setData(key, data, (err, obj) => {
+      if (err) {
+        log.error(err)
+
+        return reply({
+          Message: 'Failed to apend data to object: ' + err,
+          Code: 0
+        }).code(500)
+      }
+
+      return reply({
+        Hash: bs58.encode(obj.multihash()).toString(),
+        Links: obj.links.map((link) => ({
+          Name: link.name,
+          Hash: bs58.encode(link.hash).toString(),
+          Size: link.size
+        }))
+      })
+    })
+  }
+}
+
+exports.patchAddLink = {
+  // pre request handler that parses the args and returns `root`, `name` & `ref` which is assigned to `request.pre.args`
+  parseArgs: (request, reply) => {
+    if (!(request.query.arg instanceof Array) || request.query.arg.length !== 3) {
+      return reply("Arguments 'root', 'name' & 'ref' are required").code(400).takeover()
+    }
+
+    if (!request.query.arg[1]) {
+      return reply({
+        Message: 'cannot create link with no name!',
+        Code: 0
+      }).code(500).takeover()
+    }
+
+    try {
+      return reply({
+        root: new Buffer(bs58.decode(request.query.arg[0])),
+        name: request.query.arg[1],
+        ref: new Buffer(bs58.decode(request.query.arg[2]))
+      })
+    } catch (err) {
+      log.error(err)
+      return reply({
+        Message: 'invalid ipfs ref path',
+        Code: 0
+      }).code(500).takeover()
+    }
+  },
+
+  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+  handler: (request, reply) => {
+    const root = request.pre.args.root
+    const name = request.pre.args.name
+    const ref = request.pre.args.ref
+
+    ipfs.object.get(ref, (err, linkedObj) => {
+      if (err) {
+        log.error(err)
+        return reply({
+          Message: 'Failed to get linked object: ' + err,
+          Code: 0
+        }).code(500)
+      }
+
+      const link = new DAGLink(name, linkedObj.size(), linkedObj.multihash())
+
+      ipfs.object.patch.addLink(root, link, (err, obj) => {
+        if (err) {
+          log.error(err)
+
+          return reply({
+            Message: 'Failed to add link to object: ' + err,
+            Code: 0
+          }).code(500)
+        }
+
+        return reply({
+          Hash: bs58.encode(obj.multihash()).toString(),
+          Links: obj.links.map((link) => ({
+            Name: link.name,
+            Hash: bs58.encode(link.hash).toString(),
+            Size: link.size
+          }))
+        })
+      })
+    })
+  }
+}
+
+exports.patchRmLink = {
+  // pre request handler that parses the args and returns `root` & `link` which is assigned to `request.pre.args`
+  parseArgs: (request, reply) => {
+    if (!(request.query.arg instanceof Array) || request.query.arg.length !== 2) {
+      return reply("Arguments 'root' & 'link' are required").code(400).takeover()
+    }
+
+    if (!request.query.arg[1]) {
+      return reply({
+        Message: 'cannot create link with no name!',
+        Code: 0
+      }).code(500).takeover()
+    }
+
+    try {
+      return reply({
+        root: new Buffer(bs58.decode(request.query.arg[0])),
+        link: request.query.arg[1]
+      })
+    } catch (err) {
+      log.error(err)
+      return reply({
+        Message: 'invalid ipfs ref path',
+        Code: 0
+      }).code(500).takeover()
+    }
+  },
+
+  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+  handler: (request, reply) => {
+    const root = request.pre.args.root
+    const link = request.pre.args.link
+
+    ipfs.object.patch.rmLink(root, link, (err, obj) => {
+      if (err) {
+        log.error(err)
+
+        return reply({
+          Message: 'Failed to add link to object: ' + err,
+          Code: 0
+        }).code(500)
+      }
+
+      return reply({
+        Hash: bs58.encode(obj.multihash()).toString(),
+        Links: obj.links.map((link) => ({
           Name: link.name,
           Hash: bs58.encode(link.hash).toString(),
           Size: link.size

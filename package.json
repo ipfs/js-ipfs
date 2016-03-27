@@ -80,7 +80,7 @@
     "bs58": "^3.0.0",
     "debug": "^2.2.0",
     "hapi": "^12.0.0",
-    "ipfs-api": "^2.13.1",
+    "ipfs-api": "github:ipfs/js-ipfs-api#1fd9749",
     "ipfs-blocks": "^0.1.0",
     "ipfs-data-importing": "^0.3.3",
     "ipfs-merkle-dag": "^0.2.1",

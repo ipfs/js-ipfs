@@ -1,9 +1,5 @@
 const resources = require('./../resources')
 
-// TODO: add `object patch` endpoints, once spec is finished, check
-// https://github.com/ipfs/js-ipfs/issues/58 & https://github.com/ipfs/http-api-spec/pull/32
-// for more info
-
 module.exports = (server) => {
   const api = server.select('API')
 
@@ -74,6 +70,58 @@ module.exports = (server) => {
         { method: resources.object.links.parseArgs, assign: 'args' }
       ],
       handler: resources.object.links.handler
+    }
+  })
+
+  api.route({
+    method: '*',
+    path: '/api/v0/object/patch/append-data',
+    config: {
+      payload: {
+        parse: false,
+        output: 'stream'
+      },
+      pre: [
+        { method: resources.object.patchAppendData.parseArgs, assign: 'args' }
+      ],
+      handler: resources.object.patchAppendData.handler
+    }
+  })
+
+  api.route({
+    method: '*',
+    path: '/api/v0/object/patch/set-data',
+    config: {
+      payload: {
+        parse: false,
+        output: 'stream'
+      },
+      pre: [
+        { method: resources.object.patchSetData.parseArgs, assign: 'args' }
+      ],
+      handler: resources.object.patchSetData.handler
+    }
+  })
+
+  api.route({
+    method: '*',
+    path: '/api/v0/object/patch/add-link',
+    config: {
+      pre: [
+        { method: resources.object.patchAddLink.parseArgs, assign: 'args' }
+      ],
+      handler: resources.object.patchAddLink.handler
+    }
+  })
+
+  api.route({
+    method: '*',
+    path: '/api/v0/object/patch/rm-link',
+    config: {
+      pre: [
+        { method: resources.object.patchRmLink.parseArgs, assign: 'args' }
+      ],
+      handler: resources.object.patchRmLink.handler
     }
   })
 }

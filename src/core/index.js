@@ -207,7 +207,7 @@ function IPFS (repo) {
             if (err) {
               return callback(err)
             }
-            callback(null, obj.multihash())
+            callback(null, obj)
           })
         })
       },
@@ -219,24 +219,25 @@ function IPFS (repo) {
             if (err) {
               return callback(err)
             }
-            callback(null, obj.multihash())
+            callback(null, obj)
           })
         })
       },
-      rmLink: (multihash, multihashLink, callback) => {
+      rmLink: (multihash, linkRef, callback) => {
         this.object.get(multihash, (err, obj) => {
           if (err) { return callback(err) }
           obj.links = obj.links.filter((link) => {
-            if (link.hash.equals(multihashLink)) {
-              return false
+            // filter by name when linkRef is a string, or by hash otherwise
+            if (typeof linkRef === 'string') {
+              return link.name !== linkRef
             }
-            return true
+            return !link.hash.equals(linkRef)
           })
           dagS.add(obj, (err) => {
             if (err) {
               return callback(err)
             }
-            callback(null, obj.multihash())
+            callback(null, obj)
           })
         })
       },
@@ -248,7 +249,7 @@ function IPFS (repo) {
             if (err) {
               return callback(err)
             }
-            callback(null, obj.multihash())
+            callback(null, obj)
           })
         })
       }
