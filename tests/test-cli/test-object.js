@@ -78,6 +78,52 @@ describe('object', () => {
           done()
         })
     })
+
+    describe('patch', () => {
+      it('append-data', (done) => {
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'append-data', 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n', process.cwd() + '/tests/badconfig'])
+          .run((err, stdout, exitcode) => {
+            expect(err).to.not.exist
+            expect(exitcode).to.equal(0)
+            expect(stdout[0])
+               .to.equal('QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6')
+            done()
+          })
+      })
+
+      it('set-data', (done) => {
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'set-data', 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6', process.cwd() + '/tests/badconfig'])
+          .run((err, stdout, exitcode) => {
+            expect(err).to.not.exist
+            expect(exitcode).to.equal(0)
+            expect(stdout[0])
+               .to.equal('QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6')
+            done()
+          })
+      })
+
+      it('add-link', (done) => {
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'add-link', 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n', 'foo', 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'])
+          .run((err, stdout, exitcode) => {
+            expect(err).to.not.exist
+            expect(exitcode).to.equal(0)
+            expect(stdout[0])
+               .to.equal('QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK')
+            done()
+          })
+      })
+
+      it('rm-link', (done) => {
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'rm-link', 'QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK', 'foo'])
+          .run((err, stdout, exitcode) => {
+            expect(err).to.not.exist
+            expect(exitcode).to.equal(0)
+            expect(stdout[0])
+               .to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
+            done()
+          })
+      })
+    })
   })
 
   describe('api running', () => {
@@ -166,6 +212,52 @@ describe('object', () => {
           expect(stdout[0]).to.equal('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V 8 some link')
           done()
         })
+    })
+
+    describe('patch', () => {
+      it('append-data', (done) => {
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'append-data', 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n', process.cwd() + '/tests/badconfig'])
+          .run((err, stdout, exitcode) => {
+            expect(err).to.not.exist
+            expect(exitcode).to.equal(0)
+            expect(stdout[0])
+               .to.equal('QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6')
+            done()
+          })
+      })
+
+      it('set-data', (done) => {
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'set-data', 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6', process.cwd() + '/tests/badconfig'])
+          .run((err, stdout, exitcode) => {
+            expect(err).to.not.exist
+            expect(exitcode).to.equal(0)
+            expect(stdout[0])
+               .to.equal('QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6')
+            done()
+          })
+      })
+
+      it('add-link', (done) => {
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'add-link', 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n', 'foo', 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'])
+          .run((err, stdout, exitcode) => {
+            expect(err).to.not.exist
+            expect(exitcode).to.equal(0)
+            expect(stdout[0])
+               .to.equal('QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK')
+            done()
+          })
+      })
+
+      it('rm-link', (done) => {
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'rm-link', 'QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK', 'foo'])
+          .run((err, stdout, exitcode) => {
+            expect(err).to.not.exist
+            expect(exitcode).to.equal(0)
+            expect(stdout[0])
+               .to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
+            done()
+          })
+      })
     })
   })
 })
