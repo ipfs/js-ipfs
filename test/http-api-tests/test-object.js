@@ -102,7 +102,7 @@ describe('object', () => {
 
       it('returns 500 if the node is invalid', (done) => {
         const form = new FormData()
-        const filePath = 'tests/badnode.json'
+        const filePath = 'test/test-data/badnode.json'
         form.append('file', fs.createReadStream(filePath))
         const headers = form.getHeaders()
 
@@ -121,7 +121,7 @@ describe('object', () => {
 
       it('updates value', (done) => {
         const form = new FormData()
-        const filePath = 'tests/node.json'
+        const filePath = 'test/test-data/node.json'
         form.append('data', fs.createReadStream(filePath))
         const headers = form.getHeaders()
         const expectedResult = {
@@ -298,7 +298,7 @@ describe('object', () => {
 
       it('returns 500 for request with invalid key', (done) => {
         const form = new FormData()
-        const filePath = 'tests/badconfig'
+        const filePath = 'test/test-data/badconfig'
         form.append('file', fs.createReadStream(filePath))
         const headers = form.getHeaders()
 
@@ -317,7 +317,7 @@ describe('object', () => {
 
       it('updates value', (done) => {
         const form = new FormData()
-        const filePath = 'tests/badconfig'
+        const filePath = 'test/test-data/badconfig'
         form.append('data', fs.createReadStream(filePath))
         const headers = form.getHeaders()
         const expectedResult = {
@@ -371,7 +371,7 @@ describe('object', () => {
 
       it('returns 500 for request with invalid key', (done) => {
         const form = new FormData()
-        const filePath = 'tests/badconfig'
+        const filePath = 'test/test-data/badconfig'
         form.append('file', fs.createReadStream(filePath))
         const headers = form.getHeaders()
 
@@ -390,7 +390,7 @@ describe('object', () => {
 
       it('updates value', (done) => {
         const form = new FormData()
-        const filePath = 'tests/badconfig'
+        const filePath = 'test/test-data/badconfig'
         form.append('data', fs.createReadStream(filePath))
         const headers = form.getHeaders()
         const expectedResult = {
@@ -585,7 +585,7 @@ describe('object', () => {
 
     describe('ipfs.object.put', () => {
       it('returns error if the node is invalid', (done) => {
-        const filePath = 'tests/badnode.json'
+        const filePath = 'test/test-data/badnode.json'
 
         ctl.object.put(filePath, 'json', (err) => {
           expect(err).to.exist
@@ -594,7 +594,7 @@ describe('object', () => {
       })
 
       it('updates value', (done) => {
-        const filePath = 'tests/node.json'
+        const filePath = 'test/test-data/node.json'
         const expectedResult = {
           Hash: 'QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm',
           Links: [{
@@ -713,7 +713,7 @@ describe('object', () => {
       })
 
       it('returns error for request without data', (done) => {
-        const filePath = 'tests/badnode.json'
+        const filePath = 'test/test-data/badnode.json'
 
         ctl.object.patch.appendData(null, filePath, (err) => {
           expect(err).to.exist
@@ -723,7 +723,7 @@ describe('object', () => {
 
       it('updates value', (done) => {
         const key = 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
-        const filePath = 'tests/badnode.json'
+        const filePath = 'test/test-data/badnode.json'
         const expectedResult = {
           Hash: 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6',
           Links: []
@@ -755,7 +755,7 @@ describe('object', () => {
       })
 
       it('returns error for request without data', (done) => {
-        const filePath = 'tests/badnode.json'
+        const filePath = 'test/test-data/badnode.json'
 
         ctl.object.patch.setData(null, filePath, (err) => {
           expect(err).to.exist
@@ -765,7 +765,7 @@ describe('object', () => {
 
       it('updates value', (done) => {
         const key = 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6'
-        const filePath = 'tests/badnode.json'
+        const filePath = 'test/test-data/badnode.json'
         const expectedResult = {
           Hash: 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6',
           Links: []

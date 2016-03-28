@@ -5,9 +5,9 @@ const ncp = require('ncp').ncp
 const rimraf = require('rimraf')
 const expect = require('chai').expect
 
-describe('cli', () => {
-  const repoExample = process.cwd() + '/tests/repo-example'
-  const repoTests = exports.repoTests = process.cwd() + '/tests/repo-tests-run'
+describe('core', () => {
+  const repoExample = process.cwd() + '/test/go-ipfs-repo'
+  const repoTests = process.cwd() + '/test/repo-tests-run'
 
   before((done) => {
     ncp(repoExample, repoTests, (err) => {
@@ -26,7 +26,8 @@ describe('cli', () => {
 
   const tests = fs.readdirSync(__dirname)
   tests.filter((file) => {
-    if (file === 'index.js' || file === 'api.js') {
+    if (file === 'index.js' ||
+        file.endsWith('browser.js')) {
       return false
     } else {
       return true

@@ -2,7 +2,7 @@
 
 const expect = require('chai').expect
 const IPFS = require('../../src/core')
-const createTempRepo = require('../temp-repo')
+const createTempRepo = require('../utils/temp-repo')
 
 describe('init', function () {
   this.timeout(10000)

@@ -8,11 +8,11 @@ module.exports = function (config) {
 
     files: [
       nodeForgePath,
-      'tests/test-core/browser.js'
+      'test/core-tests/browser.js'
     ],
 
     preprocessors: {
-      'tests/test-core/*': ['webpack']
+      'test/core-tests/*': ['webpack']
     },
 
     webpack: {

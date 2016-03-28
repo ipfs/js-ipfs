@@ -8,8 +8,8 @@ const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 
 describe('config', () => {
-  const configPath = process.cwd() + '/tests/repo-tests-run/config'
-  const originalConfigPath = process.cwd() + '/tests/repo-example/config'
+  const configPath = process.cwd() + '/test/repo-tests-run/config'
+  const originalConfigPath = process.cwd() + '/test/go-ipfs-repo/config'
   const updatedConfig = () => JSON.parse(fs.readFileSync(configPath, 'utf8'))
   const restoreConfig = () => fs.writeFileSync(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8')
 
@@ -169,7 +169,7 @@ describe('config', () => {
 
       it('returns 500 if the config is invalid', (done) => {
         const form = new FormData()
-        const filePath = 'tests/badconfig'
+        const filePath = 'test/test-data/badconfig'
         form.append('file', fs.createReadStream(filePath))
         const headers = form.getHeaders()
 
@@ -188,7 +188,7 @@ describe('config', () => {
 
       it('updates value', (done) => {
         const form = new FormData()
-        const filePath = 'tests/otherconfig'
+        const filePath = 'test/test-data/otherconfig'
         form.append('file', fs.createReadStream(filePath))
         const headers = form.getHeaders()
         const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))
@@ -311,7 +311,7 @@ describe('config', () => {
 
     describe('ipfs.config.replace', () => {
       it('returns error if the config is invalid', (done) => {
-        const filePath = 'tests/badconfig'
+        const filePath = 'test/test-data/badconfig'
 
         ctl.config.replace(filePath, (err) => {
           expect(err).to.exist
@@ -320,7 +320,7 @@ describe('config', () => {
       })
 
       it('updates value', (done) => {
-        const filePath = 'tests/otherconfig'
+        const filePath = 'test/test-data/otherconfig'
         const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
         ctl.config.replace(filePath, (err) => {
