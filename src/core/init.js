@@ -10,7 +10,7 @@ module.exports = (repo, opts, callback) => {
   opts.bits = opts.bits || 2048
 
   // Pre-set config values.
-  var config = require('../../default-config.json')
+  var config = require('../init-files/default-config.json')
 
   // Verify repo does not yet exist (or that 'force' is provided).
   repo.exists((err, res) => {
@@ -65,7 +65,7 @@ module.exports = (repo, opts, callback) => {
     const blocks = new IpfsBlocks(repo)
     const dag = new IpfsDagService(blocks)
 
-    const initDocsPath = path.join(__dirname, '../../init-doc')
+    const initDocsPath = path.join(__dirname, '../init-files/init-docs')
 
     importer.import(initDocsPath, dag, {
       recursive: true

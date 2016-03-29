@@ -32,7 +32,7 @@ describe('object', () => {
     })
 
     it('put', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'put', process.cwd() + '/tests/node.json'])
+      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'put', process.cwd() + '/test/test-data/node.json'])
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
@@ -81,7 +81,7 @@ describe('object', () => {
 
     describe('patch', () => {
       it('append-data', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'append-data', 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n', process.cwd() + '/tests/badconfig'])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'append-data', 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n', process.cwd() + '/test/test-data/badconfig'])
           .run((err, stdout, exitcode) => {
             expect(err).to.not.exist
             expect(exitcode).to.equal(0)
@@ -92,7 +92,7 @@ describe('object', () => {
       })
 
       it('set-data', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'set-data', 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6', process.cwd() + '/tests/badconfig'])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'set-data', 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6', process.cwd() + '/test/test-data/badconfig'])
           .run((err, stdout, exitcode) => {
             expect(err).to.not.exist
             expect(exitcode).to.equal(0)
@@ -167,7 +167,7 @@ describe('object', () => {
     })
 
     it('put', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'put', process.cwd() + '/tests/node.json'])
+      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'put', process.cwd() + '/test/test-data/node.json'])
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
@@ -216,7 +216,7 @@ describe('object', () => {
 
     describe('patch', () => {
       it('append-data', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'append-data', 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n', process.cwd() + '/tests/badconfig'])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'append-data', 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n', process.cwd() + '/test/test-data/badconfig'])
           .run((err, stdout, exitcode) => {
             expect(err).to.not.exist
             expect(exitcode).to.equal(0)
@@ -227,7 +227,7 @@ describe('object', () => {
       })
 
       it('set-data', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'set-data', 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6', process.cwd() + '/tests/badconfig'])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'set-data', 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6', process.cwd() + '/test/test-data/badconfig'])
           .run((err, stdout, exitcode) => {
             expect(err).to.not.exist
             expect(exitcode).to.equal(0)

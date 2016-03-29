@@ -7,8 +7,8 @@ const ncp = require('ncp').ncp
 const rimraf = require('rimraf')
 
 describe('http api', () => {
-  const repoExample = process.cwd() + '/tests/repo-example'
-  const repoTests = process.cwd() + '/tests/repo-tests-run'
+  const repoExample = process.cwd() + '/test/go-ipfs-repo'
+  const repoTests = process.cwd() + '/test/repo-tests-run'
   process.env.IPFS_PATH = repoTests
 
   before((done) => {

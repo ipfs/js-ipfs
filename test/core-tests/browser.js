@@ -4,7 +4,7 @@ const async = require('async')
 const store = require('idb-plus-blob-store')
 const _ = require('lodash')
 
-const repoContext = require.context('buffer!./../repo-example', true)
+const repoContext = require.context('buffer!./../go-ipfs-repo', true)
 
 const idb = window.indexedDB ||
   window.mozIndexedDB ||
