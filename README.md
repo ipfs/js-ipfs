@@ -1,15 +1,21 @@
 IPFS JavaScript Implementation
 ==============================
 
-[![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io) [[![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs) ![Build Status](https://travis-ci.org/ipfs/js-ipfs.svg?style=flat-square)](https://travis-ci.org/ipfs/js-ipfs) ![](https://img.shields.io/badge/coverage-75%25-yellow.svg?style=flat-square) [![Dependency Status](https://david-dm.org/ipfs/js-ipfs.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
+[![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io) 
+[[![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs) ![Build Status](https://travis-ci.org/ipfs/js-ipfs.svg?style=flat-square)](https://travis-ci.org/ipfs/js-ipfs)
+![](https://img.shields.io/badge/coverage-75%25-yellow.svg?style=flat-square)
+[![Dependency Status](https://david-dm.org/ipfs/js-ipfs.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs)
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
 
-> IPFS JavaScript implementation  entry point and roadmap
+> IPFS JavaScript implementation. 
 
 # Description
 
-This repo will contain the entry point for the JavaScript implementation of IPFS spec, similar to [go-ipfs](https://github.com/ipfs/go-ipfs). 
+This repo contains the JavaScript implementation of the IPFS protocol, with feature parity to the [Go implementation](https://github.com/ipfs/go-ipfs).
 
-We are building js-ipfs because it will inform how go-ipfs works, separate concerns, and allow a complete in-browser-tab implementation with no install friction. Most of the work for IPFS does happen elsewhere, but this is an equally important part of our roadmap to lead to a permanent, IPFSed web.
+# Project status
+
+Consult the [Roadmap](/ROADMAP.md) for a complete state description of the project. A lot of components can be used currently, but it is a WIP, so beware of the Dragons.
 
 # Contribute
 
@@ -22,8 +28,6 @@ IPFS implementation in JavaScript is a work in progress. As such, there's a few 
   * **Contribute to the [FAQ repository](https://github.com/ipfs/faq/issues)** with any questions you have about IPFS or any of the relevant technology. A good example would be asking, 'What is a merkledag tree?'. If you don't know a term, odds are, someone else doesn't either. Eventually, we should have a good understanding of where we need to improve communications and teaching together to make IPFS and IPN better.
 
 # Usage
-
-> **Disclamer: Currently, js-ipfs is not a full IPFS node, it delegates all of its operations to a IPFS node available in the network, see "Getting jsipfs ready" below for more details.
 
 ### Installation
 
@@ -46,6 +50,14 @@ $ npm install ipfs --global
 ```
 
 The cli is availble through `jsipfs` in your terminal
+
+# Examples
+
+> **WIP**
+
+# API
+
+> **WIP**
 
 # Project structure
 
@@ -141,110 +153,3 @@ Files is the API that lets us work with IPFS objects (DAG Nodes) as if they were
 #### Importer
 
 Importer are a set of layouts (e.g. UnixFS) and chunkers (e.g: fixed-size, rabin, etc) that convert data to a MerkleDAG representation inside IPFS.
-
-# Usage
-
-> This is a WIP, beware of Dragons!
-
-# Project Status
-
-### Per component view
-
-| Name | Spec | Disc |
-| :----| :----| :----|
-| data importing | https://github.com/ipfs/specs/pull/57 | https://github.com/ipfs/js-ipfs/issues/41
-| repo | https://github.com/ipfs/specs/tree/master/repo | https://github.com/ipfs/js-ipfs/issues/51
-| network layer | https://github.com/ipfs/specs/tree/master/libp2p | https://github.com/diasdavid/js-libp2p/issues
-| bitswap | https://github.com/ipfs/js-ipfs/issues/51 | https://github.com/ipfs/js-ipfs/issues/51
-| pin | | https://github.com/ipfs/js-ipfs/issues/59
-| files | | https://github.com/ipfs/js-ipfs/issues/60
-| daemon | | https://github.com/ipfs/js-ipfs/issues/57
-| object | | https://github.com/ipfs/js-ipfs/issues/58
-| block | |  https://github.com/ipfs/js-ipfs/issues/50
-| bootstrap | | https://github.com/ipfs/js-ipfs/issues/46
-| init | | https://github.com/ipfs/js-ipfs/issues/42
-
-### Per feature view
-
-- **core**
-  - [x] version
-  - [x] daemon
-  - [x] id
-  - [x] block
-    - [x] get
-    - [x] put
-    - [x] stat
-  - [x] object - Basic manipulation of the DAG
-    - [x] data
-    - [x] get
-    - [x] links
-    - [x] new
-    - [x] patch
-    - [x] put
-    - [x] stat
-  - [ ] refs - Listing of references. (alking around the graph)
-    - [ ] local
-  - [ ] repo
-    - [ ] init
-    - [ ] stat
-    - [ ] gc
-  - [ ] pin
-    - [ ] add
-    - [ ] ls
-    - [ ] rm
-  - [ ] log
-    - [ ] level
-    - [ ] tail
-- **extensions**
-  - [ ] name (IPNS)
-    - [ ] publish
-    - [ ] resolve
-  - [ ] dns
-    - [ ] resolve
-  - [ ] tar
-    - [ ] add
-    - [ ] cat
-  - [ ] tour
-    - [ ] list
-    - [ ] next
-    - [ ] restart
-  - [ ] files
-    - [x] add
-    - [ ] cat
-    - [ ] get
-  - [ ] stat - Statistics about everything
-    - [ ] bw
-  - [ ] mount
-  - [x] bootstrap
-    - [x] add
-    - [x] list
-    - [x] rm
-  - [ ] bitswap
-    - [ ] stat
-    - [ ] unwant
-    - [ ] wantlist
-- **tooling**
-  - [x] commands
-  - [ ] update
-  - [ ] init - sugar on top of ipfs repo init
-  - [x] config
-    - [x] edit
-    - [x] replace
-    - [x] show
-- **network** (bubbles up from libp2p)
-  - [ ] ping
-  - [ ] dht
-    - [ ] findpeer
-    - [ ] findprovs
-    - [ ] get
-    - [ ] put
-    - [ ] query
-  - [ ] swarm
-    - [ ] addrs
-    - [ ] connect
-    - [ ] disconnect
-    - [ ] filters
-    - [ ] peers
-  - [ ] records (IPRS)
-    - [ ] put
-    - [ ] get
