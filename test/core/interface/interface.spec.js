@@ -6,6 +6,7 @@ const isNode = require('detect-node')
 
 describe('interface-ipfs-core tests', () => {
   require('./block')
+  require('./pin')
   require('./config')
   require('./files')
   require('./generic')

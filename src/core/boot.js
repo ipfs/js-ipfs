@@ -28,6 +28,7 @@ module.exports = (self) => {
 
     series([
       (cb) => self._repo.open(cb),
+      (cb) => self.pin.load(cb),
       (cb) => self.preStart(cb),
       (cb) => {
         self.state.initialized()
