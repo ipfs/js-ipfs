@@ -144,7 +144,7 @@ Importer are a set of layouts (e.g. UnixFS) and chunkers (e.g: fixed-size, rabin
 
 # Usage
 
-> This is a WIP, behare of the Dragons!
+> This is a WIP, beware of Dragons!
 
 # Project Status
 
