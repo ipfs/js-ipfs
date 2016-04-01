@@ -336,9 +336,7 @@ function IPFS (repo) {
 
   this.files = {
     add: (path, options, callback) => {
-      options.path = path
-      options.dagService = dagS
-      importer(options, callback)
+      importer(path, dagS, options, callback)
     }
   }
 }
