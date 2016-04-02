@@ -5,18 +5,17 @@ const path = require('path')
 
 module.exports = (repo, opts, callback) => {
   opts = opts || {}
-  opts.force = opts.force || false
   opts.emptyRepo = opts.emptyRepo || false
   opts.bits = opts.bits || 2048
 
   // Pre-set config values.
   var config = require('../init-files/default-config.json')
 
-  // Verify repo does not yet exist (or that 'force' is provided).
+  // Verify repo does not yet exist.
   repo.exists((err, res) => {
     if (err) { return callback(err) }
-    if (res === true && !opts.force) {
-      return callback(new Error('repo already exists and \'force\' is not set'))
+    if (res === true) {
+      return callback(new Error('repo already exists'))
     }
 
     generateAndSetKeypair()
