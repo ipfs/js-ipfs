@@ -1,58 +1,53 @@
 const resources = require('./../resources')
-const Joi = require('joi')
 
 module.exports = (server) => {
   const api = server.select('API')
 
   api.route({
-    method: 'GET',
-    path: '/api/v0/block/get/{arg?}',
-    handler: resources.block.get,
+    method: '*',
+    path: '/api/v0/block/get',
     config: {
-      validate: {
-        query: {
-          arg: Joi.string().required() // The base58 multihash of an existing block to get.
-        }
-      }
+      pre: [
+        { method: resources.block.get.parseArgs, assign: 'args' }
+      ],
+      handler: resources.block.get.handler
     }
   })
 
   api.route({
-    method: 'POST',
-    path: '/api/v0/block/put/{arg?}',
-    handler: resources.block.put,
+    method: '*',
+    path: '/api/v0/block/put',
     config: {
-      validate: {
-        query: {
-          arg: Joi.string().required() // The data to be stored as an IPFS block.
-        }
-      }
+      payload: {
+        parse: false,
+        output: 'stream'
+      },
+      pre: [
+        { method: resources.block.put.parseArgs, assign: 'args' }
+      ],
+      handler: resources.block.put.handler
     }
   })
 
   api.route({
-    method: 'DELETE',
-    path: '/api/v0/block/del/{arg?}',
-    handler: resources.block.del,
+    method: '*',
+    path: '/api/v0/block/del',
     config: {
-      validate: {
-        query: {
-          arg: Joi.string().required() // The base58 multihash of the IPFS block to be removed.
-        }
-      }
+      pre: [
+        { method: resources.block.del.parseArgs, assign: 'args' }
+      ],
+      handler: resources.block.del.handler
     }
   })
 
   api.route({
-    method: 'GET',
-    path: '/api/v0/block/stat/{arg?}',
-    handler: resources.block.stat,
+    method: '*',
+    path: '/api/v0/block/stat',
     config: {
-      validate: {
-        query: {
-          arg: Joi.string().required() // The base58 multihash of an existing block to get.
-        }
-      }
+      pre: [
+        { method: resources.block.stat.parseArgs, assign: 'args' }
+      ],
+      handler: resources.block.stat.handler
     }
   })
 }

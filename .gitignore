@@ -1,6 +1,6 @@
 **/node_modules/
 **/*.log
-tests/repo-tests*
+test/repo-tests*
 
 # Logs
 logs
