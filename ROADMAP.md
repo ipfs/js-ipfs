@@ -38,9 +38,9 @@ IPFS JavaScript Implementation roadmap
 
 ### Notes:
 
-- This releasel won't:
-  - support WebRTC, the communication between browser and machine nodes will happen through WebSockets+SPDY.
-  - won't have DHT (Kademlia Routing and Record Store) support.
+- This release won't
+  - support WebRTC, the communication between browser and machine nodes will happen through WebSockets+SPDY
+  - support DHT (Kademlia Routing and Record Store)
 
 # Milestone 2 - TBD
 
@@ -126,7 +126,7 @@ IPFS JavaScript Implementation roadmap
 - **tooling**
   - [x] commands
   - [ ] update
-  - [ ] init - sugar on top of ipfs repo init
+  - [x] init - sugar on top of ipfs repo init
   - [x] config
     - [x] edit
     - [x] replace
