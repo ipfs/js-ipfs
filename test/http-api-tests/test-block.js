@@ -177,7 +177,7 @@ describe('block', () => {
       done()
     })
 
-    describe('ipfs.object.put', () => {
+    describe('ipfs.block.put', () => {
       it('returns error for request without argument', (done) => {
         const filePath = null
 
