@@ -2,7 +2,7 @@ IPFS JavaScript Implementation
 ==============================
 
 [![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io) 
-[[![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs) ![Build Status](https://travis-ci.org/ipfs/js-ipfs.svg?style=flat-square)](https://travis-ci.org/ipfs/js-ipfs)
+[[![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs) ![Build Status](https://travis-ci.org/ipfs/js-ipfs.svg?style=flat-square&branch=master)](https://travis-ci.org/ipfs/js-ipfs)
 ![](https://img.shields.io/badge/coverage-75%25-yellow.svg?style=flat-square)
 [![Dependency Status](https://david-dm.org/ipfs/js-ipfs.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
@@ -27,13 +27,15 @@ IPFS implementation in JavaScript is a work in progress. As such, there's a few 
   * **Add tests**. There can never be enough tests.
   * **Contribute to the [FAQ repository](https://github.com/ipfs/faq/issues)** with any questions you have about IPFS or any of the relevant technology. A good example would be asking, 'What is a merkledag tree?'. If you don't know a term, odds are, someone else doesn't either. Eventually, we should have a good understanding of where we need to improve communications and teaching together to make IPFS and IPN better.
 
-# Usage
+# Installation
 
-### Installation
+## npm
 
 ```bash
 $ npm i ipfs --save
 ```
+
+## Use in Node.js
 
 ```JavaScript
 var IPFS = require('ipfs')
@@ -41,7 +43,7 @@ var IPFS = require('ipfs')
 var node = new IPFS()
 ```
 
-### Command line tool
+## Through command line tool
 
 In order to use js-ipfs as a CLI, you must install it with the -g flag.
 
@@ -51,13 +53,29 @@ $ npm install ipfs --global
 
 The cli is availble through `jsipfs` in your terminal
 
-# Examples
+## Use in the browser with browserify, webpack or any bundler
 
-> **WIP**
+The code published to npm that gets loaded on require is in fact a ES5 transpiled version with the right shims added. This means that you can require it and use with your favourite bundler without having to adjust asset management process.
 
-# API
+```JavaScript
+```
 
-> **WIP**
+## Use in a browser using a script tag
+
+```html
+```
+
+# Usage
+
+## Examples
+
+> **Will come soon**
+
+## API
+
+> **Will come soon**
+
+
 
 # Project structure
 
