@@ -59,26 +59,5 @@ describe('init', function () {
         done()
       })
   })
-
-  it('force', (done) => {
-    nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'init', '--bits', '64', '--force'])
-      .run((err, stdout, exitcode) => {
-        expect(err).to.not.exist
-        expect(exitcode).to.equal(0)
-
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'init', '--bits', '64'])
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(1)
-
-            nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'init', '--bits', '64', '--force'])
-              .run((err, stdout, exitcode) => {
-                expect(err).to.not.exist
-                expect(exitcode).to.equal(0)
-                done()
-              })
-          })
-      })
-  })
 })
 
