@@ -3,7 +3,7 @@ const debug = require('debug')
 const path = require('path')
 const log = debug('cli:config')
 log.error = debug('cli:config:error')
-const utils = require('utils')
+const utils = require('../../utils')
 
 module.exports = Command.extend({
   desc: 'Replaces the config with <file>',
