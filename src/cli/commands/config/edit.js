@@ -86,6 +86,9 @@ module.exports = Command.extend({
       }
 
       function saveConfig (config, next) {
+        config = utils.isDaemonOn()
+          ? new Buffer(JSON.stringify(config)) : config
+
         ipfs.config.replace(config, (err) => {
           if (err) {
             log.error(err)

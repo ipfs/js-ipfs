@@ -80,7 +80,7 @@
     "debug": "^2.2.0",
     "fs-blob-store": "^5.2.1",
     "hapi": "^13.3.0",
-    "ipfs-api": "github:ipfs/js-ipfs-api#1fd9749",
+    "ipfs-api": "github:ipfs/js-ipfs-api#f3e2d42",
     "ipfs-blocks": "^0.1.0",
     "ipfs-data-importing": "^0.3.3",
     "ipfs-merkle-dag": "^0.3.0",

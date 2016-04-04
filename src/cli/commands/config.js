@@ -33,6 +33,17 @@ module.exports = Command.extend({
       if (!value) {
         // Get the value of a given key
 
+        if (utils.isDaemonOn()) {
+          return ipfs.config.get(key, (err, config) => {
+            if (err) {
+              log.error(err)
+              throw new Error('failed to read the config')
+            }
+
+            console.log(config.Value)
+          })
+        }
+
         ipfs.config.show((err, config) => {
           if (err) {
             log.error(err)
@@ -54,6 +65,15 @@ module.exports = Command.extend({
             log.error(err)
             throw new Error('invalid JSON provided')
           }
+        }
+
+        if (utils.isDaemonOn()) {
+          return ipfs.config.set(key, value, (err) => {
+            if (err) {
+              log.error(err)
+              throw new Error('failed to save the config')
+            }
+          })
         }
 
         ipfs.config.show((err, originalConfig) => {

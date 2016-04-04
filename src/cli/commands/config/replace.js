@@ -4,6 +4,7 @@ const path = require('path')
 const log = debug('cli:config')
 log.error = debug('cli:config:error')
 const utils = require('../../utils')
+const fs = require('fs')
 
 module.exports = Command.extend({
   desc: 'Replaces the config with <file>',
@@ -15,14 +16,16 @@ module.exports = Command.extend({
       if (err) {
         throw err
       }
-      const config = require(path.resolve(process.cwd(), configPath))
 
-      ipfs.config.replace(config, (err, version) => {
+      const filePath = path.resolve(process.cwd(), configPath)
+
+      const config = utils.isDaemonOn()
+        ? filePath : JSON.parse(fs.readFileSync(filePath, 'utf8'))
+
+      ipfs.config.replace(config, (err) => {
         if (err) {
           throw err
         }
-
-        console.log(version)
       })
     })
   }
