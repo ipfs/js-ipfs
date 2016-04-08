@@ -1,6 +1,6 @@
 module.exports = function (config) {
   var path = require('path')
-  var nodeForgePath = path.resolve(__dirname, 'node_modules/peer-id/deps/forge.bundle.js')
+  var nodeForgePath = path.resolve(__dirname, 'node_modules/peer-id/vendor/forge.bundle.js')
 
   config.set({
     basePath: '',
@@ -31,7 +31,12 @@ module.exports = function (config) {
       module: {
         loaders: [
           { test: /\.json$/, loader: 'json' }
-        ]
+        ],
+        postLoaders: [{
+          test: /\.js$/,
+          loader: 'transform?brfs',
+          include: /node_modules\/peer-id/
+        }]
       }
     },
 
