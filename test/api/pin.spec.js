@@ -4,7 +4,7 @@ describe('.pin', () => {
   it('.pin.add', (done) => {
     apiClients['b'].pin.add('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {recursive: false}, (err, res) => {
       expect(err).to.not.exist
-      expect(res.Pinned[0]).to.be.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+      expect(res.Pins[0]).to.be.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
       done()
     })
   })
@@ -43,7 +43,7 @@ describe('.pin', () => {
       return apiClients['b'].pin
         .add('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {recursive: false})
         .then((res) => {
-          expect(res.Pinned[0]).to.be.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+          expect(res.Pins[0]).to.be.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
         })
     })
 
