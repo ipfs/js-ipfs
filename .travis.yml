@@ -4,6 +4,10 @@ node_js:
   - '5'
   - stable
 
+# always use npm latest
+before_install:
+  - npm i -g npm
+
 addons:
   firefox: 'latest'
 

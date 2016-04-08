@@ -1,10 +1,8 @@
 'use strict'
 
-const path = require('path')
-const File = require('vinyl')
 const Readable = require('stream').Readable
-
-const isNode = !global.window
+const path = require('path')
+const isNode = require('detect-node')
 
 const testfilePath = path.join(__dirname, '/../testfile.txt')
 let testfile
@@ -26,19 +24,17 @@ describe('.add', () => {
       return done()
     }
 
-    const file = new File({
-      cwd: path.dirname(testfilePath),
-      base: path.dirname(testfilePath),
-      path: testfilePath,
-      contents: new Buffer(testfile)
-    })
+    const file = {
+      path: 'testfile.txt',
+      content: new Buffer(testfile)
+    }
 
-    apiClients['a'].add(file, (err, res) => {
+    apiClients['a'].add([file], (err, res) => {
       expect(err).to.not.exist
 
       const added = res[0] != null ? res[0] : res
       expect(added).to.have.property('Hash', 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
-      expect(added).to.have.property('Name', path.basename(testfilePath))
+      expect(added).to.have.property('Name', 'testfile.txt')
       done()
     })
   })
@@ -47,6 +43,7 @@ describe('.add', () => {
     let buf = new Buffer(testfile)
     apiClients['a'].add(buf, (err, res) => {
       expect(err).to.not.exist
+
       expect(res).to.have.length(1)
       expect(res[0]).to.have.property('Hash', 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
       done()
@@ -60,6 +57,7 @@ describe('.add', () => {
 
     apiClients['a'].add(testfileBig, (err, res) => {
       expect(err).to.not.exist
+
       expect(res).to.have.length(1)
       expect(res[0]).to.have.a.property('Hash', 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq')
       done()
@@ -80,13 +78,21 @@ describe('.add', () => {
     })
   })
 
-  it('add a nested dir', (done) => {
+  it('add a nested dir following symlinks', (done) => {
     apiClients['a'].add(path.join(__dirname, '/../test-folder'), { recursive: true }, (err, res) => {
       if (isNode) {
         expect(err).to.not.exist
 
         const added = res[res.length - 1]
-        expect(added).to.have.property('Hash', 'QmSzLpCVbWnEm3XoTWnv6DT6Ju5BsVoLhzvxKXZeQ2cmdg')
+        expect(added).to.have.property('Hash', 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6')
+
+        // check that the symlink was replaced by the target file
+        const linkPath = 'test-folder/hello-link'
+        const filePath = 'test-folder/files/hello.txt'
+        const linkHash = res.filter((e) => e.Name === linkPath)[0].Hash
+        const fileHash = res.filter((e) => e.Name === filePath)[0].Hash
+        expect(linkHash).to.equal(fileHash)
+
         done()
       } else {
         expect(err.message).to.be.equal('Recursive uploads are not supported in the browser')
@@ -95,10 +101,58 @@ describe('.add', () => {
     })
   })
 
+  it('add a nested dir without following symlinks', (done) => {
+    apiClients['a'].add(path.join(__dirname, '/../test-folder'), { recursive: true, followSymlinks: false }, (err, res) => {
+      if (isNode) {
+        expect(err).to.not.exist
+
+        const added = res[res.length - 1]
+        // same hash as the result from the cli (ipfs add test/test-folder -r)
+        expect(added).to.have.property('Hash', 'QmRArDYd8Rk7Zb7K2699KqmQM1uUoejn1chtEAcqkvjzGg')
+        done()
+      } else {
+        expect(err.message).to.be.equal('Recursive uploads are not supported in the browser')
+        done()
+      }
+    })
+  })
+
+  it('add a nested dir as array', (done) => {
+    if (!isNode) return done()
+    const fs = require('fs')
+    const base = path.join(__dirname, '../test-folder')
+    const content = (name) => ({
+      path: `test-folder/${name}`,
+      content: fs.readFileSync(path.join(base, name))
+    })
+    const dirs = [
+      content('add.js'),
+      content('cat.js'),
+      content('ls.js'),
+      content('ipfs-add.js'),
+      content('version.js'),
+      content('files/hello.txt'),
+      content('files/ipfs.txt'),
+      {
+        path: 'test-folder',
+        dir: true
+      }
+    ]
+
+    apiClients['a'].add(dirs, { recursive: true }, (err, res) => {
+      expect(err).to.not.exist
+
+      const added = res[res.length - 1]
+      expect(added).to.have.property('Hash', 'QmTDH2RXGn8XyDAo9YyfbZAUXwL1FCr44YJCN9HBZmL9Gj')
+      done()
+    })
+  })
+
   it('add stream', (done) => {
     const stream = new Readable()
     stream.push('Hello world')
     stream.push(null)
+
     apiClients['a'].add(stream, (err, res) => {
       expect(err).to.not.exist
 

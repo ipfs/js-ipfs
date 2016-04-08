@@ -19,6 +19,14 @@ describe('.diag', () => {
     })
   })
 
+  it('.diag.cmds', (done) => {
+    apiClients['a'].diag.cmds((err, res) => {
+      expect(err).to.not.exist
+      expect(res).to.exist
+      done()
+    })
+  })
+
   describe('promise', () => {
     it('.diag.net', () => {
       return apiClients['a'].diag.net()
@@ -33,6 +41,13 @@ describe('.diag', () => {
           expect(res).to.exist
           expect(res).to.have.a.property('memory')
           expect(res).to.have.a.property('diskinfo')
+        })
+    })
+
+    it('.diag.cmds', () => {
+      return apiClients['a'].diag.cmds()
+        .then((res) => {
+          expect(res).to.exist
         })
     })
   })

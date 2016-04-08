@@ -70,28 +70,91 @@ describe('.object', () => {
     })
   })
 
-  it('object.patch', (done) => {
-    apiClients['a'].object.put(testPatchObject, 'json', (err, res) => {
-      expect(err).to.not.exist
-      apiClients['a'].object.patch(testObjectHash, ['add-link', 'next', testPatchObjectHash], (err, res) => {
+  describe('object.patch', () => {
+    before((done) => {
+      apiClients['a'].object.put(testPatchObject, 'json', (err, res) => {
         expect(err).to.not.exist
-        expect(res).to.be.eql({
-          Hash: 'QmZFdJ3CQsY4kkyQtjoUo8oAzsEs5BNguxBhp8sjQMpgkd',
-          Links: null
-        })
-        apiClients['a'].object.get(res.Hash, (err, res2) => {
-          expect(err).to.not.exist
-          expect(res2).to.be.eql({
-            Data: 'testdata',
-            Links: [{
-              Name: 'next',
-              Hash: 'QmWJDtdQWQSajQPx1UVAGWKaSGrHVWdjnrNhbooHP7LuF2',
-              Size: 15
-            }]
-          })
-          done()
-        })
+        done()
       })
+    })
+
+    it('.addLink', (done) => {
+      apiClients['a'].object.patch
+        .addLink(testObjectHash, 'next', testPatchObjectHash, (err, res) => {
+          expect(err).to.not.exist
+          expect(res).to.be.eql({
+            Hash: 'QmZFdJ3CQsY4kkyQtjoUo8oAzsEs5BNguxBhp8sjQMpgkd',
+            Links: null
+          })
+          apiClients['a'].object.get(res.Hash, (err, res2) => {
+            expect(err).to.not.exist
+            expect(res2).to.be.eql({
+              Data: 'testdata',
+              Links: [{
+                Name: 'next',
+                Hash: 'QmWJDtdQWQSajQPx1UVAGWKaSGrHVWdjnrNhbooHP7LuF2',
+                Size: 15
+              }]
+            })
+            done()
+          })
+        })
+    })
+
+    it('.rmLink', (done) => {
+      apiClients['a'].object.patch
+        .rmLink('QmZFdJ3CQsY4kkyQtjoUo8oAzsEs5BNguxBhp8sjQMpgkd', 'next', (err, res) => {
+          expect(err).to.not.exist
+          expect(res).to.be.eql({
+            Hash: testObjectHash,
+            Links: null
+          })
+          apiClients['a'].object.get(res.Hash, (err, res2) => {
+            expect(err).to.not.exist
+            expect(res2).to.be.eql({
+              Data: 'testdata',
+              Links: []
+            })
+            done()
+          })
+        })
+    })
+
+    it('.appendData', (done) => {
+      apiClients['a'].object.patch
+        .appendData(testObjectHash, new Buffer(' hello'), (err, res) => {
+          expect(err).to.not.exist
+          expect(res).to.be.eql({
+            Hash: 'Qmcjhr2QztQxCAoEf8tJPTGTVkTsUrTQ36JurH14DNYNsc',
+            Links: null
+          })
+          apiClients['a'].object.get(res.Hash, (err, res2) => {
+            expect(err).to.not.exist
+            expect(res2).to.be.eql({
+              Data: 'testdata hello',
+              Links: []
+            })
+            done()
+          })
+        })
+    })
+    it('.setData', (done) => {
+      apiClients['a'].object.patch
+        .setData(testObjectHash, new Buffer('hello world'), (err, res) => {
+          expect(err).to.not.exist
+          expect(res).to.be.eql({
+            Hash: 'QmU1Sq1B7RPQD2XcQNLB58qJUyJffVJqihcxmmN1STPMxf',
+            Links: null
+          })
+          apiClients['a'].object.get(res.Hash, (err, res2) => {
+            expect(err).to.not.exist
+            expect(res2).to.be.eql({
+              Data: 'hello world',
+              Links: []
+            })
+            done()
+          })
+        })
     })
   })
 
@@ -161,31 +224,6 @@ describe('.object', () => {
           expect(res).to.be.eql({
             Hash: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
             Links: []
-          })
-        })
-    })
-
-    it('object.patch', () => {
-      return apiClients['a'].object.put(testPatchObject, 'json')
-        .then((res) => {
-          return apiClients['a'].object
-            .patch(testObjectHash, ['add-link', 'next', testPatchObjectHash])
-        })
-        .then((res) => {
-          expect(res).to.be.eql({
-            Hash: 'QmZFdJ3CQsY4kkyQtjoUo8oAzsEs5BNguxBhp8sjQMpgkd',
-            Links: null
-          })
-          return apiClients['a'].object.get(res.Hash)
-        })
-        .then((res) => {
-          expect(res).to.be.eql({
-            Data: 'testdata',
-            Links: [{
-              Name: 'next',
-              Hash: 'QmWJDtdQWQSajQPx1UVAGWKaSGrHVWdjnrNhbooHP7LuF2',
-              Size: 15
-            }]
           })
         })
     })

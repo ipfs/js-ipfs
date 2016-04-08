@@ -5,7 +5,7 @@ const apiAddrs = require('./tmp-disposable-nodes-addrs.json')
 
 global.expect = require('chai').expect
 global.apiClients = {} // a, b, c
-global.isNode = !global.window
+global.isNode = require('detect-node')
 
 function connectNodes (done) {
   const addrs = {}

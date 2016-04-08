@@ -24,8 +24,16 @@ module.exports = (send) => {
         type = null
       }
       let opts = null
-      if (type) opts = { type: type }
-      return send('pin/ls', null, opts, null, cb)
+      let hash = null
+      if (typeof type === 'string') {
+        opts = { type: type }
+      } else if (type && type.hash) {
+        hash = type.hash
+        type.hash = null
+        opts = type
+      }
+
+      return send('pin/ls', hash, opts, null, cb)
     }
   }
 }

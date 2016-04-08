@@ -4,13 +4,21 @@ describe('.pin', () => {
   it('.pin.add', (done) => {
     apiClients['b'].pin.add('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {recursive: false}, (err, res) => {
       expect(err).to.not.exist
-      expect(res.Pinned[0]).to.be.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+      expect(res.Pins[0]).to.be.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
       done()
     })
   })
 
   it('.pin.list', (done) => {
     apiClients['b'].pin.list((err, res) => {
+      expect(err).to.not.exist
+      expect(res).to.exist
+      done()
+    })
+  })
+
+  it('.pin.list hash', (done) => {
+    apiClients['b'].pin.list({hash: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'}, (err, res) => {
       expect(err).to.not.exist
       expect(res).to.exist
       done()
@@ -35,12 +43,21 @@ describe('.pin', () => {
       return apiClients['b'].pin
         .add('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {recursive: false})
         .then((res) => {
-          expect(res.Pinned[0]).to.be.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+          expect(res.Pins[0]).to.be.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
         })
     })
 
     it('.pin.list', () => {
       return apiClients['b'].pin.list()
+        .then((res) => {
+          expect(res).to.exist
+        })
+    })
+
+    it('.pin.list hash', () => {
+      return apiClients['b'].pin.list({
+        hash: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
+      })
         .then((res) => {
           expect(res).to.exist
         })

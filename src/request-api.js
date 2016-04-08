@@ -5,7 +5,7 @@ const Qs = require('qs')
 const ndjson = require('ndjson')
 const getFilesStream = require('./get-files-stream')
 
-const isNode = !global.window
+const isNode = require('detect-node')
 
 // -- Internal
 
@@ -36,13 +36,11 @@ function onRes (buffer, cb) {
         }
         if (payload) {
           error.code = payload.Code
-          error.message = payload.Message
+          error.message = payload.Message || payload.toString()
         }
         cb(error)
       })
     }
-
-    // console.log('stream:', stream, ' chunked:', chunkedObjects)
 
     if (stream && !buffer) return cb(null, res)
 

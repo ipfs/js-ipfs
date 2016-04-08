@@ -1,4 +1,4 @@
-'use strict'
+/* eslint-env mocha */
 
 const isNode = !global.window
 
@@ -6,12 +6,12 @@ describe('ls', function () {
   it('should correctly retrieve links', function (done) {
     if (!isNode) return done()
 
-    apiClients['a'].ls('QmSzLpCVbWnEm3XoTWnv6DT6Ju5BsVoLhzvxKXZeQ2cmdg', (err, res) => {
+    apiClients['a'].ls('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG', (err, res) => {
       expect(err).to.not.exist
 
       expect(res).to.have.a.property('Objects')
       expect(res.Objects[0]).to.have.a.property('Links')
-      expect(res.Objects[0]).to.have.property('Hash', 'QmSzLpCVbWnEm3XoTWnv6DT6Ju5BsVoLhzvxKXZeQ2cmdg')
+      expect(res.Objects[0]).to.have.property('Hash', 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG')
       done()
     })
   })
@@ -27,7 +27,7 @@ describe('ls', function () {
   it('should correctly handle a nonexisting path', function (done) {
     if (!isNode) return done()
 
-    apiClients['a'].ls('QmTDH2RXGn8XyDAo9YyfbZAUXwL1FCr44YJCN9HBZmL9Gj/folder_that_isnt_there', (err, res) => {
+    apiClients['a'].ls('QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6/folder_that_isnt_there', (err, res) => {
       expect(err).to.exist
       expect(res).to.not.exist
       done()
@@ -38,11 +38,11 @@ describe('ls', function () {
     it('should correctly retrieve links', () => {
       if (!isNode) return
 
-      return apiClients['a'].ls('QmSzLpCVbWnEm3XoTWnv6DT6Ju5BsVoLhzvxKXZeQ2cmdg')
+      return apiClients['a'].ls('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG')
         .then((res) => {
           expect(res).to.have.a.property('Objects')
           expect(res.Objects[0]).to.have.a.property('Links')
-          expect(res.Objects[0]).to.have.property('Hash', 'QmSzLpCVbWnEm3XoTWnv6DT6Ju5BsVoLhzvxKXZeQ2cmdg')
+          expect(res.Objects[0]).to.have.property('Hash', 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG')
         })
     })
 
@@ -56,7 +56,7 @@ describe('ls', function () {
     it('should correctly handle a nonexisting path', () => {
       if (!isNode) return
 
-      return apiClients['a'].ls('QmTDH2RXGn8XyDAo9YyfbZAUXwL1FCr44YJCN9HBZmL9Gj/folder_that_isnt_there')
+      return apiClients['a'].ls('QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6/folder_that_isnt_there')
         .catch((err) => {
           expect(err).to.exist
         })
