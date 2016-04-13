@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "dignified.js": "^1.0.0",
+    "aegir": "^2.0.0",
     "gulp": "^3.9.1",
     "ipfsd-ctl": "^0.9.1",
     "pre-commit": "^1.1.2",
@@ -35,9 +35,9 @@
     "test": "gulp test",
     "test:node": "gulp test:node",
     "test:browser": "gulp test:browser",
-    "lint": "dignified-lint",
-    "build": "dignified-build",
-    "release": "dignified-release"
+    "lint": "aegir-lint",
+    "build": "aegir-build",
+    "release": "aegir-release"
   },
   "pre-commit": [
     "lint",
@@ -59,7 +59,7 @@
     "url": "https://github.com/ipfs/js-ipfs-api/issues"
   },
   "homepage": "https://github.com/ipfs/js-ipfs-api",
-  "dignified": {
+  "aegir": {
     "webpack": {
       "module": {
         "postLoaders": [{
