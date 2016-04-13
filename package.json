@@ -83,7 +83,7 @@
     "ipfs-api": "github:ipfs/js-ipfs-api#f3e2d42",
     "ipfs-blocks": "^0.1.0",
     "ipfs-data-importing": "^0.3.3",
-    "ipfs-merkle-dag": "^0.3.0",
+    "ipfs-merkle-dag": "^0.4.0",
     "ipfs-multipart": "^0.1.0",
     "ipfs-repo": "^0.6.1",
     "joi": "^8.0.2",
