@@ -1,12 +1,17 @@
+sudo: false
 language: node_js
 node_js:
-  - '4'
-  - '5'
-  - stable
+  - 4
+  - 5
 
-# always use npm latest
+# Make sure we have new NPM.
 before_install:
-  - npm i -g npm
+  - npm install -g npm
+
+script:
+  - npm run lint
+  - npm test
+  - npm run coverage
 
 addons:
   firefox: 'latest'
@@ -15,6 +20,5 @@ before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
 
-script:
-  - npm run lint
-  - npm run test
+after_success:
+  - npm run coverage-publish

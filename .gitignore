@@ -3,3 +3,4 @@ node_modules
 test/tmp-disposable-nodes-addrs.json
 dist
 lib
+coverage
