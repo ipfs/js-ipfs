@@ -29,6 +29,7 @@ function IPFS (repo) {
   const dagS = new DAGService(blockS)
   var peerInfo
   var libp2pNode
+  var peers = {}
 
   this.load = (callback) => {
     repo.exists((err, exists) => {
@@ -308,6 +309,8 @@ function IPFS (repo) {
     }
   }
 
+  const OFFLINE_ERROR = new Error('This command must be run in online mode. Try running \'ipfs daemon\' first.')
+
   this.libp2p = {
     start: (callback) => {
       libp2pNode = new libp2p.Node(peerInfo)
@@ -324,13 +327,54 @@ function IPFS (repo) {
     },
     swarm: {
       peers: (callback) => {
-        callback(null, [])
+        if (!libp2pNode) {
+          return callback(OFFLINE_ERROR)
+        }
+
+        callback(null, peers)
       },
       // all the addrs we know
-      addrs: notImpl,
-      localAddrs: notImpl,
-      connect: notImpl,
-      disconnect: notImpl,
+      addrs: (callback) => {
+        if (!libp2pNode) {
+          return callback(OFFLINE_ERROR)
+        }
+
+        notImpl()
+      },
+      localAddrs: (callback) => {
+        if (!libp2pNode) {
+          return callback(OFFLINE_ERROR)
+        }
+
+        callback(null, peerInfo.multiaddrs)
+      },
+      connect: (ma, callback) => {
+        if (!libp2pNode) {
+          return callback(OFFLINE_ERROR)
+        }
+
+        const idStr = ma.toString().match(/\/ipfs\/(.*)/)
+        if (!idStr) {
+          return callback(new Error('invalid multiaddr'))
+        }
+        const id = peerId.createFromB58String(idStr[1])
+        const peer = new PeerInfo(id)
+
+        ma = ma.toString().replace(/\/ipfs\/(.*)/, '') // FIXME remove this when multiaddr supports ipfs
+
+        peer.multiaddr.add(multiaddr(ma))
+        peers[peer.id.toB58String()] = peer
+        libp2pNode.swarm.dial(peer, (err) => {
+          callback(err, id)
+        })
+      },
+      disconnect: (callback) => {
+        if (!libp2pNode) {
+          return callback(OFFLINE_ERROR)
+        }
+
+        notImpl()
+      },
       filters: notImpl // TODO
     },
     routing: {},
