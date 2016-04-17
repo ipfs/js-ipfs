@@ -7,8 +7,9 @@ const apiAddrs = require('./tmp-disposable-nodes-addrs.json')
 // a, b, c
 global.apiClients = {}
 
+const addrs = {}
+
 function connectNodes (done) {
-  const addrs = {}
   let counter = 0
 
   function collectAddr (key, cb) {
@@ -47,6 +48,20 @@ function connectNodes (done) {
   collectAddr('c', finish)
 }
 
+function disconnectNodes (done) {
+  global.apiClients.a.swarm.disconnect(addrs.b, (err) => {
+    if (err) {
+      throw err
+    }
+    global.apiClients.a.swarm.disconnect(addrs.c, (err) => {
+      if (err) {
+        throw err
+      }
+      done()
+    })
+  })
+}
+
 before(function (done) {
   this.timeout(20000)
 
@@ -55,4 +70,8 @@ before(function (done) {
   })
 
   connectNodes(done)
+})
+
+after(function (done) {
+  disconnectNodes(done)
 })
