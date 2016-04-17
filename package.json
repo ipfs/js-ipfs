@@ -50,11 +50,27 @@
   ],
   "author": "Matt Bell <mappum@gmail.com>",
   "contributors": [
+    "Alex Mingoia <talk@alexmingoia.com>",
+    "Connor Keenan <ckeenan89@gmail.com>",
+    "David Braun <David.Braun@Toptal.com>",
+    "David Dias <daviddias.p@gmail.com>",
+    "Fil <fil@rezo.net>",
+    "Francisco Baio Dias <xicombd@gmail.com>",
+    "Harlan T Wood <harlantwood@users.noreply.github.com>",
+    "Harlan T Wood <code@harlantwood.net>",
+    "Jason Carver <jacarver@linkedin.com>",
+    "Jeromy <jeromyj@gmail.com>",
+    "Juan Batiz-Benet <juan@benet.ai>",
+    "Kristoffer Ström <kristoffer@rymdkoloni.se>",
+    "Matt Bell <mappum@gmail.com>",
+    "Richard Littauer <richard.littauer@gmail.com>",
     "Travis Person <travis.person@gmail.com>",
-    "Jeromy Jonson <why@ipfs.io>",
-    "David Dias <daviddias@ipfs.io>",
-    "Juan Benet <juanbenet@ipfs.io>",
-    "Friedel Ziegelmayer <dignifiedquire@gmail.com>"
+    "Victor Bjelkholm <victor@typeform.com>",
+    "dignifiedquire <dignifiedquire@gmail.com>",
+    "ethers <ethereum@outlook.com>",
+    "greenkeeperio-bot <support@greenkeeper.io>",
+    "priecint <tp-dev@seznam.cz>",
+    "samuli <samuli@nugg.ad>"
   ],
   "license": "MIT",
   "bugs": {
@@ -64,11 +80,13 @@
   "aegir": {
     "webpack": {
       "module": {
-        "postLoaders": [{
-          "test": "__",
-          "loader": "transform?brfs",
-          "include": []
-        }]
+        "postLoaders": [
+          {
+            "test": "__",
+            "loader": "transform?brfs",
+            "include": []
+          }
+        ]
       }
     }
   }
