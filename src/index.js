@@ -6,8 +6,6 @@ const loadCommands = require('./load-commands')
 const getConfig = require('./config')
 const getRequestAPI = require('./request-api')
 
-exports = module.exports = IpfsAPI
-
 function IpfsAPI (host_or_multiaddr, port, opts) {
   const config = getConfig()
 
@@ -45,3 +43,5 @@ function IpfsAPI (host_or_multiaddr, port, opts) {
 
   return cmds
 }
+
+exports = module.exports = IpfsAPI

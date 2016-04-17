@@ -1,4 +1,9 @@
 /* eslint-env mocha */
+/* globals apiClients */
+'use strict'
+
+const expect = require('chai').expect
+const isNode = require('detect-node')
 
 describe('.refs', () => {
   const folder = 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG'
@@ -27,9 +32,8 @@ describe('.refs', () => {
       return done()
     }
 
-    apiClients['a'].refs(folder, {'format': '<src> <dst> <linkname>'}, (err, objs) => {
+    apiClients.a.refs(folder, {format: '<src> <dst> <linkname>'}, (err, objs) => {
       expect(err).to.not.exist
-
       expect(objs).to.eql(result)
 
       done()
@@ -40,7 +44,7 @@ describe('.refs', () => {
     it('refs', () => {
       if (!isNode) return
 
-      return apiClients['a'].refs(folder, {'format': '<src> <dst> <linkname>'})
+      return apiClients.a.refs(folder, {format: '<src> <dst> <linkname>'})
         .then((objs) => {
           expect(objs).to.eql(result)
         })

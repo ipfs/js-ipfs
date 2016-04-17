@@ -1,54 +1,10 @@
 'use strict'
 
 const gulp = require('gulp')
-const Server = require('karma').Server
-const $ = require('gulp-load-plugins')()
-const runSequence = require('run-sequence')
-const path = require('path')
-
-const config = require('./config')
 
 require('./daemons')
 
-gulp.task('test', (done) => {
-  runSequence(
-    'test:node',
-    'test:browser',
-    done
-  )
-})
-
-gulp.task('test:node', (done) => {
-  runSequence(
-    'daemons:start',
-    'mocha',
-    'daemons:stop',
-    done
-  )
-})
-
-gulp.task('test:browser', (done) => {
-  runSequence(
-    'daemons:start',
-    'karma',
-    'daemons:stop',
-    done
-  )
-})
-
-gulp.task('mocha', () => {
-  return gulp.src([
-    'test/setup.js',
-    'test/**/*.spec.js'
-  ])
-    .pipe($.mocha({
-      timeout: config.webpack.dev.timeout
-    }))
-})
-
-gulp.task('karma', (done) => {
-  new Server({
-    configFile: path.join(__dirname, '/../karma.conf.js'),
-    singleRun: true
-  }, done).start()
-})
+gulp.task('test:node:before', ['daemons:start'])
+gulp.task('test:node:after', ['daemons:stop'])
+gulp.task('test:browser:before', ['daemons:start'])
+gulp.task('test:browser:after', ['daemons:stop'])

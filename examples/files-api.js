@@ -1,3 +1,5 @@
+'use strict'
+
 var ipfs = require('../src')('localhost', 5001)
 
 ipfs.files.ls('/folder1', function (err, res) {

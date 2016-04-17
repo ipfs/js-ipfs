@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 'use strict'
 
 describe('.mount', () => {

@@ -1,5 +1,8 @@
+/* eslint-env mocha */
 'use strict'
 
+const expect = require('chai').expect
+const isNode = require('detect-node')
 const ipfsAPI = require('../src/index.js')
 const noop = () => {}
 

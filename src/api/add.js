@@ -1,3 +1,5 @@
+'use strict'
+
 const Wreck = require('wreck')
 
 module.exports = (send) => {
