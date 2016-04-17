@@ -5,11 +5,19 @@ module.exports = (server) => {
 
   api.route({
     method: 'GET',
-    path: '/api/v0/swarm/addrs',
+    path: '/api/v0/swarm/peers',
     config: {
-      handler: resources.swarm.addrs.handler
+      handler: resources.swarm.peers.handler
     }
   })
+
+  // api.route({
+  //   method: 'GET',
+  //   path: '/api/v0/swarm/addrs',
+  //   config: {
+  //     handler: resources.swarm.addrs.handler
+  //   }
+  // })
 
   api.route({
     method: 'GET',
@@ -23,17 +31,20 @@ module.exports = (server) => {
     method: 'GET',
     path: '/api/v0/swarm/connect',
     config: {
-      handler: resources.swarm.connect
+      pre: [
+        { method: resources.swarm.connect.parseArgs, assign: 'args' }
+      ],
+      handler: resources.swarm.connect.handler
     }
   })
 
-  api.route({
-    method: 'GET',
-    path: '/api/v0/swarm/disconnect',
-    config: {
-      handler: resources.swarm.disconnect
-    }
-  })
+  // api.route({
+  //   method: 'GET',
+  //   path: '/api/v0/swarm/disconnect',
+  //   config: {
+  //     handler: resources.swarm.disconnect
+  //   }
+  // })
 
   // TODO
   // api.route({
