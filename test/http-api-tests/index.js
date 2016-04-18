@@ -24,6 +24,7 @@ describe('http api', () => {
   after((done) => {
     api.stop((err) => {
       expect(err).to.not.exist
+
       rimraf(repoTests, (err) => {
         expect(err).to.not.exist
         done()

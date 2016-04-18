@@ -29,7 +29,7 @@ function IPFS (repo) {
   const dagS = new DAGService(blockS)
   var peerInfo
   var libp2pNode
-  var peers = {}
+  var peerInfoBook = {}
 
   this.load = (callback) => {
     repo.exists((err, exists) => {
@@ -331,14 +331,14 @@ function IPFS (repo) {
           return callback(OFFLINE_ERROR)
         }
 
-        callback(null, peers)
+        callback(null, peerInfoBook)
       },
       // all the addrs we know
       addrs: (callback) => {
         if (!libp2pNode) {
           return callback(OFFLINE_ERROR)
         }
-
+        // TODO
         notImpl()
       },
       localAddrs: (callback) => {
@@ -363,7 +363,8 @@ function IPFS (repo) {
         ma = ma.toString().replace(/\/ipfs\/(.*)/, '') // FIXME remove this when multiaddr supports ipfs
 
         peer.multiaddr.add(multiaddr(ma))
-        peers[peer.id.toB58String()] = peer
+        peerInfoBook[peer.id.toB58String()] = peer
+
         libp2pNode.swarm.dial(peer, (err) => {
           callback(err, id)
         })

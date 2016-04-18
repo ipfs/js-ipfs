@@ -60,7 +60,7 @@ describe('swarm', function () {
   it('localAddrs', (done) => {
     ipfsB.libp2p.swarm.localAddrs((err, res) => {
       expect(err).to.not.exist
-      expect(res).to.have.length.above(1)
+      expect(res.length).to.equal(1)
       done()
     })
   })

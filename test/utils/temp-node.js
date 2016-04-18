@@ -10,8 +10,7 @@ function setAddresses (repo, num, callback) {
     expect(err).to.not.exist
     config.Addresses = {
       Swarm: [
-        `/ip4/127.0.0.1/tcp/1000${num}`,
-        `/ip6/::/tcp/1000${num}`
+        `/ip4/127.0.0.1/tcp/1000${num}`
       ],
       API: `/ip4/127.0.0.1/tcp/1100${num}`,
       Gateway: `/ip4/127.0.0.1/tcp/1200${num}`
