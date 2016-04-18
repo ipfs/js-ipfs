@@ -10,8 +10,13 @@ log.error = debug('api:error')
 
 exports = module.exports
 
-exports.start = (callback) => {
-  const ipfs = exports.ipfs = new IPFS()
+exports.start = (repo, callback) => {
+  if (typeof repo === 'function') {
+    callback = repo
+    repo = undefined
+  }
+
+  const ipfs = exports.ipfs = new IPFS(repo)
   ipfs.load(() => {
     const repoPath = process.env.IPFS_PATH || os.homedir() + '/.ipfs'
     try {
@@ -67,7 +72,9 @@ exports.start = (callback) => {
 exports.stop = (callback) => {
   const repoPath = process.env.IPFS_PATH || os.homedir() + '/.ipfs'
   fs.unlinkSync(repoPath + '/api')
+  console.log('->', 'going to stop libp2p')
   exports.ipfs.libp2p.stop(() => {
+    console.log('->', 'going to stop api server')
     exports.server.stop(callback)
   })
 }

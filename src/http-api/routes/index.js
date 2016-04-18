@@ -6,4 +6,5 @@ module.exports = (server) => {
   require('./object')(server)
   // require('./repo')(server)
   require('./config')(server)
+  require('./swarm')(server)
 }
