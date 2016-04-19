@@ -40,7 +40,7 @@ Same as in Node.js, you just have to [browserify](http://browserify.org) the cod
 You can use [npmcdn](https://npmcdn.com/) to get the latest built version, like this
 
 ```html
-<script src="https://npmcdn.com/ipfs-api/dist/ipfsapi.min.js"></script>
+<script src="https://npmcdn.com/ipfs-api/dist/index.js"></script>
 ```
 
 This will export the `ipfsAPI` constructor on the `window` object, such that:
