@@ -93,6 +93,14 @@
         "ipfs-data-importing": "{ import: {} }",
         "libp2p-ipfs": "{}",
         "mkdirp": "{}"
+      },
+      "module": {
+        "postLoaders": [
+          {
+            "test": "__",
+            "loader": "transform?brfs"
+          }
+        ]
       }
     }
   }
