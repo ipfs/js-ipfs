@@ -10,9 +10,9 @@
   "scripts": {
     "lint": "aegir-lint",
     "coverage": "aegir-coverage",
-    "test": "npm run test:node && npm run test:browser",
-    "test:node": "npm run test:node:core && npm run test:node:http-api && npm run test:node:cli",
-    "test:node:core": "aegir-test node",
+    "test": "aegir-test",
+    "test:node": "aegir-test node",
+    "test:node:core": "mocha test/core-tests/index.js",
     "test:node:http-api": "mocha test/http-api-tests/index.js",
     "test:node:cli": "mocha test/cli-tests/index.js",
     "test:browser": "aegir-test browser",
@@ -93,20 +93,7 @@
         "ipfs-data-importing": "{ import: {} }",
         "libp2p-ipfs": "{}",
         "mkdirp": "{}"
-      },
-      "module": {
-        "postLoaders": [
-          {
-            "test": "__",
-            "loader": "transform?brfs"
-          }
-        ]
       }
-    },
-    "test": {
-      "node": [
-        "test/core-tests/index.js"
-      ]
     }
   }
 }

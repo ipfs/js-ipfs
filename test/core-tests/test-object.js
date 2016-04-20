@@ -14,7 +14,7 @@ describe('object', () => {
   var ipfs
 
   before((done) => {
-    ipfs = new IPFS(require('./index').repoPath)
+    ipfs = new IPFS(require('./repo-path'))
     ipfs.load(done)
   })
 
