@@ -3,14 +3,16 @@
 
 const fs = require('fs')
 const ncp = require('ncp').ncp
-const rimraf = require('rimraf')
 const expect = require('chai').expect
+const path = require('path')
+const clean = require('../utils/clean')
 
 describe('core', () => {
-  const repoExample = process.cwd() + '/test/go-ipfs-repo'
-  const repoTests = process.cwd() + '/test/repo-tests-run'
+  const repoExample = path.join(__dirname, '../go-ipfs-repo')
+  const repoTests = path.join(__dirname, '../repo-tests-run')
 
   before((done) => {
+    clean(repoTests)
     ncp(repoExample, repoTests, (err) => {
       process.env.IPFS_PATH = repoTests
       expect(err).to.equal(null)
@@ -18,22 +20,21 @@ describe('core', () => {
     })
   })
 
-  after((done) => {
-    rimraf(repoTests, (err) => {
-      expect(err).to.equal(null)
-      done()
-    })
+  after(() => {
+    clean(repoTests)
   })
 
-  const tests = fs.readdirSync(__dirname)
-  tests.filter((file) => {
-    if (file === 'index.js' ||
-        file.endsWith('browser.js')) {
-      return false
-    } else {
-      return true
-    }
-  }).forEach((file) => {
-    require('./' + file)
+  describe('--all', () => {
+    const tests = fs.readdirSync(__dirname)
+    tests.filter((file) => {
+      if (file === 'index.js' ||
+          file.endsWith('browser.js')) {
+        return false
+      } else {
+        return true
+      }
+    }).forEach((file) => {
+      require('./' + file)
+    })
   })
 })

@@ -13,6 +13,7 @@ const multiaddr = require('multiaddr')
 const importer = require('ipfs-data-importing').import
 const libp2p = require('libp2p-ipfs')
 const init = require('./init')
+const IPFSRepo = require('ipfs-repo')
 
 exports = module.exports = IPFS
 
@@ -21,8 +22,8 @@ function IPFS (repo) {
     throw new Error('Must be instantiated with new')
   }
 
-  if (!repo) {
-    repo = defaultRepo()
+  if (!(repo instanceof IPFSRepo)) {
+    repo = defaultRepo(repo)
   }
 
   const blockS = new BlockService(repo)
@@ -105,7 +106,9 @@ function IPFS (repo) {
       })
     },
 
-    gc: function () {}
+    gc: function () {},
+
+    path: () => repo.path
   }
 
   this.init = (opts, callback) => { init(repo, opts, callback) }

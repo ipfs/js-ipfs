@@ -5,6 +5,7 @@ const IPFS = require('../core')
 const debug = require('debug')
 const fs = require('fs')
 const os = require('os')
+const path = require('path')
 const log = debug('api')
 log.error = debug('api:error')
 
@@ -18,13 +19,14 @@ exports.start = (repo, callback) => {
 
   const ipfs = exports.ipfs = new IPFS(repo)
   ipfs.load(() => {
-    const repoPath = process.env.IPFS_PATH || os.homedir() + '/.ipfs'
+    const repoPath = ipfs.repo.path()
+
     try {
-      fs.statSync(repoPath + '/api')
+      fs.statSync(path.join(repoPath, 'api'))
       console.log('This repo is currently being used by another daemon')
       process.exit(1)
     } catch (err) {
-      fs.writeFileSync(repoPath + '/api', 'api is on by js-ipfs', {flag: 'w+'})
+      fs.writeFileSync(path.join(repoPath, 'api'), 'api is on by js-ipfs', {flag: 'w+'})
     }
 
     ipfs.config.show((err, config) => {
@@ -70,8 +72,8 @@ exports.start = (repo, callback) => {
 }
 
 exports.stop = (callback) => {
-  const repoPath = process.env.IPFS_PATH || os.homedir() + '/.ipfs'
-  fs.unlinkSync(repoPath + '/api')
+  const repoPath = exports.ipfs.repo.path()
+  fs.unlinkSync(path.join(repoPath, 'api'))
   console.log('->', 'going to stop libp2p')
   exports.ipfs.libp2p.stop(() => {
     console.log('->', 'going to stop api server')

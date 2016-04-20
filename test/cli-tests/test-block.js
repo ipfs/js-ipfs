@@ -4,12 +4,26 @@
 const expect = require('chai').expect
 const nexpect = require('nexpect')
 const httpAPI = require('../../src/http-api')
+const path = require('path')
+
+const repoPath = path.join(__dirname, '../repo-tests-run-cli')
+
+const spawn = (args) => {
+  const env = process.env
+  env.IPFS_PATH = repoPath
+  return nexpect.spawn(
+    'node',
+    [path.join(__dirname, '../../src/cli/bin.js')].concat(args),
+    {env}
+  )
+}
 
 describe('block', () => {
   describe('api offline', () => {
     it('put', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'block', 'put', process.cwd() + '/test/test-data/hello'])
+      spawn(['block', 'put', process.cwd() + '/test/test-data/hello'])
         .run((err, stdout, exitcode) => {
+          if (err) throw err
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
           expect(stdout[0])
@@ -19,7 +33,7 @@ describe('block', () => {
     })
 
     it('get', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'block', 'get', 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'])
+      spawn(['block', 'get', 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'])
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
@@ -30,7 +44,7 @@ describe('block', () => {
     })
 
     it('stat', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'block', 'stat', 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'])
+      spawn(['block', 'stat', 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'])
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
@@ -43,7 +57,7 @@ describe('block', () => {
     })
 
     it('rm', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'block', 'rm', 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'])
+      spawn(['block', 'rm', 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'])
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
@@ -56,7 +70,7 @@ describe('block', () => {
 
   describe('api running', () => {
     before((done) => {
-      httpAPI.start((err) => {
+      httpAPI.start(repoPath, (err) => {
         expect(err).to.not.exist
         done()
       })
@@ -70,7 +84,7 @@ describe('block', () => {
     })
 
     it('put', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'block', 'put', process.cwd() + '/test/test-data/hello'])
+      spawn(['block', 'put', process.cwd() + '/test/test-data/hello'])
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
@@ -81,7 +95,7 @@ describe('block', () => {
     })
 
     it('get', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'block', 'get', 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'])
+      spawn(['block', 'get', 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'])
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
@@ -92,7 +106,7 @@ describe('block', () => {
     })
 
     it('stat', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'block', 'stat', 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'])
+      spawn(['block', 'stat', 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'])
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
@@ -105,7 +119,7 @@ describe('block', () => {
     })
 
     it.skip('rm', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'block', 'rm', 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'])
+      spawn(['block', 'rm', 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'])
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)

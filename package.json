@@ -104,6 +104,13 @@
           }
         ]
       }
+    },
+    "test": {
+      "node": [
+        "test/core-tests/index.js",
+        "test/http-api-tests/index.js",
+        "test/cli-tests/index.js"
+      ]
     }
   }
 }

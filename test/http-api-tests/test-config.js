@@ -6,10 +6,11 @@ const fs = require('fs')
 const APIctl = require('ipfs-api')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
+const path = require('path')
 
 describe('config', () => {
-  const configPath = process.cwd() + '/test/repo-tests-run/config'
-  const originalConfigPath = process.cwd() + '/test/go-ipfs-repo/config'
+  const configPath = path.join(__dirname, '../repo-tests-run-http/config')
+  const originalConfigPath = path.join(__dirname, '../go-ipfs-repo/config')
   const updatedConfig = () => JSON.parse(fs.readFileSync(configPath, 'utf8'))
   const restoreConfig = () => fs.writeFileSync(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8')
 

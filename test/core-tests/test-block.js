@@ -6,11 +6,12 @@ const base58 = require('bs58')
 const fs = require('fs')
 const IPFS = require('../../src/core')
 const Block = require('ipfs-blocks').Block
+const path = require('path')
 
 const isNode = !global.window
 
 const fileA = isNode
-  ? fs.readFileSync(process.cwd() + '/test/go-ipfs-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data')
+        ? fs.readFileSync(path.join(__dirname, '../go-ipfs-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data'))
   : require('buffer!./../go-ipfs-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data')
 
 // TODO use arrow funtions again when https://github.com/webpack/webpack/issues/1944 is fixed

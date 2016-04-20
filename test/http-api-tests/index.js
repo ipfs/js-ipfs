@@ -5,17 +5,22 @@ const fs = require('fs')
 const expect = require('chai').expect
 const api = require('../../src/http-api')
 const ncp = require('ncp').ncp
-const rimraf = require('rimraf')
+const path = require('path')
+const fsStore = require('fs-blob-store')
+const IPFSRepo = require('ipfs-repo')
+const clean = require('../utils/clean')
 
 describe('http api', () => {
-  const repoExample = process.cwd() + '/test/go-ipfs-repo'
-  const repoTests = process.cwd() + '/test/repo-tests-run'
+  const repoExample = path.join(__dirname, '../go-ipfs-repo')
+  const repoTests = path.join(__dirname, '../repo-tests-run-http')
   process.env.IPFS_PATH = repoTests
 
   before((done) => {
+    clean(repoTests)
     ncp(repoExample, repoTests, (err) => {
       expect(err).to.not.exist
-      api.start((err) => {
+
+      api.start(repoTests, (err) => {
         expect(err).to.not.exist
         done()
       })
@@ -26,21 +31,21 @@ describe('http api', () => {
     api.stop((err) => {
       expect(err).to.not.exist
 
-      rimraf(repoTests, (err) => {
-        expect(err).to.not.exist
-        done()
-      })
+      clean(repoTests)
+      done()
     })
   })
 
-  var tests = fs.readdirSync(__dirname)
-  tests.filter((file) => {
-    if (file === 'index.js') {
-      return false
-    } else {
-      return true
-    }
-  }).forEach((file) => {
-    require('./' + file)
+  describe('--all', () => {
+    var tests = fs.readdirSync(__dirname)
+    tests.filter((file) => {
+      if (file === 'index.js') {
+        return false
+      } else {
+        return true
+      }
+    }).forEach((file) => {
+      require('./' + file)
+    })
   })
 })
