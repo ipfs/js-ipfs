@@ -1,18 +1,24 @@
+sudo: false
 language: node_js
 node_js:
-  - "4"
-  - "5"
+  - 4
+  - 5
 
+# Make sure we have new NPM.
 before_install:
-  - npm i -g npm
-  # Workaround for a permissions issue with Travis virtual machine images
+  - npm install -g npm
+
+script:
+  - npm run lint
+  - npm test
+  - npm run coverage
 
 addons:
   firefox: 'latest'
 
-script:
-  - npm test
-
 before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
+
+after_success:
+  - npm run coverage-publish

@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+'use strict'
 
 const async = require('async')
 const store = require('idb-plus-blob-store')
@@ -43,7 +44,7 @@ describe('IPFS Repo Tests on the Browser', function () {
     }, done)
   })
 
-  it('', () => {
+  it('--', () => {
     const testsContext = require.context('.', true, /test-*/)
     testsContext
       .keys()

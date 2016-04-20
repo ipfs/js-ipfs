@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+'use strict'
 
 const expect = require('chai').expect
 const nexpect = require('nexpect')
@@ -60,4 +61,3 @@ describe('init', function () {
       })
   })
 })
-

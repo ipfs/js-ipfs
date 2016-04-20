@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+'use strict'
 
 const expect = require('chai').expect
 const IPFS = require('../../src/core')
@@ -8,8 +9,9 @@ describe('init', function () {
   this.timeout(10000)
 
   it('basic', (done) => {
-    var repo = createTempRepo()
+    const repo = createTempRepo()
     const ipfs = new IPFS(repo)
+
     ipfs.init({ emptyRepo: true }, (err) => {
       expect(err).to.not.exist
 
@@ -28,8 +30,8 @@ describe('init', function () {
   })
 
   it('set # of bits in key', (done) => {
-    var repo1 = createTempRepo()
-    var repo2 = createTempRepo()
+    const repo1 = createTempRepo()
+    const repo2 = createTempRepo()
     const ipfsShort = new IPFS(repo1)
     const ipfsLong = new IPFS(repo2)
     ipfsShort.init({ bits: 128, emptyRepo: true }, (err) => {

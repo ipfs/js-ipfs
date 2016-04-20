@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+'use strict'
 
 const fs = require('fs')
 const ncp = require('ncp').ncp

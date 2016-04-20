@@ -5,22 +5,22 @@
   "bin": {
     "jsipfs": "src/cli/bin.js"
   },
-  "main": "src/core/index.js",
+  "main": "lib/core/index.js",
+  "jsnext:main": "src/core/index.js",
   "scripts": {
-    "lint": "standard --verbose | snazzy",
-    "coverage": "istanbul cover --print both -- _mocha test/core-tests/index.js",
-    "coverage:http-api": "istanbul cover --print both -- _mocha test/http-api-tests/index.js",
-    "test": "npm run test:node && npm run test:browser",
-    "test:node": "npm run test:node:core && npm run test:node:http-api && npm run test:node:cli",
-    "test:node:teamcity": "npm run test:node:core:teamcity && npm run test:node:http-api:teamcity && npm run test:node:cli:teamcity",
-    "test:node:cli:teamcity": "mocha --reporter mocha-teamcity-reporter test/cli-tests/index.js",
-    "test:node:core:teamcity": "mocha --reporter mocha-teamcity-reporter test/core-tests/index.js",
-    "test:node:http-api:teamcity": "mocha --reporter mocha-teamcity-reporter test/http-api-tests/index.js",
+    "lint": "aegir-lint",
+    "coverage": "aegir-coverage",
+    "test": "aegir-test",
+    "test:node": "aegir-test node",
+    "test:browser": "aegir-test browser",
+    "build": "aegir-build",
+    "release": "aegir-release",
+    "release:minor": "aegir-release minor",
+    "release:major": "aegir-release major",
+    "coverage-publish": "aegir-coverage publish",
     "test:node:cli": "mocha test/cli-tests/index.js",
     "test:node:core": "mocha test/core-tests/index.js",
     "test:node:http-api": "mocha test/http-api-tests/index.js",
-    "test:browser": "karma start karma.conf.js",
-    "test:browser:teamcity": "karma start --reporters teamcity --colors false karma.conf.js",
     "test:core": "mocha test/core-tests/index.js",
     "test:cli": "mocha test/cli-tests/index.js"
   },
@@ -42,38 +42,25 @@
   },
   "homepage": "https://github.com/ipfs/js-ipfs#readme",
   "devDependencies": {
+    "aegir": "^2.1.1",
     "async": "^1.5.2",
-    "brfs": "^1.4.3",
-    "buffer-loader": "0.0.1",
-    "chai": "^3.4.1",
+    "chai": "^3.5.0",
     "expose-loader": "^0.7.1",
     "form-data": "^1.0.0-rc3",
     "idb-plus-blob-store": "^1.0.0",
-    "istanbul": "^0.4.1",
-    "json-loader": "^0.5.4",
-    "karma": "^0.13.19",
-    "karma-chrome-launcher": "^0.2.2",
-    "karma-cli": "^0.1.2",
-    "karma-firefox-launcher": "^0.1.7",
-    "karma-mocha": "^0.2.1",
-    "karma-spec-reporter": "0.0.26",
-    "karma-teamcity-reporter": "^0.2.2",
-    "karma-webpack": "^1.7.0",
     "local-storage-blob-store": "0.0.3",
     "lodash": "^4.11.1",
     "mocha": "^2.3.4",
-    "mocha-teamcity-reporter": "^1.0.0",
     "ncp": "^2.0.0",
     "nexpect": "^0.5.0",
     "pre-commit": "^1.1.2",
     "rimraf": "^2.4.4",
     "snazzy": "^3.0.1",
-    "standard": "^6.0.7",
     "stream-to-promise": "^1.1.0",
-    "transform-loader": "^0.2.3",
-    "webpack": "^2.0.7-beta"
+    "transform-loader": "^0.2.3"
   },
   "dependencies": {
+    "babel-runtime": "^6.6.1",
     "bl": "^1.1.2",
     "boom": "^3.1.1",
     "bs58": "^3.0.0",
@@ -95,5 +82,28 @@
     "peer-info": "^0.6.2",
     "ronin": "^0.3.11",
     "temp": "^0.8.3"
+  },
+  "aegir": {
+    "webpack": {
+      "resolve": {
+        "alias": {
+          "node-forge": "../../../node_modules/peer-id/vendor/forge.bundle.js"
+        }
+      },
+      "externals": {
+        "fs": "{}",
+        "ipfs-data-importing": "{ import: {} }",
+        "libp2p-ipfs": "{}",
+        "mkdirp": "{}"
+      },
+      "module": {
+        "postLoaders": [
+          {
+            "test": "__",
+            "loader": "transform?brfs"
+          }
+        ]
+      }
+    }
   }
 }

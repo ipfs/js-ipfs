@@ -1,3 +1,5 @@
+'use strict'
+
 const peerId = require('peer-id')
 const IpfsBlocks = require('ipfs-blocks').BlockService
 const IpfsDagService = require('ipfs-merkle-dag').DAGService
@@ -36,6 +38,7 @@ module.exports = (repo, opts, callback) => {
 
   function writeVersion () {
     const version = '3'
+
     repo.version.set(version, (err) => {
       if (err) { return callback(err) }
 

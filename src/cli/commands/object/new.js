@@ -1,3 +1,5 @@
+'use strict'
+
 const Command = require('ronin').Command
 const utils = require('../../utils')
 const bs58 = require('bs58')

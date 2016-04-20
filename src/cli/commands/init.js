@@ -1,3 +1,5 @@
+'use strict'
+
 const Command = require('ronin').Command
 const IpfsRepo = require('ipfs-repo')
 const Ipfs = require('../../core')
@@ -30,14 +32,7 @@ module.exports = Command.extend({
     const path = utils.getRepoPath()
 
     const repo = new IpfsRepo(path, {
-      stores: {
-        keys: fsBlobStore,
-        config: fsBlobStore,
-        datastore: fsBlobStore,
-        logs: fsBlobStore,
-        locks: fsBlobStore,
-        version: fsBlobStore
-      }
+      stores: fsBlobStore
     })
 
     var ipfs = new Ipfs(repo)
