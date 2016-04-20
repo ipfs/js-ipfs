@@ -5,18 +5,22 @@ const expect = require('chai').expect
 const nexpect = require('nexpect')
 const fs = require('fs')
 const httpAPI = require('../../src/http-api')
+const repoPath = require('./index').repoPath
+const path = require('path')
 
 describe('config', () => {
-  const repoTests = require('./index').repoTests
-  const configPath = repoTests + '/config'
-  const originalConfigPath = process.cwd() + '/test/go-ipfs-repo/config'
+  const configPath = path.join(repoPath, 'config')
+  const originalConfigPath = path.join(__dirname, '../go-ipfs-repo/config')
   const updatedConfig = () => JSON.parse(fs.readFileSync(configPath, 'utf8'))
   const restoreConfig = () => fs.writeFileSync(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8')
+
+  const env = process.env
+  env.IPFS_PATH = repoPath
 
   describe('api offline', () => {
     describe('get/set', () => {
       it('get a config key value', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'Identity.PeerID'])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'Identity.PeerID'], {env})
           .run((err, stdout, exitcode) => {
             const expected = 'QmQ2zigjQikYnyYUSXZydNXrDRhBut2mubwJBaLXobMt3A'
             expect(stdout[0]).to.equal(expected)
@@ -27,17 +31,17 @@ describe('config', () => {
       })
 
       it('set a config key with a string value', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', 'bar'])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', 'bar'], {env})
           .run((err, stdout, exitcode) => {
             expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
             expect(updatedConfig().foo).to.equal('bar')
+            expect(exitcode).to.equal(0)
             done()
           })
       })
 
       it('set a config key with true', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', true, '--bool'])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', true, '--bool'], {env})
           .run((err, stdout, exitcode) => {
             expect(err).to.not.exist
             expect(exitcode).to.equal(0)
@@ -47,7 +51,7 @@ describe('config', () => {
       })
 
       it('set a config key with false', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', false, '--bool'])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', false, '--bool'], {env})
           .run((err, stdout, exitcode) => {
             expect(err).to.not.exist
             expect(exitcode).to.equal(0)
@@ -57,7 +61,7 @@ describe('config', () => {
       })
 
       it('set a config key with json', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', '{"bar": 0}', '--json'])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', '{"bar": 0}', '--json'], {env})
           .run((err, stdout, exitcode) => {
             expect(err).to.not.exist
             expect(exitcode).to.equal(0)
@@ -67,7 +71,7 @@ describe('config', () => {
       })
 
       it('set a config key with invalid json', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', '{"bar: 0}', '--json'])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', '{"bar: 0}', '--json'], {env})
           .run((err, stdout, exitcode) => {
             const expected = 'error\tinvalid JSON provided'
             expect(stdout[0]).to.equal(expected)
@@ -78,7 +82,7 @@ describe('config', () => {
       })
 
       it('call config with no arguments', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config'])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config'], {env})
           .run((err, stdout, exitcode) => {
             const expected = "error\targument 'key' is required"
             expect(stdout[0]).to.equal(expected)
@@ -94,7 +98,7 @@ describe('config', () => {
         const filePath = 'test/test-data/otherconfig'
         const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'replace', filePath])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'replace', filePath], {env})
           .run((err, stdout, exitcode) => {
             expect(err).to.not.exist
             expect(exitcode).to.equal(0)
@@ -112,7 +116,7 @@ describe('config', () => {
 
   describe('api running', () => {
     before((done) => {
-      httpAPI.start((err) => {
+      httpAPI.start(repoPath, (err) => {
         expect(err).to.not.exist
         done()
       })
@@ -127,7 +131,7 @@ describe('config', () => {
 
     describe('get/set', () => {
       it('get a config key value', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'Identity.PeerID'])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'Identity.PeerID'], {env})
           .run((err, stdout, exitcode) => {
             const expected = 'QmQ2zigjQikYnyYUSXZydNXrDRhBut2mubwJBaLXobMt3A'
             expect(stdout[0]).to.equal(expected)
@@ -138,7 +142,7 @@ describe('config', () => {
       })
 
       it('set a config key with a string value', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', 'bar'])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', 'bar'], {env})
           .run((err, stdout, exitcode) => {
             expect(err).to.not.exist
             expect(exitcode).to.equal(0)
@@ -148,7 +152,7 @@ describe('config', () => {
       })
 
       it('set a config key with true', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', true, '--bool'])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', true, '--bool'], {env})
           .run((err, stdout, exitcode) => {
             expect(err).to.not.exist
             expect(exitcode).to.equal(0)
@@ -158,7 +162,7 @@ describe('config', () => {
       })
 
       it('set a config key with false', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', false, '--bool'])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', false, '--bool'], {env})
           .run((err, stdout, exitcode) => {
             expect(err).to.not.exist
             expect(exitcode).to.equal(0)
@@ -168,7 +172,7 @@ describe('config', () => {
       })
 
       it('set a config key with json', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', '{"bar": 0}', '--json'])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', '{"bar": 0}', '--json'], {env})
           .run((err, stdout, exitcode) => {
             expect(err).to.not.exist
             expect(exitcode).to.equal(0)
@@ -178,7 +182,7 @@ describe('config', () => {
       })
 
       it('set a config key with invalid json', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', '{"bar: 0}', '--json'])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', '{"bar: 0}', '--json'], {env})
           .run((err, stdout, exitcode) => {
             const expected = 'error\tinvalid JSON provided'
             expect(stdout[0]).to.equal(expected)
@@ -189,7 +193,7 @@ describe('config', () => {
       })
 
       it('call config with no arguments', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config'])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config'], {env})
           .run((err, stdout, exitcode) => {
             const expected = "error\targument 'key' is required"
             expect(stdout[0]).to.equal(expected)
@@ -205,7 +209,7 @@ describe('config', () => {
         const filePath = 'test/test-data/otherconfig'
         const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'replace', filePath])
+        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'replace', filePath], {env})
           .run((err, stdout, exitcode) => {
             expect(err).to.not.exist
             expect(exitcode).to.equal(0)

@@ -5,6 +5,7 @@ const os = require('os')
 const APIctl = require('ipfs-api')
 const multiaddr = require('multiaddr')
 const IPFS = require('../core')
+const path = require('path')
 const debug = require('debug')
 const log = debug('cli')
 log.error = debug('cli:error')
@@ -14,7 +15,7 @@ exports = module.exports
 exports.isDaemonOn = isDaemonOn
 function isDaemonOn () {
   try {
-    fs.readFileSync(exports.getRepoPath() + '/api')
+    fs.readFileSync(path.join(exports.getRepoPath(), 'api'))
     log('daemon is on')
     return true
   } catch (err) {
@@ -28,14 +29,14 @@ function getAPICtl () {
   if (!isDaemonOn()) {
     throw new Error('daemon is not on')
   }
-
-  const apiAddr = multiaddr(fs.readFileSync(exports.getRepoPath() + '/api').toString())
+  const apiPath = path.join(exports.getRepoPath(), 'api')
+  const apiAddr = multiaddr(fs.readFileSync(apiPath).toString())
   return APIctl(apiAddr.toString())
 }
 
 exports.getIPFS = (callback) => {
   if (!isDaemonOn()) {
-    const ipfs = new IPFS()
+    const ipfs = new IPFS(exports.getRepoPath())
     ipfs.load(() => {
       callback(null, ipfs)
     })

@@ -6,9 +6,12 @@ const nexpect = require('nexpect')
 const httpAPI = require('../../src/http-api')
 
 describe('version', () => {
+  const env = process.env
+  env.IPFS_PATH = require('./index').repoPath
+
   describe('api offline', () => {
     it('get the version', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'version'])
+      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'version'], {env})
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(stdout[0]).to.equal('ipfs version 0.4.0-dev')
@@ -34,7 +37,7 @@ describe('version', () => {
     })
 
     it('get the version', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'version'])
+      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'version'], {env})
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)

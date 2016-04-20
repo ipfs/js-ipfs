@@ -4,7 +4,6 @@ const Hapi = require('hapi')
 const IPFS = require('../core')
 const debug = require('debug')
 const fs = require('fs')
-const os = require('os')
 const path = require('path')
 const log = debug('api')
 log.error = debug('api:error')
@@ -18,15 +17,17 @@ exports.start = (repo, callback) => {
   }
 
   const ipfs = exports.ipfs = new IPFS(repo)
+  console.log('Starting at %s', ipfs.repo.path())
   ipfs.load(() => {
     const repoPath = ipfs.repo.path()
-
+    const apiPath = path.join(repoPath, 'api')
+    console.log('Finished loading')
     try {
-      fs.statSync(path.join(repoPath, 'api'))
+      fs.statSync(apiPath)
       console.log('This repo is currently being used by another daemon')
       process.exit(1)
     } catch (err) {
-      fs.writeFileSync(path.join(repoPath, 'api'), 'api is on by js-ipfs', {flag: 'w+'})
+      fs.writeFileSync(apiPath, 'api is on by js-ipfs', {flag: 'w+'})
     }
 
     ipfs.config.show((err, config) => {
@@ -46,7 +47,7 @@ exports.start = (repo, callback) => {
       const gateway = config.Addresses.Gateway.split('/')
 
       // for the CLI to know the where abouts of the API
-      fs.writeFileSync(repoPath + '/api', config.Addresses.API)
+      fs.writeFileSync(apiPath, config.Addresses.API)
 
       // select which connection with server.select(<label>) to add routes
       server.connection({ host: api[2], port: api[4], labels: 'API' })
@@ -62,8 +63,8 @@ exports.start = (repo, callback) => {
           }
           const api = server.select('API')
           const gateway = server.select('Gateway')
-          console.log('API is listening on: ' + api.info.uri)
-          console.log('Gateway (readonly) is listening on: ' + gateway.info.uri)
+          console.log('API is listening on: %s', api.info.uri)
+          console.log('Gateway (readonly) is listening on: %s', gateway.info.uri)
           callback()
         })
       })
@@ -73,8 +74,11 @@ exports.start = (repo, callback) => {
 
 exports.stop = (callback) => {
   const repoPath = exports.ipfs.repo.path()
+
   fs.unlinkSync(path.join(repoPath, 'api'))
+
   console.log('->', 'going to stop libp2p')
+
   exports.ipfs.libp2p.stop(() => {
     console.log('->', 'going to stop api server')
     exports.server.stop(callback)

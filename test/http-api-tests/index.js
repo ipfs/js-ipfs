@@ -6,14 +6,11 @@ const expect = require('chai').expect
 const api = require('../../src/http-api')
 const ncp = require('ncp').ncp
 const path = require('path')
-const fsStore = require('fs-blob-store')
-const IPFSRepo = require('ipfs-repo')
 const clean = require('../utils/clean')
 
 describe('http api', () => {
   const repoExample = path.join(__dirname, '../go-ipfs-repo')
-  const repoTests = path.join(__dirname, '../repo-tests-run-http')
-  process.env.IPFS_PATH = repoTests
+  const repoTests = exports.repoPath = path.join(__dirname, '../repo-tests-run-http')
 
   before((done) => {
     clean(repoTests)

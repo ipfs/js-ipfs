@@ -9,14 +9,13 @@ const clean = require('../utils/clean')
 
 describe('cli', () => {
   const repoExample = path.join(__dirname, '../go-ipfs-repo')
-  const repoTests = exports.repoTests = path.join(__dirname, '../repo-tests-run-cli')
+  const repoTests = exports.repoPath = path.join(__dirname, '../repo-tests-run-cli')
 
   before((done) => {
     clean(repoTests)
     ncp(repoExample, repoTests, (err) => {
       expect(err).to.not.exist
 
-      process.env.IPFS_PATH = repoTests
       done()
     })
   })

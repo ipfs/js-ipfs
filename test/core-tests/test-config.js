@@ -68,7 +68,7 @@ describe('config', () => {
   var ipfs
 
   before((done) => {
-    ipfs = new IPFS()
+    ipfs = new IPFS(require('./index').repoPath)
     ipfs.load(done)
   })
 
@@ -81,7 +81,7 @@ describe('config', () => {
   })
 
   it('replace', (done) => {
-    const ipfs = new IPFS()
+    ipfs = new IPFS(require('./index').repoPath)
     ipfs.config.replace({}, (err) => {
       expect(err).to.not.exist
       ipfs.config.show((err, config) => {
@@ -97,7 +97,7 @@ describe('config', () => {
 
 // cli only feature built with show and replace
 // it.skip('edit', (done) => {
-//   const ipfs = new IPFS()
+//  ipfs = new IPFS(require('./index').repoPath)
 //  ipfs.config((err, config) => {
 //    expect(err).to.not.exist
 //    done()

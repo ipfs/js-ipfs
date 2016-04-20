@@ -5,7 +5,7 @@ const expect = require('chai').expect
 const IPFSRepo = require('ipfs-repo')
 
 function createTempRepo () {
-  const repoPath = '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8) + '/'
+  const repoPath = '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8)
 
   let store
   let teardown

@@ -9,7 +9,7 @@ describe('bootstrap', () => {
   var ipfs
 
   before((done) => {
-    ipfs = new IPFS()
+    ipfs = new IPFS(require('./index').repoPath)
     ipfs.load(done)
   })
 
