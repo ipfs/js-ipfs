@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
 const IPFSRepo = require('ipfs-repo')
+const clean = require('./clean')
 
 function createTempRepo () {
   const repoPath = '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8)
@@ -14,11 +14,8 @@ function createTempRepo () {
   if (isNode) {
     store = require('fs-blob-store')
     teardown = (done) => {
-      const rimraf = require('rimraf')
-      rimraf(repoPath, (err) => {
-        expect(err).to.not.exist
-        done()
-      })
+      clean(repoPath)
+      done()
     }
   } else {
     const idb = window.indexedDB ||

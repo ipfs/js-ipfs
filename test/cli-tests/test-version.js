@@ -4,10 +4,11 @@
 const expect = require('chai').expect
 const nexpect = require('nexpect')
 const httpAPI = require('../../src/http-api')
+const repoPath = require('./index').repoPath
 
 describe('version', () => {
   const env = process.env
-  env.IPFS_PATH = require('./index').repoPath
+  env.IPFS_PATH = repoPath
 
   describe('api offline', () => {
     it('get the version', (done) => {
@@ -23,7 +24,7 @@ describe('version', () => {
 
   describe('api running', () => {
     before((done) => {
-      httpAPI.start((err) => {
+      httpAPI.start(repoPath, (err) => {
         expect(err).to.not.exist
         done()
       })
