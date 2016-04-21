@@ -83,9 +83,8 @@ exports.put = {
     const data = request.pre.args.data
 
     const block = new Block(data)
-    console.log('putting', block.key.toString('hex'))
+
     ipfs.block.put(block, (err) => {
-      console.log('finished putting', err)
       if (err) {
         log.error(err)
         return reply({
