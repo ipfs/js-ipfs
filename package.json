@@ -42,6 +42,7 @@
   "devDependencies": {
     "aegir": "^2.1.1",
     "async": "^1.5.2",
+    "buffer-loader": "0.0.1",
     "chai": "^3.5.0",
     "expose-loader": "^0.7.1",
     "form-data": "^1.0.0-rc3",
@@ -93,14 +94,6 @@
         "ipfs-data-importing": "{ import: {} }",
         "libp2p-ipfs": "{}",
         "mkdirp": "{}"
-      },
-      "module": {
-        "postLoaders": [
-          {
-            "test": "__",
-            "loader": "transform?brfs"
-          }
-        ]
       }
     }
   }
