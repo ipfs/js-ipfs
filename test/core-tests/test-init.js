@@ -6,7 +6,7 @@ const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/temp-repo')
 
 describe('init', function () {
-  this.timeout(10000)
+  this.timeout(50 * 1000)
 
   it('basic', (done) => {
     const repo = createTempRepo()
