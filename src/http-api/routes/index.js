@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports = (server) => {
   require('./version')(server)
   require('./id')(server)

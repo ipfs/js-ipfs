@@ -1,3 +1,5 @@
+'use strict'
+
 /* eslint-env mocha */
 
 const expect = require('chai').expect
@@ -12,7 +14,7 @@ describe('object', () => {
   var ipfs
 
   before((done) => {
-    ipfs = new IPFS()
+    ipfs = new IPFS(require('./repo-path'))
     ipfs.load(done)
   })
 

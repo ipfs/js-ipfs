@@ -1,3 +1,5 @@
+'use strict'
+
 const isNode = !global.window
 
 module.exports = isNode

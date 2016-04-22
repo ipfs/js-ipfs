@@ -1,6 +1,5 @@
 'use strict'
 
-const ipfs = require('./../index.js').ipfs
 const debug = require('debug')
 const log = debug('http-api:block')
 log.error = debug('http-api:block:error')
@@ -21,7 +20,7 @@ exports.parseAddrs = (request, reply) => {
 exports.peers = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
-    ipfs.libp2p.swarm.peers((err, peers) => {
+    request.server.app.ipfs.libp2p.swarm.peers((err, peers) => {
       if (err) {
         log.error(err)
         return reply({
@@ -42,7 +41,7 @@ exports.peers = {
 exports.localAddrs = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
-    ipfs.libp2p.swarm.localAddrs((err, addrs) => {
+    request.server.app.ipfs.libp2p.swarm.localAddrs((err, addrs) => {
       if (err) {
         log.error(err)
         return reply({
@@ -66,7 +65,7 @@ exports.connect = {
   handler: (request, reply) => {
     const addr = request.pre.args.addr
 
-    ipfs.libp2p.swarm.connect(addr, (err, res) => {
+    request.server.app.ipfs.libp2p.swarm.connect(addr, (err, res) => {
       if (err) {
         log.error(err)
         return reply({

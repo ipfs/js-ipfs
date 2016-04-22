@@ -1,9 +1,14 @@
 /* eslint-env mocha */
+'use strict'
 
 const expect = require('chai').expect
 const nexpect = require('nexpect')
+const _ = require('lodash')
 
 describe('bootstrap', () => {
+  const env = _.clone(process.env)
+  env.IPFS_PATH = require('./index').repoPath
+
   describe('api offline', () => {
     const defaultList = [
       '/ip4/104.131.131.82/tcp/4001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ',
@@ -31,7 +36,7 @@ describe('bootstrap', () => {
     ]
 
     it('list the bootstrap nodes', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bootstrap', 'list'])
+      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bootstrap', 'list'], {env})
         .run((err, stdout, exitcode) => {
           expect(stdout).to.deep.equal(defaultList)
           expect(err).to.not.exist
@@ -41,12 +46,12 @@ describe('bootstrap', () => {
     })
 
     it('add another bootstrap node', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bootstrap', 'add', '/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT'])
+      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bootstrap', 'add', '/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT'], {env})
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
 
-          nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bootstrap', 'list'])
+          nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bootstrap', 'list'], {env})
             .run((err, stdout, exitcode) => {
               expect(stdout).to.deep.equal(updatedList)
               expect(err).to.not.exist
@@ -57,12 +62,12 @@ describe('bootstrap', () => {
     })
 
     it('rm a bootstrap node', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bootstrap', 'rm', '/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT'])
+      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bootstrap', 'rm', '/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT'], {env})
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
 
-          nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bootstrap', 'list'])
+          nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bootstrap', 'list'], {env})
             .run((err, stdout, exitcode) => {
               expect(stdout).to.deep.equal(defaultList)
               expect(err).to.not.exist

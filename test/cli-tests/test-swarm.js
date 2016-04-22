@@ -1,12 +1,17 @@
 /* eslint-env mocha */
+'use strict'
 
 const expect = require('chai').expect
 const nexpect = require('nexpect')
-const httpAPI = require('../../src/http-api')
+const HttpAPI = require('../../src/http-api')
 const createTempNode = require('../utils/temp-node')
+const repoPath = require('./index').repoPath
+const _ = require('lodash')
 
 describe('swarm', function () {
   this.timeout(20000)
+  const env = _.clone(process.env)
+  env.IPFS_PATH = repoPath
 
   var ipfs
   var ipfsAddr
@@ -28,7 +33,10 @@ describe('swarm', function () {
   })
 
   describe('api running', () => {
+    let httpAPI
+
     before((done) => {
+      httpAPI = new HttpAPI(repoPath)
       httpAPI.start((err) => {
         expect(err).to.not.exist
         done()
@@ -43,7 +51,7 @@ describe('swarm', function () {
     })
 
     it('connect', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'swarm', 'connect', ipfsAddr])
+      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'swarm', 'connect', ipfsAddr], {env})
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
@@ -52,7 +60,7 @@ describe('swarm', function () {
     })
 
     it('peers', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'swarm', 'peers'])
+      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'swarm', 'peers'], {env})
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
@@ -62,7 +70,7 @@ describe('swarm', function () {
     })
 
     it('addrs local', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'swarm', 'addrs', 'local'])
+      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'swarm', 'addrs', 'local'], {env})
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)

@@ -1,37 +1,30 @@
 /* eslint-env mocha */
+'use strict'
 
 const expect = require('chai').expect
 const nexpect = require('nexpect')
-const rimraf = require('rimraf')
 const path = require('path')
 const fs = require('fs')
-const utils = require('../../src/cli/utils')
-
-function repoExistsSync (p) {
-  return fs.existsSync(path.join(utils.getRepoPath(), p))
-}
+const _ = require('lodash')
+const clean = require('../utils/clean')
 
 describe('init', function () {
   this.timeout(10000)
+  const env = _.clone(process.env)
+  const repoExistsSync = (p) => (
+    fs.existsSync(path.join(env.IPFS_PATH, p))
+  )
 
-  var oldRepoPath = process.env.IPFS_PATH
-  beforeEach((done) => {
-    oldRepoPath = process.env.IPFS_PATH
-    const repoPath = '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8) + '/'
-    process.env.IPFS_PATH = repoPath
-    done()
+  beforeEach(() => {
+    env.IPFS_PATH = '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8)
   })
 
-  afterEach((done) => {
-    rimraf(process.env.IPFS_PATH, (err) => {
-      expect(err).to.not.exist
-      process.env.IPFS_PATH = oldRepoPath
-      done()
-    })
+  afterEach(() => {
+    clean(env.IPFS_PATH)
   })
 
   it('basic', (done) => {
-    nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'init'])
+    nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'init'], {env})
       .run((err, stdout, exitcode) => {
         expect(err).to.not.exist
         expect(repoExistsSync('blocks')).to.equal(true)
@@ -42,7 +35,7 @@ describe('init', function () {
   })
 
   it('bits', (done) => {
-    nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'init', '--bits', '64'])
+    nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'init', '--bits', '64'], {env})
       .run((err, stdout, exitcode) => {
         expect(err).to.not.exist
         done()
@@ -50,7 +43,7 @@ describe('init', function () {
   })
 
   it('empty', (done) => {
-    nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'init', '--bits', '64', '--empty-repo', 'true'])
+    nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'init', '--bits', '64', '--empty-repo', 'true'], {env})
       .run((err, stdout, exitcode) => {
         expect(err).to.not.exist
         expect(repoExistsSync('blocks')).to.equal(false)
@@ -60,4 +53,3 @@ describe('init', function () {
       })
   })
 })
-

@@ -1,3 +1,5 @@
+'use strict'
+
 const Command = require('ronin').Command
 const debug = require('debug')
 const get = require('lodash.get')

@@ -1,37 +1,39 @@
 /* eslint-env mocha */
+'use strict'
 
 const fs = require('fs')
 const ncp = require('ncp').ncp
-const rimraf = require('rimraf')
 const expect = require('chai').expect
+const path = require('path')
+const clean = require('../utils/clean')
 
 describe('cli', () => {
-  const repoExample = process.cwd() + '/test/go-ipfs-repo'
-  const repoTests = exports.repoTests = process.cwd() + '/test/repo-tests-run'
+  const repoExample = path.join(__dirname, '../go-ipfs-repo')
+  const repoTests = exports.repoPath = path.join(__dirname, '../repo-tests-run-cli')
 
   before((done) => {
+    clean(repoTests)
     ncp(repoExample, repoTests, (err) => {
-      process.env.IPFS_PATH = repoTests
-      expect(err).to.equal(null)
+      expect(err).to.not.exist
+
       done()
     })
   })
 
-  after((done) => {
-    rimraf(repoTests, (err) => {
-      expect(err).to.equal(null)
-      done()
-    })
+  after(() => {
+    clean(repoTests)
   })
 
-  const tests = fs.readdirSync(__dirname)
-  tests.filter((file) => {
-    if (file === 'index.js' || file === 'api.js') {
-      return false
-    } else {
-      return true
-    }
-  }).forEach((file) => {
-    require('./' + file)
+  describe('--all', () => {
+    const tests = fs.readdirSync(__dirname)
+    tests.filter((file) => {
+      if (file === 'index.js' || file === 'api.js') {
+        return false
+      } else {
+        return true
+      }
+    }).forEach((file) => {
+      require('./' + file)
+    })
   })
 })

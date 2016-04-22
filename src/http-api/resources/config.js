@@ -1,6 +1,5 @@
 'use strict'
 
-const ipfs = require('./../index.js').ipfs
 const debug = require('debug')
 const get = require('lodash.get')
 const set = require('lodash.set')
@@ -61,7 +60,7 @@ exports.getOrSet = {
 
     if (value === undefined) {
       // Get the value of a given key
-      return ipfs.config.show((err, config) => {
+      return request.server.app.ipfs.config.show((err, config) => {
         if (err) {
           log.error(err)
           return reply({
@@ -85,7 +84,7 @@ exports.getOrSet = {
       })
     } else {
       // Set the new value of a given key
-      ipfs.config.show((err, originalConfig) => {
+      request.server.app.ipfs.config.show((err, originalConfig) => {
         if (err) {
           log.error(err)
           return reply({
@@ -95,7 +94,7 @@ exports.getOrSet = {
         }
 
         const updatedConfig = set(originalConfig, key, value)
-        ipfs.config.replace(updatedConfig, (err) => {
+        request.server.app.ipfs.config.replace(updatedConfig, (err) => {
           if (err) {
             log.error(err)
             return reply({
@@ -115,7 +114,7 @@ exports.getOrSet = {
 }
 
 exports.show = (request, reply) => {
-  return ipfs.config.show((err, config) => {
+  return request.server.app.ipfs.config.show((err, config) => {
     if (err) {
       log.error(err)
       return reply({
@@ -172,7 +171,7 @@ exports.replace = {
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
-    return ipfs.config.replace(request.pre.args.config, (err) => {
+    return request.server.app.ipfs.config.replace(request.pre.args.config, (err) => {
       if (err) {
         log.error(err)
         return reply({

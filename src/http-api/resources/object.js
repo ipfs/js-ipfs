@@ -1,6 +1,5 @@
 'use strict'
 
-const ipfs = require('./../index.js').ipfs
 const bs58 = require('bs58')
 const multipart = require('ipfs-multipart')
 const mDAG = require('ipfs-merkle-dag')
@@ -34,7 +33,7 @@ exports.parseKey = (request, reply) => {
 exports.new = {
   // pre request handler that parses the args and returns `template` which is assigned to `request.pre.args`
   parseArgs: (request, reply) => {
-    // TODO improve this validation once ipfs.object.new supports templates
+    // TODO improve this validation once request.server.app.ipfs.object.new supports templates
     if (request.query.arg === '') {
       return reply({
         Message: `template \'${request.query.arg}\' not found`,
@@ -51,7 +50,7 @@ exports.new = {
   handler: (request, reply) => {
     const template = request.pre.args.template
 
-    ipfs.object.new(template, (err, obj) => {
+    request.server.app.ipfs.object.new(template, (err, obj) => {
       if (err) {
         log.error(err)
         return reply({
@@ -76,7 +75,7 @@ exports.get = {
   handler: (request, reply) => {
     const key = request.pre.args.key
 
-    ipfs.object.get(key, (err, obj) => {
+    request.server.app.ipfs.object.get(key, (err, obj) => {
       if (err) {
         log.error(err)
         return reply({
@@ -144,7 +143,7 @@ exports.put = {
 
     const dagNode = new DAGNode(data, links)
 
-    ipfs.object.put(dagNode, (err, obj) => {
+    request.server.app.ipfs.object.put(dagNode, (err, obj) => {
       if (err) {
         log.error(err)
         return reply({
@@ -173,7 +172,7 @@ exports.stat = {
   handler: (request, reply) => {
     const key = request.pre.args.key
 
-    ipfs.object.stat(key, (err, stats) => {
+    request.server.app.ipfs.object.stat(key, (err, stats) => {
       if (err) {
         log.error(err)
         return reply({
@@ -202,7 +201,7 @@ exports.data = {
   handler: (request, reply) => {
     const key = request.pre.args.key
 
-    ipfs.object.data(key, (err, data) => {
+    request.server.app.ipfs.object.data(key, (err, data) => {
       if (err) {
         log.error(err)
         return reply({
@@ -224,7 +223,7 @@ exports.links = {
   handler: (request, reply) => {
     const key = request.pre.args.key
 
-    ipfs.object.links(key, (err, links) => {
+    request.server.app.ipfs.object.links(key, (err, links) => {
       if (err) {
         log.error(err)
         return reply({
@@ -292,7 +291,7 @@ exports.patchAppendData = {
     const key = request.pre.args.key
     const data = request.pre.args.data
 
-    ipfs.object.patch.appendData(key, data, (err, obj) => {
+    request.server.app.ipfs.object.patch.appendData(key, data, (err, obj) => {
       if (err) {
         log.error(err)
 
@@ -323,7 +322,7 @@ exports.patchSetData = {
     const key = request.pre.args.key
     const data = request.pre.args.data
 
-    ipfs.object.patch.setData(key, data, (err, obj) => {
+    request.server.app.ipfs.object.patch.setData(key, data, (err, obj) => {
       if (err) {
         log.error(err)
 
@@ -380,7 +379,7 @@ exports.patchAddLink = {
     const name = request.pre.args.name
     const ref = request.pre.args.ref
 
-    ipfs.object.get(ref, (err, linkedObj) => {
+    request.server.app.ipfs.object.get(ref, (err, linkedObj) => {
       if (err) {
         log.error(err)
         return reply({
@@ -391,7 +390,7 @@ exports.patchAddLink = {
 
       const link = new DAGLink(name, linkedObj.size(), linkedObj.multihash())
 
-      ipfs.object.patch.addLink(root, link, (err, obj) => {
+      request.server.app.ipfs.object.patch.addLink(root, link, (err, obj) => {
         if (err) {
           log.error(err)
 
@@ -447,7 +446,7 @@ exports.patchRmLink = {
     const root = request.pre.args.root
     const link = request.pre.args.link
 
-    ipfs.object.patch.rmLink(root, link, (err, obj) => {
+    request.server.app.ipfs.object.patch.rmLink(root, link, (err, obj) => {
       if (err) {
         log.error(err)
 

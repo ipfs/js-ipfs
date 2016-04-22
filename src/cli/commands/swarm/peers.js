@@ -1,3 +1,5 @@
+'use strict'
+
 const Command = require('ronin').Command
 const utils = require('../../utils')
 const debug = require('debug')

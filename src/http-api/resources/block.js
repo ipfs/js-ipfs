@@ -1,6 +1,5 @@
 'use strict'
 
-const ipfs = require('./../index.js').ipfs
 const bs58 = require('bs58')
 const multipart = require('ipfs-multipart')
 const Block = require('ipfs-blocks').Block
@@ -37,7 +36,7 @@ exports.get = {
   handler: (request, reply) => {
     const key = request.pre.args.key
 
-    ipfs.block.get(key, (err, block) => {
+    request.server.app.ipfs.block.get(key, (err, block) => {
       if (err) {
         log.error(err)
         return reply({
@@ -84,7 +83,7 @@ exports.put = {
 
     const block = new Block(data)
 
-    ipfs.block.put(block, (err) => {
+    request.server.app.ipfs.block.put(block, (err) => {
       if (err) {
         log.error(err)
         return reply({
@@ -109,7 +108,7 @@ exports.del = {
   handler: (request, reply) => {
     const key = request.pre.args.key
 
-    ipfs.block.del(key, (err, block) => {
+    request.server.app.ipfs.block.del(key, (err, block) => {
       if (err) {
         log.error(err)
         return reply({
@@ -131,7 +130,7 @@ exports.stat = {
   handler: (request, reply) => {
     const key = request.pre.args.key
 
-    ipfs.block.stat(key, (err, block) => {
+    request.server.app.ipfs.block.stat(key, (err, block) => {
       if (err) {
         log.error(err)
         return reply({
