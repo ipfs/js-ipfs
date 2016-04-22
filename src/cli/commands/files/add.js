@@ -20,14 +20,18 @@ module.exports = Command.extend({
 
   run: (recursive, path) => {
     var node = new IPFS()
-    path = process.cwd() + '/' + path
+    if (path.charAt(0) !== '/') {
+      path = process.cwd() + '/' + path
+    }
     node.files.add(path, {
       recursive: recursive
     }, (err, stats) => {
       if (err) {
         return console.log(err)
       }
-      console.log('added', bs58.encode(stats.Hash).toString(), stats.Name)
+      if (stats) {
+        console.log('added', bs58.encode(stats.Hash).toString(), stats.Name)
+      }
     })
   }
 })
