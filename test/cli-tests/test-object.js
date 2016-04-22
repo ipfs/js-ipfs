@@ -5,7 +5,7 @@ const expect = require('chai').expect
 const nexpect = require('nexpect')
 const HttpAPI = require('../../src/http-api')
 const repoPath = require('./index').repoPath
-const _ = require('Lodash')
+const _ = require('lodash')
 
 describe('object', () => {
   const env = _.clone(process.env)
