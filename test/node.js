@@ -2,4 +2,4 @@
 
 require('./core-tests')
 require('./http-api-tests')
-// require('./cli-tests')
+require('./cli-tests')

@@ -4,9 +4,10 @@
 const expect = require('chai').expect
 const nexpect = require('nexpect')
 const fs = require('fs')
-const httpAPI = require('../../src/http-api')
+const HttpAPI = require('../../src/http-api')
 const repoPath = require('./index').repoPath
 const path = require('path')
+const _ = require('lodash')
 
 describe('config', () => {
   const configPath = path.join(repoPath, 'config')
@@ -14,7 +15,7 @@ describe('config', () => {
   const updatedConfig = () => JSON.parse(fs.readFileSync(configPath, 'utf8'))
   const restoreConfig = () => fs.writeFileSync(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8')
 
-  const env = process.env
+  const env = _.clone(process.env)
   env.IPFS_PATH = repoPath
 
   describe('api offline', () => {
@@ -115,8 +116,11 @@ describe('config', () => {
   })
 
   describe('api running', () => {
+    let httpAPI
+
     before((done) => {
-      httpAPI.start(repoPath, (err) => {
+      httpAPI = new HttpAPI(repoPath)
+      httpAPI.start((err) => {
         expect(err).to.not.exist
         done()
       })

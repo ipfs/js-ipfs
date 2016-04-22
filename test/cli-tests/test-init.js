@@ -3,28 +3,24 @@
 
 const expect = require('chai').expect
 const nexpect = require('nexpect')
-const rimraf = require('rimraf')
 const path = require('path')
 const fs = require('fs')
-const utils = require('../../src/cli/utils')
-
-function repoExistsSync (p) {
-  return fs.existsSync(path.join(utils.getRepoPath(), p))
-}
+const _ = require('lodash')
+const clean = require('../utils/clean')
 
 describe('init', function () {
   this.timeout(10000)
-  const env = process.env
+  const env = _.clone(process.env)
+  const repoExistsSync = (p) => (
+    fs.existsSync(path.join(env.IPFS_PATH, p))
+  )
 
   beforeEach(() => {
     env.IPFS_PATH = '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8)
   })
 
-  afterEach((done) => {
-    rimraf(env.IPFS_PATH, (err) => {
-      expect(err).to.not.exist
-      done()
-    })
+  afterEach(() => {
+    clean(env.IPFS_PATH)
   })
 
   it('basic', (done) => {

@@ -3,11 +3,12 @@
 
 const expect = require('chai').expect
 const nexpect = require('nexpect')
-const httpAPI = require('../../src/http-api')
+const HttpAPI = require('../../src/http-api')
 const repoPath = require('./index').repoPath
+const _ = require('lodash')
 
 describe('id', () => {
-  const env = process.env
+  const env = _.clone(process.env)
   env.IPFS_PATH = repoPath
 
   describe('api offline', () => {
@@ -36,8 +37,11 @@ describe('id', () => {
   })
 
   describe('api running', () => {
+    let httpAPI
+
     before((done) => {
-      httpAPI.start(repoPath, (err) => {
+      httpAPI = new HttpAPI(repoPath)
+      httpAPI.start((err) => {
         expect(err).to.not.exist
         done()
       })

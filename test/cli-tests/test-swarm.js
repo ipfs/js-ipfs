@@ -3,13 +3,14 @@
 
 const expect = require('chai').expect
 const nexpect = require('nexpect')
-const httpAPI = require('../../src/http-api')
+const HttpAPI = require('../../src/http-api')
 const createTempNode = require('../utils/temp-node')
 const repoPath = require('./index').repoPath
+const _ = require('lodash')
 
 describe('swarm', function () {
   this.timeout(20000)
-  const env = process.env
+  const env = _.clone(process.env)
   env.IPFS_PATH = repoPath
 
   var ipfs
@@ -32,8 +33,11 @@ describe('swarm', function () {
   })
 
   describe('api running', () => {
+    let httpAPI
+
     before((done) => {
-      httpAPI.start(repoPath, (err) => {
+      httpAPI = new HttpAPI(repoPath)
+      httpAPI.start((err) => {
         expect(err).to.not.exist
         done()
       })

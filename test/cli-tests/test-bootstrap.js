@@ -3,9 +3,10 @@
 
 const expect = require('chai').expect
 const nexpect = require('nexpect')
+const _ = require('lodash')
 
 describe('bootstrap', () => {
-  const env = process.env
+  const env = _.clone(process.env)
   env.IPFS_PATH = require('./index').repoPath
 
   describe('api offline', () => {
