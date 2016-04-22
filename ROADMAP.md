@@ -18,7 +18,7 @@ IPFS JavaScript Implementation roadmap
   - [x] spdy support
   - [x] identify protocol
   - [x] multistream
-  - [ ] connect
+  - [x] connect
   - [ ] interop with go-ipfs (tests)
 - [x] block API
 - [x] object API
