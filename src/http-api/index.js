@@ -7,6 +7,8 @@ const fs = require('fs')
 const path = require('path')
 const log = debug('api')
 log.error = debug('api:error')
+const IPFSRepo = require('ipfs-repo')
+const fsbs = require('fs-blob-store')
 
 exports = module.exports
 
@@ -14,6 +16,10 @@ exports.start = (repo, callback) => {
   if (typeof repo === 'function') {
     callback = repo
     repo = undefined
+  }
+
+  if (typeof repo === 'string') {
+    repo = new IPFSRepo(repo, {stores: fsbs})
   }
 
   const ipfs = exports.ipfs = new IPFS(repo)
