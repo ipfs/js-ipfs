@@ -65,10 +65,10 @@
     "hapi": "^13.3.0",
     "ipfs-api": "^3.0.1",
     "ipfs-blocks": "^0.2.0",
-    "ipfs-unixfs-engine": "^0.4.2",
     "ipfs-merkle-dag": "^0.4.0",
     "ipfs-multipart": "^0.1.0",
     "ipfs-repo": "^0.6.1",
+    "ipfs-unixfs-engine": "git://github.com/ipfs/js-ipfs-unixfs-engine.git#fix/race",
     "joi": "^8.0.2",
     "libp2p-ipfs": "^0.3.1",
     "lodash.get": "^4.2.1",
@@ -77,6 +77,7 @@
     "peer-id": "^0.6.6",
     "peer-info": "^0.6.2",
     "ronin": "^0.3.11",
+    "streamifier": "^0.1.1",
     "temp": "^0.8.3"
   },
   "aegir": {

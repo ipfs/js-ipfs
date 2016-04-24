@@ -389,17 +389,10 @@ function IPFS (repo) {
   }
 
   this.files = {
-    add: (path, options, callback) => {
-      options.path = path
-      options.dagService = dagS
-      options.recursive = options
-
-      importer.import(path, options.dagService, options, function (err, stat) {
-        if (err) {
-          callback(err, null)
-        }
-        callback(null, stat)
-      })
+    add: (pair, callback) => {
+      const i = new importer(dagS)
+      i.add(pair)
+      callback(null, i)
     },
     cat: (hash, callback) => {
       dagS.get(hash, (err, fetchedNode) => {
