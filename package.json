@@ -70,7 +70,7 @@
     "ipfs-multipart": "^0.1.0",
     "ipfs-repo": "^0.6.1",
     "joi": "^8.0.2",
-    "libp2p-ipfs": "^0.3.1",
+    "libp2p-ipfs": "^0.3.2",
     "lodash.get": "^4.2.1",
     "lodash.set": "^4.0.0",
     "multiaddr": "^1.3.0",
