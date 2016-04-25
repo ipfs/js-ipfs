@@ -205,7 +205,9 @@ function IPFS (repo) {
     patch: {
       appendData: (multihash, data, callback) => {
         this.object.get(multihash, (err, obj) => {
-          if (err) { return callback(err) }
+          if (err) {
+            return callback(err)
+          }
           obj.data = Buffer.concat([obj.data, data])
           dagS.add(obj, (err) => {
             if (err) {
@@ -217,7 +219,9 @@ function IPFS (repo) {
       },
       addLink: (multihash, link, callback) => {
         this.object.get(multihash, (err, obj) => {
-          if (err) { return callback(err) }
+          if (err) {
+            return callback(err)
+          }
           obj.addRawLink(link)
           dagS.add(obj, (err) => {
             if (err) {
@@ -229,7 +233,9 @@ function IPFS (repo) {
       },
       rmLink: (multihash, linkRef, callback) => {
         this.object.get(multihash, (err, obj) => {
-          if (err) { return callback(err) }
+          if (err) {
+            return callback(err)
+          }
           obj.links = obj.links.filter((link) => {
             // filter by name when linkRef is a string, or by hash otherwise
             if (typeof linkRef === 'string') {

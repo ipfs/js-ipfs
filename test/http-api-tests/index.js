@@ -28,7 +28,6 @@ describe('http api', () => {
   after((done) => {
     api.stop((err) => {
       expect(err).to.not.exist
-
       clean(repoTests)
       done()
     })
