@@ -1,3 +1,5 @@
+'use strict'
+
 const Command = require('ronin').Command
 const debug = require('debug')
 const IPFS = require('../../../core')
@@ -11,13 +13,17 @@ module.exports = Command.extend({
   options: {},
 
   run: (path, options) => {
+    let dir
+    let filepath
+    let ws
+
     var node = new IPFS()
     if (!path) {
       throw new Error("Argument 'path' is required")
     }
     if (!options) {
       options = {}
-      var dir = process.cwd()
+      dir = process.cwd()
     } else {
       if (options.slice(-1) !== '/') {
         options += '/'
@@ -30,9 +36,9 @@ module.exports = Command.extend({
       }
       data.on('file', (data) => {
         if (data.path.lastIndexOf('/') === -1) {
-          var filepath = data.path
+          filepath = data.path
           if (data.dir === false) {
-            var ws = fs.createWriteStream(dir + data.path)
+            ws = fs.createWriteStream(dir + data.path)
             data.stream.pipe(ws)
           } else {
             try {

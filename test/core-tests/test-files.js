@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+'use strict'
 
 const bl = require('bl')
 const expect = require('chai').expect

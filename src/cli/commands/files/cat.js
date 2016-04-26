@@ -1,3 +1,5 @@
+'use strict'
+
 const Command = require('ronin').Command
 const debug = require('debug')
 const IPFS = require('../../../core')

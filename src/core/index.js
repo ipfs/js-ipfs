@@ -10,17 +10,12 @@ const DAGService = mDAG.DAGService
 const peerId = require('peer-id')
 const PeerInfo = require('peer-info')
 const multiaddr = require('multiaddr')
-const importer = require('ipfs-unixfs-engine').importer
-const exporter = require('ipfs-unixfs-engine').exporter
+const Importer = require('ipfs-unixfs-engine').importer
+const Exporter = require('ipfs-unixfs-engine').exporter
 const libp2p = require('libp2p-ipfs')
 const init = require('./init')
 const IPFSRepo = require('ipfs-repo')
 const UnixFS = require('ipfs-unixfs')
-const glob = require("glob")
-const path = require('path')
-const fs = require('fs')
-const streamifier = require('streamifier')
-const async = require('async')
 
 exports = module.exports = IPFS
 
@@ -400,13 +395,13 @@ function IPFS (repo) {
         arr = undefined
       }
       if (callback === undefined) {
-        callback = function noop() {}
+        callback = function noop () {}
       }
       if (arr === undefined) {
-        return new importer(dagS)
+        return new Importer(dagS)
       }
 
-      const i = new importer(dagS)
+      const i = new Importer(dagS)
       const res = []
 
       i.on('data', (info) => {
@@ -422,7 +417,6 @@ function IPFS (repo) {
       })
 
       i.end()
-
     },
     cat: (hash, callback) => {
       dagS.get(hash, (err, fetchedNode) => {
@@ -433,13 +427,13 @@ function IPFS (repo) {
         if (data.type === 'directory') {
           callback('This dag node is a directory', null)
         } else {
-          const exportEvent = exporter(hash, dagS)
+          const exportEvent = Exporter(hash, dagS)
           callback(null, exportEvent)
         }
       })
     },
     get: (hash, callback) => {
-      var exportFile = exporter(hash, dagS)
+      var exportFile = Exporter(hash, dagS)
       callback(null, exportFile)
     }
   }
