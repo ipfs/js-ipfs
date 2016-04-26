@@ -16,6 +16,11 @@ const libp2p = require('libp2p-ipfs')
 const init = require('./init')
 const IPFSRepo = require('ipfs-repo')
 const UnixFS = require('ipfs-unixfs')
+const glob = require("glob")
+const path = require('path')
+const fs = require('fs')
+const streamifier = require('streamifier')
+const async = require('async')
 
 exports = module.exports = IPFS
 
@@ -389,10 +394,35 @@ function IPFS (repo) {
   }
 
   this.files = {
-    add: (pair, callback) => {
+    add: (arr, callback) => {
+      if (typeof arr === 'function') {
+        callback = arr
+        arr = undefined
+      }
+      if (callback === undefined) {
+        callback = function noop() {}
+      }
+      if (arr === undefined) {
+        return new importer(dagS)
+      }
+
       const i = new importer(dagS)
-      i.add(pair)
-      callback(null, i)
+      const res = []
+
+      i.on('data', (info) => {
+        res.push(info)
+      })
+
+      i.on('end', () => {
+        callback(null, res)
+      })
+
+      arr.forEach((tuple) => {
+        i.write(tuple)
+      })
+
+      i.end()
+
     },
     cat: (hash, callback) => {
       dagS.get(hash, (err, fetchedNode) => {

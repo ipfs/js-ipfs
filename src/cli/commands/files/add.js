@@ -10,76 +10,64 @@ const streamifier = require('streamifier')
 const fs = require('fs')
 const async = require('async')
 const pathj = require('path')
+const glob = require("glob")
+
+let rootPath
+let filePath
+let i
 
 function addStream (pair) {
-  utils.getIPFS((err, ipfs) => {
-    if (err) {
-      throw err
-    }
-    if (utils.isDaemonOn()) {
-      throw new Error('daemon running is not supported yet')
-      /*return ipfs.add(pair.stream, (err, res) => {
-        if (err) {
-          log.error(err)
-          throw err
-        }
-        console.log('added', res[0].Hash)
-      })*/
-    }
-    console.log(pair.path)
-    ipfs.files.add(pair, (err, res) => {
-      if (err) {
-        throw err
-      }
-      res.on('file', (file) => {
-        console.log('added', bs58.encode(file.multihash).toString(), file.path)
-      })
-      res.finish()
-    })
-  })
+  i.add(pair)
 }
 
 
 function addDir (path) {
-  const files = fs.readdirSync(path)
-  //console.log(path)
+  rootPath = pathj.join(rootPath, path)
+  filePath = pathj.join(filePath, path)
+  //console.log(rootPath)
+  //console.log(filePath)
+  const files = fs.readdirSync(rootPath)
   async.forEachSeries(files, (res, callback) => {
-    var nestedPath = pathj.join(path, res)
-    const l = process.cwd().length
-    const filepath = nestedPath.substring(l + 1, nestedPath.length)
-    //console.log(filepath)
+    const tempPath = pathj.join(filePath, res)
+    const nestedPath = pathj.join(rootPath, res)
     const stat = fs.statSync(nestedPath)
     if (stat.isFile()) {
       const buffered = fs.readFileSync(nestedPath)
       const r = streamifier.createReadStream(buffered)
-      const filePair = {path: filepath, stream: r}
-      addStream(filePair)
+      const filePair = {path: tempPath, stream: r}
+      //addStream(filePair)
+      i.add(filePair)
     }
     if (stat.isDirectory()) {
-      addDir(nestedPath)
+      // TODO check if tempPath is empty, add sentinel empty dir
+
+      addDir(res)
     }
     callback()
   }, (err) => {
     if (err) {
       throw err
     }
-    console.log('done')
+    //console.log('done')
     return
   })
 }
 
-function readPath (recursive, path) {
-  console.log(utils.isDaemonOn())
+function choosePath (recursive, path, stats) {
+  //console.log(utils.isDaemonOn())
   //console.log(path)
-  const stats = fs.statSync(path)
   if (stats.isFile()) {
     const buffered = fs.readFileSync(path)
     const r = streamifier.createReadStream(buffered)
     path = path.substring(path.lastIndexOf('/') + 1, path.length)
     const filePair = {path: path, stream: r}
-    addStream(filePair)
-  } else if (stats.isDirectory() && recursive) {
-    addDir(path)
+    //addStream(filePair)
+    i.add(filePair)
+  } else if (stats.isDirectory()) {
+    console.log(path)
+    rootPath = path
+    filePath = path.substring(path.lastIndexOf('/') + 1, path.length)
+    addDir('')
   }
 }
 
@@ -95,15 +83,82 @@ module.exports = Command.extend({
   },
 
   run: (recursive, path) => {
+    let s
+
     if (!path) {
       throw new Error('Error: Argument \'path\' is required')
     }
-    if (path === '.' && recursive === false) {
-      console.log('Error: ' + path + ' is a directory, use the \'-r\' flag to specify directories')
-    } else if (path === '.' && recursive === true) {
+    
+    s = fs.statSync(path)
+
+    if (s.isDirectory() && recursive == false) {
+      throw new Error('Error: ' + process.cwd() + ' is a directory, use the \'-r\' flag to specify directories')
+    } 
+    if(path === '.' && recursive === true) {
       path = process.cwd()
+      s = fs.statSync(process.cwd())
+    } else if (path === '.' && recursive === false) {
+      s = fs.statSync(process.cwd())
+      if (s.isDirectory()) {
+        throw new Error('Error: ' + process.cwd() + ' is a directory, use the \'-r\' flag to specify directories')
+      }
     }
-    readPath(recursive, path)
+
+    glob(pathj.join(path,'/**/*'), (err, res) => {
+      if (res.length === 0) {
+        res = pathj.join(process.cwd(), path)
+      }
+      utils.getIPFS((err, ipfs) => {
+        if (err) {
+          throw err
+        }
+        if (utils.isDaemonOn()) {
+          throw new Error('daemon running is not supported yet')
+          // TODO create files.add js-ipfs-api 
+          /*return ipfs.add(pair.stream, (err, res) => {
+            if (err) {
+              log.error(err)
+              throw err
+            }
+            console.log('added', res[0].Hash)
+          })*/
+        }
+        const i = ipfs.files.add()
+        i.on('data', (file) => {
+          console.log('added', bs58.encode(file.multihash).toString(), file.path)
+        })
+        if (res.length !== 0) {
+          const index = path.lastIndexOf('/')
+          async.eachLimit(res, 10, (element, callback) => {
+            const addPath = element.substring(index + 1, element.length)
+            //console.log(element)
+            if (fs.statSync(element).isDirectory()) {
+              const filePair = {path: addPath}
+              i.write(filePair)
+              callback()
+            } else {
+              const buffered = fs.readFileSync(element)
+              const r = streamifier.createReadStream(buffered)
+              const filePair = {path: addPath, stream: r}
+              i.write(filePair)
+              callback()
+            }
+          }, (err) => {
+            if (err) {
+              throw err
+            }
+            i.end()
+            return
+          })
+        } else {
+          const buffered = fs.readFileSync(path)
+          const r = streamifier.createReadStream(buffered)
+          const filePair = {path: path, stream: r}
+          i.write(filePair)
+          i.end()
+        }
+      })      
+    })
 
     // console.log(utils.isDaemonOn())
     // utils.getIPFS((err, ipfs) => {

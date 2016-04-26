@@ -46,7 +46,6 @@ module.exports = Command.extend({
           try {
             fs.mkdirSync(dir + filepath)
           } catch (err) {
-            console.log(err)
           }
           ws = fs.createWriteStream(dir + data.path)
           data.stream.on('end', () => {
