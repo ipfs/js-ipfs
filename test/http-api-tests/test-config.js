@@ -99,7 +99,7 @@ module.exports = (httpAPI) => {
         it('updates value for request with both args and JSON flag with valid JSON argument', (done) => {
           api.inject({
             method: 'POST',
-            url: '/api/v0/config?arg=Datastore.Path&arg={\"kitten\": true}&json'
+            url: '/api/v0/config?arg=Datastore.Path&arg={"kitten": true}&json'
           }, (res) => {
             expect(res.statusCode).to.equal(200)
             expect(res.result.Key).to.equal('Datastore.Path')

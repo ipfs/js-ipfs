@@ -2,7 +2,7 @@
 
 const Command = require('ronin').Command
 const debug = require('debug')
-const IPFS = require('../../../core')
+const utils = require('../../utils')
 const log = debug('cli:files')
 log.error = debug('cli:files:error')
 
@@ -12,22 +12,39 @@ module.exports = Command.extend({
   options: {},
 
   run: (path, options) => {
-    var node = new IPFS()
     if (!path) {
       throw new Error("Argument 'path' is required")
     }
     if (!options) {
       options = {}
     }
-    node.files.cat(path, (err, res) => {
+    utils.getIPFS((err, ipfs) => {
       if (err) {
-        throw new Error(err)
+        throw err
       }
-      if (res) {
-        res.on('file', (data) => {
-          data.stream.pipe(process.stdout)
-        })
+      if (utils.isDaemonOn()) {
+        console.log('daemon is not currently supported')
+        return
+        /*return ipfs.object.put(buf, 'json', (err, obj) => {
+          if (err) {
+            log.error(err)
+            throw err
+          }
+
+          console.log('added', obj.Hash)
+        })*/
       }
+
+      ipfs.files.cat(path, (err, res) => {
+        if (err) {
+          throw new Error(err)
+        }
+        if (res) {
+          res.on('file', (data) => {
+            data.stream.pipe(process.stdout)
+          })
+        }
+      })
     })
   }
 })

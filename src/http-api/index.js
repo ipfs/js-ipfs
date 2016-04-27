@@ -89,8 +89,15 @@ exports = module.exports = function HttpApi (repo) {
   this.stop = (callback) => {
     const repoPath = this.ipfs.repo.path()
     fs.unlinkSync(path.join(repoPath, 'api'))
-    this.ipfs.libp2p.stop(() => {
-      this.server.stop(callback)
-    })
+    let counter = 0
+
+    this.server.stop(closed)
+    this.ipfs.libp2p.stop(closed)
+
+    function closed () {
+      if (++counter === 2) {
+        callback()
+      }
+    }
   }
 }

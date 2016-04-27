@@ -22,7 +22,7 @@ describe('files', () => {
     var arr = []
     const filePair = {path: 'data.txt', stream: r}
     arr.push(filePair)
-    ipfs.files.add(arr, (err,res) => {
+    ipfs.files.add(arr, (err, res) => {
       expect(err).to.not.exist
       expect(res[0].path).to.equal('data.txt')
       expect(res[0].size).to.equal(17)

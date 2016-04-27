@@ -49,9 +49,6 @@ module.exports = Command.extend({
       if (err) {
         throw err
       }
-      if (res.length === 0) {
-        res = pathj.join(process.cwd(), path)
-      }
       utils.getIPFS((err, ipfs) => {
         if (err) {
           throw err
