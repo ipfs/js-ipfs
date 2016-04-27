@@ -4,7 +4,7 @@ const peerId = require('peer-id')
 const IpfsBlocks = require('ipfs-blocks').BlockService
 const IpfsDagService = require('ipfs-merkle-dag').DAGService
 const path = require('path')
-const glob = require("glob")
+const glob = require('glob')
 const async = require('async')
 const streamifier = require('streamifier')
 const fs = require('fs')
@@ -67,17 +67,20 @@ module.exports = (repo, opts, callback) => {
       return doneImport(null)
     }
 
-    const importer = require('ipfs-unixfs-engine').importer
+    const Importer = require('ipfs-unixfs-engine').importer
     const blocks = new IpfsBlocks(repo)
     const dag = new IpfsDagService(blocks)
 
     const initDocsPath = path.join(__dirname, '../init-files/init-docs')
 
-    const i = new importer(dag)
+    const i = new Importer(dag)
     i.on('data', (file) => {
     })
 
-    glob(path.join(initDocsPath,'/**/*'), (err, res) => {
+    glob(path.join(initDocsPath, '/**/*'), (err, res) => {
+      if (err) {
+        throw err
+      }
       const index = __dirname.lastIndexOf('/')
       async.eachLimit(res, 10, (element, callback) => {
         const addPath = element.substring(index + 1, element.length)

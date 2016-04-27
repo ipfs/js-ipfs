@@ -34,10 +34,6 @@ module.exports = Command.extend({
       if (err) {
         throw err
       }
-      if (utils.isDaemonOn()) {
-        console.log('daemon is not currently supported')
-        return
-      }
       ipfs.files.get(path, (err, data) => {
         if (err) {
           throw new Error(err)
@@ -62,9 +58,9 @@ module.exports = Command.extend({
             } catch (err) {
             }
             ws = fs.createWriteStream(dir + data.path)
-            data.stream.on('end', () => {
-              console.log('finished writing file to disk')
-            })
+            // data.stream.on('end', () => {
+            //  console.log('finished writing file to disk')
+            // })
             data.stream.pipe(ws)
           }
         })

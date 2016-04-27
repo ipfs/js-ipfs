@@ -23,16 +23,15 @@ module.exports = Command.extend({
         throw err
       }
       if (utils.isDaemonOn()) {
-        console.log('daemon is not currently supported')
-        return
-        /*return ipfs.object.put(buf, 'json', (err, obj) => {
+        ipfs.cat(path, (err, res) => {
           if (err) {
-            log.error(err)
-            throw err
+            throw new Error(err)
           }
-
-          console.log('added', obj.Hash)
-        })*/
+          res.on('data', (data) => {
+            process.stdout.write(data)
+          })
+        })
+        return
       }
 
       ipfs.files.cat(path, (err, res) => {
