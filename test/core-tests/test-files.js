@@ -12,7 +12,7 @@ describe('files', () => {
   var ipfs
 
   before((done) => {
-    ipfs = new IPFS()
+    ipfs = new IPFS(require('./repo-path'))
     ipfs.load(done)
   })
 
