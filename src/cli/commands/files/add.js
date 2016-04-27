@@ -47,14 +47,53 @@ module.exports = Command.extend({
 
     glob(pathj.join(path, '/**/*'), (err, res) => {
       if (err) {
-        throw err
+        throw new Error(err)
       }
       utils.getIPFS((err, ipfs) => {
         if (err) {
-          throw err
+          throw new Error(err)
         }
+        var files = []
         if (utils.isDaemonOn()) {
-          throw new Error('daemon running is not supported yet')
+          if (res.length !== 0) {
+            const index = path.lastIndexOf('/')
+            async.eachLimit(res, 10, (element, callback) => {
+              const addPath = element.substring(index + 1, element.length)
+              if (fs.statSync(element).isDirectory()) {
+                callback()
+              } else {
+                const buffered = fs.readFileSync(element)
+                const r = streamifier.createReadStream(buffered)
+                const filePair = {path: addPath, content: r}
+                files.push(filePair)
+                callback()
+              }
+            }, (err) => {
+              if (err) {
+                throw new Error(err)
+              }
+              ipfs.add(files, (err, res) => {
+                if (err) {
+                  throw new Error(err)
+                }
+                res.forEach((goRes) => {
+                  console.log('added', goRes.Hash, goRes.Name)
+                })
+              })
+            })
+          } else {
+            const buffered = fs.readFileSync(path)
+            const r = streamifier.createReadStream(buffered)
+            const filePair = {path: path, content: r}
+            files.push(filePair)
+            ipfs.add(files, (err, res) => {
+              if (err) {
+                throw new Error(err)
+              }
+              console.log('added', res[0].Hash, res[0].Name)
+            })
+          }
+          return       
         }
         const i = ipfs.files.add()
         i.on('data', (file) => {
@@ -75,7 +114,7 @@ module.exports = Command.extend({
             }
           }, (err) => {
             if (err) {
-              throw err
+              new Error(err)
             }
             i.end()
             return
