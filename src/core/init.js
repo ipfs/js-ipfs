@@ -1,8 +1,8 @@
 'use strict'
 
 const peerId = require('peer-id')
-const IpfsBlocks = require('ipfs-blocks').BlockService
-const IpfsDagService = require('ipfs-merkle-dag').DAGService
+const BlockService = require('ipfs-block-service')
+const DagService = require('ipfs-merkle-dag').DAGService
 const path = require('path')
 
 module.exports = (repo, opts, callback) => {
@@ -64,8 +64,8 @@ module.exports = (repo, opts, callback) => {
     }
 
     const importer = require('ipfs-data-importing')
-    const blocks = new IpfsBlocks(repo)
-    const dag = new IpfsDagService(blocks)
+    const blocks = new BlockService(repo)
+    const dag = new DagService(blocks)
 
     const initDocsPath = path.join(__dirname, '../init-files/init-docs')
 

@@ -2,7 +2,7 @@
 
 const bs58 = require('bs58')
 const multipart = require('ipfs-multipart')
-const Block = require('ipfs-blocks').Block
+const Block = require('ipfs-block')
 const debug = require('debug')
 const log = debug('http-api:block')
 log.error = debug('http-api:block:error')
