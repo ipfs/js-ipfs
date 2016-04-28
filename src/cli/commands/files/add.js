@@ -93,7 +93,7 @@ module.exports = Command.extend({
               console.log('added', res[0].Hash, res[0].Name)
             })
           }
-          return       
+          return
         }
         const i = ipfs.files.add()
         i.on('data', (file) => {
@@ -114,7 +114,7 @@ module.exports = Command.extend({
             }
           }, (err) => {
             if (err) {
-              new Error(err)
+              throw new Error(err)
             }
             i.end()
             return

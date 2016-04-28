@@ -1,9 +1,8 @@
 'use strict'
 
 const defaultRepo = require('./default-repo')
-const blocks = require('ipfs-blocks')
-const BlockService = blocks.BlockService
-const Block = blocks.Block
+const BlockService = require('ipfs-block-service')
+const Block = require('ipfs-block')
 const mDAG = require('ipfs-merkle-dag')
 const DAGNode = mDAG.DAGNode
 const DAGService = mDAG.DAGService
