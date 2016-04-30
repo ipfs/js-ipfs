@@ -67,7 +67,7 @@ module.exports = (repo, opts, callback) => {
       return doneImport(null)
     }
 
-    const importer = require('ipfs-data-importing')
+    const Importer = require('ipfs-unixfs-engine').importer
     const blocks = new BlockService(repo)
     const dag = new DagService(blocks)
 
