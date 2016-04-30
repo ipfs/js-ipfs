@@ -46,6 +46,7 @@ module.exports = Command.extend({
     }
 
     glob(pathj.join(path, '/**/*'), (err, res) => {
+
       if (err) {
         throw new Error(err)
       }
@@ -121,6 +122,7 @@ module.exports = Command.extend({
           })
         } else {
           const buffered = fs.readFileSync(path)
+          path = path.substring(path.lastIndexOf('/') + 1, path.length)
           const r = streamifier.createReadStream(buffered)
           const filePair = {path: path, stream: r}
           i.write(filePair)
