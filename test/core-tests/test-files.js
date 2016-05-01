@@ -3,7 +3,7 @@
 
 const bl = require('bl')
 const expect = require('chai').expect
-const streamifier = require('streamifier')
+const Readable = require('stream').Readable
 const bs58 = require('bs58')
 
 const IPFS = require('../../src/core')
@@ -18,9 +18,11 @@ describe('files', () => {
 
   it('add', (done) => {
     const buffered = new Buffer('some data')
-    const r = streamifier.createReadStream(buffered)
+    var rs = new Readable()
+    rs.push(buffered)
+    rs.push(null)
     var arr = []
-    const filePair = {path: 'data.txt', stream: r}
+    const filePair = {path: 'data.txt', stream: rs}
     arr.push(filePair)
     ipfs.files.add(arr, (err, res) => {
       expect(err).to.not.exist

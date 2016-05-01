@@ -1,7 +1,7 @@
 'use strict'
 
 const bs58 = require('bs58')
-const streamifier = require('streamifier')
+const Readable = require('stream').Readable
 const multipart = require('ipfs-multipart')
 const debug = require('debug')
 const log = debug('http-api:files')
@@ -45,8 +45,10 @@ exports.add = {
 
     parser.on('file', (fileName, fileStream) => {
       fileStream.on('data', (data) => {
-        const r = streamifier.createReadStream(data)
-        const filePair = {path: fileName, stream: r}
+        var rs = new Readable()
+        rs.push(data)
+        rs.push(null)
+        const filePair = {path: fileName, stream: rs}
         tuples.push(filePair)
         file = data
       })

@@ -8,6 +8,6 @@ module.exports = (server) => {
   require('./object')(server)
   // require('./repo')(server)
   require('./config')(server)
-  // require('./files')(server)
+  require('./files')(server)
   require('./swarm')(server)
 }

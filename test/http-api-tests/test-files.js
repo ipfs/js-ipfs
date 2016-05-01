@@ -6,7 +6,7 @@ const APIctl = require('ipfs-api')
 const fs = require('fs')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
-const streamifier = require('streamifier')
+const Readable = require('stream').Readable
 
 module.exports = (httpAPI) => {
   describe.skip('files', () => {
@@ -59,7 +59,7 @@ module.exports = (httpAPI) => {
           })
         })
 
-        it.skip('adds multiple files', (done) => {
+        it('adds multiple files', (done) => {
           const form = new FormData()
           const filePath = '/home/n4th4n/Pictures/catfart.jpg'
           const filePath2 = '/home/n4th4n/Pictures/cat-test.jpg'
@@ -98,8 +98,7 @@ module.exports = (httpAPI) => {
           var files = []
           const buffered = fs.readFileSync('/home/n4th4n/Pictures/cat-test.jpg')
           const buffered2 = fs.readFileSync('/home/n4th4n/Pictures/catfart.jpg')
-          const r = streamifier.createReadStream(buffered)
-          const r2 = streamifier.createReadStream(buffered2)
+
           const filePair = {path: 'cat-test.jpg', content: r}
           const filePair2 = {path: 'catfart.jpg', content: r2}
           files.push(filePair)

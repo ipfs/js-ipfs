@@ -6,7 +6,7 @@ const debug = require('debug')
 const log = debug('cli:version')
 log.error = debug('cli:version:error')
 const bs58 = require('bs58')
-const streamifier = require('streamifier')
+const Readable = require('stream').Readable
 const fs = require('fs')
 const async = require('async')
 const pathj = require('path')
@@ -64,8 +64,10 @@ module.exports = Command.extend({
                 callback()
               } else {
                 const buffered = fs.readFileSync(element)
-                const r = streamifier.createReadStream(buffered)
-                const filePair = {path: addPath, content: r}
+                var rs = new Readable()
+                rs.push(buffered)
+                rs.push(null)
+                const filePair = {path: addPath, content: rs}
                 files.push(filePair)
                 callback()
               }
@@ -84,8 +86,10 @@ module.exports = Command.extend({
             })
           } else {
             const buffered = fs.readFileSync(path)
-            const r = streamifier.createReadStream(buffered)
-            const filePair = {path: path, content: r}
+            var rs = new Readable()
+            rs.push(buffered)
+            rs.push(null)
+            const filePair = {path: path, content: rs}
             files.push(filePair)
             ipfs.add(files, (err, res) => {
               if (err) {
@@ -108,8 +112,10 @@ module.exports = Command.extend({
               callback()
             } else {
               const buffered = fs.readFileSync(element)
-              const r = streamifier.createReadStream(buffered)
-              const filePair = {path: addPath, stream: r}
+              var rs = new Readable()
+              rs.push(buffered)
+              rs.push(null)
+              const filePair = {path: addPath, stream: rs}
               i.write(filePair)
               callback()
             }
@@ -123,8 +129,10 @@ module.exports = Command.extend({
         } else {
           const buffered = fs.readFileSync(path)
           path = path.substring(path.lastIndexOf('/') + 1, path.length)
-          const r = streamifier.createReadStream(buffered)
-          const filePair = {path: path, stream: r}
+          var rs = new Readable()
+          rs.push(buffered)
+          rs.push(null)
+          const filePair = {path: path, stream: rs}
           i.write(filePair)
           i.end()
         }

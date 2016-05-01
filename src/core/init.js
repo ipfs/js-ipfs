@@ -6,7 +6,7 @@ const DagService = require('ipfs-merkle-dag').DAGService
 const path = require('path')
 const glob = require('glob')
 const async = require('async')
-const streamifier = require('streamifier')
+const Readable = require('stream').Readable
 const fs = require('fs')
 
 module.exports = (repo, opts, callback) => {
@@ -88,8 +88,10 @@ module.exports = (repo, opts, callback) => {
           callback()
         } else {
           const buffered = fs.readFileSync(element)
-          const r = streamifier.createReadStream(buffered)
-          const filePair = {path: addPath, stream: r}
+          var rs = new Readable()
+          rs.push(buffered)
+          rs.push(null)
+          const filePair = {path: addPath, stream: rs}
           i.write(filePair)
           callback()
         }
