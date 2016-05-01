@@ -7,7 +7,7 @@ module.exports = (server) => {
 
   api.route({
     method: '*',
-    path: '/api/v0/files/add',
+    path: '/api/v0/add',
     config: {
       payload: {
         parse: false,

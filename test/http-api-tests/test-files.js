@@ -17,7 +17,6 @@ module.exports = (httpAPI) => {
         api = httpAPI.server.select('API')
       })
 
-
       describe('/files/add', () => {
         it('returns 400 if no tuple is provided', (done) => {
           const form = new FormData()
@@ -26,7 +25,7 @@ module.exports = (httpAPI) => {
           streamToPromise(form).then((payload) => {
             api.inject({
               method: 'POST',
-              url: '/api/v0/files/add',
+              url: '/api/v0/add',
               headers: headers,
               payload: payload
             }, (res) => {
@@ -40,8 +39,6 @@ module.exports = (httpAPI) => {
           const form = new FormData()
           const filePath = '/home/n4th4n/Pictures/catfart.jpg'
           const filePath2 = '/home/n4th4n/Pictures/cat-test.jpg'
-          //console.log(fs.readFileSync(filePath))
-          //console.log(fs.readFileSync(filePath2))
           form.append('file', fs.createReadStream(filePath))
           form.append('file', fs.createReadStream(filePath2))
           const headers = form.getHeaders()
@@ -49,7 +46,7 @@ module.exports = (httpAPI) => {
           streamToPromise(form).then((payload) => {
             api.inject({
               method: 'POST',
-              url: '/api/v0/files/add',
+              url: '/api/v0/add',
               headers: headers,
               payload: payload
             }, (res) => {
@@ -70,7 +67,7 @@ module.exports = (httpAPI) => {
           streamToPromise(form).then((payload) => {
             api.inject({
               method: 'POST',
-              url: '/api/v0/files/add',
+              url: '/api/v0/add',
               headers: headers,
               payload: payload
             }, (res) => {
@@ -81,32 +78,35 @@ module.exports = (httpAPI) => {
           })
         })
       })
-
     })
 
     describe('using js-ipfs-api', () => {
       var ctl
+      var rs = new Readable()
+      var rs2 = new Readable()
 
       it('start IPFS API ctl', (done) => {
         ctl = APIctl('/ip4/127.0.0.1/tcp/6001')
         done()
       })
 
-
       describe('ipfs.add', () => {
         it('returns error if the node is invalid', (done) => {
           var files = []
           const buffered = fs.readFileSync('/home/n4th4n/Pictures/cat-test.jpg')
           const buffered2 = fs.readFileSync('/home/n4th4n/Pictures/catfart.jpg')
-
-          const filePair = {path: 'cat-test.jpg', content: r}
-          const filePair2 = {path: 'catfart.jpg', content: r2}
+          rs.push(buffered)
+          rs.push(null)
+          rs2.push(buffered2)
+          rs2.push(null)
+          const filePair = {path: 'cat-test.jpg', content: rs}
+          const filePair2 = {path: 'catfart.jpg', content: rs2}
           files.push(filePair)
           files.push(filePair2)
 
           ctl.add(files, (err, res) => {
             console.log(res)
-            //expect(err).to.exist
+            // expect(err).to.exist
             console.log(err)
             done()
           })
@@ -130,7 +130,6 @@ module.exports = (httpAPI) => {
           })
         })
       })
-
     })
   })
 }

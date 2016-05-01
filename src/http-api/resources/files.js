@@ -11,7 +11,6 @@ exports = module.exports
 
 // common pre request handler that parses the args and returns `key` which is assigned to `request.pre.args`
 exports.parseKey = (request, reply) => {
-  //console.log(request)
   if (!request.query.arg) {
     return reply("Argument 'key' is required").code(400).takeover()
   }
@@ -36,7 +35,7 @@ exports.add = {
     if (!request.payload) {
       console.log('this is never false')
       // This is never false
-      return reply("Array, Buffer, or String is required").code(400).takeover()
+      return reply('Array, Buffer, or String is required').code(400).takeover()
     }
 
     const parser = multipart.reqParser(request.payload)
@@ -59,8 +58,8 @@ exports.add = {
         return reply("File argument 'data' is required").code(400).takeover()
       }
       return reply({
-          arr: tuples
-        })
+        arr: tuples
+      })
     })
   },
 
@@ -77,9 +76,9 @@ exports.add = {
         }).code(500)
       }
       var formatArray = obj.map((link) => ({
-          Name: link.path,
-          Hash: bs58.encode(link.multihash).toString()
-        }))
+        Name: link.path,
+        Hash: bs58.encode(link.multihash).toString()
+      }))
       return reply(formatArray)
     })
   }

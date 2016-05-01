@@ -25,6 +25,7 @@ module.exports = Command.extend({
 
   run: (recursive, path) => {
     let s
+    var rs = new Readable()
 
     if (!path) {
       throw new Error('Error: Argument \'path\' is required')
@@ -46,7 +47,6 @@ module.exports = Command.extend({
     }
 
     glob(pathj.join(path, '/**/*'), (err, res) => {
-
       if (err) {
         throw new Error(err)
       }
@@ -64,7 +64,6 @@ module.exports = Command.extend({
                 callback()
               } else {
                 const buffered = fs.readFileSync(element)
-                var rs = new Readable()
                 rs.push(buffered)
                 rs.push(null)
                 const filePair = {path: addPath, content: rs}
@@ -86,7 +85,6 @@ module.exports = Command.extend({
             })
           } else {
             const buffered = fs.readFileSync(path)
-            var rs = new Readable()
             rs.push(buffered)
             rs.push(null)
             const filePair = {path: path, content: rs}
@@ -112,7 +110,6 @@ module.exports = Command.extend({
               callback()
             } else {
               const buffered = fs.readFileSync(element)
-              var rs = new Readable()
               rs.push(buffered)
               rs.push(null)
               const filePair = {path: addPath, stream: rs}
@@ -129,7 +126,6 @@ module.exports = Command.extend({
         } else {
           const buffered = fs.readFileSync(path)
           path = path.substring(path.lastIndexOf('/') + 1, path.length)
-          var rs = new Readable()
           rs.push(buffered)
           rs.push(null)
           const filePair = {path: path, stream: rs}

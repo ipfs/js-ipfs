@@ -64,7 +64,7 @@
     "hapi": "^13.3.0",
     "ipfs-api": "^3.0.1",
     "ipfs-block": "^0.2.0",
-    "ipfs-block-service": "^0.2.4",
+    "ipfs-block-service": "^0.2.5",
     "ipfs-merkle-dag": "^0.4.3",
     "ipfs-multipart": "^0.1.0",
     "ipfs-repo": "^0.7.4",
@@ -76,6 +76,7 @@
     "multiaddr": "^1.3.0",
     "peer-id": "^0.6.6",
     "peer-info": "^0.6.2",
+    "readable-stream": "^1.1.13",
     "ronin": "^0.3.11",
     "temp": "^0.8.3"
   },
