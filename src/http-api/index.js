@@ -57,11 +57,21 @@ exports = module.exports = function HttpApi (repo) {
 
         // select which connection with server.select(<label>) to add routes
         this.server.connection({
+          routes: {
+            payload: {
+              maxBytes: 10000000
+            }
+          },
           host: api[2],
           port: api[4],
           labels: 'API'
         })
         this.server.connection({
+          routes: {
+            payload: {
+              maxBytes: 10000000
+            }
+          },
           host: gateway[2],
           port: gateway[4],
           labels: 'Gateway'

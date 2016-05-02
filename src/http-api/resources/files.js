@@ -31,24 +31,22 @@ exports.parseKey = (request, reply) => {
 exports.add = {
   // pre request handler that parses the args and returns `node` which is assigned to `request.pre.args`
   parseArgs: (request, reply) => {
-    console.log('wee')
     if (!request.payload) {
-      console.log('this is never false')
-      // This is never false
       return reply('Array, Buffer, or String is required').code(400).takeover()
     }
 
     const parser = multipart.reqParser(request.payload)
     var file
     var tuples = []
+    var filePair
 
     parser.on('file', (fileName, fileStream) => {
+      var rs = new Readable()
+      filePair = {path: fileName, stream: rs}
+      tuples.push(filePair)
       fileStream.on('data', (data) => {
-        var rs = new Readable()
         rs.push(data)
         rs.push(null)
-        const filePair = {path: fileName, stream: rs}
-        tuples.push(filePair)
         file = data
       })
     })
@@ -66,7 +64,7 @@ exports.add = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
     const array = request.pre.args.arr
-
+    // console.log(array)
     request.server.app.ipfs.files.add(array, (err, obj) => {
       if (err) {
         log.error(err)
@@ -79,7 +77,52 @@ exports.add = {
         Name: link.path,
         Hash: bs58.encode(link.multihash).toString()
       }))
-      return reply(formatArray)
+      return reply(null, formatArray)
+    })
+  }
+}
+
+exports.cat = {
+  // uses common parseKey method that returns a `key`
+  parseArgs: exports.parseKey,
+
+  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+  handler: (request, reply) => {
+    const key = request.pre.args.key
+
+    request.server.app.ipfs.files.cat(key, (err, ee) => {
+      if (err) {
+        log.error(err)
+        return reply({
+          Message: 'Failed to get object: ' + err,
+          Code: 0
+        }).code(500)
+      }
+      ee.on('file', (data) => {
+        return reply(data)
+      })
+    })
+  }
+}
+
+exports.get = {
+  // uses common parseKey method that returns a `key`
+  parseArgs: exports.parseKey,
+
+  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+  handler: (request, reply) => {
+    const key = request.pre.args.key
+
+    request.server.app.ipfs.files.get(key, (err, ee) => {
+      if (err) {
+        log.error(err)
+        return reply({
+          Message: 'Failed to get object: ' + err,
+          Code: 0
+        }).code(500)
+      }
+
+      return reply(ee)
     })
   }
 }

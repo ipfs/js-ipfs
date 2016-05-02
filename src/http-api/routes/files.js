@@ -19,4 +19,26 @@ module.exports = (server) => {
       handler: resources.files.add.handler
     }
   })
+
+  api.route({
+    method: '*',
+    path: '/api/v0/cat',
+    config: {
+      pre: [
+        { method: resources.files.cat.parseArgs, assign: 'args' }
+      ],
+      handler: resources.files.cat.handler
+    }
+  })
+
+  api.route({
+    method: '*',
+    path: '/api/v0/get',
+    config: {
+      pre: [
+        { method: resources.files.get.parseArgs, assign: 'args' }
+      ],
+      handler: resources.files.get.handler
+    }
+  })
 }
