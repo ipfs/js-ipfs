@@ -50,7 +50,7 @@
     "nexpect": "^0.5.0",
     "pre-commit": "^1.1.2",
     "rimraf": "^2.4.4",
-    "snazzy": "^3.0.1",
+    "snazzy": "^4.0.0",
     "stream-to-promise": "^1.1.0",
     "transform-loader": "^0.2.3"
   },
