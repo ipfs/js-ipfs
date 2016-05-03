@@ -37,7 +37,7 @@
   },
   "homepage": "https://github.com/ipfs/js-ipfs#readme",
   "devDependencies": {
-    "aegir": "^3.0.0",
+    "aegir": "^3.0.1",
     "async": "^1.5.2",
     "buffer-loader": "0.0.1",
     "chai": "^3.5.0",
