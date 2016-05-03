@@ -2,21 +2,26 @@
 
 const Command = require('ronin').Command
 const path = require('path')
-const ronin = require('ronin')
+const glob = require('glob').sync
 
 module.exports = Command.extend({
   desc: 'List all available commands',
 
-  run: (name) => {
-    const cli = ronin(path.resolve(__dirname, '..'))
+  run (name) {
+    const basePath = path.resolve(__dirname, '..')
 
-    cli.setupCommands()
+    // modeled after https://github.com/vdemedes/ronin/blob/master/lib/program.js#L78
+    const files = glob(path.join(basePath, 'commands', '**', '*.js'))
+    const cmds = files.map((p) => {
+      return p.replace(/\//g, path.sep)
+        .replace(/^./, ($1) => $1.toUpperCase())
+        .replace(path.join(basePath, 'commands'), '')
+        .replace(path.sep, '')
+        .split(path.sep)
+        .join(' ')
+        .replace('.js', '')
+    }).sort().map((cmd) => `ipfs ${cmd}`)
 
-    const commands = ['']
-      .concat(Object.keys(cli.commands))
-      .map((command) => 'ipfs ' + command)
-      .join('\n')
-
-    console.log(commands)
+    console.log(['ipfs'].concat(cmds).join('\n'))
   }
 })
