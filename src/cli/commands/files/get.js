@@ -1,0 +1,70 @@
+'use strict'
+
+const Command = require('ronin').Command
+const debug = require('debug')
+const utils = require('../../utils')
+const log = debug('cli:files')
+log.error = debug('cli:files:error')
+var fs = require('fs')
+
+module.exports = Command.extend({
+  desc: 'Download IPFS objects',
+
+  options: {},
+
+  run: (path, options) => {
+    let dir
+    let filepath
+    let ws
+
+    if (!path) {
+      throw new Error("Argument 'path' is required")
+    }
+    if (!options) {
+      options = {}
+      dir = process.cwd()
+    } else {
+      if (options.slice(-1) !== '/') {
+        options += '/'
+      }
+      dir = options
+    }
+
+    utils.getIPFS((err, ipfs) => {
+      if (err) {
+        throw err
+      }
+      ipfs.files.get(path, (err, data) => {
+        if (err) {
+          throw new Error(err)
+        }
+        data.on('file', (data) => {
+          if (data.path.lastIndexOf('/') === -1) {
+            filepath = data.path
+            if (data.dir === false) {
+              ws = fs.createWriteStream(dir + data.path)
+              data.stream.pipe(ws)
+            } else {
+              try {
+                fs.mkdirSync(dir + filepath)
+              } catch (err) {
+                console.log(err)
+              }
+            }
+          } else {
+            filepath = data.path.substring(0, data.path.lastIndexOf('/') + 1)
+            try {
+              fs.mkdirSync(dir + filepath)
+            } catch (err) {
+            }
+            ws = fs.createWriteStream(dir + data.path)
+            // data.stream.on('end', () => {
+            //  console.log('finished writing file to disk')
+            // })
+            data.stream.pipe(ws)
+          }
+        })
+      })
+    })
+  }
+})
