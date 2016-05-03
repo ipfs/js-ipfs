@@ -13,9 +13,6 @@ module.exports = (server) => {
         parse: false,
         output: 'stream'
       },
-      pre: [
-        { method: resources.files.add.parseArgs, assign: 'args' }
-      ],
       handler: resources.files.add.handler
     }
   })

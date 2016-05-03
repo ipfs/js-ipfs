@@ -30,54 +30,54 @@ exports.parseKey = (request, reply) => {
 
 exports.add = {
   // pre request handler that parses the args and returns `node` which is assigned to `request.pre.args`
-  parseArgs: (request, reply) => {
+  handler: (request, reply) => {
     if (!request.payload) {
       return reply('Array, Buffer, or String is required').code(400).takeover()
     }
-
     const parser = multipart.reqParser(request.payload)
-    var file
-    var tuples = []
+    var file = false
     var filePair
+    var resArr = []
+    var outCounter = 0
+    var inCounter = 0
+    var i = request.server.app.ipfs.files.add()
+
+    i.on('data', (file) => {
+      outCounter++
+      resArr.push({
+        Name: file.path,
+        Hash: bs58.encode(file.multihash).toString()
+      })
+      if (inCounter === outCounter) {
+        if (resArr.length === 0) {
+          return reply({
+            Message: 'Failed to add files',
+            Code: 0
+          }).code(500)
+        }
+        return reply(resArr)
+      }
+    })
 
     parser.on('file', (fileName, fileStream) => {
+      inCounter++
       var rs = new Readable()
-      filePair = {path: fileName, stream: rs}
-      tuples.push(filePair)
       fileStream.on('data', (data) => {
         rs.push(data)
+        file = true
+      })
+      fileStream.on('end', () => {
         rs.push(null)
-        file = data
+        filePair = {path: fileName, stream: rs}
+        i.write(filePair)
       })
     })
 
     parser.on('end', () => {
+      i.end()
       if (!file) {
         return reply("File argument 'data' is required").code(400).takeover()
       }
-      return reply({
-        arr: tuples
-      })
-    })
-  },
-
-  // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
-    const array = request.pre.args.arr
-    // console.log(array)
-    request.server.app.ipfs.files.add(array, (err, obj) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: 'Failed to add files: ' + err,
-          Code: 0
-        }).code(500)
-      }
-      var formatArray = obj.map((link) => ({
-        Name: link.path,
-        Hash: bs58.encode(link.multihash).toString()
-      }))
-      return reply(null, formatArray)
     })
   }
 }

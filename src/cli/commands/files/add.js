@@ -25,7 +25,7 @@ module.exports = Command.extend({
 
   run: (recursive, path) => {
     let s
-    var rs = new Readable()
+    let rs
 
     if (!path) {
       throw new Error('Error: Argument \'path\' is required')
@@ -56,9 +56,11 @@ module.exports = Command.extend({
         }
         var files = []
         if (utils.isDaemonOn()) {
+          console.log('daemon on')
           if (res.length !== 0) {
             const index = path.lastIndexOf('/')
             async.eachLimit(res, 10, (element, callback) => {
+              rs = new Readable()
               const addPath = element.substring(index + 1, element.length)
               if (fs.statSync(element).isDirectory()) {
                 callback()
@@ -84,6 +86,7 @@ module.exports = Command.extend({
               })
             })
           } else {
+            rs = new Readable()
             const buffered = fs.readFileSync(path)
             rs.push(buffered)
             rs.push(null)
@@ -105,6 +108,7 @@ module.exports = Command.extend({
         if (res.length !== 0) {
           const index = path.lastIndexOf('/')
           async.eachLimit(res, 10, (element, callback) => {
+            rs = new Readable()
             const addPath = element.substring(index + 1, element.length)
             if (fs.statSync(element).isDirectory()) {
               callback()
@@ -124,6 +128,7 @@ module.exports = Command.extend({
             return
           })
         } else {
+          rs = new Readable()
           const buffered = fs.readFileSync(path)
           path = path.substring(path.lastIndexOf('/') + 1, path.length)
           rs.push(buffered)

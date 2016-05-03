@@ -37,7 +37,7 @@ module.exports = (httpAPI) => {
 
         it.skip('returns 500 if tuples are invalid', (done) => {
           const form = new FormData()
-          form.append('file', 'bad tuple')
+          form.append('file', 4)
           const headers = form.getHeaders()
 
           streamToPromise(form).then((payload) => {
@@ -55,7 +55,7 @@ module.exports = (httpAPI) => {
 
         it('adds a file', (done) => {
           const form = new FormData()
-          const filePath = 'test/test-data/1.2MiB.txt'
+          const filePath = 'test/test-data/node.json'
           form.append('file', fs.createReadStream(filePath))
           const headers = form.getHeaders()
 
@@ -197,7 +197,7 @@ module.exports = (httpAPI) => {
           })
         })
 
-        it.skip('adds a large file > a chunk', (done) => {
+        it('adds a large file > a chunk', (done) => {
           const rs = new Readable()
           var files = []
           const buffered = fs.readFileSync('test/test-data/1.2MiB.txt')
@@ -207,27 +207,9 @@ module.exports = (httpAPI) => {
           files.push(filePair)
 
           ctl.add(filePair, (err, res) => {
-            console.log(res[0])
-            // expect(err).to.exist
-            console.log(err)
-            done()
-          })
-        })
-
-        it.skip('updates value', (done) => {
-          const filePath = 'test/test-data/node.json'
-          const expectedResult = {
-            Hash: 'QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm',
-            Links: [{
-              Name: 'some link',
-              Hash: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
-              Size: 8
-            }]
-          }
-
-          ctl.object.put(filePath, 'json', (err, res) => {
-            expect(err).not.to.exist
-            expect(res).to.deep.equal(expectedResult)
+            expect(err).to.not.exist
+            expect(res[0].Name).to.equal('1.2MiB.txt')
+            expect(res[0].Hash).to.equal('QmW7BDxEbGqxxSYVtn3peNPQgdDXbWkoQ6J1EFYAEuQV3Q')
             done()
           })
         })
