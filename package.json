@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "description": "JavaScript implementation of the IPFS specification",
   "bin": {
     "jsipfs": "src/cli/bin.js"
@@ -37,8 +37,8 @@
   },
   "homepage": "https://github.com/ipfs/js-ipfs#readme",
   "devDependencies": {
-    "aegir": "^2.1.2",
-    "async": "^1.5.2",
+    "aegir": "^3.0.0",
+    "async": "^2.0.0-rc.3",
     "buffer-loader": "0.0.1",
     "chai": "^3.5.0",
     "expose-loader": "^0.7.1",
@@ -50,7 +50,6 @@
     "nexpect": "^0.5.0",
     "pre-commit": "^1.1.2",
     "rimraf": "^2.4.4",
-    "snazzy": "^3.0.1",
     "stream-to-promise": "^1.1.0",
     "transform-loader": "^0.2.3"
   },
@@ -63,9 +62,10 @@
     "fs-blob-store": "^5.2.1",
     "hapi": "^13.3.0",
     "ipfs-api": "^3.0.1",
-    "ipfs-block": "^0.2.0",
-    "ipfs-block-service": "^0.2.5",
-    "ipfs-merkle-dag": "^0.4.3",
+    "ipfs-block": "^0.3.0",
+    "ipfs-block-service": "^0.3.0",
+    "ipfs-data-importing": "^0.3.3",
+    "ipfs-merkle-dag": "^0.5.0",
     "ipfs-multipart": "^0.1.0",
     "ipfs-repo": "^0.7.4",
     "ipfs-unixfs-engine": "^0.5.0",
