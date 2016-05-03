@@ -64,7 +64,7 @@
     "hapi": "^13.3.0",
     "ipfs-api": "^3.0.1",
     "ipfs-block": "^0.2.0",
-    "ipfs-block-service": "^0.2.4",
+    "ipfs-block-service": "^0.3.0",
     "ipfs-data-importing": "^0.3.3",
     "ipfs-merkle-dag": "^0.4.3",
     "ipfs-multipart": "^0.1.0",
