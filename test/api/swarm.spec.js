@@ -25,7 +25,7 @@ describe('.swarm', () => {
   })
 
   it('.swarm.addrs', (done) => {
-    apiClients['a'].swarm.addrs((err, res) => {
+    apiClients.a.swarm.addrs((err, res) => {
       expect(err).to.not.exist
 
       expect(Object.keys(res.Addrs)).to.have.length.above(1)
@@ -34,7 +34,7 @@ describe('.swarm', () => {
   })
 
   it('.swarm.localAddrs', (done) => {
-    apiClients['a'].swarm.localAddrs((err, res) => {
+    apiClients.a.swarm.localAddrs((err, res) => {
       expect(err).to.not.exist
 
       expect(res.Strings).to.have.length.above(1)
@@ -51,14 +51,14 @@ describe('.swarm', () => {
     })
 
     it('.swarm.addrs', () => {
-      return apiClients['a'].swarm.addrs()
+      return apiClients.a.swarm.addrs()
         .then((res) => {
           expect(Object.keys(res.Addrs)).to.have.length.above(1)
         })
     })
 
     it('.swarm.localAddrs', () => {
-      return apiClients['a'].swarm.localAddrs()
+      return apiClients.a.swarm.localAddrs()
         .then((res) => {
           expect(res.Strings).to.have.length.above(1)
         })
