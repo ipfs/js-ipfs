@@ -12,9 +12,9 @@ describe('.config', () => {
       const confKey = 'arbitraryKey'
       const confVal = 'arbitraryVal'
 
-      apiClients['a'].config.set(confKey, confVal, (err, res) => {
+      apiClients.a.config.set(confKey, confVal, (err, res) => {
         expect(err).to.not.exist
-        apiClients['a'].config.get(confKey, (err, res) => {
+        apiClients.a.config.get(confKey, (err, res) => {
           expect(err).to.not.exist
           expect(res).to.have.a.property('Value', confVal)
           done()
@@ -26,9 +26,9 @@ describe('.config', () => {
       const confKey = 'otherKey'
       const confVal = true
 
-      apiClients['a'].config.set(confKey, confVal, (err, res) => {
+      apiClients.a.config.set(confKey, confVal, (err, res) => {
         expect(err).to.not.exist
-        apiClients['a'].config.get(confKey, (err, res) => {
+        apiClients.a.config.get(confKey, (err, res) => {
           expect(err).to.not.exist
           expect(res.Value).to.deep.equal(confVal)
           done()
@@ -40,9 +40,9 @@ describe('.config', () => {
       const confKey = 'API.HTTPHeaders.Access-Control-Allow-Origin'
       const confVal = ['http://example.io']
 
-      apiClients['a'].config.set(confKey, confVal, (err, res) => {
+      apiClients.a.config.set(confKey, confVal, (err, res) => {
         expect(err).to.not.exist
-        apiClients['a'].config.get(confKey, (err, res) => {
+        apiClients.a.config.get(confKey, (err, res) => {
           expect(err).to.not.exist
           expect(res.Value).to.deep.equal(confVal)
           done()
@@ -77,9 +77,9 @@ describe('.config', () => {
         const confKey = 'arbitraryKey'
         const confVal = 'arbitraryVal'
 
-        return apiClients['a'].config.set(confKey, confVal)
+        return apiClients.a.config.set(confKey, confVal)
           .then((res) => {
-            return apiClients['a'].config.get(confKey)
+            return apiClients.a.config.get(confKey)
           })
           .then((res) => {
             expect(res).to.have.a.property('Value', confVal)
@@ -90,9 +90,9 @@ describe('.config', () => {
         const confKey = 'otherKey'
         const confVal = true
 
-        return apiClients['a'].config.set(confKey, confVal)
+        return apiClients.a.config.set(confKey, confVal)
           .then((res) => {
-            return apiClients['a'].config.get(confKey)
+            return apiClients.a.config.get(confKey)
           })
           .then((res) => {
             expect(res.Value).to.deep.equal(confVal)
@@ -103,9 +103,9 @@ describe('.config', () => {
         const confKey = 'API.HTTPHeaders.Access-Control-Allow-Origin'
         const confVal = ['http://example.com']
 
-        return apiClients['a'].config.set(confKey, confVal)
+        return apiClients.a.config.set(confKey, confVal)
           .then((res) => {
-            return apiClients['a'].config.get(confKey)
+            return apiClients.a.config.get(confKey)
           })
           .then((res) => {
             expect(res.Value).to.deep.equal(confVal)

@@ -67,8 +67,7 @@ describe('.object', () => {
       expect(err).to.not.exist
 
       expect(res).to.be.eql({
-        Hash: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
-        Links: []
+        Hash: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD'
       })
       done()
     })
@@ -87,8 +86,7 @@ describe('.object', () => {
         .addLink(testObjectHash, 'next', testPatchObjectHash, (err, res) => {
           expect(err).to.not.exist
           expect(res).to.be.eql({
-            Hash: 'QmZFdJ3CQsY4kkyQtjoUo8oAzsEs5BNguxBhp8sjQMpgkd',
-            Links: null
+            Hash: 'QmZFdJ3CQsY4kkyQtjoUo8oAzsEs5BNguxBhp8sjQMpgkd'
           })
           apiClients.a.object.get(res.Hash, (err, res) => {
             expect(err).to.not.exist
@@ -110,8 +108,7 @@ describe('.object', () => {
         .rmLink('QmZFdJ3CQsY4kkyQtjoUo8oAzsEs5BNguxBhp8sjQMpgkd', 'next', (err, res) => {
           expect(err).to.not.exist
           expect(res).to.be.eql({
-            Hash: testObjectHash,
-            Links: null
+            Hash: testObjectHash
           })
           apiClients.a.object.get(res.Hash, (err, res) => {
             expect(err).to.not.exist
@@ -129,8 +126,7 @@ describe('.object', () => {
         .appendData(testObjectHash, new Buffer(' hello'), (err, res) => {
           expect(err).to.not.exist
           expect(res).to.be.eql({
-            Hash: 'Qmcjhr2QztQxCAoEf8tJPTGTVkTsUrTQ36JurH14DNYNsc',
-            Links: null
+            Hash: 'Qmcjhr2QztQxCAoEf8tJPTGTVkTsUrTQ36JurH14DNYNsc'
           })
           apiClients.a.object.get(res.Hash, (err, res) => {
             expect(err).to.not.exist
@@ -147,8 +143,7 @@ describe('.object', () => {
         .setData(testObjectHash, new Buffer('hello world'), (err, res) => {
           expect(err).to.not.exist
           expect(res).to.be.eql({
-            Hash: 'QmU1Sq1B7RPQD2XcQNLB58qJUyJffVJqihcxmmN1STPMxf',
-            Links: null
+            Hash: 'QmU1Sq1B7RPQD2XcQNLB58qJUyJffVJqihcxmmN1STPMxf'
           })
           apiClients.a.object.get(res.Hash, (err, res) => {
             expect(err).to.not.exist
@@ -166,8 +161,7 @@ describe('.object', () => {
     apiClients.a.object.new('unixfs-dir', (err, res) => {
       expect(err).to.not.exist
       expect(res).to.deep.equal({
-        Hash: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn',
-        Links: null
+        Hash: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
       })
       done()
     })
@@ -226,8 +220,7 @@ describe('.object', () => {
       return apiClients.a.object.links(testObjectHash)
         .then((res) => {
           expect(res).to.be.eql({
-            Hash: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
-            Links: []
+            Hash: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD'
           })
         })
     })
@@ -236,8 +229,7 @@ describe('.object', () => {
       return apiClients.a.object.new('unixfs-dir')
         .then((res) => {
           expect(res).to.deep.equal({
-            Hash: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn',
-            Links: null
+            Hash: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
           })
         })
     })

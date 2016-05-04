@@ -24,9 +24,9 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "aegir": "^2.1.1",
+    "aegir": "^3.0.1",
     "gulp": "^3.9.1",
-    "ipfsd-ctl": "^0.11.0",
+    "ipfsd-ctl": "^0.13.0",
     "pre-commit": "^1.1.2",
     "raw-loader": "^0.5.1",
     "stream-equal": "^0.1.8",

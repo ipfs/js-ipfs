@@ -6,16 +6,16 @@ const loadCommands = require('./load-commands')
 const getConfig = require('./config')
 const getRequestAPI = require('./request-api')
 
-function IpfsAPI (host_or_multiaddr, port, opts) {
+function IpfsAPI (hostOrMultiaddr, port, opts) {
   const config = getConfig()
 
   try {
-    const maddr = multiaddr(host_or_multiaddr).nodeAddress()
+    const maddr = multiaddr(hostOrMultiaddr).nodeAddress()
     config.host = maddr.address
     config.port = maddr.port
   } catch (e) {
-    if (typeof host_or_multiaddr === 'string') {
-      config.host = host_or_multiaddr
+    if (typeof hostOrMultiaddr === 'string') {
+      config.host = hostOrMultiaddr
       config.port = port && typeof port !== 'object' ? port : config.port
     }
   }
