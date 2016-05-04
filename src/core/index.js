@@ -13,6 +13,7 @@ const importer = require('ipfs-data-importing').import
 const libp2p = require('libp2p-ipfs')
 const init = require('./init')
 const IPFSRepo = require('ipfs-repo')
+const PeerBook = require('peer-book')
 
 exports = module.exports = IPFS
 
@@ -29,7 +30,7 @@ function IPFS (repo) {
   const dagS = new DAGService(blockS)
   var peerInfo
   var libp2pNode
-  var peerInfoBook = {}
+  const peerInfoBook = new PeerBook()
 
   this.load = (callback) => {
     repo.exists((err, exists) => {
@@ -339,7 +340,7 @@ function IPFS (repo) {
           return callback(OFFLINE_ERROR)
         }
 
-        callback(null, peerInfoBook)
+        callback(null, peerInfoBook.getAll())
       },
       // all the addrs we know
       addrs: (callback) => {
@@ -371,7 +372,7 @@ function IPFS (repo) {
         ma = ma.toString().replace(/\/ipfs\/(.*)/, '') // FIXME remove this when multiaddr supports ipfs
 
         peer.multiaddr.add(multiaddr(ma))
-        peerInfoBook[peer.id.toB58String()] = peer
+        peerInfoBook.put(peer)
 
         libp2pNode.swarm.dial(peer, (err) => {
           callback(err, id)
