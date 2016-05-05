@@ -14,9 +14,12 @@ module.exports = (repo, opts, callback) => {
   var config = require('../init-files/default-config.json')
 
   // Verify repo does not yet exist.
-  repo.exists((err, res) => {
-    if (err) { return callback(err) }
-    if (res === true) {
+  repo.exists((err, exists) => {
+    if (err) {
+      return callback(err)
+    }
+
+    if (exists === true) {
       return callback(new Error('repo already exists'))
     }
 

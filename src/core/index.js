@@ -1,6 +1,5 @@
 'use strict'
 
-const defaultRepo = require('./default-repo')
 const BlockService = require('ipfs-block-service')
 const Block = require('ipfs-block')
 const mDAG = require('ipfs-merkle-dag')
@@ -11,9 +10,12 @@ const PeerInfo = require('peer-info')
 const multiaddr = require('multiaddr')
 const importer = require('ipfs-data-importing').import
 const libp2p = require('libp2p-ipfs')
-const init = require('./init')
 const IPFSRepo = require('ipfs-repo')
 const PeerBook = require('peer-book')
+
+const init = require('./init')
+const defaultRepo = require('./default-repo')
+const utils = require('./utils')
 
 exports = module.exports = IPFS
 
@@ -33,7 +35,7 @@ function IPFS (repo) {
   const peerInfoBook = new PeerBook()
 
   this.load = (callback) => {
-    repo.exists((err, exists) => {
+    utils.ifRepoExists(repo, (err) => {
       if (err) {
         throw err
       }
@@ -58,11 +60,15 @@ function IPFS (repo) {
       opts = {}
     }
 
-    repo.exists((err, exists) => {
-      if (err) { return callback(err) }
+    utils.ifRepoExists(repo, (err) => {
+      if (err) {
+        return callback(err)
+      }
 
       repo.config.get((err, config) => {
-        if (err) { return callback(err) }
+        if (err) {
+          return callback(err)
+        }
 
         callback(null, config.Version.Current)
       })
@@ -100,8 +106,12 @@ function IPFS (repo) {
         callback = opts
         opts = {}
       }
-      repo.exists((err, res) => {
-        if (err) { return callback(err) }
+
+      utils.ifRepoExists(repo, (err, res) => {
+        if (err) {
+          return callback(err)
+        }
+
         repo.version.get(callback)
       })
     },
