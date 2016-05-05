@@ -68,7 +68,7 @@
     "ipfs-data-importing": "^0.3.3",
     "ipfs-merkle-dag": "^0.5.0",
     "ipfs-multipart": "^0.1.0",
-    "ipfs-repo": "^0.7.1",
+    "ipfs-repo": "^0.8.0",
     "joi": "^8.0.2",
     "libp2p-ipfs": "^0.3.3",
     "lodash.get": "^4.2.1",
