@@ -14,13 +14,10 @@ const libp2p = require('libp2p-ipfs')
 const IPFSRepo = require('ipfs-repo')
 const PeerBook = require('peer-book')
 const UnixFS = require('ipfs-unixfs')
-<<<<<<< HEAD
 
 const init = require('./init')
 const defaultRepo = require('./default-repo')
 const utils = require('./utils')
-=======
->>>>>>> 53158a5974818e4735b61fce550c38c0f6857e97
 
 exports = module.exports = IPFS
 
