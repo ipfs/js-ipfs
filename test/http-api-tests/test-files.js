@@ -35,24 +35,6 @@ module.exports = (httpAPI) => {
           })
         })
 
-        it.skip('returns 500 if tuples are invalid', (done) => {
-          const form = new FormData()
-          form.append('file', 4)
-          const headers = form.getHeaders()
-
-          streamToPromise(form).then((payload) => {
-            api.inject({
-              method: 'POST',
-              url: '/api/v0/add',
-              headers: headers,
-              payload: payload
-            }, (res) => {
-              expect(res.statusCode).to.equal(500)
-              done()
-            })
-          })
-        })
-
         it('adds a file', (done) => {
           const form = new FormData()
           const filePath = 'test/test-data/node.json'

@@ -37,6 +37,8 @@ describe('files', () => {
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
+          expect(stdout[0])
+              .to.equal('{ "Data": "another", "Links": [ { "Name": "some link", "Hash": "QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V", "Size": 8 } ] }')
           done()
         })
     })
@@ -60,7 +62,7 @@ describe('files', () => {
       })
     })
 
-    it.skip('add', (done) => {
+    it('add', (done) => {
       nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'files', 'add', process.cwd() + '/test/test-data/node.json'], {env})
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
@@ -80,11 +82,13 @@ describe('files', () => {
         })
     })
 
-    it.skip('cat', (done) => {
+    it('cat', (done) => {
       nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'files', 'cat', 'QmRRdjTN2PjyEPrW73GBxJNAZrstH5tCZzwHYFJpSTKkhe'], {env})
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
+          expect(stdout[0])
+              .to.equal('{ "Data": "another", "Links": [ { "Name": "some link", "Hash": "QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V", "Size": 8 } ] }')
           done()
         })
     })

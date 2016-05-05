@@ -27,7 +27,7 @@ module.exports = Command.extend({
           if (err) {
             throw new Error(err)
           }
-          res.pipe(process.stdout)
+          console.log(res.toString())
         })
         return
       }

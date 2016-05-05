@@ -38,30 +38,34 @@ exports.add = {
     var file = false
     var filePair
     var resArr = []
-    var outCounter = 0
-    var inCounter = 0
     var i = request.server.app.ipfs.files.add()
 
     i.on('data', (file) => {
-      outCounter++
       resArr.push({
         Name: file.path,
         Hash: bs58.encode(file.multihash).toString()
       })
-      if (inCounter === outCounter) {
-        if (resArr.length === 0) {
-          return reply({
-            Message: 'Failed to add files',
-            Code: 0
-          }).code(500)
-        }
-        return reply(resArr)
+    })
+
+    i.on('end', () => {
+      if (resArr.length === 0 && file) {
+        return reply({
+          Message: 'Failed to add files',
+          Code: 0
+        }).code(500)
       }
+      return reply(resArr)
     })
 
     parser.on('file', (fileName, fileStream) => {
-      inCounter++
       var rs = new Readable()
+      var init = false
+      rs._read = () => {
+        if (init) {
+          return
+        }
+        init = true
+      }
       fileStream.on('data', (data) => {
         rs.push(data)
         file = true
@@ -74,10 +78,10 @@ exports.add = {
     })
 
     parser.on('end', () => {
-      i.end()
       if (!file) {
         return reply("File argument 'data' is required").code(400).takeover()
       }
+      i.end()
     })
   }
 }
@@ -94,12 +98,12 @@ exports.cat = {
       if (err) {
         log.error(err)
         return reply({
-          Message: 'Failed to get object: ' + err,
+          Message: 'Failed to cat file: ' + err,
           Code: 0
         }).code(500)
       }
       ee.on('file', (data) => {
-        return reply(data)
+        return reply(data.stream)
       })
     })
   }

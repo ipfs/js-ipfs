@@ -56,7 +56,6 @@ module.exports = Command.extend({
         }
         var files = []
         if (utils.isDaemonOn()) {
-          console.log('daemon on')
           if (res.length !== 0) {
             const index = path.lastIndexOf('/')
             async.eachLimit(res, 10, (element, callback) => {
@@ -90,6 +89,7 @@ module.exports = Command.extend({
             const buffered = fs.readFileSync(path)
             rs.push(buffered)
             rs.push(null)
+            path = path.substring(path.lastIndexOf('/') + 1, path.length)
             const filePair = {path: path, content: rs}
             files.push(filePair)
             ipfs.add(files, (err, res) => {
