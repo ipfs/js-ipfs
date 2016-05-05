@@ -424,7 +424,7 @@ function IPFS (repo) {
         res.push(info)
       })
 
-      i.on('end', () => {
+      i.once('end', () => {
         callback(null, res)
       })
 

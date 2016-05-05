@@ -77,8 +77,7 @@ module.exports = (repo, opts, callback) => {
     const initDocsPath = path.join(__dirname, '../init-files/init-docs')
 
     const i = new Importer(dag)
-    i.on('data', (file) => {
-    })
+    i.resume()
 
     glob(path.join(initDocsPath, '/**/*'), (err, res) => {
       if (err) {
@@ -91,7 +90,7 @@ module.exports = (repo, opts, callback) => {
           callback()
         } else {
           const buffered = fs.readFileSync(element)
-          var rs = new Readable()
+          const rs = new Readable()
           rs.push(buffered)
           rs.push(null)
           const filePair = {path: addPath, stream: rs}
@@ -107,7 +106,7 @@ module.exports = (repo, opts, callback) => {
       })
     })
 
-    i.on('end', () => {
+    i.once('end', () => {
       doneImport(null)
     })
 

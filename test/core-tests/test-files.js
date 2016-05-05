@@ -9,7 +9,7 @@ const bs58 = require('bs58')
 const IPFS = require('../../src/core')
 
 describe('files', () => {
-  var ipfs
+  let ipfs
 
   before((done) => {
     ipfs = new IPFS(require('./repo-path'))
@@ -18,10 +18,10 @@ describe('files', () => {
 
   it('add', (done) => {
     const buffered = new Buffer('some data')
-    var rs = new Readable()
+    const rs = new Readable()
     rs.push(buffered)
     rs.push(null)
-    var arr = []
+    const arr = []
     const filePair = {path: 'data.txt', stream: rs}
     arr.push(filePair)
     ipfs.files.add(arr, (err, res) => {

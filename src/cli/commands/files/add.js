@@ -24,14 +24,13 @@ module.exports = Command.extend({
   },
 
   run: (recursive, path) => {
-    let s
     let rs
 
     if (!path) {
       throw new Error('Error: Argument \'path\' is required')
     }
 
-    s = fs.statSync(path)
+    var s = fs.statSync(path)
 
     if (s.isDirectory() && recursive === false) {
       throw new Error('Error: ' + process.cwd() + ' is a directory, use the \'-r\' flag to specify directories')
