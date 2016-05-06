@@ -18,14 +18,13 @@ describe('.bitswap', () => {
   it('.stat', (done) => {
     apiClients.a.bitswap.stat((err, res) => {
       expect(err).to.not.exist
-      expect(res).to.have.to.be.eql({
-        BlocksReceived: 0,
-        DupBlksReceived: 0,
-        DupDataReceived: 0,
-        Peers: null,
-        ProvideBufLen: 0,
-        Wantlist: null
-      })
+      expect(res).to.have.property('BlocksReceived')
+      expect(res).to.have.property('DupBlksReceived')
+      expect(res).to.have.property('DupDataReceived')
+      expect(res).to.have.property('Peers')
+      expect(res).to.have.property('ProvideBufLen')
+      expect(res).to.have.property('Wantlist')
+
       done()
     })
   })
@@ -51,14 +50,12 @@ describe('.bitswap', () => {
     it('.stat', () => {
       return apiClients.a.bitswap.stat()
         .then((res) => {
-          expect(res).to.have.to.be.eql({
-            BlocksReceived: 0,
-            DupBlksReceived: 0,
-            DupDataReceived: 0,
-            Peers: null,
-            ProvideBufLen: 0,
-            Wantlist: null
-          })
+          expect(res).to.have.property('BlocksReceived')
+          expect(res).to.have.property('DupBlksReceived')
+          expect(res).to.have.property('DupDataReceived')
+          expect(res).to.have.property('Peers')
+          expect(res).to.have.property('ProvideBufLen')
+          expect(res).to.have.property('Wantlist')
         })
     })
 
