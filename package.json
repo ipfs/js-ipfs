@@ -15,8 +15,8 @@
     "test:browser": "aegir-test browser",
     "build": "aegir-build",
     "release": "aegir-release",
-    "release:minor": "aegir-release minor",
-    "release:major": "aegir-release major",
+    "release:minor": "aegir-release --type minor",
+    "release:major": "aegir-release --type major",
     "coverage-publish": "aegir-coverage publish"
   },
   "pre-commit": [
@@ -37,7 +37,7 @@
   },
   "homepage": "https://github.com/ipfs/js-ipfs#readme",
   "devDependencies": {
-    "aegir": "^3.0.0",
+    "aegir": "^3.0.1",
     "async": "^2.0.0-rc.3",
     "buffer-loader": "0.0.1",
     "chai": "^3.5.0",
