@@ -18,15 +18,14 @@ module.exports = (httpAPI) => {
         createTempNode(6, (err, _ipfs) => {
           expect(err).to.not.exist
           ipfs = _ipfs
-          ipfs.libp2p.start(done)
-        })
-      })
-
-      before((done) => {
-        ipfs.id((err, res) => {
-          expect(err).to.not.exist
-          ipfsAddr = `${res.Addresses[0]}/ipfs/${res.ID}`
-          done()
+          ipfs.libp2p.start((err) => {
+            expect(err).to.not.exist
+            ipfs.id((err, res) => {
+              expect(err).to.not.exist
+              ipfsAddr = `${res.Addresses[0]}/ipfs/${res.ID}`
+              done()
+            })
+          })
         })
       })
 

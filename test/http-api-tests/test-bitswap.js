@@ -90,6 +90,40 @@ module.exports = (httpAPI) => {
           }
         ], done)
       })
+
+      describe('commands', () => {
+        it('wantlist', (done) => {
+          api.inject({
+            method: 'GET',
+            url: '/api/v0/bitswap/wantlist'
+          }, (res) => {
+            expect(res.statusCode).to.equal(200)
+            expect(res.result).to.have.property('Keys')
+
+            // TODO test that there actual values in there
+            done()
+          })
+        })
+
+        it('stat', (done) => {
+          api.inject({
+            method: 'GET',
+            url: '/api/v0/bitswap/stat'
+          }, (res) => {
+            expect(res.statusCode).to.equal(200)
+            expect(res.result).to.have.property('Wantlist')
+            expect(res.result).to.have.property('Peers')
+            expect(res.result).to.have.property('DupBlksReceived', 0)
+            expect(res.result).to.have.property('DupDataReceived', 0)
+
+            // TODO test that there actual values in there
+            done()
+          })
+        })
+
+        it.skip('unwant', () => {
+        })
+      })
     })
   })
 }

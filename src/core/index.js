@@ -9,6 +9,7 @@ const defaultRepo = require('./default-repo')
 
 const goOnline = require('./ipfs/go-online')
 const goOffline = require('./ipfs/go-offline')
+const isOnline = require('./ipfs/is-online')
 const load = require('./ipfs/load')
 const version = require('./ipfs/version')
 const id = require('./ipfs/id')
@@ -44,6 +45,7 @@ function IPFS (repoInstance) {
 
   this.goOnline = goOnline(this)
   this.goOffline = goOffline(this)
+  this.isOnline = isOnline(this)
   this.load = load(this)
   this.version = version(this)
   this.id = id(this)
