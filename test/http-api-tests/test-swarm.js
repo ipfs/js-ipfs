@@ -18,7 +18,7 @@ module.exports = (httpAPI) => {
         createTempNode(6, (err, _ipfs) => {
           expect(err).to.not.exist
           ipfs = _ipfs
-          ipfs.libp2p.start((err) => {
+          ipfs.goOnline((err) => {
             expect(err).to.not.exist
             ipfs.id((err, res) => {
               expect(err).to.not.exist
@@ -104,7 +104,7 @@ module.exports = (httpAPI) => {
         createTempNode(7, (err, _ipfs) => {
           expect(err).to.not.exist
           ipfs = _ipfs
-          ipfs.libp2p.start(done)
+          ipfs.goOnline(done)
         })
       })
 

@@ -111,6 +111,7 @@ module.exports = (httpAPI) => {
             url: '/api/v0/bitswap/stat'
           }, (res) => {
             expect(res.statusCode).to.equal(200)
+            expect(res.result).to.have.property('BlocksReceived')
             expect(res.result).to.have.property('Wantlist')
             expect(res.result).to.have.property('Peers')
             expect(res.result).to.have.property('DupBlksReceived', 0)
