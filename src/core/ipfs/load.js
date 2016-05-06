@@ -10,12 +10,12 @@ module.exports = function load (self) {
   return (callback) => {
     utils.ifRepoExists(self._repo, (err) => {
       if (err) {
-        throw err
+        return callback(err)
       }
 
       self._repo.config.get((err, config) => {
         if (err) {
-          throw err
+          return callback(err)
         }
         const pid = peerId.createFromPrivKey(config.Identity.PrivKey)
         self._peerInfo = new PeerInfo(pid)

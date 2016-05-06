@@ -1,14 +1,17 @@
 'use strict'
 
+const async = require('async')
 const Hapi = require('hapi')
-const IPFS = require('../core')
 const debug = require('debug')
 const fs = require('fs')
 const path = require('path')
-const log = debug('api')
-log.error = debug('api:error')
 const IPFSRepo = require('ipfs-repo')
 const fsbs = require('fs-blob-store')
+
+const log = debug('api')
+log.error = debug('api:error')
+
+const IPFS = require('../core')
 
 exports = module.exports = function HttpApi (repo) {
   this.ipfs = null
@@ -26,7 +29,7 @@ exports = module.exports = function HttpApi (repo) {
     this.ipfs.load(() => {
       const repoPath = this.ipfs.repo.path()
       const apiPath = path.join(repoPath, 'api')
-      console.log('Finished loading')
+
       try {
         fs.statSync(apiPath)
         console.log('This repo is currently being used by another daemon')
@@ -70,7 +73,7 @@ exports = module.exports = function HttpApi (repo) {
         // load routes
         require('./routes')(this.server)
 
-        this.ipfs.libp2p.start(() => {
+        this.ipfs.goOnline(() => {
           this.server.start((err) => {
             if (err) {
               return callback(err)
@@ -89,15 +92,17 @@ exports = module.exports = function HttpApi (repo) {
   this.stop = (callback) => {
     const repoPath = this.ipfs.repo.path()
     fs.unlinkSync(path.join(repoPath, 'api'))
-    let counter = 0
 
-    this.server.stop(closed)
-    this.ipfs.libp2p.stop(closed)
+    console.log('Stopping server')
 
-    function closed () {
-      if (++counter === 2) {
-        callback()
+    async.parallel([
+      (cb) => this.server.stop(cb),
+      (cb) => this.ipfs.goOffline(cb)
+    ], (err) => {
+      if (err) {
+        console.log('There were errors stopping')
       }
-    }
+      callback()
+    })
   }
 }

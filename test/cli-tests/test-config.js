@@ -127,7 +127,9 @@ describe('config', () => {
     })
 
     after((done) => {
+      console.log('stopping')
       httpAPI.stop((err) => {
+        console.log('stopped')
         expect(err).to.not.exist
         done()
       })
