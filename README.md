@@ -43,16 +43,16 @@ You can use [npmcdn](https://npmcdn.com/) to get the latest built version, like 
 <script src="https://npmcdn.com/ipfs-api/dist/index.js"></script>
 ```
 
-This will export the `ipfsAPI` constructor on the `window` object, such that:
+This will export the `IpfsApi` constructor on the `window` object, such that:
 
 ```
-var ipfs = window.ipfsAPI('localhost', '5001')
+var ipfs = window.IpfsApi('localhost', '5001')
 ```
 
 If you omit the host and port, the api will parse `window.host`, and use this information. This also works, and can be useful if you want to write apps that can be run from multiple different gateways:
 
 ```
-var ipfs = window.ipfsAPI()
+var ipfs = window.IpfsApi()
 ```
 
 ## CORS
