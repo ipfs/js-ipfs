@@ -20,7 +20,11 @@ module.exports = function libp2p (self) {
       })
     },
     stop: (callback) => {
-      self._libp2pNode.swarm.close(callback)
+      try {
+        self._libp2pNode.swarm.close(callback)
+      } catch (err) {
+        console.log('It is fine :)')
+      }
     },
     swarm: {
       peers: (callback) => {
