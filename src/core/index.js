@@ -3,7 +3,6 @@
 const BlockService = require('ipfs-block-service')
 const mDAG = require('ipfs-merkle-dag')
 const DAGService = mDAG.DAGService
-const IPFSRepo = require('ipfs-repo')
 const PeerBook = require('peer-book')
 
 const defaultRepo = require('./default-repo')
@@ -27,7 +26,8 @@ function IPFS (repoInstance) {
     throw new Error('Must be instantiated with new')
   }
 
-  if (!(repoInstance instanceof IPFSRepo)) {
+  if (typeof repoInstance === 'string' ||
+      repoInstance === undefined) {
     repoInstance = defaultRepo(repoInstance)
   }
 
