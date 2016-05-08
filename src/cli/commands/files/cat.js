@@ -31,7 +31,6 @@ module.exports = Command.extend({
             data.stream.pipe(process.stdout)
           })
         }
-        return
       })
     })
   }
