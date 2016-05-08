@@ -31,7 +31,7 @@ module.exports = (httpAPI) => {
 
       after((done) => {
         setTimeout(() => {
-          ipfs.libp2p.stop(done)
+          ipfs.goOffline(done)
         }, 1000)
       })
 
@@ -104,21 +104,19 @@ module.exports = (httpAPI) => {
         createTempNode(7, (err, _ipfs) => {
           expect(err).to.not.exist
           ipfs = _ipfs
-          ipfs.goOnline(done)
-        })
-      })
-
-      before((done) => {
-        ipfs.id((err, res) => {
-          expect(err).to.not.exist
-          ipfsAddr = `${res.Addresses[0]}/ipfs/${res.ID}`
-          done()
+          ipfs.goOnline(() => {
+            ipfs.id((err, res) => {
+              expect(err).to.not.exist
+              ipfsAddr = `${res.Addresses[0]}/ipfs/${res.ID}`
+              done()
+            })
+          })
         })
       })
 
       after((done) => {
         setTimeout(() => {
-          ipfs.libp2p.stop(done)
+          ipfs.goOffline(done)
         }, 1000)
       })
 

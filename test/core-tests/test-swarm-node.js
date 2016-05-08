@@ -34,9 +34,9 @@ describe('swarm', function () {
   })
 
   it('start', (done) => {
-    ipfsA.libp2p.start((err) => {
+    ipfsA.goOnline((err) => {
       expect(err).to.not.exist
-      ipfsB.libp2p.start((err) => {
+      ipfsB.goOnline((err) => {
         expect(err).to.not.exist
         done()
       })
