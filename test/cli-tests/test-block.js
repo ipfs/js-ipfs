@@ -56,7 +56,7 @@ describe('block', () => {
         })
     })
 
-    it('rm', (done) => {
+    it.skip('rm', (done) => {
       spawn(['block', 'rm', 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'])
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
@@ -71,6 +71,7 @@ describe('block', () => {
   describe('api running', () => {
     let httpAPI
     before((done) => {
+      console.log('repoPath ->', repoPath)
       httpAPI = new HttpAPI(repoPath)
       httpAPI.start((err) => {
         expect(err).to.not.exist
