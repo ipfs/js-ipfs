@@ -31,20 +31,9 @@ module.exports = (httpAPI) => {
       })
 
       after((done) => {
-        // cause CI takes forever
-        var closed = false
         setTimeout(() => {
-          if (!closed) {
-            closed = true
-            done()
-          }
-        }, 10000)
-        ipfs.libp2p.stop(() => {
-          if (!closed) {
-            closed = true
-            done()
-          }
-        })
+          ipfs.libp2p.stop(done)
+        }, 1000)
       })
 
       it('gets the api obj', () => {
@@ -129,20 +118,9 @@ module.exports = (httpAPI) => {
       })
 
       after((done) => {
-        // cause CI takes forever
-        var closed = false
         setTimeout(() => {
-          if (!closed) {
-            closed = true
-            done()
-          }
-        }, 10000)
-        ipfs.libp2p.stop(() => {
-          if (!closed) {
-            closed = true
-            done()
-          }
-        })
+          ipfs.libp2p.stop(done)
+        }, 1000)
       })
 
       it('start IPFS API ctl', (done) => {

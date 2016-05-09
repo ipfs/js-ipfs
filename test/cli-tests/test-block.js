@@ -71,7 +71,6 @@ describe('block', () => {
   describe('api running', () => {
     let httpAPI
     before((done) => {
-      console.log('repoPath ->', repoPath)
       httpAPI = new HttpAPI(repoPath)
       httpAPI.start((err) => {
         expect(err).to.not.exist

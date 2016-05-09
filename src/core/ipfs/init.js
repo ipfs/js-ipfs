@@ -4,6 +4,11 @@ const peerId = require('peer-id')
 const BlockService = require('ipfs-block-service')
 const DagService = require('ipfs-merkle-dag').DAGService
 const path = require('path')
+const glob = require('glob')
+const async = require('async')
+const Readable = require('stream').Readable
+const fs = require('fs')
+const Importer = require('ipfs-unixfs-engine').importer
 
 module.exports = function init (self) {
   return (opts, callback) => {
@@ -67,18 +72,45 @@ module.exports = function init (self) {
         return doneImport(null)
       }
 
-      const importer = require('ipfs-data-importing')
       const blocks = new BlockService(self._repo)
       const dag = new DagService(blocks)
 
       const initDocsPath = path.join(__dirname, '../../init-files/init-docs')
 
-      importer.import(initDocsPath, dag, {
-        recursive: true
-      }, doneImport)
+      const i = new Importer(dag)
+      i.resume()
+
+      glob(path.join(initDocsPath, '/**/*'), (err, res) => {
+        if (err) {
+          throw err
+        }
+        const index = __dirname.lastIndexOf('/')
+        async.eachLimit(res, 10, (element, callback) => {
+          const addPath = element.substring(index + 1, element.length)
+          if (!fs.statSync(element).isDirectory()) {
+            const rs = new Readable()
+            rs.push(fs.readFileSync(element))
+            rs.push(null)
+            const filePair = {path: addPath, stream: rs}
+            i.write(filePair)
+          }
+          callback()
+        }, (err) => {
+          if (err) {
+            throw err
+          }
+          i.end()
+        })
+      })
+
+      i.once('end', () => {
+        doneImport(null)
+      })
 
       function doneImport (err, stat) {
-        if (err) { return callback(err) }
+        if (err) {
+          return callback(err)
+        }
 
         // All finished!
         callback(null, true)
