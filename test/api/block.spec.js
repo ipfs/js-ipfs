@@ -8,6 +8,12 @@ describe('.block', () => {
   const blorbKey = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
   const blorb = Buffer('blorb')
 
+  it('returns an error when putting an array of files', () => {
+    return apiClients.a.block.put([blorb, blorb], (err) => {
+      expect(err).to.be.an.instanceof(Error)
+    })
+  })
+
   it('block.put', (done) => {
     apiClients.a.block.put(blorb, (err, res) => {
       expect(err).to.not.exist
@@ -40,6 +46,13 @@ describe('.block', () => {
   })
 
   describe('promise', () => {
+    it('returns an error when putting an array of files', () => {
+      return apiClients.a.block.put([blorb, blorb])
+        .catch((err) => {
+          expect(err).to.be.an.instanceof(Error)
+        })
+    })
+
     it('block.put', () => {
       return apiClients.a.block.put(blorb)
         .then((res) => {
