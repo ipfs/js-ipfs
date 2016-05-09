@@ -15,18 +15,18 @@ function checkArgs (hash, outPath) {
   }
   // format the output directory
   if (!outPath) {
-    var cwd = process.cwd()
-    return cwd
-  } else {
-    if (!outPath.endsWith('/')) {
-      outPath += '/'
-    }
-    if (!outPath.startsWith('/')) {
-      outPath = path.join('/', outPath)
-    }
-    var directory = outPath
-    return directory
+    return process.cwd()
   }
+
+  if (!outPath.endsWith('/')) {
+    outPath += '/'
+  }
+
+  if (!outPath.startsWith('/')) {
+    outPath = path.join('/', outPath)
+  }
+
+  return outPath
 }
 
 function ensureDir (dir, cb) {
