@@ -24,19 +24,14 @@ function checkPath (inPath, recursive) {
     throw new Error('Error: Argument \'path\' is required')
   }
 
-  var s = fs.statSync(inPath)
-
-  if (s.isDirectory() && recursive === false) {
-    throw new Error('Error: ' + process.cwd() + ' is a directory, use the \'-r\' flag to specify directories')
-  }
-  if (inPath === '.' && recursive === true) {
+  if (inPath === '.') {
     inPath = process.cwd()
-  } else if (inPath === '.' && recursive === false) {
-    s = fs.statSync(process.cwd())
-    if (s.isDirectory()) {
-      throw new Error('Error: ' + process.cwd() + ' is a directory, use the \'-r\' flag to specify directories')
-    }
   }
+
+  if (fs.statSync(inPath).isDirectory() && recursive === false) {
+    throw new Error(`Error: ${inPath} is a directory, use the '-r' flag to specify directories`)
+  }
+
   return inPath
 }
 
