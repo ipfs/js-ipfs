@@ -5,6 +5,9 @@ const expect = require('chai').expect
 const _ = require('lodash')
 const async = require('async')
 const Block = require('ipfs-block')
+const Readable = require('stream').Readable
+const bs58 = require('bs58')
+const bl = require('bl')
 
 const IPFS = require('../../src/core')
 const createTempNode = require('../utils/temp-node')
@@ -137,6 +140,46 @@ describe('bitswap', () => {
               (cb) => nodes[1].goOffline(cb)
             ], cb)
           }, 500)
+        ], done)
+      })
+    })
+
+    describe('fetches a remote file', () => {
+      beforeEach((done) => {
+        ipfs.goOnline(done)
+      })
+
+      it('2 peers', (done) => {
+        const file = new Buffer('I love IPFS <3')
+        const rs = new Readable()
+        rs.push(file)
+        rs.push(null)
+
+        let node
+        async.waterfall([
+          // 0. Start node
+          (cb) => addNode(6, (err, _ipfs) => {
+            node = _ipfs
+            cb(err)
+          }),
+          // 1. Add file to tmp instance
+          (cb) => node.files.add([{path: 'awesome.txt', stream: rs}], cb),
+          // 2. Request file from local instance
+          (val, cb) => {
+            const hash = bs58.encode(val[0].multihash).toString()
+
+            ipfs.files.cat(hash, (err, res) => {
+              expect(err).to.not.exist
+              res.on('file', (data) => {
+                data.stream.pipe(bl((err, bldata) => {
+                  expect(err).to.not.exist
+                  expect(bldata.toString()).to.equal('I love IPFS <3')
+                  cb()
+                }))
+              })
+            })
+          },
+          (cb) => node.goOffline(cb)
         ], done)
       })
     })
