@@ -31,7 +31,6 @@ function checkPath (inPath, recursive) {
   }
   if (inPath === '.' && recursive === true) {
     inPath = process.cwd()
-    return inPath
   } else if (inPath === '.' && recursive === false) {
     s = fs.statSync(process.cwd())
     if (s.isDirectory()) {
@@ -76,15 +75,13 @@ module.exports = Command.extend({
         if (res.length !== 0) {
           const index = inPath.lastIndexOf('/')
           async.eachLimit(res, 10, (element, callback) => {
-            const addPath = element.substring(index + 1, element.length)
-            if (fs.statSync(element).isDirectory()) {
-              callback()
-            } else {
-              rs = fs.createReadStream(element)
-              filePair = {path: addPath, stream: rs}
-              i.write(filePair)
-              callback()
+            if (!fs.statSync(element).isDirectory()) {
+              i.write({
+                path: element.substring(index + 1, element.length),
+                stream: fs.createReadStream(element)
+              })
             }
+            callback()
           }, (err) => {
             if (err) {
               throw err

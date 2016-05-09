@@ -38,7 +38,7 @@
   "homepage": "https://github.com/ipfs/js-ipfs#readme",
   "devDependencies": {
     "aegir": "^3.0.1",
-    "async": "^1.5.2",
+    "async": "^2.0.0-rc.4",
     "buffer-loader": "0.0.1",
     "chai": "^3.5.0",
     "expose-loader": "^0.7.1",
@@ -64,7 +64,7 @@
     "hapi": "^13.3.0",
     "ipfs-api": "^3.0.2",
     "ipfs-block": "^0.3.0",
-    "ipfs-block-service": "^0.3.0",
+    "ipfs-block-service": "^0.4.0",
     "ipfs-merkle-dag": "^0.5.0",
     "ipfs-multipart": "^0.1.0",
     "ipfs-repo": "^0.8.0",
@@ -79,7 +79,7 @@
     "peer-book": "0.1.0",
     "peer-id": "^0.6.6",
     "peer-info": "^0.6.2",
-    "readable-stream": "^1.1.13",
+    "readable-stream": "1.1.13",
     "ronin": "^0.3.11",
     "temp": "^0.8.3"
   },

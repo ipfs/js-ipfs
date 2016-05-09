@@ -8,7 +8,6 @@ log.error = debug('cli:files:error')
 var fs = require('fs')
 const path = require('path')
 const pathExists = require('path-exists')
-const async = require('async')
 
 function checkArgs (hash, outPath) {
   if (!hash) {
@@ -30,60 +29,45 @@ function checkArgs (hash, outPath) {
   }
 }
 
-function getFiles (result, dir) {
-  var filePath
-  result.on('file', (file) => {
+function ensureDir (dir, cb) {
+  pathExists(dir)
+    .then((exists) => {
+      if (!exists) {
+        fs.mkdir(dir, cb)
+      } else {
+        cb()
+      }
+    })
+    .catch(cb)
+}
+
+function fileHandler (result, dir) {
+  return function onFile (file) {
     // Check to see if the result is in a directory
     if (file.path.lastIndexOf('/') === -1) {
-      filePath = file.path
+      const dirPath = path.join(dir, file.path)
       // Check to see if the result is a directory
       if (file.dir === false) {
-        const ws = fs.createWriteStream(path.join(dir, file.path))
-        file.stream.pipe(ws)
+        file.stream.pipe(fs.createWriteStream(dirPath))
       } else {
-        // Check to see if the directory has already been created
-        pathExists(path.join(dir, file.path)).then(exists => {
-          if (!exists) {
-            fs.mkdir(path.join(dir, file.path), (err) => {
-              if (err) {
-                throw err
-              }
-            })
+        ensureDir(dirPath, (err) => {
+          if (err) {
+            throw err
           }
         })
       }
     } else {
-      // Check to see if the directory has already been created
-      filePath = file.path.substring(0, file.path.lastIndexOf('/') + 1)
-      pathExists(path.join(dir, filePath)).then(exists => {
-        // Create a directory for the incoming files
-        if (!exists) {
-          async.waterfall([
-            (cb) => {
-              fs.mkdir(path.join(dir, filePath), (err) => {
-                if (err) {
-                  cb(err)
-                }
-                cb(null)
-              })
-            },
-            (cb) => {
-              const ws = fs.createWriteStream(path.join(dir, file.path))
-              file.stream.pipe(ws)
-              cb(null)
-            }
-          ], (err) => {
-            if (err) {
-              throw err
-            }
-          })
+      const filePath = file.path.substring(0, file.path.lastIndexOf('/') + 1)
+      const dirPath = path.join(dir, filePath)
+      ensureDir(dirPath, (err) => {
+        if (err) {
+          throw err
         }
-        // Just write the file
-        const ws = fs.createWriteStream(path.join(dir, file.path))
-        file.stream.pipe(ws)
+
+        file.stream.pipe(fs.createWriteStream(dirPath))
       })
     }
-  })
+  }
 }
 
 module.exports = Command.extend({
@@ -100,7 +84,7 @@ module.exports = Command.extend({
         if (err) {
           throw err
         }
-        getFiles(result, dir)
+        result.on('file', fileHandler(result, dir))
       })
     })
   }

@@ -8,6 +8,7 @@ const glob = require('glob')
 const async = require('async')
 const Readable = require('stream').Readable
 const fs = require('fs')
+const Importer = require('ipfs-unixfs-engine').importer
 
 module.exports = function init (self) {
   return (opts, callback) => {
@@ -71,7 +72,6 @@ module.exports = function init (self) {
         return doneImport(null)
       }
 
-      const Importer = require('ipfs-unixfs-engine').importer
       const blocks = new BlockService(self._repo)
       const dag = new DagService(blocks)
 
@@ -87,23 +87,19 @@ module.exports = function init (self) {
         const index = __dirname.lastIndexOf('/')
         async.eachLimit(res, 10, (element, callback) => {
           const addPath = element.substring(index + 1, element.length)
-          if (fs.statSync(element).isDirectory()) {
-            callback()
-          } else {
-            const buffered = fs.readFileSync(element)
+          if (!fs.statSync(element).isDirectory()) {
             const rs = new Readable()
-            rs.push(buffered)
+            rs.push(fs.readFileSync(element))
             rs.push(null)
             const filePair = {path: addPath, stream: rs}
             i.write(filePair)
-            callback()
           }
+          callback()
         }, (err) => {
           if (err) {
             throw err
           }
           i.end()
-          return
         })
       })
 
@@ -112,7 +108,9 @@ module.exports = function init (self) {
       })
 
       function doneImport (err, stat) {
-        if (err) { return callback(err) }
+        if (err) {
+          return callback(err)
+        }
 
         // All finished!
         callback(null, true)
