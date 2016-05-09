@@ -85,7 +85,7 @@ describe('bitswap', () => {
               cb()
             })
           },
-          (cb) => node.goOffline(cb)
+          (cb) => setTimeout(() => node.goOffline(cb), 1000)
         ], done)
       })
 
@@ -139,7 +139,7 @@ describe('bitswap', () => {
               (cb) => nodes[0].goOffline(cb),
               (cb) => nodes[1].goOffline(cb)
             ], cb)
-          }, 500)
+          }, 1000)
         ], done)
       })
     })
@@ -179,7 +179,7 @@ describe('bitswap', () => {
               })
             })
           },
-          (cb) => node.goOffline(cb)
+          (cb) => setTimeout(() => node.goOffline(cb), 1000)
         ], done)
       })
     })
