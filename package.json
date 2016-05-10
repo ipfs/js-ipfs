@@ -71,7 +71,7 @@
     "ipfs-unixfs-engine": "^0.6.1",
     "joi": "^8.0.5",
     "libp2p-ipfs": "^0.3.3",
-    "libp2p-swarm": "^0.12.5",
+    "libp2p-swarm": "^0.12.10",
     "lodash.get": "^4.2.1",
     "lodash.set": "^4.1.0",
     "multiaddr": "^1.4.1",
