@@ -70,7 +70,7 @@
     "ipfs-repo": "^0.8.0",
     "ipfs-unixfs-engine": "^0.6.1",
     "joi": "^8.0.5",
-    "libp2p-ipfs": "^0.3.3",
+    "libp2p-ipfs": "^0.3.8",
     "libp2p-swarm": "^0.12.5",
     "lodash.get": "^4.2.1",
     "lodash.set": "^4.1.0",
