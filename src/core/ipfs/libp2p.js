@@ -57,9 +57,8 @@ module.exports = function libp2p (self) {
         const id = peerId.createFromB58String(idStr[1])
         const peer = new PeerInfo(id)
 
-        ma = ma.toString().replace(/\/ipfs\/(.*)/, '') // FIXME remove this when multiaddr supports ipfs
-
         peer.multiaddr.add(multiaddr(ma))
+
         self._peerInfoBook.put(peer)
 
         self._libp2pNode.swarm.dial(peer, (err) => {

@@ -5,12 +5,16 @@ const expect = require('chai').expect
 const _ = require('lodash')
 const async = require('async')
 const Block = require('ipfs-block')
-const Readable = require('stream').Readable
 const bs58 = require('bs58')
 const bl = require('bl')
+const API = require('ipfs-api')
+const multiaddr = require('multiaddr')
 
 const IPFS = require('../../src/core')
-const createTempNode = require('../utils/temp-node')
+
+function makeBlock () {
+  return new Block(`IPFS is awesome ${Math.random()}`)
+}
 
 describe('bitswap', () => {
   let ipfs
@@ -21,41 +25,40 @@ describe('bitswap', () => {
   })
 
   describe('connections', () => {
-    function getAndAssertBlock (node, key, block, cb) {
-      node.block.get(key, (err, b) => {
-        expect(err).to.not.exist
-        expect(b.data.toString()).to.be.eql(block.data.toString())
-        cb()
-      })
-    }
-
     function connectNodesSingle (node1, node2, done) {
       node1.id((err, res) => {
         expect(err).to.not.exist
-        node2.libp2p.swarm.connect(`${res.Addresses[0]}/ipfs/${res.ID}`, done)
+        const addr = res.Addresses
+                .map((addr) => multiaddr(addr))
+                .filter((addr) => {
+                  return _.includes(addr.protoNames(), 'websockets')
+                })[0]
+
+        let target = addr.encapsulate(multiaddr(`/ipfs/${res.ID}`)).toString()
+
+        target = target.replace('0.0.0.0', '127.0.0.1')
+        const swarm = node2.libp2p ? node2.libp2p.swarm : node2.swarm
+        console.log('connecting to %s', target)
+        swarm.connect(target, done)
       })
     }
 
     function connectNodes (node1, node2, done) {
-      async.parallel([
+      async.series([
         (cb) => connectNodesSingle(node1, node2, cb),
-        (cb) => connectNodesSingle(node2, node1, cb)
+        (cb) => setTimeout(() => {
+          // need timeout so we wait for identify to happen
+          // in the browsers
+          connectNodesSingle(node2, node1, cb)
+        }, 500)
       ], done)
     }
 
     function addNode (num, done) {
-      let node
-      async.waterfall([
-        (cb) => {
-          createTempNode(num, (err, _ipfs) => {
-            expect(err).to.not.exist
-            node = _ipfs
-            cb()
-          })
-        },
-        (cb) => node.goOnline(cb),
-        (cb) => connectNodes(node, ipfs, cb)
-      ], (err) => {
+      const apiUrl = `/ip4/127.0.0.1/tcp/1100${num}`
+      const node = new API(apiUrl)
+
+      connectNodes(node, ipfs, (err) => {
         done(err, node)
       })
     }
@@ -65,105 +68,95 @@ describe('bitswap', () => {
         ipfs.goOnline(done)
       })
 
+      afterEach((done) => {
+        setTimeout(() => ipfs.goOffline(done), 500)
+      })
+
       it('2 peers', (done) => {
-        const block = new Block('I am awesome, 2')
+        const block = makeBlock()
         let node
         async.series([
           // 0. Start node
-          (cb) => addNode(6, (err, _ipfs) => {
+          (cb) => addNode(9, (err, _ipfs) => {
             node = _ipfs
             cb(err)
           }),
-          // 1. Add file to tmp instance
-          (cb) => node.block.put(block, cb),
-          // 2. Request file from local instance
+          (cb) => node.block.put(block.data, cb),
           (cb) => {
             ipfs.block.get(block.key, (err, b) => {
               expect(err).to.not.exist
-              // 3. Profit
-              expect(b.data.toString()).to.be.eql('I am awesome, 2')
+              expect(b.data.toString()).to.be.eql(block.data.toString())
               cb()
             })
-          },
-          (cb) => setTimeout(() => node.goOffline(cb), 1000)
+          }
         ], done)
       })
 
       it('3 peers', function (done) {
         this.timeout(60 * 1000)
 
-        const blocks = _.range(6).map((i) => new Block(`I am awesome, ${i}`))
+        const blocks = _.range(6).map((i) => makeBlock())
         const keys = blocks.map((b) => b.key)
         const nodes = []
         async.series([
-          // 0. Start node 1
-          (cb) => addNode(6, (err, _ipfs) => {
+          (cb) => addNode(8, (err, _ipfs) => {
             nodes.push(_ipfs)
             cb(err)
           }),
-          // 1. Start node 2
           (cb) => addNode(7, (err, _ipfs) => {
             nodes.push(_ipfs)
             cb(err)
           }),
           (cb) => connectNodes(nodes[0], nodes[1], cb),
-          // 2. Put blocks on all nodes
-          (cb) => nodes[0].block.put(blocks[0], cb),
-          (cb) => nodes[0].block.put(blocks[1], cb),
-          (cb) => nodes[1].block.put(blocks[2], cb),
-          (cb) => nodes[1].block.put(blocks[3], cb),
+          (cb) => nodes[0].block.put(blocks[0].data, cb),
+          (cb) => nodes[0].block.put(blocks[1].data, cb),
+          (cb) => nodes[1].block.put(blocks[2].data, cb),
+          (cb) => nodes[1].block.put(blocks[3].data, cb),
           (cb) => ipfs.block.put(blocks[4], cb),
           (cb) => ipfs.block.put(blocks[5], cb),
           // 3. Fetch blocks on all nodes
-          (cb) => async.parallel([
-            (cb) => {
-              async.each(_.range(6), (i, innerCb) => {
-                getAndAssertBlock(nodes[0], keys[i], blocks[i], innerCb)
-              }, cb)
-            },
-            (cb) => {
-              async.each(_.range(6), (i, innerCb) => {
-                getAndAssertBlock(nodes[1], keys[i], blocks[i], innerCb)
-              }, cb)
-            },
-            (cb) => {
-              async.each(_.range(6), (i, innerCb) => {
-                getAndAssertBlock(ipfs, keys[i], blocks[i], innerCb)
-              }, cb)
+          (cb) => async.each(_.range(6), (i, cbI) => {
+            const toMh = (k) => bs58.encode(k).toString()
+            const check = (n, k, callback) => {
+              n.block.get(k, (err, b) => {
+                expect(err).to.not.exist
+                expect(
+                  (b.data || b).toString()
+                ).to.be.eql(
+                  blocks[i].data.toString()
+                )
+                callback()
+              })
             }
-          ], cb),
-          // 4. go offline
-          (cb) => setTimeout(() => {
-            // need to wait a bit to let the sockets finish handshakes
-            async.parallel([
-              (cb) => nodes[0].goOffline(cb),
-              (cb) => nodes[1].goOffline(cb)
-            ], cb)
-          }, 1000)
+
+            async.series([
+              (cbJ) => check(nodes[0], toMh(keys[i]), cbJ),
+              (cbJ) => check(nodes[1], toMh(keys[i]), cbJ),
+              (cbJ) => check(ipfs, keys[i], cbJ)
+            ], cbI)
+          }, cb)
         ], done)
       })
     })
 
-    describe('fetches a remote file', () => {
+    // wont work without http-api for add
+    describe.skip('fetches a remote file', () => {
       beforeEach((done) => {
         ipfs.goOnline(done)
       })
 
       it('2 peers', (done) => {
         const file = new Buffer('I love IPFS <3')
-        const rs = new Readable()
-        rs.push(file)
-        rs.push(null)
 
         let node
         async.waterfall([
           // 0. Start node
-          (cb) => addNode(6, (err, _ipfs) => {
+          (cb) => addNode(9, (err, _ipfs) => {
             node = _ipfs
             cb(err)
           }),
           // 1. Add file to tmp instance
-          (cb) => node.files.add([{path: 'awesome.txt', stream: rs}], cb),
+          (cb) => node.add([{path: 'awesome.txt', content: file}], cb),
           // 2. Request file from local instance
           (val, cb) => {
             const hash = bs58.encode(val[0].multihash).toString()
@@ -203,7 +196,7 @@ describe('bitswap', () => {
             []
           )
 
-          done()
+          ipfs.goOffline(done)
         })
       })
 
@@ -227,7 +220,8 @@ describe('bitswap', () => {
               'dupDataReceived',
               'dupBlksReceived'
             ])
-            done()
+
+            ipfs.goOffline(done)
           })
         })
       })

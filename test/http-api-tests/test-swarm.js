@@ -101,7 +101,7 @@ module.exports = (httpAPI) => {
       var ipfsAddr
 
       before((done) => {
-        createTempNode(7, (err, _ipfs) => {
+        createTempNode(5, (err, _ipfs) => {
           expect(err).to.not.exist
           ipfs = _ipfs
           ipfs.goOnline(() => {
