@@ -66,3 +66,17 @@ $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin "[\"http://exam
 ## Usage
 
 See [API.md](API.md) and [`tests/api`](test/api) for details on available methods.
+
+## Contribute
+
+Contributions are welcome! Please check out the [issues](https://github.com/ipfs/js-ipfs-api/issues).
+
+Some general things we always need are more tests. If you can add them, we'll work on making them pass (hopefully with you!). 
+
+## License
+
+MIT.
+
+# Want to hack on IPFS?
+
+[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/contributing.md)
