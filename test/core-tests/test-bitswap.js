@@ -38,7 +38,6 @@ describe('bitswap', () => {
 
         target = target.replace('0.0.0.0', '127.0.0.1')
         const swarm = node2.libp2p ? node2.libp2p.swarm : node2.swarm
-        console.log('connecting to %s', target)
         swarm.connect(target, done)
       })
     }

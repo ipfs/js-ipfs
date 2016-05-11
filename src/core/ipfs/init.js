@@ -17,7 +17,7 @@ module.exports = function init (self) {
     opts.bits = opts.bits || 2048
 
     // Pre-set config values.
-    var config = require('../../init-files/default-config.json')
+    var config = JSON.parse(fs.readFileSync(path.join(__dirname, '../../init-files/default-config.json')).toString())
 
     // Verify repo does not yet exist.
     self._repo.exists((err, exists) => {
