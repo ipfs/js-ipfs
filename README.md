@@ -20,7 +20,7 @@ $ npm install --save ipfs-api
 
 #### Running the daemon with the right port
 
-To interact with the API, you need to have a local daemon running (at the moment; we have plans to make it work independently). It needs to be open on the right port. `5001` is the default, and is used in the examples below, but it can be set to whatever you need.
+To interact with the API, you need to have a local daemon running. It needs to be open on the right port. `5001` is the default, and is used in the examples below, but it can be set to whatever you need.
 
 ```sh
 # Show the ipfs config API port to check it is correct
