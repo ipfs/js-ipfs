@@ -1,0 +1,25 @@
+{
+  "name": "interface-ipfs-core",
+  "version": "0.0.0",
+  "description": "A test suite and interface you can use to implement a IPFS core interface.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/interface-ipfs-core.git"
+  },
+  "keywords": [
+    "IPFS"
+  ],
+  "author": "David Dias <daviddias@ipfs.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ipfs/interface-ipfs-core/issues"
+  },
+  "homepage": "https://github.com/ipfs/interface-ipfs-core#readme",
+  "dependencies": {
+    "chai": "^3.5.0"
+  }
+}
