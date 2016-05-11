@@ -76,7 +76,7 @@
     "lodash.set": "^4.1.0",
     "multiaddr": "^1.4.1",
     "path-exists": "^3.0.0",
-    "peer-book": "0.1.0",
+    "peer-book": "0.1.1",
     "peer-id": "^0.6.6",
     "peer-info": "^0.6.2",
     "readable-stream": "1.1.13",
