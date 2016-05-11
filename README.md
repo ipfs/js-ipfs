@@ -17,6 +17,7 @@ IPFS API wrapper library in JavaScript
 ```bash
 $ npm install --save ipfs-api
 ```
+**Note:** ipfs-api requires Node v4.x (LTS) or higher.
 
 #### Running the daemon with the right port
 
