@@ -18,6 +18,24 @@ IPFS API wrapper library in JavaScript
 $ npm install --save ipfs-api
 ```
 
+#### Running the daemon with the right port
+
+To interact with the API, you need to have a local daemon running (at the moment; we have plans to make it work independently). It needs to be open on the right port: `5001`. This is the default.
+
+```sh
+# Show the ipfs config API port to check it is correct
+$ ipfs config Addresses.API
+/ip4/127.0.0.1/tcp/5001
+# Set it if it does not match the above output
+$ ipfs config Addresses.API /ip4/127.0.0.1/tcp/5001
+# Restart the daemon after changing the config
+
+# Run the daemon
+$ ipfs daemon
+```
+
+#### Importing the module and usage
+
 ```javascript
 var ipfsAPI = require('ipfs-api')
 
@@ -67,11 +85,28 @@ $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin "[\"http://exam
 
 See [API.md](API.md) and [`tests/api`](test/api) for details on available methods.
 
+### Callbacks and promises
+
+If you do not pass in a callback all API functions will return a `Promise`. For example:
+
+```js
+ipfs.id()
+  .then(function (id) {
+    console.log('my id is: ', id)
+  })
+```
+
+This relies on a global `Promise` object. If you are in an environment where that is not
+yet available you need to bring your own polyfill.
+
 ## Contribute
 
-Contributions are welcome! Please check out the [issues](https://github.com/ipfs/js-ipfs-api/issues).
+The js-ipfs API is a work in progress. As such, there's a few things you can do right now to help out:
 
-Some general things we always need are more tests. If you can add them, we'll work on making them pass (hopefully with you!). 
+* **[Check out the existing issues](https://github.com/ipfs/js-ipfs-api/issues)**!
+* **Perform code reviews**. More eyes will help a) speed the project along b) ensure quality and c) reduce possible future bugs.
+* **Add tests**. There can never be enough tests.
+* **Contribute to the [FAQ repository](https://github.com/ipfs/faq/issues)** with any questions you have about IPFS or any of the relevant technology. A good example would be asking, 'What is a merkledag tree?'. If you don't know a term, odds are, someone else doesn't either. Eventually, we should have a good understanding of where we need to improve communications and teaching together to make IPFS and IPN better.
 
 ## License
 

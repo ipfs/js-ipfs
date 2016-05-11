@@ -2,10 +2,8 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [API](#api)
-  - [Callbacks and promises](#callbacks-and-promises)
-  - [Reference](#reference)
-    - [Core](#core)
+- [API Reference](#api-reference)
+  - [Core](#core)
       - [`version([callback])`](#versioncallback)
       - [`id([callback])`](#idcallback)
       - [`block`](#block)
@@ -32,7 +30,7 @@
         - [`pin.list(hash, options, [callback])`](#pinlisthash-options-callback)
       - [`log`](#log)
         - [`log.tail([callback])`](#logtailcallback)
-    - [Extensions](#extensions)
+  - [Extensions](#extensions)
       - [`add(arrayOrBufferOrStream, [callback])`](#addarrayorbufferorstream-callback)
       - [`name`](#name)
         - [`name.publish(hash, [callback])`](#namepublishhash-callback)
@@ -47,7 +45,7 @@
         - [`files.write(file, bufferOrArray, [options, callback])`](#fileswritefile-bufferorarray-options-callback)
         - [`files.mv(src, target, [callback])`](#filesmvsrc-target-callback)
       - [`mount(ipfs, ipns, [callback])`](#mountipfs-ipns-callback)
-    - [Tooling](#tooling)
+  - [Tooling](#tooling)
       - [`commands([callback])`](#commandscallback)
       - [`update`](#update)
         - [`update.apply([callback])`](#updateapplycallback)
@@ -57,7 +55,7 @@
         - [`diag.net([callback])`](#diagnetcallback)
         - [`diag.sys([callback])`](#diagsyscallback)
         - [`diag.cmds([callback])`](#diagcmdscallback)
-    - [Network](#network)
+  - [Network](#network)
       - [`ping(id, [callback])`](#pingid-callback)
       - [`dht`](#dht)
         - [`dht.findprovs([callback])`](#dhtfindprovscallback)
@@ -69,30 +67,13 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# API
+# API Reference
 
 We classify the API calls by 'core', 'extensions', 'tooling', and 'network', following the same API spec organization available at [ipfs/specs](https://github.com/ipfs/specs/tree/master/api).
 
 The tests folder also contains great examples that can be used to understand how this client library interacts with the HTTP-API. You can find the [tests here](test/api).
 
-
-## Callbacks and promises
-
-If you do not pass in a callback all api functions will return a `Promise`, for example
-
-```js
-ipfs.id()
-  .then(function (id) {
-    console.log('my id is: ', id)
-  })
-```
-
-This relies on a global `Promise` object. If you are in an environemnt where that is not
-yet available you need to bring your own polyfill.
-
-## Reference
-
-### Core
+## Core
 
 #### `version([callback])`
 
@@ -149,7 +130,7 @@ yet available you need to bring your own polyfill.
 
 ##### `log.tail([callback])`
 
-### Extensions
+## Extensions
 
 #### `add(arrayOrBufferOrStream, [callback])`
 
@@ -179,7 +160,7 @@ yet available you need to bring your own polyfill.
 
 - [tests](test/api/mount.spec.js)
 
-### Tooling
+## Tooling
 
 #### `commands([callback])`
 
@@ -201,7 +182,7 @@ yet available you need to bring your own polyfill.
 ##### `diag.sys([callback])`
 ##### `diag.cmds([callback])`
 
-### Network
+## Network
 
 #### `ping(id, [callback])`
 
