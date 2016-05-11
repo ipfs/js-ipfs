@@ -49,7 +49,6 @@ test.all(common)
 ## Go
 
 > WIP
-
 # API
 
 A valid (read: that follows this interface) IPFS core implementation, must expose the following API.
@@ -64,23 +63,45 @@ A valid (read: that follows this interface) IPFS core implementation, must expos
 
 **WIP**
 
-##### `JavaScript` - ipfs.object.new(layout, callback)
+##### `JavaScript` - ipfs.object.new(layout, [callback])
 
 `layout` is the MerkleDAG node type, it can be: `null`, `unixfs-dir`, `unixfs-raw`, `unixfs-file`, `unixfs-metadata`, `unixfs-symlink`.
 
-`callback` that must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js)
+`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js)
 
 If no `callback` is passed, a promise is returned.
 
+
+
+
+
 ### `object.put`
 
-> DESCRIPTION
+> Store an MerkleDAG node.
 
 ##### `Go` 
 
 **WIP**
 
-##### `JavaScript` - ipfs.object.put
+##### `JavaScript` - ipfs.object.put(obj, [options, callback])
+
+`obj` is the MerkleDAG Node to be stored. Can of type:
+
+- Object, with format `{ Data: <data>, Links: [] }`
+- Buffer, requiring that the encoding is specified on the encoding
+- [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js)
+
+`options` is a optional argument of type object, that can contain the following properties:
+
+- `enc`, the encoding of the Buffer (json, yml, etc), if passed a Buffer.
+
+`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js)
+
+If no `callback` is passed, a promise is returned.
+
+
+
+
 
 ### `object.get`
 
@@ -90,37 +111,107 @@ If no `callback` is passed, a promise is returned.
 
 **WIP**
 
-##### `JavaScript` - ipfs.object.get
+##### `JavaScript` - ipfs.object.get(multihash, [options, callback])
+
+`multihash` is a [multihash]() which can be passed as:
+
+- Buffer, the raw Buffer of the multihash (or of and encoded version)
+- String, the toString version of the multihash (or of an encoded version)
+
+`options` is a optional argument of type object, that can contain the following properties:
+
+- `enc`, the encoding of multihash (base58, base64, etc), if any.
+
+`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js)
+
+If no `callback` is passed, a promise is returned.
 
 ### `object.data`
 
-> DESCRIPTION
+> Returns the Data field of an object
 
 ##### `Go` 
 
 **WIP**
 
-##### `JavaScript` - ipfs.object.data
+##### `JavaScript` - ipfs.object.data(multihash, [options, callback])
+`multihash` is a [multihash]() which can be passed as:
+
+- Buffer, the raw Buffer of the multihash (or of and encoded version)
+- String, the toString version of the multihash (or of an encoded version)
+
+`options` is a optional argument of type object, that can contain the following properties:
+
+- `enc`, the encoding of multihash (base58, base64, etc), if any.
+
+`callback` must follow `function (err, data) {}` signature, where `err` is an error if the operation was not successful and `data` is a Buffer with the data that the MerkleDAG node contained.
+
+If no `callback` is passed, a promise is returned.
 
 ### `object.links`
 
-> DESCRIPTION
+> Returns the Links field of an object
 
 ##### `Go` 
 
 **WIP**
 
-##### `JavaScript` - ipfs.object.links
+##### `JavaScript` - ipfs.object.links(multihash, [options, callback])
+
+`multihash` is a [multihash]() which can be passed as:
+
+- Buffer, the raw Buffer of the multihash (or of and encoded version)
+- String, the toString version of the multihash (or of an encoded version)
+
+`options` is a optional argument of type object, that can contain the following properties:
+
+- `enc`, the encoding of multihash (base58, base64, etc), if any.
+
+`callback` must follow `function (err, links) {}` signature, where `err` is an error if the operation was not successful and `links` is an Array of [DAGLink](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js#L199-L203) objects.
+
+If no `callback` is passed, a promise is returned.
+
+
+
+
 
 ### `object.stat`
 
-> DESCRIPTION
+> Returns stats about an Object
 
 ##### `Go` 
 
 **WIP**
 
-##### `JavaScript` - ipfs.object.stat
+##### `JavaScript` - ipfs.object.stat(multihash, [options, callback])
+
+`multihash` is a [multihash]() which can be passed as:
+
+- Buffer, the raw Buffer of the multihash (or of and encoded version)
+- String, the toString version of the multihash (or of an encoded version)
+
+`options` is a optional argument of type object, that can contain the following properties:
+
+- `enc`, the encoding of multihash (base58, base64, etc), if any.
+
+`callback` must follow `function (err, stats) {}` signature, where `err` is an error if the operation was not successful and `stats` is an Object with following format:
+
+```JavaScript
+{
+  Hash: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
+  NumLinks: 0,
+  BlockSize: 10,
+  LinksSize: 2,
+  DataSize: 8,
+  CumulativeSize: 10
+}
+```
+
+If no `callback` is passed, a promise is returned.
+
+
+
+
 
 ### `object.patch`
 
@@ -128,42 +219,112 @@ If no `callback` is passed, a promise is returned.
 
 #### `object.patch.addLink`
 
-> DESCRIPTION
+> Add a Link to an existing MerkleDAG Object
 
 ##### `Go`
 
 **WIP**
 
-##### `JavaScript` - ipfs.object.patch.addLink
+##### `JavaScript` - ipfs.object.patch.addLink(multihash, DAGLink, [options, callback])
+
+`multihash` is a [multihash]() which can be passed as:
+
+- Buffer, the raw Buffer of the multihash (or of and encoded version)
+- String, the toString version of the multihash (or of an encoded version)
+
+`DAGLink` is the new link to be added on the node that is identified by the `multihash`
+
+`options` is a optional argument of type object, that can contain the following properties:
+
+- `enc`, the encoding of multihash (base58, base64, etc), if any.
+
+`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js) that resulted by the operation of adding a Link.
+
+If no `callback` is passed, a promise is returned.
+
+
+
 
 
 #### `object.patch.rmLink`
 
-> DESCRIPTION
+> Remove a Link from an existing MerkleDAG Object
 
 ##### `Go`
 
 **WIP**
 
-##### `JavaScript` - ipfs.object.patch.rmLink
+##### `JavaScript` - ipfs.object.patch.rmLink(multihash, DAGLink, [options, callback])
+
+`multihash` is a [multihash]() which can be passed as:
+
+- Buffer, the raw Buffer of the multihash (or of and encoded version)
+- String, the toString version of the multihash (or of an encoded version)
+
+`DAGLink` is the link to be removed on the node that is identified by the `multihash`
+
+`options` is a optional argument of type object, that can contain the following properties:
+
+- `enc`, the encoding of multihash (base58, base64, etc), if any.
+
+`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js) that resulted by the operation of adding a Link.
+
+If no `callback` is passed, a promise is returned.
+
+
+
+
 
 #### `object.patch.appendData`
 
-> DESCRIPTION
+> Append Data to the Data field of an existing node.
 
 ##### `Go`
 
 **WIP**
 
-##### `JavaScript` - ipfs.object.patch.appendData
+##### `JavaScript` - ipfs.object.patch.appendData(multihash, data, [options, callback])
+
+`multihash` is a [multihash]() which can be passed as:
+
+- Buffer, the raw Buffer of the multihash (or of and encoded version)
+- String, the toString version of the multihash (or of an encoded version)
+
+`data` is a Buffer containing Data to be appended to the existing node.
+
+`options` is a optional argument of type object, that can contain the following properties:
+
+- `enc`, the encoding of multihash (base58, base64, etc), if any.
+
+`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js) that resulted by the operation of adding a Link.
+
+If no `callback` is passed, a promise is returned.
+
+
+
+
 
 #### `object.patch.setData`
 
-> DESCRIPTION
+> Reset the Data field of a MerkleDAG Node to new Data
 
 ##### `Go` 
 
 **WIP**
 
-##### `JavaScript` - ipfs.object.patch.setData
+##### `JavaScript` - ipfs.object.patch.setData(multihash, data, [options, callback])
 
+`multihash` is a [multihash]() which can be passed as:
+
+- Buffer, the raw Buffer of the multihash (or of and encoded version)
+- String, the toString version of the multihash (or of an encoded version)
+
+`data` is a Buffer containing Data to replace the existing Data on the node.
+
+`options` is a optional argument of type object, that can contain the following properties:
+
+- `enc`, the encoding of multihash (base58, base64, etc), if any.
+
+`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js) that resulted by the operation of adding a Link.
+
+If no `callback` is passed, a promise is returned.
