@@ -64,7 +64,7 @@ A valid (read: that follows this interface) IPFS core implementation, must expos
 
 ##### `JavaScript` - ipfs.object.new(layout, [callback])
 
-`layout` is the MerkleDAG node type, it can be: `null`, `unixfs-dir`, `unixfs-raw`, `unixfs-file`, `unixfs-metadata`, `unixfs-symlink`.
+`layout` is the MerkleDAG node type, it can be: `null`, `'unixfs-dir'`, `'unixfs-raw'`, `'unixfs-file'`, `'unixfs-metadata'`, `'unixfs-symlink'`.
 
 `callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js)
 
@@ -102,7 +102,7 @@ If no `callback` is passed, a promise is returned.
 
 ### `object.get`
 
-> DESCRIPTION
+> Fetch a MerkleDAG node
 
 ##### `Go` **WIP**
 
