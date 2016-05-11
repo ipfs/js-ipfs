@@ -49,6 +49,7 @@ test.all(common)
 ## Go
 
 > WIP
+
 # API
 
 A valid (read: that follows this interface) IPFS core implementation, must expose the following API.
@@ -59,9 +60,7 @@ A valid (read: that follows this interface) IPFS core implementation, must expos
 
 > Create a new MerkleDAG node, using a specific layout. Caveat: So far, only UnixFS object layouts are supported.
 
-##### `Go` 
-
-**WIP**
+##### `Go` **WIP**
 
 ##### `JavaScript` - ipfs.object.new(layout, [callback])
 
@@ -79,9 +78,7 @@ If no `callback` is passed, a promise is returned.
 
 > Store an MerkleDAG node.
 
-##### `Go` 
-
-**WIP**
+##### `Go` **WIP**
 
 ##### `JavaScript` - ipfs.object.put(obj, [options, callback])
 
@@ -107,9 +104,7 @@ If no `callback` is passed, a promise is returned.
 
 > DESCRIPTION
 
-##### `Go` 
-
-**WIP**
+##### `Go` **WIP**
 
 ##### `JavaScript` - ipfs.object.get(multihash, [options, callback])
 
@@ -130,9 +125,7 @@ If no `callback` is passed, a promise is returned.
 
 > Returns the Data field of an object
 
-##### `Go` 
-
-**WIP**
+##### `Go` **WIP**
 
 ##### `JavaScript` - ipfs.object.data(multihash, [options, callback])
 `multihash` is a [multihash]() which can be passed as:
@@ -152,9 +145,7 @@ If no `callback` is passed, a promise is returned.
 
 > Returns the Links field of an object
 
-##### `Go` 
-
-**WIP**
+##### `Go` **WIP**
 
 ##### `JavaScript` - ipfs.object.links(multihash, [options, callback])
 
@@ -179,9 +170,7 @@ If no `callback` is passed, a promise is returned.
 
 > Returns stats about an Object
 
-##### `Go` 
-
-**WIP**
+##### `Go` **WIP**
 
 ##### `JavaScript` - ipfs.object.stat(multihash, [options, callback])
 
@@ -221,9 +210,7 @@ If no `callback` is passed, a promise is returned.
 
 > Add a Link to an existing MerkleDAG Object
 
-##### `Go`
-
-**WIP**
+##### `Go` **WIP**
 
 ##### `JavaScript` - ipfs.object.patch.addLink(multihash, DAGLink, [options, callback])
 
@@ -250,9 +237,7 @@ If no `callback` is passed, a promise is returned.
 
 > Remove a Link from an existing MerkleDAG Object
 
-##### `Go`
-
-**WIP**
+##### `Go` **WIP**
 
 ##### `JavaScript` - ipfs.object.patch.rmLink(multihash, DAGLink, [options, callback])
 
@@ -279,9 +264,7 @@ If no `callback` is passed, a promise is returned.
 
 > Append Data to the Data field of an existing node.
 
-##### `Go`
-
-**WIP**
+##### `Go` **WIP**
 
 ##### `JavaScript` - ipfs.object.patch.appendData(multihash, data, [options, callback])
 
@@ -308,9 +291,7 @@ If no `callback` is passed, a promise is returned.
 
 > Reset the Data field of a MerkleDAG Node to new Data
 
-##### `Go` 
-
-**WIP**
+##### `Go` **WIP**
 
 ##### `JavaScript` - ipfs.object.patch.setData(multihash, data, [options, callback])
 
