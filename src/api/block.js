@@ -9,7 +9,7 @@ module.exports = (send) => {
     put (file, cb) {
       if (Array.isArray(file)) {
         let err = new Error('block.put() only accepts 1 file')
-        if (typeof cb !== 'function') {
+        if (typeof cb !== 'function' && typeof Promise !== 'undefined') {
           return new Promise((resolve, reject) => reject(err))
         }
         return cb(err)
