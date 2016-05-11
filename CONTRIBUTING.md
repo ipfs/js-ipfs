@@ -6,7 +6,7 @@ You should have [node.js], [npm] and [gulp] installed.
 
 ## Linting
 
-Linting is done using [eslint] and the rules are based on [standard]
+Linting is done using [eslint] and the rules are based on [standard].
 
 ```bash
 $ gulp lint
