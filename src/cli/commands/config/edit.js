@@ -4,7 +4,7 @@ const Command = require('ronin').Command
 const spawn = require('child_process').spawn
 const fs = require('fs')
 const temp = require('temp')
-const async = require('async')
+const waterfall = require('run-waterfall')
 const debug = require('debug')
 const log = debug('cli:config')
 log.error = debug('cli:config:error')
@@ -99,7 +99,7 @@ module.exports = Command.extend({
         })
       }
 
-      async.waterfall([
+      waterfall([
         getConfig,
         saveTempConfig,
         openEditor,

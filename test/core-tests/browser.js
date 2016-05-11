@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const async = require('async')
+const series = require('run-series')
 const store = require('idb-plus-blob-store')
 const _ = require('lodash')
 
@@ -29,7 +29,7 @@ describe('IPFS Repo Tests on the Browser', function () {
     const mainBlob = store('ipfs')
     const blocksBlob = store('ipfs/blocks')
 
-    async.eachSeries(repoData, (file, cb) => {
+    series(repoData.map((file) => (cb) => {
       if (_.startsWith(file.key, 'datastore/')) {
         return cb()
       }
@@ -41,7 +41,7 @@ describe('IPFS Repo Tests on the Browser', function () {
       blob.createWriteStream({
         key: key
       }).end(file.value, cb)
-    }, done)
+    }), done)
   })
 
   it('--', () => {

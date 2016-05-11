@@ -1,11 +1,11 @@
 'use strict'
 
-const async = require('async')
+const series = require('run-series')
 const Bitswap = require('ipfs-bitswap')
 
 module.exports = function goOnline (self) {
   return (cb) => {
-    async.series([
+    series([
       self.load,
       self.libp2p.start
     ], (err) => {

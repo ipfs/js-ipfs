@@ -1,6 +1,6 @@
 'use strict'
 
-const async = require('async')
+const parallel = require('run-parallel')
 const Hapi = require('hapi')
 const debug = require('debug')
 const fs = require('fs')
@@ -95,7 +95,7 @@ exports = module.exports = function HttpApi (repo) {
 
     console.log('Stopping server')
 
-    async.parallel([
+    parallel([
       (cb) => this.server.stop(cb),
       (cb) => this.ipfs.goOffline(cb)
     ], (err) => {

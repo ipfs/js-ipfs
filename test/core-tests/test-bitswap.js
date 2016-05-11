@@ -3,7 +3,9 @@
 
 const expect = require('chai').expect
 const _ = require('lodash')
-const async = require('async')
+const series = require('run-series')
+const waterfall = require('run-waterfall')
+const parallel = require('run-parallel')
 const Block = require('ipfs-block')
 const bs58 = require('bs58')
 const bl = require('bl')
@@ -16,7 +18,7 @@ function makeBlock () {
   return new Block(`IPFS is awesome ${Math.random()}`)
 }
 
-describe('bitswap', () => {
+describe.only('bitswap', () => {
   let ipfs
 
   beforeEach((done) => {
@@ -43,7 +45,7 @@ describe('bitswap', () => {
     }
 
     function connectNodes (node1, node2, done) {
-      async.series([
+      series([
         (cb) => connectNodesSingle(node1, node2, cb),
         (cb) => setTimeout(() => {
           // need timeout so we wait for identify to happen
@@ -74,7 +76,7 @@ describe('bitswap', () => {
       it('2 peers', (done) => {
         const block = makeBlock()
         let node
-        async.series([
+        series([
           // 0. Start node
           (cb) => addNode(9, (err, _ipfs) => {
             node = _ipfs
@@ -97,7 +99,7 @@ describe('bitswap', () => {
         const blocks = _.range(6).map((i) => makeBlock())
         const keys = blocks.map((b) => b.key)
         const nodes = []
-        async.series([
+        series([
           (cb) => addNode(8, (err, _ipfs) => {
             nodes.push(_ipfs)
             cb(err)
@@ -114,7 +116,7 @@ describe('bitswap', () => {
           (cb) => ipfs.block.put(blocks[4], cb),
           (cb) => ipfs.block.put(blocks[5], cb),
           // 3. Fetch blocks on all nodes
-          (cb) => async.each(_.range(6), (i, cbI) => {
+          (cb) => parallel(_.range(6).map((i) => (cbI) => {
             const toMh = (k) => bs58.encode(k).toString()
             const check = (n, k, callback) => {
               n.block.get(k, (err, b) => {
@@ -128,12 +130,12 @@ describe('bitswap', () => {
               })
             }
 
-            async.series([
+            series([
               (cbJ) => check(nodes[0], toMh(keys[i]), cbJ),
               (cbJ) => check(nodes[1], toMh(keys[i]), cbJ),
               (cbJ) => check(ipfs, keys[i], cbJ)
             ], cbI)
-          }, cb)
+          }), cb)
         ], done)
       })
     })
@@ -148,7 +150,7 @@ describe('bitswap', () => {
         const file = new Buffer('I love IPFS <3')
 
         let node
-        async.waterfall([
+        waterfall([
           // 0. Start node
           (cb) => addNode(9, (err, _ipfs) => {
             node = _ipfs

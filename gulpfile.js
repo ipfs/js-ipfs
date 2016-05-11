@@ -1,7 +1,8 @@
 'use strict'
 
 const gulp = require('gulp')
-const async = require('async')
+const parallel = require('run-parallel')
+const series = require('run-series')
 const createTempNode = require('./test/utils/temp-node')
 const API = require('./src/http-api')
 
@@ -18,7 +19,7 @@ function startNode (num, done) {
 }
 
 gulp.task('libnode:start', (done) => {
-  async.parallel([
+  parallel([
     (cb) => startNode(7, cb),
     (cb) => startNode(8, cb),
     (cb) => startNode(9, cb)
@@ -26,9 +27,9 @@ gulp.task('libnode:start', (done) => {
 })
 
 gulp.task('libnode:stop', (done) => {
-  async.eachSeries(nodes, (node, cb) => {
+  series(nodes.map((node) => (cb) => {
     setTimeout(() => node.stop(cb), 500)
-  }, done)
+  }), done)
 })
 
 gulp.task('test:browser:before', ['libnode:start'])
