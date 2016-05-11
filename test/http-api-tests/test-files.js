@@ -195,6 +195,25 @@ module.exports = (httpAPI) => {
             done()
           })
         })
+
+        it('adds a buffer', (done) => {
+          const buffer = new Buffer('hello world')
+          ctl.add(buffer, (err, res) => {
+            expect(err).to.not.exist
+            expect(res[0].Hash).to.equal('Qmf412jQZiuVUtdgnB36FXFX7xg5V6KEbSJ4dpQuhkLyfD')
+            done()
+          })
+        })
+
+        it('adds a url', (done) => {
+          const url = 'https://raw.githubusercontent.com/ipfs/js-ipfs-api/2a9cc63d7427353f2145af6b1a768a69e67c0588/README.md'
+          ctl.add(url, (err, res) => {
+            expect(err).to.not.exist
+            const added = res[0] != null ? res[0] : res
+            expect(added).to.have.a.property('Hash', 'QmZmHgEX9baxUn3qMjsEXQzG6DyNcrVnwieQQTrpDdrFvt')
+            done()
+          })
+        })
       })
 
       describe('ipfs.cat', () => {

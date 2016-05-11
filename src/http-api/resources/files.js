@@ -1,6 +1,8 @@
 'use strict'
 
 const bs58 = require('bs58')
+// const ndjson = require('ndjson')
+// const async = require('async')
 const Readable = require('stream').Readable
 const multipart = require('ipfs-multipart')
 const debug = require('debug')
@@ -37,8 +39,11 @@ exports.add = {
     const parser = multipart.reqParser(request.payload)
     var file = false
     var filePair
-    var resArr = []
+    const resArr = []
+    // let serialArr
+    // console.log(serialArr)
     var i = request.server.app.ipfs.files.add()
+    // var serialize = ndjson.stringify()
 
     i.on('data', (file) => {
       resArr.push({
@@ -54,6 +59,25 @@ exports.add = {
           Code: 0
         }).code(500)
       }
+
+      /* serialize.on('data', (line) => {
+        var serialArr = line
+        console.log(line)
+        return reply(serialArr)
+        //console.log(line)
+      })
+
+      async.eachSeries(resArr, (item, callback) => {
+        serialize.write(item)
+        callback()
+      }, (done) => {
+        serialize.end()
+      })
+
+      serialize.on('end', () => {
+        //console.log(serialArr.length)
+        //return reply(serialArr)
+      }) */
       return reply(resArr)
     })
 
@@ -72,7 +96,10 @@ exports.add = {
       })
       fileStream.on('end', () => {
         rs.push(null)
-        filePair = {path: fileName, stream: rs}
+        filePair = {
+          path: fileName,
+          stream: rs
+        }
         i.write(filePair)
       })
     })

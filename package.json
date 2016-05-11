@@ -75,6 +75,7 @@
     "lodash.get": "^4.2.1",
     "lodash.set": "^4.1.0",
     "multiaddr": "^1.4.1",
+    "ndjson": "^1.4.3",
     "path-exists": "^3.0.0",
     "peer-book": "0.1.0",
     "peer-id": "^0.6.6",
