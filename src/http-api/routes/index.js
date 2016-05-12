@@ -9,4 +9,5 @@ module.exports = (server) => {
   // require('./repo')(server)
   require('./config')(server)
   require('./swarm')(server)
+  require('./bitswap')(server)
 }

@@ -5,9 +5,9 @@ const PeerInfo = require('peer-info')
 const multiaddr = require('multiaddr')
 const Libp2pNode = require('libp2p-ipfs').Node
 
-module.exports = function libp2p (self) {
-  const OFFLINE_ERROR = new Error('This command must be run in online mode. Try running \'ipfs daemon\' first.')
+const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 
+module.exports = function libp2p (self) {
   return {
     start: (callback) => {
       self._libp2pNode = new Libp2pNode(self._peerInfo)
@@ -24,7 +24,7 @@ module.exports = function libp2p (self) {
     },
     swarm: {
       peers: (callback) => {
-        if (!self._libp2pNode) {
+        if (!self.isOnline()) {
           return callback(OFFLINE_ERROR)
         }
 
@@ -32,21 +32,21 @@ module.exports = function libp2p (self) {
       },
       // all the addrs we know
       addrs: (callback) => {
-        if (!self._libp2pNode) {
+        if (!self.isOnline()) {
           return callback(OFFLINE_ERROR)
         }
         // TODO
         throw new Error('Not implemented')
       },
       localAddrs: (callback) => {
-        if (!self._libp2pNode) {
+        if (!self.isOnline()) {
           return callback(OFFLINE_ERROR)
         }
 
         callback(null, self._peerInfo.multiaddrs)
       },
       connect: (ma, callback) => {
-        if (!self._libp2pNode) {
+        if (!self.isOnline()) {
           return callback(OFFLINE_ERROR)
         }
 
@@ -57,9 +57,8 @@ module.exports = function libp2p (self) {
         const id = peerId.createFromB58String(idStr[1])
         const peer = new PeerInfo(id)
 
-        ma = ma.toString().replace(/\/ipfs\/(.*)/, '') // FIXME remove this when multiaddr supports ipfs
-
         peer.multiaddr.add(multiaddr(ma))
+
         self._peerInfoBook.put(peer)
 
         self._libp2pNode.swarm.dial(peer, (err) => {
@@ -67,7 +66,7 @@ module.exports = function libp2p (self) {
         })
       },
       disconnect: (callback) => {
-        if (!self._libp2pNode) {
+        if (!self.isOnline()) {
           return callback(OFFLINE_ERROR)
         }
 

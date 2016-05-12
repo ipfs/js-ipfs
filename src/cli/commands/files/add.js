@@ -7,7 +7,7 @@ const log = debug('cli:version')
 log.error = debug('cli:version:error')
 const bs58 = require('bs58')
 const fs = require('fs')
-const async = require('async')
+const parallelLimit = require('run-parallel-limit')
 const path = require('path')
 const glob = require('glob')
 
@@ -69,7 +69,7 @@ module.exports = Command.extend({
         })
         if (res.length !== 0) {
           const index = inPath.lastIndexOf('/')
-          async.eachLimit(res, 10, (element, callback) => {
+          parallelLimit(res.map((element) => (callback) => {
             if (!fs.statSync(element).isDirectory()) {
               i.write({
                 path: element.substring(index + 1, element.length),
@@ -77,7 +77,7 @@ module.exports = Command.extend({
               })
             }
             callback()
-          }, (err) => {
+          }), 10, (err) => {
             if (err) {
               throw err
             }

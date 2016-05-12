@@ -18,21 +18,20 @@ module.exports = (httpAPI) => {
         createTempNode(6, (err, _ipfs) => {
           expect(err).to.not.exist
           ipfs = _ipfs
-          ipfs.libp2p.start(done)
-        })
-      })
-
-      before((done) => {
-        ipfs.id((err, res) => {
-          expect(err).to.not.exist
-          ipfsAddr = `${res.Addresses[0]}/ipfs/${res.ID}`
-          done()
+          ipfs.goOnline((err) => {
+            expect(err).to.not.exist
+            ipfs.id((err, res) => {
+              expect(err).to.not.exist
+              ipfsAddr = `${res.Addresses[0]}/ipfs/${res.ID}`
+              done()
+            })
+          })
         })
       })
 
       after((done) => {
         setTimeout(() => {
-          ipfs.libp2p.stop(done)
+          ipfs.goOffline(done)
         }, 1000)
       })
 
@@ -102,24 +101,22 @@ module.exports = (httpAPI) => {
       var ipfsAddr
 
       before((done) => {
-        createTempNode(7, (err, _ipfs) => {
+        createTempNode(5, (err, _ipfs) => {
           expect(err).to.not.exist
           ipfs = _ipfs
-          ipfs.libp2p.start(done)
-        })
-      })
-
-      before((done) => {
-        ipfs.id((err, res) => {
-          expect(err).to.not.exist
-          ipfsAddr = `${res.Addresses[0]}/ipfs/${res.ID}`
-          done()
+          ipfs.goOnline(() => {
+            ipfs.id((err, res) => {
+              expect(err).to.not.exist
+              ipfsAddr = `${res.Addresses[0]}/ipfs/${res.ID}`
+              done()
+            })
+          })
         })
       })
 
       after((done) => {
         setTimeout(() => {
-          ipfs.libp2p.stop(done)
+          ipfs.goOffline(done)
         }, 1000)
       })
 

@@ -7,6 +7,9 @@ const PeerBook = require('peer-book')
 
 const defaultRepo = require('./default-repo')
 
+const goOnline = require('./ipfs/go-online')
+const goOffline = require('./ipfs/go-offline')
+const isOnline = require('./ipfs/is-online')
 const load = require('./ipfs/load')
 const version = require('./ipfs/version')
 const id = require('./ipfs/id')
@@ -18,6 +21,7 @@ const block = require('./ipfs/block')
 const object = require('./ipfs/object')
 const libp2p = require('./ipfs/libp2p')
 const files = require('./ipfs/files')
+const bitswap = require('./ipfs/bitswap')
 
 exports = module.exports = IPFS
 
@@ -32,12 +36,16 @@ function IPFS (repoInstance) {
   }
 
   this._repo = repoInstance
-  this._blockS = new BlockService(this._repo)
-  this._dagS = new DAGService(this._blockS)
   this._peerInfoBook = new PeerBook()
   this._peerInfo = null
   this._libp2pNode = null
+  this._bitswap = null
+  this._blockS = new BlockService(this._repo)
+  this._dagS = new DAGService(this._blockS)
 
+  this.goOnline = goOnline(this)
+  this.goOffline = goOffline(this)
+  this.isOnline = isOnline(this)
   this.load = load(this)
   this.version = version(this)
   this.id = id(this)
@@ -49,4 +57,5 @@ function IPFS (repoInstance) {
   this.object = object(this)
   this.libp2p = libp2p(this)
   this.files = files(this)
+  this.bitswap = bitswap(this)
 }

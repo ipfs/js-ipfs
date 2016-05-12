@@ -13,11 +13,11 @@ describe('swarm', function () {
   var ipfsAAddr
 
   before((done) => {
-    createTempNode(3, (err, ipfs) => {
+    createTempNode(2, (err, ipfs) => {
       expect(err).to.not.exist
       ipfsA = ipfs
 
-      createTempNode(4, (err, ipfs) => {
+      createTempNode(3, (err, ipfs) => {
         expect(err).to.not.exist
         ipfsB = ipfs
         done()
@@ -34,9 +34,9 @@ describe('swarm', function () {
   })
 
   it('start', (done) => {
-    ipfsA.libp2p.start((err) => {
+    ipfsA.goOnline((err) => {
       expect(err).to.not.exist
-      ipfsB.libp2p.start((err) => {
+      ipfsB.goOnline((err) => {
         expect(err).to.not.exist
         done()
       })
@@ -61,7 +61,7 @@ describe('swarm', function () {
   it('localAddrs', (done) => {
     ipfsB.libp2p.swarm.localAddrs((err, res) => {
       expect(err).to.not.exist
-      expect(res.length).to.equal(1)
+      expect(res.length).to.equal(2)
       done()
     })
   })
@@ -69,9 +69,9 @@ describe('swarm', function () {
   it.skip('disconnect', (done) => {})
 
   it.skip('stop', (done) => {
-    ipfsA.libp2p.stop((err) => {
+    ipfsA.goOffline((err) => {
       expect(err).to.not.exist
-      done()
+      ipfsB.goOffline(done)
     })
   })
 })

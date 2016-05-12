@@ -351,11 +351,21 @@ exports.patchAddLink = {
       return reply("Arguments 'root', 'name' & 'ref' are required").code(400).takeover()
     }
 
+    const error = (msg) => reply({
+      Message: msg,
+      Code: 0
+    }).code(500).takeover()
+
+    if (!request.query.arg[0]) {
+      return error('cannot create link with no root')
+    }
+
     if (!request.query.arg[1]) {
-      return reply({
-        Message: 'cannot create link with no name!',
-        Code: 0
-      }).code(500).takeover()
+      return error('cannot create link with no name!')
+    }
+
+    if (!request.query.arg[2]) {
+      return error('cannot create link with no ref')
     }
 
     try {
@@ -366,10 +376,7 @@ exports.patchAddLink = {
       })
     } catch (err) {
       log.error(err)
-      return reply({
-        Message: 'invalid ipfs ref path',
-        Code: 0
-      }).code(500).takeover()
+      return error('invalid ipfs ref path')
     }
   },
 

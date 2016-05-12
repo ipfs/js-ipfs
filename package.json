@@ -9,14 +9,14 @@
   "jsnext:main": "src/core/index.js",
   "scripts": {
     "lint": "aegir-lint",
-    "coverage": "aegir-coverage",
-    "test": "aegir-test",
-    "test:node": "aegir-test node",
-    "test:browser": "aegir-test browser",
-    "build": "aegir-build",
-    "release": "aegir-release",
-    "release:minor": "aegir-release --type minor",
-    "release:major": "aegir-release --type major",
+    "coverage": "gulp coverage",
+    "test": "gulp test",
+    "test:node": "gulp test:node",
+    "test:browser": "gulp test:browser",
+    "build": "gulp build",
+    "release": "gulp release",
+    "release:minor": "gulp release --type minor",
+    "release:major": "gulp release --type major",
     "coverage-publish": "aegir-coverage publish"
   },
   "pre-commit": [
@@ -38,12 +38,13 @@
   "homepage": "https://github.com/ipfs/js-ipfs#readme",
   "devDependencies": {
     "aegir": "^3.0.1",
-    "async": "^2.0.0-rc.4",
     "buffer-loader": "0.0.1",
     "chai": "^3.5.0",
     "expose-loader": "^0.7.1",
     "form-data": "^1.0.0-rc3",
+    "gulp": "^3.9.1",
     "idb-plus-blob-store": "^1.1.2",
+    "libp2p-ipfs-browser": "^0.2.0",
     "lodash": "^4.11.2",
     "mocha": "^2.4.5",
     "ncp": "^2.0.0",
@@ -63,6 +64,7 @@
     "glob": "^7.0.3",
     "hapi": "^13.3.0",
     "ipfs-api": "^3.0.2",
+    "ipfs-bitswap": "^0.2.0",
     "ipfs-block": "^0.3.0",
     "ipfs-block-service": "^0.4.0",
     "ipfs-merkle-dag": "^0.5.1",
@@ -71,29 +73,32 @@
     "ipfs-unixfs-engine": "^0.6.1",
     "joi": "^8.0.5",
     "libp2p-ipfs": "^0.3.3",
-    "libp2p-swarm": "^0.12.5",
+    "libp2p-swarm": "^0.12.11",
     "lodash.get": "^4.2.1",
     "lodash.set": "^4.1.0",
     "multiaddr": "^1.4.1",
     "path-exists": "^3.0.0",
-    "peer-book": "0.1.0",
+    "peer-book": "^0.1.1",
     "peer-id": "^0.6.6",
     "peer-info": "^0.6.2",
     "readable-stream": "1.1.13",
     "ronin": "^0.3.11",
+    "run-parallel": "^1.1.6",
+    "run-parallel-limit": "^1.0.3",
+    "run-series": "^1.1.4",
+    "run-waterfall": "^1.1.3",
     "temp": "^0.8.3"
   },
   "aegir": {
     "webpack": {
       "resolve": {
         "alias": {
-          "node-forge": "../../../node_modules/peer-id/vendor/forge.bundle.js"
+          "node-forge": "../../../node_modules/peer-id/vendor/forge.bundle.js",
+          "libp2p-ipfs": "libp2p-ipfs-browser"
         }
       },
       "externals": {
         "fs": "{}",
-        "ipfs-data-importing": "{ import: {} }",
-        "libp2p-ipfs": "{}",
         "mkdirp": "{}"
       }
     }

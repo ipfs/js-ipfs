@@ -17,18 +17,17 @@ describe('swarm', function () {
   var ipfsAddr
 
   before((done) => {
-    createTempNode(8, (err, _ipfs) => {
+    createTempNode(1, (err, _ipfs) => {
       expect(err).to.not.exist
       ipfs = _ipfs
-      ipfs.libp2p.start(done)
-    })
-  })
-
-  before((done) => {
-    ipfs.id((err, res) => {
-      expect(err).to.not.exist
-      ipfsAddr = `${res.Addresses[0]}/ipfs/${res.ID}`
-      done()
+      ipfs.goOnline((err) => {
+        expect(err).to.not.exist
+        ipfs.id((err, res) => {
+          expect(err).to.not.exist
+          ipfsAddr = `${res.Addresses[0]}/ipfs/${res.ID}`
+          done()
+        })
+      })
     })
   })
 

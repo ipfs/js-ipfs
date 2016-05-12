@@ -5,7 +5,7 @@ const BlockService = require('ipfs-block-service')
 const DagService = require('ipfs-merkle-dag').DAGService
 const path = require('path')
 const glob = require('glob')
-const async = require('async')
+const parallelLimit = require('run-parallel-limit')
 const Readable = require('stream').Readable
 const fs = require('fs')
 const Importer = require('ipfs-unixfs-engine').importer
@@ -17,7 +17,7 @@ module.exports = function init (self) {
     opts.bits = opts.bits || 2048
 
     // Pre-set config values.
-    var config = require('../../init-files/default-config.json')
+    var config = JSON.parse(fs.readFileSync(path.join(__dirname, '../../init-files/default-config.json')).toString())
 
     // Verify repo does not yet exist.
     self._repo.exists((err, exists) => {
@@ -85,7 +85,7 @@ module.exports = function init (self) {
           throw err
         }
         const index = __dirname.lastIndexOf('/')
-        async.eachLimit(res, 10, (element, callback) => {
+        parallelLimit(res.map((element) => (callback) => {
           const addPath = element.substring(index + 1, element.length)
           if (!fs.statSync(element).isDirectory()) {
             const rs = new Readable()
@@ -95,7 +95,7 @@ module.exports = function init (self) {
             i.write(filePair)
           }
           callback()
-        }, (err) => {
+        }), 10, (err) => {
           if (err) {
             throw err
           }

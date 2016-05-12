@@ -9,7 +9,7 @@ const _ = require('lodash')
 const clean = require('../utils/clean')
 
 describe('init', function () {
-  this.timeout(10000)
+  this.timeout(60 * 1000)
   const env = _.clone(process.env)
   const repoExistsSync = (p) => (
     fs.existsSync(path.join(env.IPFS_PATH, p))
