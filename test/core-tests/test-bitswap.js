@@ -18,7 +18,7 @@ function makeBlock () {
   return new Block(`IPFS is awesome ${Math.random()}`)
 }
 
-describe.only('bitswap', () => {
+describe('bitswap', () => {
   let ipfs
 
   beforeEach((done) => {
