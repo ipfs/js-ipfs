@@ -41,9 +41,6 @@ exports.unwant = {
   parseArgs: parseKey,
 
   handler: (request, reply) => {
-    const key = request.pre.args.key
-
-    request.server.app.ipfs.bitswap.unwant(key)
-    reply()
+    reply(boom.badRequrest(new Error('Not implemented yet')))
   }
 }

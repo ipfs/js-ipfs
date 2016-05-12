@@ -18,7 +18,7 @@ module.exports = Command.extend({
         throw err
       }
 
-      // TODO: implement
+      throw new Error('Not implemented yet')
     })
   }
 })
