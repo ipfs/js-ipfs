@@ -24,7 +24,7 @@ Consult the [Roadmap](/ROADMAP.md) for a complete state description of the proje
 IPFS implementation in JavaScript is a work in progress. As such, there's a few things you can do right now to help out:
 
   * Go through the modules below and **check out existing issues**. This would be especially useful for modules in active development. Some knowledge of IPFS may be required, as well as the infrastructure behind it - for instance, you may need to read up on p2p and more complex operations like muxing to be able to help technically.
-  * **Perform code reviews**. Most of this has been developed by @diasdavid, which means that more eyes will help a) speed the project along b) ensure quality and c) reduce possible future bugs.
+  * **Perform code reviews**. More eyes will help a) speed the project along b) ensure quality and c) reduce possible future bugs.
   * Take a look at go-ipfs and some of the planning repositories or issues: for instance, the libp2p spec [here](https://github.com/ipfs/specs/pull/19). Contributions here that would be most helpful are **top-level comments** about how it should look based on our understanding. Again, the more eyes the better.
   * **Add tests**. There can never be enough tests.
   * **Contribute to the [FAQ repository](https://github.com/ipfs/faq/issues)** with any questions you have about IPFS or any of the relevant technology. A good example would be asking, 'What is a merkledag tree?'. If you don't know a term, odds are, someone else doesn't either. Eventually, we should have a good understanding of where we need to improve communications and teaching together to make IPFS and IPN better.
@@ -47,13 +47,13 @@ var node = new IPFS()
 
 ## Through command line tool
 
-In order to use js-ipfs as a CLI, you must install it with the -g flag.
+In order to use js-ipfs as a CLI, you must install it with the `global` flag.
 
 ```bash
 $ npm install ipfs --global
 ```
 
-The cli is availble through `jsipfs` in your terminal
+The cli is available through `jsipfs` in your terminal
 
 ## Use in the browser with browserify, webpack or any bundler
 
@@ -173,3 +173,11 @@ Files is the API that lets us work with IPFS objects (DAG Nodes) as if they were
 #### Importer
 
 Importer are a set of layouts (e.g. UnixFS) and chunkers (e.g: fixed-size, rabin, etc) that convert data to a MerkleDAG representation inside IPFS.
+
+## License
+
+MIT.
+
+# Want to hack on IPFS?
+
+[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/contributing.md)
