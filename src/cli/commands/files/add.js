@@ -35,6 +35,49 @@ function checkPath (inPath, recursive) {
   return inPath
 }
 
+function daemonOn (res, inPath, ipfs) {
+  const files = []
+  if (res.length !== 0) {
+    const index = inPath.lastIndexOf('/')
+    async.eachLimit(res, 10, (element, callback) => {
+      if (fs.statSync(element).isDirectory()) {
+        callback()
+      } else {
+        const filePair = {
+          path: element.substring(index + 1, element.length),
+          content: fs.createReadStream(element)
+        }
+        files.push(filePair)
+        callback()
+      }
+    }, (err) => {
+      if (err) {
+        throw err
+      }
+      ipfs.add(files, (err, res) => {
+        if (err) {
+          throw err
+        }
+        res.forEach((goRes) => {
+          console.log('added', goRes.Hash, goRes.Name)
+        })
+      })
+    })
+  } else {
+    const filePair = {
+      path: inPath.substring(inPath.lastIndexOf('/') + 1, inPath.length),
+      content: fs.createReadStream(inPath)
+    }
+    files.push(filePair)
+    ipfs.add(files, (err, res) => {
+      if (err) {
+        throw err
+      }
+      console.log('added', res[0].Hash, res[0].Name)
+    })
+  }
+  return
+}
 module.exports = Command.extend({
   desc: 'Add a file to IPFS using the UnixFS data format',
 
@@ -59,36 +102,40 @@ module.exports = Command.extend({
         if (err) {
           throw err
         }
-        const i = ipfs.files.add()
-        var filePair
-        i.on('data', (file) => {
-          console.log('added', bs58.encode(file.multihash).toString(), file.path)
-        })
-        i.once('end', () => {
-          return
-        })
-        if (res.length !== 0) {
-          const index = inPath.lastIndexOf('/')
-          async.eachLimit(res, 10, (element, callback) => {
-            if (!fs.statSync(element).isDirectory()) {
-              i.write({
-                path: element.substring(index + 1, element.length),
-                stream: fs.createReadStream(element)
-              })
-            }
-            callback()
-          }, (err) => {
-            if (err) {
-              throw err
-            }
-            i.end()
-          })
+        if (utils.isDaemonOn()) {
+          daemonOn(res, inPath, ipfs)
         } else {
-          rs = fs.createReadStream(inPath)
-          inPath = inPath.substring(inPath.lastIndexOf('/') + 1, inPath.length)
-          filePair = {path: inPath, stream: rs}
-          i.write(filePair)
-          i.end()
+          const i = ipfs.files.add()
+          var filePair
+          i.on('data', (file) => {
+            console.log('added', bs58.encode(file.multihash).toString(), file.path)
+          })
+          i.once('end', () => {
+            return
+          })
+          if (res.length !== 0) {
+            const index = inPath.lastIndexOf('/')
+            async.eachLimit(res, 10, (element, callback) => {
+              if (!fs.statSync(element).isDirectory()) {
+                i.write({
+                  path: element.substring(index + 1, element.length),
+                  stream: fs.createReadStream(element)
+                })
+              }
+              callback()
+            }, (err) => {
+              if (err) {
+                throw err
+              }
+              i.end()
+            })
+          } else {
+            rs = fs.createReadStream(inPath)
+            inPath = inPath.substring(inPath.lastIndexOf('/') + 1, inPath.length)
+            filePair = {path: inPath, stream: rs}
+            i.write(filePair)
+            i.end()
+          }
         }
       })
     })

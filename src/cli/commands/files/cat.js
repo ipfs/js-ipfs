@@ -22,6 +22,15 @@ module.exports = Command.extend({
       if (err) {
         throw err
       }
+      if (utils.isDaemonOn()) {
+        ipfs.cat(path, (err, res) => {
+          if (err) {
+            throw err
+          }
+          console.log(res.toString())
+        })
+        return
+      }
       ipfs.files.cat(path, (err, res) => {
         if (err) {
           throw (err)
