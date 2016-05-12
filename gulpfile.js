@@ -6,7 +6,7 @@ const series = require('run-series')
 const createTempNode = require('./test/utils/temp-node')
 const API = require('./src/http-api')
 
-const nodes = []
+let nodes = []
 
 function startNode (num, done) {
   createTempNode(num, (err, node) => {
@@ -19,6 +19,7 @@ function startNode (num, done) {
 }
 
 gulp.task('libnode:start', (done) => {
+  nodes = []
   parallel([
     (cb) => startNode(7, cb),
     (cb) => startNode(8, cb),

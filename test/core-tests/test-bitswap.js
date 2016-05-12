@@ -51,7 +51,7 @@ describe('bitswap', () => {
           // need timeout so we wait for identify to happen
           // in the browsers
           connectNodesSingle(node2, node1, cb)
-        }, 500)
+        }, 100)
       ], done)
     }
 

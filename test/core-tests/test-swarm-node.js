@@ -68,7 +68,7 @@ describe('swarm', function () {
 
   it.skip('disconnect', (done) => {})
 
-  it('stop', (done) => {
+  it.skip('stop', (done) => {
     ipfsA.goOffline((err) => {
       expect(err).to.not.exist
       ipfsB.goOffline(done)

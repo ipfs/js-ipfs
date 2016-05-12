@@ -17,7 +17,7 @@ describe('swarm', function () {
   var ipfsAddr
 
   before((done) => {
-    createTempNode(2, (err, _ipfs) => {
+    createTempNode(1, (err, _ipfs) => {
       expect(err).to.not.exist
       ipfs = _ipfs
       ipfs.goOnline((err) => {
