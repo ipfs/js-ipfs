@@ -14,8 +14,6 @@ script:
   - npm test
   - npm run coverage
 
-addons:
-  firefox: 'latest'
 
 before_script:
   - export DISPLAY=:99.0
@@ -23,3 +21,14 @@ before_script:
 
 after_success:
   - npm run coverage-publish
+
+env:
+  - CXX=g++-4.8
+
+addons:
+  firefox: 'latest'
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
