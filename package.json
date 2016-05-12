@@ -20,6 +20,9 @@
   },
   "homepage": "https://github.com/ipfs/interface-ipfs-core#readme",
   "dependencies": {
-    "chai": "^3.5.0"
+    "bs58": "^3.0.0",
+    "chai": "^3.5.0",
+    "ipfs-merkle-dag": "^0.5.1",
+    "json2yaml": "^1.1.0"
   }
 }

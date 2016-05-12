@@ -62,9 +62,7 @@ A valid (read: that follows this interface) IPFS core implementation, must expos
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.object.new(layout, [callback])
-
-`layout` is the MerkleDAG node type, it can be: `null`, `'unixfs-dir'`, `'unixfs-raw'`, `'unixfs-file'`, `'unixfs-metadata'`, `'unixfs-symlink'`.
+##### `JavaScript` - ipfs.object.new([callback])
 
 `callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js)
 
@@ -85,8 +83,8 @@ If no `callback` is passed, a promise is returned.
 `obj` is the MerkleDAG Node to be stored. Can of type:
 
 - Object, with format `{ Data: <data>, Links: [] }`
-- Buffer, requiring that the encoding is specified on the encoding
-- [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js). If no encoding is specified, Buffer is treated as the Data field.
+- Buffer, requiring that the encoding is specified on the options. If no encoding is specified, Buffer is treated as the Data field
+- [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js). 
 
 `options` is a optional argument of type object, that can contain the following properties:
 
