@@ -62,6 +62,30 @@ describe('.files', () => {
       })
   })
 
+  it('files.write without options', (done) => {
+    apiClients.a.files
+      .write('/test-folder/test-file-2.txt', new Buffer('hello world'), (err) => {
+        expect(err).to.not.exist
+
+        apiClients.a.files.read('/test-folder/test-file-2.txt', (err, stream) => {
+          expect(err).to.not.exist
+
+          let buf = ''
+          stream
+            .on('error', (err) => {
+              expect(err).to.not.exist
+            })
+            .on('data', (data) => {
+              buf += data
+            })
+            .on('end', () => {
+              expect(buf).to.be.equal('hello world')
+              done()
+            })
+        })
+      })
+  })
+
   it('files.stat', (done) => {
     apiClients.a.files.stat('/test-folder/test-file', (err, res) => {
       expect(err).to.not.exist
@@ -109,7 +133,12 @@ describe('.files', () => {
     })
   })
 
-  // -
+  it('files.rm without options', (done) => {
+    apiClients.a.files.rm('/test-folder/test-file-2.txt', (err) => {
+      expect(err).to.not.exist
+      done()
+    })
+  })
 
   it('files.rm', (done) => {
     apiClients.a.files.rm('/test-folder', {recursive: true}, (err) => {
@@ -138,6 +167,28 @@ describe('.files', () => {
     it('files.write', (done) => {
       return apiClients.a.files
         .write('/test-folder/test-file-2.txt', new Buffer('hello world'), {create: true})
+        .then(() => {
+          return apiClients.a.files.read('/test-folder/test-file-2.txt')
+        })
+        .then((stream) => {
+          let buf = ''
+          stream
+            .on('error', (err) => {
+              expect(err).to.not.exist
+            })
+            .on('data', (data) => {
+              buf += data
+            })
+            .on('end', () => {
+              expect(buf).to.be.equal('hello world')
+              done()
+            })
+        })
+    })
+
+    it('files.write without options', (done) => {
+      return apiClients.a.files
+        .write('/test-folder/test-file-2.txt', new Buffer('hello world'))
         .then(() => {
           return apiClients.a.files.read('/test-folder/test-file-2.txt')
         })
@@ -198,6 +249,10 @@ describe('.files', () => {
               done()
             })
         })
+    })
+
+    it('files.rm without options', () => {
+      return apiClients.a.files.rm('/test-folder/test-file-2.txt')
     })
 
     it('files.rm', () => {
