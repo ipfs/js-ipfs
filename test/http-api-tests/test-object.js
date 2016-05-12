@@ -6,6 +6,7 @@ const APIctl = require('ipfs-api')
 const fs = require('fs')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
+const DAGLink = require('ipfs-merkle-dag').DAGLink
 
 module.exports = (httpAPI) => {
   describe('object', () => {
@@ -17,18 +18,6 @@ module.exports = (httpAPI) => {
       })
 
       describe('/object/new', () => {
-        it('returns 500 for request with invalid argument', (done) => {
-          api.inject({
-            method: 'GET',
-            url: '/api/v0/object/new?arg'
-          }, (res) => {
-            expect(res.statusCode).to.equal(500)
-            expect(res.result.Code).to.equal(0)
-            expect(res.result.Message).to.be.a('string')
-            done()
-          })
-        })
-
         it('returns value', (done) => {
           api.inject({
             method: 'GET',
@@ -37,8 +26,7 @@ module.exports = (httpAPI) => {
             expect(res.statusCode).to.equal(200)
             expect(res.result.Hash)
               .to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-            expect(res.result.Links)
-              .to.equal(null)
+            expect(res.result.Links).to.be.eql([])
             done()
           })
         })
@@ -74,10 +62,8 @@ module.exports = (httpAPI) => {
             url: '/api/v0/object/get?arg=QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
           }, (res) => {
             expect(res.statusCode).to.equal(200)
-            expect(res.result.Links)
-              .to.deep.equal([])
-            expect(res.result.Data)
-              .to.equal('')
+            expect(res.result.Links).to.be.eql([])
+            expect(res.result.Data).to.be.empty
             done()
           })
         })
@@ -126,12 +112,14 @@ module.exports = (httpAPI) => {
           form.append('data', fs.createReadStream(filePath))
           const headers = form.getHeaders()
           const expectedResult = {
+            Data: new Buffer('another'),
             Hash: 'QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm',
             Links: [{
               Name: 'some link',
               Hash: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
               Size: 8
-            }]
+            }],
+            Size: 68
           }
 
           streamToPromise(form).then((payload) => {
@@ -182,8 +170,9 @@ module.exports = (httpAPI) => {
             expect(res.result.Hash).to.equal('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
             expect(res.result.NumLinks).to.equal(1)
             expect(res.result.BlockSize).to.equal(60)
-            expect(res.result.LinksSize).to.equal(8)
+            expect(res.result.LinksSize).to.equal(60 - 7)
             expect(res.result.DataSize).to.equal(7)
+            expect(res.result.CumulativeSize).to.equal(60 + 8)
             done()
           })
         })
@@ -322,8 +311,10 @@ module.exports = (httpAPI) => {
           form.append('data', fs.createReadStream(filePath))
           const headers = form.getHeaders()
           const expectedResult = {
+            Data: fs.readFileSync(filePath),
             Hash: 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6',
-            Links: []
+            Links: [],
+            Size: 19
           }
 
           streamToPromise(form).then((payload) => {
@@ -547,12 +538,12 @@ module.exports = (httpAPI) => {
       })
 
       it('ipfs.object.new', (done) => {
-        ctl.object.new(null, (err, result) => {
+        ctl.object.new((err, result) => {
           expect(err).to.not.exist
-          expect(result.Hash)
+          const res = result.toJSON()
+          expect(res.Hash)
             .to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-          expect(result.Links)
-            .to.equal(null)
+          expect(res.Links).to.be.eql([])
           done()
         })
       })
@@ -566,19 +557,18 @@ module.exports = (httpAPI) => {
         })
 
         it('returns error for request with invalid argument', (done) => {
-          ctl.object.get('invalid', (err, result) => {
+          ctl.object.get('invalid', {enc: 'base58'}, (err, result) => {
             expect(err).to.exist
             done()
           })
         })
 
         it('returns value', (done) => {
-          ctl.object.get('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n', (err, result) => {
+          ctl.object.get('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n', {enc: 'base58'}, (err, result) => {
             expect(err).to.not.exist
-            expect(result.Links)
-              .to.deep.equal([])
-            expect(result.Data)
-              .to.equal('')
+            const res = result.toJSON()
+            expect(res.Links).to.be.eql([])
+            expect(res.Data).to.equal('')
             done()
           })
         })
@@ -588,26 +578,28 @@ module.exports = (httpAPI) => {
         it('returns error if the node is invalid', (done) => {
           const filePath = 'test/test-data/badnode.json'
 
-          ctl.object.put(filePath, 'json', (err) => {
+          ctl.object.put(filePath, {enc: 'json'}, (err) => {
             expect(err).to.exist
             done()
           })
         })
 
         it('updates value', (done) => {
-          const filePath = 'test/test-data/node.json'
+          const filePath = fs.readFileSync('test/test-data/node.json')
           const expectedResult = {
+            Data: 'another',
             Hash: 'QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm',
             Links: [{
               Name: 'some link',
               Hash: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
               Size: 8
-            }]
+            }],
+            Size: 68
           }
 
-          ctl.object.put(filePath, 'json', (err, res) => {
+          ctl.object.put(filePath, {enc: 'json'}, (err, res) => {
             expect(err).not.to.exist
-            expect(res).to.deep.equal(expectedResult)
+            expect(res.toJSON()).to.deep.equal(expectedResult)
             done()
           })
         })
@@ -622,20 +614,21 @@ module.exports = (httpAPI) => {
         })
 
         it('returns error for request with invalid argument', (done) => {
-          ctl.object.stat('invalid', (err, result) => {
+          ctl.object.stat('invalid', {enc: 'base58'}, (err, result) => {
             expect(err).to.exist
             done()
           })
         })
 
         it('returns value', (done) => {
-          ctl.object.stat('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm', (err, result) => {
+          ctl.object.stat('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm', {enc: 'base58'}, (err, result) => {
             expect(err).to.not.exist
             expect(result.Hash).to.equal('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
             expect(result.NumLinks).to.equal(1)
             expect(result.BlockSize).to.equal(60)
-            expect(result.LinksSize).to.equal(8)
+            expect(result.LinksSize).to.equal(60 - 7)
             expect(result.DataSize).to.equal(7)
+            expect(result.CumulativeSize).to.equal(60 + 8)
             done()
           })
         })
@@ -650,14 +643,14 @@ module.exports = (httpAPI) => {
         })
 
         it('returns error for request with invalid argument', (done) => {
-          ctl.object.data('invalid', (err, result) => {
+          ctl.object.data('invalid', {enc: 'base58'}, (err, result) => {
             expect(err).to.exist
             done()
           })
         })
 
         it('returns value', (done) => {
-          ctl.object.data('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm', (err, result) => {
+          ctl.object.data('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm', {enc: 'base58'}, (err, result) => {
             expect(err).to.not.exist
             expect(result.toString()).to.equal('another')
             done()
@@ -674,7 +667,7 @@ module.exports = (httpAPI) => {
         })
 
         it('returns error for request with invalid argument', (done) => {
-          ctl.object.links('invalid', (err, result) => {
+          ctl.object.links('invalid', {enc: 'base58'}, (err, result) => {
             expect(err).to.exist
             done()
           })
@@ -682,15 +675,14 @@ module.exports = (httpAPI) => {
 
         it('returns value', (done) => {
           const expectedResult = {
-            Hash: 'QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm',
-            Links: [
-              { Name: 'some link', Hash: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V', Size: 8 }
-            ]
+            Name: 'some link',
+            Hash: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
+            Size: 8
           }
 
-          ctl.object.links('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm', (err, result) => {
+          ctl.object.links('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm', {enc: 'base58'}, (err, result) => {
             expect(err).to.not.exist
-            expect(result).to.deep.equal(expectedResult)
+            expect(result[0].toJSON()).to.deep.equal(expectedResult)
             done()
           })
         })
@@ -707,7 +699,7 @@ module.exports = (httpAPI) => {
         it('returns error for request without key', (done) => {
           const key = 'QmVLUHkjGg3duGb5w3dnwK5w2P9QWuJmtVNuDPLc9ZDjzk'
 
-          ctl.object.patch.appendData(key, null, (err) => {
+          ctl.object.patch.appendData(key, null, {enc: 'base58'}, (err) => {
             expect(err).to.exist
             done()
           })
@@ -726,13 +718,15 @@ module.exports = (httpAPI) => {
           const key = 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
           const filePath = 'test/test-data/badnode.json'
           const expectedResult = {
+            Data: fs.readFileSync(filePath).toString(),
             Hash: 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6',
-            Links: []
+            Links: [],
+            Size: 19
           }
 
-          ctl.object.patch.appendData(key, filePath, (err, res) => {
+          ctl.object.patch.appendData(key, filePath, {enc: 'base58'}, (err, res) => {
             expect(err).not.to.exist
-            expect(res).to.deep.equal(expectedResult)
+            expect(res.toJSON()).to.deep.equal(expectedResult)
             done()
           })
         })
@@ -749,7 +743,7 @@ module.exports = (httpAPI) => {
         it('returns error for request without key', (done) => {
           const key = 'QmVLUHkjGg3duGb5w3dnwK5w2P9QWuJmtVNuDPLc9ZDjzk'
 
-          ctl.object.patch.setData(key, null, (err) => {
+          ctl.object.patch.setData(key, null, {enc: 'base58'}, (err) => {
             expect(err).to.exist
             done()
           })
@@ -768,13 +762,15 @@ module.exports = (httpAPI) => {
           const key = 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6'
           const filePath = 'test/test-data/badnode.json'
           const expectedResult = {
+            Data: fs.readFileSync(filePath).toString(),
             Hash: 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6',
-            Links: []
+            Links: [],
+            Size: 19
           }
 
-          ctl.object.patch.setData(key, filePath, (err, res) => {
+          ctl.object.patch.setData(key, filePath, {enc: 'base58'}, (err, res) => {
             expect(err).not.to.exist
-            expect(res).to.deep.equal(expectedResult)
+            expect(res.toJSON()).to.deep.equal(expectedResult)
             done()
           })
         })
@@ -799,8 +795,8 @@ module.exports = (httpAPI) => {
           const root = 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
           const name = ''
           const ref = 'QmTz3oc4gdpRMKP2sdGUPZTAGRngqjsi99BPoztyP53JMM'
-
-          ctl.object.patch.addLink(root, name, ref, (err) => {
+          const link = new DAGLink(name, 2, ref)
+          ctl.object.patch.addLink(root, link, {enc: 'base58'}, (err) => {
             expect(err).to.exist
             done()
           })
@@ -810,9 +806,10 @@ module.exports = (httpAPI) => {
           const root = 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
           const name = 'foo'
           const ref = 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
-
-          ctl.object.patch.addLink(root, name, ref, (err, res) => {
+          const link = new DAGLink(name, 10, ref)
+          ctl.object.patch.addLink(root, link, {enc: 'base58'}, (err, result) => {
             expect(err).not.to.exist
+            const res = result.toJSON()
             expect(res.Hash).to.equal('QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK')
             expect(res.Links[0]).to.deep.equal({
               Name: 'foo',
@@ -851,11 +848,11 @@ module.exports = (httpAPI) => {
 
         it('updates value', (done) => {
           const root = 'QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK'
-          const link = 'foo'
+          const link = new DAGLink('foo')
 
-          ctl.object.patch.rmLink(root, link, (err, res) => {
+          ctl.object.patch.rmLink(root, link, {enc: 'base58'}, (err, res) => {
             expect(err).not.to.exist
-            expect(res.Hash).to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
+            expect(res.toJSON().Hash).to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
             done()
           })
         })

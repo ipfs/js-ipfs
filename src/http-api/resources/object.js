@@ -30,41 +30,18 @@ exports.parseKey = (request, reply) => {
   }
 }
 
-exports.new = {
-  // pre request handler that parses the args and returns `template` which is assigned to `request.pre.args`
-  parseArgs: (request, reply) => {
-    // TODO improve this validation once request.server.app.ipfs.object.new supports templates
-    if (request.query.arg === '') {
+exports.new = (request, reply) => {
+  request.server.app.ipfs.object.new((err, node) => {
+    if (err) {
+      log.error(err)
       return reply({
-        Message: `template \'${request.query.arg}\' not found`,
+        Message: `Failed to create object: ${err.message}`,
         Code: 0
-      }).code(500).takeover()
+      }).code(500)
     }
 
-    return reply({
-      template: request.query.arg
-    })
-  },
-
-  // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
-    const template = request.pre.args.template
-
-    request.server.app.ipfs.object.new(template, (err, obj) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: 'Failed to create object: ' + err,
-          Code: 0
-        }).code(500)
-      }
-
-      return reply({
-        Hash: bs58.encode(obj.Hash).toString(),
-        Links: obj.Links || null
-      })
-    })
-  }
+    return reply(node.toJSON())
+  })
 }
 
 exports.get = {
@@ -74,8 +51,9 @@ exports.get = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
     const key = request.pre.args.key
+    const enc = request.query.enc || 'base58'
 
-    request.server.app.ipfs.object.get(key, (err, obj) => {
+    request.server.app.ipfs.object.get(key, {enc}, (err, node) => {
       if (err) {
         log.error(err)
         return reply({
@@ -84,14 +62,9 @@ exports.get = {
         }).code(500)
       }
 
-      return reply({
-        Links: obj.links.map((link) => ({
-          Name: link.name,
-          Hash: bs58.encode(link.hash).toString(),
-          Size: link.size
-        })),
-        Data: obj.data.toString()
-      })
+      const res = node.toJSON()
+      res.Data = res.Data ? res.Data.toString() : ''
+      return reply(res)
     })
   }
 }
@@ -133,15 +106,7 @@ exports.put = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
     const node = request.pre.args.node
-
-    const data = new Buffer(node.Data)
-    const links = node.Links.map((link) => ({
-      name: link.Name,
-      hash: new Buffer(bs58.decode(link.Hash)),
-      size: link.Size
-    }))
-
-    const dagNode = new DAGNode(data, links)
+    const dagNode = new DAGNode(new Buffer(node.Data), node.Links)
 
     request.server.app.ipfs.object.put(dagNode, (err, obj) => {
       if (err) {
@@ -151,15 +116,7 @@ exports.put = {
           Code: 0
         }).code(500)
       }
-
-      return reply({
-        Hash: bs58.encode(dagNode.multihash()).toString(),
-        Links: dagNode.links.map((link) => ({
-          Name: link.name,
-          Hash: bs58.encode(link.hash).toString(),
-          Size: link.size
-        }))
-      })
+      return reply(dagNode.toJSON())
     })
   }
 }
@@ -181,14 +138,7 @@ exports.stat = {
         }).code(500)
       }
 
-      return reply({
-        Hash: bs58.encode(key).toString(),
-        NumLinks: stats.NumLinks,
-        BlockSize: stats.BlockSize,
-        LinksSize: stats.LinksSize,
-        DataSize: stats.DataSize
-        // CumulativeSize: stats.CumulativeSize
-      })
+      return reply(stats)
     })
   }
 }
@@ -223,7 +173,7 @@ exports.links = {
   handler: (request, reply) => {
     const key = request.pre.args.key
 
-    request.server.app.ipfs.object.links(key, (err, links) => {
+    request.server.app.ipfs.object.get(key, (err, node) => {
       if (err) {
         log.error(err)
         return reply({
@@ -232,13 +182,10 @@ exports.links = {
         }).code(500)
       }
 
+      const res = node.toJSON()
       return reply({
-        Hash: bs58.encode(key).toString(),
-        Links: links.map((link) => ({
-          Name: link.name,
-          Hash: bs58.encode(link.hash).toString(),
-          Size: link.size
-        }))
+        Hash: res.Hash,
+        Links: res.Links
       })
     })
   }
@@ -291,7 +238,7 @@ exports.patchAppendData = {
     const key = request.pre.args.key
     const data = request.pre.args.data
 
-    request.server.app.ipfs.object.patch.appendData(key, data, (err, obj) => {
+    request.server.app.ipfs.object.patch.appendData(key, data, (err, node) => {
       if (err) {
         log.error(err)
 
@@ -301,14 +248,7 @@ exports.patchAppendData = {
         }).code(500)
       }
 
-      return reply({
-        Hash: bs58.encode(obj.multihash()).toString(),
-        Links: obj.links.map((link) => ({
-          Name: link.name,
-          Hash: bs58.encode(link.hash).toString(),
-          Size: link.size
-        }))
-      })
+      return reply(node.toJSON())
     })
   }
 }
@@ -322,7 +262,7 @@ exports.patchSetData = {
     const key = request.pre.args.key
     const data = request.pre.args.data
 
-    request.server.app.ipfs.object.patch.setData(key, data, (err, obj) => {
+    request.server.app.ipfs.object.patch.setData(key, data, (err, node) => {
       if (err) {
         log.error(err)
 
@@ -332,13 +272,10 @@ exports.patchSetData = {
         }).code(500)
       }
 
+      const res = node.toJSON()
       return reply({
-        Hash: bs58.encode(obj.multihash()).toString(),
-        Links: obj.links.map((link) => ({
-          Name: link.name,
-          Hash: bs58.encode(link.hash).toString(),
-          Size: link.size
-        }))
+        Hash: res.Hash,
+        Links: res.Links
       })
     })
   }
@@ -397,7 +334,7 @@ exports.patchAddLink = {
 
       const link = new DAGLink(name, linkedObj.size(), linkedObj.multihash())
 
-      request.server.app.ipfs.object.patch.addLink(root, link, (err, obj) => {
+      request.server.app.ipfs.object.patch.addLink(root, link, (err, node) => {
         if (err) {
           log.error(err)
 
@@ -407,14 +344,7 @@ exports.patchAddLink = {
           }).code(500)
         }
 
-        return reply({
-          Hash: bs58.encode(obj.multihash()).toString(),
-          Links: obj.links.map((link) => ({
-            Name: link.name,
-            Hash: bs58.encode(link.hash).toString(),
-            Size: link.size
-          }))
-        })
+        return reply(node.toJSON())
       })
     })
   }
@@ -453,7 +383,7 @@ exports.patchRmLink = {
     const root = request.pre.args.root
     const link = request.pre.args.link
 
-    request.server.app.ipfs.object.patch.rmLink(root, link, (err, obj) => {
+    request.server.app.ipfs.object.patch.rmLink(root, link, (err, node) => {
       if (err) {
         log.error(err)
 
@@ -463,14 +393,7 @@ exports.patchRmLink = {
         }).code(500)
       }
 
-      return reply({
-        Hash: bs58.encode(obj.multihash()).toString(),
-        Links: obj.links.map((link) => ({
-          Name: link.name,
-          Hash: bs58.encode(link.hash).toString(),
-          Size: link.size
-        }))
-      })
+      return reply(node.toJSON())
     })
   }
 }

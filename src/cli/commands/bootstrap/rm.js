@@ -18,7 +18,7 @@ module.exports = Command.extend({
       }
       ipfs.bootstrap.rm(multiaddr, (err, list) => {
         if (err) {
-          return log.error(err)
+          throw err
         }
       })
     })

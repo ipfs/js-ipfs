@@ -24,7 +24,7 @@ module.exports = Command.extend({
 
       ipfs.id((err, id) => {
         if (err) {
-          return log.error(err)
+          throw err
         }
         console.log(id)
       })

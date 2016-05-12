@@ -61,7 +61,6 @@ module.exports = Command.extend({
 
         child.on('exit', (err, code) => {
           if (err) {
-            log.error(err)
             throw new Error('error on the editor')
           }
 

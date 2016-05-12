@@ -2,33 +2,24 @@
 
 const Command = require('ronin').Command
 const utils = require('../../../utils')
-const bs58 = require('bs58')
 const bl = require('bl')
 const fs = require('fs')
 const debug = require('debug')
 const log = debug('cli:object')
 log.error = debug('cli:object:error')
 
-function parseAndAddNode (keyStr, data) {
+function parseAndAddNode (key, data) {
   utils.getIPFS((err, ipfs) => {
     if (err) {
       throw err
     }
 
-    const key = utils.isDaemonOn() ? keyStr : new Buffer(bs58.decode(keyStr))
-
-    ipfs.object.patch.setData(key, data, (err, obj) => {
+    ipfs.object.patch.setData(key, data, {enc: 'base58'}, (err, node) => {
       if (err) {
-        log.error(err)
         throw err
       }
 
-      if (typeof obj.multihash === 'function') {
-        console.log(bs58.encode(obj.multihash()).toString())
-        return
-      }
-
-      console.log(obj.Hash)
+      console.log(node.toJSON().Hash)
     })
   })
 }
@@ -49,7 +40,6 @@ module.exports = Command.extend({
 
     process.stdin.pipe(bl((err, input) => {
       if (err) {
-        log.error(err)
         throw err
       }
 
