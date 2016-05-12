@@ -74,7 +74,7 @@
     "joi": "^8.0.5",
     "libp2p-ipfs": "^0.3.3",
     "libp2p-swarm": "^0.12.11",
-    "lodash.get": "^4.2.1",
+    "lodash.get": "^4.3.0",
     "lodash.set": "^4.1.0",
     "multiaddr": "^1.4.1",
     "path-exists": "^3.0.0",
