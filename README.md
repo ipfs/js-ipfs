@@ -86,7 +86,7 @@ If no `callback` is passed, a promise is returned.
 
 - Object, with format `{ Data: <data>, Links: [] }`
 - Buffer, requiring that the encoding is specified on the encoding
-- [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js)
+- [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js). If no encoding is specified, Buffer is treated as the Data field.
 
 `options` is a optional argument of type object, that can contain the following properties:
 
