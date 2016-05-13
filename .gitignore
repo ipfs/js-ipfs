@@ -31,6 +31,7 @@ node_modules
 
 # Optional REPL history
 .node_repl_history
+<<<<<<< 05e1a1c74aa0e36274406f708d6aef0bb5ebb1d6
 
 # Dignified.js builds
 dist
