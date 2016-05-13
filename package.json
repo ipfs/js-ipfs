@@ -2,9 +2,17 @@
   "name": "interface-ipfs-core",
   "version": "0.1.1",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
-  "main": "src/index.js",
+  "main": "lib/index.js",
+  "jsnext:main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "exit(0)",
+    "build": "aegir-build node",
+    "lint": "aegir-lint",
+    "release": "aegir-release node",
+    "release-minor": "aegir-release node --type minor",
+    "release-major": "aegir-release node --type major",
+    "coverage": "exit(0)",
+    "coverage-publish": "exit(0)"
   },
   "repository": {
     "type": "git",
@@ -24,5 +32,8 @@
     "chai": "^3.5.0",
     "ipfs-merkle-dag": "^0.5.1",
     "json2yaml": "^1.1.0"
+  },
+  "devDependencies": {
+    "aegir": "^3.0.1"
   }
 }

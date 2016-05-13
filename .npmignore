@@ -1,7 +1,6 @@
 # Logs
 logs
 *.log
-npm-debug.log*
 
 # Runtime data
 pids
@@ -17,14 +16,8 @@ coverage
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
 
-# node-waf configuration
-.lock-wscript
-
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
-
-# Dependency directory
-node_modules
 
 # Optional npm cache directory
 .npm
@@ -32,6 +25,4 @@ node_modules
 # Optional REPL history
 .node_repl_history
 
-# Dignified.js builds
-dist
-lib
+test
