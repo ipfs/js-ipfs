@@ -49,15 +49,27 @@ module.exports = (common) => {
 
     it('object.put of json encoded buffer', (done) => {
       const obj = {
-        Data: new Buffer('Some data').toString(),
+        Data: new Buffer('Some data'),
         Links: []
       }
 
-      const buf = new Buffer(JSON.stringify(obj))
+      const obj2 = {
+        Data: obj.Data.toString(),
+        Links: obj.Links
+      }
+
+      const buf = new Buffer(JSON.stringify(obj2))
 
       ipfs.object.put(buf, { enc: 'json' }, (err, node) => {
         expect(err).to.not.exist
         const nodeJSON = node.toJSON()
+
+        // because js-ipfs-api can't
+        // infer if the returned Data is Buffer or String
+        if (typeof node.data === 'string') {
+          node.data = new Buffer(node.data)
+        }
+
         expect(obj.Data).to.deep.equal(node.data)
         expect(obj.Links).to.deep.equal(nodeJSON.Links)
         expect(nodeJSON.Hash).to.equal('QmPb5f92FxKPYdT3QNBd1GKiL4tZUXUrzF4Hkpdr3Gf1gK')
