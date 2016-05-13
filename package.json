@@ -37,6 +37,7 @@
     "aegir": "^3.0.1"
   },
   "contributors": [
-    "David Dias <daviddias.p@gmail.com>"
+    "David Dias <daviddias.p@gmail.com>",
+    "dignifiedquire <dignifiedquire@gmail.com>"
   ]
 }
