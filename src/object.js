@@ -4,7 +4,6 @@
 const expect = require('chai').expect
 const DAGNode = require('ipfs-merkle-dag').DAGNode
 const bs58 = require('bs58')
-const jsonToYaml = require('json2yaml')
 
 module.exports = (common) => {
   describe('.object', () => {
@@ -79,21 +78,15 @@ module.exports = (common) => {
         })
       })
 
-      // TODO verify that yaml encoded buffers still work in go-ipfs
-      it.skip('of yaml encoded buffer', (done) => {
-        const obj = {
-          Data: new Buffer('Some data').toString(),
-          Links: []
-        }
+      it('of protobuf encoded buffer', (done) => {
+        const dNode = new DAGNode(new Buffer('Some data'))
+        const buf = dNode.marshal()
 
-        const buf = new Buffer(jsonToYaml.stringify(obj))
-
-        ipfs.object.put(buf, { enc: 'yaml' }, (err, node) => {
+        ipfs.object.put(buf, { enc: 'protobuf' }, (err, node) => {
           expect(err).to.not.exist
-          const nodeJSON = node.toJSON()
-          expect(obj.Data).to.deep.equal(nodeJSON.Data)
-          expect(obj.Links).to.deep.equal(nodeJSON.Links)
-          expect(nodeJSON.Hash).to.equal('QmPb5f92FxKPYdT3QNBd1GKiL4tZUXUrzF4Hkpdr3Gf1gK')
+          expect(dNode.data).to.deep.equal(node.data)
+          expect(dNode.links).to.deep.equal(node.links)
+          expect(dNode.multihash()).to.deep.equal(node.multihash())
           done()
         })
       })
@@ -137,7 +130,11 @@ module.exports = (common) => {
         ipfs.object.put(dNode1, (err, node) => {
           expect(err).to.not.exist
           expect(dNode1.data).to.deep.equal(node.data)
-          expect(dNode1.links).to.deep.equal(node.links)
+          expect(
+            dNode1.links.map((l) => l.toJSON())
+          ).to.deep.equal(
+            node.links.map((l) => l.toJSON())
+          )
           expect(dNode1.multihash()).to.deep.equal(node.multihash())
           done()
         })
