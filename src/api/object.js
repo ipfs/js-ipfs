@@ -68,7 +68,7 @@ module.exports = (send) => {
       }
       const enc = options.enc || 'json'
 
-      send('object/put', enc, null, buf, (err, result) => {
+      send('object/put', null, {inputenc: enc}, buf, (err, result) => {
         if (err) {
           return callback(err)
         }
@@ -76,13 +76,16 @@ module.exports = (send) => {
         if (Buffer.isBuffer(obj)) {
           if (!options.enc) {
             obj = { Data: obj, Links: [] }
-          } else {
+          } else if (options.enc === 'json') {
             obj = JSON.parse(obj.toString())
           }
         }
         let node
         if (obj.multihash) {
           node = obj
+        } else if (options.enc === 'protobuf') {
+          node = new DAGNode()
+          node.unMarshal(obj)
         } else {
           node = new DAGNode(obj.Data, obj.Links)
         }
