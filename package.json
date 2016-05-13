@@ -35,5 +35,8 @@
   },
   "devDependencies": {
     "aegir": "^3.0.1"
-  }
+  },
+  "contributors": [
+    "David Dias <daviddias.p@gmail.com>"
+  ]
 }
