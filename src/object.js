@@ -58,7 +58,7 @@ module.exports = (common) => {
       ipfs.object.put(buf, { enc: 'json' }, (err, node) => {
         expect(err).to.not.exist
         const nodeJSON = node.toJSON()
-        expect(obj.Data).to.deep.equal(nodeJSON.Data)
+        expect(obj.Data).to.deep.equal(node.data)
         expect(obj.Links).to.deep.equal(nodeJSON.Links)
         expect(nodeJSON.Hash).to.equal('QmPb5f92FxKPYdT3QNBd1GKiL4tZUXUrzF4Hkpdr3Gf1gK')
         done()
