@@ -9,10 +9,7 @@ module.exports = (server) => {
     method: '*',
     path: '/api/v0/object/new',
     config: {
-      pre: [
-        { method: resources.object.new.parseArgs, assign: 'args' }
-      ],
-      handler: resources.object.new.handler
+      handler: resources.object.new
     }
   })
 

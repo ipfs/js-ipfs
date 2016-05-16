@@ -31,7 +31,6 @@ module.exports = Command.extend({
 
       ipfs.block.del(mh, (err) => {
         if (err) {
-          log.error(err)
           throw err
         }
 

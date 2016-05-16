@@ -28,6 +28,7 @@ describe('object', () => {
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
+
           const result = JSON.parse(stdout[0])
           expect(result.Links)
              .to.deep.equal([])
@@ -58,7 +59,7 @@ describe('object', () => {
           expect(stdout[1])
              .to.equal('BlockSize: 60')
           expect(stdout[2])
-             .to.equal('LinksSize: 8')
+             .to.equal('LinksSize: 53')
           expect(stdout[3])
              .to.equal('DataSize: 7')
           done()
@@ -132,6 +133,7 @@ describe('object', () => {
     })
   })
 
+  // Waiting for js-ipfs-api to be updated
   describe('api running', () => {
     let httpAPI
 
@@ -180,6 +182,7 @@ describe('object', () => {
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
+
           expect(stdout[0])
              .to.equal('added QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
           done()
@@ -196,7 +199,7 @@ describe('object', () => {
           expect(stdout[1])
              .to.equal('BlockSize: 60')
           expect(stdout[2])
-             .to.equal('LinksSize: 8')
+             .to.equal('LinksSize: 53')
           expect(stdout[3])
              .to.equal('DataSize: 7')
           done()

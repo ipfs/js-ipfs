@@ -16,7 +16,7 @@ module.exports = Command.extend({
     httpAPI = new HttpAPI()
     httpAPI.start((err) => {
       if (err) {
-        return log.error(err)
+        throw err
       }
       console.log('Daemon is ready')
     })
@@ -25,7 +25,7 @@ module.exports = Command.extend({
       console.log('Received interrupt signal, shutting down..')
       httpAPI.stop((err) => {
         if (err) {
-          return log.error(err)
+          throw err
         }
         process.exit(0)
       })

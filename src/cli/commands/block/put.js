@@ -19,7 +19,6 @@ function addBlock (buf) {
     if (utils.isDaemonOn()) {
       return ipfs.block.put(buf, (err, block) => {
         if (err) {
-          log.error(err)
           throw err
         }
 
@@ -31,7 +30,6 @@ function addBlock (buf) {
 
     ipfs.block.put(block, (err, obj) => {
       if (err) {
-        log.error(err)
         throw err
       }
 
@@ -52,7 +50,6 @@ module.exports = Command.extend({
 
     process.stdin.pipe(bl((err, input) => {
       if (err) {
-        log.error(err)
         throw err
       }
 

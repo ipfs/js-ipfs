@@ -31,7 +31,9 @@ module.exports = Command.extend({
         throw err
       }
       ipfs.version((err, version) => {
-        if (err) { return log.error(err) }
+        if (err) {
+          throw err
+        }
 
         if (typeof version === 'object') { // js-ipfs-api output
           console.log('ipfs version', version.Version)

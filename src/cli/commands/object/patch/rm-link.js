@@ -1,8 +1,8 @@
 'use strict'
 
 const Command = require('ronin').Command
+const DAGLink = require('ipfs-merkle-dag').DAGLink
 const utils = require('../../../utils')
-const bs58 = require('bs58')
 const debug = require('debug')
 const log = debug('cli:object')
 log.error = debug('cli:object:error')
@@ -25,25 +25,14 @@ module.exports = Command.extend({
         throw err
       }
 
-      if (utils.isDaemonOn()) {
-        return ipfs.object.patch.rmLink(root, link, (err, obj) => {
-          if (err) {
-            log.error(err)
-            throw err
-          }
+      const dLink = new DAGLink(link)
 
-          console.log(obj.Hash)
-        })
-      }
-
-      const mh = new Buffer(bs58.decode(root))
-      ipfs.object.patch.rmLink(mh, link, (err, obj) => {
+      ipfs.object.patch.rmLink(root, dLink, {enc: 'base58'}, (err, node) => {
         if (err) {
-          log.error(err)
           throw err
         }
 
-        console.log(bs58.encode(obj.multihash()).toString())
+        console.log(node.toJSON().Hash)
       })
     })
   }

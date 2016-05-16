@@ -2,7 +2,6 @@
 
 const Command = require('ronin').Command
 const utils = require('../../utils')
-const bs58 = require('bs58')
 const debug = require('debug')
 const log = debug('cli:object')
 log.error = debug('cli:object:error')
@@ -21,13 +20,9 @@ module.exports = Command.extend({
       if (err) {
         throw err
       }
-      const mh = utils.isDaemonOn()
-        ? key
-        : new Buffer(bs58.decode(key))
 
-      ipfs.object.stat(mh, (err, stats) => {
+      ipfs.object.stat(key, {enc: 'base58'}, (err, stats) => {
         if (err) {
-          log.error(err)
           throw err
         }
 
