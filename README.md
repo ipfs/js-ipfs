@@ -8,7 +8,7 @@ interface-ipfs-core
 
 The primary goal of this module is to define and ensure that both IPFS core implementations and their respective HTTP client libraries offer the same interface, so that developers can quickly change between a local and a remote node without having to change their applications. In addition to the definition of the expected interface, this module offers a suite of tests that can be run in order to check if the interface is used as described.
 
-The API is presented with both Node.js and Go primitives, however, there is not actual limitations for it to be extended for any other language, pushing forward the cross compatibility and interop through diferent stacks.
+The API is presented with both Node.js and Go primitives. However, there are no actual limitations keeping it from being extended for any other language, pushing forward cross compatibility and interoperability through different stacks.
 
 # Modules that implement the interface
 
@@ -28,7 +28,7 @@ Include this badge in your readme if you make a new module that uses interface-s
 
 ## Node.js
 
-Install interface-ipfs-core as one of the dependencies of your project and as a test file, using `mocha` (for Node.js) or a test runner with compatible API, do:
+Install `interface-ipfs-core` as one of the dependencies of your project and as a test file. Then, using `mocha` (for Node.js) or a test runner with compatible API, do:
 
 ```
 var test = require('interface-ipfs-core')
