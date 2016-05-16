@@ -10,7 +10,7 @@
     "detect-node": "^2.0.3",
     "flatmap": "0.0.3",
     "glob": "^7.0.3",
-    "ipfs-merkle-dag": "^0.5.1",
+    "ipfs-merkle-dag": "^0.6.0",
     "multiaddr": "^1.3.0",
     "multipart-stream": "^2.0.1",
     "ndjson": "^1.4.3",
@@ -26,7 +26,7 @@
     "url": "https://github.com/ipfs/js-ipfs-api"
   },
   "devDependencies": {
-    "aegir": "^3.0.2",
+    "aegir": "^3.0.4",
     "chai": "^3.5.0",
     "gulp": "^3.9.1",
     "interface-ipfs-core": "^0.1.4",
@@ -87,18 +87,5 @@
   "bugs": {
     "url": "https://github.com/ipfs/js-ipfs-api/issues"
   },
-  "homepage": "https://github.com/ipfs/js-ipfs-api",
-  "aegir": {
-    "webpack": {
-      "module": {
-        "postLoaders": [
-          {
-            "test": "__",
-            "loader": "transform?brfs",
-            "include": []
-          }
-        ]
-      }
-    }
-  }
+  "homepage": "https://github.com/ipfs/js-ipfs-api"
 }
