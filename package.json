@@ -67,7 +67,7 @@
     "ipfs-bitswap": "^0.2.0",
     "ipfs-block": "^0.3.0",
     "ipfs-block-service": "^0.4.0",
-    "ipfs-merkle-dag": "^0.5.1",
+    "ipfs-merkle-dag": "^0.6.0",
     "ipfs-multipart": "^0.1.0",
     "ipfs-repo": "^0.8.0",
     "ipfs-unixfs-engine": "^0.6.1",
