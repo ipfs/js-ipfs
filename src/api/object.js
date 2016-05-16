@@ -16,7 +16,12 @@ module.exports = (send) => {
       if (!options) {
         options = {}
       }
-      multihash = cleanMultihash(multihash, options)
+
+      try {
+        multihash = cleanMultihash(multihash, options)
+      } catch (err) {
+        return callback(err)
+      }
 
       send('object/get', multihash, null, null, (err, result) => {
         if (err) {
@@ -105,14 +110,23 @@ module.exports = (send) => {
       if (!options) {
         options = {}
       }
-      multihash = cleanMultihash(multihash, options)
+
+      try {
+        multihash = cleanMultihash(multihash, options)
+      } catch (err) {
+        return callback(err)
+      }
 
       send('object/data', multihash, null, null, (err, result) => {
         if (err) {
           return callback(err)
         }
 
-        result.pipe(bl(callback))
+        if (typeof result.pipe === 'function') {
+          result.pipe(bl(callback))
+        } else {
+          callback(null, result)
+        }
       })
     }),
     links: promisify((multihash, options, callback) => {
@@ -123,7 +137,12 @@ module.exports = (send) => {
       if (!options) {
         options = {}
       }
-      multihash = cleanMultihash(multihash, options)
+
+      try {
+        multihash = cleanMultihash(multihash, options)
+      } catch (err) {
+        return callback(err)
+      }
 
       send('object/links', multihash, null, null, (err, result) => {
         if (err) {
@@ -148,7 +167,12 @@ module.exports = (send) => {
       if (!options) {
         options = {}
       }
-      multihash = cleanMultihash(multihash, options)
+
+      try {
+        multihash = cleanMultihash(multihash, options)
+      } catch (err) {
+        return callback(err)
+      }
 
       send('object/stat', multihash, null, null, callback)
     }),
@@ -175,7 +199,12 @@ module.exports = (send) => {
         if (!options) {
           options = {}
         }
-        multihash = cleanMultihash(multihash, options)
+
+        try {
+          multihash = cleanMultihash(multihash, options)
+        } catch (err) {
+          return callback(err)
+        }
 
         send('object/patch/add-link', [multihash, dLink.name, bs58.encode(dLink.hash).toString()], null, null, (err, result) => {
           if (err) {
@@ -192,7 +221,12 @@ module.exports = (send) => {
         if (!options) {
           options = {}
         }
-        multihash = cleanMultihash(multihash, options)
+
+        try {
+          multihash = cleanMultihash(multihash, options)
+        } catch (err) {
+          return callback(err)
+        }
 
         send('object/patch/rm-link', [multihash, dLink.name], null, null, (err, result) => {
           if (err) {
@@ -209,7 +243,12 @@ module.exports = (send) => {
         if (!options) {
           options = {}
         }
-        multihash = cleanMultihash(multihash, options)
+
+        try {
+          multihash = cleanMultihash(multihash, options)
+        } catch (err) {
+          return callback(err)
+        }
 
         send('object/patch/set-data', [multihash], null, data, (err, result) => {
           if (err) {
@@ -226,7 +265,12 @@ module.exports = (send) => {
         if (!options) {
           options = {}
         }
-        multihash = cleanMultihash(multihash, options)
+
+        try {
+          multihash = cleanMultihash(multihash, options)
+        } catch (err) {
+          return callback(err)
+        }
 
         send('object/patch/append-data', [multihash], null, data, (err, result) => {
           if (err) {
@@ -262,6 +306,9 @@ function cleanMultihash (multihash, options) {
     } else {
       throw new Error('not valid multihash')
     }
+  } else if (!multihash) {
+    throw new Error('missing valid multihash')
   }
+
   return multihash
 }
