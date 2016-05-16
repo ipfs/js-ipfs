@@ -15,8 +15,8 @@
     "test:browser": "gulp test:browser",
     "build": "gulp build",
     "release": "gulp release",
-    "release:minor": "gulp release --type minor",
-    "release:major": "gulp release --type major",
+    "release-minor": "gulp release --type minor",
+    "release-major": "gulp release --type major",
     "coverage-publish": "aegir-coverage publish"
   },
   "pre-commit": [
