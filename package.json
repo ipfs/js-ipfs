@@ -33,7 +33,7 @@
     "ipfs-merkle-dag": "^0.6.0"
   },
   "devDependencies": {
-    "aegir": "^3.0.1"
+    "aegir": "^3.0.4"
   },
   "contributors": [
     "David Dias <daviddias.p@gmail.com>",
