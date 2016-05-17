@@ -106,7 +106,7 @@ If no `callback` is passed, a promise is returned.
 
 ##### `JavaScript` - ipfs.object.get(multihash, [options, callback])
 
-`multihash` is a [multihash]() which can be passed as:
+`multihash` is a [multihash][] which can be passed as:
 
 - Buffer, the raw Buffer of the multihash (or of and encoded version)
 - String, the toString version of the multihash (or of an encoded version)
@@ -126,7 +126,7 @@ If no `callback` is passed, a promise is returned.
 ##### `Go` **WIP**
 
 ##### `JavaScript` - ipfs.object.data(multihash, [options, callback])
-`multihash` is a [multihash]() which can be passed as:
+`multihash` is a [multihash][] which can be passed as:
 
 - Buffer, the raw Buffer of the multihash (or of and encoded version)
 - String, the toString version of the multihash (or of an encoded version)
@@ -147,7 +147,7 @@ If no `callback` is passed, a promise is returned.
 
 ##### `JavaScript` - ipfs.object.links(multihash, [options, callback])
 
-`multihash` is a [multihash]() which can be passed as:
+`multihash` is a [multihash][] which can be passed as:
 
 - Buffer, the raw Buffer of the multihash (or of and encoded version)
 - String, the toString version of the multihash (or of an encoded version)
@@ -172,7 +172,7 @@ If no `callback` is passed, a promise is returned.
 
 ##### `JavaScript` - ipfs.object.stat(multihash, [options, callback])
 
-`multihash` is a [multihash]() which can be passed as:
+`multihash` is a [multihash][] which can be passed as:
 
 - Buffer, the raw Buffer of the multihash (or of and encoded version)
 - String, the toString version of the multihash (or of an encoded version)
@@ -212,7 +212,7 @@ If no `callback` is passed, a promise is returned.
 
 ##### `JavaScript` - ipfs.object.patch.addLink(multihash, DAGLink, [options, callback])
 
-`multihash` is a [multihash]() which can be passed as:
+`multihash` is a [multihash][] which can be passed as:
 
 - Buffer, the raw Buffer of the multihash (or of and encoded version)
 - String, the toString version of the multihash (or of an encoded version)
@@ -239,7 +239,7 @@ If no `callback` is passed, a promise is returned.
 
 ##### `JavaScript` - ipfs.object.patch.rmLink(multihash, DAGLink, [options, callback])
 
-`multihash` is a [multihash]() which can be passed as:
+`multihash` is a [multihash][] which can be passed as:
 
 - Buffer, the raw Buffer of the multihash (or of and encoded version)
 - String, the toString version of the multihash (or of an encoded version)
@@ -266,7 +266,7 @@ If no `callback` is passed, a promise is returned.
 
 ##### `JavaScript` - ipfs.object.patch.appendData(multihash, data, [options, callback])
 
-`multihash` is a [multihash]() which can be passed as:
+`multihash` is a [multihash][] which can be passed as:
 
 - Buffer, the raw Buffer of the multihash (or of and encoded version)
 - String, the toString version of the multihash (or of an encoded version)
@@ -293,7 +293,7 @@ If no `callback` is passed, a promise is returned.
 
 ##### `JavaScript` - ipfs.object.patch.setData(multihash, data, [options, callback])
 
-`multihash` is a [multihash]() which can be passed as:
+`multihash` is a [multihash][] which can be passed as:
 
 - Buffer, the raw Buffer of the multihash (or of and encoded version)
 - String, the toString version of the multihash (or of an encoded version)
@@ -310,3 +310,4 @@ If no `callback` is passed, a promise is returned.
 
 
 [DAGNode]: https://github.com/vijayee/js-ipfs-merkle-dag
+[multihash]: http://github.com/jbenet/multihash
