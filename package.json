@@ -77,7 +77,7 @@
     "libp2p-swarm": "^0.12.11",
     "lodash.get": "^4.3.0",
     "lodash.set": "^4.2.0",
-    "multiaddr": "^1.4.1",
+    "multiaddr": "^2.0.0",
     "path-exists": "^3.0.0",
     "peer-book": "^0.1.1",
     "peer-id": "^0.6.6",
