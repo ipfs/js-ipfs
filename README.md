@@ -116,12 +116,8 @@ the format
 
 ```JavaScript
 {
-  Hash: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
-  NumLinks: 0,
-  BlockSize: 10,
-  LinksSize: 2,
-  DataSize: 8,
-  CumulativeSize: 10
+  Key: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
+  Size: 10
 }
 ```
 
