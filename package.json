@@ -56,7 +56,7 @@
     "transform-loader": "^0.2.3"
   },
   "dependencies": {
-    "babel-runtime": "^6.6.1",
+    "babel-runtime": "^6.9.0",
     "bl": "^1.1.2",
     "boom": "^3.1.2",
     "bs58": "^3.0.0",
