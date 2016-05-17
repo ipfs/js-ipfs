@@ -54,6 +54,82 @@ test.all(common)
 
 A valid (read: that follows this interface) IPFS core implementation, must expose the following API.
 
+## Block
+
+### `block.put`
+
+> Create a new IPFS Block.
+
+##### `Go` **WIP**
+
+##### `JavaScript` - ipfs.block.put(data, [callback])
+
+Where `data` can be a
+
+- Buffer, requiring that the encoding is specified on the options. If no
+  encoding is specified, Buffer is treated as the Data field
+- [Block][] instance
+
+`callback` has the signature `function (err, block) {}`, where `err` is an error
+if the operation was not successful. and `block` is a [Block][].
+
+
+
+
+### `block.get`
+
+> Retrieve an IPFS Block from the underlying Block Store by its mulithash.
+
+##### `Go` **WIP**
+
+##### `JavaScript` - ipfs.block.get(multihash, [callback])
+
+`multihash` is a [multihash][] which can be passed as a
+
+- Buffer, the raw Buffer of the multihash (or of and encoded version)
+- String, the toString version of the multihash (or of an encoded version)
+
+`callback` must follow the signature `function (err, node) {}`, where `err` is
+an error if the operation was not successful and `block` is a [Block][].
+
+If no `callback` is passed, a promise is returned.
+
+
+
+
+### `block.stat`
+
+> Returns various stats of an IPFS Block
+
+##### `Go` **WIP**
+
+##### `JavaScript` - ipfs.block.stat(multihash, [options, callback])
+
+`multihash` is a [multihash][] which can be passed as:
+
+- Buffer, the raw Buffer of the multihash (or of and encoded version)
+- String, the toString version of the multihash (or of an encoded version)
+
+`callback` must follow the signature `function (err, stats) {}`, where `err` is
+an error if the operation was not successful and `stats` is an object with
+the format
+
+```JavaScript
+{
+  Hash: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
+  NumLinks: 0,
+  BlockSize: 10,
+  LinksSize: 2,
+  DataSize: 8,
+  CumulativeSize: 10
+}
+```
+
+If no `callback` is passed, a promise is returned.
+
+
+
+
 ## Object
 
 ### `object.new`
@@ -118,10 +194,6 @@ If no `callback` is passed, a promise is returned.
 `callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][]
 
 If no `callback` is passed, a promise is returned.
-
-### `object.data`
-
-> Returns the Data field of an object
 
 ##### `Go` **WIP**
 
@@ -309,5 +381,6 @@ If no `callback` is passed, a promise is returned.
 If no `callback` is passed, a promise is returned.
 
 
+[Block]: https://github.com/ipfs/js-ipfs-block
 [DAGNode]: https://github.com/vijayee/js-ipfs-merkle-dag
 [multihash]: http://github.com/jbenet/multihash
