@@ -64,7 +64,7 @@ A valid (read: that follows this interface) IPFS core implementation, must expos
 
 ##### `JavaScript` - ipfs.object.new([callback])
 
-`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js)
+`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][]
 
 If no `callback` is passed, a promise is returned.
 
@@ -84,13 +84,13 @@ If no `callback` is passed, a promise is returned.
 
 - Object, with format `{ Data: <data>, Links: [] }`
 - Buffer, requiring that the encoding is specified on the options. If no encoding is specified, Buffer is treated as the Data field
-- [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js). 
+- [DAGNode][]
 
 `options` is a optional argument of type object, that can contain the following properties:
 
 - `enc`, the encoding of the Buffer (json, yml, etc), if passed a Buffer.
 
-`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js)
+`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][]
 
 If no `callback` is passed, a promise is returned.
 
@@ -115,7 +115,7 @@ If no `callback` is passed, a promise is returned.
 
 - `enc`, the encoding of multihash (base58, base64, etc), if any.
 
-`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js)
+`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][]
 
 If no `callback` is passed, a promise is returned.
 
@@ -223,7 +223,7 @@ If no `callback` is passed, a promise is returned.
 
 - `enc`, the encoding of multihash (base58, base64, etc), if any.
 
-`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js) that resulted by the operation of adding a Link.
+`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][] that resulted by the operation of adding a Link.
 
 If no `callback` is passed, a promise is returned.
 
@@ -250,7 +250,7 @@ If no `callback` is passed, a promise is returned.
 
 - `enc`, the encoding of multihash (base58, base64, etc), if any.
 
-`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js) that resulted by the operation of adding a Link.
+`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][] that resulted by the operation of adding a Link.
 
 If no `callback` is passed, a promise is returned.
 
@@ -277,7 +277,7 @@ If no `callback` is passed, a promise is returned.
 
 - `enc`, the encoding of multihash (base58, base64, etc), if any.
 
-`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js) that resulted by the operation of adding a Link.
+`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][] that resulted by the operation of adding a Link.
 
 If no `callback` is passed, a promise is returned.
 
@@ -304,6 +304,9 @@ If no `callback` is passed, a promise is returned.
 
 - `enc`, the encoding of multihash (base58, base64, etc), if any.
 
-`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js) that resulted by the operation of adding a Link.
+`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][] that resulted by the operation of adding a Link.
 
 If no `callback` is passed, a promise is returned.
+
+
+[DAGNode]: https://github.com/vijayee/js-ipfs-merkle-dag
