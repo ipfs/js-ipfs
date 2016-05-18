@@ -12,15 +12,16 @@ The API is presented with both Node.js and Go primitives. However, there are no 
 
 # Modules that implement the interface
 
-- [JavaScript IPFS implementation](https://github.com/ipfs/js-ipfs)
-- [JavaScript ipfs-api](https://github.com/ipfs/js-ipfs-api)
+- **WIP** [JavaScript IPFS implementation](https://github.com/ipfs/js-ipfs)
+- **WIP** [JavaScript ipfs-api](https://github.com/ipfs/js-ipfs-api)
 - Soon, go-ipfs, go-ipfs-api, java-ipfs-api, python-ipfs-api and others will implement it as well.
 
-Send a PR to add a new one if you happen to find or write one.
+Send in a PR if you find or write one!
 
 # Badge
 
-Include this badge in your readme if you make a new module that uses interface-stream-muxer API.
+Include this badge in your readme if you make a new module that implements
+interface-ipfs-core API.
 
 ![](/img/badge.png)
 
