@@ -31,7 +31,7 @@
     "chai": "^3.5.0",
     "gulp": "^3.9.1",
     "interface-ipfs-core": "^0.1.4",
-    "ipfsd-ctl": "^0.13.0",
+    "ipfsd-ctl": "^0.14.0",
     "pre-commit": "^1.1.2",
     "raw-loader": "^0.5.1",
     "stream-equal": "^0.1.8",
