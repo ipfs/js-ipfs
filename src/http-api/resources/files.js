@@ -1,6 +1,9 @@
 'use strict'
 
 const bs58 = require('bs58')
+const multihash = require('multihashes')
+const ndjson = require('ndjson')
+const multipart = require('ipfs-multipart')
 const debug = require('debug')
 const log = debug('http-api:files')
 log.error = debug('http-api:files:error')
@@ -43,6 +46,63 @@ exports.cat = {
         }).code(500)
       }
       return reply(stream)
+    })
+  }
+}
+
+exports.add = {
+  handler: (request, reply) => {
+    if (!request.payload) {
+      return reply('Array, Buffer, or String is required.').code(400).takeover()
+    }
+
+    const parser = multipart.reqParser(request.payload)
+
+    var filesParsed = false
+    var filesAdded = 0
+
+    var serialize = ndjson.serialize()
+    // hapi doesn't permit object streams: http://hapijs.com/api#replyerr-result
+    serialize._readableState.objectMode = false
+
+    var fileAdder = request.server.app.ipfs.files.add()
+
+    fileAdder.on('data', (file) => {
+      serialize.write({
+        Name: file.path,
+        Hash: multihash.toB58String(file.multihash)
+      })
+      filesAdded++
+    })
+
+    fileAdder.on('end', () => {
+      if (filesAdded === 0 && filesParsed) {
+        return reply({
+          Message: 'Failed to add files.',
+          Code: 0
+        }).code(500)
+      } else {
+        serialize.end()
+        return reply(serialize)
+          .header('x-chunked-output', '1')
+          .header('content-type', 'application/json')
+      }
+    })
+
+    parser.on('file', (fileName, fileStream) => {
+      var filePair = {
+        path: fileName,
+        stream: fileStream
+      }
+      filesParsed = true
+      fileAdder.write(filePair)
+    })
+
+    parser.on('end', () => {
+      if (!filesParsed) {
+        return reply("File argument 'data' is required.").code(400).takeover()
+      }
+      fileAdder.end()
     })
   }
 }

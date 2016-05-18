@@ -8,7 +8,7 @@ module.exports = (server) => {
   require('./object')(server)
   // require('./repo')(server)
   require('./config')(server)
+  require('./files')(server)
   require('./swarm')(server)
   require('./bitswap')(server)
-  require('./files')(server)
 }
