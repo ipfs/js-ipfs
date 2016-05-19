@@ -13,7 +13,7 @@ module.exports = Command.extend({
 
   run: (name) => {
     console.log('Initializing daemon...')
-    httpAPI = new HttpAPI()
+    httpAPI = new HttpAPI(process.env.IPFS_PATH)
     httpAPI.start((err) => {
       if (err) {
         throw err
