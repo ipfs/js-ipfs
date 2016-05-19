@@ -16,7 +16,7 @@ describe('config', () => {
       GCPeriod: '',
       Params: null,
     NoSync: false },
-    Addresses: { Swarm: [ '/ip4/127.0.0.1/tcp/9999', '/ip4/127.0.0.1/tcp/9990/websockets' ],
+    Addresses: { Swarm: [ '/ip4/127.0.0.1/tcp/9999', '/ip4/127.0.0.1/tcp/9990/ws' ],
       API: '/ip4/127.0.0.1/tcp/6001',
     Gateway: '/ip4/127.0.0.1/tcp/0' },
     Mounts: { IPFS: '/ipfs', IPNS: '/ipns', FuseAllowOther: false },

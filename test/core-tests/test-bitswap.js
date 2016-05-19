@@ -33,7 +33,7 @@ describe('bitswap', () => {
         const addr = res.Addresses
                 .map((addr) => multiaddr(addr))
                 .filter((addr) => {
-                  return _.includes(addr.protoNames(), 'websockets')
+                  return _.includes(addr.protoNames(), 'ws')
                 })[0]
 
         let target = addr.encapsulate(multiaddr(`/ipfs/${res.ID}`)).toString()
