@@ -67,7 +67,7 @@ A valid (read: that follows this interface) IPFS core implementation, must expos
 
 `callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][]
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 
 
@@ -93,7 +93,7 @@ If no `callback` is passed, a promise is returned.
 
 `callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][]
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 
 
@@ -118,7 +118,7 @@ If no `callback` is passed, a promise is returned.
 
 `callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][]
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 ### `object.data`
 
@@ -138,7 +138,7 @@ If no `callback` is passed, a promise is returned.
 
 `callback` must follow `function (err, data) {}` signature, where `err` is an error if the operation was not successful and `data` is a Buffer with the data that the MerkleDAG node contained.
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 ### `object.links`
 
@@ -159,7 +159,7 @@ If no `callback` is passed, a promise is returned.
 
 `callback` must follow `function (err, links) {}` signature, where `err` is an error if the operation was not successful and `links` is an Array of [DAGLink](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js#L199-L203) objects.
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 
 
@@ -195,7 +195,7 @@ If no `callback` is passed, a promise is returned.
 }
 ```
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 
 
@@ -226,7 +226,7 @@ If no `callback` is passed, a promise is returned.
 
 `callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][] that resulted by the operation of adding a Link.
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 
 
@@ -253,7 +253,7 @@ If no `callback` is passed, a promise is returned.
 
 `callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][] that resulted by the operation of adding a Link.
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 
 
@@ -280,7 +280,7 @@ If no `callback` is passed, a promise is returned.
 
 `callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][] that resulted by the operation of adding a Link.
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 
 
@@ -307,8 +307,9 @@ If no `callback` is passed, a promise is returned.
 
 `callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][] that resulted by the operation of adding a Link.
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 
 [DAGNode]: https://github.com/vijayee/js-ipfs-merkle-dag
 [multihash]: http://github.com/jbenet/multihash
+[promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
