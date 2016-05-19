@@ -45,7 +45,7 @@
     "gulp": "^3.9.1",
     "idb-plus-blob-store": "^1.1.2",
     "interface-ipfs-core": "^0.1.5",
-    "libp2p-ipfs-browser": "^0.2.0",
+    "libp2p-ipfs-browser": "^0.4.0",
     "lodash": "^4.11.2",
     "mocha": "^2.4.5",
     "ncp": "^2.0.0",
