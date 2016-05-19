@@ -37,7 +37,7 @@ describe('files', () => {
     const hash = 'QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o'
     ipfs.files.cat(hash, (err, res) => {
       expect(err).to.not.exist
-      res.on('file', (data) => {
+      res.on('data', (data) => {
         data.stream.pipe(bl((err, bldata) => {
           expect(err).to.not.exist
           expect(bldata.toString()).to.equal('hello world\n')
@@ -52,7 +52,7 @@ describe('files', () => {
     const hash = 'QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o'
     ipfs.files.get(hash, (err, res) => {
       expect(err).to.not.exist
-      res.on('file', (data) => {
+      res.on('data', (data) => {
         data.stream.pipe(bl((err, bldata) => {
           expect(err).to.not.exist
           expect(bldata.toString()).to.equal('hello world\n')

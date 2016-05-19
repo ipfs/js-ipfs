@@ -34,7 +34,7 @@ exports.cat = {
   handler: (request, reply) => {
     const key = request.pre.args.key
 
-    request.server.app.ipfs.files.cat(key, (err, ee) => {
+    request.server.app.ipfs.files.cat(key, (err, stream) => {
       if (err) {
         log.error(err)
         return reply({
@@ -42,7 +42,7 @@ exports.cat = {
           Code: 0
         }).code(500)
       }
-      ee.on('file', (data) => {
+      stream.on('data', (data) => {
         return reply(data.stream)
       })
     })

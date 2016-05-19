@@ -36,12 +36,13 @@ module.exports = (httpAPI) => {
           })
         })
 
-        it('returns a stream', (done) => {
+        it('returns a buffer', (done) => {
           api.inject({
             method: 'GET',
             url: '/api/v0/cat?arg=QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o'
           }, (res) => {
             expect(res.statusCode).to.equal(200)
+            expect(res.rawPayload).to.deep.equal(new Buffer('hello world' + '\n'))
             expect(res.payload).to.equal('hello world' + '\n')
             done()
           })
@@ -72,7 +73,7 @@ module.exports = (httpAPI) => {
           })
         })
 
-        it('returns a stream', (done) => {
+        it('returns a buffer', (done) => {
           ctl.cat('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o', (err, result) => {
             expect(err).to.not.exist
             expect(result).to.deep.equal(new Buffer('hello world' + '\n'))
