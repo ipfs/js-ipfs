@@ -6,7 +6,7 @@ const expect = require('chai').expect
 const createTempNode = require('../utils/temp-node')
 
 describe('swarm', function () {
-  this.timeout(20000)
+  this.timeout(80000)
 
   var ipfsA
   var ipfsB
