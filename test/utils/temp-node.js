@@ -12,7 +12,7 @@ function setAddresses (repo, num, callback) {
     config.Addresses = {
       Swarm: [
         `/ip4/127.0.0.1/tcp/1000${num}`,
-        `/ip4/127.0.0.1/tcp/1001${num}/websockets`
+        `/ip4/127.0.0.1/tcp/1001${num}/ws`
       ],
       API: `/ip4/127.0.0.1/tcp/1100${num}`,
       Gateway: `/ip4/127.0.0.1/tcp/1200${num}`
