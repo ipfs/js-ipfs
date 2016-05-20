@@ -12,15 +12,16 @@ The API is presented with both Node.js and Go primitives. However, there are no 
 
 # Modules that implement the interface
 
-- [JavaScript IPFS implementation](https://github.com/ipfs/js-ipfs)
-- [JavaScript ipfs-api](https://github.com/ipfs/js-ipfs-api)
+- **WIP** [JavaScript IPFS implementation](https://github.com/ipfs/js-ipfs)
+- **WIP** [JavaScript ipfs-api](https://github.com/ipfs/js-ipfs-api)
 - Soon, go-ipfs, go-ipfs-api, java-ipfs-api, python-ipfs-api and others will implement it as well.
 
-Send a PR to add a new one if you happen to find or write one.
+Send in a PR if you find or write one!
 
 # Badge
 
-Include this badge in your readme if you make a new module that uses interface-stream-muxer API.
+Include this badge in your readme if you make a new module that implements
+interface-ipfs-core API.
 
 ![](/img/badge.png)
 
@@ -66,7 +67,7 @@ A valid (read: that follows this interface) IPFS core implementation, must expos
 
 `callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][]
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 
 
@@ -92,7 +93,7 @@ If no `callback` is passed, a promise is returned.
 
 `callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][]
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 
 
@@ -117,7 +118,7 @@ If no `callback` is passed, a promise is returned.
 
 `callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][]
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 ### `object.data`
 
@@ -137,7 +138,7 @@ If no `callback` is passed, a promise is returned.
 
 `callback` must follow `function (err, data) {}` signature, where `err` is an error if the operation was not successful and `data` is a Buffer with the data that the MerkleDAG node contained.
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 ### `object.links`
 
@@ -158,7 +159,7 @@ If no `callback` is passed, a promise is returned.
 
 `callback` must follow `function (err, links) {}` signature, where `err` is an error if the operation was not successful and `links` is an Array of [DAGLink](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js#L199-L203) objects.
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 
 
@@ -194,7 +195,7 @@ If no `callback` is passed, a promise is returned.
 }
 ```
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 
 
@@ -225,7 +226,7 @@ If no `callback` is passed, a promise is returned.
 
 `callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][] that resulted by the operation of adding a Link.
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 
 
@@ -252,7 +253,7 @@ If no `callback` is passed, a promise is returned.
 
 `callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][] that resulted by the operation of adding a Link.
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 
 
@@ -279,7 +280,7 @@ If no `callback` is passed, a promise is returned.
 
 `callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][] that resulted by the operation of adding a Link.
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 
 
@@ -306,8 +307,9 @@ If no `callback` is passed, a promise is returned.
 
 `callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][] that resulted by the operation of adding a Link.
 
-If no `callback` is passed, a promise is returned.
+If no `callback` is passed, a [promise][] is returned.
 
 
 [DAGNode]: https://github.com/vijayee/js-ipfs-merkle-dag
 [multihash]: http://github.com/jbenet/multihash
+[promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
