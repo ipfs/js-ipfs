@@ -45,7 +45,7 @@ module.exports = function files (self) {
           callback('This dag node is a directory', null)
         } else {
           const exportStream = Exporter(hash, self._dagS)
-          exportStream.on('data', (object) => {
+          exportStream.once('data', (object) => {
             callback(null, object.stream)
           })
         }
