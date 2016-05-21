@@ -10,7 +10,7 @@ describe('commands', () => {
       .run((err, stdout, exitcode) => {
         expect(err).to.not.exist
         expect(exitcode).to.equal(0)
-        expect(stdout.length).to.equal(50)
+        expect(stdout.length).to.equal(48)
         done()
       })
   })

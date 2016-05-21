@@ -35,12 +35,9 @@ module.exports = Command.extend({
         if (err) {
           throw (err)
         }
-        console.log(res)
-        if (res) {
-          res.on('data', (data) => {
-            data.stream.pipe(process.stdout)
-          })
-        }
+        res.on('data', (data) => {
+          data.stream.pipe(process.stdout)
+        })
       })
     })
   }
