@@ -15,7 +15,6 @@ describe('id', () => {
     it('get the id', (done) => {
       nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'id'], {env})
         .run((err, stdout, exitcode) => {
-          console.log('->', stdout)
           expect(
             stdout
           ).to.be.eql([
