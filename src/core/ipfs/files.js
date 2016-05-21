@@ -44,8 +44,8 @@ module.exports = function files (self) {
         if (data.type === 'directory') {
           callback('This dag node is a directory', null)
         } else {
-          const exportEvent = Exporter(hash, self._dagS)
-          callback(null, exportEvent)
+          const exportStream = Exporter(hash, self._dagS)
+          callback(null, exportStream)
         }
       })
     },

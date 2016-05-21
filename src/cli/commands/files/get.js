@@ -84,7 +84,7 @@ module.exports = Command.extend({
         if (err) {
           throw err
         }
-        result.on('file', fileHandler(result, dir))
+        result.on('data', fileHandler(result, dir))
       })
     })
   }

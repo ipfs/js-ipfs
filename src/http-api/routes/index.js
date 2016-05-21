@@ -10,4 +10,5 @@ module.exports = (server) => {
   require('./config')(server)
   require('./swarm')(server)
   require('./bitswap')(server)
+  require('./files')(server)
 }
