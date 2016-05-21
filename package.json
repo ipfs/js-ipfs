@@ -62,7 +62,7 @@
     "debug": "^2.2.0",
     "fs-blob-store": "^5.2.1",
     "glob": "^7.0.3",
-    "hapi": "^13.3.0",
+    "hapi": "^13.4.1",
     "ipfs-api": "^4.0.2",
     "ipfs-bitswap": "^0.2.0",
     "ipfs-block": "^0.3.0",
