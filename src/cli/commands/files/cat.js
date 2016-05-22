@@ -35,6 +35,7 @@ module.exports = Command.extend({
         if (err) {
           throw (err)
         }
+        console.log(file)
         file.pipe(process.stdout)
       })
     })

@@ -16,7 +16,7 @@ module.exports = function files (self) {
         cb = function noop () {}
       }
       if (arr === undefined) {
-        return new Importer(self._dagS)
+        cb(null, new Importer(self._dagS))
       }
 
       const i = new Importer(self._dagS)
