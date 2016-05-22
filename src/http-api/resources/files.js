@@ -42,9 +42,7 @@ exports.cat = {
           Code: 0
         }).code(500)
       }
-      stream.on('data', (data) => {
-        return reply(data.stream)
-      })
+      return reply(stream)
     })
   }
 }
