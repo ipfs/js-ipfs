@@ -5,7 +5,7 @@ const expect = require('chai').expect
 
 module.exports = (httpAPI) => {
   describe('bitswap', function () {
-    this.timeout(20000)
+    this.timeout(80000)
     describe('commands', () => {
       let api
       before(() => {

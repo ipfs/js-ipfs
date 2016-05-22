@@ -12,7 +12,7 @@ const createTempNode = require('../utils/temp-node')
 const repoPath = require('./index').repoPath
 
 describe('bitswap', function () {
-  this.timeout(20000)
+  this.timeout(80000)
   const env = _.clone(process.env)
   env.IPFS_PATH = repoPath
 

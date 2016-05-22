@@ -7,7 +7,7 @@ const createTempNode = require('../utils/temp-node')
 
 module.exports = (httpAPI) => {
   describe('swarm', function () {
-    this.timeout(20000)
+    this.timeout(80000)
 
     describe('api', () => {
       var api
