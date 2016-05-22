@@ -3,16 +3,17 @@
 const Importer = require('ipfs-unixfs-engine').importer
 const Exporter = require('ipfs-unixfs-engine').exporter
 const UnixFS = require('ipfs-unixfs')
+const promisify = require('promisify-es6')
 
 module.exports = function files (self) {
   return {
-    add: (arr, callback) => {
+    add: promisify((arr, cb) => {
       if (typeof arr === 'function') {
-        callback = arr
+        cb = arr
         arr = undefined
       }
-      if (callback === undefined) {
-        callback = function noop () {}
+      if (cb === undefined) {
+        cb = function noop () {}
       }
       if (arr === undefined) {
         return new Importer(self._dagS)
@@ -26,7 +27,7 @@ module.exports = function files (self) {
       })
 
       i.once('end', () => {
-        callback(null, res)
+        cb(null, res)
       })
 
       arr.forEach((tuple) => {
@@ -34,26 +35,28 @@ module.exports = function files (self) {
       })
 
       i.end()
-    },
-    cat: (hash, callback) => {
+    }),
+
+    cat: promisify((hash, cb) => {
       self._dagS.get(hash, (err, fetchedNode) => {
         if (err) {
-          return callback(err, null)
+          return cb(err, null)
         }
         const data = UnixFS.unmarshal(fetchedNode.data)
         if (data.type === 'directory') {
-          callback('This dag node is a directory', null)
+          cb('This dag node is a directory', null)
         } else {
           const exportStream = Exporter(hash, self._dagS)
           exportStream.once('data', (object) => {
-            callback(null, object.stream)
+            cb(null, object.stream)
           })
         }
       })
-    },
-    get: (hash, callback) => {
+    }),
+
+    get: promisify((hash, cb) => {
       var exportFile = Exporter(hash, self._dagS)
-      callback(null, exportFile)
-    }
+      cb(null, exportFile)
+    })
   }
 }
