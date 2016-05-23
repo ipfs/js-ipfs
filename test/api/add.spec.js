@@ -7,6 +7,7 @@ const Readable = require('stream').Readable
 const path = require('path')
 const isNode = require('detect-node')
 const fs = require('fs')
+const bs58 = require('bs58')
 
 const testfileBig = fs.readFileSync(path.join(__dirname, '/../15mb.random'))
 const testfile = fs.readFileSync(path.join(__dirname, '/../testfile.txt'))
@@ -26,8 +27,9 @@ describe('.add', () => {
       expect(err).to.not.exist
 
       const added = res[0] != null ? res[0] : res
-      expect(added).to.have.property('Hash', 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
-      expect(added).to.have.property('Name', 'testfile.txt')
+      const mh = bs58.encode(added.multihash()).toString()
+      expect(mh).to.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+      expect(added.links).to.have.length(0)
       done()
     })
   })
@@ -38,7 +40,9 @@ describe('.add', () => {
       expect(err).to.not.exist
 
       expect(res).to.have.length(1)
-      expect(res[0]).to.have.property('Hash', 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+      const mh = bs58.encode(res[0].multihash()).toString()
+      expect(mh).to.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+      expect(res[0].links).to.have.length(0)
       done()
     })
   })
@@ -52,7 +56,9 @@ describe('.add', () => {
       expect(err).to.not.exist
 
       expect(res).to.have.length(1)
-      expect(res[0]).to.have.a.property('Hash', 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq')
+      const mh = bs58.encode(res[0].multihash()).toString()
+      expect(mh).to.equal('Qmcx5werSWQPdrGVap7LARHB4QUSPRPJwxhFuHvdoXqQXT')
+      expect(res[0].links).to.have.length(58)
       done()
     })
   })
@@ -66,7 +72,9 @@ describe('.add', () => {
       expect(err).to.not.exist
 
       const added = res[0] != null ? res[0] : res
-      expect(added).to.have.property('Hash', 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+      const mh = bs58.encode(added.multihash()).toString()
+      expect(mh).to.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+      expect(added.links).to.have.length(0)
       done()
     })
   })
@@ -77,14 +85,9 @@ describe('.add', () => {
         expect(err).to.not.exist
 
         const added = res[res.length - 1]
-        expect(added).to.have.property('Hash', 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6')
-
-        // check that the symlink was replaced by the target file
-        const linkPath = 'test-folder/hello-link'
-        const filePath = 'test-folder/files/hello.txt'
-        const linkHash = res.filter((e) => e.Name === linkPath)[0].Hash
-        const fileHash = res.filter((e) => e.Name === filePath)[0].Hash
-        expect(linkHash).to.equal(fileHash)
+        const mh = bs58.encode(added.multihash()).toString()
+        expect(mh).to.equal('QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6')
+        expect(added.links).to.have.length(7)
 
         done()
       } else {
@@ -101,7 +104,9 @@ describe('.add', () => {
 
         const added = res[res.length - 1]
         // same hash as the result from the cli (ipfs add test/test-folder -r)
-        expect(added).to.have.property('Hash', 'QmRArDYd8Rk7Zb7K2699KqmQM1uUoejn1chtEAcqkvjzGg')
+        const mh = bs58.encode(added.multihash()).toString()
+        expect(mh).to.equal('QmRArDYd8Rk7Zb7K2699KqmQM1uUoejn1chtEAcqkvjzGg')
+        expect(added.links).to.have.length(7)
         done()
       } else {
         expect(err.message).to.be.equal('Recursive uploads are not supported in the browser')
@@ -137,7 +142,9 @@ describe('.add', () => {
       expect(err).to.not.exist
 
       const added = res[res.length - 1]
-      expect(added).to.have.property('Hash', 'QmTDH2RXGn8XyDAo9YyfbZAUXwL1FCr44YJCN9HBZmL9Gj')
+      const mh = bs58.encode(added.multihash()).toString()
+      expect(mh).to.equal('QmTDH2RXGn8XyDAo9YyfbZAUXwL1FCr44YJCN9HBZmL9Gj')
+      expect(added.links).to.have.length(6)
       done()
     })
   })
@@ -151,7 +158,9 @@ describe('.add', () => {
       expect(err).to.not.exist
 
       const added = res[0] != null ? res[0] : res
-      expect(added).to.have.a.property('Hash', 'QmNRCQWfgze6AbBCaT1rkrkV5tJ2aP4oTNPb5JZcXYywve')
+      const mh = bs58.encode(added.multihash()).toString()
+      expect(mh).to.equal('QmNRCQWfgze6AbBCaT1rkrkV5tJ2aP4oTNPb5JZcXYywve')
+      expect(added.links).to.have.length(0)
       done()
     })
   })
@@ -162,7 +171,9 @@ describe('.add', () => {
       expect(err).to.not.exist
 
       const added = res[0] != null ? res[0] : res
-      expect(added).to.have.a.property('Hash', 'QmZmHgEX9baxUn3qMjsEXQzG6DyNcrVnwieQQTrpDdrFvt')
+      const mh = bs58.encode(added.multihash()).toString()
+      expect(mh).to.equal('QmRzvSX35JpzQ2Lyn55r3YwWqdVP6PPxYHFpiWpwQTff8A')
+      expect(added.links).to.have.length(0)
       done()
     })
   })
@@ -172,8 +183,10 @@ describe('.add', () => {
       let buf = new Buffer(testfile)
       return apiClients.a.add(buf)
         .then((res) => {
-          expect(res).to.have.length(1)
-          expect(res[0]).to.have.property('Hash', 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+          const added = res[0] != null ? res[0] : res
+          const mh = bs58.encode(added.multihash()).toString()
+          expect(mh).to.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+          expect(added.links).to.have.length(0)
         })
     })
   })

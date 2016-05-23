@@ -5,8 +5,9 @@
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
   "dependencies": {
-    "bl": "^1.1.2",
+    "async": "^2.0.0-rc.5",
     "babel-runtime": "^6.6.1",
+    "bl": "^1.1.2",
     "bs58": "^3.0.0",
     "detect-node": "^2.0.3",
     "flatmap": "0.0.3",

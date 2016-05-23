@@ -110,7 +110,7 @@ function requestAPI (config, path, args, qs, files, buffer, cb) {
 // -- Interface
 
 exports = module.exports = function getRequestAPI (config) {
-  return function (path, args, qs, files, buffer, cb) {
+  var send = function (path, args, qs, files, buffer, cb) {
     if (typeof buffer === 'function') {
       cb = buffer
       buffer = false
@@ -127,4 +127,41 @@ exports = module.exports = function getRequestAPI (config) {
 
     return requestAPI(config, path, args, qs, files, buffer, cb)
   }
+
+  // Wraps the 'send' function such that an asynchronous transform may be
+  // applied to its result before passing it on to either its callback or
+  // promise.
+  send.withTransform = function (transform) {
+    return function (path, args, qs, files, buffer, cb) {
+      if (typeof buffer === 'function') {
+        cb = buffer
+        buffer = false
+      }
+
+      var p = send(path, args, qs, files, buffer, wrap(cb))
+
+      if (p instanceof Promise) {
+        return p.then((res) => {
+          return new Promise(function (resolve, reject) {
+            transform(null, res, function (err, res) {
+              if (err) reject(err)
+              else resolve(res)
+            })
+          })
+        })
+      } else {
+        return p
+      }
+
+      function wrap (done) {
+        if (done) {
+          return function (err, res) {
+            transform(err, res, done)
+          }
+        }
+      }
+    }
+  }
+
+  return send
 }
