@@ -16,7 +16,6 @@ function singleFileServer (filename) {
   })
 }
 
-
 module.exports = (httpAPI) => {
   describe('files', () => {
     describe('api', () => {

@@ -65,44 +65,51 @@ exports.add = {
     // hapi doesn't permit object streams: http://hapijs.com/api#replyerr-result
     serialize._readableState.objectMode = false
 
-    var fileAdder = request.server.app.ipfs.files.add()
-
-    fileAdder.on('data', (file) => {
-      serialize.write({
-        Name: file.path,
-        Hash: multihash.toB58String(file.multihash)
-      })
-      filesAdded++
-    })
-
-    fileAdder.on('end', () => {
-      if (filesAdded === 0 && filesParsed) {
+    request.server.app.ipfs.files.add((err, fileAdder) => {
+      if (err) {
         return reply({
-          Message: 'Failed to add files.',
+          Message: err,
           Code: 0
         }).code(500)
-      } else {
-        serialize.end()
-        return reply(serialize)
-          .header('x-chunked-output', '1')
-          .header('content-type', 'application/json')
       }
-    })
 
-    parser.on('file', (fileName, fileStream) => {
-      var filePair = {
-        path: fileName,
-        stream: fileStream
-      }
-      filesParsed = true
-      fileAdder.write(filePair)
-    })
+      fileAdder.on('data', (file) => {
+        serialize.write({
+          Name: file.path,
+          Hash: multihash.toB58String(file.multihash)
+        })
+        filesAdded++
+      })
 
-    parser.on('end', () => {
-      if (!filesParsed) {
-        return reply("File argument 'data' is required.").code(400).takeover()
-      }
-      fileAdder.end()
+      fileAdder.on('end', () => {
+        if (filesAdded === 0 && filesParsed) {
+          return reply({
+            Message: 'Failed to add files.',
+            Code: 0
+          }).code(500)
+        } else {
+          serialize.end()
+          return reply(serialize)
+            .header('x-chunked-output', '1')
+            .header('content-type', 'application/json')
+        }
+      })
+
+      parser.on('file', (fileName, fileStream) => {
+        var filePair = {
+          path: fileName,
+          stream: fileStream
+        }
+        filesParsed = true
+        fileAdder.write(filePair)
+      })
+
+      parser.on('end', () => {
+        if (!filesParsed) {
+          return reply("File argument 'data' is required.").code(400).takeover()
+        }
+        fileAdder.end()
+      })
     })
   }
 }
