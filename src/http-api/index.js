@@ -19,7 +19,6 @@ exports = module.exports = function HttpApi (repo) {
 
   this.start = (callback) => {
     if (typeof repo === 'string') {
-      console.log('here')
       repo = new IPFSRepo(repo, {stores: fsbs})
     }
 
