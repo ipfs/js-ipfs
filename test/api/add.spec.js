@@ -13,7 +13,7 @@ const testfileBig = fs.readFileSync(path.join(__dirname, '/../15mb.random'))
 const testfile = fs.readFileSync(path.join(__dirname, '/../testfile.txt'))
 
 describe('.add', () => {
-  it('add file', (done) => {
+  it('add buffer as tuple', (done) => {
     if (!isNode) {
       return done()
     }
@@ -63,7 +63,7 @@ describe('.add', () => {
     })
   })
 
-  it('add path', (done) => {
+  it('local fs: add file', (done) => {
     if (!isNode) {
       return done()
     }
@@ -79,8 +79,8 @@ describe('.add', () => {
     })
   })
 
-  it('add a nested dir following symlinks', (done) => {
-    apiClients.a.add(path.join(__dirname, '/../test-folder'), { recursive: true }, (err, res) => {
+  it('local fs: add nested dir (follow symlinks)', (done) => {
+    apiClients.a.addFiles(path.join(__dirname, '/../test-folder'), { recursive: true }, (err, res) => {
       if (isNode) {
         expect(err).to.not.exist
 
@@ -97,8 +97,8 @@ describe('.add', () => {
     })
   })
 
-  it('add a nested dir without following symlinks', (done) => {
-    apiClients.a.add(path.join(__dirname, '/../test-folder'), { recursive: true, followSymlinks: false }, (err, res) => {
+  it('local fs: add nested dir (don\'t follow symlinks)', (done) => {
+    apiClients.a.addFiles(path.join(__dirname, '/../test-folder'), { recursive: true, followSymlinks: false }, (err, res) => {
       if (isNode) {
         expect(err).to.not.exist
 

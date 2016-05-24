@@ -1,3 +1,5 @@
+'use strict'
+
 const DAGNode = require('ipfs-merkle-dag').DAGNode
 
 module.exports = function (send, hash, cb) {

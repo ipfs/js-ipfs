@@ -3,6 +3,7 @@
 function requireCommands () {
   return {
     add: require('./api/add'),
+    addFiles: require('./api/add-files'),
     addUrl: require('./api/add-url'),
     bitswap: require('./api/bitswap'),
     block: require('./api/block'),

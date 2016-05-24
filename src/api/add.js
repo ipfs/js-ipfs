@@ -1,7 +1,6 @@
 'use strict'
 
 const isStream = require('isstream')
-const Wreck = require('wreck')
 const addToDagNodesTransform = require('../add-to-dagnode-transform')
 
 module.exports = (send) => {

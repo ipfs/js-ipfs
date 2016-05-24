@@ -1,8 +1,6 @@
 'use strict'
 
 const Wreck = require('wreck')
-const async = require('async')
-const DAGNode = require('ipfs-merkle-dag').DAGNode
 const addToDagNodesTransform = require('../add-to-dagnode-transform')
 
 module.exports = (send) => {
