@@ -122,9 +122,22 @@ module.exports = Command.extend({
               const index = inPath.lastIndexOf('/')
               parallelLimit(res.map((element) => (callback) => {
                 if (!fs.statSync(element).isDirectory()) {
+                  element.substring(index + 1, element.length)
                   i.write({
                     path: element.substring(index + 1, element.length),
                     stream: fs.createReadStream(element)
+                  })
+                } else {
+                  fs.readdir(element, (err, files) => {
+                    if (err) {
+                      throw err
+                    }
+                    if (files.length === 0) {
+                      i.write({
+                        path: element.substring(index + 1, element.length),
+                        stream: null
+                      })
+                    }
                   })
                 }
                 callback()
@@ -135,11 +148,25 @@ module.exports = Command.extend({
                 i.end()
               })
             } else {
-              rs = fs.createReadStream(inPath)
-              inPath = inPath.substring(inPath.lastIndexOf('/') + 1, inPath.length)
-              filePair = {path: inPath, stream: rs}
-              i.write(filePair)
-              i.end()
+              if (!fs.statSync(inPath).isDirectory()) {
+                rs = fs.createReadStream(inPath)
+                inPath = inPath.substring(inPath.lastIndexOf('/') + 1, inPath.length)
+                filePair = {path: inPath, stream: rs}
+                i.write(filePair)
+                i.end()
+              } else {
+                fs.readdir(inPath, (err, files) => {
+                  if (err) {
+                    throw err
+                  }
+                  if (files.length === 0) {
+                    i.write({
+                      path: inPath,
+                      stream: null
+                    })
+                  }
+                })
+              }
             }
           })
         }
