@@ -1,8 +1,8 @@
 'use strict'
 
+const isStream = require('isstream')
 const Wreck = require('wreck')
-const async = require('async')
-const DAGNode = require('ipfs-merkle-dag').DAGNode
+const addToDagNodesTransform = require('../add-to-dagnode-transform')
 
 module.exports = (send) => {
   return function add (files, opts, cb) {
@@ -11,33 +11,16 @@ module.exports = (send) => {
       opts = {}
     }
 
-    send = send.withTransform(transform)
+    var good = Buffer.isBuffer(files) ||
+               isStream.isReadable(files) ||
+               Array.isArray(files)
 
-    if (typeof files === 'string' && files.startsWith('http')) {
-      return Wreck.request('GET', files, null, (err, res) => {
-        if (err) return cb(err)
-
-        send('add', null, opts, res, cb)
-      })
+    if (!good) {
+      return cb(new Error('"files" must be a buffer, readable stream, or array of objects'))
     }
 
-    return send('add', null, opts, files, cb)
+    var sendWithTransform = send.withTransform(addToDagNodesTransform)
 
-    // transform returned objects into DAGNodes
-    function transform (err, res, done) {
-      if (err) return done(err)
-
-      async.map(res,
-        function map (entry, fin) {
-          send('object/get', entry.Hash, null, null, function (err, result) {
-            if (err) return done(err)
-            const node = new DAGNode(result.Data, result.Links)
-            fin(err, node)
-          })
-        },
-        function complete (err, results) {
-          if (done) return done(err, results)
-        })
-    }
+    return sendWithTransform('add', null, opts, files, cb)
   }
 }

@@ -143,7 +143,7 @@ exports = module.exports = function getRequestAPI (config) {
       if (p instanceof Promise) {
         return p.then((res) => {
           return new Promise(function (resolve, reject) {
-            transform(null, res, function (err, res) {
+            transform(null, res, send, function (err, res) {
               if (err) reject(err)
               else resolve(res)
             })
@@ -156,7 +156,7 @@ exports = module.exports = function getRequestAPI (config) {
       function wrap (done) {
         if (done) {
           return function (err, res) {
-            transform(err, res, done)
+            transform(err, res, send, done)
           }
         }
       }

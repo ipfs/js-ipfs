@@ -167,7 +167,7 @@ describe('.add', () => {
 
   it('add url', (done) => {
     const url = 'https://raw.githubusercontent.com/ipfs/js-ipfs-api/2a9cc63d7427353f2145af6b1a768a69e67c0588/README.md'
-    apiClients.a.add(url, (err, res) => {
+    apiClients.a.addUrl(url, (err, res) => {
       expect(err).to.not.exist
 
       const added = res[0] != null ? res[0] : res

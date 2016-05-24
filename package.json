@@ -13,6 +13,7 @@
     "flatmap": "0.0.3",
     "glob": "^7.0.3",
     "ipfs-merkle-dag": "^0.6.0",
+    "isstream": "^0.1.2",
     "multiaddr": "^2.0.0",
     "multipart-stream": "^2.0.1",
     "ndjson": "^1.4.3",
