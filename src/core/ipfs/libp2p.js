@@ -18,6 +18,11 @@ module.exports = function libp2p (self) {
         })
         callback()
       })
+
+      self._libp2pNode.discovery.on('peer', (peerInfo) => {
+        self._peerInfoBook.put(peerInfo)
+        self._libp2pNode.swarm.dial(peerInfo)
+      })
     },
     stop: (callback) => {
       self._libp2pNode.swarm.close(callback)
