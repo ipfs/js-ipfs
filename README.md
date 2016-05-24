@@ -79,19 +79,26 @@ Where `data` may be
 
 `callback` must follow `function (err, res) {}` signature, where `err` is an
 error if the operation was not successful. `res` will be an array of
-[DAGNode][]s.
+
+```js
+{
+  path: '/tmp/myfile.txt',
+  node: DAGNode
+}
+```
 
 If no `callback` is passed, a promise is returned.
 
+Example:
 ```js
 var files = [
   {
     path: '/tmp/myfile.txt',
-    content: fs.createReadStream('/tmp/myfile.txt')
+    content: (Buffer or Readable stream)
   }
 ]
-ipfs.files.add(files, function (err, dagNodes) {
-  // 'res' will be an array of DAGNodes
+ipfs.files.add(files, function (err, files) {
+  // 'files' will be an array of objects
 })
 ```
 
@@ -122,8 +129,12 @@ If no `callback` is passed, a promise is returned.
 
 ```js
 ipfs.files.createAddStream(function (err, stream) {
-  stream.on('data', function (dagNode) {
-    // ...
+  stream.on('data', function (file) {
+    // 'file' will be of the form
+    // {
+    //   path: '/tmp/myfile.txt',
+    //   node: DAGNode
+    // }
   })
 
   stream.write({path: <path to file>, content: <buffer or readable stream>})

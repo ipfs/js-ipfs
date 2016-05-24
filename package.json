@@ -28,9 +28,12 @@
   },
   "homepage": "https://github.com/ipfs/interface-ipfs-core#readme",
   "dependencies": {
+    "bl": "^1.1.2",
     "bs58": "^3.0.0",
     "chai": "^3.5.0",
-    "ipfs-merkle-dag": "^0.6.0"
+    "detect-node": "^2.0.3",
+    "ipfs-merkle-dag": "^0.6.0",
+    "readable-stream": "1.1.13"
   },
   "devDependencies": {
     "aegir": "^3.0.4"
