@@ -23,6 +23,9 @@ module.exports = function libp2p (self) {
         self._peerInfoBook.put(peerInfo)
         self._libp2pNode.swarm.dial(peerInfo)
       })
+      self._libp2pNode.swarm.on('peer-mux-established', (peerInfo) => {
+        self._peerInfoBook.put(peerInfo)
+      })
     },
     stop: (callback) => {
       self._libp2pNode.swarm.close(callback)
