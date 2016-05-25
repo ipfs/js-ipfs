@@ -9,7 +9,7 @@ const repoPath = require('./index').repoPath
 const _ = require('lodash')
 
 describe('swarm', function () {
-  this.timeout(20000)
+  this.timeout(80000)
   const env = _.clone(process.env)
   env.IPFS_PATH = repoPath
 

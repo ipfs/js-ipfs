@@ -15,4 +15,16 @@ module.exports = (server) => {
       handler: resources.files.cat.handler
     }
   })
+
+  api.route({
+    method: '*',
+    path: '/api/v0/add',
+    config: {
+      payload: {
+        parse: false,
+        output: 'stream'
+      },
+      handler: resources.files.add.handler
+    }
+  })
 }

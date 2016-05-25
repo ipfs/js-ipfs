@@ -57,5 +57,7 @@ function IPFS (repoInstance) {
   this.object = object(this)
   this.libp2p = libp2p(this)
   this.files = files(this)
+  this.cat = files(this).cat // Alias for js-ipfs-api cat
+  this.add = files(this).add // Alias for js-ipfs-api add
   this.bitswap = bitswap(this)
 }
