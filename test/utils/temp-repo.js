@@ -10,7 +10,7 @@ function createTempRepo () {
   let store
   let teardown
 
-  const isNode = !global.window
+  const isNode = require('detect-node')
   if (isNode) {
     store = require('fs-blob-store')
     teardown = (done) => {
