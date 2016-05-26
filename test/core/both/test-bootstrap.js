@@ -3,13 +3,13 @@
 
 const expect = require('chai').expect
 
-const IPFS = require('../../src/core')
+const IPFS = require('../../../src/core')
 
 describe('bootstrap', () => {
   var ipfs
 
   before((done) => {
-    ipfs = new IPFS(require('./repo-path'))
+    ipfs = new IPFS(require('../../utils/repo-path'))
     ipfs.load(done)
   })
 

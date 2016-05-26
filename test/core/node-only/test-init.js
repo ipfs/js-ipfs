@@ -2,8 +2,8 @@
 'use strict'
 
 const expect = require('chai').expect
-const IPFS = require('../../src/core')
-const createTempRepo = require('../utils/temp-repo')
+const IPFS = require('../../../src/core')
+const createTempRepo = require('../../utils/temp-repo')
 
 describe('init (Node.js specific)', function () {
   this.timeout(10000)

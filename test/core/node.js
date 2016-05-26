@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 'use strict'
 
-const fs = require('fs')
 const ncp = require('ncp').ncp
 const expect = require('chai').expect
 const path = require('path')
@@ -9,7 +8,7 @@ const clean = require('../utils/clean')
 
 describe('core', () => {
   const repoExample = path.join(__dirname, '../go-ipfs-repo')
-  const repoTests = require('./repo-path')
+  const repoTests = require('../utils/repo-path')
 
   before((done) => {
     clean(repoTests)
@@ -22,18 +21,6 @@ describe('core', () => {
   after(() => {
     clean(repoTests)
   })
-
-  describe('--all', () => {
-    const tests = fs.readdirSync(__dirname)
-    tests.filter((file) => {
-      if (file === 'index.js' ||
-          file.endsWith('browser.js')) {
-        return false
-      } else {
-        return true
-      }
-    }).forEach((file) => {
-      require('./' + file)
-    })
-  })
+  require('./both')
+  require('./node-only')
 })
