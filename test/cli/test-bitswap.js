@@ -19,7 +19,7 @@ describe('bitswap', function () {
   let ipfs
 
   before((done) => {
-    createTempNode(4, (err, _ipfs) => {
+    createTempNode(38, (err, _ipfs) => {
       expect(err).to.not.exist
       ipfs = _ipfs
       ipfs.goOnline(done)

@@ -1,34 +1,36 @@
 'use strict'
 
 const peerId = require('peer-id')
-const PeerInfo = require('peer-info')
 const multiaddr = require('multiaddr')
 const Libp2pNode = require('libp2p-ipfs').Node
+const mafmt = require('mafmt')
 
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 
 module.exports = function libp2p (self) {
+  // NOTE: TODO CONSIDER/ CONSIDERING putting all of libp2p (start, stop, peerbook and so on) inside the libp2p object and reduce one layer
+
   return {
     start: (callback) => {
       self._libp2pNode = new Libp2pNode(self._peerInfo)
       self._libp2pNode.start(() => {
         // TODO connect to bootstrap nodes, it will get us more addrs
-        self._peerInfo.multiaddrs.forEach((ma) => {
+        self._libp2pNode.peerInfo.multiaddrs.forEach((ma) => {
           console.log('Swarm listening on', ma.toString())
         })
         callback()
       })
 
       self._libp2pNode.discovery.on('peer', (peerInfo) => {
-        self._peerInfoBook.put(peerInfo)
-        self._libp2pNode.swarm.dial(peerInfo)
+        self._libp2pNode.peerBook.put(peerInfo)
+        self._libp2pNode.dialByPeerInfo(peerInfo, () => {})
       })
       self._libp2pNode.swarm.on('peer-mux-established', (peerInfo) => {
-        self._peerInfoBook.put(peerInfo)
+        self._libp2pNode.peerBook.put(peerInfo)
       })
     },
     stop: (callback) => {
-      self._libp2pNode.swarm.close(callback)
+      self._libp2pNode.stop(callback)
     },
     swarm: {
       peers: (callback) => {
@@ -36,7 +38,7 @@ module.exports = function libp2p (self) {
           return callback(OFFLINE_ERROR)
         }
 
-        callback(null, self._peerInfoBook.getAll())
+        callback(null, self._libp2pNode.peerBook.getAll())
       },
       // all the addrs we know
       addrs: (callback) => {
@@ -51,34 +53,44 @@ module.exports = function libp2p (self) {
           return callback(OFFLINE_ERROR)
         }
 
-        callback(null, self._peerInfo.multiaddrs)
+        callback(null, self._libp2pNode.peerInfo.multiaddrs)
       },
-      connect: (ma, callback) => {
+      connect: (maddr, callback) => {
         if (!self.isOnline()) {
           return callback(OFFLINE_ERROR)
         }
 
-        const idStr = ma.toString().match(/\/ipfs\/(.*)/)
-        if (!idStr) {
-          return callback(new Error('invalid multiaddr'))
+        if (typeof maddr === 'string') {
+          maddr = multiaddr(maddr)
         }
-        const id = peerId.createFromB58String(idStr[1])
-        const peer = new PeerInfo(id)
 
-        peer.multiaddr.add(multiaddr(ma))
+        if (!mafmt.IPFS.matches(maddr.toString())) {
+          return callback(new Error('multiaddr not valid'))
+        }
 
-        self._peerInfoBook.put(peer)
+        let ipfsIdB58String
+        maddr.stringTuples().forEach((tuple) => {
+          if (tuple[0] === 421) {
+            ipfsIdB58String = tuple[1]
+          }
+        })
 
-        self._libp2pNode.swarm.dial(peer, (err) => {
+        const id = peerId.createFromB58String(ipfsIdB58String)
+
+        self._libp2pNode.dialByMultiaddr(maddr, (err) => {
           callback(err, id)
         })
       },
-      disconnect: (callback) => {
+      disconnect: (maddr, callback) => {
         if (!self.isOnline()) {
           return callback(OFFLINE_ERROR)
         }
 
-        throw new Error('Not implemented')
+        if (typeof maddr === 'string') {
+          maddr = multiaddr(maddr)
+        }
+
+        self._libp2pNode.hangUpByMultiaddr(maddr, callback)
       },
       filters: () => {
         // TODO
