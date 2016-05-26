@@ -82,7 +82,7 @@
     "path-exists": "^3.0.0",
     "peer-book": "^0.1.1",
     "peer-id": "^0.6.7",
-    "peer-info": "^0.6.2",
+    "peer-info": "^0.7.0",
     "promisify-es6": "^1.0.1",
     "readable-stream": "1.1.13",
     "ronin": "^0.3.11",
