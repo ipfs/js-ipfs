@@ -8,7 +8,7 @@ const IPFS = require('../../src/core')
 const Block = require('ipfs-block')
 const path = require('path')
 
-const isNode = !global.window
+const isNode = require('detect-node')
 
 const fileA = isNode
         ? fs.readFileSync(path.join(__dirname, '../go-ipfs-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data'))

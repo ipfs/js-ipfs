@@ -1,6 +1,6 @@
 'use strict'
 
-const isNode = !global.window
+const isNode = require('detect-node')
 
 module.exports = isNode
   ? require('./node')

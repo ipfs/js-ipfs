@@ -67,7 +67,7 @@ module.exports = function init (self) {
     // Add the default assets to the repo.
     function addDefaultAssets () {
       // Skip this step on the browser, or if emptyRepo was supplied.
-      const isNode = !global.window
+      const isNode = require('detect-node')
       if (!isNode || opts.emptyRepo) {
         return doneImport(null)
       }
