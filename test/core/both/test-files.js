@@ -6,13 +6,13 @@ const expect = require('chai').expect
 const Readable = require('stream').Readable
 const bs58 = require('bs58')
 
-const IPFS = require('../../src/core')
+const IPFS = require('../../../src/core')
 
 describe('files', () => {
   let ipfs
 
   before((done) => {
-    ipfs = new IPFS(require('./repo-path'))
+    ipfs = new IPFS(require('../../utils/repo-path'))
     ipfs.load(done)
   })
 

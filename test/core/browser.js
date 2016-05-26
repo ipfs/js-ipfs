@@ -15,7 +15,7 @@ const idb = window.indexedDB ||
 idb.deleteDatabase('ipfs')
 idb.deleteDatabase('ipfs/blocks')
 
-describe('IPFS Repo Tests on the Browser', function () {
+describe('core', function () {
   this.timeout(10000)
   before(function (done) {
     var repoData = []
@@ -44,15 +44,6 @@ describe('IPFS Repo Tests on the Browser', function () {
     }), done)
   })
 
-  it('--', () => {
-    const testsContext = require.context('.', true, /test-*/)
-    testsContext
-      .keys()
-      .filter((key) => {
-        return !(key.endsWith('-node.js') || key.endsWith('-node'))
-      })
-      .forEach((key) => {
-        testsContext(key)
-      })
-  })
+  require('./both')
+  require('./browser-only')
 })

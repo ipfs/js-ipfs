@@ -12,7 +12,7 @@ const bl = require('bl')
 const API = require('ipfs-api')
 const multiaddr = require('multiaddr')
 
-const IPFS = require('../../src/core')
+const IPFS = require('../../../src/core')
 
 function makeBlock () {
   return new Block(`IPFS is awesome ${Math.random()}`)
@@ -22,7 +22,7 @@ describe('bitswap', () => {
   let ipfs
 
   beforeEach((done) => {
-    ipfs = new IPFS(require('./repo-path'))
+    ipfs = new IPFS(require('../../utils/repo-path'))
     ipfs.load(done)
   })
 

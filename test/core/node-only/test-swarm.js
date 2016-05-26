@@ -3,7 +3,7 @@
 
 const expect = require('chai').expect
 
-const createTempNode = require('../utils/temp-node')
+const createTempNode = require('../../utils/temp-node')
 
 describe('swarm', function () {
   this.timeout(20000)

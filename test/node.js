@@ -23,13 +23,13 @@ if (process.env.TEST) {
 }
 
 if (testCore) {
-  require('./core-tests')
+  require('./core/node')
 }
 
 if (testHTTP) {
-  require('./http-api-tests')
+  require('./http-api')
 }
 
 if (testCLI) {
-  require('./cli-tests')
+  require('./cli')
 }

@@ -2,7 +2,7 @@
 'use strict'
 
 const expect = require('chai').expect
-const IPFS = require('../../src/core')
+const IPFS = require('../../../src/core')
 
 describe('config', () => {
   var defaultConfig = {
@@ -68,7 +68,7 @@ describe('config', () => {
   var ipfs
 
   before((done) => {
-    ipfs = new IPFS(require('./repo-path'))
+    ipfs = new IPFS(require('../../utils/repo-path'))
     ipfs.load(done)
   })
 
@@ -81,7 +81,7 @@ describe('config', () => {
   })
 
   it('replace', (done) => {
-    ipfs = new IPFS(require('./repo-path'))
+    ipfs = new IPFS(require('../../utils/repo-path'))
     ipfs.config.replace({}, (err) => {
       expect(err).to.not.exist
       ipfs.config.show((err, config) => {
@@ -94,13 +94,4 @@ describe('config', () => {
       })
     })
   })
-
-// cli only feature built with show and replace
-// it.skip('edit', (done) => {
-//  ipfs = new IPFS(require('./repo-pathe'))
-//  ipfs.config((err, config) => {
-//    expect(err).to.not.exist
-//    done()
-//  })
-// })
 })

@@ -1,3 +1,3 @@
 'use strict'
 
-require('./core-tests/browser')
+require('./core/browser')

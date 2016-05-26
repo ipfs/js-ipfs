@@ -4,11 +4,11 @@
 
 const test = require('interface-ipfs-core')
 
-const IPFS = require('../../src/core')
+const IPFS = require('../../../src/core')
 
 const common = {
   setup: function (cb) {
-    const ipfs = new IPFS(require('./repo-path'))
+    const ipfs = new IPFS(require('../../utils/repo-path'))
     ipfs.load(() => {
       cb(null, ipfs)
     })
