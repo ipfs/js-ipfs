@@ -15,7 +15,7 @@ module.exports = function id (self) {
     function ready () {
       callback(null, {
         ID: self._peerInfo.id.toB58String(),
-        PublicKey: self._peerInfo.id.pubKey.toString('base64'),
+        PublicKey: self._peerInfo.id.pubKey.bytes.toString('base64'),
         Addresses: self._peerInfo.multiaddrs.map((ma) => { return ma.toString() }).sort(),
         AgentVersion: 'js-ipfs',
         ProtocolVersion: '9000'
