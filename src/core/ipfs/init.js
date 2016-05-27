@@ -91,7 +91,7 @@ module.exports = function init (self) {
             const rs = new Readable()
             rs.push(fs.readFileSync(element))
             rs.push(null)
-            const filePair = {path: addPath, stream: rs}
+            const filePair = {path: addPath, content: rs}
             i.write(filePair)
           }
           callback()
