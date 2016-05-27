@@ -80,7 +80,7 @@
     "lodash.set": "^4.2.0",
     "multiaddr": "^2.0.2",
     "path-exists": "^3.0.0",
-    "peer-book": "^0.1.1",
+    "peer-book": "^0.3.0",
     "peer-id": "^0.6.7",
     "peer-info": "^0.6.2",
     "promisify-es6": "^1.0.1",
