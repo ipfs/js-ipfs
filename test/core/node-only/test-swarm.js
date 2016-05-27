@@ -7,7 +7,7 @@ const parallel = require('run-parallel')
 const createTempNode = require('../../utils/temp-node')
 
 describe('swarm', function () {
-  this.timeout(20 * 1000)
+  this.timeout(40 * 1000)
 
   let nodeA
   let nodeB
