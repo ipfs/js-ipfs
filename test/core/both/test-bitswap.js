@@ -101,7 +101,8 @@ describe('bitswap', () => {
       })
 
       afterEach((done) => {
-        setTimeout(() => ipfs.goOffline(done), 500)
+        // ipfs.goOffline(done)
+        setTimeout(() => ipfs.goOffline(done), 1500)
       })
 
       it('2 peers', (done) => {
