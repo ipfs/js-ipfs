@@ -39,7 +39,7 @@ module.exports = function init (self) {
       })
       config.Identity = {
         PeerID: keys.toB58String(),
-        PrivKey: keys.privKey.toString('base64')
+        PrivKey: keys.privKey.bytes.toString('base64')
       }
 
       writeVersion()

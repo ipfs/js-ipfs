@@ -11,7 +11,7 @@ const bs58 = require('bs58')
 const bl = require('bl')
 const API = require('ipfs-api')
 const multiaddr = require('multiaddr')
-
+const isNode = require('detect-node')
 const IPFS = require('../../../src/core')
 
 function makeBlock () {
@@ -20,10 +20,31 @@ function makeBlock () {
 
 describe('bitswap', () => {
   let ipfs
+  let configBak
 
   beforeEach((done) => {
     ipfs = new IPFS(require('../../utils/repo-path'))
-    ipfs.load(done)
+    if (!isNode) {
+      ipfs.config.show((err, config) => {
+        configBak = JSON.parse(JSON.stringify(config))
+        expect(err).to.not.exist
+        config.Addresses.Swarm = []
+        ipfs.config.replace(config, (err) => {
+          expect(err).to.not.exist
+          ipfs.load(done)
+        })
+      })
+    } else {
+      ipfs.load(done)
+    }
+  })
+
+  afterEach((done) => {
+    if (!isNode) {
+      ipfs.config.replace(configBak, done)
+    } else {
+      done()
+    }
   })
 
   describe('connections', () => {
@@ -36,9 +57,17 @@ describe('bitswap', () => {
                   return _.includes(addr.protoNames(), 'ws')
                 })[0]
 
-        let target = addr.encapsulate(multiaddr(`/ipfs/${res.ID}`)).toString()
+        let target
+        if (addr) {
+          target = addr.encapsulate(multiaddr(`/ipfs/${res.ID}`)).toString()
+          target = target.replace('0.0.0.0', '127.0.0.1')
+        } else {
+          // cause browser nodes don't have a websockets addrs
+          // TODO, what we really need is a way to dial to a peerId only
+          // and another to dial to peerInfo
+          target = multiaddr(`/ip4/0.0.0.0/tcp/0/ipfs/${res.ID}`).toString()
+        }
 
-        target = target.replace('0.0.0.0', '127.0.0.1')
         const swarm = node2.libp2p ? node2.libp2p.swarm : node2.swarm
         swarm.connect(target, done)
       })
