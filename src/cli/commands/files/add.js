@@ -73,7 +73,7 @@ module.exports = Command.extend({
             if (!fs.statSync(element).isDirectory()) {
               i.write({
                 path: element.substring(index + 1, element.length),
-                stream: fs.createReadStream(element)
+                content: fs.createReadStream(element)
               })
             }
             callback()
@@ -86,7 +86,7 @@ module.exports = Command.extend({
         } else {
           rs = fs.createReadStream(inPath)
           inPath = inPath.substring(inPath.lastIndexOf('/') + 1, inPath.length)
-          filePair = {path: inPath, stream: rs}
+          filePair = {path: inPath, content: rs}
           i.write(filePair)
           i.end()
         }
