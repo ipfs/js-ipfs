@@ -6,6 +6,7 @@ const _ = require('lodash')
 const series = require('run-series')
 const waterfall = require('run-waterfall')
 const parallel = require('run-parallel')
+const leftPad = require('left-pad')
 const Block = require('ipfs-block')
 const bs58 = require('bs58')
 const bl = require('bl')
@@ -65,7 +66,7 @@ describe('bitswap', () => {
           // cause browser nodes don't have a websockets addrs
           // TODO, what we really need is a way to dial to a peerId only
           // and another to dial to peerInfo
-          target = multiaddr(`/ip4/0.0.0.0/tcp/0/ipfs/${res.ID}`).toString()
+          target = multiaddr(`/ip4/0.0.0.0/tcp/0/ws/ipfs/${res.ID}`).toString()
         }
 
         const swarm = node2.libp2p ? node2.libp2p.swarm : node2.swarm
@@ -85,7 +86,8 @@ describe('bitswap', () => {
     }
 
     function addNode (num, done) {
-      const apiUrl = `/ip4/127.0.0.1/tcp/1100${num}`
+      num = leftPad(num, 3, 0)
+      const apiUrl = `/ip4/127.0.0.1/tcp/31${num}`
       const node = new API(apiUrl)
 
       connectNodes(node, ipfs, (err) => {
