@@ -3,14 +3,14 @@
 
 const IPFSRepo = require('ipfs-repo')
 const clean = require('./clean')
+const isNode = require('detect-node')
 
 function createTempRepo () {
-  const repoPath = '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8)
+  const repoPath = '/tmp/ipfs-test-' + Math.random().toString().substring(2, 10)
 
   let store
   let teardown
 
-  const isNode = require('detect-node')
   if (isNode) {
     store = require('fs-blob-store')
     teardown = (done) => {
@@ -36,7 +36,7 @@ function createTempRepo () {
   })
 
   repo.teardown = teardown
-
+  repo.path = repoPath
   return repo
 }
 
