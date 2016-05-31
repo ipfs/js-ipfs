@@ -73,7 +73,7 @@
     "ipfs-merkle-dag": "^0.6.0",
     "ipfs-multipart": "^0.1.0",
     "ipfs-repo": "^0.8.0",
-    "ipfs-unixfs-engine": "^0.8.0",
+    "ipfs-unixfs-engine": "^0.9.0",
     "isstream": "^0.1.2",
     "joi": "^8.0.5",
     "libp2p-ipfs": "^0.11.0",
