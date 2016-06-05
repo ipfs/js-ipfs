@@ -26,13 +26,13 @@ function requireCommands () {
   // TODO: crowding the 'files' namespace temporarily for interface-ipfs-core
   // compatibility, until 'files vs mfs' naming decision is resolved.
   cmds.files = function (send) {
-    var files = require('./api/files')(send)
+    const files = require('./api/files')(send)
     files.add = require('./api/add')(send)
     return files
   }
 
   cmds.util = function (send) {
-    var util = {
+    const util = {
       addFiles: require('./api/add-files')(send),
       addUrl: require('./api/add-url')(send)
     }

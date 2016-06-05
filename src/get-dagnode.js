@@ -5,7 +5,6 @@ const bl = require('bl')
 const async = require('async')
 
 module.exports = function (send, hash, cb) {
-
   // Retrieve the object and its data in parallel, then produce a DAGNode
   // instance using this information.
   async.parallel([
@@ -21,16 +20,19 @@ module.exports = function (send, hash, cb) {
     }],
 
     function done (err, res) {
-      if (err) return cb(err)
+      if (err) {
+        return cb(err)
+      }
 
       var object = res[0]
       var stream = res[1]
 
       stream.pipe(bl(function (err, data) {
-        if (err) return cb(err)
+        if (err) {
+          return cb(err)
+        }
 
         cb(err, new DAGNode(data, object.Links))
       }))
     })
-
 }

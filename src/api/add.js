@@ -10,7 +10,7 @@ module.exports = (send) => {
       opts = {}
     }
 
-    var good = Buffer.isBuffer(files) ||
+    const good = Buffer.isBuffer(files) ||
                isStream.isReadable(files) ||
                Array.isArray(files)
 
