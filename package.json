@@ -33,9 +33,9 @@
     "interface-ipfs-core": "^0.1.4",
     "ipfsd-ctl": "^0.14.0",
     "pre-commit": "^1.1.2",
-    "raw-loader": "^0.5.1",
     "stream-equal": "^0.1.8",
-    "stream-http": "^2.2.0"
+    "stream-http": "^2.2.0",
+    "streamifier": "^0.1.1"
   },
   "scripts": {
     "test": "gulp test",

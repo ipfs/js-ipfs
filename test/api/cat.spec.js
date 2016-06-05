@@ -5,6 +5,7 @@
 const expect = require('chai').expect
 const isNode = require('detect-node')
 const fs = require('fs')
+const streamifier = require('streamifier')
 
 const path = require('path')
 const streamEqual = require('stream-equal')
@@ -12,12 +13,8 @@ const streamEqual = require('stream-equal')
 let testfile
 let testfileBig
 
-if (isNode) {
-  testfile = fs.readFileSync(path.join(__dirname, '/../testfile.txt'))
-  testfileBig = fs.createReadStream(path.join(__dirname, '/../15mb.random'), { bufferSize: 128 })
-} else {
-  testfile = require('raw!../testfile.txt')
-}
+testfile = fs.readFileSync(path.join(__dirname, '/../testfile.txt'))
+testfileBig = fs.readFileSync(path.join(__dirname, '/../15mb.random'))
 
 describe('.cat', () => {
   it('cat', (done) => {
@@ -49,7 +46,8 @@ describe('.cat', () => {
       expect(err).to.not.exist
 
       // Do not blow out the memory of nodejs :)
-      streamEqual(res, testfileBig, (err, equal) => {
+      const bigStream = streamifier.createReadStream(testfileBig)
+      streamEqual(res, bigStream, (err, equal) => {
         expect(err).to.not.exist
         expect(equal).to.be.true
         done()
