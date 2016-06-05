@@ -5,12 +5,25 @@
 const expect = require('chai').expect
 const isNode = require('detect-node')
 const path = require('path')
+const test = require('interface-ipfs-core')
 
 let testfile
 
 testfile = require('fs').readFileSync(path.join(__dirname, '/../testfile.txt'))
 
-describe('.files', () => {
+// Load the add/cat/get/ls commands from interface-ipfs-core
+const common = {
+  setup: function (cb) {
+    cb(null, apiClients.a)
+  },
+  teardown: function (cb) {
+    cb()
+  }
+}
+test.files(common)
+
+// Describe the (mfs) tests
+describe('.files (pseudo mfs)', () => {
   it('files.mkdir', (done) => {
     apiClients.a.files.mkdir('/test-folder', function (err) {
       expect(err).to.not.exist
