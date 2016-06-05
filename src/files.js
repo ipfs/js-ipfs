@@ -5,8 +5,8 @@ const expect = require('chai').expect
 const bs58 = require('bs58')
 const Readable = require('readable-stream')
 const path = require('path')
-const isNode = require('detect-node')
 const fs = require('fs')
+const isNode = require('detect-node')
 
 module.exports = (common) => {
   describe('.files/add', () => {
@@ -53,8 +53,6 @@ module.exports = (common) => {
     })
 
     it('buffer as tuple', (done) => {
-      if (!isNode) return done()
-
       const file = {
         path: 'testfile.txt',
         content: smallFile
@@ -101,6 +99,8 @@ module.exports = (common) => {
     it('add a nested dir as array', (done) => {
       if (!isNode) {
         return done()
+        // can't run this test cause browserify
+        // can't shim readFileSync in runtime
       }
       const base = path.join(__dirname, 'data/test-folder')
       const content = (name) => ({
@@ -108,8 +108,7 @@ module.exports = (common) => {
         content: fs.readFileSync(path.join(base, name))
       })
       const emptyDir = (name) => ({
-        path: `test-folder/${name}`,
-        dir: true
+        path: `test-folder/${name}`
       })
       const dirs = [
         content('pp.txt'),

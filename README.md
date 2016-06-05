@@ -77,8 +77,9 @@ Where `data` may be
 - a `Buffer` instance
 - a `Readable` stream
 
-`callback` must follow `function (err, res) {}` signature, where `err` is an
-error if the operation was not successful. `res` will be an array of
+If no `content` is passed, then the path is treated as an empty directory
+
+`callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res` will be an array of:
 
 ```js
 {
@@ -90,6 +91,7 @@ error if the operation was not successful. `res` will be an array of
 If no `callback` is passed, a promise is returned.
 
 Example:
+
 ```js
 var files = [
   {
