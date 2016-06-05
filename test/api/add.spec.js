@@ -8,19 +8,8 @@ const path = require('path')
 const isNode = require('detect-node')
 const fs = require('fs')
 
-let testfile
-let testfileBig
-const testfilePath = path.join(__dirname, '/../testfile.txt')
-
-if (isNode) {
-  testfile = fs.readFileSync(testfilePath)
-  testfileBig = fs.createReadStream(path.join(__dirname, '/../15mb.random'), { bufferSize: 128 })
-  // testfileBig = fs.createReadStream(path.join(__dirname, '/../100mb.random'), { bufferSize: 128 })
-} else {
-  testfile = require('raw!../testfile.txt')
-  // browser goes nuts with a 100mb in memory
-  // testfileBig = require('raw!../100mb.random')
-}
+const testfileBig = fs.readFileSync(path.join(__dirname, '/../15mb.random'))
+const testfile = fs.readFileSync(path.join(__dirname, '/../testfile.txt'))
 
 describe('.add', () => {
   it('add file', (done) => {
@@ -73,7 +62,7 @@ describe('.add', () => {
       return done()
     }
 
-    apiClients.a.add(testfilePath, (err, res) => {
+    apiClients.a.add(path.join(__dirname, '/../testfile.txt'), (err, res) => {
       expect(err).to.not.exist
 
       const added = res[0] != null ? res[0] : res
@@ -122,8 +111,9 @@ describe('.add', () => {
   })
 
   it('add a nested dir as array', (done) => {
-    if (!isNode) return done()
-    const fs = require('fs')
+    if (!isNode) {
+      return done()
+    }
     const base = path.join(__dirname, '../test-folder')
     const content = (name) => ({
       path: `test-folder/${name}`,

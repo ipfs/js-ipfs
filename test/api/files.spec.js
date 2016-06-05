@@ -8,11 +8,7 @@ const path = require('path')
 
 let testfile
 
-if (isNode) {
-  testfile = require('fs').readFileSync(path.join(__dirname, '/../testfile.txt'))
-} else {
-  testfile = require('raw!../testfile.txt')
-}
+testfile = require('fs').readFileSync(path.join(__dirname, '/../testfile.txt'))
 
 describe('.files', () => {
   it('files.mkdir', (done) => {
