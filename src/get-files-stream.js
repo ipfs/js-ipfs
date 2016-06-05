@@ -10,7 +10,7 @@ function headers (file) {
     'Content-Disposition': `file; filename="${name}"`
   }
 
-  if (file.dir) {
+  if (file.dir || !file.content) {
     header['Content-Type'] = 'application/x-directory'
   } else if (file.symlink) {
     header['Content-Type'] = 'application/symlink'
@@ -104,6 +104,11 @@ function getFilesStream (files, opts) {
       }
 
       return loadPaths(opts, file)
+    }
+
+    if (file.path && !file.content) {
+      file.dir = true
+      return file
     }
 
     if (file.path && (file.content || file.dir)) {

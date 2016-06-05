@@ -32,7 +32,7 @@
     "aegir": "^3.2.0",
     "chai": "^3.5.0",
     "gulp": "^3.9.1",
-    "interface-ipfs-core": "^0.2.0",
+    "interface-ipfs-core": "^0.2.1",
     "ipfsd-ctl": "^0.14.0",
     "pre-commit": "^1.1.2",
     "stream-equal": "^0.1.8",
