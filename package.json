@@ -1,6 +1,6 @@
 {
   "name": "ipfs-api",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "description": "A client library for the IPFS API",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
