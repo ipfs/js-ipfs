@@ -2,8 +2,8 @@
   "name": "interface-ipfs-core",
   "version": "0.1.5",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
-  "main": "test/index.js",
-  "jsnext:main": "test/index.js",
+  "main": "lib/index.js",
+  "jsnext:main": "src/index.js",
   "scripts": {
     "test": "exit(0)",
     "build": "aegir-build node",
@@ -28,9 +28,12 @@
   },
   "homepage": "https://github.com/ipfs/interface-ipfs-core#readme",
   "dependencies": {
+    "bl": "^1.1.2",
     "bs58": "^3.0.0",
     "chai": "^3.5.0",
-    "ipfs-merkle-dag": "^0.6.0"
+    "detect-node": "^2.0.3",
+    "ipfs-merkle-dag": "^0.6.0",
+    "readable-stream": "1.1.13"
   },
   "devDependencies": {
     "aegir": "^3.2.0"
