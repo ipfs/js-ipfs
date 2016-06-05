@@ -2,32 +2,23 @@
 'use strict'
 
 const expect = require('chai').expect
-const DAGNode = require('ipfs-merkle-dag').DAGNode
 const bs58 = require('bs58')
-const bl = require('bl')
 const Readable = require('readable-stream')
 const path = require('path')
 const isNode = require('detect-node')
+const fs = require('fs')
 
 module.exports = (common) => {
   describe('.files/add', () => {
-    let testfile
-    let testfileBig
+    let smallFile
+    let bigFile
     let ipfs
 
     before((done) => {
-      // load test data
-      if (isNode) {
-        const fs = require('fs')
-
-        const testfilePath = path.join(__dirname, './data/testfile.txt')
-        testfile = fs.readFileSync(testfilePath)
-
-        const testfileBigPath = path.join(__dirname, './data/15mb.random')
-        testfileBig = fs.createReadStream(testfileBigPath, { bufferSize: 128 })
-      } else {
-        testfile = require('raw!./data/testfile.txt')
-      }
+      smallFile = fs.readFileSync(path.join(__dirname, './data/testfile.txt')
+)
+      bigFile = fs.readFileSync(path.join(__dirname, './data/15mb.random')
+)
 
       common.setup((err, _ipfs) => {
         expect(err).to.not.exist
@@ -66,7 +57,7 @@ module.exports = (common) => {
 
       const file = {
         path: 'testfile.txt',
-        content: new Buffer(testfile)
+        content: smallFile
       }
 
       ipfs.files.add([file], (err, res) => {
@@ -82,8 +73,7 @@ module.exports = (common) => {
     })
 
     it('buffer', (done) => {
-      let buf = new Buffer(testfile)
-      ipfs.files.add(buf, (err, res) => {
+      ipfs.files.add(smallFile, (err, res) => {
         expect(err).to.not.exist
 
         expect(res).to.have.length(1)
@@ -96,11 +86,7 @@ module.exports = (common) => {
     })
 
     it('BIG buffer', (done) => {
-      if (!isNode) {
-        return done()
-      }
-
-      ipfs.files.add(testfileBig, (err, res) => {
+      ipfs.files.add(bigFile, (err, res) => {
         expect(err).to.not.exist
 
         expect(res).to.have.length(1)
@@ -113,8 +99,9 @@ module.exports = (common) => {
     })
 
     it('add a nested dir as array', (done) => {
-      if (!isNode) return done()
-      const fs = require('fs')
+      if (!isNode) {
+        return done()
+      }
       const base = path.join(__dirname, 'data/test-folder')
       const content = (name) => ({
         path: `test-folder/${name}`,
@@ -149,8 +136,7 @@ module.exports = (common) => {
 
     describe('promise', () => {
       it('buffer', () => {
-        let buf = new Buffer(testfile)
-        return ipfs.files.add(buf)
+        return ipfs.files.add(smallFile)
           .then((res) => {
             const added = res[0] != null ? res[0] : res
             const mh = bs58.encode(added.node.multihash()).toString()
