@@ -1,8 +1,7 @@
 'use strict'
 
 function requireCommands () {
-  return {
-    add: require('./api/add'),
+  var cmds = {
     bitswap: require('./api/bitswap'),
     block: require('./api/block'),
     cat: require('./api/cat'),
@@ -11,7 +10,6 @@ function requireCommands () {
     dht: require('./api/dht'),
     diag: require('./api/diag'),
     id: require('./api/id'),
-    files: require('./api/files'),
     log: require('./api/log'),
     ls: require('./api/ls'),
     mount: require('./api/mount'),
@@ -24,6 +22,24 @@ function requireCommands () {
     update: require('./api/update'),
     version: require('./api/version')
   }
+
+  // TODO: crowding the 'files' namespace temporarily for interface-ipfs-core
+  // compatibility, until 'files vs mfs' naming decision is resolved.
+  cmds.files = function (send) {
+    const files = require('./api/files')(send)
+    files.add = require('./api/add')(send)
+    return files
+  }
+
+  cmds.util = function (send) {
+    const util = {
+      addFiles: require('./api/add-files')(send),
+      addUrl: require('./api/add-url')(send)
+    }
+    return util
+  }
+
+  return cmds
 }
 
 function loadCommands (send) {

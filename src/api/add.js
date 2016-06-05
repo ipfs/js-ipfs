@@ -1,6 +1,7 @@
 'use strict'
 
-const Wreck = require('wreck')
+const isStream = require('isstream')
+const addToDagNodesTransform = require('../add-to-dagnode-transform')
 
 module.exports = (send) => {
   return function add (files, opts, cb) {
@@ -9,14 +10,16 @@ module.exports = (send) => {
       opts = {}
     }
 
-    if (typeof files === 'string' && files.startsWith('http')) {
-      return Wreck.request('GET', files, null, (err, res) => {
-        if (err) return cb(err)
+    const good = Buffer.isBuffer(files) ||
+               isStream.isReadable(files) ||
+               Array.isArray(files)
 
-        send('add', null, opts, res, cb)
-      })
+    if (!good) {
+      return cb(new Error('"files" must be a buffer, readable stream, or array of objects'))
     }
 
-    return send('add', null, opts, files, cb)
+    var sendWithTransform = send.withTransform(addToDagNodesTransform)
+
+    return sendWithTransform('add', null, opts, files, cb)
   }
 }
