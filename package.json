@@ -27,7 +27,7 @@
     "url": "https://github.com/ipfs/js-ipfs-api"
   },
   "devDependencies": {
-    "aegir": "^3.0.4",
+    "aegir": "^3.2.0",
     "chai": "^3.5.0",
     "gulp": "^3.9.1",
     "interface-ipfs-core": "^0.1.4",
