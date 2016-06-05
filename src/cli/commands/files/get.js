@@ -48,7 +48,7 @@ function fileHandler (result, dir) {
       const dirPath = path.join(dir, file.path)
       // Check to see if the result is a directory
       if (file.dir === false) {
-        file.stream.pipe(fs.createWriteStream(dirPath))
+        file.content.pipe(fs.createWriteStream(dirPath))
       } else {
         ensureDir(dirPath, (err) => {
           if (err) {
@@ -64,7 +64,7 @@ function fileHandler (result, dir) {
           throw err
         }
 
-        file.stream.pipe(fs.createWriteStream(dirPath))
+        file.content.pipe(fs.createWriteStream(dirPath))
       })
     }
   }
