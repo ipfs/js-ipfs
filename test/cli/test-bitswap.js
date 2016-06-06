@@ -52,7 +52,7 @@ describe('bitswap', function () {
       nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bitswap', 'wantlist'], {env})
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
-          // expect(exitcode).to.equal(0)
+          expect(exitcode).to.equal(0)
           expect(stdout).to.be.eql([
             key
           ])

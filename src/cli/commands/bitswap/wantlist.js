@@ -19,7 +19,6 @@ module.exports = Command.extend({
         if (err) {
           throw err
         }
-
         res.Keys.forEach((k) => console.log(k))
       })
     })

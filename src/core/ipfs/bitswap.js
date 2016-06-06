@@ -1,13 +1,9 @@
 'use strict'
 
-const bs58 = require('bs58')
-
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 
 function formatWantlist (list) {
-  return Array.from(list).map((el) => {
-    return bs58.encode(new Buffer(el[0], 'hex'))
-  })
+  return Array.from(list).map((e) => e[0])
 }
 
 module.exports = function bitswap (self) {
