@@ -11,12 +11,7 @@ module.exports = (send) => {
     } catch (err) {
       return callback(err)
     }
-    send('cat', multihash, null, null, function (err, result) {
-      if (err) {
-        return callback(err)
-      }
-      return callback(null, result)
-    })
+    send('cat', multihash, null, null, callback)
   })
   return cat
 }
