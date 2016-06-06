@@ -133,6 +133,54 @@ module.exports = (common) => {
       })
     })
 
+    it('createAddStream', (done) => {
+      if (!isNode) {
+        return done()
+        // can't run this test cause browserify
+        // can't shim readFileSync in runtime
+      }
+
+      const base = path.join(__dirname, 'data/test-folder')
+      const content = (name) => ({
+        path: `test-folder/${name}`,
+        content: fs.readFileSync(path.join(base, name))
+      })
+      const emptyDir = (name) => ({
+        path: `test-folder/${name}`
+      })
+
+      const files = [
+        content('pp.txt'),
+        content('holmes.txt'),
+        content('jungle.txt'),
+        content('alice.txt'),
+        emptyDir('empty-folder'),
+        content('files/hello.txt'),
+        content('files/ipfs.txt'),
+        emptyDir('files/empty')
+      ]
+
+      ipfs.files.createAddStream((err, stream) => {
+        expect(err).to.not.exist
+
+        stream.on('data', (tuple) => {
+          if (tuple.path === 'test-folder') {
+            const mh = bs58.encode(tuple.node.multihash()).toString()
+            expect(mh).to.equal('QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP')
+            expect(tuple.node.links).to.have.length(6)
+          }
+        })
+
+        stream.on('end', done)
+
+        files.forEach((file) => {
+          stream.write(file)
+        })
+
+        stream.end()
+      })
+    })
+
     describe('promise', () => {
       it('buffer', () => {
         return ipfs.files.add(smallFile)
