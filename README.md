@@ -148,6 +148,33 @@ ipfs.files.createAddStream(function (err, stream) {
 
 
 
+
+### `cat` 
+
+> Streams the file at the given IPFS multihash..
+
+##### `Go` **WIP**
+
+##### `JavaScript` - ipfs.cat(multihash, [callback])
+
+`multihash` is a [multihash][] which can be passed as
+
+- Buffer, the raw Buffer of the multihash 
+- String, the base58 encoded version of the multihash
+
+`callback` must follow `function (err, stream) {}` signature, where `err` is an error if the operation was not successful and `stream` is a readable stream of the file.
+
+If no `callback` is passed, a promise is returned.
+
+```js
+ipfs.files.cat(multihash, function (err, file) {
+  // file will be a stream containing the data of the file requested
+})
+```
+
+
+
+
 ## Object
 
 ### `object.new`
