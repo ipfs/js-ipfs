@@ -144,8 +144,11 @@ exports = module.exports = function getRequestAPI (config) {
         return p.then((res) => {
           return new Promise(function (resolve, reject) {
             transform(null, res, send, function (err, res) {
-              if (err) reject(err)
-              else resolve(res)
+              if (err) {
+                reject(err)
+              } else {
+                resolve(res)
+              }
             })
           })
         })
