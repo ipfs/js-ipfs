@@ -1,22 +1,57 @@
 'use strict'
 
-const Importer = require('ipfs-unixfs-engine').importer
-const Exporter = require('ipfs-unixfs-engine').exporter
+const unixfsEngine = require('ipfs-unixfs-engine')
+const Importer = unixfsEngine.Importer
+const Exporter = unixfsEngine.Exporter
 const UnixFS = require('ipfs-unixfs')
-const bs58 = require('bs58')
 const through = require('through2')
 const isStream = require('isstream')
 const promisify = require('promisify-es6')
+const Duplex = require('stream').Duplex
+const multihashes = require('multihashes')
 
 module.exports = function files (self) {
   return {
-    createAddStream: promisify((callback) => {
-      // TODO: wip
-      if (data === undefined) {
-        return new Importer(self._dagS)
-      }
-    }),
+    createAddStream: (callback) => {
+      const i = new Importer(self._dagS)
+      const ds = new Duplex({ objectMode: true })
 
+      ds._read = (n) => {}
+      ds._write = (file, enc, next) => {
+        i.write(file)
+        next()
+      }
+
+      ds.end = () => {
+        i.end()
+      }
+
+      let counter = 0
+
+      i.on('data', (file) => {
+        counter++
+        self.object.get(file.multihash, (err, node) => {
+          if (err) {
+            return ds.emit('error', err)
+          }
+          ds.push({path: file.path, node: node})
+          counter--
+        })
+      })
+
+      i.on('end', () => {
+        function canFinish () {
+          if (counter === 0) {
+            ds.push(null)
+          } else {
+            setTimeout(canFinish, 100)
+          }
+        }
+        canFinish()
+      })
+
+      callback(null, ds)
+    },
     add: promisify((data, callback) => {
       // Buffer input
       if (Buffer.isBuffer(data)) {
@@ -33,7 +68,7 @@ module.exports = function files (self) {
         }]
       }
       if (!callback || typeof callback !== 'function') {
-        callback = function oop () {}
+        callback = function noop () {}
       }
       if (!Array.isArray(data)) {
         return callback(new Error('"data" must be an array of { path: string, content: Buffer|Readable } or Buffer or Readable'))
@@ -43,8 +78,8 @@ module.exports = function files (self) {
       const res = []
 
       // Transform file info tuples to DAGNodes
-      i.pipe(through.obj(function transform (info, enc, next) {
-        const mh = bs58.encode(info.multihash).toString()
+      i.pipe(through.obj((info, enc, next) => {
+        const mh = multihashes.toB58String(info.multihash)
         self._dagS.get(mh, (err, node) => {
           if (err) return callback(err)
           var obj = {
@@ -54,7 +89,7 @@ module.exports = function files (self) {
           res.push(obj)
           next()
         })
-      }, function end (done) {
+      }, (done) => {
         callback(null, res)
       }))
 

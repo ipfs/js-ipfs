@@ -9,9 +9,8 @@ module.exports = (httpAPI) => {
     describe('api', () => {
       let api
 
-      before((done) => {
+      before(() => {
         api = httpAPI.server.select('API')
-        done()
       })
 
       describe('/files/cat', () => {
