@@ -81,7 +81,7 @@ describe('bitswap', () => {
           // need timeout so we wait for identify to happen
           // in the browsers
           connectNodesSingle(node2, node1, cb)
-        }, 100)
+        }, 300)
       ], done)
     }
 
@@ -101,7 +101,8 @@ describe('bitswap', () => {
       })
 
       afterEach((done) => {
-        setTimeout(() => ipfs.goOffline(done), 500)
+        // ipfs.goOffline(done)
+        setTimeout(() => ipfs.goOffline(done), 1500)
       })
 
       it('2 peers', (done) => {
@@ -109,7 +110,7 @@ describe('bitswap', () => {
         let node
         series([
           // 0. Start node
-          (cb) => addNode(9, (err, _ipfs) => {
+          (cb) => addNode(13, (err, _ipfs) => {
             node = _ipfs
             cb(err)
           }),
@@ -196,7 +197,7 @@ describe('bitswap', () => {
             ipfs.files.cat(hash, (err, res) => {
               expect(err).to.not.exist
               res.on('file', (data) => {
-                data.stream.pipe(bl((err, bldata) => {
+                data.content.pipe(bl((err, bldata) => {
                   expect(err).to.not.exist
                   expect(bldata.toString()).to.equal('I love IPFS <3')
                   cb()

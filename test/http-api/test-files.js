@@ -9,7 +9,7 @@ module.exports = (httpAPI) => {
     describe('api', () => {
       let api
 
-      it('api', () => {
+      before(() => {
         api = httpAPI.server.select('API')
       })
 
