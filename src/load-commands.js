@@ -1,7 +1,7 @@
 'use strict'
 
 function requireCommands () {
-  var cmds = {
+  const cmds = {
     bitswap: require('./api/bitswap'),
     block: require('./api/block'),
     cat: require('./api/cat'),
@@ -28,6 +28,10 @@ function requireCommands () {
   cmds.files = function (send) {
     const files = require('./api/files')(send)
     files.add = require('./api/add')(send)
+    files.createAddStream = require('./api/add-stream.js')(send)
+    // aliases
+    cmds.add = files.add
+    cmds.createAddStream = files.createAddStream
     return files
   }
 
