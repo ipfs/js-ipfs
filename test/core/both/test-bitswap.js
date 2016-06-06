@@ -81,7 +81,7 @@ describe('bitswap', () => {
           // need timeout so we wait for identify to happen
           // in the browsers
           connectNodesSingle(node2, node1, cb)
-        }, 100)
+        }, 300)
       ], done)
     }
 
@@ -110,7 +110,7 @@ describe('bitswap', () => {
         let node
         series([
           // 0. Start node
-          (cb) => addNode(9, (err, _ipfs) => {
+          (cb) => addNode(13, (err, _ipfs) => {
             node = _ipfs
             cb(err)
           }),
