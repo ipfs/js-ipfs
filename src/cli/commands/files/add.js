@@ -59,37 +59,39 @@ module.exports = Command.extend({
         if (err) {
           throw err
         }
-        const i = ipfs.files.add()
-        var filePair
-        i.on('data', (file) => {
-          console.log('added', bs58.encode(file.multihash).toString(), file.path)
-        })
-        i.once('end', () => {
-          return
-        })
-        if (res.length !== 0) {
-          const index = inPath.lastIndexOf('/')
-          parallelLimit(res.map((element) => (callback) => {
-            if (!fs.statSync(element).isDirectory()) {
-              i.write({
-                path: element.substring(index + 1, element.length),
-                content: fs.createReadStream(element)
-              })
-            }
-            callback()
-          }), 10, (err) => {
-            if (err) {
-              throw err
-            }
-            i.end()
+        ipfs.files.createAddStream((err, i) => {
+          if (err) throw err
+          var filePair
+          i.on('data', (file) => {
+            console.log('added', bs58.encode(file.node.multihash()).toString(), file.path)
           })
-        } else {
-          rs = fs.createReadStream(inPath)
-          inPath = inPath.substring(inPath.lastIndexOf('/') + 1, inPath.length)
-          filePair = {path: inPath, content: rs}
-          i.write(filePair)
-          i.end()
-        }
+          i.once('end', () => {
+            return
+          })
+          if (res.length !== 0) {
+            const index = inPath.lastIndexOf('/')
+            parallelLimit(res.map((element) => (callback) => {
+              if (!fs.statSync(element).isDirectory()) {
+                i.write({
+                  path: element.substring(index + 1, element.length),
+                  content: fs.createReadStream(element)
+                })
+              }
+              callback()
+            }), 10, (err) => {
+              if (err) {
+                throw err
+              }
+              i.end()
+            })
+          } else {
+            rs = fs.createReadStream(inPath)
+            inPath = inPath.substring(inPath.lastIndexOf('/') + 1, inPath.length)
+            filePair = {path: inPath, content: rs}
+            i.write(filePair)
+            i.end()
+          }
+        })
       })
     })
   }
