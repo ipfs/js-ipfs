@@ -100,7 +100,11 @@ module.exports = function files (self) {
       i.end()
     }),
 
-    cat: (hash, callback) => {
+    cat: promisify((hash, callback) => {
+      if (typeof hash === 'function') {
+        callback = hash
+        return callback('You must supply a multihash', null)
+      }
       self._dagS.get(hash, (err, fetchedNode) => {
         if (err) {
           return callback(err, null)
@@ -110,10 +114,13 @@ module.exports = function files (self) {
           callback('This dag node is a directory', null)
         } else {
           const exportStream = Exporter(hash, self._dagS)
-          callback(null, exportStream)
+          exportStream.once('data', (object) => {
+            callback(null, object.content)
+          })
         }
       })
-    },
+    }),
+
     get: (hash, callback) => {
       var exportFile = Exporter(hash, self._dagS)
       callback(null, exportFile)

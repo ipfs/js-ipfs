@@ -31,13 +31,11 @@ module.exports = Command.extend({
         })
         return
       }
-      ipfs.files.cat(path, (err, res) => {
+      ipfs.files.cat(path, (err, file) => {
         if (err) {
           throw (err)
         }
-        res.on('data', (data) => {
-          data.content.pipe(process.stdout)
-        })
+        file.pipe(process.stdout)
       })
     })
   }
