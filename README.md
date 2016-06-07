@@ -1,5 +1,5 @@
 
-![](https://ipfs.io/ipfs/QmUHAgvHnywKPy3Ky7YBHdMivxWMk1NdhquSrLbE4ASRNW/ipfs.js.png)
+![](https://ipfs.io/ipfs/QmVk7srrwahXLNmcDYvyUEJptyoxpndnRa57YJ11L4jV26/ipfs.js.png)
 
 IPFS JavaScript Implementation
 ==============================
