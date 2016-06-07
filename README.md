@@ -1,3 +1,6 @@
+
+![](https://ipfs.io/ipfs/QmUHAgvHnywKPy3Ky7YBHdMivxWMk1NdhquSrLbE4ASRNW/ipfs.js.png)
+
 IPFS JavaScript Implementation
 ==============================
 
