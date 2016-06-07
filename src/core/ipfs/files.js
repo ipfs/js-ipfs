@@ -100,20 +100,26 @@ module.exports = function files (self) {
       i.end()
     }),
 
-    cat: (hash, callback) => {
+    cat: promisify((hash, callback) => {
+      if (typeof hash === 'function') {
+        return callback(new Error('You must supply a multihash'))
+      }
       self._dagS.get(hash, (err, fetchedNode) => {
         if (err) {
-          return callback(err, null)
+          return callback(err)
         }
         const data = UnixFS.unmarshal(fetchedNode.data)
         if (data.type === 'directory') {
-          callback('This dag node is a directory', null)
+          callback(new Error('This dag node is a directory'))
         } else {
           const exportStream = Exporter(hash, self._dagS)
-          callback(null, exportStream)
+          exportStream.once('data', (object) => {
+            callback(null, object.content)
+          })
         }
       })
-    },
+    }),
+
     get: (hash, callback) => {
       var exportFile = Exporter(hash, self._dagS)
       callback(null, exportFile)
