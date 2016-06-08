@@ -120,9 +120,9 @@ module.exports = function files (self) {
       })
     }),
 
-    get: (hash, callback) => {
+    get: promisify((hash, callback) => {
       var exportFile = Exporter(hash, self._dagS)
       callback(null, exportFile)
-    }
+    })
   }
 }
