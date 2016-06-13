@@ -20,7 +20,9 @@ This repo contains the JavaScript implementation of the IPFS protocol, with feat
 
 # Project status
 
-Consult the [Roadmap](/ROADMAP.md) for a complete state description of the project. A lot of components can be used currently, but it is a WIP, so beware of the Dragons.
+Consult the [Roadmap](/ROADMAP.md) for a complete state description of the project, or you can find `in process` updates in our [`Captain.log`](https://github.com/ipfs/js-ipfs/issues/30). A lot of components can be used currently, but it is a WIP, so beware of the Dragons.
+
+[![](https://camo.githubusercontent.com/561516567e49f00b5a4f489e122ca9d22815b547/68747470733a2f2f6d656469612e67697068792e636f6d2f6d656469612f4965685335436f46667a5175512f67697068792e676966)](https://github.com/ipfs/js-ipfs/issues/30)
 
 # Contribute
 
