@@ -6,9 +6,13 @@ const expect = require('chai').expect
 const isNode = require('detect-node')
 const fs = require('fs')
 const bl = require('bl')
+const concat = require('concat-stream')
+const through = require('through2')
 
 const path = require('path')
 const streamEqual = require('stream-equal')
+
+const extract = require('tar-stream').extract
 
 let testfile
 let testfileBig
@@ -24,10 +28,20 @@ describe('.get', () => {
   it('get with no compression args', (done) => {
     apiClients.a
       .get('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', (err, res) => {
-        expect(err).to.not.exist
-        res.pipe(bl((err, bldata) => {
-          expect(err).to.not.exist
-          expect(bldata.toString()).to.contain(testfile.toString())
+
+        // accumulate the files and their content
+        var files = []
+        res.pipe(through.obj((file, enc, next) => {
+          file.content.pipe(concat((content) => {
+            files.push({
+              path: file.path,
+              content: content
+            })
+            next()
+          }))
+        }, () => {
+          expect(files).to.be.length(1)
+          expect(files[0].content.toString()).to.contain(testfile.toString())
           done()
         }))
       })
@@ -36,10 +50,20 @@ describe('.get', () => {
   it('get with archive true', (done) => {
     apiClients.a
       .get('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {archive: true}, (err, res) => {
-        expect(err).to.not.exist
-        res.pipe(bl((err, bldata) => {
-          expect(err).to.not.exist
-          expect(bldata.toString()).to.contain(testfile.toString())
+
+        // accumulate the files and their content
+        var files = []
+        res.pipe(through.obj((file, enc, next) => {
+          file.content.pipe(concat((content) => {
+            files.push({
+              path: file.path,
+              content: content
+            })
+            next()
+          }))
+        }, () => {
+          expect(files).to.be.length(1)
+          expect(files[0].content.toString()).to.contain(testfile.toString())
           done()
         }))
       })

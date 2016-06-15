@@ -34,6 +34,12 @@ function requireCommands () {
     const files = require('./api/files')(send)
     files.add = require('./api/add')(send)
     files.createAddStream = require('./api/add-stream.js')(send)
+    files.get = require('./api/get')(send)
+
+    // aliases
+    cmds.add = files.add
+    cmds.createAddStream = files.createAddStream
+    cmds.get = files.get
 
     return files
   }
