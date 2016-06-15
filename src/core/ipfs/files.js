@@ -9,6 +9,7 @@ const isStream = require('isstream')
 const promisify = require('promisify-es6')
 const Duplex = require('stream').Duplex
 const multihashes = require('multihashes')
+const bs58 = require('bs58')
 
 module.exports = function files (self) {
   return {
