@@ -1,7 +1,6 @@
 'use strict'
 
 const bs58 = require('bs58')
-const multihash = require('multihashes')
 const ndjson = require('ndjson')
 const multipart = require('ipfs-multipart')
 const debug = require('debug')
