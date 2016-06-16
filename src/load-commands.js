@@ -4,6 +4,7 @@ function requireCommands () {
   const cmds = {
     bitswap: require('./api/bitswap'),
     block: require('./api/block'),
+    bootstrap: require('./api/bootstrap'),
     cat: require('./api/cat'),
     commands: require('./api/commands'),
     config: require('./api/config'),
