@@ -64,7 +64,7 @@
     "debug": "^2.2.0",
     "detect-node": "^2.0.3",
     "fs-blob-store": "^5.2.1",
-    "glob": "^7.0.3",
+    "glob": "^7.0.4",
     "hapi": "^13.4.1",
     "ipfs-bitswap": "^0.4.1",
     "ipfs-api": "^6.0.1",
