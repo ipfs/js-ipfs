@@ -27,12 +27,16 @@ module.exports = function (send, hash, cb) {
       var object = res[0]
       var stream = res[1]
 
-      stream.pipe(bl(function (err, data) {
-        if (err) {
-          return cb(err)
-        }
+      if (Buffer.isBuffer(stream)) {
+        cb(err, new DAGNode(stream, object.Links))
+      } else {
+        stream.pipe(bl(function (err, data) {
+          if (err) {
+            return cb(err)
+          }
 
-        cb(err, new DAGNode(data, object.Links))
-      }))
+          cb(err, new DAGNode(data, object.Links))
+        }))
+      }
     })
 }
