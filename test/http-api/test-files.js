@@ -246,7 +246,7 @@ module.exports = (httpAPI) => {
       })
 
       describe('ipfs.createAddStream', () => {
-          it('adds two files under a chunk Size', (done) => {
+        it('adds two files under a chunk Size', (done) => {
           const rs = new Readable()
           const rs2 = new Readable()
           var files = []
@@ -261,23 +261,23 @@ module.exports = (httpAPI) => {
           files.push(filePair)
           files.push(filePair2)
 
-          const i = ctl.files.createAddStream(function (err, stream) {
-            expect(err).to.not.exist;
+          ctl.files.createAddStream(function (err, stream) {
+            expect(err).to.not.exist
 
             stream.on('data', function (tuple) {
               if (tuple.path === 'otherconfig') {
                 expect(tuple.path).to.equal('otherconfig')
                 expect(bs58.encode(tuple.node.multihash()).toString()).to.equal('QmayedZNznnEbHtyfjeQvvt29opSLjYjLtLqwfwSWq28ds')
               }
-            });
+            })
 
-            stream.on('end', done);
+            stream.on('end', done)
 
             files.forEach(function (file) {
-              stream.write(file);
-            });
+              stream.write(file)
+            })
 
-            stream.end();
+            stream.end()
           })
         })
       })
