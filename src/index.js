@@ -1,7 +1,6 @@
 'use strict'
 
 const multiaddr = require('multiaddr')
-
 const loadCommands = require('./load-commands')
 const getConfig = require('./config')
 const getRequestAPI = require('./request-api')
