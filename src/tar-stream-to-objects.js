@@ -19,7 +19,7 @@ module.exports = function (err, res, send, done) {
   ex.on('entry', function (header, stream, next) {
     objStream.push({
       path: header.name,
-      content: stream
+      content: header.type !== 'directory' ? stream : null
     })
     next()
   })
