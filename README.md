@@ -1,16 +1,49 @@
-interface-ipfs-core
-===================
+# interface-ipfs-core
 
 [![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
 [![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
+[![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
+[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
-> A test suite and interface you can use to implement the IPFS Core API.
+> A test suite and interface you can use to implement a IPFS core interface.
+
+## Table of Contents
+
+- [Background](#background)
+  - [Modules that implement the interface](#modules-that-implement-the-interface)
+  - [Badge](#badge)
+- [Install](#install)
+- [Usage](#usage)
+  - [Node.js](#nodejs)
+  - [Go](#go)
+- [API](#api)
+  - [Files](#files)
+    - [`add`](#add)
+    - [`createAddStream`](#createaddstream)
+    - [`cat`](#cat)
+  - [Object](#object)
+    - [`object.new`](#objectnew)
+    - [`object.put`](#objectput)
+    - [`object.get`](#objectget)
+    - [`object.data`](#objectdata)
+    - [`object.links`](#objectlinks)
+    - [`object.stat`](#objectstat)
+    - [`object.patch`](#objectpatch)
+      - [`object.patch.addLink`](#objectpatchaddlink)
+      - [`object.patch.rmLink`](#objectpatchrmlink)
+      - [`object.patch.appendData`](#objectpatchappenddata)
+      - [`object.patch.setData`](#objectpatchsetdata)
+- [Contribute](#contribute)
+  - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
+- [License](#license)
+
+## Background
 
 The primary goal of this module is to define and ensure that both IPFS core implementations and their respective HTTP client libraries offer the same interface, so that developers can quickly change between a local and a remote node without having to change their applications. In addition to the definition of the expected interface, this module offers a suite of tests that can be run in order to check if the interface is used as described.
 
 The API is presented with both Node.js and Go primitives. However, there are no actual limitations keeping it from being extended for any other language, pushing forward cross compatibility and interoperability through different stacks.
 
-# Modules that implement the interface
+### Modules that implement the interface
 
 - **WIP** [JavaScript IPFS implementation](https://github.com/ipfs/js-ipfs)
 - **WIP** [JavaScript ipfs-api](https://github.com/ipfs/js-ipfs-api)
@@ -18,16 +51,26 @@ The API is presented with both Node.js and Go primitives. However, there are no 
 
 Send in a PR if you find or write one!
 
-# Badge
+### Badge
 
 Include this badge in your readme if you make a new module that implements
 interface-ipfs-core API.
 
 ![](/img/badge.png)
 
-# How to use the battery of tests
+## Install
 
-## Node.js
+```js
+npm install interface-ipfs-core
+```
+
+```go
+# TODO
+```
+
+## Usage
+
+### Node.js
 
 Install `interface-ipfs-core` as one of the dependencies of your project and as a test file. Then, using `mocha` (for Node.js) or a test runner with compatible API, do:
 
@@ -47,17 +90,17 @@ var common = {
 test.all(common)
 ```
 
-## Go
+### Go
 
 > WIP
 
-# API
+## API
 
 A valid (read: that follows this interface) IPFS core implementation, must expose the following API.
 
-## Files
+### Files
 
-### `add`
+#### `add`
 
 > Add files and data to IPFS.
 
@@ -105,7 +148,7 @@ ipfs.files.add(files, function (err, files) {
 ```
 
 
-### `createAddStream`
+#### `createAddStream`
 
 > Add files and data to IPFS using a transform stream.
 
@@ -149,7 +192,7 @@ ipfs.files.createAddStream(function (err, stream) {
 
 
 
-### `cat` 
+#### `cat` 
 
 > Streams the file at the given IPFS multihash..
 
@@ -175,9 +218,9 @@ ipfs.files.cat(multihash, function (err, file) {
 
 
 
-## Object
+### Object
 
-### `object.new`
+#### `object.new`
 
 > Create a new MerkleDAG node, using a specific layout. Caveat: So far, only UnixFS object layouts are supported.
 
@@ -193,7 +236,7 @@ If no `callback` is passed, a [promise][] is returned.
 
 
 
-### `object.put`
+#### `object.put`
 
 > Store an MerkleDAG node.
 
@@ -219,7 +262,7 @@ If no `callback` is passed, a [promise][] is returned.
 
 
 
-### `object.get`
+#### `object.get`
 
 > Fetch a MerkleDAG node
 
@@ -240,7 +283,7 @@ If no `callback` is passed, a [promise][] is returned.
 
 If no `callback` is passed, a [promise][] is returned.
 
-### `object.data`
+#### `object.data`
 
 > Returns the Data field of an object
 
@@ -260,7 +303,7 @@ If no `callback` is passed, a [promise][] is returned.
 
 If no `callback` is passed, a [promise][] is returned.
 
-### `object.links`
+#### `object.links`
 
 > Returns the Links field of an object
 
@@ -285,7 +328,7 @@ If no `callback` is passed, a [promise][] is returned.
 
 
 
-### `object.stat`
+#### `object.stat`
 
 > Returns stats about an Object
 
@@ -321,17 +364,17 @@ If no `callback` is passed, a [promise][] is returned.
 
 
 
-### `object.patch`
+#### `object.patch`
 
 > `object.patch` exposes the available patch calls.
 
-#### `object.patch.addLink`
+##### `object.patch.addLink`
 
 > Add a Link to an existing MerkleDAG Object
 
-##### `Go` **WIP**
+###### `Go` **WIP**
 
-##### `JavaScript` - ipfs.object.patch.addLink(multihash, DAGLink, [options, callback])
+###### `JavaScript` - ipfs.object.patch.addLink(multihash, DAGLink, [options, callback])
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -352,13 +395,13 @@ If no `callback` is passed, a [promise][] is returned.
 
 
 
-#### `object.patch.rmLink`
+##### `object.patch.rmLink`
 
 > Remove a Link from an existing MerkleDAG Object
 
-##### `Go` **WIP**
+###### `Go` **WIP**
 
-##### `JavaScript` - ipfs.object.patch.rmLink(multihash, DAGLink, [options, callback])
+###### `JavaScript` - ipfs.object.patch.rmLink(multihash, DAGLink, [options, callback])
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -379,13 +422,13 @@ If no `callback` is passed, a [promise][] is returned.
 
 
 
-#### `object.patch.appendData`
+##### `object.patch.appendData`
 
 > Append Data to the Data field of an existing node.
 
-##### `Go` **WIP**
+###### `Go` **WIP**
 
-##### `JavaScript` - ipfs.object.patch.appendData(multihash, data, [options, callback])
+###### `JavaScript` - ipfs.object.patch.appendData(multihash, data, [options, callback])
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -406,13 +449,13 @@ If no `callback` is passed, a [promise][] is returned.
 
 
 
-#### `object.patch.setData`
+##### `object.patch.setData`
 
 > Reset the Data field of a MerkleDAG Node to new Data
 
-##### `Go` **WIP**
+###### `Go` **WIP**
 
-##### `JavaScript` - ipfs.object.patch.setData(multihash, data, [options, callback])
+###### `JavaScript` - ipfs.object.patch.setData(multihash, data, [options, callback])
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -429,7 +472,20 @@ If no `callback` is passed, a [promise][] is returned.
 
 If no `callback` is passed, a [promise][] is returned.
 
-
 [DAGNode]: https://github.com/vijayee/js-ipfs-merkle-dag
 [multihash]: http://github.com/jbenet/multihash
 [promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+
+## Contribute
+
+Feel free to join in. All welcome. Open an [issue](https://github.com/ipfs/interface-ipfs-core/issues)!
+
+This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
+
+### Want to hack on IPFS?
+
+[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/contributing.md)
+
+## License
+
+MIT
