@@ -1,25 +1,40 @@
-IPFS API wrapper library in JavaScript
-======================================
+# js-ipfs-api
 
-[![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io) [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/) [![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs) [![Coverage Status](https://coveralls.io/repos/github/ipfs/js-ipfs-api/badge.svg?branch=master)](https://coveralls.io/github/ipfs/js-ipfs-api?branch=master)
+[![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
+[![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
+[![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
+[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+[![Coverage Status](https://coveralls.io/repos/github/ipfs/js-ipfs-api/badge.svg?branch=master)](https://coveralls.io/github/ipfs/js-ipfs-api?branch=master)
 [![Dependency Status](https://david-dm.org/ipfs/js-ipfs-api.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-api)
 [![Travis CI](https://travis-ci.org/ipfs/js-ipfs-api.svg?branch=master)](https://travis-ci.org/ipfs/js-ipfs-api)
 [![Circle CI](https://circleci.com/gh/ipfs/js-ipfs-api.svg?style=svg)](https://circleci.com/gh/ipfs/js-ipfs-api)
 
-> A client library for the IPFS API.
+> A client library for the IPFS HTTP API, implemented in JavaScript.
 
-# Usage
+## Table of Contents
 
-## Installing the module
+- [Install](#install)
+  - [Running the daemon with the right port](#running-the-daemon-with-the-right-port)
+  - [Importing the module and usage](#importing-the-module-and-usage)
+  - [In the Browser through browserify](#in-the-browser-through-browserify)
+  - [In the Browser through `<script>` tag](#in-the-browser-through-script-tag)
+  - [CORS](#cors)
+- [Usage](#usage)
+  - [Callbacks and promises](#callbacks-and-promises)
+- [Contribute](#contribute)
+- [License](#license)
 
-### In Node.js Through npm
+## Install
+
+This module uses node.js, and can be installed through npm:
 
 ```bash
 $ npm install --save ipfs-api
 ```
+
 **Note:** ipfs-api requires Node v4.x (LTS) or higher.
 
-#### Running the daemon with the right port
+### Running the daemon with the right port
 
 To interact with the API, you need to have a local daemon running. It needs to be open on the right port. `5001` is the default, and is used in the examples below, but it can be set to whatever you need.
 
@@ -35,7 +50,7 @@ $ ipfs config Addresses.API /ip4/127.0.0.1/tcp/5001
 $ ipfs daemon
 ```
 
-#### Importing the module and usage
+### Importing the module and usage
 
 ```javascript
 var ipfsAPI = require('ipfs-api')
@@ -74,7 +89,7 @@ If you omit the host and port, the api will parse `window.host`, and use this in
 var ipfs = window.IpfsApi()
 ```
 
-## CORS
+### CORS
 
 If are using this module in a browser with something like browserify, then you will get an error saying that the origin is not allowed. This would be a CORS ("Cross Origin Resource Sharing") failure. The ipfs server rejects requests from unknown domains by default. You can whitelist the domain that you are calling from by changing your ipfs config like this:
 
@@ -112,10 +127,10 @@ The js-ipfs API is a work in progress. As such, there's a few things you can do 
 * **Add tests**. There can never be enough tests.
 * **Contribute to the [FAQ repository](https://github.com/ipfs/faq/issues)** with any questions you have about IPFS or any of the relevant technology. A good example would be asking, 'What is a merkledag tree?'. If you don't know a term, odds are, someone else doesn't either. Eventually, we should have a good understanding of where we need to improve communications and teaching together to make IPFS and IPN better.
 
-## License
-
-MIT.
-
-# Want to hack on IPFS?
+**Want to hack on IPFS?**
 
 [![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/contributing.md)
+
+## License
+
+[MIT](LICENSE)
