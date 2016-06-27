@@ -78,7 +78,7 @@
     "isstream": "^0.1.2",
     "joi": "^8.0.5",
     "libp2p-ipfs": "^0.11.0",
-    "libp2p-ipfs-browser": "^0.10.0",
+    "libp2p-ipfs-browser": "^0.12.0",
     "lodash.get": "^4.3.0",
     "lodash.set": "^4.2.0",
     "mafmt": "^2.1.1",
