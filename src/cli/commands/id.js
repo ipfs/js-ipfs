@@ -26,7 +26,7 @@ module.exports = Command.extend({
         if (err) {
           throw err
         }
-        console.log(id)
+        console.log(JSON.stringify(id, '', 2))
       })
     })
   }
