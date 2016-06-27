@@ -90,7 +90,7 @@ describe('swarm', function () {
   it('libp2p.swarm.localAddrs', (done) => {
     nodeB.libp2p.swarm.localAddrs((err, res) => {
       expect(err).to.not.exist
-      expect(res.length).to.equal(2)
+      expect(res.length > 1).to.equal(true)
       done()
     })
   })
