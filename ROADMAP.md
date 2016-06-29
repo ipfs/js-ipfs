@@ -13,18 +13,18 @@ IPFS JavaScript Implementation roadmap
   - [x] unixfs layout
   - [x] jsipfs files add
   - [ ] jsipfs files get
-- [ ] jsipfs swarm
+- [x] jsipfs swarm
   - [x] listen on WebSockets + TCP
   - [x] spdy support
   - [x] identify protocol
   - [x] multistream
   - [x] connect
-  - [ ] interop with go-ipfs (tests)
+  - [x] interop with go-ipfs
 - [x] block API
 - [x] object API
   - [x] js-ipfs-merkle-dag
 - [x] repo API
-- [ ] bitswap
+- [x] bitswap
 - js-libp2p
   - [x] js-libp2p-swarm
   - [x] js-libp2p-tcp
@@ -39,8 +39,13 @@ IPFS JavaScript Implementation roadmap
 ### Notes:
 
 - This release won't
-  - support WebRTC, the communication between browser and machine nodes will happen through WebSockets+SPDY
+  - ~~support WebRTC, the communication between browser and machine nodes will happen through WebSockets+SPDY~~
   - support DHT (Kademlia Routing and Record Store)
+
+UPDATE:
+- For Milestone 1, we also added:
+  - [x] WebRTC transport with [libp2p-webrtc-star](https://github.com/libp2p/js-libp2p-webrtc-star)
+  - [ ] [secio](https://github.com/ipfs/js-libp2p-secio)
 
 # Milestone 2 - TBD
 
@@ -85,7 +90,7 @@ IPFS JavaScript Implementation roadmap
   - [ ] refs - Listing of references. (alking around the graph)
     - [ ] local
   - [ ] repo
-    - [ ] init
+    - [x] init
     - [ ] stat
     - [ ] gc
   - [ ] pin
@@ -119,7 +124,7 @@ IPFS JavaScript Implementation roadmap
     - [x] add
     - [x] list
     - [x] rm
-  - [ ] bitswap
+  - [x] bitswap
     - [ ] stat
     - [ ] unwant
     - [ ] wantlist
@@ -140,11 +145,11 @@ IPFS JavaScript Implementation roadmap
     - [ ] put
     - [ ] query
   - [ ] swarm
-    - [ ] addrs
-    - [ ] connect
-    - [ ] disconnect
+    - [x] addrs
+    - [x] connect
+    - [x] disconnect
     - [ ] filters
-    - [ ] peers
+    - [x] peers
   - [ ] records (IPRS)
     - [ ] put
     - [ ] get
