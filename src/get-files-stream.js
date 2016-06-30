@@ -93,7 +93,9 @@ function loadPaths (opts, file) {
 }
 
 function getFilesStream (files, opts) {
-  if (!files) return null
+  if (!files) {
+    return null
+  }
 
   const mp = new Multipart()
 
