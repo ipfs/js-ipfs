@@ -105,9 +105,7 @@ $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin "[\"http://exam
 
 ### API
 
-> `WIP`
-
-`js-ipfs-api` follows the spec defined by [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core), which concerns the interface to expect from IPFS implementations. This interface is a currently active endeavor - expect it to be complete in the next few weeks (August 2016). You can use it today to consult the methods available.
+> `js-ipfs-api` follows the spec defined by [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core), which concerns the interface to expect from IPFS implementations. This interface is a currently active endeavor - expect it to be complete in the next few weeks (August 2016). You can use it today to consult the methods available.
 
 ### Utility functions
 
@@ -140,6 +138,7 @@ This is very similar to `ipfs.files.add({path:'', content: stream})`. It is like
 
 ```JavaScript
 ```
+>>>>>> refactor(module+tests): Enable running the tests
 
 ### Callbacks and promises
 
@@ -165,8 +164,6 @@ yet available you need to bring your own polyfill.
 We run tests by executing `npm test` in a terminal window. This will run both Node.js and Browser tests, both in Chrome and PhantomJS. To ensure that the module conforms with the [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core) spec, we run the batch of tests provided by the interface module, which can be found [here](https://github.com/ipfs/interface-ipfs-core/tree/master/src).
 
 
-
->>>>>>> kick off ipfs-api next generation
 
 ## Contribute
 

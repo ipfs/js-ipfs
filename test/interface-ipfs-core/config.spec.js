@@ -1,16 +1,19 @@
 /* eslint-env mocha */
 /* eslint max-nested-callbacks: ["error", 8] */
-/* globals apiClients */
 'use strict'
 
 const test = require('interface-ipfs-core')
+const FactoryClient = require('../factory/factory-client')
+
+let fc
 
 const common = {
-  setup: function (cb) {
-    cb(null, apiClients.a)
+  setup: function (callback) {
+    fc = new FactoryClient()
+    callback(null, fc)
   },
-  teardown: function (cb) {
-    cb()
+  teardown: function (callback) {
+    fc.dismantle(callback)
   }
 }
 
