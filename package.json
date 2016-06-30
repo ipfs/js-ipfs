@@ -4,6 +4,18 @@
   "description": "A client library for the IPFS API",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
+  "scripts": {
+    "test": "gulp test",
+    "test:node": "gulp test:node",
+    "test:browser": "gulp test:browser",
+    "lint": "aegir-lint",
+    "build": "gulp build",
+    "release": "gulp release",
+    "release-minor": "gulp release --type minor",
+    "release-major": "gulp release --type major",
+    "coverage": "gulp coverage",
+    "coverage-publish": "aegir-coverage publish"
+  },
   "dependencies": {
     "async": "^2.0.1",
     "babel-runtime": "^6.11.6",
@@ -43,18 +55,6 @@
     "stream-equal": "^0.1.8",
     "stream-http": "^2.3.1",
     "streamifier": "^0.1.1"
-  },
-  "scripts": {
-    "test": "gulp test",
-    "test:node": "gulp test:node",
-    "test:browser": "gulp test:browser",
-    "lint": "aegir-lint",
-    "build": "gulp build",
-    "release": "gulp release",
-    "release-minor": "gulp release --type minor",
-    "release-major": "gulp release --type major",
-    "coverage": "gulp coverage",
-    "coverage-publish": "aegir-coverage publish"
   },
   "pre-commit": [
     "lint",
