@@ -38,7 +38,7 @@ exports = module.exports = function HttpApi (repo) {
         fs.writeFileSync(apiPath, 'api is on by js-ipfs', {flag: 'w+'})
       }
 
-      this.ipfs.config.show((err, config) => {
+      this.ipfs.config.get((err, config) => {
         if (err) {
           return callback(err)
         }

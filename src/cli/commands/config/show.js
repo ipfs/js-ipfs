@@ -16,7 +16,7 @@ module.exports = Command.extend({
       if (err) {
         throw err
       }
-      ipfs.config.show((err, config) => {
+      ipfs.config.get((err, config) => {
         if (err) {
           throw err
         }
