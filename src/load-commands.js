@@ -2,6 +2,8 @@
 
 function requireCommands () {
   const cmds = {
+    add: require('./api/add'), // add alias
+    createAddStream: require('./api/add-stream'), // add stream alias
     bitswap: require('./api/bitswap'),
     block: require('./api/block'),
     bootstrap: require('./api/bootstrap'),
@@ -30,9 +32,7 @@ function requireCommands () {
     const files = require('./api/files')(send)
     files.add = require('./api/add')(send)
     files.createAddStream = require('./api/add-stream.js')(send)
-    // aliases
-    cmds.add = files.add
-    cmds.createAddStream = files.createAddStream
+
     return files
   }
 
