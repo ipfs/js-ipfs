@@ -4,7 +4,6 @@ const Wreck = require('wreck')
 const Qs = require('qs')
 const ndjson = require('ndjson')
 const getFilesStream = require('./get-files-stream')
-const Counter = require('passthrough-counter')
 
 const isNode = require('detect-node')
 
@@ -12,9 +11,7 @@ const isNode = require('detect-node')
 
 function parseChunkedJson (res, cb) {
   const parsed = []
-  const c = new Counter()
   res
-    .pipe(c)
     .pipe(ndjson.parse())
     .on('data', (obj) => {
       parsed.push(obj)
