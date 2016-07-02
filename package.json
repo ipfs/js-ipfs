@@ -47,7 +47,7 @@
     "form-data": "^1.0.0-rc3",
     "gulp": "^3.9.1",
     "idb-plus-blob-store": "^1.1.2",
-    "interface-ipfs-core": "^0.3.0",
+    "interface-ipfs-core": "^0.4.1",
     "left-pad": "^1.1.0",
     "lodash": "^4.11.2",
     "mocha": "^2.5.1",
