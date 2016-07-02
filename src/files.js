@@ -228,7 +228,7 @@ module.exports = (common) => {
 
     describe('promise API', (done) => {
       describe('.add', () => {
-        it('buffer', () => {
+        it('buffer', (done) => {
           return ipfs.files.add(smallFile)
             .then((res) => {
               const added = res[0] != null ? res[0] : res
@@ -236,6 +236,7 @@ module.exports = (common) => {
               expect(mh).to.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
               expect(added.path).to.equal(mh)
               expect(added.node.links).to.have.length(0)
+              done()
             })
             .catch((err) => {
               expect(err).to.not.exist
