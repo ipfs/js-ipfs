@@ -1,0 +1,18 @@
+{
+  "name": "ipfs-api-example-browser-add",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "browserify -t brfs index.js > bundle.js && http-server -a 127.0.0.1 -p 8888"
+  },
+  "keywords": [],
+  "author": "Friedel Ziegelmayer",
+  "license": "MIT",
+  "devDependencies": {
+    "brfs": "^1.4.3",
+    "browserify": "^13.0.1",
+    "http-server": "^0.9.0",
+    "ipfs-api": "^6.0.3"
+  }
+}
