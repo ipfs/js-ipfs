@@ -66,7 +66,7 @@ describe('bitswap', () => {
           // cause browser nodes don't have a websockets addrs
           // TODO, what we really need is a way to dial to a peerId only
           // and another to dial to peerInfo
-          target = multiaddr(`/ip4/0.0.0.0/tcp/0/ws/ipfs/${res.ID}`).toString()
+          target = multiaddr(`/ip4/127.0.0.1/tcp/0/ws/ipfs/${res.ID}`).toString()
         }
 
         const swarm = node2.libp2p ? node2.libp2p.swarm : node2.swarm
