@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>JS IPFS API name example</title>
+    <style>
+      .hidden {
+        opacity: 0;
+      }
+
+      form {
+        padding-bottom: 1em;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>js-ipfs-api</h1>
+    <h2><code>name.publish()</code> and <code>name.resolve()</code></h2>
+    <p id="status" style="color: white; padding: .5em; background: blue">
+      initializing...
+    </p>
+    
+    <form id="publish-text">
+      <h3>Add a new file to IPFS and publish it.</h3>
+      <textarea name="text" placeholder="hello, world" required></textarea>
+      <button type="submit" disabled>Publish</button>
+    </form>
+
+    <form id="publish-path">
+      <h3>Publish an existing file or directory from IPFS.</h3>
+      <input name="path" type="text" placeholder="IPFS path" required/>
+      <button type="submit" disabled>Publish</button>
+    </form>
+
+    <div class="results--publish hidden">
+      <p>
+        Published at <code id="publish-result"></code>
+      </p>
+      <p>
+        <a id="publish-gateway-link">Open with HTTP gateway</a>
+      </p>
+    </div>
+
+    <hr />
+
+    <form id="resolve-name">
+      <h3>Resolve an IPNS name</h3>
+      <input name="name" type="text" placeholder="IPNS name" required />
+      <button type="submit" disabled>Resolve</button>
+    </form>
+    <div class="results--resolve hidden">
+      <p>
+        Resolves to <code id="resolve-result"></code>
+      </p>
+      <p>
+        <a id="resolve-gateway-link">Open with HTTP gateway</a>
+      </p>
+    </div>
+
+    <script src="https://npmcdn.com/ipfs-api/dist/index.js"></script>
+    <script src="bundle.js"></script>
+  </body>
+</html>
