@@ -81,7 +81,7 @@
     "joi": "^8.0.5",
     "libp2p-ipfs": "^0.12.0",
     "libp2p-ipfs-browser": "^0.12.0",
-    "lodash.get": "^4.3.0",
+    "lodash.get": "^4.4.0",
     "lodash.set": "^4.2.0",
     "mafmt": "^2.1.1",
     "multihashes": "^0.2.2",
