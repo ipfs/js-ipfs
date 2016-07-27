@@ -1,6 +1,8 @@
 IPFS JavaScript Implementation roadmap
 ======================================
 
+> We track the development of the js-ipfs project through Github issues and [Waffle.io](https://waffle.io/ipfs/js-ipfs). See our waffle board at: [https://waffle.io/ipfs/js-ipfs](https://waffle.io/ipfs/js-ipfs)
+
 # Milestone 1 - js-ipfs on the browser
 
 > Summary: This milestone's focus is to ship a version of js-ipfs that can be embed in browser applications, creating an IPFS node inside a browser web application.
