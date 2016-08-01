@@ -77,7 +77,7 @@
     "ipfs-unixfs": "^0.1.4",
     "ipfs-unixfs-engine": "^0.10.0",
     "isstream": "^0.1.2",
-    "joi": "^8.0.5",
+    "joi": "^9.0.4",
     "libp2p-ipfs": "^0.12.0",
     "libp2p-ipfs-browser": "^0.12.0",
     "lodash.get": "^4.3.0",
