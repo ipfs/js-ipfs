@@ -66,7 +66,7 @@
     "detect-node": "^2.0.3",
     "fs-blob-store": "^5.2.1",
     "glob": "^7.0.3",
-    "hapi": "^13.4.1",
+    "hapi": "^13.5.0",
     "ipfs-bitswap": "^0.6.0",
     "ipfs-api": "^6.0.1",
     "ipfs-block": "^0.3.0",
