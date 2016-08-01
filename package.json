@@ -48,7 +48,7 @@
     "gulp": "^3.9.1",
     "idb-plus-blob-store": "^1.1.2",
     "interface-ipfs-core": "^0.3.0",
-    "left-pad": "^1.1.0",
+    "left-pad": "^1.1.1",
     "lodash": "^4.11.2",
     "ncp": "^2.0.0",
     "nexpect": "^0.5.0",
