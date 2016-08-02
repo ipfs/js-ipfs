@@ -1,27 +1,24 @@
 'use strict'
 
-const Command = require('ronin').Command
 const utils = require('../../utils')
 const debug = require('debug')
 const log = debug('cli:object')
 log.error = debug('cli:object:error')
 
-module.exports = Command.extend({
-  desc: 'Get stats for the DAG node named by <key>',
+module.exports = {
+  command: 'stat <key>',
 
-  options: {},
+  describe: 'Get stats for the DAG node named by <key>',
 
-  run: (key) => {
-    if (!key) {
-      throw new Error("Argument 'key' is required")
-    }
+  builder: {},
 
+  handler (argv) {
     utils.getIPFS((err, ipfs) => {
       if (err) {
         throw err
       }
 
-      ipfs.object.stat(key, {enc: 'base58'}, (err, stats) => {
+      ipfs.object.stat(argv.key, {enc: 'base58'}, (err, stats) => {
         if (err) {
           throw err
         }
@@ -34,4 +31,4 @@ module.exports = Command.extend({
       })
     })
   }
-})
+}

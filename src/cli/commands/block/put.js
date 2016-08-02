@@ -1,6 +1,5 @@
 'use strict'
 
-const Command = require('ronin').Command
 const utils = require('../../utils')
 const bs58 = require('bs58')
 const bl = require('bl')
@@ -38,14 +37,16 @@ function addBlock (buf) {
   })
 }
 
-module.exports = Command.extend({
-  desc: 'Stores input as an IPFS block',
+module.exports = {
+  command: 'put [data]',
 
-  options: {},
+  describe: 'Stores input as an IPFS block',
 
-  run: (filePath) => {
-    if (filePath) {
-      return addBlock(fs.readFileSync(filePath))
+  builder: {},
+
+  handler (argv) {
+    if (argv.data) {
+      return addBlock(fs.readFileSync(argv.data))
     }
 
     process.stdin.pipe(bl((err, input) => {
@@ -56,4 +57,4 @@ module.exports = Command.extend({
       addBlock(input)
     }))
   }
-})
+}

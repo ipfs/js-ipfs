@@ -1,15 +1,15 @@
 'use strict'
 
-const Command = require('ronin').Command
 const utils = require('../../utils')
 
-module.exports = Command.extend({
-  desc: 'Show some diagnostic information on the bitswap agent.',
+module.exports = {
+  command: 'stat',
 
-  options: {
-  },
+  describe: 'Show some diagnostic information on the bitswap agent.',
 
-  run: () => {
+  builder: {},
+
+  handler () {
     utils.getIPFS((err, ipfs) => {
       if (err) {
         throw err
@@ -35,4 +35,4 @@ bitswap status
       })
     })
   }
-})
+}

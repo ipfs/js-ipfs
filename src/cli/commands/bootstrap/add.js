@@ -1,26 +1,27 @@
 'use strict'
 
-const Command = require('ronin').Command
 const debug = require('debug')
 const log = debug('cli:bootstrap')
 const utils = require('../../utils')
 log.error = debug('cli:bootstrap:error')
 
-module.exports = Command.extend({
-  desc: 'Add peers to the bootstrap list',
+module.exports = {
+  command: 'add <peer>',
 
-  options: {},
+  describe: 'Add peers to the bootstrap list',
 
-  run: (multiaddr) => {
+  builder: {},
+
+  handler (argv) {
     utils.getIPFS((err, ipfs) => {
       if (err) {
         throw err
       }
-      ipfs.bootstrap.add(multiaddr, (err, list) => {
+      ipfs.bootstrap.add(argv.peer, (err, list) => {
         if (err) {
           throw err
         }
       })
     })
   }
-})
+}

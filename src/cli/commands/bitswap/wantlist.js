@@ -1,15 +1,22 @@
 'use strict'
 
-const Command = require('ronin').Command
 const utils = require('../../utils')
 
-module.exports = Command.extend({
-  desc: 'Print out all blocks currently on the bitswap wantlist for the local peer.',
+module.exports = {
+  command: 'wantlist',
 
-  options: {
+  describe: 'Print out all blocks currently on the bitswap wantlist for the local peer.',
+
+  builder: {
+    peer: {
+      alias: 'p',
+      describe: 'Specify which peer to show wantlist for.',
+      type: 'string'
+    }
   },
 
-  run: () => {
+  handler (argv) {
+    // TODO: handle argv.peer
     utils.getIPFS((err, ipfs) => {
       if (err) {
         throw err
@@ -23,4 +30,4 @@ module.exports = Command.extend({
       })
     })
   }
-})
+}
