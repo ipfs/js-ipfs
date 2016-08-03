@@ -6,9 +6,10 @@ const log = debug('cli:version')
 log.error = debug('cli:version:error')
 const bs58 = require('bs58')
 const fs = require('fs')
-const parallelLimit = require('run-parallel-limit')
 const path = require('path')
 const glob = require('glob')
+const sortBy = require('lodash.sortby')
+const mapLimit = require('map-limit')
 
 function checkPath (inPath, recursive) {
   // This function is to check for the following possible inputs
@@ -48,50 +49,70 @@ module.exports = {
   },
 
   handler (argv) {
-    let rs
-
     let inPath = checkPath(argv.file, argv.recursive)
 
-    glob(path.join(inPath, '/**/*'), (err, res) => {
+    utils.getIPFS((err, ipfs) => {
       if (err) {
         throw err
       }
-      utils.getIPFS((err, ipfs) => {
+
+      glob(path.join(inPath, '/**/*'), (err, res) => {
         if (err) {
           throw err
         }
+
         ipfs.files.createAddStream((err, i) => {
-          if (err) throw err
-          var filePair
-          i.on('data', (file) => {
-            console.log('added', bs58.encode(file.node.multihash()).toString(), file.path)
-          })
-          i.once('end', () => {
-            return
-          })
-          if (res.length !== 0) {
-            const index = inPath.lastIndexOf('/')
-            parallelLimit(res.map((element) => (callback) => {
-              if (!fs.statSync(element).isDirectory()) {
-                i.write({
-                  path: element.substring(index + 1, element.length),
-                  content: fs.createReadStream(element)
-                })
-              }
-              callback()
-            }), 10, (err) => {
-              if (err) {
-                throw err
-              }
-              i.end()
-            })
-          } else {
-            rs = fs.createReadStream(inPath)
-            inPath = inPath.substring(inPath.lastIndexOf('/') + 1, inPath.length)
-            filePair = {path: inPath, content: rs}
-            i.write(filePair)
-            i.end()
+          if (err) {
+            throw err
           }
+          const added = []
+
+          i.on('data', (file) => {
+            const hash = bs58.encode(file.node.multihash()).toString()
+            added.push({hash, path: file.path})
+          })
+
+          i.on('end', () => {
+            sortBy(added, 'path')
+              .reverse()
+              .map((file) => `added ${file.hash} ${file.path}`)
+              .forEach((msg) => console.log(msg))
+          })
+
+          if (res.length === 0) {
+            res = [inPath]
+          }
+
+          const writeToStream = (stream, element) => {
+            const index = inPath.lastIndexOf('/') + 1
+            i.write({
+              path: element.substring(index, element.length),
+              content: fs.createReadStream(element)
+            })
+          }
+
+          mapLimit(res, 50, (file, cb) => {
+            fs.stat(file, (err, stat) => {
+              if (err) {
+                return cb(err)
+              }
+              return cb(null, {
+                path: file,
+                isDirectory: stat.isDirectory()
+              })
+            })
+          }, (err, res) => {
+            if (err) {
+              throw err
+            }
+
+            res
+              .filter((elem) => !elem.isDirectory)
+              .map((elem) => elem.path)
+              .forEach((elem) => writeToStream(i, elem))
+
+            i.end()
+          })
         })
       })
     })
