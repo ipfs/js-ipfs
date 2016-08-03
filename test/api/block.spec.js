@@ -61,7 +61,7 @@ describe('.block', () => {
     })
 
     it('block.get', (done) => {
-      return apiClients.a.block.get(blorbKey)
+      apiClients.a.block.get(blorbKey)
         .then((res) => {
           let buf = ''
           res
@@ -71,6 +71,7 @@ describe('.block', () => {
               done()
             })
         })
+        .catch(done)
     })
 
     it('block.stat', () => {

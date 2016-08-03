@@ -25,16 +25,15 @@ describe('.log', () => {
   })
 
   describe('promise', () => {
-    it('.log.tail', (done) => {
+    it('.log.tail', () => {
       if (isPhantom) {
-        return done()
+        return
       }
 
       return apiClients.a.log.tail()
         .then((res) => {
           res.once('data', (obj) => {
             expect(obj).to.be.an('object')
-            done()
           })
         })
     })

@@ -175,7 +175,7 @@ describe('.files (pseudo mfs)', () => {
     })
 
     it('files.write', (done) => {
-      return apiClients.a.files
+      apiClients.a.files
         .write('/test-folder/test-file-2.txt', new Buffer('hello world'), {create: true})
         .then(() => {
           return apiClients.a.files.read('/test-folder/test-file-2.txt')
@@ -194,10 +194,11 @@ describe('.files (pseudo mfs)', () => {
               done()
             })
         })
+        .catch(done)
     })
 
     it('files.write without options', (done) => {
-      return apiClients.a.files
+      apiClients.a.files
         .write('/test-folder/test-file-2.txt', new Buffer('hello world'))
         .then(() => {
           return apiClients.a.files.read('/test-folder/test-file-2.txt')
@@ -216,6 +217,7 @@ describe('.files (pseudo mfs)', () => {
               done()
             })
         })
+        .catch(done)
     })
 
     it('files.stat', () => {
