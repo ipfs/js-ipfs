@@ -51,7 +51,7 @@ module.exports = {
               throw new Error('failed to read the config')
             }
 
-            console.log(config)
+            console.log(config.Value)
           })
         }
 
