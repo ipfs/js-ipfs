@@ -53,10 +53,10 @@ describe('bitswap', () => {
       node1.id((err, res) => {
         expect(err).to.not.exist
         const addr = res.Addresses
-                .map((addr) => multiaddr(addr))
-                .filter((addr) => {
-                  return _.includes(addr.protoNames(), 'ws')
-                })[0]
+          .map((addr) => multiaddr(addr))
+          .filter((addr) => {
+            return _.includes(addr.protoNames(), 'ws')
+          })[0]
 
         let target
         if (addr) {
