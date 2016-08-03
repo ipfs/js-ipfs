@@ -21,6 +21,7 @@ function requireCommands () {
     pin: require('./api/pin'),
     ping: require('./api/ping'),
     refs: require('./api/refs'),
+    repo: require('./api/repo'),
     swarm: require('./api/swarm'),
     update: require('./api/update'),
     version: require('./api/version')
