@@ -16,7 +16,7 @@ describe('version', () => {
   it('get version', (done) => {
     ipfs.version((err, version) => {
       expect(err).to.not.exist
-      expect(version).to.equal('0.4.0-dev')
+      expect(version).to.equal('0.14.1')
       done()
     })
   })

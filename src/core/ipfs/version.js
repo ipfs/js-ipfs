@@ -1,6 +1,6 @@
 'use strict'
 
-const utils = require('../utils')
+const readPkgUp = require('read-pkg-up')
 
 module.exports = function version (self) {
   return (opts, callback) => {
@@ -9,18 +9,10 @@ module.exports = function version (self) {
       opts = {}
     }
 
-    utils.ifRepoExists(self._repo, (err) => {
-      if (err) {
-        return callback(err)
-      }
-
-      self._repo.config.get((err, config) => {
-        if (err) {
-          return callback(err)
-        }
-
-        callback(null, config.Version.Current)
+    readPkgUp()
+      .then((res) => {
+        callback(null, res.pkg.version)
       })
-    })
+      .catch(callback)
   }
 }

@@ -42,7 +42,7 @@ module.exports = {
           return
         }
 
-        console.log('ipfs version', version)
+        console.log(`js-ipfs version: ${version}`)
       })
     })
   }

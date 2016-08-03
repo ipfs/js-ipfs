@@ -18,7 +18,7 @@ module.exports = (httpAPI) => {
           method: 'GET',
           url: '/api/v0/version'
         }, (res) => {
-          expect(res.result.Version).to.equal('0.4.0-dev')
+          expect(res.result.Version).to.equal('0.14.1')
           expect(res.result).to.have.a.property('Commit')
           expect(res.result).to.have.a.property('Repo')
           done()
