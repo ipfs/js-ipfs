@@ -226,9 +226,9 @@ module.exports = (common) => {
       })
     })
 
-    describe('promise API', (done) => {
+    describe('promise API', () => {
       describe('.add', () => {
-        it('buffer', (done) => {
+        it('buffer', () => {
           return ipfs.files.add(smallFile)
             .then((res) => {
               const added = res[0] != null ? res[0] : res
@@ -236,34 +236,27 @@ module.exports = (common) => {
               expect(mh).to.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
               expect(added.path).to.equal(mh)
               expect(added.node.links).to.have.length(0)
-              done()
-            })
-            .catch((err) => {
-              expect(err).to.not.exist
             })
         })
       })
 
       describe('.cat', () => {
-        it('with a bas58 multihash encoded string', (done) => {
+        it('with a bas58 multihash encoded string', () => {
           const hash = 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
-          ipfs.cat(hash)
+
+          return ipfs.cat(hash)
             .then((stream) => {
               stream.pipe(bl((err, data) => {
                 expect(err).to.not.exist
                 expect(data.toString()).to.contain('Check out some of the other files in this directory:')
-                done()
               }))
-            })
-            .catch((err) => {
-              expect(err).to.not.exist
             })
         })
 
-        it('errors on invalid key', (done) => {
+        it('errors on invalid key', () => {
           const hash = 'somethingNotMultihash'
-          ipfs.cat(hash)
-            .then((stream) => {})
+
+          return ipfs.cat(hash)
             .catch((err) => {
               expect(err).to.exist
               const errString = err.toString()
@@ -273,22 +266,17 @@ module.exports = (common) => {
               if (errString === 'Error: Invalid Key') {
                 expect(err.toString()).to.contain('Error: Invalid Key')
               }
-              done()
             })
         })
 
-        it('with a multihash', (done) => {
+        it('with a multihash', () => {
           const hash = new Buffer(bs58.decode('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'))
-          ipfs.cat(hash)
+          return ipfs.cat(hash)
             .then((stream) => {
               stream.pipe(bl((err, bldata) => {
                 expect(err).to.not.exist
                 expect(bldata.toString()).to.contain('Check out some of the other files in this directory:')
-                done()
               }))
-            })
-            .catch((err) => {
-              expect(err).to.not.exist
             })
         })
       })

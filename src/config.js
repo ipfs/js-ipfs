@@ -142,30 +142,22 @@ module.exports = (common) => {
 
     describe('promise API', () => {
       describe('.get', () => {
-        it('retrieve the whole config', (done) => {
-          ipfs.config.get()
+        it('retrieve the whole config', () => {
+          return ipfs.config.get()
             .then((config) => {
               expect(config).to.exist
-              done()
-            })
-            .catch((err) => {
-              expect(err).to.not.exist
             })
         })
       })
 
       describe('.set', () => {
-        it('set a new key', (done) => {
-          ipfs.config.set('Fruit', 'banana')
+        it('set a new key', () => {
+          return ipfs.config.set('Fruit', 'banana')
             .then(() => {
               ipfs.config.get('Fruit', (err, fruit) => {
                 expect(err).to.not.exist
                 expect(fruit).to.equal('banana')
-                done()
               })
-            })
-            .catch((err) => {
-              expect(err).to.not.exist
             })
         })
       })
