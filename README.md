@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/ipfs/js-ipfs.png?label=ready&title=Ready)](https://waffle.io/ipfs/js-ipfs)
 # IPFS JavaScript Implementation
 
 ![banner](https://ipfs.io/ipfs/QmVk7srrwahXLNmcDYvyUEJptyoxpndnRa57YJ11L4jV26/ipfs.js.png)
