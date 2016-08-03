@@ -539,132 +539,106 @@ module.exports = (common) => {
     })
 
     describe('promise API', () => {
-      it('object.new', (done) => {
-        ipfs.object.new()
+      it('object.new', () => {
+        return ipfs.object.new()
           .then((node) => {
             expect(node.toJSON().Hash).to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-            done()
-          })
-          .catch((err) => {
-            expect(err).to.not.exist
           })
       })
 
-      it('object.put', (done) => {
+      it('object.put', () => {
         const obj = {
           Data: new Buffer('Some data'),
           Links: []
         }
 
-        ipfs.object.put(obj)
+        return ipfs.object.put(obj)
           .then((node) => {
             const nodeJSON = node.toJSON()
             expect(obj.Data).to.deep.equal(nodeJSON.Data)
             expect(obj.Links).to.deep.equal(nodeJSON.Links)
             expect(nodeJSON.Hash).to.equal('QmPb5f92FxKPYdT3QNBd1GKiL4tZUXUrzF4Hkpdr3Gf1gK')
-            done()
-          }).catch((err) => {
-            expect(err).to.not.exist
           })
       })
 
-      it('object.get', (done) => {
+      it('object.get', () => {
         const testObj = {
           Data: new Buffer('get test object'),
           Links: []
         }
 
-        ipfs.object.put(testObj, (err, node1) => {
-          expect(err).to.not.exist
-
-          ipfs.object.get(node1.multihash())
-            .then((node2) => {
-              // because js-ipfs-api can't infer if the returned Data is Buffer
-              // or String
-              if (typeof node2.data === 'string') {
-                node2.data = new Buffer(node2.data)
-              }
-              expect(node1.multihash()).to.deep.equal(node2.multihash())
-              expect(node1.data).to.deep.equal(node2.data)
-              expect(node1.links).to.deep.equal(node2.links)
-              done()
-            })
-            .catch((err) => {
-              expect(err).to.not.exist
-            })
-        })
+        return ipfs.object.put(testObj)
+          .then((node1) => {
+            return ipfs.object.get(node1.multihash())
+              .then((node2) => {
+                // because js-ipfs-api can't infer if the returned Data is Buffer
+                // or String
+                if (typeof node2.data === 'string') {
+                  node2.data = new Buffer(node2.data)
+                }
+                expect(node1.multihash()).to.deep.equal(node2.multihash())
+                expect(node1.data).to.deep.equal(node2.data)
+                expect(node1.links).to.deep.equal(node2.links)
+              })
+          })
       })
 
-      it('object.data', (done) => {
+      it('object.data', () => {
         const testObj = {
           Data: new Buffer('get test object'),
           Links: []
         }
 
-        ipfs.object.put(testObj, (err, node) => {
-          expect(err).to.not.exist
-
-          ipfs.object.data(node.multihash())
-            .then((data) => {
-              // because js-ipfs-api can't infer
-              // if the returned Data is Buffer or String
-              if (typeof data === 'string') {
-                data = new Buffer(data)
-              }
-              expect(node.data).to.deep.equal(data)
-              done()
-            })
-            .catch((err) => {
-              expect(err).to.not.exist
-            })
-        })
-      })
-
-      it('object.stat', (done) => {
-        const testObj = {
-          Data: new Buffer('get test object'),
-          Links: []
-        }
-
-        ipfs.object.put(testObj)
+        return ipfs.object.put(testObj)
           .then((node) => {
-            ipfs.object.stat(node.multihash(), (err, stats) => {
-              expect(err).to.not.exist
-              const expected = {
-                Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
-                NumLinks: 0,
-                BlockSize: 17,
-                LinksSize: 2,
-                DataSize: 15,
-                CumulativeSize: 17
-              }
-              expect(expected).to.deep.equal(stats)
-              done()
-            })
-          })
-          .catch((err) => {
-            expect(err).to.not.exist
+            return ipfs.object.data(node.multihash())
+              .then((data) => {
+                // because js-ipfs-api can't infer
+                // if the returned Data is Buffer or String
+                if (typeof data === 'string') {
+                  data = new Buffer(data)
+                }
+                expect(node.data).to.deep.equal(data)
+              })
           })
       })
 
-      it('object.links', (done) => {
+      it('object.stat', () => {
         const testObj = {
           Data: new Buffer('get test object'),
           Links: []
         }
 
-        ipfs.object.put(testObj, (err, node) => {
-          expect(err).to.not.exist
+        return ipfs.object.put(testObj)
+          .then((node) => {
+            return ipfs.object.stat(node.multihash())
+          })
+          .then((stats) => {
+            const expected = {
+              Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
+              NumLinks: 0,
+              BlockSize: 17,
+              LinksSize: 2,
+              DataSize: 15,
+              CumulativeSize: 17
+            }
+            expect(expected).to.deep.equal(stats)
+          })
+      })
 
-          ipfs.object.links(node.multihash())
-            .then((links) => {
-              expect(node.links).to.deep.equal(links)
-              done()
-            })
-            .catch((err) => {
-              expect(err).to.not.exist
-            })
-        })
+      it('object.links', () => {
+        const testObj = {
+          Data: new Buffer('get test object'),
+          Links: []
+        }
+
+        return ipfs.object.put(testObj)
+          .then((node) => {
+            return ipfs.object.links(node.multihash())
+              .then((links) => {
+                expect(node.links).to.deep.equal(links)
+              })
+          })
       })
 
       describe('object.patch', () => {
@@ -672,71 +646,58 @@ module.exports = (common) => {
         let testNodeWithLink
         let testLink
 
-        before((done) => {
+        before(() => {
           const obj = {
             Data: new Buffer('patch test object'),
             Links: []
           }
 
-          ipfs.object.put(obj, (err, node) => {
-            expect(err).to.not.exist
-            testNode = node
-            done()
-          })
+          return ipfs.object.put(obj)
+            .then((node) => {
+              testNode = node
+            })
         })
 
-        it('.addLink', (done) => {
+        it('.addLink', () => {
           const dNode1 = testNode.copy()
           const dNode2 = new DAGNode(new Buffer('some other node'))
           // note: we need to put the linked obj, otherwise IPFS won't timeout
           // cause it needs the node to get its size
-          ipfs.object.put(dNode2, (err) => {
-            expect(err).to.not.exist
-            dNode1.addNodeLink('link-to-node', dNode2)
+          return ipfs.object.put(dNode2)
+            .then(() => {
+              dNode1.addNodeLink('link-to-node', dNode2)
 
-            ipfs.object.patch.addLink(testNode.multihash(), dNode1.links[0])
-              .then((node3) => {
-                expect(dNode1.multihash()).to.deep.equal(node3.multihash())
-                testNodeWithLink = node3
-                testLink = dNode1.links[0]
-                done()
-              })
-              .catch((err) => {
-                expect(err).to.not.exist
-              })
-          })
+              return ipfs.object.patch
+                .addLink(testNode.multihash(), dNode1.links[0])
+                .then((node3) => {
+                  expect(dNode1.multihash()).to.deep.equal(node3.multihash())
+                  testNodeWithLink = node3
+                  testLink = dNode1.links[0]
+                })
+            })
         })
 
-        it('.rmLink', (done) => {
-          ipfs.object.patch.rmLink(testNodeWithLink.multihash(), testLink)
+        it('.rmLink', () => {
+          return ipfs.object.patch
+            .rmLink(testNodeWithLink.multihash(), testLink)
             .then((node) => {
               expect(node.multihash()).to.deep.equal(testNode.multihash())
-              done()
-            })
-            .catch((err) => {
-              expect(err).to.not.exist
             })
         })
 
-        it('.appendData', (done) => {
-          ipfs.object.patch.appendData(testNode.multihash(), new Buffer('append'))
+        it('.appendData', () => {
+          return ipfs.object.patch
+            .appendData(testNode.multihash(), new Buffer('append'))
             .then((node) => {
               expect(node.multihash()).to.not.deep.equal(testNode.multihash())
-              done()
-            })
-            .catch((err) => {
-              expect(err).to.not.exist
             })
         })
 
-        it('.setData', (done) => {
-          ipfs.object.patch.appendData(testNode.multihash(), new Buffer('set'))
+        it('.setData', () => {
+          return ipfs.object.patch
+            .appendData(testNode.multihash(), new Buffer('set'))
             .then((node) => {
               expect(node.multihash()).to.not.deep.equal(testNode.multihash())
-              done()
-            })
-            .catch((err) => {
-              expect(err).to.not.exist
             })
         })
       })
