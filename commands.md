@@ -1,0 +1,51 @@
+Usage: jsipfs COMMAND [OPTIONS]
+
+Available commands:
+
+- [ ] bitswap stat              Show some diagnostic information on the bitswap agent.
+- [ ] bitswap unwant            Remove a given block from your wantlist.
+- [ ] bitswap wantlist          Print out all blocks currently on the bitswap wantlist for the local peer.
+- [ ] block get                 Get a raw IPFS block
+- [ ] block put                 Stores input as an IPFS block
+- [ ] block rm                  Remove a raw IPFS block
+- [ ] block stat                Print information of a raw IPFS block
+- [ ] bootstrap add             Add peers to the bootstrap list
+- [ ] bootstrap list            Show peers in the bootstrap list
+- [ ] bootstrap rm              Removes peers from the bootstrap list
+- [ ] commands                  List all available commands
+- [ ] config                    Get and set IPFS config values
+- [ ] config edit               Opens the config file for editing in $EDITOR
+- [ ] config replace            Replaces the config with <file>
+- [ ] config show               Outputs the content of the config file
+- [ ] daemon                    Start a long-running daemon process
+- [ ] dns
+- [ ] files add                 Add a file to IPFS using the UnixFS data format
+- [ ] files cat                 Download IPFS objects
+- [ ] files get                 Download IPFS objects
+- [ ] id                        Shows IPFS Node ID info
+- [ ] init                      Initialize a local IPFS node
+- [ ] ls
+- [ ] mount
+- [ ] object data               Outputs the raw bytes in an IPFS object
+- [ ] object get                Get and serialize the DAG node named by <key>
+- [ ] object links              Outputs the links pointed to by the specified object
+- [ ] object new                Create new ipfs objects
+- [ ] object patch add-link     Add a link to a given object
+- [ ] object patch append-data  Append data to the data segment of a dag node
+- [ ] object patch rm-link      Remove a link from an object
+- [ ] object patch set-data     Set data field of an ipfs object
+- [ ] object put                Stores input as a DAG object, outputs its key
+- [ ] object stat               Get stats for the DAG node named by <key>
+- [ ] ping
+- [ ] refs
+- [ ] repo gc
+- [ ] repo init
+- [ ] repo version              Shows IPFS repo version information
+- [ ] resolve
+- [ ] swarm addrs
+- [ ] swarm addrs local         List local addresses
+- [ ] swarm connect             Open connection to a given address
+- [ ] swarm disconnect
+- [ ] swarm peers               List peers with open connections
+- [ ] update
+- [ ] version                   Shows IPFS version information

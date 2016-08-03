@@ -9,6 +9,8 @@ log.error = debug('cli:error')
 module.exports = Command.extend({
   desc: 'Shows IPFS Node ID info',
 
+  help: utils.help,
+
   options: {
     format: {
       alias: 'f',

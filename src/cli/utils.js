@@ -46,6 +46,27 @@ exports.getIPFS = (callback) => {
   callback(null, getAPICtl())
 }
 
+exports.help = function () {
+  var keys = []
+  for (var key in this.options) {
+    var keyString = '['
+    if (this.options.hasOwnProperty(key)) {
+      if (this.options[key].alias) {
+        keyString += '-' + this.options[key].alias + ' | '
+      }
+      keyString += `--` + key + ']'
+      keys.push(keyString)
+    }
+  }
+
+  return `USAGE:
+  ipfs ${this.name} - ${this.desc}
+
+SYNOPSIS:
+  ipfs ${this.name} ${keys.join(' ')}
+`;
+}
+
 exports.getRepoPath = () => {
   return process.env.IPFS_PATH || os.homedir() + '/.ipfs'
 }
