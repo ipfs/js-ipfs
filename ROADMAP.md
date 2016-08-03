@@ -1,6 +1,8 @@
 IPFS JavaScript Implementation roadmap
 ======================================
 
+> We track the development of the js-ipfs project through Github issues and [Waffle.io](https://waffle.io/ipfs/js-ipfs). See our waffle board at: [https://waffle.io/ipfs/js-ipfs](https://waffle.io/ipfs/js-ipfs)
+
 # Milestone 1 - js-ipfs on the browser
 
 > Summary: This milestone's focus is to ship a version of js-ipfs that can be embed in browser applications, creating an IPFS node inside a browser web application.
@@ -47,27 +49,190 @@ UPDATE:
   - [x] WebRTC transport with [libp2p-webrtc-star](https://github.com/libp2p/js-libp2p-webrtc-star)
   - [ ] [secio](https://github.com/ipfs/js-libp2p-secio)
 
-# Milestone 2 - TBD
+# Milestone 2 - Quality and correctness of the JavaScript Implementation
 
-> Summary: TO BE DISCUSSED
+> Summary: The focus of this milestone is quality of the JavaScript implementation so that users of the library can build their applications with confidence.
+
+### Tasks:
+
+- [ ] Interface definition, documentation and test coverage for both js-ipfs and js-ipfs-api. The `interface-ipfs-core` effort.
+  - [ ] Create a process to signal users of a proposed interface change and interface changelog.
+  - [ ] swarm API - https://github.com/ipfs/interface-ipfs-core/pull/35
+  - [ ] block API - https://github.com/ipfs/interface-ipfs-core/pull/32
+  - [ ] generic API - https://github.com/ipfs/interface-ipfs-core/pull/33
+  - [ ] pinning API - https://github.com/ipfs/interface-ipfs-core/pull/34
+  - [ ] swarm API - https://github.com/ipfs/interface-ipfs-core/pull/35
+  - [ ] DHT API https://github.com/ipfs/interface-ipfs-core/pull/36
+  - [ ] mfs API https://github.com/ipfs/interface-ipfs-core/pull/38
+- [ ] Robust testing infrastructure
+  - [ ] Isolation of tests. This includes:
+    - Avoid cases where there is one set up for a bunch of test files, instead make each test file be runnable by itself. This also includes removing the use of all globals (i.e js-ipfs-api).
+  - [ ] Interoperability tests between js-ipfs and go-ipfs
+  - [ ] Benchmarking tests
+  - [ ] Stress tests, things like:
+    - Spawn a reasonable amount of nodes
+    - Add large files
+    - Exchange large files
+  - [ ] IPTB (InterPlanetary TestBed) Integration
+- [ ] Fixed identified bugs
+
+### Dependencies:
+
+- js-ipfs needs the following from go-ipfs (preferrably in a release) (https://github.com/ipfs/go-ipfs/issues/2738):
+  - [ ] Do not assume that the Public Key is only transfered in secio
+  - [ ] Websockets support (really nice to have)
+  - [ ] use the defined protocol multicodecs https://github.com/ipfs/specs/blob/master/libp2p/7-properties.md#757-protocol-multicodecs
+
+### Notes:
+
+- We will be defining the API in `interface-ipfs-core`, however some pieces like DHT, mfs and pinning will not be available in js-ipfs.
+
+##### Expected date of completion: `late August`
+
+# Milestone 3 - Enter IPLD - Enable js-ipfs to handle both merkledag protobufs and ipld cbor objects
+
+> Summary: Integration of IPLD (js-ipld and js-ipld-ipfs) into js-ipfs.
+
+### Tasks:
+
+NA
+
+### Dependencies:
+
+- [ ] IPLD migration path
+- [ ] go-ipfs with IPLD already integrated (it would be best)
+
+### Requirements by other projects:
+
+NA
+
+### Notes:
+
+NA
+
+##### Expected date of completion: `mid September`
+
+# Milestone 4 - Documentation and Developer Experience
+
+> Summary: During this period, we will focus on bringing great developer experience to js-ipfs, this includes: great examples, documentation, tutorials, blog posts and more, enabling more developers to hack with js-ipfs or contribute to the project.
+
+### Tasks:
+
+- [ ] Amazing examples
+  - [ ] Create the same examples available on https://ipfs.io/docs/examples/ using js-ipfs (through CLI and programatically)
+  - [ ] Example: Create an IPFS node
+  - [ ] Examples: Add files to IPFS
+  - [ ] Tutorial: Build an 'pastebin' with js-ipfs
+  - [ ] Tutorial: How to use js-ipfs in the browser
+  - [ ] Tutorial: Make a video player with js-ipfs https://github.com/ipfs/js-ipfs/issues/128
+  - [ ] Tutorial: Load a Webpage/WebApplication using js-ipfs
+  - [ ] Add all of the examples to https://ipfs.io/docs/examples/
+- [ ] Revisit and complete the IPFS spec
+
+### Dependencies:
+
+NA
+
+### Requirements by other projects:
+
+NA
+
+### Notes:
+
+NA
+
+##### Expected date of completion: `TBA`
+
+# Milestone 5 - 1st implementation Peer Routing + Content Routing (the go-ipfs DHT)
+
+> Summary: Enable content discovery in js-ipfs
+
+### Tasks:
+
+- [ ] js-ipfs-dht
+
+### Dependencies:
+
+NA
+
+### Requirements by other projects:
+
+NA
+
+### Notes:
+
+NA
+
+##### Expected date of completion: `TBA`
+
+# Milestone 6 - The last miles for complete feature parity with go-ipfs
+
+> Summary: 100% feature parity and interop with go-ipfs
+
+### Tasks:
+
+- [ ] mfs
+- [ ] ipns
+- [ ] HAMT on unixfs-engine
+- [ ] ls
+- [ ] pinning
+- [ ] ping
+
+### Dependencies:
+
+NA
+
+### Requirements by other projects:
+
+NA
+
+### Notes:
+
+##### Expected date of completion: `TBA`
+
+
+# Milestone 7 - Shoot for the moon 🌑
+
+> Summary: Grandiose ideas to make the js-ipfs project really awesome. It might take some time to get to them, but writting them down is always good.
+
+### Tasks:
+
+- [ ] InterPlanetary Lab - A test lab for the IPFS project, spawning nodes in different geographic locations with different network and machine conditions to really stress test IPFS (heavily inspired by [PlanetLab](https://www.planet-lab.org/))
+
+### Dependencies:
+
+NA
+
+### Requirements by other projects:
+
+NA
+
+### Notes:
+
+NA
+
+##### Expected date of completion: `TBA`
+
+---------------------------------------------------------------------
+
 
 # Project Status
 
 ### Per component view
 
-| Name | Spec | Disc |
-| :----| :----| :----|
-| data importing | https://github.com/ipfs/specs/pull/57 | https://github.com/ipfs/js-ipfs/issues/41
-| repo | https://github.com/ipfs/specs/tree/master/repo | https://github.com/ipfs/js-ipfs/issues/51
+| Name          | Spec | Disc |
+| :-------------| :----| :----|
+| Importers     | https://github.com/ipfs/specs/pull/57 | https://github.com/ipfs/js-ipfs/issues/41
+| repo          | https://github.com/ipfs/specs/tree/master/repo | https://github.com/ipfs/js-ipfs/issues/51
 | network layer | https://github.com/ipfs/specs/tree/master/libp2p | https://github.com/diasdavid/js-libp2p/issues
-| bitswap | https://github.com/ipfs/js-ipfs/issues/51 | https://github.com/ipfs/js-ipfs/issues/51
-| pin | | https://github.com/ipfs/js-ipfs/issues/59
-| files | | https://github.com/ipfs/js-ipfs/issues/60
-| daemon | | https://github.com/ipfs/js-ipfs/issues/57
-| object | | https://github.com/ipfs/js-ipfs/issues/58
-| block | |  https://github.com/ipfs/js-ipfs/issues/50
-| bootstrap | | https://github.com/ipfs/js-ipfs/issues/46
-| init | | https://github.com/ipfs/js-ipfs/issues/42
+| bitswap       | https://github.com/ipfs/js-ipfs/issues/51 | https://github.com/ipfs/js-ipfs/issues/51
+| pin           | | https://github.com/ipfs/js-ipfs/issues/59
+| files         | | https://github.com/ipfs/js-ipfs/issues/60
+| daemon        | | https://github.com/ipfs/js-ipfs/issues/57
+| object        | | https://github.com/ipfs/js-ipfs/issues/58
+| block         | |  https://github.com/ipfs/js-ipfs/issues/50
+| bootstrap     | | https://github.com/ipfs/js-ipfs/issues/46
+| init          | | https://github.com/ipfs/js-ipfs/issues/42
 
 ### Per feature view
 
@@ -115,7 +280,7 @@ UPDATE:
     - [ ] restart
   - [ ] files
     - [x] add
-    - [ ] cat
+    - [x] cat
     - [ ] get
   - [ ] stat - Statistics about everything
     - [ ] bw
