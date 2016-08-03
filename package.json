@@ -36,7 +36,7 @@
     "readable-stream": "1.1.13"
   },
   "devDependencies": {
-    "aegir": "^3.2.0"
+    "aegir": "^5.0.0"
   },
   "contributors": [
     "David Dias <daviddias.p@gmail.com>",
