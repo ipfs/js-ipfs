@@ -1,6 +1,6 @@
 'use strict'
 
-const readPkgUp = require('read-pkg-up')
+const pkg = require('../../../package.json')
 
 module.exports = function version (self) {
   return (opts, callback) => {
@@ -9,10 +9,6 @@ module.exports = function version (self) {
       opts = {}
     }
 
-    readPkgUp()
-      .then((res) => {
-        callback(null, res.pkg.version)
-      })
-      .catch(callback)
+    callback(null, pkg.version)
   }
 }
