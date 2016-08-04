@@ -104,13 +104,13 @@ $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin "[\"http://exam
 
 > `WIP`
 
-`js-ipfs-api` follows the spec defined by [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core), which governs the interface to expect from IPFS implementations. This interface is an current active endeavour, expect it to be complete in the following weeks (August 2016). You can use it today to consult the methods available.
+`js-ipfs-api` follows the spec defined by [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core), which concerns the interface to expect from IPFS implementations. This interface is a currently active endeavor - expect it to be complete in the next few weeks (August 2016). You can use it today to consult the methods available.
 
 ### Extra API methods
 
 Adding to the methods defined by [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core), `js-ipfs-api` exposes a set of extra utility methods.
 
-A complete documentation for these methods is coming with: https://github.com/ipfs/js-ipfs-api/pull/305
+Complete documentation for these methods is coming with: https://github.com/ipfs/js-ipfs-api/pull/305
 
 ### Callbacks and promises
 
@@ -133,7 +133,7 @@ yet available you need to bring your own polyfill.
 
 ### Testing
 
-We run tests by executing `npm test` in a terminal window, this will run both Node.js and Browser tests, both in Chrome and PhantomJS. To ensure that the module conforms with [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core) spec, we run the batch o tests provided by the interface module, which can be found [here](https://github.com/ipfs/interface-ipfs-core/tree/master/src)
+We run tests by executing `npm test` in a terminal window. This will run both Node.js and Browser tests, both in Chrome and PhantomJS. To ensure that the module conforms with the [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core) spec, we run the batch of tests provided by the interface module, which can be found [here](https://github.com/ipfs/interface-ipfs-core/tree/master/src).
 
 ## Contribute
 
@@ -141,7 +141,7 @@ The js-ipfs API is a work in progress. As such, there's a few things you can do 
 
 * **[Check out the existing issues](https://github.com/ipfs/js-ipfs-api/issues)**!
 * **Perform code reviews**. More eyes will help a) speed the project along b) ensure quality and c) reduce possible future bugs.
-* **Add tests**. There can never be enough tests. Note that interface tests exist inside [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core/tree/master/src)
+* **Add tests**. There can never be enough tests. Note that interface tests exist inside [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core/tree/master/src).
 * **Contribute to the [FAQ repository](https://github.com/ipfs/faq/issues)** with any questions you have about IPFS or any of the relevant technology. A good example would be asking, 'What is a merkledag tree?'. If you don't know a term, odds are, someone else doesn't either. Eventually, we should have a good understanding of where we need to improve communications and teaching together to make IPFS and IPN better.
 
 **Want to hack on IPFS?**
