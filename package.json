@@ -32,7 +32,7 @@
     "bs58": "^3.0.0",
     "chai": "^3.5.0",
     "detect-node": "^2.0.3",
-    "ipfs-merkle-dag": "^0.6.1",
+    "ipfs-merkle-dag": "^0.6.2",
     "readable-stream": "1.1.13"
   },
   "devDependencies": {
