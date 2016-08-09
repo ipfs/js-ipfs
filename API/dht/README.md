@@ -32,11 +32,19 @@ ipfs.dht.findPeer(id, function (err, peerInfo) {
 
 ##### `JavaScript` - ipfs.dht.findprovs(hash, [callback])
 
+Where `hash` is a multihash.
+
+`callback` must follow `function (err, peerInfos) {}` signature, where `err` is an error if the operation was not successful. `peerInfos` is an array of objects of type [PeerInfo](https://github.com/libp2p/js-peer-info)
+
 If no `callback` is passed, a promise is returned.
 
 Example:
 
-
+```JavaScript
+ipfs.dht.findProvs(hash, function (err, peerInfos) {
+  // peerInfo will contain the multiaddrs of that peer
+})
+```
 
 #### `get`
 
