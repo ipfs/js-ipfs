@@ -41,28 +41,32 @@ If no `callback` is passed, a promise is returned.
 Example:
 
 ```JavaScript
-ipfs.dht.findProvs(hash, function (err, peerInfos) {
-  // peerInfo will contain the multiaddrs of that peer
-})
+ipfs.dht.findProvs(hash, function (err, peerInfos) {})
 ```
 
 #### `get`
 
-> 
+> Retrieve a value from DHT
 
 ##### `Go` **WIP**
 
 ##### `JavaScript` - ipfs.dht.get(key, [callback])
 
+Where `key` is a string.
+
+`callback` must follow `function (err, value) {}` signature, where `err` is an error if the operation was not successful. `value` is the value that was stored under that key.
 
 If no `callback` is passed, a promise is returned.
 
 Example:
 
+```JavaScript
+ipfs.dht.get(key, function (err, value) {})
+```
 
 #### `put`
 
-> 
+> Store a value on the DHT
 
 ##### `Go` **WIP**
 
