@@ -20,6 +20,7 @@
   - [Files](/API/files)
     - [`add`](/API/files#add)
     - [`createAddStream`](/files#createaddstream)
+    - [`get`](/API/files#get)
     - [`cat`](/API/files#cat)
   - [Object](/API/object)
     - [`object.new`](/API/object#objectnew)
@@ -99,7 +100,7 @@ test.all(common)
 
 ## API
 
-A valid (read: that follows this interface) IPFS core implementation, must expose the API described in [/API](/API)
+A valid (read: that follows this interface) IPFS core implementation must expose the API described in [/API](/API).
 
 ## Contribute
 
@@ -114,3 +115,5 @@ This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/c
 ## License
 
 MIT
+
+[UnixFS]: https://github.com/ipfs/specs/tree/master/unixfs
