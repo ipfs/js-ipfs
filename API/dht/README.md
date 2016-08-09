@@ -72,24 +72,37 @@ ipfs.dht.get(key, function (err, value) {})
 
 ##### `JavaScript` - ipfs.dht.put(key, value, [callback])
 
+Where `key` is a string and `value` can be of any type.
+
+`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful. 
 
 If no `callback` is passed, a promise is returned.
 
 Example:
 
+```JavaScript
+ipfs.dht.put(key, value, function (err) {})
+```
+
 
 #### `query`
 
-> 
+> Queries the network for the 'closest peers' to a given key. 'closest' is defined by the rules of the underlying Peer Routing mechanism.
 
 ##### `Go` **WIP**
 
 ##### `JavaScript` - ipfs.dht.query(peerId, [callback])
 
+Where `peerId` is a IPFS/libp2p Id of type [PeerId](https://github.com/libp2p/js-peer-id).
 
+`callback` must follow `function (err, peerInfos) {}` signature, where `err` is an error if the operation was not successful. `peerInfos` is an array of objects of type [PeerInfo](https://github.com/libp2p/js-peer-info)
 
 If no `callback` is passed, a promise is returned.
 
 Example:
 
-
+```JavaScript
+var id = PeerId.create()
+ipfs.dht.query(id, function (err, peerInfos) {
+})
+```
