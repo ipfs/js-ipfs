@@ -17,13 +17,15 @@ const path = require('path')
 // const extract = require('tar-stream').extract
 
 const testfile = fs.readFileSync(path.join(__dirname, '/../testfile.txt'))
+
 let testfileBig
 
 if (isNode) {
-  testfileBig = fs.createReadStream(path.join(__dirname, '/../15mb.random'), { bufferSize: 128 })
+  const tfbPath = path.join(__dirname, '/../15mb.random')
+  testfileBig = fs.createReadStream(tfbPath, { bufferSize: 128 })
 }
 
-describe.skip('.get', () => {
+describe('.get', () => {
   it('get with no compression args', (done) => {
     apiClients.a
       .get('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', (err, res) => {
@@ -92,35 +94,42 @@ describe.skip('.get', () => {
       return done()
     }
 
-    apiClients.a.get('Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq', (err, res) => {
+    apiClients.a.get('Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq', (err, files) => {
       expect(err).to.not.exist
 
-      // Do not blow out the memory of nodejs :)
-      streamEqual(res, testfileBig, (err, equal) => {
-        expect(err).to.not.exist
-        expect(equal).to.be.true
-        done()
+      files.on('data', (file) => {
+        // Do not blow out the memory of nodejs :)
+        streamEqual(file.content, testfileBig, (err, equal) => {
+          expect(err).to.not.exist
+          expect(equal).to.be.true
+          done()
+        })
       })
     })
   })
 
-  describe.skip('promise', () => {
+  describe('promise', () => {
     it('get', (done) => {
       apiClients.a.get('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
-        .then((res) => {
-          let buf = ''
-          res
-            .on('error', (err) => {
-              throw err
-            })
-            .on('data', (data) => {
-              buf += data
-            })
-            .on('end', () => {
-              expect(buf).to.contain(testfile.toString())
-              done()
-            })
+        .then((files) => {
+          files.on('data', (file) => {
+            let buf = ''
+            file.content
+              .on('error', (err) => {
+                throw err
+              })
+              .on('data', (data) => {
+                buf += data.toString()
+              })
+              .on('end', () => {
+                expect(buf).to.contain(testfile.toString())
+                done()
+              })
+          })
         })
+      .catch((err) => {
+        expect(err).to.not.exist
+      })
     })
   })
 })

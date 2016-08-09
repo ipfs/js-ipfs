@@ -1,5 +1,6 @@
 'use strict'
 
+const isNode = require('detect-node')
 const addToDagNodesTransform = require('../add-to-dagnode-transform')
 
 module.exports = (send) => {
@@ -7,6 +8,10 @@ module.exports = (send) => {
     if (typeof (opts) === 'function' && cb === undefined) {
       cb = opts
       opts = {}
+    }
+
+    if (!isNode) {
+      return cb(new Error('Recursive uploads are not supported in the browser'))
     }
 
     if (typeof (path) !== 'string') {
