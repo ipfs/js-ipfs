@@ -75,7 +75,7 @@
     "ipfs-multipart": "^0.1.0",
     "ipfs-repo": "^0.8.0",
     "ipfs-unixfs": "^0.1.4",
-    "ipfs-unixfs-engine": "^0.10.0",
+    "ipfs-unixfs-engine": "^0.10.1",
     "isstream": "^0.1.2",
     "joi": "^9.0.4",
     "libp2p-ipfs": "^0.12.1",
