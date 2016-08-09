@@ -2,13 +2,13 @@
 
 const tar = require('tar-stream')
 const Readable = require('readable-stream')
-const through = require('through2')
 
 // transform tar stream into readable stream of
 // { path: 'string', content: Readable }
 module.exports = function (err, res, send, done) {
-
-  if (err) return done(err)
+  if (err) {
+    return done(err)
+  }
 
   var ex = tar.extract()
   res.pipe(ex)

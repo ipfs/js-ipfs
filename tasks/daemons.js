@@ -1,4 +1,5 @@
 'use strict'
+/* eslint max-nested-callbacks: ["error", 8] */ // TODO reduce nesteness
 
 const gulp = require('gulp')
 const fs = require('fs')
