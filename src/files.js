@@ -13,7 +13,7 @@ const concat = require('concat-stream')
 const through = require('through2')
 
 module.exports = (common) => {
-  describe.only('.files', () => {
+  describe('.files', () => {
     let smallFile
     let bigFile
     let directoryContent
@@ -22,6 +22,7 @@ module.exports = (common) => {
     before((done) => {
       smallFile = fs.readFileSync(path.join(__dirname, './data/testfile.txt'))
       bigFile = fs.readFileSync(path.join(__dirname, './data/15mb.random'))
+
       directoryContent = {
         'pp.txt': fs.readFileSync(path.join(__dirname, './data/test-folder/pp.txt')),
         'holmes.txt': fs.readFileSync(path.join(__dirname, './data/test-folder/holmes.txt')),
@@ -133,9 +134,10 @@ module.exports = (common) => {
 
             const added = res[res.length - 1]
             const mh = bs58.encode(added.node.multihash()).toString()
-            expect(mh).to.equal('QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP')
-            expect(added.path).to.equal('test-folder')
             expect(added.node.links).to.have.length(6)
+            expect(added.path).to.equal('test-folder')
+            expect(mh).to.equal('QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP')
+
             done()
           })
         })
