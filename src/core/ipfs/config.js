@@ -1,6 +1,8 @@
 'use strict'
 
 const promisify = require('promisify-es6')
+const _get = require('lodash.get')
+const _set = require('lodash.set')
 
 module.exports = function config (self) {
   return {
@@ -22,21 +24,11 @@ module.exports = function config (self) {
         if (err) {
           return callback(err)
         }
-        const keys = key.split('.')
-        let finished = false
-        keys.forEach((key) => {
-          if (finished) {
-            return
-          }
-          if (config[key]) {
-            config = config[key]
-          } else {
-            finished = true
-            callback(new Error(('Key does not exist in config')))
-          }
-        })
-        if (!finished) {
-          callback(null, config)
+        const value = _get(config, key, undefined)
+        if (!value) {
+          callback(new Error('Key does not exist in config'))
+        } else {
+          callback(null, value)
         }
       })
     }),
@@ -50,33 +42,11 @@ module.exports = function config (self) {
       }
 
       self._repo.config.get((err, config) => {
-        const configBak = config
         if (err) {
           return callback(err)
         }
-        const keys = key.split('.')
-        let finished = false
-        keys.forEach((key, index) => {
-          if (finished) {
-            return
-          }
-          if (config[key]) {
-            if (index === keys.length - 1) {
-              finished = true
-              config[key] = value
-            }
-            config = config[key]
-          } else {
-            if (index === keys.length - 1) {
-              finished = true
-              config[key] = value
-            } else {
-              config = config[key] = {}
-            }
-          }
-        })
-
-        self.config.replace(configBak, callback)
+        _set(config, key, value)
+        self.config.replace(config, callback)
       })
     }),
     replace: promisify((config, callback) => {
