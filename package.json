@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.14.2",
+  "version": "0.14.3",
   "description": "JavaScript implementation of the IPFS specification",
   "bin": {
     "jsipfs": "src/cli/bin.js"
