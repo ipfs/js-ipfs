@@ -2,21 +2,17 @@
 'use strict'
 
 const test = require('interface-ipfs-core')
-const IPFS = require('../../../src/core')
+const IPFSFactory = require('../../utils/factory')
 
-// let factory
+let factory
 
 const common = {
   setup: function (cb) {
-    // TODO change to factory
-    const ipfs = new IPFS(require('../../utils/repo-path'))
-    ipfs.load(() => {
-      cb(null, ipfs)
-    })
+    factory = new IPFSFactory()
+    cb(null, factory)
   },
   teardown: function (cb) {
-    // factory.teardown
-    cb()
+    factory.dismantle(cb)
   }
 }
 

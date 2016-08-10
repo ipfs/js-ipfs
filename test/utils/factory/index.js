@@ -1,13 +1,12 @@
 'use strict'
 
-const fs = require('fs')
-const path = require('path')
 const PeerId = require('peer-id')
 const isNode = require('detect-node')
 const IPFSRepo = require('ipfs-repo')
 const cleanRepo = require('../clean')
 const IPFS = require('../../../src/core')
 const series = require('run-series')
+const defaultConfig = require('./default-config.json')
 
 module.exports = Factory
 
@@ -36,9 +35,8 @@ function Factory () {
     }
 
     if (!config) {
-      const defaultConfigPath = path.join(__dirname, 'default-config.json')
-      config = JSON.parse(fs.readFileSync(defaultConfigPath).toString())
-      const pId = PeerId.create().toJSON()
+      config = JSON.parse(JSON.stringify(defaultConfig))
+      const pId = PeerId.create({ bits: 32 }).toJSON()
       config.Identity.PeerID = pId.id
       config.Identity.PrivKey = pId.privKey
     }
