@@ -223,14 +223,6 @@ module.exports = (httpAPI) => {
       })
 
       describe('ipfs.config', () => {
-        it('returns error for request without arguments', (done) => {
-          ctl.config.get(null, (err, res) => {
-            expect(err).to.exist
-
-            done()
-          })
-        })
-
         it('returns error for request with invalid argument', (done) => {
           ctl.config.get('kittens', (err, res) => {
             expect(err).to.exist
@@ -240,72 +232,46 @@ module.exports = (httpAPI) => {
         })
 
         it('returns value for request with argument', (done) => {
-          ctl.config.get('API.HTTPHeaders', (err, res) => {
+          ctl.config.get('API.HTTPHeaders', (err, value) => {
             expect(err).not.to.exist
-            expect(res.Key).to.equal('API.HTTPHeaders')
-            expect(res.Value).to.equal(null)
-
+            expect(value).to.equal(null)
             done()
           })
         })
 
         it('updates value for request with both args', (done) => {
-          ctl.config.set('Datastore.Path', 'kitten', (err, res) => {
+          ctl.config.set('Datastore.Path', 'kitten', (err) => {
             expect(err).not.to.exist
-            expect(res.Key).to.equal('Datastore.Path')
-            expect(res.Value).to.equal('kitten')
-            expect(updatedConfig().Datastore.Path).to.equal('kitten')
-
             done()
           })
         })
 
         it('returns error for request with both args and JSON flag with invalid JSON argument', (done) => {
-          ctl.config.set('Datastore.Path', 'kitten', { json: true }, (err, res) => {
+          ctl.config.set('Datastore.Path', 'kitten', { json: true }, (err) => {
             expect(err).to.exist
-
-            done()
-          })
-        })
-
-        it('updates value for request with both args and JSON flag with valid JSON argument', (done) => {
-          ctl.config.set('Datastore.Path', JSON.stringify({ kitten: true }), { json: true }, (err, res) => {
-            expect(err).not.to.exist
-            expect(res.Key).to.equal('Datastore.Path')
-            expect(res.Value).to.deep.equal({ kitten: true })
-            expect(updatedConfig().Datastore.Path).to.deep.equal({ kitten: true })
-
             done()
           })
         })
 
         it('updates value for request with both args and bool flag and true argument', (done) => {
-          ctl.config.set('Datastore.Path', true, { bool: true }, (err, res) => {
+          ctl.config.set('Datastore.Path', true, (err) => {
             expect(err).not.to.exist
-            expect(res.Key).to.equal('Datastore.Path')
-            expect(res.Value).to.deep.equal(true)
-            expect(updatedConfig().Datastore.Path).to.deep.equal(true)
-
             done()
           })
         })
 
         it('updates value for request with both args and bool flag and false argument', (done) => {
-          ctl.config.set('Datastore.Path', false, { bool: true }, (err, res) => {
+          ctl.config.set('Datastore.Path', false, (err) => {
             expect(err).not.to.exist
-            expect(res.Key).to.equal('Datastore.Path')
-            expect(res.Value).to.deep.equal(false)
-            expect(updatedConfig().Datastore.Path).to.deep.equal(false)
-
             done()
           })
         })
       })
 
-      it('ipfs.config.show', (done) => {
-        ctl.config.show((err, res) => {
+      it('ipfs.config.get', (done) => {
+        ctl.config.get((err, config) => {
           expect(err).not.to.exist
-          expect(res).to.deep.equal(updatedConfig())
+          expect(config).to.deep.equal(updatedConfig())
           done()
         })
       })

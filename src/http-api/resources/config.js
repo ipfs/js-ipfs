@@ -60,7 +60,7 @@ exports.getOrSet = {
 
     if (value === undefined) {
       // Get the value of a given key
-      return request.server.app.ipfs.config.show((err, config) => {
+      return request.server.app.ipfs.config.get((err, config) => {
         if (err) {
           log.error(err)
           return reply({
@@ -84,7 +84,7 @@ exports.getOrSet = {
       })
     } else {
       // Set the new value of a given key
-      request.server.app.ipfs.config.show((err, originalConfig) => {
+      request.server.app.ipfs.config.get((err, originalConfig) => {
         if (err) {
           log.error(err)
           return reply({
@@ -114,7 +114,7 @@ exports.getOrSet = {
 }
 
 exports.show = (request, reply) => {
-  return request.server.app.ipfs.config.show((err, config) => {
+  return request.server.app.ipfs.config.get((err, config) => {
     if (err) {
       log.error(err)
       return reply({

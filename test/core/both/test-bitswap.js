@@ -26,7 +26,7 @@ describe('bitswap', () => {
   beforeEach((done) => {
     ipfs = new IPFS(require('../../utils/repo-path'))
     if (!isNode) {
-      ipfs.config.show((err, config) => {
+      ipfs.config.get((err, config) => {
         configBak = JSON.parse(JSON.stringify(config))
         expect(err).to.not.exist
         config.Addresses.Swarm = []

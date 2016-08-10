@@ -46,7 +46,7 @@ module.exports = Command.extend({
           })
         }
 
-        ipfs.config.show((err, config) => {
+        ipfs.config.get((err, config) => {
           if (err) {
             log.error(err)
             throw new Error('failed to read the config')
@@ -78,7 +78,7 @@ module.exports = Command.extend({
           })
         }
 
-        ipfs.config.show((err, originalConfig) => {
+        ipfs.config.get((err, originalConfig) => {
           if (err) {
             log.error(err)
             throw new Error('failed to read the config')

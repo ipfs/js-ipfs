@@ -25,7 +25,7 @@ module.exports = Command.extend({
       }
 
       function getConfig (next) {
-        ipfs.config.show((err, config) => {
+        ipfs.config.get((err, config) => {
           if (err) {
             log.error(err)
             next(new Error('failed to get the config'))
