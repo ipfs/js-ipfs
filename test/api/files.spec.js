@@ -15,7 +15,21 @@ testfile = require('fs').readFileSync(path.join(__dirname, '/../testfile.txt'))
 // Load the add/cat/get/ls commands from interface-ipfs-core
 const common = {
   setup: function (cb) {
-    cb(null, apiClients.a)
+    let c = 0
+    cb(null, {
+      spawnNode: (path, config, callback) => {
+        if (typeof path === 'function') {
+          callback = path
+          path = undefined
+        }
+        switch (c) {
+          case 0: callback(null, apiClients.a); c++; break
+          case 1: callback(null, apiClients.b); c++; break
+          case 2: callback(null, apiClients.c); c++; break
+          default: callback(new Error('no more nodes available'))
+        }
+      }
+    })
   },
   teardown: function (cb) {
     cb()
