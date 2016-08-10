@@ -28,7 +28,8 @@ If no `content` is passed, then the path is treated as an empty directory
 ```js
 {
   path: '/tmp/myfile.txt',
-  node: DAGNode
+  hash: 'QmHash', // base58 encoded multihash
+  size: 123
 }
 ```
 
@@ -79,7 +80,8 @@ ipfs.files.createAddStream(function (err, stream) {
     // 'file' will be of the form
     // {
     //   path: '/tmp/myfile.txt',
-    //   node: DAGNode
+    //   hash: 'QmHash' // base58 encoded multihash
+    //   size: 123
     // }
   })
 
