@@ -1,17 +1,18 @@
 'use strict'
 
-const Command = require('ronin').Command
 const utils = require('../../utils')
 const debug = require('debug')
 const log = debug('cli:bootstrap')
 log.error = debug('cli:bootstrap:error')
 
-module.exports = Command.extend({
-  desc: 'Show peers in the bootstrap list',
+module.exports = {
+  command: 'list',
 
-  options: {},
+  describe: 'Show peers in the bootstrap list',
 
-  run: () => {
+  builder: {},
+
+  handler () {
     utils.getIPFS((err, ipfs) => {
       if (err) {
         throw err
@@ -26,4 +27,4 @@ module.exports = Command.extend({
       })
     })
   }
-})
+}

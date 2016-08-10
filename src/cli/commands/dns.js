@@ -1,10 +1,10 @@
 'use strict'
 
-const Command = require('ronin').Command
+module.exports = {
+  command: 'dns',
 
-module.exports = Command.extend({
-  desc: '',
+  describe: '',
 
-  run: () => {
+  handler (argv) {
   }
-})
+}

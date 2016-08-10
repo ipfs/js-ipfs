@@ -1,17 +1,21 @@
 'use strict'
 
-const Command = require('ronin').Command
 const utils = require('../../utils')
 const debug = require('debug')
 const log = debug('cli:object')
 log.error = debug('cli:object:error')
 
-module.exports = Command.extend({
-  desc: '',
+module.exports = {
+  command: 'addrs',
 
-  options: {},
+  describe: '',
 
-  run: () => {
+  builder (yargs) {
+    return yargs
+      .commandDir('addrs')
+  },
+
+  handler (argv) {
     utils.getIPFS((err, ipfs) => {
       if (err) {
         throw err
@@ -19,4 +23,4 @@ module.exports = Command.extend({
       // TODO
     })
   }
-})
+}

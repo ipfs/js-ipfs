@@ -1,13 +1,14 @@
 'use strict'
 
-const Command = require('ronin').Command
 const path = require('path')
 const glob = require('glob').sync
 
-module.exports = Command.extend({
-  desc: 'List all available commands',
+module.exports = {
+  command: 'commands',
 
-  run (name) {
+  describe: 'List all available commands',
+
+  handler () {
     const basePath = path.resolve(__dirname, '..')
 
     // modeled after https://github.com/vdemedes/ronin/blob/master/lib/program.js#L78
@@ -24,4 +25,4 @@ module.exports = Command.extend({
 
     console.log(['ipfs'].concat(cmds).join('\n'))
   }
-})
+}

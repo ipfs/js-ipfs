@@ -1,6 +1,6 @@
 'use strict'
 
-const utils = require('../utils')
+const pkg = require('../../../package.json')
 
 module.exports = function version (self) {
   return (opts, callback) => {
@@ -9,18 +9,6 @@ module.exports = function version (self) {
       opts = {}
     }
 
-    utils.ifRepoExists(self._repo, (err) => {
-      if (err) {
-        return callback(err)
-      }
-
-      self._repo.config.get((err, config) => {
-        if (err) {
-          return callback(err)
-        }
-
-        callback(null, config.Version.Current)
-      })
-    })
+    callback(null, pkg.version)
   }
 }

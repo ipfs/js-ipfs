@@ -1,10 +1,10 @@
 'use strict'
 
-const Command = require('ronin').Command
+module.exports = {
+  command: 'mount',
 
-module.exports = Command.extend({
-  desc: '',
+  describe: '',
 
-  run: (name) => {
+  handler (argv) {
   }
-})
+}

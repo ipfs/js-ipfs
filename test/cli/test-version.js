@@ -16,7 +16,7 @@ describe('version', () => {
       nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'version'], {env})
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
-          expect(stdout[0]).to.equal('ipfs version 0.4.0-dev')
+          expect(stdout[0]).to.equal('js-ipfs version: 0.14.1')
           expect(exitcode).to.equal(0)
           done()
         })
@@ -46,7 +46,7 @@ describe('version', () => {
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
-          expect(stdout[0]).to.equal('ipfs version 0.4.0-dev')
+          expect(stdout[0]).to.equal('js-ipfs version: 0.14.1')
           done()
         })
     })
