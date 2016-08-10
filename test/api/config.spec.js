@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+/* eslint max-nested-callbacks: ["error", 8] */
 /* globals apiClients */
 'use strict'
 

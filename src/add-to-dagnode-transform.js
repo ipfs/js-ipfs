@@ -8,6 +8,7 @@ module.exports = function (err, res, send, done) {
   if (err) {
     return done(err)
   }
+
   async.map(res, function map (entry, next) {
     getDagNode(send, entry.Hash, function (err, node) {
       if (err) {

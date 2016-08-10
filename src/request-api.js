@@ -4,6 +4,7 @@ const Wreck = require('wreck')
 const Qs = require('qs')
 const ndjson = require('ndjson')
 const getFilesStream = require('./get-files-stream')
+const Counter = require('passthrough-counter')
 
 const isNode = require('detect-node')
 
@@ -11,13 +12,19 @@ const isNode = require('detect-node')
 
 function parseChunkedJson (res, cb) {
   const parsed = []
+  const c = new Counter()
   res
+    .pipe(c)
     .pipe(ndjson.parse())
-    .on('data', parsed.push.bind(parsed))
-    .on('end', () => cb(null, parsed))
+    .on('data', (obj) => {
+      parsed.push(obj)
+    })
+    .on('end', () => {
+      cb(null, parsed)
+    })
 }
 
-function onRes (buffer, cb) {
+function onRes (buffer, cb, uri) {
   return (err, res) => {
     if (err) {
       return cb(err)
@@ -42,10 +49,14 @@ function onRes (buffer, cb) {
       })
     }
 
-    if (stream && !buffer) return cb(null, res)
+    if (stream && !buffer) {
+      return cb(null, res)
+    }
 
     if (chunkedObjects) {
-      if (isJson) return parseChunkedJson(res, cb)
+      if (isJson) {
+        return parseChunkedJson(res, cb)
+      }
 
       return Wreck.read(res, null, cb)
     }
@@ -56,6 +67,11 @@ function onRes (buffer, cb) {
 
 function requestAPI (config, path, args, qs, files, buffer, cb) {
   qs = qs || {}
+
+  if (Array.isArray(files)) {
+    qs.recursive = true
+  }
+
   if (Array.isArray(path)) path = path.join('/')
   if (args && !Array.isArray(args)) args = [args]
   if (args) qs.arg = args
@@ -65,10 +81,6 @@ function requestAPI (config, path, args, qs, files, buffer, cb) {
     qs.recursive = qs.r
     // From IPFS 0.4.0, it throws an error when both r and recursive are passed
     delete qs.r
-  }
-
-  if (!isNode && qs.recursive && path === 'add') {
-    return cb(new Error('Recursive uploads are not supported in the browser'))
   }
 
   qs['stream-channels'] = true
@@ -104,7 +116,7 @@ function requestAPI (config, path, args, qs, files, buffer, cb) {
     opts.payload = stream
   }
 
-  return Wreck.request(opts.method, opts.uri, opts, onRes(buffer, cb))
+  return Wreck.request(opts.method, opts.uri, opts, onRes(buffer, cb, opts.uri))
 }
 
 // -- Interface
@@ -128,9 +140,9 @@ exports = module.exports = function getRequestAPI (config) {
     return requestAPI(config, path, args, qs, files, buffer, cb)
   }
 
-  // Wraps the 'send' function such that an asynchronous transform may be
-  // applied to its result before passing it on to either its callback or
-  // promise.
+  // Wraps the 'send' function such that an asynchronous
+  // transform may be applied to its result before
+  // passing it on to either its callback or promise.
   send.withTransform = function (transform) {
     return function (path, args, qs, files, buffer, cb) {
       if (typeof buffer === 'function') {
