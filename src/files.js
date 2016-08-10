@@ -32,10 +32,13 @@ module.exports = (common) => {
         'files/ipfs.txt': fs.readFileSync(path.join(__dirname, './data/test-folder/files/ipfs.txt'))
       }
 
-      common.setup((err, _ipfs) => {
+      common.setup((err, factory) => {
         expect(err).to.not.exist
-        ipfs = _ipfs
-        done()
+        factory.spawnNode((err, node) => {
+          expect(err).to.not.exist
+          ipfs = node
+          done()
+        })
       })
     })
 
@@ -187,24 +190,24 @@ module.exports = (common) => {
 
       describe('.cat', () => {
         it('with a base58 string encoded multihash', (done) => {
-          const hash = 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
+          const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
           ipfs.cat(hash, (err, stream) => {
             expect(err).to.not.exist
             stream.pipe(bl((err, data) => {
               expect(err).to.not.exist
-              expect(data.toString()).to.contain('Check out some of the other files in this directory:')
+              expect(data.toString()).to.contain('Plz add me!')
               done()
             }))
           })
         })
 
         it('with a multihash', (done) => {
-          const mhBuf = new Buffer(bs58.decode('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'))
+          const mhBuf = new Buffer(bs58.decode('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'))
           ipfs.cat(mhBuf, (err, stream) => {
             expect(err).to.not.exist
             stream.pipe(bl((err, data) => {
               expect(err).to.not.exist
-              expect(data.toString()).to.contain('Check out some of the other files in this directory:')
+              expect(data.toString()).to.contain('Plz add me!')
               done()
             }))
           })
@@ -240,13 +243,13 @@ module.exports = (common) => {
 
       describe('.cat', () => {
         it('with a base58 multihash encoded string', () => {
-          const hash = 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
+          const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
 
           return ipfs.cat(hash)
             .then((stream) => {
               stream.pipe(bl((err, data) => {
                 expect(err).to.not.exist
-                expect(data.toString()).to.contain('Check out some of the other files in this directory:')
+                expect(data.toString()).to.contain('Plz add me!')
               }))
             })
         })
@@ -268,12 +271,12 @@ module.exports = (common) => {
         })
 
         it('with a multihash', () => {
-          const hash = new Buffer(bs58.decode('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'))
+          const hash = new Buffer(bs58.decode('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'))
           return ipfs.cat(hash)
             .then((stream) => {
               stream.pipe(bl((err, data) => {
                 expect(err).to.not.exist
-                expect(data.toString()).to.contain('Check out some of the other files in this directory:')
+                expect(data.toString()).to.contain('Plz add me!')
               }))
             })
         })
@@ -282,7 +285,7 @@ module.exports = (common) => {
 
     describe('.get', () => {
       it('with a base58 encoded multihash', (done) => {
-        const hash = 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
+        const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
         ipfs.files.get(hash, (err, stream) => {
           expect(err).to.not.exist
           stream.pipe(concat((files) => {
@@ -290,7 +293,7 @@ module.exports = (common) => {
             expect(files).to.be.length(1)
             expect(files[0].path).to.equal(hash)
             files[0].content.pipe(concat((content) => {
-              expect(content.toString()).to.contain('Check out some of the other files in this directory:')
+              expect(content.toString()).to.contain('Plz add me!')
               done()
             }))
           }))
@@ -298,7 +301,7 @@ module.exports = (common) => {
       })
 
       it('with a multihash', (done) => {
-        const hash = 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
+        const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
         const mhBuf = new Buffer(bs58.decode(hash))
         ipfs.files.get(mhBuf, (err, stream) => {
           expect(err).to.not.exist
@@ -306,7 +309,7 @@ module.exports = (common) => {
             expect(files).to.be.length(1)
             expect(files[0].path).to.deep.equal(hash)
             files[0].content.pipe(concat((content) => {
-              expect(content.toString()).to.contain('Check out some of the other files in this directory:')
+              expect(content.toString()).to.contain('Plz add me!')
               done()
             }))
           }))
@@ -398,14 +401,14 @@ module.exports = (common) => {
 
       describe('promise', () => {
         it('with a base58 encoded string', (done) => {
-          const hash = 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
+          const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
           ipfs.files.get(hash)
             .then((stream) => {
               stream.pipe(concat((files) => {
                 expect(files).to.be.length(1)
                 expect(files[0].path).to.equal(hash)
                 files[0].content.pipe(concat((content) => {
-                  expect(content.toString()).to.contain('Check out some of the other files in this directory:')
+                  expect(content.toString()).to.contain('Plz add me!')
                   done()
                 }))
               }))

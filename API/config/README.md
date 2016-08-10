@@ -35,7 +35,7 @@ Note that this operation will **not** spark the restart of any service, i.e: if 
 
 #### `config.replace`
 
-> Adds or replaces a config value.
+> Adds or replaces a config file.
 
 ##### `Go` **WIP**
 

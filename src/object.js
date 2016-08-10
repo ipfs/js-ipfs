@@ -12,10 +12,13 @@ module.exports = (common) => {
     let ipfs
 
     before((done) => {
-      common.setup((err, _ipfs) => {
+      common.setup((err, factory) => {
         expect(err).to.not.exist
-        ipfs = _ipfs
-        done()
+        factory.spawnNode((err, node) => {
+          expect(err).to.not.exist
+          ipfs = node
+          done()
+        })
       })
     })
 
