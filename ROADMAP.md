@@ -9,12 +9,12 @@ IPFS JavaScript Implementation roadmap
 
 ### Tasks:
 
-- [ ] files API
+- [x] files API
   - [x] js-ipfs-unixfs
   - [x] fixed size chunker
   - [x] unixfs layout
   - [x] jsipfs files add
-  - [ ] jsipfs files get
+  - [x] jsipfs files get
 - [x] jsipfs swarm
   - [x] listen on WebSockets + TCP
   - [x] spdy support
@@ -47,7 +47,7 @@ IPFS JavaScript Implementation roadmap
 UPDATE:
 - For Milestone 1, we also added:
   - [x] WebRTC transport with [libp2p-webrtc-star](https://github.com/libp2p/js-libp2p-webrtc-star)
-  - [ ] [secio](https://github.com/ipfs/js-libp2p-secio)
+  - [x] [secio](https://github.com/ipfs/js-libp2p-secio)
 
 # Milestone 2 - Quality and correctness of the JavaScript Implementation
 
