@@ -12,6 +12,9 @@ module.exports = (common) => {
     let ipfs
 
     before((done) => {
+      // CI is slow
+      this.timeout(20 * 1000)
+
       common.setup((err, factory) => {
         expect(err).to.not.exist
         factory.spawnNode((err, node) => {

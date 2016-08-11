@@ -19,7 +19,10 @@ module.exports = (common) => {
     let directoryContent
     let ipfs
 
-    before((done) => {
+    before(function (done) {
+      // CI is slow
+      this.timeout(20 * 1000)
+
       smallFile = fs.readFileSync(path.join(__dirname, './data/testfile.txt'))
       bigFile = fs.readFileSync(path.join(__dirname, './data/15mb.random'))
 
