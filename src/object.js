@@ -11,7 +11,7 @@ module.exports = (common) => {
   describe('.object', () => {
     let ipfs
 
-    before((done) => {
+    before(function (done) {
       // CI is slow
       this.timeout(20 * 1000)
 
