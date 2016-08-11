@@ -3,6 +3,7 @@
 
 const expect = require('chai').expect
 const APIctl = require('ipfs-api')
+const pkgversion = require('../../package.json').version
 
 module.exports = (httpAPI) => {
   describe('version', () => {
@@ -18,7 +19,7 @@ module.exports = (httpAPI) => {
           method: 'GET',
           url: '/api/v0/version'
         }, (res) => {
-          expect(res.result.Version).to.equal('0.14.1')
+          expect(res.result.Version).to.equal(pkgversion)
           expect(res.result).to.have.a.property('Commit')
           expect(res.result).to.have.a.property('Repo')
           done()

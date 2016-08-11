@@ -2,6 +2,7 @@
 'use strict'
 
 const expect = require('chai').expect
+const pkgversion = require('../../../package.json').version
 
 const IPFS = require('../../../src/core')
 
@@ -16,7 +17,7 @@ describe('version', () => {
   it('get version', (done) => {
     ipfs.version((err, version) => {
       expect(err).to.not.exist
-      expect(version).to.equal('0.14.1')
+      expect(version).to.equal(pkgversion)
       done()
     })
   })
