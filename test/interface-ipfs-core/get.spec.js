@@ -7,21 +7,17 @@
 const expect = require('chai').expect
 const isNode = require('detect-node')
 const fs = require('fs')
-// const bl = require('bl')
 const concat = require('concat-stream')
 const through = require('through2')
 const streamEqual = require('stream-equal')
-
 const path = require('path')
 
-// const extract = require('tar-stream').extract
-
-const testfile = fs.readFileSync(path.join(__dirname, '/../testfile.txt'))
+const testfile = fs.readFileSync(path.join(__dirname, '/../data/testfile.txt'))
 
 let testfileBig
 
 if (isNode) {
-  const tfbPath = path.join(__dirname, '/../15mb.random')
+  const tfbPath = path.join(__dirname, '/../data/15mb.random')
   testfileBig = fs.createReadStream(tfbPath, { bufferSize: 128 })
 }
 

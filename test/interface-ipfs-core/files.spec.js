@@ -7,10 +7,9 @@ const expect = require('chai').expect
 const isNode = require('detect-node')
 const path = require('path')
 const test = require('interface-ipfs-core')
+const fs = require('fs')
 
-let testfile
-
-testfile = require('fs').readFileSync(path.join(__dirname, '/../testfile.txt'))
+const testfile = fs.readFileSync(path.join(__dirname, '/../data/testfile.txt'))
 
 // Load the add/cat/get/ls commands from interface-ipfs-core
 const common = {

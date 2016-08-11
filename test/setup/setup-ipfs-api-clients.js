@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const ipfsAPI = require('../src/index.js')
+const ipfsAPI = require('./../../src/index.js')
 const apiAddrs = require('./tmp-disposable-nodes-addrs.json')
 
 // a, b, c

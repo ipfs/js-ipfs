@@ -1,5 +1,6 @@
 'use strict'
-/* eslint max-nested-callbacks: ["error", 8] */ // TODO reduce nesteness
+// TODO reduce the callbacks nestness
+/* eslint max-nested-callbacks: ["error", 8] */
 
 const gulp = require('gulp')
 const fs = require('fs')
@@ -21,7 +22,7 @@ function startDisposableDaemons (callback) {
   function finish () {
     counter++
     if (counter === 3) {
-      const targetPath = path.join(__dirname, '/../test/tmp-disposable-nodes-addrs.json')
+      const targetPath = path.join(__dirname, '/tmp-disposable-nodes-addrs.json')
       fs.writeFileSync(targetPath, JSON.stringify(apiAddrs))
       callback(ipfsNodes)
     }

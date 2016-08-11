@@ -65,7 +65,7 @@ describe('.config', () => {
       return done()
     }
 
-    apiClients.c.config.replace(path.join(__dirname, '/../r-config.json'), (err, res) => {
+    apiClients.c.config.replace(path.join(__dirname, '/../data/r-config.json'), (err, res) => {
       expect(err).to.not.exist
       expect(res).to.be.equal(null)
       done()
@@ -126,7 +126,7 @@ describe('.config', () => {
         return
       }
 
-      return apiClients.c.config.replace(path.join(__dirname, '/../r-config.json'))
+      return apiClients.c.config.replace(path.join(__dirname, '/../data/r-config.json'))
         .then((res) => {
           expect(res).to.be.equal(null)
         })

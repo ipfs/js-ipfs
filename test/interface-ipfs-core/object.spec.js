@@ -10,6 +10,14 @@ const common = {
     let c = 0
     cb(null, {
       spawnNode: (path, config, callback) => {
+        if (typeof path === 'function') {
+          callback = path
+          path = undefined
+        }
+        if (typeof config === 'function') {
+          callback = config
+          config = undefined
+        }
         switch (c) {
           case 0: callback(null, apiClients.a); c++; break
           case 1: callback(null, apiClients.b); c++; break

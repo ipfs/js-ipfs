@@ -3,11 +3,11 @@
 
 const expect = require('chai').expect
 
-const ipfsAPI = require('../src/index.js')
+const ipfsAPI = require('./../../src/index.js')
 
 describe('ipfsAPI constructor tests', () => {
   describe('parameter permuations', () => {
-    const apiAddrs = require('./tmp-disposable-nodes-addrs.json')
+    const apiAddrs = require('./../setup/tmp-disposable-nodes-addrs.json')
     const apiAddr = apiAddrs.a.split('/')
 
     function clientWorks (client, done) {
