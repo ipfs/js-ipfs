@@ -4,7 +4,6 @@ const utils = require('../../utils')
 const debug = require('debug')
 const log = debug('cli:version')
 log.error = debug('cli:version:error')
-const bs58 = require('bs58')
 const fs = require('fs')
 const path = require('path')
 const glob = require('glob')
@@ -68,8 +67,10 @@ module.exports = {
           const added = []
 
           i.on('data', (file) => {
-            const hash = bs58.encode(file.node.multihash()).toString()
-            added.push({hash, path: file.path})
+            added.push({
+              hash: file.hash,
+              path: file.path
+            })
           })
 
           i.on('end', () => {
