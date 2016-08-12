@@ -24,7 +24,6 @@ describe('.dht', () => {
       // non ipns or pk hashes fail to fetch, known bug
       // bug: https://github.com/ipfs/go-ipfs/issues/1923#issuecomment-152932234
       // apiClients.a.dht.get('scope', (err, value) => {
-      //  console.log('->>', err, value)
       //  expect(err).to.not.exist
       //  expect(value).to.be.equal('interplanetary')
       //  done()

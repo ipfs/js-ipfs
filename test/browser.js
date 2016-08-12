@@ -1,3 +1,3 @@
 'use strict'
 
-require('./setup')
+require('./setup/setup-ipfs-api-clients')

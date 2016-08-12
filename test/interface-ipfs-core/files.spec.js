@@ -7,25 +7,41 @@ const expect = require('chai').expect
 const isNode = require('detect-node')
 const path = require('path')
 const test = require('interface-ipfs-core')
+const bs58 = require('bs58')
+const fs = require('fs')
+const FactoryClient = require('../factory/factory-client')
+const testfile = fs.readFileSync(path.join(__dirname, '/../data/testfile.txt'))
 
-let testfile
+// add, cat, get and ls tests from interface-ipfs-core
+let fc
 
-testfile = require('fs').readFileSync(path.join(__dirname, '/../testfile.txt'))
-
-// Load the add/cat/get/ls commands from interface-ipfs-core
 const common = {
-  setup: function (cb) {
-    cb(null, apiClients.a)
+  setup: function (callback) {
+    fc = new FactoryClient()
+    callback(null, fc)
   },
-  teardown: function (cb) {
-    cb()
+  teardown: function (callback) {
+    fc.dismantle(callback)
   }
 }
 
 test.files(common)
 
-// Describe the (mfs) tests
+// mfs tests
 describe('.files (pseudo mfs)', () => {
+  it('add file for testing', (done) => {
+    apiClients.a.files.add(testfile, (err, res) => {
+      expect(err).to.not.exist
+
+      expect(res).to.have.length(1)
+      const mh = bs58.encode(res[0].node.multihash()).toString()
+      expect(mh).to.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+      expect(res[0].path).to.equal(mh)
+      expect(res[0].node.links).to.have.length(0)
+      done()
+    })
+  })
+
   it('files.mkdir', (done) => {
     apiClients.a.files.mkdir('/test-folder', function (err) {
       expect(err).to.not.exist

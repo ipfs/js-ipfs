@@ -7,21 +7,18 @@
 const expect = require('chai').expect
 const isNode = require('detect-node')
 const fs = require('fs')
-// const bl = require('bl')
 const concat = require('concat-stream')
+const bs58 = require('bs58')
 const through = require('through2')
 const streamEqual = require('stream-equal')
-
 const path = require('path')
 
-// const extract = require('tar-stream').extract
-
-const testfile = fs.readFileSync(path.join(__dirname, '/../testfile.txt'))
+const testfile = fs.readFileSync(path.join(__dirname, '/../data/testfile.txt'))
 
 let testfileBig
-
+let tfbPath
 if (isNode) {
-  const tfbPath = path.join(__dirname, '/../15mb.random')
+  tfbPath = path.join(__dirname, '/../data/15mb.random')
   testfileBig = fs.createReadStream(tfbPath, { bufferSize: 128 })
 }
 
@@ -87,6 +84,25 @@ describe('.get', () => {
         expect(err).to.not.exist
         done()
       })
+  })
+
+  it('add a BIG file (for testing get)', (done) => {
+    if (!isNode) {
+      return done()
+    }
+
+    const bigFile = fs.readFileSync(tfbPath)
+
+    apiClients.a.files.add(bigFile, (err, res) => {
+      expect(err).to.not.exist
+
+      expect(res).to.have.length(1)
+      expect(res[0].node.links).to.have.length(58)
+      const mh = bs58.encode(res[0].node.multihash()).toString()
+      expect(res[0].path).to.equal(mh)
+      expect(mh).to.equal('Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq')
+      done()
+    })
   })
 
   it('get BIG file', (done) => {

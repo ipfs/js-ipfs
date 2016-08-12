@@ -3,12 +3,12 @@
 
 const expect = require('chai').expect
 const isNode = require('detect-node')
-const ipfsAPI = require('../src/index.js')
+const ipfsAPI = require('./../../src/index.js')
 const noop = () => {}
 
 describe('ipfsAPI request tests', () => {
   describe('requestAPI', () => {
-    const apiAddrs = require('./tmp-disposable-nodes-addrs.json')
+    const apiAddrs = require('./../setup/tmp-disposable-nodes-addrs.json')
     const apiAddr = apiAddrs.a.split('/')
 
     it('excludes port from URL if config.port is falsy', (done) => {
@@ -57,7 +57,7 @@ describe('ipfsAPI request tests', () => {
         res.end()
       }).listen(6001, () => {
         ipfsAPI('/ip4/127.0.0.1/tcp/6001')
-          .config.replace('test/r-config.json', (err) => {
+          .config.replace('test/data/r-config.json', (err) => {
             expect(err).to.not.exist
             server.close(done)
           })

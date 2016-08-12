@@ -1,6 +1,6 @@
 node_modules
 *.log
-test/tmp-disposable-nodes-addrs.json
+test/setup/tmp-disposable-nodes-addrs.json
 dist
 lib
 coverage
