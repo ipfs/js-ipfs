@@ -3,6 +3,7 @@ language: node_js
 node_js:
   - 4
   - 5
+  - "stable"
 
 # Make sure we have new NPM.
 before_install:
