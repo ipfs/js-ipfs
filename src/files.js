@@ -53,21 +53,33 @@ module.exports = (common) => {
       describe('.add', () => {
         it('stream', (done) => {
           const buffered = new Buffer('some data')
+          const expectedMultihash = 'QmVv4Wz46JaZJeH5PMV4LGbRiiMKEmszPYY3g6fjGnVXBS'
+
           const rs = new Readable()
           rs.push(buffered)
           rs.push(null)
 
           const arr = []
-          const filePair = {path: 'data.txt', content: rs}
+          const filePair = {
+            path: 'data.txt',
+            content: rs
+          }
+
           arr.push(filePair)
 
           ipfs.files.add(arr, (err, res) => {
             expect(err).to.not.exist
             expect(res).to.be.length(1)
-            expect(res[0].path).to.equal('data.txt')
-            expect(res[0].node.size()).to.equal(17)
-            const mh = 'QmVv4Wz46JaZJeH5PMV4LGbRiiMKEmszPYY3g6fjGnVXBS'
-            expect(bs58.encode(res[0].node.multihash()).toString()).to.equal(mh)
+            const file = res[0]
+            expect(file).to.be.eql({
+              path: 'data.txt',
+              size: 17,
+              hash: expectedMultihash
+            })
+            expect(file).to.eqlk
+            expect(file.path).to.equal('data.txt')
+            expect(file.size).to.equal(17)
+            expect(file.hash).to.equal(expectedMultihash)
             done()
           })
         })
@@ -77,41 +89,40 @@ module.exports = (common) => {
             path: 'testfile.txt',
             content: smallFile
           }
+          const expectedMultihash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
 
           ipfs.files.add([file], (err, res) => {
             expect(err).to.not.exist
 
-            const added = res[0] != null ? res[0] : res
-            const mh = bs58.encode(added.node.multihash()).toString()
-            expect(mh).to.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
-            expect(added.path).to.equal('testfile.txt')
-            expect(added.node.links).to.have.length(0)
+            const file = res[0]
+            expect(file.hash).to.equal(expectedMultihash)
+            expect(file.path).to.equal('testfile.txt')
             done()
           })
         })
 
         it('buffer', (done) => {
+          const expectedMultihash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
+
           ipfs.files.add(smallFile, (err, res) => {
             expect(err).to.not.exist
-
             expect(res).to.have.length(1)
-            const mh = bs58.encode(res[0].node.multihash()).toString()
-            expect(mh).to.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
-            expect(res[0].path).to.equal(mh)
-            expect(res[0].node.links).to.have.length(0)
+            const file = res[0]
+            expect(file.hash).to.equal(expectedMultihash)
+            expect(file.path).to.equal(file.hash)
             done()
           })
         })
 
         it('BIG buffer', (done) => {
+          const expectedMultihash = 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq'
+
           ipfs.files.add(bigFile, (err, res) => {
             expect(err).to.not.exist
-
             expect(res).to.have.length(1)
-            expect(res[0].node.links).to.have.length(58)
-            const mh = bs58.encode(res[0].node.multihash()).toString()
-            expect(res[0].path).to.equal(mh)
-            expect(mh).to.equal('Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq')
+            const file = res[0]
+            expect(file.hash).to.equal(expectedMultihash)
+            expect(file.path).to.equal(file.hash)
             done()
           })
         })
@@ -121,9 +132,13 @@ module.exports = (common) => {
             path: `test-folder/${name}`,
             content: directoryContent[name]
           })
+
           const emptyDir = (name) => ({
             path: `test-folder/${name}`
           })
+
+          const expectedRootMultihash = 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'
+
           const dirs = [
             content('pp.txt'),
             content('holmes.txt'),
@@ -137,13 +152,10 @@ module.exports = (common) => {
 
           ipfs.files.add(dirs, (err, res) => {
             expect(err).to.not.exist
+            const root = res[res.length - 1]
 
-            const added = res[res.length - 1]
-            const mh = bs58.encode(added.node.multihash()).toString()
-            expect(added.node.links).to.have.length(6)
-            expect(added.path).to.equal('test-folder')
-            expect(mh).to.equal('QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP')
-
+            expect(root.path).to.equal('test-folder')
+            expect(root.hash).to.equal(expectedRootMultihash)
             done()
           })
         })
@@ -154,9 +166,13 @@ module.exports = (common) => {
               path: `test-folder/${name}`,
               content: directoryContent[name]
             })
+
             const emptyDir = (name) => ({
               path: `test-folder/${name}`
             })
+
+            const expectedRootMultihash = 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'
+
             const files = [
               content('pp.txt'),
               content('holmes.txt'),
@@ -171,11 +187,9 @@ module.exports = (common) => {
             ipfs.files.createAddStream((err, stream) => {
               expect(err).to.not.exist
 
-              stream.on('data', (tuple) => {
-                if (tuple.path === 'test-folder') {
-                  const mh = bs58.encode(tuple.node.multihash()).toString()
-                  expect(mh).to.equal('QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP')
-                  expect(tuple.node.links).to.have.length(6)
+              stream.on('data', (file) => {
+                if (file.path === 'test-folder') {
+                  expect(file.hash).to.equal(expectedRootMultihash)
                 }
               })
 
@@ -232,14 +246,14 @@ module.exports = (common) => {
 
     describe('promise API', () => {
       describe('.add', () => {
+        const expectedMultihash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
+
         it('buffer', () => {
           return ipfs.files.add(smallFile)
             .then((res) => {
-              const added = res[0] != null ? res[0] : res
-              const mh = bs58.encode(added.node.multihash()).toString()
-              expect(mh).to.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
-              expect(added.path).to.equal(mh)
-              expect(added.node.links).to.have.length(0)
+              const file = res[0]
+              expect(file.hash).to.equal(expectedMultihash)
+              expect(file.path).to.equal(file.hash)
             })
         })
       })
