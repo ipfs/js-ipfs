@@ -5,12 +5,11 @@
 const gulp = require('gulp')
 const fs = require('fs')
 const path = require('path')
+const ipfsd = require('ipfsd-ctl')
 
 let daemons
 
 function startDisposableDaemons (callback) {
-  const ipfsd = require('ipfsd-ctl')
-
   // a, b, c
   const ipfsNodes = {}
 

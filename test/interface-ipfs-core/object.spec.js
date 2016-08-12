@@ -1,34 +1,19 @@
 /* eslint-env mocha */
-/* globals apiClients */
 
 'use strict'
 
 const test = require('interface-ipfs-core')
+const FactoryClient = require('../factory/factory-client')
+
+let fc
 
 const common = {
-  setup: function (cb) {
-    let c = 0
-    cb(null, {
-      spawnNode: (path, config, callback) => {
-        if (typeof path === 'function') {
-          callback = path
-          path = undefined
-        }
-        if (typeof config === 'function') {
-          callback = config
-          config = undefined
-        }
-        switch (c) {
-          case 0: callback(null, apiClients.a); c++; break
-          case 1: callback(null, apiClients.b); c++; break
-          case 2: callback(null, apiClients.c); c++; break
-          default: callback(new Error('no more nodes available'))
-        }
-      }
-    })
+  setup: function (callback) {
+    fc = new FactoryClient()
+    callback(null, fc)
   },
-  teardown: function (cb) {
-    cb()
+  teardown: function (callback) {
+    fc.dismantle(callback)
   }
 }
 
