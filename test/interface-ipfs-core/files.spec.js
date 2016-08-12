@@ -7,7 +7,6 @@ const expect = require('chai').expect
 const isNode = require('detect-node')
 const path = require('path')
 const test = require('interface-ipfs-core')
-const bs58 = require('bs58')
 const fs = require('fs')
 const FactoryClient = require('../factory/factory-client')
 const testfile = fs.readFileSync(path.join(__dirname, '/../data/testfile.txt'))
@@ -30,14 +29,14 @@ test.files(common)
 // mfs tests
 describe('.files (pseudo mfs)', () => {
   it('add file for testing', (done) => {
+    const expectedMultihash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
+
     apiClients.a.files.add(testfile, (err, res) => {
       expect(err).to.not.exist
 
       expect(res).to.have.length(1)
-      const mh = bs58.encode(res[0].node.multihash()).toString()
-      expect(mh).to.equal('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
-      expect(res[0].path).to.equal(mh)
-      expect(res[0].node.links).to.have.length(0)
+      expect(res[0].hash).to.equal(expectedMultihash)
+      expect(res[0].path).to.equal(expectedMultihash)
       done()
     })
   })

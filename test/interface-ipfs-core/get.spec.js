@@ -8,7 +8,6 @@ const expect = require('chai').expect
 const isNode = require('detect-node')
 const fs = require('fs')
 const concat = require('concat-stream')
-const bs58 = require('bs58')
 const through = require('through2')
 const streamEqual = require('stream-equal')
 const path = require('path')
@@ -92,15 +91,14 @@ describe('.get', () => {
     }
 
     const bigFile = fs.readFileSync(tfbPath)
+    const expectedMultihash = 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq'
 
     apiClients.a.files.add(bigFile, (err, res) => {
       expect(err).to.not.exist
 
       expect(res).to.have.length(1)
-      expect(res[0].node.links).to.have.length(58)
-      const mh = bs58.encode(res[0].node.multihash()).toString()
-      expect(res[0].path).to.equal(mh)
-      expect(mh).to.equal('Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq')
+      expect(res[0].path).to.equal(expectedMultihash)
+      expect(res[0].hash).to.equal(expectedMultihash)
       done()
     })
   })
