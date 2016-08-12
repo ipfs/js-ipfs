@@ -16,7 +16,8 @@ module.exports = function (err, res, send, done) {
       }
       var obj = {
         path: entry.Name,
-        node: node
+        hash: entry.Hash,
+        size: node.size()
       }
       next(null, obj)
     })
