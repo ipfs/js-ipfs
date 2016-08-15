@@ -1,13 +1,58 @@
 'use strict'
 
-const cmds = require('../cmd-helpers')
-
 module.exports = (send) => {
   return {
-    peers: cmds.command(send, 'swarm/peers'),
-    connect: cmds.argCommand(send, 'swarm/connect'),
-    disconnect: cmds.argCommand(send, 'swarm/disconnect'),
-    addrs: cmds.command(send, 'swarm/addrs'),
-    localAddrs: cmds.command(send, 'swarm/addrs/local')
+    peers (opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'swarm/peers',
+        qs: opts
+      }, callback)
+    },
+    connect (args, opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'swarm/connect',
+        args: args,
+        qs: opts
+      }, callback)
+    },
+    disconnect (args, opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'swarm/disconnect',
+        args: args,
+        qs: opts
+      }, callback)
+    },
+    addrs (opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'swarm/addrs',
+        qs: opts
+      }, callback)
+    },
+    localAddrs (opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'swarm/addrs/local',
+        qs: opts
+      }, callback)
+    }
   }
 }

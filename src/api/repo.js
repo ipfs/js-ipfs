@@ -1,10 +1,26 @@
 'use strict'
 
-const cmds = require('../cmd-helpers')
-
 module.exports = (send) => {
   return {
-    gc: cmds.command(send, 'repo/gc'),
-    stat: cmds.command(send, 'repo/stat')
+    gc (opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'repo/gc',
+        qs: opts
+      }, callback)
+    },
+    stat (opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'repo/stat',
+        qs: opts
+      }, callback)
+    }
   }
 }

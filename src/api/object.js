@@ -23,7 +23,10 @@ module.exports = (send) => {
         return callback(err)
       }
 
-      send('object/get', multihash, null, null, (err, result) => {
+      send({
+        path: 'object/get',
+        args: multihash
+      }, (err, result) => {
         if (err) {
           return callback(err)
         }
@@ -73,7 +76,11 @@ module.exports = (send) => {
       }
       const enc = options.enc || 'json'
 
-      send('object/put', null, {inputenc: enc}, buf, (err, result) => {
+      send({
+        path: 'object/put',
+        qs: { inputenc: enc },
+        files: buf
+      }, (err, result) => {
         if (err) {
           return callback(err)
         }
@@ -117,7 +124,10 @@ module.exports = (send) => {
         return callback(err)
       }
 
-      send('object/data', multihash, null, null, (err, result) => {
+      send({
+        path: 'object/data',
+        args: multihash
+      }, (err, result) => {
         if (err) {
           return callback(err)
         }
@@ -144,7 +154,10 @@ module.exports = (send) => {
         return callback(err)
       }
 
-      send('object/links', multihash, null, null, (err, result) => {
+      send({
+        path: 'object/links',
+        args: multihash
+      }, (err, result) => {
         if (err) {
           return callback(err)
         }
@@ -159,25 +172,30 @@ module.exports = (send) => {
         callback(null, links)
       })
     }),
-    stat: promisify((multihash, options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
+    stat: promisify((multihash, opts, callback) => {
+      if (typeof opts === 'function') {
+        callback = opts
+        opts = {}
       }
-      if (!options) {
-        options = {}
+      if (!opts) {
+        opts = {}
       }
 
       try {
-        multihash = cleanMultihash(multihash, options)
+        multihash = cleanMultihash(multihash, opts)
       } catch (err) {
         return callback(err)
       }
 
-      send('object/stat', multihash, null, null, callback)
+      send({
+        path: 'object/stat',
+        args: multihash
+      }, callback)
     }),
     new: promisify((callback) => {
-      send('object/new', null, null, null, (err, result) => {
+      send({
+        path: 'object/new'
+      }, (err, result) => {
         if (err) {
           return callback(err)
         }
@@ -191,88 +209,102 @@ module.exports = (send) => {
       })
     }),
     patch: {
-      addLink: promisify((multihash, dLink, options, callback) => {
-        if (typeof options === 'function') {
-          callback = options
-          options = {}
+      addLink: promisify((multihash, dLink, opts, callback) => {
+        if (typeof opts === 'function') {
+          callback = opts
+          opts = {}
         }
-        if (!options) {
-          options = {}
+        if (!opts) {
+          opts = {}
         }
 
         try {
-          multihash = cleanMultihash(multihash, options)
+          multihash = cleanMultihash(multihash, opts)
         } catch (err) {
           return callback(err)
         }
 
-        send('object/patch/add-link', [multihash, dLink.name, bs58.encode(dLink.hash).toString()], null, null, (err, result) => {
+        send({
+          path: 'object/patch/add-link',
+          args: [multihash, dLink.name, bs58.encode(dLink.hash).toString()]
+        }, (err, result) => {
           if (err) {
             return callback(err)
           }
           api.get(result.Hash, { enc: 'base58' }, callback)
         })
       }),
-      rmLink: promisify((multihash, dLink, options, callback) => {
-        if (typeof options === 'function') {
-          callback = options
-          options = {}
+      rmLink: promisify((multihash, dLink, opts, callback) => {
+        if (typeof opts === 'function') {
+          callback = opts
+          opts = {}
         }
-        if (!options) {
-          options = {}
+        if (!opts) {
+          opts = {}
         }
 
         try {
-          multihash = cleanMultihash(multihash, options)
+          multihash = cleanMultihash(multihash, opts)
         } catch (err) {
           return callback(err)
         }
 
-        send('object/patch/rm-link', [multihash, dLink.name], null, null, (err, result) => {
+        send({
+          path: 'object/patch/rm-link',
+          args: [multihash, dLink.name]
+        }, (err, result) => {
           if (err) {
             return callback(err)
           }
           api.get(result.Hash, { enc: 'base58' }, callback)
         })
       }),
-      setData: promisify((multihash, data, options, callback) => {
-        if (typeof options === 'function') {
-          callback = options
-          options = {}
+      setData: promisify((multihash, data, opts, callback) => {
+        if (typeof opts === 'function') {
+          callback = opts
+          opts = {}
         }
-        if (!options) {
-          options = {}
+        if (!opts) {
+          opts = {}
         }
 
         try {
-          multihash = cleanMultihash(multihash, options)
+          multihash = cleanMultihash(multihash, opts)
         } catch (err) {
           return callback(err)
         }
 
-        send('object/patch/set-data', [multihash], null, data, (err, result) => {
+        send({
+          path: 'object/patch/set-data',
+          args: [multihash],
+          files: data
+        }, (err, result) => {
           if (err) {
             return callback(err)
           }
           api.get(result.Hash, { enc: 'base58' }, callback)
         })
       }),
-      appendData: promisify((multihash, data, options, callback) => {
-        if (typeof options === 'function') {
-          callback = options
-          options = {}
+      appendData: promisify((multihash, data, opts, callback) => {
+        if (typeof opts === 'function') {
+          callback = opts
+          opts = {}
         }
-        if (!options) {
-          options = {}
+        if (!opts) {
+          opts = {}
         }
 
         try {
-          multihash = cleanMultihash(multihash, options)
+          multihash = cleanMultihash(multihash, opts)
         } catch (err) {
           return callback(err)
         }
 
-        send('object/patch/append-data', [multihash], null, data, (err, result) => {
+        send({
+          path: 'object/patch/append-data',
+          args: [multihash],
+          files: data
+        }, (err, result) => {
           if (err) {
             return callback(err)
           }
@@ -281,9 +313,11 @@ module.exports = (send) => {
       })
     }
   }
+
   return api
 }
 
+// TODO verify if this is duplicated of clean-multihash.js
 function cleanMultihash (multihash, options) {
   if (Buffer.isBuffer(multihash)) {
     if (options.enc) {

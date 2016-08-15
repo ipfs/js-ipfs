@@ -2,29 +2,36 @@
 
 module.exports = (send) => {
   return {
-    add (hash, opts, cb) {
+    add (hash, opts, callback) {
       if (typeof opts === 'function') {
-        cb = opts
+        callback = opts
         opts = null
       }
-
-      return send('pin/add', hash, opts, null, cb)
+      return send({
+        path: 'pin/add',
+        args: hash,
+        qs: opts
+      }, callback)
     },
-    remove (hash, opts, cb) {
+    remove (hash, opts, callback) {
       if (typeof opts === 'function') {
-        cb = opts
+        callback = opts
         opts = null
       }
-
-      return send('pin/rm', hash, opts, null, cb)
+      return send({
+        path: 'pin/rm',
+        args: hash,
+        qs: opts
+      }, callback)
     },
-    list (type, cb) {
+    list (type, callback) {
       if (typeof type === 'function') {
-        cb = type
+        callback = type
         type = null
       }
       let opts = null
       let hash = null
+
       if (typeof type === 'string') {
         opts = { type: type }
       } else if (type && type.hash) {
@@ -32,8 +39,11 @@ module.exports = (send) => {
         type.hash = null
         opts = type
       }
-
-      return send('pin/ls', hash, opts, null, cb)
+      return send({
+        path: 'pin/ls',
+        args: hash,
+        qs: opts
+      }, callback)
     }
   }
 }

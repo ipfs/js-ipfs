@@ -1,23 +1,40 @@
 'use strict'
 
-const command = require('../cmd-helpers').command
-
 module.exports = (send) => {
   return {
-    add: (arg, opts, cb) => {
-      if (typeof opts === 'function' && cb === undefined) {
-        cb = opts
+    add (args, opts, callback) {
+      if (typeof opts === 'function' &&
+          callback === undefined) {
+        callback = opts
         opts = {}
       }
-      return send('bootstrap/add', arg, opts, null, cb)
+      return send({
+        path: 'bootstrap/add',
+        args: args,
+        qs: opts
+      }, callback)
     },
-    rm: (arg, opts, cb) => {
-      if (typeof opts === 'function' && cb === undefined) {
-        cb = opts
+    rm (args, opts, callback) {
+      if (typeof opts === 'function' &&
+          callback === undefined) {
+        callback = opts
         opts = {}
       }
-      return send('bootstrap/rm', arg, opts, null, cb)
+      return send({
+        path: 'bootstrap/rm',
+        args: args,
+        qs: opts
+      }, callback)
     },
-    list: command(send, 'bootstrap/list')
+    list (opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'bootstrap/list',
+        qs: opts
+      }, callback)
+    }
   }
 }

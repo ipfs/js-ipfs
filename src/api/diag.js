@@ -1,11 +1,39 @@
 'use strict'
 
-const command = require('../cmd-helpers').command
-
 module.exports = (send) => {
   return {
-    net: command(send, 'diag/net'),
-    sys: command(send, 'diag/sys'),
-    cmds: command(send, 'diag/sys')
+    net (opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+
+      return send({
+        path: 'diag/net',
+        qs: opts
+      }, callback)
+    },
+    sys (opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+
+      return send({
+        path: 'diag/sys',
+        qs: opts
+      }, callback)
+    },
+    cmds (opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+
+      return send({
+        path: 'diag/cmds',
+        qs: opts
+      }, callback)
+    }
   }
 }

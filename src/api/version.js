@@ -1,7 +1,15 @@
 'use strict'
 
-const command = require('../cmd-helpers').command
-
 module.exports = (send) => {
-  return command(send, 'version')
+  return (opts, callback) => {
+    if (typeof opts === 'function') {
+      callback = opts
+      opts = {}
+    }
+
+    return send({
+      path: 'version',
+      qs: opts
+    }, callback)
+  }
 }

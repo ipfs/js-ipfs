@@ -1,10 +1,27 @@
 'use strict'
 
-const cmds = require('../cmd-helpers')
-
 module.exports = (send) => {
-  const refs = cmds.argCommand(send, 'refs')
-  refs.local = cmds.command(send, 'refs/local')
+  const refs = (args, opts, callback) => {
+    if (typeof (opts) === 'function') {
+      callback = opts
+      opts = {}
+    }
+    return send({
+      path: 'refs',
+      args: args,
+      qs: opts
+    }, callback)
+  }
+  refs.local = (opts, callback) => {
+    if (typeof (opts) === 'function') {
+      callback = opts
+      opts = {}
+    }
+    return send({
+      path: 'refs',
+      qs: opts
+    }, callback)
+  }
 
   return refs
 }

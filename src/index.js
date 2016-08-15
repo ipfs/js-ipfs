@@ -2,7 +2,7 @@
 
 const multiaddr = require('multiaddr')
 const loadCommands = require('./load-commands')
-const getConfig = require('./config')
+const getConfig = require('./default-config')
 const getRequestAPI = require('./request-api')
 
 function IpfsAPI (hostOrMultiaddr, port, opts) {

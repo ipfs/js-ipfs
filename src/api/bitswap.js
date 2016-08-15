@@ -1,15 +1,27 @@
 'use strict'
 
-const argCommand = require('../cmd-helpers').argCommand
-
 module.exports = (send) => {
   return {
-    wantlist (cb) {
-      return send('bitswap/wantlist', {}, null, null, cb)
+    wantlist (callback) {
+      return send({
+        path: 'bitswap/wantlist'
+      }, callback)
     },
-    stat (cb) {
-      return send('bitswap/stat', {}, null, null, cb)
+    stat (callback) {
+      return send({
+        path: 'bitswap/stat'
+      }, callback)
     },
-    unwant: argCommand(send, 'bitswap/unwant')
+    unwant (args, opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'bitswap/unwant',
+        args: args,
+        qs: opts
+      }, callback)
+    }
   }
 }
