@@ -56,7 +56,7 @@ UPDATE:
 ### Tasks:
 
 - [ ] Interface definition, documentation and test coverage for both js-ipfs and js-ipfs-api. The `interface-ipfs-core` effort.
-  - [ ] Create a process to signal users of a proposed interface change and interface changelog.
+  - [x] Create a process to signal users of a proposed interface change and interface changelog. https://github.com/ipfs/interface-ipfs-core/issues/55
   - [ ] swarm API - https://github.com/ipfs/interface-ipfs-core/pull/35
   - [ ] block API - https://github.com/ipfs/interface-ipfs-core/pull/32
   - [ ] generic API - https://github.com/ipfs/interface-ipfs-core/pull/33
@@ -65,7 +65,7 @@ UPDATE:
   - [ ] DHT API https://github.com/ipfs/interface-ipfs-core/pull/36
   - [ ] mfs API https://github.com/ipfs/interface-ipfs-core/pull/38
 - [ ] Robust testing infrastructure
-  - [ ] Isolation of tests. This includes:
+  - [x] Isolation of tests. This includes:
     - Avoid cases where there is one set up for a bunch of test files, instead make each test file be runnable by itself. This also includes removing the use of all globals (i.e js-ipfs-api).
   - [ ] Interoperability tests between js-ipfs and go-ipfs
   - [ ] Benchmarking tests
