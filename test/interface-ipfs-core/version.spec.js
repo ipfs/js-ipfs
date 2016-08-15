@@ -1,14 +1,31 @@
 /* eslint-env mocha */
-/* globals apiClients */
 'use strict'
 
 const expect = require('chai').expect
+const FactoryClient = require('../factory/factory-client')
 
 describe('.version', () => {
+  let ipfs
+  let fc
+
+  before(function (done) {
+    this.timeout(20 * 1000) // slow CI
+    fc = new FactoryClient()
+    fc.spawnNode((err, node) => {
+      expect(err).to.not.exist
+      ipfs = node
+      done()
+    })
+  })
+
+  after((done) => {
+    fc.dismantle(done)
+  })
+
   // note, IPFS HTTP-API returns always the same object, the filtering
   // happens on the CLI
   it('checks the version', (done) => {
-    apiClients.a.version((err, res) => {
+    ipfs.version((err, res) => {
       expect(err).to.not.exist
       expect(res).to.have.a.property('Version')
       expect(res).to.have.a.property('Commit')
@@ -18,7 +35,7 @@ describe('.version', () => {
   })
 
   it('with number option', (done) => {
-    apiClients.a.version({number: true}, (err, res) => {
+    ipfs.version({number: true}, (err, res) => {
       expect(err).to.not.exist
       expect(res).to.have.a.property('Version')
       expect(res).to.have.a.property('Commit')
@@ -28,7 +45,7 @@ describe('.version', () => {
   })
 
   it('with commit option', (done) => {
-    apiClients.a.version({commit: true}, (err, res) => {
+    ipfs.version({commit: true}, (err, res) => {
       expect(err).to.not.exist
       expect(res).to.have.a.property('Version')
       expect(res).to.have.a.property('Commit')
@@ -38,7 +55,7 @@ describe('.version', () => {
   })
 
   it('with repo option', (done) => {
-    apiClients.a.version({commit: true}, (err, res) => {
+    ipfs.version({commit: true}, (err, res) => {
       expect(err).to.not.exist
       expect(res).to.have.a.property('Version')
       expect(res).to.have.a.property('Commit')
@@ -49,7 +66,7 @@ describe('.version', () => {
 
   describe('promise', () => {
     it('checks the version', () => {
-      return apiClients.a.version()
+      return ipfs.version()
         .then((res) => {
           expect(res).to.have.a.property('Version')
           expect(res).to.have.a.property('Commit')
@@ -58,7 +75,7 @@ describe('.version', () => {
     })
 
     it('with number option', () => {
-      return apiClients.a.version({number: true})
+      return ipfs.version({number: true})
         .then((res) => {
           expect(res).to.have.a.property('Version')
           expect(res).to.have.a.property('Commit')

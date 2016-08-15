@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 /* eslint max-nested-callbacks: ["error", 8] */
-/* globals apiClients */
 
 'use strict'
 
@@ -11,6 +10,7 @@ const concat = require('concat-stream')
 const through = require('through2')
 const streamEqual = require('stream-equal')
 const path = require('path')
+const FactoryClient = require('../factory/factory-client')
 
 const testfile = fs.readFileSync(path.join(__dirname, '/../data/testfile.txt'))
 
@@ -22,8 +22,38 @@ if (isNode) {
 }
 
 describe('.get', () => {
+  let ipfs
+  let fc
+
+  before(function (done) {
+    this.timeout(20 * 1000) // slow CI
+    fc = new FactoryClient()
+    fc.spawnNode((err, node) => {
+      expect(err).to.not.exist
+      ipfs = node
+      done()
+    })
+  })
+
+  after((done) => {
+    fc.dismantle(done)
+  })
+
+  it('add file for testing', (done) => {
+    const expectedMultihash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
+
+    ipfs.files.add(testfile, (err, res) => {
+      expect(err).to.not.exist
+
+      expect(res).to.have.length(1)
+      expect(res[0].hash).to.equal(expectedMultihash)
+      expect(res[0].path).to.equal(expectedMultihash)
+      done()
+    })
+  })
+
   it('get with no compression args', (done) => {
-    apiClients.a
+    ipfs
       .get('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', (err, res) => {
         expect(err).to.not.exist
 
@@ -46,7 +76,7 @@ describe('.get', () => {
   })
 
   it('get with archive true', (done) => {
-    apiClients.a
+    ipfs
       .get('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {archive: true}, (err, res) => {
         expect(err).to.not.exist
 
@@ -69,7 +99,7 @@ describe('.get', () => {
   })
 
   it('get err with out of range compression level', (done) => {
-    apiClients.a
+    ipfs
       .get('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {compress: true, 'compression-level': 10}, (err, res) => {
         expect(err).to.exist
         expect(err.toString()).to.equal('Error: Compression level must be between 1 and 9')
@@ -78,7 +108,7 @@ describe('.get', () => {
   })
 
   it('get with compression level', (done) => {
-    apiClients.a
+    ipfs
       .get('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {compress: true, 'compression-level': 1}, (err, res) => {
         expect(err).to.not.exist
         done()
@@ -93,7 +123,7 @@ describe('.get', () => {
     const bigFile = fs.readFileSync(tfbPath)
     const expectedMultihash = 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq'
 
-    apiClients.a.files.add(bigFile, (err, res) => {
+    ipfs.files.add(bigFile, (err, res) => {
       expect(err).to.not.exist
 
       expect(res).to.have.length(1)
@@ -108,7 +138,7 @@ describe('.get', () => {
       return done()
     }
 
-    apiClients.a.get('Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq', (err, files) => {
+    ipfs.get('Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq', (err, files) => {
       expect(err).to.not.exist
 
       files.on('data', (file) => {
@@ -124,7 +154,7 @@ describe('.get', () => {
 
   describe('promise', () => {
     it('get', (done) => {
-      apiClients.a.get('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+      ipfs.get('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
         .then((files) => {
           files.on('data', (file) => {
             let buf = ''

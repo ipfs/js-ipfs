@@ -1,15 +1,33 @@
 /* eslint-env mocha */
-/* globals apiClients */
 'use strict'
 
 const expect = require('chai').expect
 const isNode = require('detect-node')
-
+const FactoryClient = require('../factory/factory-client')
 describe('ls', function () {
-  it('should correctly retrieve links', function (done) {
-    if (!isNode) return done()
+  let ipfs
+  let fc
 
-    apiClients.a.ls('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG', (err, res) => {
+  before(function (done) {
+    this.timeout(20 * 1000) // slow CI
+    fc = new FactoryClient()
+    fc.spawnNode((err, node) => {
+      expect(err).to.not.exist
+      ipfs = node
+      done()
+    })
+  })
+
+  after((done) => {
+    fc.dismantle(done)
+  })
+
+  it('should correctly retrieve links', function (done) {
+    if (!isNode) {
+      return done()
+    }
+
+    ipfs.ls('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG', (err, res) => {
       expect(err).to.not.exist
 
       expect(res).to.have.a.property('Objects')
@@ -20,7 +38,7 @@ describe('ls', function () {
   })
 
   it('should correctly handle a nonexisting hash', function (done) {
-    apiClients.a.ls('surelynotavalidhashheh?', (err, res) => {
+    ipfs.ls('surelynotavalidhashheh?', (err, res) => {
       expect(err).to.exist
       expect(res).to.not.exist
       done()
@@ -30,7 +48,7 @@ describe('ls', function () {
   it('should correctly handle a nonexisting path', function (done) {
     if (!isNode) return done()
 
-    apiClients.a.ls('QmRNjDeKStKGTQXnJ2NFqeQ9oW/folder_that_isnt_there', (err, res) => {
+    ipfs.ls('QmRNjDeKStKGTQXnJ2NFqeQ9oW/folder_that_isnt_there', (err, res) => {
       expect(err).to.exist
       expect(res).to.not.exist
       done()
@@ -41,7 +59,7 @@ describe('ls', function () {
     it('should correctly retrieve links', () => {
       if (!isNode) return
 
-      return apiClients.a.ls('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG')
+      return ipfs.ls('QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG')
         .then((res) => {
           expect(res).to.have.a.property('Objects')
           expect(res.Objects[0]).to.have.a.property('Links')
@@ -50,7 +68,7 @@ describe('ls', function () {
     })
 
     it('should correctly handle a nonexisting hash', () => {
-      return apiClients.a.ls('surelynotavalidhashheh?')
+      return ipfs.ls('surelynotavalidhashheh?')
         .catch((err) => {
           expect(err).to.exist
         })
@@ -59,7 +77,7 @@ describe('ls', function () {
     it('should correctly handle a nonexisting path', () => {
       if (!isNode) return
 
-      return apiClients.a.ls('QmRNjDeKStKGTQXnJ3NFqeQ9oW/folder_that_isnt_there')
+      return ipfs.ls('QmRNjDeKStKGTQXnJ3NFqeQ9oW/folder_that_isnt_there')
         .catch((err) => {
           expect(err).to.exist
         })

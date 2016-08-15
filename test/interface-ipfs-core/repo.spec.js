@@ -1,12 +1,29 @@
 /* eslint-env mocha */
-/* globals apiClients */
 'use strict'
 
+const FactoryClient = require('../factory/factory-client')
 const expect = require('chai').expect
 
 describe('.repo', () => {
+  let ipfs
+  let fc
+
+  before(function (done) {
+    this.timeout(20 * 1000) // slow CI
+    fc = new FactoryClient()
+    fc.spawnNode((err, node) => {
+      expect(err).to.not.exist
+      ipfs = node
+      done()
+    })
+  })
+
+  after((done) => {
+    fc.dismantle(done)
+  })
+
   it('.repo.gc', (done) => {
-    apiClients.a.repo.gc((err, res) => {
+    ipfs.repo.gc((err, res) => {
       expect(err).to.not.exist
       expect(res).to.exist
       done()
@@ -14,7 +31,7 @@ describe('.repo', () => {
   })
 
   it('.repo.stat', (done) => {
-    apiClients.a.repo.stat((err, res) => {
+    ipfs.repo.stat((err, res) => {
       expect(err).to.not.exist
       expect(res).to.exist
       expect(res).to.have.a.property('NumObjects')
@@ -25,14 +42,14 @@ describe('.repo', () => {
 
   describe('promise', () => {
     it('.repo.gc', () => {
-      return apiClients.a.repo.gc()
+      return ipfs.repo.gc()
         .then((res) => {
           expect(res).to.exist
         })
     })
 
     it('.repo.stat', () => {
-      return apiClients.a.repo.stat()
+      return ipfs.repo.stat()
         .then((res) => {
           expect(res).to.exist
           expect(res).to.have.a.property('NumObjects')

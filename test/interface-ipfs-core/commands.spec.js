@@ -1,12 +1,29 @@
 /* eslint-env mocha */
-/* globals apiClients */
 'use strict'
 
 const expect = require('chai').expect
+const FactoryClient = require('../factory/factory-client')
 
 describe('.commands', () => {
+  let ipfs
+  let fc
+
+  before(function (done) {
+    this.timeout(20 * 1000) // slow CI
+    fc = new FactoryClient()
+    fc.spawnNode((err, node) => {
+      expect(err).to.not.exist
+      ipfs = node
+      done()
+    })
+  })
+
+  after((done) => {
+    fc.dismantle(done)
+  })
+
   it('lists commands', (done) => {
-    apiClients.a.commands((err, res) => {
+    ipfs.commands((err, res) => {
       expect(err).to.not.exist
       expect(res).to.exist
       done()
@@ -15,7 +32,7 @@ describe('.commands', () => {
 
   describe('promise', () => {
     it('lists commands', () => {
-      return apiClients.a.commands()
+      return ipfs.commands()
         .then((res) => {
           expect(res).to.exist
         })
