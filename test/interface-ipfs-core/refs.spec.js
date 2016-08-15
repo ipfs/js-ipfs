@@ -1,11 +1,28 @@
 /* eslint-env mocha */
-/* globals apiClients */
 'use strict'
 
 const expect = require('chai').expect
 const isNode = require('detect-node')
+const FactoryClient = require('../factory/factory-client')
 
 describe('.refs', () => {
+  let ipfs
+  let fc
+
+  before(function (done) {
+    this.timeout(20 * 1000) // slow CI
+    fc = new FactoryClient()
+    fc.spawnNode((err, node) => {
+      expect(err).to.not.exist
+      ipfs = node
+      done()
+    })
+  })
+
+  after((done) => {
+    fc.dismantle(done)
+  })
+
   const folder = 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG'
   const result = [{
     Ref: 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG QmZTR5bcpQD7cFgTorqxZDYaew1Wqgfbd2ud9QqGPAkK2V about',
@@ -32,7 +49,7 @@ describe('.refs', () => {
       return done()
     }
 
-    apiClients.a.refs(folder, {format: '<src> <dst> <linkname>'}, (err, objs) => {
+    ipfs.refs(folder, {format: '<src> <dst> <linkname>'}, (err, objs) => {
       expect(err).to.not.exist
       expect(objs).to.eql(result)
 
@@ -42,9 +59,11 @@ describe('.refs', () => {
 
   describe('promise', () => {
     it('refs', () => {
-      if (!isNode) return
+      if (!isNode) {
+        return
+      }
 
-      return apiClients.a.refs(folder, {format: '<src> <dst> <linkname>'})
+      return ipfs.refs(folder, {format: '<src> <dst> <linkname>'})
         .then((objs) => {
           expect(objs).to.eql(result)
         })

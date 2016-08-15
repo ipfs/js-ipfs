@@ -1,11 +1,36 @@
 'use strict'
 
-const command = require('../cmd-helpers').command
-
 module.exports = (send) => {
   return {
-    apply: command(send, 'update'),
-    check: command(send, 'update/check'),
-    log: command(send, 'update/log')
+    apply (opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'update',
+        qs: opts
+      }, callback)
+    },
+    check (opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'update/check',
+        qs: opts
+      }, callback)
+    },
+    log (opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'update/log',
+        qs: opts
+      }, callback)
+    }
   }
 }

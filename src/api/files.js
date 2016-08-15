@@ -1,28 +1,98 @@
 'use strict'
 
-const argCommand = require('../cmd-helpers').argCommand
-
 module.exports = (send) => {
   return {
-    cp: argCommand(send, 'files/cp'),
-    ls: argCommand(send, 'files/ls'),
-    mkdir: argCommand(send, 'files/mkdir'),
-    stat: argCommand(send, 'files/stat'),
-    rm: function (path, opts, cb) {
-      if (typeof opts === 'function' && cb === undefined) {
-        cb = opts
+    cp (args, opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
         opts = {}
       }
-      return send('files/rm', path, opts, null, cb)
+      return send({
+        path: 'files/cp',
+        args: args,
+        qs: opts
+      }, callback)
     },
-    read: argCommand(send, 'files/read'),
-    write: function (pathDst, files, opts, cb) {
-      if (typeof opts === 'function' && cb === undefined) {
-        cb = opts
+    ls (args, opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
         opts = {}
       }
-      return send('files/write', pathDst, opts, files, cb)
+      return send({
+        path: 'files/ls',
+        args: args,
+        qs: opts
+      }, callback)
     },
-    mv: argCommand(send, 'files/mv')
+    mkdir (args, opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'files/mkdir',
+        args: args,
+        qs: opts
+      }, callback)
+    },
+    stat (args, opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'files/stat',
+        args: args,
+        qs: opts
+      }, callback)
+    },
+    rm (path, opts, callback) {
+      if (typeof opts === 'function' &&
+          callback === undefined) {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'files/rm',
+        args: path,
+        qs: opts
+      }, callback)
+    },
+    read (args, opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'files/read',
+        args: args,
+        qs: opts
+      }, callback)
+    },
+    write (pathDst, files, opts, callback) {
+      if (typeof opts === 'function' && callback === undefined) {
+        callback = opts
+        opts = {}
+      }
+
+      return send({
+        path: 'files/write',
+        args: pathDst,
+        qs: opts,
+        files: files
+      }, callback)
+    },
+    mv (args, opts, callback) {
+      if (typeof opts === 'function' &&
+          callback === undefined) {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'files/mv',
+        args: args,
+        qs: opts
+      }, callback)
+    }
   }
 }

@@ -4,15 +4,21 @@ const ndjson = require('ndjson')
 
 module.exports = (send) => {
   return {
-    tail (cb) {
-      if (typeof cb !== 'function' && typeof Promise !== 'undefined') {
-        return send('log/tail', null, {}, null, false)
-          .then((res) => res.pipe(ndjson.parse()))
+    tail (callback) {
+      if (typeof callback !== 'function' &&
+          typeof Promise !== 'undefined') {
+        return send({
+          path: 'log/tail'
+        }).then((res) => res.pipe(ndjson.parse()))
       }
 
-      return send('log/tail', null, {}, null, false, (err, res) => {
-        if (err) return cb(err)
-        cb(null, res.pipe(ndjson.parse()))
+      return send({
+        path: 'log/tail'
+      }, (err, response) => {
+        if (err) {
+          return callback(err)
+        }
+        callback(null, response.pipe(ndjson.parse()))
       })
     }
   }

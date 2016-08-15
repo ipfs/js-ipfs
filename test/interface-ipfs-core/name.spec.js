@@ -3,9 +3,26 @@
 'use strict'
 
 const expect = require('chai').expect
+const fs = require('fs')
+const path = require('path')
+
+const testfile = fs.readFileSync(path.join(__dirname, '/../data/testfile.txt'))
 
 describe('.name', () => {
   let name
+
+  it('add file for testing', (done) => {
+    const expectedMultihash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
+
+    apiClients.a.files.add(testfile, (err, res) => {
+      expect(err).to.not.exist
+
+      expect(res).to.have.length(1)
+      expect(res[0].hash).to.equal(expectedMultihash)
+      expect(res[0].path).to.equal(expectedMultihash)
+      done()
+    })
+  })
 
   it('.name.publish', (done) => {
     apiClients.a.name.publish('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', (err, res) => {

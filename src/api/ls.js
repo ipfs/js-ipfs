@@ -1,7 +1,15 @@
 'use strict'
 
-const argCommand = require('../cmd-helpers').argCommand
-
 module.exports = (send) => {
-  return argCommand(send, 'ls')
+  return (args, opts, callback) => {
+    if (typeof (opts) === 'function') {
+      callback = opts
+      opts = {}
+    }
+    return send({
+      path: 'ls',
+      args: args,
+      qs: opts
+    }, callback)
+  }
 }

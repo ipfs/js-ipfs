@@ -11,14 +11,21 @@ module.exports = (send) => {
       }
 
       if (!key) {
-        return send('config/show', null, null, null, true, callback)
+        return send({
+          path: 'config/show',
+          buffer: true
+        }, callback)
       }
 
-      return send('config', key, null, null, (err, result) => {
+      return send({
+        path: 'config',
+        args: key,
+        buffer: true
+      }, (err, response) => {
         if (err) {
           return callback(err)
         }
-        callback(null, result.Value)
+        callback(null, response.Value)
       })
     },
     set (key, value, opts, callback) {
@@ -46,19 +53,24 @@ module.exports = (send) => {
         opts = { bool: true }
       }
 
-      return send('config', [key, value], opts, null, callback)
+      return send({
+        path: 'config',
+        args: [key, value],
+        qs: opts,
+        files: undefined,
+        buffer: true
+      }, callback)
     },
     replace (config, callback) {
-      // Its a path
-      if (typeof config === 'string') {
-        return send('config/replace', null, null, config, callback)
-      }
-
-      // Its a config obj
       if (typeof config === 'object') {
         config = streamifier.createReadStream(new Buffer(JSON.stringify(config)))
-        return send('config/replace', null, null, config, callback)
       }
+
+      return send({
+        path: 'config/replace',
+        files: config,
+        buffer: true
+      }, callback)
     }
   }
 }

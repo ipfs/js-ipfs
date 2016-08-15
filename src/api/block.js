@@ -1,20 +1,43 @@
 'use strict'
 
-const argCommand = require('../cmd-helpers').argCommand
-
 module.exports = (send) => {
   return {
-    get: argCommand(send, 'block/get'),
-    stat: argCommand(send, 'block/stat'),
-    put (file, cb) {
+    get (args, opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'block/get',
+        args: args,
+        qs: opts
+      }, callback)
+    },
+    stat (args, opts, callback) {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'block/stat',
+        args: args,
+        qs: opts
+      }, callback)
+    },
+    put (file, callback) {
       if (Array.isArray(file)) {
-        let err = new Error('block.put() only accepts 1 file')
-        if (typeof cb !== 'function' && typeof Promise !== 'undefined') {
+        const err = new Error('block.put() only accepts 1 file')
+        if (typeof callback !== 'function' &&
+            typeof Promise !== 'undefined') {
           return new Promise((resolve, reject) => reject(err))
         }
-        return cb(err)
+        return callback(err)
       }
-      return send('block/put', null, null, file, cb)
+
+      return send({
+        path: 'block/put',
+        files: file
+      }, callback)
     }
   }
 }

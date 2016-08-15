@@ -1,7 +1,9 @@
 'use strict'
 
-const command = require('../cmd-helpers').command
-
 module.exports = (send) => {
-  return command(send, 'commands')
+  return (callback) => {
+    return send({
+      path: 'commands'
+    }, callback)
+  }
 }
