@@ -5,6 +5,7 @@ const DAGLink = require('ipfs-merkle-dag').DAGLink
 const promisify = require('promisify-es6')
 const bs58 = require('bs58')
 const bl = require('bl')
+const cleanMultihash = require('../clean-multihash')
 
 module.exports = (send) => {
   const api = {
@@ -315,34 +316,4 @@ module.exports = (send) => {
   }
 
   return api
-}
-
-// TODO verify if this is duplicated of clean-multihash.js
-function cleanMultihash (multihash, options) {
-  if (Buffer.isBuffer(multihash)) {
-    if (options.enc) {
-      switch (options.enc) {
-        case 'base58': {
-          multihash = multihash.toString()
-          break
-        }
-        default: throw new Error('invalid multihash')
-      }
-    } else {
-      multihash = bs58.encode(multihash).toString()
-    }
-  } else if (typeof multihash === 'string') {
-    if (options.enc) {
-      // For the future, when we support more than one enc
-      // switch (options.enc) {
-      //   case 'base58':  // It is good
-      // }
-    } else {
-      throw new Error('not valid multihash')
-    }
-  } else if (!multihash) {
-    throw new Error('missing valid multihash')
-  }
-
-  return multihash
 }
