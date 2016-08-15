@@ -160,7 +160,7 @@ exports.data = {
         }).code(500)
       }
 
-      return reply(data.toString())
+      return reply(data)
     })
   }
 }
