@@ -1,14 +1,28 @@
 'use strict'
 
+const promisify = require('promisify-es6')
+
 module.exports = (send) => {
-  return function id (opts, callback) {
+  return promisify((opts, callback) => {
     if (typeof opts === 'function') {
       callback = opts
       opts = undefined
     }
-    return send({
+    send({
       path: 'id',
       args: opts
-    }, callback)
-  }
+    }, (err, result) => {
+      if (err) {
+        return callback(err)
+      }
+      const identity = {
+        id: result.ID,
+        publicKey: result.PublicKey,
+        addresses: result.Addresses,
+        agentVersion: result.AgentVersion,
+        protocolVersion: result.ProtocolVersion
+      }
+      callback(null, identity)
+    })
+  })
 }

@@ -14,8 +14,8 @@ describe('ipfsAPI constructor tests', () => {
       client.id((err, id) => {
         expect(err).to.not.exist
 
-        expect(id).to.have.a.property('ID')
-        expect(id).to.have.a.property('PublicKey')
+        expect(id).to.have.a.property('id')
+        expect(id).to.have.a.property('publicKey')
         done()
       })
     }
