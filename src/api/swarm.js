@@ -1,17 +1,27 @@
 'use strict'
 
+const promisify = require('promisify-es6')
+const multiaddr = require('multiaddr')
+
 module.exports = (send) => {
   return {
-    peers (opts, callback) {
+    peers: promisify((opts, callback) => {
       if (typeof (opts) === 'function') {
         callback = opts
         opts = {}
       }
-      return send({
+      send({
         path: 'swarm/peers',
         qs: opts
-      }, callback)
-    },
+      }, (err, result) => {
+        if (err) {
+          return callback(err)
+        }
+        callback(null, result.Strings.map((addr) => {
+          return multiaddr(addr)
+        }))
+      })
+    }),
     connect (args, opts, callback) {
       if (typeof (opts) === 'function') {
         callback = opts
@@ -34,17 +44,26 @@ module.exports = (send) => {
         qs: opts
       }, callback)
     },
-    addrs (opts, callback) {
+    addrs: promisify((opts, callback) => {
       if (typeof (opts) === 'function') {
         callback = opts
         opts = {}
       }
-      return send({
+      send({
         path: 'swarm/addrs',
         qs: opts
-      }, callback)
-    },
-    localAddrs (opts, callback) {
+      }, (err, result) => {
+        if (err) {
+          return callback(err)
+        }
+        callback(null, Object.keys(result.Addrs).map((id) => {
+          return result.Addrs[id].map((maStr) => {
+            return multiaddr(maStr).encapsulate('/ipfs/' + id)
+          })
+        })[0])
+      })
+    }),
+    localAddrs: promisify((opts, callback) => {
       if (typeof (opts) === 'function') {
         callback = opts
         opts = {}
@@ -52,7 +71,14 @@ module.exports = (send) => {
       return send({
         path: 'swarm/addrs/local',
         qs: opts
-      }, callback)
-    }
+      }, (err, result) => {
+        if (err) {
+          return callback(err)
+        }
+        callback(null, result.Strings.map((addr) => {
+          return multiaddr(addr)
+        }))
+      })
+    })
   }
 }
