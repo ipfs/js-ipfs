@@ -84,13 +84,27 @@ The CLI is available by using the command `jsipfs` in your terminal. This is ali
 
 The code published to npm that gets loaded on require is in fact a ES5 transpiled version with the right shims added. This means that you can require it and use with your favourite bundler without having to adjust the asset management process.
 
+```js
+var ipfs = require('ipfs');
+```
+
 ### Use in a browser using a script tag
 
-Simply include ipfs in your bundled javascript file.
+Loading this module in a browser (using a `<script>` tag) makes the `Ipfs` object available in the global namespace.
 
-```html
-<script type="text/javascript" src="assets/bundled.js"></script>
-```
+The last published version of the package becomes available on [npmcdn](https://npmcdn.com/) and thus you may use it as the source:
+
+* loading the minified version
+
+   ```html
+   <script src="https://npmcdn.com/ipfs/dist/index.min.js"></script>
+   ```
+
+* loading the human-readable (not minified) version
+
+   ```html
+   <script src="https://npmcdn.com/ipfs/dist/index.js"></script>
+   ```
 
 ## Usage
 
