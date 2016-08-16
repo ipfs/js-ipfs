@@ -1,4 +1,4 @@
-generic API
+Generic API
 ===========
 
 #### `id`
@@ -32,7 +32,7 @@ ipfs.id(function (err, identity) {
 
 ##### `JavaScript` - ipfs.version([callback])
 
-`callback` must follow `function (err, version) {}` signature, where `err` is an error if the operation was not successful. `version` is the version string of the implementation.
+`callback` must follow `function (err, version) {}` signature, where `err` is an error if the operation was not successful. `version` is an object with the version of the implementation, the commit and the Repo.
 
 If no `callback` is passed, a promise is returned.
 
