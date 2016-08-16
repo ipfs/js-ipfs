@@ -1,9 +1,9 @@
-swarm API
+Swarm API
 =========
 
 #### `addrs`
 
-> List of known addresses (from the peer).
+> List of known addresses of each peer connected.
 
 ##### `Go` **WIP**
 
@@ -61,9 +61,31 @@ Example:
 ipfs.swarm.disconnect(addr, function (err) {})
 ```
 
+#### `peers`
+
+> List out the peers that we have connections with.
+
+##### `Go` **WIP**
+
+##### `JavaScript` - ipfs.swarm.peers([callback])
+
+`callback` must follow `function (err, peerInfos) {}` signature, where `err` is an error if the operation was not successful. `peerInfos` will be an array of [PeerInfo]().
+
+If no `callback` is passed, a promise is returned.
+
+Example:
+
+```JavaScript
+ipfs.swarm.peers(function (err, peerInfos) {})
+```
+
+------------------------------
+
+> NOT IMPLEMENTED YET
+
 #### `filters`
 
-> Display current multiaddr filters
+> Display current multiaddr filters. Filters are a way to set up rules for the network connections established.
 
 ##### `Go` **WIP**
 
@@ -119,21 +141,4 @@ Example:
 ipfs.swarm.filters.rm(filter, function (err) {})
 ```
 
-#### `peers`
-
-> List out the peers that we have connections with.
-
-##### `Go` **WIP**
-
-##### `JavaScript` - ipfs.swarm.peers([callback])
-
-`callback` must follow `function (err, peerInfos) {}` signature, where `err` is an error if the operation was not successful. `peerInfos` will be an array of [PeerInfo]().
-
-If no `callback` is passed, a promise is returned.
-
-Example:
-
-```JavaScript
-ipfs.swarm.peers(function (err, peerInfos) {})
-```
 

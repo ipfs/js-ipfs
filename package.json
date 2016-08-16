@@ -34,7 +34,8 @@
     "concat-stream": "^1.5.1",
     "detect-node": "^2.0.3",
     "ipfs-merkle-dag": "^0.6.2",
-    "readable-stream": "1.1.13"
+    "readable-stream": "1.1.13",
+    "run-series": "^1.1.4"
   },
   "devDependencies": {
     "aegir": "^6.0.0"
