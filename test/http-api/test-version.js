@@ -19,9 +19,9 @@ module.exports = (httpAPI) => {
           method: 'GET',
           url: '/api/v0/version'
         }, (res) => {
-          expect(res.result.Version).to.equal(pkgversion)
-          expect(res.result).to.have.a.property('Commit')
-          expect(res.result).to.have.a.property('Repo')
+          expect(res.result.version).to.equal(pkgversion)
+          expect(res.result).to.have.a.property('commit')
+          expect(res.result).to.have.a.property('repo')
           done()
         })
       })
@@ -29,7 +29,7 @@ module.exports = (httpAPI) => {
 
     describe('gateway', () => {})
 
-    describe('using js-ipfs-api', () => {
+    describe.skip('using js-ipfs-api', () => {
       var ctl
 
       it('start IPFS API ctl', (done) => {
@@ -40,9 +40,9 @@ module.exports = (httpAPI) => {
       it('get the version', (done) => {
         ctl.version((err, result) => {
           expect(err).to.not.exist
-          expect(result).to.have.a.property('Version')
-          expect(result).to.have.a.property('Commit')
-          expect(result).to.have.a.property('Repo')
+          expect(result).to.have.a.property('version')
+          expect(result).to.have.a.property('commit')
+          expect(result).to.have.a.property('repo')
           done()
         })
       })

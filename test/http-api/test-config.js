@@ -214,7 +214,8 @@ module.exports = (httpAPI) => {
       })
     })
 
-    describe('using js-ipfs-api', () => {
+    // js-ipfs-api
+    describe.skip('using js-ipfs-api', () => {
       var ctl
 
       before('start IPFS API ctl', (done) => {
@@ -223,14 +224,6 @@ module.exports = (httpAPI) => {
       })
 
       describe('ipfs.config', () => {
-        it('returns error for request without arguments', (done) => {
-          ctl.config.get(null, (err, res) => {
-            expect(err).to.exist
-
-            done()
-          })
-        })
-
         it('returns error for request with invalid argument', (done) => {
           ctl.config.get('kittens', (err, res) => {
             expect(err).to.exist
@@ -242,8 +235,8 @@ module.exports = (httpAPI) => {
         it('returns value for request with argument', (done) => {
           ctl.config.get('API.HTTPHeaders', (err, res) => {
             expect(err).not.to.exist
-            expect(res.Key).to.equal('API.HTTPHeaders')
-            expect(res.Value).to.equal(null)
+            expect(res.key).to.equal('API.HTTPHeaders')
+            expect(res.value).to.equal(null)
 
             done()
           })
@@ -299,14 +292,6 @@ module.exports = (httpAPI) => {
 
             done()
           })
-        })
-      })
-
-      it('ipfs.config.show', (done) => {
-        ctl.config.show((err, res) => {
-          expect(err).not.to.exist
-          expect(res).to.deep.equal(updatedConfig())
-          done()
         })
       })
 

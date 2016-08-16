@@ -19,7 +19,7 @@ function makeBlock () {
   return new Block(`IPFS is awesome ${Math.random()}`)
 }
 
-describe('bitswap', () => {
+describe.only('bitswap', () => {
   let ipfs
   let configBak
 
@@ -52,7 +52,7 @@ describe('bitswap', () => {
     function connectNodesSingle (node1, node2, done) {
       node1.id((err, res) => {
         expect(err).to.not.exist
-        const addr = res.Addresses
+        const addr = res.addresses
           .map((addr) => multiaddr(addr))
           .filter((addr) => {
             return _.includes(addr.protoNames(), 'ws')
@@ -60,13 +60,13 @@ describe('bitswap', () => {
 
         let target
         if (addr) {
-          target = addr.encapsulate(multiaddr(`/ipfs/${res.ID}`)).toString()
+          target = addr.encapsulate(multiaddr(`/ipfs/${res.id}`)).toString()
           target = target.replace('0.0.0.0', '127.0.0.1')
         } else {
           // cause browser nodes don't have a websockets addrs
           // TODO, what we really need is a way to dial to a peerId only
           // and another to dial to peerInfo
-          target = multiaddr(`/ip4/127.0.0.1/tcp/0/ws/ipfs/${res.ID}`).toString()
+          target = multiaddr(`/ip4/127.0.0.1/tcp/0/ws/ipfs/${res.id}`).toString()
         }
 
         const swarm = node2.libp2p ? node2.libp2p.swarm : node2.swarm
