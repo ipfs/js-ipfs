@@ -7,26 +7,25 @@ block API
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.block.get(multihash, [callback])
+##### `JavaScript` - ipfs.block.get(multihash, [options, callback])
 
-`multihash` is a [multihash][] which can be passed as
+`multihash` is a [multihash][multihash] which can be passed as:
 
 - Buffer, the raw Buffer of the multihash 
 - String, the base58 encoded version of the multihash
 
-`callback` must follow `function (err, block) {}` signature, where `err` is an error if the operation was not successful and `block` is a [Block][].
-
+`callback` must follow `function (err, block) {}` signature, where `err` is an error if the operation was not successful and `block` is a [Block][block] type object, containing both the data and the hash of the block.
 
 ```js
-ipfs.block.get(multihash, function (err, data) {
-  // data is the raw data contained in a block
+ipfs.block.get(multihash, function (err, block) {
+  if (err) {
+    throw err
+  }
+  console.log(block.key, block.data)
 })
 ```
 
 If no `callback` is passed, a promise is returned.
-
-
-
 
 #### `put`
 
@@ -34,22 +33,16 @@ If no `callback` is passed, a promise is returned.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.block.put(data, [callback])
+##### `JavaScript` - ipfs.block.put(block, [callback])
 
-Where `data` can be a
+Where `block` can be:
 
-- Buffer, requiring that the encoding is specified on the options. if no 
-  encoding is specified, Buffer is treated as the Data field
-- [Block][] instance
+- `Buffer` - the raw bytes of the Block
+- [`Block`][block] instance
 
-`callback` has the signature `function (err, block) {}`, where `err` is an error
-if the operation was not successful. and `block` is a [Block][].
+`callback` has the signature `function (err) {}`, where `err` is an error if the operation was not successful. 
 
 If no `callback` is passed, a promise is returned.
-
-
-
-
 
 #### `stat`
 
@@ -59,14 +52,12 @@ If no `callback` is passed, a promise is returned.
 
 ##### `JavaScript` - ipfs.block.stat(multihash, [callback])
 
-`multihash` is a [multihash][] which can be passed as:
+`multihash` is a [multihash][multihash] which can be passed as:
 
-- Buffer, the raw Buffer of the multihash (or of and encoded version)
-- String, the toString version of the multihash (or of an encoded version)
+- `Buffer`, the raw Buffer of the multihash (or of and encoded version)
+- `String`, the toString version of the multihash (or of an encoded version)
 
-`callback` must follow the signature `function (err, stats) {}`, where `err` is
-an error if the operation was not successful and `stats` is an object with
-the format
+`callback` must follow the signature `function (err, stats) {}`, where `err` is an error if the operation was not successful and `stats` is an object with the format:`
 
 ```JavaScript
 {
@@ -76,3 +67,6 @@ the format
 ```
 
 If no `callback` is passed, a promise is returned.
+
+[block](https://github.com/ipfs/js-ipfs-block)
+[multihash](https://github.com/multiformats/multihash)
