@@ -40,7 +40,7 @@ Where `block` can be:
 - `Buffer` - the raw bytes of the Block
 - [`Block`][block] instance
 
-`callback` has the signature `function (err) {}`, where `err` is an error if the operation was not successful. 
+`callback` has the signature `function (err, block) {}`, where `err` is an error if the operation was not successful and `block` is a [Block][block] type object, containing both the data and the hash of the block.
 
 If no `callback` is passed, a promise is returned.
 

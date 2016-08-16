@@ -1,87 +1,84 @@
 /* eslint-env mocha */
-/* globals apiClients */
+/* eslint max-nested-callbacks: ["error", 8] */
+
 'use strict'
 
 const expect = require('chai').expect
 
 module.exports = (common) => {
-  describe.only('.block', () => {
-    const blorbKey = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
-    const blorb = Buffer('blorb')
+  describe('.block', () => {
+    let ipfs
 
-    it('returns an error when putting an array of files', () => {
-      return apiClients.a.block.put([blorb, blorb], (err) => {
-        console.log(err)
-        expect(err).to.be.an.instanceof(Error)
-      })
-    })
+    before(function (done) {
+      // CI takes longer to instantiate the daemon,
+      // so we need to increase the timeout for the
+      // before step
+      this.timeout(20 * 1000)
 
-    it('block.put', (done) => {
-      apiClients.a.block.put(blorb, (err, res) => {
+      common.setup((err, factory) => {
         expect(err).to.not.exist
-        expect(res).to.have.a.property('Key', 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
-        done()
+        factory.spawnNode((err, node) => {
+          expect(err).to.not.exist
+          ipfs = node
+          done()
+        })
       })
     })
 
-    it('block.get', (done) => {
-      apiClients.a.block.get(blorbKey, (err, res) => {
-        expect(err).to.not.exist
-
-        let buf = ''
-        res
-          .on('data', function (data) { buf += data })
-          .on('end', function () {
-            expect(buf).to.be.equal('blorb')
-            done()
-          })
-      })
+    after((done) => {
+      common.teardown(done)
     })
 
-    it('block.stat', (done) => {
-      apiClients.a.block.stat(blorbKey, (err, res) => {
-        expect(err).to.not.exist
-        expect(res).to.have.property('Key')
-        expect(res).to.have.property('Size')
-        done()
-      })
-    })
+    describe('callback API', () => {
+      it('.put', (done) => {
+        const expectedHash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
+        const blob = Buffer('blorb')
 
-    describe('promise', () => {
-      it('returns an error when putting an array of files', () => {
-        return apiClients.a.block.put([blorb, blorb])
-          .catch((err) => {
-            expect(err).to.be.an.instanceof(Error)
-          })
+        ipfs.block.put(blob, (err, res) => {
+          expect(err).to.not.exist
+          expect(res).to.have.a.property('Key', expectedHash)
+          done()
+        })
       })
 
-      it('block.put', () => {
-        return apiClients.a.block.put(blorb)
-          .then((res) => {
-            expect(res).to.have.a.property('Key', 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
-          })
+      it('.put error with array of blocks', () => {
+        const blob = Buffer('blorb')
+
+        ipfs.block.put([blob, blob], (err) => {
+          expect(err).to.be.an.instanceof(Error)
+        })
       })
 
       it('block.get', (done) => {
-        return apiClients.a.block.get(blorbKey)
-          .then((res) => {
-            let buf = ''
-            res
-              .on('data', function (data) { buf += data })
-              .on('end', function () {
-                expect(buf).to.be.equal('blorb')
-                done()
-              })
-          })
+        const hash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
+
+        ipfs.block.get(hash, (err, res) => {
+          expect(err).to.not.exist
+
+          // TODO review this
+          let buf = ''
+          res
+            .on('data', function (data) { buf += data })
+            .on('end', function () {
+              expect(buf).to.be.equal('blorb')
+              done()
+            })
+        })
       })
 
-      it('block.stat', () => {
-        return apiClients.a.block.stat(blorbKey)
-          .then((res) => {
-            expect(res).to.have.property('Key')
-            expect(res).to.have.property('Size')
-          })
+      it('block.stat', (done) => {
+        const hash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
+
+        ipfs.block.stat(hash, (err, res) => {
+          expect(err).to.not.exist
+          expect(res).to.have.property('Key')
+          expect(res).to.have.property('Size')
+          done()
+        })
       })
+    })
+
+    describe('promise API', () => {
     })
   })
 }
