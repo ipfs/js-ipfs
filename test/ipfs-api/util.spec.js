@@ -12,6 +12,7 @@ describe('.util', () => {
   if (!isNode) {
     return
   }
+
   let ipfs
   let fc
 
@@ -30,7 +31,8 @@ describe('.util', () => {
   })
 
   it('.streamAdd', (done) => {
-    const rs = fs.createReadStream(path.join(__dirname, '/../data/testfile.txt'))
+    const tfpath = path.join(__dirname, '/../data/testfile.txt')
+    const rs = fs.createReadStream(tfpath)
     rs.path = '' // clean the path for testing purposes
 
     ipfs.util.streamAdd(rs, (err, result) => {

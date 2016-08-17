@@ -32,7 +32,6 @@ module.exports = (send) => {
       if (err) {
         return callback(err)
       }
-      console.log('got page back')
 
       sendWithTransform({
         path: 'add',

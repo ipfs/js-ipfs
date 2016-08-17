@@ -17,4 +17,4 @@ const common = {
   }
 }
 
-// test.block(common)
+test.block(common)
