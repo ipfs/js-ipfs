@@ -11,7 +11,7 @@ module.exports = (send) => {
       return callback(err)
     }
 
-    return send({
+    send({
       path: 'cat',
       args: hash
     }, callback)

@@ -7,7 +7,7 @@ const promisify = require('promisify-es6')
 module.exports = (send) => {
   const add = addCmd(send)
 
-  return promisify(function createAddStream (callback) {
+  return promisify((callback) => {
     const tuples = []
 
     const ds = new Duplex({ objectMode: true })

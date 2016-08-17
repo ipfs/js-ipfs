@@ -130,27 +130,16 @@ function requestAPI (config, options, callback) {
 exports = module.exports = function getRequestAPI (config) {
   /*
    * options: {
-   *   path:   // API path (like /add or /config)
-   *   args:   // Arguments to the command
-   *   qs:     // Opts as query string opts to the command --something
-   *   files:  // files to be sent
-   *   buffer: // buffer the request before sending it
+   *   path:   // API path (like /add or /config) - type: string
+   *   args:   // Arguments to the command - type: object
+   *   qs:     // Opts as query string opts to the command --something - type: object
+   *   files:  // files to be sent - type: string, buffer or array of strings or buffers
+   *   buffer: // buffer the request before sending it - type: bool
    * }
    */
   const send = function (options, callback) {
     if (typeof options !== 'object') {
       return callback(new Error('no options were passed'))
-    }
-
-    if (typeof callback !== 'function' && typeof Promise !== 'undefined') {
-      return new Promise(function (resolve, reject) {
-        requestAPI(config, options, function (err, res) {
-          if (err) {
-            return reject(err)
-          }
-          resolve(res)
-        })
-      })
     }
 
     return requestAPI(config, options, callback)
@@ -165,23 +154,7 @@ exports = module.exports = function getRequestAPI (config) {
         return callback(new Error('no options were passed'))
       }
 
-      const p = send(options, wrap(callback))
-
-      if (p instanceof Promise) {
-        return p.then((res) => {
-          return new Promise(function (resolve, reject) {
-            transform(null, res, send, function (err, res) {
-              if (err) {
-                reject(err)
-              } else {
-                resolve(res)
-              }
-            })
-          })
-        })
-      } else {
-        return p
-      }
+      send(options, wrap(callback))
 
       function wrap (func) {
         if (func) {

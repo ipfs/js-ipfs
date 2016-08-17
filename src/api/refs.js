@@ -1,7 +1,9 @@
 'use strict'
 
+const promisify = require('promisify-es6')
+
 module.exports = (send) => {
-  const refs = (args, opts, callback) => {
+  const refs = promisify((args, opts, callback) => {
     if (typeof (opts) === 'function') {
       callback = opts
       opts = {}
@@ -11,8 +13,8 @@ module.exports = (send) => {
       args: args,
       qs: opts
     }, callback)
-  }
-  refs.local = (opts, callback) => {
+  })
+  refs.local = promisify((opts, callback) => {
     if (typeof (opts) === 'function') {
       callback = opts
       opts = {}
@@ -21,7 +23,7 @@ module.exports = (send) => {
       path: 'refs',
       qs: opts
     }, callback)
-  }
+  })
 
   return refs
 }

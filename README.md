@@ -138,7 +138,6 @@ This is very similar to `ipfs.files.add({path:'', content: stream})`. It is like
 
 ```JavaScript
 ```
->>>>>> refactor(module+tests): Enable running the tests
 
 ### Callbacks and promises
 

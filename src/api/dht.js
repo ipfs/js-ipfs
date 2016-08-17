@@ -1,23 +1,43 @@
 'use strict'
 
+const promisify = require('promisify-es6')
+
 module.exports = (send) => {
   return {
-    findprovs (args, opts, callback) {
-      if (typeof (opts) === 'function') {
+    findprovs: promisify((args, opts, callback) => {
+      if (typeof opts === 'function' &&
+          !callback) {
         callback = opts
         opts = {}
       }
-      return send({
+
+      // opts is the real callback --
+      // 'callback' is being injected by promisify
+      if (typeof opts === 'function' &&
+          typeof callback === 'function') {
+        callback = opts
+        opts = {}
+      }
+
+      send({
         path: 'dht/findprovs',
         args: args,
         qs: opts
       }, callback)
-    },
-    get (key, opts, callback) {
-      if (typeof (opts) === 'function' &&
+    }),
+    get: promisify((key, opts, callback) => {
+      if (typeof opts === 'function' &&
           !callback) {
         callback = opts
-        opts = null
+        opts = {}
+      }
+
+      // opts is the real callback --
+      // 'callback' is being injected by promisify
+      if (typeof opts === 'function' &&
+          typeof callback === 'function') {
+        callback = opts
+        opts = {}
       }
 
       const handleResult = (done, err, res) => {
@@ -44,36 +64,32 @@ module.exports = (send) => {
         }
       }
 
-      if (typeof callback !== 'function' && typeof Promise !== 'undefined') {
-        const done = (err, res) => {
-          if (err) throw err
-          return res
-        }
-
-        return send({
-          path: 'dht/get',
-          args: key,
-          qs: opts
-        }).then((res) => handleResult(done, null, res),
-                (err) => handleResult(done, err))
-      }
-
-      return send({
+      send({
         path: 'dht/get',
         args: key,
         qs: opts
       }, handleResult.bind(null, callback))
-    },
-    put (key, value, opts, callback) {
-      if (typeof (opts) === 'function' && !callback) {
+    }),
+    put: promisify((key, value, opts, callback) => {
+      if (typeof opts === 'function' &&
+          !callback) {
         callback = opts
-        opts = null
+        opts = {}
       }
-      return send({
+
+      // opts is the real callback --
+      // 'callback' is being injected by promisify
+      if (typeof opts === 'function' &&
+          typeof callback === 'function') {
+        callback = opts
+        opts = {}
+      }
+
+      send({
         path: 'dht/put',
         args: [key, value],
         qs: opts
       }, callback)
-    }
+    })
   }
 }

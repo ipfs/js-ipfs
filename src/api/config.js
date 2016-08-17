@@ -1,23 +1,25 @@
 'use strict'
 
 const streamifier = require('streamifier')
+const promisify = require('promisify-es6')
 
 module.exports = (send) => {
   return {
-    get (key, callback) {
+    get: promisify((key, callback) => {
       if (typeof key === 'function') {
         callback = key
         key = undefined
       }
 
       if (!key) {
-        return send({
+        send({
           path: 'config/show',
           buffer: true
         }, callback)
+        return
       }
 
-      return send({
+      send({
         path: 'config',
         args: key,
         buffer: true
@@ -27,8 +29,8 @@ module.exports = (send) => {
         }
         callback(null, response.Value)
       })
-    },
-    set (key, value, opts, callback) {
+    }),
+    set: promisify((key, value, opts, callback) => {
       if (typeof opts === 'function') {
         callback = opts
         opts = {}
@@ -53,24 +55,24 @@ module.exports = (send) => {
         opts = { bool: true }
       }
 
-      return send({
+      send({
         path: 'config',
         args: [key, value],
         qs: opts,
         files: undefined,
         buffer: true
       }, callback)
-    },
-    replace (config, callback) {
+    }),
+    replace: promisify((config, callback) => {
       if (typeof config === 'object') {
         config = streamifier.createReadStream(new Buffer(JSON.stringify(config)))
       }
 
-      return send({
+      send({
         path: 'config/replace',
         files: config,
         buffer: true
       }, callback)
-    }
+    })
   }
 }

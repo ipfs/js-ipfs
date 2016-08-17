@@ -3,8 +3,10 @@
 const Wreck = require('wreck')
 const addToDagNodesTransform = require('../add-to-dagnode-transform')
 
+const promisify = require('promisify-es6')
+
 module.exports = (send) => {
-  return function add (url, opts, callback) {
+  return promisify((url, opts, callback) => {
     if (typeof (opts) === 'function' &&
         callback === undefined) {
       callback = opts
@@ -29,5 +31,5 @@ module.exports = (send) => {
         files: res
       }, callback)
     })
-  }
+  })
 }

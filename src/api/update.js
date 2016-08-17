@@ -1,36 +1,38 @@
 'use strict'
 
+const promisify = require('promisify-es6')
+
 module.exports = (send) => {
   return {
-    apply (opts, callback) {
+    apply: promisify((opts, callback) => {
       if (typeof (opts) === 'function') {
         callback = opts
         opts = {}
       }
-      return send({
+      send({
         path: 'update',
         qs: opts
       }, callback)
-    },
-    check (opts, callback) {
+    }),
+    check: promisify((opts, callback) => {
       if (typeof (opts) === 'function') {
         callback = opts
         opts = {}
       }
-      return send({
+      send({
         path: 'update/check',
         qs: opts
       }, callback)
-    },
-    log (opts, callback) {
+    }),
+    log: promisify((opts, callback) => {
       if (typeof (opts) === 'function') {
         callback = opts
         opts = {}
       }
-      return send({
+      send({
         path: 'update/log',
         qs: opts
       }, callback)
-    }
+    })
   }
 }

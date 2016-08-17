@@ -1,18 +1,12 @@
 'use strict'
 
 const ndjson = require('ndjson')
+const promisify = require('promisify-es6')
 
 module.exports = (send) => {
   return {
-    tail (callback) {
-      if (typeof callback !== 'function' &&
-          typeof Promise !== 'undefined') {
-        return send({
-          path: 'log/tail'
-        }).then((res) => res.pipe(ndjson.parse()))
-      }
-
-      return send({
+    tail: promisify((callback) => {
+      send({
         path: 'log/tail'
       }, (err, response) => {
         if (err) {
@@ -20,6 +14,6 @@ module.exports = (send) => {
         }
         callback(null, response.pipe(ndjson.parse()))
       })
-    }
+    })
   }
 }

@@ -1,15 +1,17 @@
 'use strict'
 
+const promisify = require('promisify-es6')
+
 module.exports = (send) => {
-  return (args, opts, callback) => {
+  return promisify((args, opts, callback) => {
     if (typeof (opts) === 'function') {
       callback = opts
       opts = {}
     }
-    return send({
+    send({
       path: 'ls',
       args: args,
       qs: opts
     }, callback)
-  }
+  })
 }

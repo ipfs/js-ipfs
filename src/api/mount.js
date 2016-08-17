@@ -1,7 +1,9 @@
 'use strict'
 
+const promisify = require('promisify-es6')
+
 module.exports = (send) => {
-  return function mount (ipfs, ipns, callback) {
+  return promisify((ipfs, ipns, callback) => {
     if (typeof ipfs === 'function') {
       callback = ipfs
       ipfs = null
@@ -17,9 +19,9 @@ module.exports = (send) => {
       opts.n = ipns
     }
 
-    return send({
+    send({
       path: 'mount',
       qs: opts
     }, callback)
-  }
+  })
 }

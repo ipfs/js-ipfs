@@ -22,28 +22,28 @@ module.exports = (send) => {
         }))
       })
     }),
-    connect (args, opts, callback) {
+    connect: promisify((args, opts, callback) => {
       if (typeof (opts) === 'function') {
         callback = opts
         opts = {}
       }
-      return send({
+      send({
         path: 'swarm/connect',
         args: args,
         qs: opts
       }, callback)
-    },
-    disconnect (args, opts, callback) {
+    }),
+    disconnect: promisify((args, opts, callback) => {
       if (typeof (opts) === 'function') {
         callback = opts
         opts = {}
       }
-      return send({
+      send({
         path: 'swarm/disconnect',
         args: args,
         qs: opts
       }, callback)
-    },
+    }),
     addrs: promisify((opts, callback) => {
       if (typeof (opts) === 'function') {
         callback = opts
@@ -68,7 +68,7 @@ module.exports = (send) => {
         callback = opts
         opts = {}
       }
-      return send({
+      send({
         path: 'swarm/addrs/local',
         qs: opts
       }, (err, result) => {

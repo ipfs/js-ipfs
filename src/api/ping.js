@@ -1,17 +1,10 @@
 'use strict'
 
-module.exports = (send) => {
-  return function ping (id, callback) {
-    if (typeof callback !== 'function' &&
-        typeof Promise !== 'undefined') {
-      return send({
-        path: 'ping',
-        args: id,
-        qs: { n: 1 }
-      }).then((res) => res[1])
-    }
+const promisify = require('promisify-es6')
 
-    return send({
+module.exports = (send) => {
+  return promisify((id, callback) => {
+    send({
       path: 'ping',
       args: id,
       qs: { n: 1 }
@@ -21,5 +14,5 @@ module.exports = (send) => {
       }
       callback(null, res[1])
     })
-  }
+  })
 }

@@ -12,7 +12,8 @@ module.exports = (send) => {
       opts = {}
     }
 
-    // opts is the real callback -- 'callback' is being injected by promisify
+    // opts is the real callback --
+    // 'callback' is being injected by promisify
     if (typeof opts === 'function' &&
         typeof callback === 'function') {
       callback = opts
@@ -27,7 +28,7 @@ module.exports = (send) => {
 
     var sendWithTransform = send.withTransform(tarStreamToObjects)
 
-    return sendWithTransform({
+    sendWithTransform({
       path: 'get',
       args: path,
       qs: opts

@@ -2,10 +2,11 @@
 
 const isNode = require('detect-node')
 const addToDagNodesTransform = require('../add-to-dagnode-transform')
+const promisify = require('promisify-es6')
 
 module.exports = (send) => {
-  return function add (path, opts, callback) {
-    if (typeof (opts) === 'function' &&
+  return promisify((path, opts, callback) => {
+    if (typeof opts === 'function' &&
         callback === undefined) {
       callback = opts
       opts = {}
@@ -21,10 +22,10 @@ module.exports = (send) => {
 
     const sendWithTransform = send.withTransform(addToDagNodesTransform)
 
-    return sendWithTransform({
+    sendWithTransform({
       path: 'add',
       qs: opts,
       files: path
     }, callback)
-  }
+  })
 }

@@ -1,39 +1,41 @@
 'use strict'
 
+const promisify = require('promisify-es6')
+
 module.exports = (send) => {
   return {
-    net (opts, callback) {
+    net: promisify((opts, callback) => {
       if (typeof (opts) === 'function') {
         callback = opts
         opts = {}
       }
 
-      return send({
+      send({
         path: 'diag/net',
         qs: opts
       }, callback)
-    },
-    sys (opts, callback) {
+    }),
+    sys: promisify((opts, callback) => {
       if (typeof (opts) === 'function') {
         callback = opts
         opts = {}
       }
 
-      return send({
+      send({
         path: 'diag/sys',
         qs: opts
       }, callback)
-    },
-    cmds (opts, callback) {
+    }),
+    cmds: promisify((opts, callback) => {
       if (typeof (opts) === 'function') {
         callback = opts
         opts = {}
       }
 
-      return send({
+      send({
         path: 'diag/cmds',
         qs: opts
       }, callback)
-    }
+    })
   }
 }
