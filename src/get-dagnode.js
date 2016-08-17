@@ -2,12 +2,12 @@
 
 const DAGNode = require('ipfs-merkle-dag').DAGNode
 const bl = require('bl')
-const async = require('async')
+const parallel = require('async/parallel')
 
 module.exports = function (send, hash, cb) {
   // Retrieve the object and its data in parallel, then produce a DAGNode
   // instance using this information.
-  async.parallel([
+  parallel([
     function get (done) {
       send('object/get', hash, null, null, done)
     },
