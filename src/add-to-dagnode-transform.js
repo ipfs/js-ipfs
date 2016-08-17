@@ -1,6 +1,6 @@
 'use strict'
 
-const async = require('async')
+const map = require('async/map')
 const getDagNode = require('./get-dagnode')
 
 // transform { Hash: '...' } objects into { path: 'string', node: DAGNode }
@@ -9,7 +9,7 @@ module.exports = function (err, res, send, done) {
     return done(err)
   }
 
-  async.map(res, function map (entry, next) {
+  map(res, function map (entry, next) {
     getDagNode(send, entry.Hash, function (err, node) {
       if (err) {
         return next(err)
