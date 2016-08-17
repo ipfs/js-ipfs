@@ -1,7 +1,7 @@
 'use strict'
 
 const isNode = require('detect-node')
-const addToDagNodesTransform = require('../add-to-dagnode-transform')
+const addToDagNodesTransform = require('./../../add-to-dagnode-transform')
 const promisify = require('promisify-es6')
 
 module.exports = (send) => {
@@ -12,8 +12,16 @@ module.exports = (send) => {
       opts = {}
     }
 
+    // opts is the real callback --
+    // 'callback' is being injected by promisify
+    if (typeof opts === 'function' &&
+        typeof callback === 'function') {
+      callback = opts
+      opts = {}
+    }
+
     if (!isNode) {
-      return callback(new Error('Recursive uploads are not supported in the browser'))
+      return callback(new Error('fsAdd does not work in the browser'))
     }
 
     if (typeof path !== 'string') {

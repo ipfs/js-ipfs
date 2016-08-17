@@ -116,11 +116,29 @@ Complete documentation for these methods is coming with: https://github.com/ipfs
 
 #### Add files or entire directories from the FileSystem to IPFS
 
-> `ipfs.util.fsAdd(path, callback)`
+> `ipfs.util.fsAdd(path, option, callback)`
 
-Reads path from disk, if it is a directory, will add it recursively, if not, will add the file.
+Reads path from disk (if directory add an options `{ recursive: true }` and adds it to IPFS.
 
 ```JavaScript
+ipfs.util.fsAdd(<dirpath>, { recursive: true }, (err, result) => {
+  if (err) {
+    throw err
+  }
+  console.log(result)
+})
+```
+
+`files` is an array of objects describing the files that were added, such as:
+
+```
+[{
+  path: 'test-folder',
+  hash: 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6',
+  size: 2278
+},
+// ...
+]
 ```
 
 #### Add a file from a URL to IPFS
@@ -128,6 +146,13 @@ Reads path from disk, if it is a directory, will add it recursively, if not, wil
 > `ipfs.util.urlAdd(url, callback)`
 
 ```JavaScript
+ipfs.util.urlAdd('http://example.com/', (err, result) => {
+  if (err) {
+    throw err
+  }
+  console.log(result)
+})
+
 ```
 
 #### Add a file from a stream to IPFS
@@ -137,6 +162,12 @@ Reads path from disk, if it is a directory, will add it recursively, if not, wil
 This is very similar to `ipfs.files.add({path:'', content: stream})`. It is like the reverse of cat
 
 ```JavaScript
+ipfs.util.streamAdd(<readable-stream>, (err, result) => {
+  if (err) {
+    throw err
+  }
+  console.log(result)
+})
 ```
 
 ### Callbacks and promises
