@@ -35,7 +35,7 @@ describe('.util', () => {
     const rs = fs.createReadStream(tfpath)
     rs.path = '' // clean the path for testing purposes
 
-    ipfs.util.streamAdd(rs, (err, result) => {
+    ipfs.util.addFromStream(rs, (err, result) => {
       expect(err).to.not.exist
       expect(result.length).to.equal(1)
       done()
@@ -44,7 +44,7 @@ describe('.util', () => {
 
   it('.fsAdd a directory', (done) => {
     const filesPath = path.join(__dirname, '../data/test-folder')
-    ipfs.util.fsAdd(filesPath, { recursive: true }, (err, result) => {
+    ipfs.util.addFromFs(filesPath, { recursive: true }, (err, result) => {
       expect(err).to.not.exist
       expect(result.length).to.be.above(8)
       done()
@@ -53,7 +53,7 @@ describe('.util', () => {
 
   it('.fsAdd a file', (done) => {
     const filePath = path.join(__dirname, '../data/testfile.txt')
-    ipfs.util.fsAdd(filePath, (err, result) => {
+    ipfs.util.addFromFs(filePath, (err, result) => {
       expect(err).to.not.exist
       expect(result.length).to.be.above(5)
 
@@ -62,7 +62,7 @@ describe('.util', () => {
   })
 
   it('.urlAdd', (done) => {
-    ipfs.util.urlAdd('http://example.com/', (err, result) => {
+    ipfs.util.addFromURL('http://example.com/', (err, result) => {
       expect(err).to.not.exist
       expect(result.length).to.equal(1)
       done()

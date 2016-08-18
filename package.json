@@ -5,14 +5,14 @@
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
   "scripts": {
-    "test": "node --max_old_space_size=4096 node_modules/.bin/gulp test",
+    "test": "node --max_old_space_size=4096 node_modules/.bin/gulp test:node",
     "test:node": "gulp test:node",
     "test:browser": "node --max_old_space_size=4096 node_modules/.bin/gulp test:browser",
     "lint": "aegir-lint",
     "build": "gulp build",
-    "release": "gulp release",
-    "release-minor": "gulp release --type minor",
-    "release-major": "gulp release --type major",
+    "release": "node --max_old_space_size=4096 node_modules/.bin/gulp release",
+    "release-minor": "node --max_old_space_size=4096 node_modules/.bin/gulp release --type minor",
+    "release-major": "node --max_old_space_size=4096 node_modules/.bin/gulp release --type major",
     "coverage": "gulp coverage",
     "coverage-publish": "aegir-coverage publish"
   },

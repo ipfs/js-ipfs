@@ -47,9 +47,9 @@ function requireCommands () {
 
   cmds.util = function (send) {
     const util = {
-      fsAdd: require('./api/util/fs-add')(send),
-      streamAdd: require('./api/add')(send),
-      urlAdd: require('./api/util/url-add')(send)
+      addFromFs: require('./api/util/fs-add')(send),
+      addFromStream: require('./api/add')(send),
+      addFromURL: require('./api/util/url-add')(send)
     }
     return util
   }
