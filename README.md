@@ -92,7 +92,7 @@ var ipfs = require('ipfs');
 
 Loading this module in a browser (using a `<script>` tag) makes the `Ipfs` object available in the global namespace.
 
-The last published version of the package becomes available on [npmcdn](https://npmcdn.com/) and thus you may use it as the source:
+The last published version of the package become [available for download](https://npmcdn.com/ipfs/dist/) from [npmcdn](https://npmcdn.com/) and thus you may use it as the source:
 
 * loading the minified version
 
