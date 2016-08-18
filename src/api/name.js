@@ -1,10 +1,30 @@
 'use strict'
 
-const argCommand = require('../cmd-helpers').argCommand
+const promisify = require('promisify-es6')
 
 module.exports = (send) => {
   return {
-    publish: argCommand(send, 'name/publish'),
-    resolve: argCommand(send, 'name/resolve')
+    publish: promisify((args, opts, callback) => {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      send({
+        path: 'name/publish',
+        args: args,
+        qs: opts
+      }, callback)
+    }),
+    resolve: promisify((args, opts, callback) => {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      send({
+        path: 'name/resolve',
+        args: args,
+        qs: opts
+      }, callback)
+    })
   }
 }

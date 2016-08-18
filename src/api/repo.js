@@ -1,10 +1,28 @@
 'use strict'
 
-const cmds = require('../cmd-helpers')
+const promisify = require('promisify-es6')
 
 module.exports = (send) => {
   return {
-    gc: cmds.command(send, 'repo/gc'),
-    stat: cmds.command(send, 'repo/stat')
+    gc: promisify((opts, callback) => {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      send({
+        path: 'repo/gc',
+        qs: opts
+      }, callback)
+    }),
+    stat: promisify((opts, callback) => {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      send({
+        path: 'repo/stat',
+        qs: opts
+      }, callback)
+    })
   }
 }

@@ -18,7 +18,7 @@ function connectNodes (done) {
         throw err
       }
       // note to self: HTTP API port !== Node port
-      addrs[key] = id.Addresses[0]
+      addrs[key] = id.addresses[0]
       cb()
     })
   }

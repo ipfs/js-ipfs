@@ -1,12 +1,29 @@
 /* eslint-env mocha */
-/* globals apiClients */
 'use strict'
 
+const FactoryClient = require('../factory/factory-client')
 const expect = require('chai').expect
 
 describe('.diag', () => {
+  let ipfs
+  let fc
+
+  before(function (done) {
+    this.timeout(20 * 1000) // slow CI
+    fc = new FactoryClient()
+    fc.spawnNode((err, node) => {
+      expect(err).to.not.exist
+      ipfs = node
+      done()
+    })
+  })
+
+  after((done) => {
+    fc.dismantle(done)
+  })
+
   it('.diag.net', (done) => {
-    apiClients.a.diag.net((err, res) => {
+    ipfs.diag.net((err, res) => {
       expect(err).to.not.exist
       expect(res).to.exist
       done()
@@ -14,7 +31,7 @@ describe('.diag', () => {
   })
 
   it('.diag.sys', (done) => {
-    apiClients.a.diag.sys((err, res) => {
+    ipfs.diag.sys((err, res) => {
       expect(err).to.not.exist
       expect(res).to.exist
       expect(res).to.have.a.property('memory')
@@ -24,7 +41,7 @@ describe('.diag', () => {
   })
 
   it('.diag.cmds', (done) => {
-    apiClients.a.diag.cmds((err, res) => {
+    ipfs.diag.cmds((err, res) => {
       expect(err).to.not.exist
       expect(res).to.exist
       done()
@@ -33,14 +50,14 @@ describe('.diag', () => {
 
   describe('promise', () => {
     it('.diag.net', () => {
-      return apiClients.a.diag.net()
+      return ipfs.diag.net()
         .then((res) => {
           expect(res).to.exist
         })
     })
 
     it('.diag.sys', () => {
-      return apiClients.a.diag.sys()
+      return ipfs.diag.sys()
         .then((res) => {
           expect(res).to.exist
           expect(res).to.have.a.property('memory')
@@ -49,7 +66,7 @@ describe('.diag', () => {
     })
 
     it('.diag.cmds', () => {
-      return apiClients.a.diag.cmds()
+      return ipfs.diag.cmds()
         .then((res) => {
           expect(res).to.exist
         })

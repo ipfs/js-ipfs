@@ -1,20 +1,41 @@
 'use strict'
 
-const argCommand = require('../cmd-helpers').argCommand
+const promisify = require('promisify-es6')
 
 module.exports = (send) => {
   return {
-    get: argCommand(send, 'block/get'),
-    stat: argCommand(send, 'block/stat'),
-    put (file, cb) {
-      if (Array.isArray(file)) {
-        let err = new Error('block.put() only accepts 1 file')
-        if (typeof cb !== 'function' && typeof Promise !== 'undefined') {
-          return new Promise((resolve, reject) => reject(err))
-        }
-        return cb(err)
+    get: promisify((args, opts, callback) => {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
       }
-      return send('block/put', null, null, file, cb)
-    }
+      return send({
+        path: 'block/get',
+        args: args,
+        qs: opts
+      }, callback)
+    }),
+    stat: promisify((args, opts, callback) => {
+      if (typeof (opts) === 'function') {
+        callback = opts
+        opts = {}
+      }
+      return send({
+        path: 'block/stat',
+        args: args,
+        qs: opts
+      }, callback)
+    }),
+    put: promisify((file, callback) => {
+      if (Array.isArray(file)) {
+        const err = new Error('block.put() only accepts 1 file')
+        return callback(err)
+      }
+
+      return send({
+        path: 'block/put',
+        files: file
+      }, callback)
+    })
   }
 }

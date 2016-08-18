@@ -1,7 +1,11 @@
 'use strict'
 
-const command = require('../cmd-helpers').command
+const promisify = require('promisify-es6')
 
 module.exports = (send) => {
-  return command(send, 'commands')
+  return promisify((callback) => {
+    send({
+      path: 'commands'
+    }, callback)
+  })
 }

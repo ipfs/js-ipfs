@@ -1,39 +1,68 @@
 'use strict'
 
+const promisify = require('promisify-es6')
+
 module.exports = (send) => {
   return {
-    add (hash, opts, cb) {
+    add: promisify((hash, opts, callback) => {
       if (typeof opts === 'function') {
-        cb = opts
+        callback = opts
         opts = null
       }
-
-      return send('pin/add', hash, opts, null, cb)
-    },
-    remove (hash, opts, cb) {
+      send({
+        path: 'pin/add',
+        args: hash,
+        qs: opts
+      }, (err, res) => {
+        if (err) {
+          return callback(err)
+        }
+        callback(null, res.Pins)
+      })
+    }),
+    rm: promisify((hash, opts, callback) => {
       if (typeof opts === 'function') {
-        cb = opts
+        callback = opts
         opts = null
       }
-
-      return send('pin/rm', hash, opts, null, cb)
-    },
-    list (type, cb) {
-      if (typeof type === 'function') {
-        cb = type
-        type = null
+      send({
+        path: 'pin/rm',
+        args: hash,
+        qs: opts
+      }, (err, res) => {
+        if (err) {
+          return callback(err)
+        }
+        callback(null, res.Pins)
+      })
+    }),
+    ls: promisify((hash, opts, callback) => {
+      if (typeof opts === 'function') {
+        callback = opts
+        opts = {}
       }
-      let opts = null
-      let hash = null
-      if (typeof type === 'string') {
-        opts = { type: type }
-      } else if (type && type.hash) {
-        hash = type.hash
-        type.hash = null
-        opts = type
+
+      if (typeof hash === 'object') {
+        opts = hash
+        hash = undefined
       }
 
-      return send('pin/ls', hash, opts, null, cb)
-    }
+      if (typeof hash === 'function') {
+        callback = hash
+        hash = undefined
+        opts = {}
+      }
+
+      send({
+        path: 'pin/ls',
+        args: hash,
+        qs: opts
+      }, (err, res) => {
+        if (err) {
+          return callback(err)
+        }
+        callback(null, res.Keys)
+      })
+    })
   }
 }

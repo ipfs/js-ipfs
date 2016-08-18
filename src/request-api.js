@@ -4,7 +4,6 @@ const Wreck = require('wreck')
 const Qs = require('qs')
 const ndjson = require('ndjson')
 const getFilesStream = require('./get-files-stream')
-const Counter = require('passthrough-counter')
 
 const isNode = require('detect-node')
 
@@ -12,9 +11,7 @@ const isNode = require('detect-node')
 
 function parseChunkedJson (res, cb) {
   const parsed = []
-  const c = new Counter()
   res
-    .pipe(c)
     .pipe(ndjson.parse())
     .on('data', (obj) => {
       parsed.push(obj)
@@ -32,7 +29,8 @@ function onRes (buffer, cb, uri) {
 
     const stream = Boolean(res.headers['x-stream-output'])
     const chunkedObjects = Boolean(res.headers['x-chunked-output'])
-    const isJson = res.headers['content-type'] && res.headers['content-type'].indexOf('application/json') === 0
+    const isJson = res.headers['content-type'] &&
+                   res.headers['content-type'].indexOf('application/json') === 0
 
     if (res.statusCode >= 400 || !res.statusCode) {
       const error = new Error(`Server responded with ${res.statusCode}`)
@@ -65,39 +63,47 @@ function onRes (buffer, cb, uri) {
   }
 }
 
-function requestAPI (config, path, args, qs, files, buffer, cb) {
-  qs = qs || {}
+function requestAPI (config, options, callback) {
+  options.qs = options.qs || {}
 
-  if (Array.isArray(files)) {
-    qs.recursive = true
+  if (Array.isArray(options.files)) {
+    options.qs.recursive = true
   }
 
-  if (Array.isArray(path)) path = path.join('/')
-  if (args && !Array.isArray(args)) args = [args]
-  if (args) qs.arg = args
-  if (files && !Array.isArray(files)) files = [files]
+  if (Array.isArray(options.path)) {
+    options.path = options.path.join('/')
+  }
+  if (options.args && !Array.isArray(options.args)) {
+    options.args = [options.args]
+  }
+  if (options.args) {
+    options.qs.arg = options.args
+  }
+  if (options.files && !Array.isArray(options.files)) {
+    options.files = [options.files]
+  }
 
-  if (qs.r) {
-    qs.recursive = qs.r
+  if (options.qs.r) {
+    options.qs.recursive = options.qs.r
     // From IPFS 0.4.0, it throws an error when both r and recursive are passed
-    delete qs.r
+    delete options.qs.r
   }
 
-  qs['stream-channels'] = true
+  options.qs['stream-channels'] = true
 
   let stream
-  if (files) {
-    stream = getFilesStream(files, qs)
+  if (options.files) {
+    stream = getFilesStream(options.files, options.qs)
   }
 
   // this option is only used internally, not passed to daemon
-  delete qs.followSymlinks
+  delete options.qs.followSymlinks
 
   const port = config.port ? `:${config.port}` : ''
 
   const opts = {
-    method: files ? 'POST' : 'GET',
-    uri: `${config.protocol}://${config.host}${port}${config['api-path']}${path}?${Qs.stringify(qs, {arrayFormat: 'repeat'})}`,
+    method: 'POST',
+    uri: `${config.protocol}://${config.host}${port}${config['api-path']}${options.path}?${Qs.stringify(options.qs, {arrayFormat: 'repeat'})}`,
     headers: {}
   }
 
@@ -106,72 +112,54 @@ function requestAPI (config, path, args, qs, files, buffer, cb) {
     opts.headers['User-Agent'] = config['user-agent']
   }
 
-  if (files) {
+  if (options.files) {
     if (!stream.boundary) {
-      return cb(new Error('No boundary in multipart stream'))
+      return callback(new Error('No boundary in multipart stream'))
     }
 
     opts.headers['Content-Type'] = `multipart/form-data; boundary=${stream.boundary}`
-    opts.downstreamRes = stream
     opts.payload = stream
   }
 
-  return Wreck.request(opts.method, opts.uri, opts, onRes(buffer, cb, opts.uri))
+  return Wreck.request(opts.method, opts.uri, opts, onRes(options.buffer, callback, opts.uri))
 }
 
-// -- Interface
+//
+// -- Module Interface
 
 exports = module.exports = function getRequestAPI (config) {
-  var send = function (path, args, qs, files, buffer, cb) {
-    if (typeof buffer === 'function') {
-      cb = buffer
-      buffer = false
+  /*
+   * options: {
+   *   path:   // API path (like /add or /config) - type: string
+   *   args:   // Arguments to the command - type: object
+   *   qs:     // Opts as query string opts to the command --something - type: object
+   *   files:  // files to be sent - type: string, buffer or array of strings or buffers
+   *   buffer: // buffer the request before sending it - type: bool
+   * }
+   */
+  const send = function (options, callback) {
+    if (typeof options !== 'object') {
+      return callback(new Error('no options were passed'))
     }
 
-    if (typeof cb !== 'function' && typeof Promise !== 'undefined') {
-      return new Promise(function (resolve, reject) {
-        requestAPI(config, path, args, qs, files, buffer, function (err, res) {
-          if (err) return reject(err)
-          resolve(res)
-        })
-      })
-    }
-
-    return requestAPI(config, path, args, qs, files, buffer, cb)
+    return requestAPI(config, options, callback)
   }
 
   // Wraps the 'send' function such that an asynchronous
   // transform may be applied to its result before
   // passing it on to either its callback or promise.
   send.withTransform = function (transform) {
-    return function (path, args, qs, files, buffer, cb) {
-      if (typeof buffer === 'function') {
-        cb = buffer
-        buffer = false
+    return function (options, callback) {
+      if (typeof options !== 'object') {
+        return callback(new Error('no options were passed'))
       }
 
-      var p = send(path, args, qs, files, buffer, wrap(cb))
+      send(options, wrap(callback))
 
-      if (p instanceof Promise) {
-        return p.then((res) => {
-          return new Promise(function (resolve, reject) {
-            transform(null, res, send, function (err, res) {
-              if (err) {
-                reject(err)
-              } else {
-                resolve(res)
-              }
-            })
-          })
-        })
-      } else {
-        return p
-      }
-
-      function wrap (done) {
-        if (done) {
+      function wrap (func) {
+        if (func) {
           return function (err, res) {
-            transform(err, res, send, done)
+            transform(err, res, send, func)
           }
         }
       }

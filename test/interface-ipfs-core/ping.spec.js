@@ -9,7 +9,7 @@ describe('.ping', () => {
     apiClients.b.id((err, id) => {
       expect(err).to.not.exist
 
-      apiClients.a.ping(id.ID, (err, res) => {
+      apiClients.a.ping(id.id, (err, res) => {
         expect(err).to.not.exist
         expect(res).to.have.a.property('Success')
         done()
@@ -21,7 +21,7 @@ describe('.ping', () => {
     it('ping another peer', () => {
       return apiClients.b.id()
         .then((id) => {
-          return apiClients.a.ping(id.ID)
+          return apiClients.a.ping(id.id)
         })
         .then((res) => {
           expect(res).to.have.a.property('Success')

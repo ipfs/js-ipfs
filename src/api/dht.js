@@ -1,20 +1,55 @@
 'use strict'
 
-const argCommand = require('../cmd-helpers').argCommand
+const promisify = require('promisify-es6')
 
 module.exports = (send) => {
   return {
-    findprovs: argCommand(send, 'dht/findprovs'),
-    get (key, opts, cb) {
-      if (typeof (opts) === 'function' && !cb) {
-        cb = opts
-        opts = null
+    findprovs: promisify((args, opts, callback) => {
+      if (typeof opts === 'function' &&
+          !callback) {
+        callback = opts
+        opts = {}
+      }
+
+      // opts is the real callback --
+      // 'callback' is being injected by promisify
+      if (typeof opts === 'function' &&
+          typeof callback === 'function') {
+        callback = opts
+        opts = {}
+      }
+
+      send({
+        path: 'dht/findprovs',
+        args: args,
+        qs: opts
+      }, callback)
+    }),
+    get: promisify((key, opts, callback) => {
+      if (typeof opts === 'function' &&
+          !callback) {
+        callback = opts
+        opts = {}
+      }
+
+      // opts is the real callback --
+      // 'callback' is being injected by promisify
+      if (typeof opts === 'function' &&
+          typeof callback === 'function') {
+        callback = opts
+        opts = {}
       }
 
       const handleResult = (done, err, res) => {
-        if (err) return done(err)
-        if (!res) return done(new Error('empty response'))
-        if (res.length === 0) return done(new Error('no value returned for key'))
+        if (err) {
+          return done(err)
+        }
+        if (!res) {
+          return done(new Error('empty response'))
+        }
+        if (res.length === 0) {
+          return done(new Error('no value returned for key'))
+        }
 
         // Inconsistent return values in the browser vs node
         if (Array.isArray(res)) {
@@ -29,28 +64,32 @@ module.exports = (send) => {
         }
       }
 
-      if (typeof cb !== 'function' && typeof Promise !== 'undefined') {
-        const done = (err, res) => {
-          if (err) throw err
-          return res
-        }
-
-        return send('dht/get', key, opts)
-          .then(
-            (res) => handleResult(done, null, res),
-            (err) => handleResult(done, err)
-          )
+      send({
+        path: 'dht/get',
+        args: key,
+        qs: opts
+      }, handleResult.bind(null, callback))
+    }),
+    put: promisify((key, value, opts, callback) => {
+      if (typeof opts === 'function' &&
+          !callback) {
+        callback = opts
+        opts = {}
       }
 
-      return send('dht/get', key, opts, null, handleResult.bind(null, cb))
-    },
-    put (key, value, opts, cb) {
-      if (typeof (opts) === 'function' && !cb) {
-        cb = opts
-        opts = null
+      // opts is the real callback --
+      // 'callback' is being injected by promisify
+      if (typeof opts === 'function' &&
+          typeof callback === 'function') {
+        callback = opts
+        opts = {}
       }
 
-      return send('dht/put', [key, value], opts, null, cb)
-    }
+      send({
+        path: 'dht/put',
+        args: [key, value],
+        qs: opts
+      }, callback)
+    })
   }
 }

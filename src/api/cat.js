@@ -4,13 +4,16 @@ const promisify = require('promisify-es6')
 const cleanMultihash = require('../clean-multihash')
 
 module.exports = (send) => {
-  const cat = promisify((multihash, callback) => {
+  return promisify((hash, callback) => {
     try {
-      multihash = cleanMultihash(multihash)
+      hash = cleanMultihash(hash)
     } catch (err) {
       return callback(err)
     }
-    send('cat', multihash, null, null, callback)
+
+    send({
+      path: 'cat',
+      args: hash
+    }, callback)
   })
-  return cat
 }
