@@ -15,7 +15,6 @@ module.exports = function id (self) {
     }
 
     function ready () {
-      console.log('GOT CONFIG')
       callback(null, {
         id: self._peerInfo.id.toB58String(),
         publicKey: self._peerInfo.id.pubKey.bytes.toString('base64'),

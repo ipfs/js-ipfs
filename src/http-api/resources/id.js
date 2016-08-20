@@ -9,6 +9,13 @@ exports.get = (request, reply) => {
     if (err) {
       return reply(boom.badRequest(err))
     }
-    return reply(id)
+
+    return reply({
+      ID: id.id,
+      PublicKey: id.publicKey,
+      Addresses: id.addresses,
+      AgentVersion: id.agentVersion,
+      ProtocolVersion: id.protocolVersion
+    })
   })
 }

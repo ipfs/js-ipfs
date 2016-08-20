@@ -8,14 +8,14 @@ module.exports = (server) => {
 
   // https://github.com/ipfs/http-api-spec/blob/master/apiary.apib#L818
   api.route({
-    method: 'GET',
+    method: '*',
     path: '/api/v0/bootstrap',
     handler: resources.bootstrap.list
   })
 
   // https://github.com/ipfs/http-api-spec/blob/master/apiary.apib#L866
   api.route({
-    method: 'GET',
+    method: '*',
     path: '/api/v0/bootstrap/add',
     handler: resources.bootstrap.add,
     config: {
@@ -30,14 +30,14 @@ module.exports = (server) => {
 
   // https://github.com/ipfs/http-api-spec/blob/master/apiary.apib#L1081
   api.route({
-    method: 'GET',
+    method: '*',
     path: '/api/v0/bootstrap/list',
     handler: resources.bootstrap.list
   })
 
   // https://github.com/ipfs/http-api-spec/blob/master/apiary.apib#L1131
   api.route({
-    method: 'GET',
+    method: '*',
     path: '/api/v0/bootstrap/rm',
     handler: resources.bootstrap.rm,
     config: {

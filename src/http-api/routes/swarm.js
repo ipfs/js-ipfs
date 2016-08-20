@@ -6,7 +6,7 @@ module.exports = (server) => {
   const api = server.select('API')
 
   api.route({
-    method: 'GET',
+    method: '*',
     path: '/api/v0/swarm/peers',
     config: {
       handler: resources.swarm.peers.handler
@@ -14,7 +14,7 @@ module.exports = (server) => {
   })
 
   // api.route({
-  //   method: 'GET',
+  //   method: '*',
   //   path: '/api/v0/swarm/addrs',
   //   config: {
   //     handler: resources.swarm.addrs.handler
@@ -22,7 +22,7 @@ module.exports = (server) => {
   // })
 
   api.route({
-    method: 'GET',
+    method: '*',
     path: '/api/v0/swarm/addrs/local',
     config: {
       handler: resources.swarm.localAddrs.handler
@@ -30,7 +30,7 @@ module.exports = (server) => {
   })
 
   api.route({
-    method: 'GET',
+    method: '*',
     path: '/api/v0/swarm/connect',
     config: {
       pre: [
@@ -41,7 +41,7 @@ module.exports = (server) => {
   })
 
   // api.route({
-  //   method: 'GET',
+  //   method: '*',
   //   path: '/api/v0/swarm/disconnect',
   //   config: {
   //     handler: resources.swarm.disconnect
@@ -50,7 +50,7 @@ module.exports = (server) => {
 
   // TODO
   // api.route({
-  //  method: 'GET',
+  //  method: '*',
   //  path: '/api/v0/swarm/filters',
   //  config: {
   //    handler: resources.swarm.disconnect
