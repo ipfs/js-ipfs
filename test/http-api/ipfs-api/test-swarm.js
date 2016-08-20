@@ -3,7 +3,7 @@
 
 const expect = require('chai').expect
 const APIctl = require('ipfs-api')
-const createTempNode = require('../utils/temp-node')
+const createTempNode = require('./../../utils/temp-node')
 
 module.exports = (httpAPI) => {
   describe('swarm', function () {

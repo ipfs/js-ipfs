@@ -3,7 +3,7 @@
 
 const expect = require('chai').expect
 const APIctl = require('ipfs-api')
-const pkgversion = require('../../package.json').version
+const pkgversion = require('./../../../package.json').version
 
 module.exports = (httpAPI) => {
   describe('version', () => {
