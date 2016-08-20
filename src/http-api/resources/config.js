@@ -113,7 +113,7 @@ exports.getOrSet = {
   }
 }
 
-exports.show = (request, reply) => {
+exports.get = (request, reply) => {
   return request.server.app.ipfs.config.get((err, config) => {
     if (err) {
       log.error(err)
