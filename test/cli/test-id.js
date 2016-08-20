@@ -12,7 +12,7 @@ describe('id', () => {
   env.IPFS_PATH = repoPath
 
   describe('api offline', () => {
-    it('get the id', (done) => {
+    it.skip('get the id', (done) => {
       nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'id'], {env})
         .run((err, stdout, exitcode) => {
           expect(
@@ -55,7 +55,7 @@ describe('id', () => {
       })
     })
 
-    it('get the id', (done) => {
+    it.skip('get the id', (done) => {
       nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'id'], {env})
         .run((err, stdout, exitcode) => {
           expect(

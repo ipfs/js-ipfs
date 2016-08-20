@@ -69,7 +69,6 @@
     "hapi": "^14.0.0",
     "ipfs-api": "^7.0.0",
     "ipfs-bitswap": "^0.6.0",
-    "ipfs-api": "^7.0.0",
     "ipfs-block": "^0.3.0",
     "ipfs-block-service": "^0.4.0",
     "ipfs-merkle-dag": "^0.6.2",

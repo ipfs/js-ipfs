@@ -132,7 +132,7 @@ describe('config', () => {
     })
 
     describe('get/set', () => {
-      it('get a config key value', (done) => {
+      it.skip('get a config key value', (done) => {
         nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'Identity.PeerID'], {env})
           .run((err, stdout, exitcode) => {
             const expected = 'QmQ2zigjQikYnyYUSXZydNXrDRhBut2mubwJBaLXobMt3A'
