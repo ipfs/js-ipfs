@@ -57,11 +57,11 @@ UPDATE:
 
 - [ ] Interface definition, documentation and test coverage for both js-ipfs and js-ipfs-api. The `interface-ipfs-core` effort.
   - [x] Create a process to signal users of a proposed interface change and interface changelog. https://github.com/ipfs/interface-ipfs-core/issues/55
-  - [ ] swarm API - https://github.com/ipfs/interface-ipfs-core/pull/35
-  - [ ] block API - https://github.com/ipfs/interface-ipfs-core/pull/32
-  - [ ] generic API - https://github.com/ipfs/interface-ipfs-core/pull/33
-  - [ ] pinning API - https://github.com/ipfs/interface-ipfs-core/pull/34
-  - [ ] swarm API - https://github.com/ipfs/interface-ipfs-core/pull/35
+  - [x] swarm API - https://github.com/ipfs/interface-ipfs-core/pull/35
+  - [x] block API - https://github.com/ipfs/interface-ipfs-core/pull/32
+  - [x] generic API - https://github.com/ipfs/interface-ipfs-core/pull/33
+  - [x] pinning API - https://github.com/ipfs/interface-ipfs-core/pull/34
+  - [x] swarm API - https://github.com/ipfs/interface-ipfs-core/pull/35
   - [ ] DHT API https://github.com/ipfs/interface-ipfs-core/pull/36
   - [ ] mfs API https://github.com/ipfs/interface-ipfs-core/pull/38
 - [ ] Robust testing infrastructure
@@ -74,7 +74,12 @@ UPDATE:
     - Add large files
     - Exchange large files
   - [ ] IPTB (InterPlanetary TestBed) Integration
-- [ ] Fixed identified bugs
+- [ ] Fixed identified bugs to date
+
+#### Extra:
+
+- [ ] Migration to pull-streams - https://github.com/ipfs/js-ipfs/issues/403
+- [ ] Usage of interface-ipfs-core tests with js-ipfs-api to test the http-api of js-ipfs
 
 ### Dependencies:
 
