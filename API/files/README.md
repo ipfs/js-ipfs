@@ -126,7 +126,7 @@ ipfs.files.cat(multihash, function (err, file) {
 
 ##### `JavaScript` - ipfs.files.get(hash, [callback])
 
-Where `hash` is an IPFS multiaddress or multihash.
+Where `hash` is an IPFS multihash or straight multihash.
 
 `callback` must follow `function (err, stream) {}` signature, where `err` is an
 error if the operation was not successful. `stream` will be a Readable stream in
@@ -148,8 +148,8 @@ If no `callback` is passed, a promise is returned with the Readable stream.
 Example:
 
 ```js
-var multiaddr = '/ipfs/QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
-ipfs.files.get(multiaddr, function (err, stream) {
+var multihashStr = '/ipfs/QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
+ipfs.files.get(multihashStr, function (err, stream) {
   stream.on('data', (file) => {
     // write the file's path and contents to standard out
     console.log(file.path)
