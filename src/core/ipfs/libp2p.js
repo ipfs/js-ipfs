@@ -8,8 +8,6 @@ const mafmt = require('mafmt')
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 
 module.exports = function libp2p (self) {
-  // NOTE: TODO CONSIDER/ CONSIDERING putting all of libp2p (start, stop, peerbook and so on) inside the libp2p object and reduce one layer
-
   return {
     start: (callback) => {
       self._libp2pNode = new Libp2pNode(self._peerInfo)

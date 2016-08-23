@@ -1,37 +1,34 @@
-/* eslint-env mocha */
+#! /usr/bin/env node
+
 'use strict'
 
 const expect = require('chai').expect
-const leftPad = require('left-pad')
 
 const IPFS = require('../../src/core')
 const createTempRepo = require('./temp-repo')
 
-function setAddresses (repo, num, callback) {
+function setAddresses (repo, callback) {
   repo.config.get((err, config) => {
     expect(err).to.not.exist
     config.Addresses = {
       Swarm: [
-        `/ip4/127.0.0.1/tcp/10${num}`,
-        `/ip4/127.0.0.1/tcp/20${num}/ws`
+        '/ip4/127.0.0.1/tcp/0'
       ],
-      API: `/ip4/127.0.0.1/tcp/31${num}`,
-      Gateway: `/ip4/127.0.0.1/tcp/32${num}`
+      API: '',
+      Gateway: ''
     }
 
     repo.config.set(config, callback)
   })
 }
 
-function createTempNode (num, callback) {
+function createTempNode (callback) {
   const repo = createTempRepo()
   const ipfs = new IPFS(repo)
 
-  num = leftPad(num, 3, 0)
-
   ipfs.init({ emptyRepo: true }, (err) => {
     expect(err).to.not.exist
-    setAddresses(repo, num, (err) => {
+    setAddresses(repo, (err) => {
       expect(err).to.not.exist
 
       ipfs.load((err) => {
@@ -42,4 +39,17 @@ function createTempNode (num, callback) {
   })
 }
 
-module.exports = createTempNode
+createTempNode((err, ipfs) => {
+  expect(err).to.not.exist
+  ipfs.goOnline(() => {
+    ipfs.id((err, id) => {
+      expect(err).to.not.exist
+
+      ipfs._libp2pNode.handle('/echo/1.0.0', (conn) => {
+        conn.pipe(conn)
+      })
+
+      console.log(JSON.stringify(id))
+    })
+  })
+})
