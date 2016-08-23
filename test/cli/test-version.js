@@ -12,7 +12,7 @@ describe('version', () => {
   const env = _.clone(process.env)
   env.IPFS_PATH = repoPath
 
-  describe('api offline', () => {
+  describe.skip('api offline', () => {
     it('get the version', (done) => {
       nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'version'], {env})
         .run((err, stdout, exitcode) => {
@@ -24,7 +24,7 @@ describe('version', () => {
     })
   })
 
-  describe('api running', () => {
+  describe.skip('api running', () => {
     let httpAPI
 
     before((done) => {

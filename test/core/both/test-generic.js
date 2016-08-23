@@ -17,4 +17,4 @@ const common = {
   }
 }
 
-test.config(common)
+test.generic(common)
