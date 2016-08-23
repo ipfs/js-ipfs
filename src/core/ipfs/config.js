@@ -2,6 +2,7 @@
 
 const promisify = require('promisify-es6')
 const _get = require('lodash.get')
+const _has = require('lodash.has')
 const _set = require('lodash.set')
 
 module.exports = function config (self) {
@@ -24,11 +25,11 @@ module.exports = function config (self) {
         if (err) {
           return callback(err)
         }
-        const value = _get(config, key, undefined)
-        if (!value) {
-          callback(new Error('Key does not exist in config'))
-        } else {
+        if (_has(config, key)) {
+          const value = _get(config, key, undefined)
           callback(null, value)
+        } else {
+          callback(new Error('Key does not exist in config'))
         }
       })
     }),
@@ -37,7 +38,7 @@ module.exports = function config (self) {
         return callback(new Error('Invalid key type'))
       }
 
-      if (!value || Buffer.isBuffer(value)) {
+      if (value === undefined || Buffer.isBuffer(value)) {
         return callback(new Error('Invalid value type'))
       }
 
