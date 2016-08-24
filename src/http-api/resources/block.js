@@ -140,8 +140,8 @@ exports.stat = {
       }
 
       return reply({
-        Key: bs58.encode(block.Key).toString(),
-        Size: block.Size
+        Key: bs58.encode(block.key).toString(),
+        Size: block.size
       })
     })
   }
