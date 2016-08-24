@@ -1,6 +1,8 @@
 'use strict'
 
 const promisify = require('promisify-es6')
+const bl = require('bl')
+const Block = require('ipfs-block')
 
 module.exports = (send) => {
   return {
@@ -13,7 +15,17 @@ module.exports = (send) => {
         path: 'block/get',
         args: args,
         qs: opts
-      }, callback)
+      }, (err, res) => {
+        if (err) {
+          return callback(err)
+        }
+        res.pipe(bl((err, data) => {
+          if (err) {
+            return callback(err)
+          }
+          callback(null, new Block(data))
+        }))
+      })
     }),
     stat: promisify((args, opts, callback) => {
       if (typeof (opts) === 'function') {
@@ -24,18 +36,35 @@ module.exports = (send) => {
         path: 'block/stat',
         args: args,
         qs: opts
-      }, callback)
+      }, (err, stats) => {
+        if (err) {
+          return callback(err)
+        }
+        callback(null, {
+          key: stats.Key,
+          size: stats.Size
+        })
+      })
     }),
-    put: promisify((file, callback) => {
-      if (Array.isArray(file)) {
+    put: promisify((block, callback) => {
+      if (Array.isArray(block)) {
         const err = new Error('block.put() only accepts 1 file')
         return callback(err)
       }
 
+      if (typeof block === 'object' && block.data) {
+        block = block.data
+      }
+
       return send({
         path: 'block/put',
-        files: file
-      }, callback)
+        files: block
+      }, (err, blockInfo) => {
+        if (err) {
+          return callback(err)
+        }
+        callback(null, new Block(block))
+      })
     })
   }
 }
