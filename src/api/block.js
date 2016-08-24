@@ -19,12 +19,16 @@ module.exports = (send) => {
         if (err) {
           return callback(err)
         }
-        res.pipe(bl((err, data) => {
-          if (err) {
-            return callback(err)
-          }
-          callback(null, new Block(data))
-        }))
+        if (Buffer.isBuffer(res)) {
+          callback(null, new Block(res))
+        } else {
+          res.pipe(bl((err, data) => {
+            if (err) {
+              return callback(err)
+            }
+            callback(null, new Block(data))
+          }))
+        }
       })
     }),
     stat: promisify((args, opts, callback) => {
