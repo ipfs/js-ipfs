@@ -58,6 +58,13 @@ exports.getOrSet = {
     const key = request.pre.args.key
     const value = request.pre.args.value
 
+    if (typeof value === 'object' && value.type === 'Buffer') {
+      return reply({
+        Message: 'Invalid value type',
+        Code: 0
+      }).code(500)
+    }
+
     if (value === undefined) {
       // Get the value of a given key
       return request.server.app.ipfs.config.get((err, config) => {
