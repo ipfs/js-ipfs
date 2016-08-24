@@ -61,8 +61,8 @@ If no `callback` is passed, a promise is returned.
 
 ```JavaScript
 {
-  Key: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
-  Size: 10
+  key: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
+  size: 10
 }
 ```
 
