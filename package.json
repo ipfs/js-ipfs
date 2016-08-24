@@ -1,6 +1,6 @@
 {
   "name": "ipfs-api",
-  "version": "8.0.0",
+  "version": "8.0.1",
   "description": "A client library for the IPFS HTTP API. Follows interface-ipfs-core spec",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
