@@ -47,7 +47,7 @@ describe('HTTP API', () => {
     })
   })
 
-  describe.only('## interface-ipfs-core tests over ipfs-api', () => {
+  describe('## interface-ipfs-core tests over ipfs-api', () => {
     const tests = fs.readdirSync(path.join(__dirname,
           '/interface-ipfs-core-over-ipfs-api'))
     tests.filter((file) => {

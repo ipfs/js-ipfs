@@ -2,20 +2,21 @@
 'use strict'
 
 const expect = require('chai').expect
+const multihash = require('multihashes')
 
 module.exports = (ctl) => {
   describe('.block', () => {
     describe('.put', () => {
       it('updates value', (done) => {
-        const filePath = 'test/test-data/hello'
+        const data = new Buffer('hello world\n')
         const expectedResult = {
-          Key: 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp',
-          Size: 12
+          key: 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp',
+          size: 12
         }
 
-        ctl.block.put(filePath, (err, res) => {
+        ctl.block.put(data, (err, block) => {
           expect(err).not.to.exist
-          expect(res).to.deep.equal(expectedResult)
+          expect(block.key).to.deep.equal(multihash.fromB58String(expectedResult.key))
           done()
         })
       })
@@ -39,7 +40,7 @@ module.exports = (ctl) => {
       it('returns value', (done) => {
         ctl.block.get('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp', (err, result) => {
           expect(err).to.not.exist
-          expect(result.toString())
+          expect(result.data.toString())
             .to.equal('hello world\n')
           done()
         })
@@ -64,9 +65,9 @@ module.exports = (ctl) => {
       it('returns value', (done) => {
         ctl.block.stat('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp', (err, result) => {
           expect(err).to.not.exist
-          expect(result.Key)
+          expect(result.key)
             .to.equal('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
-          expect(result.Size).to.equal(12)
+          expect(result.size).to.equal(12)
           done()
         })
       })

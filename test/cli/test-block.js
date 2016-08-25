@@ -68,7 +68,7 @@ describe('block', () => {
     })
   })
 
-  describe('api running', () => {
+  describe.skip('api running', () => {
     let httpAPI
     before((done) => {
       httpAPI = new HttpAPI(repoPath)

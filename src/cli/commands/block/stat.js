@@ -23,18 +23,13 @@ module.exports = {
         ? argv.key
         : new Buffer(bs58.decode(argv.key))
 
-      ipfs.block.stat(mh, (err, block) => {
+      ipfs.block.stat(mh, (err, stats) => {
         if (err) {
           throw err
         }
 
-        if (typeof block.Key !== 'string') {
-          block.Key = bs58.encode(block.Key).toString()
-        }
-
-        Object.keys(block).forEach((key) => {
-          console.log(`${key}: ${block[key]}`)
-        })
+        console.log('Key:', bs58.encode(stats.key).toString())
+        console.log('Size:', stats.size)
       })
     })
   }
