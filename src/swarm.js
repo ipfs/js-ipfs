@@ -46,6 +46,7 @@ module.exports = (common) => {
       it('.connect', (done) => {
         ipfsB.id((err, id) => {
           expect(err).to.not.exist
+          console.log('-> id:', id)
           const ipfsBAddr = id.addresses[0]
           ipfsA.swarm.connect(ipfsBAddr, done)
         })

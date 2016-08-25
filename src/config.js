@@ -35,9 +35,9 @@ module.exports = (common) => {
         })
 
         it('retrieve a value through a key', (done) => {
-          ipfs.config.get('Identity', (err, identity) => {
+          ipfs.config.get('Identity.PeerID', (err, peerId) => {
             expect(err).to.not.exist
-            expect(identity).to.exist
+            expect(peerId).to.exist
             done()
           })
         })
