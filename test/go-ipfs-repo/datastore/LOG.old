@@ -1,10 +1,10 @@
 =============== Dec 10, 2015 (PST) ===============
-07:49:57.048841 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
-07:49:57.049014 db@open opening
-07:49:57.049066 journal@recovery F·1
-07:49:57.049233 journal@recovery recovering @1
-07:49:57.049693 mem@flush created L0@2 N·2 S·211B "/lo..oot,v2":"/lo..ins,v1"
-07:49:57.050381 db@janitor F·3 G·0
-07:49:57.050397 db@open done T·1.375431ms
-07:49:57.064580 db@close closing
-07:49:57.064655 db@close done T·72.59µs
+07:50:02.056578 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+07:50:02.057231 db@open opening
+07:50:02.057312 journal@recovery F·1
+07:50:02.057514 journal@recovery recovering @3
+07:50:02.058921 mem@flush created L0@5 N·4 S·1KiB "/ip..\xf6\xe4\xa9,v5":"/pk..\xf6\xe4\xa9,v6"
+07:50:02.059983 db@janitor F·4 G·0
+07:50:02.060001 db@open done T·2.755926ms
+07:50:02.073183 db@close closing
+07:50:02.073285 db@close done T·97.522µs

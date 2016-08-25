@@ -6,8 +6,8 @@ const debug = require('debug')
 const fs = require('fs')
 const path = require('path')
 const IPFSRepo = require('ipfs-repo')
-const fsbs = require('fs-blob-store')
 const multiaddr = require('multiaddr')
+const Store = require('fs-pull-blob-store')
 
 const log = debug('api')
 log.error = debug('api:error')
@@ -20,7 +20,7 @@ exports = module.exports = function HttpApi (repo) {
 
   this.start = (callback) => {
     if (typeof repo === 'string') {
-      repo = new IPFSRepo(repo, {stores: fsbs})
+      repo = new IPFSRepo(repo, {stores: Store})
     }
 
     this.ipfs = new IPFS(repo)

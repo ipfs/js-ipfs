@@ -16,7 +16,7 @@ module.exports = function goOnline (self) {
       self._bitswap = new Bitswap(
         self._libp2pNode.peerInfo,
         self._libp2pNode,
-        self._repo.datastore,
+        self._repo.blockstore,
         self._libp2pNode.peerBook
       )
       self._bitswap.start()

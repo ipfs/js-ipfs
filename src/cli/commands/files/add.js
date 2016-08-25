@@ -8,7 +8,10 @@ const fs = require('fs')
 const path = require('path')
 const glob = require('glob')
 const sortBy = require('lodash.sortby')
-const mapLimit = require('map-limit')
+const pull = require('pull-stream')
+const pullFile = require('pull-file')
+const paramap = require('pull-paramap')
+const zip = require('pull-zip')
 
 function checkPath (inPath, recursive) {
   // This function is to check for the following possible inputs
@@ -48,76 +51,48 @@ module.exports = {
   },
 
   handler (argv) {
-    let inPath = checkPath(argv.file, argv.recursive)
+    const inPath = checkPath(argv.file, argv.recursive)
+    const index = inPath.lastIndexOf('/') + 1
 
-    utils.getIPFS(gotIPFS)
+    utils.getIPFS((err, ipfs) => {
+      if (err) throw err
 
-    function gotIPFS (err, ipfs) {
-      if (err) {
-        throw err
-      }
+      glob(path.join(inPath, '/**/*'), (err, list) => {
+        if (err) throw err
+        if (list.length === 0) list = [inPath]
 
-      glob(path.join(inPath, '/**/*'), (err, res) => {
-        if (err) {
-          throw err
-        }
+        pull(
+          zip(
+            pull.values(list),
+            pull(
+              pull.values(list),
+              paramap(fs.stat.bind(fs), 50)
+            )
+          ),
+          pull.map((pair) => ({
+            path: pair[0],
+            isDirectory: pair[1].isDirectory()
+          })),
+          pull.filter((file) => !file.isDirectory),
+          pull.map((file) => ({
+            path: file.path.substring(index, file.path.length),
+            content: pullFile(file.path)
+          })),
+          ipfs.files.createAddPullStream(),
+          pull.map((file) => ({
+            hash: file.hash,
+            path: file.path
+          })),
+          pull.collect((err, added) => {
+            if (err) throw err
 
-        ipfs.files.createAddStream((err, i) => {
-          if (err) {
-            throw err
-          }
-          const added = []
-
-          i.on('data', (file) => {
-            added.push({
-              hash: file.hash,
-              path: file.path
-            })
-          })
-
-          i.on('end', () => {
             sortBy(added, 'path')
               .reverse()
               .map((file) => `added ${file.hash} ${file.path}`)
               .forEach((msg) => console.log(msg))
           })
-
-          if (res.length === 0) {
-            res = [inPath]
-          }
-
-          const writeToStream = (stream, element) => {
-            const index = inPath.lastIndexOf('/') + 1
-            i.write({
-              path: element.substring(index, element.length),
-              content: fs.createReadStream(element)
-            })
-          }
-
-          mapLimit(res, 50, (file, cb) => {
-            fs.stat(file, (err, stat) => {
-              if (err) {
-                return cb(err)
-              }
-              return cb(null, {
-                path: file,
-                isDirectory: stat.isDirectory()
-              })
-            })
-          }, (err, res) => {
-            if (err) {
-              throw err
-            }
-
-            res
-              .filter((elem) => !elem.isDirectory)
-              .map((elem) => elem.path)
-              .forEach((elem) => writeToStream(i, elem))
-
-            i.end()
-          })
-        })
+        )
       })
-    }
+    })
   }
 }

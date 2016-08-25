@@ -12,7 +12,7 @@ function createTempRepo () {
 
   const isNode = require('detect-node')
   if (isNode) {
-    store = require('fs-blob-store')
+    store = require('fs-pull-blob-store')
     teardown = (done) => {
       clean(repoPath)
       done()
@@ -22,7 +22,7 @@ function createTempRepo () {
             window.mozIndexedDB ||
             window.webkitIndexedDB ||
             window.msIndexedDB
-    store = require('idb-plus-blob-store')
+    store = require('idb-pull-blob-store')
     teardown = (done) => {
       idb.deleteDatabase(repoPath)
       idb.deleteDatabase(repoPath + '/blocks')

@@ -5,10 +5,10 @@ const BlockService = require('ipfs-block-service')
 const DagService = require('ipfs-merkle-dag').DAGService
 const path = require('path')
 const glob = require('glob')
-const parallelLimit = require('run-parallel-limit')
-const Readable = require('stream').Readable
 const fs = require('fs')
-const Importer = require('ipfs-unixfs-engine').importer
+const importer = require('ipfs-unixfs-engine').importer
+const pull = require('pull-stream')
+const file = require('pull-file')
 
 module.exports = function init (self) {
   return (opts, callback) => {
@@ -20,8 +20,17 @@ module.exports = function init (self) {
     opts.emptyRepo = opts.emptyRepo || false
     opts.bits = opts.bits || 2048
 
+    let config
     // Pre-set config values.
-    const config = JSON.parse(fs.readFileSync(path.join(__dirname, '../../init-files/default-config.json')).toString())
+    try {
+      config = JSON.parse(
+        fs.readFileSync(
+          path.join(__dirname, '../../init-files/default-config.json')
+        ).toString()
+      )
+    } catch (err) {
+      return callback(err)
+    }
 
     // Verify repo does not yet exist.
     self._repo.exists((err, exists) => {
@@ -53,7 +62,7 @@ module.exports = function init (self) {
       const version = '3'
 
       self._repo.version.set(version, (err) => {
-        if (err) { return callback(err) }
+        if (err) return callback(err)
 
         writeConfig()
       })
@@ -62,7 +71,7 @@ module.exports = function init (self) {
     // Write the config to the repo.
     function writeConfig () {
       self._repo.config.set(config, (err) => {
-        if (err) { return callback(err) }
+        if (err) return callback(err)
 
         addDefaultAssets()
       })
@@ -73,52 +82,38 @@ module.exports = function init (self) {
       // Skip this step on the browser, or if emptyRepo was supplied.
       const isNode = require('detect-node')
       if (!isNode || opts.emptyRepo) {
-        return doneImport(null)
+        return callback(null, true)
       }
 
       const blocks = new BlockService(self._repo)
       const dag = new DagService(blocks)
 
       const initDocsPath = path.join(__dirname, '../../init-files/init-docs')
+      const index = __dirname.lastIndexOf('/')
 
-      const i = new Importer(dag)
-      i.resume()
-
-      glob(path.join(initDocsPath, '/**/*'), (err, res) => {
-        if (err) {
-          throw err
-        }
-        const index = __dirname.lastIndexOf('/')
-        parallelLimit(res.map((element) => (callback) => {
+      pull(
+        pull.values([initDocsPath]),
+        pull.asyncMap((val, cb) => {
+          glob(path.join(val, '/**/*'), cb)
+        }),
+        pull.flatten(),
+        pull.map((element) => {
           const addPath = element.substring(index + 1, element.length)
-          if (!fs.statSync(element).isDirectory()) {
-            const rs = new Readable()
-            rs.push(fs.readFileSync(element))
-            rs.push(null)
-            const filePair = {path: addPath, content: rs}
-            i.write(filePair)
+          if (fs.statSync(element).isDirectory()) return
+
+          return {
+            path: addPath,
+            content: file(element)
           }
-          callback()
-        }), 10, (err) => {
-          if (err) {
-            throw err
-          }
-          i.end()
+        }),
+        pull.filter(Boolean),
+        importer(dag),
+        pull.onEnd((err) => {
+          if (err) return callback(err)
+
+          callback(null, true)
         })
-      })
-
-      i.once('end', () => {
-        doneImport(null)
-      })
-
-      function doneImport (err, stat) {
-        if (err) {
-          return callback(err)
-        }
-
-        // All finished!
-        callback(null, true)
-      }
+      )
     }
   }
 }

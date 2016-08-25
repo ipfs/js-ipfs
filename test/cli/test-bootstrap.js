@@ -1,5 +1,5 @@
-/* eslint-env mocha */
 /* eslint max-nested-callbacks: ["error", 8] */
+/* eslint-env mocha */
 'use strict'
 
 const expect = require('chai').expect

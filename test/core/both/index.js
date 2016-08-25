@@ -7,11 +7,7 @@ describe('--both', () => {
   const tests = fs.readdirSync(__dirname)
 
   tests.filter((file) => {
-    if (file === 'index.js') {
-      return false
-    } else {
-      return true
-    }
+    return !(file === 'index.js' || file.indexOf('.') === 0)
   }).forEach((file) => {
     require('./' + file)
   })

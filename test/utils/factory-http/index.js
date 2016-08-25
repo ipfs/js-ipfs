@@ -44,7 +44,7 @@ function Factory () {
 
     // set up the repo
     const repo = new IPFSRepo(repoPath, {
-      stores: require('fs-blob-store')
+      stores: require('fs-pull-blob-store')
     })
     repo.teardown = (done) => {
       cleanRepo(repoPath)
