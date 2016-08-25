@@ -119,7 +119,7 @@ describe('bitswap', () => {
             cb(err)
           }),
           (cb) => {
-            remoteNode.block.put(block.data, cb)
+            remoteNode.block.put(block, cb)
           },
           (cb) => {
             inProcNode.block.get(block.key, (err, b) => {
@@ -146,10 +146,10 @@ describe('bitswap', () => {
             cb(err)
           }),
           (cb) => connectNodes(remoteNodes[0], remoteNodes[1], cb),
-          (cb) => remoteNodes[0].block.put(blocks[0].data, cb),
-          (cb) => remoteNodes[0].block.put(blocks[1].data, cb),
-          (cb) => remoteNodes[1].block.put(blocks[2].data, cb),
-          (cb) => remoteNodes[1].block.put(blocks[3].data, cb),
+          (cb) => remoteNodes[0].block.put(blocks[0], cb),
+          (cb) => remoteNodes[0].block.put(blocks[1], cb),
+          (cb) => remoteNodes[1].block.put(blocks[2], cb),
+          (cb) => remoteNodes[1].block.put(blocks[3], cb),
           (cb) => inProcNode.block.put(blocks[4], cb),
           (cb) => inProcNode.block.put(blocks[5], cb),
           // 3. Fetch blocks on all nodes

@@ -47,7 +47,15 @@ describe('HTTP API', () => {
     })
   })
 
-  describe('## interface-ipfs-core tests over ipfs-api', () => {}) // TODO
+  describe('## interface-ipfs-core tests over ipfs-api', () => {
+    const tests = fs.readdirSync(path.join(__dirname,
+          '/interface-ipfs-core-over-ipfs-api'))
+    tests.filter((file) => {
+      return file.match(/test-.*\.js/)
+    }).forEach((file) => {
+      require('./interface-ipfs-core-over-ipfs-api/' + file)
+    })
+  })
 
   describe('## custom ipfs-api tests', () => {
     const tests = fs.readdirSync(path.join(__dirname, '/ipfs-api'))

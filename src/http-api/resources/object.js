@@ -76,12 +76,19 @@ exports.put = {
       return reply("File argument 'data' is required").code(400).takeover()
     }
 
+    const enc = request.query.inputenc
+
     const parser = multipart.reqParser(request.payload)
     var file
 
     parser.on('file', (fileName, fileStream) => {
       fileStream.on('data', (data) => {
-        file = data
+        if (enc === 'protobuf') {
+          const n = new DAGNode().unMarshal(data)
+          file = new Buffer(JSON.stringify(n.toJSON()))
+        } else {
+          file = data
+        }
       })
     })
 

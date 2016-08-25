@@ -1,14 +1,12 @@
 'use strict'
 
-const peerId = require('peer-id')
 const multiaddr = require('multiaddr')
 const Libp2pNode = require('libp2p-ipfs').Node
-const mafmt = require('mafmt')
 
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 
 module.exports = function libp2p (self) {
-  // NOTE: TODO CONSIDER/ CONSIDERING putting all of libp2p (start, stop, peerbook and so on) inside the libp2p object and reduce one layer
+  // NOTE: TODO CONSIDER/CONSIDERING putting all of libp2p (start, stop, peerbook and so on) inside the libp2p object and reduce one layer
 
   return {
     start: (callback) => {
@@ -64,22 +62,7 @@ module.exports = function libp2p (self) {
           maddr = multiaddr(maddr)
         }
 
-        if (!mafmt.IPFS.matches(maddr.toString())) {
-          return callback(new Error('multiaddr not valid'))
-        }
-
-        let ipfsIdB58String
-        maddr.stringTuples().forEach((tuple) => {
-          if (tuple[0] === 421) {
-            ipfsIdB58String = tuple[1]
-          }
-        })
-
-        const id = peerId.createFromB58String(ipfsIdB58String)
-
-        self._libp2pNode.dialByMultiaddr(maddr, (err) => {
-          callback(err, id)
-        })
+        self._libp2pNode.dialByMultiaddr(maddr, callback)
       },
       disconnect: (maddr, callback) => {
         if (!self.isOnline()) {
