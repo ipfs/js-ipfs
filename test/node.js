@@ -16,7 +16,7 @@ if (process.env.TEST) {
     } break
     case 'cli': {
       testCore = false
-      testCLI = false
+      testHTTP = false
     } break
     default: break
   }

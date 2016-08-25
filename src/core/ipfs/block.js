@@ -6,9 +6,8 @@ const multihash = require('multihashes')
 module.exports = function block (self) {
   return {
     get: (hash, callback) => {
-      if (typeof hash === 'string') {
-        hash = multihash.fromB58String(hash)
-      }
+      hash = cleanHash(hash)
+
       self._blockS.getBlock(hash, callback)
     },
     put: (block, callback) => {
@@ -24,16 +23,11 @@ module.exports = function block (self) {
       })
     },
     del: (hash, callback) => {
-      if (typeof hash === 'string') {
-        hash = multihash.fromB58String(hash)
-      }
-
+      hash = cleanHash(hash)
       self._blockS.deleteBlock(hash, callback)
     },
     stat: (hash, callback) => {
-      if (typeof hash === 'string') {
-        hash = multihash.fromB58String(hash)
-      }
+      hash = cleanHash(hash)
 
       self._blockS.getBlock(hash, (err, block) => {
         if (err) {
@@ -46,4 +40,11 @@ module.exports = function block (self) {
       })
     }
   }
+}
+
+function cleanHash (hash) {
+  if (typeof hash === 'string') {
+    return multihash.fromB58String(hash)
+  }
+  return hash
 }

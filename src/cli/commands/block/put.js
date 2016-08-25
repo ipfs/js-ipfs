@@ -15,19 +15,9 @@ function addBlock (buf) {
       throw err
     }
 
-    if (utils.isDaemonOn()) {
-      return ipfs.block.put(buf, (err, block) => {
-        if (err) {
-          throw err
-        }
-
-        console.log(block.Key)
-      })
-    }
-
     const block = new Block(buf)
 
-    ipfs.block.put(block, (err, obj) => {
+    ipfs.block.put(block, (err, block) => {
       if (err) {
         throw err
       }
