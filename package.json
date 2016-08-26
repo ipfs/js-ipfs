@@ -44,7 +44,7 @@
     "buffer-loader": "0.0.1",
     "chai": "^3.5.0",
     "expose-loader": "^0.7.1",
-    "form-data": "^1.0.0-rc4",
+    "form-data": "^1.0.1",
     "gulp": "^3.9.1",
     "idb-plus-blob-store": "^1.1.2",
     "interface-ipfs-core": "^0.14.0",
