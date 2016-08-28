@@ -34,7 +34,9 @@ function checkPath (inPath, recursive) {
   return inPath
 }
 
-module.exports = {
+module.exports = command
+
+const command = {
   command: 'add <file>',
 
   describe: 'Add a file to IPFS using the UnixFS data format',
@@ -50,7 +52,9 @@ module.exports = {
   handler (argv) {
     let inPath = checkPath(argv.file, argv.recursive)
 
-    utils.getIPFS((err, ipfs) => {
+    utils.getIPFS(gotIPFS)
+
+    function gotIPFS (err, ipfs) {
       if (err) {
         throw err
       }
@@ -116,6 +120,6 @@ module.exports = {
           })
         })
       })
-    })
+    }
   }
 }
