@@ -67,7 +67,7 @@
     "fs-blob-store": "^5.2.1",
     "glob": "^7.0.5",
     "hapi": "^14.0.0",
-    "ipfs-api": "^8.0.1",
+    "ipfs-api": "^8.0.3",
     "ipfs-bitswap": "^0.6.0",
     "ipfs-block": "^0.3.0",
     "ipfs-block-service": "^0.4.0",
