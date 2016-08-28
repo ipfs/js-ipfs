@@ -34,7 +34,8 @@
     "promisify-es6": "^1.0.1",
     "qs": "^6.2.1",
     "tar-stream": "^1.5.2",
-    "wreck": "^9.0.0"
+    "wreck": "^9.0.0",
+    "streamifier": "^0.1.1"
   },
   "engines": {
     "node": ">=4.2.2"
@@ -54,8 +55,7 @@
     "socket.io": "^1.4.8",
     "socket.io-client": "^1.4.8",
     "stream-equal": "^0.1.8",
-    "stream-http": "^2.3.1",
-    "streamifier": "^0.1.1"
+    "stream-http": "^2.3.1"
   },
   "pre-commit": [
     "lint",
