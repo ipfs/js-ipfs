@@ -3,13 +3,12 @@
 module.exports = {
   command: 'files',
 
-  description: '',
+  description: 'Unixfs commands',
 
   builder (yargs) {
     return yargs
       .commandDir('files')
   },
 
-  handler (argv) {
-  }
+  handler (argv) {}
 }

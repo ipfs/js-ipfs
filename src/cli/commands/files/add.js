@@ -34,9 +34,7 @@ function checkPath (inPath, recursive) {
   return inPath
 }
 
-module.exports = command
-
-const command = {
+module.exports = {
   command: 'add <file>',
 
   describe: 'Add a file to IPFS using the UnixFS data format',
