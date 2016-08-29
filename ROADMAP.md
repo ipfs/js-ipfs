@@ -79,7 +79,12 @@ UPDATE:
 #### Extra:
 
 - [ ] Migration to pull-streams - https://github.com/ipfs/js-ipfs/issues/403
-- [ ] Usage of interface-ipfs-core tests with js-ipfs-api to test the http-api of js-ipfs
+- [ ] Test js-ipfs using ipfs-api through http-api with interface-ipfs-core tests
+  - [x] test-block
+  - [x] test-object
+  - [ ] test-files
+  - [x] test-config
+  - [ ] test-swarm
 
 ### Dependencies:
 
@@ -87,6 +92,7 @@ UPDATE:
   - [ ] Do not assume that the Public Key is only transfered in secio
   - [ ] Websockets support (really nice to have)
   - [ ] use the defined protocol multicodecs https://github.com/ipfs/specs/blob/master/libp2p/7-properties.md#757-protocol-multicodecs
+- [ ] go-libp2p scripts for libp2p interop testing https://github.com/ipfs/js-libp2p-ipfs/issues/15
 
 ### Notes:
 
