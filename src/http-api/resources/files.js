@@ -75,9 +75,10 @@ exports.add = {
       }
 
       fileAdder.on('data', (file) => {
+        const filePath = file.path ? file.path : file.hash
         serialize.write({
-          Name: file.path,
-          Hash: bs58.encode(file.node.multihash()).toString()
+          Name: filePath,
+          Hash: file.hash
         })
         filesAdded++
       })
@@ -103,6 +104,12 @@ exports.add = {
         }
         filesParsed = true
         fileAdder.write(filePair)
+      })
+      parser.on('directory', (directory) => {
+        fileAdder.write({
+          path: directory,
+          content: ''
+        })
       })
 
       parser.on('end', () => {
