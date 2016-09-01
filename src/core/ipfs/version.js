@@ -1,26 +1,19 @@
 'use strict'
 
-const utils = require('../utils')
+const pkg = require('../../../package.json')
+const promisify = require('promisify-es6')
 
 module.exports = function version (self) {
-  return (opts, callback) => {
+  return promisify((opts, callback) => {
     if (typeof opts === 'function') {
       callback = opts
       opts = {}
     }
 
-    utils.ifRepoExists(self._repo, (err) => {
-      if (err) {
-        return callback(err)
-      }
-
-      self._repo.config.get((err, config) => {
-        if (err) {
-          return callback(err)
-        }
-
-        callback(null, config.Version.Current)
-      })
+    callback(null, {
+      version: pkg.version,
+      repo: '',
+      commit: ''
     })
-  }
+  })
 }

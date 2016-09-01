@@ -20,67 +20,71 @@ function makeBlock () {
 }
 
 describe('bitswap', () => {
-  let ipfs
-  let configBak
+  let inProcNode // Node spawned inside this process
+  let swarmAddrsBak
 
   beforeEach((done) => {
-    ipfs = new IPFS(require('../../utils/repo-path'))
+    inProcNode = new IPFS(require('../../utils/repo-path'))
     if (!isNode) {
-      ipfs.config.show((err, config) => {
-        configBak = JSON.parse(JSON.stringify(config))
+      inProcNode.config.get('Addresses.Swarm', (err, swarmAddrs) => {
         expect(err).to.not.exist
-        config.Addresses.Swarm = []
-        ipfs.config.replace(config, (err) => {
+        swarmAddrsBak = swarmAddrs
+        inProcNode.config.set('Addresses.Swarm', [], (err) => {
           expect(err).to.not.exist
-          ipfs.load(done)
+          inProcNode.load(done)
         })
       })
     } else {
-      ipfs.load(done)
+      inProcNode.load(done)
     }
   })
 
   afterEach((done) => {
     if (!isNode) {
-      ipfs.config.replace(configBak, done)
+      inProcNode.config.set('Addresses.Swarm', swarmAddrsBak, done)
     } else {
       done()
     }
   })
 
   describe('connections', () => {
-    function connectNodesSingle (node1, node2, done) {
-      node1.id((err, res) => {
+    function wire (targetNode, dialerNode, done) {
+      targetNode.id((err, identity) => {
         expect(err).to.not.exist
-        const addr = res.Addresses
-                .map((addr) => multiaddr(addr))
-                .filter((addr) => {
-                  return _.includes(addr.protoNames(), 'ws')
-                })[0]
+        const addr = identity.addresses
+          .map((addr) => multiaddr(addr))
+          .filter((addr) => {
+            return _.includes(addr.protoNames(), 'ws')
+          })[0]
 
-        let target
+        let targetAddr
         if (addr) {
-          target = addr.encapsulate(multiaddr(`/ipfs/${res.ID}`)).toString()
-          target = target.replace('0.0.0.0', '127.0.0.1')
+          targetAddr = addr.encapsulate(multiaddr(`/ipfs/${identity.id}`)).toString()
+          targetAddr = targetAddr.replace('0.0.0.0', '127.0.0.1')
         } else {
-          // cause browser nodes don't have a websockets addrs
-          // TODO, what we really need is a way to dial to a peerId only
-          // and another to dial to peerInfo
-          target = multiaddr(`/ip4/0.0.0.0/tcp/0/ws/ipfs/${res.ID}`).toString()
+          // Note: the browser doesn't have
+          // a websockets listening addr
+
+          // TODO, what we really need is a way to dial to
+          // a peerId only and another to dial to peerInfo
+          targetAddr = multiaddr(`/ip4/127.0.0.1/tcp/0/ws/ipfs/${identity.id}`).toString()
         }
 
-        const swarm = node2.libp2p ? node2.libp2p.swarm : node2.swarm
-        swarm.connect(target, done)
+        dialerNode.swarm.connect(targetAddr, done)
       })
     }
 
-    function connectNodes (node1, node2, done) {
+    function connectNodes (remoteNode, ipn, done) {
       series([
-        (cb) => connectNodesSingle(node1, node2, cb),
+        (cb) => {
+          wire(remoteNode, ipn, cb)
+        },
         (cb) => setTimeout(() => {
-          // need timeout so we wait for identify to happen
-          // in the browsers
-          connectNodesSingle(node2, node1, cb)
+          // need timeout so we wait for identify
+          // to happen.
+
+          // This call is just to ensure identify happened
+          wire(ipn, remoteNode, cb)
         }, 300)
       ], done)
     }
@@ -88,38 +92,39 @@ describe('bitswap', () => {
     function addNode (num, done) {
       num = leftPad(num, 3, 0)
       const apiUrl = `/ip4/127.0.0.1/tcp/31${num}`
-      const node = new API(apiUrl)
+      const remoteNode = new API(apiUrl)
 
-      connectNodes(node, ipfs, (err) => {
-        done(err, node)
+      connectNodes(remoteNode, inProcNode, (err) => {
+        done(err, remoteNode)
       })
     }
 
     describe('fetches a remote block', () => {
       beforeEach((done) => {
-        ipfs.goOnline(done)
+        inProcNode.goOnline(done)
       })
 
       afterEach((done) => {
-        // ipfs.goOffline(done)
-        setTimeout(() => ipfs.goOffline(done), 1500)
+        setTimeout(() => inProcNode.goOffline(done), 1500)
       })
 
       it('2 peers', (done) => {
         const block = makeBlock()
-        let node
+        let remoteNode
         series([
           // 0. Start node
-          (cb) => addNode(13, (err, _ipfs) => {
-            node = _ipfs
+          (cb) => addNode(13, (err, _remoteNode) => {
+            expect(err).to.not.exist
+            remoteNode = _remoteNode
             cb(err)
           }),
-          (cb) => node.block.put(block.data, cb),
           (cb) => {
-            ipfs.block.get(block.key, (err, b) => {
-              expect(err).to.not.exist
+            remoteNode.block.put(block, cb)
+          },
+          (cb) => {
+            inProcNode.block.get(block.key, (err, b) => {
               expect(b.data.toString()).to.be.eql(block.data.toString())
-              cb()
+              cb(err)
             })
           }
         ], done)
@@ -130,23 +135,23 @@ describe('bitswap', () => {
 
         const blocks = _.range(6).map((i) => makeBlock())
         const keys = blocks.map((b) => b.key)
-        const nodes = []
+        const remoteNodes = []
         series([
           (cb) => addNode(8, (err, _ipfs) => {
-            nodes.push(_ipfs)
+            remoteNodes.push(_ipfs)
             cb(err)
           }),
           (cb) => addNode(7, (err, _ipfs) => {
-            nodes.push(_ipfs)
+            remoteNodes.push(_ipfs)
             cb(err)
           }),
-          (cb) => connectNodes(nodes[0], nodes[1], cb),
-          (cb) => nodes[0].block.put(blocks[0].data, cb),
-          (cb) => nodes[0].block.put(blocks[1].data, cb),
-          (cb) => nodes[1].block.put(blocks[2].data, cb),
-          (cb) => nodes[1].block.put(blocks[3].data, cb),
-          (cb) => ipfs.block.put(blocks[4], cb),
-          (cb) => ipfs.block.put(blocks[5], cb),
+          (cb) => connectNodes(remoteNodes[0], remoteNodes[1], cb),
+          (cb) => remoteNodes[0].block.put(blocks[0], cb),
+          (cb) => remoteNodes[0].block.put(blocks[1], cb),
+          (cb) => remoteNodes[1].block.put(blocks[2], cb),
+          (cb) => remoteNodes[1].block.put(blocks[3], cb),
+          (cb) => inProcNode.block.put(blocks[4], cb),
+          (cb) => inProcNode.block.put(blocks[5], cb),
           // 3. Fetch blocks on all nodes
           (cb) => parallel(_.range(6).map((i) => (cbI) => {
             const toMh = (k) => bs58.encode(k).toString()
@@ -163,9 +168,9 @@ describe('bitswap', () => {
             }
 
             series([
-              (cbJ) => check(nodes[0], toMh(keys[i]), cbJ),
-              (cbJ) => check(nodes[1], toMh(keys[i]), cbJ),
-              (cbJ) => check(ipfs, keys[i], cbJ)
+              (cbJ) => check(remoteNodes[0], toMh(keys[i]), cbJ),
+              (cbJ) => check(remoteNodes[1], toMh(keys[i]), cbJ),
+              (cbJ) => check(inProcNode, keys[i], cbJ)
             ], cbI)
           }), cb)
         ], done)
@@ -175,7 +180,7 @@ describe('bitswap', () => {
     // wont work without http-api for add
     describe.skip('fetches a remote file', () => {
       beforeEach((done) => {
-        ipfs.goOnline(done)
+        inProcNode.goOnline(done)
       })
 
       it('2 peers', (done) => {
@@ -194,7 +199,7 @@ describe('bitswap', () => {
           (val, cb) => {
             const hash = bs58.encode(val[0].multihash).toString()
 
-            ipfs.files.cat(hash, (err, res) => {
+            inProcNode.files.cat(hash, (err, res) => {
               expect(err).to.not.exist
               res.on('file', (data) => {
                 data.content.pipe(bl((err, bldata) => {
@@ -211,40 +216,40 @@ describe('bitswap', () => {
     })
   })
 
-  describe('commands', () => {
+  describe('bitswap API', () => {
     describe('wantlist', (done) => {
       it('throws if offline', () => {
         expect(
-          () => ipfs.bitswap.wantlist()
+          () => inProcNode.bitswap.wantlist()
         ).to.throw(/online/)
       })
 
       it('returns an array of wanted blocks', (done) => {
-        ipfs.goOnline((err) => {
+        inProcNode.goOnline((err) => {
           expect(err).to.not.exist
 
           expect(
-            ipfs.bitswap.wantlist()
+            inProcNode.bitswap.wantlist()
           ).to.be.eql(
             []
           )
 
-          ipfs.goOffline(done)
+          inProcNode.goOffline(done)
         })
       })
 
       describe('stat', () => {
-        it('throws if offline', () => {
+        it('throws while offline', () => {
           expect(
-            () => ipfs.bitswap.stat()
+            () => inProcNode.bitswap.stat()
           ).to.throw(/online/)
         })
 
         it('returns the stats', (done) => {
-          ipfs.goOnline((err) => {
+          inProcNode.goOnline((err) => {
             expect(err).to.not.exist
 
-            let stats = ipfs.bitswap.stat()
+            let stats = inProcNode.bitswap.stat()
 
             expect(stats).to.have.keys([
               'blocksReceived',
@@ -254,7 +259,7 @@ describe('bitswap', () => {
               'dupBlksReceived'
             ])
 
-            ipfs.goOffline(done)
+            inProcNode.goOffline(done)
           })
         })
       })
@@ -262,7 +267,7 @@ describe('bitswap', () => {
       describe('unwant', () => {
         it('throws if offline', () => {
           expect(
-            () => ipfs.bitswap.unwant('my key')
+            () => inProcNode.bitswap.unwant('my key')
           ).to.throw(/online/)
         })
       })

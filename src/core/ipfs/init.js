@@ -12,12 +12,16 @@ const Importer = require('ipfs-unixfs-engine').importer
 
 module.exports = function init (self) {
   return (opts, callback) => {
-    opts = opts || {}
+    if (typeof opts === 'function') {
+      callback = opts
+      opts = {}
+    }
+
     opts.emptyRepo = opts.emptyRepo || false
     opts.bits = opts.bits || 2048
 
     // Pre-set config values.
-    var config = JSON.parse(fs.readFileSync(path.join(__dirname, '../../init-files/default-config.json')).toString())
+    const config = JSON.parse(fs.readFileSync(path.join(__dirname, '../../init-files/default-config.json')).toString())
 
     // Verify repo does not yet exist.
     self._repo.exists((err, exists) => {

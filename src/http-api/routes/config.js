@@ -19,7 +19,7 @@ module.exports = (server) => {
   api.route({
     method: '*',
     path: '/api/v0/config/show',
-    handler: resources.config.show
+    handler: resources.config.get
   })
 
   api.route({

@@ -1,18 +1,13 @@
 'use strict'
 
-const Command = require('ronin').Command
 const utils = require('../../utils')
 
-module.exports = Command.extend({
-  desc: 'Remove a given block from your wantlist.',
+module.exports = {
+  command: 'unwant <key>',
 
-  options: {
-    key: {
-      required: true
-    }
-  },
+  describe: 'Remove a given block from your wantlist.',
 
-  run: (key) => {
+  handler (argv) {
     utils.getIPFS((err, ipfs) => {
       if (err) {
         throw err
@@ -21,4 +16,4 @@ module.exports = Command.extend({
       throw new Error('Not implemented yet')
     })
   }
-})
+}

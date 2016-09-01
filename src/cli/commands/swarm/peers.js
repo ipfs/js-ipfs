@@ -1,17 +1,18 @@
 'use strict'
 
-const Command = require('ronin').Command
 const utils = require('../../utils')
 const debug = require('debug')
 const log = debug('cli:object')
 log.error = debug('cli:object:error')
 
-module.exports = Command.extend({
-  desc: 'List peers with open connections',
+module.exports = {
+  command: 'peers',
 
-  options: {},
+  describe: 'List peers with open connections',
 
-  run: () => {
+  builder: {},
+
+  handler (argv) {
     utils.getIPFS((err, ipfs) => {
       if (err) {
         throw err
@@ -32,4 +33,4 @@ module.exports = Command.extend({
       })
     })
   }
-})
+}

@@ -1,14 +1,15 @@
 'use strict'
 
-const Command = require('ronin').Command
 const utils = require('../../utils')
 
-module.exports = Command.extend({
-  desc: 'Shows IPFS repo version information',
+module.exports = {
+  command: 'version',
 
-  options: {},
+  describe: 'Shows IPFS repo version information',
 
-  run: function () {
+  builder: {},
+
+  handler (argv) {
     utils.getIPFS((err, ipfs) => {
       if (err) {
         throw err
@@ -21,4 +22,4 @@ module.exports = Command.extend({
       })
     })
   }
-})
+}

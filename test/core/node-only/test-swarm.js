@@ -39,14 +39,14 @@ describe('swarm', function () {
       (cb) => {
         nodeA.id((err, res) => {
           expect(err).to.not.exist
-          // nodeAMultiaddr = `${res.Addresses[0]}/ipfs/${res.ID}`
+          // nodeAMultiaddr = `${res.addresses[0]}/ipfs/${res.id}`
           cb()
         })
       },
       (cb) => {
         nodeB.id((err, res) => {
           expect(err).to.not.exist
-          nodeBMultiaddr = `${res.Addresses[0]}/ipfs/${res.ID}`
+          nodeBMultiaddr = `${res.addresses[0]}/ipfs/${res.id}`
           cb()
         })
       }
@@ -90,7 +90,7 @@ describe('swarm', function () {
   it('libp2p.swarm.localAddrs', (done) => {
     nodeB.libp2p.swarm.localAddrs((err, res) => {
       expect(err).to.not.exist
-      expect(res.length).to.equal(2)
+      expect(res.length > 1).to.equal(true)
       done()
     })
   })

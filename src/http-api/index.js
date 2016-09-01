@@ -7,6 +7,7 @@ const fs = require('fs')
 const path = require('path')
 const IPFSRepo = require('ipfs-repo')
 const fsbs = require('fs-blob-store')
+const multiaddr = require('multiaddr')
 
 const log = debug('api')
 log.error = debug('api:error')
@@ -38,7 +39,7 @@ exports = module.exports = function HttpApi (repo) {
         fs.writeFileSync(apiPath, 'api is on by js-ipfs', {flag: 'w+'})
       }
 
-      this.ipfs.config.show((err, config) => {
+      this.ipfs.config.get((err, config) => {
         if (err) {
           return callback(err)
         }
@@ -64,6 +65,7 @@ exports = module.exports = function HttpApi (repo) {
           port: api[4],
           labels: 'API'
         })
+
         this.server.connection({
           host: gateway[2],
           port: gateway[4],
@@ -80,6 +82,7 @@ exports = module.exports = function HttpApi (repo) {
             }
             const api = this.server.select('API')
             const gateway = this.server.select('Gateway')
+            this.apiMultiaddr = multiaddr('/ip4/127.0.0.1/tcp/' + api.info.port)
             console.log('API is listening on: %s', api.info.uri)
             console.log('Gateway (readonly) is listening on: %s', gateway.info.uri)
             callback()

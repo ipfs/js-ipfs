@@ -1,6 +1,5 @@
 'use strict'
 
-const Command = require('ronin').Command
 const debug = require('debug')
 const get = require('lodash.get')
 const set = require('lodash.set')
@@ -8,24 +7,34 @@ const log = debug('cli:config')
 log.error = debug('cli:config:error')
 const utils = require('../utils')
 
-module.exports = Command.extend({
-  desc: 'Get and set IPFS config values',
+module.exports = {
+  command: 'config <key> [value]',
 
-  options: {
-    bool: {
-      type: 'boolean',
-      default: false
-    },
-    json: {
-      type: 'boolean',
-      default: false
-    }
+  description: 'Get and set IPFS config values',
+
+  builder (yargs) {
+    return yargs
+      .commandDir('config')
+      .options({
+        bool: {
+          type: 'boolean',
+          default: false
+        },
+        json: {
+          type: 'boolean',
+          default: false
+        }
+      })
   },
 
-  run: (bool, json, key, value) => {
-    if (!key) {
-      throw new Error("argument 'key' is required")
-    }
+  handler (argv) {
+    if (argv._handled) return
+    argv._handled = true
+
+    const bool = argv.bool
+    const json = argv.json
+    const key = argv.key
+    let value = argv.value
 
     utils.getIPFS((err, ipfs) => {
       if (err) {
@@ -46,7 +55,7 @@ module.exports = Command.extend({
           })
         }
 
-        ipfs.config.show((err, config) => {
+        ipfs.config.get((err, config) => {
           if (err) {
             log.error(err)
             throw new Error('failed to read the config')
@@ -78,7 +87,7 @@ module.exports = Command.extend({
           })
         }
 
-        ipfs.config.show((err, originalConfig) => {
+        ipfs.config.get((err, originalConfig) => {
           if (err) {
             log.error(err)
             throw new Error('failed to read the config')
@@ -95,4 +104,4 @@ module.exports = Command.extend({
       }
     })
   }
-})
+}

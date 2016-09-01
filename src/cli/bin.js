@@ -2,12 +2,20 @@
 
 'use strict'
 
-const ronin = require('ronin')
+const yargs = require('yargs')
+const updateNotifier = require('update-notifier')
+const readPkgUp = require('read-pkg-up')
 
-const cli = ronin(__dirname)
+const pkg = readPkgUp.sync().pkg
+updateNotifier({
+  pkg,
+  updateCheckInterval: 1000 * 60 * 60 * 24 * 7 // 1 week
+}).notify()
 
-cli.run()
-
-// cli.autoupdate(function () {
-//   cli.run()
-// })
+yargs
+  .commandDir('commands')
+  .demand(1)
+  .help()
+  .strict()
+  .completion()
+  .argv

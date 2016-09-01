@@ -3,6 +3,7 @@
 const debug = require('debug')
 const log = debug('http-api:block')
 log.error = debug('http-api:block:error')
+const multiaddr = require('multiaddr')
 
 exports = module.exports
 
@@ -10,6 +11,12 @@ exports = module.exports
 exports.parseAddrs = (request, reply) => {
   if (!request.query.arg) {
     return reply("Argument 'addr' is required").code(400).takeover()
+  }
+
+  try {
+    multiaddr(request.query.arg)
+  } catch (err) {
+    return reply("Argument 'addr' is invalid").code(500).takeover()
   }
 
   return reply({
@@ -65,7 +72,7 @@ exports.connect = {
   handler: (request, reply) => {
     const addr = request.pre.args.addr
 
-    request.server.app.ipfs.libp2p.swarm.connect(addr, (err, res) => {
+    request.server.app.ipfs.libp2p.swarm.connect(addr, (err) => {
       if (err) {
         log.error(err)
         return reply({
@@ -75,7 +82,7 @@ exports.connect = {
       }
 
       return reply({
-        Strings: [`connect ${res.toB58String()} success`]
+        Strings: [`connect ${addr} success`]
       })
     })
   }

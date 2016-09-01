@@ -1,19 +1,20 @@
 'use strict'
 
-const Command = require('ronin').Command
 const utils = require('../../utils')
 const debug = require('debug')
 const log = debug('cli:swarm')
 log.error = debug('cli:swarm:error')
 
-module.exports = Command.extend({
-  desc: 'Open connection to a given address',
+module.exports = {
+  command: 'connect <address>',
 
-  options: {},
+  describe: 'Open connection to a given address',
 
-  run: (address) => {
-    if (!address) {
-      throw new Error("Argument 'address' is required")
+  builder: {},
+
+  handler (argv) {
+    if (!utils.isDaemonOn()) {
+      throw new Error('This command must be run in online mode. Try running \'ipfs daemon\' first.')
     }
 
     utils.getIPFS((err, ipfs) => {
@@ -21,11 +22,7 @@ module.exports = Command.extend({
         throw err
       }
 
-      if (!utils.isDaemonOn()) {
-        throw new Error('This command must be run in online mode. Try running \'ipfs daemon\' first.')
-      }
-
-      ipfs.swarm.connect(address, (err, res) => {
+      ipfs.swarm.connect(argv.address, (err, res) => {
         if (err) {
           throw err
         }
@@ -34,4 +31,4 @@ module.exports = Command.extend({
       })
     })
   }
-})
+}

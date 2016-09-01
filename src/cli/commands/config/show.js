@@ -1,22 +1,26 @@
 'use strict'
 
-const Command = require('ronin').Command
 const debug = require('debug')
 const log = debug('cli:config')
 log.error = debug('cli:config:error')
 const utils = require('../../utils')
 
-module.exports = Command.extend({
-  desc: 'Outputs the content of the config file',
+module.exports = {
+  command: 'show',
 
-  options: {},
+  describe: 'Outputs the content of the config file',
 
-  run: () => {
+  builder: {},
+
+  handler (argv) {
+    if (argv._handled) return
+    argv._handled = true
+
     utils.getIPFS((err, ipfs) => {
       if (err) {
         throw err
       }
-      ipfs.config.show((err, config) => {
+      ipfs.config.get((err, config) => {
         if (err) {
           throw err
         }
@@ -25,4 +29,4 @@ module.exports = Command.extend({
       })
     })
   }
-})
+}

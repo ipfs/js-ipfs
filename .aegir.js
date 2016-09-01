@@ -14,8 +14,9 @@ module.exports = {
       }
     },
     externals: {
-      fs: '{}',
-      mkdirp: '{}'
+      mkdirp: '{}',
+      glob: '{}',
+      'simple-websocket-server': '{}'
     }
   }
 }

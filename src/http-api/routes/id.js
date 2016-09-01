@@ -6,7 +6,7 @@ module.exports = (server) => {
   const api = server.select('API')
 
   api.route({
-    method: 'GET',
+    method: '*',
     path: '/api/v0/id',
     handler: resources.id.get
   })

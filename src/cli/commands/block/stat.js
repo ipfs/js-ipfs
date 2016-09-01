@@ -1,44 +1,32 @@
 'use strict'
 
-const Command = require('ronin').Command
 const utils = require('../../utils')
 const bs58 = require('bs58')
 const debug = require('debug')
 const log = debug('cli:block')
 log.error = debug('cli:block:error')
 
-module.exports = Command.extend({
-  desc: 'Print information of a raw IPFS block',
+module.exports = {
+  command: 'stat <key>',
 
-  options: {},
+  describe: 'Print information of a raw IPFS block',
 
-  run: (key) => {
-    if (!key) {
-      throw new Error("Argument 'key' is required")
-    }
+  builder: {},
 
+  handler (argv) {
     utils.getIPFS((err, ipfs) => {
       if (err) {
         throw err
       }
 
-      const mh = utils.isDaemonOn()
-        ? key
-        : new Buffer(bs58.decode(key))
-
-      ipfs.block.stat(mh, (err, block) => {
+      ipfs.block.stat(argv.key, (err, stats) => {
         if (err) {
           throw err
         }
 
-        if (typeof block.Key !== 'string') {
-          block.Key = bs58.encode(block.Key).toString()
-        }
-
-        Object.keys(block).forEach((key) => {
-          console.log(`${key}: ${block[key]}`)
-        })
+        console.log('Key:', bs58.encode(stats.key).toString())
+        console.log('Size:', stats.size)
       })
     })
   }
-})
+}

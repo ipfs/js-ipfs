@@ -30,11 +30,16 @@ module.exports = function files (self) {
 
       i.on('data', (file) => {
         counter++
+        const bs58mh = multihashes.toB58String(file.multihash)
         self.object.get(file.multihash, (err, node) => {
           if (err) {
             return ds.emit('error', err)
           }
-          ds.push({path: file.path, node: node})
+          ds.push({
+            path: file.path,
+            hash: bs58mh,
+            size: node.size()
+          })
           counter--
         })
       })
@@ -79,12 +84,13 @@ module.exports = function files (self) {
 
       // Transform file info tuples to DAGNodes
       i.pipe(through.obj((info, enc, next) => {
-        const mh = multihashes.toB58String(info.multihash)
-        self._dagS.get(mh, (err, node) => {
+        const bs58mh = multihashes.toB58String(info.multihash)
+        self._dagS.get(bs58mh, (err, node) => {
           if (err) return callback(err)
           var obj = {
-            path: info.path || mh,
-            node: node
+            path: info.path || bs58mh,
+            hash: bs58mh,
+            size: node.size()
           }
           res.push(obj)
           next()
@@ -120,9 +126,9 @@ module.exports = function files (self) {
       })
     }),
 
-    get: (hash, callback) => {
-      var exportFile = Exporter(hash, self._dagS)
+    get: promisify((hash, callback) => {
+      const exportFile = Exporter(hash, self._dagS)
       callback(null, exportFile)
-    }
+    })
   }
 }

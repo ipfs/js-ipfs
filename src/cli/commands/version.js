@@ -1,15 +1,16 @@
 'use strict'
 
-const Command = require('ronin').Command
 const utils = require('../utils')
 const debug = require('debug')
 const log = debug('cli:version')
 log.error = debug('cli:version:error')
 
-module.exports = Command.extend({
-  desc: 'Shows IPFS version information',
+module.exports = {
+  command: 'version',
 
-  options: {
+  describe: 'Shows IPFS version information',
+
+  builder: {
     number: {
       alias: 'n',
       type: 'boolean',
@@ -25,7 +26,8 @@ module.exports = Command.extend({
     }
   },
 
-  run: () => {
+  handler (argv) {
+    // TODO: handle argv.{repo|commit|number}
     utils.getIPFS((err, ipfs) => {
       if (err) {
         throw err
@@ -36,12 +38,11 @@ module.exports = Command.extend({
         }
 
         if (typeof version === 'object') { // js-ipfs-api output
-          console.log('ipfs version', version.Version)
-          return
+          version = version.Version
         }
 
-        console.log('ipfs version', version)
+        console.log(`js-ipfs version: ${version}`)
       })
     })
   }
-})
+}

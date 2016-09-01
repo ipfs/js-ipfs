@@ -1,6 +1,5 @@
 'use strict'
 
-const Command = require('ronin').Command
 const debug = require('debug')
 const utils = require('../../utils')
 const log = debug('cli:files')
@@ -10,14 +9,7 @@ const path = require('path')
 const pathExists = require('path-exists')
 
 function checkArgs (hash, outPath) {
-  if (!hash) {
-    throw new Error("Argument 'path' is required")
-  }
   // format the output directory
-  if (!outPath) {
-    return process.cwd()
-  }
-
   if (!outPath.endsWith('/')) {
     outPath += '/'
   }
@@ -70,17 +62,27 @@ function fileHandler (result, dir) {
   }
 }
 
-module.exports = Command.extend({
-  desc: 'Download IPFS objects',
+module.exports = {
+  command: 'get <ipfs-path>',
 
-  run: (hash, outPath) => {
-    const dir = checkArgs(hash, outPath)
+  describe: 'Download IPFS objects',
+
+  builder: {
+    output: {
+      alias: 'o',
+      type: 'string',
+      default: process.cwd()
+    }
+  },
+
+  handler (argv) {
+    const dir = checkArgs(argv.ipfsPath, argv.output)
 
     utils.getIPFS((err, ipfs) => {
       if (err) {
         throw err
       }
-      ipfs.files.get(hash, (err, result) => {
+      ipfs.files.get(argv.ipfsPath, (err, result) => {
         if (err) {
           throw err
         }
@@ -88,4 +90,4 @@ module.exports = Command.extend({
       })
     })
   }
-})
+}
