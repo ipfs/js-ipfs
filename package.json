@@ -96,6 +96,7 @@
     "promisify-es6": "^1.0.1",
     "pull-file": "^1.0.0",
     "pull-paramap": "^1.1.6",
+    "pull-pushable": "^2.0.1",
     "pull-sort": "^1.0.0",
     "pull-stream": "^3.4.5",
     "pull-stream-to-stream": "^1.3.3",

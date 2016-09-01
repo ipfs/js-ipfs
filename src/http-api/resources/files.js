@@ -1,13 +1,16 @@
 'use strict'
 
 const bs58 = require('bs58')
-const ndjson = require('ndjson')
 const multipart = require('ipfs-multipart')
 const debug = require('debug')
 const tar = require('tar-stream')
 const log = debug('http-api:files')
 log.error = debug('http-api:files:error')
-const async = require('async')
+const pull = require('pull-stream')
+const toStream = require('pull-stream-to-stream')
+const toPull = require('stream-to-pull-stream')
+const pushable = require('pull-pushable')
+const EOL = require('os').EOL
 
 exports = module.exports
 
@@ -37,8 +40,9 @@ exports.cat = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
     const key = request.pre.args.key
+    const ipfs = request.server.app.ipfs
 
-    request.server.app.ipfs.files.cat(key, (err, stream) => {
+    ipfs.files.cat(key, (err, stream) => {
       if (err) {
         log.error(err)
         return reply({
@@ -46,6 +50,13 @@ exports.cat = {
           Code: 0
         }).code(500)
       }
+
+      // hapi is not very clever and throws if no
+      // - _read method
+      // - _readableState object
+      // are there :(
+      stream._read = () => {}
+      stream._readableState = {}
       return reply(stream).header('X-Stream-Output', '1')
     })
   }
@@ -58,45 +69,44 @@ exports.get = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
     const key = request.pre.args.key
+    const ipfs = request.server.app.ipfs
+    const pack = tar.pack()
 
-    request.server.app.ipfs.files.get(key, (err, stream) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: 'Failed to get file: ' + err,
-          Code: 0
-        }).code(500)
-      }
-      var pack = tar.pack()
-      const files = []
-      stream.on('data', (data) => {
-        files.push(data)
-      })
-      const processFile = (file) => {
-        return (callback) => {
-          if (!file.content) { // is directory
-            pack.entry({name: file.path, type: 'directory'})
-            callback()
-          } else { // is file
-            const fileContents = []
-            file.content.on('data', (data) => {
-              fileContents.push(data)
-            })
-            file.content.on('end', () => {
-              pack.entry({name: file.path}, Buffer.concat(fileContents))
-              callback()
-            })
+    ipfs.files.getPull(key, (err, stream) => {
+      if (err) return handleError(err)
+
+      pull(
+        stream,
+        pull.asyncMap((file, cb) => {
+          const header = {name: file.path}
+
+          if (!file.content) {
+            header.type = 'directory'
+            pack.entry(header)
+            cb()
+          } else {
+            header.size = file.size
+            toStream.source(file.content)
+              .pipe(pack.entry(header, cb))
           }
-        }
-      }
-      stream.on('end', () => {
-        const callbacks = files.map(processFile)
-        async.series(callbacks, () => {
+        }),
+        pull.onEnd((err) => {
+          if (err) return handleError(err)
+
           pack.finalize()
           reply(pack).header('X-Stream-Output', '1')
         })
-      })
+      )
     })
+
+    function handleError (err) {
+      log.error(err)
+
+      reply({
+        Message: 'Failed to get file: ' + err,
+        Code: 0
+      }).code(500)
+    }
   }
 }
 
@@ -106,67 +116,66 @@ exports.add = {
       return reply('Array, Buffer, or String is required.').code(400).takeover()
     }
 
+    const ipfs = request.server.app.ipfs
+    // TODO: make pull-multipart
     const parser = multipart.reqParser(request.payload)
+    let filesParsed = false
 
-    var filesParsed = false
-    var filesAdded = 0
+    const fileAdder = pushable()
 
-    var serialize = ndjson.serialize()
-    // hapi doesn't permit object streams: http://hapijs.com/api#replyerr-result
-    serialize._readableState.objectMode = false
-
-    request.server.app.ipfs.files.createAddStream((err, fileAdder) => {
-      if (err) {
-        return reply({
-          Message: err,
-          Code: 0
-        }).code(500)
+    parser.on('file', (fileName, fileStream) => {
+      const filePair = {
+        path: fileName,
+        content: toPull(fileStream)
       }
+      filesParsed = true
+      fileAdder.push(filePair)
+    })
 
-      fileAdder.on('data', (file) => {
-        const filePath = file.path ? file.path : file.hash
-        serialize.write({
-          Name: filePath,
-          Hash: file.hash
-        })
-        filesAdded++
+    parser.on('directory', (directory) => {
+      fileAdder.push({
+        path: directory,
+        content: ''
       })
+    })
 
-      fileAdder.on('end', () => {
-        if (filesAdded === 0 && filesParsed) {
+    parser.on('end', () => {
+      if (!filesParsed) {
+        return reply("File argument 'data' is required.")
+          .code(400).takeover()
+      }
+      fileAdder.end()
+    })
+
+    pull(
+      fileAdder,
+      ipfs.files.createAddPullStream(),
+      pull.map((file) => {
+        return {
+          Name: file.path ? file.path : file.hash,
+          Hash: file.hash
+        }
+      }),
+      pull.map((file) => JSON.stringify(file) + EOL),
+      pull.collect((err, files) => {
+        if (err) {
+          return reply({
+            Message: err,
+            Code: 0
+          }).code(500)
+        }
+
+        if (files.length === 0 && filesParsed) {
           return reply({
             Message: 'Failed to add files.',
             Code: 0
           }).code(500)
-        } else {
-          serialize.end()
-          return reply(serialize)
-            .header('x-chunked-output', '1')
-            .header('content-type', 'application/json')
         }
-      })
 
-      parser.on('file', (fileName, fileStream) => {
-        var filePair = {
-          path: fileName,
-          content: fileStream
-        }
-        filesParsed = true
-        fileAdder.write(filePair)
+        reply(files.join(''))
+          .header('x-chunked-output', '1')
+          .header('content-type', 'application/json')
       })
-      parser.on('directory', (directory) => {
-        fileAdder.write({
-          path: directory,
-          content: ''
-        })
-      })
-
-      parser.on('end', () => {
-        if (!filesParsed) {
-          return reply("File argument 'data' is required.").code(400).takeover()
-        }
-        fileAdder.end()
-      })
-    })
+    )
   }
 }

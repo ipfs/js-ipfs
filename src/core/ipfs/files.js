@@ -53,6 +53,7 @@ module.exports = function files (self) {
       pull(
         pull.values([hash]),
         pull.asyncMap(self._dagS.get.bind(self._dagS)),
+        pull.take(1),
         pull.map((node) => {
           const data = UnixFS.unmarshal(node.data)
           if (data.type === 'directory') {
@@ -81,6 +82,10 @@ module.exports = function files (self) {
           return file
         })
       )))
+    }),
+
+    getPull: promisify((hash, callback) => {
+      callback(null, exporter(hash, self._dagS))
     })
   }
 }
