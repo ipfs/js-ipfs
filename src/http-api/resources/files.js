@@ -4,8 +4,10 @@ const bs58 = require('bs58')
 const ndjson = require('ndjson')
 const multipart = require('ipfs-multipart')
 const debug = require('debug')
+const tar = require('tar-stream')
 const log = debug('http-api:files')
 log.error = debug('http-api:files:error')
+const async = require('async')
 
 exports = module.exports
 
@@ -44,8 +46,55 @@ exports.cat = {
           Code: 0
         }).code(500)
       }
+      return reply(stream).header('X-Stream-Output', '1')
+    })
+  }
+}
+
+exports.get = {
+  // uses common parseKey method that returns a `key`
+  parseArgs: exports.parseKey,
+
+  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+  handler: (request, reply) => {
+    const key = request.pre.args.key
+
+    request.server.app.ipfs.files.get(key, (err, stream) => {
+      if (err) {
+        log.error(err)
+        return reply({
+          Message: 'Failed to get file: ' + err,
+          Code: 0
+        }).code(500)
+      }
+      var pack = tar.pack()
+      const files = []
       stream.on('data', (data) => {
-        return reply(data)
+        files.push(data)
+      })
+      const processFile = (file) => {
+        return (callback) => {
+          if (!file.content) { // is directory
+            pack.entry({name: file.path, type: 'directory'})
+            callback()
+          } else { // is file
+            const fileContents = []
+            file.content.on('data', (data) => {
+              fileContents.push(data)
+            })
+            file.content.on('end', () => {
+              pack.entry({name: file.path}, Buffer.concat(fileContents))
+              callback()
+            })
+          }
+        }
+      }
+      stream.on('end', () => {
+        const callbacks = files.map(processFile)
+        async.series(callbacks, () => {
+          pack.finalize()
+          reply(pack).header('X-Stream-Output', '1')
+        })
       })
     })
   }
@@ -75,9 +124,10 @@ exports.add = {
       }
 
       fileAdder.on('data', (file) => {
+        const filePath = file.path ? file.path : file.hash
         serialize.write({
-          Name: file.path,
-          Hash: bs58.encode(file.node.multihash()).toString()
+          Name: filePath,
+          Hash: file.hash
         })
         filesAdded++
       })
@@ -103,6 +153,12 @@ exports.add = {
         }
         filesParsed = true
         fileAdder.write(filePair)
+      })
+      parser.on('directory', (directory) => {
+        fileAdder.write({
+          path: directory,
+          content: ''
+        })
       })
 
       parser.on('end', () => {

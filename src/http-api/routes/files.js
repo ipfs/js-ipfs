@@ -6,6 +6,7 @@ module.exports = (server) => {
   const api = server.select('API')
 
   api.route({
+    // TODO fix method
     method: '*',
     path: '/api/v0/cat',
     config: {
@@ -17,6 +18,19 @@ module.exports = (server) => {
   })
 
   api.route({
+    // TODO fix method
+    method: '*',
+    path: '/api/v0/get',
+    config: {
+      pre: [
+        { method: resources.files.get.parseArgs, assign: 'args' }
+      ],
+      handler: resources.files.get.handler
+    }
+  })
+
+  api.route({
+    // TODO fix method
     method: '*',
     path: '/api/v0/add',
     config: {
