@@ -44,9 +44,7 @@ exports.cat = {
           Code: 0
         }).code(500)
       }
-      stream.on('data', (data) => {
-        return reply(data)
-      })
+      return reply(stream).header('X-Stream-Output', '1')
     })
   }
 }
