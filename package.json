@@ -49,7 +49,7 @@
     "idb-plus-blob-store": "^1.1.2",
     "interface-ipfs-core": "^0.14.3",
     "left-pad": "^1.1.1",
-    "lodash": "^4.14.1",
+    "lodash": "^4.14.2",
     "ncp": "^2.0.0",
     "nexpect": "^0.5.0",
     "pre-commit": "^1.1.3",
