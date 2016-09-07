@@ -155,7 +155,6 @@ module.exports = function object (self) {
         if (err) {
           return cb(err)
         }
-
         cb(null, node.data)
       })
     }),
