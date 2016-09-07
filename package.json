@@ -79,7 +79,7 @@
     "isstream": "^0.1.2",
     "joi": "^9.0.4",
     "libp2p-ipfs": "^0.12.1",
-    "libp2p-ipfs-browser": "^0.12.1",
+    "libp2p-ipfs-browser": "^0.13.0",
     "lodash.get": "^4.4.1",
     "lodash.has": "^4.5.2",
     "lodash.set": "^4.3.1",
