@@ -70,7 +70,7 @@
     "ipfs-api": "^8.0.3",
     "ipfs-bitswap": "^0.6.0",
     "ipfs-block": "^0.3.0",
-    "ipfs-block-service": "^0.4.0",
+    "ipfs-block-service": "^0.5.0",
     "ipfs-merkle-dag": "^0.6.2",
     "ipfs-multipart": "^0.1.0",
     "ipfs-repo": "^0.8.0",
