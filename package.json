@@ -34,7 +34,7 @@
     "promisify-es6": "^1.0.1",
     "qs": "^6.2.1",
     "tar-stream": "^1.5.2",
-    "wreck": "^9.0.0",
+    "wreck": "^10.0.0",
     "streamifier": "^0.1.1"
   },
   "engines": {
