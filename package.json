@@ -34,7 +34,7 @@
     "concat-stream": "^1.5.1",
     "detect-node": "^2.0.3",
     "ipfs-block": "^0.3.0",
-    "ipfs-merkle-dag": "^0.6.2",
+    "ipfs-merkle-dag": "^0.7.0",
     "multihashes": "^0.2.2",
     "readable-stream": "1.1.13",
     "run-series": "^1.1.4"
