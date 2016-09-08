@@ -92,18 +92,18 @@ var ipfs = require('ipfs');
 
 Loading this module in a browser (using a `<script>` tag) makes the `Ipfs` object available in the global namespace.
 
-The last published version of the package become [available for download](https://npmcdn.com/ipfs/dist/) from [npmcdn](https://npmcdn.com/) and thus you may use it as the source:
+The last published version of the package become [available for download](https://unpkg.com/ipfs/dist/) from [unpkg](https://unpkg.com/) and thus you may use it as the source:
 
 * loading the minified version
 
    ```html
-   <script src="https://npmcdn.com/ipfs/dist/index.min.js"></script>
+   <script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
    ```
 
 * loading the human-readable (not minified) version
 
    ```html
-   <script src="https://npmcdn.com/ipfs/dist/index.js"></script>
+   <script src="https://unpkg.com/ipfs/dist/index.js"></script>
    ```
 
 ## Usage
