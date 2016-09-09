@@ -10,16 +10,16 @@
   "scripts": {
     "lint": "aegir-lint",
     "coverage": "gulp coverage",
-    "test": "gulp test",
+    "test": "PHANTOM=off gulp test",
     "test:node": "gulp test:node",
     "test:node:core": "TEST=core npm run test:node",
     "test:node:http": "TEST=http npm run test:node",
     "test:node:cli": "TEST=cli npm run test:node",
-    "test:browser": "gulp test:browser",
+    "test:browser": "PHANTOM=off gulp test:browser",
     "build": "gulp build",
-    "release": "gulp release",
-    "release-minor": "gulp release --type minor",
-    "release-major": "gulp release --type major",
+    "release": "PHANTOM=off gulp release",
+    "release-minor": "PHANTOM=off gulp release --type minor",
+    "release-major": "PHANTOM=off gulp release --type major",
     "coverage-publish": "aegir-coverage publish"
   },
   "pre-commit": [
