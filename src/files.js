@@ -378,6 +378,11 @@ module.exports = (common) => {
               next()
             }
           }, () => {
+            files = files.sort((a, b) => {
+              if (a.path > b.path) return 1
+              if (a.path < b.path) return -1
+              return 0
+            })
             // Check paths
             var paths = files.map((file) => {
               return file.path
