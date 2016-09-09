@@ -7,6 +7,7 @@ const debug = require('debug')
 const tar = require('tar-stream')
 const log = debug('http-api:files')
 log.error = debug('http-api:files:error')
+const async = require('async')
 
 exports = module.exports
 
@@ -68,18 +69,14 @@ exports.get = {
       }
       var pack = tar.pack()
       const files = []
-      let totalFiles = 0
       stream.on('data', (data) => {
         files.push(data)
-        totalFiles = totalFiles + 1
       })
-      let processedFiles = 0
-      stream.on('end', () => {
-        files.forEach((file, index) => {
+      const processFile = (file) => {
+        return (callback) => {
           if (!file.content) { // is directory
-            // TODO want to put null here but get Uncaught error: already piping an entry
-            pack.entry({name: file.path}, '')
-            processedFiles = processedFiles + 1
+            pack.entry({name: file.path, type: 'directory'})
+            callback()
           } else { // is file
             const fileContents = []
             file.content.on('data', (data) => {
@@ -87,18 +84,18 @@ exports.get = {
             })
             file.content.on('end', () => {
               pack.entry({name: file.path}, Buffer.concat(fileContents))
-              processedFiles = processedFiles + 1
+              callback()
             })
           }
-        })
-      })
-      const interval = setInterval(() => {
-        if (totalFiles === processedFiles) {
-          clearInterval(interval)
+        }
+      }
+      stream.on('end', () => {
+        const callbacks = files.map(processFile)
+        async.series(callbacks, () => {
           pack.finalize()
           reply(pack).header('X-Stream-Output', '1')
-        }
-      }, 500)
+        })
+      })
     })
   }
 }
