@@ -4,6 +4,7 @@ const bs58 = require('bs58')
 const ndjson = require('ndjson')
 const multipart = require('ipfs-multipart')
 const debug = require('debug')
+const tar = require('tar-stream')
 const log = debug('http-api:files')
 log.error = debug('http-api:files:error')
 
@@ -45,6 +46,59 @@ exports.cat = {
         }).code(500)
       }
       return reply(stream).header('X-Stream-Output', '1')
+    })
+  }
+}
+
+exports.get = {
+  // uses common parseKey method that returns a `key`
+  parseArgs: exports.parseKey,
+
+  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+  handler: (request, reply) => {
+    const key = request.pre.args.key
+
+    request.server.app.ipfs.files.get(key, (err, stream) => {
+      if (err) {
+        log.error(err)
+        return reply({
+          Message: 'Failed to get file: ' + err,
+          Code: 0
+        }).code(500)
+      }
+      var pack = tar.pack()
+      const files = []
+      let totalFiles = 0
+      stream.on('data', (data) => {
+        files.push(data)
+        totalFiles = totalFiles + 1
+      })
+      let processedFiles = 0
+      stream.on('end', () => {
+        files.forEach((file, index) => {
+          if (!file.content) { // is directory
+            // TODO want to put null here but get Uncaught error: already piping an entry
+            pack.entry({name: file.path}, '')
+            processedFiles = processedFiles + 1
+          } else { // is file
+            const fileContents = []
+            file.content.on('data', (data) => {
+              fileContents.push(data)
+            })
+            file.content.on('end', () => {
+              pack.entry({name: file.path}, Buffer.concat(fileContents))
+              processedFiles = processedFiles + 1
+            })
+          }
+        })
+      })
+      const interval = setInterval(() => {
+        if (totalFiles === processedFiles) {
+          clearInterval(interval)
+          pack.finalize()
+          reply(pack).header('X-Stream-Output', '1')
+        }
+      }, 500)
     })
   }
 }

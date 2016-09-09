@@ -127,8 +127,8 @@ module.exports = function files (self) {
     }),
 
     get: promisify((hash, callback) => {
-      const exportFile = Exporter(hash, self._dagS)
-      callback(null, exportFile)
+      const exportStream = Exporter(hash, self._dagS)
+      callback(null, exportStream)
     })
   }
 }
