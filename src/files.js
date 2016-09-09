@@ -387,7 +387,7 @@ module.exports = (common) => {
             var paths = files.map((file) => {
               return file.path
             })
-            expect(paths).to.deep.equal([
+            expect(paths).to.include.members([
               'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP',
               'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/alice.txt',
               'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/empty-folder',
@@ -401,20 +401,16 @@ module.exports = (common) => {
             ])
 
             // Check contents
-            var contents = files.map((file) => {
-              return file.content ? file.content : null
+            var contents = files.map(function (file) {
+              return file.content ? file.content.toString() : null
             })
-            expect(contents).to.deep.equal([
-              null,
-              directoryContent['alice.txt'],
-              null,
-              null,
-              null,
-              directoryContent['files/hello.txt'],
-              directoryContent['files/ipfs.txt'],
-              directoryContent['holmes.txt'],
-              directoryContent['jungle.txt'],
-              directoryContent['pp.txt']
+            expect(contents).to.include.members([
+              directoryContent['alice.txt'].toString(),
+              directoryContent['files/hello.txt'].toString(),
+              directoryContent['files/ipfs.txt'].toString(),
+              directoryContent['holmes.txt'].toString(),
+              directoryContent['jungle.txt'].toString(),
+              directoryContent['pp.txt'].toString()
             ])
             done()
           }))
