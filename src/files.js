@@ -382,34 +382,30 @@ module.exports = (common) => {
             var paths = files.map((file) => {
               return file.path
             })
-            expect(paths).to.deep.equal([
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP',
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/alice.txt',
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/empty-folder',
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/files',
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/files/empty',
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/files/hello.txt',
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/files/ipfs.txt',
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/holmes.txt',
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/jungle.txt',
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/pp.txt'
-            ])
+            expect(paths).to.include.members([
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP',
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/alice.txt',
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/empty-folder',
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/files',
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/files/empty',
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/files/hello.txt',
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/files/ipfs.txt',
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/holmes.txt',
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/jungle.txt',
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/pp.txt'
+            ]);
 
             // Check contents
-            var contents = files.map((file) => {
-              return file.content ? file.content : null
-            })
-            expect(contents).to.deep.equal([
-              null,
-              directoryContent['alice.txt'],
-              null,
-              null,
-              null,
-              directoryContent['files/hello.txt'],
-              directoryContent['files/ipfs.txt'],
-              directoryContent['holmes.txt'],
-              directoryContent['jungle.txt'],
-              directoryContent['pp.txt']
+            var contents = files.map(function (file) {
+              return file.content ? file.content.toString() : null
+            });
+            expect(contents).to.include.members([
+              directoryContent['alice.txt'].toString(),
+              directoryContent['files/hello.txt'].toString(),
+              directoryContent['files/ipfs.txt'].toString(),
+              directoryContent['holmes.txt'].toString(),
+              directoryContent['jungle.txt'].toString(),
+              directoryContent['pp.txt'].toString()
             ])
             done()
           }))
