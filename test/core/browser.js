@@ -2,8 +2,9 @@
 'use strict'
 
 const series = require('run-series')
-const store = require('idb-plus-blob-store')
+const Store = require('idb-pull-blob-store')
 const _ = require('lodash')
+const pull = require('pull-stream')
 
 const repoContext = require.context('buffer!./../go-ipfs-repo', true)
 
@@ -26,8 +27,8 @@ describe('core', function () {
       })
     })
 
-    const mainBlob = store('ipfs')
-    const blocksBlob = store('ipfs/blocks')
+    const mainBlob = new Store('ipfs')
+    const blocksBlob = new Store('ipfs/blocks')
 
     series(repoData.map((file) => (cb) => {
       if (_.startsWith(file.key, 'datastore/')) {
@@ -38,9 +39,10 @@ describe('core', function () {
       const blob = blocks ? blocksBlob : mainBlob
       const key = blocks ? file.key.replace(/^blocks\//, '') : file.key
 
-      blob.createWriteStream({
-        key: key
-      }).end(file.value, cb)
+      pull(
+        pull.values([file.value]),
+        blob.write(key, cb)
+      )
     }), done)
   })
 

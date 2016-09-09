@@ -46,7 +46,7 @@ function Factory () {
     let teardown
 
     if (isNode) {
-      store = require('fs-blob-store')
+      store = require('fs-pull-blob-store')
       teardown = (done) => {
         cleanRepo(repoPath)
         done()
@@ -56,7 +56,7 @@ function Factory () {
               window.mozIndexedDB ||
               window.webkitIndexedDB ||
               window.msIndexedDB
-      store = require('idb-plus-blob-store')
+      store = require('idb-pull-blob-store')
       teardown = (done) => {
         idb.deleteDatabase(repoPath)
         idb.deleteDatabase(repoPath + '/blocks')

@@ -3,6 +3,7 @@
 
 const expect = require('chai').expect
 const leftPad = require('left-pad')
+const series = require('run-series')
 
 const IPFS = require('../../src/core')
 const createTempRepo = require('./temp-repo')
@@ -29,16 +30,14 @@ function createTempNode (num, callback) {
 
   num = leftPad(num, 3, 0)
 
-  ipfs.init({ emptyRepo: true }, (err) => {
-    expect(err).to.not.exist
-    setAddresses(repo, num, (err) => {
-      expect(err).to.not.exist
-
-      ipfs.load((err) => {
-        expect(err).to.not.exist
-        callback(null, ipfs)
-      })
-    })
+  series([
+    (cb) => ipfs.init({ emptyRepo: true }, cb),
+    (cb) => setAddresses(repo, num, cb),
+    (cb) => ipfs.load(cb)
+  ], (err) => {
+    if (err) return callback(err)
+    callback(null, ipfs)
   })
 }
+
 module.exports = createTempNode

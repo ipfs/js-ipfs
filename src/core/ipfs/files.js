@@ -1,134 +1,135 @@
 'use strict'
 
 const unixfsEngine = require('ipfs-unixfs-engine')
-const Importer = unixfsEngine.Importer
-const Exporter = unixfsEngine.Exporter
+const importer = unixfsEngine.importer
+const exporter = unixfsEngine.exporter
 const UnixFS = require('ipfs-unixfs')
-const through = require('through2')
 const isStream = require('isstream')
 const promisify = require('promisify-es6')
-const Duplex = require('stream').Duplex
 const multihashes = require('multihashes')
+const pull = require('pull-stream')
+const sort = require('pull-sort')
+const toStream = require('pull-stream-to-stream')
+const toPull = require('stream-to-pull-stream')
 
 module.exports = function files (self) {
+  const createAddPullStream = () => pull(
+    pull.map(normalizeContent),
+    pull.flatten(),
+    importer(self._dagS),
+    pull.asyncMap(prepareFile.bind(null, self))
+  )
+
   return {
     createAddStream: (callback) => {
-      const i = new Importer(self._dagS)
-      const ds = new Duplex({ objectMode: true })
-
-      ds._read = (n) => {}
-      ds._write = (file, enc, next) => {
-        i.write(file)
-        next()
-      }
-
-      ds.end = () => {
-        i.end()
-      }
-
-      let counter = 0
-
-      i.on('data', (file) => {
-        counter++
-        const bs58mh = multihashes.toB58String(file.multihash)
-        self.object.get(file.multihash, (err, node) => {
-          if (err) {
-            return ds.emit('error', err)
-          }
-          ds.push({
-            path: file.path,
-            hash: bs58mh,
-            size: node.size()
-          })
-          counter--
-        })
-      })
-
-      i.on('end', () => {
-        function canFinish () {
-          if (counter === 0) {
-            ds.push(null)
-          } else {
-            setTimeout(canFinish, 100)
-          }
-        }
-        canFinish()
-      })
-
-      callback(null, ds)
+      callback(null, toStream(createAddPullStream()))
     },
+
+    createAddPullStream: createAddPullStream,
+
     add: promisify((data, callback) => {
-      // Buffer input
-      if (Buffer.isBuffer(data)) {
-        data = [{
-          path: '',
-          content: data
-        }]
-      }
-      // Readable stream input
-      if (isStream.isReadable(data)) {
-        data = [{
-          path: '',
-          content: data
-        }]
-      }
       if (!callback || typeof callback !== 'function') {
         callback = function noop () {}
       }
-      if (!Array.isArray(data)) {
-        return callback(new Error('"data" must be an array of { path: string, content: Buffer|Readable } or Buffer or Readable'))
-      }
 
-      const i = new Importer(self._dagS)
-      const res = []
-
-      // Transform file info tuples to DAGNodes
-      i.pipe(through.obj((info, enc, next) => {
-        const bs58mh = multihashes.toB58String(info.multihash)
-        self._dagS.get(bs58mh, (err, node) => {
-          if (err) return callback(err)
-          var obj = {
-            path: info.path || bs58mh,
-            hash: bs58mh,
-            size: node.size()
-          }
-          res.push(obj)
-          next()
-        })
-      }, (done) => {
-        callback(null, res)
-      }))
-
-      data.forEach((tuple) => {
-        i.write(tuple)
-      })
-
-      i.end()
+      pull(
+        pull.values(normalizeContent(data)),
+        importer(self._dagS),
+        pull.asyncMap(prepareFile.bind(null, self)),
+        sort((a, b) => {
+          if (a.path < b.path) return 1
+          if (a.path > b.path) return -1
+          return 0
+        }),
+        pull.collect(callback)
+      )
     }),
 
     cat: promisify((hash, callback) => {
       if (typeof hash === 'function') {
         return callback(new Error('You must supply a multihash'))
       }
-      self._dagS.get(hash, (err, fetchedNode) => {
-        if (err) {
-          return callback(err)
-        }
-        const data = UnixFS.unmarshal(fetchedNode.data)
-        if (data.type === 'directory') {
-          callback(new Error('This dag node is a directory'))
-        } else {
-          const exportStream = Exporter(hash, self._dagS)
-          exportStream.once('data', (object) => {
-            callback(null, object.content)
-          })
-        }
-      })
+
+      pull(
+        pull.values([hash]),
+        pull.asyncMap(self._dagS.get.bind(self._dagS)),
+        pull.map((node) => {
+          const data = UnixFS.unmarshal(node.data)
+          if (data.type === 'directory') {
+            return pull.error(new Error('This dag node is a directory'))
+          }
+
+          return exporter(hash, self._dagS)
+        }),
+        pull.flatten(),
+        pull.collect((err, files) => {
+          if (err) return callback(err)
+          callback(null, toStream.source(files[0].content))
+        })
+      )
     }),
 
     get: promisify((hash, callback) => {
-      const exportFile = Exporter(hash, self._dagS)
-      callback(null, exportFile)
+      callback(null, toStream.source(pull(
+        exporter(hash, self._dagS),
+        pull.map((file) => {
+          if (file.content) {
+            file.content = toStream.source(file.content)
+            file.content.pause()
+          }
+
+          return file
+        })
+      )))
     })
   }
+}
+
+function prepareFile (self, file, cb) {
+  const bs58mh = multihashes.toB58String(file.multihash)
+  self.object.get(file.multihash, (err, node) => {
+    if (err) return cb(err)
+
+    cb(null, {
+      path: file.path || bs58mh,
+      hash: bs58mh,
+      size: node.size()
+    })
+  })
+}
+
+function normalizeContent (content) {
+  if (!Array.isArray(content)) {
+    content = [content]
+  }
+
+  return content.map((data) => {
+    // Buffer input
+    if (Buffer.isBuffer(data)) {
+      data = {
+        path: '',
+        content: pull.values([data])
+      }
+    }
+
+    // Readable stream input
+    if (isStream.isReadable(data)) {
+      data = {
+        path: '',
+        content: toPull.source(data)
+      }
+    }
+
+    if (data && data.content && typeof data.content !== 'function') {
+      if (Buffer.isBuffer(data.content)) {
+        data.content = pull.values([data.content])
+      }
+
+      if (isStream.isReadable(data.content)) {
+        data.content = toPull.source(data.content)
+      }
+    }
+
+    return data
+  })
 }

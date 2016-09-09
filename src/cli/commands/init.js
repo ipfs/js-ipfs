@@ -2,7 +2,7 @@
 
 const IpfsRepo = require('ipfs-repo')
 const Ipfs = require('../../core')
-const fsBlobStore = require('fs-blob-store')
+const Store = require('fs-pull-blob-store')
 const utils = require('../utils')
 
 module.exports = {
@@ -33,7 +33,7 @@ module.exports = {
     const path = utils.getRepoPath()
 
     const repo = new IpfsRepo(path, {
-      stores: fsBlobStore
+      stores: Store
     })
 
     const ipfs = new Ipfs(repo)
