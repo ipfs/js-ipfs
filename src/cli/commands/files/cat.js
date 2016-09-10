@@ -13,7 +13,7 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    const path = argv.ipfsPath
+    const path = argv['ipfs-path']
     utils.getIPFS((err, ipfs) => {
       if (err) {
         throw err
