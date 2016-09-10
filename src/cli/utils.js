@@ -49,3 +49,18 @@ exports.getIPFS = (callback) => {
 exports.getRepoPath = () => {
   return process.env.IPFS_PATH || os.homedir() + '/.ipfs'
 }
+
+exports.createLogger = (visible) => {
+  return (msg, newline) => {
+    if (newline === undefined) {
+      newline = true
+    }
+    if (visible) {
+      if (msg === undefined) {
+        msg = ''
+      }
+      msg = newline ? msg + '\n' : msg
+      process.stdout.write(msg)
+    }
+  }
+}

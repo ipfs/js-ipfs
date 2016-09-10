@@ -32,6 +32,9 @@ module.exports = {
   handler (argv) {
     const path = utils.getRepoPath()
 
+    const log = utils.createLogger(true)
+    log(`initializing ipfs node at ${path}`)
+
     const repo = new IpfsRepo(path, {
       stores: Store
     })
@@ -41,7 +44,8 @@ module.exports = {
     ipfs.init({
       bits: argv.bits,
       force: argv.force,
-      emptyRepo: argv.emptyRepo
+      emptyRepo: argv.emptyRepo,
+      log
     }, function (err) {
       if (err) {
         console.error(err.toString())
