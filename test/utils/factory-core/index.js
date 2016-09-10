@@ -36,7 +36,7 @@ function Factory () {
 
     if (!config) {
       config = JSON.parse(JSON.stringify(defaultConfig))
-      const pId = PeerId.create({ bits: 32 }).toJSON()
+      const pId = PeerId.create({ bits: 512 }).toJSON()
       config.Identity.PeerID = pId.id
       config.Identity.PrivKey = pId.privKey
     }
@@ -69,7 +69,7 @@ function Factory () {
 
     // create the IPFS node
     const ipfs = new IPFS(repo)
-    ipfs.init({ emptyRepo: true }, (err) => {
+    ipfs.init({ emptyRepo: true, bits: 512 }, (err) => {
       if (err) {
         return callback(err)
       }
