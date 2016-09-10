@@ -17,6 +17,7 @@ describe('files', () => {
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
+          expect(stdout[0]).to.equal('hello world')
           done()
         })
     })
