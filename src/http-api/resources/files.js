@@ -94,9 +94,12 @@ exports.get = {
           if (err) return handleError(err)
 
           pack.finalize()
-          reply(pack).header('X-Stream-Output', '1')
         })
       )
+
+      // the reply must read the tar stream,
+      // to pull values through
+      reply(pack).header('X-Stream-Output', '1')
     })
 
     function handleError (err) {
