@@ -9,6 +9,7 @@ const fs = require('fs')
 const importer = require('ipfs-unixfs-engine').importer
 const pull = require('pull-stream')
 const file = require('pull-file')
+const mh = require('multihashes')
 
 module.exports = function init (self) {
   return (opts, callback) => {
@@ -19,6 +20,7 @@ module.exports = function init (self) {
 
     opts.emptyRepo = opts.emptyRepo || false
     opts.bits = opts.bits || 2048
+    opts.log = opts.log || function () {}
 
     let config
     // Pre-set config values.
@@ -47,6 +49,7 @@ module.exports = function init (self) {
 
     // Generate peer identity keypair + transform to desired format + add to config.
     function generateAndSetKeypair () {
+      opts.log(`generating ${opts.bits}-bit RSA keypair...`, false)
       var keys = peerId.create({
         bits: opts.bits
       })
@@ -54,6 +57,8 @@ module.exports = function init (self) {
         PeerID: keys.toB58String(),
         PrivKey: keys.privKey.bytes.toString('base64')
       }
+      opts.log('done')
+      opts.log('peer identity: ' + config.Identity.PeerID)
 
       writeVersion()
     }
@@ -108,6 +113,15 @@ module.exports = function init (self) {
         }),
         pull.filter(Boolean),
         importer(dag),
+        pull.through((el) => {
+          if (el.path === 'files/init-docs/docs') {
+            const hash = mh.toB58String(el.multihash)
+            opts.log('to get started, enter:')
+            opts.log()
+            opts.log(`\t jsipfs files cat /ipfs/${hash}/readme`)
+            opts.log()
+          }
+        }),
         pull.onEnd((err) => {
           if (err) return callback(err)
 
