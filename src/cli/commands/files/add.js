@@ -9,9 +9,9 @@ const path = require('path')
 const glob = require('glob')
 const sortBy = require('lodash.sortby')
 const pull = require('pull-stream')
-const pullFile = require('pull-file')
 const paramap = require('pull-paramap')
 const zip = require('pull-zip')
+const toPull = require('stream-to-pull-stream')
 
 function checkPath (inPath, recursive) {
   // This function is to check for the following possible inputs
@@ -59,46 +59,71 @@ module.exports = {
         throw err
       }
 
-      glob(path.join(inPath, '/**/*'), (err, list) => {
+      // TODO: revist when interface-ipfs-core exposes pull-streams
+      let createAddStream = (cb) => {
+        ipfs.files.createAddStream((err, stream) => {
+          cb(err, err ? null : toPull.transform(stream))
+        })
+      }
+
+      if (typeof ipfs.files.createAddPullStream === 'function') {
+        createAddStream = (cb) => {
+          cb(null, ipfs.files.createAddPullStream())
+        }
+      }
+
+      createAddStream((err, addStream) => {
         if (err) {
           throw err
         }
-        if (list.length === 0) {
-          list = [inPath]
-        }
 
-        pull(
-          zip(
-            pull.values(list),
-            pull(
-              pull.values(list),
-              paramap(fs.stat.bind(fs), 50)
-            )
-          ),
-          pull.map((pair) => ({
-            path: pair[0],
-            isDirectory: pair[1].isDirectory()
-          })),
-          pull.filter((file) => !file.isDirectory),
-          pull.map((file) => ({
-            path: file.path.substring(index, file.path.length),
-            content: pullFile(file.path)
-          })),
-          ipfs.files.createAddPullStream(),
-          pull.map((file) => ({
-            hash: file.hash,
-            path: file.path
-          })),
-          pull.collect((err, added) => {
-            if (err) throw err
+        glob(path.join(inPath, '/**/*'), (err, list) => {
+          if (err) {
+            throw err
+          }
+          if (list.length === 0) {
+            list = [inPath]
+          }
 
-            sortBy(added, 'path')
-              .reverse()
-              .map((file) => `added ${file.hash} ${file.path}`)
-              .forEach((msg) => console.log(msg))
-          })
-        )
+          addPipeline(index, addStream, list)
+        })
       })
     })
   }
+}
+
+function addPipeline (index, addStream, list) {
+  pull(
+    zip(
+      pull.values(list),
+      pull(
+        pull.values(list),
+        paramap(fs.stat.bind(fs), 50)
+      )
+    ),
+    pull.map((pair) => ({
+      path: pair[0],
+      isDirectory: pair[1].isDirectory()
+    })),
+    pull.filter((file) => !file.isDirectory),
+    pull.map((file) => ({
+      path: file.path.substring(index, file.path.length),
+      content: fs.createReadStream(file.path)
+    })),
+    addStream,
+    pull.map((file) => ({
+      hash: file.hash,
+      path: file.path
+    })),
+    pull.collect((err, added) => {
+      if (err) {
+        throw err
+      }
+
+      sortBy(added, 'path')
+        .reverse()
+        .map((file) => `added ${file.hash} ${file.path}`)
+        .forEach((msg) => console.log(msg))
+    })
+  )
 }

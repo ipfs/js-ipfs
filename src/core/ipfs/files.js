@@ -13,12 +13,14 @@ const toStream = require('pull-stream-to-stream')
 const toPull = require('stream-to-pull-stream')
 
 module.exports = function files (self) {
-  const createAddPullStream = () => pull(
-    pull.map(normalizeContent),
-    pull.flatten(),
-    importer(self._dagS),
-    pull.asyncMap(prepareFile.bind(null, self))
-  )
+  const createAddPullStream = () => {
+    return pull(
+      pull.map(normalizeContent),
+      pull.flatten(),
+      importer(self._dagS),
+      pull.asyncMap(prepareFile.bind(null, self))
+    )
+  }
 
   return {
     createAddStream: (callback) => {
