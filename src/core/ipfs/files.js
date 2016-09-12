@@ -50,23 +50,26 @@ module.exports = function files (self) {
         return callback(new Error('You must supply a multihash'))
       }
 
-      pull(
-        pull.values([hash]),
-        pull.asyncMap(self._dagS.get.bind(self._dagS)),
-        pull.map((node) => {
-          const data = UnixFS.unmarshal(node.data)
-          if (data.type === 'directory') {
-            return pull.error(new Error('This dag node is a directory'))
-          }
+      self._dagS.get(hash, (err, node) => {
+        if (err) {
+          return callback(err)
+        }
 
-          return exporter(hash, self._dagS)
-        }),
-        pull.flatten(),
-        pull.collect((err, files) => {
-          if (err) return callback(err)
-          callback(null, toStream.source(files[0].content))
-        })
-      )
+        const data = UnixFS.unmarshal(node.data)
+        if (data.type === 'directory') {
+          return callback(
+            new Error('This dag node is a directory')
+          )
+        }
+
+        pull(
+          exporter(hash, self._dagS),
+          pull.collect((err, files) => {
+            if (err) return callback(err)
+            callback(null, toStream.source(files[0].content))
+          })
+        )
+      })
     }),
 
     get: promisify((hash, callback) => {
@@ -81,6 +84,10 @@ module.exports = function files (self) {
           return file
         })
       )))
+    }),
+
+    getPull: promisify((hash, callback) => {
+      callback(null, exporter(hash, self._dagS))
     })
   }
 }

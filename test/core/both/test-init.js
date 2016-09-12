@@ -13,7 +13,7 @@ describe('init', function () {
     const repo = createTempRepo()
     const ipfs = new IPFS(repo)
 
-    ipfs.init({ emptyRepo: true }, (err) => {
+    ipfs.init({ emptyRepo: true, bits: 128 }, (err) => {
       expect(err).to.not.exist
 
       repo.exists((err, res) => {

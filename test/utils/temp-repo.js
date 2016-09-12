@@ -31,7 +31,7 @@ function createTempRepo () {
   }
 
   var repo = new IPFSRepo(repoPath, {
-    bits: 64,
+    bits: 512,
     stores: store
   })
 
