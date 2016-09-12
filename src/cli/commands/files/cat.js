@@ -19,10 +19,6 @@ module.exports = {
         throw err
       }
 
-      if (utils.isDaemonOn()) {
-        return ipfs.cat(path, onFile)
-      }
-
       ipfs.files.cat(path, onFile)
     })
   }

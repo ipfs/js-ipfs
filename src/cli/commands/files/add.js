@@ -55,11 +55,17 @@ module.exports = {
     const index = inPath.lastIndexOf('/') + 1
 
     utils.getIPFS((err, ipfs) => {
-      if (err) throw err
+      if (err) {
+        throw err
+      }
 
       glob(path.join(inPath, '/**/*'), (err, list) => {
-        if (err) throw err
-        if (list.length === 0) list = [inPath]
+        if (err) {
+          throw err
+        }
+        if (list.length === 0) {
+          list = [inPath]
+        }
 
         pull(
           zip(
