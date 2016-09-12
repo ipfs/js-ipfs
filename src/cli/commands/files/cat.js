@@ -14,19 +14,23 @@ module.exports = {
 
   handler (argv) {
     const path = argv['ipfs-path']
-
     utils.getIPFS((err, ipfs) => {
       if (err) {
         throw err
       }
 
-      ipfs.files.cat(path, (err, file) => {
-        if (err) {
-          throw (err)
-        }
+      if (utils.isDaemonOn()) {
+        return ipfs.cat(path, onFile)
+      }
 
-        file.pipe(process.stdout)
-      })
+      ipfs.files.cat(path, onFile)
     })
   }
+}
+
+function onFile (err, file) {
+  if (err) {
+    throw (err)
+  }
+  file.pipe(process.stdout)
 }
