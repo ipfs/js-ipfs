@@ -73,7 +73,15 @@ exports.get = {
     const pack = tar.pack()
 
     ipfs.files.getPull(key, (err, stream) => {
-      if (err) return handleError(err)
+      if (err) {
+        log.error(err)
+
+        reply({
+          Message: 'Failed to get file: ' + err,
+          Code: 0
+        }).code(500)
+        return
+      }
 
       pull(
         stream,
@@ -91,7 +99,15 @@ exports.get = {
           }
         }),
         pull.onEnd((err) => {
-          if (err) return handleError(err)
+          if (err) {
+            log.error(err)
+
+            reply({
+              Message: 'Failed to get file: ' + err,
+              Code: 0
+            }).code(500)
+            return
+          }
 
           pack.finalize()
         })
@@ -101,15 +117,6 @@ exports.get = {
       // to pull values through
       reply(pack).header('X-Stream-Output', '1')
     })
-
-    function handleError (err) {
-      log.error(err)
-
-      reply({
-        Message: 'Failed to get file: ' + err,
-        Code: 0
-      }).code(500)
-    }
   }
 }
 
