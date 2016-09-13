@@ -6,7 +6,8 @@ const expect = require('chai').expect
 const createTempNode = require('./../../utils/temp-node')
 
 module.exports = (ctl) => {
-  describe('.swarm', () => {
+  // TODO revisit these once the interface-ipfs-core tests over ipfs-api are done
+  describe.skip('.swarm', () => {
     let remoteNode
     let remoteNodeAddr
 

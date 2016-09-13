@@ -2,6 +2,7 @@
 
 const multiaddr = require('multiaddr')
 const Libp2pNode = require('libp2p-ipfs').Node
+const promisify = require('promisify-es6')
 
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 
@@ -31,29 +32,50 @@ module.exports = function libp2p (self) {
       self._libp2pNode.stop(callback)
     },
     swarm: {
-      peers: (callback) => {
+      peers: promisify((callback) => {
         if (!self.isOnline()) {
           return callback(OFFLINE_ERROR)
         }
 
-        callback(null, self._libp2pNode.peerBook.getAll())
-      },
+        const peers = self._libp2pNode.peerBook.getAll()
+        const mas = []
+        Object
+           .keys(peers)
+           .forEach((b58Id) => {
+             peers[b58Id].multiaddrs.forEach((ma) => {
+               // TODO this should only print the addr we are using
+               mas.push(ma)
+             })
+           })
+
+        callback(null, mas)
+      }),
       // all the addrs we know
-      addrs: (callback) => {
+      addrs: promisify((callback) => {
         if (!self.isOnline()) {
           return callback(OFFLINE_ERROR)
         }
-        // TODO
-        throw new Error('Not implemented')
-      },
-      localAddrs: (callback) => {
+        const peers = self._libp2pNode.peerBook.getAll()
+        const mas = []
+        Object
+           .keys(peers)
+           .forEach((b58Id) => {
+             peers[b58Id].multiaddrs.forEach((ma) => {
+               // TODO this should only print the addr we are using
+               mas.push(ma)
+             })
+           })
+
+        callback(null, mas)
+      }),
+      localAddrs: promisify((callback) => {
         if (!self.isOnline()) {
           return callback(OFFLINE_ERROR)
         }
 
         callback(null, self._libp2pNode.peerInfo.multiaddrs)
-      },
-      connect: (maddr, callback) => {
+      }),
+      connect: promisify((maddr, callback) => {
         if (!self.isOnline()) {
           return callback(OFFLINE_ERROR)
         }
@@ -63,8 +85,8 @@ module.exports = function libp2p (self) {
         }
 
         self._libp2pNode.dialByMultiaddr(maddr, callback)
-      },
-      disconnect: (maddr, callback) => {
+      }),
+      disconnect: promisify((maddr, callback) => {
         if (!self.isOnline()) {
           return callback(OFFLINE_ERROR)
         }
@@ -74,11 +96,11 @@ module.exports = function libp2p (self) {
         }
 
         self._libp2pNode.hangUpByMultiaddr(maddr, callback)
-      },
-      filters: () => {
+      }),
+      filters: promisify((callback) => {
         // TODO
         throw new Error('Not implemented')
-      }
+      })
     },
     routing: {},
     records: {},

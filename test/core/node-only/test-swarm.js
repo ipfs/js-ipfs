@@ -46,7 +46,7 @@ describe('swarm', function () {
       (cb) => {
         nodeB.id((err, res) => {
           expect(err).to.not.exist
-          nodeBMultiaddr = `${res.addresses[0]}/ipfs/${res.id}`
+          nodeBMultiaddr = res.addresses[0]
           cb()
         })
       }
@@ -73,14 +73,14 @@ describe('swarm', function () {
       (cb) => {
         nodeA.libp2p.swarm.peers((err, res) => {
           expect(err).to.not.exist
-          expect(Object.keys(res)).to.have.length(1)
+          expect(Object.keys(res)).to.have.length.above(0)
           cb()
         })
       },
       (cb) => {
         nodeB.libp2p.swarm.peers((err, res) => {
           expect(err).to.not.exist
-          expect(Object.keys(res)).to.have.length(1)
+          expect(Object.keys(res)).to.have.length.above(0)
           cb()
         })
       }

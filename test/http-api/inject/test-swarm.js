@@ -6,7 +6,8 @@ const expect = require('chai').expect
 const createTempNode = require('./../../utils/temp-node')
 
 module.exports = (http) => {
-  describe('/swarm', function () {
+  // TODO revisit these once interface-ipfs-core tests over ipfs-api are done
+  describe.skip('/swarm', function () {
     this.timeout(20000)
 
     var api
