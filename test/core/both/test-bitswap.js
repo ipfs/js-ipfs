@@ -53,7 +53,10 @@ describe('bitswap', () => {
       targetNode.id((err, identity) => {
         expect(err).to.not.exist
         const addr = identity.addresses
-          .map((addr) => multiaddr(addr))
+          .map((addr) => {
+            const ma = multiaddr(addr.toString().split('ipfs')[0])
+            return ma
+          })
           .filter((addr) => {
             return _.includes(addr.protoNames(), 'ws')
           })[0]

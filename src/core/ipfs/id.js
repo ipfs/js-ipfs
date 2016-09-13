@@ -18,7 +18,10 @@ module.exports = function id (self) {
       callback(null, {
         id: self._peerInfo.id.toB58String(),
         publicKey: self._peerInfo.id.pubKey.bytes.toString('base64'),
-        addresses: self._peerInfo.multiaddrs.map((ma) => { return ma.toString() }).sort(),
+        addresses: self._peerInfo.multiaddrs.map((ma) => {
+          const addr = ma.toString() + '/ipfs/' + self._peerInfo.id.toB58String()
+          return addr
+        }).sort(),
         agentVersion: 'js-ipfs',
         protocolVersion: '9000'
       })

@@ -2,7 +2,6 @@
 
 'use strict'
 
-/*
 const test = require('interface-ipfs-core')
 const IPFSFactory = require('../../utils/factory-core')
 
@@ -17,7 +16,5 @@ const common = {
     factory.dismantle(cb)
   }
 }
-*/
-// TODO
-// Needs: https://github.com/ipfs/js-libp2p-ipfs/pull/16
-// test.swarm(common)
+
+test.swarm(common)
