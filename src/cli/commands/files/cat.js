@@ -18,21 +18,15 @@ module.exports = {
       if (err) {
         throw err
       }
-      if (utils.isDaemonOn()) {
-        ipfs.cat(path, (err, res) => {
-          if (err) {
-            throw err
-          }
-          console.log(res.toString())
-        })
-        return
-      }
-      ipfs.files.cat(path, (err, file) => {
-        if (err) {
-          throw (err)
-        }
-        file.pipe(process.stdout)
-      })
+
+      ipfs.files.cat(path, onFile)
     })
   }
+}
+
+function onFile (err, file) {
+  if (err) {
+    throw (err)
+  }
+  file.pipe(process.stdout)
 }
