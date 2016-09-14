@@ -61,7 +61,7 @@ describe('swarm', function () {
   })
 
   it('libp2p.swarm.connect nodeA to nodeB', (done) => {
-    nodeA.libp2p.swarm.connect(nodeBMultiaddr, (err) => {
+    nodeA.swarm.connect(nodeBMultiaddr, (err) => {
       expect(err).to.not.exist
       // So that identify has time to execute
       setTimeout(done, 500)
@@ -71,14 +71,14 @@ describe('swarm', function () {
   it('libp2p.swarm.peers on nodeA and nodeB match each other', (done) => {
     parallel([
       (cb) => {
-        nodeA.libp2p.swarm.peers((err, res) => {
+        nodeA.swarm.peers((err, res) => {
           expect(err).to.not.exist
           expect(Object.keys(res)).to.have.length.above(0)
           cb()
         })
       },
       (cb) => {
-        nodeB.libp2p.swarm.peers((err, res) => {
+        nodeB.swarm.peers((err, res) => {
           expect(err).to.not.exist
           expect(Object.keys(res)).to.have.length.above(0)
           cb()
@@ -88,7 +88,7 @@ describe('swarm', function () {
   })
 
   it('libp2p.swarm.localAddrs', (done) => {
-    nodeB.libp2p.swarm.localAddrs((err, res) => {
+    nodeB.swarm.localAddrs((err, res) => {
       expect(err).to.not.exist
       expect(res.length > 1).to.equal(true)
       done()
@@ -96,7 +96,7 @@ describe('swarm', function () {
   })
 
   it('libp2p.swarm.disconnect nodeB from nodeA', (done) => {
-    nodeA.libp2p.swarm.disconnect(nodeBMultiaddr, (err) => {
+    nodeA.swarm.disconnect(nodeBMultiaddr, (err) => {
       expect(err).to.not.exist
       // So that identify has time to execute
       setTimeout(check, 500)
@@ -104,14 +104,14 @@ describe('swarm', function () {
       function check () {
         parallel([
           (cb) => {
-            nodeA.libp2p.swarm.peers((err, res) => {
+            nodeA.swarm.peers((err, res) => {
               expect(err).to.not.exist
               expect(Object.keys(res)).to.have.length(0)
               cb()
             })
           },
           (cb) => {
-            nodeB.libp2p.swarm.peers((err, res) => {
+            nodeB.swarm.peers((err, res) => {
               expect(err).to.not.exist
               expect(Object.keys(res)).to.have.length(0)
               cb()
