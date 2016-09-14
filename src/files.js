@@ -208,7 +208,7 @@ module.exports = (common) => {
       describe('.cat', () => {
         it('with a base58 string encoded multihash', (done) => {
           const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
-          ipfs.cat(hash, (err, stream) => {
+          ipfs.files.cat(hash, (err, stream) => {
             expect(err).to.not.exist
             stream.pipe(bl((err, data) => {
               expect(err).to.not.exist
@@ -220,7 +220,7 @@ module.exports = (common) => {
 
         it('with a multihash', (done) => {
           const mhBuf = new Buffer(bs58.decode('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'))
-          ipfs.cat(mhBuf, (err, stream) => {
+          ipfs.files.cat(mhBuf, (err, stream) => {
             expect(err).to.not.exist
             stream.pipe(bl((err, data) => {
               expect(err).to.not.exist
@@ -232,7 +232,7 @@ module.exports = (common) => {
 
         it('streams a large file', (done) => {
           const hash = 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq'
-          ipfs.cat(hash, (err, stream) => {
+          ipfs.files.cat(hash, (err, stream) => {
             expect(err).to.not.exist
             stream.pipe(bl((err, data) => {
               expect(err).to.not.exist
@@ -262,7 +262,7 @@ module.exports = (common) => {
         it('with a base58 multihash encoded string', () => {
           const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
 
-          return ipfs.cat(hash)
+          return ipfs.files.cat(hash)
             .then((stream) => {
               stream.pipe(bl((err, data) => {
                 expect(err).to.not.exist
@@ -274,7 +274,7 @@ module.exports = (common) => {
         it('errors on invalid key', () => {
           const hash = 'somethingNotMultihash'
 
-          return ipfs.cat(hash)
+          return ipfs.files.cat(hash)
             .catch((err) => {
               expect(err).to.exist
               const errString = err.toString()
@@ -289,7 +289,7 @@ module.exports = (common) => {
 
         it('with a multihash', () => {
           const hash = new Buffer(bs58.decode('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'))
-          return ipfs.cat(hash)
+          return ipfs.files.cat(hash)
             .then((stream) => {
               stream.pipe(bl((err, data) => {
                 expect(err).to.not.exist
