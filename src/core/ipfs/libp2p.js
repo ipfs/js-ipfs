@@ -3,6 +3,7 @@
 const multiaddr = require('multiaddr')
 const Libp2pNode = require('libp2p-ipfs').Node
 const promisify = require('promisify-es6')
+const flatMap = require('lodash.flatmap')
 
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 
@@ -11,21 +12,27 @@ module.exports = function libp2p (self) {
 
   return {
     start: (callback) => {
-      self._libp2pNode = new Libp2pNode(self._peerInfo)
-      self._libp2pNode.start(() => {
-        // TODO connect to bootstrap nodes, it will get us more addrs
-        self._libp2pNode.peerInfo.multiaddrs.forEach((ma) => {
+      const node = self._libp2pNode = new Libp2pNode(self._peerInfo)
+      node.start((err) => {
+        if (err) {
+          return callback(err)
+        }
+
+        // TODO: connect to bootstrap nodes, it will
+        // get us more addrs
+        node.peerInfo.multiaddrs.forEach((ma) => {
           console.log('Swarm listening on', ma.toString())
         })
         callback()
       })
 
-      self._libp2pNode.discovery.on('peer', (peerInfo) => {
-        self._libp2pNode.peerBook.put(peerInfo)
-        self._libp2pNode.dialByPeerInfo(peerInfo, () => {})
+      node.discovery.on('peer', (peerInfo) => {
+        node.peerBook.put(peerInfo)
+        node.dialByPeerInfo(peerInfo, () => {})
       })
-      self._libp2pNode.swarm.on('peer-mux-established', (peerInfo) => {
-        self._libp2pNode.peerBook.put(peerInfo)
+
+      node.swarm.on('peer-mux-established', (peerInfo) => {
+        node.peerBook.put(peerInfo)
       })
     },
     stop: (callback) => {
@@ -37,17 +44,7 @@ module.exports = function libp2p (self) {
           return callback(OFFLINE_ERROR)
         }
 
-        const peers = self._libp2pNode.peerBook.getAll()
-        const mas = []
-        Object
-           .keys(peers)
-           .forEach((b58Id) => {
-             peers[b58Id].multiaddrs.forEach((ma) => {
-               // TODO this should only print the addr we are using
-               mas.push(ma)
-             })
-           })
-
+        const mas = collectAddrs(self._libp2pNode.peerBook)
         callback(null, mas)
       }),
       // all the addrs we know
@@ -55,17 +52,8 @@ module.exports = function libp2p (self) {
         if (!self.isOnline()) {
           return callback(OFFLINE_ERROR)
         }
-        const peers = self._libp2pNode.peerBook.getAll()
-        const mas = []
-        Object
-           .keys(peers)
-           .forEach((b58Id) => {
-             peers[b58Id].multiaddrs.forEach((ma) => {
-               // TODO this should only print the addr we are using
-               mas.push(ma)
-             })
-           })
 
+        const mas = collectAddrs(self._libp2pNode.peerBook)
         callback(null, mas)
       }),
       localAddrs: promisify((callback) => {
@@ -108,4 +96,11 @@ module.exports = function libp2p (self) {
       throw new Error('Not implemented')
     }
   }
+}
+
+function collectAddrs (book) {
+  const peers = book.getAll()
+  return flatMap(Object.keys(peers), (id) => {
+    return peers[id].multiaddrs
+  })
 }
