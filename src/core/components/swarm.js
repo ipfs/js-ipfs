@@ -2,6 +2,7 @@
 
 const multiaddr = require('multiaddr')
 const promisify = require('promisify-es6')
+const flatMap = require('lodash.flatmap')
 
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 
@@ -12,17 +13,7 @@ module.exports = function swarm (self) {
         return callback(OFFLINE_ERROR)
       }
 
-      const peers = self._libp2pNode.peerBook.getAll()
-      const mas = []
-      Object
-         .keys(peers)
-         .forEach((b58Id) => {
-           peers[b58Id].multiaddrs.forEach((ma) => {
-             // TODO this should only print the addr we are using
-             mas.push(ma)
-           })
-         })
-
+      const mas = collectAddrs(self._libp2pNode.peerBook)
       callback(null, mas)
     }),
     // all the addrs we know
@@ -30,17 +21,8 @@ module.exports = function swarm (self) {
       if (!self.isOnline()) {
         return callback(OFFLINE_ERROR)
       }
-      const peers = self._libp2pNode.peerBook.getAll()
-      const mas = []
-      Object
-         .keys(peers)
-         .forEach((b58Id) => {
-           peers[b58Id].multiaddrs.forEach((ma) => {
-             // TODO this should only print the addr we are using
-             mas.push(ma)
-           })
-         })
 
+      const mas = collectAddrs(self._libp2pNode.peerBook)
       callback(null, mas)
     }),
     localAddrs: promisify((callback) => {
@@ -77,4 +59,11 @@ module.exports = function swarm (self) {
       throw new Error('Not implemented')
     })
   }
+}
+
+function collectAddrs (book) {
+  const peers = book.getAll()
+  return flatMap(Object.keys(peers), (id) => {
+    return peers[id].multiaddrs
+  })
 }
