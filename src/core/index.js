@@ -7,21 +7,23 @@ const PeerBook = require('peer-book')
 
 const defaultRepo = require('./default-repo')
 
-const goOnline = require('./ipfs/go-online')
-const goOffline = require('./ipfs/go-offline')
-const isOnline = require('./ipfs/is-online')
-const load = require('./ipfs/load')
-const version = require('./ipfs/version')
-const id = require('./ipfs/id')
-const repo = require('./ipfs/repo')
-const init = require('./ipfs/init')
-const bootstrap = require('./ipfs/bootstrap')
-const config = require('./ipfs/config')
-const block = require('./ipfs/block')
-const object = require('./ipfs/object')
-const libp2p = require('./ipfs/libp2p')
-const files = require('./ipfs/files')
-const bitswap = require('./ipfs/bitswap')
+const goOnline = require('./components/go-online')
+const goOffline = require('./components/go-offline')
+const isOnline = require('./components/is-online')
+const load = require('./components/load')
+const version = require('./components/version')
+const id = require('./components/id')
+const repo = require('./components/repo')
+const init = require('./components/init')
+const bootstrap = require('./components/bootstrap')
+const config = require('./components/config')
+const block = require('./components/block')
+const object = require('./components/object')
+const libp2p = require('./components/libp2p')
+const swarm = require('./components/swarm')
+const ping = require('./components/ping')
+const files = require('./components/files')
+const bitswap = require('./components/bitswap')
 
 exports = module.exports = IPFS
 
@@ -35,6 +37,7 @@ function IPFS (repoInstance) {
     repoInstance = defaultRepo(repoInstance)
   }
 
+  // IPFS Core Internals
   this._repo = repoInstance
   this._peerInfoBook = new PeerBook()
   this._peerInfo = null
@@ -43,21 +46,24 @@ function IPFS (repoInstance) {
   this._blockS = new BlockService(this._repo)
   this._dagS = new DAGService(this._blockS)
 
+  // IPFS Core exposed components
+  //   for booting up a node
   this.goOnline = goOnline(this)
   this.goOffline = goOffline(this)
   this.isOnline = isOnline(this)
   this.load = load(this)
+  this.init = init(this)
+  //   interface-ipfs-core defined API
   this.version = version(this)
   this.id = id(this)
   this.repo = repo(this)
-  this.init = init(this)
   this.bootstrap = bootstrap(this)
   this.config = config(this)
   this.block = block(this)
   this.object = object(this)
   this.libp2p = libp2p(this)
-  this.swarm = this.libp2p.swarm // for interface-ipfs-core sake
+  this.swarm = swarm(this)
   this.files = files(this)
-  this.cat = files(this).cat // Alias for js-ipfs-api cat
   this.bitswap = bitswap(this)
+  this.ping = ping(this)
 }

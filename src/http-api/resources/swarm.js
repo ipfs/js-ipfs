@@ -27,7 +27,7 @@ exports.parseAddrs = (request, reply) => {
 exports.peers = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
-    request.server.app.ipfs.libp2p.swarm.peers((err, peers) => {
+    request.server.app.ipfs.swarm.peers((err, peers) => {
       if (err) {
         log.error(err)
         return reply({
@@ -48,7 +48,7 @@ exports.peers = {
 exports.localAddrs = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
-    request.server.app.ipfs.libp2p.swarm.localAddrs((err, addrs) => {
+    request.server.app.ipfs.swarm.localAddrs((err, addrs) => {
       if (err) {
         log.error(err)
         return reply({
@@ -72,7 +72,7 @@ exports.connect = {
   handler: (request, reply) => {
     const addr = request.pre.args.addr
 
-    request.server.app.ipfs.libp2p.swarm.connect(addr, (err) => {
+    request.server.app.ipfs.swarm.connect(addr, (err) => {
       if (err) {
         log.error(err)
         return reply({
