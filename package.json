@@ -30,7 +30,8 @@
     "release": "gulp release",
     "release-minor": "gulp release --type minor",
     "release-major": "gulp release --type major",
-    "coverage-publish": "aegir-coverage publish"
+    "coverage-publish": "aegir-coverage publish",
+    "bench": "./scripts/bench.sh"
   },
   "pre-commit": [
     "lint",

@@ -33,3 +33,5 @@ node_modules
 
 lib
 dist
+
+current.json
