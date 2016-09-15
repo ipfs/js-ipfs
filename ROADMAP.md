@@ -79,12 +79,12 @@ UPDATE:
 #### Extra:
 
 - [x] Migration to pull-streams - https://github.com/ipfs/js-ipfs/issues/403
-- [ ] Test js-ipfs using ipfs-api through http-api with interface-ipfs-core tests
+- [x] Test js-ipfs using ipfs-api through http-api with interface-ipfs-core tests
   - [x] test-block
   - [x] test-object
   - [x] test-files
   - [x] test-config
-  - [ ] test-swarm
+  - [x] test-swarm
 
 ### Dependencies:
 
