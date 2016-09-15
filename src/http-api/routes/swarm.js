@@ -13,13 +13,13 @@ module.exports = (server) => {
     }
   })
 
-  // api.route({
-  //   method: '*',
-  //   path: '/api/v0/swarm/addrs',
-  //   config: {
-  //     handler: resources.swarm.addrs.handler
-  //   }
-  // })
+  api.route({
+    method: '*',
+    path: '/api/v0/swarm/addrs',
+    config: {
+      handler: resources.swarm.addrs.handler
+    }
+  })
 
   api.route({
     method: '*',
@@ -40,13 +40,16 @@ module.exports = (server) => {
     }
   })
 
-  // api.route({
-  //   method: '*',
-  //   path: '/api/v0/swarm/disconnect',
-  //   config: {
-  //     handler: resources.swarm.disconnect
-  //   }
-  // })
+  api.route({
+    method: '*',
+    path: '/api/v0/swarm/disconnect',
+    config: {
+      pre: [
+        { method: resources.swarm.disconnect.parseArgs, assign: 'args' }
+      ],
+      handler: resources.swarm.disconnect.handler
+    }
+  })
 
   // TODO
   // api.route({
