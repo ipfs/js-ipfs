@@ -35,46 +35,64 @@ function Factory () {
                                  .substring(2, 8)
     }
 
-    if (!config) {
-      config = JSON.parse(JSON.stringify(defaultConfig))
-      const pId = PeerId.create({ bits: 512 }).toJSON()
-      config.Identity.PeerID = pId.id
-      config.Identity.PrivKey = pId.privKey
-    }
-
-    // set up the repo
-    const repo = new IPFSRepo(repoPath, {
-      stores: require('fs-pull-blob-store')
-    })
-    repo.teardown = (done) => {
-      cleanRepo(repoPath)
-      done()
-    }
-
-   // create the IPFS node
-    const ipfs = new IPFS(repo)
-    ipfs.init({ emptyRepo: true, bits: 512 }, (err) => {
+    createConfig(config, (err, conf) => {
       if (err) {
         return callback(err)
       }
-      repo.config.set(config, launchNode)
-    })
 
-    function launchNode () {
-      // create the IPFS node through the HTTP-API
-      const node = new HTTPAPI(repo)
-      nodes.push({
-        httpApi: node,
-        repo: repo
+      config = conf
+      // set up the repo
+      const repo = new IPFSRepo(repoPath, {
+        stores: require('fs-pull-blob-store')
       })
+      repo.teardown = (done) => {
+        cleanRepo(repoPath)
+        done()
+      }
 
-      node.start((err) => {
+      // create the IPFS node
+      const ipfs = new IPFS(repo)
+      ipfs.init({ emptyRepo: true, bits: 512 }, (err) => {
         if (err) {
           return callback(err)
         }
-        console.log(node.apiMultiaddr)
-        const ctl = IPFSAPI(node.apiMultiaddr)
-        callback(null, ctl)
+        repo.config.set(config, launchNode)
+      })
+
+      function launchNode () {
+        // create the IPFS node through the HTTP-API
+        const node = new HTTPAPI(repo)
+        nodes.push({
+          httpApi: node,
+          repo: repo
+        })
+
+        node.start((err) => {
+          if (err) {
+            return callback(err)
+          }
+          console.log(node.apiMultiaddr)
+          const ctl = IPFSAPI(node.apiMultiaddr)
+          callback(null, ctl)
+        })
+      }
+    })
+
+    function createConfig (config, cb) {
+      if (config) {
+        return cb(null, config)
+      }
+      const conf = JSON.parse(JSON.stringify(defaultConfig))
+
+      PeerId.create({ bits: 512 }, (err, id) => {
+        if (err) {
+          return cb(err)
+        }
+
+        const pId = id.toJSON()
+        conf.Identity.PeerID = pId.id
+        conf.Identity.PrivKey = pId.privKey
+        cb(null, conf)
       })
     }
   }

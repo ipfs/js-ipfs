@@ -34,66 +34,85 @@ function Factory () {
                                  .substring(2, 8)
     }
 
-    if (!config) {
-      config = JSON.parse(JSON.stringify(defaultConfig))
-      const pId = PeerId.create({ bits: 512 }).toJSON()
-      config.Identity.PeerID = pId.id
-      config.Identity.PrivKey = pId.privKey
-    }
-
-    // set up the repo
-    let store
-    let teardown
-
-    if (isNode) {
-      store = require('fs-pull-blob-store')
-      teardown = (done) => {
-        cleanRepo(repoPath)
-        done()
-      }
-    } else {
-      const idb = window.indexedDB ||
-              window.mozIndexedDB ||
-              window.webkitIndexedDB ||
-              window.msIndexedDB
-      store = require('idb-pull-blob-store')
-      teardown = (done) => {
-        idb.deleteDatabase(repoPath)
-        idb.deleteDatabase(repoPath + '/blocks')
-        done()
-      }
-    }
-
-    const repo = new IPFSRepo(repoPath, { stores: store })
-    repo.teardown = teardown
-
-    // create the IPFS node
-    const ipfs = new IPFS(repo)
-    ipfs.init({ emptyRepo: true, bits: 512 }, (err) => {
+    createConfig(config, (err, conf) => {
       if (err) {
         return callback(err)
       }
-      repo.config.set(config, launchNode)
-    })
 
-    function launchNode () {
-      ipfs.load((err) => {
+      config = conf
+
+      // set up the repo
+      let store
+      let teardown
+
+      if (isNode) {
+        store = require('fs-pull-blob-store')
+        teardown = (done) => {
+          cleanRepo(repoPath)
+          done()
+        }
+      } else {
+        const idb = window.indexedDB ||
+                window.mozIndexedDB ||
+                window.webkitIndexedDB ||
+                window.msIndexedDB
+        store = require('idb-pull-blob-store')
+        teardown = (done) => {
+          idb.deleteDatabase(repoPath)
+          idb.deleteDatabase(repoPath + '/blocks')
+          done()
+        }
+      }
+
+      const repo = new IPFSRepo(repoPath, { stores: store })
+      repo.teardown = teardown
+
+      // create the IPFS node
+      const ipfs = new IPFS(repo)
+      ipfs.init({ emptyRepo: true, bits: 512 }, (err) => {
         if (err) {
           return callback(err)
         }
+        repo.config.set(config, launchNode)
+      })
 
-        ipfs.goOnline((err) => {
+      function launchNode () {
+        ipfs.load((err) => {
           if (err) {
             return callback(err)
           }
 
-          nodes.push({
-            repo: repo,
-            ipfs: ipfs
-          })
+          ipfs.goOnline((err) => {
+            if (err) {
+              return callback(err)
+            }
 
-          callback(null, ipfs)
+            nodes.push({
+              repo: repo,
+              ipfs: ipfs
+            })
+
+            callback(null, ipfs)
+          })
         })
+      }
+    })
+
+    function createConfig (config, cb) {
+      if (config) {
+        return cb(null, config)
+      }
+      const conf = JSON.parse(JSON.stringify(defaultConfig))
+
+      PeerId.create({ bits: 512 }, (err, id) => {
+        if (err) {
+          return cb(err)
+        }
+
+        const pId = id.toJSON()
+        conf.Identity.PeerID = pId.id
+        conf.Identity.PrivKey = pId.privKey
+        cb(null, conf)
       })
     }
   }

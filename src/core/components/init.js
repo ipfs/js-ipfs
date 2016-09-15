@@ -17,7 +17,7 @@ module.exports = function init (self) {
     }
 
     opts.emptyRepo = opts.emptyRepo || false
-    opts.bits = opts.bits || 2048
+    opts.bits = Number(opts.bits) || 2048
     opts.log = opts.log || function () {}
 
     let config
@@ -48,17 +48,20 @@ module.exports = function init (self) {
     // Generate peer identity keypair + transform to desired format + add to config.
     function generateAndSetKeypair () {
       opts.log(`generating ${opts.bits}-bit RSA keypair...`, false)
-      var keys = peerId.create({
+      peerId.create({
         bits: opts.bits
-      })
-      config.Identity = {
-        PeerID: keys.toB58String(),
-        PrivKey: keys.privKey.bytes.toString('base64')
-      }
-      opts.log('done')
-      opts.log('peer identity: ' + config.Identity.PeerID)
+      }, (err, keys) => {
+        if (err) return callback(err)
 
-      writeVersion()
+        config.Identity = {
+          PeerID: keys.toB58String(),
+          PrivKey: keys.privKey.bytes.toString('base64')
+        }
+        opts.log('done')
+        opts.log('peer identity: ' + config.Identity.PeerID)
+
+        writeVersion()
+      })
     }
 
     function writeVersion () {

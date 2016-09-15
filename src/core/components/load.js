@@ -3,27 +3,24 @@
 const peerId = require('peer-id')
 const PeerInfo = require('peer-info')
 const multiaddr = require('multiaddr')
+const waterfall = require('run-waterfall')
 
 const utils = require('../utils')
 
 module.exports = function load (self) {
   return (callback) => {
-    utils.ifRepoExists(self._repo, (err) => {
-      if (err) {
-        return callback(err)
-      }
+    waterfall([
+      (cb) => utils.ifRepoExists(self._repo, cb),
+      (cb) => self._repo.config.get(cb),
+      (config, cb) => {
+        const id = peerId.createFromPrivKey(config.Identity.PrivKey)
 
-      self._repo.config.get((err, config) => {
-        if (err) {
-          return callback(err)
-        }
-        const pid = peerId.createFromPrivKey(config.Identity.PrivKey)
-        self._peerInfo = new PeerInfo(pid)
+        self._peerInfo = new PeerInfo(id)
         config.Addresses.Swarm.forEach((addr) => {
           self._peerInfo.multiaddr.add(multiaddr(addr))
         })
-        callback()
-      })
-    })
+        cb()
+      }
+    ], callback)
   }
 }
