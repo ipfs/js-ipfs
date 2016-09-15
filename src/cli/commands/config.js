@@ -1,8 +1,6 @@
 'use strict'
 
 const debug = require('debug')
-const get = require('lodash.get')
-const set = require('lodash.set')
 const log = debug('cli:config')
 log.error = debug('cli:config:error')
 const utils = require('../utils')
@@ -43,26 +41,17 @@ module.exports = {
 
       if (!value) {
         // Get the value of a given key
-
-        if (utils.isDaemonOn()) {
-          return ipfs.config.get(key, (err, config) => {
-            if (err) {
-              log.error(err)
-              throw new Error('failed to read the config')
-            }
-
-            console.log(config.Value)
-          })
-        }
-
-        ipfs.config.get((err, config) => {
+        ipfs.config.get(key, (err, value) => {
           if (err) {
             log.error(err)
             throw new Error('failed to read the config')
           }
 
-          const value = get(config, key)
-          console.log(value)
+          if (typeof value === 'object') {
+            console.log(JSON.stringify(value, null, 2))
+          } else {
+            console.log(value)
+          }
         })
       } else {
         // Set the new value of a given key
@@ -78,28 +67,11 @@ module.exports = {
           }
         }
 
-        if (utils.isDaemonOn()) {
-          return ipfs.config.set(key, value, (err) => {
-            if (err) {
-              log.error(err)
-              throw new Error('failed to save the config')
-            }
-          })
-        }
-
-        ipfs.config.get((err, originalConfig) => {
+        ipfs.config.set(key, value, (err) => {
           if (err) {
             log.error(err)
             throw new Error('failed to read the config')
           }
-
-          const updatedConfig = set(originalConfig, key, value)
-          ipfs.config.replace(updatedConfig, (err) => {
-            if (err) {
-              log.error(err)
-              throw new Error('failed to save the config')
-            }
-          })
         })
       }
     })

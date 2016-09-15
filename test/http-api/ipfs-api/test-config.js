@@ -60,14 +60,14 @@ module.exports = (ctl) => {
     it('.get updatedConfig', (done) => {
       ctl.config.get((err, config) => {
         expect(err).not.to.exist
-        expect(config).to.deep.equal(updatedConfig())
+        expect(config).to.be.eql(updatedConfig())
         done()
       })
     })
 
     // This one is one stale mode till go-ipfs decides
     // what to do
-    describe.skip('.replace', () => {
+    describe('.replace', () => {
       it('returns error if the config is invalid', (done) => {
         const filePath = 'test/test-data/badconfig'
 
