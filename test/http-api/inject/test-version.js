@@ -17,9 +17,9 @@ module.exports = (http) => {
         method: 'GET',
         url: '/api/v0/version'
       }, (res) => {
-        expect(res.result.version).to.equal(pkgversion)
-        expect(res.result).to.have.a.property('commit')
-        expect(res.result).to.have.a.property('repo')
+        expect(res.result).to.have.a.property('Version', pkgversion)
+        expect(res.result).to.have.a.property('Commit')
+        expect(res.result).to.have.a.property('Repo')
         done()
       })
     })
