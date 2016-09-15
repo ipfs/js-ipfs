@@ -9,7 +9,7 @@ Swarm API
 
 ##### `JavaScript` - ipfs.swarm.addrs([callback])
 
-`callback` must follow `function (err, addrs) {}` signature, where `err` is an error if the operation was not successful. `addrs` will be an array of multiaddrs.
+`callback` must follow `function (err, addrs) {}` signature, where `err` is an error if the operation was not successful. `addrs` will be an array of [`PeerInfo`](https://github.com/libp2p/js-peer-info)s.
 
 If no `callback` is passed, a promise is returned.
 
@@ -29,7 +29,7 @@ ipfs.swarm.addrs(function (err, addrs) {})
 
 Where `addr` is of type [multiaddr](https://github.com/multiformats/js-multiaddr)
 
-`callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. 
+`callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful.
 
 If no `callback` is passed, a promise is returned.
 
@@ -51,7 +51,7 @@ ipfs.swarm.connect(addr, function (err) {
 
 Where `addr` is of type [multiaddr](https://github.com/multiformats/js-multiaddr)
 
-`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful. 
+`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
 
 If no `callback` is passed, a promise is returned.
 
@@ -111,7 +111,7 @@ ipfs.swarm.filters(function (err, filters) {})
 
 Where `filter` is of type [multiaddr]()
 
-`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful. 
+`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
 
 If no `callback` is passed, a promise is returned.
 
@@ -140,5 +140,3 @@ Example:
 ```JavaScript
 ipfs.swarm.filters.rm(filter, function (err) {})
 ```
-
-
