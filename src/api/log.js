@@ -6,7 +6,7 @@ const promisify = require('promisify-es6')
 module.exports = (send) => {
   return {
     tail: promisify((callback) => {
-      send({
+      return send({
         path: 'log/tail'
       }, (err, response) => {
         if (err) {
