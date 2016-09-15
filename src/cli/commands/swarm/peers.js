@@ -27,8 +27,8 @@ module.exports = {
           throw err
         }
 
-        res.Strings.forEach((addr) => {
-          console.log(addr)
+        res.forEach((addr) => {
+          console.log(addr.toString())
         })
       })
     })
