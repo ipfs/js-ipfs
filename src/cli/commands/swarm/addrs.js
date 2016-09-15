@@ -20,7 +20,21 @@ module.exports = {
       if (err) {
         throw err
       }
-      // TODO
+
+      ipfs.swarm.addrs((err, res) => {
+        if (err) {
+          throw err
+        }
+
+        res.forEach((peer) => {
+          const count = peer.multiaddrs.length
+          console.log(`${peer.id.toB58String()} (${count})`)
+          peer.multiaddrs.forEach((addr) => {
+            const res = addr.decapsulate('ipfs').toString()
+            console.log(`\t${res}`)
+          })
+        })
+      })
     })
   }
 }

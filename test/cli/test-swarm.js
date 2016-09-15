@@ -26,7 +26,8 @@ describe('swarm', function () {
         expect(err).to.not.exist
         ipfs.id((err, identity) => {
           expect(err).to.not.exist
-          ipfsAddr = `${identity.addresses[0]}/ipfs/${identity.id}`
+          ipfsAddr = identity.addresses[0]
+          console.log('addr', ipfsAddr)
           done()
         })
       })
@@ -51,18 +52,32 @@ describe('swarm', function () {
       })
     })
 
-    // TODO revisit these once interface-ipfs-core over http-api are done
-    it.skip('connect', (done) => {
+    it('connect', (done) => {
       nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'swarm', 'connect', ipfsAddr], {env})
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
+          expect(stdout).to.be.eql([
+            `connect ${ipfsAddr} success`
+          ])
           done()
         })
     })
 
-    it.skip('peers', (done) => {
+    it('peers', (done) => {
       nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'swarm', 'peers'], {env})
+        .run((err, stdout, exitcode) => {
+          expect(err).to.not.exist
+          expect(exitcode).to.equal(0)
+          expect(stdout).to.be.eql([
+            ipfsAddr
+          ])
+          done()
+        })
+    })
+
+    it('addrs', (done) => {
+      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'swarm', 'addrs'], {env})
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist
           expect(exitcode).to.equal(0)
@@ -71,7 +86,7 @@ describe('swarm', function () {
         })
     })
 
-    it.skip('addrs local', (done) => {
+    it('addrs local', (done) => {
       nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'swarm', 'addrs', 'local'], {env})
         .run((err, stdout, exitcode) => {
           expect(err).to.not.exist

@@ -25,9 +25,9 @@ exports.parseAddrs = (request, reply) => {
 }
 
 exports.peers = {
-  // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
-    request.server.app.ipfs.swarm.peers((err, peers) => {
+    const ipfs = request.server.app.ipfs
+    ipfs.swarm.peers((err, peers) => {
       if (err) {
         log.error(err)
         return reply({
@@ -37,18 +37,40 @@ exports.peers = {
       }
 
       return reply({
-        Strings: Object.keys(peers)
-          .map((key) =>
-            `${peers[key].multiaddrs[0].toString()}/ipfs/${peers[key].id.toB58String()}`)
+        Strings: peers.map((addr) => addr.toString())
+      })
+    })
+  }
+}
+
+exports.addrs = {
+  handler: (request, reply) => {
+    const ipfs = request.server.app.ipfs
+    ipfs.swarm.addrs((err, peers) => {
+      if (err) {
+        log.error(err)
+        return reply({
+          Message: err.toString(),
+          Code: 0
+        }).code(500)
+      }
+
+      const addrs = {}
+      peers.forEach((peer) => {
+        addrs[peer.id.toB58String()] = peer.multiaddrs.map((addr) => addr.toString())
+      })
+
+      return reply({
+        Addrs: addrs
       })
     })
   }
 }
 
 exports.localAddrs = {
-  // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
-    request.server.app.ipfs.swarm.localAddrs((err, addrs) => {
+    const ipfs = request.server.app.ipfs
+    ipfs.swarm.localAddrs((err, addrs) => {
       if (err) {
         log.error(err)
         return reply({
@@ -71,8 +93,9 @@ exports.connect = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
     const addr = request.pre.args.addr
+    const ipfs = request.server.app.ipfs
 
-    request.server.app.ipfs.swarm.connect(addr, (err) => {
+    ipfs.swarm.connect(addr, (err) => {
       if (err) {
         log.error(err)
         return reply({
@@ -83,6 +106,31 @@ exports.connect = {
 
       return reply({
         Strings: [`connect ${addr} success`]
+      })
+    })
+  }
+}
+
+exports.disconnect = {
+  // uses common parseAddr method that returns a `addr`
+  parseArgs: exports.parseAddrs,
+
+  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+  handler: (request, reply) => {
+    const addr = request.pre.args.addr
+    const ipfs = request.server.app.ipfs
+
+    ipfs.swarm.disconnect(addr, (err) => {
+      if (err) {
+        log.error(err)
+        return reply({
+          Message: err.toString(),
+          Code: 0
+        }).code(500)
+      }
+
+      return reply({
+        Strings: [`disconnect ${addr} success`]
       })
     })
   }
