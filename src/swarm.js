@@ -46,6 +46,7 @@ module.exports = (common) => {
       it('.connect', (done) => {
         ipfsB.id((err, id) => {
           expect(err).to.not.exist
+
           const ipfsBAddr = id.addresses[0]
           ipfsA.swarm.connect(ipfsBAddr, done)
         })
@@ -62,7 +63,9 @@ module.exports = (common) => {
       it('.addrs', (done) => {
         ipfsA.swarm.addrs((err, multiaddrs) => {
           expect(err).to.not.exist
-          expect(multiaddrs).to.have.length.above(0)
+          expect(multiaddrs).to.not.be.empty
+          expect(multiaddrs).to.be.an('array')
+          expect(multiaddrs[0].constructor.name).to.be.eql('Peer')
           done()
         })
       })
