@@ -31,11 +31,13 @@
     "multiaddr": "^2.0.2",
     "multipart-stream": "^2.0.1",
     "ndjson": "^1.4.3",
+    "peer-id": "^0.7.0",
+    "peer-info": "^0.7.1",
     "promisify-es6": "^1.0.1",
     "qs": "^6.2.1",
+    "streamifier": "^0.1.1",
     "tar-stream": "^1.5.2",
-    "wreck": "^10.0.0",
-    "streamifier": "^0.1.1"
+    "wreck": "^10.0.0"
   },
   "engines": {
     "node": ">=4.2.2"
@@ -49,7 +51,7 @@
     "chai": "^3.5.0",
     "gulp": "^3.9.1",
     "hapi": "^15.0.2",
-    "interface-ipfs-core": "^0.14.5",
+    "interface-ipfs-core": "^0.15.0",
     "ipfsd-ctl": "^0.14.0",
     "pre-commit": "^1.1.3",
     "socket.io": "^1.4.8",
