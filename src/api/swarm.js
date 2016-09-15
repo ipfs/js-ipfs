@@ -2,6 +2,8 @@
 
 const promisify = require('promisify-es6')
 const multiaddr = require('multiaddr')
+const PeerId = require('peer-id')
+const PeerInfo = require('peer-info')
 
 module.exports = (send) => {
   return {
@@ -56,11 +58,17 @@ module.exports = (send) => {
         if (err) {
           return callback(err)
         }
-        callback(null, Object.keys(result.Addrs).map((id) => {
-          return result.Addrs[id].map((maStr) => {
-            return multiaddr(maStr).encapsulate('/ipfs/' + id)
+
+        const peers = Object.keys(result.Addrs).map((id) => {
+          const info = new PeerInfo(PeerId.createFromB58String(id))
+          result.Addrs[id].forEach((addr) => {
+            info.multiaddr.add(multiaddr(addr))
           })
-        })[0])
+
+          return info
+        })
+
+        callback(null, peers)
       })
     }),
     localAddrs: promisify((opts, callback) => {

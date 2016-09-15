@@ -31,11 +31,13 @@
     "multiaddr": "^2.0.2",
     "multipart-stream": "^2.0.1",
     "ndjson": "^1.4.3",
+    "peer-id": "^0.7.0",
+    "peer-info": "^0.7.1",
     "promisify-es6": "^1.0.1",
     "qs": "^6.2.1",
+    "streamifier": "^0.1.1",
     "tar-stream": "^1.5.2",
-    "wreck": "^10.0.0",
-    "streamifier": "^0.1.1"
+    "wreck": "^10.0.0"
   },
   "engines": {
     "node": ">=4.2.2"
