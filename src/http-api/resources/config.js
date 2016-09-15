@@ -57,8 +57,10 @@ exports.getOrSet = {
   handler: (request, reply) => {
     const key = request.pre.args.key
     const value = request.pre.args.value
+    const ipfs = request.server.app.ipfs
 
-    if (typeof value === 'object' && value.type === 'Buffer') {
+    if (typeof value === 'object' &&
+        value.type === 'Buffer') {
       return reply({
         Message: 'Invalid value type',
         Code: 0
@@ -67,7 +69,7 @@ exports.getOrSet = {
 
     if (value === undefined) {
       // Get the value of a given key
-      return request.server.app.ipfs.config.get((err, config) => {
+      return ipfs.config.get((err, config) => {
         if (err) {
           log.error(err)
           return reply({
@@ -89,9 +91,20 @@ exports.getOrSet = {
           Value: value
         })
       })
-    } else {
-      // Set the new value of a given key
-      request.server.app.ipfs.config.get((err, originalConfig) => {
+    }
+
+    // Set the new value of a given key
+    ipfs.config.get((err, originalConfig) => {
+      if (err) {
+        log.error(err)
+        return reply({
+          Message: 'Failed to get config value: ' + err,
+          Code: 0
+        }).code(500)
+      }
+
+      const updatedConfig = set(originalConfig, key, value)
+      ipfs.config.replace(updatedConfig, (err) => {
         if (err) {
           log.error(err)
           return reply({
@@ -100,28 +113,37 @@ exports.getOrSet = {
           }).code(500)
         }
 
-        const updatedConfig = set(originalConfig, key, value)
-        request.server.app.ipfs.config.replace(updatedConfig, (err) => {
-          if (err) {
-            log.error(err)
-            return reply({
-              Message: 'Failed to get config value: ' + err,
-              Code: 0
-            }).code(500)
-          }
-
-          return reply({
-            Key: key,
-            Value: value
-          })
+        return reply({
+          Key: key,
+          Value: value
         })
       })
-    }
+    })
   }
 }
 
 exports.get = (request, reply) => {
-  return request.server.app.ipfs.config.get((err, config) => {
+  const ipfs = request.server.app.ipfs
+
+  ipfs.config.get((err, config) => {
+    if (err) {
+      log.error(err)
+      return reply({
+        Message: 'Failed to get config value: ' + err,
+        Code: 0
+      }).code(500)
+    }
+
+    return reply({
+      Value: config
+    })
+  })
+}
+
+exports.show = (request, reply) => {
+  const ipfs = request.server.app.ipfs
+
+  ipfs.config.get((err, config) => {
     if (err) {
       log.error(err)
       return reply({

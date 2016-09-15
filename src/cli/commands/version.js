@@ -37,11 +37,7 @@ module.exports = {
           throw err
         }
 
-        if (typeof version === 'object') { // js-ipfs-api output
-          version = version.Version
-        }
-
-        console.log(`js-ipfs version: ${version}`)
+        console.log(`js-ipfs version: ${version.version}`)
       })
     })
   }

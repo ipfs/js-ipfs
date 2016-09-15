@@ -123,16 +123,14 @@ describe('config', () => {
     })
 
     after((done) => {
-      console.log('stopping')
       httpAPI.stop((err) => {
-        console.log('stopped')
         expect(err).to.not.exist
         done()
       })
     })
 
     describe('get/set', () => {
-      it.skip('get a config key value', (done) => {
+      it('get a config key value', (done) => {
         nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'Identity.PeerID'], {env})
           .run((err, stdout, exitcode) => {
             const expected = 'QmQ2zigjQikYnyYUSXZydNXrDRhBut2mubwJBaLXobMt3A'
