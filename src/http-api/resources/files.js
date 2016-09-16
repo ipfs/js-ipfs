@@ -7,10 +7,10 @@ const tar = require('tar-stream')
 const log = debug('http-api:files')
 log.error = debug('http-api:files:error')
 const pull = require('pull-stream')
-const toStream = require('pull-stream-to-stream')
 const toPull = require('stream-to-pull-stream')
 const pushable = require('pull-pushable')
 const EOL = require('os').EOL
+const through = require('through2')
 
 exports = module.exports
 
@@ -72,7 +72,7 @@ exports.get = {
     const ipfs = request.server.app.ipfs
     const pack = tar.pack()
 
-    ipfs.files.getPull(key, (err, stream) => {
+    ipfs.files.get(key, (err, stream) => {
       if (err) {
         log.error(err)
 
@@ -83,35 +83,33 @@ exports.get = {
         return
       }
 
-      pull(
-        stream,
-        pull.asyncMap((file, cb) => {
-          const header = {name: file.path}
+      stream.pipe(through.obj((file, enc, cb) => {
+        const header = {name: file.path}
 
-          if (!file.content) {
-            header.type = 'directory'
-            pack.entry(header)
-            cb()
-          } else {
-            header.size = file.size
-            toStream.source(file.content)
-              .pipe(pack.entry(header, cb))
+        if (!file.content) {
+          header.type = 'directory'
+          pack.entry(header)
+          cb()
+        } else {
+          header.size = file.size
+          const packStream = pack.entry(header, cb)
+          if (!packStream) {
+            // this happens if the request is aborted
+            // we just skip things then
+            return cb()
           }
-        }),
-        pull.onEnd((err) => {
-          if (err) {
-            log.error(err)
+          file.content.pipe(packStream)
+        }
+      }), () => {
+        if (err) {
+          log.error(err)
+          pack.emit('error', err)
+          pack.destroy()
+          return
+        }
 
-            reply({
-              Message: 'Failed to get file: ' + err,
-              Code: 0
-            }).code(500)
-            return
-          }
-
-          pack.finalize()
-        })
-      )
+        pack.finalize()
+      })
 
       // the reply must read the tar stream,
       // to pull values through

@@ -7,6 +7,8 @@ log.error = debug('cli:files:error')
 var fs = require('fs')
 const path = require('path')
 const pathExists = require('path-exists')
+const pull = require('pull-stream')
+const toPull = require('stream-to-pull-stream')
 
 function checkArgs (hash, outPath) {
   // format the output directory
@@ -33,30 +35,38 @@ function ensureDir (dir, cb) {
     .catch(cb)
 }
 
-function fileHandler (result, dir) {
-  return function onFile (file) {
+function fileHandler (dir) {
+  return function onFile (file, cb) {
+    const lastSlash = file.path.lastIndexOf('/')
     // Check to see if the result is in a directory
-    if (file.path.lastIndexOf('/') === -1) {
+    if (lastSlash === -1) {
       const dirPath = path.join(dir, file.path)
       // Check to see if the result is a directory
-      if (file.dir === false) {
+      if (file.content) {
         file.content.pipe(fs.createWriteStream(dirPath))
+          .once('error', cb)
+          .once('end', cb)
       } else {
-        ensureDir(dirPath, (err) => {
-          if (err) {
-            throw err
-          }
-        })
+        ensureDir(dirPath, cb)
       }
     } else {
-      const filePath = file.path.substring(0, file.path.lastIndexOf('/') + 1)
+      const filePath = file.path.substring(0, lastSlash + 1)
       const dirPath = path.join(dir, filePath)
+
       ensureDir(dirPath, (err) => {
         if (err) {
-          throw err
+          return cb(err)
         }
 
-        file.content.pipe(fs.createWriteStream(dirPath))
+        if (file.content) {
+          const filename = file.path.substring(lastSlash)
+          const target = path.join(dirPath, filename)
+
+          file.content.pipe(fs.createWriteStream(target))
+            .once('error', cb)
+            .once('end', cb)
+        }
+        cb()
       })
     }
   }
@@ -76,17 +86,29 @@ module.exports = {
   },
 
   handler (argv) {
-    const dir = checkArgs(argv.ipfsPath, argv.output)
+    const ipfsPath = argv['ipfs-path']
+    const dir = checkArgs(ipfsPath, argv.output)
 
     utils.getIPFS((err, ipfs) => {
       if (err) {
         throw err
       }
-      ipfs.files.get(argv.ipfsPath, (err, result) => {
+
+      ipfs.files.get(ipfsPath, (err, stream) => {
         if (err) {
           throw err
         }
-        result.on('data', fileHandler(result, dir))
+
+        pull(
+          toPull.source(stream),
+          pull.asyncMap(fileHandler(dir)),
+          pull.onEnd((err) => {
+            console.log('finished writing')
+            if (err) {
+              throw err
+            }
+          })
+        )
       })
     })
   }
