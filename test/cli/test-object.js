@@ -3,273 +3,93 @@
 'use strict'
 
 const expect = require('chai').expect
-const nexpect = require('nexpect')
-const HttpAPI = require('../../src/http-api')
 const repoPath = require('./index').repoPath
-const _ = require('lodash')
+const describeOnlineAndOffline = require('../utils/on-and-off')
+const ipfs = require('../utils/ipfs')(repoPath)
 
 describe('object', () => {
-  const env = _.clone(process.env)
-  env.IPFS_PATH = repoPath
-
-  describe('api offline', () => {
-    it('new', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'new'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-          expect(stdout[0])
-            .to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-          done()
-        })
+  describeOnlineAndOffline(repoPath, () => {
+    it('new', () => {
+      return ipfs('object new').then((out) => {
+        expect(out).to.be.eql(
+          'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
+        )
+      })
     })
 
-    it('get', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'get', 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-
-          const result = JSON.parse(stdout[0])
-          expect(result.Links)
-            .to.deep.equal([])
-          expect(result.Data)
-            .to.equal('')
-          done()
-        })
+    it('get', () => {
+      return ipfs('object get QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n').then((out) => {
+        const result = JSON.parse(out)
+        expect(result.Links).to.be.eql([])
+        expect(result.Data).to.be.eql('')
+      })
     })
 
-    it('put', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'put', process.cwd() + '/test/test-data/node.json'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-          expect(stdout[0])
-            .to.equal('added QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
-          done()
-        })
+    it('put', () => {
+      return ipfs('object put test/test-data/node.json').then((out) => {
+        expect(out).to.be.eql(
+          'added QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm'
+        )
+      })
     })
 
-    it('stat', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'stat', 'QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-          expect(stdout[0])
-            .to.equal('NumLinks: 1')
-          expect(stdout[1])
-            .to.equal('BlockSize: 60')
-          expect(stdout[2])
-            .to.equal('LinksSize: 53')
-          expect(stdout[3])
-            .to.equal('DataSize: 7')
-          done()
-        })
+    it('stat', () => {
+      return ipfs('object stat QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').then((out) => {
+        expect(out).to.be.eql([
+          'NumLinks: 1',
+          'BlockSize: 60',
+          'LinksSize: 53',
+          'DataSize: 7',
+          'CumulativeSize: 68'
+        ].join('\n'))
+      })
     })
 
-    it('data', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'data', 'QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-          expect(stdout[0]).to.equal('another')
-          done()
-        })
+    it('data', () => {
+      return ipfs('object data QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').then((out) => {
+        expect(out).to.be.eql('another')
+      })
     })
 
-    it('links', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'links', 'QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-          expect(stdout[0]).to.equal('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V 8 some link')
-          done()
-        })
+    it('links', () => {
+      return ipfs('object links QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').then((out) => {
+        expect(out).to.be.eql(
+          'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V 8 some link'
+        )
+      })
     })
 
     describe('patch', () => {
-      it('append-data', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'append-data', 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n', process.cwd() + '/test/test-data/badconfig'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
-            expect(stdout[0])
-              .to.equal('QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6')
-            done()
-          })
-      })
-
-      it('set-data', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'set-data', 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6', process.cwd() + '/test/test-data/badconfig'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
-            expect(stdout[0])
-              .to.equal('QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6')
-            done()
-          })
-      })
-
-      it('add-link', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'add-link', 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n', 'foo', 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
-            expect(stdout[0])
-              .to.equal('QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK')
-            done()
-          })
-      })
-
-      it('rm-link', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'rm-link', 'QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK', 'foo'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
-            expect(stdout[0])
-              .to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-            done()
-          })
-      })
-    })
-  })
-
-  // Waiting for js-ipfs-api to be updated
-  describe('api running', () => {
-    let httpAPI
-
-    before((done) => {
-      httpAPI = new HttpAPI(repoPath)
-      httpAPI.start((err) => {
-        expect(err).to.not.exist
-        done()
-      })
-    })
-
-    after((done) => {
-      httpAPI.stop((err) => {
-        expect(err).to.not.exist
-        done()
-      })
-    })
-
-    it('new', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'new'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-          expect(stdout[0])
-            .to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-          done()
+      it('append-data', () => {
+        return ipfs('object patch append-data QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n test/test-data/badconfig').then((out) => {
+          expect(out).to.be.eql(
+            'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6'
+          )
         })
-    })
-
-    it('get', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'get', 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-          const result = JSON.parse(stdout[0])
-          expect(result.Links)
-            .to.deep.equal([])
-          expect(result.Data)
-            .to.equal('')
-          done()
-        })
-    })
-
-    it('put', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'put', process.cwd() + '/test/test-data/node.json'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-
-          expect(stdout[0])
-            .to.equal('added QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
-          done()
-        })
-    })
-
-    it('stat', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'stat', 'QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-          expect(stdout[0])
-            .to.equal('NumLinks: 1')
-          expect(stdout[1])
-            .to.equal('BlockSize: 60')
-          expect(stdout[2])
-            .to.equal('LinksSize: 53')
-          expect(stdout[3])
-            .to.equal('DataSize: 7')
-          done()
-        })
-    })
-
-    it('data', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'data', 'QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-          expect(stdout[0]).to.equal('another')
-          done()
-        })
-    })
-
-    it('links', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'links', 'QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-          expect(stdout[0]).to.equal('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V 8 some link')
-          done()
-        })
-    })
-
-    describe('patch', () => {
-      it('append-data', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'append-data', 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n', process.cwd() + '/test/test-data/badconfig'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
-            expect(stdout[0])
-              .to.equal('QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6')
-            done()
-          })
       })
 
-      it('set-data', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'set-data', 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6', process.cwd() + '/test/test-data/badconfig'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
-            expect(stdout[0])
-              .to.equal('QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6')
-            done()
-          })
+      it('set-data', () => {
+        return ipfs('object patch set-data QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6 test/test-data/badconfig').then((out) => {
+          expect(out).to.be.eql(
+            'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6'
+          )
+        })
       })
 
-      it('add-link', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'add-link', 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n', 'foo', 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
-            expect(stdout[0])
-              .to.equal('QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK')
-            done()
-          })
+      it('add-link', () => {
+        return ipfs('object patch add-link QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n foo QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn').then((out) => {
+          expect(out).to.be.eql(
+            'QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK'
+          )
+        })
       })
 
-      it('rm-link', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'object', 'patch', 'rm-link', 'QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK', 'foo'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
-            expect(stdout[0])
-              .to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-            done()
-          })
+      it('rm-link', () => {
+        return ipfs('object patch rm-link QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK foo').then((out) => {
+          expect(out).to.be.eql(
+            'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
+          )
+        })
       })
     })
   })

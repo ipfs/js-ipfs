@@ -1,37 +1,35 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-/* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
 const expect = require('chai').expect
-const nexpect = require('nexpect')
 const HttpAPI = require('../../src/http-api')
 const createTempNode = require('../utils/temp-node')
 const repoPath = require('./index').repoPath
-const _ = require('lodash')
+const ipfs = require('../utils/ipfs')(repoPath)
 
 describe('swarm', function () {
   this.timeout(30 * 1000)
-  const env = _.clone(process.env)
-  env.IPFS_PATH = repoPath
-
-  var ipfs
-  var ipfsAddr
+  let node
+  let nodeAddr
 
   before((done) => {
-    createTempNode(1, (err, _ipfs) => {
+    createTempNode(1, (err, _node) => {
       expect(err).to.not.exist
-      ipfs = _ipfs
-      ipfs.goOnline((err) => {
+      node = _node
+      node.goOnline((err) => {
         expect(err).to.not.exist
-        ipfs.id((err, identity) => {
+        node.id((err, identity) => {
           expect(err).to.not.exist
-          ipfsAddr = identity.addresses[0]
-          console.log('addr', ipfsAddr)
+          nodeAddr = identity.addresses[0]
           done()
         })
       })
     })
+  })
+
+  after((done) => {
+    node.goOffline(done)
   })
 
   describe('api running', () => {
@@ -52,48 +50,30 @@ describe('swarm', function () {
       })
     })
 
-    it('connect', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'swarm', 'connect', ipfsAddr], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-          expect(stdout).to.be.eql([
-            `connect ${ipfsAddr} success`
-          ])
-          done()
-        })
+    it('connect', () => {
+      return ipfs('swarm', 'connect', nodeAddr).then((out) => {
+        expect(out).to.be.eql(
+          `connect ${nodeAddr} success`
+        )
+      })
     })
 
-    it('peers', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'swarm', 'peers'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-          expect(stdout).to.be.eql([
-            ipfsAddr
-          ])
-          done()
-        })
+    it('peers', () => {
+      return ipfs('swarm peers').then((out) => {
+        expect(out).to.be.eql(nodeAddr)
+      })
     })
 
-    it('addrs', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'swarm', 'addrs'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-          expect(stdout).to.have.length.above(0)
-          done()
-        })
+    it('addrs', () => {
+      return ipfs('swarm addrs').then((out) => {
+        expect(out).to.have.length.above(0)
+      })
     })
 
-    it('addrs local', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'swarm', 'addrs', 'local'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-          expect(stdout).to.have.length.above(0)
-          done()
-        })
+    it('addrs local', () => {
+      return ipfs('swarm addrs local').then((out) => {
+        expect(out).to.have.length.above(0)
+      })
     })
   })
 })

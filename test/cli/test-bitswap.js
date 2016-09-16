@@ -2,34 +2,32 @@
 'use strict'
 
 const expect = require('chai').expect
-const nexpect = require('nexpect')
 const Block = require('ipfs-block')
-const _ = require('lodash')
 const bs58 = require('bs58')
 
 const HttpAPI = require('../../src/http-api')
 const createTempNode = require('../utils/temp-node')
 const repoPath = require('./index').repoPath
+const ipfs = require('../utils/ipfs')(repoPath)
 
-describe('bitswap', function () {
-  this.timeout(40000)
-  const env = _.clone(process.env)
-  env.IPFS_PATH = repoPath
-
-  let ipfs
+describe('bitswap', () => {
+  let node
 
   before((done) => {
-    createTempNode(38, (err, _ipfs) => {
+    createTempNode(38, (err, _node) => {
       expect(err).to.not.exist
-      ipfs = _ipfs
-      ipfs.goOnline(done)
+      node = _node
+      node.goOnline(done)
     })
+  })
+
+  after((done) => {
+    node.goOffline(done)
   })
 
   describe('api running', () => {
     const block = new Block('hello')
     const key = bs58.encode(block.key)
-
     let httpAPI
 
     before((done) => {
@@ -41,42 +39,32 @@ describe('bitswap', function () {
       httpAPI.stop(done)
     })
 
-    it('wantlist', (done) => {
+    it('wantlist', () => {
       const api = httpAPI.server.select('API')
 
       api.inject({
         method: 'GET',
         url: `/api/v0/block/get?arg=${key}`
-      }, (res) => {})
+      }, () => {})
 
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bitswap', 'wantlist'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-          expect(stdout).to.be.eql([
-            key
-          ])
-          done()
-        })
+      return ipfs('bitswap wantlist').then((out) => {
+        expect(out).to.be.eql(key)
+      })
     })
 
-    it('stat', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bitswap', 'stat'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-          expect(stdout).to.be.eql([
-            'bitswap status',
-            '  blocks received: 0',
-            '  dup blocks received: 0',
-            '  dup data received: 0B',
-            '  wantlist [1 keys]',
-            `    ${key}`,
-            '  partners [0]',
-            '    '
-          ])
-          done()
-        })
+    it('stat', () => {
+      return ipfs('bitswap stat').then((out) => {
+        expect(out).to.be.eql([
+          'bitswap status',
+          '  blocks received: 0',
+          '  dup blocks received: 0',
+          '  dup data received: 0B',
+          '  wantlist [1 keys]',
+          `    ${key}`,
+          '  partners [0]',
+          '    '
+        ].join('\n'))
+      })
     })
   })
 })

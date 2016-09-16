@@ -3,14 +3,12 @@
 'use strict'
 
 const expect = require('chai').expect
-const nexpect = require('nexpect')
-const _ = require('lodash')
+const repoPath = require('./index').repoPath
+const ipfs = require('../utils/ipfs')(repoPath)
+const describeOnlineAndOffline = require('../utils/on-and-off')
 
 describe('bootstrap', () => {
-  const env = _.clone(process.env)
-  env.IPFS_PATH = require('./index').repoPath
-
-  describe('api offline', () => {
+  describeOnlineAndOffline(repoPath, () => {
     const defaultList = [
       '/ip4/104.131.131.82/tcp/4001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ',
       '/ip4/104.236.176.52/tcp/4001/ipfs/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z',
@@ -33,51 +31,29 @@ describe('bootstrap', () => {
       '/ip4/178.62.158.247/tcp/4001/ipfs/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd',
       '/ip4/178.62.61.185/tcp/4001/ipfs/QmSoLMeWqB7YGVLJN3pNLQpmmEk35v6wYtsMGLzSr5QBU3',
       '/ip4/104.236.151.122/tcp/4001/ipfs/QmSoLju6m7xTh3DuokvT3886QRYqxAzb1kShaanJgW36yx',
-      '/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT'
+      '/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD'
     ]
 
-    it('list the bootstrap nodes', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bootstrap', 'list'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(stdout).to.deep.equal(defaultList)
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-          done()
-        })
+    it('list the bootstrap nodes', () => {
+      return ipfs('bootstrap list').then((out) => {
+        expect(out).to.be.eql(defaultList.join('\n'))
+      })
     })
 
-    it('add another bootstrap node', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bootstrap', 'add', '/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-
-          nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bootstrap', 'list'], {env})
-            .run((err, stdout, exitcode) => {
-              expect(stdout).to.deep.equal(updatedList)
-              expect(err).to.not.exist
-              expect(exitcode).to.equal(0)
-              done()
-            })
-        })
+    it('add another bootstrap node', () => {
+      return ipfs('bootstrap add /ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD').then((out) => {
+        return ipfs('bootstrap list')
+      }).then((out) => {
+        expect(out).to.be.eql(updatedList.join('\n'))
+      })
     })
 
-    it('rm a bootstrap node', (done) => {
-      nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bootstrap', 'rm', '/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT'], {env})
-        .run((err, stdout, exitcode) => {
-          expect(err).to.not.exist
-          expect(exitcode).to.equal(0)
-
-          nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'bootstrap', 'list'], {env})
-            .run((err, stdout, exitcode) => {
-              expect(stdout).to.deep.equal(defaultList)
-              expect(err).to.not.exist
-              expect(exitcode).to.equal(0)
-              done()
-            })
-        })
+    it('rm a bootstrap node', () => {
+      return ipfs('bootstrap rm /ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD').then((out) => {
+        return ipfs('bootstrap list')
+      }).then((out) => {
+        expect(out).to.deep.equal(defaultList.join('\n'))
+      })
     })
   })
-
-  describe('api running', () => {})
 })

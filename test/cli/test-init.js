@@ -2,54 +2,50 @@
 'use strict'
 
 const expect = require('chai').expect
-const nexpect = require('nexpect')
 const path = require('path')
 const fs = require('fs')
-const _ = require('lodash')
 const clean = require('../utils/clean')
+const ipfsCmd = require('../utils/ipfs')
 
 describe('init', function () {
   this.timeout(60 * 1000)
-  const env = _.clone(process.env)
+  let repoPath
+  let ipfs
+
   const repoExistsSync = (p) => (
-    fs.existsSync(path.join(env.IPFS_PATH, p))
+    fs.existsSync(path.join(repoPath, p))
   )
 
   beforeEach(() => {
-    env.IPFS_PATH = '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8)
+    repoPath = '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8)
+    ipfs = ipfsCmd(repoPath)
   })
 
   afterEach(() => {
-    clean(env.IPFS_PATH)
+    clean(repoPath)
   })
 
-  it('basic', (done) => {
-    nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'init'], {env})
-      .run((err, stdout, exitcode) => {
-        expect(err).to.not.exist
-        expect(repoExistsSync('blocks')).to.equal(true)
-        expect(repoExistsSync('config')).to.equal(true)
-        expect(repoExistsSync('version')).to.equal(true)
-        done()
-      })
+  it('basic', () => {
+    return ipfs('init').then(() => {
+      expect(repoExistsSync('blocks')).to.equal(true)
+      expect(repoExistsSync('config')).to.equal(true)
+      expect(repoExistsSync('version')).to.equal(true)
+    })
   })
 
-  it('bits', (done) => {
-    nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'init', '--bits', '64'], {env})
-      .run((err, stdout, exitcode) => {
-        expect(err).to.not.exist
-        done()
-      })
+  it('bits', () => {
+    return ipfs('init --bits 512').then(() => {
+      expect(repoExistsSync('blocks')).to.equal(true)
+      expect(repoExistsSync('config')).to.equal(true)
+      expect(repoExistsSync('version')).to.equal(true)
+    })
   })
 
-  it('empty', (done) => {
-    nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'init', '--bits', '64', '--empty-repo', 'true'], {env})
-      .run((err, stdout, exitcode) => {
-        expect(err).to.not.exist
-        expect(repoExistsSync('blocks')).to.equal(false)
-        expect(repoExistsSync('config')).to.equal(true)
-        expect(repoExistsSync('version')).to.equal(true)
-        done()
-      })
+  it('empty', () => {
+    return ipfs('init --bits 512 --empty-repo true').then(() => {
+      expect(repoExistsSync('blocks')).to.equal(false)
+      expect(repoExistsSync('config')).to.equal(true)
+      expect(repoExistsSync('version')).to.equal(true)
+    })
   })
 })

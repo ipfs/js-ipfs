@@ -10,7 +10,7 @@ const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
 const pushable = require('pull-pushable')
 const EOL = require('os').EOL
-const through = require('through2')
+const toStream = require('pull-stream-to-stream')
 
 exports = module.exports
 
@@ -55,8 +55,10 @@ exports.cat = {
       // - _read method
       // - _readableState object
       // are there :(
-      stream._read = () => {}
-      stream._readableState = {}
+      if (!stream._read) {
+        stream._read = () => {}
+        stream._readableState = {}
+      }
       return reply(stream).header('X-Stream-Output', '1')
     })
   }
@@ -72,7 +74,7 @@ exports.get = {
     const ipfs = request.server.app.ipfs
     const pack = tar.pack()
 
-    ipfs.files.get(key, (err, stream) => {
+    ipfs.files.getPull(key, (err, stream) => {
       if (err) {
         log.error(err)
 
@@ -83,33 +85,37 @@ exports.get = {
         return
       }
 
-      stream.pipe(through.obj((file, enc, cb) => {
-        const header = {name: file.path}
-
-        if (!file.content) {
-          header.type = 'directory'
-          pack.entry(header)
-          cb()
-        } else {
-          header.size = file.size
-          const packStream = pack.entry(header, cb)
-          if (!packStream) {
-            // this happens if the request is aborted
-            // we just skip things then
-            return cb()
+      pull(
+        stream,
+        pull.asyncMap((file, cb) => {
+          const header = {name: file.path}
+          if (!file.content) {
+            header.type = 'directory'
+            pack.entry(header)
+            cb()
+          } else {
+            header.size = file.size
+            const packStream = pack.entry(header, cb)
+            if (!packStream) {
+              // this happens if the request is aborted
+              // we just skip things then
+              log('other side hung up')
+              return cb()
+            }
+            toStream.source(file.content).pipe(packStream)
           }
-          file.content.pipe(packStream)
-        }
-      }), () => {
-        if (err) {
-          log.error(err)
-          pack.emit('error', err)
-          pack.destroy()
-          return
-        }
+        }),
+        pull.onEnd((err) => {
+          if (err) {
+            log.error(err)
+            pack.emit('error', err)
+            pack.destroy()
+            return
+          }
 
-        pack.finalize()
-      })
+          pack.finalize()
+        })
+      )
 
       // the reply must read the tar stream,
       // to pull values through

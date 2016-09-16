@@ -43,6 +43,7 @@
     "aegir": "^8.0.1",
     "buffer-loader": "0.0.1",
     "chai": "^3.5.0",
+    "execa": "^0.4.0",
     "expose-loader": "^0.7.1",
     "form-data": "^2.0.0",
     "fs-pull-blob-store": "^0.3.0",

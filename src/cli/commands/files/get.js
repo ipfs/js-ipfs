@@ -98,12 +98,11 @@ module.exports = {
         if (err) {
           throw err
         }
-
+        console.log(`Saving file(s) to ${ipfsPath}`)
         pull(
           toPull.source(stream),
           pull.asyncMap(fileHandler(dir)),
           pull.onEnd((err) => {
-            console.log('finished writing')
             if (err) {
               throw err
             }

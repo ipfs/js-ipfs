@@ -1,7 +1,6 @@
 'use strict'
 
 const utils = require('../../utils')
-const bs58 = require('bs58')
 const debug = require('debug')
 const log = debug('cli:block')
 log.error = debug('cli:block:error')
@@ -24,7 +23,7 @@ module.exports = {
           throw err
         }
 
-        console.log('Key:', bs58.encode(stats.key).toString())
+        console.log('Key:', stats.key)
         console.log('Size:', stats.size)
       })
     })

@@ -2,12 +2,11 @@
 'use strict'
 
 const expect = require('chai').expect
-const nexpect = require('nexpect')
 const fs = require('fs')
-const HttpAPI = require('../../src/http-api')
-const repoPath = require('./index').repoPath
 const path = require('path')
-const _ = require('lodash')
+const repoPath = require('./index').repoPath
+const ipfs = require('../utils/ipfs')(repoPath)
+const describeOnlineAndOffline = require('../utils/on-and-off')
 
 describe('config', () => {
   const configPath = path.join(repoPath, 'config')
@@ -15,204 +14,65 @@ describe('config', () => {
   const updatedConfig = () => JSON.parse(fs.readFileSync(configPath, 'utf8'))
   const restoreConfig = () => fs.writeFileSync(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8')
 
-  const env = _.clone(process.env)
-  env.IPFS_PATH = repoPath
-
-  describe('api offline', () => {
+  describeOnlineAndOffline(repoPath, () => {
     describe('get/set', () => {
-      it('get a config key value', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'Identity.PeerID'], {env})
-          .run((err, stdout, exitcode) => {
-            const expected = 'QmQ2zigjQikYnyYUSXZydNXrDRhBut2mubwJBaLXobMt3A'
-            expect(stdout[0]).to.equal(expected)
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
-            done()
-          })
+      it('get a config key value', () => {
+        return ipfs('config Identity.PeerID').then((out) => {
+          expect(out).to.be.eql(
+            'QmQ2zigjQikYnyYUSXZydNXrDRhBut2mubwJBaLXobMt3A'
+          )
+        })
       })
 
-      it('set a config key with a string value', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', 'bar'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(updatedConfig().foo).to.equal('bar')
-            expect(exitcode).to.equal(0)
-            done()
-          })
+      it('set a config key with a string value', () => {
+        return ipfs('config foo bar').then((out) => {
+          expect(updatedConfig().foo).to.equal('bar')
+        })
       })
 
-      it('set a config key with true', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', true, '--bool'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
-            expect(updatedConfig().foo).to.equal(true)
-            done()
-          })
+      it('set a config key with true', () => {
+        return ipfs('config foo true --bool').then((out) => {
+          expect(updatedConfig().foo).to.equal(true)
+        })
       })
 
-      it('set a config key with false', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', false, '--bool'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
-            expect(updatedConfig().foo).to.equal(false)
-            done()
-          })
+      it('set a config key with false', () => {
+        return ipfs('config foo false --bool').then((out) => {
+          expect(updatedConfig().foo).to.equal(false)
+        })
       })
 
-      it('set a config key with json', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', '{"bar": 0}', '--json'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
-            expect(updatedConfig().foo).to.deep.equal({ bar: 0 })
-            done()
-          })
+      it('set a config key with json', () => {
+        return ipfs('config foo {"bar":0} --json').then((out) => {
+          expect(updatedConfig().foo).to.deep.equal({ bar: 0 })
+        })
       })
 
-      it('set a config key with invalid json', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', '{"bar: 0}', '--json'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(1)
-            done()
-          })
+      it('set a config key with invalid json', () => {
+        return ipfs.fail('config foo {"bar:0} --json')
       })
 
-      it('call config with no arguments', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(1)
-            done()
-          })
+      it('call config with no arguments', () => {
+        return ipfs.fail('config')
+      })
+    })
+
+    describe('show', () => {
+      it('returns the full config', () => {
+        return ipfs('config show').then((out) => {
+          expect(JSON.parse(out)).to.be.eql(updatedConfig())
+        })
       })
     })
 
     describe('replace', () => {
-      it('replace config with file', (done) => {
+      it('replace config with file', () => {
         const filePath = 'test/test-data/otherconfig'
         const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'replace', filePath], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
-
-            expect(updatedConfig()).to.deep.equal(expectedConfig)
-            done()
-          })
-      })
-
-      after(() => {
-        restoreConfig()
-      })
-    })
-  })
-
-  describe('api running', () => {
-    let httpAPI
-
-    before((done) => {
-      httpAPI = new HttpAPI(repoPath)
-      httpAPI.start((err) => {
-        expect(err).to.not.exist
-        done()
-      })
-    })
-
-    after((done) => {
-      httpAPI.stop((err) => {
-        expect(err).to.not.exist
-        done()
-      })
-    })
-
-    describe('get/set', () => {
-      it('get a config key value', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'Identity.PeerID'], {env})
-          .run((err, stdout, exitcode) => {
-            const expected = 'QmQ2zigjQikYnyYUSXZydNXrDRhBut2mubwJBaLXobMt3A'
-            expect(stdout[0]).to.equal(expected)
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
-            done()
-          })
-      })
-
-      it('set a config key with a string value', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', 'bar'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
-            expect(updatedConfig().foo).to.equal('bar')
-            done()
-          })
-      })
-
-      it('set a config key with true', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', true, '--bool'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
-            expect(updatedConfig().foo).to.equal(true)
-            done()
-          })
-      })
-
-      it('set a config key with false', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', false, '--bool'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
-            expect(updatedConfig().foo).to.equal(false)
-            done()
-          })
-      })
-
-      it('set a config key with json', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', '{"bar": 0}', '--json'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
-            expect(updatedConfig().foo).to.deep.equal({ bar: 0 })
-            done()
-          })
-      })
-
-      it('set a config key with invalid json', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'foo', '{"bar: 0}', '--json'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(1)
-            done()
-          })
-      })
-
-      it('call config with no arguments', (done) => {
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config'], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(1)
-            done()
-          })
-      })
-    })
-
-    describe('replace', () => {
-      it('replace config with file', (done) => {
-        const filePath = 'test/test-data/otherconfig'
-        const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))
-
-        nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'config', 'replace', filePath], {env})
-          .run((err, stdout, exitcode) => {
-            expect(err).to.not.exist
-            expect(exitcode).to.equal(0)
-
-            expect(updatedConfig()).to.deep.equal(expectedConfig)
-            done()
-          })
+        return ipfs(`config replace ${filePath}`).then((out) => {
+          expect(updatedConfig()).to.be.eql(expectedConfig)
+        })
       })
 
       after(() => {

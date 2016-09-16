@@ -1,5 +1,6 @@
 'use strict'
 
+const waterfall = require('run-waterfall')
 const debug = require('debug')
 const utils = require('../../utils')
 const log = debug('cli:files')
@@ -14,19 +15,16 @@ module.exports = {
 
   handler (argv) {
     const path = argv['ipfs-path']
-    utils.getIPFS((err, ipfs) => {
+
+    waterfall([
+      (cb) => utils.getIPFS(cb),
+      (ipfs, cb) => ipfs.files.cat(path, cb)
+    ], (err, file) => {
       if (err) {
         throw err
       }
 
-      ipfs.files.cat(path, onFile)
+      file.pipe(process.stdout)
     })
   }
-}
-
-function onFile (err, file) {
-  if (err) {
-    throw (err)
-  }
-  file.pipe(process.stdout)
 }
