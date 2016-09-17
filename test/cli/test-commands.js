@@ -14,4 +14,13 @@ describe('commands', () => {
         done()
       })
   })
+  it('list the commands even if not in the same dir', (done) => {
+    nexpect.spawn('node', [process.cwd() + '/src/cli/bin.js', 'commands'], {cwd: '/tmp'})
+      .run((err, stdout, exitcode) => {
+        expect(err).to.not.exist
+        expect(exitcode).to.equal(0)
+        expect(stdout.length).to.equal(56)
+        done()
+      })
+  })
 })
