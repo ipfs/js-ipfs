@@ -1,6 +1,6 @@
 # Run sharness tests
 #
-# Copyright (c) 2014 Christian Couder
+# Copyright (c) 2016 Christian Couder
 # MIT Licensed; see the LICENSE file in this repository.
 #
 # NOTE: run with TEST_VERBOSE=1 for verbose sharness tests.
@@ -11,18 +11,18 @@ SHARNESSDIR = sharness
 AGGREGATE = $(LIBDIR)/$(SHARNESSDIR)/aggregate-results.sh
 
 
-# Add below the binaries that this project generates or needs.
-# For example:
-# BINS = bin/ipfs
-BINS =
+BINS = ../bin/ipfs
 
 all: aggregate
 
+help:
+	@echo "- use 'make' or 'make all' to run all the tests"
+	@echo "- use 'make deps' to create an 'ipfs' executable in ../bin"
+	@echo "- to run tests manually, make sure to include ../bin in your PATH"
+
 clean: clean-test-results
 	@echo "*** $@ ***"
-	# Clean binaries below.
-	# For example:
-	# -rm -rf bin/ipfs
+	-rm -rf ../bin/ipfs
 
 clean-test-results:
 	@echo "*** $@ ***"
@@ -36,32 +36,18 @@ aggregate: clean-test-results $(T)
 	@echo "*** $@ ***"
 	ls test-results/t*-*.sh.*.counts | $(AGGREGATE)
 
-# Add below some needed dependencies.
-# For example:
-# deps: sharness $(BINS) curl
-deps: sharness $(BINS)
+deps: sharness $(BINS) curl
 
 sharness:
 	@echo "*** checking $@ ***"
 	lib/install-sharness.sh
 
-# Add below other targets like:
-# - the targets needed to build binaries,
-# - targets using special compile flags,
-# - targets to check or install dependencies.
-#
-# For example:
-#
-# GOFLAGS =
-#
-# bin/%: FORCE
-# 	cd .. && make GOFLAGS=$(GOFLAGS) $@
-#
-# race:
-# 	make GOFLAGS=-race all
-#
-# curl:
-#	@which curl >/dev/null || (echo "Please install curl!" && false)
+../bin/ipfs:
+	mkdir -p ../bin
+	cd ../bin && ln -s ../../src/cli/bin.js ipfs
 
-.PHONY: all clean clean-test-results $(T) aggregate deps sharness FORCE
+curl:
+	@which curl >/dev/null || (echo "Please install curl!" && false)
+
+.PHONY: all help clean clean-test-results $(T) aggregate deps sharness
 
