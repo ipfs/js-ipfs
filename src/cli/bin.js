@@ -6,7 +6,7 @@ const yargs = require('yargs')
 const updateNotifier = require('update-notifier')
 const readPkgUp = require('read-pkg-up')
 
-const pkg = readPkgUp.sync().pkg
+const pkg = readPkgUp.sync({cwd: __dirname}).pkg
 updateNotifier({
   pkg,
   updateCheckInterval: 1000 * 60 * 60 * 24 * 7 // 1 week
