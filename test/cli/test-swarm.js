@@ -6,7 +6,7 @@ const expect = require('chai').expect
 const HttpAPI = require('../../src/http-api')
 const createTempNode = require('../utils/temp-node')
 const repoPath = require('./index').repoPath
-const ipfs = require('../utils/ipfs')(repoPath)
+const ipfs = require('../utils/ipfs-exec')(repoPath)
 
 describe('swarm', function () {
   this.timeout(30 * 1000)

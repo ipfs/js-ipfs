@@ -65,6 +65,7 @@ function fileHandler (dir) {
           file.content.pipe(fs.createWriteStream(target))
             .once('error', cb)
             .once('end', cb)
+          return
         }
         cb()
       })

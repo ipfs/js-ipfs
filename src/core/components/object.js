@@ -1,7 +1,7 @@
 'use strict'
 
 const mDAG = require('ipfs-merkle-dag')
-const waterfall = require('run-waterfall')
+const waterfall = require('async/waterfall')
 const promisify = require('promisify-es6')
 const bs58 = require('bs58')
 const DAGNode = mDAG.DAGNode
@@ -69,12 +69,7 @@ module.exports = function object (self) {
             cb(err, node)
           })
         }
-      ], (err, node) => {
-        if (err) {
-          return cb(err)
-        }
-        cb(null, node)
-      })
+      ], cb)
     }
   }
 

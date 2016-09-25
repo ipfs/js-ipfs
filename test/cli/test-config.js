@@ -5,7 +5,7 @@ const expect = require('chai').expect
 const fs = require('fs')
 const path = require('path')
 const repoPath = require('./index').repoPath
-const ipfs = require('../utils/ipfs')(repoPath)
+const ipfs = require('../utils/ipfs-exec')(repoPath)
 const describeOnlineAndOffline = require('../utils/on-and-off')
 
 describe('config', () => {

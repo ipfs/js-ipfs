@@ -1,8 +1,8 @@
 'use strict'
 
 const gulp = require('gulp')
-const parallel = require('run-parallel')
-const series = require('run-series')
+const parallel = require('async/parallel')
+const series = require('async/series')
 const createTempNode = require('./test/utils/temp-node')
 const API = require('./src/http-api')
 

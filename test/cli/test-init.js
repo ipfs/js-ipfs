@@ -5,7 +5,7 @@ const expect = require('chai').expect
 const path = require('path')
 const fs = require('fs')
 const clean = require('../utils/clean')
-const ipfsCmd = require('../utils/ipfs')
+const ipfsCmd = require('../utils/ipfs-exec')
 
 describe('init', function () {
   this.timeout(60 * 1000)

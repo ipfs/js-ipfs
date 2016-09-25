@@ -1,6 +1,6 @@
 'use strict'
 
-const waterfall = require('run-waterfall')
+const waterfall = require('async/waterfall')
 const debug = require('debug')
 const utils = require('../../utils')
 const log = debug('cli:files')

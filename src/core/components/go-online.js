@@ -1,6 +1,6 @@
 'use strict'
 
-const series = require('run-series')
+const series = require('async/series')
 const Bitswap = require('ipfs-bitswap')
 
 module.exports = function goOnline (self) {

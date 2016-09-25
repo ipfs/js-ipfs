@@ -4,9 +4,9 @@
 
 const expect = require('chai').expect
 const _ = require('lodash')
-const series = require('run-series')
-const waterfall = require('run-waterfall')
-const parallel = require('run-parallel')
+const series = require('async/series')
+const waterfall = require('async/waterfall')
+const parallel = require('async/parallel')
 const leftPad = require('left-pad')
 const Block = require('ipfs-block')
 const bs58 = require('bs58')

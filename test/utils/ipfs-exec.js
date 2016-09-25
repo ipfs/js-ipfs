@@ -4,6 +4,17 @@ const execa = require('execa')
 const expect = require('chai').expect
 const _ = require('lodash')
 
+// This is our new test utility to easily check and execute
+// ipfs cli commands.
+//
+// The top level export is a function that can be passed a `repoPath`
+// and optional `opts` to customize the execution of the commands.
+// This function returns the actual executer, which consists of
+// `ipfs('files get <hash>')` and `ipfs.fail('files get <hash>')`
+// The first one executes and asserts that the command ran successfully
+// and returns a promise which is resolved to `stdout` of the command.
+// The `.fail` variation asserts that the command exited with `Code > 0`
+// and returns a promise that resolves to `stderr`.
 module.exports = (repoPath, opts) => {
   const env = _.clone(process.env)
   env.IPFS_PATH = repoPath

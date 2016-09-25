@@ -60,6 +60,7 @@
     "transform-loader": "^0.2.3"
   },
   "dependencies": {
+    "async": "^2.0.1",
     "babel-runtime": "^6.11.6",
     "bl": "^1.1.2",
     "boom": "^4.0.0",

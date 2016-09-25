@@ -3,7 +3,7 @@
 
 const expect = require('chai').expect
 const repoPath = require('./index').repoPath
-const ipfsBase = require('../utils/ipfs')
+const ipfsBase = require('../utils/ipfs-exec')
 const ipfs = ipfsBase(repoPath)
 const describeOnlineAndOffline = require('../utils/on-and-off')
 

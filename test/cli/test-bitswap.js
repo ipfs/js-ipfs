@@ -8,7 +8,7 @@ const bs58 = require('bs58')
 const HttpAPI = require('../../src/http-api')
 const createTempNode = require('../utils/temp-node')
 const repoPath = require('./index').repoPath
-const ipfs = require('../utils/ipfs')(repoPath)
+const ipfs = require('../utils/ipfs-exec')(repoPath)
 
 describe('bitswap', () => {
   let node
