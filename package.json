@@ -7,6 +7,11 @@
   },
   "main": "lib/core/index.js",
   "jsnext:main": "src/core/index.js",
+  "browser": {
+    "libp2p-ipfs": "libp2p-ipfs-browser",
+    "./src/core/default-repo.js": "./src/core/default-repo-browser.js",
+    "./lib/core/default-repo.js": "./lib/core/default-repo-browser.js"
+  },
   "scripts": {
     "lint": "aegir-lint",
     "coverage": "gulp coverage",
