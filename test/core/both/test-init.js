@@ -13,7 +13,7 @@ describe('init', function () {
     const repo = createTempRepo()
     const ipfs = new IPFS(repo)
 
-    ipfs.init({ emptyRepo: true, bits: 512 }, (err) => {
+    ipfs.init({ emptyRepo: true, bits: 1024 }, (err) => {
       expect(err).to.not.exist
 
       repo.exists((err, res) => {
@@ -35,7 +35,7 @@ describe('init', function () {
     const repo2 = createTempRepo()
     const ipfsShort = new IPFS(repo1)
     const ipfsLong = new IPFS(repo2)
-    ipfsShort.init({ bits: 512, emptyRepo: true }, (err) => {
+    ipfsShort.init({ bits: 1024, emptyRepo: true }, (err) => {
       expect(err).to.not.exist
 
       ipfsLong.init({ bits: 1024, emptyRepo: true }, (err) => {

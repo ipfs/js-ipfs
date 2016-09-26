@@ -6,7 +6,6 @@ const clean = require('./clean')
 
 function createTempRepo () {
   const repoPath = '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8)
-
   let store
   let teardown
 
@@ -31,7 +30,7 @@ function createTempRepo () {
   }
 
   var repo = new IPFSRepo(repoPath, {
-    bits: 512,
+    bits: 1024,
     stores: store
   })
 

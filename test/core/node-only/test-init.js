@@ -23,7 +23,7 @@ describe('init (Node.js specific)', function () {
   })
 
   it('init docs are written', (done) => {
-    ipfs.init({ bits: 512 }, (err) => {
+    ipfs.init({ bits: 1024 }, (err) => {
       expect(err).to.not.exist
       var multihash = new Buffer('12205e7c3ce237f936c76faf625e90f7751a9f5eeb048f59873303c215e9cce87599', 'hex')
       setTimeout(() => {
@@ -37,7 +37,7 @@ describe('init (Node.js specific)', function () {
   })
 
   it('empty repo', (done) => {
-    ipfs.init({ bits: 512, emptyRepo: true }, (err) => {
+    ipfs.init({ bits: 1024, emptyRepo: true }, (err) => {
       expect(err).to.not.exist
 
       // Check for default assets

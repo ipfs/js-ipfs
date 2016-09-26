@@ -11,7 +11,7 @@ let nodes = []
 function startNode (num, done) {
   createTempNode(num, (err, node) => {
     if (err) {
-      throw err
+      return done(err)
     }
 
     const api = new API(node.repo.path())

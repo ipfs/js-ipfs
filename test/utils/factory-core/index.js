@@ -69,7 +69,7 @@ function Factory () {
 
       // create the IPFS node
       const ipfs = new IPFS(repo)
-      ipfs.init({ emptyRepo: true, bits: 512 }, (err) => {
+      ipfs.init({ emptyRepo: true, bits: 1024 }, (err) => {
         if (err) {
           return callback(err)
         }
@@ -104,7 +104,7 @@ function Factory () {
       }
       const conf = JSON.parse(JSON.stringify(defaultConfig))
 
-      PeerId.create({ bits: 512 }, (err, id) => {
+      PeerId.create({ bits: 1024 }, (err, id) => {
         if (err) {
           return cb(err)
         }

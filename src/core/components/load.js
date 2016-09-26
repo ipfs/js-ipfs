@@ -13,8 +13,11 @@ module.exports = function load (self) {
       (cb) => utils.ifRepoExists(self._repo, cb),
       (cb) => self._repo.config.get(cb),
       (config, cb) => {
-        const id = peerId.createFromPrivKey(config.Identity.PrivKey)
-
+        peerId.createFromPrivKey(config.Identity.PrivKey, (err, id) => {
+          cb(err, config, id)
+        })
+      },
+      (config, id, cb) => {
         self._peerInfo = new PeerInfo(id)
         config.Addresses.Swarm.forEach((addr) => {
           self._peerInfo.multiaddr.add(multiaddr(addr))
