@@ -5,6 +5,7 @@ const bs58 = require('bs58')
 const bl = require('bl')
 const fs = require('fs')
 const Block = require('ipfs-block')
+const waterfall = require('run-waterfall')
 const debug = require('debug')
 const log = debug('cli:block')
 log.error = debug('cli:block:error')
@@ -15,9 +16,10 @@ function addBlock (buf) {
       throw err
     }
 
-    const block = new Block(buf)
-
-    ipfs.block.put(block, (err, block) => {
+    waterfall([
+      (cb) => Block.create(buf, cb),
+      (block, cb) => ipfs.block.put(block, cb)
+    ], (err, block) => {
       if (err) {
         throw err
       }

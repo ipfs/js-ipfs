@@ -16,7 +16,8 @@ module.exports = function block (self) {
       }
 
       if (Buffer.isBuffer(block)) {
-        block = new Block(block)
+        Block.create(block, put)
+        return
       }
 
       if (typeof cid === 'function') {

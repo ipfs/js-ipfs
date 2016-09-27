@@ -3,6 +3,7 @@
 const mh = require('multihashes')
 const multipart = require('ipfs-multipart')
 const Block = require('ipfs-block')
+const waterfall = require('run-waterfall')
 const debug = require('debug')
 const log = debug('http-api:block')
 log.error = debug('http-api:block:error')
@@ -80,10 +81,12 @@ exports.put = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
     const data = request.pre.args.data
+    const ipfs = request.server.app.ipfs
 
-    const block = new Block(data)
-
-    request.server.app.ipfs.block.put(block, (err) => {
+    waterfall([
+      (cb) => Block.create(data, cb),
+      (block, cb) => ipfs.block.put(block, cb)
+    ], (err, block) => {
       if (err) {
         log.error(err)
         return reply({

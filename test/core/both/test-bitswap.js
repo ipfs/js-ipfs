@@ -16,8 +16,8 @@ const multiaddr = require('multiaddr')
 const isNode = require('detect-node')
 const IPFS = require('../../../src/core')
 
-function makeBlock () {
-  return new Block(`IPFS is awesome ${Math.random()}`)
+function makeBlock (cb) {
+  return Block.create(`IPFS is awesome ${Math.random()}`, cb)
 }
 
 describe.skip('bitswap', () => {
@@ -113,22 +113,28 @@ describe.skip('bitswap', () => {
       })
 
       it('2 peers', (done) => {
-        const block = makeBlock()
         let remoteNode
+        let block
         series([
+          (cb) => makeBlock((err, _block) => {
+            expect(err).to.not.exist
+            block = _block
+            cb()
+          }),
           // 0. Start node
           (cb) => addNode(13, (err, _remoteNode) => {
             expect(err).to.not.exist
             remoteNode = _remoteNode
-            cb(err)
+            cb()
           }),
           (cb) => {
             remoteNode.block.put(block, cb)
           },
           (cb) => {
             inProcNode.block.get(block.key('sha2-256'), (err, b) => {
+              expect(err).to.not.exist
               expect(b.data.toString()).to.be.eql(block.data.toString())
-              cb(err)
+              cb()
             })
           }
         ], done)
@@ -137,10 +143,17 @@ describe.skip('bitswap', () => {
       it('3 peers', function (done) {
         this.timeout(60 * 1000)
 
-        const blocks = _.range(6).map((i) => makeBlock())
-        const keys = blocks.map((b) => b.key('sha2-256'))
+        let blocks
+        let keys
         const remoteNodes = []
+
         series([
+          (cb) => parallel(_.range(6).map((i) => makeBlock), (err, _blocks) => {
+            expect(err).to.not.exist
+            blocks = _blocks
+            keys = blocks.map((b) => b.key('sha2-256'))
+            cb()
+          }),
           (cb) => addNode(8, (err, _ipfs) => {
             remoteNodes.push(_ipfs)
             cb(err)
