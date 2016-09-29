@@ -38,7 +38,7 @@ describe('init', function () {
     ipfsShort.init({ bits: 1024, emptyRepo: true }, (err) => {
       expect(err).to.not.exist
 
-      ipfsLong.init({ bits: 1024, emptyRepo: true }, (err) => {
+      ipfsLong.init({ bits: 2048, emptyRepo: true }, (err) => {
         expect(err).to.not.exist
 
         repo1.config.get((err, config1) => {

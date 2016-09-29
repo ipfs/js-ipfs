@@ -6,11 +6,9 @@ const expect = require('chai').expect
 const IPFS = require('../../../src/core')
 const createTempRepo = require('../../utils/temp-repo')
 
-describe('init (Node.js specific)', function () {
-  this.timeout(10000)
-
-  var ipfs
-  var repo
+describe('init (Node.js specific)', () => {
+  let ipfs
+  let repo
 
   beforeEach((done) => {
     repo = createTempRepo()

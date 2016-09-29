@@ -16,7 +16,7 @@ module.exports = function block (self) {
       }
 
       if (Buffer.isBuffer(block)) {
-        Block.create(block, put)
+        block = new Block(block)
         return
       }
 
