@@ -3,52 +3,65 @@
 
 const expect = require('chai').expect
 const isNode = require('detect-node')
+const waterfall = require('async/waterfall')
+const path = require('path')
 const FactoryClient = require('../factory/factory-client')
 
 describe('.refs', () => {
+  if (!isNode) {
+    return
+  }
+
   let ipfs
   let fc
+  let folder
 
   before(function (done) {
     this.timeout(20 * 1000) // slow CI
     fc = new FactoryClient()
-    fc.spawnNode((err, node) => {
-      expect(err).to.not.exist
-      ipfs = node
-      done()
-    })
+    waterfall([
+      (cb) => fc.spawnNode(cb),
+      (node, cb) => {
+        ipfs = node
+        const filesPath = path.join(__dirname, '../data/test-folder')
+        ipfs.util.addFromFs(filesPath, { recursive: true }, cb)
+      },
+      (hashes, cb) => {
+        folder = hashes[hashes.length - 1].hash
+        expect(folder).to.be.eql('QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6')
+        cb()
+      }
+    ], done)
   })
 
   after((done) => {
     fc.dismantle(done)
   })
 
-  const folder = 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG'
   const result = [{
-    Ref: 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG QmZTR5bcpQD7cFgTorqxZDYaew1Wqgfbd2ud9QqGPAkK2V about',
+    Ref: 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6 QmcUYKmQxmTcFom4R4UZP7FWeQzgJkwcFn51XrvsMy7PE9 add.js',
     Err: ''
   }, {
-    Ref: 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG QmYCvbfNbCwFR45HiNP45rwJgvatpiW38D961L5qAhUM5Y contact',
+    Ref: 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6 QmNeHxDfQfjVFyYj2iruvysLH9zpp78v3cu1s3BZq1j5hY cat.js',
     Err: ''
   }, {
-    Ref: 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG QmY5heUM5qgRubMDD1og9fhCPA6QdkMp3QCwd4s7gJsyE7 help',
+    Ref: 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6 QmTYFLz5vsdMpq4XXw1a1pSxujJc9Z5V3Aw1Qg64d849Zy files',
     Err: ''
   }, {
-    Ref: 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG QmdncfsVm2h5Kqq9hPmU7oAVX2zTSVP3L869tgTbPYnsha quick-start',
+    Ref: 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6 QmY9cxiHqTFoWamkQVkpmmqzBrY3hCBEL2XNu3NtX74Fuu hello-link',
     Err: ''
   }, {
-    Ref: 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme',
+    Ref: 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6 QmU7wetVaAqc3Meurif9hcYBHGvQmL5QdpPJYBoZizyTNL ipfs-add.js',
     Err: ''
   }, {
-    Ref: 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG QmTumTjvcYCAvRRwQ8sDRxh8ezmrcr88YFU7iYNroGGTBZ security-notes',
+    Ref: 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6 QmctZfSuegbi2TMFY2y3VQjxsH5JbRBu7XmiLfHNvshhio ls.js',
+    Err: ''
+  }, {
+    Ref: 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6 QmbkMNB6rwfYAxRvnG9CWJ6cKKHEdq2ZKTozyF5FQ7H8Rs version.js',
     Err: ''
   }]
 
   it('refs', (done) => {
-    if (!isNode) {
-      return done()
-    }
-
     ipfs.refs(folder, {format: '<src> <dst> <linkname>'}, (err, objs) => {
       expect(err).to.not.exist
       expect(objs).to.eql(result)
@@ -59,10 +72,6 @@ describe('.refs', () => {
 
   describe('promise', () => {
     it('refs', () => {
-      if (!isNode) {
-        return
-      }
-
       return ipfs.refs(folder, {format: '<src> <dst> <linkname>'})
         .then((objs) => {
           expect(objs).to.eql(result)
