@@ -28,6 +28,7 @@ describe('.refs', () => {
       },
       (hashes, cb) => {
         folder = hashes[hashes.length - 1].hash
+        expect(folder).to.be.eql('QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6')
         cb()
       }
     ], done)

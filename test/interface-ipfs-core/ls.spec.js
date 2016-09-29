@@ -15,7 +15,7 @@ describe('ls', function () {
 
   let ipfs
   let fc
-  let folderHash
+  let folder
 
   before(function (done) {
     this.timeout(20 * 1000) // slow CI
@@ -28,7 +28,8 @@ describe('ls', function () {
         ipfs.util.addFromFs(filesPath, { recursive: true }, cb)
       },
       (hashes, cb) => {
-        folderHash = hashes[hashes.length - 1].hash
+        folder = hashes[hashes.length - 1].hash
+        expect(folder).to.be.eql('QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6')
         cb()
       }
     ], done)
@@ -39,12 +40,12 @@ describe('ls', function () {
   })
 
   it('should correctly retrieve links', function (done) {
-    ipfs.ls(folderHash, (err, res) => {
+    ipfs.ls(folder, (err, res) => {
       expect(err).to.not.exist
 
       expect(res).to.have.a.property('Objects')
       expect(res.Objects[0]).to.have.a.property('Links')
-      expect(res.Objects[0]).to.have.property('Hash')
+      expect(res.Objects[0]).to.have.property('Hash', 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6')
       done()
     })
   })
@@ -67,11 +68,11 @@ describe('ls', function () {
 
   describe('promise', () => {
     it('should correctly retrieve links', () => {
-      return ipfs.ls(folderHash)
+      return ipfs.ls(folder)
         .then((res) => {
           expect(res).to.have.a.property('Objects')
           expect(res.Objects[0]).to.have.a.property('Links')
-          expect(res.Objects[0]).to.have.property('Hash')
+          expect(res.Objects[0]).to.have.property('Hash', 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6')
         })
     })
 
