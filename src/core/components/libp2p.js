@@ -2,7 +2,8 @@
 
 const Libp2pNode = require('libp2p-ipfs').Node
 const promisify = require('promisify-es6')
-const parallel = require('run-parallel')
+const Bootstrap = require('libp2p-railing')
+// const parallel = require('run-parallel')
 
 module.exports = function libp2p (self) {
   // TODO Just expose libp2p API directly, this start stop wrapping doesn't make that much sense anymore :)
@@ -11,10 +12,11 @@ module.exports = function libp2p (self) {
       self._libp2pNode = new Libp2pNode(self._peerInfo)
       self._libp2pNode.start(() => {
         self._repo.config.get((err, config) => {
-          parallel(
-            config.Bootstrap.map((addr) => (cb) => self._libp2pNode.dialByMultiaddr(addr, cb)),
-            (err, res) => { if (res) console.log('Bootstrapped', res.length, 'peers') }
-          )
+          // parallel(
+          //   config.Bootstrap.map((addr) => (cb) => self._libp2pNode.dialByMultiaddr(addr, cb)),
+          //   (err, res) => { if (res) console.log('Bootstrapped', res.length, 'peers') }
+          // )
+          self._bootstrap = new Bootstrap(config.Bootstrap, {verify: true}, self._libp2pNode.swarm)
         })
         self._libp2pNode.peerInfo.multiaddrs.forEach((ma) => {
           console.log('Swarm listening on', ma.toString())
