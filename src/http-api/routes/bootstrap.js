@@ -1,5 +1,6 @@
 'use strict'
 
+const Joi = require('joi')
 const resources = require('./../resources')
 
 module.exports = (server) => {
@@ -20,7 +21,14 @@ module.exports = (server) => {
       pre: [
         { method: resources.bootstrap.add.parseArgs, assign: 'args' }
       ],
-      handler: resources.bootstrap.add.handler
+      handler: resources.bootstrap.add.handler,
+      validate: {
+        query: {
+          arg: Joi.string().required(),
+          default: Joi.boolean(),
+          'stream-channels': Joi.boolean()
+        }
+      }
     }
   })
 
@@ -39,7 +47,14 @@ module.exports = (server) => {
       pre: [
         { method: resources.bootstrap.rm.parseArgs, assign: 'args' }
       ],
-      handler: resources.bootstrap.rm.handler
+      handler: resources.bootstrap.rm.handler,
+      validate: {
+        query: {
+          arg: Joi.string().required(),
+          default: Joi.boolean(),
+          'stream-channels': Joi.boolean()
+        }
+      }
     }
   })
 }
