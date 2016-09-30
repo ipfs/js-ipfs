@@ -33,7 +33,7 @@ module.exports = function block (self) {
           return callback(err)
         }
         callback(null, {
-          key: hash,
+          key: multihash.toB58String(hash),
           size: block.data.length
         })
       })

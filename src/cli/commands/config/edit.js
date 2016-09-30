@@ -3,7 +3,7 @@
 const spawn = require('child_process').spawn
 const fs = require('fs')
 const temp = require('temp')
-const waterfall = require('run-waterfall')
+const waterfall = require('async/waterfall')
 const debug = require('debug')
 const log = debug('cli:config')
 log.error = debug('cli:config:error')

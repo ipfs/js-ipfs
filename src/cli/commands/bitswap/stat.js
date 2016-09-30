@@ -23,8 +23,7 @@ module.exports = {
         stats.Wantlist = stats.Wantlist || []
         stats.Peers = stats.Peers || []
 
-        console.log(`
-bitswap status
+        console.log(`bitswap status
   blocks received: ${stats.BlocksReceived}
   dup blocks received: ${stats.DupBlksReceived}
   dup data received: ${stats.DupDataReceived}B

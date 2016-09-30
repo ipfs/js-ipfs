@@ -7,10 +7,10 @@ const tar = require('tar-stream')
 const log = debug('http-api:files')
 log.error = debug('http-api:files:error')
 const pull = require('pull-stream')
-const toStream = require('pull-stream-to-stream')
 const toPull = require('stream-to-pull-stream')
 const pushable = require('pull-pushable')
 const EOL = require('os').EOL
+const toStream = require('pull-stream-to-stream')
 
 exports = module.exports
 
@@ -55,8 +55,10 @@ exports.cat = {
       // - _read method
       // - _readableState object
       // are there :(
-      stream._read = () => {}
-      stream._readableState = {}
+      if (!stream._read) {
+        stream._read = () => {}
+        stream._readableState = {}
+      }
       return reply(stream).header('X-Stream-Output', '1')
     })
   }
@@ -87,25 +89,27 @@ exports.get = {
         stream,
         pull.asyncMap((file, cb) => {
           const header = {name: file.path}
-
           if (!file.content) {
             header.type = 'directory'
             pack.entry(header)
             cb()
           } else {
             header.size = file.size
-            toStream.source(file.content)
-              .pipe(pack.entry(header, cb))
+            const packStream = pack.entry(header, cb)
+            if (!packStream) {
+              // this happens if the request is aborted
+              // we just skip things then
+              log('other side hung up')
+              return cb()
+            }
+            toStream.source(file.content).pipe(packStream)
           }
         }),
         pull.onEnd((err) => {
           if (err) {
             log.error(err)
-
-            reply({
-              Message: 'Failed to get file: ' + err,
-              Code: 0
-            }).code(500)
+            pack.emit('error', err)
+            pack.destroy()
             return
           }
 

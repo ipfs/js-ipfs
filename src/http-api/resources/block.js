@@ -1,6 +1,6 @@
 'use strict'
 
-const bs58 = require('bs58')
+const mh = require('multihashes')
 const multipart = require('ipfs-multipart')
 const Block = require('ipfs-block')
 const debug = require('debug')
@@ -17,7 +17,7 @@ exports.parseKey = (request, reply) => {
 
   try {
     return reply({
-      key: new Buffer(bs58.decode(request.query.arg))
+      key: mh.fromB58String(request.query.arg)
     })
   } catch (err) {
     log.error(err)
@@ -93,7 +93,7 @@ exports.put = {
       }
 
       return reply({
-        Key: bs58.encode(block.key).toString(),
+        Key: mh.toB58String(block.key),
         Size: block.data.length
       })
     })
@@ -112,7 +112,7 @@ exports.del = {
       if (err) {
         log.error(err)
         return reply({
-          Message: 'Failed to get block stats: ' + err,
+          Message: 'Failed to delete block: ' + err,
           Code: 0
         }).code(500)
       }
@@ -129,7 +129,7 @@ exports.stat = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
     const key = request.pre.args.key
-
+    console.log('fetching', key)
     request.server.app.ipfs.block.stat(key, (err, block) => {
       if (err) {
         log.error(err)
@@ -140,7 +140,7 @@ exports.stat = {
       }
 
       return reply({
-        Key: bs58.encode(block.key).toString(),
+        Key: block.key,
         Size: block.size
       })
     })

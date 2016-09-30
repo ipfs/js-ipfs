@@ -3,7 +3,7 @@
 
 const expect = require('chai').expect
 const leftPad = require('left-pad')
-const series = require('run-series')
+const series = require('async/series')
 
 const IPFS = require('../../src/core')
 const createTempRepo = require('./temp-repo')

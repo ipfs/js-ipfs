@@ -5,7 +5,7 @@ const isNode = require('detect-node')
 const IPFSRepo = require('ipfs-repo')
 const cleanRepo = require('../clean')
 const IPFS = require('../../../src/core')
-const series = require('run-series')
+const series = require('async/series')
 const defaultConfig = require('./default-config.json')
 
 module.exports = Factory

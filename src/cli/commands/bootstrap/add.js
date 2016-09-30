@@ -17,6 +17,7 @@ module.exports = {
       if (err) {
         throw err
       }
+
       ipfs.bootstrap.add(argv.peer, (err, list) => {
         if (err) {
           throw err

@@ -1,6 +1,6 @@
 'use strict'
 
-const parallel = require('run-parallel')
+const parallel = require('async/parallel')
 const Hapi = require('hapi')
 const debug = require('debug')
 const fs = require('fs')

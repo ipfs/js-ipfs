@@ -6,7 +6,7 @@ const IPFSAPI = require('ipfs-api')
 const IPFS = require('../../../src/core')
 const cleanRepo = require('../clean')
 const HTTPAPI = require('../../../src/http-api')
-const series = require('run-series')
+const series = require('async/series')
 const defaultConfig = require('./default-config.json')
 
 module.exports = Factory
