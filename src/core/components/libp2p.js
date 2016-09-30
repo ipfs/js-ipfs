@@ -29,7 +29,7 @@ module.exports = function libp2p (self) {
         self._libp2pNode.dialByPeerInfo(peerInfo, () => {})
       })
       self._libp2pNode.swarm.on('peer-mux-established', (peerInfo) => {
-        self._libp2pNode.peerBook.put(peerInfo)
+        self._libp2pNode.peerBook.put(peerInfo, true)
       })
     }),
     stop: promisify((callback) => {
