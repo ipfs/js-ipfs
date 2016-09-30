@@ -11,7 +11,7 @@ const clean = require('../utils/clean')
 
 describe('HTTP API', () => {
   const repoExample = path.join(__dirname, '../go-ipfs-repo')
-  const repoTests = path.join(__dirname, '../repo-tests-run-http')
+  const repoTests = path.join(__dirname, '../repo-tests-async/http')
 
   let http = {}
 

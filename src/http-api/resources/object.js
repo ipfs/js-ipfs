@@ -1,6 +1,6 @@
 'use strict'
 
-const bs58 = require('bs58')
+const mh = require('multihashes')
 const multipart = require('ipfs-multipart')
 const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
@@ -21,7 +21,7 @@ exports.parseKey = (request, reply) => {
 
   try {
     return reply({
-      key: new Buffer(bs58.decode(request.query.arg))
+      key: mh.fromB58String(request.query.arg)
     })
   } catch (err) {
     log.error(err)
@@ -270,8 +270,8 @@ exports.parseKeyAndData = (request, reply) => {
     try {
       return reply({
         data: file,
-        key: new Buffer(bs58.decode(request.query.arg))
         // TODO: support ipfs paths: https://github.com/ipfs/http-api-spec/pull/68/files#diff-2625016b50d68d922257f74801cac29cR3880
+        key: mh.fromB58String(request.query.arg)
       })
     } catch (err) {
       return reply({
@@ -367,9 +367,9 @@ exports.patchAddLink = {
 
     try {
       return reply({
-        root: new Buffer(bs58.decode(request.query.arg[0])),
+        root: mh.fromB58String(request.query.arg[0]),
         name: request.query.arg[1],
-        ref: new Buffer(bs58.decode(request.query.arg[2]))
+        ref: mh.fromB58String(request.query.arg[2])
       })
     } catch (err) {
       log.error(err)
@@ -434,7 +434,7 @@ exports.patchRmLink = {
 
     try {
       return reply({
-        root: new Buffer(bs58.decode(request.query.arg[0])),
+        root: mh.fromB58String(request.query.arg[0]),
         link: request.query.arg[1]
       })
     } catch (err) {

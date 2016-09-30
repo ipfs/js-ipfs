@@ -3,7 +3,7 @@
 const peerId = require('peer-id')
 const PeerInfo = require('peer-info')
 const multiaddr = require('multiaddr')
-const waterfall = require('run-waterfall')
+const waterfall = require('async/waterfall')
 
 const utils = require('../utils')
 

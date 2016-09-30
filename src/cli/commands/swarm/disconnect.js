@@ -1,7 +1,6 @@
 'use strict'
 
 const utils = require('../../utils')
-// const bs58 = require('bs58')
 const debug = require('debug')
 const log = debug('cli:object')
 log.error = debug('cli:object:error')

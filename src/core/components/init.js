@@ -1,7 +1,7 @@
 'use strict'
 
 const peerId = require('peer-id')
-const waterfall = require('run-waterfall')
+const waterfall = require('async/waterfall')
 
 const addDefaultAssets = require('./init-assets')
 

@@ -9,7 +9,7 @@ const path = require('path')
 
 module.exports = (http) => {
   describe('/config', () => {
-    const configPath = path.join(__dirname, '../../repo-tests-run-http/config')
+    const configPath = path.join(__dirname, '../../repo-tests-async/http/config')
     const originalConfigPath = path.join(__dirname, '../../go-ipfs-repo/config')
 
     let updatedConfig

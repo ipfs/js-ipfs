@@ -3,7 +3,7 @@
 const mh = require('multihashes')
 const multipart = require('ipfs-multipart')
 const Block = require('ipfs-block')
-const waterfall = require('run-waterfall')
+const waterfall = require('async/waterfall')
 const debug = require('debug')
 const log = debug('http-api:block')
 log.error = debug('http-api:block:error')

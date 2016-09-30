@@ -1,6 +1,6 @@
 'use strict'
 
-const bs58 = require('bs58')
+const mh = require('multihashes')
 const multipart = require('ipfs-multipart')
 const debug = require('debug')
 const tar = require('tar-stream')
@@ -22,7 +22,7 @@ exports.parseKey = (request, reply) => {
 
   try {
     return reply({
-      key: new Buffer(bs58.decode(request.query.arg))
+      key: mh.fromB58String(request.query.arg)
     })
   } catch (err) {
     log.error(err)

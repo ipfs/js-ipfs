@@ -9,7 +9,7 @@ const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
 const leftPad = require('left-pad')
 const Block = require('ipfs-block')
-const bs58 = require('bs58')
+const mh = require('multihashes')
 const bl = require('bl')
 const API = require('ipfs-api')
 const multiaddr = require('multiaddr')
@@ -171,7 +171,6 @@ describe.skip('bitswap', () => {
           (cb) => inProcNode.block.put(blocks[5], cb),
           // 3. Fetch blocks on all nodes
           (cb) => parallel(_.range(6).map((i) => (cbI) => {
-            const toMh = (k) => bs58.encode(k).toString()
             const check = (n, k, callback) => {
               n.block.get(k, (err, b) => {
                 expect(err).to.not.exist
@@ -185,8 +184,8 @@ describe.skip('bitswap', () => {
             }
 
             series([
-              (cbJ) => check(remoteNodes[0], toMh(keys[i]), cbJ),
-              (cbJ) => check(remoteNodes[1], toMh(keys[i]), cbJ),
+              (cbJ) => check(remoteNodes[0], mh.toB58String(keys[i]), cbJ),
+              (cbJ) => check(remoteNodes[1], mh.toB58String(keys[i]), cbJ),
               (cbJ) => check(inProcNode, keys[i], cbJ)
             ], cbI)
           }), cb)
@@ -214,7 +213,7 @@ describe.skip('bitswap', () => {
           (cb) => node.add([{path: 'awesome.txt', content: file}], cb),
           // 2. Request file from local instance
           (val, cb) => {
-            const hash = bs58.encode(val[0].multihash).toString()
+            const hash = mh.toB58String(val[0].multihash)
 
             inProcNode.files.cat(hash, (err, res) => {
               expect(err).to.not.exist

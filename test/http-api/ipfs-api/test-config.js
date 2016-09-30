@@ -7,7 +7,7 @@ const path = require('path')
 
 module.exports = (ctl) => {
   describe('.config', () => {
-    const configPath = path.join(__dirname, '../../repo-tests-run-http/config')
+    const configPath = path.join(__dirname, '../../repo-tests-async/http/config')
     let updatedConfig
 
     before(() => {
