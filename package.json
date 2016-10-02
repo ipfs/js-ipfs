@@ -5,7 +5,7 @@
   "bin": {
     "jsipfs": "src/cli/bin.js"
   },
-  "main": "lib/core/index.js",
+  "main": "src/core/index.js",
   "jsnext:main": "src/core/index.js",
   "scripts": {
     "lint": "aegir-lint",
