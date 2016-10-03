@@ -3,28 +3,27 @@
 # Copyright (c) 2014 Christian Couder
 # MIT Licensed; see the LICENSE file in this repository.
 #
-# We are using sharness (https://github.com/mlafeldt/sharness)
+# We are using sharness (https://github.com/chriscool/sharness)
 # which was extracted from the Git test framework.
-
-# use the ipfs tool to test against
 
 # add current directory to path, for ipfs tool.
 BIN=$(cd .. && echo `pwd`/bin)
 PATH=${BIN}:${PATH}
 
+# assert the `ipfs` we're using is the right one.
+if test $(which ipfs) != ${BIN}/ipfs; then
+	echo >&2 "Cannot find the tests' local ipfs tool."
+	echo >&2 "Please check test and ipfs tool installation."
+	JS_BIN=$(dirname $(dirname "${BIN}"))"/src/cli/bin.js"
+	echo >&2 "For js-ipfs, look for a symlink from '${BIN}/ipfs' to '${JS_BIN}'."
+	echo >&2 "Use 'make' or 'make deps' as it should install this symlink."
+	exit 1
+fi
+
 # set sharness verbosity. we set the env var directly as
 # it's too late to pass in --verbose, and --verbose is harder
 # to pass through in some cases.
 test "$TEST_VERBOSE" = 1 && verbose=t
-
-# TODO: fix this for js-ipfs
-# assert the `ipfs` we're using is the right one.
-##if test `which ipfs` != ${BIN}/ipfs; then
-##	echo >&2 "Cannot find the tests' local ipfs tool."
-##	echo >&2 "Please check test and ipfs tool installation."
-##	exit 1
-##fi
-
 
 # source the common hashes first.
 . lib/test-lib-hashes.sh
