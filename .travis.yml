@@ -13,7 +13,7 @@ script:
   - npm run lint
   - npm test
   - npm run coverage
-
+  - make test
 
 before_script:
   - export DISPLAY=:99.0

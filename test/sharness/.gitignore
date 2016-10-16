@@ -1,0 +1,4 @@
+!/lib/
+lib/sharness/
+test-results/
+trash directory.*.sh/
