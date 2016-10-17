@@ -60,8 +60,7 @@ This project is available through [npm](https://www.npmjs.com/). To install:
 $ npm install ipfs --save
 ```
 
-Requires npm@3 and node >= 4
-Tested on OSX & Linux, expected to work on Windows.
+Requires npm@3 and node >= 4, tested on OSX & Linux, expected to work on Windows.
 
 ### Use in Node.js
 
