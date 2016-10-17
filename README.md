@@ -61,6 +61,7 @@ $ npm install ipfs --save
 ```
 
 Requires npm@3 and node >= 4
+Tested on OSX & Linux, expected to work on Windows.
 
 ### Use in Node.js
 
