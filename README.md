@@ -60,6 +60,8 @@ This project is available through [npm](https://www.npmjs.com/). To install:
 $ npm install ipfs --save
 ```
 
+Requires npm@3 and node >= 4
+
 ### Use in Node.js
 
 To include this project programmatically:
