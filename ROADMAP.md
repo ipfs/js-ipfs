@@ -123,15 +123,16 @@ UPDATE:
 
 - [ ] Create an issue for each of the 'parts' that needs to be discussed
 - [ ] Parts:
-  - [ ] 
-  - [ ] 
+  - ES5, Babel (transpilation) and PhantomJS
+  - Node.js version to support
+  - Flow control library
+  - Exposed Interfaces
+  - Classes vs Functions
+  - Getters and Setters
 
-### Dependencies:
-
+### Dependencies: `NA`
 ### Requirements by other projects: `NA`
-
 ### Notes: `NA`
-
 ##### Expected date of completion: `Week 1 - October 17 to create the issues, discussion will happen throughout the quarter`
 
 # Milestone - interface-floodsub
@@ -147,8 +148,7 @@ UPDATE:
 
 - [ ] Create interface-floodsub.md on pubsub-notes repo
 
-### Dependencies:
-
+### Dependencies: `NA`
 ### Requirements by other projects:
 
 This is a requirement to integrate floodsub in js-ipfs
@@ -168,7 +168,7 @@ This is a requirement to integrate floodsub in js-ipfs
 
 ### Tasks:
 
-- [ ] Awesome IPLD endeavour PR -
+- [ ] Awesome IPLD endeavour PR - https://github.com/ipld/js-ipld-resolver/pull/60
 
 ### Dependencies:
 
@@ -179,10 +179,7 @@ This is a requirement to integrate floodsub in js-ipfs
 
 - everyone is waiting for this
 
-### Notes:
-
-NA
-
+### Notes: `NA`
 ##### Expected date of completion: `Week 2 - Oct 24`
 
 
@@ -199,16 +196,9 @@ NA
 
 NA
 
-### Dependencies:
-
-### Requirements by other projects:
-
-NA
-
-### Notes:
-
-NA
-
+### Dependencies: `NA`
+### Requirements by other projects: `NA`
+### Notes: `NA`
 ##### Expected date of completion: `Week 2 - Oct 24`
 
 
@@ -226,16 +216,9 @@ NA
 
 NA
 
-### Dependencies:
-
-### Requirements by other projects:
-
-NA
-
-### Notes:
-
-NA
-
+### Dependencies: `NA`
+### Requirements by other projects: `NA`
+### Notes: `NA`
 ##### Expected date of completion: `Week 3 - Oct 31`
 
 
@@ -252,16 +235,9 @@ NA
 
 NA
 
-### Dependencies:
-
-### Requirements by other projects:
-
-NA
-
-### Notes:
-
-NA
-
+### Dependencies: `NA`
+### Requirements by other projects: `NA`
+### Notes: `NA`
 ##### Expected date of completion: `Week 3 - Oct 31`
 
 
@@ -274,20 +250,10 @@ NA
 
 - Friedel
 
-### Tasks:
-
-NA
-
-### Dependencies:
-
-### Requirements by other projects:
-
-NA
-
-### Notes:
-
-NA
-
+### Tasks: `NA`
+### Dependencies: `NA`
+### Requirements by other projects: `NA`
+### Notes: `NA`
 ##### Expected date of completion: `Week 6 - Nov 21`
 
 
@@ -304,16 +270,9 @@ NA
 
 NA
 
-### Dependencies:
-
-### Requirements by other projects:
-
-NA
-
-### Notes:
-
-NA
-
+### Dependencies: `NA`
+### Requirements by other projects: `NA`
+### Notes: `NA`
 ##### Expected date of completion: `Week 7 - Nov 28`
 
 
