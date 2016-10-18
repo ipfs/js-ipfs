@@ -63,10 +63,22 @@ class IPFS {
     this.ping = components.ping(this)
     this.pubsub = components.pubsub(this)
 
-    if (configOpts.EXPERIMENTAL.pubsub) {
-      this.log('EXPERIMENTAL pubsub is enabled')
-    }
-  }
+  //   interface-ipfs-core defined API
+  this.version = version(this)
+  this.id = id(this)
+  this.repo = repo(this)
+  this.bootstrap = bootstrap(this)
+  this.config = config(this)
+  this.block = block(this)
+  this.object = object(this)
+  this.libp2p = libp2p(this)
+  this.swarm = swarm(this)
+  this.files = files(this)
+  this.bitswap = bitswap(this)
+  this.ping = ping(this)
+
+  // expose Buffer for browser applications
+  this.Buffer = Buffer
 }
 
 module.exports = IPFS
