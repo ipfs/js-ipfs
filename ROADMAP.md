@@ -3,7 +3,11 @@ IPFS JavaScript Implementation roadmap
 
 > We track the development of the js-ipfs project through Github issues and [Waffle.io](https://waffle.io/ipfs/js-ipfs). See our waffle board at: [https://waffle.io/ipfs/js-ipfs](https://waffle.io/ipfs/js-ipfs)
 
-# Milestone 1 - js-ipfs on the browser
+--------------------------------------------------------------------------------------------------
+
+# 2016 Q3
+
+# Milestone - js-ipfs on the browser
 
 > Summary: This milestone's focus is to ship a version of js-ipfs that can be embed in browser applications, creating an IPFS node inside a browser web application.
 
@@ -49,7 +53,7 @@ UPDATE:
   - [x] WebRTC transport with [libp2p-webrtc-star](https://github.com/libp2p/js-libp2p-webrtc-star)
   - [x] [secio](https://github.com/ipfs/js-libp2p-secio)
 
-# Milestone 2 - Quality and correctness of the JavaScript Implementation
+# Milestone - Quality and correctness of the JavaScript Implementation
 
 > Summary: The focus of this milestone is quality of the JavaScript implementation so that users of the library can build their applications with confidence.
 
@@ -100,18 +104,102 @@ UPDATE:
 
 ##### Expected date of completion: `late August`
 
-# Milestone 3 - Enter IPLD - Enable js-ipfs to handle both merkledag protobufs and ipld cbor objects
+--------------------------------------------------------------------------------------------------
+
+# 2016 Q4
+
+# Milestone - The InterPlanetary JavaScript
+
+> Summary: Settle in what will be the 'good parts' for us to use accross JS projects
+
+### Leads:
+
+- David
+- Friedel
+- Victor
+- Richard
+
+### Tasks:
+
+- [ ] Create an issue for each of the 'parts' that needs to be discussed
+- [ ] Parts:
+  - [ ] 
+  - [ ] 
+
+### Dependencies:
+
+### Requirements by other projects: `NA`
+
+### Notes: `NA`
+
+##### Expected date of completion: `Week 1 - October 17 to create the issues, discussion will happen throughout the quarter`
+
+# Milestone - interface-floodsub
+
+> Summary: Define an interface for floodsub, that can be implemented for js-ipfs and js-ipfs-api
+
+### Leads:
+
+- David
+- Juan
+
+### Tasks:
+
+- [ ] Create interface-floodsub.md on pubsub-notes repo
+
+### Dependencies:
+
+### Requirements by other projects:
+
+This is a requirement to integrate floodsub in js-ipfs
+
+### Notes: `NA`
+
+##### Expected date of completion: `Week 1 - October 17`
+
+
+# Milestone - Awesome IPLD - Enable js-ipfs to handle both merkledag protobufs and ipld cbor objects
 
 > Summary: Integration of IPLD (js-ipld and js-ipld-ipfs) into js-ipfs.
+
+### Leads:
+
+- David
+
+### Tasks:
+
+- [ ] Awesome IPLD endeavour PR -
+
+### Dependencies:
+
+- [x] CID spec
+- [ ] go-ipfs with IPLD already integrated (it would be best)
+
+### Requirements by other projects:
+
+- everyone is waiting for this
+
+### Notes:
+
+NA
+
+##### Expected date of completion: `Week 2 - Oct 24`
+
+
+
+# Milestone - Async Crypto
+
+> Summary: Move away from bundling in node-forge and use the WebCrypto browser primitives directly
+
+### Leads:
+
+- Friedel
 
 ### Tasks:
 
 NA
 
 ### Dependencies:
-
-- [ ] IPLD migration path
-- [ ] go-ipfs with IPLD already integrated (it would be best)
 
 ### Requirements by other projects:
 
@@ -121,7 +209,117 @@ NA
 
 NA
 
-##### Expected date of completion: `mid September`
+##### Expected date of completion: `Week 2 - Oct 24`
+
+
+
+# Milestone - Bitswap Complete
+
+> Summary: Make js-ipfs-bitswap work at the same level go-ipfs-bitswap
+
+### Leads:
+
+- David
+- Friedel
+
+### Tasks:
+
+NA
+
+### Dependencies:
+
+### Requirements by other projects:
+
+NA
+
+### Notes:
+
+NA
+
+##### Expected date of completion: `Week 3 - Oct 31`
+
+
+
+# Milestone - js-ipfs and js-ipfs-api bundling 
+
+> Summary: Make it work with any bundler, out of the box or provide proper documentation if not possible.
+
+### Leads:
+
+- Friedel
+
+### Tasks:
+
+NA
+
+### Dependencies:
+
+### Requirements by other projects:
+
+NA
+
+### Notes:
+
+NA
+
+##### Expected date of completion: `Week 3 - Oct 31`
+
+
+
+# Milestone - Documentation of all the modules
+
+> Summary: 
+
+### Leads:
+
+- Friedel
+
+### Tasks:
+
+NA
+
+### Dependencies:
+
+### Requirements by other projects:
+
+NA
+
+### Notes:
+
+NA
+
+##### Expected date of completion: `Week 6 - Nov 21`
+
+
+
+# Milestone - Quick Start examples for js-ipfs and js-ipfs-api
+
+> Summary: 
+
+### Leads:
+
+- Samuli
+
+### Tasks:
+
+NA
+
+### Dependencies:
+
+### Requirements by other projects:
+
+NA
+
+### Notes:
+
+NA
+
+##### Expected date of completion: `Week 7 - Nov 28`
+
+
+--------------------------------------------------------------------------------------------------
+
+# Cached milestones (to re-evaluate for next quarter)
 
 # Milestone 4 - Documentation and Developer Experience
 
