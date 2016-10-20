@@ -1,17 +1,13 @@
 'use strict'
 
-const multiaddr = require('multiaddr')
 const promisify = require('promisify-es6')
-const flatMap = require('lodash.flatmap')
-const values = require('lodash.values')
 const Stream = require('stream')
 
 const FloodSub = require('libp2p-floodsub')
 
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 
-module.exports = function pubsub (self) {  
-
+module.exports = function pubsub (self) {
   let fsub
 
   return {
@@ -38,14 +34,13 @@ module.exports = function pubsub (self) {
       }
 
       fsub.on(topic, (data) => {
-        console.log("PUBSUB DATA:", data.toString())
+        console.log('PUBSUB DATA:', data.toString())
         rs.emit('data', {
           data: data.toString(),
-          topicIDs: [topic],
-          // these fields are currently missing from message 
+          topicIDs: [topic]
+          // these fields are currently missing from message
           // (but are present in messages from go-ipfs pubsub)
           // from: bs58.encode(message.from),
-          // data: Base64.decode(message.data),
           // seqno: Base64.decode(message.seqno)
         })
       })
@@ -59,10 +54,11 @@ module.exports = function pubsub (self) {
         return callback(OFFLINE_ERROR)
       }
 
-      const out = data instanceof Buffer ? data : new Buffer(data)
-      fsub.publish(topic, out)
+      const buf = Buffer.isBuffer(data) ? data : new Buffer(data)
+
+      fsub.publish(topic, buf)
       callback(null)
-    }),
+    })
 
   }
 }
