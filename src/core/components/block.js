@@ -19,6 +19,12 @@ module.exports = function block (self) {
         block = new Block(block)
       }
 
+      if (typeof cid === 'function') {
+        // legacy (without CID)
+        callback = cid
+        cid = new CID(block.key('sha2-256'))
+      }
+
       self._blockService.put({
         block: block,
         cid: cid
@@ -47,8 +53,10 @@ module.exports = function block (self) {
 }
 
 function cleanCid (cid) {
-  if (typeof cid === 'string') {
-    return new CID(cid)
+  if (cid.constructor.name === 'CID') {
+    return cid
   }
-  return cid
+
+  // CID constructor knows how to do the cleaning :)
+  return new CID(cid)
 }
