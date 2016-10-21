@@ -112,7 +112,38 @@ The last published version of the package become [available for download](htt
 
 ### Examples
 
-> **Will come soon**
+var fs = require('fs');
+var promisify = require('promisify-es6')
+
+var IPFS = require('ipfs')
+var node = new IPFS()
+
+function displayVersion() {
+    console.log(node.version());
+}
+
+function initializeRepo() {
+    node.init(function(err){
+        console.log(err);
+    })    
+}
+
+function startDaemon() {
+    node.goOnline(function(msg) {});  
+}
+
+function addFile() {
+    var readStream = fs.createReadStream('PathOfFileToAdd');
+    node.files.add(readStream).then(function(hash) {
+        console.log(hash);
+    });    
+}
+
+function catFile() {
+    node.files.cat('HashOfExistingFile').then(function(stream) {
+        stream.pipe(process.stdout, { end : false });
+    });
+}
 
 ### API
 
