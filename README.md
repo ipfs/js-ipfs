@@ -112,6 +112,7 @@ The last published version of the package become [available for download](htt
 
 ### Examples
 
+```js
 var fs = require('fs');
 var promisify = require('promisify-es6')
 
@@ -144,7 +145,7 @@ function catFile() {
         stream.pipe(process.stdout, { end : false });
     });
 }
-
+```
 ### API
 
 A complete API definition will come, meanwhile, you can learn how to you use js-ipfs throught he standard interface at [![](https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg)](https://github.com/ipfs/interface-ipfs-core)
