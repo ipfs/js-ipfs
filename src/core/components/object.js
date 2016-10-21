@@ -1,11 +1,12 @@
 'use strict'
 
-const mDAG = require('ipfs-merkle-dag')
 const waterfall = require('async/waterfall')
 const promisify = require('promisify-es6')
 const bs58 = require('bs58')
-const DAGNode = mDAG.DAGNode
-const DAGLink = mDAG.DAGLink
+const dagPB = require('ipld-dag-pb')
+const DAGNode = dagPB.DAGNode
+const DAGLink = dagPB.DAGLink
+const CID = require('cids')
 
 function normalizeMultihash (multihash, enc) {
   if (typeof multihash === 'string') {
@@ -49,9 +50,7 @@ function parseJSONBuffer (buf) {
 }
 
 function parseProtoBuffer (buf) {
-  const node = new DAGNode()
-  node.unMarshal(buf)
-  return node
+  return dagPB.util.deserialize(buf)
 }
 
 module.exports = function object (self) {
@@ -63,9 +62,16 @@ module.exports = function object (self) {
       }
 
       waterfall([
-        (cb) => self.object.get(multihash, options, cb),
+        (cb) => {
+          self.object.get(multihash, options, cb)
+        },
         (node, cb) => {
-          self._dagService.put(edit(node), (err) => {
+          node = edit(node)
+
+          self._ipldResolver.put({
+            node: node,
+            cid: new CID(node.multihash())
+          }, (err) => {
             cb(err, node)
           })
         }
@@ -77,7 +83,10 @@ module.exports = function object (self) {
     new: promisify((cb) => {
       const node = new DAGNode()
 
-      self._dagService.put(node, function (err) {
+      self._ipldResolver.put({
+        node: node,
+        cid: new CID(node.multihash())
+      }, function (err) {
         if (err) {
           return cb(err)
         }
@@ -85,7 +94,6 @@ module.exports = function object (self) {
         cb(null, node)
       })
     }),
-
     put: promisify((obj, options, cb) => {
       if (typeof options === 'function') {
         cb = options
@@ -114,7 +122,10 @@ module.exports = function object (self) {
         return cb(new Error('obj not recognized'))
       }
 
-      self._dagService.put(node, (err, block) => {
+      self._ipldResolver.put({
+        node: node,
+        cid: new CID(node.multihash())
+      }, (err, block) => {
         if (err) {
           return cb(err)
         }
@@ -136,8 +147,8 @@ module.exports = function object (self) {
       } catch (err) {
         return cb(err)
       }
-
-      self._dagService.get(mh, cb)
+      const cid = new CID(mh)
+      self._ipldResolver.get(cid, cb)
     }),
 
     data: promisify((multihash, options, cb) => {
@@ -180,7 +191,7 @@ module.exports = function object (self) {
           return cb(err)
         }
 
-        const blockSize = node.marshal().length
+        const blockSize = dagPB.util.serialize(node).length
         const linkLength = node.links.reduce((a, l) => a + l.size, 0)
 
         cb(null, {

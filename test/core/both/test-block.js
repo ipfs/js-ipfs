@@ -17,5 +17,4 @@ const common = {
   }
 }
 
-console.log('->')
 test.block(common)
