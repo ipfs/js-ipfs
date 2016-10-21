@@ -59,6 +59,18 @@ module.exports = (common) => {
         })
       })
 
+      it('.put a block (without using CID, legacy mode)', (done) => {
+        const expectedHash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
+        const blob = new Block(new Buffer('blorb'))
+
+        ipfs.block.put(blob, (err, block) => {
+          expect(err).to.not.exist
+          expect(block.key('sha2-256')).to.eql(multihash.fromB58String(expectedHash))
+          expect(block.data).to.eql(new Buffer('blorb'))
+          done()
+        })
+      })
+
       it('.put error with array of blocks', () => {
         const blob = Buffer('blorb')
 
@@ -74,6 +86,17 @@ module.exports = (common) => {
         ipfs.block.get(cid, (err, block) => {
           expect(err).to.not.exist
           expect(block.key('sha2-256')).to.eql(cid.multihash)
+          expect(block.data).to.eql(new Buffer('blorb'))
+          done()
+        })
+      })
+
+      it('block.get (without using CID, legacy mode)', (done) => {
+        const hash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
+
+        ipfs.block.get(hash, (err, block) => {
+          expect(err).to.not.exist
+          expect(block.key('sha2-256')).to.eql(multihash.fromB58String(hash))
           expect(block.data).to.eql(new Buffer('blorb'))
           done()
         })
