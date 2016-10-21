@@ -2,38 +2,43 @@
 
 const Block = require('ipfs-block')
 const multihash = require('multihashes')
+const CID = require('cids')
 
 module.exports = function block (self) {
   return {
-    get: (hash, callback) => {
-      hash = cleanHash(hash)
-      self._blockS.get(hash, callback)
+    get: (cid, callback) => {
+      cid = cleanCid(cid)
+      self._blockService.get(cid, callback)
     },
-    put: (block, callback) => {
+    put: (block, cid, callback) => {
       if (Array.isArray(block)) {
         return callback(new Error('Array is not supported'))
       }
+
       if (Buffer.isBuffer(block)) {
         block = new Block(block)
       }
 
-      self._blockS.put(block, (err) => {
+      self._blockService.put({
+        block: block,
+        cid: cid
+      }, (err) => {
         callback(err, block)
       })
     },
-    del: (hash, callback) => {
-      hash = cleanHash(hash)
-      self._blockS.delete(hash, callback)
+    rm: (cid, callback) => {
+      cid = cleanCid(cid)
+      self._blockService.delete(cid, callback)
     },
-    stat: (hash, callback) => {
-      hash = cleanHash(hash)
+    stat: (cid, callback) => {
+      cid = cleanCid(cid)
 
-      self._blockS.get(hash, (err, block) => {
+      self._blockService.get(cid, (err, block) => {
         if (err) {
           return callback(err)
         }
         callback(null, {
-          key: multihash.toB58String(hash),
+          key: multihash.toB58String(cid.multihash),
           size: block.data.length
         })
       })
@@ -41,9 +46,9 @@ module.exports = function block (self) {
   }
 }
 
-function cleanHash (hash) {
-  if (typeof hash === 'string') {
-    return multihash.fromB58String(hash)
+function cleanCid (cid) {
+  if (typeof cid === 'string') {
+    return new CID(cid)
   }
-  return hash
+  return cid
 }

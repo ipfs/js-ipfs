@@ -65,7 +65,7 @@ module.exports = function object (self) {
       waterfall([
         (cb) => self.object.get(multihash, options, cb),
         (node, cb) => {
-          self._dagS.put(edit(node), (err) => {
+          self._dagService.put(edit(node), (err) => {
             cb(err, node)
           })
         }
@@ -77,7 +77,7 @@ module.exports = function object (self) {
     new: promisify((cb) => {
       const node = new DAGNode()
 
-      self._dagS.put(node, function (err) {
+      self._dagService.put(node, function (err) {
         if (err) {
           return cb(err)
         }
@@ -114,7 +114,7 @@ module.exports = function object (self) {
         return cb(new Error('obj not recognized'))
       }
 
-      self._dagS.put(node, (err, block) => {
+      self._dagService.put(node, (err, block) => {
         if (err) {
           return cb(err)
         }
@@ -137,7 +137,7 @@ module.exports = function object (self) {
         return cb(err)
       }
 
-      self._dagS.get(mh, cb)
+      self._dagService.get(mh, cb)
     }),
 
     data: promisify((multihash, options, cb) => {

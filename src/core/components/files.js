@@ -17,7 +17,7 @@ module.exports = function files (self) {
     return pull(
       pull.map(normalizeContent),
       pull.flatten(),
-      importer(self._dagS),
+      importer(self._dagService),
       pull.asyncMap(prepareFile.bind(null, self))
     )
   }
@@ -36,7 +36,7 @@ module.exports = function files (self) {
 
       pull(
         pull.values(normalizeContent(data)),
-        importer(self._dagS),
+        importer(self._dagService),
         pull.asyncMap(prepareFile.bind(null, self)),
         sort((a, b) => {
           if (a.path < b.path) return 1
@@ -52,7 +52,7 @@ module.exports = function files (self) {
         return callback(new Error('You must supply a multihash'))
       }
 
-      self._dagS.get(hash, (err, node) => {
+      self._dagService.get(hash, (err, node) => {
         if (err) {
           return callback(err)
         }
@@ -65,7 +65,7 @@ module.exports = function files (self) {
         }
 
         pull(
-          exporter(hash, self._dagS),
+          exporter(hash, self._dagService),
           pull.collect((err, files) => {
             if (err) return callback(err)
             callback(null, toStream.source(files[0].content))
@@ -76,7 +76,7 @@ module.exports = function files (self) {
 
     get: promisify((hash, callback) => {
       callback(null, toStream.source(pull(
-        exporter(hash, self._dagS),
+        exporter(hash, self._dagService),
         pull.map((file) => {
           if (file.content) {
             file.content = toStream.source(file.content)
@@ -89,7 +89,7 @@ module.exports = function files (self) {
     }),
 
     getPull: promisify((hash, callback) => {
-      callback(null, exporter(hash, self._dagS))
+      callback(null, exporter(hash, self._dagService))
     })
   }
 }

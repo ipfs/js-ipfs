@@ -20,7 +20,7 @@ module.exports = function goOnline (self) {
         self._libp2pNode.peerBook
       )
       self._bitswap.start()
-      self._blockS.goOnline(self._bitswap)
+      self._blockService.goOnline(self._bitswap)
       cb()
     })
   }
