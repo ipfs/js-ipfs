@@ -4,7 +4,8 @@
 'use strict'
 
 const expect = require('chai').expect
-const DAGNode = require('ipfs-merkle-dag').DAGNode
+const dagPB = require('ipld-dag-pb')
+const DAGNode = dagPB.DAGNode
 const bs58 = require('bs58')
 
 module.exports = (common) => {
@@ -89,7 +90,7 @@ module.exports = (common) => {
 
         it('of protobuf encoded buffer', (done) => {
           const dNode = new DAGNode(new Buffer('Some data'))
-          const buf = dNode.marshal()
+          const buf = dagPB.util.serialize(dNode)
 
           ipfs.object.put(buf, { enc: 'protobuf' }, (err, node) => {
             expect(err).to.not.exist
@@ -185,8 +186,8 @@ module.exports = (common) => {
 
             ipfs.object.get(node1.multihash(), (err, node2) => {
               expect(err).to.not.exist
-              // because js-ipfs-api can't infer if the returned Data is Buffer
-              // or String
+              // because js-ipfs-api can't infer if the
+              // returned Data is Buffer or String
               if (typeof node2.data === 'string') {
                 node2.data = new Buffer(node2.data)
               }
@@ -488,12 +489,13 @@ module.exports = (common) => {
         let testNode
         let testNodeWithLink
         let testLink
-        before((done) => {
-          const obj = {
-            Data: new Buffer('patch test object'),
-            Links: []
-          }
 
+        const obj = {
+          Data: new Buffer('patch test object'),
+          Links: []
+        }
+
+        before((done) => {
           ipfs.object.put(obj, (err, node) => {
             expect(err).to.not.exist
             testNode = node
@@ -502,12 +504,14 @@ module.exports = (common) => {
         })
 
         it('.addLink', (done) => {
-          const dNode1 = testNode.copy()
+          const dNode1 = new DAGNode(obj.Data, obj.Links)
           const dNode2 = new DAGNode(new Buffer('some other node'))
-          // note: we need to put the linked obj, otherwise IPFS won't timeout
-          // cause it needs the node to get its size
+
+          // note: we need to put the linked obj, otherwise IPFS won't
+          // timeout. Reason: it needs the node to get its size
           ipfs.object.put(dNode2, (err) => {
             expect(err).to.not.exist
+
             dNode1.addNodeLink('link-to-node', dNode2)
 
             ipfs.object.patch.addLink(testNode.multihash(), dNode1.links[0], (err, node3) => {
@@ -667,7 +671,7 @@ module.exports = (common) => {
         })
 
         it('.addLink', () => {
-          const dNode1 = testNode.copy()
+          const dNode1 = dagPB.util.deserialize(dagPB.util.serialize(testNode))
           const dNode2 = new DAGNode(new Buffer('some other node'))
           // note: we need to put the linked obj, otherwise IPFS won't timeout
           // cause it needs the node to get its size
