@@ -4,7 +4,7 @@
 const expect = require('chai').expect
 
 module.exports = (http) => {
-  describe('/bitswap', () => {
+  describe.skip('/bitswap', () => {
     let api
 
     before(() => {

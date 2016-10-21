@@ -53,7 +53,7 @@ module.exports = function block (self) {
 }
 
 function cleanCid (cid) {
-  if (cid.constructor.name === 'CID') {
+  if (CID.isCID(cid)) {
     return cid
   }
 

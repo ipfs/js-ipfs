@@ -22,7 +22,7 @@ function addBlock (buf) {
         throw err
       }
 
-      console.log(bs58.encode(block.key).toString())
+      console.log(bs58.encode(block.key()).toString())
     })
   })
 }

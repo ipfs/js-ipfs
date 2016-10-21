@@ -16,7 +16,7 @@ module.exports = (ctl) => {
 
         ctl.block.put(data, (err, block) => {
           expect(err).not.to.exist
-          expect(block.key).to.deep.equal(multihash.fromB58String(expectedResult.key))
+          expect(block.key()).to.deep.equal(multihash.fromB58String(expectedResult.key))
           done()
         })
       })
