@@ -19,8 +19,8 @@ ipfs-api
 - [Install](#install)
   - [Running the daemon with the right port](#running-the-daemon-with-the-right-port)
   - [Importing the module and usage](#importing-the-module-and-usage)
-  - [In the Browser through browserify](#in-the-browser-through-browserify)
-  - [In the Browser through `<script>` tag](#in-the-browser-through-script-tag)
+  - [In a web browser through Browserify](#in-a-web-browser-through-browserify)
+  - [In a web browser from CDN](#in-a-web-browser-from-cdn)
   - [CORS](#cors)
 - [Usage](#usage)
   - [API](#api)
@@ -69,25 +69,43 @@ var ipfs = ipfsAPI('/ip4/127.0.0.1/tcp/5001')
 var ipfs = ipfsAPI({host: 'localhost', port: '5001', procotol: 'http'})
 ```
 
-### In the Browser through browserify
+### In a web browser through Browserify
 
 Same as in Node.js, you just have to [browserify](http://browserify.org) the code before serving it. See the browserify repo for how to do that.
 
-### In the Browser through `<script>` tag
+### In a web browser from CDN
 
-You can use [unpkg](https://unpkg.com/) to get the latest built version, like this
+Instead of a local installation (and browserification) you may request a remote copy of IPFS API from [unpkg CDN](https://unpkg.com/).
+
+To always request the latest version, use the following:
 
 ```html
 <script src="https://unpkg.com/ipfs-api/dist/index.js"></script>
 ```
 
-This will export the `IpfsApi` constructor on the `window` object, such that:
+For maximum security you may also decide to:
+
+* reference a specific version of IPFS API (to prevent unexpected breaking changes when a newer latest version is published)
+
+* [generate a SRI hash](https://www.srihash.org/) of that version and use it to ensure integrity
+
+* set the [CORS settings attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes) to make anonymous requests to CDN
+
+Example:
+
+```html
+<script src="https://unpkg.com/ipfs-api@9.0.0/dist/index.js"
+integrity="sha384-5bXRcW9kyxxnSMbOoHzraqa7Z0PQWIao+cgeg327zit1hz5LZCEbIMx/LWKPReuB"
+crossorigin="anonymous"></script>
+```
+
+CDN-based IPFS API provides the `IpfsApi` constructor as a method of the global `window` object. Example:
 
 ```
 var ipfs = window.IpfsApi('localhost', '5001')
 ```
 
-If you omit the host and port, the api will parse `window.host`, and use this information. This also works, and can be useful if you want to write apps that can be run from multiple different gateways:
+If you omit the host and port, the API will parse `window.host`, and use this information. This also works, and can be useful if you want to write apps that can be run from multiple different gateways:
 
 ```
 var ipfs = window.IpfsApi()
@@ -95,7 +113,7 @@ var ipfs = window.IpfsApi()
 
 ### CORS
 
-If are using this module in a browser with something like browserify, then you will get an error saying that the origin is not allowed. This would be a CORS ("Cross Origin Resource Sharing") failure. The ipfs server rejects requests from unknown domains by default. You can whitelist the domain that you are calling from by changing your ipfs config like this:
+In a web browser IPFS API (either browserified or CDN-based) might encounter an error saying that the origin is not allowed. This would be a CORS ("Cross Origin Resource Sharing") failure: IPFS servers are designed to reject requests from unknown domains by default. You can whitelist the domain that you are calling from by changing your ipfs config like this:
 
 ```bash
 $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin "[\"http://example.com\"]"
