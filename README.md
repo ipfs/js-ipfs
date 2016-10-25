@@ -75,10 +75,10 @@ Same as in Node.js, you just have to [browserify](http://browserify.org) the cod
 
 ### In the Browser through `<script>` tag
 
-You can use [npmcdn](https://npmcdn.com/) to get the latest built version, like this
+You can use [unpkg](https://unpkg.com/) to get the latest built version, like this
 
 ```html
-<script src="https://npmcdn.com/ipfs-api/dist/index.js"></script>
+<script src="https://unpkg.com/ipfs-api/dist/index.js"></script>
 ```
 
 This will export the `IpfsApi` constructor on the `window` object, such that:
