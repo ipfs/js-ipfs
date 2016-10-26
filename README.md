@@ -114,8 +114,6 @@ The last published version of the package become [available for download](htt
 
 ```js
 var fs = require('fs');
-var promisify = require('promisify-es6')
-
 var IPFS = require('ipfs')
 var node = new IPFS()
 
@@ -130,10 +128,14 @@ function initializeRepo() {
 }
 
 function startDaemon() {
-    node.goOnline(function(msg) {});  
+    node.goOnline(function(msg) {
+        addFile(function() {
+            node.goOffline();
+        });
+    });  
 }
 
-function addFile() {
+function addFile(callBack) {
     var readStream = fs.createReadStream('PathOfFileToAdd');
     node.files.add(readStream).then(function(hash) {
         console.log(hash);
