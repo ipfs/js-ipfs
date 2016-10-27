@@ -94,21 +94,37 @@ module.exports = (send) => {
             obj = JSON.parse(obj.toString())
           }
         }
+
         let node
+
         if (obj.multihash) {
           node = obj
         } else if (options.enc === 'protobuf') {
-          node = new DAGNode()
-          node.unMarshal(obj)
+          dagPB.util.deserialize(obj, (err, _node) => {
+            if (err) {
+              return callback(err)
+            }
+            node = _node
+            next()
+          })
+          return
         } else {
           node = new DAGNode(obj.Data, obj.Links)
         }
+        next()
 
-        if (node.toJSON().Hash !== result.Hash) {
-          return callback(new Error('Stored object was different from constructed object'))
+        function next () {
+          node.toJSON((err, nodeJSON) => {
+            if (err) {
+              return callback(err)
+            }
+            if (nodeJSON.Hash !== result.Hash) {
+              return callback(new Error('Stored object was different from constructed object'))
+            }
+
+            callback(null, node)
+          })
         }
-
-        callback(null, node)
       })
     }),
     data: promisify((multihash, options, callback) => {
@@ -201,13 +217,19 @@ module.exports = (send) => {
         if (err) {
           return callback(err)
         }
+
         const node = new DAGNode()
+        node.toJSON((err, nodeJSON) => {
+          if (err) {
+            return callback(err)
+          }
 
-        if (node.toJSON().Hash !== result.Hash) {
-          return callback(new Error('Stored object was different from constructed object'))
-        }
+          if (nodeJSON.Hash !== result.Hash) {
+            return callback(new Error('Stored object was different from constructed object'))
+          }
 
-        callback(null, node)
+          callback(null, node)
+        })
       })
     }),
     patch: {
