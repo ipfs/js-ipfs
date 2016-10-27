@@ -4,24 +4,29 @@ const map = require('async/map')
 const getDagNode = require('./get-dagnode')
 
 // transform { Hash: '...' } objects into { path: 'string', node: DAGNode }
-module.exports = function (err, res, send, done) {
+module.exports = (err, res, send, done) => {
   if (err) {
     return done(err)
   }
 
-  map(res, function map (entry, next) {
-    getDagNode(send, entry.Hash, function (err, node) {
+  map(res, (entry, next) => {
+    getDagNode(send, entry.Hash, (err, node) => {
       if (err) {
         return next(err)
       }
-      var obj = {
-        path: entry.Name,
-        hash: entry.Hash,
-        size: node.size()
-      }
-      next(null, obj)
+      node.size((err, size) => {
+        if (err) {
+          return next(err)
+        }
+        const obj = {
+          path: entry.Name,
+          hash: entry.Hash,
+          size: size
+        }
+        next(null, obj)
+      })
     })
-  }, function (err, res) {
+  }, (err, res) => {
     done(err, res)
   })
 }
