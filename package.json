@@ -28,19 +28,19 @@
   },
   "homepage": "https://github.com/ipfs/interface-ipfs-core#readme",
   "dependencies": {
+    "async": "^2.1.2",
     "bl": "^1.1.2",
     "bs58": "^3.0.0",
     "chai": "^3.5.0",
-    "concat-stream": "^1.5.1",
+    "concat-stream": "^1.5.2",
     "detect-node": "^2.0.3",
-    "ipfs-block": "^0.3.0",
-    "ipfs-merkle-dag": "^0.7.0",
+    "ipfs-block": "^0.4.0",
+    "ipld-dag-pb": "^0.1.3",
     "multihashes": "^0.2.2",
-    "readable-stream": "1.1.13",
-    "run-series": "^1.1.4"
+    "readable-stream": "1.1.13"
   },
   "devDependencies": {
-    "aegir": "^8.0.0"
+    "aegir": "^8.1.2"
   },
   "contributors": [
     "David Dias <daviddias.p@gmail.com>",

@@ -4,7 +4,7 @@
 'use strict'
 
 const expect = require('chai').expect
-const series = require('run-series')
+const series = require('async/series')
 
 module.exports = (common) => {
   describe('.swarm', () => {
