@@ -10,7 +10,7 @@ const bs58 = require('bs58')
 const series = require('async/series')
 
 module.exports = (common) => {
-  describe.only('.object', () => {
+  describe('.object', () => {
     let ipfs
 
     before(function (done) {
