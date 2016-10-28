@@ -36,6 +36,7 @@ Consult the [Roadmap](/ROADMAP.md) for a complete state description of the proje
 - [Usage](#usage)
   - [Examples](#examples)
   - [API](#api)
+- [Development](#development)
 - [Project structure](#project-structure)
 - [IPFS Core implementation architecture](#ipfs-core-implementation-architecture)
     - [IPFS Core](#ipfs-core)
@@ -117,6 +118,39 @@ The last published version of the package become [available for download](htt
 ### API
 
 A complete API definition will come, meanwhile, you can learn how to you use js-ipfs throught he standard interface at [![](https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg)](https://github.com/ipfs/interface-ipfs-core)
+
+## Development
+
+### Clone
+```
+git clone https://github.com/ipfs/js-ipfs.git
+cd js-ipfs
+```
+
+### Install Dependencies
+```
+npm install
+```
+
+### Run Tests
+```
+npm test
+```
+
+### Lint
+
+*Conforming to linting rules is a prerequisite to commit to js-ipfs.*
+
+```
+npm run lint
+```
+
+### Build
+```
+npm run build
+```
+
+The ES5 distributable build will be located in `lib/`. The browser distributable will be located in `dist/index.js`.
 
 ## Project structure
 
