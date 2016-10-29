@@ -443,7 +443,9 @@ exports.patchAddLink = {
               }).code(500)
             }
 
-            node.toJSON((err, nodeJSON) => {
+            node.toJSON(gotJSON)
+
+            function gotJSON (err, nodeJSON) {
               if (err) {
                 return reply({
                   Message: 'Failed to get object: ' + err,
@@ -451,7 +453,7 @@ exports.patchAddLink = {
                 }).code(500)
               }
               return reply(nodeJSON)
-            })
+            }
           })
         })
       })

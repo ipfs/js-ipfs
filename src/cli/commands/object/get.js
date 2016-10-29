@@ -23,9 +23,13 @@ module.exports = {
           throw err
         }
 
-        const res = node.toJSON()
-        res.Data = res.Data ? res.Data.toString() : ''
-        console.log(JSON.stringify(res))
+        node.toJSON((err, nodeJSON) => {
+          if (err) {
+            throw err
+          }
+          nodeJSON.Data = nodeJSON.Data ? nodeJSON.Data.toString() : ''
+          console.log(JSON.stringify(nodeJSON))
+        })
       })
     })
   }

@@ -18,7 +18,13 @@ function appendData (key, data) {
         throw err
       }
 
-      console.log(node.toJSON().Hash)
+      node.toJSON((err, nodeJSON) => {
+        if (err) {
+          throw err
+        }
+
+        console.log(nodeJSON.Hash)
+      })
     })
   })
 }
