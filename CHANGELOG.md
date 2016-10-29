@@ -1,3 +1,13 @@
+<a name="11.0.0"></a>
+# [11.0.0](https://github.com/ipfs/js-ipfs-api/compare/v10.0.0...v11.0.0) (2016-10-29)
+
+
+### Bug Fixes
+
+* increase memory (to enable release until we got the size of the bundle shaved down ([12c9660](https://github.com/ipfs/js-ipfs-api/commit/12c9660))
+
+
+
 <a name="10.0.0"></a>
 # [10.0.0](https://github.com/ipfs/js-ipfs-api/compare/v9.0.0...v10.0.0) (2016-10-28)
 
