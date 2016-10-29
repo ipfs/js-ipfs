@@ -32,7 +32,7 @@ module.exports = function files (self) {
 
     add: promisify((data, callback) => {
       if (!callback || typeof callback !== 'function') {
-        callback = function noop () {}
+        callback = noop
       }
 
       pull(
@@ -97,17 +97,22 @@ module.exports = function files (self) {
   }
 }
 
-function prepareFile (self, file, cb) {
+function prepareFile (self, file, callback) {
   const bs58mh = multihashes.toB58String(file.multihash)
   self.object.get(file.multihash, (err, node) => {
     if (err) {
-      return cb(err)
+      return callback(err)
     }
 
-    cb(null, {
-      path: file.path || bs58mh,
-      hash: bs58mh,
-      size: node.size()
+    node.size((err, size) => {
+      if (err) {
+        return callback(err)
+      }
+      callback(null, {
+        path: file.path || bs58mh,
+        hash: bs58mh,
+        size: size
+      })
     })
   })
 }
@@ -147,3 +152,5 @@ function normalizeContent (content) {
     return data
   })
 }
+
+function noop () {}

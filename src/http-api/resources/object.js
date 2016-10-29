@@ -2,12 +2,12 @@
 
 const bs58 = require('bs58')
 const multipart = require('ipfs-multipart')
-const mDAG = require('ipfs-merkle-dag')
-const DAGLink = mDAG.DAGLink
+const dagPB = require('ipld-dag-pb')
+const DAGLink = dagPB.DAGLink
+const DAGNode = dagPB.DAGNode
 const debug = require('debug')
 const log = debug('http-api:object')
 log.error = debug('http-api:object:error')
-const DAGNode = mDAG.DAGNode
 
 exports = module.exports
 
