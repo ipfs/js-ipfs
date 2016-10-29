@@ -833,19 +833,32 @@ module.exports = (common) => {
           })
       })
 
-      it('object.stat', () => {
-        return ipfs.object.stat('QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ')
-          .then((stats) => {
-            const expected = {
-              Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
-              NumLinks: 0,
-              BlockSize: 17,
-              LinksSize: 2,
-              DataSize: 15,
-              CumulativeSize: 17
-            }
-            expect(expected).to.deep.equal(stats)
-          })
+      it('object.stat', (done) => {
+        const testObj = {
+          Data: new Buffer('get test object'),
+          Links: []
+        }
+
+        ipfs.object.put(testObj, (err, node) => {
+          expect(err).to.not.exist
+
+          ipfs.object.stat('QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ', {enc: 'base58'})
+            .then((stats) => {
+              const expected = {
+                Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
+                NumLinks: 0,
+                BlockSize: 17,
+                LinksSize: 2,
+                DataSize: 15,
+                CumulativeSize: 17
+              }
+              expect(expected).to.deep.equal(stats)
+              done()
+            })
+           .catch((err) => {
+             expect(err).to.not.exist
+           })
+        })
       })
 
       it('object.links', (done) => {
