@@ -3,18 +3,22 @@
 
 const expect = require('chai').expect
 const fs = require('fs')
-const DAGLink = require('ipfs-merkle-dag').DAGLink
+const dagPB = require('ipld-dag-pb')
+const DAGLink = dagPB.DAGLink
 
 module.exports = (ctl) => {
   describe('.object', () => {
     it('.new', (done) => {
       ctl.object.new((err, result) => {
         expect(err).to.not.exist
-        const res = result.toJSON()
-        expect(res.Hash)
-          .to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-        expect(res.Links).to.be.eql([])
-        done()
+
+        result.toJSON((err, nodeJSON) => {
+          expect(err).to.not.exist
+          expect(nodeJSON.Hash)
+            .to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
+          expect(nodeJSON.Links).to.be.eql([])
+          done()
+        })
       })
     })
 
@@ -36,10 +40,12 @@ module.exports = (ctl) => {
       it('returns value', (done) => {
         ctl.object.get('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n', {enc: 'base58'}, (err, result) => {
           expect(err).to.not.exist
-          const res = result.toJSON()
-          expect(res.Links).to.be.eql([])
-          expect(res.Data).to.equal('')
-          done()
+          result.toJSON((err, nodeJSON) => {
+            expect(err).to.not.exist
+            expect(nodeJSON.Links).to.be.eql([])
+            expect(nodeJSON.Data).to.equal('')
+            done()
+          })
         })
       })
     })
@@ -69,8 +75,11 @@ module.exports = (ctl) => {
 
         ctl.object.put(filePath, {enc: 'json'}, (err, res) => {
           expect(err).not.to.exist
-          expect(res.toJSON()).to.deep.equal(expectedResult)
-          done()
+          res.toJSON((err, nodeJSON) => {
+            expect(err).to.not.exist
+            expect(nodeJSON).to.deep.equal(expectedResult)
+            done()
+          })
         })
       })
     })
@@ -187,8 +196,11 @@ module.exports = (ctl) => {
 
         ctl.object.patch.appendData(key, filePath, {enc: 'base58'}, (err, res) => {
           expect(err).not.to.exist
-          expect(res.toJSON()).to.deep.equal(expectedResult)
-          done()
+          res.toJSON((err, nodeJSON) => {
+            expect(err).to.not.exist
+            expect(nodeJSON).to.deep.equal(expectedResult)
+            done()
+          })
         })
       })
     })
@@ -222,8 +234,11 @@ module.exports = (ctl) => {
 
         ctl.object.patch.setData(key, filePath, {enc: 'base58'}, (err, res) => {
           expect(err).not.to.exist
-          expect(res.toJSON()).to.deep.equal(expectedResult)
-          done()
+          res.toJSON((err, nodeJSON) => {
+            expect(err).to.not.exist
+            expect(nodeJSON).to.deep.equal(expectedResult)
+            done()
+          })
         })
       })
     })
@@ -261,14 +276,16 @@ module.exports = (ctl) => {
         const link = new DAGLink(name, 10, ref)
         ctl.object.patch.addLink(root, link, {enc: 'base58'}, (err, result) => {
           expect(err).not.to.exist
-          const res = result.toJSON()
-          expect(res.Hash).to.equal('QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK')
-          expect(res.Links[0]).to.deep.equal({
-            Name: 'foo',
-            Hash: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn',
-            Size: 4
+          result.toJSON((err, nodeJSON) => {
+            expect(err).to.not.exist
+            expect(nodeJSON.Hash).to.equal('QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK')
+            expect(nodeJSON.Links[0]).to.eql({
+              Name: 'foo',
+              Hash: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn',
+              Size: 4
+            })
+            done()
           })
-          done()
         })
       })
     })
@@ -304,8 +321,11 @@ module.exports = (ctl) => {
 
         ctl.object.patch.rmLink(root, link, {enc: 'base58'}, (err, res) => {
           expect(err).not.to.exist
-          expect(res.toJSON().Hash).to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-          done()
+          res.toJSON((err, nodeJSON) => {
+            expect(err).to.not.exist
+            expect(nodeJSON.Hash).to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
+            done()
+          })
         })
       })
     })
