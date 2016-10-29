@@ -1,3 +1,13 @@
+<a name="0.16.5"></a>
+## [0.16.5](https://github.com/ipfs/interface-ipfs-core/compare/v0.16.4...v0.16.5) (2016-10-29)
+
+
+### Bug Fixes
+
+* object.stat test was not passing the encoding of the multihash ([8158667](https://github.com/ipfs/interface-ipfs-core/commit/8158667))
+
+
+
 <a name="0.16.4"></a>
 ## [0.16.4](https://github.com/ipfs/interface-ipfs-core/compare/v0.16.3...v0.16.4) (2016-10-28)
 
