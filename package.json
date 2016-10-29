@@ -52,7 +52,7 @@
     "gulp": "^3.9.1",
     "hapi": "^15.2.0",
     "interface-ipfs-core": "^0.16.1",
-    "ipfsd-ctl": "^0.16.0",
+    "ipfsd-ctl": "^0.17.0",
     "pre-commit": "^1.1.3",
     "socket.io": "^1.5.1",
     "socket.io-client": "^1.5.1",
