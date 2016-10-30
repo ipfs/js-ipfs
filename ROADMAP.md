@@ -7,7 +7,7 @@ IPFS JavaScript Implementation roadmap
 
 # 2016 Q3
 
-# Milestone - js-ipfs on the browser
+# ✔️ Milestone - js-ipfs on the browser
 
 > Summary: This milestone's focus is to ship a version of js-ipfs that can be embed in browser applications, creating an IPFS node inside a browser web application.
 
@@ -108,7 +108,7 @@ UPDATE:
 
 # 2016 Q4
 
-# Milestone - The InterPlanetary JavaScript
+# ✔️ Milestone - The InterPlanetary JavaScript
 
 > Summary: Settle in what will be the 'good parts' for us to use accross JS projects
 
@@ -121,14 +121,15 @@ UPDATE:
 
 ### Tasks:
 
-- [ ] Create an issue for each of the 'parts' that needs to be discussed
-- [ ] Parts:
-  - ES5, Babel (transpilation) and PhantomJS
+- [x] Create an issue for each of the 'parts' that needs to be discussed
+- [x] Parts:
+  - Supported Runtimes https://github.com/ipfs/js-ipfs/issues/536
+  - Bundling js-ipfs and js-ipfs-api https://github.com/ipfs/js-ipfs/issues/429
   - Node.js version to support
-  - Flow control library
-  - Exposed Interfaces
-  - Classes vs Functions
-  - Getters and Setters
+  - ~~Flow control library~~ -> Natural convergence happened - use Async
+  - Exposed Interfaces https://github.com/ipfs/js-ipfs/issues/557
+  - Improving init https://github.com/ipfs/js-ipfs/issues/556
+  - Getters and Setters - https://github.com/ipfs/js-ipfs/issues/267
 
 ### Dependencies: `NA`
 ### Requirements by other projects: `NA`
