@@ -1,4 +1,4 @@
-# IPFS JavaScript Implementation
+﻿# IPFS JavaScript Implementation
 
 ![banner](https://ipfs.io/ipfs/QmVk7srrwahXLNmcDYvyUEJptyoxpndnRa57YJ11L4jV26/ipfs.js.png)
 
@@ -113,40 +113,36 @@ The last published version of the package become [available for download](htt
 ### Examples
 
 ```js
-var fs = require('fs');
+var fs = require('fs')
 var IPFS = require('ipfs')
 var node = new IPFS()
 
-function displayVersion() {
-    console.log(node.version());
-}
+var fileName = './hello.txt'
 
-function initializeRepo() {
-    node.init(function(err){
-        console.log(err);
-    })    
-}
-
-function startDaemon() {
-    node.goOnline(function(msg) {
-        addFile(function() {
-            node.goOffline();
-        });
-    });  
-}
-
-function addFile(callBack) {
-    var readStream = fs.createReadStream('PathOfFileToAdd');
-    node.files.add(readStream).then(function(hash) {
-        console.log(hash);
-    });    
-}
-
-function catFile() {
-    node.files.cat('HashOfExistingFile').then(function(stream) {
-        stream.pipe(process.stdout, { end : false });
-    });
-}
+// Lets display the version of js-ipfs first
+node.version().then(function (versionData) {
+  console.log(versionData)
+  // We can initialize the repo, however it only needs to be done once.
+  node.init(function (err) {
+    // If the repo has been initialized this will tell us.
+    if (err) console.log(err)
+    // Ok let's go online and do some cool stuff
+    node.goOnline(function () {
+      // We can test to see if we actually are online if we want to
+      if (node.isOnline()) console.log('Yep, we are online')
+      // Now that we are online now. Let's add a file.
+      var readStream = fs.createReadStream(fileName)
+      node.files.add(readStream).then(function (data) {
+        // Awesome we've added a file so let's retrieve and display its contents from IPFS
+        node.files.cat(data[0].hash).then(function (stream) {
+          stream.pipe(process.stdout, { end: false })
+          // let's call it a day now and go offline
+          node.goOffline()
+        })
+      })
+    })
+  })
+})
 ```
 ### API
 
