@@ -11,13 +11,14 @@ const pull = require('pull-stream')
 const sort = require('pull-sort')
 const toStream = require('pull-stream-to-stream')
 const toPull = require('stream-to-pull-stream')
+const CID = require('cids')
 
 module.exports = function files (self) {
   const createAddPullStream = () => {
     return pull(
       pull.map(normalizeContent),
       pull.flatten(),
-      importer(self._dagS),
+      importer(self._ipldResolver),
       pull.asyncMap(prepareFile.bind(null, self))
     )
   }
@@ -31,12 +32,12 @@ module.exports = function files (self) {
 
     add: promisify((data, callback) => {
       if (!callback || typeof callback !== 'function') {
-        callback = function noop () {}
+        callback = noop
       }
 
       pull(
         pull.values(normalizeContent(data)),
-        importer(self._dagS),
+        importer(self._ipldResolver),
         pull.asyncMap(prepareFile.bind(null, self)),
         sort((a, b) => {
           if (a.path < b.path) return 1
@@ -52,7 +53,7 @@ module.exports = function files (self) {
         return callback(new Error('You must supply a multihash'))
       }
 
-      self._dagS.get(hash, (err, node) => {
+      self._ipldResolver.get(new CID(hash), (err, node) => {
         if (err) {
           return callback(err)
         }
@@ -65,9 +66,11 @@ module.exports = function files (self) {
         }
 
         pull(
-          exporter(hash, self._dagS),
+          exporter(hash, self._ipldResolver),
           pull.collect((err, files) => {
-            if (err) return callback(err)
+            if (err) {
+              return callback(err)
+            }
             callback(null, toStream.source(files[0].content))
           })
         )
@@ -76,7 +79,7 @@ module.exports = function files (self) {
 
     get: promisify((hash, callback) => {
       callback(null, toStream.source(pull(
-        exporter(hash, self._dagS),
+        exporter(hash, self._ipldResolver),
         pull.map((file) => {
           if (file.content) {
             file.content = toStream.source(file.content)
@@ -89,20 +92,27 @@ module.exports = function files (self) {
     }),
 
     getPull: promisify((hash, callback) => {
-      callback(null, exporter(hash, self._dagS))
+      callback(null, exporter(hash, self._ipldResolver))
     })
   }
 }
 
-function prepareFile (self, file, cb) {
+function prepareFile (self, file, callback) {
   const bs58mh = multihashes.toB58String(file.multihash)
   self.object.get(file.multihash, (err, node) => {
-    if (err) return cb(err)
+    if (err) {
+      return callback(err)
+    }
 
-    cb(null, {
-      path: file.path || bs58mh,
-      hash: bs58mh,
-      size: node.size()
+    node.size((err, size) => {
+      if (err) {
+        return callback(err)
+      }
+      callback(null, {
+        path: file.path || bs58mh,
+        hash: bs58mh,
+        size: size
+      })
     })
   })
 }
@@ -142,3 +152,5 @@ function normalizeContent (content) {
     return data
   })
 }
+
+function noop () {}

@@ -21,9 +21,7 @@ This repo contains the JavaScript implementation of the IPFS protocol, with feat
 
 ### Project status
 
-Consult the [Roadmap](/ROADMAP.md) for a complete state description of the project, or you can find `in process` updates in our [`Captain.log`](https://github.com/ipfs/js-ipfs/issues/30). A lot of components can be used currently, but it is a WIP, so beware of the Dragons.
-
-[![](https://camo.githubusercontent.com/561516567e49f00b5a4f489e122ca9d22815b547/68747470733a2f2f6d656469612e67697068792e636f6d2f6d656469612f4965685335436f46667a5175512f67697068792e676966)](https://github.com/ipfs/js-ipfs/issues/30)
+Consult the [Roadmap](/ROADMAP.md) for a complete state description of the project, or you can find `in process` updates in our [`Captain.log`](https://github.com/ipfs/js-ipfs/issues/30). A lot of components can be used currently, but it is a WIP, so beware of the Dragons 🐉.
 
 ## Table of Contents
 
@@ -37,15 +35,7 @@ Consult the [Roadmap](/ROADMAP.md) for a complete state description of the proje
   - [Examples](#examples)
   - [API](#api)
 - [Development](#development)
-- [Project structure](#project-structure)
-- [IPFS Core implementation architecture](#ipfs-core-implementation-architecture)
-    - [IPFS Core](#ipfs-core)
-    - [Block Service](#block-service)
-    - [DAG Service](#dag-service)
-    - [IPFS Repo](#ipfs-repo)
-    - [Bitswap](#bitswap)
-    - [Files](#files)
-    - [Importer](#importer)
+- [Project Architecture](/ARCHITECTURE.md)
 - [Packages](#packages)
 - [Contribute](#contribute)
   - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
@@ -97,155 +87,151 @@ Loading this module in a browser (using a `<script>` tag) makes the `Ipfs` ob
 
 The last published version of the package become [available for download](https://unpkg.com/ipfs/dist/) from [unpkg](https://unpkg.com/) and thus you may use it as the source:
 
-* loading the minified version
 
-   ```html
-   <script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
-   ```
+```html
+<!-- loading the minified version -->
+<script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
 
-* loading the human-readable (not minified) version
-
-   ```html
-   <script src="https://unpkg.com/ipfs/dist/index.js"></script>
-   ```
+<!-- loading the human-readable (not minified) version -->
+<script src="https://unpkg.com/ipfs/dist/index.js"></script>
+```
 
 ## Usage
 
-### Examples
+### CLI
 
-> **Will come soon**
+The `jsipfs` CLI, available when `js-ipfs` is installed globably, follows(should, it is a WIP) the same interface defined by `go-ipfs`, you can always use the `help` command for help menus.
+
+```
+# Install js-ipfs globally
+> npm install ipfs --global
+> jsipfs --help
+Commands:
+  bitswap               A set of commands to manipulate the bitswap agent.
+  block                 Manipulate raw IPFS blocks.
+  bootstrap             Show or edit the list of bootstrap peers.
+  commands              List all available commands
+  config <key> [value]  Get and set IPFS config values
+  daemon                Start a long-running daemon process
+# ...
+```
+
+### HTTP-API
+
+The HTTP-API exposed by the js-ipfs daemon follows the [`http-api-spec`](https://github.com/ipfs/http-api-spec). You can use any of the IPFS HTTP-API client libraries with it, such as: [js-ipfs-api](https://github.com/ipfs/js-ipfs-api).
+
+### IPFS Core examples (use IPFS as a module)
+
+#### Create a IPFS node instance
+
+```JavaScript
+// IPFS will need a repo, it can create one for you or you can pass
+// it a repo instance of the type IPFS Repo
+// https://github.com/ipfs/js-ipfs-repo
+const repo = <IPFS Repo instance or repo path>
+
+// Create the IPFS node instance
+const node = new IPFS(repo)
+
+// We need to init our repo, in this case the repo was empty
+// We are picking 2048 bits for the RSA key that will be our PeerId
+ipfs.init({ emptyRepo: true, bits: 2048 }, (err) => {
+   if (err) { throw err }
+
+   // Once the repo is initiated, we have to load it so that the IPFS
+   // instance has its config values. This is useful when you have
+   // previous created repos and you don't need to generate a new one
+   ipfs.load((err) => {
+     if (err) { throw err }
+
+     // Last but not the least, we want our IPFS node to use its peer
+     // connections to fetch and serve blocks from.
+     ipfs.goOnline((err) => {
+       if (err) { throw err }
+       // Here you should be good to go and call any IPFS function
+   })
+})
+```
+
+> We are working on making this init process better, see https://github.com/ipfs/js-ipfs/issues/556 for the discussion.
+
+#### More to come
+
+> If you have built an example, please share it with the community by submitting a Pull Request to this repo!.
 
 ### API
 
-A complete API definition will come, meanwhile, you can learn how to you use js-ipfs throught he standard interface at [![](https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg)](https://github.com/ipfs/interface-ipfs-core)
+[![](https://github.com/ipfs/interface-ipfs-core/raw/master/img/badge.png)](https://github.com/ipfs/interface-ipfs-core)
+
+A complete API definition will come, meanwhile, you can learn how to you use js-ipfs throught he standard interface at [![](https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg)](https://github.com/ipfs/interface-ipfs-core).
+
+##### [Generic API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic)
+
+##### [Block API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block)
+
+##### [Object API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/object)
+
+##### [Config API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/config)
+
+##### [Files API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files)
+
+##### [Swarm API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/swarm)
+
+##### [libp2p API](https://github.com/libp2p/interface-libp2p)
+
+Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal interface for this API hasn't been defined by you can find documentation at its implementations:
+
+- [libp2p-ipfs](https://github.com/ipfs/js-libp2p-ipfs)
+- [libp2p-ipfs-browser](https://github.com/ipfs/js-libp2p-ipfs-browser)
 
 ## Development
 
 ### Clone
-```
-git clone https://github.com/ipfs/js-ipfs.git
-cd js-ipfs
+
+```sh
+> git clone https://github.com/ipfs/js-ipfs.git
+> cd js-ipfs
 ```
 
 ### Install Dependencies
-```
-npm install
+
+```sh
+> npm install
 ```
 
 ### Run Tests
-```
-npm test
+
+```sh
+> npm test
+
+# run just IPFS core tests
+> npm run test:node:core
+
+# run just IPFS HTTP-API tests
+> npm run test:node:http
+
+# run just IPFS CLI tests
+> npm run test:node:cli
+
+# run just IPFS Browser tests
+> npm run test:browser
 ```
 
 ### Lint
 
 *Conforming to linting rules is a prerequisite to commit to js-ipfs.*
 
-```
-npm run lint
+```sh
+> npm run lint
 ```
 
-### Build
+### Build a dist version
+
 ```
-npm run build
+> npm run build
 ```
 
 The ES5 distributable build will be located in `lib/`. The browser distributable will be located in `dist/index.js`.
-
-## Project structure
-
-```
-┌───┐    ┌───────────────┐    ┌──────────────┐
-│CLI│───▶│   HTTP API    ├───▶│IPFS Core Impl│
-└───┘    └───────────────┘    └──────────────┘
-  △              △                    △
-  └──────────────└──────────┬─────────┘
-                            │
-                         ┌─────┐
-                         │Tests│
-                         └─────┘
-```
-
-## IPFS Core implementation architecture
-
-IPFS Core is divided into separate subsystems, each of them exist in their own repo/module. The dependencies between each subsystem is assured by injection at the IPFS Core level. IPFS Core exposes an API, defined by the IPFS API spec. libp2p is the networking layer used by IPFS, but out of scope in IPFS core, follow that project [here](https://github.com/diasdavid/js-libp2p)
-
-
-```
-             ▶  ┌───────────────────────────────────────────────────────────────────────────────┐
-                │                                   IPFS Core                                   │
-             │  └───────────────────────────────────────────────────────────────────────────────┘
-                                                        │
-             │                                          │
-                                                        │
-             │            ┌──────────────┬──────────────┼────────────┬─────────────────┐
-                          │              │              │            │                 │
-             │            │              │              │            │                 │
-                          ▼              │              ▼            │                 ▼
-             │  ┌──────────────────┐     │    ┌──────────────────┐   │       ┌──────────────────┐
-                │                  │     │    │                  │   │       │                  │
-             │  │  Block Service   │     │    │   DAG Service    │   │       │    IPFS Repo     │
-                │                  │     │    │                  │   │       │                  │
-             │  └──────────────────┘     │    └──────────────────┘   │       └──────────────────┘
-                          │              │              │            │
-  IPFS Core  │            ▼              │         ┌────┴────┐       │
-                     ┌────────┐          │         ▼         ▼       │
-             │       │ Block  │          │    ┌────────┐┌────────┐   │
-                     └────────┘          │    │DAG Node││DAG Link│   │
-             │                           │    └────────┘└────────┘   │
-                ┌──────────────────┐     │                           │       ┌──────────────────┐
-             │  │                  │     │                           │       │                  │
-                │    Bitswap       │◀────┤                           ├──────▶│    Importer      │
-             │  │                  │     │                           │       │                  │
-                └──────────────────┘     │                           │       └──────────────────┘
-             │                           │                           │                 │
-                                         │                           │            ┌────┴────┐
-             │                           │                           │            ▼         ▼
-                                         │                           │       ┌────────┐┌────────┐
-             │  ┌──────────────────┐     │                           │       │ layout ││chunker │
-                │                  │     │              ┌────────────┘       └────────┘└────────┘
-             │  │    Files         │◀────┘              │
-                │                  │                    │
-             │  └──────────────────┘                    │
-             ▶                                          │
-                                                        ▼
-                ┌───────────────────────────────────────────────────────────────────────────────┐
-                │                                                                               │
-                │                                                                               │
-                │                                                                               │
-                │                                 libp2p                                        │
-                │                                                                               │
-                │                                                                               │
-                └───────────────────────────────────────────────────────────────────────────────┘
-```
-
-#### IPFS Core
-
-IPFS Core is the entry point module for IPFS. It exposes an interface defined on [IPFS Specs.](https://github.com/ipfs/specs/blob/ipfs/api/api/core/README.md)
-
-#### Block Service
-
-Block Service uses IPFS Repo (local storage) and Bitswap (network storage) to store and fetch blocks. A block is a serialized MerkleDAG node.
-
-#### DAG Service
-
-DAG Service offers some graph language semantics on top of the MerkleDAG, composed by DAG Nodes (which can have DAG Links). It uses the Block Service as its storage and discovery service.
-
-#### IPFS Repo
-
-IPFS Repo is storage driver of IPFS, follows the [IPFS Repo Spec](https://github.com/ipfs/specs/tree/master/repo) and supports the storage of different types of files.
-
-#### Bitswap
-
-Bitswap is the exchange protocol used by IPFS to 'trade' blocks with other IPFS nodes.
-
-#### Files
-
-Files is the API that lets us work with IPFS objects (DAG Nodes) as if they were Unix Files.
-
-#### Importer
-
-Importer are a set of layouts (e.g. UnixFS) and chunkers (e.g: fixed-size, rabin, etc) that convert data to a MerkleDAG representation inside IPFS.
 
 ## Packages
 

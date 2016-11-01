@@ -1,6 +1,6 @@
 'use strict'
 
-const DAGLink = require('ipfs-merkle-dag').DAGLink
+const DAGLink = require('ipld-dag-pb').DAGLink
 const utils = require('../../../utils')
 const debug = require('debug')
 const log = debug('cli:object')
@@ -26,7 +26,12 @@ module.exports = {
           throw err
         }
 
-        console.log(node.toJSON().Hash)
+        node.toJSON((err, nodeJSON) => {
+          if (err) {
+            throw err
+          }
+          console.log(nodeJSON.Hash)
+        })
       })
     })
   }

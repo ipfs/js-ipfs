@@ -10,7 +10,7 @@ const createTempNode = require('../utils/temp-node')
 const repoPath = require('./index').repoPath
 const ipfs = require('../utils/ipfs-exec')(repoPath)
 
-describe('bitswap', () => {
+describe.skip('bitswap', () => {
   let node
 
   before((done) => {

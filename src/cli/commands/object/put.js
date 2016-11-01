@@ -18,7 +18,13 @@ function putNode (buf, enc) {
         throw err
       }
 
-      console.log('added', node.toJSON().Hash)
+      node.toJSON((err, nodeJSON) => {
+        if (err) {
+          throw err
+        }
+
+        console.log('added', nodeJSON.Hash)
+      })
     })
   })
 }

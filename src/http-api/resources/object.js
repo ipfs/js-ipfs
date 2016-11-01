@@ -2,12 +2,12 @@
 
 const bs58 = require('bs58')
 const multipart = require('ipfs-multipart')
-const mDAG = require('ipfs-merkle-dag')
-const DAGLink = mDAG.DAGLink
+const dagPB = require('ipld-dag-pb')
+const DAGLink = dagPB.DAGLink
+const DAGNode = dagPB.DAGNode
 const debug = require('debug')
 const log = debug('http-api:object')
 log.error = debug('http-api:object:error')
-const DAGNode = mDAG.DAGNode
 
 exports = module.exports
 
@@ -40,7 +40,15 @@ exports.new = (request, reply) => {
       }).code(500)
     }
 
-    return reply(node.toJSON())
+    node.toJSON((err, nodeJSON) => {
+      if (err) {
+        return reply({
+          Message: 'Failed to get object: ' + err,
+          Code: 0
+        }).code(500)
+      }
+      return reply(nodeJSON)
+    })
   })
 }
 
@@ -62,37 +70,73 @@ exports.get = {
         }).code(500)
       }
 
-      const res = node.toJSON()
-      res.Data = res.Data ? res.Data.toString() : ''
-      return reply(res)
+      node.toJSON((err, nodeJSON) => {
+        if (err) {
+          return reply({
+            Message: 'Failed to get object: ' + err,
+            Code: 0
+          }).code(500)
+        }
+
+        nodeJSON.Data = nodeJSON.Data ? nodeJSON.Data.toString() : ''
+        return reply(nodeJSON)
+      })
     })
   }
 }
 
 exports.put = {
-  // pre request handler that parses the args and returns `node` which is assigned to `request.pre.args`
+  // pre request handler that parses the args and returns `node`
+  // which is assigned to `request.pre.args`
   parseArgs: (request, reply) => {
     if (!request.payload) {
       return reply("File argument 'data' is required").code(400).takeover()
     }
 
     const enc = request.query.inputenc
-
     const parser = multipart.reqParser(request.payload)
-    var file
 
-    parser.on('file', (fileName, fileStream) => {
-      fileStream.on('data', (data) => {
+    let file
+    let finished = true
+
+    parser.on('file', (name, stream) => {
+      finished = false
+      // TODO fix: stream is not emitting the 'end' event
+      stream.on('data', (data) => {
         if (enc === 'protobuf') {
-          const n = new DAGNode().unMarshal(data)
-          file = new Buffer(JSON.stringify(n.toJSON()))
+          dagPB.util.deserialize(data, (err, node) => {
+            if (err) {
+              return reply({
+                Message: 'Failed to receive protobuf encoded: ' + err,
+                Code: 0
+              }).code(500).takeover()
+            }
+
+            node.toJSON((err, nodeJSON) => {
+              if (err) {
+                return reply({
+                  Message: 'Failed to receive protobuf encoded: ' + err,
+                  Code: 0
+                }).code(500).takeover()
+              }
+              file = new Buffer(JSON.stringify(nodeJSON))
+              finished = true
+            })
+          })
         } else {
           file = data
+
+          finished = true
         }
       })
     })
 
-    parser.on('end', () => {
+    parser.on('end', finish)
+
+    function finish () {
+      if (!finished) {
+        return setTimeout(finish, 10)
+      }
       if (!file) {
         return reply("File argument 'data' is required").code(400).takeover()
       }
@@ -107,15 +151,15 @@ exports.put = {
           Code: 0
         }).code(500).takeover()
       }
-    })
+    }
   },
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
-    const node = request.pre.args.node
-    const dagNode = new DAGNode(new Buffer(node.Data), node.Links)
+    const nodeJSON = request.pre.args.node
+    const node = new DAGNode(new Buffer(nodeJSON.Data), nodeJSON.Links)
 
-    request.server.app.ipfs.object.put(dagNode, (err, obj) => {
+    request.server.app.ipfs.object.put(node, (err, obj) => {
       if (err) {
         log.error(err)
         return reply({
@@ -123,7 +167,17 @@ exports.put = {
           Code: 0
         }).code(500)
       }
-      return reply(dagNode.toJSON())
+
+      node.toJSON((err, nodeJSON) => {
+        if (err) {
+          return reply({
+            Message: 'Failed to put object: ' + err,
+            Code: 0
+          }).code(500)
+        }
+
+        return reply(nodeJSON)
+      })
     })
   }
 }
@@ -189,10 +243,17 @@ exports.links = {
         }).code(500)
       }
 
-      const res = node.toJSON()
-      return reply({
-        Hash: res.Hash,
-        Links: res.Links
+      node.toJSON((err, nodeJSON) => {
+        if (err) {
+          return reply({
+            Message: 'Failed to get object: ' + err,
+            Code: 0
+          }).code(500)
+        }
+        return reply({
+          Hash: nodeJSON.Hash,
+          Links: nodeJSON.Links
+        })
       })
     })
   }
@@ -225,7 +286,8 @@ exports.parseKeyAndData = (request, reply) => {
     try {
       return reply({
         data: file,
-        key: new Buffer(bs58.decode(request.query.arg)) // TODO: support ipfs paths: https://github.com/ipfs/http-api-spec/pull/68/files#diff-2625016b50d68d922257f74801cac29cR3880
+        key: new Buffer(bs58.decode(request.query.arg))
+        // TODO: support ipfs paths: https://github.com/ipfs/http-api-spec/pull/68/files#diff-2625016b50d68d922257f74801cac29cR3880
       })
     } catch (err) {
       return reply({
@@ -255,7 +317,15 @@ exports.patchAppendData = {
         }).code(500)
       }
 
-      return reply(node.toJSON())
+      node.toJSON((err, nodeJSON) => {
+        if (err) {
+          return reply({
+            Message: 'Failed to get object: ' + err,
+            Code: 0
+          }).code(500)
+        }
+        return reply(nodeJSON)
+      })
     })
   }
 }
@@ -279,10 +349,17 @@ exports.patchSetData = {
         }).code(500)
       }
 
-      const res = node.toJSON()
-      return reply({
-        Hash: res.Hash,
-        Links: res.Links
+      node.toJSON((err, nodeJSON) => {
+        if (err) {
+          return reply({
+            Message: 'Failed to get object: ' + err,
+            Code: 0
+          }).code(500)
+        }
+        return reply({
+          Hash: nodeJSON.Hash,
+          Links: nodeJSON.Links
+        })
       })
     })
   }
@@ -339,19 +416,46 @@ exports.patchAddLink = {
         }).code(500)
       }
 
-      const link = new DAGLink(name, linkedObj.size(), linkedObj.multihash())
-
-      request.server.app.ipfs.object.patch.addLink(root, link, (err, node) => {
+      linkedObj.size((err, size) => {
         if (err) {
-          log.error(err)
-
           return reply({
-            Message: 'Failed to add link to object: ' + err,
+            Message: 'Failed to get linked object: ' + err,
             Code: 0
           }).code(500)
         }
+        linkedObj.multihash((err, multihash) => {
+          if (err) {
+            return reply({
+              Message: 'Failed to get linked object: ' + err,
+              Code: 0
+            }).code(500)
+          }
 
-        return reply(node.toJSON())
+          const link = new DAGLink(name, size, multihash)
+
+          request.server.app.ipfs.object.patch.addLink(root, link, (err, node) => {
+            if (err) {
+              log.error(err)
+
+              return reply({
+                Message: 'Failed to add link to object: ' + err,
+                Code: 0
+              }).code(500)
+            }
+
+            node.toJSON(gotJSON)
+
+            function gotJSON (err, nodeJSON) {
+              if (err) {
+                return reply({
+                  Message: 'Failed to get object: ' + err,
+                  Code: 0
+                }).code(500)
+              }
+              return reply(nodeJSON)
+            }
+          })
+        })
       })
     })
   }
@@ -393,14 +497,21 @@ exports.patchRmLink = {
     request.server.app.ipfs.object.patch.rmLink(root, link, (err, node) => {
       if (err) {
         log.error(err)
-
         return reply({
           Message: 'Failed to add link to object: ' + err,
           Code: 0
         }).code(500)
       }
 
-      return reply(node.toJSON())
+      node.toJSON((err, nodeJSON) => {
+        if (err) {
+          return reply({
+            Message: 'Failed to get object: ' + err,
+            Code: 0
+          }).code(500)
+        }
+        return reply(nodeJSON)
+      })
     })
   }
 }

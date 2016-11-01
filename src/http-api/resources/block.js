@@ -93,7 +93,7 @@ exports.put = {
       }
 
       return reply({
-        Key: mh.toB58String(block.key),
+        Key: mh.toB58String(block.key('sha2-256')),
         Size: block.data.length
       })
     })
@@ -108,7 +108,7 @@ exports.del = {
   handler: (request, reply) => {
     const key = request.pre.args.key
 
-    request.server.app.ipfs.block.del(key, (err, block) => {
+    request.server.app.ipfs.block.rm(key, (err, block) => {
       if (err) {
         log.error(err)
         return reply({
@@ -129,8 +129,7 @@ exports.stat = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
     const key = request.pre.args.key
-    console.log('fetching', key)
-    request.server.app.ipfs.block.stat(key, (err, block) => {
+    request.server.app.ipfs.block.stat(key, (err, stats) => {
       if (err) {
         log.error(err)
         return reply({
@@ -140,8 +139,8 @@ exports.stat = {
       }
 
       return reply({
-        Key: block.key,
-        Size: block.size
+        Key: stats.key,
+        Size: stats.size
       })
     })
   }

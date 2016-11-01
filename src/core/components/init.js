@@ -1,8 +1,6 @@
 'use strict'
 
 const peerId = require('peer-id')
-const BlockService = require('ipfs-block-service')
-const DagService = require('ipfs-merkle-dag').DAGService
 const path = require('path')
 const glob = require('glob')
 const fs = require('fs')
@@ -90,9 +88,6 @@ module.exports = function init (self) {
         return callback(null, true)
       }
 
-      const blocks = new BlockService(self._repo)
-      const dag = new DagService(blocks)
-
       const initDocsPath = path.join(__dirname, '../../init-files/init-docs')
       const index = __dirname.lastIndexOf('/')
 
@@ -112,7 +107,7 @@ module.exports = function init (self) {
           }
         }),
         pull.filter(Boolean),
-        importer(dag),
+        importer(self._ipldResolver),
         pull.through((el) => {
           if (el.path === 'files/init-docs/docs') {
             const hash = mh.toB58String(el.multihash)
@@ -123,7 +118,9 @@ module.exports = function init (self) {
           }
         }),
         pull.onEnd((err) => {
-          if (err) return callback(err)
+          if (err) {
+            return callback(err)
+          }
 
           callback(null, true)
         })

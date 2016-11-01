@@ -1,11 +1,12 @@
 'use strict'
 
-const mDAG = require('ipfs-merkle-dag')
 const waterfall = require('async/waterfall')
 const promisify = require('promisify-es6')
 const bs58 = require('bs58')
-const DAGNode = mDAG.DAGNode
-const DAGLink = mDAG.DAGLink
+const dagPB = require('ipld-dag-pb')
+const DAGNode = dagPB.DAGNode
+const DAGLink = dagPB.DAGLink
+const CID = require('cids')
 
 function normalizeMultihash (multihash, enc) {
   if (typeof multihash === 'string') {
@@ -21,18 +22,19 @@ function normalizeMultihash (multihash, enc) {
   }
 }
 
-function parseBuffer (buf, encoding) {
+function parseBuffer (buf, encoding, callback) {
   switch (encoding) {
     case 'json':
-      return parseJSONBuffer(buf)
+      return parseJSONBuffer(buf, callback)
     case 'protobuf':
-      return parseProtoBuffer(buf)
+      return parseProtoBuffer(buf, callback)
     default:
-      throw new Error(`unkown encoding: ${encoding}`)
+      callback(new Error(`unkown encoding: ${encoding}`))
   }
 }
 
-function parseJSONBuffer (buf) {
+function parseJSONBuffer (buf, callback) {
+  let node
   try {
     const parsed = JSON.parse(buf.toString())
     const links = (parsed.Links || []).map((link) => {
@@ -42,53 +44,71 @@ function parseJSONBuffer (buf) {
         new Buffer(bs58.decode(link.Hash))
       )
     })
-    return new DAGNode(new Buffer(parsed.Data), links)
+    node = new DAGNode(new Buffer(parsed.Data), links)
   } catch (err) {
-    throw new Error('failed to parse JSON: ' + err)
+    return callback(new Error('failed to parse JSON: ' + err))
   }
+  callback(null, node)
 }
 
-function parseProtoBuffer (buf) {
-  const node = new DAGNode()
-  node.unMarshal(buf)
-  return node
+function parseProtoBuffer (buf, callback) {
+  dagPB.util.deserialize(buf, callback)
 }
 
 module.exports = function object (self) {
   function editAndSave (edit) {
-    return (multihash, options, cb) => {
+    return (multihash, options, callback) => {
       if (typeof options === 'function') {
-        cb = options
+        callback = options
         options = {}
       }
 
       waterfall([
-        (cb) => self.object.get(multihash, options, cb),
+        (cb) => {
+          self.object.get(multihash, options, cb)
+        },
         (node, cb) => {
-          self._dagS.put(edit(node), (err) => {
-            cb(err, node)
+          node = edit(node)
+
+          node.multihash((err, multihash) => {
+            if (err) {
+              return cb(err)
+            }
+            self._ipldResolver.put({
+              node: node,
+              cid: new CID(multihash)
+            }, (err) => {
+              cb(err, node)
+            })
           })
         }
-      ], cb)
+      ], callback)
     }
   }
 
   return {
-    new: promisify((cb) => {
+    new: promisify((callback) => {
       const node = new DAGNode()
 
-      self._dagS.put(node, function (err) {
+      node.multihash((err, multihash) => {
         if (err) {
-          return cb(err)
+          return callback(err)
         }
+        self._ipldResolver.put({
+          node: node,
+          cid: new CID(multihash)
+        }, function (err) {
+          if (err) {
+            return callback(err)
+          }
 
-        cb(null, node)
+          callback(null, node)
+        })
       })
     }),
-
-    put: promisify((obj, options, cb) => {
+    put: promisify((obj, options, callback) => {
       if (typeof options === 'function') {
-        cb = options
+        callback = options
         options = {}
       }
 
@@ -97,11 +117,14 @@ module.exports = function object (self) {
 
       if (Buffer.isBuffer(obj)) {
         if (encoding) {
-          try {
-            node = parseBuffer(obj, encoding)
-          } catch (err) {
-            return cb(err)
-          }
+          parseBuffer(obj, encoding, (err, _node) => {
+            if (err) {
+              return callback(err)
+            }
+            node = _node
+            next()
+          })
+          return
         } else {
           node = new DAGNode(obj)
         }
@@ -111,21 +134,33 @@ module.exports = function object (self) {
       } else if (typeof obj === 'object') {
         node = new DAGNode(obj.Data, obj.Links)
       } else {
-        return cb(new Error('obj not recognized'))
+        return callback(new Error('obj not recognized'))
       }
 
-      self._dagS.put(node, (err, block) => {
-        if (err) {
-          return cb(err)
-        }
+      next()
 
-        self.object.get(node.multihash(), cb)
-      })
+      function next () {
+        node.multihash((err, multihash) => {
+          if (err) {
+            return callback(err)
+          }
+          self._ipldResolver.put({
+            node: node,
+            cid: new CID(multihash)
+          }, (err, block) => {
+            if (err) {
+              return callback(err)
+            }
+
+            self.object.get(multihash, callback)
+          })
+        })
+      }
     }),
 
-    get: promisify((multihash, options, cb) => {
+    get: promisify((multihash, options, callback) => {
       if (typeof options === 'function') {
-        cb = options
+        callback = options
         options = {}
       }
 
@@ -134,75 +169,87 @@ module.exports = function object (self) {
       try {
         mh = normalizeMultihash(multihash, options.enc)
       } catch (err) {
-        return cb(err)
+        return callback(err)
       }
-
-      self._dagS.get(mh, cb)
+      const cid = new CID(mh)
+      self._ipldResolver.get(cid, callback)
     }),
 
-    data: promisify((multihash, options, cb) => {
+    data: promisify((multihash, options, callback) => {
       if (typeof options === 'function') {
-        cb = options
+        callback = options
         options = {}
       }
 
       self.object.get(multihash, options, (err, node) => {
         if (err) {
-          return cb(err)
+          return callback(err)
         }
-        cb(null, node.data)
+        callback(null, node.data)
       })
     }),
 
-    links: promisify((multihash, options, cb) => {
+    links: promisify((multihash, options, callback) => {
       if (typeof options === 'function') {
-        cb = options
+        callback = options
         options = {}
       }
 
       self.object.get(multihash, options, (err, node) => {
         if (err) {
-          return cb(err)
+          return callback(err)
         }
 
-        cb(null, node.links)
+        callback(null, node.links)
       })
     }),
 
-    stat: promisify((multihash, options, cb) => {
+    stat: promisify((multihash, options, callback) => {
       if (typeof options === 'function') {
-        cb = options
+        callback = options
         options = {}
       }
 
       self.object.get(multihash, options, (err, node) => {
         if (err) {
-          return cb(err)
+          return callback(err)
         }
 
-        const blockSize = node.marshal().length
-        const linkLength = node.links.reduce((a, l) => a + l.size, 0)
+        dagPB.util.serialize(node, (err, serialized) => {
+          if (err) {
+            return callback(err)
+          }
 
-        cb(null, {
-          Hash: node.toJSON().Hash,
-          NumLinks: node.links.length,
-          BlockSize: blockSize,
-          LinksSize: blockSize - node.data.length,
-          DataSize: node.data.length,
-          CumulativeSize: blockSize + linkLength
+          const blockSize = serialized.length
+          const linkLength = node.links.reduce((a, l) => a + l.size, 0)
+
+          node.toJSON((err, nodeJSON) => {
+            if (err) {
+              return callback(err)
+            }
+
+            callback(null, {
+              Hash: nodeJSON.Hash,
+              NumLinks: node.links.length,
+              BlockSize: blockSize,
+              LinksSize: blockSize - node.data.length,
+              DataSize: node.data.length,
+              CumulativeSize: blockSize + linkLength
+            })
+          })
         })
       })
     }),
 
     patch: promisify({
-      addLink (multihash, link, options, cb) {
+      addLink (multihash, link, options, callback) {
         editAndSave((node) => {
           node.addRawLink(link)
           return node
-        })(multihash, options, cb)
+        })(multihash, options, callback)
       },
 
-      rmLink (multihash, linkRef, options, cb) {
+      rmLink (multihash, linkRef, options, callback) {
         editAndSave((node) => {
           node.links = node.links.filter((link) => {
             if (typeof linkRef === 'string') {
@@ -220,21 +267,21 @@ module.exports = function object (self) {
             return !link.hash.equals(linkRef.hash)
           })
           return node
-        })(multihash, options, cb)
+        })(multihash, options, callback)
       },
 
-      appendData (multihash, data, options, cb) {
+      appendData (multihash, data, options, callback) {
         editAndSave((node) => {
           node.data = Buffer.concat([node.data, data])
           return node
-        })(multihash, options, cb)
+        })(multihash, options, callback)
       },
 
-      setData (multihash, data, options, cb) {
+      setData (multihash, data, options, callback) {
         editAndSave((node) => {
           node.data = data
           return node
-        })(multihash, options, cb)
+        })(multihash, options, callback)
       }
     })
   }

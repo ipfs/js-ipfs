@@ -1,8 +1,7 @@
 'use strict'
 
 const BlockService = require('ipfs-block-service')
-const mDAG = require('ipfs-merkle-dag')
-const DAGService = mDAG.DAGService
+const IPLDResolver = require('ipld-resolver')
 const PeerBook = require('peer-book')
 
 const defaultRepo = require('./default-repo')
@@ -43,16 +42,18 @@ function IPFS (repoInstance) {
   this._peerInfo = null
   this._libp2pNode = null
   this._bitswap = null
-  this._blockS = new BlockService(this._repo)
-  this._dagS = new DAGService(this._blockS)
+  this._blockService = new BlockService(this._repo)
+  this._ipldResolver = new IPLDResolver(this._blockService)
 
   // IPFS Core exposed components
+
   //   for booting up a node
   this.goOnline = goOnline(this)
   this.goOffline = goOffline(this)
   this.isOnline = isOnline(this)
   this.load = load(this)
   this.init = init(this)
+
   //   interface-ipfs-core defined API
   this.version = version(this)
   this.id = id(this)
