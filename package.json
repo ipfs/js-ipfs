@@ -5,14 +5,11 @@
   "bin": {
     "jsipfs": "src/cli/bin.js"
   },
-  "main": "lib/core/index.js",
-  "jsnext:main": "src/core/index.js",
+  "main": "src/core/index.js",
   "browser": {
     "libp2p-ipfs": "libp2p-ipfs-browser",
     "./src/core/default-repo.js": "./src/core/default-repo-browser.js",
-    "./lib/core/default-repo.js": "./lib/core/default-repo-browser.js",
     "./src/core/components/init-assets.js": false,
-    "./lib/core/components/init-assets.js": false,
     "fs-pull-blob-store": false,
     "glob": false,
     "rimraf": false
@@ -20,16 +17,16 @@
   "scripts": {
     "lint": "aegir-lint",
     "coverage": "gulp coverage",
-    "test": "PHANTOM=off gulp test",
+    "test": "gulp test",
     "test:node": "gulp test:node",
     "test:node:core": "TEST=core npm run test:node",
     "test:node:http": "TEST=http npm run test:node",
     "test:node:cli": "TEST=cli npm run test:node",
-    "test:browser": "PHANTOM=off gulp test:browser",
+    "test:browser": "gulp test:browser",
     "build": "gulp build",
-    "release": "PHANTOM=off gulp release",
-    "release-minor": "PHANTOM=off gulp release --type minor",
-    "release-major": "PHANTOM=off gulp release --type major",
+    "release": "gulp release",
+    "release-minor": "gulp release --type minor",
+    "release-major": "gulp release --type major",
     "coverage-publish": "aegir-coverage publish"
   },
   "pre-commit": [
@@ -50,7 +47,7 @@
   },
   "homepage": "https://github.com/ipfs/js-ipfs#readme",
   "devDependencies": {
-    "aegir": "^8.1.2",
+    "aegir": "^9.0.1",
     "buffer-loader": "0.0.1",
     "chai": "^3.5.0",
     "detect-node": "^2.0.3",
@@ -71,7 +68,6 @@
   },
   "dependencies": {
     "async": "^2.0.1",
-    "babel-runtime": "^6.11.6",
     "bl": "^1.1.2",
     "boom": "^4.0.0",
     "debug": "^2.2.0",

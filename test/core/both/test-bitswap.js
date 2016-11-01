@@ -115,27 +115,21 @@ describe.skip('bitswap', () => {
       it('2 peers', (done) => {
         let remoteNode
         let block
-        series([
-          (cb) => makeBlock((err, _block) => {
-            expect(err).to.not.exist
-            block = _block
+        waterfall([
+          (cb) => parallel([
+            (cb) => makeBlock(cb),
+            (cb) => addNode(13, cb)
+          ], cb),
+          (res, cb) => {
+            block = res[0]
+            remoteNode = res[1]
             cb()
-          }),
-          // 0. Start node
-          (cb) => addNode(13, (err, _remoteNode) => {
-            expect(err).to.not.exist
-            remoteNode = _remoteNode
-            cb()
-          }),
-          (cb) => {
-            remoteNode.block.put(block, cb)
           },
-          (cb) => {
-            inProcNode.block.get(block.key('sha2-256'), (err, b) => {
-              expect(err).to.not.exist
-              expect(b.data.toString()).to.be.eql(block.data.toString())
-              cb()
-            })
+          (cb) => remoteNode.block.put(block, cb),
+          (cb) => inProcNode.block.get(block.key('sha2-256'), cb),
+          (b, cb) => {
+            expect(b.data).to.be.eql(block.data)
+            cb()
           }
         ], done)
       })

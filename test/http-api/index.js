@@ -20,12 +20,11 @@ describe('HTTP API', () => {
 
     clean(repoTests)
     ncp(repoExample, repoTests, (err) => {
-      expect(err).to.not.exist
+      if (err) {
+        return done(err)
+      }
 
-      http.api.start((err) => {
-        expect(err).to.not.exist
-        done()
-      })
+      http.api.start(done)
     })
   })
 

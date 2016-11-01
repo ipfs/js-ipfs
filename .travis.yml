@@ -2,7 +2,7 @@ sudo: false
 language: node_js
 node_js:
   - 4
-  - 5
+  - 6
   - stable
 
 # Make sure we have new NPM.
