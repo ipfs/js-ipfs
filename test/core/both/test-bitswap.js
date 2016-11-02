@@ -7,6 +7,7 @@ const _ = require('lodash')
 const series = require('async/series')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
+const map = require('async/map')
 const leftPad = require('left-pad')
 const Block = require('ipfs-block')
 const mh = require('multihashes')
@@ -126,7 +127,8 @@ describe.skip('bitswap', () => {
             cb()
           },
           (cb) => remoteNode.block.put(block, cb),
-          (cb) => inProcNode.block.get(block.key('sha2-256'), cb),
+          (cb) => block.key('sha2-256', cb),
+          (key, cb) => inProcNode.block.get(key, cb),
           (b, cb) => {
             expect(b.data).to.be.eql(block.data)
             cb()
@@ -145,8 +147,11 @@ describe.skip('bitswap', () => {
           (cb) => parallel(_.range(6).map((i) => makeBlock), (err, _blocks) => {
             expect(err).to.not.exist
             blocks = _blocks
-            keys = blocks.map((b) => b.key('sha2-256'))
-            cb()
+            map(blocks, (b, cb) => b.key('sha2-256', cb), (err, res) => {
+              expect(err).to.not.exist
+              keys = res
+              cb()
+            })
           }),
           (cb) => addNode(8, (err, _ipfs) => {
             remoteNodes.push(_ipfs)

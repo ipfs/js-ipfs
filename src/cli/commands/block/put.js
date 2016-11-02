@@ -18,13 +18,14 @@ function addBlock (buf) {
 
     waterfall([
       (cb) => Block.create(buf, cb),
-      (block, cb) => ipfs.block.put(block, cb)
-    ], (err, block) => {
+      (block, cb) => ipfs.block.put(block, cb),
+      (block, cb) => block.key(cb)
+    ], (err, key) => {
       if (err) {
         throw err
       }
 
-      console.log(mh.toB58String(block.key()))
+      console.log(mh.toB58String(key))
     })
   })
 }

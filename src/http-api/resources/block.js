@@ -85,8 +85,14 @@ exports.put = {
 
     waterfall([
       (cb) => Block.create(data, cb),
-      (block, cb) => ipfs.block.put(block, cb)
-    ], (err, block) => {
+      (block, cb) => ipfs.block.put(block, cb),
+      (block, cb) => block.key('sha2-256', (err, key) => {
+        if (err) {
+          return cb(err)
+        }
+        cb(null, [key, block])
+      })
+    ], (err, res) => {
       if (err) {
         log.error(err)
         return reply({
@@ -96,8 +102,8 @@ exports.put = {
       }
 
       return reply({
-        Key: mh.toB58String(block.key('sha2-256')),
-        Size: block.data.length
+        Key: mh.toB58String(res[0]),
+        Size: res[1].data.length
       })
     })
   }

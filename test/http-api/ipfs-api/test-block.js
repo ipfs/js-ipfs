@@ -3,6 +3,7 @@
 
 const expect = require('chai').expect
 const multihash = require('multihashes')
+const waterfall = require('async/waterfall')
 
 module.exports = (ctl) => {
   describe('.block', () => {
@@ -14,11 +15,13 @@ module.exports = (ctl) => {
           size: 12
         }
 
-        ctl.block.put(data, (err, block) => {
-          expect(err).not.to.exist
-          expect(block.key()).to.deep.equal(multihash.fromB58String(expectedResult.key))
-          done()
-        })
+        waterfall([
+          (cb) => ctl.block.put(data, cb),
+          (block, cb) => block.key(cb),
+          (key, cb) => {
+            expect(key).to.deep.equal(multihash.fromB58String(expectedResult.key))
+          }
+        ], done)
       })
     })
 

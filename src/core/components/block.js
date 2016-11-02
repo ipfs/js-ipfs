@@ -3,6 +3,7 @@
 const Block = require('ipfs-block')
 const multihash = require('multihashes')
 const CID = require('cids')
+const waterfall = require('async/waterfall')
 
 module.exports = function block (self) {
   return {
@@ -17,21 +18,30 @@ module.exports = function block (self) {
 
       if (Buffer.isBuffer(block)) {
         block = new Block(block)
-        return
       }
 
       if (typeof cid === 'function') {
         // legacy (without CID)
         callback = cid
-        cid = new CID(block.key('sha2-256'))
+        cid === undefined
       }
 
-      self._blockService.put({
-        block: block,
-        cid: cid
-      }, (err) => {
-        callback(err, block)
-      })
+      waterfall([
+        (cb) => {
+          if (cid) {
+            return cb(null, cid)
+          }
+
+          block.key('sha2-256', (err, key) => {
+            if (err) {
+              return cb(err)
+            }
+
+            cb(null, new CID(key))
+          })
+        },
+        (cid, cb) => self._blockService.put({block: block, cid: cid})
+      ], callback)
     },
     rm: (cid, callback) => {
       cid = cleanCid(cid)
