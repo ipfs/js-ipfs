@@ -6,7 +6,7 @@
 const expect = require('chai').expect
 const loadFixture = require('aegir/fixtures')
 
-const testfile = loadFixture(__dirname, '../test/fixtures/testfile.txt')
+const testfile = loadFixture(__dirname, '../test/fixtures/testfile.txt', 'interface-ipfs-core')
 
 module.exports = (common) => {
   describe('.pin', () => {

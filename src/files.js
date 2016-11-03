@@ -22,16 +22,16 @@ module.exports = (common) => {
       // CI is slow
       this.timeout(20 * 1000)
 
-      smallFile = loadFixture(__dirname, '../test/fixtures/testfile.txt')
-      bigFile = loadFixture(__dirname, '../test/fixtures/15mb.random')
+      smallFile = loadFixture(__dirname, '../test/fixtures/testfile.txt', 'interface-ipfs-core')
+      bigFile = loadFixture(__dirname, '../test/fixtures/15mb.random', 'interface-ipfs-core')
 
       directoryContent = {
-        'pp.txt': loadFixture(__dirname, '../test/fixtures/test-folder/pp.txt'),
-        'holmes.txt': loadFixture(__dirname, '../test/fixtures/test-folder/holmes.txt'),
-        'jungle.txt': loadFixture(__dirname, '../test/fixtures/test-folder/jungle.txt'),
-        'alice.txt': loadFixture(__dirname, '../test/fixtures/test-folder/alice.txt'),
-        'files/hello.txt': loadFixture(__dirname, '../test/fixtures/test-folder/files/hello.txt'),
-        'files/ipfs.txt': loadFixture(__dirname, '../test/fixtures/test-folder/files/ipfs.txt')
+        'pp.txt': loadFixture(__dirname, '../test/fixtures/test-folder/pp.txt', 'interface-ipfs-core'),
+        'holmes.txt': loadFixture(__dirname, '../test/fixtures/test-folder/holmes.txt', 'interface-ipfs-core'),
+        'jungle.txt': loadFixture(__dirname, '../test/fixtures/test-folder/jungle.txt', 'interface-ipfs-core'),
+        'alice.txt': loadFixture(__dirname, '../test/fixtures/test-folder/alice.txt', 'interface-ipfs-core'),
+        'files/hello.txt': loadFixture(__dirname, '../test/fixtures/test-folder/files/hello.txt', 'interface-ipfs-core'),
+        'files/ipfs.txt': loadFixture(__dirname, '../test/fixtures/test-folder/files/ipfs.txt', 'interface-ipfs-core')
       }
 
       common.setup((err, factory) => {
