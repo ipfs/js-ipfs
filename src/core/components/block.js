@@ -12,18 +12,18 @@ module.exports = function block (self) {
       self._blockService.get(cid, callback)
     },
     put: (block, cid, callback) => {
+      if (typeof cid === 'function') {
+        // legacy (without CID)
+        callback = cid
+        cid = undefined
+      }
+
       if (Array.isArray(block)) {
         return callback(new Error('Array is not supported'))
       }
 
       if (Buffer.isBuffer(block)) {
         block = new Block(block)
-      }
-
-      if (typeof cid === 'function') {
-        // legacy (without CID)
-        callback = cid
-        cid === undefined
       }
 
       waterfall([
@@ -40,8 +40,14 @@ module.exports = function block (self) {
             cb(null, new CID(key))
           })
         },
-        (cid, cb) => self._blockService.put({block: block, cid: cid})
-      ], callback)
+        (cid, cb) => self._blockService.put({block: block, cid: cid}, cb)
+      ], (err) => {
+        if (err) {
+          return callback(err)
+        }
+
+        callback(null, block)
+      })
     },
     rm: (cid, callback) => {
       cid = cleanCid(cid)

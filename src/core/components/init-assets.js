@@ -12,9 +12,6 @@ const mh = require('multihashes')
 
 // Add the default assets to the repo.
 module.exports = function addDefaultAssets (self, log, callback) {
-  const blocks = new BlockService(self._repo)
-  const dag = new DagService(blocks)
-
   const initDocsPath = path.join(__dirname, '../../init-files/init-docs')
   const index = __dirname.lastIndexOf('/')
 
@@ -34,7 +31,7 @@ module.exports = function addDefaultAssets (self, log, callback) {
       }
     }),
     pull.filter(Boolean),
-    importer(dag),
+    importer(self._ipldResolver),
     pull.through((el) => {
       if (el.path === 'files/init-docs/docs') {
         const hash = mh.toB58String(el.multihash)
