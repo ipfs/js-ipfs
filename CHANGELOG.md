@@ -1,3 +1,13 @@
+<a name="0.18.1"></a>
+## [0.18.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.18.0...v0.18.1) (2016-11-03)
+
+
+### Bug Fixes
+
+* use new nested aegir fixtures ([#84](https://github.com/ipfs/interface-ipfs-core/issues/84)) ([ee6424f](https://github.com/ipfs/interface-ipfs-core/commit/ee6424f))
+
+
+
 <a name="0.18.0"></a>
 # [0.18.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.17.1...v0.18.0) (2016-11-03)
 
