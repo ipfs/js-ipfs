@@ -78,7 +78,7 @@
     "ipfs-repo": "^0.10.0",
     "ipfs-unixfs": "^0.1.4",
     "ipfs-unixfs-engine": "^0.12.0",
-    "ipld-resolver": "^0.1.1",
+    "ipld-resolver": "^0.2.0",
     "isstream": "^0.1.2",
     "joi": "^9.0.4",
     "libp2p-ipfs": "^0.14.1",
