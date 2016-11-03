@@ -84,8 +84,7 @@ exports.put = {
     const ipfs = request.server.app.ipfs
 
     waterfall([
-      (cb) => Block.create(data, cb),
-      (block, cb) => ipfs.block.put(block, cb),
+      (cb) => ipfs.block.put(new Block(data), cb),
       (block, cb) => block.key('sha2-256', (err, key) => {
         if (err) {
           return cb(err)

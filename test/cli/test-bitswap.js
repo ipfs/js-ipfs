@@ -30,11 +30,12 @@ describe.skip('bitswap', () => {
     let httpAPI
 
     before((done) => {
-      Block.create('hello', (err, block) => {
+      const block = new Block('hello')
+      block.key((err, k) => {
         if (err) {
           return done(err)
         }
-        key = mh.toB58String(block.key)
+        key = mh.toB58String(k)
 
         httpAPI = new HttpAPI(repoPath)
         httpAPI.start(done)

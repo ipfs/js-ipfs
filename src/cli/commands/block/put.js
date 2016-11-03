@@ -17,8 +17,7 @@ function addBlock (buf) {
     }
 
     waterfall([
-      (cb) => Block.create(buf, cb),
-      (block, cb) => ipfs.block.put(block, cb),
+      (block, cb) => ipfs.block.put(new Block(buf), cb),
       (block, cb) => block.key(cb)
     ], (err, key) => {
       if (err) {

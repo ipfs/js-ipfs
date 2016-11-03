@@ -1,7 +1,5 @@
 'use strict'
 
-const BlockService = require('ipfs-block-service')
-const DagService = require('ipfs-merkle-dag').DAGService
 const path = require('path')
 const fs = require('fs')
 const glob = require('glob')

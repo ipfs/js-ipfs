@@ -18,7 +18,7 @@ const isNode = require('detect-node')
 const IPFS = require('../../../src/core')
 
 function makeBlock (cb) {
-  return Block.create(`IPFS is awesome ${Math.random()}`, cb)
+  return cb(null, new Block(`IPFS is awesome ${Math.random()}`))
 }
 
 describe.skip('bitswap', () => {

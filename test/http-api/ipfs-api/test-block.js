@@ -20,6 +20,7 @@ module.exports = (ctl) => {
           (block, cb) => block.key(cb),
           (key, cb) => {
             expect(key).to.deep.equal(multihash.fromB58String(expectedResult.key))
+            cb()
           }
         ], done)
       })
