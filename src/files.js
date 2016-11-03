@@ -6,8 +6,7 @@
 const expect = require('chai').expect
 const bs58 = require('bs58')
 const Readable = require('readable-stream')
-const path = require('path')
-const fs = require('fs')
+const loadFixture = require('aegir/fixtures')
 const bl = require('bl')
 const concat = require('concat-stream')
 const through = require('through2')
@@ -23,16 +22,16 @@ module.exports = (common) => {
       // CI is slow
       this.timeout(20 * 1000)
 
-      smallFile = fs.readFileSync(path.join(__dirname, './data/testfile.txt'))
-      bigFile = fs.readFileSync(path.join(__dirname, './data/15mb.random'))
+      smallFile = loadFixture(__dirname, '../test/fixtures/testfile.txt')
+      bigFile = loadFixture(__dirname, '../test/fixtures/15mb.random')
 
       directoryContent = {
-        'pp.txt': fs.readFileSync(path.join(__dirname, './data/test-folder/pp.txt')),
-        'holmes.txt': fs.readFileSync(path.join(__dirname, './data/test-folder/holmes.txt')),
-        'jungle.txt': fs.readFileSync(path.join(__dirname, './data/test-folder/jungle.txt')),
-        'alice.txt': fs.readFileSync(path.join(__dirname, './data/test-folder/alice.txt')),
-        'files/hello.txt': fs.readFileSync(path.join(__dirname, './data/test-folder/files/hello.txt')),
-        'files/ipfs.txt': fs.readFileSync(path.join(__dirname, './data/test-folder/files/ipfs.txt'))
+        'pp.txt': loadFixture(__dirname, '../test/fixtures/test-folder/pp.txt'),
+        'holmes.txt': loadFixture(__dirname, '../test/fixtures/test-folder/holmes.txt'),
+        'jungle.txt': loadFixture(__dirname, '../test/fixtures/test-folder/jungle.txt'),
+        'alice.txt': loadFixture(__dirname, '../test/fixtures/test-folder/alice.txt'),
+        'files/hello.txt': loadFixture(__dirname, '../test/fixtures/test-folder/files/hello.txt'),
+        'files/ipfs.txt': loadFixture(__dirname, '../test/fixtures/test-folder/files/ipfs.txt')
       }
 
       common.setup((err, factory) => {
@@ -436,10 +435,9 @@ module.exports = (common) => {
             })
         })
 
-        it('errors on invalid key', (done) => {
+        it('errors on invalid key', () => {
           const hash = 'somethingNotMultihash'
-          ipfs.files.get(hash)
-            .then((stream) => {})
+          return ipfs.files.get(hash)
             .catch((err) => {
               expect(err).to.exist
               const errString = err.toString()
@@ -449,7 +447,6 @@ module.exports = (common) => {
               if (errString === 'Error: Invalid Key') {
                 expect(err.toString()).to.contain('Error: Invalid Key')
               }
-              done()
             })
         })
       })

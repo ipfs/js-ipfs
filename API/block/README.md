@@ -11,7 +11,7 @@ block API
 
 `multihash` is a [multihash][multihash] which can be passed as:
 
-- Buffer, the raw Buffer of the multihash 
+- Buffer, the raw Buffer of the multihash
 - String, the base58 encoded version of the multihash
 
 `callback` must follow `function (err, block) {}` signature, where `err` is an error if the operation was not successful and `block` is a [Block][block] type object, containing both the data and the hash of the block.
@@ -21,7 +21,12 @@ ipfs.block.get(multihash, function (err, block) {
   if (err) {
     throw err
   }
-  console.log(block.key, block.data)
+  block.key((err, key) => {
+    if (err) {
+      throw err
+    }
+    console.log(key, block.data)
+  })
 })
 ```
 

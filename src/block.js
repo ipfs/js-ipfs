@@ -8,6 +8,16 @@ const Block = require('ipfs-block')
 const multihash = require('multihashes')
 const CID = require('cids')
 
+function expectKey (block, expected, callback) {
+  block.key((err, key) => {
+    if (err) {
+      return callback(err)
+    }
+    expect(key).to.be.eql(expected)
+    callback()
+  })
+}
+
 module.exports = (common) => {
   describe('.block', () => {
     let ipfs
@@ -40,9 +50,8 @@ module.exports = (common) => {
 
         ipfs.block.put(blob, cid, (err, block) => {
           expect(err).to.not.exist
-          expect(block.key('sha2-256')).to.eql(multihash.fromB58String(expectedHash))
           expect(block).to.have.a.property('data', blob)
-          done()
+          expectKey(block, multihash.fromB58String(expectedHash), done)
         })
       })
 
@@ -53,9 +62,8 @@ module.exports = (common) => {
 
         ipfs.block.put(blob, cid, (err, block) => {
           expect(err).to.not.exist
-          expect(block.key('sha2-256')).to.eql(multihash.fromB58String(expectedHash))
           expect(block.data).to.eql(new Buffer('blorb'))
-          done()
+          expectKey(block, multihash.fromB58String(expectedHash), done)
         })
       })
 
@@ -65,17 +73,17 @@ module.exports = (common) => {
 
         ipfs.block.put(blob, (err, block) => {
           expect(err).to.not.exist
-          expect(block.key('sha2-256')).to.eql(multihash.fromB58String(expectedHash))
           expect(block.data).to.eql(new Buffer('blorb'))
-          done()
+          expectKey(block, multihash.fromB58String(expectedHash), done)
         })
       })
 
-      it('.put error with array of blocks', () => {
+      it('.put error with array of blocks', (done) => {
         const blob = Buffer('blorb')
 
         ipfs.block.put([blob, blob], 'fake cids', (err) => {
           expect(err).to.be.an.instanceof(Error)
+          done()
         })
       })
 
@@ -85,9 +93,8 @@ module.exports = (common) => {
 
         ipfs.block.get(cid, (err, block) => {
           expect(err).to.not.exist
-          expect(block.key('sha2-256')).to.eql(cid.multihash)
           expect(block.data).to.eql(new Buffer('blorb'))
-          done()
+          expectKey(block, cid.multihash, done)
         })
       })
 
@@ -96,9 +103,8 @@ module.exports = (common) => {
 
         ipfs.block.get(hash, (err, block) => {
           expect(err).to.not.exist
-          expect(block.key('sha2-256')).to.eql(multihash.fromB58String(hash))
           expect(block.data).to.eql(new Buffer('blorb'))
-          done()
+          expectKey(block, multihash.fromB58String(hash), done)
         })
       })
 

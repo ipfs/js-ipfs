@@ -2,11 +2,9 @@
   "name": "interface-ipfs-core",
   "version": "0.16.6",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
-  "main": "lib/index.js",
-  "jsnext:main": "src/index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "exit(0)",
-    "build": "aegir-build node",
     "lint": "aegir-lint",
     "release": "aegir-release node",
     "release-minor": "aegir-release node --type minor",
@@ -34,13 +32,13 @@
     "chai": "^3.5.0",
     "concat-stream": "^1.5.2",
     "detect-node": "^2.0.3",
-    "ipfs-block": "^0.4.0",
+    "ipfs-block": "^0.5.0",
     "ipld-dag-pb": "^0.1.3",
     "multihashes": "^0.2.2",
-    "readable-stream": "1.1.13"
+    "readable-stream": "2.1.5"
   },
   "devDependencies": {
-    "aegir": "^8.1.2"
+    "aegir": "^9.1.0"
   },
   "contributors": [
     "David Dias <daviddias.p@gmail.com>",

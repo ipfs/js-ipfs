@@ -4,10 +4,9 @@
 'use strict'
 
 const expect = require('chai').expect
-const fs = require('fs')
-const path = require('path')
+const loadFixture = require('aegir/fixtures')
 
-const testfile = fs.readFileSync(path.join(__dirname, './data/testfile.txt'))
+const testfile = loadFixture(__dirname, '../test/fixtures/testfile.txt')
 
 module.exports = (common) => {
   describe('.pin', () => {
