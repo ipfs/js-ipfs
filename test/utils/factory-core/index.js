@@ -3,7 +3,6 @@
 const PeerId = require('peer-id')
 const isNode = require('detect-node')
 const IPFSRepo = require('ipfs-repo')
-const cleanRepo = require('../clean')
 const IPFS = require('../../../src/core')
 const series = require('async/series')
 const defaultConfig = require('./default-config.json')
@@ -48,7 +47,7 @@ function Factory () {
       if (isNode) {
         store = require('fs-pull-blob-store')
         teardown = (done) => {
-          cleanRepo(repoPath)
+          require('../clean')(repoPath)
           done()
         }
       } else {

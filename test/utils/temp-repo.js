@@ -2,7 +2,6 @@
 'use strict'
 
 const IPFSRepo = require('ipfs-repo')
-const clean = require('./clean')
 
 function createTempRepo () {
   const repoPath = '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8)
@@ -13,7 +12,7 @@ function createTempRepo () {
   if (isNode) {
     store = require('fs-pull-blob-store')
     teardown = (done) => {
-      clean(repoPath)
+      require('./clean')(repoPath)
       done()
     }
   } else {
