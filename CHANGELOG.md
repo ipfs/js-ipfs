@@ -1,3 +1,13 @@
+<a name="0.18.0"></a>
+# [0.18.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.17.1...v0.18.0) (2016-11-03)
+
+
+### Bug Fixes
+
+* remove test from npmignore ([238d5f9](https://github.com/ipfs/interface-ipfs-core/commit/238d5f9))
+
+
+
 <a name="0.17.1"></a>
 ## [0.17.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.17.0...v0.17.1) (2016-11-03)
 
