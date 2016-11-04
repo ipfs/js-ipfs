@@ -70,12 +70,7 @@ module.exports = (common) => {
             expect(err).to.not.exist
             expect(res).to.be.length(1)
             const file = res[0]
-            expect(file).to.be.eql({
-              path: 'data.txt',
-              size: 17,
-              hash: expectedMultihash
-            })
-            expect(file).to.eqlk
+            expect(file).to.exist
             expect(file.path).to.equal('data.txt')
             expect(file.size).to.equal(17)
             expect(file.hash).to.equal(expectedMultihash)
