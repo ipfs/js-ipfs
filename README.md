@@ -135,18 +135,18 @@ const node = new IPFS(repo)
 
 // We need to init our repo, in this case the repo was empty
 // We are picking 2048 bits for the RSA key that will be our PeerId
-ipfs.init({ emptyRepo: true, bits: 2048 }, (err) => {
+node.init({ emptyRepo: true, bits: 2048 }, (err) => {
    if (err) { throw err }
 
    // Once the repo is initiated, we have to load it so that the IPFS
    // instance has its config values. This is useful when you have
    // previous created repos and you don't need to generate a new one
-   ipfs.load((err) => {
+   node.load((err) => {
      if (err) { throw err }
 
      // Last but not the least, we want our IPFS node to use its peer
      // connections to fetch and serve blocks from.
-     ipfs.goOnline((err) => {
+     node.goOnline((err) => {
        if (err) { throw err }
        // Here you should be good to go and call any IPFS function
    })
