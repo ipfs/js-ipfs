@@ -1,10 +1,20 @@
 sudo: false
 language: node_js
-node_js:
-  - "stable"
+matrix:
+  include:
+  - node_js: stable
+    env: CXX=g++-4.8
 
+# Make sure we have new NPM.
 before_install:
   - npm install -g npm
 
 script:
   - npm run lint
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
