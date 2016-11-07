@@ -80,7 +80,7 @@
     "ipfs-block": "^0.5.0",
     "ipfs-block-service": "^0.7.0",
     "ipfs-multipart": "^0.1.0",
-    "ipfs-repo": "^0.11.0",
+    "ipfs-repo": "^0.11.1",
     "ipfs-unixfs": "^0.1.5",
     "ipfs-unixfs-engine": "^0.13.0",
     "ipld-resolver": "^0.2.0",

@@ -9,7 +9,7 @@ const clean = require('../utils/clean')
 
 describe('cli', () => {
   const repoExample = path.join(__dirname, '../go-ipfs-repo')
-  const repoTests = exports.repoPath = path.join(__dirname, '../repo-tests-async/cli')
+  const repoTests = exports.repoPath = path.join(__dirname, '../repo-tests-run')
 
   before((done) => {
     clean(repoTests)
