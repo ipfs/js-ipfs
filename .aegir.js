@@ -1,20 +1,12 @@
 'use strict'
 
-const path = require('path')
-
 module.exports = {
-  webpack: {
-    resolve: {
-      alias: {
-        'node-forge': path.resolve(
-          path.dirname(require.resolve('libp2p-crypto')),
-          '../vendor/forge.bundle.js'
-        )
-      }
-    },
-    externals: {
-      fs: '{}',
-      mkdirp: '{}'
-    }
+  karma: {
+    files: [{
+      pattern: 'node_modules/interface-ipfs-core/test/fixtures/**/*',
+      watched: false,
+      served: true,
+      included: false
+    }]
   }
 }

@@ -2,7 +2,9 @@
 
 // const defaultConfig = require('./default-config.json')
 const ipfsd = require('ipfsd-ctl')
-const series = require('run-series')
+const series = require('async/series')
+const eachSeries = require('async/eachSeries')
+const once = require('once')
 
 module.exports = Factory
 
@@ -11,7 +13,7 @@ function Factory () {
     return new Factory()
   }
 
-  const nodes = []
+  let nodes = []
 
   this.spawnNode = (repoPath, config, callback) => {
     if (typeof repoPath === 'function') {
@@ -44,11 +46,18 @@ function Factory () {
     })
   }
 
-  this.dismantle = function (callback) {
-    series(
-      nodes.map((node) => {
-        return node.stopDaemon
-      }), callback)
+  this.dismantle = (callback) => {
+    eachSeries(nodes, (node, cb) => {
+      cb = once(cb)
+      node.stopDaemon(cb)
+    }, (err) => {
+      if (err) {
+        return callback(err)
+      }
+      nodes = []
+
+      callback()
+    })
   }
 }
 
@@ -62,22 +71,19 @@ function spawnEphemeralNode (callback) {
     // doesn't work as expected
     series([
       (cb) => {
-        node.setConfig('Bootstrap', null, cb)
-      },
-      (cb) => {
-        node.setConfig('Discovery', '{}', cb)
-      },
-      (cb) => {
-        const headers = {
-          HTTPHeaders: {
-            'Access-Control-Allow-Origin': ['*']
-          }
+        const configValues = {
+          Bootstrap: [],
+          Discovery: {},
+          'HTTPHeaders.Access-Control-Allow-Origin': ['*'],
+          'HTTPHeaders.Access-Control-Allow-Credentials': 'true',
+          'HTTPHeaders.Access-Control-Allow-Methods': ['PUT', 'POST', 'GET']
         }
-        node.setConfig('API', JSON.stringify(headers), cb)
+
+        eachSeries(Object.keys(configValues), (configKey, cb) => {
+          node.setConfig(`API.${configKey}`, JSON.stringify(configValues[configKey]), cb)
+        }, cb)
       },
-      (cb) => {
-        node.startDaemon(cb)
-      }
+      (cb) => node.startDaemon(cb)
     ], (err) => {
       if (err) {
         return callback(err)

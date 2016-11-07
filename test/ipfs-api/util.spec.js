@@ -31,7 +31,7 @@ describe('.util', () => {
   })
 
   it('.streamAdd', (done) => {
-    const tfpath = path.join(__dirname, '/../data/testfile.txt')
+    const tfpath = path.join(__dirname, '/../fixtures/testfile.txt')
     const rs = fs.createReadStream(tfpath)
     rs.path = '' // clean the path for testing purposes
 
@@ -43,7 +43,7 @@ describe('.util', () => {
   })
 
   it('.fsAdd a directory', (done) => {
-    const filesPath = path.join(__dirname, '../data/test-folder')
+    const filesPath = path.join(__dirname, '../fixtures/test-folder')
     ipfs.util.addFromFs(filesPath, { recursive: true }, (err, result) => {
       expect(err).to.not.exist
       expect(result.length).to.be.above(8)
@@ -52,7 +52,7 @@ describe('.util', () => {
   })
 
   it('.fsAdd a file', (done) => {
-    const filePath = path.join(__dirname, '../data/testfile.txt')
+    const filePath = path.join(__dirname, '../fixtures/testfile.txt')
     ipfs.util.addFromFs(filePath, (err, result) => {
       expect(err).to.not.exist
       expect(result.length).to.be.above(5)

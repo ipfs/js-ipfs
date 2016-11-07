@@ -3,10 +3,15 @@
 'use strict'
 
 const expect = require('chai').expect
-const fs = require('fs')
-const path = require('path')
+const isNode = require('detect-node')
+const loadFixture = require('aegir/fixtures')
 
-const testfile = fs.readFileSync(path.join(__dirname, '/../data/testfile.txt'))
+let testfile
+if (isNode) {
+  testfile = loadFixture(__dirname, '../fixtures/testfile.txt')
+} else {
+  testfile = loadFixture(__dirname, 'fixtures/testfile.txt')
+}
 
 describe('.name', () => {
   let name

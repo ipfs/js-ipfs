@@ -2,5 +2,4 @@ node_modules
 *.log
 test/setup/tmp-disposable-nodes-addrs.json
 dist
-lib
 coverage

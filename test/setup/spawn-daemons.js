@@ -6,6 +6,8 @@ const gulp = require('gulp')
 const fs = require('fs')
 const path = require('path')
 const ipfsd = require('ipfsd-ctl')
+const eachSeries = require('async/eachSeries')
+const parallel = require('async/parallel')
 
 let daemons
 
@@ -13,82 +15,60 @@ function startDisposableDaemons (callback) {
   // a, b, c
   const ipfsNodes = {}
 
-  // a, b, c
-  const apiAddrs = {}
-
-  let counter = 0
-
-  function finish () {
-    counter++
-    if (counter === 3) {
-      const targetPath = path.join(__dirname, '/tmp-disposable-nodes-addrs.json')
-      fs.writeFileSync(targetPath, JSON.stringify(apiAddrs))
-      callback(ipfsNodes)
-    }
-  }
-
-  function startIndependentNode (nodes, addrs, key, cb) {
+  function startIndependentNode (nodes, key, cb) {
     ipfsd.disposable((err, node) => {
       if (err) {
-        throw err
+        return cb(err)
       }
 
       nodes[key] = node
 
       console.log('  ipfs init done - (bootstrap and mdns off) - ' + key)
 
-      nodes[key].setConfig('Bootstrap', null, (err) => {
+      const configValues = {
+        Bootstrap: [],
+        Discovery: {},
+        'HTTPHeaders.Access-Control-Allow-Origin': ['*'],
+        'HTTPHeaders.Access-Control-Allow-Credentials': 'true',
+        'HTTPHeaders.Access-Control-Allow-Methods': ['PUT', 'POST', 'GET']
+      }
+
+      eachSeries(Object.keys(configValues), (configKey, cb) => {
+        nodes[key].setConfig(`API.${configKey}`, JSON.stringify(configValues[configKey]), cb)
+      }, (err) => {
         if (err) {
-          throw err
+          return cb(err)
         }
-        nodes[key].setConfig('Discovery', '{}', (err) => {
-          if (err) {
-            throw err
-          }
 
-          const headers = {
-            HTTPHeaders: {
-              'Access-Control-Allow-Origin': ['*']
-            }
-          }
-          nodes[key].setConfig('API', JSON.stringify(headers), (err) => {
-            if (err) {
-              throw err
-            }
-
-            nodes[key].startDaemon((err, ignore) => {
-              if (err) {
-                throw err
-              }
-
-              addrs[key] = nodes[key].apiAddr
-              cb()
-            })
-          })
-        })
+        nodes[key].startDaemon(cb)
       })
     })
   }
 
-  startIndependentNode(ipfsNodes, apiAddrs, 'a', finish)
-  startIndependentNode(ipfsNodes, apiAddrs, 'b', finish)
-  startIndependentNode(ipfsNodes, apiAddrs, 'c', finish)
+  parallel([
+    (cb) => startIndependentNode(ipfsNodes, 'a', cb),
+    (cb) => startIndependentNode(ipfsNodes, 'b', cb),
+    (cb) => startIndependentNode(ipfsNodes, 'c', cb)
+  ], (err) => {
+    if (err) {
+      return callback(err)
+    }
+    const targetPath = path.join(__dirname, '/tmp-disposable-nodes-addrs.json')
+    fs.writeFileSync(targetPath, JSON.stringify({
+      a: ipfsNodes.a.apiAddr,
+      b: ipfsNodes.b.apiAddr,
+      c: ipfsNodes.c.apiAddr
+    }))
+    callback(null, ipfsNodes)
+  })
 }
 
 function stopDisposableDaemons (ds, callback) {
-  let counter = 0
-  function finish () {
-    counter++
-    if (counter === 3) {
-      callback()
-    }
-  }
-
-  function stopIPFSNode (list, key, cb) {
+  function stopIPFSNode (node, cb) {
     let nodeStopped
-    list[key].stopDaemon((err) => {
+    node.stopDaemon((err) => {
       if (err) {
-        throw err
+        return cb(err)
       }
       if (!nodeStopped) {
         nodeStopped = true
@@ -97,20 +77,28 @@ function stopDisposableDaemons (ds, callback) {
     })
   }
 
-  stopIPFSNode(ds, 'a', finish)
-  stopIPFSNode(ds, 'b', finish)
-  stopIPFSNode(ds, 'c', finish)
+  parallel([
+    (cb) => stopIPFSNode(ds.a, cb),
+    (cb) => stopIPFSNode(ds.b, cb),
+    (cb) => stopIPFSNode(ds.c, cb)
+  ], callback)
 }
 
 gulp.task('daemons:start', (done) => {
-  startDisposableDaemons((d) => {
+  startDisposableDaemons((err, d) => {
+    if (err) {
+      return done(err)
+    }
     daemons = d
     done()
   })
 })
 
 gulp.task('daemons:stop', (done) => {
-  stopDisposableDaemons(daemons, () => {
+  stopDisposableDaemons(daemons, (err) => {
+    if (err) {
+      return done(err)
+    }
     daemons = null
     done()
   })

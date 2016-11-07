@@ -24,12 +24,12 @@ describe('ls', function () {
       (cb) => fc.spawnNode(cb),
       (node, cb) => {
         ipfs = node
-        const filesPath = path.join(__dirname, '../data/test-folder')
+        const filesPath = path.join(__dirname, '../fixtures/test-folder')
         ipfs.util.addFromFs(filesPath, { recursive: true }, cb)
       },
       (hashes, cb) => {
         folder = hashes[hashes.length - 1].hash
-        expect(folder).to.be.eql('QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6')
+        expect(folder).to.be.eql('QmQao3KNcpCsdXaLGpjieFGMfXzsSXgsf6Rnc5dJJA3QMh')
         cb()
       }
     ], done)
@@ -45,7 +45,7 @@ describe('ls', function () {
 
       expect(res).to.have.a.property('Objects')
       expect(res.Objects[0]).to.have.a.property('Links')
-      expect(res.Objects[0]).to.have.property('Hash', 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6')
+      expect(res.Objects[0]).to.have.property('Hash', 'QmQao3KNcpCsdXaLGpjieFGMfXzsSXgsf6Rnc5dJJA3QMh')
       done()
     })
   })
@@ -72,7 +72,7 @@ describe('ls', function () {
         .then((res) => {
           expect(res).to.have.a.property('Objects')
           expect(res.Objects[0]).to.have.a.property('Links')
-          expect(res.Objects[0]).to.have.property('Hash', 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6')
+          expect(res.Objects[0]).to.have.property('Hash', 'QmQao3KNcpCsdXaLGpjieFGMfXzsSXgsf6Rnc5dJJA3QMh')
         })
     })
 
