@@ -10,31 +10,29 @@ module.exports = (err, res, send, done) => {
     return done(err)
   }
 
-  const ex = tar.extract()
-  res.pipe(ex)
-
   const objStream = new Readable({ objectMode: true })
   objStream._read = function noop () {}
 
-  ex.on('entry', (header, stream, next) => {
-    stream.on('end', next)
+  res
+    .pipe(tar.extract())
+    .on('entry', (header, stream, next) => {
+      stream.on('end', next)
 
-    if (header.type !== 'directory') {
-      objStream.push({
-        path: header.name,
-        content: stream
-      })
-    } else {
-      objStream.push({
-        path: header.name
-      })
-      stream.resume()
-    }
-  })
-
-  ex.on('finish', () => {
-    objStream.push(null)
-  })
+      if (header.type !== 'directory') {
+        objStream.push({
+          path: header.name,
+          content: stream
+        })
+      } else {
+        objStream.push({
+          path: header.name
+        })
+        stream.resume()
+      }
+    })
+    .on('finish', () => {
+      objStream.push(null)
+    })
 
   done(null, objStream)
 }
