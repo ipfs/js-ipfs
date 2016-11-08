@@ -1,3 +1,14 @@
+<a name="0.18.2"></a>
+## [0.18.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.18.1...v0.18.2) (2016-11-08)
+
+
+### Bug Fixes
+
+* **files:** remove duplicated expectations ([c8c5ee8](https://github.com/ipfs/interface-ipfs-core/commit/c8c5ee8))
+* **get:** update tests to reflect the tar-stream behaviour ([6adb626](https://github.com/ipfs/interface-ipfs-core/commit/6adb626))
+
+
+
 <a name="0.18.1"></a>
 ## [0.18.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.18.0...v0.18.1) (2016-11-03)
 
