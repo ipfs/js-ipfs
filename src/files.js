@@ -299,14 +299,21 @@ module.exports = (common) => {
         const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
         ipfs.files.get(hash, (err, stream) => {
           expect(err).to.not.exist
-          stream.pipe(concat((files) => {
-            expect(err).to.not.exist
-            expect(files).to.be.length(1)
-            expect(files[0].path).to.equal(hash)
-            files[0].content.pipe(concat((content) => {
-              expect(content.toString()).to.contain('Plz add me!')
-              done()
+
+          let files = []
+          stream.pipe(through.obj((file, enc, next) => {
+            file.content.pipe(concat((content) => {
+              files.push({
+                path: file.path,
+                content: content
+              })
+              next()
             }))
+          }, () => {
+            expect(files).to.be.length(1)
+            expect(files[0].path).to.be.eql(hash)
+            expect(files[0].content.toString()).to.contain('Plz add me!')
+            done()
           }))
         })
       })
@@ -316,13 +323,21 @@ module.exports = (common) => {
         const mhBuf = new Buffer(bs58.decode(hash))
         ipfs.files.get(mhBuf, (err, stream) => {
           expect(err).to.not.exist
-          stream.pipe(concat((files) => {
-            expect(files).to.be.length(1)
-            expect(files[0].path).to.deep.equal(hash)
-            files[0].content.pipe(concat((content) => {
-              expect(content.toString()).to.contain('Plz add me!')
-              done()
+
+          let files = []
+          stream.pipe(through.obj((file, enc, next) => {
+            file.content.pipe(concat((content) => {
+              files.push({
+                path: file.path,
+                content: content
+              })
+              next()
             }))
+          }, () => {
+            expect(files).to.be.length(1)
+            expect(files[0].path).to.be.eql(hash)
+            expect(files[0].content.toString()).to.contain('Plz add me!')
+            done()
           }))
         })
       })
@@ -412,37 +427,41 @@ module.exports = (common) => {
       })
 
       describe('promise', () => {
-        it('with a base58 encoded string', (done) => {
+        it('with a base58 encoded string', () => {
           const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
-          ipfs.files.get(hash)
-            .then((stream) => {
-              stream.pipe(concat((files) => {
+          return ipfs.files.get(hash).then((stream) => {
+            let files = []
+            return new Promise((resolve, reject) => {
+              stream.pipe(through.obj((file, enc, next) => {
+                file.content.pipe(concat((content) => {
+                  files.push({
+                    path: file.path,
+                    content: content
+                  })
+                  next()
+                }))
+              }, () => {
                 expect(files).to.be.length(1)
                 expect(files[0].path).to.equal(hash)
-                files[0].content.pipe(concat((content) => {
-                  expect(content.toString()).to.contain('Plz add me!')
-                  done()
-                }))
+                expect(files[0].content.toString()).to.contain('Plz add me!')
+                resolve()
               }))
             })
-            .catch((err) => {
-              expect(err).to.not.exist
-            })
+          })
         })
 
         it('errors on invalid key', () => {
           const hash = 'somethingNotMultihash'
-          return ipfs.files.get(hash)
-            .catch((err) => {
-              expect(err).to.exist
-              const errString = err.toString()
-              if (errString === 'Error: invalid ipfs ref path') {
-                expect(err.toString()).to.contain('Error: invalid ipfs ref path')
-              }
-              if (errString === 'Error: Invalid Key') {
-                expect(err.toString()).to.contain('Error: Invalid Key')
-              }
-            })
+          return ipfs.files.get(hash).catch((err) => {
+            expect(err).to.exist
+            const errString = err.toString()
+            if (errString === 'Error: invalid ipfs ref path') {
+              expect(err.toString()).to.contain('Error: invalid ipfs ref path')
+            }
+            if (errString === 'Error: Invalid Key') {
+              expect(err.toString()).to.contain('Error: Invalid Key')
+            }
+          })
         })
       })
     })
