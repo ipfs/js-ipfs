@@ -1,3 +1,16 @@
+<a name="0.18.3"></a>
+## [0.18.3](https://github.com/ipfs/interface-ipfs-core/compare/v0.18.2...v0.18.3) (2016-11-08)
+
+
+### Features
+
+* **dht:** add dht.findpeer spec ([daf892d](https://github.com/ipfs/interface-ipfs-core/commit/daf892d))
+* **dht:** add dht.findprovs spec ([9878a92](https://github.com/ipfs/interface-ipfs-core/commit/9878a92))
+* **dht:** add dht.get spec ([9ec3064](https://github.com/ipfs/interface-ipfs-core/commit/9ec3064))
+* **dht:** add dht.put + .query spec ([841c2c3](https://github.com/ipfs/interface-ipfs-core/commit/841c2c3))
+
+
+
 <a name="0.18.2"></a>
 ## [0.18.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.18.1...v0.18.2) (2016-11-08)
 
