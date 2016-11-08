@@ -1,6 +1,6 @@
 'use strict'
 
-var IPFS = require('ipfs-api')
+var IPFS = require('../../src')
 var ipfs = IPFS()
 
 function store () {
@@ -11,24 +11,26 @@ function store () {
     }
 
     res.forEach(function (file) {
-      console.log('successfully stored', file.Hash)
-      display(file.Hash)
+      if (file && file.hash) {
+        console.log('successfully stored', file.hash)
+        display(file.hash)
+      }
     })
   })
 }
 
 function display (hash) {
-  ipfs.cat(hash, function (err, res) {
+  // buffer: true results in the returned result being a buffer rather than a stream
+  ipfs.cat(hash, {buffer: true}, function (err, res) {
     if (err || !res) {
       return console.error('ipfs cat error', err, res)
     }
-    if (res.readable) {
-      console.error('unhandled: cat result is a pipe', res)
-    } else {
-      document.getElementById('hash').innerText = hash
-      document.getElementById('content').innerText = res
-    }
+
+    document.getElementById('hash').innerText = hash
+    document.getElementById('content').innerText = res.toString()
   })
 }
 
-document.getElementById('store').onclick = store
+document.addEventListener('DOMContentLoaded', function () {
+  document.getElementById('store').onclick = store
+})

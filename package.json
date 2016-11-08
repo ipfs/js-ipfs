@@ -6,7 +6,8 @@
   "browser": {
     "glob": false,
     "fs": false,
-    "stream": "readable-stream"
+    "stream": "readable-stream",
+    "http": "stream-http"
   },
   "scripts": {
     "test": "gulp test",
@@ -24,6 +25,7 @@
     "async": "^2.1.2",
     "bl": "^1.1.2",
     "bs58": "^3.0.0",
+    "concat-stream": "^1.5.2",
     "detect-node": "^2.0.3",
     "flatmap": "0.0.3",
     "glob": "^7.1.1",
@@ -40,9 +42,9 @@
     "promisify-es6": "^1.0.2",
     "qs": "^6.3.0",
     "readable-stream": "^1.1.14",
+    "stream-http": "^2.5.0",
     "streamifier": "^0.1.1",
-    "tar-stream": "^1.5.2",
-    "wreck": "^10.0.0"
+    "tar-stream": "^1.5.2"
   },
   "engines": {
     "node": ">=4.0.0"

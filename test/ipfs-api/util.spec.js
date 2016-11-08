@@ -61,8 +61,16 @@ describe('.util', () => {
     })
   })
 
-  it('.urlAdd', (done) => {
+  it('.urlAdd http', (done) => {
     ipfs.util.addFromURL('http://example.com/', (err, result) => {
+      expect(err).to.not.exist
+      expect(result.length).to.equal(1)
+      done()
+    })
+  })
+
+  it('.urlAdd https', (done) => {
+    ipfs.util.addFromURL('https://example.com/', (err, result) => {
       expect(err).to.not.exist
       expect(result.length).to.equal(1)
       done()

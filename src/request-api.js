@@ -1,32 +1,54 @@
 'use strict'
 
-const Wreck = require('wreck')
 const Qs = require('qs')
 const ndjson = require('ndjson')
-const getFilesStream = require('./get-files-stream')
-
 const isNode = require('detect-node')
+const once = require('once')
+const concat = require('concat-stream')
+
+const getFilesStream = require('./get-files-stream')
+const request = require('./request')
 
 // -- Internal
 
 function parseChunkedJson (res, cb) {
-  const parsed = []
   res
     .pipe(ndjson.parse())
-    .on('data', (obj) => {
-      parsed.push(obj)
-    })
-    .on('end', () => {
-      cb(null, parsed)
-    })
+    .once('error', cb)
+    .pipe(concat((data) => cb(null, data)))
 }
 
-function onRes (buffer, cb, uri) {
-  return (err, res) => {
-    if (err) {
-      return cb(err)
-    }
+function parseRaw (res, cb) {
+  res
+    .once('error', cb)
+    .pipe(concat((data) => cb(null, data)))
+}
 
+function parseJson (res, cb) {
+  res
+    .once('error', cb)
+    .pipe(concat((data) => {
+      if (!data || data.length === 0) {
+        return cb()
+      }
+
+      if (Buffer.isBuffer(data)) {
+        data = data.toString()
+      }
+
+      let res
+      try {
+        res = JSON.parse(data)
+      } catch (err) {
+        return cb(err)
+      }
+
+      cb(null, res)
+    }))
+}
+
+function onRes (buffer, cb) {
+  return (res) => {
     const stream = Boolean(res.headers['x-stream-output'])
     const chunkedObjects = Boolean(res.headers['x-chunked-output'])
     const isJson = res.headers['content-type'] &&
@@ -35,7 +57,7 @@ function onRes (buffer, cb, uri) {
     if (res.statusCode >= 400 || !res.statusCode) {
       const error = new Error(`Server responded with ${res.statusCode}`)
 
-      return Wreck.read(res, {json: true}, (err, payload) => {
+      parseJson(res, (err, payload) => {
         if (err) {
           return cb(err)
         }
@@ -51,20 +73,21 @@ function onRes (buffer, cb, uri) {
       return cb(null, res)
     }
 
-    if (chunkedObjects) {
-      if (isJson) {
-        return parseChunkedJson(res, cb)
-      }
-
-      return Wreck.read(res, null, cb)
+    if (chunkedObjects && isJson) {
+      return parseChunkedJson(res, cb)
     }
 
-    Wreck.read(res, {json: isJson}, cb)
+    if (isJson) {
+      return parseJson(res, cb)
+    }
+
+    parseRaw(res, cb)
   }
 }
 
 function requestAPI (config, options, callback) {
   options.qs = options.qs || {}
+  callback = once(callback)
 
   if (Array.isArray(options.files)) {
     options.qs.recursive = true
@@ -99,17 +122,12 @@ function requestAPI (config, options, callback) {
   // this option is only used internally, not passed to daemon
   delete options.qs.followSymlinks
 
-  const port = config.port ? `:${config.port}` : ''
-
-  const opts = {
-    method: 'POST',
-    uri: `${config.protocol}://${config.host}${port}${config['api-path']}${options.path}?${Qs.stringify(options.qs, {arrayFormat: 'repeat'})}`,
-    headers: {}
-  }
+  const method = 'POST'
+  const headers = {}
 
   if (isNode) {
     // Browsers do not allow you to modify the user agent
-    opts.headers['User-Agent'] = config['user-agent']
+    headers['User-Agent'] = config['user-agent']
   }
 
   if (options.files) {
@@ -117,11 +135,25 @@ function requestAPI (config, options, callback) {
       return callback(new Error('No boundary in multipart stream'))
     }
 
-    opts.headers['Content-Type'] = `multipart/form-data; boundary=${stream.boundary}`
-    opts.payload = stream
+    headers['Content-Type'] = `multipart/form-data; boundary=${stream.boundary}`
   }
 
-  return Wreck.request(opts.method, opts.uri, opts, onRes(options.buffer, callback, opts.uri))
+  const qs = Qs.stringify(options.qs, {arrayFormat: 'repeat'})
+  const req = request(config.protocol)({
+    hostname: config.host,
+    path: `${config['api-path']}${options.path}?${qs}`,
+    port: config.port,
+    method: method,
+    headers: headers
+  }, onRes(options.buffer, callback))
+
+  if (options.files) {
+    stream.pipe(req)
+  } else {
+    req.end()
+  }
+
+  return req
 }
 
 //

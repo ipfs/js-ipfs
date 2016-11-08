@@ -1,9 +1,11 @@
 'use strict'
 
-const Wreck = require('wreck')
-const addToDagNodesTransform = require('./../../add-to-dagnode-transform')
-
 const promisify = require('promisify-es6')
+const once = require('once')
+const parseUrl = require('url').parse
+
+const request = require('../../request')
+const addToDagNodesTransform = require('./../../add-to-dagnode-transform')
 
 module.exports = (send) => {
   return promisify((url, opts, callback) => {
@@ -27,10 +29,12 @@ module.exports = (send) => {
     }
 
     const sendWithTransform = send.withTransform(addToDagNodesTransform)
+    callback = once(callback)
 
-    Wreck.request('GET', url, null, (err, res) => {
-      if (err) {
-        return callback(err)
+    request(parseUrl(url).protocol)(url, (res) => {
+      res.once('error', callback)
+      if (res.statusCode >= 400) {
+        return callback(new Error(`Failed to download with ${res.statusCode}`))
       }
 
       sendWithTransform({
@@ -38,6 +42,6 @@ module.exports = (send) => {
         qs: opts,
         files: res
       }, callback)
-    })
+    }).end()
   })
 }
