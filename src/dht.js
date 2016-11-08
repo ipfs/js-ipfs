@@ -24,41 +24,33 @@ module.exports = (common) => {
     })
 
     describe('callback API', () => {
-      describe('.get', (done) => {
-        it('errors when getting a non-existent key from the DHT', (done) => {
-          ipfs.dht.get('non-existing', {timeout: '100ms'}, (err, value) => {
-            expect(err).to.be.an.instanceof(Error)
-            done()
-          })
+      it('.get errors when getting a non-existent key from the DHT', (done) => {
+        ipfs.dht.get('non-existing', {timeout: '100ms'}, (err, value) => {
+          expect(err).to.be.an.instanceof(Error)
+          done()
         })
       })
-      describe('.findprovs', () => {
-        it('finds providers', (done) => {
-          ipfs.dht.findprovs('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', (err, res) => {
-            expect(err).to.not.exist
+      it('.findprovs', (done) => {
+        ipfs.dht.findprovs('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', (err, res) => {
+          expect(err).to.not.exist
 
-            expect(res).to.be.an('array')
-            done()
-          })
+          expect(res).to.be.an('array')
+          done()
         })
       })
     })
     describe('promise API', () => {
-      describe('.get', (done) => {
-        it('errors when getting a non-existent key from the DHT', (done) => {
-          ipfs.dht.get('non-existing', {timeout: '100ms'}).catch((err) => {
-            expect(err).to.be.an.instanceof(Error)
-            done()
-          })
+      it('.get errors when getting a non-existent key from the DHT', (done) => {
+        ipfs.dht.get('non-existing', {timeout: '100ms'}).catch((err) => {
+          expect(err).to.be.an.instanceof(Error)
+          done()
         })
       })
-      describe('.findprovs', () => {
-        it('finds providers', (done) => {
-          ipfs.dht.findprovs('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP').then((res) => {
-            expect(res).to.be.an('array')
-            done()
-          }).catch(done)
-        })
+      it('.findprovs', (done) => {
+        ipfs.dht.findprovs('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP').then((res) => {
+          expect(res).to.be.an('array')
+          done()
+        }).catch(done)
       })
     })
     // Tests below are tests that haven't been implemented yet or is not
@@ -79,19 +71,17 @@ module.exports = (common) => {
         })
       })
     })
-    xdescribe('.put & .get', () => {
-      it('puts and gets a key value pair in the DHT', (done) => {
-        peers.a.ipfs.dht.put('scope', 'interplanetary', (err, res) => {
+    xit('.put and .get a key value pair in the DHT', (done) => {
+      peers.a.ipfs.dht.put('scope', 'interplanetary', (err, res) => {
+        expect(err).to.not.exist
+
+        expect(res).to.be.an('array')
+
+        // bug: https://github.com/ipfs/go-ipfs/issues/1923#issuecomment-152932234
+        peers.b.ipfs.dht.get('scope', (err, value) => {
           expect(err).to.not.exist
-
-          expect(res).to.be.an('array')
-
-          // bug: https://github.com/ipfs/go-ipfs/issues/1923#issuecomment-152932234
-          peers.b.ipfs.dht.get('scope', (err, value) => {
-            expect(err).to.not.exist
-            expect(value).to.be.equal('interplanetary')
-            done()
-          })
+          expect(value).to.be.equal('interplanetary')
+          done()
         })
       })
     })
