@@ -1,5 +1,5 @@
-<a name="111.1.0"></a>
-# [111.1.0](https://github.com/ipfs/js-ipfs-api/compare/v11.0.1...v111.1.0) (2016-11-08)
+<a name="11.1.0"></a>
+# [11.1.0](https://github.com/ipfs/js-ipfs-api/compare/v11.0.1...v11.1.0) (2016-11-08)
 
 
 ### Bug Fixes
@@ -54,6 +54,3 @@
 ### Features
 
 * **swarm:** make interface-ipfs-core compliant ([f245f27](https://github.com/ipfs/js-ipfs-api/commit/f245f27))
-
-
-
