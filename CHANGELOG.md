@@ -1,3 +1,20 @@
+<a name="111.1.0"></a>
+# [111.1.0](https://github.com/ipfs/js-ipfs-api/compare/v11.0.1...v111.1.0) (2016-11-08)
+
+
+### Bug Fixes
+
+* **get:** properly handled nested content ([0731f45](https://github.com/ipfs/js-ipfs-api/commit/0731f45))
+
+
+### Features
+
+* **object:** add lru cache to object get/put ([c439f39](https://github.com/ipfs/js-ipfs-api/commit/c439f39))
+* add npm engine ([505ce8e](https://github.com/ipfs/js-ipfs-api/commit/505ce8e))
+* update interface-ipfs-core ([1191bb6](https://github.com/ipfs/js-ipfs-api/commit/1191bb6))
+
+
+
 <a name="11.0.1"></a>
 ## [11.0.1](https://github.com/ipfs/js-ipfs-api/compare/v11.0.0...v11.0.1) (2016-10-29)
 
