@@ -1,3 +1,13 @@
+<a name="0.18.4"></a>
+## [0.18.4](https://github.com/ipfs/interface-ipfs-core/compare/v0.18.3...v0.18.4) (2016-11-10)
+
+
+### Features
+
+* disable nested array test until https://github.com/ipfs/js-ipfs-api/issues/339 is fixed ([6d07f92](https://github.com/ipfs/interface-ipfs-core/commit/6d07f92))
+
+
+
 <a name="0.18.3"></a>
 ## [0.18.3](https://github.com/ipfs/interface-ipfs-core/compare/v0.18.2...v0.18.3) (2016-11-08)
 
