@@ -66,13 +66,13 @@ UPDATE:
   - [x] generic API - https://github.com/ipfs/interface-ipfs-core/pull/33
   - [x] pinning API - https://github.com/ipfs/interface-ipfs-core/pull/34
   - [x] swarm API - https://github.com/ipfs/interface-ipfs-core/pull/35
-  - [ ] DHT API https://github.com/ipfs/interface-ipfs-core/pull/36
+  - [x] DHT API https://github.com/ipfs/interface-ipfs-core/pull/36
   - [ ] mfs API https://github.com/ipfs/interface-ipfs-core/pull/38
 - [ ] Robust testing infrastructure
   - [x] Isolation of tests. This includes:
     - Avoid cases where there is one set up for a bunch of test files, instead make each test file be runnable by itself. This also includes removing the use of all globals (i.e js-ipfs-api).
   - [ ] Interoperability tests between js-ipfs and go-ipfs
-  - [ ] Benchmarking tests
+  - [ ] Benchmarking tests - https://github.com/ipfs/js-ipfs/pull/488
   - [ ] Stress tests, things like:
     - Spawn a reasonable amount of nodes
     - Add large files
@@ -159,7 +159,7 @@ This is a requirement to integrate floodsub in js-ipfs
 ##### Expected date of completion: `Week 1 - October 17`
 
 
-# Milestone - Awesome IPLD - Enable js-ipfs to handle both merkledag protobufs and ipld cbor objects
+# ✔️ Milestone - Awesome IPLD - Enable js-ipfs to handle both merkledag protobufs and ipld cbor objects
 
 > Summary: Integration of IPLD (js-ipld and js-ipld-ipfs) into js-ipfs.
 
@@ -169,12 +169,12 @@ This is a requirement to integrate floodsub in js-ipfs
 
 ### Tasks:
 
-- [ ] Awesome IPLD endeavour PR - https://github.com/ipld/js-ipld-resolver/pull/60
+- [x] Awesome IPLD endeavour PR - https://github.com/ipld/js-ipld-resolver/pull/60
 
 ### Dependencies:
 
 - [x] CID spec
-- [ ] go-ipfs with IPLD already integrated (it would be best)
+- [x] go-ipfs with IPLD already integrated (it would be best)
 
 ### Requirements by other projects:
 
@@ -195,7 +195,7 @@ This is a requirement to integrate floodsub in js-ipfs
 
 ### Tasks:
 
-NA
+- [ ] https://github.com/ipfs/js-ipfs/pull/485 (the PR of PRs)
 
 ### Dependencies: `NA`
 ### Requirements by other projects: `NA`
@@ -234,7 +234,7 @@ NA
 
 ### Tasks:
 
-NA
+- [ ] https://github.com/ipfs/js-ipfs/issues/429
 
 ### Dependencies: `NA`
 ### Requirements by other projects: `NA`
