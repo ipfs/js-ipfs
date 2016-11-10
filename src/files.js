@@ -121,7 +121,9 @@ module.exports = (common) => {
           })
         })
 
-        it('add a nested dir as array', (done) => {
+        // Needs https://github.com/ipfs/js-ipfs-api/issues/339 to be fixed
+        // for js-ipfs-api + go-ipfs
+        it.skip('add a nested dir as array', (done) => {
           const content = (name) => ({
             path: `test-folder/${name}`,
             content: directoryContent[name]
