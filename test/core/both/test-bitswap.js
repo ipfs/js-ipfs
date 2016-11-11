@@ -15,13 +15,14 @@ const bl = require('bl')
 const API = require('ipfs-api')
 const multiaddr = require('multiaddr')
 const isNode = require('detect-node')
+
 const IPFS = require('../../../src/core')
 
 function makeBlock (cb) {
   return cb(null, new Block(`IPFS is awesome ${Math.random()}`))
 }
 
-describe.skip('bitswap', () => {
+describe('bitswap', () => {
   let inProcNode // Node spawned inside this process
   let swarmAddrsBak
 
@@ -127,7 +128,7 @@ describe.skip('bitswap', () => {
             cb()
           },
           (cb) => remoteNode.block.put(block, cb),
-          (cb) => block.key('sha2-256', cb),
+          (res, cb) => block.key('sha2-256', cb),
           (key, cb) => inProcNode.block.get(key, cb),
           (b, cb) => {
             expect(b.data).to.be.eql(block.data)
@@ -192,41 +193,34 @@ describe.skip('bitswap', () => {
       })
     })
 
-    // wont work without http-api for add
-    describe.skip('fetches a remote file', () => {
+    describe('fetches a remote file', () => {
       beforeEach((done) => {
         inProcNode.goOnline(done)
       })
 
-      it('2 peers', (done) => {
-        const file = new Buffer('I love IPFS <3')
+      afterEach((done) => {
+        setTimeout(() => inProcNode.goOffline(done), 1500)
+      })
 
-        let node
+      it('2 peers', (done) => {
+        const file = new Buffer(`I love IPFS <3 ${Math.random()}`)
+
         waterfall([
           // 0. Start node
-          (cb) => addNode(9, (err, _ipfs) => {
-            node = _ipfs
-            cb(err)
-          }),
+          (cb) => addNode(12, cb),
           // 1. Add file to tmp instance
-          (cb) => node.add([{path: 'awesome.txt', content: file}], cb),
+          (remote, cb) => remote.add([{
+            path: 'awesome.txt',
+            content: file
+          }], cb),
           // 2. Request file from local instance
-          (val, cb) => {
-            const hash = mh.toB58String(val[0].multihash)
-
-            inProcNode.files.cat(hash, (err, res) => {
-              expect(err).to.not.exist
-              res.on('file', (data) => {
-                data.content.pipe(bl((err, bldata) => {
-                  expect(err).to.not.exist
-                  expect(bldata.toString()).to.equal('I love IPFS <3')
-                  cb()
-                }))
-              })
-            })
-          },
-          (cb) => setTimeout(() => node.goOffline(cb), 1000)
-        ], done)
+          (val, cb) => inProcNode.files.cat(val[0].hash, cb),
+          (res, cb) => res.pipe(bl(cb))
+        ], (err, res) => {
+          expect(err).to.not.exist
+          expect(res).to.be.eql(file)
+          done()
+        })
       })
     })
   })

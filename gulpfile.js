@@ -25,6 +25,7 @@ gulp.task('libnode:start', (done) => {
   parallel([
     (cb) => startNode(7, cb),
     (cb) => startNode(8, cb),
+    (cb) => startNode(12, cb),
     (cb) => startNode(13, cb)
   ], done)
 })
