@@ -73,7 +73,8 @@ describe('bitswap', () => {
 
           // TODO, what we really need is a way to dial to
           // a peerId only and another to dial to peerInfo
-          targetAddr = multiaddr(`/ip4/127.0.0.1/tcp/0/ws/ipfs/${identity.id}`).toString()
+          return done()
+          // targetAddr = multiaddr(`/ip4/127.0.0.1/tcp/0/ws/ipfs/${identity.id}`).toString()
         }
 
         dialerNode.swarm.connect(targetAddr, done)

@@ -1,11 +1,11 @@
 'use strict'
 
 const PeerId = require('peer-id')
-const isNode = require('detect-node')
-const IPFSRepo = require('ipfs-repo')
-const IPFS = require('../../../src/core')
 const series = require('async/series')
+
 const defaultConfig = require('./default-config.json')
+const IPFS = require('../../../src/core')
+const createTempRepo = require('../temp-repo')
 
 module.exports = Factory
 
@@ -40,31 +40,7 @@ function Factory () {
 
       config = conf
 
-      // set up the repo
-      let store
-      let teardown
-
-      if (isNode) {
-        store = require('fs-pull-blob-store')
-        teardown = (done) => {
-          require('../clean')(repoPath)
-          done()
-        }
-      } else {
-        const idb = window.indexedDB ||
-                window.mozIndexedDB ||
-                window.webkitIndexedDB ||
-                window.msIndexedDB
-        store = require('idb-pull-blob-store')
-        teardown = (done) => {
-          idb.deleteDatabase(repoPath)
-          idb.deleteDatabase(repoPath + '/blocks')
-          done()
-        }
-      }
-
-      const repo = new IPFSRepo(repoPath, { stores: store })
-      repo.teardown = teardown
+      const repo = createTempRepo(repoPath)
 
       // create the IPFS node
       const ipfs = new IPFS(repo)
