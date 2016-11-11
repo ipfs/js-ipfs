@@ -8,7 +8,11 @@ module.exports = function libp2p (self) {
   return {
     start: promisify((callback) => {
       self._libp2pNode = new Libp2pNode(self._peerInfo)
-      self._libp2pNode.start(() => {
+      self._libp2pNode.start((err) => {
+        if (err) {
+          return callback(err)
+        }
+
         // TODO connect to bootstrap nodes, it will get us more addrs
         self._libp2pNode.peerInfo.multiaddrs.forEach((ma) => {
           console.log('Swarm listening on', ma.toString())
