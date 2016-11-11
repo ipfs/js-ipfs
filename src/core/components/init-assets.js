@@ -21,7 +21,9 @@ module.exports = function addDefaultAssets (self, log, callback) {
     pull.flatten(),
     pull.map((element) => {
       const addPath = element.substring(index + 1, element.length)
-      if (fs.statSync(element).isDirectory()) return
+      if (fs.statSync(element).isDirectory()) {
+        return
+      }
 
       return {
         path: addPath,

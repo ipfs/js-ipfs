@@ -11,7 +11,7 @@ log.error = debug('cli:object:error')
 function putNode (buf, enc) {
   waterfall([
     (cb) => utils.getIPFS(cb),
-    (ipfs, cb) => ipfs.object.put(buf, {enc}, cb),
+    (ipfs, cb) => ipfs.object.put(buf, {enc: enc}, cb),
     (node, cb) => node.toJSON(cb)
   ], (err, node) => {
     if (err) {
