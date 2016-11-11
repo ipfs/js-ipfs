@@ -30,6 +30,7 @@ module.exports = function addDefaultAssets (self, log, callback) {
         content: file(element)
       }
     }),
+    // Filter out directories, which are undefined from above
     pull.filter(Boolean),
     importer(self._ipldResolver),
     pull.through((el) => {

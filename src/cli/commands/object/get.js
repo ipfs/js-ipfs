@@ -18,13 +18,13 @@ module.exports = {
       (cb) => utils.getIPFS(cb),
       (ipfs, cb) => ipfs.object.get(argv.key, {enc: 'base58'}, cb),
       (node, cb) => node.toJSON(cb)
-    ], (err, res) => {
+    ], (err, nodeJson) => {
       if (err) {
         throw err
       }
 
-      res.Data = res.Data ? res.Data.toString() : ''
-      console.log(JSON.stringify(res))
+      nodeJson.Data = nodeJson.Data ? nodeJson.Data.toString() : ''
+      console.log(JSON.stringify(nodeJson))
     })
   }
 }

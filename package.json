@@ -76,7 +76,7 @@
     "hapi": "^15.2.0",
     "idb-pull-blob-store": "^0.5.1",
     "ipfs-api": "^11.1.0",
-    "ipfs-bitswap": "^0.8.0",
+    "ipfs-bitswap": "^0.8.1",
     "ipfs-block": "^0.5.0",
     "ipfs-block-service": "^0.7.0",
     "ipfs-multipart": "^0.1.0",

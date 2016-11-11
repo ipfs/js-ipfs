@@ -37,7 +37,7 @@ exports.new = (request, reply) => {
   waterfall([
     (cb) => ipfs.object.new(cb),
     (node, cb) => node.toJSON(cb)
-  ], (err, res) => {
+  ], (err, nodeJson) => {
     if (err) {
       log.error(err)
       return reply({
@@ -46,7 +46,7 @@ exports.new = (request, reply) => {
       }).code(500)
     }
 
-    return reply(res)
+    return reply(nodeJson)
   })
 }
 
@@ -63,7 +63,7 @@ exports.get = {
     waterfall([
       (cb) => ipfs.object.get(key, {enc}, cb),
       (node, cb) => node.toJSON(cb)
-    ], (err, res) => {
+    ], (err, nodeJson) => {
       if (err) {
         log.error(err)
         return reply({
@@ -72,8 +72,8 @@ exports.get = {
         }).code(500)
       }
 
-      res.Data = res.Data ? res.Data.toString() : ''
-      return reply(res)
+      nodeJson.Data = nodeJson.Data ? nodeJson.Data.toString() : ''
+      return reply(nodeJson)
     })
   }
 }
@@ -156,7 +156,7 @@ exports.put = {
     parallel([
       (cb) => ipfs.object.put(dagNode, cb),
       (cb) => dagNode.toJSON(cb)
-    ], (err, res) => {
+    ], (err, nodeJson) => {
       if (err) {
         log.error(err)
         return reply({
@@ -165,7 +165,7 @@ exports.put = {
         }).code(500)
       }
 
-      return reply(res[1])
+      return reply(nodeJson[1])
     })
   }
 }
@@ -226,7 +226,7 @@ exports.links = {
     waterfall([
       (cb) => ipfs.object.get(key, cb),
       (node, cb) => node.toJSON(cb)
-    ], (err, res) => {
+    ], (err, nodeJson) => {
       if (err) {
         log.error(err)
         return reply({
@@ -236,8 +236,8 @@ exports.links = {
       }
 
       return reply({
-        Hash: res.Hash,
-        Links: res.Links
+        Hash: nodeJson.Hash,
+        Links: nodeJson.Links
       })
     })
   }
@@ -295,7 +295,7 @@ exports.patchAppendData = {
     waterfall([
       (cb) => ipfs.object.patch.appendData(key, data, cb),
       (node, cb) => node.toJSON(cb)
-    ], (err, res) => {
+    ], (err, nodeJson) => {
       if (err) {
         log.error(err)
 
@@ -305,7 +305,7 @@ exports.patchAppendData = {
         }).code(500)
       }
 
-      return reply(res)
+      return reply(nodeJson)
     })
   }
 }
@@ -323,7 +323,7 @@ exports.patchSetData = {
     waterfall([
       (cb) => ipfs.object.patch.setData(key, data, cb),
       (node, cb) => node.toJSON(cb)
-    ], (err, res) => {
+    ], (err, nodeJson) => {
       if (err) {
         log.error(err)
 
@@ -334,8 +334,8 @@ exports.patchSetData = {
       }
 
       return reply({
-        Hash: res.Hash,
-        Links: res.Links
+        Hash: nodeJson.Hash,
+        Links: nodeJson.Links
       })
     })
   }
@@ -403,7 +403,7 @@ exports.patchAddLink = {
         },
         (link, cb) => ipfs.object.patch.addLink(root, link, cb),
         (node, cb) => node.toJSON(cb)
-      ], (err, res) => {
+      ], (err, nodeJson) => {
         if (err) {
           log.error(err)
           return reply({
@@ -412,7 +412,7 @@ exports.patchAddLink = {
           }).code(500)
         }
 
-        return reply(res)
+        return reply(nodeJson)
       })
     })
   }
@@ -455,7 +455,7 @@ exports.patchRmLink = {
     waterfall([
       (cb) => ipfs.object.patch.rmLink(root, link, cb),
       (node, cb) => node.toJSON(cb)
-    ], (err, res) => {
+    ], (err, nodeJson) => {
       if (err) {
         log.error(err)
         return reply({
@@ -464,7 +464,7 @@ exports.patchRmLink = {
         }).code(500)
       }
 
-      return reply(res)
+      return reply(nodeJson)
     })
   }
 }
