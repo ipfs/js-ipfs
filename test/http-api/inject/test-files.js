@@ -20,7 +20,7 @@ module.exports = (http) => {
           url: '/api/v0/cat'
         }, (res) => {
           expect(res.statusCode).to.equal(400)
-          expect(res.result).to.be.a('string')
+          expect(res.result.Message).to.be.a('string')
           done()
         })
       })
