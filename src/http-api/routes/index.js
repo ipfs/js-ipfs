@@ -11,4 +11,5 @@ module.exports = (server) => {
   require('./swarm')(server)
   require('./bitswap')(server)
   require('./files')(server)
+  require('./floodsub')(server)
 }
