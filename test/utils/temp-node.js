@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
 const leftPad = require('left-pad')
 const series = require('async/series')
 
@@ -10,7 +9,9 @@ const createTempRepo = require('./temp-repo')
 
 function setAddresses (repo, num, callback) {
   repo.config.get((err, config) => {
-    expect(err).to.not.exist
+    if (err) {
+      return callback(err)
+    }
     config.Addresses = {
       Swarm: [
         `/ip4/127.0.0.1/tcp/10${num}`,
@@ -19,7 +20,6 @@ function setAddresses (repo, num, callback) {
       API: `/ip4/127.0.0.1/tcp/31${num}`,
       Gateway: `/ip4/127.0.0.1/tcp/32${num}`
     }
-
     repo.config.set(config, callback)
   })
 }
@@ -31,7 +31,7 @@ function createTempNode (num, callback) {
   num = leftPad(num, 3, 0)
 
   series([
-    (cb) => ipfs.init({ emptyRepo: true, bits: 512 }, cb),
+    (cb) => ipfs.init({ emptyRepo: true, bits: 1024 }, cb),
     (cb) => setAddresses(repo, num, cb),
     (cb) => ipfs.load(cb)
   ], (err) => {

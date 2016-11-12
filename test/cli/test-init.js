@@ -34,7 +34,7 @@ describe('init', function () {
   })
 
   it('bits', () => {
-    return ipfs('init --bits 512').then(() => {
+    return ipfs('init --bits 1024').then(() => {
       expect(repoExistsSync('blocks')).to.equal(true)
       expect(repoExistsSync('config')).to.equal(true)
       expect(repoExistsSync('version')).to.equal(true)
@@ -42,7 +42,7 @@ describe('init', function () {
   })
 
   it('empty', () => {
-    return ipfs('init --bits 512 --empty-repo true').then(() => {
+    return ipfs('init --bits 1024 --empty-repo true').then(() => {
       expect(repoExistsSync('blocks')).to.equal(false)
       expect(repoExistsSync('config')).to.equal(true)
       expect(repoExistsSync('version')).to.equal(true)

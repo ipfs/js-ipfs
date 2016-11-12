@@ -12,6 +12,7 @@ const sort = require('pull-sort')
 const toStream = require('pull-stream-to-stream')
 const toPull = require('stream-to-pull-stream')
 const CID = require('cids')
+const waterfall = require('async/waterfall')
 
 module.exports = function files (self) {
   const createAddPullStream = () => {
@@ -99,22 +100,19 @@ module.exports = function files (self) {
 
 function prepareFile (self, file, callback) {
   const bs58mh = multihashes.toB58String(file.multihash)
-  self.object.get(file.multihash, (err, node) => {
-    if (err) {
-      return callback(err)
-    }
-
-    node.size((err, size) => {
+  waterfall([
+    (cb) => self.object.get(file.multihash, cb),
+    (node, cb) => node.size((err, size) => {
       if (err) {
-        return callback(err)
+        return cb(err)
       }
-      callback(null, {
+      cb(null, {
         path: file.path || bs58mh,
         hash: bs58mh,
         size: size
       })
     })
-  })
+  ], callback)
 }
 
 function normalizeContent (content) {

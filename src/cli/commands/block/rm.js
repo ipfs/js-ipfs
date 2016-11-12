@@ -1,7 +1,7 @@
 'use strict'
 
 const utils = require('../../utils')
-const bs58 = require('bs58')
+const mh = require('multihashes')
 const debug = require('debug')
 const log = debug('cli:block')
 log.error = debug('cli:block:error')
@@ -24,9 +24,7 @@ module.exports = {
         throw new Error('rm block with daemon running is not yet implemented')
       }
 
-      const mh = new Buffer(bs58.decode(argv.key))
-
-      ipfs.block.del(mh, (err) => {
+      ipfs.block.del(mh.fromB58String(argv.key), (err) => {
         if (err) {
           throw err
         }

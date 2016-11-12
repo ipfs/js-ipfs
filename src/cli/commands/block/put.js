@@ -1,10 +1,11 @@
 'use strict'
 
 const utils = require('../../utils')
-const bs58 = require('bs58')
+const mh = require('multihashes')
 const bl = require('bl')
 const fs = require('fs')
 const Block = require('ipfs-block')
+const waterfall = require('async/waterfall')
 const debug = require('debug')
 const log = debug('cli:block')
 log.error = debug('cli:block:error')
@@ -15,14 +16,15 @@ function addBlock (buf) {
       throw err
     }
 
-    const block = new Block(buf)
-
-    ipfs.block.put(block, (err, block) => {
+    waterfall([
+      (cb) => ipfs.block.put(new Block(buf), cb),
+      (block, cb) => block.key(cb)
+    ], (err, key) => {
       if (err) {
         throw err
       }
 
-      console.log(bs58.encode(block.key()).toString())
+      console.log(mh.toB58String(key))
     })
   })
 }

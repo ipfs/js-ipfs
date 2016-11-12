@@ -6,11 +6,9 @@ const expect = require('chai').expect
 const IPFS = require('../../../src/core')
 const createTempRepo = require('../../utils/temp-repo')
 
-describe('init (Node.js specific)', function () {
-  this.timeout(10000)
-
-  var ipfs
-  var repo
+describe('init (Node.js specific)', () => {
+  let ipfs
+  let repo
 
   beforeEach((done) => {
     repo = createTempRepo()
@@ -23,7 +21,7 @@ describe('init (Node.js specific)', function () {
   })
 
   it('init docs are written', (done) => {
-    ipfs.init({ bits: 64 }, (err) => {
+    ipfs.init({ bits: 1024 }, (err) => {
       expect(err).to.not.exist
       var multihash = new Buffer('12205e7c3ce237f936c76faf625e90f7751a9f5eeb048f59873303c215e9cce87599', 'hex')
       setTimeout(() => {
@@ -37,7 +35,7 @@ describe('init (Node.js specific)', function () {
   })
 
   it('empty repo', (done) => {
-    ipfs.init({ bits: 64, emptyRepo: true }, (err) => {
+    ipfs.init({ bits: 1024, emptyRepo: true }, (err) => {
       expect(err).to.not.exist
 
       // Check for default assets

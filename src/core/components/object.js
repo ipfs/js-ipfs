@@ -2,11 +2,11 @@
 
 const waterfall = require('async/waterfall')
 const promisify = require('promisify-es6')
-const bs58 = require('bs58')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const DAGLink = dagPB.DAGLink
 const CID = require('cids')
+const mh = require('multihashes')
 
 function normalizeMultihash (multihash, enc) {
   if (typeof multihash === 'string') {
@@ -41,7 +41,7 @@ function parseJSONBuffer (buf, callback) {
       return new DAGLink(
         link.Name,
         link.Size,
-        new Buffer(bs58.decode(link.Hash))
+        mh.fromB58String(link.Hash)
       )
     })
     node = new DAGNode(new Buffer(parsed.Data), links)

@@ -11,7 +11,7 @@ const clean = require('../utils/clean')
 
 describe('HTTP API', () => {
   const repoExample = path.join(__dirname, '../go-ipfs-repo')
-  const repoTests = path.join(__dirname, '../repo-tests-run-http')
+  const repoTests = path.join(__dirname, '../repo-tests-run')
 
   let http = {}
 
@@ -20,12 +20,11 @@ describe('HTTP API', () => {
 
     clean(repoTests)
     ncp(repoExample, repoTests, (err) => {
-      expect(err).to.not.exist
+      if (err) {
+        return done(err)
+      }
 
-      http.api.start((err) => {
-        expect(err).to.not.exist
-        done()
-      })
+      http.api.start(done)
     })
   })
 
