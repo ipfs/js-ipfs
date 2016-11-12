@@ -21,6 +21,7 @@ module.exports = function goOnline (self) {
       )
       self._bitswap.start()
       self._blockService.goOnline(self._bitswap)
+      self.floodsub.start(self._libp2pNode)
       cb()
     })
   }

@@ -23,6 +23,7 @@ const swarm = require('./components/swarm')
 const ping = require('./components/ping')
 const files = require('./components/files')
 const bitswap = require('./components/bitswap')
+const floodsub = require('./components/floodsub')
 
 exports = module.exports = IPFS
 
@@ -67,4 +68,5 @@ function IPFS (repoInstance) {
   this.files = files(this)
   this.bitswap = bitswap(this)
   this.ping = ping(this)
+  this.floodsub = floodsub(this)
 }
