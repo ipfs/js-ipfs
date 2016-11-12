@@ -147,7 +147,7 @@ UPDATE:
 
 ### Tasks:
 
-- [ ] Create interface-floodsub.md on pubsub-notes repo
+- [ ] Create interface-floodsub.md on pubsub-notes repo - https://github.com/ipfs/js-ipfs/issues/580
 
 ### Dependencies: `NA`
 ### Requirements by other projects:
@@ -185,7 +185,7 @@ This is a requirement to integrate floodsub in js-ipfs
 
 
 
-# Milestone - Async Crypto
+# ✔️ Milestone - Async Crypto
 
 > Summary: Move away from bundling in node-forge and use the WebCrypto browser primitives directly
 
@@ -195,7 +195,7 @@ This is a requirement to integrate floodsub in js-ipfs
 
 ### Tasks:
 
-- [ ] https://github.com/ipfs/js-ipfs/pull/485 (the PR of PRs)
+- [x] https://github.com/ipfs/js-ipfs/pull/485 (the PR of PRs)
 
 ### Dependencies: `NA`
 ### Requirements by other projects: `NA`
