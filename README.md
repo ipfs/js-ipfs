@@ -35,10 +35,25 @@ Consult the [Roadmap](/ROADMAP.md) for a complete state description of the proje
   - [Use in the browser with browserify, webpack or any bundler](#use-in-the-browser-with-browserify-webpack-or-any-bundler)
   - [Use in a browser using a script tag](#use-in-a-browser-using-a-script-tag)
 - [Usage](#usage)
-  - [Examples](#examples)
+  - [CLI](#cli)
+  - [HTTP-API](#http-api)
+  - [IPFS Core examples (use IPFS as a module)](#ipfs-core-examples-use-ipfs-as-a-module)
+    - [Create a IPFS node instance](#create-a-ipfs-node-instance)
+    - [More to come](#more-to-come)
   - [API](#api)
+      - [Generic API](#generic-api)
+      - [Block API](#block-api)
+      - [Object API](#object-api)
+      - [Config API](#config-api)
+      - [Files API](#files-api)
+      - [Swarm API](#swarm-api)
+      - [libp2p API](#libp2p-api)
 - [Development](#development)
-- [Project Architecture](/ARCHITECTURE.md)
+  - [Clone](#clone)
+  - [Install Dependencies](#install-dependencies)
+  - [Run Tests](#run-tests)
+  - [Lint](#lint)
+  - [Build a dist version](#build-a-dist-version)
 - [Packages](#packages)
 - [Contribute](#contribute)
   - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
@@ -166,7 +181,7 @@ node.init({ emptyRepo: true, bits: 2048 }, (err) => {
 
 [![](https://github.com/ipfs/interface-ipfs-core/raw/master/img/badge.png)](https://github.com/ipfs/interface-ipfs-core)
 
-A complete API definition will come, meanwhile, you can learn how to you use js-ipfs throught he standard interface at [![](https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg)](https://github.com/ipfs/interface-ipfs-core).
+A complete API definition is in the works. Meanwhile, you can learn how to you use js-ipfs through the standard interface at [![](https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg)](https://github.com/ipfs/interface-ipfs-core).
 
 ##### [Generic API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic)
 
