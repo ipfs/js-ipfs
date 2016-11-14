@@ -120,7 +120,7 @@
     "temp": "^0.8.3",
     "through2": "^2.0.1",
     "update-notifier": "^1.0.2",
-    "yargs": "^6.3.0"
+    "yargs": "^6.4.0"
   },
   "contributors": [
     "Andrew de Andrade <andrew@deandrade.com.br>",
