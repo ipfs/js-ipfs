@@ -1,0 +1,15 @@
+{
+  "name": "js-ipfs-milestone-sync",
+  "version": "1.0.0",
+  "description": "Milestone and label sync for js-ipfs project",
+  "main": "index.js",
+  "scripts": {
+    "sync-milestones": "./node_modules/.bin/github-sync-labels-milestones -v -c js-ipfs-milestones.config.json -t $GITHUB_TOKEN",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Haad",
+  "license": "MIT",
+  "dependencies": {
+    "github-sync-labels-milestones": "0.2.1"
+  }
+}
