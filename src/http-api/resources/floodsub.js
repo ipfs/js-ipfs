@@ -11,10 +11,6 @@ exports.sub = {
     const discover = request.query.discover
     const topic = request.params.topic
 
-    console.log('API RESC: SUBSCRIBE')
-    console.log('discover',discover)
-    console.log('topic',topic)
-
     request.server.app.ipfs.floodsub.sub(topic, { discover }, (err, stream) => {
       if (err) {
         log.error(err)
@@ -33,10 +29,6 @@ exports.pub = {
   handler: (request, reply) => {
     const buf = request.query.buf
     const topic = request.query.topic
-
-    console.log('API RESC: PUBLISH')
-    console.log('buf',buf)
-    console.log('topic',topic)
 
     request.server.app.ipfs.floodsub.pub(topic, buf, (err) => {
       if (err) {
