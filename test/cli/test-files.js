@@ -16,6 +16,12 @@ describe('files', () => {
       })
     })
 
+    it('cat alias', () => {
+      return ipfs('cat QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o').then((out) => {
+        expect(out).to.be.eql('hello world')
+      })
+    })
+
     it('get', () => {
       return ipfs('files get QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o').then((out) => {
         expect(out).to.be.eql(
@@ -33,8 +39,33 @@ describe('files', () => {
       })
     })
 
+    it('get alias', () => {
+      return ipfs('get QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o').then((out) => {
+        expect(out).to.be.eql(
+          'Saving file(s) to QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o'
+        )
+
+        const file = path.join(process.cwd(), 'QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+        expect(
+          fs.readFileSync(file).toString()
+        ).to.be.eql(
+          'hello world\n'
+        )
+
+        fs.unlinkSync(file)
+      })
+    })
+
     it('add', () => {
       return ipfs('files add src/init-files/init-docs/readme').then((out) => {
+        expect(out).to.be.eql(
+          'added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme'
+        )
+      })
+    })
+
+    it('add alias', () => {
+      return ipfs('add src/init-files/init-docs/readme').then((out) => {
         expect(out).to.be.eql(
           'added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme'
         )

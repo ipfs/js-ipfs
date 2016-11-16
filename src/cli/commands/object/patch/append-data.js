@@ -3,29 +3,22 @@
 const utils = require('../../../utils')
 const bl = require('bl')
 const fs = require('fs')
+const waterfall = require('async/waterfall')
 const debug = require('debug')
 const log = debug('cli:object')
 log.error = debug('cli:object:error')
 
 function appendData (key, data) {
-  utils.getIPFS((err, ipfs) => {
+  waterfall([
+    (cb) => utils.getIPFS(cb),
+    (ipfs, cb) => ipfs.object.patch.appendData(key, data, {enc: 'base58'}, cb),
+    (node, cb) => node.toJSON(cb)
+  ], (err, node) => {
     if (err) {
       throw err
     }
 
-    ipfs.object.patch.appendData(key, data, {enc: 'base58'}, (err, node) => {
-      if (err) {
-        throw err
-      }
-
-      node.toJSON((err, nodeJSON) => {
-        if (err) {
-          throw err
-        }
-
-        console.log(nodeJSON.Hash)
-      })
-    })
+    console.log(node.Hash)
   })
 }
 

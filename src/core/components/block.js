@@ -3,6 +3,7 @@
 const Block = require('ipfs-block')
 const multihash = require('multihashes')
 const CID = require('cids')
+const waterfall = require('async/waterfall')
 
 module.exports = function block (self) {
   return {
@@ -11,6 +12,12 @@ module.exports = function block (self) {
       self._blockService.get(cid, callback)
     },
     put: (block, cid, callback) => {
+      if (typeof cid === 'function') {
+        // legacy (without CID)
+        callback = cid
+        cid = undefined
+      }
+
       if (Array.isArray(block)) {
         return callback(new Error('Array is not supported'))
       }
@@ -19,17 +26,27 @@ module.exports = function block (self) {
         block = new Block(block)
       }
 
-      if (typeof cid === 'function') {
-        // legacy (without CID)
-        callback = cid
-        cid = new CID(block.key('sha2-256'))
-      }
+      waterfall([
+        (cb) => {
+          if (cid) {
+            return cb(null, cid)
+          }
 
-      self._blockService.put({
-        block: block,
-        cid: cid
-      }, (err) => {
-        callback(err, block)
+          block.key('sha2-256', (err, key) => {
+            if (err) {
+              return cb(err)
+            }
+
+            cb(null, new CID(key))
+          })
+        },
+        (cid, cb) => self._blockService.put({block: block, cid: cid}, cb)
+      ], (err) => {
+        if (err) {
+          return callback(err)
+        }
+
+        callback(null, block)
       })
     },
     rm: (cid, callback) => {

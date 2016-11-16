@@ -3,6 +3,7 @@
 const mh = require('multihashes')
 const multipart = require('ipfs-multipart')
 const Block = require('ipfs-block')
+const waterfall = require('async/waterfall')
 const debug = require('debug')
 const log = debug('http-api:block')
 log.error = debug('http-api:block:error')
@@ -80,10 +81,17 @@ exports.put = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
     const data = request.pre.args.data
+    const ipfs = request.server.app.ipfs
 
-    const block = new Block(data)
-
-    request.server.app.ipfs.block.put(block, (err) => {
+    waterfall([
+      (cb) => ipfs.block.put(new Block(data), cb),
+      (block, cb) => block.key('sha2-256', (err, key) => {
+        if (err) {
+          return cb(err)
+        }
+        cb(null, [key, block])
+      })
+    ], (err, res) => {
       if (err) {
         log.error(err)
         return reply({
@@ -93,8 +101,8 @@ exports.put = {
       }
 
       return reply({
-        Key: mh.toB58String(block.key('sha2-256')),
-        Size: block.data.length
+        Key: mh.toB58String(res[0]),
+        Size: res[1].data.length
       })
     })
   }

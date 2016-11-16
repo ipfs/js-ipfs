@@ -8,6 +8,7 @@ const path = require('path')
 const IPFSRepo = require('ipfs-repo')
 const multiaddr = require('multiaddr')
 const Store = require('fs-pull-blob-store')
+const setHeader = require('hapi-set-header')
 
 const log = debug('api')
 log.error = debug('api:error')
@@ -52,6 +53,7 @@ exports = module.exports = function HttpApi (repo) {
             }
           }
         })
+
         this.server.app.ipfs = this.ipfs
         const api = config.Addresses.API.split('/')
         const gateway = config.Addresses.Gateway.split('/')
@@ -74,6 +76,10 @@ exports = module.exports = function HttpApi (repo) {
 
         // load routes
         require('./routes')(this.server)
+
+        // Set default headers
+        setHeader(this.server, 'Access-Control-Allow-Headers', 'X-Stream-Output, X-Chunked-Output, X-Content-Length')
+        setHeader(this.server, 'Access-Control-Expose-Headers', 'X-Stream-Output, X-Chunked-Output, X-Content-Length')
 
         this.ipfs.goOnline(() => {
           this.server.start((err) => {

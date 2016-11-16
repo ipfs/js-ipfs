@@ -11,7 +11,7 @@ let nodes = []
 function startNode (num, done) {
   createTempNode(num, (err, node) => {
     if (err) {
-      throw err
+      return done(err)
     }
 
     const api = new API(node.repo.path())
@@ -25,6 +25,7 @@ gulp.task('libnode:start', (done) => {
   parallel([
     (cb) => startNode(7, cb),
     (cb) => startNode(8, cb),
+    (cb) => startNode(12, cb),
     (cb) => startNode(13, cb)
   ], done)
 })

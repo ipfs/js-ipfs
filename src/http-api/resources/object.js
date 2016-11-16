@@ -1,10 +1,12 @@
 'use strict'
 
-const bs58 = require('bs58')
+const mh = require('multihashes')
 const multipart = require('ipfs-multipart')
 const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
 const DAGNode = dagPB.DAGNode
+const waterfall = require('async/waterfall')
+const parallel = require('async/parallel')
 const debug = require('debug')
 const log = debug('http-api:object')
 log.error = debug('http-api:object:error')
@@ -19,7 +21,7 @@ exports.parseKey = (request, reply) => {
 
   try {
     return reply({
-      key: new Buffer(bs58.decode(request.query.arg))
+      key: mh.fromB58String(request.query.arg)
     })
   } catch (err) {
     log.error(err)
@@ -31,7 +33,11 @@ exports.parseKey = (request, reply) => {
 }
 
 exports.new = (request, reply) => {
-  request.server.app.ipfs.object.new((err, node) => {
+  const ipfs = request.server.app.ipfs
+  waterfall([
+    (cb) => ipfs.object.new(cb),
+    (node, cb) => node.toJSON(cb)
+  ], (err, nodeJson) => {
     if (err) {
       log.error(err)
       return reply({
@@ -40,15 +46,7 @@ exports.new = (request, reply) => {
       }).code(500)
     }
 
-    node.toJSON((err, nodeJSON) => {
-      if (err) {
-        return reply({
-          Message: 'Failed to get object: ' + err,
-          Code: 0
-        }).code(500)
-      }
-      return reply(nodeJSON)
-    })
+    return reply(nodeJson)
   })
 }
 
@@ -60,8 +58,12 @@ exports.get = {
   handler: (request, reply) => {
     const key = request.pre.args.key
     const enc = request.query.enc || 'base58'
+    const ipfs = request.server.app.ipfs
 
-    request.server.app.ipfs.object.get(key, {enc}, (err, node) => {
+    waterfall([
+      (cb) => ipfs.object.get(key, {enc}, cb),
+      (node, cb) => node.toJSON(cb)
+    ], (err, nodeJson) => {
       if (err) {
         log.error(err)
         return reply({
@@ -70,17 +72,8 @@ exports.get = {
         }).code(500)
       }
 
-      node.toJSON((err, nodeJSON) => {
-        if (err) {
-          return reply({
-            Message: 'Failed to get object: ' + err,
-            Code: 0
-          }).code(500)
-        }
-
-        nodeJSON.Data = nodeJSON.Data ? nodeJSON.Data.toString() : ''
-        return reply(nodeJSON)
-      })
+      nodeJson.Data = nodeJson.Data ? nodeJson.Data.toString() : ''
+      return reply(nodeJson)
     })
   }
 }
@@ -156,10 +149,14 @@ exports.put = {
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
-    const nodeJSON = request.pre.args.node
-    const node = new DAGNode(new Buffer(nodeJSON.Data), nodeJSON.Links)
+    const node = request.pre.args.node
+    const dagNode = new DAGNode(new Buffer(node.Data), node.Links)
+    const ipfs = request.server.app.ipfs
 
-    request.server.app.ipfs.object.put(node, (err, obj) => {
+    parallel([
+      (cb) => ipfs.object.put(dagNode, cb),
+      (cb) => dagNode.toJSON(cb)
+    ], (err, nodeJson) => {
       if (err) {
         log.error(err)
         return reply({
@@ -168,16 +165,7 @@ exports.put = {
         }).code(500)
       }
 
-      node.toJSON((err, nodeJSON) => {
-        if (err) {
-          return reply({
-            Message: 'Failed to put object: ' + err,
-            Code: 0
-          }).code(500)
-        }
-
-        return reply(nodeJSON)
-      })
+      return reply(nodeJson[1])
     })
   }
 }
@@ -233,8 +221,12 @@ exports.links = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
     const key = request.pre.args.key
+    const ipfs = request.server.app.ipfs
 
-    request.server.app.ipfs.object.get(key, (err, node) => {
+    waterfall([
+      (cb) => ipfs.object.get(key, cb),
+      (node, cb) => node.toJSON(cb)
+    ], (err, nodeJson) => {
       if (err) {
         log.error(err)
         return reply({
@@ -243,17 +235,9 @@ exports.links = {
         }).code(500)
       }
 
-      node.toJSON((err, nodeJSON) => {
-        if (err) {
-          return reply({
-            Message: 'Failed to get object: ' + err,
-            Code: 0
-          }).code(500)
-        }
-        return reply({
-          Hash: nodeJSON.Hash,
-          Links: nodeJSON.Links
-        })
+      return reply({
+        Hash: nodeJson.Hash,
+        Links: nodeJson.Links
       })
     })
   }
@@ -286,8 +270,8 @@ exports.parseKeyAndData = (request, reply) => {
     try {
       return reply({
         data: file,
-        key: new Buffer(bs58.decode(request.query.arg))
         // TODO: support ipfs paths: https://github.com/ipfs/http-api-spec/pull/68/files#diff-2625016b50d68d922257f74801cac29cR3880
+        key: mh.fromB58String(request.query.arg)
       })
     } catch (err) {
       return reply({
@@ -306,8 +290,12 @@ exports.patchAppendData = {
   handler: (request, reply) => {
     const key = request.pre.args.key
     const data = request.pre.args.data
+    const ipfs = request.server.app.ipfs
 
-    request.server.app.ipfs.object.patch.appendData(key, data, (err, node) => {
+    waterfall([
+      (cb) => ipfs.object.patch.appendData(key, data, cb),
+      (node, cb) => node.toJSON(cb)
+    ], (err, nodeJson) => {
       if (err) {
         log.error(err)
 
@@ -317,15 +305,7 @@ exports.patchAppendData = {
         }).code(500)
       }
 
-      node.toJSON((err, nodeJSON) => {
-        if (err) {
-          return reply({
-            Message: 'Failed to get object: ' + err,
-            Code: 0
-          }).code(500)
-        }
-        return reply(nodeJSON)
-      })
+      return reply(nodeJson)
     })
   }
 }
@@ -338,8 +318,12 @@ exports.patchSetData = {
   handler: (request, reply) => {
     const key = request.pre.args.key
     const data = request.pre.args.data
+    const ipfs = request.server.app.ipfs
 
-    request.server.app.ipfs.object.patch.setData(key, data, (err, node) => {
+    waterfall([
+      (cb) => ipfs.object.patch.setData(key, data, cb),
+      (node, cb) => node.toJSON(cb)
+    ], (err, nodeJson) => {
       if (err) {
         log.error(err)
 
@@ -349,17 +333,9 @@ exports.patchSetData = {
         }).code(500)
       }
 
-      node.toJSON((err, nodeJSON) => {
-        if (err) {
-          return reply({
-            Message: 'Failed to get object: ' + err,
-            Code: 0
-          }).code(500)
-        }
-        return reply({
-          Hash: nodeJSON.Hash,
-          Links: nodeJSON.Links
-        })
+      return reply({
+        Hash: nodeJson.Hash,
+        Links: nodeJson.Links
       })
     })
   }
@@ -391,9 +367,9 @@ exports.patchAddLink = {
 
     try {
       return reply({
-        root: new Buffer(bs58.decode(request.query.arg[0])),
+        root: mh.fromB58String(request.query.arg[0]),
         name: request.query.arg[1],
-        ref: new Buffer(bs58.decode(request.query.arg[2]))
+        ref: mh.fromB58String(request.query.arg[2])
       })
     } catch (err) {
       log.error(err)
@@ -406,8 +382,9 @@ exports.patchAddLink = {
     const root = request.pre.args.root
     const name = request.pre.args.name
     const ref = request.pre.args.ref
+    const ipfs = request.server.app.ipfs
 
-    request.server.app.ipfs.object.get(ref, (err, linkedObj) => {
+    ipfs.object.get(ref, (err, linkedObj) => {
       if (err) {
         log.error(err)
         return reply({
@@ -416,46 +393,26 @@ exports.patchAddLink = {
         }).code(500)
       }
 
-      linkedObj.size((err, size) => {
+      waterfall([
+        (cb) => parallel([
+          (cb) => linkedObj.size(cb),
+          (cb) => linkedObj.multihash(cb)
+        ], cb),
+        (stats, cb) => {
+          cb(null, new DAGLink(name, stats[0], stats[1]))
+        },
+        (link, cb) => ipfs.object.patch.addLink(root, link, cb),
+        (node, cb) => node.toJSON(cb)
+      ], (err, nodeJson) => {
         if (err) {
+          log.error(err)
           return reply({
             Message: 'Failed to get linked object: ' + err,
             Code: 0
           }).code(500)
         }
-        linkedObj.multihash((err, multihash) => {
-          if (err) {
-            return reply({
-              Message: 'Failed to get linked object: ' + err,
-              Code: 0
-            }).code(500)
-          }
 
-          const link = new DAGLink(name, size, multihash)
-
-          request.server.app.ipfs.object.patch.addLink(root, link, (err, node) => {
-            if (err) {
-              log.error(err)
-
-              return reply({
-                Message: 'Failed to add link to object: ' + err,
-                Code: 0
-              }).code(500)
-            }
-
-            node.toJSON(gotJSON)
-
-            function gotJSON (err, nodeJSON) {
-              if (err) {
-                return reply({
-                  Message: 'Failed to get object: ' + err,
-                  Code: 0
-                }).code(500)
-              }
-              return reply(nodeJSON)
-            }
-          })
-        })
+        return reply(nodeJson)
       })
     })
   }
@@ -477,7 +434,7 @@ exports.patchRmLink = {
 
     try {
       return reply({
-        root: new Buffer(bs58.decode(request.query.arg[0])),
+        root: mh.fromB58String(request.query.arg[0]),
         link: request.query.arg[1]
       })
     } catch (err) {
@@ -493,8 +450,12 @@ exports.patchRmLink = {
   handler: (request, reply) => {
     const root = request.pre.args.root
     const link = request.pre.args.link
+    const ipfs = request.server.app.ipfs
 
-    request.server.app.ipfs.object.patch.rmLink(root, link, (err, node) => {
+    waterfall([
+      (cb) => ipfs.object.patch.rmLink(root, link, cb),
+      (node, cb) => node.toJSON(cb)
+    ], (err, nodeJson) => {
       if (err) {
         log.error(err)
         return reply({
@@ -503,15 +464,7 @@ exports.patchRmLink = {
         }).code(500)
       }
 
-      node.toJSON((err, nodeJSON) => {
-        if (err) {
-          return reply({
-            Message: 'Failed to get object: ' + err,
-            Code: 0
-          }).code(500)
-        }
-        return reply(nodeJSON)
-      })
+      return reply(nodeJson)
     })
   }
 }

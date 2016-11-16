@@ -1,6 +1,7 @@
 'use strict'
 
 const DAGLink = require('ipld-dag-pb').DAGLink
+const waterfall = require('async/waterfall')
 const utils = require('../../../utils')
 const debug = require('debug')
 const log = debug('cli:object')
@@ -14,25 +15,18 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    utils.getIPFS((err, ipfs) => {
+    const dLink = new DAGLink(argv.link)
+
+    waterfall([
+      (cb) => utils.getIPFS(cb),
+      (ipfs, cb) => ipfs.object.patch.rmLink(argv.root, dLink, {enc: 'base58'}, cb),
+      (node, cb) => node.toJSON(cb)
+    ], (err, node) => {
       if (err) {
         throw err
       }
 
-      const dLink = new DAGLink(argv.link)
-
-      ipfs.object.patch.rmLink(argv.root, dLink, {enc: 'base58'}, (err, node) => {
-        if (err) {
-          throw err
-        }
-
-        node.toJSON((err, nodeJSON) => {
-          if (err) {
-            throw err
-          }
-          console.log(nodeJSON.Hash)
-        })
-      })
+      console.log(node.Hash)
     })
   }
 }

@@ -1,5 +1,6 @@
 'use strict'
 
+const waterfall = require('async/waterfall')
 const utils = require('../../utils')
 const debug = require('debug')
 const log = debug('cli:object')
@@ -13,24 +14,17 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    utils.getIPFS((err, ipfs) => {
+    waterfall([
+      (cb) => utils.getIPFS(cb),
+      (ipfs, cb) => ipfs.object.get(argv.key, {enc: 'base58'}, cb),
+      (node, cb) => node.toJSON(cb)
+    ], (err, nodeJson) => {
       if (err) {
         throw err
       }
 
-      ipfs.object.get(argv.key, {enc: 'base58'}, (err, node) => {
-        if (err) {
-          throw err
-        }
-
-        node.toJSON((err, nodeJSON) => {
-          if (err) {
-            throw err
-          }
-          nodeJSON.Data = nodeJSON.Data ? nodeJSON.Data.toString() : ''
-          console.log(JSON.stringify(nodeJSON))
-        })
-      })
+      nodeJson.Data = nodeJson.Data ? nodeJson.Data.toString() : ''
+      console.log(JSON.stringify(nodeJson))
     })
   }
 }

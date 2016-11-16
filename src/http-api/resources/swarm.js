@@ -104,7 +104,7 @@ exports.connect = {
         }).code(500)
       }
 
-      return reply({
+      reply({
         Strings: [`connect ${addr} success`]
       })
     })

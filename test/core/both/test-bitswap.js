@@ -7,20 +7,22 @@ const _ = require('lodash')
 const series = require('async/series')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
+const map = require('async/map')
 const leftPad = require('left-pad')
 const Block = require('ipfs-block')
-const bs58 = require('bs58')
+const mh = require('multihashes')
 const bl = require('bl')
 const API = require('ipfs-api')
 const multiaddr = require('multiaddr')
 const isNode = require('detect-node')
+
 const IPFS = require('../../../src/core')
 
-function makeBlock () {
-  return new Block(`IPFS is awesome ${Math.random()}`)
+function makeBlock (cb) {
+  return cb(null, new Block(`IPFS is awesome ${Math.random()}`))
 }
 
-describe.skip('bitswap', () => {
+describe('bitswap', () => {
   let inProcNode // Node spawned inside this process
   let swarmAddrsBak
 
@@ -71,7 +73,8 @@ describe.skip('bitswap', () => {
 
           // TODO, what we really need is a way to dial to
           // a peerId only and another to dial to peerInfo
-          targetAddr = multiaddr(`/ip4/127.0.0.1/tcp/0/ws/ipfs/${identity.id}`).toString()
+          return done()
+          // targetAddr = multiaddr(`/ip4/127.0.0.1/tcp/0/ws/ipfs/${identity.id}`).toString()
         }
 
         dialerNode.swarm.connect(targetAddr, done)
@@ -113,23 +116,24 @@ describe.skip('bitswap', () => {
       })
 
       it('2 peers', (done) => {
-        const block = makeBlock()
         let remoteNode
-        series([
-          // 0. Start node
-          (cb) => addNode(13, (err, _remoteNode) => {
-            expect(err).to.not.exist
-            remoteNode = _remoteNode
-            cb(err)
-          }),
-          (cb) => {
-            remoteNode.block.put(block, cb)
+        let block
+        waterfall([
+          (cb) => parallel([
+            (cb) => makeBlock(cb),
+            (cb) => addNode(13, cb)
+          ], cb),
+          (res, cb) => {
+            block = res[0]
+            remoteNode = res[1]
+            cb()
           },
-          (cb) => {
-            inProcNode.block.get(block.key('sha2-256'), (err, b) => {
-              expect(b.data.toString()).to.be.eql(block.data.toString())
-              cb(err)
-            })
+          (cb) => remoteNode.block.put(block, cb),
+          (res, cb) => block.key('sha2-256', cb),
+          (key, cb) => inProcNode.block.get(key, cb),
+          (b, cb) => {
+            expect(b.data).to.be.eql(block.data)
+            cb()
           }
         ], done)
       })
@@ -137,10 +141,20 @@ describe.skip('bitswap', () => {
       it('3 peers', function (done) {
         this.timeout(60 * 1000)
 
-        const blocks = _.range(6).map((i) => makeBlock())
-        const keys = blocks.map((b) => b.key('sha2-256'))
+        let blocks
+        let keys
         const remoteNodes = []
+
         series([
+          (cb) => parallel(_.range(6).map((i) => makeBlock), (err, _blocks) => {
+            expect(err).to.not.exist
+            blocks = _blocks
+            map(blocks, (b, cb) => b.key('sha2-256', cb), (err, res) => {
+              expect(err).to.not.exist
+              keys = res
+              cb()
+            })
+          }),
           (cb) => addNode(8, (err, _ipfs) => {
             remoteNodes.push(_ipfs)
             cb(err)
@@ -158,7 +172,6 @@ describe.skip('bitswap', () => {
           (cb) => inProcNode.block.put(blocks[5], cb),
           // 3. Fetch blocks on all nodes
           (cb) => parallel(_.range(6).map((i) => (cbI) => {
-            const toMh = (k) => bs58.encode(k).toString()
             const check = (n, k, callback) => {
               n.block.get(k, (err, b) => {
                 expect(err).to.not.exist
@@ -172,8 +185,8 @@ describe.skip('bitswap', () => {
             }
 
             series([
-              (cbJ) => check(remoteNodes[0], toMh(keys[i]), cbJ),
-              (cbJ) => check(remoteNodes[1], toMh(keys[i]), cbJ),
+              (cbJ) => check(remoteNodes[0], mh.toB58String(keys[i]), cbJ),
+              (cbJ) => check(remoteNodes[1], mh.toB58String(keys[i]), cbJ),
               (cbJ) => check(inProcNode, keys[i], cbJ)
             ], cbI)
           }), cb)
@@ -181,41 +194,34 @@ describe.skip('bitswap', () => {
       })
     })
 
-    // wont work without http-api for add
-    describe.skip('fetches a remote file', () => {
+    describe('fetches a remote file', () => {
       beforeEach((done) => {
         inProcNode.goOnline(done)
       })
 
-      it('2 peers', (done) => {
-        const file = new Buffer('I love IPFS <3')
+      afterEach((done) => {
+        setTimeout(() => inProcNode.goOffline(done), 1500)
+      })
 
-        let node
+      it('2 peers', (done) => {
+        const file = new Buffer(`I love IPFS <3 ${Math.random()}`)
+
         waterfall([
           // 0. Start node
-          (cb) => addNode(9, (err, _ipfs) => {
-            node = _ipfs
-            cb(err)
-          }),
+          (cb) => addNode(12, cb),
           // 1. Add file to tmp instance
-          (cb) => node.add([{path: 'awesome.txt', content: file}], cb),
+          (remote, cb) => remote.add([{
+            path: 'awesome.txt',
+            content: file
+          }], cb),
           // 2. Request file from local instance
-          (val, cb) => {
-            const hash = bs58.encode(val[0].multihash).toString()
-
-            inProcNode.files.cat(hash, (err, res) => {
-              expect(err).to.not.exist
-              res.on('file', (data) => {
-                data.content.pipe(bl((err, bldata) => {
-                  expect(err).to.not.exist
-                  expect(bldata.toString()).to.equal('I love IPFS <3')
-                  cb()
-                }))
-              })
-            })
-          },
-          (cb) => setTimeout(() => node.goOffline(cb), 1000)
-        ], done)
+          (val, cb) => inProcNode.files.cat(val[0].hash, cb),
+          (res, cb) => res.pipe(bl(cb))
+        ], (err, res) => {
+          expect(err).to.not.exist
+          expect(res).to.be.eql(file)
+          done()
+        })
       })
     })
   })

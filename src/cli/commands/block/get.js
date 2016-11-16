@@ -1,7 +1,7 @@
 'use strict'
 
 const utils = require('../../utils')
-const bs58 = require('bs58')
+const mh = require('multihashes')
 const debug = require('debug')
 const log = debug('cli:block')
 log.error = debug('cli:block:error')
@@ -19,11 +19,11 @@ module.exports = {
         throw err
       }
 
-      const mh = utils.isDaemonOn()
+      const hash = utils.isDaemonOn()
         ? argv.key
-        : new Buffer(bs58.decode(argv.key))
+        : mh.fromB58String(argv.key)
 
-      ipfs.block.get(mh, (err, block) => {
+      ipfs.block.get(hash, (err, block) => {
         if (err) {
           throw err
         }

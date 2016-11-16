@@ -1,6 +1,6 @@
 'use strict'
 
-const bs58 = require('bs58')
+const mh = require('multihashes')
 const multipart = require('ipfs-multipart')
 const debug = require('debug')
 const tar = require('tar-stream')
@@ -17,12 +17,15 @@ exports = module.exports
 // common pre request handler that parses the args and returns `key` which is assigned to `request.pre.args`
 exports.parseKey = (request, reply) => {
   if (!request.query.arg) {
-    return reply("Argument 'key' is required").code(400).takeover()
+    return reply({
+      Message: "Argument 'key' is required",
+      Code: 0
+    }).code(400).takeover()
   }
 
   try {
     return reply({
-      key: new Buffer(bs58.decode(request.query.arg))
+      key: mh.fromB58String(request.query.arg)
     })
   } catch (err) {
     log.error(err)
@@ -127,7 +130,10 @@ exports.get = {
 exports.add = {
   handler: (request, reply) => {
     if (!request.payload) {
-      return reply('Array, Buffer, or String is required.').code(400).takeover()
+      return reply({
+        Message: 'Array, Buffer, or String is required.',
+        code: 0
+      }).code(400).takeover()
     }
 
     const ipfs = request.server.app.ipfs
@@ -155,8 +161,10 @@ exports.add = {
 
     parser.on('end', () => {
       if (!filesParsed) {
-        return reply("File argument 'data' is required.")
-          .code(400).takeover()
+        return reply({
+          Message: "File argument 'data' is required.",
+          code: 0
+        }).code(400).takeover()
       }
       fileAdder.end()
     })
@@ -186,7 +194,7 @@ exports.add = {
           }).code(500)
         }
 
-        reply(files.join(''))
+        reply(files.join('\n'))
           .header('x-chunked-output', '1')
           .header('content-type', 'application/json')
       })
