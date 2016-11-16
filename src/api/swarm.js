@@ -12,6 +12,9 @@ module.exports = (send) => {
         callback = opts
         opts = {}
       }
+	  if (opts['v']) {
+		throw "I don't know how to handle errors in javascript, but the -v option needs to be handled"
+	  }
       send({
         path: 'swarm/peers',
         qs: opts
@@ -19,9 +22,19 @@ module.exports = (send) => {
         if (err) {
           return callback(err)
         }
-        callback(null, result.Strings.map((addr) => {
-          return multiaddr(addr)
-        }))
+		if (result.Strings) {
+          callback(null, result.Strings.map((addr) => {
+            return multiaddr(addr)
+          }))
+		} else if (result.Peers) {
+		  let out = result.Peers.map((p) => {
+			return {
+				addr: new multiaddr(p.Addr),
+				peer: new PeerId(p.Peer),
+				latency: p.Latency,
+				streams: p.Streams,
+			}
+		}
       })
     }),
     connect: promisify((args, opts, callback) => {
