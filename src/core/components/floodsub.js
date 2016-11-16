@@ -1,6 +1,7 @@
 'use strict'
 
-const FloodSub = require('libp2p-floodsub')
+// const FloodSub = require('libp2p-floodsub')
+const FloodSub = require('./../../../node_modules/libp2p-floodsub/src')
 const promisify = require('promisify-es6')
 const Stream = require('stream')
 
@@ -10,8 +11,13 @@ module.exports = function floodsub (self) {
   let fsub
 
   return {
-    start: promisify((libp2pNode) => {
-      fsub = new FloodSub(libp2pNode)
+    start: promisify(() => {
+      if (!self.isOnline()) {
+        throw OFFLINE_ERROR
+      }
+
+      fsub = new FloodSub(self._libp2pNode)
+      return self._libp2pNode
     }),
 
     sub: promisify((topic, options, callback) => {
@@ -38,7 +44,12 @@ module.exports = function floodsub (self) {
         })
       })
 
-      fsub.subscribe(topic)
+      try {
+        fsub.subscribe(topic)
+      } catch (err) {
+        return callback(err)
+      }
+
       callback(null, rs)
     }),
 
@@ -49,7 +60,12 @@ module.exports = function floodsub (self) {
 
       const buf = Buffer.isBuffer(data) ? data : new Buffer(data)
 
-      fsub.publish(topic, data)
+      try {
+        fsub.publish(topic, buf)
+      } catch (err) {
+        return callback(err)
+      }
+
       callback(null)
     })
   }
