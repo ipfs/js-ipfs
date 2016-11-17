@@ -13,7 +13,6 @@ module.exports = function goOnline (self) {
         return cb(err)
       }
 
-      self.floodsub.start()
       self._bitswap = new Bitswap(
         self._libp2pNode.peerInfo,
         self._libp2pNode,

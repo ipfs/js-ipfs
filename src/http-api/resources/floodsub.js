@@ -6,9 +6,25 @@ log.error = debug('http-api:floodsub:error')
 
 exports = module.exports
 
+exports.start = {
+  handler: (request, reply) => {
+    request.server.app.ipfs.floodsub.start((err, floodsub) => {
+      if (err) {
+        log.error(err)
+        return reply({
+          Message: `Failed to start: ${err}`,
+          Code: 0
+        }).code(500)
+      }
+
+      return reply(floodsub)
+    })
+  }
+}
+
 exports.sub = {
   handler: (request, reply) => {
-    const discover = request.query.discover
+    const discover = request.query.discover || null
     const topic = request.params.topic
 
     request.server.app.ipfs.floodsub.sub(topic, { discover }, (err, stream) => {
@@ -20,6 +36,14 @@ exports.sub = {
         }).code(500)
       }
 
+      // hapi is not very clever and throws if no
+      // - _read method
+      // - _readableState object
+      // are there :(
+      if (!stream._read) {
+        stream._read = () => {}
+        stream._readableState = {}
+      }
       return reply(stream)
     })
   }
@@ -39,7 +63,25 @@ exports.pub = {
         }).code(500)
       }
 
-      return reply(true)
+      return reply()
+    })
+  }
+}
+
+exports.unsub = {
+  handler: (request, reply) => {
+    const topic = request.params.topic
+
+    request.server.app.ipfs.floodsub.unsub(topic, (err) => {
+      if (err) {
+        log.error(err)
+        return reply({
+          Message: `Failed to subscribe to topic ${topic}: ${err}`,
+          Code: 0
+        }).code(500)
+      }
+
+      return reply()
     })
   }
 }
