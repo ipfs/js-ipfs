@@ -13,6 +13,8 @@ module.exports = (send) => {
         opts = {}
       }
 
+      const verbose = opts.v || opts.verbose
+
       send({
         path: 'swarm/peers',
         qs: opts
@@ -21,14 +23,24 @@ module.exports = (send) => {
           return callback(err)
         }
 
-        console.log(JSON.stringify(result, null, 2))
-
         if (result.Strings) {
           // go-ipfs <= 0.4.4
           callback(null, result.Strings.map((p) => {
-            // splitting on whitespace as verbose mode
-            // returns the latency appended
-            return multiaddr(p.split(' ')[0])
+            const res = {}
+
+            if (verbose) {
+              const parts = p.split(' ')
+              res.addr = multiaddr(parts[0])
+              res.latency = parts[1]
+            } else {
+              res.addr = multiaddr(p)
+            }
+
+            res.peer = PeerId.createFromB58String(
+              res.addr.decapsulate('ipfs')
+            )
+
+            return res
           }))
         } else if (result.Peers) {
           // go-ipfs >= 0.4.5
