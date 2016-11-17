@@ -45,6 +45,7 @@ function IPFS (repoInstance) {
   this._bitswap = null
   this._blockService = new BlockService(this._repo)
   this._ipldResolver = new IPLDResolver(this._blockService)
+  this._floodsub = null
 
   // IPFS Core exposed components
 

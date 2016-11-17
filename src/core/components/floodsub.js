@@ -1,23 +1,21 @@
 'use strict'
 
-// const FloodSub = require('libp2p-floodsub')
-const FloodSub = require('./../../../node_modules/libp2p-floodsub/src')
+const FloodSub = require('libp2p-floodsub')
 const promisify = require('promisify-es6')
-const Stream = require('stream')
+const Readable = require('stream').Readable
 
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
+const FSUB_ERROR = new Error(`FloodSub is not started.`)
 
 module.exports = function floodsub (self) {
-  let fsub
-
   return {
-    start: promisify(() => {
+    start: promisify((callback) => {
       if (!self.isOnline()) {
         throw OFFLINE_ERROR
       }
 
-      fsub = new FloodSub(self._libp2pNode)
-      return self._libp2pNode
+      self._floodsub = new FloodSub(self._libp2pNode)
+      return callback(null, self._floodsub)
     }),
 
     sub: promisify((topic, options, callback) => {
@@ -32,12 +30,14 @@ module.exports = function floodsub (self) {
         throw OFFLINE_ERROR
       }
 
-      let rs = new Stream()
-      rs.readable = true
-      rs._read = () => {}
-      rs.cancel = () => fsub.unsubscribe(topic)
+      if (!self._floodsub) {
+        throw FSUB_ERROR
+      }
 
-      fsub.on(topic, (data) => {
+      let rs = new Readable()
+      rs.cancel = () => self._floodsub.subscribe(topic)
+
+      self._floodsub.on(topic, (data) => {
         rs.emit('data', {
           data: data.toString(),
           topicIDs: [topic]
@@ -45,7 +45,7 @@ module.exports = function floodsub (self) {
       })
 
       try {
-        fsub.subscribe(topic)
+        self._floodsub.subscribe(topic)
       } catch (err) {
         return callback(err)
       }
@@ -58,10 +58,32 @@ module.exports = function floodsub (self) {
         throw OFFLINE_ERROR
       }
 
+      if (!self._floodsub) {
+        throw FSUB_ERROR
+      }
+
       const buf = Buffer.isBuffer(data) ? data : new Buffer(data)
 
       try {
-        fsub.publish(topic, buf)
+        self._floodsub.publish(topic, buf)
+      } catch (err) {
+        return callback(err)
+      }
+
+      callback(null)
+    }),
+
+    unsub: promisify((topic, callback) => {
+      if (!self.isOnline()) {
+        throw OFFLINE_ERROR
+      }
+
+      if (!self._floodsub) {
+        throw FSUB_ERROR
+      }
+
+      try {
+        self._floodsub.unsubscribe(topic)
       } catch (err) {
         return callback(err)
       }
