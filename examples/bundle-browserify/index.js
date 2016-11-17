@@ -1,6 +1,7 @@
 'use strict'
 
-var IPFS = require('../../src')
+var IPFS = require('ipfs-api')
+
 var ipfs = IPFS()
 
 function store () {

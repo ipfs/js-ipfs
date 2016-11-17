@@ -1,5 +1,5 @@
-node_modules
-*.log
+**/node_modules
+**/*.log
 test/setup/tmp-disposable-nodes-addrs.json
 dist
 coverage

@@ -1,7 +1,7 @@
 {
-  "name": "ipfs-api-example-browser-add",
+  "name": "bundle-browserify",
   "version": "1.0.0",
-  "description": "",
+  "description": "Bundle js-ipfs-api with Browserify",
   "main": "index.js",
   "scripts": {
     "start": "browserify index.js > bundle.js && http-server -a 127.0.0.1 -p 8888"
@@ -10,7 +10,10 @@
   "author": "Friedel Ziegelmayer",
   "license": "MIT",
   "devDependencies": {
-    "browserify": "^13.0.1",
+    "browserify": "^13.1.1",
+    "ipfs-api": "^11.1.0",
     "http-server": "^0.9.0"
+  },
+  "dependencies": {
   }
 }

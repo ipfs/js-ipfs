@@ -79,6 +79,8 @@ var ipfs = ipfsAPI({host: 'localhost', port: '5001', procotol: 'http'})
 
 Same as in Node.js, you just have to [browserify](http://browserify.org) the code before serving it. See the browserify repo for how to do that.
 
+See the example at the [examples folder](/examples/bundle-browserify) to get a boilerplate.
+
 ### In a web browser from CDN
 
 Instead of a local installation (and browserification) you may request a remote copy of IPFS API from [unpkg CDN](https://unpkg.com/).
