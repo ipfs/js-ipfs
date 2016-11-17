@@ -99,7 +99,7 @@
     "lodash.sortby": "^4.7.0",
     "lodash.values": "^4.3.0",
     "mafmt": "^2.1.2",
-    "multiaddr": "^2.0.3",
+    "multiaddr": "^2.1.0",
     "multihashes": "^0.2.2",
     "path-exists": "^3.0.0",
     "peer-book": "^0.3.0",
