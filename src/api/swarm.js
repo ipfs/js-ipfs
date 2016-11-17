@@ -12,9 +12,7 @@ module.exports = (send) => {
         callback = opts
         opts = {}
       }
-	  if (opts['v']) {
-		throw "I don't know how to handle errors in javascript, but the -v option needs to be handled"
-	  }
+
       send({
         path: 'swarm/peers',
         qs: opts
@@ -22,19 +20,36 @@ module.exports = (send) => {
         if (err) {
           return callback(err)
         }
-		if (result.Strings) {
-          callback(null, result.Strings.map((addr) => {
-            return multiaddr(addr)
+
+        console.log(JSON.stringify(result, null, 2))
+
+        if (result.Strings) {
+          // go-ipfs <= 0.4.4
+          callback(null, result.Strings.map((p) => {
+            // splitting on whitespace as verbose mode
+            // returns the latency appended
+            return multiaddr(p.split(' ')[0])
           }))
-		} else if (result.Peers) {
-		  let out = result.Peers.map((p) => {
-			return {
-				addr: new multiaddr(p.Addr),
-				peer: new PeerId(p.Peer),
-				latency: p.Latency,
-				streams: p.Streams,
-			}
-		}
+        } else if (result.Peers) {
+          // go-ipfs >= 0.4.5
+          callback(null, result.Peers.map((p) => {
+            const res = {
+              addr: multiaddr(p.Addr),
+              peer: PeerId.createFromB58String(p.Peer),
+              muxer: p.Muxer
+            }
+
+            if (p.Latency) {
+              res.latency = p.Latency
+            }
+
+            if (p.Streams) {
+              res.streams = p.Streams
+            }
+
+            return res
+          }))
+        }
       })
     }),
     connect: promisify((args, opts, callback) => {
