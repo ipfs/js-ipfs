@@ -1,3 +1,13 @@
+<a name="0.19.0"></a>
+# [0.19.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.18.4...v0.19.0) (2016-11-17)
+
+
+### Features
+
+* prepare for swarm.peers changes in 0.4.5 ([039eca7](https://github.com/ipfs/interface-ipfs-core/commit/039eca7))
+
+
+
 <a name="0.18.4"></a>
 ## [0.18.4](https://github.com/ipfs/interface-ipfs-core/compare/v0.18.3...v0.18.4) (2016-11-10)
 
