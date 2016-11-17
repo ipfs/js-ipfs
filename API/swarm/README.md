@@ -67,9 +67,20 @@ ipfs.swarm.disconnect(addr, function (err) {})
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.swarm.peers([callback])
+##### `JavaScript` - ipfs.swarm.peers([opts] [, callback])
 
-`callback` must follow `function (err, peerInfos) {}` signature, where `err` is an error if the operation was not successful. `peerInfos` will be an array of [PeerInfo]().
+If `opts.verbose` is set to `true` additional information, such as `latency` is provided.
+
+`callback` must follow `function (err, peerInfos) {}` signature, where `err` is an error if the operation was not successful. `peerInfos` will be an array of the form
+
+- `addr: Multiaddr`
+- `peer: [PeerInfo]()`
+- `latency: String` Only if `verbose: true`  was passed
+
+Starting with `go-ipfs 0.4.5` these additional properties are provided
+
+- `muxer: String` - The type of stream muxer the peer is usng
+- `streams: []String` - Only if `verbose: true`, a list of currently open streams
 
 If no `callback` is passed, a promise is returned.
 

@@ -34,6 +34,7 @@
     "detect-node": "^2.0.3",
     "ipfs-block": "^0.5.0",
     "ipld-dag-pb": "^0.8.0",
+    "multiaddr": "^2.0.3",
     "multihashes": "^0.2.2",
     "readable-stream": "2.1.5"
   },
