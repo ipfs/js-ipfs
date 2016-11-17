@@ -58,6 +58,7 @@
   "devDependencies": {
     "aegir": "^9.1.2",
     "chai": "^3.5.0",
+    "eslint-plugin-react": "^6.7.1",
     "gulp": "^3.9.1",
     "hapi": "^15.2.0",
     "interface-ipfs-core": "^0.18.3",
