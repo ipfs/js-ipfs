@@ -215,7 +215,11 @@ This is a requirement to integrate floodsub in js-ipfs
 
 ### Tasks:
 
-NA
+- [x] Support for matching func - https://github.com/multiformats/js-multistream-select/pull/26
+- [ ] Figure out DAG API https://github.com/ipfs/interface-ipfs-core/issues/81
+- [ ] Implement DAG API
+- [ ] Support bitswap 1.0.0 and 1.1.0 simultaneously
+- [ ] Fix full bitswap compatibility with go-ipfs
 
 ### Dependencies: `NA`
 ### Requirements by other projects: `NA`
@@ -224,7 +228,7 @@ NA
 
 
 
-# Milestone - js-ipfs and js-ipfs-api bundling 
+# ✔️ Milestone - js-ipfs and js-ipfs-api bundling 
 
 > Summary: Make it work with any bundler, out of the box or provide proper documentation if not possible.
 
@@ -234,7 +238,7 @@ NA
 
 ### Tasks:
 
-- [ ] https://github.com/ipfs/js-ipfs/issues/429
+- [x] https://github.com/ipfs/js-ipfs/issues/429
 
 ### Dependencies: `NA`
 ### Requirements by other projects: `NA`
@@ -259,17 +263,22 @@ NA
 
 
 
-# Milestone - Quick Start examples for js-ipfs and js-ipfs-api
+# ✔️ Milestone - Quick Start examples for js-ipfs and js-ipfs-api
 
 > Summary: 
 
 ### Leads:
 
 - Samuli
+- David
+- Friedel
+- Victor
 
 ### Tasks:
 
-NA
+- [x] https://github.com/ipfs/js-ipfs-api/pull/421
+- [x] https://github.com/ipfs/js-ipfs-api/issues/428
+- [x] https://github.com/ipfs/js-ipfs/pull/607
 
 ### Dependencies: `NA`
 ### Requirements by other projects: `NA`
@@ -281,7 +290,7 @@ NA
 
 # Cached milestones (to re-evaluate for next quarter)
 
-# Milestone 4 - Documentation and Developer Experience
+# Milestone - Documentation and Developer Experience
 
 > Summary: During this period, we will focus on bringing great developer experience to js-ipfs, this includes: great examples, documentation, tutorials, blog posts and more, enabling more developers to hack with js-ipfs or contribute to the project.
 
@@ -312,29 +321,7 @@ NA
 
 ##### Expected date of completion: `TBA`
 
-# Milestone 5 - 1st implementation Peer Routing + Content Routing (the go-ipfs DHT)
-
-> Summary: Enable content discovery in js-ipfs
-
-### Tasks:
-
-- [ ] js-ipfs-dht
-
-### Dependencies:
-
-NA
-
-### Requirements by other projects:
-
-NA
-
-### Notes:
-
-NA
-
-##### Expected date of completion: `TBA`
-
-# Milestone 6 - The last miles for complete feature parity with go-ipfs
+# Milestone - The last miles for complete feature parity with go-ipfs
 
 > Summary: 100% feature parity and interop with go-ipfs
 
@@ -360,7 +347,7 @@ NA
 ##### Expected date of completion: `TBA`
 
 
-# Milestone 7 - Shoot for the moon 🌑
+# Milestone - Shoot for the moon 🌑
 
 > Summary: Grandiose ideas to make the js-ipfs project really awesome. It might take some time to get to them, but writting them down is always good.
 
