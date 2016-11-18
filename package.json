@@ -89,7 +89,7 @@
     "ipfs-unixfs-engine": "^0.13.0",
     "ipld-resolver": "^0.2.0",
     "isstream": "^0.1.2",
-    "joi": "^9.2.0",
+    "joi": "^10.0.1",
     "libp2p-ipfs": "^0.15.0",
     "libp2p-ipfs-browser": "^0.16.0",
     "lodash.flatmap": "^4.5.0",
