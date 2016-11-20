@@ -22,12 +22,12 @@ exports.start = {
   }
 }
 
-exports.sub = {
+exports.subscribe = {
   handler: (request, reply) => {
     const discover = request.query.discover || null
     const topic = request.params.topic
 
-    request.server.app.ipfs.floodsub.sub(topic, { discover }, (err, stream) => {
+    request.server.app.ipfs.floodsub.subscribe(topic, { discover }, (err, stream) => {
       if (err) {
         log.error(err)
         return reply({
@@ -49,12 +49,12 @@ exports.sub = {
   }
 }
 
-exports.pub = {
+exports.publish = {
   handler: (request, reply) => {
     const buf = request.query.buf
     const topic = request.query.topic
 
-    request.server.app.ipfs.floodsub.pub(topic, buf, (err) => {
+    request.server.app.ipfs.floodsub.publish(topic, buf, (err) => {
       if (err) {
         log.error(err)
         return reply({
@@ -68,15 +68,15 @@ exports.pub = {
   }
 }
 
-exports.unsub = {
+exports.unsubscribe = {
   handler: (request, reply) => {
     const topic = request.params.topic
 
-    request.server.app.ipfs.floodsub.unsub(topic, (err) => {
+    request.server.app.ipfs.floodsub.unsubscribe(topic, (err) => {
       if (err) {
         log.error(err)
         return reply({
-          Message: `Failed to subscribe to topic ${topic}: ${err}`,
+          Message: `Failed to unsubscribe from topic ${topic}: ${err}`,
           Code: 0
         }).code(500)
       }

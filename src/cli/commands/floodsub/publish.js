@@ -6,9 +6,9 @@ const log = debug('cli:floodsub')
 log.error = debug('cli:floodsub:error')
 
 module.exports = {
-  command: 'pub <topic> <message>',
+  command: 'publish <topic> <data>',
 
-  describe: 'Publish a message to a topic',
+  describe: 'Publish data to a topic',
 
   builder: {},
 
@@ -18,7 +18,7 @@ module.exports = {
         throw err
       }
 
-      ipfs.floodsub.pub(argv.topic, argv.message, (err) => {
+      ipfs.floodsub.publish(argv.topic, argv.data, (err) => {
         if (err) {
           throw err
         }
