@@ -56,21 +56,21 @@ describe('floodsub', () => {
       })
     })
 
-    describe('sub', () => {
+    describe('subscribe', () => {
       it('throws if offline', () => {
-        expect(() => nodeOffline.floodsub.sub()).to.throw
+        expect(() => nodeOffline.floodsub.subscribe()).to.throw
       })
 
       it('throws if not started', () => {
-        expect(() => nodeUnstarted.floodsub.sub(topic)).to.throw
+        expect(() => nodeUnstarted.floodsub.subscribe(topic)).to.throw
       })
 
       it('throws without a topic', () => {
-        expect(() => nodeStarted.floodsub.sub()).to.throw
+        expect(() => nodeStarted.floodsub.subscribe()).to.throw
       })
 
       it('success', (done) => {
-        nodeStarted.floodsub.sub(topic, (err, stream) => {
+        nodeStarted.floodsub.subscribe(topic, (err, stream) => {
           expect(err).to.not.exist
           expect(stream.readable).to.eql(true)
           expect(typeof stream._read).to.eql('function')
@@ -86,21 +86,21 @@ describe('floodsub', () => {
       })
     })
 
-    describe('pub', () => {
+    describe('publish', () => {
       it('throws if offline', () => {
-        expect(() => nodeOffline.floodsub.pub()).to.throw
+        expect(() => nodeOffline.floodsub.publish()).to.throw
       })
 
       it('throws if not started', () => {
-        expect(() => nodeUnstarted.floodsub.pub(topic, message)).to.throw
+        expect(() => nodeUnstarted.floodsub.publish(topic, message)).to.throw
       })
 
       it('throws without a topic', () => {
-        expect(() => nodeStarted.floodsub.sub()).to.throw
+        expect(() => nodeStarted.floodsub.publish()).to.throw
       })
 
       it('throws without data', () => {
-        expect(() => nodeStarted.floodsub.sub(topic)).to.throw
+        expect(() => nodeStarted.floodsub.publish(topic)).to.throw
       })
 
       it('success', (done) => {
@@ -108,27 +108,27 @@ describe('floodsub', () => {
 
         subscription.on('data', () => done())
 
-        nodeStarted.floodsub.pub(topic, message, () => {
+        nodeStarted.floodsub.publish(topic, message, () => {
           expect(published).to.eql(true)
         })
       })
     })
 
-    describe('unsub', () => {
+    describe('unsubscribe', () => {
       it('throws if offline', () => {
-        expect(() => nodeOffline.floodsub.unsub()).to.throw
+        expect(() => nodeOffline.floodsub.unsubscribe()).to.throw
       })
 
       it('throws if not started', () => {
-        expect(() => nodeUnstarted.floodsub.unsub(topic)).to.throw
+        expect(() => nodeUnstarted.floodsub.unsubscribe(topic)).to.throw
       })
 
       it('throws without a topic', () => {
-        expect(() => nodeStarted.floodsub.unsub()).to.throw
+        expect(() => nodeStarted.floodsub.unsubscribe()).to.throw
       })
 
       it('success', (done) => {
-        nodeStarted.floodsub.unsub(topic, (err) => {
+        nodeStarted.floodsub.unsubscribe(topic, (err) => {
           expect(err).to.not.exist
           const nodeSubs = floodsub.getSubscriptions()
           expect(nodeSubs.length).to.eql(0)

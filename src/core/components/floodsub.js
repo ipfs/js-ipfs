@@ -18,7 +18,7 @@ module.exports = function floodsub (self) {
       return callback(null, self._floodsub)
     }),
 
-    sub: promisify((topic, options, callback) => {
+    subscribe: promisify((topic, options, callback) => {
       // TODO: Clarify with @diasdavid what to do with the `options.discover` param
       // Ref: https://github.com/ipfs/js-ipfs-api/pull/377/files#diff-f0c61c06fd5dc36b6f760b7ea97b1862R50
       if (typeof options === 'function') {
@@ -35,7 +35,7 @@ module.exports = function floodsub (self) {
       }
 
       let rs = new Readable()
-      rs.cancel = () => self._floodsub.subscribe(topic)
+      rs.cancel = () => self._floodsub.unsubscribe(topic)
 
       self._floodsub.on(topic, (data) => {
         rs.emit('data', {
@@ -53,7 +53,7 @@ module.exports = function floodsub (self) {
       callback(null, rs)
     }),
 
-    pub: promisify((topic, data, callback) => {
+    publish: promisify((topic, data, callback) => {
       if (!self.isOnline()) {
         throw OFFLINE_ERROR
       }
@@ -73,7 +73,7 @@ module.exports = function floodsub (self) {
       callback(null)
     }),
 
-    unsub: promisify((topic, callback) => {
+    unsubscribe: promisify((topic, callback) => {
       if (!self.isOnline()) {
         throw OFFLINE_ERROR
       }

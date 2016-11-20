@@ -58,20 +58,20 @@ describe.skip('floodsub', function () {
       })
     })
 
-    it('sub', () => {
-      return ipfs('floodsub', 'sub', topic).then((out) => {
+    it('subscribe', () => {
+      return ipfs('floodsub', 'subscribe', topic).then((out) => {
         expect(out).to.have.length.above(0)
       })
     })
 
-    it('pub', () => {
-      return ipfs('floodsub', 'pub', topic, message).then((out) => {
+    it('publish', () => {
+      return ipfs('floodsub', 'publish', topic, message).then((out) => {
         expect(called).to.eql(true)
       })
     })
 
-    it('unsub', () => {
-      return ipfs('floodsub', 'unsub', topic).then((out) => {
+    it('unsubscribe', () => {
+      return ipfs('floodsub', 'unsubscribe', topic).then((out) => {
         expect(called).to.eql(true)
       })
     })

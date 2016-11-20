@@ -6,9 +6,9 @@ const log = debug('cli:floodsub')
 log.error = debug('cli:floodsub:error')
 
 module.exports = {
-  command: 'unsub <topic>',
+  command: 'subscribe <topic>',
 
-  describe: 'Unsubscribe from a topic',
+  describe: 'Subscribe to a topic',
 
   builder: {},
 
@@ -18,10 +18,12 @@ module.exports = {
         throw err
       }
 
-      ipfs.floodsub.unsub(argv.topic, (err) => {
+      ipfs.floodsub.subscribe(argv.topic, (err, stream) => {
         if (err) {
           throw err
         }
+
+        console.log(stream.toString())
       })
     })
   }
