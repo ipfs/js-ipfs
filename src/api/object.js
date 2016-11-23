@@ -46,14 +46,17 @@ module.exports = (send) => {
           return callback(err)
         }
 
-        const node = new DAGNode(result.Data, result.Links.map(
-          (l) => {
-            return new DAGLink(l.Name, l.Size, new Buffer(bs58.decode(l.Hash)))
-          }))
+        const links = result.Links.map((l) => {
+          return new DAGLink(l.Name, l.Size, new Buffer(bs58.decode(l.Hash)))
+        })
 
-        cache.set(multihash, node)
-
-        callback(null, node)
+        DAGNode.create(result.Data, links, (err, node) => {
+          if (err) {
+            return callback(err)
+          }
+          cache.set(multihash, node)
+          callback(null, node)
+        })
       })
     }),
 
@@ -73,12 +76,19 @@ module.exports = (send) => {
 
       if (Buffer.isBuffer(obj)) {
         if (!options.enc) {
-          tmpObj = { Data: obj.toString(), Links: [] }
+          tmpObj = {
+            Data: obj.toString(),
+            Links: []
+          }
         }
       } else if (obj.multihash) {
         tmpObj = {
           Data: obj.data.toString(),
-          Links: obj.links.map((l) => { return l.toJSON() })
+          Links: obj.links.map((l) => {
+            const link = l.toJSON()
+            link.hash = link.multihash
+            return link
+          })
         }
       } else if (typeof obj === 'object') {
         tmpObj.Data = obj.Data.toString()
@@ -125,23 +135,26 @@ module.exports = (send) => {
           })
           return
         } else {
-          node = new DAGNode(obj.Data, obj.Links)
+          DAGNode.create(new Buffer(obj.Data), obj.Links, (err, _node) => {
+            if (err) {
+              return callback(err)
+            }
+            node = _node
+            next()
+          })
+          return
         }
         next()
 
         function next () {
-          node.toJSON((err, nodeJSON) => {
-            if (err) {
-              return callback(err)
-            }
-            if (nodeJSON.Hash !== result.Hash) {
-              return callback(new Error('Stored object was different from constructed object'))
-            }
+          const nodeJSON = node.toJSON()
+          if (nodeJSON.multihash !== result.Hash) {
+            const err = new Error('multihashes do not match')
+            return callback(err)
+          }
 
-            cache.set(result.Hash, node)
-
-            callback(null, node)
-          })
+          cache.set(result.Hash, node)
+          callback(null, node)
         }
       })
     }),
@@ -248,14 +261,15 @@ module.exports = (send) => {
           return callback(err)
         }
 
-        const node = new DAGNode()
-        node.toJSON((err, nodeJSON) => {
+        DAGNode.create(new Buffer(0), (err, node) => {
           if (err) {
             return callback(err)
           }
 
-          if (nodeJSON.Hash !== result.Hash) {
-            return callback(new Error('Stored object was different from constructed object'))
+          if (node.toJSON().multihash !== result.Hash) {
+            console.log(node.toJSON())
+            console.log(result)
+            return callback(new Error('multihashes do not match'))
           }
 
           callback(null, node)
@@ -280,7 +294,11 @@ module.exports = (send) => {
 
         send({
           path: 'object/patch/add-link',
-          args: [multihash, dLink.name, bs58.encode(dLink.hash).toString()]
+          args: [
+            multihash,
+            dLink.name,
+            bs58.encode(dLink.multihash).toString()
+          ]
         }, (err, result) => {
           if (err) {
             return callback(err)
@@ -305,7 +323,10 @@ module.exports = (send) => {
 
         send({
           path: 'object/patch/rm-link',
-          args: [multihash, dLink.name]
+          args: [
+            multihash,
+            dLink.name
+          ]
         }, (err, result) => {
           if (err) {
             return callback(err)

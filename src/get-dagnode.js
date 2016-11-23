@@ -34,14 +34,13 @@ module.exports = function (send, hash, callback) {
       var stream = res[1]
 
       if (Buffer.isBuffer(stream)) {
-        callback(err, new DAGNode(stream, object.Links))
+        DAGNode.create(stream, object.Links, callback)
       } else {
         stream.pipe(bl(function (err, data) {
           if (err) {
             return callback(err)
           }
-
-          callback(err, new DAGNode(data, object.Links))
+          DAGNode.create(data, object.Links, callback)
         }))
       }
     })
