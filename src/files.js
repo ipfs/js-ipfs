@@ -368,7 +368,9 @@ module.exports = (common) => {
         })
       })
 
-      it('directory', (done) => {
+      // Needs https://github.com/ipfs/js-ipfs-api/issues/339 to be fixed
+      // for js-ipfs-api + go-ipfs
+      it.skip('directory', (done) => {
         const hash = 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'
         ipfs.files.get(hash, (err, stream) => {
           expect(err).to.not.exist
