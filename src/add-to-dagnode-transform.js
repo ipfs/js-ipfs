@@ -13,7 +13,7 @@ module.exports = (err, res, send, done) => {
 
   map(res, (entry, next) => waterfall([
     (cb) => getDagNode(send, entry.Hash, cb),
-    (node, cb) => node.size((err, size) => {
+    (node, cb) => {
       if (err) {
         return cb(err)
       }
@@ -21,8 +21,8 @@ module.exports = (err, res, send, done) => {
       cb(null, {
         path: entry.Name,
         hash: entry.Hash,
-        size: size
+        size: node.size
       })
-    })
+    }
   ], next), done)
 }
