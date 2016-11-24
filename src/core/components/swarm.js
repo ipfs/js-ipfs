@@ -9,17 +9,41 @@ const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 
 module.exports = function swarm (self) {
   return {
-    peers: promisify((callback) => {
+    peers: promisify((opts, callback) => {
+      if (typeof opts === 'function') {
+        callback = opts
+        opts = {}
+      }
+
       if (!self.isOnline()) {
         return callback(OFFLINE_ERROR)
       }
 
+      const verbose = opts.v || opts.verbose
+      // TODO: return latency and streams when verbose is set
+      // we currently don't have this information
+
       const peers = self._libp2pNode.peerBook.getAll()
-      const mas = flatMap(Object.keys(peers), (id) => {
-        return peers[id].multiaddrs
+      const keys = Object.keys(peers)
+
+      const peerList = flatMap(keys, (id) => {
+        const peer = peers[id]
+
+        return peer.multiaddrs.map((addr) => {
+          const res = {
+            addr: addr,
+            peer: peers[id]
+          }
+
+          if (verbose) {
+            res.latency = 'unknown'
+          }
+
+          return res
+        })
       })
 
-      callback(null, mas)
+      callback(null, peerList)
     }),
 
     // all the addrs we know
