@@ -31,11 +31,16 @@ function createTempNode (num, callback) {
   num = leftPad(num, 3, 0)
 
   series([
-    (cb) => ipfs.init({ emptyRepo: true, bits: 1024 }, cb),
+    (cb) => ipfs.init({
+      emptyRepo: true,
+      bits: 1024
+    }, cb),
     (cb) => setAddresses(repo, num, cb),
     (cb) => ipfs.load(cb)
   ], (err) => {
-    if (err) return callback(err)
+    if (err) {
+      return callback(err)
+    }
     callback(null, ipfs)
   })
 }

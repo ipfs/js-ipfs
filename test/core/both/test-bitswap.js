@@ -98,10 +98,12 @@ describe('bitswap', () => {
 
     function addNode (num, done) {
       num = leftPad(num, 3, 0)
+
       const apiUrl = `/ip4/127.0.0.1/tcp/31${num}`
       const remoteNode = new API(apiUrl)
 
       connectNodes(remoteNode, inProcNode, (err) => {
+        console.log('connected')
         done(err, remoteNode)
       })
     }
@@ -205,17 +207,24 @@ describe('bitswap', () => {
 
       it('2 peers', (done) => {
         const file = new Buffer(`I love IPFS <3 ${Math.random()}`)
+        console.log('1')
 
         waterfall([
           // 0. Start node
           (cb) => addNode(12, cb),
           // 1. Add file to tmp instance
-          (remote, cb) => remote.add([{
-            path: 'awesome.txt',
-            content: file
-          }], cb),
+          (remote, cb) => {
+            console.log('2')
+            remote.files.add([{
+              path: 'awesome.txt',
+              content: file
+            }], cb)
+          },
           // 2. Request file from local instance
-          (val, cb) => inProcNode.files.cat(val[0].hash, cb),
+          (val, cb) => {
+            console.log('3')
+            inProcNode.files.cat(val[0].hash, cb)
+          },
           (res, cb) => res.pipe(bl(cb))
         ], (err, res) => {
           expect(err).to.not.exist
@@ -237,13 +246,8 @@ describe('bitswap', () => {
       it('returns an array of wanted blocks', (done) => {
         inProcNode.goOnline((err) => {
           expect(err).to.not.exist
-
-          expect(
-            inProcNode.bitswap.wantlist()
-          ).to.be.eql(
-            []
-          )
-
+          expect(inProcNode.bitswap.wantlist())
+            .to.be.eql([])
           inProcNode.goOffline(done)
         })
       })
