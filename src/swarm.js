@@ -62,7 +62,7 @@ module.exports = (common) => {
         })
 
         it('default', (done) => {
-          ipfsB.swarm.peers((err, peers) => {
+          ipfsA.swarm.peers((err, peers) => {
             expect(err).to.not.exist
             expect(peers).to.have.length.above(0)
 
