@@ -1,3 +1,20 @@
+<a name="11.2.0"></a>
+# [11.2.0](https://github.com/ipfs/js-ipfs-api/compare/v11.1.0...v11.2.0) (2016-11-24)
+
+
+### Bug Fixes
+
+* handle missing daemon errors ([41c8153](https://github.com/ipfs/js-ipfs-api/commit/41c8153))
+* linting ([723b4b0](https://github.com/ipfs/js-ipfs-api/commit/723b4b0))
+
+
+### Features
+
+* **swarm:** support for new swarm.peers in 0.4.5 ([690a77c](https://github.com/ipfs/js-ipfs-api/commit/690a77c))
+* upgrade to awesome dag-pb ([1e82b8c](https://github.com/ipfs/js-ipfs-api/commit/1e82b8c))
+
+
+
 <a name="11.1.0"></a>
 # [11.1.0](https://github.com/ipfs/js-ipfs-api/compare/v11.0.1...v11.1.0) (2016-11-08)
 
