@@ -26,15 +26,15 @@
   },
   "homepage": "https://github.com/ipfs/interface-ipfs-core#readme",
   "dependencies": {
-    "async": "^2.1.2",
+    "async": "^2.1.4",
     "bl": "^1.1.2",
     "bs58": "^3.0.0",
     "chai": "^3.5.0",
     "concat-stream": "^1.5.2",
     "detect-node": "^2.0.3",
     "ipfs-block": "^0.5.0",
-    "ipld-dag-pb": "^0.8.0",
-    "multiaddr": "^2.0.3",
+    "ipld-dag-pb": "^0.9.0",
+    "multiaddr": "^2.1.1",
     "multihashes": "^0.2.2",
     "readable-stream": "2.1.5"
   },
