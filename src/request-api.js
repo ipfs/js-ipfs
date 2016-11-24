@@ -147,6 +147,10 @@ function requestAPI (config, options, callback) {
     headers: headers
   }, onRes(options.buffer, callback))
 
+  req.on('error', (err) => {
+    callback(err)
+  })
+
   if (options.files) {
     stream.pipe(req)
   } else {
