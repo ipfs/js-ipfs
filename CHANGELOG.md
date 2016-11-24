@@ -1,3 +1,13 @@
+<a name="0.22.0"></a>
+# [0.22.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.21.0...v0.22.0) (2016-11-24)
+
+
+### Bug Fixes
+
+* **swarm:** swarm.peers test ([0a6a07d](https://github.com/ipfs/interface-ipfs-core/commit/0a6a07d))
+
+
+
 <a name="0.21.0"></a>
 # [0.21.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.20.1...v0.21.0) (2016-11-24)
 
