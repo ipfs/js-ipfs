@@ -109,6 +109,7 @@ module.exports = (http) => {
         const filePath = 'test/test-data/node.json'
         form.append('data', fs.createReadStream(filePath))
         const headers = form.getHeaders()
+
         const expectedResult = {
           Data: new Buffer('another'),
           Hash: 'QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm',
@@ -128,7 +129,7 @@ module.exports = (http) => {
             payload: payload
           }, (res) => {
             expect(res.statusCode).to.equal(200)
-            expect(res.result).to.deep.equal(expectedResult)
+            expect(res.result).to.eql(expectedResult)
             done()
           })
         })
