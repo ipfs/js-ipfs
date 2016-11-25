@@ -7,7 +7,7 @@ const repoPath = require('./index').repoPath
 const describeOnlineAndOffline = require('../utils/on-and-off')
 const ipfs = require('../utils/ipfs-exec')(repoPath)
 
-describe('object', () => {
+describe.only('object', () => {
   describeOnlineAndOffline(repoPath, () => {
     it('new', () => {
       return ipfs('object new').then((out) => {

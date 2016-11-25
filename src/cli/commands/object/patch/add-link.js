@@ -31,38 +31,24 @@ module.exports = {
         })
       },
       (cb) => {
-        ipfs.object.get(
-          argv.ref,
-          { enc: 'base58' },
-          (err, node) => {
-            console.log('Do I get my node')
-            if (err) {
-              return cb(err)
-            }
-            nodeA = node
-            cb()
-          })
+        ipfs.object.get(argv.ref, {enc: 'base58'}, (err, node) => {
+          if (err) {
+            return cb(err)
+          }
+          nodeA = node
+          cb()
+        })
       },
       (cb) => {
-        console.log('multihash is:', nodeA.multihash)
-        const link = new DAGLink(
-          argv.name,
-          nodeA.multihash,
-          nodeA.size
-        )
+        const link = new DAGLink(argv.name, nodeA.size, nodeA.multihash)
 
-        ipfs.object.patch.addLink(
-          argv.root,
-          link,
-          { enc: 'base58' },
-          (err, node) => {
-            if (err) {
-              return cb(err)
-            }
-            nodeB = node
-            cb()
+        ipfs.object.patch.addLink(argv.root, link, {enc: 'base58'}, (err, node) => {
+          if (err) {
+            return cb(err)
           }
-        )
+          nodeB = node
+          cb()
+        })
       }
     ], (err) => {
       if (err) {
