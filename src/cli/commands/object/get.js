@@ -16,10 +16,7 @@ module.exports = {
   handler (argv) {
     waterfall([
       (cb) => utils.getIPFS(cb),
-      (ipfs, cb) => ipfs.object.get(
-        argv.key,
-        { enc: 'base58' },
-        cb)
+      (ipfs, cb) => ipfs.object.get(argv.key, {enc: 'base58'}, cb)
     ], (err, node) => {
       if (err) {
         throw err

@@ -77,7 +77,6 @@ module.exports = (ctl) => {
 
         ctl.object.put(filePath, {enc: 'json'}, asJson((err, res) => {
           expect(err).not.to.exist
-          console.log(res)
           expect(res).to.eql(expectedResult)
           done()
         }))

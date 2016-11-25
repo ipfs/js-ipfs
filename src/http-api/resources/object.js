@@ -6,7 +6,6 @@ const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
 const DAGNode = dagPB.DAGNode
 const waterfall = require('async/waterfall')
-const parallel = require('async/parallel')
 const series = require('async/series')
 const debug = require('debug')
 const log = debug('http-api:object')
@@ -472,16 +471,12 @@ exports.patchAddLink = {
       }
 
       waterfall([
-        (cb) => parallel([
-          (cb) => {
-            cb(null, linkedObj.size)
-          },
-          (cb) => {
-            cb(null, linkedObj.multihash)
-          }
-        ], cb),
-        (stats, cb) => {
-          cb(null, new DAGLink(name, stats[0], stats[1]))
+        (cb) => {
+          const link = new DAGLink(
+            name,
+            linkedObj.size,
+            linkedObj.multihash)
+          cb(null, link)
         },
         (link, cb) => ipfs.object.patch.addLink(root, link, cb)
       ], (err, node) => {
