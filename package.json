@@ -18,7 +18,7 @@
     "npm": ">=3.0.0"
   },
   "scripts": {
-    "lint": "eslint -c node_modules/aegir/config/eslintrc.yml src test",
+    "lint": "aegir-lint",
     "coverage": "gulp coverage",
     "test": "gulp test",
     "test:node": "gulp test:node",
@@ -54,6 +54,7 @@
     "buffer-loader": "0.0.1",
     "chai": "^3.5.0",
     "detect-node": "^2.0.3",
+    "eslint-plugin-react": "^6.7.1",
     "execa": "^0.5.0",
     "expose-loader": "^0.7.1",
     "form-data": "^2.1.2",
