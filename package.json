@@ -18,7 +18,7 @@
     "npm": ">=3.0.0"
   },
   "scripts": {
-    "lint": "aegir-lint",
+    "lint": "eslint -c node_modules/aegir/config/eslintrc.yml src test",
     "coverage": "gulp coverage",
     "test": "gulp test",
     "test:node": "gulp test:node",
