@@ -103,7 +103,6 @@ describe('bitswap', () => {
       const remoteNode = new API(apiUrl)
 
       connectNodes(remoteNode, inProcNode, (err) => {
-        console.log('connected')
         done(err, remoteNode)
       })
     }
@@ -207,14 +206,12 @@ describe('bitswap', () => {
 
       it('2 peers', (done) => {
         const file = new Buffer(`I love IPFS <3 ${Math.random()}`)
-        console.log('1')
 
         waterfall([
           // 0. Start node
           (cb) => addNode(12, cb),
           // 1. Add file to tmp instance
           (remote, cb) => {
-            console.log('2')
             remote.files.add([{
               path: 'awesome.txt',
               content: file
@@ -222,7 +219,6 @@ describe('bitswap', () => {
           },
           // 2. Request file from local instance
           (val, cb) => {
-            console.log('3')
             inProcNode.files.cat(val[0].hash, cb)
           },
           (res, cb) => res.pipe(bl(cb))

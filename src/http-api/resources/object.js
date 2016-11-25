@@ -188,8 +188,6 @@ exports.put = {
     const ipfs = request.server.app.ipfs
     let node = request.pre.args.node
 
-    console.log('HANDLER')
-
     series([
       (cb) => {
         DAGNode.create(new Buffer(node.Data), node.Links, (err, _node) => {

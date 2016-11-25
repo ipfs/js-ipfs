@@ -5,8 +5,7 @@ const debug = require('debug')
 const log = debug('cli:object')
 const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
-const waterfall = require('async/waterfall')
-const parallel = require('async/parallel')
+const series = require('async/series')
 log.error = debug('cli:object:error')
 
 module.exports = {
@@ -17,29 +16,60 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    waterfall([
-      (cb) => utils.getIPFS(cb),
-      (ipfs, cb) => waterfall([
-        (cb) => ipfs.object.get(argv.ref, {enc: 'base58'}, cb),
-        (linkedObj, cb) => parallel([
-          (cb) => linkedObj.size(cb),
-          (cb) => linkedObj.multihash(cb)
-        ], cb)
-      ], (err, stats) => {
-        if (err) {
-          return cb(err)
-        }
+    let ipfs
+    let nodeA
+    let nodeB
 
-        const link = new DAGLink(argv.name, stats[0], stats[1])
-        ipfs.object.patch.addLink(argv.root, link, {enc: 'base58'}, cb)
-      }),
-      (node, cb) => node.toJSON(cb)
-    ], (err, node) => {
+    series([
+      (cb) => {
+        utils.getIPFS((err, _ipfs) => {
+          if (err) {
+            return cb(err)
+          }
+          ipfs = _ipfs
+          cb()
+        })
+      },
+      (cb) => {
+        ipfs.object.get(
+          argv.ref,
+          { enc: 'base58' },
+          (err, node) => {
+            console.log('Do I get my node')
+            if (err) {
+              return cb(err)
+            }
+            nodeA = node
+            cb()
+          })
+      },
+      (cb) => {
+        console.log('multihash is:', nodeA.multihash)
+        const link = new DAGLink(
+          argv.name,
+          nodeA.multihash,
+          nodeA.size
+        )
+
+        ipfs.object.patch.addLink(
+          argv.root,
+          link,
+          { enc: 'base58' },
+          (err, node) => {
+            if (err) {
+              return cb(err)
+            }
+            nodeB = node
+            cb()
+          }
+        )
+      }
+    ], (err) => {
       if (err) {
         throw err
       }
 
-      console.log(node.Hash)
+      console.log(nodeB.toJSON().multihash)
     })
   }
 }

@@ -19,14 +19,15 @@ module.exports = {
 
     waterfall([
       (cb) => utils.getIPFS(cb),
-      (ipfs, cb) => ipfs.object.patch.rmLink(argv.root, dLink, {enc: 'base58'}, cb),
-      (node, cb) => node.toJSON(cb)
+      (ipfs, cb) => ipfs.object.patch.rmLink(argv.root, dLink, {enc: 'base58'}, cb)
     ], (err, node) => {
       if (err) {
         throw err
       }
 
-      console.log(node.Hash)
+      const nodeJSON = node.toJSON()
+
+      console.log(nodeJSON.multihash)
     })
   }
 }
