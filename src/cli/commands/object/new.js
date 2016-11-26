@@ -16,14 +16,15 @@ module.exports = {
   handler (argv) {
     waterfall([
       (cb) => utils.getIPFS(cb),
-      (ipfs, cb) => ipfs.object.new(cb),
-      (node, cb) => node.toJSON(cb)
+      (ipfs, cb) => ipfs.object.new(cb)
     ], (err, node) => {
       if (err) {
         throw err
       }
 
-      console.log(node.Hash)
+      const nodeJSON = node.toJSON()
+
+      console.log(nodeJSON.multihash)
     })
   }
 }

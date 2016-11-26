@@ -16,15 +16,29 @@ module.exports = {
   handler (argv) {
     waterfall([
       (cb) => utils.getIPFS(cb),
-      (ipfs, cb) => ipfs.object.get(argv.key, {enc: 'base58'}, cb),
-      (node, cb) => node.toJSON(cb)
-    ], (err, nodeJson) => {
+      (ipfs, cb) => ipfs.object.get(argv.key, {enc: 'base58'}, cb)
+    ], (err, node) => {
       if (err) {
         throw err
       }
+      const nodeJSON = node.toJSON()
 
-      nodeJson.Data = nodeJson.Data ? nodeJson.Data.toString() : ''
-      console.log(JSON.stringify(nodeJson))
+      nodeJSON.data = nodeJSON.data ? nodeJSON.data.toString() : ''
+
+      const answer = {
+        Data: nodeJSON.data,
+        Hash: nodeJSON.multihash,
+        Size: nodeJSON.size,
+        Links: nodeJSON.links.map((l) => {
+          return {
+            Name: l.name,
+            Size: l.size,
+            Hash: l.multihash
+          }
+        })
+      }
+
+      console.log(JSON.stringify(answer))
     })
   }
 }

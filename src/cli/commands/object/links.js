@@ -25,7 +25,12 @@ module.exports = {
 
         links.forEach((link) => {
           link = link.toJSON()
-          console.log(link.Hash, link.Size, link.Name)
+
+          console.log(
+            link.multihash,
+            link.size,
+            link.name
+          )
         })
       })
     })

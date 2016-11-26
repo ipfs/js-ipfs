@@ -11,7 +11,8 @@ const DAGLink = dagPB.DAGLink
 function asJson (cb) {
   return (err, result) => {
     expect(err).to.not.exist
-    result.toJSON((cb))
+    const nodeJSON = result.toJSON()
+    cb(null, nodeJSON)
   }
 }
 module.exports = (ctl) => {
@@ -19,9 +20,9 @@ module.exports = (ctl) => {
     it('.new', (done) => {
       ctl.object.new(asJson((err, res) => {
         expect(err).to.not.exist
-        expect(res.Hash)
+        expect(res.multihash)
           .to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-        expect(res.Links).to.be.eql([])
+        expect(res.links).to.be.eql([])
         done()
       }))
     })
@@ -44,8 +45,8 @@ module.exports = (ctl) => {
       it('returns value', (done) => {
         ctl.object.get('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n', {enc: 'base58'}, asJson((err, res) => {
           expect(err).to.not.exist
-          expect(res.Links).to.be.eql([])
-          expect(res.Data).to.equal('')
+          expect(res.links).to.be.eql([])
+          expect(res.data).to.eql(new Buffer(''))
           done()
         }))
       })
@@ -64,19 +65,19 @@ module.exports = (ctl) => {
       it('updates value', (done) => {
         const filePath = fs.readFileSync('test/test-data/node.json')
         const expectedResult = {
-          Data: 'another',
-          Hash: 'QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm',
-          Links: [{
-            Name: 'some link',
-            Hash: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
-            Size: 8
+          data: new Buffer('another'),
+          multihash: 'QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm',
+          links: [{
+            name: 'some link',
+            multihash: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
+            size: 8
           }],
-          Size: 68
+          size: 68
         }
 
         ctl.object.put(filePath, {enc: 'json'}, asJson((err, res) => {
           expect(err).not.to.exist
-          expect(res).to.deep.equal(expectedResult)
+          expect(res).to.eql(expectedResult)
           done()
         }))
       })
@@ -152,9 +153,9 @@ module.exports = (ctl) => {
 
       it('returns value', (done) => {
         const expectedResult = {
-          Name: 'some link',
-          Hash: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
-          Size: 8
+          name: 'some link',
+          multihash: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
+          size: 8
         }
 
         ctl.object.links('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm', {enc: 'base58'}, (err, result) => {
@@ -186,15 +187,15 @@ module.exports = (ctl) => {
         const key = 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
         const filePath = 'test/test-data/badnode.json'
         const expectedResult = {
-          Data: fs.readFileSync(filePath).toString(),
-          Hash: 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6',
-          Links: [],
-          Size: 19
+          data: fs.readFileSync(filePath).toString(),
+          multihash: 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6',
+          links: [],
+          size: 19
         }
 
         ctl.object.patch.appendData(key, filePath, {enc: 'base58'}, asJson((err, res) => {
           expect(err).not.to.exist
-          expect(res).to.deep.equal(expectedResult)
+          expect(res).to.eql(expectedResult)
           done()
         }))
       })
@@ -221,15 +222,15 @@ module.exports = (ctl) => {
         const key = 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6'
         const filePath = 'test/test-data/badnode.json'
         const expectedResult = {
-          Data: fs.readFileSync(filePath).toString(),
-          Hash: 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6',
-          Links: [],
-          Size: 19
+          data: fs.readFileSync(filePath).toString(),
+          multihash: 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6',
+          links: [],
+          size: 19
         }
 
         ctl.object.patch.setData(key, filePath, {enc: 'base58'}, asJson((err, res) => {
           expect(err).not.to.exist
-          expect(res).to.deep.equal(expectedResult)
+          expect(res).to.eql(expectedResult)
           done()
         }))
       })
@@ -268,11 +269,11 @@ module.exports = (ctl) => {
         const link = new DAGLink(name, 10, ref)
         ctl.object.patch.addLink(root, link, {enc: 'base58'}, asJson((err, res) => {
           expect(err).not.to.exist
-          expect(res.Hash).to.equal('QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK')
-          expect(res.Links[0]).to.deep.equal({
-            Name: 'foo',
-            Hash: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn',
-            Size: 4
+          expect(res.multihash).to.equal('QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK')
+          expect(res.links[0]).to.eql({
+            name: 'foo',
+            multihash: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn',
+            size: 4
           })
           done()
         }))
@@ -302,17 +303,6 @@ module.exports = (ctl) => {
           expect(err).to.exist
           done()
         })
-      })
-
-      it('updates value', (done) => {
-        const root = 'QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK'
-        const link = new DAGLink('foo')
-
-        ctl.object.patch.rmLink(root, link, {enc: 'base58'}, asJson((err, res) => {
-          expect(err).not.to.exist
-          expect(res.Hash).to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-          done()
-        }))
       })
     })
   })
