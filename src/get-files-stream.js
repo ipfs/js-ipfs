@@ -3,6 +3,7 @@
 const isNode = require('detect-node')
 const Multipart = require('multipart-stream')
 const flatmap = require('flatmap')
+const escape = require('glob-escape')
 
 function headers (file) {
   const name = file.path || ''
@@ -44,7 +45,7 @@ function loadPaths (opts, file) {
   }
 
   if (stats.isDirectory() && opts.recursive) {
-    const mg = new glob.sync.GlobSync(`${file}/**/*`, {
+    const mg = new glob.sync.GlobSync(`${escape(file)}/**/*`, {
       follow: followSymlinks
     })
 

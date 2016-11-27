@@ -51,6 +51,15 @@ describe('.util', () => {
     })
   })
 
+  it('.fsAdd a directory with an odd name', (done) => {
+    const filesPath = path.join(__dirname, '../fixtures/weird name folder [v0]')
+    ipfs.util.addFromFs(filesPath, { recursive: true }, (err, result) => {
+      expect(err).to.not.exist
+      expect(result.length).to.be.above(8)
+      done()
+    })
+  })
+
   it('.fsAdd a file', (done) => {
     const filePath = path.join(__dirname, '../fixtures/testfile.txt')
     ipfs.util.addFromFs(filePath, (err, result) => {
