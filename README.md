@@ -199,7 +199,7 @@ A complete API definition is in the works. Meanwhile, you can learn how to you u
 
 Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal interface for this API hasn't been defined by you can find documentation at its implementations:
 
-- [libp2p-ipfs](https://github.com/ipfs/js-libp2p-ipfs)
+- [libp2p-ipfs-nodejs](https://github.com/ipfs/js-libp2p-ipfs-nodejs)
 - [libp2p-ipfs-browser](https://github.com/ipfs/js-libp2p-ipfs-browser)
 
 ## Development
