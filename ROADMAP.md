@@ -96,7 +96,7 @@ UPDATE:
   - [x] Do not assume that the Public Key is only transfered in secio
   - [x] Websockets support (really nice to have)
   - [x] use the defined protocol multicodecs https://github.com/ipfs/specs/blob/master/libp2p/7-properties.md#757-protocol-multicodecs
-- [x] go-libp2p scripts for libp2p interop testing https://github.com/ipfs/js-libp2p-ipfs/issues/15
+- [x] go-libp2p scripts for libp2p interop testing https://github.com/ipfs/js-libp2p-ipfs-nodejs/issues/15
 
 ### Notes:
 
