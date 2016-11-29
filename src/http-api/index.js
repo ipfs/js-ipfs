@@ -25,11 +25,17 @@ exports = module.exports = function HttpApi (repo) {
     }
 
     this.ipfs = new IPFS(repo)
+    const repoPath = this.ipfs.repo.path()
+
+    try {
+      fs.statSync(repoPath)
+    } catch (err) {
+      return callback(err)
+    }
 
     console.log('Starting at %s', this.ipfs.repo.path())
 
     this.ipfs.load(() => {
-      const repoPath = this.ipfs.repo.path()
       const apiPath = path.join(repoPath, 'api')
 
       try {
