@@ -10,7 +10,7 @@ const dagCBOR = require('ipld-dag-pb')
 // const series = require('async/series')
 
 module.exports = (common) => {
-  describe.only('.dag', () => {
+  describe.skip('.dag', () => {
     let ipfs
 
     before(function (done) {
@@ -71,7 +71,7 @@ module.exports = (common) => {
           ipfs.dag.put(cborNode, 'dag-cbor', 'sha2-256', done)
         })
 
-        it.skip('dag-cbor with custom hash func (sha3-512)', (done) => {
+        it('dag-cbor with custom hash func (sha3-512)', (done) => {
           ipfs.dag.put(cborNode, 'dag-cbor', 'sha3-512', done)
         })
 
