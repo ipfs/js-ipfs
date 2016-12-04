@@ -23,9 +23,14 @@ exports.parseKey = (request, reply) => {
     }).code(400).takeover()
   }
 
+  let arg = request.query.arg
   try {
+    if (arg.indexOf('/ipfs/') === 0) {
+      arg = arg.replace('/ipfs/', '')
+    }
+
     return reply({
-      key: mh.fromB58String(request.query.arg)
+      key: mh.fromB58String(arg)
     })
   } catch (err) {
     log.error(err)
