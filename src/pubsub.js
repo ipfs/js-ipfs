@@ -3,505 +3,517 @@
 'use strict'
 
 const expect = require('chai').expect
-const isNode = require('detect-node')
 const series = require('async/series')
-
-const topicName = 'js-ipfs-api-tests'
-
-const publish = (ipfs, data, callback) => {
-  ipfs.pubsub.publish(topicName, data, (err) => {
-    expect(err).to.not.exist
-    callback()
-  })
-}
-
-const waitForPeers = (ipfs, peersToWait, callback) => {
-  const i = setInterval(() => {
-    ipfs.pubsub.peers(topicName, (err, peers) => {
-      if (err) {
-        return callback(err)
-      }
-
-      const hasAllPeers = peersToWait.map((e) => peers.includes(e)).filter((e) => e === false).length === 0
-      if (hasAllPeers) {
-        clearInterval(i)
-        callback(null)
-      }
-    })
-  }, 1000)
-}
 
 module.exports = (common) => {
   describe('.pubsub', () => {
-    if (!isNode) {
-      return
-    }
+    const topic = 'pubsub-tests'
 
-    let ipfs, ipfs2
+    describe('callback API', () => {
+      let ipfs1
+      let ipfs2
 
-    before((done) => {
-      // CI takes longer to instantiate the daemon,
-      // so we need to increase the timeout for the
-      // before step
-      common.setup((err, factory) => {
-        expect(err).to.not.exist
-        series([
-          (cb) => {
-            factory.spawnNode((err, node) => {
-              expect(err).to.not.exist
-              ipfs = node
-              ipfs.id().then((res) => {
-                ipfs.PeerId = res.id
-                cb()
-              })
-            })
-          },
-          (cb) => {
-            factory.spawnNode((err, node) => {
-              expect(err).to.not.exist
-              ipfs2 = node
-              ipfs2.id().then((res) => {
-                ipfs2.PeerId = res.id
-                cb()
-              })
-            })
-          }
-        ], done)
-      })
-    })
-
-    after((done) => {
-      common.teardown(done)
-    })
-
-    describe('publish', () => {
-      it('message from string', (done) => {
-        publish(ipfs, 'hello friend', done)
-      })
-
-      it('message from buffer', (done) => {
-        publish(ipfs, new Buffer('hello friend'), done)
-      })
-    })
-
-    describe('subscribe', () => {
-      it('one topic', (done) => {
-        ipfs.pubsub.subscribe(topicName, (err, subscription) => {
+      before((done) => {
+        // CI takes longer to instantiate the daemon,
+        // so we need to increase the timeout for the
+        // before step
+        common.setup((err, factory) => {
           expect(err).to.not.exist
+          series([
+            (cb) => {
+              factory.spawnNode((err, node) => {
+                expect(err).to.not.exist
+                ipfs1 = node
+                ipfs1.id().then((res) => {
+                  ipfs1.peerId = res.id
+                  cb()
+                })
+              })
+            },
+            (cb) => {
+              factory.spawnNode((err, node) => {
+                expect(err).to.not.exist
+                ipfs2 = node
+                ipfs2.id().then((res) => {
+                  ipfs2.peerId = res.id
+                  cb()
+                })
+              })
+            }
+          ], done)
+        })
+      })
 
-          subscription.on('data', (d) => {
-            expect(d.data).to.equal('hi')
-            subscription.cancel(done)
+      after((done) => {
+        common.teardown(done)
+      })
+
+      function waitForPeers (ipfs, peersToWait, callback) {
+        const i = setInterval(() => {
+          ipfs.pubsub.peers(topic, (err, peers) => {
+            if (err) {
+              return callback(err)
+            }
+
+            const hasAllPeers = peersToWait
+                                  .map((e) => peers.includes(e))
+                                  .filter((e) => e === false)
+                                  .length === 0
+            if (hasAllPeers) {
+              clearInterval(i)
+              callback()
+            }
           })
+        }, 1000)
+      }
 
-          ipfs.pubsub.publish(topicName, 'hi', (err) => {
+      describe('.publish', () => {
+        it('message from string', (done) => {
+          ipfs1.pubsub.publish(topic, 'hello friend', done)
+        })
+
+        it('message from buffer', (done) => {
+          ipfs1.pubsub.publish(topic, new Buffer('hello friend'), done)
+        })
+      })
+
+      describe('.subscribe', () => {
+        it('to one topic', (done) => {
+          ipfs1.pubsub.subscribe(topic, (err, subscription) => {
             expect(err).to.not.exist
-          })
-        })
-      })
 
-      it('cancels a subscription', (done) => {
-        ipfs.pubsub.subscribe(topicName, (err, subscription) => {
-          expect(err).to.not.exist
-          subscription.cancel(done)
-        })
-      })
-
-      it('closes the subscription stream', (done) => {
-        ipfs.pubsub.subscribe(topicName, (err, subscription) => {
-          expect(err).to.not.exist
-          subscription.on('end', done)
-          subscription.cancel()
-        })
-      })
-
-      it('returns an error when already subscribed', (done) => {
-        ipfs.pubsub.subscribe(topicName)
-          .then((firstSub) => {
-            ipfs.pubsub.subscribe(topicName)
-              .then((secondSub) => {
-                expect(secondSub).to.not.exist
-                done("Shouldn't get here!")
-              })
-              .catch((secondErr) => {
-                expect(secondErr).to.be.an('error')
-                expect(secondErr.toString()).to.equal(`Error: Already subscribed to '${topicName}'`)
-                firstSub.cancel(done)
-              })
-          })
-          .catch(done)
-      })
-
-      it('takes options as an argument', (done) => {
-        ipfs.pubsub.subscribe(topicName, { discover: true }, (err, subscription) => {
-          expect(err).to.not.exist
-
-          subscription.on('data', (d) => {
-            expect(d.data).to.equal('hi')
-            subscription.cancel(done)
-          })
-
-          ipfs.pubsub.publish(topicName, 'hi', (err) => {
-            expect(err).to.not.exist
-          })
-        })
-      })
-    })
-
-    describe('peers', () => {
-      it('returns an error when not subscribed to a topic', (done) => {
-        ipfs.pubsub.peers(topicName, (err, peers) => {
-          expect(err).to.be.an('error')
-          expect(err.toString()).to.equal(`Error: Not subscribed to '${topicName}'`)
-          done()
-        })
-      })
-
-      it.skip('returns no peers within 10 seconds', (done) => {
-        // Currently go-ipfs returns peers that have not been subscribed to the topic
-        // Enable when go-ipfs has been fixed
-        ipfs.pubsub.subscribe(topicName, (err, subscription) => {
-          expect(err).to.not.exist
-
-          setTimeout(() => {
-            ipfs.pubsub.peers(topicName, (err, peers) => {
-              expect(err).to.not.exist
-              expect(peers.length).to.equal(0)
+            subscription.on('data', (msg) => {
+              expect(msg.data).to.equal('hi')
               subscription.cancel(done)
             })
-          }, 10000)
+
+            ipfs1.pubsub.publish(topic, 'hi', (err) => {
+              expect(err).to.not.exist
+            })
+          })
+        })
+
+        it('errors on double subscription', (done) => {
+          series([
+            (cb) => ipfs1.pubsub.subscribe(topic, cb),
+            (cb) => ipfs1.pubsub.subscribe(topic, cb)
+          ], (err, subs) => {
+            expect(err).to.exist
+            expect(err.toString())
+              .to.eql(`Error: Already subscribed to '${topic}'`)
+            subs[0].cancel(done)
+          })
+        })
+
+        it('discover options', (done) => {
+          ipfs1.pubsub.subscribe(topic, {
+            discover: true
+          }, (err, subscription) => {
+            expect(err).to.not.exist
+            subscription.cancel(done)
+          })
         })
       })
 
-      it.skip('doesn\'t return extra peers', (done) => {
-        // Currently go-ipfs returns peers that have not been subscribed to the topic
-        // Enable when go-ipfs has been fixed
-        ipfs.pubsub.subscribe(topicName, (err, subscription1) => {
-          expect(err).to.not.exist
+      describe('subscription', () => {
+        it('.cancel and wait for callback', (done) => {
+          ipfs1.pubsub.subscribe(topic, (err, subscription) => {
+            expect(err).to.not.exist
+            subscription.cancel(done)
+          })
+        })
 
-          ipfs2.pubsub.subscribe(topicName + 'different topic', (err, subscription2) => {
+        it('.cancel and wait for end event', (done) => {
+          ipfs1.pubsub.subscribe(topic, (err, subscription) => {
+            expect(err).to.not.exist
+            subscription.on('end', done)
+            subscription.cancel()
+          })
+        })
+      })
+
+      describe('.peers', () => {
+        // TODO clarify what is the goal of pubsub.peers
+        it('returns an error when not subscribed to a topic', (done) => {
+          ipfs1.pubsub.peers(topic, (err, peers) => {
+            expect(err).to.exist
+            expect(err.toString()).to.equal(`Error: Not subscribed to '${topic}'`)
+            done()
+          })
+        })
+
+        it.skip('returns no peers within 10 seconds', (done) => {
+          // Currently go-ipfs returns peers that have not been
+          // subscribed to the topic. Enable when go-ipfs has been fixed
+          ipfs1.pubsub.subscribe(topic, (err, subscription) => {
             expect(err).to.not.exist
 
             setTimeout(() => {
-              ipfs.pubsub.peers(topicName, (err, peers) => {
+              ipfs1.pubsub.peers(topic, (err, peers) => {
                 expect(err).to.not.exist
                 expect(peers.length).to.equal(0)
-
-                subscription1.cancel(() => {
-                  subscription2.cancel(done)
-                })
+                subscription.cancel(done)
               })
             }, 10000)
           })
         })
-      })
 
-      it.skip('returns peers for a topic - one peer', (done) => {
-        // Currently go-ipfs returns peers that have not been subscribed to the topic
-        // Enable when go-ipfs has been fixed
-        const peersToWait = [ipfs2.PeerId]
-
-        ipfs2.pubsub.subscribe(topicName, (err, subscription) => {
-          expect(err).to.not.exist
-
-          const i = setInterval(() => {
-            ipfs.pubsub.peers(topicName, (err, peers) => {
-              if (err) {
-                expect(err).to.not.exist
-                done(err)
-              }
-
-              console.log(peers)
-
-              const hasAllPeers = peersToWait
-                .map((e) => peers.indexOf(e) !== -1)
-                .filter((e) => e === false)
-                .length === 0
-
-              if (hasAllPeers) {
-                clearInterval(i)
-                expect(peers.length).to.equal(peersToWait.length)
-                subscription.cancel(done)
-              }
-            })
-          }, 1000)
-        })
-      })
-
-      it.skip('lists peers for a topic - multiple peers', (done) => {
-        // TODO
-      })
-    })
-
-    describe('ls', () => {
-      it('lists no subscribed topics', (done) => {
-        ipfs.pubsub.ls((err, topics) => {
-          expect(err).to.not.exist
-          expect(topics.length).to.equal(0)
-          done()
-        })
-      })
-
-      it('lists 1 subscribed topic', (done) => {
-        ipfs.pubsub.subscribe(topicName, (err, subscription) => {
-          expect(err).to.not.exist
-
-          ipfs.pubsub.ls((err, topics) => {
+        it.skip('doesn\'t return extra peers', (done) => {
+          // Currently go-ipfs returns peers that have not been
+          // subscribed to the topic. Enable when go-ipfs has been fixed
+          ipfs1.pubsub.subscribe(topic, (err, subscription1) => {
             expect(err).to.not.exist
-            expect(topics.length).to.equal(1)
-            expect(topics[0]).to.equal(topicName)
-            subscription.cancel(done)
-          })
-        })
-      })
 
-      it('lists all subscribed topics', (done) => {
-        let topics = ['one', 'two', 'three']
-        let subscriptions = topics.map((e) => ipfs.pubsub.subscribe(e))
-        Promise.all(subscriptions)
-          .then((subscriptions) => {
-            ipfs.pubsub.ls((err, result) => {
+            ipfs2.pubsub.subscribe(topic + 'different topic', (err, subscription2) => {
               expect(err).to.not.exist
-              expect(result.length).to.equal(3)
-              result.forEach((e) => {
-                expect(topics.indexOf(e) !== -1).to.be.true
-              })
-              Promise.all(subscriptions.map((s) => s.cancel()))
-                .then(() => done())
-                .catch(done)
-            })
-          })
-          .catch(done)
-      })
-    })
 
-    describe('send and receive messages', () => {
-      it('receive messages from different node', (done) => {
-        const expectedString = 'hello from the other side'
+              setTimeout(() => {
+                ipfs1.pubsub.peers(topic, (err, peers) => {
+                  expect(err).to.not.exist
+                  expect(peers.length).to.equal(0)
 
-        ipfs.pubsub.subscribe(topicName, (err, subscription) => {
-          expect(err).to.not.exist
-          expect(subscription).to.exist
-
-          subscription.on('data', (d) => {
-            expect(d.data).to.be.equal(expectedString)
-            subscription.cancel(done)
-          })
-
-          waitForPeers(ipfs2, [ipfs.PeerId], (err) => {
-            expect(err).to.not.exist
-            ipfs2.pubsub.publish(topicName, expectedString, (err) => {
-              expect(err).to.not.exist
+                  subscription1.cancel(() => {
+                    subscription2.cancel(done)
+                  })
+                })
+              }, 10000)
             })
           })
         })
-      })
 
-      it('receive multiple messages', (done) => {
-        let receivedMessages = []
-        const expectedMessages = 2
+        it.skip('returns peers for a topic - one peer', (done) => {
+          // Currently go-ipfs returns peers that have not been subscribed to the topic
+          // Enable when go-ipfs has been fixed
+          const peersToWait = [ipfs2.peerId]
 
-        ipfs.pubsub.subscribe(topicName, (err, subscription) => {
-          expect(err).to.not.exists
-
-          subscription.on('data', (d) => {
-            receivedMessages.push(d.data)
-            if (receivedMessages.length === expectedMessages) {
-              receivedMessages.forEach((msg) => {
-                expect(msg).to.be.equal('hi')
-              })
-              subscription.cancel(done)
-            }
-          })
-
-          waitForPeers(ipfs2, [ipfs.PeerId], (err) => {
+          ipfs2.pubsub.subscribe(topic, (err, subscription) => {
             expect(err).to.not.exist
-            ipfs2.pubsub.publish(topicName, 'hi')
-            ipfs2.pubsub.publish(topicName, 'hi')
+
+            const i = setInterval(() => {
+              ipfs1.pubsub.peers(topic, (err, peers) => {
+                if (err) {
+                  expect(err).to.not.exist
+                  done(err)
+                }
+
+                console.log(peers)
+
+                const hasAllPeers = peersToWait
+                  .map((e) => peers.indexOf(e) !== -1)
+                  .filter((e) => e === false)
+                  .length === 0
+
+                if (hasAllPeers) {
+                  clearInterval(i)
+                  expect(peers.length).to.equal(peersToWait.length)
+                  subscription.cancel(done)
+                }
+              })
+            }, 1000)
           })
         })
-      })
-    })
 
-    describe('promises', () => {
-      it('subscribe', (done) => {
-        ipfs.pubsub.subscribe(topicName)
-          .then((subscription) => {
-            expect(subscription).to.exist
-            subscription.cancel(done)
-          })
-          .catch(done)
+        it.skip('lists peers for a topic - multiple peers', (done) => {
+          // TODO
+        })
       })
 
-      it('publish', (done) => {
-        ipfs.pubsub.subscribe(topicName)
-          .then((subscription) => {
-            return ipfs.pubsub.publish(topicName, 'hi')
-              .then(() => subscription)
-          })
-          .then((subscription) => subscription.cancel(done))
-          .catch(done)
-      })
-
-      it('cancel subscription', (done) => {
-        ipfs.pubsub.subscribe(topicName)
-          .then((subscription) => subscription.cancel())
-          .then(() => done())
-          .catch(done)
-      })
-
-      it('peers', (done) => {
-        let s
-        ipfs.pubsub.subscribe(topicName)
-          .then((subscription) => {
-            s = subscription
-            return ipfs.pubsub.peers(topicName)
-          })
-          .then((peers) => {
-            expect(peers).to.exist
-            s.cancel(done)
-          })
-          .catch(done)
-      })
-
-      it('topics', (done) => {
-        ipfs.pubsub.ls()
-          .then((topics) => {
-            expect(topics).to.exist
+      describe('.ls', () => {
+        it('empty list when no topics are subscribed', (done) => {
+          ipfs1.pubsub.ls((err, topics) => {
+            expect(err).to.not.exist
             expect(topics.length).to.equal(0)
             done()
           })
-          .catch(done)
-      })
-    })
+        })
 
-    describe('load tests', () => {
-      it('send/receive 10k messages', (done) => {
-        const expectedString = 'hello'
-        const count = 10000
-        let sendCount = 0
-        let receivedCount = 0
-        let startTime
-
-        ipfs.pubsub.subscribe(topicName, (err, subscription) => {
-          expect(err).to.not.exists
-
-          const outputProgress = () => {
-            process.stdout.write('                                                                        \r')
-            process.stdout.write('Sent: ' + sendCount + ' of ' + count + ', Received: ' + receivedCount + '\r')
-          }
-
-          subscription.on('data', (d) => {
-            expect(d.data).to.be.equal(expectedString)
-            receivedCount++
-            outputProgress()
-            if (receivedCount >= count) {
-              const duration = new Date().getTime() - startTime
-              process.stdout.write('                                                                        \r')
-              console.log(`Send/Receive 10k messages took: ${duration} ms, ${Math.floor(count / (duration / 1000))} ops / s`)
-              subscription.cancel(done)
-            }
-          })
-
-          const loop = () => {
-            if (sendCount < count) {
-              sendCount++
-              outputProgress()
-              ipfs2.pubsub.publish(topicName, expectedString, (err) => {
-                expect(err).to.not.exist
-                process.nextTick(() => loop())
-              })
-            }
-          }
-
-          waitForPeers(ipfs, [ipfs2.PeerId], (err) => {
+        it('list with 1 subscribed topic', (done) => {
+          ipfs1.pubsub.subscribe(topic, (err, subscription) => {
             expect(err).to.not.exist
-            startTime = new Date().getTime()
-            loop()
+
+            ipfs1.pubsub.ls((err, topics) => {
+              expect(err).to.not.exist
+              expect(topics.length).to.equal(1)
+              expect(topics[0]).to.equal(topic)
+              subscription.cancel(done)
+            })
+          })
+        })
+
+        it('list with 3 subscribed topicss', (done) => {
+          const topics = ['one', 'two', 'three']
+          series(
+            topics.map((t) => (cb) => ipfs1.pubsub.subscribe(t, cb))
+          , (err, subs) => {
+            expect(err).to.not.exist
+            ipfs1.pubsub.ls((err, list) => {
+              expect(err).to.not.exist
+              expect(list.length).to.equal(3)
+              expect(list).to.eql(topics)
+              series(subs.map((s) => (cb) => s.cancel(cb)), done)
+            })
           })
         })
       })
 
-      it('call publish 1k times', (done) => {
-        const expectedString = 'hello'
-        const count = 1000
-        let sendCount = 0
+      describe('multiple nodes', () => {
+        it('receive messages from different node', (done) => {
+          const expectedString = 'hello from the other side'
 
-        const loop = () => {
-          if (sendCount < count) {
-            sendCount++
-            process.stdout.write('                                               \r')
-            process.stdout.write('Sending messages: ' + sendCount + ' of ' + count + '\r')
-            ipfs.pubsub.publish(topicName, expectedString, (err) => {
-              expect(err).to.not.exist
-              process.nextTick(() => loop())
+          ipfs1.pubsub.subscribe(topic, (err, subscription) => {
+            expect(err).to.not.exist
+            expect(subscription).to.exist
+
+            subscription.on('data', (d) => {
+              expect(d.data).to.be.equal(expectedString)
+              subscription.cancel(done)
             })
-          } else {
-            done()
-          }
-        }
-        loop()
-      })
 
-      it('call subscribe 1k times', (done) => {
-        const count = 1000
-        let sendCount = 0
-        let receivedCount = 0
-        let subscription = null
-
-        const loop = () => {
-          if (sendCount < count) {
-            sendCount++
-            process.stdout.write('                                               \r')
-            process.stdout.write('Subscribing: ' + sendCount + ' of ' + count + '\r')
-            ipfs.pubsub.subscribe(topicName, (err, res) => {
-              receivedCount++
-              // First call should go through normally
-              if (receivedCount === 1) {
+            waitForPeers(ipfs2, [ipfs1.peerId], (err) => {
+              expect(err).to.not.exist
+              ipfs2.pubsub.publish(topic, expectedString, (err) => {
                 expect(err).to.not.exist
-                expect(res).to.exist
-                subscription = res
-              } else {
-                // Subsequent calls should return "error, duplicate subscription"
-                expect(err).to.exist
-              }
-              process.nextTick(() => loop())
+              })
             })
-          } else {
-            subscription.cancel(done)
-          }
-        }
-        loop()
+          })
+        })
+
+        it('receive multiple messages', (done) => {
+          let receivedMessages = []
+          const expectedMessages = 2
+
+          ipfs1.pubsub.subscribe(topic, (err, subscription) => {
+            expect(err).to.not.exists
+
+            subscription.on('data', (d) => {
+              receivedMessages.push(d.data)
+              if (receivedMessages.length === expectedMessages) {
+                receivedMessages.forEach((msg) => {
+                  expect(msg).to.be.equal('hi')
+                })
+                subscription.cancel(done)
+              }
+            })
+
+            waitForPeers(ipfs2, [ipfs1.peerId], (err) => {
+              expect(err).to.not.exist
+              ipfs2.pubsub.publish(topic, 'hi')
+              ipfs2.pubsub.publish(topic, 'hi')
+            })
+          })
+        })
       })
 
-      it('subscribe/unsubscribe 1k times', (done) => {
-        const count = 1000
-        let sendCount = 0
-        let receivedCount = 0
+      describe('load tests', () => {
+        it('send/receive 10k messages', (done) => {
+          const expectedString = 'hello'
+          const count = 10000
+          let sendCount = 0
+          let receivedCount = 0
+          let startTime
 
-        const outputProgress = () => {
-          process.stdout.write('                                                                                 \r')
-          process.stdout.write('Subscribe: ' + sendCount + ' of ' + count + ', Unsubscribe: ' + receivedCount + '\r')
-        }
+          ipfs1.pubsub.subscribe(topic, (err, subscription) => {
+            expect(err).to.not.exists
 
-        const loop = () => {
-          if (sendCount < count) {
-            sendCount++
-            outputProgress()
-            ipfs.pubsub.subscribe(topicName, (err, subscription) => {
-              expect(err).to.not.exist
-              subscription.cancel((err) => {
-                receivedCount++
+            const outputProgress = () => {
+              process.stdout.write('                                                                        \r')
+              process.stdout.write('Sent: ' + sendCount + ' of ' + count + ', Received: ' + receivedCount + '\r')
+            }
+
+            subscription.on('data', (d) => {
+              expect(d.data).to.be.equal(expectedString)
+              receivedCount++
+              outputProgress()
+              if (receivedCount >= count) {
+                const duration = new Date().getTime() - startTime
+                process.stdout.write('                                                                        \r')
+                console.log(`Send/Receive 10k messages took: ${duration} ms, ${Math.floor(count / (duration / 1000))} ops / s`)
+                subscription.cancel(done)
+              }
+            })
+
+            function loop () {
+              if (sendCount < count) {
+                sendCount++
                 outputProgress()
+                ipfs2.pubsub.publish(topic, expectedString, (err) => {
+                  expect(err).to.not.exist
+                  process.nextTick(() => loop())
+                })
+              }
+            }
+
+            waitForPeers(ipfs1, [ipfs2.peerId], (err) => {
+              expect(err).to.not.exist
+              startTime = new Date().getTime()
+              loop()
+            })
+          })
+        })
+
+        it('call publish 1k times', (done) => {
+          const expectedString = 'hello'
+          const count = 1000
+          let sendCount = 0
+
+          function loop () {
+            if (sendCount < count) {
+              sendCount++
+              process.stdout.write('                                               \r')
+              process.stdout.write('Sending messages: ' + sendCount + ' of ' + count + '\r')
+              ipfs1.pubsub.publish(topic, expectedString, (err) => {
                 expect(err).to.not.exist
                 process.nextTick(() => loop())
               })
-            })
-          } else {
-            done()
+            } else {
+              done()
+            }
           }
-        }
-        loop()
+          loop()
+        })
+
+        it('call subscribe 1k times', (done) => {
+          const count = 1000
+          let sendCount = 0
+          let receivedCount = 0
+          let subscription = null
+
+          function loop () {
+            if (sendCount < count) {
+              sendCount++
+              process.stdout.write('                                               \r')
+              process.stdout.write('Subscribing: ' + sendCount + ' of ' + count + '\r')
+              ipfs1.pubsub.subscribe(topic, (err, res) => {
+                receivedCount++
+                // First call should go through normally
+                if (receivedCount === 1) {
+                  expect(err).to.not.exist
+                  expect(res).to.exist
+                  subscription = res
+                } else {
+                  // Subsequent calls should return "error, duplicate subscription"
+                  expect(err).to.exist
+                }
+                process.nextTick(() => loop())
+              })
+            } else {
+              subscription.cancel(done)
+            }
+          }
+          loop()
+        })
+
+        it('subscribe/unsubscribe 1k times', (done) => {
+          const count = 1000
+          let sendCount = 0
+          let receivedCount = 0
+
+          function outputProgress () {
+            process.stdout.write('                                                                                 \r')
+            process.stdout.write('Subscribe: ' + sendCount + ' of ' + count + ', Unsubscribe: ' + receivedCount + '\r')
+          }
+
+          function loop () {
+            if (sendCount < count) {
+              sendCount++
+              outputProgress()
+              ipfs1.pubsub.subscribe(topic, (err, subscription) => {
+                expect(err).to.not.exist
+                subscription.cancel((err) => {
+                  expect(err).to.not.exist
+                  receivedCount++
+                  outputProgress()
+                  process.nextTick(() => loop())
+                })
+              })
+            } else {
+              done()
+            }
+          }
+          loop()
+        })
+      })
+    })
+
+    describe('promise API', () => {
+      let ipfs1
+      let ipfs2
+
+      before((done) => {
+        // CI takes longer to instantiate the daemon,
+        // so we need to increase the timeout for the
+        // before step
+        common.setup((err, factory) => {
+          expect(err).to.not.exist
+          series([
+            (cb) => {
+              factory.spawnNode((err, node) => {
+                expect(err).to.not.exist
+                ipfs1 = node
+                ipfs1.id().then((res) => {
+                  ipfs1.peerId = res.id
+                  cb()
+                })
+              })
+            },
+            (cb) => {
+              factory.spawnNode((err, node) => {
+                expect(err).to.not.exist
+                ipfs2 = node
+                ipfs2.id().then((res) => {
+                  ipfs2.peerId = res.id
+                  cb()
+                })
+              })
+            }
+          ], done)
+        })
+      })
+
+      after((done) => {
+        common.teardown(done)
+      })
+
+      it('.subscribe', () => {
+        return ipfs1.pubsub.subscribe(topic)
+          .then((subscription) => {
+            expect(subscription).to.exist
+            return subscription.cancel()
+          })
+      })
+
+      it('.publish', () => {
+        return ipfs1.pubsub.subscribe(topic)
+          .then((subscription) => {
+            return ipfs1.pubsub.publish(topic, 'hi').then(() => subscription)
+          })
+          .then((subscription) => subscription.cancel())
+      })
+
+      it('.cancel', () => {
+        return ipfs1.pubsub.subscribe(topic)
+          .then((subscription) => subscription.cancel())
+      })
+
+      it('.peers', () => {
+        let s
+        return ipfs1.pubsub.subscribe(topic)
+          .then((subscription) => {
+            s = subscription
+            return ipfs1.pubsub.peers(topic)
+          })
+          .then((peers) => {
+            expect(peers).to.exist
+            return s.cancel()
+          })
+      })
+
+      it('.ls', () => {
+        return ipfs1.pubsub.ls()
+          .then((topics) => {
+            expect(topics).to.exist
+            expect(topics.length).to.equal(0)
+          })
       })
     })
   })
