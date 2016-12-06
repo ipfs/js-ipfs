@@ -1,0 +1,21 @@
+{
+  "name": "js-ipfs-api-example-name-publish-resolve",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "browserify index.js > bundle.js && http-server -a 127.0.0.1 -p 8888"
+  },
+  "author": "Tara Vancil <tbvanc@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "babelify": "^7.3.0",
+    "browserify": "^13.0.1",
+    "buffer-browserify": "^0.2.5",
+    "http-server": "^0.9.0",
+    "ipfs-api": "^6.0.3"
+  },
+  "browserify": {
+    "transform": ["babelify"]
+  }
+}
