@@ -1,3 +1,5 @@
+'use strict'
+
 const ipfs = window.IpfsApi()
 
 const DOM = {
@@ -11,7 +13,7 @@ const DOM = {
   publishResult: document.getElementById('publish-result'),
   resolveResult: document.getElementById('resolve-result'),
   publishGatewayLink: document.getElementById('publish-gateway-link'),
-  resolveGatewayLink: document.getElementById('resolve-gateway-link'),
+  resolveGatewayLink: document.getElementById('resolve-gateway-link')
 }
 
 const COLORS = {
@@ -63,7 +65,7 @@ const addAndPublish = (e) => {
       input.value = ''
     })
     .catch(err => {
-      showStatus(`error adding ${path}`, COLORS.error)
+      showStatus('failed to add the data', COLORS.error)
       console.error(err)
     })
 }
@@ -76,7 +78,6 @@ const publish = (path) => {
   ipfs.name.publish(path)
     .then(res => {
       const name = res.Name
-      
       showStatus('success!', COLORS.success)
       DOM.publishResultsDiv.classList.remove('hidden')
       DOM.publishResult.innerText = `/ipns/${name}`
