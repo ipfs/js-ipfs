@@ -34,21 +34,25 @@ function parseBuffer (buf, encoding, callback) {
 }
 
 function parseJSONBuffer (buf, callback) {
-  let node
+  let data
+  let links
+
   try {
     const parsed = JSON.parse(buf.toString())
-    const links = (parsed.Links || []).map((link) => {
+
+    links = (parsed.Links || []).map((link) => {
       return new DAGLink(
-        link.Name,
-        link.Size,
-        mh.fromB58String(link.Hash)
+        link.Name || link.name,
+        link.Size || link.size,
+        mh.fromB58String(link.Hash || link.hash || link.multihash)
       )
     })
-    node = new DAGNode(new Buffer(parsed.Data), links)
+    data = new Buffer(parsed.Data)
   } catch (err) {
     return callback(new Error('failed to parse JSON: ' + err))
   }
-  callback(null, node)
+
+  DAGNode.create(data, links, callback)
 }
 
 function parseProtoBuffer (buf, callback) {
@@ -68,15 +72,15 @@ module.exports = function object (self) {
           self.object.get(multihash, options, cb)
         },
         (node, cb) => {
-          node = edit(node)
-
-          node.multihash((err, multihash) => {
+          // edit applies the edit func passed to
+          // editAndSave
+          edit(node, (err, node) => {
             if (err) {
               return cb(err)
             }
             self._ipldResolver.put({
               node: node,
-              cid: new CID(multihash)
+              cid: new CID(node.multihash)
             }, (err) => {
               cb(err, node)
             })
@@ -88,16 +92,14 @@ module.exports = function object (self) {
 
   return {
     new: promisify((callback) => {
-      const node = new DAGNode()
-
-      node.multihash((err, multihash) => {
+      DAGNode.create(new Buffer(0), (err, node) => {
         if (err) {
           return callback(err)
         }
         self._ipldResolver.put({
           node: node,
-          cid: new CID(multihash)
-        }, function (err) {
+          cid: new CID(node.multihash)
+        }, (err) => {
           if (err) {
             return callback(err)
           }
@@ -126,34 +128,40 @@ module.exports = function object (self) {
           })
           return
         } else {
-          node = new DAGNode(obj)
+          DAGNode.create(obj, (err, _node) => {
+            if (err) {
+              return callback(err)
+            }
+            node = _node
+            next()
+          })
         }
       } else if (obj.multihash) {
         // already a dag node
         node = obj
+        next()
       } else if (typeof obj === 'object') {
-        node = new DAGNode(obj.Data, obj.Links)
+        DAGNode.create(obj.Data, obj.Links, (err, _node) => {
+          if (err) {
+            return callback(err)
+          }
+          node = _node
+          next()
+        })
       } else {
         return callback(new Error('obj not recognized'))
       }
 
-      next()
-
       function next () {
-        node.multihash((err, multihash) => {
+        self._ipldResolver.put({
+          node: node,
+          cid: new CID(node.multihash)
+        }, (err) => {
           if (err) {
             return callback(err)
           }
-          self._ipldResolver.put({
-            node: node,
-            cid: new CID(multihash)
-          }, (err, block) => {
-            if (err) {
-              return callback(err)
-            }
 
-            self.object.get(multihash, callback)
-          })
+          self.object.get(node.multihash, callback)
         })
       }
     }),
@@ -223,19 +231,15 @@ module.exports = function object (self) {
           const blockSize = serialized.length
           const linkLength = node.links.reduce((a, l) => a + l.size, 0)
 
-          node.toJSON((err, nodeJSON) => {
-            if (err) {
-              return callback(err)
-            }
+          const nodeJSON = node.toJSON()
 
-            callback(null, {
-              Hash: nodeJSON.Hash,
-              NumLinks: node.links.length,
-              BlockSize: blockSize,
-              LinksSize: blockSize - node.data.length,
-              DataSize: node.data.length,
-              CumulativeSize: blockSize + linkLength
-            })
+          callback(null, {
+            Hash: nodeJSON.multihash,
+            NumLinks: node.links.length,
+            BlockSize: blockSize,
+            LinksSize: blockSize - node.data.length,
+            DataSize: node.data.length,
+            CumulativeSize: blockSize + linkLength
           })
         })
       })
@@ -243,44 +247,31 @@ module.exports = function object (self) {
 
     patch: promisify({
       addLink (multihash, link, options, callback) {
-        editAndSave((node) => {
-          node.addRawLink(link)
-          return node
+        editAndSave((node, cb) => {
+          DAGNode.addLink(node, link, cb)
         })(multihash, options, callback)
       },
 
       rmLink (multihash, linkRef, options, callback) {
-        editAndSave((node) => {
-          node.links = node.links.filter((link) => {
-            if (typeof linkRef === 'string') {
-              return link.name !== linkRef
-            }
-
-            if (Buffer.isBuffer(linkRef)) {
-              return !link.hash.equals(linkRef)
-            }
-
-            if (linkRef.name) {
-              return link.name !== linkRef.name
-            }
-
-            return !link.hash.equals(linkRef.hash)
-          })
-          return node
+        editAndSave((node, cb) => {
+          if (linkRef.constructor &&
+              linkRef.constructor.name === 'DAGLink') {
+            linkRef = linkRef._name
+          }
+          DAGNode.rmLink(node, linkRef, cb)
         })(multihash, options, callback)
       },
 
       appendData (multihash, data, options, callback) {
-        editAndSave((node) => {
-          node.data = Buffer.concat([node.data, data])
-          return node
+        editAndSave((node, cb) => {
+          const newData = Buffer.concat([node.data, data])
+          DAGNode.create(newData, node.links, cb)
         })(multihash, options, callback)
       },
 
       setData (multihash, data, options, callback) {
-        editAndSave((node) => {
-          node.data = data
-          return node
+        editAndSave((node, cb) => {
+          DAGNode.create(data, node.links, cb)
         })(multihash, options, callback)
       }
     })

@@ -57,12 +57,12 @@ describe('HTTP API', () => {
   })
 
   describe('## custom ipfs-api tests', () => {
-    const tests = fs.readdirSync(path.join(__dirname, '/ipfs-api'))
+    const tests = fs.readdirSync(path.join(__dirname, '/custom-ipfs-api'))
     const ctl = APIctl('/ip4/127.0.0.1/tcp/6001')
     tests.filter((file) => {
       return file.match(/test-.*\.js/)
     }).forEach((file) => {
-      require('./ipfs-api/' + file)(ctl)
+      require('./custom-ipfs-api/' + file)(ctl)
     })
   })
 })

@@ -102,16 +102,13 @@ function prepareFile (self, file, callback) {
   const bs58mh = multihashes.toB58String(file.multihash)
   waterfall([
     (cb) => self.object.get(file.multihash, cb),
-    (node, cb) => node.size((err, size) => {
-      if (err) {
-        return cb(err)
-      }
+    (node, cb) => {
       cb(null, {
         path: file.path || bs58mh,
         hash: bs58mh,
-        size: size
+        size: node.size
       })
-    })
+    }
   ], callback)
 }
 

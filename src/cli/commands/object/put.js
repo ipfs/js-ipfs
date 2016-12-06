@@ -11,14 +11,15 @@ log.error = debug('cli:object:error')
 function putNode (buf, enc) {
   waterfall([
     (cb) => utils.getIPFS(cb),
-    (ipfs, cb) => ipfs.object.put(buf, {enc: enc}, cb),
-    (node, cb) => node.toJSON(cb)
+    (ipfs, cb) => ipfs.object.put(buf, {enc: enc}, cb)
   ], (err, node) => {
     if (err) {
       throw err
     }
 
-    console.log('added', node.Hash)
+    const nodeJSON = node.toJSON()
+
+    console.log('added', nodeJSON.multihash)
   })
 }
 
@@ -36,7 +37,9 @@ module.exports = {
 
   handler (argv) {
     if (argv.data) {
-      return putNode(fs.readFileSync(argv.data), argv.inputenc)
+      const buf = fs.readFileSync(argv.data)
+      putNode(buf, argv.inputenc)
+      return
     }
 
     process.stdin.pipe(bl((err, input) => {

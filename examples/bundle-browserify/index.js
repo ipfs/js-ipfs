@@ -5,7 +5,7 @@ var IPFS = require('ipfs')
 // Create the IPFS node instance
 // for simplicity, we create a new repo everytime the node
 // is created, because you can't init already existing repos
-const repoPath = '' + Math.random()
+const repoPath = String(Math.random())
 const node = new IPFS(repoPath)
 const concat = require('concat-stream')
 

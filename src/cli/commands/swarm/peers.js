@@ -22,13 +22,13 @@ module.exports = {
         throw new Error('This command must be run in online mode. Try running \'ipfs daemon\' first.')
       }
 
-      ipfs.swarm.peers((err, res) => {
+      ipfs.swarm.peers((err, result) => {
         if (err) {
           throw err
         }
 
-        res.forEach((addr) => {
-          console.log(addr.toString())
+        result.forEach((item) => {
+          console.log(item.addr.toString())
         })
       })
     })

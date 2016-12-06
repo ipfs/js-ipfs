@@ -1,13 +1,13 @@
 'use strict'
 
-const Libp2pNode = require('libp2p-ipfs').Node
+const Node = require('libp2p-ipfs-nodejs')
 const promisify = require('promisify-es6')
 
 module.exports = function libp2p (self) {
   // TODO Just expose libp2p API directly, this start stop wrapping doesn't make that much sense anymore :)
   return {
     start: promisify((callback) => {
-      self._libp2pNode = new Libp2pNode(self._peerInfo)
+      self._libp2pNode = new Node(self._peerInfo)
       self._libp2pNode.start((err) => {
         if (err) {
           return callback(err)

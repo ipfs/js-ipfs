@@ -26,8 +26,11 @@ exports.parseAddrs = (request, reply) => {
 
 exports.peers = {
   handler: (request, reply) => {
+    const rawVerbose = request.query.v || request.query.verbose
+    const verbose = rawVerbose === 'true'
     const ipfs = request.server.app.ipfs
-    ipfs.swarm.peers((err, peers) => {
+
+    ipfs.swarm.peers({verbose: verbose}, (err, peers) => {
       if (err) {
         log.error(err)
         return reply({
@@ -37,7 +40,18 @@ exports.peers = {
       }
 
       return reply({
-        Strings: peers.map((addr) => addr.toString())
+        Peers: peers.map((p) => {
+          const res = {
+            Peer: p.peer.id.toB58String(),
+            Addr: p.addr.toString()
+          }
+
+          if (verbose) {
+            res.Latency = p.latency
+          }
+
+          return res
+        })
       })
     })
   }

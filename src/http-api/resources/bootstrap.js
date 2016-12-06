@@ -38,6 +38,7 @@ exports.add = {
   handler (request, reply) {
     const ipfs = request.server.app.ipfs
     const addr = request.pre.args.addr
+    console.log('Handler is called', addr.toString())
 
     ipfs.bootstrap.add(addr.toString(), (err, list) => {
       if (err) {

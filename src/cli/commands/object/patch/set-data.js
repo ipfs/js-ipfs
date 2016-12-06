@@ -11,14 +11,14 @@ log.error = debug('cli:object:error')
 function parseAndAddNode (key, data) {
   waterfall([
     (cb) => utils.getIPFS(cb),
-    (ipfs, cb) => ipfs.object.patch.setData(key, data, {enc: 'base58'}, cb),
-    (node, cb) => node.toJSON(cb)
+    (ipfs, cb) => ipfs.object.patch.setData(key, data, {enc: 'base58'}, cb)
   ], (err, node) => {
     if (err) {
       throw err
     }
+    const nodeJSON = node.toJSON()
 
-    console.log(node.Hash)
+    console.log(nodeJSON.multihash)
   })
 }
 

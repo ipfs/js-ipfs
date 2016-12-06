@@ -75,5 +75,13 @@ describe('swarm', function () {
         expect(out).to.have.length.above(0)
       })
     })
+
+    it('disconnect', () => {
+      return ipfs('swarm', 'disconnect', nodeAddr).then((out) => {
+        expect(out).to.be.eql(
+          `disconnect ${nodeAddr} success`
+        )
+      })
+    })
   })
 })
