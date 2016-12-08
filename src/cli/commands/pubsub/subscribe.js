@@ -8,7 +8,7 @@ log.error = debug('cli:pubsub:error')
 module.exports = {
   command: 'subscribe <topic>',
 
-  alias : 'sub',
+  alias: 'sub',
 
   describe: 'Subscribe to a topic',
 

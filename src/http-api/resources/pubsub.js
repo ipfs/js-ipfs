@@ -1,7 +1,7 @@
 'use strict'
 
 const debug = require('debug')
-const ndjson = require('ndjson')
+// const ndjson = require('ndjson')
 const log = debug('http-api:pubsub')
 log.error = debug('http-api:pubsub:error')
 
