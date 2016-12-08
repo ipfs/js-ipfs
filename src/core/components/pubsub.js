@@ -114,6 +114,7 @@ module.exports = function pubsub (self) {
 
       try {
         const peerSet = self._pubsub.getPeerSet()
+        console.log(peerSet)
         _values(peerSet).forEach((peer) => {
           const idB58Str = peer.peerInfo.id.toB58String()
           const index = peer.topics.indexOf(topic)

@@ -22,7 +22,7 @@ function makeBlock (cb) {
   return cb(null, new Block(`IPFS is awesome ${Math.random()}`))
 }
 
-describe('bitswap', () => {
+describe.skip('bitswap', () => {
   let inProcNode // Node spawned inside this process
   let swarmAddrsBak
 
