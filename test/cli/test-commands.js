@@ -7,11 +7,16 @@ const ipfsBase = require('../utils/ipfs-exec')
 const ipfs = ipfsBase(repoPath)
 const describeOnlineAndOffline = require('../utils/on-and-off')
 
+// The command count bump from 56 to 60 depends on:
+// ipfs/interface-ipfs-core.git#5c7df414a8f627f8adb50a52ef8d2b629381285f
+// ipfs/js-ipfs-api.git#01044a1f59fb866e4e08b06aae4e74d968615931
+const commandCount = 60
+
 describe('commands', () => {
   describeOnlineAndOffline(repoPath, () => {
     it('list the commands', () => {
       return ipfs('commands').then((out) => {
-        expect(out.split('\n')).to.have.length(56)
+        expect(out.split('\n')).to.have.length(commandCount)
       })
     })
   })
@@ -20,7 +25,7 @@ describe('commands', () => {
     return ipfsBase(repoPath, {
       cwd: '/tmp'
     })('commands').then((out) => {
-      expect(out.split('\n').length).to.equal(56)
+      expect(out.split('\n').length).to.equal(commandCount)
     })
   })
 })

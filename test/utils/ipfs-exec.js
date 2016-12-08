@@ -20,7 +20,7 @@ module.exports = (repoPath, opts) => {
   env.IPFS_PATH = repoPath
 
   const config = Object.assign({}, {
-    stipEof: true,
+    stripEof: true,
     env: env,
     timeout: 60 * 1000
   }, opts)

@@ -23,6 +23,7 @@ const swarm = require('./components/swarm')
 const ping = require('./components/ping')
 const files = require('./components/files')
 const bitswap = require('./components/bitswap')
+const pubsub = require('./components/pubsub')
 
 exports = module.exports = IPFS
 
@@ -44,6 +45,7 @@ function IPFS (repoInstance) {
   this._bitswap = null
   this._blockService = new BlockService(this._repo)
   this._ipldResolver = new IPLDResolver(this._blockService)
+  this._pubsub = null
 
   // IPFS Core exposed components
 
@@ -67,4 +69,5 @@ function IPFS (repoInstance) {
   this.files = files(this)
   this.bitswap = bitswap(this)
   this.ping = ping(this)
+  this.pubsub = pubsub(this)
 }
