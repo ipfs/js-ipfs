@@ -6,7 +6,7 @@ const expect = require('chai').expect
 const createTempNode = require('./../../utils/temp-node')
 
 module.exports = (http) => {
-  describe('/pubsub', () => {
+  describe.only('/pubsub', () => {
     let api
     let tmpNode
 
@@ -32,24 +32,11 @@ module.exports = (http) => {
       }, 1000)
     })
 
-    describe('/pubsub/start', () => {
-      it('returns 200', (done) => {
-        api.inject({
-          method: 'POST',
-          url: `/api/v0/pubsub/start`
-        }, (res) => {
-          expect(res.statusCode).to.equal(200)
-          expect(res.result).to.be.an('object')
-          done()
-        })
-      })
-    })
-
-    describe('/pubsub/subscribe/{topic}', () => {
+    describe('/sub/{topic}', () => {
       it('returns 404 if no topic is provided', (done) => {
         api.inject({
           method: 'GET',
-          url: `/api/v0/pubsub/subscribe`
+          url: `/api/v0/pubsub/sub`
         }, (res) => {
           expect(res.statusCode).to.equal(404)
           done()
@@ -59,7 +46,7 @@ module.exports = (http) => {
       it('returns 200 with topic', (done) => {
         api.inject({
           method: 'GET',
-          url: `/api/v0/pubsub/subscribe/${topic}`
+          url: `/api/v0/pubsub/sub/${topic}`
         }, (res) => {
           expect(res.statusCode).to.equal(200)
           done()
@@ -67,11 +54,11 @@ module.exports = (http) => {
       })
     })
 
-    describe('/pubsub/publish', () => {
+    xdescribe('/pub', () => {
       it('returns 400 if no buffer is provided', (done) => {
         api.inject({
           method: 'POST',
-          url: `/api/v0/pubsub/publish?topic=${topic}`
+          url: `/api/v0/pubsub/pub?topic=${topic}`
         }, (res) => {
           expect(res.statusCode).to.equal(400)
           expect(res.statusMessage).to.equal('Bad Request')
@@ -82,7 +69,7 @@ module.exports = (http) => {
       it('returns 400 if no topic is provided', (done) => {
         api.inject({
           method: 'POST',
-          url: `/api/v0/pubsub/publish?buf=${buf}`
+          url: `/api/v0/pubsub/pub?buf=${buf}`
         }, (res) => {
           expect(res.statusCode).to.equal(400)
           expect(res.statusMessage).to.equal('Bad Request')
@@ -93,7 +80,7 @@ module.exports = (http) => {
       it('returns 200 with topic and buffer', (done) => {
         api.inject({
           method: 'POST',
-          url: `/api/v0/pubsub/publish?buf=${buf}&topic=${topic}`
+          url: `/api/v0/pubsub/pub?buf=${buf}&topic=${topic}`
         }, (res) => {
           expect(res.statusCode).to.equal(200)
           done()
@@ -101,11 +88,24 @@ module.exports = (http) => {
       })
     })
 
-    describe('/pubsub/unsubscribe/{topic}', () => {
+    xdescribe('/ls', () => {
+      it('returns 200', (done) => {
+        api.inject({
+          method: 'GET',
+          url: `/api/v0/pubsub/ls`
+        }, (res) => {
+          expect(res.statusCode).to.equal(200)
+          expect(res.result).to.be.an('object')
+          done()
+        })
+      })
+    })
+
+    xdescribe('/peers/{topic}', () => {
       it('returns 404 if no topic is provided', (done) => {
         api.inject({
           method: 'GET',
-          url: `/api/v0/pubsub/unsubscribe`
+          url: `/api/v0/pubsub/peers`
         }, (res) => {
           expect(res.statusCode).to.equal(404)
           done()
@@ -115,7 +115,7 @@ module.exports = (http) => {
       it('returns 200 with topic', (done) => {
         api.inject({
           method: 'GET',
-          url: `/api/v0/pubsub/unsubscribe/${topic}`
+          url: `/api/v0/pubsub/peers/${topic}`
         }, (res) => {
           expect(res.statusCode).to.equal(200)
           done()

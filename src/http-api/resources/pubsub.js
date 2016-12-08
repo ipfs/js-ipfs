@@ -1,33 +1,18 @@
 'use strict'
 
 const debug = require('debug')
-const log = debug('http-api:floodsub')
-log.error = debug('http-api:floodsub:error')
+const ndjson = require('ndjson')
+const log = debug('http-api:pubsub')
+log.error = debug('http-api:pubsub:error')
 
 exports = module.exports
-
-exports.start = {
-  handler: (request, reply) => {
-    request.server.app.ipfs.floodsub.start((err, floodsub) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: `Failed to start: ${err}`,
-          Code: 0
-        }).code(500)
-      }
-
-      return reply(floodsub)
-    })
-  }
-}
 
 exports.subscribe = {
   handler: (request, reply) => {
     const discover = request.query.discover || null
     const topic = request.params.topic
 
-    request.server.app.ipfs.floodsub.subscribe(topic, { discover }, (err, stream) => {
+    request.server.app.ipfs.pubsub.subscribe(topic, { discover }, (err, stream) => {
       if (err) {
         log.error(err)
         return reply({
@@ -36,7 +21,7 @@ exports.subscribe = {
         }).code(500)
       }
 
-      // hapi is not very clever and throws if no
+      // hapi is not very clever and throws if no:
       // - _read method
       // - _readableState object
       // are there :(
@@ -44,6 +29,8 @@ exports.subscribe = {
         stream._read = () => {}
         stream._readableState = {}
       }
+
+      // ndjson.serialize
       return reply(stream)
     })
   }
@@ -54,7 +41,7 @@ exports.publish = {
     const buf = request.query.buf
     const topic = request.query.topic
 
-    request.server.app.ipfs.floodsub.publish(topic, buf, (err) => {
+    request.server.app.ipfs.pubsub.publish(topic, buf, (err) => {
       if (err) {
         log.error(err)
         return reply({
@@ -68,20 +55,36 @@ exports.publish = {
   }
 }
 
-exports.unsubscribe = {
+exports.ls = {
   handler: (request, reply) => {
-    const topic = request.params.topic
-
-    request.server.app.ipfs.floodsub.unsubscribe(topic, (err) => {
+    request.server.app.ipfs.pubsub.ls((err, subscriptions) => {
       if (err) {
         log.error(err)
         return reply({
-          Message: `Failed to unsubscribe from topic ${topic}: ${err}`,
+          Message: `Failed to list subscriptions: ${err}`,
           Code: 0
         }).code(500)
       }
 
-      return reply()
+      return reply(subscriptions)
+    })
+  }
+}
+
+exports.peers = {
+  handler: (request, reply) => {
+    const topic = request.params.topic
+
+    request.server.app.ipfs.pubsub.peers(topic, (err, peers) => {
+      if (err) {
+        log.error(err)
+        return reply({
+          Message: `Failed to find peers subscribed to ${topic}: ${err}`,
+          Code: 0
+        }).code(500)
+      }
+
+      return reply(peers)
     })
   }
 }

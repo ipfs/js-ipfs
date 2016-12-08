@@ -2,8 +2,8 @@
 
 const utils = require('../../utils')
 const debug = require('debug')
-const log = debug('cli:floodsub')
-log.error = debug('cli:floodsub:error')
+const log = debug('cli:pubsub')
+log.error = debug('cli:pubsub:error')
 
 module.exports = {
   command: 'publish <topic> <data>',
@@ -18,7 +18,7 @@ module.exports = {
         throw err
       }
 
-      ipfs.floodsub.publish(argv.topic, argv.data, (err) => {
+      ipfs.pubsub.publish(argv.topic, argv.data, (err) => {
         if (err) {
           throw err
         }

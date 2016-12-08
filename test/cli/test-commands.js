@@ -7,11 +7,10 @@ const ipfsBase = require('../utils/ipfs-exec')
 const ipfs = ipfsBase(repoPath)
 const describeOnlineAndOffline = require('../utils/on-and-off')
 
-// NOTE: Floodsub CLI tests will not be run until
-// https://github.com/ipfs/js-ipfs-api/pull/377
-// is merged. But we have the files ready to go
-// so the command count is bumped from 56 to 61
-const commandCount = 61
+// The command count bump from 56 to 60 depends on:
+// ipfs/interface-ipfs-core.git#5c7df414a8f627f8adb50a52ef8d2b629381285f
+// ipfs/js-ipfs-api.git#01044a1f59fb866e4e08b06aae4e74d968615931
+const commandCount = 60
 
 describe('commands', () => {
   describeOnlineAndOffline(repoPath, () => {

@@ -8,14 +8,15 @@ const createTempNode = require('../utils/temp-node')
 const repoPath = require('./index').repoPath
 const ipfs = require('../utils/ipfs-exec')(repoPath)
 
-// NOTE: Floodsub CLI tests will not be run until
-// https://github.com/ipfs/js-ipfs-api/pull/377
-// is merged
-describe.skip('floodsub', function () {
+// This depends on:
+// ipfs/interface-ipfs-core.git#5c7df414a8f627f8adb50a52ef8d2b629381285f
+// ipfs/js-ipfs-api.git#01044a1f59fb866e4e08b06aae4e74d968615931
+describe.only('pubsub', function () {
   this.timeout(30 * 1000)
   let node
 
-  const topic = 'nonscents'
+  const topicA = 'nonscentsA'
+  const topicB = 'nonscentsB'
   const message = new Buffer('Some non cents.')
 
   before((done) => {
@@ -52,28 +53,50 @@ describe.skip('floodsub', function () {
       })
     })
 
-    it('start', () => {
-      return ipfs('floodsub', 'start').then((out) => {
-        expect(called).to.eql(true)
+    it('subscribe', () => {
+      return ipfs('pubsub', 'subscribe', topicA).then((out) => {
+        expect(out).to.have.length.above(0)
       })
     })
 
-    it('subscribe', () => {
-      return ipfs('floodsub', 'subscribe', topic).then((out) => {
+    it('subscribe alias', () => {
+      return ipfs('pubsub', 'sub', topicB).then((out) => {
         expect(out).to.have.length.above(0)
       })
     })
 
     it('publish', () => {
-      return ipfs('floodsub', 'publish', topic, message).then((out) => {
+      return ipfs('pubsub', 'publish', topicA, message).then((out) => {
         expect(called).to.eql(true)
       })
     })
 
-    it('unsubscribe', () => {
-      return ipfs('floodsub', 'unsubscribe', topic).then((out) => {
-        expect(called).to.eql(true)
+    it('ls', () => {
+      return ipfs('pubsub', 'ls').then((out) => {
+        expect(out).to.have.length.above(0)
+      })
+    })
+
+    it('peers', () => {
+      return ipfs('pubsub', 'peers', topicA).then((out) => {
+        expect(out).to.be.eql('[]')
       })
     })
   })
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
