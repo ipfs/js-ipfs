@@ -42,7 +42,7 @@ module.exports = (common) => {
           })
         })
 
-        it('template unixfs-dir', (done) => {
+        it.skip('template unixfs-dir', (done) => {
           ipfs.object.new('unixfs-dir', (err, node) => {
             expect(err).to.not.exist
             const nodeJSON = node.toJSON()
