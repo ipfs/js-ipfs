@@ -2,13 +2,13 @@
 
 const utils = require('../../utils')
 const debug = require('debug')
-const log = debug('cli:floodsub')
-log.error = debug('cli:floodsub:error')
+const log = debug('cli:pubsub')
+log.error = debug('cli:pubsub:error')
 
 module.exports = {
-  command: 'subscribe <topic>',
+  command: 'ls',
 
-  describe: 'Subscribe to a topic',
+  describe: 'Get your list of subscriptions',
 
   builder: {},
 
@@ -18,12 +18,12 @@ module.exports = {
         throw err
       }
 
-      ipfs.floodsub.subscribe(argv.topic, (err, stream) => {
+      ipfs.pubsub.ls((err, subscriptions) => {
         if (err) {
           throw err
         }
 
-        console.log(stream.toString())
+        console.log(JSON.stringify(subscriptions, null, 2))
       })
     })
   }

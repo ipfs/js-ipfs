@@ -2,13 +2,13 @@
 
 const utils = require('../../utils')
 const debug = require('debug')
-const log = debug('cli:floodsub')
-log.error = debug('cli:floodsub:error')
+const log = debug('cli:pubsub')
+log.error = debug('cli:pubsub:error')
 
 module.exports = {
-  command: 'unsubscribe <topic>',
+  command: 'peers <topic>',
 
-  describe: 'Unsubscribe from a topic',
+  describe: 'Get all peers subscribed to a topic',
 
   builder: {},
 
@@ -18,10 +18,12 @@ module.exports = {
         throw err
       }
 
-      ipfs.floodsub.unsubscribe(argv.topic, (err) => {
+      ipfs.pubsub.peers(argv.topic, (err, peers) => {
         if (err) {
           throw err
         }
+
+        console.log(JSON.stringify(peers, null, 2))
       })
     })
   }

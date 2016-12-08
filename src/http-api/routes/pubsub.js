@@ -8,17 +8,9 @@ module.exports = (server) => {
 
   api.route({
     method: '*',
-    path: '/api/v0/pubsub/start',
+    path: '/api/v0/pubsub/sub/{topic}',
     config: {
-      handler: resources.floodsub.start.handler
-    }
-  })
-
-  api.route({
-    method: '*',
-    path: '/api/v0/pubsub/subscribe/{topic}',
-    config: {
-      handler: resources.floodsub.subscribe.handler,
+      handler: resources.pubsub.subscribe.handler,
       validate: {
         params: {
           topic: Joi.string().required()
@@ -32,9 +24,9 @@ module.exports = (server) => {
 
   api.route({
     method: '*',
-    path: '/api/v0/pubsub/publish',
+    path: '/api/v0/pubsub/pub',
     config: {
-      handler: resources.floodsub.publish.handler,
+      handler: resources.pubsub.publish.handler,
       validate: {
         query: {
           topic: Joi.string().required(),
@@ -46,9 +38,17 @@ module.exports = (server) => {
 
   api.route({
     method: '*',
-    path: '/api/v0/pubsub/unsubscribe/{topic}',
+    path: '/api/v0/pubsub/ls',
     config: {
-      handler: resources.floodsub.unsubscribe.handler,
+      handler: resources.pubsub.ls.handler
+    }
+  })
+
+  api.route({
+    method: '*',
+    path: '/api/v0/pubsub/peers',
+    config: {
+      handler: resources.pubsub.peers.handler,
       validate: {
         params: {
           topic: Joi.string().required()
