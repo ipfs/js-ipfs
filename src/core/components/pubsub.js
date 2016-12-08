@@ -126,6 +126,6 @@ module.exports = function pubsub (self) {
       }
 
       callback(null, peers)
-    }),
+    })
   }
 }
