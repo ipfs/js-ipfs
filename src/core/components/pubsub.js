@@ -6,26 +6,26 @@ const _values = require('lodash.values')
 
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 
-let subscriptions = {}
-
-const addSubscription = (topic, request, stream) => {
-  subscriptions[topic] = { request: request, stream: stream }
-}
-
-const removeSubscription = promisify((topic, callback) => {
-  if (!subscriptions[topic]) {
-    return callback(new Error(`Not subscribed to ${topic}`))
-  }
-
-  subscriptions[topic].stream.emit('end')
-  delete subscriptions[topic]
-
-  if (callback) {
-    callback(null)
-  }
-})
-
 module.exports = function pubsub (self) {
+  let subscriptions = {}
+
+  const addSubscription = (topic, request, stream) => {
+    subscriptions[topic] = { request: request, stream: stream }
+  }
+
+  const removeSubscription = promisify((topic, callback) => {
+    if (!subscriptions[topic]) {
+      return callback(new Error(`Not subscribed to ${topic}`))
+    }
+
+    subscriptions[topic].stream.emit('end')
+    delete subscriptions[topic]
+
+    if (callback) {
+      callback(null)
+    }
+  })
+
   return {
     subscribe: promisify((topic, options, callback) => {
       if (!self.isOnline()) {
@@ -47,7 +47,11 @@ module.exports = function pubsub (self) {
 
       // There is no explicit unsubscribe; subscriptions have a cancel event
       stream.cancel = promisify((cb) => {
+        // Remove the event listener
+        self._pubsub.removeAllListeners(topic)
+        // Make sure floodsub knows we've unsubscribed
         self._pubsub.unsubscribe(topic)
+        // Remove the subscription from pubsub's internal state
         removeSubscription(topic, cb)
       })
 
@@ -113,8 +117,9 @@ module.exports = function pubsub (self) {
       let peers = []
 
       try {
+        // This part should be moved down to floodsub
+        // Just return the list of peers
         const peerSet = self._pubsub.getPeerSet()
-        console.log(peerSet)
         _values(peerSet).forEach((peer) => {
           const idB58Str = peer.peerInfo.id.toB58String()
           const index = peer.topics.indexOf(topic)
