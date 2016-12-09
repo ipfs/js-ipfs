@@ -1,3 +1,13 @@
+<a name="12.0.3"></a>
+## [12.0.3](https://github.com/ipfs/js-ipfs-api/compare/v12.0.2...v12.0.3) (2016-12-09)
+
+
+### Bug Fixes
+
+* block.get supports multihash as buffers again ([b3dbe45](https://github.com/ipfs/js-ipfs-api/commit/b3dbe45))
+
+
+
 <a name="12.0.2"></a>
 ## [12.0.2](https://github.com/ipfs/js-ipfs-api/compare/v12.0.1...v12.0.2) (2016-12-01)
 
