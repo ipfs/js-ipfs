@@ -10,10 +10,13 @@ module.exports = (send) => {
   return {
     get: promisify((args, opts, callback) => {
       // TODO this needs to be adjusted with the new go-ipfs http-api
-      if (args && CID.isCID(args)) {
+      if (CID.isCID(args)) {
         args = multihash.toB58String(args.multihash)
       }
-      if (typeof (opts) === 'function') {
+      if (Buffer.isBuffer(args)) {
+        args = multihash.toB58String(args)
+      }
+      if (typeof opts === 'function') {
         callback = opts
         opts = {}
       }
