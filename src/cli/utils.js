@@ -47,7 +47,7 @@ exports.getIPFS = (callback) => {
 }
 
 exports.getRepoPath = () => {
-  return process.env.IPFS_PATH || os.homedir() + '/.ipfs'
+  return process.env.IPFS_PATH || os.homedir() + '/.jsipfs'
 }
 
 exports.createLogger = (visible) => {
