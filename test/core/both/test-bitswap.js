@@ -18,11 +18,12 @@ const isNode = require('detect-node')
 
 const IPFS = require('../../../src/core')
 
-function makeBlock (cb) {
-  return cb(null, new Block(`IPFS is awesome ${Math.random()}`))
+function makeBlock (callback) {
+  const block = new Block(new Buffer(`IPFS is awesome ${Math.random()}`))
+  callback(null, block)
 }
 
-describe('bitswap', () => {
+describe.only('bitswap', () => {
   let inProcNode // Node spawned inside this process
   let swarmAddrsBak
 
@@ -68,8 +69,7 @@ describe('bitswap', () => {
           targetAddr = addr.encapsulate(multiaddr(`/ipfs/${identity.id}`)).toString()
           targetAddr = targetAddr.replace('0.0.0.0', '127.0.0.1')
         } else {
-          // Note: the browser doesn't have
-          // a websockets listening addr
+          // Note: the browser doesn't have a websockets listening addr
 
           // TODO, what we really need is a way to dial to
           // a peerId only and another to dial to peerInfo
@@ -129,19 +129,34 @@ describe('bitswap', () => {
             remoteNode = res[1]
             cb()
           },
-          (cb) => remoteNode.block.put(block, cb),
-          (res, cb) => block.key('sha2-256', cb),
-          (key, cb) => inProcNode.block.get(key, cb),
+          (cb) => {
+            remoteNode.block.put(block, (err, _block) => {
+              expect(err).to.not.exist
+              expect(block.data).to.eql(_block.data)
+              cb()
+            })
+          },
+          (cb) => block.key('sha2-256', cb),
+          (key, cb) => {
+            console.log('----> 1')
+            inProcNode.swarm.peers((err, peers) => {
+              expect(err).to.not.exist
+              console.log('Got %d peers', peers.length)
+            })
+
+            // remoteNode.block.get(key, cb) // for testing
+            inProcNode.block.get(key, cb)
+          },
           (b, cb) => {
-            expect(b.data).to.be.eql(block.data)
+            console.log('----> 2')
+
+            expect(b.data).to.eql(block.data)
             cb()
           }
         ], done)
       })
 
-      it('3 peers', function (done) {
-        this.timeout(60 * 1000)
-
+      it('3 peers', (done) => {
         let blocks
         let keys
         const remoteNodes = []
