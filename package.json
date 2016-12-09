@@ -57,7 +57,7 @@
     "url": "https://github.com/ipfs/js-ipfs-api"
   },
   "devDependencies": {
-    "aegir": "^9.1.2",
+    "aegir": "^9.2.1",
     "chai": "^3.5.0",
     "eslint-plugin-react": "^6.8.0",
     "gulp": "^3.9.1",
