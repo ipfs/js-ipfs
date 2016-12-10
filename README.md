@@ -120,7 +120,7 @@ The last published version of the package become [available for download](htt
 
 The `jsipfs` CLI, available when `js-ipfs` is installed globably, follows(should, it is a WIP) the same interface defined by `go-ipfs`, you can always use the `help` command for help menus.
 
-```
+```sh
 # Install js-ipfs globally
 > npm install ipfs --global
 > jsipfs --help
@@ -133,6 +133,12 @@ Commands:
   daemon                Start a long-running daemon process
 # ...
 ```
+
+`js-ipfs` uses some different default config values, so that they don't clash directly with a go-ipfs node running in the same machine. These are:
+
+- default repo location: `~/.jsipfs` (can be changed with env variable `IPFS_PATH`)
+- default swarm port: `4002`
+- default API port: `5002`
 
 ### HTTP-API
 
