@@ -1,3 +1,13 @@
+<a name="0.22.1"></a>
+## [0.22.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.22.0...v0.22.1) (2016-12-10)
+
+
+### Features
+
+* **object:** add template option to object.new ([2f23617](https://github.com/ipfs/interface-ipfs-core/commit/2f23617))
+
+
+
 <a name="0.22.0"></a>
 # [0.22.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.21.0...v0.22.0) (2016-11-24)
 
