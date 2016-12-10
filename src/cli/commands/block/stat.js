@@ -1,6 +1,7 @@
 'use strict'
 
 const utils = require('../../utils')
+const CID = require('cids')
 const debug = require('debug')
 const log = debug('cli:block')
 log.error = debug('cli:block:error')
@@ -13,12 +14,14 @@ module.exports = {
   builder: {},
 
   handler (argv) {
+    const cid = new CID(argv.key)
+
     utils.getIPFS((err, ipfs) => {
       if (err) {
         throw err
       }
 
-      ipfs.block.stat(argv.key, (err, stats) => {
+      ipfs.block.stat(cid, (err, stats) => {
         if (err) {
           throw err
         }
