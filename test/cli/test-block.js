@@ -19,7 +19,7 @@ describe('block', () => {
     it('put with flags, format and mhtype', () => {
       return ipfs('block put --format eth-block --mhtype keccak-256 test/test-data/eth-block').then((out) => {
         expect(out).to.be.eql(
-          'z43AaGF2Jd3Kt5wSYT6wbU4D6QbCXM8AtwZ6WYsVVmnAz7pfX95'
+          'z43AaGF4V81rH6y9ykccadnaGV7EkvbPhFXuvrP6mpK89r8bR5T'
         )
       })
     })
