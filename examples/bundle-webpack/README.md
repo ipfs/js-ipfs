@@ -1,4 +1,4 @@
-# Bundle js-ipfswith Webpack!
+# Bundle js-ipfs with Webpack!
 
 > In this example, you will find a boilerplate you can use to guide yourself into bundling js-ipfs with webpack, so that you can use it in your own web app!
 
