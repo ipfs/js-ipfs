@@ -65,7 +65,7 @@ module.exports = {
     mhlen: {
       describe: 'multihash hash length',
       default: undefined
-    },
+    }
   },
 
   handler (argv) {
