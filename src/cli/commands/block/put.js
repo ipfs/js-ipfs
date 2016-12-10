@@ -5,6 +5,7 @@ const bl = require('bl')
 const fs = require('fs')
 const Block = require('ipfs-block')
 const CID = require('cids')
+const multihashing = require('multihashing-async')
 const waterfall = require('async/waterfall')
 const debug = require('debug')
 const log = debug('cli:block')
@@ -12,7 +13,7 @@ log.error = debug('cli:block:error')
 
 function addBlock (buf, opts) {
   let block = new Block(buf)
-  let mhash, cid
+  let cid
 
   utils.getIPFS((err, ipfs) => {
     if (err) {
@@ -21,7 +22,7 @@ function addBlock (buf, opts) {
 
     waterfall([
       (cb) => generateHash(block, opts, cb),
-      (cb) => generateCid(mhash, block, opts, cb),
+      (mhash, cb) => generateCid(mhash, block, opts, cb),
       (cb) => ipfs.block.put(block, cid, cb)
     ], (err) => {
       if (err) {
@@ -33,24 +34,15 @@ function addBlock (buf, opts) {
   })
 
   function generateHash (block, opts, cb) {
-    if (opts.format === 'v0') {
-      block.key(done)
+    if (opts.mhlen === undefined) {
+      multihashing(buf, opts.mhtype, cb)
     } else {
-      block.key(opts.mhtype, done)
-    }
-    function done (err, _mhash) {
-      if (err) return cb(err)
-      mhash = _mhash
-      cb()
+      multihashing(buf, opts.mhtype, opts.mhlen, cb)
     }
   }
 
   function generateCid (mhash, block, opts, cb) {
-    if (opts.format === 'v0') {
-      cid = new CID(0, 'dag-pb', mhash)
-    } else {
-      cid = new CID(1, opts.format, mhash)
-    }
+    cid = new CID(opts.verison, opts.format, mhash)
     cb()
   }
 }
@@ -73,10 +65,19 @@ module.exports = {
     mhlen: {
       describe: 'multihash hash length',
       default: undefined
-    }
+    },
   },
 
   handler (argv) {
+    // parse options
+    if (argv.format === 'v0') {
+      argv.verison = 0
+      argv.format = 'dag-pb'
+      argv.mhtype = 'sha2-256'
+    } else {
+      argv.verison = 1
+    }
+
     if (argv.data) {
       return addBlock(fs.readFileSync(argv.data), argv)
     }
