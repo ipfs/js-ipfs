@@ -7,7 +7,9 @@ object API
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.object.new([callback])
+##### `JavaScript` - ipfs.object.new([template][, callback])
+
+`template` if defined, must be a string `unixfs-dir` and if that is passed, the created node will be an empty unixfs style directory.
 
 `callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][]
 
@@ -256,5 +258,3 @@ If no `callback` is passed, a [promise][] is returned.
 [DAGNode]: https://github.com/vijayee/js-ipfs-merkle-dag
 [multihash]: http://github.com/jbenet/multihash
 [promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
-
-
