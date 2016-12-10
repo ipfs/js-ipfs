@@ -41,6 +41,19 @@ module.exports = (common) => {
             done()
           })
         })
+
+        it('template unixfs-dir', (done) => {
+          ipfs.object.new('unixfs-dir', (err, node) => {
+            expect(err).to.not.exist
+            const nodeJSON = node.toJSON()
+            expect(
+              nodeJSON.multihash
+            ).to.equal(
+              'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
+            )
+            done()
+          })
+        })
       })
 
       describe('.put', () => {
