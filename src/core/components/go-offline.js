@@ -1,7 +1,6 @@
 'use strict'
 
 module.exports = function goOffline (self) {
-
   /**
    * @alias goOffline
    * @memberof IPFS#

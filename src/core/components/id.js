@@ -11,6 +11,8 @@ module.exports = function id (self) {
    * @param {Object} [opts={}]
    * @param {function(Error, IPFS#Id)} callback
    * @returns {Promise<IPFS#Id>|undefined}
+   *
+   * @see https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic#id
    */
   return promisify((opts, callback) => {
     if (typeof opts === 'function') {

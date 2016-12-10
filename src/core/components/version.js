@@ -10,6 +10,8 @@ module.exports = function version (self) {
    * @method
    * @param {function(Error, IPFS#Version)} callback
    * @returns {Promise<IPFS#Version>|undefined}
+   *
+   * @see https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic#id
    */
   return promisify((opts, callback) => {
     if (typeof opts === 'function') {

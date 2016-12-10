@@ -12,7 +12,7 @@ module.exports = function load (self) {
    * @alias load
    * @memberof IPFS#
    * @method
-   * @param {function(Error)} cb
+   * @param {function(Error)} callback
    * @returns {undefined}
    */
   return (callback) => {

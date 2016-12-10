@@ -97,6 +97,8 @@ module.exports = function object (self) {
      * @method
      * @param {function(Error)} callback
      * @returns {Promise<undefined>|undefined}
+     *
+     * @see https://github.com/ipfs/interface-ipfs-core/tree/master/API/object#objectnew
      */
     new: promisify((callback) => {
       DAGNode.create(new Buffer(0), (err, node) => {
@@ -122,6 +124,8 @@ module.exports = function object (self) {
      * @method
      * @param {function(Error)} callback
      * @returns {Promise<undefined>|undefined}
+     *
+     * @see https://github.com/ipfs/interface-ipfs-core/tree/master/API/object#objectput
      */
     put: promisify((obj, options, callback) => {
       if (typeof options === 'function') {
@@ -187,6 +191,8 @@ module.exports = function object (self) {
      * @method
      * @param {function(Error)} callback
      * @returns {Promise<undefined>|undefined}
+     *
+     * @see https://github.com/ipfs/interface-ipfs-core/tree/master/API/object#objectget
      */
     get: promisify((multihash, options, callback) => {
       if (typeof options === 'function') {
@@ -211,6 +217,8 @@ module.exports = function object (self) {
      * @method
      * @param {function(Error)} callback
      * @returns {Promise<undefined>|undefined}
+     *
+     * @see https://github.com/ipfs/interface-ipfs-core/tree/master/API/object#objectdata
      */
     data: promisify((multihash, options, callback) => {
       if (typeof options === 'function') {
@@ -232,6 +240,8 @@ module.exports = function object (self) {
      * @method
      * @param {function(Error)} callback
      * @returns {Promise<undefined>|undefined}
+     *
+     * @see https://github.com/ipfs/interface-ipfs-core/tree/master/API/object#objectlinks
      */
     links: promisify((multihash, options, callback) => {
       if (typeof options === 'function') {
@@ -256,6 +266,8 @@ module.exports = function object (self) {
      * @param {Object} [options={}]
      * @param {function(Error)} callback
      * @returns {Promise<undefined>|undefined}
+     *
+     * @see https://github.com/ipfs/interface-ipfs-core/tree/master/API/object#objectstat
      */
     stat: promisify((multihash, options, callback) => {
       if (typeof options === 'function') {
@@ -290,20 +302,37 @@ module.exports = function object (self) {
       })
     }),
 
-    /**
-     * @alias object.patch
-     * @memberof IPFS#
-     * @method
-     * @param {function(Error)} callback
-     * @returns {Promise<undefined>|undefined}
-     */
-    patch: promisify({
+    patch: {
+      /**
+       * @alias object.patch.addLink
+       * @memberof IPFS#
+       * @method
+       * @param {Buffer|string} multihash
+       * @param {DAGLink} link
+       * @param {Object}  [options={}]
+       * @param {function(Error)} callback
+       * @returns {Promise<undefined>|undefined}
+       *
+       * @see https://github.com/ipfs/interface-ipfs-core/tree/master/API/object#objectpatchaddlink
+       */
       addLink (multihash, link, options, callback) {
         editAndSave((node, cb) => {
           DAGNode.addLink(node, link, cb)
         })(multihash, options, callback)
       },
 
+      /**
+       * @alias object.patch.rmLink
+       * @memberof IPFS#
+       * @method
+       * @param {Buffer|string} multihash
+       * @param {DAGLink} linkRef
+       * @param {Object}  [options={}]
+       * @param {function(Error)} callback
+       * @returns {Promise<undefined>|undefined}
+       *
+       * @see https://github.com/ipfs/interface-ipfs-core/tree/master/API/object#objectpatchrmlink
+       */
       rmLink (multihash, linkRef, options, callback) {
         editAndSave((node, cb) => {
           if (linkRef.constructor &&
@@ -314,6 +343,18 @@ module.exports = function object (self) {
         })(multihash, options, callback)
       },
 
+      /**
+       * @alias object.patch.appendData
+       * @memberof IPFS#
+       * @method
+       * @param {Buffer|string} multihash
+       * @param {Object} data
+       * @param {Object}  [options={}]
+       * @param {function(Error)} callback
+       * @returns {Promise<undefined>|undefined}
+       *
+       * @see https://github.com/ipfs/interface-ipfs-core/tree/master/API/object#objectpatchappenddata
+       */
       appendData (multihash, data, options, callback) {
         editAndSave((node, cb) => {
           const newData = Buffer.concat([node.data, data])
@@ -321,11 +362,23 @@ module.exports = function object (self) {
         })(multihash, options, callback)
       },
 
+      /**
+       * @alias object.patch.setData
+       * @memberof IPFS#
+       * @method
+       * @param {Buffer|string} multihash
+       * @param {Object} data
+       * @param {Object}  [options={}]
+       * @param {function(Error)} callback
+       * @returns {Promise<undefined>|undefined}
+       *
+       * @see https://github.com/ipfs/interface-ipfs-core/tree/master/API/object#objectpatchsetdata
+       */
       setData (multihash, data, options, callback) {
         editAndSave((node, cb) => {
           DAGNode.create(data, node.links, cb)
         })(multihash, options, callback)
       }
-    })
+    }
   }
 }

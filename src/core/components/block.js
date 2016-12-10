@@ -11,8 +11,11 @@ module.exports = function block (self) {
      * @alias block.get
      * @memberof IPFS#
      * @method
+     * @param {CID} cid
      * @param {function(Error)} callback
      * @returns {undefined}
+     *
+     * @see https://github.com/ipfs/interface-ipfs-core/tree/master/API/block#get
      */
     get: (cid, callback) => {
       cid = cleanCid(cid)
@@ -22,8 +25,12 @@ module.exports = function block (self) {
      * @alias block.put
      * @memberof IPFS#
      * @method
+     * @param {Block} block
+     * @param {CID} cid
      * @param {function(Error)} callback
      * @returns {undefined}
+     *
+     * @see https://github.com/ipfs/interface-ipfs-core/tree/master/API/block#put
      */
     put: (block, cid, callback) => {
       if (typeof cid === 'function') {
@@ -67,8 +74,11 @@ module.exports = function block (self) {
      * @alias block.rm
      * @memberof IPFS#
      * @method
+     * @param {CID} cid
      * @param {function(Error)} callback
      * @returns {undefined}
+     *
+     * @see https://github.com/ipfs/interface-ipfs-core/tree/master/API/block#rm
      */
     rm: (cid, callback) => {
       cid = cleanCid(cid)
@@ -78,8 +88,11 @@ module.exports = function block (self) {
      * @alias block.stat
      * @memberof IPFS#
      * @method
+     * @param {CID} cid
      * @param {function(Error)} callback
      * @returns {undefined}
+     *
+     * @see https://github.com/ipfs/interface-ipfs-core/tree/master/API/block#stat
      */
     stat: (cid, callback) => {
       cid = cleanCid(cid)
