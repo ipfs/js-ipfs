@@ -26,7 +26,7 @@ describe('block', () => {
 
     it('get', () => {
       return ipfs('block get QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp').then((out) => {
-        expect(out).to.be.eql('hello world\n')
+        expect(out).to.be.eql('hello world')
       })
     })
 
