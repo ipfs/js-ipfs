@@ -7,10 +7,24 @@ const waterfall = require('async/waterfall')
 
 module.exports = function block (self) {
   return {
+    /**
+     * @alias block.get
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error)} callback
+     * @returns {undefined}
+     */
     get: (cid, callback) => {
       cid = cleanCid(cid)
       self._blockService.get(cid, callback)
     },
+    /**
+     * @alias block.put
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error)} callback
+     * @returns {undefined}
+     */
     put: (block, cid, callback) => {
       if (typeof cid === 'function') {
         // legacy (without CID)
@@ -49,10 +63,24 @@ module.exports = function block (self) {
         callback(null, block)
       })
     },
+    /**
+     * @alias block.rm
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error)} callback
+     * @returns {undefined}
+     */
     rm: (cid, callback) => {
       cid = cleanCid(cid)
       self._blockService.delete(cid, callback)
     },
+    /**
+     * @alias block.stat
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error)} callback
+     * @returns {undefined}
+     */
     stat: (cid, callback) => {
       cid = cleanCid(cid)
 

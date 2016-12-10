@@ -91,6 +91,13 @@ module.exports = function object (self) {
   }
 
   return {
+    /**
+     * @alias object.new
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error)} callback
+     * @returns {Promise<undefined>|undefined}
+     */
     new: promisify((callback) => {
       DAGNode.create(new Buffer(0), (err, node) => {
         if (err) {
@@ -108,6 +115,14 @@ module.exports = function object (self) {
         })
       })
     }),
+
+    /**
+     * @alias object.put
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error)} callback
+     * @returns {Promise<undefined>|undefined}
+     */
     put: promisify((obj, options, callback) => {
       if (typeof options === 'function') {
         callback = options
@@ -166,6 +181,13 @@ module.exports = function object (self) {
       }
     }),
 
+    /**
+     * @alias object.get
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error)} callback
+     * @returns {Promise<undefined>|undefined}
+     */
     get: promisify((multihash, options, callback) => {
       if (typeof options === 'function') {
         callback = options
@@ -183,6 +205,13 @@ module.exports = function object (self) {
       self._ipldResolver.get(cid, callback)
     }),
 
+    /**
+     * @alias object.data
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error)} callback
+     * @returns {Promise<undefined>|undefined}
+     */
     data: promisify((multihash, options, callback) => {
       if (typeof options === 'function') {
         callback = options
@@ -197,6 +226,13 @@ module.exports = function object (self) {
       })
     }),
 
+    /**
+     * @alias object.links
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error)} callback
+     * @returns {Promise<undefined>|undefined}
+     */
     links: promisify((multihash, options, callback) => {
       if (typeof options === 'function') {
         callback = options
@@ -212,6 +248,15 @@ module.exports = function object (self) {
       })
     }),
 
+    /**
+     * @alias object.stat
+     * @memberof IPFS#
+     * @method
+     * @param {*} multihash
+     * @param {Object} [options={}]
+     * @param {function(Error)} callback
+     * @returns {Promise<undefined>|undefined}
+     */
     stat: promisify((multihash, options, callback) => {
       if (typeof options === 'function') {
         callback = options
@@ -245,6 +290,13 @@ module.exports = function object (self) {
       })
     }),
 
+    /**
+     * @alias object.patch
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error)} callback
+     * @returns {Promise<undefined>|undefined}
+     */
     patch: promisify({
       addLink (multihash, link, options, callback) {
         editAndSave((node, cb) => {

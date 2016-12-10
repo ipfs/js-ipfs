@@ -6,6 +6,13 @@ const promisify = require('promisify-es6')
 module.exports = function libp2p (self) {
   // TODO Just expose libp2p API directly, this start stop wrapping doesn't make that much sense anymore :)
   return {
+    /**
+     * @alias libp2p.start
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error)} callback
+     * @returns {Promise<undefined>|undefined}
+     */
     start: promisify((callback) => {
       self._libp2pNode = new Node(self._peerInfo)
       self._libp2pNode.start((err) => {
@@ -28,6 +35,13 @@ module.exports = function libp2p (self) {
         self._libp2pNode.peerBook.put(peerInfo)
       })
     }),
+    /**
+     * @alias libp2p.stop
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error)} callback
+     * @returns {Promise<undefined>|undefined}
+     */
     stop: promisify((callback) => {
       self._libp2pNode.stop(callback)
     })

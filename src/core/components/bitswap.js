@@ -8,6 +8,12 @@ function formatWantlist (list) {
 
 module.exports = function bitswap (self) {
   return {
+    /**
+     * @alias bitswap.wantlist
+     * @memberof IPFS#
+     * @method
+     * @returns {Array}
+     */
     wantlist: () => {
       if (!self.isOnline()) {
         throw OFFLINE_ERROR
@@ -16,6 +22,12 @@ module.exports = function bitswap (self) {
       const list = self._bitswap.getWantlist()
       return formatWantlist(list)
     },
+    /**
+     * @alias bitswap.stat
+     * @memberof IPFS#
+     * @method
+     * @returns {Object}
+     */
     stat: () => {
       if (!self.isOnline()) {
         throw OFFLINE_ERROR
@@ -27,6 +39,14 @@ module.exports = function bitswap (self) {
 
       return stats
     },
+    /**
+     * NOT IMPLEMENTED
+     * @alias bitswap.unwant
+     * @memberof IPFS#
+     * @method
+     * @param {*} key
+     * @returns {undefined}
+     */
     unwant: (key) => {
       if (!self.isOnline()) {
         throw OFFLINE_ERROR

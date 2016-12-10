@@ -20,6 +20,7 @@
   "scripts": {
     "lint": "aegir-lint",
     "coverage": "gulp coverage",
+    "docs": "aegir-docs",
     "test": "gulp test",
     "test:node": "gulp test:node",
     "test:node:core": "TEST=core npm run test:node",
@@ -27,9 +28,9 @@
     "test:node:cli": "TEST=cli npm run test:node",
     "test:browser": "gulp test:browser",
     "build": "gulp build",
-    "release": "gulp release",
-    "release-minor": "gulp release --type minor",
-    "release-major": "gulp release --type major",
+    "release": "gulp release --docs",
+    "release-minor": "gulp release --type minor --docs",
+    "release-major": "gulp release --type major --docs",
     "coverage-publish": "aegir-coverage publish"
   },
   "pre-commit": [

@@ -9,6 +9,14 @@ const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 
 module.exports = function swarm (self) {
   return {
+    /**
+     * @alias swarm.peers
+     * @memberof IPFS#
+     * @method
+     * @param {Object} [opts={}]
+     * @param {function(Error)} callback
+     * @returns {Promise<*>|undefined}
+     */
     peers: promisify((opts, callback) => {
       if (typeof opts === 'function') {
         callback = opts
@@ -46,7 +54,15 @@ module.exports = function swarm (self) {
       callback(null, peerList)
     }),
 
-    // all the addrs we know
+    /**
+     * Get all the addresses we know.
+     *
+     * @alias swarm.addrs
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error)} callback
+     * @returns {Promise<*>|undefined}
+     */
     addrs: promisify((callback) => {
       if (!self.isOnline()) {
         return callback(OFFLINE_ERROR)
@@ -56,6 +72,14 @@ module.exports = function swarm (self) {
       callback(null, peers)
     }),
 
+    /**
+     *
+     * @alias swarm.localAddrs
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error)} callback
+     * @returns {Promise<*>|undefined}
+     */
     localAddrs: promisify((callback) => {
       if (!self.isOnline()) {
         return callback(OFFLINE_ERROR)
@@ -64,6 +88,14 @@ module.exports = function swarm (self) {
       callback(null, self._libp2pNode.peerInfo.multiaddrs)
     }),
 
+    /**
+     * @alias swarm.connect
+     * @memberof IPFS#
+     * @method
+     * @param {Multiaddr|string} maddr
+     * @param {function(Error)} callback
+     * @returns {Promise<*>|undefined}
+     */
     connect: promisify((maddr, callback) => {
       if (!self.isOnline()) {
         return callback(OFFLINE_ERROR)
@@ -76,6 +108,14 @@ module.exports = function swarm (self) {
       self._libp2pNode.dialByMultiaddr(maddr, callback)
     }),
 
+    /**
+     * @alias swarm.disconnect
+     * @memberof IPFS#
+     * @method
+     * @param {Multiaddr|string}
+     * @param {function(Error)} callback
+     * @returns {Promise<*>|undefined}
+     */
     disconnect: promisify((maddr, callback) => {
       if (!self.isOnline()) {
         return callback(OFFLINE_ERROR)
@@ -88,6 +128,15 @@ module.exports = function swarm (self) {
       self._libp2pNode.hangUpByMultiaddr(maddr, callback)
     }),
 
+    /**
+     * NOT IMPLEMENTED
+     *
+     * @alias swarm.filters
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error)} callback
+     * @returns {Promise<*>|undefined}
+     */
     filters: promisify((callback) => {
       // TODO
       throw new Error('Not implemented')

@@ -4,6 +4,13 @@ const pkg = require('../../../package.json')
 const promisify = require('promisify-es6')
 
 module.exports = function version (self) {
+  /**
+   * @alias version
+   * @memberof IPFS#
+   * @method
+   * @param {function(Error, IPFS#Version)} callback
+   * @returns {Promise<IPFS#Version>|undefined}
+   */
   return promisify((opts, callback) => {
     if (typeof opts === 'function') {
       callback = opts
@@ -17,3 +24,11 @@ module.exports = function version (self) {
     })
   })
 }
+
+/**
+ * @memberof IPFS#
+ * @typedef {Object} Version
+ * @param {string} version
+ * @param {string} repo
+ * @param {string} commit
+ */

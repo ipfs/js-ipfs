@@ -4,6 +4,13 @@ const series = require('async/series')
 const Bitswap = require('ipfs-bitswap')
 
 module.exports = function goOnline (self) {
+  /**
+   * @alias goOnline
+   * @memberof IPFS#
+   * @method
+   * @param {function(Error)} cb
+   * @returns {undefined}
+   */
   return (cb) => {
     series([
       self.load,

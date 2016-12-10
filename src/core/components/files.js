@@ -25,12 +25,32 @@ module.exports = function files (self) {
   }
 
   return {
+    /**
+     * @alias files.createAddStream
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error, DuplexStream)} callback
+     * @returns {Promise<DuplexStream>|undefined}
+     */
     createAddStream: (callback) => {
       callback(null, toStream(createAddPullStream()))
     },
-
+    /**
+     * @alias files.createAddPullStream
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error, Pullstream)} callback
+     * @returns {Promise<PullStream>|undefined}
+     */
     createAddPullStream: createAddPullStream,
-
+    /**
+     * @alias files.add
+     * @memberof IPFS#
+     * @method
+     * @param {*} data
+     * @param {function(Error *)} callback
+     * @returns {Promise<*>|undefined}
+     */
     add: promisify((data, callback) => {
       if (!callback || typeof callback !== 'function') {
         callback = noop
@@ -48,7 +68,14 @@ module.exports = function files (self) {
         pull.collect(callback)
       )
     }),
-
+    /**
+     * @alias files.cat
+     * @memberof IPFS#
+     * @method
+     * @param {string} hash
+     * @param {function(Error, ReadableStream)} callback
+     * @returns {Promise<ReadableStream>|undefined}
+     */
     cat: promisify((hash, callback) => {
       if (typeof hash === 'function') {
         return callback(new Error('You must supply a multihash'))
@@ -77,7 +104,14 @@ module.exports = function files (self) {
         )
       })
     }),
-
+    /**
+     * @alias files.get
+     * @memberof IPFS#
+     * @method
+     * @param {string} hash
+     * @param {function(Error, *)} callback
+     * @returns {Promise<*>|undefined}
+     */
     get: promisify((hash, callback) => {
       callback(null, toStream.source(pull(
         exporter(hash, self._ipldResolver),
@@ -91,7 +125,14 @@ module.exports = function files (self) {
         })
       )))
     }),
-
+    /**
+     * @alias files.getPull
+     * @memberof IPFS#
+     * @method
+     * @param {string} hash
+     * @param {function(Error, *)} callback
+     * @returns {Promise<*>|undefined}
+     */
     getPull: promisify((hash, callback) => {
       callback(null, exporter(hash, self._ipldResolver))
     })

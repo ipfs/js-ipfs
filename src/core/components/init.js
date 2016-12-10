@@ -9,6 +9,17 @@ const addDefaultAssets = require('./init-assets')
 const VERSION = '3'
 
 module.exports = function init (self) {
+  /**
+   * @alias init
+   * @memberof IPFS#
+   * @method
+   * @param {Object} opts
+   * @param {boolean} opts.emptyRepo
+   * @param {number} [opts.bits=2048]
+   * @param {function(string)} opts.log
+   * @param {function(Error)} callback
+   * @returns {undefined}
+   */
   return (opts, callback) => {
     if (typeof opts === 'function') {
       callback = opts

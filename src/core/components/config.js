@@ -7,6 +7,13 @@ const _set = require('lodash.set')
 
 module.exports = function config (self) {
   return {
+    /**
+     * @alias config.get
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error)} callback
+     * @returns {Promise<undefined>|undefined}
+     */
     get: promisify((key, callback) => {
       if (typeof key === 'function') {
         callback = key
@@ -33,6 +40,13 @@ module.exports = function config (self) {
         }
       })
     }),
+    /**
+     * @alias config.set
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error)} callback
+     * @returns {Promise<undefined>|undefined}
+     */
     set: promisify((key, value, callback) => {
       if (!key || typeof key !== 'string') {
         return callback(new Error('Invalid key type'))
@@ -50,6 +64,13 @@ module.exports = function config (self) {
         self.config.replace(config, callback)
       })
     }),
+    /**
+     * @alias config.replace
+     * @memberof IPFS#
+     * @method
+     * @param {function(Error)} callback
+     * @returns {Promise<undefined>|undefined}
+     */
     replace: promisify((config, callback) => {
       self._repo.config.set(config, callback)
     })

@@ -3,6 +3,15 @@
 const promisify = require('promisify-es6')
 
 module.exports = function id (self) {
+  /**
+   * @alias id
+   * @memberof IPFS#
+   * @method
+   * @method
+   * @param {Object} [opts={}]
+   * @param {function(Error, IPFS#Id)} callback
+   * @returns {Promise<IPFS#Id>|undefined}
+   */
   return promisify((opts, callback) => {
     if (typeof opts === 'function') {
       callback = opts
@@ -28,3 +37,13 @@ module.exports = function id (self) {
     }
   })
 }
+
+/**
+ * @typedef {object} Id
+ * @memberof IPFS#
+ * @param {string} id - encoded in `base58`
+ * @param {string} publicKey - encoded in `base64`
+ * @param {Array<string>} addresses
+ * @param {string} agentVersion
+ * @param {string} protocolVersion
+ */

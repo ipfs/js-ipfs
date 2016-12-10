@@ -8,6 +8,13 @@ const waterfall = require('async/waterfall')
 const utils = require('../utils')
 
 module.exports = function load (self) {
+  /**
+   * @alias load
+   * @memberof IPFS#
+   * @method
+   * @param {function(Error)} cb
+   * @returns {undefined}
+   */
   return (callback) => {
     waterfall([
       (cb) => utils.ifRepoExists(self._repo, cb),
