@@ -60,7 +60,7 @@
     "form-data": "^2.1.2",
     "fs-pull-blob-store": "^0.4.1",
     "gulp": "^3.9.1",
-    "interface-ipfs-core": "^0.22.1",
+    "interface-ipfs-core": "ipfs/interface-ipfs-core#501c304",
     "left-pad": "^1.1.3",
     "lodash": "^4.17.2",
     "ncp": "^2.0.0",
@@ -80,40 +80,22 @@
     "hapi": "^16.0.1",
     "hapi-set-header": "^1.0.2",
     "idb-pull-blob-store": "^0.5.1",
-<<<<<<< 186c5d21434e1a198d467cb1396c4d83c3219311
     "ipfs-api": "^12.1.0",
     "ipfs-bitswap": "^0.8.2",
     "ipfs-block": "^0.5.3",
     "ipfs-block-service": "^0.7.1",
-=======
-    "ipfs-api": "git+https://github.com/ipfs/js-ipfs-api.git#01044a1f59fb866e4e08b06aae4e74d968615931",
-    "ipfs-bitswap": "^0.8.1",
-    "ipfs-block": "^0.5.0",
-    "ipfs-block-service": "^0.7.0",
->>>>>>> chore: address CR comments
+    "ipfs-api": "ipfs/js-ipfs-api#32908ae",
+    "ipfs-bitswap": "^0.8.2",
     "ipfs-multipart": "^0.1.0",
     "ipfs-repo": "^0.11.2",
     "ipfs-unixfs": "^0.1.8",
     "ipfs-unixfs-engine": "^0.14.1",
     "ipld-resolver": "^0.4.0",
     "isstream": "^0.1.2",
-<<<<<<< 186c5d21434e1a198d467cb1396c4d83c3219311
-<<<<<<< 7f1eca4e04b6e7855cfd02e381d1f0fa8ef49841
     "joi": "^10.0.5",
     "libp2p-ipfs-nodejs": "^0.17.0",
     "libp2p-ipfs-browser": "^0.17.2",
     "libp2p-floodsub": "0.4.1",
-=======
-    "joi": "^9.2.0",
-    "libp2p-floodsub": "0.3.1",
->>>>>>> feat(api, cli, core): add floodsub
-    "libp2p-ipfs": "^0.15.0",
-=======
-    "joi": "^10.0.1",
-    "libp2p-floodsub": "0.4.0",
-    "libp2p-ipfs-browser": "^0.17.0",
-    "libp2p-ipfs-nodejs": "^0.16.1",
->>>>>>> chore: address CR comments
     "lodash.flatmap": "^4.5.0",
     "lodash.get": "^4.4.2",
     "lodash.has": "^4.5.2",
