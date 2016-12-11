@@ -82,7 +82,7 @@
     "idb-pull-blob-store": "^0.5.1",
     "ipfs-api": "^12.0.3",
     "ipfs-bitswap": "^0.8.2",
-    "ipfs-block": "^0.5.1",
+    "ipfs-block": "^0.5.2",
     "ipfs-block-service": "^0.7.1",
     "ipfs-multipart": "^0.1.0",
     "ipfs-repo": "^0.11.1",
