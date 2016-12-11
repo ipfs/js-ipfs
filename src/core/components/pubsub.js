@@ -86,7 +86,7 @@ module.exports = function pubsub (self) {
         return callback(err)
       }
 
-      callback(null)
+      setImmediate(() => callback())
     }),
 
     ls: promisify((callback) => {
@@ -102,7 +102,7 @@ module.exports = function pubsub (self) {
         return callback(err)
       }
 
-      callback(null, subscriptions)
+      setImmediate(() => callback(null, subscriptions))
     }),
 
     peers: promisify((topic, callback) => {
