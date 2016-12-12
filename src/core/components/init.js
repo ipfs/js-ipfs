@@ -2,6 +2,7 @@
 
 const peerId = require('peer-id')
 const waterfall = require('async/waterfall')
+const parallel = require('async/parallel')
 
 const addDefaultAssets = require('./init-assets')
 
@@ -51,11 +52,28 @@ module.exports = function init (self) {
       },
       (cb) => self._repo.config.set(config, cb),
       (cb) => {
-        if (typeof addDefaultAssets === 'function' && !opts.emptyRepo) {
-          return addDefaultAssets(self, opts.log, cb)
+        if (opts.emptyRepo) {
+          return cb(null, true)
         }
 
-        cb(null, true)
+        const tasks = [
+          // add empty unixfs dir object (go-ipfs assumes this exists)
+          (cb) => self.object.new('unixfs-dir', cb)
+        ]
+
+        if (typeof addDefaultAssets === 'function') {
+          tasks.push(
+            (cb) => addDefaultAssets(self, opts.log, cb)
+          )
+        }
+
+        parallel(tasks, (err) => {
+          if (err) {
+            return cb(err)
+          }
+
+          cb(null, true)
+        })
       }
     ], callback)
   }
