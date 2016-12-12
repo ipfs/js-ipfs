@@ -12,6 +12,7 @@ function setAddresses (repo, num, callback) {
     if (err) {
       return callback(err)
     }
+
     config.Addresses = {
       Swarm: [
         `/ip4/127.0.0.1/tcp/10${num}`,
@@ -20,6 +21,9 @@ function setAddresses (repo, num, callback) {
       API: `/ip4/127.0.0.1/tcp/31${num}`,
       Gateway: `/ip4/127.0.0.1/tcp/32${num}`
     }
+
+    config.Discovery.MDNS.Enabled = false
+
     repo.config.set(config, callback)
   })
 }

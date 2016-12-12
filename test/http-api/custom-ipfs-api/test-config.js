@@ -8,6 +8,7 @@ const path = require('path')
 module.exports = (ctl) => {
   describe('.config', () => {
     const configPath = path.join(__dirname, '../../repo-tests-run/config')
+
     let updatedConfig
 
     before(() => {
@@ -66,7 +67,7 @@ module.exports = (ctl) => {
     })
 
     // This one is one stale mode till go-ipfs decides
-    // what to do
+    // what to do with the .replace command
     describe('.replace', () => {
       it('returns error if the config is invalid', (done) => {
         const filePath = 'test/test-data/badconfig'
