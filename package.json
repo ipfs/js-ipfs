@@ -65,7 +65,7 @@
     "lodash": "^4.17.2",
     "ncp": "^2.0.0",
     "nexpect": "^0.5.0",
-    "pre-commit": "^1.2.0",
+    "pre-commit": "^1.2.1",
     "rimraf": "^2.5.4",
     "stream-to-promise": "^2.2.0",
     "transform-loader": "^0.2.3"
