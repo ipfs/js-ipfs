@@ -80,7 +80,7 @@
     "hapi": "^16.0.1",
     "hapi-set-header": "^1.0.2",
     "idb-pull-blob-store": "^0.5.1",
-    "ipfs-api": "^12.0.3",
+    "ipfs-api": "^12.1.0",
     "ipfs-bitswap": "^0.8.2",
     "ipfs-block": "^0.5.1",
     "ipfs-block-service": "^0.7.1",
