@@ -9,8 +9,8 @@ const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 module.exports = function pubsub (self) {
   let subscriptions = {}
 
-  const addSubscription = (topic, request, stream) => {
-    subscriptions[topic] = { request: request, stream: stream }
+  const addSubscription = (topic, stream, handler) => {
+    subscriptions[topic] = { stream, handler }
   }
 
   const removeSubscription = promisify((topic, callback) => {
@@ -47,20 +47,25 @@ module.exports = function pubsub (self) {
 
       // There is no explicit unsubscribe; subscriptions have a cancel event
       stream.cancel = promisify((cb) => {
-        // Remove the event listener
-        self._pubsub.removeAllListeners(topic)
+        // Remove relevant event listeners
+        if (self._pubsub.listenerCount(topic) > 1) {
+          self._pubsub.removeListener(topic, subscriptions[topic].handler)
+        } else {
+          self._pubsub.removeAllListeners(topic)
+        }
         // Make sure floodsub knows we've unsubscribed
         self._pubsub.unsubscribe(topic)
         // Remove the subscription from pubsub's internal state
         removeSubscription(topic, cb)
       })
 
-      self._pubsub.on(topic, (data) => {
+      const handler = (data) => {
         stream.emit('data', {
           data: data.toString(),
           topicIDs: [topic]
         })
-      })
+      }
+      self._pubsub.on(topic, handler)
 
       try {
         self._pubsub.subscribe(topic)
@@ -69,7 +74,7 @@ module.exports = function pubsub (self) {
       }
 
       // Add the request to the active subscriptions and return the stream
-      addSubscription(topic, null, stream)
+      addSubscription(topic, stream, handler)
       callback(null, stream)
     }),
 
