@@ -24,8 +24,6 @@ const ping = require('./components/ping')
 const files = require('./components/files')
 const bitswap = require('./components/bitswap')
 
-exports = module.exports = IPFS
-
 /**
  * The core IPFS component.
  *
@@ -102,3 +100,5 @@ class IPFS {
     this.ping = ping(this)
   }
 }
+
+exports = module.exports = IPFS
