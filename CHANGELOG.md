@@ -1,3 +1,13 @@
+<a name="12.1.0"></a>
+# [12.1.0](https://github.com/ipfs/js-ipfs-api/compare/v12.0.3...v12.1.0) (2016-12-12)
+
+
+### Features
+
+* **object:** add template support to object.new ([2784863](https://github.com/ipfs/js-ipfs-api/commit/2784863))
+
+
+
 <a name="12.0.3"></a>
 ## [12.0.3](https://github.com/ipfs/js-ipfs-api/compare/v12.0.2...v12.0.3) (2016-12-09)
 
