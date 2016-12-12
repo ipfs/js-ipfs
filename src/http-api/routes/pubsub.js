@@ -46,7 +46,7 @@ module.exports = (server) => {
 
   api.route({
     method: '*',
-    path: '/api/v0/pubsub/peers',
+    path: '/api/v0/pubsub/peers/{topic}',
     config: {
       handler: resources.pubsub.peers.handler,
       validate: {
