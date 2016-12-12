@@ -11,7 +11,7 @@ const LRU = require('lru-cache')
 const lruOptions = {
   max: 128
 }
-
+const Unixfs = require('ipfs-unixfs')
 const cache = LRU(lruOptions)
 
 module.exports = (send) => {
@@ -253,15 +253,31 @@ module.exports = (send) => {
         args: multihash
       }, callback)
     }),
-    new: promisify((callback) => {
+    new: promisify((template, callback) => {
+      if (typeof template === 'function') {
+        callback = template
+        template = undefined
+      }
       send({
-        path: 'object/new'
+        path: 'object/new',
+        args: template
       }, (err, result) => {
         if (err) {
           return callback(err)
         }
 
-        DAGNode.create(new Buffer(0), (err, node) => {
+        let data
+
+        if (template) {
+          if (template !== 'unixfs-dir') {
+            return callback(new Error('unkown template: ' + template))
+          }
+          data = (new Unixfs('directory')).marshal()
+        } else {
+          data = new Buffer(0)
+        }
+
+        DAGNode.create(data, (err, node) => {
           if (err) {
             return callback(err)
           }
