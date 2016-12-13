@@ -83,7 +83,7 @@
     "ipfs-api": "^12.1.0",
     "ipfs-bitswap": "^0.8.2",
     "ipfs-block": "^0.5.3",
-    "ipfs-block-service": "^0.7.1",
+    "ipfs-block-service": "^0.7.2",
     "ipfs-multipart": "^0.1.0",
     "ipfs-repo": "^0.11.1",
     "ipfs-unixfs": "^0.1.8",
