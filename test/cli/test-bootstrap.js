@@ -7,7 +7,7 @@ const repoPath = require('./index').repoPath
 const ipfs = require('../utils/ipfs-exec')(repoPath)
 const describeOnlineAndOffline = require('../utils/on-and-off')
 
-describe.only('bootstrap', () => {
+describe('bootstrap', () => {
   describeOnlineAndOffline(repoPath, () => {
     const defaultList = [
       '/ip4/104.131.131.82/tcp/4001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ',
@@ -34,16 +34,21 @@ describe.only('bootstrap', () => {
       '/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD'
     ]
 
+    it('add default', () => {
+      return ipfs('bootstrap add --default').then((out) => {
+        expect(out).to.be.eql(defaultList.join('\n'))
+      })
+    })
+
     it('list the bootstrap nodes', () => {
       return ipfs('bootstrap list').then((out) => {
         expect(out).to.eql(defaultList.join('\n'))
       })
     })
 
-    // TODO need https://github.com/ipfs/interface-ipfs-core/issues/97
-    // to happen, otherwise it is a cat an mouse game
-    it.skip('add another bootstrap node', () => {
+    it('add another bootstrap node', () => {
       return ipfs('bootstrap add /ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD').then((out) => {
+        expect(out).to.be.eql('/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD')
         return ipfs('bootstrap list')
       }).then((out) => {
         expect(out).to.be.eql(updatedList.join('\n'))
@@ -52,6 +57,7 @@ describe.only('bootstrap', () => {
 
     it('rm a bootstrap node', () => {
       return ipfs('bootstrap rm /ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD').then((out) => {
+        expect(out).to.be.eql('/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD')
         return ipfs('bootstrap list')
       }).then((out) => {
         expect(out).to.deep.equal(defaultList.join('\n'))
@@ -60,6 +66,7 @@ describe.only('bootstrap', () => {
 
     it('rm all bootstrap nodes', () => {
       return ipfs('bootstrap rm --all').then((out) => {
+        expect(out).to.be.eql('')
         return ipfs('bootstrap list')
       }).then((out) => {
         expect(out).to.deep.equal('')

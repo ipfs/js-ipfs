@@ -28,6 +28,8 @@ module.exports = {
         if (err) {
           throw err
         }
+
+        list.Peers.forEach((l) => console.log(l))
       })
     })
   }

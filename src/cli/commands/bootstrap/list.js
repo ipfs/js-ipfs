@@ -21,7 +21,8 @@ module.exports = {
         if (err) {
           throw err
         }
-        list.forEach((node) => {
+
+        list.Peers.forEach((node) => {
           console.log(node)
         })
       })

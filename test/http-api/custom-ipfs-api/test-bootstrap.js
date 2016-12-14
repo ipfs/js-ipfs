@@ -5,28 +5,86 @@ const expect = require('chai').expect
 
 module.exports = (ctl) => {
   describe('.bootstrap', () => {
-    // TODO: needs https://github.com/ipfs/js-ipfs-api/issues/217
-    it.skip('list', (done) => {
-      ctl.boostrap.list((err, result) => {
-        expect(err).to.not.exist
-        expect(result).to.deep.equal(defaultList)
-        done()
+    const invalidArg = 'this/Is/So/Invalid/'
+    const validIp4 = '/ip4/104.236.176.52/tcp/4001/ipfs/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z'
+    let peers
+
+    describe('.add', () => {
+      it('returns an error when called with an invalid arg', (done) => {
+        ctl.bootstrap.add(invalidArg, (err) => {
+          expect(err).to.be.an.instanceof(Error)
+          done()
+        })
+      })
+
+      it('returns a list of containing the bootstrap peer when called with a valid arg (ip4)', (done) => {
+        ctl.bootstrap.add(validIp4, (err, res) => {
+          expect(err).to.not.exist
+          expect(res).to.be.eql({ Peers: [validIp4] })
+          done()
+        })
+      })
+
+      it('returns a list of bootstrap peers when called with the default option', (done) => {
+        ctl.bootstrap.add({ default: true }, (err, res) => {
+          expect(err).to.not.exist
+          peers = res.Peers
+          expect(peers).to.exist
+          console.log(peers)
+          expect(peers.length).to.be.above(1)
+          done()
+        })
       })
     })
 
-    it.skip('add', (done) => {}) // TODO
-    it.skip('rm', (done) => {}) // TODO
+    describe('.list', () => {
+      it('returns a list of peers', (done) => {
+        ctl.bootstrap.list((err, res) => {
+          expect(err).to.not.exist
+          peers = res.Peers
+          expect(peers).to.exist
+          done()
+        })
+      })
+    })
+
+    describe('.rm', () => {
+      it('returns an error when called with an invalid arg', (done) => {
+        ctl.bootstrap.rm(invalidArg, (err) => {
+          expect(err).to.be.an.instanceof(Error)
+          done()
+        })
+      })
+
+      it('returns empty list because no peers removed when called without an arg or options', (done) => {
+        ctl.bootstrap.rm(null, (err, res) => {
+          expect(err).to.not.exist
+          peers = res.Peers
+          expect(peers).to.exist
+          expect(peers.length).to.eql(0)
+          done()
+        })
+      })
+
+      it('returns list containing the peer removed when called with a valid arg (ip4)', (done) => {
+        ctl.bootstrap.rm(validIp4, (err, res) => {
+          expect(err).to.not.exist
+
+          peers = res.Peers
+          expect(peers).to.exist
+          expect(peers.length).to.eql(1)
+          done()
+        })
+      })
+
+      it('returns list of all peers removed when all option is passed', (done) => {
+        ctl.bootstrap.rm(null, { all: true }, (err, res) => {
+          expect(err).to.not.exist
+          peers = res.Peers
+          expect(peers).to.exist
+          done()
+        })
+      })
+    })
   })
 }
-
-const defaultList = [
-  '/ip4/104.131.131.82/tcp/4001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ',
-  '/ip4/104.236.176.52/tcp/4001/ipfs/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z',
-  '/ip4/104.236.179.241/tcp/4001/ipfs/QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM',
-  '/ip4/162.243.248.213/tcp/4001/ipfs/QmSoLueR4xBeUbY9WZ9xGUUxunbKWcrNFTDAadQJmocnWm',
-  '/ip4/128.199.219.111/tcp/4001/ipfs/QmSoLSafTMBsPKadTEgaXctDQVcqN88CNLHXMkTNwMKPnu',
-  '/ip4/104.236.76.40/tcp/4001/ipfs/QmSoLV4Bbm51jM9C4gDYZQ9Cy3U6aXMJDAbzgu2fzaDs64',
-  '/ip4/178.62.158.247/tcp/4001/ipfs/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd',
-  '/ip4/178.62.61.185/tcp/4001/ipfs/QmSoLMeWqB7YGVLJN3pNLQpmmEk35v6wYtsMGLzSr5QBU3',
-  '/ip4/104.236.151.122/tcp/4001/ipfs/QmSoLju6m7xTh3DuokvT3886QRYqxAzb1kShaanJgW36yx'
-]
