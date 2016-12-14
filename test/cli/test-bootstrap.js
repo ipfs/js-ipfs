@@ -7,7 +7,7 @@ const repoPath = require('./index').repoPath
 const ipfs = require('../utils/ipfs-exec')(repoPath)
 const describeOnlineAndOffline = require('../utils/on-and-off')
 
-describe('bootstrap', () => {
+describe.only('bootstrap', () => {
   describeOnlineAndOffline(repoPath, () => {
     const defaultList = [
       '/ip4/104.131.131.82/tcp/4001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ',
@@ -50,11 +50,19 @@ describe('bootstrap', () => {
       })
     })
 
-    it.skip('rm a bootstrap node', () => {
+    it('rm a bootstrap node', () => {
       return ipfs('bootstrap rm /ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD').then((out) => {
         return ipfs('bootstrap list')
       }).then((out) => {
         expect(out).to.deep.equal(defaultList.join('\n'))
+      })
+    })
+
+    it('rm all bootstrap nodes', () => {
+      return ipfs('bootstrap rm --all').then((out) => {
+        return ipfs('bootstrap list')
+      }).then((out) => {
+        expect(out).to.deep.equal('')
       })
     })
   })

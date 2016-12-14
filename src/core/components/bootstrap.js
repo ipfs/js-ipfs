@@ -19,19 +19,21 @@ module.exports = function bootstrap (self) {
         self._repo.config.set(config, callback)
       })
     },
-    rm: (multiaddr, callback) => {
+    rm: (multiaddr, args, callback) => {
+      if (typeof args === 'function') {
+        callback = args
+        args = {all: false}
+      }
       self._repo.config.get((err, config) => {
         if (err) {
           return callback(err)
         }
+        if (args.all) {
+          config.Bootstrap = []
+        } else {
+          config.Bootstrap = config.Bootstrap.filter((mh) => mh !== multiaddr)
+        }
 
-        config.Bootstrap = config.Bootstrap.filter((mh) => {
-          if (mh === multiaddr) {
-            return false
-          } else {
-            return true
-          }
-        })
         self._repo.config.set(config, callback)
       })
     }
