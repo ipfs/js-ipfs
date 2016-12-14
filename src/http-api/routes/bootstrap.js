@@ -9,7 +9,9 @@ module.exports = (server) => {
   api.route({
     method: '*',
     path: '/api/v0/bootstrap',
-    handler: resources.bootstrap.list
+    config: {
+      handler: resources.bootstrap.list
+    }
   })
 
   // https://github.com/ipfs/http-api-spec/blob/master/apiary.apib#L866

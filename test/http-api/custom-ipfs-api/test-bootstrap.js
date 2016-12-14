@@ -6,7 +6,7 @@ const expect = require('chai').expect
 module.exports = (ctl) => {
   describe('.bootstrap', () => {
     const invalidArg = 'this/Is/So/Invalid/'
-    const validIp4 = '/ip4/104.236.176.52/tcp/4001/ipfs/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z'
+    const validIp4 = '/ip4/101.236.176.52/tcp/4001/ipfs/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z'
     let peers
 
     describe('.add', () => {
@@ -30,7 +30,6 @@ module.exports = (ctl) => {
           expect(err).to.not.exist
           peers = res.Peers
           expect(peers).to.exist
-          console.log(peers)
           expect(peers.length).to.be.above(1)
           done()
         })

@@ -11,21 +11,6 @@ function applyError (reply, err) {
   }).code(500).takeover()
 }
 
-// common pre request handler that parses the args and returns `key` which is assigned to `request.pre.args`
-exports.parseKey = (request, reply) => {
-  if (!request.query.arg) {
-    return applyError(reply, new Error("Argument 'multiaddr' is required"))
-  }
-
-  try {
-    return reply({
-      addr: multiaddr(request.query.arg)
-    })
-  } catch (err) {
-    return applyError(reply, new Error('Not a valid multiaddr'))
-  }
-}
-
 exports.list = (request, reply) => {
   const ipfs = request.server.app.ipfs
 
