@@ -16,7 +16,7 @@ test_expect_success "ipfs init succeeds" '
 	export IPFS_PATH="$(pwd)/.ipfs" &&
 	echo "IPFS_PATH: \"$IPFS_PATH\"" &&
 	BITS="2048" &&
-	ipfs init --bits="$BITS" >actual_init ||
+	jsipfs init --bits="$BITS" >actual_init ||
 	test_fsh cat actual_init
 '
 
@@ -26,7 +26,7 @@ test_expect_success ".ipfs/config has been created" '
 '
 
 test_expect_success "ipfs config succeeds" '
-	ipfs config $cfg_flags "$cfg_key" "$cfg_val"
+	jsipfs config $cfg_flags "$cfg_key" "$cfg_val"
 '
 
 test_expect_success "ipfs read config succeeds" '
