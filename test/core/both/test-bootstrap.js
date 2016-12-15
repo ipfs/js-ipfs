@@ -41,28 +41,30 @@ describe('bootstrap', () => {
   it('get bootstrap list', (done) => {
     ipfs.bootstrap.list((err, list) => {
       expect(err).to.not.exist
-      expect(list).to.deep.equal(defaultList)
+      expect(list.Peers).to.deep.equal(defaultList)
       done()
     })
   })
 
   it('add a peer to the bootstrap list', (done) => {
-    ipfs.bootstrap.add('/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT', (err) => {
+    ipfs.bootstrap.add('/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT', (err, res) => {
       expect(err).to.not.exist
+      expect(res).to.be.eql({Peers: ['/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT']})
       ipfs.bootstrap.list((err, list) => {
         expect(err).to.not.exist
-        expect(list).to.deep.equal(updatedList)
+        expect(list.Peers).to.deep.equal(updatedList)
         done()
       })
     })
   })
 
   it('remove a peer from the bootstrap list', (done) => {
-    ipfs.bootstrap.rm('/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT', (err) => {
+    ipfs.bootstrap.rm('/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT', (err, res) => {
       expect(err).to.not.exist
+      expect(res).to.be.eql({Peers: ['/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT']})
       ipfs.bootstrap.list((err, list) => {
         expect(err).to.not.exist
-        expect(list).to.deep.equal(defaultList)
+        expect(list.Peers).to.deep.equal(defaultList)
         done()
       })
     })
