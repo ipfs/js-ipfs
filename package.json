@@ -103,7 +103,6 @@
     "mafmt": "^2.1.2",
     "multiaddr": "^2.1.1",
     "multihashes": "^0.3.0",
-    "ndjson": "1.5.0",
     "path-exists": "^3.0.0",
     "peer-book": "^0.3.0",
     "peer-id": "^0.8.0",

@@ -1,7 +1,9 @@
 'use strict'
 
 const debug = require('debug')
-// const ndjson = require('ndjson')
+const pull = require('pull-stream')
+const toStream = require('pull-stream-to-stream')
+const toPull = require('stream-to-pull-stream')
 const log = debug('http-api:pubsub')
 log.error = debug('http-api:pubsub:error')
 
@@ -21,17 +23,24 @@ exports.subscribe = {
         }).code(500)
       }
 
+      // TODO: expose pull-streams on floodsub and use them here
+      const res = toStream.source(pull(
+        toPull(stream),
+        pull.map((obj) => JSON.stringify(obj) + '\n')
+      ))
+
       // hapi is not very clever and throws if no:
       // - _read method
       // - _readableState object
       // are there :(
-      if (!stream._read) {
-        stream._read = () => {}
-        stream._readableState = {}
+      if (!res._read) {
+        res._read = () => {}
+        res._readableState = {}
       }
 
-      // ndjson.serialize
-      return reply(stream)
+      res.destroy = () => stream.cancel()
+
+      reply(res).header('X-Stream-Output', '1')
     })
   }
 }
