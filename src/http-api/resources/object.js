@@ -34,8 +34,9 @@ exports.parseKey = (request, reply) => {
 
 exports.new = (request, reply) => {
   const ipfs = request.server.app.ipfs
+  const template = request.query.arg
 
-  ipfs.object.new((err, node) => {
+  ipfs.object.new(template, (err, node) => {
     if (err) {
       log.error(err)
       return reply({

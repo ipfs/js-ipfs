@@ -49,10 +49,10 @@ module.exports = (http) => {
         // Regarding: https://github.com/ipfs/js-ipfs/pull/644#issuecomment-267687194
         // Current Patch: Subscribe to a topic so the other tests run as expected
         api.app.ipfs.pubsub.subscribe(topic)
-          .then((stream) => {
-              stream.on('end', done)
-              setTimeout(() => stream.emit('end'), 100)
-            })
+        .then((stream) => {
+          stream.on('end', done)
+          setTimeout(() => stream.emit('end'), 100)
+        })
         // api.inject({
         //   method: 'GET',
         //   url: `/api/v0/pubsub/sub/${topic}`

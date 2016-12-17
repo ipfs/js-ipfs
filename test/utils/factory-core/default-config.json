@@ -33,7 +33,7 @@
   },
   "Discovery": {
     "MDNS": {
-      "Enabled": true,
+      "Enabled": false,
       "Interval": 10
     }
   },

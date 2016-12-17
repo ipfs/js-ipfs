@@ -27,13 +27,6 @@ module.exports = (ctl) => {
     })
 
     describe('.get', () => {
-      it('returns error for request without argument', (done) => {
-        ctl.block.get(null, (err, result) => {
-          expect(err).to.exist
-          done()
-        })
-      })
-
       it('returns error for request with invalid argument', (done) => {
         ctl.block.get('invalid', (err, result) => {
           expect(err).to.exist

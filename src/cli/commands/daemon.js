@@ -16,7 +16,7 @@ module.exports = {
     console.log('Initializing daemon...')
     httpAPI = new HttpAPI(process.env.IPFS_PATH)
     httpAPI.start((err) => {
-      if (err.code === 'ENOENT') {
+      if (err && err.code === 'ENOENT') {
         console.log('Error: no ipfs repo found in ' + process.env.IPFS_PATH)
         console.log('please run: jsipfs init')
         process.exit(1)

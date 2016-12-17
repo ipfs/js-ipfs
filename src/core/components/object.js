@@ -7,6 +7,8 @@ const DAGNode = dagPB.DAGNode
 const DAGLink = dagPB.DAGLink
 const CID = require('cids')
 const mh = require('multihashes')
+const Unixfs = require('ipfs-unixfs')
+const assert = require('assert')
 
 function normalizeMultihash (multihash, enc) {
   if (typeof multihash === 'string') {
@@ -91,8 +93,22 @@ module.exports = function object (self) {
   }
 
   return {
-    new: promisify((callback) => {
-      DAGNode.create(new Buffer(0), (err, node) => {
+    new: promisify((template, callback) => {
+      if (typeof template === 'function') {
+        callback = template
+        template = undefined
+      }
+
+      let data
+
+      if (template) {
+        assert(template === 'unixfs-dir', 'unkown template')
+        data = (new Unixfs('directory')).marshal()
+      } else {
+        data = new Buffer(0)
+      }
+
+      DAGNode.create(data, (err, node) => {
         if (err) {
           return callback(err)
         }

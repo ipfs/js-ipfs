@@ -6,7 +6,7 @@ const glob = require('glob')
 const importer = require('ipfs-unixfs-engine').importer
 const pull = require('pull-stream')
 const file = require('pull-file')
-const mh = require('multihashes')
+// const mh = require('multihashes')
 
 // Add the default assets to the repo.
 module.exports = function addDefaultAssets (self, log, callback) {
@@ -35,10 +35,12 @@ module.exports = function addDefaultAssets (self, log, callback) {
     importer(self._ipldResolver),
     pull.through((el) => {
       if (el.path === 'files/init-docs/docs') {
-        const hash = mh.toB58String(el.multihash)
+        // const hash = mh.toB58String(el.multihash)
         log('to get started, enter:')
         log()
-        log(`\t jsipfs files cat /ipfs/${hash}/readme`)
+        log(`\t jsipfs files cat /ipfs/QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB`)
+        // TODO when we support pathing in unixfs-engine
+        // log(`\t jsipfs files cat /ipfs/${hash}/readme`)
         log()
       }
     }),

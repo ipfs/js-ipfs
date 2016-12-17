@@ -14,7 +14,10 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    const path = argv['ipfs-path']
+    let path = argv['ipfs-path']
+    if (path.indexOf('/ipfs/') !== 1) {
+      path = path.replace('/ipfs/', '')
+    }
 
     waterfall([
       (cb) => utils.getIPFS(cb),
