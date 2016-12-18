@@ -33,13 +33,13 @@ module.exports = (http) => {
       }, 1000)
     })
 
-    describe('/sub/{topic}', () => {
-      it('returns 404 if no topic is provided', (done) => {
+    describe('/sub', () => {
+      it('returns 500 if no topic is provided', (done) => {
         api.inject({
           method: 'GET',
           url: `/api/v0/pubsub/sub`
         }, (res) => {
-          expect(res.statusCode).to.equal(404)
+          expect(res.statusCode).to.equal(500)
           done()
         })
       })
@@ -66,7 +66,7 @@ module.exports = (http) => {
       it('returns 500 if already subscribed to a topic', (done) => {
         api.inject({
           method: 'GET',
-          url: `/api/v0/pubsub/sub/${topic}`
+          url: `/api/v0/pubsub/sub?arg=${topic}`
         }, (res) => {
           expect(res.statusCode).to.equal(500)
           done()
@@ -75,24 +75,12 @@ module.exports = (http) => {
     })
 
     describe('/pub', () => {
-      it('returns 400 if no buffer is provided', (done) => {
+      it('returns 500 if no buffer is provided', (done) => {
         api.inject({
           method: 'POST',
-          url: `/api/v0/pubsub/pub?topic=${topic}`
+          url: `/api/v0/pubsub/pub?arg=${topic}&arg=`
         }, (res) => {
-          expect(res.statusCode).to.equal(400)
-          expect(res.statusMessage).to.equal('Bad Request')
-          done()
-        })
-      })
-
-      it('returns 400 if no topic is provided', (done) => {
-        api.inject({
-          method: 'POST',
-          url: `/api/v0/pubsub/pub?buf=${buf}`
-        }, (res) => {
-          expect(res.statusCode).to.equal(400)
-          expect(res.statusMessage).to.equal('Bad Request')
+          expect(res.statusCode).to.equal(500)
           done()
         })
       })
@@ -100,7 +88,7 @@ module.exports = (http) => {
       it('returns 200 with topic and buffer', (done) => {
         api.inject({
           method: 'POST',
-          url: `/api/v0/pubsub/pub?buf=${buf}&topic=${topic}`
+          url: `/api/v0/pubsub/pub?arg=${topic}&arg=${buf}`
         }, (res) => {
           expect(res.statusCode).to.equal(200)
           done()
@@ -115,20 +103,19 @@ module.exports = (http) => {
           url: `/api/v0/pubsub/ls`
         }, (res) => {
           expect(res.statusCode).to.equal(200)
-          expect(res.result.length).to.eql(1)
-          expect(res.result[0]).to.eql(topic)
+          expect(res.result.Strings).to.be.eql([topic])
           done()
         })
       })
     })
 
-    describe('/peers/{topic}', () => {
-      it('returns 404 if no topic is provided', (done) => {
+    describe('/peers', () => {
+      it('returns 500 if no topic is provided', (done) => {
         api.inject({
           method: 'GET',
           url: `/api/v0/pubsub/peers`
         }, (res) => {
-          expect(res.statusCode).to.equal(404)
+          expect(res.statusCode).to.equal(500)
           done()
         })
       })
@@ -136,7 +123,7 @@ module.exports = (http) => {
       it('returns 500 if not subscribed to a topic', (done) => {
         api.inject({
           method: 'GET',
-          url: `/api/v0/pubsub/peers/${topicNotSubscribed}`
+          url: `/api/v0/pubsub/peers?arg=${topicNotSubscribed}`
         }, (res) => {
           expect(res.statusCode).to.equal(500)
           done()
@@ -146,7 +133,7 @@ module.exports = (http) => {
       it('returns 200 with topic', (done) => {
         api.inject({
           method: 'GET',
-          url: `/api/v0/pubsub/peers/${topic}`
+          url: `/api/v0/pubsub/peers?arg=${topic}`
         }, (res) => {
           expect(res.statusCode).to.equal(200)
           done()

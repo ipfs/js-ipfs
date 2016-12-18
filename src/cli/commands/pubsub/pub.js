@@ -6,7 +6,7 @@ const log = debug('cli:pubsub')
 log.error = debug('cli:pubsub:error')
 
 module.exports = {
-  command: 'publish <topic> <data>',
+  command: 'pub <topic> <data>',
 
   describe: 'Publish data to a topic',
 

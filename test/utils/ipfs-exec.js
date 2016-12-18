@@ -33,13 +33,19 @@ module.exports = (repoPath, opts) => {
       args = args[0].split(' ')
     }
 
-    return exec(args).then((res) => {
+    const cp = exec(args)
+    const res = cp.then((res) => {
       // We can't escape the os.tmpDir warning due to:
       // https://github.com/shelljs/shelljs/blob/master/src/tempdir.js#L43
       // expect(res.stderr).to.be.eql('')
-
       return res.stdout
     })
+
+    res.kill = cp.kill.bind(cp)
+    res.stdout = cp.stdout
+    res.stderr = cp.stderr
+
+    return res
   }
 
   ipfs.fail = function ipfsFail () {

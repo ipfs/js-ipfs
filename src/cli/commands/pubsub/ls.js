@@ -23,7 +23,9 @@ module.exports = {
           throw err
         }
 
-        console.log(JSON.stringify(subscriptions, null, 2))
+        subscriptions.forEach((sub) => {
+          console.log(sub)
+        })
       })
     })
   }

@@ -14,6 +14,7 @@ const log = debug('api')
 log.error = debug('api:error')
 
 const IPFS = require('../core')
+const errorHandler = require('./error-handler')
 
 exports = module.exports = function HttpApi (repo) {
   this.ipfs = null
@@ -79,6 +80,9 @@ exports = module.exports = function HttpApi (repo) {
           port: gateway[4],
           labels: 'Gateway'
         })
+
+        // Nicer errors
+        errorHandler(this.server)
 
         // load routes
         require('./routes')(this.server)

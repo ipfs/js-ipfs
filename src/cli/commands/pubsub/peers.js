@@ -23,7 +23,9 @@ module.exports = {
           throw err
         }
 
-        console.log(JSON.stringify(peers, null, 2))
+        peers.forEach((peer) => {
+          console.log(peer)
+        })
       })
     })
   }

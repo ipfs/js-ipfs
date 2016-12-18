@@ -1,6 +1,5 @@
 'use strict'
 
-const Joi = require('joi')
 const resources = require('./../resources')
 
 module.exports = (server) => {
@@ -8,17 +7,9 @@ module.exports = (server) => {
 
   api.route({
     method: '*',
-    path: '/api/v0/pubsub/sub/{topic}',
+    path: '/api/v0/pubsub/sub',
     config: {
-      handler: resources.pubsub.subscribe.handler,
-      validate: {
-        params: {
-          topic: Joi.string().required()
-        },
-        query: {
-          discover: Joi.boolean()
-        }
-      }
+      handler: resources.pubsub.subscribe.handler
     }
   })
 
@@ -26,13 +17,7 @@ module.exports = (server) => {
     method: '*',
     path: '/api/v0/pubsub/pub',
     config: {
-      handler: resources.pubsub.publish.handler,
-      validate: {
-        query: {
-          topic: Joi.string().required(),
-          buf: Joi.binary().required()
-        }
-      }
+      handler: resources.pubsub.publish.handler
     }
   })
 
@@ -46,14 +31,9 @@ module.exports = (server) => {
 
   api.route({
     method: '*',
-    path: '/api/v0/pubsub/peers/{topic}',
+    path: '/api/v0/pubsub/peers',
     config: {
-      handler: resources.pubsub.peers.handler,
-      validate: {
-        params: {
-          topic: Joi.string().required()
-        }
-      }
+      handler: resources.pubsub.peers.handler
     }
   })
 }

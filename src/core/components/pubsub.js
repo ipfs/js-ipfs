@@ -18,15 +18,8 @@ module.exports = function pubsub (self) {
       }
 
       if (self._pubsub.subscriptions.has(topic)) {
-        return callback(`Error: Already subscribed to '${topic}'`)
+        return callback(new Error(`Already subscribed to '${topic}'`))
       }
-
-      try {
-        self._pubsub.subscribe(topic)
-      } catch (err) {
-        return callback(err)
-      }
-
       const subscription = new Readable({ objectMode: true })
       let canceled = false
       subscription._read = () => {}
@@ -47,10 +40,14 @@ module.exports = function pubsub (self) {
         if (canceled) {
           return
         }
-        subscription.push({
-          data: data,
-          topicIDs: [topic]
-        })
+
+        subscription.push(data)
+      }
+
+      try {
+        self._pubsub.subscribe(topic)
+      } catch (err) {
+        return callback(err)
       }
 
       // Add the request to the active subscriptions and return the stream
@@ -62,8 +59,9 @@ module.exports = function pubsub (self) {
         throw OFFLINE_ERROR
       }
 
-      // TODO: Tests don't show that we actually expect this, @haad??
-      // data = Buffer.isBuffer(data) ? data : new Buffer(data)
+      if (typeof data === 'string') {
+        data = new Buffer(data)
+      }
 
       try {
         self._pubsub.publish(topic, data)
@@ -92,18 +90,12 @@ module.exports = function pubsub (self) {
       }
 
       if (!self._pubsub.subscriptions.has(topic)) {
-        return callback(`Error: Not subscribed to '${topic}'`)
+        return callback(new Error(`Not subscribed to '${topic}'`))
       }
 
-      let peers
-
-      try {
-        peers = Array.from(self._pubsub.peers.values())
+      const peers = Array.from(self._pubsub.peers.values())
           .filter((peer) => peer.topics.has(topic))
           .map((peer) => peer.info.id.toB58String())
-      } catch (err) {
-        return callback(err)
-      }
 
       setImmediate(() => callback(null, peers))
     })

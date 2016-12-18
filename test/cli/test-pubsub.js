@@ -3,21 +3,19 @@
 'use strict'
 
 const expect = require('chai').expect
+const delay = require('delay')
 const HttpAPI = require('../../src/http-api')
 const createTempNode = require('../utils/temp-node')
 const repoPath = require('./index').repoPath
 const ipfs = require('../utils/ipfs-exec')(repoPath)
 
-// This depends on:
-// ipfs/interface-ipfs-core.git#5c7df414a8f627f8adb50a52ef8d2b629381285f
-// ipfs/js-ipfs-api.git#01044a1f59fb866e4e08b06aae4e74d968615931
-describe.skip('pubsub', function () {
+describe('pubsub', function () {
   this.timeout(30 * 1000)
   let node
 
   const topicA = 'nonscentsA'
   const topicB = 'nonscentsB'
-  const message = new Buffer('Some non cents.')
+  const topicC = 'nonscentsC'
 
   before((done) => {
     createTempNode(1, (err, _node) => {
@@ -36,51 +34,76 @@ describe.skip('pubsub', function () {
 
   describe('api running', () => {
     let httpAPI
-    const called = true
 
     before((done) => {
       httpAPI = new HttpAPI(repoPath)
-      httpAPI.start((err) => {
-        expect(err).to.not.exist
-        done()
-      })
+      httpAPI.start(done)
     })
 
     after((done) => {
-      httpAPI.stop((err) => {
-        expect(err).to.not.exist
-        done()
-      })
+      httpAPI.stop(done)
     })
 
-    it('subscribe', () => {
-      return ipfs('pubsub', 'subscribe', topicA).then((out) => {
-        expect(out).to.have.length.above(0)
-      })
-    })
+    it('subscribe and publish', () => {
+      const sub = ipfs(`pubsub sub ${topicA}`)
 
-    it('subscribe alias', () => {
-      return ipfs('pubsub', 'sub', topicB).then((out) => {
-        expect(out).to.have.length.above(0)
+      sub.stdout.on('data', (c) => {
+        expect(c.toString()).to.be.eql('world\n')
+        sub.kill()
       })
-    })
 
-    it('publish', () => {
-      return ipfs('pubsub', 'publish', topicA, message).then((out) => {
-        expect(called).to.eql(true)
-      })
+      return Promise.all([
+        sub.catch(ignoreKill),
+        delay(200)
+          .then(() => ipfs(`pubsub pub ${topicA} world`))
+          .then((out) => {
+            expect(out).to.be.eql('')
+          })
+      ])
     })
 
     it('ls', () => {
-      return ipfs('pubsub', 'ls').then((out) => {
-        expect(out).to.have.length.above(0)
+      const sub = ipfs(`pubsub sub ${topicB}`)
+
+      sub.stdout.once('data', (data) => {
+        expect(data.toString()).to.be.eql('world\n')
+        ipfs('pubsub ls')
+          .then((out) => {
+            expect(out).to.be.eql(topicB)
+            sub.kill()
+          })
       })
+
+      return Promise.all([
+        sub.catch(ignoreKill),
+        delay(200)
+          .then(() => ipfs(`pubsub pub ${topicB} world`))
+      ])
     })
 
     it('peers', () => {
-      return ipfs('pubsub', 'peers', topicA).then((out) => {
-        expect(out).to.be.eql('[]')
+      const sub = ipfs(`pubsub sub ${topicC}`)
+
+      sub.stdout.once('data', (data) => {
+        expect(data.toString()).to.be.eql('world\n')
+        ipfs(`pubsub peers ${topicC}`)
+          .then((out) => {
+            expect(out).to.be.eql('')
+            sub.kill()
+          })
       })
+
+      return Promise.all([
+        sub.catch(ignoreKill),
+        delay(200)
+          .then(() => ipfs(`pubsub pub ${topicC} world`))
+      ])
     })
   })
 })
+
+function ignoreKill (err) {
+  if (!err.killed) {
+    throw err
+  }
+}

@@ -6,9 +6,7 @@ const log = debug('cli:pubsub')
 log.error = debug('cli:pubsub:error')
 
 module.exports = {
-  command: 'subscribe <topic>',
-
-  alias: 'sub',
+  command: 'sub <topic>',
 
   describe: 'Subscribe to a topic',
 
@@ -25,7 +23,17 @@ module.exports = {
           throw err
         }
 
-        console.log(stream.toString())
+        stream.on('data', (obj) => {
+          console.log(obj.data.toString())
+        })
+
+        stream.on('error', (err) => {
+          throw err
+        })
+
+        stream.on('end', () => {
+          process.exit()
+        })
       })
     })
   }
