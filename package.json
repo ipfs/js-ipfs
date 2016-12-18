@@ -105,7 +105,7 @@
     "multihashes": "^0.3.0",
     "path-exists": "^3.0.0",
     "peer-book": "^0.3.0",
-    "peer-id": "^0.8.0",
+    "peer-id": "^0.8.1",
     "peer-info": "^0.8.1",
     "promisify-es6": "^1.0.2",
     "pull-file": "^1.0.0",
