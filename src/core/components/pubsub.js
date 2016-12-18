@@ -2,21 +2,22 @@
 
 const promisify = require('promisify-es6')
 const Readable = require('stream').Readable
-const _values = require('lodash.values')
 
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 
 module.exports = function pubsub (self) {
   return {
     subscribe: promisify((topic, options, callback) => {
-      if (!self.isOnline()) { throw OFFLINE_ERROR }
+      if (!self.isOnline()) {
+        throw OFFLINE_ERROR
+      }
 
       if (typeof options === 'function') {
         callback = options
         options = {}
       }
 
-      if (self._pubsub.getSubscriptions().indexOf(topic) > -1) {
+      if (self._pubsub.subscriptions.has(topic)) {
         return callback(`Error: Already subscribed to '${topic}'`)
       }
 
@@ -78,13 +79,9 @@ module.exports = function pubsub (self) {
         throw OFFLINE_ERROR
       }
 
-      let subscriptions = []
-
-      try {
-        subscriptions = self._pubsub.getSubscriptions()
-      } catch (err) {
-        return callback(err)
-      }
+      const subscriptions = Array.from(
+        self._pubsub.subscriptions
+      )
 
       setImmediate(() => callback(null, subscriptions))
     }),
@@ -94,23 +91,16 @@ module.exports = function pubsub (self) {
         throw OFFLINE_ERROR
       }
 
-      if (self._pubsub.getSubscriptions().indexOf(topic) < 0) {
+      if (!self._pubsub.subscriptions.has(topic)) {
         return callback(`Error: Not subscribed to '${topic}'`)
       }
 
-      let peers = []
+      let peers
 
       try {
-        // This part should be moved down to floodsub
-        // Just return the list of peers
-        const peerSet = self._pubsub.getPeerSet()
-        _values(peerSet).forEach((peer) => {
-          const idB58Str = peer.peerInfo.id.toB58String()
-          const index = peer.topics.indexOf(topic)
-          if (index > -1) {
-            peers.push(idB58Str)
-          }
-        })
+        peers = Array.from(self._pubsub.peers.values())
+          .filter((peer) => peer.topics.has(topic))
+          .map((peer) => peer.info.id.toB58String())
       } catch (err) {
         return callback(err)
       }

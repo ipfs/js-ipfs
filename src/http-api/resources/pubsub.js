@@ -13,8 +13,11 @@ exports.subscribe = {
   handler: (request, reply) => {
     const discover = request.query.discover || null
     const topic = request.params.topic
+    const ipfs = request.server.app.ipfs
 
-    request.server.app.ipfs.pubsub.subscribe(topic, { discover }, (err, stream) => {
+    ipfs.pubsub.subscribe(topic, {
+      discover: discover
+    }, (err, stream) => {
       if (err) {
         log.error(err)
         return reply({
@@ -49,8 +52,9 @@ exports.publish = {
   handler: (request, reply) => {
     const buf = request.query.buf
     const topic = request.query.topic
+    const ipfs = request.server.app.ipfs
 
-    request.server.app.ipfs.pubsub.publish(topic, buf, (err) => {
+    ipfs.pubsub.publish(topic, buf, (err) => {
       if (err) {
         log.error(err)
         return reply({
@@ -66,7 +70,9 @@ exports.publish = {
 
 exports.ls = {
   handler: (request, reply) => {
-    request.server.app.ipfs.pubsub.ls((err, subscriptions) => {
+    const ipfs = request.server.app.ipfs
+
+    ipfs.pubsub.ls((err, subscriptions) => {
       if (err) {
         log.error(err)
         return reply({
@@ -83,8 +89,9 @@ exports.ls = {
 exports.peers = {
   handler: (request, reply) => {
     const topic = request.params.topic
+    const ipfs = request.server.app.ipfs
 
-    request.server.app.ipfs.pubsub.peers(topic, (err, peers) => {
+    ipfs.pubsub.peers(topic, (err, peers) => {
       if (err) {
         log.error(err)
         return reply({
