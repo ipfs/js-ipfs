@@ -1,5 +1,7 @@
 'use strict'
 
+const defaultNodes = require('../../init-files/default-config.json').Bootstrap
+
 module.exports = function bootstrap (self) {
   return {
     list: (callback) => {
@@ -7,32 +9,61 @@ module.exports = function bootstrap (self) {
         if (err) {
           return callback(err)
         }
-        callback(null, config.Bootstrap)
+        callback(null, {Peers: config.Bootstrap})
       })
     },
-    add: (multiaddr, callback) => {
+    add: (multiaddr, args, callback) => {
+      if (typeof args === 'function') {
+        callback = args
+        args = {default: false}
+      }
       self._repo.config.get((err, config) => {
         if (err) {
           return callback(err)
         }
-        config.Bootstrap.push(multiaddr)
-        self._repo.config.set(config, callback)
+        if (args.default) {
+          config.Bootstrap = defaultNodes
+        } else if (multiaddr) {
+          config.Bootstrap.push(multiaddr)
+        }
+        self._repo.config.set(config, (err) => {
+          if (err) {
+            return callback(err)
+          }
+
+          callback(null, {
+            Peers: args.default ? defaultNodes : [multiaddr]
+          })
+        })
       })
     },
-    rm: (multiaddr, callback) => {
+    rm: (multiaddr, args, callback) => {
+      if (typeof args === 'function') {
+        callback = args
+        args = {all: false}
+      }
       self._repo.config.get((err, config) => {
         if (err) {
           return callback(err)
+        }
+        if (args.all) {
+          config.Bootstrap = []
+        } else {
+          config.Bootstrap = config.Bootstrap.filter((mh) => mh !== multiaddr)
         }
 
-        config.Bootstrap = config.Bootstrap.filter((mh) => {
-          if (mh === multiaddr) {
-            return false
-          } else {
-            return true
+        self._repo.config.set(config, (err) => {
+          if (err) {
+            return callback(err)
           }
+
+          const res = []
+          if (!args.all && multiaddr) {
+            res.push(multiaddr)
+          }
+
+          callback(null, {Peers: res})
         })
-        self._repo.config.set(config, callback)
       })
     }
   }
