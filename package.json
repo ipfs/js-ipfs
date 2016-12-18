@@ -40,7 +40,7 @@
     "multipart-stream": "^2.0.1",
     "ndjson": "^1.5.0",
     "once": "^1.4.0",
-    "peer-id": "^0.8.0",
+    "peer-id": "^0.8.1",
     "peer-info": "^0.8.1",
     "promisify-es6": "^1.0.2",
     "qs": "^6.3.0",
