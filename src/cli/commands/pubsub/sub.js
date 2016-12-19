@@ -18,22 +18,8 @@ module.exports = {
         throw err
       }
 
-      ipfs.pubsub.subscribe(argv.topic, (err, stream) => {
-        if (err) {
-          throw err
-        }
-
-        stream.on('data', (obj) => {
-          console.log(obj.data.toString())
-        })
-
-        stream.on('error', (err) => {
-          throw err
-        })
-
-        stream.on('end', () => {
-          process.exit()
-        })
+      ipfs.pubsub.subscribe(argv.topic, (msg) => {
+        console.log(msg.data.toString())
       })
     })
   }

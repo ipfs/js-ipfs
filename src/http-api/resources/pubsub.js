@@ -1,9 +1,7 @@
 'use strict'
 
 const debug = require('debug')
-const pull = require('pull-stream')
-const toStream = require('pull-stream-to-stream')
-const toPull = require('stream-to-pull-stream')
+const PassThrough = require('stream').PassThrough
 const log = debug('http-api:pubsub')
 log.error = debug('http-api:pubsub:error')
 
@@ -28,34 +26,34 @@ exports.subscribe = {
 
     const ipfs = request.server.app.ipfs
 
+    const res = new PassThrough({highWaterMark: 1})
+
+    const handler = (msg) => {
+      res.write(JSON.stringify({
+        from: msg.from,
+        data: msg.data.toString('base64'),
+        seqno: msg.seqno.toString('base64'),
+        topicCIDs: msg.topicCIDs
+      }) + '\n', 'utf8')
+    }
+
+    // js-ipfs-api needs a reply, and go-ipfs does the same thing
+    res.write('{}\n')
+
+    const unsubscribe = () => {
+      ipfs.pubsub.unsubscribe(topic, handler)
+      res.end()
+    }
+
+    request.once('disconnect', unsubscribe)
+    request.once('finish', unsubscribe)
+
     ipfs.pubsub.subscribe(topic, {
       discover: discover
-    }, (err, stream) => {
+    }, handler, (err) => {
       if (err) {
-        return handleError(reply, `Failed to subscribe to topic ${topic}: ${err}`)
+        return handleError(reply, err.message)
       }
-
-      // TODO: expose pull-streams on floodsub and use them here
-      const res = toStream.source(pull(
-        toPull(stream),
-        pull.map((obj) => JSON.stringify({
-          from: obj.from,
-          data: obj.data.toString('base64'),
-          seqno: obj.seqno.toString('base64'),
-          topicCIDs: obj.topicCIDs
-        }) + '\n')
-      ))
-
-      // hapi is not very clever and throws if no:
-      // - _read method
-      // - _readableState object
-      // are there :(
-      if (!res._read) {
-        res._read = () => {}
-        res._readableState = {}
-      }
-
-      res.destroy = () => stream.cancel()
 
       reply(res)
         .header('X-Chunked-Output', '1')

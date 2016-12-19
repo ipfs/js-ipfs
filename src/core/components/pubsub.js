@@ -1,58 +1,46 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const Readable = require('stream').Readable
+const setImmediate = require('async/setImmediate')
 
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 
 module.exports = function pubsub (self) {
   return {
-    subscribe: promisify((topic, options, callback) => {
+    subscribe: (topic, options, handler, callback) => {
       if (!self.isOnline()) {
         throw OFFLINE_ERROR
       }
 
       if (typeof options === 'function') {
-        callback = options
+        callback = handler
+        handler = options
         options = {}
       }
 
-      if (self._pubsub.subscriptions.has(topic)) {
-        return callback(new Error(`Already subscribed to '${topic}'`))
-      }
-      const subscription = new Readable({ objectMode: true })
-      let canceled = false
-      subscription._read = () => {}
-
-      // Attach an extra `cancel` method to the stream
-      subscription.cancel = promisify((cb) => {
-        canceled = true
-        self._pubsub.unsubscribe(topic)
-        self._pubsub.removeListener(topic, handler)
-        subscription.on('end', cb)
-        subscription.resume() // make sure it is flowing before cancel
-        subscription.push(null)
-      })
-
-      self._pubsub.on(topic, handler)
-
-      function handler (data) {
-        if (canceled) {
-          return
-        }
-
-        subscription.push(data)
+      if (!callback) {
+        return new Promise((resolve, reject) => {
+          subscribe(topic, options, handler, (err) => {
+            if (err) {
+              return reject(err)
+            }
+            resolve()
+          })
+        })
       }
 
-      try {
-        self._pubsub.subscribe(topic)
-      } catch (err) {
-        return callback(err)
-      }
+      subscribe(topic, options, handler, callback)
+    },
 
-      // Add the request to the active subscriptions and return the stream
-      setImmediate(() => callback(null, subscription))
-    }),
+    unsubscribe: (topic, handler) => {
+      const ps = self._pubsub
+
+      ps.removeListener(topic, handler)
+
+      if (ps.listenerCount(topic) === 0) {
+        ps.unsubscribe(topic)
+      }
+    },
 
     publish: promisify((topic, data, callback) => {
       if (!self.isOnline()) {
@@ -63,13 +51,9 @@ module.exports = function pubsub (self) {
         data = new Buffer(data)
       }
 
-      try {
-        self._pubsub.publish(topic, data)
-      } catch (err) {
-        return callback(err)
-      }
+      self._pubsub.publish(topic, data)
 
-      setImmediate(() => callback())
+      setImmediate(callback)
     }),
 
     ls: promisify((callback) => {
@@ -98,6 +82,21 @@ module.exports = function pubsub (self) {
           .map((peer) => peer.info.id.toB58String())
 
       setImmediate(() => callback(null, peers))
-    })
+    }),
+
+    setMaxListeners (n) {
+      return self._pubsub.setMaxListeners(n)
+    }
+  }
+
+  function subscribe (topic, options, handler, callback) {
+    const ps = self._pubsub
+
+    if (ps.listenerCount(topic) === 0) {
+      ps.subscribe(topic)
+    }
+
+    ps.on(topic, handler)
+    setImmediate(callback)
   }
 }
