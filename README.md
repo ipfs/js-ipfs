@@ -223,22 +223,58 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 > npm install
 ```
 
-### Run Tests
+### Run unit tests
 
 ```sh
-> npm test
+# run all the unit tsts
+> npm test 
+
+# run just IPFS tests in Node.js
+> npm run test:unit:node:core
 
 # run just IPFS core tests
-> npm run test:node:core
+> npm run test:unit:node:core
 
 # run just IPFS HTTP-API tests
-> npm run test:node:http
+> npm run test:unit:node:http
 
 # run just IPFS CLI tests
-> npm run test:node:cli
+> npm run test:unit:node:cli
 
-# run just IPFS Browser tests
-> npm run test:browser
+# run just IPFS core tests in the Browser (Chrome)
+> npm run test:unit:browser
+```
+
+### Run interop tests
+
+```sh
+# run all the interop tsts
+> npm test:interop 
+
+# run just IPFS interop tests in Node.js using one go-ipfs daemon and one js-ipfs daemon
+> npm run test:interop:node
+
+# run just IPFS interop testsin the Browser (Chrome) using one instance in the browser and one go-ipfs daemon
+> npm run test:interop:browser
+```
+
+### Run benchmark tests
+
+```sh
+# run all the interop tsts
+> npm test:benchmark 
+
+# run just IPFS benchmarks in Node.js
+> npm run test:benchmark:node
+
+# run just IPFS benchmarks in Node.js for an IPFS instance
+> npm run test:benchmark:node:core
+
+# run just IPFS benchmarks in Node.js for an IPFS daemon
+> npm run test:benchmark:node:http
+
+# run just IPFS benchmarks in the browser (Chrome)
+> npm run test:benchmark:browser
 ```
 
 ### Lint
