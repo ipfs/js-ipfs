@@ -28,18 +28,18 @@
   "dependencies": {
     "async": "^2.1.4",
     "bl": "^1.1.2",
-    "bs58": "^3.0.0",
+    "bs58": "^3.1.0",
     "chai": "^3.5.0",
     "concat-stream": "^1.5.2",
     "detect-node": "^2.0.3",
-    "ipfs-block": "^0.5.0",
-    "ipld-dag-pb": "^0.9.0",
+    "ipfs-block": "^0.5.3",
+    "ipld-dag-pb": "^0.9.3",
     "multiaddr": "^2.1.1",
-    "multihashes": "^0.3.0",
-    "readable-stream": "2.1.5"
+    "multihashes": "^0.3.1",
+    "readable-stream": "2.2.2"
   },
   "devDependencies": {
-    "aegir": "^9.2.1"
+    "aegir": "^9.3.0"
   },
   "contributors": [
     "David Dias <daviddias.p@gmail.com>",
