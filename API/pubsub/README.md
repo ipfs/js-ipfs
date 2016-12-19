@@ -3,38 +3,48 @@ pubsub API
 
 #### `pubsub.subscribe`
 
-> Subscribe to an IPFS Topic
+> Subscribe to a pubsub topic.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.pubsub.subscribe(topic, options, callback)
+##### `JavaScript` - ipfs.pubsub.subscribe(topic, options, handler, callback)
 
-- `topic` - type: String
-- `options` - type: Object, optional, might contain the following properties:
-  - `discover`: type: Boolean - Will use the DHT to find 
-
-`callback` must follow `function (err, subscription) {}` where Subscription is a Node.js Stream in Object mode, emiting a `data` event for each new message on the subscribed topic.`err` is an error if the operation was not successful.
-
-`subscription` has a `.cancel` event in order to cancel the subscription.
+- `topic: string`
+- `options: Object` - (Optional), might contain the following properties:
+  - `discover`: type: Boolean - Will use the DHT to find other peers.
+- `handler: (msg) => ()` - Event handler which will be called with a message object everytime one is received. The `msg` has the format `{from: string, seqno: Buffer, data: Buffer, topicCIDs: Array<string>}`.
+- `callback: (Error) => ()` (Optional) Called once the subscription is established.
 
 If no `callback` is passed, a [promise][] is returned.
 
 > _In the future, topic can also be type of TopicDescriptor (https://github.com/libp2p/pubsub-notes/blob/master/flooding/flooding.proto#L23). However, for now, only strings are supported._
 
+#### `pubsub.unsubscribe`
+
+> Unsubscribes from a pubsub topic.
+
+##### `Go` **WIP**
+
+##### `JavaScript` - `ipfs.pubsub.unsubscribe(topic, handler)`
+
+- `topic: string` - The topic to unsubscribe from
+- `handler: (msg) => ()` - The handler to remove.
+
+This works like `EventEmitter.removeListener`, as that only the `handler` passed to a `subscribe` call before is removed from listening. The underlying subscription will only be canceled once all listeners for a topic have been removed.
+
 #### `pubsub.publish`
 
-> Publish a data message to a pubsub topic
+> Publish a data message to a pubsub topic.
 
 ##### `Go` **WIP**
 
 ##### `JavaScript` - ipfs.pubsub.publish(topic, data, callback)
 
-- `topic` - type: String
-- `data` - type: Buffer
+- `topic: string`
+- `data: buffer` - The actual message to send
+- `callback: (Error) => ()` - Calls back with an error or nothing if the publish was successfull.
 
-`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
-
-If no `callback` is passed, a [promise][] is returned.
+If no `callback` is passed, a promise is returned.
 
 #### `pubsub.ls`
 
@@ -44,9 +54,10 @@ If no `callback` is passed, a [promise][] is returned.
 
 ##### `JavaScript` - ipfs.pubsub.ls(topic, callback)
 
-`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
+- `topic: string`
+- `callback: (Error, Array<string>>) => ()` - Calls back with an error or a list of topicCIDs that this peer is subscribed to.
 
-If no `callback` is passed, a [promise][] is returned.
+If no `callback` is passed, a promise is returned.
 
 #### `pubsub.peers`
 
@@ -56,8 +67,7 @@ If no `callback` is passed, a [promise][] is returned.
 
 ##### `JavaScript` - ipfs.pubsub.peers(topic, callback)
 
-- `topic` - type: String
+- `topic: string`
+- `callback: (Error, Array<string>>) => ()` - Calls back with an error or a list of peer ids subscribed to the `topic`.
 
-`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
-
-If no `callback` is passed, a [promise][] is returned.
+If no `callback` is passed, a promise is returned.
