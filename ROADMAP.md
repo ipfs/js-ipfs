@@ -135,31 +135,6 @@ UPDATE:
 ### Notes: `NA`
 ##### Expected date of completion: `Week 1 - October 17 to create the issues, discussion will happen throughout the quarter`
 
-# Milestone - interface-floodsub
-
-> Summary: Define an interface for floodsub, that can be implemented for js-ipfs and js-ipfs-api
-
-### Leads:
-
-- David
-- Juan
-
-### Tasks:
-
-- [ ] Create interface-floodsub.md on pubsub-notes repo - https://github.com/ipfs/js-ipfs/issues/580
-
-### Dependencies: `NA`
-### Requirements by other projects:
-
-This is a requirement to integrate floodsub in js-ipfs
-
-### Notes: 
-
-This milestone has shifted its direction towards a more implementation driven definition of the pubsub library. @haadcode and @gavinmcdermont are owning it.
-
-##### Expected date of completion: `Week 1 - October 17`
-
-
 # ✔️ Milestone - Awesome IPLD - Enable js-ipfs to handle both merkledag protobufs and ipld cbor objects
 
 > Summary: Integration of IPLD (js-ipld and js-ipld-ipfs) into js-ipfs.
@@ -258,10 +233,9 @@ Not having full unixfs-engine feature matching was causing the 'bitswap only req
 
 Bonus: Start thinking about the Importer/Exporter spec.
 
-##### Expected date of completion:
+This milestone was added as an extra during the quarter.
 
-Added during the quarter.
-
+##### Expected date of completion: `NA`
 
 # ✔️ Milestone - js-ipfs and js-ipfs-api bundling 
 
@@ -319,6 +293,26 @@ Added during the quarter.
 ### Requirements by other projects: `NA`
 ### Notes: `NA`
 ##### Expected date of completion: `Week 7 - Nov 28`
+
+# Milestone - PubSub through Floodsub
+
+> Summary: Integrate Floodsubin js-ipfs, exposing the same PubSub interface offered by go-ipfs (with interoperability tested)
+
+### Leads:
+
+- Gavin
+- Samuli
+
+### Tasks:
+
+- [ ] PubSub API Spec and tests - https://github.com/ipfs/interface-ipfs-core/pull/101
+- [ ] Implementation in js-ipfs - https://github.com/ipfs/js-ipfs/pull/644
+- [ ] Implementation in js-ipfs-api - https://github.com/ipfs/js-ipfs-api/pull/471
+
+### Dependencies: `NA`
+### Requirements by other projects: `NA`
+### Notes: `This milestone was added as an extra during the quarter.`
+##### Expected date of completion: `NA`
 
 
 --------------------------------------------------------------------------------------------------
