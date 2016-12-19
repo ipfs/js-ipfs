@@ -16,9 +16,17 @@ describe('block', () => {
       })
     })
 
+    it('put with flags, format and mhtype', () => {
+      return ipfs('block put --format eth-block --mhtype keccak-256 test/test-data/eth-block').then((out) => {
+        expect(out).to.be.eql(
+          'z43AaGF23fmvRnDP56Ub9WcJCfzSfqtmzNCCvmz5eudT8dtdCDS'
+        )
+      })
+    })
+
     it('get', () => {
       return ipfs('block get QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp').then((out) => {
-        expect(out).to.be.eql('hello world\n')
+        expect(out).to.be.eql('hello world')
       })
     })
 

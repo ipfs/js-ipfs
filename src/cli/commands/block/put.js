@@ -1,32 +1,50 @@
 'use strict'
 
 const utils = require('../../utils')
-const mh = require('multihashes')
 const bl = require('bl')
 const fs = require('fs')
 const Block = require('ipfs-block')
+const CID = require('cids')
+const multihashing = require('multihashing-async')
 const waterfall = require('async/waterfall')
 const debug = require('debug')
 const log = debug('cli:block')
 log.error = debug('cli:block:error')
 
-function addBlock (buf) {
+function addBlock (buf, opts) {
+  let block = new Block(buf)
+  let cid
+
   utils.getIPFS((err, ipfs) => {
     if (err) {
       throw err
     }
 
     waterfall([
-      (cb) => ipfs.block.put(new Block(buf), cb),
-      (block, cb) => block.key(cb)
-    ], (err, key) => {
+      (cb) => generateHash(block, opts, cb),
+      (mhash, cb) => generateCid(mhash, block, opts, cb),
+      (cb) => ipfs.block.put(block, cid, cb)
+    ], (err) => {
       if (err) {
         throw err
       }
 
-      console.log(mh.toB58String(key))
+      console.log(cid.toBaseEncodedString())
     })
   })
+
+  function generateHash (block, opts, cb) {
+    if (opts.mhlen === undefined) {
+      multihashing(buf, opts.mhtype, cb)
+    } else {
+      multihashing(buf, opts.mhtype, opts.mhlen, cb)
+    }
+  }
+
+  function generateCid (mhash, block, opts, cb) {
+    cid = new CID(opts.verison, opts.format, mhash)
+    cb()
+  }
 }
 
 module.exports = {
@@ -34,11 +52,34 @@ module.exports = {
 
   describe: 'Stores input as an IPFS block',
 
-  builder: {},
+  builder: {
+    format: {
+      alias: 'f',
+      describe: 'cid format for blocks to be created with.',
+      default: 'v0'
+    },
+    mhtype: {
+      describe: 'multihash hash function',
+      default: 'sha2-256'
+    },
+    mhlen: {
+      describe: 'multihash hash length',
+      default: undefined
+    }
+  },
 
   handler (argv) {
+    // parse options
+    if (argv.format === 'v0') {
+      argv.verison = 0
+      argv.format = 'dag-pb'
+      argv.mhtype = 'sha2-256'
+    } else {
+      argv.verison = 1
+    }
+
     if (argv.data) {
-      return addBlock(fs.readFileSync(argv.data))
+      return addBlock(fs.readFileSync(argv.data), argv)
     }
 
     process.stdin.pipe(bl((err, input) => {
@@ -46,7 +87,7 @@ module.exports = {
         throw err
       }
 
-      addBlock(input)
+      addBlock(input, argv)
     }))
   }
 }
