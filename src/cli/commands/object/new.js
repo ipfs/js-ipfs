@@ -7,7 +7,7 @@ const log = debug('cli:object')
 log.error = debug('cli:object:error')
 
 module.exports = {
-  command: 'new',
+  command: 'new [<template>]',
 
   describe: 'Create new ipfs objects',
 
@@ -16,7 +16,7 @@ module.exports = {
   handler (argv) {
     waterfall([
       (cb) => utils.getIPFS(cb),
-      (ipfs, cb) => ipfs.object.new(cb)
+      (ipfs, cb) => ipfs.object.new(argv.template, cb)
     ], (err, node) => {
       if (err) {
         throw err

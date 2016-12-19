@@ -7,7 +7,7 @@ IPFS JavaScript Implementation roadmap
 
 # 2016 Q3
 
-# ✔️ Milestone - js-ipfs on the browser
+# ✔️  Milestone - js-ipfs on the browser
 
 > Summary: This milestone's focus is to ship a version of js-ipfs that can be embed in browser applications, creating an IPFS node inside a browser web application.
 
@@ -59,7 +59,7 @@ UPDATE:
 
 ### Tasks:
 
-- [ ] Interface definition, documentation and test coverage for both js-ipfs and js-ipfs-api. The `interface-ipfs-core` effort.
+- [x] Interface definition, documentation and test coverage for both js-ipfs and js-ipfs-api. The `interface-ipfs-core` effort.
   - [x] Create a process to signal users of a proposed interface change and interface changelog. https://github.com/ipfs/interface-ipfs-core/issues/55
   - [x] swarm API - https://github.com/ipfs/interface-ipfs-core/pull/35
   - [x] block API - https://github.com/ipfs/interface-ipfs-core/pull/32
@@ -67,18 +67,17 @@ UPDATE:
   - [x] pinning API - https://github.com/ipfs/interface-ipfs-core/pull/34
   - [x] swarm API - https://github.com/ipfs/interface-ipfs-core/pull/35
   - [x] DHT API https://github.com/ipfs/interface-ipfs-core/pull/36
-  - [ ] mfs API https://github.com/ipfs/interface-ipfs-core/pull/38
 - [ ] Robust testing infrastructure
   - [x] Isolation of tests. This includes:
     - Avoid cases where there is one set up for a bunch of test files, instead make each test file be runnable by itself. This also includes removing the use of all globals (i.e js-ipfs-api).
   - [ ] Interoperability tests between js-ipfs and go-ipfs
+    - [x] Done at the libp2p level
   - [ ] Benchmarking tests - https://github.com/ipfs/js-ipfs/pull/488
   - [ ] Stress tests, things like:
     - Spawn a reasonable amount of nodes
     - Add large files
     - Exchange large files
   - [ ] IPTB (InterPlanetary TestBed) Integration
-- [ ] Fixed identified bugs to date
 
 #### Extra:
 
@@ -154,7 +153,9 @@ UPDATE:
 
 This is a requirement to integrate floodsub in js-ipfs
 
-### Notes: `NA`
+### Notes: 
+
+This milestone has shifted its direction towards a more implementation driven definition of the pubsub library. @haadcode and @gavinmcdermont are owning it.
 
 ##### Expected date of completion: `Week 1 - October 17`
 
@@ -202,30 +203,64 @@ This is a requirement to integrate floodsub in js-ipfs
 ### Notes: `NA`
 ##### Expected date of completion: `Week 2 - Oct 24`
 
+# Milestone - The DAG API
 
-
-# Milestone - Bitswap Complete
-
-> Summary: Make js-ipfs-bitswap work at the same level go-ipfs-bitswap
+> Summary: Design, agree and implement the new DAG API
 
 ### Leads:
 
 - David
-- Friedel
+- Juan
 
 ### Tasks:
 
-- [x] Support for matching func - https://github.com/multiformats/js-multistream-select/pull/26
 - [ ] Figure out DAG API https://github.com/ipfs/interface-ipfs-core/issues/81
 - [ ] Implement DAG API
-- [ ] Support bitswap 1.0.0 and 1.1.0 simultaneously
 - [ ] Fix full bitswap compatibility with go-ipfs
+- Bitswap Support
+  - [x] Support for matching func - https://github.com/multiformats/js-multistream-select/pull/26
+  - [ ] Support bitswap 1.0.0 and 1.1.0 simultaneously
 
 ### Dependencies: `NA`
 ### Requirements by other projects: `NA`
 ### Notes: `NA`
 ##### Expected date of completion: `Week 3 - Oct 31`
 
+
+
+# Milestone - The Files API
+
+> Summary: Achieve a 100% feature parity Unixfs Engine (with the several DAG Builders) and Files API
+
+### Leads:
+
+- David
+- Pedro
+
+### Tasks:
+
+- Import and Export files just like go-ipfs
+  - unixfs-engine support of:
+    - [ ] trickle-dag
+    - [ ] balanced-dag-
+    - [ ] sharding (HAMT)
+  - ensure compatibility with go
+    - [ ] import export files both implementations (tests)
+    - [ ] exchange files (bitswap) betweeen both implementations (tests)
+- Files API (mfs)
+  - [ ] Complete the spec https://github.com/ipfs/interface-ipfs-core/pull/38
+
+### Dependencies: `NA`
+### Requirements by other projects: `NA`
+### Notes: 
+
+Not having full unixfs-engine feature matching was causing the 'bitswap only requesting one block', because the exporter of unixfs-engine was not crawling through the dag formed by go-ipfs.
+
+Bonus: Start thinking about the Importer/Exporter spec.
+
+##### Expected date of completion:
+
+Added during the quarter.
 
 
 # ✔️ Milestone - js-ipfs and js-ipfs-api bundling 
@@ -287,6 +322,8 @@ This is a requirement to integrate floodsub in js-ipfs
 
 
 --------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
 
 # Cached milestones (to re-evaluate for next quarter)
 
@@ -298,8 +335,8 @@ This is a requirement to integrate floodsub in js-ipfs
 
 - [ ] Amazing examples
   - [ ] Create the same examples available on https://ipfs.io/docs/examples/ using js-ipfs (through CLI and programatically)
-  - [ ] Example: Create an IPFS node
-  - [ ] Examples: Add files to IPFS
+  - [x] Example: Create an IPFS node
+  - [x] Examples: Add files to IPFS
   - [ ] Tutorial: Build an 'pastebin' with js-ipfs
   - [ ] Tutorial: How to use js-ipfs in the browser
   - [ ] Tutorial: Make a video player with js-ipfs https://github.com/ipfs/js-ipfs/issues/128
@@ -307,18 +344,9 @@ This is a requirement to integrate floodsub in js-ipfs
   - [ ] Add all of the examples to https://ipfs.io/docs/examples/
 - [ ] Revisit and complete the IPFS spec
 
-### Dependencies:
-
-NA
-
-### Requirements by other projects:
-
-NA
-
-### Notes:
-
-NA
-
+### Dependencies: `NA`
+### Requirements by other projects: `NA`
+### Notes: `NA`
 ##### Expected date of completion: `TBA`
 
 # Milestone - The last miles for complete feature parity with go-ipfs
@@ -327,23 +355,13 @@ NA
 
 ### Tasks:
 
-- [ ] mfs
-- [ ] ipns
-- [ ] HAMT on unixfs-engine
-- [ ] ls
-- [ ] pinning
-- [ ] ping
+- [ ] IPNS
+- [ ] pinning API
+- [x] ping
 
-### Dependencies:
-
-NA
-
-### Requirements by other projects:
-
-NA
-
-### Notes:
-
+### Dependencies: `NA`
+### Requirements by other projects: `NA`
+### Notes: `NA`
 ##### Expected date of completion: `TBA`
 
 
@@ -355,18 +373,9 @@ NA
 
 - [ ] InterPlanetary Lab - A test lab for the IPFS project, spawning nodes in different geographic locations with different network and machine conditions to really stress test IPFS (heavily inspired by [PlanetLab](https://www.planet-lab.org/))
 
-### Dependencies:
-
-NA
-
-### Requirements by other projects:
-
-NA
-
-### Notes:
-
-NA
-
+### Dependencies: `NA`
+### Requirements by other projects: `NA`
+### Notes: `NA`
 ##### Expected date of completion: `TBA`
 
 ---------------------------------------------------------------------
@@ -377,7 +386,7 @@ NA
 ### Per component view
 
 | Name          | Spec | Disc |
-| :-------------| :----| :----|
+|:--------------|:-----|:-----|
 | Importers     | https://github.com/ipfs/specs/pull/57 | https://github.com/ipfs/js-ipfs/issues/41
 | repo          | https://github.com/ipfs/specs/tree/master/repo | https://github.com/ipfs/js-ipfs/issues/51
 | network layer | https://github.com/ipfs/specs/tree/master/libp2p | https://github.com/diasdavid/js-libp2p/issues
@@ -386,7 +395,7 @@ NA
 | files         | | https://github.com/ipfs/js-ipfs/issues/60
 | daemon        | | https://github.com/ipfs/js-ipfs/issues/57
 | object        | | https://github.com/ipfs/js-ipfs/issues/58
-| block         | |  https://github.com/ipfs/js-ipfs/issues/50
+| block         | | https://github.com/ipfs/js-ipfs/issues/50
 | bootstrap     | | https://github.com/ipfs/js-ipfs/issues/46
 | init          | | https://github.com/ipfs/js-ipfs/issues/42
 
@@ -408,7 +417,7 @@ NA
     - [x] patch
     - [x] put
     - [x] stat
-  - [ ] refs - Listing of references. (alking around the graph)
+  - [ ] refs - Listing of references. (walking around the graph)
     - [ ] local
   - [ ] repo
     - [x] init

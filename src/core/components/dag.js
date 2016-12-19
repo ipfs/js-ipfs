@@ -1,6 +1,7 @@
 'use strict'
 
 const promisify = require('promisify-es6')
+
 const dagPB = require('ipld-dag-pb')
 const dagCBOR = require('ipld-dag-cbor')
 

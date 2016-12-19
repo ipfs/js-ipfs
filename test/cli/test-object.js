@@ -17,6 +17,14 @@ describe('object', () => {
       })
     })
 
+    it('new unixfs-dir', () => {
+      return ipfs('object new unixfs-dir').then((out) => {
+        expect(out).to.be.eql(
+          'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
+        )
+      })
+    })
+
     it('get', () => {
       return ipfs('object get QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n').then((out) => {
         const result = JSON.parse(out)
