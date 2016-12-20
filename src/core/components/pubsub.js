@@ -73,10 +73,6 @@ module.exports = function pubsub (self) {
         throw OFFLINE_ERROR
       }
 
-      if (!self._pubsub.subscriptions.has(topic)) {
-        return callback(new Error(`Not subscribed to '${topic}'`))
-      }
-
       const peers = Array.from(self._pubsub.peers.values())
           .filter((peer) => peer.topics.has(topic))
           .map((peer) => peer.info.id.toB58String())

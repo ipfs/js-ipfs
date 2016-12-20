@@ -18,8 +18,14 @@ module.exports = {
         throw err
       }
 
-      ipfs.pubsub.subscribe(argv.topic, (msg) => {
+      const handler = (msg) => {
         console.log(msg.data.toString())
+      }
+
+      ipfs.pubsub.subscribe(argv.topic, handler, (err) => {
+        if (err) {
+          throw err
+        }
       })
     })
   }

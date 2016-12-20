@@ -4,6 +4,7 @@
 
 const expect = require('chai').expect
 const delay = require('delay')
+const waterfall = require('async/waterfall')
 const HttpAPI = require('../../src/http-api')
 const createTempNode = require('../utils/temp-node')
 const repoPath = require('./index').repoPath
@@ -11,20 +12,17 @@ const ipfs = require('../utils/ipfs-exec')(repoPath)
 
 describe('pubsub', function () {
   this.timeout(30 * 1000)
-  let node
-
   const topicA = 'nonscentsA'
   const topicB = 'nonscentsB'
   const topicC = 'nonscentsC'
+  let node
+  let id
 
   before((done) => {
     createTempNode(1, (err, _node) => {
       expect(err).to.not.exist
       node = _node
-      node.goOnline((err) => {
-        expect(err).to.not.exist
-        done()
-      })
+      node.goOnline(done)
     })
   })
 
@@ -37,7 +35,17 @@ describe('pubsub', function () {
 
     before((done) => {
       httpAPI = new HttpAPI(repoPath)
-      httpAPI.start(done)
+
+      waterfall([
+        (cb) => httpAPI.start(cb),
+        (cb) => node.id(cb),
+        (_id, cb) => {
+          id = _id
+          ipfs(`swarm connect ${id.addresses[0]}`)
+            .then(() => cb())
+            .catch(cb)
+        }
+      ], done)
     })
 
     after((done) => {
@@ -82,19 +90,22 @@ describe('pubsub', function () {
     })
 
     it('peers', () => {
-      const sub = ipfs(`pubsub sub ${topicC}`)
-
-      sub.stdout.once('data', (data) => {
-        expect(data.toString()).to.be.eql('world\n')
+      const handler = (msg) => {
+        expect(msg.data.toString()).to.be.eql('world')
         ipfs(`pubsub peers ${topicC}`)
           .then((out) => {
-            expect(out).to.be.eql('')
-            sub.kill()
+            expect(out).to.be.eql(id.id)
+            sub2.kill()
+            node.pubsub.unsubscribe(topicC, handler)
           })
-      })
+      }
+
+      const sub1 = node.pubsub.subscribe(topicC, handler)
+      const sub2 = ipfs(`pubsub sub ${topicC}`)
 
       return Promise.all([
-        sub.catch(ignoreKill),
+        sub1,
+        sub2.catch(ignoreKill),
         delay(200)
           .then(() => ipfs(`pubsub pub ${topicC} world`))
       ])

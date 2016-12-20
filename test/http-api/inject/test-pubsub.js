@@ -102,7 +102,7 @@ module.exports = (http) => {
       })
     })
 
-    describe.skip('/peers', () => {
+    describe('/peers', () => {
       it('returns 500 if no topic is provided', (done) => {
         api.inject({
           method: 'GET',
@@ -113,12 +113,13 @@ module.exports = (http) => {
         })
       })
 
-      it('returns 500 if not subscribed to a topic', (done) => {
+      it('returns 200 if not subscribed to a topic', (done) => {
         api.inject({
           method: 'GET',
           url: `/api/v0/pubsub/peers?arg=${topicNotSubscribed}`
         }, (res) => {
-          expect(res.statusCode).to.equal(500)
+          expect(res.statusCode).to.equal(200)
+          expect(res.result.Strings).to.be.eql([])
           done()
         })
       })
@@ -129,6 +130,7 @@ module.exports = (http) => {
           url: `/api/v0/pubsub/peers?arg=${topic}`
         }, (res) => {
           expect(res.statusCode).to.equal(200)
+          expect(res.result.Strings).to.be.eql([])
           done()
         })
       })
