@@ -47,8 +47,8 @@ module.exports = function pubsub (self) {
         throw OFFLINE_ERROR
       }
 
-      if (typeof data === 'string') {
-        data = new Buffer(data)
+      if (!Buffer.isBuffer(data)) {
+        return callback(new Error('data must be a Buffer'))
       }
 
       self._pubsub.publish(topic, data)

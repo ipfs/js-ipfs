@@ -18,7 +18,9 @@ module.exports = {
         throw err
       }
 
-      ipfs.pubsub.publish(argv.topic, argv.data, (err) => {
+      const data = new Buffer(String(argv.data))
+
+      ipfs.pubsub.publish(argv.topic, data, (err) => {
         if (err) {
           throw err
         }
