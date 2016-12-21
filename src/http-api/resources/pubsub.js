@@ -1,18 +1,8 @@
 'use strict'
 
-const debug = require('debug')
 const PassThrough = require('stream').PassThrough
-const log = debug('http-api:pubsub')
-log.error = debug('http-api:pubsub:error')
 
 exports = module.exports
-
-function handleError (reply, msg) {
-  reply({
-    Message: msg,
-    Code: 0
-  }).code(500)
-}
 
 exports.subscribe = {
   handler: (request, reply) => {
@@ -21,7 +11,7 @@ exports.subscribe = {
     const topic = query.arg
 
     if (!topic) {
-      return handleError(reply, 'Missing topic')
+      return reply(new Error('Missing topic'))
     }
 
     const ipfs = request.server.app.ipfs
@@ -52,7 +42,7 @@ exports.subscribe = {
       discover: discover
     }, handler, (err) => {
       if (err) {
-        return handleError(reply, err.message)
+        return reply(err)
       }
 
       reply(res)
@@ -71,16 +61,16 @@ exports.publish = {
     const ipfs = request.server.app.ipfs
 
     if (!topic) {
-      return handleError(reply, 'Missing topic')
+      return reply(new Error('Missing topic'))
     }
 
     if (!buf) {
-      return handleError(reply, 'Missing buf')
+      return reply(new Error('Missing buf'))
     }
 
     ipfs.pubsub.publish(topic, new Buffer(String(buf)), (err) => {
       if (err) {
-        return handleError(reply, `Failed to publish to topic ${topic}: ${err}`)
+        return reply(new Error(`Failed to publish to topic ${topic}: ${err}`))
       }
 
       reply()
@@ -94,7 +84,7 @@ exports.ls = {
 
     ipfs.pubsub.ls((err, subscriptions) => {
       if (err) {
-        return handleError(reply, `Failed to list subscriptions: ${err}`)
+        return reply(new Error(`Failed to list subscriptions: ${err}`))
       }
 
       reply({Strings: subscriptions})
@@ -108,12 +98,12 @@ exports.peers = {
     const ipfs = request.server.app.ipfs
 
     if (!topic) {
-      return handleError(reply, 'Missing topic')
+      return reply(new Error('Missing topic'))
     }
 
     ipfs.pubsub.peers(topic, (err, peers) => {
       if (err) {
-        return handleError(reply, `Failed to find peers subscribed to ${topic}: ${err}`)
+        return reply(new Error(`Failed to find peers subscribed to ${topic}: ${err}`))
       }
 
       reply({Strings: peers})

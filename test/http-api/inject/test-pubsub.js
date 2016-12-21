@@ -40,6 +40,7 @@ module.exports = (http) => {
           url: `/api/v0/pubsub/sub`
         }, (res) => {
           expect(res.statusCode).to.equal(500)
+          expect(res.result.Code).to.be.eql(1)
           done()
         })
       })
@@ -74,6 +75,7 @@ module.exports = (http) => {
           url: `/api/v0/pubsub/pub?arg=${topic}&arg=`
         }, (res) => {
           expect(res.statusCode).to.equal(500)
+          expect(res.result.Code).to.be.eql(1)
           done()
         })
       })
@@ -109,6 +111,7 @@ module.exports = (http) => {
           url: `/api/v0/pubsub/peers`
         }, (res) => {
           expect(res.statusCode).to.equal(500)
+          expect(res.result.Code).to.be.eql(1)
           done()
         })
       })

@@ -19,7 +19,6 @@ module.exports = (server) => {
       statusCode = res.output.payload.statusCode
 
       if (res.message && res.isDeveloperError) {
-        // we caught it!
         msg = res.message.replace('Uncaught error: ', '')
       }
 
@@ -31,12 +30,12 @@ module.exports = (server) => {
         payload: request.payload,
         response: res.output.payload
       }
-      // ALWAYS Log the error
+
       server.log('error', debug)
 
       reply({
         Message: msg,
-        Code: 0
+        Code: 1
       }).code(statusCode)
       return
     }
