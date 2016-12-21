@@ -5,7 +5,7 @@ const DAGNode = dagPB.DAGNode
 const DAGLink = dagPB.DAGLink
 const promisify = require('promisify-es6')
 const bs58 = require('bs58')
-const bl = require('bl')
+const streamToValue = require('../stream-to-value')
 const cleanMultihash = require('../clean-multihash')
 const LRU = require('lru-cache')
 const lruOptions = {
@@ -188,7 +188,7 @@ module.exports = (send) => {
         }
 
         if (typeof result.pipe === 'function') {
-          result.pipe(bl(callback))
+          streamToValue(result, callback)
         } else {
           callback(null, result)
         }

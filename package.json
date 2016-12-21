@@ -23,7 +23,6 @@
   },
   "dependencies": {
     "async": "^2.1.4",
-    "bl": "^1.1.2",
     "bs58": "^4.0.0",
     "concat-stream": "^1.6.0",
     "detect-node": "^2.0.3",
@@ -43,6 +42,7 @@
     "peer-id": "^0.8.1",
     "peer-info": "^0.8.1",
     "promisify-es6": "^1.0.2",
+    "pump": "^1.0.2",
     "qs": "^6.3.0",
     "readable-stream": "1.1.14",
     "stream-http": "^2.5.0",

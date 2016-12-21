@@ -1,6 +1,7 @@
 'use strict'
 
 const promisify = require('promisify-es6')
+const streamToValue = require('../stream-to-value')
 
 module.exports = (send) => {
   const refs = promisify((args, opts, callback) => {
@@ -8,21 +9,28 @@ module.exports = (send) => {
       callback = opts
       opts = {}
     }
-    return send({
+
+    const request = {
       path: 'refs',
       args: args,
       qs: opts
-    }, callback)
+    }
+
+    send.andTransform(request, streamToValue, callback)
   })
+
   refs.local = promisify((opts, callback) => {
     if (typeof (opts) === 'function') {
       callback = opts
       opts = {}
     }
-    return send({
+
+    const request = {
       path: 'refs',
       qs: opts
-    }, callback)
+    }
+
+    send.andTransform(request, streamToValue, callback)
   })
 
   return refs

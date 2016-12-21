@@ -1,8 +1,8 @@
 'use strict'
 
 const DAGNode = require('ipld-dag-pb').DAGNode
-const bl = require('bl')
 const parallel = require('async/parallel')
+const streamToValue = require('./stream-to-value')
 
 module.exports = function (send, hash, callback) {
   // Retrieve the object and its data in parallel, then produce a DAGNode
@@ -36,12 +36,12 @@ module.exports = function (send, hash, callback) {
       if (Buffer.isBuffer(stream)) {
         DAGNode.create(stream, object.Links, callback)
       } else {
-        stream.pipe(bl(function (err, data) {
+        streamToValue(stream, (err, data) => {
           if (err) {
             return callback(err)
           }
           DAGNode.create(data, object.Links, callback)
-        }))
+        })
       }
     })
 }

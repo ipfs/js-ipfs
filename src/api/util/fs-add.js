@@ -1,8 +1,8 @@
 'use strict'
 
 const isNode = require('detect-node')
-const addToDagNodesTransform = require('./../../add-to-dagnode-transform')
 const promisify = require('promisify-es6')
+const DAGNodeStream = require('../../dagnode-stream')
 
 module.exports = (send) => {
   return promisify((path, opts, callback) => {
@@ -28,12 +28,14 @@ module.exports = (send) => {
       return callback(new Error('"path" must be a string'))
     }
 
-    const sendWithTransform = send.withTransform(addToDagNodesTransform)
-
-    sendWithTransform({
+    const request = {
       path: 'add',
       qs: opts,
       files: path
-    }, callback)
+    }
+
+    // Transform the response stream to DAGNode values
+    const transform = (res, callback) => DAGNodeStream.streamToValue(send, res, callback)
+    send.andTransform(request, transform, callback)
   })
 }

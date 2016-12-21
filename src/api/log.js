@@ -1,5 +1,6 @@
 'use strict'
 
+const pump = require('pump')
 const ndjson = require('ndjson')
 const promisify = require('promisify-es6')
 
@@ -12,7 +13,8 @@ module.exports = (send) => {
         if (err) {
           return callback(err)
         }
-        callback(null, response.pipe(ndjson.parse()))
+        const outputStream = pump(response, ndjson.parse())
+        callback(null, outputStream)
       })
     })
   }

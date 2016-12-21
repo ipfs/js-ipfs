@@ -1,6 +1,7 @@
 'use strict'
 
 const promisify = require('promisify-es6')
+const streamToValue = require('../stream-to-value')
 
 module.exports = (send) => {
   return {
@@ -19,11 +20,13 @@ module.exports = (send) => {
         opts = {}
       }
 
-      send({
+      const request = {
         path: 'dht/findprovs',
         args: args,
         qs: opts
-      }, callback)
+      }
+
+      send.andTransform(request, streamToValue, callback)
     }),
     get: promisify((key, opts, callback) => {
       if (typeof opts === 'function' &&

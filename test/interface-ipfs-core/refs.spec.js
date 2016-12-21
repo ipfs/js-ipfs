@@ -65,7 +65,6 @@ describe('.refs', () => {
     ipfs.refs(folder, {format: '<src> <dst> <linkname>'}, (err, objs) => {
       expect(err).to.not.exist
       expect(objs).to.eql(result)
-
       done()
     })
   })

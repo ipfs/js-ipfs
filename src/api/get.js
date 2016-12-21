@@ -1,11 +1,11 @@
 'use strict'
 
-const tarStreamToObjects = require('../tar-stream-to-objects')
-const cleanMultihash = require('../clean-multihash')
 const promisify = require('promisify-es6')
+const cleanMultihash = require('../clean-multihash')
+const TarStreamToObjects = require('../tar-stream-to-objects')
 
 module.exports = (send) => {
-  return promisify(function get (path, opts, callback) {
+  return promisify((path, opts, callback) => {
     if (typeof opts === 'function' &&
         !callback) {
       callback = opts
@@ -26,12 +26,13 @@ module.exports = (send) => {
       return callback(err)
     }
 
-    var sendWithTransform = send.withTransform(tarStreamToObjects)
-
-    sendWithTransform({
+    const request = {
       path: 'get',
       args: path,
       qs: opts
-    }, callback)
+    }
+
+    // Convert the response stream to TarStream objects
+    send.andTransform(request, TarStreamToObjects, callback)
   })
 }

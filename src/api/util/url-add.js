@@ -3,9 +3,8 @@
 const promisify = require('promisify-es6')
 const once = require('once')
 const parseUrl = require('url').parse
-
 const request = require('../../request')
-const addToDagNodesTransform = require('./../../add-to-dagnode-transform')
+const DAGNodeStream = require('../../dagnode-stream')
 
 module.exports = (send) => {
   return promisify((url, opts, callback) => {
@@ -28,7 +27,6 @@ module.exports = (send) => {
       return callback(new Error('"url" param must be an http(s) url'))
     }
 
-    const sendWithTransform = send.withTransform(addToDagNodesTransform)
     callback = once(callback)
 
     request(parseUrl(url).protocol)(url, (res) => {
@@ -37,11 +35,15 @@ module.exports = (send) => {
         return callback(new Error(`Failed to download with ${res.statusCode}`))
       }
 
-      sendWithTransform({
+      const params = {
         path: 'add',
         qs: opts,
         files: res
-      }, callback)
+      }
+
+      // Transform the response stream to DAGNode values
+      const transform = (res, callback) => DAGNodeStream.streamToValue(send, res, callback)
+      send.andTransform(params, transform, callback)
     }).end()
   })
 }

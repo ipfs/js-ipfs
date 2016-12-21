@@ -1,10 +1,10 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const bl = require('bl')
 const Block = require('ipfs-block')
 const multihash = require('multihashes')
 const CID = require('cids')
+const streamToValue = require('../stream-to-value')
 
 module.exports = (send) => {
   return {
@@ -21,25 +21,27 @@ module.exports = (send) => {
         opts = {}
       }
 
-      return send({
-        path: 'block/get',
-        args: args,
-        qs: opts
-      }, (err, res) => {
-        if (err) {
-          return callback(err)
-        }
+      // Transform the response from Buffer or a Stream to a Block
+      const transform = (res, callback) => {
         if (Buffer.isBuffer(res)) {
           callback(null, new Block(res))
         } else {
-          res.pipe(bl((err, data) => {
+          streamToValue(res, (err, data) => {
             if (err) {
               return callback(err)
             }
             callback(null, new Block(data))
-          }))
+          })
         }
-      })
+      }
+
+      const request = {
+        path: 'block/get',
+        args: args,
+        qs: opts
+      }
+
+      send.andTransform(request, transform, callback)
     }),
     stat: promisify((args, opts, callback) => {
       // TODO this needs to be adjusted with the new go-ipfs http-api
@@ -51,19 +53,22 @@ module.exports = (send) => {
         callback = opts
         opts = {}
       }
-      return send({
+
+      const request = {
         path: 'block/stat',
         args: args,
         qs: opts
-      }, (err, stats) => {
-        if (err) {
-          return callback(err)
-        }
+      }
+
+      // Transform the response from { Key, Size } objects to { key, size } objects
+      const transform = (stats, callback) => {
         callback(null, {
           key: stats.Key,
           size: stats.Size
         })
-      })
+      }
+
+      send.andTransform(request, transform, callback)
     }),
     put: promisify((block, cid, callback) => {
       // TODO this needs to be adjusted with the new go-ipfs http-api
@@ -81,15 +86,15 @@ module.exports = (send) => {
         block = block.data
       }
 
-      return send({
+      const request = {
         path: 'block/put',
         files: block
-      }, (err, blockInfo) => {
-        if (err) {
-          return callback(err)
-        }
-        callback(null, new Block(block))
-      })
+      }
+
+      // Transform the response to a Block
+      const transform = (blockInfo, callback) => callback(null, new Block(block))
+
+      send.andTransform(request, transform, callback)
     })
   }
 }

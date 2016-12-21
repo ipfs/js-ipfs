@@ -12,6 +12,10 @@ describe('.ping', () => {
       apiClients.a.ping(id.id, (err, res) => {
         expect(err).to.not.exist
         expect(res).to.have.a.property('Success')
+        expect(res).to.have.a.property('Time')
+        expect(res).to.have.a.property('Text')
+        expect(res.Text).to.contain('Average latency')
+        expect(res.Time).to.be.a('number')
         done()
       })
     })
@@ -25,6 +29,10 @@ describe('.ping', () => {
         })
         .then((res) => {
           expect(res).to.have.a.property('Success')
+          expect(res).to.have.a.property('Time')
+          expect(res).to.have.a.property('Text')
+          expect(res.Text).to.contain('Average latency')
+          expect(res.Time).to.be.a('number')
         })
     })
   })

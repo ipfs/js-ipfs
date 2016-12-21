@@ -28,13 +28,13 @@ function startDisposableDaemons (callback) {
       const configValues = {
         Bootstrap: [],
         Discovery: {},
-        'HTTPHeaders.Access-Control-Allow-Origin': ['*'],
-        'HTTPHeaders.Access-Control-Allow-Credentials': 'true',
-        'HTTPHeaders.Access-Control-Allow-Methods': ['PUT', 'POST', 'GET']
+        'API.HTTPHeaders.Access-Control-Allow-Origin': ['*'],
+        'API.HTTPHeaders.Access-Control-Allow-Credentials': 'true',
+        'API.HTTPHeaders.Access-Control-Allow-Methods': ['PUT', 'POST', 'GET']
       }
 
       eachSeries(Object.keys(configValues), (configKey, cb) => {
-        nodes[key].setConfig(`API.${configKey}`, JSON.stringify(configValues[configKey]), cb)
+        nodes[key].setConfig(configKey, JSON.stringify(configValues[configKey]), cb)
       }, (err) => {
         if (err) {
           return cb(err)

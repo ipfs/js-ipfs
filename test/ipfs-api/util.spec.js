@@ -65,7 +65,6 @@ describe('.util', () => {
     ipfs.util.addFromFs(filePath, (err, result) => {
       expect(err).to.not.exist
       expect(result.length).to.be.above(5)
-
       done()
     })
   })

@@ -1,38 +1,48 @@
 'use strict'
 
+const pump = require('pump')
 const tar = require('tar-stream')
-const Readable = require('readable-stream')
+const ReadableStream = require('readable-stream').Readable
 
-// transform tar stream into readable stream of
-// { path: 'string', content: Readable }
-module.exports = (err, res, send, done) => {
-  if (err) {
-    return done(err)
+class ObjectsStreams extends ReadableStream {
+  constructor (options) {
+    const opts = Object.assign(options || {}, { objectMode: true })
+    super(opts)
   }
 
-  const objStream = new Readable({ objectMode: true })
-  objStream._read = function noop () {}
+  _read () {}
+}
 
-  res
-    .pipe(tar.extract())
+/*
+  Transform a tar stream into a stream of objects:
+
+  Output format:
+  { path: 'string', content: Stream<Readable> }
+*/
+const TarStreamToObjects = (inputStream, callback) => {
+  let outputStream = new ObjectsStreams()
+  let extractStream = tar.extract()
+
+  extractStream
     .on('entry', (header, stream, next) => {
       stream.on('end', next)
 
       if (header.type !== 'directory') {
-        objStream.push({
+        outputStream.push({
           path: header.name,
           content: stream
         })
       } else {
-        objStream.push({
+        outputStream.push({
           path: header.name
         })
         stream.resume()
       }
     })
-    .on('finish', () => {
-      objStream.push(null)
-    })
+    .on('finish', () => outputStream.push(null))
 
-  done(null, objStream)
+  pump(inputStream, extractStream)
+  callback(null, outputStream)
 }
+
+module.exports = TarStreamToObjects
