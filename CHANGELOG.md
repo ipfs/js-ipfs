@@ -1,3 +1,19 @@
+<a name="0.23.0"></a>
+# [0.23.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.22.1...v0.23.0) (2016-12-21)
+
+
+### Bug Fixes
+
+* fix a bunch of issues (i.e: identify race condition) ([d004577](https://github.com/ipfs/interface-ipfs-core/commit/d004577))
+
+
+### Features
+
+* add first pass of pubsub tests (running in js-ipfs-api) ([74003a7](https://github.com/ipfs/interface-ipfs-core/commit/74003a7))
+* new event based API ([1a82890](https://github.com/ipfs/interface-ipfs-core/commit/1a82890))
+
+
+
 <a name="0.22.1"></a>
 ## [0.22.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.22.0...v0.22.1) (2016-12-10)
 
