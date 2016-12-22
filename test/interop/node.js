@@ -1,4 +1,7 @@
+/* eslint-env mocha */
 'use strict'
 
-require('./index')
-require('./repo')
+describe('interop', () => {
+  require('./index')
+  require('./repo')
+})

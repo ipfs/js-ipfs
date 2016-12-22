@@ -23,7 +23,7 @@ function catAndCheck (daemon, hash, data, callback) {
 }
 
 // TODO: these are not working, will need to figure out why
-describe.skip('interop - repo', () => {
+describe.skip('repo', () => {
   it('read repo: go -> js', (done) => {
     const dir = os.tmpdir() + '/' + Math.ceil(Math.random() * 10000)
     const data = crypto.randomBytes(1024 * 5)
@@ -49,7 +49,7 @@ describe.skip('interop - repo', () => {
     ], done)
   })
 
-  it.only('read repo: js -> go', (done) => {
+  it('read repo: js -> go', (done) => {
     const dir = os.tmpdir() + '/' + Math.ceil(Math.random() * 10000)
     const data = crypto.randomBytes(1024 * 5)
 

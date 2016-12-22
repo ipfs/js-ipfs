@@ -11,7 +11,7 @@ const crypto = require('crypto')
 const GoDaemon = require('./daemons/go')
 const JsDaemon = require('./daemons/js')
 
-describe('interop', () => {
+describe('basic', () => {
   let goDaemon
   let jsDaemon
 
