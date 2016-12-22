@@ -35,11 +35,29 @@ class GoDaemon {
       },
       (node, cb) => {
         this.node = node
-        this.node.startDaemon(cb)
+        this.node.setConfig('Bootstrap', '[]', cb)
       },
+      (res, cb) => this.node.startDaemon(cb),
       (api, cb) => {
         this.api = api
-        cb()
+
+        if (process.env.DEBUG) {
+          this.api.log.tail((err, stream) => {
+            if (err) {
+              return console.error(err)
+            }
+            stream.on('data', (chunk) => {
+              console.log('go-log: %s.%s %s (%s)', chunk.system, chunk.subsystem || '', chunk.event, chunk.error)
+            })
+          })
+          this.node._run(
+            ['log', 'level', 'all', 'debug'],
+            {env: this.node.env},
+            cb
+          )
+        } else {
+          cb()
+        }
       }
     ], (err) => callback(err))
   }

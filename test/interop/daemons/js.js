@@ -62,6 +62,7 @@ class JsDaemon {
           cb()
         }
       },
+      (cb) => this.ipfs.config.set('Bootstrap', [], cb),
       (cb) => {
         if (this.port) {
           console.log('setting to port', this.port)
