@@ -194,7 +194,7 @@ UPDATE:
 - [ ] Fix full bitswap compatibility with go-ipfs
 - Bitswap Support
   - [x] Support for matching func - https://github.com/multiformats/js-multistream-select/pull/26
-  - [ ] Support bitswap 1.0.0 and 1.1.0 simultaneously
+  - [x] Support bitswap 1.0.0 and 1.1.0 simultaneously
 
 ### Dependencies: `NA`
 ### Requirements by other projects: `NA`
@@ -264,7 +264,14 @@ This milestone was added as an extra during the quarter.
 
 - Friedel
 
-### Tasks: `NA`
+### Tasks: 
+- [x] Ship `aegir-docs`
+- [x] Ship custom theme for documentation.js https://github.com/dignifiedquire/clean-documentation-theme
+- [ ] Add documentation, overall tracking: https://github.com/ipfs/js-ipfs/issues/615
+  - [ ] js-ipfs: https://github.com/ipfs/js-ipfs/pull/651
+  - [ ] js-ipfs-api: https://github.com/ipfs/js-ipfs-api/pull/469
+
+
 ### Dependencies: `NA`
 ### Requirements by other projects: `NA`
 ### Notes: `NA`
@@ -305,13 +312,16 @@ This milestone was added as an extra during the quarter.
 
 ### Tasks:
 
-- [ ] PubSub API Spec and tests - https://github.com/ipfs/interface-ipfs-core/pull/101
-- [ ] Implementation in js-ipfs - https://github.com/ipfs/js-ipfs/pull/644
-- [ ] Implementation in js-ipfs-api - https://github.com/ipfs/js-ipfs-api/pull/471
+- [x] PubSub API Spec and tests - https://github.com/ipfs/interface-ipfs-core/pull/101
+- [x] Implementation in js-ipfs - https://github.com/ipfs/js-ipfs/pull/644
+- [x] Implementation in js-ipfs-api - https://github.com/ipfs/js-ipfs-api/pull/493
 
 ### Dependencies: `NA`
 ### Requirements by other projects: `NA`
-### Notes: `This milestone was added as an extra during the quarter.`
+### Notes: 
+- `This milestone was added as an extra during the quarter.`
+- Shipping blocked by http streaming issues for `subscribe`: https://github.com/ipfs/js-ipfs-api/pull/493#issuecomment-268603853
+
 ##### Expected date of completion: `NA`
 
 
