@@ -73,7 +73,7 @@
   },
   "dependencies": {
     "async": "^2.1.4",
-    "bl": "^1.1.2",
+    "bl": "^1.2.0",
     "boom": "^4.2.0",
     "debug": "^2.4.5",
     "fs-pull-blob-store": "^0.3.0",
