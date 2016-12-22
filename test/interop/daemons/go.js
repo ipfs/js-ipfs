@@ -4,15 +4,35 @@ const ctl = require('ipfsd-ctl')
 const waterfall = require('async/waterfall')
 
 class GoDaemon {
-  constructor () {
+  constructor (opts) {
+    opts = opts || {
+      disposable: true,
+      init: true
+    }
+
+    this.init = opts.init
+    this.path = opts.path
+    this.disposable = opts.disposable
     this.node = null
     this.api = null
   }
 
   start (callback) {
-    console.log('starting go')
     waterfall([
-      (cb) => ctl.disposable(cb),
+      (cb) => {
+        if (this.disposable) {
+          ctl.disposable({init: this.init}, cb)
+        } else if (this.init) {
+          ctl.local(this.path, (err, node) => {
+            if (err) {
+              return cb(err)
+            }
+            node.init((err) => cb(err, node))
+          })
+        } else {
+          ctl.local(this.path, cb)
+        }
+      },
       (node, cb) => {
         this.node = node
         this.node.startDaemon(cb)
@@ -21,7 +41,7 @@ class GoDaemon {
         this.api = api
         cb()
       }
-    ], callback)
+    ], (err) => callback(err))
   }
 
   stop (callback) {
