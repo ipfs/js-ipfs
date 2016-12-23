@@ -10,6 +10,7 @@ exports.wantlist = (request, reply) => {
   let list
   try {
     list = request.server.app.ipfs.bitswap.wantlist()
+    list = list.map((entry) => entry.cid.toBaseEncodedString())
   } catch (err) {
     return reply(boom.badRequest(err))
   }
