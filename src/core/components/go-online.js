@@ -14,7 +14,7 @@ module.exports = function goOnline (self) {
       }
 
       self._bitswap = new Bitswap(
-        self._libp2pNode.peerInfo,
+        {}, // TODO remove when new bitswap is merged
         self._libp2pNode,
         self._repo.blockstore,
         self._libp2pNode.peerBook
