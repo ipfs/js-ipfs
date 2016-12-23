@@ -70,9 +70,11 @@ UPDATE:
 - [ ] Robust testing infrastructure
   - [x] Isolation of tests. This includes:
     - Avoid cases where there is one set up for a bunch of test files, instead make each test file be runnable by itself. This also includes removing the use of all globals (i.e js-ipfs-api).
-  - [ ] Interoperability tests between js-ipfs and go-ipfs
+  - [x] Interoperability tests between js-ipfs and go-ipfs
     - [x] Done at the libp2p level
+    - [x] (Dec 23 2016) Now done at js-ipfs level too
   - [ ] Benchmarking tests - https://github.com/ipfs/js-ipfs/pull/488
+    - [x] (Dec 23 2016) https://github.com/ipfs/js-ipfs-bitswap/tree/master/benchmarks
   - [ ] Stress tests, things like:
     - Spawn a reasonable amount of nodes
     - Add large files
@@ -191,10 +193,10 @@ UPDATE:
 
 - [ ] Figure out DAG API https://github.com/ipfs/interface-ipfs-core/issues/81
 - [ ] Implement DAG API
-- [ ] Fix full bitswap compatibility with go-ipfs
 - Bitswap Support
   - [x] Support for matching func - https://github.com/multiformats/js-multistream-select/pull/26
-  - [ ] Support bitswap 1.0.0 and 1.1.0 simultaneously
+  - [x] Support bitswap 1.0.0 and 1.1.0 simultaneously https://github.com/ipfs/js-ipfs-bitswap/pull/76
+  - [x] Fix bitswap compatibility with go-ipfs
 
 ### Dependencies: `NA`
 ### Requirements by other projects: `NA`
@@ -264,7 +266,14 @@ This milestone was added as an extra during the quarter.
 
 - Friedel
 
-### Tasks: `NA`
+### Tasks: 
+- [x] Ship `aegir-docs`
+- [x] Ship custom theme for documentation.js https://github.com/dignifiedquire/clean-documentation-theme
+- [ ] Add documentation, overall tracking: https://github.com/ipfs/js-ipfs/issues/615
+  - [ ] js-ipfs: https://github.com/ipfs/js-ipfs/pull/651
+  - [ ] js-ipfs-api: https://github.com/ipfs/js-ipfs-api/pull/469
+
+
 ### Dependencies: `NA`
 ### Requirements by other projects: `NA`
 ### Notes: `NA`
@@ -305,13 +314,16 @@ This milestone was added as an extra during the quarter.
 
 ### Tasks:
 
-- [ ] PubSub API Spec and tests - https://github.com/ipfs/interface-ipfs-core/pull/101
-- [ ] Implementation in js-ipfs - https://github.com/ipfs/js-ipfs/pull/644
-- [ ] Implementation in js-ipfs-api - https://github.com/ipfs/js-ipfs-api/pull/471
+- [x] PubSub API Spec and tests - https://github.com/ipfs/interface-ipfs-core/pull/101
+- [x] Implementation in js-ipfs - https://github.com/ipfs/js-ipfs/pull/644
+- [x] Implementation in js-ipfs-api - https://github.com/ipfs/js-ipfs-api/pull/493
 
 ### Dependencies: `NA`
 ### Requirements by other projects: `NA`
-### Notes: `This milestone was added as an extra during the quarter.`
+### Notes: 
+- `This milestone was added as an extra during the quarter.`
+- Shipping blocked by http streaming issues for `subscribe`: https://github.com/ipfs/js-ipfs-api/pull/493#issuecomment-268603853
+
 ##### Expected date of completion: `NA`
 
 
@@ -320,10 +332,6 @@ This milestone was added as an extra during the quarter.
 --------------------------------------------------------------------------------------------------
 
 # Cached milestones (to re-evaluate for next quarter)
-
-# Milestone - Documentation and Developer Experience
-
-> Summary: During this period, we will focus on bringing great developer experience to js-ipfs, this includes: great examples, documentation, tutorials, blog posts and more, enabling more developers to hack with js-ipfs or contribute to the project.
 
 ### Tasks:
 
@@ -337,27 +345,9 @@ This milestone was added as an extra during the quarter.
   - [ ] Tutorial: Load a Webpage/WebApplication using js-ipfs
   - [ ] Add all of the examples to https://ipfs.io/docs/examples/
 - [ ] Revisit and complete the IPFS spec
-
-### Dependencies: `NA`
-### Requirements by other projects: `NA`
-### Notes: `NA`
-##### Expected date of completion: `TBA`
-
-# Milestone - The last miles for complete feature parity with go-ipfs
-
-> Summary: 100% feature parity and interop with go-ipfs
-
-### Tasks:
-
 - [ ] IPNS
 - [ ] pinning API
 - [x] ping
-
-### Dependencies: `NA`
-### Requirements by other projects: `NA`
-### Notes: `NA`
-##### Expected date of completion: `TBA`
-
 
 # Milestone - Shoot for the moon 🌑
 
@@ -421,9 +411,6 @@ This milestone was added as an extra during the quarter.
     - [ ] add
     - [ ] ls
     - [ ] rm
-  - [ ] log
-    - [ ] level
-    - [ ] tail
 - **extensions**
   - [ ] name (IPNS)
     - [ ] publish
@@ -433,28 +420,22 @@ This milestone was added as an extra during the quarter.
   - [ ] tar
     - [ ] add
     - [ ] cat
-  - [ ] tour
-    - [ ] list
-    - [ ] next
-    - [ ] restart
-  - [ ] files
+  - [x] files
     - [x] add
     - [x] cat
-    - [ ] get
+    - [x] get
   - [ ] stat - Statistics about everything
     - [ ] bw
-  - [ ] mount
   - [x] bootstrap
     - [x] add
     - [x] list
     - [x] rm
   - [x] bitswap
-    - [ ] stat
+    - [x] stat
     - [ ] unwant
-    - [ ] wantlist
+    - [x] wantlist
 - **tooling**
   - [x] commands
-  - [ ] update
   - [x] init - sugar on top of ipfs repo init
   - [x] config
     - [x] edit
@@ -468,12 +449,8 @@ This milestone was added as an extra during the quarter.
     - [ ] get
     - [ ] put
     - [ ] query
-  - [ ] swarm
+  - [x] swarm
     - [x] addrs
     - [x] connect
     - [x] disconnect
-    - [ ] filters
     - [x] peers
-  - [ ] records (IPRS)
-    - [ ] put
-    - [ ] get
