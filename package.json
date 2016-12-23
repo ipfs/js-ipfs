@@ -92,7 +92,7 @@
     "hapi-set-header": "^1.0.2",
     "idb-pull-blob-store": "^0.5.1",
     "ipfs-api": "^12.1.2",
-    "ipfs-bitswap": "^0.8.3",
+    "ipfs-bitswap": "^0.9.0",
     "ipfs-block": "^0.5.4",
     "ipfs-block-service": "^0.7.2",
     "ipfs-multipart": "^0.1.0",
