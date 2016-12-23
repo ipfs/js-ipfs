@@ -26,7 +26,7 @@ module.exports = {
         if (err) {
           throw err
         }
-        res.Keys.forEach((k) => console.log(k))
+        res.Keys.forEach((k) => console.log(k.toString()))
       })
     })
   }
