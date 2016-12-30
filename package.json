@@ -62,7 +62,7 @@
     "chai": "^3.5.0",
     "eslint-plugin-react": "^6.8.0",
     "gulp": "^3.9.1",
-    "hapi": "^16.0.1",
+    "hapi": "^16.0.3",
     "interface-ipfs-core": "^0.22.1",
     "ipfsd-ctl": "^0.17.0",
     "pre-commit": "^1.2.0",
