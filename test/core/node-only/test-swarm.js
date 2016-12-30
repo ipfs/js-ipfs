@@ -6,9 +6,7 @@ const parallel = require('async/parallel')
 
 const createTempNode = require('../../utils/temp-node')
 
-describe('swarm', function () {
-  this.timeout(40 * 1000)
-
+describe('swarm', () => {
   let nodeA
   let nodeB
 
@@ -71,16 +69,16 @@ describe('swarm', function () {
   it('libp2p.swarm.peers on nodeA and nodeB match each other', (done) => {
     parallel([
       (cb) => {
-        nodeA.swarm.peers((err, res) => {
+        nodeA.swarm.peers((err, peers) => {
           expect(err).to.not.exist
-          expect(Object.keys(res)).to.have.length.above(0)
+          expect(peers).to.have.length.above(0)
           cb()
         })
       },
       (cb) => {
-        nodeB.swarm.peers((err, res) => {
+        nodeB.swarm.peers((err, peers) => {
           expect(err).to.not.exist
-          expect(Object.keys(res)).to.have.length.above(0)
+          expect(peers).to.have.length.above(0)
           cb()
         })
       }
@@ -104,16 +102,16 @@ describe('swarm', function () {
       function check () {
         parallel([
           (cb) => {
-            nodeA.swarm.peers((err, res) => {
+            nodeA.swarm.peers((err, peers) => {
               expect(err).to.not.exist
-              expect(Object.keys(res)).to.have.length(0)
+              expect(peers).to.have.length(0)
               cb()
             })
           },
           (cb) => {
-            nodeB.swarm.peers((err, res) => {
+            nodeB.swarm.peers((err, peers) => {
               expect(err).to.not.exist
-              expect(Object.keys(res)).to.have.length(0)
+              expect(peers).to.have.length(0)
               cb()
             })
           }

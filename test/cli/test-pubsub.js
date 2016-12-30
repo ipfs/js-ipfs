@@ -10,8 +10,7 @@ const createTempNode = require('../utils/temp-node')
 const repoPath = require('./index').repoPath
 const ipfs = require('../utils/ipfs-exec')(repoPath)
 
-describe('pubsub', function () {
-  this.timeout(30 * 1000)
+describe.skip('pubsub', () => {
   const topicA = 'nonscentsA'
   const topicB = 'nonscentsB'
   const topicC = 'nonscentsC'

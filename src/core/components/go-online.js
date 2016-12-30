@@ -4,7 +4,7 @@ const series = require('async/series')
 const Bitswap = require('ipfs-bitswap')
 const FloodSub = require('libp2p-floodsub')
 
-module.exports = function goOnline (self) {
+module.exports = (self) => {
   return (cb) => {
     series([
       self.load,
@@ -22,7 +22,7 @@ module.exports = function goOnline (self) {
       self._bitswap.start()
       self._blockService.goOnline(self._bitswap)
       self._pubsub = new FloodSub(self._libp2pNode)
-
+      // TODO self.pubsub.start()
       cb()
     })
   }
