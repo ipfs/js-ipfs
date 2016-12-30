@@ -88,7 +88,7 @@
     "debug": "^2.5.1",
     "fs-pull-blob-store": "^0.3.0",
     "glob": "^7.1.1",
-    "hapi": "^16.0.2",
+    "hapi": "^16.1.0",
     "hapi-set-header": "^1.0.2",
     "idb-pull-blob-store": "^0.5.1",
     "ipfs-api": "^12.1.2",
