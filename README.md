@@ -262,7 +262,7 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 
 ```sh
 # run all the interop tsts
-> npm test:benchmark 
+> npm run test:benchmark 
 
 # run just IPFS benchmarks in Node.js
 > npm run test:benchmark:node
