@@ -1,7 +1,7 @@
 {
-  "name": "bundle-browserify",
+  "name": "bundle-webpack",
   "version": "1.0.0",
-  "description": "Bundle js-ipfs-api with Browserify",
+  "description": "Bundle js-ipfs-api with Webpack",
   "scripts": {
     "start": "node server.js"
   },
