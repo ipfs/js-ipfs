@@ -4,6 +4,7 @@ const resources = require('./../resources')
 
 module.exports = (server) => {
   const api = server.select('API')
+  const gateway = server.select('Gateway')
 
   api.route({
     // TODO fix method
@@ -39,6 +40,17 @@ module.exports = (server) => {
         output: 'stream'
       },
       handler: resources.files.add.handler
+    }
+  })
+
+  gateway.route({
+    method: '*',
+    path: '/ipfs/{hash*}',
+    config: {
+      pre: [
+        { method: resources.files.gateway.checkHash, assign: 'args' }
+      ],
+      handler: resources.files.gateway.handler
     }
   })
 }
