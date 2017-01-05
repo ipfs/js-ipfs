@@ -84,7 +84,6 @@
   "dependencies": {
     "async": "^2.1.4",
     "bl": "^1.2.0",
-    "bluebird": "^3.4.7",
     "boom": "^4.2.0",
     "debug": "^2.5.1",
     "filesize": "^3.3.0",
@@ -120,6 +119,7 @@
     "peer-book": "^0.3.0",
     "peer-id": "^0.8.1",
     "peer-info": "^0.8.2",
+    "promised-for": "^1.0.0",
     "promisify-es6": "^1.0.2",
     "pull-file": "^1.0.0",
     "pull-paramap": "^1.2.1",

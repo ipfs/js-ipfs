@@ -1,17 +1,12 @@
 'use strict'
 
 const mh = require('multihashes')
-const Promise = require('bluebird')
+const pf = require('promised-for')
 
 const html = require('./utils/html')
 const PathUtil = require('./utils/path')
 
 const INDEX_HTML_FILES = [ 'index.html', 'index.htm', 'index.shtml' ]
-
-const promisedFor = Promise.method((condition, action, value) => {
-  if (!condition(value)) return value
-  return action(value).then(promisedFor.bind(null, condition, action))
-})
 
 const resolveDirectory = (ipfs, path, multihash) => {
   return ipfs
@@ -34,7 +29,11 @@ const resolveMultihash = (ipfs, path) => {
   const parts = PathUtil.splitPath(path)
   const partsLength = parts.length
 
-  return promisedFor(
+  return pf(
+    {
+      multihash: parts[0],
+      index: 0
+    },
     (i) => i.index < partsLength,
     (i) => {
       const currentIndex = i.index
@@ -78,9 +77,6 @@ const resolveMultihash = (ipfs, path) => {
                     }
                   }
                 })
-    }, {
-      multihash: parts[0],
-      index: 0
     })
 }
 
