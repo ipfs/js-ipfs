@@ -1,10 +1,14 @@
 'use strict'
 
 module.exports = (self) => {
-  return (cb) => {
+  return (callback) => {
     self._blockService.goOffline()
     self._bitswap.stop()
-    // TODO self._pubsub.stop()
-    self.libp2p.stop(cb)
+    self._pubsub.stop((err) => {
+      if (err) {
+        return callback(err)
+      }
+      self.libp2p.stop(callback)
+    })
   }
 }
