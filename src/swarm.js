@@ -55,6 +55,11 @@ module.exports = (common) => {
         })
       })
 
+      // for Identify to finish
+      it('time', (done) => {
+        setTimeout(done, 1500)
+      })
+
       describe('.peers', () => {
         beforeEach((done) => {
           const ipfsBAddr = ipfsBId.addresses[0]
@@ -135,6 +140,11 @@ module.exports = (common) => {
             const ipfsBAddr = id.addresses[0]
             return ipfsA.swarm.connect(ipfsBAddr)
           })
+      })
+
+      // for Identify to finish
+      it('time', (done) => {
+        setTimeout(done, 1500)
       })
 
       it('.peers', () => {
