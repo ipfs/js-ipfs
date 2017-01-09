@@ -12,11 +12,11 @@ test_expect_success "current dir is writable" '
 	echo "It works!" >test.txt
 '
 
-test_expect_success "ipfs version succeeds" '
-	ipfs version >version.txt
+test_expect_success "jsipfs version succeeds" '
+	jsipfs version >version.txt
 '
 
-test_expect_success "ipfs version shows js-ipfs" '
+test_expect_success "jsipfs version shows js-ipfs" '
 	grep "js-ipfs" version.txt >/dev/null ||
 	test_fsh cat version.txt
 '
