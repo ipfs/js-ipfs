@@ -23,7 +23,7 @@ describe('init (Node.js specific)', () => {
   it('init docs are written', (done) => {
     ipfs.init({ bits: 1024 }, (err) => {
       expect(err).to.not.exist
-      const multihash = new Buffer('12205e7c3ce237f936c76faf625e90f7751a9f5eeb048f59873303c215e9cce87599', 'hex')
+      const multihash = new Buffer('12209fc9ba7a2c3de39e9460e76ee392b460fb404a22b7e24d95f3c90bfeb3c24290', 'hex')
 
       setTimeout(() => {
         ipfs.object.get(multihash, {}, (err, node) => {
@@ -40,7 +40,7 @@ describe('init (Node.js specific)', () => {
       expect(err).to.not.exist
 
       // Check for default assets
-      var multihash = new Buffer('12205e7c3ce237f936c76faf625e90f7751a9f5eeb048f59873303c215e9cce87599', 'hex')
+      var multihash = new Buffer('12209fc9ba7a2c3de39e9460e76ee392b460fb404a22b7e24d95f3c90bfeb3c24290', 'hex')
       ipfs.object.get(multihash, {}, (err, node) => {
         expect(err).to.exist
         done()

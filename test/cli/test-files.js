@@ -59,7 +59,7 @@ describe('files', () => {
     it('add', () => {
       return ipfs('files add src/init-files/init-docs/readme').then((out) => {
         expect(out).to.be.eql(
-          'added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme'
+          'added QmWttNAA5JNh8CPLHucifgpqJqe82kmKG4hiw2uq7iuLXB readme'
         )
       })
     })
@@ -67,7 +67,7 @@ describe('files', () => {
     it('add alias', () => {
       return ipfs('add src/init-files/init-docs/readme').then((out) => {
         expect(out).to.be.eql(
-          'added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme'
+          'added QmWttNAA5JNh8CPLHucifgpqJqe82kmKG4hiw2uq7iuLXB readme'
         )
       })
     })
@@ -75,17 +75,17 @@ describe('files', () => {
     it('add recursively', () => {
       return ipfs('files add -r src/init-files/init-docs').then((out) => {
         expect(out).to.be.eql([
-          'added QmYE7xo6NxbHEVEHej1yzxijYaNY51BaeKxjXxn6Ssa6Bs init-docs/tour/0.0-intro',
-          'added QmciSU8hfpAXKjvK5YLUSwApomGSWN5gFbP4EpDAEzu2Te init-docs/tour',
-          'added QmTumTjvcYCAvRRwQ8sDRxh8ezmrcr88YFU7iYNroGGTBZ init-docs/security-notes',
-          'added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB init-docs/readme',
-          'added QmdncfsVm2h5Kqq9hPmU7oAVX2zTSVP3L869tgTbPYnsha init-docs/quick-start',
-          'added QmY5heUM5qgRubMDD1og9fhCPA6QdkMp3QCwd4s7gJsyE7 init-docs/help',
-          'added QmQN88TEidd3RY2u3dpib49fERTDfKtDpvxnvczATNsfKT init-docs/docs/index',
-          'added QmegvLXxpVKiZ4b57Xs1syfBVRd8CbucVHAp7KpLQdGieC init-docs/docs',
-          'added QmYCvbfNbCwFR45HiNP45rwJgvatpiW38D961L5qAhUM5Y init-docs/contact',
-          'added QmZTR5bcpQD7cFgTorqxZDYaew1Wqgfbd2ud9QqGPAkK2V init-docs/about',
-          'added QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU init-docs'
+          'added QmaGE6DRwomWZxau96Hx6cdjYYYfVsp89o8gHaQbHiWWuc init-docs/tour/0.0-intro',
+          'added QmWDvFCCGNeLAz2ASvhYvjwY1fqv1kgZYu3PoyPvNBUggF init-docs/tour',
+          'added QmNtK7DiXysCe5RvAe4VqxrbphHMVAzrSFsKHGUrJQvVvZ init-docs/security-notes',
+          'added QmWttNAA5JNh8CPLHucifgpqJqe82kmKG4hiw2uq7iuLXB init-docs/readme',
+          'added QmfQ6dVwcmNcXscwHSdHAn5Rhz9THHxc8r1EAH1W4QqyX9 init-docs/quick-start',
+          'added QmU1sw7VjE4dqESBHcowgPd2W4e7Pf4KvXptaDCZCCBYZs init-docs/help',
+          'added QmfSgwmt9u6L6vgio3DY8ZgeJjeSKEJTuysi3vkRyS9gTY init-docs/docs/index',
+          'added QmXPKvjP6hbd9zwHthuVqiqXoLCdQkaqi6svb8Fd7G7QsE init-docs/docs',
+          'added QmNifNEbdZzs1D8XSBaNVNnVNhwzjDm6tSR72km9HF5Jti init-docs/contact',
+          'added QmUKsDvy7spk3UwF3fkxfm6fqw9zb6nrEkiVypd6Es3M6b init-docs/about',
+          'added QmZ6Pwevfnbx6L15wX2ftHGTi7Ed2Jnh6H4GyHbwLsUK6o init-docs'
         ].join('\n'))
       })
     })
