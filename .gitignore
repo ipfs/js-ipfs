@@ -3,3 +3,4 @@
 test/setup/tmp-disposable-nodes-addrs.json
 dist
 coverage
+**/*.swp

@@ -150,10 +150,10 @@ Complete documentation for these methods is coming with: https://github.com/ipfs
 
 > `ipfs.util.addFromFs(path, option, callback)`
 
-Reads a file from `path` on the filesystem  and adds it to IPFS. If `path` is a directory, use option `{ recursive: true }` to add the directory and all its sub-directories.
+Reads a file from `path` on the filesystem  and adds it to IPFS. If `path` is a directory, use option `{ recursive: true }` to add the directory and all its sub-directories. To exclude fileglobs from the directory, use option `{ ignore: ['ignore/this/folder/**', 'and/this/file'] }`.
 
 ```JavaScript
-ipfs.util.addFromFs('path/to/a/file', { recursive: true }, (err, result) => {
+ipfs.util.addFromFs('path/to/a/folder', { recursive: true , ignore: ['subfolder/to/ignore/**']}, (err, result) => {
   if (err) {
     throw err
   }

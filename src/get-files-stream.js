@@ -45,8 +45,12 @@ function loadPaths (opts, file) {
   }
 
   if (stats.isDirectory() && opts.recursive) {
-    const mg = new glob.sync.GlobSync(`${escape(file)}/**/*`, {
-      follow: followSymlinks
+    const globEscapedDir = escape(file) + (file.endsWith('/') ? '' : '/')
+    const mg = new glob.sync.GlobSync(`${globEscapedDir}**/*`, {
+      follow: followSymlinks,
+      ignore: (opts.ignore || []).map(function (ignoreGlob) {
+        return globEscapedDir + ignoreGlob
+      })
     })
 
     return mg.found
@@ -88,7 +92,7 @@ function loadPaths (opts, file) {
   }
 
   return {
-    path: file,
+    path: path.basename(file),
     content: fs.createReadStream(file)
   }
 }
