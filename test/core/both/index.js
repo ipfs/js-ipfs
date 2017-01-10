@@ -10,5 +10,4 @@ describe('--both', () => {
   require('./test-generic')
   require('./test-init')
   require('./test-object')
-  require('./test-pubsub')
 })
