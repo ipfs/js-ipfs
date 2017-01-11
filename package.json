@@ -98,7 +98,7 @@
     "ipfs-multipart": "^0.1.0",
     "ipfs-repo": "^0.11.2",
     "ipfs-unixfs": "^0.1.9",
-    "ipfs-unixfs-engine": "^0.14.2",
+    "ipfs-unixfs-engine": "^0.15.0",
     "ipld-resolver": "^0.4.1",
     "isstream": "^0.1.2",
     "joi": "^10.0.6",
