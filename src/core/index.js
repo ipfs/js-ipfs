@@ -67,4 +67,7 @@ function IPFS (repoInstance) {
   this.files = files(this)
   this.bitswap = bitswap(this)
   this.ping = ping(this)
+
+  // expose Buffer for browser applications
+  this.Buffer = Buffer
 }

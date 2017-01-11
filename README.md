@@ -39,6 +39,8 @@ Consult the [Roadmap](/ROADMAP.md) for a complete state description of the proje
   - [HTTP-API](#http-api)
   - [IPFS Core examples (use IPFS as a module)](#ipfs-core-examples-use-ipfs-as-a-module)
     - [Create a IPFS node instance](#create-a-ipfs-node-instance)
+    - [Add a file](#add-a-file)
+    - [Retrieve a file](#retrieve-a-file)
     - [More to come](#more-to-come)
   - [API](#api)
       - [Generic API](#generic-api)
@@ -48,6 +50,7 @@ Consult the [Roadmap](/ROADMAP.md) for a complete state description of the proje
       - [Files API](#files-api)
       - [Swarm API](#swarm-api)
       - [libp2p API](#libp2p-api)
+      - [Domain data types](#domain-data-types)
 - [Development](#development)
   - [Clone](#clone)
   - [Install Dependencies](#install-dependencies)
@@ -148,6 +151,8 @@ The HTTP-API exposed by the js-ipfs daemon follows the [`http-api-spec`](https:/
 
 #### Create a IPFS node instance
 
+The basic startup flow involves (optionally) creating a Repo, creating an IPFS node, `init`-ing it so it can generate its keys, `load`-ing its configuration, and putting it online with `goOnline`. Here is a structural example:
+
 ```JavaScript
 // IPFS will need a repo, it can create one for you or you can pass
 // it a repo instance of the type IPFS Repo
@@ -179,6 +184,38 @@ node.init({ emptyRepo: true, bits: 2048 }, (err) => {
 
 > We are working on making this init process better, see https://github.com/ipfs/js-ipfs/issues/556 for the discussion.
 
+Below are some more examples of JavaScript IPFS in action.
+
+#### Add a file
+
+Once you have an IPFS node up and running, you can add files to it from `Buffer`s, `Readable` streams, or [arrays of objects of a certain form](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#add). If you don't have `Buffer` conveniently available (say, because you're in a browser without the Node API handy), it's available as a property of the IPFS node.
+
+```javascript
+// Add a single file
+node.files.add(node.Buffer.from('Hello world'), (err, returned) => {
+  if (err) {
+    throw err
+  }
+  console.log('IPFS hash: ', returned[0].hash)
+})
+```
+
+#### Retrieve a file
+
+To retrieve the contents of a file, you can use the [cat method](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#cat), which will call your callback with a Node.js-style `Readable` stream.
+
+```javascript
+node.files.cat('QmNRCQWfgze6AbBCaT1rkrkV5tJ2aP4oTNPb5JZcXYywve', 
+  (err, content_stream) => {
+  if (err) {
+    throw err
+  }
+  content_stream.on('data', (buffer) => {
+    console.log('File contents:', buffer.toString('ascii'))
+  })
+})
+```
+
 #### More to come
 
 > If you have built an example, please share it with the community by submitting a Pull Request to this repo!.
@@ -208,6 +245,12 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 - [libp2p-ipfs-nodejs](https://github.com/ipfs/js-libp2p-ipfs-nodejs)
 - [libp2p-ipfs-browser](https://github.com/ipfs/js-libp2p-ipfs-browser)
 
+#### Domain data types
+
+IPFS exposes the Buffer class in every ipfs instance, so that you can create buffers and add them to IPFS just like if you were using it in Node.js.
+
+You can get it at `ipfs.Buffer`
+
 ## Development
 
 ### Clone
@@ -224,6 +267,8 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 ```
 
 ### Run unit tests
+
+#### Block Service
 
 ```sh
 # run all the unit tsts
