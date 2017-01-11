@@ -17,7 +17,7 @@ function waitForPeers (ipfs, topic, peersToWait, callback) {
       }
 
       const missingPeers = peersToWait
-            .map((e) => peers.includes(e))
+            .map((e) => peers.indexOf(e) !== -1)
             .filter((e) => !e)
 
       if (missingPeers.length === 0) {
