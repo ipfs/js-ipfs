@@ -1,3 +1,13 @@
+<a name="0.23.1"></a>
+## [0.23.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.23.0...v0.23.1) (2017-01-11)
+
+
+### Bug Fixes
+
+* identify needs time to finish ([b76993d](https://github.com/ipfs/interface-ipfs-core/commit/b76993d))
+
+
+
 <a name="0.23.0"></a>
 # [0.23.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.22.1...v0.23.0) (2016-12-21)
 
