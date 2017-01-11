@@ -1,3 +1,13 @@
+<a name="0.23.2"></a>
+## [0.23.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.23.1...v0.23.2) (2017-01-11)
+
+
+### Bug Fixes
+
+* be nodejs 4 compatible ([3e356f0](https://github.com/ipfs/interface-ipfs-core/commit/3e356f0))
+
+
+
 <a name="0.23.1"></a>
 ## [0.23.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.23.0...v0.23.1) (2017-01-11)
 
