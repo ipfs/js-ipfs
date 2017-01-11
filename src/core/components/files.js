@@ -15,30 +15,37 @@ const CID = require('cids')
 const waterfall = require('async/waterfall')
 
 module.exports = function files (self) {
-  const createAddPullStream = () => {
+  const createAddPullStream = (options) => {
     return pull(
       pull.map(normalizeContent),
       pull.flatten(),
-      importer(self._ipldResolver),
+      importer(self._ipldResolver, options),
       pull.asyncMap(prepareFile.bind(null, self))
     )
   }
 
   return {
-    createAddStream: (callback) => {
-      callback(null, toStream(createAddPullStream()))
+    createAddStream: (options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = undefined
+      }
+      callback(null, toStream(createAddPullStream(options)))
     },
 
     createAddPullStream: createAddPullStream,
 
-    add: promisify((data, callback) => {
-      if (!callback || typeof callback !== 'function') {
+    add: promisify((data, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = undefined
+      } else if (!callback || typeof callback !== 'function') {
         callback = noop
       }
 
       pull(
         pull.values(normalizeContent(data)),
-        importer(self._ipldResolver),
+        importer(self._ipldResolver, options),
         pull.asyncMap(prepareFile.bind(null, self)),
         sort((a, b) => {
           if (a.path < b.path) return 1
