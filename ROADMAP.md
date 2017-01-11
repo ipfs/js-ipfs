@@ -218,11 +218,11 @@ UPDATE:
 
 - Import and Export files just like go-ipfs
   - unixfs-engine support of:
-    - [ ] trickle-dag
-    - [ ] balanced-dag-
+    - [x] trickle-dag
+    - [x] balanced-dag-
     - [ ] sharding (HAMT)
   - ensure compatibility with go
-    - [ ] import export files both implementations (tests)
+    - [x] import export files both implementations (tests)
     - [ ] exchange files (bitswap) betweeen both implementations (tests)
 - Files API (mfs)
   - [ ] Complete the spec https://github.com/ipfs/interface-ipfs-core/pull/38
