@@ -7,7 +7,12 @@ const promisify = require('promisify-es6')
 module.exports = (send) => {
   const add = addCmd(send)
 
-  return promisify((callback) => {
+  return promisify((options, callback) => {
+    if (typeof options === 'function') {
+      callback = options
+      options = undefined
+    }
+
     const tuples = []
 
     const ds = new Duplex({ objectMode: true })
