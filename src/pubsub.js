@@ -447,12 +447,31 @@ module.exports = (common) => {
           it('send/receive 10k messages', function (done) {
             this.timeout(2 * 60 * 1000)
 
-            const msgData = new Buffer('hello')
+            const msgBase = 'msg - '
             const count = 10000
             let sendCount = 0
             let receivedCount = 0
             let startTime
             let counter = 0
+
+            const sub1 = (msg) => {
+              const expectedMsg = msgBase + receivedCount
+              const receivedMsg = msg.data.toString()
+              expect(receivedMsg).to.eql(expectedMsg)
+
+              receivedCount++
+
+              if (receivedCount >= count) {
+                const duration = new Date().getTime() - startTime
+                const opsPerSec = Math.floor(count / (duration / 1000))
+
+                console.log(`Send/Receive 10k messages took: ${duration} ms, ${opsPerSec} ops / s\n`)
+
+                check()
+              }
+            }
+
+            const sub2 = (msg) => {}
 
             function check () {
               if (++counter === 2) {
@@ -461,21 +480,6 @@ module.exports = (common) => {
                 done()
               }
             }
-
-            const sub1 = (msg) => {
-              expect(msg.data).to.eql(msgData)
-
-              receivedCount++
-
-              if (receivedCount >= count) {
-                const duration = new Date().getTime() - startTime
-                console.log(`Send/Receive 10k messages took: ${duration} ms, ${Math.floor(count / (duration / 1000))} ops / s\n`)
-
-                check()
-              }
-            }
-
-            const sub2 = (msg) => {}
 
             series([
               (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
@@ -488,6 +492,7 @@ module.exports = (common) => {
               whilst(
                 () => sendCount < count,
                 (cb) => {
+                  const msgData = new Buffer(msgBase + sendCount)
                   sendCount++
                   ipfs2.pubsub.publish(topic, msgData, cb)
                 },
