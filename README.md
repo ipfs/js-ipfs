@@ -72,7 +72,7 @@ var ipfs = ipfsAPI('localhost', '5001', {protocol: 'http'}) // leaving out the a
 var ipfs = ipfsAPI('/ip4/127.0.0.1/tcp/5001')
 
 // or using options
-var ipfs = ipfsAPI({host: 'localhost', port: '5001', procotol: 'http'})
+var ipfs = ipfsAPI({host: 'localhost', port: '5001', protocol: 'http'})
 ```
 
 ### In a web browser through Browserify
