@@ -7,11 +7,13 @@ const ipfsBase = require('../utils/ipfs-exec')
 const ipfs = ipfsBase(repoPath)
 const describeOnlineAndOffline = require('../utils/on-and-off')
 
+const commandCount = 61
+
 describe('commands', () => {
   describeOnlineAndOffline(repoPath, () => {
     it('list the commands', () => {
       return ipfs('commands').then((out) => {
-        expect(out.split('\n')).to.have.length(56)
+        expect(out.split('\n')).to.have.length(commandCount)
       })
     })
   })
@@ -20,7 +22,7 @@ describe('commands', () => {
     return ipfsBase(repoPath, {
       cwd: '/tmp'
     })('commands').then((out) => {
-      expect(out.split('\n').length).to.equal(56)
+      expect(out.split('\n').length).to.equal(commandCount)
     })
   })
 })

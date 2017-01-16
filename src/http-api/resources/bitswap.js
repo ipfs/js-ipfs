@@ -42,6 +42,6 @@ exports.unwant = {
   parseArgs: parseKey,
 
   handler: (request, reply) => {
-    reply(boom.badRequrest(new Error('Not implemented yet')))
+    reply(boom.badRequest(new Error('Not implemented yet')))
   }
 }
