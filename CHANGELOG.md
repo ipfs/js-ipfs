@@ -1,3 +1,13 @@
+<a name="0.23.3"></a>
+## [0.23.3](https://github.com/ipfs/interface-ipfs-core/compare/v0.23.2...v0.23.3) (2017-01-16)
+
+
+### Bug Fixes
+
+* **test:** send/receive 10k messages test ([ad952e2](https://github.com/ipfs/interface-ipfs-core/commit/ad952e2))
+
+
+
 <a name="0.23.2"></a>
 ## [0.23.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.23.1...v0.23.2) (2017-01-11)
 
