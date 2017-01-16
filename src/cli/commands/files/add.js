@@ -47,12 +47,21 @@ module.exports = {
       alias: 'r',
       type: 'boolean',
       default: false
+    },
+    trickle: {
+      alias: 't',
+      type: 'boolean',
+      default: false,
+      describe: 'Use the trickle DAG builder'
     }
   },
 
   handler (argv) {
     const inPath = checkPath(argv.file, argv.recursive)
     const index = inPath.lastIndexOf('/') + 1
+    const options = {
+      strategy: argv.trickle ? 'trickle' : 'balanced'
+    }
 
     utils.getIPFS((err, ipfs) => {
       if (err) {
@@ -61,14 +70,14 @@ module.exports = {
 
       // TODO: revist when interface-ipfs-core exposes pull-streams
       let createAddStream = (cb) => {
-        ipfs.files.createAddStream((err, stream) => {
+        ipfs.files.createAddStream(options, (err, stream) => {
           cb(err, err ? null : toPull.transform(stream))
         })
       }
 
       if (typeof ipfs.files.createAddPullStream === 'function') {
         createAddStream = (cb) => {
-          cb(null, ipfs.files.createAddPullStream())
+          cb(null, ipfs.files.createAddPullStream(options))
         }
       }
 

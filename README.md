@@ -249,7 +249,7 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 
 ```sh
 # run all the interop tsts
-> npm test:interop 
+> npm run test:interop 
 
 # run just IPFS interop tests in Node.js using one go-ipfs daemon and one js-ipfs daemon
 > npm run test:interop:node
@@ -262,7 +262,7 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 
 ```sh
 # run all the interop tsts
-> npm test:benchmark 
+> npm run test:benchmark 
 
 # run just IPFS benchmarks in Node.js
 > npm run test:benchmark:node
