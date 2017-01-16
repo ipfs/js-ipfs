@@ -426,34 +426,60 @@ module.exports = (common) => {
           })
 
           after(() => {
-            ipfs1.pubsub.setMaxListeners(11)
-            ipfs2.pubsub.setMaxListeners(11)
+            ipfs1.pubsub.setMaxListeners(10)
+            ipfs2.pubsub.setMaxListeners(10)
+          })
+
+          it('call publish 1k times', (done) => {
+            const count = 1000
+            let sendCount = 0
+
+            whilst(
+              () => sendCount < count,
+              (cb) => {
+                sendCount++
+                ipfs1.pubsub.publish(topic, new Buffer('hey there'), cb)
+              },
+              done
+            )
           })
 
           it('send/receive 10k messages', function (done) {
             this.timeout(2 * 60 * 1000)
 
-            const expectedString = 'hello'
+            const msgBase = 'msg - '
             const count = 10000
             let sendCount = 0
             let receivedCount = 0
             let startTime
+            let counter = 0
 
             const sub1 = (msg) => {
-              expect(msg.data.toString()).to.equal(expectedString)
+              const expectedMsg = msgBase + receivedCount
+              const receivedMsg = msg.data.toString()
+              expect(receivedMsg).to.eql(expectedMsg)
 
               receivedCount++
 
               if (receivedCount >= count) {
                 const duration = new Date().getTime() - startTime
-                console.log(`Send/Receive 10k messages took: ${duration} ms, ${Math.floor(count / (duration / 1000))} ops / s\n`)
+                const opsPerSec = Math.floor(count / (duration / 1000))
 
-                ipfs1.pubsub.unsubscribe(topic, sub1)
-                ipfs2.pubsub.unsubscribe(topic, sub2)
+                console.log(`Send/Receive 10k messages took: ${duration} ms, ${opsPerSec} ops / s\n`)
+
+                check()
               }
             }
 
             const sub2 = (msg) => {}
+
+            function check () {
+              if (++counter === 2) {
+                ipfs1.pubsub.unsubscribe(topic, sub1)
+                ipfs2.pubsub.unsubscribe(topic, sub2)
+                done()
+              }
+            }
 
             series([
               (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
@@ -466,27 +492,13 @@ module.exports = (common) => {
               whilst(
                 () => sendCount < count,
                 (cb) => {
+                  const msgData = new Buffer(msgBase + sendCount)
                   sendCount++
-                  ipfs2.pubsub.publish(topic, new Buffer(expectedString), cb)
+                  ipfs2.pubsub.publish(topic, msgData, cb)
                 },
-                done
+                check
               )
             })
-          })
-
-          it('call publish 1k times', (done) => {
-            const expectedString = 'hello'
-            const count = 1000
-            let sendCount = 0
-
-            whilst(
-              () => sendCount < count,
-              (cb) => {
-                sendCount++
-                ipfs1.pubsub.publish(topic, new Buffer(expectedString), cb)
-              },
-              done
-            )
           })
 
           it('call subscribe/unsubscribe 1k times', (done) => {
@@ -494,23 +506,25 @@ module.exports = (common) => {
             let sendCount = 0
             const handlers = []
 
+            const someTopic = 'some-other-topic'
+
             whilst(
               () => sendCount < count,
               (cb) => {
                 sendCount++
                 const handler = (msg) => {}
                 handlers.push(handler)
-                ipfs1.pubsub.subscribe(topic, handler, cb)
+                ipfs1.pubsub.subscribe(someTopic, handler, cb)
               },
               (err) => {
                 expect(err).to.not.exist
                 handlers.forEach((handler) => {
-                  ipfs1.pubsub.unsubscribe(topic, handler)
+                  ipfs1.pubsub.unsubscribe(someTopic, handler)
                 })
 
                 ipfs1.pubsub.ls((err, topics) => {
                   expect(err).to.not.exist
-                  expect(topics).to.be.eql([])
+                  expect(topics).to.eql([])
                   done()
                 })
               }
