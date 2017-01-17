@@ -1,3 +1,13 @@
+<a name="0.23.4"></a>
+## [0.23.4](https://github.com/ipfs/interface-ipfs-core/compare/v0.23.3...v0.23.4) (2017-01-17)
+
+
+### Bug Fixes
+
+* **config:** make promise tests actually test the full promise chain ([416560e](https://github.com/ipfs/interface-ipfs-core/commit/416560e))
+
+
+
 <a name="0.23.3"></a>
 ## [0.23.3](https://github.com/ipfs/interface-ipfs-core/compare/v0.23.2...v0.23.3) (2017-01-16)
 
