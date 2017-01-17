@@ -72,7 +72,7 @@
     "form-data": "^2.1.2",
     "fs-pull-blob-store": "^0.4.1",
     "gulp": "^3.9.1",
-    "interface-ipfs-core": "^0.23.3",
+    "interface-ipfs-core": "^0.23.4",
     "ipfsd-ctl": "^0.18.1",
     "left-pad": "^1.1.3",
     "lodash": "^4.17.4",
