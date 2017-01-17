@@ -113,8 +113,7 @@ module.exports = (common) => {
               expect(msg).to.have.property('seqno')
               expect(Buffer.isBuffer(msg.seqno)).to.be.eql(true)
               expect(msg).to.have.property('topicCIDs').eql([topic])
-              // TODO: broken https://github.com/ipfs/go-ipfs/issues/3522
-              // expect(msg).to.have.property('from', ipfs1.peerId.id)
+              expect(msg).to.have.property('from', ipfs1.peerId.id)
 
               ipfs1.pubsub.unsubscribe(topic, handler)
 
@@ -351,16 +350,14 @@ module.exports = (common) => {
 
             const sub1 = (msg) => {
               expect(msg.data.toString()).to.be.eql(expectedString)
-              // TODO: Reenable when go-ipfs is unbroken
-              // expect(msg.from).to.be.eql(ipfs2.peerId.id)
+              expect(msg.from).to.be.eql(ipfs2.peerId.id)
               ipfs1.pubsub.unsubscribe(topic, sub1)
               check()
             }
 
             const sub2 = (msg) => {
               expect(msg.data.toString()).to.be.eql(expectedString)
-              // TODO: reenable when go-ipfs is unbroken
-              // expect(msg.from).to.be.eql(ipfs2.peerId.id)
+              expect(msg.from).to.be.eql(ipfs2.peerId.id)
               ipfs2.pubsub.unsubscribe(topic, sub2)
               check()
             }
@@ -393,15 +390,13 @@ module.exports = (common) => {
 
             function sub1 (msg) {
               inbox1.push(msg.data.toString())
-              // TODO: enable when go-ipfs is unbroken
-              // expect(msg.from).to.be.eql(ipfs2.peerId.id)
+              expect(msg.from).to.be.eql(ipfs2.peerId.id)
               check()
             }
 
             function sub2 (msg) {
               inbox2.push(msg.data.toString())
-              // TODO: enable when go-ipfs is unbroken
-              // expect(msg.from).to.be.eql(ipfs2.peerId.id)
+              expect(msg.from).to.be.eql(ipfs2.peerId.id)
               check()
             }
 
