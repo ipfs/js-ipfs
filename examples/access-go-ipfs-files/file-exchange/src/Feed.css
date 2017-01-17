@@ -1,0 +1,49 @@
+.Feed {
+  width: 80vw;
+  max-width: 48em;
+  display: flex;
+  flex-direction: column;
+  margin-top: 1em;
+}
+
+.Feed-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.8em;
+  margin: 0.5em 0em;
+  flex: 1 0;
+}
+
+.Feed-files {
+  overflow: auto;
+  border: 1px solid rgba(228, 228, 228, 0.6);
+  font-size: 0.85em;
+  min-height: 2em;
+}
+
+.Feed-empty {
+  font-style: italic;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 2em;
+}
+
+.Feed-instructions {
+  font-style: italic;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1em;
+  font-size: 0.8em;
+}
+
+.Feed-peers {
+  cursor: pointer;
+  padding: 0.25em 1em;
+}
+
+.Feed-peers:hover {
+  background-color: rgb(230, 230, 230);
+}
