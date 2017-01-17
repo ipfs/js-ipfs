@@ -1,0 +1,23 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  margin: 0.5em;
+  margin-top: 0;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+.root {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  font-family: 'Anonymous Pro';
+  font-size: 1.0em;
+  overflow: auto;
+  z-index: 0;
+}

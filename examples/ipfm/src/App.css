@@ -1,0 +1,47 @@
+.App {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 64px;
+  margin-top: 1em;
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.App-instructions {
+  font-style: italic;
+  font-size: 1.0em;
+  padding: 1em;
+  margin-top: 4vh;
+  min-height: 2em;
+}
+
+.App-dropzone {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex: 1 1 100%;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(32, 32, 32, 0.8);
+  color: rgba(255, 255, 255, 1.0);
+  font-size: 2.5em;
+}
+
+.App-dropzoneActive {
+  background-color: rgba(0, 0, 0, 0.9);
+}
