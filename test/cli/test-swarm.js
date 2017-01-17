@@ -14,7 +14,7 @@ describe('swarm', function () {
   let nodeAddr
 
   before((done) => {
-    createTempNode(1, (err, _node) => {
+    createTempNode({ num: 1 }, (err, _node) => {
       expect(err).to.not.exist
       node = _node
       node.goOnline((err) => {

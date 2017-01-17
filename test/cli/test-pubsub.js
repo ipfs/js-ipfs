@@ -18,7 +18,7 @@ describe.skip('pubsub', () => {
   let id
 
   before((done) => {
-    createTempNode(1, (err, _node) => {
+    createTempNode({ num: 1 }, (err, _node) => {
       expect(err).to.not.exist
       node = _node
       node.goOnline(done)
