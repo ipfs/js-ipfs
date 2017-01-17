@@ -13,6 +13,9 @@
     "./test/utils/temp-repo.js": "./test/utils/temp-repo-browser.js",
     "stream": "readable-stream"
   },
+  "go-ipfs": {
+    "version": "v0.4.5-pre1"
+  },
   "engines": {
     "node": ">=4.0.0",
     "npm": ">=3.0.0"
