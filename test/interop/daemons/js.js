@@ -41,7 +41,7 @@ class JsDaemon {
     this.init = opts.init
     this.port = opts.port
 
-    this.path = opts.path || os.tmpdir() + `/${Math.ceil(Math.random() * 1000)}`
+    this.path = opts.path || os.tmpdir() + `/${Math.ceil(Math.random() * 10000)}`
     if (this.init) {
       this.ipfs = new IPFS(this.path)
     } else {
