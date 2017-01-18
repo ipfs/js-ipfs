@@ -9,7 +9,7 @@ const API = require('./src/http-api')
 let nodes = []
 
 function startNode (num, done) {
-  createTempNode(num, (err, node) => {
+  createTempNode({ num: num }, (err, node) => {
     if (err) {
       return done(err)
     }

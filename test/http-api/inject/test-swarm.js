@@ -17,7 +17,7 @@ module.exports = (http) => {
     before((done) => {
       api = http.api.server.select('API')
 
-      createTempNode(47, (err, _ipfs) => {
+      createTempNode({ num: 47 }, (err, _ipfs) => {
         expect(err).to.not.exist
         tmpNode = _ipfs
         tmpNode.goOnline((err) => {

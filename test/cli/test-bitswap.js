@@ -14,7 +14,7 @@ describe('bitswap', () => {
   let node
 
   before((done) => {
-    createTempNode(38, (err, _node) => {
+    createTempNode({ num: 38 }, (err, _node) => {
       expect(err).to.not.exist
       node = _node
       node.goOnline(done)

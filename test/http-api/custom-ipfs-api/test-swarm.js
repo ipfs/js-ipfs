@@ -12,7 +12,7 @@ module.exports = (ctl) => {
     let remoteNodeAddr
 
     before((done) => {
-      createTempNode(6, (err, _remoteNode) => {
+      createTempNode({ num: 6 }, (err, _remoteNode) => {
         expect(err).to.not.exist
         remoteNode = _remoteNode
         remoteNode.goOnline(() => {
