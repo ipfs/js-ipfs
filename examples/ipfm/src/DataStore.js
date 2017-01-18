@@ -21,7 +21,7 @@ class DataStore extends EventEmitter {
   // Open an orbit-db database and hook up to the emitted events
   openFeed (name) {
     this.orbitdb = new OrbitDB(this.ipfs)
-    this.feed = this.orbitdb.feed(name, { cachePath: '/ipfm2/ipfm.cache' })
+    this.feed = this.orbitdb.feed(name, { cachePath: '/ipfm22/ipfm.cache' })
     this.feed.events.on('ready', () => this.emit('feed'))
     this.feed.events.on('history', () => this.emit('update'))
     this.feed.events.on('data', () => this.emit('update'))

@@ -38,3 +38,12 @@
   padding: 1em;
   font-size: 0.8em;
 }
+
+.Feed-peers {
+  cursor: pointer;
+  padding: 0.25em 1em;
+}
+
+.Feed-peers:hover {
+  background-color: rgb(230, 230, 230);
+}

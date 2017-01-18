@@ -3,6 +3,7 @@ import Dropzone from 'react-dropzone'
 import DataStore from './DataStore'
 import Feed from './Feed'
 import Preview from './Preview'
+import Peers from './Peers'
 import Status from './Status'
 import { isMediaFile } from './utils'
 import logo from './logo.svg'
@@ -14,11 +15,12 @@ class App extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      dragActive: false,
       feed: null,
       files: [],
       status: null,
-      preview: null
+      preview: null,
+      dragActive: false,
+      showPeers: false
     }
   }
 
@@ -29,7 +31,7 @@ class App extends Component {
     // Initialize our DataStore, ie. start IPFS
     dataStore = DataStore.init({
       // Directory to which save IPFS data to
-      IpfsDataDir: '/tmp/ipfm/public22',
+      IpfsDataDir: '/tmp/ipfm/public222',
       // IPFS dev server: webrtc-star-signalling.cloud.ipfs.team
       SignalServer: '188.166.203.82:20000',
     })
@@ -42,7 +44,8 @@ class App extends Component {
       if (feedName) {
         dataStore.on('feed', () => {
           this.setState({ feed: feedName })
-          this.setStatus(`Loaded '${feedName}'`, 5000)
+          dataStore.ipfs.id()
+            .then((id) => this.setStatus('Your Peer ID: ' + id.id))
         })
         dataStore.on('update', () => this.updateFiles())
         dataStore.on('file', () => this.setState({ dragActive: false }))
@@ -62,7 +65,7 @@ class App extends Component {
     }
   }
 
-  updateFiles() {
+  updateFiles () {
     let files = dataStore.feed.iterator({ limit: -1 })
       .collect()
       .slice()
@@ -90,20 +93,25 @@ class App extends Component {
     this.setState({ preview: null })
   }
 
-  onDragEnter() {
+  showPeers (show) {
+    console.log("Show peers", show)
+    this.setState({ showPeers: show })
+  }
+
+  onDragEnter () {
     this.setState({ dragActive: true })
   }
 
-  onDragLeave() {
+  onDragLeave () {
     this.setState({ dragActive: false })
   }
 
-  onDrop(files) {
+  onDrop (files) {
     files.slice()
       .forEach((file) => dataStore.addFiles(file))
   }
 
-  render() {
+  render () {
     const { feed, status, peers, files, preview, dragActive } = this.state
 
     const dropzone = dragActive
@@ -127,7 +135,8 @@ class App extends Component {
     const feedElement = feed
       ? <Feed name={feed}
         peers={peers}
-        files={files} 
+        files={files}
+        onShowPeers={this.showPeers.bind(this, true)}
         onOpenFile={this.openFile.bind(this)}/>
       : null
 
@@ -139,11 +148,16 @@ class App extends Component {
                  onClick={this.closeFile.bind(this)}/>
       : null
 
+    const peersElement = this.state.showPeers
+      ? <Peers peers={peers} onClick={this.showPeers.bind(this, false)}/>
+      : null
+
     return (
       <div 
         className='App'
         onDragEnter={this.onDragEnter.bind(this)}>
         {previewElement}
+        {peersElement}
         <img src={logo} className='App-logo' alt='logo' />
         <h1>InterPlanetary File Manager</h1>
         <Status className='App-status' text={status}/>

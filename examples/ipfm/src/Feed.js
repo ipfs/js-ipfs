@@ -20,8 +20,14 @@ class Feed extends Component {
 
     const peerCount = peers ? peers.length : 0
     const peerCounter = peers && peerCount > 0
-      ? <span>{peerCount} {peerCount === 1 ? 'peer' : 'peers'}</span>
-      : <span><i>Searching for peers...</i></span>
+      ? <div className='Feed-peers' 
+             onClick={this.props.onShowPeers}>
+          {peerCount} {peerCount === 1 ? 'peer' : 'peers'}
+        </div>
+      : <div className='Feed-peers'
+             onClick={this.props.onShowPeers}>
+          <i>Searching for peers...</i>
+        </div>
 
     return (
       <div className='Feed'>

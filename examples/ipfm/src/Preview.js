@@ -85,7 +85,7 @@ class Preview extends Component {
       : <pre className="Preview-loading">{name}</pre> 
 
     return (
-      <div className="Preview" onClick={this.props.onClick}>
+      <div className="Preview" onClick={onClick}>
         {statusText}
         {output}
       </div>
