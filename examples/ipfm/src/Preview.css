@@ -26,9 +26,19 @@
 }
 
 .Preview-loading {
-  z-index: 1000;
   display: flex;
   justify-content: center;
-  font-size: 1.25em;
+  padding: 0.5em;
   color: rgb(248, 248, 248);
+  /*font-size: 1.25em;*/
+}
+
+.Preview-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5em;
+  color: rgb(248, 248, 248);
+  /*font-size: 1.0;*/
 }

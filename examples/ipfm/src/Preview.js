@@ -49,7 +49,7 @@ class Preview extends Component {
 
   render () {
     let output
-    const { name, type, onClick } = this.props
+    const { name, hash, type, onClick } = this.props
     const src = this.state.data
     const progress = this.state.progress
 
@@ -59,17 +59,17 @@ class Preview extends Component {
     }
 
     if (type === 'image') {
-      output = <img style={{ maxWidth: '90%', maxHeight: '90%' }}
+      output = <img style={{ maxWidth: '90%', maxHeight: '80%' }}
                     src={src} 
                     alt=''/>
     } else if (type === 'audio') {
-      output = <audio style={{ width: '60%', maxHeight: '90%' }} 
+      output = <audio style={{ width: '60%', maxHeight: '80%' }} 
                       src={src} 
                       controls 
                       autoPlay={true} 
                       onClick={stopEventBubbling}/>
     } else if (type === 'video') {
-      output = <video style={{ width: '90%', maxHeight: '90%' }} 
+      output = <video style={{ maxWidth: '90%', maxHeight: '80%' }} 
                       src={src} 
                       controls 
                       autoPlay={true} 
@@ -81,8 +81,11 @@ class Preview extends Component {
     }
 
     const statusText = !src 
-      ? <pre className="Preview-loading">{progress}</pre> 
-      : <pre className="Preview-loading">{name}</pre> 
+      ? <div className="Preview-loading"><br/>{progress}</div>
+      : <div className="Preview-info">
+          <span>{name}</span>
+          <span>{hash}</span>
+        </div>
 
     return (
       <div className="Preview" onClick={onClick}>
