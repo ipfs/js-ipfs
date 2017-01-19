@@ -4,12 +4,11 @@ body {
 }
 
 h1 {
-  margin: 0.5em;
-  margin-top: 0;
+  margin: 0em 0.5em;
 }
 
 h2 {
-  margin-top: 0;
+  margin: 0;
 }
 
 .root {

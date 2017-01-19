@@ -3,16 +3,16 @@
   max-width: 48em;
   display: flex;
   flex-direction: column;
+  margin-top: 1em;
 }
 
 .Feed-title {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-top: 1em;
-  height: 2.0em;
-  min-height: 2.0em;
   font-size: 0.8em;
+  margin: 0.5em 0em;
+  flex: 1 0;
 }
 
 .Feed-files {
@@ -27,7 +27,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 1.75em;
+  min-height: 2em;
 }
 
 .Feed-instructions {

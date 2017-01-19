@@ -20,6 +20,9 @@
 }
 
 .App-instructions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   font-style: italic;
   font-size: 1.0em;
   padding: 1em;
