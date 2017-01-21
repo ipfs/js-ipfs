@@ -31,9 +31,11 @@ class App extends Component {
     // Initialize our DataStore, ie. start IPFS
     dataStore = DataStore.init({
       // Directory to which save IPFS data to
-      IpfsDataDir: '/tmp/ipfm/public222',
+      IpfsDataDir: '/ipfs/ipfd-2',
       // IPFS dev server: webrtc-star-signalling.cloud.ipfs.team
       SignalServer: '188.166.203.82:20000',
+      // Localhost webrtc-star server
+      // SignalServer: '127.0.0.1:9090',
     })
 
     dataStore.on('error', (e) => console.error(e))
@@ -94,8 +96,11 @@ class App extends Component {
   }
 
   showPeers (show) {
-    console.log("Show peers", show)
     this.setState({ showPeers: show })
+  }
+
+  connectTo (multiaddr) {
+    dataStore.connectToPeer(multiaddr)
   }
 
   onDragEnter () {
@@ -127,8 +132,11 @@ class App extends Component {
 
     const instructions = this.props.params && this.props.params.hash === undefined 
         ? <div className='App-instructions'>
-            Open a feed by adding the feed name to the URL, eg.<br/>
+            Open a file drop by adding the a name to the URL, eg.<br/>
             <a href="/hello-world">http://localhost:3000/hello-world</a>
+            <br/>
+            Share the link with others and once connected, <br/>
+            you'll be able to share files between you.
           </div>
         : null
 
@@ -149,7 +157,9 @@ class App extends Component {
       : null
 
     const peersElement = this.state.showPeers
-      ? <Peers peers={peers} onClick={this.showPeers.bind(this, false)}/>
+      ? <Peers peers={peers}
+               onConnectTo={this.connectTo.bind(this)}
+               onClick={this.showPeers.bind(this, false)}/>
       : null
 
     return (
@@ -159,7 +169,7 @@ class App extends Component {
         {previewElement}
         {peersElement}
         <img src={logo} className='App-logo' alt='logo' />
-        <h1>InterPlanetary File Manager</h1>
+        <h1>InterPlanetary File Exchange</h1>
         <Status className='App-status' text={status}/>
         {dropzone}
         {feedElement}

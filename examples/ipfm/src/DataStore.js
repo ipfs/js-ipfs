@@ -1,7 +1,7 @@
  // Need to include this to make webpack happy
-import { Buffer } from 'buffer' // eslint-disable-line no-unused-vars
+import { Buffer } from 'buffer/' // eslint-disable-line no-unused-vars
 import EventEmitter from 'events'
-import IPFS from 'ipfs-daemon/src/ipfs-browser-daemon'
+import IPFS from './ipfs'
 import OrbitDB from 'orbit-db'
 import { readFileContents } from './read-file'
 
@@ -10,10 +10,11 @@ let instance
 class DataStore extends EventEmitter {
   constructor (options) {
     super()
-    this.ipfs = new IPFS(options)
-    this.ipfs.on('error', (e) => console.error(e))
-    this.ipfs.on('ready', () => {
-      this.timer = setInterval(() => this._updatePeers(), 1000)
+    IPFS.create(options, (err, node) => {
+      if (err) {
+        console.log(err)
+      }
+      this.ipfs = node
       this.emit('ready')
     })
   }
@@ -21,10 +22,12 @@ class DataStore extends EventEmitter {
   // Open an orbit-db database and hook up to the emitted events
   openFeed (name) {
     this.orbitdb = new OrbitDB(this.ipfs)
-    this.feed = this.orbitdb.feed(name, { cachePath: '/ipfm22/ipfm.cache' })
+    this.feed = this.orbitdb.feed(name, { cachePath: '/ipfd/ipfd2.db' })
     this.feed.events.on('ready', () => this.emit('feed'))
     this.feed.events.on('history', () => this.emit('update'))
     this.feed.events.on('data', () => this.emit('update'))
+    if (this.timer) clearInterval(this.timer)
+    this.timer = setInterval(() => this._updatePeers(name), 1000)
   }
 
   getFile (hash) {
@@ -76,9 +79,16 @@ class DataStore extends EventEmitter {
       .catch((e) => console.error(e))
   }
 
+  connectToPeer (multiaddr) {
+    console.log("Connect to:", multiaddr)
+    this.ipfs.swarm.connect(multiaddr)
+      .then((res) => console.log("Connected to", multiaddr))
+      .catch((e) => console.error(e))
+  }
+
   // Get peers from IPFS and emit 'peers' event after updated
-  _updatePeers () {
-    this.ipfs.swarm.peers()
+  _updatePeers (feed) {
+    this.ipfs.pubsub.peers(feed)
       .then((peers) => this.emit('peers', peers))
       .catch((e) => console.error(e))
   }
