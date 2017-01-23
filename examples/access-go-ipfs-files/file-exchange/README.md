@@ -6,6 +6,13 @@ InterPlanetary File Exchange enables you to share files with others via IPFS.
 
 IPFE was built to demonstrate interoperability between the go-ipfs and js-ipfs (browser and Node.js) instances.
 
+## TODO
+
+- Need to merge https://github.com/ipfs/browserify-zlib-next/pull/23 and use the updated module. Otherwise the UI will error on zlib._transform.
+- Make sure go-ipfs and the UI connect to each other (last time I checked they didn't)
+- Use new signal server address everywhere (src/App.js, ipfe-daemon.js, ipfe-add.js)
+- ipfe-add currently uses js-ipf(node.js) daemon. But in order to add files from go-ipfs daemon, it would need to use js-ipfd-ctl. A quick way would be to use ipfs-daemon (I would *highly* recommend to do so), otherwise need to add the init dance for js-ipfsd-ctl much like `src/ipfs.js`.
+
 ## Requirements
 
 - Node.js >= v4.x
@@ -125,21 +132,3 @@ Note that the multihash at the end of the swarm address will be different.
 9. You have successfully added a file in go-ipfs and downloaded it to the browser.
 
 You can also add files to the browser app by dragging and dropping them. Once you do so, you should see the updated file list in the terminal running `ipfe-daemon`.
-
-## Dev & Run
-```
-npm install
-npm start
-```
-
-See `package.json` for more dev scripts.
-
-## Tutorial
-
-**TODO**
-
-This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
-
-```
-npm install ipfs-daemon orbit-db --save
-```

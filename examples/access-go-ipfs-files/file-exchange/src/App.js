@@ -33,9 +33,9 @@ class App extends Component {
       // Directory to which save IPFS data to
       IpfsDataDir: '/ipfs/ipfd-2',
       // IPFS dev server: webrtc-star-signalling.cloud.ipfs.team
-      SignalServer: '188.166.203.82:20000',
+      // SignalServer: '188.166.203.82:20000',
       // Localhost webrtc-star server
-      // SignalServer: '127.0.0.1:9090',
+      SignalServer: '127.0.0.1:9090',
     })
 
     dataStore.on('error', (e) => console.error(e))
