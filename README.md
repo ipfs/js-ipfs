@@ -8,7 +8,8 @@
 [![Coverage Status](https://coveralls.io/repos/github/ipfs/js-ipfs/badge.svg?branch=master)](https://coveralls.io/github/ipfs/js-ipfs?branch=master)
 [![Travis CI](https://travis-ci.org/ipfs/js-ipfs.svg?branch=master)](https://travis-ci.org/ipfs/js-ipfs)
 [![Circle CI](https://circleci.com/gh/ipfs/js-ipfs.svg?style=svg)](https://circleci.com/gh/ipfs/js-ipfs)
-[![Dependency Status](https://david-dm.org/ipfs/js-ipfs.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
+[![Dependency Status](https://david-dm.org/ipfs/js-ipfs.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs)
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 [![](https://img.shields.io/badge/pm-waffle-yellow.svg?style=flat-square)](https://waffle.io/ipfs/js-ipfs)
 [![](https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg)](https://github.com/ipfs/interface-ipfs-core)
@@ -24,7 +25,13 @@ This repo contains the JavaScript implementation of the IPFS protocol, with feat
 
 ### Project status
 
-Consult the [Roadmap](/ROADMAP.md) for a complete state description of the project, or you can find `in process` updates in our [`Captain.log`](https://github.com/ipfs/js-ipfs/issues/30). A lot of components can be used currently, but it is a WIP, so beware of the Dragons 🐉.
+We've come a long way, but this project is still in Alpha, lots of development is happening, API might change, beware of the Dragons 🐉..
+
+You can check the development status at:
+
+- Original project [Roadmap](/ROADMAP.md).
+- [Waffle Board](https://waffle.io/ipfs/js-ipfs)
+- [IPFS Organization Roadmap](https://waffle.io/ipfs/roadmaps)
 
 ## Table of Contents
 
@@ -93,17 +100,14 @@ The CLI is available by using the command `jsipfs` in your terminal. This is ali
 
 ### Use in the browser with browserify, webpack or any bundler
 
-The code published to npm that gets loaded on require is in fact a ES5 transpiled version with the right shims added. This means that you can require it and use with your favourite bundler without having to adjust the asset management process.
+Simply require it as you would do for Node.js, but when transpiling+minifying with your bundler, make sure to swap `zlib` with a full replacement for the browser: `zlib: 'browserify-zlib-next'`. We have submited PR's to browserify and WebPack to make this as part of the standard node libraries that are transpiled, you can follow this development in [browserify](https://github.com/substack/node-browserify/issues/1672), [webpack](https://github.com/webpack/node-libs-browser/issues/51).
 
-```js
-var ipfs = require('ipfs');
-```
 
 ### Use in a browser using a script tag
 
-Loading this module in a browser (using a `<script>` tag) makes the `Ipfs` object available in the global namespace.
+Loading this module in a browser (using a `<script>` tag) makes the `Ipfs` object available in the global namespace.
 
-The last published version of the package become [available for download](https://unpkg.com/ipfs/dist/) from [unpkg](https://unpkg.com/) and thus you may use it as the source:
+The last published version of the package become [available for download](https://unpkg.com/ipfs/dist/) from [unpkg](https://unpkg.com/) and thus you may use it as the source:
 
 
 ```html
@@ -190,17 +194,11 @@ node.init({ emptyRepo: true, bits: 2048 }, (err) => {
 A complete API definition is in the works. Meanwhile, you can learn how to you use js-ipfs through the standard interface at [![](https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg)](https://github.com/ipfs/interface-ipfs-core).
 
 ##### [Generic API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic)
-
 ##### [Block API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block)
-
 ##### [Object API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/object)
-
 ##### [Config API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/config)
-
 ##### [Files API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files)
-
 ##### [Swarm API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/swarm)
-
 ##### [libp2p API](https://github.com/libp2p/interface-libp2p)
 
 Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal interface for this API hasn't been defined by you can find documentation at its implementations:
@@ -210,16 +208,11 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 
 ## Development
 
-### Clone
+### Clone and install dependnecies
 
 ```sh
 > git clone https://github.com/ipfs/js-ipfs.git
 > cd js-ipfs
-```
-
-### Install Dependencies
-
-```sh
 > npm install
 ```
 
