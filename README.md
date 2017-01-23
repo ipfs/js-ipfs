@@ -1,27 +1,64 @@
-# IPFS JavaScript Implementation
+<h1 align="center">
+  <a href="ipfs.io">
+    <img src="https://ipfs.io/ipfs/QmVk7srrwahXLNmcDYvyUEJptyoxpndnRa57YJ11L4jV26/ipfs.js.png" alt="IPFS in JavaScript logo" />
+  </a>
+</h1>
 
-![banner](https://ipfs.io/ipfs/QmVk7srrwahXLNmcDYvyUEJptyoxpndnRa57YJ11L4jV26/ipfs.js.png)
+<h3 align="center">The JavaScript implementation of the IPFS protocol.</h3>
 
-[![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
-[![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
-[![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
-[![Coverage Status](https://coveralls.io/repos/github/ipfs/js-ipfs/badge.svg?branch=master)](https://coveralls.io/github/ipfs/js-ipfs?branch=master)
-[![Travis CI](https://travis-ci.org/ipfs/js-ipfs.svg?branch=master)](https://travis-ci.org/ipfs/js-ipfs)
-[![Circle CI](https://circleci.com/gh/ipfs/js-ipfs.svg?style=svg)](https://circleci.com/gh/ipfs/js-ipfs)
-[![Dependency Status](https://david-dm.org/ipfs/js-ipfs.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
-[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-[![](https://img.shields.io/badge/pm-waffle-yellow.svg?style=flat-square)](https://waffle.io/ipfs/js-ipfs)
-[![](https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg)](https://github.com/ipfs/interface-ipfs-core)
-[![](https://img.shields.io/badge/interface--ipfs--core-Updates-blue.svg)](https://github.com/ipfs/interface-ipfs-core/issues/55)
-![](https://img.shields.io/badge/npm-%3E%3D3.0.0-orange.svg?style=flat-square)
-![](https://img.shields.io/badge/Node.js-%3E%3D4.0.0-orange.svg?style=flat-square)
+<p align="center">
+  <a href="http://ipn.io">
+    <img src="https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square" />
+  </a>
+  <a href="http://ipfs.io/">
+    <img src="https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square" />
+  </a>
+  <a href="http://webchat.freenode.net/?channels=%23ipfs">
+    <img src="https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square" />
+  </a>
+  <br>
+  <a href="https://waffle.io/ipfs/js-ipfs">
+    <img src="https://img.shields.io/badge/pm-waffle-yellow.svg?style=flat-square" />
+  </a>
+  <a href="https://github.com/ipfs/interface-ipfs-core">
+    <img src="https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg">
+  </a>
+  <a href="https://github.com/ipfs/interface-ipfs-core/issues/55">
+    <img src="https://img.shields.io/badge/interface--ipfs--core-Updates-blue.svg">
+  </a>
+</p>
 
-[![Sauce Test Status](https://saucelabs.com/browser-matrix/js-ipfs.svg)](https://saucelabs.com/u/js-ipfs)
-
-> IPFS JavaScript implementation.
-
-This repo contains the JavaScript implementation of the IPFS protocol, with feature parity to the [Go implementation](https://github.com/ipfs/go-ipfs).
+<p align="center">
+  <a href="https://travis-ci.org/ipfs/js-ipfs">
+    <img src="https://travis-ci.org/ipfs/js-ipfs.svg?branch=master" />
+  </a>
+  <a href="https://circleci.com/gh/ipfs/js-ipfs">
+    <img src="https://circleci.com/gh/ipfs/js-ipfs.svg?style=svg" />
+  </a>
+  <a href="https://coveralls.io/github/ipfs/js-ipfs?branch=master">
+    <img src="https://coveralls.io/repos/github/ipfs/js-ipfs/badge.svg?branch=master">
+  </a>
+  <br>
+  <a href="https://david-dm.org/ipfs/js-ipfs">
+    <img src="https://david-dm.org/ipfs/js-ipfs.svg?style=flat-square" />
+  </a>
+  <a href="https://github.com/feross/standard">
+    <img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square">
+  </a>
+  <a href="https://github.com/RichardLitt/standard-readme">
+    <img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square" />
+  </a>
+  <a href="">
+    <img src="https://img.shields.io/badge/npm-%3E%3D3.0.0-orange.svg?style=flat-square" />
+  </a>
+  <a href="">
+    <img src="https://img.shields.io/badge/Node.js-%3E%3D4.0.0-orange.svg?style=flat-square" />
+  </a>
+  <br>
+  <a href="https://saucelabs.com/u/js-ipfs">
+    <img src="https://saucelabs.com/browser-matrix/js-ipfs.svg" />
+  </a>
+</p>
 
 ### Project status
 
