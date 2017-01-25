@@ -2,14 +2,12 @@
 
 const fs = require('fs')
 const IPFS = require('../../src/core') // replace this by line below
-
 // const IPFS = require('ipfs')
 
 /*
  * Create a new IPFS instance, using default repo (fs) on default path (~/.ipfs)
  */
 const node = new IPFS()
-
 
 /*
  * Display version of js-ipfs
