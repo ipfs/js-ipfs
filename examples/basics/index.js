@@ -2,14 +2,17 @@
 
 const fs = require('fs')
 const os = require('os')
+const path = require('path')
 const series = require('async/series')
-const IPFS = require('../../src/core') // replace this by line below
+const IPFS = require('../../src/core')
+// replace this by line below if you are using ipfs as a dependency of your
+// project
 // const IPFS = require('ipfs')
 
 /*
  * Create a new IPFS instance, using default repo (fs) on default path (~/.ipfs)
  */
-const node = new IPFS(os.tmpDir() + '/' + new Date().toString())
+const node = new IPFS(path.join(os.tmpDir() + '/' + new Date().toString()))
 
 const fileToAdd = {
   path: 'hello.txt',
