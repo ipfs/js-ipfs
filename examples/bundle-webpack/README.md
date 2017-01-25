@@ -20,3 +20,7 @@ You should see the following:
 ## Special note
 
 In order to use js-ipfs in the browser, you need to replace the default `zlib` library by `browserify-zlib-next`, a full implementation of the native `zlib` package, full in Node.js. See the WebPack config to learn how to do this and avoid this pitfall. More context on: https://github.com/ipfs/js-ipfs#use-in-the-browser-with-browserify-webpack-or-any-bundler
+
+## Special note 2
+
+You need to use WebPack@2 or above, version 1 won't work

@@ -141,6 +141,8 @@ Simply require it as you would do for Node.js, but when transpiling+minifying wi
 
 You can also find examples of how to do this bundling at: `https://github.com/ipfs/js-ipfs/tree/master/examples`
 
+Special note, if you are using webpack, make sure to use version 2 or above, otherwise it won't work.
+
 ### Use in a browser using a script tag
 
 Loading this module in a browser (using a `<script>` tag) makes the `Ipfs` object available in the global namespace.
