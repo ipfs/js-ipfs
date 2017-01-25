@@ -8,7 +8,7 @@ module.exports = {
   entry: [
     'webpack-dev-server/client?http://localhost:3000',
     'webpack/hot/only-dev-server',
-    './src/index'
+    './src/components/index'
   ],
   output: {
     path: path.join(__dirname, 'dist'),
@@ -29,5 +29,16 @@ module.exports = {
     fs: 'empty',
     net: 'empty',
     tls: 'empty'
+  },
+  /*
+   * In order to transfer files, this is a very important step in your Webpack
+   * configuration, see more at:
+   * https://github.com/ipfs/js-ipfs#use-in-the-browser-with-browserify-webpack-or-any-bundler
+   */
+  resolve: {
+    alias: {
+      zlib: 'browserify-zlib-next'
+    }
   }
+
 }
