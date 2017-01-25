@@ -11,3 +11,5 @@ Let us know if you find any issue or if you want to contribute and add a new tut
 - [How to bundle js-ipfs with WebPack](/bundle-webpack)
 
 ## Tutorials
+
+- [Transfer files between a Browser node and Desktop node](/transfer-files)

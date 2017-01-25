@@ -1,12 +1,10 @@
 {
-  "name": "cat-a-file",
+  "name": "transfer-files",
   "version": "1.0.0",
-  "description": "",
   "scripts": {
     "postinstall": "cp ../../../dist/index.js ./public/ipfs.js",
     "start": "http-server -c-1"
   },
-  "author": "Haad",
   "license": "MIT",
   "devDependencies": {
     "http-server": "^0.9.0"

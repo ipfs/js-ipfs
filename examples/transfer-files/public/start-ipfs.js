@@ -1,4 +1,5 @@
 'use strict'
+/* eslint max-nested-callbacks: ["error", 8] */
 
 // Start an IPFS instance
 window.startIpfs = (options, callback) => {
@@ -19,7 +20,7 @@ window.startIpfs = (options, callback) => {
       const host = options.SignalServer.split(':')[0] || '127.0.0.1'
       const port = options.SignalServer.split(':')[1] || 9090
       const signalServer = `/libp2p-webrtc-star/ip4/${host}/tcp/${port}/ws/ipfs/${config.Identity.PeerID}`
-      
+
       config.Addresses = {
         Swarm: [
           signalServer
@@ -35,8 +36,10 @@ window.startIpfs = (options, callback) => {
 
         node.load((err) => {
           if (err) { return callback(err) }
+
           node.goOnline((err) => {
             if (err) { return callback(err) }
+
             console.log('IPFS node is ready')
             callback(null, node)
           })
