@@ -2,8 +2,10 @@
   "name": "transfer-files",
   "version": "1.0.0",
   "scripts": {
-    "postinstall": "cp ../../../dist/index.js ./public/ipfs.js",
-    "start": "http-server -c-1"
+    "check-bundle": "test -f ../../dist/index.js && npm run copy-bundle || echo \"js-ipfs dist file not found, go up two dirs and run 'npm run build' first\"",
+    "copy-bundle": "cp ../../dist/index.js ./public/ipfs.js",
+    "serve": "http-server -c-1 public",
+    "start": "npm run check-bundle && npm run serve"
   },
   "license": "MIT",
   "devDependencies": {
