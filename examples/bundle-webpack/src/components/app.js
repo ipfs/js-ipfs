@@ -1,6 +1,8 @@
 'use strict'
+
 const React = require('react')
-const IPFS = require('ipfs')
+const IPFS = require('../../../../src/core') // replace this by line below
+// const IPFS = require('ipfs')
 
 const stringToUse = 'hello world from webpacked IPFS'
 
@@ -83,22 +85,25 @@ class App extends React.Component {
     }
   }
   render () {
-    return <div style={{textAlign: 'center'}}>
-      <h1>Everything is working!</h1>
-      <p>Your ID is <strong>{this.state.id}</strong></p>
-      <p>Your IPFS version is <strong>{this.state.version}</strong></p>
-      <p>Your IPFS protocol version is <strong>{this.state.protocol_version}</strong></p>
-      <div>
+    return (
+      <div style={{textAlign: 'center'}}>
+        <h1>Everything is working!</h1>
+        <p>Your ID is <strong>{this.state.id}</strong></p>
+        <p>Your IPFS version is <strong>{this.state.version}</strong></p>
+        <p>Your IPFS protocol version is <strong>{this.state.protocol_version}</strong></p>
+        <hr />
         <div>
           Added a file! <br />
           {this.state.added_file_hash}
         </div>
-        <div>
+        <br />
+        <br />
+        <p>
           Contents of this file: <br />
           {this.state.added_file_contents}
-        </div>
+        </p>
       </div>
-    </div>
+    )
   }
 }
 module.exports = App

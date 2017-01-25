@@ -1,6 +1,7 @@
 'use strict'
 
-var IPFS = require('ipfs')
+var IPFS = require('../../../src/core') // replace this by line below
+// var IPFS = require('ipfs')
 
 // Create the IPFS node instance
 // for simplicity, we create a new repo everytime the node
