@@ -2,9 +2,10 @@
 
 > Welcome! This tutorial will help you a tiny web application where you can fetch and add files to IPFS and transfer these between a go-ipfs node and a js-ipfs node.
 
-There is a couple of caveats:
+There are a couple of caveats:
 
 - js-ipfs currently doesn't support DHT peer discovery, the peer from which you are fetching data should be within the reach (local or in public IP) of the browser node.
+- We need to use a signalling server to establish the WebRTC connections, this won't be necessary as soon as libp2p-relay gets developed
 - [full go-ipfs interop is not complete yet, blocked by an interop stream multiplexer](https://github.com/ipfs/js-ipfs/issues/721)
 
 That being said, we will explain throughout this tutorial to circunvent the caveats and once they are fixed, we will update the tutorial as well.
