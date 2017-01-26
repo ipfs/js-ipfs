@@ -50,9 +50,20 @@ TODO: Insert final screenshot here
 
 ## Step-by-step instructions
 
-Instructions:
-- 1. 
-- 2. 
+**Instructions:**
+
+- 1. Set up, install a go-ipfs and/or js-ipfs in your machine
+- 2. Make your daemons listen on WebSockets
+- 3. Start the WebApp project
+- 4. Create the frame for your IPFS enabled app
+- 5. Add and cat a file
+- 6. Use WebRTC to dial between browser nodes
+- 7. Dial to a node using WebSockets (your Desktop ones)
+- 8. Transfer files between all of your nodes, have fun!
+
+
+-------------------------
+> Steps need to be updated once the final thing is finished
 
 ### Start a go-ipfs daemon
 
