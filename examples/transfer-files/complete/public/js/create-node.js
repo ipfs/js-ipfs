@@ -1,14 +1,16 @@
 'use strict'
-/* eslint max-nested-callbacks: ["error", 8] */
 
-// Start an IPFS instance
-window.startIpfs = (options, callback) => {
-  const repoPath = options.IpfsDataDir || '/tmp/ipfs'
-
+/*
+ * Create an IPFS node helper
+ */
+window.createNode = (options, callback) => {
+  const repoPath = options.path || '/tmp/ipfs' + Math.random()
   const node = new window.Ipfs(repoPath)
 
-  node.init({ emptyRepo: true, bits: 2048 }, (err) => {
-    if (err && err.message !== 'repo already exists') {
+  node.init({ emptyRepo: true, bits: 2048 }, updateConfig)
+
+  function updateConfig (err) {
+    if (err) {
       return callback(err)
     }
 
@@ -17,34 +19,36 @@ window.startIpfs = (options, callback) => {
         return callback(err)
       }
 
-      const host = options.SignalServer.split(':')[0] || '127.0.0.1'
-      const port = options.SignalServer.split(':')[1] || 9090
-      const signalServer = `/libp2p-webrtc-star/ip4/${host}/tcp/${port}/ws/ipfs/${config.Identity.PeerID}`
+      // TODO change to use wstar in DNS instead
+      const host = options.signalAddr.split(':')[0] || '127.0.0.1'
+      const port = options.signalAddr.split(':')[1] || 9090
 
-      config.Addresses = {
-        Swarm: [
-          signalServer
-        ],
-        API: '',
-        Gateway: ''
+      const wstarMultiaddr = `/libp2p-webrtc-star/ip4/${host}/tcp/${port}/ws/ipfs/${config.Identity.PeerID}`
+
+      config.Addresses.Swarm = [ wstarMultiaddr ]
+
+      node.config.replace(config, bootNode)
+    })
+  }
+
+  function bootNode (err) {
+    if (err) {
+      return callback(err)
+    }
+
+    node.load((err) => {
+      if (err) {
+        return callback(err)
       }
 
-      config.Discovery.MDNS.Enabled = false
+      node.goOnline((err) => {
+        if (err) {
+          return callback(err)
+        }
 
-      node.config.replace(config, (err) => {
-        if (err) { return callback(err) }
-
-        node.load((err) => {
-          if (err) { return callback(err) }
-
-          node.goOnline((err) => {
-            if (err) { return callback(err) }
-
-            console.log('IPFS node is ready')
-            callback(null, node)
-          })
-        })
+        // console.log('IPFS node is ready')
+        callback(null, node)
       })
     })
-  })
+  }
 }

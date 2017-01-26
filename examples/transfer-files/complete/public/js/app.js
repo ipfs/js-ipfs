@@ -1,43 +1,44 @@
-const rootElement = document.getElementById("ipfs")
-const startButton = document.getElementById("start")
-const stopButton = document.getElementById("stop")
-const output = document.getElementById("state")
-const details = document.getElementById("details")
-const peers = document.getElementById("peers")
-const errors = document.getElementById("errors")
-const directory = document.getElementById("directory")
-const dirInput = document.getElementById("dir")
-const signalServerInput = document.getElementById("signalServerInput")
-const files = document.getElementById("files")
-const filesStatus = document.getElementById("filesStatus")
-const picture = document.getElementById("picture")
-const multihashInput = document.getElementById("multihash")
-const catButton = document.getElementById("cat")
+/* global Blob, URL, FileReader */
 
-let ipfs, peerInfo, pollPeersTimer
+const rootElement = document.getElementById('ipfs')
+const startButton = document.getElementById('start')
+const stopButton = document.getElementById('stop')
+const output = document.getElementById('state')
+const details = document.getElementById('details')
+const peers = document.getElementById('peers')
+const errors = document.getElementById('errors')
+const directory = document.getElementById('directory')
+const dirInput = document.getElementById('dir')
+const signalServerInput = document.getElementById('signalServerInput')
+const files = document.getElementById('files')
+const filesStatus = document.getElementById('filesStatus')
+const picture = document.getElementById('picture')
+const multihashInput = document.getElementById('multihash')
+const catButton = document.getElementById('cat')
 
-const ipfsOptions = {
-  // Directory to which save IPFS data to
-  IpfsDataDir: dirInput.value,
-  // IPFS dev server: webrtc-star-signalling.cloud.ipfs.team
-  SignalServer: signalServerInput.value,
-  // Local webrtc-star server, you can get it from:
-  // https://github.com/libp2p/js-libp2p-webrtc-star
-  // SignalServer: '127.0.0.1:9090',
-}
+let ipfs
+let peerInfo
+let pollPeersTimer
 
 // Start IPFS instance
-const start = () => {
+function start () {
   if (!ipfs) {
     // Update the UI with initial settings
     updateView('starting', ipfs)
 
+    /*
+     * path - 'dirname' of where the IPFS repo is stored
+     * signallAddr - address of the signalling server
+     */
+    const options = {
+      path: dirInput.value,
+      signalAddr: signalServerInput.value
+    }
+
     // Create an IPFS instance
-    // window.startIpfs() is exposed in ./start-ipfs.js
-    window.startIpfs(ipfsOptions, (err, node) => {
+    window.createNode(options, (err, node) => {
       if (err) {
-        onError(err)
-        return
+        return onError(err)
       }
 
       ipfs = node
@@ -59,9 +60,10 @@ const start = () => {
 // Stop IPFS instance
 const stop = () => {
   if (ipfs) {
-    if (pollPeersTimer) 
+    if (pollPeersTimer) {
       clearInterval(pollPeersTimer)
-    
+    }
+
     ipfs.goOffline()
     ipfs = null
     updateView('stopped', ipfs)
@@ -100,7 +102,7 @@ const catFile = () => {
 // Display an error
 const onError = (e) => {
   console.error(e)
-  errors.innerHTML = '<br/><span class="error">' + e.stack + '</span>'
+  errors.innerHTML = "<br/><span class='error'>' + e.stack + '</span>"
   errors.className = 'error visible'
 }
 
@@ -125,7 +127,7 @@ const onDrop = (event) => {
   // TODO: Promise reduce?
   for (var i = 0; i < files.length; i++) {
     const file = files[i]
-    console.log("Add file", file.name, file.size)
+    console.log('Add file', file.name, file.size)
     readFileContents(file)
       .then((buffer) => {
         // IPFS.files.add()
@@ -136,7 +138,7 @@ const onDrop = (event) => {
         }])
       })
       .then((files) => {
-        console.log("Files added", files)
+        console.log('Files added', files)
         multihashInput.value = files[0].hash
         filesStatus.innerHTML = files
           .map((e) => `Added ${e.path} as ${e.hash}`)
@@ -149,28 +151,31 @@ const onDrop = (event) => {
 // Get peers from IPFS and display them
 const updatePeers = () => {
   ipfs.swarm.peers((err, res) => {
+    if (err) {
+      // TODO ??
+    }
     // PeerId.toJSON()
     // https://github.com/libp2p/js-peer-id/blob/3ef704ba32a97a9da26a1f821702cdd3f09c778f/src/index.js#L106
     // Multiaddr.toString()
     // https://multiformats.github.io/js-multiaddr/#multiaddrtostring
     const peersAsHtml = res
       .map((e, idx) => {
-        return (idx + 1) + '.'
-          + e.peer.id.toJSON().id
-          + '<br>'
-          + e.addr.toString()
-          + '<br>'
+        return (idx + 1) + '.' +
+          e.peer.id.toJSON().id +
+          '<br>' +
+          e.addr.toString() +
+          '<br>'
       })
       .join('')
 
-    peers.innerHTML =  res.length > 0 
+    peers.innerHTML = res.length > 0
       ? '<h2>Peers</h2>' + peersAsHtml
       : '<h2>Peers</h2><i>Waiting for peers...</i>'
   })
 }
 
 /* UI functions */
-function initView() {
+function initView () {
   const initElement = (e, className) => {
     e.innerHTML = ''
     e.className = className
@@ -202,19 +207,19 @@ function initView() {
   catButton.addEventListener('click', catFile)
 }
 
-function updateView(state, ipfs) {
+function updateView (state, ipfs) {
   if (state === 'ready') {
     // Set the header to display the current state
     output.innerHTML = '🚀 IPFS started'
     // Display IPFS info
-    details.innerHTML = '<div>'
-      + '<h2>IPFS Node</h2>'
-      + '<b>ID</b><br>'
-      + peerInfo.id + '<br><br>'
-      + '<b>Address</b><br>' 
-      + peerInfo.addresses[0] + '<br><br>'
-      + '<b>IPFS Data Directory</b><br>' 
-      + dirInput.value
+    details.innerHTML = '<div>' +
+      '<h2>IPFS Node</h2>' +
+      '<b>ID</b><br>' +
+      peerInfo.id + '<br><br>' +
+      '<b>Address</b><br>' +
+      peerInfo.addresses[0] + '<br><br>' +
+      '<b>IPFS Data Directory</b><br>' +
+      dirInput.value
     // Set the file status
     filesStatus.innerHTML = '<i>Drop a picture here to add it to IPFS.</i>'
     details.className = 'visible'
@@ -232,4 +237,3 @@ function updateView(state, ipfs) {
 
 // Start the app
 initView()
-

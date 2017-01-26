@@ -34,7 +34,7 @@
           <label for="multihash">Mutihash</label>
           <input id="multihash" type="text" placeholder="Multihash"/>
           <button id="cat" type="button">Cat</button>
-          <img id="picture" />
+          <img id="picture" alt=""/>
         </div>
         <pre id="errors"></pre>
       </div>
@@ -43,12 +43,10 @@
     <!-- The IPFS node module -->
     <script src="js/ipfs.js"></script>
     <!--
-    The latest js-ipfs published version is also available through the unpkg CDN
+      The latest js-ipfs published version is also available
+      through the unpkg CDN, you can use it directly 
     <script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
     -->
-
-
-
 
     <!-- Helper script to spawn our IPFS node instance -->
     <script src="js/create-node.js"></script>
