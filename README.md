@@ -137,7 +137,7 @@ The CLI is available by using the command `jsipfs` in your terminal. This is ali
 
 ### Use in the browser with browserify, webpack or any bundler
 
-Simply require it as you would do for Node.js, but when transpiling+minifying with your bundler, make sure to swap `zlib` with a full replacement for the browser: `zlib: 'browserify-zlib-next'`. We have submited PR's to browserify and WebPack to make this as part of the standard node libraries that are transpiled, you can follow this development in [browserify](https://github.com/substack/node-browserify/issues/1672), [webpack](https://github.com/webpack/node-libs-browser/issues/51).
+Simply require it as you would do for Node.js, but when transpiling+minifying with your bundler, make sure to swap `zlib` with a full replacement for the browser: `zlib: 'browserify-zlib-next'`. We have submitted PR's to browserify and WebPack to make this as part of the standard node libraries that are transpiled, you can follow this development in [browserify](https://github.com/substack/node-browserify/issues/1672), [webpack](https://github.com/webpack/node-libs-browser/issues/51).
 
 You can also find examples of how to do this bundling at: `https://github.com/ipfs/js-ipfs/tree/master/examples`
 
@@ -151,10 +151,10 @@ The last published version of the package become [available for download](https:
 
 
 ```html
-<!-- loading the minified version -->
+<!-- loading the minified version -->
 <script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
 
-<!-- loading the human-readable (not minified) version -->
+<!-- loading the human-readable (not minified) version -->
 <script src="https://unpkg.com/ipfs/dist/index.js"></script>
 ```
 
@@ -162,7 +162,7 @@ The last published version of the package become [available for download](https:
 
 ### CLI
 
-The `jsipfs` CLI, available when `js-ipfs` is installed globably, follows(should, it is a WIP) the same interface defined by `go-ipfs`, you can always use the `help` command for help menus.
+The `jsipfs` CLI, available when `js-ipfs` is installed globally, follows(should, it is a WIP) the same interface defined by `go-ipfs`, you can always use the `help` command for help menus.
 
 ```sh
 # Install js-ipfs globally
@@ -285,7 +285,7 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 
 ## Development
 
-### Clone and install dependnecies
+### Clone and install dependencies
 
 ```sh
 > git clone https://github.com/ipfs/js-ipfs.git
@@ -297,7 +297,7 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 
 ```sh
 # run all the unit tsts
-> npm test 
+> npm test
 
 # run just IPFS tests in Node.js
 > npm run test:unit:node:core
@@ -319,7 +319,7 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 
 ```sh
 # run all the interop tsts
-> npm run test:interop 
+> npm run test:interop
 
 # run just IPFS interop tests in Node.js using one go-ipfs daemon and one js-ipfs daemon
 > npm run test:interop:node
@@ -332,7 +332,7 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 
 ```sh
 # run all the interop tsts
-> npm run test:benchmark 
+> npm run test:benchmark
 
 # run just IPFS benchmarks in Node.js
 > npm run test:benchmark:node
@@ -373,11 +373,11 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 > tree src -L 2
 src                 # Main source code folder
 ├── cli             # Implementation of the IPFS CLI
-│   └── ...
+│   └── ...
 ├── http-api        # The HTTP-API implementation of IPFS as defined by http-api-spec
 ├── core            # IPFS implementation, the core (what gets loaded in browser)
-│   ├── components  # Each of IPFS subcomponent
-│   └── ...
+│   ├── components  # Each of IPFS subcomponent
+│   └── ...
 └── ...
 ```
 
