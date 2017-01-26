@@ -1,18 +1,58 @@
-# access-go-ipfs-files - cat-a-file
+# Tutorial - Transfer files between the browser and other IPFS nodes
 
-**WIP**
+> Welcome! This tutorial will help you a tiny web application where you can fetch and add files to IPFS and transfer these between a go-ipfs node and a js-ipfs node.
 
-## TODO
+There is a couple of caveats:
 
-- Add "connect to peer" input field and "connect" button under the "Peers" section in index.html
-- Add `connectToPeer` function which calls `ipfs.swarm.connect(multiaddr)`. See https://github.com/ipfs/js-ipfs/blob/b0a7cd83cbf146b0f147467dedc686f94a5f751f/examples/ipfm/src/DataStore.js#L82 and https://github.com/ipfs/js-ipfs/blob/b0a7cd83cbf146b0f147467dedc686f94a5f751f/examples/ipfm/README.md#start-an-interplanetary-file-exchange-daemon. The multiaddr to connect to looks like this: `/ip4/127.0.0.1/tcp/9999/ws/ipfs/QmZGH8GeASSkSZoNLPEBu1MqtzLTERNUEwh9yTHLEF5kcW`
-- Hook up "connect" button's click event to `connectToPeer` function
-- Add instructions to this README on how to add a file in go-ipfs
-- Add instructions to this README on how to cat it in the UI
-- Make sure the "Start a go-ipfs daemon" instructions are correct
-- Make sure go-ipfs daemon and the example connect to each other
+- js-ipfs currently doesn't support DHT peer discovery, the peer from which you are fetching data should be within the reach (local or in public IP) of the browser node.
+- [full go-ipfs interop is not complete yet, blocked by an interop stream multiplexer](https://github.com/ipfs/js-ipfs/issues/721)
 
-## Step-by-step Instructions
+That being said, we will explain throughout this tutorial to circunvent the caveats and once they are fixed, we will update the tutorial as well.
+
+## Application diagram
+
+The goal of this tutorial is to create a WebApplication with an IPFS node that dials to other instances of it using WebRTC, and at the same time dial and transfer files from a Desktop IPFS node using WebSockets as the transport.
+
+┌──────────────┐                   ┌──────────────┐
+│   Browser    │                   │   Browser    │
+│              │      WebRTC       │              │
+│              │◀─────────────────▶│              │
+│              │                   │              │
+└──────────────┘                   └──────────────┘
+        ▲                                  ▲
+        │                                  │
+        │                                  │
+        │                                  │
+        │WebSockets              WebSockets│
+        │                                  │
+        │                                  │
+        │        ┌──────────────┐          │
+        │        │   Desktop    │          │
+        │        │              │          │
+        └───────▶│              │◀─────────┘
+                 │              │
+                 └──────────────┘
+
+## Check out the final state
+
+If you just want to check out what is the final state of how this application will look like, go to the complete folder, install the dependencies and run it.
+
+```sh
+> cd complete
+> npm install
+> npm start
+# open your browser (Chrome or Firefox) in http://localhost:12345
+```
+
+You should get something like this:
+
+TODO: Insert final screenshot here
+
+## Step-by-step instructions
+
+Instructions:
+- 1. 
+- 2. 
 
 ### Start a go-ipfs daemon
 
