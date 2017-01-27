@@ -51,7 +51,7 @@ TODO: Insert final screenshot here
 
 ## Step-by-step instructions
 
-**Instructions:**
+Here's what we are going to be doing, today:
 
 - 1. Set up, install a go-ipfs node in your machine
 - 2. Make your daemons listen on WebSockets
@@ -62,37 +62,85 @@ TODO: Insert final screenshot here
 - 7. Dial to a node using WebSockets (your Desktop ones)
 - 8. Transfer files between all of your nodes, have fun!
 
+Let's go.
 
--------------------------
-> Steps need to be updated once the final thing is finished
+### 1. Set up
 
-### Start a go-ipfs daemon
+You'll need to have an implementation of IPFS running on your machine. Currently, this means either go-ipfs or js-ipfs.
 
-1. Install go-ipfs from master (TODO: link). 
+Installing go-ipfs can be done by installing the binary [here](https://ipfs.io/ipns/dist.ipfs.io/#go-ipfs). Alternatively, you could follow the instructions in the README at [ipfs/go-ipfs](https://github.com/ipfs/go-ipfs).
 
-2. Run `ipfs init`
+Installing js-ipfs requires you to have node and [npm](https://www.npmjs.com). Then, you simply run:
 
-3. Edit your IPFS config file, located at `~/.ipfs/config`
-
-4. Add a Websocket listener address to `Addresses.Swarm`. It should look like this after editing:
-```
-"Addresses": {
-  "API": "/ip4/127.0.0.1/tcp/5001",
-  "Gateway": "/ip4/0.0.0.0/tcp/8080",
-  "Swarm": [
-    "/ip4/0.0.0.0/tcp/4001",
-    "/ip4/0.0.0.0/tcp/9999/ws"
-  ]
-},
+```sh
+> npm install --global ipfs
+...
+> jsipfs --help
+Commands:
+...
 ```
 
-5. Start the go-ipfs daemon with:
+This will alias `jsipfs` on your machine; this is to avoid issues with `go-ipfs` being called `ipfs`.
+
+At this point, you have either js-ipfs or go-ipfs running. Now, initialize it:
+
 ```
-ipfs daemon
+> ipfs init
 ```
 
-6. You should see the Websocket address in the output:
+or
+
 ```
+> jsipfs init
+```
+
+This will set up an `init` file in your home directory.
+
+### 2. Make your daemons listen on WebSockets
+
+At this point, you need to edit your `config` file, the one you just set up with `{js}ipfs init`. It should be in either `~/.jsipfs/config` or `~/.ipfs/config`, depending on whether you're using JS or Go. You can run `cat ~/.jsipfs/config` to see the contents of the JSON file.
+
+Since websockets are currently not stable and are experimental, you'll need to add the ability for your daemon to listen on Websocket addresses. Look into your init file (using `cat`) and find the `Addresses` block:
+
+```json
+  "Addresses": {
+    "Swarm": [
+      "/ip4/0.0.0.0/tcp/4002"
+    ],
+    "API": "/ip4/127.0.0.1/tcp/5002",
+    "Gateway": "/ip4/127.0.0.1/tcp/9090"
+  }
+```
+
+To make Websockets work, open up the `config` file and add the following entry to your `Swarm` array: `/ip4/0.0.0.0/tcp/9999/ws`. Now, it should look like this: 
+
+
+```json
+  "Addresses": {
+    "Swarm": [
+      "/ip4/0.0.0.0/tcp/4002",
+      "/ip4/0.0.0.0/tcp/9999/ws"
+    ],
+    "API": "/ip4/127.0.0.1/tcp/5002",
+    "Gateway": "/ip4/127.0.0.1/tcp/9090"
+  }
+```
+
+Now it should listen on Websockets. We're ready to...
+
+### 3. Start the WebApp project
+
+Ok. To do this, we'll need to start an IPFS daemon.
+
+```sh
+> ipfs daemon
+```
+
+(Again, either `jsipfs` or `ipfs` works. I'll stop explaining that from here on out.)
+
+You should see the Websocket address in the output:
+
+```sh
 Initializing daemon...
 Swarm listening on /ip4/127.0.0.1/tcp/4001
 Swarm listening on /ip4/127.0.0.1/tcp/9999/ws
@@ -103,7 +151,16 @@ Gateway (readonly) server listening on /ip4/0.0.0.0/tcp/8080
 Daemon is ready
 ```
 
-If you see address like `Swarm listening on /ip4/127.0.0.1/tcp/9999/ws`, it means all good!
+It's there in line 5 - see the `/ws`? Good. that means it is listening.
+
+
+### 4. Create the frame for your IPFS enabled app
+### 5. Add and cat a file
+### 6. Use WebRTC to dial between browser nodes
+### 7. Dial to a node using WebSockets (your Desktop ones)
+### 8. Transfer files between all of your nodes, have fun!
+
+--------
 
 ## Start the example
 
