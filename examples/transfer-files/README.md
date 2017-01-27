@@ -1,6 +1,6 @@
 # Tutorial - Transfer files between the browser and other IPFS nodes
 
-> Welcome! This tutorial will help you a tiny web application where you can fetch and add files to IPFS and transfer these between a go-ipfs node and a js-ipfs node.
+> Welcome! This tutorial will help you build a tiny web application where you can fetch and add files to IPFS and transfer these between a go-ipfs node and a js-ipfs node.
 
 There are a couple of caveats:
 
@@ -12,7 +12,7 @@ That being said, we will explain throughout this tutorial to circunvent the cave
 
 ## Application diagram
 
-The goal of this tutorial is to create a WebApplication with an IPFS node that dials to other instances of it using WebRTC, and at the same time dial and transfer files from a Desktop IPFS node using WebSockets as the transport.
+The goal of this tutorial is to create a application with a IPFS node that dials to other instances of it using WebRTC, and at the same time dial and transfer files from a Desktop IPFS node using WebSockets as the transport.
 
 ┌──────────────┐                   ┌──────────────┐
 │   Browser    │                   │   Browser    │
@@ -53,9 +53,9 @@ TODO: Insert final screenshot here
 
 **Instructions:**
 
-- 1. Set up, install a go-ipfs and/or js-ipfs in your machine
+- 1. Set up, install a go-ipfs node in your machine
 - 2. Make your daemons listen on WebSockets
-- 3. Start the WebApp project
+- 3. Initialize the project
 - 4. Create the frame for your IPFS enabled app
 - 5. Add and cat a file
 - 6. Use WebRTC to dial between browser nodes
