@@ -19,9 +19,13 @@ window.createNode = (options, callback) => {
         return callback(err)
       }
 
-      const wstarMultiaddr = `/libp2p-webrtc-star/dns4/${options.signalAddr}/wss/ipfs/${config.Identity.PeerID}`
+      // TODO change to use wstar in DNS instead
+      const host = options.signalAddr.split(':')[0] || '127.0.0.1'
+      const port = options.signalAddr.split(':')[1] || 9090
 
-      config.Addresses.Swarm = config.Addresses.Swarm.concat([ wstarMultiaddr ])
+      const wstarMultiaddr = `/libp2p-webrtc-star/ip4/${host}/tcp/${port}/ws/ipfs/${config.Identity.PeerID}`
+
+      config.Addresses.Swarm = [ wstarMultiaddr ]
 
       node.config.replace(config, bootNode)
     })

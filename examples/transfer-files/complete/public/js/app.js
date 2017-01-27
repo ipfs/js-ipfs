@@ -1,5 +1,8 @@
+/* global Blob, URL, FileReader */
+
 const rootElement = document.getElementById('ipfs')
 const startButton = document.getElementById('start')
+const stopButton = document.getElementById('stop')
 const output = document.getElementById('state')
 const details = document.getElementById('details')
 const peers = document.getElementById('peers')
@@ -8,27 +11,14 @@ const directory = document.getElementById('directory')
 const dirInput = document.getElementById('dir')
 const signalServerInput = document.getElementById('signalServerInput')
 const files = document.getElementById('files')
+const filesStatus = document.getElementById('filesStatus')
+const picture = document.getElementById('picture')
 const multihashInput = document.getElementById('multihash')
 const catButton = document.getElementById('cat')
 
-const $connectPeer = document.querySelector('input.connect-peer')
-const $connectPeerButton = document.querySelector('button.connect-peer')
-
 let ipfs
 let peerInfo
-
-// See signal and data-directory option
-// Click start ipfs daemon
-// Connect to go-ipfs daemon
-// Cat a file from go-ipfs daemon
-// Add text in browser and cat with go-ipfs
-
-$connectPeerButton.addEventListener('click', () => {
-  console.log('connecting', $connectPeer.value)
-  ipfs.swarm.connect($connectPeer.value, (err, res) => {
-    console.log(err, res)
-  })
-})
+let pollPeersTimer
 
 // Start IPFS instance
 function start () {
@@ -59,7 +49,8 @@ function start () {
         // Update the UI
         updateView('ready', ipfs)
 
-        setInterval(updatePeers, 1000)
+        // Poll for peers from IPFS and display them
+        pollPeersTimer = setInterval(updatePeers, 1000)
         peers.innerHTML = '<h2>Peers</h2><i>Waiting for peers...</i>'
       })
     })
@@ -67,16 +58,17 @@ function start () {
 }
 
 // Stop IPFS instance
-// const stop = () => {
-//   if (ipfs) {
-//     if (pollPeersTimer) {
-//       clearInterval(pollPeersTimer)
-//     }
-//     ipfs.goOffline()
-//     ipfs = null
-//     updateView('stopped', ipfs)
-//   }
-// }
+const stop = () => {
+  if (ipfs) {
+    if (pollPeersTimer) {
+      clearInterval(pollPeersTimer)
+    }
+
+    ipfs.goOffline()
+    ipfs = null
+    updateView('stopped', ipfs)
+  }
+}
 
 // Fetch file contents from IPFS and display it
 const catFile = () => {
@@ -84,6 +76,8 @@ const catFile = () => {
   const multihash = multihashInput.value
 
   // Update UI
+  picture.innerHTML = multihash ? '<i>Loading...</i>' : ''
+  picture.className = multihash ? 'picture visible' : 'hidden'
   errors.className = 'hidden'
 
   // Get the file from IPFS
@@ -97,9 +91,8 @@ const catFile = () => {
         let buf = []
         stream.on('data', (d) => buf.push(d))
         stream.on('end', () => {
-          console.log(buf.join(''))
-          // const blob = new window.Blob(buf)
-          // picture.src = window.URL.createObjectURL(blob)
+          const blob = new Blob(buf)
+          picture.src = URL.createObjectURL(blob)
         })
       })
       .catch(onError)
@@ -115,6 +108,8 @@ const onError = (e) => {
 
 // Handle file drop
 const onDrop = (event) => {
+  picture.innerHTML = ''
+  picture.className = 'hidden'
   errors.className = 'hidden'
 
   event.preventDefault()
@@ -123,7 +118,7 @@ const onDrop = (event) => {
 
   const readFileContents = (file) => {
     return new Promise((resolve) => {
-      const reader = new window.FileReader()
+      const reader = new FileReader()
       reader.onload = (event) => resolve(event.target.result)
       reader.readAsArrayBuffer(file)
     })
@@ -145,12 +140,14 @@ const onDrop = (event) => {
       .then((files) => {
         console.log('Files added', files)
         multihashInput.value = files[0].hash
+        filesStatus.innerHTML = files
+          .map((e) => `Added ${e.path} as ${e.hash}`)
+          .join('<br>')
       })
       .catch(onError)
   }
 }
 
-let numberOfPeersLastTime = 0
 // Get peers from IPFS and display them
 const updatePeers = () => {
   ipfs.swarm.peers((err, res) => {
@@ -161,21 +158,19 @@ const updatePeers = () => {
     // https://github.com/libp2p/js-peer-id/blob/3ef704ba32a97a9da26a1f821702cdd3f09c778f/src/index.js#L106
     // Multiaddr.toString()
     // https://multiformats.github.io/js-multiaddr/#multiaddrtostring
-    if (res.length === numberOfPeersLastTime) {
-      return
-    }
-    numberOfPeersLastTime = res.length
     const peersAsHtml = res
       .map((e, idx) => {
-        return '<div class="peer-item">' +
+        return (idx + 1) + '.' +
+          e.peer.id.toJSON().id +
+          '<br>' +
           e.addr.toString() +
-          '</div>'
+          '<br>'
       })
       .join('')
 
     peers.innerHTML = res.length > 0
-      ? '<h2>Connected Peers</h2>' + peersAsHtml
-      : '<h2>Connected Peers</h2><i>Waiting for peers...</i>'
+      ? '<h2>Peers</h2>' + peersAsHtml
+      : '<h2>Peers</h2><i>Waiting for peers...</i>'
   })
 }
 
@@ -190,35 +185,49 @@ function initView () {
   const elements = [errors, details, peers]
   elements.map((e) => initElement(e, 'hidden'))
   errors.innerHTML = ''
+  output.innerHTML = '🔌 IPFS stopped'
   dirInput.value = '/ipfs/' + new Date().getTime()
   directory.className = 'visible'
   files.className = 'hidden'
+  filesStatus.innerHTML = ''
+  picture.innerHTML = ''
   startButton.disabled = false
+  stopButton.disabled = true
   multihashInput.value = null
+  picture.className = 'hidden'
   // Remove old event listeners
   rootElement.removeEventListener('drop', onDrop)
   startButton.removeEventListener('click', start)
+  stopButton.removeEventListener('click', stop)
   catButton.removeEventListener('click', catFile)
   // Setup event listeners for interaction
   rootElement.addEventListener('drop', onDrop)
   startButton.addEventListener('click', start)
+  stopButton.addEventListener('click', stop)
   catButton.addEventListener('click', catFile)
 }
 
 function updateView (state, ipfs) {
   if (state === 'ready') {
     // Set the header to display the current state
-    output.innerHTML = 'IPFS running now'
+    output.innerHTML = '🚀 IPFS started'
     // Display IPFS info
-    details.innerHTML = '<div class="id">' +
-      '<strong>Your ID: </strong><br>' +
-      peerInfo.id + '<br><br>'
+    details.innerHTML = '<div>' +
+      '<h2>IPFS Node</h2>' +
+      '<b>ID</b><br>' +
+      peerInfo.id + '<br><br>' +
+      '<b>Address</b><br>' +
+      peerInfo.addresses[0] + '<br><br>' +
+      '<b>IPFS Data Directory</b><br>' +
+      dirInput.value
     // Set the file status
+    filesStatus.innerHTML = '<i>Drop a picture here to add it to IPFS.</i>'
     details.className = 'visible'
     peers.className = 'visible'
     files.className = 'visible'
+    stopButton.disabled = false
   } else if (state === 'starting') {
-    output.innerHTML = 'IPFS daemon is starting...'
+    output.innerHTML = '📡 IPFS starting'
     startButton.disabled = true
     directory.className = 'hidden'
   } else if (state === 'stopped') {
