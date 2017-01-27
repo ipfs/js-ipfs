@@ -8,33 +8,57 @@
   </head>
 
   <body>
-    <div class="center">
+    <div class="header">
+      <a href="https://ipfs.io" target="_blank">
+        <img src="ipfs-logo.svg" height="32" id="logo">
+      </a>
+			<h1>Transfer Files</h1>
+    </div>
+    <div class="wrapper">
       <div id="ipfs" class="ipfs" ondragover="event.preventDefault()">
-        <h1 id="state" class="center"></h1>
+					<div class="left centered">
+						<div id="buttons" class="buttons">
+							<button id="start" type="button">Start IPFS</button>
+							<button id="stop" type="button">Stop IPFS</button>
+						</div>
+						<div class="settings">
+							<h2>Daemon Settings</h2>
+							<div class="setting-item">
+								<label for="dir">Data Directory</label><br/>
+								<input id="dir" type="text" placeholder="IPFS data directory"/>
+							</div>
+							<div class="setting-item">
+								<label for="signalServerInput">Signal Server</label><br/>
+								<input id="signalServerInput" type="text" value="star-signal.cloud.ipfs.team"/>
+							</div>
+						</div>
+						<div id="details"></div>
+					</div>
+					<div class="right hidden">
+						<div id="peers">
+							<h2>Remote Peers</h2>
+						</div>
+						<div>
+							<input type="text" class="connect-peer" placeholder="Multiaddr" value="/ip4/192.168.1.131/tcp/9999/ws/ipfs/QmRJC9JnVCy5mZcAP6djLvku8hgmgJzUpmm8USL98kiKR5"/>
+							<button class="connect-peer">Connect</button>
+						</div>
+					</div>
         <div>
-          <div id="buttons" class="buttons center">
-            <button id="start" type="button">Start</button>
-            <button id="stop" type="button">Stop</button>
-          </div>
-          <div id="directory">
-            <h2>IPFS Settings</h2>
-            <label for="dir">Data Directory</label>
-            <input id="dir" type="text" placeholder="IPFS data directory"/>
-            <br><br>
-            <label for="signalServerInput">Signal Server</label>
-            <input id="signalServerInput" type="text" value="188.166.203.82:20000"/>
-          </div>
         </div>
-        <div id="details"></div>
-        <div id="peers"></div>
         <div id="files">
           <h2>Files</h2>
           <div id="filesStatus"></div>
-          <br>
-          <label for="multihash">Mutihash</label>
-          <input id="multihash" type="text" placeholder="Multihash"/>
-          <button id="cat" type="button">Cat</button>
-          <img id="picture" alt=""/>
+
+          <div>
+          	<label for="multihash">Multihash</label>
+          	<input id="multihash" type="text" placeholder="Multihash"/>
+          	<button id="cat" type="button">Cat</button>
+          </div>
+
+          <div>
+          	<img id="picture" alt=""/>
+          </div>
+
         </div>
         <pre id="errors"></pre>
       </div>

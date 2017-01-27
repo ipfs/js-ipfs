@@ -1,9 +1,13 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,700');
-
 body {
-  font-family: 'Roboto', sans-serif;
-  font-size: 1.0em;
-  font-weight: 400;
+  height: 100vh;
+  font-family: sans-serif;
+  color: white;
+  background: linear-gradient(to bottom,#041727 0%,#062b3f 100%);
+}
+
+.wrapper {
+	width: 700px;
+	margin: 0 auto;
 }
 
 h1 {
@@ -22,12 +26,13 @@ h3 {
   font-weight: 700;
 }
 
-label {
-  margin-right: 1em;
+.header {
+	text-align: center;
 }
 
-input {
-  margin-right: 1em;  
+.header h1 {
+	margin-top: 20px;
+	margin-bottom: 20px;
 }
 
 .hidden {
@@ -44,23 +49,74 @@ input {
   color: red;
 }
 
-.center {
-  display: flex;
-  justify-content: center;
-}
-
 .ipfs {
   min-width: 22em;
   max-width: 44em;
   flex-grow: 1;
   flex-basis: 22em;
-  border: 1px dashed grey;
-  padding: 1em;
   overflow: auto;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 1px;
+	box-sizing: border-box;
+	padding-bottom: 50px;
 }
 
-.buttons {
-  margin-top: 1em;  
+#details {
+	padding: 10px;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+#details ul {
+	margin: 0px; padding: 0px;
+	list-style: none;
+}
+
+#details ul li {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	font-size: 9px;
+	word-wrap: break-word;
+}
+
+button {
+  background-color: rgba(0,0,0,0.2);
+  color: #6acad1;
+  border: 2px solid #6acad1;
+  font-size: 15px;
+  padding: 10px 25px 10px 25px;
+  border-radius: 2px;
+	margin: 5px;
+}
+
+button:hover {
+  color: white;
+  border: 2px solid white;
+  cursor: pointer;
+}
+
+.address {
+	font-family: monospace
+}
+button:disabled {
+	opacity: 0.2;
+}
+
+input {
+  border: 2px solid #444;
+  color: black;
+  padding: 10px;
+  border-radius: 2px;
+  font-family: monospace;
+  font-size: 16px;
+}
+
+textarea, input, button {
+  outline: none;
+}
+
+button:focus, input:focus {
+  outline: 3px solid #6acad1;
 }
 
 .picture {
@@ -69,4 +125,35 @@ input {
   background-color: rgba(196, 196, 196, 0.1);
   /*padding: 0.25em;*/
   /*font-size: 1.2em;*/
+}
+
+.settings {
+	padding: 15px;
+}
+
+.left {
+	/* background-color: red; */
+}
+
+.right {
+	/* background-color: green; */
+}
+
+.setting-item {
+	margin-top: 20px;
+}
+
+.setting-item input {
+	width: 100%;
+}
+
+.left, .right {
+	width: 50%;
+	float: left;
+}
+
+.left.centered {
+	float: none;
+	margin: 0px auto;
+	text-align: center;
 }

@@ -3,11 +3,10 @@
 const rootElement = document.getElementById('ipfs')
 const startButton = document.getElementById('start')
 const stopButton = document.getElementById('stop')
-const output = document.getElementById('state')
 const details = document.getElementById('details')
 const peers = document.getElementById('peers')
 const errors = document.getElementById('errors')
-const directory = document.getElementById('directory')
+const settings = document.querySelector('.settings')
 const dirInput = document.getElementById('dir')
 const signalServerInput = document.getElementById('signalServerInput')
 const files = document.getElementById('files')
@@ -15,6 +14,10 @@ const filesStatus = document.getElementById('filesStatus')
 const picture = document.getElementById('picture')
 const multihashInput = document.getElementById('multihash')
 const catButton = document.getElementById('cat')
+const $connectPeer = document.querySelector('input.connect-peer')
+const $connectPeerButton = document.querySelector('button.connect-peer')
+const leftColumn = document.querySelector('.left')
+const rightColumn = document.querySelector('.right')
 
 let ipfs
 let peerInfo
@@ -51,7 +54,7 @@ function start () {
 
         // Poll for peers from IPFS and display them
         pollPeersTimer = setInterval(updatePeers, 1000)
-        peers.innerHTML = '<h2>Peers</h2><i>Waiting for peers...</i>'
+        peers.innerHTML = '<h2>Remote Peers</h2><i>Waiting for peers...</i>'
       })
     })
   }
@@ -68,6 +71,16 @@ const stop = () => {
     ipfs = null
     updateView('stopped', ipfs)
   }
+}
+
+const connectPeer = (e) => {
+  e.target.disabled = true
+  ipfs.swarm.connect($connectPeer.value, (err) => {
+    if (err) return onError(err)
+    setTimeout(() => {
+      e.target.disabled = false
+    }, 500)
+  })
 }
 
 // Fetch file contents from IPFS and display it
@@ -169,8 +182,8 @@ const updatePeers = () => {
       .join('')
 
     peers.innerHTML = res.length > 0
-      ? '<h2>Peers</h2>' + peersAsHtml
-      : '<h2>Peers</h2><i>Waiting for peers...</i>'
+      ? '<h2>Remote Peers</h2>' + peersAsHtml
+      : '<h2>Remote Peers</h2><i>Waiting for peers...</i>'
   })
 }
 
@@ -185,9 +198,8 @@ function initView () {
   const elements = [errors, details, peers]
   elements.map((e) => initElement(e, 'hidden'))
   errors.innerHTML = ''
-  output.innerHTML = '🔌 IPFS stopped'
   dirInput.value = '/ipfs/' + new Date().getTime()
-  directory.className = 'visible'
+  settings.className = 'visible'
   files.className = 'hidden'
   filesStatus.innerHTML = ''
   picture.innerHTML = ''
@@ -205,21 +217,23 @@ function initView () {
   startButton.addEventListener('click', start)
   stopButton.addEventListener('click', stop)
   catButton.addEventListener('click', catFile)
+  $connectPeerButton.addEventListener('click', connectPeer)
 }
 
 function updateView (state, ipfs) {
   if (state === 'ready') {
     // Set the header to display the current state
-    output.innerHTML = '🚀 IPFS started'
     // Display IPFS info
+    leftColumn.className = 'left'
+    rightColumn.className = 'right'
     details.innerHTML = '<div>' +
-      '<h2>IPFS Node</h2>' +
-      '<b>ID</b><br>' +
-      peerInfo.id + '<br><br>' +
-      '<b>Address</b><br>' +
-      peerInfo.addresses[0] + '<br><br>' +
-      '<b>IPFS Data Directory</b><br>' +
-      dirInput.value
+      '<h2>Your Daemon</h2>' +
+      '<b>ID</b><pre>' +
+      peerInfo.id + '</pre>' +
+      '<b>Addresses</b><br><ul>' +
+      peerInfo.addresses.map((address) => {
+        return '<li><span class="address">' + address + '</span></li>'
+      }).join('') + '</ul>'
     // Set the file status
     filesStatus.innerHTML = '<i>Drop a picture here to add it to IPFS.</i>'
     details.className = 'visible'
@@ -227,9 +241,8 @@ function updateView (state, ipfs) {
     files.className = 'visible'
     stopButton.disabled = false
   } else if (state === 'starting') {
-    output.innerHTML = '📡 IPFS starting'
     startButton.disabled = true
-    directory.className = 'hidden'
+    settings.className = 'hidden'
   } else if (state === 'stopped') {
     initView()
   }
