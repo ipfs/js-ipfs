@@ -1,13 +1,14 @@
 {
   "name": "file-feed",
   "version": "0.0.0",
+  "bin": "src/ff-cli/bin.js",
   "devDependencies": {
     "buffer": "^5.0.2",
     "react-scripts": "0.8.5",
     "uglify-js": "github:mishoo/UglifyJS2#harmony"
   },
   "dependencies": {
-    "browserify-zlib-next": "^1.0.0",
+    "browserify-zlib-next": "^1.0.1",
     "ipfs": "^0.21.0",
     "ipfs-daemon": "^0.3.0-beta.18",
     "mime": "^1.3.4",

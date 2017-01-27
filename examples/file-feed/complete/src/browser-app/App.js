@@ -6,7 +6,6 @@ import Preview from './Preview'
 import Peers from './Peers'
 import Status from './Status'
 import { isMediaFile } from './utils'
-import logo from './logo.svg'
 import './App.css'
 
 let dataStore
@@ -168,7 +167,6 @@ class App extends Component {
         onDragEnter={this.onDragEnter.bind(this)}>
         {previewElement}
         {peersElement}
-        <img src={logo} className='App-logo' alt='logo' />
         <h1>InterPlanetary File Exchange</h1>
         <Status className='App-status' text={status} />
         {dropzone}
