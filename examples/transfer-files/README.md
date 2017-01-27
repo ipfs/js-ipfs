@@ -126,11 +126,7 @@ To make Websockets work, open up the `config` file and add the following entry t
   }
 ```
 
-Now it should listen on Websockets. We're ready to...
-
-### 3. Start the WebApp project
-
-Ok. To do this, we'll need to start an IPFS daemon.
+Now it should listen on Websockets. We're ready to start the daemon.
 
 ```sh
 > ipfs daemon
@@ -153,9 +149,34 @@ Daemon is ready
 
 It's there in line 5 - see the `/ws`? Good. that means it is listening.
 
+### 3. Start the WebApp project
+
+
+Now, you'll need to make sure you are in `js-ipfs/examples/transfer-files/complete`. You'll see a `package.json`: this manifest holds the information for which packages you'll need to install to run the webapp. Let's install them, and then start the project:
+
+```sh
+> npm install
+> npm start
+```
+
+You should see this text:
+
+```sh
+Starting up http-server, serving public
+Available on:
+  http://127.0.0.1:12345
+  http://192.168.1.24:12345
+Hit CTRL-C to stop the server
+```
+
+Go to http://127.0.0.1:12345 in your browser; you're now in the webapp, if all went well.
 
 ### 4. Create the frame for your IPFS enabled app
+
+TODO: Not sure what this means.
+
 ### 5. Add and cat a file
+
 ### 6. Use WebRTC to dial between browser nodes
 ### 7. Dial to a node using WebSockets (your Desktop ones)
 ### 8. Transfer files between all of your nodes, have fun!
