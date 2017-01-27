@@ -50,7 +50,7 @@ class DataStore extends EventEmitter {
             resolve(buffer)
           })
         })
-        .catch(reject)      
+        .catch(reject)
     })
   }
 
@@ -80,9 +80,9 @@ class DataStore extends EventEmitter {
   }
 
   connectToPeer (multiaddr) {
-    console.log("Connect to:", multiaddr)
+    console.log('Connect to:', multiaddr)
     this.ipfs.swarm.connect(multiaddr)
-      .then((res) => console.log("Connected to", multiaddr))
+      .then((res) => console.log('Connected to', multiaddr))
       .catch((e) => console.error(e))
   }
 
@@ -98,7 +98,7 @@ class DataStoreSingleton {
   static init (options) {
     instance = !instance ? new DataStore(options) : instance
     return instance
-  }  
+  }
 }
 
 export default DataStoreSingleton

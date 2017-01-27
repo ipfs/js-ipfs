@@ -19,7 +19,7 @@ function create (options, callback) {
       const host = options.SignalServer.split(':')[0] || '127.0.0.1'
       const port = options.SignalServer.split(':')[1] || 9090
       const signalServer = `/libp2p-webrtc-star/ip4/${host}/tcp/${port}/ws/ipfs/${config.Identity.PeerID}`
-      
+
       config.Addresses = {
         Swarm: [
           signalServer

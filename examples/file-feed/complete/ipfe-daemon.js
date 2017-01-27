@@ -4,16 +4,14 @@
 const IPFS = require('./src/ipfs')
 const OrbitDB = require('orbit-db')
 
-const userId = Math.floor(Math.random() * 1000)
-
-const conf = { 
+const conf = {
   IpfsDataDir: '/tmp/addfile-example',
-  SignalServer: '127.0.0.1:9090',
+  SignalServer: '127.0.0.1:9090'
 }
 
-console.log("Starting...")
+console.log('Starting...')
 
-const feed = process.argv[2] || "hello-world"
+const feed = process.argv[2] || 'hello-world'
 
 IPFS.create(conf, (err, node) => {
   if (err) {
@@ -22,13 +20,13 @@ IPFS.create(conf, (err, node) => {
   const ipfs = node
   const orbitdb = new OrbitDB(ipfs)
   const db = orbitdb.eventlog(feed)
-  
+
   let peerList = []
   let fileList = []
 
-  db.events.on('ready', () => console.log("DB ready!"))
-  db.events.on('history', () => console.log("DB updated!"))
-  db.events.on('data', () => console.log("DB updated locally!"))
+  db.events.on('ready', () => console.log('DB ready!'))
+  db.events.on('history', () => console.log('DB updated!'))
+  db.events.on('data', () => console.log('DB updated locally!'))
 
   setInterval(() => {
     ipfs.pubsub.peers(feed)
@@ -48,10 +46,10 @@ IPFS.create(conf, (err, node) => {
       fileList = latest
 
       const files = latest.reverse().map((e) => {
-        return e.payload.value.file.path + " | " 
-             + e.payload.value.file.hash + " | "
-             + e.payload.value.file.size + " | "
-             + e.payload.value.mime
+        return e.payload.value.file.path + ' | ' +
+          e.payload.value.file.hash + ' | ' +
+          e.payload.value.file.size + ' | ' +
+          e.payload.value.mime
       })
 
       if (latest.length > 0) {
@@ -61,8 +59,8 @@ IPFS.create(conf, (err, node) => {
         output += `------------------------------\n`
         output += files.join('\n') + '\n'
         output += `------------------------------\n`
-        console.log(output)        
-      }        
+        console.log(output)
+      }
     }
   }
 

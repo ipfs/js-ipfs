@@ -5,15 +5,15 @@ const IPFS = require('./src/ipfs')
 const OrbitDB = require('orbit-db')
 const mime = require('mime')
 
-const conf = { 
+const conf = {
   IpfsDataDir: '/tmp/addfile-example-add',
-  SignalServer: '127.0.0.1:9090',
+  SignalServer: '127.0.0.1:9090'
 }
 
-console.log("Starting...")
+console.log('Starting...')
 
-const feed = process.argv[2] || "hello-world"
-const filename = process.argv[3] 
+const feed = process.argv[2] || 'hello-world'
+const filename = process.argv[3]
 
 if (!filename) {
   console.error('Filename required!')
@@ -28,7 +28,7 @@ IPFS.create(conf, (err, node) => {
   const ipfs = node
   const orbitdb = new OrbitDB(ipfs)
   const db = orbitdb.eventlog(feed)
-  
+
   let peerList = []
   let fileList = []
 
@@ -45,11 +45,11 @@ IPFS.create(conf, (err, node) => {
     return {
       content: content,
       mime: mime.lookup(filePath)
-    }    
+    }
   }
 
   const addToIpfs = (name, content) => {
-    console.log("add to ipfs", name)
+    console.log('add to ipfs', name)
     return ipfs.files.add([{
       path: name,
       content: new Buffer(content)
@@ -57,7 +57,7 @@ IPFS.create(conf, (err, node) => {
   }
 
   const addToOrbitDB = (file, type) => {
-    console.log("add to orbit-db", file)
+    console.log('add to orbit-db', file)
     return db.add({
       ts: new Date().getTime(),
       mime: type,
@@ -75,9 +75,9 @@ IPFS.create(conf, (err, node) => {
   const query = () => {
     const latest = db.iterator({ limit: -1 }).collect()
     const files = latest.reverse().map((e) => {
-      return e.payload.value.file.path + " | " 
-           + e.payload.value.file.hash + " | "
-           + e.payload.value.file.size + " | "
+      return e.payload.value.file.path + ' | '
+           + e.payload.value.file.hash + ' | '
+           + e.payload.value.file.size + ' | '
            + e.payload.value.mime
     })
 
@@ -87,7 +87,7 @@ IPFS.create(conf, (err, node) => {
     output += `------------------------------\n`
     output += files.join('\n') + '\n'
     output += `------------------------------\n`
-    console.log(output)        
+    console.log(output)
   }
 
   db.events.on('ready', () => {
@@ -103,6 +103,6 @@ IPFS.create(conf, (err, node) => {
           }
         })
         .catch((e) => console.error(e))
-    }, 1000)    
+    }, 1000)
   })
 })

@@ -1,4 +1,4 @@
-// Read contents of a File (TODO: link to MDN) and 
+// Read contents of a File (TODO: link to MDN) and
 // return the contents as an ArrayBuffer
 export function readFileContents (file) {
   return new Promise((resolve) => {

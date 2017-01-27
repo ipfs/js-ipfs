@@ -1,25 +1,40 @@
-# Accessing go-ipfs files from the browser
+# Tutorial - Synchronize and distribute folders with files.
 
-**WIP**
+> Welcome! This tutorial will guide you through building a web application for file distribution, using React, OrbitDB (a distributed key-value store) and libp2p PubSub. You will learn how to distribute content and how to synchronize state in a distributed way.
 
-InterPlanetary File Exchange enables you to share files with others via IPFS. 
+There are a couple of caveats:
 
-IPFE was built to demonstrate interoperability between the go-ipfs and js-ipfs (browser and Node.js) instances.
+- js-ipfs currently doesn't support DHT peer discovery, the peer from which you are fetching data should be within the reach (local or in public IP) of the browser node.
+- We need to use a signalling server to establish the WebRTC connections, this won't be necessary as soon as libp2p-relay gets developed
+- [full go-ipfs interop is not complete yet, blocked by an interop stream multiplexer](https://github.com/ipfs/js-ipfs/issues/721). You can, however, fetch content from go-ipfs through js-ipfs.
 
-## TODO
+That being said, we will explain throughout this tutorial to circunvent the caveats and once they are fixed, we will update the tutorial as well.
 
-- Need to merge https://github.com/ipfs/browserify-zlib-next/pull/23 and use the updated module. Otherwise the UI will error on zlib._transform.
-- Make sure go-ipfs and the UI connect to each other (last time I checked they didn't)
-- Use new signal server address everywhere (src/App.js, ipfe-daemon.js, ipfe-add.js)
-- ipfe-add currently uses js-ipf(node.js) daemon. But in order to add files from go-ipfs daemon, it would need to use js-ipfd-ctl. A quick way would be to use ipfs-daemon (I would *highly* recommend to do so), otherwise need to add the init dance for js-ipfsd-ctl much like `src/ipfs.js`.
+# Application diagram
 
-## Requirements
+`TODO - Explain in a diagram how things fit with each other`
 
-- Node.js >= v4.x
-- Npm >= v3.x
+## Check out the final state
 
-## Step-by-step Instructions
+If you just want to check out what is the final state of how this application will look like, go to the complete folder, install the dependencies and run it.
 
+```sh
+> cd complete
+> npm install
+> npm start
+# open your browser (Chrome or Firefox) in http://localhost:12345
+```
+
+You should get something like this:
+
+`TODO: Insert final screenshot here`
+
+## Step-by-step instructions
+
+`TODO`
+
+--------------------------------------
+`needs refactor`
 ### Start a go-ipfs daemon
 
 1. Install go-ipfs from master (TODO: link). 
