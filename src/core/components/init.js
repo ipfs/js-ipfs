@@ -3,6 +3,7 @@
 const peerId = require('peer-id')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
+const isNode = require('detect-node')
 
 const addDefaultAssets = require('./init-assets')
 
@@ -20,13 +21,9 @@ module.exports = function init (self) {
     opts.bits = Number(opts.bits) || 2048
     opts.log = opts.log || function () {}
 
-    let config
-    // Pre-set config values.
-    try {
-      config = require('../../init-files/default-config.json')
-    } catch (err) {
-      return callback(err)
-    }
+    const config = isNode
+      ? require('../../init-files/default-config-node.json')
+      : require('../../init-files/default-config-browser.json')
 
     waterfall([
       // Verify repo does not yet exist.
@@ -62,9 +59,7 @@ module.exports = function init (self) {
         ]
 
         if (typeof addDefaultAssets === 'function') {
-          tasks.push(
-            (cb) => addDefaultAssets(self, opts.log, cb)
-          )
+          tasks.push((cb) => addDefaultAssets(self, opts.log, cb))
         }
 
         parallel(tasks, (err) => {

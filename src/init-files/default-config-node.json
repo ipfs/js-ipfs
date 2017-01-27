@@ -1,7 +1,8 @@
 {
   "Addresses": {
     "Swarm": [
-      "/ip4/0.0.0.0/tcp/4002"
+      "/ip4/0.0.0.0/tcp/4002",
+      "/ip4/127.0.0.1/tcp/4003/ws"
     ],
     "API": "/ip4/127.0.0.1/tcp/5002",
     "Gateway": "/ip4/127.0.0.1/tcp/9090"
@@ -11,17 +12,6 @@
       "Enabled": true,
       "Interval": 10
     }
-  },
-  "Mounts": {
-    "IPFS": "/ipfs",
-    "IPNS": "/ipns"
-  },
-  "Ipns": {
-    "ResolveCacheSize": 128
-  },
-  "Gateway": {
-    "RootRedirect": "",
-    "Writable": false
   },
   "Bootstrap": [
     "/ip4/104.131.131.82/tcp/4001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ",

@@ -5,7 +5,7 @@ const series = require('async/series')
 
 const defaultConfig = require('./default-config.json')
 const IPFS = require('../../../src/core')
-const createTempRepo = require('../temp-repo')
+const createTempRepo = require('../create-repo-node')
 
 module.exports = Factory
 
