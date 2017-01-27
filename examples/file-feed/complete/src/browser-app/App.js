@@ -29,12 +29,8 @@ class App extends Component {
 
     // Initialize our DataStore, ie. start IPFS
     dataStore = DataStore.init({
-      // Directory to which save IPFS data to
-      IpfsDataDir: '/ipfs/ipfd-2',
-      // IPFS dev server: webrtc-star-signalling.cloud.ipfs.team
-      // SignalServer: '188.166.203.82:20000',
-      // Localhost webrtc-star server
-      SignalServer: '127.0.0.1:9090'
+      path: '/ipfs/' + new Date().toString(),
+      signalAddr: '/dns4/star-signal.cloud.ipfs.team'
     })
 
     dataStore.on('error', (e) => console.error(e))

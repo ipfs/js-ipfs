@@ -1,7 +1,7 @@
  // Need to include this to make webpack happy
 import { Buffer } from 'buffer/' // eslint-disable-line no-unused-vars
 import EventEmitter from 'events'
-import IPFS from './ipfs'
+import spawnNode from '../util/spawn-node'
 import OrbitDB from 'orbit-db'
 import { readFileContents } from './read-file'
 
@@ -10,7 +10,7 @@ let instance
 class DataStore extends EventEmitter {
   constructor (options) {
     super()
-    IPFS.create(options, (err, node) => {
+    spawnNode(options, (err, node) => {
       if (err) {
         console.log(err)
       }

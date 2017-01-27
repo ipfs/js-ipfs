@@ -17,9 +17,7 @@
     "react-router": "^3.0.1"
   },
   "scripts": {
-    "check-bundle": "test -f ../../../dist/index.js && npm run copy-bundle || echo \"js-ipfs dist file not found, go up two dirs and run 'npm run build' first\"",
-    "copy-bundle": "cp ../../../dist/index.js ./public/js/ipfs.js",
-    "start": "npm run check-bundle && react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
