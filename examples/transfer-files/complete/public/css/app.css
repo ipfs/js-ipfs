@@ -20,32 +20,8 @@ body {
   right: 20px;
 }
 
-h1 {
-  font-size: 2em;
-  font-weight: 300;
-  margin: 0em;
-}
-
-h2 {
-  font-size: 25px;
-  font-weight: 700;
-}
-
-h3 {
-  font-size: 1.0em;
-  font-weight: 700;
-}
-
-p {
-  font-size: 17px;
-}
-
 .center {
   text-align: center;
-}
-
-label {
-  margin-right: 1em;
 }
 
 input {
@@ -69,17 +45,23 @@ input {
 .wrapper {
   position: relative;
   margin: 50px auto;
-  padding-top: 50px;
-  padding-bottom: 50px;
+	width: 1020px;
+}
+
+.box {
   width: 500px;
+  padding: 50px;
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 1px;
+  text-align: center;
+	float: left;
+	margin: 5px;
+	box-sizing: border-box;
 }
 
 .introduction {
   width: 70%;
   margin: 0px auto;
-  text-align: center;
 }
 
 .on-off-button {
@@ -88,16 +70,12 @@ input {
 	right: 10px;
 }
 
-#directory {
-	text-align: center;
-}
-
 #directory .group {
 	margin: 30px;
 }
 
-#directory label {
-  font-size: 18px;
+label {
+  font-weight: bolder;
   display: block;
 }
 
@@ -143,9 +121,7 @@ button:hover {
   cursor: pointer;
 }
 
-#directory input {
-  width: 70%;
-  font-size: 16px;
+input {
   border: 2px solid #444;
   color: black;
   padding: 10px;
@@ -153,7 +129,27 @@ button:hover {
   font-family: monospace;
 }
 
+#directory input {
+  width: 70%;
+  font-size: 16px;
+}
+
+.group {
+  vertical-align: middle;
+  margin-top: 15px;
+  text-align: center;
+}
+
 .group-item {
-  display: inline;
-  line-height: 30px;
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.state {
+  display: none;
+}
+
+.state.stopped {
+  display: block;
 }

@@ -14,6 +14,9 @@ const catButton = document.getElementById('cat')
 const $connectPeer = document.querySelector('input.connect-peer')
 const $connectPeerButton = document.querySelector('button.connect-peer')
 
+const $getContent = document.querySelector('input.get-content')
+const $getContentButton = document.querySelector('button.get-content')
+
 let ipfs
 let peerInfo
 
@@ -22,13 +25,6 @@ let peerInfo
 // Connect to go-ipfs daemon
 // Cat a file from go-ipfs daemon
 // Add text in browser and cat with go-ipfs
-
-$connectPeerButton.addEventListener('click', () => {
-  console.log('connecting', $connectPeer.value)
-  ipfs.swarm.connect($connectPeer.value, (err, res) => {
-    console.log(err, res)
-  })
-})
 
 // Start IPFS instance
 function start () {
@@ -40,29 +36,6 @@ function start () {
      * path - 'dirname' of where the IPFS repo is stored
      * signallAddr - address of the signalling server
      */
-    const options = {
-      path: dirInput.value,
-      signalAddr: signalServerInput.value
-    }
-
-    // Create an IPFS instance
-    window.createNode(options, (err, node) => {
-      if (err) {
-        return onError(err)
-      }
-
-      ipfs = node
-
-      // Get our IPFS instance's info: ID and address
-      ipfs.id().then((id) => {
-        peerInfo = id
-        // Update the UI
-        updateView('ready', ipfs)
-
-        setInterval(updatePeers, 1000)
-        peers.innerHTML = '<h2>Peers</h2><i>Waiting for peers...</i>'
-      })
-    })
   }
 }
 
@@ -150,34 +123,33 @@ const onDrop = (event) => {
   }
 }
 
-let numberOfPeersLastTime = 0
+// let numberOfPeersLastTime = 0
 // Get peers from IPFS and display them
-const updatePeers = () => {
-  ipfs.swarm.peers((err, res) => {
-    if (err) {
-      // TODO ??
-    }
-    // PeerId.toJSON()
-    // https://github.com/libp2p/js-peer-id/blob/3ef704ba32a97a9da26a1f821702cdd3f09c778f/src/index.js#L106
-    // Multiaddr.toString()
-    // https://multiformats.github.io/js-multiaddr/#multiaddrtostring
-    if (res.length === numberOfPeersLastTime) {
-      return
-    }
-    numberOfPeersLastTime = res.length
-    const peersAsHtml = res
-      .map((e, idx) => {
-        return '<div class="peer-item">' +
-          e.addr.toString() +
-          '</div>'
-      })
-      .join('')
-
-    peers.innerHTML = res.length > 0
-      ? '<h2>Connected Peers</h2>' + peersAsHtml
-      : '<h2>Connected Peers</h2><i>Waiting for peers...</i>'
-  })
-}
+// const updatePeers = () => {
+//   ipfs.swarm.peers((err, res) => {
+//     if (err) {
+//       // TODO ??
+//     }
+//     // PeerId.toJSON()
+//     // https://github.com/libp2p/js-peer-id/blob/3ef704ba32a97a9da26a1f821702cdd3f09c778f/src/index.js#L106
+//     // Multiaddr.toString()
+//     // https://multiformats.github.io/js-multiaddr/#multiaddrtostring
+//     if (res.length === numberOfPeersLastTime) {
+//       return
+//     }
+//     numberOfPeersLastTime = res.length
+//     const peersAsHtml = res
+//       .map((e, idx) => {
+//         return '<div class="peer-item">' +
+//           e.addr.toString() +
+//           '</div>'
+//       })
+//       .join('')
+//     peers.innerHTML = res.length > 0
+//       ? '<h2>Connected Peers</h2>' + peersAsHtml
+//       : '<h2>Connected Peers</h2><i>Waiting for peers...</i>'
+//   })
+// }
 
 /* UI functions */
 function initView () {
@@ -190,7 +162,6 @@ function initView () {
   const elements = [errors, details, peers]
   elements.map((e) => initElement(e, 'hidden'))
   errors.innerHTML = ''
-  dirInput.value = '/ipfs/' + new Date().getTime()
   directory.className = 'visible'
   files.className = 'hidden'
   startButton.disabled = false
@@ -226,5 +197,109 @@ function updateView (state, ipfs) {
   }
 }
 
+let contentOfFile = ''
+
+const states = {
+  stopped: () => {
+    console.log('went to stopped state')
+    dirInput.value = '/ipfs/' + new Date().getTime()
+    // promt user to start daemon after looking at data and signal server config
+  },
+  starting: () => {
+    const options = {
+      path: dirInput.value,
+      signalAddr: signalServerInput.value
+    }
+    window.createNode(options, (err, node) => {
+      if (err) {
+        throw err
+      }
+      ipfs = node
+      goToState('running')
+      // Get our IPFS instance's info: ID and address
+      // ipfs.id().then((id) => {
+      //   peerInfo = id
+      //   // Update the UI
+      //   updateView('ready', ipfs)
+
+      //   setInterval(updatePeers, 1000)
+      //   peers.innerHTML = '<h2>Peers</h2><i>Waiting for peers...</i>'
+      // })
+    })
+    console.log('went to starting state')
+  },
+  running: () => {
+    console.log('went to running state')
+    // now everything is running, but we have no peers, please connect to
+    // go-ipfs daemon
+    $connectPeerButton.addEventListener('click', () => {
+      goToState('connecting')
+      ipfs.swarm.connect($connectPeer.value, (err, res) => {
+        console.log(err, res)
+        goToState('connected')
+      })
+    })
+  },
+  connecting: () => {
+    // connecting to the daemon
+  },
+  connected: () => {
+    console.log('went to connected state')
+    // now we're connected! Try adding a hash in go-ipfs and put it here
+    $getContentButton.addEventListener('click', () => {
+      goToState('loading')
+      console.log($getContent.value)
+      // TODO does not work atm
+      // ipfs.files.cat($getContent.value, (err, res) => {
+      //   console.log()
+      //   console.log(err, res)
+      //   let data = []
+      //   window.res = res
+      //   res.on('data', (d) => {
+      //     data.push(d.toString())
+      //   })
+      //   res.on('end', () => {
+      //     console.log(data.join(''))
+      //     goToState('loaded')
+      //   })
+      // })
+      setTimeout(() => {
+        contentOfFile = 'Hello World!'
+        goToState('loaded')
+      }, 1000)
+    })
+  },
+  loading: () => {
+    console.log('went to loading state')
+  },
+  loaded: () => {
+    const $contentBox = document.querySelector('.loaded pre')
+    $contentBox.innerText = contentOfFile
+  }
+}
+
+const initialState = 'stopped'
+let currentState = initialState
+
+const goToState = (stateToGoTo) => {
+  currentState = stateToGoTo
+  // Hide previous states
+  const els = document.querySelectorAll('.state')
+  els.forEach((el) => { el.style.display = 'none' })
+  const el = document.querySelector('.' + currentState)
+  el.style.display = 'block'
+
+  states[currentState]()
+}
+
+document.querySelectorAll('button[data-next-state]').forEach((el) => {
+  el.addEventListener('click', (e) => {
+    const nextState = e.target.getAttribute('data-next-state')
+    goToState(nextState)
+  })
+})
+
+goToState(initialState)
+
 // Start the app
-initView()
+// initView()
