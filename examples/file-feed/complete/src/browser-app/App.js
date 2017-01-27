@@ -6,7 +6,6 @@ import Preview from './Preview'
 import Peers from './Peers'
 import Status from './Status'
 import { isMediaFile } from './utils'
-import logo from './logo.svg'
 import './App.css'
 
 let dataStore
@@ -30,12 +29,8 @@ class App extends Component {
 
     // Initialize our DataStore, ie. start IPFS
     dataStore = DataStore.init({
-      // Directory to which save IPFS data to
-      IpfsDataDir: '/ipfs/ipfd-2',
-      // IPFS dev server: webrtc-star-signalling.cloud.ipfs.team
-      // SignalServer: '188.166.203.82:20000',
-      // Localhost webrtc-star server
-      SignalServer: '127.0.0.1:9090',
+      path: '/ipfs/' + new Date().toString(),
+      signalAddr: '/dns4/star-signal.cloud.ipfs.team'
     })
 
     dataStore.on('error', (e) => console.error(e))
@@ -73,7 +68,7 @@ class App extends Component {
       .slice()
       .reverse()
       .map((e) => e.payload.value)
-    
+
     this.setState({ files: files })
   }
 
@@ -81,13 +76,13 @@ class App extends Component {
     const elmType = type.split('/')[0]
     const typeAsText = isMediaFile(elmType) || elmType === 'text' ? elmType : 'raw'
     console.log(`Render '${name}' as ${typeAsText} (${type})`)
-    this.setState({ 
-      preview: { 
-        hash: hash, 
+    this.setState({
+      preview: {
+        hash: hash,
         type: elmType,
         name: name,
         size: size
-      } 
+      }
     })
   }
 
@@ -121,21 +116,21 @@ class App extends Component {
 
     const dropzone = dragActive
       ? <Dropzone
-          className='App-dropzone'
-          activeClassName='App-dropzoneActive'
-          disableClick={true}
-          onDrop={this.onDrop.bind(this)}
-          onDragLeave={this.onDragLeave.bind(this)}>
-            <div ref='dropLabel'>Add files to '{this.state.feed}'</div>
-        </Dropzone>
+        className='App-dropzone'
+        activeClassName='App-dropzoneActive'
+        disableClick
+        onDrop={this.onDrop.bind(this)}
+        onDragLeave={this.onDragLeave.bind(this)}>
+        <div ref='dropLabel'>Add files to '{this.state.feed}'</div>
+      </Dropzone>
       : null
 
-    const instructions = this.props.params && this.props.params.hash === undefined 
+    const instructions = this.props.params && this.props.params.hash === undefined
         ? <div className='App-instructions'>
-            Open a file drop by adding the a name to the URL, eg.<br/>
-            <a href="/hello-world">http://localhost:3000/hello-world</a>
-            <br/>
-            Share the link with others and once connected, <br/>
+            Open a file drop by adding the a name to the URL, eg.<br />
+          <a href='/hello-world'>http://localhost:3000/hello-world</a>
+          <br />
+            Share the link with others and once connected, <br />
             you'll be able to share files between you.
           </div>
         : null
@@ -145,32 +140,32 @@ class App extends Component {
         peers={peers}
         files={files}
         onShowPeers={this.showPeers.bind(this, true)}
-        onOpenFile={this.openFile.bind(this)}/>
+        onOpenFile={this.openFile.bind(this)} />
       : null
 
     const previewElement = preview
-      ? <Preview hash={preview.hash} 
-                 type={preview.type}
-                 name={preview.name}
-                 size={preview.size}
-                 onClick={this.closeFile.bind(this)}/>
+      ? <Preview hash={preview.hash}
+        type={preview.type}
+        name={preview.name}
+        size={preview.size}
+        onClick={this.closeFile.bind(this)} />
       : null
 
     const peersElement = this.state.showPeers
       ? <Peers peers={peers}
-               onConnectTo={this.connectTo.bind(this)}
-               onClick={this.showPeers.bind(this, false)}/>
+        onConnectTo={this.connectTo.bind(this)}
+        onClick={this.showPeers.bind(this, false)} />
       : null
 
     return (
-      <div 
+      <div
         className='App'
         onDragEnter={this.onDragEnter.bind(this)}>
         {previewElement}
         {peersElement}
-        <img src={logo} className='App-logo' alt='logo' />
-        <h1>InterPlanetary File Exchange</h1>
-        <Status className='App-status' text={status}/>
+        <h1>File Feed</h1>
+        <h4>Synchronize series of files between browsers and Desktop with IPFS and OrbitDB</h4>
+        <Status className='App-status' text={status} />
         {dropzone}
         {feedElement}
         {instructions}

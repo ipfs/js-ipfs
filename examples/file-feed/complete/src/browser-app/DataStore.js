@@ -1,7 +1,7 @@
  // Need to include this to make webpack happy
 import { Buffer } from 'buffer/' // eslint-disable-line no-unused-vars
 import EventEmitter from 'events'
-import IPFS from './ipfs'
+import spawnNode from '../util/spawn-node'
 import OrbitDB from 'orbit-db'
 import { readFileContents } from './read-file'
 
@@ -10,7 +10,7 @@ let instance
 class DataStore extends EventEmitter {
   constructor (options) {
     super()
-    IPFS.create(options, (err, node) => {
+    spawnNode(options, (err, node) => {
       if (err) {
         console.log(err)
       }
@@ -50,7 +50,7 @@ class DataStore extends EventEmitter {
             resolve(buffer)
           })
         })
-        .catch(reject)      
+        .catch(reject)
     })
   }
 
@@ -80,9 +80,9 @@ class DataStore extends EventEmitter {
   }
 
   connectToPeer (multiaddr) {
-    console.log("Connect to:", multiaddr)
+    console.log('Connect to:', multiaddr)
     this.ipfs.swarm.connect(multiaddr)
-      .then((res) => console.log("Connected to", multiaddr))
+      .then((res) => console.log('Connected to', multiaddr))
       .catch((e) => console.error(e))
   }
 
@@ -98,7 +98,7 @@ class DataStoreSingleton {
   static init (options) {
     instance = !instance ? new DataStore(options) : instance
     return instance
-  }  
+  }
 }
 
 export default DataStoreSingleton
