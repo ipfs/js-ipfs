@@ -1,9 +1,23 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,700');
-
 body {
-  font-family: 'Roboto', sans-serif;
-  font-size: 1.0em;
-  font-weight: 400;
+  height: 100vh;
+  font-family: sans-serif;
+  color: white;
+  background: linear-gradient(to bottom,#041727 0%,#062b3f 100%);
+}
+
+.id {
+  margin-top: 30px;
+  font-size: 14px;
+}
+
+.id strong {
+  font-size: 17px;
+}
+
+#restart {
+  position: absolute;
+  top: 20px;
+  right: 20px;
 }
 
 h1 {
@@ -13,13 +27,21 @@ h1 {
 }
 
 h2 {
-  font-size: 1.25em;
+  font-size: 25px;
   font-weight: 700;
 }
 
 h3 {
   font-size: 1.0em;
   font-weight: 700;
+}
+
+p {
+  font-size: 17px;
+}
+
+.center {
+  text-align: center;
 }
 
 label {
@@ -44,29 +66,94 @@ input {
   color: red;
 }
 
-.center {
-  display: flex;
-  justify-content: center;
+.wrapper {
+  position: relative;
+  margin: 50px auto;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  width: 500px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 1px;
 }
 
-.ipfs {
-  min-width: 22em;
-  max-width: 44em;
-  flex-grow: 1;
-  flex-basis: 22em;
-  border: 1px dashed grey;
-  padding: 1em;
-  overflow: auto;
+.introduction {
+  width: 70%;
+  margin: 0px auto;
+  text-align: center;
 }
 
-.buttons {
-  margin-top: 1em;  
+.on-off-button {
+	position: absolute;
+	top: 10px;
+	right: 10px;
 }
 
-.picture {
-  margin-top: 1em;
-  width: 100%;
-  background-color: rgba(196, 196, 196, 0.1);
-  /*padding: 0.25em;*/
-  /*font-size: 1.2em;*/
+#directory {
+	text-align: center;
+}
+
+#directory .group {
+	margin: 30px;
+}
+
+#directory label {
+  font-size: 18px;
+  display: block;
+}
+
+textarea, input, button {
+  outline: none;
+}
+
+button:focus, input:focus {
+  outline: 5px solid #6acad1;
+}
+
+#peers {
+  margin: 10px;
+  text-align: left;
+  font-size: 14px;
+  word-break: break-all;
+}
+
+.peer-item {
+  margin-bottom: 15px;
+}
+
+#logo-link {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 32px;
+  overflow: hidden;
+}
+
+.button {
+  background-color: rgba(0,0,0,0.2);
+  color: #6acad1;
+  border: 2px solid #6acad1;
+  font-size: 15px;
+  padding: 10px 25px 10px 25px;
+  border-radius: 2px;
+}
+
+button:hover {
+  color: white;
+  border: 2px solid white;
+  cursor: pointer;
+}
+
+#directory input {
+  width: 70%;
+  font-size: 16px;
+  border: 2px solid #444;
+  color: black;
+  padding: 10px;
+  border-radius: 2px;
+  font-family: monospace;
+}
+
+.group-item {
+  display: inline;
+  line-height: 30px;
 }

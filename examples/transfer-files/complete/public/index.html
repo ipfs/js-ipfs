@@ -1,42 +1,67 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <link rel="stylesheet" href="css/app.css">
-
-    <script src="js/ipfs.js"></script>
-    <script src="js/create-node.js"></script>
+		<title>IPFS - Transfer Files Example</title>
   </head>
-
   <body>
+    <a href="https://ipfs.io" target="_blank" id="logo-link">
+      <img src="ipfs-logo.svg" height="32" id="logo">
+    </a>
+    <button id="restart" class="button" type="button" onclick="window.location.href = window.location.href">Restart</button>
     <div class="center">
-      <div id="ipfs" class="ipfs" ondragover="event.preventDefault()">
-        <h1 id="state" class="center"></h1>
+      <div id="ipfs" class="wrapper" ondragover="event.preventDefault()">
+        <h1 id="state" class="center">IPFS not running yet</h1>
         <div>
-          <div id="buttons" class="buttons center">
-            <button id="start" type="button">Start</button>
-            <button id="stop" type="button">Stop</button>
+          <div id="buttons" class="on-off-button">
           </div>
           <div id="directory">
-            <h2>IPFS Settings</h2>
-            <label for="dir">Data Directory</label>
-            <input id="dir" type="text" placeholder="IPFS data directory"/>
-            <br><br>
-            <label for="signalServerInput">Signal Server</label>
-            <input id="signalServerInput" type="text" value="188.166.203.82:20000"/>
+						<h2>Setup</h2>
+						<div class="introduction">
+							<p>
+							  Here you can configure where to keep your IPFS configuration
+							  and which signaling server to use.
+							</p>
+              <p>
+                When you're ready, click "Go Online" to start the IPFS daemon
+                in the background
+              </p>
+						</div>
+						<div class="group">
+              <div class="group-item">
+                <label for="dir">Data Directory:</label>
+              </div>
+              <div class="group-item">
+                <input id="dir" type="text" placeholder="IPFS data directory"/>
+              </div>
+						</div>
+						<div class="group">
+              <div class="group-item">
+                <label for="signalServerInput">Signal Server:</label>
+              </div>
+              <div class="group-item">
+                <input id="signalServerInput" type="text" value="star-signal.cloud.ipfs.team"/>
+              </div>
+						</div>
+            <button id="start" class="button" type="button">Go Online</button>
           </div>
         </div>
-        <div id="details"></div>
-        <div id="peers"></div>
-        <div id="files">
-          <h2>Files</h2>
-          <div id="filesStatus"></div>
-          <br>
-          <label for="multihash">Mutihash</label>
-          <input id="multihash" type="text" placeholder="Multihash"/>
-          <button id="cat" type="button">Cat</button>
-          <img id="picture" alt=""/>
+        <div id="details" class="hidden"></div>
+        <div id="peers" class="hidden"></div>
+        <div id="files" class="hidden">
+          <div>
+            <label for="multihash">Mutihash</label>
+            <input id="multihash" type="text" placeholder="Multihash"/>
+            <button id="cat" type="button">Cat</button>
+          </div>
+          <div>
+            <label for="connect-peer">Connect peer</label>
+            <input class="connect-peer" type="text" placeholder="Multiaddr: ex /ip4/192.168.1.131/tcp/9999/ws "/>
+            <button class="connect-peer" type="button">Connect</button>
+          </div>
         </div>
-        <pre id="errors"></pre>
+        <pre id="errors" class="hidden"></pre>
       </div>
     </div>
 
