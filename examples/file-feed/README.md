@@ -12,7 +12,47 @@ That being said, we will explain throughout this tutorial to circunvent the cave
 
 # Application diagram
 
-`TODO - Explain in a diagram how things fit with each other`
+```sh
+                                                                                      
+                                                                                      
+       ┌───────────────────────┐                             ┌───────────────────────┐
+       │                       │                             │                       │
+       │       React UI        │                             │       React UI        │
+       │                       │WebRTC Transport             │                       │
+       ├───────────────────────┤OrbitDB syncs state of feeds ├───────────────────────┤
+       │                       │IPFS distributes the files   │                       │
+       │       File Feed       │◀───────────────────────────▶│       File Feed       │
+       │                       │                             │                       │
+       ├───────────┬───────────┤                             ├───────────┬───────────┤
+       │           │           │                             │           │           │
+       │  OrbitDB  │   IPFS    │                             │  OrbitDB  │   IPFS    │
+       │           │           │                             │           │           │
+       └───────────┼───────────┤                             └───────────┼───────────┤
+                   │  libp2p   │                                         │  libp2p   │
+                   └───────────┘                                         └───────────┘
+                   ▲                                                     ▲            
+                   │                                                     │            
+                   │                                                     │            
+                   │                       WebRTC or WebSockets Transport│            
+                   │                                                     │            
+                   │   ┌───────────────────────┐                         │            
+                   │   │                       │                         │            
+                   │   │       CLI             │                         │            
+                   │   │                       │                         │            
+                   │   ├───────────────────────┤                         │            
+                   │   │                       │                         │            
+                   └──▶│       File Feed       │◀────────────────────────┘            
+                       │                       │                                      
+                       ├───────────┬───────────┤                                      
+                       │           │           │                                      
+                       │  OrbitDB  │   IPFS    │                                      
+                       │           │           │                                      
+                       └───────────┼───────────┤                                      
+                                   │  libp2p   │                                      
+                                   └───────────┘                                      
+```
+
+This app, file feed, will use OrbitDB over IPFS/libp2p PubSub to synchronize the latest state of feed, then using IPFS primitives to fetch and distribute the files. IPFS is using libp2p, the networking stack of IPFS, that enables IPFS to work in the Browser and in Node.js by swapping its building blocks, supporting multiple transports while keeping the same API.
 
 ## Check out the final state
 
