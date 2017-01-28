@@ -2,15 +2,27 @@
 'use strict'
 
 const expect = require('chai').expect
+const isNode = require('detect-node')
+const series = require('async/series')
 
-const IPFS = require('../../../src/core')
+// This gets replaced by require('../utils/create-repo-browser.js')
+// in the browser
+const createTempRepo = require('../utils/create-repo-node.js')
+
+const IPFS = require('../../src/core')
 
 describe('bootstrap', () => {
-  var ipfs
+  if (!isNode) { return }
+
+  let ipfs
 
   before((done) => {
-    ipfs = new IPFS(require('../../utils/repo-path'))
-    ipfs.load(done)
+    const repo = createTempRepo()
+    ipfs = new IPFS(repo)
+    series([
+      (cb) => ipfs.init({ bits: 1024 }, cb),
+      (cb) => ipfs.load(cb)
+    ], done)
   })
 
   const defaultList = [
