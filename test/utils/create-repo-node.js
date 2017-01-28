@@ -14,7 +14,7 @@ function createTempRepo (repoPath) {
 
   repo.teardown = (done) => {
     clean(repoPath)
-    done()
+    setImmediate(() => done())
   }
 
   return repo

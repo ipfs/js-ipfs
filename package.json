@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.21.2",
+  "version": "0.21.3",
   "description": "JavaScript implementation of the IPFS specification",
   "bin": {
     "jsipfs": "src/cli/bin.js"
@@ -10,7 +10,7 @@
     "libp2p-ipfs-nodejs": "libp2p-ipfs-browser",
     "./src/core/default-repo.js": "./src/core/default-repo-browser.js",
     "./src/core/components/init-assets.js": false,
-    "./test/utils/temp-repo.js": "./test/utils/temp-repo-browser.js",
+    "./test/utils/create-repo-node.js": "./test/utils/create-repo-browser.js",
     "stream": "readable-stream"
   },
   "go-ipfs": {

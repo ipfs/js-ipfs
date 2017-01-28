@@ -36,33 +36,32 @@ describe('HTTP API', () => {
     })
   })
 
-  describe('## direct tests (inject)', () => {
-    const tests = fs.readdirSync(path.join(__dirname, '/inject'))
+  describe('## http-api spec tests', () => {
+    const tests = fs.readdirSync(path.join(__dirname, '/spec'))
 
     tests.filter((file) => {
       return file.match(/test-.*\.js/)
     }).forEach((file) => {
-      require('./inject/' + file)(http)
+      require('./spec/' + file)(http)
     })
   })
 
   describe('## interface-ipfs-core tests over ipfs-api', () => {
-    const tests = fs.readdirSync(path.join(__dirname,
-          '/interface-ipfs-core-over-ipfs-api'))
+    const tests = fs.readdirSync(path.join(__dirname, '/interface'))
     tests.filter((file) => {
       return file.match(/test-.*\.js/)
     }).forEach((file) => {
-      require('./interface-ipfs-core-over-ipfs-api/' + file)
+      require('./interface/' + file)
     })
   })
 
   describe('## custom ipfs-api tests', () => {
-    const tests = fs.readdirSync(path.join(__dirname, '/custom-ipfs-api'))
+    const tests = fs.readdirSync(path.join(__dirname, '/over-ipfs-api'))
     const ctl = APIctl('/ip4/127.0.0.1/tcp/6001')
     tests.filter((file) => {
       return file.match(/test-.*\.js/)
     }).forEach((file) => {
-      require('./custom-ipfs-api/' + file)(ctl)
+      require('./over-ipfs-api/' + file)(ctl)
     })
   })
 })
