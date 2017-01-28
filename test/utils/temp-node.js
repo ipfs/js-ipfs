@@ -5,7 +5,7 @@ const leftPad = require('left-pad')
 const series = require('async/series')
 
 const IPFS = require('../../src/core')
-const createTempRepo = require('./temp-repo')
+const createTempRepo = require('./create-repo-node.js')
 
 function setAddresses (repo, num, callback) {
   repo.config.get((err, config) => {

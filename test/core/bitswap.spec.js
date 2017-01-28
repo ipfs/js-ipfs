@@ -16,7 +16,11 @@ const API = require('ipfs-api')
 const multiaddr = require('multiaddr')
 const isNode = require('detect-node')
 
-const IPFS = require('../../../src/core')
+// This gets replaced by require('../utils/create-repo-browser.js')
+// in the browser
+const createTempRepo = require('../utils/create-repo-node.js')
+
+const IPFS = require('../../src/core')
 
 function makeBlock (cb) {
   return cb(null, new Block(`IPFS is awesome ${Math.random()}`))
@@ -27,19 +31,24 @@ describe('bitswap', () => {
   let swarmAddrsBak
 
   beforeEach((done) => {
-    inProcNode = new IPFS(require('../../utils/repo-path'))
-    if (!isNode) {
-      inProcNode.config.get('Addresses.Swarm', (err, swarmAddrs) => {
-        expect(err).to.not.exist
-        swarmAddrsBak = swarmAddrs
-        inProcNode.config.set('Addresses.Swarm', [], (err) => {
-          expect(err).to.not.exist
-          inProcNode.load(done)
-        })
-      })
-    } else {
-      inProcNode.load(done)
-    }
+    const repo = createTempRepo()
+    inProcNode = new IPFS(repo)
+    series([
+      (cb) => inProcNode.init({ bits: 2048 }, cb),
+      (cb) => {
+        if (!isNode) {
+          inProcNode.config.get('Addresses.Swarm', (err, swarmAddrs) => {
+            expect(err).to.not.exist
+            swarmAddrsBak = swarmAddrs
+            inProcNode.config.set('Addresses.Swarm', [], cb)
+          })
+        } else {
+          cb()
+        }
+      },
+      (cb) => inProcNode.config.set('Discovery.MDNS.Enabled', false, cb),
+      (cb) => inProcNode.load(cb)
+    ], done)
   })
 
   afterEach((done) => {
