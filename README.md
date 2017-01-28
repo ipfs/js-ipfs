@@ -18,7 +18,7 @@
   </a>
   <br>
   <a href="https://waffle.io/ipfs/js-ipfs">
-    <img src="https://img.shields.io/badge/pm-waffle-yellow.svg?style=flat-square" />
+    <img src="https://img.shields.io/badge/pm-waffle-blue.svg?style=flat-square" />
   </a>
   <a href="https://github.com/ipfs/interface-ipfs-core">
     <img src="https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg">
