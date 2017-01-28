@@ -70,44 +70,47 @@ const catFile = () => {
   errors.className = 'hidden'
 
   if (multihash) {
-    ipfs.files.cat(multihash, (err, stream) => {
+    ipfs.files.get(multihash, (err, stream) => {
       if (err) onError(err)
       // TODO files.get doesnt work properly...
       // when it's working, this should be used instead
-      // stream.on('data', (file) => {
-      //   console.log(file)
-      //   const buf = []
-      //   file.content.on('data', (data) => {
-      //     console.log('file got data')
-      //     buf.push(data)
-      //   })
-      //   file.content.on('end', (data) => {
-      //     console.log('file got end')
-      //     console.log(buf.join(''))
-      //   })
-      // })
-      // stream.on('end', () => {
-      //   console.log('no more files')
-      // })
-      // TODO since .get doesn't work, we use the following code with .cat instead
-      const buf = []
-      stream.on('data', (data) => {
-        buf.push(data.toString())
+      console.log(stream)
+      stream.on('data', (file) => {
+        console.log(file)
+        const buf = []
+        if (file.content) {
+          file.content.on('data', (data) => {
+            console.log('file got data')
+            buf.push(data)
+          })
+          file.content.on('end', (data) => {
+            console.log('file got end')
+            console.log(buf)
+          })
+        }
       })
       stream.on('end', () => {
-        const downloadContent = window.btoa(window.unescape(window.encodeURIComponent(buf.join(''))))
-        const downloadLink = 'data:application/octet-stream;charset=utf-8;base64,' + downloadContent
-        const listItem = document.createElement('div')
-        const link = document.createElement('a')
-        link.setAttribute('href', downloadLink)
-        link.setAttribute('download', multihash)
-        const date = (new Date()).toLocaleTimeString()
-        link.innerText = date + ' - ' + multihash
-        const fileList = document.querySelector('.file-list')
-
-        listItem.appendChild(link)
-        fileList.insertBefore(listItem, fileList.firstChild)
+        console.log('no more files')
       })
+      // TODO since .get doesn't work, we use the following code with .cat instead
+      // const buf = []
+      // stream.on('data', (data) => {
+      //   buf.push(data.toString())
+      // })
+      // stream.on('end', () => {
+      //   const downloadContent = window.btoa(window.unescape(window.encodeURIComponent(buf.join(''))))
+      //   const downloadLink = 'data:application/octet-stream;charset=utf-8;base64,' + downloadContent
+      //   const listItem = document.createElement('div')
+      //   const link = document.createElement('a')
+      //   link.setAttribute('href', downloadLink)
+      //   link.setAttribute('download', multihash)
+      //   const date = (new Date()).toLocaleTimeString()
+      //   link.innerText = date + ' - ' + multihash
+      //   const fileList = document.querySelector('.file-list')
+
+      //   listItem.appendChild(link)
+      //   fileList.insertBefore(listItem, fileList.firstChild)
+      // })
     })
   }
 }
@@ -216,6 +219,9 @@ function initView () {
   stopButton.addEventListener('click', stop)
   catButton.addEventListener('click', catFile)
   $connectPeerButton.addEventListener('click', connectPeer)
+
+  $connectPeer.value = '/ip4/0.0.0.0/tcp/9999/ws/ipfs/QmSGmyZtL3BPLxkF9yyaitLsotvratuqeWq1UR8V9BDXcV'
+  multihashInput.value = 'QmXxyxhxbt9TU4pJFdpAnqAsTraCMvCNsWsyfe2ZZUjJUn'
 }
 
 function updateView (state, ipfs) {
