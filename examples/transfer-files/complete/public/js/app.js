@@ -50,6 +50,7 @@ const stop = () => {
 const connectPeer = (e) => {
   e.target.disabled = true
   ipfs.swarm.connect($connectPeer.value, (err) => {
+    $connectPeer.value = ''
     if (err) return onError(err)
     setTimeout(() => {
       e.target.disabled = false
@@ -61,6 +62,7 @@ const connectPeer = (e) => {
 const catFile = () => {
   // Get the hash to cat from the input field
   const multihash = multihashInput.value
+  multihashInput.value = ''
 
   // Update UI
   picture.innerHTML = multihash ? '<i>Loading...</i>' : ''
