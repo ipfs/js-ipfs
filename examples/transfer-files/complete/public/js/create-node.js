@@ -3,8 +3,8 @@
 /*
  * Create an IPFS node helper
  */
-window.createNode = (options, callback) => {
-  const repoPath = options.path || '/tmp/ipfs' + Math.random()
+window.createNode = (callback) => {
+  const repoPath = '/tmp/ipfs' + Math.random()
   const node = new window.Ipfs(repoPath)
 
   node.init({ emptyRepo: true, bits: 2048 }, updateConfig)
@@ -18,10 +18,8 @@ window.createNode = (options, callback) => {
       if (err) {
         return callback(err)
       }
-
-      const wstarMultiaddr = `/libp2p-webrtc-star/dns/${options.signalAddr}/wss/ipfs/${config.Identity.PeerID}`
-
-      console.log(wstarMultiaddr)
+      const signalDomain = 'star-signal.cloud.ipfs.team'
+      const wstarMultiaddr = `/libp2p-webrtc-star/dns/${signalDomain}/wss/ipfs/${config.Identity.PeerID}`
 
       config.Addresses.Swarm = config.Addresses.Swarm.concat([ wstarMultiaddr ])
 

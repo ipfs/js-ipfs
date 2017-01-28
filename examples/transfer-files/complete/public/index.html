@@ -7,58 +7,62 @@
     <script src="js/create-node.js"></script>
   </head>
 
-  <body>
+  <body ondragover="event.preventDefault()">
+    <div class="dragover-popup">
+      <h1>Drop file to upload</h1>
+    </div>
     <div class="header">
       <a href="https://ipfs.io" target="_blank">
         <img src="ipfs-logo.svg" height="32" id="logo">
       </a>
 			<h1>Transfer Files</h1>
+      <div class="note">
+        <i>P.S. drop files anywhere to upload them!</i>
+      </div>
     </div>
     <div class="wrapper">
-      <div id="ipfs" class="ipfs" ondragover="event.preventDefault()">
-					<div class="left centered">
-						<div id="buttons" class="buttons">
-							<button id="start" type="button">Start IPFS</button>
-							<button id="stop" type="button">Stop IPFS</button>
-						</div>
-						<div class="settings">
-							<h2>Daemon Settings</h2>
-							<div class="setting-item">
-								<label for="dir">Data Directory</label><br/>
-								<input id="dir" type="text" placeholder="IPFS data directory"/>
-							</div>
-							<div class="setting-item">
-								<label for="signalServerInput">Signal Server</label><br/>
-								<input id="signalServerInput" type="text" value="star-signal.cloud.ipfs.team"/>
-							</div>
-						</div>
-						<div id="details"></div>
-					</div>
-					<div class="right hidden">
-						<div id="peers">
-							<h2>Remote Peers</h2>
-						</div>
-						<div>
-							<input type="text" class="connect-peer" placeholder="Multiaddr" value="/ip4/192.168.1.131/tcp/9999/ws/ipfs/QmRJC9JnVCy5mZcAP6djLvku8hgmgJzUpmm8USL98kiKR5"/>
-							<button class="connect-peer">Connect</button>
-						</div>
-					</div>
-        <div>
-        </div>
-        <div id="files">
-          <h2>Files</h2>
-          <div id="filesStatus"></div>
-
-          <div>
-          	<label for="multihash">Multihash</label>
-          	<input id="multihash" type="text" placeholder="Multihash"/>
-          	<button id="cat" type="button">Cat</button>
+      <div id="ipfs" class="ipfs" >
+        <div class="left">
+          <div id="buttons" class="buttons">
+            <button id="start" type="button">Start IPFS</button>
+            <button id="stop" disabled type="button">Stop IPFS</button>
           </div>
+          <div id="details" class="disabled">
+            <h2>Your daemon</h2>
+            <h3>ID</h3>
+            <pre class='id-container'>N/A</pre>
+            <h3>Addresses</h3>
+            <ul class='addresses-container'>
+              <li>Not yet online</li>
+            </ul>
+          </div>
+        </div>
+        <div class="right">
+          <div id="peers" class="disabled">
+            <h2>Remote Peers</h2>
+          </div>
+          <div>
+            <input disabled type="text" class="connect-peer" placeholder="Multiaddr" value="/ip4/0.0.0.0/tcp/15000/ws/ipfs/QmZWSnyATraTHnzdkVsqkCSrRYDXzwVkPyZUiMivvWbn5w"/>
+            <button disabled class="connect-peer">Connect to peer</button>
+          </div>
+        </div>
+        <div class="clear"></div>
+        <div id="files">
+          <div class="multihash-wrapper">
+          	<input disabled id="multihash" type="text" placeholder="Multihash" value="QmWTWTGSEBhaB5RtRwrC7zaRNp1MAFStwHWKFecahF3qxx" />
+          	<button disabled id="cat" type="button">Fetch File</button>
+						<div class="clear"></div>
+          </div>
+
+					<div class="file-list"></div>
 
           <div>
           	<img id="picture" alt=""/>
           </div>
 
+          <div id="filesStatus">
+            <i>Drop files anywhere to upload them</i>
+          </div>
         </div>
         <pre id="errors"></pre>
       </div>
