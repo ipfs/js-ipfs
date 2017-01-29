@@ -193,12 +193,7 @@ const updatePeers = () => {
 }
 
 // TODO remove the whole initView, should be initial markup in index.html
-function initView () {
-  $errors.innerHTML = ''
-  $errors.className = 'hidden'
-  $startButton.disabled = false
-  $stopButton.disabled = true
-
+function setupEventListeners () {
   // Setup event listeners for interaction
   document.querySelector('body').addEventListener('dragenter', onDragEnter)
   document.querySelector('body').addEventListener('drop', onDrop)
@@ -246,4 +241,4 @@ function updateView (state, ipfs) {
 }
 
 // Start the app
-initView()
+setupEventListeners()
