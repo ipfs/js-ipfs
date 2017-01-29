@@ -215,8 +215,8 @@ function initView () {
   $multihashInput.value = 'QmXxyxhxbt9TU4pJFdpAnqAsTraCMvCNsWsyfe2ZZUjJUn'
 }
 
-function updateView (state, ipfs) {
-  if (state === 'ready') {
+const states = {
+  ready: () => {
     const addressesHtml = peerInfo.addresses.map((address) => {
       return '<li><span class="address">' + address + '</span></li>'
     }).join('')
@@ -231,10 +231,17 @@ function updateView (state, ipfs) {
 
     $stopButton.disabled = false
     $startButton.disabled = true
-  } else if (state === 'starting') {
+  },
+  starting: () => {
     $startButton.disabled = true
-  } else if (state === 'stopped') {
-    initView()
+  }
+}
+
+function updateView (state, ipfs) {
+  if (states[state] !== undefined) {
+    states[state]()
+  } else {
+    throw new Error('Could not find state "' + state + '"')
   }
 }
 
