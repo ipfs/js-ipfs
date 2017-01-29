@@ -20,6 +20,12 @@ const $allDisabledInputs = document.querySelectorAll('input:disabled')
 let ipfs
 let peerInfo
 
+// TODO groups
+// ipfs stuff
+// creating html stuff
+// event listeners
+// states
+
 function start () {
   if (!ipfs) {
     updateView('starting', ipfs)
@@ -74,6 +80,19 @@ const catFile = () => {
             console.log('file got end')
             console.log(buf)
           })
+          // TODO currently, can't grab content from file either in get...
+          const downloadContent = window.btoa(window.unescape(window.encodeURIComponent('content of file')))
+          const downloadLink = 'data:application/octet-stream;charset=utf-8;base64,' + downloadContent
+          const listItem = document.createElement('div')
+          const link = document.createElement('a')
+          link.setAttribute('href', downloadLink)
+          link.setAttribute('download', multihash)
+          const date = (new Date()).toLocaleTimeString()
+          link.innerText = date + ' - ' + multihash + ' - Size: ' + file.size
+          const fileList = document.querySelector('.file-list')
+
+          listItem.appendChild(link)
+          fileList.insertBefore(listItem, fileList.firstChild)
         }
       })
       stream.on('end', () => {
@@ -208,4 +227,8 @@ function updateView (state, ipfs) {
   }
 }
 
-setupEventListeners()
+const startApplication = () => {
+  setupEventListeners()
+}
+
+startApplication()
