@@ -62,6 +62,7 @@ const stop = () => {
 
 const connectPeer = (e) => {
   e.target.disabled = true
+  // Connect directly to a peer via it's multiaddr
   ipfs.swarm.connect($connectPeer.value, (err) => {
     console.log(err)
     if (err) return onError(err)
@@ -77,13 +78,16 @@ const catFile = () => {
   $multihashInput.value = ''
   $errors.className = 'hidden'
   if (multihash) {
+    // Get a file or many files
     ipfs.files.get(multihash, (err, stream) => {
       if (err) onError(err)
       console.log(stream)
+      // .get gives us a stream of files
       stream.on('data', (file) => {
         console.log(file)
         const buf = []
         if (file.content) {
+          // once we get a file, we also want to read the data for that file
           file.content.on('data', (data) => {
             console.log('file got data')
             buf.push(data)
@@ -100,6 +104,7 @@ const catFile = () => {
           link.setAttribute('href', downloadLink)
           link.setAttribute('download', multihash)
           const date = (new Date()).toLocaleTimeString()
+
           link.innerText = date + ' - ' + multihash + ' - Size: ' + file.size
           const fileList = document.querySelector('.file-list')
 
@@ -180,6 +185,8 @@ const onDrop = (event) => {
 // Get peers from IPFS and display them
 let numberOfPeersLastTime = 0
 const updatePeers = () => {
+  // Once in a while, we need to refresh our list of peers in the UI
+  // .swarm.peers returns an array with all our currently connected peer
   ipfs.swarm.peers((err, res) => {
     if (err) onError(err)
     if (numberOfPeersLastTime !== res.length) {
@@ -206,10 +213,6 @@ function setupEventListeners () {
   $stopButton.addEventListener('click', stop)
   $catButton.addEventListener('click', catFile)
   $connectPeerButton.addEventListener('click', connectPeer)
-
-  // TODO temporary default values, remove before merging
-  $connectPeer.value = '/ip4/0.0.0.0/tcp/9999/ws/ipfs/QmSGmyZtL3BPLxkF9yyaitLsotvratuqeWq1UR8V9BDXcV'
-  $multihashInput.value = 'QmXxyxhxbt9TU4pJFdpAnqAsTraCMvCNsWsyfe2ZZUjJUn'
 }
 
 const states = {
