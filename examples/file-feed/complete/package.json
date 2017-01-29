@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "browserify-zlib-next": "^1.0.1",
+    "ipfs-api": "ipfs/js-ipfs-api#6ee082c6a17ea7ddd1297595691f9b83209518d3",
     "mime": "^1.3.4",
     "orbit-db": "^0.16.1",
     "react": "^15.4.2",

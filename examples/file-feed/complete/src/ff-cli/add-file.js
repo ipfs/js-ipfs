@@ -2,15 +2,14 @@
 
 const path = require('path')
 const OrbitDB = require('orbit-db')
-const spawnNode = require('../util/spawn-node')
+const ipfsApi = require('ipfs-api')
 const waitForPeers = require('./wait-for-peers')
 const listFiles = require('./list-files')
 const readFileContents = require('./read-file-contents')
 const nodeOptions = require('./node1.config.js')
 
 function addFile (feed, fileToAdd) {
-  spawnNode(nodeOptions, (err, node) => {
-    if (err) { throw err }
+  const node = ipfsApi('localhost', 5002)
 
     const orbitdb = new OrbitDB(node)
     const db = orbitdb.eventlog(feed, { cachePath: nodeOptions.orbitdbPath })
@@ -53,13 +52,12 @@ function addFile (feed, fileToAdd) {
 
       return addToIpfs(filePath, file.content)
         .then((res) => addToOrbitDB(res[0], file.mime))
-        .then(() => listFiles(db))        
+        .then(() => listFiles(db))
     }
 
     function exit () {
-      setTimeout(() => process.exit(0), 1000)      
+      setTimeout(() => process.exit(0), 1000)
     }
-  })
 }
 
 module.exports = addFile
