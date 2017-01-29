@@ -20,9 +20,21 @@ const $allDisabledInputs = document.querySelectorAll('input:disabled')
 let ipfs
 let peerInfo
 
-// TODO groups
+// TODO groups to refactor into
 // ipfs stuff
+//  start node
+//  get details
+//  get peers
+//  connect to peer
+//  get contents of hash
+//  add files to ipfs
 // creating html stuff
+//  list of peers / peers state
+//  add file to download list
+//  error handling
+//  show ipfs id
+//  show ipfs addressess
+// drag-and-drop
 // event listeners
 // states
 
