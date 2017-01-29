@@ -37,7 +37,7 @@ function start () {
 
         // Poll for peers from IPFS and display them
         setInterval(updatePeers, 1000)
-        peers.innerHTML = '<h2>Remote Peers</h2><i>Waiting for peers...</i>'
+        peers.innerHTML = '<h2>Peers</h2><i>Waiting for peers...</i>'
       })
     })
   }
