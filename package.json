@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.21.3",
+  "version": "0.21.5",
   "description": "JavaScript implementation of the IPFS specification",
   "bin": {
     "jsipfs": "src/cli/bin.js"
@@ -61,7 +61,7 @@
   },
   "homepage": "https://github.com/ipfs/js-ipfs#readme",
   "devDependencies": {
-    "aegir": "^9.3.3",
+    "aegir": "^9.4.0",
     "buffer-loader": "0.0.1",
     "chai": "^3.5.0",
     "delay": "^1.3.1",
@@ -109,8 +109,8 @@
     "isstream": "^0.1.2",
     "libp2p-floodsub": "0.7.1",
     "joi": "^10.2.0",
-    "libp2p-ipfs-nodejs": "^0.17.7",
-    "libp2p-ipfs-browser": "^0.17.6",
+    "libp2p-ipfs-nodejs": "^0.17.8",
+    "libp2p-ipfs-browser": "^0.17.7",
     "lodash.flatmap": "^4.5.0",
     "lodash.get": "^4.4.2",
     "lodash.has": "^4.5.2",
@@ -119,7 +119,7 @@
     "lodash.values": "^4.3.0",
     "mafmt": "^2.1.6",
     "multiaddr": "^2.2.0",
-    "multihashes": "^0.3.1",
+    "multihashes": "^0.3.2",
     "path-exists": "^3.0.0",
     "peer-book": "^0.3.0",
     "peer-id": "^0.8.1",
@@ -145,6 +145,7 @@
     "Andrew de Andrade <andrew@deandrade.com.br>",
     "Christian Couder <chriscool@tuxfamily.org>",
     "Daniel J. O'Quinn <danieljoquinn@gmail.com>",
+    "Daniela Borges Matos de Carvalho <alunassertiva@gmail.com>",
     "David Dias <daviddias.p@gmail.com>",
     "Felix Yan <felixonmars@archlinux.org>",
     "Francisco Baio Dias <xicombd@gmail.com>",
