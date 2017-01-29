@@ -10,19 +10,24 @@ let instance
 class DataStore extends EventEmitter {
   constructor (options) {
     super()
+    this.ipfs = null
+  }
+
+  init (options, callback) {
     spawnNode(options, (err, node) => {
       if (err) {
-        console.log(err)
+        callback(err)
+      } else {
+        this.ipfs = node
+        callback(null, this)
       }
-      this.ipfs = node
-      this.emit('ready')
     })
   }
 
   // Open an orbit-db database and hook up to the emitted events
   openFeed (name) {
     this.orbitdb = new OrbitDB(this.ipfs)
-    this.feed = this.orbitdb.feed(name, { cachePath: '/ipfd/ipfd2.db' })
+    this.feed = this.orbitdb.feed(name, { cachePath: '/file-feed.db' })
     this.feed.events.on('ready', () => this.emit('feed'))
     this.feed.events.on('history', () => this.emit('update'))
     this.feed.events.on('data', () => this.emit('update'))
@@ -30,28 +35,25 @@ class DataStore extends EventEmitter {
     this.timer = setInterval(() => this._updatePeers(name), 1000)
   }
 
-  getFile (hash) {
-    return new Promise((resolve, reject) => {
-      // Cat the contents of a multihash
-      this.ipfs.files.cat(hash)
-        .then((stream) => {
-          // Buffer all contents of the file as text
-          // and once buffered, create a blob for the picture
-          let buffer = []
-          let bytes = 0
-          stream.on('error', (e) => console.error(e))
-          stream.on('data', (d) => {
-            bytes += d.length
-            buffer.push(d)
-            this.emit('load', hash, bytes)
-          })
-          stream.on('end', () => {
-            this.emit('load', hash, bytes)
-            resolve(buffer)
-          })
+  getFile (hash, callback) {
+    // Cat the contents of a multihash
+    this.ipfs.files.cat(hash)
+      .then((stream) => {
+        // Buffer all contents of the file
+        let buffer = []
+        let bytes = 0
+        stream.on('error', callback)
+        stream.on('data', (d) => {
+          bytes += d.length
+          buffer.push(d)
+          this.emit('load', hash, bytes)
         })
-        .catch(reject)
-    })
+        stream.on('end', () => {
+          this.emit('load', hash, bytes)
+          callback(null, buffer)
+        })
+      })
+      .catch(callback)
   }
 
   addFiles (file) {
@@ -70,13 +72,14 @@ class DataStore extends EventEmitter {
       })
     }
 
-    readFileContents(file)
-      .then((content) => addToIpfs(file.name, content))
-      .then((files) => {
-        files.forEach((e) => addToOrbitDB(e, file.type))
-      })
-      .then(() => this.emit('file', file))
-      .catch((e) => console.error(e))
+    readFileContents(file, (err, content) => {
+      addToIpfs(file.name, content)
+        .then((files) => {
+          files.forEach((e) => addToOrbitDB(e, file.type))
+        })
+        .then(() => this.emit('file', file))
+        .catch((e) => console.error(e))      
+    })
   }
 
   connectToPeer (multiaddr) {
@@ -95,9 +98,13 @@ class DataStore extends EventEmitter {
 }
 
 class DataStoreSingleton {
-  static init (options) {
-    instance = !instance ? new DataStore(options) : instance
-    return instance
+  static init (options, callback) {
+    if (!instance) {
+      instance = new DataStore()
+      instance.init(options, callback)
+    } else {
+      callback(null, instance)
+    }
   }
 }
 

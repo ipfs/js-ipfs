@@ -17,6 +17,7 @@
     "react-router": "^3.0.1"
   },
   "scripts": {
+    "postinstall": "cp config/webpack.config.dev.js node_modules/react-scripts/config/webpack.config.dev.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",

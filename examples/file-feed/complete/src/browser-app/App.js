@@ -28,13 +28,16 @@ class App extends Component {
     this.setStatus('Starting IPFS')
 
     // Initialize our DataStore, ie. start IPFS
-    dataStore = DataStore.init({
-      path: '/ipfs/' + new Date().toString(),
+    DataStore.init({
+      path: '/ipfs-file-feed/',
       signalAddr: '/dns4/star-signal.cloud.ipfs.team'
-    })
+    }, (err, res) => {
+      if (err) {
+        console.error(err)
+        return
+      }
 
-    dataStore.on('error', (e) => console.error(e))
-    dataStore.on('ready', () => {
+      dataStore = res
       this.setStatus('IPFS Started', 5000)
 
       const feedName = this.props.params.hash

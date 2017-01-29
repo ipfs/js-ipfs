@@ -8,12 +8,24 @@ const multiaddr = require('multiaddr')
 const series = require('async/series')
 
 function spawnNode (options, callback) {
-  options.path = options.path || '/ipfd/tmp/' + Math.random()
+  options.path = options.path || '/ipfs/'
+  options.initRepo = options.initRepo || true
 
   const node = new IPFS(options.path)
 
   series([
-    (cb) => node.init({ emptyRepo: true, bits: 2048 }, cb),
+    (cb) => {
+      node.init({ emptyRepo: true, bits: 2048 }, (err) => {
+        if (err) {
+          const errStr = String(err).match(/repo already exists/)
+          if (errStr.length > 0) {
+            cb(null)
+          }
+        } else {
+          cb(null)
+        }
+      })
+    },
     (cb) => {
       node.config.get((err, config) => {
         if (err) { return cb(err) }

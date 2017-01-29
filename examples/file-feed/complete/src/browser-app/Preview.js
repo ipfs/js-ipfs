@@ -13,7 +13,10 @@ class Preview extends Component {
       progress: 'Loading...'
     }
     // Get a DataStore instance (singleton across the app)
-    dataStore = DataStore.init()
+    DataStore.init(null, (err, res) => {
+      if (err) { console.error(err) }
+      dataStore = res
+    })
     this.handleLoadProgress = this.handleLoadProgress.bind(this)
   }
 
@@ -22,16 +25,18 @@ class Preview extends Component {
 
     dataStore.on('load', this.handleLoadProgress)
 
-    dataStore.getFile(this.props.hash)
-      .then((content) => {
+    dataStore.getFile(this.props.hash, (err, content) => {
+      if (err) {
+        console.error(err)
+      } else {
         const data = isMediaFile(this.props.type)
           ? URL.createObjectURL(new Blob(content))
           : content.map((e) => e.toString()).join('')
 
         // Set the content for this preview
         this.setState({ data: data })
-      })
-      .catch((e) => console.error(e))
+      }
+    })
   }
 
   componentWillUnmount () {
