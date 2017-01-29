@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer'
 import EventEmitter from 'events'
 import spawnNode from '../util/spawn-node'
 import OrbitDB from 'orbit-db'

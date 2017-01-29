@@ -1,5 +1,19 @@
 # Tutorial - Synchronize and distribute folders with files.
 
+**WIP**
+
+## Run
+
+1. Run a go-ipfs daemon with a WS address and --enable-pubsub-experiment flag, with API at port 5001
+2. Run `node src/ff-cli/bin.js add hello package.json`
+3. Change the following line in `src/ff-cli/receive-files.js` to include your go-ipfs daemon WS addres: `node.swarm.connect('/ip4/0.0.0.0/tcp/9999/ws/ipfs/QmZGH8GeASSkSZoNLPEBu1MqtzLTERNUEwh9yTHLEF5kcW', (err, res) => {`
+4. Run `node src/ff-cli/bin.js listen hello`
+5. It works!
+
+Note that the run order is important, running the ff-cli other way round won't work.
+
+## Coming up
+
 > Welcome! This tutorial will guide you through building a web application for file distribution, using React, OrbitDB (a distributed key-value store) and libp2p PubSub. You will learn how to distribute content and how to synchronize state in a distributed way.
 
 There are a couple of caveats:

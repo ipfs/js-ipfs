@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports = {
   path: './ff-cli-data/node2/ipfs',
   orbitdbPath: './ff-cli-data/node1/orbitdb',
