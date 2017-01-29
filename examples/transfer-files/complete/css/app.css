@@ -17,13 +17,13 @@ body {
 }
 
 .wrapper {
-	width: 900px;
-	margin: 0 auto;
+  width: 900px;
+  margin: 0 auto;
   /* filter: blur(5px); */
 }
 
 .header {
-	text-align: center;
+  text-align: center;
   /* filter: blur(5px); */
 }
 
@@ -52,8 +52,8 @@ h3 {
 
 
 .header h1 {
-	margin-top: 20px;
-	margin-bottom: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .hidden {
@@ -71,28 +71,28 @@ h3 {
 }
 
 .ipfs {
-	padding-bottom: 50px;
+  padding-bottom: 50px;
   border-radius: 1px;
-	box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 #details {
-	padding: 10px;
-	width: 100%;
-	box-sizing: border-box;
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 ul {
-	margin: 0px; padding: 0px;
-	list-style: none;
+  margin: 0px; padding: 0px;
+  list-style: none;
   font-size: 11px;
 }
 
 ul li {
-	margin-top: 10px;
-	margin-bottom: 10px;
-	font-size: 9px;
-	word-wrap: break-word;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 9px;
+  word-wrap: break-word;
 }
 
 button {
@@ -102,24 +102,24 @@ button {
   font-size: 15px;
   padding: 10px 25px 10px 25px;
   border-radius: 2px;
-	margin: 5px;
+  margin: 5px;
 }
 
 .multihash-wrapper input {
-	width: 80%;
-	float: left;
-	height: 40px;
-	margin-left: 1%;
-	font-size: 16px;
+  width: 80%;
+  float: left;
+  height: 40px;
+  margin-left: 1%;
+  font-size: 16px;
   box-sizing: border-box;
 }
 
 .multihash-wrapper button {
-	width: 17%;
-	float: left;
-	height: 40px;
-	margin: 0px;
-	margin-left: 1%;
+  width: 17%;
+  float: left;
+  height: 40px;
+  margin: 0px;
+  margin-left: 1%;
 }
 
 .file-list {
@@ -128,15 +128,15 @@ button {
 }
 
 .file-list a {
-	font-size: 16px;
-	color: white;
-	display: block;
+  font-size: 16px;
+  color: white;
+  display: block;
 }
 
 button.connect-peer {
-	margin: 0px;
-	margin-top: 2px;
-	width: 100%;
+  margin: 0px;
+  margin-top: 2px;
+  width: 100%;
 }
 
 button:hover {
@@ -146,21 +146,21 @@ button:hover {
 }
 
 .address {
-	font-family: monospace
+  font-family: monospace
 }
 
 button:disabled {
-	opacity: 0.2;
+  opacity: 0.2;
 }
 input:disabled {
-	opacity: 0.2;
+  opacity: 0.2;
 }
 .disabled {
   opacity: 0.2;
 }
 
 input {
-	width: 100%;
+  width: 100%;
   border: 2px solid #444;
   color: black;
   padding: 7px;
@@ -185,25 +185,25 @@ button:focus, input:focus {
 }
 
 .settings {
-	padding: 15px;
+  padding: 15px;
 }
 
 .left {
-	box-sizing: border-box;
-	/* background-color: red; */
+  box-sizing: border-box;
+  /* background-color: red; */
 }
 
 .right {
-	/* background-color: green; */
+  /* background-color: green; */
 }
 
 .setting-item {
-	margin-top: 20px;
+  margin-top: 20px;
 }
 
 .left, .right {
-	width: 48%;
-	float: left;
+  width: 48%;
+  float: left;
   background-color: rgba(255, 255, 255, 0.05);
   box-sizing: border-box;
   margin: 1%;
@@ -219,13 +219,13 @@ button:focus, input:focus {
 }
 
 .left.centered {
-	float: none;
-	margin: 0px auto;
-	text-align: center;
+  float: none;
+  margin: 0px auto;
+  text-align: center;
 }
 
 .clear {
-	clear: both;
+  clear: both;
 }
 
 .note {
