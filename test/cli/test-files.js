@@ -89,5 +89,13 @@ describe('files', () => {
         ].join('\n'))
       })
     })
+
+    it('get recursively', () => {
+      return ipfs('files get QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU').then((out) => {
+        const directory = path.join(process.cwd(), 'QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU')
+        expect(fs.readdirSync(directory).length).to.be.eql(8)
+        // TODO add assertion on content of files
+      })
+    })
   })
 })
