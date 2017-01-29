@@ -1,14 +1,12 @@
 window.onerror = onError
 
-// const rootElement = document.getElementById('ipfs')
-const startButton = document.getElementById('start')
-const stopButton = document.getElementById('stop')
-// const details = document.getElementById('details')
-const peers = document.getElementById('peers')
-const errors = document.getElementById('errors')
-const filesStatus = document.getElementById('filesStatus')
-const multihashInput = document.getElementById('multihash')
-const catButton = document.getElementById('cat')
+const $startButton = document.querySelector('#start')
+const $stopButton = document.querySelector('#stop')
+const $peers = document.querySelector('#peers')
+const $errors = document.querySelector('#errors')
+const $filesStatus = document.querySelector('#filesStatus')
+const $multihashInput = document.querySelector('#multihash')
+const $catButton = document.querySelector('#cat')
 const $connectPeer = document.querySelector('input.connect-peer')
 const $connectPeerButton = document.querySelector('button.connect-peer')
 
@@ -36,7 +34,7 @@ function start () {
 
         // Poll for peers from IPFS and display them
         setInterval(updatePeers, 1000)
-        peers.innerHTML = '<h2>Peers</h2><i>Waiting for peers...</i>'
+        $peers.innerHTML = '<h2>Peers</h2><i>Waiting for peers...</i>'
       })
     })
   }
@@ -60,10 +58,10 @@ const connectPeer = (e) => {
 // Fetch file contents from IPFS and display it
 const catFile = () => {
   // Get the hash to cat from the input field
-  const multihash = multihashInput.value
-  multihashInput.value = ''
+  const multihash = $multihashInput.value
+  $multihashInput.value = ''
 
-  errors.className = 'hidden'
+  $errors.className = 'hidden'
 
   if (multihash) {
     ipfs.files.get(multihash, (err, stream) => {
@@ -114,12 +112,12 @@ const catFile = () => {
 function onError (e) {
   if (e.stack !== undefined) {
     console.error(e)
-    errors.innerHTML = '<span class="error">' + e.stack + '</span>'
+    $errors.innerHTML = '<span class="error">' + e.stack + '</span>'
   }
   if (typeof e === 'string') {
-    errors.innerHTML = '<span class="error">' + e + '</span>'
+    $errors.innerHTML = '<span class="error">' + e + '</span>'
   }
-  errors.className = 'error visible'
+  $errors.className = 'error visible'
 }
 
 const onDragEnter = () => {
@@ -138,7 +136,7 @@ const onDragExit = () => {
 // Handle file drop
 const onDrop = (event) => {
   onDragExit()
-  errors.className = 'hidden'
+  $errors.className = 'hidden'
 
   event.preventDefault()
   var dt = event.dataTransfer
@@ -165,8 +163,8 @@ const onDrop = (event) => {
       })
       .then((files) => {
         console.log('Files added', files)
-        multihashInput.value = files[0].hash
-        filesStatus.innerHTML = files
+        $multihashInput.value = files[0].hash
+        $filesStatus.innerHTML = files
           .map((e) => `Added ${e.path} as ${e.hash}`)
           .join('<br>')
       })
@@ -185,7 +183,7 @@ const updatePeers = () => {
           return '<li>' + p + '</li>'
         }).join()
 
-      peers.innerHTML = res.length > 0
+      $peers.innerHTML = res.length > 0
         ? '<h2>Remote Peers</h2><ul>' + peersAsHtml + '</ul>'
         : '<h2>Remote Peers</h2><i>Waiting for peers...</i>'
     } else {
@@ -196,10 +194,10 @@ const updatePeers = () => {
 
 // TODO remove the whole initView, should be initial markup in index.html
 function initView () {
-  errors.innerHTML = ''
-  errors.className = 'hidden'
-  startButton.disabled = false
-  stopButton.disabled = true
+  $errors.innerHTML = ''
+  $errors.className = 'hidden'
+  $startButton.disabled = false
+  $stopButton.disabled = true
 
   // Setup event listeners for interaction
   document.querySelector('body').addEventListener('dragenter', onDragEnter)
@@ -207,14 +205,14 @@ function initView () {
   // TODO should work to hide the dragover-popup but doesn't...
   document.querySelector('body').addEventListener('dragleave', onDragExit)
 
-  startButton.addEventListener('click', start)
-  stopButton.addEventListener('click', stop)
-  catButton.addEventListener('click', catFile)
+  $startButton.addEventListener('click', start)
+  $stopButton.addEventListener('click', stop)
+  $catButton.addEventListener('click', catFile)
   $connectPeerButton.addEventListener('click', connectPeer)
 
   // TODO temporary default values, remove before merging
   $connectPeer.value = '/ip4/0.0.0.0/tcp/9999/ws/ipfs/QmSGmyZtL3BPLxkF9yyaitLsotvratuqeWq1UR8V9BDXcV'
-  multihashInput.value = 'QmXxyxhxbt9TU4pJFdpAnqAsTraCMvCNsWsyfe2ZZUjJUn'
+  $multihashInput.value = 'QmXxyxhxbt9TU4pJFdpAnqAsTraCMvCNsWsyfe2ZZUjJUn'
 }
 
 function updateView (state, ipfs) {
@@ -228,13 +226,13 @@ function updateView (state, ipfs) {
     document.querySelectorAll('button:disabled').forEach(b => { b.disabled = false })
     document.querySelectorAll('input:disabled').forEach(b => { b.disabled = false })
 
-    document.querySelector('#peers').className = ''
+    $peers.className = ''
     document.querySelector('#details').className = ''
 
-    stopButton.disabled = false
-    startButton.disabled = true
+    $stopButton.disabled = false
+    $startButton.disabled = true
   } else if (state === 'starting') {
-    startButton.disabled = true
+    $startButton.disabled = true
   } else if (state === 'stopped') {
     initView()
   }
