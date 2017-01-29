@@ -1,5 +1,3 @@
- // Need to include this to make webpack happy
-import { Buffer } from 'buffer/' // eslint-disable-line no-unused-vars
 import EventEmitter from 'events'
 import spawnNode from '../util/spawn-node'
 import OrbitDB from 'orbit-db'
