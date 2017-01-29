@@ -242,3 +242,7 @@ button:focus, input:focus {
   margin-bottom: 5px;
   font-size: 14px;
 }
+
+.error {
+  font-size: 18px;
+}

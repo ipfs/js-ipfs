@@ -47,8 +47,9 @@ const stop = () => {
 const connectPeer = (e) => {
   e.target.disabled = true
   ipfs.swarm.connect($connectPeer.value, (err) => {
-    $connectPeer.value = ''
+    console.log(err)
     if (err) return onError(err)
+    $connectPeer.value = ''
     setTimeout(() => {
       e.target.disabled = false
     }, 500)
@@ -110,13 +111,14 @@ const catFile = () => {
 }
 
 function onError (e) {
+  console.error(e)
+  let msg = 'An error occured, check the dev console'
   if (e.stack !== undefined) {
-    console.error(e)
-    $errors.innerHTML = '<span class="error">' + e.stack + '</span>'
+    msg = e.stack
+  } else if (typeof e === 'string') {
+    msg = e
   }
-  if (typeof e === 'string') {
-    $errors.innerHTML = '<span class="error">' + e + '</span>'
-  }
+  $errors.innerHTML = '<span class="error">' + msg + '</span>'
   $errors.className = 'error visible'
 }
 
