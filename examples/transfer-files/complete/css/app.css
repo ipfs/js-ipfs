@@ -111,6 +111,7 @@ button {
 	height: 40px;
 	margin-left: 1%;
 	font-size: 16px;
+  box-sizing: border-box;
 }
 
 .multihash-wrapper button {
