@@ -1,5 +1,3 @@
-window.onerror = onError
-
 const $startButton = document.querySelector('#start')
 const $stopButton = document.querySelector('#stop')
 const $peers = document.querySelector('#peers')
@@ -9,6 +7,15 @@ const $multihashInput = document.querySelector('#multihash')
 const $catButton = document.querySelector('#cat')
 const $connectPeer = document.querySelector('input.connect-peer')
 const $connectPeerButton = document.querySelector('button.connect-peer')
+const $dragoverPopup = document.querySelector('.dragover-popup')
+const $wrapper = document.querySelector('.wrapper')
+const $header = document.querySelector('.header')
+const $body = document.querySelector('body')
+const $idContainer = document.querySelector('.id-container')
+const $addressesContainer = document.querySelector('.addresses-container')
+const $details = document.querySelector('#details')
+const $allDisabledButtons = document.querySelectorAll('button:disabled')
+const $allDisabledInputs = document.querySelectorAll('input:disabled')
 
 let ipfs
 let peerInfo
@@ -76,7 +83,7 @@ const catFile = () => {
   }
 }
 
-function onError (e) {
+const onError = (e) => {
   console.error(e)
   let msg = 'An error occured, check the dev console'
   if (e.stack !== undefined) {
@@ -87,18 +94,19 @@ function onError (e) {
   $errors.innerHTML = '<span class="error">' + msg + '</span>'
   $errors.className = 'error visible'
 }
+window.onerror = onError
 
 const onDragEnter = () => {
-  document.querySelector('.dragover-popup').style.display = 'block'
-  document.querySelector('.wrapper').style.filter = 'blur(5px)'
-  document.querySelector('.header').style.filter = 'blur(5px)'
+  $dragoverPopup.style.display = 'block'
+  $wrapper.style.filter = 'blur(5px)'
+  $header.style.filter = 'blur(5px)'
 }
 
 const onDragExit = () => {
   console.log('drag left')
-  document.querySelector('.dragover-popup').style.display = 'none'
-  document.querySelector('.wrapper').style.filter = ''
-  document.querySelector('.header').style.filter = ''
+  $dragoverPopup.style.display = 'none'
+  $wrapper.style.filter = ''
+  $header.style.filter = ''
 }
 
 // Handle file drop
@@ -158,10 +166,10 @@ const updatePeers = () => {
 }
 
 function setupEventListeners () {
-  document.querySelector('body').addEventListener('dragenter', onDragEnter)
-  document.querySelector('body').addEventListener('drop', onDrop)
+  $body.addEventListener('dragenter', onDragEnter)
+  $body.addEventListener('drop', onDrop)
   // TODO should work to hide the dragover-popup but doesn't...
-  document.querySelector('body').addEventListener('dragleave', onDragExit)
+  $body.addEventListener('dragleave', onDragExit)
 
   $startButton.addEventListener('click', start)
   $stopButton.addEventListener('click', stop)
@@ -178,12 +186,12 @@ const states = {
     const addressesHtml = peerInfo.addresses.map((address) => {
       return '<li><span class="address">' + address + '</span></li>'
     }).join('')
-    document.querySelector('.id-container').innerText = peerInfo.id
-    document.querySelector('.addresses-container').innerHTML = addressesHtml
-    document.querySelectorAll('button:disabled').forEach(b => { b.disabled = false })
-    document.querySelectorAll('input:disabled').forEach(b => { b.disabled = false })
+    $idContainer.innerText = peerInfo.id
+    $addressesContainer.innerHTML = addressesHtml
+    $allDisabledButtons.forEach(b => { b.disabled = false })
+    $allDisabledInputs.forEach(b => { b.disabled = false })
     $peers.className = ''
-    document.querySelector('#details').className = ''
+    $details.className = ''
     $stopButton.disabled = false
     $startButton.disabled = true
   },
