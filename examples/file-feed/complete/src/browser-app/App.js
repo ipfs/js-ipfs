@@ -7,6 +7,7 @@ import Peers from './Peers'
 import Status from './Status'
 import { isMediaFile } from './utils'
 import './App.css'
+import LogoSVG from './ipfs-logo.svg'
 
 let dataStore
 
@@ -33,7 +34,7 @@ class App extends Component {
       signalAddr: '/dns4/star-signal.cloud.ipfs.team'
     }, (err, res) => {
       if (err) {
-        console.error(err)
+        this.setError(err)
         return
       }
 
@@ -54,6 +55,11 @@ class App extends Component {
         dataStore.openFeed(feedName)
       }
     })
+  }
+
+  setError (error) {
+    console.error(error)
+    this.setState({ status: error.toString() })
   }
 
   setStatus (text, timeout) {
@@ -166,8 +172,11 @@ class App extends Component {
         onDragEnter={this.onDragEnter.bind(this)}>
         {previewElement}
         {peersElement}
+        <a href='https://ipfs.io' target='_blank'>
+          <img src={LogoSVG} className='App-logo' />
+        </a>
         <h1>File Feed</h1>
-        <h4>Synchronize series of files between browsers and Desktop with IPFS and OrbitDB</h4>
+        <h4>Exchange files between browsers and Desktop with IPFS and OrbitDB</h4>
         <Status className='App-status' text={status} />
         {dropzone}
         {feedElement}

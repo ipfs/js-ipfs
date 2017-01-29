@@ -19,7 +19,7 @@
   margin-top: 0;
   background-color: rgb(255, 255, 255);
   color: rgb(32, 32, 32);
-  font-family: 'Source Code Pro';
+  font-family: 'Source Code Pro', monospace;
   font-size: 0.8em;
   max-height: 90%;
   max-width: 90%;
