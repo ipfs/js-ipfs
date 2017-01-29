@@ -7,7 +7,6 @@ const stopButton = document.getElementById('stop')
 const peers = document.getElementById('peers')
 const errors = document.getElementById('errors')
 const filesStatus = document.getElementById('filesStatus')
-const picture = document.getElementById('picture')
 const multihashInput = document.getElementById('multihash')
 const catButton = document.getElementById('cat')
 const $connectPeer = document.querySelector('input.connect-peer')
@@ -64,9 +63,6 @@ const catFile = () => {
   const multihash = multihashInput.value
   multihashInput.value = ''
 
-  // Update UI
-  picture.innerHTML = multihash ? '<i>Loading...</i>' : ''
-  picture.className = multihash ? 'picture visible' : 'hidden'
   errors.className = 'hidden'
 
   if (multihash) {
@@ -142,8 +138,6 @@ const onDragExit = () => {
 // Handle file drop
 const onDrop = (event) => {
   onDragExit()
-  picture.innerHTML = ''
-  picture.className = 'hidden'
   errors.className = 'hidden'
 
   event.preventDefault()
@@ -204,10 +198,8 @@ const updatePeers = () => {
 function initView () {
   errors.innerHTML = ''
   errors.className = 'hidden'
-  picture.innerHTML = ''
   startButton.disabled = false
   stopButton.disabled = true
-  picture.className = 'hidden'
 
   // Setup event listeners for interaction
   document.querySelector('body').addEventListener('dragenter', onDragEnter)
