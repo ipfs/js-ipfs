@@ -212,6 +212,7 @@ function initView () {
   catButton.addEventListener('click', catFile)
   $connectPeerButton.addEventListener('click', connectPeer)
 
+  // TODO temporary default values, remove before merging
   $connectPeer.value = '/ip4/0.0.0.0/tcp/9999/ws/ipfs/QmSGmyZtL3BPLxkF9yyaitLsotvratuqeWq1UR8V9BDXcV'
   multihashInput.value = 'QmXxyxhxbt9TU4pJFdpAnqAsTraCMvCNsWsyfe2ZZUjJUn'
 }
