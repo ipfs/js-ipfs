@@ -13,26 +13,17 @@ const $connectPeerButton = document.querySelector('button.connect-peer')
 let ipfs
 let peerInfo
 
-// Start IPFS instance
 function start () {
   if (!ipfs) {
-    // Update the UI with initial settings
     updateView('starting', ipfs)
-
     window.createNode((err, node) => {
       if (err) {
         return onError(err)
       }
-
       ipfs = node
-
-      // Get our IPFS instance's info: ID and address
       ipfs.id().then((id) => {
         peerInfo = id
-        // Update the UI
         updateView('ready', ipfs)
-
-        // Poll for peers from IPFS and display them
         setInterval(updatePeers, 1000)
         $peers.innerHTML = '<h2>Peers</h2><i>Waiting for peers...</i>'
       })
@@ -56,19 +47,13 @@ const connectPeer = (e) => {
   })
 }
 
-// Fetch file contents from IPFS and display it
 const catFile = () => {
-  // Get the hash to cat from the input field
   const multihash = $multihashInput.value
   $multihashInput.value = ''
-
   $errors.className = 'hidden'
-
   if (multihash) {
     ipfs.files.get(multihash, (err, stream) => {
       if (err) onError(err)
-      // TODO files.get doesnt work properly...
-      // when it's working, this should be used instead
       console.log(stream)
       stream.on('data', (file) => {
         console.log(file)
@@ -87,25 +72,6 @@ const catFile = () => {
       stream.on('end', () => {
         console.log('no more files')
       })
-      // TODO since .get doesn't work, we use the following code with .cat instead
-      // const buf = []
-      // stream.on('data', (data) => {
-      //   buf.push(data.toString())
-      // })
-      // stream.on('end', () => {
-      //   const downloadContent = window.btoa(window.unescape(window.encodeURIComponent(buf.join(''))))
-      //   const downloadLink = 'data:application/octet-stream;charset=utf-8;base64,' + downloadContent
-      //   const listItem = document.createElement('div')
-      //   const link = document.createElement('a')
-      //   link.setAttribute('href', downloadLink)
-      //   link.setAttribute('download', multihash)
-      //   const date = (new Date()).toLocaleTimeString()
-      //   link.innerText = date + ' - ' + multihash
-      //   const fileList = document.querySelector('.file-list')
-
-      //   listItem.appendChild(link)
-      //   fileList.insertBefore(listItem, fileList.firstChild)
-      // })
     })
   }
 }
@@ -139,11 +105,9 @@ const onDragExit = () => {
 const onDrop = (event) => {
   onDragExit()
   $errors.className = 'hidden'
-
   event.preventDefault()
   var dt = event.dataTransfer
   var files = dt.files
-
   const readFileContents = (file) => {
     return new Promise((resolve) => {
       const reader = new window.FileReader()
@@ -188,15 +152,12 @@ const updatePeers = () => {
       $peers.innerHTML = res.length > 0
         ? '<h2>Remote Peers</h2><ul>' + peersAsHtml + '</ul>'
         : '<h2>Remote Peers</h2><i>Waiting for peers...</i>'
-    } else {
     }
     numberOfPeersLastTime = res.length
   })
 }
 
-// TODO remove the whole initView, should be initial markup in index.html
 function setupEventListeners () {
-  // Setup event listeners for interaction
   document.querySelector('body').addEventListener('dragenter', onDragEnter)
   document.querySelector('body').addEventListener('drop', onDrop)
   // TODO should work to hide the dragover-popup but doesn't...
@@ -219,13 +180,10 @@ const states = {
     }).join('')
     document.querySelector('.id-container').innerText = peerInfo.id
     document.querySelector('.addresses-container').innerHTML = addressesHtml
-
     document.querySelectorAll('button:disabled').forEach(b => { b.disabled = false })
     document.querySelectorAll('input:disabled').forEach(b => { b.disabled = false })
-
     $peers.className = ''
     document.querySelector('#details').className = ''
-
     $stopButton.disabled = false
     $startButton.disabled = true
   },
@@ -242,5 +200,4 @@ function updateView (state, ipfs) {
   }
 }
 
-// Start the app
 setupEventListeners()
