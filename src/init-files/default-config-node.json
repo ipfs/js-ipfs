@@ -25,6 +25,8 @@
     "/ip4/104.236.76.40/tcp/4001/ipfs/QmSoLV4Bbm51jM9C4gDYZQ9Cy3U6aXMJDAbzgu2fzaDs64",
     "/ip4/178.62.158.247/tcp/4001/ipfs/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd",
     "/ip4/178.62.61.185/tcp/4001/ipfs/QmSoLMeWqB7YGVLJN3pNLQpmmEk35v6wYtsMGLzSr5QBU3",
-    "/ip4/104.236.151.122/tcp/4001/ipfs/QmSoLju6m7xTh3DuokvT3886QRYqxAzb1kShaanJgW36yx"
+    "/ip4/104.236.151.122/tcp/4001/ipfs/QmSoLju6m7xTh3DuokvT3886QRYqxAzb1kShaanJgW36yx",
+    "/dns4/strawberry.i.ipfs.io/wss/ipfs/QmWyLSnMHW2H6bmCG9e9PQq4ARve94JduvGjbutUuzx4a8",
+    "/dns4/blueberry.i.ipfs.io/wss/ipfs/QmVcj9MATxGTAFoQSbrJvZ9Fbs4Jzvrxy9hyJeRwbW8NeA"
   ]
 }
