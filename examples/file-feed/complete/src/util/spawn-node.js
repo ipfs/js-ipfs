@@ -8,7 +8,7 @@ const multiaddr = require('multiaddr')
 const series = require('async/series')
 
 function spawnNode (options, callback) {
-  options.path = options.path || '/ipfs/'
+  options.path = options.path || '/ipfs-' + Math.random()
   options.initRepo = options.initRepo || true
 
   const node = new IPFS(options.path)
@@ -38,7 +38,6 @@ function spawnNode (options, callback) {
         const sma = `/libp2p-webrtc-star${options.signalAddr}/wss/ipfs/${peerId}`
 
         config.Addresses.Swarm = [ sma ]
-        config.Discovery.MDNS.Enabled = false
 
         node.config.replace(config, cb)
       })
