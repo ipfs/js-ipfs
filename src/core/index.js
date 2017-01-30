@@ -25,6 +25,8 @@ const files = require('./components/files')
 const bitswap = require('./components/bitswap')
 const pubsub = require('./components/pubsub')
 
+const Buffer = require('buffer/').Buffer
+
 exports = module.exports = IPFS
 
 function IPFS (repoInstance) {
@@ -70,4 +72,9 @@ function IPFS (repoInstance) {
   this.bitswap = bitswap(this)
   this.ping = ping(this)
   this.pubsub = pubsub(this)
+
+  // Exposed data types
+  this.types = {
+    Buffer: Buffer
+  }
 }

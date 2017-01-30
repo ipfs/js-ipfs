@@ -33,3 +33,5 @@ node_modules
 
 lib
 dist
+
+examples/transfer-files/complete/public/js/ipfs.js
