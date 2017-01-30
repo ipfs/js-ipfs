@@ -13,18 +13,17 @@ class Peers extends Component {
   }
 
   render () {
-    const peers = this.props.peers
+    const peers = this.props.peers && this.props.peers.length > 0
       ? this.props.peers.map((e, idx) => {
         return (
           <div className='Peers-list'
             key={e}
             onClick={stopEventBubbling}>
             <div>{idx + 1}. {e}</div>
-            <br />
           </div>
         )
       })
-      : null
+      : <div className='Peers-list'><br/><br/><i>Not connected to any peers</i></div>
 
     return (
       <div className='Peers' onClick={this.props.onClick.bind(this)}>
@@ -33,11 +32,12 @@ class Peers extends Component {
         <br />
         <br />
         <h2>Connect to a Peer</h2>
-        <div onClick={stopEventBubbling}>
+        <br />
+        <div className='Peers-connect' onClick={stopEventBubbling}>
           <input className='Peers-connect-input'
             type='text'
             ref='addr'
-            placeholder='/ip4/127.0.0.1/tcp/9999/ws/ipfs/QmZGH8GeASSkSZoNLPEBu1MqtzLTERNUEwh9yTHLEF5kcW'
+            placeholder='/ip4/0.0.0.0/tcp/9999/ws/ipfs/QmZGH8GeASSkSZoNLPEBu1MqtzLTERNUEwh9yTHLEF5kcW'
                  />
           <input className='Peers-connect-button'
             type='button'

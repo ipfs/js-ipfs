@@ -20,3 +20,12 @@
 .Peers-list {
   padding: 1em;
 }
+
+.Peers-connect {
+  width: 50%;
+}
+
+.Peers-connect-input {
+  width: 80%;
+  margin: 1em;
+}
