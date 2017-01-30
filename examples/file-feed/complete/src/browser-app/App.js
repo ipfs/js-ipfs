@@ -17,6 +17,8 @@ class App extends Component {
     this.state = {
       feed: null,
       files: [],
+      peers: [],
+      swarm: [],
       status: null,
       preview: null,
       dragActive: false,
@@ -51,6 +53,7 @@ class App extends Component {
         dataStore.on('update', () => this.updateFiles())
         dataStore.on('file', () => this.setState({ dragActive: false }))
         dataStore.on('peers', (peers) => this.setState({ peers: peers }))
+        dataStore.on('swarm', (peers) => this.setState({ swarm: peers }))
         this.setStatus('Loading database')
         dataStore.openFeed(feedName)
       }
@@ -121,7 +124,7 @@ class App extends Component {
   }
 
   render () {
-    const { feed, status, peers, files, preview, dragActive } = this.state
+    const { feed, status, peers, swarm, files, preview, dragActive } = this.state
 
     const dropzone = dragActive
       ? <Dropzone
@@ -161,7 +164,8 @@ class App extends Component {
       : null
 
     const peersElement = this.state.showPeers
-      ? <Peers peers={peers}
+      ? <Peers peers={peers} 
+        swarm={swarm}
         onConnectTo={this.connectTo.bind(this)}
         onClick={this.showPeers.bind(this, false)} />
       : null
@@ -175,7 +179,7 @@ class App extends Component {
         <a href='https://ipfs.io' target='_blank'>
           <img src={LogoSVG} className='App-logo' />
         </a>
-        <h1>File Feed</h1>
+        <h1>File Exchange</h1>
         <h4>Exchange files between browsers and Desktop with IPFS and OrbitDB</h4>
         <Status className='App-status' text={status} />
         {dropzone}

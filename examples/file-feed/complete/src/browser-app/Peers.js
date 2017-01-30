@@ -23,12 +23,29 @@ class Peers extends Component {
           </div>
         )
       })
-      : <div className='Peers-list'><br/><br/><i>Not connected to any peers</i></div>
+      : <div className='Peers-list'><br/><br/><i>No peers for this feed</i></div>
+
+    const swarm = this.props.swarm && this.props.swarm.length > 0
+      ? this.props.swarm.map((e, idx) => {
+        return (
+          <div className='Peers-list'
+            key={e}
+            onClick={stopEventBubbling}>
+            <div>{idx + 1}. {e.addr.toString()}</div>
+          </div>
+        )
+      })
+      : <div className='Peers-list'><br/><br/><i>Not connected to the swarm</i></div>
+
 
     return (
       <div className='Peers' onClick={this.props.onClick.bind(this)}>
-        <h2>Connected Peers</h2>
+        <h2>Peers Connected to this Feed</h2>
         {peers}
+        <br />
+        <br />
+        <h2>Swarm</h2>
+        {swarm}
         <br />
         <br />
         <h2>Connect to a Peer</h2>

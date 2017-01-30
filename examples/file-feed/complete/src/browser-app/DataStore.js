@@ -93,6 +93,10 @@ class DataStore extends EventEmitter {
     this.ipfs.pubsub.peers(feed)
       .then((peers) => this.emit('peers', peers))
       .catch((e) => console.error(e))
+
+    this.ipfs.swarm.peers()
+      .then((peers) => this.emit('swarm', peers))
+      .catch((e) => console.error(e))
   }
 }
 
