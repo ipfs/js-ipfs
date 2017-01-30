@@ -2,7 +2,7 @@
 
 const argv = require('yargs')
 const receiveFiles = require('./receive-files')
-const addFile = require('./add-file')
+const addFile = require('./add-file-js')
 
 argv
   .usage('Usage: $0 <command>')
