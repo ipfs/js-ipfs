@@ -8,13 +8,15 @@ const readFileContents = require('./read-file-contents')
 const nodeOptions = require('./node1.config.js')
 
 function addFile (feed, fileToAdd) {
+  console.log('Connecting to go-ipfs daemon...')
   const node = ipfsApi('localhost', 5001)
 
+  console.log('Initialize OrbitDB')
   const orbitdb = new OrbitDB(node)
   const db = orbitdb.eventlog(feed, { cachePath: nodeOptions.orbitdbPath })
 
   db.events.on('ready', () => {
-    console.log('Database ready.')
+    console.log('Database ready')
     console.log()
     console.log('Searching for peers...')
 
