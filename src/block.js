@@ -38,9 +38,7 @@ module.exports = (common) => {
       })
     })
 
-    after((done) => {
-      common.teardown(done)
-    })
+    after((done) => common.teardown(done))
 
     describe('callback API', () => {
       it('.put a buffer', (done) => {
@@ -123,7 +121,6 @@ module.exports = (common) => {
       it.skip('block.rm', (done) => {}) // TODO once block.rm is shipped in go-ipfs
     })
 
-    describe('promise API', () => {
-    })
+    describe('promise API', () => {})
   })
 }

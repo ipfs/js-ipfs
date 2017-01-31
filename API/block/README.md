@@ -7,17 +7,18 @@ block API
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.block.get(multihash, [options, callback])
+##### `JavaScript` - ipfs.block.get(cid, [options, callback])
 
-`multihash` is a [multihash][multihash] which can be passed as:
+`cid` is a [cid][cid] which can be passed as:
 
-- Buffer, the raw Buffer of the multihash
+- Buffer, the raw Buffer of the cid
+- CID, a CID instance
 - String, the base58 encoded version of the multihash
 
 `callback` must follow `function (err, block) {}` signature, where `err` is an error if the operation was not successful and `block` is a [Block][block] type object, containing both the data and the hash of the block.
 
 ```js
-ipfs.block.get(multihash, function (err, block) {
+ipfs.block.get(cid, function (err, block) {
   if (err) {
     throw err
   }
@@ -38,12 +39,18 @@ If no `callback` is passed, a promise is returned.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.block.put(block, [callback])
+##### `JavaScript` - ipfs.block.put(block, cid, [callback])
 
 Where `block` can be:
 
 - `Buffer` - the raw bytes of the Block
 - [`Block`][block] instance
+
+`cid` is a [cid][cid] which can be passed as:
+
+- Buffer, the raw Buffer of the cid
+- CID, a CID instance
+- String, the base58 encoded version of the multihash
 
 `callback` has the signature `function (err, block) {}`, where `err` is an error if the operation was not successful and `block` is a [Block][block] type object, containing both the data and the hash of the block.
 
@@ -55,18 +62,19 @@ If no `callback` is passed, a promise is returned.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.block.stat(multihash, [callback])
+##### `JavaScript` - ipfs.block.stat(cid, [callback])
 
-`multihash` is a [multihash][multihash] which can be passed as:
+`cid` is a [cid][cid] which can be passed as:
 
 - `Buffer`, the raw Buffer of the multihash (or of and encoded version)
 - `String`, the toString version of the multihash (or of an encoded version)
+- CID, a CID instance
 
 `callback` must follow the signature `function (err, stats) {}`, where `err` is an error if the operation was not successful and `stats` is an object with the format:`
 
 ```JavaScript
 {
-  key: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
+  cid: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
   size: 10
 }
 ```
