@@ -6,11 +6,10 @@
 const expect = require('chai').expect
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
-const dagCBOR = require('ipld-dag-pb')
-// const series = require('async/series')
+const dagCBOR = require('ipld-dag-cbor')
 
 module.exports = (common) => {
-  describe.skip('.dag', () => {
+  describe.only('.dag (basics)', () => {
     let ipfs
 
     before(function (done) {
@@ -54,10 +53,12 @@ module.exports = (common) => {
           ipfs.dag.put(pbNode, 'dag-pb', 'sha2-256', done)
         })
 
-        it.skip('dag-pb with custom hash func (sha3-512)', (done) => {
+        it('dag-pb with custom hash func (sha3-512)', (done) => {
           ipfs.dag.put(pbNode, 'dag-pb', 'sha3-512', done)
         })
 
+        /*
+         * This works because dag-cbor will just treat pbNode as a regular object
         it.skip('dag-pb node with wrong multicodec', (done) => {
           // This works because dag-cbor will just treat pbNode as a
           // regular object
@@ -66,6 +67,7 @@ module.exports = (common) => {
             done()
           })
         })
+        */
 
         it('dag-cbor with default hash func (sha2-256)', (done) => {
           ipfs.dag.put(cborNode, 'dag-cbor', 'sha2-256', done)
@@ -130,17 +132,6 @@ module.exports = (common) => {
         })
       })
 
-      describe('.resolve', () => {
-        it.skip('dag-pb local scope', (done) => {})
-        it.skip('dag-pb one level', (done) => {})
-        it.skip('dag-pb two levels', (done) => {})
-        it.skip('dag-cbor local scope', (done) => {})
-        it.skip('dag-cbor one level', (done) => {})
-        it.skip('dag-cbor two levels', (done) => {})
-        it.skip('from dag-pb to dag-cbor', (done) => {})
-        it.skip('from dag-cbor to dag-pb', (done) => {})
-      })
-
       describe('.rm', () => {
         let pbNode
 
@@ -163,7 +154,7 @@ module.exports = (common) => {
                 expect(err).to.not.exist
                 ipfs.dag.rm(cid, done)
                 // TODO When we get timeouts in js-ipfs, try to fetch again
-                // and observe it timesout without the node
+                // and observe it timeout without the node
               })
             })
           })
@@ -174,7 +165,6 @@ module.exports = (common) => {
     describe('promise API', () => {
       describe('.put', () => {})
       describe('.get', () => {})
-      describe('.resolve', () => {})
       describe('.rm', () => {})
     })
   })
