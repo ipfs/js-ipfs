@@ -33,14 +33,14 @@
     "concat-stream": "^1.6.0",
     "detect-node": "^2.0.3",
     "ipfs-block": "^0.5.4",
-    "ipld-dag-cbor": "^0.8.5",
-    "ipld-dag-pb": "^0.9.3",
-    "multiaddr": "^2.1.1",
-    "multihashes": "^0.3.1",
+    "ipld-dag-cbor": "^0.9.0",
+    "ipld-dag-pb": "^0.9.4",
+    "multiaddr": "^2.2.0",
+    "multihashes": "^0.3.2",
     "readable-stream": "2.2.2"
   },
   "devDependencies": {
-    "aegir": "^9.3.0"
+    "aegir": "^9.4.0"
   },
   "contributors": [
     "David Dias <daviddias.p@gmail.com>",
