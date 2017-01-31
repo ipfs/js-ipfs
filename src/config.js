@@ -158,11 +158,9 @@ module.exports = (common) => {
       describe('.set', () => {
         it('set a new key', () => {
           return ipfs.config.set('Fruit', 'banana')
-            .then(() => {
-              ipfs.config.get('Fruit', (err, fruit) => {
-                expect(err).to.not.exist
-                expect(fruit).to.equal('banana')
-              })
+            .then(() => ipfs.config.get('Fruit'))
+            .then((fruit) => {
+              expect(fruit).to.equal('banana')
             })
         })
       })

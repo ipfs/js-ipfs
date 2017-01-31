@@ -1,6 +1,6 @@
 {
   "name": "interface-ipfs-core",
-  "version": "0.22.1",
+  "version": "0.23.5",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "main": "src/index.js",
   "scripts": {
@@ -27,12 +27,12 @@
   "homepage": "https://github.com/ipfs/interface-ipfs-core#readme",
   "dependencies": {
     "async": "^2.1.4",
-    "bl": "^1.1.2",
-    "bs58": "^3.1.0",
+    "bl": "^1.2.0",
+    "bs58": "^4.0.0",
     "chai": "^3.5.0",
-    "concat-stream": "^1.5.2",
+    "concat-stream": "^1.6.0",
     "detect-node": "^2.0.3",
-    "ipfs-block": "^0.5.3",
+    "ipfs-block": "^0.5.4",
     "ipld-dag-pb": "^0.9.3",
     "multiaddr": "^2.1.1",
     "multihashes": "^0.3.1",
@@ -44,10 +44,12 @@
   "contributors": [
     "David Dias <daviddias.p@gmail.com>",
     "Friedel Ziegelmayer <dignifiedquire@gmail.com>",
+    "Pedro Teixeira <i@pgte.me>",
     "Richard Littauer <richard.littauer@gmail.com>",
     "Stephen Whitmore <stephen.whitmore@gmail.com>",
     "Victor Bjelkholm <victorbjelkholm@gmail.com>",
     "greenkeeperio-bot <support@greenkeeper.io>",
+    "haad <haad@headbanggames.com>",
     "nginnever <ginneversource@gmail.com>"
   ]
 }

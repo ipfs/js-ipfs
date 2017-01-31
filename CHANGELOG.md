@@ -1,3 +1,64 @@
+<a name="0.23.5"></a>
+## [0.23.5](https://github.com/ipfs/interface-ipfs-core/compare/v0.23.4...v0.23.5) (2017-01-17)
+
+
+
+<a name="0.23.4"></a>
+## [0.23.4](https://github.com/ipfs/interface-ipfs-core/compare/v0.23.3...v0.23.4) (2017-01-17)
+
+
+### Bug Fixes
+
+* **config:** make promise tests actually test the full promise chain ([416560e](https://github.com/ipfs/interface-ipfs-core/commit/416560e))
+
+
+
+<a name="0.23.3"></a>
+## [0.23.3](https://github.com/ipfs/interface-ipfs-core/compare/v0.23.2...v0.23.3) (2017-01-16)
+
+
+### Bug Fixes
+
+* **test:** send/receive 10k messages test ([ad952e2](https://github.com/ipfs/interface-ipfs-core/commit/ad952e2))
+
+
+
+<a name="0.23.2"></a>
+## [0.23.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.23.1...v0.23.2) (2017-01-11)
+
+
+### Bug Fixes
+
+* be nodejs 4 compatible ([3e356f0](https://github.com/ipfs/interface-ipfs-core/commit/3e356f0))
+
+
+
+<a name="0.23.1"></a>
+## [0.23.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.23.0...v0.23.1) (2017-01-11)
+
+
+### Bug Fixes
+
+* identify needs time to finish ([b76993d](https://github.com/ipfs/interface-ipfs-core/commit/b76993d))
+
+
+
+<a name="0.23.0"></a>
+# [0.23.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.22.1...v0.23.0) (2016-12-21)
+
+
+### Bug Fixes
+
+* fix a bunch of issues (i.e: identify race condition) ([d004577](https://github.com/ipfs/interface-ipfs-core/commit/d004577))
+
+
+### Features
+
+* add first pass of pubsub tests (running in js-ipfs-api) ([74003a7](https://github.com/ipfs/interface-ipfs-core/commit/74003a7))
+* new event based API ([1a82890](https://github.com/ipfs/interface-ipfs-core/commit/1a82890))
+
+
+
 <a name="0.22.1"></a>
 ## [0.22.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.22.0...v0.22.1) (2016-12-10)
 

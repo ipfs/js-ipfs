@@ -7,7 +7,7 @@ files API
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.files.add(data, [callback])
+##### `JavaScript` - ipfs.files.add(data, [options], [callback])
 
 Where `data` may be
 
@@ -22,6 +22,8 @@ Where `data` may be
 - a `Readable` stream
 
 If no `content` is passed, then the path is treated as an empty directory
+
+`options` is an optional object argument containing the [DAG importer options](https://github.com/ipfs/js-ipfs-unixfs-engine#importer-api).
 
 `callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res` will be an array of:
 
@@ -56,7 +58,7 @@ ipfs.files.add(files, function (err, files) {
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.files.createAddStream([callback])
+##### `JavaScript` - ipfs.files.createAddStream([options], [callback])
 
 Provides a Transform stream, where objects can be written of the forms
 
@@ -66,6 +68,8 @@ Provides a Transform stream, where objects can be written of the forms
   content: (Buffer or Readable stream)
 }
 ```
+
+`options` is an optional object argument containing the [DAG importer options](https://github.com/ipfs/js-ipfs-unixfs-engine#importer-api).
 
 `callback` must follow `function (err, stream) {}` signature, where `err` is an
 error if the operation was not successful. `stream` will be a Transform stream,
@@ -105,7 +109,7 @@ ipfs.files.createAddStream(function (err, stream) {
 
 `multihash` is a [multihash][] which can be passed as
 
-- Buffer, the raw Buffer of the multihash 
+- Buffer, the raw Buffer of the multihash
 - String, the base58 encoded version of the multihash
 
 `callback` must follow `function (err, stream) {}` signature, where `err` is an error if the operation was not successful and `stream` is a readable stream of the file.
