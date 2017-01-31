@@ -83,6 +83,7 @@
   "contributors": [
     "Alex Mingoia <talk@alexmingoia.com>",
     "Connor Keenan <ckeenan89@gmail.com>",
+    "Danny <dannyid@protonmail.com>",
     "David Braun <David.Braun@Toptal.com>",
     "David Dias <daviddias.p@gmail.com>",
     "Fil <fil@rezo.net>",
@@ -109,14 +110,14 @@
     "Stephen Whitmore <stephen.whitmore@gmail.com>",
     "Tara Vancil <tbvanc@gmail.com>",
     "Travis Person <travis.person@gmail.com>",
-    "Victor Bjelkholm <victorbjelkholm@gmail.com>",
     "Victor Bjelkholm <victor@typeform.com>",
     "elsehow <yes@cosmopol.is>",
     "ethers <ethereum@outlook.com>",
     "haad <haad@headbanggames.com>",
     "nginnever <ginneversource@gmail.com>",
     "priecint <tp-dev@seznam.cz>",
-    "samuli <samuli@nugg.ad>"
+    "samuli <samuli@nugg.ad>",
+    "ᴠɪᴄᴛᴏʀ ʙᴊᴇʟᴋʜᴏʟᴍ <victorbjelkholm@gmail.com>"
   ],
   "license": "MIT",
   "bugs": {
