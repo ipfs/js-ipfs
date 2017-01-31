@@ -183,6 +183,7 @@ Commands:
 - default repo location: `~/.jsipfs` (can be changed with env variable `IPFS_PATH`)
 - default swarm port: `4002`
 - default API port: `5002`
+- default Bootstrap is off, to enable it set `IPFS_BOOTSTRAP=1`
 
 ### HTTP-API
 
