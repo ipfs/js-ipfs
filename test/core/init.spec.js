@@ -18,7 +18,12 @@ describe('init', () => {
 
   beforeEach(() => {
     repo = createTempRepo()
-    ipfs = new IPFS(repo)
+    ipfs = new IPFS({
+      repo: repo,
+      EXPERIMENTAL: {
+        pubsub: true
+      }
+    })
   })
 
   afterEach((done) => repo.teardown(done))

@@ -36,10 +36,13 @@ function getAPICtl () {
 
 exports.getIPFS = (callback) => {
   if (!isDaemonOn()) {
-    const ipfs = new IPFS(exports.getRepoPath())
-    ipfs.load(() => {
-      callback(null, ipfs)
+    const ipfs = new IPFS({
+      repo: exports.getRepoPath(),
+      EXPERIMENTAL: {
+        pubsub: true
+      }
     })
+    ipfs.load(() => callback(null, ipfs))
     return
   }
 

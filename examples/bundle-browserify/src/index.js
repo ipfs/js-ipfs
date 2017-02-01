@@ -7,7 +7,12 @@ var IPFS = require('../../../src/core') // replace this by line below
 // for simplicity, we create a new repo everytime the node
 // is created, because you can't init already existing repos
 const repoPath = String(Math.random())
-const node = new IPFS(repoPath)
+const node = new IPFS({
+  repo: repoPath,
+  EXPERIMENTAL: {
+    pubsub: false
+  }
+})
 const concat = require('concat-stream')
 
 node.init({ emptyRepo: true, bits: 2048 }, function (err) {

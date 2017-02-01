@@ -31,9 +31,13 @@ module.exports = (self) => {
           self._blockService.goOnline(self._bitswap)
           cb()
         },
-        (cb) => self._pubsub.start(cb) // ,
-        // For all of the protocols to handshake with each other
-        // (cb) => setTimeout(cb, 1000) // Still not decided if we want this
+        (cb) => {
+          if (self._configOpts.EXPERIMENTAL.pubsub) {
+            self._pubsub.start(cb)
+          } else {
+            cb()
+          }
+        }
       ], callback)
     })
   }
