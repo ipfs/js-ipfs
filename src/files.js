@@ -8,6 +8,7 @@ const bs58 = require('bs58')
 const Readable = require('readable-stream')
 const loadFixture = require('aegir/fixtures')
 const bl = require('bl')
+const isNode = require('detect-node')
 const concat = require('concat-stream')
 const through = require('through2')
 
@@ -121,9 +122,11 @@ module.exports = (common) => {
           })
         })
 
-        // Needs https://github.com/ipfs/js-ipfs-api/issues/339 to be fixed
-        // for js-ipfs-api + go-ipfs
-        it.skip('add a nested dir as array', (done) => {
+        it('add a nested dir as array', (done) => {
+          // Needs https://github.com/ipfs/js-ipfs-api/issues/339 to be fixed
+          // for js-ipfs-api + go-ipfs
+          if (!isNode) { return done() }
+
           const content = (name) => ({
             path: `test-folder/${name}`,
             content: directoryContent[name]
@@ -368,9 +371,11 @@ module.exports = (common) => {
         })
       })
 
-      // Needs https://github.com/ipfs/js-ipfs-api/issues/339 to be fixed
-      // for js-ipfs-api + go-ipfs
-      it.skip('directory', (done) => {
+      it('directory', (done) => {
+        // Needs https://github.com/ipfs/js-ipfs-api/issues/339 to be fixed
+        // for js-ipfs-api + go-ipfs
+        if (!isNode) { return done() }
+
         const hash = 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'
         ipfs.files.get(hash, (err, stream) => {
           expect(err).to.not.exist
