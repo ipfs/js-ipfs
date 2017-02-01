@@ -18,6 +18,11 @@ module.exports = function dag (self) {
         if (err) {
           return callback(err)
         }
+
+        console.log('b)')
+        console.log(multicodec, cid.toBaseEncodedString())
+        console.log(dagNode)
+
         self._ipldResolver.put({
           node: dagNode,
           cid: cid
