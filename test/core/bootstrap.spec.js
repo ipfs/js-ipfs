@@ -18,7 +18,12 @@ describe('bootstrap', () => {
 
   before((done) => {
     const repo = createTempRepo()
-    ipfs = new IPFS(repo)
+    ipfs = new IPFS({
+      repo: repo,
+      EXPERIMENTAL: {
+        pubsub: true
+      }
+    })
     series([
       (cb) => ipfs.init({ bits: 1024 }, cb),
       (cb) => ipfs.load(cb)

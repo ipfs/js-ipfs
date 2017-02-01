@@ -32,7 +32,12 @@ describe('bitswap', () => {
 
   beforeEach((done) => {
     const repo = createTempRepo()
-    inProcNode = new IPFS(repo)
+    inProcNode = new IPFS({
+      repo: repo,
+      EXPERIMENTAL: {
+        pubsub: true
+      }
+    })
     series([
       (cb) => inProcNode.init({ bits: 2048 }, cb),
       (cb) => {

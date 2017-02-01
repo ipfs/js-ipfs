@@ -25,7 +25,13 @@ exports = module.exports = function HttpApi (repo) {
       repo = new IPFSRepo(repo, {stores: Store})
     }
 
-    this.ipfs = new IPFS(repo)
+    this.ipfs = new IPFS({
+      repo: repo,
+      EXPERIMENTAL: {
+        pubsub: true
+      }
+    })
+
     const repoPath = this.ipfs.repo.path()
 
     try {

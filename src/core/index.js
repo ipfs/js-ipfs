@@ -6,68 +6,53 @@ const PeerBook = require('peer-book')
 
 const defaultRepo = require('./default-repo')
 
-const goOnline = require('./components/go-online')
-const goOffline = require('./components/go-offline')
-const isOnline = require('./components/is-online')
-const load = require('./components/load')
-const version = require('./components/version')
-const id = require('./components/id')
-const repo = require('./components/repo')
-const init = require('./components/init')
-const bootstrap = require('./components/bootstrap')
-const config = require('./components/config')
-const block = require('./components/block')
-const object = require('./components/object')
-const libp2p = require('./components/libp2p')
-const swarm = require('./components/swarm')
-const ping = require('./components/ping')
-const files = require('./components/files')
-const bitswap = require('./components/bitswap')
-const pubsub = require('./components/pubsub')
+const components = require('./components')
 
-exports = module.exports = IPFS
+class IPFS {
+  constructor (configOpts) {
+    let repoInstance
+    if (typeof configOpts.repo === 'string' || configOpts.repo === undefined) {
+      repoInstance = defaultRepo(configOpts.repo)
+    } else {
+      repoInstance = configOpts.repo
+    }
+    delete configOpts.repo
 
-function IPFS (repoInstance) {
-  if (!(this instanceof IPFS)) {
-    throw new Error('Must be instantiated with new')
+    configOpts.EXPERIMENTAL = configOpts.EXPERIMENTAL || {}
+
+    // IPFS Core Internals
+    this._configOpts = configOpts
+    this._repo = repoInstance
+    this._peerInfoBook = new PeerBook()
+    this._peerInfo = undefined
+    this._libp2pNode = undefined
+    this._bitswap = undefined
+    this._blockService = new BlockService(this._repo)
+    this._ipldResolver = new IPLDResolver(this._blockService)
+    this._pubsub = undefined
+
+    // IPFS Core exposed components
+    //   - for booting up a node
+    this.goOnline = components.goOnline(this)
+    this.goOffline = components.goOffline(this)
+    this.isOnline = components.isOnline(this)
+    this.load = components.load(this)
+    this.init = components.init(this)
+    //   - interface-ipfs-core defined API
+    this.version = components.version(this)
+    this.id = components.id(this)
+    this.repo = components.repo(this)
+    this.bootstrap = components.bootstrap(this)
+    this.config = components.config(this)
+    this.block = components.block(this)
+    this.object = components.object(this)
+    this.libp2p = components.libp2p(this)
+    this.swarm = components.swarm(this)
+    this.files = components.files(this)
+    this.bitswap = components.bitswap(this)
+    this.ping = components.ping(this)
+    this.pubsub = components.pubsub(this)
   }
-
-  if (typeof repoInstance === 'string' ||
-      repoInstance === undefined) {
-    repoInstance = defaultRepo(repoInstance)
-  }
-
-  // IPFS Core Internals
-  this._repo = repoInstance
-  this._peerInfoBook = new PeerBook()
-  this._peerInfo = null
-  this._libp2pNode = null
-  this._bitswap = null
-  this._blockService = new BlockService(this._repo)
-  this._ipldResolver = new IPLDResolver(this._blockService)
-  this._pubsub = null
-
-  // IPFS Core exposed components
-
-  //   for booting up a node
-  this.goOnline = goOnline(this)
-  this.goOffline = goOffline(this)
-  this.isOnline = isOnline(this)
-  this.load = load(this)
-  this.init = init(this)
-
-  //   interface-ipfs-core defined API
-  this.version = version(this)
-  this.id = id(this)
-  this.repo = repo(this)
-  this.bootstrap = bootstrap(this)
-  this.config = config(this)
-  this.block = block(this)
-  this.object = object(this)
-  this.libp2p = libp2p(this)
-  this.swarm = swarm(this)
-  this.files = files(this)
-  this.bitswap = bitswap(this)
-  this.ping = ping(this)
-  this.pubsub = pubsub(this)
 }
+
+module.exports = IPFS

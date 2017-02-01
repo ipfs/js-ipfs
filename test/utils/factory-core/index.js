@@ -43,7 +43,13 @@ function Factory () {
       const repo = createTempRepo(repoPath)
 
       // create the IPFS node
-      const ipfs = new IPFS(repo)
+      const ipfs = new IPFS({
+        repo: repo,
+        EXPERIMENTAL: {
+          pubsub: true
+        }
+      })
+
       ipfs.init({ emptyRepo: true, bits: 1024 }, (err) => {
         if (err) {
           return callback(err)
