@@ -1,0 +1,29 @@
+=============== Aug 25, 2016 (CEST) ===============
+17:21:42.391799 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+17:21:42.393115 db@open opening
+17:21:42.399749 db@janitor F·5 G·1
+17:21:42.399774 db@janitor removing manifest-4
+17:21:42.399904 db@open done T·6.754896ms
+=============== Aug 25, 2016 (CEST) ===============
+17:36:56.009638 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+17:36:56.009849 version@stat F·[2] S·1KiB[1KiB] Sc·[0.50]
+17:36:56.009874 db@open opening
+17:36:56.009943 journal@recovery F·1
+17:36:56.010918 journal@recovery recovering @8
+17:36:56.012317 memdb@flush created L0@10 N·4 S·1KiB "/ip..\xf6\xe4\xa9,d12":"/pk..TOA,v9"
+17:36:56.013451 version@stat F·[3] S·2KiB[2KiB] Sc·[0.75]
+17:36:56.014779 db@janitor F·5 G·0
+17:36:56.014815 db@open done T·4.928147ms
+17:36:56.030081 db@close closing
+17:36:56.030223 db@close done T·138.943µs
+=============== Aug 25, 2016 (CEST) ===============
+17:37:32.735975 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+17:37:32.736209 version@stat F·[3] S·2KiB[2KiB] Sc·[0.75]
+17:37:32.736230 db@open opening
+17:37:32.736304 journal@recovery F·1
+17:37:32.737385 journal@recovery recovering @11
+17:37:32.738575 version@stat F·[3] S·2KiB[2KiB] Sc·[0.75]
+17:37:32.739466 db@janitor F·5 G·0
+17:37:32.739492 db@open done T·3.248709ms
+17:37:51.684973 db@close closing
+17:37:51.685242 db@close done T·168.908µs
