@@ -1,3 +1,13 @@
+<a name="0.23.6"></a>
+## [0.23.6](https://github.com/ipfs/interface-ipfs-core/compare/v0.23.5...v0.23.6) (2017-02-01)
+
+
+### Features
+
+* update block spec to support CID ([35e2353](https://github.com/ipfs/interface-ipfs-core/commit/35e2353))
+
+
+
 <a name="0.23.5"></a>
 ## [0.23.5](https://github.com/ipfs/interface-ipfs-core/compare/v0.23.4...v0.23.5) (2017-01-17)
 
