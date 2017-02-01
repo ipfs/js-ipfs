@@ -171,7 +171,6 @@ describe('files', () => {
       const outDir = path.join(process.cwd(), 'QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
       rimraf(outDir)
       return ipfs('files get QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2').then((out) => {
-        console.log(out)
         expect(out).to.be.eql(
           'Saving file(s) to QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2'
         )
