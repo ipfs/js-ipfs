@@ -52,6 +52,7 @@ class IPFS {
     this.config = components.config(this)
     this.block = components.block(this)
     this.object = components.object(this)
+    this.dag = components.dag(this)
     this.libp2p = components.libp2p(this)
     this.swarm = components.swarm(this)
     this.files = components.files(this)
