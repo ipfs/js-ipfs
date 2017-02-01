@@ -131,41 +131,11 @@ module.exports = (common) => {
           })
         })
       })
-
-      describe('.rm', () => {
-        let pbNode
-
-        before((done) => {
-          const someData = new Buffer('some other data')
-
-          pbNode = DAGNode.create(someData, (err, node) => {
-            expect(err).to.not.exist
-            pbNode = node
-            done()
-          })
-        })
-
-        it('dag-pb node', (done) => {
-          ipfs.dag.put(pbNode, 'dag-pb', 'sha2-256', (err) => {
-            expect(err).to.not.exist
-            dagPB.util.cid(pbNode, (err, cid) => {
-              expect(err).to.not.exist
-              ipfs.dag.get(cid, (err, node) => {
-                expect(err).to.not.exist
-                ipfs.dag.rm(cid, done)
-                // TODO When we get timeouts in js-ipfs, try to fetch again
-                // and observe it timeout without the node
-              })
-            })
-          })
-        })
-      })
     })
 
     describe('promise API', () => {
       describe('.put', () => {})
       describe('.get', () => {})
-      describe('.rm', () => {})
     })
   })
 }
