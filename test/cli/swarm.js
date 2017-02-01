@@ -7,7 +7,7 @@ const series = require('async/series')
 const ipfsExec = require('../utils/ipfs-exec')
 const Factory = require('../utils/ipfs-factory-daemon')
 
-describe.only('swarm', () => {
+describe('swarm', () => {
   let factory
   let bMultiaddr
   let ipfsA
@@ -24,8 +24,6 @@ describe.only('swarm', () => {
       (cb) => {
         factory.spawnNode((err, node) => {
           expect(err).to.not.exist
-          console.log('path', node.repoPath)
-          console.log('api', node.apiMultiaddr)
           ipfsA = ipfsExec(node.repoPath)
           cb()
         })
@@ -46,7 +44,7 @@ describe.only('swarm', () => {
   after((done) => factory.dismantle(done))
 
   describe('daemon on (through http-api)', () => {
-    it.only('connect', () => {
+    it('connect', () => {
       return ipfsA('swarm', 'connect', bMultiaddr).then((out) => {
         expect(out).to.eql(`connect ${bMultiaddr} success`)
       })

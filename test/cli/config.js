@@ -4,25 +4,24 @@
 const expect = require('chai').expect
 const fs = require('fs')
 const path = require('path')
-const repoPath = require('./index').repoPath
-const ipfs = require('../utils/ipfs-exec')(repoPath)
 const runOnAndOff = require('../utils/on-and-off')
 
-describe('config', () => runOnAndOff(repoPath, () => {
-  const configPath = path.join(repoPath, 'config')
-  const originalConfigPath = path.join(__dirname, '../test-data/go-ipfs-repo/config')
-  const updatedConfig = () => JSON.parse(fs.readFileSync(configPath, 'utf8'))
-  const restoreConfig = () => fs.writeFileSync(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8')
+describe('config', () => runOnAndOff((thing) => {
+  let ipfs
+  let configPath
+  let originalConfigPath
+  let updatedConfig
+  let restoreConfig
+
+  before(() => {
+    ipfs = thing.ipfs
+    configPath = path.join(ipfs.repoPath, 'config')
+    originalConfigPath = path.join(__dirname, '../test-data/go-ipfs-repo/config')
+    updatedConfig = () => JSON.parse(fs.readFileSync(configPath, 'utf8'))
+    restoreConfig = () => fs.writeFileSync(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8')
+  })
 
   describe('get/set', () => {
-    it('get a config key value', () => {
-      return ipfs('config Identity.PeerID').then((out) => {
-        expect(out).to.be.eql(
-          'QmQ2zigjQikYnyYUSXZydNXrDRhBut2mubwJBaLXobMt3A'
-        )
-      })
-    })
-
     it('set a config key with a string value', () => {
       return ipfs('config foo bar').then((out) => {
         expect(updatedConfig().foo).to.equal('bar')
@@ -49,6 +48,12 @@ describe('config', () => runOnAndOff(repoPath, () => {
 
     it('set a config key with invalid json', () => {
       return ipfs.fail('config foo {"bar:0} --json')
+    })
+
+    it('get a config key value', () => {
+      return ipfs('config Identity.PeerID').then((out) => {
+        expect(out).to.exist
+      })
     })
 
     it('call config with no arguments', () => {

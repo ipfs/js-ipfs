@@ -2,56 +2,19 @@
 'use strict'
 
 const expect = require('chai').expect
-const repoPath = require('./index').repoPath
 const fs = require('fs')
 const path = require('path')
 const compareDir = require('dir-compare').compareSync
 const rimraf = require('rimraf').sync
 const runOnAndOff = require('../utils/on-and-off')
-const ipfs = require('../utils/ipfs-exec')(repoPath)
 
-describe('files', () => runOnAndOff(repoPath, () => {
-  it('cat', () => {
-    return ipfs('files cat QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
-      .then((out) => {
-        expect(out).to.eql('hello world')
-      })
-  })
+describe('files', () => runOnAndOff((thing) => {
+  let ipfs
+  const readme = fs.readFileSync(path.join(process.cwd(), '/src/init-files/init-docs/readme'))
+                   .toString('utf-8').slice(0, -1)
 
-  it('cat alias', () => {
-    return ipfs('cat QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
-      .then((out) => {
-        expect(out).to.eql('hello world')
-      })
-  })
-
-  it('get', () => {
-    return ipfs('files get QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
-      .then((out) => {
-        expect(out)
-          .to.eql('Saving file(s) to QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
-
-        const file = path.join(process.cwd(), 'QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
-
-        expect(fs.readFileSync(file).toString())
-         .to.eql('hello world\n')
-
-        rimraf(file)
-      })
-  })
-
-  it('get alias', () => {
-    return ipfs('get QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
-      .then((out) => {
-        expect(out)
-          .to.eql('Saving file(s) to QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
-
-        const file = path.join(process.cwd(), 'QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
-        expect(fs.readFileSync(file).toString())
-          .to.eql('hello world\n')
-
-        rimraf(file)
-      })
+  before(() => {
+    ipfs = thing.ipfs
   })
 
   it('add', () => {
@@ -161,6 +124,48 @@ describe('files', () => runOnAndOff(repoPath, () => {
           'added QmQQHYDwAQms78fPcvx1uFFsfho23YJNoewfLbi9AtdyJ9 recursive-get-dir/blocks',
           'added QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2 recursive-get-dir'
         ].join('\n'))
+      })
+  })
+
+  it('cat', () => {
+    return ipfs('files cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+      .then((out) => {
+        expect(out).to.eql(readme)
+      })
+  })
+
+  it('cat alias', () => {
+    return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+      .then((out) => {
+        expect(out).to.eql(readme)
+      })
+  })
+
+  it('get', () => {
+    return ipfs('files get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+      .then((out) => {
+        expect(out)
+          .to.eql('Saving file(s) to QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+        const file = path.join(process.cwd(), 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+        expect(fs.readFileSync(file).toString().slice(0, -1)).to.eql(readme)
+
+        rimraf(file)
+      })
+  })
+
+  it('get alias', () => {
+    return ipfs('get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+      .then((out) => {
+        expect(out)
+          .to.eql('Saving file(s) to QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+        const file = path.join(process.cwd(), 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+        expect(fs.readFileSync(file).toString().slice(0, -1)).to.eql(readme)
+
+        rimraf(file)
       })
   })
 

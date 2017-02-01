@@ -3,11 +3,15 @@
 'use strict'
 
 const expect = require('chai').expect
-const repoPath = require('./index').repoPath
-const ipfs = require('../utils/ipfs-exec')(repoPath)
 const runOnAndOff = require('../utils/on-and-off')
 
-describe('bootstrap', () => runOnAndOff(repoPath, () => {
+describe('bootstrap', () => runOnAndOff((thing) => {
+  let ipfs
+
+  before(() => {
+    ipfs = thing.ipfs
+  })
+
   const defaultList = [
     '/ip4/104.131.131.82/tcp/4001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ',
     '/ip4/104.236.176.52/tcp/4001/ipfs/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z',

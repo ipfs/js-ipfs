@@ -2,11 +2,15 @@
 'use strict'
 
 const expect = require('chai').expect
-const repoPath = require('./index').repoPath
 const runOnAndOff = require('../utils/on-and-off')
-const ipfs = require('../utils/ipfs-exec')(repoPath)
 
-describe('block', () => runOnAndOff(repoPath, () => {
+describe('block', () => runOnAndOff((thing) => {
+  let ipfs
+
+  before(() => {
+    ipfs = thing.ipfs
+  })
+
   it('put', () => {
     return ipfs('block put test/test-data/hello').then((out) => {
       expect(out).to.eql('zdj7Wgpi9yzsvjJerghrdhPFpe1p1jZFyB5GKLyXEzFQyaxVk')

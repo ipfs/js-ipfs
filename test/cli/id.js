@@ -2,11 +2,15 @@
 'use strict'
 
 const expect = require('chai').expect
-const repoPath = require('./index').repoPath
 const runOnAndOff = require('../utils/on-and-off')
-const ipfs = require('../utils/ipfs-exec')(repoPath)
 
-describe('id', () => runOnAndOff(repoPath, () => {
+describe('id', () => runOnAndOff((thing) => {
+  let ipfs
+
+  before(() => {
+    ipfs = thing.ipfs
+  })
+
   it('get the id', () => {
     return ipfs('id').then((res) => {
       const id = JSON.parse(res)
