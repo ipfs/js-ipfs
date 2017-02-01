@@ -9,7 +9,7 @@ const DAGNode = dagPB.DAGNode
 const dagCBOR = require('ipld-dag-cbor')
 
 module.exports = (common) => {
-  describe.only('.dag (basics)', () => {
+  describe('.dag (basics)', () => {
     let ipfs
 
     before(function (done) {
