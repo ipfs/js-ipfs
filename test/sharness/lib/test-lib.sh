@@ -57,7 +57,7 @@ if test "$TEST_VERBOSE" = 1; then
 fi
 
 # source our generic test lib
-. ../../ipfs-test-lib.sh
+. ../lib/ipfs-test-lib.sh
 
 # source iptb lib
 . ../lib/iptb-lib.sh

@@ -5,7 +5,7 @@ const expect = require('chai').expect
 const clean = require('../utils/clean')
 const ipfsCmd = require('../utils/ipfs-exec')
 
-describe('daemon', function () {
+describe('daemon', () => {
   let repoPath
   let ipfs
 
@@ -14,9 +14,7 @@ describe('daemon', function () {
     ipfs = ipfsCmd(repoPath)
   })
 
-  afterEach(() => {
-    clean(repoPath)
-  })
+  afterEach(() => clean(repoPath))
 
   it('gives error if user hasn\'t run init before', (done) => {
     const expectedError = 'no ipfs repo found in ' + repoPath

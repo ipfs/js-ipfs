@@ -2,7 +2,7 @@
 'use strict'
 
 const test = require('interface-ipfs-core')
-const IPFSFactory = require('../../utils/factory-core')
+const IPFSFactory = require('../../utils/ipfs-factory-instance')
 
 let factory
 

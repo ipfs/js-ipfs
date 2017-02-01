@@ -3,7 +3,7 @@
 'use strict'
 
 const test = require('interface-ipfs-core')
-const FactoryClient = require('./../../utils/factory-http')
+const FactoryClient = require('./../../utils/ipfs-factory-daemon')
 
 let fc
 
@@ -17,4 +17,4 @@ const common = {
   }
 }
 
-test.config(common)
+test.swarm(common)

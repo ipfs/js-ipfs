@@ -2,81 +2,41 @@
 'use strict'
 
 const expect = require('chai').expect
-const repoPath = require('./index').repoPath
 const fs = require('fs')
 const path = require('path')
 const compareDir = require('dir-compare').compareSync
 const rimraf = require('rimraf').sync
-const describeOnlineAndOffline = require('../utils/on-and-off')
-const ipfs = require('../utils/ipfs-exec')(repoPath)
+const runOnAndOff = require('../utils/on-and-off')
 
-describe('files', () => {
-  describeOnlineAndOffline(repoPath, () => {
-    it('cat', () => {
-      return ipfs('files cat QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o').then((out) => {
-        expect(out).to.be.eql('hello world')
+describe('files', () => runOnAndOff((thing) => {
+  let ipfs
+  const readme = fs.readFileSync(path.join(process.cwd(), '/src/init-files/init-docs/readme'))
+                   .toString('utf-8').slice(0, -1)
+
+  before(() => {
+    ipfs = thing.ipfs
+  })
+
+  it('add', () => {
+    return ipfs('files add src/init-files/init-docs/readme')
+      .then((out) => {
+        expect(out)
+          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme')
       })
-    })
+  })
 
-    it('cat alias', () => {
-      return ipfs('cat QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o').then((out) => {
-        expect(out).to.be.eql('hello world')
+  it('add alias', () => {
+    return ipfs('add src/init-files/init-docs/readme')
+      .then((out) => {
+        expect(out)
+          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme')
       })
-    })
+  })
 
-    it('get', () => {
-      return ipfs('files get QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o').then((out) => {
-        expect(out).to.be.eql(
-          'Saving file(s) to QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o'
-        )
-
-        const file = path.join(process.cwd(), 'QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
-        expect(
-          fs.readFileSync(file).toString()
-        ).to.be.eql(
-          'hello world\n'
-        )
-
-        rimraf(file)
-      })
-    })
-
-    it('get alias', () => {
-      return ipfs('get QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o').then((out) => {
-        expect(out).to.be.eql(
-          'Saving file(s) to QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o'
-        )
-
-        const file = path.join(process.cwd(), 'QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
-        expect(
-          fs.readFileSync(file).toString()
-        ).to.be.eql(
-          'hello world\n'
-        )
-
-        rimraf(file)
-      })
-    })
-
-    it('add', () => {
-      return ipfs('files add src/init-files/init-docs/readme').then((out) => {
-        expect(out).to.be.eql(
-          'added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme'
-        )
-      })
-    })
-
-    it('add alias', () => {
-      return ipfs('add src/init-files/init-docs/readme').then((out) => {
-        expect(out).to.be.eql(
-          'added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme'
-        )
-      })
-    })
-
-    it('add recursively test', () => {
-      return ipfs('files add -r test/test-data/recursive-get-dir').then((out) => {
-        expect(out).to.be.eql([
+  it('add recursively test', () => {
+    return ipfs('files add -r test/test-data/recursive-get-dir')
+      .then((out) => {
+        expect(out).to.eql([
           'added QmR56UJmAaZLXLdTT1ALrE9vVqV8soUEekm9BMd4FnuYqV recursive-get-dir/version',
           'added QmYE7xo6NxbHEVEHej1yzxijYaNY51BaeKxjXxn6Ssa6Bs recursive-get-dir/init-docs/tour/0.0-intro',
           'added QmciSU8hfpAXKjvK5YLUSwApomGSWN5gFbP4EpDAEzu2Te recursive-get-dir/init-docs/tour',
@@ -165,25 +125,70 @@ describe('files', () => {
           'added QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2 recursive-get-dir'
         ].join('\n'))
       })
-    })
+  })
 
-    it('get recursively', () => {
-      const outDir = path.join(process.cwd(), 'QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
-      rimraf(outDir)
-      return ipfs('files get QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2').then((out) => {
-        expect(out).to.be.eql(
+  it('cat', () => {
+    return ipfs('files cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+      .then((out) => {
+        expect(out).to.eql(readme)
+      })
+  })
+
+  it('cat alias', () => {
+    return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+      .then((out) => {
+        expect(out).to.eql(readme)
+      })
+  })
+
+  it('get', () => {
+    return ipfs('files get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+      .then((out) => {
+        expect(out)
+          .to.eql('Saving file(s) to QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+        const file = path.join(process.cwd(), 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+        expect(fs.readFileSync(file).toString().slice(0, -1)).to.eql(readme)
+
+        rimraf(file)
+      })
+  })
+
+  it('get alias', () => {
+    return ipfs('get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+      .then((out) => {
+        expect(out)
+          .to.eql('Saving file(s) to QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+        const file = path.join(process.cwd(), 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+        expect(fs.readFileSync(file).toString().slice(0, -1)).to.eql(readme)
+
+        rimraf(file)
+      })
+  })
+
+  it('get recursively', () => {
+    const outDir = path.join(process.cwd(), 'QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
+    rimraf(outDir)
+
+    return ipfs('files get QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
+      .then((out) => {
+        expect(out).to.eql(
           'Saving file(s) to QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2'
         )
 
         const outDir = path.join(process.cwd(), 'QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
         const expectedDir = path.join(process.cwd(), 'test', 'test-data', 'recursive-get-dir')
+
         const compareResult = compareDir(outDir, expectedDir, {
           compareContent: true,
           compareSize: true
         })
-        expect(compareResult.differences).to.be.eql(0)
+
+        expect(compareResult.differences).to.equal(0)
         rimraf(outDir)
       })
-    })
   })
-})
+}))

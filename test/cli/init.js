@@ -5,25 +5,21 @@ const expect = require('chai').expect
 const path = require('path')
 const fs = require('fs')
 const clean = require('../utils/clean')
-const ipfsCmd = require('../utils/ipfs-exec')
+const ipfsExec = require('../utils/ipfs-exec')
+const os = require('os')
 
-describe('init', function () {
-  this.timeout(60 * 1000)
+describe('init', () => {
   let repoPath
   let ipfs
 
-  const repoExistsSync = (p) => (
-    fs.existsSync(path.join(repoPath, p))
-  )
+  const repoExistsSync = (p) => fs.existsSync(path.join(repoPath, p))
 
   beforeEach(() => {
-    repoPath = '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8)
-    ipfs = ipfsCmd(repoPath)
+    repoPath = os.tmpDir() + '/ipfs-' + Math.random().toString().substring(2, 8)
+    ipfs = ipfsExec(repoPath)
   })
 
-  afterEach(() => {
-    clean(repoPath)
-  })
+  afterEach(() => clean(repoPath))
 
   it('basic', () => {
     return ipfs('init').then(() => {
