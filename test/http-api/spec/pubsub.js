@@ -3,9 +3,9 @@
 'use strict'
 
 const expect = require('chai').expect
-// TODO migrate to use ipfs-factory-daemon
 const createTempNode = ''
 
+// TODO migrate to use ipfs-factory-daemon
 module.exports = (http) => {
   describe.skip('/pubsub', () => {
     let api

@@ -2,6 +2,7 @@
 
 'use strict'
 
+// TODO needs: https://github.com/ipfs/js-ipfs-api/pull/493
 /*
 const test = require('interface-ipfs-core')
 const FactoryClient = require('./../../utils/ipfs-factory-daemon')
@@ -17,8 +18,6 @@ const common = {
     fc.dismantle(callback)
   }
 }
-*/
 
-// TODO
-// needs: https://github.com/ipfs/js-ipfs-api/pull/493
-// test.pubsub(common)
+test.pubsub(common)
+*/

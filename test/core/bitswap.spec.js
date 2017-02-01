@@ -81,11 +81,10 @@ describe('bitswap', () => {
           targetAddr = addr.encapsulate(multiaddr(`/ipfs/${identity.id}`)).toString()
           targetAddr = targetAddr.replace('0.0.0.0', '127.0.0.1')
         } else {
-          // Note: the browser doesn't have
-          // a websockets listening addr
+          // Note: the browser doesn't have a websockets listening addr
 
-          // TODO, what we really need is a way to dial to
-          // a peerId only and another to dial to peerInfo
+          // What we really need is a way to dial to a peerId only and another
+          // to dial to peerInfo
           return done()
           // targetAddr = multiaddr(`/ip4/127.0.0.1/tcp/0/ws/ipfs/${identity.id}`).toString()
         }
