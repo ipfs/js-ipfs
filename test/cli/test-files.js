@@ -182,10 +182,6 @@ describe('files', () => {
           compareContent: true,
           compareSize: true
         })
-        if (compareResult.differences) {
-          const diffs = compareResult.diffSet.filter(d => d.state !== 'equal')
-          console.log('differences: %s', JSON.stringify(diffs, null, '  '))
-        }
         expect(compareResult.differences).to.be.eql(0)
         rimraf(outDir)
       })
