@@ -1,3 +1,16 @@
+<a name="0.23.7"></a>
+## [0.23.7](https://github.com/ipfs/interface-ipfs-core/compare/v0.23.6...v0.23.7) (2017-02-01)
+
+
+### Features
+
+* dag API basics (get, put, rm) ([dd3396b](https://github.com/ipfs/interface-ipfs-core/commit/dd3396b))
+* dag-api (WIP) ([44af576](https://github.com/ipfs/interface-ipfs-core/commit/44af576))
+* dag-api (WIP) ([64a25b9](https://github.com/ipfs/interface-ipfs-core/commit/64a25b9))
+* remove rm from dag api ([0a5d629](https://github.com/ipfs/interface-ipfs-core/commit/0a5d629))
+
+
+
 <a name="0.23.6"></a>
 ## [0.23.6](https://github.com/ipfs/interface-ipfs-core/compare/v0.23.5...v0.23.6) (2017-02-01)
 
