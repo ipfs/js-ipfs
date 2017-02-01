@@ -3,6 +3,7 @@
 const BlockService = require('ipfs-block-service')
 const IPLDResolver = require('ipld-resolver')
 const PeerBook = require('peer-book')
+const debug = require('debug')
 
 const defaultRepo = require('./default-repo')
 
@@ -19,6 +20,11 @@ class IPFS {
     delete configOpts.repo
 
     configOpts.EXPERIMENTAL = configOpts.EXPERIMENTAL || {}
+
+    // IPFS utils
+    this.types = {}
+    this.log = debug('jsipfs')
+    this.log.err = debug('jsipfs:err')
 
     // IPFS Core Internals
     this._configOpts = configOpts
@@ -52,6 +58,10 @@ class IPFS {
     this.bitswap = components.bitswap(this)
     this.ping = components.ping(this)
     this.pubsub = components.pubsub(this)
+
+    if (configOpts.EXPERIMENTAL.pubsub) {
+      this.log('EXPERIMENTAL pubsub is enabled')
+    }
   }
 }
 
