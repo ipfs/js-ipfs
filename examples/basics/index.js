@@ -12,7 +12,12 @@ const IPFS = require('../../src/core')
 /*
  * Create a new IPFS instance, using default repo (fs) on default path (~/.ipfs)
  */
-const node = new IPFS(path.join(os.tmpDir() + '/' + new Date().toString()))
+const node = new IPFS({
+  repo: path.join(os.tmpDir() + '/' + new Date().toString()),
+  EXPERIMENTAL: {
+    pubsub: false
+  }
+})
 
 const fileToAdd = {
   path: 'hello.txt',

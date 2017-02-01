@@ -1,3 +1,5 @@
+'use strict'
+
 exports.goOnline = require('./go-online')
 exports.goOffline = require('./go-offline')
 exports.isOnline = require('./is-online')
