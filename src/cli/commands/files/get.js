@@ -36,13 +36,15 @@ function fileHandler (dir) {
       if (err) {
         callback(err)
       } else {
+        const fullFilePath = path.join(dir, file.path)
         if (file.content) {
           file.content
-            .pipe(fs.createWriteStream(path.join(dir, file.path)))
+            .pipe(fs.createWriteStream(fullFilePath))
             .once('error', callback)
             .once('finish', callback)
         } else {
-          callback()
+          // this is a dir
+          mkdirp(fullFilePath, callback)
         }
       }
     })
