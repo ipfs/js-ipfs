@@ -200,7 +200,12 @@ The HTTP-API exposed by the js-ipfs daemon follows the [`http-api-spec`](https:/
 const repo = <IPFS Repo instance or repo path>
 
 // Create the IPFS node instance
-const node = new IPFS(repo)
+const node = new IPFS({
+  repo: repo,
+  EXPERIMENTAL: {
+    pubsub: false
+  }
+})
 
 // We need to init our repo, in this case the repo was empty
 // We are picking 2048 bits for the RSA key that will be our PeerId

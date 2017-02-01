@@ -29,7 +29,12 @@ class App extends React.Component {
       // for simplicity, we create a new repo everytime the node
       // is created, because you can't init already existing repos
       const repoPath = String(Math.random())
-      node = new IPFS(repoPath)
+      node = new IPFS({
+        repo: repoPath,
+        EXPERIMENTAL: {
+          pubsub: false
+        }
+      })
 
       node.init({ emptyRepo: true, bits: 2048 }, function (err) {
         if (err) {

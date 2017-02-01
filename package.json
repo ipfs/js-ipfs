@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.21.7",
+  "version": "0.21.8",
   "description": "JavaScript implementation of the IPFS specification",
   "bin": {
     "jsipfs": "src/cli/bin.js"
@@ -103,7 +103,7 @@
     "ipfs-multipart": "^0.1.0",
     "ipfs-repo": "^0.11.2",
     "ipfs-unixfs": "^0.1.9",
-    "ipfs-unixfs-engine": "^0.15.2",
+    "ipfs-unixfs-engine": "^0.15.4",
     "ipld-resolver": "^0.4.3",
     "isstream": "^0.1.2",
     "libp2p-floodsub": "0.7.2",

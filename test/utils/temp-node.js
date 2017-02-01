@@ -30,7 +30,12 @@ function setAddresses (repo, num, callback) {
 
 function createTempNode (num, callback) {
   const repo = createTempRepo()
-  const ipfs = new IPFS(repo)
+  const ipfs = new IPFS({
+    repo: repo,
+    EXPERIMENTAL: {
+      pubsub: true
+    }
+  })
 
   num = leftPad(num, 3, 0)
 

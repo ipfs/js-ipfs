@@ -20,9 +20,7 @@ describe('cli', () => {
     })
   })
 
-  after(() => {
-    clean(repoTests)
-  })
+  after(() => clean(repoTests))
 
   describe('--all', () => {
     const tests = fs.readdirSync(__dirname)
