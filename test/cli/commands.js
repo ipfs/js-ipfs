@@ -2,8 +2,6 @@
 'use strict'
 
 const expect = require('chai').expect
-const repoPath = require('./index').repoPath
-const ipfsBase = require('../utils/ipfs-exec')
 const runOnAndOff = require('../utils/on-and-off')
 
 const commandCount = 61
