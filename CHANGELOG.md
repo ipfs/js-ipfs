@@ -1,3 +1,13 @@
+<a name="0.23.8"></a>
+## [0.23.8](https://github.com/ipfs/interface-ipfs-core/compare/v0.23.7...v0.23.8) (2017-02-01)
+
+
+### Bug Fixes
+
+* remove .only from dag ([66e93cd](https://github.com/ipfs/interface-ipfs-core/commit/66e93cd))
+
+
+
 <a name="0.23.7"></a>
 ## [0.23.7](https://github.com/ipfs/interface-ipfs-core/compare/v0.23.6...v0.23.7) (2017-02-01)
 
