@@ -182,7 +182,7 @@ describe('files', () => runOnAndOff(repoPath, () => {
           compareSize: true
         })
 
-        expect(compareResult.differences).to.be.eql(0)
+        expect(compareResult.differences).to.equal(0)
         rimraf(outDir)
       })
   })

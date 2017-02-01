@@ -3,84 +3,77 @@
 'use strict'
 
 const expect = require('chai').expect
-const HttpAPI = require('../../src/http-api')
-// TODO 1. needs to use ipfs-factory-daemon
-const createTempNode = ''
-const repoPath = require('./index').repoPath
-const ipfs = require('../utils/ipfs-exec')(repoPath)
+const series = require('async/series')
+const ipfsExec = require('../utils/ipfs-exec')
+const Factory = require('../utils/ipfs-factory-daemon')
 
-describe.skip('swarm', function () {
-  this.timeout(30 * 1000)
-  let node
-  let nodeAddr
+describe.only('swarm', () => {
+  let factory
+  let bMultiaddr
+  let ipfsA
 
-  before((done) => {
-    createTempNode(1, (err, _node) => {
-      expect(err).to.not.exist
-      node = _node
-      node.goOnline((err) => {
-        expect(err).to.not.exist
-        node.id((err, identity) => {
+  before(function (done) {
+    // CI takes longer to instantiate the daemon,
+    // so we need to increase the timeout for the
+    // before step
+    this.timeout(20 * 1000)
+
+    factory = new Factory()
+
+    series([
+      (cb) => {
+        factory.spawnNode((err, node) => {
           expect(err).to.not.exist
-          nodeAddr = identity.addresses[0]
-          done()
+          console.log('path', node.repoPath)
+          console.log('api', node.apiMultiaddr)
+          ipfsA = ipfsExec(node.repoPath)
+          cb()
         })
-      })
-    })
+      },
+      (cb) => {
+        factory.spawnNode((err, node) => {
+          expect(err).to.not.exist
+          node.id((err, id) => {
+            expect(err).to.not.exist
+            bMultiaddr = id.addresses[0]
+            cb()
+          })
+        })
+      }
+    ], done)
   })
 
-  after((done) => {
-    node.goOffline(done)
-  })
+  after((done) => factory.dismantle(done))
 
-  describe('api running', () => {
-    let httpAPI
-
-    before((done) => {
-      httpAPI = new HttpAPI(repoPath)
-      httpAPI.start((err) => {
-        expect(err).to.not.exist
-        done()
-      })
-    })
-
-    after((done) => {
-      httpAPI.stop((err) => {
-        expect(err).to.not.exist
-        done()
-      })
-    })
-
-    it('connect', () => {
-      return ipfs('swarm', 'connect', nodeAddr).then((out) => {
-        expect(out).to.be.eql(
-          `connect ${nodeAddr} success`
-        )
+  describe('daemon on (through http-api)', () => {
+    it.only('connect', () => {
+      return ipfsA('swarm', 'connect', bMultiaddr).then((out) => {
+        expect(out).to.eql(`connect ${bMultiaddr} success`)
       })
     })
 
     it('peers', () => {
-      return ipfs('swarm peers').then((out) => {
-        expect(out).to.be.eql(nodeAddr)
+      return ipfsA('swarm peers').then((out) => {
+        expect(out).to.be.eql(bMultiaddr)
       })
     })
 
     it('addrs', () => {
-      return ipfs('swarm addrs').then((out) => {
+      return ipfsA('swarm addrs').then((out) => {
         expect(out).to.have.length.above(0)
       })
     })
 
     it('addrs local', () => {
-      return ipfs('swarm addrs local').then((out) => {
+      return ipfsA('swarm addrs local').then((out) => {
         expect(out).to.have.length.above(0)
       })
     })
 
     it('disconnect', () => {
-      return ipfs('swarm', 'disconnect', nodeAddr).then((out) => {
-        expect(out).to.be.eql(
-          `disconnect ${nodeAddr} success`
+      return ipfsA('swarm', 'disconnect', bMultiaddr).then((out) => {
+        expect(out).to.eql(
+          `disconnect ${bMultiaddr} success`
         )
       })
     })

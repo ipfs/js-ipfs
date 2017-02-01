@@ -1,25 +1,21 @@
 'use strict'
 
 const PeerId = require('peer-id')
-const IPFSRepo = require('ipfs-repo')
 const IPFSAPI = require('ipfs-api')
 const IPFS = require('../../../src/core')
-const cleanRepo = require('../clean')
+const clean = require('../clean')
 const HTTPAPI = require('../../../src/http-api')
 const series = require('async/series')
 const defaultConfig = require('./default-config.json')
+const os = require('os')
 
-module.exports = Factory
-
-function Factory () {
-  if (!(this instanceof Factory)) {
-    return new Factory()
+class Factory {
+  constructor () {
+    this.daemonsSpawned = []
   }
 
-  const nodes = []
-
   /* yields a new started node */
-  this.spawnNode = (repoPath, config, callback) => {
+  spawnNode (repoPath, config, callback) {
     if (typeof repoPath === 'function') {
       callback = repoPath
       repoPath = undefined
@@ -29,103 +25,68 @@ function Factory () {
       config = undefined
     }
 
-    if (!repoPath) {
-      repoPath = '/tmp/.ipfs-' + Math.random()
-                                 .toString()
-                                 .substring(2, 8)
-    }
+    repoPath = repoPath || os.tmpDir() +
+      '/ipfs-' + Math.random().toString().substring(2, 8)
 
-    createConfig(config, (err, conf) => {
-      if (err) {
-        return callback(err)
-      }
+    let node
+    let daemon
+    let ctl
 
-      config = conf
-      // set up the repo
-      const repo = new IPFSRepo(repoPath, {
-        stores: require('fs-pull-blob-store')
-      })
-      repo.teardown = (done) => {
-        cleanRepo(repoPath)
-        done()
-      }
+    series([
+      (cb) => {
+        if (config) { return cb() }
 
-      // create the IPFS node
-      const ipfs = new IPFS({
-        repo: repo,
-        EXPERIMENTAL: {
-          pubsub: true
-        }
-      })
+        config = JSON.parse(JSON.stringify(defaultConfig))
 
-      ipfs.init({
-        emptyRepo: true,
-        bits: 1024
-      }, (err) => {
-        if (err) {
-          return callback(err)
-        }
-        repo.config.set(config, launchNode)
-      })
+        PeerId.create({ bits: 1024 }, (err, id) => {
+          if (err) { return cb(err) }
 
-      function launchNode () {
-        // create the IPFS node through the HTTP-API
-        const node = new HTTPAPI(repo)
-        nodes.push({
-          httpApi: node,
-          repo: repo
+          const pId = id.toJSON()
+          config.Identity.PeerID = pId.id
+          config.Identity.PrivKey = pId.privKey
+          cb()
         })
-
-        node.start((err) => {
-          if (err) {
-            return callback(err)
+      },
+      (cb) => {
+        // create the node
+        node = new IPFS({
+          repo: repoPath,
+          EXPERIMENTAL: {
+            pubsub: true
           }
-
-          const ctl = IPFSAPI(node.apiMultiaddr)
-
-          callback(null, ctl)
         })
+
+        node.init({ emptyRepo: true }, cb)
+      },
+      (cb) => node._repo.config.set(config, cb),
+      (cb) => {
+        // create the daemon
+        daemon = new HTTPAPI(repoPath)
+        daemon.repoPath = repoPath
+        this.daemonsSpawned.push(daemon)
+
+        daemon.start(cb)
+      },
+      (cb) => {
+        ctl = IPFSAPI(daemon.apiMultiaddr)
+        ctl.repoPath = repoPath
+        ctl.apiMultiaddr = daemon.apiMultiaddr
+        cb()
       }
+    ], (err) => callback(err, ctl))
+  }
+
+  dismantle (callback) {
+    const tasks = this.daemonsSpawned.map((daemon) => (cb) => {
+      daemon.stop((err) => {
+        if (err) { return cb(err) }
+        clean(daemon.repoPath)
+        cb()
+      })
     })
 
-    function createConfig (config, cb) {
-      if (config) {
-        return cb(null, config)
-      }
-      // copy default config
-      const conf = JSON.parse(
-          JSON.stringify(defaultConfig))
-
-      PeerId.create({
-        bits: 1024
-      }, (err, id) => {
-        if (err) {
-          return cb(err)
-        }
-
-        const pId = id.toJSON()
-        conf.Identity.PeerID = pId.id
-        conf.Identity.PrivKey = pId.privKey
-        cb(null, conf)
-      })
-    }
-  }
-
-  this.dismantle = function (callback) {
-    series(nodes.map((node) => {
-      return node.httpApi.stop
-    }), clean)
-
-    function clean (err) {
-      if (err) {
-        return callback(err)
-      }
-      series(
-        nodes.map((node) => {
-          return node.repo.teardown
-        }),
-        callback
-      )
-    }
+    series(tasks, callback)
   }
 }
+
+module.exports = Factory

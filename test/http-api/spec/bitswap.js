@@ -18,7 +18,6 @@ module.exports = (http) => {
       }, (res) => {
         expect(res.statusCode).to.equal(200)
         expect(res.result).to.have.property('Keys')
-        // TODO test that there actual values in there
         done()
       })
     })
@@ -37,12 +36,8 @@ module.exports = (http) => {
           'DupBlksReceived',
           'DupDataReceived'
         ])
-        // TODO test that there actual values in there
         done()
       })
-    })
-
-    it.skip('/unwant', () => {
     })
   })
 }

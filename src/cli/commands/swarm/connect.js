@@ -18,14 +18,10 @@ module.exports = {
     }
 
     utils.getIPFS((err, ipfs) => {
-      if (err) {
-        throw err
-      }
+      if (err) { throw err }
 
       ipfs.swarm.connect(argv.address, (err, res) => {
-        if (err) {
-          throw err
-        }
+        if (err) { throw err }
 
         console.log(res.Strings[0])
       })
