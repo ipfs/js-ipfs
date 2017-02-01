@@ -33,6 +33,7 @@
     "concat-stream": "^1.6.0",
     "detect-node": "^2.0.3",
     "ipfs-block": "^0.5.4",
+    "ipld-dag-cbor": "^0.8.5",
     "ipld-dag-pb": "^0.9.3",
     "multiaddr": "^2.1.1",
     "multihashes": "^0.3.1",
