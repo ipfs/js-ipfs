@@ -24,6 +24,8 @@
     "lint": "aegir-lint",
     "coverage": "gulp coverage",
     "test": "gulp test",
+    "test:node": "npm run test:unit:node",
+    "test:browser": "npm run test:unit:browser",
     "test:unit:node": "gulp test:node",
     "test:unit:node:core": "TEST=core npm run test:unit:node",
     "test:unit:node:http": "TEST=http npm run test:unit:node",
