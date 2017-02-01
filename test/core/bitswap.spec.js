@@ -16,8 +16,7 @@ const API = require('ipfs-api')
 const multiaddr = require('multiaddr')
 const isNode = require('detect-node')
 
-// This gets replaced by require('../utils/create-repo-browser.js')
-// in the browser
+// This gets replaced by '../utils/create-repo-browser.js' in the browser
 const createTempRepo = require('../utils/create-repo-node.js')
 
 const IPFS = require('../../src/core')

@@ -7,23 +7,18 @@ const fs = require('fs')
 const clean = require('../utils/clean')
 const ipfsCmd = require('../utils/ipfs-exec')
 
-describe('init', function () {
-  this.timeout(60 * 1000)
+describe('init', () => {
   let repoPath
   let ipfs
 
-  const repoExistsSync = (p) => (
-    fs.existsSync(path.join(repoPath, p))
-  )
+  const repoExistsSync = (p) => fs.existsSync(path.join(repoPath, p))
 
   beforeEach(() => {
     repoPath = '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8)
     ipfs = ipfsCmd(repoPath)
   })
 
-  afterEach(() => {
-    clean(repoPath)
-  })
+  afterEach(() => clean(repoPath))
 
   it('basic', () => {
     return ipfs('init').then(() => {

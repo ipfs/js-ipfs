@@ -6,7 +6,8 @@ const expect = require('chai').expect
 const delay = require('delay')
 const waterfall = require('async/waterfall')
 const HttpAPI = require('../../src/http-api')
-const createTempNode = require('../utils/temp-node')
+// TODO needs to use ipfs-factory-daemon
+const createTempNode = ''
 const repoPath = require('./index').repoPath
 const ipfs = require('../utils/ipfs-exec')(repoPath)
 

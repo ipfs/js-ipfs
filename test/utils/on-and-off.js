@@ -3,13 +3,12 @@
 
 const HTTPAPI = require('../../src/http-api')
 
-/*
- * CLI Utility to run the tests offline (daemon off) and online (daemon on)
- */
-module.exports = (repoPath, tests) => {
-  describe('with daemon off (requiring js-ipfs core directly)', () => tests())
+function off (repoPath, tests) {
+  describe('daemon off (directly to core)', () => tests())
+}
 
-  describe('with daemon on (contacting js-ipfs through http-api)', () => {
+function on (repoPath, tests) {
+  describe('daemon on (through http-api)', () => {
     let httpAPI
 
     before((done) => {
@@ -22,3 +21,14 @@ module.exports = (repoPath, tests) => {
     tests()
   })
 }
+
+/*
+ * CLI Utility to run the tests offline (daemon off) and online (daemon on)
+ */
+exports = module.exports = (repoPath, tests) => {
+  off(repoPath, tests)
+  on(repoPath, tests)
+}
+
+exports.off = off
+exports.on = on
