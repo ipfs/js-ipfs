@@ -178,7 +178,14 @@ describe('files', () => {
 
         const outDir = path.join(process.cwd(), 'QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
         const expectedDir = path.join(process.cwd(), 'test', 'test-data', 'recursive-get-dir')
-        const compareResult = compareDir(outDir, expectedDir)
+        const compareResult = compareDir(outDir, expectedDir, {
+          compareContent: true,
+          compareSize: true
+        })
+        if (compareResult.differences) {
+          const diffs = compareResult.diffSet.filter(d => d.state !== 'equal')
+          console.log('differences: %s', JSON.stringify(diffs, null, '  '))
+        }
         expect(compareResult.differences).to.be.eql(0)
         rimraf(outDir)
       })
