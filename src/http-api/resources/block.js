@@ -47,7 +47,7 @@ exports.get = {
         }).code(500)
       }
 
-      return reply(block.data.toString())
+      return reply(block.data)
     })
   }
 }
