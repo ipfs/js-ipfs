@@ -18,6 +18,7 @@ module.exports = function dag (self) {
         if (err) {
           return callback(err)
         }
+
         self._ipldResolver.put({
           node: dagNode,
           cid: cid
