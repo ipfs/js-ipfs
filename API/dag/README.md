@@ -30,4 +30,17 @@ If no `callback` is passed, a [promise][] is returned.
 
 `callback` must follow `function (err, dagNode) {}` signature, where `err` is an error if the operation was not successful and `dagNode` is the IPLD format DAG node retrieved.
 
+#### `dag.resolve`
+
+> Resolves an IPLD path
+
+##### `Go` **WIP**
+
+##### `JavaScript` - ipfs.dag.resolve(cid, path, callback)
+
+- `cid` is a [CID][https://github.com/ipfs/js-cid] instance.
+- `path` is a String that represents a valid path to be resolved
+
+`callback` must follow `function (err, value) {}` signature, where `err` is an error if the operation was not successful and `value` is the value it was retrieved.
+
 If no `callback` is passed, a [promise][] is returned.
