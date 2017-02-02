@@ -10,7 +10,7 @@ const series = require('async/series')
 const pull = require('pull-stream')
 
 module.exports = (common) => {
-  describe.only('.dag.resolve', () => {
+  describe('.dag.resolve', () => {
     let ipfs
     let nodePb
     let nodeCbor
@@ -57,7 +57,6 @@ module.exports = (common) => {
           dagCBOR.util.cid(nodeCbor, (err, cid) => {
             expect(err).to.not.exist
             cidCbor = cid
-            console.log(nodeCbor)
             cb()
           })
         }
@@ -70,14 +69,7 @@ module.exports = (common) => {
             { node: nodeCbor, multicodec: 'dag-cbor', hashAlg: 'sha2-256' }
           ]),
           pull.asyncMap((el, cb) => {
-            ipfs.dag.put(el.node, el.multicodec, el.hashAlg, (err) => {
-              if (err) {
-                console.log(err)
-              }
-              console.log('put', el.multicodec)
-
-              cb()
-            })
+            ipfs.dag.put(el.node, el.multicodec, el.hashAlg, cb)
           }),
           pull.onEnd(done)
         )
@@ -110,11 +102,8 @@ module.exports = (common) => {
         it.skip('dag-pb two levels', (done) => {})
 
         it('dag-cbor get the node', (done) => {
-          ipfs.dag.get(cidCbor, (err, result) => {
-          // ipfs.dag.resolve(cidCbor, '/', (err, result) => {
+          ipfs.dag.resolve(cidCbor, '/', (err, result) => {
             expect(err).to.not.exist
-
-            console.log('get the node')
 
             dagCBOR.util.cid(result, (err, cid) => {
               expect(err).to.not.exist
