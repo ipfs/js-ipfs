@@ -33,7 +33,11 @@ module.exports = {
 
       lookupFn()
       .then((obj) => {
-        console.log(obj)
+        if (Buffer.isBuffer(obj)) {
+          console.log('0x' + obj.toString('hex'))
+        } else {
+          console.log(obj)
+        }
       })
       .catch((err) => {
         console.error(err)
