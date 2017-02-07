@@ -4,12 +4,9 @@
   "description": "Bundle js-ipfs with Browserify",
   "main": "index.js",
   "scripts": {
-    "bundle": "browserify src/index.js > public/bundle.js",
+    "bundle": "browserify src/index.js --require browserify-zlib-next:zlib  > public/bundle.js",
     "serve": "http-server public -a 127.0.0.1 -p 8888",
     "start": "npm run bundle && npm run serve"
-  },
-  "browser": {
-    "zlib": "browserify-zlib-next"
   },
   "keywords": [],
   "license": "MIT",
