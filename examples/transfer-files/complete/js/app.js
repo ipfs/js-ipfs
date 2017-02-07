@@ -80,41 +80,45 @@ const catFile = () => {
   if (multihash) {
     // Get a file or many files
     ipfs.files.get(multihash, (err, stream) => {
-      if (err) onError(err)
+      if (err) {
+        onError(err)
+      }
       console.log(stream)
+
       // .get gives us a stream of files
       stream.on('data', (file) => {
-        console.log(file)
+        console.log('got file', file)
+
         const buf = []
+
         if (file.content) {
           // once we get a file, we also want to read the data for that file
-          file.content.on('data', (data) => {
-            console.log('file got data')
-            buf.push(data)
-          })
-          file.content.on('end', (data) => {
-            console.log('file got end')
-            console.log(buf)
-          })
-          // TODO currently, can't grab content from file either in get...
-          const downloadContent = window.btoa(window.unescape(window.encodeURIComponent('content of file')))
-          const downloadLink = 'data:application/octet-stream;charset=utf-8;base64,' + downloadContent
-          const listItem = document.createElement('div')
-          const link = document.createElement('a')
-          link.setAttribute('href', downloadLink)
-          link.setAttribute('download', multihash)
-          const date = (new Date()).toLocaleTimeString()
+          file.content.on('data', (data) => buf.push(data))
 
-          link.innerText = date + ' - ' + multihash + ' - Size: ' + file.size
-          const fileList = document.querySelector('.file-list')
+          file.content.on('end', () => {
+            console.log('The buf', buf)
 
-          listItem.appendChild(link)
-          fileList.insertBefore(listItem, fileList.firstChild)
+            const content = new window.Blob(buf, {type: 'application/octet-binary'})
+            const contentUrl = window.URL.createObjectURL(content)
+
+            const listItem = document.createElement('div')
+            const link = document.createElement('a')
+            link.setAttribute('href', contentUrl)
+            link.setAttribute('download', multihash)
+            const date = (new Date()).toLocaleTimeString()
+
+            link.innerText = date + ' - ' + multihash + ' - Size: ' + file.size
+            const fileList = document.querySelector('.file-list')
+
+            listItem.appendChild(link)
+            fileList.insertBefore(listItem, fileList.firstChild)
+          })
+
+          file.content.resume()
         }
       })
-      stream.on('end', () => {
-        console.log('no more files')
-      })
+
+      stream.on('end', () => console.log('no more files'))
     })
   }
 }
