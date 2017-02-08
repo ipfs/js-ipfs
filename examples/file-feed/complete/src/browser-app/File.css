@@ -1,0 +1,31 @@
+.File {
+  cursor: pointer;
+  padding: 0.5em 0.5em;
+  background-color: rgba(196, 196, 196, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.File:hover {
+  background-color: rgba(196, 196, 196, 0.25);
+}
+
+.File-filename {
+  display: flex;
+  flex: 1 1 80%;
+}
+
+.File-size {
+  display: flex;
+  justify-content: flex-end;
+  flex: 1 0 13%;
+}
+
+.File-timestamp {
+  display: flex;
+  flex: 1 1 3%;
+  justify-content: flex-end;
+  font-size: 0.8em;
+  padding: 0em 0.5em;
+}

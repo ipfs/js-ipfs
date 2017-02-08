@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css?family=Anonymous+Pro|Source+Code+Pro');
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  margin: 0em 0.5em;
+  text-align: center;
+}
+
+h2 {
+  margin: 0;
+  text-align: center;
+}
+
+h4 {
+  font-weight: 300;
+  margin: 0.5em;
+  text-align: center;
+}
+
+.root {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  font-family: 'Anonymous Pro', monospace;
+  font-size: 1.0em;
+  overflow: auto;
+  z-index: 0;
+}
