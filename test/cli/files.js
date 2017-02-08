@@ -125,7 +125,7 @@ describe('files', () => runOnAndOff((thing) => {
           'added QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2 recursive-get-dir'
         ].join('\n'))
       })
-  })
+  }).timeout(10000)
 
   it('cat', () => {
     return ipfs('files cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
