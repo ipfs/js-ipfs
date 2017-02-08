@@ -15,7 +15,7 @@ describe('init', () => {
   const repoExistsSync = (p) => fs.existsSync(path.join(repoPath, p))
 
   beforeEach(() => {
-    repoPath = os.tmpDir() + '/ipfs-' + Math.random().toString().substring(2, 8)
+    repoPath = os.tmpdir() + '/ipfs-' + Math.random().toString().substring(2, 8)
     ipfs = ipfsExec(repoPath)
   })
 

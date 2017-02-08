@@ -25,7 +25,7 @@ class Factory {
       config = undefined
     }
 
-    repoPath = repoPath || os.tmpDir() +
+    repoPath = repoPath || os.tmpdir() +
       '/ipfs-' + Math.random().toString().substring(2, 8)
 
     let node

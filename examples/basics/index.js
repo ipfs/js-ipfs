@@ -13,7 +13,7 @@ const IPFS = require('../../src/core')
  * Create a new IPFS instance, using default repo (fs) on default path (~/.ipfs)
  */
 const node = new IPFS({
-  repo: path.join(os.tmpDir() + '/' + new Date().toString()),
+  repo: path.join(os.tmpdir() + '/' + new Date().toString()),
   EXPERIMENTAL: {
     pubsub: false
   }

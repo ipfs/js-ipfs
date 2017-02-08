@@ -35,7 +35,7 @@ module.exports = (repoPath, opts) => {
 
     const cp = exec(args)
     const res = cp.then((res) => {
-      // We can't escape the os.tmpDir warning due to:
+      // We can't escape the os.tmpdir warning due to:
       // https://github.com/shelljs/shelljs/blob/master/src/tempdir.js#L43
       // expect(res.stderr).to.be.eql('')
       return res.stdout
