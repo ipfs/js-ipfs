@@ -37,10 +37,11 @@
     "ipld-dag-pb": "^0.9.4",
     "multiaddr": "^2.2.0",
     "multihashes": "^0.3.2",
+    "pull-stream": "^3.5.0",
     "readable-stream": "2.2.2"
   },
   "devDependencies": {
-    "aegir": "^9.4.0"
+    "aegir": "^10.0.0"
   },
   "contributors": [
     "David Dias <daviddias.p@gmail.com>",
