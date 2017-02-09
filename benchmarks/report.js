@@ -50,7 +50,7 @@ mapSeries(
           if (err) {
             callback(err)
           } else {
-            process.stderr.write('done'.green)
+            process.stderr.write('done\n\n'.green)
             result[0].profile = join(suite, stdout.trim())
             callback(null, result)
           }
@@ -89,8 +89,6 @@ function saveResults (results, callback) {
 }
 
 function generateReport (results, callback) {
-  console.log('output results:', JSON.stringify(results, null, '  '))
-
   process.stderr.write('generating report...\n'.yellow)
   const command = 'node benchmarks/generate-report > ' + out
 

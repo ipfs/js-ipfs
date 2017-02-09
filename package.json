@@ -44,7 +44,7 @@
     "coverage-publish": "aegir-coverage publish",
     "benchmarks": "node benchmarks",
     "benchmarks:report": "node benchmarks/report",
-    "benchmarks:report:profile": "node benchmarks/report --profile"
+    "benchmarks:report:profile": "node benchmarks/report --profile=true"
   },
   "pre-commit": [
     "lint",
