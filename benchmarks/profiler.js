@@ -12,7 +12,8 @@ function profile (suites, callback) {
     stdio: 'pipe'
   }
   const child = spawn('0x', args, options)
-  let lastLine = '', error
+  let lastLine = ''
+  let error
 
   child.stdout.pipe(process.stdout)
   child.stderr.pipe(split())
