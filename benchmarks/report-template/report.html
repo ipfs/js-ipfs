@@ -26,8 +26,8 @@
           {{#each results}}
             {{#each benchmarks}}
               <tr>
-                <td>{{suite}}</td>
-                <td>{{name}}</td>
+                <td><a href="#{{suite}}">{{suite}}</a></td>
+                <td><a href="#{{suite}}/{{name}}">{{name}}</a></td>
                 <td>{{stats.mean}}</td>
                 <td>{{stats.variance}}</td>
                 <td>{{stats.deviation}}</td>
@@ -44,9 +44,10 @@
     <section>
       <h2>Detailed results</h2>
       {{#each results}}
-        <h3>{{name}}</h3>
-        <h4>{{benchmarks.length}} benchmarks:</h4>
+        <h3><a id="{{name}}"></a>Suite {{name}}</h3>
+        <p>{{benchmarks.length}} benchmarks:</p>
         {{#each benchmarks}}
+          <h4><a id="{{suite}}/{{name}}"></a>{{suite}}/{{name}}:</h4>
           <p>Context:</p>
           <table class="table table-striped">
             <tbody>
