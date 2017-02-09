@@ -15,6 +15,7 @@ module.exports = function libp2p (self) {
 
         const options = {
           mdns: config.Discovery.MDNS.Enabled,
+          webRTCStar: config.Discovery.webRTCStar.Enabled,
           bootstrap: config.Bootstrap
         }
 

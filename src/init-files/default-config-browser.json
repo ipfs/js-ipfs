@@ -8,6 +8,9 @@
     "MDNS": {
       "Enabled": false,
       "Interval": 10
+    },
+    "webRTCStar": {
+      "Enabled": true
     }
   },
   "Bootstrap": []
