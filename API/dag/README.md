@@ -9,11 +9,14 @@ dag API
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.dag.put(dagNode, formatMulticodec, hashAlg, callback)
+##### `JavaScript` - ipfs.dag.put(dagNode, options, callback)
 
 - `dagNode` - a DAG node that follows one of the supported IPLD formats.
-- `formatMulticodec` - The IPLD format multicodec.
-- `hashAlg` - The hash algorithm to be used over the serialized dagNode.
+- `options` - a object that might contain the follwing values:
+  - `format` - The IPLD format multicodec.
+  - `hashAlg` - The hash algorithm to be used over the serialized dagNode.
+  - `cid` - the CID of the node passed.
+  - **Note** - You should only pass the CID or the format + hashAlg pair and not both
 - `callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
 
 If no `callback` is passed, a [promise][] is returned.
@@ -24,23 +27,14 @@ If no `callback` is passed, a [promise][] is returned.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.dag.get(cid, callback)
+##### `JavaScript` - ipfs.dag.get(cid [, path, options], callback)
 
-- `cid` is a [CID][https://github.com/ipfs/js-cid] instance.
+- `cid` - a [CID][https://github.com/ipfs/js-cid] instance.
+- `path` - the path to be resolved. Optional.
+- `options` - a object that might contain the following values:
+  - `localResolve` - bool - if set to true, it will avoid resolving through different objects.
 
-`callback` must follow `function (err, dagNode) {}` signature, where `err` is an error if the operation was not successful and `dagNode` is the IPLD format DAG node retrieved.
+`callback` must follow `function (err, result) {}` signature, where `err` is an error if the operation was not successful and `result` is an object containing:
 
-#### `dag.resolve`
-
-> Resolves an IPLD path
-
-##### `Go` **WIP**
-
-##### `JavaScript` - ipfs.dag.resolve(cid, path, callback)
-
-- `cid` is a [CID][https://github.com/ipfs/js-cid] instance.
-- `path` is a String that represents a valid path to be resolved
-
-`callback` must follow `function (err, value) {}` signature, where `err` is an error if the operation was not successful and `value` is the value it was retrieved.
-
-If no `callback` is passed, a [promise][] is returned.
+- `value` - the value or node that was fetched during the get operation.
+- `remainderPath` - The remainder of the Path that the node was unable to resolve or what was left in a localResolve scenario.
