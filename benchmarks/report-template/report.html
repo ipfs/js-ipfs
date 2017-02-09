@@ -9,6 +9,7 @@
     <h1>IPFS Benchmarks Report</h1>
 
     <section>
+      <h2>Summary:</h2>
       <table class="table table-striped">
         <thead>
           <tr>
@@ -42,7 +43,7 @@
     </section>
 
     <section>
-      <h2>Detailed results</h2>
+      <h2>Details:</h2>
       {{#each results}}
         <h3><a id="{{name}}"></a>Suite {{name}}</h3>
         <p>{{benchmarks.length}} benchmarks:</p>
@@ -142,9 +143,8 @@
               </tr>
             </tbody>
           </table>
-
+          <hr>
         {{/each}}
-        <hr>
       {{/each}}
     </section>
   </body>
