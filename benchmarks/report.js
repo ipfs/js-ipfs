@@ -16,7 +16,7 @@ if (!suites.length) {
   suites = require('./suites').map(s => s.name)
 }
 
-const prefix = Date.now() + '-report'
+const prefix = (new Date()).toISOString() + '-report'
 const outDir = join(__dirname, 'reports', 'out', prefix)
 mkdirp.sync(outDir)
 const out = join(outDir, 'report.html')
