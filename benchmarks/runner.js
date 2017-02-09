@@ -1,5 +1,6 @@
 'use strict'
 
+require('colors')
 const mapSeries = require('async/mapSeries')
 const Suite = require('benchmark').Suite
 const suites = require('./suites')
@@ -8,7 +9,12 @@ exports.run = run
 
 function run (_suites, callback) {
   const s = _suites || suites
-  mapSeries(s, runOne, callback)
+  mapSeries(s, runOne, (err, result) => {
+    if (!err) {
+      process.stderr.write('all finished\n'.green)
+    }
+    callback(err, result)
+  })
 }
 
 function runOne (_suite, callback) {
@@ -19,17 +25,20 @@ function runOne (_suite, callback) {
       return callback(new Error('no suite named ' + _suite))
     }
   }
+  process.stderr.write((suite.name + ' started\n').yellow)
+
   const s = Suite(suite.name)
   let tests = suite.tests
   if (!Array.isArray(tests)) {
     tests = [tests]
   }
 
-  tests.forEach(test => {
-    s.add(test.name, test, { defer: true })
+  tests.forEach((test, index) => {
+    s.add(test.name || (suite.name + '-' + (index + 1)), test, { defer: true })
   })
 
   s.on('complete', () => {
+    process.stderr.write(suite.name + ' finished\n')
     callback(null, result(s))
   })
 
@@ -43,6 +52,7 @@ function result (suite) {
     benchmarks: suite.map(benchmark => {
       return {
         name: benchmark.name,
+        code: benchmark.fn.toString(),
         count: benchmark.count,
         hz: benchmark.hz,
         stats: {

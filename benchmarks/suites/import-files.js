@@ -2,6 +2,11 @@
 
 const timers = require('timers')
 
-module.exports = function fake (d) {
-  timers.setTimeout(() => d.resolve(), 10)
-}
+module.exports = [
+  function (d) {
+    timers.setTimeout(() => d.resolve(), 5)
+  },
+  function (d) {
+    timers.setTimeout(() => d.resolve(), 6)
+  }
+]
