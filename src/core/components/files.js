@@ -61,16 +61,17 @@ module.exports = function files (self) {
         return callback(new Error('You must supply a multihash'))
       }
 
-      self._ipldResolver.get(new CID(hash), (err, node) => {
+      self._ipldResolver.get(new CID(hash), (err, result) => {
         if (err) {
           return callback(err)
         }
 
+        const node = result.value
+
         const data = UnixFS.unmarshal(node.data)
+
         if (data.type === 'directory') {
-          return callback(
-            new Error('This dag node is a directory')
-          )
+          return callback(new Error('This dag node is a directory'))
         }
 
         pull(
@@ -107,6 +108,7 @@ module.exports = function files (self) {
 
 function prepareFile (self, file, callback) {
   const bs58mh = multihashes.toB58String(file.multihash)
+
   waterfall([
     (cb) => self.object.get(file.multihash, cb),
     (node, cb) => {

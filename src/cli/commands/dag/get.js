@@ -21,26 +21,19 @@ module.exports = {
 
       const refParts = argv.ref.split('/')
       const cidString = refParts[0]
-      const pathString = refParts.slice(1).join('/')
+      const path = refParts.slice(1).join('/')
       const cid = new CID(cidString)
 
-      let lookupFn
-      if (pathString) {
-        lookupFn = () => ipfs.dag.resolve(cid, pathString)
-      } else {
-        lookupFn = () => ipfs.dag.get(cid)
-      }
-
-      lookupFn()
-      .then((obj) => {
+      ipfs.dag.get(cid, path, (err, result) => {
+        if (err) {
+          throw err
+        }
+        const obj = result.value
         if (Buffer.isBuffer(obj)) {
           console.log('0x' + obj.toString('hex'))
         } else {
           console.log(obj)
         }
-      })
-      .catch((err) => {
-        console.error(err)
       })
     })
   }
