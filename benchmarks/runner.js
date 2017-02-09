@@ -2,7 +2,10 @@
 
 require('colors')
 const mapSeries = require('async/mapSeries')
-const Suite = require('benchmark').Suite
+const Benchmark = require('benchmark')
+const Suite = Benchmark.Suite
+const os = require('os')
+
 const suites = require('./suites')
 
 exports.run = run
@@ -53,6 +56,9 @@ function result (suite) {
       return {
         name: benchmark.name,
         code: benchmark.fn.toString(),
+        platform: Benchmark.platform,
+        cpus: os.cpus(),
+        loadavg: os.loadavg(),
         count: benchmark.count,
         hz: benchmark.hz,
         stats: {
