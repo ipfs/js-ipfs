@@ -1,3 +1,13 @@
+<a name="0.24.1"></a>
+## [0.24.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.24.0...v0.24.1) (2017-02-09)
+
+
+### Features
+
+* the dag resolve and dag get ([53ad3cf](https://github.com/ipfs/interface-ipfs-core/commit/53ad3cf))
+
+
+
 <a name="0.24.0"></a>
 # [0.24.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.23.8...v0.24.0) (2017-02-02)
 
