@@ -1,12 +1,13 @@
+/* global self */
 'use strict'
 
 const IPFSRepo = require('ipfs-repo')
 const Store = require('idb-pull-blob-store')
 
-const idb = window.indexedDB ||
-  window.mozIndexedDB ||
-  window.webkitIndexedDB ||
-  window.msIndexedDB
+const idb = self.indexedDB ||
+  self.mozIndexedDB ||
+  self.webkitIndexedDB ||
+  self.msIndexedDB
 
 function createTempRepo (repoPath) {
   repoPath = repoPath || '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8)

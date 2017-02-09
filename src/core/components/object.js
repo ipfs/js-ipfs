@@ -80,8 +80,7 @@ module.exports = function object (self) {
             if (err) {
               return cb(err)
             }
-            self._ipldResolver.put({
-              node: node,
+            self._ipldResolver.put(node, {
               cid: new CID(node.multihash)
             }, (err) => {
               cb(err, node)
@@ -112,8 +111,7 @@ module.exports = function object (self) {
         if (err) {
           return callback(err)
         }
-        self._ipldResolver.put({
-          node: node,
+        self._ipldResolver.put(node, {
           cid: new CID(node.multihash)
         }, (err) => {
           if (err) {
@@ -169,8 +167,7 @@ module.exports = function object (self) {
       }
 
       function next () {
-        self._ipldResolver.put({
-          node: node,
+        self._ipldResolver.put(node, {
           cid: new CID(node.multihash)
         }, (err) => {
           if (err) {
@@ -196,7 +193,16 @@ module.exports = function object (self) {
         return callback(err)
       }
       const cid = new CID(mh)
-      self._ipldResolver.get(cid, callback)
+
+      self._ipldResolver.get(cid, (err, result) => {
+        if (err) {
+          return callback(err)
+        }
+
+        const node = result.value
+
+        callback(null, node)
+      })
     }),
 
     data: promisify((multihash, options, callback) => {
