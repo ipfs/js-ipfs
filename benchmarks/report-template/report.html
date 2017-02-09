@@ -3,7 +3,7 @@
   <head>
     <title>IPFS Benchmarks Report</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href='../css/bootstrap.css' rel='stylesheet' type='text/css'>
+    <link href='../../css/bootstrap.css' rel='stylesheet' type='text/css'>
   </head>
   <body class="container">
     <h1>IPFS Benchmarks Report</h1>
@@ -25,9 +25,15 @@
         </thead>
         <tbody>
           {{#each results}}
+            <tr>
+              <td colspan="2"><a href="#{{suite}}">{{name}}</a></td>
+              {{#if profile}}
+                <td colspan="6">{{#if profile}}<a href="{{profile}}">profile</a>{{/if}}</td>
+              {{/if}}
+            </tr>
             {{#each benchmarks}}
               <tr>
-                <td><a href="#{{suite}}">{{suite}}</a></td>
+                <td></td>
                 <td><a href="#{{suite}}/{{name}}">{{name}}</a></td>
                 <td>{{stats.mean}}</td>
                 <td>{{stats.variance}}</td>

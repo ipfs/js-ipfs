@@ -1,12 +1,17 @@
 'use strict'
 
 const profiler = require('./profiler')
+const argv = require('yargs').argv
 
-const suites = process.argv.slice(2)
+const suites = argv._
+const outDir = argv.out
+if (!outDir) {
+  throw new Error('please provide an out dir')
+}
 
-profiler(suites, (err, resultLink) => {
+profiler(outDir, suites, (err, resultLink) => {
   if (err) {
     throw err
   }
-  console.log(resultLink)
+  process.stdout.write(resultLink)
 })
