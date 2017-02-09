@@ -77,6 +77,7 @@
     "form-data": "^2.1.2",
     "fs-pull-blob-store": "^0.4.1",
     "gulp": "^3.9.1",
+    "handlebars": "^4.0.6",
     "interface-ipfs-core": "^0.23.8",
     "ipfsd-ctl": "^0.18.1",
     "left-pad": "^1.1.3",

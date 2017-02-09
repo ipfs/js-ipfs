@@ -13,9 +13,5 @@ runner.run(suites, (err, results) => {
     throw err
   }
 
-  results.forEach(printSuiteResult)
+  console.log(JSON.stringify(results, null, '  '))
 })
-
-function printSuiteResult (result) {
-  console.log(JSON.stringify(result, null, '  '))
-}

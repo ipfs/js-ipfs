@@ -55,12 +55,14 @@ function result (suite) {
     benchmarks: suite.map(benchmark => {
       return {
         name: benchmark.name,
+        suite: suite.name,
         code: benchmark.fn.toString(),
         platform: Benchmark.platform,
         cpus: os.cpus(),
         loadavg: os.loadavg(),
         count: benchmark.count,
         hz: benchmark.hz,
+        now: Date.now(),
         stats: {
           moe: benchmark.stats.moe,
           rme: benchmark.stats.rme,

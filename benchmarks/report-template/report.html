@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>IPFS Benchmarks Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='../css/bootstrap.css' rel='stylesheet' type='text/css'>
+  </head>
+  <body class="container">
+    <h1>IPFS Benchmarks Report</h1>
+
+    <section>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Suite</th>
+            <th>Test</th>
+            <th>Mean</th>
+            <th>Variance</th>
+            <th>Deviation</th>
+            <th>MOE</th>
+            <th>RME</th>
+            <th>SEM</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each results}}
+            {{#each benchmarks}}
+              <tr>
+                <td>{{suite}}</td>
+                <td>{{name}}</td>
+                <td>{{stats.mean}}</td>
+                <td>{{stats.variance}}</td>
+                <td>{{stats.deviation}}</td>
+                <td>{{stats.moe}}</td>
+                <td>{{stats.rme}}</td>
+                <td>{{stats.sem}}</td>
+              </tr>
+            {{/each}}
+          {{/each}}
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Detailed results</h2>
+      {{#each results}}
+        <h3>{{name}}</h3>
+        <h4>{{benchmarks.length}} benchmarks:</h4>
+        {{#each benchmarks}}
+          <p>Context:</p>
+          <table class="table table-striped">
+            <tbody>
+              <tr>
+                <th>Name</th>
+                <td>{{name}}</td>
+              </tr>
+              <tr>
+                <th>When</th>
+                <td>{{now}}</td>
+              </tr>
+              <tr>
+                <th>Code</th>
+                <td><code>{{code}}</code></td>
+              </tr>
+              <tr>
+                <th>Platform</th>
+                <td>
+                  {{platform.description}}
+                </td>
+              </tr>
+              <tr>
+                <th>CPUs</th>
+                <td>
+                  {{#each cpus}}
+                    <table class="table table-striped">
+                      <tbody>
+                        <tr>
+                          <th>Model</th>
+                          <td>{{model}}</td>
+                        </tr>
+                        <tr>
+                          <th>Speed</th>
+                          <td>{{speed}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  {{/each}}
+                </td>
+              </tr>
+              <tr>
+                <th>Load Average</th>
+                <td>{{loadavg}}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p>Results:</p>
+
+          <table class="table table-striped">
+            <tbody>
+              <tr>
+                <th>Count</th>
+                <td>{{count}}</td>
+              </tr>
+              <tr>
+                <th>Hz</th>
+                <td>{{hz}}</td>
+              </tr>
+              <tr>
+                <th>Stats</th>
+                <td>
+                  <table class="table table-striped">
+                    <tbody>
+                      <tr>
+                        <th>Mean</th>
+                        <td>{{stats.mean}}</td>
+                      </tr>
+                      <tr>
+                        <th>Variance</th>
+                        <td>{{stats.variance}}</td>
+                      </tr>
+                      <tr>
+                        <th>Deviation</th>
+                        <td>{{stats.deviation}}</td>
+                      </tr>
+                      <tr>
+                        <th>MOE</th>
+                        <td>{{stats.moe}}</td>
+                      </tr>
+                      <tr>
+                        <th>RME</th>
+                        <td>{{stats.rme}}</td>
+                      </tr>
+                      <tr>
+                        <th>SEM</th>
+                        <td>{{stats.sem}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+        {{/each}}
+        <hr>
+      {{/each}}
+    </section>
+  </body>
+</html>

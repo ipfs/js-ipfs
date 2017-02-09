@@ -2,6 +2,11 @@
 **/*.log
 test/repo-tests*
 
+.DS_Store
+
+# Benchmarks
+benchmarks/reports/out/*
+
 # Logs
 logs
 *.log
