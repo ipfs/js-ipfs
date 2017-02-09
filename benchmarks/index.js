@@ -1,53 +1,36 @@
 'use strict'
 
 require('colors')
-const eachSeries = require('async/eachSeries')
-const Suite = require('benchmark').Suite
+const runner = require('./runner')
 
-let suites = {
-  'import-files': require('./import-files')
+let suites = process.argv.slice(2)
+
+if (!suites.length) {
+  suites = undefined
 }
 
-suites = Object.keys(suites).map((suiteName) => {
-  const suite = Suite(suiteName)
-  let tests = suites[suiteName]
-  if (!Array.isArray(tests)) {
-    tests = [tests]
+runner.run(suites, (err, results) => {
+  if (err) {
+    throw err
   }
 
-  tests.forEach(test => {
-    suite.add(test.name, test, { defer: true })
-  })
-
-  return suite
+  results.forEach(printSuiteResult)
 })
 
-eachSeries(
-  suites,
-  (suite, callback) => {
-    suite.on('complete', () => {
-      suite.forEach(printBenchmark)
-      callback()
-    })
+function printSuiteResult (result) {
+  // console.log(result)
+  // return;
+  console.log(result.name.red + ':')
+  result.benchmarks.forEach(printBenchmarkResult)
+}
 
-    console.log(suite.name.red)
-    suite.run({ async: true })
-  },
-  (err) => {
-    if (err) {
-      throw err
-    }
-  }
-)
 
-function printBenchmark (benchmark) {
+function printBenchmarkResult (benchmark) {
   console.log('  ' + benchmark.name.green + ':')
   console.log('    count: %d', benchmark.count)
   console.log('    hz: %d', benchmark.hz)
   const stats = benchmark.stats
   for (let stat in stats) {
-    if (stat !== 'sample') {
-      console.log('    %s: %d', stat, stats[stat])
-    }
+    console.log('    %s: %d', stat, stats[stat])
   }
 }
