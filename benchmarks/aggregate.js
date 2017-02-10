@@ -9,8 +9,12 @@ const OK_ERRORS = ['ENOENT', 'ENOTDIR']
 
 const reports = fs.readdirSync(reportDir)
   .map((report) => {
+    const path = join(reportDir, report, 'results.json')
     try {
-      return JSON.parse(fs.readFileSync(join(reportDir, report, 'results.json'), { encoding: 'utf8' }))
+      return {
+        path: join('out', report, 'report.html'),
+        content: JSON.parse(fs.readFileSync(path, { encoding: 'utf8' }))
+      }
     } catch(err) {
       if (OK_ERRORS.indexOf(err.code) > -1) {
         return null
@@ -26,7 +30,7 @@ const reports = fs.readdirSync(reportDir)
 const suites = {}
 reports.forEach((report) => {
   // console.log('report.length:', report.length)
-  report.forEach((s) => {
+  report.content.forEach((s) => {
     let suite = suites[s.name]
     if (!suite) {
       suite = suites[s.name] = {
@@ -45,6 +49,7 @@ reports.forEach((report) => {
       // console.log('adding run')
       benchmark.runs.push({
         when: b.now,
+        path: report.path,
         whenPretty: new Date(b.now).toISOString(),
         count: b.count,
         hz: b.hz,
