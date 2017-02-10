@@ -1,20 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>IPFS Benchmarks Report</title>
+    <title>IPFS Benchmarks Aggregate Repor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href='css/bootstrap.css' rel='stylesheet' type='text/css'>
     <script src="js/Chart.bundle.min.js"></script>
   </head>
   <body class="container">
-    <h1>IPFS Benchmarks Views</h1>
+    <h1 class="title">IPFS Benchmarks Views</h1>
+
+    <h1>Index</h1>
+    <ul>
+      {{#each suites}}
+        <li><a href="#{{suite}}">{{suite}}</a>
+          <ul>
+            {{#each benchmarks}}
+              <li><a href="#{{../suite}}/{{name}}">{{name}}</a></li>
+            {{/each}}
+          </ul>
+        </li>
+      {{/each}}
+    </ul>
+
+    <h1>Suites</h1>
 
     <section>
       {{#each suites}}
-        <h2>{{suite}}</h2>
+        <h2><a id="{{suite}}"></a>{{suite}}</h2>
         {{#each benchmarks}}
           <div class="clearfix">
-            <h3>{{../suite}}/{{name}}</h3>
+            <h3><a id="{{../suite}}/{{name}}"></a>{{../suite}}/{{name}}</h3>
             <table class="table table-bordered">
               <thead>
                 <tr>
