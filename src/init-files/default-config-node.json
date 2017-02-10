@@ -11,6 +11,9 @@
     "MDNS": {
       "Enabled": true,
       "Interval": 10
+    },
+    "webRTCStar": {
+      "Enabled": true
     }
   },
   "Bootstrap": [

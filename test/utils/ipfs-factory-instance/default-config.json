@@ -35,6 +35,9 @@
     "MDNS": {
       "Enabled": false,
       "Interval": 10
+    },
+    "webRTCStar": {
+      "Enabled": false
     }
   },
   "Ipns": {
