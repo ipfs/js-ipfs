@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>IPFS Benchmarks Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='css/bootstrap.css' rel='stylesheet' type='text/css'>
+    <script src="js/Chart.bundle.min.js"></script>
+  </head>
+  <body class="container">
+    <h1>IPFS Benchmarks Views</h1>
+
+    <section>
+        <h2>import-files</h2>
+          <div class="clearfix">
+            <h3>import-files/import-files-1</h3>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>When</th>
+                  <th>Count</th>
+                  <th>Hz</th>
+                  <th>Mean</th>
+                  <th>Variance</th>
+                  <th>Deviation</th>
+                  <th>MOE</th>
+                  <th>RME</th>
+                  <th>SEM</th>
+                </tr>
+              </thead>
+              <tbody>
+                  <tr>
+                    <td>1486665709260</td>
+                    <td>10</td>
+                    <td>158.57625340590732</td>
+                    <td>0.006306114430893395</td>
+                    <td>3.298981072801986e-8</td>
+                    <td>0.0001816309740325693</td>
+                    <td>0.00004138377683389123</td>
+                    <td>0.6562484282104653</td>
+                    <td>0.000021114171854026135</td>
+                  </tr>
+                  <tr>
+                    <td>1486665725306</td>
+                    <td>9</td>
+                    <td>157.85590712936363</td>
+                    <td>0.006334891219373219</td>
+                    <td>3.07213014196896e-8</td>
+                    <td>0.00017527493095046307</td>
+                    <td>0.00003889811667939187</td>
+                    <td>0.6140297494049233</td>
+                    <td>0.000019845977897648912</td>
+                  </tr>
+                  <tr>
+                    <td>1486665741083</td>
+                    <td>9</td>
+                    <td>157.82301490778397</td>
+                    <td>0.006336211487179486</td>
+                    <td>2.7148879919739365e-8</td>
+                    <td>0.00016476917163031247</td>
+                    <td>0.000036566612398518284</td>
+                    <td>0.5771053013698509</td>
+                    <td>0.000018656434897203206</td>
+                  </tr>
+                  <tr>
+                    <td>1486720849194</td>
+                    <td>9</td>
+                    <td>155.52609580597905</td>
+                    <td>0.006429789128427127</td>
+                    <td>2.249051047221412e-8</td>
+                    <td>0.0001499683649047829</td>
+                    <td>0.00003349734337790645</td>
+                    <td>0.5209711035438057</td>
+                    <td>0.000017090481315258395</td>
+                  </tr>
+                  <tr>
+                    <td>1486720884263</td>
+                    <td>10</td>
+                    <td>166.62099151663207</td>
+                    <td>0.006001644756148148</td>
+                    <td>1.3015367151199096e-7</td>
+                    <td>0.0003607681686512697</td>
+                    <td>0.00008164952292005667</td>
+                    <td>1.3604524465799819</td>
+                    <td>0.00004165791985717177</td>
+                  </tr>
+              </tbody>
+            </table>
+
+              <div style="float: left">
+                <span>mean</span>
+                <canvas width="350" height="350" id="import-files/import-files-1/mean"></canvas>
+                <script>
+                  var canvas = document.getElementById('import-files/import-files-1/mean')
+                  var options = {
+                    type: 'line',
+                    data: {
+                      datasets: [{
+                        label: 'mean',
+                        data: [
+                            {
+                              x: 1486665709260,
+                              y: 0.006306114430893395
+                            },
+                            {
+                              x: 1486665725306,
+                              y: 0.006334891219373219
+                            },
+                            {
+                              x: 1486665741083,
+                              y: 0.006336211487179486
+                            },
+                            {
+                              x: 1486720849194,
+                              y: 0.006429789128427127
+                            },
+                            {
+                              x: 1486720884263,
+                              y: 0.006001644756148148
+                            }
+                        ]
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        xAxes: [{
+                          type: 'time',
+                          position: 'bottom'
+                        }]
+                      },
+                      responsive: false
+                    }
+                  }
+                  var chart = new Chart(canvas, options)
+                </script>
+              </div>
+              <div style="float: left">
+                <span>variance</span>
+                <canvas width="350" height="350" id="import-files/import-files-1/variance"></canvas>
+                <script>
+                  var canvas = document.getElementById('import-files/import-files-1/variance')
+                  var options = {
+                    type: 'line',
+                    data: {
+                      datasets: [{
+                        label: 'variance',
+                        data: [
+                            {
+                              x: 1486665709260,
+                              y: 3.298981072801986e-8
+                            },
+                            {
+                              x: 1486665725306,
+                              y: 3.07213014196896e-8
+                            },
+                            {
+                              x: 1486665741083,
+                              y: 2.7148879919739365e-8
+                            },
+                            {
+                              x: 1486720849194,
+                              y: 2.249051047221412e-8
+                            },
+                            {
+                              x: 1486720884263,
+                              y: 1.3015367151199096e-7
+                            }
+                        ]
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        xAxes: [{
+                          type: 'time',
+                          position: 'bottom'
+                        }]
+                      },
+                      responsive: false
+                    }
+                  }
+                  var chart = new Chart(canvas, options)
+                </script>
+              </div>
+              <div style="float: left">
+                <span>deviation</span>
+                <canvas width="350" height="350" id="import-files/import-files-1/deviation"></canvas>
+                <script>
+                  var canvas = document.getElementById('import-files/import-files-1/deviation')
+                  var options = {
+                    type: 'line',
+                    data: {
+                      datasets: [{
+                        label: 'deviation',
+                        data: [
+                            {
+                              x: 1486665709260,
+                              y: 0.0001816309740325693
+                            },
+                            {
+                              x: 1486665725306,
+                              y: 0.00017527493095046307
+                            },
+                            {
+                              x: 1486665741083,
+                              y: 0.00016476917163031247
+                            },
+                            {
+                              x: 1486720849194,
+                              y: 0.0001499683649047829
+                            },
+                            {
+                              x: 1486720884263,
+                              y: 0.0003607681686512697
+                            }
+                        ]
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        xAxes: [{
+                          type: 'time',
+                          position: 'bottom'
+                        }]
+                      },
+                      responsive: false
+                    }
+                  }
+                  var chart = new Chart(canvas, options)
+                </script>
+              </div>
+              <div style="float: left">
+                <span>moe</span>
+                <canvas width="350" height="350" id="import-files/import-files-1/moe"></canvas>
+                <script>
+                  var canvas = document.getElementById('import-files/import-files-1/moe')
+                  var options = {
+                    type: 'line',
+                    data: {
+                      datasets: [{
+                        label: 'moe',
+                        data: [
+                            {
+                              x: 1486665709260,
+                              y: 0.00004138377683389123
+                            },
+                            {
+                              x: 1486665725306,
+                              y: 0.00003889811667939187
+                            },
+                            {
+                              x: 1486665741083,
+                              y: 0.000036566612398518284
+                            },
+                            {
+                              x: 1486720849194,
+                              y: 0.00003349734337790645
+                            },
+                            {
+                              x: 1486720884263,
+                              y: 0.00008164952292005667
+                            }
+                        ]
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        xAxes: [{
+                          type: 'time',
+                          position: 'bottom'
+                        }]
+                      },
+                      responsive: false
+                    }
+                  }
+                  var chart = new Chart(canvas, options)
+                </script>
+              </div>
+              <div style="float: left">
+                <span>rme</span>
+                <canvas width="350" height="350" id="import-files/import-files-1/rme"></canvas>
+                <script>
+                  var canvas = document.getElementById('import-files/import-files-1/rme')
+                  var options = {
+                    type: 'line',
+                    data: {
+                      datasets: [{
+                        label: 'rme',
+                        data: [
+                            {
+                              x: 1486665709260,
+                              y: 0.6562484282104653
+                            },
+                            {
+                              x: 1486665725306,
+                              y: 0.6140297494049233
+                            },
+                            {
+                              x: 1486665741083,
+                              y: 0.5771053013698509
+                            },
+                            {
+                              x: 1486720849194,
+                              y: 0.5209711035438057
+                            },
+                            {
+                              x: 1486720884263,
+                              y: 1.3604524465799819
+                            }
+                        ]
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        xAxes: [{
+                          type: 'time',
+                          position: 'bottom'
+                        }]
+                      },
+                      responsive: false
+                    }
+                  }
+                  var chart = new Chart(canvas, options)
+                </script>
+              </div>
+              <div style="float: left">
+                <span>sem</span>
+                <canvas width="350" height="350" id="import-files/import-files-1/sem"></canvas>
+                <script>
+                  var canvas = document.getElementById('import-files/import-files-1/sem')
+                  var options = {
+                    type: 'line',
+                    data: {
+                      datasets: [{
+                        label: 'sem',
+                        data: [
+                            {
+                              x: 1486665709260,
+                              y: 0.000021114171854026135
+                            },
+                            {
+                              x: 1486665725306,
+                              y: 0.000019845977897648912
+                            },
+                            {
+                              x: 1486665741083,
+                              y: 0.000018656434897203206
+                            },
+                            {
+                              x: 1486720849194,
+                              y: 0.000017090481315258395
+                            },
+                            {
+                              x: 1486720884263,
+                              y: 0.00004165791985717177
+                            }
+                        ]
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        xAxes: [{
+                          type: 'time',
+                          position: 'bottom'
+                        }]
+                      },
+                      responsive: false
+                    }
+                  }
+                  var chart = new Chart(canvas, options)
+                </script>
+              </div>
+              <div style="float: left">
+                <span>count</span>
+                <canvas width="350" height="350" id="import-files/import-files-1/count"></canvas>
+                <script>
+                  var canvas = document.getElementById('import-files/import-files-1/count')
+                  var options = {
+                    type: 'line',
+                    data: {
+                      datasets: [{
+                        label: 'count',
+                        data: [
+                            {
+                              x: 1486665709260,
+                              y: 10
+                            },
+                            {
+                              x: 1486665725306,
+                              y: 9
+                            },
+                            {
+                              x: 1486665741083,
+                              y: 9
+                            },
+                            {
+                              x: 1486720849194,
+                              y: 9
+                            },
+                            {
+                              x: 1486720884263,
+                              y: 10
+                            }
+                        ]
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        xAxes: [{
+                          type: 'time',
+                          position: 'bottom'
+                        }]
+                      },
+                      responsive: false
+                    }
+                  }
+                  var chart = new Chart(canvas, options)
+                </script>
+              </div>
+              <div style="float: left">
+                <span>hz</span>
+                <canvas width="350" height="350" id="import-files/import-files-1/hz"></canvas>
+                <script>
+                  var canvas = document.getElementById('import-files/import-files-1/hz')
+                  var options = {
+                    type: 'line',
+                    data: {
+                      datasets: [{
+                        label: 'hz',
+                        data: [
+                            {
+                              x: 1486665709260,
+                              y: 158.57625340590732
+                            },
+                            {
+                              x: 1486665725306,
+                              y: 157.85590712936363
+                            },
+                            {
+                              x: 1486665741083,
+                              y: 157.82301490778397
+                            },
+                            {
+                              x: 1486720849194,
+                              y: 155.52609580597905
+                            },
+                            {
+                              x: 1486720884263,
+                              y: 166.62099151663207
+                            }
+                        ]
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        xAxes: [{
+                          type: 'time',
+                          position: 'bottom'
+                        }]
+                      },
+                      responsive: false
+                    }
+                  }
+                  var chart = new Chart(canvas, options)
+                </script>
+              </div>
+          </div>
+          <div class="clearfix">
+            <h3>import-files/import-files-2</h3>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>When</th>
+                  <th>Count</th>
+                  <th>Hz</th>
+                  <th>Mean</th>
+                  <th>Variance</th>
+                  <th>Deviation</th>
+                  <th>MOE</th>
+                  <th>RME</th>
+                  <th>SEM</th>
+                </tr>
+              </thead>
+              <tbody>
+                  <tr>
+                    <td>1486665709260</td>
+                    <td>8</td>
+                    <td>131.50346950147937</td>
+                    <td>0.007604362103835978</td>
+                    <td>2.6223417067388955e-8</td>
+                    <td>0.0001619364599693008</td>
+                    <td>0.00003526616239331439</td>
+                    <td>0.46376227107234375</td>
+                    <td>0.000017992939996588976</td>
+                  </tr>
+                  <tr>
+                    <td>1486665725306</td>
+                    <td>8</td>
+                    <td>131.57131674673133</td>
+                    <td>0.007600440770270268</td>
+                    <td>3.4632232178318524e-8</td>
+                    <td>0.0001860973728409902</td>
+                    <td>0.00004240142513161882</td>
+                    <td>0.5578811336505034</td>
+                    <td>0.000021633380169193277</td>
+                  </tr>
+                  <tr>
+                    <td>1486665741083</td>
+                    <td>8</td>
+                    <td>131.24910127177907</td>
+                    <td>0.0076190997904761896</td>
+                    <td>3.424421453322745e-8</td>
+                    <td>0.00018505192388415596</td>
+                    <td>0.00004188119300288162</td>
+                    <td>0.5496868941818134</td>
+                    <td>0.000021367955613715113</td>
+                  </tr>
+                  <tr>
+                    <td>1486720849194</td>
+                    <td>8</td>
+                    <td>136.4053029609785</td>
+                    <td>0.007331093280780075</td>
+                    <td>2.705756481769321e-7</td>
+                    <td>0.0005201688650591576</td>
+                    <td>0.00011694822347588055</td>
+                    <td>1.5952357853975707</td>
+                    <td>0.000059667460957081915</td>
+                  </tr>
+                  <tr>
+                    <td>1486720884263</td>
+                    <td>8</td>
+                    <td>133.41468149778865</td>
+                    <td>0.007495426955815016</td>
+                    <td>1.0064019079288156e-7</td>
+                    <td>0.0003172383816515296</td>
+                    <td>0.00007040353984307215</td>
+                    <td>0.9392865844480345</td>
+                    <td>0.00003592017338932253</td>
+                  </tr>
+              </tbody>
+            </table>
+
+              <div style="float: left">
+                <span>mean</span>
+                <canvas width="350" height="350" id="import-files/import-files-2/mean"></canvas>
+                <script>
+                  var canvas = document.getElementById('import-files/import-files-2/mean')
+                  var options = {
+                    type: 'line',
+                    data: {
+                      datasets: [{
+                        label: 'mean',
+                        data: [
+                            {
+                              x: 1486665709260,
+                              y: 0.007604362103835978
+                            },
+                            {
+                              x: 1486665725306,
+                              y: 0.007600440770270268
+                            },
+                            {
+                              x: 1486665741083,
+                              y: 0.0076190997904761896
+                            },
+                            {
+                              x: 1486720849194,
+                              y: 0.007331093280780075
+                            },
+                            {
+                              x: 1486720884263,
+                              y: 0.007495426955815016
+                            }
+                        ]
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        xAxes: [{
+                          type: 'time',
+                          position: 'bottom'
+                        }]
+                      },
+                      responsive: false
+                    }
+                  }
+                  var chart = new Chart(canvas, options)
+                </script>
+              </div>
+              <div style="float: left">
+                <span>variance</span>
+                <canvas width="350" height="350" id="import-files/import-files-2/variance"></canvas>
+                <script>
+                  var canvas = document.getElementById('import-files/import-files-2/variance')
+                  var options = {
+                    type: 'line',
+                    data: {
+                      datasets: [{
+                        label: 'variance',
+                        data: [
+                            {
+                              x: 1486665709260,
+                              y: 2.6223417067388955e-8
+                            },
+                            {
+                              x: 1486665725306,
+                              y: 3.4632232178318524e-8
+                            },
+                            {
+                              x: 1486665741083,
+                              y: 3.424421453322745e-8
+                            },
+                            {
+                              x: 1486720849194,
+                              y: 2.705756481769321e-7
+                            },
+                            {
+                              x: 1486720884263,
+                              y: 1.0064019079288156e-7
+                            }
+                        ]
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        xAxes: [{
+                          type: 'time',
+                          position: 'bottom'
+                        }]
+                      },
+                      responsive: false
+                    }
+                  }
+                  var chart = new Chart(canvas, options)
+                </script>
+              </div>
+              <div style="float: left">
+                <span>deviation</span>
+                <canvas width="350" height="350" id="import-files/import-files-2/deviation"></canvas>
+                <script>
+                  var canvas = document.getElementById('import-files/import-files-2/deviation')
+                  var options = {
+                    type: 'line',
+                    data: {
+                      datasets: [{
+                        label: 'deviation',
+                        data: [
+                            {
+                              x: 1486665709260,
+                              y: 0.0001619364599693008
+                            },
+                            {
+                              x: 1486665725306,
+                              y: 0.0001860973728409902
+                            },
+                            {
+                              x: 1486665741083,
+                              y: 0.00018505192388415596
+                            },
+                            {
+                              x: 1486720849194,
+                              y: 0.0005201688650591576
+                            },
+                            {
+                              x: 1486720884263,
+                              y: 0.0003172383816515296
+                            }
+                        ]
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        xAxes: [{
+                          type: 'time',
+                          position: 'bottom'
+                        }]
+                      },
+                      responsive: false
+                    }
+                  }
+                  var chart = new Chart(canvas, options)
+                </script>
+              </div>
+              <div style="float: left">
+                <span>moe</span>
+                <canvas width="350" height="350" id="import-files/import-files-2/moe"></canvas>
+                <script>
+                  var canvas = document.getElementById('import-files/import-files-2/moe')
+                  var options = {
+                    type: 'line',
+                    data: {
+                      datasets: [{
+                        label: 'moe',
+                        data: [
+                            {
+                              x: 1486665709260,
+                              y: 0.00003526616239331439
+                            },
+                            {
+                              x: 1486665725306,
+                              y: 0.00004240142513161882
+                            },
+                            {
+                              x: 1486665741083,
+                              y: 0.00004188119300288162
+                            },
+                            {
+                              x: 1486720849194,
+                              y: 0.00011694822347588055
+                            },
+                            {
+                              x: 1486720884263,
+                              y: 0.00007040353984307215
+                            }
+                        ]
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        xAxes: [{
+                          type: 'time',
+                          position: 'bottom'
+                        }]
+                      },
+                      responsive: false
+                    }
+                  }
+                  var chart = new Chart(canvas, options)
+                </script>
+              </div>
+              <div style="float: left">
+                <span>rme</span>
+                <canvas width="350" height="350" id="import-files/import-files-2/rme"></canvas>
+                <script>
+                  var canvas = document.getElementById('import-files/import-files-2/rme')
+                  var options = {
+                    type: 'line',
+                    data: {
+                      datasets: [{
+                        label: 'rme',
+                        data: [
+                            {
+                              x: 1486665709260,
+                              y: 0.46376227107234375
+                            },
+                            {
+                              x: 1486665725306,
+                              y: 0.5578811336505034
+                            },
+                            {
+                              x: 1486665741083,
+                              y: 0.5496868941818134
+                            },
+                            {
+                              x: 1486720849194,
+                              y: 1.5952357853975707
+                            },
+                            {
+                              x: 1486720884263,
+                              y: 0.9392865844480345
+                            }
+                        ]
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        xAxes: [{
+                          type: 'time',
+                          position: 'bottom'
+                        }]
+                      },
+                      responsive: false
+                    }
+                  }
+                  var chart = new Chart(canvas, options)
+                </script>
+              </div>
+              <div style="float: left">
+                <span>sem</span>
+                <canvas width="350" height="350" id="import-files/import-files-2/sem"></canvas>
+                <script>
+                  var canvas = document.getElementById('import-files/import-files-2/sem')
+                  var options = {
+                    type: 'line',
+                    data: {
+                      datasets: [{
+                        label: 'sem',
+                        data: [
+                            {
+                              x: 1486665709260,
+                              y: 0.000017992939996588976
+                            },
+                            {
+                              x: 1486665725306,
+                              y: 0.000021633380169193277
+                            },
+                            {
+                              x: 1486665741083,
+                              y: 0.000021367955613715113
+                            },
+                            {
+                              x: 1486720849194,
+                              y: 0.000059667460957081915
+                            },
+                            {
+                              x: 1486720884263,
+                              y: 0.00003592017338932253
+                            }
+                        ]
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        xAxes: [{
+                          type: 'time',
+                          position: 'bottom'
+                        }]
+                      },
+                      responsive: false
+                    }
+                  }
+                  var chart = new Chart(canvas, options)
+                </script>
+              </div>
+              <div style="float: left">
+                <span>count</span>
+                <canvas width="350" height="350" id="import-files/import-files-2/count"></canvas>
+                <script>
+                  var canvas = document.getElementById('import-files/import-files-2/count')
+                  var options = {
+                    type: 'line',
+                    data: {
+                      datasets: [{
+                        label: 'count',
+                        data: [
+                            {
+                              x: 1486665709260,
+                              y: 8
+                            },
+                            {
+                              x: 1486665725306,
+                              y: 8
+                            },
+                            {
+                              x: 1486665741083,
+                              y: 8
+                            },
+                            {
+                              x: 1486720849194,
+                              y: 8
+                            },
+                            {
+                              x: 1486720884263,
+                              y: 8
+                            }
+                        ]
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        xAxes: [{
+                          type: 'time',
+                          position: 'bottom'
+                        }]
+                      },
+                      responsive: false
+                    }
+                  }
+                  var chart = new Chart(canvas, options)
+                </script>
+              </div>
+              <div style="float: left">
+                <span>hz</span>
+                <canvas width="350" height="350" id="import-files/import-files-2/hz"></canvas>
+                <script>
+                  var canvas = document.getElementById('import-files/import-files-2/hz')
+                  var options = {
+                    type: 'line',
+                    data: {
+                      datasets: [{
+                        label: 'hz',
+                        data: [
+                            {
+                              x: 1486665709260,
+                              y: 131.50346950147937
+                            },
+                            {
+                              x: 1486665725306,
+                              y: 131.57131674673133
+                            },
+                            {
+                              x: 1486665741083,
+                              y: 131.24910127177907
+                            },
+                            {
+                              x: 1486720849194,
+                              y: 136.4053029609785
+                            },
+                            {
+                              x: 1486720884263,
+                              y: 133.41468149778865
+                            }
+                        ]
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        xAxes: [{
+                          type: 'time',
+                          position: 'bottom'
+                        }]
+                      },
+                      responsive: false
+                    }
+                  }
+                  var chart = new Chart(canvas, options)
+                </script>
+              </div>
+          </div>
+    </section>
+  </body>
+</html>

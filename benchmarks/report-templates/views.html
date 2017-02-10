@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>IPFS Benchmarks Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='css/bootstrap.css' rel='stylesheet' type='text/css'>
+    <script src="js/Chart.bundle.min.js"></script>
+  </head>
+  <body class="container">
+    <h1>IPFS Benchmarks Views</h1>
+
+    <section>
+      {{#each suites}}
+        <h2>{{suite}}</h2>
+        {{#each benchmarks}}
+          <div class="clearfix">
+            <h3>{{../suite}}/{{name}}</h3>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>When</th>
+                  <th>Count</th>
+                  <th>Hz</th>
+                  <th>Mean</th>
+                  <th>Variance</th>
+                  <th>Deviation</th>
+                  <th>MOE</th>
+                  <th>RME</th>
+                  <th>SEM</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each runs}}
+                  <tr>
+                    <td>{{when}}</td>
+                    <td>{{count}}</td>
+                    <td>{{hz}}</td>
+                    <td>{{stats.mean}}</td>
+                    <td>{{stats.variance}}</td>
+                    <td>{{stats.deviation}}</td>
+                    <td>{{stats.moe}}</td>
+                    <td>{{stats.rme}}</td>
+                    <td>{{stats.sem}}</td>
+                  </tr>
+                {{/each}}
+              </tbody>
+            </table>
+
+            {{#each metric}}
+              <div style="float: left">
+                <span>{{@key}}</span>
+                <canvas width="350" height="350" id="{{../../suite}}/{{../name}}/{{@key}}"></canvas>
+                <script>
+                  var canvas = document.getElementById('{{../../suite}}/{{../name}}/{{@key}}')
+                  var options = {
+                    type: 'line',
+                    data: {
+                      datasets: [{
+                        label: '{{@key}}',
+                        data: [
+                          {{#each this}}
+                            {
+                              x: {{when}},
+                              y: {{value}}
+                            }{{#unless @last}},{{/unless}}
+                          {{/each}}
+                        ]
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        xAxes: [{
+                          type: 'time',
+                          position: 'bottom'
+                        }]
+                      },
+                      responsive: false
+                    }
+                  }
+                  var chart = new Chart(canvas, options)
+                </script>
+              </div>
+            {{/each}}
+          </div>
+        {{/each}}
+      {{/each}}
+    </section>
+  </body>
+</html>

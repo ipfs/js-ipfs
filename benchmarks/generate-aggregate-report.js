@@ -5,16 +5,15 @@ const handlebars = require('handlebars')
 const fs = require('fs')
 const join = require('path').join
 const template = handlebars.compile(
-  fs.readFileSync(join(__dirname, 'report-templates', 'results.html'), 'utf8'))
+  fs.readFileSync(join(__dirname, 'report-templates', 'views.html'), 'utf8'))
 
 process.stdin.pipe(concat(gotResult))
 
 function gotResult(str) {
-  const result = JSON.parse(str)
-  outputReport(result)
+  outputSuites(JSON.parse(str))
 }
 
-function outputReport(result) {
-  const html = template({ results: result })
+function outputSuites(suites) {
+  const html = template({ suites: suites })
   process.stdout.write(html)
 }
