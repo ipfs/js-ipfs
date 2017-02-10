@@ -13,15 +13,15 @@
         <h2>import-files</h2>
           <div class="clearfix">
             <h3>import-files/import-files-1</h3>
-            <table class="table table-striped">
+            <table class="table table-bordered">
               <thead>
                 <tr>
                   <th>When</th>
-                  <th>Count</th>
-                  <th>Hz</th>
                   <th>Mean</th>
                   <th>Variance</th>
                   <th>Deviation</th>
+                  <th>Count</th>
+                  <th>Hz</th>
                   <th>MOE</th>
                   <th>RME</th>
                   <th>SEM</th>
@@ -29,56 +29,56 @@
               </thead>
               <tbody>
                   <tr>
-                    <td>1486665709260</td>
-                    <td>10</td>
-                    <td>158.57625340590732</td>
-                    <td>0.006306114430893395</td>
+                    <td>2017-02-09T18:41:49.260Z</td>
+                    <td><b>0.006306114430893395</b></td>
                     <td>3.298981072801986e-8</td>
                     <td>0.0001816309740325693</td>
+                    <td>10</td>
+                    <td>158.57625340590732</td>
                     <td>0.00004138377683389123</td>
                     <td>0.6562484282104653</td>
                     <td>0.000021114171854026135</td>
                   </tr>
                   <tr>
-                    <td>1486665725306</td>
-                    <td>9</td>
-                    <td>157.85590712936363</td>
-                    <td>0.006334891219373219</td>
+                    <td>2017-02-09T18:42:05.306Z</td>
+                    <td><b>0.006334891219373219</b></td>
                     <td>3.07213014196896e-8</td>
                     <td>0.00017527493095046307</td>
+                    <td>9</td>
+                    <td>157.85590712936363</td>
                     <td>0.00003889811667939187</td>
                     <td>0.6140297494049233</td>
                     <td>0.000019845977897648912</td>
                   </tr>
                   <tr>
-                    <td>1486665741083</td>
-                    <td>9</td>
-                    <td>157.82301490778397</td>
-                    <td>0.006336211487179486</td>
+                    <td>2017-02-09T18:42:21.083Z</td>
+                    <td><b>0.006336211487179486</b></td>
                     <td>2.7148879919739365e-8</td>
                     <td>0.00016476917163031247</td>
+                    <td>9</td>
+                    <td>157.82301490778397</td>
                     <td>0.000036566612398518284</td>
                     <td>0.5771053013698509</td>
                     <td>0.000018656434897203206</td>
                   </tr>
                   <tr>
-                    <td>1486720849194</td>
-                    <td>9</td>
-                    <td>155.52609580597905</td>
-                    <td>0.006429789128427127</td>
+                    <td>2017-02-10T10:00:49.194Z</td>
+                    <td><b>0.006429789128427127</b></td>
                     <td>2.249051047221412e-8</td>
                     <td>0.0001499683649047829</td>
+                    <td>9</td>
+                    <td>155.52609580597905</td>
                     <td>0.00003349734337790645</td>
                     <td>0.5209711035438057</td>
                     <td>0.000017090481315258395</td>
                   </tr>
                   <tr>
-                    <td>1486720884263</td>
-                    <td>10</td>
-                    <td>166.62099151663207</td>
-                    <td>0.006001644756148148</td>
+                    <td>2017-02-10T10:01:24.263Z</td>
+                    <td><b>0.006001644756148148</b></td>
                     <td>1.3015367151199096e-7</td>
                     <td>0.0003607681686512697</td>
+                    <td>10</td>
+                    <td>166.62099151663207</td>
                     <td>0.00008164952292005667</td>
                     <td>1.3604524465799819</td>
                     <td>0.00004165791985717177</td>
@@ -86,9 +86,9 @@
               </tbody>
             </table>
 
-              <div style="float: left">
+              <div style="float: left; width: 350px">
                 <span>mean</span>
-                <canvas width="350" height="350" id="import-files/import-files-1/mean"></canvas>
+                <canvas height="350" id="import-files/import-files-1/mean"></canvas>
                 <script>
                   var canvas = document.getElementById('import-files/import-files-1/mean')
                   var options = {
@@ -117,7 +117,8 @@
                               x: 1486720884263,
                               y: 0.006001644756148148
                             }
-                        ]
+                        ],
+                        backgroundColor: '#3772FF'
                       }]
                     },
                     options: {
@@ -126,16 +127,15 @@
                           type: 'time',
                           position: 'bottom'
                         }]
-                      },
-                      responsive: false
+                      }
                     }
                   }
                   var chart = new Chart(canvas, options)
                 </script>
               </div>
-              <div style="float: left">
+              <div style="float: left; width: 350px">
                 <span>variance</span>
-                <canvas width="350" height="350" id="import-files/import-files-1/variance"></canvas>
+                <canvas height="350" id="import-files/import-files-1/variance"></canvas>
                 <script>
                   var canvas = document.getElementById('import-files/import-files-1/variance')
                   var options = {
@@ -164,7 +164,8 @@
                               x: 1486720884263,
                               y: 1.3015367151199096e-7
                             }
-                        ]
+                        ],
+                        backgroundColor: '#EF709D'
                       }]
                     },
                     options: {
@@ -173,16 +174,15 @@
                           type: 'time',
                           position: 'bottom'
                         }]
-                      },
-                      responsive: false
+                      }
                     }
                   }
                   var chart = new Chart(canvas, options)
                 </script>
               </div>
-              <div style="float: left">
+              <div style="float: left; width: 350px">
                 <span>deviation</span>
-                <canvas width="350" height="350" id="import-files/import-files-1/deviation"></canvas>
+                <canvas height="350" id="import-files/import-files-1/deviation"></canvas>
                 <script>
                   var canvas = document.getElementById('import-files/import-files-1/deviation')
                   var options = {
@@ -211,7 +211,8 @@
                               x: 1486720884263,
                               y: 0.0003607681686512697
                             }
-                        ]
+                        ],
+                        backgroundColor: '#E2EF70'
                       }]
                     },
                     options: {
@@ -220,23 +221,22 @@
                           type: 'time',
                           position: 'bottom'
                         }]
-                      },
-                      responsive: false
+                      }
                     }
                   }
                   var chart = new Chart(canvas, options)
                 </script>
               </div>
-              <div style="float: left">
-                <span>moe</span>
-                <canvas width="350" height="350" id="import-files/import-files-1/moe"></canvas>
+              <div style="float: left; width: 350px">
+                <span>MOE</span>
+                <canvas height="350" id="import-files/import-files-1/MOE"></canvas>
                 <script>
-                  var canvas = document.getElementById('import-files/import-files-1/moe')
+                  var canvas = document.getElementById('import-files/import-files-1/MOE')
                   var options = {
                     type: 'line',
                     data: {
                       datasets: [{
-                        label: 'moe',
+                        label: 'MOE',
                         data: [
                             {
                               x: 1486665709260,
@@ -258,7 +258,8 @@
                               x: 1486720884263,
                               y: 0.00008164952292005667
                             }
-                        ]
+                        ],
+                        backgroundColor: '#CA3CFF'
                       }]
                     },
                     options: {
@@ -267,23 +268,22 @@
                           type: 'time',
                           position: 'bottom'
                         }]
-                      },
-                      responsive: false
+                      }
                     }
                   }
                   var chart = new Chart(canvas, options)
                 </script>
               </div>
-              <div style="float: left">
-                <span>rme</span>
-                <canvas width="350" height="350" id="import-files/import-files-1/rme"></canvas>
+              <div style="float: left; width: 350px">
+                <span>RME</span>
+                <canvas height="350" id="import-files/import-files-1/RME"></canvas>
                 <script>
-                  var canvas = document.getElementById('import-files/import-files-1/rme')
+                  var canvas = document.getElementById('import-files/import-files-1/RME')
                   var options = {
                     type: 'line',
                     data: {
                       datasets: [{
-                        label: 'rme',
+                        label: 'RME',
                         data: [
                             {
                               x: 1486665709260,
@@ -305,7 +305,8 @@
                               x: 1486720884263,
                               y: 1.3604524465799819
                             }
-                        ]
+                        ],
+                        backgroundColor: '#70E4EF'
                       }]
                     },
                     options: {
@@ -314,23 +315,22 @@
                           type: 'time',
                           position: 'bottom'
                         }]
-                      },
-                      responsive: false
+                      }
                     }
                   }
                   var chart = new Chart(canvas, options)
                 </script>
               </div>
-              <div style="float: left">
-                <span>sem</span>
-                <canvas width="350" height="350" id="import-files/import-files-1/sem"></canvas>
+              <div style="float: left; width: 350px">
+                <span>SEM</span>
+                <canvas height="350" id="import-files/import-files-1/SEM"></canvas>
                 <script>
-                  var canvas = document.getElementById('import-files/import-files-1/sem')
+                  var canvas = document.getElementById('import-files/import-files-1/SEM')
                   var options = {
                     type: 'line',
                     data: {
                       datasets: [{
-                        label: 'sem',
+                        label: 'SEM',
                         data: [
                             {
                               x: 1486665709260,
@@ -352,7 +352,8 @@
                               x: 1486720884263,
                               y: 0.00004165791985717177
                             }
-                        ]
+                        ],
+                        backgroundColor: '#DEF6CA'
                       }]
                     },
                     options: {
@@ -361,16 +362,15 @@
                           type: 'time',
                           position: 'bottom'
                         }]
-                      },
-                      responsive: false
+                      }
                     }
                   }
                   var chart = new Chart(canvas, options)
                 </script>
               </div>
-              <div style="float: left">
+              <div style="float: left; width: 350px">
                 <span>count</span>
-                <canvas width="350" height="350" id="import-files/import-files-1/count"></canvas>
+                <canvas height="350" id="import-files/import-files-1/count"></canvas>
                 <script>
                   var canvas = document.getElementById('import-files/import-files-1/count')
                   var options = {
@@ -399,7 +399,8 @@
                               x: 1486720884263,
                               y: 10
                             }
-                        ]
+                        ],
+                        backgroundColor: '#F8BDC4'
                       }]
                     },
                     options: {
@@ -408,16 +409,15 @@
                           type: 'time',
                           position: 'bottom'
                         }]
-                      },
-                      responsive: false
+                      }
                     }
                   }
                   var chart = new Chart(canvas, options)
                 </script>
               </div>
-              <div style="float: left">
+              <div style="float: left; width: 350px">
                 <span>hz</span>
-                <canvas width="350" height="350" id="import-files/import-files-1/hz"></canvas>
+                <canvas height="350" id="import-files/import-files-1/hz"></canvas>
                 <script>
                   var canvas = document.getElementById('import-files/import-files-1/hz')
                   var options = {
@@ -446,7 +446,8 @@
                               x: 1486720884263,
                               y: 166.62099151663207
                             }
-                        ]
+                        ],
+                        backgroundColor: '#F497DA'
                       }]
                     },
                     options: {
@@ -455,8 +456,7 @@
                           type: 'time',
                           position: 'bottom'
                         }]
-                      },
-                      responsive: false
+                      }
                     }
                   }
                   var chart = new Chart(canvas, options)
@@ -465,15 +465,15 @@
           </div>
           <div class="clearfix">
             <h3>import-files/import-files-2</h3>
-            <table class="table table-striped">
+            <table class="table table-bordered">
               <thead>
                 <tr>
                   <th>When</th>
-                  <th>Count</th>
-                  <th>Hz</th>
                   <th>Mean</th>
                   <th>Variance</th>
                   <th>Deviation</th>
+                  <th>Count</th>
+                  <th>Hz</th>
                   <th>MOE</th>
                   <th>RME</th>
                   <th>SEM</th>
@@ -481,56 +481,56 @@
               </thead>
               <tbody>
                   <tr>
-                    <td>1486665709260</td>
-                    <td>8</td>
-                    <td>131.50346950147937</td>
-                    <td>0.007604362103835978</td>
+                    <td>2017-02-09T18:41:49.260Z</td>
+                    <td><b>0.007604362103835978</b></td>
                     <td>2.6223417067388955e-8</td>
                     <td>0.0001619364599693008</td>
+                    <td>8</td>
+                    <td>131.50346950147937</td>
                     <td>0.00003526616239331439</td>
                     <td>0.46376227107234375</td>
                     <td>0.000017992939996588976</td>
                   </tr>
                   <tr>
-                    <td>1486665725306</td>
-                    <td>8</td>
-                    <td>131.57131674673133</td>
-                    <td>0.007600440770270268</td>
+                    <td>2017-02-09T18:42:05.306Z</td>
+                    <td><b>0.007600440770270268</b></td>
                     <td>3.4632232178318524e-8</td>
                     <td>0.0001860973728409902</td>
+                    <td>8</td>
+                    <td>131.57131674673133</td>
                     <td>0.00004240142513161882</td>
                     <td>0.5578811336505034</td>
                     <td>0.000021633380169193277</td>
                   </tr>
                   <tr>
-                    <td>1486665741083</td>
-                    <td>8</td>
-                    <td>131.24910127177907</td>
-                    <td>0.0076190997904761896</td>
+                    <td>2017-02-09T18:42:21.083Z</td>
+                    <td><b>0.0076190997904761896</b></td>
                     <td>3.424421453322745e-8</td>
                     <td>0.00018505192388415596</td>
+                    <td>8</td>
+                    <td>131.24910127177907</td>
                     <td>0.00004188119300288162</td>
                     <td>0.5496868941818134</td>
                     <td>0.000021367955613715113</td>
                   </tr>
                   <tr>
-                    <td>1486720849194</td>
-                    <td>8</td>
-                    <td>136.4053029609785</td>
-                    <td>0.007331093280780075</td>
+                    <td>2017-02-10T10:00:49.194Z</td>
+                    <td><b>0.007331093280780075</b></td>
                     <td>2.705756481769321e-7</td>
                     <td>0.0005201688650591576</td>
+                    <td>8</td>
+                    <td>136.4053029609785</td>
                     <td>0.00011694822347588055</td>
                     <td>1.5952357853975707</td>
                     <td>0.000059667460957081915</td>
                   </tr>
                   <tr>
-                    <td>1486720884263</td>
-                    <td>8</td>
-                    <td>133.41468149778865</td>
-                    <td>0.007495426955815016</td>
+                    <td>2017-02-10T10:01:24.263Z</td>
+                    <td><b>0.007495426955815016</b></td>
                     <td>1.0064019079288156e-7</td>
                     <td>0.0003172383816515296</td>
+                    <td>8</td>
+                    <td>133.41468149778865</td>
                     <td>0.00007040353984307215</td>
                     <td>0.9392865844480345</td>
                     <td>0.00003592017338932253</td>
@@ -538,9 +538,9 @@
               </tbody>
             </table>
 
-              <div style="float: left">
+              <div style="float: left; width: 350px">
                 <span>mean</span>
-                <canvas width="350" height="350" id="import-files/import-files-2/mean"></canvas>
+                <canvas height="350" id="import-files/import-files-2/mean"></canvas>
                 <script>
                   var canvas = document.getElementById('import-files/import-files-2/mean')
                   var options = {
@@ -569,7 +569,8 @@
                               x: 1486720884263,
                               y: 0.007495426955815016
                             }
-                        ]
+                        ],
+                        backgroundColor: '#3772FF'
                       }]
                     },
                     options: {
@@ -578,16 +579,15 @@
                           type: 'time',
                           position: 'bottom'
                         }]
-                      },
-                      responsive: false
+                      }
                     }
                   }
                   var chart = new Chart(canvas, options)
                 </script>
               </div>
-              <div style="float: left">
+              <div style="float: left; width: 350px">
                 <span>variance</span>
-                <canvas width="350" height="350" id="import-files/import-files-2/variance"></canvas>
+                <canvas height="350" id="import-files/import-files-2/variance"></canvas>
                 <script>
                   var canvas = document.getElementById('import-files/import-files-2/variance')
                   var options = {
@@ -616,7 +616,8 @@
                               x: 1486720884263,
                               y: 1.0064019079288156e-7
                             }
-                        ]
+                        ],
+                        backgroundColor: '#EF709D'
                       }]
                     },
                     options: {
@@ -625,16 +626,15 @@
                           type: 'time',
                           position: 'bottom'
                         }]
-                      },
-                      responsive: false
+                      }
                     }
                   }
                   var chart = new Chart(canvas, options)
                 </script>
               </div>
-              <div style="float: left">
+              <div style="float: left; width: 350px">
                 <span>deviation</span>
-                <canvas width="350" height="350" id="import-files/import-files-2/deviation"></canvas>
+                <canvas height="350" id="import-files/import-files-2/deviation"></canvas>
                 <script>
                   var canvas = document.getElementById('import-files/import-files-2/deviation')
                   var options = {
@@ -663,7 +663,8 @@
                               x: 1486720884263,
                               y: 0.0003172383816515296
                             }
-                        ]
+                        ],
+                        backgroundColor: '#E2EF70'
                       }]
                     },
                     options: {
@@ -672,23 +673,22 @@
                           type: 'time',
                           position: 'bottom'
                         }]
-                      },
-                      responsive: false
+                      }
                     }
                   }
                   var chart = new Chart(canvas, options)
                 </script>
               </div>
-              <div style="float: left">
-                <span>moe</span>
-                <canvas width="350" height="350" id="import-files/import-files-2/moe"></canvas>
+              <div style="float: left; width: 350px">
+                <span>MOE</span>
+                <canvas height="350" id="import-files/import-files-2/MOE"></canvas>
                 <script>
-                  var canvas = document.getElementById('import-files/import-files-2/moe')
+                  var canvas = document.getElementById('import-files/import-files-2/MOE')
                   var options = {
                     type: 'line',
                     data: {
                       datasets: [{
-                        label: 'moe',
+                        label: 'MOE',
                         data: [
                             {
                               x: 1486665709260,
@@ -710,7 +710,8 @@
                               x: 1486720884263,
                               y: 0.00007040353984307215
                             }
-                        ]
+                        ],
+                        backgroundColor: '#CA3CFF'
                       }]
                     },
                     options: {
@@ -719,23 +720,22 @@
                           type: 'time',
                           position: 'bottom'
                         }]
-                      },
-                      responsive: false
+                      }
                     }
                   }
                   var chart = new Chart(canvas, options)
                 </script>
               </div>
-              <div style="float: left">
-                <span>rme</span>
-                <canvas width="350" height="350" id="import-files/import-files-2/rme"></canvas>
+              <div style="float: left; width: 350px">
+                <span>RME</span>
+                <canvas height="350" id="import-files/import-files-2/RME"></canvas>
                 <script>
-                  var canvas = document.getElementById('import-files/import-files-2/rme')
+                  var canvas = document.getElementById('import-files/import-files-2/RME')
                   var options = {
                     type: 'line',
                     data: {
                       datasets: [{
-                        label: 'rme',
+                        label: 'RME',
                         data: [
                             {
                               x: 1486665709260,
@@ -757,7 +757,8 @@
                               x: 1486720884263,
                               y: 0.9392865844480345
                             }
-                        ]
+                        ],
+                        backgroundColor: '#70E4EF'
                       }]
                     },
                     options: {
@@ -766,23 +767,22 @@
                           type: 'time',
                           position: 'bottom'
                         }]
-                      },
-                      responsive: false
+                      }
                     }
                   }
                   var chart = new Chart(canvas, options)
                 </script>
               </div>
-              <div style="float: left">
-                <span>sem</span>
-                <canvas width="350" height="350" id="import-files/import-files-2/sem"></canvas>
+              <div style="float: left; width: 350px">
+                <span>SEM</span>
+                <canvas height="350" id="import-files/import-files-2/SEM"></canvas>
                 <script>
-                  var canvas = document.getElementById('import-files/import-files-2/sem')
+                  var canvas = document.getElementById('import-files/import-files-2/SEM')
                   var options = {
                     type: 'line',
                     data: {
                       datasets: [{
-                        label: 'sem',
+                        label: 'SEM',
                         data: [
                             {
                               x: 1486665709260,
@@ -804,7 +804,8 @@
                               x: 1486720884263,
                               y: 0.00003592017338932253
                             }
-                        ]
+                        ],
+                        backgroundColor: '#DEF6CA'
                       }]
                     },
                     options: {
@@ -813,16 +814,15 @@
                           type: 'time',
                           position: 'bottom'
                         }]
-                      },
-                      responsive: false
+                      }
                     }
                   }
                   var chart = new Chart(canvas, options)
                 </script>
               </div>
-              <div style="float: left">
+              <div style="float: left; width: 350px">
                 <span>count</span>
-                <canvas width="350" height="350" id="import-files/import-files-2/count"></canvas>
+                <canvas height="350" id="import-files/import-files-2/count"></canvas>
                 <script>
                   var canvas = document.getElementById('import-files/import-files-2/count')
                   var options = {
@@ -851,7 +851,8 @@
                               x: 1486720884263,
                               y: 8
                             }
-                        ]
+                        ],
+                        backgroundColor: '#F8BDC4'
                       }]
                     },
                     options: {
@@ -860,16 +861,15 @@
                           type: 'time',
                           position: 'bottom'
                         }]
-                      },
-                      responsive: false
+                      }
                     }
                   }
                   var chart = new Chart(canvas, options)
                 </script>
               </div>
-              <div style="float: left">
+              <div style="float: left; width: 350px">
                 <span>hz</span>
-                <canvas width="350" height="350" id="import-files/import-files-2/hz"></canvas>
+                <canvas height="350" id="import-files/import-files-2/hz"></canvas>
                 <script>
                   var canvas = document.getElementById('import-files/import-files-2/hz')
                   var options = {
@@ -898,7 +898,8 @@
                               x: 1486720884263,
                               y: 133.41468149778865
                             }
-                        ]
+                        ],
+                        backgroundColor: '#F497DA'
                       }]
                     },
                     options: {
@@ -907,8 +908,7 @@
                           type: 'time',
                           position: 'bottom'
                         }]
-                      },
-                      responsive: false
+                      }
                     }
                   }
                   var chart = new Chart(canvas, options)

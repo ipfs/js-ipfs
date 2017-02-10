@@ -45,7 +45,7 @@
     "benchmarks": "node benchmarks",
     "benchmarks:report": "node benchmarks/report",
     "benchmarks:report:profile": "node benchmarks/report --profile=true",
-    "benchmarks:report:aggregate": "node benchmarks/aggregate | node benchmarks/generate-aggregate-report > benchmarks/reports/aggregate.html"
+    "benchmarks:report:aggregate": "node benchmarks/aggregate | node benchmarks/generate-aggregate-report"
   },
   "pre-commit": [
     "lint",

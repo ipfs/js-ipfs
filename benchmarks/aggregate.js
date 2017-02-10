@@ -45,6 +45,7 @@ reports.forEach((report) => {
       // console.log('adding run')
       benchmark.runs.push({
         when: b.now,
+        whenPretty: new Date(b.now).toISOString(),
         count: b.count,
         hz: b.hz,
         stats: {
@@ -68,13 +69,23 @@ const results = Object.keys(suites).map(sn => suites[sn]).map((suite) => {
         return {
           name: bm.name,
           runs: bm.runs.sort(sortBenchmarkRuns),
+          colors: {
+            mean: '#3772FF',
+            variance: '#EF709D',
+            deviation: '#E2EF70',
+            MOE: '#CA3CFF',
+            RME: '#70E4EF',
+            SEM: '#DEF6CA',
+            count: '#F8BDC4',
+            hz: '#F497DA'
+          },
           metric: bm.runs.sort(sortBenchmarkRuns).reduce(reduceBenchmarkRuns, {
             mean: [],
             variance: [],
             deviation: [],
-            moe: [],
-            rme: [],
-            sem: [],
+            MOE: [],
+            RME: [],
+            SEM: [],
             count: [],
             hz: []
           })
@@ -100,12 +111,16 @@ function sortBenchmarkRuns (a, b) {
 function reduceBenchmarkRuns (acc, run) {
   acc.count.push({ when: run.when, value: run.count })
   acc.hz.push({ when: run.when, value: run.hz })
-  acc.moe.push({ when: run.when, value: run.stats.moe })
-  acc.rme.push({ when: run.when, value: run.stats.rme })
-  acc.sem.push({ when: run.when, value: run.stats.sem })
+  acc.MOE.push({ when: run.when, value: run.stats.moe })
+  acc.RME.push({ when: run.when, value: run.stats.rme })
+  acc.SEM.push({ when: run.when, value: run.stats.sem })
   acc.deviation.push({ when: run.when, value: run.stats.deviation })
   acc.mean.push({ when: run.when, value: run.stats.mean })
   acc.variance.push({ when: run.when, value: run.stats.variance })
 
   return acc
+}
+
+function generateColor () {
+
 }

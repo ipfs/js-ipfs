@@ -15,15 +15,15 @@
         {{#each benchmarks}}
           <div class="clearfix">
             <h3>{{../suite}}/{{name}}</h3>
-            <table class="table table-striped">
+            <table class="table table-bordered">
               <thead>
                 <tr>
                   <th>When</th>
-                  <th>Count</th>
-                  <th>Hz</th>
                   <th>Mean</th>
                   <th>Variance</th>
                   <th>Deviation</th>
+                  <th>Count</th>
+                  <th>Hz</th>
                   <th>MOE</th>
                   <th>RME</th>
                   <th>SEM</th>
@@ -32,12 +32,12 @@
               <tbody>
                 {{#each runs}}
                   <tr>
-                    <td>{{when}}</td>
-                    <td>{{count}}</td>
-                    <td>{{hz}}</td>
-                    <td>{{stats.mean}}</td>
+                    <td>{{whenPretty}}</td>
+                    <td><b>{{stats.mean}}</b></td>
                     <td>{{stats.variance}}</td>
                     <td>{{stats.deviation}}</td>
+                    <td>{{count}}</td>
+                    <td>{{hz}}</td>
                     <td>{{stats.moe}}</td>
                     <td>{{stats.rme}}</td>
                     <td>{{stats.sem}}</td>
@@ -47,9 +47,9 @@
             </table>
 
             {{#each metric}}
-              <div style="float: left">
+              <div style="float: left; width: 350px">
                 <span>{{@key}}</span>
-                <canvas width="350" height="350" id="{{../../suite}}/{{../name}}/{{@key}}"></canvas>
+                <canvas height="350" id="{{../../suite}}/{{../name}}/{{@key}}"></canvas>
                 <script>
                   var canvas = document.getElementById('{{../../suite}}/{{../name}}/{{@key}}')
                   var options = {
@@ -64,7 +64,8 @@
                               y: {{value}}
                             }{{#unless @last}},{{/unless}}
                           {{/each}}
-                        ]
+                        ],
+                        backgroundColor: '{{lookup ../colors @key}}'
                       }]
                     },
                     options: {
@@ -73,8 +74,7 @@
                           type: 'time',
                           position: 'bottom'
                         }]
-                      },
-                      responsive: false
+                      }
                     }
                   }
                   var chart = new Chart(canvas, options)
