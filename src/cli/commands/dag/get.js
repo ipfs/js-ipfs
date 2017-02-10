@@ -7,11 +7,16 @@ const log = debug('cli:block')
 log.error = debug('cli:block:error')
 
 module.exports = {
-  command: 'get <ref>',
+  command: 'get <cid path>',
 
-  describe: 'Get a dag node from ipfs.',
+  describe: 'Get a dag node or value from ipfs.',
 
-  builder: {},
+  builder: {
+    'local-resolve': {
+      type: 'boolean',
+      default: false
+    }
+  },
 
   handler (argv) {
     utils.getIPFS((err, ipfs) => {
@@ -19,21 +24,42 @@ module.exports = {
         throw err
       }
 
-      const refParts = argv.ref.split('/')
+      const refParts = argv.cidpath.split('/')
       const cidString = refParts[0]
       const path = refParts.slice(1).join('/')
       const cid = new CID(cidString)
 
-      ipfs.dag.get(cid, path, (err, result) => {
+      const options = {
+        localResolve: argv.localResolve
+      }
+
+      ipfs.dag.get(cid, path, options, (err, result) => {
         if (err) {
           throw err
         }
-        const obj = result.value
-        if (Buffer.isBuffer(obj)) {
-          console.log('0x' + obj.toString('hex'))
-        } else {
-          console.log(obj)
+
+        if (options.localResolve) {
+          console.log('resolving path within the node only')
+          console.log('remainder path:', result.remainderPath || 'n/a', '\n')
         }
+
+        const node = result.value
+
+        // TODO we need to find* a way to pretty print objects
+        // * reads as 'agree in'
+        if (node._json) {
+          delete node._json.multihash
+          node._json.data = '0x' + node._json.data.toString('hex')
+          console.log(node._json)
+          return
+        }
+
+        if (Buffer.isBuffer(node)) {
+          console.log('0x' + node.toString('hex'))
+          return
+        }
+
+        console.log(node)
       })
     })
   }
