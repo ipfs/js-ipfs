@@ -9,5 +9,6 @@ Let us know if you find any issue or if you want to contribute and add a new tut
 - [js-ipfs basic, how to spawn a node and add a file to IPFS](/examples)
 - [How to bundle js-ipfs with Browserify](/bundle-browserify)
 - [How to bundle js-ipfs with WebPack](/bundle-webpack)
+- [Use IPFS to explore the Ethereum BlockChain](/explore-ethereum)
 
 ## Tutorials
