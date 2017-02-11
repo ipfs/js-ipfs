@@ -22,7 +22,9 @@ class IPFS {
     configOpts.EXPERIMENTAL = configOpts.EXPERIMENTAL || {}
 
     // IPFS utils
-    this.types = {}
+    this.types = {
+      Buffer: Buffer
+    }
     this.log = debug('jsipfs')
     this.log.err = debug('jsipfs:err')
 

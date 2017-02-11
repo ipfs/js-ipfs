@@ -1,19 +1,23 @@
 'use strict'
 
-var IPFS = require('../../../src/core') // replace this by line below
+const concat = require('concat-stream')
+const IPFS = require('../../../src/core') // replace this by line below
 // var IPFS = require('ipfs')
 
 // Create the IPFS node instance
 // for simplicity, we create a new repo everytime the node
 // is created, because you can't init already existing repos
 const repoPath = String(Math.random())
+
 const node = new IPFS({
   repo: repoPath,
   EXPERIMENTAL: {
     pubsub: false
   }
 })
-const concat = require('concat-stream')
+
+// expose the node to the window, for the fun!
+window.ipfs = node
 
 node.init({ emptyRepo: true, bits: 2048 }, function (err) {
   if (err) {

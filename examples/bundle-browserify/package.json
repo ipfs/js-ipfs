@@ -11,8 +11,8 @@
   "keywords": [],
   "license": "MIT",
   "devDependencies": {
-    "browserify": "^13.1.1",
-    "concat-stream": "^1.5.2",
+    "browserify": "^14.0.0",
+    "concat-stream": "^1.6.0",
     "http-server": "^0.9.0",
     "browserify-zlib-next": "^1.0.1"
   },
