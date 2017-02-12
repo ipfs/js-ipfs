@@ -29,8 +29,8 @@ function IpfsAPI (hostOrMultiaddr, port, opts) {
 
   // autoconfigure in browser
   if (!config.host &&
-    typeof window !== 'undefined') {
-    const split = window.location.host.split(':')
+    typeof self !== 'undefined') {
+    const split = self.location.host.split(':')
     config.host = split[0]
     config.port = split[1]
   }
