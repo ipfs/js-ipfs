@@ -35,7 +35,7 @@ module.exports = {
 
       ipfs.dag.get(cid, path, options, (err, result) => {
         if (err) {
-          throw err
+          return console.log('dag get failed:', err.message)
         }
 
         if (options.localResolve) {
@@ -59,7 +59,11 @@ module.exports = {
           return
         }
 
-        console.log(node)
+        if (node.raw) {
+          console.log(node.raw)
+        } else {
+          console.log(node)
+        }
       })
     })
   }
