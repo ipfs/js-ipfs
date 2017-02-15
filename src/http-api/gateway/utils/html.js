@@ -53,8 +53,6 @@ const buildTable = (path, links) => {
   `
 }
 
-// build HTML for directory listing page identical to ipfs.io/ipfs/<multihash>
-// TODO: move this to a template and render it dynamically with data
 module.exports.build = (path, links) => {
   return `
     <!DOCTYPE html>
