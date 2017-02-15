@@ -1,9 +1,21 @@
 'use strict'
 
-module.exports = function goOffline (self) {
-  return (cb) => {
+module.exports = (self) => {
+  return (callback) => {
     self._blockService.goOffline()
     self._bitswap.stop()
-    self.libp2p.stop(cb)
+
+    if (self._configOpts.EXPERIMENTAL.pubsub) {
+      self._pubsub.stop(next)
+    } else {
+      next()
+    }
+
+    function next (err) {
+      if (err) {
+        return callback(err)
+      }
+      self.libp2p.stop(callback)
+    }
   }
 }

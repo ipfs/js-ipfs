@@ -15,30 +15,37 @@ const CID = require('cids')
 const waterfall = require('async/waterfall')
 
 module.exports = function files (self) {
-  const createAddPullStream = () => {
+  const createAddPullStream = (options) => {
     return pull(
       pull.map(normalizeContent),
       pull.flatten(),
-      importer(self._ipldResolver),
+      importer(self._ipldResolver, options),
       pull.asyncMap(prepareFile.bind(null, self))
     )
   }
 
   return {
-    createAddStream: (callback) => {
-      callback(null, toStream(createAddPullStream()))
+    createAddStream: (options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = undefined
+      }
+      callback(null, toStream(createAddPullStream(options)))
     },
 
     createAddPullStream: createAddPullStream,
 
-    add: promisify((data, callback) => {
-      if (!callback || typeof callback !== 'function') {
+    add: promisify((data, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = undefined
+      } else if (!callback || typeof callback !== 'function') {
         callback = noop
       }
 
       pull(
         pull.values(normalizeContent(data)),
-        importer(self._ipldResolver),
+        importer(self._ipldResolver, options),
         pull.asyncMap(prepareFile.bind(null, self)),
         sort((a, b) => {
           if (a.path < b.path) return 1
@@ -54,16 +61,17 @@ module.exports = function files (self) {
         return callback(new Error('You must supply a multihash'))
       }
 
-      self._ipldResolver.get(new CID(hash), (err, node) => {
+      self._ipldResolver.get(new CID(hash), (err, result) => {
         if (err) {
           return callback(err)
         }
 
+        const node = result.value
+
         const data = UnixFS.unmarshal(node.data)
+
         if (data.type === 'directory') {
-          return callback(
-            new Error('This dag node is a directory')
-          )
+          return callback(new Error('This dag node is a directory'))
         }
 
         pull(
@@ -100,6 +108,7 @@ module.exports = function files (self) {
 
 function prepareFile (self, file, callback) {
   const bs58mh = multihashes.toB58String(file.multihash)
+
   waterfall([
     (cb) => self.object.get(file.multihash, cb),
     (node, cb) => {

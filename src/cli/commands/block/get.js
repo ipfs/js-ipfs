@@ -1,7 +1,7 @@
 'use strict'
 
 const utils = require('../../utils')
-const mh = require('multihashes')
+const CID = require('cids')
 const debug = require('debug')
 const log = debug('cli:block')
 log.error = debug('cli:block:error')
@@ -19,21 +19,15 @@ module.exports = {
         throw err
       }
 
-      const hash = utils.isDaemonOn()
-        ? argv.key
-        : mh.fromB58String(argv.key)
+      const cid = new CID(argv.key)
 
-      ipfs.block.get(hash, (err, block) => {
+      ipfs.block.get(cid, (err, block) => {
         if (err) {
           throw err
         }
 
-        if (block.data) {
-          console.log(block.data.toString())
-          return
-        }
-
-        console.log(block.toString())
+        process.stdout.write(block.data)
+        process.stdout.write('\n')
       })
     })
   }

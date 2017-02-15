@@ -6,7 +6,7 @@ const log = debug('cli:files')
 log.error = debug('cli:files:error')
 var fs = require('fs')
 const path = require('path')
-const pathExists = require('path-exists')
+const mkdirp = require('mkdirp')
 const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
 
@@ -23,53 +23,31 @@ function checkArgs (hash, outPath) {
   return outPath
 }
 
-function ensureDir (dir, cb) {
-  pathExists(dir)
-    .then((exists) => {
-      if (!exists) {
-        fs.mkdir(dir, cb)
-      } else {
-        cb()
-      }
-    })
-    .catch(cb)
+function ensureDirFor (dir, file, callback) {
+  const lastSlash = file.path.lastIndexOf('/')
+  const filePath = file.path.substring(0, lastSlash + 1)
+  const dirPath = path.join(dir, filePath)
+  mkdirp(dirPath, callback)
 }
 
 function fileHandler (dir) {
-  return function onFile (file, cb) {
-    const lastSlash = file.path.lastIndexOf('/')
-    // Check to see if the result is in a directory
-    if (lastSlash === -1) {
-      const dirPath = path.join(dir, file.path)
-      // Check to see if the result is a directory
-      if (file.content) {
-        file.content.pipe(fs.createWriteStream(dirPath))
-          .once('error', cb)
-          .once('end', cb)
+  return function onFile (file, callback) {
+    ensureDirFor(dir, file, (err) => {
+      if (err) {
+        callback(err)
       } else {
-        ensureDir(dirPath, cb)
-      }
-    } else {
-      const filePath = file.path.substring(0, lastSlash + 1)
-      const dirPath = path.join(dir, filePath)
-
-      ensureDir(dirPath, (err) => {
-        if (err) {
-          return cb(err)
-        }
-
+        const fullFilePath = path.join(dir, file.path)
         if (file.content) {
-          const filename = file.path.substring(lastSlash)
-          const target = path.join(dirPath, filename)
-
-          file.content.pipe(fs.createWriteStream(target))
-            .once('error', cb)
-            .once('end', cb)
-          return
+          file.content
+            .pipe(fs.createWriteStream(fullFilePath))
+            .once('error', callback)
+            .once('finish', callback)
+        } else {
+          // this is a dir
+          mkdirp(fullFilePath, callback)
         }
-        cb()
-      })
-    }
+      }
+    })
   }
 }
 

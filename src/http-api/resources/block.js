@@ -1,6 +1,7 @@
 'use strict'
 
 const mh = require('multihashes')
+const CID = require('cids')
 const multipart = require('ipfs-multipart')
 const Block = require('ipfs-block')
 const waterfall = require('async/waterfall')
@@ -18,7 +19,7 @@ exports.parseKey = (request, reply) => {
 
   try {
     return reply({
-      key: mh.fromB58String(request.query.arg)
+      key: new CID(request.query.arg)
     })
   } catch (err) {
     log.error(err)
@@ -46,7 +47,7 @@ exports.get = {
         }).code(500)
       }
 
-      return reply(block.data.toString())
+      return reply(block.data)
     })
   }
 }

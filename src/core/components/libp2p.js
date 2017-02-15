@@ -6,14 +6,18 @@ const promisify = require('promisify-es6')
 module.exports = function libp2p (self) {
   return {
     start: promisify((callback) => {
-      self.config.get('Discovery.MDNS.Enabled', gotConfig)
+      self.config.get(gotConfig)
 
-      function gotConfig (err, enabled) {
+      function gotConfig (err, config) {
         if (err) {
           return callback(err)
         }
 
-        const options = { mdns: enabled }
+        const options = {
+          mdns: config.Discovery.MDNS.Enabled,
+          webRTCStar: config.Discovery.webRTCStar.Enabled,
+          bootstrap: config.Bootstrap
+        }
 
         self._libp2pNode = new Node(self._peerInfo, undefined, options)
 

@@ -2,6 +2,8 @@
 
 const utils = require('../../utils')
 const debug = require('debug')
+const mafmt = require('mafmt')
+const multiaddr = require('multiaddr')
 const log = debug('cli:object')
 log.error = debug('cli:object:error')
 
@@ -28,7 +30,12 @@ module.exports = {
         }
 
         result.forEach((item) => {
-          console.log(item.addr.toString())
+          let ma = multiaddr(item.addr.toString())
+          if (!mafmt.IPFS.matches(ma)) {
+            ma = ma.encapsulate('/ipfs/' + item.peer.toB58String())
+          }
+          const addr = ma.toString()
+          console.log(addr)
         })
       })
     })

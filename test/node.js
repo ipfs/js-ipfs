@@ -23,7 +23,7 @@ if (process.env.TEST) {
 }
 
 if (testCore) {
-  require('./core/node')
+  // require('./core/node')
 }
 
 if (testHTTP) {

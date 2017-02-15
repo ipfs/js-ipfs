@@ -1,7 +1,7 @@
 'use strict'
 
-const IpfsRepo = require('ipfs-repo')
-const Ipfs = require('../../core')
+const Repo = require('ipfs-repo')
+const IPFS = require('../../core')
 const Store = require('fs-pull-blob-store')
 const utils = require('../utils')
 
@@ -35,18 +35,21 @@ module.exports = {
     const log = utils.createLogger(true)
     log(`initializing ipfs node at ${path}`)
 
-    const repo = new IpfsRepo(path, {
+    const repo = new Repo(path, {
       stores: Store
     })
 
-    const ipfs = new Ipfs(repo)
+    const ipfs = new IPFS({
+      repo: repo,
+      EXPERIMENTAL: {}
+    })
 
     ipfs.init({
       bits: argv.bits,
       force: argv.force,
       emptyRepo: argv.emptyRepo,
       log
-    }, function (err) {
+    }, (err) => {
       if (err) {
         console.error(err.toString())
         process.exit(1)

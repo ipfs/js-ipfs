@@ -14,6 +14,12 @@ const log = debug('api')
 log.error = debug('api:error')
 
 const IPFS = require('../core')
+const errorHandler = require('./error-handler')
+
+function uriToMultiaddr (uri) {
+  const ipPort = uri.split('/')[2].split(':')
+  return `/ip4/${ipPort[0]}/tcp/${ipPort[1]}`
+}
 
 exports = module.exports = function HttpApi (repo) {
   this.ipfs = null
@@ -24,7 +30,13 @@ exports = module.exports = function HttpApi (repo) {
       repo = new IPFSRepo(repo, {stores: Store})
     }
 
-    this.ipfs = new IPFS(repo)
+    this.ipfs = new IPFS({
+      repo: repo,
+      EXPERIMENTAL: {
+        pubsub: true
+      }
+    })
+
     const repoPath = this.ipfs.repo.path()
 
     try {
@@ -42,9 +54,7 @@ exports = module.exports = function HttpApi (repo) {
         fs.statSync(apiPath)
         console.log('This repo is currently being used by another daemon')
         process.exit(1)
-      } catch (err) {
-        fs.writeFileSync(apiPath, 'api is on by js-ipfs', {flag: 'w+'})
-      }
+      } catch (err) {}
 
       this.ipfs.config.get((err, config) => {
         if (err) {
@@ -64,9 +74,6 @@ exports = module.exports = function HttpApi (repo) {
         const api = config.Addresses.API.split('/')
         const gateway = config.Addresses.Gateway.split('/')
 
-        // for the CLI to know the where abouts of the API
-        fs.writeFileSync(apiPath, config.Addresses.API)
-
         // select which connection with server.select(<label>) to add routes
         this.server.connection({
           host: api[2],
@@ -79,6 +86,9 @@ exports = module.exports = function HttpApi (repo) {
           port: gateway[4],
           labels: 'Gateway'
         })
+
+        // Nicer errors
+        errorHandler(this.server)
 
         // load routes
         require('./routes')(this.server)
@@ -95,8 +105,15 @@ exports = module.exports = function HttpApi (repo) {
             const api = this.server.select('API')
             const gateway = this.server.select('Gateway')
             this.apiMultiaddr = multiaddr('/ip4/127.0.0.1/tcp/' + api.info.port)
-            console.log('API is listening on: %s', api.info.uri)
-            console.log('Gateway (readonly) is listening on: %s', gateway.info.uri)
+            api.info.ma = uriToMultiaddr(api.info.uri)
+            gateway.info.ma = uriToMultiaddr(gateway.info.uri)
+
+            console.log('API is listening on: %s', api.info.ma)
+            console.log('Gateway (readonly) is listening on: %s', gateway.info.ma)
+
+            // for the CLI to know the where abouts of the API
+            fs.writeFileSync(apiPath, api.info.ma)
+
             callback()
           })
         })

@@ -10,7 +10,7 @@ const path = require('path')
 const clean = require('../utils/clean')
 
 describe('HTTP API', () => {
-  const repoExample = path.join(__dirname, '../go-ipfs-repo')
+  const repoExample = path.join(__dirname, '../test-data/go-ipfs-repo')
   const repoTests = path.join(__dirname, '../repo-tests-run')
 
   let http = {}
@@ -36,33 +36,20 @@ describe('HTTP API', () => {
     })
   })
 
-  describe('## direct tests (inject)', () => {
-    const tests = fs.readdirSync(path.join(__dirname, '/inject'))
-
-    tests.filter((file) => {
-      return file.match(/test-.*\.js/)
-    }).forEach((file) => {
-      require('./inject/' + file)(http)
-    })
+  describe('## http-api spec tests', () => {
+    fs.readdirSync(path.join(__dirname, '/spec'))
+      .forEach((file) => require('./spec/' + file)(http))
   })
 
-  describe('## interface-ipfs-core tests over ipfs-api', () => {
-    const tests = fs.readdirSync(path.join(__dirname,
-          '/interface-ipfs-core-over-ipfs-api'))
-    tests.filter((file) => {
-      return file.match(/test-.*\.js/)
-    }).forEach((file) => {
-      require('./interface-ipfs-core-over-ipfs-api/' + file)
-    })
+  describe('## interface tests', () => {
+    fs.readdirSync(path.join(__dirname, '/interface'))
+      .forEach((file) => require('./interface/' + file))
   })
 
   describe('## custom ipfs-api tests', () => {
-    const tests = fs.readdirSync(path.join(__dirname, '/custom-ipfs-api'))
     const ctl = APIctl('/ip4/127.0.0.1/tcp/6001')
-    tests.filter((file) => {
-      return file.match(/test-.*\.js/)
-    }).forEach((file) => {
-      require('./custom-ipfs-api/' + file)(ctl)
-    })
+
+    fs.readdirSync(path.join(__dirname, '/over-ipfs-api'))
+      .forEach((file) => require('./over-ipfs-api/' + file)(ctl))
   })
 })

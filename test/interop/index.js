@@ -11,6 +11,20 @@ const crypto = require('crypto')
 const GoDaemon = require('./daemons/go')
 const JsDaemon = require('./daemons/js')
 
+const sizes = [
+  1024,
+  1024 * 62,
+  // starts failing with spdy
+  1024 * 64,
+  1024 * 512,
+  1024 * 768,
+  1024 * 1023,
+  // starts failing with multiplex
+  1024 * 1024,
+  1024 * 1024 * 4,
+  1024 * 1024 * 8
+]
+
 describe('basic', () => {
   let goDaemon
   let jsDaemon
@@ -92,43 +106,44 @@ describe('basic', () => {
     ], done)
   })
 
-  it('cat file: go -> js', (done) => {
-    const data = crypto.randomBytes(1024 * 1024)
-    waterfall([
-      (cb) => goDaemon.api.add(data, cb),
-      (res, cb) => jsDaemon.api.cat(res[0].hash, cb),
-      (stream, cb) => stream.pipe(bl(cb))
-    ], (err, file) => {
-      expect(err).to.not.exist
-      expect(file).to.be.eql(data)
-      done()
+  describe('cat file', () => sizes.forEach((size) => {
+    it(`go -> js: ${size}bytes`, (done) => {
+      const data = crypto.randomBytes(size)
+      waterfall([
+        (cb) => goDaemon.api.add(data, cb),
+        (res, cb) => jsDaemon.api.cat(res[0].hash, cb),
+        (stream, cb) => stream.pipe(bl(cb))
+      ], (err, file) => {
+        expect(err).to.not.exist
+        expect(file).to.be.eql(data)
+        done()
+      })
     })
-  })
 
-  it('cat file: js -> go', (done) => {
-    // This will fail once the size is increased to 64512 = 1024 * 63
-    const data = crypto.randomBytes(1024 * 63 - 1)
-    waterfall([
-      (cb) => jsDaemon.api.add(data, cb),
-      (res, cb) => goDaemon.api.cat(res[0].hash, cb),
-      (stream, cb) => stream.pipe(bl(cb))
-    ], (err, file) => {
-      expect(err).to.not.exist
-      expect(file).to.be.eql(data)
-      done()
+    it(`js -> go: ${size}bytes`, (done) => {
+      const data = crypto.randomBytes(size)
+      waterfall([
+        (cb) => jsDaemon.api.add(data, cb),
+        (res, cb) => goDaemon.api.cat(res[0].hash, cb),
+        (stream, cb) => stream.pipe(bl(cb))
+      ], (err, file) => {
+        expect(err).to.not.exist
+        expect(file).to.be.eql(data)
+        done()
+      })
     })
-  })
 
-  it('cat file: js -> js', (done) => {
-    const data = crypto.randomBytes(1024 * 1024)
-    waterfall([
-      (cb) => js2Daemon.api.add(data, cb),
-      (res, cb) => jsDaemon.api.cat(res[0].hash, cb),
-      (stream, cb) => stream.pipe(bl(cb))
-    ], (err, file) => {
-      expect(err).to.not.exist
-      expect(file).to.be.eql(data)
-      done()
+    it(`js -> js: ${size}bytes`, (done) => {
+      const data = crypto.randomBytes(size)
+      waterfall([
+        (cb) => js2Daemon.api.add(data, cb),
+        (res, cb) => jsDaemon.api.cat(res[0].hash, cb),
+        (stream, cb) => stream.pipe(bl(cb))
+      ], (err, file) => {
+        expect(err).to.not.exist
+        expect(file).to.be.eql(data)
+        done()
+      })
     })
-  })
+  }))
 })

@@ -1,30 +1,76 @@
-# IPFS JavaScript Implementation
+<h1 align="center">
+  <a href="ipfs.io">
+    <img src="https://ipfs.io/ipfs/QmVk7srrwahXLNmcDYvyUEJptyoxpndnRa57YJ11L4jV26/ipfs.js.png" alt="IPFS in JavaScript logo" />
+  </a>
+</h1>
 
-![banner](https://ipfs.io/ipfs/QmVk7srrwahXLNmcDYvyUEJptyoxpndnRa57YJ11L4jV26/ipfs.js.png)
+<h3 align="center">The JavaScript implementation of the IPFS protocol.</h3>
 
-[![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
-[![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
-[![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
-[![Coverage Status](https://coveralls.io/repos/github/ipfs/js-ipfs/badge.svg?branch=master)](https://coveralls.io/github/ipfs/js-ipfs?branch=master)
-[![Travis CI](https://travis-ci.org/ipfs/js-ipfs.svg?branch=master)](https://travis-ci.org/ipfs/js-ipfs)
-[![Circle CI](https://circleci.com/gh/ipfs/js-ipfs.svg?style=svg)](https://circleci.com/gh/ipfs/js-ipfs)
-[![Dependency Status](https://david-dm.org/ipfs/js-ipfs.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
-[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-[![](https://img.shields.io/badge/pm-waffle-yellow.svg?style=flat-square)](https://waffle.io/ipfs/js-ipfs)
-[![](https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg)](https://github.com/ipfs/interface-ipfs-core)
-[![](https://img.shields.io/badge/interface--ipfs--core-Updates-blue.svg)](https://github.com/ipfs/interface-ipfs-core/issues/55)
-![](https://img.shields.io/badge/npm-%3E%3D3.0.0-orange.svg?style=flat-square)
-![](https://img.shields.io/badge/Node.js-%3E%3D4.0.0-orange.svg?style=flat-square)
+<p align="center">
+  <a href="http://ipn.io">
+    <img src="https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square" />
+  </a>
+  <a href="http://ipfs.io/">
+    <img src="https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square" />
+  </a>
+  <a href="http://webchat.freenode.net/?channels=%23ipfs">
+    <img src="https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square" />
+  </a>
+  <br>
+  <a href="https://waffle.io/ipfs/js-ipfs">
+    <img src="https://img.shields.io/badge/pm-waffle-blue.svg?style=flat-square" />
+  </a>
+  <a href="https://github.com/ipfs/interface-ipfs-core">
+    <img src="https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg">
+  </a>
+  <a href="https://github.com/ipfs/interface-ipfs-core/issues/55">
+    <img src="https://img.shields.io/badge/interface--ipfs--core-Updates-blue.svg">
+  </a>
+</p>
 
-[![Sauce Test Status](https://saucelabs.com/browser-matrix/js-ipfs.svg)](https://saucelabs.com/u/js-ipfs)
-
-> IPFS JavaScript implementation.
-
-This repo contains the JavaScript implementation of the IPFS protocol, with feature parity to the [Go implementation](https://github.com/ipfs/go-ipfs).
+<p align="center">
+  <a href="https://travis-ci.org/ipfs/js-ipfs">
+    <img src="https://travis-ci.org/ipfs/js-ipfs.svg?branch=master" />
+  </a>
+  <a href="https://circleci.com/gh/ipfs/js-ipfs">
+    <img src="https://circleci.com/gh/ipfs/js-ipfs.svg?style=svg" />
+  </a>
+  <a href="https://coveralls.io/github/ipfs/js-ipfs?branch=master">
+    <img src="https://coveralls.io/repos/github/ipfs/js-ipfs/badge.svg?branch=master">
+  </a>
+  <br>
+  <a href="https://david-dm.org/ipfs/js-ipfs">
+    <img src="https://david-dm.org/ipfs/js-ipfs.svg?style=flat-square" />
+  </a>
+  <a href="https://github.com/feross/standard">
+    <img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square">
+  </a>
+  <a href="https://github.com/RichardLitt/standard-readme">
+    <img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square" />
+  </a>
+  <a href="">
+    <img src="https://img.shields.io/badge/npm-%3E%3D3.0.0-orange.svg?style=flat-square" />
+  </a>
+  <a href="">
+    <img src="https://img.shields.io/badge/Node.js-%3E%3D4.0.0-orange.svg?style=flat-square" />
+  </a>
+  <br>
+  <a href="https://saucelabs.com/u/js-ipfs">
+    <img src="https://saucelabs.com/browser-matrix/js-ipfs.svg" />
+  </a>
+</p>
 
 ### Project status
 
-Consult the [Roadmap](/ROADMAP.md) for a complete state description of the project, or you can find `in process` updates in our [`Captain.log`](https://github.com/ipfs/js-ipfs/issues/30). A lot of components can be used currently, but it is a WIP, so beware of the Dragons 🐉.
+We've come a long way, but this project is still in Alpha, lots of development is happening, API might change, beware of the Dragons 🐉..
+
+**Want to get started?** Check our [examples folder](/examples) to learn how to spawn an IPFS node in Node.js and in the Browser.
+
+You can check the development status at:
+
+- Original project [Roadmap](/ROADMAP.md).
+- [Waffle Board](https://waffle.io/ipfs/js-ipfs)
+- [IPFS Organization Roadmap](https://waffle.io/ipfs/roadmaps)
 
 ## Table of Contents
 
@@ -37,9 +83,9 @@ Consult the [Roadmap](/ROADMAP.md) for a complete state description of the proje
 - [Usage](#usage)
   - [CLI](#cli)
   - [HTTP-API](#http-api)
-  - [IPFS Core examples (use IPFS as a module)](#ipfs-core-examples-use-ipfs-as-a-module)
+  - [IPFS Core (use IPFS as a module in Node.js or in the Browser)](#ipfs-core-examples-use-ipfs-as-a-module)
     - [Create a IPFS node instance](#create-a-ipfs-node-instance)
-    - [More to come](#more-to-come)
+  - [Tutorials and Examples](#tutorials-and-examples)
   - [API](#api)
       - [Generic API](#generic-api)
       - [Block API](#block-api)
@@ -48,37 +94,35 @@ Consult the [Roadmap](/ROADMAP.md) for a complete state description of the proje
       - [Files API](#files-api)
       - [Swarm API](#swarm-api)
       - [libp2p API](#libp2p-api)
+- [Packages](#packages)
 - [Development](#development)
   - [Clone](#clone)
   - [Install Dependencies](#install-dependencies)
   - [Run Tests](#run-tests)
   - [Lint](#lint)
   - [Build a dist version](#build-a-dist-version)
-- [Packages](#packages)
 - [Contribute](#contribute)
   - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
 - [License](#license)
 
 ## Install
 
-### npm
-
 This project is available through [npm](https://www.npmjs.com/). To install:
 
 ```bash
-$ npm install ipfs --save
+> npm install ipfs --save
 ```
 
-Requires npm@3 and node >= 4, tested on OSX & Linux, expected to work on Windows.
+Requires npm@3 and node >= 4.5, tested on OSX & Linux, expected to work on Windows.
 
 ### Use in Node.js
 
 To include this project programmatically:
 
-```js
-var IPFS = require('ipfs')
+```JavaScript
+const IPFS = require('ipfs')
 
-var node = new IPFS()
+const node = new IPFS()
 ```
 
 ### Through command line tool
@@ -93,24 +137,24 @@ The CLI is available by using the command `jsipfs` in your terminal. This is ali
 
 ### Use in the browser with browserify, webpack or any bundler
 
-The code published to npm that gets loaded on require is in fact a ES5 transpiled version with the right shims added. This means that you can require it and use with your favourite bundler without having to adjust the asset management process.
+Simply require it as you would do for Node.js, but when transpiling+minifying with your bundler, make sure to swap `zlib` with a full replacement for the browser: `zlib: 'browserify-zlib-next'`. We have submitted PR's to browserify and WebPack to make this as part of the standard node libraries that are transpiled, you can follow this development in [browserify](https://github.com/substack/node-browserify/issues/1672), [webpack](https://github.com/webpack/node-libs-browser/issues/51).
 
-```js
-var ipfs = require('ipfs');
-```
+You can also find examples of how to do this bundling at: `https://github.com/ipfs/js-ipfs/tree/master/examples`
+
+Special note, if you are using webpack, make sure to use version 2 or above, otherwise it won't work.
 
 ### Use in a browser using a script tag
 
-Loading this module in a browser (using a `<script>` tag) makes the `Ipfs` object available in the global namespace.
+Loading this module in a browser (using a `<script>` tag) makes the `Ipfs` object available in the global namespace.
 
-The last published version of the package become [available for download](https://unpkg.com/ipfs/dist/) from [unpkg](https://unpkg.com/) and thus you may use it as the source:
+The last published version of the package become [available for download](https://unpkg.com/ipfs/dist/) from [unpkg](https://unpkg.com/) and thus you may use it as the source:
 
 
 ```html
-<!-- loading the minified version -->
+<!-- loading the minified version -->
 <script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
 
-<!-- loading the human-readable (not minified) version -->
+<!-- loading the human-readable (not minified) version -->
 <script src="https://unpkg.com/ipfs/dist/index.js"></script>
 ```
 
@@ -118,7 +162,7 @@ The last published version of the package become [available for download](htt
 
 ### CLI
 
-The `jsipfs` CLI, available when `js-ipfs` is installed globably, follows(should, it is a WIP) the same interface defined by `go-ipfs`, you can always use the `help` command for help menus.
+The `jsipfs` CLI, available when `js-ipfs` is installed globally, follows(should, it is a WIP) the same interface defined by `go-ipfs`, you can always use the `help` command for help menus.
 
 ```sh
 # Install js-ipfs globally
@@ -139,6 +183,7 @@ Commands:
 - default repo location: `~/.jsipfs` (can be changed with env variable `IPFS_PATH`)
 - default swarm port: `4002`
 - default API port: `5002`
+- default Bootstrap is off, to enable it set `IPFS_BOOTSTRAP=1`
 
 ### HTTP-API
 
@@ -155,7 +200,12 @@ The HTTP-API exposed by the js-ipfs daemon follows the [`http-api-spec`](https:/
 const repo = <IPFS Repo instance or repo path>
 
 // Create the IPFS node instance
-const node = new IPFS(repo)
+const node = new IPFS({
+  repo: repo,
+  EXPERIMENTAL: {
+    pubsub: false
+  }
+})
 
 // We need to init our repo, in this case the repo was empty
 // We are picking 2048 bits for the RSA key that will be our PeerId
@@ -179,9 +229,9 @@ node.init({ emptyRepo: true, bits: 2048 }, (err) => {
 
 > We are working on making this init process better, see https://github.com/ipfs/js-ipfs/issues/556 for the discussion.
 
-#### More to come
+### [Tutorials and Examples](/examples)
 
-> If you have built an example, please share it with the community by submitting a Pull Request to this repo!.
+You can find some examples and tutorials in the [examples](/examples) folder, these exist to help you get started using `js-ipfs`.
 
 ### API
 
@@ -190,17 +240,11 @@ node.init({ emptyRepo: true, bits: 2048 }, (err) => {
 A complete API definition is in the works. Meanwhile, you can learn how to you use js-ipfs through the standard interface at [![](https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg)](https://github.com/ipfs/interface-ipfs-core).
 
 ##### [Generic API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic)
-
 ##### [Block API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block)
-
 ##### [Object API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/object)
-
 ##### [Config API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/config)
-
 ##### [Files API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files)
-
 ##### [Swarm API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/swarm)
-
 ##### [libp2p API](https://github.com/libp2p/interface-libp2p)
 
 Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal interface for this API hasn't been defined by you can find documentation at its implementations:
@@ -208,18 +252,50 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 - [libp2p-ipfs-nodejs](https://github.com/ipfs/js-libp2p-ipfs-nodejs)
 - [libp2p-ipfs-browser](https://github.com/ipfs/js-libp2p-ipfs-browser)
 
+## Packages
+
+| Package | Version | Deps | DevDeps |
+|---------|---------|--------------|-----------------|
+| **API Specs**                                      |
+| [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core) |
+| [`http-api-spec`](https://github.com/ipfs/http-api-spec) |
+| [`cli spec`](https://github.com/ipfs/specs/tree/master/public-api/cli) |
+| **Repo**                                           |
+| [`ipfs-repo`](//github.com/ipfs/js-ipfs-repo) | [![npm](https://img.shields.io/npm/v/ipfs-repo.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-repo/releases) | [![Dep Status](https://david-dm.org/ipfs/js-ipfs-repo.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-repo) | [![devDep Status](https://david-dm.org/ipfs/js-ipfs-repo/dev-status.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-repo?type=dev) |
+| **DAG**                                            |
+| [`ipld-resolver`](https://github.com/ipld/js-ipld-resolver) |
+| [`ipld-dag-pb`](https://github.com/ipld/js-ipld-dag-pb) |
+| [`ipld-dag-cbor`](https://github.com/ipld/js-ipld-dag-cbor) |
+| **Files**                                          |
+| [`ipfs-unixfs-engine`](//github.com/ipfs/js-ipfs-unixfs-engine) | [![npm](https://img.shields.io/npm/v/ipfs-unixfs-engine.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-unixfs-engine/releases) | [![Dep Status](https://david-dm.org/ipfs/js-ipfs-unixfs-engine.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-unixfs-engine) | [![devDep Status](https://david-dm.org/ipfs/js-ipfs-unixfs-engine/dev-status.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-unixfs-engine?type=dev) |
+| **Exchange**                                       |
+| [`ipfs-block-service`](//github.com/ipfs/js-ipfs-block-service) | [![npm](https://img.shields.io/npm/v/ipfs-block-service.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-block-service/releases) | [![Dep Status](https://david-dm.org/ipfs/js-ipfs-block-service.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-block-service) | [![devDep Status](https://david-dm.org/ipfs/js-ipfs-block-service/dev-status.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-block-service?type=dev) |
+| **Swarm/libp2p**                                   |
+| [`js-libp2p`](https://github.com/libp2p/js-libp2p) |
+| [`libp2p-ipfs-nodejs`](//github.com/ipfs/js-libp2p-ipfs-nodejs) | [![npm](https://img.shields.io/npm/v/libp2p-ipfs-nodejs.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-libp2p-ipfs-nodejs/releases) | [![Dep Status](https://david-dm.org/ipfs/js-libp2p-ipfs-nodejs.svg?style=flat-square)](https://david-dm.org/ipfs/js-libp2p-ipfs-nodejs) | [![devDep Status](https://david-dm.org/ipfs/js-libp2p-ipfs-nodejs/dev-status.svg?style=flat-square)](https://david-dm.org/ipfs/js-libp2p-ipfs-nodejs?type=dev) |
+| [`libp2p-ipfs-browser`](//github.com/ipfs/js-libp2p-ipfs-browser) | [![npm](https://img.shields.io/npm/v/libp2p-ipfs-browser.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-libp2p-ipfs-browser/releases) | [![Dep Status](https://david-dm.org/ipfs/js-libp2p-ipfs-browser.svg?style=flat-square)](https://david-dm.org/ipfs/js-libp2p-ipfs-browser) | [![devDep Status](https://david-dm.org/ipfs/js-libp2p-ipfs-browser/dev-status.svg?style=flat-square)](https://david-dm.org/ipfs/js-libp2p-ipfs-browser?type=dev) |
+| **Data Types**                                     |
+| [`ipfs-block`](//github.com/ipfs/js-ipfs-block) | [![npm](https://img.shields.io/npm/v/ipfs-block.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-block/releases) | [![Dep Status](https://david-dm.org/ipfs/js-ipfs-block.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-block) | [![devDep Status](https://david-dm.org/ipfs/js-ipfs-block/dev-status.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-block?type=dev) |
+| [`ipfs-unixfs`](//github.com/ipfs/js-ipfs-unixfs) | [![npm](https://img.shields.io/npm/v/ipfs-unixfs.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-unixfs/releases) | [![Dep Status](https://david-dm.org/ipfs/js-ipfs-unixfs.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-unixfs) | [![devDep Status](https://david-dm.org/ipfs/js-ipfs-unixfs/dev-status.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-unixfs?type=dev) |
+| [`peer-id`](//github.com/libp2p/js-peer-id) | [![npm](https://img.shields.io/npm/v/peer-id.svg?maxAge=86400&style=flat-square)](//github.com/libp2p/js-peer-id/releases) | [![Dep Status](https://david-dm.org/libp2p/js-peer-id.svg?style=flat-square)](https://david-dm.org/libp2p/js-peer-id) | [![devDep Status](https://david-dm.org/libp2p/js-peer-id/dev-status.svg?style=flat-square)](https://david-dm.org/libp2p/js-peer-id?type=dev) |
+| [`peer-info`](//github.com/libp2p/js-peer-info) | [![npm](https://img.shields.io/npm/v/peer-info.svg?maxAge=86400&style=flat-square)](//github.com/libp2p/js-peer-info/releases) | [![Dep Status](https://david-dm.org/libp2p/js-peer-info.svg?style=flat-square)](https://david-dm.org/libp2p/js-peer-info) | [![devDep Status](https://david-dm.org/libp2p/js-peer-info/dev-status.svg?style=flat-square)](https://david-dm.org/libp2p/js-peer-info?type=dev) |
+| [`multiaddr`](//github.com/multiformats/js-multiaddr) | [![npm](https://img.shields.io/npm/v/multiaddr.svg?maxAge=86400&style=flat-square)](//github.com/multiformats/js-multiaddr/releases) | [![Dep Status](https://david-dm.org/multiformats/js-multiaddr.svg?style=flat-square)](https://david-dm.org/multiformats/js-multiaddr) | [![devDep Status](https://david-dm.org/multiformats/js-multiaddr/dev-status.svg?style=flat-square)](https://david-dm.org/multiformats/js-multiaddr?type=dev) |
+| [`multihashes`](//github.com/multiformats/js-multihash) | [![npm](https://img.shields.io/npm/v/multihashes.svg?maxAge=86400&style=flat-square)](//github.com/multiformats/js-multihash/releases) | [![Dep Status](https://david-dm.org/multiformats/js-multihash.svg?style=flat-square)](https://david-dm.org/multiformats/js-multihash) | [![devDep Status](https://david-dm.org/multiformats/js-multihash/dev-status.svg?style=flat-square)](https://david-dm.org/multiformats/js-multihash?type=dev) |
+| **Generics/Utils**                                 |
+| [`ipfs-api`](//github.com/ipfs/js-ipfs-api) | [![npm](https://img.shields.io/npm/v/ipfs-api.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-api/releases) | [![Dep Status](https://david-dm.org/ipfs/js-ipfs-api.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-api) | [![devDep Status](https://david-dm.org/ipfs/js-ipfs-api/dev-status.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-api?type=dev) |
+| [`ipfs-multipart`](//github.com/xicombd/ipfs-multipart) | [![npm](https://img.shields.io/npm/v/ipfs-multipart.svg?maxAge=86400&style=flat-square)](//github.com/xicombd/ipfs-multipart/releases) | [![Dep Status](https://david-dm.org/xicombd/ipfs-multipart.svg?style=flat-square)](https://david-dm.org/xicombd/ipfs-multipart) | [![devDep Status](https://david-dm.org/xicombd/ipfs-multipart/dev-status.svg?style=flat-square)](https://david-dm.org/xicombd/ipfs-multipart?type=dev) |
+| [`multihashing`](//github.com/multiformats/js-multihashing) | [![npm](https://img.shields.io/npm/v/multihashing.svg?maxAge=86400&style=flat-square)](//github.com/multiformats/js-multihashing/releases) | [![Dep Status](https://david-dm.org/multiformats/js-multihashing.svg?style=flat-square)](https://david-dm.org/multiformats/js-multihashing) | [![devDep Status](https://david-dm.org/multiformats/js-multihashing/dev-status.svg?style=flat-square)](https://david-dm.org/multiformats/js-multihashing?type=dev) |
+| [`mafmt`](//github.com/whyrusleeping/js-mafmt) | [![npm](https://img.shields.io/npm/v/mafmt.svg?maxAge=86400&style=flat-square)](//github.com/whyrusleeping/js-mafmt/releases) | [![Dep Status](https://david-dm.org/whyrusleeping/js-mafmt.svg?style=flat-square)](https://david-dm.org/whyrusleeping/js-mafmt) | [![devDep Status](https://david-dm.org/whyrusleeping/js-mafmt/dev-status.svg?style=flat-square)](https://david-dm.org/whyrusleeping/js-mafmt?type=dev) |
+
+
+
 ## Development
 
-### Clone
+### Clone and install dependencies
 
 ```sh
 > git clone https://github.com/ipfs/js-ipfs.git
 > cd js-ipfs
-```
-
-### Install Dependencies
-
-```sh
 > npm install
 ```
 
@@ -227,7 +303,7 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 
 ```sh
 # run all the unit tsts
-> npm test 
+> npm test
 
 # run just IPFS tests in Node.js
 > npm run test:unit:node:core
@@ -249,7 +325,7 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 
 ```sh
 # run all the interop tsts
-> npm run test:interop 
+> npm run test:interop
 
 # run just IPFS interop tests in Node.js using one go-ipfs daemon and one js-ipfs daemon
 > npm run test:interop:node
@@ -262,7 +338,7 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 
 ```sh
 # run all the interop tsts
-> npm run test:benchmark 
+> npm run test:benchmark
 
 # run just IPFS benchmarks in Node.js
 > npm run test:benchmark:node
@@ -303,11 +379,11 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 > tree src -L 2
 src                 # Main source code folder
 ├── cli             # Implementation of the IPFS CLI
-│   └── ...
+│   └── ...
 ├── http-api        # The HTTP-API implementation of IPFS as defined by http-api-spec
 ├── core            # IPFS implementation, the core (what gets loaded in browser)
-│   ├── components  # Each of IPFS subcomponent
-│   └── ...
+│   ├── components  # Each of IPFS subcomponent
+│   └── ...
 └── ...
 ```
 
@@ -322,41 +398,6 @@ What does this image explain?
 - The DAG api (previously Object) comes from the IPLD Resolver, it can support several IPLD Formats (i.e: dag-pb, dag-cbor, etc).
 - The Files API uses `ipfs-unixfs-engine` to import and export files to and from IPFS.
 - Swarm, the component that offers a network API, uses libp2p to dial and listen for connections, use the DHT, discovery mechanisms and more. libp2p-ipfs-nodejs is used in case of running in Node.js and libp2p-ipfs-browser is used in the case of the Browser.
-
-## Packages
-
-| Package | Version | Deps | DevDeps |
-|---------|---------|--------------|-----------------|
-| **API Specs**                                      |
-| [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core) |
-| [`http-api-spec`](https://github.com/ipfs/http-api-spec) |
-| [`cli spec`](https://github.com/ipfs/specs/tree/master/public-api/cli) |
-| **Repo**                                           |
-| [`ipfs-repo`](//github.com/ipfs/js-ipfs-repo) | [![npm](https://img.shields.io/npm/v/ipfs-repo.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-repo/releases) | [![Dep Status](https://david-dm.org/ipfs/js-ipfs-repo.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-repo) | [![devDep Status](https://david-dm.org/ipfs/js-ipfs-repo/dev-status.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-repo?type=dev) |
-| **DAG**                                            |
-| [`ipld-resolver`](https://github.com/ipld/js-ipld-resolver) |
-| [`ipld-dag-pb`](https://github.com/ipld/js-ipld-dag-pb) |
-| [`ipld-dag-cbor`](https://github.com/ipld/js-ipld-dag-cbor) |
-| **Files**                                          |
-| [`ipfs-unixfs-engine`](//github.com/ipfs/js-ipfs-unixfs-engine) | [![npm](https://img.shields.io/npm/v/ipfs-unixfs-engine.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-unixfs-engine/releases) | [![Dep Status](https://david-dm.org/ipfs/js-ipfs-unixfs-engine.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-unixfs-engine) | [![devDep Status](https://david-dm.org/ipfs/js-ipfs-unixfs-engine/dev-status.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-unixfs-engine?type=dev) |
-| **Exchange**                                       |
-| [`ipfs-block-service`](//github.com/ipfs/js-ipfs-block-service) | [![npm](https://img.shields.io/npm/v/ipfs-block-service.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-block-service/releases) | [![Dep Status](https://david-dm.org/ipfs/js-ipfs-block-service.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-block-service) | [![devDep Status](https://david-dm.org/ipfs/js-ipfs-block-service/dev-status.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-block-service?type=dev) |
-| **Swarm/libp2p**                                   |
-| [`js-libp2p`](https://github.com/libp2p/js-libp2p) |
-| [`libp2p-ipfs-nodejs`](//github.com/ipfs/js-libp2p-ipfs-nodejs) | [![npm](https://img.shields.io/npm/v/libp2p-ipfs-nodejs.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-libp2p-ipfs-nodejs/releases) | [![Dep Status](https://david-dm.org/ipfs/js-libp2p-ipfs-nodejs.svg?style=flat-square)](https://david-dm.org/ipfs/js-libp2p-ipfs-nodejs) | [![devDep Status](https://david-dm.org/ipfs/js-libp2p-ipfs-nodejs/dev-status.svg?style=flat-square)](https://david-dm.org/ipfs/js-libp2p-ipfs-nodejs?type=dev) |
-| [`libp2p-ipfs-browser`](//github.com/ipfs/js-libp2p-ipfs-browser) | [![npm](https://img.shields.io/npm/v/libp2p-ipfs-browser.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-libp2p-ipfs-browser/releases) | [![Dep Status](https://david-dm.org/ipfs/js-libp2p-ipfs-browser.svg?style=flat-square)](https://david-dm.org/ipfs/js-libp2p-ipfs-browser) | [![devDep Status](https://david-dm.org/ipfs/js-libp2p-ipfs-browser/dev-status.svg?style=flat-square)](https://david-dm.org/ipfs/js-libp2p-ipfs-browser?type=dev) |
-| **Data Types**                                     |
-| [`ipfs-block`](//github.com/ipfs/js-ipfs-block) | [![npm](https://img.shields.io/npm/v/ipfs-block.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-block/releases) | [![Dep Status](https://david-dm.org/ipfs/js-ipfs-block.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-block) | [![devDep Status](https://david-dm.org/ipfs/js-ipfs-block/dev-status.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-block?type=dev) |
-| [`ipfs-unixfs`](//github.com/ipfs/js-ipfs-unixfs) | [![npm](https://img.shields.io/npm/v/ipfs-unixfs.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-unixfs/releases) | [![Dep Status](https://david-dm.org/ipfs/js-ipfs-unixfs.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-unixfs) | [![devDep Status](https://david-dm.org/ipfs/js-ipfs-unixfs/dev-status.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-unixfs?type=dev) |
-| [`peer-id`](//github.com/libp2p/js-peer-id) | [![npm](https://img.shields.io/npm/v/peer-id.svg?maxAge=86400&style=flat-square)](//github.com/libp2p/js-peer-id/releases) | [![Dep Status](https://david-dm.org/libp2p/js-peer-id.svg?style=flat-square)](https://david-dm.org/libp2p/js-peer-id) | [![devDep Status](https://david-dm.org/libp2p/js-peer-id/dev-status.svg?style=flat-square)](https://david-dm.org/libp2p/js-peer-id?type=dev) |
-| [`peer-info`](//github.com/libp2p/js-peer-info) | [![npm](https://img.shields.io/npm/v/peer-info.svg?maxAge=86400&style=flat-square)](//github.com/libp2p/js-peer-info/releases) | [![Dep Status](https://david-dm.org/libp2p/js-peer-info.svg?style=flat-square)](https://david-dm.org/libp2p/js-peer-info) | [![devDep Status](https://david-dm.org/libp2p/js-peer-info/dev-status.svg?style=flat-square)](https://david-dm.org/libp2p/js-peer-info?type=dev) |
-| [`multiaddr`](//github.com/multiformats/js-multiaddr) | [![npm](https://img.shields.io/npm/v/multiaddr.svg?maxAge=86400&style=flat-square)](//github.com/multiformats/js-multiaddr/releases) | [![Dep Status](https://david-dm.org/multiformats/js-multiaddr.svg?style=flat-square)](https://david-dm.org/multiformats/js-multiaddr) | [![devDep Status](https://david-dm.org/multiformats/js-multiaddr/dev-status.svg?style=flat-square)](https://david-dm.org/multiformats/js-multiaddr?type=dev) |
-| [`multihashes`](//github.com/multiformats/js-multihash) | [![npm](https://img.shields.io/npm/v/multihashes.svg?maxAge=86400&style=flat-square)](//github.com/multiformats/js-multihash/releases) | [![Dep Status](https://david-dm.org/multiformats/js-multihash.svg?style=flat-square)](https://david-dm.org/multiformats/js-multihash) | [![devDep Status](https://david-dm.org/multiformats/js-multihash/dev-status.svg?style=flat-square)](https://david-dm.org/multiformats/js-multihash?type=dev) |
-| **Generics/Utils**                                 |
-| [`ipfs-api`](//github.com/ipfs/js-ipfs-api) | [![npm](https://img.shields.io/npm/v/ipfs-api.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-api/releases) | [![Dep Status](https://david-dm.org/ipfs/js-ipfs-api.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-api) | [![devDep Status](https://david-dm.org/ipfs/js-ipfs-api/dev-status.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-api?type=dev) |
-| [`ipfs-multipart`](//github.com/xicombd/ipfs-multipart) | [![npm](https://img.shields.io/npm/v/ipfs-multipart.svg?maxAge=86400&style=flat-square)](//github.com/xicombd/ipfs-multipart/releases) | [![Dep Status](https://david-dm.org/xicombd/ipfs-multipart.svg?style=flat-square)](https://david-dm.org/xicombd/ipfs-multipart) | [![devDep Status](https://david-dm.org/xicombd/ipfs-multipart/dev-status.svg?style=flat-square)](https://david-dm.org/xicombd/ipfs-multipart?type=dev) |
-| [`multihashing`](//github.com/multiformats/js-multihashing) | [![npm](https://img.shields.io/npm/v/multihashing.svg?maxAge=86400&style=flat-square)](//github.com/multiformats/js-multihashing/releases) | [![Dep Status](https://david-dm.org/multiformats/js-multihashing.svg?style=flat-square)](https://david-dm.org/multiformats/js-multihashing) | [![devDep Status](https://david-dm.org/multiformats/js-multihashing/dev-status.svg?style=flat-square)](https://david-dm.org/multiformats/js-multihashing?type=dev) |
-| [`mafmt`](//github.com/whyrusleeping/js-mafmt) | [![npm](https://img.shields.io/npm/v/mafmt.svg?maxAge=86400&style=flat-square)](//github.com/whyrusleeping/js-mafmt/releases) | [![Dep Status](https://david-dm.org/whyrusleeping/js-mafmt.svg?style=flat-square)](https://david-dm.org/whyrusleeping/js-mafmt) | [![devDep Status](https://david-dm.org/whyrusleeping/js-mafmt/dev-status.svg?style=flat-square)](https://david-dm.org/whyrusleeping/js-mafmt?type=dev) |
 
 ## Contribute
 
