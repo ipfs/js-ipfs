@@ -202,6 +202,15 @@ module.exports = (common) => {
             })
           })
         })
+
+        it('fails in invalid input', (done) => {
+          const nonValid = 'sfdasfasfs'
+
+          ipfs.files.add(nonValid, (err, result) => {
+            expect(err).to.exist
+            done()
+          })
+        })
       })
 
       describe('.cat', () => {
