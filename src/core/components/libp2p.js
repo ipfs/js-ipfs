@@ -19,7 +19,7 @@ module.exports = function libp2p (self) {
           bootstrap: config.Bootstrap
         }
 
-        self._libp2pNode = new Node(self._peerInfo, undefined, options)
+        self._libp2pNode = new Node(self._peerInfo, self._peerInfoBook, options)
 
         self._libp2pNode.start((err) => {
           if (err) {
@@ -31,11 +31,11 @@ module.exports = function libp2p (self) {
           })
 
           self._libp2pNode.discovery.on('peer', (peerInfo) => {
-            self._libp2pNode.peerBook.put(peerInfo)
+            self._peerInfoBook.put(peerInfo)
             self._libp2pNode.dialByPeerInfo(peerInfo, () => {})
           })
           self._libp2pNode.swarm.on('peer-mux-established', (peerInfo) => {
-            self._libp2pNode.peerBook.put(peerInfo)
+            self._peerInfoBook.put(peerInfo)
           })
 
           callback()

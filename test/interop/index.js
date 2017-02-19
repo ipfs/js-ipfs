@@ -78,7 +78,7 @@ describe('basic', () => {
     ], done)
   })
 
-  it('connect js <-> js', (done) => {
+  it.skip('connect js <-> js', (done) => {
     let jsId
     let js2Id
 
@@ -133,7 +133,7 @@ describe('basic', () => {
       })
     })
 
-    it(`js -> js: ${size}bytes`, (done) => {
+    it.skip(`js -> js: ${size}bytes`, (done) => {
       const data = crypto.randomBytes(size)
       waterfall([
         (cb) => js2Daemon.api.add(data, cb),
