@@ -23,7 +23,10 @@ function setPorts (ipfs, port, callback) {
     ),
     (cb) => ipfs.config.set(
       'Addresses.Swarm',
-      ['/ip4/0.0.0.0/tcp/' + (4002 + port)],
+      [
+        '/ip4/0.0.0.0/tcp/' + (4003 + port),
+        '/ip4/0.0.0.0/tcp/' + (4004 + port) + '/ws',
+      ],
       cb
     )
   ], callback)

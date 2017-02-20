@@ -7,6 +7,7 @@ const parallel = require('async/parallel')
 const waterfall = require('async/waterfall')
 const bl = require('bl')
 const crypto = require('crypto')
+const pretty = require('pretty-bytes')
 
 const GoDaemon = require('./daemons/go')
 const JsDaemon = require('./daemons/js')
@@ -106,7 +107,7 @@ describe('basic', () => {
   })
 
   describe('cat file', () => sizes.forEach((size) => {
-    it(`go -> js: ${size}bytes`, (done) => {
+    it(`go -> js: ${pretty(size)}`, (done) => {
       const data = crypto.randomBytes(size)
       waterfall([
         (cb) => goDaemon.api.add(data, cb),
@@ -119,7 +120,7 @@ describe('basic', () => {
       })
     })
 
-    it(`js -> go: ${size}bytes`, (done) => {
+    it(`js -> go: ${pretty(size)}`, (done) => {
       const data = crypto.randomBytes(size)
       waterfall([
         (cb) => jsDaemon.api.add(data, cb),
@@ -132,7 +133,7 @@ describe('basic', () => {
       })
     })
 
-    it(`js -> js: ${size}bytes`, (done) => {
+    it(`js -> js: ${pretty(size)}`, (done) => {
       const data = crypto.randomBytes(size)
       waterfall([
         (cb) => js2Daemon.api.add(data, cb),
