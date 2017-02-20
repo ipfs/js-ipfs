@@ -85,6 +85,7 @@
     "pre-commit": "^1.2.2",
     "pretty-bytes": "^4.0.2",
     "qs": "^6.3.0",
+    "random-fs": "^1.0.3",
     "rimraf": "^2.5.4",
     "stream-to-promise": "^2.2.0",
     "transform-loader": "^0.2.3"

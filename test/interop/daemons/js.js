@@ -5,6 +5,7 @@ const IPFSAPI = require('ipfs-api')
 const series = require('async/series')
 const rimraf = require('rimraf')
 const IPFSRepo = require('ipfs-repo')
+const tmpDir = require('../util').tmpDir
 
 const IPFS = require('../../../src/core')
 const HTTPAPI = require('../../../src/http-api')
@@ -44,7 +45,7 @@ class JsDaemon {
     this.init = opts.init
     this.port = opts.port
 
-    this.path = opts.path || os.tmpdir() + `/${Math.ceil(Math.random() * 10000)}`
+    this.path = opts.path || tmpDir()
     if (this.init) {
       this.ipfs = new IPFS({
         repo: this.path
