@@ -19,7 +19,6 @@ const sizes = [
   1024 * 512,
   1024 * 768,
   1024 * 1023,
-  // starts failing with multiplex
   1024 * 1024,
   1024 * 1024 * 4,
   1024 * 1024 * 8
@@ -78,7 +77,7 @@ describe('basic', () => {
     ], done)
   })
 
-  it.skip('connect js <-> js', (done) => {
+  it('connect js <-> js', (done) => {
     let jsId
     let js2Id
 
@@ -133,7 +132,7 @@ describe('basic', () => {
       })
     })
 
-    it.skip(`js -> js: ${size}bytes`, (done) => {
+    it(`js -> js: ${size}bytes`, (done) => {
       const data = crypto.randomBytes(size)
       waterfall([
         (cb) => js2Daemon.api.add(data, cb),
