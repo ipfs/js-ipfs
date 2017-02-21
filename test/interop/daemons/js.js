@@ -1,6 +1,5 @@
 'use strict'
 
-const os = require('os')
 const IPFSAPI = require('ipfs-api')
 const series = require('async/series')
 const rimraf = require('rimraf')
@@ -26,7 +25,7 @@ function setPorts (ipfs, port, callback) {
       'Addresses.Swarm',
       [
         '/ip4/0.0.0.0/tcp/' + (4003 + port),
-        '/ip4/0.0.0.0/tcp/' + (4004 + port) + '/ws',
+        '/ip4/0.0.0.0/tcp/' + (4004 + port) + '/ws'
       ],
       cb
     )
