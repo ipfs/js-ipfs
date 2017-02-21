@@ -102,7 +102,7 @@
     "hoek": "^4.1.0",
     "idb-pull-blob-store": "~0.5.1",
     "ipfs-api": "^12.1.7",
-    "ipfs-bitswap": "~0.9.3",
+    "ipfs-bitswap": "~0.9.4",
     "ipfs-block": "~0.5.5",
     "ipfs-block-service": "~0.8.3",
     "ipfs-multipart": "~0.1.0",
