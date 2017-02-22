@@ -11,6 +11,7 @@ const components = require('./components')
 
 class IPFS {
   constructor (configOpts) {
+    configOpts = configOpts || {}
     let repoInstance
     if (typeof configOpts.repo === 'string' || configOpts.repo === undefined) {
       repoInstance = defaultRepo(configOpts.repo)
