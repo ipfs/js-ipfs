@@ -83,7 +83,9 @@
     "ncp": "^2.0.0",
     "nexpect": "^0.5.0",
     "pre-commit": "^1.2.2",
+    "pretty-bytes": "^4.0.2",
     "qs": "^6.3.0",
+    "random-fs": "^1.0.3",
     "rimraf": "^2.5.4",
     "stream-to-promise": "^2.2.0",
     "transform-loader": "^0.2.3"
@@ -100,7 +102,7 @@
     "hoek": "^4.1.0",
     "idb-pull-blob-store": "~0.5.1",
     "ipfs-api": "^12.1.7",
-    "ipfs-bitswap": "~0.9.3",
+    "ipfs-bitswap": "~0.9.4",
     "ipfs-block": "~0.5.5",
     "ipfs-block-service": "~0.8.3",
     "ipfs-multipart": "~0.1.0",

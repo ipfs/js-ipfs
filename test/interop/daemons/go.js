@@ -3,6 +3,8 @@
 const ctl = require('ipfsd-ctl')
 const waterfall = require('async/waterfall')
 
+const flags = ['--enable-mplex-experiment']
+
 class GoDaemon {
   constructor (opts) {
     opts = opts || {
@@ -37,7 +39,7 @@ class GoDaemon {
         this.node = node
         this.node.setConfig('Bootstrap', '[]', cb)
       },
-      (res, cb) => this.node.startDaemon(cb),
+      (res, cb) => this.node.startDaemon(flags, cb),
       (api, cb) => {
         this.api = api
 

@@ -23,7 +23,7 @@ module.exports = function swarm (self) {
       // TODO: return latency and streams when verbose is set
       // we currently don't have this information
 
-      const peers = self._libp2pNode.peerBook.getAll()
+      const peers = self._peerInfoBook.getAll()
       const keys = Object.keys(peers)
 
       const peerList = flatMap(keys, (id) => {
@@ -52,7 +52,7 @@ module.exports = function swarm (self) {
         return callback(OFFLINE_ERROR)
       }
 
-      const peers = values(self._libp2pNode.peerBook.getAll())
+      const peers = values(self._peerInfoBook.getAll())
       callback(null, peers)
     }),
 

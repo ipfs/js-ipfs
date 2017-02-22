@@ -17,11 +17,14 @@ module.exports = (self) => {
       self._bitswap = new Bitswap(
         self._libp2pNode,
         self._repo.blockstore,
-        self._libp2pNode.peerBook
+        self._peerInfoBook
       )
 
-      self._pubsub = new FloodSub(self._libp2pNode)
+      const pubsub = self._configOpts.EXPERIMENTAL.pubsub
 
+      if (pubsub) {
+        self._pubsub = new FloodSub(self._libp2pNode)
+      }
       series([
         (cb) => {
           self._bitswap.start()
@@ -32,7 +35,7 @@ module.exports = (self) => {
           cb()
         },
         (cb) => {
-          if (self._configOpts.EXPERIMENTAL.pubsub) {
+          if (pubsub) {
             self._pubsub.start(cb)
           } else {
             cb()

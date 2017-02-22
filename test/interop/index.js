@@ -7,6 +7,14 @@ const parallel = require('async/parallel')
 const waterfall = require('async/waterfall')
 const bl = require('bl')
 const crypto = require('crypto')
+const pretty = require('pretty-bytes')
+const randomFs = require('random-fs')
+const promisify = require('promisify-es6')
+const rimraf = require('rimraf')
+
+const rmDir = promisify(rimraf)
+
+const tmpDir = require('./util').tmpDir
 
 const GoDaemon = require('./daemons/go')
 const JsDaemon = require('./daemons/js')
@@ -19,10 +27,16 @@ const sizes = [
   1024 * 512,
   1024 * 768,
   1024 * 1023,
-  // starts failing with multiplex
   1024 * 1024,
   1024 * 1024 * 4,
   1024 * 1024 * 8
+]
+
+const dirs = [
+  5,
+  10,
+  50,
+  100
 ]
 
 describe('basic', () => {
@@ -107,7 +121,7 @@ describe('basic', () => {
   })
 
   describe('cat file', () => sizes.forEach((size) => {
-    it(`go -> js: ${size}bytes`, (done) => {
+    it(`go -> js: ${pretty(size)}`, (done) => {
       const data = crypto.randomBytes(size)
       waterfall([
         (cb) => goDaemon.api.add(data, cb),
@@ -120,7 +134,7 @@ describe('basic', () => {
       })
     })
 
-    it(`js -> go: ${size}bytes`, (done) => {
+    it(`js -> go: ${pretty(size)}`, (done) => {
       const data = crypto.randomBytes(size)
       waterfall([
         (cb) => jsDaemon.api.add(data, cb),
@@ -133,7 +147,7 @@ describe('basic', () => {
       })
     })
 
-    it(`js -> js: ${size}bytes`, (done) => {
+    it(`js -> js: ${pretty(size)}`, (done) => {
       const data = crypto.randomBytes(size)
       waterfall([
         (cb) => js2Daemon.api.add(data, cb),
@@ -143,6 +157,59 @@ describe('basic', () => {
         expect(err).to.not.exist
         expect(file).to.be.eql(data)
         done()
+      })
+    })
+  }))
+
+  describe('get directory', () => dirs.forEach((num) => {
+    it(`go -> js: depth: 5, num: ${num}`, () => {
+      const dir = tmpDir()
+      return randomFs({
+        path: dir,
+        depth: 5,
+        number: num
+      }).then(() => {
+        return goDaemon.api.util.addFromFs(dir, {recursive: true})
+      }).then((res) => {
+        const hash = res[res.length - 1].hash
+        return jsDaemon.api.object.get(hash)
+      }).then((res) => {
+        expect(res).to.exist
+        return rmDir(dir)
+      })
+    })
+
+    it(`js -> go: depth: 5, num: ${num}`, () => {
+      const dir = tmpDir()
+      return randomFs({
+        path: dir,
+        depth: 5,
+        number: num
+      }).then(() => {
+        return jsDaemon.api.util.addFromFs(dir, {recursive: true})
+      }).then((res) => {
+        const hash = res[res.length - 1].hash
+        return goDaemon.api.object.get(hash)
+      }).then((res) => {
+        expect(res).to.exist
+        return rmDir(dir)
+      })
+    })
+
+    it(`js -> js: depth: 5, num: ${num}`, () => {
+      const dir = tmpDir()
+      return randomFs({
+        path: dir,
+        depth: 5,
+        number: num
+      }).then(() => {
+        return js2Daemon.api.util.addFromFs(dir, {recursive: true})
+      }).then((res) => {
+        const hash = res[res.length - 1].hash
+        return jsDaemon.api.object.get(hash)
+      }).then((res) => {
+        expect(res).to.exist
+        return rmDir(dir)
       })
     })
   }))

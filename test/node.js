@@ -6,19 +6,20 @@ let testCLI = true
 
 if (process.env.TEST) {
   switch (process.env.TEST) {
-    case 'core': {
+    case 'core':
       testHTTP = false
       testCLI = false
-    } break
-    case 'http': {
+      break
+    case 'http':
       testCore = false
       testCLI = false
-    } break
-    case 'cli': {
+      break
+    case 'cli':
       testCore = false
       testHTTP = false
-    } break
-    default: break
+      break
+    default:
+      break
   }
 }
 
