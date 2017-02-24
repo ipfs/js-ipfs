@@ -13,7 +13,7 @@ describe('bitswap', () => runOn((thing) => {
     ipfs('block get ' + key)
       .then(() => {})
       .catch(() => {})
-    setTimeout(done, 100)
+    setTimeout(done, 800)
   })
 
   it('wantlist', () => {
