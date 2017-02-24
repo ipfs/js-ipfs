@@ -83,4 +83,22 @@ describe('init', () => {
       })
     })
   })
+
+  it('checks if existing repo exists', (done) => {
+    ipfs.init({ bits: 1024, emptyRepo: true }, (err) => {
+      expect(err).to.not.exist
+
+      ipfs.repoExists((err, exists) => {
+        expect(exists).to.be.true
+        done()
+      })
+    })
+  })
+
+  it('checks if nonexistant repo exists', (done) => {
+    ipfs.repoExists((err, exists) => {
+      expect(exists).to.be.false
+      done()
+    });
+  })
 })

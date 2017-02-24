@@ -8,6 +8,7 @@ const debug = require('debug')
 const defaultRepo = require('./default-repo')
 
 const components = require('./components')
+const utils = require('./utils')
 
 class IPFS {
   constructor (configOpts) {
@@ -62,6 +63,7 @@ class IPFS {
     this.bitswap = components.bitswap(this)
     this.ping = components.ping(this)
     this.pubsub = components.pubsub(this)
+    this.repoExists = utils.repoExists(this)
 
     if (configOpts.EXPERIMENTAL.pubsub) {
       this.log('EXPERIMENTAL pubsub is enabled')

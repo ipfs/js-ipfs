@@ -14,4 +14,16 @@ exports.ifRepoExists = (repo, cb) => {
   })
 }
 
+exports.repoExists = (self) => {
+  return (cb) => {
+    self._repo.exists((err, exists) => {
+      if(err) {
+        return cb(err)
+      }
+
+      cb(err, exists)
+    })
+  }
+}
+
 exports.OFFLINE_ERROR = new Error('This command must be run in online mode. Try running \'ipfs daemon\' first.')
