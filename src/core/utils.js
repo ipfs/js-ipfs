@@ -17,7 +17,7 @@ exports.ifRepoExists = (repo, cb) => {
 exports.repoExists = (self) => {
   return (cb) => {
     self._repo.exists((err, exists) => {
-      if(err) {
+      if (err) {
         return cb(err)
       }
 

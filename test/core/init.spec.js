@@ -89,6 +89,7 @@ describe('init', () => {
       expect(err).to.not.exist
 
       ipfs.repoExists((err, exists) => {
+        expect(err).to.not.exist
         expect(exists).to.be.true
         done()
       })
@@ -97,8 +98,9 @@ describe('init', () => {
 
   it('checks if nonexistant repo exists', (done) => {
     ipfs.repoExists((err, exists) => {
+      expect(err).to.not.exist
       expect(exists).to.be.false
       done()
-    });
+    })
   })
 })
