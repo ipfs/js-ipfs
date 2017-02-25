@@ -166,6 +166,7 @@ input {
   padding: 7px;
   border-radius: 2px;
   font-size: 9px;
+	box-sizing: border-box;
 }
 
 textarea, input, button {
