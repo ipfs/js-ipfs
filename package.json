@@ -66,11 +66,11 @@
     "gulp": "^3.9.1",
     "hapi": "^16.1.0",
     "interface-ipfs-core": "~0.24.1",
-    "ipfsd-ctl": "~0.18.2",
+    "ipfsd-ctl": "~0.18.3",
     "pre-commit": "^1.2.2",
     "socket.io": "^1.7.2",
     "socket.io-client": "^1.7.2",
-    "stream-equal": "^0.1.12"
+    "stream-equal": "^0.1.13"
   },
   "pre-commit": [
     "lint",
