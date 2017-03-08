@@ -13,15 +13,13 @@ const path = require('path')
 const loadFixture = require('aegir/fixtures')
 const FactoryClient = require('./ipfs-factory/client')
 
-let testfile
+const testfile = loadFixture(__dirname, '/fixtures/testfile.txt')
 let testfileBig
 let tfbPath
+
 if (isNode) {
   tfbPath = path.join(__dirname, '/fixtures/15mb.random')
   testfileBig = fs.createReadStream(tfbPath, { bufferSize: 128 })
-  testfile = loadFixture(__dirname, '/fixtures/testfile.txt')
-} else {
-  testfile = loadFixture(__dirname, 'fixtures/testfile.txt')
 }
 
 describe('.get', () => {
