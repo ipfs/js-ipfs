@@ -92,6 +92,7 @@ module.exports = (send) => {
         }
       } else if (typeof obj === 'object') {
         tmpObj.Data = obj.Data.toString()
+        tmpObj.Links = obj.Links
       } else {
         return callback(new Error('obj not recognized'))
       }
