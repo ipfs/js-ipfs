@@ -4,7 +4,6 @@ const unixfsEngine = require('ipfs-unixfs-engine')
 const importer = unixfsEngine.importer
 const exporter = unixfsEngine.exporter
 const UnixFS = require('ipfs-unixfs')
-const isStream = require('isstream')
 const promisify = require('promisify-es6')
 const multihashes = require('multihashes')
 const pull = require('pull-stream')
@@ -13,6 +12,7 @@ const toStream = require('pull-stream-to-stream')
 const toPull = require('stream-to-pull-stream')
 const CID = require('cids')
 const waterfall = require('async/waterfall')
+const isStream = require('isstream')
 
 module.exports = function files (self) {
   const createAddPullStream = (options) => {
@@ -41,6 +41,12 @@ module.exports = function files (self) {
         options = undefined
       } else if (!callback || typeof callback !== 'function') {
         callback = noop
+      }
+
+      if (typeof data !== 'object' &&
+          !Buffer.isBuffer(data) &&
+          !isStream(data)) {
+        return callback(new Error('Invalid arguments, data must be an object, Buffer or readable stream'))
       }
 
       pull(
