@@ -35,6 +35,7 @@
     "glob": "^7.1.2",
     "ipfs-block": "~0.6.1",
     "ipfs-unixfs": "~0.1.14",
+    "ipld-dag-cbor": "^0.12.0",
     "ipld-dag-pb": "~0.13.1",
     "is-ipfs": "^0.3.2",
     "is-stream": "^1.1.0",
