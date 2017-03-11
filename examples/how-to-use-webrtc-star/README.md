@@ -1,4 +1,4 @@
-# Robust Initialization and libp2p-webrtc-star Signaling
+# How to use WebRTC star
 
 There's still a bit of work required to start up an in-browser node in a robust way, so that it will work whether or not there is an existing initialized IPFS repo in the user's browser. If there isn't one, you need to call `init` as above, but if there is one, calling `init` will fail. Moreover, there's currently no good way to check if you need to call `init` or not.
 
