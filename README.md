@@ -85,9 +85,6 @@ You can check the development status at:
   - [HTTP-API](#http-api)
   - [IPFS Core (use IPFS as a module in Node.js or in the Browser)](#ipfs-core-examples-use-ipfs-as-a-module)
     - [Create a IPFS node instance](#create-a-ipfs-node-instance)
-    - [Add a file](#add-a-file)
-    - [Retrieve a file](#retrieve-a-file)
-    - [More to come](#more-to-come)
   - [Tutorials and Examples](#tutorials-and-examples)
   - [API](#api)
       - [Generic API](#generic-api)
@@ -235,39 +232,7 @@ node.init({ emptyRepo: true, bits: 2048 }, (err) => {
 
 > We are working on making this init process better, see https://github.com/ipfs/js-ipfs/issues/556 for the discussion.
 
-Below are some more examples of JavaScript IPFS in action.
-
-#### Add a file
-
-Once you have an IPFS node up and running, you can add files to it from `Buffer`s, `Readable` streams, or [arrays of objects of a certain form](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#add). If you don't have `Buffer` conveniently available (say, because you're in a browser without the Node API handy), it's available as a property of the IPFS node.
-
-```javascript
-// Add a single file
-node.files.add(node.Buffer.from('Hello world'), (err, returned) => {
-  if (err) {
-    throw err
-  }
-  console.log('IPFS hash: ', returned[0].hash)
-})
-```
-
-#### Retrieve a file
-
-To retrieve the contents of a file, you can use the [cat method](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#cat), which will call your callback with a Node.js-style `Readable` stream.
-
-```javascript
-node.files.cat('QmNRCQWfgze6AbBCaT1rkrkV5tJ2aP4oTNPb5JZcXYywve',
-  (err, content_stream) => {
-  if (err) {
-    throw err
-  }
-  content_stream.on('data', (buffer) => {
-    console.log('File contents:', buffer.toString('ascii'))
-  })
-})
-```
-
-#### More to come
+More examples can be found in the [examples folder](./examples)
 
 > If you have built an example, please share it with the community by submitting a Pull Request to this repo!.
 
@@ -303,6 +268,7 @@ A set of data types are exposed directly from the IPFS instance under `ipfs.type
 * [`ipfs.types.PeerInfo`](https://github.com/libp2p/js-peer-info)
 * [`ipfs.types.multiaddr`](https://github.com/multiformats/js-multiaddr)
 * [`ipfs.types.multihash`](https://github.com/multiformats/js-multihash)
+* [`ipfs.types.CID`](https://github.com/ipld/js-cid)
 
 ## Packages
 

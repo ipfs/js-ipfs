@@ -8,6 +8,7 @@ const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
 const multiaddr = require('multiaddr')
 const multihash = require('multihashes')
+const CID = require('cids')
 const IPFS = require('../../src/core')
 
 // This gets replaced by require('../utils/create-repo-browser.js')
@@ -94,7 +95,8 @@ describe('init', () => {
       PeerId,
       PeerInfo,
       multiaddr,
-      multihash
+      multihash,
+      CID
     })
   })
 })
