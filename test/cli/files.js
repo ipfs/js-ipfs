@@ -127,6 +127,23 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
+  it('add with piped argument', () => {
+    // echo 'src/init-files/init-docs/readme' | jsipfs files add
+    return ipfs('files add', { piped: 'src/init-files/init-docs/readme' })
+      .then((out) => {
+        expect(out)
+          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme')
+      })
+  })
+
+  it('add with extra piped argument', () => {
+    return ipfs('files add', { piped: 'src/init-files/init-docs/readme' })
+      .then((out) => {
+        expect(out)
+          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme')
+      })
+  })
+
   it('cat', () => {
     return ipfs('files cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
       .then((out) => {

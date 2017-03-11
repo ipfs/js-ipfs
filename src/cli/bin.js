@@ -2,6 +2,7 @@
 
 'use strict'
 
+require('pipe-args').load()
 const yargs = require('yargs')
 const updateNotifier = require('update-notifier')
 const readPkgUp = require('read-pkg-up')
