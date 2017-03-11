@@ -2,6 +2,10 @@
 
 const BlockService = require('ipfs-block-service')
 const IPLDResolver = require('ipld-resolver')
+const PeerId = require('peer-id')
+const PeerInfo = require('peer-info')
+const multiaddr = require('multiaddr')
+const multihash = require('multihashes')
 const PeerBook = require('peer-book')
 const debug = require('debug')
 
@@ -24,7 +28,11 @@ class IPFS {
 
     // IPFS utils
     this.types = {
-      Buffer: Buffer
+      Buffer,
+      PeerId,
+      PeerInfo,
+      multiaddr,
+      multihash
     }
     this.log = debug('jsipfs')
     this.log.err = debug('jsipfs:err')
@@ -63,22 +71,13 @@ class IPFS {
     this.ping = components.ping(this)
     this.pubsub = components.pubsub(this)
 
-  //   interface-ipfs-core defined API
-  this.version = version(this)
-  this.id = id(this)
-  this.repo = repo(this)
-  this.bootstrap = bootstrap(this)
-  this.config = config(this)
-  this.block = block(this)
-  this.object = object(this)
-  this.libp2p = libp2p(this)
-  this.swarm = swarm(this)
-  this.files = files(this)
-  this.bitswap = bitswap(this)
-  this.ping = ping(this)
+    // expose Buffer for browser applications
+    this.Buffer = Buffer
 
-  // expose Buffer for browser applications
-  this.Buffer = Buffer
+    if (configOpts.EXPERIMENTAL.pubsub) {
+      this.log('EXPERIMENTAL pubsub is enabled')
+    }
+  }
 }
 
 module.exports = IPFS
