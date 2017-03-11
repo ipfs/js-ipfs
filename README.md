@@ -234,8 +234,6 @@ node.init({ emptyRepo: true, bits: 2048 }, (err) => {
 
 More examples can be found in the [examples folder](./examples)
 
-> If you have built an example, please share it with the community by submitting a Pull Request to this repo!.
-
 ### [Tutorials and Examples](/examples)
 
 You can find some examples and tutorials in the [examples](/examples) folder, these exist to help you get started using `js-ipfs`.
