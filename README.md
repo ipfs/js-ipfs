@@ -296,9 +296,9 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 
 #### Domain data types
 
-IPFS exposes the Buffer class in every ipfs instance, so that you can create buffers and add them to IPFS just like if you were using it in Node.js.
+A set of data types are exposed directly from the IPFS instance under `ipfs.types`. That way you're not required to import/require the following.
 
-You can get it at `ipfs.Buffer`
+* `ipfs.types.Buffer`
 
 ## Packages
 
@@ -346,8 +346,6 @@ You can get it at `ipfs.Buffer`
 ```
 
 ### Run unit tests
-
-#### Block Service
 
 ```sh
 # run all the unit tsts
