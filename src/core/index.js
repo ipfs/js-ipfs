@@ -73,9 +73,6 @@ class IPFS {
     this.ping = components.ping(this)
     this.pubsub = components.pubsub(this)
 
-    // expose Buffer for browser applications
-    this.Buffer = Buffer
-
     if (configOpts.EXPERIMENTAL.pubsub) {
       this.log('EXPERIMENTAL pubsub is enabled')
     }
