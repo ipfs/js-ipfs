@@ -6,80 +6,101 @@
   <script type="text/javascript">
     // Set this if you have a libp2p-webrtc-star server
     // Something like
-    // const SIGNALING_SERVER = '/libp2p-webrtc-star/ip4/127.0.0.1/tcp/9090/ws/ipfs/'
-    const SIGNALING_SERVER = null
+    // var SIGNALING_SERVER = '/libp2p-webrtc-star/ip4/127.0.0.1/tcp/9090/ws/ipfs/'
 
-    // Make an IPFS node
-    var ipfs = new Ipfs()
+    // This is our signalling server that can be used for practical demos and experimentation.
+    // It should not be used for apps in production.
+    var SIGNALING_SERVER = '/libp2p-webrtc-star/dns4/star-signal.cloud.ipfs.team/wss/ipfs/'
 
-    // Init a repo in the given IPFS node it if hasn't got one already. Calls the
-    // setup callback, passing the normal callback, after first initialization.
-    // Calls the normal callback directly after subsequent initializations. Calls
-    // the normal callback with an error parameter if there is an error.
-    function initIfNeeded (ipfs, setup, callback) {
-      ipfs.init((err) => {
-        if (!err) {
-          // This is the first time we have started a node
-          setup(callback)
-        } else if (err.message == 'repo already exists') {
-          // The node already exists
-          callback()
-        } else {
-          callback(err)
-        }
-      })
-    }
+    // Create an IPFS node
+    var node = new Ipfs()
 
     // Init the node
-    initIfNeeded(ipfs, (callback) => {
-      // On first initialization, do some setup
-      // Get the node config we just init-ed
-      ipfs.config.get((err, config) => {
+    node.init(handleInit)
+
+    function handleInit (err) {
+      // The node exited with an error
+      if (err && err.message !== 'repo already exists') {
+        throw err
+      }
+
+      // The repo was initialized for the first time, we need to configure it
+      if (!err) configNode()
+      // The repo already existed, let's just load it
+      loadRepo()
+    }
+
+    function configNode() {
+      node.config.get(function (err, config) {
         if (err) {
           throw err
         }
-        if (SIGNALING_SERVER) {
-          // Add at least one libp2p-webrtc-star address. Without an address like this
-          // the libp2p-webrtc-star transport won't be installed, and the resulting
-          // node won't be able to dial out to libp2p-webrtc-star addresses.
-          var star_addr = (SIGNALING_SERVER + config.Identity.PeerID)
-          ipfs.config.set('Addresses.Swarm[1]', star_addr, (err) => {
-            if (err) {
-              throw err
-            }
-            // Continue down the already-initialized code path
-            callback()
-          })
-        } else {
-          // No signaling server is known. Just cointinue without it.
-          // We don't want to spam the console in our demo
-          callback()
-        }
-      })
-    }, (err) => {
-      // If the repo was already initialized, or after the first-time initialization
-      // code is run, we'll do this.
-      if (err) {
-        throw err
-      }
-      // Have the node set itself up
-      ipfs.load(() => {
-        // Go online and connect to things
-        ipfs.goOnline(() => {
-          console.log('Online status: ', ipfs.isOnline() ? 'online' : 'offline')
-          document.getElementById("status").innerHTML= 'Node status: ' + (ipfs.isOnline() ? 'online' : 'offline')
-          // TODO: Write your code here!
-          // Use methods like ipfs.files.add, ipfs.files.get, and so on in here
-          // Methods requiring buffers can use ipfs.Buffer
+        // Add at least one libp2p-webrtc-star address.
+        var star_addr = (SIGNALING_SERVER + config.Identity.PeerID)
+        node.config.set('Addresses.Swarm[1]', star_addr, function (err) {
+          if (err) {
+            throw err
+          }
+          // Load the newly created repo
+          loadRepo()
         })
       })
-    })
+    }
+
+    function loadRepo() {
+      node.load(() => {
+        // Go online and connect to things
+        node.goOnline(() => {
+          console.log('Online status: ', node.isOnline() ? 'online' : 'offline')
+          document.getElementById("status").innerHTML= 'Node status: ' + (node.isOnline() ? 'online' : 'offline')
+          // TODO: Write your code here!
+          // Use methods like node.files.add, node.files.get, and so on
+          // Methods requiring buffers can use node.types.Buffer
+        })
+      })
+    }
   </script>
 </head>
 <body>
   <h1>IPFS in the Browser</h1>
-  <p>This page creates an IPFS node in your browser and drops it into the global Javascript namespace as <em>ipfs</em>. Open the console to play around with it.</p>
+  <p>This page creates an IPFS node in your browser and drops it into the global Javascript namespace as <b><em style="background-color:#d7d6d6">node</em></b>. Open the console to play around with it.</p>
   <p>Note that opening two tabs of this page in the same browser won't work well, because they will share node configuration. You'll end up trying to run two instances of the same node, with the same private key and identity, which is a Bad Idea.</p>
   <div id="status">Node status: offline</div>
+
+  <h2>Some suggestions</h2>
+
+  <p>Try adding a new file:</p>
+
+  <code style="display:block; white-space:pre-wrap; background-color:#d7d6d6">
+    node.files.add(new node.types.Buffer('Hello world!'), function (err, res) {
+      if (err || !res) {
+        return console.error('Error - ipfs files add', err, res)
+      }
+
+      res.forEach(function (file) {
+        console.log('successfully stored', file)
+      })
+    })
+  </code>
+
+  <p>You can cat that same file. If you used the exact same string as above ('Hello world!') you should have an hash like this: 'QmQzCQn4puG4qu8PVysxZmscmQ5vT1ZXpqo7f58Uh9QfyY'</p>
+
+  <code style="display:block; white-space:pre-wrap; background-color:#d7d6d6">
+    node.files.cat('QmQzCQn4puG4qu8PVysxZmscmQ5vT1ZXpqo7f58Uh9QfyY', function (err, stream) {
+      var res = ''
+
+      stream.on('data', function (chunk) {
+        res += chunk.toString()
+      })
+
+      stream.on('error', function (err) {
+        console.error('Error - ipfs files cat ', err)
+      })
+
+      stream.on('end', function () {
+        console.log('Got:', res)
+      })
+    })
+  </code>
 </body>
 </html>
