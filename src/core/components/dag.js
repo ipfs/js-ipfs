@@ -39,6 +39,12 @@ module.exports = function dag (self) {
     }),
 
     tree: promisify((cid, path, options, callback) => {
+      if (typeof path === 'object') {
+        callback = options
+        options = path
+        path = undefined
+      }
+
       if (typeof path === 'function') {
         callback = path
         path = undefined
@@ -59,7 +65,7 @@ module.exports = function dag (self) {
         if (split.length > 0) {
           path = split.join('/')
         } else {
-          path = '/'
+          path = undefined
         }
       }
 
