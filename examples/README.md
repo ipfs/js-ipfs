@@ -10,5 +10,6 @@ Let us know if you find any issue or if you want to contribute and add a new tut
 - [How to bundle js-ipfs with Browserify](./bundle-browserify)
 - [How to bundle js-ipfs with WebPack](./bundle-webpack)
 - [Use IPFS to explore the Ethereum BlockChain](./explore-ethereum)
+- [Create and resolve through graphs with the dag API](./dag)
 
 ## Tutorials
