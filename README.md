@@ -94,6 +94,7 @@ You can check the development status at:
       - [Files API](#files-api)
       - [Swarm API](#swarm-api)
       - [libp2p API](#libp2p-api)
+      - [Domain data types](#domain-data-types)
 - [Packages](#packages)
 - [Development](#development)
   - [Clone](#clone)
@@ -193,6 +194,8 @@ The HTTP-API exposed by the js-ipfs daemon follows the [`http-api-spec`](https:/
 
 #### Create a IPFS node instance
 
+The basic startup flow involves (optionally) creating a Repo, creating an IPFS node, `init`-ing it so it can generate its keys, `load`-ing its configuration, and putting it online with `goOnline`. Here is a structural example:
+
 ```JavaScript
 // IPFS will need a repo, it can create one for you or you can pass
 // it a repo instance of the type IPFS Repo
@@ -229,6 +232,8 @@ node.init({ emptyRepo: true, bits: 2048 }, (err) => {
 
 > We are working on making this init process better, see https://github.com/ipfs/js-ipfs/issues/556 for the discussion.
 
+More examples can be found in the [examples folder](./examples)
+
 ### [Tutorials and Examples](/examples)
 
 You can find some examples and tutorials in the [examples](/examples) folder, these exist to help you get started using `js-ipfs`.
@@ -251,6 +256,17 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 
 - [libp2p-ipfs-nodejs](https://github.com/ipfs/js-libp2p-ipfs-nodejs)
 - [libp2p-ipfs-browser](https://github.com/ipfs/js-libp2p-ipfs-browser)
+
+#### Domain data types
+
+A set of data types are exposed directly from the IPFS instance under `ipfs.types`. That way you're not required to import/require the following.
+
+* [`ipfs.types.Buffer`](https://www.npmjs.com/package/buffer)
+* [`ipfs.types.PeerId`](https://github.com/libp2p/js-peer-id)
+* [`ipfs.types.PeerInfo`](https://github.com/libp2p/js-peer-info)
+* [`ipfs.types.multiaddr`](https://github.com/multiformats/js-multiaddr)
+* [`ipfs.types.multihash`](https://github.com/multiformats/js-multihash)
+* [`ipfs.types.CID`](https://github.com/ipld/js-cid)
 
 ## Packages
 
@@ -286,8 +302,6 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 | [`ipfs-multipart`](//github.com/xicombd/ipfs-multipart) | [![npm](https://img.shields.io/npm/v/ipfs-multipart.svg?maxAge=86400&style=flat-square)](//github.com/xicombd/ipfs-multipart/releases) | [![Dep Status](https://david-dm.org/xicombd/ipfs-multipart.svg?style=flat-square)](https://david-dm.org/xicombd/ipfs-multipart) | [![devDep Status](https://david-dm.org/xicombd/ipfs-multipart/dev-status.svg?style=flat-square)](https://david-dm.org/xicombd/ipfs-multipart?type=dev) |
 | [`multihashing`](//github.com/multiformats/js-multihashing) | [![npm](https://img.shields.io/npm/v/multihashing.svg?maxAge=86400&style=flat-square)](//github.com/multiformats/js-multihashing/releases) | [![Dep Status](https://david-dm.org/multiformats/js-multihashing.svg?style=flat-square)](https://david-dm.org/multiformats/js-multihashing) | [![devDep Status](https://david-dm.org/multiformats/js-multihashing/dev-status.svg?style=flat-square)](https://david-dm.org/multiformats/js-multihashing?type=dev) |
 | [`mafmt`](//github.com/whyrusleeping/js-mafmt) | [![npm](https://img.shields.io/npm/v/mafmt.svg?maxAge=86400&style=flat-square)](//github.com/whyrusleeping/js-mafmt/releases) | [![Dep Status](https://david-dm.org/whyrusleeping/js-mafmt.svg?style=flat-square)](https://david-dm.org/whyrusleeping/js-mafmt) | [![devDep Status](https://david-dm.org/whyrusleeping/js-mafmt/dev-status.svg?style=flat-square)](https://david-dm.org/whyrusleeping/js-mafmt?type=dev) |
-
-
 
 ## Development
 
