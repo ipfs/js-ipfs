@@ -71,12 +71,7 @@ module.exports = function dag (self) {
 
       pull(
         self._ipldResolver.treeStream(cid, path, options),
-        pull.collect((err, results) => {
-          if (err) {
-            return callback(err)
-          }
-          callback(null, results)
-        })
+        pull.collect(callback)
       )
     })
   }
