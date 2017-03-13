@@ -67,7 +67,7 @@ const obj = {
   b: [1, 2, 3],
   c: {
     ca: [5, 6, 7],
-    cb: 'foo"'
+    cb: 'foo'
   }
 }
 
@@ -85,22 +85,22 @@ function errOrLog(err, result) {
 }
 
 ipfs.dag.get('zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5/a', errOrLog)
-// Returns:
+// Logs:
 // 1
 
 ipfs.dag.get('zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5/b', errOrLog)
-// Returns:
+// Logs:
 // [1, 2, 3]
 
 ipfs.dag.get('zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5/c', errOrLog)
-// Returns:
+// Logs:
 // {
 //   ca: [5, 6, 7],
 //   cb: 'foo'
 // }
 
 ipfs.dag.get('zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5/c/ca/1', errOrLog)
-// Returns:
+// Logs:
 // 6
 ```
 
@@ -129,6 +129,42 @@ If no `callback` is passed, a [promise][] is returned.
 **Example:**
 
 ```JavaScript
+// example obj
+const obj = {
+  a: 1,
+  b: [1, 2, 3],
+  c: {
+    ca: [5, 6, 7],
+    cb: 'foo'
+  }
+}
+
+ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' }, (err, cid) => {
+  console.log(cid.toBaseEncodedString())
+  // zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5
+})
+
+function errOrLog(err, result) {
+  if (err) {
+    console.error('error: ' + err)
+  } else {
+    console.log(result.value)
+  }
+}
+
+ipfs.dag.tree('zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5/a', errOrLog)
+// Logs:
+// a
+// b
+// b/0
+// b/1
+// b/2
+// c
+// c/ca
+// c/ca/0
+// c/ca/1
+// c/ca/2
+// c/cb
 ```
 
 A great source of [examples][] can be found in the tests for this API.

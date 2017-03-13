@@ -12,7 +12,7 @@ const dagCBOR = require('ipld-dag-cbor')
 const CID = require('cids')
 
 module.exports = (common) => {
-  describe.only('.dag', () => {
+  describe('.dag', () => {
     let ipfs
 
     before(function (done) {
@@ -394,9 +394,9 @@ module.exports = (common) => {
             expect(err).to.not.exist
             expect(paths).to.eql([
               'pb',
-              'pb/Data',
+              'someData',
               'pb/Links',
-              'someData'
+              'pb/Data'
             ])
             done()
           })
@@ -406,8 +406,8 @@ module.exports = (common) => {
           ipfs.dag.tree(cidCbor, 'pb', { recursive: true }, (err, paths) => {
             expect(err).to.not.exist
             expect(paths).to.eql([
-              'Data',
-              'Links'
+              'Links',
+              'Data'
             ])
             done()
           })
