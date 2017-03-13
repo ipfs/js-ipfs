@@ -17,12 +17,30 @@
   - [Node.js](#nodejs)
   - [Go](#go)
 - [API](#api)
-  - [Files](/API/files)
+  - [bitswap (not spec'ed yet)](/API/bitswap)
+  - [block](/API/block)
+    - [`block.get`](/API/block#get)
+    - [`block.put`](/API/block#put)
+    - [`block.stat`](/API/block#stat)
+  - [bootstrap](/API/bootstrap)
+  - [config](/API/config)
+    - [`config.get`](/API/config#get)
+    - [`config.set`](/API/config#set)
+    - [`config.replace`](/API/config#replace)
+  - [dag](/API/dag)
+    - [`dag.put`](/API/dag#dagput)
+    - [`dag.get`](/API/dag#dagget)
+    - [`dag.tree`](/API/dag#dagtree)
+  - [dht (not spec'ed yet)](/API/dht)
+  - [files](/API/files)
     - [`add`](/API/files#add)
     - [`createAddStream`](/files#createaddstream)
     - [`get`](/API/files#get)
     - [`cat`](/API/files#cat)
-  - [Object](/API/object)
+  - [generic operations](/API/generic)
+    - [`id`](/API/generic#id)
+    - [`version`](/API/generic#version)
+  - [object](/API/object)
     - [`object.new`](/API/object#objectnew)
     - [`object.put`](/API/object#objectput)
     - [`object.get`](/API/object#objectget)
@@ -34,6 +52,19 @@
       - [`object.patch.rmLink`](/API/object#objectpatchrmlink)
       - [`object.patch.appendData`](/API/object#objectpatchappenddata)
       - [`object.patch.setData`](/API/object#objectpatchsetdata)
+  - [pin (not spec'ed yet)](/API/pin)
+  - [pubsub](/API/pubsub)
+    - [`pubsub.subscribe`](/API/pubsub#pubsubsubscribe)
+    - [`pubsub.unsubscribe`](/API/pubsub#pubsubunsubscribe)
+    - [`pubsub.publish`](/API/pubsub#pubsubpublish)
+    - [`pubsub.ls`](/API/pubsub#pubsubls)
+    - [`pubsub.peers`](/API/pubsub#pubsubpeers)
+  - [repo (not spec'ed yet)](/API/repo)
+  - [swarm](/API/swarm)
+    - [`swarm.addrs`](/API/swarm#addrs)
+    - [`swarm.connect`](/API/swarm#connect)
+    - [`swarm.disconnect`](/API/swarm#disconnect)
+    - [`swarm.peers`](/API/swarm#peers)
 - [Contribute](#contribute)
   - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
 - [License](#license)
@@ -48,7 +79,7 @@ The API is presented with both Node.js and Go primitives. However, there are no 
 
 - **WIP** [JavaScript IPFS implementation](https://github.com/ipfs/js-ipfs)
 - **WIP** [JavaScript ipfs-api](https://github.com/ipfs/js-ipfs-api)
-- Soon, go-ipfs, go-ipfs-api, java-ipfs-api, python-ipfs-api and others will implement it as well.
+- Soon™, go-ipfs, go-ipfs-api, java-ipfs-api, python-ipfs-api and others will implement it as well.
 
 Send in a PR if you find or write one!
 
@@ -83,7 +114,7 @@ var test = require('interface-ipfs-core')
 
 var common = {
   setup: function (cb) {
-    cb(null, yourIPFSInstance)
+    cb(null, IPFSFactory)
   },
   teardown: function (cb) {
     cb()
@@ -96,7 +127,7 @@ test.all(common)
 
 ### Go
 
-> WIP
+> [WIP](https://github.com/ipfs/interface-ipfs-core/issues/66)
 
 ## API
 
