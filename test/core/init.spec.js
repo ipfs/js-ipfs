@@ -4,6 +4,11 @@
 
 const expect = require('chai').expect
 const isNode = require('detect-node')
+const PeerId = require('peer-id')
+const PeerInfo = require('peer-info')
+const multiaddr = require('multiaddr')
+const multihash = require('multihashes')
+const CID = require('cids')
 const IPFS = require('../../src/core')
 
 // This gets replaced by require('../utils/create-repo-browser.js')
@@ -81,6 +86,17 @@ describe('init', () => {
         expect(err).to.exist
         done()
       })
+    })
+  })
+
+  it('data types', () => {
+    expect(ipfs.types).to.be.deep.equal({
+      Buffer,
+      PeerId,
+      PeerInfo,
+      multiaddr,
+      multihash,
+      CID
     })
   })
 })

@@ -2,7 +2,12 @@
 
 const BlockService = require('ipfs-block-service')
 const IPLDResolver = require('ipld-resolver')
+const PeerId = require('peer-id')
+const PeerInfo = require('peer-info')
+const multiaddr = require('multiaddr')
+const multihash = require('multihashes')
 const PeerBook = require('peer-book')
+const CID = require('cids')
 const debug = require('debug')
 
 const defaultRepo = require('./default-repo')
@@ -24,7 +29,12 @@ class IPFS {
 
     // IPFS utils
     this.types = {
-      Buffer: Buffer
+      Buffer,
+      PeerId,
+      PeerInfo,
+      multiaddr,
+      multihash,
+      CID
     }
     this.log = debug('jsipfs')
     this.log.err = debug('jsipfs:err')
