@@ -29,7 +29,7 @@ module.exports = {
   describe: 'Stores input as a DAG object, outputs its key',
 
   builder: {
-    inputenc: {
+    'input-enc': {
       type: 'string',
       default: 'json'
     }
@@ -38,7 +38,7 @@ module.exports = {
   handler (argv) {
     if (argv.data) {
       const buf = fs.readFileSync(argv.data)
-      putNode(buf, argv.inputenc)
+      putNode(buf, argv.inputEnc)
       return
     }
 
@@ -47,7 +47,7 @@ module.exports = {
         throw err
       }
 
-      putNode(input, argv.inputenc)
+      putNode(input, argv.inputEnc)
     }))
   }
 }
