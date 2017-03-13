@@ -248,6 +248,10 @@ A complete API definition is in the works. Meanwhile, you can learn how to you u
 
 ##### [bitswap]()
 
+- [`ipfs.bitswap.wantlist`]()
+- [`ipfs.bitswap.stat`]()
+- [`ipfs.bitswap.unwant`]()
+
 ##### [block](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block)
 
 - [`ipfs.block.get(cid, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block#get)
@@ -255,6 +259,10 @@ A complete API definition is in the works. Meanwhile, you can learn how to you u
 - [`ipfs.block.stat(cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block#stat)
 
 ##### [bootstrap]()
+
+- [`ipfs.bootstrap.list`]()
+- [`ipfs.bootstrap.add`]()
+- [`ipfs.bootstrap.rm`]()
 
 ##### [config](https://github.com/ipfs/interface-ipfs-core/tree/master/API/config)
 
