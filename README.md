@@ -55,9 +55,11 @@
     <img src="https://img.shields.io/badge/Node.js-%3E%3D4.0.0-orange.svg?style=flat-square" />
   </a>
   <br>
+  <!-- Hidding this until we have SauceLabs situation figured out, right now it is just misleading
   <a href="https://saucelabs.com/u/js-ipfs">
     <img src="https://saucelabs.com/browser-matrix/js-ipfs.svg" />
   </a>
+  -->
 </p>
 
 ### Project status
@@ -190,7 +192,7 @@ Commands:
 
 The HTTP-API exposed by the js-ipfs daemon follows the [`http-api-spec`](https://github.com/ipfs/http-api-spec). You can use any of the IPFS HTTP-API client libraries with it, such as: [js-ipfs-api](https://github.com/ipfs/js-ipfs-api).
 
-### IPFS Core examples (use IPFS as a module)
+### IPFS Core (use IPFS as a module)
 
 #### Create a IPFS node instance
 
@@ -244,12 +246,63 @@ You can find some examples and tutorials in the [examples](/examples) folder, th
 
 A complete API definition is in the works. Meanwhile, you can learn how to you use js-ipfs through the standard interface at [![](https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg)](https://github.com/ipfs/interface-ipfs-core).
 
-##### [Generic API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic)
-##### [Block API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block)
-##### [Object API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/object)
-##### [Config API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/config)
-##### [Files API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files)
-##### [Swarm API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/swarm)
+##### [block](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block)
+
+- [`ipfs.block.get(cid, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block#get)
+- [`ipfs.block.put(block, cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block#put)
+- [`ipfs.block.stat(cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block#stat)
+
+##### [config](https://github.com/ipfs/interface-ipfs-core/tree/master/API/config)
+
+- [``]()
+- [``]()
+- [``]()
+- [``]()
+
+##### [dag](https://github.com/ipfs/interface-ipfs-core/tree/master/API/dag)
+
+- [``]()
+- [``]()
+- [``]()
+- [``]()
+
+##### [dht (not available, yet!)]()
+
+##### [files](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files)
+- [``]()
+- [``]()
+- [``]()
+- [``]()
+
+##### [generic operations](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic)
+- [``]()
+- [``]()
+- [``]()
+- [``]()
+
+##### [object](https://github.com/ipfs/interface-ipfs-core/tree/master/API/object)
+
+- [``]()
+- [``]()
+- [``]()
+- [``]()
+
+##### [pin (not available, yet!)]()
+
+##### [pubsub](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pubsub)
+
+- [``]()
+- [``]()
+- [``]()
+- [``]()
+
+##### [swarm](https://github.com/ipfs/interface-ipfs-core/tree/master/API/swarm)
+
+- [``]()
+- [``]()
+- [``]()
+- [``]()
+
 ##### [libp2p API](https://github.com/libp2p/interface-libp2p)
 
 Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal interface for this API hasn't been defined by you can find documentation at its implementations:
@@ -257,16 +310,16 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 - [libp2p-ipfs-nodejs](https://github.com/ipfs/js-libp2p-ipfs-nodejs)
 - [libp2p-ipfs-browser](https://github.com/ipfs/js-libp2p-ipfs-browser)
 
-#### Domain data types
+##### Domain data types
 
 A set of data types are exposed directly from the IPFS instance under `ipfs.types`. That way you're not required to import/require the following.
 
-* [`ipfs.types.Buffer`](https://www.npmjs.com/package/buffer)
-* [`ipfs.types.PeerId`](https://github.com/libp2p/js-peer-id)
-* [`ipfs.types.PeerInfo`](https://github.com/libp2p/js-peer-info)
-* [`ipfs.types.multiaddr`](https://github.com/multiformats/js-multiaddr)
-* [`ipfs.types.multihash`](https://github.com/multiformats/js-multihash)
-* [`ipfs.types.CID`](https://github.com/ipld/js-cid)
+- [`ipfs.types.Buffer`](https://www.npmjs.com/package/buffer)
+- [`ipfs.types.PeerId`](https://github.com/libp2p/js-peer-id)
+- [`ipfs.types.PeerInfo`](https://github.com/libp2p/js-peer-info)
+- [`ipfs.types.multiaddr`](https://github.com/multiformats/js-multiaddr)
+- [`ipfs.types.multihash`](https://github.com/multiformats/js-multihash)
+- [`ipfs.types.CID`](https://github.com/ipld/js-cid)
 
 ## Packages
 
