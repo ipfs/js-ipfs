@@ -25,7 +25,7 @@ Where:
 
 If no `callback` is passed, a promise is returned.
 
-Example:
+**Example:**
 
 ```JavaScript
 ipfs.pin.add(hash, function (err) {})
@@ -49,7 +49,7 @@ Where:
 
 If no `callback` is passed, a promise is returned.
 
-Example:
+**Example:**
 
 ```JavaScript
 ipfs.pin.ls(function (err, pinset) {
@@ -60,6 +60,7 @@ ipfs.pin.ls(function (err, pinset) {
 })
 ```
 
+A great source of [examples][] can be found in the tests for this API.
 
 #### `rm`
 
@@ -78,7 +79,7 @@ Where:
 
 If no `callback` is passed, a promise is returned.
 
-Example:
+**Example:**
 
 ```JavaScript
 ipfs.pin.rm(hash, function (err, pinset) {
@@ -88,3 +89,7 @@ ipfs.pin.rm(hash, function (err, pinset) {
   console.log(pinset) prints the hashes that were unpinned
 })
 ```
+
+A great source of [examples][] can be found in the tests for this API.
+
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/pin.js

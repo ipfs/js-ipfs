@@ -15,6 +15,19 @@ config API
 
 If no callback is passed, a [promise][] is returned
 
+**Example:**
+
+```JavaScript
+ipfs.config.get((err, config) => {
+  if (err) {
+    throw err
+  }
+  console.log(config)
+})
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
 #### `config.set`
 
 > Adds or replaces a config value.
@@ -33,6 +46,19 @@ If no callback is passed, a [promise][] is returned
 
 Note that this operation will **not** spark the restart of any service, i.e: if a config.replace changes the multiaddrs of the Swarm, Swarm will have to be restarted manually for the changes to take difference.
 
+**Example:**
+
+```JavaScript
+ipfs.config.set('Discovery.MDNS.Enabled', false, (err) => {
+  if (err) {
+    throw err
+  }
+  // MDNS Discovery was set to false
+})
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
 #### `config.replace`
 
 > Adds or replaces a config file.
@@ -49,4 +75,18 @@ If no callback is passed, a [promise][] is returned
 
 Note that this operation will **not** spark the restart of any service, i.e: if a config.replace changes the multiaddrs of the Swarm, Swarm will have to be restarted manually for the changes to take difference.
 
+**Example:**
+
+```JavaScript
+ipfs.config.replace(newConfig, (err) => {
+  if (err) {
+    throw err
+  }
+  // config has been replaced
+})
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
 [promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/config.js

@@ -15,14 +15,17 @@ Where `peerId` is a IPFS/libp2p Id of type [PeerId](https://github.com/libp2p/js
 
 If no `callback` is passed, a promise is returned.
 
-Example:
+**Example:**
 
 ```JavaScript
 var id = PeerId.create()
+
 ipfs.dht.findPeer(id, function (err, peerInfo) {
   // peerInfo will contain the multiaddrs of that peer
 })
 ```
+
+A great source of [examples][] can be found in the tests for this API.
 
 #### `findprovs`
 
@@ -38,11 +41,13 @@ Where `hash` is a multihash.
 
 If no `callback` is passed, a promise is returned.
 
-Example:
+**Example:**
 
 ```JavaScript
-ipfs.dht.findProvs(hash, function (err, peerInfos) {})
+ipfs.dht.findProvs(multihash, function (err, peerInfos) {})
 ```
+
+A great source of [examples][] can be found in the tests for this API.
 
 #### `get`
 
@@ -58,11 +63,13 @@ Where `key` is a string.
 
 If no `callback` is passed, a promise is returned.
 
-Example:
+**Example:**
 
 ```JavaScript
 ipfs.dht.get(key, function (err, value) {})
 ```
+
+A great source of [examples][] can be found in the tests for this API.
 
 #### `put`
 
@@ -78,12 +85,13 @@ Where `key` is a string and `value` can be of any type.
 
 If no `callback` is passed, a promise is returned.
 
-Example:
+**Example:**
 
 ```JavaScript
 ipfs.dht.put(key, value, function (err) {})
 ```
 
+A great source of [examples][] can be found in the tests for this API.
 
 #### `query`
 
@@ -99,10 +107,15 @@ Where `peerId` is a IPFS/libp2p Id of type [PeerId](https://github.com/libp2p/js
 
 If no `callback` is passed, a promise is returned.
 
-Example:
+**Example:**
 
 ```JavaScript
-var id = PeerId.create()
+const id = PeerId.create()
+
 ipfs.dht.query(id, function (err, peerInfos) {
 })
 ```
+
+A great source of [examples][] can be found in the tests for this API.
+
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/dht.js

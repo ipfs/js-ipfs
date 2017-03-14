@@ -13,11 +13,18 @@ Swarm API
 
 If no `callback` is passed, a promise is returned.
 
-Example:
+**Example:**
 
 ```JavaScript
-ipfs.swarm.addrs(function (err, addrs) {})
+ipfs.swarm.addrs(function (err, addrs) {
+  if (err) {
+    throw err
+  }
+  console.log(addrs)
+})
 ```
+
+A great source of [examples][] can be found in the tests for this API.
 
 #### `connect`
 
@@ -33,13 +40,18 @@ Where `addr` is of type [multiaddr](https://github.com/multiformats/js-multiaddr
 
 If no `callback` is passed, a promise is returned.
 
-Example:
+**Example:**
 
 ```JavaScript
 ipfs.swarm.connect(addr, function (err) {
+  if (err) {
+    throw err
+  }
   // if no err is present, connection is now open
 })
 ```
+
+A great source of [examples][] can be found in the tests for this API.
 
 #### `disconnect`
 
@@ -55,11 +67,13 @@ Where `addr` is of type [multiaddr](https://github.com/multiformats/js-multiaddr
 
 If no `callback` is passed, a promise is returned.
 
-Example:
+**Example:**
 
 ```JavaScript
 ipfs.swarm.disconnect(addr, function (err) {})
 ```
+
+A great source of [examples][] can be found in the tests for this API.
 
 #### `peers`
 
@@ -84,11 +98,18 @@ Starting with `go-ipfs 0.4.5` these additional properties are provided
 
 If no `callback` is passed, a promise is returned.
 
-Example:
+**Example:**
 
 ```JavaScript
-ipfs.swarm.peers(function (err, peerInfos) {})
+ipfs.swarm.peers(function (err, peerInfos) {
+  if (err) {
+    throw err
+  }
+  console.log(peerInfos)
+})
 ```
+
+A great source of [examples][] can be found in the tests for this API.
 
 ------------------------------
 
@@ -151,3 +172,5 @@ Example:
 ```JavaScript
 ipfs.swarm.filters.rm(filter, function (err) {})
 ```
+
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/swarm.js

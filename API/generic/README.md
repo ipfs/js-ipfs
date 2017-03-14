@@ -13,9 +13,9 @@ Generic API
 
 If no `callback` is passed, a promise is returned.
 
-Example:
+**Example:**
 
-```js
+```JavaScript
 ipfs.id(function (err, identity) {
   if (err) {
     throw err
@@ -23,6 +23,8 @@ ipfs.id(function (err, identity) {
   console.log(identity)
 })
 ```
+
+A great source of [examples][] can be found in the tests for this API.
 
 #### `version`
 
@@ -36,13 +38,17 @@ ipfs.id(function (err, identity) {
 
 If no `callback` is passed, a promise is returned.
 
-Example:
+**Example:**
 
-```js
-ipfs.version(function (err, version) {
+```JavaScript
+ipfs.version((err, version) => {
   if (err) {
     throw err
   }
   console.log(version)
 })
 ```
+
+A great source of [examples][] can be found in the tests for this API.
+
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/generic.js

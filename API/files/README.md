@@ -12,7 +12,7 @@ files API
 Where `data` may be
 
 - an array of objects, each of the form
-```js
+```JavaScript
 {
   path: '/tmp/myfile.txt',
   content: (Buffer or Readable stream)
@@ -27,7 +27,7 @@ If no `content` is passed, then the path is treated as an empty directory
 
 `callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res` will be an array of:
 
-```js
+```JavaScript
 {
   path: '/tmp/myfile.txt',
   hash: 'QmHash', // base58 encoded multihash
@@ -37,20 +37,22 @@ If no `content` is passed, then the path is treated as an empty directory
 
 If no `callback` is passed, a promise is returned.
 
-Example:
+**Example:**
 
-```js
-var files = [
+```JavaScript
+const files = [
   {
     path: '/tmp/myfile.txt',
     content: (Buffer or Readable stream)
   }
 ]
+
 ipfs.files.add(files, function (err, files) {
   // 'files' will be an array of objects
 })
 ```
 
+A great source of [examples][] can be found in the tests for this API.
 
 #### `createAddStream`
 
@@ -78,7 +80,9 @@ objects will be outputted.
 
 If no `callback` is passed, a promise is returned.
 
-```js
+**Example:**
+
+```JavaScript
 ipfs.files.createAddStream(function (err, stream) {
   stream.on('data', function (file) {
     // 'file' will be of the form
@@ -89,15 +93,17 @@ ipfs.files.createAddStream(function (err, stream) {
     // }
   })
 
-  stream.write({path: <path to file>, content: <buffer or readable stream>})
+  stream.write({
+    path: <path to file>,
+    content: <buffer or readable stream>
+  })
   // write as many as you want
 
   stream.end()
 })
 ```
 
-
-
+A great source of [examples][] can be found in the tests for this API.
 
 #### `cat`
 
@@ -105,7 +111,7 @@ ipfs.files.createAddStream(function (err, stream) {
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.cat(multihash, [callback])
+##### `JavaScript` - ipfs.files.cat(multihash, [callback])
 
 `multihash` is a [multihash][] which can be passed as
 
@@ -116,21 +122,23 @@ ipfs.files.createAddStream(function (err, stream) {
 
 If no `callback` is passed, a promise is returned.
 
-```js
+```JavaScript
 ipfs.files.cat(multihash, function (err, file) {
   // file will be a stream containing the data of the file requested
 })
 ```
 
+A great source of [examples][] can be found in the tests for this API.
 
 #### `get`
+
 > Get [UnixFS][] files from IPFS.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.files.get(hash, [callback])
+##### `JavaScript` - ipfs.files.get(multihash, [callback])
 
-Where `hash` is an IPFS multihash or straight multihash.
+Where `multihash` is an IPFS multihash or string multihash.
 
 `callback` must follow `function (err, stream) {}` signature, where `err` is an
 error if the operation was not successful. `stream` will be a Readable stream in
@@ -149,10 +157,11 @@ Readable stream with the raw contents of that file.
 
 If no `callback` is passed, a promise is returned with the Readable stream.
 
-Example:
+**Example:**
 
-```js
-var multihashStr = '/ipfs/QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
+```JavaScript
+const multihashStr = 'QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
+
 ipfs.files.get(multihashStr, function (err, stream) {
   stream.on('data', (file) => {
     // write the file's path and contents to standard out
@@ -162,3 +171,6 @@ ipfs.files.get(multihashStr, function (err, stream) {
 })
 ```
 
+A great source of [examples][] can be found in the tests for this API.
+
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/files.js

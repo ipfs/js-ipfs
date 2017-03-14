@@ -17,7 +17,11 @@ block API
 
 `callback` must follow `function (err, block) {}` signature, where `err` is an error if the operation was not successful and `block` is a [Block][block] type object, containing both the data and the hash of the block.
 
-```js
+If no `callback` is passed, a promise is returned.
+
+**Example:**
+
+```JavaScript
 ipfs.block.get(cid, function (err, block) {
   if (err) {
     throw err
@@ -31,7 +35,7 @@ ipfs.block.get(cid, function (err, block) {
 })
 ```
 
-If no `callback` is passed, a promise is returned.
+A great source of [examples][] can be found in the tests for this API.
 
 #### `put`
 
@@ -55,6 +59,27 @@ Where `block` can be:
 `callback` has the signature `function (err, block) {}`, where `err` is an error if the operation was not successful and `block` is a [Block][block] type object, containing both the data and the hash of the block.
 
 If no `callback` is passed, a promise is returned.
+
+**Example:**
+
+```JavaScript
+const CID = require('cids')
+const buf = new Buffer('a serialized object')
+const cid = new CID(1, 'dag-pb', multihash)
+
+ipfs.block.put(blob, cid, (err, block) => {
+  if (err) {
+    throw err
+  }
+  // Block hsa been stored
+
+  console.log(block.data.toString())
+  // Logs:
+  // a serialized object
+})
+```
+
+A great source of [examples][] can be found in the tests for this API.
 
 #### `stat`
 
@@ -81,5 +106,27 @@ If no `callback` is passed, a promise is returned.
 
 If no `callback` is passed, a promise is returned.
 
-[block](https://github.com/ipfs/js-ipfs-block)
-[multihash](https://github.com/multiformats/multihash)
+**Example:**
+
+```JavaScript
+const multihashStr = 'QmQULBtTjNcMwMr4VMNknnVv3RpytrLSdgpvMcTnfNhrBJ'
+const cid = new CID(multihashStr)
+
+ipfs.block.stat(cid, (err, stats) => {
+  if (err) {
+    throw err
+  }
+  console.log(stats)
+  // Logs:
+  // {
+  //   key: QmQULBtTjNcMwMr4VMNknnVv3RpytrLSdgpvMcTnfNhrBJ,
+  /    size: 3739
+  // }
+})
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
+[block]:https://github.com/ipfs/js-ipfs-block
+[multihash]:https://github.com/multiformats/multihash
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/block.js

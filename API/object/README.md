@@ -15,9 +15,20 @@ object API
 
 If no `callback` is passed, a [promise][] is returned.
 
+**Example:**
 
+```JavaScript
+ipfs.object.new('unixfs-dir', (err, node) => {
+  if (err) {
+    throw err
+  }
+  console.log(node.toJSON().multihash)
+  // Logs:
+  // QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn
+})
+```
 
-
+A great source of [examples][] can be found in the tests for this API.
 
 #### `object.put`
 
@@ -41,9 +52,25 @@ If no `callback` is passed, a [promise][] is returned.
 
 If no `callback` is passed, a [promise][] is returned.
 
+**Example:**
 
+```JavaScript
+const obj = {
+  Data: new Buffer('Some data'),
+  Links: []
+}
 
+ipfs.object.put(obj, (err, node) => {
+  if (err) {
+    throw err
+  }
+  console.log(node.toJSON().multihash)
+  // Logs:
+  // QmPb5f92FxKPYdT3QNBd1GKiL4tZUXUrzF4Hkpdr3Gf1gK
+})
+```
 
+A great source of [examples][] can be found in the tests for this API.
 
 #### `object.get`
 
@@ -66,6 +93,23 @@ If no `callback` is passed, a [promise][] is returned.
 
 If no `callback` is passed, a [promise][] is returned.
 
+**Example:**
+
+```JavaScript
+const multihash = 'QmPb5f92FxKPYdT3QNBd1GKiL4tZUXUrzF4Hkpdr3Gf1gK'
+
+ipfs.object.get(multihash, (err, node) => {
+  if (err) {
+    throw err
+  }
+  console.log(node.toJSON().multihash)
+  // Logs:
+  // QmPb5f92FxKPYdT3QNBd1GKiL4tZUXUrzF4Hkpdr3Gf1gK
+})
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
 #### `object.data`
 
 > Returns the Data field of an object
@@ -85,6 +129,22 @@ If no `callback` is passed, a [promise][] is returned.
 `callback` must follow `function (err, data) {}` signature, where `err` is an error if the operation was not successful and `data` is a Buffer with the data that the MerkleDAG node contained.
 
 If no `callback` is passed, a [promise][] is returned.
+
+**Example:**
+
+```JavaScript
+const multihash = 'QmPb5f92FxKPYdT3QNBd1GKiL4tZUXUrzF4Hkpdr3Gf1gK'
+
+ipfs.object.data(multihash, (err, data) => {
+  if (err) {
+    throw err
+  }
+  console.log(data.toString())
+  // Logs:
+  // some data
+```
+
+A great source of [examples][] can be found in the tests for this API.
 
 #### `object.links`
 
@@ -107,9 +167,21 @@ If no `callback` is passed, a [promise][] is returned.
 
 If no `callback` is passed, a [promise][] is returned.
 
+**Example:**
 
+```JavaScript
+const multihash = 'QmPb5f92FxKPYdT3QNBd1GKiL4tZUXUrzF4Hkpdr3Gf1gK'
 
+ipfs.object.links(multihash, (err, links) => {
+  if (err) {
+    throw err
+  }
+  console.log(links)
+  // Logs:
+  // []
+```
 
+A great source of [examples][] can be found in the tests for this API.
 
 #### `object.stat`
 
@@ -143,9 +215,29 @@ If no `callback` is passed, a [promise][] is returned.
 
 If no `callback` is passed, a [promise][] is returned.
 
+**Example:**
 
+```JavaScript
+const multihash = 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD'
 
+ipfs.object.stat(multihash, (err, stats) => {
+  if (err) {
+    throw err
+  }
+  console.log(stats)
+  // Logs:
+  // {
+  //   Hash: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
+  //   NumLinks: 0,
+  //   BlockSize: 10,
+  //   LinksSize: 2,
+  //   DataSize: 8,
+  //   CumulativeSize: 10
+  // }
+})
+```
 
+A great source of [examples][] can be found in the tests for this API.
 
 #### `object.patch`
 
@@ -174,9 +266,22 @@ If no `callback` is passed, a [promise][] is returned.
 
 If no `callback` is passed, a [promise][] is returned.
 
+**Example:**
 
+```JavaScript
+ipfs.object.patch.addLink(node, {
+  name: 'some-link'
+  size: 10
+  multihash: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD'
+}, (err, newNode) => {
+  if (err) {
+    throw err
+  }
+  // newNode is node with the added link
+})
+```
 
-
+A great source of [examples][] can be found in the tests for this API.
 
 ##### `object.patch.rmLink`
 
@@ -201,9 +306,12 @@ If no `callback` is passed, a [promise][] is returned.
 
 If no `callback` is passed, a [promise][] is returned.
 
+**Example:**
 
+```JavaScript
+```
 
-
+A great source of [examples][] can be found in the tests for this API.
 
 ##### `object.patch.appendData`
 
@@ -228,9 +336,17 @@ If no `callback` is passed, a [promise][] is returned.
 
 If no `callback` is passed, a [promise][] is returned.
 
+**Example:**
 
+```JavaScript
+ipfs.object.patch.appendData(multihash, new Buffer('more data'), (err, node) => {
+  if (err) {
+    throw err
+  }
+})
+```
 
-
+A great source of [examples][] can be found in the tests for this API.
 
 ##### `object.patch.setData`
 
@@ -255,6 +371,20 @@ If no `callback` is passed, a [promise][] is returned.
 
 If no `callback` is passed, a [promise][] is returned.
 
-[DAGNode]: https://github.com/vijayee/js-ipfs-merkle-dag
-[multihash]: http://github.com/jbenet/multihash
+**Example:**
+
+```JavaScript
+ipfs.object.patch.setData(multihash, new Buffer('more data'), (err, node) => {
+  if (err) {
+    throw err
+  }
+})
+
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
+[DAGNode]: https://github.com/ipld/js-ipld-dag-pb
+[multihash]: http://github.com/multiformats/multihash
 [promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/object.js

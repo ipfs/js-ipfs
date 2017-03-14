@@ -19,6 +19,20 @@ If no `callback` is passed, a [promise][] is returned.
 
 > _In the future, topic can also be type of TopicDescriptor (https://github.com/libp2p/pubsub-notes/blob/master/flooding/flooding.proto#L23). However, for now, only strings are supported._
 
+**Example:**
+
+```JavaScript
+const topic = 'fruit-of-the-day'
+
+const receiveMsg = (msg) => {
+  console.log(msg.toString()
+}
+
+ipfs.pubsub.subscribe(topic, receiveMsg)
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
 #### `pubsub.unsubscribe`
 
 > Unsubscribes from a pubsub topic.
@@ -31,6 +45,25 @@ If no `callback` is passed, a [promise][] is returned.
 - `handler: (msg) => ()` - The handler to remove.
 
 This works like `EventEmitter.removeListener`, as that only the `handler` passed to a `subscribe` call before is removed from listening. The underlying subscription will only be canceled once all listeners for a topic have been removed.
+
+**Example:**
+
+```JavaScript
+const topic = 'fruit-of-the-day'
+
+const receiveMsg = (msg) => {
+  console.log(msg.toString()
+}
+
+ipfs.pubsub.subscribe(topic, receiveMsg)
+
+setTimeout(() => {
+  // unsubscribe a second later
+  ipfs.pubsub.unsubscribe(topic, receiveMsg)
+}, 1000)
+```
+
+A great source of [examples][] can be found in the tests for this API.
 
 #### `pubsub.publish`
 
@@ -46,6 +79,22 @@ This works like `EventEmitter.removeListener`, as that only the `handler` passed
 
 If no `callback` is passed, a promise is returned.
 
+**Example:**
+
+```JavaScript
+const topic = 'fruit-of-the-day'
+const msg = new Buffer('banana')
+
+ipfs.pubsub.publish(topic, msg, (err) => {
+  if (err) {
+    throw err
+  }
+  // msg was broadcasted
+})
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
 #### `pubsub.ls`
 
 > Returns the list of subscriptions the peer is subscribed to.
@@ -59,6 +108,19 @@ If no `callback` is passed, a promise is returned.
 
 If no `callback` is passed, a promise is returned.
 
+**Example:**
+
+```JavaScript
+ipfs.pubsub.ls((err, topics) => {
+  if (err) {
+    throw err
+  }
+  console.log(topics)
+})
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
 #### `pubsub.peers`
 
 > Returns the peers that are subscribed to one topic.
@@ -71,3 +133,18 @@ If no `callback` is passed, a promise is returned.
 - `callback: (Error, Array<string>>) => ()` - Calls back with an error or a list of peer ids subscribed to the `topic`.
 
 If no `callback` is passed, a promise is returned.
+
+**Example:**
+
+```JavaScript
+ipfs.pubsub.peers(topic, (err, peerIds) => {
+  if (err) {
+    throw err
+  }
+  console.log(peerIds)
+})
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/pubsub.js
