@@ -20,14 +20,20 @@ function spawnDaemon (num, callback) {
 
   const node = new IPFS({
     repo: repo,
+    init: {
+      bits: 1024
+    },
+    start: false,
     EXPERIMENTAL: {
       pubsub: true
     }
   })
 
   series([
-    (cb) => node.init({ emptyRepo: true, bits: 1024 }, cb),
     (cb) => {
+      console.log('init was fine')
+      // TODO change all of this when overload the config is
+      // ready
       repo.config.get((err, config) => {
         if (err) { return callback(err) }
 
@@ -45,7 +51,6 @@ function spawnDaemon (num, callback) {
         repo.config.set(config, cb)
       })
     },
-    (cb) => node.load(cb),
     (cb) => {
       const daemon = new HTTPAPI(node.repo.path())
       nodes.push(daemon)
@@ -57,10 +62,11 @@ function spawnDaemon (num, callback) {
 gulp.task('libnode:start', (done) => {
   nodes = []
   parallel([
-    (cb) => spawnDaemon(7, cb),
-    (cb) => spawnDaemon(8, cb),
-    (cb) => spawnDaemon(12, cb),
-    (cb) => spawnDaemon(13, cb)
+    // (cb) => spawnDaemon(7, cb),
+    // (cb) => spawnDaemon(8, cb),
+    // (cb) => spawnDaemon(12, cb),
+    // (cb) => spawnDaemon(13, cb)
+    (cb) => cb()
   ], done)
 })
 

@@ -1,9 +1,9 @@
 'use strict'
 
-exports.goOnline = require('./go-online')
-exports.goOffline = require('./go-offline')
+exports.preStart = require('./pre-start')
+exports.start = require('./start')
+exports.stop = require('./stop')
 exports.isOnline = require('./is-online')
-exports.load = require('./load')
 exports.version = require('./version')
 exports.id = require('./id')
 exports.repo = require('./repo')

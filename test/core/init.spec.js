@@ -91,12 +91,12 @@ describe('init', () => {
 
   it('data types', () => {
     expect(ipfs.types).to.be.deep.equal({
-      Buffer,
-      PeerId,
-      PeerInfo,
-      multiaddr,
-      multihash,
-      CID
+      Buffer: Buffer,
+      PeerId: PeerId,
+      PeerInfo: PeerInfo,
+      multiaddr: multiaddr,
+      multihash: multihash,
+      CID: CID
     })
   })
 })
