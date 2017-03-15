@@ -6,8 +6,10 @@ const FloodSub = require('libp2p-floodsub')
 
 module.exports = (self) => {
   return (callback) => {
+    callback = callback || function noop () {}
+
     series([
-      (cb) => self.load(cb),
+      (cb) => self.preStart(cb),
       (cb) => self.libp2p.start(cb)
     ], (err) => {
       if (err) {
@@ -20,11 +22,12 @@ module.exports = (self) => {
         self._peerInfoBook
       )
 
-      const pubsub = self._configOpts.EXPERIMENTAL.pubsub
+      const pubsub = self._options.EXPERIMENTAL.pubsub
 
       if (pubsub) {
         self._pubsub = new FloodSub(self._libp2pNode)
       }
+
       series([
         (cb) => {
           self._bitswap.start()
@@ -40,6 +43,10 @@ module.exports = (self) => {
           } else {
             cb()
           }
+        },
+        (cb) => {
+          self.emit('start')
+          cb()
         }
       ], callback)
     })

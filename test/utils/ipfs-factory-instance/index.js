@@ -33,57 +33,33 @@ function Factory () {
                                  .substring(2, 8)
     }
 
-    createConfig(config, (err, conf) => {
+    createConfig(config, (err, config) => {
       if (err) {
         return callback(err)
       }
 
-      config = conf
-
-      const repo = createTempRepo(repoPath)
-
       // create the IPFS node
-      const ipfs = new IPFS({
+      const repo = createTempRepo(repoPath)
+      const node = new IPFS({
         repo: repo,
+        config: config,
         EXPERIMENTAL: {
           pubsub: true
         }
       })
 
-      ipfs.init({ emptyRepo: true, bits: 1024 }, (err) => {
-        if (err) {
-          return callback(err)
-        }
-        repo.config.set(config, launchNode)
+      node.on('start', () => {
+        nodes.push({ repo: repo, ipfs: node })
+        callback(null, node)
       })
-
-      function launchNode () {
-        ipfs.load((err) => {
-          if (err) {
-            return callback(err)
-          }
-
-          ipfs.goOnline((err) => {
-            if (err) {
-              return callback(err)
-            }
-
-            nodes.push({
-              repo: repo,
-              ipfs: ipfs
-            })
-
-            callback(null, ipfs)
-          })
-        })
-      }
     })
 
     function createConfig (config, cb) {
       if (config) {
         return cb(null, config)
       }
-      const conf = JSON.parse(JSON.stringify(defaultConfig))
+
+      config = JSON.parse(JSON.stringify(defaultConfig))
 
       PeerId.create({ bits: 1024 }, (err, id) => {
         if (err) {
@@ -91,28 +67,17 @@ function Factory () {
         }
 
         const pId = id.toJSON()
-        conf.Identity.PeerID = pId.id
-        conf.Identity.PrivKey = pId.privKey
-        cb(null, conf)
+        config.Identity.PeerID = pId.id
+        config.Identity.PrivKey = pId.privKey
+        cb(null, config)
       })
     }
   }
 
   this.dismantle = function (callback) {
-    series(nodes.map((node) => {
-      return node.ipfs.goOffline
-    }), clean)
-
-    function clean (err) {
-      if (err) {
-        return callback(err)
-      }
-      series(
-        nodes.map((node) => {
-          return node.repo.teardown
-        }),
-        callback
-      )
-    }
+    series([
+      (cb) => series(nodes.map((el) => el.ipfs.stop), cb),
+      (cb) => series(nodes.map((el) => el.repo.teardown), cb)
+    ], callback)
   }
 }

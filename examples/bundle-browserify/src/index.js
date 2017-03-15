@@ -11,6 +11,8 @@ const repoPath = String(Math.random())
 
 const node = new IPFS({
   repo: repoPath,
+  init: false,
+  start: false,
   EXPERIMENTAL: {
     pubsub: false
   }
@@ -23,17 +25,12 @@ node.init({ emptyRepo: true, bits: 2048 }, function (err) {
   if (err) {
     throw err
   }
-  node.load(function (err) {
+
+  node.start(function (err) {
     if (err) {
       throw err
     }
-
-    node.goOnline(function (err) {
-      if (err) {
-        throw err
-      }
-      console.log('IPFS node is ready')
-    })
+    console.log('IPFS node is ready')
   })
 })
 

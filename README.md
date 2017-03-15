@@ -196,7 +196,25 @@ The HTTP-API exposed by the js-ipfs daemon follows the [`http-api-spec`](https:/
 
 #### Create a IPFS node instance
 
-The basic startup flow involves (optionally) creating a Repo, creating an IPFS node, `init`-ing it so it can generate its keys, `load`-ing its configuration, and putting it online with `goOnline`. Here is a structural example:
+Creating an IPFS instance couldn't be easier, all you have to do is:
+
+```JavaScript
+// Create the IPFS node instance
+const node = new IPFS()
+
+node.on('start', () => {
+  // Your now is ready to use \o/
+
+  // stopping a node
+  node.stop(() => {
+    // node is now 'offline'
+  })
+})
+```
+
+#### Advanced options when creating an IPFS node.
+
+When starting a node, you can:
 
 ```JavaScript
 // IPFS will need a repo, it can create one for you or you can pass
@@ -204,37 +222,27 @@ The basic startup flow involves (optionally) creating a Repo, creating an IPFS n
 // https://github.com/ipfs/js-ipfs-repo
 const repo = <IPFS Repo instance or repo path>
 
-// Create the IPFS node instance
 const node = new IPFS({
   repo: repo,
-  EXPERIMENTAL: {
-    pubsub: false
+  init: true, // default
+  // init: false,
+  // init: {
+  //   bits: 1024 // size of the RSA key generated
+  // },
+  start: true,
+  // start: false,
+  EXPERIMENTAL: { // enable experimental features
+    pubsub: true
+  },
+  config: { // overload the default config
+    Addresses: {
+      Swarm: [
+        '/ip4/127.0.0.1/tcp/1337'
+      ]
+    }
   }
 })
-
-// We need to init our repo, in this case the repo was empty
-// We are picking 2048 bits for the RSA key that will be our PeerId
-node.init({ emptyRepo: true, bits: 2048 }, (err) => {
-   if (err) { throw err }
-
-   // Once the repo is initiated, we have to load it so that the IPFS
-   // instance has its config values. This is useful when you have
-   // previous created repos and you don't need to generate a new one
-   node.load((err) => {
-     if (err) { throw err }
-
-     // Last but not the least, we want our IPFS node to use its peer
-     // connections to fetch and serve blocks from.
-     node.goOnline((err) => {
-       if (err) { throw err }
-       // Here you should be good to go and call any IPFS function
-   })
-})
 ```
-
-> We are working on making this init process better, see https://github.com/ipfs/js-ipfs/issues/556 for the discussion.
-
-More examples can be found in the [examples folder](./examples)
 
 ### [Tutorials and Examples](/examples)
 

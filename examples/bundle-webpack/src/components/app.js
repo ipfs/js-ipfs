@@ -29,8 +29,11 @@ class App extends React.Component {
       // for simplicity, we create a new repo everytime the node
       // is created, because you can't init already existing repos
       const repoPath = String(Math.random())
+
       node = new IPFS({
         repo: repoPath,
+        init: false,
+        start: false,
         EXPERIMENTAL: {
           pubsub: false
         }
@@ -40,18 +43,13 @@ class App extends React.Component {
         if (err) {
           throw err
         }
-        node.load(function (err) {
+
+        node.start(function (err) {
           if (err) {
             throw err
           }
-
-          node.goOnline(function (err) {
-            if (err) {
-              throw err
-            }
-            console.log('IPFS node is ready')
-            ops()
-          })
+          console.log('IPFS node is ready')
+          ops()
         })
       })
     }

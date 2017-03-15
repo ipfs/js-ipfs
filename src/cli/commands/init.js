@@ -17,11 +17,6 @@ module.exports = {
       default: '2048',
       describe: 'Number of bits to use in the generated RSA private key (defaults to 2048)'
     },
-    force: {
-      alias: 'f',
-      type: 'boolean',
-      describe: 'Overwrite existing config (if it exists)'
-    },
     emptyRepo: {
       alias: 'e',
       type: 'boolean',
@@ -39,16 +34,16 @@ module.exports = {
       stores: Store
     })
 
-    const ipfs = new IPFS({
+    const node = new IPFS({
       repo: repo,
-      EXPERIMENTAL: {}
+      init: false,
+      start: false
     })
 
-    ipfs.init({
+    node.init({
       bits: argv.bits,
-      force: argv.force,
       emptyRepo: argv.emptyRepo,
-      log
+      log: log
     }, (err) => {
       if (err) {
         console.error(err.toString())

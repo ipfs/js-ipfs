@@ -23,11 +23,11 @@ describe('init', () => {
 
   beforeEach(() => {
     repo = createTempRepo()
+
     ipfs = new IPFS({
       repo: repo,
-      EXPERIMENTAL: {
-        pubsub: true
-      }
+      init: false,
+      start: false
     })
   })
 
@@ -91,12 +91,12 @@ describe('init', () => {
 
   it('data types', () => {
     expect(ipfs.types).to.be.deep.equal({
-      Buffer,
-      PeerId,
-      PeerInfo,
-      multiaddr,
-      multihash,
-      CID
+      Buffer: Buffer,
+      PeerId: PeerId,
+      PeerInfo: PeerInfo,
+      multiaddr: multiaddr,
+      multihash: multihash,
+      CID: CID
     })
   })
 })
