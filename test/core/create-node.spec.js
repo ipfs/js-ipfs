@@ -3,6 +3,7 @@
 'use strict'
 
 const expect = require('chai').expect
+const isNode = require('detect-node')
 const IPFS = require('../../src/core')
 
 // This gets replaced by require('../utils/create-repo-browser.js')
@@ -145,6 +146,9 @@ describe('create node', () => {
   })
 
   it('overload config', (done) => {
+    if (!isNode) {
+      return done()
+    }
     const node = new IPFS({
       repo: createTempRepo(),
       config: {
