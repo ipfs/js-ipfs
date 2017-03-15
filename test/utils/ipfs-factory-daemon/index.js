@@ -25,40 +25,45 @@ class Factory {
       config = undefined
     }
 
-    repoPath = repoPath || os.tmpdir() +
-      '/ipfs-' + Math.random().toString().substring(2, 8)
+    repoPath = repoPath ||
+      os.tmpdir() + '/ipfs-' + Math.random().toString().substring(2, 8)
 
-    let node
     let daemon
     let ctl
 
     series([
       (cb) => {
-        if (config) { return cb() }
+        // prepare config for node
+        if (config) {
+          return cb()
+        }
 
         config = JSON.parse(JSON.stringify(defaultConfig))
 
         PeerId.create({ bits: 1024 }, (err, id) => {
-          if (err) { return cb(err) }
+          if (err) {
+            return cb(err)
+          }
 
-          const pId = id.toJSON()
-          config.Identity.PeerID = pId.id
-          config.Identity.PrivKey = pId.privKey
+          const peerId = id.toJSON()
+          config.Identity.PeerID = peerId.id
+          config.Identity.PrivKey = peerId.privKey
           cb()
         })
       },
       (cb) => {
         // create the node
-        node = new IPFS({
+        IPFS.createNode({
           repo: repoPath,
+          start: false,
+          config: config,
           EXPERIMENTAL: {
             pubsub: true
           }
         })
 
-        node.init({ emptyRepo: true }, cb)
+        setTimeout(cb, 400)
       },
-      (cb) => node._repo.config.set(config, cb),
       (cb) => {
         // create the daemon
         daemon = new HTTPAPI(repoPath)
@@ -79,7 +84,9 @@ class Factory {
   dismantle (callback) {
     const tasks = this.daemonsSpawned.map((daemon) => (cb) => {
       daemon.stop((err) => {
-        if (err) { return cb(err) }
+        if (err) {
+          return cb(err)
+        }
         clean(daemon.repoPath)
         cb()
       })

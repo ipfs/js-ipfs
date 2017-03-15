@@ -3,7 +3,6 @@
 
 const expect = require('chai').expect
 const isNode = require('detect-node')
-const series = require('async/series')
 
 // This gets replaced by require('../utils/create-repo-browser.js')
 // in the browser
@@ -14,21 +13,27 @@ const IPFS = require('../../src/core')
 describe('bootstrap', () => {
   if (!isNode) { return }
 
-  let ipfs
+  let node
 
   before((done) => {
-    const repo = createTempRepo()
-    ipfs = new IPFS({
-      repo: repo,
+    node = new IPFS({
+      repo: createTempRepo(),
+      init: {
+        bits: 1024
+      },
       EXPERIMENTAL: {
         pubsub: true
       }
     })
-    series([
-      (cb) => ipfs.init({ bits: 1024 }, cb),
-      (cb) => ipfs.load(cb)
-    ], done)
+
+    node.on('error', (err) => {
+      expect(err).to.not.exist
+    })
+
+    node.on('start', done)
   })
+
+  after((done) => node.stop(done))
 
   const defaultList = [
     '/ip4/104.131.131.82/tcp/4001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ',
@@ -56,7 +61,7 @@ describe('bootstrap', () => {
   ]
 
   it('get bootstrap list', (done) => {
-    ipfs.bootstrap.list((err, list) => {
+    node.bootstrap.list((err, list) => {
       expect(err).to.not.exist
       expect(list.Peers).to.deep.equal(defaultList)
       done()
@@ -64,10 +69,10 @@ describe('bootstrap', () => {
   })
 
   it('add a peer to the bootstrap list', (done) => {
-    ipfs.bootstrap.add('/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT', (err, res) => {
+    node.bootstrap.add('/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT', (err, res) => {
       expect(err).to.not.exist
       expect(res).to.be.eql({Peers: ['/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT']})
-      ipfs.bootstrap.list((err, list) => {
+      node.bootstrap.list((err, list) => {
         expect(err).to.not.exist
         expect(list.Peers).to.deep.equal(updatedList)
         done()
@@ -76,10 +81,10 @@ describe('bootstrap', () => {
   })
 
   it('remove a peer from the bootstrap list', (done) => {
-    ipfs.bootstrap.rm('/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT', (err, res) => {
+    node.bootstrap.rm('/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT', (err, res) => {
       expect(err).to.not.exist
       expect(res).to.be.eql({Peers: ['/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT']})
-      ipfs.bootstrap.list((err, list) => {
+      node.bootstrap.list((err, list) => {
         expect(err).to.not.exist
         expect(list.Peers).to.deep.equal(defaultList)
         done()

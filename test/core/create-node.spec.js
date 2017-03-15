@@ -9,7 +9,7 @@ const IPFS = require('../../src/core')
 // in the browser
 const createTempRepo = require('../utils/create-repo-node.js')
 
-describe.only('create node', () => {
+describe('create node', () => {
   it('custom repoPath', (done) => {
     const node = new IPFS({
       repo: '/tmp/ipfs-repo-' + Math.random()

@@ -31,8 +31,11 @@ describe('bitswap', () => {
 
   beforeEach((done) => {
     const repo = createTempRepo()
+
     inProcNode = new IPFS({
       repo: repo,
+      init: false,
+      start: false,
       EXPERIMENTAL: {
         pubsub: true
       }
@@ -50,8 +53,7 @@ describe('bitswap', () => {
           cb()
         }
       },
-      (cb) => inProcNode.config.set('Discovery.MDNS.Enabled', false, cb),
-      (cb) => inProcNode.load(cb)
+      (cb) => inProcNode.config.set('Discovery.MDNS.Enabled', false, cb)
     ], done)
   })
 
@@ -121,11 +123,11 @@ describe('bitswap', () => {
 
     describe('fetches a remote block', () => {
       beforeEach((done) => {
-        inProcNode.goOnline(done)
+        inProcNode.start(done)
       })
 
       afterEach((done) => {
-        setTimeout(() => inProcNode.goOffline(done), 1500)
+        setTimeout(() => inProcNode.stop(done), 1500)
       })
 
       it('2 peers', (done) => {
@@ -209,11 +211,11 @@ describe('bitswap', () => {
 
     describe('fetches a remote file', () => {
       beforeEach((done) => {
-        inProcNode.goOnline(done)
+        inProcNode.start(done)
       })
 
       afterEach((done) => {
-        setTimeout(() => inProcNode.goOffline(done), 1500)
+        setTimeout(() => inProcNode.stop(done), 1500)
       })
 
       it('2 peers', (done) => {
@@ -252,11 +254,11 @@ describe('bitswap', () => {
       })
 
       it('returns an array of wanted blocks', (done) => {
-        inProcNode.goOnline((err) => {
+        inProcNode.start((err) => {
           expect(err).to.not.exist
           expect(inProcNode.bitswap.wantlist())
-            .to.be.eql([])
-          inProcNode.goOffline(done)
+            .to.eql([])
+          inProcNode.stop(done)
         })
       })
 
@@ -268,7 +270,7 @@ describe('bitswap', () => {
         })
 
         it('returns the stats', (done) => {
-          inProcNode.goOnline((err) => {
+          inProcNode.start((err) => {
             expect(err).to.not.exist
 
             let stats = inProcNode.bitswap.stat()
@@ -281,7 +283,7 @@ describe('bitswap', () => {
               'dupBlksReceived'
             ])
 
-            inProcNode.goOffline(done)
+            inProcNode.stop(done)
           })
         })
       })

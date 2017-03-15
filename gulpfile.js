@@ -16,63 +16,52 @@ let nodes = []
 function spawnDaemon (num, callback) {
   num = leftPad(num, 3, 0)
 
-  const repo = createTempRepo()
-
   const node = new IPFS({
-    repo: repo,
+    repo: createTempRepo(),
     init: {
       bits: 1024
     },
     start: false,
     EXPERIMENTAL: {
       pubsub: true
+    },
+    config: {
+      Addresses: {
+        Swarm: [
+          `/ip4/127.0.0.1/tcp/10${num}`,
+          `/ip4/127.0.0.1/tcp/20${num}/ws`
+        ],
+        API: `/ip4/127.0.0.1/tcp/31${num}`,
+        Gateway: `/ip4/127.0.0.1/tcp/32${num}`
+      },
+      Discovery: {
+        MDNS: {
+          Enabled: false
+        }
+      }
     }
   })
 
-  series([
-    (cb) => {
-      console.log('init was fine')
-      // TODO change all of this when overload the config is
-      // ready
-      repo.config.get((err, config) => {
-        if (err) { return callback(err) }
-
-        config.Addresses = {
-          Swarm: [
-            `/ip4/127.0.0.1/tcp/10${num}`,
-            `/ip4/127.0.0.1/tcp/20${num}/ws`
-          ],
-          API: `/ip4/127.0.0.1/tcp/31${num}`,
-          Gateway: `/ip4/127.0.0.1/tcp/32${num}`
-        }
-
-        config.Discovery.MDNS.Enabled = false
-
-        repo.config.set(config, cb)
-      })
-    },
-    (cb) => {
-      const daemon = new HTTPAPI(node.repo.path())
-      nodes.push(daemon)
-      daemon.start(cb)
-    }
-  ], callback)
+  setTimeout(() => {
+    const daemon = new HTTPAPI(node.repo.path())
+    nodes.push(daemon)
+    daemon.start(callback)
+  }, 400)
 }
 
 gulp.task('libnode:start', (done) => {
   nodes = []
   parallel([
-    // (cb) => spawnDaemon(7, cb),
-    // (cb) => spawnDaemon(8, cb),
-    // (cb) => spawnDaemon(12, cb),
-    // (cb) => spawnDaemon(13, cb)
-    (cb) => cb()
+    (cb) => spawnDaemon(7, cb),
+    (cb) => spawnDaemon(8, cb),
+    (cb) => spawnDaemon(12, cb),
+    (cb) => spawnDaemon(13, cb)
   ], done)
 })
 
 gulp.task('libnode:stop', (done) => {
   series(nodes.map((node) => (cb) => {
-    setTimeout(() => node.stop(cb), 200)
+    setTimeout(() => node.stop(cb), 100)
   }), done)
 })
 

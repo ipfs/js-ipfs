@@ -23,11 +23,11 @@ describe('init', () => {
 
   beforeEach(() => {
     repo = createTempRepo()
+
     ipfs = new IPFS({
       repo: repo,
-      EXPERIMENTAL: {
-        pubsub: true
-      }
+      init: false,
+      start: false
     })
   })
 
