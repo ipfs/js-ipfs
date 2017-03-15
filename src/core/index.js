@@ -29,10 +29,9 @@ class IPFS extends EventEmitter {
 
     extend(this._options, options)
 
-    if (!(
-        typeof options.init === 'boolean' &&
-        options.init === false)) {
-      this._options.init = true
+    if (typeof options.init === 'boolean' &&
+        options.init === false) {
+      this._options.init = false
     }
 
     if (!(
@@ -114,8 +113,6 @@ class IPFS extends EventEmitter {
     ], (err) => {
       if (err) {
         this.emit('error', err)
-      } else if (this.isOnline()) {
-        this.emit('start')
       }
     })
   }

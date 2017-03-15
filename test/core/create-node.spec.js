@@ -10,9 +10,6 @@ const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/create-repo-node.js')
 
 describe.only('create node', () => {
-  let ipfs
-  let repo
-
   it('custom repoPath', (done) => {
     const node = new IPFS({
       repo: '/tmp/ipfs-repo-' + Math.random()
@@ -31,32 +28,110 @@ describe.only('create node', () => {
     })
   })
 
-  it.skip('custom repo', (done) => {
+  it('custom repo', (done) => {
     const node = new IPFS({
       repo: createTempRepo()
     })
 
     node.on('start', (err) => {
       expect(err).to.not.exist
-    })
-  })
-
-  it.skip('IPFS.createNode', (done) => {})
-  it.skip('init: { bits: 1024 }', (done) => {
-    // TODO
-    ipfs.init({ bits: 2048 }, (err) => {
-      expect(err).to.not.exist
-
-      repo.config.get((err, config) => {
+      node.config.get((err, config) => {
         expect(err).to.not.exist
-        expect(config.Identity.PrivKey.length).is.above(256)
-        done()
+
+        expect(config.Identity).to.exist
+        node.on('stop', done)
+        node.stop()
       })
     })
   })
-  it.skip('init: false errors (start default: true)', (done) => {})
-  it.skip('init: false, start: false', (done) => {})
-  it.skip('init: true, start: false', (done) => {})
+
+  it('IPFS.createNode', (done) => {
+    const node = IPFS.createNode({
+      repo: createTempRepo()
+    })
+
+    node.on('start', (err) => {
+      expect(err).to.not.exist
+      node.config.get((err, config) => {
+        expect(err).to.not.exist
+
+        expect(config.Identity).to.exist
+        // note: key length doesn't map to buffer length
+        expect(config.Identity.PrivKey.length).is.below(2048)
+
+        node.on('stop', done)
+        node.stop()
+      })
+    })
+  })
+
+  it('init: { bits: 1024 }', (done) => {
+    const node = new IPFS({
+      repo: createTempRepo(),
+      init: {
+        bits: 1024
+      }
+    })
+
+    node.on('start', (err) => {
+      expect(err).to.not.exist
+      node.config.get((err, config) => {
+        expect(err).to.not.exist
+        expect(config.Identity).to.exist
+        expect(config.Identity.PrivKey.length).is.below(1024)
+        node.on('stop', done)
+        node.stop()
+      })
+    })
+  })
+
+  it('init: false errors (start default: true)', (done) => {
+    const node = new IPFS({
+      repo: createTempRepo(),
+      init: false
+    })
+    node.on('error', (err) => {
+      expect(err).to.exist
+      done()
+    })
+  })
+
+  it('init: false, start: false', (done) => {
+    const node = new IPFS({
+      repo: createTempRepo(),
+      init: false,
+      start: false
+    })
+
+    let happened = false
+
+    function shouldNotHappen () {
+      happened = true
+    }
+
+    node.on('error', shouldNotHappen)
+    node.on('start', shouldNotHappen)
+    node.on('stop', shouldNotHappen)
+
+    setTimeout(() => {
+      expect(happened).to.be.false
+      done()
+    }, 250)
+  })
+
+  it('init: true, start: false', (done) => {
+    const node = new IPFS({
+      repo: createTempRepo(),
+      init: true,
+      start: false
+    })
+
+    setTimeout(() => {
+      node.on('start', done)
+      node.start()
+    }, 250)
+  })
+
   it.skip('overload config', (done) => {})
   it.skip('start and stop, start and stop', (done) => {})
 })

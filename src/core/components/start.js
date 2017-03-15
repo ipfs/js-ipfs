@@ -42,6 +42,9 @@ module.exports = (self) => {
           } else {
             cb()
           }
+        },
+        (cb) => {
+          self.emit('start')
         }
       ], callback)
     })
