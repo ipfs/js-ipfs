@@ -128,7 +128,7 @@
     "peer-book": "~0.3.1",
     "peer-id": "~0.8.2",
     "peer-info": "~0.8.3",
-    "pipe-args": "^1.0.1",
+    "pipe-args": "^1.2.0",
     "promisify-es6": "^1.0.2",
     "pull-file": "^1.0.0",
     "pull-paramap": "^1.2.1",

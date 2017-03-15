@@ -2,10 +2,18 @@
 
 'use strict'
 
-require('pipe-args').load()
-const yargs = require('yargs')
+const pipe = require('pipe-args')
 const updateNotifier = require('update-notifier')
 const readPkgUp = require('read-pkg-up')
+
+const enableStdin = [
+  'files', 'path', 'object data', 'ref', 'domain-name', 'key', 'ipfs-path',
+  'name', 'address', 'data', 'peer', 'recursive', 'default-config', 'peer ID'
+]
+
+pipe.load({ commands: enableStdin })
+
+const yargs = require('yargs')
 
 const pkg = readPkgUp.sync({cwd: __dirname}).pkg
 updateNotifier({
