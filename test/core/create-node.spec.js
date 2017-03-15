@@ -127,11 +127,57 @@ describe.only('create node', () => {
     })
 
     setTimeout(() => {
-      node.on('start', done)
+      node.on('start', () => node.stop(done))
       node.start()
     }, 250)
   })
 
-  it.skip('overload config', (done) => {})
-  it.skip('start and stop, start and stop', (done) => {})
+  it('init: true, start: false, use callback', (done) => {
+    const node = new IPFS({
+      repo: createTempRepo(),
+      init: true,
+      start: false
+    })
+
+    setTimeout(() => {
+      node.start(() => node.stop(done))
+    }, 500)
+  })
+
+  it('overload config', (done) => {
+    const node = new IPFS({
+      repo: createTempRepo(),
+      config: {
+        Addresses: {
+          Swarm: ['/ip4/127.0.0.1/tcp/9977']
+        }
+      }
+    })
+
+    node.on('start', (err) => {
+      expect(err).to.not.exist
+      node.config.get((err, config) => {
+        expect(err).to.not.exist
+
+        expect(config.Addresses.Swarm).to.eql(
+          ['/ip4/127.0.0.1/tcp/9977']
+        )
+        node.stop(done)
+      })
+    })
+  })
+
+  it('start and stop, start and stop', (done) => {
+    const node = new IPFS({
+      repo: createTempRepo()
+    })
+
+    node.once('start', () => {
+      node.stop(() => {
+        node.start(() => {
+          node.stop(done)
+        })
+      })
+    })
+  })
 })

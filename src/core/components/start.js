@@ -27,6 +27,7 @@ module.exports = (self) => {
       if (pubsub) {
         self._pubsub = new FloodSub(self._libp2pNode)
       }
+
       series([
         (cb) => {
           self._bitswap.start()
@@ -45,6 +46,7 @@ module.exports = (self) => {
         },
         (cb) => {
           self.emit('start')
+          cb()
         }
       ], callback)
     })

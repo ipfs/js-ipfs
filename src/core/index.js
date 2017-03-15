@@ -106,6 +106,22 @@ class IPFS extends EventEmitter {
           : cb()
       },
       (cb) => {
+        if (!(this._options.config &&
+              typeof this._options.config === 'object' &&
+              this._options.init)) {
+          return cb()
+        }
+
+        this._repo.config.get((err, config) => {
+          if (err) {
+            return cb(err)
+          }
+
+          extend(config, this._options.config)
+          this._repo.config.set(config, cb)
+        })
+      },
+      (cb) => {
         this._options.start
           ? this.start(cb)
           : cb()
