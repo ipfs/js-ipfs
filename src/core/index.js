@@ -34,9 +34,8 @@ class IPFS extends EventEmitter {
       this._options.init = false
     }
 
-    if (!(
-        typeof options.start === 'boolean' &&
-        options.start === false)) {
+    if (!(typeof options.start === 'boolean' &&
+          options.start === false)) {
       this._options.start = true
     }
 
