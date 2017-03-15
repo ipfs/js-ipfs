@@ -4,15 +4,12 @@
   <title>IPFS in the Browser</title>
   <script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
   <script type="text/javascript">
-    // We provide a hosted signalling endpoint that you can use to discover
-    // and dial to other nodes. It is hosted at `star-signal.cloud.ipfs.team`
-    // If you run your own signalling, you can change this multiaddr.
-    const SIGNALING_SERVER = '/libp2p-webrtc-star/dns4/star-signal.cloud.ipfs.team/wss/ipfs/'
-
     const repoPath = 'ipfs-' + Math.random()
 
     // Create an IPFS node
     const node = new Ipfs({
+      init: false,
+      start: false
       repo: repoPath
     })
 
@@ -20,35 +17,15 @@
     node.init(handleInit)
 
     function handleInit (err) {
-      if (!err) { // The repo was initialized for the first time, we need to configure it
-        addWebRTCMultiaddr()
-      } else if (err && err.message !== 'repo already exists') { // The repo already existed, let's just load it
-        loadRepo()
-      } else {
+      if (err) {
         throw err
       }
-    }
 
-    function addWebRTCMultiaddr() {
-      // Addj the WebrTCStar Multiaddr to your node
-      node.config.get(function (err, config) {
-        if (err) {
-          throw err
-        }
-
-        const starAddr = (SIGNALING_SERVER + config.Identity.PeerID)
-
-        node.config.set('Addresses.Swarm[1]', starAddr, loadRepo)
-      })
-    }
-
-    function loadRepo() {
-      node.load(() => node.goOnline(() => {
+      node.start(() => {
         console.log('Online status: ', node.isOnline() ? 'online' : 'offline')
 
         document.getElementById("status").innerHTML= 'Node status: ' + (node.isOnline() ? 'online' : 'offline')
 
-        // \o/ Now you have an IPFS node using WebRTC to find other nodes!
         // You can write more code here to use it. Use methods like 
         // node.files.add, node.files.get. See the API docs here:
         // https://github.com/ipfs/interface-ipfs-core/tree/master/API
