@@ -14,6 +14,8 @@ const IPFS = require('../../src/core')
  */
 const node = new IPFS({
   repo: path.join(os.tmpdir() + '/' + new Date().toString()),
+  init: false,
+  start: false,
   EXPERIMENTAL: {
     pubsub: false
   }
@@ -43,13 +45,9 @@ series([
    */
   (cb) => node.init({ emptyRepo: true, bits: 2048 }, cb),
   /*
-   * Load the repo config into the IPFS node
-   */
-  (cb) => node.load(cb),
-  /*
    * Take the node online (bitswap, network and so on)
    */
-  (cb) => node.goOnline(cb),
+  (cb) => node.start(cb),
   /*
    * Add a file to IPFS - Complete Files API on:
    * https://github.com/ipfs/interface-ipfs-core/tree/master/API/files
