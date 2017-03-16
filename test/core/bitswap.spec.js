@@ -37,7 +37,7 @@ describe('bitswap', () => {
       init: false,
       start: false,
       EXPERIMENTAL: {
-        pubsub: true
+        pubsub: false
       }
     })
     series([
