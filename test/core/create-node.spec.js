@@ -128,9 +128,10 @@ describe('create node', () => {
     })
 
     setTimeout(() => {
-      node.on('start', () => node.stop(done))
+      node.on('stop', () => done())
+      node.on('start', () => node.stop())
       node.start()
-    }, 250)
+    }, 800)
   })
 
   it('init: true, start: false, use callback', (done) => {
@@ -142,7 +143,7 @@ describe('create node', () => {
 
     setTimeout(() => {
       node.start(() => node.stop(done))
-    }, 500)
+    }, 800)
   })
 
   it('overload config', (done) => {
