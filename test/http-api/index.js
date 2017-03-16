@@ -2,7 +2,10 @@
 'use strict'
 
 const fs = require('fs')
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const API = require('../../src/http-api')
 const APIctl = require('ipfs-api')
 const ncp = require('ncp').ncp
@@ -30,7 +33,7 @@ describe('HTTP API', () => {
 
   after((done) => {
     http.api.stop((err) => {
-      expect(err).to.not.exist
+      expect(err).to.not.exist()
       clean(repoTests)
       done()
     })

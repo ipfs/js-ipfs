@@ -1,7 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const series = require('async/series')
 const parallel = require('async/parallel')
 const waterfall = require('async/waterfall')
@@ -73,7 +76,7 @@ describe('basic', () => {
         (cb) => jsDaemon.api.id(cb),
         (cb) => goDaemon.api.id(cb)
       ], (err, ids) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         jsId = ids[0]
         goId = ids[1]
         cb()
@@ -84,7 +87,7 @@ describe('basic', () => {
         (cb) => goDaemon.api.swarm.peers(cb),
         (cb) => jsDaemon.api.swarm.peers(cb)
       ], (err, peers) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         expect(peers[0].map((p) => p.peer.toB58String())).to.include(jsId.id)
         expect(peers[1].map((p) => p.peer.toB58String())).to.include(goId.id)
         cb()
@@ -101,7 +104,7 @@ describe('basic', () => {
         (cb) => jsDaemon.api.id(cb),
         (cb) => js2Daemon.api.id(cb)
       ], (err, ids) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         jsId = ids[0]
         js2Id = ids[1]
         cb()
@@ -112,7 +115,7 @@ describe('basic', () => {
         (cb) => js2Daemon.api.swarm.peers(cb),
         (cb) => jsDaemon.api.swarm.peers(cb)
       ], (err, peers) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         expect(peers[0].map((p) => p.peer.toB58String())).to.include(jsId.id)
         expect(peers[1].map((p) => p.peer.toB58String())).to.include(js2Id.id)
         cb()
@@ -128,7 +131,7 @@ describe('basic', () => {
         (res, cb) => jsDaemon.api.cat(res[0].hash, cb),
         (stream, cb) => stream.pipe(bl(cb))
       ], (err, file) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         expect(file).to.be.eql(data)
         done()
       })
@@ -141,7 +144,7 @@ describe('basic', () => {
         (res, cb) => goDaemon.api.cat(res[0].hash, cb),
         (stream, cb) => stream.pipe(bl(cb))
       ], (err, file) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         expect(file).to.be.eql(data)
         done()
       })
@@ -154,7 +157,7 @@ describe('basic', () => {
         (res, cb) => jsDaemon.api.cat(res[0].hash, cb),
         (stream, cb) => stream.pipe(bl(cb))
       ], (err, file) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         expect(file).to.be.eql(data)
         done()
       })
@@ -174,7 +177,7 @@ describe('basic', () => {
         const hash = res[res.length - 1].hash
         return jsDaemon.api.object.get(hash)
       }).then((res) => {
-        expect(res).to.exist
+        expect(res).to.exist()
         return rmDir(dir)
       })
     })
@@ -191,7 +194,7 @@ describe('basic', () => {
         const hash = res[res.length - 1].hash
         return goDaemon.api.object.get(hash)
       }).then((res) => {
-        expect(res).to.exist
+        expect(res).to.exist()
         return rmDir(dir)
       })
     })
@@ -208,7 +211,7 @@ describe('basic', () => {
         const hash = res[res.length - 1].hash
         return jsDaemon.api.object.get(hash)
       }).then((res) => {
-        expect(res).to.exist
+        expect(res).to.exist()
         return rmDir(dir)
       })
     })

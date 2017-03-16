@@ -1,7 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const waterfall = require('async/waterfall')
 const bl = require('bl')
 const crypto = require('crypto')
@@ -16,7 +19,7 @@ function catAndCheck (daemon, hash, data, callback) {
     (stream, cb) => stream.pipe(bl(cb))
   ], (err, file) => {
     console.log('got file')
-    expect(err).to.not.exist
+    expect(err).to.not.exist()
     expect(file).to.be.eql(data)
     callback()
   })

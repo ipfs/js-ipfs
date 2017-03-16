@@ -1,7 +1,11 @@
 'use strict'
 
 const execa = require('execa')
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
+
 const _ = require('lodash')
 
 // This is our new test utility to easily check and execute
@@ -55,7 +59,7 @@ module.exports = (repoPath, opts) => {
     }
 
     return exec(args).catch((err) => {
-      expect(err).to.exist
+      expect(err).to.exist()
     })
   }
 

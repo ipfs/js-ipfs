@@ -2,7 +2,11 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
+
 const isNode = require('detect-node')
 const IPFS = require('../../src/core')
 
@@ -17,12 +21,12 @@ describe('create node', () => {
     })
 
     node.on('start', (err) => {
-      expect(err).to.not.exist
+      expect(err).to.not.exist()
 
       node.config.get((err, config) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
 
-        expect(config.Identity).to.exist
+        expect(config.Identity).to.exist()
         node.on('stop', done)
         node.stop()
       })
@@ -35,11 +39,11 @@ describe('create node', () => {
     })
 
     node.on('start', (err) => {
-      expect(err).to.not.exist
+      expect(err).to.not.exist()
       node.config.get((err, config) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
 
-        expect(config.Identity).to.exist
+        expect(config.Identity).to.exist()
         node.on('stop', done)
         node.stop()
       })
@@ -52,11 +56,11 @@ describe('create node', () => {
     })
 
     node.on('start', (err) => {
-      expect(err).to.not.exist
+      expect(err).to.not.exist()
       node.config.get((err, config) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
 
-        expect(config.Identity).to.exist
+        expect(config.Identity).to.exist()
         // note: key length doesn't map to buffer length
         expect(config.Identity.PrivKey.length).is.below(2048)
 
@@ -75,10 +79,10 @@ describe('create node', () => {
     })
 
     node.on('start', (err) => {
-      expect(err).to.not.exist
+      expect(err).to.not.exist()
       node.config.get((err, config) => {
-        expect(err).to.not.exist
-        expect(config.Identity).to.exist
+        expect(err).to.not.exist()
+        expect(config.Identity).to.exist()
         expect(config.Identity.PrivKey.length).is.below(1024)
         node.on('stop', done)
         node.stop()
@@ -92,7 +96,7 @@ describe('create node', () => {
       init: false
     })
     node.on('error', (err) => {
-      expect(err).to.exist
+      expect(err).to.exist()
       done()
     })
   })
@@ -115,7 +119,7 @@ describe('create node', () => {
     node.on('stop', shouldNotHappen)
 
     setTimeout(() => {
-      expect(happened).to.be.false
+      expect(happened).to.equal(false)
       done()
     }, 250)
   })
@@ -160,9 +164,9 @@ describe('create node', () => {
     })
 
     node.on('start', (err) => {
-      expect(err).to.not.exist
+      expect(err).to.not.exist()
       node.config.get((err, config) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
 
         expect(config.Addresses.Swarm).to.eql(
           ['/ip4/127.0.0.1/tcp/9977']

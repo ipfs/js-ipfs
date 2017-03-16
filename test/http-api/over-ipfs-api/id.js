@@ -1,13 +1,16 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 
 module.exports = (ctl) => {
   describe('.id', () => {
     it('get the identity', (done) => {
       ctl.id((err, result) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         expect(result.id).to.equal(idResult.ID)
         expect(result.publicKey).to.equal(idResult.PublicKey)
         expect(result.agentVersion).to.equal(idResult.AgentVersion)

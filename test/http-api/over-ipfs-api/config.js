@@ -1,7 +1,11 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
+
 const fs = require('fs')
 const path = require('path')
 
@@ -17,14 +21,14 @@ module.exports = (ctl) => {
 
     it('.get returns error for request with invalid argument', (done) => {
       ctl.config.get('kittens', (err, res) => {
-        expect(err).to.exist
+        expect(err).to.exist()
         done()
       })
     })
 
     it('.get returns value for request with argument', (done) => {
       ctl.config.get('API.HTTPHeaders', (err, value) => {
-        expect(err).not.to.exist
+        expect(err).not.to.exist()
         expect(value).to.equal(null)
         done()
       })
@@ -32,35 +36,35 @@ module.exports = (ctl) => {
 
     it('.set updates value for request with both args', (done) => {
       ctl.config.set('Datastore.Path', 'kitten', (err) => {
-        expect(err).not.to.exist
+        expect(err).not.to.exist()
         done()
       })
     })
 
     it('.set returns error for request with both args and JSON flag with invalid JSON argument', (done) => {
       ctl.config.set('Datastore.Path', 'kitten', { json: true }, (err) => {
-        expect(err).to.exist
+        expect(err).to.exist()
         done()
       })
     })
 
     it('.set updates value for request with both args and bool flag and true argument', (done) => {
       ctl.config.set('Datastore.Path', true, (err) => {
-        expect(err).not.to.exist
+        expect(err).not.to.exist()
         done()
       })
     })
 
     it('.set updates value for request with both args and bool flag and false argument', (done) => {
       ctl.config.set('Datastore.Path', false, (err) => {
-        expect(err).not.to.exist
+        expect(err).not.to.exist()
         done()
       })
     })
 
     it('.get updatedConfig', (done) => {
       ctl.config.get((err, config) => {
-        expect(err).not.to.exist
+        expect(err).not.to.exist()
         expect(config).to.be.eql(updatedConfig())
         done()
       })
@@ -73,7 +77,7 @@ module.exports = (ctl) => {
         const filePath = 'test/test-data/badconfig'
 
         ctl.config.replace(filePath, (err) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
@@ -83,7 +87,7 @@ module.exports = (ctl) => {
         const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
         ctl.config.replace(filePath, (err) => {
-          expect(err).not.to.exist
+          expect(err).not.to.exist()
           expect(expectedConfig).to.deep.equal(updatedConfig())
           done()
         })

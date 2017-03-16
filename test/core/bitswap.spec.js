@@ -2,7 +2,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const _ = require('lodash')
 const series = require('async/series')
 const waterfall = require('async/waterfall')
@@ -70,7 +73,7 @@ describe('bitswap', () => {
   describe('connections', () => {
     function wire (targetNode, dialerNode, done) {
       targetNode.id((err, identity) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         const addr = identity.addresses
           .map((addr) => {
             const ma = multiaddr(addr.toString().split('ipfs')[0])
@@ -156,10 +159,10 @@ describe('bitswap', () => {
 
         series([
           (cb) => parallel(_.range(6).map((i) => makeBlock), (err, _blocks) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             blocks = _blocks
             map(blocks, (b, cb) => b.key('sha2-256', cb), (err, res) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               keys = res
               cb()
             })
@@ -183,7 +186,7 @@ describe('bitswap', () => {
           (cb) => parallel(_.range(6).map((i) => (cbI) => {
             const check = (n, k, callback) => {
               n.block.get(k, (err, b) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 expect(
                   (b.data || b).toString()
                 ).to.be.eql(
@@ -223,7 +226,7 @@ describe('bitswap', () => {
           },
           (res, cb) => res.pipe(bl(cb))
         ], (err, res) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           expect(res).to.be.eql(file)
           done()
         })

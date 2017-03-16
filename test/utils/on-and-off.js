@@ -2,7 +2,11 @@
 'use strict'
 
 const Factory = require('../utils/ipfs-factory-daemon')
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
+
 const ipfsExec = require('../utils/ipfs-exec')
 const clean = require('../utils/clean')
 const os = require('os')
@@ -42,7 +46,7 @@ function on (tests) {
       factory = new Factory()
 
       factory.spawnNode((err, node) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         thing.ipfs = ipfsExec(node.repoPath)
         thing.ipfs.repoPath = node.repoPath
         done()

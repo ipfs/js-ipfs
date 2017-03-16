@@ -2,7 +2,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const series = require('async/series')
 const ipfsExec = require('../utils/ipfs-exec')
 const Factory = require('../utils/ipfs-factory-daemon')
@@ -23,16 +26,16 @@ describe('swarm', () => {
     series([
       (cb) => {
         factory.spawnNode((err, node) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           ipfsA = ipfsExec(node.repoPath)
           cb()
         })
       },
       (cb) => {
         factory.spawnNode((err, node) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           node.id((err, id) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             bMultiaddr = id.addresses[0]
             cb()
           })

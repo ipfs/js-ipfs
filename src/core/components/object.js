@@ -140,7 +140,6 @@ module.exports = function object (self) {
             node = _node
             next()
           })
-          return
         } else {
           DAGNode.create(obj, (err, _node) => {
             if (err) {

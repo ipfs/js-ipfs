@@ -1,7 +1,11 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
+
 const isNode = require('detect-node')
 
 // This gets replaced by require('../utils/create-repo-browser.js')
@@ -27,7 +31,7 @@ describe('bootstrap', () => {
     })
 
     node.on('error', (err) => {
-      expect(err).to.not.exist
+      expect(err).to.not.exist()
     })
 
     node.on('start', done)
@@ -62,7 +66,7 @@ describe('bootstrap', () => {
 
   it('get bootstrap list', (done) => {
     node.bootstrap.list((err, list) => {
-      expect(err).to.not.exist
+      expect(err).to.not.exist()
       expect(list.Peers).to.deep.equal(defaultList)
       done()
     })
@@ -70,10 +74,10 @@ describe('bootstrap', () => {
 
   it('add a peer to the bootstrap list', (done) => {
     node.bootstrap.add('/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT', (err, res) => {
-      expect(err).to.not.exist
+      expect(err).to.not.exist()
       expect(res).to.be.eql({Peers: ['/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT']})
       node.bootstrap.list((err, list) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         expect(list.Peers).to.deep.equal(updatedList)
         done()
       })
@@ -82,10 +86,10 @@ describe('bootstrap', () => {
 
   it('remove a peer from the bootstrap list', (done) => {
     node.bootstrap.rm('/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT', (err, res) => {
-      expect(err).to.not.exist
+      expect(err).to.not.exist()
       expect(res).to.be.eql({Peers: ['/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT']})
       node.bootstrap.list((err, list) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         expect(list.Peers).to.deep.equal(defaultList)
         done()
       })

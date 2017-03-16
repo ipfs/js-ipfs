@@ -28,7 +28,8 @@ aliases.forEach((alias) => {
 })
 
 // finalize cli setup
-cli.help()
+cli // eslint-disable-line
+  .help()
   .strict()
   .completion()
-.argv
+  .argv

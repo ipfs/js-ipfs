@@ -1,7 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const fs = require('fs')
 const path = require('path')
 const runOnAndOff = require('../utils/on-and-off')
@@ -52,7 +55,7 @@ describe('config', () => runOnAndOff((thing) => {
 
     it('get a config key value', () => {
       return ipfs('config Identity.PeerID').then((out) => {
-        expect(out).to.exist
+        expect(out).to.exist()
       })
     })
 

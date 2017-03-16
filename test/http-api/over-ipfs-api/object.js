@@ -1,25 +1,29 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-/* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
+
 const fs = require('fs')
 const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
 
 function asJson (cb) {
   return (err, result) => {
-    expect(err).to.not.exist
+    expect(err).to.not.exist()
     const nodeJSON = result.toJSON()
     cb(null, nodeJSON)
   }
 }
+
 module.exports = (ctl) => {
   describe('.object', () => {
     it('.new', (done) => {
       ctl.object.new(asJson((err, res) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         expect(res.multihash)
           .to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
         expect(res.links).to.be.eql([])
@@ -30,21 +34,21 @@ module.exports = (ctl) => {
     describe('.get', () => {
       it('returns error for request without argument', (done) => {
         ctl.object.get(null, (err, result) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
 
       it('returns error for request with invalid argument', (done) => {
         ctl.object.get('invalid', {enc: 'base58'}, (err, result) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
 
       it('returns value', (done) => {
         ctl.object.get('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n', {enc: 'base58'}, asJson((err, res) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           expect(res.links).to.be.eql([])
           expect(res.data).to.eql(new Buffer(''))
           done()
@@ -57,7 +61,7 @@ module.exports = (ctl) => {
         const filePath = 'test/test-data/badnode.json'
 
         ctl.object.put(filePath, {enc: 'json'}, (err) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
@@ -76,7 +80,7 @@ module.exports = (ctl) => {
         }
 
         ctl.object.put(filePath, {enc: 'json'}, asJson((err, res) => {
-          expect(err).not.to.exist
+          expect(err).to.not.exist()
           expect(res).to.eql(expectedResult)
           done()
         }))
@@ -86,21 +90,21 @@ module.exports = (ctl) => {
     describe('.stat', () => {
       it('returns error for request without argument', (done) => {
         ctl.object.stat(null, (err, result) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
 
       it('returns error for request with invalid argument', (done) => {
         ctl.object.stat('invalid', {enc: 'base58'}, (err, result) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
 
       it('returns value', (done) => {
         ctl.object.stat('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm', {enc: 'base58'}, (err, result) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           expect(result.Hash).to.equal('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
           expect(result.NumLinks).to.equal(1)
           expect(result.BlockSize).to.equal(60)
@@ -115,21 +119,21 @@ module.exports = (ctl) => {
     describe('.data', () => {
       it('returns error for request without argument', (done) => {
         ctl.object.data(null, (err, result) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
 
       it('returns error for request with invalid argument', (done) => {
         ctl.object.data('invalid', {enc: 'base58'}, (err, result) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
 
       it('returns value', (done) => {
         ctl.object.data('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm', {enc: 'base58'}, (err, result) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           expect(result.toString()).to.equal('another')
           done()
         })
@@ -139,14 +143,14 @@ module.exports = (ctl) => {
     describe('.links', () => {
       it('returns error for request without argument', (done) => {
         ctl.object.links(null, (err, result) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
 
       it('returns error for request with invalid argument', (done) => {
         ctl.object.links('invalid', {enc: 'base58'}, (err, result) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
@@ -159,7 +163,7 @@ module.exports = (ctl) => {
         }
 
         ctl.object.links('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm', {enc: 'base58'}, (err, result) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           expect(result[0].toJSON()).to.deep.equal(expectedResult)
           done()
         })
@@ -169,7 +173,7 @@ module.exports = (ctl) => {
     describe('.patch.appendData', () => {
       it('returns error for request without key & data', (done) => {
         ctl.object.patch.appendData(null, null, (err) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
@@ -178,7 +182,7 @@ module.exports = (ctl) => {
         const filePath = 'test/test-data/badnode.json'
 
         ctl.object.patch.appendData(null, filePath, (err) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
@@ -194,7 +198,7 @@ module.exports = (ctl) => {
         }
 
         ctl.object.patch.appendData(key, filePath, {enc: 'base58'}, asJson((err, res) => {
-          expect(err).not.to.exist
+          expect(err).to.not.exist()
           expect(res).to.eql(expectedResult)
           done()
         }))
@@ -204,7 +208,7 @@ module.exports = (ctl) => {
     describe('.patch.setData', () => {
       it('returns error for request without key & data', (done) => {
         ctl.object.patch.setData(null, null, (err) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
@@ -213,7 +217,7 @@ module.exports = (ctl) => {
         const filePath = 'test/test-data/badnode.json'
 
         ctl.object.patch.setData(null, filePath, (err) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
@@ -229,7 +233,7 @@ module.exports = (ctl) => {
         }
 
         ctl.object.patch.setData(key, filePath, {enc: 'base58'}, asJson((err, res) => {
-          expect(err).not.to.exist
+          expect(err).to.not.exist()
           expect(res).to.eql(expectedResult)
           done()
         }))
@@ -239,14 +243,14 @@ module.exports = (ctl) => {
     describe('.patch.addLink', () => {
       it('returns error for request without arguments', (done) => {
         ctl.object.patch.addLink(null, null, null, (err) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
 
       it('returns error for request only one invalid argument', (done) => {
         ctl.object.patch.addLink('invalid', null, null, (err) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
@@ -257,7 +261,7 @@ module.exports = (ctl) => {
         const ref = 'QmTz3oc4gdpRMKP2sdGUPZTAGRngqjsi99BPoztyP53JMM'
         const link = new DAGLink(name, 2, ref)
         ctl.object.patch.addLink(root, link, {enc: 'base58'}, (err) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
@@ -268,7 +272,7 @@ module.exports = (ctl) => {
         const ref = 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
         const link = new DAGLink(name, 10, ref)
         ctl.object.patch.addLink(root, link, {enc: 'base58'}, asJson((err, res) => {
-          expect(err).not.to.exist
+          expect(err).not.to.exist()
           expect(res.multihash).to.equal('QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK')
           expect(res.links[0]).to.eql({
             name: 'foo',
@@ -283,14 +287,14 @@ module.exports = (ctl) => {
     describe('.patch.rmLink', () => {
       it('returns error for request without arguments', (done) => {
         ctl.object.patch.rmLink(null, null, (err) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
 
       it('returns error for request only one invalid argument', (done) => {
         ctl.object.patch.rmLink('invalid', null, (err) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
@@ -300,7 +304,7 @@ module.exports = (ctl) => {
         const link = 'foo'
 
         ctl.object.patch.rmLink(root, link, (err) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           done()
         })
       })
