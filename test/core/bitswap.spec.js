@@ -27,42 +27,44 @@ function makeBlock (cb) {
 
 describe('bitswap', () => {
   let inProcNode // Node spawned inside this process
-  let swarmAddrsBak
+  // let swarmAddrsBak
 
   beforeEach((done) => {
     const repo = createTempRepo()
 
-    inProcNode = new IPFS({
-      repo: repo,
-      init: false,
-      start: false,
-      EXPERIMENTAL: {
-        pubsub: true
-      }
-    })
-    series([
-      (cb) => inProcNode.init({ bits: 2048 }, cb),
-      (cb) => {
-        if (!isNode) {
-          inProcNode.config.get('Addresses.Swarm', (err, swarmAddrs) => {
-            expect(err).to.not.exist
-            swarmAddrsBak = swarmAddrs
-            inProcNode.config.set('Addresses.Swarm', [], cb)
-          })
-        } else {
-          cb()
+    if (!isNode) {
+      inProcNode = new IPFS({
+        repo: repo,
+        config: {
+          Addresses: {
+            Swarm: []
+          },
+          Discovery: {
+            MDNS: {
+              Enabled: false
+            }
+          }
         }
-      },
-      (cb) => inProcNode.config.set('Discovery.MDNS.Enabled', false, cb)
-    ], done)
+      })
+    } else {
+      inProcNode = new IPFS({
+        repo: repo,
+        config: {
+          Discovery: {
+            MDNS: {
+              Enabled: false
+            }
+          }
+        }
+      })
+    }
+
+    inProcNode.on('start', () => done())
   })
 
   afterEach((done) => {
-    if (!isNode) {
-      inProcNode.config.set('Addresses.Swarm', swarmAddrsBak, done)
-    } else {
-      done()
-    }
+    inProcNode.on('stop', () => done())
+    inProcNode.stop()
   })
 
   describe('connections', () => {
@@ -122,14 +124,6 @@ describe('bitswap', () => {
     }
 
     describe('fetches a remote block', () => {
-      beforeEach((done) => {
-        inProcNode.start(done)
-      })
-
-      afterEach((done) => {
-        setTimeout(() => inProcNode.stop(done), 1500)
-      })
-
       it('2 peers', (done) => {
         let remoteNode
         let block
@@ -210,14 +204,6 @@ describe('bitswap', () => {
     })
 
     describe('fetches a remote file', () => {
-      beforeEach((done) => {
-        inProcNode.start(done)
-      })
-
-      afterEach((done) => {
-        setTimeout(() => inProcNode.stop(done), 1500)
-      })
-
       it('2 peers', (done) => {
         const file = new Buffer(`I love IPFS <3 ${Math.random()}`)
 
@@ -246,54 +232,60 @@ describe('bitswap', () => {
   })
 
   describe('bitswap API', () => {
-    describe('wantlist', (done) => {
+    let node
+
+    before((done) => {
+      node = new IPFS({
+        repo: createTempRepo(),
+        start: false,
+        config: {
+          Addresses: {
+            Swarm: []
+          },
+          Discovery: {
+            MDNS: {
+              Enabled: false
+            }
+          }
+        }
+      })
+      setTimeout(() => done(), 500)
+    })
+
+    describe('while offline', () => {
+      it('.wantlist throws if offline', () => {
+        expect(() => node.bitswap.wantlist()).to.throw(/online/)
+      })
+
+      it('.stat throws while offline', () => {
+        expect(() => node.bitswap.stat()).to.throw(/online/)
+      })
+
       it('throws if offline', () => {
-        expect(
-          () => inProcNode.bitswap.wantlist()
-        ).to.throw(/online/)
+        expect(() => node.bitswap.unwant('my key'))
+          .to.throw(/online/)
+      })
+    })
+
+    describe('while online', () => {
+      before((done) => {
+        node.start(() => done())
       })
 
-      it('returns an array of wanted blocks', (done) => {
-        inProcNode.start((err) => {
-          expect(err).to.not.exist
-          expect(inProcNode.bitswap.wantlist())
-            .to.eql([])
-          inProcNode.stop(done)
-        })
+      it('.wantlist returns an array of wanted blocks', () => {
+        expect(node.bitswap.wantlist()).to.eql([])
       })
 
-      describe('stat', () => {
-        it('throws while offline', () => {
-          expect(
-            () => inProcNode.bitswap.stat()
-          ).to.throw(/online/)
-        })
+      it('returns the stats', () => {
+        let stats = node.bitswap.stat()
 
-        it('returns the stats', (done) => {
-          inProcNode.start((err) => {
-            expect(err).to.not.exist
-
-            let stats = inProcNode.bitswap.stat()
-
-            expect(stats).to.have.keys([
-              'blocksReceived',
-              'wantlist',
-              'peers',
-              'dupDataReceived',
-              'dupBlksReceived'
-            ])
-
-            inProcNode.stop(done)
-          })
-        })
-      })
-
-      describe('unwant', () => {
-        it('throws if offline', () => {
-          expect(
-            () => inProcNode.bitswap.unwant('my key')
-          ).to.throw(/online/)
-        })
+        expect(stats).to.have.keys([
+          'blocksReceived',
+          'wantlist',
+          'peers',
+          'dupDataReceived',
+          'dupBlksReceived'
+        ])
       })
     })
   })

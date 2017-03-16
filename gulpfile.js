@@ -45,8 +45,8 @@ function spawnDaemon (num, callback) {
   setTimeout(() => {
     const daemon = new HTTPAPI(node.repo.path())
     nodes.push(daemon)
-    daemon.start(callback)
-  }, 400)
+    setTimeout(() => daemon.start(callback), 400)
+  }, 800)
 }
 
 gulp.task('libnode:start', (done) => {
