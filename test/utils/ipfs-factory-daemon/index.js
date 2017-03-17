@@ -26,7 +26,10 @@ class Factory {
     }
 
     repoPath = repoPath ||
-      os.tmpdir() + '/ipfs-' + Math.random().toString().substring(2, 8)
+      os.tmpdir() + '/ipfs-' +
+        Math.random().toString().substring(2, 8) +
+        '-' +
+        new Date().toString()
 
     let daemon
     let ctl
@@ -62,7 +65,7 @@ class Factory {
           }
         })
 
-        setTimeout(cb, 400)
+        setTimeout(cb, 1000)
       },
       (cb) => {
         // create the daemon
