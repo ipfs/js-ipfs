@@ -10,14 +10,14 @@ const _ = require('lodash')
 const series = require('async/series')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
-const map = require('async/map')
 const leftPad = require('left-pad')
 const Block = require('ipfs-block')
-const mh = require('multihashes')
 const bl = require('bl')
 const API = require('ipfs-api')
 const multiaddr = require('multiaddr')
 const isNode = require('detect-node')
+const multihashing = require('multihashing-async')
+const CID = require('cids')
 
 // This gets replaced by '../utils/create-repo-browser.js' in the browser
 const createTempRepo = require('../utils/create-repo-node.js')
@@ -25,7 +25,13 @@ const createTempRepo = require('../utils/create-repo-node.js')
 const IPFS = require('../../src/core')
 
 function makeBlock (cb) {
-  return cb(null, new Block(`IPFS is awesome ${Math.random()}`))
+  const d = new Buffer(`IPFS is awesome ${Math.random()}`)
+  multihashing(d, 'sha2-256', (err, multihash) => {
+    if (err) {
+      return cb(err)
+    }
+    cb(null, new Block(d, new CID(multihash)))
+  })
 }
 
 describe('bitswap', () => {
@@ -143,8 +149,7 @@ describe('bitswap', () => {
             cb()
           },
           (cb) => remoteNode.block.put(block, cb),
-          (res, cb) => block.key('sha2-256', cb),
-          (key, cb) => inProcNode.block.get(key, cb),
+          (key, cb) => inProcNode.block.get(block.cid, cb),
           (b, cb) => {
             expect(b.data).to.be.eql(block.data)
             cb()
@@ -156,18 +161,13 @@ describe('bitswap', () => {
         this.timeout(60 * 1000)
 
         let blocks
-        let keys
         const remoteNodes = []
 
         series([
           (cb) => parallel(_.range(6).map((i) => makeBlock), (err, _blocks) => {
             expect(err).to.not.exist()
             blocks = _blocks
-            map(blocks, (b, cb) => b.key('sha2-256', cb), (err, res) => {
-              expect(err).to.not.exist()
-              keys = res
-              cb()
-            })
+            cb()
           }),
           (cb) => addNode(8, (err, _ipfs) => {
             remoteNodes.push(_ipfs)
@@ -186,22 +186,18 @@ describe('bitswap', () => {
           (cb) => inProcNode.block.put(blocks[5], cb),
           // 3. Fetch blocks on all nodes
           (cb) => parallel(_.range(6).map((i) => (cbI) => {
-            const check = (n, k, callback) => {
-              n.block.get(k, (err, b) => {
+            const check = (n, cid, callback) => {
+              n.block.get(cid, (err, b) => {
                 expect(err).to.not.exist()
-                expect(
-                  (b.data || b).toString()
-                ).to.be.eql(
-                  blocks[i].data.toString()
-                )
+                expect(b).to.eql(blocks[i])
                 callback()
               })
             }
 
             series([
-              (cbJ) => check(remoteNodes[0], mh.toB58String(keys[i]), cbJ),
-              (cbJ) => check(remoteNodes[1], mh.toB58String(keys[i]), cbJ),
-              (cbJ) => check(inProcNode, keys[i], cbJ)
+              (cbJ) => check(remoteNodes[0], blocks[i].cid, cbJ),
+              (cbJ) => check(remoteNodes[1], blocks[i].cid, cbJ),
+              (cbJ) => check(inProcNode, blocks[i].cid, cbJ)
             ], cbI)
           }), cb)
         ], done)

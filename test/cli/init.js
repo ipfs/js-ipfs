@@ -14,6 +14,11 @@ describe('init', () => {
 
   const repoExistsSync = (p) => fs.existsSync(path.join(repoPath, p))
 
+  const repoDirSync = (p) => {
+    return fs.readdirSync(path.join(repoPath, p)).filter((f) => {
+      return !f.startsWith('.')
+    })
+  }
   beforeEach(() => {
     repoPath = os.tmpdir() + '/ipfs-' + Math.random().toString().substring(2, 8)
     ipfs = ipfsExec(repoPath)
@@ -23,7 +28,7 @@ describe('init', () => {
 
   it('basic', () => {
     return ipfs('init').then(() => {
-      expect(repoExistsSync('blocks')).to.equal(true)
+      expect(repoDirSync('blocks')).to.have.length.above(2)
       expect(repoExistsSync('config')).to.equal(true)
       expect(repoExistsSync('version')).to.equal(true)
     })
@@ -31,7 +36,7 @@ describe('init', () => {
 
   it('bits', () => {
     return ipfs('init --bits 1024').then(() => {
-      expect(repoExistsSync('blocks')).to.equal(true)
+      expect(repoDirSync('blocks')).to.have.length.above(2)
       expect(repoExistsSync('config')).to.equal(true)
       expect(repoExistsSync('version')).to.equal(true)
     })
@@ -39,7 +44,7 @@ describe('init', () => {
 
   it('empty', () => {
     return ipfs('init --bits 1024 --empty-repo true').then(() => {
-      expect(repoExistsSync('blocks')).to.equal(false)
+      expect(repoDirSync('blocks')).to.have.length(2)
       expect(repoExistsSync('config')).to.equal(true)
       expect(repoExistsSync('version')).to.equal(true)
     })

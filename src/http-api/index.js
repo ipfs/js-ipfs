@@ -3,16 +3,9 @@
 const series = require('async/series')
 const Hapi = require('hapi')
 const debug = require('debug')
-const fs = require('fs')
-const path = require('path')
-const IPFSRepo = require('ipfs-repo')
 const multiaddr = require('multiaddr')
-const Store = require('fs-pull-blob-store')
 const setHeader = require('hapi-set-header')
 const once = require('once')
-
-const log = debug('api')
-log.error = debug('api:error')
 
 const IPFS = require('../core')
 const errorHandler = require('./error-handler')
@@ -22,56 +15,58 @@ function uriToMultiaddr (uri) {
   return `/ip4/${ipPort[0]}/tcp/${ipPort[1]}`
 }
 
-function HttpApi (repo) {
+function HttpApi (repo, config) {
   this.node = undefined
   this.server = undefined
 
-  this.start = (callback) => {
-    if (typeof repo === 'string') {
-      repo = new IPFSRepo(repo, {stores: Store})
-    }
+  this.log = debug('jsipfs:http-api')
+  this.log.error = debug('jsipfs:http-api:error')
 
-    let apiFilePath
+  this.start = (init, callback) => {
+    if (typeof init === 'function') {
+      callback = init
+      init = false
+    }
+    this.log('starting')
 
     series([
       (cb) => {
-        // start the daemon
-        this.node = new IPFS({
-          repo: repo,
-          init: false,
-          start: true,
-          EXPERIMENTAL: {
-            pubsub: true
-          }
-        })
+        // try-catch so that programmer errors are not swallowed during testing
+        try {
+          // start the daemon
+          this.node = new IPFS({
+            repo: repo,
+            init: init,
+            start: true,
+            config: config,
+            EXPERIMENTAL: {
+              pubsub: true
+            }
+          })
+        } catch (err) {
+          return cb(err)
+        }
 
         cb = once(cb)
 
         this.node.once('error', (err) => {
+          this.log('error starting core', err)
           err.code = 'ENOENT'
           cb(err)
         })
         this.node.once('start', cb)
       },
       (cb) => {
-        // start the http server
-        const repoPath = this.node.repo.path()
-        apiFilePath = path.join(repoPath, 'api')
-
-        // make sure we are not using some other daemon repo
-        try {
-          fs.statSync(apiFilePath)
-          console.log('This repo is currently being used by another daemon')
-          process.exit(1)
-        } catch (err) {}
-
+        this.log('fetching config')
         this.node._repo.config.get((err, config) => {
           if (err) {
             return callback(err)
           }
 
           // CORS is enabled by default
-          this.server = new Hapi.Server({ connections: { routes: { cors: true } } })
+          this.server = new Hapi.Server({
+            connections: { routes: { cors: true } }
+          })
 
           this.server.app.ipfs = this.node
           const api = config.Addresses.API.split('/')
@@ -91,7 +86,7 @@ function HttpApi (repo) {
           })
 
           // Nicer errors
-          errorHandler(this.server)
+          errorHandler(this, this.server)
 
           // load routes
           require('./routes')(this.server)
@@ -118,22 +113,22 @@ function HttpApi (repo) {
         console.log('Gateway (readonly) is listening on: %s', gateway.info.ma)
 
         // for the CLI to know the where abouts of the API
-        fs.writeFileSync(apiFilePath, api.info.ma)
-
-        cb()
+        this.node._repo.setApiAddress(api.info.ma, cb)
       }
-    ], callback)
+    ], (err) => {
+      this.log('done', err)
+      callback(err)
+    })
   }
 
   this.stop = (callback) => {
-    const repoPath = this.node.repo.path()
-    fs.unlinkSync(path.join(repoPath, 'api'))
-
+    this.log('stopping')
     series([
       (cb) => this.server.stop(cb),
       (cb) => this.node.stop(cb)
     ], (err) => {
       if (err) {
+        this.log.error(err)
         console.log('There were errors stopping')
       }
       callback()

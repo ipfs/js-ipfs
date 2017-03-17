@@ -1,11 +1,5 @@
 'use strict'
 
-const waterfall = require('async/waterfall')
-const debug = require('debug')
-const utils = require('../../utils')
-const log = debug('cli:files')
-log.error = debug('cli:files:error')
-
 module.exports = {
   command: 'cat <ipfs-path>',
 
@@ -19,10 +13,7 @@ module.exports = {
       path = path.replace('/ipfs/', '')
     }
 
-    waterfall([
-      (cb) => utils.getIPFS(cb),
-      (ipfs, cb) => ipfs.files.cat(path, cb)
-    ], (err, file) => {
+    argv.ipfs.files.cat(path, (err, file) => {
       if (err) {
         throw err
       }

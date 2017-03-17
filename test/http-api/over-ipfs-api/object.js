@@ -191,7 +191,7 @@ module.exports = (ctl) => {
         const key = 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
         const filePath = 'test/test-data/badnode.json'
         const expectedResult = {
-          data: fs.readFileSync(filePath).toString(),
+          data: fs.readFileSync(filePath),
           multihash: 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6',
           links: [],
           size: 19
@@ -226,7 +226,7 @@ module.exports = (ctl) => {
         const key = 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6'
         const filePath = 'test/test-data/badnode.json'
         const expectedResult = {
-          data: fs.readFileSync(filePath).toString(),
+          data: fs.readFileSync(filePath),
           multihash: 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6',
           links: [],
           size: 19

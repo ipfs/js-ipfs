@@ -25,13 +25,16 @@ function catAndCheck (daemon, hash, data, callback) {
   })
 }
 
-// TODO: these are not working, will need to figure out why
-describe.skip('repo', () => {
+describe('repo', () => {
   it('read repo: go -> js', (done) => {
     const dir = os.tmpdir() + '/' + Math.ceil(Math.random() * 10000)
     const data = crypto.randomBytes(1024 * 5)
 
-    const goDaemon = new GoDaemon({init: true, disposable: false, path: dir})
+    const goDaemon = new GoDaemon({
+      init: true,
+      disposable: false,
+      path: dir
+    })
     let jsDaemon
 
     let hash
@@ -44,7 +47,11 @@ describe.skip('repo', () => {
       },
       (cb) => goDaemon.stop(cb),
       (cb) => {
-        jsDaemon = new JsDaemon({init: false, disposable: false, path: dir})
+        jsDaemon = new JsDaemon({
+          init: false,
+          disposable: false,
+          path: dir
+        })
         jsDaemon.start(cb)
       },
       (cb) => catAndCheck(goDaemon, hash, data, cb),

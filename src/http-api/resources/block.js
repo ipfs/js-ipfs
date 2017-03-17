@@ -1,13 +1,14 @@
 'use strict'
 
-const mh = require('multihashes')
 const CID = require('cids')
 const multipart = require('ipfs-multipart')
 const Block = require('ipfs-block')
 const waterfall = require('async/waterfall')
+const multihashing = require('multihashing-async')
+const Buffer = require('safe-buffer').Buffer
 const debug = require('debug')
-const log = debug('http-api:block')
-log.error = debug('http-api:block:error')
+const log = debug('jsipfs:http-api:block')
+log.error = debug('jsipfs:http-api:block:error')
 
 exports = module.exports
 
@@ -81,18 +82,18 @@ exports.put = {
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
-    const data = request.pre.args.data
+    const data = Buffer.from(request.pre.args.data)
     const ipfs = request.server.app.ipfs
 
     waterfall([
-      (cb) => ipfs.block.put(new Block(data), cb),
-      (block, cb) => block.key('sha2-256', (err, key) => {
+      (cb) => multihashing(data, 'sha2-256', (err, multihash) => {
         if (err) {
           return cb(err)
         }
-        cb(null, [key, block])
-      })
-    ], (err, res) => {
+        cb(null, new Block(data, new CID(multihash)))
+      }),
+      (block, cb) => ipfs.block.put(block, cb)
+    ], (err, block) => {
       if (err) {
         log.error(err)
         return reply({
@@ -102,8 +103,8 @@ exports.put = {
       }
 
       return reply({
-        Key: mh.toB58String(res[0]),
-        Size: res[1].data.length
+        Key: block.cid.toBaseEncodedString(),
+        Size: block.data.length
       })
     })
   }

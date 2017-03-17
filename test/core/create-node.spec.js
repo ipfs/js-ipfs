@@ -6,6 +6,7 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
+const series = require('async/series')
 
 const isNode = require('detect-node')
 const IPFS = require('../../src/core')
@@ -20,14 +21,14 @@ describe('create node', () => {
       repo: '/tmp/ipfs-repo-' + Math.random()
     })
 
-    node.on('start', (err) => {
+    node.once('start', (err) => {
       expect(err).to.not.exist()
 
       node.config.get((err, config) => {
         expect(err).to.not.exist()
 
         expect(config.Identity).to.exist()
-        node.on('stop', done)
+        node.once('stop', done)
         node.stop()
       })
     })
@@ -38,13 +39,13 @@ describe('create node', () => {
       repo: createTempRepo()
     })
 
-    node.on('start', (err) => {
+    node.once('start', (err) => {
       expect(err).to.not.exist()
       node.config.get((err, config) => {
         expect(err).to.not.exist()
 
         expect(config.Identity).to.exist()
-        node.on('stop', done)
+        node.once('stop', done)
         node.stop()
       })
     })
@@ -55,7 +56,7 @@ describe('create node', () => {
       repo: createTempRepo()
     })
 
-    node.on('start', (err) => {
+    node.once('start', (err) => {
       expect(err).to.not.exist()
       node.config.get((err, config) => {
         expect(err).to.not.exist()
@@ -64,7 +65,7 @@ describe('create node', () => {
         // note: key length doesn't map to buffer length
         expect(config.Identity.PrivKey.length).is.below(2048)
 
-        node.on('stop', done)
+        node.once('stop', done)
         node.stop()
       })
     })
@@ -78,13 +79,13 @@ describe('create node', () => {
       }
     })
 
-    node.on('start', (err) => {
+    node.once('start', (err) => {
       expect(err).to.not.exist()
       node.config.get((err, config) => {
         expect(err).to.not.exist()
         expect(config.Identity).to.exist()
         expect(config.Identity.PrivKey.length).is.below(1024)
-        node.on('stop', done)
+        node.once('stop', done)
         node.stop()
       })
     })
@@ -95,7 +96,7 @@ describe('create node', () => {
       repo: createTempRepo(),
       init: false
     })
-    node.on('error', (err) => {
+    node.once('error', (err) => {
       expect(err).to.exist()
       done()
     })
@@ -114,9 +115,9 @@ describe('create node', () => {
       happened = true
     }
 
-    node.on('error', shouldNotHappen)
-    node.on('start', shouldNotHappen)
-    node.on('stop', shouldNotHappen)
+    node.once('error', shouldNotHappen)
+    node.once('start', shouldNotHappen)
+    node.once('stop', shouldNotHappen)
 
     setTimeout(() => {
       expect(happened).to.equal(false)
@@ -125,36 +126,36 @@ describe('create node', () => {
   })
 
   it('init: true, start: false', (done) => {
-    // TODO investigate why this test likes to fail in the browser in travis
-    if (!isNode) {
-      return done()
-    }
     const node = new IPFS({
       repo: createTempRepo(),
       init: true,
-      start: false
+      start: false,
+      config: {
+        Bootstrap: []
+      }
     })
 
-    node.on('init', () => {
-      node.on('stop', () => done())
-      node.on('start', () => node.stop())
-      node.start()
-    })
+    node.once('error', done)
+    node.once('stop', done)
+    node.once('start', () => node.stop())
+
+    node.once('ready', () => node.start())
   })
 
   it('init: true, start: false, use callback', (done) => {
-    // TODO investigate why this test likes to fail in the browser in travis
-    if (!isNode) {
-      return done()
-    }
-
     const node = new IPFS({
       repo: createTempRepo(),
       init: true,
-      start: false
+      start: false,
+      config: {
+        Bootstrap: []
+      }
     })
 
-    node.on('init', () => node.start(() => node.stop(done)))
+    node.once('error', done)
+    node.once('ready', () => {
+      node.start(() => node.stop(done))
+    })
   })
 
   it('overload config', (done) => {
@@ -166,11 +167,12 @@ describe('create node', () => {
       config: {
         Addresses: {
           Swarm: ['/ip4/127.0.0.1/tcp/9977']
-        }
+        },
+        Bootstrap: []
       }
     })
 
-    node.on('start', (err) => {
+    node.once('start', (err) => {
       expect(err).to.not.exist()
       node.config.get((err, config) => {
         expect(err).to.not.exist()
@@ -178,6 +180,9 @@ describe('create node', () => {
         expect(config.Addresses.Swarm).to.eql(
           ['/ip4/127.0.0.1/tcp/9977']
         )
+
+        expect(config.Bootstrap).to.eql([])
+
         node.stop(done)
       })
     })
@@ -191,12 +196,11 @@ describe('create node', () => {
       }
     })
 
-    node.once('start', () => {
-      node.stop(() => {
-        node.start(() => {
-          node.stop(done)
-        })
-      })
-    })
+    series([
+      (cb) => node.once('start', cb),
+      (cb) => node.stop(cb),
+      (cb) => node.start(cb),
+      (cb) => node.stop(cb)
+    ], done)
   })
 })

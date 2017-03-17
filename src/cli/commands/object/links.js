@@ -1,10 +1,5 @@
 'use strict'
 
-const utils = require('../../utils')
-const debug = require('debug')
-const log = debug('cli:object')
-log.error = debug('cli:object:error')
-
 module.exports = {
   command: 'links <key>',
 
@@ -13,25 +8,21 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    utils.getIPFS((err, ipfs) => {
+    argv.ipfs.object.links(argv.key, {
+      enc: 'base58'
+    }, (err, links) => {
       if (err) {
         throw err
       }
 
-      ipfs.object.links(argv.key, {enc: 'base58'}, (err, links) => {
-        if (err) {
-          throw err
-        }
+      links.forEach((link) => {
+        link = link.toJSON()
 
-        links.forEach((link) => {
-          link = link.toJSON()
-
-          console.log(
-            link.multihash,
-            link.size,
-            link.name
-          )
-        })
+        console.log(
+          link.multihash,
+          link.size,
+          link.name
+        )
       })
     })
   }

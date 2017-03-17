@@ -1,9 +1,5 @@
 'use strict'
 
-const utils = require('../../utils')
-const debug = require('debug')
-const log = debug('cli:version')
-log.error = debug('cli:version:error')
 const fs = require('fs')
 const path = require('path')
 const glob = require('glob')
@@ -69,40 +65,35 @@ module.exports = {
     const options = {
       strategy: argv.trickle ? 'trickle' : 'balanced'
     }
+    const ipfs = argv.ipfs
 
-    utils.getIPFS((err, ipfs) => {
+    // TODO: revist when interface-ipfs-core exposes pull-streams
+    let createAddStream = (cb) => {
+      ipfs.files.createAddStream(options, (err, stream) => {
+        cb(err, err ? null : toPull.transform(stream))
+      })
+    }
+
+    if (typeof ipfs.files.createAddPullStream === 'function') {
+      createAddStream = (cb) => {
+        cb(null, ipfs.files.createAddPullStream(options))
+      }
+    }
+
+    createAddStream((err, addStream) => {
       if (err) {
         throw err
       }
 
-      // TODO: revist when interface-ipfs-core exposes pull-streams
-      let createAddStream = (cb) => {
-        ipfs.files.createAddStream(options, (err, stream) => {
-          cb(err, err ? null : toPull.transform(stream))
-        })
-      }
-
-      if (typeof ipfs.files.createAddPullStream === 'function') {
-        createAddStream = (cb) => {
-          cb(null, ipfs.files.createAddPullStream(options))
-        }
-      }
-
-      createAddStream((err, addStream) => {
+      glob(path.join(inPath, '/**/*'), (err, list) => {
         if (err) {
           throw err
         }
+        if (list.length === 0) {
+          list = [inPath]
+        }
 
-        glob(path.join(inPath, '/**/*'), (err, list) => {
-          if (err) {
-            throw err
-          }
-          if (list.length === 0) {
-            list = [inPath]
-          }
-
-          addPipeline(index, addStream, list, argv.wrapWithDirectory)
-        })
+        addPipeline(index, addStream, list, argv.wrapWithDirectory)
       })
     })
   }

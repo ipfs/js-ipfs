@@ -2,6 +2,7 @@
 
 const Block = require('ipfs-block')
 const multihash = require('multihashes')
+const multihashing = require('multihashing-async')
 const CID = require('cids')
 const waterfall = require('async/waterfall')
 
@@ -11,43 +12,32 @@ module.exports = function block (self) {
       cid = cleanCid(cid)
       self._blockService.get(cid, callback)
     },
-    put: (block, cid, callback) => {
-      if (typeof cid === 'function') {
-        // legacy (without CID)
-        callback = cid
-        cid = undefined
-      }
-
+    put: (block, callback) => {
       if (Array.isArray(block)) {
         return callback(new Error('Array is not supported'))
       }
 
-      if (Buffer.isBuffer(block)) {
-        block = new Block(block)
-      }
-
       waterfall([
         (cb) => {
-          if (cid) {
-            return cb(null, cid)
+          if (Block.isBlock(block)) {
+            return cb(null, block)
           }
 
-          block.key('sha2-256', (err, key) => {
+          multihashing(block, 'sha2-256', (err, multihash) => {
             if (err) {
               return cb(err)
             }
 
-            cb(null, new CID(key))
+            cb(null, new Block(block, new CID(multihash)))
           })
         },
-        (cid, cb) => self._blockService.put({block: block, cid: cid}, cb)
-      ], (err) => {
-        if (err) {
-          return callback(err)
-        }
-
-        callback(null, block)
-      })
+        (block, cb) => self._blockService.put(block, (err) => {
+          if (err) {
+            return cb(err)
+          }
+          cb(null, block)
+        })
+      ], callback)
     },
     rm: (cid, callback) => {
       cid = cleanCid(cid)

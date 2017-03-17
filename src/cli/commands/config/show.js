@@ -3,8 +3,6 @@
 const debug = require('debug')
 const log = debug('cli:config')
 log.error = debug('cli:config:error')
-const utils = require('../../utils')
-
 module.exports = {
   command: 'show',
 
@@ -16,17 +14,12 @@ module.exports = {
     if (argv._handled) return
     argv._handled = true
 
-    utils.getIPFS((err, ipfs) => {
+    argv.ipfs.config.get((err, config) => {
       if (err) {
         throw err
       }
-      ipfs.config.get((err, config) => {
-        if (err) {
-          throw err
-        }
 
-        console.log(JSON.stringify(config, null, 4))
-      })
+      console.log(JSON.stringify(config, null, 4))
     })
   }
 }

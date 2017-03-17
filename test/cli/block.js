@@ -13,13 +13,14 @@ describe('block', () => runOnAndOff((thing) => {
 
   it('put', () => {
     return ipfs('block put test/test-data/hello').then((out) => {
-      expect(out).to.eql('zdj7Wgpi9yzsvjJerghrdhPFpe1p1jZFyB5GKLyXEzFQyaxVk')
+      expect(out).to.eql('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
     })
   })
 
   it('put with flags, format and mhtype', () => {
     return ipfs('block put --format eth-block --mhtype keccak-256 test/test-data/eth-block')
-      .then((out) => expect(out).to.eql('z43AaGF23fmvRnDP56Ub9WcJCfzSfqtmzNCCvmz5eudT8dtdCDS'))
+      .then((out) =>
+        expect(out).to.eql('z43AaGF23fmvRnDP56Ub9WcJCfzSfqtmzNCCvmz5eudT8dtdCDS'))
   })
 
   it('get', () => {

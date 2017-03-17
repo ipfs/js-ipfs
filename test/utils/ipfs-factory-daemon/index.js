@@ -2,10 +2,10 @@
 
 const PeerId = require('peer-id')
 const IPFSAPI = require('ipfs-api')
-const IPFS = require('../../../src/core')
 const clean = require('../clean')
-const HTTPAPI = require('../../../src/http-api')
+const HttpApi = require('../../../src/http-api')
 const series = require('async/series')
+const eachSeries = require('async/eachSeries')
 const defaultConfig = require('./default-config.json')
 const os = require('os')
 
@@ -28,8 +28,7 @@ class Factory {
     repoPath = repoPath ||
       os.tmpdir() + '/ipfs-' +
         Math.random().toString().substring(2, 8) +
-        '-' +
-        new Date().toString()
+      '-' + Date.now()
 
     let daemon
     let ctl
@@ -55,25 +54,11 @@ class Factory {
         })
       },
       (cb) => {
-        // create the node
-        IPFS.createNode({
-          repo: repoPath,
-          start: false,
-          config: config,
-          EXPERIMENTAL: {
-            pubsub: true
-          }
-        })
-
-        setTimeout(cb, 1000)
-      },
-      (cb) => {
-        // create the daemon
-        daemon = new HTTPAPI(repoPath)
+        daemon = new HttpApi(repoPath, config)
         daemon.repoPath = repoPath
         this.daemonsSpawned.push(daemon)
 
-        daemon.start(cb)
+        daemon.start(true, cb)
       },
       (cb) => {
         ctl = IPFSAPI(daemon.apiMultiaddr)
@@ -85,17 +70,15 @@ class Factory {
   }
 
   dismantle (callback) {
-    const tasks = this.daemonsSpawned.map((daemon) => (cb) => {
-      daemon.stop((err) => {
+    eachSeries(this.daemonsSpawned, (d, cb) => {
+      d.stop((err) => {
         if (err) {
-          return cb(err)
+          console.error('error stopping', err)
         }
-        clean(daemon.repoPath)
+        clean(d.repoPath)
         cb()
       })
-    })
-
-    series(tasks, callback)
+    }, callback)
   }
 }
 

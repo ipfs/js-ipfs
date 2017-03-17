@@ -2,7 +2,7 @@
 
 const Hoek = require('hoek')
 
-module.exports = (server) => {
+module.exports = (api, server) => {
   server.ext('onRequest', (request, reply) => {
     request.handleError = handleError
     reply.continue()
@@ -31,6 +31,7 @@ module.exports = (server) => {
         response: res.output.payload
       }
 
+      api.log.error(res.stack)
       server.log('error', debug)
 
       reply({

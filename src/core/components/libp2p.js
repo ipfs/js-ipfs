@@ -2,6 +2,7 @@
 
 const Node = require('libp2p-ipfs-nodejs')
 const promisify = require('promisify-es6')
+const get = require('lodash.get')
 
 module.exports = function libp2p (self) {
   return {
@@ -14,9 +15,9 @@ module.exports = function libp2p (self) {
         }
 
         const options = {
-          mdns: config.Discovery.MDNS.Enabled,
-          webRTCStar: config.Discovery.webRTCStar.Enabled,
-          bootstrap: config.Bootstrap
+          mdns: get(config, 'Discovery.MDNS.Enabled'),
+          webRTCStar: get(config, 'Discovery.webRTCStar.Enabled'),
+          bootstrap: get(config, 'Bootstrap')
         }
 
         self._libp2pNode = new Node(self._peerInfo, self._peerInfoBook, options)

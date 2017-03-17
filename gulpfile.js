@@ -4,7 +4,6 @@ const gulp = require('gulp')
 const parallel = require('async/parallel')
 const series = require('async/series')
 const createTempRepo = require('./test/utils/create-repo-node.js')
-const IPFS = require('./src/core')
 const HTTPAPI = require('./src/http-api')
 const leftPad = require('left-pad')
 
@@ -16,38 +15,26 @@ let nodes = []
 function spawnDaemon (num, callback) {
   num = leftPad(num, 3, 0)
 
-  const node = new IPFS({
-    repo: createTempRepo(),
-    init: {
-      bits: 1024
+  const config = {
+    Addresses: {
+      Swarm: [
+        `/ip4/127.0.0.1/tcp/10${num}`,
+        `/ip4/127.0.0.1/tcp/20${num}/ws`
+      ],
+      API: `/ip4/127.0.0.1/tcp/31${num}`,
+      Gateway: `/ip4/127.0.0.1/tcp/32${num}`
     },
-    start: false,
-    EXPERIMENTAL: {
-      pubsub: true
-    },
-    config: {
-      Addresses: {
-        Swarm: [
-          `/ip4/127.0.0.1/tcp/10${num}`,
-          `/ip4/127.0.0.1/tcp/20${num}/ws`
-        ],
-        API: `/ip4/127.0.0.1/tcp/31${num}`,
-        Gateway: `/ip4/127.0.0.1/tcp/32${num}`
-      },
-      Bootstrap: [],
-      Discovery: {
-        MDNS: {
-          Enabled: false
-        }
+    Bootstrap: [],
+    Discovery: {
+      MDNS: {
+        Enabled: false
       }
     }
-  })
+  }
 
-  node.on('init', () => {
-    const daemon = new HTTPAPI(node.repo.path())
-    nodes.push(daemon)
-    setTimeout(() => daemon.start(callback), 400)
-  })
+  const daemon = new HTTPAPI(createTempRepo(), config)
+  nodes.push(daemon)
+  daemon.start(true, callback)
 }
 
 gulp.task('libnode:start', (done) => {

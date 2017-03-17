@@ -1,9 +1,7 @@
 'use strict'
 
 const HttpAPI = require('../../http-api')
-const debug = require('debug')
-const log = debug('cli:daemon')
-log.error = debug('cli:daemon:error')
+const utils = require('../utils')
 
 let httpAPI
 
@@ -15,11 +13,12 @@ module.exports = {
   handler () {
     console.log('Initializing daemon...')
 
-    httpAPI = new HttpAPI(process.env.IPFS_PATH)
+    const repoPath = utils.getRepoPath()
+    httpAPI = new HttpAPI(repoPath)
 
     httpAPI.start((err) => {
       if (err && err.code === 'ENOENT') {
-        console.log('Error: no ipfs repo found in ' + process.env.IPFS_PATH)
+        console.log('Error: no ipfs repo found in ' + repoPath)
         console.log('please run: jsipfs init')
         process.exit(1)
       }

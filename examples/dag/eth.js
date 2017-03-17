@@ -30,7 +30,7 @@ createNode((err, ipfs) => {
       const cid = new CID(1, 'eth-block', multihash)
       // console.log(cid.toBaseEncodedString())
 
-      ipfs.block.put(new Block(data), cid, cb)
+      ipfs.block.put(new Block(data, cid), cb)
     })
   }, (err) => {
     if (err) {

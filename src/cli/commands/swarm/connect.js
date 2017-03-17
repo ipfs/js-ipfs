@@ -1,9 +1,6 @@
 'use strict'
 
 const utils = require('../../utils')
-const debug = require('debug')
-const log = debug('cli:swarm')
-log.error = debug('cli:swarm:error')
 
 module.exports = {
   command: 'connect <address>',
@@ -17,18 +14,12 @@ module.exports = {
       throw new Error('This command must be run in online mode. Try running \'ipfs daemon\' first.')
     }
 
-    utils.getIPFS((err, ipfs) => {
+    argv.ipfs.swarm.connect(argv.address, (err, res) => {
       if (err) {
         throw err
       }
 
-      ipfs.swarm.connect(argv.address, (err, res) => {
-        if (err) {
-          throw err
-        }
-
-        console.log(res.Strings[0])
-      })
+      console.log(res.Strings[0])
     })
   }
 }

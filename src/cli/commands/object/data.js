@@ -1,10 +1,5 @@
 'use strict'
 
-const utils = require('../../utils')
-const debug = require('debug')
-const log = debug('cli:object')
-log.error = debug('cli:object:error')
-
 module.exports = {
   command: 'data <key>',
 
@@ -13,18 +8,14 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    utils.getIPFS((err, ipfs) => {
+    argv.ipfs.object.data(argv.key, {
+      enc: 'base58'
+    }, (err, data) => {
       if (err) {
         throw err
       }
 
-      ipfs.object.data(argv.key, {enc: 'base58'}, (err, data) => {
-        if (err) {
-          throw err
-        }
-
-        console.log(data.toString())
-      })
+      console.log(data.toString())
     })
   }
 }
