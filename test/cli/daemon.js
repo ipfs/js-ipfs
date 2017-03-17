@@ -10,7 +10,7 @@ describe('daemon', () => {
   let ipfs
 
   beforeEach(() => {
-    repoPath = '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8)
+    repoPath = '/tmp/ipfs-test-not-found-' + Math.random().toString().substring(2, 8)
     ipfs = ipfsCmd(repoPath)
   })
 
@@ -18,6 +18,7 @@ describe('daemon', () => {
 
   it('gives error if user hasn\'t run init before', (done) => {
     const expectedError = 'no ipfs repo found in ' + repoPath
+
     ipfs('daemon').catch((err) => {
       expect(err.stdout).to.have.string(expectedError)
       done()
