@@ -13,6 +13,8 @@ const paramap = require('pull-paramap')
 const zip = require('pull-zip')
 const toPull = require('stream-to-pull-stream')
 
+const WRAPPER = 'wrapper/'
+
 function checkPath (inPath, recursive) {
   // This function is to check for the following possible inputs
   // 1) "." add the cwd but throw error for no recursion flag
