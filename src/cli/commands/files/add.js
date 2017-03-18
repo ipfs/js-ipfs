@@ -53,6 +53,11 @@ module.exports = {
       type: 'boolean',
       default: false,
       describe: 'Use the trickle DAG builder'
+    },
+    'wrap-with-directory': {
+      alias: 'w',
+      type: 'boolean',
+      default: false
     }
   },
 
@@ -94,14 +99,14 @@ module.exports = {
             list = [inPath]
           }
 
-          addPipeline(index, addStream, list)
+          addPipeline(index, addStream, list, argv.wrapWithDirectory)
         })
       })
     })
   }
 }
 
-function addPipeline (index, addStream, list) {
+function addPipeline (index, addStream, list, wrapWithDirectory) {
   pull(
     zip(
       pull.values(list),
@@ -117,12 +122,16 @@ function addPipeline (index, addStream, list) {
     pull.filter((file) => !file.isDirectory),
     pull.map((file) => ({
       path: file.path.substring(index, file.path.length),
-      content: fs.createReadStream(file.path)
+      originalPath: file.path
+    })),
+    pull.map((file) => ({
+      path: wrapWithDirectory ? `${WRAPPER}${file.path}` : file.path,
+      content: fs.createReadStream(file.originalPath)
     })),
     addStream,
     pull.map((file) => ({
       hash: file.hash,
-      path: file.path
+      path: wrapWithDirectory ? file.path.substring(WRAPPER.length) : file.path
     })),
     pull.collect((err, added) => {
       if (err) {
