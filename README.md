@@ -242,6 +242,13 @@ const node = new IPFS({
     }
   }
 })
+
+// Events
+
+node.on('init', () => {})     // Node has successfully finished initing the repo
+node.on('error', (err) => {}) // Node has hit some error while initing/starting
+node.on('start', () => {})    // Node has started
+node.on('stop', () => {})     // Node has stopped
 ```
 
 ### [Tutorials and Examples](/examples)
