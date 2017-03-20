@@ -76,7 +76,7 @@ describe('.name', () => {
         expect(err).to.not.exist
         expect(res).to.exist
         expect(res).to.be.eql({
-          Path: '/ipfs/' + name.Value
+          Path: name.Value
         })
         done()
       })
@@ -99,7 +99,7 @@ describe('.name', () => {
         .then((res) => {
           expect(res).to.exist
           expect(res).to.be.eql({
-            Path: '/ipfs/' + name.Value
+            Path: name.Value
           })
         })
     })

@@ -26,7 +26,7 @@ describe('.add (extra tests)', () => {
 
   after((done) => fc.dismantle(done))
 
-  it('add file for testing', (done) => {
+  it('add by path fails', (done) => {
     const validPath = path.join(process.cwd() + '/package.json')
 
     ipfs.files.add(validPath, (err, res) => {
