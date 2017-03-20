@@ -19,7 +19,7 @@ module.exports = (http) => {
       if (err) {
         throw err
       }
-      this.emit('fc-node', apiAddr)
+      this.emit('fc-node', apiAddr.toString())
     })
   }
 
