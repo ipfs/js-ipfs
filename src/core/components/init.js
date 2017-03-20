@@ -70,6 +70,14 @@ module.exports = function init (self) {
           cb(null, true)
         })
       }
-    ], callback)
+    ], (err, success) => {
+      if (err) {
+        return callback(err)
+      }
+
+      self.emit('init')
+
+      callback(null, success)
+    })
   }
 }
