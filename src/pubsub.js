@@ -214,17 +214,19 @@ module.exports = (common) => {
             })
           })
 
-          it.skip("doesn't return extra peers", (done) => {
+          it("doesn't return extra peers", (done) => {
             // Currently go-ipfs returns peers that have not been
             // subscribed to the topic. Enable when go-ipfs has been fixed
             const sub1 = (msg) => {}
             const sub2 = (msg) => {}
+            const sub3 = (msg) => {}
 
             const topicOther = topic + 'different topic'
 
             series([
               (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
-              (cb) => ipfs2.pubsub.subscribe(topicOther, sub2, cb)
+              (cb) => ipfs2.pubsub.subscribe(topicOther, sub2, cb),
+              (cb) => ipfs3.pubsub.subscribe(topicOther, sub3, cb)
             ], (err) => {
               expect(err).to.not.exist
               setTimeout(() => {
@@ -234,26 +236,30 @@ module.exports = (common) => {
                   expect(peers).to.be.empty
                   ipfs1.pubsub.unsubscribe(topic, sub1)
                   ipfs2.pubsub.unsubscribe(topicOther, sub2)
+                  ipfs3.pubsub.unsubscribe(topicOther, sub3)
                   done()
                 }, 10000)
               })
             })
           })
 
-          it.skip('returns peers for a topic - one peer', (done) => {
+          it('returns peers for a topic - one peer', (done) => {
             // Currently go-ipfs returns peers that have not been
             // subscribed to the topic. Enable when go-ipfs has been fixed
             const sub1 = (msg) => {}
             const sub2 = (msg) => {}
+            const sub3 = (msg) => {}
 
             series([
               (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
               (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
+              (cb) => ipfs3.pubsub.subscribe(topic, sub3, cb),
               (cb) => waitForPeers(ipfs1, topic, [ipfs2.peerId.id], cb)
             ], (err) => {
               expect(err).to.not.exist
               ipfs1.pubsub.unsubscribe(topic, sub1)
               ipfs2.pubsub.unsubscribe(topic, sub2)
+              ipfs3.pubsub.unsubscribe(topic, sub3)
 
               done()
             })
