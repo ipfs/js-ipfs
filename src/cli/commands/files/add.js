@@ -13,6 +13,8 @@ const paramap = require('pull-paramap')
 const zip = require('pull-zip')
 const toPull = require('stream-to-pull-stream')
 
+const WRAPPER = 'wrapper/'
+
 function checkPath (inPath, recursive) {
   // This function is to check for the following possible inputs
   // 1) "." add the cwd but throw error for no recursion flag
@@ -53,6 +55,11 @@ module.exports = {
       type: 'boolean',
       default: false,
       describe: 'Use the trickle DAG builder'
+    },
+    'wrap-with-directory': {
+      alias: 'w',
+      type: 'boolean',
+      default: false
     }
   },
 
@@ -94,14 +101,14 @@ module.exports = {
             list = [inPath]
           }
 
-          addPipeline(index, addStream, list)
+          addPipeline(index, addStream, list, argv.wrapWithDirectory)
         })
       })
     })
   }
 }
 
-function addPipeline (index, addStream, list) {
+function addPipeline (index, addStream, list, wrapWithDirectory) {
   pull(
     zip(
       pull.values(list),
@@ -117,12 +124,16 @@ function addPipeline (index, addStream, list) {
     pull.filter((file) => !file.isDirectory),
     pull.map((file) => ({
       path: file.path.substring(index, file.path.length),
-      content: fs.createReadStream(file.path)
+      originalPath: file.path
+    })),
+    pull.map((file) => ({
+      path: wrapWithDirectory ? path.join(WRAPPER, file.path) : file.path,
+      content: fs.createReadStream(file.originalPath)
     })),
     addStream,
     pull.map((file) => ({
       hash: file.hash,
-      path: file.path
+      path: wrapWithDirectory ? file.path.substring(WRAPPER.length) : file.path
     })),
     pull.collect((err, added) => {
       if (err) {
@@ -131,7 +142,13 @@ function addPipeline (index, addStream, list) {
 
       sortBy(added, 'path')
         .reverse()
-        .map((file) => `added ${file.hash} ${file.path}`)
+        .map((file) => {
+          const log = [ 'added', file.hash ]
+
+          if (file.path.length > 0) log.push(file.path)
+
+          return log.join(' ')
+        })
         .forEach((msg) => console.log(msg))
     })
   )

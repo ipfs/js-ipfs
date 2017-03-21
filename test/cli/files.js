@@ -127,6 +127,15 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
+  it('add and wrap with a directory', () => {
+    return ipfs('add -w src/init-files/init-docs/readme').then((out) => {
+      expect(out).to.be.eql([
+        'added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme',
+        'added QmapdaVPjHXdcswef82FnGQUauMNpk9xYFkLDZKgAxhMwq'
+      ].join('\n'))
+    })
+  })
+
   it('cat', () => {
     return ipfs('files cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
       .then((out) => {
