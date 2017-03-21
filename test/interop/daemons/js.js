@@ -45,19 +45,23 @@ class JsDaemon {
     this.port = opts.port
 
     this.path = opts.path || tmpDir()
+    let repo
     if (this.init) {
-      this.ipfs = new IPFS({
-        repo: this.path
-      })
+      repo = this.path
     } else {
-      const repo = new IPFSRepo(this.path, {stores: require('fs-pull-blob-store')})
-      this.ipfs = new IPFS({
-        repo: repo,
-        EXPERIMENTAL: {
-          pubsub: true
-        }
+      repo = new IPFSRepo(this.path, {
+        stores: require('fs-pull-blob-store')
       })
     }
+    this.ipfs = new IPFS({
+      repo: repo,
+      init: false,
+      start: false,
+      EXPERIMENTAL: {
+        pubsub: true
+      }
+    })
+
     this.node = null
     this.api = null
   }
