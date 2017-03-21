@@ -68,9 +68,9 @@ describe('init', () => {
   it('init docs are written', (done) => {
     ipfs.init({ bits: 1024 }, (err) => {
       expect(err).to.not.exist()
-      const multihash = new Buffer('12205e7c3ce237f936c76faf625e90f7751a9f5eeb048f59873303c215e9cce87599', 'hex')
+      const multihash = 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
 
-      ipfs.object.get(multihash, {}, (err, node) => {
+      ipfs.object.get(multihash, { enc: 'base58' }, (err, node) => {
         expect(err).to.not.exist()
         expect(node.links).to.exist()
         done()

@@ -35,11 +35,11 @@ module.exports = function addDefaultAssets (self, log, callback) {
     importer(self._ipldResolver),
     pull.through((el) => {
       if (el.path === 'files/init-docs/docs') {
-        // const hash = mh.toB58String(el.multihash)
         log('to get started, enter:')
         log()
         log(`\t jsipfs files cat /ipfs/QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB`)
         // TODO when we support pathing in unixfs-engine
+        // const hash = mh.toB58String(el.multihash)
         // log(`\t jsipfs files cat /ipfs/${hash}/readme`)
         log()
       }
