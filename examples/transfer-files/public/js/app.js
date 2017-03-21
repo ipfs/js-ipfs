@@ -1,3 +1,4 @@
+'use strict'
 /* global self */
 
 const $startButton = document.querySelector('#start')
@@ -126,7 +127,8 @@ function onDrop (event) {
   event.preventDefault()
   const dt = event.dataTransfer
   const files = dt.files
-  const readFileContents = (file) => {
+
+  function readFileContents (file) {
     return new Promise((resolve) => {
       const reader = new window.FileReader()
       reader.onload = (event) => resolve(event.target.result)
@@ -134,8 +136,7 @@ function onDrop (event) {
     })
   }
 
-  for (var i = 0; i < files.length; i++) {
-    const file = files[i]
+  files.map((file) => {
     readFileContents(file)
       .then((buffer) => {
         return node.files.add([{
@@ -150,7 +151,7 @@ function onDrop (event) {
           .join('<br>')
       })
       .catch(onError)
-  }
+  })
 }
 
 /*
