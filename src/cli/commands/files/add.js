@@ -142,7 +142,13 @@ function addPipeline (index, addStream, list, wrapWithDirectory) {
 
       sortBy(added, 'path')
         .reverse()
-        .map((file) => `added ${file.hash} ${file.path}`)
+        .map((file) => {
+          const log = [ 'added', file.hash ]
+
+          if (file.path.length > 0) log.push(file.path)
+
+          return log.join(' ')
+        })
         .forEach((msg) => console.log(msg))
     })
   )
