@@ -59,6 +59,8 @@ module.exports = function init (self) {
         ]
 
         if (typeof addDefaultAssets === 'function') {
+          console.log('init assets')
+
           tasks.push((cb) => addDefaultAssets(self, opts.log, cb))
         }
 
