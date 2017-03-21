@@ -127,7 +127,7 @@ function addPipeline (index, addStream, list, wrapWithDirectory) {
       originalPath: file.path
     })),
     pull.map((file) => ({
-      path: wrapWithDirectory ? `${WRAPPER}${file.path}` : file.path,
+      path: wrapWithDirectory ? path.join(WRAPPER, file.path) : file.path,
       content: fs.createReadStream(file.originalPath)
     })),
     addStream,
