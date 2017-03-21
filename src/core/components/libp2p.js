@@ -31,8 +31,10 @@ module.exports = function libp2p (self) {
           })
 
           self._libp2pNode.discovery.on('peer', (peerInfo) => {
-            self._peerInfoBook.put(peerInfo)
-            self._libp2pNode.dialByPeerInfo(peerInfo, () => {})
+            if (self.isOnline()) {
+              self._peerInfoBook.put(peerInfo)
+              self._libp2pNode.dialByPeerInfo(peerInfo, () => {})
+            }
           })
           self._libp2pNode.swarm.on('peer-mux-established', (peerInfo) => {
             self._peerInfoBook.put(peerInfo)

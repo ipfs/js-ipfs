@@ -185,7 +185,10 @@ describe('create node', () => {
 
   it('start and stop, start and stop', (done) => {
     const node = new IPFS({
-      repo: createTempRepo()
+      repo: createTempRepo(),
+      config: {
+        Bootstrap: []
+      }
     })
 
     node.once('start', () => {

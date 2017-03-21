@@ -46,7 +46,8 @@ describe('bitswap', () => {
             MDNS: {
               Enabled: false
             }
-          }
+          },
+          Bootstrap: []
         }
       })
     } else {
@@ -57,7 +58,8 @@ describe('bitswap', () => {
             MDNS: {
               Enabled: false
             }
-          }
+          },
+          Bootstrap: []
         }
       })
     }
