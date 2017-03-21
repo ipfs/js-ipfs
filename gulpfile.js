@@ -34,6 +34,7 @@ function spawnDaemon (num, callback) {
         API: `/ip4/127.0.0.1/tcp/31${num}`,
         Gateway: `/ip4/127.0.0.1/tcp/32${num}`
       },
+      Bootstrap: [],
       Discovery: {
         MDNS: {
           Enabled: false
