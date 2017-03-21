@@ -1,0 +1,14 @@
+{
+  "name": "transfer-files",
+  "version": "1.0.0",
+  "scripts": {
+    "check-bundle": "test -f ../../dist/index.js && npm run copy-bundle || (echo \"js-ipfs dist file not found, go up two dirs and run 'npm run build' first\" && exit 1)",
+    "copy-bundle": "cp ../../dist/index.js ./public/js/ipfs.js",
+    "serve": "http-server -c-1 -p 12345 public",
+    "start": "npm run check-bundle && npm run serve"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^0.9.0"
+  }
+}
