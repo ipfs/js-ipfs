@@ -3,7 +3,10 @@
 
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const bs58 = require('bs58')
 const Readable = require('readable-stream')
 const loadFixture = require('aegir/fixtures')
@@ -36,9 +39,9 @@ module.exports = (common) => {
       }
 
       common.setup((err, factory) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         factory.spawnNode((err, node) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           ipfs = node
           done()
         })
@@ -68,10 +71,10 @@ module.exports = (common) => {
           arr.push(filePair)
 
           ipfs.files.add(arr, (err, res) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             expect(res).to.be.length(1)
             const file = res[0]
-            expect(file).to.exist
+            expect(file).to.exist()
             expect(file.path).to.equal('data.txt')
             expect(file.size).to.equal(17)
             expect(file.hash).to.equal(expectedMultihash)
@@ -87,7 +90,7 @@ module.exports = (common) => {
           const expectedMultihash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
 
           ipfs.files.add([file], (err, res) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
 
             const file = res[0]
             expect(file.hash).to.equal(expectedMultihash)
@@ -100,7 +103,7 @@ module.exports = (common) => {
           const expectedMultihash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
 
           ipfs.files.add(smallFile, (err, res) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             expect(res).to.have.length(1)
             const file = res[0]
             expect(file.hash).to.equal(expectedMultihash)
@@ -113,7 +116,7 @@ module.exports = (common) => {
           const expectedMultihash = 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq'
 
           ipfs.files.add(bigFile, (err, res) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             expect(res).to.have.length(1)
             const file = res[0]
             expect(file.hash).to.equal(expectedMultihash)
@@ -150,7 +153,7 @@ module.exports = (common) => {
           ]
 
           ipfs.files.add(dirs, (err, res) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             const root = res[res.length - 1]
 
             expect(root.path).to.equal('test-folder')
@@ -184,7 +187,7 @@ module.exports = (common) => {
             ]
 
             ipfs.files.createAddStream((err, stream) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
 
               stream.on('data', (file) => {
                 if (file.path === 'test-folder') {
@@ -207,7 +210,7 @@ module.exports = (common) => {
           const nonValid = 'sfdasfasfs'
 
           ipfs.files.add(nonValid, (err, result) => {
-            expect(err).to.exist
+            expect(err).to.exist()
             done()
           })
         })
@@ -217,9 +220,9 @@ module.exports = (common) => {
         it('with a base58 string encoded multihash', (done) => {
           const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
           ipfs.files.cat(hash, (err, stream) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             stream.pipe(bl((err, data) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               expect(data.toString()).to.contain('Plz add me!')
               done()
             }))
@@ -229,9 +232,9 @@ module.exports = (common) => {
         it('with a multihash', (done) => {
           const mhBuf = new Buffer(bs58.decode('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'))
           ipfs.files.cat(mhBuf, (err, stream) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             stream.pipe(bl((err, data) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               expect(data.toString()).to.contain('Plz add me!')
               done()
             }))
@@ -241,9 +244,9 @@ module.exports = (common) => {
         it('streams a large file', (done) => {
           const hash = 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq'
           ipfs.files.cat(hash, (err, stream) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             stream.pipe(bl((err, data) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               expect(data).to.deep.equal(bigFile)
               done()
             }))
@@ -273,7 +276,7 @@ module.exports = (common) => {
           return ipfs.files.cat(hash)
             .then((stream) => {
               stream.pipe(bl((err, data) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 expect(data.toString()).to.contain('Plz add me!')
               }))
             })
@@ -284,7 +287,7 @@ module.exports = (common) => {
 
           return ipfs.files.cat(hash)
             .catch((err) => {
-              expect(err).to.exist
+              expect(err).to.exist()
               const errString = err.toString()
               if (errString === 'Error: invalid ipfs ref path') {
                 expect(err.toString()).to.contain('Error: invalid ipfs ref path')
@@ -300,7 +303,7 @@ module.exports = (common) => {
           return ipfs.files.cat(hash)
             .then((stream) => {
               stream.pipe(bl((err, data) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 expect(data.toString()).to.contain('Plz add me!')
               }))
             })
@@ -312,7 +315,7 @@ module.exports = (common) => {
       it('with a base58 encoded multihash', (done) => {
         const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
         ipfs.files.get(hash, (err, stream) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
 
           let files = []
           stream.pipe(through.obj((file, enc, next) => {
@@ -336,7 +339,7 @@ module.exports = (common) => {
         const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
         const mhBuf = new Buffer(bs58.decode(hash))
         ipfs.files.get(mhBuf, (err, stream) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
 
           let files = []
           stream.pipe(through.obj((file, enc, next) => {
@@ -359,7 +362,7 @@ module.exports = (common) => {
       it('large file', (done) => {
         const hash = 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq'
         ipfs.files.get(hash, (err, stream) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
 
           // accumulate the files and their content
           var files = []
@@ -387,7 +390,7 @@ module.exports = (common) => {
 
         const hash = 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'
         ipfs.files.get(hash, (err, stream) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
 
           // accumulate the files and their content
           var files = []
@@ -471,7 +474,7 @@ module.exports = (common) => {
         it('errors on invalid key', () => {
           const hash = 'somethingNotMultihash'
           return ipfs.files.get(hash).catch((err) => {
-            expect(err).to.exist
+            expect(err).to.exist()
             const errString = err.toString()
             if (errString === 'Error: invalid ipfs ref path') {
               expect(err.toString()).to.contain('Error: invalid ipfs ref path')

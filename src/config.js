@@ -3,7 +3,10 @@
 
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 
 module.exports = (common) => {
   describe('.config', () => {
@@ -11,9 +14,9 @@ module.exports = (common) => {
 
     before((done) => {
       common.setup((err, factory) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         factory.spawnNode((err, node) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           ipfs = node
           done()
         })
@@ -28,38 +31,38 @@ module.exports = (common) => {
       describe('.get', () => {
         it('retrieve the whole config', (done) => {
           ipfs.config.get((err, config) => {
-            expect(err).to.not.exist
-            expect(config).to.exist
+            expect(err).to.not.exist()
+            expect(config).to.exist()
             done()
           })
         })
 
         it('retrieve a value through a key', (done) => {
           ipfs.config.get('Identity.PeerID', (err, peerId) => {
-            expect(err).to.not.exist
-            expect(peerId).to.exist
+            expect(err).to.not.exist()
+            expect(peerId).to.exist()
             done()
           })
         })
 
         it('retrieve a value through a nested key', (done) => {
           ipfs.config.get('Addresses.Swarm', (err, swarmAddrs) => {
-            expect(err).to.not.exist
-            expect(swarmAddrs).to.exist
+            expect(err).to.not.exist()
+            expect(swarmAddrs).to.exist()
             done()
           })
         })
 
         it('fail on non valid key', (done) => {
           ipfs.config.get(1234, (err, peerId) => {
-            expect(err).to.exist
+            expect(err).to.exist()
             done()
           })
         })
 
-        it('fail on non existent key', (done) => {
+        it('fail on non exist()ent key', (done) => {
           ipfs.config.get('Bananas', (err, peerId) => {
-            expect(err).to.exist
+            expect(err).to.exist()
             done()
           })
         })
@@ -67,20 +70,20 @@ module.exports = (common) => {
       describe('.set', () => {
         it('set a new key', (done) => {
           ipfs.config.set('Fruit', 'banana', (err) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             ipfs.config.get('Fruit', (err, fruit) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               expect(fruit).to.equal('banana')
               done()
             })
           })
         })
 
-        it('set an already existing key', (done) => {
+        it('set an already exist()ing key', (done) => {
           ipfs.config.set('Fruit', 'morango', (err) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             ipfs.config.get('Fruit', (err, fruit) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               expect(fruit).to.equal('morango')
               done()
             })
@@ -91,9 +94,9 @@ module.exports = (common) => {
           const key = 'API.HTTPHeaders.Access-Control-Allow-Origin'
           const val = ['http://example.io']
           ipfs.config.set(key, val, function (err) {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             ipfs.config.get(key, function (err, result) {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               expect(result).to.deep.equal(val)
               done()
             })
@@ -102,14 +105,14 @@ module.exports = (common) => {
 
         it('fail on non valid key', (done) => {
           ipfs.config.set(new Buffer('heeey'), '', (err) => {
-            expect(err).to.exist
+            expect(err).to.exist()
             done()
           })
         })
 
         it('fail on non valid value', (done) => {
           ipfs.config.set('Fruit', new Buffer('abc'), (err) => {
-            expect(err).to.exist
+            expect(err).to.exist()
             done()
           })
         })
@@ -125,9 +128,9 @@ module.exports = (common) => {
 
         it('replace the whole config', (done) => {
           ipfs.config.replace(config, (err) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             ipfs.config.get((err, _config) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               expect(_config).to.deep.equal(config)
             })
           })
@@ -135,9 +138,9 @@ module.exports = (common) => {
 
         it('replace to empty config', (done) => {
           ipfs.config.replace({}, (err) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             ipfs.config.get((err, _config) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               expect(_config).to.deep.equal(config)
             })
           })
@@ -150,7 +153,7 @@ module.exports = (common) => {
         it('retrieve the whole config', () => {
           return ipfs.config.get()
             .then((config) => {
-              expect(config).to.exist
+              expect(config).to.exist()
             })
         })
       })

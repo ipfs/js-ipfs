@@ -3,7 +3,10 @@
 
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const series = require('async/series')
 const pull = require('pull-stream')
 const dagPB = require('ipld-dag-pb')
@@ -20,9 +23,9 @@ module.exports = (common) => {
       this.timeout(20 * 1000)
 
       common.setup((err, factory) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         factory.spawnNode((err, node) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           ipfs = node
           done()
         })
@@ -39,7 +42,7 @@ module.exports = (common) => {
         const someData = new Buffer('some data')
 
         pbNode = DAGNode.create(someData, (err, node) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           pbNode = node
           done()
         })
@@ -70,7 +73,7 @@ module.exports = (common) => {
           // This works because dag-cbor will just treat pbNode as a
           // regular object
           ipfs.dag.put(pbNode, 'dag-cbor', 'sha3-512', (err) => {
-            expect(err).to.exist
+            expect(err).to.exist()
             done()
           })
         })
@@ -95,7 +98,7 @@ module.exports = (common) => {
             format: 'dag-pb',
             hashAlg: 'sha3-512'
           }, (err) => {
-            expect(err).to.exist
+            expect(err).to.exist()
             done()
           })
         })
@@ -105,11 +108,11 @@ module.exports = (common) => {
             format: 'dag-cbor',
             hashAlg: 'sha3-512'
           }, (err, cid) => {
-            expect(err).to.not.exist
-            expect(cid).to.exist
-            expect(CID.isCID(cid)).to.be.true
+            expect(err).to.not.exist()
+            expect(cid).to.exist()
+            expect(CID.isCID(cid)).to.equal(true)
             dagCBOR.util.cid(cborNode, (err, _cid) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               expect(cid.buffer).to.eql(_cid.buffer)
               done()
             })
@@ -134,7 +137,7 @@ module.exports = (common) => {
               const someData = new Buffer('some other data')
 
               pbNode = DAGNode.create(someData, (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 pbNode = node
                 cb()
               })
@@ -145,14 +148,14 @@ module.exports = (common) => {
             },
             (cb) => {
               dagPB.DAGNode.create(new Buffer('I am inside a Protobuf'), (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 nodePb = node
                 cb()
               })
             },
             (cb) => {
               dagPB.util.cid(nodePb, (err, cid) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 cidPb = cid
                 cb()
               })
@@ -164,7 +167,7 @@ module.exports = (common) => {
               }
 
               dagCBOR.util.cid(nodeCbor, (err, cid) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 cidCbor = cid
                 cb()
               })
@@ -193,9 +196,9 @@ module.exports = (common) => {
             format: 'dag-pb',
             hashAlg: 'sha2-256'
           }, (err, cid) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             ipfs.dag.get(cid, (err, result) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               const node = result.value
               expect(pbNode.toJSON()).to.eql(node.toJSON())
               done()
@@ -208,9 +211,9 @@ module.exports = (common) => {
             format: 'dag-cbor',
             hashAlg: 'sha2-256'
           }, (err, cid) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             ipfs.dag.get(cid, (err, result) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
 
               const node = result.value
               expect(cborNode).to.eql(node)
@@ -222,12 +225,12 @@ module.exports = (common) => {
         describe('with path', () => {
           it('dag-pb get the node', (done) => {
             ipfs.dag.get(cidPb, '/', (err, result) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
 
               const node = result.value
 
               dagPB.util.cid(node, (err, cid) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 expect(cid).to.eql(cidPb)
                 done()
               })
@@ -236,7 +239,7 @@ module.exports = (common) => {
 
           it('dag-pb local scope', (done) => {
             ipfs.dag.get(cidPb, 'Data', (err, result) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               expect(result.value).to.eql(new Buffer('I am inside a Protobuf'))
               done()
             })
@@ -247,12 +250,12 @@ module.exports = (common) => {
 
           it('dag-cbor get the node', (done) => {
             ipfs.dag.get(cidCbor, '/', (err, result) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
 
               const node = result.value
 
               dagCBOR.util.cid(node, (err, cid) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 expect(cid).to.eql(cidCbor)
                 done()
               })
@@ -261,7 +264,7 @@ module.exports = (common) => {
 
           it('dag-cbor local scope', (done) => {
             ipfs.dag.get(cidCbor, 'someData', (err, result) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               expect(result.value).to.eql('I am inside a Cbor object')
               done()
             })
@@ -273,7 +276,7 @@ module.exports = (common) => {
 
           it('from dag-cbor to dag-pb', (done) => {
             ipfs.dag.get(cidCbor, 'pb/Data', (err, result) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               expect(result.value).to.eql(new Buffer('I am inside a Protobuf'))
               done()
             })
@@ -283,12 +286,12 @@ module.exports = (common) => {
             const cidCborStr = cidCbor.toBaseEncodedString()
 
             ipfs.dag.get(cidCborStr, (err, result) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
 
               const node = result.value
 
               dagCBOR.util.cid(node, (err, cid) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 expect(cid).to.eql(cidCbor)
                 done()
               })
@@ -299,7 +302,7 @@ module.exports = (common) => {
             const cidCborStr = cidCbor.toBaseEncodedString()
 
             ipfs.dag.get(cidCborStr + '/pb/Data', (err, result) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               expect(result.value).to.eql(new Buffer('I am inside a Protobuf'))
               done()
             })
@@ -317,14 +320,14 @@ module.exports = (common) => {
           series([
             (cb) => {
               dagPB.DAGNode.create(new Buffer('I am inside a Protobuf'), (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 nodePb = node
                 cb()
               })
             },
             (cb) => {
               dagPB.util.cid(nodePb, (err, cid) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 cidPb = cid
                 cb()
               })
@@ -336,7 +339,7 @@ module.exports = (common) => {
               }
 
               dagCBOR.util.cid(nodeCbor, (err, cid) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 cidCbor = cid
                 cb()
               })
@@ -362,7 +365,7 @@ module.exports = (common) => {
 
         it('.tree with CID', (done) => {
           ipfs.dag.tree(cidCbor, (err, paths) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             expect(paths).to.eql([
               'pb',
               'someData'
@@ -373,7 +376,7 @@ module.exports = (common) => {
 
         it('.tree with CID and path', (done) => {
           ipfs.dag.tree(cidCbor, 'someData', (err, paths) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             expect(paths).to.eql([])
             done()
           })
@@ -383,7 +386,7 @@ module.exports = (common) => {
           const cidCborStr = cidCbor.toBaseEncodedString()
 
           ipfs.dag.tree(cidCborStr + '/someData', (err, paths) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             expect(paths).to.eql([])
             done()
           })
@@ -391,7 +394,7 @@ module.exports = (common) => {
 
         it('.tree with CID recursive (accross different formats)', (done) => {
           ipfs.dag.tree(cidCbor, { recursive: true }, (err, paths) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             expect(paths).to.eql([
               'pb',
               'someData',
@@ -404,7 +407,7 @@ module.exports = (common) => {
 
         it('.tree with CID and path recursive', (done) => {
           ipfs.dag.tree(cidCbor, 'pb', { recursive: true }, (err, paths) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             expect(paths).to.eql([
               'Links',
               'Data'

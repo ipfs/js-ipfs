@@ -2,7 +2,10 @@
 /* eslint max-nested-callbacks: ['error', 8] */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const series = require('async/series')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
@@ -94,7 +97,7 @@ module.exports = (common) => {
         describe('.publish', () => {
           it('errors on string messags', (done) => {
             ipfs1.pubsub.publish(topic, 'hello friend', (err) => {
-              expect(err).to.exist
+              expect(err).to.exist()
               done()
             })
           })
@@ -118,14 +121,14 @@ module.exports = (common) => {
               ipfs1.pubsub.unsubscribe(topic, handler)
 
               ipfs1.pubsub.ls((err, topics) => {
-                expect(err).to.not.exist
-                expect(topics).to.be.empty
+                expect(err).to.not.exist()
+                expect(topics).to.be.empty()
                 check()
               })
             }
 
             ipfs1.pubsub.subscribe(topic, handler, (err) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               ipfs1.pubsub.publish(topic, new Buffer('hi'), check)
             })
           })
@@ -145,7 +148,7 @@ module.exports = (common) => {
                 },
                 (cb) => ipfs1.pubsub.ls(cb)
               ], (err, res) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
 
                 // Still subscribed as there is one listener left
                 expect(res[0]).to.be.eql([topic])
@@ -164,7 +167,7 @@ module.exports = (common) => {
               (cb) => ipfs1.pubsub.subscribe(topic, handler1, cb),
               (cb) => ipfs1.pubsub.subscribe(topic, handler2, cb)
             ], (err) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               ipfs1.pubsub.publish(topic, new Buffer('hello'), check)
             })
           })
@@ -181,7 +184,7 @@ module.exports = (common) => {
             ipfs1.pubsub.subscribe(topic, {
               discover: true
             }, handler, (err) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               ipfs1.pubsub.publish(topic, new Buffer('hi'), check)
             })
           })
@@ -206,9 +209,9 @@ module.exports = (common) => {
         describe('.peers', () => {
           it('does not error when not subscribed to a topic', (done) => {
             ipfs1.pubsub.peers(topic, (err, peers) => {
-              expect(err).to.not.exist
-              // Should be empty but as mentioned below go-ipfs returns more than it should
-              // expect(peers).to.be.empty
+              expect(err).to.not.exist()
+              // Should be empty() but as mentioned below go-ipfs returns more than it should
+              // expect(peers).to.be.empty()
 
               done()
             })
@@ -228,12 +231,12 @@ module.exports = (common) => {
               (cb) => ipfs2.pubsub.subscribe(topicOther, sub2, cb),
               (cb) => ipfs3.pubsub.subscribe(topicOther, sub3, cb)
             ], (err) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               setTimeout(() => {
                 ipfs1.pubsub.peers(topic, (err, peers) => {
-                  expect(err).to.not.exist
+                  expect(err).to.not.exist()
 
-                  expect(peers).to.be.empty
+                  expect(peers).to.be.empty()
                   ipfs1.pubsub.unsubscribe(topic, sub1)
                   ipfs2.pubsub.unsubscribe(topicOther, sub2)
                   ipfs3.pubsub.unsubscribe(topicOther, sub3)
@@ -256,7 +259,7 @@ module.exports = (common) => {
               (cb) => ipfs3.pubsub.subscribe(topic, sub3, cb),
               (cb) => waitForPeers(ipfs1, topic, [ipfs2.peerId.id], cb)
             ], (err) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               ipfs1.pubsub.unsubscribe(topic, sub1)
               ipfs2.pubsub.unsubscribe(topic, sub2)
               ipfs3.pubsub.unsubscribe(topic, sub3)
@@ -279,7 +282,7 @@ module.exports = (common) => {
                 ipfs3.peerId.id
               ], cb)
             ], (err) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               ipfs1.pubsub.unsubscribe(topic, sub1)
               ipfs2.pubsub.unsubscribe(topic, sub2)
               ipfs3.pubsub.unsubscribe(topic, sub3)
@@ -290,9 +293,9 @@ module.exports = (common) => {
         })
 
         describe('.ls', () => {
-          it('empty list when no topics are subscribed', (done) => {
+          it('empty() list when no topics are subscribed', (done) => {
             ipfs1.pubsub.ls((err, topics) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               expect(topics.length).to.equal(0)
               done()
             })
@@ -302,10 +305,10 @@ module.exports = (common) => {
             const sub1 = (msg) => {}
 
             ipfs1.pubsub.subscribe(topic, sub1, (err) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
 
               ipfs1.pubsub.ls((err, topics) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 expect(topics).to.be.eql([topic])
 
                 ipfs1.pubsub.unsubscribe(topic, sub1)
@@ -329,9 +332,9 @@ module.exports = (common) => {
             each(topics, (t, cb) => {
               ipfs1.pubsub.subscribe(t.name, t.handler, cb)
             }, (err) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               ipfs1.pubsub.ls((err, list) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
 
                 expect(
                   list.sort()
@@ -373,7 +376,7 @@ module.exports = (common) => {
               (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
               (cb) => waitForPeers(ipfs2, topic, [ipfs1.peerId.id], cb)
             ], (err) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
 
               ipfs2.pubsub.publish(topic, new Buffer(expectedString), check)
             })
@@ -411,7 +414,7 @@ module.exports = (common) => {
               (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
               (cb) => waitForPeers(ipfs2, topic, [ipfs1.peerId.id], cb)
             ], (err) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
 
               outbox.forEach((msg) => {
                 ipfs2.pubsub.publish(topic, new Buffer(msg), check)
@@ -487,7 +490,7 @@ module.exports = (common) => {
               (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
               (cb) => waitForPeers(ipfs1, topic, [ipfs2.peerId.id], cb)
             ], (err) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               startTime = new Date().getTime()
 
               whilst(
@@ -518,13 +521,13 @@ module.exports = (common) => {
                 ipfs1.pubsub.subscribe(someTopic, handler, cb)
               },
               (err) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 handlers.forEach((handler) => {
                   ipfs1.pubsub.unsubscribe(someTopic, handler)
                 })
 
                 ipfs1.pubsub.ls((err, topics) => {
-                  expect(err).to.not.exist
+                  expect(err).to.not.exist()
                   expect(topics).to.eql([])
                   done()
                 })
@@ -575,7 +578,7 @@ module.exports = (common) => {
         return ipfs1.pubsub.subscribe(topic, sub)
           .then(() => ipfs1.pubsub.peers(topic))
           .then((peers) => {
-            expect(peers).to.exist
+            expect(peers).to.exist()
             ipfs1.pubsub.unsubscribe(topic, sub)
           })
       })

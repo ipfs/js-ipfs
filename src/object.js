@@ -3,7 +3,10 @@
 
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const bs58 = require('bs58')
@@ -18,9 +21,9 @@ module.exports = (common) => {
       this.timeout(20 * 1000)
 
       common.setup((err, factory) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         factory.spawnNode((err, node) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           ipfs = node
           done()
         })
@@ -35,7 +38,7 @@ module.exports = (common) => {
       describe('.new', () => {
         it('no layout', (done) => {
           ipfs.object.new((err, node) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             const nodeJSON = node.toJSON()
             expect(nodeJSON.multihash).to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
             done()
@@ -44,7 +47,7 @@ module.exports = (common) => {
 
         it('template unixfs-dir', (done) => {
           ipfs.object.new('unixfs-dir', (err, node) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             const nodeJSON = node.toJSON()
             expect(
               nodeJSON.multihash
@@ -64,7 +67,7 @@ module.exports = (common) => {
           }
 
           ipfs.object.put(obj, (err, node) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             const nodeJSON = node.toJSON()
             expect(nodeJSON.data).to.eql(obj.Data)
             expect(nodeJSON.links).to.eql(obj.Links)
@@ -87,7 +90,7 @@ module.exports = (common) => {
           const buf = new Buffer(JSON.stringify(obj2))
 
           ipfs.object.put(buf, { enc: 'json' }, (err, node) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             const nodeJSON = node.toJSON()
 
             expect(nodeJSON.data).to.eql(node.data)
@@ -103,21 +106,21 @@ module.exports = (common) => {
           series([
             (cb) => {
               DAGNode.create(new Buffer('Some data'), (err, _node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node = _node
                 cb()
               })
             },
             (cb) => {
               dagPB.util.serialize(node, (err, _serialized) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 serialized = _serialized
                 cb()
               })
             },
             (cb) => {
               ipfs.object.put(serialized, { enc: 'protobuf' }, (err, storedNode) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 expect(node.data).to.deep.equal(node.data)
                 expect(node.links).to.deep.equal(node.links)
                 expect(node.multihash).to.eql(storedNode.multihash)
@@ -130,7 +133,7 @@ module.exports = (common) => {
         it('of buffer treated as Data field', (done) => {
           const data = new Buffer('Some data')
           ipfs.object.put(data, (err, node) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             const nodeJSON = node.toJSON()
             expect(data).to.deep.equal(nodeJSON.data)
             expect([]).to.deep.equal(nodeJSON.links)
@@ -141,9 +144,9 @@ module.exports = (common) => {
 
         it('of DAGNode', (done) => {
           DAGNode.create(new Buffer('Some data'), (err, dNode) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             ipfs.object.put(dNode, (err, node) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               expect(dNode.data).to.deep.equal(node.data)
               expect(dNode.links).to.deep.equal(node.links)
               done()
@@ -153,7 +156,7 @@ module.exports = (common) => {
 
         it('fails if String is passed', (done) => {
           ipfs.object.put('aaa', (err) => {
-            expect(err).to.exist
+            expect(err).to.exist()
             done()
           })
         })
@@ -165,14 +168,14 @@ module.exports = (common) => {
           series([
             (cb) => {
               DAGNode.create(new Buffer('Some data 1'), (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node1a = node
                 cb()
               })
             },
             (cb) => {
               DAGNode.create(new Buffer('Some data 2'), (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node2 = node
                 cb()
               })
@@ -181,14 +184,14 @@ module.exports = (common) => {
               const link = node2.toJSON()
               link.name = 'some-link'
               DAGNode.addLink(node1a, link, (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node1b = node
                 cb()
               })
             },
             (cb) => {
               ipfs.object.put(node1b, (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 expect(node1b.data).to.deep.equal(node.data)
                 expect(node1b.links.map((l) => l.toJSON()))
                   .to.deep.equal(node.links.map((l) => l.toJSON()))
@@ -212,14 +215,14 @@ module.exports = (common) => {
           series([
             (cb) => {
               ipfs.object.put(obj, (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node1 = node
                 cb()
               })
             },
             (cb) => {
               ipfs.object.get(node1.multihash, (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node2 = node
 
                 // because js-ipfs-api can't infer if the
@@ -248,14 +251,14 @@ module.exports = (common) => {
           series([
             (cb) => {
               DAGNode.create(new Buffer('Some data 1'), (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node1a = node
                 cb()
               })
             },
             (cb) => {
               DAGNode.create(new Buffer('Some data 2'), (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node2 = node
                 cb()
               })
@@ -264,7 +267,7 @@ module.exports = (common) => {
               const link = node2.toJSON()
               link.name = 'some-link'
               DAGNode.addLink(node1a, link, (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node1b = node
                 cb()
               })
@@ -274,7 +277,7 @@ module.exports = (common) => {
             },
             (cb) => {
               ipfs.object.get(node1b.multihash, (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
 
                 // because js-ipfs-api can't infer if the
                 // returned Data is Buffer or String
@@ -306,14 +309,14 @@ module.exports = (common) => {
           series([
             (cb) => {
               ipfs.object.put(obj, (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node1a = node
                 cb()
               })
             },
             (cb) => {
               ipfs.object.get(node1a.multihash, { enc: 'base58' }, (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 // because js-ipfs-api can't infer if the
                 // returned Data is Buffer or String
                 if (typeof node.data === 'string') {
@@ -344,14 +347,14 @@ module.exports = (common) => {
           series([
             (cb) => {
               ipfs.object.put(obj, (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node1a = node
                 cb()
               })
             },
             (cb) => {
               ipfs.object.get(bs58.encode(node1a.multihash).toString(), { enc: 'base58' }, (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 // because js-ipfs-api can't infer if the
                 // returned Data is Buffer or String
                 if (typeof node.data === 'string') {
@@ -379,10 +382,10 @@ module.exports = (common) => {
           }
 
           ipfs.object.put(testObj, (err, node) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
 
             ipfs.object.data(node.multihash, (err, data) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
 
               // because js-ipfs-api can't infer
               // if the returned Data is Buffer or String
@@ -402,10 +405,10 @@ module.exports = (common) => {
           }
 
           ipfs.object.put(testObj, (err, node) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
 
             ipfs.object.data(bs58.encode(node.multihash), { enc: 'base58' }, (err, data) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
 
               // because js-ipfs-api can't infer
               // if the returned Data is Buffer or String
@@ -425,10 +428,10 @@ module.exports = (common) => {
           }
 
           ipfs.object.put(testObj, (err, node) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
 
             ipfs.object.data(bs58.encode(node.multihash).toString(), { enc: 'base58' }, (err, data) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
 
               // because js-ipfs-api can't infer if the
               // returned Data is Buffer or String
@@ -450,10 +453,10 @@ module.exports = (common) => {
           }
 
           ipfs.object.put(testObj, (err, node) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
 
             ipfs.object.links(node.multihash, (err, links) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               expect(node.links).to.deep.equal(links)
               done()
             })
@@ -468,14 +471,14 @@ module.exports = (common) => {
           series([
             (cb) => {
               DAGNode.create(new Buffer('Some data 1'), (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node1a = node
                 cb()
               })
             },
             (cb) => {
               DAGNode.create(new Buffer('Some data 2'), (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node2 = node
                 cb()
               })
@@ -485,7 +488,7 @@ module.exports = (common) => {
               link.name = 'some-link'
 
               DAGNode.addLink(node1a, link, (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node1b = node
                 cb()
               })
@@ -495,7 +498,7 @@ module.exports = (common) => {
             },
             (cb) => {
               ipfs.object.links(node1b.multihash, (err, links) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 expect(node1b.links[0].toJSON()).to.eql(links[0].toJSON())
                 cb()
               })
@@ -510,10 +513,10 @@ module.exports = (common) => {
           }
 
           ipfs.object.put(testObj, (err, node) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
 
             ipfs.object.links(bs58.encode(node.multihash), { enc: 'base58' }, (err, links) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               expect(node.links).to.deep.equal(links)
               done()
             })
@@ -527,9 +530,9 @@ module.exports = (common) => {
           }
 
           ipfs.object.put(testObj, (err, node) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             ipfs.object.links(bs58.encode(node.multihash), { enc: 'base58' }, (err, links) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               expect(node.links).to.deep.equal(links)
               done()
             })
@@ -545,10 +548,10 @@ module.exports = (common) => {
           }
 
           ipfs.object.put(testObj, (err, node) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
 
             ipfs.object.stat(node.multihash, (err, stats) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               const expected = {
                 Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
                 NumLinks: 0,
@@ -571,14 +574,14 @@ module.exports = (common) => {
           series([
             (cb) => {
               DAGNode.create(new Buffer('Some data 1'), (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node1a = node
                 cb()
               })
             },
             (cb) => {
               DAGNode.create(new Buffer('Some data 2'), (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node2 = node
                 cb()
               })
@@ -588,7 +591,7 @@ module.exports = (common) => {
               link.name = 'some-link'
 
               DAGNode.addLink(node1a, link, (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node1b = node
                 cb()
               })
@@ -598,7 +601,7 @@ module.exports = (common) => {
             },
             (cb) => {
               ipfs.object.stat(node1b.multihash, (err, stats) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 const expected = {
                   Hash: 'QmPR7W4kaADkAo4GKEVVPQN81EDUFCHJtqejQZ5dEG7pBC',
                   NumLinks: 1,
@@ -621,10 +624,10 @@ module.exports = (common) => {
           }
 
           ipfs.object.put(testObj, (err, node) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
 
             ipfs.object.stat(bs58.encode(node.multihash), { enc: 'base58' }, (err, stats) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               const expected = {
                 Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
                 NumLinks: 0,
@@ -646,10 +649,10 @@ module.exports = (common) => {
           }
 
           ipfs.object.put(testObj, (err, node) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
 
             ipfs.object.stat(bs58.encode(node.multihash).toString(), { enc: 'base58' }, (err, stats) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               const expected = {
                 Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
                 NumLinks: 0,
@@ -677,7 +680,7 @@ module.exports = (common) => {
 
         before((done) => {
           ipfs.object.put(obj, (err, node) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             testNodeMultihash = node.multihash
             done()
           })
@@ -691,14 +694,14 @@ module.exports = (common) => {
           series([
             (cb) => {
               DAGNode.create(obj.Data, obj.Links, (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node1a = node
                 cb()
               })
             },
             (cb) => {
               DAGNode.create(new Buffer('some other node'), (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node2 = node
                 cb()
               })
@@ -712,14 +715,14 @@ module.exports = (common) => {
               const link = node2.toJSON()
               link.name = 'link-to-node'
               DAGNode.addLink(node1a, link, (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node1b = node
                 cb()
               })
             },
             (cb) => {
               ipfs.object.patch.addLink(testNodeMultihash, node1b.links[0], (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 expect(node1b.multihash).to.eql(node.multihash)
                 testNodeWithLinkMultihash = node.multihash
                 testLink = node1b.links[0]
@@ -731,7 +734,7 @@ module.exports = (common) => {
 
         it('.rmLink', (done) => {
           ipfs.object.patch.rmLink(testNodeWithLinkMultihash, testLink, (err, node) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             expect(node.multihash).to.not.deep.equal(testNodeWithLinkMultihash)
             done()
           })
@@ -739,7 +742,7 @@ module.exports = (common) => {
 
         it('.appendData', (done) => {
           ipfs.object.patch.appendData(testNodeMultihash, new Buffer('append'), (err, node) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             expect(node.multihash).to.not.deep.equal(testNodeMultihash)
             done()
           })
@@ -747,7 +750,7 @@ module.exports = (common) => {
 
         it('.setData', (done) => {
           ipfs.object.patch.appendData(testNodeMultihash, new Buffer('set'), (err, node) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             expect(node.multihash).to.not.deep.equal(testNodeMultihash)
             done()
           })
@@ -828,7 +831,7 @@ module.exports = (common) => {
         }
 
         ipfs.object.put(testObj, (err, node) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
 
           ipfs.object.stat('QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ', {enc: 'base58'})
             .then((stats) => {
@@ -844,7 +847,7 @@ module.exports = (common) => {
               done()
             })
            .catch((err) => {
-             expect(err).to.not.exist
+             expect(err).to.not.exist()
            })
         })
       })
@@ -875,7 +878,7 @@ module.exports = (common) => {
 
         before((done) => {
           ipfs.object.put(obj, (err, node) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             testNodeMultihash = node.multihash
             done()
           })
@@ -889,14 +892,14 @@ module.exports = (common) => {
           series([
             (cb) => {
               DAGNode.create(obj.Data, obj.Links, (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node1a = node
                 cb()
               })
             },
             (cb) => {
               DAGNode.create(new Buffer('some other node'), (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node2 = node
                 cb()
               })
@@ -910,7 +913,7 @@ module.exports = (common) => {
               const link = node2.toJSON()
               link.name = 'link-to-node'
               DAGNode.addLink(node1a, link, (err, node) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
                 node1b = node
                 cb()
               })
@@ -924,7 +927,7 @@ module.exports = (common) => {
                   cb()
                 })
                 .catch((err) => {
-                  expect(err).to.not.exist
+                  expect(err).to.not.exist()
                 })
             }
           ], done)
@@ -937,7 +940,7 @@ module.exports = (common) => {
               done()
             })
             .catch((err) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
             })
         })
 
@@ -948,7 +951,7 @@ module.exports = (common) => {
               done()
             })
             .catch((err) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
             })
         })
 
@@ -959,7 +962,7 @@ module.exports = (common) => {
               done()
             })
            .catch((err) => {
-             expect(err).to.not.exist
+             expect(err).to.not.exist()
            })
         })
       })

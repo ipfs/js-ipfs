@@ -3,7 +3,10 @@
 
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const series = require('async/series')
 const multiaddr = require('multiaddr')
 
@@ -19,18 +22,18 @@ module.exports = (common) => {
       this.timeout(20 * 1000)
 
       common.setup((err, factory) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         series([
           (cb) => {
             factory.spawnNode((err, node) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               ipfsA = node
               cb()
             })
           },
           (cb) => {
             factory.spawnNode((err, node) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
               ipfsB = node
               cb()
             })
@@ -48,7 +51,7 @@ module.exports = (common) => {
     describe('callback API', () => {
       it('.connect', (done) => {
         ipfsB.id((err, id) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           ipfsBId = id
           const ipfsBAddr = id.addresses[0]
           ipfsA.swarm.connect(ipfsBAddr, done)
@@ -68,13 +71,13 @@ module.exports = (common) => {
 
         it('default', (done) => {
           ipfsA.swarm.peers((err, peers) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             expect(peers).to.have.length.above(0)
 
             const peer = peers[0]
 
             expect(peer).to.have.a.property('addr')
-            expect(multiaddr.isMultiaddr(peer.addr)).to.be.true
+            expect(multiaddr.isMultiaddr(peer.addr)).to.equal(true)
             expect(peer).to.have.a.property('peer')
             expect(peer).to.not.have.a.property('latency')
 
@@ -88,12 +91,12 @@ module.exports = (common) => {
 
         it('verbose', (done) => {
           ipfsA.swarm.peers({verbose: true}, (err, peers) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             expect(peers).to.have.length.above(0)
 
             const peer = peers[0]
             expect(peer).to.have.a.property('addr')
-            expect(multiaddr.isMultiaddr(peer.addr)).to.be.true
+            expect(multiaddr.isMultiaddr(peer.addr)).to.equal(true)
             expect(peer).to.have.a.property('peer')
             expect(peer).to.have.a.property('latency')
 
@@ -108,8 +111,8 @@ module.exports = (common) => {
 
       it('.addrs', (done) => {
         ipfsA.swarm.addrs((err, multiaddrs) => {
-          expect(err).to.not.exist
-          expect(multiaddrs).to.not.be.empty
+          expect(err).to.not.exist()
+          expect(multiaddrs).to.not.be.empty()
           expect(multiaddrs).to.be.an('array')
           expect(multiaddrs[0].constructor.name).to.be.eql('PeerInfo')
           done()
@@ -118,7 +121,7 @@ module.exports = (common) => {
 
       it('.localAddrs', (done) => {
         ipfsA.swarm.localAddrs((err, multiaddrs) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           expect(multiaddrs).to.have.length.above(0)
           done()
         })
@@ -126,7 +129,7 @@ module.exports = (common) => {
 
       it('.disconnect', (done) => {
         ipfsB.id((err, id) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           const ipfsBAddr = id.addresses[0]
           ipfsA.swarm.disconnect(ipfsBAddr, done)
         })
