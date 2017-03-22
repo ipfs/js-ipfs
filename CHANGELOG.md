@@ -1,3 +1,13 @@
+<a name="0.26.0"></a>
+# [0.26.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.25.1...v0.26.0) (2017-03-22)
+
+
+### Bug Fixes
+
+* make aegir happy-n ([d5b1c30](https://github.com/ipfs/interface-ipfs-core/commit/d5b1c30))
+
+
+
 <a name="0.25.1"></a>
 ## [0.25.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.25.0...v0.25.1) (2017-03-20)
 
