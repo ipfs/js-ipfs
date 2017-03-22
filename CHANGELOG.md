@@ -1,3 +1,13 @@
+<a name="13.0.0"></a>
+# [13.0.0](https://github.com/ipfs/js-ipfs-api/compare/v12.1.7...v13.0.0) (2017-03-22)
+
+
+### Features
+
+* change window to self for webworker support ([e2e3213](https://github.com/ipfs/js-ipfs-api/commit/e2e3213))
+
+
+
 <a name="12.1.7"></a>
 ## [12.1.7](https://github.com/ipfs/js-ipfs-api/compare/v12.1.6...v12.1.7) (2017-02-09)
 
