@@ -9,28 +9,39 @@ const streamToValue = require('../stream-to-value')
 module.exports = (send) => {
   return {
     get: promisify((args, opts, callback) => {
-      // TODO this needs to be adjusted with the new go-ipfs http-api
-      if (CID.isCID(args)) {
-        args = multihash.toB58String(args.multihash)
-      }
-      if (Buffer.isBuffer(args)) {
-        args = multihash.toB58String(args)
-      }
       if (typeof opts === 'function') {
         callback = opts
         opts = {}
       }
 
+      // TODO this needs to be adjusted with the new go-ipfs http-api
+      let cid
+      try {
+        if (CID.isCID(args)) {
+          cid = args
+          args = multihash.toB58String(args.multihash)
+        } else if (Buffer.isBuffer(args)) {
+          cid = new CID(args)
+          args = multihash.toB58String(args)
+        } else if (typeof args === 'string') {
+          cid = new CID(args)
+        } else {
+          return callback(new Error('invalid argument'))
+        }
+      } catch (err) {
+        return callback(err)
+      }
+
       // Transform the response from Buffer or a Stream to a Block
       const transform = (res, callback) => {
         if (Buffer.isBuffer(res)) {
-          callback(null, new Block(res))
+          callback(null, new Block(res, cid))
         } else {
           streamToValue(res, (err, data) => {
             if (err) {
               return callback(err)
             }
-            callback(null, new Block(data))
+            callback(null, new Block(data, cid))
           })
         }
       }
@@ -92,7 +103,9 @@ module.exports = (send) => {
       }
 
       // Transform the response to a Block
-      const transform = (blockInfo, callback) => callback(null, new Block(block))
+      const transform = (info, callback) => {
+        callback(null, new Block(block, new CID(info.Key)))
+      }
 
       send.andTransform(request, transform, callback)
     })

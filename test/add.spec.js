@@ -2,7 +2,10 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const isNode = require('detect-node')
 const path = require('path')
 
@@ -18,7 +21,7 @@ describe('.add (extra tests)', () => {
     this.timeout(20 * 1000) // slow CI
     fc = new FactoryClient()
     fc.spawnNode((err, node) => {
-      expect(err).to.not.exist
+      expect(err).to.not.exist()
       ipfs = node
       done()
     })
@@ -30,7 +33,7 @@ describe('.add (extra tests)', () => {
     const validPath = path.join(process.cwd() + '/package.json')
 
     ipfs.files.add(validPath, (err, res) => {
-      expect(err).to.exist
+      expect(err).to.exist()
       done()
     })
   })

@@ -18,6 +18,7 @@ function parseError (res, cb) {
     if (err) {
       return cb(err)
     }
+
     if (payload) {
       error.code = payload.Code
       error.message = payload.Message || payload.toString()

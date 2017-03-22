@@ -2,7 +2,10 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const FactoryClient = require('./ipfs-factory/client')
 
 describe('.log', () => {
@@ -13,7 +16,7 @@ describe('.log', () => {
     this.timeout(20 * 1000) // slow CI
     fc = new FactoryClient()
     fc.spawnNode((err, node) => {
-      expect(err).to.not.exist
+      expect(err).to.not.exist()
       ipfs = node
       done()
     })
@@ -24,8 +27,8 @@ describe('.log', () => {
   describe('Callback API', () => {
     it('.log.tail', (done) => {
       const req = ipfs.log.tail((err, res) => {
-        expect(err).to.not.exist
-        expect(req).to.exist
+        expect(err).to.not.exist()
+        expect(req).to.exist()
 
         res.once('data', (obj) => {
           expect(obj).to.be.an('object')

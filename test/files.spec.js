@@ -2,7 +2,10 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const isNode = require('detect-node')
 const loadFixture = require('aegir/fixtures')
 
@@ -20,7 +23,7 @@ describe('.files (the MFS API part)', () => {
     this.timeout(20 * 1000) // slow CI
     fc = new FactoryClient()
     fc.spawnNode((err, node) => {
-      expect(err).to.not.exist
+      expect(err).to.not.exist()
       ipfs = node
       done()
     })
@@ -33,7 +36,7 @@ describe('.files (the MFS API part)', () => {
       const expectedMultihash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
 
       ipfs.files.add(testfile, (err, res) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
 
         expect(res).to.have.length(1)
         expect(res[0].hash).to.equal(expectedMultihash)
@@ -51,14 +54,14 @@ describe('.files (the MFS API part)', () => {
         '/ipfs/Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
         '/test-folder/test-file'
       ], (err) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         done()
       })
     })
 
     it('files.ls', (done) => {
       ipfs.files.ls('/test-folder', (err, res) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         expect(res.Entries.length).to.equal(1)
         done()
       })
@@ -67,14 +70,14 @@ describe('.files (the MFS API part)', () => {
     it('files.write', (done) => {
       ipfs.files
         .write('/test-folder/test-file-2.txt', new Buffer('hello world'), {create: true}, (err) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
 
           ipfs.files.read('/test-folder/test-file-2.txt', (err, stream) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
 
             let buf = ''
             stream
-              .on('error', (err) => expect(err).to.not.exist)
+              .on('error', (err) => expect(err).to.not.exist())
               .on('data', (data) => {
                 buf += data
               })
@@ -89,15 +92,15 @@ describe('.files (the MFS API part)', () => {
     it('files.write without options', (done) => {
       ipfs.files
         .write('/test-folder/test-file-2.txt', new Buffer('hello world'), (err) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
 
           ipfs.files.read('/test-folder/test-file-2.txt', (err, stream) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
 
             let buf = ''
             stream
               .on('error', (err) => {
-                expect(err).to.not.exist
+                expect(err).to.not.exist()
               })
               .on('data', (data) => {
                 buf += data
@@ -112,7 +115,7 @@ describe('.files (the MFS API part)', () => {
 
     it('files.stat', (done) => {
       ipfs.files.stat('/test-folder/test-file', (err, res) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         expect(res).to.deep.equal({
           Hash: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
           Size: 12,
@@ -125,9 +128,9 @@ describe('.files (the MFS API part)', () => {
       })
     })
 
-    it('files.stat file that does not exist', (done) => {
-      ipfs.files.stat('/test-folder/does-not-exist', (err, res) => {
-        expect(err).to.exist
+    it('files.stat file that does not exist()', (done) => {
+      ipfs.files.stat('/test-folder/does-not-exist()', (err, res) => {
+        expect(err).to.exist()
         if (err.code === 0) {
           return done()
         }
@@ -141,11 +144,11 @@ describe('.files (the MFS API part)', () => {
       }
 
       ipfs.files.read('/test-folder/test-file', (err, stream) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         let buf = ''
         stream
           .on('error', (err) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
           })
           .on('data', (data) => {
             buf += data
@@ -193,7 +196,7 @@ describe('.files (the MFS API part)', () => {
           let buf = ''
           stream
             .on('error', (err) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
             })
             .on('data', (data) => {
               buf += data
@@ -216,7 +219,7 @@ describe('.files (the MFS API part)', () => {
           let buf = ''
           stream
             .on('error', (err) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
             })
             .on('data', (data) => {
               buf += data
@@ -242,10 +245,10 @@ describe('.files (the MFS API part)', () => {
         })
     })
 
-    it('files.stat file that does not exist', () => {
-      return ipfs.files.stat('/test-folder/does-not-exist')
+    it('files.stat file that does not exist()', () => {
+      return ipfs.files.stat('/test-folder/does-not-exist()')
         .catch((err) => {
-          expect(err).to.exist
+          expect(err).to.exist()
           expect(err.code).to.be.eql(0)
         })
     })
@@ -258,7 +261,7 @@ describe('.files (the MFS API part)', () => {
           let buf = ''
           stream
             .on('error', (err) => {
-              expect(err).to.not.exist
+              expect(err).to.not.exist()
             })
             .on('data', (data) => {
               buf += data

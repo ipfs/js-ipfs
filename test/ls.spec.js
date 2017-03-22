@@ -1,7 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const isNode = require('detect-node')
 const waterfall = require('async/waterfall')
 const path = require('path')
@@ -38,7 +41,7 @@ describe('.ls', () => {
   describe('Callback API', () => {
     it('should correctly retrieve links', function (done) {
       ipfs.ls(folder, (err, res) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
 
         expect(res).to.have.a.property('Objects')
         expect(res.Objects[0]).to.have.a.property('Links')
@@ -47,18 +50,18 @@ describe('.ls', () => {
       })
     })
 
-    it('should correctly handle a nonexisting hash', function (done) {
+    it('should correctly handle a nonexist()ing hash', function (done) {
       ipfs.ls('surelynotavalidhashheh?', (err, res) => {
-        expect(err).to.exist
-        expect(res).to.not.exist
+        expect(err).to.exist()
+        expect(res).to.not.exist()
         done()
       })
     })
 
-    it('should correctly handle a nonexisting path', function (done) {
+    it('should correctly handle a nonexist()ing path', function (done) {
       ipfs.ls('QmRNjDeKStKGTQXnJ2NFqeQ9oW/folder_that_isnt_there', (err, res) => {
-        expect(err).to.exist
-        expect(res).to.not.exist
+        expect(err).to.exist()
+        expect(res).to.not.exist()
         done()
       })
     })
@@ -74,14 +77,14 @@ describe('.ls', () => {
         })
     })
 
-    it('should correctly handle a nonexisting hash', () => {
+    it('should correctly handle a nonexist()ing hash', () => {
       return ipfs.ls('surelynotavalidhashheh?')
-        .catch((err) => expect(err).to.exist)
+        .catch((err) => expect(err).to.exist())
     })
 
-    it('should correctly handle a nonexisting path', () => {
+    it('should correctly handle a nonexist()ing path', () => {
       return ipfs.ls('QmRNjDeKStKGTQXnJ3NFqeQ9oW/folder_that_isnt_there')
-        .catch((err) => expect(err).to.exist)
+        .catch((err) => expect(err).to.exist())
     })
   })
 })

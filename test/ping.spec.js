@@ -1,7 +1,11 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
+
 const series = require('async/series')
 const FactoryClient = require('./ipfs-factory/client')
 
@@ -16,7 +20,7 @@ describe.skip('.ping', () => {
     series([
       (cb) => {
         fc.spawnNode((err, node) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           ipfs = node
           cb()
         })
@@ -24,14 +28,14 @@ describe.skip('.ping', () => {
       (cb) => {
         console.log('going to spawn second node')
         fc.spawnNode((err, node) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           other = node
           cb()
         })
       },
       (cb) => {
         ipfs.id((err, id) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           const ma = id.addresses[0]
           other.swarm.connect(ma, cb)
         })
@@ -44,10 +48,10 @@ describe.skip('.ping', () => {
   describe('callback API', () => {
     it('ping another peer', (done) => {
       other.id((err, id) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
 
         ipfs.ping(id.id, (err, res) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           expect(res).to.have.a.property('Success')
           expect(res).to.have.a.property('Time')
           expect(res).to.have.a.property('Text')

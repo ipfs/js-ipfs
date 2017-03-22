@@ -1,7 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const isNode = require('detect-node')
 const ipfsAPI = require('../src/index.js')
 
@@ -18,7 +21,7 @@ describe('\'deal with HTTP weirdness\' tests', () => {
 
     server.listen(6001, () => {
       ipfsAPI('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json', (err) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         server.close(done)
       })
     })

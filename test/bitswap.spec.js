@@ -1,7 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const FactoryClient = require('./ipfs-factory/client')
 
 describe('.bitswap', () => {
@@ -12,7 +15,7 @@ describe('.bitswap', () => {
     this.timeout(20 * 1000) // slow CI
     fc = new FactoryClient()
     fc.spawnNode((err, node) => {
-      expect(err).to.not.exist
+      expect(err).to.not.exist()
       ipfs = node
       done()
     })
@@ -25,7 +28,7 @@ describe('.bitswap', () => {
   describe('Callback API', () => {
     it('.wantlist', (done) => {
       ipfs.bitswap.wantlist((err, res) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         expect(res).to.have.to.be.eql({
           Keys: null
         })
@@ -35,7 +38,7 @@ describe('.bitswap', () => {
 
     it('.stat', (done) => {
       ipfs.bitswap.stat((err, res) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         expect(res).to.have.property('BlocksReceived')
         expect(res).to.have.property('DupBlksReceived')
         expect(res).to.have.property('DupDataReceived')
@@ -50,7 +53,7 @@ describe('.bitswap', () => {
     it('.unwant', (done) => {
       const key = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
       ipfs.bitswap.unwant(key, (err) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         done()
       })
     })

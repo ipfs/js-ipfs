@@ -1,7 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const isNode = require('detect-node')
 const series = require('async/series')
 const loadFixture = require('aegir/fixtures')
@@ -22,21 +25,21 @@ describe('.name', () => {
     series([
       (cb) => {
         fc.spawnNode((err, node) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           ipfs = node
           cb()
         })
       },
       (cb) => {
         fc.spawnNode((err, node) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           other = node
           cb()
         })
       },
       (cb) => {
         ipfs.id((err, id) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           const ma = id.addresses[0]
           other.swarm.connect(ma, cb)
         })
@@ -53,7 +56,7 @@ describe('.name', () => {
       const expectedMultihash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
 
       ipfs.files.add(testfile, (err, res) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
 
         expect(res).to.have.length(1)
         expect(res[0].hash).to.equal(expectedMultihash)
@@ -64,17 +67,17 @@ describe('.name', () => {
 
     it('.name.publish', (done) => {
       ipfs.name.publish('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', (err, res) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         name = res
-        expect(name).to.exist
+        expect(name).to.exist()
         done()
       })
     })
 
     it('.name.resolve', (done) => {
       ipfs.name.resolve(name.Name, (err, res) => {
-        expect(err).to.not.exist
-        expect(res).to.exist
+        expect(err).to.not.exist()
+        expect(res).to.exist()
         expect(res).to.be.eql({
           Path: name.Value
         })
@@ -90,14 +93,14 @@ describe('.name', () => {
       return ipfs.name.publish('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
         .then((res) => {
           name = res
-          expect(name).to.exist
+          expect(name).to.exist()
         })
     })
 
     it('.name.resolve', () => {
       return ipfs.name.resolve(name.Name)
         .then((res) => {
-          expect(res).to.exist
+          expect(res).to.exist()
           expect(res).to.be.eql({
             Path: name.Value
           })

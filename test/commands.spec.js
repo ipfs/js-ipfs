@@ -1,7 +1,11 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
+
 const FactoryClient = require('./ipfs-factory/client')
 
 describe('.commands', () => {
@@ -12,7 +16,7 @@ describe('.commands', () => {
     this.timeout(20 * 1000) // slow CI
     fc = new FactoryClient()
     fc.spawnNode((err, node) => {
-      expect(err).to.not.exist
+      expect(err).to.not.exist()
       ipfs = node
       done()
     })
@@ -24,8 +28,8 @@ describe('.commands', () => {
 
   it('lists commands', (done) => {
     ipfs.commands((err, res) => {
-      expect(err).to.not.exist
-      expect(res).to.exist
+      expect(err).to.not.exist()
+      expect(res).to.exist()
       done()
     })
   })
@@ -34,7 +38,7 @@ describe('.commands', () => {
     it('lists commands', () => {
       return ipfs.commands()
         .then((res) => {
-          expect(res).to.exist
+          expect(res).to.exist()
         })
     })
   })

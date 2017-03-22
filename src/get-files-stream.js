@@ -46,7 +46,7 @@ function loadPaths (opts, file) {
 
   if (stats.isDirectory() && opts.recursive) {
     const globEscapedDir = escape(file) + (file.endsWith('/') ? '' : '/')
-    const mg = new glob.sync.GlobSync(`${globEscapedDir}**/*`, {
+    const mg = new glob.sync.GlobSync(`${globEscapedDir}` + '**/*', {
       follow: followSymlinks,
       dot: opts.hidden,
       ignore: (opts.ignore || []).map(function (ignoreGlob) {
@@ -84,9 +84,7 @@ function loadPaths (opts, file) {
             dir: true
           }
         }
-
         // files inside symlinks and others
-        return
       })
       // filter out null files
       .filter(Boolean)

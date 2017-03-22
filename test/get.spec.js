@@ -3,7 +3,10 @@
 
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const isNode = require('detect-node')
 const fs = require('fs')
 const concat = require('concat-stream')
@@ -30,7 +33,7 @@ describe('.get', () => {
     this.timeout(20 * 1000) // slow CI
     fc = new FactoryClient()
     fc.spawnNode((err, node) => {
-      expect(err).to.not.exist
+      expect(err).to.not.exist()
       ipfs = node
       done()
     })
@@ -43,7 +46,7 @@ describe('.get', () => {
       const expectedMultihash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
 
       ipfs.files.add(testfile, (err, res) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
 
         expect(res).to.have.length(1)
         expect(res[0].hash).to.equal(expectedMultihash)
@@ -54,7 +57,7 @@ describe('.get', () => {
 
     it('get with no compression args', (done) => {
       ipfs.get('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', (err, res) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
 
         // accumulate the files and their content
         var files = []
@@ -79,7 +82,7 @@ describe('.get', () => {
       ipfs.get('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', {
         archive: true
       }, (err, res) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
 
         // accumulate the files and their content
         var files = []
@@ -105,7 +108,7 @@ describe('.get', () => {
         compress: true,
         'compression-level': 10
       }, (err, res) => {
-        expect(err).to.exist
+        expect(err).to.exist()
         expect(err.toString()).to.equal('Error: Compression level must be between 1 and 9')
         done()
       })
@@ -116,7 +119,7 @@ describe('.get', () => {
         compress: true,
         'compression-level': 1
       }, (err, res) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         done()
       })
     })
@@ -128,7 +131,7 @@ describe('.get', () => {
       const expectedMultihash = 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq'
 
       ipfs.files.add(bigFile, (err, res) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
 
         expect(res).to.have.length(1)
         expect(res[0].path).to.equal(expectedMultihash)
@@ -141,13 +144,13 @@ describe('.get', () => {
       if (!isNode) { return done() }
 
       ipfs.get('Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq', (err, files) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
 
         files.on('data', (file) => {
           // Do not blow out the memory of nodejs :)
           streamEqual(file.content, testfileBig, (err, equal) => {
-            expect(err).to.not.exist
-            expect(equal).to.be.true
+            expect(err).to.not.exist()
+            expect(equal).to.equal(true)
             done()
           })
         })
@@ -162,7 +165,7 @@ describe('.get', () => {
           files.on('data', (file) => {
             let buf = ''
             file.content
-              .on('error', (err) => expect(err).to.not.exist)
+              .on('error', (err) => expect(err).to.not.exist())
               .on('data', (data) => {
                 buf += data.toString()
               })
@@ -173,7 +176,7 @@ describe('.get', () => {
           })
         })
       .catch((err) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
       })
     })
   })

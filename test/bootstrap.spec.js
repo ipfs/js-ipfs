@@ -2,7 +2,10 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const FactoryClient = require('./ipfs-factory/client')
 
 const invalidArg = 'this/Is/So/Invalid/'
@@ -16,7 +19,7 @@ describe('.bootstrap', () => {
     this.timeout(20 * 1000) // slow CI
     fc = new FactoryClient()
     fc.spawnNode((err, node) => {
-      expect(err).to.not.exist
+      expect(err).to.not.exist()
       ipfs = node
       done()
     })
@@ -39,10 +42,10 @@ describe('.bootstrap', () => {
 
       it('returns a list of containing the bootstrap peer when called with a valid arg (ip4)', (done) => {
         ipfs.bootstrap.add(validIp4, (err, res) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           expect(res).to.be.eql({ Peers: [validIp4] })
           peers = res.Peers
-          expect(peers).to.exist
+          expect(peers).to.exist()
           expect(peers.length).to.eql(1)
           done()
         })
@@ -50,9 +53,9 @@ describe('.bootstrap', () => {
 
       it('returns a list of bootstrap peers when called with the default option', (done) => {
         ipfs.bootstrap.add({ default: true }, (err, res) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           peers = res.Peers
-          expect(peers).to.exist
+          expect(peers).to.exist()
           expect(peers.length).to.above(1)
           done()
         })
@@ -62,9 +65,9 @@ describe('.bootstrap', () => {
     describe('.list', () => {
       it('returns a list of peers', (done) => {
         ipfs.bootstrap.list((err, res) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           peers = res.Peers
-          expect(peers).to.exist
+          expect(peers).to.exist()
           done()
         })
       })
@@ -80,9 +83,9 @@ describe('.bootstrap', () => {
 
       it('returns empty list because no peers removed when called without an arg or options', (done) => {
         ipfs.bootstrap.rm(null, (err, res) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           peers = res.Peers
-          expect(peers).to.exist
+          expect(peers).to.exist()
           expect(peers.length).to.eql(0)
           done()
         })
@@ -90,9 +93,9 @@ describe('.bootstrap', () => {
 
       it('returns list containing the peer removed when called with a valid arg (ip4)', (done) => {
         ipfs.bootstrap.rm(null, (err, res) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           peers = res.Peers
-          expect(peers).to.exist
+          expect(peers).to.exist()
           expect(peers.length).to.eql(0)
           done()
         })
@@ -100,9 +103,9 @@ describe('.bootstrap', () => {
 
       it('returns list of all peers removed when all option is passed', (done) => {
         ipfs.bootstrap.rm(null, { all: true }, (err, res) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           peers = res.Peers
-          expect(peers).to.exist
+          expect(peers).to.exist()
           done()
         })
       })
@@ -130,7 +133,7 @@ describe('.bootstrap', () => {
           .then((res) => {
             expect(res).to.be.eql({ Peers: [validIp4] })
             peers = res.Peers
-            expect(peers).to.exist
+            expect(peers).to.exist()
             expect(peers.length).to.eql(1)
           })
       })
@@ -139,7 +142,7 @@ describe('.bootstrap', () => {
         return ipfs.bootstrap.add(null, { default: true })
           .then((res) => {
             peers = res.Peers
-            expect(peers).to.exist
+            expect(peers).to.exist()
             expect(peers.length).to.above(1)
           })
       })
@@ -150,7 +153,7 @@ describe('.bootstrap', () => {
         return ipfs.bootstrap.list()
           .then((res) => {
             peers = res.Peers
-            expect(peers).to.exist
+            expect(peers).to.exist()
           })
       })
     })
@@ -167,7 +170,7 @@ describe('.bootstrap', () => {
         return ipfs.bootstrap.rm(null)
           .then((res) => {
             peers = res.Peers
-            expect(peers).to.exist
+            expect(peers).to.exist()
             expect(peers.length).to.eql(0)
           })
       })
@@ -176,7 +179,7 @@ describe('.bootstrap', () => {
         return ipfs.bootstrap.rm(null)
           .then((res) => {
             peers = res.Peers
-            expect(peers).to.exist
+            expect(peers).to.exist()
             expect(peers.length).to.eql(0)
           })
       })
@@ -185,7 +188,7 @@ describe('.bootstrap', () => {
         return ipfs.bootstrap.rm(null, { all: true })
           .then((res) => {
             peers = res.Peers
-            expect(peers).to.exist
+            expect(peers).to.exist()
           })
       })
     })
