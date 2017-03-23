@@ -47,23 +47,23 @@ module.exports = (self) => {
 
   const tasks = []
 
-  if (doInit) {
-    self.log('boot:doInit')
-    tasks.push((cb) => self.init(initOptions, cb))
+  self._repo.exists((err, repoExists) => {
+    if (err) {
+      return done(err)
+    }
+    if (doInit && !repoExists) {
+      tasks.push((cb) => self.init(initOptions, cb))
+    }
+    if (repoExists) {
+      tasks.push(maybeOpenRepo)
+    }
     next(null, true)
-  } else if (!repoOpen) {
-    self._repo.exists(next)
-  }
+  })
 
   function next (err, hasRepo) {
     self.log('boot:next')
     if (err) {
       return done(err)
-    }
-
-    if (hasRepo && !doInit) {
-      self.log('boot:maybeopenreop')
-      tasks.push(maybeOpenRepo)
     }
 
     if (setConfig) {
