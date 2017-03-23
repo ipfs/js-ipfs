@@ -15,13 +15,17 @@ module.exports = (self) => {
   const repoOpen = !self._repo.closed
 
   const customInitOptions = typeof options.init === 'object' ? options.init : {}
-  const initOptions = Object.assign({ bits: 2048 }, customInitOptions)
+  const initOptions = Object.assign({
+    bits: 2048
+  }, customInitOptions)
 
+  // Checks if a repo exists, and if so opens it
+  // Will return callback with a bool indicating the existence
+  // of the repo
   const maybeOpenRepo = (cb) => {
     waterfall([
       (cb) => self._repo.exists(cb),
       (exists, cb) => {
-        self.log('boot:maybeOpen', exists, repoOpen)
         if (exists && !repoOpen) {
           return series([
             (cb) => self._repo.open(cb),
@@ -32,7 +36,7 @@ module.exports = (self) => {
             }
           ], cb)
         }
-        cb()
+        cb(null, exists)
       }
     ], cb)
   }
@@ -47,27 +51,22 @@ module.exports = (self) => {
 
   const tasks = []
 
-  self._repo.exists((err, repoExists) => {
+  // check if there as a repo and if so open it
+  maybeOpenRepo((err, hasRepo) => {
     if (err) {
       return done(err)
     }
-    if (doInit && !repoExists) {
+
+    // No repo, but need should init one
+    if (doInit && !hasRepo) {
       tasks.push((cb) => self.init(initOptions, cb))
-    }
-    if (repoExists) {
-      tasks.push(maybeOpenRepo)
-    }
-    next(null, true)
-  })
-
-  function next (err, hasRepo) {
-    self.log('boot:next')
-    if (err) {
-      return done(err)
+      // we know we will have a repo for all follwing tasks
+      // if the above succeeds
+      hasRepo = true
     }
 
+    // Need to set config
     if (setConfig) {
-      self.log('boot:setConfig')
       if (!hasRepo) {
         console.log('WARNING, trying to set config on uninitialized repo, maybe forgot to set "init: true"')
       } else {
@@ -83,8 +82,8 @@ module.exports = (self) => {
       }
     }
 
+    // Need to start up the node
     if (doStart) {
-      self.log('boot:doStart')
       if (!hasRepo) {
         console.log('WARNING, trying to start ipfs node on uninitialized repo, maybe forgot to set "init: true"')
         return done(new Error('Uninitalized repo'))
@@ -93,6 +92,7 @@ module.exports = (self) => {
       }
     }
 
+    // Do the actual boot sequence
     series(tasks, done)
-  }
+  })
 }
