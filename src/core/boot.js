@@ -23,22 +23,35 @@ module.exports = (self) => {
   // Will return callback with a bool indicating the existence
   // of the repo
   const maybeOpenRepo = (cb) => {
-    waterfall([
-      (cb) => self._repo.exists(cb),
-      (exists, cb) => {
-        if (exists && !repoOpen) {
-          return series([
-            (cb) => self._repo.open(cb),
-            (cb) => self.preStart(cb),
-            (cb) => {
-              self.state.initialized()
-              cb()
-            }
-          ], cb)
-        }
-        cb(null, exists)
+    // nothing to do
+    if (repoOpen) {
+      return cb(null, true)
+    }
+
+    series([
+      (cb) => self._repo.open(cb),
+      (cb) => self.preStart(cb),
+      (cb) => {
+        self.state.initialized()
+        cb(null, true)
       }
-    ], cb)
+    ], (err, res) => {
+      if (err) {
+        // If the error is that no repo exists,
+        // which happens when the version file is not found
+        // we just want to signal that no repo exist, not
+        // fail the whole process.
+        // TODO: improve datastore and ipfs-repo implemenations so this error is a bit more unified
+        if (err.message.match(/not found/) || // indexeddb
+            err.message.match(/ENOENT/) || // fs
+            err.message.match(/No value/) // memory
+           ) {
+          return cb(null, false)
+        }
+        return cb(err)
+      }
+      cb(null, res)
+    })
   }
 
   const done = (err) => {
