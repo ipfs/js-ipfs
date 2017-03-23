@@ -15,26 +15,43 @@ module.exports = (self) => {
   const repoOpen = !self._repo.closed
 
   const customInitOptions = typeof options.init === 'object' ? options.init : {}
-  const initOptions = Object.assign({ bits: 2048 }, customInitOptions)
+  const initOptions = Object.assign({
+    bits: 2048
+  }, customInitOptions)
 
+  // Checks if a repo exists, and if so opens it
+  // Will return callback with a bool indicating the existence
+  // of the repo
   const maybeOpenRepo = (cb) => {
-    waterfall([
-      (cb) => self._repo.exists(cb),
-      (exists, cb) => {
-        self.log('boot:maybeOpen', exists, repoOpen)
-        if (exists && !repoOpen) {
-          return series([
-            (cb) => self._repo.open(cb),
-            (cb) => self.preStart(cb),
-            (cb) => {
-              self.state.initialized()
-              cb()
-            }
-          ], cb)
-        }
-        cb()
+    // nothing to do
+    if (repoOpen) {
+      return cb(null, true)
+    }
+
+    series([
+      (cb) => self._repo.open(cb),
+      (cb) => self.preStart(cb),
+      (cb) => {
+        self.state.initialized()
+        cb(null, true)
       }
-    ], cb)
+    ], (err, res) => {
+      if (err) {
+        // If the error is that no repo exists,
+        // which happens when the version file is not found
+        // we just want to signal that no repo exist, not
+        // fail the whole process.
+        // TODO: improve datastore and ipfs-repo implemenations so this error is a bit more unified
+        if (err.message.match(/not found/) || // indexeddb
+            err.message.match(/ENOENT/) || // fs
+            err.message.match(/No value/) // memory
+           ) {
+          return cb(null, false)
+        }
+        return cb(err)
+      }
+      cb(null, res)
+    })
   }
 
   const done = (err) => {
@@ -47,27 +64,22 @@ module.exports = (self) => {
 
   const tasks = []
 
-  if (doInit) {
-    self.log('boot:doInit')
-    tasks.push((cb) => self.init(initOptions, cb))
-    next(null, true)
-  } else if (!repoOpen) {
-    self._repo.exists(next)
-  }
-
-  function next (err, hasRepo) {
-    self.log('boot:next')
+  // check if there as a repo and if so open it
+  maybeOpenRepo((err, hasRepo) => {
     if (err) {
       return done(err)
     }
 
-    if (hasRepo && !doInit) {
-      self.log('boot:maybeopenreop')
-      tasks.push(maybeOpenRepo)
+    // No repo, but need should init one
+    if (doInit && !hasRepo) {
+      tasks.push((cb) => self.init(initOptions, cb))
+      // we know we will have a repo for all follwing tasks
+      // if the above succeeds
+      hasRepo = true
     }
 
+    // Need to set config
     if (setConfig) {
-      self.log('boot:setConfig')
       if (!hasRepo) {
         console.log('WARNING, trying to set config on uninitialized repo, maybe forgot to set "init: true"')
       } else {
@@ -83,8 +95,8 @@ module.exports = (self) => {
       }
     }
 
+    // Need to start up the node
     if (doStart) {
-      self.log('boot:doStart')
       if (!hasRepo) {
         console.log('WARNING, trying to start ipfs node on uninitialized repo, maybe forgot to set "init: true"')
         return done(new Error('Uninitalized repo'))
@@ -93,6 +105,7 @@ module.exports = (self) => {
       }
     }
 
+    // Do the actual boot sequence
     series(tasks, done)
-  }
+  })
 }

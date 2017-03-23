@@ -203,4 +203,24 @@ describe('create node', () => {
       (cb) => node.stop(cb)
     ], done)
   })
+
+  it('can start node twice without crash', (done) => {
+    const options = {
+      repo: createTempRepo(),
+      config: {
+        Bootstrap: []
+      }
+    }
+    let node = new IPFS(options)
+    series([
+      (cb) => node.once('start', cb),
+      (cb) => node.stop(cb),
+      (cb) => {
+        node = new IPFS(options)
+        node.on('error', cb)
+        node.once('start', cb)
+      },
+      (cb) => node.stop(cb)
+    ], done)
+  })
 })
