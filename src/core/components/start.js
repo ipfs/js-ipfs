@@ -28,8 +28,6 @@ module.exports = (self) => {
 
     series([
       (cb) => {
-        console.log('repo is:', self._repo.closed)
-
         self._repo.closed
           ? self._repo.open(cb)
           : cb()
