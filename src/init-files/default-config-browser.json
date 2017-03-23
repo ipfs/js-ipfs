@@ -15,5 +15,7 @@
   },
   "Discovery": {},
   "Bootstrap": [
+    "/dns4/strawberry.i.ipfs.io/wss/ipfs/QmWyLSnMHW2H6bmCG9e9PQq4ARve94JduvGjbutUuzx4a8",
+    "/dns4/blueberry.i.ipfs.io/wss/ipfs/QmVcj9MATxGTAFoQSbrJvZ9Fbs4Jzvrxy9hyJeRwbW8NeA"
   ]
 }
