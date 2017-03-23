@@ -30,7 +30,7 @@
     "test:unit:node:core": "TEST=core npm run test:unit:node",
     "test:unit:node:http": "TEST=http npm run test:unit:node",
     "test:unit:node:cli": "TEST=cli npm run test:unit:node",
-    "test:unit:browser": "gulp test:browser",
+    "test:unit:browser": "gulp test:browser --dom",
     "test:interop": "mocha -t 60000 test/interop",
     "test:interop:node": "mocha -t 60000 test/interop/node.js",
     "test:interop:browser": "mocha test/interop/browser.js",
