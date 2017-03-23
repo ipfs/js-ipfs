@@ -1,7 +1,5 @@
 'use strict'
 
-const utils = require('../../utils')
-
 module.exports = {
   command: 'wantlist',
 
@@ -17,18 +15,12 @@ module.exports = {
 
   handler (argv) {
     // TODO: handle argv.peer
-    utils.getIPFS((err, ipfs) => {
+    argv.ipfs.bitswap.wantlist((err, res) => {
       if (err) {
         throw err
       }
-
-      ipfs.bitswap.wantlist((err, res) => {
-        if (err) {
-          throw err
-        }
-        res.Keys.forEach((cidStr) => {
-          console.log(cidStr)
-        })
+      res.Keys.forEach((cidStr) => {
+        console.log(cidStr)
       })
     })
   }

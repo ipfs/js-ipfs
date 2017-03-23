@@ -17,7 +17,7 @@ function off (tests) {
     let repoPath
 
     before(() => {
-      repoPath = os.tmpdir() + '/ipfs-' + Math.random().toString().substring(2, 8)
+      repoPath = os.tmpdir() + '/ipfs-' + Math.random().toString().substring(2, 16)
       thing.ipfs = ipfsExec(repoPath)
       thing.ipfs.repoPath = repoPath
       return thing.ipfs('init')

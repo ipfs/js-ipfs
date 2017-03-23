@@ -1,8 +1,8 @@
 'use strict'
 
 const debug = require('debug')
-const log = debug('http-api:block')
-log.error = debug('http-api:block:error')
+const log = debug('jsipfs:http-api:block')
+log.error = debug('jsipfs:http-api:block:error')
 const multiaddr = require('multiaddr')
 
 exports = module.exports

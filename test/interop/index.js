@@ -49,8 +49,8 @@ describe('basic', () => {
 
   before((done) => {
     goDaemon = new GoDaemon()
-    jsDaemon = new JsDaemon()
-    js2Daemon = new JsDaemon({port: 1})
+    jsDaemon = new JsDaemon({port: 1})
+    js2Daemon = new JsDaemon({port: 2})
 
     parallel([
       (cb) => goDaemon.start(cb),

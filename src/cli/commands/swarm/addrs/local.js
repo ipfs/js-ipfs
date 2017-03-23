@@ -13,23 +13,17 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    utils.getIPFS((err, ipfs) => {
+    if (!utils.isDaemonOn()) {
+      throw new Error('This command must be run in online mode. Try running \'ipfs daemon\' first.')
+    }
+
+    argv.ipfs.swarm.localAddrs((err, res) => {
       if (err) {
         throw err
       }
 
-      if (!utils.isDaemonOn()) {
-        throw new Error('This command must be run in online mode. Try running \'ipfs daemon\' first.')
-      }
-
-      ipfs.swarm.localAddrs((err, res) => {
-        if (err) {
-          throw err
-        }
-
-        res.forEach((addr) => {
-          console.log(addr.toString())
-        })
+      res.forEach((addr) => {
+        console.log(addr.toString())
       })
     })
   }

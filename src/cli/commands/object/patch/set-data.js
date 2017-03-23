@@ -1,18 +1,15 @@
 'use strict'
 
-const utils = require('../../../utils')
-const bl = require('bl')
 const fs = require('fs')
-const waterfall = require('async/waterfall')
+const bl = require('bl')
 const debug = require('debug')
 const log = debug('cli:object')
 log.error = debug('cli:object:error')
 
-function parseAndAddNode (key, data) {
-  waterfall([
-    (cb) => utils.getIPFS(cb),
-    (ipfs, cb) => ipfs.object.patch.setData(key, data, {enc: 'base58'}, cb)
-  ], (err, node) => {
+function parseAndAddNode (key, data, ipfs) {
+  ipfs.object.patch.setData(key, data, {
+    enc: 'base58'
+  }, (err, node) => {
     if (err) {
       throw err
     }
@@ -30,8 +27,9 @@ module.exports = {
   builder: {},
 
   handler (argv) {
+    const ipfs = argv.ipfs
     if (argv.data) {
-      return parseAndAddNode(argv.root, fs.readFileSync(argv.data))
+      return parseAndAddNode(argv.root, fs.readFileSync(argv.data), ipfs)
     }
 
     process.stdin.pipe(bl((err, input) => {
@@ -39,7 +37,7 @@ module.exports = {
         throw err
       }
 
-      parseAndAddNode(argv.root, input)
+      parseAndAddNode(argv.root, input, ipfs)
     }))
   }
 }

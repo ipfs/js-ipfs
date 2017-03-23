@@ -10,11 +10,10 @@ const PeerBook = require('peer-book')
 const CID = require('cids')
 const debug = require('debug')
 const extend = require('deep-extend')
-const series = require('async/series')
 const EventEmitter = require('events')
 
 const defaultRepo = require('./default-repo')
-
+const boot = require('./boot')
 const components = require('./components')
 
 class IPFS extends EventEmitter {
@@ -29,13 +28,11 @@ class IPFS extends EventEmitter {
 
     extend(this._options, options)
 
-    if (typeof options.init === 'boolean' &&
-        options.init === false) {
+    if (options.init === false) {
       this._options.init = false
     }
 
-    if (!(typeof options.start === 'boolean' &&
-          options.start === false)) {
+    if (!(options.start === false)) {
       this._options.start = true
     }
 
@@ -49,6 +46,8 @@ class IPFS extends EventEmitter {
     // IPFS utils
     this.log = debug('jsipfs')
     this.log.err = debug('jsipfs:err')
+
+    this.on('error', (err) => this.log(err))
 
     // IPFS types
     this.types = {
@@ -96,40 +95,9 @@ class IPFS extends EventEmitter {
     if (this._options.EXPERIMENTAL.pubsub) {
       this.log('EXPERIMENTAL pubsub is enabled')
     }
+    this.state = require('./state')(this)
 
-    // Boot
-    series([
-      (cb) => {
-        this._options.init
-          ? this.init({ bits: this._options.init.bits || 2048 }, cb)
-          : cb()
-      },
-      (cb) => {
-        if (!(this._options.config &&
-              typeof this._options.config === 'object' &&
-              this._options.init)) {
-          return cb()
-        }
-
-        this._repo.config.get((err, config) => {
-          if (err) {
-            return cb(err)
-          }
-
-          extend(config, this._options.config)
-          this._repo.config.set(config, cb)
-        })
-      },
-      (cb) => {
-        this._options.start
-          ? this.start(cb)
-          : cb()
-      }
-    ], (err) => {
-      if (err) {
-        this.emit('error', err)
-      }
-    })
+    boot(this)
   }
 }
 

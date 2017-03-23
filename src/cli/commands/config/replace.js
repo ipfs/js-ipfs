@@ -1,11 +1,8 @@
 'use strict'
 
-const debug = require('debug')
 const path = require('path')
-const log = debug('cli:config')
-log.error = debug('cli:config:error')
-const utils = require('../../utils')
 const fs = require('fs')
+const utils = require('../../utils')
 
 module.exports = {
   command: 'replace <file>',
@@ -18,21 +15,15 @@ module.exports = {
     if (argv._handled) return
     argv._handled = true
 
-    utils.getIPFS((err, ipfs) => {
+    const filePath = path.resolve(process.cwd(), argv.file)
+
+    const config = utils.isDaemonOn()
+      ? filePath : JSON.parse(fs.readFileSync(filePath, 'utf8'))
+
+    argv.ipfs.config.replace(config, (err) => {
       if (err) {
         throw err
       }
-
-      const filePath = path.resolve(process.cwd(), argv.file)
-
-      const config = utils.isDaemonOn()
-        ? filePath : JSON.parse(fs.readFileSync(filePath, 'utf8'))
-
-      ipfs.config.replace(config, (err) => {
-        if (err) {
-          throw err
-        }
-      })
     })
   }
 }

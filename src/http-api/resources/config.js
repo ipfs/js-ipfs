@@ -3,8 +3,8 @@
 const debug = require('debug')
 const get = require('lodash.get')
 const set = require('lodash.set')
-const log = debug('http-api:config')
-log.error = debug('http-api:config:error')
+const log = debug('jsipfs:http-api:config')
+log.error = debug('jsipfs:http-api:config:error')
 const multipart = require('ipfs-multipart')
 
 exports = module.exports

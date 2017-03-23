@@ -1,9 +1,5 @@
 'use strict'
 
-const debug = require('debug')
-const utils = require('../../utils')
-const log = debug('cli:files')
-log.error = debug('cli:files:error')
 var fs = require('fs')
 const path = require('path')
 const mkdirp = require('mkdirp')
@@ -68,26 +64,20 @@ module.exports = {
     const ipfsPath = argv['ipfs-path']
     const dir = checkArgs(ipfsPath, argv.output)
 
-    utils.getIPFS((err, ipfs) => {
+    argv.ipfs.files.get(ipfsPath, (err, stream) => {
       if (err) {
         throw err
       }
-
-      ipfs.files.get(ipfsPath, (err, stream) => {
-        if (err) {
-          throw err
-        }
-        console.log(`Saving file(s) to ${ipfsPath}`)
-        pull(
-          toPull.source(stream),
-          pull.asyncMap(fileHandler(dir)),
-          pull.onEnd((err) => {
-            if (err) {
-              throw err
-            }
-          })
-        )
-      })
+      console.log(`Saving file(s) to ${ipfsPath}`)
+      pull(
+        toPull.source(stream),
+        pull.asyncMap(fileHandler(dir)),
+        pull.onEnd((err) => {
+          if (err) {
+            throw err
+          }
+        })
+      )
     })
   }
 }

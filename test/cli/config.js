@@ -19,7 +19,7 @@ describe('config', () => runOnAndOff((thing) => {
   before(() => {
     ipfs = thing.ipfs
     configPath = path.join(ipfs.repoPath, 'config')
-    originalConfigPath = path.join(__dirname, '../test-data/go-ipfs-repo/config')
+    originalConfigPath = path.join(__dirname, '../go-ipfs-repo/config')
     updatedConfig = () => JSON.parse(fs.readFileSync(configPath, 'utf8'))
     restoreConfig = () => fs.writeFileSync(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8')
   })

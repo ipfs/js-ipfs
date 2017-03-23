@@ -2,6 +2,7 @@
 
 const PeerId = require('peer-id')
 const series = require('async/series')
+const each = require('async/each')
 
 const defaultConfig = require('./default-config.json')
 const IPFS = require('../../../src/core')
@@ -48,7 +49,7 @@ function Factory () {
         }
       })
 
-      node.on('start', () => {
+      node.once('start', () => {
         nodes.push({ repo: repo, ipfs: node })
         callback(null, node)
       })
@@ -76,8 +77,8 @@ function Factory () {
 
   this.dismantle = function (callback) {
     series([
-      (cb) => series(nodes.map((el) => el.ipfs.stop), cb),
-      (cb) => series(nodes.map((el) => el.repo.teardown), cb)
+      (cb) => each(nodes, (el, cb) => el.ipfs.stop(cb), cb),
+      (cb) => each(nodes, (el, cb) => el.repo.teardown(cb), cb)
     ], callback)
   }
 }

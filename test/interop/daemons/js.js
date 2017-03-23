@@ -1,39 +1,29 @@
 'use strict'
 
+const EventEmitter = require('events').EventEmitter
 const IPFSAPI = require('ipfs-api')
 const series = require('async/series')
 const rimraf = require('rimraf')
-const IPFSRepo = require('ipfs-repo')
 const tmpDir = require('../util').tmpDir
 
-const IPFS = require('../../../src/core')
-const HTTPAPI = require('../../../src/http-api')
+const HttpApi = require('../../../src/http-api')
 
-function setPorts (ipfs, port, callback) {
-  series([
-    (cb) => ipfs.config.set(
-      'Addresses.Gateway',
-      '/ip4/127.0.0.1/tcp/' + (9090 + port),
-      cb
-    ),
-    (cb) => ipfs.config.set(
-      'Addresses.API',
-      '/ip4/127.0.0.1/tcp/' + (5002 + port),
-      cb
-    ),
-    (cb) => ipfs.config.set(
-      'Addresses.Swarm',
-      [
-        '/ip4/0.0.0.0/tcp/' + (4003 + port),
-        '/ip4/0.0.0.0/tcp/' + (4004 + port) + '/ws'
-      ],
-      cb
-    )
-  ], callback)
+function portConfig (port) {
+  port = port + 5
+
+  return {
+    Gateway: '/ip4/127.0.0.1/tcp/' + (9090 + port),
+    API: '/ip4/127.0.0.1/tcp/' + (5002 + port),
+    Swarm: [
+      '/ip4/127.0.0.1/tcp/' + (4003 + port),
+      '/ip4/127.0.0.1/tcp/' + (4104 + port) + '/ws'
+    ]
+  }
 }
 
-class JsDaemon {
+class JsDaemon extends EventEmitter {
   constructor (opts) {
+    super()
     opts = Object.assign({}, {
       disposable: true,
       init: true
@@ -42,61 +32,42 @@ class JsDaemon {
     this.path = opts.path
     this.disposable = opts.disposable
     this.init = opts.init
-    this.port = opts.port
+    this.port = opts.port || 1
 
     this.path = opts.path || tmpDir()
-    let repo
-    if (this.init) {
-      repo = this.path
-    } else {
-      repo = new IPFSRepo(this.path, {
-        stores: require('fs-pull-blob-store')
-      })
-    }
-    this.ipfs = new IPFS({
-      repo: repo,
-      init: false,
-      start: false,
-      EXPERIMENTAL: {
-        pubsub: true
-      }
-    })
+    this._started = false
 
-    this.node = null
-    this.api = null
+    if (this.init) {
+      const p = portConfig(this.port)
+      this.node = new HttpApi(this.path, {
+        Bootstrap: [],
+        Addresses: p
+      })
+    } else {
+      this.node = new HttpApi(this.path)
+    }
+
+    this.node.start(this.init, (err) => {
+      if (err) {
+        throw err
+      }
+      this._started = true
+      this.api = new IPFSAPI(this.node.apiMultiaddr)
+
+      this.emit('start')
+    })
   }
 
   start (callback) {
-    console.log('starting js', this.path)
-    series([
-      (cb) => {
-        if (this.init) {
-          this.ipfs.init(cb)
-        } else {
-          cb()
-        }
-      },
-      (cb) => this.ipfs.config.set('Bootstrap', [], cb),
-      (cb) => {
-        if (this.port) {
-          console.log('setting to port', this.port)
-          setPorts(this.ipfs, this.port, cb)
-        } else {
-          cb()
-        }
-      },
-      (cb) => {
-        this.node = new HTTPAPI(this.ipfs._repo)
-        this.node.start(cb)
-      },
-      (cb) => {
-        this.api = new IPFSAPI(this.node.apiMultiaddr)
-        cb()
-      }
-    ], (err) => callback(err))
+    if (!this._started) {
+      return this.once('start', callback)
+    }
+
+    callback()
   }
 
   stop (callback) {
+    this._started = false
     series([
       (cb) => this.node.stop(cb),
       (cb) => {

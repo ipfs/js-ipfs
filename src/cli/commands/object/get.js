@@ -1,11 +1,5 @@
 'use strict'
 
-const waterfall = require('async/waterfall')
-const utils = require('../../utils')
-const debug = require('debug')
-const log = debug('cli:object')
-log.error = debug('cli:object:error')
-
 module.exports = {
   command: 'get <key>',
 
@@ -14,10 +8,7 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    waterfall([
-      (cb) => utils.getIPFS(cb),
-      (ipfs, cb) => ipfs.object.get(argv.key, {enc: 'base58'}, cb)
-    ], (err, node) => {
+    argv.ipfs.object.get(argv.key, {enc: 'base58'}, (err, node) => {
       if (err) {
         throw err
       }
