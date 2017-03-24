@@ -181,16 +181,16 @@ function noop () {}
 
 class AddStreamDuplex extends Duplex {
   constructor (pullStream, push, options) {
-    super(Object.assign({}, { objectMode: true }, options))
+    super(Object.assign({ objectMode: true }, options))
     this._pullStream = pullStream
     this._pushable = push
   }
 
   _read () {
-    this._pullStream(null, (err, data) => {
-      if (err) {
-        if (err instanceof Error) {
-          this.emit('error', err)
+    this._pullStream(null, (end, data) => {
+      if (end) {
+        if (end instanceof Error) {
+          this.emit('error', end)
         }
       } else {
         this.push(data)
