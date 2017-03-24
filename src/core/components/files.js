@@ -190,7 +190,8 @@ class AddStreamDuplex extends Duplex {
   _read () {
     this._pullStream(null, (end, data) => {
       while (this._waitingPullFlush.length) {
-        this._waitingPullFlush.shift()()
+        const cb = this._waitingPullFlush.shift()
+        cb()
       }
       if (end) {
         if (end instanceof Error) {
