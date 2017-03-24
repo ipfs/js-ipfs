@@ -192,10 +192,9 @@ module.exports = (common) => {
               stream.on('data', (file) => {
                 if (file.path === 'test-folder') {
                   expect(file.hash).to.equal(expectedRootMultihash)
+                  done()
                 }
               })
-
-              stream.on('end', done)
 
               files.forEach((file) => {
                 stream.write(file)
