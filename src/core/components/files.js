@@ -184,10 +184,14 @@ class AddStreamDuplex extends Duplex {
     super(Object.assign({ objectMode: true }, options))
     this._pullStream = pullStream
     this._pushable = push
+    this._waitingPullFlush = []
   }
 
   _read () {
     this._pullStream(null, (end, data) => {
+      while (this._waitingPullFlush.length) {
+        this._waitingPullFlush.shift()()
+      }
       if (end) {
         if (end instanceof Error) {
           this.emit('error', end)
@@ -199,7 +203,7 @@ class AddStreamDuplex extends Duplex {
   }
 
   _write (chunk, encoding, callback) {
+    this._waitingPullFlush.push(callback)
     this._pushable.push(chunk)
-    callback()
   }
 }
