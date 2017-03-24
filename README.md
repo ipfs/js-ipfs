@@ -232,7 +232,8 @@ const node = new IPFS({
   start: true,
   // start: false,
   EXPERIMENTAL: { // enable experimental features
-    pubsub: true
+    pubsub: true,
+    sharding: true // enable dir sharding
   },
   config: { // overload the default config
     Addresses: {

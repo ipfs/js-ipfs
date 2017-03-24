@@ -8,11 +8,13 @@ const promisify = require('promisify-es6')
 const multihashes = require('multihashes')
 const pull = require('pull-stream')
 const sort = require('pull-sort')
+const pushable = require('pull-pushable')
 const toStream = require('pull-stream-to-stream')
 const toPull = require('stream-to-pull-stream')
 const CID = require('cids')
 const waterfall = require('async/waterfall')
 const isStream = require('isstream')
+const Duplex = require('stream').Duplex
 
 module.exports = function files (self) {
   const createAddPullStream = (options) => {
@@ -30,7 +32,19 @@ module.exports = function files (self) {
         callback = options
         options = undefined
       }
-      callback(null, toStream(createAddPullStream(options)))
+
+      const addPullStream = createAddPullStream(options)
+      const p = pushable()
+      const s = pull(
+        p,
+        addPullStream
+      )
+
+      const retStream = new AddStreamDuplex(s, p)
+
+      retStream.once('finish', () => p.end())
+
+      callback(null, retStream)
     },
 
     createAddPullStream: createAddPullStream,
@@ -164,3 +178,28 @@ function normalizeContent (content) {
 }
 
 function noop () {}
+
+class AddStreamDuplex extends Duplex {
+  constructor (pullStream, push, options) {
+    super(Object.assign({ objectMode: true }, options))
+    this._pullStream = pullStream
+    this._pushable = push
+  }
+
+  _read () {
+    this._pullStream(null, (end, data) => {
+      if (end) {
+        if (end instanceof Error) {
+          this.emit('error', end)
+        }
+      } else {
+        this.push(data)
+      }
+    })
+  }
+
+  _write (chunk, encoding, callback) {
+    this._pushable.push(chunk)
+    callback()
+  }
+}
