@@ -17,7 +17,7 @@ const boot = require('./boot')
 const components = require('./components')
 
 class IPFS extends EventEmitter {
-  constructor (options) {
+  constructor (options = {}) {
     super()
 
     this._options = {
