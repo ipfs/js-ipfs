@@ -26,7 +26,7 @@ class IPFS extends EventEmitter {
       EXPERIMENTAL: {}
     }
 
-    options = options != null ? options : {}
+    options = options || {}
 
     extend(this._options, options)
 
