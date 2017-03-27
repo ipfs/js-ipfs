@@ -17,7 +17,9 @@ const cli = yargs
   .commandDir('commands')
   .demandCommand(1)
   .fail((msg, err, yargs) => {
-    if (err) throw err // preserve stack
+    if (err) {
+      throw err // preserve stack
+    }
     console.error(yargs.help())
     process.exit(1)
   })
@@ -59,7 +61,9 @@ utils.getIPFS((err, ipfs, cleanup) => {
     .parse(args, {
       ipfs: ipfs
     }, (err, argv, output) => {
-      if (output) console.log(output)
+      if (output) {
+        console.log(output)
+      }
       cleanup(() => {
         if (err) {
           throw err
