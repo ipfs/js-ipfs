@@ -16,6 +16,12 @@ updateNotifier({
 const cli = yargs
   .commandDir('commands')
   .demandCommand(1)
+  .fail((msg, err, yargs) => {
+    if (err) {
+      throw err // preserve stack
+    }
+    yargs.showHelp()
+  })
 
 // NOTE: This creates an alias of
 // `jsipfs files {add, get, cat}` to `jsipfs {add, get, cat}`.
@@ -53,6 +59,9 @@ utils.getIPFS((err, ipfs, cleanup) => {
     .parse(args, {
       ipfs: ipfs
     }, (err, argv, output) => {
+      if (output) {
+        console.log(output)
+      }
       cleanup(() => {
         if (err) {
           throw err
