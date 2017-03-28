@@ -20,10 +20,8 @@ const cli = yargs
     if (err) {
       throw err // preserve stack
     }
-    console.error(yargs.help())
-    process.exit(1)
+    yargs.showHelp()
   })
-
 
 // NOTE: This creates an alias of
 // `jsipfs files {add, get, cat}` to `jsipfs {add, get, cat}`.
