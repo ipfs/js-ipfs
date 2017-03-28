@@ -1,15 +1,19 @@
+/* eslint max-nested-callbacks: ["error", 8] */
+/* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const pull = require('pull-stream')
 
 const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/create-repo-node.js')
 
 describe('files dir', () => {
-
   const files = []
-  for(let i = 0; i < 1005; i++) {
+  for (let i = 0; i < 1005; i++) {
     files.push({
       path: 'test-folder/' + i,
       content: new Buffer('some content ' + i)
@@ -38,6 +42,7 @@ describe('files dir', () => {
         pull.values(files),
         ipfs.files.createAddPullStream(),
         pull.collect((err, results) => {
+          expect(err).to.not.exist()
           const last = results[results.length - 1]
           expect(last.path).to.be.eql('test-folder')
           expect(last.hash).to.be.eql('QmWWM8ZV6GPhqJ46WtKcUaBPNHN5yQaFsKDSQ1RE73w94Q')
@@ -48,8 +53,7 @@ describe('files dir', () => {
       after((done) => {
         ipfs.stop(() => done()) // ignore stop errors
       })
-
-    }).timeout(4000)
+    })
   })
 
   describe('with sharding', () => {
@@ -77,13 +81,13 @@ describe('files dir', () => {
         pull.values(files),
         ipfs.files.createAddPullStream(),
         pull.collect((err, results) => {
+          expect(err).to.not.exist()
           const last = results[results.length - 1]
           expect(last.path).to.be.eql('test-folder')
           expect(last.hash).to.be.eql('QmZjYC1kWrLmiRYbEmGSo2PEpMixzT2k2xoCKSBzt8KDcy')
           done()
         })
       )
-
-    }).timeout(4000)
+    })
   })
 })
