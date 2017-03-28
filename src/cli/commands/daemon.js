@@ -10,11 +10,22 @@ module.exports = {
 
   describe: 'Start a long-running daemon process',
 
-  handler () {
+  builder: {
+    'enable-sharding-experiment': {
+      type: 'boolean',
+      defaultt: false
+    },
+    'enable-pubsub-experiment': {
+      type: 'booleam',
+      default: false
+    }
+  },
+
+  handler (argv) {
     console.log('Initializing daemon...')
 
     const repoPath = utils.getRepoPath()
-    httpAPI = new HttpAPI(repoPath)
+    httpAPI = new HttpAPI(process.env.IPFS_PATH, argv)
 
     httpAPI.start((err) => {
       if (err && err.code === 'ENOENT') {

@@ -8,6 +8,7 @@ const pull = require('pull-stream')
 const paramap = require('pull-paramap')
 const zip = require('pull-zip')
 const toPull = require('stream-to-pull-stream')
+const utils = require('../../utils')
 
 const WRAPPER = 'wrapper/'
 
@@ -56,6 +57,14 @@ module.exports = {
       alias: 'w',
       type: 'boolean',
       default: false
+    },
+    'enable-sharding-experiment': {
+      type: 'boolean',
+      defaultt: false
+    },
+    'shard-split-threshold': {
+      type: 'integer',
+      default: 1000
     }
   },
 
@@ -63,7 +72,12 @@ module.exports = {
     const inPath = checkPath(argv.file, argv.recursive)
     const index = inPath.lastIndexOf('/') + 1
     const options = {
-      strategy: argv.trickle ? 'trickle' : 'balanced'
+      strategy: argv.trickle ? 'trickle' : 'balanced',
+      shardSplitThreshold: argv.enableShardingExperiment ? argv.shardSplitThreshold : Infinity
+    }
+
+    if (argv.enableShardingExperiment && utils.isDaemonOn()) {
+      throw new Error('Error: Enabling the sharding experiment should be done on the daemon')
     }
     const ipfs = argv.ipfs
 

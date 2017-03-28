@@ -40,7 +40,8 @@ function HttpApi (repo, config) {
             start: true,
             config: config,
             EXPERIMENTAL: {
-              pubsub: true
+              pubsub: true,
+              sharding: config && config.enableShardingExperiment
             }
           })
         } catch (err) {
