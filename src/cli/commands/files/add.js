@@ -8,6 +8,7 @@ const pull = require('pull-stream')
 const paramap = require('pull-paramap')
 const zip = require('pull-zip')
 const toPull = require('stream-to-pull-stream')
+const utils = require('../../utils')
 
 const WRAPPER = 'wrapper/'
 
