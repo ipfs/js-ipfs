@@ -73,7 +73,7 @@ module.exports = function swarm (self) {
         maddr = multiaddr(maddr)
       }
 
-      self._libp2pNode.dialByMultiaddr(maddr, callback)
+      self._libp2pNode.dial(maddr, callback)
     }),
 
     disconnect: promisify((maddr, callback) => {
@@ -85,7 +85,7 @@ module.exports = function swarm (self) {
         maddr = multiaddr(maddr)
       }
 
-      self._libp2pNode.hangUpByMultiaddr(maddr, callback)
+      self._libp2pNode.hangUp(maddr, callback)
     }),
 
     filters: promisify((callback) => {
