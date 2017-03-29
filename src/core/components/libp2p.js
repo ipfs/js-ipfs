@@ -31,13 +31,13 @@ module.exports = function libp2p (self) {
             console.log('Swarm listening on', ma.toString())
           })
 
-          self._libp2pNode.on('peer', (peerInfo) => {
+          self._libp2pNode.on('peer:discovery', (peerInfo) => {
             if (self.isOnline()) {
               self._peerInfoBook.put(peerInfo)
               self._libp2pNode.dial(peerInfo, () => {})
             }
           })
-          self._libp2pNode.swarm.on('peer-mux-established', (peerInfo) => {
+          self._libp2pNode.on('peer:connect', (peerInfo) => {
             self._peerInfoBook.put(peerInfo)
           })
 
