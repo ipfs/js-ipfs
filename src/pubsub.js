@@ -448,7 +448,7 @@ module.exports = (common) => {
             )
           })
 
-          it('send/receive 10k messages', function (done) {
+          it('send/receive 10k messages', (done) => {
             this.timeout(2 * 60 * 1000)
 
             const msgBase = 'msg - '
@@ -459,9 +459,12 @@ module.exports = (common) => {
             let counter = 0
 
             const sub1 = (msg) => {
-              const expectedMsg = msgBase + receivedCount
-              const receivedMsg = msg.data.toString()
-              expect(receivedMsg).to.eql(expectedMsg)
+              // go-ipfs can't send messages in order when there are
+              // only two nodes in the same machine ¯\_(ツ)_/¯
+              // https://github.com/ipfs/js-ipfs-api/pull/493#issuecomment-289499943
+              // const expectedMsg = msgBase + receivedCount
+              // const receivedMsg = msg.data.toString()
+              // expect(receivedMsg).to.eql(expectedMsg)
 
               receivedCount++
 
