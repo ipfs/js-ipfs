@@ -1,3 +1,13 @@
+<a name="0.26.2"></a>
+## [0.26.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.26.1...v0.26.2) (2017-03-30)
+
+
+### Features
+
+* make tests go-ipfs friendly ([06261f1](https://github.com/ipfs/interface-ipfs-core/commit/06261f1))
+
+
+
 <a name="0.26.1"></a>
 ## [0.26.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.26.0...v0.26.1) (2017-03-24)
 
