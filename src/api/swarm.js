@@ -100,12 +100,11 @@ module.exports = (send) => {
         }
 
         const peers = Object.keys(result.Addrs).map((id) => {
-          const info = new PeerInfo(PeerId.createFromB58String(id))
+          const peerInfo = new PeerInfo(PeerId.createFromB58String(id))
           result.Addrs[id].forEach((addr) => {
-            info.multiaddr.add(multiaddr(addr))
+            peerInfo.multiaddrs.add(multiaddr(addr))
           })
-
-          return info
+          return peerInfo
         })
 
         callback(null, peers)
