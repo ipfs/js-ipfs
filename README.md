@@ -246,11 +246,12 @@ const node = new IPFS({
 
 // Events
 
+node.on('ready', () => {})    // Node is ready to use when you first create it
+node.on('error', (err) => {}) // Node has hit some error while initing/starting
+
 node.on('init', () => {})     // Node has successfully finished initing the repo
-node.on('ready', () => {})    // Node has its repo ready
 node.on('start', () => {})    // Node has started
 node.on('stop', () => {})     // Node has stopped
-node.on('error', (err) => {}) // Node has hit some error while initing/starting
 ```
 
 ### [Tutorials and Examples](/examples)
