@@ -1,3 +1,14 @@
+<a name="14.0.0"></a>
+# [14.0.0](https://github.com/ipfs/js-ipfs-api/compare/v13.0.0...v14.0.0) (2017-03-30)
+
+
+### Features
+
+* new peer-info ([#542](https://github.com/ipfs/js-ipfs-api/issues/542)) ([820150c](https://github.com/ipfs/js-ipfs-api/commit/820150c))
+* **pubsub:** Add pubsub api ([#493](https://github.com/ipfs/js-ipfs-api/issues/493)) ([d2eb925](https://github.com/ipfs/js-ipfs-api/commit/d2eb925))
+
+
+
 <a name="13.0.0"></a>
 # [13.0.0](https://github.com/ipfs/js-ipfs-api/compare/v12.1.7...v13.0.0) (2017-03-22)
 
