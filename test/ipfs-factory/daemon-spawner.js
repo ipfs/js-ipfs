@@ -84,7 +84,7 @@ function spawnEphemeralNode (callback) {
           node.setConfig(configKey, configVal, cb)
         }, cb)
       },
-      (cb) => node.startDaemon(cb)
+      (cb) => node.startDaemon(['--enable-pubsub-experiment'], cb)
     ], (err) => callback(err, node))
   })
 }

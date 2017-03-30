@@ -139,6 +139,30 @@ $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods "[\"PUT\", \"P
 
 > `js-ipfs-api` follows the spec defined by [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core), which concerns the interface to expect from IPFS implementations. This interface is a currently active endeavor. You can use it today to consult the methods available.
 
+#### Caveats
+
+##### Pubsub
+
+**Currently, the [PubSub API only works in Node.js envinroment](https://github.com/ipfs/js-ipfs-api/issues/518)**
+
+We currently don't support pubsub when run in the browser, and we test it with separate set of tests to make sure if it's being used in the browser, pubsub errors.
+
+More info: https://github.com/ipfs/js-ipfs-api/issues/518
+
+This means:
+- You can use pubsub from js-ipfs-api in Node.js
+- You can use pubsub from js-ipfs-api in Electron
+  (when js-ipfs-api is ran in the main process of Electron)
+- You can't use pubsub from js-ipfs-api in the browser
+- You can't use pubsub from js-ipfs-api in Electron's
+  renderer process
+- You can use pubsub from js-ipfs in the browsers
+- You can use pubsub from js-ipfs in Node.js
+- You can use pubsub from js-ipfs in Electron
+  (in both the main process and the renderer process)
+- See https://github.com/ipfs/js-ipfs for details on
+  pubsub in js-ipfs
+
 ##### [bitswap]()
 
 - [`ipfs.bitswap.wantlist()`]()

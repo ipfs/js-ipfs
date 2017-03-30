@@ -25,6 +25,7 @@ function requireCommands () {
     refs: require('./api/refs'),
     repo: require('./api/repo'),
     swarm: require('./api/swarm'),
+    pubsub: require('./api/pubsub'),
     update: require('./api/update'),
     version: require('./api/version')
   }
