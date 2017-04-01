@@ -232,7 +232,8 @@ const node = new IPFS({
   EXPERIMENTAL: { // enable experimental features
     pubsub: true,
     sharding: true, // enable dir sharding
-    wrtcLinuxWindows: true // use unstable wrtc module on Linux or Windows with Node.js
+    wrtcLinuxWindows: true // use unstable wrtc module on Linux or Windows with Node.js,
+    dht: true // enable KadDHT, currently not interopable with go-ipfs
   },
   config: { // overload the default config
     Addresses: {

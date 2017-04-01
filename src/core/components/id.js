@@ -15,6 +15,7 @@ module.exports = function id (self) {
       addresses: self._peerInfo.multiaddrs
                                .toArray()
                                .map((ma) => ma.toString())
+                               .filter((ma) => ma.indexOf('ipfs') >= 0)
                                .sort(),
       agentVersion: 'js-ipfs',
       protocolVersion: '9000'
