@@ -60,7 +60,7 @@ module.exports = {
     },
     'enable-sharding-experiment': {
       type: 'boolean',
-      defaultt: false
+      default: false
     },
     'shard-split-threshold': {
       type: 'integer',

@@ -13,7 +13,7 @@ module.exports = {
   builder: {
     'enable-sharding-experiment': {
       type: 'boolean',
-      defaultt: false
+      default: false
     },
     'enable-pubsub-experiment': {
       type: 'booleam',
