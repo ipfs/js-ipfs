@@ -13,6 +13,7 @@ module.exports = function id (self) {
       id: self._peerInfo.id.toB58String(),
       publicKey: self._peerInfo.id.pubKey.bytes.toString('base64'),
       addresses: self._peerInfo.multiaddrs
+                               .toArray()
                                .map((ma) => ma.toString())
                                .sort(),
       agentVersion: 'js-ipfs',

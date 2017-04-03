@@ -29,7 +29,7 @@ module.exports = function swarm (self) {
       const peerList = flatMap(keys, (id) => {
         const peer = peers[id]
 
-        return peer.multiaddrs.map((addr) => {
+        return peer.multiaddrs.toArray().map((addr) => {
           const res = {
             addr: addr,
             peer: peers[id]
@@ -53,6 +53,8 @@ module.exports = function swarm (self) {
       }
 
       const peers = values(self._peerInfoBook.getAll())
+        .filter((peer) => peer.isConnected())
+
       callback(null, peers)
     }),
 
@@ -61,7 +63,7 @@ module.exports = function swarm (self) {
         return callback(OFFLINE_ERROR)
       }
 
-      callback(null, self._libp2pNode.peerInfo.multiaddrs)
+      callback(null, self._libp2pNode.peerInfo.multiaddrs.toArray())
     }),
 
     connect: promisify((maddr, callback) => {
@@ -88,9 +90,6 @@ module.exports = function swarm (self) {
       self._libp2pNode.hangUp(maddr, callback)
     }),
 
-    filters: promisify((callback) => {
-      // TODO
-      throw new Error('Not implemented')
-    })
+    filters: promisify((callback) => callback(new Error('Not implemented')))
   }
 }
