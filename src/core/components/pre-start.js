@@ -18,9 +18,7 @@ module.exports = function preStart (self) {
       (config, cb) => {
         const privKey = config.Identity.PrivKey
 
-        peerId.createFromPrivKey(privKey, (err, id) => {
-          cb(err, config, id)
-        })
+        peerId.createFromPrivKey(privKey, (err, id) => cb(err, config, id))
       },
       (config, id, cb) => {
         self._peerInfo = new PeerInfo(id)
@@ -29,12 +27,10 @@ module.exports = function preStart (self) {
           let ma = multiaddr(addr)
 
           if (!mafmt.IPFS.matches(ma)) {
-            ma = ma.encapsulate(
-              '/ipfs/' + self._peerInfo.id.toB58String()
-            )
+            ma = ma.encapsulate('/ipfs/' + self._peerInfo.id.toB58String())
           }
 
-          self._peerInfo.multiaddr.add(ma)
+          self._peerInfo.multiaddrs.add(ma)
         })
 
         cb()

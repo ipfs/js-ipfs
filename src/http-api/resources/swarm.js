@@ -71,7 +71,8 @@ exports.addrs = {
 
       const addrs = {}
       peers.forEach((peer) => {
-        addrs[peer.id.toB58String()] = peer.multiaddrs.map((addr) => addr.toString())
+        addrs[peer.id.toB58String()] = peer.multiaddrs.toArray()
+          .map((addr) => addr.toString())
       })
 
       return reply({

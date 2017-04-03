@@ -36,7 +36,6 @@ function makeBlock (cb) {
 
 describe('bitswap', () => {
   let inProcNode // Node spawned inside this process
-  // let swarmAddrsBak
 
   beforeEach((done) => {
     const repo = createTempRepo()
@@ -73,36 +72,24 @@ describe('bitswap', () => {
     inProcNode.on('start', () => done())
   })
 
-  afterEach((done) => {
-    inProcNode.on('stop', () => done())
-    inProcNode.stop()
-  })
+  afterEach((done) => inProcNode.stop(() => done()))
 
   describe('connections', () => {
     function wire (targetNode, dialerNode, done) {
       targetNode.id((err, identity) => {
         expect(err).to.not.exist()
         const addr = identity.addresses
-          .map((addr) => {
-            const ma = multiaddr(addr.toString().split('ipfs')[0])
-            return ma
-          })
-          .filter((addr) => {
-            return _.includes(addr.protoNames(), 'ws')
-          })[0]
+          .map((addr) => multiaddr(addr.toString().split('ipfs')[0]))
+          .filter((addr) => _.includes(addr.protoNames(), 'ws'))[0]
 
-        let targetAddr
-        if (addr) {
-          targetAddr = addr.encapsulate(multiaddr(`/ipfs/${identity.id}`)).toString()
-          targetAddr = targetAddr.replace('0.0.0.0', '127.0.0.1')
-        } else {
+        if (!addr) {
           // Note: the browser doesn't have a websockets listening addr
-
-          // What we really need is a way to dial to a peerId only and another
-          // to dial to peerInfo
           return done()
-          // targetAddr = multiaddr(`/ip4/127.0.0.1/tcp/0/ws/ipfs/${identity.id}`).toString()
         }
+
+        const targetAddr = addr
+          .encapsulate(multiaddr(`/ipfs/${identity.id}`)).toString()
+          .replace('0.0.0.0', '127.0.0.1')
 
         dialerNode.swarm.connect(targetAddr, done)
       })
@@ -110,13 +97,9 @@ describe('bitswap', () => {
 
     function connectNodes (remoteNode, ipn, done) {
       series([
-        (cb) => {
-          wire(remoteNode, ipn, cb)
-        },
+        (cb) => wire(remoteNode, ipn, cb),
         (cb) => setTimeout(() => {
-          // need timeout so we wait for identify
-          // to happen.
-
+          // need timeout so we wait for identify to happen.
           // This call is just to ensure identify happened
           wire(ipn, remoteNode, cb)
         }, 300)
@@ -129,9 +112,7 @@ describe('bitswap', () => {
       const apiUrl = `/ip4/127.0.0.1/tcp/31${num}`
       const remoteNode = new API(apiUrl)
 
-      connectNodes(remoteNode, inProcNode, (err) => {
-        done(err, remoteNode)
-      })
+      connectNodes(remoteNode, inProcNode, (err) => done(err, remoteNode))
     }
 
     describe('fetches a remote block', () => {
