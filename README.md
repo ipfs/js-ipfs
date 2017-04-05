@@ -68,11 +68,9 @@ We've come a long way, but this project is still in Alpha, lots of development i
 
 **Want to get started?** Check our [examples folder](/examples) to learn how to spawn an IPFS node in Node.js and in the Browser.
 
-You can check the development status at:
+You can check the development status at the [Waffle Board](https://waffle.io/ipfs/js-ipfs).
 
-- Original project [Roadmap](/ROADMAP.md).
-- [Waffle Board](https://waffle.io/ipfs/js-ipfs)
-- [IPFS Organization Roadmap](https://waffle.io/ipfs/roadmaps)
+[![Throughput Graph](https://graphs.waffle.io/ipfs/js-ipfs/throughput.svg)](https://waffle.io/ipfs/js-ipfs/metrics/throughput)
 
 ## Table of Contents
 
