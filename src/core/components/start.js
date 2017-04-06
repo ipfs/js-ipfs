@@ -3,6 +3,7 @@
 const series = require('async/series')
 const Bitswap = require('ipfs-bitswap')
 const FloodSub = require('libp2p-floodsub')
+const setImmediate = require('async/setImmediate')
 
 module.exports = (self) => {
   return (callback) => {
@@ -10,12 +11,12 @@ module.exports = (self) => {
 
     const done = (err) => {
       if (err) {
-        self.emit('error', err)
+        setImmediate(() => self.emit('error', err))
         return callback(err)
       }
 
       self.state.started()
-      self.emit('start')
+      setImmediate(() => self.emit('start'))
       callback()
     }
 
