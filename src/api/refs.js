@@ -26,7 +26,7 @@ module.exports = (send) => {
     }
 
     const request = {
-      path: 'refs',
+      path: 'refs/local',
       qs: opts
     }
 
