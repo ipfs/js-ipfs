@@ -13,7 +13,7 @@ module.exports = (ctl) => {
   describe('.block', () => {
     describe('.put', () => {
       it('updates value', (done) => {
-        const data = new Buffer('hello world\n')
+        const data = Buffer.from('hello world\n')
         const expectedResult = {
           key: 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp',
           size: 12

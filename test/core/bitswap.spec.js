@@ -18,7 +18,6 @@ const multiaddr = require('multiaddr')
 const isNode = require('detect-node')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
-const Buffer = require('safe-buffer').Buffer
 
 // This gets replaced by '../utils/create-repo-browser.js' in the browser
 const createTempRepo = require('../utils/create-repo-nodejs.js')
@@ -39,7 +38,8 @@ function makeBlock (cb) {
 describe('bitswap', () => {
   let inProcNode // Node spawned inside this process
 
-  beforeEach((done) => {
+  beforeEach(function (done) {
+    this.timeout(20 * 1000)
     const repo = createTempRepo()
 
     if (!isNode) {
@@ -62,7 +62,7 @@ describe('bitswap', () => {
         repo: repo,
         config: {
           Addresses: {
-            Swarm: [ '/ip4/127.0.0.1/tcp/0' ]
+            Swarm: ['/ip4/127.0.0.1/tcp/0']
           },
           Discovery: {
             MDNS: {
@@ -77,7 +77,10 @@ describe('bitswap', () => {
     inProcNode.on('start', () => done())
   })
 
-  afterEach((done) => inProcNode.stop(() => done()))
+  afterEach(function (done) {
+    this.timeout(20 * 1000)
+    inProcNode.stop(() => done())
+  })
 
   describe('connections', () => {
     function wire (targetNode, dialerNode, done) {
@@ -141,11 +144,9 @@ describe('bitswap', () => {
             cb()
           }
         ], done)
-      })
+      }).timeout(20 * 1000)
 
-      it('3 peers', function (done) {
-        this.timeout(60 * 1000)
-
+      it('3 peers', (done) => {
         let blocks
         const remoteNodes = []
 
@@ -187,12 +188,12 @@ describe('bitswap', () => {
             ], cbI)
           }), cb)
         ], done)
-      })
-    })
+      }).timeout(20 * 1000)
+    }).timeout(60 * 1000)
 
     describe('fetches a remote file', () => {
       it('2 peers', (done) => {
-        const file = new Buffer(`I love IPFS <3 ${Math.random()}`)
+        const file = Buffer.from(`I love IPFS <3 ${Math.random()}`)
 
         waterfall([
           // 0. Start node
@@ -221,7 +222,8 @@ describe('bitswap', () => {
   describe('bitswap API', () => {
     let node
 
-    before((done) => {
+    before(function (done) {
+      this.timeout(20 * 1000)
       node = new IPFS({
         repo: createTempRepo(),
         start: false,
@@ -261,7 +263,7 @@ describe('bitswap', () => {
 
       it('.wantlist returns an array of wanted blocks', () => {
         expect(node.bitswap.wantlist()).to.eql([])
-      })
+      }).timeout(30 * 1000)
 
       it('returns the stats', () => {
         let stats = node.bitswap.stat()

@@ -18,7 +18,7 @@ module.exports = {
 
       stats.Wantlist = stats.Wantlist || []
       stats.Wantlist = stats.Wantlist.map((entry) => {
-        const buf = new Buffer(entry.cid.hash.data)
+        const buf = Buffer.from(entry.cid.hash.data)
         const cid = new CID(entry.cid.version, entry.cid.codec, buf)
         return cid.toBaseEncodedString()
       })

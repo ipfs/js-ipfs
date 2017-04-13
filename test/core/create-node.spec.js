@@ -36,7 +36,7 @@ describe('create node', () => {
         node.stop()
       })
     })
-  })
+  }).timeout(20 * 1000)
 
   it('custom repo', (done) => {
     const node = new IPFS({
@@ -58,7 +58,7 @@ describe('create node', () => {
         node.stop()
       })
     })
-  })
+  }).timeout(20 * 1000)
 
   it('IPFS.createNode', (done) => {
     const node = IPFS.createNode({
@@ -83,7 +83,7 @@ describe('create node', () => {
         node.stop()
       })
     })
-  })
+  }).timeout(20 * 1000)
 
   it('init: { bits: 1024 }', (done) => {
     const node = new IPFS({
@@ -172,7 +172,7 @@ describe('create node', () => {
     node.once('start', () => node.stop())
 
     node.once('ready', () => node.start())
-  })
+  }).timeout(20 * 1000)
 
   it('init: true, start: false, use callback', (done) => {
     const node = new IPFS({
@@ -191,7 +191,7 @@ describe('create node', () => {
     node.once('ready', () => {
       node.start(() => node.stop(done))
     })
-  })
+  }).timeout(20 * 1000)
 
   it('overload config', (done) => {
     if (!isNode) {
@@ -221,7 +221,7 @@ describe('create node', () => {
         node.stop(done)
       })
     })
-  })
+  }).timeout(20 * 1000)
 
   it('start and stop, start and stop', (done) => {
     const node = new IPFS({
@@ -240,7 +240,7 @@ describe('create node', () => {
       (cb) => node.start(cb),
       (cb) => node.stop(cb)
     ], done)
-  })
+  }).timeout(20 * 1000)
 
   it('can start node twice without crash', (done) => {
     const options = {
@@ -263,5 +263,5 @@ describe('create node', () => {
       },
       (cb) => node.stop(cb)
     ], done)
-  })
+  }).timeout(30 * 1000)
 })

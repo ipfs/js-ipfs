@@ -11,7 +11,7 @@ const runOnAndOff = require('../utils/on-and-off')
 describe('files', () => runOnAndOff((thing) => {
   let ipfs
   const readme = fs.readFileSync(path.join(process.cwd(), '/src/init-files/init-docs/readme'))
-                   .toString('utf-8')
+    .toString('utf-8')
 
   const recursiveGetDirResults = [
     'added QmR56UJmAaZLXLdTT1ALrE9vVqV8soUEekm9BMd4FnuYqV recursive-get-dir/version',
@@ -228,7 +228,7 @@ describe('files', () => runOnAndOff((thing) => {
     return ipfs('files add --silent src/init-files/init-docs/readme')
       .then((out) => {
         expect(out)
-        .to.eql('')
+          .to.eql('')
       })
   })
 

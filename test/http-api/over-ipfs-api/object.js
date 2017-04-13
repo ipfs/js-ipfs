@@ -50,7 +50,7 @@ module.exports = (ctl) => {
         ctl.object.get('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n', {enc: 'base58'}, asJson((err, res) => {
           expect(err).to.not.exist()
           expect(res.links).to.be.eql([])
-          expect(res.data).to.eql(new Buffer(''))
+          expect(res.data).to.eql(Buffer.from(''))
           done()
         }))
       })
@@ -69,7 +69,7 @@ module.exports = (ctl) => {
       it('updates value', (done) => {
         const filePath = fs.readFileSync('test/test-data/node.json')
         const expectedResult = {
-          data: new Buffer('another'),
+          data: Buffer.from('another'),
           multihash: 'QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm',
           links: [{
             name: 'some link',

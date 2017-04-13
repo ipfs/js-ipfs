@@ -16,7 +16,7 @@ function normalizeMultihash (multihash, enc) {
       return multihash
     }
 
-    return new Buffer(multihash, enc)
+    return Buffer.from(multihash, enc)
   } else if (Buffer.isBuffer(multihash)) {
     return multihash
   } else {
@@ -49,7 +49,7 @@ function parseJSONBuffer (buf, callback) {
         mh.fromB58String(link.Hash || link.hash || link.multihash)
       )
     })
-    data = new Buffer(parsed.Data)
+    data = Buffer.from(parsed.Data)
   } catch (err) {
     return callback(new Error('failed to parse JSON: ' + err))
   }
@@ -104,7 +104,7 @@ module.exports = function object (self) {
         assert(template === 'unixfs-dir', 'unkown template')
         data = (new Unixfs('directory')).marshal()
       } else {
-        data = new Buffer(0)
+        data = Buffer.alloc(0)
       }
 
       DAGNode.create(data, (err, node) => {

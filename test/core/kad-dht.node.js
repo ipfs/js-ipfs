@@ -8,7 +8,6 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const bl = require('bl')
 const parallel = require('async/parallel')
-const Buffer = require('safe-buffer')
 const IPFSFactory = require('../utils/ipfs-factory-instance')
 
 describe('verify that kad-dht is doing its thing', () => {
@@ -62,7 +61,7 @@ describe('verify that kad-dht is doing its thing', () => {
         expect(err).to.not.exist()
         stream.pipe(bl((err, data) => {
           expect(err).to.not.exist()
-          expect(data).to.eql(new Buffer('hello kad'))
+          expect(data).to.eql(Buffer.from('hello kad'))
           done()
         }))
       })

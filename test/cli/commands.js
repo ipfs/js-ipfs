@@ -9,7 +9,8 @@ const commandCount = 56
 describe('commands', () => runOnAndOff((thing) => {
   let ipfs
 
-  before(() => {
+  before(function () {
+    this.timeout(30 * 1000)
     ipfs = thing.ipfs
   })
 

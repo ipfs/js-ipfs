@@ -172,7 +172,7 @@ describe('basic', () => {
         depth: 5,
         number: num
       }).then(() => {
-        return goDaemon.api.util.addFromFs(dir, {recursive: true})
+        return goDaemon.api.util.addFromFs(dir, { recursive: true })
       }).then((res) => {
         const hash = res[res.length - 1].hash
         return jsDaemon.api.object.get(hash)
@@ -189,7 +189,7 @@ describe('basic', () => {
         depth: 5,
         number: num
       }).then(() => {
-        return jsDaemon.api.util.addFromFs(dir, {recursive: true})
+        return jsDaemon.api.util.addFromFs(dir, { recursive: true })
       }).then((res) => {
         const hash = res[res.length - 1].hash
         return goDaemon.api.object.get(hash)
@@ -206,7 +206,7 @@ describe('basic', () => {
         depth: 5,
         number: num
       }).then(() => {
-        return js2Daemon.api.util.addFromFs(dir, {recursive: true})
+        return js2Daemon.api.util.addFromFs(dir, { recursive: true })
       }).then((res) => {
         const hash = res[res.length - 1].hash
         return jsDaemon.api.object.get(hash)

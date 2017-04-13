@@ -29,8 +29,8 @@ function Factory () {
 
     if (!repoPath) {
       repoPath = '/tmp/.ipfs-' + Math.random()
-                                 .toString()
-                                 .substring(2, 8)
+        .toString()
+        .substring(2, 8)
     }
 
     config = config || defaultConfig

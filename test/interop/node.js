@@ -3,6 +3,7 @@
 
 describe('interop', () => {
   require('./exchange-files')
+  require('./circuit')
   require('./kad-dht')
   require('./repo')
 })

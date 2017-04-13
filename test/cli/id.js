@@ -7,7 +7,8 @@ const runOnAndOff = require('../utils/on-and-off')
 describe('id', () => runOnAndOff((thing) => {
   let ipfs
 
-  before(() => {
+  before(function () {
+    this.timeout(30 * 1000)
     ipfs = thing.ipfs
   })
 
