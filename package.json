@@ -26,20 +26,22 @@
   },
   "homepage": "https://github.com/ipfs/interface-ipfs-core#readme",
   "dependencies": {
-    "async": "^2.2.0",
+    "async": "^2.3.0",
     "bl": "^1.2.0",
     "bs58": "^4.0.0",
     "chai": "^3.5.0",
-    "cids": "^0.4.2",
+    "cids": "^0.5.0",
     "concat-stream": "^1.6.0",
     "detect-node": "^2.0.3",
     "ipfs-block": "^0.6.0",
-    "ipld-dag-cbor": "^0.11.0",
+    "ipld-dag-cbor": "^0.11.1",
     "ipld-dag-pb": "^0.11.0",
     "multiaddr": "^2.3.0",
     "multihashes": "^0.4.5",
+    "multihashing-async": "^0.4.5",
+    "peer-id": "^0.8.7",
     "pull-stream": "^3.5.0",
-    "readable-stream": "2.2.6"
+    "readable-stream": "1.1.14"
   },
   "devDependencies": {
     "aegir": "^11.0.1",

@@ -41,7 +41,6 @@ module.exports = (common) => {
     describe('callback API', () => {
       it('.put a buffer', (done) => {
         const expectedHash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
-        // const cid = new CID(expectedHash)
         const blob = new Buffer('blorb')
 
         ipfs.block.put(blob, (err, block) => {

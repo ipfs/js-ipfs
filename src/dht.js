@@ -5,89 +5,164 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
+const waterfall = require('async/waterfall')
+const series = require('async/series')
+const parallel = require('async/parallel')
+const map = require('async/map')
+const multihashing = require('multihashing-async')
+const CID = require('cids')
+const PeerId = require('peer-id')
+
+function spawnWithId (factory, callback) {
+  waterfall([
+    (cb) => factory.spawnNode(cb),
+    (node, cb) => node.id((err, peerId) => {
+      if (err) {
+        return cb(err)
+      }
+      node.peerId = peerId
+      cb(null, node)
+    })
+  ], callback)
+}
 
 module.exports = (common) => {
   describe('.dht', () => {
-    let ipfs
-    let peers
+    let nodeA
+    let nodeB
+    let nodeC
 
     before((done) => {
       common.setup((err, factory) => {
         expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
+        series([
+          (cb) => spawnWithId(factory, cb),
+          (cb) => spawnWithId(factory, cb),
+          (cb) => spawnWithId(factory, cb)
+        ], (err, nodes) => {
           expect(err).to.not.exist()
-          ipfs = node
-          done()
+
+          nodeA = nodes[0]
+          nodeB = nodes[1]
+          nodeC = nodes[2]
+
+          parallel([
+            (cb) => nodeA.swarm.connect(nodeB.peerId.addresses[0], cb),
+            (cb) => nodeB.swarm.connect(nodeC.peerId.addresses[0], cb),
+            (cb) => nodeC.swarm.connect(nodeA.peerId.addresses[0], cb)
+          ], done)
         })
       })
     })
 
-    after((done) => {
-      common.teardown(done)
-    })
+    after((done) => common.teardown(done))
 
     describe('callback API', () => {
-      it('.get errors when getting a non-exist()ent key from the DHT', (done) => {
-        ipfs.dht.get('non-exist()ing', {timeout: '100ms'}, (err, value) => {
-          expect(err).to.be.an.instanceof(Error)
-          done()
+      describe('.get and .put', () => {
+        it('errors when getting a non-existent key from the DHT', (done) => {
+          nodeA.dht.get('non-existing', { timeout: '100ms' }, (err, value) => {
+            expect(err).to.be.an.instanceof(Error)
+            done()
+          })
+        })
+
+        // TODO: fix - go-ipfs errors with  Error: key was not found (type 6)
+        // https://github.com/ipfs/go-ipfs/issues/3862
+        it.skip('fetches value after it was put on another node', (done) => {
+          const val = new Buffer('hello')
+
+          waterfall([
+            (cb) => nodeB.object.new('unixfs-dir', cb),
+            (node, cb) => setTimeout(() => cb(null, node), 1000),
+            (node, cb) => {
+              const multihash = node.toJSON().multihash
+
+              nodeA.dht.get(multihash, cb)
+            },
+            (result, cb) => {
+              expect(result).to.eql('')
+              cb()
+            }
+          ], done)
         })
       })
-      it('.findprovs', (done) => {
-        ipfs.dht.findprovs('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', (err, res) => {
-          expect(err).to.not.exist()
 
-          expect(res).to.be.an('array')
-          done()
+      describe('.findpeer', () => {
+        it('finds other peers', (done) => {
+          nodeA.dht.findpeer(nodeC.peerId.id, (err, peer) => {
+            expect(err).to.not.exist()
+            // TODO upgrade the answer, format is weird
+            // console.log(peer)
+            expect(peer[0].Responses[0].ID).to.be.equal(nodeC.peerId.id)
+            done()
+          })
+        })
+
+        // TODO checking what is exactly go-ipfs returning
+        // https://github.com/ipfs/go-ipfs/issues/3862#issuecomment-294168090
+        it.skip('fails to find other peer, if peer doesnt exist()s', (done) => {
+          nodeA.dht.findpeer('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ', (err, peer) => {
+            expect(err).to.not.exist()
+            expect(peer).to.be.equal(null)
+            done()
+          })
+        })
+      })
+
+      describe('.provide', () => {
+        it('regular', (done) => {
+          const cid = new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ')
+
+          nodeC.dht.provide(cid, done)
+        })
+
+        it.skip('recursive', () => {})
+      })
+
+      describe.skip('findprovs', () => {
+        it('basic', (done) => {
+          const cid = new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxxx')
+
+          waterfall([
+            (cb) => nodeB.dht.provide(cid, cb),
+            (cb) => nodeC.dht.findprovs(cid, cb),
+            (provs, cb) => {
+              expect(provs.map((p) => p.toB58String()))
+                .to.eql([nodeB.peerId.id])
+              cb()
+            }
+          ], done)
+        })
+      })
+
+      describe('.query', () => {
+        it('returns the other node in the query', (done) => {
+          nodeA.dht.query(nodeC.peerId.id, (err, peers) => {
+            expect(err).to.not.exist()
+            expect(peers.map((p) => p.ID))
+              .to.include(nodeC.peerId.id)
+            done()
+          })
         })
       })
     })
+
     describe('promise API', () => {
-      it('.get errors when getting a non-exist()ent key from the DHT', (done) => {
-        ipfs.dht.get('non-exist()ing', {timeout: '100ms'}).catch((err) => {
-          expect(err).to.be.an.instanceof(Error)
-          done()
+      describe('.get', () => {
+        it('errors when getting a non-existent key from the DHT', (done) => {
+          nodeA.dht.get('non-existing', {timeout: '100ms'}).catch((err) => {
+            expect(err).to.be.an.instanceof(Error)
+            done()
+          })
         })
       })
+
       it('.findprovs', (done) => {
-        ipfs.dht.findprovs('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP').then((res) => {
+        nodeB.dht.findprovs('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP').then((res) => {
           expect(res).to.be.an('array')
           done()
         }).catch(done)
       })
     })
-    // Tests below are tests that haven't been implemented yet or is not
-    // passing currently
-    xdescribe('.findpeer', () => {
-      it('finds other peers', (done) => {
-        peers.a.ipfs.dht.findpeer(peers.b.peerID, (err, foundPeer) => {
-          expect(err).to.be.empty()
-          expect(foundPeer.peerID).to.be.equal(peers.b.peerID)
-          done()
-        })
-      })
-      it('fails to find other peer, if peer doesnt exist()s', (done) => {
-        peers.a.ipfs.dht.findpeer('ARandomPeerID', (err, foundPeer) => {
-          expect(err).to.be.instanceof(Error)
-          expect(foundPeer).to.be.equal(null)
-          done()
-        })
-      })
-    })
-    xit('.put and .get a key value pair in the DHT', (done) => {
-      peers.a.ipfs.dht.put('scope', 'interplanetary', (err, res) => {
-        expect(err).to.not.exist()
-
-        expect(res).to.be.an('array')
-
-        // bug: https://github.com/ipfs/go-ipfs/issues/1923#issuecomment-152932234
-        peers.b.ipfs.dht.get('scope', (err, value) => {
-          expect(err).to.not.exist()
-          expect(value).to.be.equal('interplanetary')
-          done()
-        })
-      })
-    })
-    xdescribe('.query', () => {})
   })
 }
