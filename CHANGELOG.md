@@ -1,3 +1,13 @@
+<a name="0.27.0"></a>
+# [0.27.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.26.2...v0.27.0) (2017-04-14)
+
+
+### Bug Fixes
+
+* linting, unused vars ([802612d](https://github.com/ipfs/interface-ipfs-core/commit/802612d))
+
+
+
 <a name="0.26.2"></a>
 ## [0.26.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.26.1...v0.26.2) (2017-03-30)
 
