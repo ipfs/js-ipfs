@@ -5,45 +5,20 @@ const streamToValue = require('../stream-to-value')
 
 module.exports = (send) => {
   return {
-    findprovs: promisify((args, opts, callback) => {
-      if (typeof opts === 'function' &&
-          !callback) {
-        callback = opts
-        opts = {}
-      }
-
-      // opts is the real callback --
-      // 'callback' is being injected by promisify
-      if (typeof opts === 'function' &&
-          typeof callback === 'function') {
-        callback = opts
-        opts = {}
-      }
-
-      const request = {
-        path: 'dht/findprovs',
-        args: args,
-        qs: opts
-      }
-
-      send.andTransform(request, streamToValue, callback)
-    }),
     get: promisify((key, opts, callback) => {
-      if (typeof opts === 'function' &&
-          !callback) {
+      if (typeof opts === 'function' && !callback) {
         callback = opts
         opts = {}
       }
 
       // opts is the real callback --
       // 'callback' is being injected by promisify
-      if (typeof opts === 'function' &&
-          typeof callback === 'function') {
+      if (typeof opts === 'function' && typeof callback === 'function') {
         callback = opts
         opts = {}
       }
 
-      const handleResult = (done, err, res) => {
+      function handleResult (done, err, res) {
         if (err) {
           return done(err)
         }
@@ -73,17 +48,16 @@ module.exports = (send) => {
         qs: opts
       }, handleResult.bind(null, callback))
     }),
+
     put: promisify((key, value, opts, callback) => {
-      if (typeof opts === 'function' &&
-          !callback) {
+      if (typeof opts === 'function' && !callback) {
         callback = opts
         opts = {}
       }
 
       // opts is the real callback --
       // 'callback' is being injected by promisify
-      if (typeof opts === 'function' &&
-          typeof callback === 'function') {
+      if (typeof opts === 'function' && typeof callback === 'function') {
         callback = opts
         opts = {}
       }
@@ -93,6 +67,91 @@ module.exports = (send) => {
         args: [key, value],
         qs: opts
       }, callback)
+    }),
+
+    findprovs: promisify((cid, opts, callback) => {
+      if (typeof opts === 'function' && !callback) {
+        callback = opts
+        opts = {}
+      }
+
+      // opts is the real callback --
+      // 'callback' is being injected by promisify
+      if (typeof opts === 'function' && typeof callback === 'function') {
+        callback = opts
+        opts = {}
+      }
+
+      send.andTransform({
+        path: 'dht/findprovs',
+        args: cid,
+        qs: opts
+      }, streamToValue, callback)
+    }),
+
+    findpeer: promisify((peerId, opts, callback) => {
+      if (typeof opts === 'function' && !callback) {
+        callback = opts
+        opts = {}
+      }
+
+      // opts is the real callback --
+      // 'callback' is being injected by promisify
+      if (typeof opts === 'function' && typeof callback === 'function') {
+        callback = opts
+        opts = {}
+      }
+
+      send.andTransform({
+        path: 'dht/findpeer',
+        args: peerId,
+        qs: opts
+      }, streamToValue, callback)
+    }),
+
+    provide: promisify((cids, opts, callback) => {
+      if (typeof opts === 'function' && !callback) {
+        callback = opts
+        opts = {}
+      }
+
+      // opts is the real callback --
+      // 'callback' is being injected by promisify
+      if (typeof opts === 'function' && typeof callback === 'function') {
+        callback = opts
+        opts = {}
+      }
+
+      if (!Array.isArray(cids)) {
+        cids = [cids]
+      }
+
+      send({
+        path: 'dht/provide',
+        args: cids,
+        qs: opts
+      }, callback)
+    }),
+
+    // find closest peerId to given peerId
+    query: promisify((peerId, opts, callback) => {
+      if (typeof opts === 'function' && !callback) {
+        callback = opts
+        opts = {}
+      }
+
+      // opts is the real callback --
+      // 'callback' is being injected by promisify
+      if (typeof opts === 'function' && typeof callback === 'function') {
+        callback = opts
+        opts = {}
+      }
+
+      send.andTransform({
+        path: 'dht/query',
+        args: peerId,
+        qs: opts
+      }, streamToValue, callback)
     })
   }
 }
