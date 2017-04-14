@@ -8,10 +8,7 @@ chai.use(dirtyChai)
 const waterfall = require('async/waterfall')
 const series = require('async/series')
 const parallel = require('async/parallel')
-const map = require('async/map')
-const multihashing = require('multihashing-async')
 const CID = require('cids')
-const PeerId = require('peer-id')
 
 function spawnWithId (factory, callback) {
   waterfall([
@@ -69,8 +66,6 @@ module.exports = (common) => {
         // TODO: fix - go-ipfs errors with  Error: key was not found (type 6)
         // https://github.com/ipfs/go-ipfs/issues/3862
         it.skip('fetches value after it was put on another node', (done) => {
-          const val = new Buffer('hello')
-
           waterfall([
             (cb) => nodeB.object.new('unixfs-dir', cb),
             (node, cb) => setTimeout(() => cb(null, node), 1000),
