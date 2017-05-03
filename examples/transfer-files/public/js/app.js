@@ -136,7 +136,12 @@ function onDrop (event) {
     })
   }
 
-  files.map((file) => {
+  let filesArray = []
+  for (let i = 0; i < files.length; i++) {
+    filesArray.push(files[i])
+  }
+
+  filesArray.map((file) => {
     readFileContents(file)
       .then((buffer) => {
         return node.files.add([{
