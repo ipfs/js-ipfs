@@ -1,3 +1,8 @@
+<a name="14.0.1"></a>
+## [14.0.1](https://github.com/ipfs/js-ipfs-api/compare/v14.0.0...v14.0.1) (2017-05-04)
+
+
+
 <a name="14.0.0"></a>
 # [14.0.0](https://github.com/ipfs/js-ipfs-api/compare/v13.0.0...v14.0.0) (2017-03-30)
 
