@@ -226,6 +226,11 @@ This means:
 - [`ipfs.ping()`]()
 - [`ipfs.log()`]()
 
+#### [key]()
+
+- [`ipfs.key.gen(name, [options, callback])`]()
+- [`ipfs.key.list([options, callback])`]()
+
 ##### [name]()
 
 - [`ipfs.name.publish()`]()
