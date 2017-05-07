@@ -27,6 +27,8 @@ module.exports = (http) => {
         url: '/api/v0/bootstrap/list'
       }, (res) => {
         expect(res.statusCode).to.be.eql(200)
+        console.log(res.result.Peers)
+        console.log(defaultList)
         expect(res.result.Peers).to.deep.equal(defaultList)
         done()
       })

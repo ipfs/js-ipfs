@@ -187,7 +187,14 @@ function refreshPeerList () {
     }
 
     const peersAsHtml = peers
-      .map((peer) => peer.addr.toString())
+      .map((peer) => {
+        const addr = peer.addr.toString()
+        if (addr.indexOf('ipfs') >= 0) {
+          return addr
+        } else {
+          return addr + peer.peer.id.toB58String()
+        }
+      })
       .map((addr) => {
         return '<li>' + addr + '</li>'
       }).join('')
