@@ -1,8 +1,10 @@
 {
   "Addresses": {
-    "Swarm": [],
-    "API": "/ip4/127.0.0.1/tcp/5002",
-    "Gateway": "/ip4/127.0.0.1/tcp/9090"
+    "Swarm": [
+      "/libp2p-webrtc-star/dns4/star-signal.cloud.ipfs.team/wss"
+    ],
+    "API": "",
+    "Gateway": ""
   },
   "Discovery": {
     "MDNS": {
