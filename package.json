@@ -112,7 +112,7 @@
     "ipld-resolver": "~0.11.0",
     "isstream": "^0.1.2",
     "joi": "^10.4.1",
-    "libp2p-floodsub": "~0.9.0",
+    "libp2p-floodsub": "~0.9.4",
     "libp2p-ipfs-browser": "~0.23.0",
     "libp2p-ipfs-nodejs": "~0.23.0",
     "lodash.flatmap": "^4.5.0",
