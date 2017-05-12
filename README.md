@@ -231,7 +231,8 @@ const node = new IPFS({
   // start: false,
   EXPERIMENTAL: { // enable experimental features
     pubsub: true,
-    sharding: true // enable dir sharding
+    sharding: true, // enable dir sharding
+    wrtcLinuxWindows: true // use unstable wrtc module on Linux or Windows with Node.js
   },
   config: { // overload the default config
     Addresses: {
@@ -366,6 +367,18 @@ A set of data types are exposed directly from the IPFS instance under `ipfs.type
 - [`ipfs.types.multiaddr`](https://github.com/multiformats/js-multiaddr)
 - [`ipfs.types.multihash`](https://github.com/multiformats/js-multihash)
 - [`ipfs.types.CID`](https://github.com/ipld/js-cid)
+
+## FAQ
+
+> Is there WebRTC support for js-ipfs with Node.js?
+
+Yes there is, however, Linux and Windows support is limited/unstable. For Linux users, you need to follow the install the extra packages for Linux listed on the [`wrtc` npm page](http://npmjs.org/wrtc) and then, when doing initing the repo, do:
+
+```sh
+> IPFS_WRTC_LINUX_WINDOWS=1 jsipfs init
+```
+
+This will create a repo with a config file that contains a WebRTC multiaddr.
 
 ## Packages
 

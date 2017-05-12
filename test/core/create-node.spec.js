@@ -18,7 +18,12 @@ const createTempRepo = require('../utils/create-repo-node.js')
 describe('create node', () => {
   it('custom repoPath', (done) => {
     const node = new IPFS({
-      repo: '/tmp/ipfs-repo-' + Math.random()
+      repo: '/tmp/ipfs-repo-' + Math.random(),
+      config: {
+        Addresses: {
+          Swarm: []
+        }
+      }
     })
 
     node.once('start', (err) => {
@@ -36,7 +41,12 @@ describe('create node', () => {
 
   it('custom repo', (done) => {
     const node = new IPFS({
-      repo: createTempRepo()
+      repo: createTempRepo(),
+      config: {
+        Addresses: {
+          Swarm: []
+        }
+      }
     })
 
     node.once('start', (err) => {
@@ -53,7 +63,12 @@ describe('create node', () => {
 
   it('IPFS.createNode', (done) => {
     const node = IPFS.createNode({
-      repo: createTempRepo()
+      repo: createTempRepo(),
+      config: {
+        Addresses: {
+          Swarm: []
+        }
+      }
     })
 
     node.once('start', (err) => {
@@ -76,6 +91,11 @@ describe('create node', () => {
       repo: createTempRepo(),
       init: {
         bits: 1024
+      },
+      config: {
+        Addresses: {
+          Swarm: []
+        }
       }
     })
 
@@ -94,7 +114,12 @@ describe('create node', () => {
   it('init: false errors (start default: true)', (done) => {
     const node = new IPFS({
       repo: createTempRepo(),
-      init: false
+      init: false,
+      config: {
+        Addresses: {
+          Swarm: []
+        }
+      }
     })
     node.once('error', (err) => {
       expect(err).to.exist()
@@ -106,7 +131,12 @@ describe('create node', () => {
     const node = new IPFS({
       repo: createTempRepo(),
       init: false,
-      start: false
+      start: false,
+      config: {
+        Addresses: {
+          Swarm: []
+        }
+      }
     })
 
     let happened = false
@@ -131,6 +161,9 @@ describe('create node', () => {
       init: true,
       start: false,
       config: {
+        Addresses: {
+          Swarm: []
+        },
         Bootstrap: []
       }
     })
@@ -148,6 +181,9 @@ describe('create node', () => {
       init: true,
       start: false,
       config: {
+        Addresses: {
+          Swarm: []
+        },
         Bootstrap: []
       }
     })
@@ -192,6 +228,9 @@ describe('create node', () => {
     const node = new IPFS({
       repo: createTempRepo(),
       config: {
+        Addresses: {
+          Swarm: []
+        },
         Bootstrap: []
       }
     })
@@ -208,6 +247,9 @@ describe('create node', () => {
     const options = {
       repo: createTempRepo(),
       config: {
+        Addresses: {
+          Swarm: []
+        },
         Bootstrap: []
       }
     }
