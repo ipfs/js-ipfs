@@ -1,7 +1,7 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const cleanMultihash = require('../clean-multihash')
+const cleanCID = require('../clean-cid')
 const TarStreamToObjects = require('../tar-stream-to-objects')
 
 module.exports = (send) => {
@@ -21,7 +21,7 @@ module.exports = (send) => {
     }
 
     try {
-      path = cleanMultihash(path)
+      path = cleanCID(path)
     } catch (err) {
       return callback(err)
     }
