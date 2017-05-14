@@ -19,10 +19,10 @@ module.exports = (send) => {
       try {
         if (CID.isCID(args)) {
           cid = args
-          args = multihash.toB58String(args.multihash)
+          args = cid.toBaseEncodedString()
         } else if (Buffer.isBuffer(args)) {
           cid = new CID(args)
-          args = multihash.toB58String(args)
+          args = cid.toBaseEncodedString()
         } else if (typeof args === 'string') {
           cid = new CID(args)
         } else {
