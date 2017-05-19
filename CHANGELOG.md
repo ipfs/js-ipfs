@@ -1,3 +1,13 @@
+<a name="14.0.2"></a>
+## [14.0.2](https://github.com/ipfs/js-ipfs-api/compare/v14.0.1...v14.0.2) (2017-05-19)
+
+
+### Features
+
+* Use CID for api.get/api.cat ([#555](https://github.com/ipfs/js-ipfs-api/issues/555)) ([da7d0f4](https://github.com/ipfs/js-ipfs-api/commit/da7d0f4))
+
+
+
 <a name="14.0.1"></a>
 ## [14.0.1](https://github.com/ipfs/js-ipfs-api/compare/v14.0.0...v14.0.1) (2017-05-04)
 
