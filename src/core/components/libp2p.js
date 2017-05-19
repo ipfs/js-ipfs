@@ -46,6 +46,8 @@ module.exports = function libp2p (self) {
                 }
               },
               dht: {
+                kBucketSize: get(opts.options, 'dht.kBucketSize', 20),
+                enabledDiscovery: get(opts.options, 'dht.enabledDiscovery', true),
                 validators: {
                   ipns: ipnsUtils.validator
                 },

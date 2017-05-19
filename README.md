@@ -319,7 +319,7 @@ Enable and configure experimental features.
 - `pubsub` (boolean): Enable libp2p pub-sub. (Default: `false`)
 - `ipnsPubsub` (boolean): Enable pub-sub on IPNS. (Default: `false`)
 - `sharding` (boolean): Enable directory sharding. Directories that have many child objects will be represented by multiple DAG nodes instead of just one. It can improve lookup performance when a directory has several thousand files or more. (Default: `false`)
-- `dht` (boolean): Enable KadDHT. **This is currently not interoperable with `go-ipfs`.**
+- `dht` (boolean): Enable KadDHT.
 
 ##### `options.config`
 
@@ -600,7 +600,13 @@ The core API is grouped into several areas:
   - [`ipfs.bootstrap.add(addr, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BOOTSTRAP.md#bootstrapadd)
   - [`ipfs.bootstrap.rm(peer, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BOOTSTRAP.md#bootstraprm)
 
-- dht (not implemented yet)
+- [dht](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/)
+  - [`ipfs.dht.findpeer(peerId, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtfindpeer)
+  - [`ipfs.dht.findprovs(multihash, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtfindprovs)
+  - [`ipfs.dht.get(key, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtget)
+  - [`ipfs.dht.provide(cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtprovide)
+  - [`ipfs.dht.put(key, value, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtput)
+  - [`ipfs.dht.query(peerId, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtquery)
 
 - [pubsub](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md)
   - [`ipfs.pubsub.subscribe(topic, handler, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubsubscribe)
