@@ -28,7 +28,7 @@
     "concat-stream": "^1.6.0",
     "detect-node": "^2.0.3",
     "flatmap": "0.0.3",
-    "glob": "^7.1.1",
+    "glob": "^7.1.2",
     "glob-escape": "0.0.2",
     "ipfs-block": "~0.6.0",
     "ipfs-unixfs": "~0.1.11",
@@ -46,9 +46,9 @@
     "promisify-es6": "^1.0.2",
     "pump": "^1.0.2",
     "qs": "^6.4.0",
-    "stream-http": "^2.7.0",
+    "stream-http": "^2.7.1",
     "streamifier": "^0.1.1",
-    "tar-stream": "^1.5.2",
+    "tar-stream": "^1.5.4",
     "readable-stream": "1.1.14"
   },
   "engines": {
@@ -60,17 +60,17 @@
     "url": "https://github.com/ipfs/js-ipfs-api"
   },
   "devDependencies": {
-    "aegir": "^11.0.1",
+    "aegir": "^11.0.2",
     "chai": "^3.5.0",
     "dirty-chai": "^1.2.2",
-    "eslint-plugin-react": "^6.10.3",
+    "eslint-plugin-react": "^7.0.1",
     "gulp": "^3.9.1",
     "hapi": "^16.1.1",
-    "interface-ipfs-core": "~0.27.1",
-    "ipfsd-ctl": "~0.20.0",
+    "interface-ipfs-core": "~0.27.2",
+    "ipfsd-ctl": "~0.21.0",
     "pre-commit": "^1.2.2",
-    "socket.io": "^1.7.3",
-    "socket.io-client": "^1.7.3",
+    "socket.io": "^2.0.1",
+    "socket.io-client": "^2.0.1",
     "stream-equal": "^1.0.0"
   },
   "pre-commit": [
