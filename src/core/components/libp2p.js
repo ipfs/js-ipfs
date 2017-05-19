@@ -47,35 +47,37 @@ module.exports = function libp2p (self, config) {
 
 function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
   const libp2pDefaults = {
-    datastore,
-    peerInfo,
-    peerBook,
+    datastore: opts.datastore,
+    peerInfo: opts.peerInfo,
+    peerBook: opts.peerBook,
     config: {
       peerDiscovery: {
         mdns: {
-          enabled: get(options, 'config.Discovery.MDNS.Enabled',
-            get(config, 'Discovery.MDNS.Enabled', true))
+          enabled: get(opts.options, 'config.Discovery.MDNS.Enabled',
+            get(opts.config, 'Discovery.MDNS.Enabled', true))
         },
         webRTCStar: {
-          enabled: get(options, 'config.Discovery.webRTCStar.Enabled',
-            get(config, 'Discovery.webRTCStar.Enabled', true))
+          enabled: get(opts.options, 'config.Discovery.webRTCStar.Enabled',
+            get(opts.config, 'Discovery.webRTCStar.Enabled', true))
         },
         bootstrap: {
-          list: get(options, 'config.Bootstrap',
-            get(config, 'Bootstrap', []))
+          list: get(opts.options, 'config.Bootstrap',
+            get(opts.config, 'Bootstrap', []))
         }
       },
       relay: {
-        enabled: get(options, 'relay.enabled',
-          get(config, 'relay.enabled', false)),
+        enabled: get(opts.options, 'relay.enabled',
+          get(opts.config, 'relay.enabled', false)),
         hop: {
-          enabled: get(options, 'relay.hop.enabled',
-            get(config, 'relay.hop.enabled', false)),
-          active: get(options, 'relay.hop.active',
-            get(config, 'relay.hop.active', false))
+          enabled: get(opts.options, 'relay.hop.enabled',
+            get(opts.config, 'relay.hop.enabled', false)),
+          active: get(opts.options, 'relay.hop.active',
+            get(opts.config, 'relay.hop.active', false))
         }
       },
       dht: {
+        kBucketSize: get(opts.options, 'dht.kBucketSize', 20),
+        enabledDiscovery: get(opts.options, 'dht.enabledDiscovery', true),
         validators: {
           ipns: ipnsUtils.validator
         },
@@ -84,12 +86,12 @@ function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
         }
       },
       EXPERIMENTAL: {
-        dht: get(options, 'EXPERIMENTAL.dht', false),
-        pubsub: get(options, 'EXPERIMENTAL.pubsub', false)
+        dht: get(opts.options, 'EXPERIMENTAL.dht', false),
+        pubsub: get(opts.options, 'EXPERIMENTAL.pubsub', false)
       }
     },
-    connectionManager: get(options, 'connectionManager',
-      get(config, 'connectionManager', {}))
+    connectionManager: get(opts.options, 'connectionManager',
+      get(opts.config, 'connectionManager', {}))
   }
 
   const libp2pOptions = defaultsDeep(get(options, 'libp2p', {}), libp2pDefaults)

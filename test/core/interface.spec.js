@@ -36,19 +36,23 @@ describe('interface-ipfs-core tests', () => {
 
   const dhtCommonFactory = CommonFactory.create({
     spawnOptions: {
-      initOptions: { bits: 512 },
-      EXPERIMENTAL: {
-        dht: true
-      },
       config: {
-        Bootstrap: []
-      }
+        Bootstrap: [],
+        Discovery: {
+          MDNS: {
+            Enabled: false
+          },
+          webRTCStar: {
+            Enabled: false
+          }
+        }
+      },
+      args: ['--enable-dht-experiment'],
+      initOptions: { bits: 512 }
     }
   })
 
-  tests.dht(dhtCommonFactory, {
-    skip: { reason: 'TODO: unskip when https://github.com/ipfs/js-ipfs/pull/856 is merged' }
-  })
+  tests.dht(dhtCommonFactory)
 
   tests.filesRegular(defaultCommonFactory, {
     skip: isNode ? null : [{

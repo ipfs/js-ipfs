@@ -6,6 +6,7 @@ const WebSocketStarMulti = require('libp2p-websocket-star-multi')
 const Multiplex = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
 const Bootstrap = require('libp2p-bootstrap')
+const KadDHT = require('libp2p-kad-dht')
 const libp2p = require('libp2p')
 const defaultsDeep = require('@nodeutils/defaults-deep')
 const multiaddr = require('multiaddr')
@@ -37,7 +38,8 @@ class Node extends libp2p {
           wrtcstar.discovery,
           wsstar.discovery,
           Bootstrap
-        ]
+        ],
+        dht: KadDHT
       },
       config: {
         peerDiscovery: {
@@ -50,6 +52,10 @@ class Node extends libp2p {
           websocketStar: {
             enabled: true
           }
+        },
+        dht: {
+          kBucketSize: 20,
+          enabledDiscovery: true
         },
         EXPERIMENTAL: {
           dht: false,
