@@ -2,6 +2,7 @@
 
 const concat = require('concat-stream')
 const Buffer = require('safe-buffer').Buffer
+
 const IPFS = require('../../../src/core') // replace this by line below
 // var IPFS = require('ipfs')
 
