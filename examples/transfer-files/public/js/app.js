@@ -32,17 +32,8 @@ function start () {
   if (!node) {
     updateView('starting', node)
 
-    const repoPath = 'ipfs-' + Math.random()
-
     node = new self.Ipfs({
-      repo: repoPath,
-      config: {
-        Addresses: {
-          Swarm: [
-            '/libp2p-webrtc-star/dns4/star-signal.cloud.ipfs.team/wss'
-          ]
-        }
-      }
+      repo: 'ipfs-' + Math.random()
     })
 
     node.on('start', () => {
