@@ -97,10 +97,10 @@ module.exports = function init (self) {
 
         parallel(tasks, (err) => {
           if (err) {
-            return cb(err)
+            cb(err)
+          } else {
+            cb(null, true)
           }
-
-          cb(null, true)
         })
       }
     ], done)
