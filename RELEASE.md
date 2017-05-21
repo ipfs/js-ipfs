@@ -19,3 +19,5 @@
   - [ ] Announcements (both pre-release and post-release)
     - [ ] Twitter
     - [ ] IRC
+    - [ ] Reddit
+  - [ ] Blog post
