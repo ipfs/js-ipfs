@@ -28,6 +28,9 @@ function spawnDaemon (num, callback) {
     Discovery: {
       MDNS: {
         Enabled: false
+      },
+      webRTCStar: {
+        Enabled: false
       }
     }
   }
