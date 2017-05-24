@@ -39,7 +39,7 @@ node.version()
    * Initialize the repo for this node
    */
   .then(() => {
-    // we need to promisify node.init to return a promise 
+    // we need to promisify node.init to return a promise
     return promisify(node.init)({ emptyRepo: true, bits: 2048 })
   })
 
@@ -47,11 +47,11 @@ node.version()
    * Take the node online (bitswap, network and so on)
    */
   .then(() => {
-    // we need to promisify node.start to return a promise 
+    // we need to promisify node.start to return a promise
     return promisify(node.start)()
   })
 
-  /* 
+  /*
    * Add a file to IPFS - Complete Files API on:
    * https://github.com/ipfs/interface-ipfs-core/tree/master/API/files
    */
