@@ -4,11 +4,12 @@ const peerId = require('peer-id')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
 const isNode = require('detect-node')
+const promisify = require('promisify-es6')
 
 const addDefaultAssets = require('./init-assets')
 
 module.exports = function init (self) {
-  return (opts, callback) => {
+  return promisify((opts, callback) => {
     if (typeof opts === 'function') {
       callback = opts
       opts = {}
@@ -104,5 +105,5 @@ module.exports = function init (self) {
         })
       }
     ], done)
-  }
+  })
 }
