@@ -3,7 +3,6 @@
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
-const promisify = require('promisify-es6')
 // const IPFS = require('../../src/core')
 // replace this by line below if you are using ipfs as a dependency of your
 // project
@@ -39,16 +38,14 @@ node.version()
    * Initialize the repo for this node
    */
   .then(() => {
-    // we need to promisify node.init to return a promise
-    return promisify(node.init)({ emptyRepo: true, bits: 2048 })
+    return node.init({ emptyRepo: true, bits: 2048 })
   })
 
   /*
    * Take the node online (bitswap, network and so on)
    */
   .then(() => {
-    // we need to promisify node.start to return a promise
-    return promisify(node.start)()
+    return node.start()
   })
 
   /*
