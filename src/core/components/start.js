@@ -4,9 +4,10 @@ const series = require('async/series')
 const Bitswap = require('ipfs-bitswap')
 const FloodSub = require('libp2p-floodsub')
 const setImmediate = require('async/setImmediate')
+const promisify = require('promisify-es6')
 
 module.exports = (self) => {
-  return (callback) => {
+  return promisify((callback) => {
     callback = callback || function noop () {}
 
     const done = (err) => {
@@ -56,5 +57,5 @@ module.exports = (self) => {
         done()
       }
     })
-  }
+  })
 }
