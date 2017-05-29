@@ -3,11 +3,11 @@
 const promisify = require('promisify-es6')
 const cleanCID = require('../clean-cid')
 const TarStreamToObjects = require('../tar-stream-to-objects')
+const v = require('is-ipfs')
 
 module.exports = (send) => {
   return promisify((path, opts, callback) => {
-    if (typeof opts === 'function' &&
-        !callback) {
+    if (typeof opts === 'function' && !callback) {
       callback = opts
       opts = {}
     }
@@ -23,7 +23,9 @@ module.exports = (send) => {
     try {
       path = cleanCID(path)
     } catch (err) {
-      return callback(err)
+      if (!v.ipfsPath(path)) {
+        return callback(err)
+      }
     }
 
     const request = {
