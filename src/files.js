@@ -14,6 +14,7 @@ const bl = require('bl')
 const isNode = require('detect-node')
 const concat = require('concat-stream')
 const through = require('through2')
+const Buffer = require('safe-buffer').Buffer
 
 module.exports = (common) => {
   describe('.files', () => {
@@ -48,14 +49,12 @@ module.exports = (common) => {
       })
     })
 
-    after((done) => {
-      common.teardown(done)
-    })
+    after((done) => common.teardown(done))
 
     describe('callback API', (done) => {
       describe('.add', () => {
         it('stream', (done) => {
-          const buffered = new Buffer('some data')
+          const buffered = Buffer.from('some data')
           const expectedMultihash = 'QmVv4Wz46JaZJeH5PMV4LGbRiiMKEmszPYY3g6fjGnVXBS'
 
           const rs = new Readable()
@@ -196,9 +195,7 @@ module.exports = (common) => {
                 }
               })
 
-              files.forEach((file) => {
-                stream.write(file)
-              })
+              files.forEach((file) => stream.write(file))
 
               stream.end()
             })
@@ -218,6 +215,7 @@ module.exports = (common) => {
       describe('.cat', () => {
         it('with a base58 string encoded multihash', (done) => {
           const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
+
           ipfs.files.cat(hash, (err, stream) => {
             expect(err).to.not.exist()
             stream.pipe(bl((err, data) => {
@@ -229,7 +227,7 @@ module.exports = (common) => {
         })
 
         it('with a multihash', (done) => {
-          const mhBuf = new Buffer(bs58.decode('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'))
+          const mhBuf = Buffer.from(bs58.decode('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'))
           ipfs.files.cat(mhBuf, (err, stream) => {
             expect(err).to.not.exist()
             stream.pipe(bl((err, data) => {
@@ -242,6 +240,7 @@ module.exports = (common) => {
 
         it('streams a large file', (done) => {
           const hash = 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq'
+
           ipfs.files.cat(hash, (err, stream) => {
             expect(err).to.not.exist()
             stream.pipe(bl((err, data) => {
@@ -249,6 +248,219 @@ module.exports = (common) => {
               expect(data).to.deep.equal(bigFile)
               done()
             }))
+          })
+        })
+
+        it('with ipfs path', (done) => {
+          const ipfsPath = '/ipfs/Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
+
+          ipfs.files.cat(ipfsPath, (err, stream) => {
+            expect(err).to.not.exist()
+            stream.pipe(bl((err, data) => {
+              expect(err).to.not.exist()
+              expect(data.toString()).to.contain('Plz add me!')
+              done()
+            }))
+          })
+        })
+
+        it('with ipfs path, nested value', (done) => {
+          const file = {
+            path: 'a/testfile.txt',
+            content: smallFile
+          }
+
+          ipfs.files.createAddStream((err, stream) => {
+            expect(err).to.not.exist()
+
+            stream.on('data', (file) => {
+              if (file.path === 'a') {
+                ipfs.files.cat(`/ipfs/${file.hash}/testfile.txt`, (err, stream) => {
+                  expect(err).to.not.exist()
+                  stream.pipe(bl((err, data) => {
+                    expect(err).to.not.exist()
+                    expect(data.toString()).to.contain('Plz add me!')
+                    done()
+                  }))
+                })
+              }
+            })
+
+            stream.write(file)
+            stream.end()
+          })
+        })
+      })
+
+      describe('.get', () => {
+        it('with a base58 encoded multihash', (done) => {
+          const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
+          ipfs.files.get(hash, (err, stream) => {
+            expect(err).to.not.exist()
+
+            let files = []
+            stream.pipe(through.obj((file, enc, next) => {
+              file.content.pipe(concat((content) => {
+                files.push({
+                  path: file.path,
+                  content: content
+                })
+                next()
+              }))
+            }, () => {
+              expect(files).to.be.length(1)
+              expect(files[0].path).to.be.eql(hash)
+              expect(files[0].content.toString()).to.contain('Plz add me!')
+              done()
+            }))
+          })
+        })
+
+        it('with a multihash', (done) => {
+          const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
+          const mhBuf = Buffer.from(bs58.decode(hash))
+          ipfs.files.get(mhBuf, (err, stream) => {
+            expect(err).to.not.exist()
+
+            let files = []
+            stream.pipe(through.obj((file, enc, next) => {
+              file.content.pipe(concat((content) => {
+                files.push({
+                  path: file.path,
+                  content: content
+                })
+                next()
+              }))
+            }, () => {
+              expect(files).to.be.length(1)
+              expect(files[0].path).to.be.eql(hash)
+              expect(files[0].content.toString()).to.contain('Plz add me!')
+              done()
+            }))
+          })
+        })
+
+        it('large file', (done) => {
+          const hash = 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq'
+          ipfs.files.get(hash, (err, stream) => {
+            expect(err).to.not.exist()
+
+            // accumulate the files and their content
+            var files = []
+            stream.pipe(through.obj((file, enc, next) => {
+              file.content.pipe(concat((content) => {
+                files.push({
+                  path: file.path,
+                  content: content
+                })
+                next()
+              }))
+            }, () => {
+              expect(files.length).to.equal(1)
+              expect(files[0].path).to.equal(hash)
+              expect(files[0].content).to.deep.equal(bigFile)
+              done()
+            }))
+          })
+        })
+
+        it('directory', (done) => {
+          // Needs https://github.com/ipfs/js-ipfs-api/issues/339 to be fixed
+          // for js-ipfs-api + go-ipfs
+          if (!isNode) { return done() }
+
+          const hash = 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'
+          ipfs.files.get(hash, (err, stream) => {
+            expect(err).to.not.exist()
+
+            // accumulate the files and their content
+            var files = []
+            stream.pipe(through.obj((file, enc, next) => {
+              if (file.content) {
+                file.content.pipe(concat((content) => {
+                  files.push({
+                    path: file.path,
+                    content: content
+                  })
+                  next()
+                }))
+              } else {
+                files.push(file)
+                next()
+              }
+            }, () => {
+              files = files.sort((a, b) => {
+                if (a.path > b.path) return 1
+                if (a.path < b.path) return -1
+                return 0
+              })
+              // Check paths
+              var paths = files.map((file) => {
+                return file.path
+              })
+              expect(paths).to.include.members([
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP',
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/alice.txt',
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/empty-folder',
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/files',
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/files/empty',
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/files/hello.txt',
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/files/ipfs.txt',
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/holmes.txt',
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/jungle.txt',
+                'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/pp.txt'
+              ])
+
+              // Check contents
+              var contents = files.map(function (file) {
+                return file.content ? file.content.toString() : null
+              })
+              expect(contents).to.include.members([
+                directoryContent['alice.txt'].toString(),
+                directoryContent['files/hello.txt'].toString(),
+                directoryContent['files/ipfs.txt'].toString(),
+                directoryContent['holmes.txt'].toString(),
+                directoryContent['jungle.txt'].toString(),
+                directoryContent['pp.txt'].toString()
+              ])
+              done()
+            }))
+          })
+        })
+
+        it('with ipfs path, nested value', (done) => {
+          const file = {
+            path: 'a/testfile.txt',
+            content: smallFile
+          }
+
+          ipfs.files.createAddStream((err, stream) => {
+            expect(err).to.not.exist()
+
+            stream.on('data', (file) => {
+              if (file.path === 'a') {
+                ipfs.files.get(`/ipfs/${file.hash}/testfile.txt`, (err, stream) => {
+                  expect(err).to.not.exist()
+                  let files = []
+                  stream.pipe(through.obj((file, enc, next) => {
+                    file.content.pipe(concat((content) => {
+                      files.push({
+                        path: file.path,
+                        content: content
+                      })
+                      next()
+                    }))
+                  }, () => {
+                    expect(files).to.be.length(1)
+                    expect(files[0].content.toString()).to.contain('Plz add me!')
+                    done()
+                  }))
+                })
+              }
+            })
+
+            stream.write(file)
+            stream.end()
           })
         })
       })
@@ -298,7 +510,7 @@ module.exports = (common) => {
         })
 
         it('with a multihash', () => {
-          const hash = new Buffer(bs58.decode('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'))
+          const hash = Buffer.from(bs58.decode('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'))
           return ipfs.files.cat(hash)
             .then((stream) => {
               stream.pipe(bl((err, data) => {
@@ -308,145 +520,8 @@ module.exports = (common) => {
             })
         })
       })
-    })
 
-    describe('.get', () => {
-      it('with a base58 encoded multihash', (done) => {
-        const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
-        ipfs.files.get(hash, (err, stream) => {
-          expect(err).to.not.exist()
-
-          let files = []
-          stream.pipe(through.obj((file, enc, next) => {
-            file.content.pipe(concat((content) => {
-              files.push({
-                path: file.path,
-                content: content
-              })
-              next()
-            }))
-          }, () => {
-            expect(files).to.be.length(1)
-            expect(files[0].path).to.be.eql(hash)
-            expect(files[0].content.toString()).to.contain('Plz add me!')
-            done()
-          }))
-        })
-      })
-
-      it('with a multihash', (done) => {
-        const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
-        const mhBuf = new Buffer(bs58.decode(hash))
-        ipfs.files.get(mhBuf, (err, stream) => {
-          expect(err).to.not.exist()
-
-          let files = []
-          stream.pipe(through.obj((file, enc, next) => {
-            file.content.pipe(concat((content) => {
-              files.push({
-                path: file.path,
-                content: content
-              })
-              next()
-            }))
-          }, () => {
-            expect(files).to.be.length(1)
-            expect(files[0].path).to.be.eql(hash)
-            expect(files[0].content.toString()).to.contain('Plz add me!')
-            done()
-          }))
-        })
-      })
-
-      it('large file', (done) => {
-        const hash = 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq'
-        ipfs.files.get(hash, (err, stream) => {
-          expect(err).to.not.exist()
-
-          // accumulate the files and their content
-          var files = []
-          stream.pipe(through.obj((file, enc, next) => {
-            file.content.pipe(concat((content) => {
-              files.push({
-                path: file.path,
-                content: content
-              })
-              next()
-            }))
-          }, () => {
-            expect(files.length).to.equal(1)
-            expect(files[0].path).to.equal(hash)
-            expect(files[0].content).to.deep.equal(bigFile)
-            done()
-          }))
-        })
-      })
-
-      it('directory', (done) => {
-        // Needs https://github.com/ipfs/js-ipfs-api/issues/339 to be fixed
-        // for js-ipfs-api + go-ipfs
-        if (!isNode) { return done() }
-
-        const hash = 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'
-        ipfs.files.get(hash, (err, stream) => {
-          expect(err).to.not.exist()
-
-          // accumulate the files and their content
-          var files = []
-          stream.pipe(through.obj((file, enc, next) => {
-            if (file.content) {
-              file.content.pipe(concat((content) => {
-                files.push({
-                  path: file.path,
-                  content: content
-                })
-                next()
-              }))
-            } else {
-              files.push(file)
-              next()
-            }
-          }, () => {
-            files = files.sort((a, b) => {
-              if (a.path > b.path) return 1
-              if (a.path < b.path) return -1
-              return 0
-            })
-            // Check paths
-            var paths = files.map((file) => {
-              return file.path
-            })
-            expect(paths).to.include.members([
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP',
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/alice.txt',
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/empty-folder',
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/files',
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/files/empty',
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/files/hello.txt',
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/files/ipfs.txt',
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/holmes.txt',
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/jungle.txt',
-              'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/pp.txt'
-            ])
-
-            // Check contents
-            var contents = files.map(function (file) {
-              return file.content ? file.content.toString() : null
-            })
-            expect(contents).to.include.members([
-              directoryContent['alice.txt'].toString(),
-              directoryContent['files/hello.txt'].toString(),
-              directoryContent['files/ipfs.txt'].toString(),
-              directoryContent['holmes.txt'].toString(),
-              directoryContent['jungle.txt'].toString(),
-              directoryContent['pp.txt'].toString()
-            ])
-            done()
-          }))
-        })
-      })
-
-      describe('promise', () => {
+      describe('.get', () => {
         it('with a base58 encoded string', () => {
           const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
           return ipfs.files.get(hash).then((stream) => {
