@@ -1,3 +1,13 @@
+<a name="0.28.0"></a>
+# [0.28.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.27.2...v0.28.0) (2017-05-29)
+
+
+### Features
+
+* add options to block.put API, now it works with specified mhtype, format and version, just like the CLI ([d62c6e2](https://github.com/ipfs/interface-ipfs-core/commit/d62c6e2))
+
+
+
 <a name="0.27.2"></a>
 ## [0.27.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.27.1...v0.27.2) (2017-05-12)
 
