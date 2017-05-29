@@ -43,18 +43,27 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.block.put(block, cid, [callback])
+##### `JavaScript` - ipfs.block.put(block [, options], [callback])
 
 Where `block` can be:
 
 - `Buffer` - the raw bytes of the Block
 - [`Block`][block] instance
 
-`cid` is a [cid][cid] which can be passed as:
+and `options` is an Object that can contain the following properties:
 
-- Buffer, the raw Buffer of the cid
-- CID, a CID instance
-- String, the base58 encoded version of the multihash
+- `cid` - a [cid][cid] which can be passed as:
+  - Buffer, the raw Buffer of the cid
+  - CID, a CID instance
+  - String, the base58 encoded version of the multihash
+- format
+- mhtype
+- mhlen
+- version
+
+if no options are passed, it defaults to `{ format: 'dag-pb', mhtype: 'sha2-256', version: 0 }`
+
+**Note:** If you pass a [`Block`][block] instance as the block parameter, you don't need to pass options, as the block instance will carry the CID value as a property.
 
 `callback` has the signature `function (err, block) {}`, where `err` is an error if the operation was not successful and `block` is a [Block][block] type object, containing both the data and the hash of the block.
 
@@ -63,19 +72,36 @@ If no `callback` is passed, a promise is returned.
 **Example:**
 
 ```JavaScript
-const CID = require('cids')
+// Defaults
 const buf = new Buffer('a serialized object')
-const cid = new CID(1, 'dag-pb', multihash)
 
-ipfs.block.put(blob, cid, (err, block) => {
-  if (err) {
-    throw err
-  }
-  // Block hsa been stored
+ipfs.block.put(blob, (err, block) => {
+  if (err) { throw err }
+  // Block has been stored
 
   console.log(block.data.toString())
   // Logs:
   // a serialized object
+  console.log(block.cid.toBaseEncodedString())
+  // Logs:
+  // the CID of the object
+})
+
+// With custom format and hashtype through CID
+const CID = require('cids')
+const buf = new Buffer('another serialized object')
+const cid = new CID(1, 'dag-pb', multihash)
+
+ipfs.block.put(blob, cid, (err, block) => {
+  if (err) { throw err }
+  // Block has been stored
+
+  console.log(block.data.toString())
+  // Logs:
+  // a serialized object
+  console.log(block.cid.toBaseEncodedString())
+  // Logs:
+  // the CID of the object
 })
 ```
 
