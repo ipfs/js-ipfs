@@ -1,3 +1,13 @@
+<a name="0.29.0"></a>
+# [0.29.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.28.0...v0.29.0) (2017-05-29)
+
+
+### Features
+
+* add support for paths on get and cat ([4cae543](https://github.com/ipfs/interface-ipfs-core/commit/4cae543))
+
+
+
 <a name="0.28.0"></a>
 # [0.28.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.27.2...v0.28.0) (2017-05-29)
 
