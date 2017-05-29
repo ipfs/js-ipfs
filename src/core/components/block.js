@@ -12,7 +12,12 @@ module.exports = function block (self) {
       cid = cleanCid(cid)
       self._blockService.get(cid, callback)
     },
-    put: (block, callback) => {
+    put: (block, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
+      }
+
       if (Array.isArray(block)) {
         return callback(new Error('Array is not supported'))
       }
@@ -23,12 +28,21 @@ module.exports = function block (self) {
             return cb(null, block)
           }
 
-          multihashing(block, 'sha2-256', (err, multihash) => {
+          if (options.cid && CID.isCID(options.cid)) {
+            return cb(null, new Block(block, options.cid))
+          }
+
+          const mhtype = options.mhtype || 'sha2-256'
+          const format = options.format || 'dag-pb'
+          const cidVersion = options.version || 0
+          // const mhlen = options.mhlen || 0
+
+          multihashing(block, mhtype, (err, multihash) => {
             if (err) {
               return cb(err)
             }
 
-            cb(null, new Block(block, new CID(multihash)))
+            cb(null, new Block(block, new CID(cidVersion, format, multihash)))
           })
         },
         (block, cb) => self._blockService.put(block, (err) => {
