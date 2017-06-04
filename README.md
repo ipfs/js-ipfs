@@ -163,11 +163,11 @@ This means:
 - See https://github.com/ipfs/js-ipfs for details on
   pubsub in js-ipfs
 
-##### [bitswap]()
+##### [bitswap](https://github.com/ipfs/interface-ipfs-core/tree/master/API/bitswap)
 
-- [`ipfs.bitswap.wantlist()`]()
-- [`ipfs.bitswap.stat()`]()
-- [`ipfs.bitswap.unwant()`]()
+- [`ipfs.bitswap.wantlist()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/bitswap#wantlist)
+- [`ipfs.bitswap.stat()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/bitswap#stat)
+- [`ipfs.bitswap.unwant()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/bitswap#unwant)
 
 ##### [block](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block)
 
@@ -175,11 +175,11 @@ This means:
 - [`ipfs.block.put(block, cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block#put)
 - [`ipfs.block.stat(cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block#stat)
 
-##### [bootstrap]()
+##### [bootstrap](https://github.com/ipfs/interface-ipfs-core/tree/master/API/bootstrap)
 
-- [`ipfs.bootstrap.list()`]()
-- [`ipfs.bootstrap.add()`]()
-- [`ipfs.bootstrap.rm()`]()
+- [`ipfs.bootstrap.list()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/bootstrap#list)
+- [`ipfs.bootstrap.add()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/bootstrap#add)
+- [`ipfs.bootstrap.rm()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/bootstrap#rm)
 
 ##### [config](https://github.com/ipfs/interface-ipfs-core/tree/master/API/config)
 
@@ -193,11 +193,11 @@ This means:
 - [`ipfs.dag.get(cid [, path, options], callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/dag#dagget)
 - [`ipfs.dag.tree(cid [, path, options], callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/dag#dagtree)
 
-##### [dht]()
+##### [dht](https://github.com/ipfs/interface-ipfs-core/tree/master/API/dht)
 
-- [`ipfs.dht.findprovs()`]()
-- [`ipfs.dht.get()`]()
-- [`ipfs.dht.put()`]()
+- [`ipfs.dht.findprovs()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/dht#findprovs)
+- [`ipfs.dht.get()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/dht#get)
+- [`ipfs.dht.put()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/dht#put)
 
 ##### [files](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files)
 
@@ -210,31 +210,31 @@ This means:
   - alias to `ipfs.get`
 - [`ipfs.ls`]()
 - mfs (mutable file system) specific:
-  - [`ipfs.files.cp`]()
-  - [`ipfs.files.ls`]()
-  - [`ipfs.files.mkdir`]()
-  - [`ipfs.files.stat`]()
-  - [`ipfs.files.rm`]()
-  - [`ipfs.files.read`]()
-  - [`ipfs.files.write`]()
-  - [`ipfs.files.mv`]()
+  - [`ipfs.files.cp`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#cp)
+  - [`ipfs.files.ls`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#ls)
+  - [`ipfs.files.mkdir`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#mkdir)
+  - [`ipfs.files.stat`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#stat)
+  - [`ipfs.files.rm`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#rm)
+  - [`ipfs.files.read`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#read)
+  - [`ipfs.files.write`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#write)
+  - [`ipfs.files.mv`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#mv)
 
 ##### [generic operations](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic)
 
 - [`ipfs.id([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic#id)
 - [`ipfs.version([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic#version)
-- [`ipfs.ping()`]()
-- [`ipfs.log()`]()
+- [`ipfs.ping()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic#ping)
+- [`ipfs.log()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic#log)
 
-#### [key]()
+#### [key](https://github.com/ipfs/interface-ipfs-core/tree/master/API/key)
 
-- [`ipfs.key.gen(name, [options, callback])`]()
-- [`ipfs.key.list([options, callback])`]()
+- [`ipfs.key.gen(name, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/key#gen)
+- [`ipfs.key.list([options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/key#list)
 
-##### [name]()
+##### [name](https://github.com/ipfs/interface-ipfs-core/tree/master/API/name)
 
-- [`ipfs.name.publish()`]()
-- [`ipfs.name.resolve()`]()
+- [`ipfs.name.publish()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/name#publish)
+- [`ipfs.name.resolve()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/name#resolve)
 
 ##### [object](https://github.com/ipfs/interface-ipfs-core/tree/master/API/object)
 
@@ -249,11 +249,11 @@ This means:
 - [`ipfs.object.patch.appendData(multihash, data, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/object#objectpatchappenddata)
 - [`ipfs.object.patch.setData(multihash, data, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/object#objectpatchsetdata)
 
-##### [pin]()
+##### [pin](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pin)
 
-- [`ipfs.pin.add()`]()
-- [`ipfs.pin.rm()`]()
-- [`ipfs.pin.ls()`]()
+- [`ipfs.pin.add()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pin#add)
+- [`ipfs.pin.rm()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pin#rm)
+- [`ipfs.pin.ls()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pin#ls)
 
 ##### [pubsub (not implemented, yet!)](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pubsub)
 
@@ -265,14 +265,14 @@ This means:
 - [`ipfs.pubsub.ls(topic, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pubsub#pubsubls)
 - [`ipfs.pubsub.peers(topic, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pubsub#pubsubpeers)
 
-##### [refs]()
+##### [refs](https://github.com/ipfs/interface-ipfs-core/tree/master/API/refs)
 
-- [`ipfs.refs.local()`]()
+- [`ipfs.refs.local()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/refs#local)
 
-##### [repo]()
+##### [repo](https://github.com/ipfs/interface-ipfs-core/tree/master/API/repo)
 
-- [`ipfs.repo.stat()`]()
-- [`ipfs.repo.gc()`]()
+- [`ipfs.repo.stat()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/repo#stat)
+- [`ipfs.repo.gc()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/repo#gc)
 
 ##### [swarm](https://github.com/ipfs/interface-ipfs-core/tree/master/API/swarm)
 
