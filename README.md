@@ -142,11 +142,7 @@ The CLI is available by using the command `jsipfs` in your terminal. This is ali
 
 ### Use in the browser with browserify, webpack or any bundler
 
-Simply require it as you would do for Node.js, but when transpiling+minifying with your bundler, make sure to swap `zlib` with a full replacement for the browser: `zlib: 'browserify-zlib-next'`. We have submitted PR's to browserify and WebPack to make this as part of the standard node libraries that are transpiled, you can follow this development in [browserify](https://github.com/substack/node-browserify/issues/1672), [webpack](https://github.com/webpack/node-libs-browser/issues/51).
-
-You can also find examples of how to do this bundling at: `https://github.com/ipfs/js-ipfs/tree/master/examples`
-
-Special note, if you are using webpack, make sure to use version 2 or above, otherwise it won't work.
+You can find examples of how to do this bundling at: `https://github.com/ipfs/js-ipfs/tree/master/examples`. If you are using webpack, make sure to use version 2 or above, otherwise it won't work.
 
 ### Use in a browser using a script tag
 
