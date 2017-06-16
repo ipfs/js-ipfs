@@ -89,7 +89,7 @@ describe('files dir', () => {
           expect(err).to.not.exist()
           const last = results[results.length - 1]
           expect(last.path).to.be.eql('test-folder')
-          expect(last.hash).to.be.eql('QmZjYC1kWrLmiRYbEmGSo2PEpMixzT2k2xoCKSBzt8KDcy')
+          expect(last.hash).to.be.eql('QmY8TxNWtNViN7syd2DHazPqu21qWfSNjzCDe78e4YMsUD')
           done()
         })
       )
