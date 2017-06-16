@@ -3,7 +3,6 @@
 const unixfsEngine = require('ipfs-unixfs-engine')
 const importer = unixfsEngine.importer
 const exporter = unixfsEngine.exporter
-const UnixFS = require('ipfs-unixfs')
 const promisify = require('promisify-es6')
 const multihashes = require('multihashes')
 const pull = require('pull-stream')
@@ -11,7 +10,6 @@ const sort = require('pull-sort')
 const pushable = require('pull-pushable')
 const toStream = require('pull-stream-to-stream')
 const toPull = require('stream-to-pull-stream')
-const CID = require('cids')
 const waterfall = require('async/waterfall')
 const isStream = require('isstream')
 const Duplex = require('stream').Duplex
@@ -80,39 +78,25 @@ module.exports = function files (self) {
       )
     }),
 
-    cat: promisify((hash, callback) => {
-      if (typeof hash === 'function') {
-        return callback(new Error('You must supply a multihash'))
+    cat: promisify((ipfsPath, callback) => {
+      if (typeof ipfsPath === 'function') {
+        return callback(new Error('You must supply a ipfsPath'))
       }
 
-      self._ipldResolver.get(new CID(hash), (err, result) => {
-        if (err) {
-          return callback(err)
-        }
-
-        const node = result.value
-
-        const data = UnixFS.unmarshal(node.data)
-
-        if (data.type === 'directory') {
-          return callback(new Error('This dag node is a directory'))
-        }
-
-        pull(
-          exporter(hash, self._ipldResolver),
-          pull.collect((err, files) => {
-            if (err) {
-              return callback(err)
-            }
-            callback(null, toStream.source(files[0].content))
-          })
-        )
-      })
+      pull(
+        exporter(ipfsPath, self._ipldResolver),
+        pull.collect((err, files) => {
+          if (err) {
+            return callback(err)
+          }
+          callback(null, toStream.source(files[files.length - 1].content))
+        })
+      )
     }),
 
-    get: promisify((hash, callback) => {
+    get: promisify((ipfsPath, callback) => {
       callback(null, toStream.source(pull(
-        exporter(hash, self._ipldResolver),
+        exporter(ipfsPath, self._ipldResolver),
         pull.map((file) => {
           if (file.content) {
             file.content = toStream.source(file.content)
@@ -124,8 +108,8 @@ module.exports = function files (self) {
       )))
     }),
 
-    getPull: promisify((hash, callback) => {
-      callback(null, exporter(hash, self._ipldResolver))
+    getPull: promisify((ipfsPath, callback) => {
+      callback(null, exporter(ipfsPath, self._ipldResolver))
     })
   }
 }

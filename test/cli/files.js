@@ -154,7 +154,7 @@ describe('files', () => runOnAndOff((thing) => {
     return ipfs('files get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
       .then((out) => {
         expect(out)
-          .to.eql('Saving file(s) to QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+          .to.eql('Saving file(s) QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
         const file = path.join(process.cwd(), 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
@@ -168,7 +168,7 @@ describe('files', () => runOnAndOff((thing) => {
     return ipfs('get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
       .then((out) => {
         expect(out)
-          .to.eql('Saving file(s) to QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+          .to.eql('Saving file(s) QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
         const file = path.join(process.cwd(), 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
@@ -185,7 +185,7 @@ describe('files', () => runOnAndOff((thing) => {
     return ipfs('files get QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
       .then((out) => {
         expect(out).to.eql(
-          'Saving file(s) to QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2'
+          'Saving file(s) QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2'
         )
 
         const outDir = path.join(process.cwd(), 'QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
