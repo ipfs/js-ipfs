@@ -105,7 +105,7 @@
     "ipfs-multipart": "~0.1.0",
     "ipfs-repo": "~0.13.1",
     "ipfs-unixfs": "~0.1.11",
-    "ipfs-unixfs-engine": "~0.19.2",
+    "ipfs-unixfs-engine": "~0.20.0",
     "ipld-resolver": "~0.11.1",
     "is-ipfs": "^0.3.0",
     "isstream": "^0.1.2",
