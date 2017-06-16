@@ -89,7 +89,7 @@ module.exports = function files (self) {
           if (err) {
             return callback(err)
           }
-          callback(null, toStream.source(files[0].content))
+          callback(null, toStream.source(files[files.length - 1].content))
         })
       )
     }),
