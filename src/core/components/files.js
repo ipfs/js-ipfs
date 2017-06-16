@@ -3,7 +3,6 @@
 const unixfsEngine = require('ipfs-unixfs-engine')
 const importer = unixfsEngine.importer
 const exporter = unixfsEngine.exporter
-const UnixFS = require('ipfs-unixfs')
 const promisify = require('promisify-es6')
 const multihashes = require('multihashes')
 const pull = require('pull-stream')
@@ -11,39 +10,9 @@ const sort = require('pull-sort')
 const pushable = require('pull-pushable')
 const toStream = require('pull-stream-to-stream')
 const toPull = require('stream-to-pull-stream')
-const CID = require('cids')
-const bs58 = require('bs58')
 const waterfall = require('async/waterfall')
 const isStream = require('isstream')
 const Duplex = require('stream').Duplex
-const v = require('is-ipfs')
-
-function cleanCID (cid) {
-  if (Buffer.isBuffer(cid)) {
-    cid = bs58.encode(cid)
-  }
-  if (typeof cid !== 'string') {
-    throw new Error('unexpected cid type: ' + typeof cid)
-  }
-  CID.validateCID(new CID(cid.split('/')[0]))
-  return cid
-}
-
-function cleanPath (ipfsPath) {
-  try {
-    ipfsPath = cleanCID(ipfsPath)
-  } catch (err) {
-    if (!v.ipfsPath(ipfsPath)) {
-      throw err
-    }
-  }
-
-  if (ipfsPath.indexOf('/ipfs/') === 0) {
-    ipfsPath = ipfsPath.substring(6)
-  }
-
-  return ipfsPath
-}
 
 module.exports = function files (self) {
   const createAddPullStream = (options) => {
@@ -114,42 +83,20 @@ module.exports = function files (self) {
         return callback(new Error('You must supply a ipfsPath'))
       }
 
-      try {
-        ipfsPath = cleanPath(ipfsPath)
-      } catch (err) {
-        return callback(err)
-      }
-
-      self.dag.get(ipfsPath, (err, result) => {
-        if (err) {
-          return callback(err)
-        }
-
-        const node = result.value
-
-        const data = UnixFS.unmarshal(node.data)
-
-        if (data.type === 'directory') {
-          return callback(new Error('This dag node is a directory'))
-        }
-
-        const cid = new CID(ipfsPath)
-
-        pull(
-          exporter(cid.multihash, self._ipldResolver),
-          pull.collect((err, files) => {
-            if (err) {
-              return callback(err)
-            }
-            callback(null, toStream.source(files[0].content))
-          })
-        )
-      })
+      pull(
+        exporter(ipfsPath, self._ipldResolver),
+        pull.collect((err, files) => {
+          if (err) {
+            return callback(err)
+          }
+          callback(null, toStream.source(files[0].content))
+        })
+      )
     }),
 
-    get: promisify((cid, callback) => {
+    get: promisify((ipfsPath, callback) => {
       callback(null, toStream.source(pull(
-        exporter(cid, self._ipldResolver),
+        exporter(ipfsPath, self._ipldResolver),
         pull.map((file) => {
           if (file.content) {
             file.content = toStream.source(file.content)
@@ -161,8 +108,8 @@ module.exports = function files (self) {
       )))
     }),
 
-    getPull: promisify((hash, callback) => {
-      callback(null, exporter(hash, self._ipldResolver))
+    getPull: promisify((ipfsPath, callback) => {
+      callback(null, exporter(ipfsPath, self._ipldResolver))
     })
   }
 }
