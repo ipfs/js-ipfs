@@ -412,7 +412,7 @@ module.exports = (common) => {
               ])
 
               // Check contents
-              var contents = files.map(function (file) {
+              const contents = files.map((file) => {
                 return file.content ? file.content.toString() : null
               })
               expect(contents).to.include.members([
