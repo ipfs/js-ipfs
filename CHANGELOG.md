@@ -1,3 +1,13 @@
+<a name="14.0.4"></a>
+## [14.0.4](https://github.com/ipfs/js-ipfs-api/compare/v14.0.3...v14.0.4) (2017-06-21)
+
+
+### Bug Fixes
+
+* don't let qs mangle binary buffers ([#569](https://github.com/ipfs/js-ipfs-api/issues/569)) ([#570](https://github.com/ipfs/js-ipfs-api/issues/570)) ([6cbd89c](https://github.com/ipfs/js-ipfs-api/commit/6cbd89c))
+
+
+
 <a name="14.0.3"></a>
 ## [14.0.3](https://github.com/ipfs/js-ipfs-api/compare/v14.0.2...v14.0.3) (2017-05-29)
 
