@@ -382,6 +382,46 @@ module.exports = (common) => {
             })
           })
 
+          it('round trips a non-utf8 binary buffer correctly', (done) => {
+            const check = makeCheck(3, done)
+            const expectedHex = 'a36161636179656162830103056164a16466666666f4'
+            const buffer = Buffer.from(expectedHex, 'hex')
+
+            const sub1 = (msg) => {
+              try {
+                expect(msg.data.toString('hex')).to.be.eql(expectedHex)
+                expect(msg.from).to.be.eql(ipfs2.peerId.id)
+                check()
+              } catch (err) {
+                check(err)
+              } finally {
+                ipfs1.pubsub.unsubscribe(topic, sub1)
+              }
+            }
+
+            const sub2 = (msg) => {
+              try {
+                expect(msg.data.toString('hex')).to.be.eql(expectedHex)
+                expect(msg.from).to.be.eql(ipfs2.peerId.id)
+                check()
+              } catch (err) {
+                check(err)
+              } finally {
+                ipfs2.pubsub.unsubscribe(topic, sub2)
+              }
+            }
+
+            series([
+              (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
+              (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
+              (cb) => waitForPeers(ipfs2, topic, [ipfs1.peerId.id], cb)
+            ], (err) => {
+              expect(err).to.not.exist()
+
+              ipfs2.pubsub.publish(topic, buffer, check)
+            })
+          })
+
           it('receive multiple messages', (done) => {
             const inbox1 = []
             const inbox2 = []
