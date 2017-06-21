@@ -1,6 +1,7 @@
 'use strict'
 
 const Qs = require('qs')
+const qsDefaultEncoder = require('qs/lib/utils').encode
 const isNode = require('detect-node')
 const ndjson = require('ndjson')
 const pump = require('pump')
@@ -112,7 +113,39 @@ function requestAPI (config, options, callback) {
     headers['Content-Type'] = `multipart/form-data; boundary=${stream.boundary}`
   }
 
-  const qs = Qs.stringify(options.qs, {arrayFormat: 'repeat'})
+  const qs = Qs.stringify(options.qs, {
+    arrayFormat: 'repeat',
+    encoder: data => {
+      // TODO: future releases of qs will provide the default
+      // encoder as a 2nd argument to this function; it will
+      // no longer be necessary to import qsDefaultEncoder
+      if (Buffer.isBuffer(data)) {
+        let uriEncoded = ''
+        for (const byte of data) {
+          // https://tools.ietf.org/html/rfc3986#page-14
+          // ALPHA (%41-%5A and %61-%7A), DIGIT (%30-%39), hyphen (%2D), period (%2E), underscore (%5F), or tilde (%7E)
+          if (
+            (byte >= 0x41 && byte <= 0x5A) ||
+            (byte >= 0x61 && byte <= 0x7A) ||
+            (byte >= 0x30 && byte <= 0x39) ||
+            (byte === 0x2D) ||
+            (byte === 0x2E) ||
+            (byte === 0x5F) ||
+            (byte === 0x7E)
+          ) {
+            uriEncoded += String.fromCharCode(byte)
+          } else {
+            const hex = byte.toString(16)
+            // String.prototype.padStart() not widely supported yet
+            const padded = hex.length === 1 ? `0${hex}` : hex
+            uriEncoded += `%${padded}`
+          }
+        }
+        return uriEncoded
+      }
+      return qsDefaultEncoder(data)
+    }
+  })
   const req = request(config.protocol)({
     hostname: config.host,
     path: `${config['api-path']}${options.path}?${qs}`,
