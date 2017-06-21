@@ -28,8 +28,8 @@
   "dependencies": {
     "async": "^2.4.1",
     "bl": "^1.2.1",
-    "bs58": "^4.0.0",
-    "chai": "^4.0.0",
+    "bs58": "^4.0.1",
+    "chai": "^4.0.2",
     "cids": "^0.5.0",
     "concat-stream": "^1.6.0",
     "detect-node": "^2.0.3",
@@ -41,12 +41,12 @@
     "multihashing-async": "^0.4.5",
     "peer-id": "^0.8.7",
     "pull-stream": "^3.6.0",
-    "readable-stream": "^1.1.14",
-    "safe-buffer": "^5.0.1"
+    "readable-stream": "1.1.14",
+    "safe-buffer": "^5.1.0"
   },
   "devDependencies": {
     "aegir": "^11.0.2",
-    "dirty-chai": "^1.2.2"
+    "dirty-chai": "^2.0.0"
   },
   "contributors": [
     "David Dias <daviddias.p@gmail.com>",
