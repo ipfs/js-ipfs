@@ -36,6 +36,30 @@ describe('.log', () => {
         })
       })
     })
+
+    it('.log.ls', (done) => {
+      ipfs.log.ls((err, res) => {
+        expect(err).to.not.exist()
+        expect(res).to.exist()
+
+        expect(res).to.be.an('array')
+
+        done()
+      })
+    })
+
+    it('.log.level', (done) => {
+      ipfs.log.level('all', 'error', (err, res) => {
+        expect(err).to.not.exist()
+        expect(res).to.exist()
+
+        expect(res).to.be.an('object')
+        expect(res).to.not.have.property('Error')
+        expect(res).to.have.property('Message')
+
+        done()
+      })
+    })
   })
 
   describe('Promise API', () => {
@@ -45,6 +69,26 @@ describe('.log', () => {
           res.once('data', (obj) => {
             expect(obj).to.be.an('object')
           })
+        })
+    })
+
+    it('.log.ls', () => {
+      return ipfs.log.ls()
+        .then((res) => {
+          expect(res).to.exist()
+
+          expect(res).to.be.an('array')
+        })
+    })
+
+    it('.log.level', () => {
+      return ipfs.log.level('all', 'error')
+        .then((res) => {
+          expect(res).to.exist()
+
+          expect(res).to.be.an('object')
+          expect(res).to.not.have.property('Error')
+          expect(res).to.have.property('Message')
         })
     })
   })

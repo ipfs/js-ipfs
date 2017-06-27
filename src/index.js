@@ -1,9 +1,9 @@
 'use strict'
 
 const multiaddr = require('multiaddr')
-const loadCommands = require('./load-commands')
-const getConfig = require('./default-config')
-const getRequestAPI = require('./request-api')
+const loadCommands = require('./utils/load-commands')
+const getConfig = require('./utils/default-config')
+const getRequestAPI = require('./utils/request-api')
 
 function IpfsAPI (hostOrMultiaddr, port, opts) {
   const config = getConfig()

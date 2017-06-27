@@ -25,6 +25,7 @@ ipfs-api
 - [Install](#install)
   - [Running the daemon with the right port](#running-the-daemon-with-the-right-port)
   - [Importing the module and usage](#importing-the-module-and-usage)
+  - [Importing a sub-module and usage](#importing-a-sub-module-and-usage)
   - [In a web browser through Browserify](#in-a-web-browser-through-browserify)
   - [In a web browser from CDN](#in-a-web-browser-from-cdn)
   - [CORS](#cors)
@@ -73,6 +74,14 @@ var ipfs = ipfsAPI('/ip4/127.0.0.1/tcp/5001')
 
 // or using options
 var ipfs = ipfsAPI({host: 'localhost', port: '5001', protocol: 'http'})
+```
+### Importing a sub-module and usage
+```javascript
+const bitswap = require('ipfs-api/src/bitswap')('/ip4/127.0.0.1/tcp/5001')
+
+bitswap.unwant(key, (err) => {
+  // ...
+}
 ```
 
 ### In a web browser through Browserify
@@ -224,12 +233,15 @@ This means:
 - [`ipfs.id([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic#id)
 - [`ipfs.version([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic#version)
 - [`ipfs.ping()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic#ping)
-- [`ipfs.log()`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic#log)
 
-#### [key](https://github.com/ipfs/interface-ipfs-core/tree/master/API/key)
+- log:
+  - [`ipfs.log.ls([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic)
+  - [`ipfs.log.tail([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic)
+  - [`ipfs.log.level(subsystem, level, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic)
 
-- [`ipfs.key.gen(name, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/key#gen)
-- [`ipfs.key.list([options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/key#list)
+- key:
+  - [`ipfs.key.gen(name, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/key#gen)
+  - [`ipfs.key.list([options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/key#list)
 
 ##### [name](https://github.com/ipfs/interface-ipfs-core/tree/master/API/name)
 
