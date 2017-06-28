@@ -7,59 +7,28 @@
 <h3 align="center">The JavaScript implementation of the IPFS protocol.</h3>
 
 <p align="center">
-  <a href="http://ipn.io">
-    <img src="https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square" />
-  </a>
-  <a href="http://ipfs.io/">
-    <img src="https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square" />
-  </a>
-  <a href="http://webchat.freenode.net/?channels=%23ipfs">
-    <img src="https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square" />
-  </a>
+  <a href="http://ipn.io"><img src="https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square" /></a>
+  <a href="http://ipfs.io/"><img src="https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square" /></a>
+  <a href="http://webchat.freenode.net/?channels=%23ipfs"><img src="https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square" /></a>
   <br>
-  <a href="https://waffle.io/ipfs/js-ipfs">
-    <img src="https://img.shields.io/badge/pm-waffle-blue.svg?style=flat-square" />
-  </a>
-  <a href="https://github.com/ipfs/interface-ipfs-core">
-    <img src="https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg">
-  </a>
-  <a href="https://github.com/ipfs/interface-ipfs-core/issues/55">
-    <img src="https://img.shields.io/badge/interface--ipfs--core-Updates-blue.svg">
-  </a>
+  <a href="https://waffle.io/ipfs/js-ipfs"><img src="https://img.shields.io/badge/pm-waffle-blue.svg?style=flat-square" /></a>
+  <a href="https://github.com/ipfs/interface-ipfs-core"><img src="https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg"></a>
+  <a href="https://github.com/ipfs/interface-ipfs-core/issues/55"><img src="https://img.shields.io/badge/interface--ipfs--core-Updates-blue.svg"></a>
 </p>
 
 <p align="center">
-  <a href="https://travis-ci.org/ipfs/js-ipfs">
-    <img src="https://travis-ci.org/ipfs/js-ipfs.svg?branch=master" />
-  </a>
-  <a href="https://circleci.com/gh/ipfs/js-ipfs">
-    <img src="https://circleci.com/gh/ipfs/js-ipfs.svg?style=svg" />
-  </a>
-  <a href="https://coveralls.io/github/ipfs/js-ipfs?branch=master">
-    <img src="https://coveralls.io/repos/github/ipfs/js-ipfs/badge.svg?branch=master">
-  </a>
+  <a href="https://travis-ci.org/ipfs/js-ipfs"><img src="https://travis-ci.org/ipfs/js-ipfs.svg?branch=master" /></a>
+  <a href="https://circleci.com/gh/ipfs/js-ipfs"><img src="https://circleci.com/gh/ipfs/js-ipfs.svg?style=svg" /></a>
+  <a href="https://coveralls.io/github/ipfs/js-ipfs?branch=master"><img src="https://coveralls.io/repos/github/ipfs/js-ipfs/badge.svg?branch=master"></a>
   <br>
-  <a href="https://david-dm.org/ipfs/js-ipfs">
-    <img src="https://david-dm.org/ipfs/js-ipfs.svg?style=flat-square" />
-  </a>
-  <a href="https://github.com/feross/standard">
-    <img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square">
-  </a>
-  <a href="https://github.com/RichardLitt/standard-readme">
-    <img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square" />
-  </a>
-  <a href="">
-    <img src="https://img.shields.io/badge/npm-%3E%3D3.0.0-orange.svg?style=flat-square" />
-  </a>
-  <a href="">
-    <img src="https://img.shields.io/badge/Node.js-%3E%3D4.0.0-orange.svg?style=flat-square" />
-  </a>
+  <a href="https://david-dm.org/ipfs/js-ipfs"><img src="https://david-dm.org/ipfs/js-ipfs.svg?style=flat-square" /></a>
+  <a href="https://github.com/feross/standard"><img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square"></a>
+  <a href="https://github.com/RichardLitt/standard-readme"><img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square" /></a>
+  <a href=""><img src="https://img.shields.io/badge/npm-%3E%3D3.0.0-orange.svg?style=flat-square" /></a>
+  <a href=""><img src="https://img.shields.io/badge/Node.js-%3E%3D4.0.0-orange.svg?style=flat-square" /></a>
   <br>
   <!-- Hidding this until we have SauceLabs situation figured out, right now it is just misleading
-  <a href="https://saucelabs.com/u/js-ipfs">
-    <img src="https://saucelabs.com/browser-matrix/js-ipfs.svg" />
-  </a>
-  -->
+  <a href="https://saucelabs.com/u/js-ipfs"><img src="https://saucelabs.com/browser-matrix/js-ipfs.svg" /></a> -->
 </p>
 
 ### Project status
@@ -138,18 +107,17 @@ In order to use js-ipfs as a CLI, you must install it with the `global` flag. Ru
 $ npm install ipfs --global
 ```
 
-The CLI is available by using the command `jsipfs` in your terminal. This is aliased, instead of using `ipfs`, to make sure it does not conflict with the Go implementation.
+The CLI is available by using the command `jsipfs` in your terminal. This is aliased, instead of using `ipfs`, to make sure it does not conflict with the [Go implementation](https://github.com/ipfs/go-ipfs).
 
-### Use in the browser with browserify, webpack or any bundler
+### Use in the browser
 
-You can find examples of how to do this bundling at: `https://github.com/ipfs/js-ipfs/tree/master/examples`. If you are using webpack, make sure to use version 2 or above, otherwise it won't work.
+##### With browserify, webpack or any bundler
 
-### Use in a browser using a script tag
+Find examples of how to do this bundling at: `https://github.com/ipfs/js-ipfs/tree/master/examples`. If you are using webpack, make sure to use version 2 or above, otherwise it won't work.
 
-Loading this module in a browser (using a `<script>` tag) makes the `Ipfs` object available in the global namespace.
+##### With script tag
 
-The last published version of the package become [available for download](https://unpkg.com/ipfs/dist/) from [unpkg](https://unpkg.com/) and thus you may use it as the source:
-
+Loading this module in a browser (using a `<script>` tag) makes the `Ipfs` object available in the global namespace. The last published version of the package become [available for download](https://unpkg.com/ipfs/dist/) from [unpkg](https://unpkg.com/) and thus you may use it as the source:
 
 ```html
 <!-- loading the minified version -->
@@ -186,6 +154,14 @@ Commands:
 - default API port: `5002`
 - default Bootstrap is off, to enable it set `IPFS_BOOTSTRAP=1`
 
+If you want to use WebRTC in your local daemon, you will need to install it separatly by installing globally one of the following modules:
+
+- [wrtc](https://npmjs.org/wrtc)
+- [electron-webrtc](https://npmjs.org/electron-webrtc)
+
+This is a separate step because there isn't still a good open source WebRTC implementation for Node.js that runs in all the envinronments correctly.
+Example: `npm install electron-webrtc --global`. 
+
 ### HTTP-API
 
 The HTTP-API exposed by the js-ipfs daemon follows the [`http-api-spec`](https://github.com/ipfs/http-api-spec). You can use any of the IPFS HTTP-API client libraries with it, such as: [js-ipfs-api](https://github.com/ipfs/js-ipfs-api).
@@ -220,6 +196,11 @@ When starting a node, you can:
 // https://github.com/ipfs/js-ipfs-repo
 const repo = <IPFS Repo instance or repo path>
 
+// If you want to use the WebRTC transport in Node.js, you have to add it separately. Note, WebRTC comes out of the box in the Browser!
+const wrtc = require('wrtc') // or require('electron-webrtc')()
+const WStar = require('libp2p-webrtc-star')
+const wstar = WStar({ wrtc: wrtc })
+
 const node = new IPFS({
   repo: repo,
   init: true, // default
@@ -240,6 +221,12 @@ const node = new IPFS({
       Swarm: [
         '/ip4/127.0.0.1/tcp/1337'
       ]
+    }
+  },
+  libp2p: { // add custom modules to the libp2p stack of your node
+    modules: { // here we show how to add WebRTC. Note, WebRTC comes out of the box in the Browser! You just need to do this for Node.js
+      transport: [wstar]
+      discovery: [wstar.discovery]
     }
   }
 })
