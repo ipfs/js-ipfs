@@ -27,6 +27,7 @@ class IPFS extends EventEmitter {
     }
 
     options = options || {}
+    this._libp2pModules = options.libp2p && options.libp2p.modules
 
     extend(this._options, options)
 
