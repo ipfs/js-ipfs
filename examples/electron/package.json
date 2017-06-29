@@ -17,6 +17,6 @@
   "devDependencies": {
     "electron": "~1.6.11",
     "electron-rebuild": "^1.5.11",
-    "ipfs": "ipfs/js-ipfs#feat\/no-wrtc-by-default"
+    "ipfs": "ipfs/js-ipfs"
   }
 }
