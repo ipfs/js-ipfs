@@ -8,6 +8,7 @@ const setHeader = require('hapi-set-header')
 const once = require('once')
 
 const IPFS = require('../core')
+const WStar = require('libp2p-webrtc-star')
 const errorHandler = require('./error-handler')
 
 function uriToMultiaddr (uri) {
@@ -31,6 +32,22 @@ function HttpApi (repo, config) {
 
     series([
       (cb) => {
+        const libp2p = {
+          modules: {}
+        }
+
+        // Attempt to use any of the WebRTC versions available globally
+        let electronWebRTC
+        let wrtc
+        try { electronWebRTC = require('electron-webrtc')() } catch (err) {}
+        try { wrtc = require('wrtc') } catch (err) {}
+
+        if (electronWebRTC || wrtc) {
+          const wstar = new WStar(electronWebRTC || wrtc)
+          libp2p.modules.transport = [wstar]
+          libp2p.modules.discovery = [wstar.discovery]
+        }
+
         // try-catch so that programmer errors are not swallowed during testing
         try {
           // start the daemon
