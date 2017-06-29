@@ -32,9 +32,7 @@ function HttpApi (repo, config) {
 
     series([
       (cb) => {
-        const libp2p = {
-          modules: {}
-        }
+        const libp2p = { modules: {} }
 
         // Attempt to use any of the WebRTC versions available globally
         let electronWebRTC
@@ -42,8 +40,8 @@ function HttpApi (repo, config) {
         try { electronWebRTC = require('electron-webrtc')() } catch (err) {}
         try { wrtc = require('wrtc') } catch (err) {}
 
-        if (electronWebRTC || wrtc) {
-          const wstar = new WStar(electronWebRTC || wrtc)
+        if (wrtc || electronWebRTC) {
+          const wstar = new WStar({ wrtc: (wrtc || electronWebRTC) })
           libp2p.modules.transport = [wstar]
           libp2p.modules.discovery = [wstar.discovery]
         }
@@ -59,7 +57,8 @@ function HttpApi (repo, config) {
             EXPERIMENTAL: {
               pubsub: true,
               sharding: config && config.enableShardingExperiment
-            }
+            },
+            libp2p: libp2p
           })
         } catch (err) {
           return cb(err)
