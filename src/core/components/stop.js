@@ -7,6 +7,11 @@ module.exports = (self) => {
     callback = callback || function noop () {}
     self.log('stop')
 
+    if (self.state.state() === 'stopped') {
+      callback()
+      return
+    }
+
     const done = (err) => {
       if (err) {
         self.emit('error', err)
