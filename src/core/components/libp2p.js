@@ -26,9 +26,14 @@ module.exports = function libp2p (self) {
         self._libp2pNode = new Node(self._peerInfo, self._peerInfoBook, options)
 
         self._libp2pNode.on('peer:discovery', (peerInfo) => {
-          if (self.isOnline()) {
+          const dial = () => {
             self._peerInfoBook.put(peerInfo)
             self._libp2pNode.dial(peerInfo, () => {})
+          }
+          if (self.isOnline()) {
+            dial()
+          } else {
+            self._libp2pNode.once('online', dial)
           }
         })
 
