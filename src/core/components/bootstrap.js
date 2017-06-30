@@ -27,7 +27,7 @@ module.exports = function bootstrap (self) {
         }
         if (args.default) {
           config.Bootstrap = defaultNodes
-        } else if (multiaddr) {
+        } else if (multiaddr && config.Bootstrap.indexOf(multiaddr) === -1) {
           config.Bootstrap.push(multiaddr)
         }
         self._repo.config.set(config, (err) => {

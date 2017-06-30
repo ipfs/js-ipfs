@@ -12,7 +12,7 @@ module.exports = (ctl) => {
     const validIp4 = '/ip4/101.236.176.52/tcp/4001/ipfs/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z'
     let peers
 
-    describe('.add', () => {
+    describe.only('.add', () => {
       it('returns an error when called with an invalid arg', (done) => {
         ctl.bootstrap.add(invalidArg, (err) => {
           expect(err).to.be.an.instanceof(Error)
@@ -26,6 +26,27 @@ module.exports = (ctl) => {
           expect(res).to.be.eql({ Peers: [validIp4] })
           done()
         })
+      })
+
+      it('prevents duplicate inserts of bootstrap peers', () => {
+        return ctl
+          .bootstrap
+          .add(validIp4)
+          .then(res => {
+            expect(res).to.be.eql({ Peers: [validIp4] })
+            return ctl.bootstrap.add(validIp4)
+          })
+          .then((res) => {
+            expect(res).to.be.eql({ Peers: [validIp4] })
+            return ctl.bootstrap.list()
+          })
+          .then((res) => {
+            expect(res).to.exist()
+            const insertPosition = res.Peers.indexOf(validIp4)
+            expect(insertPosition).to.not.equal(-1)
+            const duplicatePosition = res.Peers.indexOf(validIp4, insertPosition + 1)
+            expect(duplicatePosition).to.equal(-1)
+          })
       })
 
       it('returns a list of bootstrap peers when called with the default option', (done) => {
