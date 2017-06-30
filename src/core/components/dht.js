@@ -116,7 +116,7 @@ module.exports = (self) => {
 
       // ensure blocks are actually local
       every(keys, (key, cb) => {
-        self._repo.blockstore.has(key, cb)
+        self._repo.blocks.has(key, cb)
       }, (err, has) => {
         if (err) {
           return callback(err)

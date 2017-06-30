@@ -125,8 +125,6 @@
     "libp2p-websockets": "^0.10.0",
     "lodash.flatmap": "^4.5.0",
     "lodash.get": "^4.4.2",
-    "lodash.has": "^4.5.2",
-    "lodash.set": "^4.3.2",
     "lodash.sortby": "^4.7.0",
     "lodash.values": "^4.3.0",
     "mafmt": "^2.1.8",
