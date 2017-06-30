@@ -1,6 +1,7 @@
 'use strict'
 
 const series = require('async/series')
+const setImmediate = require('async/setImmediate')
 
 module.exports = (self) => {
   return (callback) => {
@@ -8,8 +9,7 @@ module.exports = (self) => {
     self.log('stop')
 
     if (self.state.state() === 'stopped') {
-      callback()
-      return
+      return callback()
     }
 
     const done = (err) => {
