@@ -1,7 +1,6 @@
 'use strict'
 
 const series = require('async/series')
-const setImmediate = require('async/setImmediate')
 
 module.exports = (self) => {
   return (callback) => {
