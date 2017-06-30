@@ -1,11 +1,16 @@
 'use strict'
 
 const series = require('async/series')
+const setImmediate = require('async/setImmediate')
 
 module.exports = (self) => {
   return (callback) => {
     callback = callback || function noop () {}
     self.log('stop')
+
+    if (self.state.state() === 'stopped') {
+      return callback()
+    }
 
     const done = (err) => {
       if (err) {
