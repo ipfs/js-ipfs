@@ -31,7 +31,11 @@ module.exports = (ctl) => {
       it('prevents duplicate inserts of bootstrap peers', () => {
         return ctl
           .bootstrap
-          .add(validIp4)
+          .rm(null, { all: true })
+          .then((res) => {
+            expect(res.Peers.length).to.equal(0)
+            return ctl.bootstrap.add(validIp4)
+          })
           .then(res => {
             expect(res).to.be.eql({ Peers: [validIp4] })
             return ctl.bootstrap.add(validIp4)
@@ -44,8 +48,7 @@ module.exports = (ctl) => {
             expect(res).to.exist()
             const insertPosition = res.Peers.indexOf(validIp4)
             expect(insertPosition).to.not.equal(-1)
-            const duplicatePosition = res.Peers.indexOf(validIp4, insertPosition + 1)
-            expect(duplicatePosition).to.equal(-1)
+            expect(res.Peers.length).to.equal(1)
           })
       })
 
