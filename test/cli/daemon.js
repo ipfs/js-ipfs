@@ -17,7 +17,7 @@ describe('daemon', () => {
   afterEach(() => clean(repoPath))
 
   it('gives error if user hasn\'t run init before', (done) => {
-    const expectedError = 'no ipfs repo found in ' + repoPath
+    const expectedError = 'no initialized ipfs repo found in ' + repoPath
 
     ipfs('daemon').catch((err) => {
       expect(err.stdout).to.have.string(expectedError)
