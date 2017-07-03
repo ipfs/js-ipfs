@@ -28,6 +28,30 @@ module.exports = (ctl) => {
         })
       })
 
+      it('prevents duplicate inserts of bootstrap peers', () => {
+        return ctl
+          .bootstrap
+          .rm(null, { all: true })
+          .then((res) => {
+            expect(res.Peers.length).to.equal(0)
+            return ctl.bootstrap.add(validIp4)
+          })
+          .then(res => {
+            expect(res).to.be.eql({ Peers: [validIp4] })
+            return ctl.bootstrap.add(validIp4)
+          })
+          .then((res) => {
+            expect(res).to.be.eql({ Peers: [validIp4] })
+            return ctl.bootstrap.list()
+          })
+          .then((res) => {
+            expect(res).to.exist()
+            const insertPosition = res.Peers.indexOf(validIp4)
+            expect(insertPosition).to.not.equal(-1)
+            expect(res.Peers.length).to.equal(1)
+          })
+      })
+
       it('returns a list of bootstrap peers when called with the default option', (done) => {
         ctl.bootstrap.add({ default: true }, (err, res) => {
           expect(err).to.not.exist()
