@@ -1,6 +1,6 @@
 'use strict'
 
-const Node = require('libp2p-ipfs-nodejs')
+const Node = require('../runtime/libp2p-nodejs')
 const promisify = require('promisify-es6')
 const get = require('lodash.get')
 
