@@ -1,10 +1,6 @@
 'use strict'
 
-const isNode = require('detect-node')
-
-const defaultNodes = isNode
-  ? require('../../init-files/default-config-node.json').Bootstrap
-  : require('../../init-files/default-config-browser.json').Bootstrap
+const defaultNodes = require('../runtime/config-nodejs.json').Bootstrap
 
 module.exports = function bootstrap (self) {
   return {

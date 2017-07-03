@@ -14,9 +14,8 @@ const multihash = require('multihashes')
 const CID = require('cids')
 const IPFS = require('../../src/core')
 
-// This gets replaced by require('../utils/create-repo-browser.js')
-// in the browser
-const createTempRepo = require('../utils/create-repo-node.js')
+// This gets replaced by `create-repo-browser.js` in the browser
+const createTempRepo = require('../utils/create-repo-nodejs.js')
 
 describe('init', () => {
   if (!isNode) { return }

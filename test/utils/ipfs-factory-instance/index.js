@@ -5,7 +5,7 @@ const each = require('async/each')
 
 const defaultConfig = require('./default-config.json')
 const IPFS = require('../../../src/core')
-const createTempRepo = require('../create-repo-node')
+const createTempRepo = require('../create-repo-nodejs')
 
 module.exports = Factory
 

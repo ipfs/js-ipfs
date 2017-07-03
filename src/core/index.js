@@ -12,9 +12,10 @@ const debug = require('debug')
 const extend = require('deep-extend')
 const EventEmitter = require('events')
 
-const defaultRepo = require('./default-repo')
 const boot = require('./boot')
 const components = require('./components')
+// replaced by repo-browser when running in the browser
+const defaultRepo = require('./runtime/repo-nodejs')
 
 class IPFS extends EventEmitter {
   constructor (options) {

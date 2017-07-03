@@ -32,6 +32,7 @@ module.exports = (ctl) => {
         ctl.bootstrap.add({ default: true }, (err, res) => {
           expect(err).to.not.exist()
           peers = res.Peers
+          console.log(res)
           expect(peers).to.exist()
           expect(peers.length).to.be.above(1)
           done()

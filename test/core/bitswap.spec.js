@@ -21,7 +21,7 @@ const CID = require('cids')
 const Buffer = require('safe-buffer').Buffer
 
 // This gets replaced by '../utils/create-repo-browser.js' in the browser
-const createTempRepo = require('../utils/create-repo-node.js')
+const createTempRepo = require('../utils/create-repo-nodejs.js')
 
 const IPFS = require('../../src/core')
 

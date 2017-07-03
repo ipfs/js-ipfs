@@ -8,9 +8,8 @@ chai.use(dirtyChai)
 
 const isNode = require('detect-node')
 
-// This gets replaced by require('../utils/create-repo-browser.js')
-// in the browser
-const createTempRepo = require('../utils/create-repo-node.js')
+// This gets replaced by `create-repo-browser.js` in the browser
+const createTempRepo = require('../utils/create-repo-nodejs.js')
 
 const IPFS = require('../../src/core')
 
