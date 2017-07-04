@@ -26,7 +26,7 @@ module.exports = (self) => {
     }
 
     self.state.stop()
-    self._blockService.goOffline()
+    self._blockService.unsetExchange()
     self._bitswap.stop()
 
     series([

@@ -48,7 +48,7 @@ module.exports = (self) => {
       )
 
       self._bitswap.start()
-      self._blockService.goOnline(self._bitswap)
+      self._blockService.setExchange(self._bitswap)
 
       if (self._options.EXPERIMENTAL.pubsub) {
         self._pubsub = new FloodSub(self._libp2pNode)
