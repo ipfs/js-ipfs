@@ -177,7 +177,7 @@ Creating an IPFS instance couldn't be easier, all you have to do is:
 const node = new IPFS()
 
 node.on('ready', () => {
-  // Your now is ready to use \o/
+  // Your node is now ready to use \o/
 
   // stopping a node
   node.stop(() => {
