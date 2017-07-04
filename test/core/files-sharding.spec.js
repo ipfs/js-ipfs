@@ -10,7 +10,7 @@ const pull = require('pull-stream')
 const Buffer = require('safe-buffer').Buffer
 
 const IPFS = require('../../src/core')
-const createTempRepo = require('../utils/create-repo-node.js')
+const createTempRepo = require('../utils/create-repo-nodejs.js')
 
 describe('files dir', () => {
   const files = []

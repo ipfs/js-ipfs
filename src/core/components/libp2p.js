@@ -1,6 +1,7 @@
 'use strict'
 
-const Node = require('libp2p-ipfs-nodejs')
+// libp2p-nodejs gets replaced by libp2p-browser when webpacked/browserified
+const Node = require('../runtime/libp2p-nodejs')
 const promisify = require('promisify-es6')
 const get = require('lodash.get')
 

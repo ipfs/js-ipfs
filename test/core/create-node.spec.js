@@ -11,9 +11,8 @@ const series = require('async/series')
 const isNode = require('detect-node')
 const IPFS = require('../../src/core')
 
-// This gets replaced by require('../utils/create-repo-browser.js')
-// in the browser
-const createTempRepo = require('../utils/create-repo-node.js')
+// This gets replaced by `create-repo-browser.js` in the browser
+const createTempRepo = require('../utils/create-repo-nodejs.js')
 
 describe('create node', () => {
   it('custom repoPath', (done) => {
