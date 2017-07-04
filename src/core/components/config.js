@@ -10,21 +10,9 @@ module.exports = function config (self) {
         key = undefined
       }
 
-      if (!key) {
-        return self._repo.config.get(callback)
-      } else {
-        return self._repo.config.get(key, callback)
-      }
+      return self._repo.config.get(key, callback)
     }),
     set: promisify((key, value, callback) => {
-      if (!key || typeof key !== 'string') {
-        return callback(new Error('Invalid key type'))
-      }
-
-      if (value === undefined || Buffer.isBuffer(value)) {
-        return callback(new Error('Invalid value type'))
-      }
-
       self._repo.config.set(key, value, callback)
     }),
     replace: promisify((config, callback) => {
