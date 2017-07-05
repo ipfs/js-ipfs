@@ -36,6 +36,7 @@
     "test:interop": "IPFS_TEST=interop aegir test -t node -t browser -f test/interop",
     "test:interop:node": "IPFS_TEST=interop aegir test -t node -f test/interop/node.js",
     "test:interop:browser": "IPFS_TEST=interop aegir test -t browser -f test/interop/browser.js",
+    "test:bootstrapers": "aegir test -t browser -f test/bootstrapers.js",
     "test:benchmark": "echo \"Error: no benchmarks yet\" && exit 1",
     "test:benchmark:node": "echo \"Error: no benchmarks yet\" && exit 1",
     "test:benchmark:node:core": "echo \"Error: no benchmarks yet\" && exit 1",
