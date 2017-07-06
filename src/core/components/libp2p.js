@@ -33,7 +33,7 @@ module.exports = function libp2p (self) {
           if (self.isOnline()) {
             dial()
           } else {
-            self._libp2pNode.once('online', dial)
+            self._libp2pNode.once('start', dial)
           }
         })
 
