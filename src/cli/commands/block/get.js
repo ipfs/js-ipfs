@@ -18,7 +18,10 @@ module.exports = {
       }
 
       process.stdout.write(block.data)
-      process.stdout.write('\n')
+      // only append a newline (for clean formatting) if outputting to terminal
+      if (process.stdout.isTTY) {
+        process.stdout.write('\n')
+      }
     })
   }
 }
