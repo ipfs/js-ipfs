@@ -28,6 +28,14 @@ describe('block', () => runOnAndOff((thing) => {
       .then((out) => expect(out).to.eql('hello world\n'))
   })
 
+  it('get block from file without a final newline', () => {
+    return ipfs('block put test/test-data/no-newline').then((out) => {
+      expect(out).to.eql('QmTwbQs4sGcCiPxV97SpbHS7QgmVg9SiKxcG1AcF1Ly2SL\n')
+      return ipfs('block get QmTwbQs4sGcCiPxV97SpbHS7QgmVg9SiKxcG1AcF1Ly2SL')
+    })
+    .then((out) => expect(out).to.eql('there is no newline at end of this file'))
+  })
+
   it('stat', () => {
     return ipfs('block stat QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
       .then((out) => {
