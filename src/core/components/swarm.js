@@ -23,16 +23,14 @@ module.exports = function swarm (self) {
       // TODO: return latency and streams when verbose is set
       // we currently don't have this information
 
-      const peers = self._peerInfoBook.getAll()
-      const keys = Object.keys(peers)
+      const peers = values(self._peerInfoBook.getAll())
+        .filter((peer) => peer.isConnected())
 
-      const peerList = flatMap(keys, (id) => {
-        const peer = peers[id]
-
+      const peerList = flatMap(peers, (peer) => {
         return peer.multiaddrs.toArray().map((addr) => {
           const res = {
             addr: addr,
-            peer: peers[id]
+            peer: peer
           }
 
           if (verbose) {
@@ -53,7 +51,6 @@ module.exports = function swarm (self) {
       }
 
       const peers = values(self._peerInfoBook.getAll())
-        .filter((peer) => peer.isConnected())
 
       callback(null, peers)
     }),
