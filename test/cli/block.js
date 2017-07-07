@@ -25,7 +25,7 @@ describe('block', () => runOnAndOff((thing) => {
 
   it('get', () => {
     return ipfs('block get QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
-      .then((out) => expect(out).to.eql('hello world\n\n'))
+      .then((out) => expect(out).to.eql('hello world\n'))
   })
 
   it('stat', () => {
