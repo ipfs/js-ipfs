@@ -3,19 +3,21 @@
 const series = require('async/series')
 const Bitswap = require('ipfs-bitswap')
 const FloodSub = require('libp2p-floodsub')
+const setImmediate = require('async/setImmediate')
+const promisify = require('promisify-es6')
 
 module.exports = (self) => {
-  return (callback) => {
+  return promisify((callback) => {
     callback = callback || function noop () {}
 
     const done = (err) => {
       if (err) {
-        self.emit('error', err)
+        setImmediate(() => self.emit('error', err))
         return callback(err)
       }
 
       self.state.started()
-      self.emit('start')
+      setImmediate(() => self.emit('start'))
       callback()
     }
 
@@ -41,12 +43,12 @@ module.exports = (self) => {
 
       self._bitswap = new Bitswap(
         self._libp2pNode,
-        self._repo.blockstore,
+        self._repo.blocks,
         self._peerInfoBook
       )
 
       self._bitswap.start()
-      self._blockService.goOnline(self._bitswap)
+      self._blockService.setExchange(self._bitswap)
 
       if (self._options.EXPERIMENTAL.pubsub) {
         self._pubsub = new FloodSub(self._libp2pNode)
@@ -55,5 +57,5 @@ module.exports = (self) => {
         done()
       }
     })
-  }
+  })
 }

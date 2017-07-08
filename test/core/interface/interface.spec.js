@@ -14,5 +14,6 @@ describe('interface-ipfs-core tests', () => {
   if (isNode) {
     require('./swarm')
     require('./pubsub')
+    require('./dht')
   }
 })

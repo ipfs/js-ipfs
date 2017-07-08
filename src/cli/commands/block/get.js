@@ -18,7 +18,6 @@ module.exports = {
       }
 
       process.stdout.write(block.data)
-      process.stdout.write('\n')
     })
   }
 }

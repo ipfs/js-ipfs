@@ -1,6 +1,7 @@
 'use strict'
 
 const React = require('react')
+const Buffer = require('safe-buffer').Buffer
 const IPFS = require('../../../../src/core') // replace this by line below
 // const IPFS = require('ipfs')
 
@@ -26,31 +27,13 @@ class App extends React.Component {
     function create () {
       // Create the IPFS node instance
 
-      // for simplicity, we create a new repo everytime the node
-      // is created, because you can't init already existing repos
-      const repoPath = String(Math.random())
-
       node = new IPFS({
-        repo: repoPath,
-        init: false,
-        start: false,
-        EXPERIMENTAL: {
-          pubsub: false
-        }
+        repo: String(Math.random() + Date.now())
       })
 
-      node.init({ emptyRepo: true, bits: 2048 }, function (err) {
-        if (err) {
-          throw err
-        }
-
-        node.start(function (err) {
-          if (err) {
-            throw err
-          }
-          console.log('IPFS node is ready')
-          ops()
-        })
+      node.on('ready', () => {
+        console.log('IPFS node is ready')
+        ops()
       })
     }
 
@@ -66,12 +49,14 @@ class App extends React.Component {
         })
       })
 
-      node.files.add([new Buffer(stringToUse)], (err, res) => {
+      node.files.add([Buffer.from(stringToUse)], (err, res) => {
         if (err) {
           throw err
         }
+
         const hash = res[0].hash
         self.setState({added_file_hash: hash})
+
         node.files.cat(hash, (err, res) => {
           if (err) {
             throw err

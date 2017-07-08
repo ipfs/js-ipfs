@@ -1,6 +1,7 @@
 'use strict'
 
-const Node = require('libp2p-ipfs-nodejs')
+// libp2p-nodejs gets replaced by libp2p-browser when webpacked/browserified
+const Node = require('../runtime/libp2p-nodejs')
 const promisify = require('promisify-es6')
 const get = require('lodash.get')
 
@@ -17,10 +18,28 @@ module.exports = function libp2p (self) {
         const options = {
           mdns: get(config, 'Discovery.MDNS.Enabled'),
           webRTCStar: get(config, 'Discovery.webRTCStar.Enabled'),
-          bootstrap: get(config, 'Bootstrap')
+          bootstrap: get(config, 'Bootstrap'),
+          dht: get(self._options, 'EXPERIMENTAL.dht'),
+          modules: self._libp2pModules
         }
 
         self._libp2pNode = new Node(self._peerInfo, self._peerInfoBook, options)
+
+        self._libp2pNode.on('peer:discovery', (peerInfo) => {
+          const dial = () => {
+            self._peerInfoBook.put(peerInfo)
+            self._libp2pNode.dial(peerInfo, () => {})
+          }
+          if (self.isOnline()) {
+            dial()
+          } else {
+            self._libp2pNode.once('start', dial)
+          }
+        })
+
+        self._libp2pNode.on('peer:connect', (peerInfo) => {
+          self._peerInfoBook.put(peerInfo)
+        })
 
         self._libp2pNode.start((err) => {
           if (err) {
@@ -29,16 +48,6 @@ module.exports = function libp2p (self) {
 
           self._libp2pNode.peerInfo.multiaddrs.forEach((ma) => {
             console.log('Swarm listening on', ma.toString())
-          })
-
-          self._libp2pNode.on('peer:discovery', (peerInfo) => {
-            if (self.isOnline()) {
-              self._peerInfoBook.put(peerInfo)
-              self._libp2pNode.dial(peerInfo, () => {})
-            }
-          })
-          self._libp2pNode.on('peer:connect', (peerInfo) => {
-            self._peerInfoBook.put(peerInfo)
           })
 
           callback()

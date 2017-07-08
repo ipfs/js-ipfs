@@ -18,7 +18,7 @@ describe('bitswap', () => runOn((thing) => {
 
   it('wantlist', () => {
     return ipfs('bitswap wantlist').then((out) => {
-      expect(out).to.eql(key)
+      expect(out).to.eql(key + '\n')
     })
   })
 
@@ -33,7 +33,7 @@ describe('bitswap', () => runOn((thing) => {
         `    ${key}`,
         '  partners [0]',
         '    '
-      ].join('\n'))
+      ].join('\n') + '\n')
     })
   })
 }))

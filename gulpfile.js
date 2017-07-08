@@ -3,7 +3,7 @@
 const gulp = require('gulp')
 const parallel = require('async/parallel')
 const series = require('async/series')
-const createTempRepo = require('./test/utils/create-repo-node.js')
+const createTempRepo = require('./test/utils/create-repo-nodejs.js')
 const HTTPAPI = require('./src/http-api')
 const leftPad = require('left-pad')
 
@@ -27,6 +27,9 @@ function spawnDaemon (num, callback) {
     Bootstrap: [],
     Discovery: {
       MDNS: {
+        Enabled: false
+      },
+      webRTCStar: {
         Enabled: false
       }
     }

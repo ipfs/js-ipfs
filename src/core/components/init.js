@@ -3,12 +3,13 @@
 const peerId = require('peer-id')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
-const isNode = require('detect-node')
+const promisify = require('promisify-es6')
+const config = require('../runtime/config-nodejs.json')
 
 const addDefaultAssets = require('./init-assets')
 
 module.exports = function init (self) {
-  return (opts, callback) => {
+  return promisify((opts, callback) => {
     if (typeof opts === 'function') {
       callback = opts
       opts = {}
@@ -36,10 +37,6 @@ module.exports = function init (self) {
     opts.bits = Number(opts.bits) || 2048
     opts.log = opts.log || function () {}
 
-    const config = isNode
-      ? require('../../init-files/default-config-node.json')
-      : require('../../init-files/default-config-browser.json')
-
     waterfall([
       // Verify repo does not yet exist.
       (cb) => self._repo.exists(cb),
@@ -63,6 +60,20 @@ module.exports = function init (self) {
         opts.log('done')
         opts.log('peer identity: ' + config.Identity.PeerID)
 
+        const isWin = /^win/.test(process.platform)
+        const isLinux = /^linux/.test(process.platform)
+        const wrtcLinuxWindows = !process.env.IPFS_WRTC_LINUX_WINDOWS ||
+                                 self._options.EXPERIMENTAL.wrtcLinuxWindows
+
+        // For the lack of sane WebRTC support on Linux and Windows
+        if (wrtcLinuxWindows && (isWin || isLinux)) {
+          console.log('WARNING: Your platform does not have native WebRTC support, it won\' use any WebRTC transport')
+          const newAddrs = config.Addresses.Swarm.filter((addr) => {
+            return addr.indexOf('libp2p-webrtc-star') < 0
+          })
+          config.Addresses.Swarm = newAddrs
+        }
+
         self._repo.init(config, cb)
       },
       (_, cb) => self._repo.open(cb),
@@ -83,12 +94,12 @@ module.exports = function init (self) {
 
         parallel(tasks, (err) => {
           if (err) {
-            return cb(err)
+            cb(err)
+          } else {
+            cb(null, true)
           }
-
-          cb(null, true)
         })
       }
     ], done)
-  }
+  })
 }

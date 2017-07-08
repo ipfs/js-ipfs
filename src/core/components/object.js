@@ -12,7 +12,7 @@ const assert = require('assert')
 
 function normalizeMultihash (multihash, enc) {
   if (typeof multihash === 'string') {
-    if (enc === 'base58') {
+    if (enc === 'base58' || !enc) {
       return multihash
     }
 

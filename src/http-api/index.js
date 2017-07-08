@@ -8,6 +8,7 @@ const setHeader = require('hapi-set-header')
 const once = require('once')
 
 const IPFS = require('../core')
+const WStar = require('libp2p-webrtc-star')
 const errorHandler = require('./error-handler')
 
 function uriToMultiaddr (uri) {
@@ -31,6 +32,20 @@ function HttpApi (repo, config) {
 
     series([
       (cb) => {
+        const libp2p = { modules: {} }
+
+        // Attempt to use any of the WebRTC versions available globally
+        let electronWebRTC
+        let wrtc
+        try { electronWebRTC = require('electron-webrtc')() } catch (err) {}
+        try { wrtc = require('wrtc') } catch (err) {}
+
+        if (wrtc || electronWebRTC) {
+          const wstar = new WStar({ wrtc: (wrtc || electronWebRTC) })
+          libp2p.modules.transport = [wstar]
+          libp2p.modules.discovery = [wstar.discovery]
+        }
+
         // try-catch so that programmer errors are not swallowed during testing
         try {
           // start the daemon
@@ -42,7 +57,8 @@ function HttpApi (repo, config) {
             EXPERIMENTAL: {
               pubsub: true,
               sharding: config && config.enableShardingExperiment
-            }
+            },
+            libp2p: libp2p
           })
         } catch (err) {
           return cb(err)
@@ -114,7 +130,7 @@ function HttpApi (repo, config) {
         console.log('Gateway (readonly) is listening on: %s', gateway.info.ma)
 
         // for the CLI to know the where abouts of the API
-        this.node._repo.setApiAddress(api.info.ma, cb)
+        this.node._repo.apiAddr.set(api.info.ma, cb)
       }
     ], (err) => {
       this.log('done', err)

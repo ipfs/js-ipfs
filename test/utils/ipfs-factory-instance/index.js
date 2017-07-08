@@ -1,12 +1,11 @@
 'use strict'
 
-const PeerId = require('peer-id')
 const series = require('async/series')
 const each = require('async/each')
 
 const defaultConfig = require('./default-config.json')
 const IPFS = require('../../../src/core')
-const createTempRepo = require('../create-repo-node')
+const createTempRepo = require('../create-repo-nodejs')
 
 module.exports = Factory
 
@@ -34,45 +33,28 @@ function Factory () {
                                  .substring(2, 8)
     }
 
-    createConfig(config, (err, config) => {
-      if (err) {
-        return callback(err)
+    config = config || defaultConfig
+
+    const repo = createTempRepo(repoPath)
+    const node = new IPFS({
+      repo: repo,
+      init: {
+        bits: 1024
+      },
+      config: config,
+      EXPERIMENTAL: {
+        pubsub: true,
+        dht: true
       }
-
-      // create the IPFS node
-      const repo = createTempRepo(repoPath)
-      const node = new IPFS({
-        repo: repo,
-        config: config,
-        EXPERIMENTAL: {
-          pubsub: true
-        }
-      })
-
-      node.once('start', () => {
-        nodes.push({ repo: repo, ipfs: node })
-        callback(null, node)
-      })
     })
 
-    function createConfig (config, cb) {
-      if (config) {
-        return cb(null, config)
-      }
-
-      config = JSON.parse(JSON.stringify(defaultConfig))
-
-      PeerId.create({ bits: 1024 }, (err, id) => {
-        if (err) {
-          return cb(err)
-        }
-
-        const pId = id.toJSON()
-        config.Identity.PeerID = pId.id
-        config.Identity.PrivKey = pId.privKey
-        cb(null, config)
+    node.once('ready', () => {
+      nodes.push({
+        repo: repo,
+        ipfs: node
       })
-    }
+      callback(null, node)
+    })
   }
 
   this.dismantle = function (callback) {

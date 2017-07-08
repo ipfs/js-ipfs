@@ -1,8 +1,4 @@
 {
-  "Identity": {
-    "PeerID": "",
-    "PrivKey": ""
-  },
   "Datastore": {
     "Type": "",
     "Path": "",
@@ -18,11 +14,6 @@
     ],
     "API": "/ip4/127.0.0.1/tcp/0",
     "Gateway": "/ip4/127.0.0.1/tcp/0"
-  },
-  "Mounts": {
-    "IPFS": "/ipfs",
-    "IPNS": "/ipns",
-    "FuseAllowOther": false
   },
   "Version": {
     "Current": "jsipfs-dev",
@@ -46,26 +37,7 @@
     "ResolveCacheSize": 128
   },
   "Bootstrap": [],
-  "Tour": {
-    "Last": ""
-  },
-  "Gateway": {
-    "HTTPHeaders": null,
-    "RootRedirect": "",
-    "Writable": false
-  },
-  "SupernodeRouting": {
-    "Servers": []
-  },
   "API": {
     "HTTPHeaders": null
-  },
-  "Swarm": {
-    "AddrFilters": null
-  },
-  "Log": {
-    "MaxSizeMB": 250,
-    "MaxBackups": 1,
-    "MaxAgeDays": 0
   }
 }

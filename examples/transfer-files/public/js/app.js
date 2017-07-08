@@ -32,17 +32,8 @@ function start () {
   if (!node) {
     updateView('starting', node)
 
-    const repoPath = 'ipfs-' + Math.random()
-
     node = new self.Ipfs({
-      repo: repoPath,
-      config: {
-        Addresses: {
-          Swarm: [
-            '/libp2p-webrtc-star/dns4/star-signal.cloud.ipfs.team/wss'
-          ]
-        }
-      }
+      repo: 'ipfs-' + Math.random()
     })
 
     node.on('start', () => {
@@ -136,7 +127,12 @@ function onDrop (event) {
     })
   }
 
-  files.map((file) => {
+  let filesArray = []
+  for (let i = 0; i < files.length; i++) {
+    filesArray.push(files[i])
+  }
+
+  filesArray.map((file) => {
     readFileContents(file)
       .then((buffer) => {
         return node.files.add([{
@@ -182,7 +178,14 @@ function refreshPeerList () {
     }
 
     const peersAsHtml = peers
-      .map((peer) => peer.addr.toString())
+      .map((peer) => {
+        const addr = peer.addr.toString()
+        if (addr.indexOf('ipfs') >= 0) {
+          return addr
+        } else {
+          return addr + peer.peer.id.toB58String()
+        }
+      })
       .map((addr) => {
         return '<li>' + addr + '</li>'
       }).join('')

@@ -12,9 +12,10 @@ const debug = require('debug')
 const extend = require('deep-extend')
 const EventEmitter = require('events')
 
-const defaultRepo = require('./default-repo')
 const boot = require('./boot')
 const components = require('./components')
+// replaced by repo-browser when running in the browser
+const defaultRepo = require('./runtime/repo-nodejs')
 
 class IPFS extends EventEmitter {
   constructor (options) {
@@ -27,6 +28,7 @@ class IPFS extends EventEmitter {
     }
 
     options = options || {}
+    this._libp2pModules = options.libp2p && options.libp2p.modules
 
     extend(this._options, options)
 
@@ -93,6 +95,7 @@ class IPFS extends EventEmitter {
     this.bitswap = components.bitswap(this)
     this.ping = components.ping(this)
     this.pubsub = components.pubsub(this)
+    this.dht = components.dht(this)
 
     if (this._options.EXPERIMENTAL.pubsub) {
       this.log('EXPERIMENTAL pubsub is enabled')
@@ -100,6 +103,10 @@ class IPFS extends EventEmitter {
     if (this._options.EXPERIMENTAL.sharding) {
       this.log('EXPERIMENTAL sharding is enabled')
     }
+    if (this._options.EXPERIMENTAL.dht) {
+      this.log('EXPERIMENTAL Kademlia DHT is enabled')
+    }
+
     this.state = require('./state')(this)
 
     boot(this)

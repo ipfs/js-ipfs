@@ -7,16 +7,17 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const pull = require('pull-stream')
+const Buffer = require('safe-buffer').Buffer
 
 const IPFS = require('../../src/core')
-const createTempRepo = require('../utils/create-repo-node.js')
+const createTempRepo = require('../utils/create-repo-nodejs.js')
 
 describe('files dir', () => {
   const files = []
   for (let i = 0; i < 1005; i++) {
     files.push({
       path: 'test-folder/' + i,
-      content: new Buffer('some content ' + i)
+      content: Buffer.from('some content ' + i)
     })
   }
 
@@ -27,15 +28,16 @@ describe('files dir', () => {
       ipfs = new IPFS({
         repo: createTempRepo(),
         config: {
+          Addresses: {
+            Swarm: []
+          },
           Bootstrap: []
         }
       })
       ipfs.once('start', done)
     })
 
-    after((done) => {
-      ipfs.stop(done)
-    })
+    after((done) => ipfs.stop(done))
 
     it('should be able to add dir without sharding', (done) => {
       pull(
@@ -63,6 +65,9 @@ describe('files dir', () => {
       ipfs = new IPFS({
         repo: createTempRepo(),
         config: {
+          Addresses: {
+            Swarm: []
+          },
           Bootstrap: []
         },
         EXPERIMENTAL: {
@@ -84,7 +89,7 @@ describe('files dir', () => {
           expect(err).to.not.exist()
           const last = results[results.length - 1]
           expect(last.path).to.be.eql('test-folder')
-          expect(last.hash).to.be.eql('QmZjYC1kWrLmiRYbEmGSo2PEpMixzT2k2xoCKSBzt8KDcy')
+          expect(last.hash).to.be.eql('QmY8TxNWtNViN7syd2DHazPqu21qWfSNjzCDe78e4YMsUD')
           done()
         })
       )

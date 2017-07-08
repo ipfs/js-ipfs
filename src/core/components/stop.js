@@ -7,6 +7,10 @@ module.exports = (self) => {
     callback = callback || function noop () {}
     self.log('stop')
 
+    if (self.state.state() === 'stopped') {
+      return callback()
+    }
+
     const done = (err) => {
       if (err) {
         self.emit('error', err)
@@ -22,7 +26,7 @@ module.exports = (self) => {
     }
 
     self.state.stop()
-    self._blockService.goOffline()
+    self._blockService.unsetExchange()
     self._bitswap.stop()
 
     series([

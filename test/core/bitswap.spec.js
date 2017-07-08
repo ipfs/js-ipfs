@@ -18,14 +18,16 @@ const multiaddr = require('multiaddr')
 const isNode = require('detect-node')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
+const Buffer = require('safe-buffer').Buffer
 
 // This gets replaced by '../utils/create-repo-browser.js' in the browser
-const createTempRepo = require('../utils/create-repo-node.js')
+const createTempRepo = require('../utils/create-repo-nodejs.js')
 
 const IPFS = require('../../src/core')
 
 function makeBlock (cb) {
-  const d = new Buffer(`IPFS is awesome ${Math.random()}`)
+  const d = Buffer.from(`IPFS is awesome ${Math.random()}`)
+
   multihashing(d, 'sha2-256', (err, multihash) => {
     if (err) {
       return cb(err)
@@ -59,6 +61,9 @@ describe('bitswap', () => {
       inProcNode = new IPFS({
         repo: repo,
         config: {
+          Addresses: {
+            Swarm: [ '/ip4/127.0.0.1/tcp/0' ]
+          },
           Discovery: {
             MDNS: {
               Enabled: false
