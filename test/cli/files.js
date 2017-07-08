@@ -11,7 +11,7 @@ const runOnAndOff = require('../utils/on-and-off')
 describe('files', () => runOnAndOff((thing) => {
   let ipfs
   const readme = fs.readFileSync(path.join(process.cwd(), '/src/init-files/init-docs/readme'))
-                   .toString('utf-8').slice(0, -1)
+                   .toString('utf-8')
 
   before(() => {
     ipfs = thing.ipfs
@@ -21,7 +21,7 @@ describe('files', () => runOnAndOff((thing) => {
     return ipfs('files add src/init-files/init-docs/readme')
       .then((out) => {
         expect(out)
-          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme')
+          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
       })
   })
 
@@ -29,7 +29,7 @@ describe('files', () => runOnAndOff((thing) => {
     return ipfs('add src/init-files/init-docs/readme')
       .then((out) => {
         expect(out)
-          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme')
+          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
       })
   })
 
@@ -123,7 +123,7 @@ describe('files', () => runOnAndOff((thing) => {
           'added QmYwUkwNwJN2cevwXKL48DRpbbjbdLWyyLANG3BKTtsTZ8 recursive-get-dir/blocks/CIQBE',
           'added QmQQHYDwAQms78fPcvx1uFFsfho23YJNoewfLbi9AtdyJ9 recursive-get-dir/blocks',
           'added QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2 recursive-get-dir'
-        ].join('\n'))
+        ].join('\n') + '\n')
       })
   })
 
@@ -132,7 +132,7 @@ describe('files', () => runOnAndOff((thing) => {
       expect(out).to.be.eql([
         'added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme',
         'added QmapdaVPjHXdcswef82FnGQUauMNpk9xYFkLDZKgAxhMwq'
-      ].join('\n'))
+      ].join('\n') + '\n')
     })
   })
 
@@ -154,11 +154,11 @@ describe('files', () => runOnAndOff((thing) => {
     return ipfs('files get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
       .then((out) => {
         expect(out)
-          .to.eql('Saving file(s) QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+          .to.eql('Saving file(s) QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB\n')
 
         const file = path.join(process.cwd(), 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-        expect(fs.readFileSync(file).toString().slice(0, -1)).to.eql(readme)
+        expect(fs.readFileSync(file).toString()).to.eql(readme)
 
         rimraf(file)
       })
@@ -168,11 +168,11 @@ describe('files', () => runOnAndOff((thing) => {
     return ipfs('get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
       .then((out) => {
         expect(out)
-          .to.eql('Saving file(s) QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+          .to.eql('Saving file(s) QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB\n')
 
         const file = path.join(process.cwd(), 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-        expect(fs.readFileSync(file).toString().slice(0, -1)).to.eql(readme)
+        expect(fs.readFileSync(file).toString()).to.eql(readme)
 
         rimraf(file)
       })
@@ -185,7 +185,7 @@ describe('files', () => runOnAndOff((thing) => {
     return ipfs('files get QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
       .then((out) => {
         expect(out).to.eql(
-          'Saving file(s) QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2'
+          'Saving file(s) QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2\n'
         )
 
         const outDir = path.join(process.cwd(), 'QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
