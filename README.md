@@ -17,7 +17,6 @@
 </p>
 
 <p align="center">
-  <a href="https://travis-ci.org/ipfs/js-ipfs"><img src="https://travis-ci.org/ipfs/js-ipfs.svg?branch=master" /></a>
   <a href="https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fipfs%2Fjs-ipfs?ref=badge_small" alt="FOSSA Status"><img src="https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fipfs%2Fjs-ipfs.svg?type=small"/></a>
   <a href="https://travis-ci.org/ipfs/js-ipfs"><img src="https://travis-ci.org/ipfs/js-ipfs.svg?branch=master" /></a>
   <a href="https://circleci.com/gh/ipfs/js-ipfs"><img src="https://circleci.com/gh/ipfs/js-ipfs.svg?style=svg" /></a>
