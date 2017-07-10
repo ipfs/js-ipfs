@@ -1,6 +1,7 @@
 'use strict'
 
 const promisify = require('promisify-es6')
+const setImmediate = require('async/setImmediate')
 
 module.exports = function id (self) {
   return promisify((opts, callback) => {
