@@ -32,9 +32,7 @@ function start () {
   if (!node) {
     updateView('starting', node)
 
-    node = new self.Ipfs({
-      repo: 'ipfs-' + Math.random()
-    })
+    node = new self.Ipfs({repo: 'ipfs-' + Math.random()})
 
     node.on('start', () => {
       node.id().then((id) => {

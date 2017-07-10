@@ -8,7 +8,7 @@
   "main": "src/core/index.js",
   "browser": {
     "./src/core/components/init-assets.js": false,
-    "./src/core/runtime/config-nodejs.js": "./src/core/runtime/config-browser.js",
+    "./src/core/runtime/config-nodejs.json": "./src/core/runtime/config-browser.json",
     "./src/core/runtime/libp2p-nodejs.js": "./src/core/runtime/libp2p-browser.js",
     "./src/core/runtime/repo-nodejs.js": "./src/core/runtime/repo-browser.js",
     "./test/utils/create-repo-nodejs.js": "./test/utils/create-repo-browser.js",
@@ -118,7 +118,6 @@
     "libp2p-multiplex": "^0.4.3",
     "libp2p-railing": "^0.5.1",
     "libp2p-secio": "^0.6.8",
-    "libp2p-spdy": "^0.10.6",
     "libp2p-swarm": "^0.29.1",
     "libp2p-tcp": "^0.10.1",
     "libp2p-webrtc-star": "^0.11.0",
