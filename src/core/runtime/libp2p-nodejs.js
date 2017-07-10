@@ -4,49 +4,20 @@ const TCP = require('libp2p-tcp')
 const MulticastDNS = require('libp2p-mdns')
 const WS = require('libp2p-websockets')
 const Railing = require('libp2p-railing')
-const spdy = require('libp2p-spdy')
 const KadDHT = require('libp2p-kad-dht')
-const multiplex = require('libp2p-multiplex')
-const secio = require('libp2p-secio')
+const Multiplex = require('libp2p-multiplex')
+const SECIO = require('libp2p-secio')
 const libp2p = require('libp2p')
-
-function mapMuxers (list) {
-  return list.map((pref) => {
-    if (typeof pref !== 'string') {
-      return pref
-    }
-    switch (pref.trim().toLowerCase()) {
-      case 'spdy': return spdy
-      case 'multiplex': return multiplex
-      default:
-        throw new Error(pref + ' muxer not available')
-    }
-  })
-}
-
-function getMuxers (muxers) {
-  const muxerPrefs = process.env.LIBP2P_MUXER
-  if (muxerPrefs && !muxers) {
-    return mapMuxers(muxerPrefs.split(','))
-  } else if (muxers) {
-    return mapMuxers(muxers)
-  } else {
-    return [multiplex, spdy]
-  }
-}
 
 class Node extends libp2p {
   constructor (peerInfo, peerBook, options) {
     options = options || {}
 
     const modules = {
-      transport: [
-        new TCP(),
-        new WS()
-      ],
+      transport: [new TCP(), new WS()],
       connection: {
-        muxer: getMuxers(options.muxer),
-        crypto: [ secio ]
+        muxer: [Multiplex],
+        crypto: [SECIO]
       },
       discovery: []
     }
