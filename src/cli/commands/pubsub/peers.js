@@ -1,10 +1,5 @@
 'use strict'
 
-const utils = require('../../utils')
-const debug = require('debug')
-const log = debug('cli:pubsub')
-log.error = debug('cli:pubsub:error')
-
 module.exports = {
   command: 'peers <topic>',
 
@@ -13,19 +8,13 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    utils.getIPFS((err, ipfs) => {
+    argv.ipfs.pubsub.peers(argv.topic, (err, peers) => {
       if (err) {
         throw err
       }
 
-      ipfs.pubsub.peers(argv.topic, (err, peers) => {
-        if (err) {
-          throw err
-        }
-
-        peers.forEach((peer) => {
-          console.log(peer)
-        })
+      peers.forEach((peer) => {
+        console.log(peer)
       })
     })
   }

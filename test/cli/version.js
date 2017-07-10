@@ -15,7 +15,7 @@ describe('version', () => runOnAndOff((thing) => {
   it('get the version', () => {
     return ipfs('version').then((out) => {
       expect(out).to.be.eql(
-        `js-ipfs version: ${pkgversion}`
+        `js-ipfs version: ${pkgversion}\n`
       )
     })
   })

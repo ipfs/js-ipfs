@@ -4,8 +4,8 @@ const mh = require('multihashes')
 const multipart = require('ipfs-multipart')
 const debug = require('debug')
 const tar = require('tar-stream')
-const log = debug('http-api:files')
-log.error = debug('http-api:files:error')
+const log = debug('jsipfs:http-api:files')
+log.error = debug('jsipfs:http-api:files:error')
 const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
 const pushable = require('pull-pushable')
@@ -23,10 +23,18 @@ exports.parseKey = (request, reply) => {
     }).code(400).takeover()
   }
 
+  let key = request.query.arg
+  if (key.indexOf('/ipfs/') === 0) {
+    key = key.substring(6)
+  }
+
+  const slashIndex = key.indexOf('/')
+  if (slashIndex > 0) {
+    key = key.substring(0, slashIndex)
+  }
+
   try {
-    return reply({
-      key: mh.fromB58String(request.query.arg)
-    })
+    mh.fromB58String(key)
   } catch (err) {
     log.error(err)
     return reply({
@@ -34,6 +42,10 @@ exports.parseKey = (request, reply) => {
       Code: 0
     }).code(500).takeover()
   }
+
+  reply({
+    key: request.query.arg
+  })
 }
 
 exports.cat = {

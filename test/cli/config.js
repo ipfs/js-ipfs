@@ -1,7 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const fs = require('fs')
 const path = require('path')
 const runOnAndOff = require('../utils/on-and-off')
@@ -16,7 +19,7 @@ describe('config', () => runOnAndOff((thing) => {
   before(() => {
     ipfs = thing.ipfs
     configPath = path.join(ipfs.repoPath, 'config')
-    originalConfigPath = path.join(__dirname, '../test-data/go-ipfs-repo/config')
+    originalConfigPath = path.join(__dirname, '../go-ipfs-repo/config')
     updatedConfig = () => JSON.parse(fs.readFileSync(configPath, 'utf8'))
     restoreConfig = () => fs.writeFileSync(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8')
   })
@@ -52,7 +55,7 @@ describe('config', () => runOnAndOff((thing) => {
 
     it('get a config key value', () => {
       return ipfs('config Identity.PeerID').then((out) => {
-        expect(out).to.exist
+        expect(out).to.exist()
       })
     })
 

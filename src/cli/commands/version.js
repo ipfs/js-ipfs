@@ -1,10 +1,5 @@
 'use strict'
 
-const utils = require('../utils')
-const debug = require('debug')
-const log = debug('cli:version')
-log.error = debug('cli:version:error')
-
 module.exports = {
   command: 'version',
 
@@ -28,17 +23,12 @@ module.exports = {
 
   handler (argv) {
     // TODO: handle argv.{repo|commit|number}
-    utils.getIPFS((err, ipfs) => {
+    argv.ipfs.version((err, version) => {
       if (err) {
         throw err
       }
-      ipfs.version((err, version) => {
-        if (err) {
-          throw err
-        }
 
-        console.log(`js-ipfs version: ${version.version}`)
-      })
+      console.log(`js-ipfs version: ${version.version}`)
     })
   }
 }

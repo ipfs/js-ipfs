@@ -1,6 +1,7 @@
 **/node_modules/
 **/*.log
 test/repo-tests*
+**/bundle.js
 
 # Logs
 logs
@@ -33,3 +34,6 @@ node_modules
 
 lib
 dist
+test/test-data/go-ipfs-repo/LOCK
+test/test-data/go-ipfs-repo/LOG
+test/test-data/go-ipfs-repo/LOG.old

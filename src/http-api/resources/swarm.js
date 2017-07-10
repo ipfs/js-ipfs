@@ -1,8 +1,8 @@
 'use strict'
 
 const debug = require('debug')
-const log = debug('http-api:block')
-log.error = debug('http-api:block:error')
+const log = debug('jsipfs:http-api:block')
+log.error = debug('jsipfs:http-api:block:error')
 const multiaddr = require('multiaddr')
 
 exports = module.exports
@@ -71,7 +71,8 @@ exports.addrs = {
 
       const addrs = {}
       peers.forEach((peer) => {
-        addrs[peer.id.toB58String()] = peer.multiaddrs.map((addr) => addr.toString())
+        addrs[peer.id.toB58String()] = peer.multiaddrs.toArray()
+          .map((addr) => addr.toString())
       })
 
       return reply({

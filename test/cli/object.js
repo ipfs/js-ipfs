@@ -15,7 +15,7 @@ describe('object', () => runOnAndOff((thing) => {
   it('new', () => {
     return ipfs('object new').then((out) => {
       expect(out).to.eql(
-        'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
+        'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n\n'
       )
     })
   })
@@ -23,7 +23,7 @@ describe('object', () => runOnAndOff((thing) => {
   it('new unixfs-dir', () => {
     return ipfs('object new unixfs-dir').then((out) => {
       expect(out).to.eql(
-        'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
+        'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn\n'
       )
     })
   })
@@ -39,7 +39,7 @@ describe('object', () => runOnAndOff((thing) => {
   it('put', () => {
     return ipfs('object put test/test-data/node.json').then((out) => {
       expect(out).to.eql(
-        'added QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm'
+        'added QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm\n'
       )
     })
   })
@@ -52,20 +52,20 @@ describe('object', () => runOnAndOff((thing) => {
         'LinksSize: 53',
         'DataSize: 7',
         'CumulativeSize: 68'
-      ].join('\n'))
+      ].join('\n') + '\n')
     })
   })
 
   it('data', () => {
     return ipfs('object data QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').then((out) => {
-      expect(out).to.eql('another')
+      expect(out).to.eql('another\n')
     })
   })
 
   it('links', () => {
     return ipfs('object links QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').then((out) => {
       expect(out).to.eql(
-        'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V 8 some link'
+        'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V 8 some link\n'
       )
     })
   })
@@ -74,7 +74,7 @@ describe('object', () => runOnAndOff((thing) => {
     it('append-data', () => {
       return ipfs('object patch append-data QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n test/test-data/badconfig').then((out) => {
         expect(out).to.eql(
-          'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6'
+          'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6\n'
         )
       })
     })
@@ -82,7 +82,7 @@ describe('object', () => runOnAndOff((thing) => {
     it('set-data', () => {
       return ipfs('object patch set-data QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6 test/test-data/badconfig').then((out) => {
         expect(out).to.eql(
-          'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6'
+          'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6\n'
         )
       })
     })
@@ -90,7 +90,7 @@ describe('object', () => runOnAndOff((thing) => {
     it('add-link', () => {
       return ipfs('object patch add-link QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n foo QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn').then((out) => {
         expect(out).to.eql(
-          'QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK'
+          'QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK\n'
         )
       })
     })
@@ -98,7 +98,7 @@ describe('object', () => runOnAndOff((thing) => {
     it('rm-link', () => {
       return ipfs('object patch rm-link QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK foo').then((out) => {
         expect(out).to.eql(
-          'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
+          'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n\n'
         )
       })
     })

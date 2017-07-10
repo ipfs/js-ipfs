@@ -2,36 +2,69 @@
 
 const BlockService = require('ipfs-block-service')
 const IPLDResolver = require('ipld-resolver')
+const PeerId = require('peer-id')
+const PeerInfo = require('peer-info')
+const multiaddr = require('multiaddr')
+const multihash = require('multihashes')
 const PeerBook = require('peer-book')
+const CID = require('cids')
 const debug = require('debug')
+const extend = require('deep-extend')
+const EventEmitter = require('events')
 
-const defaultRepo = require('./default-repo')
-
+const boot = require('./boot')
 const components = require('./components')
+// replaced by repo-browser when running in the browser
+const defaultRepo = require('./runtime/repo-nodejs')
 
-class IPFS {
-  constructor (configOpts) {
-    configOpts = configOpts || {}
-    let repoInstance
-    if (typeof configOpts.repo === 'string' || configOpts.repo === undefined) {
-      repoInstance = defaultRepo(configOpts.repo)
-    } else {
-      repoInstance = configOpts.repo
+class IPFS extends EventEmitter {
+  constructor (options) {
+    super()
+
+    this._options = {
+      init: true,
+      start: true,
+      EXPERIMENTAL: {}
     }
-    delete configOpts.repo
 
-    configOpts.EXPERIMENTAL = configOpts.EXPERIMENTAL || {}
+    options = options || {}
+    this._libp2pModules = options.libp2p && options.libp2p.modules
+
+    extend(this._options, options)
+
+    if (options.init === false) {
+      this._options.init = false
+    }
+
+    if (!(options.start === false)) {
+      this._options.start = true
+    }
+
+    if (typeof options.repo === 'string' ||
+        options.repo === undefined) {
+      this._repo = defaultRepo(options.repo)
+    } else {
+      this._repo = options.repo
+    }
 
     // IPFS utils
-    this.types = {
-      Buffer: Buffer
-    }
     this.log = debug('jsipfs')
     this.log.err = debug('jsipfs:err')
 
+    this.on('error', (err) => this.log(err))
+
+    // IPFS types
+    this.types = {
+      Buffer: Buffer,
+      PeerId: PeerId,
+      PeerInfo: PeerInfo,
+      multiaddr: multiaddr,
+      multihash: multihash,
+      CID: CID
+    }
+
     // IPFS Core Internals
-    this._configOpts = configOpts
-    this._repo = repoInstance
+    // this._repo - assigned above
     this._peerInfoBook = new PeerBook()
     this._peerInfo = undefined
     this._libp2pNode = undefined
@@ -42,11 +75,11 @@ class IPFS {
 
     // IPFS Core exposed components
     //   - for booting up a node
-    this.goOnline = components.goOnline(this)
-    this.goOffline = components.goOffline(this)
-    this.isOnline = components.isOnline(this)
-    this.load = components.load(this)
     this.init = components.init(this)
+    this.preStart = components.preStart(this)
+    this.start = components.start(this)
+    this.stop = components.stop(this)
+    this.isOnline = components.isOnline(this)
     //   - interface-ipfs-core defined API
     this.version = components.version(this)
     this.id = components.id(this)
@@ -62,11 +95,26 @@ class IPFS {
     this.bitswap = components.bitswap(this)
     this.ping = components.ping(this)
     this.pubsub = components.pubsub(this)
+    this.dht = components.dht(this)
 
-    if (configOpts.EXPERIMENTAL.pubsub) {
+    if (this._options.EXPERIMENTAL.pubsub) {
       this.log('EXPERIMENTAL pubsub is enabled')
     }
+    if (this._options.EXPERIMENTAL.sharding) {
+      this.log('EXPERIMENTAL sharding is enabled')
+    }
+    if (this._options.EXPERIMENTAL.dht) {
+      this.log('EXPERIMENTAL Kademlia DHT is enabled')
+    }
+
+    this.state = require('./state')(this)
+
+    boot(this)
   }
 }
 
-module.exports = IPFS
+exports = module.exports = IPFS
+
+exports.createNode = (options) => {
+  return new IPFS(options)
+}

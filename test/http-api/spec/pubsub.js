@@ -2,7 +2,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const createTempNode = ''
 
 // TODO migrate to use ipfs-factory-daemon
@@ -19,10 +22,10 @@ module.exports = (http) => {
       api = http.api.server.select('API')
 
       createTempNode(47, (err, _ipfs) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         tmpNode = _ipfs
         tmpNode.goOnline((err) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           done()
         })
       })

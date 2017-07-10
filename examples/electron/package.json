@@ -1,0 +1,22 @@
+{
+  "name": "js-ipfs-in-electron",
+  "version": "0.0.0",
+  "description": "A minimal Electron application with js-ipfs",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "postinstall": "electron-rebuild"
+  },
+  "keywords": [
+    "Electron",
+    "IPFS",
+    "Example"
+  ],
+  "author": "David Dias <daviddias@ipfs.io>",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "~1.6.11",
+    "electron-rebuild": "^1.5.11",
+    "ipfs": "ipfs/js-ipfs"
+  }
+}

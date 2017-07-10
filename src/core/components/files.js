@@ -3,23 +3,27 @@
 const unixfsEngine = require('ipfs-unixfs-engine')
 const importer = unixfsEngine.importer
 const exporter = unixfsEngine.exporter
-const UnixFS = require('ipfs-unixfs')
-const isStream = require('isstream')
 const promisify = require('promisify-es6')
 const multihashes = require('multihashes')
 const pull = require('pull-stream')
 const sort = require('pull-sort')
+const pushable = require('pull-pushable')
 const toStream = require('pull-stream-to-stream')
 const toPull = require('stream-to-pull-stream')
-const CID = require('cids')
 const waterfall = require('async/waterfall')
+const isStream = require('isstream')
+const Duplex = require('stream').Duplex
 
 module.exports = function files (self) {
   const createAddPullStream = (options) => {
+    const opts = Object.assign({}, {
+      shardSplitThreshold: self._options.EXPERIMENTAL.sharding ? 1000 : Infinity
+    }, options)
+
     return pull(
       pull.map(normalizeContent),
       pull.flatten(),
-      importer(self._ipldResolver, options),
+      importer(self._ipldResolver, opts),
       pull.asyncMap(prepareFile.bind(null, self))
     )
   }
@@ -30,7 +34,19 @@ module.exports = function files (self) {
         callback = options
         options = undefined
       }
-      callback(null, toStream(createAddPullStream(options)))
+
+      const addPullStream = createAddPullStream(options)
+      const p = pushable()
+      const s = pull(
+        p,
+        addPullStream
+      )
+
+      const retStream = new AddStreamDuplex(s, p)
+
+      retStream.once('finish', () => p.end())
+
+      callback(null, retStream)
     },
 
     createAddPullStream: createAddPullStream,
@@ -41,6 +57,12 @@ module.exports = function files (self) {
         options = undefined
       } else if (!callback || typeof callback !== 'function') {
         callback = noop
+      }
+
+      if (typeof data !== 'object' &&
+          !Buffer.isBuffer(data) &&
+          !isStream(data)) {
+        return callback(new Error('Invalid arguments, data must be an object, Buffer or readable stream'))
       }
 
       pull(
@@ -56,39 +78,25 @@ module.exports = function files (self) {
       )
     }),
 
-    cat: promisify((hash, callback) => {
-      if (typeof hash === 'function') {
-        return callback(new Error('You must supply a multihash'))
+    cat: promisify((ipfsPath, callback) => {
+      if (typeof ipfsPath === 'function') {
+        return callback(new Error('You must supply a ipfsPath'))
       }
 
-      self._ipldResolver.get(new CID(hash), (err, result) => {
-        if (err) {
-          return callback(err)
-        }
-
-        const node = result.value
-
-        const data = UnixFS.unmarshal(node.data)
-
-        if (data.type === 'directory') {
-          return callback(new Error('This dag node is a directory'))
-        }
-
-        pull(
-          exporter(hash, self._ipldResolver),
-          pull.collect((err, files) => {
-            if (err) {
-              return callback(err)
-            }
-            callback(null, toStream.source(files[0].content))
-          })
-        )
-      })
+      pull(
+        exporter(ipfsPath, self._ipldResolver),
+        pull.collect((err, files) => {
+          if (err) {
+            return callback(err)
+          }
+          callback(null, toStream.source(files[files.length - 1].content))
+        })
+      )
     }),
 
-    get: promisify((hash, callback) => {
+    get: promisify((ipfsPath, callback) => {
       callback(null, toStream.source(pull(
-        exporter(hash, self._ipldResolver),
+        exporter(ipfsPath, self._ipldResolver),
         pull.map((file) => {
           if (file.content) {
             file.content = toStream.source(file.content)
@@ -100,8 +108,8 @@ module.exports = function files (self) {
       )))
     }),
 
-    getPull: promisify((hash, callback) => {
-      callback(null, exporter(hash, self._ipldResolver))
+    getPull: promisify((ipfsPath, callback) => {
+      callback(null, exporter(ipfsPath, self._ipldResolver))
     })
   }
 }
@@ -158,3 +166,33 @@ function normalizeContent (content) {
 }
 
 function noop () {}
+
+class AddStreamDuplex extends Duplex {
+  constructor (pullStream, push, options) {
+    super(Object.assign({ objectMode: true }, options))
+    this._pullStream = pullStream
+    this._pushable = push
+    this._waitingPullFlush = []
+  }
+
+  _read () {
+    this._pullStream(null, (end, data) => {
+      while (this._waitingPullFlush.length) {
+        const cb = this._waitingPullFlush.shift()
+        cb()
+      }
+      if (end) {
+        if (end instanceof Error) {
+          this.emit('error', end)
+        }
+      } else {
+        this.push(data)
+      }
+    })
+  }
+
+  _write (chunk, encoding, callback) {
+    this._waitingPullFlush.push(callback)
+    this._pushable.push(chunk)
+  }
+}

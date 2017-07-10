@@ -35,18 +35,34 @@ function getAPICtl () {
 }
 
 exports.getIPFS = (callback) => {
-  if (!isDaemonOn()) {
-    const ipfs = new IPFS({
-      repo: exports.getRepoPath(),
-      EXPERIMENTAL: {
-        pubsub: true
-      }
-    })
-    ipfs.load(() => callback(null, ipfs))
-    return
+  if (isDaemonOn()) {
+    return callback(null, getAPICtl(), (cb) => cb())
   }
 
-  callback(null, getAPICtl())
+  const node = new IPFS({
+    repo: exports.getRepoPath(),
+    init: false,
+    start: false,
+    EXPERIMENTAL: {
+      pubsub: true
+    }
+  })
+
+  const cleanup = (cb) => {
+    if (node && node._repo && !node._repo.closed) {
+      node._repo.close(() => cb())
+    } else {
+      cb()
+    }
+  }
+
+  node.on('error', (err) => {
+    throw err
+  })
+
+  node.once('ready', () => {
+    callback(null, node, cleanup)
+  })
 }
 
 exports.getRepoPath = () => {

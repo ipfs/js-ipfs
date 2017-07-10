@@ -2,7 +2,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const series = require('async/series')
 const ipfsExec = require('../utils/ipfs-exec')
 const Factory = require('../utils/ipfs-factory-daemon')
@@ -23,16 +26,16 @@ describe('swarm', () => {
     series([
       (cb) => {
         factory.spawnNode((err, node) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           ipfsA = ipfsExec(node.repoPath)
           cb()
         })
       },
       (cb) => {
         factory.spawnNode((err, node) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           node.id((err, id) => {
-            expect(err).to.not.exist
+            expect(err).to.not.exist()
             bMultiaddr = id.addresses[0]
             cb()
           })
@@ -46,32 +49,32 @@ describe('swarm', () => {
   describe('daemon on (through http-api)', () => {
     it('connect', () => {
       return ipfsA('swarm', 'connect', bMultiaddr).then((out) => {
-        expect(out).to.eql(`connect ${bMultiaddr} success`)
+        expect(out).to.eql(`connect ${bMultiaddr} success\n`)
       })
     })
 
     it('peers', () => {
       return ipfsA('swarm peers').then((out) => {
-        expect(out).to.be.eql(bMultiaddr)
+        expect(out).to.be.eql(bMultiaddr + '\n')
       })
     })
 
     it('addrs', () => {
       return ipfsA('swarm addrs').then((out) => {
-        expect(out).to.have.length.above(0)
+        expect(out).to.have.length.above(1)
       })
     })
 
     it('addrs local', () => {
       return ipfsA('swarm addrs local').then((out) => {
-        expect(out).to.have.length.above(0)
+        expect(out).to.have.length.above(1)
       })
     })
 
     it('disconnect', () => {
       return ipfsA('swarm', 'disconnect', bMultiaddr).then((out) => {
         expect(out).to.eql(
-          `disconnect ${bMultiaddr} success`
+          `disconnect ${bMultiaddr} success\n`
         )
       })
     })

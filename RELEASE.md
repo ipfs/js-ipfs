@@ -8,9 +8,7 @@
     - [ ] interop
     - [ ] sharness
   - [ ] Run tests of the following projects with the new release:
-    - [ ] orbitdb
-    - [ ] orbit-core
-    - [ ] ipfs-log
+    - n/a
 - Documentation
   - [ ] Ensure that README.md is up to date
   - [ ] Ensure that all the examples run
@@ -19,3 +17,5 @@
   - [ ] Announcements (both pre-release and post-release)
     - [ ] Twitter
     - [ ] IRC
+    - [ ] Reddit
+  - [ ] Blog post

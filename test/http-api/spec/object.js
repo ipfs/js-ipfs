@@ -2,7 +2,11 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
+
 const fs = require('fs')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
@@ -61,7 +65,7 @@ module.exports = (http) => {
         }, (res) => {
           expect(res.statusCode).to.equal(200)
           expect(res.result.Links).to.be.eql([])
-          expect(res.result.Data).to.be.empty
+          expect(res.result.Data).to.be.empty()
           done()
         })
       })

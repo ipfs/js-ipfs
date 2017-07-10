@@ -12,7 +12,7 @@ const assert = require('assert')
 
 function normalizeMultihash (multihash, enc) {
   if (typeof multihash === 'string') {
-    if (enc === 'base58') {
+    if (enc === 'base58' || !enc) {
       return multihash
     }
 
@@ -140,7 +140,6 @@ module.exports = function object (self) {
             node = _node
             next()
           })
-          return
         } else {
           DAGNode.create(obj, (err, _node) => {
             if (err) {

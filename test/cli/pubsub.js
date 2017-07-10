@@ -2,7 +2,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const delay = require('delay')
 const waterfall = require('async/waterfall')
 const HttpAPI = require('../../src/http-api')
@@ -20,7 +23,7 @@ describe.skip('pubsub', () => {
 
   before((done) => {
     createTempNode(1, (err, _node) => {
-      expect(err).to.not.exist
+      expect(err).to.not.exist()
       node = _node
       node.goOnline(done)
     })

@@ -2,7 +2,6 @@
 
 const Repo = require('ipfs-repo')
 const IPFS = require('../../core')
-const Store = require('fs-pull-blob-store')
 const utils = require('../utils')
 
 module.exports = {
@@ -17,11 +16,6 @@ module.exports = {
       default: '2048',
       describe: 'Number of bits to use in the generated RSA private key (defaults to 2048)'
     },
-    force: {
-      alias: 'f',
-      type: 'boolean',
-      describe: 'Overwrite existing config (if it exists)'
-    },
     emptyRepo: {
       alias: 'e',
       type: 'boolean',
@@ -35,22 +29,21 @@ module.exports = {
     const log = utils.createLogger(true)
     log(`initializing ipfs node at ${path}`)
 
-    const repo = new Repo(path, {
-      stores: Store
+    const node = new IPFS({
+      repo: new Repo(path),
+      init: false,
+      start: false
     })
 
-    const ipfs = new IPFS({
-      repo: repo,
-      EXPERIMENTAL: {}
-    })
-
-    ipfs.init({
+    node.init({
       bits: argv.bits,
-      force: argv.force,
       emptyRepo: argv.emptyRepo,
-      log
+      log: log
     }, (err) => {
       if (err) {
+        if (err.code === 'EACCES') {
+          err.message = `EACCES: permission denied, stat $IPFS_PATH/version`
+        }
         console.error(err.toString())
         process.exit(1)
       }

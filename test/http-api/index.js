@@ -2,7 +2,10 @@
 'use strict'
 
 const fs = require('fs')
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const API = require('../../src/http-api')
 const APIctl = require('ipfs-api')
 const ncp = require('ncp').ncp
@@ -10,7 +13,7 @@ const path = require('path')
 const clean = require('../utils/clean')
 
 describe('HTTP API', () => {
-  const repoExample = path.join(__dirname, '../test-data/go-ipfs-repo')
+  const repoExample = path.join(__dirname, '../go-ipfs-repo')
   const repoTests = path.join(__dirname, '../repo-tests-run')
 
   let http = {}
@@ -18,19 +21,16 @@ describe('HTTP API', () => {
   before((done) => {
     http.api = new API(repoTests)
 
-    clean(repoTests)
     ncp(repoExample, repoTests, (err) => {
-      if (err) {
-        return done(err)
-      }
+      expect(err).to.not.exist()
 
-      http.api.start(done)
+      http.api.start(false, done)
     })
   })
 
   after((done) => {
     http.api.stop((err) => {
-      expect(err).to.not.exist
+      expect(err).to.not.exist()
       clean(repoTests)
       done()
     })

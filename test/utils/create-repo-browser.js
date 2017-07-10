@@ -2,7 +2,6 @@
 'use strict'
 
 const IPFSRepo = require('ipfs-repo')
-const Store = require('idb-pull-blob-store')
 
 const idb = self.indexedDB ||
   self.mozIndexedDB ||
@@ -12,15 +11,14 @@ const idb = self.indexedDB ||
 function createTempRepo (repoPath) {
   repoPath = repoPath || '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8)
 
-  const repo = new IPFSRepo(repoPath, {
-    bits: 1024,
-    stores: Store
-  })
+  const repo = new IPFSRepo(repoPath)
 
   repo.teardown = (done) => {
-    idb.deleteDatabase(repoPath)
-    idb.deleteDatabase(repoPath + '/blocks')
-    done()
+    repo.close(() => {
+      idb.deleteDatabase(repoPath)
+      idb.deleteDatabase(repoPath + '/blocks')
+      done()
+    })
   }
 
   return repo

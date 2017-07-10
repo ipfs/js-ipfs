@@ -39,31 +39,31 @@ describe('bootstrap', () => runOnAndOff((thing) => {
 
   it('add default', () => {
     return ipfs('bootstrap add --default').then((out) => {
-      expect(out).to.be.eql(defaultList.join('\n'))
+      expect(out).to.be.eql(defaultList.join('\n') + '\n')
     })
   })
 
   it('list the bootstrap nodes', () => {
     return ipfs('bootstrap list').then((out) => {
-      expect(out).to.eql(defaultList.join('\n'))
+      expect(out).to.eql(defaultList.join('\n') + '\n')
     })
   })
 
   it('add another bootstrap node', () => {
     return ipfs('bootstrap add /ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD').then((out) => {
-      expect(out).to.be.eql('/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD')
+      expect(out).to.be.eql('/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD\n')
       return ipfs('bootstrap list')
     }).then((out) => {
-      expect(out).to.be.eql(updatedList.join('\n'))
+      expect(out).to.be.eql(updatedList.join('\n') + '\n')
     })
   })
 
   it('rm a bootstrap node', () => {
     return ipfs('bootstrap rm /ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD').then((out) => {
-      expect(out).to.be.eql('/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD')
+      expect(out).to.be.eql('/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD\n')
       return ipfs('bootstrap list')
     }).then((out) => {
-      expect(out).to.deep.equal(defaultList.join('\n'))
+      expect(out).to.deep.equal(defaultList.join('\n') + '\n')
     })
   })
 
