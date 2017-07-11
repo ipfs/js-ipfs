@@ -2,6 +2,7 @@
 
 const fs = require('fs')
 const path = require('path')
+const stream = require('stream')
 const glob = require('glob')
 const sortBy = require('lodash.sortby')
 const pull = require('pull-stream')
@@ -34,6 +35,19 @@ function checkPath (inPath, recursive) {
   }
 
   return inPath
+}
+
+function printResult (added) {
+  sortBy(added, 'path')
+    .reverse()
+    .map((file) => {
+      const log = [ 'added', file.hash ]
+
+      if (file.path.length > 0) log.push(file.path)
+
+      return log.join(' ')
+    })
+    .forEach((msg) => console.log(msg))
 }
 
 module.exports = {
@@ -69,8 +83,7 @@ module.exports = {
   },
 
   handler (argv) {
-    const inPath = checkPath(argv.file, argv.recursive)
-    const index = inPath.lastIndexOf('/') + 1
+    const hasPipedArgs = argv.hasPipedArgs
     const options = {
       strategy: argv.trickle ? 'trickle' : 'balanced',
       shardSplitThreshold: argv.enableShardingExperiment ? argv.shardSplitThreshold : Infinity
@@ -94,26 +107,62 @@ module.exports = {
       }
     }
 
-    createAddStream((err, addStream) => {
-      if (err) {
+    // if there are piped arguments, input is data to publish instead of a file
+    // path
+    if(hasPipedArgs) {
+      const data = argv.file
+      const dataStream = new stream.Readable()
+      dataStream.push(Buffer.from(data, 'utf8'))
+      dataStream.push(null)
+      createAddStream((err, addStream) => {
+        if(err)
         throw err
-      }
+        
+        addDataPipeline([dataStream], addStream)
+      })
+    }
+    else {
+      const inPath = checkPath(argv.file, argv.recursive)
+      const index = inPath.lastIndexOf('/') + 1
 
-      glob(path.join(inPath, '/**/*'), (err, list) => {
+      createAddStream((err, addStream) => {
         if (err) {
           throw err
         }
-        if (list.length === 0) {
-          list = [inPath]
-        }
+      
+        glob(path.join(inPath, '/**/*'), (err, list) => {
+          if (err) {
+            throw err
+          }
+          if (list.length === 0) {
+            list = [inPath]
+          }
 
-        addPipeline(index, addStream, list, argv.wrapWithDirectory)
-      })
-    })
+          addFilePipeline(index, addStream, list, argv.wrapWithDirectory)
+        })
+      })   
+    }
   }
 }
 
-function addPipeline (index, addStream, list, wrapWithDirectory) {
+function addDataPipeline (dataStream, addStream) {
+  pull(
+    pull.values(dataStream),
+    pull.map(dataStream => {
+      return { path: '', content: dataStream }
+    }),
+    addStream,
+    pull.collect((err, added) => {
+      if(err) {
+        throw err
+      }
+      printResult(added)
+    })
+  )
+}
+
+
+function addFilePipeline (index, addStream, list, wrapWithDirectory) {
   pull(
     zip(
       pull.values(list),
@@ -122,16 +171,19 @@ function addPipeline (index, addStream, list, wrapWithDirectory) {
         paramap(fs.stat.bind(fs), 50)
       )
     ),
-    pull.map((pair) => ({
-      path: pair[0],
-      isDirectory: pair[1].isDirectory()
-    })),
-    pull.filter((file) => !file.isDirectory),
+    pull.map((pair) => { 
+      return ({
+        path: pair[0],
+        isDirectory: pair[1].isDirectory()
+    })}),
+    pull.filter((file) => {
+      return !file.isDirectory
+    }),
     pull.map((file) => ({
       path: file.path.substring(index, file.path.length),
       originalPath: file.path
     })),
-    pull.map((file) => ({
+    pull.map((file) => ({ 
       path: wrapWithDirectory ? path.join(WRAPPER, file.path) : file.path,
       content: fs.createReadStream(file.originalPath)
     })),
@@ -144,17 +196,7 @@ function addPipeline (index, addStream, list, wrapWithDirectory) {
       if (err) {
         throw err
       }
-
-      sortBy(added, 'path')
-        .reverse()
-        .map((file) => {
-          const log = [ 'added', file.hash ]
-
-          if (file.path.length > 0) log.push(file.path)
-
-          return log.join(' ')
-        })
-        .forEach((msg) => console.log(msg))
+      printResult(added)
     })
   )
 }

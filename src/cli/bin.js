@@ -3,18 +3,17 @@
 'use strict'
 
 const pipe = require('pipe-args')
+const yargs = require('yargs')
 const updateNotifier = require('update-notifier')
 const readPkgUp = require('read-pkg-up')
 const utils = require('./utils')
 
 const enableStdin = [
-  'files', 'path', 'object data', 'ref', 'domain-name', 'key', 'ipfs-path',
-  'name', 'address', 'data', 'peer', 'recursive', 'default-config', 'peer ID'
+  'data', 'path', 'object data', 'ref', 'key', 'ipfs-path', 'add', 'get', 'cat',
+  'name', 'address', 'files', 'peer', 'recursive', 'default-config', 'peer ID'
 ]
 
-pipe.load({ commands: enableStdin })
-
-const yargs = require('yargs')
+const hasPipedArgs = pipe.load({ commands: enableStdin })
 
 const pkg = readPkgUp.sync({cwd: __dirname}).pkg
 updateNotifier({
@@ -59,14 +58,15 @@ utils.getIPFS((err, ipfs, cleanup) => {
   if (err) {
     throw err
   }
-
+  
   // finalize cli setup
   cli // eslint-disable-line
     .help()
     .strict(false)
     .completion()
     .parse(args, {
-      ipfs: ipfs
+      ipfs: ipfs,
+      hasPipedArgs: hasPipedArgs 
     }, (err, argv, output) => {
       if (output) {
         console.log(output)
