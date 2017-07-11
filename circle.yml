@@ -5,8 +5,10 @@ machine:
 dependencies:
   pre:
     - google-chrome --version
-    - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-    - sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+    - curl -L -o google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    - sudo dpkg -i google-chrome.deb || true
     - sudo apt-get update
-    - sudo apt-get --only-upgrade install google-chrome-stable
+    - sudo apt-get install -f
+    - sudo apt-get install --only-upgrade lsb-base
+    - sudo dpkg -i google-chrome.deb
     - google-chrome --version
