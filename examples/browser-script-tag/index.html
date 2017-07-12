@@ -37,21 +37,19 @@
   <h1>IPFS in the Browser</h1>
   <p>This page creates an IPFS node in your browser and drops it into the global Javascript namespace as <b><em style="background-color:#d7d6d6">node</em></b>. Open the console to play around with it.</p>
   <p>Note that opening two tabs of this page in the same browser won't work well, because they will share node configuration. You'll end up trying to run two instances of the same node, with the same private key and identity, which is a Bad Idea.</p>
-  <div id="status">Node status: offline</div>
+  <h1 id="status">Node status: offline</h1>
 
   <h2>Some suggestions</h2>
 
   <p>Try adding a new file:</p>
 
   <code style="display:block; white-space:pre-wrap; background-color:#d7d6d6">
-    node.files.add(new node.types.Buffer('Hello world!'), function (err, res) {
+    node.files.add(new node.types.Buffer('Hello world!'), (err, res) => {
       if (err || !res) {
         return console.error('Error - ipfs files add', err, res)
       }
 
-      res.forEach(function (file) {
-        console.log('successfully stored', file)
-      })
+      res.forEach((file) => console.log('successfully stored', file))
     })
   </code>
 
