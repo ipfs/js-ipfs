@@ -14,7 +14,7 @@ matrix:
 
 # Make sure we have new NPM.
 before_install:
-  - npm install -g npm
+  - npm install -g npm@4
 
 script:
   - npm run lint
