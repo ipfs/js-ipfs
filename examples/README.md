@@ -10,6 +10,7 @@ Let us know if you find any issue or if you want to contribute and add a new tut
 - [Tutorial: Transfer files and connect to the to other nodes](./transfer-files)
 - [Tutorial: Use IPFS to explore the Ethereum BlockChain](./explore-ethereum)
 - [Tutorial: How to build an application with IPFS PubSub Room](https://www.youtube.com/watch?v=Nv_Teb--1zg)
+- [Tutorial: How to build an Collaborative Editing Application with IPFS using CRDT](https://www.youtube.com/watch?v=-kdx8rJd8rQ)
 
 ## Examples
 
