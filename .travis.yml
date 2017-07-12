@@ -7,14 +7,13 @@ matrix:
     env: CXX=g++-4.8
   - node_js: 6
     env:
-      - SAUCE=false
       - CXX=g++-4.8
   - node_js: stable
     env: CXX=g++-4.8
 
 # Make sure we have new NPM.
 before_install:
-  - npm install -g npm
+  - npm install -g npm@4
 
 script:
   - npm run lint
