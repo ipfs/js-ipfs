@@ -3,10 +3,10 @@
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
-// const IPFS = require('../../src/core')
+const IPFS = require('../../src/core')
 // replace this by line below if you are using ipfs as a dependency of your
 // project
-const IPFS = require('ipfs')
+// const IPFS = require('ipfs')
 
 /*
  * Create a new IPFS instance, using default repo (fs) on default path (~/.ipfs)
@@ -14,10 +14,7 @@ const IPFS = require('ipfs')
 const node = new IPFS({
   repo: path.join(os.tmpdir() + '/' + new Date().toString()),
   init: false,
-  start: false,
-  EXPERIMENTAL: {
-    pubsub: false
-  }
+  start: false
 })
 
 const fileToAdd = {
@@ -37,16 +34,12 @@ node.version()
   /*
    * Initialize the repo for this node
    */
-  .then(() => {
-    return node.init({ emptyRepo: true, bits: 2048 })
-  })
+  .then(() => node.init({ emptyRepo: true, bits: 2048 }))
 
   /*
    * Take the node online (bitswap, network and so on)
    */
-  .then(() => {
-    return node.start()
-  })
+  .then(() => node.start())
 
   /*
    * Add a file to IPFS - Complete Files API on:
@@ -71,9 +64,7 @@ node.version()
    * Awesome we've added a file so let's retrieve and
    * display its contents from IPFS
    */
-  .then((fileMultihash) => {
-    return node.files.cat(fileMultihash)
-  })
+  .then((fileMultihash) => node.files.cat(fileMultihash))
 
   .then((stream) => {
     console.log('\nFile content:')
@@ -82,10 +73,6 @@ node.version()
     return Promise.resolve()
   })
 
-  .then(() => {
-    console.log('Success!')
-  })
+  .then(() => console.log('Success!'))
 
-  .catch((err) => {
-    console.log(err)
-  })
+  .catch((err) => console.log(err))
