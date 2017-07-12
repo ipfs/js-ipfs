@@ -63,7 +63,7 @@
   "devDependencies": {
     "aegir": "^11.0.2",
     "buffer-loader": "0.0.1",
-    "chai": "^4.0.2",
+    "chai": "^4.1.0",
     "delay": "^2.0.0",
     "detect-node": "^2.0.3",
     "dir-compare": "^1.4.0",
