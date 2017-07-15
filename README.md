@@ -52,8 +52,7 @@ You can check the development status at the [Waffle Board](https://waffle.io/ipf
   - [npm](#npm)
   - [Use in Node.js](#use-in-nodejs)
   - [Through command line tool](#through-command-line-tool)
-  - [Use in the browser with browserify, webpack or any bundler](#use-in-the-browser-with-browserify-webpack-or-any-bundler)
-  - [Use in a browser using a script tag](#use-in-a-browser-using-a-script-tag)
+  - [Use in the browser](#use-in-the-browser)
 - [Usage](#usage)
   - [CLI](#cli)
   - [HTTP-API](#http-api)
@@ -82,7 +81,7 @@ You can check the development status at the [Waffle Board](https://waffle.io/ipf
 
 ## Install
 
-This project is available through [npm](https://www.npmjs.com/). To install:
+This project is available through [npm](https://www.npmjs.com/). To install run
 
 ```bash
 > npm install ipfs --save
@@ -112,20 +111,14 @@ The CLI is available by using the command `jsipfs` in your terminal. This is ali
 
 ### Use in the browser
 
-##### With browserify, webpack or any bundler
+Learn how to bundle with browserify and webpack in the [`examples`](https://github.com/ipfs/js-ipfs/tree/master/examples) folder.
 
-Find examples of how to do this bundling at: `https://github.com/ipfs/js-ipfs/tree/master/examples`. If you are using webpack, make sure to use version 2 or above, otherwise it won't work.
 
-##### With script tag
-
-Loading this module in a browser (using a `<script>` tag) makes the `Ipfs` object available in the global namespace. The last published version of the package become [available for download](https://unpkg.com/ipfs/dist/) from [unpkg](https://unpkg.com/) and thus you may use it as the source:
+You can also load it using a `<script>` using the [unpkg](https://unpkg.com) CDN. Inserting one of the following lines will make a `Ipfs` object available in the global namespace.
 
 ```html
-<!-- loading the minified version -->
-<script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
-
-<!-- loading the human-readable (not minified) version -->
-<script src="https://unpkg.com/ipfs/dist/index.js"></script>
+<script src="https://unpkg.com/ipfs/dist/index.min.js"></script> <!-- loading the minified version -->
+<script src="https://unpkg.com/ipfs/dist/index.js"></script>     <!-- loading the human-readable (not minified) version -->
 ```
 
 ## Usage
