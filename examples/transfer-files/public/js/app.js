@@ -114,6 +114,10 @@ function onDrop (event) {
   onDragExit()
   $errors.className = 'hidden'
   event.preventDefault()
+  if (!node) {
+    onError('IPFS must be started before files can be added')
+    return
+  }
   const dt = event.dataTransfer
   const files = dt.files
 
