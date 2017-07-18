@@ -16,7 +16,7 @@ module.exports = {
       default: false
     },
     'enable-pubsub-experiment': {
-      type: 'booleam',
+      type: 'boolean',
       default: false
     }
   },

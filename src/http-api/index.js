@@ -53,9 +53,8 @@ function HttpApi (repo, config) {
             repo: repo,
             init: init,
             start: true,
-            config: config,
             EXPERIMENTAL: {
-              pubsub: true,
+              pubsub: config && config.enablePubsubExperiment,
               sharding: config && config.enableShardingExperiment
             },
             libp2p: libp2p
