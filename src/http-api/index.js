@@ -16,7 +16,7 @@ function uriToMultiaddr (uri) {
   return `/ip4/${ipPort[0]}/tcp/${ipPort[1]}`
 }
 
-function HttpApi (repo, config) {
+function HttpApi (repo, config, cliArgs) {
   this.node = undefined
   this.server = undefined
 
@@ -55,8 +55,8 @@ function HttpApi (repo, config) {
             start: true,
             config: config,
             EXPERIMENTAL: {
-              pubsub: true,
-              sharding: config && config.enableShardingExperiment
+              pubsub: cliArgs && cliArgs.enablePubsubExperiment,
+              sharding: cliArgs && cliArgs.enableShardingExperiment
             },
             libp2p: libp2p
           })

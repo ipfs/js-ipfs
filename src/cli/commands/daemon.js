@@ -16,7 +16,7 @@ module.exports = {
       default: false
     },
     'enable-pubsub-experiment': {
-      type: 'booleam',
+      type: 'boolean',
       default: false
     }
   },
@@ -25,7 +25,7 @@ module.exports = {
     console.log('Initializing daemon...')
 
     const repoPath = utils.getRepoPath()
-    httpAPI = new HttpAPI(process.env.IPFS_PATH, argv)
+    httpAPI = new HttpAPI(process.env.IPFS_PATH, null, argv)
 
     httpAPI.start((err) => {
       if (err && err.code === 'ENOENT' && err.message.match(/Uninitalized repo/i)) {
