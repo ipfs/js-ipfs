@@ -1,5 +1,6 @@
 'use strict'
 
+const Buffer = require('safe-buffer').Buffer
 const createNode = require('./create-node.js')
 const series = require('async/series')
 const dagPB = require('ipld-dag-pb')

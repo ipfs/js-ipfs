@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
+const Buffer = require('safe-buffer').Buffer
 const expect = require('chai').expect
 
 module.exports = (http) => {

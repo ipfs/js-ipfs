@@ -1,5 +1,6 @@
 'use strict'
 
+const Buffer = require('safe-buffer').Buffer
 const mh = require('multihashes')
 const multipart = require('ipfs-multipart')
 const dagPB = require('ipld-dag-pb')

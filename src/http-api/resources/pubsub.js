@@ -1,5 +1,6 @@
 'use strict'
 
+const Buffer = require('safe-buffer').Buffer
 const PassThrough = require('stream').PassThrough
 
 exports = module.exports
