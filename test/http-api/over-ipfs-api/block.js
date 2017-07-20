@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
+const Buffer = require('safe-buffer').Buffer
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect

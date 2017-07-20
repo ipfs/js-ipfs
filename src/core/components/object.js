@@ -1,5 +1,6 @@
 'use strict'
 
+const Buffer = require('safe-buffer').Buffer
 const waterfall = require('async/waterfall')
 const promisify = require('promisify-es6')
 const dagPB = require('ipld-dag-pb')

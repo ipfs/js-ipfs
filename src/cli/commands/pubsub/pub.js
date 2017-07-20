@@ -1,5 +1,7 @@
 'use strict'
 
+const Buffer = require('safe-buffer').Buffer
+
 module.exports = {
   command: 'pub <topic> <data>',
 

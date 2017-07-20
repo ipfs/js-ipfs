@@ -1,5 +1,6 @@
 'use strict'
 
+const Buffer = require('safe-buffer').Buffer
 const spawn = require('child_process').spawn
 const fs = require('fs')
 const temp = require('temp')
