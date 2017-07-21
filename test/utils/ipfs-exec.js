@@ -33,11 +33,24 @@ module.exports = (repoPath, opts) => {
 
   function ipfs () {
     let args = Array.from(arguments)
-    if (args.length === 1) {
+    let pipedArgs
+
+    _.map(args, arg => arg.piped ? (pipedArgs = arg.piped) : '')
+
+    if (args.length === 1 || args.length === 2 && pipedArgs) {
       args = args[0].split(' ')
     }
 
     const cp = exec(args)
+
+    // Passes content of pipedArgs to childProcess as if jsipfs had been called
+    // with piped arguments
+    if (pipedArgs) {
+      cp.stdin.setEncoding('utf-8')
+      cp.stdin.write(`${pipedArgs}\n`)
+      cp.stdin.end()
+    }
+
     const res = cp.then((res) => {
       // We can't escape the os.tmpdir warning due to:
       // https://github.com/shelljs/shelljs/blob/master/src/tempdir.js#L43

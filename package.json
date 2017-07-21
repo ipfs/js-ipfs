@@ -132,6 +132,7 @@
     "multihashes": "~0.4.5",
     "once": "^1.4.0",
     "path-exists": "^3.0.0",
+    "pipe-args": "^1.3.0",
     "peer-book": "^0.4.0",
     "peer-id": "^0.8.8",
     "peer-info": "^0.9.4",
