@@ -1,7 +1,6 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const bs58 = require('bs58')
 const cleanMultihash = require('../utils/clean-multihash')
 
 module.exports = (send) => {
@@ -27,7 +26,7 @@ module.exports = (send) => {
       args: [
         multihash,
         dLink.name,
-        bs58.encode(dLink.multihash).toString()
+        cleanMultihash(dLink.multihash)
       ]
     }, (err, result) => {
       if (err) {
