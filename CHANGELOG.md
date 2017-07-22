@@ -1,3 +1,13 @@
+<a name="14.1.0"></a>
+# [14.1.0](https://github.com/ipfs/js-ipfs-api/compare/v14.0.4...v14.1.0) (2017-07-22)
+
+
+### Bug Fixes
+
+* circle ci, thanks victor! ([88b6705](https://github.com/ipfs/js-ipfs-api/commit/88b6705))
+
+
+
 <a name="14.0.4"></a>
 ## [14.0.4](https://github.com/ipfs/js-ipfs-api/compare/v14.0.3...v14.0.4) (2017-06-21)
 
