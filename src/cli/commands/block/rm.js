@@ -2,6 +2,7 @@
 
 const utils = require('../../utils')
 const mh = require('multihashes')
+const print = utils.print
 
 module.exports = {
   command: 'rm <key>',
@@ -21,7 +22,7 @@ module.exports = {
         throw err
       }
 
-      console.log('removed', argv.key)
+      print('removed ' + argv.key)
     })
   }
 }

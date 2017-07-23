@@ -1,5 +1,7 @@
 'use strict'
 
+const print = require('../../utils').print
+
 module.exports = {
   command: 'version',
 
@@ -12,7 +14,7 @@ module.exports = {
       if (err) {
         return console.error(err)
       }
-      console.log(version)
+      print(version)
     })
   }
 }

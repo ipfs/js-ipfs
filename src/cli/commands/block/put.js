@@ -6,6 +6,7 @@ const bl = require('bl')
 const fs = require('fs')
 const Block = require('ipfs-block')
 const waterfall = require('async/waterfall')
+const print = require('../../utils').print
 
 function addBlock (data, opts) {
   const ipfs = opts.ipfs
@@ -26,7 +27,7 @@ function addBlock (data, opts) {
     if (err) {
       throw err
     }
-    console.log(cid.toBaseEncodedString())
+    print(cid.toBaseEncodedString())
   })
 }
 

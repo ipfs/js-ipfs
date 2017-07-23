@@ -1,6 +1,7 @@
 'use strict'
 
 const utils = require('../../utils')
+const print = utils.print
 
 module.exports = {
   command: 'connect <address>',
@@ -19,7 +20,7 @@ module.exports = {
         throw err
       }
 
-      console.log(res.Strings[0])
+      print(res.Strings[0])
     })
   }
 }

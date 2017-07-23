@@ -1,6 +1,7 @@
 'use strict'
 
 const CID = require('cids')
+const print = require('../../utils').print
 
 module.exports = {
   command: 'get <cid path>',
@@ -26,12 +27,12 @@ module.exports = {
 
     argv.ipfs.dag.get(cid, path, options, (err, result) => {
       if (err) {
-        return console.log('dag get failed:', err.message)
+        return print(`dag get failed: ${err.message}`)
       }
 
       if (options.localResolve) {
-        console.log('resolving path within the node only')
-        console.log('remainder path:', result.remainderPath || 'n/a', '\n')
+        print('resolving path within the node only')
+        print(`remainder path: ${result.remainderPath || 'n/a'}\n`)
       }
 
       const node = result.value
@@ -41,19 +42,19 @@ module.exports = {
       if (node._json) {
         delete node._json.multihash
         node._json.data = '0x' + node._json.data.toString('hex')
-        console.log(node._json)
+        print(node._json)
         return
       }
 
       if (Buffer.isBuffer(node)) {
-        console.log('0x' + node.toString('hex'))
+        print('0x' + node.toString('hex'))
         return
       }
 
       if (node.raw) {
-        console.log(node.raw)
+        print(node.raw)
       } else {
-        console.log(node)
+        print(node)
       }
     })
   }

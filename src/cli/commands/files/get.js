@@ -5,6 +5,7 @@ const path = require('path')
 const mkdirp = require('mkdirp')
 const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
+const print = require('../../utils').print
 
 function checkArgs (hash, outPath) {
   // format the output directory
@@ -68,7 +69,7 @@ module.exports = {
       if (err) {
         throw err
       }
-      console.log(`Saving file(s) ${ipfsPath}`)
+      print(`Saving file(s) ${ipfsPath}`)
       pull(
         toPull.source(stream),
         pull.asyncMap(fileHandler(dir)),

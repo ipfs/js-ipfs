@@ -1,5 +1,7 @@
 'use strict'
 
+const print = require('../../utils').print
+
 module.exports = {
   command: 'wantlist',
 
@@ -20,7 +22,7 @@ module.exports = {
         throw err
       }
       res.Keys.forEach((cidStr) => {
-        console.log(cidStr)
+        print(cidStr)
       })
     })
   }

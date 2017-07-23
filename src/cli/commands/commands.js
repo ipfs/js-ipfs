@@ -1,5 +1,5 @@
 'use strict'
-
+const print = require('../utils').print
 const path = require('path')
 const glob = require('glob').sync
 
@@ -23,6 +23,6 @@ module.exports = {
         .replace('.js', '')
     }).sort().map((cmd) => `ipfs ${cmd}`)
 
-    console.log(['ipfs'].concat(cmds).join('\n'))
+    print(['ipfs'].concat(cmds).join('\n'))
   }
 }

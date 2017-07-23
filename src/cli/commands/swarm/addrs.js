@@ -1,5 +1,7 @@
 'use strict'
 
+const print = require('../../utils').print
+
 module.exports = {
   command: 'addrs',
 
@@ -18,11 +20,11 @@ module.exports = {
 
       res.forEach((peer) => {
         const count = peer.multiaddrs.size
-        console.log(`${peer.id.toB58String()} (${count})`)
+        print(`${peer.id.toB58String()} (${count})`)
 
         peer.multiaddrs.forEach((addr) => {
           const res = addr.decapsulate('ipfs').toString()
-          console.log(`\t${res}`)
+          print(`\t${res}`)
         })
       })
     })

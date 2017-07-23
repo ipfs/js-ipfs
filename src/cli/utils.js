@@ -83,3 +83,4 @@ exports.createLogger = (visible) => {
     }
   }
 }
+exports.print = exports.createLogger(true) // TODO refactor/remove createLogger?

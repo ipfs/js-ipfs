@@ -1,5 +1,7 @@
 'use strict'
 
+const print = require('../../utils').print
+
 module.exports = {
   command: 'sub <topic>',
 
@@ -9,7 +11,7 @@ module.exports = {
 
   handler (argv) {
     const handler = (msg) => {
-      console.log(msg.data.toString())
+      print(msg.data.toString())
     }
 
     argv.ipfs.pubsub.subscribe(argv.topic, handler, (err) => {

@@ -1,4 +1,5 @@
 'use strict'
+const print = require('../utils').print
 
 module.exports = {
   command: 'id',
@@ -19,7 +20,7 @@ module.exports = {
         throw err
       }
 
-      console.log(JSON.stringify(id, '', 2))
+      print(JSON.stringify(id, '', 2))
     })
   }
 }

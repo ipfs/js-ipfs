@@ -5,6 +5,7 @@ const fs = require('fs')
 const debug = require('debug')
 const log = debug('cli:object')
 log.error = debug('cli:object:error')
+const print = require('../../../utils').print
 
 function appendData (key, data, ipfs) {
   ipfs.object.patch.appendData(key, data, {
@@ -15,7 +16,7 @@ function appendData (key, data, ipfs) {
     }
     const nodeJSON = node.toJSON()
 
-    console.log(nodeJSON.multihash)
+    print(nodeJSON.multihash)
   })
 }
 

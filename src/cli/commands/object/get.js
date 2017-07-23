@@ -1,5 +1,7 @@
 'use strict'
 
+const print = require('../../utils').print
+
 module.exports = {
   command: 'get <key>',
 
@@ -29,7 +31,7 @@ module.exports = {
         })
       }
 
-      console.log(JSON.stringify(answer))
+      print(JSON.stringify(answer))
     })
   }
 }
