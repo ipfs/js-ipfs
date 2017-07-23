@@ -2,8 +2,7 @@
   "Addresses": {
     "Swarm": [
       "/ip4/0.0.0.0/tcp/4002",
-      "/ip4/127.0.0.1/tcp/4003/ws",
-      "/libp2p-webrtc-star/dns4/star-signal.cloud.ipfs.team/wss"
+      "/ip4/127.0.0.1/tcp/4003/ws"
     ],
     "API": "/ip4/127.0.0.1/tcp/5002",
     "Gateway": "/ip4/127.0.0.1/tcp/9090"
