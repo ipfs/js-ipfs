@@ -10,8 +10,7 @@
   <a href="http://ipn.io"><img src="https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square" /></a>
   <a href="http://ipfs.io/"><img src="https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square" /></a>
   <a href="http://webchat.freenode.net/?channels=%23ipfs"><img src="https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square" /></a>
-  <br>
-  <a href="https://waffle.io/ipfs/js-ipfs"><img src="https://img.shields.io/badge/pm-waffle-blue.svg?style=flat-square" /></a>
+  <br> <a href="https://waffle.io/ipfs/js-ipfs"><img src="https://img.shields.io/badge/pm-waffle-blue.svg?style=flat-square" /></a>
   <a href="https://github.com/ipfs/interface-ipfs-core"><img src="https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg"></a>
   <a href="https://github.com/ipfs/interface-ipfs-core/issues/55"><img src="https://img.shields.io/badge/interface--ipfs--core-Updates-blue.svg"></a>
 </p>
@@ -60,19 +59,19 @@ You can check the development status at the [Waffle Board](https://waffle.io/ipf
     - [Create a IPFS node instance](#create-a-ipfs-node-instance)
   - [Tutorials and Examples](#tutorials-and-examples)
   - [API](#api)
-      - [Bitswap API](#bitswap)
-      - [Block API](#block)
-      - [Bootstrap API](#bootstrap)
-      - [Config API](#config)
-      - [DAG API](#dag)
-      - [Files API](#files)
-      - [Generic API](#generic-operations)
-      - [Object API](#object)
-      - [PubSub API](#pubsub)
-      - [Repo API](#repo)
-      - [Swarm API](#swarm)
-      - [libp2p API](#libp2p)
-      - [Domain data types](#domain-data-types)
+    - [Files API](#files)
+    - [DAG API](#dag)
+    - [PubSub API](#pubsub)
+    - [libp2p API](#libp2p)
+    - [Miscellaneous API](#miscellaneous-operations)
+    - [Bitswap API](#bitswap)
+    - [Block API](#block)
+    - [Config API](#config)
+    - [Bootstrap API](#bootstrap)
+    - [Repo API](#repo)
+    - [Swarm API](#swarm)
+    - [Object API](#object)
+    - [Domain data types](#domain-data-types)
 - [Packages](#packages)
 - [Development](#development)
   - [Clone](#clone)
@@ -100,7 +99,6 @@ To include this project programmatically:
 
 ```JavaScript
 const IPFS = require('ipfs')
-
 const node = new IPFS()
 ```
 
@@ -109,7 +107,7 @@ const node = new IPFS()
 In order to use js-ipfs as a CLI, you must install it with the `global` flag. Run the following (even if you have ipfs installed locally):
 
 ```bash
-$ npm install ipfs --global
+> npm install ipfs --global
 ```
 
 The CLI is available by using the command `jsipfs` in your terminal. This is aliased, instead of using `ipfs`, to make sure it does not conflict with the [Go implementation](https://github.com/ipfs/go-ipfs).
@@ -250,38 +248,6 @@ You can find some examples and tutorials in the [examples](/examples) folder, th
 
 A complete API definition is in the works. Meanwhile, you can learn how to you use js-ipfs through the standard interface at [![](https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg)](https://github.com/ipfs/interface-ipfs-core).
 
-##### [bitswap]()
-
-- [`ipfs.bitswap.wantlist`]()
-- [`ipfs.bitswap.stat`]()
-- [`ipfs.bitswap.unwant`]()
-
-##### [block](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block)
-
-- [`ipfs.block.get(cid, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block#get)
-- [`ipfs.block.put(block, cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block#put)
-- [`ipfs.block.stat(cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block#stat)
-
-##### [bootstrap]()
-
-- [`ipfs.bootstrap.list`]()
-- [`ipfs.bootstrap.add`]()
-- [`ipfs.bootstrap.rm`]()
-
-##### [config](https://github.com/ipfs/interface-ipfs-core/tree/master/API/config)
-
-- [`ipfs.config.get([key, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/config#configget)
-- [`ipfs.config.set(key, value, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/config#configset)
-- [`ipfs.config.replace(config, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/config#configreplace)
-
-##### [dag](https://github.com/ipfs/interface-ipfs-core/tree/master/API/dag)
-
-- [`ipfs.dag.put(dagNode, options, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/dag#dagput)
-- [`ipfs.dag.get(cid [, path, options], callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/dag#dagget)
-- [`ipfs.dag.tree(cid [, path, options], callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/dag#dagtree)
-
-##### [dht (not implemented, yet!)]()
-
 ##### [files](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files)
 
 - [`ipfs.files.add(data, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#add)
@@ -289,18 +255,78 @@ A complete API definition is in the works. Meanwhile, you can learn how to you u
 - [`ipfs.files.cat(multihash, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#cat)
 - [`ipfs.files.get(hash, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#get)
 
-##### [generic operations](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic)
+##### [dag](https://github.com/ipfs/interface-ipfs-core/tree/master/API/dag)
+
+- [`ipfs.dag.put(dagNode, options, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/dag#dagput)
+- [`ipfs.dag.get(cid [, path, options], callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/dag#dagget)
+- [`ipfs.dag.tree(cid [, path, options], callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/dag#dagtree)
+
+##### [pubsub](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pubsub)
+
+- [`ipfs.pubsub.subscribe(topic, options, handler, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pubsub#pubsubsubscribe)
+- [`ipfs.pubsub.unsubscribe(topic, handler)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pubsub#pubsubunsubscribe)
+- [`ipfs.pubsub.publish(topic, data, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pubsub#pubsubpublish)
+- [`ipfs.pubsub.ls(topic, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pubsub#pubsubls)
+- [`ipfs.pubsub.peers(topic, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pubsub#pubsubpeers)
+
+##### [libp2p](https://github.com/libp2p/interface-libp2p)
+
+Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal interface for this API hasn't been defined by you can find documentation at its implementations:
+
+- [Node.js bundle](./src/core/runtime/libp2p-nodejs.js)
+- [Browser Bungle](./src/code/runtime/libp2p-browser.js)
+- [libp2p baseclass](https://github.com/libp2p/js-libp2p)
+
+##### [miscellaneous operations](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic)
 
 - [`ipfs.id([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic#id)
 - [`ipfs.version([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic#version)
-- [`ipfs.ping()`]()
-- [`ipfs.init()`]()
-- [`ipfs.load()`]()
-- [`ipfs.isOnline()`]()
-- [`ipfs.goOnline()`]()
-- [`ipfs.goOffline()`]()
+- `ipfs.ping()`
+- `ipfs.init([options], callback)`
+- `ipfs.start([callback])`
+- `ipfs.stop([callback])`
+- `ipfs.isOnline()`
+
+##### [bitswap](https://github.com/ipfs/interface-ipfs-core/tree/master/API/)
+
+- `ipfs.bitswap.wantlist()`
+- `ipfs.bitswap.stat()`
+- `ipfs.bitswap.unwant()`
+
+##### [block](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block)
+
+- [`ipfs.block.get(cid, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block#get)
+- [`ipfs.block.put(block, cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block#put)
+- [`ipfs.block.stat(cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/block#stat)
+
+##### [config](https://github.com/ipfs/interface-ipfs-core/tree/master/API/config)
+
+- [`ipfs.config.get([key, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/config#configget)
+- [`ipfs.config.set(key, value, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/config#configset)
+- [`ipfs.config.replace(config, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/config#configreplace)
+
+##### [bootstrap](https://github.com/ipfs/interface-ipfs-core/tree/master/API/)
+
+- `ipfs.bootstrap.list`
+- `ipfs.bootstrap.add`
+- `ipfs.bootstrap.rm`
+
+##### [repo](https://github.com/ipfs/interface-ipfs-core/tree/master/API/)
+
+- `ipfs.repo.init`
+- `ipfs.repo.version`
+- `ipfs.repo.gc` (not implemented, yet!)
+
+##### [swarm](https://github.com/ipfs/interface-ipfs-core/tree/master/API/swarm)
+
+- [`ipfs.swarm.addrs([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/swarm#addrs)
+- [`ipfs.swarm.connect(addr, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/swarm#connect)
+- [`ipfs.swarm.disconnect(addr, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/swarm#disconnect)
+- [`ipfs.swarm.peers([opts] [, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/swarm#peers)
 
 ##### [object](https://github.com/ipfs/interface-ipfs-core/tree/master/API/object)
+
+> Consider using the [dag API](#dag) API instead.
 
 - [`ipfs.object.new([template][, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/object#objectnew)
 - [`ipfs.object.put(obj, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/object#objectput)
@@ -313,37 +339,6 @@ A complete API definition is in the works. Meanwhile, you can learn how to you u
 - [`ipfs.object.patch.appendData(multihash, data, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/object#objectpatchappenddata)
 - [`ipfs.object.patch.setData(multihash, data, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/object#objectpatchsetdata)
 
-##### [pin (not implemented, yet!)]()
-
-##### [pubsub](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pubsub)
-
-- [`ipfs.pubsub.subscribe(topic, options, handler, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pubsub#pubsubsubscribe)
-- [`ipfs.pubsub.unsubscribe(topic, handler)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pubsub#pubsubunsubscribe)
-- [`ipfs.pubsub.publish(topic, data, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pubsub#pubsubpublish)
-- [`ipfs.pubsub.ls(topic, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pubsub#pubsubls)
-- [`ipfs.pubsub.peers(topic, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/pubsub#pubsubpeers)
-
-##### [repo]()
-
-- [`ipfs.repo.init`]()
-- [`ipfs.repo.version`]()
-- [`ipfs.repo.gc` (not implemented, yet!)]()
-
-##### [swarm](https://github.com/ipfs/interface-ipfs-core/tree/master/API/swarm)
-
-- [`ipfs.swarm.addrs([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/swarm#addrs)
-- [`ipfs.swarm.connect(addr, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/swarm#connect)
-- [`ipfs.swarm.disconnect(addr, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/swarm#disconnect)
-- [`ipfs.swarm.peers([opts] [, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/swarm#peers)
-
-##### [libp2p](https://github.com/libp2p/interface-libp2p)
-
-Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal interface for this API hasn't been defined by you can find documentation at its implementations:
-
-- [libp2p-ipfs-nodejs](https://github.com/ipfs/js-libp2p-ipfs-nodejs)
-- [libp2p-ipfs-browser](https://github.com/ipfs/js-libp2p-ipfs-browser)
-- [libp2p baseclass](https://github.com/libp2p/js-libp2p)
-
 ##### Domain data types
 
 A set of data types are exposed directly from the IPFS instance under `ipfs.types`. That way you're not required to import/require the following.
@@ -354,6 +349,10 @@ A set of data types are exposed directly from the IPFS instance under `ipfs.type
 - [`ipfs.types.multiaddr`](https://github.com/multiformats/js-multiaddr)
 - [`ipfs.types.multihash`](https://github.com/multiformats/js-multihash)
 - [`ipfs.types.CID`](https://github.com/ipld/js-cid)
+
+##### [dht (not implemented, yet!)](https://github.com/ipfs/interface-ipfs-core/tree/master/API/)
+
+##### [pin (not implemented, yet!)](https://github.com/ipfs/interface-ipfs-core/tree/master/API/)
 
 ## FAQ
 
