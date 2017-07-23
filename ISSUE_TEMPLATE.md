@@ -21,12 +21,14 @@ simple and free of external dependencies as you are able.
 <!-- Bug, Feature, Question, Enhancement, Etc -->
 #### Type:
 
-<!-- One of following:
-    Critical - System crash, application panic.
-    High - The main functionality of the application does not work, API breakage, repo format breakage, etc.
-    Medium - A non-essential functionality does not work, performance issues, etc.
-    Low - An optional functionality does not work.
-    Very Low - Translation or documentation mistake. Something that really does not matter much but should be noticed for a future release. -->
+<!-- 
+One of following:
+  Critical - System crash, application panic.
+  High - The main functionality of the application does not work, API breakage, repo format breakage, etc.
+  Medium - A non-essential functionality does not work, performance issues, etc.
+  Low - An optional functionality does not work.
+  Very Low - Translation or documentation mistake. Something that won't give anyone a bad day.
+-->
 #### Severity:
 
 #### Description:
