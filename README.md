@@ -368,7 +368,7 @@ This will create a repo with a config file that contains a WebRTC multiaddr.
 
 ## Packages
 
-| Package | Version | Deps | DevDeps | Build |
+| Package | Version | Deps         | DevDeps         | Build     |
 |---------|---------|--------------|-----------------|-----------|
 | **API Specs**                                      |
 | [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core) | [![npm](https://img.shields.io/npm/v/interface-ipfs-core.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-repo/releases) | [![Dep Status](https://david-dm.org/ipfs/interface-ipfs-core.svg?style=flat-square)](https://david-dm.org/ipfs/interface-ipfs-core) | [![devDep Status](https://david-dm.org/ipfs/interface-ipfs-core/dev-status.svg?style=flat-square)](https://david-dm.org/ipfs/interface-ipfs-core?type=dev) | [![Build Status](https://travis-ci.org/ipfs/interface-ipfs-core.svg?branch=master)](https://travis-ci.org/ipfs/interface-ipfs-core) |
