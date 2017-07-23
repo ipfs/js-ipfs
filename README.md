@@ -151,13 +151,6 @@ Commands:
 - default API port: `5002`
 - default Bootstrap is off, to enable it set `IPFS_BOOTSTRAP=1`
 
-If you want to use WebRTC in your local daemon, you will need to install it separatly by installing globally one of the following modules:
-
-- [wrtc](https://npmjs.org/wrtc)
-- [electron-webrtc](https://npmjs.org/electron-webrtc)
-
-This is a separate step because there isn't still a good open source WebRTC implementation for Node.js that runs in all the envinronments correctly.
-Example: `npm install electron-webrtc --global`. 
 
 ### HTTP-API
 
@@ -193,11 +186,6 @@ When starting a node, you can:
 // https://github.com/ipfs/js-ipfs-repo
 const repo = <IPFS Repo instance or repo path>
 
-// If you want to use the WebRTC transport in Node.js, you have to add it separately. Note, WebRTC comes out of the box in the Browser!
-const wrtc = require('wrtc') // or require('electron-webrtc')()
-const WStar = require('libp2p-webrtc-star')
-const wstar = WStar({ wrtc: wrtc })
-
 const node = new IPFS({
   repo: repo,
   init: true, // default
@@ -210,10 +198,9 @@ const node = new IPFS({
   EXPERIMENTAL: { // enable experimental features
     pubsub: true,
     sharding: true, // enable dir sharding
-    wrtcLinuxWindows: true, // use unstable wrtc module on Linux or Windows with Node.js,
     dht: true // enable KadDHT, currently not interopable with go-ipfs
   },
-  config: { // overload the default config
+  config: { // overload the default IPFS node config
     Addresses: {
       Swarm: [
         '/ip4/127.0.0.1/tcp/1337'
@@ -221,10 +208,7 @@ const node = new IPFS({
     }
   },
   libp2p: { // add custom modules to the libp2p stack of your node
-    modules: { // here we show how to add WebRTC. Note, WebRTC comes out of the box in the Browser! You just need to do this for Node.js
-      transport: [wstar]
-      discovery: [wstar.discovery]
-    }
+    modules: {}
   }
 })
 
@@ -356,15 +340,54 @@ A set of data types are exposed directly from the IPFS instance under `ipfs.type
 
 ## FAQ
 
-> Is there WebRTC support for js-ipfs with Node.js?
+#### Is there WebRTC support for js-ipfs with Node.js?
 
-Yes there is, however, Linux and Windows support is limited/unstable. For Linux users, you need to follow the install the extra packages for Linux listed on the [`wrtc` npm page](http://npmjs.org/wrtc) and then, when doing initing the repo, do:
+Yes, however, bare in mind that there isn't a 100% stable solution to use WebRTC in Node.js, use it at your own risk. The most tested options are:
 
-```sh
-> IPFS_WRTC_LINUX_WINDOWS=1 jsipfs init
+- [wrtc](https://npmjs.org/wrtc) - Follow the install instructions.
+- [electron-webrtc](https://npmjs.org/electron-webrtc)
+
+To add WebRTC support in a IPFS node instance, do:
+
+```JavaScript
+const wrtc = require('wrtc') // or require('electron-webrtc')()
+const WStar = require('libp2p-webrtc-star')
+const wstar = WStar({ wrtc: wrtc })
+
+const node = new IPFS({
+  repo: 'your-repo-path',
+  // start: false,
+  config: {
+    Addresses: {
+      Swarm: [
+        "/ip4/0.0.0.0/tcp/4002",
+        "/ip4/127.0.0.1/tcp/4003/ws",
+        "/libp2p-webrtc-star/dns4/star-signal.cloud.ipfs.team/wss"
+      ]
+    }
+  },
+  libp2p: {
+    modules: {
+      transport: [wstar]
+      discovery: [wstar.discovery]
+    }
+  }
+})
+
+node.on('ready', () => {
+  // your instance with WebRTC is ready
+})
 ```
 
-This will create a repo with a config file that contains a WebRTC multiaddr.
+To add WebRTC support to the IPFS daemon, you only need to install one of the WebRTC modules globally:
+
+```bash
+npm install wrtc --global
+# or
+npm install electron-webrtc --global
+```
+
+Then, update your IPFS Daemon config to include the multiaddr for this new transport on the `Addresses.Swarm` array. Add: `"/libp2p-webrtc-star/dns4/star-signal.cloud.ipfs.team/wss"`
 
 ## Packages
 

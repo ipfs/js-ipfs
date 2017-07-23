@@ -60,20 +60,6 @@ module.exports = function init (self) {
         opts.log('done')
         opts.log('peer identity: ' + config.Identity.PeerID)
 
-        const isWin = /^win/.test(process.platform)
-        const isLinux = /^linux/.test(process.platform)
-        const wrtcLinuxWindows = !process.env.IPFS_WRTC_LINUX_WINDOWS ||
-                                 self._options.EXPERIMENTAL.wrtcLinuxWindows
-
-        // For the lack of sane WebRTC support on Linux and Windows
-        if (wrtcLinuxWindows && (isWin || isLinux)) {
-          console.log('WARNING: Your platform does not have native WebRTC support, it won\' use any WebRTC transport')
-          const newAddrs = config.Addresses.Swarm.filter((addr) => {
-            return addr.indexOf('libp2p-webrtc-star') < 0
-          })
-          config.Addresses.Swarm = newAddrs
-        }
-
         self._repo.init(config, cb)
       },
       (_, cb) => self._repo.open(cb),
