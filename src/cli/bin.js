@@ -39,33 +39,25 @@ const args = process.argv.slice(2)
 // Need to skip to avoid locking as these commands
 // don't require a daemon
 if (args[0] === 'daemon' || args[0] === 'init') {
-  return cli
+  cli
     .help()
     .strict(false)
     .completion()
     .parse(args)
-}
+} else {
+  utils.getIPFS((err, ipfs, cleanup) => {
+    if (err) { throw err }
 
-utils.getIPFS((err, ipfs, cleanup) => {
-  if (err) {
-    throw err
-  }
+    cli
+      .help()
+      .strict(false)
+      .completion()
+      .parse(args, { ipfs: ipfs }, (err, argv, output) => {
+        if (output) { console.log(output) }
 
-  // finalize cli setup
-  cli // eslint-disable-line
-    .help()
-    .strict(false)
-    .completion()
-    .parse(args, {
-      ipfs: ipfs
-    }, (err, argv, output) => {
-      if (output) {
-        console.log(output)
-      }
-      cleanup(() => {
-        if (err) {
-          throw err
-        }
+        cleanup(() => {
+          if (err) { throw err }
+        })
       })
-    })
-})
+  })
+}

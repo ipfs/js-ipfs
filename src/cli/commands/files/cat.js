@@ -3,7 +3,7 @@
 module.exports = {
   command: 'cat <ipfs-path>',
 
-  describe: 'Download IPFS objects',
+  describe: 'Fetch and cat an IPFS path referencing a file',
 
   builder: {},
 

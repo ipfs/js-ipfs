@@ -50,7 +50,7 @@ function fileHandler (dir) {
 module.exports = {
   command: 'get <ipfs-path>',
 
-  describe: 'Download IPFS objects',
+  describe: 'Fetch a file or directory with files references from an IPFS Path',
 
   builder: {
     output: {
