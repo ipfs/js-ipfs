@@ -7,7 +7,7 @@ If you require more general support please file an issue on our discuss forum. h
 Please fill in as much of the template below as you're able.
 
 Version: output of `jsipfs version --all` if using the CLI or `ipfs.version((err, version) => {})` if using the instance.
-Platform: output of `uname -a` (UNIX), or version and 32 or 64-bit (Windows).
+Platform: output of `uname -a` (UNIX), or version and 32 or 64-bit (Windows). If using in a Browser, please share the browser version as well.
 Subsystem: if known, please specify affected core module name (e.g Bitswap, libp2p, etc).
 
 If possible, please provide code that demonstrates the problem, keeping it as
