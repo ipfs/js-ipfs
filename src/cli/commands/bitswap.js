@@ -3,13 +3,13 @@
 module.exports = {
   command: 'bitswap',
 
-  description: 'A set of commands to manipulate the bitswap agent.',
+  description: 'Interact with the bitswap agent.',
 
   builder (yargs) {
-    return yargs
-      .commandDir('bitswap')
+    return yargs.commandDir('bitswap')
   },
 
   handler (argv) {
+    console.log('Type `jsipfs bitswap --help` for more information about this command')
   }
 }
