@@ -44,8 +44,7 @@ module.exports = {
         if (err.code === 'EACCES') {
           err.message = `EACCES: permission denied, stat $IPFS_PATH/version`
         }
-        console.error(err.toString())
-        process.exit(1)
+        throw err
       }
     })
   }
