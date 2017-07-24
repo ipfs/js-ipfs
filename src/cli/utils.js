@@ -69,17 +69,19 @@ exports.getRepoPath = () => {
   return process.env.IPFS_PATH || os.homedir() + '/.jsipfs'
 }
 
-exports.createLogger = (visible) => {
-  return (msg, newline) => {
-    if (newline === undefined) {
-      newline = true
+let visible = true
+exports.disablePrinting = () => { visible = false }
+
+exports.print = (msg, newline) => {
+  if (newline === undefined) {
+    newline = true
+  }
+
+  if (visible) {
+    if (msg === undefined) {
+      msg = ''
     }
-    if (visible) {
-      if (msg === undefined) {
-        msg = ''
-      }
-      msg = newline ? msg + '\n' : msg
-      process.stdout.write(msg)
-    }
+    msg = newline ? msg + '\n' : msg
+    process.stdout.write(msg)
   }
 }

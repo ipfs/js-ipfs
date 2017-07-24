@@ -3,6 +3,8 @@
 const debug = require('debug')
 const log = debug('cli:bootstrap')
 log.error = debug('cli:bootstrap:error')
+const print = require('../../utils').print
+
 module.exports = {
   command: 'rm [<peer>]',
 
@@ -24,7 +26,7 @@ module.exports = {
         throw err
       }
 
-      list.Peers.forEach((l) => console.log(l))
+      list.Peers.forEach((peer) => print(peer))
     })
   }
 }

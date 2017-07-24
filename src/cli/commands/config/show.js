@@ -3,6 +3,8 @@
 const debug = require('debug')
 const log = debug('cli:config')
 log.error = debug('cli:config:error')
+const print = require('../../utils').print
+
 module.exports = {
   command: 'show',
 
@@ -19,7 +21,7 @@ module.exports = {
         throw err
       }
 
-      console.log(JSON.stringify(config, null, 4))
+      print(JSON.stringify(config, null, 4))
     })
   }
 }

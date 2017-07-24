@@ -1,5 +1,7 @@
 'use strict'
 
+const print = require('../../utils').print
+
 module.exports = {
   command: 'data <key>',
 
@@ -15,7 +17,7 @@ module.exports = {
         throw err
       }
 
-      console.log(data.toString())
+      print(data.toString())
     })
   }
 }

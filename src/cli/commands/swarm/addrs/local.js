@@ -4,6 +4,7 @@ const utils = require('../../../utils')
 const debug = require('debug')
 const log = debug('cli:object')
 log.error = debug('cli:object:error')
+const print = require('../../../utils').print
 
 module.exports = {
   command: 'local',
@@ -23,7 +24,7 @@ module.exports = {
       }
 
       res.forEach((addr) => {
-        console.log(addr.toString())
+        print(addr.toString())
       })
     })
   }

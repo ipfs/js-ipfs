@@ -2,6 +2,7 @@
 
 const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
+const print = require('../../../utils').print
 
 module.exports = {
   command: 'add-link <root> <name> <ref>',
@@ -28,7 +29,7 @@ module.exports = {
           throw err
         }
 
-        console.log(nodeB.toJSON().multihash)
+        print(nodeB.toJSON().multihash)
       })
     })
   }

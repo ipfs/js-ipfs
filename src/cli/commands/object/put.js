@@ -2,6 +2,7 @@
 
 const bl = require('bl')
 const fs = require('fs')
+const print = require('../../utils').print
 
 function putNode (buf, enc, ipfs) {
   ipfs.object.put(buf, {enc: enc}, (err, node) => {
@@ -11,7 +12,7 @@ function putNode (buf, enc, ipfs) {
 
     const nodeJSON = node.toJSON()
 
-    console.log('added', nodeJSON.multihash)
+    print(`added ${nodeJSON.multihash}`)
   })
 }
 

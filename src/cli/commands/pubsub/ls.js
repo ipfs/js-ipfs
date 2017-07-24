@@ -1,5 +1,7 @@
 'use strict'
 
+const print = require('../../utils').print
+
 module.exports = {
   command: 'ls',
 
@@ -14,7 +16,7 @@ module.exports = {
       }
 
       subscriptions.forEach((sub) => {
-        console.log(sub)
+        print(sub)
       })
     })
   }

@@ -1,5 +1,7 @@
 'use strict'
 
+const print = require('../../utils').print
+
 module.exports = {
   command: 'list',
 
@@ -13,9 +15,7 @@ module.exports = {
         throw err
       }
 
-      list.Peers.forEach((node) => {
-        console.log(node)
-      })
+      list.Peers.forEach((node) => print(node))
     })
   }
 }

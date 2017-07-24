@@ -3,6 +3,7 @@
 const Repo = require('ipfs-repo')
 const IPFS = require('../../core')
 const utils = require('../utils')
+const print = utils.print
 
 module.exports = {
   command: 'init',
@@ -26,8 +27,7 @@ module.exports = {
   handler (argv) {
     const path = utils.getRepoPath()
 
-    const log = utils.createLogger(true)
-    log(`initializing ipfs node at ${path}`)
+    print(`initializing ipfs node at ${path}`)
 
     const node = new IPFS({
       repo: new Repo(path),
@@ -38,7 +38,7 @@ module.exports = {
     node.init({
       bits: argv.bits,
       emptyRepo: argv.emptyRepo,
-      log: log
+      log: print
     }, (err) => {
       if (err) {
         if (err.code === 'EACCES') {

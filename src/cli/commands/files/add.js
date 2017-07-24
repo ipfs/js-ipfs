@@ -9,6 +9,7 @@ const paramap = require('pull-paramap')
 const zip = require('pull-zip')
 const toPull = require('stream-to-pull-stream')
 const utils = require('../../utils')
+const print = require('../../utils').print
 
 const WRAPPER = 'wrapper/'
 
@@ -77,7 +78,7 @@ function addPipeline (index, addStream, list, wrapWithDirectory) {
 
           return log.join(' ')
         })
-        .forEach((msg) => console.log(msg))
+        .forEach((msg) => print(msg))
     })
   )
 }

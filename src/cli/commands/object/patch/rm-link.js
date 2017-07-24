@@ -4,6 +4,7 @@ const DAGLink = require('ipld-dag-pb').DAGLink
 const debug = require('debug')
 const log = debug('cli:object')
 log.error = debug('cli:object:error')
+const print = require('../../../utils').print
 
 module.exports = {
   command: 'rm-link <root> <link>',
@@ -27,7 +28,7 @@ module.exports = {
 
       const nodeJSON = node.toJSON()
 
-      console.log(nodeJSON.multihash)
+      print(nodeJSON.multihash)
     })
   }
 }

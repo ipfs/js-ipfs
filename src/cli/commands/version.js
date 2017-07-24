@@ -1,5 +1,7 @@
 'use strict'
 
+const print = require('../utils').print
+
 module.exports = {
   command: 'version',
 
@@ -28,7 +30,7 @@ module.exports = {
         throw err
       }
 
-      console.log(`js-ipfs version: ${version.version}`)
+      print(`js-ipfs version: ${version.version}`)
     })
   }
 }

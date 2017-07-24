@@ -1,5 +1,7 @@
 'use strict'
 
+const print = require('../../utils').print
+
 module.exports = {
   command: 'links <key>',
 
@@ -18,11 +20,7 @@ module.exports = {
       links.forEach((link) => {
         link = link.toJSON()
 
-        console.log(
-          link.multihash,
-          link.size,
-          link.name
-        )
+        print(`${link.multihash} ${link.size} ${link.name}`)
       })
     })
   }

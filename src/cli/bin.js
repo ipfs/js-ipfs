@@ -6,6 +6,7 @@ const yargs = require('yargs')
 const updateNotifier = require('update-notifier')
 const readPkgUp = require('read-pkg-up')
 const utils = require('./utils')
+const print = utils.print
 
 const pkg = readPkgUp.sync({cwd: __dirname}).pkg
 updateNotifier({
@@ -14,6 +15,12 @@ updateNotifier({
 }).notify()
 
 const cli = yargs
+  .option('q', {
+    alias: 'quiet',
+    desc: 'suppress output',
+    type: 'boolean',
+    coerce: (quiet) => { if (quiet) { utils.disablePrinting() } }
+  })
   .commandDir('commands')
   .demandCommand(1)
   .fail((msg, err, yargs) => {
@@ -53,7 +60,7 @@ if (args[0] === 'daemon' || args[0] === 'init') {
       .strict(false)
       .completion()
       .parse(args, { ipfs: ipfs }, (err, argv, output) => {
-        if (output) { console.log(output) }
+        if (output) { print(output) }
 
         cleanup(() => {
           if (err) { throw err }

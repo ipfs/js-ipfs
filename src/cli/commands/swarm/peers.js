@@ -3,6 +3,7 @@
 const mafmt = require('mafmt')
 const multiaddr = require('multiaddr')
 const utils = require('../../utils')
+const print = require('../../utils').print
 
 module.exports = {
   command: 'peers',
@@ -27,7 +28,7 @@ module.exports = {
           ma = ma.encapsulate('/ipfs/' + item.peer.toB58String())
         }
         const addr = ma.toString()
-        console.log(addr)
+        print(addr)
       })
     })
   }

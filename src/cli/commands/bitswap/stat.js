@@ -1,6 +1,7 @@
 'use strict'
 
 const CID = require('cids')
+const print = require('../../utils').print
 
 module.exports = {
   command: 'stat',
@@ -23,7 +24,7 @@ module.exports = {
       })
       stats.Peers = stats.Peers || []
 
-      console.log(`bitswap status
+      print(`bitswap status
   blocks received: ${stats.BlocksReceived}
   dup blocks received: ${stats.DupBlksReceived}
   dup data received: ${stats.DupDataReceived}B

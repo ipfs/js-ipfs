@@ -1,5 +1,7 @@
 'use strict'
 
+const print = require('../../utils').print
+
 module.exports = {
   command: 'stat <key>',
 
@@ -18,7 +20,7 @@ module.exports = {
       delete stats.Hash // only for js-ipfs-api output
 
       Object.keys(stats).forEach((key) => {
-        console.log(`${key}: ${stats[key]}`)
+        print(`${key}: ${stats[key]}`)
       })
     })
   }
