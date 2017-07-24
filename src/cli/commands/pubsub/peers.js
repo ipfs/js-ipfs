@@ -15,7 +15,7 @@ module.exports = {
         throw err
       }
 
-      peers.forEach(print)
+      peers.forEach((peer) => print(peer))
     })
   }
 }

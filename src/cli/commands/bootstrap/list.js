@@ -15,7 +15,7 @@ module.exports = {
         throw err
       }
 
-      list.Peers.forEach(node => print(node))
+      list.Peers.forEach((node) => print(node))
     })
   }
 }

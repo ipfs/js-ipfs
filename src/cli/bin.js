@@ -15,6 +15,18 @@ updateNotifier({
 }).notify()
 
 const cli = yargs
+  .option('q', {
+    alias: 'quiet',
+    desc: 'suppress output',
+    type: 'boolean',
+    coerce: (quiet) => { if (quiet) { utils.printLevel = 0 } }
+  })
+  .option('v', {
+    alias: 'verbose',
+    desc: 'verbose mode, multiple -v increases verbosity',
+    count: true,
+    coerce: (verbosity) => { utils.printLevel = verbosity + 1 }
+  })
   .commandDir('commands')
   .demandCommand(1)
   .fail((msg, err, yargs) => {

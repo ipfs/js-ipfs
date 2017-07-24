@@ -69,18 +69,15 @@ exports.getRepoPath = () => {
   return process.env.IPFS_PATH || os.homedir() + '/.jsipfs'
 }
 
-exports.createLogger = (visible) => {
-  return (msg, newline) => {
-    if (newline === undefined) {
-      newline = true
-    }
-    if (visible) {
-      if (msg === undefined) {
-        msg = ''
-      }
-      msg = newline ? msg + '\n' : msg
-      process.stdout.write(msg)
-    }
+exports.printLevel = 1
+
+exports.print = (msg, options) => {
+  msg = msg || ''
+  if (typeof options === 'boolean') { options = { newline: options } }
+  options = Object.assign({ newline: true, printLevel: 1 }, options || {})
+
+  if (options.printLevel <= exports.printLevel) {
+    msg = options.newline ? msg + '\n' : msg
+    process.stdout.write(msg)
   }
 }
-exports.print = exports.createLogger(true) // TODO refactor/remove createLogger?
