@@ -69,15 +69,19 @@ exports.getRepoPath = () => {
   return process.env.IPFS_PATH || os.homedir() + '/.jsipfs'
 }
 
-exports.printLevel = 1
+let visible = true
+exports.disablePrinting = () => { visible = false }
 
-exports.print = (msg, options) => {
-  msg = msg || ''
-  if (typeof options === 'boolean') { options = { newline: options } }
-  options = Object.assign({ newline: true, printLevel: 1 }, options || {})
+exports.print = (msg, newline) => {
+  if (newline === undefined) {
+    newline = true
+  }
 
-  if (options.printLevel <= exports.printLevel) {
-    msg = options.newline ? msg + '\n' : msg
+  if (visible) {
+    if (msg === undefined) {
+      msg = ''
+    }
+    msg = newline ? msg + '\n' : msg
     process.stdout.write(msg)
   }
 }
