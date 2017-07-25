@@ -12,7 +12,7 @@ module.exports = {
   handler (argv) {
     argv.ipfs.repo.version(function (err, version) {
       if (err) {
-        return console.error(err)
+        throw err
       }
       print(version)
     })
