@@ -8,7 +8,7 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const bs58 = require('bs58')
-const Readable = require('readable-stream')
+const Readable = require('stream').Readable
 const loadFixture = require('aegir/fixtures')
 const bl = require('bl')
 const isNode = require('detect-node')
