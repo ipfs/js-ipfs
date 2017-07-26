@@ -109,7 +109,7 @@
     "ipfs-unixfs-engine": "~0.22.0",
     "ipld-resolver": "~0.13.0",
     "is-ipfs": "^0.3.0",
-    "isstream": "^0.1.2",
+    "is-stream": "^1.1.0",
     "joi": "^10.6.0",
     "libp2p": "^0.11.0",
     "libp2p-floodsub": "~0.11.0",

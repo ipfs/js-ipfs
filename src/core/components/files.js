@@ -11,7 +11,7 @@ const pushable = require('pull-pushable')
 const toStream = require('pull-stream-to-stream')
 const toPull = require('stream-to-pull-stream')
 const waterfall = require('async/waterfall')
-const isStream = require('isstream')
+const isStream = require('is-stream')
 const Duplex = require('stream').Duplex
 
 module.exports = function files (self) {
@@ -144,7 +144,7 @@ function normalizeContent (content) {
     }
 
     // Readable stream input
-    if (isStream.isReadable(data)) {
+    if (isStream.readable(data)) {
       data = {
         path: '',
         content: toPull.source(data)
@@ -156,7 +156,7 @@ function normalizeContent (content) {
         data.content = pull.values([data.content])
       }
 
-      if (isStream.isReadable(data.content)) {
+      if (isStream.readable(data.content)) {
         data.content = toPull.source(data.content)
       }
     }
