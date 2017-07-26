@@ -1,4 +1,4 @@
-# Tutorial - Transfer files between the browser and other IPFS nodes
+# Tutorial - Build a tiny browser app to exchange files between nodes
 
 > Welcome! This tutorial will help you exchange files between browser nodes and go-ipfs nodes.
 

@@ -8,8 +8,8 @@ Let us know if you find any issue or if you want to contribute and add a new tut
 
 - [Tutorial: IPFS 101, spawn a node and add a file to IPFS](./ipfs-101)
 - [Tutorial: Build a tiny browser app to exchange files between nodes](./exchange-files-in-browser)
-- [Tutorial: Use the IPFS CLI directly from your terminal](./ipfs-cli-fun)
-- [Tutorial: Learn how to resolve through IPLD graphs with the dag API](./traverse-ipld-graphs)
+- [Tutorial: Interact with IPFS directly from your Terminal](./ipfs-cli-fun)
+- [Tutorial: Resolve through IPLD graphs with the dag API](./traverse-ipld-graphs)
 - [Tutorial: Use IPFS to explore the Ethereum BlockChain](./explore-ethereum-blockchain)
 - [Tutorial: How to build an application with IPFS PubSub Room](https://www.youtube.com/watch?v=Nv_Teb--1zg)
 - [Tutorial: How to build an Collaborative Editing Application with IPFS using CRDT](https://www.youtube.com/watch?v=-kdx8rJd8rQ)

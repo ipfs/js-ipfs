@@ -23,13 +23,11 @@ series([
     fileMultihash = result[0].hash
     // cb()
   }),
-  (cb) => {
-    node.files.cat(fileMultihash, (err, stream) => {
-      if (err) { return cb(err) }
+  (cb) => node.files.cat(fileMultihash, (err, stream) => {
+    if (err) { return cb(err) }
 
-      console.log('\nFile content:')
-      stream.pipe(process.stdout)
-      stream.on('end', process.exit)
-    })
-  }
+    console.log('\nFile content:')
+    stream.pipe(process.stdout)
+    stream.on('end', process.exit)
+  })
 ])
