@@ -14,5 +14,6 @@ COPY . /usr/src/app
 
 ENV IPFS_WRTC_LINUX_WINDOWS=1
 ENV IPFS_BOOTSTRAP=1
+ENV IPFS_MONITORING=1
 
 CMD ./init-and-daemon.sh
