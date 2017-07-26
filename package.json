@@ -153,6 +153,10 @@
     "update-notifier": "^2.2.0",
     "yargs": "8.0.2"
   },
+  "optionalDependencies": {
+    "prom-client": "^10.0.2",
+    "prometheus-gc-stats": "^0.5.0"
+  },
   "contributors": [
     "Andrew de Andrade <andrew@deandrade.com.br>",
     "CHEVALAY JOSSELIN <josselin54.chevalay@gmail.com>",
@@ -170,7 +174,9 @@
     "Greenkeeper <support@greenkeeper.io>",
     "Haad <haadcode@users.noreply.github.com>",
     "Harsh Vakharia <harshjv@users.noreply.github.com>",
+    "Jon Schlinkert <dev@sellside.com>",
     "João Antunes <j.goncalo.antunes@gmail.com>",
+    "Kevin Wang <kevin@fossa.io>",
     "Lars Gierth <larsg@systemli.org>",
     "Marius Darila <marius.darila@gmail.com>",
     "Michelle Lee <michelle@protocol.ai>",

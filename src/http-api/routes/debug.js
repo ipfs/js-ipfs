@@ -18,6 +18,10 @@ module.exports = (server) => {
     method: 'GET',
     path: '/debug/metrics/prometheus',
     handler: (request, reply) => {
+      if (!process.env.IPFS_MONITORING) {
+        return reply('Monitoring is disabled. Enable it by setting environment variable IPFS_MONITORING')
+          .code(501) // 501 = Not Implemented
+      }
       reply(register.metrics()).header('Content-Type', register.contentType)
     }
   })

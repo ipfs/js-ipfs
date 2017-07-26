@@ -7,8 +7,6 @@ const multiaddr = require('multiaddr')
 const setHeader = require('hapi-set-header')
 const once = require('once')
 
-const prometheusClient = require('prom-client')
-const prometheusGcStats = require('prometheus-gc-stats')
 
 const IPFS = require('../core')
 const WStar = require('libp2p-webrtc-star')
@@ -26,10 +24,14 @@ function HttpApi (repo, config, cliArgs) {
   this.log = debug('jsipfs:http-api')
   this.log.error = debug('jsipfs:http-api:error')
 
-  // Setup debug metrics collection
-  const collectDefaultMetrics = prometheusClient.collectDefaultMetrics
-  collectDefaultMetrics({ timeout: 5000 })
-  prometheusGcStats(prometheusClient.register)()
+  if (process.env.IPFS_MONITORING) {
+    // Setup debug metrics collection
+    const prometheusClient = require('prom-client')
+    const prometheusGcStats = require('prometheus-gc-stats')
+    const collectDefaultMetrics = prometheusClient.collectDefaultMetrics
+    collectDefaultMetrics({ timeout: 5000 })
+    prometheusGcStats(prometheusClient.register)()
+  }
 
   this.start = (init, callback) => {
     if (typeof init === 'function') {
