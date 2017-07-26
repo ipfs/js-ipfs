@@ -1,5 +1,5 @@
-Create and resolve through graphs with the dag API
-==================================================
+Resolve through IPLD graphs with the dag API
+============================================
 
 In this set of examples, you can find snippets of code to:
 

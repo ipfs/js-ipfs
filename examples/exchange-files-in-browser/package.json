@@ -1,0 +1,11 @@
+{
+  "name": "exchange-files-browser",
+  "version": "0.0.0",
+  "scripts": {
+    "start": "http-server -c-1 -p 12345 public"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^0.10.0"
+  }
+}

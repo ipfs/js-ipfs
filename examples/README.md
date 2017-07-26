@@ -6,16 +6,29 @@ Let us know if you find any issue or if you want to contribute and add a new tut
 
 ## Tutorials
 
-- [Tutorial: Create and resolve through graphs with the dag API](./dag)
-- [Tutorial: Transfer files and connect to the to other nodes](./transfer-files)
-- [Tutorial: Use IPFS to explore the Ethereum BlockChain](./explore-ethereum)
+- [Tutorial: IPFS 101, spawn a node and add a file to IPFS](./ipfs-101)
+- [Tutorial: Build a tiny browser app to exchange files between nodes](./exchange-files-in-browser)
+- [Tutorial: Interact with IPFS directly from your Terminal](./ipfs-cli-fun)
+- [Tutorial: Resolve through IPLD graphs with the dag API](./traverse-ipld-graphs)
+- [Tutorial: Use IPFS to explore the Ethereum BlockChain](./explore-ethereum-blockchain)
 - [Tutorial: How to build an application with IPFS PubSub Room](https://www.youtube.com/watch?v=Nv_Teb--1zg)
 - [Tutorial: How to build an Collaborative Editing Application with IPFS using CRDT](https://www.youtube.com/watch?v=-kdx8rJd8rQ)
 
 ## Examples
 
-- [js-ipfs basic, how to spawn a node and add a file to IPFS](./basics)
-- [How to bundle js-ipfs with Browserify](./bundle-browserify)
-- [How to bundle js-ipfs with WebPack](./bundle-webpack)
-- [How to use js-ipfs with a script tag](./browser-script-tag)
-- [Use js-ipfs in electron](./electron)
+- [js-ipfs in the browser with Browserify](./browser-browserify)
+- [js-ipfs in the browser with WebPack](./browser-webpack)
+- [js-ipfs in the browser with a `<script>` tag](./browser-script-tag)
+- [js-ipfs in electron](./run-in-electron)
+
+## Understanding the IPFS Stack
+
+In this section, you will find explanations to different pieces of IPFS Architecture and how `js-ipfs` implements them.
+
+![](../img/core.png)
+
+> These explanations are still a work in progress
+
+- Storing and Retrieving blocks (soon™)
+- IPLD (InterPlanetary Linked-Data) (soon™)
+- IPFS Networking - Managing your swarm, libp2p and more (soon™)

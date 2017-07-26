@@ -1,4 +1,4 @@
-# Resolve the ethereum blockchain through IPFS
+# Use IPFS to explore the Ethereum Blockchain
 
 > This is a pre-example to a full Ethereum to IPFS bridge. It shows how to resolve Ethereum hashes through the IPFS DAG get API.
 
