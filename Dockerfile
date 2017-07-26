@@ -8,7 +8,11 @@ WORKDIR /usr/src/app
 COPY package.json /usr/src/app/package.json
 
 RUN npm install
+RUN npm install wrtc
 
 COPY . /usr/src/app
 
-ENTRYPOINT ["node", "src/cli/bin.js"]
+ENV IPFS_WRTC_LINUX_WINDOWS=1
+ENV IPFS_BOOTSTRAP=1
+
+CMD ./init-and-daemon.sh
