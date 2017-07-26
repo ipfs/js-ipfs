@@ -4,7 +4,7 @@
 const expect = require('chai').expect
 const runOnAndOff = require('../utils/on-and-off')
 
-describe('general cli options', () => runOnAndOff((thing) => {
+describe('general cli options', () => runOnAndOff.off((thing) => {
   it('should handle --quiet flag', () => {
     return thing.ipfs('help --quiet').then((out) => {
       expect(out).to.be.empty()
