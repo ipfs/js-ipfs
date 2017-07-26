@@ -1,13 +1,13 @@
 'use strict'
 
-const isStream = require('isstream')
+const isStream = require('is-stream')
 const promisify = require('promisify-es6')
 const DAGNodeStream = require('../utils/dagnode-stream')
 
 module.exports = (send) => {
   return promisify((files, callback) => {
     const ok = Buffer.isBuffer(files) ||
-               isStream.isReadable(files) ||
+               isStream.readable(files) ||
                Array.isArray(files)
 
     if (!ok) {

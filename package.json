@@ -34,7 +34,7 @@
     "ipfs-unixfs": "~0.1.12",
     "ipld-dag-pb": "~0.11.0",
     "is-ipfs": "^0.3.0",
-    "isstream": "^0.1.2",
+    "is-stream": "^1.1.0",
     "lru-cache": "^4.1.1",
     "multiaddr": "^2.3.0",
     "multihashes": "~0.4.5",
