@@ -51,6 +51,8 @@ function HttpApi (repo, config, cliArgs) {
         try { wrtc = require('wrtc') } catch (err) {}
 
         if (wrtc || electronWebRTC) {
+          const using = wrtc ? 'wrtc' : 'electron-webrtc'
+          console.log(`Using ${using} for webrtc support`)
           const wstar = new WStar({ wrtc: (wrtc || electronWebRTC) })
           libp2p.modules.transport = [wstar]
           libp2p.modules.discovery = [wstar.discovery]
