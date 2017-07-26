@@ -1,3 +1,13 @@
+<a name="14.1.1"></a>
+## [14.1.1](https://github.com/ipfs/js-ipfs-api/compare/v14.1.0...v14.1.1) (2017-07-26)
+
+
+### Bug Fixes
+
+* [#572](https://github.com/ipfs/js-ipfs-api/issues/572) ([3354901](https://github.com/ipfs/js-ipfs-api/commit/3354901))
+
+
+
 <a name="14.1.0"></a>
 # [14.1.0](https://github.com/ipfs/js-ipfs-api/compare/v14.0.4...v14.1.0) (2017-07-22)
 
