@@ -5,15 +5,11 @@ matrix:
   include:
   - node_js: 6
   - node_js: 8
-  - node_js: stable
-
-# Make sure we have new NPM.
-before_install:
-  - npm install -g npm@4
+  #  - node_js: stable
 
 script:
   - npm run lint
-  - npm test
+  - npm run test
   - npm run coverage
   - make test
 
