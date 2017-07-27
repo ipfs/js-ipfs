@@ -2,10 +2,7 @@
 
 > Welcome! This tutorial will help you exchange files between browser nodes and go-ipfs nodes.
 
-There are a couple of caveats:
-
-- js-ipfs currently doesn't support DHT peer discovery, the peer from which you are fetching data should be within the reach (local or in public IP) of the browser node.
-- We need to use a signalling server to establish the WebRTC connections, this won't be necessary as soon as libp2p-relay gets developed
+caveat: js-ipfs currently doesn't support DHT peer discovery, the peer from which you are fetching data should be within the reach (local or in public IP) of the browser node.
 
 That being said, we will explain throughout this tutorial to circunvent the caveats and once they are fixed, we will update the tutorial as well.
 
@@ -14,18 +11,16 @@ That being said, we will explain throughout this tutorial to circunvent the cave
 The goal of this tutorial is to create a application with a IPFS node that dials to other instances of it using WebRTC, and at the same time dial and transfer files from a Desktop IPFS node using WebSockets as the transport.
 
 ```
-┌──────────────┐                   ┌──────────────┐
-│   Browser    │                   │   Browser    │
-│              │      WebRTC       │              │
-│              │◀─────────────────▶│              │
-└──────────────┘                   └──────────────┘
-        ▲                                  ▲
-        │                                  │
-        │WebSockets              WebSockets│
-        │        ┌──────────────┐          │
-        │        │   Desktop    │          │
-        └───────▶│              │◀─────────┘
-                 └──────────────┘
+┌──────────────┐                ┌──────────────┐
+│   Browser    │ libp2p(WebRTC) │   Browser    │
+│              │◀──────────────▶│              │
+└──────────────┘                └──────────────┘
+       ▲                                  ▲
+       │WebSockets              WebSockets│
+       │        ┌──────────────┐          │
+       │        │   Desktop    │          │
+       └───────▶│   Terminal   │◀─────────┘
+                └──────────────┘
 ```
 
 ## Check out the final state
@@ -83,26 +78,26 @@ Note: js-ipfs sets up a websocket listener by default, if you are just using js-
 Since websockets support is currently not on by default, you'll need to add a WebSockets address manually. Look into your config file and find the `Addresses` section:
 
 ```json
-  "Addresses": {
-    "Swarm": [
-      "/ip4/0.0.0.0/tcp/4002"
-    ],
-    "API": "/ip4/127.0.0.1/tcp/5002",
-    "Gateway": "/ip4/127.0.0.1/tcp/9090"
-  }
+"Addresses": {
+  "Swarm": [
+    "/ip4/0.0.0.0/tcp/4002"
+  ],
+  "API": "/ip4/127.0.0.1/tcp/5002",
+  "Gateway": "/ip4/127.0.0.1/tcp/9090"
+}
 ```
 
 Add the following entry to your `Swarm` array: `/ip4/127.0.0.1/tcp/9999/ws`. Now, it should look like this: 
 
 ```json
-  "Addresses": {
-    "Swarm": [
-      "/ip4/0.0.0.0/tcp/4002",
-      "/ip4/127.0.0.1/tcp/9999/ws"
-    ],
-    "API": "/ip4/127.0.0.1/tcp/5002",
-    "Gateway": "/ip4/127.0.0.1/tcp/9090"
-  }
+"Addresses": {
+  "Swarm": [
+    "/ip4/0.0.0.0/tcp/4002",
+    "/ip4/127.0.0.1/tcp/9999/ws"
+  ],
+  "API": "/ip4/127.0.0.1/tcp/5002",
+  "Gateway": "/ip4/127.0.0.1/tcp/9090"
+}
 ```
 
 Now it should listen on Websockets. We're ready to start the daemon.
