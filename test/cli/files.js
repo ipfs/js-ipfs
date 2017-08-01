@@ -254,6 +254,46 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
+  it('ls', () => {
+    return ipfs('ls QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
+      .then((out) => {
+        expect(out).to.eql(
+          'QmQQHYDwAQms78fPcvx1uFFsfho23YJNoewfLbi9AtdyJ9 123530 blocks\n' +
+          'QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN 3939   config\n' +
+          'Qma13ZrhKG52MWnwtZ6fMD8jGj8d4Q9sJgn5xtKgeZw5uz 5503   datastore\n' +
+          'QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU 7397   init-docs\n' +
+          'QmR56UJmAaZLXLdTT1ALrE9vVqV8soUEekm9BMd4FnuYqV 10     version\n')
+      })
+  })
+
+  it('ls -v', () => {
+    return ipfs('ls /ipfs/QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2 -v')
+      .then((out) => {
+        expect(out).to.eql(
+          'Hash                                           Size   Name\n' +
+          'QmQQHYDwAQms78fPcvx1uFFsfho23YJNoewfLbi9AtdyJ9 123530 blocks\n' +
+          'QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN 3939   config\n' +
+          'Qma13ZrhKG52MWnwtZ6fMD8jGj8d4Q9sJgn5xtKgeZw5uz 5503   datastore\n' +
+          'QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU 7397   init-docs\n' +
+          'QmR56UJmAaZLXLdTT1ALrE9vVqV8soUEekm9BMd4FnuYqV 10     version\n')
+      })
+  })
+
+  it('ls --help', () => {
+    return ipfs('ls --help')
+      .then((out) => {
+        expect(out.split('\n').slice(1)).to.eql(['',
+          'Options:',
+          '  -q, --quiet     suppress output                                      [boolean]',
+          '  --help          Show help                                            [boolean]',
+          '  -v, --headers   Print table headers (Hash, Size, Name).',
+          '                                                      [boolean] [default: false]',
+          '  --resolve-type  Resolve linked objects to find out their types. (not',
+          '                  implemented yet)                    [boolean] [default: false]',
+          '', ''])
+      })
+  })
+
   it('get', () => {
     return ipfs('files get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
       .then((out) => {
