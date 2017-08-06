@@ -24,10 +24,9 @@
   <a href="https://github.com/feross/standard"><img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square"></a>
   <a href="https://github.com/RichardLitt/standard-readme"><img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square" /></a>
   <a href=""><img src="https://img.shields.io/badge/npm-%3E%3D3.0.0-orange.svg?style=flat-square" /></a>
-  <a href=""><img src="https://img.shields.io/badge/Node.js-%3E%3D4.0.0-orange.svg?style=flat-square" /></a>
+  <a href=""><img src="https://img.shields.io/badge/Node.js-%3E%3D6.0.0-orange.svg?style=flat-square" /></a>
   <br>
 </p>
-
 
 > A client library for the IPFS HTTP API, implemented in JavaScript. This client library implements the [interface-ipfs-core](https://github.com/ipfs/interface-ipfs-core) enabling applications to change between a embebed js-ipfs node and any remote IPFS node without having to change the code. In addition, this client library implements a set of utility functions.
 
@@ -54,7 +53,7 @@ This module uses node.js, and can be installed through npm:
 > npm install --save ipfs-api
 ```
 
-**Note:** ipfs-api requires Node.js v4 (LTS) or higher.
+**Note:** ipfs-api requires Node.js v6 (LTS) or higher.
 
 ### Running the daemon with the right port
 
