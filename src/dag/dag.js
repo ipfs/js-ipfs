@@ -17,7 +17,7 @@ module.exports = (send) => {
 
       callback = callback || noop
 
-      let hashAlg = options.hashAlg || 'sha2-256'
+      let hashAlg = options.hash || 'sha2-256'
       let format
       let inputEnc
 
@@ -33,20 +33,12 @@ module.exports = (send) => {
       }
 
       function prepare () {
-        if (format === 'dag-cbor') {
-          // TODO change this once
-          // https://github.com/ipfs/go-ipfs/issues/3771 is finished
-          format = 'cbor'
+        inputEnc = 'raw'
 
-          inputEnc = 'cbor'
+        if (format === 'dag-cbor') {
           dagCBOR.util.serialize(dagNode, finalize)
         }
         if (format === 'dag-pb') {
-          // TODO change this once
-          // https://github.com/ipfs/go-ipfs/issues/3771 is finished
-          format = 'protobuf'
-
-          inputEnc = 'protobuf'
           dagPB.util.serialize(dagNode, finalize)
         }
       }
@@ -57,9 +49,9 @@ module.exports = (send) => {
         send({
           path: 'dag/put',
           qs: {
-            hashAlg: hashAlg, // not implemented in go yet https://github.com/ipfs/go-ipfs/issues/3771
+            hash: hashAlg,
             format: format,
-            inputenc: inputEnc
+            'input-enc': inputEnc
           },
           files: serialized
         }, (err, result) => {
