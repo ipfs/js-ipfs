@@ -5,6 +5,7 @@ const dagCBOR = require('ipld-dag-cbor')
 const promisify = require('promisify-es6')
 const CID = require('cids')
 const multihash = require('multihashes')
+const block = require('./block')
 
 function noop () {}
 
@@ -96,14 +97,28 @@ module.exports = (send) => {
       }
 
       send({
-        path: 'dag/get',
+        path: 'dag/resolve',
         args: cid + '/' + path,
         qs: options
-      }, (err, result) => {
+      }, (err, resolved) => {
         if (err) {
           return callback(err)
         }
-        callback(undefined, {value: result})
+
+        let resolvedCid = new CID(resolved['Cid']['/'])
+
+        block(send).get(resolvedCid, (err, blk) => {
+          if (err) {
+            return callback(err)
+          }
+
+          if (resolvedCid.codec === 'dag-cbor') {
+            dagCBOR.resolver.resolve(blk, resolved['RemPath'], callback)
+          }
+          if (resolvedCid.codec === 'dag-pb') {
+            dagCBOR.resolver.resolve(blk, resolved['RemPath'], callback)
+          }
+        })
       })
     })
   }
