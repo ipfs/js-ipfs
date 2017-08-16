@@ -352,7 +352,7 @@ To add WebRTC support in a IPFS node instance, do:
 ```JavaScript
 const wrtc = require('wrtc') // or require('electron-webrtc')()
 const WStar = require('libp2p-webrtc-star')
-const wstar = WStar({ wrtc: wrtc })
+const wstar = new WStar({ wrtc: wrtc })
 
 const node = new IPFS({
   repo: 'your-repo-path',
@@ -368,7 +368,7 @@ const node = new IPFS({
   },
   libp2p: {
     modules: {
-      transport: [wstar]
+      transport: [wstar],
       discovery: [wstar.discovery]
     }
   }
