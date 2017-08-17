@@ -51,7 +51,7 @@ module.exports = (common) => {
 
     after((done) => common.teardown(done))
 
-    describe('callback API', (done) => {
+    describe('callback API', () => {
       describe('.add', () => {
         it('stream', (done) => {
           const buffered = Buffer.from('some data')
