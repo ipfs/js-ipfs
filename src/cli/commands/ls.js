@@ -1,6 +1,6 @@
 'use strict'
 
-const {print, rightpad} = require('../utils')
+const utils = require('../utils')
 const Unixfs = require('ipfs-unixfs')
 
 module.exports = {
@@ -51,8 +51,8 @@ module.exports = {
       const sizeWidth = Math.max.apply(null, links.map((file) => String(file.size).length))
 
       links.forEach((file) => {
-        print(rightpad(file.multihash, multihashWidth + 1) +
-          rightpad(file.size, sizeWidth + 1) +
+        utils.print(utils.rightpad(file.multihash, multihashWidth + 1) +
+          utils.rightpad(file.size, sizeWidth + 1) +
             file.name)
       })
     })
