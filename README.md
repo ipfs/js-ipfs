@@ -102,7 +102,7 @@ In order to be considered "valid", an IPFS core implementation  must expose the 
 - [dht (not spec'ed yet)](/API/dht)
 - [files](/API/files)
   - [`add`](/API/files#add)
-  - [`createAddStream`](/files#createaddstream)
+  - [`createAddStream`](/API/files#createaddstream)
   - [`get`](/API/files#get)
   - [`cat`](/API/files#cat)
 - [generic operations](/API/generic)
