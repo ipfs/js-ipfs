@@ -36,6 +36,7 @@ module.exports = function init (self) {
     opts.emptyRepo = opts.emptyRepo || false
     opts.bits = Number(opts.bits) || 2048
     opts.log = opts.log || function () {}
+    opts.type = opts.type || 'RSA'
 
     waterfall([
       // Verify repo does not yet exist.
@@ -47,9 +48,9 @@ module.exports = function init (self) {
         }
 
         // Generate peer identity keypair + transform to desired format + add to config.
-        opts.log(`generating ${opts.bits}-bit RSA keypair...`, false)
+        opts.log(`generating ${opts.bits}-bit ${opts.type} keypair...`, false)
         self.log('generating peer id: %s bits', opts.bits)
-        peerId.create({bits: opts.bits}, cb)
+        peerId.create({bits: opts.bits, type: opts.type}, cb)
       },
       (keys, cb) => {
         self.log('identity generated')
