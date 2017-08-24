@@ -21,6 +21,12 @@ module.exports = {
       alias: 'e',
       type: 'boolean',
       describe: "Don't add and pin help files to the local storage"
+    },
+    type: {
+      alias: 't',
+      type: 'string',
+      default: 'RSA',
+      describe: 'Choose the key type used by your node'
     }
   },
 
