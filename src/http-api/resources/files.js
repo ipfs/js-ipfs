@@ -11,10 +11,11 @@ const toPull = require('stream-to-pull-stream')
 const pushable = require('pull-pushable')
 const EOL = require('os').EOL
 const toStream = require('pull-stream-to-stream')
+const fileType = require('file-type')
 const mime = require('mime-types')
-
 const GatewayResolver = require('../gateway/resolver')
 const PathUtils = require('../gateway/utils/path')
+const Stream = require('stream')
 
 exports = module.exports
 
@@ -245,21 +246,58 @@ exports.gateway = {
                         .redirect(PathUtils.removeTrailingSlash(ref))
                         .permanent(true)
                } else {
-                 const mimeType = mime.lookup(ref)
-
                  if (!stream._read) {
                    stream._read = () => {}
                    stream._readableState = {}
                  }
 
-                 if (mimeType) {
-                   return reply(stream)
-                          .header('Content-Type', mime.contentType(mimeType))
-                          .header('X-Stream-Output', '1')
-                 } else {
-                   return reply(stream)
-                          .header('X-Stream-Output', '1')
-                 }
+                 let filetypeChecked = false
+                 let stream2 = new Stream.PassThrough({highWaterMark: 1})
+                 let response = reply(stream2).hold()
+
+                 pull(
+                   toPull.source(stream),
+                   pull.drain((chunk) => {
+                     if (chunk.length > 0 && !filetypeChecked) {
+                       console.log('got first chunk')
+                       let fileSignature = fileType(chunk)
+                       console.log('file type: ', fileSignature)
+
+                       filetypeChecked = true
+                       const mimeType = mime.lookup((fileSignature) ? fileSignature.ext : null)
+                       console.log('ref ', ref)
+                       console.log('mime-type ', mimeType)
+
+                       if (mimeType) {
+                         console.log('writing mimeType')
+
+                         response
+                           .header('Content-Type', mime.contentType(mimeType))
+                           .header('Access-Control-Allow-Headers', 'X-Stream-Output, X-Chunked-Ouput')
+                           .header('Access-Control-Allow-Methods', 'GET')
+                           .header('Access-Control-Allow-Origin', '*')
+                           .header('Access-Control-Expose-Headers', 'X-Stream-Output, X-Chunked-Ouput')
+                           .send()
+                       } else {
+                         response
+                          .header('Access-Control-Allow-Headers', 'X-Stream-Output, X-Chunked-Ouput')
+                          .header('Access-Control-Allow-Methods', 'GET')
+                          .header('Access-Control-Allow-Origin', '*')
+                          .header('Access-Control-Expose-Headers', 'X-Stream-Output, X-Chunked-Ouput')
+                          .send()
+                       }
+
+                       stream2.write(chunk)
+                     } else {
+                      //  console.log('chunk length: ', chunk.length)
+                       stream2.write(chunk)
+                     }
+                   }, (err) => {
+                     if (err) throw err
+                     console.log('stream ended.')
+                     stream2.end()
+                   })
+                 )
                }
              })
              .catch((err) => {

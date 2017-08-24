@@ -1,7 +1,9 @@
 'use strict'
 
 const mh = require('multihashes')
-const pf = require('promised-for')
+// const pf = require('promised-for')
+const promisify = require('promisify-es6')
+const eachOf = require('async/eachOf')
 
 const html = require('./utils/html')
 const PathUtil = require('./utils/path')
@@ -25,60 +27,109 @@ const resolveDirectory = (ipfs, path, multihash) => {
          })
 }
 
-const resolveMultihash = (ipfs, path) => {
+const noop = function () {}
+
+const resolveMultihash = promisify((ipfs, path, callback) => {
+  if (!callback) {
+    callback = noop
+  }
+
   const parts = PathUtil.splitPath(path)
   const partsLength = parts.length
 
-  return pf(
-    {
-      multihash: parts[0],
-      index: 0
-    },
-    (i) => i.index < partsLength,
-    (i) => {
-      const currentIndex = i.index
-      const currentMultihash = i.multihash
+  let currentMultihash = parts[0]
 
-      // throws error when invalid multihash is passed
-      mh.validate(mh.fromB58String(currentMultihash))
+  eachOf(parts, (multihash, currentIndex, next) => {
+    // throws error when invalid multihash is passed
+    mh.validate(mh.fromB58String(currentMultihash))
 
-      return ipfs
-             .object
-             .get(currentMultihash, { enc: 'base58' })
-             .then((DAGNode) => {
-               if (currentIndex === partsLength - 1) {
-                  // leaf node
-                 return {
-                   multihash: currentMultihash,
-                   index: currentIndex + 1
-                 }
-               } else {
-                  // find multihash of requested named-file
-                  // in current DAGNode's links
-                 let multihashOfNextFile
-                 const nextFileName = parts[currentIndex + 1]
-                 const links = DAGNode.links
+    ipfs
+     .object
+     .get(currentMultihash, { enc: 'base58' })
+     .then((DAGNode) => {
+       if (currentIndex === partsLength - 1) {
+          // leaf node
+         console.log('leaf node: ', currentMultihash)
+         next()
+       } else {
+          // find multihash of requested named-file
+          // in current DAGNode's links
+         let multihashOfNextFile
+         const nextFileName = parts[currentIndex + 1]
+         const links = DAGNode.links
 
-                 for (let link of links) {
-                   if (link.name === nextFileName) {
-                      // found multihash of requested named-file
-                     multihashOfNextFile = mh.toB58String(link.multihash)
-                     break
-                   }
-                 }
+         for (let link of links) {
+           if (link.name === nextFileName) {
+              // found multihash of requested named-file
+             multihashOfNextFile = mh.toB58String(link.multihash)
+             console.log('found multihash: ', multihashOfNextFile)
+             break
+           }
+         }
 
-                 if (!multihashOfNextFile) {
-                   throw new Error(`no link named "${nextFileName}" under ${currentMultihash}`)
-                 }
+         if (!multihashOfNextFile) {
+           throw new Error(`no link named "${nextFileName}" under ${currentMultihash}`)
+         }
 
-                 return {
-                   multihash: multihashOfNextFile,
-                   index: currentIndex + 1
-                 }
-               }
-             })
-    })
-}
+         currentMultihash = multihashOfNextFile
+         next()
+       }
+     })
+  }, (err) => {
+    if (err) throw err
+    callback(null, {multihash: currentMultihash})
+  })
+  // Original implementation
+  // return pf(
+  //   {
+  //     multihash: parts[0],
+  //     index: 0
+  //   },
+  //   (i) => i.index < partsLength,
+  //   (i) => {
+  //     const currentIndex = i.index
+  //     const currentMultihash = i.multihash
+  //
+  //     // throws error when invalid multihash is passed
+  //     mh.validate(mh.fromB58String(currentMultihash))
+  //
+  //     return ipfs
+  //            .object
+  //            .get(currentMultihash, { enc: 'base58' })
+  //            .then((DAGNode) => {
+  //              if (currentIndex === partsLength - 1) {
+  //                 // leaf node
+  //                return {
+  //                  multihash: currentMultihash,
+  //                  index: currentIndex + 1
+  //                }
+  //              } else {
+  //                 // find multihash of requested named-file
+  //                 // in current DAGNode's links
+  //                let multihashOfNextFile
+  //                const nextFileName = parts[currentIndex + 1]
+  //                const links = DAGNode.links
+  //
+  //                for (let link of links) {
+  //                  if (link.name === nextFileName) {
+  //                     // found multihash of requested named-file
+  //                    multihashOfNextFile = mh.toB58String(link.multihash)
+  //                    break
+  //                  }
+  //                }
+  //
+  //                if (!multihashOfNextFile) {
+  //                  throw new Error(`no link named "${nextFileName}" under ${currentMultihash}`)
+  //                }
+  //
+  //                return {
+  //                  multihash: multihashOfNextFile,
+  //                  index: currentIndex + 1
+  //                }
+  //              }
+  //            })
+  //   })
+})
 
 module.exports = {
   resolveDirectory,
