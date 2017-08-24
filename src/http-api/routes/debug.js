@@ -1,5 +1,6 @@
 const register = require('prom-client').register
 const client = require('prom-client')
+const boom = require('boom')
 
 // Endpoint for handling debug metrics
 module.exports = (server) => {
@@ -15,7 +16,9 @@ module.exports = (server) => {
           .code(501) // 501 = Not Implemented
       }
       server.app.ipfs.swarm.peers((err, res) => {
-        if (err) throw err
+        if (err) {
+          return reply(err).code(500)
+        }
         const count = res.length
         gauge.set(count)
         reply(register.metrics()).header('Content-Type', register.contentType)
