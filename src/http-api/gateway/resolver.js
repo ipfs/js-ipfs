@@ -3,20 +3,19 @@
 const mh = require('multihashes')
 // const pf = require('promised-for')
 const promisify = require('promisify-es6')
-const eachOf = require('async/eachOf')
+const eachOfSeries = require('async/eachOfSeries')
 
 const html = require('./utils/html')
 const PathUtil = require('./utils/path')
 
 const INDEX_HTML_FILES = [ 'index.html', 'index.htm', 'index.shtml' ]
 
-const resolveDirectory = promisify((ipfs, path, callback) => {
+const resolveDirectory = promisify((ipfs, path, multihash, callback) => {
   if (!callback) {
     callback = noop
   }
 
-  const parts = PathUtil.splitPath(path)
-  const multihash = parts[0]
+  mh.validate(mh.fromB58String(multihash))
 
   ipfs
    .object
@@ -46,24 +45,38 @@ const resolveMultihash = promisify((ipfs, path, callback) => {
 
   let currentMultihash = parts[0]
 
-  eachOf(parts, (multihash, currentIndex, next) => {
+  eachOfSeries(parts, (multihash, currentIndex, next) => {
     // throws error when invalid multihash is passed
     mh.validate(mh.fromB58String(currentMultihash))
+    console.log('currentMultihash: ', currentMultihash)
+    console.log('currentIndex: ', currentIndex, '/', partsLength)
 
     ipfs
      .object
      .get(currentMultihash, { enc: 'base58' })
      .then((DAGNode) => {
-       //  console.log('DAGNode: ', DAGNode)
-       if (DAGNode.links && DAGNode.links.length > 0 && DAGNode.links[0].name.length > 0) {
-         //  this is a directory.
-         // fire directory error here.
-         return next(new Error('This dag node is a directory'))
-       }
-
+      //  console.log('DAGNode: ', DAGNode)
        if (currentIndex === partsLength - 1) {
           // leaf node
          console.log('leaf node: ', currentMultihash)
+         console.log('DAGNode: ', DAGNode.links)
+
+         if (DAGNode.links &&
+           DAGNode.links.length > 0 &&
+           DAGNode.links[0].name.length > 0) {
+           for (let link of DAGNode.links) {
+             if (mh.toB58String(link.multihash) === currentMultihash) {
+               return next()
+             }
+           }
+
+           //  this is a directory.
+           let isDirErr = new Error('This dag node is a directory')
+           // add currentMultihash as a fileName so it can be used by resolveDirectory
+           isDirErr.fileName = currentMultihash
+           return next(isDirErr)
+         }
+
          next()
        } else {
           // find multihash of requested named-file

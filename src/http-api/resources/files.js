@@ -307,12 +307,12 @@ exports.gateway = {
                }
              })
            }).catch((err) => {
-             console.log('err: ', err.toString())
+             console.log('err: ', err.toString(), ' fileName: ', err.fileName)
 
              const errorToString = err.toString()
              if (errorToString === 'Error: This dag node is a directory') {
                return GatewayResolver
-                      .resolveDirectory(ipfs, ref)
+                      .resolveDirectory(ipfs, ref, err.fileName)
                       .then((data) => {
                         if (typeof data === 'string') {
                           // no index file found
