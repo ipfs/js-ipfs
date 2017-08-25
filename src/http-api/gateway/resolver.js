@@ -10,22 +10,29 @@ const PathUtil = require('./utils/path')
 
 const INDEX_HTML_FILES = [ 'index.html', 'index.htm', 'index.shtml' ]
 
-const resolveDirectory = (ipfs, path, multihash) => {
-  return ipfs
-         .object
-         .get(multihash, { enc: 'base58' })
-         .then((DAGNode) => {
-           const links = DAGNode.links
-           const indexFiles = links.filter((link) => INDEX_HTML_FILES.indexOf(link.name) !== -1)
+const resolveDirectory = promisify((ipfs, path, callback) => {
+  if (!callback) {
+    callback = noop
+  }
 
-           // found index file in links
-           if (indexFiles.length > 0) {
-             return indexFiles
-           }
+  const parts = PathUtil.splitPath(path)
+  const multihash = parts[0]
 
-           return html.build(path, links)
-         })
-}
+  ipfs
+   .object
+   .get(multihash, { enc: 'base58' })
+   .then((DAGNode) => {
+     const links = DAGNode.links
+     const indexFiles = links.filter((link) => INDEX_HTML_FILES.indexOf(link.name) !== -1)
+
+     // found index file in links
+     if (indexFiles.length > 0) {
+       return callback(null, indexFiles)
+     }
+
+     return callback(null, html.build(path, links))
+   })
+})
 
 const noop = function () {}
 
@@ -47,6 +54,13 @@ const resolveMultihash = promisify((ipfs, path, callback) => {
      .object
      .get(currentMultihash, { enc: 'base58' })
      .then((DAGNode) => {
+       //  console.log('DAGNode: ', DAGNode)
+       if (DAGNode.links && DAGNode.links.length > 0 && DAGNode.links[0].name.length > 0) {
+         //  this is a directory.
+         // fire directory error here.
+         return next(new Error('This dag node is a directory'))
+       }
+
        if (currentIndex === partsLength - 1) {
           // leaf node
          console.log('leaf node: ', currentMultihash)
@@ -76,7 +90,9 @@ const resolveMultihash = promisify((ipfs, path, callback) => {
        }
      })
   }, (err) => {
-    if (err) throw err
+    if (err) {
+      return callback(err)
+    }
     callback(null, {multihash: currentMultihash})
   })
   // Original implementation

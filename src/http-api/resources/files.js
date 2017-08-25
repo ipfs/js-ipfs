@@ -301,38 +301,39 @@ exports.gateway = {
                }
              })
              .catch((err) => {
-               if (err.toString() === 'Error: This dag node is a directory') {
-                 return GatewayResolver
-                        .resolveDirectory(ipfs, ref, data.multihash)
-                        .then((data) => {
-                          if (typeof data === 'string') {
-                            // no index file found
-                            if (!ref.endsWith('/')) {
-                              // for a directory, if URL doesn't end with a /
-                              // append / and redirect permanent to that URL
-                              return reply.redirect(`${ref}/`).permanent(true)
-                            } else {
-                              // send directory listing
-                              return reply(data)
-                            }
-                          } else {
-                            // found index file
-                            // redirect to URL/<found-index-file>
-                            return reply.redirect(PathUtils.joinURLParts(ref, data[0].name))
-                          }
-                        }).catch((err) => {
-                          log.error(err)
-                          return reply(err.toString()).code(500)
-                        })
-               } else {
+               if (err) {
                  log.error(err)
                  return reply(err.toString()).code(500)
                }
              })
            }).catch((err) => {
-             const errorToString = err.toString()
+             console.log('err: ', err.toString())
 
-             if (errorToString.startsWith('Error: no link named')) {
+             const errorToString = err.toString()
+             if (errorToString === 'Error: This dag node is a directory') {
+               return GatewayResolver
+                      .resolveDirectory(ipfs, ref)
+                      .then((data) => {
+                        if (typeof data === 'string') {
+                          // no index file found
+                          if (!ref.endsWith('/')) {
+                            // for a directory, if URL doesn't end with a /
+                            // append / and redirect permanent to that URL
+                            return reply.redirect(`${ref}/`).permanent(true)
+                          } else {
+                            // send directory listing
+                            return reply(data)
+                          }
+                        } else {
+                          // found index file
+                          // redirect to URL/<found-index-file>
+                          return reply.redirect(PathUtils.joinURLParts(ref, data[0].name))
+                        }
+                      }).catch((err) => {
+                        log.error(err)
+                        return reply(err.toString()).code(500)
+                      })
+             } else if (errorToString.startsWith('Error: no link named')) {
                return reply(errorToString).code(404)
              } else if (errorToString.startsWith('Error: multihash length inconsistent') ||
                        errorToString.startsWith('Error: Non-base58 character')) {
