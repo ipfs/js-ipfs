@@ -13,13 +13,12 @@ const bs58 = require('bs58')
 const series = require('async/series')
 
 module.exports = (common) => {
-  describe('.object', () => {
+  describe('.object', function () {
+    this.timeout(20 * 1000)
+
     let ipfs
 
-    before(function (done) {
-      // CI is slow
-      this.timeout(20 * 1000)
-
+    before((done) => {
       common.setup((err, factory) => {
         expect(err).to.not.exist()
         factory.spawnNode((err, node) => {

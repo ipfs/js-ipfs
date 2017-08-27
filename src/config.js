@@ -9,7 +9,8 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 module.exports = (common) => {
-  describe('.config', () => {
+  describe('.config', function () {
+    this.timeout(20 * 1000)
     let ipfs
 
     before((done) => {

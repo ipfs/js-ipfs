@@ -12,15 +12,12 @@ const loadFixture = require('aegir/fixtures')
 const testfile = loadFixture(__dirname, '../test/fixtures/testfile.txt', 'interface-ipfs-core')
 
 module.exports = (common) => {
-  describe('.pin', () => {
+  describe('.pin', function () {
+    this.timeout(50 * 1000)
+
     let ipfs
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon,
-      // so we need to increase the timeout for the
-      // before step
-      this.timeout(20 * 1000)
-
+    before((done) => {
       common.setup((err, factory) => {
         expect(err).to.not.exist()
         factory.spawnNode((err, node) => {

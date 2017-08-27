@@ -58,7 +58,9 @@ function makeCheck (n, done) {
 }
 
 module.exports = (common) => {
-  describe('.pubsub', () => {
+  describe('.pubsub', function () {
+    this.timeout(20 * 1000)
+
     const topic = 'pubsub-tests'
 
     describe('callback API', () => {
