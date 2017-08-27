@@ -104,14 +104,14 @@ module.exports = (common) => {
         })
 
         it('fail on non valid key', (done) => {
-          ipfs.config.set(new Buffer('heeey'), '', (err) => {
+          ipfs.config.set(Buffer.from('heeey'), '', (err) => {
             expect(err).to.exist()
             done()
           })
         })
 
         it('fail on non valid value', (done) => {
-          ipfs.config.set('Fruit', new Buffer('abc'), (err) => {
+          ipfs.config.set('Fruit', Buffer.from('abc'), (err) => {
             expect(err).to.exist()
             done()
           })

@@ -39,7 +39,7 @@ module.exports = (common) => {
       let cborNode
 
       before((done) => {
-        const someData = new Buffer('some data')
+        const someData = Buffer.from('some data')
 
         pbNode = DAGNode.create(someData, (err, node) => {
           expect(err).to.not.exist()
@@ -134,7 +134,7 @@ module.exports = (common) => {
         before((done) => {
           series([
             (cb) => {
-              const someData = new Buffer('some other data')
+              const someData = Buffer.from('some other data')
 
               pbNode = DAGNode.create(someData, (err, node) => {
                 expect(err).to.not.exist()
@@ -147,7 +147,7 @@ module.exports = (common) => {
               }
             },
             (cb) => {
-              dagPB.DAGNode.create(new Buffer('I am inside a Protobuf'), (err, node) => {
+              dagPB.DAGNode.create(Buffer.from('I am inside a Protobuf'), (err, node) => {
                 expect(err).to.not.exist()
                 nodePb = node
                 cb()
@@ -240,7 +240,7 @@ module.exports = (common) => {
           it('dag-pb local scope', (done) => {
             ipfs.dag.get(cidPb, 'Data', (err, result) => {
               expect(err).to.not.exist()
-              expect(result.value).to.eql(new Buffer('I am inside a Protobuf'))
+              expect(result.value).to.eql(Buffer.from('I am inside a Protobuf'))
               done()
             })
           })
@@ -277,7 +277,7 @@ module.exports = (common) => {
           it('from dag-cbor to dag-pb', (done) => {
             ipfs.dag.get(cidCbor, 'pb/Data', (err, result) => {
               expect(err).to.not.exist()
-              expect(result.value).to.eql(new Buffer('I am inside a Protobuf'))
+              expect(result.value).to.eql(Buffer.from('I am inside a Protobuf'))
               done()
             })
           })
@@ -303,7 +303,7 @@ module.exports = (common) => {
 
             ipfs.dag.get(cidCborStr + '/pb/Data', (err, result) => {
               expect(err).to.not.exist()
-              expect(result.value).to.eql(new Buffer('I am inside a Protobuf'))
+              expect(result.value).to.eql(Buffer.from('I am inside a Protobuf'))
               done()
             })
           })
@@ -319,7 +319,7 @@ module.exports = (common) => {
         before((done) => {
           series([
             (cb) => {
-              dagPB.DAGNode.create(new Buffer('I am inside a Protobuf'), (err, node) => {
+              dagPB.DAGNode.create(Buffer.from('I am inside a Protobuf'), (err, node) => {
                 expect(err).to.not.exist()
                 nodePb = node
                 cb()

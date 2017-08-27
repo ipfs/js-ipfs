@@ -59,7 +59,7 @@ module.exports = (common) => {
       describe('.put', () => {
         it('of object', (done) => {
           const obj = {
-            Data: new Buffer('Some data'),
+            Data: Buffer.from('Some data'),
             Links: []
           }
 
@@ -75,7 +75,7 @@ module.exports = (common) => {
 
         it('of json encoded buffer', (done) => {
           const obj = {
-            Data: new Buffer('Some data'),
+            Data: Buffer.from('Some data'),
             Links: []
           }
 
@@ -84,7 +84,7 @@ module.exports = (common) => {
             Links: obj.Links
           }
 
-          const buf = new Buffer(JSON.stringify(obj2))
+          const buf = Buffer.from(JSON.stringify(obj2))
 
           ipfs.object.put(buf, { enc: 'json' }, (err, node) => {
             expect(err).to.not.exist()
@@ -102,7 +102,7 @@ module.exports = (common) => {
 
           series([
             (cb) => {
-              DAGNode.create(new Buffer('Some data'), (err, _node) => {
+              DAGNode.create(Buffer.from('Some data'), (err, _node) => {
                 expect(err).to.not.exist()
                 node = _node
                 cb()
@@ -128,7 +128,7 @@ module.exports = (common) => {
         })
 
         it('of buffer treated as Data field', (done) => {
-          const data = new Buffer('Some data')
+          const data = Buffer.from('Some data')
           ipfs.object.put(data, (err, node) => {
             expect(err).to.not.exist()
             const nodeJSON = node.toJSON()
@@ -140,7 +140,7 @@ module.exports = (common) => {
         })
 
         it('of DAGNode', (done) => {
-          DAGNode.create(new Buffer('Some data'), (err, dNode) => {
+          DAGNode.create(Buffer.from('Some data'), (err, dNode) => {
             expect(err).to.not.exist()
             ipfs.object.put(dNode, (err, node) => {
               expect(err).to.not.exist()
@@ -164,14 +164,14 @@ module.exports = (common) => {
           let node2
           series([
             (cb) => {
-              DAGNode.create(new Buffer('Some data 1'), (err, node) => {
+              DAGNode.create(Buffer.from('Some data 1'), (err, node) => {
                 expect(err).to.not.exist()
                 node1a = node
                 cb()
               })
             },
             (cb) => {
-              DAGNode.create(new Buffer('Some data 2'), (err, node) => {
+              DAGNode.create(Buffer.from('Some data 2'), (err, node) => {
                 expect(err).to.not.exist()
                 node2 = node
                 cb()
@@ -202,7 +202,7 @@ module.exports = (common) => {
       describe('.get', () => {
         it('with multihash', (done) => {
           const obj = {
-            Data: new Buffer('get test object'),
+            Data: Buffer.from('get test object'),
             Links: []
           }
 
@@ -225,7 +225,7 @@ module.exports = (common) => {
                 // because js-ipfs-api can't infer if the
                 // returned Data is Buffer or String
                 if (typeof node2.data === 'string') {
-                  node2.data = new Buffer(node2.data)
+                  node2.data = Buffer.from(node2.data)
                 }
                 cb()
               })
@@ -255,14 +255,14 @@ module.exports = (common) => {
 
           series([
             (cb) => {
-              DAGNode.create(new Buffer('Some data 1'), (err, node) => {
+              DAGNode.create(Buffer.from('Some data 1'), (err, node) => {
                 expect(err).to.not.exist()
                 node1a = node
                 cb()
               })
             },
             (cb) => {
-              DAGNode.create(new Buffer('Some data 2'), (err, node) => {
+              DAGNode.create(Buffer.from('Some data 2'), (err, node) => {
                 expect(err).to.not.exist()
                 node2 = node
                 cb()
@@ -287,7 +287,7 @@ module.exports = (common) => {
                 // because js-ipfs-api can't infer if the
                 // returned Data is Buffer or String
                 if (typeof node.data === 'string') {
-                  node.data = new Buffer(node.data)
+                  node.data = Buffer.from(node.data)
                 }
 
                 node1c = node
@@ -304,7 +304,7 @@ module.exports = (common) => {
 
         it('with multihash base58 encoded', (done) => {
           const obj = {
-            Data: new Buffer('get test object'),
+            Data: Buffer.from('get test object'),
             Links: []
           }
 
@@ -325,7 +325,7 @@ module.exports = (common) => {
                 // because js-ipfs-api can't infer if the
                 // returned Data is Buffer or String
                 if (typeof node.data === 'string') {
-                  node.data = new Buffer(node.data)
+                  node.data = Buffer.from(node.data)
                 }
                 node1b = node
                 cb()
@@ -342,7 +342,7 @@ module.exports = (common) => {
 
         it('with multihash base58 encoded toString', (done) => {
           const obj = {
-            Data: new Buffer('get test object'),
+            Data: Buffer.from('get test object'),
             Links: []
           }
 
@@ -363,7 +363,7 @@ module.exports = (common) => {
                 // because js-ipfs-api can't infer if the
                 // returned Data is Buffer or String
                 if (typeof node.data === 'string') {
-                  node.data = new Buffer(node.data)
+                  node.data = Buffer.from(node.data)
                 }
                 node1b = node
                 cb()
@@ -382,7 +382,7 @@ module.exports = (common) => {
       describe('.data', () => {
         it('with multihash', (done) => {
           const testObj = {
-            Data: new Buffer('get test object'),
+            Data: Buffer.from('get test object'),
             Links: []
           }
 
@@ -395,7 +395,7 @@ module.exports = (common) => {
               // because js-ipfs-api can't infer
               // if the returned Data is Buffer or String
               if (typeof data === 'string') {
-                data = new Buffer(data)
+                data = Buffer.from(data)
               }
               expect(node.data).to.eql(data)
               done()
@@ -405,7 +405,7 @@ module.exports = (common) => {
 
         it('with multihash base58 encoded', (done) => {
           const testObj = {
-            Data: new Buffer('get test object'),
+            Data: Buffer.from('get test object'),
             Links: []
           }
 
@@ -418,7 +418,7 @@ module.exports = (common) => {
               // because js-ipfs-api can't infer
               // if the returned Data is Buffer or String
               if (typeof data === 'string') {
-                data = new Buffer(data)
+                data = Buffer.from(data)
               }
               expect(node.data).to.eql(data)
               done()
@@ -428,7 +428,7 @@ module.exports = (common) => {
 
         it('with multihash base58 encoded toString', (done) => {
           const testObj = {
-            Data: new Buffer('get test object'),
+            Data: Buffer.from('get test object'),
             Links: []
           }
 
@@ -441,7 +441,7 @@ module.exports = (common) => {
               // because js-ipfs-api can't infer if the
               // returned Data is Buffer or String
               if (typeof data === 'string') {
-                data = new Buffer(data)
+                data = Buffer.from(data)
               }
               expect(node.data).to.eql(data)
               done()
@@ -453,7 +453,7 @@ module.exports = (common) => {
       describe('.links', () => {
         it('object.links with multihash', (done) => {
           const testObj = {
-            Data: new Buffer('get test object'),
+            Data: Buffer.from('get test object'),
             Links: []
           }
 
@@ -475,14 +475,14 @@ module.exports = (common) => {
 
           series([
             (cb) => {
-              DAGNode.create(new Buffer('Some data 1'), (err, node) => {
+              DAGNode.create(Buffer.from('Some data 1'), (err, node) => {
                 expect(err).to.not.exist()
                 node1a = node
                 cb()
               })
             },
             (cb) => {
-              DAGNode.create(new Buffer('Some data 2'), (err, node) => {
+              DAGNode.create(Buffer.from('Some data 2'), (err, node) => {
                 expect(err).to.not.exist()
                 node2 = node
                 cb()
@@ -513,7 +513,7 @@ module.exports = (common) => {
 
         it('with multihash base58 encoded', (done) => {
           const testObj = {
-            Data: new Buffer('get test object'),
+            Data: Buffer.from('get test object'),
             Links: []
           }
 
@@ -530,7 +530,7 @@ module.exports = (common) => {
 
         it('with multihash base58 encoded toString', (done) => {
           const testObj = {
-            Data: new Buffer('get test object'),
+            Data: Buffer.from('get test object'),
             Links: []
           }
 
@@ -548,7 +548,7 @@ module.exports = (common) => {
       describe('.stat', () => {
         it('with multihash', (done) => {
           const testObj = {
-            Data: new Buffer('get test object'),
+            Data: Buffer.from('get test object'),
             Links: []
           }
 
@@ -578,14 +578,14 @@ module.exports = (common) => {
 
           series([
             (cb) => {
-              DAGNode.create(new Buffer('Some data 1'), (err, node) => {
+              DAGNode.create(Buffer.from('Some data 1'), (err, node) => {
                 expect(err).to.not.exist()
                 node1a = node
                 cb()
               })
             },
             (cb) => {
-              DAGNode.create(new Buffer('Some data 2'), (err, node) => {
+              DAGNode.create(Buffer.from('Some data 2'), (err, node) => {
                 expect(err).to.not.exist()
                 node2 = node
                 cb()
@@ -624,7 +624,7 @@ module.exports = (common) => {
 
         it('with multihash base58 encoded', (done) => {
           const testObj = {
-            Data: new Buffer('get test object'),
+            Data: Buffer.from('get test object'),
             Links: []
           }
 
@@ -649,7 +649,7 @@ module.exports = (common) => {
 
         it('with multihash base58 encoded toString', (done) => {
           const testObj = {
-            Data: new Buffer('get test object'),
+            Data: Buffer.from('get test object'),
             Links: []
           }
 
@@ -679,7 +679,7 @@ module.exports = (common) => {
         let testLink
 
         const obj = {
-          Data: new Buffer('patch test object'),
+          Data: Buffer.from('patch test object'),
           Links: []
         }
 
@@ -705,7 +705,7 @@ module.exports = (common) => {
               })
             },
             (cb) => {
-              DAGNode.create(new Buffer('some other node'), (err, node) => {
+              DAGNode.create(Buffer.from('some other node'), (err, node) => {
                 expect(err).to.not.exist()
                 node2 = node
                 cb()
@@ -746,7 +746,7 @@ module.exports = (common) => {
         })
 
         it('.appendData', (done) => {
-          ipfs.object.patch.appendData(testNodeMultihash, new Buffer('append'), (err, node) => {
+          ipfs.object.patch.appendData(testNodeMultihash, Buffer.from('append'), (err, node) => {
             expect(err).to.not.exist()
             expect(node.multihash).to.not.deep.equal(testNodeMultihash)
             done()
@@ -754,7 +754,7 @@ module.exports = (common) => {
         })
 
         it('.setData', (done) => {
-          ipfs.object.patch.appendData(testNodeMultihash, new Buffer('set'), (err, node) => {
+          ipfs.object.patch.appendData(testNodeMultihash, Buffer.from('set'), (err, node) => {
             expect(err).to.not.exist()
             expect(node.multihash).to.not.deep.equal(testNodeMultihash)
             done()
@@ -774,7 +774,7 @@ module.exports = (common) => {
 
       it('object.put', () => {
         const obj = {
-          Data: new Buffer('Some data'),
+          Data: Buffer.from('Some data'),
           Links: []
         }
 
@@ -789,7 +789,7 @@ module.exports = (common) => {
 
       it('object.get', () => {
         const testObj = {
-          Data: new Buffer('get test object'),
+          Data: Buffer.from('get test object'),
           Links: []
         }
 
@@ -798,7 +798,7 @@ module.exports = (common) => {
             // because js-ipfs-api can't infer if the
             // returned Data is Buffer or String
             if (typeof node2.data === 'string') {
-              node2.data = new Buffer(node2.data)
+              node2.data = Buffer.from(node2.data)
             }
 
             expect(node1.data).to.deep.equal(node2.data)
@@ -815,7 +815,7 @@ module.exports = (common) => {
 
       it('object.data', () => {
         const testObj = {
-          Data: new Buffer('get test object'),
+          Data: Buffer.from('get test object'),
           Links: []
         }
 
@@ -824,7 +824,7 @@ module.exports = (common) => {
             // because js-ipfs-api can't infer
             // if the returned Data is Buffer or String
             if (typeof data === 'string') {
-              data = new Buffer(data)
+              data = Buffer.from(data)
             }
             expect(node.data).to.deep.equal(data)
           })
@@ -833,7 +833,7 @@ module.exports = (common) => {
 
       it('object.stat', () => {
         const testObj = {
-          Data: new Buffer('get test object'),
+          Data: Buffer.from('get test object'),
           Links: []
         }
 
@@ -857,7 +857,7 @@ module.exports = (common) => {
 
       it('object.links', () => {
         const testObj = {
-          Data: new Buffer('get test object'),
+          Data: Buffer.from('get test object'),
           Links: []
         }
 
@@ -874,7 +874,7 @@ module.exports = (common) => {
         let testLink
 
         const obj = {
-          Data: new Buffer('patch test object'),
+          Data: Buffer.from('patch test object'),
           Links: []
         }
 
@@ -899,7 +899,7 @@ module.exports = (common) => {
           }).then((node) => {
             node1a = node
             return new Promise((resolve, reject) => {
-              DAGNode.create(new Buffer('some other node'), function (err, node) {
+              DAGNode.create(Buffer.from('some other node'), function (err, node) {
                 if (err) {
                   return reject(err)
                 }
@@ -938,14 +938,14 @@ module.exports = (common) => {
         })
 
         it('.appendData', () => {
-          return ipfs.object.patch.appendData(testNodeMultihash, new Buffer('append'))
+          return ipfs.object.patch.appendData(testNodeMultihash, Buffer.from('append'))
             .then((node) => {
               expect(node.multihash).to.not.deep.equal(testNodeMultihash)
             })
         })
 
         it('.setData', () => {
-          return ipfs.object.patch.appendData(testNodeMultihash, new Buffer('set'))
+          return ipfs.object.patch.appendData(testNodeMultihash, Buffer.from('set'))
             .then((node) => {
               expect(node.multihash).to.not.deep.equal(testNodeMultihash)
             })

@@ -20,8 +20,8 @@ function waitForPeers (ipfs, topic, peersToWait, callback) {
       }
 
       const missingPeers = peersToWait
-            .map((e) => peers.indexOf(e) !== -1)
-            .filter((e) => !e)
+        .map((e) => peers.indexOf(e) !== -1)
+        .filter((e) => !e)
 
       if (missingPeers.length === 0) {
         clearInterval(i)
@@ -103,7 +103,7 @@ module.exports = (common) => {
           })
 
           it('message from buffer', (done) => {
-            ipfs1.pubsub.publish(topic, new Buffer('hello friend'), done)
+            ipfs1.pubsub.publish(topic, Buffer.from('hello friend'), done)
           })
         })
 
@@ -129,14 +129,14 @@ module.exports = (common) => {
 
             ipfs1.pubsub.subscribe(topic, handler, (err) => {
               expect(err).to.not.exist()
-              ipfs1.pubsub.publish(topic, new Buffer('hi'), check)
+              ipfs1.pubsub.publish(topic, Buffer.from('hi'), check)
             })
           })
 
           it('attaches multiple event listeners', (done) => {
             const check = makeCheck(3, done)
             const handler1 = (msg) => {
-              expect(msg.data.toString()).to.be.eql('hello')
+              expect(msg.data.toString()).to.eql('hello')
 
               ipfs1.pubsub.unsubscribe(topic, handler1)
 
@@ -168,7 +168,7 @@ module.exports = (common) => {
               (cb) => ipfs1.pubsub.subscribe(topic, handler2, cb)
             ], (err) => {
               expect(err).to.not.exist()
-              ipfs1.pubsub.publish(topic, new Buffer('hello'), check)
+              ipfs1.pubsub.publish(topic, Buffer.from('hello'), check)
             })
           })
 
@@ -185,7 +185,7 @@ module.exports = (common) => {
               discover: true
             }, handler, (err) => {
               expect(err).to.not.exist()
-              ipfs1.pubsub.publish(topic, new Buffer('hi'), check)
+              ipfs1.pubsub.publish(topic, Buffer.from('hi'), check)
             })
           })
         })
@@ -378,7 +378,7 @@ module.exports = (common) => {
             ], (err) => {
               expect(err).to.not.exist()
 
-              ipfs2.pubsub.publish(topic, new Buffer(expectedString), check)
+              ipfs2.pubsub.publish(topic, Buffer.from(expectedString), check)
             })
           })
 
@@ -457,7 +457,7 @@ module.exports = (common) => {
               expect(err).to.not.exist()
 
               outbox.forEach((msg) => {
-                ipfs2.pubsub.publish(topic, new Buffer(msg), check)
+                ipfs2.pubsub.publish(topic, Buffer.from(msg), check)
               })
             })
           })
@@ -482,7 +482,7 @@ module.exports = (common) => {
               () => sendCount < count,
               (cb) => {
                 sendCount++
-                ipfs1.pubsub.publish(topic, new Buffer('hey there'), cb)
+                ipfs1.pubsub.publish(topic, Buffer.from('hey there'), cb)
               },
               done
             )
@@ -539,7 +539,7 @@ module.exports = (common) => {
               whilst(
                 () => sendCount < count,
                 (cb) => {
-                  const msgData = new Buffer(msgBase + sendCount)
+                  const msgData = Buffer.from(msgBase + sendCount)
                   sendCount++
                   ipfs2.pubsub.publish(topic, msgData, cb)
                 },
@@ -612,7 +612,7 @@ module.exports = (common) => {
         }
 
         return ipfs1.pubsub.subscribe(topic, sub)
-          .then(() => ipfs1.pubsub.publish(topic, new Buffer('hi')))
+          .then(() => ipfs1.pubsub.publish(topic, Buffer.from('hi')))
       })
 
       it('.peers', () => {
