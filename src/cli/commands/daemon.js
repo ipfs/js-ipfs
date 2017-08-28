@@ -1,6 +1,6 @@
 'use strict'
 
-const HttpAPI = require('../../http-api')
+const HttpAPI = require('../../http')
 const utils = require('../utils')
 const print = utils.print
 

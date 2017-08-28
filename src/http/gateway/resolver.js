@@ -1,9 +1,11 @@
 'use strict'
 
 const mh = require('multihashes')
-// const pf = require('promised-for')
 const promisify = require('promisify-es6')
 const eachOfSeries = require('async/eachOfSeries')
+const debug = require('debug')
+const log = debug('jsipfs:http-gateway:resolver')
+log.error = debug('jsipfs:http-gateway:resolver:error')
 
 const html = require('./utils/html')
 const PathUtil = require('./utils/path')
@@ -48,28 +50,22 @@ const resolveMultihash = promisify((ipfs, path, callback) => {
   eachOfSeries(parts, (multihash, currentIndex, next) => {
     // throws error when invalid multihash is passed
     mh.validate(mh.fromB58String(currentMultihash))
-    console.log('currentMultihash: ', currentMultihash)
-    console.log('currentIndex: ', currentIndex, '/', partsLength)
+    log('currentMultihash: ', currentMultihash)
+    log('currentIndex: ', currentIndex, '/', partsLength)
 
     ipfs
      .object
      .get(currentMultihash, { enc: 'base58' })
      .then((DAGNode) => {
-      //  console.log('DAGNode: ', DAGNode)
+      //  log('DAGNode: ', DAGNode)
        if (currentIndex === partsLength - 1) {
           // leaf node
-         console.log('leaf node: ', currentMultihash)
-         console.log('DAGNode: ', DAGNode.links)
+         log('leaf node: ', currentMultihash)
+        //  log('DAGNode: ', DAGNode.links)
 
          if (DAGNode.links &&
-           DAGNode.links.length > 0 &&
-           DAGNode.links[0].name.length > 0) {
-           for (let link of DAGNode.links) {
-             if (mh.toB58String(link.multihash) === currentMultihash) {
-               return next()
-             }
-           }
-
+             DAGNode.links.length > 0 &&
+             DAGNode.links[0].name.length > 0) {
            //  this is a directory.
            let isDirErr = new Error('This dag node is a directory')
            // add currentMultihash as a fileName so it can be used by resolveDirectory
@@ -89,12 +85,13 @@ const resolveMultihash = promisify((ipfs, path, callback) => {
            if (link.name === nextFileName) {
               // found multihash of requested named-file
              multihashOfNextFile = mh.toB58String(link.multihash)
-             console.log('found multihash: ', multihashOfNextFile)
+             log('found multihash: ', multihashOfNextFile)
              break
            }
          }
 
          if (!multihashOfNextFile) {
+           log.error(`no link named "${nextFileName}" under ${currentMultihash}`)
            throw new Error(`no link named "${nextFileName}" under ${currentMultihash}`)
          }
 
@@ -104,60 +101,11 @@ const resolveMultihash = promisify((ipfs, path, callback) => {
      })
   }, (err) => {
     if (err) {
+      log.error(err)
       return callback(err)
     }
     callback(null, {multihash: currentMultihash})
   })
-  // Original implementation
-  // return pf(
-  //   {
-  //     multihash: parts[0],
-  //     index: 0
-  //   },
-  //   (i) => i.index < partsLength,
-  //   (i) => {
-  //     const currentIndex = i.index
-  //     const currentMultihash = i.multihash
-  //
-  //     // throws error when invalid multihash is passed
-  //     mh.validate(mh.fromB58String(currentMultihash))
-  //
-  //     return ipfs
-  //            .object
-  //            .get(currentMultihash, { enc: 'base58' })
-  //            .then((DAGNode) => {
-  //              if (currentIndex === partsLength - 1) {
-  //                 // leaf node
-  //                return {
-  //                  multihash: currentMultihash,
-  //                  index: currentIndex + 1
-  //                }
-  //              } else {
-  //                 // find multihash of requested named-file
-  //                 // in current DAGNode's links
-  //                let multihashOfNextFile
-  //                const nextFileName = parts[currentIndex + 1]
-  //                const links = DAGNode.links
-  //
-  //                for (let link of links) {
-  //                  if (link.name === nextFileName) {
-  //                     // found multihash of requested named-file
-  //                    multihashOfNextFile = mh.toB58String(link.multihash)
-  //                    break
-  //                  }
-  //                }
-  //
-  //                if (!multihashOfNextFile) {
-  //                  throw new Error(`no link named "${nextFileName}" under ${currentMultihash}`)
-  //                }
-  //
-  //                return {
-  //                  multihash: multihashOfNextFile,
-  //                  index: currentIndex + 1
-  //                }
-  //              }
-  //            })
-  //   })
 })
 
 module.exports = {

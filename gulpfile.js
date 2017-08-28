@@ -4,7 +4,7 @@ const gulp = require('gulp')
 const parallel = require('async/parallel')
 const series = require('async/series')
 const createTempRepo = require('./test/utils/create-repo-nodejs.js')
-const HTTPAPI = require('./src/http-api')
+const HTTPAPI = require('./src/http')
 const leftPad = require('left-pad')
 
 let nodes = []
