@@ -14,7 +14,7 @@ const series = require('async/series')
 
 module.exports = (common) => {
   describe('.object', function () {
-    this.timeout(20 * 1000)
+    this.timeout(80 * 1000)
 
     let ipfs
 
