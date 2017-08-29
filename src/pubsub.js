@@ -59,7 +59,7 @@ function makeCheck (n, done) {
 
 module.exports = (common) => {
   describe('.pubsub', function () {
-    this.timeout(20 * 1000)
+    this.timeout(80 * 1000)
 
     const getTopic = () => 'pubsub-tests-' + Math.random()
 
