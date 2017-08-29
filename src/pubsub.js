@@ -61,7 +61,7 @@ module.exports = (common) => {
   describe('.pubsub', function () {
     this.timeout(20 * 1000)
 
-    const topic = 'pubsub-tests'
+    const getTopic = () => 'pubsub-tests-' + Math.random()
 
     describe('callback API', () => {
       let ipfs1
@@ -98,6 +98,7 @@ module.exports = (common) => {
       describe('single node', () => {
         describe('.publish', () => {
           it('errors on string messags', (done) => {
+            const topic = getTopic()
             ipfs1.pubsub.publish(topic, 'hello friend', (err) => {
               expect(err).to.exist()
               done()
@@ -105,6 +106,7 @@ module.exports = (common) => {
           })
 
           it('message from buffer', (done) => {
+            const topic = getTopic()
             ipfs1.pubsub.publish(topic, Buffer.from('hello friend'), done)
           })
         })
@@ -112,6 +114,7 @@ module.exports = (common) => {
         describe('.subscribe', () => {
           it('to one topic', (done) => {
             const check = makeCheck(2, done)
+            const topic = getTopic()
 
             const handler = (msg) => {
               expect(msg.data.toString()).to.equal('hi')
@@ -136,6 +139,8 @@ module.exports = (common) => {
           })
 
           it('attaches multiple event listeners', (done) => {
+            const topic = getTopic()
+
             const check = makeCheck(3, done)
             const handler1 = (msg) => {
               expect(msg.data.toString()).to.eql('hello')
@@ -176,6 +181,7 @@ module.exports = (common) => {
 
           it('discover options', (done) => {
             const check = makeCheck(2, done)
+            const topic = getTopic()
 
             const handler = (msg) => {
               expect(msg.data.toString()).to.be.eql('hi')
@@ -210,6 +216,7 @@ module.exports = (common) => {
 
         describe('.peers', () => {
           it('does not error when not subscribed to a topic', (done) => {
+            const topic = getTopic()
             ipfs1.pubsub.peers(topic, (err, peers) => {
               expect(err).to.not.exist()
               // Should be empty() but as mentioned below go-ipfs returns more than it should
@@ -226,6 +233,7 @@ module.exports = (common) => {
             const sub2 = (msg) => {}
             const sub3 = (msg) => {}
 
+            const topic = getTopic()
             const topicOther = topic + 'different topic'
 
             series([
@@ -254,6 +262,7 @@ module.exports = (common) => {
             const sub1 = (msg) => {}
             const sub2 = (msg) => {}
             const sub3 = (msg) => {}
+            const topic = getTopic()
 
             series([
               (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
@@ -274,6 +283,7 @@ module.exports = (common) => {
             const sub1 = (msg) => {}
             const sub2 = (msg) => {}
             const sub3 = (msg) => {}
+            const topic = getTopic()
 
             series([
               (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
@@ -305,6 +315,7 @@ module.exports = (common) => {
 
           it('list with 1 subscribed topic', (done) => {
             const sub1 = (msg) => {}
+            const topic = getTopic()
 
             ipfs1.pubsub.subscribe(topic, sub1, (err) => {
               expect(err).to.not.exist()
@@ -358,6 +369,7 @@ module.exports = (common) => {
           it('receive messages from different node', (done) => {
             const check = makeCheck(3, done)
             const expectedString = 'hello from the other side'
+            const topic = getTopic()
 
             const sub1 = (msg) => {
               expect(msg.data.toString()).to.be.eql(expectedString)
@@ -388,6 +400,7 @@ module.exports = (common) => {
             const check = makeCheck(3, done)
             const expectedHex = 'a36161636179656162830103056164a16466666666f4'
             const buffer = Buffer.from(expectedHex, 'hex')
+            const topic = getTopic()
 
             const sub1 = (msg) => {
               try {
@@ -428,6 +441,7 @@ module.exports = (common) => {
             const inbox1 = []
             const inbox2 = []
             const outbox = ['hello', 'world', 'this', 'is', 'pubsub']
+            const topic = getTopic()
 
             const check = makeCheck(outbox.length * 3, (err) => {
               ipfs1.pubsub.unsubscribe(topic, sub1)
@@ -479,6 +493,7 @@ module.exports = (common) => {
           it('call publish 1k times', (done) => {
             const count = 1000
             let sendCount = 0
+            const topic = getTopic()
 
             whilst(
               () => sendCount < count,
@@ -499,6 +514,7 @@ module.exports = (common) => {
             let receivedCount = 0
             let startTime
             let counter = 0
+            const topic = getTopic()
 
             const sub1 = (msg) => {
               // go-ipfs can't send messages in order when there are
@@ -555,7 +571,7 @@ module.exports = (common) => {
             let sendCount = 0
             const handlers = []
 
-            const someTopic = 'some-other-topic'
+            const someTopic = getTopic()
 
             whilst(
               () => sendCount < count,
@@ -608,6 +624,8 @@ module.exports = (common) => {
       })
 
       it('.subscribe and .publish', () => {
+        const topic = getTopic()
+
         const sub = (msg) => {
           expect(msg.data.toString()).to.be.eql('hi')
           ipfs1.pubsub.unsubscribe(topic, sub)
@@ -619,6 +637,7 @@ module.exports = (common) => {
 
       it('.peers', () => {
         const sub = (msg) => {}
+        const topic = getTopic()
 
         return ipfs1.pubsub.subscribe(topic, sub)
           .then(() => ipfs1.pubsub.peers(topic))
