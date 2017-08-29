@@ -11,6 +11,10 @@ const toPull = require('stream-to-pull-stream')
 const pushable = require('pull-pushable')
 const EOL = require('os').EOL
 const toStream = require('pull-stream-to-stream')
+const mime = require('mime-types')
+
+const GatewayResolver = require('../gateway/resolver')
+const PathUtils = require('../gateway/utils/path')
 
 exports = module.exports
 
@@ -211,5 +215,94 @@ exports.add = {
           .header('content-type', 'application/json')
       })
     )
+  }
+}
+
+exports.gateway = {
+  checkHash: (request, reply) => {
+    if (!request.params.hash) {
+      return reply('Path Resolve error: path must contain at least one component').code(400).takeover()
+    }
+
+    return reply({
+      ref: `/ipfs/${request.params.hash}`
+    })
+  },
+  handler: (request, reply) => {
+    const ref = request.pre.args.ref
+    const ipfs = request.server.app.ipfs
+
+    return GatewayResolver
+           .resolveMultihash(ipfs, ref)
+           .then((data) => {
+             ipfs
+             .files
+             .cat(data.multihash)
+             .then((stream) => {
+               if (ref.endsWith('/')) {
+                  // remove trailing slash for files
+                 return reply
+                        .redirect(PathUtils.removeTrailingSlash(ref))
+                        .permanent(true)
+               } else {
+                 const mimeType = mime.lookup(ref)
+
+                 if (!stream._read) {
+                   stream._read = () => {}
+                   stream._readableState = {}
+                 }
+
+                 if (mimeType) {
+                   return reply(stream)
+                          .header('Content-Type', mime.contentType(mimeType))
+                          .header('X-Stream-Output', '1')
+                 } else {
+                   return reply(stream)
+                          .header('X-Stream-Output', '1')
+                 }
+               }
+             })
+             .catch((err) => {
+               if (err.toString() === 'Error: This dag node is a directory') {
+                 return GatewayResolver
+                        .resolveDirectory(ipfs, ref, data.multihash)
+                        .then((data) => {
+                          if (typeof data === 'string') {
+                            // no index file found
+                            if (!ref.endsWith('/')) {
+                              // for a directory, if URL doesn't end with a /
+                              // append / and redirect permanent to that URL
+                              return reply.redirect(`${ref}/`).permanent(true)
+                            } else {
+                              // send directory listing
+                              return reply(data)
+                            }
+                          } else {
+                            // found index file
+                            // redirect to URL/<found-index-file>
+                            return reply.redirect(PathUtils.joinURLParts(ref, data[0].name))
+                          }
+                        }).catch((err) => {
+                          log.error(err)
+                          return reply(err.toString()).code(500)
+                        })
+               } else {
+                 log.error(err)
+                 return reply(err.toString()).code(500)
+               }
+             })
+           }).catch((err) => {
+             const errorToString = err.toString()
+
+             if (errorToString.startsWith('Error: no link named')) {
+               return reply(errorToString).code(404)
+             } else if (errorToString.startsWith('Error: multihash length inconsistent') ||
+                       errorToString.startsWith('Error: Non-base58 character')) {
+               return reply(errorToString).code(400)
+             } else {
+               log.error(err)
+               return reply(errorToString).code(500)
+             }
+           })
   }
 }
