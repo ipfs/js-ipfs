@@ -117,7 +117,9 @@ function HttpApi (repo, config, cliArgs) {
           errorHandler(this, this.server)
 
           // load routes
-          require('./routes')(this.server)
+          require('./api/routes')(this.server)
+          // load gateway routes
+          require('./gateway/routes')(this.server)
 
           // Set default headers
           setHeader(this.server,
