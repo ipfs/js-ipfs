@@ -23,16 +23,14 @@ module.exports = function swarm (self) {
       // TODO: return latency and streams when verbose is set
       // we currently don't have this information
 
-      const peers = self._libp2pNode.peerBook.getAll()
-      const keys = Object.keys(peers)
+      const peers = values(self._peerInfoBook.getAll())
+        .filter((peer) => peer.isConnected())
 
-      const peerList = flatMap(keys, (id) => {
-        const peer = peers[id]
-
-        return peer.multiaddrs.map((addr) => {
+      const peerList = flatMap(peers, (peer) => {
+        return peer.multiaddrs.toArray().map((addr) => {
           const res = {
             addr: addr,
-            peer: peers[id]
+            peer: peer
           }
 
           if (verbose) {
@@ -52,7 +50,8 @@ module.exports = function swarm (self) {
         return callback(OFFLINE_ERROR)
       }
 
-      const peers = values(self._libp2pNode.peerBook.getAll())
+      const peers = values(self._peerInfoBook.getAll())
+
       callback(null, peers)
     }),
 
@@ -61,7 +60,7 @@ module.exports = function swarm (self) {
         return callback(OFFLINE_ERROR)
       }
 
-      callback(null, self._libp2pNode.peerInfo.multiaddrs)
+      callback(null, self._libp2pNode.peerInfo.multiaddrs.toArray())
     }),
 
     connect: promisify((maddr, callback) => {
@@ -73,7 +72,7 @@ module.exports = function swarm (self) {
         maddr = multiaddr(maddr)
       }
 
-      self._libp2pNode.dialByMultiaddr(maddr, callback)
+      self._libp2pNode.dial(maddr, callback)
     }),
 
     disconnect: promisify((maddr, callback) => {
@@ -85,12 +84,9 @@ module.exports = function swarm (self) {
         maddr = multiaddr(maddr)
       }
 
-      self._libp2pNode.hangUpByMultiaddr(maddr, callback)
+      self._libp2pNode.hangUp(maddr, callback)
     }),
 
-    filters: promisify((callback) => {
-      // TODO
-      throw new Error('Not implemented')
-    })
+    filters: promisify((callback) => callback(new Error('Not implemented')))
   }
 }

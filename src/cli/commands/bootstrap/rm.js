@@ -3,7 +3,7 @@
 const debug = require('debug')
 const log = debug('cli:bootstrap')
 log.error = debug('cli:bootstrap:error')
-const utils = require('../../utils')
+const print = require('../../utils').print
 
 module.exports = {
   command: 'rm [<peer>]',
@@ -19,18 +19,14 @@ module.exports = {
   },
 
   handler (argv) {
-    utils.getIPFS((err, ipfs) => {
+    argv.ipfs.bootstrap.rm(argv.peer, {
+      all: argv.all
+    }, (err, list) => {
       if (err) {
         throw err
       }
 
-      ipfs.bootstrap.rm(argv.peer, {all: argv.all}, (err, list) => {
-        if (err) {
-          throw err
-        }
-
-        list.Peers.forEach((l) => console.log(l))
-      })
+      list.Peers.forEach((peer) => print(peer))
     })
   }
 }

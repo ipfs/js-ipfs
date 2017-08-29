@@ -1,9 +1,6 @@
 'use strict'
 
-const utils = require('../../utils')
-const debug = require('debug')
-const log = debug('cli:bootstrap')
-log.error = debug('cli:bootstrap:error')
+const print = require('../../utils').print
 
 module.exports = {
   command: 'list',
@@ -12,20 +9,13 @@ module.exports = {
 
   builder: {},
 
-  handler () {
-    utils.getIPFS((err, ipfs) => {
+  handler (argv) {
+    argv.ipfs.bootstrap.list((err, list) => {
       if (err) {
         throw err
       }
-      ipfs.bootstrap.list((err, list) => {
-        if (err) {
-          throw err
-        }
 
-        list.Peers.forEach((node) => {
-          console.log(node)
-        })
-      })
+      list.Peers.forEach((node) => print(node))
     })
   }
 }

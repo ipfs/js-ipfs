@@ -1,0 +1,19 @@
+{
+  "name": "bundle-browserify",
+  "version": "1.0.0",
+  "description": "Bundle js-ipfs with Browserify",
+  "main": "index.js",
+  "scripts": {
+    "bundle": "browserify src/index.js > public/bundle.js",
+    "serve": "http-server public -a 127.0.0.1 -p 8888",
+    "start": "npm run bundle && npm run serve"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "devDependencies": {
+    "browserify": "^14.0.0",
+    "concat-stream": "^1.6.0",
+    "http-server": "^0.9.0"
+  },
+  "dependencies": {}
+}

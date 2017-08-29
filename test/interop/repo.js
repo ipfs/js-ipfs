@@ -1,7 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 const waterfall = require('async/waterfall')
 const bl = require('bl')
 const crypto = require('crypto')
@@ -16,19 +19,22 @@ function catAndCheck (daemon, hash, data, callback) {
     (stream, cb) => stream.pipe(bl(cb))
   ], (err, file) => {
     console.log('got file')
-    expect(err).to.not.exist
+    expect(err).to.not.exist()
     expect(file).to.be.eql(data)
     callback()
   })
 }
 
-// TODO: these are not working, will need to figure out why
-describe.skip('repo', () => {
+describe('repo', () => {
   it('read repo: go -> js', (done) => {
     const dir = os.tmpdir() + '/' + Math.ceil(Math.random() * 10000)
     const data = crypto.randomBytes(1024 * 5)
 
-    const goDaemon = new GoDaemon({init: true, disposable: false, path: dir})
+    const goDaemon = new GoDaemon({
+      init: true,
+      disposable: false,
+      path: dir
+    })
     let jsDaemon
 
     let hash
@@ -41,7 +47,11 @@ describe.skip('repo', () => {
       },
       (cb) => goDaemon.stop(cb),
       (cb) => {
-        jsDaemon = new JsDaemon({init: false, disposable: false, path: dir})
+        jsDaemon = new JsDaemon({
+          init: false,
+          disposable: false,
+          path: dir
+        })
         jsDaemon.start(cb)
       },
       (cb) => catAndCheck(goDaemon, hash, data, cb),

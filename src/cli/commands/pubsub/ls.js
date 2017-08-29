@@ -1,9 +1,6 @@
 'use strict'
 
-const utils = require('../../utils')
-const debug = require('debug')
-const log = debug('cli:pubsub')
-log.error = debug('cli:pubsub:error')
+const print = require('../../utils').print
 
 module.exports = {
   command: 'ls',
@@ -13,19 +10,13 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    utils.getIPFS((err, ipfs) => {
+    argv.ipfs.pubsub.ls((err, subscriptions) => {
       if (err) {
         throw err
       }
 
-      ipfs.pubsub.ls((err, subscriptions) => {
-        if (err) {
-          throw err
-        }
-
-        subscriptions.forEach((sub) => {
-          console.log(sub)
-        })
+      subscriptions.forEach((sub) => {
+        print(sub)
       })
     })
   }

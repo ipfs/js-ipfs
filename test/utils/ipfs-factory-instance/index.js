@@ -1,11 +1,11 @@
 'use strict'
 
-const PeerId = require('peer-id')
 const series = require('async/series')
+const each = require('async/each')
 
 const defaultConfig = require('./default-config.json')
 const IPFS = require('../../../src/core')
-const createTempRepo = require('../create-repo-node')
+const createTempRepo = require('../create-repo-nodejs')
 
 module.exports = Factory
 
@@ -33,86 +33,34 @@ function Factory () {
                                  .substring(2, 8)
     }
 
-    createConfig(config, (err, conf) => {
-      if (err) {
-        return callback(err)
-      }
+    config = config || defaultConfig
 
-      config = conf
-
-      const repo = createTempRepo(repoPath)
-
-      // create the IPFS node
-      const ipfs = new IPFS({
-        repo: repo,
-        EXPERIMENTAL: {
-          pubsub: true
-        }
-      })
-
-      ipfs.init({ emptyRepo: true, bits: 1024 }, (err) => {
-        if (err) {
-          return callback(err)
-        }
-        repo.config.set(config, launchNode)
-      })
-
-      function launchNode () {
-        ipfs.load((err) => {
-          if (err) {
-            return callback(err)
-          }
-
-          ipfs.goOnline((err) => {
-            if (err) {
-              return callback(err)
-            }
-
-            nodes.push({
-              repo: repo,
-              ipfs: ipfs
-            })
-
-            callback(null, ipfs)
-          })
-        })
+    const repo = createTempRepo(repoPath)
+    const node = new IPFS({
+      repo: repo,
+      init: {
+        bits: 1024
+      },
+      config: config,
+      EXPERIMENTAL: {
+        pubsub: true,
+        dht: true
       }
     })
 
-    function createConfig (config, cb) {
-      if (config) {
-        return cb(null, config)
-      }
-      const conf = JSON.parse(JSON.stringify(defaultConfig))
-
-      PeerId.create({ bits: 1024 }, (err, id) => {
-        if (err) {
-          return cb(err)
-        }
-
-        const pId = id.toJSON()
-        conf.Identity.PeerID = pId.id
-        conf.Identity.PrivKey = pId.privKey
-        cb(null, conf)
+    node.once('ready', () => {
+      nodes.push({
+        repo: repo,
+        ipfs: node
       })
-    }
+      callback(null, node)
+    })
   }
 
   this.dismantle = function (callback) {
-    series(nodes.map((node) => {
-      return node.ipfs.goOffline
-    }), clean)
-
-    function clean (err) {
-      if (err) {
-        return callback(err)
-      }
-      series(
-        nodes.map((node) => {
-          return node.repo.teardown
-        }),
-        callback
-      )
-    }
+    series([
+      (cb) => each(nodes, (el, cb) => el.ipfs.stop(cb), cb),
+      (cb) => each(nodes, (el, cb) => el.repo.teardown(cb), cb)
+    ], callback)
   }
 }

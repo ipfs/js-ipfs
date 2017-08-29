@@ -3,12 +3,14 @@
 module.exports = {
   command: 'files',
 
-  description: 'Unixfs commands',
+  description: 'Operations over files (add, cat, get, ls, etc)',
 
   builder (yargs) {
     return yargs
       .commandDir('files')
   },
 
-  handler (argv) {}
+  handler (argv) {
+    console.log('Type `jsipfs bitswap --help` for more instructions')
+  }
 }

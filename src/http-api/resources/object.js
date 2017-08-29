@@ -8,8 +8,8 @@ const DAGNode = dagPB.DAGNode
 const waterfall = require('async/waterfall')
 const series = require('async/series')
 const debug = require('debug')
-const log = debug('http-api:object')
-log.error = debug('http-api:object:error')
+const log = debug('jsipfs:http-api:object')
+log.error = debug('jsipfs:http-api:object:error')
 
 exports = module.exports
 

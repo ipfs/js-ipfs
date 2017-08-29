@@ -1,9 +1,9 @@
 'use strict'
 
-exports.goOnline = require('./go-online')
-exports.goOffline = require('./go-offline')
+exports.preStart = require('./pre-start')
+exports.start = require('./start')
+exports.stop = require('./stop')
 exports.isOnline = require('./is-online')
-exports.load = require('./load')
 exports.version = require('./version')
 exports.id = require('./id')
 exports.repo = require('./repo')
@@ -19,3 +19,4 @@ exports.ping = require('./ping')
 exports.files = require('./files')
 exports.bitswap = require('./bitswap')
 exports.pubsub = require('./pubsub')
+exports.dht = require('./dht')

@@ -1,9 +1,6 @@
 'use strict'
 
-const debug = require('debug')
-const log = debug('cli:bootstrap')
-const utils = require('../../utils')
-log.error = debug('cli:bootstrap:error')
+const print = require('../../utils').print
 
 module.exports = {
   command: 'add [<peer>]',
@@ -19,18 +16,14 @@ module.exports = {
   },
 
   handler (argv) {
-    utils.getIPFS((err, ipfs) => {
+    argv.ipfs.bootstrap.add(argv.peer, {
+      default: argv.default
+    }, (err, list) => {
       if (err) {
         throw err
       }
 
-      ipfs.bootstrap.add(argv.peer, {default: argv.default}, (err, list) => {
-        if (err) {
-          throw err
-        }
-
-        list.Peers.forEach((l) => console.log(l))
-      })
+      list.Peers.forEach((peer) => print(peer))
     })
   }
 }

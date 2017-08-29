@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+  <title>IPFS in the Browser</title>
+  <script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
+  <script type="text/javascript">
+    const repoPath = 'ipfs-' + Math.random()
+
+    // Create an IPFS node
+    const node = new Ipfs({
+      init: false,
+      start: false,
+      repo: repoPath
+    })
+
+    // Init the node
+    node.init(handleInit)
+
+    function handleInit (err) {
+      if (err) {
+        throw err
+      }
+
+      node.start(() => {
+        console.log('Online status: ', node.isOnline() ? 'online' : 'offline')
+
+        document.getElementById("status").innerHTML= 'Node status: ' + (node.isOnline() ? 'online' : 'offline')
+
+        // You can write more code here to use it. Use methods like 
+        // node.files.add, node.files.get. See the API docs here:
+        // https://github.com/ipfs/interface-ipfs-core/tree/master/API
+      })
+    }
+  </script>
+</head>
+<body>
+  <h1>IPFS in the Browser</h1>
+  <p>This page creates an IPFS node in your browser and drops it into the global Javascript namespace as <b><em style="background-color:#d7d6d6">node</em></b>. Open the console to play around with it.</p>
+  <p>Note that opening two tabs of this page in the same browser won't work well, because they will share node configuration. You'll end up trying to run two instances of the same node, with the same private key and identity, which is a Bad Idea.</p>
+  <h1 id="status">Node status: offline</h1>
+
+  <h2>Some suggestions</h2>
+
+  <p>Try adding a new file:</p>
+
+  <code style="display:block; white-space:pre-wrap; background-color:#d7d6d6">
+    node.files.add(new node.types.Buffer('Hello world!'), (err, res) => {
+      if (err || !res) {
+        return console.error('Error - ipfs files add', err, res)
+      }
+
+      res.forEach((file) => console.log('successfully stored', file))
+    })
+  </code>
+
+  <p>You can cat that same file. If you used the exact same string as above ('Hello world!') you should have an hash like this: 'QmQzCQn4puG4qu8PVysxZmscmQ5vT1ZXpqo7f58Uh9QfyY'</p>
+
+  <code style="display:block; white-space:pre-wrap; background-color:#d7d6d6">
+    node.files.cat('QmQzCQn4puG4qu8PVysxZmscmQ5vT1ZXpqo7f58Uh9QfyY', function (err, stream) {
+      var res = ''
+
+      stream.on('data', function (chunk) {
+        res += chunk.toString()
+      })
+
+      stream.on('error', function (err) {
+        console.error('Error - ipfs files cat ', err)
+      })
+
+      stream.on('end', function () {
+        console.log('Got:', res)
+      })
+    })
+  </code>
+</body>
+</html>

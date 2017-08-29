@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/app.css">
+    <title>IPFS - Transfer Files</title>
+  </head>
+
+  <body ondragover="event.preventDefault()">
+    <div class="dragover-popup">
+      <h1>Drop file to upload</h1>
+    </div>
+
+    <div class="header">
+      <a href="https://ipfs.io" target="_blank">
+        <img src="ipfs-logo.svg" height="32" id="logo" alt="ipfs logo">
+      </a>
+      <h1>Transfer Files</h1>
+      <div class="note">
+        <i>P.S. drop files anywhere to upload them!</i>
+      </div>
+    </div>
+
+    <div class="wrapper">
+      <div id="ipfs" class="ipfs" >
+        <div class="left">
+          <div id="buttons" class="buttons">
+            <button id="start" type="button">Start IPFS</button>
+            <button id="stop" disabled type="button">Stop IPFS</button>
+          </div>
+          <div id="details" class="disabled">
+            <h2>Your daemon</h2>
+            <h3>ID</h3>
+            <pre class='id-container'>N/A</pre>
+            <h3>Addresses</h3>
+            <ul class='addresses-container'>
+              <li>Not yet online</li>
+            </ul>
+          </div>
+        </div>
+        <div class="right">
+          <div id="peers" class="disabled">
+            <h2>Peers</h2>
+          </div>
+          <div>
+            <input disabled type="text" class="connect-peer" placeholder="Multiaddr"/>
+            <button disabled class="connect-peer">Connect to peer</button>
+          </div>
+        </div>
+        <div class="clear"></div>
+        <div id="files">
+          <div class="multihash-wrapper">
+            <input disabled id="multihash" type="text" placeholder="Multihash"/>
+            <button disabled id="cat" type="button">Fetch File</button>
+            <div class="clear"></div>
+          </div>
+          <div class="file-list"></div>
+          <div id="filesStatus"></div>
+        </div>
+        <pre id="errors" class="hidden"></pre>
+      </div>
+    </div>
+
+    <!-- The IPFS node module -->
+    <script src="//unpkg.com/ipfs/dist/index.min.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

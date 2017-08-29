@@ -1,9 +1,5 @@
 'use strict'
-
-const debug = require('debug')
-const utils = require('../utils')
-const log = debug('cli')
-log.error = debug('cli:error')
+const print = require('../utils').print
 
 module.exports = {
   command: 'id',
@@ -19,17 +15,12 @@ module.exports = {
 
   handler (argv) {
     // TODO: handle argv.format
-    utils.getIPFS((err, ipfs) => {
+    argv.ipfs.id((err, id) => {
       if (err) {
         throw err
       }
-      ipfs.id((err, id) => {
-        if (err) {
-          throw err
-        }
 
-        console.log(JSON.stringify(id, '', 2))
-      })
+      print(JSON.stringify(id, '', 2))
     })
   }
 }

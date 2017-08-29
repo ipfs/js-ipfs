@@ -1,6 +1,6 @@
 'use strict'
 
-const utils = require('../../utils')
+const print = require('../../utils').print
 
 module.exports = {
   command: 'version',
@@ -10,16 +10,11 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    utils.getIPFS((err, ipfs) => {
+    argv.ipfs.repo.version(function (err, version) {
       if (err) {
         throw err
       }
-      ipfs.repo.version(function (err, version) {
-        if (err) {
-          return console.error(err)
-        }
-        console.log(version)
-      })
+      print(version)
     })
   }
 }

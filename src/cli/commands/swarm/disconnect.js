@@ -1,9 +1,7 @@
 'use strict'
 
 const utils = require('../../utils')
-const debug = require('debug')
-const log = debug('cli:object')
-log.error = debug('cli:object:error')
+const print = require('../../utils').print
 
 module.exports = {
   command: 'disconnect <address>',
@@ -17,18 +15,12 @@ module.exports = {
       throw new Error('This command must be run in online mode. Try running \'ipfs daemon\' first.')
     }
 
-    utils.getIPFS((err, ipfs) => {
+    argv.ipfs.swarm.disconnect(argv.address, (err, res) => {
       if (err) {
         throw err
       }
 
-      ipfs.swarm.disconnect(argv.address, (err, res) => {
-        if (err) {
-          throw err
-        }
-
-        console.log(res.Strings[0])
-      })
+      print(res.Strings[0])
     })
   }
 }

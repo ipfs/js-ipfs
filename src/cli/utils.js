@@ -35,35 +35,53 @@ function getAPICtl () {
 }
 
 exports.getIPFS = (callback) => {
-  if (!isDaemonOn()) {
-    const ipfs = new IPFS({
-      repo: exports.getRepoPath(),
-      EXPERIMENTAL: {
-        pubsub: true
-      }
-    })
-    ipfs.load(() => callback(null, ipfs))
-    return
+  if (isDaemonOn()) {
+    return callback(null, getAPICtl(), (cb) => cb())
   }
 
-  callback(null, getAPICtl())
+  const node = new IPFS({
+    repo: exports.getRepoPath(),
+    init: false,
+    start: false,
+    EXPERIMENTAL: {
+      pubsub: true
+    }
+  })
+
+  const cleanup = (cb) => {
+    if (node && node._repo && !node._repo.closed) {
+      node._repo.close(() => cb())
+    } else {
+      cb()
+    }
+  }
+
+  node.on('error', (err) => {
+    throw err
+  })
+
+  node.once('ready', () => {
+    callback(null, node, cleanup)
+  })
 }
 
 exports.getRepoPath = () => {
   return process.env.IPFS_PATH || os.homedir() + '/.jsipfs'
 }
 
-exports.createLogger = (visible) => {
-  return (msg, newline) => {
-    if (newline === undefined) {
-      newline = true
+let visible = true
+exports.disablePrinting = () => { visible = false }
+
+exports.print = (msg, newline) => {
+  if (newline === undefined) {
+    newline = true
+  }
+
+  if (visible) {
+    if (msg === undefined) {
+      msg = ''
     }
-    if (visible) {
-      if (msg === undefined) {
-        msg = ''
-      }
-      msg = newline ? msg + '\n' : msg
-      process.stdout.write(msg)
-    }
+    msg = newline ? msg + '\n' : msg
+    process.stdout.write(msg)
   }
 }

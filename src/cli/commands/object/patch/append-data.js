@@ -1,24 +1,22 @@
 'use strict'
 
-const utils = require('../../../utils')
 const bl = require('bl')
 const fs = require('fs')
-const waterfall = require('async/waterfall')
 const debug = require('debug')
 const log = debug('cli:object')
 log.error = debug('cli:object:error')
+const print = require('../../../utils').print
 
-function appendData (key, data) {
-  waterfall([
-    (cb) => utils.getIPFS(cb),
-    (ipfs, cb) => ipfs.object.patch.appendData(key, data, {enc: 'base58'}, cb)
-  ], (err, node) => {
+function appendData (key, data, ipfs) {
+  ipfs.object.patch.appendData(key, data, {
+    enc: 'base58'
+  }, (err, node) => {
     if (err) {
       throw err
     }
     const nodeJSON = node.toJSON()
 
-    console.log(nodeJSON.multihash)
+    print(nodeJSON.multihash)
   })
 }
 
@@ -30,8 +28,9 @@ module.exports = {
   builder: {},
 
   handler (argv) {
+    const ipfs = argv.ipfs
     if (argv.data) {
-      return appendData(argv.root, fs.readFileSync(argv.data))
+      return appendData(argv.root, fs.readFileSync(argv.data), ipfs)
     }
 
     process.stdin.pipe(bl((err, input) => {
@@ -39,7 +38,7 @@ module.exports = {
         throw err
       }
 
-      appendData(argv.root, input)
+      appendData(argv.root, input, ipfs)
     }))
   }
 }

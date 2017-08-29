@@ -1,14 +1,11 @@
 'use strict'
 
-const debug = require('debug')
-const utils = require('../../utils')
-const log = debug('cli:files')
-log.error = debug('cli:files:error')
 var fs = require('fs')
 const path = require('path')
 const mkdirp = require('mkdirp')
 const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
+const print = require('../../utils').print
 
 function checkArgs (hash, outPath) {
   // format the output directory
@@ -54,7 +51,7 @@ function fileHandler (dir) {
 module.exports = {
   command: 'get <ipfs-path>',
 
-  describe: 'Download IPFS objects',
+  describe: 'Fetch a file or directory with files references from an IPFS Path',
 
   builder: {
     output: {
@@ -68,26 +65,20 @@ module.exports = {
     const ipfsPath = argv['ipfs-path']
     const dir = checkArgs(ipfsPath, argv.output)
 
-    utils.getIPFS((err, ipfs) => {
+    argv.ipfs.files.get(ipfsPath, (err, stream) => {
       if (err) {
         throw err
       }
-
-      ipfs.files.get(ipfsPath, (err, stream) => {
-        if (err) {
-          throw err
-        }
-        console.log(`Saving file(s) to ${ipfsPath}`)
-        pull(
-          toPull.source(stream),
-          pull.asyncMap(fileHandler(dir)),
-          pull.onEnd((err) => {
-            if (err) {
-              throw err
-            }
-          })
-        )
-      })
+      print(`Saving file(s) ${ipfsPath}`)
+      pull(
+        toPull.source(stream),
+        pull.asyncMap(fileHandler(dir)),
+        pull.onEnd((err) => {
+          if (err) {
+            throw err
+          }
+        })
+      )
     })
   }
 }

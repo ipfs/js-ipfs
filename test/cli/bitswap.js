@@ -13,12 +13,12 @@ describe('bitswap', () => runOn((thing) => {
     ipfs('block get ' + key)
       .then(() => {})
       .catch(() => {})
-    setTimeout(done, 100)
+    setTimeout(done, 800)
   })
 
   it('wantlist', () => {
     return ipfs('bitswap wantlist').then((out) => {
-      expect(out).to.eql(key)
+      expect(out).to.eql(key + '\n')
     })
   })
 
@@ -33,7 +33,7 @@ describe('bitswap', () => runOn((thing) => {
         `    ${key}`,
         '  partners [0]',
         '    '
-      ].join('\n'))
+      ].join('\n') + '\n')
     })
   })
 }))

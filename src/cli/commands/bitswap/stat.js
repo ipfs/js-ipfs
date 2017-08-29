@@ -1,7 +1,7 @@
 'use strict'
 
-const utils = require('../../utils')
 const CID = require('cids')
+const print = require('../../utils').print
 
 module.exports = {
   command: 'stat',
@@ -10,26 +10,21 @@ module.exports = {
 
   builder: {},
 
-  handler () {
-    utils.getIPFS((err, ipfs) => {
+  handler (argv) {
+    argv.ipfs.bitswap.stat((err, stats) => {
       if (err) {
         throw err
       }
 
-      ipfs.bitswap.stat((err, stats) => {
-        if (err) {
-          throw err
-        }
+      stats.Wantlist = stats.Wantlist || []
+      stats.Wantlist = stats.Wantlist.map((entry) => {
+        const buf = new Buffer(entry.cid.hash.data)
+        const cid = new CID(entry.cid.version, entry.cid.codec, buf)
+        return cid.toBaseEncodedString()
+      })
+      stats.Peers = stats.Peers || []
 
-        stats.Wantlist = stats.Wantlist || []
-        stats.Wantlist = stats.Wantlist.map((entry) => {
-          const buf = new Buffer(entry.cid.hash.data)
-          const cid = new CID(entry.cid.version, entry.cid.codec, buf)
-          return cid.toBaseEncodedString()
-        })
-        stats.Peers = stats.Peers || []
-
-        console.log(`bitswap status
+      print(`bitswap status
   blocks received: ${stats.BlocksReceived}
   dup blocks received: ${stats.DupBlksReceived}
   dup data received: ${stats.DupDataReceived}B
@@ -37,7 +32,6 @@ module.exports = {
     ${stats.Wantlist.join('\n    ')}
   partners [${stats.Peers.length}]
     ${stats.Peers.join('\n    ')}`)
-      })
     })
   }
 }
