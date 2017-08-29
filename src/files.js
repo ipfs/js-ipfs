@@ -17,16 +17,15 @@ const through = require('through2')
 const Buffer = require('safe-buffer').Buffer
 
 module.exports = (common) => {
-  describe('.files', () => {
+  describe('.files', function () {
+    this.timeout(50 * 1000)
+
     let smallFile
     let bigFile
     let directoryContent
     let ipfs
 
-    before(function (done) {
-      // CI is slow
-      this.timeout(20 * 1000)
-
+    before((done) => {
       smallFile = loadFixture(__dirname, '../test/fixtures/testfile.txt', 'interface-ipfs-core')
       bigFile = loadFixture(__dirname, '../test/fixtures/15mb.random', 'interface-ipfs-core')
 
