@@ -63,7 +63,9 @@ module.exports = (common) => {
 
     const getTopic = () => 'pubsub-tests-' + Math.random()
 
-    describe('callback API', () => {
+    describe('callback API', function () {
+      this.timeout(80 * 1000)
+
       let ipfs1
       let ipfs2
       let ipfs3
@@ -599,7 +601,9 @@ module.exports = (common) => {
       })
     })
 
-    describe('promise API', () => {
+    describe('promise API', function () {
+      this.timeout(80 * 1000)
+
       let ipfs1
 
       before((done) => {
