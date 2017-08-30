@@ -1,6 +1,7 @@
+'use strict'
+
 const register = require('prom-client').register
 const client = require('prom-client')
-const boom = require('boom')
 
 // Endpoint for handling debug metrics
 module.exports = (server) => {

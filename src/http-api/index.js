@@ -7,7 +7,6 @@ const multiaddr = require('multiaddr')
 const setHeader = require('hapi-set-header')
 const once = require('once')
 
-
 const IPFS = require('../core')
 const WStar = require('libp2p-webrtc-star')
 const errorHandler = require('./error-handler')
