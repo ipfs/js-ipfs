@@ -6,6 +6,8 @@ const client = require('prom-client')
 // Endpoint for handling debug metrics
 module.exports = (server) => {
   const api = server.select('API')
+  // Clear the register to make sure we're not registering multiple ones
+  register.clear()
   const gauge = new client.Gauge({ name: 'number_of_peers', help: 'the_number_of_currently_connected_peers' })
 
   api.route({
