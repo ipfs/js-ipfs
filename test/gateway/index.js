@@ -1,13 +1,11 @@
 /* eslint-env mocha */
 'use strict'
 
-const fs = require('fs')
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const API = require('../../src/http')
-// const APIctl = require('ipfs-api')
 const ncp = require('ncp').ncp
 const path = require('path')
 const clean = require('../utils/clean')
@@ -17,6 +15,7 @@ describe('HTTP GATEWAY', () => {
   const repoTests = path.join(__dirname, '../repo-tests-run')
 
   let http = {}
+  let gateway
 
   before((done) => {
     http.api = new API(repoTests)
@@ -24,7 +23,10 @@ describe('HTTP GATEWAY', () => {
     ncp(repoExample, repoTests, (err) => {
       expect(err).to.not.exist()
 
-      http.api.start(false, done)
+      http.api.start(false, () => {
+        gateway = http.api.server.select('Gateway')
+        done()
+      })
     })
   })
 
@@ -36,8 +38,39 @@ describe('HTTP GATEWAY', () => {
     })
   })
 
-  describe('## http-gateway spec tests', () => {
-    fs.readdirSync(path.join(__dirname, '/spec'))
-      .forEach((file) => require('./spec/' + file)(http))
+  describe('/ipfs/* route', () => {
+    it('returns 400 for request without argument', (done) => {
+      gateway.inject({
+        method: 'GET',
+        url: '/ipfs'
+      }, (res) => {
+        expect(res.statusCode).to.equal(400)
+        expect(res.result.Message).to.be.a('string')
+        done()
+      })
+    })
+
+    it('400 for request with invalid argument', (done) => {
+      gateway.inject({
+        method: 'GET',
+        url: '/ipfs/invalid'
+      }, (res) => {
+        expect(res.statusCode).to.equal(400)
+        expect(res.result.Message).to.be.a('string')
+        done()
+      })
+    })
+
+    it('valid hash', (done) => {
+      gateway.inject({
+        method: 'GET',
+        url: '/ipfs/QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o'
+      }, (res) => {
+        expect(res.statusCode).to.equal(200)
+        expect(res.rawPayload).to.deep.equal(new Buffer('hello world' + '\n'))
+        expect(res.payload).to.equal('hello world' + '\n')
+        done()
+      })
+    })
   })
 })
