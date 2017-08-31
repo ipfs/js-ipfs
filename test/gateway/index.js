@@ -40,16 +40,4 @@ describe('HTTP GATEWAY', () => {
     fs.readdirSync(path.join(__dirname, '/spec'))
       .forEach((file) => require('./spec/' + file)(http))
   })
-
-  // describe('## interface tests', () => {
-  //   fs.readdirSync(path.join(__dirname, '/interface'))
-  //     .forEach((file) => require('./interface/' + file))
-  // })
-  //
-  // describe('## custom ipfs-api tests', () => {
-  //   const ctl = APIctl('/ip4/127.0.0.1/tcp/6001')
-  //
-  //   fs.readdirSync(path.join(__dirname, '/over-ipfs-api'))
-  //     .forEach((file) => require('./over-ipfs-api/' + file)(ctl))
-  // })
 })
