@@ -14,6 +14,7 @@ module.exports = (common) => {
   describe('.swarm', () => {
     let ipfsA
     let ipfsB
+    let factoryInstance
 
     before(function (done) {
       // CI takes longer to instantiate the daemon,
@@ -23,6 +24,7 @@ module.exports = (common) => {
 
       common.setup((err, factory) => {
         expect(err).to.not.exist()
+        factoryInstance = factory
         series([
           (cb) => {
             factory.spawnNode((err, node) => {
@@ -105,6 +107,138 @@ module.exports = (common) => {
             // expect(peer).to.have.a.property('streams')
 
             done()
+          })
+        })
+
+        const getConfig = (addresses) => {
+          return {
+            Addresses: {
+              Swarm: addresses,
+              API: null,
+              Gateway: null
+            }
+          }
+        }
+        const getRepoPath = () => {
+          return '/tmp/.ipfs-' + Math.random().toString().substring(2, 8)
+        }
+
+        describe('Shows connected peers only once', () => {
+          it('Connecting two peers with one address each', (done) => {
+            let nodeA
+            let nodeB
+            let nodeBAddress
+            const addresses = ['/ip4/127.0.0.1/tcp/0']
+            const config = getConfig(addresses)
+            series([
+              (cb) => {
+                factoryInstance.spawnNode(getRepoPath(), config, (err, node) => {
+                  expect(err).to.not.exist()
+                  nodeA = node
+                  cb()
+                })
+              },
+              (cb) => {
+                factoryInstance.spawnNode(getRepoPath(), config, (err, node) => {
+                  expect(err).to.not.exist()
+                  nodeB = node
+                  cb()
+                })
+              },
+              (cb) => {
+                nodeB.id((err, info) => {
+                  expect(err).to.not.exist()
+                  nodeBAddress = info.addresses[0]
+                  cb()
+                })
+              },
+              (cb) => {
+                nodeA.swarm.connect(nodeBAddress, (err) => {
+                  expect(err).to.not.exist()
+                  cb()
+                })
+              },
+              (cb) => {
+                // Waiting to make sure nodes are connected
+                setTimeout(cb, 1000)
+              },
+              (cb) => {
+                nodeA.swarm.peers((err, peers) => {
+                  expect(err).to.not.exist()
+                  expect(peers).to.have.length(1)
+                  cb()
+                })
+              },
+              (cb) => {
+                nodeB.swarm.peers((err, peers) => {
+                  expect(err).to.not.exist()
+                  expect(peers).to.have.length(1)
+                  cb()
+                })
+              }
+            ], done)
+          })
+
+          it('Connecting two peers with two addresses each', (done) => {
+            let nodeA
+            let nodeB
+            let nodeBAddress
+            const configA = getConfig([
+              // TODO: Change to port 0, needs: https://github.com/ipfs/interface-ipfs-core/issues/152
+              '/ip4/127.0.0.1/tcp/6543',
+              '/ip4/127.0.0.1/tcp/6544'
+            ])
+            const configB = getConfig([
+              '/ip4/127.0.0.1/tcp/6545',
+              '/ip4/127.0.0.1/tcp/6546'
+            ])
+            series([
+              (cb) => {
+                factoryInstance.spawnNode(getRepoPath(), configA, (err, node) => {
+                  expect(err).to.not.exist()
+                  nodeA = node
+                  cb()
+                })
+              },
+              (cb) => {
+                factoryInstance.spawnNode(getRepoPath(), configB, (err, node) => {
+                  expect(err).to.not.exist()
+                  nodeB = node
+                  cb()
+                })
+              },
+              (cb) => {
+                nodeB.id((err, info) => {
+                  expect(err).to.not.exist()
+                  nodeBAddress = info.addresses[0]
+                  cb()
+                })
+              },
+              (cb) => {
+                nodeA.swarm.connect(nodeBAddress, (err) => {
+                  expect(err).to.not.exist()
+                  cb()
+                })
+              },
+              (cb) => {
+                // Waiting to make sure nodes are connected
+                setTimeout(cb, 1000)
+              },
+              (cb) => {
+                nodeA.swarm.peers((err, peers) => {
+                  expect(err).to.not.exist()
+                  expect(peers).to.have.length(1)
+                  cb()
+                })
+              },
+              (cb) => {
+                nodeB.swarm.peers((err, peers) => {
+                  expect(err).to.not.exist()
+                  expect(peers).to.have.length(1)
+                  cb()
+                })
+              }
+            ], done)
           })
         })
       })
