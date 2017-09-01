@@ -1,10 +1,10 @@
-<a name="0.31.9"></a>
-## [0.31.9](https://github.com/ipfs/interface-ipfs-core/compare/v0.31.8...v0.31.9) (2017-09-01)
+<a name="0.31.10"></a>
+## [0.31.10](https://github.com/ipfs/interface-ipfs-core/compare/v0.31.9...v0.31.10) (2017-09-01)
 
 
-### Features
+### Bug Fixes
 
-* more tests for swarm - test correct amount of peers ([b19c80f](https://github.com/ipfs/interface-ipfs-core/commit/b19c80f))
+* add multiaddrs for API and Gateway ([30160a7](https://github.com/ipfs/interface-ipfs-core/commit/30160a7))
 
 
 
