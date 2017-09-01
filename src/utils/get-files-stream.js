@@ -6,7 +6,7 @@ const flatmap = require('flatmap')
 const escape = require('glob-escape')
 
 function headers (file) {
-  const name = file.path || ''
+  const name = encodeURIComponent(file.path) || ''
   const header = {
     'Content-Disposition': `file; filename="${name}"`
   }

@@ -156,6 +156,37 @@ describe('.get', () => {
         })
       })
     })
+
+    it('add path containing "+"s (for testing get)', (done) => {
+      if (!isNode) { return done() }
+      const filename = 'ti,c64x+mega++mod-pic.txt'
+      const subdir = 'tmp/c++files'
+      const expectedMultihash = 'QmPkmARcqjo5fqK1V1o8cFsuaXxWYsnwCNLJUYS4KeZyff'
+      ipfs.files.add([{
+        path: subdir + '/' + filename,
+        content: Buffer.from(subdir + '/' + filename, 'utf-8')
+      }], (err, res) => {
+        if (err) done(err)
+        expect(res[2].hash).to.equal(expectedMultihash)
+        done()
+      })
+    })
+
+    it('get path containing "+"s', (done) => {
+      if (!isNode) { return done() }
+      const multihash = 'QmPkmARcqjo5fqK1V1o8cFsuaXxWYsnwCNLJUYS4KeZyff'
+      let count = 0
+      ipfs.get(multihash, (err, files) => {
+        expect(err).to.not.exist()
+        files.on('data', (file) => {
+          if (file.path !== multihash) {
+            count++
+            expect(file.path).to.contain('+')
+            if (count === 2) done()
+          }
+        })
+      })
+    })
   })
 
   describe('Promise API', () => {
