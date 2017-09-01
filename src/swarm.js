@@ -114,8 +114,8 @@ module.exports = (common) => {
           return {
             Addresses: {
               Swarm: addresses,
-              API: null,
-              Gateway: null
+              API: '/ip4/127.0.0.1/tcp/0',
+              Gateway: '/ip4/127.0.0.1/tcp/0'
             }
           }
         }
