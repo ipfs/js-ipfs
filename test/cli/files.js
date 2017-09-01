@@ -136,6 +136,60 @@ describe('files', () => runOnAndOff((thing) => {
     })
   })
 
+  it('add with cid-version=0', () => {
+    return ipfs('add src/init-files/init-docs/readme --cid-version=0').then((out) => {
+      expect(out)
+        .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
+    })
+  })
+
+  // Temporarily expect to fail as raw-leaves not yet implemented.
+  //
+  // When cid-version=1 then raw-leaves MUST be present and false.
+  //
+  // This is because raw-leaves is not yet implemented in js-ipfs,
+  // and go-ipfs changes the value of raw-leaves to true when
+  // cid-version > 0 unless explicitly set to false.
+  //
+  // This retains feature parity without having to implement raw-leaves.
+  it('add with cid-version=1', () => {
+    return new Promise((resolve, reject) => {
+      ipfs('add src/init-files/init-docs/readme --cid-version=1')
+        .then(() => reject(new Error('Raw leaves not expected to be implemented')))
+        .catch((err) => {
+          expect(err).to.exist()
+          resolve()
+        })
+    })
+  })
+
+  it('add with cid-version=1 and raw-leaves=false', () => {
+    return ipfs('add src/init-files/init-docs/readme --cid-version=1 --raw-leaves=false').then((out) => {
+      expect(out)
+        .to.eql('added zdj7WWeQ43G6JJvLWQWZpyHuAMq6uYWRjkBXFad11vE2LHhQ7 readme\n')
+    })
+  })
+
+  // Temporarily expect to fail as raw-leaves not yet implemented
+  //
+  // When cid-version=1 then raw-leaves MUST be present and false.
+  //
+  // This is because raw-leaves is not yet implemented in js-ipfs,
+  // and go-ipfs changes the value of raw-leaves to true when
+  // cid-version > 0 unless explicitly set to false.
+  //
+  // This retains feature parity without having to implement raw-leaves.
+  it('add with cid-version=1 and raw-leaves=true', () => {
+    return new Promise((resolve, reject) => {
+      ipfs('add src/init-files/init-docs/readme --cid-version=1 --raw-leaves=true')
+        .then(() => reject(new Error('Raw leaves not expected to be implemented')))
+        .catch((err) => {
+          expect(err).to.exist()
+          resolve()
+        })
+    })
+  })
+
   it('cat', () => {
     return ipfs('files cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
       .then((out) => {
