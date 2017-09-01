@@ -37,7 +37,7 @@
     "is-stream": "^1.1.0",
     "lru-cache": "^4.1.1",
     "multiaddr": "^2.3.0",
-    "multihashes": "~0.4.5",
+    "multihashes": "~0.4.9",
     "multipart-stream": "^2.0.1",
     "ndjson": "^1.5.0",
     "once": "^1.4.0",
@@ -46,7 +46,7 @@
     "promisify-es6": "^1.0.3",
     "pump": "^1.0.2",
     "qs": "^6.5.0",
-    "readable-stream": "2.3.3",
+    "readable-stream": "^2.3.3",
     "stream-http": "^2.7.2",
     "streamifier": "^0.1.1",
     "tar-stream": "^1.5.4"
@@ -61,17 +61,17 @@
   },
   "devDependencies": {
     "aegir": "^11.0.2",
-    "chai": "^4.1.1",
+    "chai": "^4.1.2",
     "dirty-chai": "^2.0.1",
-    "eslint-plugin-react": "^7.1.0",
+    "eslint-plugin-react": "^7.3.0",
     "gulp": "^3.9.1",
     "hapi": "^16.5.2",
-    "interface-ipfs-core": "~0.30.1",
+    "interface-ipfs-core": "~0.31.12",
     "ipfsd-ctl": "~0.21.0",
     "pre-commit": "^1.2.2",
     "socket.io": "^2.0.3",
     "socket.io-client": "^2.0.3",
-    "stream-equal": "^1.0.0"
+    "stream-equal": "^1.0.1"
   },
   "pre-commit": [
     "lint",
