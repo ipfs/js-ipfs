@@ -20,7 +20,7 @@ module.exports = (common) => {
       // CI takes longer to instantiate the daemon,
       // so we need to increase the timeout for the
       // before step
-      this.timeout(20 * 1000)
+      this.timeout(50 * 1000)
 
       common.setup((err, factory) => {
         expect(err).to.not.exist()
