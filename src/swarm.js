@@ -61,9 +61,7 @@ module.exports = (common) => {
       })
 
       // for Identify to finish
-      it('time', (done) => {
-        setTimeout(done, 1500)
-      })
+      it('time', (done) => setTimeout(done, 1500))
 
       describe('.peers', () => {
         beforeEach((done) => {
@@ -110,20 +108,23 @@ module.exports = (common) => {
           })
         })
 
-        const getConfig = (addresses) => {
-          return {
-            Addresses: {
-              Swarm: addresses,
-              API: '/ip4/127.0.0.1/tcp/0',
-              Gateway: '/ip4/127.0.0.1/tcp/0'
+        describe('Shows connected peers only once', () => {
+          function getConfig (addrs) {
+            addrs = Array.isArray(addrs) ? addrs : [addrs]
+
+            return {
+              Addresses: {
+                Swarm: addrs,
+                API: '/ip4/127.0.0.1/tcp/0',
+                Gateway: '/ip4/127.0.0.1/tcp/0'
+              }
             }
           }
-        }
-        const getRepoPath = () => {
-          return '/tmp/.ipfs-' + Math.random().toString().substring(2, 8)
-        }
 
-        describe('Shows connected peers only once', () => {
+          function getRepoPath () {
+            return '/tmp/.ipfs-' + Math.random().toString().substring(2, 8) + Date.now()
+          }
+
           it('Connecting two peers with one address each', (done) => {
             let nodeA
             let nodeB
@@ -152,16 +153,8 @@ module.exports = (common) => {
                   cb()
                 })
               },
-              (cb) => {
-                nodeA.swarm.connect(nodeBAddress, (err) => {
-                  expect(err).to.not.exist()
-                  cb()
-                })
-              },
-              (cb) => {
-                // Waiting to make sure nodes are connected
-                setTimeout(cb, 1000)
-              },
+              (cb) => nodeA.swarm.connect(nodeBAddress, cb),
+              (cb) => setTimeout(cb, 1000), // time for identify
               (cb) => {
                 nodeA.swarm.peers((err, peers) => {
                   expect(err).to.not.exist()
@@ -183,14 +176,15 @@ module.exports = (common) => {
             let nodeA
             let nodeB
             let nodeBAddress
+
+            // TODO: Change to port 0, needs: https://github.com/ipfs/interface-ipfs-core/issues/152
             const configA = getConfig([
-              // TODO: Change to port 0, needs: https://github.com/ipfs/interface-ipfs-core/issues/152
-              '/ip4/127.0.0.1/tcp/6543',
-              '/ip4/127.0.0.1/tcp/6544'
+              '/ip4/127.0.0.1/tcp/16543',
+              '/ip4/127.0.0.1/tcp/16544'
             ])
             const configB = getConfig([
-              '/ip4/127.0.0.1/tcp/6545',
-              '/ip4/127.0.0.1/tcp/6546'
+              '/ip4/127.0.0.1/tcp/26545',
+              '/ip4/127.0.0.1/tcp/26546'
             ])
             series([
               (cb) => {
@@ -214,16 +208,8 @@ module.exports = (common) => {
                   cb()
                 })
               },
-              (cb) => {
-                nodeA.swarm.connect(nodeBAddress, (err) => {
-                  expect(err).to.not.exist()
-                  cb()
-                })
-              },
-              (cb) => {
-                // Waiting to make sure nodes are connected
-                setTimeout(cb, 1000)
-              },
+              (cb) => nodeA.swarm.connect(nodeBAddress, cb),
+              (cb) => setTimeout(cb, 1000), // time for identify
               (cb) => {
                 nodeA.swarm.peers((err, peers) => {
                   expect(err).to.not.exist()
