@@ -117,6 +117,12 @@ module.exports = (common) => {
                 Swarm: addrs,
                 API: '/ip4/127.0.0.1/tcp/0',
                 Gateway: '/ip4/127.0.0.1/tcp/0'
+              },
+              Bootstrap: [],
+              Discovery: {
+                MDNS: {
+                  Enabled: false
+                }
               }
             }
           }
@@ -213,6 +219,7 @@ module.exports = (common) => {
               (cb) => {
                 nodeA.swarm.peers((err, peers) => {
                   expect(err).to.not.exist()
+                  peers.forEach((peer) => console.log(peer.addr.toString()))
                   expect(peers).to.have.length(1)
                   cb()
                 })
