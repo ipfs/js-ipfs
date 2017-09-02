@@ -179,6 +179,7 @@ exports.add = {
     const fileAdder = pushable()
 
     parser.on('file', (fileName, fileStream) => {
+      fileName = decodeURIComponent(fileName)
       const filePair = {
         path: fileName,
         content: toPull(fileStream)
@@ -188,6 +189,8 @@ exports.add = {
     })
 
     parser.on('directory', (directory) => {
+      directory = decodeURIComponent(directory)
+
       fileAdder.push({
         path: directory,
         content: ''
