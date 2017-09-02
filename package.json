@@ -128,7 +128,7 @@
     "mafmt": "^2.1.8",
     "mkdirp": "~0.5.1",
     "multiaddr": "^2.3.0",
-    "multihashes": "~0.4.8",
+    "multihashes": "~0.4.9",
     "once": "^1.4.0",
     "path-exists": "^3.0.0",
     "peer-book": "~0.5.0",
