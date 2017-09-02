@@ -6,10 +6,11 @@ const flatmap = require('flatmap')
 const escape = require('glob-escape')
 
 function headers (file) {
-  const name = encodeURIComponent(file.path) || ''
-  const header = {
-    'Content-Disposition': `file; filename="${name}"`
-  }
+  const name = file.path
+    ? encodeURIComponent(file.path)
+    : ''
+
+  const header = { 'Content-Disposition': `file; filename="${name}"` }
 
   if (file.dir || !file.content) {
     header['Content-Type'] = 'application/x-directory'
@@ -49,7 +50,7 @@ function loadPaths (opts, file) {
     const mg = new glob.sync.GlobSync(`${globEscapedDir}` + '**/*', {
       follow: followSymlinks,
       dot: opts.hidden,
-      ignore: (opts.ignore || []).map(function (ignoreGlob) {
+      ignore: (opts.ignore || []).map((ignoreGlob) => {
         return globEscapedDir + ignoreGlob
       })
     })

@@ -36,8 +36,6 @@ module.exports = (send) => {
         }
 
         if (node.toJSON().multihash !== result.Hash) {
-          console.log(node.toJSON())
-          console.log(result)
           return callback(new Error('multihashes do not match'))
         }
 

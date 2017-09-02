@@ -15,6 +15,7 @@ const request = require('./request')
 
 function parseError (res, cb) {
   const error = new Error(`Server responded with ${res.statusCode}`)
+
   streamToJsonValue(res, (err, payload) => {
     if (err) {
       return cb(err)
@@ -61,8 +62,8 @@ function onRes (buffer, cb) {
 }
 
 function requestAPI (config, options, callback) {
-  options.qs = options.qs || {}
   callback = once(callback)
+  options.qs = options.qs || {}
 
   if (Array.isArray(options.files)) {
     options.qs.recursive = true

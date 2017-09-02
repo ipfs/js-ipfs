@@ -25,14 +25,8 @@ module.exports = (send) => {
 
     ds.end = () => {
       add(tuples, options, (err, res) => {
-        if (err) {
-          return ds.emit('error', err)
-        }
-
-        res.forEach((tuple) => {
-          ds.push(tuple)
-        })
-
+        if (err) { return ds.emit('error', err) }
+        res.forEach((tuple) => ds.push(tuple))
         ds.push(null)
       })
     }
