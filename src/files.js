@@ -18,7 +18,7 @@ const Buffer = require('safe-buffer').Buffer
 
 module.exports = (common) => {
   describe('.files', function () {
-    this.timeout(50 * 1000)
+    this.timeout(80 * 1000)
 
     let smallFile
     let bigFile
