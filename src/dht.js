@@ -25,7 +25,7 @@ function spawnWithId (factory, callback) {
 
 module.exports = (common) => {
   describe('.dht', function () {
-    this.timeout(20 * 1000)
+    this.timeout(80 * 1000)
 
     let nodeA
     let nodeB
