@@ -1,3 +1,15 @@
+<a name="14.2.0"></a>
+# [14.2.0](https://github.com/ipfs/js-ipfs-api/compare/v14.1.2...v14.2.0) (2017-09-02)
+
+
+### Features
+
+* Allow --cid-version option to be passed to ipfs files add ([#589](https://github.com/ipfs/js-ipfs-api/issues/589)) ([717c72f](https://github.com/ipfs/js-ipfs-api/commit/717c72f))
+* Preserve "+" in file paths. ([#588](https://github.com/ipfs/js-ipfs-api/issues/588)) ([322b756](https://github.com/ipfs/js-ipfs-api/commit/322b756))
+* test against latest go-ipfs ([#590](https://github.com/ipfs/js-ipfs-api/issues/590)) ([40c8f10](https://github.com/ipfs/js-ipfs-api/commit/40c8f10))
+
+
+
 <a name="14.1.2"></a>
 ## [14.1.2](https://github.com/ipfs/js-ipfs-api/compare/v14.1.1...v14.1.2) (2017-08-06)
 
