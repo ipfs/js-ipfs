@@ -99,7 +99,7 @@
     "hapi": "^16.5.2",
     "hapi-set-header": "^1.0.2",
     "hoek": "^4.2.0",
-    "ipfs-api": "^14.2.0",
+    "ipfs-api": "^14.2.1",
     "ipfs-bitswap": "~0.16.1",
     "ipfs-block": "~0.6.0",
     "ipfs-block-service": "~0.12.0",
