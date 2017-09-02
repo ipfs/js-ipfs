@@ -1,23 +1,15 @@
 'use strict'
 
-// const mh = require('multihashes')
-// const multipart = require('ipfs-multipart')
 const debug = require('debug')
-// const tar = require('tar-stream')
 const log = debug('jsipfs:http-gateway')
 log.error = debug('jsipfs:http-gateway:error')
 const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
-// const pushable = require('pull-pushable')
-// const EOL = require('os').EOL
-// const toStream = require('pull-stream-to-stream')
 const fileType = require('file-type')
 const mime = require('mime-types')
 const GatewayResolver = require('../resolver')
 const PathUtils = require('../utils/path')
 const Stream = require('stream')
-
-exports = module.exports
 
 module.exports = {
   checkHash: (request, reply) => {

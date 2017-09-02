@@ -1,3 +1,5 @@
 'use strict'
 
-exports.gateway = require('./gateway')
+module.exports = {
+  gateway: require('./gateway')
+}
