@@ -4,7 +4,6 @@ const unixfsEngine = require('ipfs-unixfs-engine')
 const importer = unixfsEngine.importer
 const exporter = unixfsEngine.exporter
 const promisify = require('promisify-es6')
-const multihashes = require('multihashes')
 const pull = require('pull-stream')
 const sort = require('pull-sort')
 const pushable = require('pull-pushable')
@@ -13,6 +12,7 @@ const toPull = require('stream-to-pull-stream')
 const waterfall = require('async/waterfall')
 const isStream = require('is-stream')
 const Duplex = require('stream').Duplex
+const CID = require('cids')
 
 module.exports = function files (self) {
   const createAddPullStream = (options) => {
@@ -24,7 +24,7 @@ module.exports = function files (self) {
       pull.map(normalizeContent),
       pull.flatten(),
       importer(self._ipldResolver, opts),
-      pull.asyncMap(prepareFile.bind(null, self))
+      pull.asyncMap(prepareFile.bind(null, self, opts))
     )
   }
 
@@ -68,7 +68,7 @@ module.exports = function files (self) {
       pull(
         pull.values(normalizeContent(data)),
         importer(self._ipldResolver, options),
-        pull.asyncMap(prepareFile.bind(null, self)),
+        pull.asyncMap(prepareFile.bind(null, self, options)),
         sort((a, b) => {
           if (a.path < b.path) return 1
           if (a.path > b.path) return -1
@@ -114,15 +114,23 @@ module.exports = function files (self) {
   }
 }
 
-function prepareFile (self, file, callback) {
-  const bs58mh = multihashes.toB58String(file.multihash)
+function prepareFile (self, opts, file, callback) {
+  opts = opts || {}
 
   waterfall([
     (cb) => self.object.get(file.multihash, cb),
     (node, cb) => {
+      let cid = new CID(node.multihash)
+
+      if (opts['cid-version'] === 1) {
+        cid = cid.toV1()
+      }
+
+      const b58Hash = cid.toBaseEncodedString()
+
       cb(null, {
-        path: file.path || bs58mh,
-        hash: bs58mh,
+        path: file.path || b58Hash,
+        hash: b58Hash,
         size: node.size
       })
     }

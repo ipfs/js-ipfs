@@ -41,7 +41,7 @@ describe('HTTP API', () => {
       .forEach((file) => require('./spec/' + file)(http))
   })
 
-  describe('## interface tests', () => {
+  describe.only('## interface tests', () => {
     fs.readdirSync(path.join(__dirname, '/interface'))
       .forEach((file) => require('./interface/' + file))
   })
