@@ -1,3 +1,13 @@
+<a name="14.2.1"></a>
+## [14.2.1](https://github.com/ipfs/js-ipfs-api/compare/v14.2.0...v14.2.1) (2017-09-02)
+
+
+### Bug Fixes
+
+* regression caused by 322b756 ([#591](https://github.com/ipfs/js-ipfs-api/issues/591)) ([8affcfe](https://github.com/ipfs/js-ipfs-api/commit/8affcfe))
+
+
+
 <a name="14.2.0"></a>
 # [14.2.0](https://github.com/ipfs/js-ipfs-api/compare/v14.1.2...v14.2.0) (2017-09-02)
 
