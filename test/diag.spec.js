@@ -24,7 +24,8 @@ describe('.diag', () => {
   after((done) => fc.dismantle(done))
 
   describe('Callback API', () => {
-    it('.diag.net', (done) => {
+    // Disabled in go-ipfs 0.4.10
+    it.skip('.diag.net', (done) => {
       ipfs.diag.net((err, res) => {
         expect(err).to.not.exist()
         expect(res).to.exist()
@@ -52,7 +53,8 @@ describe('.diag', () => {
   })
 
   describe('Promise API', () => {
-    it('.diag.net', () => {
+    // Disabled in go-ipfs 0.4.10
+    it.skip('.diag.net', () => {
       return ipfs.diag.net()
         .then((res) => expect(res).to.exist())
     })

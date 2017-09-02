@@ -20,7 +20,7 @@ describe('.name', () => {
   let fc
 
   before(function (done) {
-    this.timeout(20 * 1000) // slow CI
+    this.timeout(50 * 1000) // slow CI
     fc = new FactoryClient()
     series([
       (cb) => {
