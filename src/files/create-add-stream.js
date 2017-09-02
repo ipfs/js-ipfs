@@ -24,7 +24,7 @@ module.exports = (send) => {
     }
 
     ds.end = () => {
-      add(tuples, (err, res) => {
+      add(tuples, options, (err, res) => {
         if (err) {
           return ds.emit('error', err)
         }
