@@ -647,14 +647,14 @@ module.exports = (common) => {
           .then(() => ipfs1.pubsub.peers(topic))
           .then((peers) => {
             expect(peers).to.exist()
-            ipfs1.pubsub.unsubscribe(topic, sub)
+            return ipfs1.pubsub.unsubscribe(topic, sub)
           })
       })
 
       it('.ls', () => {
         return ipfs1.pubsub.ls()
           .then((topics) => {
-            expect(topics).to.be.eql([])
+            expect(topics).to.eql([])
           })
       })
     })
