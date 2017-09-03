@@ -362,7 +362,7 @@ const node = new IPFS({
       Swarm: [
         "/ip4/0.0.0.0/tcp/4002",
         "/ip4/127.0.0.1/tcp/4003/ws",
-        "/libp2p-webrtc-star/dns4/star-signal.cloud.ipfs.team/wss"
+        "/dns4/star-signal.cloud.ipfs.team/wss/p2p-webrtc-star"
       ]
     }
   },
@@ -387,7 +387,7 @@ npm install wrtc --global
 npm install electron-webrtc --global
 ```
 
-Then, update your IPFS Daemon config to include the multiaddr for this new transport on the `Addresses.Swarm` array. Add: `"/libp2p-webrtc-star/dns4/star-signal.cloud.ipfs.team/wss"`
+Then, update your IPFS Daemon config to include the multiaddr for this new transport on the `Addresses.Swarm` array. Add: `"/dns4/star-signal.cloud.ipfs.team/wss/p2p-webrtc-star"`
 
 ## Packages
 
