@@ -26,6 +26,9 @@ function checkPath (inPath, recursive) {
     throw new Error('Error: Argument \'path\' is required')
   }
 
+  // Strips trailing slash from path.
+  inPath = inPath.replace(/\/$/, '')
+
   if (inPath === '.') {
     inPath = process.cwd()
   }
