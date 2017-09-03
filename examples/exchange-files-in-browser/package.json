@@ -2,10 +2,16 @@
   "name": "exchange-files-browser",
   "version": "0.0.0",
   "scripts": {
-    "start": "http-server -c-1 -p 12345 public"
+    "bundle": "browserify public/js/app.js > public/js/bundle.js",
+    "serve": "http-server -c-1 -p 12345 public",
+    "start": "npm run bundle && npm run serve"
   },
   "license": "MIT",
   "devDependencies": {
+    "browserify": "^14.4.0",
     "http-server": "^0.10.0"
+  },
+  "dependencies": {
+    "stream-buffers": "^3.0.1"
   }
 }
