@@ -21,7 +21,7 @@ series([
 
     console.log('\nAdded file:', result[0].path, result[0].hash)
     fileMultihash = result[0].hash
-    // cb()
+    cb()
   }),
   (cb) => node.files.cat(fileMultihash, (err, stream) => {
     if (err) { return cb(err) }

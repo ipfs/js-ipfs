@@ -1,0 +1,15 @@
+{
+  "name": "ipfs-101",
+  "version": "0.0.0",
+  "description": "this package.json needs to exist because of new npm config https://github.com/ipfs/js-ipfs/issues/977#issuecomment-326741092",
+  "main": "1.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "David Dias <daviddias@ipfs.io>",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^2.5.0",
+    "ipfs": "^0.25.4"
+  }
+}
