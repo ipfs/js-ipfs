@@ -6,7 +6,7 @@ var ipfs = IPFS()
 
 function store () {
   var toStore = document.getElementById('source').value
-  ipfs.add(new Buffer(toStore), function (err, res) {
+  ipfs.add(Buffer.from(toStore), function (err, res) {
     if (err || !res) {
       return console.error('ipfs add error', err, res)
     }

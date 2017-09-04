@@ -10,16 +10,16 @@
     "http": "stream-http"
   },
   "scripts": {
-    "test": "gulp test",
-    "test:node": "gulp test:node",
-    "test:browser": "gulp test:browser",
-    "lint": "aegir-lint",
-    "build": "gulp build",
-    "release": "gulp release",
-    "release-minor": "gulp release --type minor",
-    "release-major": "gulp release --type major",
-    "coverage": "gulp coverage",
-    "coverage-publish": "aegir-coverage publish"
+    "test": "aegir test --no-parallel",
+    "test:node": "aegir test --target node --no-parallel",
+    "test:browser": "aegir test --target browser",
+    "lint": "aegir lint",
+    "build": "aegir build",
+    "release": "aegir release --no-parallel",
+    "release-minor": "aegir release --type minor --no-parallel",
+    "release-major": "aegir release --type major --no-parallel",
+    "coverage": "aegir coverage --no-parallel --timeout 100000",
+    "coverage-publish": "aegir coverage --provider coveralls --no-parallel --timeout 100000"
   },
   "dependencies": {
     "async": "^2.5.0",
@@ -36,13 +36,13 @@
     "is-ipfs": "^0.3.0",
     "is-stream": "^1.1.0",
     "lru-cache": "^4.1.1",
-    "multiaddr": "^2.3.0",
+    "multiaddr": "^3.0.0",
     "multihashes": "~0.4.9",
     "multipart-stream": "^2.0.1",
     "ndjson": "^1.5.0",
     "once": "^1.4.0",
-    "peer-id": "~0.9.0",
-    "peer-info": "~0.10.0",
+    "peer-id": "~0.10.0",
+    "peer-info": "~0.11.0",
     "promisify-es6": "^1.0.3",
     "pump": "^1.0.2",
     "qs": "^6.5.0",
@@ -52,7 +52,7 @@
     "tar-stream": "^1.5.4"
   },
   "engines": {
-    "node": ">=4.0.0",
+    "node": ">=6.0.0",
     "npm": ">=3.0.0"
   },
   "repository": {
@@ -60,13 +60,13 @@
     "url": "https://github.com/ipfs/js-ipfs-api"
   },
   "devDependencies": {
-    "aegir": "^11.0.2",
+    "aegir": "^12.0.2",
     "chai": "^4.1.2",
     "dirty-chai": "^2.0.1",
     "eslint-plugin-react": "^7.3.0",
     "gulp": "^3.9.1",
     "hapi": "^16.5.2",
-    "interface-ipfs-core": "~0.31.16",
+    "interface-ipfs-core": "~0.31.18",
     "ipfsd-ctl": "~0.22.0",
     "pre-commit": "^1.2.2",
     "socket.io": "^2.0.3",

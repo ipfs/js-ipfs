@@ -25,7 +25,7 @@ class App extends React.Component {
         protocol_version: res.protocolVersion
       })
     })
-    ipfs.add([new Buffer(stringToUse)], (err, res) => {
+    ipfs.add([Buffer.from(stringToUse)], (err, res) => {
       if (err) throw err
       const hash = res[0].hash
       this.setState({added_file_hash: hash})

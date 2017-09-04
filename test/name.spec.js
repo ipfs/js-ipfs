@@ -14,13 +14,14 @@ const testfile = isNode
   ? loadFixture(__dirname, '/fixtures/testfile.txt')
   : loadFixture(__dirname, 'fixtures/testfile.txt')
 
-describe('.name', () => {
+describe('.name', function () {
+  this.timeout(50 * 1000)
+
   let ipfs
   let other
   let fc
 
-  before(function (done) {
-    this.timeout(50 * 1000) // slow CI
+  before((done) => {
     fc = new FactoryClient()
     series([
       (cb) => {

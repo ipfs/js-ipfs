@@ -27,7 +27,7 @@ module.exports = (send) => {
         }
         data = (new Unixfs('directory')).marshal()
       } else {
-        data = new Buffer(0)
+        data = Buffer.alloc(0)
       }
 
       DAGNode.create(data, (err, node) => {

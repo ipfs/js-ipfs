@@ -11,15 +11,16 @@ const path = require('path')
 
 const FactoryClient = require('./ipfs-factory/client')
 
-describe('.ls', () => {
+describe('.ls', function () {
+  this.timeout(50 * 1000)
+
   if (!isNode) { return }
 
   let ipfs
   let fc
   let folder
 
-  before(function (done) {
-    this.timeout(20 * 1000) // slow CI
+  before((done) => {
     fc = new FactoryClient()
     waterfall([
       (cb) => fc.spawnNode(cb),

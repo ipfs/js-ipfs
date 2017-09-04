@@ -25,12 +25,13 @@ if (isNode) {
   testfileBig = fs.createReadStream(tfbPath, { bufferSize: 128 })
 }
 
-describe('.get', () => {
+describe('.get', function () {
+  this.timeout(80 * 1000)
+
   let ipfs
   let fc
 
-  before(function (done) {
-    this.timeout(20 * 1000) // slow CI
+  before((done) => {
     fc = new FactoryClient()
     fc.spawnNode((err, node) => {
       expect(err).to.not.exist()
@@ -42,6 +43,8 @@ describe('.get', () => {
   after((done) => fc.dismantle(done))
 
   describe('Callback API', () => {
+    this.timeout(80 * 1000)
+
     it('add file for testing', (done) => {
       const expectedMultihash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
 
@@ -190,6 +193,8 @@ describe('.get', () => {
   })
 
   describe('Promise API', () => {
+    this.timeout(80 * 1000)
+
     it('get', (done) => {
       ipfs.get('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
         .then((files) => {
@@ -206,9 +211,9 @@ describe('.get', () => {
               })
           })
         })
-      .catch((err) => {
-        expect(err).to.not.exist()
-      })
+        .catch((err) => {
+          expect(err).to.not.exist()
+        })
     })
   })
 })

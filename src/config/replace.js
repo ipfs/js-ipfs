@@ -6,7 +6,7 @@ const promisify = require('promisify-es6')
 module.exports = (send) => {
   return promisify((config, callback) => {
     if (typeof config === 'object') {
-      config = streamifier.createReadStream(new Buffer(JSON.stringify(config)))
+      config = streamifier.createReadStream(Buffer.from(JSON.stringify(config)))
     }
 
     send({

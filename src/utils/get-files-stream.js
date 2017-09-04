@@ -25,9 +25,9 @@ function headers (file) {
 
 function strip (name, base) {
   const smallBase = base
-        .split('/')
-        .slice(0, -1)
-        .join('/') + '/'
+    .split('/')
+    .slice(0, -1)
+    .join('/') + '/'
   return name.replace(smallBase, '')
 }
 

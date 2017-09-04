@@ -30,14 +30,14 @@ class App extends React.Component {
     let ipfsId
     const buffer = Buffer.from(reader.result)
     this.ipfsApi.add(buffer)
-    .then((response) => {
-      console.log(response)
-      ipfsId = response[0].hash
-      console.log(ipfsId)
-      this.setState({added_file_hash: ipfsId})
-    }).catch((err) => {
-      console.error(err)
-    })
+      .then((response) => {
+        console.log(response)
+        ipfsId = response[0].hash
+        console.log(ipfsId)
+        this.setState({added_file_hash: ipfsId})
+      }).catch((err) => {
+        console.error(err)
+      })
   }
 
   arrayBufferToString (arrayBuffer) {
@@ -51,11 +51,11 @@ class App extends React.Component {
   render () {
     return (
       <div>
-        <form id="captureMedia" onSubmit={this.handleSubmit}>
-          <input type="file" onChange={this.captureFile} />
+        <form id='captureMedia' onSubmit={this.handleSubmit}>
+          <input type='file' onChange={this.captureFile} />
         </form>
         <div>
-          <a target="_blank"
+          <a target='_blank'
             href={'https://ipfs.io/ipfs/' + this.state.added_file_hash}>
             {this.state.added_file_hash}
           </a>

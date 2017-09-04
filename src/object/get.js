@@ -45,7 +45,7 @@ module.exports = (send) => {
       }
 
       const links = result.Links.map((l) => {
-        return new DAGLink(l.Name, l.Size, new Buffer(bs58.decode(l.Hash)))
+        return new DAGLink(l.Name, l.Size, Buffer.from(bs58.decode(l.Hash)))
       })
 
       DAGNode.create(result.Data, links, (err, node) => {

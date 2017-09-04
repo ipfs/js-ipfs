@@ -52,7 +52,7 @@ const addAndPublish = (e) => {
   e.preventDefault()
 
   let input = e.target.elements['text']
-  let buffer = new Buffer(input.value)
+  let buffer = Buffer.from(input.value)
 
   showStatus('adding to IPFS...', COLORS.active)
 

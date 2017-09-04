@@ -7,11 +7,12 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const FactoryClient = require('./ipfs-factory/client')
 
-describe('.bitswap', () => {
+describe('.bitswap', function () {
+  this.timeout(20 * 1000) // slow CI
   let ipfs
   let fc
 
-  before(function (done) {
+  before((done) => {
     this.timeout(20 * 1000) // slow CI
     fc = new FactoryClient()
     fc.spawnNode((err, node) => {

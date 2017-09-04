@@ -52,7 +52,7 @@ module.exports = (send) => {
     if (Buffer.isBuffer(obj) && options.enc) {
       buf = obj
     } else {
-      buf = new Buffer(JSON.stringify(tmpObj))
+      buf = Buffer.from(JSON.stringify(tmpObj))
     }
     const enc = options.enc || 'json'
 
@@ -87,7 +87,7 @@ module.exports = (send) => {
         })
         return
       } else {
-        DAGNode.create(new Buffer(obj.Data), obj.Links, (err, _node) => {
+        DAGNode.create(Buffer.from(obj.Data), obj.Links, (err, _node) => {
           if (err) {
             return callback(err)
           }

@@ -15,12 +15,13 @@ const testfile = isNode
   ? loadFixture(__dirname, '/fixtures/testfile.txt')
   : loadFixture(__dirname, 'fixtures/testfile.txt')
 
-describe('.files (the MFS API part)', () => {
+describe('.files (the MFS API part)', function () {
+  this.timeout(120 * 1000)
+
   let ipfs
   let fc
 
-  before(function (done) {
-    this.timeout(20 * 1000) // slow CI
+  before((done) => {
     fc = new FactoryClient()
     fc.spawnNode((err, node) => {
       expect(err).to.not.exist()
@@ -31,7 +32,9 @@ describe('.files (the MFS API part)', () => {
 
   after((done) => fc.dismantle(done))
 
-  describe('Callback API', () => {
+  describe('Callback API', function () {
+    this.timeout(120 * 1000)
+
     it('add file for testing', (done) => {
       const expectedMultihash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
 
@@ -83,7 +86,7 @@ describe('.files (the MFS API part)', () => {
 
     it('files.write', (done) => {
       ipfs.files
-        .write('/test-folder/test-file-2.txt', new Buffer('hello world'), {create: true}, (err) => {
+        .write('/test-folder/test-file-2.txt', Buffer.from('hello world'), {create: true}, (err) => {
           expect(err).to.not.exist()
 
           ipfs.files.read('/test-folder/test-file-2.txt', (err, stream) => {
@@ -105,7 +108,7 @@ describe('.files (the MFS API part)', () => {
 
     it('files.write without options', (done) => {
       ipfs.files
-        .write('/test-folder/test-file-2.txt', new Buffer('hello world'), (err) => {
+        .write('/test-folder/test-file-2.txt', Buffer.from('hello world'), (err) => {
           expect(err).to.not.exist()
 
           ipfs.files.read('/test-folder/test-file-2.txt', (err, stream) => {
@@ -168,7 +171,7 @@ describe('.files (the MFS API part)', () => {
             buf += data
           })
           .on('end', () => {
-            expect(new Buffer(buf)).to.deep.equal(testfile)
+            expect(Buffer.from(buf)).to.deep.equal(testfile)
             done()
           })
       })
@@ -183,7 +186,9 @@ describe('.files (the MFS API part)', () => {
     })
   })
 
-  describe('Promise API', () => {
+  describe('Promise API', function () {
+    this.timeout(120 * 1000)
+
     it('files.add with cid-version=1 and raw-leaves=false', () => {
       const expectedHash = 'zdj7Wh9x6gXdg4UAqhRYnjBTw9eJF7hvzUU4HjpnZXHYQz9jK'
       const options = { 'cid-version': 1, 'raw-leaves': false }
@@ -214,7 +219,7 @@ describe('.files (the MFS API part)', () => {
 
     it('files.write', (done) => {
       ipfs.files
-        .write('/test-folder/test-file-2.txt', new Buffer('hello world'), {create: true})
+        .write('/test-folder/test-file-2.txt', Buffer.from('hello world'), {create: true})
         .then(() => {
           return ipfs.files.read('/test-folder/test-file-2.txt')
         })
@@ -237,7 +242,7 @@ describe('.files (the MFS API part)', () => {
 
     it('files.write without options', (done) => {
       ipfs.files
-        .write('/test-folder/test-file-2.txt', new Buffer('hello world'))
+        .write('/test-folder/test-file-2.txt', Buffer.from('hello world'))
         .then(() => {
           return ipfs.files.read('/test-folder/test-file-2.txt')
         })
@@ -293,7 +298,7 @@ describe('.files (the MFS API part)', () => {
               buf += data
             })
             .on('end', () => {
-              expect(new Buffer(buf)).to.deep.equal(testfile)
+              expect(Buffer.from(buf)).to.eql(testfile)
               done()
             })
         })

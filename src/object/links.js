@@ -46,7 +46,7 @@ module.exports = (send) => {
 
       if (result.Links) {
         links = result.Links.map((l) => {
-          return new DAGLink(l.Name, l.Size, new Buffer(bs58.decode(l.Hash)))
+          return new DAGLink(l.Name, l.Size, Buffer.from(bs58.decode(l.Hash)))
         })
       }
       callback(null, links)

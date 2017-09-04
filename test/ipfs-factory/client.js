@@ -49,7 +49,11 @@ function Factory () {
   }
 
   this.dismantle = function (callback) {
-    ioC.once('fc-nodes-shutdown', callback)
+    ioC.once('fc-nodes-shutdown', (err) => {
+      ioC.disconnect()
+      sioConnected = false
+      callback(err)
+    })
     ioC.emit('fs-dismantle')
   }
 }

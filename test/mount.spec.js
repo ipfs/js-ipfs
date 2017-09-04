@@ -2,4 +2,6 @@
 'use strict'
 
 // requires FUSE to be installed, not practical for testing
-describe('.mount', () => {})
+describe('.mount', () => {
+  it('missing')
+})
