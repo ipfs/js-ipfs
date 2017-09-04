@@ -198,6 +198,30 @@ describe('files', () => runOnAndOff((thing) => {
     })
   })
 
+  it('add --quiet', () => {
+    return ipfs('files add -q src/init-files/init-docs/readme')
+      .then((out) => {
+        expect(out)
+          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB\n')
+      })
+  })
+
+  it('add --quieter', () => {
+    return ipfs('files add -Q -w test/test-data/hello test/test-data/node.json')
+      .then((out) => {
+        expect(out)
+          .to.eql('QmYRMUVULBfj7WrdPESnwnyZmtayN6Sdrwh1nKcQ9QgQeZ\n')
+      })
+  })
+
+  it('add --silent', () => {
+    return ipfs('files add --silent src/init-files/init-docs/readme')
+      .then((out) => {
+        expect(out)
+        .to.eql('')
+      })
+  })
+
   it('cat', () => {
     return ipfs('files cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
       .then((out) => {
