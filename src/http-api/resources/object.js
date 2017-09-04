@@ -149,7 +149,7 @@ exports.put = {
               })
             }
 
-            file = new Buffer(JSON.stringify(answer))
+            file = Buffer.from(JSON.stringify(answer))
             finished = true
           })
         } else {
@@ -190,7 +190,7 @@ exports.put = {
 
     series([
       (cb) => {
-        DAGNode.create(new Buffer(node.Data), node.Links, (err, _node) => {
+        DAGNode.create(Buffer.from(node.Data), node.Links, (err, _node) => {
           if (err) {
             return cb(err)
           }

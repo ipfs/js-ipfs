@@ -43,7 +43,7 @@ module.exports = (self) => {
         if (err.message.match(/not found/) || // indexeddb
             err.message.match(/ENOENT/) || // fs
             err.message.match(/No value/) // memory
-           ) {
+        ) {
           return cb(null, false)
         }
         return cb(err)

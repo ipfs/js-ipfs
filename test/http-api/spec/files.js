@@ -42,8 +42,8 @@ module.exports = (http) => {
           url: '/api/v0/cat?arg=QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o'
         }, (res) => {
           expect(res.statusCode).to.equal(200)
-          expect(res.rawPayload).to.deep.equal(new Buffer('hello world' + '\n'))
-          expect(res.payload).to.equal('hello world' + '\n')
+          expect(res.rawPayload).to.deep.equal(Buffer.from('hello world\n'))
+          expect(res.payload).to.equal('hello world\n')
           done()
         })
       })
