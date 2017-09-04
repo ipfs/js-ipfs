@@ -29,21 +29,21 @@
     "async": "^2.5.0",
     "bl": "^1.2.1",
     "bs58": "^4.0.1",
-    "chai": "^4.1.1",
+    "chai": "^4.1.2",
     "cids": "^0.5.1",
     "concat-stream": "^1.6.0",
     "detect-node": "^2.0.3",
     "ipfs-block": "^0.6.0",
     "ipld-dag-cbor": "^0.11.1",
     "ipld-dag-pb": "^0.11.0",
-    "multiaddr": "^2.3.0",
-    "multihashes": "^0.4.8",
+    "multiaddr": "^3.0.0",
+    "multihashes": "^0.4.9",
     "multihashing-async": "^0.4.6",
-    "peer-id": "^0.9.0",
+    "peer-id": "^0.10.0",
     "pull-stream": "^3.6.0"
   },
   "devDependencies": {
-    "aegir": "^12.0.0",
+    "aegir": "^12.0.2",
     "dirty-chai": "^2.0.1"
   },
   "contributors": [

@@ -11,17 +11,14 @@ const series = require('async/series')
 const multiaddr = require('multiaddr')
 
 module.exports = (common) => {
-  describe('.swarm', () => {
+  describe('.swarm', function () {
+    this.timeout(80 * 1000)
+
     let ipfsA
     let ipfsB
     let factoryInstance
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon,
-      // so we need to increase the timeout for the
-      // before step
-      this.timeout(50 * 1000)
-
+    before((done) => {
       common.setup((err, factory) => {
         expect(err).to.not.exist()
         factoryInstance = factory
@@ -50,7 +47,9 @@ module.exports = (common) => {
 
     let ipfsBId
 
-    describe('callback API', () => {
+    describe('callback API', function () {
+      this.timeout(80 * 1000)
+
       it('.connect', (done) => {
         ipfsB.id((err, id) => {
           expect(err).to.not.exist()
@@ -263,7 +262,9 @@ module.exports = (common) => {
       })
     })
 
-    describe('promise API', () => {
+    describe('promise API', function () {
+      this.timeout(80 * 1000)
+
       it('.connect', () => {
         return ipfsB.id()
           .then((id) => {
