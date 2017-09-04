@@ -104,7 +104,7 @@ module.exports = function object (self) {
         assert(template === 'unixfs-dir', 'unkown template')
         data = (new Unixfs('directory')).marshal()
       } else {
-        data = Buffer.from(0)
+        data = Buffer.alloc(0)
       }
 
       DAGNode.create(data, (err, node) => {
