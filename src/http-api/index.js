@@ -23,6 +23,15 @@ function HttpApi (repo, config, cliArgs) {
   this.log = debug('jsipfs:http-api')
   this.log.error = debug('jsipfs:http-api:error')
 
+  if (process.env.IPFS_MONITORING) {
+    // Setup debug metrics collection
+    const prometheusClient = require('prom-client')
+    const prometheusGcStats = require('prometheus-gc-stats')
+    const collectDefaultMetrics = prometheusClient.collectDefaultMetrics
+    collectDefaultMetrics({ timeout: 5000 })
+    prometheusGcStats(prometheusClient.register)()
+  }
+
   this.start = (init, callback) => {
     if (typeof init === 'function') {
       callback = init
@@ -41,6 +50,8 @@ function HttpApi (repo, config, cliArgs) {
         try { wrtc = require('wrtc') } catch (err) {}
 
         if (wrtc || electronWebRTC) {
+          const using = wrtc ? 'wrtc' : 'electron-webrtc'
+          console.log(`Using ${using} for webrtc support`)
           const wstar = new WStar({ wrtc: (wrtc || electronWebRTC) })
           libp2p.modules.transport = [wstar]
           libp2p.modules.discovery = [wstar.discovery]

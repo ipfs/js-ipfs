@@ -2,7 +2,6 @@
 
 const multiaddr = require('multiaddr')
 const promisify = require('promisify-es6')
-const flatMap = require('lodash.flatmap')
 const values = require('lodash.values')
 
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
@@ -24,24 +23,19 @@ module.exports = function swarm (self) {
       // we currently don't have this information
 
       const peers = values(self._peerInfoBook.getAll())
-        .filter((peer) => peer.isConnected())
-
-      const peerList = flatMap(peers, (peer) => {
-        return peer.multiaddrs.toArray().map((addr) => {
+        .map((peer) => {
+          const connectedAddr = peer.isConnected()
           const res = {
-            addr: addr,
+            addr: connectedAddr,
             peer: peer
           }
-
           if (verbose) {
             res.latency = 'unknown'
           }
-
           return res
         })
-      })
 
-      callback(null, peerList)
+      callback(null, peers)
     }),
 
     // all the addrs we know
