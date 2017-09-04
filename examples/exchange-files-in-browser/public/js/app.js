@@ -1,5 +1,4 @@
 'use strict'
-/* global self */
 
 const $startButton = document.querySelector('#start')
 const $stopButton = document.querySelector('#stop')
@@ -20,7 +19,9 @@ const $details = document.querySelector('#details')
 const $allDisabledButtons = document.querySelectorAll('button:disabled')
 const $allDisabledInputs = document.querySelectorAll('input:disabled')
 const $filesList = document.querySelector('.file-list')
-const streamBuffers = require('stream-buffers')
+const Ipfs = require('../../../../src/core')
+const pullFilereader = require('pull-filereader')
+const pull = require('pull-stream')
 
 let node
 let peerInfo
@@ -33,7 +34,7 @@ function start () {
   if (!node) {
     updateView('starting', node)
 
-    node = new self.Ipfs({repo: 'ipfs-' + Math.random()})
+    node = new Ipfs({repo: 'ipfs-' + Math.random()})
 
     node.on('start', () => {
       node.id().then((id) => {
@@ -119,93 +120,44 @@ function onDrop (event) {
     onError('IPFS must be started before files can be added')
     return
   }
-  const dt = event.dataTransfer
-  const files = dt.files
 
-  function readFileContents (file) {
-    return new Promise((resolve) => {
-      const reader = new window.FileReader()
-      reader.onload = (event) => resolve(event.target.result)
-      reader.readAsArrayBuffer(file)
-    })
+  let files = []
+  for (let i = 0; i < event.dataTransfer.files.length; i++) {
+    files.push(event.dataTransfer.files[i])
   }
 
-  let filesArray = []
-  for (let i = 0; i < files.length; i++) {
-    filesArray.push(files[i])
-  }
-
-  filesArray.map((file) => {
-    readFileContents(file)
-      .then((buffer) => {
-        let fileSize = buffer.byteLength
-
-        if (fileSize < 50000000) {
-          return node.files.add([{
-            path: file.name,
-            content: new node.types.Buffer(buffer)
-          }])
-        } else {
-          // use createAddStream and chunk the file.
-          let progress = 0
-
-          let myReadableStreamBuffer = new streamBuffers.ReadableStreamBuffer({
-            // frequency: 10,   // in milliseconds.
-            chunkSize: 32048  // in bytes.
-          })
-
-          node.files.createAddStream((err, stream) => {
-            if (err) throw err
-
-            stream.on('data', (file) => {
-              $multihashInput.value = file.hash
-              $filesStatus.innerHTML = `Added ${file.path} as ${file.hash}`
-
-              if (progressbar) {
-                clearInterval(progressbar)
-                progress = 0
-              }
-            })
-
-            myReadableStreamBuffer.on('data', (chunk) => {
-              progress += chunk.byteLength
-            })
-
-            if (!myReadableStreamBuffer.destroy) {
-              myReadableStreamBuffer.destroy = () => {}
-            }
-
-            stream.write({
-              path: file.name,
-              content: myReadableStreamBuffer
-            })
-
-            myReadableStreamBuffer.put(Buffer.from(buffer))
-            myReadableStreamBuffer.stop()
-
-            myReadableStreamBuffer.on('end', () => {
-              stream.end()
-            })
-
-            myReadableStreamBuffer.resume()
-
-            // progress.
-            let progressbar = setInterval(() => {
-              console.log('progress: ', progress, '/', fileSize, ' = ', Math.floor((progress / fileSize) * 100), '%')
-            }, 5000)
-          })
+  pull(
+    pull.values(files),
+    pull.through((file) => console.log('Adding %s', file)),
+    pull.asyncMap((file, cb) => pull(
+      pull.values([{
+        path: file.name,
+        content: pullFilereader(file)
+      }]),
+      node.files.createAddPullStream(),
+      pull.collect((err, res) => {
+        if (err) {
+          return cb(err)
         }
-      })
-      .then((files) => {
-        if (files && files.length) {
-          $multihashInput.value = files[0].hash
-          $filesStatus.innerHTML = files
+        const file = res[0]
+        console.log('Adding %s finished', file.path)
+
+        $multihashInput.value = file.hash
+        $filesStatus.innerHTML = `Added ${file.path} as ${file.hash}`
+        cb(null, file)
+      }))),
+    pull.collect((err, files) => {
+      if (err) {
+        return onError(err)
+      }
+      if (files && files.length) {
+        $multihashInput.value = files[0].hash
+        $filesStatus.innerHTML = files
           .map((e) => `Added ${e.path} as ${e.hash}`)
           .join('<br>')
-        }
-      })
-      .catch(onError)
-  })
+      }
+    })
+  )
 }
 
 /*
