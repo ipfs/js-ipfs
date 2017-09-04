@@ -12,4 +12,5 @@ module.exports = (server) => {
   require('./bitswap')(server)
   require('./files')(server)
   require('./pubsub')(server)
+  require('./debug')(server)
 }

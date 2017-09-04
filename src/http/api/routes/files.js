@@ -38,7 +38,8 @@ module.exports = (server) => {
         parse: false,
         output: 'stream'
       },
-      handler: resources.files.add.handler
+      handler: resources.files.add.handler,
+      validate: resources.files.add.validate
     }
   })
 }

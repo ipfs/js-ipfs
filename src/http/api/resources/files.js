@@ -11,6 +11,7 @@ const toPull = require('stream-to-pull-stream')
 const pushable = require('pull-pushable')
 const EOL = require('os').EOL
 const toStream = require('pull-stream-to-stream')
+const Joi = require('joi')
 
 exports = module.exports
 
@@ -140,6 +141,28 @@ exports.get = {
 }
 
 exports.add = {
+  validate: {
+    query: Joi.object()
+      .keys({
+        'cid-version': Joi.number().integer().min(0).max(1),
+        // Temporary restriction on raw-leaves:
+        // When cid-version=1 then raw-leaves MUST be present and false.
+        //
+        // This is because raw-leaves is not yet implemented in js-ipfs,
+        // and go-ipfs changes the value of raw-leaves to true when
+        // cid-version > 0 unless explicitly set to false.
+        //
+        // This retains feature parity without having to implement raw-leaves.
+        'raw-leaves': Joi.any().when('cid-version', {
+          is: 1,
+          then: Joi.boolean().valid(false).required(),
+          otherwise: Joi.boolean().valid(false)
+        })
+      })
+      // TODO: Necessary until validate "recursive", "stream-channels" etc.
+      .options({ allowUnknown: true })
+  },
+
   handler: (request, reply) => {
     if (!request.payload) {
       return reply({
@@ -156,6 +179,7 @@ exports.add = {
     const fileAdder = pushable()
 
     parser.on('file', (fileName, fileStream) => {
+      fileName = decodeURIComponent(fileName)
       const filePair = {
         path: fileName,
         content: toPull(fileStream)
@@ -165,6 +189,8 @@ exports.add = {
     })
 
     parser.on('directory', (directory) => {
+      directory = decodeURIComponent(directory)
+
       fileAdder.push({
         path: directory,
         content: ''
@@ -181,9 +207,14 @@ exports.add = {
       fileAdder.end()
     })
 
+    const options = {
+      'cid-version': request.query['cid-version'],
+      'raw-leaves': request.query['raw-leaves']
+    }
+
     pull(
       fileAdder,
-      ipfs.files.createAddPullStream(),
+      ipfs.files.createAddPullStream(options),
       pull.map((file) => {
         return {
           Name: file.path ? file.path : file.hash,

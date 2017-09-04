@@ -362,7 +362,7 @@ const node = new IPFS({
       Swarm: [
         "/ip4/0.0.0.0/tcp/4002",
         "/ip4/127.0.0.1/tcp/4003/ws",
-        "/libp2p-webrtc-star/dns4/star-signal.cloud.ipfs.team/wss"
+        "/dns4/star-signal.cloud.ipfs.team/wss/p2p-webrtc-star"
       ]
     }
   },
@@ -387,7 +387,7 @@ npm install wrtc --global
 npm install electron-webrtc --global
 ```
 
-Then, update your IPFS Daemon config to include the multiaddr for this new transport on the `Addresses.Swarm` array. Add: `"/libp2p-webrtc-star/dns4/star-signal.cloud.ipfs.team/wss"`
+Then, update your IPFS Daemon config to include the multiaddr for this new transport on the `Addresses.Swarm` array. Add: `"/dns4/star-signal.cloud.ipfs.team/wss/p2p-webrtc-star"`
 
 ## Packages
 
@@ -518,6 +518,20 @@ src                 # Main source code folder
 │   ├── components  # Each of IPFS subcomponent
 │   └── ...
 └── ...
+```
+
+### Monitoring
+
+The HTTP API exposed with js-ipfs can also be used for exposing metrics about
+the running js-ipfs node and other nodejs metrics.
+
+To enable it, you need to set the environment variable `IPFS_MONITORING` (any value)
+
+Once environment variable is set and the js-ipfs daemon is running, you can get
+the metrics (in prometheus format) by making a GET request to the following endpoint:
+
+```
+http://localhost:5002/debug/metrics/prometheus
 ```
 
 ### IPFS Core Architecture

@@ -15,14 +15,14 @@ class Factory {
   }
 
   /* yields a new started node */
-  spawnNode (repoPath, config, callback) {
+  spawnNode (repoPath, suppliedConfig, callback) {
     if (typeof repoPath === 'function') {
       callback = repoPath
       repoPath = undefined
     }
-    if (typeof config === 'function') {
-      callback = config
-      config = undefined
+    if (typeof suppliedConfig === 'function') {
+      callback = suppliedConfig
+      suppliedConfig = undefined
     }
 
     repoPath = repoPath ||
@@ -32,15 +32,13 @@ class Factory {
 
     let daemon
     let ctl
+    let config
 
     series([
       (cb) => {
         // prepare config for node
-        if (config) {
-          return cb()
-        }
 
-        config = JSON.parse(JSON.stringify(defaultConfig))
+        config = Object.assign({}, defaultConfig, config || {})
 
         PeerId.create({ bits: 1024 }, (err, id) => {
           if (err) {
