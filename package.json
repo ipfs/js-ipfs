@@ -25,7 +25,6 @@
     "release": "aegir release --no-parallel",
     "release-minor": "aegir release --type minor --no-parallel",
     "release-major": "aegir release --type major --no-parallel",
-    "coverage-publish": "aegir coverage publish",
     "test": "aegir test --no-parallel",
     "test:node": "aegir test --target node --no-parallel",
     "test:browser": "aegir test --target browser --no-parallel",
