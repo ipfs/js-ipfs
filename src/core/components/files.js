@@ -122,7 +122,7 @@ function prepareFile (self, opts, file, callback) {
     (node, cb) => {
       let cid = new CID(node.multihash)
 
-      if (opts['cid-version'] === 1) {
+      if (opts.cidVersion === 1) {
         cid = cid.toV1()
       }
 
