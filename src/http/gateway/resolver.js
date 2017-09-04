@@ -3,10 +3,11 @@
 const mh = require('multihashes')
 const promisify = require('promisify-es6')
 const eachOfSeries = require('async/eachOfSeries')
+const CID = require('cids')
+const Unixfs = require('ipfs-unixfs')
 const debug = require('debug')
 const log = debug('jsipfs:http-gateway:resolver')
 log.error = debug('jsipfs:http-gateway:resolver:error')
-
 const html = require('./utils/html')
 const PathUtil = require('./utils/path')
 
@@ -41,32 +42,31 @@ const resolveMultihash = promisify((ipfs, path, callback) => {
   const partsLength = parts.length
 
   let currentMultihash = parts[0]
-
+  let currentCid
   eachOfSeries(parts, (multihash, currentIndex, next) => {
-    // throws error when invalid multihash is passed
-    mh.validate(mh.fromB58String(currentMultihash))
+    // throws error when invalid CID is passed
+    try {
+      currentCid = new CID(mh.fromB58String(currentMultihash))
+    } catch (e) {
+      if (e) throw e
+    }
+
     log('currentMultihash: ', currentMultihash)
     log('currentIndex: ', currentIndex, '/', partsLength)
 
-    ipfs.object.get(currentMultihash, { enc: 'base58' }, (err, dagNode) => {
+    ipfs.dag.get(currentCid, (err, result) => {
       if (err) { return next(err) }
+      let dagNode = result.value
 
       if (currentIndex === partsLength - 1) {
-        // leaf node
-        log('leaf node: ', currentMultihash)
-
-        // TODO: Check if it is a directory by using Unixfs Type, right now
-        // it won't detect empty dirs
-        if (dagNode.links &&
-            dagNode.links.length > 0 &&
-            dagNode.links[0].name.length > 0) {
-          //  this is a directory.
-
+        let dagDataObj = Unixfs.unmarshal(dagNode.data)
+        if (dagDataObj.type === 'directory') {
           let isDirErr = new Error('This dag node is a directory')
           // add currentMultihash as a fileName so it can be used by resolveDirectory
           isDirErr.fileName = currentMultihash
           return next(isDirErr)
         }
+
         return next()
       }
 
