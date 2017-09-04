@@ -86,8 +86,6 @@ module.exports = (common) => {
 
       describe('.findpeer', () => {
         it('finds other peers', (done) => {
-          console.log(nodeC.peerId.id)
-
           nodeA.dht.findpeer(nodeC.peerId.id, (err, peer) => {
             expect(err).to.not.exist()
             // TODO upgrade the answer, format is weird

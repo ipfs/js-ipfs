@@ -218,7 +218,6 @@ module.exports = (common) => {
               (cb) => {
                 nodeA.swarm.peers((err, peers) => {
                   expect(err).to.not.exist()
-                  peers.forEach((peer) => console.log(peer.addr.toString()))
                   expect(peers).to.have.length(1)
                   cb()
                 })
