@@ -7,10 +7,10 @@ module.exports = (server) => {
 
   gateway.route({
     method: '*',
-    path: '/ipfs/{hash*}',
+    path: '/ipfs/{cid*}',
     config: {
       pre: [
-        { method: resources.gateway.checkHash, assign: 'args' }
+        { method: resources.gateway.checkCID, assign: 'args' }
       ],
       handler: resources.gateway.handler
     }
