@@ -12,6 +12,10 @@
     "coverage": "exit 0",
     "coverage-publish": "exit 0"
   },
+  "files": [
+    "src/",
+    "test/"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/interface-ipfs-core.git"
