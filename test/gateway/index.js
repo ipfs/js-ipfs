@@ -10,8 +10,8 @@ const ncp = require('ncp').ncp
 const path = require('path')
 const clean = require('../utils/clean')
 
-describe('HTTP GATEWAY', () => {
-  const repoExample = path.join(__dirname, '../go-ipfs-repo')
+describe('HTTP Gateway', () => {
+  const repoExample = path.join(__dirname, '../js-ipfs-repo')
   const repoTests = path.join(__dirname, '../repo-tests-run')
 
   let http = {}
@@ -67,7 +67,7 @@ describe('HTTP GATEWAY', () => {
         url: '/ipfs/QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o'
       }, (res) => {
         expect(res.statusCode).to.equal(200)
-        expect(res.rawPayload).to.deep.equal(new Buffer('hello world' + '\n'))
+        expect(res.rawPayload).to.deep.equal(Buffer.from('hello world' + '\n'))
         expect(res.payload).to.equal('hello world' + '\n')
         done()
       })
