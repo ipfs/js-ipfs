@@ -6,17 +6,26 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const API = require('../../src/http')
+const loadFixture = require('aegir/fixtures')
+const bigFile = loadFixture(__dirname, '../../node_modules/interface-ipfs-core/test/fixtures/15mb.random', 'ipfs')
 
 describe('HTTP Gateway', () => {
   let http = {}
   let gateway
+  let bigFileHash = 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq'
 
   before((done) => {
     http.api = new API()
 
     http.api.start(true, () => {
       gateway = http.api.server.select('Gateway')
-      done()
+      http.api.node.files.add(bigFile, (err, files) => {
+        if (err) throw err
+        expect(files).to.exist()
+        expect(files[0].hash).to.deep.equal(bigFileHash)
+
+        done()
+      })
     })
   })
 
@@ -58,6 +67,17 @@ describe('HTTP Gateway', () => {
         expect(res.statusCode).to.equal(200)
         expect(res.rawPayload).to.deep.equal(Buffer.from('hello world' + '\n'))
         expect(res.payload).to.equal('hello world' + '\n')
+        done()
+      })
+    })
+
+    it('stream a large file', (done) => {
+      gateway.inject({
+        method: 'GET',
+        url: '/ipfs/' + bigFileHash
+      }, (res) => {
+        expect(res.statusCode).to.equal(200)
+        expect(res.rawPayload).to.deep.equal(bigFile)
         done()
       })
     })
