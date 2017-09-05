@@ -20,6 +20,11 @@ module.exports = function files (self) {
       shardSplitThreshold: self._options.EXPERIMENTAL.sharding ? 1000 : Infinity
     }, options)
 
+    // CID v0 is for multihashes encoded with sha2-256
+    if (opts.hashAlg && opts.hashAlg !== 'sha2-256' && opts.cidVersion !== 1) {
+      opts.cidVersion = 1
+    }
+
     return pull(
       pull.map(normalizeContent),
       pull.flatten(),
@@ -63,6 +68,11 @@ module.exports = function files (self) {
           !Buffer.isBuffer(data) &&
           !isStream(data)) {
         return callback(new Error('Invalid arguments, data must be an object, Buffer or readable stream'))
+      }
+
+      // CID v0 is for multihashes encoded with sha2-256
+      if (options && options.hashAlg && options.hashAlg !== 'sha2-256' && options.cidVersion !== 1) {
+        options.cidVersion = 1
       }
 
       pull(
@@ -120,7 +130,7 @@ function prepareFile (self, opts, file, callback) {
   waterfall([
     (cb) => self.object.get(file.multihash, cb),
     (node, cb) => {
-      let cid = new CID(node.multihash)
+      let cid = new CID(file.multihash)
 
       if (opts.cidVersion === 1) {
         cid = cid.toV1()
