@@ -6,34 +6,23 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const API = require('../../src/http')
-const ncp = require('ncp').ncp
-const path = require('path')
-const clean = require('../utils/clean')
 
 describe('HTTP Gateway', () => {
-  const repoExample = path.join(__dirname, '../js-ipfs-repo')
-  const repoTests = path.join(__dirname, '../repo-tests-run')
-
   let http = {}
   let gateway
 
   before((done) => {
-    http.api = new API(repoTests)
+    http.api = new API()
 
-    ncp(repoExample, repoTests, (err) => {
-      expect(err).to.not.exist()
-
-      http.api.start(false, () => {
-        gateway = http.api.server.select('Gateway')
-        done()
-      })
+    http.api.start(true, () => {
+      gateway = http.api.server.select('Gateway')
+      done()
     })
   })
 
   after((done) => {
     http.api.stop((err) => {
       expect(err).to.not.exist()
-      clean(repoTests)
       done()
     })
   })
