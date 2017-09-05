@@ -11,7 +11,7 @@ const toPull = require('stream-to-pull-stream')
 const Progress = require('progress')
 const getFolderSize = require('get-folder-size')
 const byteman = require('byteman')
-const async = require('async')
+const waterfall = require('async/waterfall')
 const utils = require('../../utils')
 const print = require('../../utils').print
 
@@ -192,7 +192,7 @@ module.exports = {
     let list = []
     let currentBytes = 0
 
-    async.waterfall([
+    waterfall([
       (next) => glob(path.join(inPath, '/**/*'), next),
       (globResult, next) => {
         list = globResult.length === 0 ? [inPath] : globResult
