@@ -12,8 +12,8 @@ const PathUtils = require('../utils/path')
 const Stream = require('stream')
 
 module.exports = {
-  checkHash: (request, reply) => {
-    if (!request.params.hash) {
+  checkCID: (request, reply) => {
+    if (!request.params.cid) {
       return reply({
         Message: 'Path Resolve error: path must contain at least one component',
         Code: 0
@@ -21,7 +21,7 @@ module.exports = {
     }
 
     return reply({
-      ref: `/ipfs/${request.params.hash}`
+      ref: `/ipfs/${request.params.cid}`
     })
   },
   handler: (request, reply) => {
