@@ -6,6 +6,8 @@ const fs = require('fs')
 const path = require('path')
 const compareDir = require('dir-compare').compareSync
 const rimraf = require('rimraf').sync
+const CID = require('cids')
+const mh = require('multihashes')
 const runOnAndOff = require('../utils/on-and-off')
 
 describe('files', () => runOnAndOff((thing) => {
@@ -220,6 +222,17 @@ describe('files', () => runOnAndOff((thing) => {
         expect(out)
         .to.eql('')
       })
+  })
+
+  Object.keys(mh.names).forEach((name) => {
+    it('add with hash=' + name, () => {
+      return ipfs('add src/init-files/init-docs/readme --hash=' + name)
+        .then((out) => {
+          const hash = out.split(' ')[1]
+          const cid = new CID(hash)
+          expect(mh.decode(cid.multihash).name).to.equal(name)
+        })
+    })
   })
 
   it('cat', () => {

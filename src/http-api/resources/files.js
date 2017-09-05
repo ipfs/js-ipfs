@@ -158,8 +158,7 @@ exports.add = {
           then: Joi.boolean().valid(false).required(),
           otherwise: Joi.boolean().valid(false)
         }),
-        // TODO: Validate against multihash alg names
-        hash: Joi.string()
+        hash: Joi.string().valid(Object.keys(mh.names))
       })
       // TODO: Necessary until validate "recursive", "stream-channels" etc.
       .options({ allowUnknown: true })
@@ -210,9 +209,9 @@ exports.add = {
     })
 
     const options = {
-      'cid-version': request.query['cid-version'],
-      'raw-leaves': request.query['raw-leaves'],
-      'hashAlg': request.query['hash']
+      cidVersion: request.query['cid-version'],
+      rawLeaves: request.query['raw-leaves'],
+      hashAlg: request.query['hash']
     }
 
     pull(
