@@ -8,6 +8,10 @@ const pull = require('pull-stream')
 const paramap = require('pull-paramap')
 const zip = require('pull-zip')
 const toPull = require('stream-to-pull-stream')
+const Progress = require('progress')
+const getFolderSize = require('get-folder-size')
+const byteman = require('byteman')
+const async = require('async')
 const utils = require('../../utils')
 const print = require('../../utils').print
 
@@ -40,6 +44,27 @@ function checkPath (inPath, recursive) {
   return inPath
 }
 
+function getTotalBytes (path, recursive, cb) {
+  if (recursive) {
+    getFolderSize(path, cb)
+  } else {
+    fs.stat(path, (err, stat) => cb(err, stat.size))
+  }
+}
+
+function createProgressBar (totalBytes) {
+  const total = byteman(totalBytes, 2, 'MB')
+  const barFormat = `:progress / ${total} [:bar] :percent :etas`
+
+  // 16 MB / 34 MB [===========             ] 48% 5.8s //
+  return new Progress(barFormat, {
+    incomplete: ' ',
+    clear: true,
+    stream: process.stdout,
+    total: totalBytes
+  })
+}
+
 function addPipeline (index, addStream, list, argv) {
   const {
     wrapWithDirectory,
@@ -47,7 +72,6 @@ function addPipeline (index, addStream, list, argv) {
     quieter,
     silent
   } = argv
-
   pull(
     zip(
       pull.values(list),
@@ -102,6 +126,12 @@ module.exports = {
   describe: 'Add a file to IPFS using the UnixFS data format',
 
   builder: {
+    progress: {
+      alias: 'p',
+      type: 'boolean',
+      default: true,
+      describe: 'Stream progress data'
+    },
     recursive: {
       alias: 'r',
       type: 'boolean',
@@ -185,34 +215,45 @@ module.exports = {
     }
     const ipfs = argv.ipfs
 
-    // TODO: revist when interface-ipfs-core exposes pull-streams
-    let createAddStream = (cb) => {
-      ipfs.files.createAddStream(options, (err, stream) => {
-        cb(err, err ? null : toPull.transform(stream))
-      })
-    }
+    let list = []
+    let currentBytes = 0
 
-    if (typeof ipfs.files.createAddPullStream === 'function') {
-      createAddStream = (cb) => {
-        cb(null, ipfs.files.createAddPullStream(options))
-      }
-    }
+    async.waterfall([
+      (next) => glob(path.join(inPath, '/**/*'), next),
+      (globResult, next) => {
+        list = globResult.length === 0 ? [inPath] : globResult
 
-    createAddStream((err, addStream) => {
-      if (err) {
-        throw err
-      }
-
-      glob(path.join(inPath, '/**/*'), (err, list) => {
-        if (err) {
-          throw err
-        }
-        if (list.length === 0) {
-          list = [inPath]
+        getTotalBytes(inPath, argv.recursive, next)
+      },
+      (totalBytes, next) => {
+        if (argv.progress) {
+          const bar = createProgressBar(totalBytes)
+          options.progress = function (byteLength) {
+            currentBytes += byteLength
+            bar.tick(byteLength, {progress: byteman(currentBytes, 2, 'MB')})
+          }
         }
 
-        addPipeline(index, addStream, list, argv)
-      })
+        // TODO: revist when interface-ipfs-core exposes pull-streams
+
+        let createAddStream = (cb) => {
+          ipfs.files.createAddStream(options, (err, stream) => {
+            cb(err, err ? null : toPull.transform(stream))
+          })
+        }
+
+        if (typeof ipfs.files.createAddPullStream === 'function') {
+          createAddStream = (cb) => {
+            cb(null, ipfs.files.createAddPullStream(options))
+          }
+        }
+
+        createAddStream(next)
+      }
+    ], (err, addStream) => {
+      if (err) throw err
+
+      addPipeline(index, addStream, list, argv)
     })
   }
 }
