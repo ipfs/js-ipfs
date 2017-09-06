@@ -41,7 +41,7 @@ You can check the development status at the [Waffle Board](https://waffle.io/ipf
 
 [![Throughput Graph](https://graphs.waffle.io/ipfs/js-ipfs/throughput.svg)](https://waffle.io/ipfs/js-ipfs/metrics/throughput)
 
-**Important to note:** DHT and Relay are not finalized yet, you won't have resource discovery happening by default as you get in go-ipfs, we are working actively on this pieces, please follow:
+**Important to note:** DHT and Relay are not finalized yet, you won't have resource discovery happening by default as you get in go-ipfs, we are working actively on these pieces, please follow:
 - DHT: https://github.com/ipfs/js-ipfs/pull/856
 - Relay: https://github.com/ipfs/js-ipfs/pull/830
 
