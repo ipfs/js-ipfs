@@ -38,7 +38,7 @@ const resolveDirectory = promisify((ipfs, path, multihash, callback) => {
       return callback(null, indexFiles)
     }
 
-    return callback(null, dirView.build(path, dagNode.links))
+    return callback(null, dirView.render(path, dagNode.links))
   })
 })
 
