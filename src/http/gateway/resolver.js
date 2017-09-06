@@ -8,10 +8,19 @@ const Unixfs = require('ipfs-unixfs')
 const debug = require('debug')
 const log = debug('jsipfs:http-gateway:resolver')
 log.error = debug('jsipfs:http-gateway:resolver:error')
-const html = require('./utils/html')
-const PathUtil = require('./utils/path')
 
-const INDEX_HTML_FILES = [ 'index.html', 'index.htm', 'index.shtml' ]
+const dirView = require('./dir-view')
+const pathUtil = require('./utils/path')
+
+function getIndexFiles (links) {
+  const INDEX_HTML_FILES = [
+    'index.html',
+    'index.htm',
+    'index.shtml'
+  ]
+
+  return links.filter((link) => INDEX_HTML_FILES.indexOf(link.name) !== -1)
+}
 
 function noop () {}
 
@@ -23,22 +32,20 @@ const resolveDirectory = promisify((ipfs, path, multihash, callback) => {
   ipfs.object.get(multihash, { enc: 'base58' }, (err, dagNode) => {
     if (err) { return callback(err) }
 
-    const links = dagNode.links
-    const indexFiles = links.filter((link) => INDEX_HTML_FILES.indexOf(link.name) !== -1)
+    const indexFiles = getIndexFiles(dagNode.links)
 
-    // found index file in links
     if (indexFiles.length > 0) {
       return callback(null, indexFiles)
     }
 
-    return callback(null, html.build(path, links))
+    return callback(null, dirView.render(path, dagNode.links))
   })
 })
 
 const resolveMultihash = promisify((ipfs, path, callback) => {
   callback = callback || noop
 
-  const parts = PathUtil.splitPath(path)
+  const parts = pathUtil.splitPath(path)
   const partsLength = parts.length
 
   let currentMultihash = parts[0]
@@ -47,8 +54,8 @@ const resolveMultihash = promisify((ipfs, path, callback) => {
     // throws error when invalid CID is passed
     try {
       currentCid = new CID(mh.fromB58String(currentMultihash))
-    } catch (e) {
-      if (e) throw e
+    } catch (err) {
+      return next(err)
     }
 
     log('currentMultihash: ', currentMultihash)
@@ -94,6 +101,7 @@ const resolveMultihash = promisify((ipfs, path, callback) => {
     })
   }, (err) => {
     if (err) { return callback(err) }
+
     callback(null, { multihash: currentMultihash })
   })
 })

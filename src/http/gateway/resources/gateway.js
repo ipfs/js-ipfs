@@ -7,9 +7,10 @@ const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
 const fileType = require('file-type')
 const mime = require('mime-types')
+const Stream = require('readable-stream')
+
 const GatewayResolver = require('../resolver')
 const PathUtils = require('../utils/path')
-const Stream = require('stream')
 
 module.exports = {
   checkCID: (request, reply) => {

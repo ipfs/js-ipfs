@@ -1,27 +1,37 @@
 'use strict'
 
-const splitPath = (path) => {
-  if (path[path.length - 1] === '/') path = path.substring(0, path.length - 1)
+function splitPath (path) {
+  if (path[path.length - 1] === '/') {
+    path = path.substring(0, path.length - 1)
+  }
+
   return path.substring(6).split('/')
 }
 
-const removeLeadingSlash = (url) => {
-  if (url[0] === '/') url = url.substring(1)
+function removeLeadingSlash (url) {
+  if (url[0] === '/') {
+    url = url.substring(1)
+  }
+
   return url
 }
 
-const removeTrailingSlash = (url) => {
-  if (url.endsWith('/')) url = url.substring(0, url.length - 1)
+function removeTrailingSlash (url) {
+  if (url.endsWith('/')) {
+    url = url.substring(0, url.length - 1)
+  }
+
   return url
 }
 
-const removeSlashFromBothEnds = (url) => {
+function removeSlashFromBothEnds (url) {
   url = removeLeadingSlash(url)
   url = removeTrailingSlash(url)
+
   return url
 }
 
-const joinURLParts = (...urls) => {
+function joinURLParts (...urls) {
   urls = urls.filter((url) => url.length > 0)
   urls = [ '' ].concat(urls.map((url) => removeSlashFromBothEnds(url)))
 
@@ -29,7 +39,7 @@ const joinURLParts = (...urls) => {
 }
 
 module.exports = {
-  splitPath,
-  removeTrailingSlash,
-  joinURLParts
+  splitPath: splitPath,
+  removeTrailingSlash: removeTrailingSlash,
+  joinURLParts: joinURLParts
 }
