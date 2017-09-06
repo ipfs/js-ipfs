@@ -1,8 +1,6 @@
 /* eslint-env mocha */
 'use strict'
 
-const fs = require('fs')
-const path = require('path')
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
@@ -62,11 +60,6 @@ describe('HTTP Gateway', () => {
       expect(err).to.not.exist()
       done()
     })
-  })
-
-  describe('## interface tests', () => {
-    fs.readdirSync(path.join(__dirname, '/interface'))
-      .forEach((file) => require('./interface/' + file))
   })
 
   describe('## HTTP Gateway', () => {
