@@ -21,6 +21,8 @@ describe('.files (the MFS API part)', function () {
   let ipfs
   let fc
 
+  const expectedMultihash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
+
   before((done) => {
     fc = new FactoryClient()
     fc.spawnNode((err, node) => {
@@ -36,8 +38,6 @@ describe('.files (the MFS API part)', function () {
     this.timeout(120 * 1000)
 
     it('add file for testing', (done) => {
-      const expectedMultihash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
-
       ipfs.files.add(testfile, (err, res) => {
         expect(err).to.not.exist()
 
@@ -49,15 +49,26 @@ describe('.files (the MFS API part)', function () {
     })
 
     it('files.add with cid-version=1 and raw-leaves=false', (done) => {
-      const expectedHash = 'zdj7Wh9x6gXdg4UAqhRYnjBTw9eJF7hvzUU4HjpnZXHYQz9jK'
+      const expectedCid = 'zdj7Wh9x6gXdg4UAqhRYnjBTw9eJF7hvzUU4HjpnZXHYQz9jK'
       const options = { 'cid-version': 1, 'raw-leaves': false }
 
       ipfs.files.add(testfile, options, (err, res) => {
         expect(err).to.not.exist()
 
         expect(res).to.have.length(1)
-        expect(res[0].hash).to.equal(expectedHash)
-        expect(res[0].path).to.equal(expectedHash)
+        expect(res[0].hash).to.equal(expectedCid)
+        expect(res[0].path).to.equal(expectedCid)
+        done()
+      })
+    })
+
+    it('files.add with options', (done) => {
+      ipfs.files.add(testfile, { pin: false }, (err, res) => {
+        expect(err).to.not.exist()
+
+        expect(res).to.have.length(1)
+        expect(res[0].hash).to.equal(expectedMultihash)
+        expect(res[0].path).to.equal(expectedMultihash)
         done()
       })
     })
@@ -189,6 +200,15 @@ describe('.files (the MFS API part)', function () {
   describe('Promise API', function () {
     this.timeout(120 * 1000)
 
+    it('files.add', () => {
+      return ipfs.files.add(testfile)
+        .then((res) => {
+          expect(res).to.have.length(1)
+          expect(res[0].hash).to.equal(expectedMultihash)
+          expect(res[0].path).to.equal(expectedMultihash)
+        })
+    })
+
     it('files.add with cid-version=1 and raw-leaves=false', () => {
       const expectedHash = 'zdj7Wh9x6gXdg4UAqhRYnjBTw9eJF7hvzUU4HjpnZXHYQz9jK'
       const options = { 'cid-version': 1, 'raw-leaves': false }
@@ -201,13 +221,25 @@ describe('.files (the MFS API part)', function () {
         })
     })
 
+    it('files.add with options', () => {
+      return ipfs.files.add(testfile, { pin: false })
+        .then((res) => {
+          expect(res).to.have.length(1)
+          expect(res[0].hash).to.equal(expectedMultihash)
+          expect(res[0].path).to.equal(expectedMultihash)
+        })
+    })
+
     it('files.mkdir', () => {
       return ipfs.files.mkdir('/test-folder')
     })
 
     it('files.cp', () => {
       return ipfs.files
-        .cp(['/ipfs/Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', '/test-folder/test-file'])
+        .cp([
+          '/ipfs/Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
+          '/test-folder/test-file'
+        ])
     })
 
     it('files.ls', () => {
