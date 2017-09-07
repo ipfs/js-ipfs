@@ -7,6 +7,7 @@ const DAGLink = dagPB.DAGLink
 const DAGNode = dagPB.DAGNode
 const waterfall = require('async/waterfall')
 const series = require('async/series')
+const CID = require('cids')
 const debug = require('debug')
 const log = debug('jsipfs:http-api:object')
 log.error = debug('jsipfs:http-api:object:error')
@@ -20,9 +21,7 @@ exports.parseKey = (request, reply) => {
   }
 
   try {
-    return reply({
-      key: mh.fromB58String(request.query.arg)
-    })
+    return reply({ key: new CID(request.query.arg) })
   } catch (err) {
     log.error(err)
     return reply({

@@ -6,7 +6,21 @@ const fs = require('fs')
 const path = require('path')
 const compareDir = require('dir-compare').compareSync
 const rimraf = require('rimraf').sync
+const CID = require('cids')
+const mh = require('multihashes')
 const runOnAndOff = require('../utils/on-and-off')
+
+// TODO: Test against all algorithms Object.keys(mh.names)
+// This subset is known to work with both go-ipfs and js-ipfs as of 2017-09-05
+const HASH_ALGS = [
+  'sha1',
+  'sha2-256',
+  'sha2-512',
+  'keccak-224',
+  'keccak-256',
+  'keccak-384',
+  'keccak-512'
+]
 
 describe('files', () => runOnAndOff((thing) => {
   let ipfs
@@ -194,6 +208,17 @@ describe('files', () => runOnAndOff((thing) => {
         .catch((err) => {
           expect(err).to.exist()
           resolve()
+        })
+    })
+  })
+
+  HASH_ALGS.forEach((name) => {
+    it.only(`add with hash=${name} and raw-leaves=false`, () => {
+      return ipfs(`add src/init-files/init-docs/readme --hash=${name} --raw-leaves=false`)
+        .then((out) => {
+          const hash = out.split(' ')[1]
+          const cid = new CID(hash)
+          expect(mh.decode(cid.multihash).name).to.equal(name)
         })
     })
   })

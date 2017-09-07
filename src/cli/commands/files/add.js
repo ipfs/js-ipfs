@@ -8,6 +8,7 @@ const pull = require('pull-stream')
 const paramap = require('pull-paramap')
 const zip = require('pull-zip')
 const toPull = require('stream-to-pull-stream')
+const mh = require('multihashes')
 const utils = require('../../utils')
 const print = require('../../utils').print
 
@@ -124,6 +125,11 @@ module.exports = {
     'cid-version': {
       type: 'integer',
       describe: 'Cid version. Non-zero value will change default of \'raw-leaves\' to true. (experimental)'
+    },
+    hash: {
+      type: 'string',
+      choices: [undefined].concat(Object.keys(mh.names)),
+      describe: 'Hash function to use. Will set Cid version to 1 if used. (experimental)'
     }
   },
 
@@ -133,8 +139,9 @@ module.exports = {
     const options = {
       strategy: argv.trickle ? 'trickle' : 'balanced',
       shardSplitThreshold: argv.enableShardingExperiment ? argv.shardSplitThreshold : Infinity,
-      'cid-version': argv['cid-version'],
-      'raw-leaves': argv['raw-leaves']
+      cidVersion: argv.cidVersion,
+      rawLeaves: argv.rawLeaves,
+      hashAlg: argv.hash
     }
 
     // Temporary restriction on raw-leaves:
@@ -145,11 +152,23 @@ module.exports = {
     // cid-version > 0 unless explicitly set to false.
     //
     // This retains feature parity without having to implement raw-leaves.
-    if (argv['cid-version'] > 0 && argv['raw-leaves'] !== false) {
+    if (argv.cidVersion > 0 && argv.rawLeaves !== false) {
       throw new Error('Implied argument raw-leaves must be passed and set to false when cid-version is > 0')
     }
 
-    if (argv['raw-leaves']) {
+    // Temporary restriction on raw-leaves:
+    // When hash != undefined then raw-leaves MUST be present and false.
+    //
+    // This is because raw-leaves is not yet implemented in js-ipfs,
+    // and go-ipfs changes the value of raw-leaves to true when
+    // hash != undefined unless explicitly set to false.
+    //
+    // This retains feature parity without having to implement raw-leaves.
+    if (argv.hash && argv.rawLeaves !== false) {
+      throw new Error('Implied argument raw-leaves must be passed and set to false when hash argument is specified')
+    }
+
+    if (argv.rawLeaves) {
       throw new Error('Not implemented: raw-leaves')
     }
 
