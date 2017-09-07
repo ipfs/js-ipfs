@@ -9,7 +9,7 @@ const fileType = require('file-type')
 const mime = require('mime-types')
 const Stream = require('readable-stream')
 
-const GatewayResolver = require('../resolver')
+const gatewayResolver = require('../resolver')
 const PathUtils = require('../utils/path')
 
 module.exports = {
@@ -29,113 +29,116 @@ module.exports = {
     const ref = request.pre.args.ref
     const ipfs = request.server.app.ipfs
 
-    return GatewayResolver
-           .resolveMultihash(ipfs, ref)
-           .then((data) => {
-             ipfs
-             .files
-             .cat(data.multihash)
-             .then((stream) => {
-               if (ref.endsWith('/')) {
-                  // remove trailing slash for files
-                 return reply
-                        .redirect(PathUtils.removeTrailingSlash(ref))
-                        .permanent(true)
-               } else {
-                 if (!stream._read) {
-                   stream._read = () => {}
-                   stream._readableState = {}
-                 }
-                 //  response.continue()
-                 let filetypeChecked = false
-                 let stream2 = new Stream.PassThrough({highWaterMark: 1})
-                 let response = reply(stream2).hold()
+    function handleGatewayResolverError (err) {
+      if (err) {
+        log.error('err: ', err.toString(), ' fileName: ', err.fileName)
 
-                 pull(
-                   toPull.source(stream),
-                   pull.drain((chunk) => {
-                     // Check file type.  do this once.
-                     if (chunk.length > 0 && !filetypeChecked) {
-                       log('got first chunk')
-                       let fileSignature = fileType(chunk)
-                       log('file type: ', fileSignature)
+        const errorToString = err.toString()
+        // switch case with true feels so wrong.
+        switch (true) {
+          case (errorToString === 'Error: This dag node is a directory'):
+            gatewayResolver.resolveDirectory(ipfs, ref, err.fileName, (err, data) => {
+              if (err) {
+                log.error(err)
+                return reply(err.toString()).code(500)
+              }
+              if (typeof data === 'string') {
+                // no index file found
+                if (!ref.endsWith('/')) {
+                  // for a directory, if URL doesn't end with a /
+                  // append / and redirect permanent to that URL
+                  return reply.redirect(`${ref}/`).permanent(true)
+                } else {
+                  // send directory listing
+                  return reply(data)
+                }
+              } else {
+                // found index file
+                // redirect to URL/<found-index-file>
+                return reply.redirect(PathUtils.joinURLParts(ref, data[0].name))
+              }
+            })
+            break
+          case (errorToString.startsWith('Error: no link named')):
+            return reply(errorToString).code(404)
+          case (errorToString.startsWith('Error: multihash length inconsistent')):
+          case (errorToString.startsWith('Error: Non-base58 character')):
+            return reply({Message: errorToString, code: 0}).code(400)
+          default:
+            log.error(err)
+            return reply({Message: errorToString, code: 0}).code(500)
+        }
+      }
+    }
 
-                       filetypeChecked = true
-                       const mimeType = mime.lookup((fileSignature) ? fileSignature.ext : null)
-                       log('ref ', ref)
-                       log('mime-type ', mimeType)
+    return gatewayResolver.resolveMultihash(ipfs, ref, (err, data) => {
+      if (err) {
+        return handleGatewayResolverError(err)
+      }
+      ipfs.files.cat(data.multihash, (err, stream) => {
+        if (err) {
+          log.error(err)
+          return reply(err.toString()).code(500)
+        }
 
-                       if (mimeType) {
-                         log('writing mimeType')
+        if (ref.endsWith('/')) {
+           // remove trailing slash for files
+          return reply
+                 .redirect(PathUtils.removeTrailingSlash(ref))
+                 .permanent(true)
+        } else {
+          if (!stream._read) {
+            stream._read = () => {}
+            stream._readableState = {}
+          }
+          //  response.continue()
+          let filetypeChecked = false
+          let stream2 = new Stream.PassThrough({highWaterMark: 1})
+          let response = reply(stream2).hold()
 
-                         response
-                           .header('Content-Type', mime.contentType(mimeType))
-                           .header('Access-Control-Allow-Headers', 'X-Stream-Output, X-Chunked-Ouput')
-                           .header('Access-Control-Allow-Methods', 'GET')
-                           .header('Access-Control-Allow-Origin', '*')
-                           .header('Access-Control-Expose-Headers', 'X-Stream-Output, X-Chunked-Ouput')
-                           .send()
-                       } else {
-                         response
-                          .header('Access-Control-Allow-Headers', 'X-Stream-Output, X-Chunked-Ouput')
-                          .header('Access-Control-Allow-Methods', 'GET')
-                          .header('Access-Control-Allow-Origin', '*')
-                          .header('Access-Control-Expose-Headers', 'X-Stream-Output, X-Chunked-Ouput')
-                          .send()
-                       }
-                     }
+          pull(
+            toPull.source(stream),
+            pull.through((chunk) => {
+              // Check file type.  do this once.
+              if (chunk.length > 0 && !filetypeChecked) {
+                log('got first chunk')
+                let fileSignature = fileType(chunk)
+                log('file type: ', fileSignature)
 
-                     stream2.write(chunk)
-                   }, (err) => {
-                     if (err) throw err
-                     log('stream ended.')
-                     stream2.end()
-                   })
-                 )
-               }
-             })
-             .catch((err) => {
-               if (err) {
-                 log.error(err)
-                 return reply(err.toString()).code(500)
-               }
-             })
-           }).catch((err) => {
-             log('err: ', err.toString(), ' fileName: ', err.fileName)
+                filetypeChecked = true
+                const mimeType = mime.lookup((fileSignature) ? fileSignature.ext : null)
+                log('ref ', ref)
+                log('mime-type ', mimeType)
 
-             const errorToString = err.toString()
-             if (errorToString === 'Error: This dag node is a directory') {
-               return GatewayResolver
-                      .resolveDirectory(ipfs, ref, err.fileName)
-                      .then((data) => {
-                        if (typeof data === 'string') {
-                          // no index file found
-                          if (!ref.endsWith('/')) {
-                            // for a directory, if URL doesn't end with a /
-                            // append / and redirect permanent to that URL
-                            return reply.redirect(`${ref}/`).permanent(true)
-                          } else {
-                            // send directory listing
-                            return reply(data)
-                          }
-                        } else {
-                          // found index file
-                          // redirect to URL/<found-index-file>
-                          return reply.redirect(PathUtils.joinURLParts(ref, data[0].name))
-                        }
-                      }).catch((err) => {
-                        log.error(err)
-                        return reply(err.toString()).code(500)
-                      })
-             } else if (errorToString.startsWith('Error: no link named')) {
-               return reply(errorToString).code(404)
-             } else if (errorToString.startsWith('Error: multihash length inconsistent') ||
-                       errorToString.startsWith('Error: Non-base58 character')) {
-               return reply({Message: errorToString, code: 0}).code(400)
-             } else {
-               log.error(err)
-               return reply({Message: errorToString, code: 0}).code(500)
-             }
-           })
+                if (mimeType) {
+                  log('writing mimeType')
+
+                  response
+                    .header('Content-Type', mime.contentType(mimeType))
+                    .header('Access-Control-Allow-Headers', 'X-Stream-Output, X-Chunked-Ouput')
+                    .header('Access-Control-Allow-Methods', 'GET')
+                    .header('Access-Control-Allow-Origin', '*')
+                    .header('Access-Control-Expose-Headers', 'X-Stream-Output, X-Chunked-Ouput')
+                    .send()
+                } else {
+                  response
+                   .header('Access-Control-Allow-Headers', 'X-Stream-Output, X-Chunked-Ouput')
+                   .header('Access-Control-Allow-Methods', 'GET')
+                   .header('Access-Control-Allow-Origin', '*')
+                   .header('Access-Control-Expose-Headers', 'X-Stream-Output, X-Chunked-Ouput')
+                   .send()
+                }
+              }
+
+              stream2.write(chunk)
+            }),
+            pull.onEnd(() => {
+              log('stream ended.')
+              stream2.end()
+            })
+          )
+        }
+      })
+    })
   }
 }

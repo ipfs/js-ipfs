@@ -38,9 +38,6 @@ describe('HTTP Gateway', () => {
       (cb) => http.api.start(true, cb),
       (cb) => {
         gateway = http.api.server.select('Gateway')
-        cb()
-      },
-      (cb) => {
         const content = (name) => ({
           path: `test-folder/${name}`,
           content: directoryContent[name]

@@ -6,7 +6,7 @@ const mainStyle = require('./style')
 const pathUtil = require('../utils/path')
 
 function getParentDirectoryURL (originalParts) {
-  const parts = originalParts.splice()
+  const parts = originalParts.slice()
 
   if (parts.length > 1) {
     parts.pop()

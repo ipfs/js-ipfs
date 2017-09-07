@@ -2,7 +2,7 @@
 
 const mh = require('multihashes')
 const promisify = require('promisify-es6')
-const eachOfSeries = require('async/eachOfSeries')
+const reduce = require('async/reduce')
 const CID = require('cids')
 const Unixfs = require('ipfs-unixfs')
 const debug = require('debug')
@@ -22,11 +22,7 @@ function getIndexFiles (links) {
   return links.filter((link) => INDEX_HTML_FILES.indexOf(link.name) !== -1)
 }
 
-function noop () {}
-
 const resolveDirectory = promisify((ipfs, path, multihash, callback) => {
-  callback = callback || noop
-
   mh.validate(mh.fromB58String(multihash))
 
   ipfs.object.get(multihash, { enc: 'base58' }, (err, dagNode) => {
@@ -43,43 +39,28 @@ const resolveDirectory = promisify((ipfs, path, multihash, callback) => {
 })
 
 const resolveMultihash = promisify((ipfs, path, callback) => {
-  callback = callback || noop
-
   const parts = pathUtil.splitPath(path)
-  const partsLength = parts.length
-
-  let currentMultihash = parts[0]
+  let firstMultihash = parts.shift()
   let currentCid
-  eachOfSeries(parts, (multihash, currentIndex, next) => {
-    // throws error when invalid CID is passed
+
+  reduce(parts, firstMultihash, (memo, item, next) => {
     try {
-      currentCid = new CID(mh.fromB58String(currentMultihash))
+      currentCid = new CID(mh.fromB58String(memo))
     } catch (err) {
       return next(err)
     }
 
-    log('currentMultihash: ', currentMultihash)
-    log('currentIndex: ', currentIndex, '/', partsLength)
+    log('memo: ', memo)
+    log('item: ', item)
 
     ipfs.dag.get(currentCid, (err, result) => {
       if (err) { return next(err) }
+
       let dagNode = result.value
-
-      if (currentIndex === partsLength - 1) {
-        let dagDataObj = Unixfs.unmarshal(dagNode.data)
-        if (dagDataObj.type === 'directory') {
-          let isDirErr = new Error('This dag node is a directory')
-          // add currentMultihash as a fileName so it can be used by resolveDirectory
-          isDirErr.fileName = currentMultihash
-          return next(isDirErr)
-        }
-
-        return next()
-      }
-
       // find multihash of requested named-file in current dagNode's links
       let multihashOfNextFile
-      const nextFileName = parts[currentIndex + 1]
+      let nextFileName = item
+
       const links = dagNode.links
 
       for (let link of links) {
@@ -92,17 +73,34 @@ const resolveMultihash = promisify((ipfs, path, callback) => {
       }
 
       if (!multihashOfNextFile) {
-        log.error(`no link named "${nextFileName}" under ${currentMultihash}`)
-        return next(new Error(`no link named "${nextFileName}" under ${currentMultihash}`))
+        return next(new Error(`no link named "${nextFileName}" under ${memo}`))
       }
 
-      currentMultihash = multihashOfNextFile
-      next()
+      next(null, multihashOfNextFile)
     })
-  }, (err) => {
+  }, (err, result) => {
     if (err) { return callback(err) }
 
-    callback(null, { multihash: currentMultihash })
+    let cid
+    try {
+      cid = new CID(mh.fromB58String(result))
+    } catch (err) {
+      return callback(err)
+    }
+
+    ipfs.dag.get(cid, (err, dagResult) => {
+      if (err) return callback(err)
+
+      let dagDataObj = Unixfs.unmarshal(dagResult.value.data)
+      if (dagDataObj.type === 'directory') {
+        let isDirErr = new Error('This dag node is a directory')
+        // add memo (last multihash) as a fileName so it can be used by resolveDirectory
+        isDirErr.fileName = result
+        return callback(isDirErr)
+      }
+
+      callback(null, { multihash: result })
+    })
   })
 })
 
