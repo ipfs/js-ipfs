@@ -8,12 +8,12 @@ const pull = require('pull-stream')
 const paramap = require('pull-paramap')
 const zip = require('pull-zip')
 const toPull = require('stream-to-pull-stream')
-const Progress = require('progress')
 const getFolderSize = require('get-folder-size')
 const byteman = require('byteman')
 const waterfall = require('async/waterfall')
 const utils = require('../../utils')
 const print = require('../../utils').print
+const createProgressBar = require('../../utils').createProgressBar
 
 const WRAPPER = 'wrapper/'
 
@@ -50,19 +50,6 @@ function getTotalBytes (path, recursive, cb) {
   } else {
     fs.stat(path, (err, stat) => cb(err, stat.size))
   }
-}
-
-function createProgressBar (totalBytes) {
-  const total = byteman(totalBytes, 2, 'MB')
-  const barFormat = `:progress / ${total} [:bar] :percent :etas`
-
-  // 16 MB / 34 MB [===========             ] 48% 5.8s //
-  return new Progress(barFormat, {
-    incomplete: ' ',
-    clear: true,
-    stream: process.stdout,
-    total: totalBytes
-  })
 }
 
 function addPipeline (index, addStream, list, argv) {
