@@ -145,20 +145,19 @@ exports.add = {
     query: Joi.object()
       .keys({
         'cid-version': Joi.number().integer().min(0).max(1),
+        hash: Joi.string().valid(Object.keys(mh.names)),
         // Temporary restriction on raw-leaves:
-        // When cid-version=1 then raw-leaves MUST be present and false.
+        // When cid-version > 0 or hash != undefined then raw-leaves MUST be
+        // present and false.
         //
         // This is because raw-leaves is not yet implemented in js-ipfs,
         // and go-ipfs changes the value of raw-leaves to true when
-        // cid-version > 0 unless explicitly set to false.
+        // cid-version > 0 or hash != undefined unless explicitly set to false.
         //
         // This retains feature parity without having to implement raw-leaves.
-        'raw-leaves': Joi.any().when('cid-version', {
-          is: 1,
-          then: Joi.boolean().valid(false).required(),
-          otherwise: Joi.boolean().valid(false)
-        }),
-        hash: Joi.string().valid(Object.keys(mh.names))
+        'raw-leaves': Joi.boolean().valid(false)
+          .when('cid-version', { is: 1, then: Joi.required() })
+          .when('hash', { is: Joi.string(), then: Joi.required() })
       })
       // TODO: Necessary until validate "recursive", "stream-channels" etc.
       .options({ allowUnknown: true })
