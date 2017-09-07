@@ -20,7 +20,14 @@ describe('HTTP Gateway', () => {
   let gateway
 
   before((done) => {
-    http.api = new API()
+    http.api = new API(undefined, {
+      Bootstrap: [],
+      Discovery: {
+        MDNS: {
+          Enabled: false
+        }
+      }
+    })
 
     http.api.start(true, () => {
       const content = (name) => ({
@@ -91,7 +98,7 @@ describe('HTTP Gateway', () => {
         url: '/ipfs/QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o'
       }, (res) => {
         expect(res.statusCode).to.equal(200)
-        expect(res.rawPayload).to.deep.equal(Buffer.from('hello world' + '\n'))
+        expect(res.rawPayload).to.eql(Buffer.from('hello world' + '\n'))
         expect(res.payload).to.equal('hello world' + '\n')
         done()
       })
@@ -105,7 +112,7 @@ describe('HTTP Gateway', () => {
         url: '/ipfs/' + bigFileHash
       }, (res) => {
         expect(res.statusCode).to.equal(200)
-        expect(res.rawPayload).to.deep.equal(bigFile)
+        expect(res.rawPayload).to.eql(bigFile)
         done()
       })
     })
