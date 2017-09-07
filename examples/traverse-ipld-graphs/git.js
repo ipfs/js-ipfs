@@ -47,13 +47,13 @@ createNode((err, ipfs) => {
 
     const v1tag = 'z8mWaGfwSWLMPJ6Q2JdsAjGiXTf61Nbue'
 
-    function errOrLog(comment) {
+    function errOrLog (comment) {
       return (err, result) => {
         if (err) {
           throw err
         }
 
-        if (Buffer.isBuffer(result.value)) { //Blobs (files) are returned as buffer instance
+        if (Buffer.isBuffer(result.value)) { // Blobs (files) are returned as buffer instance
           result.value = result.value.toString()
         }
 
@@ -62,7 +62,6 @@ createNode((err, ipfs) => {
         console.log(result.value)
       }
     }
-
 
     ipfs.dag.get(v1tag + '/', errOrLog('Tag object:'))
     ipfs.dag.get(v1tag + '/object/message', errOrLog('Tagged commit message:'))
