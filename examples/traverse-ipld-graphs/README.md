@@ -17,6 +17,8 @@ This tutorial goes through several operations over IPLD graphs using the [DAG AP
 
 ## [traverse through a slice of the ethereum blockchain](./eth.js)
 
+## [traverse through a git repo](./git.js)
+
 ## Video of the demos
 
 Find a video with a walkthrough of this examples on Youtube:
