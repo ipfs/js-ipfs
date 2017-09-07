@@ -5,8 +5,10 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
+const series = require('async/series')
 const API = require('../../src/http')
 const loadFixture = require('aegir/fixtures')
+
 const bigFile = loadFixture(__dirname, '../../node_modules/interface-ipfs-core/test/fixtures/15mb.random', 'ipfs')
 const directoryContent = {
   'index.html': loadFixture(__dirname, './test-folder/index.html', 'ipfs'),
@@ -29,45 +31,55 @@ describe('HTTP Gateway', () => {
       }
     })
 
-    http.api.start(true, () => {
-      const content = (name) => ({
-        path: `test-folder/${name}`,
-        content: directoryContent[name]
-      })
-
-      const emptyDir = (name) => ({
-        path: `test-folder/${name}`
-      })
-
-      const expectedRootMultihash = 'QmbQD7EMEL1zeebwBsWEfA3ndgSS6F7S6iTuwuqasPgVRi'
-
-      const dirs = [
-        content('index.html'),
-        emptyDir('empty-folder'),
-        content('nested-folder/hello.txt'),
-        content('nested-folder/ipfs.txt'),
-        content('nested-folder/nested.html'),
-        emptyDir('nested-folder/empty')
-      ]
-
-      http.api.node.files.add(dirs, (err, res) => {
-        expect(err).to.not.exist()
-        const root = res[res.length - 1]
-
-        expect(root.path).to.equal('test-folder')
-        expect(root.hash).to.equal(expectedRootMultihash)
+    series([
+      (cb) => http.api.start(true, cb),
+      (cb) => {
         gateway = http.api.server.select('Gateway')
-        done()
-      })
-    })
+        cb()
+      },
+      (cb) => {
+        const content = (name) => ({
+          path: `test-folder/${name}`,
+          content: directoryContent[name]
+        })
+
+        const emptyDir = (name) => ({ path: `test-folder/${name}` })
+
+        const expectedRootMultihash = 'QmbQD7EMEL1zeebwBsWEfA3ndgSS6F7S6iTuwuqasPgVRi'
+
+        const dirs = [
+          content('index.html'),
+          emptyDir('empty-folder'),
+          content('nested-folder/hello.txt'),
+          content('nested-folder/ipfs.txt'),
+          content('nested-folder/nested.html'),
+          emptyDir('nested-folder/empty')
+        ]
+
+        http.api.node.files.add(dirs, (err, res) => {
+          expect(err).to.not.exist()
+          const root = res[res.length - 1]
+
+          expect(root.path).to.equal('test-folder')
+          expect(root.hash).to.equal(expectedRootMultihash)
+          cb()
+        })
+      },
+      (cb) => {
+        const expectedMultihash = 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq'
+
+        http.api.node.files.add(bigFile, (err, res) => {
+          expect(err).to.not.exist()
+          const file = res[0]
+          expect(file.path).to.equal(expectedMultihash)
+          expect(file.hash).to.equal(expectedMultihash)
+          cb()
+        })
+      }
+    ], done)
   })
 
-  after((done) => {
-    http.api.stop((err) => {
-      expect(err).to.not.exist()
-      done()
-    })
-  })
+  after((done) => http.api.stop(done))
 
   describe('## HTTP Gateway', () => {
     it('returns 400 for request without argument', (done) => {
