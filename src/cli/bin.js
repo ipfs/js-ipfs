@@ -15,11 +15,11 @@ updateNotifier({
 }).notify()
 
 const cli = yargs
-  .option('q', {
-    alias: 'quiet',
-    desc: 'suppress output',
+  .option('silent', {
+    desc: 'Write no output',
     type: 'boolean',
-    coerce: (quiet) => { if (quiet) { utils.disablePrinting() } }
+    default: false,
+    coerce: ('silent', silent => silent ? utils.disablePrinting() : silent)
   })
   .commandDir('commands')
   .demandCommand(1)
