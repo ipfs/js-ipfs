@@ -1,3 +1,13 @@
+<a name="14.3.5"></a>
+## [14.3.5](https://github.com/ipfs/js-ipfs-api/compare/v14.3.4...v14.3.5) (2017-09-08)
+
+
+### Features
+
+* Support specify hash algorithm in files.add ([#597](https://github.com/ipfs/js-ipfs-api/issues/597)) ([ed68657](https://github.com/ipfs/js-ipfs-api/commit/ed68657))
+
+
+
 <a name="14.3.4"></a>
 ## [14.3.4](https://github.com/ipfs/js-ipfs-api/compare/v14.3.3...v14.3.4) (2017-09-07)
 
