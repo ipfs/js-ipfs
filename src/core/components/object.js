@@ -164,16 +164,14 @@ module.exports = function object (self) {
       }
     }),
 
-    get: promisify((hash, options, callback) => {
+    get: promisify((cid, options, callback) => {
       if (typeof options === 'function') {
         callback = options
         options = {}
       }
 
-      let cid
-
       try {
-        cid = new CID(hash)
+        cid = new CID(cid)
       } catch (err) {
         return callback(err)
       }
@@ -189,16 +187,14 @@ module.exports = function object (self) {
       })
     }),
 
-    data: promisify((hash, options, callback) => {
+    data: promisify((cid, options, callback) => {
       if (typeof options === 'function') {
         callback = options
         options = {}
       }
 
-      let cid
-
       try {
-        cid = new CID(hash)
+        cid = new CID(cid)
       } catch (err) {
         return callback(err)
       }
