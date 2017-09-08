@@ -8,8 +8,6 @@ chai.use(dirtyChai)
 const series = require('async/series')
 const API = require('../../src/http')
 const loadFixture = require('aegir/fixtures')
-const os = require('os')
-const path = require('path')
 
 const bigFile = loadFixture(__dirname, '../../node_modules/interface-ipfs-core/test/fixtures/15mb.random', 'ipfs')
 const directoryContent = {
@@ -24,12 +22,7 @@ describe('HTTP Gateway', () => {
   let gateway
 
   before((done) => {
-    const repoPath = path.join(
-      os.tmpdir(),
-      '/ipfs-' + Math.random().toString().substring(2, 8) + '-' + Date.now()
-    )
-
-    http.api = new API(repoPath, {
+    http.api = new API(undefined, {
       Bootstrap: [],
       Discovery: {
         MDNS: {
