@@ -55,7 +55,7 @@ You can check the development status at the [Waffle Board](https://waffle.io/ipf
 - [Usage](#usage)
   - [CLI](#cli)
   - [HTTP-API](#http-api)
-  - [IPFS Core (use IPFS as a module in Node.js or in the Browser)](#ipfs-core-examples-use-ipfs-as-a-module)
+  - [IPFS Core (use IPFS as a module in Node.js or in the Browser)](#ipfs-core-use-ipfs-as-a-module)
     - [Create a IPFS node instance](#create-a-ipfs-node-instance)
   - [Tutorials and Examples](#tutorials-and-examples)
   - [API](#api)
@@ -74,9 +74,8 @@ You can check the development status at the [Waffle Board](https://waffle.io/ipf
     - [Domain data types](#domain-data-types)
 - [Packages](#packages)
 - [Development](#development)
-  - [Clone](#clone)
-  - [Install Dependencies](#install-dependencies)
-  - [Run Tests](#run-tests)
+  - [Clone and install dependencies](#clone-and-install-dependencies)
+  - [Run Tests](#run-unit-tests)
   - [Lint](#lint)
   - [Build a dist version](#build-a-dist-version)
 - [Contribute](#contribute)
@@ -258,7 +257,7 @@ A complete API definition is in the works. Meanwhile, you can learn how to you u
 Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal interface for this API hasn't been defined by you can find documentation at its implementations:
 
 - [Node.js bundle](./src/core/runtime/libp2p-nodejs.js)
-- [Browser Bundle](./src/code/runtime/libp2p-browser.js)
+- [Browser Bundle](./src/core/runtime/libp2p-browser.js)
 - [libp2p baseclass](https://github.com/libp2p/js-libp2p)
 
 ##### [miscellaneous operations](https://github.com/ipfs/interface-ipfs-core/tree/master/API/generic)
