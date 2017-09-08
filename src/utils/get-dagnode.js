@@ -3,13 +3,16 @@
 const DAGNode = require('ipld-dag-pb').DAGNode
 const parallel = require('async/parallel')
 const CID = require('cids')
-const mh = require('multihashes')
 const streamToValue = require('./stream-to-value')
 
 module.exports = function (send, hash, callback) {
-  // Until js-ipfs supports object/get and object/data by CID
-  // we need to convert our CID or multihash hash into a multihash
-  const multihash = mh.toB58String(new CID(hash).multihash)
+  let cid
+
+  try {
+    cid = new CID(hash)
+  } catch (err) {
+    return callback(err)
+  }
 
   // Retrieve the object and its data in parallel, then produce a DAGNode
   // instance using this information.
@@ -17,7 +20,7 @@ module.exports = function (send, hash, callback) {
     (done) => {
       send({
         path: 'object/get',
-        args: multihash
+        args: cid.toBaseEncodedString()
       }, done)
     },
     (done) => {
@@ -26,7 +29,7 @@ module.exports = function (send, hash, callback) {
       // See https://github.com/ipfs/go-ipfs/issues/1582 for more details.
       send({
         path: 'object/data',
-        args: multihash
+        args: cid.toBaseEncodedString()
       }, done)
     }
   ], (err, res) => {

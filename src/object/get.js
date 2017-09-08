@@ -5,7 +5,7 @@ const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const DAGLink = dagPB.DAGLink
 const bs58 = require('bs58')
-const cleanMultihash = require('../utils/clean-multihash')
+const CID = require('cids')
 const LRU = require('lru-cache')
 const lruOptions = {
   max: 128
@@ -14,7 +14,7 @@ const lruOptions = {
 const cache = LRU(lruOptions)
 
 module.exports = (send) => {
-  return promisify((multihash, options, callback) => {
+  return promisify((cid, options, callback) => {
     if (typeof options === 'function') {
       callback = options
       options = {}
@@ -24,13 +24,16 @@ module.exports = (send) => {
       options = {}
     }
 
+    let cidB58Str
+
     try {
-      multihash = cleanMultihash(multihash, options)
+      cid = new CID(cid)
+      cidB58Str = cid.toBaseEncodedString()
     } catch (err) {
       return callback(err)
     }
 
-    const node = cache.get(multihash)
+    const node = cache.get(cidB58Str)
 
     if (node) {
       return callback(null, node)
@@ -38,7 +41,7 @@ module.exports = (send) => {
 
     send({
       path: 'object/get',
-      args: multihash
+      args: cidB58Str
     }, (err, result) => {
       if (err) {
         return callback(err)
@@ -52,7 +55,7 @@ module.exports = (send) => {
         if (err) {
           return callback(err)
         }
-        cache.set(multihash, node)
+        cache.set(cidB58Str, node)
         callback(null, node)
       })
     })
