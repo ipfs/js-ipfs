@@ -22,18 +22,23 @@ module.exports = function swarm (self) {
       // TODO: return latency and streams when verbose is set
       // we currently don't have this information
 
-      const peers = values(self._peerInfoBook.getAll())
-        .map((peer) => {
-          const connectedAddr = peer.isConnected()
-          const res = {
-            addr: connectedAddr,
-            peer: peer
-          }
-          if (verbose) {
-            res.latency = 'unknown'
-          }
-          return res
-        })
+      const peers = []
+
+      values(self._peerInfoBook.getAll()).forEach((peer) => {
+        const connectedAddr = peer.isConnected()
+
+        if (!connectedAddr) { return }
+
+        const tupple = {
+          addr: connectedAddr,
+          peer: peer
+        }
+        if (verbose) {
+          tupple.latency = 'unknown'
+        }
+
+        peers.push(tupple)
+      })
 
       callback(null, peers)
     }),
