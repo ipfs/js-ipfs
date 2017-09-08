@@ -8,7 +8,7 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const delay = require('delay')
 const waterfall = require('async/waterfall')
-const HttpAPI = require('../../src/http-api')
+const HttpAPI = require('../../src/http')
 // TODO needs to use ipfs-factory-daemon
 const createTempNode = ''
 const repoPath = require('./index').repoPath

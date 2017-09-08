@@ -3,6 +3,7 @@
 let testCore = true
 let testHTTP = true
 let testCLI = true
+let testGatway = true
 
 if (process.env.TEST) {
   switch (process.env.TEST) {
@@ -13,6 +14,11 @@ if (process.env.TEST) {
     case 'http':
       testCore = false
       testCLI = false
+      break
+    case 'gateway':
+      testCore = false
+      testCLI = false
+      testHTTP = false
       break
     case 'cli':
       testCore = false
@@ -33,4 +39,8 @@ if (testHTTP) {
 
 if (testCLI) {
   require('./cli')
+}
+
+if (testGatway) {
+  require('./gateway')
 }

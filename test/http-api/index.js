@@ -6,7 +6,7 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-const API = require('../../src/http-api')
+const API = require('../../src/http')
 const APIctl = require('ipfs-api')
 const ncp = require('ncp').ncp
 const path = require('path')
