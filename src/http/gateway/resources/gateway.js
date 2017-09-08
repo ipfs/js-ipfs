@@ -75,6 +75,7 @@ module.exports = {
       if (err) {
         return handleGatewayResolverError(err)
       }
+
       ipfs.files.cat(data.multihash, (err, stream) => {
         if (err) {
           log.error(err)
@@ -91,6 +92,7 @@ module.exports = {
             stream._read = () => {}
             stream._readableState = {}
           }
+
           //  response.continue()
           let filetypeChecked = false
           let stream2 = new Stream.PassThrough({highWaterMark: 1})
@@ -106,7 +108,8 @@ module.exports = {
                 log('file type: ', fileSignature)
 
                 filetypeChecked = true
-                const mimeType = mime.lookup((fileSignature) ? fileSignature.ext : null)
+                const mimeType = mime.lookup(fileSignature ? fileSignature.ext : null)
+
                 log('ref ', ref)
                 log('mime-type ', mimeType)
 
@@ -115,18 +118,9 @@ module.exports = {
 
                   response
                     .header('Content-Type', mime.contentType(mimeType))
-                    .header('Access-Control-Allow-Headers', 'X-Stream-Output, X-Chunked-Ouput')
-                    .header('Access-Control-Allow-Methods', 'GET')
-                    .header('Access-Control-Allow-Origin', '*')
-                    .header('Access-Control-Expose-Headers', 'X-Stream-Output, X-Chunked-Ouput')
                     .send()
                 } else {
-                  response
-                   .header('Access-Control-Allow-Headers', 'X-Stream-Output, X-Chunked-Ouput')
-                   .header('Access-Control-Allow-Methods', 'GET')
-                   .header('Access-Control-Allow-Origin', '*')
-                   .header('Access-Control-Expose-Headers', 'X-Stream-Output, X-Chunked-Ouput')
-                   .send()
+                  response.send()
                 }
               }
 
