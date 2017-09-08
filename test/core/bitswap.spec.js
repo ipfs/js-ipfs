@@ -18,7 +18,6 @@ const multiaddr = require('multiaddr')
 const isNode = require('detect-node')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
-const Buffer = require('safe-buffer').Buffer
 
 // This gets replaced by '../utils/create-repo-browser.js' in the browser
 const createTempRepo = require('../utils/create-repo-nodejs.js')
@@ -192,7 +191,7 @@ describe('bitswap', () => {
 
     describe('fetches a remote file', () => {
       it('2 peers', (done) => {
-        const file = new Buffer(`I love IPFS <3 ${Math.random()}`)
+        const file = Buffer.from(`I love IPFS <3 ${Math.random()}`)
 
         waterfall([
           // 0. Start node

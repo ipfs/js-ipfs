@@ -5,7 +5,6 @@ const multipart = require('ipfs-multipart')
 const Block = require('ipfs-block')
 const waterfall = require('async/waterfall')
 const multihashing = require('multihashing-async')
-const Buffer = require('safe-buffer').Buffer
 const debug = require('debug')
 const log = debug('jsipfs:http-api:block')
 log.error = debug('jsipfs:http-api:block:error')

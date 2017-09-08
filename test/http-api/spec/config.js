@@ -36,187 +36,169 @@ describe('/config', () => {
     setup.after(http, done)
   })
 
-  it('returns 400 for request without arguments', (done) => {
-    api.inject({
+  it('returns 400 for request without arguments', () => {
+    return api.inject({
       method: 'POST',
       url: '/api/v0/config'
-    }, (res) => {
+    }).then((res) => {
       expect(res.statusCode).to.equal(400)
-      done()
     })
   })
 
-  it('500 for request with invalid args', (done) => {
-    api.inject({
+  it('500 for request with invalid args', () => {
+    return api.inject({
       method: 'POST',
       url: '/api/v0/config?arg=kitten'
-    }, (res) => {
+    }).then((res) => {
       expect(res.statusCode).to.equal(500)
       expect(res.result.Code).to.equal(0)
       expect(res.result.Message).to.be.a('string')
-      done()
     })
   })
 
-  it('returns value for request with valid arg', (done) => {
-    api.inject({
+  it('returns value for request with valid arg', () => {
+    return api.inject({
       method: 'POST',
       url: '/api/v0/config?arg=API.HTTPHeaders'
-    }, (res) => {
+    }).then((res) => {
       expect(res.statusCode).to.equal(200)
       expect(res.result.Key).to.equal('API.HTTPHeaders')
       expect(res.result.Value).to.equal(null)
-      done()
     })
   })
 
-  it('returns value for request as subcommand', (done) => {
-    api.inject({
+  it('returns value for request as subcommand', () => {
+    return api.inject({
       method: 'POST',
       url: '/api/v0/config/API.HTTPHeaders'
-    }, (res) => {
+    }).then((res) => {
       expect(res.statusCode).to.equal(200)
       expect(res.result.Key).to.equal('API.HTTPHeaders')
       expect(res.result.Value).to.equal(null)
-      done()
     })
   })
 
-  it.skip('updates value for request with both args', (done) => {
-    api.inject({
+  it('updates value for request with both args', () => {
+    return api.inject({
       method: 'POST',
       url: '/api/v0/config?arg=Datastore.Path&arg=kitten'
-    }, (res) => {
+    }).then((res) => {
       expect(res.statusCode).to.equal(200)
       expect(res.result.Key).to.equal('Datastore.Path')
       expect(res.result.Value).to.equal('kitten')
       expect(updatedConfig().Datastore.Path).to.equal('kitten')
-
-      done()
     })
   })
 
-  it('returns 500 value for request with both args and JSON flag with invalid JSON argument', (done) => {
-    api.inject({
+  it('returns 500 value for request with both args and JSON flag with invalid JSON argument', () => {
+    return api.inject({
       method: 'POST',
       url: '/api/v0/config?arg=Datastore.Path&arg=kitten&json'
-    }, (res) => {
+    }).then((res) => {
       expect(res.statusCode).to.equal(500)
       expect(res.result.Code).to.equal(0)
       expect(res.result.Message).to.be.a('string')
-
-      done()
     })
   })
 
-  it.skip('updates value for request with both args and JSON flag with valid JSON argument', (done) => {
-    api.inject({
+  it('updates value for request with both args and JSON flag with valid JSON argument', () => {
+    return api.inject({
       method: 'POST',
       url: '/api/v0/config?arg=Datastore.Path&arg={"kitten": true}&json'
-    }, (res) => {
+    }).then((res) => {
       expect(res.statusCode).to.equal(200)
       expect(res.result.Key).to.equal('Datastore.Path')
       expect(res.result.Value).to.deep.equal({ kitten: true })
       expect(updatedConfig().Datastore.Path).to.deep.equal({ kitten: true })
-
-      done()
     })
   })
 
-  it.skip('updates value for request with both args and bool flag and true argument', (done) => {
-    api.inject({
+  it('updates value for request with both args and bool flag and true argument', () => {
+    return api.inject({
       method: 'POST',
       url: '/api/v0/config?arg=Datastore.Path&arg=true&bool'
-    }, (res) => {
+    }).then((res) => {
       expect(res.statusCode).to.equal(200)
       expect(res.result.Key).to.equal('Datastore.Path')
       expect(res.result.Value).to.deep.equal(true)
       expect(updatedConfig().Datastore.Path).to.deep.equal(true)
-
-      done()
     })
   })
 
-  it('updates value for request with both args and bool flag and false argument', (done) => {
-    api.inject({
+  it('updates value for request with both args and bool flag and false argument', () => {
+    return api.inject({
       method: 'POST',
       url: '/api/v0/config?arg=Datastore.Path&arg=false&bool'
-    }, (res) => {
-      throw new Error('fail')
+    }).then((res) => {
       expect(res.statusCode).to.equal(200)
       expect(res.result.Key).to.equal('Datastore.Path')
       expect(res.result.Value).to.deep.equal(false)
       expect(updatedConfig().Datastore.Path).to.deep.equal(false)
-      done()
     })
   })
 
-  it('/config/show', (done) => {
-    api.inject({
+  it('/config/show', () => {
+    return api.inject({
       method: 'POST',
       url: '/api/v0/config/show'
-    }, (res) => {
+    }).then((res) => {
       expect(res.statusCode).to.equal(200)
       expect(res.result).to.deep.equal(updatedConfig())
-      done()
     })
   })
 
   describe.skip('/config/replace', () => {
-    it('returns 400 if no config is provided', (done) => {
+    it('returns 400 if no config is provided', () => {
       const form = new FormData()
       const headers = form.getHeaders()
 
-      streamToPromise(form).then((payload) => {
-        api.inject({
+      return streamToPromise(form).then((payload) => {
+        return api.inject({
           method: 'POST',
           url: '/api/v0/config/replace',
           headers: headers,
           payload: payload
-        }, (res) => {
-          expect(res.statusCode).to.equal(400)
-          done()
         })
+      }).then((res) => {
+        expect(res.statusCode).to.equal(400)
       })
     })
 
-    it('returns 500 if the config is invalid', (done) => {
+    it('returns 500 if the config is invalid', () => {
       const form = new FormData()
       const filePath = 'test/test-data/badconfig'
       form.append('file', fs.createReadStream(filePath))
       const headers = form.getHeaders()
 
-      streamToPromise(form).then((payload) => {
-        api.inject({
+      return streamToPromise(form).then((payload) => {
+        return api.inject({
           method: 'POST',
           url: '/api/v0/config/replace',
           headers: headers,
           payload: payload
-        }, (res) => {
-          expect(res.statusCode).to.equal(500)
-          done()
         })
+      }).then((res) => {
+        expect(res.statusCode).to.equal(500)
       })
     })
 
-    it('updates value', (done) => {
+    it('updates value', () => {
       const form = new FormData()
       const filePath = 'test/test-data/otherconfig'
       form.append('file', fs.createReadStream(filePath))
       const headers = form.getHeaders()
       const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
-      streamToPromise(form).then((payload) => {
-        api.inject({
+      return streamToPromise(form).then((payload) => {
+        return api.inject({
           method: 'POST',
           url: '/api/v0/config/replace',
           headers: headers,
           payload: payload
-        }, (res) => {
-          expect(res.statusCode).to.equal(200)
-          expect(updatedConfig()).to.deep.equal(expectedConfig)
-          done()
         })
+      }).then((res) => {
+        expect(res.statusCode).to.equal(200)
+        expect(updatedConfig()).to.deep.equal(expectedConfig)
       })
     })
   })

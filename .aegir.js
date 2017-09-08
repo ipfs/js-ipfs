@@ -2,6 +2,7 @@
 
 const parallel = require('async/parallel')
 const series = require('async/series')
+const timeout = require('async/timeout')
 const createTempRepo = require('./test/utils/create-repo-nodejs.js')
 const HTTPAPI = require('./src/http-api')
 const leftPad = require('left-pad')
@@ -59,9 +60,9 @@ module.exports = {
       ], callback)
     },
     post (callback) {
-      series(nodes.map((node) => (cb) => {
+      timeout((cb) => series(nodes.map((node) => (cb) => {
         setTimeout(() => node.stop(cb), 100)
-      }), callback)
+      }), cb), 50000)(callback)
     }
   }
 }

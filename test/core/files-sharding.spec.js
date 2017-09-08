@@ -7,7 +7,6 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const pull = require('pull-stream')
-const Buffer = require('safe-buffer').Buffer
 
 const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/create-repo-nodejs.js')

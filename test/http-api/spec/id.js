@@ -2,29 +2,39 @@
 'use strict'
 
 const expect = require('chai').expect
+const setup = require('../index')
 
-module.exports = (http) => {
-  describe('/id', () => {
-    let api
+describe('/id', () => {
+  let api
+  let http
 
-    before(() => {
+  before((done) => {
+    setup.before((err, _http) => {
+      if (err) {
+        return done(err)
+      }
+      http = _http
       api = http.api.server.select('API')
-    })
-
-    it('get the id', (done) => {
-      api.inject({
-        method: 'GET',
-        url: '/api/v0/id'
-      }, (res) => {
-        expect(res.result.ID).to.equal(idResult.ID)
-        expect(res.result.PublicKey).to.equal(idResult.PublicKey)
-        expect(res.result.AgentVersion).to.equal(idResult.AgentVersion)
-        expect(res.result.ProtocolVersion).to.equal(idResult.ProtocolVersion)
-        done()
-      })
+      done()
     })
   })
-}
+
+  after((done) => {
+    setup.after(http, done)
+  })
+
+  it('get the id', () => {
+    return api.inject({
+      method: 'GET',
+      url: '/api/v0/id'
+    }).then((res) => {
+      expect(res.result.ID).to.equal(idResult.ID)
+      expect(res.result.PublicKey).to.equal(idResult.PublicKey)
+      expect(res.result.AgentVersion).to.equal(idResult.AgentVersion)
+      expect(res.result.ProtocolVersion).to.equal(idResult.ProtocolVersion)
+    })
+  })
+})
 
 const idResult = {
   ID: 'QmQ2zigjQikYnyYUSXZydNXrDRhBut2mubwJBaLXobMt3A',
