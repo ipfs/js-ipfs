@@ -33,7 +33,7 @@ describe('block', () => runOnAndOff((thing) => {
       expect(out).to.eql('QmTwbQs4sGcCiPxV97SpbHS7QgmVg9SiKxcG1AcF1Ly2SL\n')
       return ipfs('block get QmTwbQs4sGcCiPxV97SpbHS7QgmVg9SiKxcG1AcF1Ly2SL')
     })
-    .then((out) => expect(out).to.eql('there is no newline at end of this file'))
+      .then((out) => expect(out).to.eql('there is no newline at end of this file'))
   })
 
   it('stat', () => {
