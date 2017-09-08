@@ -52,7 +52,14 @@ function getTotalBytes (path, recursive, cb) {
   }
 }
 
-function addPipeline (index, addStream, list, wrapWithDirectory) {
+function addPipeline (index, addStream, list, argv) {
+  const {
+    wrapWithDirectory,
+    quiet,
+    quieter,
+    silent
+  } = argv
+
   pull(
     zip(
       pull.values(list),
@@ -84,12 +91,15 @@ function addPipeline (index, addStream, list, wrapWithDirectory) {
         throw err
       }
 
+      if (silent) return
+      if (quieter) return print(added.pop().hash)
+
       sortBy(added, 'path')
         .reverse()
         .map((file) => {
           const log = [ 'added', file.hash ]
 
-          if (file.path.length > 0) log.push(file.path)
+          if (!quiet && file.path.length > 0) log.push(file.path)
 
           return log.join(' ')
         })
@@ -142,6 +152,23 @@ module.exports = {
     'cid-version': {
       type: 'integer',
       describe: 'Cid version. Non-zero value will change default of \'raw-leaves\' to true. (experimental)'
+    },
+    quiet: {
+      alias: 'q',
+      type: 'boolean',
+      default: false,
+      describe: 'Write minimal output'
+    },
+    quieter: {
+      alias: 'Q',
+      type: 'boolean',
+      default: false,
+      describe: 'Write only final hash'
+    },
+    silent: {
+      type: 'boolean',
+      default: false,
+      describe: 'Write no output'
     }
   },
 
@@ -214,7 +241,7 @@ module.exports = {
     ], (err, addStream) => {
       if (err) throw err
 
-      addPipeline(index, addStream, list, argv.wrapWithDirectory)
+      addPipeline(index, addStream, list, argv)
     })
   }
 }
