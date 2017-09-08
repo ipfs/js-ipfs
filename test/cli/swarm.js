@@ -78,5 +78,11 @@ describe('swarm', () => {
         )
       })
     })
+
+    it('`peers` should not throw after `disconnect`', () => {
+      return ipfsA('swarm peers').then((out) => {
+        expect(out).to.be.empty()
+      })
+    })
   })
 })
