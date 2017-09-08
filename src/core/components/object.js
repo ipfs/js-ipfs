@@ -10,20 +10,6 @@ const mh = require('multihashes')
 const Unixfs = require('ipfs-unixfs')
 const assert = require('assert')
 
-function normalizeMultihash (multihash, enc) {
-  if (typeof multihash === 'string') {
-    if (enc === 'base58' || !enc) {
-      return multihash
-    }
-
-    return new Buffer(multihash, enc)
-  } else if (Buffer.isBuffer(multihash)) {
-    return multihash
-  } else {
-    throw new Error('unsupported multihash')
-  }
-}
-
 function parseBuffer (buf, encoding, callback) {
   switch (encoding) {
     case 'json':
@@ -178,20 +164,17 @@ module.exports = function object (self) {
       }
     }),
 
-    get: promisify((multihash, options, callback) => {
+    get: promisify((cid, options, callback) => {
       if (typeof options === 'function') {
         callback = options
         options = {}
       }
 
-      let mh
-
       try {
-        mh = normalizeMultihash(multihash, options.enc)
+        cid = new CID(cid)
       } catch (err) {
         return callback(err)
       }
-      const cid = new CID(mh)
 
       self._ipldResolver.get(cid, (err, result) => {
         if (err) {
@@ -204,13 +187,19 @@ module.exports = function object (self) {
       })
     }),
 
-    data: promisify((multihash, options, callback) => {
+    data: promisify((cid, options, callback) => {
       if (typeof options === 'function') {
         callback = options
         options = {}
       }
 
-      self.object.get(multihash, options, (err, node) => {
+      try {
+        cid = new CID(cid)
+      } catch (err) {
+        return callback(err)
+      }
+
+      self.object.get(cid, options, (err, node) => {
         if (err) {
           return callback(err)
         }
