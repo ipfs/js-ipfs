@@ -8,7 +8,7 @@ const compareDir = require('dir-compare').compareSync
 const rimraf = require('rimraf').sync
 const runOnAndOff = require('../utils/on-and-off')
 
-describe.only('files', () => runOnAndOff((thing) => {
+describe('files', () => runOnAndOff((thing) => {
   let ipfs
   const readme = fs.readFileSync(path.join(process.cwd(), '/src/init-files/init-docs/readme'))
                    .toString('utf-8')
