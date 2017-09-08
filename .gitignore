@@ -3,6 +3,9 @@
 test/repo-tests*
 **/bundle.js
 
+/ipfs
+/ipfs.exe
+
 # Logs
 logs
 *.log
