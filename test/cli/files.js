@@ -217,8 +217,7 @@ describe('files', () => runOnAndOff((thing) => {
   it('add --silent', () => {
     return ipfs('files add --silent src/init-files/init-docs/readme')
       .then((out) => {
-        expect(out)
-        .to.eql('')
+        expect(out).to.eql('')
       })
   })
 
