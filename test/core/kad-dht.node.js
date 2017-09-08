@@ -62,7 +62,6 @@ describe('verify that kad-dht is doing its thing', () => {
         expect(err).to.not.exist()
         stream.pipe(bl((err, data) => {
           expect(err).to.not.exist()
-          console.log(data.toString())
           expect(data).to.eql(new Buffer('hello kad'))
           done()
         }))

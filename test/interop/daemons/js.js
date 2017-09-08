@@ -6,7 +6,7 @@ const series = require('async/series')
 const rimraf = require('rimraf')
 const tmpDir = require('../util').tmpDir
 
-const HttpApi = require('../../../src/http-api')
+const HttpApi = require('../../../src/http')
 
 function portConfig (port) {
   port = port + 5

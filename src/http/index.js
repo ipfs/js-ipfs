@@ -41,6 +41,8 @@ function HttpApi (repo, config, cliArgs) {
 
     series([
       (cb) => {
+        cb = once(cb)
+
         const libp2p = { modules: {} }
 
         // Attempt to use any of the WebRTC versions available globally
@@ -75,8 +77,6 @@ function HttpApi (repo, config, cliArgs) {
           return cb(err)
         }
 
-        cb = once(cb)
-
         this.node.once('error', (err) => {
           this.log('error starting core', err)
           err.code = 'ENOENT'
@@ -92,8 +92,13 @@ function HttpApi (repo, config, cliArgs) {
           }
 
           // CORS is enabled by default
+          // TODO: shouldn't, fix this
           this.server = new Hapi.Server({
-            connections: { routes: { cors: true } }
+            connections: {
+              routes: {
+                cors: true
+              }
+            }
           })
 
           this.server.app.ipfs = this.node
@@ -117,7 +122,9 @@ function HttpApi (repo, config, cliArgs) {
           errorHandler(this, this.server)
 
           // load routes
-          require('./routes')(this.server)
+          require('./api/routes')(this.server)
+          // load gateway routes
+          require('./gateway/routes')(this.server)
 
           // Set default headers
           setHeader(this.server,
