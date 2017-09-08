@@ -6,8 +6,12 @@ dependencies:
   pre:
     - google-chrome --version
     - curl -L -o google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    - for v in $(curl http://archive.ubuntu.com/ubuntu/pool/main/n/nss/ | grep "href=" | grep "libnss3.*deb\"" -o | grep -o "libnss3.*deb" | grep "3.28" | grep "14.04"); do curl -L -o $v http://archive.ubuntu.com/ubuntu/pool/main/n/nss/$v; done && rm libnss3-tools*_i386.deb libnss3-dev*_i386.deb
     - sudo dpkg -i google-chrome.deb || true
+    - sudo dpkg -i libnss3*.deb || true
     - sudo apt-get update
+    - sudo apt-get install -f || true
+    - sudo dpkg -i libnss3*.deb
     - sudo apt-get install -f
     - sudo apt-get install --only-upgrade lsb-base
     - sudo dpkg -i google-chrome.deb
