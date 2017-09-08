@@ -8,7 +8,6 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const bl = require('bl')
 const parallel = require('async/parallel')
-const Buffer = require('safe-buffer')
 const IPFSFactory = require('../utils/ipfs-factory-instance')
 
 describe('verify that kad-dht is doing its thing', () => {
@@ -50,7 +49,8 @@ describe('verify that kad-dht is doing its thing', () => {
 
   after((done) => factory.dismantle(done))
 
-  it('add a file in C, fetch through B in A', (done) => {
+  it('add a file in C, fetch through B in A', function (done) {
+    this.timeout(80000)
     const file = {
       path: 'testfile.txt',
       content: Buffer.from('hello kad')
@@ -63,7 +63,7 @@ describe('verify that kad-dht is doing its thing', () => {
         stream.pipe(bl((err, data) => {
           expect(err).to.not.exist()
           console.log(data.toString())
-          expect(data).to.eql(new Buffer('hello kad'))
+          expect(data).to.eql(Buffer.from('hello kad'))
           done()
         }))
       })

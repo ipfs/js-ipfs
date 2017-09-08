@@ -68,7 +68,7 @@ exports.publish = {
       return reply(new Error('Missing buf'))
     }
 
-    ipfs.pubsub.publish(topic, new Buffer(String(buf)), (err) => {
+    ipfs.pubsub.publish(topic, Buffer.from(String(buf)), (err) => {
       if (err) {
         return reply(new Error(`Failed to publish to topic ${topic}: ${err}`))
       }

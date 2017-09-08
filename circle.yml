@@ -1,6 +1,9 @@
 machine:
   node:
     version: stable
+test:
+  post:
+    - npm run coverage -- --upload
 
 dependencies:
   pre:

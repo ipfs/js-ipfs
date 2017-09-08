@@ -14,7 +14,7 @@ module.exports = (http) => {
     let api
     let tmpNode
 
-    const buf = new Buffer('some message')
+    const buf = Buffer.from('some message')
     const topic = 'nonScents'
     const topicNotSubscribed = 'somethingRandom'
 

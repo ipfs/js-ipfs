@@ -150,8 +150,8 @@ function onDrop (event) {
           let progress = 0
 
           let myReadableStreamBuffer = new streamBuffers.ReadableStreamBuffer({
-            // frequency: 10,   // in milliseconds.
-            chunkSize: 32048  // in bytes.
+            // frequency: 10, // in milliseconds.
+            chunkSize: 32048 // in bytes.
           })
 
           node.files.createAddStream((err, stream) => {
@@ -200,8 +200,8 @@ function onDrop (event) {
         if (files && files.length) {
           $multihashInput.value = files[0].hash
           $filesStatus.innerHTML = files
-          .map((e) => `Added ${e.path} as ${e.hash}`)
-          .join('<br>')
+            .map((e) => `Added ${e.path} as ${e.hash}`)
+            .join('<br>')
         }
       })
       .catch(onError)

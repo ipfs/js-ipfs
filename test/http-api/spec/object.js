@@ -115,7 +115,7 @@ module.exports = (http) => {
         const headers = form.getHeaders()
 
         const expectedResult = {
-          Data: new Buffer('another'),
+          Data: Buffer.from('another'),
           Hash: 'QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm',
           Links: [{
             Name: 'some link',

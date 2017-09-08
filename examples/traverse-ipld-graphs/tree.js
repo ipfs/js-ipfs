@@ -16,7 +16,7 @@ createNode((err, ipfs) => {
 
   series([
     (cb) => {
-      const someData = new Buffer('capoeira')
+      const someData = Buffer.from('capoeira')
 
       dagPB.DAGNode.create(someData, (err, node) => {
         if (err) {

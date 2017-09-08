@@ -82,7 +82,7 @@ describe('init', () => {
       expect(err).to.not.exist()
 
       // Should not have default assets
-      const multihash = new Buffer('12205e7c3ce237f936c76faf625e90f7751a9f5eeb048f59873303c215e9cce87599', 'hex')
+      const multihash = Buffer.from('12205e7c3ce237f936c76faf625e90f7751a9f5eeb048f59873303c215e9cce87599', 'hex')
 
       ipfs.object.get(multihash, {}, (err, node) => {
         expect(err).to.exist()
