@@ -9,6 +9,8 @@ const path = require('path')
 const debug = require('debug')
 const log = debug('cli')
 log.error = debug('cli:error')
+const Progress = require('progress')
+const byteman = require('byteman')
 
 exports = module.exports
 
@@ -84,4 +86,17 @@ exports.print = (msg, newline) => {
     msg = newline ? msg + '\n' : msg
     process.stdout.write(msg)
   }
+}
+
+exports.createProgressBar = (totalBytes) => {
+  const total = byteman(totalBytes, 2, 'MB')
+  const barFormat = `:progress / ${total} [:bar] :percent :etas`
+
+  // 16 MB / 34 MB [===========             ] 48% 5.8s //
+  return new Progress(barFormat, {
+    incomplete: ' ',
+    clear: true,
+    stream: process.stdout,
+    total: totalBytes
+  })
 }
