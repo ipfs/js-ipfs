@@ -1,6 +1,6 @@
 # `js-ipfs` Examples and Tutorials
 
-In this folder, you can find a variety of examples to help you get started in using js-ipfs, in Node.js and in the Browser. Every example as a specific purpose and some of each incorporate a full tutorial that you can follow through, helping you expand your knowledge about IPFS and the Distributed Web in General.
+In this folder, you can find a variety of examples to help you get started in using js-ipfs, in Node.js and in the Browser. Every example has a specific purpose and some of each incorporate a full tutorial that you can follow through, helping you expand your knowledge about IPFS and the Distributed Web in General.
 
 Let us know if you find any issue or if you want to contribute and add a new tutorial, feel welcome to submit a PR, thank you!
 
