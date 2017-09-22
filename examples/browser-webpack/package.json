@@ -11,13 +11,17 @@
     "babel-core": "^6.24.1",
     "babel-loader": "^7.0.0",
     "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
     "json-loader": "^0.5.4",
-    "react": "^15.5.4",
     "react-hot-loader": "^1.3.1",
     "webpack": "^2.5.1",
     "webpack-dev-server": "^2.4.5"
   },
   "dependencies": {
+    "ipfs": "^0.26.0",
+    "ipfs-block-service": "^0.12.0",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
     "safe-buffer": "^5.0.1"
   }
 }
