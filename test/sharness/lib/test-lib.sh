@@ -220,10 +220,13 @@ test_launch_ipfs_daemon() {
 
 	test_set_address_vars actual_daemon
 
+	echo "IPFS_PATH: '$IPFS_PATH'"
+	echo "API_MADDR: '$API_MADDR'"
+
 	# we say the daemon is ready when the API server is ready.
 	test_expect_success "'ipfs daemon' is ready" '
 		IPFS_PID=$! &&
-		pollEndpoint -ep=/version -host=$API_MADDR -v -tout=1s -tries=60 2>poll_apierr > poll_apiout ||
+		go-poll-endpoint -ep=/version -host=$API_MADDR -v -tout=1s -tries=60 2>poll_apierr > poll_apiout ||
 		test_fsh cat actual_daemon || test_fsh cat daemon_err || test_fsh cat poll_apierr || test_fsh cat poll_apiout
 	'
 }
