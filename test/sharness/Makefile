@@ -36,7 +36,7 @@ aggregate: clean-test-results $(T)
 	@echo "*** $@ ***"
 	ls test-results/t*-*.sh.*.counts | $(AGGREGATE)
 
-deps: sharness $(BINS) curl
+deps: sharness $(BINS) curl go-poll-endpoint
 
 sharness:
 	@echo "*** checking $@ ***"
@@ -48,6 +48,12 @@ sharness:
 
 curl:
 	@which curl >/dev/null || (echo "Please install curl!" && false)
+
+go-poll-endpoint:
+	@which go-poll-endpoint >/dev/null || \
+	(echo "Please install go-poll-endpoint!" && \
+	echo "See: https://github.com/ipfs/go-poll-endpoint" && \
+	false)
 
 .PHONY: all help clean clean-test-results $(T) aggregate deps sharness
 
