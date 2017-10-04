@@ -116,12 +116,15 @@ The CLI is available by using the command `jsipfs` in your terminal. This is ali
 Learn how to bundle with browserify and webpack in the [`examples`](https://github.com/ipfs/js-ipfs/tree/master/examples) folder.
 
 
-You can also load it using a `<script>` using the [unpkg](https://unpkg.com) CDN. Inserting one of the following lines will make a `Ipfs` object available in the global namespace.
-
+You can also load it using a `<script>` from the [unpkg](https://unpkg.com) CDN:
 ```html
-<script src="https://unpkg.com/ipfs/dist/index.min.js"></script> <!-- loading the minified version -->
-<script src="https://unpkg.com/ipfs/dist/index.js"></script>     <!-- loading the human-readable (non-minified) version -->
+<!-- minified version -->
+<script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
+
+<!-- human-readable (non-minified) version -->
+<script src="https://unpkg.com/ipfs/dist/index.js"></script>
 ```
+Inserting one of the above lines will make an `Ipfs` object available in the global namespace.
 
 ## Usage
 
