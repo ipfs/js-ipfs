@@ -10,6 +10,7 @@ const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
 const pushable = require('pull-pushable')
 const toStream = require('pull-stream-to-stream')
+const abortable = require('pull-abortable')
 const Joi = require('joi')
 const ndjson = require('pull-ndjson')
 
@@ -218,8 +219,10 @@ exports.add = {
       progress: request.query['progress'] ? progressHandler : null
     }
 
+    const aborter = abortable()
     const stream = toStream.source(pull(
       replyStream,
+      aborter,
       ndjson.serialize()
     ))
 
@@ -231,6 +234,7 @@ exports.add = {
     if (!stream._read) {
       stream._read = () => {}
       stream._readableState = {}
+      stream.unpipe = () => {}
     }
     reply(stream)
       .header('x-chunked-output', '1')
@@ -247,17 +251,19 @@ exports.add = {
       }),
       pull.collect((err, files) => {
         if (err) {
-          return reply({
+          replyStream.push({
             Message: err,
             Code: 0
-          }).code(500)
+          })
+          return aborter.abort()
         }
 
         if (files.length === 0 && filesParsed) {
-          return reply({
+          replyStream.push({
             Message: 'Failed to add files.',
             Code: 0
-          }).code(500)
+          })
+          return aborter.abort()
         }
 
         files.forEach((f) => replyStream.push(f))

@@ -142,6 +142,7 @@
     "peer-info": "~0.11.0",
     "progress": "^2.0.0",
     "promisify-es6": "^1.0.3",
+    "pull-abortable": "^4.1.1",
     "pull-file": "^1.0.0",
     "pull-ndjson": "^0.1.1",
     "pull-paramap": "^1.2.2",
