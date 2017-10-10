@@ -106,6 +106,14 @@ describe('files', () => runOnAndOff((thing) => {
     ipfs = thing.ipfs
   })
 
+  it('add with progress', () => {
+    return ipfs('files add -p src/init-files/init-docs/readme')
+      .then((out) => {
+        expect(out)
+          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
+      })
+  })
+
   it('add', () => {
     return ipfs('files add src/init-files/init-docs/readme')
       .then((out) => {

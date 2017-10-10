@@ -9,9 +9,9 @@ log.error = debug('jsipfs:http-api:files:error')
 const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
 const pushable = require('pull-pushable')
-const EOL = require('os').EOL
 const toStream = require('pull-stream-to-stream')
 const Joi = require('joi')
+const ndjson = require('pull-ndjson')
 
 exports = module.exports
 
@@ -104,7 +104,7 @@ exports.get = {
       pull(
         stream,
         pull.asyncMap((file, cb) => {
-          const header = {name: file.path}
+          const header = { name: file.path }
           if (!file.content) {
             header.type = 'directory'
             pack.entry(header)
@@ -207,10 +207,34 @@ exports.add = {
       fileAdder.end()
     })
 
+    const replyStream = pushable()
+    const progressHandler = (bytes) => {
+      replyStream.push({ Bytes: bytes })
+    }
+
     const options = {
       'cid-version': request.query['cid-version'],
-      'raw-leaves': request.query['raw-leaves']
+      'raw-leaves': request.query['raw-leaves'],
+      progress: request.query['progress'] ? progressHandler : null
     }
+
+    const stream = toStream.source(pull(
+      replyStream,
+      ndjson.serialize()
+    ))
+
+    // const stream = toStream.source(replyStream.source)
+    // hapi is not very clever and throws if no
+    // - _read method
+    // - _readableState object
+    // are there :(
+    if (!stream._read) {
+      stream._read = () => {}
+      stream._readableState = {}
+    }
+    reply(stream)
+      .header('x-chunked-output', '1')
+      .header('content-type', 'application/json')
 
     pull(
       fileAdder,
@@ -221,7 +245,6 @@ exports.add = {
           Hash: file.hash
         }
       }),
-      pull.map((file) => JSON.stringify(file) + EOL),
       pull.collect((err, files) => {
         if (err) {
           return reply({
@@ -237,9 +260,8 @@ exports.add = {
           }).code(500)
         }
 
-        reply(files.join('\n'))
-          .header('x-chunked-output', '1')
-          .header('content-type', 'application/json')
+        files.forEach((f) => replyStream.push(f))
+        replyStream.end()
       })
     )
   }
