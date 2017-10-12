@@ -239,6 +239,15 @@ exports.add = {
     reply(stream)
       .header('x-chunked-output', '1')
       .header('content-type', 'application/json')
+      .header('Trailer', 'X-Stream-Error')
+
+    function _writeErr (msg, code) {
+      const err = JSON.stringify({ Message: msg, Code: code })
+      request.raw.res.addTrailers({
+        'X-Stream-Error': err
+      })
+      return aborter.abort()
+    }
 
     pull(
       fileAdder,
@@ -251,19 +260,11 @@ exports.add = {
       }),
       pull.collect((err, files) => {
         if (err) {
-          replyStream.push({
-            Message: err,
-            Code: 0
-          })
-          return aborter.abort()
+          return _writeErr(err, 0)
         }
 
         if (files.length === 0 && filesParsed) {
-          replyStream.push({
-            Message: 'Failed to add files.',
-            Code: 0
-          })
-          return aborter.abort()
+          return _writeErr('Failed to add files.', 0)
         }
 
         files.forEach((f) => replyStream.push(f))
