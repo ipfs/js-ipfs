@@ -85,3 +85,11 @@ exports.print = (msg, newline) => {
     process.stdout.write(msg)
   }
 }
+
+exports.rightpad = (val, n) => {
+  let result = String(val)
+  for (let i = result.length; i < n; ++i) {
+    result += ' '
+  }
+  return result
+}
