@@ -52,7 +52,7 @@ This works like `EventEmitter.removeListener`, as that only the `handler` passed
 const topic = 'fruit-of-the-day'
 
 const receiveMsg = (msg) => {
-  console.log(msg.toString()
+  console.log(msg.toString())
 }
 
 ipfs.pubsub.subscribe(topic, receiveMsg)
