@@ -6,7 +6,7 @@ const glob = require('glob')
 const importer = require('ipfs-unixfs-engine').importer
 const pull = require('pull-stream')
 const file = require('pull-file')
-const mh = require('multihashes')
+const CID = require('cids')
 
 // Add the default assets to the repo.
 module.exports = function addDefaultAssets (self, log, callback) {
@@ -35,8 +35,9 @@ module.exports = function addDefaultAssets (self, log, callback) {
     importer(self._ipldResolver),
     pull.through((el) => {
       if (el.path === 'init-docs') {
+        const cid = new CID(el.multihash)
         log('to get started, enter:\n')
-        log(`\t jsipfs files cat /ipfs/${mh.toB58String(el.multihash)}/readme\n`)
+        log(`\t jsipfs files cat /ipfs/${cid.toBaseEncodedString()}/readme\n`)
       }
     }),
     pull.collect((err) => {

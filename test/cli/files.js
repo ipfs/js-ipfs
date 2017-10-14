@@ -242,7 +242,7 @@ describe('files', () => runOnAndOff((thing) => {
     return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB/dummy')
       .then(() => expect.fail(0, 1, 'Should have thrown an error'))
       .catch((err) => {
-        expect(err).to.exist();
+        expect(err).to.exist()
       })
   })
 
