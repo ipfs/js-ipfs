@@ -119,11 +119,15 @@ Learn how to bundle with browserify and webpack in the [`examples`](https://gith
 You can also load it using a `<script>` using the [unpkg](https://unpkg.com) CDN or the [jsDelivr](https://www.jsdelivr.com/package/npm/ipfs) CDN. Inserting one of the following lines will make a `Ipfs` object available in the global namespace.
 
 ```html
-<script src="https://unpkg.com/ipfs/dist/index.min.js"></script> <!-- loading the minified version -->
+<!-- loading the minified version -->
+<script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/ipfs/dist/index.min.js"></script>
-<script src="https://unpkg.com/ipfs/dist/index.js"></script>     <!-- loading the human-readable (not minified) version -->
+
+<!-- loading the human-readable (not minified) version -->
+<script src="https://unpkg.com/ipfs/dist/index.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/ipfs/dist/index.js"></script>
 ```
+Inserting one of the above lines will make an `Ipfs` object available in the global namespace.
 
 ## Usage
 
@@ -489,7 +493,7 @@ Then, update your IPFS Daemon config to include the multiaddr for this new trans
 
 ### Lint
 
-*Conforming to linting rules is a prerequisite to commit to js-ipfs.*
+**Conforming to linting rules is a prerequisite to commit to js-ipfs.**
 
 ```sh
 > npm run lint
@@ -524,11 +528,11 @@ src                 # Main source code folder
 ### Monitoring
 
 The HTTP API exposed with js-ipfs can also be used for exposing metrics about
-the running js-ipfs node and other nodejs metrics.
+the running js-ipfs node and other Node.js metrics.
 
 To enable it, you need to set the environment variable `IPFS_MONITORING` (any value)
 
-Once environment variable is set and the js-ipfs daemon is running, you can get
+Once the environment variable is set and the js-ipfs daemon is running, you can get
 the metrics (in prometheus format) by making a GET request to the following endpoint:
 
 ```
@@ -543,17 +547,17 @@ What does this image explain?
 
 - IPFS uses `ipfs-repo` which picks `fs` or `indexeddb` as its storage drivers, depending if it is running in Node.js or in the Browser.
 - The exchange protocol, `bitswap`, uses the Block Service which in turn uses the Repo, offering a get and put of blocks to the IPFS implementation.
-- The DAG api (previously Object) comes from the IPLD Resolver, it can support several IPLD Formats (i.e: dag-pb, dag-cbor, etc).
+- The DAG API (previously Object) comes from the IPLD Resolver, it can support several IPLD Formats (i.e: dag-pb, dag-cbor, etc).
 - The Files API uses `ipfs-unixfs-engine` to import and export files to and from IPFS.
-- Swarm, the component that offers a network API, uses libp2p to dial and listen for connections, use the DHT, discovery mechanisms and more. libp2p-ipfs-nodejs is used in case of running in Node.js and libp2p-ipfs-browser is used in the case of the Browser.
+- Swarm, the component that offers a network API, uses libp2p to dial and listen for connections, to use the DHT, for discovery mechanisms, and more. libp2p-ipfs-nodejs is used when running in Node.js and libp2p-ipfs-browser is used when running in the browser.
 
 ## Contribute
 
 IPFS implementation in JavaScript is a work in progress. As such, there's a few things you can do right now to help out:
 
   * Go through the modules below and **check out existing issues**. This would be especially useful for modules in active development. Some knowledge of IPFS may be required, as well as the infrastructure behind it - for instance, you may need to read up on p2p and more complex operations like muxing to be able to help technically.
-  * **Perform code reviews**. More eyes will help a) speed the project along b) ensure quality and c) reduce possible future bugs.
-  * Take a look at go-ipfs and some of the planning repositories or issues: for instance, the libp2p spec [here](https://github.com/ipfs/specs/pull/19). Contributions here that would be most helpful are **top-level comments** about how it should look based on our understanding. Again, the more eyes the better.
+  * **Perform code reviews**. More eyes will help (a) speed the project along, (b) ensure quality, and (c) reduce possible future bugs.
+  * Take a look at go-ipfs and some of the planning repositories or issues: for instance, the [libp2p spec](https://github.com/ipfs/specs/pull/19). Contributions here that would be most helpful are **top-level comments** about how it should look based on our understanding. Again, the more eyes the better.
   * **Add tests**. There can never be enough tests.
   * **Contribute to the [FAQ repository](https://github.com/ipfs/faq/issues)** with any questions you have about IPFS or any of the relevant technology. A good example would be asking, 'What is a merkledag tree?'. If you don't know a term, odds are, someone else doesn't either. Eventually, we should have a good understanding of where we need to improve communications and teaching together to make IPFS and IPN better.
 
