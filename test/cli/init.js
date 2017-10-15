@@ -40,7 +40,7 @@ describe('init', () => {
       let command = out.substring(out.indexOf('files cat'), out.length - 2 /* omit the newline char */)
       return ipfs(command)
     }).then((out) => expect(out).to.equal(readme))
-  }).timeout(6000)
+  }).timeout(8000)
 
   it('bits', () => {
     return ipfs('init --bits 1024').then(() => {
