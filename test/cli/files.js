@@ -238,6 +238,14 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
+  it('cat non-existent file', () => {
+    return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB/dummy')
+      .then(() => expect.fail(0, 1, 'Should have thrown an error'))
+      .catch((err) => {
+        expect(err).to.exist()
+      })
+  })
+
   it('get', () => {
     return ipfs('files get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
       .then((out) => {

@@ -80,7 +80,7 @@ module.exports = function files (self) {
 
     cat: promisify((ipfsPath, callback) => {
       if (typeof ipfsPath === 'function') {
-        return callback(new Error('You must supply a ipfsPath'))
+        return callback(new Error('You must supply an ipfsPath'))
       }
 
       pull(
@@ -89,6 +89,7 @@ module.exports = function files (self) {
           if (err) {
             return callback(err)
           }
+          if (!files || !files.length) return callback(new Error('No such file'))
           callback(null, toStream.source(files[files.length - 1].content))
         })
       )
