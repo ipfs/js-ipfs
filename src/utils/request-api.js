@@ -152,7 +152,8 @@ function requestAPI (config, options, callback) {
     path: `${config['api-path']}${options.path}?${qs}`,
     port: config.port,
     method: method,
-    headers: headers
+    headers: headers,
+    protocol: `${config.protocol}:`
   }, onRes(options.buffer, callback))
 
   req.on('error', (err) => {
