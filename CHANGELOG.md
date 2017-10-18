@@ -1,3 +1,19 @@
+<a name="14.3.6"></a>
+## [14.3.6](https://github.com/ipfs/js-ipfs-api/compare/v14.3.5...v14.3.6) (2017-10-18)
+
+
+### Bug Fixes
+
+* pass the config protocol to http requests ([#609](https://github.com/ipfs/js-ipfs-api/issues/609)) ([38d7289](https://github.com/ipfs/js-ipfs-api/commit/38d7289))
+
+
+### Features
+
+* avoid doing multiple RPC requests for files.add, fixes [#522](https://github.com/ipfs/js-ipfs-api/issues/522) ([#595](https://github.com/ipfs/js-ipfs-api/issues/595)) ([0ea5f57](https://github.com/ipfs/js-ipfs-api/commit/0ea5f57))
+* report progress on ipfs add  ([e2d894c](https://github.com/ipfs/js-ipfs-api/commit/e2d894c))
+
+
+
 <a name="14.3.5"></a>
 ## [14.3.5](https://github.com/ipfs/js-ipfs-api/compare/v14.3.4...v14.3.5) (2017-09-08)
 
