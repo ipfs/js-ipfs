@@ -257,7 +257,8 @@ exports.add = {
       pull.map((file) => {
         return {
           Name: file.path ? file.path : file.hash,
-          Hash: file.hash
+          Hash: file.hash,
+          Size: file.size
         }
       }),
       pull.collect((err, files) => {
