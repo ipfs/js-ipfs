@@ -2,7 +2,7 @@
 
 const isNode = require('detect-node')
 const promisify = require('promisify-es6')
-const DAGNodeStream = require('../utils/dagnode-stream')
+const converter = require('../utils/converter')
 const moduleConfig = require('../utils/module-config')
 
 module.exports = (arg) => {
@@ -31,14 +31,7 @@ module.exports = (arg) => {
       return callback(new Error('"path" must be a string'))
     }
 
-    const request = {
-      path: 'add',
-      qs: opts,
-      files: path
-    }
-
-    // Transform the response stream to DAGNode values
-    const transform = (res, callback) => DAGNodeStream.streamToValue(send, res, callback)
-    send.andTransform(request, transform, callback)
+    const request = { path: 'add', files: path, qs: opts }
+    send.andTransform(request, converter, callback)
   })
 }

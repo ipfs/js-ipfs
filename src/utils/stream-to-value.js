@@ -6,9 +6,9 @@ const concat = require('concat-stream')
 /*
   Concatenate a stream to a single value.
 */
-function streamToValue (res, callback) {
+function streamToValue (response, callback) {
   pump(
-    res,
+    response,
     concat((data) => callback(null, data)),
     (err) => {
       if (err) {

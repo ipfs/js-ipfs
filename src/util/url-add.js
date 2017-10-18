@@ -4,7 +4,7 @@ const promisify = require('promisify-es6')
 const once = require('once')
 const parseUrl = require('url').parse
 const request = require('../utils/request')
-const DAGNodeStream = require('../utils/dagnode-stream')
+const converter = require('../utils/converter')
 const moduleConfig = require('../utils/module-config')
 
 module.exports = (arg) => {
@@ -25,11 +25,11 @@ module.exports = (arg) => {
       opts = {}
     }
 
+    callback = once(callback)
+
     if (!validUrl(url)) {
       return callback(new Error('"url" param must be an http(s) url'))
     }
-
-    callback = once(callback)
 
     requestWithRedirect(url, opts, send, callback)
   })
@@ -52,14 +52,9 @@ const requestWithRedirect = (url, opts, send, callback) => {
       }
       requestWithRedirect(redirection, opts, send, callback)
     } else {
-      const params = {
-        path: 'add',
-        qs: opts,
-        files: res
-      }
-      // Transform the response stream to DAGNode values
-      const transform = (res, callback) => DAGNodeStream.streamToValue(send, res, callback)
-      send.andTransform(params, transform, callback)
+      const request = { path: 'add', files: res, qs: opts }
+
+      send.andTransform(request, converter, callback)
     }
   }).end()
 }
