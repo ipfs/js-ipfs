@@ -23,7 +23,11 @@ Where `data` may be
 
 If no `content` is passed, then the path is treated as an empty directory
 
-`options` is an optional object argument containing the [DAG importer options](https://github.com/ipfs/js-ipfs-unixfs-engine#importer-api).
+`options` is an optional object argument that might include the following keys:
+
+- cid-version (integer, default 0): the CID version to use when storing the data (storage keys are based on the CID, including it's version)
+- progress (function): a function that will be called with the byte length of chunks as a file is added to ipfs.
+- hashAlg || hash (string): multihash hashing algorithm to use
 
 `callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res` will be an array of:
 

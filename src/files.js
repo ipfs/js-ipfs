@@ -123,6 +123,28 @@ module.exports = (common) => {
           })
         })
 
+        it('BIG buffer with progress', (done) => {
+          const expectedMultihash = 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq'
+
+          let progCount = 0
+          let progress = 0
+          const handler = (p) => {
+            progCount += 1
+            progress += p
+          }
+
+          ipfs.files.add(bigFile, {progress: handler}, (err, res) => {
+            expect(err).to.not.exist()
+            expect(res).to.have.length(1)
+            const file = res[0]
+            expect(file.hash).to.equal(expectedMultihash)
+            expect(file.path).to.equal(file.hash)
+            expect(progCount).to.equal(58)
+            expect(progress).to.equal(bigFile.byteLength)
+            done()
+          })
+        })
+
         it('add a nested dir as array', (done) => {
           // Needs https://github.com/ipfs/js-ipfs-api/issues/339 to be fixed
           // for js-ipfs-api + go-ipfs
@@ -156,6 +178,56 @@ module.exports = (common) => {
 
             expect(root.path).to.equal('test-folder')
             expect(root.hash).to.equal(expectedRootMultihash)
+            done()
+          })
+        })
+
+        it('add a nested dir as array with progress', (done) => {
+          // Needs https://github.com/ipfs/js-ipfs-api/issues/339 to be fixed
+          // for js-ipfs-api + go-ipfs
+          if (!isNode) { return done() }
+
+          const content = (name) => ({
+            path: `test-folder/${name}`,
+            content: directoryContent[name]
+          })
+
+          const emptyDir = (name) => ({
+            path: `test-folder/${name}`
+          })
+
+          const expectedRootMultihash = 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'
+
+          const dirs = [
+            content('pp.txt'),
+            content('holmes.txt'),
+            content('jungle.txt'),
+            content('alice.txt'),
+            emptyDir('empty-folder'),
+            content('files/hello.txt'),
+            content('files/ipfs.txt'),
+            emptyDir('files/empty')
+          ]
+
+          const total = dirs.reduce((i, entry) => {
+            return i + (entry.content ? entry.content.length : 0)
+          }, 0)
+
+          let progCount = 0
+          let progress = 0
+          const handler = (p) => {
+            progCount += 1
+            progress += p
+          }
+
+          ipfs.files.add(dirs, {progress: handler}, (err, res) => {
+            expect(err).to.not.exist()
+            const root = res[res.length - 1]
+
+            expect(root.path).to.equal('test-folder')
+            expect(root.hash).to.equal(expectedRootMultihash)
+            expect(progCount).to.equal(8)
+            expect(progress).to.equal(total)
             done()
           })
         })
