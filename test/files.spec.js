@@ -106,6 +106,96 @@ describe('.files (the MFS API part)', function () {
       })
     })
 
+    it('files.add file with progress option', (done) => {
+      let progress
+      let progressCount = 0
+
+      const progressHandler = (p) => {
+        progressCount += 1
+        progress = p
+      }
+
+      ipfs.files.add(testfile, { progress: progressHandler }, (err, res) => {
+        expect(err).to.not.exist()
+
+        expect(res).to.have.length(1)
+        expect(progress).to.be.equal(testfile.byteLength)
+        expect(progressCount).to.be.equal(1)
+
+        done()
+      })
+    })
+
+    it('files.add big file with progress option', (done) => {
+      let progress = 0
+      let progressCount = 0
+
+      const progressHandler = (p) => {
+        progressCount += 1
+        progress = p
+      }
+
+      // TODO: needs to be using a big file
+      ipfs.files.add(testfile, { progress: progressHandler }, (err, res) => {
+        expect(err).to.not.exist()
+
+        expect(res).to.have.length(1)
+        expect(progress).to.be.equal(testfile.byteLength)
+        expect(progressCount).to.be.equal(1)
+
+        done()
+      })
+    })
+
+    it('files.add directory with progress option', (done) => {
+      let progress = 0
+      let progressCount = 0
+
+      const progressHandler = (p) => {
+        progressCount += 1
+        progress = p
+      }
+
+      // TODO: needs to be using a directory
+      ipfs.files.add(testfile, { progress: progressHandler }, (err, res) => {
+        expect(err).to.not.exist()
+
+        expect(res).to.have.length(1)
+        expect(progress).to.be.equal(testfile.byteLength)
+        expect(progressCount).to.be.equal(1)
+
+        done()
+      })
+    })
+
+    it('files.add without progress options', (done) => {
+      ipfs.files.add(testfile, (err, res) => {
+        expect(err).to.not.exist()
+
+        expect(res).to.have.length(1)
+        done()
+      })
+    })
+
+    HASH_ALGS.forEach((name) => {
+      it(`files.add with hash=${name} and raw-leaves=false`, (done) => {
+        const content = String(Math.random() + Date.now())
+        const file = {
+          path: content + '.txt',
+          content: Buffer.from(content)
+        }
+        const options = { hash: name, 'raw-leaves': false }
+
+        ipfs.files.add([file], options, (err, res) => {
+          if (err) return done(err)
+          expect(res).to.have.length(1)
+          const cid = new CID(res[0].hash)
+          expect(mh.decode(cid.multihash).name).to.equal(name)
+          done()
+        })
+      })
+    })
+
     it('files.mkdir', (done) => {
       ipfs.files.mkdir('/test-folder', done)
     })

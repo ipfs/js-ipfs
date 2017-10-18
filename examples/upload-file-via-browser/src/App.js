@@ -29,7 +29,7 @@ class App extends React.Component {
   saveToIpfs (reader) {
     let ipfsId
     const buffer = Buffer.from(reader.result)
-    this.ipfsApi.add(buffer)
+    this.ipfsApi.add(buffer, { progress: (prog) => console.log(`received: ${prog}`) })
       .then((response) => {
         console.log(response)
         ipfsId = response[0].hash
