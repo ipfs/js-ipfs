@@ -1,3 +1,13 @@
+<a name="0.32.1"></a>
+## [0.32.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.32.0...v0.32.1) (2017-10-18)
+
+
+### Bug Fixes
+
+* make tests consistent across js-ipfs/go-ipfs ([#158](https://github.com/ipfs/interface-ipfs-core/issues/158)) ([a5a4c37](https://github.com/ipfs/interface-ipfs-core/commit/a5a4c37))
+
+
+
 <a name="0.32.0"></a>
 # [0.32.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.31.19...v0.32.0) (2017-10-18)
 
