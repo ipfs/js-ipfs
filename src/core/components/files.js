@@ -54,7 +54,7 @@ module.exports = function files (self) {
     add: promisify((data, options, callback) => {
       if (typeof options === 'function') {
         callback = options
-        options = undefined
+        options = {}
       } else if (!callback || typeof callback !== 'function') {
         callback = noop
       }
@@ -65,6 +65,14 @@ module.exports = function files (self) {
         return callback(new Error('Invalid arguments, data must be an object, Buffer or readable stream'))
       }
 
+      let total = 0
+      let prog = options.progress || (() => {})
+      const progress = (bytes) => {
+        total += bytes
+        prog(total)
+      }
+
+      options.progress = progress
       pull(
         pull.values(normalizeContent(data)),
         importer(self._ipldResolver, options),
