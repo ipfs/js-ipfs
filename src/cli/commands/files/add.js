@@ -203,8 +203,6 @@ module.exports = {
     const ipfs = argv.ipfs
 
     let list = []
-    let currentBytes = 0
-
     waterfall([
       (next) => glob(path.join(inPath, '/**/*'), next),
       (globResult, next) => {
@@ -216,8 +214,7 @@ module.exports = {
         if (argv.progress) {
           const bar = createProgressBar(totalBytes)
           options.progress = function (byteLength) {
-            currentBytes += byteLength
-            bar.tick(byteLength, {progress: byteman(currentBytes, 2, 'MB')})
+            bar.update(byteLength / totalBytes, {progress: byteman(byteLength, 2, 'MB')})
           }
         }
 

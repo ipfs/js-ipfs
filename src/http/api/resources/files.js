@@ -209,10 +209,8 @@ exports.add = {
     })
 
     const replyStream = pushable()
-    let total = 0
     const progressHandler = (bytes) => {
-      total += bytes
-      replyStream.push({ Bytes: total })
+      replyStream.push({ Bytes: bytes })
     }
 
     const options = {

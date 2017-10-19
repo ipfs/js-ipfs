@@ -20,6 +20,14 @@ module.exports = function files (self) {
       shardSplitThreshold: self._options.EXPERIMENTAL.sharding ? 1000 : Infinity
     }, options)
 
+    let total = 0
+    let prog = opts.progress || (() => {})
+    const progress = (bytes) => {
+      total += bytes
+      prog(total)
+    }
+
+    opts.progress = progress
     return pull(
       pull.map(normalizeContent),
       pull.flatten(),
