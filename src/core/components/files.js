@@ -20,6 +20,14 @@ module.exports = function files (self) {
       shardSplitThreshold: self._options.EXPERIMENTAL.sharding ? 1000 : Infinity
     }, options)
 
+    let total = 0
+    let prog = opts.progress || (() => {})
+    const progress = (bytes) => {
+      total += bytes
+      prog(total)
+    }
+
+    opts.progress = progress
     return pull(
       pull.map(normalizeContent),
       pull.flatten(),
@@ -65,18 +73,9 @@ module.exports = function files (self) {
         return callback(new Error('Invalid arguments, data must be an object, Buffer or readable stream'))
       }
 
-      let total = 0
-      let prog = options.progress || (() => {})
-      const progress = (bytes) => {
-        total += bytes
-        prog(total)
-      }
-
-      options.progress = progress
       pull(
-        pull.values(normalizeContent(data)),
-        importer(self._ipldResolver, options),
-        pull.asyncMap(prepareFile.bind(null, self, options)),
+        pull.values([data]),
+        createAddPullStream(options),
         sort((a, b) => {
           if (a.path < b.path) return 1
           if (a.path > b.path) return -1
