@@ -315,7 +315,7 @@ Every IPFS instance also exposes the libp2p API at `ipfs.libp2p`. The formal int
 
 ##### [object](https://github.com/ipfs/interface-ipfs-core/tree/master/API/object)
 
-> Consider using the [dag API](#dag) API instead.
+> Consider using the [dag API](#dag) instead.
 
 - [`ipfs.object.new([template][, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/object#objectnew)
 - [`ipfs.object.put(obj, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/API/object#objectput)
