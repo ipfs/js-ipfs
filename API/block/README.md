@@ -75,7 +75,7 @@ If no `callback` is passed, a promise is returned.
 // Defaults
 const buf = new Buffer('a serialized object')
 
-ipfs.block.put(blob, (err, block) => {
+ipfs.block.put(buf, (err, block) => {
   if (err) { throw err }
   // Block has been stored
 
