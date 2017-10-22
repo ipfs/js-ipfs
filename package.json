@@ -65,7 +65,7 @@
     "dirty-chai": "^2.0.1",
     "eslint-plugin-react": "^7.4.0",
     "gulp": "^3.9.1",
-    "interface-ipfs-core": "~0.32.1",
+    "interface-ipfs-core": "~0.33.0",
     "hapi": "^16.6.2",
     "ipfsd-ctl": "~0.24.0",
     "pre-commit": "^1.2.2",

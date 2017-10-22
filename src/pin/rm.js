@@ -16,7 +16,7 @@ module.exports = (send) => {
       if (err) {
         return callback(err)
       }
-      callback(null, res.Pins)
+      callback(null, res.Pins.map((hash) => ({ hash: hash })))
     })
   })
 }
