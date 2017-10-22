@@ -1,3 +1,13 @@
+<a name="15.0.0"></a>
+# [15.0.0](https://github.com/ipfs/js-ipfs-api/compare/v14.3.7...v15.0.0) (2017-10-22)
+
+
+### Features
+
+* update pin API to match interface-ipfs-core ([9102643](https://github.com/ipfs/js-ipfs-api/commit/9102643))
+
+
+
 <a name="14.3.7"></a>
 ## [14.3.7](https://github.com/ipfs/js-ipfs-api/compare/v14.3.6...v14.3.7) (2017-10-18)
 
