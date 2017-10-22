@@ -106,6 +106,14 @@ describe('files', () => runOnAndOff((thing) => {
     ipfs = thing.ipfs
   })
 
+  it('add with progress', () => {
+    return ipfs('files add -p src/init-files/init-docs/readme')
+      .then((out) => {
+        expect(out)
+          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
+      })
+  })
+
   it('add', () => {
     return ipfs('files add src/init-files/init-docs/readme')
       .then((out) => {
@@ -235,6 +243,14 @@ describe('files', () => runOnAndOff((thing) => {
     return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
       .then((out) => {
         expect(out).to.eql(readme)
+      })
+  })
+
+  it('cat non-existent file', () => {
+    return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB/dummy')
+      .then(() => expect.fail(0, 1, 'Should have thrown an error'))
+      .catch((err) => {
+        expect(err).to.exist()
       })
   })
 

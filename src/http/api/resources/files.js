@@ -9,9 +9,10 @@ log.error = debug('jsipfs:http-api:files:error')
 const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
 const pushable = require('pull-pushable')
-const EOL = require('os').EOL
 const toStream = require('pull-stream-to-stream')
+const abortable = require('pull-abortable')
 const Joi = require('joi')
+const ndjson = require('pull-ndjson')
 
 exports = module.exports
 
@@ -104,7 +105,7 @@ exports.get = {
       pull(
         stream,
         pull.asyncMap((file, cb) => {
-          const header = {name: file.path}
+          const header = { name: file.path }
           if (!file.content) {
             header.type = 'directory'
             pack.entry(header)
@@ -207,9 +208,45 @@ exports.add = {
       fileAdder.end()
     })
 
+    const replyStream = pushable()
+    const progressHandler = (bytes) => {
+      replyStream.push({ Bytes: bytes })
+    }
+
     const options = {
       'cid-version': request.query['cid-version'],
-      'raw-leaves': request.query['raw-leaves']
+      'raw-leaves': request.query['raw-leaves'],
+      progress: request.query['progress'] ? progressHandler : null
+    }
+
+    const aborter = abortable()
+    const stream = toStream.source(pull(
+      replyStream,
+      aborter,
+      ndjson.serialize()
+    ))
+
+    // const stream = toStream.source(replyStream.source)
+    // hapi is not very clever and throws if no
+    // - _read method
+    // - _readableState object
+    // are there :(
+    if (!stream._read) {
+      stream._read = () => {}
+      stream._readableState = {}
+      stream.unpipe = () => {}
+    }
+    reply(stream)
+      .header('x-chunked-output', '1')
+      .header('content-type', 'application/json')
+      .header('Trailer', 'X-Stream-Error')
+
+    function _writeErr (msg, code) {
+      const err = JSON.stringify({ Message: msg, Code: code })
+      request.raw.res.addTrailers({
+        'X-Stream-Error': err
+      })
+      return aborter.abort()
     }
 
     pull(
@@ -218,28 +255,21 @@ exports.add = {
       pull.map((file) => {
         return {
           Name: file.path ? file.path : file.hash,
-          Hash: file.hash
+          Hash: file.hash,
+          Size: file.size
         }
       }),
-      pull.map((file) => JSON.stringify(file) + EOL),
       pull.collect((err, files) => {
         if (err) {
-          return reply({
-            Message: err,
-            Code: 0
-          }).code(500)
+          return _writeErr(err, 0)
         }
 
         if (files.length === 0 && filesParsed) {
-          return reply({
-            Message: 'Failed to add files.',
-            Code: 0
-          }).code(500)
+          return _writeErr('Failed to add files.', 0)
         }
 
-        reply(files.join('\n'))
-          .header('x-chunked-output', '1')
-          .header('content-type', 'application/json')
+        files.forEach((f) => replyStream.push(f))
+        replyStream.end()
       })
     )
   }

@@ -20,6 +20,14 @@ module.exports = function files (self) {
       shardSplitThreshold: self._options.EXPERIMENTAL.sharding ? 1000 : Infinity
     }, options)
 
+    let total = 0
+    let prog = opts.progress || (() => {})
+    const progress = (bytes) => {
+      total += bytes
+      prog(total)
+    }
+
+    opts.progress = progress
     return pull(
       pull.map(normalizeContent),
       pull.flatten(),
@@ -54,7 +62,7 @@ module.exports = function files (self) {
     add: promisify((data, options, callback) => {
       if (typeof options === 'function') {
         callback = options
-        options = undefined
+        options = {}
       } else if (!callback || typeof callback !== 'function') {
         callback = noop
       }
@@ -66,9 +74,8 @@ module.exports = function files (self) {
       }
 
       pull(
-        pull.values(normalizeContent(data)),
-        importer(self._ipldResolver, options),
-        pull.asyncMap(prepareFile.bind(null, self, options)),
+        pull.values([data]),
+        createAddPullStream(options),
         sort((a, b) => {
           if (a.path < b.path) return 1
           if (a.path > b.path) return -1
@@ -80,7 +87,7 @@ module.exports = function files (self) {
 
     cat: promisify((ipfsPath, callback) => {
       if (typeof ipfsPath === 'function') {
-        return callback(new Error('You must supply a ipfsPath'))
+        return callback(new Error('You must supply an ipfsPath'))
       }
 
       pull(
@@ -89,6 +96,7 @@ module.exports = function files (self) {
           if (err) {
             return callback(err)
           }
+          if (!files || !files.length) return callback(new Error('No such file'))
           callback(null, toStream.source(files[files.length - 1].content))
         })
       )

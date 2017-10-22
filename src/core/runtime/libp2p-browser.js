@@ -26,6 +26,14 @@ class Node extends libp2p {
       modules.discovery.push(r)
     }
 
+    if (options.modules && options.modules.transport) {
+      options.modules.transport.forEach((t) => modules.transport.push(t))
+    }
+
+    if (options.modules && options.modules.discovery) {
+      options.modules.discovery.forEach((d) => modules.discovery.push(d))
+    }
+
     super(modules, peerInfo, peerBook, options)
   }
 }
