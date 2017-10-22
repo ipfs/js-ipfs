@@ -47,7 +47,7 @@
     "pull-stream": "^3.6.1"
   },
   "devDependencies": {
-    "aegir": "^12.0.8",
+    "aegir": "^12.1.0",
     "dirty-chai": "^2.0.1"
   },
   "contributors": [
