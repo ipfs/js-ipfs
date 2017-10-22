@@ -2,7 +2,6 @@
 
 const React = require('react')
 const Buffer = require('safe-buffer').Buffer
-// const IPFS = require('../../../../src/core') // replace this by line below
 const IPFS = require('ipfs')
 
 const stringToUse = 'hello world from webpacked IPFS'
