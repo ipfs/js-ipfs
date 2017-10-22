@@ -20,6 +20,6 @@
     "webpack-dev-server": "^2.4.5"
   },
   "dependencies": {
-    "safe-buffer": "^5.0.1"
+    "ipfs": "file:../../"
   }
 }
