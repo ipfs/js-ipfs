@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "ipfs": "file:../../",
-    "ipfs-block-service": "^0.12.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "safe-buffer": "^5.0.1"
