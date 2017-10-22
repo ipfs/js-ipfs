@@ -37,7 +37,7 @@
     "is-stream": "^1.1.0",
     "lru-cache": "^4.1.1",
     "multiaddr": "^3.0.1",
-    "multihashes": "~0.4.10",
+    "multihashes": "~0.4.12",
     "multipart-stream": "^2.0.1",
     "ndjson": "^1.5.0",
     "once": "^1.4.0",
@@ -60,7 +60,7 @@
     "url": "https://github.com/ipfs/js-ipfs-api"
   },
   "devDependencies": {
-    "aegir": "^12.0.8",
+    "aegir": "^12.1.0",
     "chai": "^4.1.2",
     "dirty-chai": "^2.0.1",
     "eslint-plugin-react": "^7.4.0",
@@ -69,8 +69,8 @@
     "hapi": "^16.6.2",
     "ipfsd-ctl": "~0.24.0",
     "pre-commit": "^1.2.2",
-    "socket.io": "^2.0.3",
-    "socket.io-client": "^2.0.3",
+    "socket.io": "^2.0.4",
+    "socket.io-client": "^2.0.4",
     "stream-equal": "^1.1.0"
   },
   "pre-commit": [
