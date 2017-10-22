@@ -41,8 +41,8 @@
     "ipld-dag-cbor": "^0.11.1",
     "ipld-dag-pb": "^0.11.2",
     "multiaddr": "^3.0.1",
-    "multihashes": "^0.4.10",
-    "multihashing-async": "^0.4.6",
+    "multihashes": "^0.4.12",
+    "multihashing-async": "^0.4.7",
     "peer-id": "^0.10.2",
     "pull-stream": "^3.6.1"
   },
