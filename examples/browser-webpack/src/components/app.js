@@ -1,7 +1,6 @@
 'use strict'
 
 const React = require('react')
-const Buffer = require('safe-buffer').Buffer
 const IPFS = require('ipfs')
 
 const stringToUse = 'hello world from webpacked IPFS'
