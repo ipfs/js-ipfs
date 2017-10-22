@@ -9,7 +9,8 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const loadFixture = require('aegir/fixtures')
 
-const testfile = loadFixture(__dirname, '../test/fixtures/testfile.txt', 'interface-ipfs-core')
+const testFile = loadFixture(__dirname, '../test/fixtures/testfile.txt', 'interface-ipfs-core')
+const testHash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
 
 module.exports = (common) => {
   describe('.pin', function () {
@@ -28,14 +29,11 @@ module.exports = (common) => {
       })
 
       function populate () {
-        const expectedMultihash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
-
-        ipfs.files.add(testfile, (err, res) => {
+        ipfs.files.add(testFile, (err, res) => {
           expect(err).to.not.exist()
-
           expect(res).to.have.length(1)
-          expect(res[0].hash).to.equal(expectedMultihash)
-          expect(res[0].path).to.equal(expectedMultihash)
+          expect(res[0].hash).to.equal(testHash)
+          expect(res[0].path).to.equal(testHash)
           done()
         })
       }
@@ -47,26 +45,49 @@ module.exports = (common) => {
 
     describe('callback API', () => {
       // 1st, because ipfs.files.add pins automatically
-      it('.rm', (done) => {
-        const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
-
-        ipfs.pin.rm(hash, { recursive: true }, (err, pinset) => {
+      it('.ls type recursive', (done) => {
+        ipfs.pin.ls({ type: 'recursive' }, (err, pinset) => {
           expect(err).to.not.exist()
-          expect(pinset).to.exist()
+          expect(pinset).to.deep.include({
+            hash: testHash,
+            type: 'recursive'
+          })
+          done()
+        })
+      })
+
+      it.skip('.ls type indirect', (done) => {
+        ipfs.pin.ls({ type: 'indirect' }, (err, pinset) => {
+          expect(err).to.not.exist()
+          // because the pinned file has no links
+          expect(pinset).to.be.empty()
+          done()
+        })
+      })
+
+      it('.rm', (done) => {
+        ipfs.pin.rm(testHash, { recursive: true }, (err, pinset) => {
+          expect(err).to.not.exist()
+          expect(pinset).to.deep.equal([{
+            hash: testHash
+          }])
           ipfs.pin.ls({ type: 'direct' }, (err, pinset) => {
             expect(err).to.not.exist()
-            expect(pinset).to.be.empty()
+            expect(pinset).to.not.deep.include({
+              hash: testHash,
+              type: 'recursive'
+            })
             done()
           })
         })
       })
 
       it('.add', (done) => {
-        const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
-
-        ipfs.pin.add(hash, { recursive: false }, (err, pinset) => {
+        ipfs.pin.add(testHash, { recursive: false }, (err, pinset) => {
           expect(err).to.not.exist()
-          expect(pinset[0]).to.be.equal(hash)
+          expect(pinset).to.deep.equal([{
+            hash: testHash
+          }])
           done()
         })
       })
@@ -75,6 +96,10 @@ module.exports = (common) => {
         ipfs.pin.ls((err, pinset) => {
           expect(err).to.not.exist()
           expect(pinset).to.not.be.empty()
+          expect(pinset).to.deep.include({
+            hash: testHash,
+            type: 'direct'
+          })
           done()
         })
       })
@@ -82,33 +107,21 @@ module.exports = (common) => {
       it('.ls type direct', (done) => {
         ipfs.pin.ls({ type: 'direct' }, (err, pinset) => {
           expect(err).to.not.exist()
-          expect(pinset).to.not.be.empty()
-          done()
-        })
-      })
-
-      it('.ls type indirect', (done) => {
-        ipfs.pin.ls({ type: 'indirect' }, (err, pinset) => {
-          expect(err).to.not.exist()
-          expect(pinset).to.not.be.empty()
-          done()
-        })
-      })
-
-      it('.ls type recursive', (done) => {
-        ipfs.pin.ls({ type: 'recursive' }, (err, pinset) => {
-          expect(err).to.not.exist()
-          expect(pinset).to.not.be.empty()
+          expect(pinset).to.deep.include({
+            hash: testHash,
+            type: 'direct'
+          })
           done()
         })
       })
 
       it('.ls for a specific hash', (done) => {
-        const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
-
-        ipfs.pin.ls(hash, (err, pinset) => {
+        ipfs.pin.ls(testHash, (err, pinset) => {
           expect(err).to.not.exist()
-          expect(pinset).to.exist()
+          expect(pinset).to.deep.equal([{
+            hash: testHash,
+            type: 'direct'
+          }])
           done()
         })
       })
@@ -116,40 +129,46 @@ module.exports = (common) => {
 
     describe('promise API', () => {
       it('.add', () => {
-        const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
-
-        return ipfs.pin.add(hash, { recursive: false })
+        return ipfs.pin.add(testHash, { recursive: false })
           .then((pinset) => {
-            expect(pinset[0]).to.be.equal(hash)
+            expect(pinset).to.deep.equal([{
+              hash: testHash
+            }])
           })
       })
 
       it('.ls', () => {
         return ipfs.pin.ls()
           .then((pinset) => {
-            expect(pinset).to.exist()
-            expect(pinset).to.not.be.empty()
+            expect(pinset).to.deep.include({
+              hash: testHash,
+              type: 'direct'
+            })
           })
       })
 
       it('.ls hash', () => {
-        const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
-
-        return ipfs.pin.ls(hash)
+        return ipfs.pin.ls(testHash)
           .then((pinset) => {
-            expect(pinset).to.exist()
+            expect(pinset).to.deep.equal([{
+              hash: testHash,
+              type: 'direct'
+            }])
           })
       })
 
       it('.rm', () => {
-        const hash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
-
-        return ipfs.pin.rm(hash, { recursive: false })
+        return ipfs.pin.rm(testHash, { recursive: false })
           .then((pinset) => {
+            expect(pinset).to.deep.equal([{
+              hash: testHash
+            }])
             return ipfs.pin.ls({ type: 'direct' })
           })
           .then((pinset) => {
-            expect(pinset).to.be.empty()
+            expect(pinset).to.not.deep.include({
+              hash: testHash
+            })
           })
       })
     })
