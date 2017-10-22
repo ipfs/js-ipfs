@@ -81,6 +81,11 @@ module.exports = function files (self) {
           if (a.path > b.path) return -1
           return 0
         }),
+        pull.asyncMap((file, cb) => {
+          self.pin.add(file.hash, (err) => {
+            cb(err, file)
+          })
+        }),
         pull.collect(callback)
       )
     }),
