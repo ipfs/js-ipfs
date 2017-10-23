@@ -148,11 +148,11 @@ function errOrLog(err, result) {
   if (err) {
     console.error('error: ' + err)
   } else {
-    console.log(result.value)
+    console.log(result)
   }
 }
 
-ipfs.dag.tree('zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5/a', errOrLog)
+ipfs.dag.tree('zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5', errOrLog)
 // Logs:
 // a
 // b
