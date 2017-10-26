@@ -2,14 +2,14 @@
 
 ## Setup
 
-You should have [node.js], [npm] and [gulp] installed.
+You should have [node.js] and [npm] installed.
 
 ## Linting
 
 Linting is done using [eslint] and the rules are based on [standard].
 
 ```bash
-$ gulp lint
+$ npm run lint
 ```
 
 ## Tests
@@ -17,19 +17,19 @@ $ gulp lint
 Tests in node
 
 ```bash
-$ gulp test:node
+$ npm run test:node
 ```
 
 Tests in the browser
 
 ```bash
-$ gulp test:browser
+$ npm run test:browser
 ```
 
 ## Building browser version
 
 ```bash
-$ gulp build
+$ npm run build
 ```
 
 ## Releases
@@ -45,15 +45,14 @@ The `release` task will
 
 ```bash
 # Major release
-$ gulp release --major
+$ npm run release-major
 # Minor relase
-$ gulp release --minor
+$ npm run release-minor
 # Patch release
-$ gulp release
+$ npm run release
 ```
 
 [node.js]: https://nodejs.org/
 [npm]: http://npmjs.org/
-[gulp]: http://gulpjs.com/
 [eslint]: http://eslint.org/
 [standard]: https://github.com/feross/standard
