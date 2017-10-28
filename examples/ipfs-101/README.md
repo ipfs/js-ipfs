@@ -36,11 +36,11 @@ Running the code above gets you:
 IPFS Version: 0.25.0
 ```
 
-Now lets make it more interesting and add a file to IPFS. We can do it by adding another async call to the series that uses the `node.files.add` call. You can learn about IPFS API for files at [interface-ipfs-core](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files).
+Now lets make it more interesting and add a file to IPFS. We can do it by adding another async call to the series that uses the `node.files.add` call. You can learn about IPFS API for files at [interface-ipfs-core](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md).
 
 ```JavaScript
 // Create the File to add, a file consists of a path + content. More details on
-// https://github.com/ipfs/interface-ipfs-core/tree/master/API/files
+// https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md
 (cb) => node.files.add({
   path: 'hello.txt',
   content: Buffer.from('Hello World')
