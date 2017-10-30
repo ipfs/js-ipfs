@@ -307,12 +307,13 @@ ipfs.util.addFromFs('path/to/a/folder', { recursive: true , ignore: ['subfolder/
 `result` is an array of objects describing the files that were added, such as:
 
 ```
-[{
-  path: 'test-folder',
-  hash: 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6',
-  size: 2278
-},
-// ...
+[
+  {
+    path: 'test-folder',
+    hash: 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6',
+    size: 2278
+  },
+  // ...
 ]
 ```
 
@@ -351,11 +352,11 @@ If you do not pass in a callback all API functions will return a `Promise`. For 
 
 ```js
 ipfs.id()
-  .then(function (id) {
+  .then((id) => {
     console.log('my id is: ', id)
   })
-  .catch(function(err) {
-  	console.log('Fail: ', err)
+  .catch((err) => {
+    console.log('Fail: ', err)
   })
 ```
 
