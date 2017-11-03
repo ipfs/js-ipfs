@@ -9,7 +9,7 @@ module.exports = function pubsub (self) {
   return {
     subscribe: (topic, options, handler, callback) => {
       if (!self.isOnline()) {
-        throw OFFLINE_ERROR
+        throw new Error(OFFLINE_ERROR)
       }
 
       if (typeof options === 'function') {
@@ -44,7 +44,7 @@ module.exports = function pubsub (self) {
 
     publish: promisify((topic, data, callback) => {
       if (!self.isOnline()) {
-        return setImmediate(() => callback(OFFLINE_ERROR))
+        return setImmediate(() => callback(new Error(OFFLINE_ERROR)))
       }
 
       if (!Buffer.isBuffer(data)) {
@@ -57,7 +57,7 @@ module.exports = function pubsub (self) {
 
     ls: promisify((callback) => {
       if (!self.isOnline()) {
-        return setImmediate(() => callback(OFFLINE_ERROR))
+        return setImmediate(() => callback(new Error(OFFLINE_ERROR)))
       }
 
       const subscriptions = Array.from(
@@ -69,7 +69,7 @@ module.exports = function pubsub (self) {
 
     peers: promisify((topic, callback) => {
       if (!self.isOnline()) {
-        return setImmediate(() => callback(OFFLINE_ERROR))
+        return setImmediate(() => callback(new Error(OFFLINE_ERROR)))
       }
 
       const peers = Array.from(self._pubsub.peers.values())
