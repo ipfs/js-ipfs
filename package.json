@@ -6,6 +6,19 @@
     "jsipfs": "src/cli/bin.js"
   },
   "main": "src/core/index.js",
+  "pkg": {
+    "scripts": "src/cli/commands/**/*.js",
+    "assets": "natives/**"
+  },
+  "pkg-native": {
+    "scan": "all",
+    "mode": "bundle",
+    "modules": [
+      "node_modules/fs-ext",
+      "node_modules/sha3",
+      "node_modules/keccak/bindings.js"
+    ]
+  },
   "browser": {
     "./src/core/components/init-assets.js": false,
     "./src/core/runtime/config-nodejs.json": "./src/core/runtime/config-browser.json",
@@ -20,6 +33,7 @@
   },
   "scripts": {
     "lint": "aegir-lint",
+    "pkg": "pkg-natives",
     "coverage": "gulp coverage",
     "test": "gulp test --dom",
     "test:node": "npm run test:unit:node",
@@ -81,6 +95,7 @@
     "mocha": "^4.0.1",
     "ncp": "^2.0.0",
     "nexpect": "^0.5.0",
+    "pkg-natives": "^0.1.0",
     "pre-commit": "^1.2.2",
     "pretty-bytes": "^4.0.2",
     "qs": "^6.5.1",
