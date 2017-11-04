@@ -1,0 +1,28 @@
+version: "{build}"
+
+environment:
+  matrix:
+    - nodejs_version: "6"
+    - nodejs_version: "8"
+
+matrix:
+  fast_finish: true
+
+install:
+  # Install Node.js
+  - ps: Install-Product node $env:nodejs_version
+
+  # Upgrade npm
+  - npm install -g npm
+
+  # Output our current versions for debugging
+  - node --version
+  - npm --version
+
+  # Install our package dependencies
+  - npm install
+
+test_script:
+  - npm run test:node
+
+build: off
