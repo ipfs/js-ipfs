@@ -15,7 +15,7 @@ module.exports = function swarm (self) {
       }
 
       if (!self.isOnline()) {
-        return callback(OFFLINE_ERROR)
+        return callback(new Error(OFFLINE_ERROR))
       }
 
       const verbose = opts.v || opts.verbose
@@ -46,7 +46,7 @@ module.exports = function swarm (self) {
     // all the addrs we know
     addrs: promisify((callback) => {
       if (!self.isOnline()) {
-        return callback(OFFLINE_ERROR)
+        return callback(new Error(OFFLINE_ERROR))
       }
 
       const peers = values(self._peerInfoBook.getAll())
@@ -56,7 +56,7 @@ module.exports = function swarm (self) {
 
     localAddrs: promisify((callback) => {
       if (!self.isOnline()) {
-        return callback(OFFLINE_ERROR)
+        return callback(new Error(OFFLINE_ERROR))
       }
 
       callback(null, self._libp2pNode.peerInfo.multiaddrs.toArray())
@@ -64,7 +64,7 @@ module.exports = function swarm (self) {
 
     connect: promisify((maddr, callback) => {
       if (!self.isOnline()) {
-        return callback(OFFLINE_ERROR)
+        return callback(new Error(OFFLINE_ERROR))
       }
 
       if (typeof maddr === 'string') {
@@ -76,7 +76,7 @@ module.exports = function swarm (self) {
 
     disconnect: promisify((maddr, callback) => {
       if (!self.isOnline()) {
-        return callback(OFFLINE_ERROR)
+        return callback(new Error(OFFLINE_ERROR))
       }
 
       if (typeof maddr === 'string') {
