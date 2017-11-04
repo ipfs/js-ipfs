@@ -12,6 +12,9 @@
     "http-server": "^0.10.0"
   },
   "dependencies": {
+    "browserify-aes": "crypto-browserify/browserify-aes#master",
+    "pull-filereader": "^1.0.1",
+    "pull-stream": "^3.6.0",
     "stream-buffers": "^3.0.1"
   }
 }
