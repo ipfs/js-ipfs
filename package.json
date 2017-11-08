@@ -5,7 +5,7 @@
   "bin": {
     "jsipfs": "src/cli/bin.js"
   },
-  "main": "src/core/index.js",
+  "main": "lib/index.js",
   "browser": {
     "./src/core/components/init-assets.js": false,
     "./src/core/runtime/config-nodejs.json": "./src/core/runtime/config-browser.json",
@@ -19,6 +19,7 @@
     "npm": ">=3.0.0"
   },
   "scripts": {
+		"babel": "babel dist -d lib",
     "lint": "aegir lint",
     "build": "aegir build",
     "test": "aegir test -t node -t browser --no-cors",
