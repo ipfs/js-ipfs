@@ -64,7 +64,7 @@ module.exports = (http) => {
           url: '/api/v0/object/get?arg=QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
         }, (res) => {
           expect(res.statusCode).to.equal(200)
-          expect(res.result.Links).to.be.eql([])
+          expect(res.result.Links).to.eql([])
           expect(res.result.Data).to.be.empty()
           done()
         })
@@ -91,7 +91,7 @@ module.exports = (http) => {
 
       it('returns 500 if the node is invalid', (done) => {
         const form = new FormData()
-        const filePath = 'test/test-data/badnode.json'
+        const filePath = 'test/fixtures/test-data/badnode.json'
         form.append('file', fs.createReadStream(filePath))
         const headers = form.getHeaders()
 
@@ -110,7 +110,7 @@ module.exports = (http) => {
 
       it('updates value', (done) => {
         const form = new FormData()
-        const filePath = 'test/test-data/node.json'
+        const filePath = 'test/fixtures/test-data/node.json'
         form.append('data', fs.createReadStream(filePath))
         const headers = form.getHeaders()
 
@@ -291,7 +291,7 @@ module.exports = (http) => {
 
       it('returns 500 for request with invalid key', (done) => {
         const form = new FormData()
-        const filePath = 'test/test-data/badconfig'
+        const filePath = 'test/fixtures/test-data/badconfig'
         form.append('file', fs.createReadStream(filePath))
         const headers = form.getHeaders()
 
@@ -310,7 +310,7 @@ module.exports = (http) => {
 
       it('updates value', (done) => {
         const form = new FormData()
-        const filePath = 'test/test-data/badconfig'
+        const filePath = 'test/fixtures/test-data/badconfig'
         form.append('data', fs.createReadStream(filePath))
         const headers = form.getHeaders()
         const expectedResult = {
@@ -366,7 +366,7 @@ module.exports = (http) => {
 
       it('returns 500 for request with invalid key', (done) => {
         const form = new FormData()
-        const filePath = 'test/test-data/badconfig'
+        const filePath = 'test/fixtures/test-data/badconfig'
         form.append('file', fs.createReadStream(filePath))
         const headers = form.getHeaders()
 
@@ -385,7 +385,7 @@ module.exports = (http) => {
 
       it('updates value', (done) => {
         const form = new FormData()
-        const filePath = 'test/test-data/badconfig'
+        const filePath = 'test/fixtures/test-data/badconfig'
         form.append('data', fs.createReadStream(filePath))
         const headers = form.getHeaders()
         const expectedResult = {

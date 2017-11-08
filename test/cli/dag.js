@@ -13,7 +13,7 @@ describe('dag', () => runOnAndOff.off((thing) => {
 
   it('get', () => {
     // put test eth-block
-    return ipfs('block put --format eth-block --mhtype keccak-256 test/test-data/eth-block').then((out) => {
+    return ipfs('block put --format eth-block --mhtype keccak-256 test/fixtures/test-data/eth-block').then((out) => {
       expect(out).to.eql('z43AaGF23fmvRnDP56Ub9WcJCfzSfqtmzNCCvmz5eudT8dtdCDS\n')
       // lookup path on eth-block
       return ipfs('dag get z43AaGF23fmvRnDP56Ub9WcJCfzSfqtmzNCCvmz5eudT8dtdCDS/parentHash')
