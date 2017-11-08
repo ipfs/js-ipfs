@@ -11,8 +11,8 @@ const parallel = require('async/parallel')
 const waterfall = require('async/waterfall')
 const bl = require('bl')
 
-const GODaemon = require('./daemons/go')
-const JSDaemon = require('./daemons/js')
+const GODaemon = require('./spawner/go')
+const JSDaemon = require('./spawner/js')
 
 describe.skip('kad-dht', () => {
   describe('a JS node in the land of Go', () => {

@@ -19,8 +19,8 @@ const rmDir = promisify(rimraf)
 
 const tmpDir = require('./util').tmpDir
 
-const GoDaemon = require('./daemons/go')
-const JsDaemon = require('./daemons/js')
+const GoDaemon = require('./spawner/go')
+const JsDaemon = require('./spawner/js')
 
 const sizes = [
   1024,
