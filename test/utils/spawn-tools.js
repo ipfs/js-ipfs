@@ -6,10 +6,13 @@ const waterfall = require('async/waterfall')
 const series = require('async/series')
 
 const relayConfig = require('./ipfs-factory-daemon/default-config.json')
-const GoDaemon = require('../interop/daemons/go')
+const GoDaemon = require('../interop/spawner/go')
 const Factory = require('./ipfs-factory-daemon')
 
 const nodes = []
+const factory = new Factory()
+exports = module.exports
+
 exports.spawnGoNode = (addrs, hop, api, gateway, cb) => {
   if (typeof hop === 'function') {
     cb = hop
@@ -60,7 +63,6 @@ exports.spawnGoNode = (addrs, hop, api, gateway, cb) => {
   })
 }
 
-const factory = new Factory()
 exports.spawnJsNode = (addrs, hop, api, gateway, cb) => {
   let relayPeer
   let relayAddrs

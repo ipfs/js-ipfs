@@ -9,7 +9,7 @@ const stop = spawnTools.stopNodes
 /*
  * spawns a daemon with ports numbers starting in 10 and ending in `num`
  */
-function pre (done) {
+function start (done) {
   const base = '/ip4/127.0.0.1/tcp'
 
   parallel([
@@ -37,7 +37,7 @@ module.exports = {
     }]
   },
   hooks: {
-    pre: pre,
+    pre: start,
     post: stop
   }
 }
