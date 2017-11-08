@@ -15,20 +15,14 @@ module.exports = function addDefaultAssets (self, log, callback) {
 
   pull(
     pull.values([initDocsPath]),
-    pull.asyncMap((val, cb) => {
-      glob(path.join(val, '/**/*'), cb)
-    }),
+    pull.asyncMap((val, cb) => glob(path.join(val, '/**/*'), cb)),
     pull.flatten(),
     pull.map((element) => {
       const addPath = element.substring(index + 1)
-      if (fs.statSync(element).isDirectory()) {
-        return
-      }
 
-      return {
-        path: addPath,
-        content: file(element)
-      }
+      if (fs.statSync(element).isDirectory()) { return }
+
+      return { path: addPath, content: file(element) }
     }),
     // Filter out directories, which are undefined from above
     pull.filter(Boolean),

@@ -49,7 +49,7 @@ module.exports = function init (self) {
         // Generate peer identity keypair + transform to desired format + add to config.
         opts.log(`generating ${opts.bits}-bit RSA keypair...`, false)
         self.log('generating peer id: %s bits', opts.bits)
-        peerId.create({bits: opts.bits}, cb)
+        peerId.create({ bits: opts.bits }, cb)
       },
       (keys, cb) => {
         self.log('identity generated')
