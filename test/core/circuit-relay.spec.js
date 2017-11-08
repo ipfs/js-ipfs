@@ -5,6 +5,7 @@
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
+chai.use(dirtyChai)
 const parallel = require('async/parallel')
 const series = require('async/series')
 const waterfall = require('async/waterfall')
@@ -14,10 +15,8 @@ const PeerInfo = require('peer-info')
 const PeerId = require('peer-id')
 const multiaddr = require('multiaddr')
 const isNode = require('detect-node')
-const IPFSFactory = require('../utils/ipfs-factory-instance')
 const crypto = require('crypto')
-
-chai.use(dirtyChai)
+const IPFSFactory = require('../utils/ipfs-factory-instance')
 
 function peerInfoFromObj (obj, callback) {
   waterfall([
@@ -45,40 +44,36 @@ describe('circuit', function () {
   // let nodeId1
   let nodeId2
 
-  before(function (done) {
+  before((done) => {
     factory = new IPFSFactory()
 
+    const base = {
+      EXPERIMENTAL: {
+        Relay: {
+          Enabled: true
+        }
+      },
+      Addresses: {
+        Swarm: []
+      }
+    }
+
     parallel([
-      (cb) => factory.spawnNode(null, {
-        EXPERIMENTAL: {
-          Relay: {
-            Enabled: true
-          }
-        },
-        Addresses:
-          {
-            Swarm: [
-              (isNode ? `/ip4/127.0.0.1/tcp/0` : '')
-            ]
-          }
-      }, cb),
-      (cb) => factory.spawnNode(null, {
-        EXPERIMENTAL: {
-          Relay: {
-            Enabled: true
-          }
-        },
-        Addresses:
-          {
-            Swarm: [
-              (isNode ? `/ip4/127.0.0.1/tcp/0/ws` : '')
-            ]
-          }
-      }, cb)
-    ], (err, res1) => {
+      (cb) => factory.spawnNode(null, Object.assign(base, {
+        Addresses: {
+          Swarm: [ (isNode ? `/ip4/127.0.0.1/tcp/0` : '') ]
+        }
+      }), cb),
+      (cb) => factory.spawnNode(null, Object.assign(base, {
+        Addresses: {
+          Swarm: [ (isNode ? `/ip4/127.0.0.1/tcp/0/ws` : '') ]
+        }
+      }), cb)
+    ], (err, nodes) => {
       expect(err).to.not.exist()
-      node1 = res1[0]
-      node2 = res1[1]
+      node1 = nodes[0]
+      node2 = nodes[1]
+
       parallel([
         (cb) => jsRelay.id(cb),
         // (cb) => goRelay.id(cb),
@@ -105,38 +100,42 @@ describe('circuit', function () {
 
   after((done) => factory.dismantle(done))
 
-  // TODO: figure out why this test hangs randomly
-  it.skip('node1 <-> goRelay <-> node2', function (done) {
+  // TODO: 1) figure out why this test hangs randomly
+  // TODO: 2) move this test to the interop batch
+  it.skip('node1 <-> goRelay <-> node2', (done) => {
     const data = crypto.randomBytes(128)
+
     series([
       (cb) => node1.swarm.connect(goRelayId, cb),
-      (cb) => setTimeout(cb, 2000),
+      (cb) => setTimeout(cb, 1000),
       (cb) => node2.swarm.connect(goRelayId, cb),
-      (cb) => setTimeout(cb, 2000),
+      (cb) => setTimeout(cb, 1000),
       (cb) => node1.swarm.connect(nodeId2, cb)
     ], (err) => {
       expect(err).to.not.exist()
       waterfall([
         (cb) => node1.files.add(data, cb),
-        (res, cb) => node2.files.cat(res[0].hash, cb),
+        (filesAdded, cb) => node2.files.cat(filesAdded[0].hash, cb),
         (stream, cb) => stream.pipe(bl(cb))
       ], done)
     })
   })
 
-  it('node1 <-> jsRelay <-> node2', function (done) {
+  it('node1 <-> jsRelay <-> node2', (done) => {
     const data = crypto.randomBytes(128)
+
     series([
       (cb) => node1.swarm.connect(jsRelayId, cb),
-      (cb) => setTimeout(cb, 2000),
+      (cb) => setTimeout(cb, 1000),
       (cb) => node2.swarm.connect(jsRelayId, cb),
-      (cb) => setTimeout(cb, 2000),
+      (cb) => setTimeout(cb, 1000),
       (cb) => node1.swarm.connect(nodeId2, cb)
     ], (err) => {
       expect(err).to.not.exist()
+
       waterfall([
         (cb) => node1.files.add(data, cb),
-        (res, cb) => node2.files.cat(res[0].hash, cb),
+        (filesAdded, cb) => node2.files.cat(filesAdded[0].hash, cb),
         (stream, cb) => stream.pipe(bl(cb))
       ], done)
     })
