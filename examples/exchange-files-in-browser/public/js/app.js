@@ -33,7 +33,7 @@ function start () {
   if (!node) {
     updateView('starting', node)
 
-    node = new self.Ipfs({repo: 'ipfs-' + Math.random()})
+    node = new self.Ipfs({ repo: 'ipfs-' + Math.random() })
 
     node.on('start', () => {
       node.id().then((id) => {
@@ -55,7 +55,7 @@ function stop () {
  */
 
 function createFileBlob (data, multihash) {
-  const file = new window.Blob(data, {type: 'application/octet-binary'})
+  const file = new window.Blob(data, { type: 'application/octet-binary' })
   const fileUrl = window.URL.createObjectURL(file)
 
   const listItem = document.createElement('div')
@@ -151,7 +151,7 @@ function onDrop (event) {
 
           let myReadableStreamBuffer = new streamBuffers.ReadableStreamBuffer({
             // frequency: 10,   // in milliseconds.
-            chunkSize: 32048  // in bytes.
+            chunkSize: 32048 // in bytes.
           })
 
           node.files.createAddStream((err, stream) => {
@@ -200,8 +200,8 @@ function onDrop (event) {
         if (files && files.length) {
           $multihashInput.value = files[0].hash
           $filesStatus.innerHTML = files
-          .map((e) => `Added ${e.path} as ${e.hash}`)
-          .join('<br>')
+            .map((e) => `Added ${e.path} as ${e.hash}`)
+            .join('<br>')
         }
       })
       .catch(onError)

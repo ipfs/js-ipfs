@@ -74,7 +74,7 @@ module.exports = (ctl) => {
     // what to do with the .replace command
     describe('.replace', () => {
       it('returns error if the config is invalid', (done) => {
-        const filePath = 'test/test-data/badconfig'
+        const filePath = 'test/fixtures/test-data/badconfig'
 
         ctl.config.replace(filePath, (err) => {
           expect(err).to.exist()
@@ -83,7 +83,7 @@ module.exports = (ctl) => {
       })
 
       it('updates value', (done) => {
-        const filePath = 'test/test-data/otherconfig'
+        const filePath = 'test/fixtures/test-data/otherconfig'
         const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
         ctl.config.replace(filePath, (err) => {

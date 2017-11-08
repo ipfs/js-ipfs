@@ -50,7 +50,7 @@ module.exports = (ctl) => {
         ctl.object.get('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n', {enc: 'base58'}, asJson((err, res) => {
           expect(err).to.not.exist()
           expect(res.links).to.be.eql([])
-          expect(res.data).to.eql(new Buffer(''))
+          expect(res.data).to.eql(Buffer.from(''))
           done()
         }))
       })
@@ -58,7 +58,7 @@ module.exports = (ctl) => {
 
     describe('.put', () => {
       it('returns error if the node is invalid', (done) => {
-        const filePath = 'test/test-data/badnode.json'
+        const filePath = 'test/fixtures/test-data/badnode.json'
 
         ctl.object.put(filePath, {enc: 'json'}, (err) => {
           expect(err).to.exist()
@@ -67,9 +67,9 @@ module.exports = (ctl) => {
       })
 
       it('updates value', (done) => {
-        const filePath = fs.readFileSync('test/test-data/node.json')
+        const filePath = fs.readFileSync('test/fixtures/test-data/node.json')
         const expectedResult = {
-          data: new Buffer('another'),
+          data: Buffer.from('another'),
           multihash: 'QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm',
           links: [{
             name: 'some link',
@@ -179,7 +179,7 @@ module.exports = (ctl) => {
       })
 
       it('returns error for request without data', (done) => {
-        const filePath = 'test/test-data/badnode.json'
+        const filePath = 'test/fixtures/test-data/badnode.json'
 
         ctl.object.patch.appendData(null, filePath, (err) => {
           expect(err).to.exist()
@@ -189,7 +189,7 @@ module.exports = (ctl) => {
 
       it('updates value', (done) => {
         const key = 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
-        const filePath = 'test/test-data/badnode.json'
+        const filePath = 'test/fixtures/test-data/badnode.json'
         const expectedResult = {
           data: fs.readFileSync(filePath),
           multihash: 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6',
@@ -214,7 +214,7 @@ module.exports = (ctl) => {
       })
 
       it('returns error for request without data', (done) => {
-        const filePath = 'test/test-data/badnode.json'
+        const filePath = 'test/fixtures/test-data/badnode.json'
 
         ctl.object.patch.setData(null, filePath, (err) => {
           expect(err).to.exist()
@@ -224,7 +224,7 @@ module.exports = (ctl) => {
 
       it('updates value', (done) => {
         const key = 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6'
-        const filePath = 'test/test-data/badnode.json'
+        const filePath = 'test/fixtures/test-data/badnode.json'
         const expectedResult = {
           data: fs.readFileSync(filePath),
           multihash: 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6',

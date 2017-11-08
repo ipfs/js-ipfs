@@ -4,7 +4,7 @@ const EventEmitter = require('events').EventEmitter
 const IPFSAPI = require('ipfs-api')
 const series = require('async/series')
 const rimraf = require('rimraf')
-const tmpDir = require('../util').tmpDir
+const tmpDir = require('./util').tmpDir
 
 const HttpApi = require('../../../src/http')
 

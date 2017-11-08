@@ -17,10 +17,9 @@ const rimraf = require('rimraf')
 
 const rmDir = promisify(rimraf)
 
-const tmpDir = require('./util').tmpDir
-
-const GoDaemon = require('./daemons/go')
-const JsDaemon = require('./daemons/js')
+const tmpDir = require('../utils/interop-daemon-spawner/util').tmpDir
+const GoDaemon = require('../utils/interop-daemon-spawner/go')
+const JsDaemon = require('../utils/interop-daemon-spawner/js')
 
 const sizes = [
   1024,
@@ -42,12 +41,13 @@ const dirs = [
   100
 ]
 
-describe('basic', () => {
+describe('exchange files', () => {
   let goDaemon
   let jsDaemon
   let js2Daemon
 
-  before((done) => {
+  before(function (done) {
+    this.timeout(15 * 1000)
     goDaemon = new GoDaemon()
     jsDaemon = new JsDaemon({port: 1})
     js2Daemon = new JsDaemon({port: 2})
@@ -172,7 +172,7 @@ describe('basic', () => {
         depth: 5,
         number: num
       }).then(() => {
-        return goDaemon.api.util.addFromFs(dir, {recursive: true})
+        return goDaemon.api.util.addFromFs(dir, { recursive: true })
       }).then((res) => {
         const hash = res[res.length - 1].hash
         return jsDaemon.api.object.get(hash)
@@ -189,7 +189,7 @@ describe('basic', () => {
         depth: 5,
         number: num
       }).then(() => {
-        return jsDaemon.api.util.addFromFs(dir, {recursive: true})
+        return jsDaemon.api.util.addFromFs(dir, { recursive: true })
       }).then((res) => {
         const hash = res[res.length - 1].hash
         return goDaemon.api.object.get(hash)
@@ -206,7 +206,7 @@ describe('basic', () => {
         depth: 5,
         number: num
       }).then(() => {
-        return js2Daemon.api.util.addFromFs(dir, {recursive: true})
+        return js2Daemon.api.util.addFromFs(dir, { recursive: true })
       }).then((res) => {
         const hash = res[res.length - 1].hash
         return jsDaemon.api.object.get(hash)

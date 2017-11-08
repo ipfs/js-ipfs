@@ -15,7 +15,9 @@ const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/create-repo-nodejs.js')
 
 describe('create node', () => {
-  it('custom repoPath', (done) => {
+  it('custom repoPath', function (done) {
+    this.timeout(15 * 1000)
+
     const node = new IPFS({
       repo: '/tmp/ipfs-repo-' + Math.random(),
       config: {
@@ -38,7 +40,9 @@ describe('create node', () => {
     })
   })
 
-  it('custom repo', (done) => {
+  it('custom repo', function (done) {
+    this.timeout(15 * 1000)
+
     const node = new IPFS({
       repo: createTempRepo(),
       config: {
@@ -60,7 +64,8 @@ describe('create node', () => {
     })
   })
 
-  it('IPFS.createNode', (done) => {
+  it('IPFS.createNode', function (done) {
+    this.timeout(15 * 1000)
     const node = IPFS.createNode({
       repo: createTempRepo(),
       config: {
@@ -154,7 +159,8 @@ describe('create node', () => {
     }, 250)
   })
 
-  it('init: true, start: false', (done) => {
+  it('init: true, start: false', function (done) {
+    this.timeout(20 * 1000)
     const node = new IPFS({
       repo: createTempRepo(),
       init: true,
@@ -174,7 +180,9 @@ describe('create node', () => {
     node.once('ready', () => node.start())
   })
 
-  it('init: true, start: false, use callback', (done) => {
+  it('init: true, start: false, use callback', function (done) {
+    this.timeout(20 * 1000)
+
     const node = new IPFS({
       repo: createTempRepo(),
       init: true,
@@ -188,12 +196,12 @@ describe('create node', () => {
     })
 
     node.once('error', done)
-    node.once('ready', () => {
-      node.start(() => node.stop(done))
-    })
+    node.once('ready', () => node.start(() => node.stop(done)))
   })
 
-  it('overload config', (done) => {
+  it('overload config', function (done) {
+    this.timeout(20 * 1000)
+
     if (!isNode) {
       return done()
     }
@@ -223,7 +231,9 @@ describe('create node', () => {
     })
   })
 
-  it('start and stop, start and stop', (done) => {
+  it('start and stop, start and stop', function (done) {
+    this.timeout(15 * 1000)
+
     const node = new IPFS({
       repo: createTempRepo(),
       config: {
@@ -242,7 +252,9 @@ describe('create node', () => {
     ], done)
   })
 
-  it('can start node twice without crash', (done) => {
+  it('can start node twice without crash', function (done) {
+    this.timeout(15 * 1000)
+
     const options = {
       repo: createTempRepo(),
       config: {

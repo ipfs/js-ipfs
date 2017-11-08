@@ -41,9 +41,9 @@ module.exports = (self) => {
         // fail the whole process.
         // TODO: improve datastore and ipfs-repo implemenations so this error is a bit more unified
         if (err.message.match(/not found/) || // indexeddb
-            err.message.match(/ENOENT/) || // fs
-            err.message.match(/No value/) // memory
-           ) {
+          err.message.match(/ENOENT/) || // fs
+          err.message.match(/No value/) // memory
+        ) {
           return cb(null, false)
         }
         return cb(err)

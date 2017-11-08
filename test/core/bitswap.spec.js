@@ -18,66 +18,63 @@ const multiaddr = require('multiaddr')
 const isNode = require('detect-node')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
-const Buffer = require('safe-buffer').Buffer
 
 // This gets replaced by '../utils/create-repo-browser.js' in the browser
 const createTempRepo = require('../utils/create-repo-nodejs.js')
 
 const IPFS = require('../../src/core')
 
-function makeBlock (cb) {
+function makeBlock (callback) {
   const d = Buffer.from(`IPFS is awesome ${Math.random()}`)
 
   multihashing(d, 'sha2-256', (err, multihash) => {
     if (err) {
-      return cb(err)
+      return callback(err)
     }
-    cb(null, new Block(d, new CID(multihash)))
+    callback(null, new Block(d, new CID(multihash)))
   })
 }
 
 describe('bitswap', () => {
   let inProcNode // Node spawned inside this process
 
-  beforeEach((done) => {
-    const repo = createTempRepo()
+  beforeEach(function (done) {
+    this.timeout(15 * 1000)
 
-    if (!isNode) {
-      inProcNode = new IPFS({
-        repo: repo,
+    let config = {
+      repo: createTempRepo(),
+      config: {
+        Addresses: {
+          Swarm: []
+        },
+        Discovery: {
+          MDNS: {
+            Enabled: false
+          }
+        },
+        Bootstrap: []
+      }
+    }
+
+    if (isNode) {
+      config = Object.assign(config, {
         config: {
           Addresses: {
-            Swarm: []
-          },
-          Discovery: {
-            MDNS: {
-              Enabled: false
-            }
-          },
-          Bootstrap: []
-        }
-      })
-    } else {
-      inProcNode = new IPFS({
-        repo: repo,
-        config: {
-          Addresses: {
-            Swarm: [ '/ip4/127.0.0.1/tcp/0' ]
-          },
-          Discovery: {
-            MDNS: {
-              Enabled: false
-            }
-          },
-          Bootstrap: []
+            Swarm: ['/ip4/127.0.0.1/tcp/0']
+          }
         }
       })
     }
 
+    inProcNode = new IPFS(config)
     inProcNode.on('start', () => done())
   })
 
-  afterEach((done) => inProcNode.stop(() => done()))
+  afterEach(function (done) {
+    this.timeout(15 * 1000)
+
+    inProcNode.stop(() => done())
+  })
 
   describe('connections', () => {
     function wire (targetNode, dialerNode, done) {
@@ -103,11 +100,9 @@ describe('bitswap', () => {
     function connectNodes (remoteNode, ipn, done) {
       series([
         (cb) => wire(remoteNode, ipn, cb),
-        (cb) => setTimeout(() => {
-          // need timeout so we wait for identify to happen.
-          // This call is just to ensure identify happened
-          wire(ipn, remoteNode, cb)
-        }, 300)
+        // need timeout so we wait for identify to happen.
+        // This call is just to ensure identify happened
+        (cb) => setTimeout(() => wire(ipn, remoteNode, cb), 300)
       ], done)
     }
 
@@ -121,7 +116,9 @@ describe('bitswap', () => {
     }
 
     describe('fetches a remote block', () => {
-      it('2 peers', (done) => {
+      it('2 peers', function (done) {
+        this.timeout(10 * 1000)
+
         let remoteNode
         let block
         waterfall([
@@ -137,14 +134,14 @@ describe('bitswap', () => {
           (cb) => remoteNode.block.put(block, cb),
           (key, cb) => inProcNode.block.get(block.cid, cb),
           (b, cb) => {
-            expect(b.data).to.be.eql(block.data)
+            expect(b.data).to.eql(block.data)
             cb()
           }
         ], done)
       })
 
       it('3 peers', function (done) {
-        this.timeout(60 * 1000)
+        this.timeout(20 * 1000)
 
         let blocks
         const remoteNodes = []
@@ -192,7 +189,7 @@ describe('bitswap', () => {
 
     describe('fetches a remote file', () => {
       it('2 peers', (done) => {
-        const file = new Buffer(`I love IPFS <3 ${Math.random()}`)
+        const file = Buffer.from(`I love IPFS <3 ${Math.random()}`)
 
         waterfall([
           // 0. Start node
@@ -221,7 +218,9 @@ describe('bitswap', () => {
   describe('bitswap API', () => {
     let node
 
-    before((done) => {
+    before(function (done) {
+      this.timeout(15 * 1000)
+
       node = new IPFS({
         repo: createTempRepo(),
         start: false,
@@ -236,7 +235,7 @@ describe('bitswap', () => {
           }
         }
       })
-      setTimeout(() => done(), 500)
+      node.on('ready', () => done())
     })
 
     describe('while offline', () => {
@@ -255,7 +254,9 @@ describe('bitswap', () => {
     })
 
     describe('while online', () => {
-      before((done) => {
+      before(function (done) {
+        this.timeout(15 * 1000)
+
         node.start(() => done())
       })
 

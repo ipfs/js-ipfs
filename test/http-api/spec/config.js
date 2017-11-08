@@ -10,7 +10,7 @@ const path = require('path')
 module.exports = (http) => {
   describe('/config', () => {
     const configPath = path.join(__dirname, '../../repo-tests-run/config')
-    const originalConfigPath = path.join(__dirname, '../../go-ipfs-repo/config')
+    const originalConfigPath = path.join(__dirname, '../../fixtures/go-ipfs-repo/config')
 
     let updatedConfig
     let api
@@ -173,7 +173,7 @@ module.exports = (http) => {
 
       it('returns 500 if the config is invalid', (done) => {
         const form = new FormData()
-        const filePath = 'test/test-data/badconfig'
+        const filePath = 'test/fixtures/test-data/badconfig'
         form.append('file', fs.createReadStream(filePath))
         const headers = form.getHeaders()
 
@@ -192,7 +192,7 @@ module.exports = (http) => {
 
       it('updates value', (done) => {
         const form = new FormData()
-        const filePath = 'test/test-data/otherconfig'
+        const filePath = 'test/fixtures/test-data/otherconfig'
         form.append('file', fs.createReadStream(filePath))
         const headers = form.getHeaders()
         const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))

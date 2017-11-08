@@ -25,7 +25,8 @@ describe('HTTP Gateway', () => {
   let http = {}
   let gateway
 
-  before((done) => {
+  before(function (done) {
+    this.timeout(20 * 1000)
     const repoPath = path.join(
       os.tmpdir(),
       '/ipfs-' + Math.random().toString().substring(2, 8) + '-' + Date.now()
@@ -113,7 +114,8 @@ describe('HTTP Gateway', () => {
 
   after((done) => http.api.stop(done))
 
-  describe('## HTTP Gateway', () => {
+  describe('## HTTP Gateway', function () {
+    this.timeout(20 * 1000)
     it('returns 400 for request without argument', (done) => {
       gateway.inject({
         method: 'GET',

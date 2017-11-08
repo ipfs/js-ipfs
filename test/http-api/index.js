@@ -13,7 +13,7 @@ const path = require('path')
 const clean = require('../utils/clean')
 
 describe('HTTP API', () => {
-  const repoExample = path.join(__dirname, '../go-ipfs-repo')
+  const repoExample = path.join(__dirname, '../fixtures/go-ipfs-repo')
   const repoTests = path.join(__dirname, '../repo-tests-run')
 
   let http = {}

@@ -12,13 +12,13 @@ describe('block', () => runOnAndOff((thing) => {
   })
 
   it('put', () => {
-    return ipfs('block put test/test-data/hello').then((out) => {
+    return ipfs('block put test/fixtures/test-data/hello').then((out) => {
       expect(out).to.eql('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp\n')
     })
   })
 
   it('put with flags, format and mhtype', () => {
-    return ipfs('block put --format eth-block --mhtype keccak-256 test/test-data/eth-block')
+    return ipfs('block put --format eth-block --mhtype keccak-256 test/fixtures/test-data/eth-block')
       .then((out) =>
         expect(out).to.eql('z43AaGF23fmvRnDP56Ub9WcJCfzSfqtmzNCCvmz5eudT8dtdCDS\n'))
   })
@@ -29,11 +29,11 @@ describe('block', () => runOnAndOff((thing) => {
   })
 
   it('get block from file without a final newline', () => {
-    return ipfs('block put test/test-data/no-newline').then((out) => {
+    return ipfs('block put test/fixtures/test-data/no-newline').then((out) => {
       expect(out).to.eql('QmTwbQs4sGcCiPxV97SpbHS7QgmVg9SiKxcG1AcF1Ly2SL\n')
       return ipfs('block get QmTwbQs4sGcCiPxV97SpbHS7QgmVg9SiKxcG1AcF1Ly2SL')
     })
-    .then((out) => expect(out).to.eql('there is no newline at end of this file'))
+      .then((out) => expect(out).to.eql('there is no newline at end of this file'))
   })
 
   it('stat', () => {

@@ -1,8 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-describe('interop', () => {
-  require('./exchange-files')
-  require('./kad-dht')
-  require('./repo')
-})
+require('./repo')
+require('./exchange-files')
+require('./circuit-relay')
+require('./kad-dht')

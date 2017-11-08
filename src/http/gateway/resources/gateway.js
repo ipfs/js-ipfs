@@ -63,10 +63,10 @@ module.exports = {
             return reply(errorToString).code(404)
           case (errorToString.startsWith('Error: multihash length inconsistent')):
           case (errorToString.startsWith('Error: Non-base58 character')):
-            return reply({Message: errorToString, code: 0}).code(400)
+            return reply({ Message: errorToString, code: 0 }).code(400)
           default:
             log.error(err)
-            return reply({Message: errorToString, code: 0}).code(500)
+            return reply({ Message: errorToString, code: 0 }).code(500)
         }
       }
     }
@@ -83,10 +83,10 @@ module.exports = {
         }
 
         if (ref.endsWith('/')) {
-           // remove trailing slash for files
+          // remove trailing slash for files
           return reply
-                 .redirect(PathUtils.removeTrailingSlash(ref))
-                 .permanent(true)
+            .redirect(PathUtils.removeTrailingSlash(ref))
+            .permanent(true)
         } else {
           if (!stream._read) {
             stream._read = () => {}
@@ -95,7 +95,7 @@ module.exports = {
 
           //  response.continue()
           let filetypeChecked = false
-          let stream2 = new Stream.PassThrough({highWaterMark: 1})
+          let stream2 = new Stream.PassThrough({ highWaterMark: 1 })
           let response = reply(stream2).hold()
 
           pull(

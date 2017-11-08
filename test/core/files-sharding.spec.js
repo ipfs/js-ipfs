@@ -7,7 +7,6 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const pull = require('pull-stream')
-const Buffer = require('safe-buffer').Buffer
 
 const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/create-repo-nodejs.js')
@@ -24,7 +23,9 @@ describe('files dir', () => {
   describe('without sharding', () => {
     let ipfs
 
-    before((done) => {
+    before(function (done) {
+      this.timeout(15 * 1000)
+
       ipfs = new IPFS({
         repo: createTempRepo(),
         config: {
@@ -39,7 +40,9 @@ describe('files dir', () => {
 
     after((done) => ipfs.stop(done))
 
-    it('should be able to add dir without sharding', (done) => {
+    it('should be able to add dir without sharding', function (done) {
+      this.timeout(15 * 1000)
+
       pull(
         pull.values(files),
         ipfs.files.createAddPullStream(),
@@ -61,7 +64,9 @@ describe('files dir', () => {
   describe('with sharding', () => {
     let ipfs
 
-    before((done) => {
+    before(function (done) {
+      this.timeout(15 * 1000)
+
       ipfs = new IPFS({
         repo: createTempRepo(),
         config: {
@@ -77,11 +82,11 @@ describe('files dir', () => {
       ipfs.once('start', done)
     })
 
-    after((done) => {
-      ipfs.stop(() => done()) // ignore stop errors
-    })
+    after((done) => ipfs.stop(done))
 
-    it('should be able to add dir with sharding', (done) => {
+    it('should be able to add dir with sharding', function (done) {
+      this.timeout(15 * 1000)
+
       pull(
         pull.values(files),
         ipfs.files.createAddPullStream(),

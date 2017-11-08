@@ -18,7 +18,9 @@ const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/create-repo-nodejs.js')
 
 describe('init', () => {
-  if (!isNode) { return }
+  if (!isNode) {
+    return
+  }
 
   let ipfs
   let repo
@@ -52,7 +54,8 @@ describe('init', () => {
     })
   })
 
-  it('set # of bits in key', (done) => {
+  it('set # of bits in key', function (done) {
+    this.timeout(20 * 1000)
     ipfs.init({ bits: 2048 }, (err) => {
       expect(err).to.not.exist()
 
@@ -82,7 +85,7 @@ describe('init', () => {
       expect(err).to.not.exist()
 
       // Should not have default assets
-      const multihash = new Buffer('12205e7c3ce237f936c76faf625e90f7751a9f5eeb048f59873303c215e9cce87599', 'hex')
+      const multihash = Buffer.from('12205e7c3ce237f936c76faf625e90f7751a9f5eeb048f59873303c215e9cce87599', 'hex')
 
       ipfs.object.get(multihash, {}, (err, node) => {
         expect(err).to.exist()

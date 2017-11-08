@@ -35,7 +35,7 @@ module.exports = (http) => {
 
       it('updates value', (done) => {
         const form = new FormData()
-        const filePath = 'test/test-data/hello'
+        const filePath = 'test/fixtures/test-data/hello'
         form.append('data', fs.createReadStream(filePath))
         const headers = form.getHeaders()
         const expectedResult = {

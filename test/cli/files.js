@@ -11,7 +11,7 @@ const runOnAndOff = require('../utils/on-and-off')
 describe('files', () => runOnAndOff((thing) => {
   let ipfs
   const readme = fs.readFileSync(path.join(process.cwd(), '/src/init-files/init-docs/readme'))
-                   .toString('utf-8')
+    .toString('utf-8')
 
   const recursiveGetDirResults = [
     'added QmR56UJmAaZLXLdTT1ALrE9vVqV8soUEekm9BMd4FnuYqV recursive-get-dir/version',
@@ -131,14 +131,14 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   it('add recursively test', () => {
-    return ipfs('files add -r test/test-data/recursive-get-dir')
+    return ipfs('files add -r test/fixtures/test-data/recursive-get-dir')
       .then((out) => {
         expect(out).to.eql(recursiveGetDirResults.join('\n') + '\n')
       })
   })
 
   it('add directory with trailing slash test', () => {
-    return ipfs('files add -r test/test-data/recursive-get-dir/')
+    return ipfs('files add -r test/fixtures/test-data/recursive-get-dir/')
       .then((out) => {
         expect(out).to.eql(recursiveGetDirResults.join('\n') + '\n')
       })
@@ -217,7 +217,7 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   it('add --quieter', () => {
-    return ipfs('files add -Q -w test/test-data/hello test/test-data/node.json')
+    return ipfs('files add -Q -w test/fixtures/test-data/hello test/test-data/node.json')
       .then((out) => {
         expect(out)
           .to.eql('QmYRMUVULBfj7WrdPESnwnyZmtayN6Sdrwh1nKcQ9QgQeZ\n')
@@ -228,7 +228,7 @@ describe('files', () => runOnAndOff((thing) => {
     return ipfs('files add --silent src/init-files/init-docs/readme')
       .then((out) => {
         expect(out)
-        .to.eql('')
+          .to.eql('')
       })
   })
 
@@ -293,7 +293,7 @@ describe('files', () => runOnAndOff((thing) => {
         )
 
         const outDir = path.join(process.cwd(), 'QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
-        const expectedDir = path.join(process.cwd(), 'test', 'test-data', 'recursive-get-dir')
+        const expectedDir = path.join(process.cwd(), 'test', 'fixtures', 'test-data', 'recursive-get-dir')
 
         const compareResult = compareDir(outDir, expectedDir, {
           compareContent: true,

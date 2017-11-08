@@ -16,14 +16,16 @@ function off (tests) {
     let thing = {}
     let repoPath
 
-    before(() => {
+    before(function () {
+      this.timeout(30 * 1000)
       repoPath = os.tmpdir() + '/ipfs-' + Math.random().toString().substring(2, 16)
       thing.ipfs = ipfsExec(repoPath)
       thing.ipfs.repoPath = repoPath
       return thing.ipfs('init')
     })
 
-    after((done) => {
+    after(function (done) {
+      this.timeout(20 * 1000)
       clean(repoPath)
       setImmediate(done)
     })
@@ -41,7 +43,7 @@ function on (tests) {
       // CI takes longer to instantiate the daemon,
       // so we need to increase the timeout for the
       // before step
-      this.timeout(20 * 1000)
+      this.timeout(30 * 1000)
 
       factory = new Factory()
 
@@ -53,7 +55,10 @@ function on (tests) {
       })
     })
 
-    after((done) => factory.dismantle(done))
+    after(function (done) {
+      this.timeout(20 * 1000)
+      factory.dismantle(done)
+    })
 
     tests(thing)
   })

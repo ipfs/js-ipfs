@@ -73,8 +73,8 @@ module.exports = function pubsub (self) {
       }
 
       const peers = Array.from(self._pubsub.peers.values())
-          .filter((peer) => peer.topics.has(topic))
-          .map((peer) => peer.info.id.toB58String())
+        .filter((peer) => peer.topics.has(topic))
+        .map((peer) => peer.info.id.toB58String())
 
       setImmediate(() => callback(null, peers))
     }),

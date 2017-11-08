@@ -4,7 +4,6 @@ const peerId = require('peer-id')
 const PeerInfo = require('peer-info')
 const multiaddr = require('multiaddr')
 const waterfall = require('async/waterfall')
-const mafmt = require('mafmt')
 
 /*
  * Load stuff from Repo into memory
@@ -26,7 +25,7 @@ module.exports = function preStart (self) {
         config.Addresses.Swarm.forEach((addr) => {
           let ma = multiaddr(addr)
 
-          if (!mafmt.IPFS.matches(ma)) {
+          if (ma.getPeerId()) {
             ma = ma.encapsulate('/ipfs/' + self._peerInfo.id.toB58String())
           }
 
