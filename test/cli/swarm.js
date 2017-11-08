@@ -19,7 +19,7 @@ describe('swarm', () => {
     // CI takes longer to instantiate the daemon,
     // so we need to increase the timeout for the
     // before step
-    this.timeout(30 * 1000)
+    this.timeout(25 * 1000)
 
     factory = new Factory()
 
@@ -46,7 +46,9 @@ describe('swarm', () => {
 
   after((done) => factory.dismantle(done))
 
-  describe('daemon on (through http-api)', () => {
+  describe('daemon on (through http-api)', function () {
+    this.timeout(10 * 1000)
+
     it('connect', () => {
       return ipfsA('swarm', 'connect', bMultiaddr).then((out) => {
         expect(out).to.eql(`connect ${bMultiaddr} success\n`)
@@ -55,7 +57,7 @@ describe('swarm', () => {
 
     it('peers', () => {
       return ipfsA('swarm peers').then((out) => {
-        expect(out).to.be.eql(bMultiaddr + '\n')
+        expect(out).to.eql(bMultiaddr + '\n')
       })
     })
 
@@ -85,4 +87,4 @@ describe('swarm', () => {
       })
     })
   })
-}).timeout(20 * 1000)
+})

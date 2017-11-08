@@ -8,14 +8,13 @@ const runOnAndOff = require('../utils/on-and-off')
 describe('version', () => runOnAndOff((thing) => {
   let ipfs
 
-  before(function () {
-    this.timeout(30 * 1000)
+  before(() => {
     ipfs = thing.ipfs
   })
 
   it('get the version', () => {
     return ipfs('version').then((out) => {
-      expect(out).to.be.eql(
+      expect(out).to.eql(
         `js-ipfs version: ${pkgversion}\n`
       )
     })
