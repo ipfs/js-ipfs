@@ -219,7 +219,7 @@ describe('bitswap', () => {
     let node
 
     before(function (done) {
-      this.timeout(10 * 1000)
+      this.timeout(15 * 1000)
 
       node = new IPFS({
         repo: createTempRepo(),
@@ -235,7 +235,7 @@ describe('bitswap', () => {
           }
         }
       })
-      setTimeout(() => done(), 500)
+      node.on('ready', () => done())
     })
 
     describe('while offline', () => {
@@ -254,13 +254,15 @@ describe('bitswap', () => {
     })
 
     describe('while online', () => {
-      before((done) => {
+      before(function (done) {
+        this.timeout(15 * 1000)
+
         node.start(() => done())
       })
 
       it('.wantlist returns an array of wanted blocks', () => {
         expect(node.bitswap.wantlist()).to.eql([])
-      }).timeout(30 * 1000)
+      })
 
       it('returns the stats', () => {
         let stats = node.bitswap.stat()
