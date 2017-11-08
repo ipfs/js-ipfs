@@ -18,14 +18,13 @@ function catAndCheck (daemon, hash, data, callback) {
     (cb) => daemon.api.cat(hash, cb),
     (stream, cb) => stream.pipe(bl(cb))
   ], (err, file) => {
-    console.log('got file')
     expect(err).to.not.exist()
     expect(file).to.eql(data)
     callback()
   })
 }
 
-describe.only('repo', () => {
+describe('repo', () => {
   it('read repo: go -> js', (done) => {
     const dir = os.tmpdir() + '/' + Math.ceil(Math.random() * 10000)
     const data = crypto.randomBytes(1024 * 5)
@@ -59,7 +58,9 @@ describe.only('repo', () => {
     ], done)
   })
 
-  it('read repo: js -> go', (done) => {
+  // This was last due to an update on go-ipfs that changed how datastore is
+  // configured
+  it.skip('read repo: js -> go', (done) => {
     const dir = os.tmpdir() + '/' + Math.ceil(Math.random() * 10000)
     const data = crypto.randomBytes(1024 * 5)
 

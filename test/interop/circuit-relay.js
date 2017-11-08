@@ -18,7 +18,7 @@ const js = ads.spawnJsNode
 const go = ads.spawnGoNode
 const stop = ads.stopNodes
 
-describe.skip('circuit interop', function () {
+describe.only('circuit interop', () => {
   let jsTCP
   let jsTCPAddrs
   let jsWS
