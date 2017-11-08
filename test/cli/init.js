@@ -29,7 +29,8 @@ describe('init', () => {
 
   afterEach(() => clean(repoPath))
 
-  it('basic', () => {
+  it('basic', function () {
+    this.timeout(20 * 1000)
     return ipfs('init').then((out) => {
       expect(repoDirSync('blocks')).to.have.length.above(2)
       expect(repoExistsSync('config')).to.equal(true)
@@ -40,7 +41,7 @@ describe('init', () => {
       let command = out.substring(out.indexOf('files cat'), out.length - 2 /* omit the newline char */)
       return ipfs(command)
     }).then((out) => expect(out).to.equal(readme))
-  }).timeout(20 * 1000)
+  })
 
   it('bits', () => {
     return ipfs('init --bits 1024').then(() => {

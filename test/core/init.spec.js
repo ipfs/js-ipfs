@@ -18,7 +18,9 @@ const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/create-repo-nodejs.js')
 
 describe('init', () => {
-  if (!isNode) { return }
+  if (!isNode) {
+    return
+  }
 
   let ipfs
   let repo
@@ -52,7 +54,8 @@ describe('init', () => {
     })
   })
 
-  it('set # of bits in key', (done) => {
+  it('set # of bits in key', function (done) {
+    this.timeout(20 * 1000)
     ipfs.init({ bits: 2048 }, (err) => {
       expect(err).to.not.exist()
 
@@ -62,7 +65,7 @@ describe('init', () => {
         done()
       })
     })
-  }).timeout(20 * 1000)
+  })
 
   it('init docs are written', (done) => {
     ipfs.init({ bits: 1024 }, (err) => {

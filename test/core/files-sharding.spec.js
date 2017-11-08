@@ -38,7 +38,8 @@ describe('files dir', () => {
 
     after((done) => ipfs.stop(done))
 
-    it('should be able to add dir without sharding', (done) => {
+    it('should be able to add dir without sharding', function (done) {
+      this.timeout(20 * 1000)
       pull(
         pull.values(files),
         ipfs.files.createAddPullStream(),
@@ -54,7 +55,7 @@ describe('files dir', () => {
       after((done) => {
         ipfs.stop(() => done()) // ignore stop errors
       })
-    }).timeout(20 * 1000)
+    })
   })
 
   describe('with sharding', () => {
@@ -82,7 +83,8 @@ describe('files dir', () => {
       ipfs.stop(() => done()) // ignore stop errors
     })
 
-    it('should be able to add dir with sharding', (done) => {
+    it('should be able to add dir with sharding', function (done) {
+      this.timeout(20 * 1000)
       pull(
         pull.values(files),
         ipfs.files.createAddPullStream(),
@@ -94,6 +96,6 @@ describe('files dir', () => {
           done()
         })
       )
-    }).timeout(20 * 1000)
+    })
   })
 })
