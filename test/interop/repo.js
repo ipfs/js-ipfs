@@ -10,8 +10,8 @@ const bl = require('bl')
 const crypto = require('crypto')
 const os = require('os')
 
-const GoDaemon = require('./spawner/go')
-const JsDaemon = require('./spawner/js')
+const GoDaemon = require('../utils/interop-daemon-spawner/go')
+const JsDaemon = require('../utils/interop-daemon-spawner/js')
 
 function catAndCheck (daemon, hash, data, callback) {
   waterfall([

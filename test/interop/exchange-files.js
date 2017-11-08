@@ -19,8 +19,8 @@ const rmDir = promisify(rimraf)
 
 const tmpDir = require('./util').tmpDir
 
-const GoDaemon = require('./spawner/go')
-const JsDaemon = require('./spawner/js')
+const GoDaemon = require('../utils/interop-daemon-spawner/go')
+const JsDaemon = require('../utils/interop-daemon-spawner/js')
 
 const sizes = [
   1024,
@@ -42,12 +42,13 @@ const dirs = [
   100
 ]
 
-describe('basic', () => {
+describe.only('exchange files', () => {
   let goDaemon
   let jsDaemon
   let js2Daemon
 
-  before((done) => {
+  before(function (done) {
+    this.timeout(15 * 1000)
     goDaemon = new GoDaemon()
     jsDaemon = new JsDaemon({port: 1})
     js2Daemon = new JsDaemon({port: 2})

@@ -1,10 +1,10 @@
 'use strict'
 
 const parallel = require('async/parallel')
-const spawnTools = require('./test/utils/spawn-tools')
-const js = spawnTools.spawnJsNode
-// const go = spawnTools.spawnGoNode
-const stop = spawnTools.stopNodes
+const ads = require('./test/utils/another-daemon-spawner')
+const js = ads.spawnJsNode
+// const go = ads.spawnGoNode
+const stop = ads.stopNodes
 
 /*
  * spawns a daemon with ports numbers starting in 10 and ending in `num`

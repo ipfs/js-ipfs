@@ -6,24 +6,24 @@ const waterfall = require('async/waterfall')
 const series = require('async/series')
 
 const relayConfig = require('./ipfs-factory-daemon/default-config.json')
-const GoDaemon = require('../interop/spawner/go')
 const Factory = require('./ipfs-factory-daemon')
+const GoDaemon = require('./interop-daemon-spawner/go')
 
 const nodes = []
 const factory = new Factory()
 exports = module.exports
 
-exports.spawnGoNode = (addrs, hop, api, gateway, cb) => {
+exports.spawnGoNode = (addrs, hop, api, gateway, callback) => {
   if (typeof hop === 'function') {
-    cb = hop
+    callback = hop
     hop = false
   }
   if (typeof api === 'function') {
-    cb = api
+    callback = api
     api = 0
   }
   if (typeof gateway === 'function') {
-    cb = gateway
+    callback = gateway
     gateway = 0
   }
 
@@ -51,71 +51,67 @@ exports.spawnGoNode = (addrs, hop, api, gateway, cb) => {
 
   daemon.start((err) => {
     if (err) {
-      return cb(err)
+      return callback(err)
     }
     daemon.api.id((err, id) => {
       if (err) {
-        return cb(err)
+        return callback(err)
       }
       nodes.push(daemon)
-      cb(null, daemon, id.addresses)
+      callback(null, daemon, id.addresses)
     })
   })
 }
 
-exports.spawnJsNode = (addrs, hop, api, gateway, cb) => {
+exports.spawnJsNode = (addrs, hop, api, gateway, callback) => {
   let relayPeer
   let relayAddrs
 
   if (typeof hop === 'function') {
-    cb = hop
+    callback = hop
     hop = false
   }
   if (typeof api === 'function') {
-    cb = api
+    callback = api
     api = 0
   }
   if (typeof gateway === 'function') {
-    cb = gateway
+    callback = gateway
     gateway = 0
   }
 
   api = api || 0
   gateway = gateway || 0
 
-  cb = cb || (() => {})
+  callback = callback || function noop () {}
 
   waterfall([
-    (pCb) => {
-      factory.spawnNode(null,
-        Object.assign(relayConfig, {
-          Addresses: {
-            Swarm: addrs,
-            API: `/ip4/0.0.0.0/tcp/${api}`,
-            Gateway: `/ip4/0.0.0.0/tcp/${gateway}`
-          },
-          EXPERIMENTAL: {
-            Swarm: {
-              DisableRelay: false,
-              EnableRelayHop: hop
-            }
-          }
-        }), pCb)
-    },
-    (node, pCb) => {
+    (cb) => factory.spawnNode(null, Object.assign(relayConfig, {
+      Addresses: {
+        Swarm: addrs,
+        API: `/ip4/0.0.0.0/tcp/${api}`,
+        Gateway: `/ip4/0.0.0.0/tcp/${gateway}`
+      },
+      EXPERIMENTAL: {
+        Swarm: {
+          DisableRelay: false,
+          EnableRelayHop: hop
+        }
+      }
+    }), cb),
+    (node, cb) => {
       relayPeer = node
-      pCb()
+      relayPeer.swarm.localAddrs(cb)
     },
-    (pCb) => relayPeer.swarm.localAddrs(pCb),
-    (addrs, pCb) => {
+    (addrs, cb) => {
       relayAddrs = addrs
-      pCb()
+      cb()
     }
   ], (err) => {
     if (err) {
-      return cb(err)
+      return callback(err)
     }
-    cb(null, relayPeer, relayAddrs)
+    callback(null, relayPeer, relayAddrs)
   })
 }
 

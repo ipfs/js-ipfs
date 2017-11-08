@@ -13,10 +13,10 @@ const waterfall = require('async/waterfall')
 const multiaddr = require('multiaddr')
 const crypto = require('crypto')
 
-const spawnTools = require('./test/utils/spawn-tools')
-const js = spawnTools.spawnJsNode
-const go = spawnTools.spawnGoNode
-const stop = spawnTools.stopNodes
+const ads = require('../utils/another-daemon-spawner')
+const js = ads.spawnJsNode
+const go = ads.spawnGoNode
+const stop = ads.stopNodes
 
 describe.skip('circuit interop', function () {
   let jsTCP
