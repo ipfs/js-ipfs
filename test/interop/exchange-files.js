@@ -17,8 +17,7 @@ const rimraf = require('rimraf')
 
 const rmDir = promisify(rimraf)
 
-const tmpDir = require('./util').tmpDir
-
+const tmpDir = require('../utils/interop-daemon-spawner/util').tmpDir
 const GoDaemon = require('../utils/interop-daemon-spawner/go')
 const JsDaemon = require('../utils/interop-daemon-spawner/js')
 
@@ -42,7 +41,7 @@ const dirs = [
   100
 ]
 
-describe.only('exchange files', () => {
+describe('exchange files', () => {
   let goDaemon
   let jsDaemon
   let js2Daemon

@@ -20,12 +20,12 @@ function catAndCheck (daemon, hash, data, callback) {
   ], (err, file) => {
     console.log('got file')
     expect(err).to.not.exist()
-    expect(file).to.be.eql(data)
+    expect(file).to.eql(data)
     callback()
   })
 }
 
-describe('repo', () => {
+describe.only('repo', () => {
   it('read repo: go -> js', (done) => {
     const dir = os.tmpdir() + '/' + Math.ceil(Math.random() * 10000)
     const data = crypto.randomBytes(1024 * 5)
