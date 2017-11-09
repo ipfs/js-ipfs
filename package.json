@@ -30,6 +30,7 @@
   },
   "homepage": "https://github.com/ipfs/interface-ipfs-core#readme",
   "dependencies": {
+    "aegir": "^12.1.0",
     "async": "^2.5.0",
     "bl": "^1.2.1",
     "bs58": "^4.0.1",
@@ -47,7 +48,6 @@
     "pull-stream": "^3.6.1"
   },
   "devDependencies": {
-    "aegir": "^12.1.0",
     "dirty-chai": "^2.0.1"
   },
   "contributors": [
