@@ -1,3 +1,13 @@
+<a name="0.33.2"></a>
+## [0.33.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.33.1...v0.33.2) (2017-11-09)
+
+
+### Bug Fixes
+
+* **package:** aegir is a dependency ([#166](https://github.com/ipfs/interface-ipfs-core/issues/166)) ([72f2f56](https://github.com/ipfs/interface-ipfs-core/commit/72f2f56))
+
+
+
 <a name="0.33.1"></a>
 ## [0.33.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.33.0...v0.33.1) (2017-10-22)
 
