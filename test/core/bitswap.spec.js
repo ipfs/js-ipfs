@@ -39,7 +39,7 @@ describe('bitswap', () => {
   let inProcNode // Node spawned inside this process
 
   beforeEach(function (done) {
-    this.timeout(15 * 1000)
+    this.timeout(30 * 1000)
 
     let config = {
       repo: createTempRepo(),

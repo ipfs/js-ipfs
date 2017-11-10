@@ -16,7 +16,7 @@ const createTempRepo = require('../utils/create-repo-nodejs.js')
 
 describe('create node', () => {
   it('custom repoPath', function (done) {
-    this.timeout(15 * 1000)
+    this.timeout(30 * 1000)
 
     const node = new IPFS({
       repo: '/tmp/ipfs-repo-' + Math.random(),
