@@ -141,7 +141,7 @@ describe('bitswap', () => {
       })
 
       it('3 peers', function (done) {
-        this.timeout(20 * 1000)
+        this.timeout(30 * 1000)
 
         let blocks
         const remoteNodes = []
