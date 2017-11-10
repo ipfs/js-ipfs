@@ -29,7 +29,7 @@ function peerInfoFromObj (obj, callback) {
 }
 
 describe('circuit', function () {
-  this.timeout(20 * 1000)
+  this.timeout(40 * 1000)
 
   let factory
 
@@ -44,7 +44,9 @@ describe('circuit', function () {
   // let nodeId1
   let nodeId2
 
-  before((done) => {
+  before(function (done) {
+    this.timeout(40 * 1000)
+
     factory = new IPFSFactory()
 
     const base = {

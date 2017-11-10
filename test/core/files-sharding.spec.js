@@ -41,7 +41,7 @@ describe('files dir', () => {
     after((done) => ipfs.stop(done))
 
     it('should be able to add dir without sharding', function (done) {
-      this.timeout(15 * 1000)
+      this.timeout(30 * 1000)
 
       pull(
         pull.values(files),
@@ -65,7 +65,7 @@ describe('files dir', () => {
     let ipfs
 
     before(function (done) {
-      this.timeout(15 * 1000)
+      this.timeout(30 * 1000)
 
       ipfs = new IPFS({
         repo: createTempRepo(),
@@ -85,7 +85,7 @@ describe('files dir', () => {
     after((done) => ipfs.stop(done))
 
     it('should be able to add dir with sharding', function (done) {
-      this.timeout(15 * 1000)
+      this.timeout(30 * 1000)
 
       pull(
         pull.values(files),

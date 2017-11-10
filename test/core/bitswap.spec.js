@@ -39,7 +39,7 @@ describe('bitswap', () => {
   let inProcNode // Node spawned inside this process
 
   beforeEach(function (done) {
-    this.timeout(15 * 1000)
+    this.timeout(30 * 1000)
 
     let config = {
       repo: createTempRepo(),
@@ -71,7 +71,7 @@ describe('bitswap', () => {
   })
 
   afterEach(function (done) {
-    this.timeout(15 * 1000)
+    this.timeout(30 * 1000)
 
     inProcNode.stop(() => done())
   })
@@ -141,7 +141,7 @@ describe('bitswap', () => {
       })
 
       it('3 peers', function (done) {
-        this.timeout(20 * 1000)
+        this.timeout(30 * 1000)
 
         let blocks
         const remoteNodes = []
