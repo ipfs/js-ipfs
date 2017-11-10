@@ -71,7 +71,7 @@ describe('bitswap', () => {
   })
 
   afterEach(function (done) {
-    this.timeout(15 * 1000)
+    this.timeout(30 * 1000)
 
     inProcNode.stop(() => done())
   })
