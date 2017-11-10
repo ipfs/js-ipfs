@@ -14,7 +14,7 @@ const IPFS = require('../../src/core')
 // This gets replaced by `create-repo-browser.js` in the browser
 const createTempRepo = require('../utils/create-repo-nodejs.js')
 
-describe('create node', fuction () {
+describe('create node', function () {
   this.timeout(30 * 1000)
 
   it('custom repoPath', function (done) {
