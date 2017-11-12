@@ -28,7 +28,7 @@ function peerInfoFromObj (obj, callback) {
   ], callback)
 }
 
-describe('circuit', function () {
+describe.skip('circuit', function () {
   this.timeout(40 * 1000)
 
   let factory

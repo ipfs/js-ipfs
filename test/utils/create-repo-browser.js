@@ -2,6 +2,7 @@
 'use strict'
 
 const IPFSRepo = require('ipfs-repo')
+const hat = require('hat')
 
 const idb = self.indexedDB ||
   self.mozIndexedDB ||
@@ -9,7 +10,7 @@ const idb = self.indexedDB ||
   self.msIndexedDB
 
 function createTempRepo (repoPath) {
-  repoPath = repoPath || '/tmp/ipfs-test-' + Math.random().toString().substring(2, 8)
+  repoPath = repoPath || '/ipfs-' + hat()
 
   const repo = new IPFSRepo(repoPath)
 
