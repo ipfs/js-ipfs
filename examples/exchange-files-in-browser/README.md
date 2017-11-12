@@ -125,7 +125,7 @@ It's there in line 5 - see the `/ws`? Good. that means it is listening.
 
 ### 3. Start the WebApp project
 
-Now, you'll need to make sure you are in `js-ipfs/examples/transfer-files`. You'll see a `package.json`: this manifest holds the information for which packages you'll need to install to run the webapp. Let's install them, and then start the project:
+Now, you'll need to make sure you are in `js-ipfs/examples/exchange-files-in-browser`. You'll see a `package.json`: this manifest holds the information for which packages you'll need to install to run the webapp. Let's install them, and then start the project:
 
 ```sh
 > npm install
