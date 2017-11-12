@@ -50,10 +50,7 @@ function Factory () {
     })
 
     node.once('ready', () => {
-      nodes.push({
-        repo: repo,
-        ipfs: node
-      })
+      nodes.push({ repo: repo, ipfs: node })
       callback(null, node)
     })
   }
