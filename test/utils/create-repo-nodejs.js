@@ -2,11 +2,13 @@
 
 const IPFSRepo = require('ipfs-repo')
 const clean = require('./clean')
+const os = require('os')
+const path = require('path')
+const hat = require('hat')
 const series = require('async/series')
 
 function createTempRepo (repoPath) {
-  repoPath = repoPath ||
-    '/tmp/ipfs-test-' + Math.random()
+  repoPath = repoPath || path.join(os.tmpdir(), '/ipfs-test-' + hat())
 
   const repo = new IPFSRepo(repoPath)
 

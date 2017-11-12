@@ -37,7 +37,12 @@ describe('files directory (sharding tests)', () => {
           Addresses: {
             Swarm: []
           },
-          Bootstrap: []
+          Bootstrap: [],
+          Discovery: {
+            MDNS: {
+              Enabled: false
+            }
+          }
         }
       })
       ipfs.once('ready', done)
@@ -77,7 +82,12 @@ describe('files directory (sharding tests)', () => {
           Addresses: {
             Swarm: []
           },
-          Bootstrap: []
+          Bootstrap: [],
+          Discovery: {
+            MDNS: {
+              Enabled: false
+            }
+          }
         },
         EXPERIMENTAL: {
           sharding: true
