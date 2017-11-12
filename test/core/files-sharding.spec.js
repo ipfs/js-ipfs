@@ -11,7 +11,7 @@ const pull = require('pull-stream')
 const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/create-repo-nodejs.js')
 
-describe('files directory (sharding tests)', () => {
+describe.skip('files directory (sharding tests)', () => {
   function createTestFiles () {
     const files = []
 

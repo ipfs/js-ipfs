@@ -44,7 +44,8 @@ function Factory () {
       config: config,
       EXPERIMENTAL: {
         pubsub: true,
-        dht: true
+        dht: true,
+        relay: false
       }
     })
 
