@@ -258,10 +258,10 @@ describe('files', () => runOnAndOff((thing) => {
     return ipfs('ls QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
       .then((out) => {
         expect(out).to.eql(
-          'QmQQHYDwAQms78fPcvx1uFFsfho23YJNoewfLbi9AtdyJ9 123530 blocks\n' +
+          'QmQQHYDwAQms78fPcvx1uFFsfho23YJNoewfLbi9AtdyJ9 123530 blocks/\n' +
           'QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN 3939   config\n' +
-          'Qma13ZrhKG52MWnwtZ6fMD8jGj8d4Q9sJgn5xtKgeZw5uz 5503   datastore\n' +
-          'QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU 7397   init-docs\n' +
+          'Qma13ZrhKG52MWnwtZ6fMD8jGj8d4Q9sJgn5xtKgeZw5uz 5503   datastore/\n' +
+          'QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU 7397   init-docs/\n' +
           'QmR56UJmAaZLXLdTT1ALrE9vVqV8soUEekm9BMd4FnuYqV 10     version\n')
       })
   })
@@ -271,10 +271,10 @@ describe('files', () => runOnAndOff((thing) => {
       .then((out) => {
         expect(out).to.eql(
           'Hash                                           Size   Name\n' +
-          'QmQQHYDwAQms78fPcvx1uFFsfho23YJNoewfLbi9AtdyJ9 123530 blocks\n' +
+          'QmQQHYDwAQms78fPcvx1uFFsfho23YJNoewfLbi9AtdyJ9 123530 blocks/\n' +
           'QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN 3939   config\n' +
-          'Qma13ZrhKG52MWnwtZ6fMD8jGj8d4Q9sJgn5xtKgeZw5uz 5503   datastore\n' +
-          'QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU 7397   init-docs\n' +
+          'Qma13ZrhKG52MWnwtZ6fMD8jGj8d4Q9sJgn5xtKgeZw5uz 5503   datastore/\n' +
+          'QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU 7397   init-docs/\n' +
           'QmR56UJmAaZLXLdTT1ALrE9vVqV8soUEekm9BMd4FnuYqV 10     version\n')
       })
   })
@@ -283,8 +283,11 @@ describe('files', () => runOnAndOff((thing) => {
     return ipfs('ls --help')
       .then((out) => {
         expect(out.split('\n').slice(1)).to.eql(['',
+          'List files for the given directory',
+          '',
           'Options:',
-          '  -q, --quiet     suppress output                                      [boolean]',
+          '  -v, --version   Show version number                                  [boolean]',
+          '  --silent        Show no output.                                      [boolean]',
           '  --help          Show help                                            [boolean]',
           '  -v, --headers   Print table headers (Hash, Size, Name).',
           '                                                      [boolean] [default: false]',
