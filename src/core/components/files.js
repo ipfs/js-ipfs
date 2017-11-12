@@ -121,11 +121,11 @@ module.exports = function files (self) {
       callback(null, exporter(ipfsPath, self._ipldResolver))
     }),
 
-    ls: (ipfsPath) => pull(
+    ls: (ipfsPath) => toStream.source(pull(
       exporter(ipfsPath, self._ipldResolver, { maxDepth: 1 }),
       pull.filter((node) => node.depth === 1),
       pull.map((node) => Object.assign({}, node, { hash: toB58String(node.hash) })),
-    )
+    ))
   }
 }
 
