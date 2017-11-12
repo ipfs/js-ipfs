@@ -274,3 +274,50 @@ exports.add = {
     )
   }
 }
+
+
+exports.ls = {
+  // uses common parseKey method that returns a `key`
+  parseArgs: exports.parseKey,
+
+  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+  handler: (request, reply) => {
+    const key = request.pre.args.key
+    const ipfs = request.server.app.ipfs
+
+    ipfs.files.lsPull(key).then((lsStream) => {
+      const stream = toStream.source(pull(
+        lsStream,
+        ndjson.serialize(),
+      ))
+
+      if (!stream._read) {
+        stream._read = () => {}
+        stream._readableState = {}
+        stream.unpipe = () => {}
+      }
+
+      stream.on('error', onStreamError)
+
+      reply((stream))
+        .header('x-chunked-output', '1')
+        .header('content-type', 'application/json')
+        .header('Trailer', 'X-Stream-Error')
+
+      function onStreamError(err) {
+        console.error(err)
+        const msg = JSON.stringify({ Message: err.msg, Code: 0 })
+        request.raw.res.addTrailers({
+          'X-Stream-Error': msg
+        })
+      }
+    }).catch(onError)
+
+    function onError(err) {
+      reply({
+        Message: 'Failed to get file: ' + err.message,
+        Code: 0
+      }).code(500)
+    }
+  }
+}

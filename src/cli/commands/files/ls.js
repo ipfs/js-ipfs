@@ -30,7 +30,7 @@ module.exports = {
       path = path.replace('/ipfs/', '')
     }
 
-    argv.ipfs.files.ls(path, 0).pipe(concat((links) => {
+    argv.ipfs.files.ls(path, {}).then((stream) => stream.pipe(concat((links) => {
       if (argv.headers) {
         links = [{hash: 'Hash', size: 'Size', name: 'Name'}].concat(links)
       }
@@ -50,6 +50,6 @@ module.exports = {
           utils.rightpad(file.size || '', sizeWidth + 1) +
             file.name)
       })
-    }))
+    })))
   }
 }
