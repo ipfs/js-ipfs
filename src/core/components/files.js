@@ -13,6 +13,7 @@ const waterfall = require('async/waterfall')
 const isStream = require('is-stream')
 const Duplex = require('stream').Duplex
 const CID = require('cids')
+const toB58String = require('multihashes').toB58String
 
 module.exports = function files (self) {
   const createAddPullStream = (options) => {
@@ -118,7 +119,13 @@ module.exports = function files (self) {
 
     getPull: promisify((ipfsPath, callback) => {
       callback(null, exporter(ipfsPath, self._ipldResolver))
-    })
+    }),
+
+    ls: (ipfsPath) => pull(
+      exporter(ipfsPath, self._ipldResolver, { maxDepth: 1 }),
+      pull.filter((node) => node.depth === 1),
+      pull.map((node) => Object.assign({}, node, { hash: toB58String(node.hash) })),
+    )
   }
 }
 
