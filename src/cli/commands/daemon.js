@@ -41,7 +41,7 @@ module.exports = {
     })
 
     const cleanup = (code) => {
-      print(`Received ${code} signal, shutting down..`)
+      print(`Received interrupt signal, shutting down..`)
       httpAPI.stop((err) => {
         if (err) {
           throw err
