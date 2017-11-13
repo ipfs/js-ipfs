@@ -1,9 +1,8 @@
 'use strict'
 
-const utils = require('../../utils')
+const utils = require('../utils')
 const Unixfs = require('ipfs-unixfs')
 const pull = require('pull-stream')
-const concat = require('concat-stream')
 
 module.exports = {
   command: 'ls <key>',
@@ -30,7 +29,11 @@ module.exports = {
       path = path.replace('/ipfs/', '')
     }
 
-    argv.ipfs.files.ls(path, {}).then((stream) => stream.pipe(concat((links) => {
+    argv.ipfs.ls(path, (err, links) => {
+      if (err) {
+        throw err
+      }
+
       if (argv.headers) {
         links = [{hash: 'Hash', size: 'Size', name: 'Name'}].concat(links)
       }
@@ -50,6 +53,6 @@ module.exports = {
           utils.rightpad(file.size || '', sizeWidth + 1) +
             file.name)
       })
-    })))
+    })
   }
 }

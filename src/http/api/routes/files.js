@@ -46,12 +46,12 @@ module.exports = (server) => {
   api.route({
     // TODO fix method
     method: '*',
-    path: '/api/v0/files/ls',
+    path: '/api/v0/ls',
     config: {
       pre: [
-        { method: resources.files.ls.parseArgs, assign: 'args' }
+        { method: resources.files.immutableLs.parseArgs, assign: 'args' }
       ],
-      handler: resources.files.ls.handler
+      handler: resources.files.immutableLs.handler
     }
   })
 }

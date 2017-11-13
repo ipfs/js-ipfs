@@ -276,7 +276,7 @@ exports.add = {
 }
 
 
-exports.ls = {
+exports.immutableLs = {
   // uses common parseKey method that returns a `key`
   parseArgs: exports.parseKey,
 
@@ -285,39 +285,36 @@ exports.ls = {
     const key = request.pre.args.key
     const ipfs = request.server.app.ipfs
 
-    ipfs.files.lsPull(key).then((lsStream) => {
-      const stream = toStream.source(pull(
-        lsStream,
-        ndjson.serialize(),
-      ))
-
-      if (!stream._read) {
-        stream._read = () => {}
-        stream._readableState = {}
-        stream.unpipe = () => {}
+    ipfs.ls(key, (err, files) => {
+      if (err) {
+        reply({
+          Message: 'Failed to list dir: ' + err.message,
+          Code: 0
+        }).code(500)
       }
 
-      stream.on('error', onStreamError)
-
-      reply((stream))
-        .header('x-chunked-output', '1')
-        .header('content-type', 'application/json')
-        .header('Trailer', 'X-Stream-Error')
-
-      function onStreamError(err) {
-        console.error(err)
-        const msg = JSON.stringify({ Message: err.msg, Code: 0 })
-        request.raw.res.addTrailers({
-          'X-Stream-Error': msg
-        })
-      }
-    }).catch(onError)
-
-    function onError(err) {
       reply({
-        Message: 'Failed to get file: ' + err.message,
-        Code: 0
-      }).code(500)
-    }
+        Objects: [{
+          Hash: key,
+          Links: files.map((file) => ({
+            Name: file.name,
+            Hash: file.hash,
+            Size: file.size,
+            Type: toTypeCode(file.type)
+          }))
+        }]
+      })
+    })
+  }
+}
+
+function toTypeCode(type) {
+  switch (type) {
+    case 'dir':
+      return 1
+    case 'file':
+      return 2
+    default:
+      return 0
   }
 }

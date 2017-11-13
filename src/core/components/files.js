@@ -121,25 +121,18 @@ module.exports = function files (self) {
       callback(null, exporter(ipfsPath, self._ipldResolver))
     }),
 
-    lsPull: promisify((ipfsPath, options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-      callback(null, pull(
-        exporter(ipfsPath, self._ipldResolver, { maxDepth: 1 }),
-        pull.filter((node) => node.depth === 1),
-        pull.map((node) => Object.assign({}, node, { hash: toB58String(node.hash) }))
-      ))
+    immutableLs: promisify((ipfsPath, callback) => {
+      pull(
+        self.files.immutableLsPullStream(ipfsPath),
+        pull.collect(callback))
     }),
 
-    ls: promisify((ipfsPath, options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-      self.files.lsPull(ipfsPath, options).then((stream) => callback(null, toStream.source(stream)))
-    })
+    immutableLsPullStream: (ipfsPath) => {
+      return pull(
+        exporter(ipfsPath, self._ipldResolver, { maxDepth: 1 }),
+        pull.filter((node) => node.depth === 1),
+        pull.map((node) => Object.assign({}, node, { hash: toB58String(node.hash) })))
+    }
   }
 }
 
