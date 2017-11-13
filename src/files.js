@@ -17,7 +17,7 @@ const through = require('through2')
 const Buffer = require('safe-buffer').Buffer
 
 module.exports = (common) => {
-  describe.only('.files', function () {
+  describe('.files', function () {
     this.timeout(80 * 1000)
 
     let smallFile
