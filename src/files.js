@@ -587,7 +587,6 @@ module.exports = (common) => {
           })
         })
       })
-
     })
 
     describe('promise API', () => {
