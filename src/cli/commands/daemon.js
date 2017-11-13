@@ -40,14 +40,18 @@ module.exports = {
       print('Daemon is ready')
     })
 
-    process.on('SIGINT', () => {
-      print('Received interrupt signal, shutting down..')
+    const cleanup = (code) => {
+      print(`Received ${code} signal, shutting down..`)
       httpAPI.stop((err) => {
         if (err) {
           throw err
         }
-        process.exit(0)
+        process.exit(code)
       })
-    })
+    }
+
+    // listen for graceful termination
+    process.on('SIGTERM', cleanup)
+    process.on('SIGINT', cleanup)
   }
 }
