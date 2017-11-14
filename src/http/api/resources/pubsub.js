@@ -23,7 +23,7 @@ exports.subscribe = {
         from: msg.from,
         data: msg.data.toString('base64'),
         seqno: msg.seqno.toString('base64'),
-        topicCIDs: msg.topicCIDs
+        topicIDs: msg.topicIDs
       }) + '\n', 'utf8')
     }
 
