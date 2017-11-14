@@ -275,7 +275,6 @@ exports.add = {
   }
 }
 
-
 exports.immutableLs = {
   // uses common parseKey method that returns a `key`
   parseArgs: exports.parseKey,
@@ -308,7 +307,7 @@ exports.immutableLs = {
   }
 }
 
-function toTypeCode(type) {
+function toTypeCode (type) {
   switch (type) {
     case 'dir':
       return 1
@@ -318,3 +317,4 @@ function toTypeCode(type) {
       return 0
   }
 }
+
