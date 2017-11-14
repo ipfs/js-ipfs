@@ -6,6 +6,7 @@ const DaemonSpawner = require('./daemon-spawner')
 module.exports = (http) => {
   const io = new SocketIO(http.listener)
   io.on('connection', handle)
+  io.on('error', (err) => this.emit('error', err))
 
   const ds = new DaemonSpawner()
 
@@ -17,7 +18,7 @@ module.exports = (http) => {
   function spawnNode (repoPath, config) {
     ds.spawnNode(repoPath, config, (err, apiAddr) => {
       if (err) {
-        throw err
+        return this.emit('error', err)
       }
       this.emit('fc-node', apiAddr.toString())
     })
@@ -26,7 +27,7 @@ module.exports = (http) => {
   function dismantle () {
     ds.dismantle((err) => {
       if (err) {
-        throw err
+        return this.emit('error', err)
       }
       this.emit('fc-nodes-shutdown')
     })

@@ -6,9 +6,15 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
+const os = require('os')
 
 describe('.diag', function () {
   this.timeout(50 * 1000)
+
+  if (os.platform() === 'win32') {
+    it('skip these on Windows')
+    return
+  }
 
   let ipfs
   let fc

@@ -46,6 +46,8 @@ function loadPaths (opts, file) {
   }
 
   if (stats.isDirectory() && opts.recursive) {
+    // glob requires a POSIX filename
+    file = file.split(path.sep).join('/')
     const globEscapedDir = escape(file) + (file.endsWith('/') ? '' : '/')
     const mg = new glob.sync.GlobSync(`${globEscapedDir}` + '**/*', {
       follow: followSymlinks,

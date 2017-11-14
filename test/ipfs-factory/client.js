@@ -31,6 +31,7 @@ function Factory () {
       spawnNode()
     } else {
       ioC = io.connect(sioUrl, sioOptions)
+      ioC.once('error', callback)
       ioC.once('connect_error', callback)
       ioC.once('connect', () => {
         sioConnected = true

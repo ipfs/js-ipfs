@@ -57,7 +57,15 @@ function onRes (buffer, cb) {
       res.on('end', () => {
         let err = res.trailers['x-stream-error']
         if (err) {
-          err = JSON.parse(err)
+          // Not all errors are JSON
+          try {
+            err = JSON.parse(err)
+          } catch (e) {
+            err = {
+              Code: 'n/a',
+              Message: err
+            }
+          }
           const error = new Error(`Server responded with 500`)
           error.code = err.Code
           error.message = err.Message
