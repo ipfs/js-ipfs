@@ -1,6 +1,7 @@
 'use strict'
 
 const PassThrough = require('stream').PassThrough
+const bs58 = require('bs58')
 
 exports = module.exports
 
