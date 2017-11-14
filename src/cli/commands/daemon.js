@@ -40,13 +40,13 @@ module.exports = {
       print('Daemon is ready')
     })
 
-    const cleanup = (code) => {
+    const cleanup = () => {
       print(`Received interrupt signal, shutting down..`)
       httpAPI.stop((err) => {
         if (err) {
           throw err
         }
-        process.exit(code)
+        process.exit(0)
       })
     }
 
