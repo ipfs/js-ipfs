@@ -42,4 +42,16 @@ module.exports = (server) => {
       validate: resources.files.add.validate
     }
   })
+
+  api.route({
+    // TODO fix method
+    method: '*',
+    path: '/api/v0/ls',
+    config: {
+      pre: [
+        { method: resources.files.immutableLs.parseArgs, assign: 'args' }
+      ],
+      handler: resources.files.immutableLs.handler
+    }
+  })
 }

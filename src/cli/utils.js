@@ -100,3 +100,11 @@ exports.createProgressBar = (totalBytes) => {
     total: totalBytes
   })
 }
+
+exports.rightpad = (val, n) => {
+  let result = String(val)
+  for (let i = result.length; i < n; ++i) {
+    result += ' '
+  }
+  return result
+}

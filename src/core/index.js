@@ -112,6 +112,9 @@ class IPFS extends EventEmitter {
 
     this.state = require('./state')(this)
 
+    // ipfs.ls
+    this.ls = this.files.immutableLs
+
     boot(this)
   }
 }
