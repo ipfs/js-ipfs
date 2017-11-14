@@ -22,15 +22,17 @@ module.exports = function preStart (self) {
       (config, id, cb) => {
         self._peerInfo = new PeerInfo(id)
 
-        config.Addresses.Swarm.forEach((addr) => {
-          let ma = multiaddr(addr)
+        if (config.Addresses && config.Addresses.Swarm) {
+          config.Addresses.Swarm.forEach((addr) => {
+            let ma = multiaddr(addr)
 
-          if (ma.getPeerId()) {
-            ma = ma.encapsulate('/ipfs/' + self._peerInfo.id.toB58String())
-          }
+            if (ma.getPeerId()) {
+              ma = ma.encapsulate('/ipfs/' + self._peerInfo.id.toB58String())
+            }
 
-          self._peerInfo.multiaddrs.add(ma)
-        })
+            self._peerInfo.multiaddrs.add(ma)
+          })
+        }
 
         cb()
       }
