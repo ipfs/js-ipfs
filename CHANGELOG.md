@@ -1,3 +1,18 @@
+<a name="15.1.0"></a>
+# [15.1.0](https://github.com/ipfs/js-ipfs-api/compare/v15.0.2...v15.1.0) (2017-11-14)
+
+
+### Bug Fixes
+
+* adapting HTTP API to the interface-ipfs-core spec ([#625](https://github.com/ipfs/js-ipfs-api/issues/625)) ([8e58225](https://github.com/ipfs/js-ipfs-api/commit/8e58225))
+
+
+### Features
+
+* windows interop ([#624](https://github.com/ipfs/js-ipfs-api/issues/624)) ([40557d0](https://github.com/ipfs/js-ipfs-api/commit/40557d0))
+
+
+
 <a name="15.0.2"></a>
 ## [15.0.2](https://github.com/ipfs/js-ipfs-api/compare/v15.0.1...v15.0.2) (2017-11-13)
 
