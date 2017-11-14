@@ -40,17 +40,6 @@ describe('.ls', function () {
   after((done) => fc.dismantle(done))
 
   describe('Callback API', () => {
-    it('should correctly retrieve links', function (done) {
-      ipfs.ls(folder, (err, res) => {
-        expect(err).to.not.exist()
-
-        expect(res).to.have.a.property('Objects')
-        expect(res.Objects[0]).to.have.a.property('Links')
-        expect(res.Objects[0]).to.have.property('Hash', 'QmQao3KNcpCsdXaLGpjieFGMfXzsSXgsf6Rnc5dJJA3QMh')
-        done()
-      })
-    })
-
     it('should correctly handle a nonexist()ing hash', function (done) {
       ipfs.ls('surelynotavalidhashheh?', (err, res) => {
         expect(err).to.exist()
@@ -69,15 +58,6 @@ describe('.ls', function () {
   })
 
   describe('Promises API', () => {
-    it('should correctly retrieve links', () => {
-      return ipfs.ls(folder)
-        .then((res) => {
-          expect(res).to.have.a.property('Objects')
-          expect(res.Objects[0]).to.have.a.property('Links')
-          expect(res.Objects[0]).to.have.property('Hash', 'QmQao3KNcpCsdXaLGpjieFGMfXzsSXgsf6Rnc5dJJA3QMh')
-        })
-    })
-
     it('should correctly handle a nonexist()ing hash', () => {
       return ipfs.ls('surelynotavalidhashheh?')
         .catch((err) => expect(err).to.exist())
