@@ -16,7 +16,7 @@ name API
 ```JavaScript
 {
   resolve: // bool - Resolve given path before publishing. Default: true.
-  lifetime: // string - Time duration of the record. Defaulg: 24h
+  lifetime: // string - Time duration of the record. Default: 24h
   ttl:  // string - Time duration this record should be cached
 }
 ```
