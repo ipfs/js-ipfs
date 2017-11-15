@@ -30,5 +30,4 @@ describe('file ls', () => runOnAndOff((thing) => {
         'QmR56UJmAaZLXLdTT1ALrE9vVqV8soUEekm9BMd4FnuYqV\n'
       ))
   })
-
 }))
