@@ -3,7 +3,7 @@
 module.exports = {
   command: 'file',
 
-  description: ' Interact with IPFS objects representing Unix filesystems.',
+  description: 'Interact with IPFS objects representing Unix filesystems.',
 
   builder (yargs) {
     return yargs
