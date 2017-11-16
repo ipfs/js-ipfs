@@ -14,7 +14,7 @@ const createTempNode = ''
 const repoPath = require('./index').repoPath
 const ipfs = require('../utils/ipfs-exec')(repoPath)
 
-describe.skip('pubsub', () => {
+describe('pubsub', () => {
   const topicA = 'nonscentsA'
   const topicB = 'nonscentsB'
   const topicC = 'nonscentsC'

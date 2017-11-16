@@ -10,7 +10,7 @@ const createTempNode = ''
 
 // TODO migrate to use ipfs-factory-daemon
 module.exports = (http) => {
-  describe.skip('/pubsub', () => {
+  describe('/pubsub', () => {
     let api
     let tmpNode
 
