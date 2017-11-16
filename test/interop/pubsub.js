@@ -11,18 +11,39 @@ const parallel = require('async/parallel')
 const GODaemon = require('../utils/interop-daemon-spawner/go')
 const JSDaemon = require('../utils/interop-daemon-spawner/js')
 
+// TODO: These tests are mainly NYI. 
+// JS Pubsub is broken, https://github.com/ipfs/js-ipfs/issues/1068#issuecomment-345086825
 describe('pubsub', () => {
   let jsD
   let goD
+  let jsID
+  let goID
 
-  before((done) => {
-    goD = new GODaemon()
-    jsD = new JSDaemon({ port: 73 })
+  before(function (done) {
+    this.timeout(50 * 1000)
+    
+    goD = new GODaemon({
+      disposable: true,
+      init: true,
+      flags: ['--enable-pubsub-experiment']
+    })
+    jsD = new JSDaemon()
 
     parallel([
-      (cb) => goD.start(cb),
-      (cb) => jsD.start(cb)
-    ], done)
+      (cb) => goD.start(() => {
+        goD.api.id((err, data) => {
+          if (err) return cb(err)
+          goID = data.id
+          cb(err)
+        })
+      }),
+      (cb) => jsD.start(() => {
+        jsD.api.id((err, data) => {
+          jsID = data.id
+          cb(err)
+        })
+      }),
+    ], (done))
   })
 
   after((done) => {
@@ -32,7 +53,7 @@ describe('pubsub', () => {
     ], done)
   })
 
-  it('make connections', (done) => {
+  it.skip('make connections', (done) => {
     parallel([
       (cb) => jsD.api.id(cb),
       (cb) => goD.api.id(cb)
@@ -50,6 +71,16 @@ describe('pubsub', () => {
   })
 
   it.skip('publish from Go, subscribe on JS', (done) => {
-    // TODO write this test
+    const topic = 'pubsub-go-js'
+    const data = Buffer.from('hello world')
+
+    function checkMessage () {
+      console.log('check message', arguments)
+    }
+
+    series([
+      cb => jsD.api.pubsub.subscribe(topic, checkMessage, cb),
+      cb => goD.api.pubsub.publish(topic, data, cb)
+    ], done)
   })
 })
