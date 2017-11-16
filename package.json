@@ -10,16 +10,16 @@
     "http": "stream-http"
   },
   "scripts": {
-    "test": "aegir test --no-parallel",
-    "test:node": "aegir test --target node --no-parallel",
-    "test:browser": "aegir test --target browser",
+    "test": "aegir test ",
+    "test:node": "aegir test -t node ",
+    "test:browser": "aegir test -t browser",
     "lint": "aegir lint",
     "build": "aegir build",
-    "release": "aegir release --no-parallel",
-    "release-minor": "aegir release --type minor --no-parallel",
-    "release-major": "aegir release --type major --no-parallel",
-    "coverage": "aegir coverage --no-parallel --timeout 100000",
-    "coverage-publish": "aegir coverage --provider coveralls --no-parallel --timeout 100000"
+    "release": "aegir release ",
+    "release-minor": "aegir release --type minor ",
+    "release-major": "aegir release --type major ",
+    "coverage": "aegir coverage --timeout 100000",
+    "coverage-publish": "aegir coverage --provider coveralls k--timeout 100000"
   },
   "dependencies": {
     "async": "^2.6.0",
