@@ -7,6 +7,11 @@ log.error = debug('jsipfs:http-api:files:error')
 
 exports = module.exports
 
+const fileTypeMap = {
+  file: 'File',
+  dir: 'Directory'
+}
+
 // common pre request handler that parses the args and returns `key` which is assigned to `request.pre.args`
 exports.parseKey = (request, reply) => {
   if (!request.query.arg) {
@@ -76,7 +81,7 @@ exports.ls = {
           Name: file.name,
           Hash: file.hash,
           Size: file.size,
-          Type: file.type
+          Type: fileTypeMap[file.type] || file.type
         }))
       }
       reply(res)
