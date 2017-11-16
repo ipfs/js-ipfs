@@ -274,3 +274,47 @@ exports.add = {
     )
   }
 }
+
+exports.immutableLs = {
+  // uses common parseKey method that returns a `key`
+  parseArgs: exports.parseKey,
+
+  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+  handler: (request, reply) => {
+    const key = request.pre.args.key
+    const ipfs = request.server.app.ipfs
+
+    ipfs.ls(key, (err, files) => {
+      if (err) {
+        reply({
+          Message: 'Failed to list dir: ' + err.message,
+          Code: 0
+        }).code(500)
+      }
+
+      reply({
+        Objects: [{
+          Hash: key,
+          Links: files.map((file) => ({
+            Name: file.name,
+            Hash: file.hash,
+            Size: file.size,
+            Type: toTypeCode(file.type)
+          }))
+        }]
+      })
+    })
+  }
+}
+
+function toTypeCode (type) {
+  switch (type) {
+    case 'dir':
+      return 1
+    case 'file':
+      return 2
+    default:
+      return 0
+  }
+}
+
