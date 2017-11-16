@@ -16,7 +16,7 @@ const fileTypeMap = {
   dir: 'Directory'
 }
 
-function toFileObject(file) {
+function toFileObject (file) {
   const fo = {
     Hash: toB58String(file.hash),
     Size: file.size,
@@ -25,7 +25,7 @@ function toFileObject(file) {
   if (fo.Hash !== file.name) {
     fo.Name = file.name
   }
-  return fo;
+  return fo
 }
 
 // common pre request handler that parses the args and returns `key` which is assigned to `request.pre.args`
@@ -99,7 +99,7 @@ exports.ls = {
             let id = toB58String(file.hash)
             res.Arguments[path] = id
             res.Objects[id] = toFileObject(file)
-            res.Objects[id].Links = file.type === 'file' ? null : links;
+            res.Objects[id].Links = file.type === 'file' ? null : links
           } else {
             links.push(toFileObject(file))
           }
