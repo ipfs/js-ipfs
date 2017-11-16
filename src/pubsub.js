@@ -375,14 +375,14 @@ module.exports = (common) => {
 
             const sub1 = (msg) => {
               expect(msg.data.toString()).to.be.eql(expectedString)
-              expect(msg.from).to.be.eql(ipfs2.peerId.id)
+              expect(msg.from).to.eql(ipfs2.peerId.id)
               ipfs1.pubsub.unsubscribe(topic, sub1)
               check()
             }
 
             const sub2 = (msg) => {
               expect(msg.data.toString()).to.be.eql(expectedString)
-              expect(msg.from).to.be.eql(ipfs2.peerId.id)
+              expect(msg.from).to.eql(ipfs2.peerId.id)
               ipfs2.pubsub.unsubscribe(topic, sub2)
               check()
             }
@@ -407,7 +407,7 @@ module.exports = (common) => {
             const sub1 = (msg) => {
               try {
                 expect(msg.data.toString('hex')).to.be.eql(expectedHex)
-                expect(msg.from).to.be.eql(ipfs2.peerId.id)
+                expect(msg.from).to.eql(ipfs2.peerId.id)
                 check()
               } catch (err) {
                 check(err)
@@ -418,8 +418,8 @@ module.exports = (common) => {
 
             const sub2 = (msg) => {
               try {
-                expect(msg.data.toString('hex')).to.be.eql(expectedHex)
-                expect(msg.from).to.be.eql(ipfs2.peerId.id)
+                expect(msg.data.toString('hex')).to.eql(expectedHex)
+                expect(msg.from).to.eql(ipfs2.peerId.id)
                 check()
               } catch (err) {
                 check(err)
@@ -449,15 +449,15 @@ module.exports = (common) => {
               ipfs1.pubsub.unsubscribe(topic, sub1)
               ipfs2.pubsub.unsubscribe(topic, sub2)
 
-              expect(inbox1.sort()).to.be.eql(outbox.sort())
-              expect(inbox2.sort()).to.be.eql(outbox.sort())
+              expect(inbox1.sort()).to.eql(outbox.sort())
+              expect(inbox2.sort()).to.eql(outbox.sort())
 
               done(err)
             })
 
             function sub1 (msg) {
               inbox1.push(msg.data.toString())
-              expect(msg.from).to.be.eql(ipfs2.peerId.id)
+              expect(msg.from).to.eql(ipfs2.peerId.id)
               check()
             }
 
