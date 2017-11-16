@@ -1,3 +1,13 @@
+<a name="0.35.0"></a>
+# [0.35.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.34.3...v0.35.0) (2017-11-16)
+
+
+### Bug Fixes
+
+* **pubsub:** topicCIDs should be topicIDs ([#169](https://github.com/ipfs/interface-ipfs-core/issues/169)) ([d357f5f](https://github.com/ipfs/interface-ipfs-core/commit/d357f5f))
+
+
+
 <a name="0.34.3"></a>
 ## [0.34.3](https://github.com/ipfs/interface-ipfs-core/compare/v0.34.2...v0.34.3) (2017-11-14)
 
