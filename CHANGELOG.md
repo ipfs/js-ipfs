@@ -1,3 +1,13 @@
+<a name="16.0.0"></a>
+# [16.0.0](https://github.com/ipfs/js-ipfs-api/compare/v15.1.0...v16.0.0) (2017-11-16)
+
+
+### Bug Fixes
+
+* pubsub message fields ([#627](https://github.com/ipfs/js-ipfs-api/issues/627)) ([470777d](https://github.com/ipfs/js-ipfs-api/commit/470777d))
+
+
+
 <a name="15.1.0"></a>
 # [15.1.0](https://github.com/ipfs/js-ipfs-api/compare/v15.0.2...v15.1.0) (2017-11-14)
 
