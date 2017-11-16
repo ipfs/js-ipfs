@@ -122,7 +122,7 @@ module.exports = (common) => {
               expect(msg.data.toString()).to.equal('hi')
               expect(msg).to.have.property('seqno')
               expect(Buffer.isBuffer(msg.seqno)).to.be.eql(true)
-              expect(msg).to.have.property('topicCIDs').eql([topic])
+              expect(msg).to.have.property('topicIDs').eql([topic])
               expect(msg).to.have.property('from', ipfs1.peerId.id)
 
               ipfs1.pubsub.unsubscribe(topic, handler)
