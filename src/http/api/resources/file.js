@@ -1,18 +1,9 @@
 'use strict'
 
 const mh = require('multihashes')
-const multipart = require('ipfs-multipart')
 const debug = require('debug')
-const tar = require('tar-stream')
 const log = debug('jsipfs:http-api:files')
 log.error = debug('jsipfs:http-api:files:error')
-const pull = require('pull-stream')
-const toPull = require('stream-to-pull-stream')
-const pushable = require('pull-pushable')
-const toStream = require('pull-stream-to-stream')
-const abortable = require('pull-abortable')
-const Joi = require('joi')
-const ndjson = require('pull-ndjson')
 
 exports = module.exports
 
@@ -89,7 +80,6 @@ exports.ls = {
         }))
       }
       reply(res)
-      
     })
   }
 }

@@ -5,7 +5,6 @@ const resources = require('./../resources')
 module.exports = (server) => {
   const api = server.select('API')
 
-
   api.route({
     // TODO fix method
     method: '*',
