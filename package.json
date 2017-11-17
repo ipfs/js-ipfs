@@ -6,9 +6,9 @@
   "scripts": {
     "test": "exit 0",
     "lint": "aegir lint",
-    "release": "aegir release node --no-docs",
-    "release-minor": "aegir release node --type minor --no-docs",
-    "release-major": "aegir release node --type major --no-docs",
+    "release": "aegir release -t node --no-docs",
+    "release-minor": "aegir release -t node --type minor --no-docs",
+    "release-major": "aegir release -t node --type major --no-docs",
     "coverage": "exit 0",
     "coverage-publish": "exit 0"
   },
@@ -35,6 +35,7 @@
     "bl": "^1.2.1",
     "bs58": "^4.0.1",
     "chai": "^4.1.2",
+    "dirty-chai": "^2.0.1",
     "cids": "~0.5.2",
     "concat-stream": "^1.6.0",
     "detect-node": "^2.0.3",
@@ -45,9 +46,9 @@
     "multihashes": "~0.4.12",
     "multihashing-async": "~0.4.7",
     "peer-id": "~0.10.2",
-    "pull-stream": "^3.6.1",
-    "dirty-chai": "^2.0.1"
+    "pull-stream": "^3.6.1"
   },
+  "devDependencies": {},
   "contributors": [
     "David Dias <daviddias.p@gmail.com>",
     "Dmitriy Ryajov <dryajov@gmail.com>",
