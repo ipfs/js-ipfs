@@ -141,7 +141,6 @@ module.exports = function files (self) {
         }
 
         const content = files[files.length - 1].content
-        console.log('do I resolve?', content)
         d.resolve(content)
         // toStream.source(content).pipe(concat((data) => callback(null, data)))
       })
@@ -212,22 +211,41 @@ module.exports = function files (self) {
     catPullStream: _catPullStream,
 
     get: promisify((ipfsPath, callback) => {
-      callback(null, toStream.source(pull(
+      pull(
         exporter(ipfsPath, self._ipldResolver),
-        pull.map((file) => {
+        pull.asyncMap((file, cb) => {
           if (file.content) {
-            file.content = toStream.source(file.content)
-            file.content.pause()
-          }
+            pull(
+              file.content,
+              pull.concat((err, data) => {
+                if (err) { throw err }
 
-          return file
-        })
-      )))
+                file.content = data
+                cb(null, file)
+              })
+            )
+          } else {
+            cb(null, file)
+          }
+        }),
+        pull.collect(callback)
+      )
     }),
 
     getReadableStream: (ipfsPath) => {
-      // TODO
-      return exporter(ipfsPath, self._ipldResolver)
+      return toStream.source(
+        pull(
+          exporter(ipfsPath, self._ipldResolver),
+          pull.map((file) => {
+            if (file.content) {
+              file.content = toStream.source(file.content)
+              file.content.pause()
+            }
+
+            return file
+          })
+        )
+      )
     },
 
     getPullStream: (ipfsPath) => {
