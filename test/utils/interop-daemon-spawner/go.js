@@ -40,7 +40,8 @@ class GoDaemon {
         this.node = node
         this.node.setConfig('Bootstrap', '[]', cb)
       },
-      (res, cb) => this.node.startDaemon(this.flags, cb),
+      (res, cb) => this.node.startDaemon(cb),
+      // (res, cb) => this.node.startDaemon(this.flags, cb),
       (api, cb) => {
         this.api = api
 
