@@ -9,7 +9,7 @@ chai.use(dirtyChai)
 const parallel = require('async/parallel')
 const IPFSFactory = require('../utils/ipfs-factory-instance')
 
-describe.skip('verify that kad-dht is doing its thing', () => {
+describe('verify that kad-dht is doing its thing', () => {
   let factory
   let nodeA
   let nodeB
@@ -20,6 +20,7 @@ describe.skip('verify that kad-dht is doing its thing', () => {
 
   before((done) => {
     factory = new IPFSFactory()
+
     parallel([
       (cb) => factory.spawnNode(cb),
       (cb) => factory.spawnNode(cb),
@@ -49,7 +50,7 @@ describe.skip('verify that kad-dht is doing its thing', () => {
   after((done) => factory.dismantle(done))
 
   it('add a file in C, fetch through B in A', function (done) {
-    this.timeout(40 * 1000)
+    this.timeout(10 * 1000)
 
     const file = {
       path: 'testfile.txt',

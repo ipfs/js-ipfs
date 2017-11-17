@@ -87,31 +87,32 @@ exports.get = {
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
-    const key = request.pre.args.key
+    const cid = request.pre.args.key
     const ipfs = request.server.app.ipfs
     const pack = tar.pack()
 
-    const stream = ipfs.files.getPullStream(key)
+    const stream = ipfs.files.getPullStream(cid)
 
     pull(
       stream,
       pull.asyncMap((file, cb) => {
         const header = { name: file.path }
-        if (!file.content) {
+
+        if (file.content) {
+          header.size = file.size
+          const ps = pack.entry(header, cb)
+          // in case request has been aborted
+          if (!ps) {
+            log('other side hung up')
+          } else {
+            toStream.source(file.content).pipe(ps)
+          }
+        } else {
           header.type = 'directory'
           pack.entry(header)
-          cb()
-        } else {
-          header.size = file.size
-          const packStream = pack.entry(header, cb)
-          if (!packStream) {
-            // this happens if the request is aborted
-            // we just skip things then
-            log('other side hung up')
-            return cb()
-          }
-          toStream.source(file.content).pipe(packStream)
         }
+
+        cb()
       }),
       pull.onEnd((err) => {
         if (err) {
