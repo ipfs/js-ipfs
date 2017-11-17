@@ -244,6 +244,24 @@ describe('create node', function () {
     ], done)
   })
 
+  it('stop as promised', function (done) {
+    const node = new IPFS({
+      repo: createTempRepo(),
+      config: {
+        Addresses: {
+          Swarm: []
+        },
+        Bootstrap: []
+      }
+    })
+
+    node.once('ready', () => {
+      node.stop()
+        .then(done)
+        .catch(done)
+    })
+  })
+
   it('can start node twice without crash', function (done) {
     const options = {
       repo: createTempRepo(),

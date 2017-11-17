@@ -317,4 +317,3 @@ function toTypeCode (type) {
       return 0
   }
 }
-
