@@ -251,7 +251,7 @@ exports.add = {
 
     pull(
       fileAdder,
-      ipfs.files.createAddPullStream(options),
+      ipfs.files.addPullStream(options),
       pull.map((file) => {
         return {
           Name: file.path ? file.path : file.hash,

@@ -142,7 +142,6 @@ module.exports = function files (self) {
 
         const content = files[files.length - 1].content
         d.resolve(content)
-        // toStream.source(content).pipe(concat((data) => callback(null, data)))
       })
     )
 
