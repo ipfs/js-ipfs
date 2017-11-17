@@ -209,7 +209,10 @@ module.exports = function files (self) {
       const p = _catPullStream(ipfsPath)
       pull(
         p,
-        pull.reduce((a, b) => Buffer.concat([a, b]), Buffer.alloc(0), callback)
+        pull.collect((err, buffers) => {
+          if (err) { return callback(err) }
+          callback(null, Buffer.concat(buffers))
+        })
       )
     }),
 
@@ -228,10 +231,9 @@ module.exports = function files (self) {
           if (file.content) {
             pull(
               file.content,
-              pull.reduce((a, b) => Buffer.concat([a, b]), Buffer.alloc(0), (err, data) => {
-                if (err) { throw err }
-
-                file.content = data
+              pull.collect((err, buffers) => {
+                if (err) { return cb(err) }
+                file.content = Buffer.concat(buffers)
                 cb(null, file)
               })
             )
