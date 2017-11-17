@@ -113,7 +113,9 @@ class IPFS extends EventEmitter {
     this.state = require('./state')(this)
 
     // ipfs.ls
-    this.ls = this.files.immutableLs
+    this.ls = this.files.lsImmutable
+    this.lsReadableStream = this.files.lsReadableStreamImmutable
+    this.lsPullStream = this.files.lsPullStreamImmutable
 
     boot(this)
   }
