@@ -17,6 +17,7 @@ const concat = require('concat-stream')
 const through = require('through2')
 const path = require('path')
 const bl = require('bl')
+const isNode = require('detect-node')
 
 module.exports = (common) => {
   describe('.files', function () {
@@ -161,6 +162,9 @@ module.exports = (common) => {
       })
 
       it('add a nested directory as array of tupples', (done) => {
+        // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
+        if (!isNode) { return done() }
+
         const content = (name) => ({
           path: `test-folder/${name}`,
           content: directory.files[name]
@@ -190,6 +194,9 @@ module.exports = (common) => {
       })
 
       it('add a nested directory as array of tuppled with progress', (done) => {
+        // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
+        if (!isNode) { return done() }
+
         const content = (name) => ({
           path: `test-folder/${name}`,
           content: directory.files[name]
@@ -251,8 +258,9 @@ module.exports = (common) => {
     })
 
     describe('.addReadableStream', () => {
-      it('stream of valid files and dirs', function (done) {
-        this.timeout(40 * 1000)
+      it('stream of valid files and dirs', (done) => {
+        // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
+        if (!isNode) { return done() }
 
         const content = (name) => ({
           path: `test-folder/${name}`,
@@ -291,8 +299,9 @@ module.exports = (common) => {
     })
 
     describe('.addPullStream', () => {
-      it('stream of valid files and dirs', function (done) {
-        this.timeout(20 * 1000)
+      it('stream of valid files and dirs', (done) => {
+        // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
+        if (!isNode) { return done() }
 
         const content = (name) => ({
           path: `test-folder/${name}`,
@@ -495,8 +504,9 @@ module.exports = (common) => {
         })
       })
 
-      it('directory', function (done) {
-        this.timeout(40 * 1000)
+      it('directory', (done) => {
+        // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
+        if (!isNode) { return done() }
 
         series([
           (cb) => {
@@ -668,8 +678,10 @@ module.exports = (common) => {
     })
 
     describe('.ls', () => {
-      before(function (done) {
-        this.timeout(20 * 1000)
+      before((done) => {
+        // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
+        if (!isNode) { return done() }
+
         const content = (name) => ({
           path: `test-folder/${name}`,
           content: directory.files[name]
@@ -699,6 +711,9 @@ module.exports = (common) => {
       })
 
       it('with a base58 encoded CID', (done) => {
+        // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
+        if (!isNode) { return done() }
+
         const cid = 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'
         ipfs.ls(cid, (err, files) => {
           expect(err).to.not.exist()
@@ -763,8 +778,9 @@ module.exports = (common) => {
     })
 
     describe('.lsReadableStream', () => {
-      before(function (done) {
-        this.timeout(40 * 1000)
+      before((done) => {
+        // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
+        if (!isNode) { return done() }
 
         const content = (name) => ({
           path: `test-folder/${name}`,
@@ -795,6 +811,9 @@ module.exports = (common) => {
       })
 
       it('with a base58 encoded CID', (done) => {
+        // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
+        if (!isNode) { return done() }
+
         const cid = 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'
         const stream = ipfs.lsReadableStream(cid)
 
@@ -843,8 +862,10 @@ module.exports = (common) => {
     })
 
     describe('.lsPullStream', () => {
-      before(function (done) {
-        this.timeout(40 * 1000)
+      before((done) => {
+        // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
+        if (!isNode) { return done() }
+
         const content = (name) => ({
           path: `test-folder/${name}`,
           content: directory.files[name]
@@ -874,6 +895,9 @@ module.exports = (common) => {
       })
 
       it('with a base58 encoded CID', (done) => {
+        // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
+        if (!isNode) { return done() }
+
         const cid = 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'
         const stream = ipfs.lsPullStream(cid)
 
