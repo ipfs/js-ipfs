@@ -76,23 +76,20 @@ function createFileBlob (data, multihash) {
 }
 
 function getFile () {
-  const multihash = $multihashInput.value
+  const cid = $multihashInput.value
 
   $multihashInput.value = ''
 
   $errors.className = 'hidden'
 
-  if (!multihash) {
-    return console.log('no multihash was inserted')
-  }
+  if (!cid) { return console.log('no multihash was inserted') }
 
-  node.files.get(multihash, (err, files) => {
+  node.files.get(cid, (err, files) => {
     if (err) { return onError(err) }
 
     files.forEach((file) => {
       if (file.content) {
-        console.log('-> typeof', typeof file.content)
-        const listItem = createFileBlob(file.content, multihash)
+        const listItem = createFileBlob(file.content, cid)
         $filesList.insertBefore(listItem, $filesList.firstChild)
       }
     })
@@ -132,21 +129,19 @@ function onDrop (event) {
         const fileStream = new ReadableStreamBuffer({ chunkSize: 32048 })
         if (!fileStream.destroy) { fileStream.destroy = () => {} }
 
-        // TODO change this to use a pull-stream instead! :)
-        const stream = node.files.addReadableStream()
-
-        stream.on('data', (fileAdded) => {
-          $multihashInput.value = fileAdded.hash
-          $filesStatus.innerHTML = `Added ${fileAdded.path} as ${fileAdded.hash}`
-        })
-
-        stream.write({ path: file.name, content: fileStream })
-
         fileStream.put(Buffer.from(buffer))
         fileStream.stop()
 
-        fileStream.on('end', () => stream.end())
-        fileStream.resume()
+        node.files.add([{
+          path: file.name,
+          content: fileStream
+        }], (err, filesAdded) => {
+          if (err) { return onError(err) }
+
+          const f = filesAdded[0]
+          $multihashInput.value = f.hash
+          $filesStatus.innerHTML = `Added ${f.path} as ${f.hash}`
+        })
       })
       .catch(onError)
   })
