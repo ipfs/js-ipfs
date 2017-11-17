@@ -30,13 +30,7 @@ module.exports = (self) => {
     self._bitswap.stop()
 
     series([
-      (cb) => {
-        if (self._options.EXPERIMENTAL.pubsub) {
-          self._pubsub.stop(cb)
-        } else {
-          cb()
-        }
-      },
+      (cb) => self._pubsub.stop(cb),
       (cb) => self.libp2p.stop(cb),
       (cb) => self._repo.close(cb)
     ], done)
