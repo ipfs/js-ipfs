@@ -1,8 +1,6 @@
 'use strict'
 
 const utils = require('../utils')
-const Unixfs = require('ipfs-unixfs')
-const pull = require('pull-stream')
 
 module.exports = {
   command: 'ls <key>',
