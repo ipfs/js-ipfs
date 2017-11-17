@@ -1,6 +1,7 @@
 'use strict'
 
 const PassThrough = require('stream').PassThrough
+const bs58 = require('bs58')
 
 exports = module.exports
 
@@ -20,10 +21,10 @@ exports.subscribe = {
 
     const handler = (msg) => {
       res.write(JSON.stringify({
-        from: msg.from,
+        from: bs58.decode(msg.from).toString('base64'),
         data: msg.data.toString('base64'),
         seqno: msg.seqno.toString('base64'),
-        topicCIDs: msg.topicCIDs
+        topicIDs: msg.topicIDs
       }) + '\n', 'utf8')
     }
 
