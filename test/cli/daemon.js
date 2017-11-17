@@ -60,7 +60,7 @@ function testSignal (ipfs, sig) {
   })
 }
 
-describe.only('daemon', () => {
+describe('daemon', () => {
   let repoPath
   let ipfs
 
