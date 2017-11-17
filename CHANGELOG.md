@@ -1,3 +1,13 @@
+<a name="17.0.0"></a>
+# [17.0.0](https://github.com/ipfs/js-ipfs-api/compare/v16.0.0...v17.0.0) (2017-11-17)
+
+
+### Features
+
+* Implementing the new interfaces ([#619](https://github.com/ipfs/js-ipfs-api/issues/619)) ([e1b38bf](https://github.com/ipfs/js-ipfs-api/commit/e1b38bf))
+
+
+
 <a name="16.0.0"></a>
 # [16.0.0](https://github.com/ipfs/js-ipfs-api/compare/v15.1.0...v16.0.0) (2017-11-16)
 
