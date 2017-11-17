@@ -9,6 +9,7 @@ const sort = require('pull-sort')
 const pushable = require('pull-pushable')
 const toStream = require('pull-stream-to-stream')
 const toPull = require('stream-to-pull-stream')
+const deferred = require('pull-defer')
 const waterfall = require('async/waterfall')
 const isStream = require('is-stream')
 const Duplex = require('readable-stream').Duplex
@@ -124,6 +125,31 @@ module.exports = function files (self) {
     )
   }
 
+  function _catPullStream (ipfsPath) {
+    if (typeof ipfsPath === 'function') {
+      throw new Error('You must supply an ipfsPath')
+    }
+
+    const d = deferred.source()
+
+    pull(
+      exporter(ipfsPath, self._ipldResolver),
+      pull.collect((err, files) => {
+        if (err) { d.end(err) }
+        if (!files || !files.length) {
+          return d.end(new Error('No such file'))
+        }
+
+        const content = files[files.length - 1].content
+        console.log('do I resolve?', content)
+        d.resolve(content)
+        // toStream.source(content).pipe(concat((data) => callback(null, data)))
+      })
+    )
+
+    return d
+  }
+
   return {
     add: promisify((data, options, callback) => {
       if (typeof options === 'function') {
@@ -170,29 +196,20 @@ module.exports = function files (self) {
     addPullStream: _addPullStream,
 
     cat: promisify((ipfsPath, callback) => {
-      if (typeof ipfsPath === 'function') {
-        return callback(new Error('You must supply an ipfsPath'))
-      }
-
+      const p = _catPullStream(ipfsPath)
       pull(
-        exporter(ipfsPath, self._ipldResolver),
-        pull.collect((err, files) => {
-          if (err) { return callback(err) }
-          if (!files || !files.length) {
-            return callback(new Error('No such file'))
-          }
-          callback(null, toStream.source(files[files.length - 1].content))
-        })
+        p,
+        pull.concat(callback)
       )
     }),
 
     catReadableStream: (ipfsPath) => {
-      // TODO
+      const p = _catPullStream(ipfsPath)
+
+      return toStream.source(p)
     },
 
-    catPullStream: (ipfsPath) => {
-      // TODO
-    },
+    catPullStream: _catPullStream,
 
     get: promisify((ipfsPath, callback) => {
       callback(null, toStream.source(pull(
