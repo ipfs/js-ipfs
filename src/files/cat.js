@@ -3,6 +3,7 @@
 const promisify = require('promisify-es6')
 const cleanCID = require('../utils/clean-cid')
 const v = require('is-ipfs')
+const bl = require('bl')
 
 module.exports = (send) => {
   return promisify((hash, opts, callback) => {
@@ -19,10 +20,14 @@ module.exports = (send) => {
       }
     }
 
-    send({
-      path: 'cat',
-      args: hash,
-      buffer: opts.buffer
-    }, callback)
+    send({ path: 'cat', args: hash, buffer: opts.buffer }, (err, stream) => {
+      if (err) { return callback(err) }
+
+      stream.pipe(bl((err, data) => {
+        if (err) { return callback(err) }
+
+        callback(null, data)
+      }))
+    })
   })
 }

@@ -19,7 +19,7 @@
     "release-minor": "aegir release --type minor ",
     "release-major": "aegir release --type major ",
     "coverage": "aegir coverage --timeout 100000",
-    "coverage-publish": "aegir coverage --provider coveralls k--timeout 100000"
+    "coverage-publish": "aegir coverage --provider coveralls --timeout 100000"
   },
   "dependencies": {
     "async": "^2.6.0",
@@ -45,9 +45,13 @@
     "peer-info": "~0.11.1",
     "promisify-es6": "^1.0.3",
     "pump": "^1.0.3",
+    "pull": "^2.1.1",
+    "pull-defer": "^0.2.2",
+    "pull-pushable": "^2.1.1",
     "qs": "^6.5.1",
     "readable-stream": "^2.3.3",
     "stream-http": "^2.7.2",
+    "stream-to-pull-stream": "^1.7.2",
     "streamifier": "^0.1.1",
     "tar-stream": "^1.5.5"
   },
@@ -65,7 +69,7 @@
     "dirty-chai": "^2.0.1",
     "eslint-plugin-react": "^7.4.0",
     "gulp": "^3.9.1",
-    "interface-ipfs-core": "~0.35.0",
+    "interface-ipfs-core": "~0.36.4",
     "hapi": "^16.6.2",
     "ipfsd-ctl": "~0.24.1",
     "pre-commit": "^1.2.2",

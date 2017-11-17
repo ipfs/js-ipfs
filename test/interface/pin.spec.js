@@ -3,7 +3,7 @@
 'use strict'
 
 const test = require('interface-ipfs-core')
-const FactoryClient = require('./ipfs-factory/client')
+const FactoryClient = require('../ipfs-factory/client')
 
 let fc
 
