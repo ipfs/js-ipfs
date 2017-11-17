@@ -15,6 +15,7 @@ const Readable = require('readable-stream').Readable
 const pull = require('pull-stream')
 const concat = require('concat-stream')
 const through = require('through2')
+const path = require('path')
 const bl = require('bl')
 
 module.exports = (common) => {
@@ -129,6 +130,15 @@ module.exports = (common) => {
         })
       })
 
+      it('add by path fails', (done) => {
+        const validPath = path.join(process.cwd() + '/package.json')
+
+        ipfs.files.add(validPath, (err, res) => {
+          expect(err).to.exist()
+          done()
+        })
+      })
+
       it('a Readable Stream', (done) => {
         const expectedCid = 'QmVv4Wz46JaZJeH5PMV4LGbRiiMKEmszPYY3g6fjGnVXBS'
 
@@ -209,14 +219,14 @@ module.exports = (common) => {
           accumProgress += p
         }
 
-        ipfs.files.add(dirs, { progress: handler }, (err, res) => {
+        ipfs.files.add(dirs, { progress: handler }, (err, filesAdded) => {
           expect(err).to.not.exist()
-          const root = res[res.length - 1]
+          const root = filesAdded[filesAdded.length - 1]
 
-          expect(root.path).to.equal('test-folder')
-          expect(root.hash).to.equal(directory.cid)
           expect(progCount).to.equal(8)
           expect(accumProgress).to.be.at.least(total)
+          expect(root.path).to.equal('test-folder')
+          expect(root.hash).to.equal(directory.cid)
           done()
         })
       })
@@ -726,6 +736,22 @@ module.exports = (common) => {
               hash: 'QmVwdDCY4SPGVFnNCiZnX5CtzwWDn6kAM98JXzKxE3kCmn',
               type: 'file' }
           ])
+          done()
+        })
+      })
+
+      it('should correctly handle a non existing hash', (done) => {
+        ipfs.ls('surelynotavalidhashheh?', (err, res) => {
+          expect(err).to.exist()
+          expect(res).to.not.exist()
+          done()
+        })
+      })
+
+      it('should correctly handle a non exiting path', (done) => {
+        ipfs.ls('QmRNjDeKStKGTQXnJ2NFqeQ9oW/folder_that_isnt_there', (err, res) => {
+          expect(err).to.exist()
+          expect(res).to.not.exist()
           done()
         })
       })
