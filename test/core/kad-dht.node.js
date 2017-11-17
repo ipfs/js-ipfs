@@ -60,7 +60,6 @@ describe('verify that kad-dht is doing its thing', () => {
     nodeC.files.add(file, (err, filesAdded) => {
       expect(err).to.not.exist()
 
-      console.log('going to cat')
       nodeA.files.cat(filesAdded[0].hash, (err, data) => {
         expect(err).to.not.exist()
         expect(data.length).to.equal(file.data.length)
