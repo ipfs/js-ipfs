@@ -91,53 +91,43 @@ exports.get = {
     const ipfs = request.server.app.ipfs
     const pack = tar.pack()
 
-    ipfs.files.getPull(key, (err, stream) => {
-      if (err) {
-        log.error(err)
+    const stream = ipfs.files.getPullStream(key)
 
-        reply({
-          Message: 'Failed to get file: ' + err,
-          Code: 0
-        }).code(500)
-        return
-      }
-
-      pull(
-        stream,
-        pull.asyncMap((file, cb) => {
-          const header = { name: file.path }
-          if (!file.content) {
-            header.type = 'directory'
-            pack.entry(header)
-            cb()
-          } else {
-            header.size = file.size
-            const packStream = pack.entry(header, cb)
-            if (!packStream) {
-              // this happens if the request is aborted
-              // we just skip things then
-              log('other side hung up')
-              return cb()
-            }
-            toStream.source(file.content).pipe(packStream)
+    pull(
+      stream,
+      pull.asyncMap((file, cb) => {
+        const header = { name: file.path }
+        if (!file.content) {
+          header.type = 'directory'
+          pack.entry(header)
+          cb()
+        } else {
+          header.size = file.size
+          const packStream = pack.entry(header, cb)
+          if (!packStream) {
+            // this happens if the request is aborted
+            // we just skip things then
+            log('other side hung up')
+            return cb()
           }
-        }),
-        pull.onEnd((err) => {
-          if (err) {
-            log.error(err)
-            pack.emit('error', err)
-            pack.destroy()
-            return
-          }
+          toStream.source(file.content).pipe(packStream)
+        }
+      }),
+      pull.onEnd((err) => {
+        if (err) {
+          log.error(err)
+          pack.emit('error', err)
+          pack.destroy()
+          return
+        }
 
-          pack.finalize()
-        })
-      )
+        pack.finalize()
+      })
+    )
 
-      // the reply must read the tar stream,
-      // to pull values through
-      reply(pack).header('X-Stream-Output', '1')
-    })
+    // the reply must read the tar stream,
+    // to pull values through
+    reply(pack).header('X-Stream-Output', '1')
   }
 }
 

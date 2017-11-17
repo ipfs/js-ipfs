@@ -13,10 +13,6 @@ matrix:
 script:
   - npm run lint
   - npm run test
-  # latest Aegir was skipping these
-  - npm run test:unit:node:http
-  - npm run test:unit:node:gateway
-  - npm run test:unit:node:cli
   - npm run coverage
   - make test
 
