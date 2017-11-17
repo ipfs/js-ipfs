@@ -87,8 +87,10 @@ function getFile () {
 
     files.forEach((file) => {
       if (file.content) {
-        const listItem = createFileBlob(file.content, cid)
-        $filesList.insertBefore(listItem, $filesList.firstChild)
+        console.log('Fetched file:', cid, file.content.length)
+        // calling createFileBlob makes the Chrome go "Oh Snap"
+        // const listItem = createFileBlob(file.content, cid)
+        // $filesList.insertBefore(listItem, $filesList.firstChild)
       }
     })
   })
