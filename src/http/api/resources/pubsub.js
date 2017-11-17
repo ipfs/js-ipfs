@@ -48,6 +48,7 @@ exports.subscribe = {
 
       reply(res)
         .header('X-Chunked-Output', '1')
+        .header('content-encoding', 'identity') // stop gzip from buffering, see https://github.com/hapijs/hapi/issues/2975
         .header('content-type', 'application/json')
     })
   }
