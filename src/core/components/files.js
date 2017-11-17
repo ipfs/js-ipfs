@@ -210,7 +210,7 @@ module.exports = function files (self) {
       const p = _catPullStream(ipfsPath)
       pull(
         p,
-        pull.concat(callback)
+        pull.concat((err, data) => callback(err, Buffer.from(data)))
       )
     }),
 
@@ -232,7 +232,7 @@ module.exports = function files (self) {
               pull.concat((err, data) => {
                 if (err) { throw err }
 
-                file.content = data
+                file.content = Buffer.from(data)
                 cb(null, file)
               })
             )
