@@ -20,8 +20,6 @@ const $details = document.querySelector('#details')
 const $allDisabledButtons = document.querySelectorAll('button:disabled')
 const $allDisabledInputs = document.querySelectorAll('input:disabled')
 const $filesList = document.querySelector('.file-list')
-const streamBuffers = require('stream-buffers')
-const ReadableStreamBuffer = streamBuffers.ReadableStreamBuffer
 
 let node
 let info
@@ -108,7 +106,7 @@ function onDrop (event) {
     return onError('IPFS must be started before files can be added')
   }
   const dt = event.dataTransfer
-  const files = dt.files
+  const filesDropped = dt.files
 
   function readFileContents (file) {
     return new Promise((resolve) => {
@@ -118,33 +116,20 @@ function onDrop (event) {
     })
   }
 
-  let filesArray = []
-  for (let i = 0; i < files.length; i++) {
-    filesArray.push(files[i])
-  }
-
-  filesArray.map((file) => {
+  for (let i = 0; i < filesDropped.length; i++) {
+    const file = filesDropped[i]
     readFileContents(file)
       .then((buffer) => {
-        const fileStream = new ReadableStreamBuffer({ chunkSize: 32048 })
-        if (!fileStream.destroy) { fileStream.destroy = () => {} }
-
-        fileStream.put(Buffer.from(buffer))
-        fileStream.stop()
-
-        node.files.add([{
-          path: file.name,
-          content: fileStream
-        }], (err, filesAdded) => {
+        node.files.add(Buffer.from(buffer), (err, filesAdded) => {
           if (err) { return onError(err) }
 
-          const f = filesAdded[0]
-          $multihashInput.value = f.hash
-          $filesStatus.innerHTML = `Added ${f.path} as ${f.hash}`
+          const fl = filesAdded[0]
+          $multihashInput.value = fl.hash
+          $filesStatus.innerHTML = `Added ${file.name} as ${fl.hash}`
         })
       })
       .catch(onError)
-  })
+  }
 }
 
 /*
