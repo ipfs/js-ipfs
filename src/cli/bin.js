@@ -52,19 +52,27 @@ if (args[0] === 'daemon' || args[0] === 'init') {
     .completion()
     .parse(args)
 } else {
-  utils.getIPFS((err, ipfs, cleanup) => {
-    if (err) { throw err }
+  // here we have to make a separate yargs instance with
+  // only the `api` option because we need this before doing
+  // the final yargs parse where the command handler is invoked..
+  yargs().option('api').parse(process.argv, (err, argv, output) => {
+    if (err) {
+      throw err
+    }
+    utils.getIPFS(argv.api, (err, ipfs, cleanup) => {
+      if (err) { throw err }
 
-    cli
-      .help()
-      .strict(false)
-      .completion()
-      .parse(args, { ipfs: ipfs }, (err, argv, output) => {
-        if (output) { print(output) }
+      cli
+        .help()
+        .strict(false)
+        .completion()
+        .parse(args, { ipfs: ipfs }, (err, argv, output) => {
+          if (output) { print(output) }
 
-        cleanup(() => {
-          if (err) { throw err }
+          cleanup(() => {
+            if (err) { throw err }
+          })
         })
-      })
+    })
   })
 }
