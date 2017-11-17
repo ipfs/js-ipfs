@@ -251,7 +251,9 @@ module.exports = (common) => {
     })
 
     describe('.addReadableStream', () => {
-      it('stream of valid files and dirs', (done) => {
+      it('stream of valid files and dirs', function (done) {
+        this.timeout(20 * 1000)
+
         const content = (name) => ({
           path: `test-folder/${name}`,
           content: directory.files[name]
@@ -664,7 +666,8 @@ module.exports = (common) => {
     })
 
     describe('.ls', () => {
-      before((done) => {
+      before(function (done) {
+        this.timeout(20 * 1000)
         const content = (name) => ({
           path: `test-folder/${name}`,
           content: directory.files[name]
@@ -758,7 +761,9 @@ module.exports = (common) => {
     })
 
     describe('.lsReadableStream', () => {
-      before((done) => {
+      before(function (done) {
+        this.timeout(20 * 1000)
+
         const content = (name) => ({
           path: `test-folder/${name}`,
           content: directory.files[name]
@@ -836,7 +841,8 @@ module.exports = (common) => {
     })
 
     describe('.lsPullStream', () => {
-      before((done) => {
+      before(function (done) {
+        this.timeout(20 * 1000)
         const content = (name) => ({
           path: `test-folder/${name}`,
           content: directory.files[name]
