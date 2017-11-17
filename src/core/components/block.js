@@ -5,14 +5,17 @@ const multihash = require('multihashes')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
 const waterfall = require('async/waterfall')
+const promisify = require('promisify-es6')
 
 module.exports = function block (self) {
   return {
-    get: (cid, callback) => {
+    get: promisify((cid, callback) => {
       cid = cleanCid(cid)
       self._blockService.get(cid, callback)
-    },
-    put: (block, options, callback) => {
+    }),
+    put: promisify((block, options, callback) => {
+      callback = callback || function noop () {}
+
       if (typeof options === 'function') {
         callback = options
         options = {}
@@ -52,12 +55,12 @@ module.exports = function block (self) {
           cb(null, block)
         })
       ], callback)
-    },
-    rm: (cid, callback) => {
+    }),
+    rm: promisify((cid, callback) => {
       cid = cleanCid(cid)
       self._blockService.delete(cid, callback)
-    },
-    stat: (cid, callback) => {
+    }),
+    stat: promisify((cid, callback) => {
       cid = cleanCid(cid)
 
       self._blockService.get(cid, (err, block) => {
@@ -69,7 +72,7 @@ module.exports = function block (self) {
           size: block.data.length
         })
       })
-    }
+    })
   }
 }
 
