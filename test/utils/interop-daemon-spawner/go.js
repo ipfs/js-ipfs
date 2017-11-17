@@ -16,6 +16,7 @@ class GoDaemon {
     this.node = null
     this.api = null
     this.config = opts.config || {}
+    this.flags = opts.flags || {}
   }
 
   start (callback) {
@@ -40,6 +41,7 @@ class GoDaemon {
         this.node.setConfig('Bootstrap', '[]', cb)
       },
       (res, cb) => this.node.startDaemon(cb),
+      // (res, cb) => this.node.startDaemon(this.flags, cb),
       (api, cb) => {
         this.api = api
 
