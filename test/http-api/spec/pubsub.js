@@ -6,9 +6,7 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-const createTempNode = ''
 
-// TODO migrate to use ipfs-factory-daemon
 module.exports = (http) => {
   describe('/pubsub', () => {
     let api
@@ -18,23 +16,8 @@ module.exports = (http) => {
     const topic = 'nonScents'
     const topicNotSubscribed = 'somethingRandom'
 
-    before((done) => {
+    before(() => {
       api = http.api.server.select('API')
-
-      createTempNode(47, (err, _ipfs) => {
-        expect(err).to.not.exist()
-        tmpNode = _ipfs
-        tmpNode.goOnline((err) => {
-          expect(err).to.not.exist()
-          done()
-        })
-      })
-    })
-
-    after((done) => {
-      setTimeout(() => {
-        tmpNode.goOffline(done)
-      }, 1000)
     })
 
     describe('/sub', () => {
