@@ -11,7 +11,24 @@ const parallel = require('async/parallel')
 const GODaemon = require('../utils/interop-daemon-spawner/go')
 const JSDaemon = require('../utils/interop-daemon-spawner/js')
 
-describe('pubsub', () => {
+/*
+ * Wait for a condition to become true.  When its true, callback is called.
+ */
+function waitFor (predicate, callback) {
+  const ttl = Date.now() + (2 * 1000)
+  const self = setInterval(() => {
+    if (predicate()) {
+      clearInterval(self)
+      callback()
+    }
+    if (Date.now() > ttl) {
+      clearInterval(self)
+      callback(new Error("waitFor time expired"))
+    }
+  }, 500)
+}
+
+describe('pubsub', function () {
   let jsD
   let goD
   let jsId
@@ -34,47 +51,115 @@ describe('pubsub', () => {
   })
 
   after((done) => {
-    series([
+    parallel([
       (cb) => goD.stop(cb),
       (cb) => jsD.stop(cb)
     ], done)
   })
 
   it('make connections', (done) => {
-    parallel([
+    series([
       (cb) => jsD.api.id(cb),
       (cb) => goD.api.id(cb)
     ], (err, ids) => {
       expect(err).to.not.exist()
 
-      jsId = ids[0].ID
-      goId = ids[0].ID
+      jsId = ids[0].id
+      goId = ids[1].id
 
-      console.log('jsId:', jsId)
-      console.log('goId:', goId)
+      const jsLocalAddr = ids[0].addresses.find(a => a.includes('127.0.0.1'))
+      const goLocalAddr = ids[1].addresses.find(a => a.includes('127.0.0.1'))
 
       parallel([
-        (cb) => jsD.api.swarm.connect(ids[1].addresses[0], cb),
-        (cb) => goD.api.swarm.connect(ids[0].addresses[0], cb)
+        (cb) => jsD.api.swarm.connect(goLocalAddr, cb),
+        (cb) => goD.api.swarm.connect(jsLocalAddr, cb)
       ], done)
     })
   })
 
-  it.skip('publish from JS, subscribe on Go', (done) => {
-    // TODO write this test
-  })
-
-  it.skip('publish from Go, subscribe on JS', (done) => {
-    const topic = 'pubsub-go-js'
+  it('publish from Go, subscribe on Go', (done) => {
+    const topic = 'pubsub-go-go'
     const data = Buffer.from('hello world')
+    let n = 0
 
-    function checkMessage () {
-      console.log('check message', arguments)
+    function checkMessage (msg) {
+      ++n
+      expect(msg.data.toString()).to.equal(data.toString())
+      expect(msg).to.have.property('seqno')
+      expect(Buffer.isBuffer(msg.seqno)).to.be.eql(true)
+      // TODO: expect(msg).to.have.property('topicIDs').eql([topic])
+      expect(msg).to.have.property('from', goId)
     }
 
     series([
-      cb => jsD.api.pubsub.subscribe(topic, checkMessage, cb),
-      cb => goD.api.pubsub.publish(topic, data, cb)
+      (cb) => goD.api.pubsub.subscribe(topic, checkMessage, cb),
+      (cb) => goD.api.pubsub.publish(topic, data, cb),
+      (cb) => waitFor(() => n === 1, cb)
+    ], done)
+  })
+
+  it('publish from JS, subscribe on JS', (done) => {
+    const topic = 'pubsub-js-js'
+    const data = Buffer.from('hello world')
+    let n = 0
+
+    function checkMessage (msg) {
+      ++n
+      expect(msg.data.toString()).to.equal(data.toString())
+      expect(msg).to.have.property('seqno')
+      expect(Buffer.isBuffer(msg.seqno)).to.be.eql(true)
+      expect(msg).to.have.property('topicIDs').eql([topic])
+      expect(msg).to.have.property('from', jsId)
+    }
+
+    series([
+      (cb) => jsD.api.pubsub.subscribe(topic, checkMessage, cb),
+      (cb) => jsD.api.pubsub.publish(topic, data, cb),
+      (cb) => waitFor(() => n === 1, cb)
+    ], done)
+  })
+
+  it('publish from JS, subscribe on Go', (done) => {
+    const topic = 'pubsub-js-go'
+    const data = Buffer.from('hello world')
+    let n = 0
+
+    function checkMessage (msg) {
+      console.log('check message', msg)
+      ++n
+      expect(msg.data.toString()).to.equal(data.toString())
+      expect(msg).to.have.property('seqno')
+      expect(Buffer.isBuffer(msg.seqno)).to.be.eql(true)
+      expect(msg).to.have.property('topicIDs').eql([topic])
+      expect(msg).to.have.property('from', jsId)
+    }
+
+    series([
+      (cb) => goD.api.pubsub.subscribe(topic, checkMessage, cb),
+      (cb) => jsD.api.pubsub.publish(topic, data, cb),
+      (cb) => waitFor(() => n === 1, cb)
+    ], done)
+  })
+
+  it('publish from Go, subscribe on JS', (done) => {
+    const topic = 'pubsub-go-js'
+    const data = Buffer.from('hello world')
+    let n = 0
+
+    function checkMessage (msg) {
+      console.log('check message', msg)
+      ++n
+      expect(msg.data.toString()).to.equal(data.toString())
+      expect(msg).to.have.property('seqno')
+      expect(Buffer.isBuffer(msg.seqno)).to.be.eql(true)
+      expect(msg).to.have.property('topicIDs').eql([topic])
+      expect(msg).to.have.property('from', goId)
+    }
+
+    series([
+      (cb) => jsD.api.pubsub.subscribe(topic, checkMessage, cb),
+      (cb) => goD.api.pubsub.publish(topic, data, cb),
+      (cb) => waitFor(() => n === 1, cb),
     ], done)
   })
 })
