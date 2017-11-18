@@ -10,7 +10,6 @@ chai.use(dirtyChai)
 module.exports = (http) => {
   describe('/pubsub', () => {
     let api
-    let tmpNode
 
     const buf = Buffer.from('some message')
     const topic = 'nonScents'

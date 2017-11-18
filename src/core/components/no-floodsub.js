@@ -2,7 +2,7 @@
 
 const EventEmitter = require('events')
 
-function fail() {
+function fail () {
   throw new Error('The daemon must be run with \'--enable-pubsub-experiment\'')
 }
 
@@ -19,7 +19,6 @@ class NoFloodSub extends EventEmitter {
   publish () { fail() }
   subscribe () { fail() }
   unsubscribe () { fail() }
-
 }
 
 module.exports = NoFloodSub
