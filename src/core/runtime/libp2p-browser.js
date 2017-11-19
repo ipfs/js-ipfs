@@ -2,6 +2,7 @@
 
 const WS = require('libp2p-websockets')
 const WebRTCStar = require('libp2p-webrtc-star')
+const WebSocketStar = require('libp2p-websocket-star')
 const Multiplex = require('libp2p-multiplex')
 const SECIO = require('libp2p-secio')
 const Railing = require('libp2p-railing')
@@ -11,14 +12,15 @@ class Node extends libp2p {
   constructor (peerInfo, peerBook, options) {
     options = options || {}
     const wstar = new WebRTCStar()
+    const wsstar = new WebSocketStar({id: peerInfo.id})
 
     const modules = {
-      transport: [new WS(), wstar],
+      transport: [new WS(), wstar, wsstar],
       connection: {
         muxer: [Multiplex],
         crypto: [SECIO]
       },
-      discovery: [wstar.discovery]
+      discovery: [wstar.discovery, wsstar.discovery]
     }
 
     if (options.bootstrap) {
