@@ -1,0 +1,21 @@
+name: jsipfs
+version: 0.26.0
+summary: JavaScript implementation of the IPFS specification
+description: |
+  The JavaScript implementation of the IPFS protocol.
+
+grade: stable
+confinement: strict
+
+apps:
+  jsipfs:
+    command: jsipfs
+    plugs:
+      - network
+      - network-bind
+
+parts:
+  jsipfs:
+    plugin: nodejs
+    node-engine: 8.9.1
+    source: .
