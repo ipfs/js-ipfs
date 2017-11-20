@@ -39,7 +39,7 @@ function start () {
     // EXAMPLE
     // node = new self.Ipfs({ repo: 'ipfs-' + Math.random() })
 
-    node.on('start', () => node.id((err, id) => {
+    node.once('start', () => node.id((err, id) => {
       if (err) { return onError(err) }
 
       info = id
@@ -88,9 +88,11 @@ function getFile () {
     files.forEach((file) => {
       if (file.content) {
         console.log('Fetched file:', cid, file.content.length)
-        // calling createFileBlob makes the Chrome go "Oh Snap"
-        // const listItem = createFileBlob(file.content, cid)
-        // $filesList.insertBefore(listItem, $filesList.firstChild)
+
+        // TODO: FIX calling createFileBlob makes the Chrome go "Oh Snap"
+        const listItem = createFileBlob(file.content, cid)
+        $filesList.insertBefore(listItem, $filesList.firstChild)
+
       }
     })
   })

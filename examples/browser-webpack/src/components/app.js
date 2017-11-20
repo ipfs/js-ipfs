@@ -27,7 +27,7 @@ class App extends React.Component {
 
       node = new IPFS({ repo: String(Math.random() + Date.now()) })
 
-      node.on('ready', () => {
+      node.once('ready', () => {
         console.log('IPFS node is ready')
         ops()
       })

@@ -6,7 +6,7 @@
   <script type="text/javascript">
     const node = new Ipfs({ repo: 'ipfs-' + Math.random() })
 
-    node.on('ready', () => {
+    node.once('ready', () => {
       console.log('Online status: ', node.isOnline() ? 'online' : 'offline')
 
       document.getElementById("status").innerHTML= 'Node status: ' + (node.isOnline() ? 'online' : 'offline')

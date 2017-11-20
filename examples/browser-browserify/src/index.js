@@ -7,7 +7,7 @@ const node = new IPFS({
   repo: String(Math.random() + Date.now())
 })
 
-node.on('ready', () => console.log('IPFS node is ready'))
+node.once('ready', () => console.log('IPFS node is ready'))
 
 function store () {
   var toStore = document.getElementById('source').value
