@@ -99,8 +99,13 @@ exports.get = {
         const header = { name: file.path }
 
         if (file.content) {
+          console.log('packing file:', header.name)
+
           header.size = file.size
-          const ps = pack.entry(header, cb)
+          const ps = pack.entry(header, () => {
+            console.log('packed a file')
+            cb()
+          })
           // in case request has been aborted
           if (!ps) {
             log('other side hung up')
@@ -108,11 +113,14 @@ exports.get = {
             toStream.source(file.content).pipe(ps)
           }
         } else {
-          header.type = 'directory'
-          pack.entry(header)
-        }
+          console.log('packing dir:', header.name)
 
-        cb()
+          header.type = 'directory'
+          pack.entry(header, () => {
+            console.log('packed a directory')
+            cb()
+          })
+        }
       }),
       pull.onEnd((err) => {
         if (err) {
@@ -122,12 +130,13 @@ exports.get = {
           return
         }
 
+        console.log('finalizing')
         pack.finalize()
       })
     )
 
-    // the reply must read the tar stream,
-    // to pull values through
+    // reply must be called right away so that tar-stream offloads its content
+    // otherwise it will block in large files
     reply(pack).header('X-Stream-Output', '1')
   }
 }
