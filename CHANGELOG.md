@@ -1,3 +1,13 @@
+<a name="17.1.0"></a>
+# [17.1.0](https://github.com/ipfs/js-ipfs-api/compare/v17.0.1...v17.1.0) (2017-11-20)
+
+
+### Features
+
+* send files HTTP request should stream ([#629](https://github.com/ipfs/js-ipfs-api/issues/629)) ([dae62cb](https://github.com/ipfs/js-ipfs-api/commit/dae62cb))
+
+
+
 <a name="17.0.1"></a>
 ## [17.0.1](https://github.com/ipfs/js-ipfs-api/compare/v17.0.0...v17.0.1) (2017-11-20)
 
