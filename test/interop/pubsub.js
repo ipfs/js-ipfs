@@ -19,16 +19,18 @@ function waitFor (predicate, callback) {
   const self = setInterval(() => {
     if (predicate()) {
       clearInterval(self)
-      callback()
+      return callback()
     }
     if (Date.now() > ttl) {
       clearInterval(self)
-      callback(new Error("waitFor time expired"))
+      return callback(new Error("waitFor time expired"))
     }
   }, 500)
 }
 
 describe('pubsub', function () {
+  this.timeout(4 * 1000)
+
   let jsD
   let goD
   let jsId
@@ -50,7 +52,9 @@ describe('pubsub', function () {
     ], (done))
   })
 
-  after((done) => {
+  after(function (done) {
+    this.timeout(50 * 1000)
+
     parallel([
       (cb) => goD.stop(cb),
       (cb) => jsD.stop(cb)
@@ -72,7 +76,10 @@ describe('pubsub', function () {
 
       parallel([
         (cb) => jsD.api.swarm.connect(goLocalAddr, cb),
-        (cb) => goD.api.swarm.connect(jsLocalAddr, cb)
+        (cb) => goD.api.swarm.connect(jsLocalAddr, cb),
+        (cb) => setTimeout(() => {
+          cb()
+        }, 1000)
       ], done)
     })
   })
@@ -87,7 +94,7 @@ describe('pubsub', function () {
       expect(msg.data.toString()).to.equal(data.toString())
       expect(msg).to.have.property('seqno')
       expect(Buffer.isBuffer(msg.seqno)).to.be.eql(true)
-      // TODO: expect(msg).to.have.property('topicIDs').eql([topic])
+      expect(msg).to.have.property('topicIDs').eql([topic])
       expect(msg).to.have.property('from', goId)
     }
 
@@ -125,7 +132,6 @@ describe('pubsub', function () {
     let n = 0
 
     function checkMessage (msg) {
-      console.log('check message', msg)
       ++n
       expect(msg.data.toString()).to.equal(data.toString())
       expect(msg).to.have.property('seqno')
@@ -136,6 +142,7 @@ describe('pubsub', function () {
 
     series([
       (cb) => goD.api.pubsub.subscribe(topic, checkMessage, cb),
+      (cb) => setTimeout(() => { cb() }, 500),
       (cb) => jsD.api.pubsub.publish(topic, data, cb),
       (cb) => waitFor(() => n === 1, cb)
     ], done)
@@ -147,7 +154,6 @@ describe('pubsub', function () {
     let n = 0
 
     function checkMessage (msg) {
-      console.log('check message', msg)
       ++n
       expect(msg.data.toString()).to.equal(data.toString())
       expect(msg).to.have.property('seqno')
@@ -158,8 +164,54 @@ describe('pubsub', function () {
 
     series([
       (cb) => jsD.api.pubsub.subscribe(topic, checkMessage, cb),
+      (cb) => setTimeout(() => { cb() }, 500),
       (cb) => goD.api.pubsub.publish(topic, data, cb),
       (cb) => waitFor(() => n === 1, cb),
     ], done)
+  })
+
+  describe.skip('binary data', () => {
+    it('publish from Go, subscribe on Go', (done) => {
+      const topic = 'pubsub-binary-go-go'
+      const data = Buffer.from('00010203040506070809', 'hex')
+      let n = 0
+
+      function checkMessage (msg) {
+        ++n
+        expect(msg.data.toString('hex')).to.equal(data.toString('hex'))
+        expect(msg).to.have.property('seqno')
+        expect(Buffer.isBuffer(msg.seqno)).to.be.eql(true)
+        expect(msg).to.have.property('topicIDs').eql([topic])
+        expect(msg).to.have.property('from', goId)
+      }
+
+      series([
+        (cb) => goD.api.pubsub.subscribe(topic, checkMessage, cb),
+        (cb) => goD.api.pubsub.publish(topic, data, cb),
+        (cb) => waitFor(() => n === 1, cb)
+      ], done)
+    })
+
+    it('publish from JS, subscribe on Go', (done) => {
+      const topic = 'pubsub-binary-js-go'
+      const data = Buffer.from('00010203040506070809', 'hex')
+      let n = 0
+
+      function checkMessage (msg) {
+        ++n
+        expect(msg.data.toString('hex')).to.equal(data.toString('hex'))
+        expect(msg).to.have.property('seqno')
+        expect(Buffer.isBuffer(msg.seqno)).to.be.eql(true)
+        expect(msg).to.have.property('topicIDs').eql([topic])
+        expect(msg).to.have.property('from', goId)
+      }
+
+      series([
+        (cb) => goD.api.pubsub.subscribe(topic, checkMessage, cb),
+        (cb) => jsD.api.pubsub.publish(topic, data, cb),
+        (cb) => waitFor(() => n === 1, cb)
+      ], done)
+    })
+
   })
 })
