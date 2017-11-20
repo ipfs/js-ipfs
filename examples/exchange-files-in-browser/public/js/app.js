@@ -92,7 +92,6 @@ function getFile () {
         // TODO: FIX calling createFileBlob makes the Chrome go "Oh Snap"
         const listItem = createFileBlob(file.content, cid)
         $filesList.insertBefore(listItem, $filesList.firstChild)
-
       }
     })
   })
@@ -120,8 +119,12 @@ function onDrop (event) {
     })
   }
 
+  const files = []
   for (let i = 0; i < filesDropped.length; i++) {
-    const file = filesDropped[i]
+    files.pUsh(filesDropped[i])
+  }
+
+  files.forEach((file) => {
     readFileContents(file)
       .then((buffer) => {
         node.files.add(Buffer.from(buffer), (err, filesAdded) => {
@@ -133,7 +136,7 @@ function onDrop (event) {
         })
       })
       .catch(onError)
-  }
+  })
 }
 
 /*

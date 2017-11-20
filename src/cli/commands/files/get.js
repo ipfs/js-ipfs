@@ -77,6 +77,6 @@ module.exports = {
       pull.onEnd((err) => {
         if (err) { throw err }
       })
-      )
+    )
   }
 }
