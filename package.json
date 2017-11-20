@@ -28,7 +28,7 @@
     "release-minor": "aegir release --type minor -t node -t browser",
     "release-major": "aegir release --type major -t node -t browser",
     "test:unit:node": "aegir test -t node",
-    "test:unit:node:core": "aegir test -t node -f test/core/*.js",
+    "test:unit:node:core": "aegir test -t node -f test/core/**.js",
     "test:unit:node:http": "aegir test -t node -f test/http-api/index.js",
     "test:unit:node:gateway": "aegir test -t node -f test/gateway/index.js",
     "test:unit:node:cli": "aegir test -t node -f test/cli/index.js",
