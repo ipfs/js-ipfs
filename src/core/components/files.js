@@ -268,7 +268,13 @@ module.exports = function files (self) {
     lsImmutable: promisify((ipfsPath, callback) => {
       pull(
         _lsPullStreamImmutable(ipfsPath),
-        pull.collect(callback))
+        pull.collect((err, values) => {
+          if (err) {
+            return callback(err)
+          }
+          callback(null, values)
+        })
+      )
     }),
 
     lsReadableStreamImmutable: (ipfsPath) => {
