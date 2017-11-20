@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "bundle": "browserify public/js/app.js > public/js/bundle.js",
-    "serve": "http-server -c-1 -p 12345 public",
-    "start": "npm run bundle && npm run serve"
+    "dev": "npm run bundle && npm run start",
+    "start": "http-server -c-1 -p 12345 public"
   },
   "license": "MIT",
   "devDependencies": {

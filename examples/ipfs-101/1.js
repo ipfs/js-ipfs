@@ -16,18 +16,17 @@ series([
   (cb) => node.files.add({
     path: 'hello.txt',
     content: Buffer.from('Hello World 101')
-  }, (err, result) => {
+  }, (err, filesAdded) => {
     if (err) { return cb(err) }
 
-    console.log('\nAdded file:', result[0].path, result[0].hash)
-    fileMultihash = result[0].hash
+    console.log('\nAdded file:', filesAdded[0].path, filesAdded[0].hash)
+    fileMultihash = filesAdded[0].hash
     cb()
   }),
-  (cb) => node.files.cat(fileMultihash, (err, stream) => {
+  (cb) => node.files.cat(fileMultihash, (err, data) => {
     if (err) { return cb(err) }
 
     console.log('\nFile content:')
-    stream.pipe(process.stdout)
-    stream.on('end', process.exit)
+    process.stdout(data)
   })
 ])

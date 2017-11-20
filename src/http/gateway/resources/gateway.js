@@ -76,63 +76,66 @@ module.exports = {
         return handleGatewayResolverError(err)
       }
 
-      ipfs.files.cat(data.multihash, (err, stream) => {
+      const stream = ipfs.files.catReadableStream(data.multihash)
+      stream.once('error', (err) => {
         if (err) {
           log.error(err)
           return reply(err.toString()).code(500)
         }
-
-        if (ref.endsWith('/')) {
-          // remove trailing slash for files
-          return reply
-            .redirect(PathUtils.removeTrailingSlash(ref))
-            .permanent(true)
-        } else {
-          if (!stream._read) {
-            stream._read = () => {}
-            stream._readableState = {}
-          }
-
-          //  response.continue()
-          let filetypeChecked = false
-          let stream2 = new Stream.PassThrough({ highWaterMark: 1 })
-          let response = reply(stream2).hold()
-
-          pull(
-            toPull.source(stream),
-            pull.through((chunk) => {
-              // Check file type.  do this once.
-              if (chunk.length > 0 && !filetypeChecked) {
-                log('got first chunk')
-                let fileSignature = fileType(chunk)
-                log('file type: ', fileSignature)
-
-                filetypeChecked = true
-                const mimeType = mime.lookup(fileSignature ? fileSignature.ext : null)
-
-                log('ref ', ref)
-                log('mime-type ', mimeType)
-
-                if (mimeType) {
-                  log('writing mimeType')
-
-                  response
-                    .header('Content-Type', mime.contentType(mimeType))
-                    .send()
-                } else {
-                  response.send()
-                }
-              }
-
-              stream2.write(chunk)
-            }),
-            pull.onEnd(() => {
-              log('stream ended.')
-              stream2.end()
-            })
-          )
-        }
       })
+
+      if (ref.endsWith('/')) {
+        // remove trailing slash for files
+        return reply
+          .redirect(PathUtils.removeTrailingSlash(ref))
+          .permanent(true)
+      } else {
+        if (!stream._read) {
+          stream._read = () => {}
+          stream._readableState = {}
+        }
+
+        //  response.continue()
+        let filetypeChecked = false
+        let stream2 = new Stream.PassThrough({ highWaterMark: 1 })
+        let response = reply(stream2).hold()
+
+        pull(
+          toPull.source(stream),
+          pull.through((chunk) => {
+            // Check file type.  do this once.
+            if (chunk.length > 0 && !filetypeChecked) {
+              log('got first chunk')
+              let fileSignature = fileType(chunk)
+              log('file type: ', fileSignature)
+
+              filetypeChecked = true
+              const mimeType = mime.lookup(fileSignature
+                ? fileSignature.ext
+                : null)
+
+              log('ref ', ref)
+              log('mime-type ', mimeType)
+
+              if (mimeType) {
+                log('writing mimeType')
+
+                response
+                  .header('Content-Type', mime.contentType(mimeType))
+                  .send()
+              } else {
+                response.send()
+              }
+            }
+
+            stream2.write(chunk)
+          }),
+          pull.onEnd(() => {
+            log('stream ended.')
+            stream2.end()
+          })
+        )
+      }
     })
   }
 }

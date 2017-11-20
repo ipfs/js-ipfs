@@ -25,11 +25,9 @@ class App extends React.Component {
     function create () {
       // Create the IPFS node instance
 
-      node = new IPFS({
-        repo: String(Math.random() + Date.now())
-      })
+      node = new IPFS({ repo: String(Math.random() + Date.now()) })
 
-      node.on('ready', () => {
+      node.once('ready', () => {
         console.log('IPFS node is ready')
         ops()
       })
@@ -47,25 +45,15 @@ class App extends React.Component {
         })
       })
 
-      node.files.add([Buffer.from(stringToUse)], (err, res) => {
-        if (err) {
-          throw err
-        }
+      node.files.add([Buffer.from(stringToUse)], (err, filesAdded) => {
+        if (err) { throw err }
 
-        const hash = res[0].hash
+        const hash = filesAdded[0].hash
         self.setState({added_file_hash: hash})
 
-        node.files.cat(hash, (err, res) => {
-          if (err) {
-            throw err
-          }
-          let data = ''
-          res.on('data', (d) => {
-            data = data + d
-          })
-          res.on('end', () => {
-            self.setState({added_file_contents: data})
-          })
+        node.files.cat(hash, (err, data) => {
+          if (err) { throw err }
+          self.setState({added_file_contents: data})
         })
       })
     }

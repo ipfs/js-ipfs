@@ -65,20 +65,18 @@ module.exports = {
     const ipfsPath = argv['ipfs-path']
     const dir = checkArgs(ipfsPath, argv.output)
 
-    argv.ipfs.files.get(ipfsPath, (err, stream) => {
-      if (err) {
-        throw err
-      }
-      print(`Saving file(s) ${ipfsPath}`)
-      pull(
-        toPull.source(stream),
-        pull.asyncMap(fileHandler(dir)),
-        pull.onEnd((err) => {
-          if (err) {
-            throw err
-          }
-        })
-      )
+    const stream = argv.ipfs.files.getReadableStream(ipfsPath)
+
+    stream.once('error', (err) => {
+      if (err) { throw err }
     })
+    print(`Saving file(s) ${ipfsPath}`)
+    pull(
+      toPull.source(stream),
+      pull.asyncMap(fileHandler(dir)),
+      pull.onEnd((err) => {
+        if (err) { throw err }
+      })
+    )
   }
 }

@@ -1,8 +1,5 @@
 'use strict'
 
-const concat = require('concat-stream')
-const Buffer = require('safe-buffer').Buffer
-
 const IPFS = require('../../../src/core') // replace this by line below
 // var IPFS = require('ipfs')
 
@@ -10,9 +7,7 @@ const node = new IPFS({
   repo: String(Math.random() + Date.now())
 })
 
-node.on('ready', () => {
-  console.log('IPFS node is ready')
-})
+node.once('ready', () => console.log('IPFS node is ready'))
 
 function store () {
   var toStore = document.getElementById('source').value
@@ -33,16 +28,11 @@ function store () {
 
 function display (hash) {
   // buffer: true results in the returned result being a buffer rather than a stream
-  node.files.cat(hash, (err, res) => {
-    if (err || !res) {
-      return console.error('ipfs cat error', err, res)
-    }
+  node.files.cat(hash, (err, data) => {
+    if (err) { return console.error('ipfs cat error', err) }
 
     document.getElementById('hash').innerText = hash
-
-    res.pipe(concat((data) => {
-      document.getElementById('content').innerText = data
-    }))
+    document.getElementById('content').innerText = data
   })
 }
 
