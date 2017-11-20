@@ -18,27 +18,34 @@ module.exports = function pubsub (self) {
         options = {}
       }
 
+      function subscribe (cb) {
+        if (self._pubsub.listenerCount(topic) === 0) {
+          self._pubsub.subscribe(topic)
+        }
+
+        self._pubsub.on(topic, handler)
+        setImmediate(() => callback())
+      }
+
       if (!callback) {
         return new Promise((resolve, reject) => {
-          subscribe(topic, options, handler, (err) => {
+          subscribe((err) => {
             if (err) {
               return reject(err)
             }
             resolve()
           })
         })
+      } else {
+        subscribe(callback)
       }
-
-      subscribe(topic, options, handler, callback)
     },
 
     unsubscribe: (topic, handler) => {
-      const ps = self._pubsub
+      self._pubsub.removeListener(topic, handler)
 
-      ps.removeListener(topic, handler)
-
-      if (ps.listenerCount(topic) === 0) {
-        ps.unsubscribe(topic)
+      if (self._pubsub.listenerCount(topic) === 0) {
+        self._pubsub.unsubscribe(topic)
       }
     },
 
@@ -60,9 +67,7 @@ module.exports = function pubsub (self) {
         return setImmediate(() => callback(new Error(OFFLINE_ERROR)))
       }
 
-      const subscriptions = Array.from(
-        self._pubsub.subscriptions
-      )
+      const subscriptions = Array.from(self._pubsub.subscriptions)
 
       setImmediate(() => callback(null, subscriptions))
     }),
@@ -82,16 +87,5 @@ module.exports = function pubsub (self) {
     setMaxListeners (n) {
       return self._pubsub.setMaxListeners(n)
     }
-  }
-
-  function subscribe (topic, options, handler, callback) {
-    const ps = self._pubsub
-
-    if (ps.listenerCount(topic) === 0) {
-      ps.subscribe(topic)
-    }
-
-    ps.on(topic, handler)
-    setImmediate(() => callback())
   }
 }
