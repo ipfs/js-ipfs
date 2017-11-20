@@ -9,6 +9,7 @@ log.error = debug('jsipfs:http-api:files:error')
 const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
 const pushable = require('pull-pushable')
+const each = require('async/each')
 const toStream = require('pull-stream-to-stream')
 const abortable = require('pull-abortable')
 const Joi = require('joi')
@@ -91,38 +92,25 @@ exports.get = {
     const ipfs = request.server.app.ipfs
     const pack = tar.pack()
 
-    const stream = ipfs.files.getPullStream(cid)
+    ipfs.files.get(cid, (err, filesArray) => {
+      if (err) {
+        log.error(err)
+        pack.emit('error', err)
+        pack.destroy()
+        return
+      }
 
-    pull(
-      stream,
-      pull.asyncMap((file, cb) => {
+      each(filesArray, (file, cb) => {
         const header = { name: file.path }
 
         if (file.content) {
-          console.log('packing file:', header.name)
-
           header.size = file.size
-          const ps = pack.entry(header, () => {
-            console.log('packed a file')
-            cb()
-          })
-          // in case request has been aborted
-          if (!ps) {
-            log('other side hung up')
-          } else {
-            toStream.source(file.content).pipe(ps)
-          }
+          pack.entry(header, file.content, cb)
         } else {
-          console.log('packing dir:', header.name)
-
           header.type = 'directory'
-          pack.entry(header, () => {
-            console.log('packed a directory')
-            cb()
-          })
+          pack.entry(header, cb)
         }
-      }),
-      pull.onEnd((err) => {
+      }, (err) => {
         if (err) {
           log.error(err)
           pack.emit('error', err)
@@ -130,14 +118,13 @@ exports.get = {
           return
         }
 
-        console.log('finalizing')
         pack.finalize()
       })
-    )
 
-    // reply must be called right away so that tar-stream offloads its content
-    // otherwise it will block in large files
-    reply(pack).header('X-Stream-Output', '1')
+      // reply must be called right away so that tar-stream offloads its content
+      // otherwise it will block in large files
+      reply(pack).header('X-Stream-Output', '1')
+    })
   }
 }
 
