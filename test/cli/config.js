@@ -72,7 +72,7 @@ describe('config', () => runOnAndOff((thing) => {
     })
   })
 
-  describe('replace', () => {
+  describe.skip('replace', () => {
     it('replace config with file', () => {
       const filePath = 'test/fixtures/test-data/otherconfig'
       const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))

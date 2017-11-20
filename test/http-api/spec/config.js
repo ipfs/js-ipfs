@@ -153,7 +153,7 @@ module.exports = (http) => {
       })
     })
 
-    describe('/config/replace', () => {
+    describe.skip('/config/replace', () => {
       it('returns 400 if no config is provided', (done) => {
         const form = new FormData()
         const headers = form.getHeaders()

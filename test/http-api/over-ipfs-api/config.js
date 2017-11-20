@@ -72,7 +72,7 @@ module.exports = (ctl) => {
 
     // This one is one stale mode till go-ipfs decides
     // what to do with the .replace command
-    describe('.replace', () => {
+    describe.skip('.replace', () => {
       it('returns error if the config is invalid', (done) => {
         const filePath = 'test/fixtures/test-data/badconfig'
 
