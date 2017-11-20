@@ -30,10 +30,10 @@ function deserializeFromBase64 (obj) {
     from: bs58.encode(Buffer.from(obj.from, 'base64')).toString(),
     seqno: Buffer.from(obj.seqno, 'base64'),
     data: Buffer.from(obj.data, 'base64'),
-    topicIDs: obj.topicIDs
+    topicIDs: obj.topicIDs || obj.topicCIDs
   }
 }
 
 function isPubsubMessage (obj) {
-  return obj && obj.from && obj.seqno && obj.data && obj.topicIDs
+  return obj && obj.from && obj.seqno && obj.data && (obj.topicIDs || obj.topicCIDs)
 }

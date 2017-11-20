@@ -121,6 +121,7 @@ module.exports = (arg) => {
   function subscribe (topic, options, handler, callback) {
     ps.on(topic, handler)
     if (subscriptions[topic]) {
+      // TODO: should a callback error be returned?
       return callback()
     }
 
