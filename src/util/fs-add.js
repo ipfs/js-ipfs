@@ -2,11 +2,11 @@
 
 const isNode = require('detect-node')
 const promisify = require('promisify-es6')
-const converter = require('../utils/converter')
 const moduleConfig = require('../utils/module-config')
+const SendOneFile = require('../utils/send-one-file-multiple-results')
 
 module.exports = (arg) => {
-  const send = moduleConfig(arg)
+  const sendOneFile = SendOneFile(moduleConfig(arg), 'add')
 
   return promisify((path, opts, callback) => {
     if (typeof opts === 'function' &&
@@ -31,7 +31,6 @@ module.exports = (arg) => {
       return callback(new Error('"path" must be a string'))
     }
 
-    const request = { path: 'add', files: path, qs: opts }
-    send.andTransform(request, converter, callback)
+    sendOneFile(path, { qs: opts }, callback)
   })
 }

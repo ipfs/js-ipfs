@@ -1,16 +1,20 @@
 'use strict'
 
 const promisify = require('promisify-es6')
+const once = require('once')
 const cleanMultihash = require('../utils/clean-multihash')
+const SendOneFile = require('../utils/send-one-file')
 
 module.exports = (send) => {
   const objectGet = require('./get')(send)
+  const sendOneFile = SendOneFile(send, 'object/patch/set-data')
 
-  return promisify((multihash, data, opts, callback) => {
+  return promisify((multihash, data, opts, _callback) => {
     if (typeof opts === 'function') {
-      callback = opts
+      _callback = opts
       opts = {}
     }
+    const callback = once(_callback)
     if (!opts) {
       opts = {}
     }
@@ -21,11 +25,7 @@ module.exports = (send) => {
       return callback(err)
     }
 
-    send({
-      path: 'object/patch/set-data',
-      args: [multihash],
-      files: data
-    }, (err, result) => {
+    sendOneFile(data, { args: [multihash] }, (err, result) => {
       if (err) {
         return callback(err)
       }

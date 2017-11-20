@@ -1,51 +1,42 @@
 'use strict'
 
-const isStream = require('is-stream')
 const promisify = require('promisify-es6')
-const ProgressStream = require('../utils/progress-stream')
-const converter = require('../utils/converter')
+const ConcatStream = require('concat-stream')
+const once = require('once')
+const isStream = require('is-stream')
+const SendFilesStream = require('../utils/send-files-stream')
 
 module.exports = (send) => {
-  return promisify((files, opts, callback) => {
-    if (typeof opts === 'function') {
-      callback = opts
-      opts = {}
+  const createAddStream = SendFilesStream(send, 'add')
+
+  return promisify((_files, options, _callback) => {
+    if (typeof options === 'function') {
+      _callback = options
+      options = null
     }
 
-    opts = opts || {}
+    const callback = once(_callback)
 
-    const ok = Buffer.isBuffer(files) ||
-               isStream.readable(files) ||
-               Array.isArray(files)
+    if (!options) {
+      options = {}
+    }
+
+    const ok = Buffer.isBuffer(_files) ||
+               isStream.readable(_files) ||
+               Array.isArray(_files)
 
     if (!ok) {
       return callback(new Error('"files" must be a buffer, readable stream, or array of objects'))
     }
 
-    const qs = {}
+    const files = [].concat(_files)
 
-    if (opts['cid-version'] != null) {
-      qs['cid-version'] = opts['cid-version']
-    } else if (opts.cidVersion != null) {
-      qs['cid-version'] = opts.cidVersion
-    }
+    const stream = createAddStream(options)
+    const concat = ConcatStream((result) => callback(null, result))
+    stream.once('error', callback)
+    stream.pipe(concat)
 
-    if (opts['raw-leaves'] != null) {
-      qs['raw-leaves'] = opts['raw-leaves']
-    } else if (opts.rawLeaves != null) {
-      qs['raw-leaves'] = opts.rawLeaves
-    }
-
-    if (opts.hash != null) {
-      qs.hash = opts.hash
-    } else if (opts.hashAlg != null) {
-      qs.hash = opts.hashAlg
-    }
-
-    const request = { path: 'add', files: files, qs: qs, progress: opts.progress }
-
-    send.andTransform(request, (response, cb) => {
-      converter(ProgressStream.fromStream(opts.progress, response), cb)
-    }, callback)
+    files.forEach((file) => stream.write(file))
+    stream.end()
   })
 }

@@ -6,7 +6,6 @@ const isNode = require('detect-node')
 const ndjson = require('ndjson')
 const pump = require('pump')
 const once = require('once')
-const getFilesStream = require('./get-files-stream')
 const streamToValue = require('./stream-to-value')
 const streamToJsonValue = require('./stream-to-json-value')
 const request = require('./request')
@@ -89,10 +88,6 @@ function requestAPI (config, options, callback) {
   callback = once(callback)
   options.qs = options.qs || {}
 
-  if (Array.isArray(options.files)) {
-    options.qs.recursive = true
-  }
-
   if (Array.isArray(options.path)) {
     options.path = options.path.join('/')
   }
@@ -101,9 +96,6 @@ function requestAPI (config, options, callback) {
   }
   if (options.args) {
     options.qs.arg = options.args
-  }
-  if (options.files && !Array.isArray(options.files)) {
-    options.files = [options.files]
   }
   if (options.progress) {
     options.qs.progress = true
@@ -117,9 +109,8 @@ function requestAPI (config, options, callback) {
 
   options.qs['stream-channels'] = true
 
-  let stream
-  if (options.files) {
-    stream = getFilesStream(options.files, options.qs)
+  if (options.stream) {
+    options.buffer = false
   }
 
   // this option is only used internally, not passed to daemon
@@ -133,12 +124,12 @@ function requestAPI (config, options, callback) {
     headers['User-Agent'] = config['user-agent']
   }
 
-  if (options.files) {
-    if (!stream.boundary) {
-      return callback(new Error('No boundary in multipart stream'))
+  if (options.multipart) {
+    if (!options.multipartBoundary) {
+      return callback(new Error('No multipartBoundary'))
     }
 
-    headers['Content-Type'] = `multipart/form-data; boundary=${stream.boundary}`
+    headers['Content-Type'] = `multipart/form-data; boundary=${options.multipartBoundary}`
   }
 
   const qs = Qs.stringify(options.qs, {
@@ -174,22 +165,21 @@ function requestAPI (config, options, callback) {
       return qsDefaultEncoder(data)
     }
   })
-  const req = request(config.protocol)({
+  const reqOptions = {
     hostname: config.host,
     path: `${config['api-path']}${options.path}?${qs}`,
     port: config.port,
     method: method,
     headers: headers,
     protocol: `${config.protocol}:`
-  }, onRes(options.buffer, callback))
+  }
+  const req = request(config.protocol)(reqOptions, onRes(options.buffer, callback))
 
   req.on('error', (err) => {
     callback(err)
   })
 
-  if (options.files) {
-    stream.pipe(req)
-  } else {
+  if (!options.stream) {
     req.end()
   }
 

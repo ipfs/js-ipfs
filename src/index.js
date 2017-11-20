@@ -3,7 +3,7 @@
 const multiaddr = require('multiaddr')
 const loadCommands = require('./utils/load-commands')
 const getConfig = require('./utils/default-config')
-const getRequestAPI = require('./utils/request-api')
+const sendRequest = require('./utils/send-request')
 
 function IpfsAPI (hostOrMultiaddr, port, opts) {
   const config = getConfig()
@@ -35,7 +35,7 @@ function IpfsAPI (hostOrMultiaddr, port, opts) {
     config.port = split[1]
   }
 
-  const requestAPI = getRequestAPI(config)
+  const requestAPI = sendRequest(config)
   const cmds = loadCommands(requestAPI)
   cmds.send = requestAPI
   cmds.Buffer = Buffer

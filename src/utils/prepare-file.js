@@ -1,27 +1,8 @@
 'use strict'
 
 const isNode = require('detect-node')
-const Multipart = require('multipart-stream')
 const flatmap = require('flatmap')
 const escape = require('glob-escape')
-
-function headers (file) {
-  const name = file.path
-    ? encodeURIComponent(file.path)
-    : ''
-
-  const header = { 'Content-Disposition': `file; filename="${name}"` }
-
-  if (file.dir || !file.content) {
-    header['Content-Type'] = 'application/x-directory'
-  } else if (file.symlink) {
-    header['Content-Type'] = 'application/symlink'
-  } else {
-    header['Content-Type'] = 'application/octet-stream'
-  }
-
-  return header
-}
 
 function strip (name, base) {
   const smallBase = base
@@ -99,14 +80,10 @@ function loadPaths (opts, file) {
   }
 }
 
-function getFilesStream (files, opts) {
-  if (!files) {
-    return null
-  }
+function prepareFile (file, opts) {
+  let files = [].concat(file)
 
-  const mp = new Multipart()
-
-  flatmap(files, (file) => {
+  return flatmap(files, (file) => {
     if (typeof file === 'string') {
       if (!isNode) {
         throw new Error('Can not add paths in node')
@@ -130,14 +107,7 @@ function getFilesStream (files, opts) {
       dir: false,
       content: file
     }
-  }).forEach((file) => {
-    mp.addPart({
-      headers: headers(file),
-      body: file.content
-    })
   })
-
-  return mp
 }
 
-exports = module.exports = getFilesStream
+exports = module.exports = prepareFile

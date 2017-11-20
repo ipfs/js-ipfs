@@ -26,18 +26,20 @@ const streamToValue = require('./stream-to-value')
 */
 class ConverterStream extends TransformStream {
   constructor (options) {
-    const opts = Object.assign(options || {}, { objectMode: true })
+    const opts = Object.assign({}, options || {}, { objectMode: true })
     super(opts)
   }
 
   _transform (obj, enc, callback) {
-    this.push({
+    if (!obj.Hash) {
+      return callback()
+    }
+
+    callback(null, {
       path: obj.Name,
       hash: obj.Hash,
       size: parseInt(obj.Size, 10)
     })
-
-    callback(null)
   }
 }
 
@@ -54,4 +56,5 @@ function converter (inputStream, callback) {
   streamToValue(outputStream, callback)
 }
 
-module.exports = converter
+exports = module.exports = converter
+exports.ConverterStream = ConverterStream

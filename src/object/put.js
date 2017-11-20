@@ -9,13 +9,20 @@ const lruOptions = {
 }
 
 const cache = LRU(lruOptions)
+const SendOneFile = require('../utils/send-one-file')
+const once = require('once')
 
 module.exports = (send) => {
-  return promisify((obj, options, callback) => {
+  const sendOneFile = SendOneFile(send, 'object/put')
+
+  return promisify((obj, options, _callback) => {
     if (typeof options === 'function') {
-      callback = options
+      _callback = options
       options = {}
     }
+
+    const callback = once(_callback)
+
     if (!options) {
       options = {}
     }
@@ -56,13 +63,13 @@ module.exports = (send) => {
     }
     const enc = options.enc || 'json'
 
-    send({
-      path: 'object/put',
-      qs: { inputenc: enc },
-      files: buf
-    }, (err, result) => {
+    const sendOptions = {
+      qs: { inputenc: enc }
+    }
+
+    sendOneFile(buf, sendOptions, (err, result) => {
       if (err) {
-        return callback(err)
+        return callback(err) // early
       }
 
       if (Buffer.isBuffer(obj)) {

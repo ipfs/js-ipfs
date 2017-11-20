@@ -38,7 +38,6 @@
     "lru-cache": "^4.1.1",
     "multiaddr": "^3.0.1",
     "multihashes": "~0.4.12",
-    "multipart-stream": "^2.0.1",
     "ndjson": "^1.5.0",
     "once": "^1.4.0",
     "peer-id": "~0.10.2",

@@ -1,14 +1,13 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const once = require('once')
 const parseUrl = require('url').parse
 const request = require('../utils/request')
-const converter = require('../utils/converter')
 const moduleConfig = require('../utils/module-config')
+const SendOneFile = require('../utils/send-one-file-multiple-results')
 
 module.exports = (arg) => {
-  const send = moduleConfig(arg)
+  const sendOneFile = SendOneFile(moduleConfig(arg), 'add')
 
   return promisify((url, opts, callback) => {
     if (typeof (opts) === 'function' &&
@@ -25,19 +24,17 @@ module.exports = (arg) => {
       opts = {}
     }
 
-    callback = once(callback)
-
     if (!validUrl(url)) {
       return callback(new Error('"url" param must be an http(s) url'))
     }
 
-    requestWithRedirect(url, opts, send, callback)
+    requestWithRedirect(url, opts, sendOneFile, callback)
   })
 }
 
 const validUrl = (url) => typeof url === 'string' && url.startsWith('http')
 
-const requestWithRedirect = (url, opts, send, callback) => {
+const requestWithRedirect = (url, opts, sendOneFile, callback) => {
   request(parseUrl(url).protocol)(url, (res) => {
     res.once('error', callback)
     if (res.statusCode >= 400) {
@@ -50,11 +47,9 @@ const requestWithRedirect = (url, opts, send, callback) => {
       if (!validUrl(redirection)) {
         return callback(new Error('redirection url must be an http(s) url'))
       }
-      requestWithRedirect(redirection, opts, send, callback)
+      requestWithRedirect(redirection, opts, sendOneFile, callback)
     } else {
-      const request = { path: 'add', files: res, qs: opts }
-
-      send.andTransform(request, converter, callback)
+      sendOneFile(res, { qs: opts }, callback)
     }
   }).end()
 }

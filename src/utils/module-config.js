@@ -1,7 +1,7 @@
 'use strict'
 
 const getConfig = require('./default-config')
-const requestAPI = require('./request-api')
+const sendRequest = require('./send-request')
 const multiaddr = require('multiaddr')
 
 module.exports = (arg) => {
@@ -10,12 +10,12 @@ module.exports = (arg) => {
   if (typeof arg === 'function') {
     return arg
   } else if (typeof arg === 'object') {
-    return requestAPI(arg)
+    return sendRequest(arg)
   } else if (typeof arg === 'string') {
     const maddr = multiaddr(arg).nodeAddress()
     config.host = maddr.address
     config.port = maddr.port
-    return requestAPI(config)
+    return sendRequest(config)
   } else {
     throw new Error('Argument must be a send function or a config object.')
   }
