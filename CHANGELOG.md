@@ -1,3 +1,13 @@
+<a name="17.0.1"></a>
+## [17.0.1](https://github.com/ipfs/js-ipfs-api/compare/v17.0.0...v17.0.1) (2017-11-20)
+
+
+### Bug Fixes
+
+* allow topicCIDs from older peers ([#631](https://github.com/ipfs/js-ipfs-api/issues/631)) ([fe7cc22](https://github.com/ipfs/js-ipfs-api/commit/fe7cc22))
+
+
+
 <a name="17.0.0"></a>
 # [17.0.0](https://github.com/ipfs/js-ipfs-api/compare/v16.0.0...v17.0.0) (2017-11-17)
 
