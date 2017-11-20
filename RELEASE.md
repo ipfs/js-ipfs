@@ -1,6 +1,12 @@
-# Release checklist
+# Release Template
 
-> List of actions to perform before issuing a new js-ipfs release
+> short tl;dr; of the release
+
+# 🗺 What's left for release
+
+# 🔦 Highlights
+
+# ✅ Release Checklist
 
 - Robustness and quality
   - [ ] Ensure that all tests are passing, this includes:
@@ -19,3 +25,7 @@
     - [ ] IRC
     - [ ] Reddit
   - [ ] Blog post
+
+# 🙌🏽Want to contribute?
+
+# ⁉️ Do you have questions?
