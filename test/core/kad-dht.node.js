@@ -49,7 +49,7 @@ describe('verify that kad-dht is doing its thing', () => {
 
   after((done) => factory.dismantle(done))
 
-  it('add a file in C, fetch through B in A', function (done) {
+  it.skip('add a file in C, fetch through B in A', function (done) {
     this.timeout(10 * 1000)
 
     const file = {
