@@ -12,7 +12,6 @@ const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
 const leftPad = require('left-pad')
 const Block = require('ipfs-block')
-const bl = require('bl')
 const API = require('ipfs-api')
 const multiaddr = require('multiaddr')
 const isNode = require('detect-node')
@@ -196,19 +195,13 @@ describe('bitswap', () => {
           (cb) => addNode(12, cb),
           // 1. Add file to tmp instance
           (remote, cb) => {
-            remote.files.add([{
-              path: 'awesome.txt',
-              content: file
-            }], cb)
+            remote.files.add([{path: 'awesome.txt', content: file}], cb)
           },
           // 2. Request file from local instance
-          (val, cb) => {
-            inProcNode.files.cat(val[0].hash, cb)
-          },
-          (res, cb) => res.pipe(bl(cb))
-        ], (err, res) => {
+          (filesAdded, cb) => inProcNode.files.cat(filesAdded[0].hash, cb)
+        ], (err, data) => {
           expect(err).to.not.exist()
-          expect(res).to.be.eql(file)
+          expect(data).to.eql(file)
           done()
         })
       })

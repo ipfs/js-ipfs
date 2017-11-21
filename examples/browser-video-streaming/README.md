@@ -3,6 +3,7 @@
 This example shows a method for video/audio streaming in the browser over IPFS.
 
 ## Why use HLS?
+
 HLS (Apple's HTTP Live Streaming) is one of several protocols currently available for adaptive bitrate streaming.
 
 One of the advantages of HLS over some other streaming technologies is that the content can be hosted on a plain old web server without any special server-side support. The way this works is that the original content (the stream or video/audio file) is split up into small MPEG2-TS segments before being uploaded to the server. The segments are then fetched by the HLS player on the fly (using regular HTTP GET requests) and get spliced together to a continuous stream.
@@ -12,6 +13,7 @@ In addition to the segments there are also so-called manifests (m3u8 files) whic
 The fact that HLS content is just "a bunch of files" makes it a good choice for IPFS (another protocol that works this way is MPEG-DASH, which could certainly be a good choice as well). Furthermore, the [hls.js](https://github.com/video-dev/hls.js) library enables straightforward integration with the HTML5 video element.
 
 ## hlsjs-ipfs-loader
+
 The hls.js library ships with an HTTP based content loader only, but it's fortunately possible to configure custom content loaders as well, which is what makes IPFS streaming possible in this case. A loader implementation that fetches content using js-ipfs can be found [here](https://www.npmjs.com/package/hlsjs-ipfs-loader), and is easy to use on a regular HTML page:
 
 ```html
@@ -21,6 +23,7 @@ The hls.js library ships with an HTTP based content loader only, but it's fortun
 ```
 
 ## Generating HLS content
+
 In order for any of the above to be useful, we also need to have a way to actually generate HLS manifests and MPEG2-TS segments from an arbitrary video/audio file. Luckily, most new builds of `ffmpeg` are compiled with this capability.
 
 For example, say we have a directory containing a video file `BigBuckBunny_320x180.mp4`. We can then create a sub directory and generate the HLS data there, and finally add it to IPFS:

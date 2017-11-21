@@ -9,132 +9,14 @@ const sort = require('pull-sort')
 const pushable = require('pull-pushable')
 const toStream = require('pull-stream-to-stream')
 const toPull = require('stream-to-pull-stream')
+const deferred = require('pull-defer')
 const waterfall = require('async/waterfall')
 const isStream = require('is-stream')
-const Duplex = require('stream').Duplex
+const Duplex = require('readable-stream').Duplex
 const CID = require('cids')
 const toB58String = require('multihashes').toB58String
 
-module.exports = function files (self) {
-  const createAddPullStream = (options) => {
-    const opts = Object.assign({}, {
-      shardSplitThreshold: self._options.EXPERIMENTAL.sharding ? 1000 : Infinity
-    }, options)
-
-    let total = 0
-    let prog = opts.progress || (() => {})
-    const progress = (bytes) => {
-      total += bytes
-      prog(total)
-    }
-
-    opts.progress = progress
-    return pull(
-      pull.map(normalizeContent),
-      pull.flatten(),
-      importer(self._ipldResolver, opts),
-      pull.asyncMap(prepareFile.bind(null, self, opts))
-    )
-  }
-
-  return {
-    createAddStream: (options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = undefined
-      }
-
-      const addPullStream = createAddPullStream(options)
-      const p = pushable()
-      const s = pull(
-        p,
-        addPullStream
-      )
-
-      const retStream = new AddStreamDuplex(s, p)
-
-      retStream.once('finish', () => p.end())
-
-      callback(null, retStream)
-    },
-
-    createAddPullStream: createAddPullStream,
-
-    add: promisify((data, options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      } else if (!callback || typeof callback !== 'function') {
-        callback = noop
-      }
-
-      if (typeof data !== 'object' &&
-          !Buffer.isBuffer(data) &&
-          !isStream(data)) {
-        return callback(new Error('Invalid arguments, data must be an object, Buffer or readable stream'))
-      }
-
-      pull(
-        pull.values([data]),
-        createAddPullStream(options),
-        sort((a, b) => {
-          if (a.path < b.path) return 1
-          if (a.path > b.path) return -1
-          return 0
-        }),
-        pull.collect(callback)
-      )
-    }),
-
-    cat: promisify((ipfsPath, callback) => {
-      if (typeof ipfsPath === 'function') {
-        return callback(new Error('You must supply an ipfsPath'))
-      }
-
-      pull(
-        exporter(ipfsPath, self._ipldResolver),
-        pull.collect((err, files) => {
-          if (err) {
-            return callback(err)
-          }
-          if (!files || !files.length) return callback(new Error('No such file'))
-          callback(null, toStream.source(files[files.length - 1].content))
-        })
-      )
-    }),
-
-    get: promisify((ipfsPath, callback) => {
-      callback(null, toStream.source(pull(
-        exporter(ipfsPath, self._ipldResolver),
-        pull.map((file) => {
-          if (file.content) {
-            file.content = toStream.source(file.content)
-            file.content.pause()
-          }
-
-          return file
-        })
-      )))
-    }),
-
-    getPull: promisify((ipfsPath, callback) => {
-      callback(null, exporter(ipfsPath, self._ipldResolver))
-    }),
-
-    immutableLs: promisify((ipfsPath, callback) => {
-      pull(
-        self.files.immutableLsPullStream(ipfsPath),
-        pull.collect(callback))
-    }),
-
-    immutableLsPullStream: (ipfsPath) => {
-      return pull(
-        exporter(ipfsPath, self._ipldResolver, { maxDepth: 1 }),
-        pull.filter((node) => node.depth === 1),
-        pull.map((node) => Object.assign({}, node, { hash: toB58String(node.hash) })))
-    }
-  }
-}
+function noop () {}
 
 function prepareFile (self, opts, file, callback) {
   opts = opts || {}
@@ -167,18 +49,12 @@ function normalizeContent (content) {
   return content.map((data) => {
     // Buffer input
     if (Buffer.isBuffer(data)) {
-      data = {
-        path: '',
-        content: pull.values([data])
-      }
+      data = { path: '', content: pull.values([data]) }
     }
 
     // Readable stream input
     if (isStream.readable(data)) {
-      data = {
-        path: '',
-        content: toPull.source(data)
-      }
+      data = { path: '', content: toPull.source(data) }
     }
 
     if (data && data.content && typeof data.content !== 'function') {
@@ -195,9 +71,7 @@ function normalizeContent (content) {
   })
 }
 
-function noop () {}
-
-class AddStreamDuplex extends Duplex {
+class AddHelper extends Duplex {
   constructor (pullStream, push, options) {
     super(Object.assign({ objectMode: true }, options))
     this._pullStream = pullStream
@@ -224,5 +98,189 @@ class AddStreamDuplex extends Duplex {
   _write (chunk, encoding, callback) {
     this._waitingPullFlush.push(callback)
     this._pushable.push(chunk)
+  }
+}
+
+module.exports = function files (self) {
+  function _addPullStream (options) {
+    const opts = Object.assign({}, {
+      shardSplitThreshold: self._options.EXPERIMENTAL.sharding
+        ? 1000
+        : Infinity
+    }, options)
+
+    let total = 0
+    let prog = opts.progress || (() => {})
+    const progress = (bytes) => {
+      total += bytes
+      prog(total)
+    }
+
+    opts.progress = progress
+    return pull(
+      pull.map(normalizeContent),
+      pull.flatten(),
+      importer(self._ipldResolver, opts),
+      pull.asyncMap(prepareFile.bind(null, self, opts))
+    )
+  }
+
+  function _catPullStream (ipfsPath) {
+    if (typeof ipfsPath === 'function') {
+      throw new Error('You must supply an ipfsPath')
+    }
+
+    const d = deferred.source()
+
+    pull(
+      exporter(ipfsPath, self._ipldResolver),
+      pull.collect((err, files) => {
+        if (err) { d.end(err) }
+        if (!files || !files.length) {
+          return d.end(new Error('No such file'))
+        }
+
+        const content = files[files.length - 1].content
+        d.resolve(content)
+      })
+    )
+
+    return d
+  }
+
+  function _lsPullStreamImmutable (ipfsPath) {
+    return pull(
+      exporter(ipfsPath, self._ipldResolver, { maxDepth: 1 }),
+      pull.filter((node) => node.depth === 1),
+      pull.map((node) => {
+        node = Object.assign({}, node, { hash: toB58String(node.hash) })
+        delete node.content
+        return node
+      })
+    )
+  }
+
+  return {
+    add: promisify((data, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
+      } else if (!callback || typeof callback !== 'function') {
+        callback = noop
+      }
+
+      if (typeof data !== 'object' &&
+          !Buffer.isBuffer(data) &&
+          !isStream(data)) {
+        return callback(new Error('Invalid arguments, data must be an object, Buffer or readable stream'))
+      }
+
+      pull(
+        pull.values([data]),
+        _addPullStream(options),
+        sort((a, b) => {
+          if (a.path < b.path) return 1
+          if (a.path > b.path) return -1
+          return 0
+        }),
+        pull.collect(callback)
+      )
+    }),
+
+    addReadableStream: (options) => {
+      options = options || {}
+
+      const p = pushable()
+      const s = pull(
+        p,
+        _addPullStream(options)
+      )
+
+      const retStream = new AddHelper(s, p)
+
+      retStream.once('finish', () => p.end())
+
+      return retStream
+    },
+
+    addPullStream: _addPullStream,
+
+    cat: promisify((ipfsPath, callback) => {
+      const p = _catPullStream(ipfsPath)
+      pull(
+        p,
+        pull.collect((err, buffers) => {
+          if (err) { return callback(err) }
+          callback(null, Buffer.concat(buffers))
+        })
+      )
+    }),
+
+    catReadableStream: (ipfsPath) => {
+      const p = _catPullStream(ipfsPath)
+
+      return toStream.source(p)
+    },
+
+    catPullStream: _catPullStream,
+
+    get: promisify((ipfsPath, callback) => {
+      pull(
+        exporter(ipfsPath, self._ipldResolver),
+        pull.asyncMap((file, cb) => {
+          if (file.content) {
+            pull(
+              file.content,
+              pull.collect((err, buffers) => {
+                if (err) { return cb(err) }
+                file.content = Buffer.concat(buffers)
+                cb(null, file)
+              })
+            )
+          } else {
+            cb(null, file)
+          }
+        }),
+        pull.collect(callback)
+      )
+    }),
+
+    getReadableStream: (ipfsPath) => {
+      return toStream.source(
+        pull(
+          exporter(ipfsPath, self._ipldResolver),
+          pull.map((file) => {
+            if (file.content) {
+              file.content = toStream.source(file.content)
+              file.content.pause()
+            }
+
+            return file
+          })
+        )
+      )
+    },
+
+    getPullStream: (ipfsPath) => {
+      return exporter(ipfsPath, self._ipldResolver)
+    },
+
+    lsImmutable: promisify((ipfsPath, callback) => {
+      pull(
+        _lsPullStreamImmutable(ipfsPath),
+        pull.collect((err, values) => {
+          if (err) {
+            return callback(err)
+          }
+          callback(null, values)
+        })
+      )
+    }),
+
+    lsReadableStreamImmutable: (ipfsPath) => {
+      return toStream.source(_lsPullStreamImmutable(ipfsPath))
+    },
+
+    lsPullStreamImmutable: _lsPullStreamImmutable
   }
 }

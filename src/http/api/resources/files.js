@@ -9,6 +9,7 @@ log.error = debug('jsipfs:http-api:files:error')
 const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
 const pushable = require('pull-pushable')
+const each = require('async/each')
 const toStream = require('pull-stream-to-stream')
 const abortable = require('pull-abortable')
 const Joi = require('joi')
@@ -87,55 +88,41 @@ exports.get = {
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
-    const key = request.pre.args.key
+    const cid = request.pre.args.key
     const ipfs = request.server.app.ipfs
     const pack = tar.pack()
 
-    ipfs.files.getPull(key, (err, stream) => {
+    ipfs.files.get(cid, (err, filesArray) => {
       if (err) {
         log.error(err)
-
-        reply({
-          Message: 'Failed to get file: ' + err,
-          Code: 0
-        }).code(500)
+        pack.emit('error', err)
+        pack.destroy()
         return
       }
 
-      pull(
-        stream,
-        pull.asyncMap((file, cb) => {
-          const header = { name: file.path }
-          if (!file.content) {
-            header.type = 'directory'
-            pack.entry(header)
-            cb()
-          } else {
-            header.size = file.size
-            const packStream = pack.entry(header, cb)
-            if (!packStream) {
-              // this happens if the request is aborted
-              // we just skip things then
-              log('other side hung up')
-              return cb()
-            }
-            toStream.source(file.content).pipe(packStream)
-          }
-        }),
-        pull.onEnd((err) => {
-          if (err) {
-            log.error(err)
-            pack.emit('error', err)
-            pack.destroy()
-            return
-          }
+      each(filesArray, (file, cb) => {
+        const header = { name: file.path }
 
-          pack.finalize()
-        })
-      )
+        if (file.content) {
+          header.size = file.size
+          pack.entry(header, file.content, cb)
+        } else {
+          header.type = 'directory'
+          pack.entry(header, cb)
+        }
+      }, (err) => {
+        if (err) {
+          log.error(err)
+          pack.emit('error', err)
+          pack.destroy()
+          return
+        }
 
-      // the reply must read the tar stream,
-      // to pull values through
+        pack.finalize()
+      })
+
+      // reply must be called right away so that tar-stream offloads its content
+      // otherwise it will block in large files
       reply(pack).header('X-Stream-Output', '1')
     })
   }
@@ -251,7 +238,7 @@ exports.add = {
 
     pull(
       fileAdder,
-      ipfs.files.createAddPullStream(options),
+      ipfs.files.addPullStream(options),
       pull.map((file) => {
         return {
           Name: file.path ? file.path : file.hash,
