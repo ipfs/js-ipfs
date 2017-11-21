@@ -93,6 +93,7 @@
   },
   "dependencies": {
     "async": "^2.6.0",
+    "binary-querystring": "^0.1.1",
     "bl": "^1.2.1",
     "boom": "^7.1.1",
     "bs58": "^4.0.1",

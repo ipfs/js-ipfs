@@ -83,7 +83,7 @@ describe('pubsub', function () {
       ], done)
     })
   })
-  
+
   describe('ascii data', () => {
     const data = Buffer.from('hello world')
 
@@ -258,7 +258,7 @@ describe('pubsub', function () {
 
   describe('binary data', () => {
     const data = Buffer.from('a36161636179656162830103056164a16466666666f400010203040506070809', 'hex')
-    
+
     it('publish from Go, subscribe on Go', (done) => {
       const topic = 'pubsub-binary-go-go'
       let n = 0
