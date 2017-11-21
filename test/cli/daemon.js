@@ -71,9 +71,8 @@ describe('daemon', () => {
 
   afterEach(() => clean(repoPath))
 
-  // TODO: test fails
-  it.skip('do not crash if Addresses.Swarm is empty', function (done) {
-    this.timeout(20 * 1000)
+  it('do not crash if Addresses.Swarm is empty', function (done) {
+    this.timeout(100 * 1000)
 
     ipfs('init').then(() => {
       return ipfs('config', 'Addresses', JSON.stringify({
@@ -88,18 +87,16 @@ describe('daemon', () => {
     }).catch((err) => done(err))
   })
 
-  // TODO: test fails
-  it.skip('should handle SIGINT gracefully', function (done) {
-    this.timeout(20 * 1000)
+  it('should handle SIGINT gracefully', function (done) {
+    this.timeout(100 * 1000)
 
     testSignal(ipfs, 'SIGINT').then(() => {
       checkLock(repoPath, done)
     }).catch(done)
   })
 
-  // TODO: test fails
-  it.skip('should handle SIGTERM gracefully', function (done) {
-    this.timeout(20 * 1000)
+  it('should handle SIGTERM gracefully', function (done) {
+    this.timeout(100 * 1000)
 
     testSignal(ipfs, 'SIGTERM').then(() => {
       checkLock(repoPath, done)
