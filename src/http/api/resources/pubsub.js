@@ -61,7 +61,7 @@ exports.publish = {
     const topic = arg[0]
 
     const rawArgs = binaryQueryString(request.url.search)
-    const buf = rawArgs.arg[1]
+    const buf = rawArgs.arg && rawArgs.arg[1]
 
     const ipfs = request.server.app.ipfs
 
