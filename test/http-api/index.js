@@ -19,7 +19,10 @@ describe('HTTP API', () => {
   let http = {}
 
   before((done) => {
-    http.api = new API(repoTests)
+    const options = {
+      enablePubsubExperiment: true
+    }
+    http.api = new API(repoTests, null, options)
 
     ncp(repoExample, repoTests, (err) => {
       expect(err).to.not.exist()
