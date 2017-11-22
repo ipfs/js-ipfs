@@ -6,7 +6,6 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const waterfall = require('async/waterfall')
-const bl = require('bl')
 const crypto = require('crypto')
 const os = require('os')
 
@@ -14,17 +13,14 @@ const GoDaemon = require('../utils/interop-daemon-spawner/go')
 const JsDaemon = require('../utils/interop-daemon-spawner/js')
 
 function catAndCheck (daemon, hash, data, callback) {
-  waterfall([
-    (cb) => daemon.api.cat(hash, cb),
-    (stream, cb) => stream.pipe(bl(cb))
-  ], (err, file) => {
+  daemon.api.cat(hash, (err, fileData) => {
     expect(err).to.not.exist()
-    expect(file).to.eql(data)
+    expect(fileData).to.eql(data)
     callback()
   })
 }
 
-describe.only('repo', () => {
+describe('repo', () => {
   it('read repo: go -> js', (done) => {
     const dir = os.tmpdir() + '/' + Math.ceil(Math.random() * 10000)
     const data = crypto.randomBytes(1024 * 5)

@@ -128,8 +128,7 @@ describe('exchange files', () => {
       const data = crypto.randomBytes(size)
       waterfall([
         (cb) => goDaemon.api.add(data, cb),
-        (res, cb) => jsDaemon.api.cat(res[0].hash, cb),
-        (stream, cb) => stream.pipe(bl(cb))
+        (res, cb) => jsDaemon.api.cat(res[0].hash, cb)
       ], (err, file) => {
         expect(err).to.not.exist()
         expect(file).to.be.eql(data)
@@ -141,8 +140,7 @@ describe('exchange files', () => {
       const data = crypto.randomBytes(size)
       waterfall([
         (cb) => jsDaemon.api.add(data, cb),
-        (res, cb) => goDaemon.api.cat(res[0].hash, cb),
-        (stream, cb) => stream.pipe(bl(cb))
+        (res, cb) => goDaemon.api.cat(res[0].hash, cb)
       ], (err, file) => {
         expect(err).to.not.exist()
         expect(file).to.be.eql(data)
@@ -154,8 +152,7 @@ describe('exchange files', () => {
       const data = crypto.randomBytes(size)
       waterfall([
         (cb) => js2Daemon.api.add(data, cb),
-        (res, cb) => jsDaemon.api.cat(res[0].hash, cb),
-        (stream, cb) => stream.pipe(bl(cb))
+        (res, cb) => jsDaemon.api.cat(res[0].hash, cb)
       ], (err, file) => {
         expect(err).to.not.exist()
         expect(file).to.be.eql(data)
@@ -164,6 +161,7 @@ describe('exchange files', () => {
     })
   }))
 
+  // TODO these tests are not fetching the full dir??
   describe('get directory', () => dirs.forEach((num) => {
     it(`go -> js: depth: 5, num: ${num}`, () => {
       const dir = tmpDir()
