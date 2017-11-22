@@ -201,9 +201,9 @@ module.exports = (common) => {
     describe('multiple nodes connected', () => {
       before((done) => {
         parallel([
-          (cb) => ipfs1.swarm.connect(ipfs2.peerId.addresses[0], cb),
-          (cb) => ipfs2.swarm.connect(ipfs3.peerId.addresses[0], cb),
-          (cb) => ipfs1.swarm.connect(ipfs3.peerId.addresses[0], cb)
+          (cb) => ipfs1.swarm.connect(ipfs2.peerId.addresses.find(a => a.includes('127.0.0.1')), cb),
+          (cb) => ipfs2.swarm.connect(ipfs3.peerId.addresses.find(a => a.includes('127.0.0.1')), cb),
+          (cb) => ipfs1.swarm.connect(ipfs3.peerId.addresses.find(a => a.includes('127.0.0.1')), cb)
         ], (err) => {
           if (err) {
             return done(err)
