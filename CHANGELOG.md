@@ -1,3 +1,13 @@
+<a name="17.1.2"></a>
+## [17.1.2](https://github.com/ipfs/js-ipfs-api/compare/v17.1.1...v17.1.2) (2017-11-22)
+
+
+### Bug Fixes
+
+* config.replace ([#634](https://github.com/ipfs/js-ipfs-api/issues/634)) ([79d79c5](https://github.com/ipfs/js-ipfs-api/commit/79d79c5)), closes [#633](https://github.com/ipfs/js-ipfs-api/issues/633)
+
+
+
 <a name="17.1.1"></a>
 ## [17.1.1](https://github.com/ipfs/js-ipfs-api/compare/v17.1.0...v17.1.1) (2017-11-22)
 
