@@ -69,7 +69,7 @@ exports.publish = {
       return reply(new Error('Missing topic'))
     }
 
-    if (!buf) {
+    if (!buf || buf.length === 0) {
       return reply(new Error('Missing buf'))
     }
 
