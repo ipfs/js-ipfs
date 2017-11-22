@@ -121,7 +121,7 @@
     "joi": "^13.0.2",
     "libp2p": "~0.13.1",
     "libp2p-circuit": "~0.1.4",
-    "libp2p-floodsub": "~0.12.1",
+    "libp2p-floodsub": "~0.13.0",
     "libp2p-kad-dht": "~0.6.0",
     "libp2p-mdns": "~0.9.1",
     "libp2p-multiplex": "~0.5.0",
