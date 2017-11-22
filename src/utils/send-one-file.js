@@ -9,9 +9,6 @@ module.exports = (send, path) => {
       if (err) {
         return callback(err)
       }
-      if (results.length !== 1) {
-        return callback(new Error('expected 1 result and had ' + results.length))
-      }
       callback(null, results[0])
     })
   }
