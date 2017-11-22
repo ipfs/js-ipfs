@@ -377,6 +377,32 @@ Yes, unfortunately, due to [Chrome aggressive resource throttling policy](https:
 
 A way to mitigate this in Chrome, is to run your IPFS node inside a Service Worker, so that the IPFS instance runs in a background process. You can learn how to install an IPFS node as a service worker in here the repo [ipfs-service-worker](https://github.com/ipfs/ipfs-service-worker)
 
+#### How can I configure an IPFS node to use a custom `signaling server`?
+
+You'll need to execute a compatible `signaling server` ([libp2p-webrtc-star](https://github.com/libp2p/js-libp2p-webrtc-star) works) and to setup the correct configurations params for your IPFS node:
+
+- enable `pubsub`
+- provide the [`multiaddr`](https://github.com/multiformats/multiaddr) for the `signaling server`
+
+
+```JavaScript
+const node = new IPFS({
+  repo: 'your-repo-path',
+  EXPERIMENTAL: {
+    pubsub: true,
+  },
+  config: {
+    Addresses: {
+      Swarm: [
+        '/ip4/127.0.0.1/tcp/9090/ws/p2p-webrtc-star'
+      ]
+    }
+  }
+})
+```
+
+The code above assumes you are running a local `signaling server` on port `9090`. Provide the correct values accordingly.
+
 ## Packages
 
 | Package | Version | Deps | DevDeps | Build |
