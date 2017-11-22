@@ -58,7 +58,7 @@ module.exports = (http) => {
       it('returns 500 if no buffer is provided', (done) => {
         api.inject({
           method: 'POST',
-          url: `/api/v0/pubsub/pub?arg=${topic}&arg=`
+          url: `/api/v0/pubsub/pub?arg=&arg=`
         }, (res) => {
           expect(res.statusCode).to.equal(500)
           expect(res.result.Code).to.be.eql(1)
