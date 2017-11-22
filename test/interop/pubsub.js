@@ -165,7 +165,7 @@ describe('pubsub', function () {
         (cb) => jsD.api.pubsub.subscribe(topic, checkMessage, cb),
         (cb) => setTimeout(() => { cb() }, 500),
         (cb) => goD.api.pubsub.publish(topic, data, cb),
-        (cb) => waitFor(() => n === 1, cb),
+        (cb) => waitFor(() => n === 1, cb)
       ], done)
     })
   })
@@ -251,7 +251,7 @@ describe('pubsub', function () {
         (cb) => jsD.api.pubsub.subscribe(topic, checkMessage, cb),
         (cb) => setTimeout(() => { cb() }, 500),
         (cb) => goD.api.pubsub.publish(topic, data, cb),
-        (cb) => waitFor(() => n === 1, cb),
+        (cb) => waitFor(() => n === 1, cb)
       ], done)
     })
   })
@@ -342,6 +342,5 @@ describe('pubsub', function () {
         (cb) => waitFor(() => n === 1, cb)
       ], done)
     })
-
   })
 })
