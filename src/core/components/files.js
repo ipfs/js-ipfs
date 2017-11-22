@@ -282,5 +282,22 @@ module.exports = function files (self) {
     },
 
     lsPullStreamImmutable: _lsPullStreamImmutable
-  }
+  },
+
+  unlink: promisify((ipfsPath, callback) => {
+    const cid = new CID(ipfsPath)
+    self._ipldResolver.get(cid, (err, node) => {
+      if (err) {
+        return callback(err)
+      }
+      pull(
+        pull.values(node.value.links),
+        pull.drain(
+          link => self._ipldResolver.bs.delete(new CID(link.multihash)),
+          () => self._ipldResolver.bs.delete(cid, callback)
+        )
+      )
+    })
+  })
+
 }
