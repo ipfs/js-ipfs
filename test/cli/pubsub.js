@@ -12,7 +12,9 @@ const InstanceFactory = require('../utils/ipfs-factory-instance')
 const DaemonFactory = require('../utils/ipfs-factory-daemon')
 const ipfsExec = require('../utils/ipfs-exec')
 
-describe('pubsub', () => {
+describe('pubsub', function() {
+  this.timeout(30000)
+
   let instanceFactory
   let daemonFactory
   let node
