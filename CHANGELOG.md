@@ -1,3 +1,13 @@
+<a name="17.1.1"></a>
+## [17.1.1](https://github.com/ipfs/js-ipfs-api/compare/v17.1.0...v17.1.1) (2017-11-22)
+
+
+### Bug Fixes
+
+* pubsub do not eat error messages ([#632](https://github.com/ipfs/js-ipfs-api/issues/632)) ([5a1bf9b](https://github.com/ipfs/js-ipfs-api/commit/5a1bf9b))
+
+
+
 <a name="17.1.0"></a>
 # [17.1.0](https://github.com/ipfs/js-ipfs-api/compare/v17.0.1...v17.1.0) (2017-11-20)
 
