@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/ipfs/interface-ipfs-core#readme",
   "dependencies": {
-    "aegir": "^12.1.3",
+    "aegir": "^12.2.0",
     "async": "^2.6.0",
     "bl": "^1.2.1",
     "bs58": "^4.0.1",
