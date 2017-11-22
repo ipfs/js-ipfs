@@ -8,7 +8,7 @@ chai.use(dirtyChai)
 const series = require('async/series')
 const parallel = require('async/parallel')
 
-const GODaemon = require('../utils/interop-daemon-spawner/go')
+const GoDaemon = require('../utils/interop-daemon-spawner/go')
 const JSDaemon = require('../utils/interop-daemon-spawner/js')
 
 /*
@@ -23,13 +23,13 @@ function waitFor (predicate, callback) {
     }
     if (Date.now() > ttl) {
       clearInterval(self)
-      return callback(new Error("waitFor time expired"))
+      return callback(new Error('waitFor time expired'))
     }
   }, 500)
 }
 
 describe('pubsub', function () {
-  this.timeout(4 * 1000)
+  this.timeout(5 * 1000)
 
   let jsD
   let goD
@@ -39,7 +39,7 @@ describe('pubsub', function () {
   before(function (done) {
     this.timeout(50 * 1000)
 
-    goD = new GODaemon({
+    goD = new GoDaemon({
       disposable: true,
       init: true,
       flags: ['--enable-pubsub-experiment']

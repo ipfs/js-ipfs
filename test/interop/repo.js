@@ -24,7 +24,7 @@ function catAndCheck (daemon, hash, data, callback) {
   })
 }
 
-describe('repo', () => {
+describe.only('repo', () => {
   it('read repo: go -> js', (done) => {
     const dir = os.tmpdir() + '/' + Math.ceil(Math.random() * 10000)
     const data = crypto.randomBytes(1024 * 5)
