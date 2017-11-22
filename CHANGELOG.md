@@ -1,3 +1,13 @@
+<a name="0.36.8"></a>
+## [0.36.8](https://github.com/ipfs/interface-ipfs-core/compare/v0.36.7...v0.36.8) (2017-11-22)
+
+
+### Bug Fixes
+
+* **pubsub:** swarm connect to local servers ([#175](https://github.com/ipfs/interface-ipfs-core/issues/175)) ([09d9573](https://github.com/ipfs/interface-ipfs-core/commit/09d9573))
+
+
+
 <a name="0.36.7"></a>
 ## [0.36.7](https://github.com/ipfs/interface-ipfs-core/compare/v0.36.6...v0.36.7) (2017-11-20)
 
