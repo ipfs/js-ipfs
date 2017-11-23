@@ -33,7 +33,7 @@ describe('block', () => runOnAndOff((thing) => {
       .then((out) => expect(out).to.eql('hello world\n'))
   })
 
-  it('get block from file without a final newline', () => {
+  it('get block from file without a final newline', function () {
     this.timeout(20 * 1000)
 
     return ipfs('block put test/fixtures/test-data/no-newline').then((out) => {
