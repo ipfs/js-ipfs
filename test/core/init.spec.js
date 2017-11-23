@@ -24,6 +24,8 @@ describe('init', () => {
   let repo
 
   beforeEach(() => {
+    repo = createTempRepo()
+
     ipfs = new IPFS({
       repo: createTempRepo(),
       init: false,
