@@ -214,7 +214,7 @@ describe('bitswap', function () {
     let node
 
     before(function (done) {
-      this.timeout(15 * 1000)
+      this.timeout(40 * 1000)
 
       node = new IPFS({
         repo: createTempRepo(),
@@ -250,7 +250,7 @@ describe('bitswap', function () {
 
     describe('while online', () => {
       before(function (done) {
-        this.timeout(15 * 1000)
+        this.timeout(40 * 1000)
 
         node.start(() => done())
       })
