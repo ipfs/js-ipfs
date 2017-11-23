@@ -12,14 +12,14 @@ describe('block', () => runOnAndOff((thing) => {
   })
 
   it('put', function () {
-    this.timeout(20 * 1000)
+    this.timeout(40 * 1000)
     return ipfs('block put test/fixtures/test-data/hello').then((out) => {
       expect(out).to.eql('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp\n')
     })
   })
 
   it('put with flags, format and mhtype', function () {
-    this.timeout(20 * 1000)
+    this.timeout(40 * 1000)
 
     return ipfs('block put --format eth-block --mhtype keccak-256 test/fixtures/test-data/eth-block')
       .then((out) =>
@@ -27,14 +27,14 @@ describe('block', () => runOnAndOff((thing) => {
   })
 
   it('get', function () {
-    this.timeout(20 * 1000)
+    this.timeout(40 * 1000)
 
     return ipfs('block get QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
       .then((out) => expect(out).to.eql('hello world\n'))
   })
 
   it('get block from file without a final newline', function () {
-    this.timeout(20 * 1000)
+    this.timeout(40 * 1000)
 
     return ipfs('block put test/fixtures/test-data/no-newline').then((out) => {
       expect(out).to.eql('QmTwbQs4sGcCiPxV97SpbHS7QgmVg9SiKxcG1AcF1Ly2SL\n')
@@ -44,7 +44,7 @@ describe('block', () => runOnAndOff((thing) => {
   })
 
   it('stat', function () {
-    this.timeout(20 * 1000)
+    this.timeout(40 * 1000)
 
     return ipfs('block stat QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
       .then((out) => {
@@ -56,7 +56,7 @@ describe('block', () => runOnAndOff((thing) => {
   })
 
   it.skip('rm', function () {
-    this.timeout(20 * 1000)
+    this.timeout(40 * 1000)
 
     return ipfs('block rm QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
       .then((out) => {
