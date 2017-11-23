@@ -44,7 +44,9 @@ describe('object', () => runOnAndOff((thing) => {
     })
   })
 
-  it('stat', () => {
+  it('stat', function () {
+    this.timeout(40 * 1000)
+
     return ipfs('object stat QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').then((out) => {
       expect(out).to.eql([
         'NumLinks: 1',
@@ -70,7 +72,9 @@ describe('object', () => runOnAndOff((thing) => {
     })
   })
 
-  describe('patch', () => {
+  describe('patch', function () {
+    this.timeout(40 * 1000)
+
     it('append-data', () => {
       return ipfs('object patch append-data QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n test/fixtures/test-data/badconfig').then((out) => {
         expect(out).to.eql(

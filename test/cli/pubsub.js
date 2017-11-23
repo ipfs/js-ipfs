@@ -13,7 +13,7 @@ const DaemonFactory = require('../utils/ipfs-factory-daemon')
 const ipfsExec = require('../utils/ipfs-exec')
 
 describe('pubsub', function () {
-  this.timeout(30000)
+  this.timeout(40 * 1000)
 
   let instanceFactory
   let daemonFactory
@@ -25,7 +25,9 @@ describe('pubsub', function () {
   const topicB = 'nonscentsB'
   const topicC = 'nonscentsC'
 
-  before((done) => {
+  before(function (done) {
+    this.timeout(40 * 1000)
+
     instanceFactory = new InstanceFactory()
     instanceFactory.spawnNode((err, _node) => {
       expect(err).to.not.exist()
@@ -70,7 +72,9 @@ describe('pubsub', function () {
     ])
   })
 
-  it('ls', () => {
+  it('ls', function () {
+    this.timeout(40 * 1000)
+
     const sub = cli(`pubsub sub ${topicB}`)
 
     sub.stdout.once('data', (data) => {
