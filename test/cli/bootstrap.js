@@ -38,7 +38,7 @@ describe('bootstrap', () => runOnAndOff((thing) => {
   ]
 
   it('add default', function () {
-    this.timeout(20 * 1000)
+    this.timeout(40 * 1000)
 
     return ipfs('bootstrap add --default').then((out) => {
       expect(out).to.equal(defaultList.join('\n') + '\n')
@@ -46,7 +46,7 @@ describe('bootstrap', () => runOnAndOff((thing) => {
   })
 
   it('list the bootstrap nodes', function () {
-    this.timeout(20 * 1000)
+    this.timeout(40 * 1000)
 
     return ipfs('bootstrap list').then((out) => {
       expect(out).to.equal(defaultList.join('\n') + '\n')
@@ -54,7 +54,7 @@ describe('bootstrap', () => runOnAndOff((thing) => {
   })
 
   it('add another bootstrap node', function () {
-    this.timeout(20 * 1000)
+    this.timeout(40 * 1000)
 
     return ipfs('bootstrap add /ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD').then((out) => {
       expect(out).to.equal('/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD\n')
@@ -63,7 +63,7 @@ describe('bootstrap', () => runOnAndOff((thing) => {
   })
 
   it('rm a bootstrap node', function () {
-    this.timeout(20 * 1000)
+    this.timeout(40 * 1000)
 
     return ipfs('bootstrap rm /ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD').then((out) => {
       expect(out).to.equal('/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD\n')
@@ -74,7 +74,7 @@ describe('bootstrap', () => runOnAndOff((thing) => {
   })
 
   it('rm all bootstrap nodes', function () {
-    this.timeout(20 * 1000)
+    this.timeout(40 * 1000)
 
     return ipfs('bootstrap rm --all').then((out) => {
       expect(out).to.equal('')
