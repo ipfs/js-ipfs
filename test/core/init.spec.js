@@ -27,7 +27,7 @@ describe('init', () => {
     repo = createTempRepo()
 
     ipfs = new IPFS({
-      repo: createTempRepo(),
+      repo: repo,
       init: false,
       start: false
     })
