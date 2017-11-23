@@ -22,10 +22,9 @@ module.exports = (common) => {
     let ipfs
 
     before(function (done) {
-      // CI takes longer to instantiate the daemon,
-      // so we need to increase the timeout for the
-      // before step
-      this.timeout(20 * 1000)
+      // CI takes longer to instantiate the daemon, so we need to increase the
+      // timeout for the before step
+      this.timeout(40 * 1000)
 
       common.setup((err, factory) => {
         expect(err).to.not.exist()
@@ -39,106 +38,108 @@ module.exports = (common) => {
 
     after((done) => common.teardown(done))
 
-    describe('callback API', () => {
-      describe('.put', () => {
-        it('a buffer, using defaults', (done) => {
-          const expectedHash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
-          const blob = new Buffer('blorb')
+    describe('.put', () => {
+      it('a buffer, using defaults', (done) => {
+        const expectedHash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
+        const blob = new Buffer('blorb')
 
-          ipfs.block.put(blob, (err, block) => {
-            expect(err).to.not.exist()
-            expect(block.data).to.be.eql(blob)
-            expectKey(block, multihash.fromB58String(expectedHash), done)
-          })
-        })
-
-        it('a buffer, using CID', (done) => {
-          const expectedHash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
-          const cid = new CID(expectedHash)
-          const blob = new Buffer('blorb')
-
-          ipfs.block.put(blob, { cid: cid }, (err, block) => {
-            expect(err).to.not.exist()
-            expect(block.data).to.be.eql(blob)
-            expectKey(block, multihash.fromB58String(expectedHash), done)
-          })
-        })
-
-        it('a buffer, using options', (done) => {
-          const expectedHash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
-          const blob = new Buffer('blorb')
-
-          ipfs.block.put(blob, {
-            format: 'dag-pb',
-            mhtype: 'sha2-256',
-            version: 0
-          }, (err, block) => {
-            expect(err).to.not.exist()
-            expect(block.data).to.be.eql(blob)
-            expectKey(block, multihash.fromB58String(expectedHash), done)
-          })
-        })
-
-        it('a Block instance', (done) => {
-          const expectedHash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
-          const cid = new CID(expectedHash)
-          const b = new Block(new Buffer('blorb'), cid)
-
-          ipfs.block.put(b, (err, block) => {
-            expect(err).to.not.exist()
-            expect(block.data).to.eql(new Buffer('blorb'))
-            expectKey(block, multihash.fromB58String(expectedHash), done)
-          })
-        })
-
-        it('error with array of blocks', (done) => {
-          const blob = Buffer('blorb')
-
-          ipfs.block.put([blob, blob], (err) => {
-            expect(err).to.be.an.instanceof(Error)
-            done()
-          })
+        ipfs.block.put(blob, (err, block) => {
+          expect(err).to.not.exist()
+          expect(block.data).to.be.eql(blob)
+          expectKey(block, multihash.fromB58String(expectedHash), done)
         })
       })
 
-      describe('.get', () => {
-        it('by CID object', (done) => {
-          const hash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
-          const cid = new CID(hash)
+      it('a buffer, using CID', (done) => {
+        const expectedHash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
+        const cid = new CID(expectedHash)
+        const blob = new Buffer('blorb')
 
-          ipfs.block.get(cid, (err, block) => {
-            expect(err).to.not.exist()
-            expect(block.data).to.eql(new Buffer('blorb'))
-            expectKey(block, cid.multihash, done)
-          })
-        })
-
-        it('by CID in Str', (done) => {
-          const hash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
-
-          ipfs.block.get(hash, (err, block) => {
-            expect(err).to.not.exist()
-            expect(block.data).to.eql(new Buffer('blorb'))
-            expectKey(block, multihash.fromB58String(hash), done)
-          })
+        ipfs.block.put(blob, { cid: cid }, (err, block) => {
+          expect(err).to.not.exist()
+          expect(block.data).to.be.eql(blob)
+          expectKey(block, multihash.fromB58String(expectedHash), done)
         })
       })
 
-      describe('.stat', () => {
-        it('by CID', (done) => {
-          const hash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
-          const cid = new CID(hash)
+      it('a buffer, using options', (done) => {
+        const expectedHash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
+        const blob = new Buffer('blorb')
 
-          ipfs.block.stat(cid, (err, stats) => {
-            expect(err).to.not.exist()
-            expect(stats).to.have.property('key')
-            expect(stats).to.have.property('size')
-            done()
-          })
+        ipfs.block.put(blob, {
+          format: 'dag-pb',
+          mhtype: 'sha2-256',
+          version: 0
+        }, (err, block) => {
+          expect(err).to.not.exist()
+          expect(block.data).to.be.eql(blob)
+          expectKey(block, multihash.fromB58String(expectedHash), done)
         })
       })
+
+      it('a Block instance', (done) => {
+        const expectedHash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
+        const cid = new CID(expectedHash)
+        const b = new Block(new Buffer('blorb'), cid)
+
+        ipfs.block.put(b, (err, block) => {
+          expect(err).to.not.exist()
+          expect(block.data).to.eql(new Buffer('blorb'))
+          expectKey(block, multihash.fromB58String(expectedHash), done)
+        })
+      })
+
+      it('error with array of blocks', (done) => {
+        const blob = Buffer('blorb')
+
+        ipfs.block.put([blob, blob], (err) => {
+          expect(err).to.be.an.instanceof(Error)
+          done()
+        })
+      })
+
+      // TODO it.skip('Promises support', (done) => {})
     })
 
-    describe('promise API', () => {})
+    describe('.get', () => {
+      it('by CID object', (done) => {
+        const hash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
+        const cid = new CID(hash)
+
+        ipfs.block.get(cid, (err, block) => {
+          expect(err).to.not.exist()
+          expect(block.data).to.eql(new Buffer('blorb'))
+          expectKey(block, cid.multihash, done)
+        })
+      })
+
+      it('by CID in Str', (done) => {
+        const hash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
+
+        ipfs.block.get(hash, (err, block) => {
+          expect(err).to.not.exist()
+          expect(block.data).to.eql(new Buffer('blorb'))
+          expectKey(block, multihash.fromB58String(hash), done)
+        })
+      })
+
+      // TODO it.skip('Promises support', (done) => {})
+    })
+
+    describe('.stat', () => {
+      it('by CID', (done) => {
+        const hash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
+        const cid = new CID(hash)
+
+        ipfs.block.stat(cid, (err, stats) => {
+          expect(err).to.not.exist()
+          expect(stats).to.have.property('key')
+          expect(stats).to.have.property('size')
+          done()
+        })
+      })
+
+      // TODO it.skip('Promises support', (done) => {})
+    })
   })
 }

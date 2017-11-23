@@ -11,6 +11,7 @@ const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
 const whilst = require('async/whilst')
 const each = require('async/each')
+const hat = require('hat')
 
 function waitForPeers (ipfs, topic, peersToWait, callback) {
   const i = setInterval(() => {
@@ -61,13 +62,17 @@ module.exports = (common) => {
   describe('.pubsub', function () {
     this.timeout(80 * 1000)
 
-    const getTopic = () => 'pubsub-tests-' + Math.random()
+    const getTopic = () => 'pubsub-tests-' + hat()
 
     let ipfs1
     let ipfs2
     let ipfs3
 
-    before((done) => {
+    before(function (done) {
+      // CI takes longer to instantiate the daemon, so we need to increase the
+      // timeout for the before step
+      this.timeout(60 * 1000)
+
       common.setup((err, factory) => {
         if (err) {
           return done(err)

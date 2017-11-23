@@ -18,32 +18,30 @@ module.exports = (common) => {
     let ipfsB
     let factoryInstance
 
-    before((done) => {
+    before(function (done) {
+      // CI takes longer to instantiate the daemon, so we need to increase the
+      // timeout for the before step
+      this.timeout(40 * 1000)
+
       common.setup((err, factory) => {
         expect(err).to.not.exist()
         factoryInstance = factory
         series([
-          (cb) => {
-            factory.spawnNode((err, node) => {
-              expect(err).to.not.exist()
-              ipfsA = node
-              cb()
-            })
-          },
-          (cb) => {
-            factory.spawnNode((err, node) => {
-              expect(err).to.not.exist()
-              ipfsB = node
-              cb()
-            })
-          }
+          (cb) => factory.spawnNode((err, node) => {
+            expect(err).to.not.exist()
+            ipfsA = node
+            cb()
+          }),
+          (cb) => factory.spawnNode((err, node) => {
+            expect(err).to.not.exist()
+            ipfsB = node
+            cb()
+          })
         ], done)
       })
     })
 
-    after((done) => {
-      common.teardown(done)
-    })
+    after((done) => common.teardown(done))
 
     let ipfsBId
 
