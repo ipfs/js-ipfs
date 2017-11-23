@@ -34,11 +34,13 @@ function makeBlock (callback) {
   })
 }
 
-describe('bitswap', () => {
+describe('bitswap', function () {
+  this.timeout(80 * 1000)
+
   let inProcNode // Node spawned inside this process
 
   beforeEach(function (done) {
-    this.timeout(30 * 1000)
+    this.timeout(60 * 1000)
 
     let config = {
       repo: createTempRepo(),
