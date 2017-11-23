@@ -8,8 +8,7 @@ chai.use(dirtyChai)
 
 const _ = require('lodash')
 
-// This is our new test utility to easily check and execute
-// ipfs cli commands.
+// This is our new test utility to easily check and execute ipfs cli commands.
 //
 // The top level export is a function that can be passed a `repoPath`
 // and optional `opts` to customize the execution of the commands.

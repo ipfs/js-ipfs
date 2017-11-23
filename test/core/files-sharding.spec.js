@@ -29,7 +29,7 @@ describe('files directory (sharding tests)', () => {
     let ipfs
 
     before(function (done) {
-      this.timeout(30 * 1000)
+      this.timeout(40 * 1000)
 
       ipfs = new IPFS({
         repo: createTempRepo(),
@@ -49,12 +49,12 @@ describe('files directory (sharding tests)', () => {
     })
 
     after(function (done) {
-      this.timeout(30 * 1000)
+      this.timeout(40 * 1000)
       ipfs.stop(done)
     })
 
     it('should be able to add dir without sharding', function (done) {
-      this.timeout(30 * 1000)
+      this.timeout(40 * 1000)
 
       pull(
         pull.values(createTestFiles()),
@@ -74,7 +74,7 @@ describe('files directory (sharding tests)', () => {
     let ipfs
 
     before(function (done) {
-      this.timeout(30 * 1000)
+      this.timeout(40 * 1000)
 
       ipfs = new IPFS({
         repo: createTempRepo(),
@@ -97,12 +97,12 @@ describe('files directory (sharding tests)', () => {
     })
 
     after(function (done) {
-      this.timeout(30 * 1000)
+      this.timeout(40 * 1000)
       ipfs.stop(done)
     })
 
     it('should be able to add dir with sharding', function (done) {
-      this.timeout(30 * 1000)
+      this.timeout(40 * 1000)
 
       pull(
         pull.values(createTestFiles()),

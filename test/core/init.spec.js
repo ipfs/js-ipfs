@@ -18,9 +18,7 @@ const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/create-repo-nodejs.js')
 
 describe('init', () => {
-  if (!isNode) {
-    return
-  }
+  if (!isNode) { return }
 
   let ipfs
   let repo
@@ -38,7 +36,7 @@ describe('init', () => {
   afterEach((done) => repo.teardown(done))
 
   it('basic', (done) => {
-    ipfs.init({ bits: 1024 }, (err) => {
+    ipfs.init({ bits: 512 }, (err) => {
       expect(err).to.not.exist()
 
       repo.exists((err, res) => {
@@ -55,8 +53,9 @@ describe('init', () => {
   })
 
   it('set # of bits in key', function (done) {
-    this.timeout(20 * 1000)
-    ipfs.init({ bits: 2048 }, (err) => {
+    this.timeout(40 * 1000)
+
+    ipfs.init({ bits: 1024 }, (err) => {
       expect(err).to.not.exist()
 
       repo.config.get((err, config) => {
@@ -68,7 +67,7 @@ describe('init', () => {
   })
 
   it('init docs are written', (done) => {
-    ipfs.init({ bits: 1024 }, (err) => {
+    ipfs.init({ bits: 512 }, (err) => {
       expect(err).to.not.exist()
       const multihash = 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
 
@@ -81,7 +80,7 @@ describe('init', () => {
   })
 
   it('empty repo', (done) => {
-    ipfs.init({ bits: 1024, emptyRepo: true }, (err) => {
+    ipfs.init({ bits: 512, emptyRepo: true }, (err) => {
       expect(err).to.not.exist()
 
       // Should not have default assets

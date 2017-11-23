@@ -37,14 +37,17 @@ class JsDaemon extends EventEmitter {
     this.path = opts.path || tmpDir()
     this._started = false
 
+    const extras = {
+      enablePubsubExperiment: true
+    }
     if (this.init) {
       const p = portConfig(this.port)
       this.node = new HttpApi(this.path, {
         Bootstrap: [],
         Addresses: p
-      })
+      }, extras)
     } else {
-      this.node = new HttpApi(this.path)
+      this.node = new HttpApi(this.path, null, extras)
     }
 
     this.node.start(this.init, (err) => {

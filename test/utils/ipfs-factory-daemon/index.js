@@ -8,6 +8,7 @@ const series = require('async/series')
 const eachSeries = require('async/eachSeries')
 const defaultConfig = require('./default-config.json')
 const os = require('os')
+const hat = require('hat')
 
 class Factory {
   constructor () {
@@ -22,13 +23,10 @@ class Factory {
     }
     if (typeof suppliedConfig === 'function') {
       callback = suppliedConfig
-      suppliedConfig = undefined
+      suppliedConfig = {}
     }
 
-    repoPath = repoPath ||
-      os.tmpdir() + '/ipfs-' +
-        Math.random().toString().substring(2, 8) +
-      '-' + Date.now()
+    repoPath = repoPath || os.tmpdir() + '/ipfs-' + hat()
 
     let daemon
     let ctl
@@ -38,12 +36,10 @@ class Factory {
       (cb) => {
         // prepare config for node
 
-        config = Object.assign({}, defaultConfig, config || {})
+        config = Object.assign({}, defaultConfig, suppliedConfig)
 
         PeerId.create({ bits: 1024 }, (err, id) => {
-          if (err) {
-            return cb(err)
-          }
+          if (err) { return cb(err) }
 
           const peerId = id.toJSON()
           config.Identity.PeerID = peerId.id
@@ -52,7 +48,7 @@ class Factory {
         })
       },
       (cb) => {
-        daemon = new HttpApi(repoPath, config)
+        daemon = new HttpApi(repoPath, config, {enablePubsubExperiment: true})
         daemon.repoPath = repoPath
         this.daemonsSpawned.push(daemon)
 
@@ -70,11 +66,11 @@ class Factory {
   dismantle (callback) {
     eachSeries(this.daemonsSpawned, (d, cb) => {
       d.stop((err) => {
+        clean(d.repoPath)
         if (err) {
           console.error('error stopping', err)
         }
-        clean(d.repoPath)
-        cb()
+        cb(err)
       })
     }, callback)
   }

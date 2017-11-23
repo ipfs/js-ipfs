@@ -2,6 +2,7 @@
 
 const PassThrough = require('stream').PassThrough
 const bs58 = require('bs58')
+const binaryQueryString = require('binary-querystring')
 
 exports = module.exports
 
@@ -48,6 +49,7 @@ exports.subscribe = {
 
       reply(res)
         .header('X-Chunked-Output', '1')
+        .header('content-encoding', 'identity') // stop gzip from buffering, see https://github.com/hapijs/hapi/issues/2975
         .header('content-type', 'application/json')
     })
   }
@@ -57,7 +59,9 @@ exports.publish = {
   handler: (request, reply) => {
     const arg = request.query.arg
     const topic = arg[0]
-    const buf = arg[1]
+
+    const rawArgs = binaryQueryString(request.url.search)
+    const buf = rawArgs.arg && rawArgs.arg[1]
 
     const ipfs = request.server.app.ipfs
 
@@ -65,11 +69,11 @@ exports.publish = {
       return reply(new Error('Missing topic'))
     }
 
-    if (!buf) {
+    if (!buf || buf.length === 0) {
       return reply(new Error('Missing buf'))
     }
 
-    ipfs.pubsub.publish(topic, Buffer.from(String(buf)), (err) => {
+    ipfs.pubsub.publish(topic, buf, (err) => {
       if (err) {
         return reply(new Error(`Failed to publish to topic ${topic}: ${err}`))
       }

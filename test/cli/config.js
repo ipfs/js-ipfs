@@ -24,7 +24,9 @@ describe('config', () => runOnAndOff((thing) => {
     restoreConfig = () => fs.writeFileSync(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8')
   })
 
-  describe('get/set', () => {
+  describe('get/set', function () {
+    this.timeout(40 * 1000)
+
     it('set a config key with a string value', () => {
       return ipfs('config foo bar').then((out) => {
         expect(updatedConfig().foo).to.equal('bar')
@@ -64,7 +66,9 @@ describe('config', () => runOnAndOff((thing) => {
     })
   })
 
-  describe('show', () => {
+  describe('show', function () {
+    this.timeout(40 * 1000)
+
     it('returns the full config', () => {
       return ipfs('config show').then((out) => {
         expect(JSON.parse(out)).to.be.eql(updatedConfig())

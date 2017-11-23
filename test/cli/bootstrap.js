@@ -8,8 +8,7 @@ const runOnAndOff = require('../utils/on-and-off')
 describe('bootstrap', () => runOnAndOff((thing) => {
   let ipfs
 
-  before(function () {
-    this.timeout(30 * 1000)
+  before(() => {
     ipfs = thing.ipfs
   })
 
@@ -38,42 +37,50 @@ describe('bootstrap', () => runOnAndOff((thing) => {
     '/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD'
   ]
 
-  it('add default', () => {
+  it('add default', function () {
+    this.timeout(40 * 1000)
+
     return ipfs('bootstrap add --default').then((out) => {
-      expect(out).to.be.eql(defaultList.join('\n') + '\n')
+      expect(out).to.equal(defaultList.join('\n') + '\n')
     })
   })
 
-  it('list the bootstrap nodes', () => {
+  it('list the bootstrap nodes', function () {
+    this.timeout(40 * 1000)
+
     return ipfs('bootstrap list').then((out) => {
-      expect(out).to.eql(defaultList.join('\n') + '\n')
+      expect(out).to.equal(defaultList.join('\n') + '\n')
     })
   })
 
-  it('add another bootstrap node', () => {
+  it('add another bootstrap node', function () {
+    this.timeout(40 * 1000)
+
     return ipfs('bootstrap add /ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD').then((out) => {
-      expect(out).to.be.eql('/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD\n')
+      expect(out).to.equal('/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD\n')
       return ipfs('bootstrap list')
-    }).then((out) => {
-      expect(out).to.be.eql(updatedList.join('\n') + '\n')
-    })
+    }).then((out) => expect(out).to.equal(updatedList.join('\n') + '\n'))
   })
 
-  it('rm a bootstrap node', () => {
+  it('rm a bootstrap node', function () {
+    this.timeout(40 * 1000)
+
     return ipfs('bootstrap rm /ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD').then((out) => {
-      expect(out).to.be.eql('/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD\n')
+      expect(out).to.equal('/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD\n')
       return ipfs('bootstrap list')
     }).then((out) => {
-      expect(out).to.deep.equal(defaultList.join('\n') + '\n')
+      expect(out).to.equal(defaultList.join('\n') + '\n')
     })
   })
 
-  it('rm all bootstrap nodes', () => {
+  it('rm all bootstrap nodes', function () {
+    this.timeout(40 * 1000)
+
     return ipfs('bootstrap rm --all').then((out) => {
-      expect(out).to.be.eql('')
+      expect(out).to.equal('')
       return ipfs('bootstrap list')
     }).then((out) => {
-      expect(out).to.deep.equal('')
+      expect(out).to.equal('')
     })
   })
 }))

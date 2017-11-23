@@ -11,7 +11,9 @@ describe('dag', () => runOnAndOff.off((thing) => {
     ipfs = thing.ipfs
   })
 
-  it('get', () => {
+  it('get', function () {
+    this.timeout(20 * 1000)
+
     // put test eth-block
     return ipfs('block put --format eth-block --mhtype keccak-256 test/fixtures/test-data/eth-block').then((out) => {
       expect(out).to.eql('z43AaGF23fmvRnDP56Ub9WcJCfzSfqtmzNCCvmz5eudT8dtdCDS\n')
