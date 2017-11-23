@@ -379,18 +379,13 @@ A way to mitigate this in Chrome, is to run your IPFS node inside a Service Work
 
 #### How can I configure an IPFS node to use a custom `signaling server`?
 
-You'll need to execute a compatible `signaling server` ([libp2p-webrtc-star](https://github.com/libp2p/js-libp2p-webrtc-star) works) and to setup the correct configurations params for your IPFS node:
+You'll need to execute a compatible `signaling server` ([libp2p-webrtc-star](https://github.com/libp2p/js-libp2p-webrtc-star) works) and include the correct configuration param for your IPFS node:
 
-- enable `pubsub`
 - provide the [`multiaddr`](https://github.com/multiformats/multiaddr) for the `signaling server`
-
 
 ```JavaScript
 const node = new IPFS({
   repo: 'your-repo-path',
-  EXPERIMENTAL: {
-    pubsub: true,
-  },
   config: {
     Addresses: {
       Swarm: [
