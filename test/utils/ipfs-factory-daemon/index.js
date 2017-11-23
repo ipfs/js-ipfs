@@ -23,7 +23,7 @@ class Factory {
     }
     if (typeof suppliedConfig === 'function') {
       callback = suppliedConfig
-      suppliedConfig = undefined
+      suppliedConfig = {}
     }
 
     repoPath = repoPath || os.tmpdir() + '/ipfs-' + hat()
@@ -36,9 +36,9 @@ class Factory {
       (cb) => {
         // prepare config for node
 
-        config = Object.assign({}, defaultConfig, suppliedConfig || {})
+        config = Object.assign({}, defaultConfig, suppliedConfig)
 
-        PeerId.create({ bits: 512 }, (err, id) => {
+        PeerId.create({ bits: 1024 }, (err, id) => {
           if (err) { return cb(err) }
 
           const peerId = id.toJSON()

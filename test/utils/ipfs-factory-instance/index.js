@@ -26,7 +26,7 @@ function Factory () {
 
     if (typeof suppliedConfig === 'function') {
       callback = suppliedConfig
-      suppliedConfig = undefined
+      suppliedConfig = {}
     }
 
     if (!repoPath) {
@@ -38,7 +38,7 @@ function Factory () {
     const repo = createTempRepo(repoPath)
     const node = new IPFS({
       repo: repo,
-      init: { bits: 512 },
+      init: { bits: 1024 },
       config: config,
       EXPERIMENTAL: {
         pubsub: true,
