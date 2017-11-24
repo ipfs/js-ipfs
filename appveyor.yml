@@ -3,6 +3,9 @@ environment:
     - nodejs_version: "6"
     - nodejs_version: "8"
 
+init:
+  - git config --global core.autocrlf input
+
 # cache:
 #  - node_modules
 

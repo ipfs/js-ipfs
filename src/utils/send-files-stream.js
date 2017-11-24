@@ -129,6 +129,8 @@ module.exports = (send, path) => {
         return
       }
 
+      response.on('error', (err) => retStream.emit('error', err))
+
       response.on('data', (d) => {
         if (d.Bytes && options.progress) {
           options.progress(d.Bytes)
