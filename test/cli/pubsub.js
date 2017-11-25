@@ -26,7 +26,7 @@ describe('pubsub', function () {
   const topicC = 'nonscentsC'
 
   before(function (done) {
-    this.timeout(40 * 1000)
+    this.timeout(60 * 1000)
 
     instanceFactory = new InstanceFactory()
     instanceFactory.spawnNode((err, _node) => {
@@ -73,7 +73,7 @@ describe('pubsub', function () {
   })
 
   it('ls', function () {
-    this.timeout(40 * 1000)
+    this.timeout(80 * 1000)
 
     const sub = cli(`pubsub sub ${topicB}`)
 
@@ -108,32 +108,31 @@ describe('pubsub', function () {
         })
     }
 
-    series(
-      [
-        (cb) => httpApi.id((err, peerInfo) => {
-          expect(err).to.not.exist()
-          peerAddress = peerInfo.addresses[0]
-          expect(peerAddress).to.exist()
-          cb()
-        }),
-        (cb) => node.id((err, peerInfo) => {
-          expect(err).to.not.exist()
-          instancePeerId = peerInfo.id.toString()
-          cb()
-        }),
-        (cb) => node.swarm.connect(peerAddress, cb),
-        (cb) => node.pubsub.subscribe(topicC, handler, cb)
-      ],
-      (err) => {
+    series([
+      (cb) => httpApi.id((err, peerInfo) => {
         expect(err).to.not.exist()
-        sub = cli(`pubsub sub ${topicC}`)
+        peerAddress = peerInfo.addresses[0]
+        expect(peerAddress).to.exist()
+        cb()
+      }),
+      (cb) => node.id((err, peerInfo) => {
+        expect(err).to.not.exist()
+        instancePeerId = peerInfo.id.toString()
+        cb()
+      }),
+      (cb) => node.swarm.connect(peerAddress, cb),
+      (cb) => node.pubsub.subscribe(topicC, handler, cb)
+    ],
+    (err) => {
+      expect(err).to.not.exist()
+      sub = cli(`pubsub sub ${topicC}`)
 
-        return Promise.all([
-          sub.catch(ignoreKill),
-          delay(1000)
-            .then(() => cli(`pubsub pub ${topicC} world`))
-        ])
-      })
+      return Promise.all([
+        sub.catch(ignoreKill),
+        delay(1000)
+          .then(() => cli(`pubsub pub ${topicC} world`))
+      ])
+    })
   })
 })
 
