@@ -10,13 +10,13 @@ chai.use(dirtyChai)
 
 module.exports = (common) => {
   describe('.config', function () {
-    this.timeout(20 * 1000)
+    this.timeout(30 * 1000)
     let ipfs
 
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
       // timeout for the before step
-      this.timeout(40 * 1000)
+      this.timeout(60 * 1000)
 
       common.setup((err, factory) => {
         expect(err).to.not.exist()
