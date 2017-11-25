@@ -18,7 +18,8 @@ describe('bootstrap', () => {
 
   let node
 
-  before((done) => {
+  before(function (done) {
+    this.timeout(40 * 1000)
     node = new IPFS({
       repo: createTempRepo(),
       init: {
