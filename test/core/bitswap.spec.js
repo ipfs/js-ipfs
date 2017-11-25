@@ -106,7 +106,7 @@ describe('bitswap', function () {
     }
 
     inProcNode = new IPFS(options)
-    inProcNode.on('start', () => done())
+    inProcNode.on('ready', () => done())
   })
 
   afterEach(function (done) {
