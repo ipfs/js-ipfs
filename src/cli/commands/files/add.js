@@ -29,12 +29,17 @@ function checkPath (inPath, recursive) {
     throw new Error('Error: Argument \'path\' is required')
   }
 
-  // Strips trailing slash from path.
-  inPath = inPath.replace(/\/$/, '')
-
   if (inPath === '.') {
     inPath = process.cwd()
   }
+
+  // Convert to POSIX format
+  inPath = inPath
+    .split(path.sep)
+    .join('/')
+
+  // Strips trailing slash from path.
+  inPath = inPath.replace(/\/$/, '')
 
   if (fs.statSync(inPath).isDirectory() && recursive === false) {
     throw new Error(`Error: ${inPath} is a directory, use the '-r' flag to specify directories`)
