@@ -42,9 +42,10 @@ You can check the development status at the [Waffle Board](https://waffle.io/ipf
 
 [![Throughput Graph](https://graphs.waffle.io/ipfs/js-ipfs/throughput.svg)](https://waffle.io/ipfs/js-ipfs/metrics/throughput)
 
-**Important to note:** DHT and Relay are not finalized yet, you won't have resource discovery happening by default as you get in go-ipfs, we are working actively on these pieces, please follow:
+**Please read this:** DHT (automatic content discovery) and Circuit Relay (pierce through NATs and dial between any node in the network) are two fundamental pieces that are not finalized yet. There are multiple applications that can be built without these two services but nevertheless they are fundamental to get that magic IPFS experience. If you want to track progress or contribute, please follow:
+
 - DHT: https://github.com/ipfs/js-ipfs/pull/856
-- Relay: https://github.com/ipfs/js-ipfs/pull/830
+- Relay: https://github.com/ipfs/js-ipfs/pull/1063
 
 ## Table of Contents
 
@@ -54,10 +55,10 @@ You can check the development status at the [Waffle Board](https://waffle.io/ipf
   - [Through command line tool](#through-command-line-tool)
   - [Use in the browser](#use-in-the-browser)
 - [Usage](#usage)
-  - [CLI](#cli)
-  - [HTTP-API](#http-api)
-  - [IPFS Core (use IPFS as a module in Node.js or in the Browser)](#ipfs-core-use-ipfs-as-a-module)
-    - [Create a IPFS node instance](#create-a-ipfs-node-instance)
+  - [IPFS CLI](#ipfs-cli)
+  - [IPFS Daemon](#ipfs-daemon)
+  - [IPFS Module (use IPFS as a module in Node.js or in the Browser)](#ipfs-module)
+    - [How to create a IPFS node instance](#create-a-ipfs-node-instance)
   - [Tutorials and Examples](#tutorials-and-examples)
   - [API Docs](#api)
     - [Files](#files)
@@ -124,7 +125,7 @@ Inserting one of the above lines will make an `Ipfs` object available in the glo
 
 ## Usage
 
-### CLI
+### IPFS CLI
 
 The `jsipfs` CLI, available when `js-ipfs` is installed globally, follows(should, it is a WIP) the same interface defined by `go-ipfs`, you can always use the `help` command for help menus.
 
@@ -150,11 +151,13 @@ Commands:
 - default Bootstrap is off, to enable it set `IPFS_BOOTSTRAP=1`
 
 
-### HTTP-API
+### IPFS Daemon
 
-The HTTP-API exposed by the js-ipfs daemon follows the [`http-api-spec`](https://github.com/ipfs/http-api-spec). You can use any of the IPFS HTTP-API client libraries with it, such as: [js-ipfs-api](https://github.com/ipfs/js-ipfs-api).
+The IPFS Daemon exposes the API defined [`http-api-spec`](https://github.com/ipfs/http-api-spec). You can use any of the IPFS HTTP-API client libraries with it, such as: [js-ipfs-api](https://github.com/ipfs/js-ipfs-api).
 
-### IPFS Core (use IPFS as a module)
+### IPFS Module
+
+Use the IPFS Module as a dependency of a project to spawn in process instances of IPFS.
 
 #### Create a IPFS node instance
 
@@ -191,14 +194,14 @@ const node = new IPFS({
   // init: {
   //   bits: 1024 // size of the RSA key generated
   // },
-  start: true,
+  start: true, // default
   // start: false,
   EXPERIMENTAL: { // enable experimental features
     pubsub: true,
     sharding: true, // enable dir sharding
     dht: true // enable KadDHT, currently not interopable with go-ipfs
   },
-  config: { // overload the default IPFS node config
+  config: { // overload the default IPFS node config, find defaults at https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime
     Addresses: {
       Swarm: [
         '/ip4/127.0.0.1/tcp/1337'
@@ -322,6 +325,28 @@ A set of data types are exposed directly from the IPFS instance under `ipfs.type
 
 ## FAQ
 
+#### How to enable WebRTC support for js-ipfs in the Browser
+
+To add a WebRTC transport to your js-ipfs node, you must add a WebRTC multiaddr. To do that, simple override the config.Addresses.Swarm array which contains all the multiaddrs which the IPFS node will use. See below:
+
+```JavaScript
+const node = new IPFS({
+  config: {
+    Addresses: {
+      Swarm: [
+        "/dns4/star-signal.cloud.ipfs.team/wss/p2p-webrtc-star"
+      ]
+    }
+  }
+})
+
+node.on('ready', () => {
+  // your instance with WebRTC is ready
+})
+```
+
+**Important:** This transport usage is kind of unstable and several users have experienced crashes. Track development of a solution at https://github.com/ipfs/js-ipfs/issues/1088.
+
 #### Is there WebRTC support for js-ipfs with Node.js?
 
 Yes, however, bare in mind that there isn't a 100% stable solution to use WebRTC in Node.js, use it at your own risk. The most tested options are:
@@ -371,13 +396,7 @@ npm install electron-webrtc --global
 
 Then, update your IPFS Daemon config to include the multiaddr for this new transport on the `Addresses.Swarm` array. Add: `"/dns4/star-signal.cloud.ipfs.team/wss/p2p-webrtc-star"`
 
-#### I see some slowness when hopping between tabs Chrome with IPFS nodes, is there a reason why?
-
-Yes, unfortunately, due to [Chrome aggressive resource throttling policy](https://github.com/ipfs/js-ipfs/issues/611), it cuts freezes the execution of any background tab, turning an IPFS node that was running on that webpage into a vegetable state.
-
-A way to mitigate this in Chrome, is to run your IPFS node inside a Service Worker, so that the IPFS instance runs in a background process. You can learn how to install an IPFS node as a service worker in here the repo [ipfs-service-worker](https://github.com/ipfs/ipfs-service-worker)
-
-#### How can I configure an IPFS node to use a custom `signaling server`?
+#### How can I configure an IPFS node to use a custom `signaling endpoint` for my WebRTC transport?
 
 You'll need to execute a compatible `signaling server` ([libp2p-webrtc-star](https://github.com/libp2p/js-libp2p-webrtc-star) works) and include the correct configuration param for your IPFS node:
 
@@ -397,6 +416,13 @@ const node = new IPFS({
 ```
 
 The code above assumes you are running a local `signaling server` on port `9090`. Provide the correct values accordingly.
+
+#### I see some slowness when hopping between tabs Chrome with IPFS nodes, is there a reason why?
+
+Yes, unfortunately, due to [Chrome aggressive resource throttling policy](https://github.com/ipfs/js-ipfs/issues/611), it cuts freezes the execution of any background tab, turning an IPFS node that was running on that webpage into a vegetable state.
+
+A way to mitigate this in Chrome, is to run your IPFS node inside a Service Worker, so that the IPFS instance runs in a background process. You can learn how to install an IPFS node as a service worker in here the repo [ipfs-service-worker](https://github.com/ipfs/ipfs-service-worker)
+
 
 ## Packages
 
