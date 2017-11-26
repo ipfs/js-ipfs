@@ -19,7 +19,7 @@ describe('HTTP API', () => {
   let http = {}
 
   before(function (done) {
-    this.timeout(40 * 1000)
+    this.timeout(60 * 1000)
 
     const options = { enablePubsubExperiment: true }
     http.api = new API(repoTests, null, options)

@@ -75,7 +75,7 @@
     "expose-loader": "^0.7.4",
     "form-data": "^2.3.1",
     "hat": "0.0.3",
-    "interface-ipfs-core": "~0.36.10",
+    "interface-ipfs-core": "~0.36.11",
     "ipfsd-ctl": "~0.25.1",
     "left-pad": "^1.2.0",
     "lodash": "^4.17.4",
