@@ -12,7 +12,9 @@ module.exports = (ctl) => {
     const validIp4 = '/ip4/101.236.176.52/tcp/4001/ipfs/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z'
     let peers
 
-    describe('.add', () => {
+    describe('.add', function () {
+      this.timeout(40 * 1000)
+
       it('returns an error when called with an invalid arg', (done) => {
         ctl.bootstrap.add(invalidArg, (err) => {
           expect(err).to.be.an.instanceof(Error)

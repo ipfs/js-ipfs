@@ -8,12 +8,12 @@ describe('id', () => runOnAndOff((thing) => {
   let ipfs
 
   before(function () {
-    this.timeout(40 * 1000)
+    this.timeout(60 * 1000)
     ipfs = thing.ipfs
   })
 
   it('get the id', function () {
-    this.timeout(40 * 1000)
+    this.timeout(60 * 1000)
 
     return ipfs('id').then((res) => {
       const id = JSON.parse(res)

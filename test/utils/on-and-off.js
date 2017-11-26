@@ -2,6 +2,7 @@
 'use strict'
 
 const Factory = require('../utils/ipfs-factory-daemon')
+const hat = require('hat')
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
@@ -17,15 +18,16 @@ function off (tests) {
     let repoPath
 
     before(function () {
-      this.timeout(30 * 1000)
-      repoPath = os.tmpdir() + '/ipfs-' + Math.random().toString().substring(2, 16)
+      this.timeout(60 * 1000)
+
+      repoPath = os.tmpdir() + '/ipfs-' + hat()
       thing.ipfs = ipfsExec(repoPath)
       thing.ipfs.repoPath = repoPath
       return thing.ipfs('init')
     })
 
     after(function (done) {
-      this.timeout(20 * 1000)
+      this.timeout(26 * 1000)
       clean(repoPath)
       setImmediate(done)
     })
@@ -43,7 +45,7 @@ function on (tests) {
       // CI takes longer to instantiate the daemon,
       // so we need to increase the timeout for the
       // before step
-      this.timeout(30 * 1000)
+      this.timeout(60 * 1000)
 
       factory = new Factory()
 
@@ -56,7 +58,7 @@ function on (tests) {
     })
 
     after(function (done) {
-      this.timeout(20 * 1000)
+      this.timeout(60 * 1000)
       factory.dismantle(done)
     })
 

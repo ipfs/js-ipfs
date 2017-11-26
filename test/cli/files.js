@@ -107,7 +107,7 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   it('add with progress', function () {
-    this.timeout(20 * 1000)
+    this.timeout(30 * 1000)
 
     return ipfs('files add -p src/init-files/init-docs/readme')
       .then((out) => {
@@ -117,7 +117,7 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   it('add', function () {
-    this.timeout(20 * 1000)
+    this.timeout(30 * 1000)
 
     return ipfs('files add src/init-files/init-docs/readme')
       .then((out) => {
@@ -127,7 +127,7 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   it('add alias', function () {
-    this.timeout(20 * 1000)
+    this.timeout(30 * 1000)
 
     return ipfs('add src/init-files/init-docs/readme')
       .then((out) => {
@@ -137,7 +137,7 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   it('add recursively test', function () {
-    this.timeout(20 * 1000)
+    this.timeout(60 * 1000)
 
     return ipfs('files add -r test/fixtures/test-data/recursive-get-dir')
       .then((out) => {
@@ -146,7 +146,7 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   it('add directory with trailing slash test', function () {
-    this.timeout(20 * 1000)
+    this.timeout(30 * 1000)
 
     return ipfs('files add -r test/fixtures/test-data/recursive-get-dir/')
       .then((out) => {
@@ -155,7 +155,7 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   it('add and wrap with a directory', function () {
-    this.timeout(20 * 1000)
+    this.timeout(30 * 1000)
 
     return ipfs('add -w src/init-files/init-docs/readme').then((out) => {
       expect(out).to.be.eql([
@@ -166,7 +166,7 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   it('add with cid-version=0', function () {
-    this.timeout(20 * 1000)
+    this.timeout(30 * 1000)
 
     return ipfs('add src/init-files/init-docs/readme --cid-version=0').then((out) => {
       expect(out)
@@ -184,7 +184,7 @@ describe('files', () => runOnAndOff((thing) => {
   //
   // This retains feature parity without having to implement raw-leaves.
   it('add with cid-version=1', function () {
-    this.timeout(20 * 1000)
+    this.timeout(30 * 1000)
 
     return new Promise((resolve, reject) => {
       ipfs('add src/init-files/init-docs/readme --cid-version=1')
@@ -214,7 +214,7 @@ describe('files', () => runOnAndOff((thing) => {
   //
   // This retains feature parity without having to implement raw-leaves.
   it('add with cid-version=1 and raw-leaves=true', function () {
-    this.timeout(20 * 1000)
+    this.timeout(30 * 1000)
 
     return new Promise((resolve, reject) => {
       ipfs('add src/init-files/init-docs/readme --cid-version=1 --raw-leaves=true')
@@ -227,7 +227,7 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   it('add --quiet', function () {
-    this.timeout(20 * 1000)
+    this.timeout(30 * 1000)
 
     return ipfs('files add -q src/init-files/init-docs/readme')
       .then((out) => {
@@ -237,7 +237,7 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   it('add --quieter', function () {
-    this.timeout(20 * 1000)
+    this.timeout(30 * 1000)
 
     return ipfs('files add -Q -w test/fixtures/test-data/hello test/test-data/node.json')
       .then((out) => {
@@ -247,7 +247,7 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   it('add --silent', function () {
-    this.timeout(20 * 1000)
+    this.timeout(30 * 1000)
 
     return ipfs('files add --silent src/init-files/init-docs/readme')
       .then((out) => {
@@ -257,7 +257,7 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   it('cat', function () {
-    this.timeout(20 * 1000)
+    this.timeout(30 * 1000)
 
     return ipfs('files cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
       .then((out) => {
