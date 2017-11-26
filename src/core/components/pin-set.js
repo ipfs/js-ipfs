@@ -2,8 +2,7 @@
 
 const multihashes = require('multihashes')
 const CID = require('cids')
-const protobuf = require('protocol-buffers')
-const crypto = require('crypto')
+const protobuf = require('protons')
 const fnv1a = require('fnv1a')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
@@ -17,17 +16,18 @@ const defaultFanout = 256
 const maxItems = 8192
 
 // Protobuf interface
-const pbSchema = (
-  // from go-ipfs/pin/internal/pb/header.proto
-  'message Set { ' +
-    // 1 for now
-    'optional uint32 version = 1; ' +
-    // how many of the links are subtrees
-    'optional uint32 fanout = 2; ' +
-    // hash seed for subtree selection, a random number
-    'optional fixed32 seed = 3; ' +
-  '}'
-)
+// from go-ipfs/pin/internal/pb/header.proto
+const pbSchema = `
+  syntax = "proto2";
+
+  package ipfs.pin;
+
+  message Set {
+    optional uint32 version = 1;
+    optional uint32 fanout = 2;
+    optional fixed32 seed = 3;
+  }
+`
 const pb = protobuf(pbSchema)
 function readHeader (rootNode) {
   // rootNode.data should be a buffer of the format:
@@ -113,10 +113,11 @@ exports = module.exports = function (dag) {
       })
     },
 
-    storeItems: (items, logInternalKey, callback, _subcalls, _done) => {
+    storeItems: (items, logInternalKey, callback, _depth, _subcalls, _done) => {
       // callback (err, rootNode)
       callback = once(callback)
-      const seed = crypto.randomBytes(4).readUInt32LE(0, true)
+//      const seed = crypto.randomBytes(4).readUInt32LE(0, true)  // old nondeterministic behavior
+      const seed = _depth  // new deterministic behavior
       const pbHeader = pb.Set.encode({
         version: 1,
         fanout: defaultFanout,
@@ -205,6 +206,7 @@ exports = module.exports = function (dag) {
               hashed[h],
               logInternalKey,
               storeItemsCb.bind({h: h}),
+              _depth + 1,
               _subcalls,
               _done
             )
