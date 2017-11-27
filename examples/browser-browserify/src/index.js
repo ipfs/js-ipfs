@@ -1,11 +1,8 @@
 'use strict'
 
-const IPFS = require('../../../src/core') // replace this by line below
-// var IPFS = require('ipfs')
+var IPFS = require('ipfs')
 
-const node = new IPFS({
-  repo: String(Math.random() + Date.now())
-})
+const node = new IPFS({ repo: String(Math.random() + Date.now()) })
 
 node.once('ready', () => console.log('IPFS node is ready'))
 

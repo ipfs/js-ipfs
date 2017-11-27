@@ -12,6 +12,7 @@
     "http-server": "^0.10.0"
   },
   "dependencies": {
-    "stream-buffers": "^3.0.1"
+    "stream-buffers": "^3.0.1",
+    "ipfs": "file:../../"
   }
 }
