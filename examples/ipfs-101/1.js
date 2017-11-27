@@ -27,6 +27,6 @@ series([
     if (err) { return cb(err) }
 
     console.log('\nFile content:')
-    process.stdout(data)
+    process.stdout.write(data)
   })
 ])
