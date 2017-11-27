@@ -417,7 +417,7 @@ const node = new IPFS({
 
 The code above assumes you are running a local `signaling server` on port `9090`. Provide the correct values accordingly.
 
-#### Is there a more stable alternative to websocket-star that offers a similar functionality?
+#### Is there a more stable alternative to webrtc-star that offers a similar functionality?
 
 Yes, websocket-star! A WebSockets based transport that uses a Relay to route the messages. To enable it, just do:
 
