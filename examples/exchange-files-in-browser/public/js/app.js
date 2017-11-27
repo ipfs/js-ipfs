@@ -1,5 +1,5 @@
-'use strict'
 /* global self */
+'use strict'
 
 const $startButton = document.querySelector('#start')
 const $stopButton = document.querySelector('#stop')
@@ -33,7 +33,7 @@ function start () {
     updateView('starting', node)
 
     // DEV: To test with latest js-ipfs
-    const IPFS = require('../../../..')
+    const IPFS = require('ipfs')
     node = new IPFS({ repo: 'ipfs-' + Math.random() })
 
     // EXAMPLE
