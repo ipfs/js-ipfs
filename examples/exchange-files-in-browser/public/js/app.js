@@ -45,12 +45,12 @@ function start () {
     }
 
     // IFDEV: To test with latest js-ipfs
-    const IPFS = require('ipfs')
-    node = new IPFS(options)
+    // const IPFS = require('ipfs')
+    // node = new IPFS(options)
     // VEDIF
 
     // EXAMPLE
-    // node = new self.Ipfs(options)
+    node = new self.Ipfs(options)
 
     node.once('start', () => node.id((err, id) => {
       if (err) { return onError(err) }
