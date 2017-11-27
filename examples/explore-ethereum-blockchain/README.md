@@ -18,7 +18,7 @@ If this is the first time you use js-ipfs, make sure to init your repo with
 
 ## Load ethereum chain data into ipfs
 
-We've some ethereum blocks available at [eth-stuffs](/eth-stuffs) folder, you can add them to ipfs by running:
+We've some ethereum blocks available at [eth-stuffs](./eth-stuffs) folder, you can add them to ipfs by running:
 
 ```sh
 > ./load-eth-stuffs.sh
