@@ -232,7 +232,7 @@ A complete API definition is in the works. Meanwhile, you can learn how to you u
 
 #### `Files`
 
-- [files](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/FILES)
+- [files](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md)
   - [`ipfs.files.add(data, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/FILES.md#add)
   - [`ipfs.files.createAddStream([options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/FILES.md#createaddstream)
   - [`ipfs.files.cat(multihash, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/FILES.md#cat)
