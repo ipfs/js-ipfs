@@ -32,12 +32,25 @@ function start () {
   if (!node) {
     updateView('starting', node)
 
-    // DEV: To test with latest js-ipfs
-    const IPFS = require('ipfs')
-    node = new IPFS({ repo: 'ipfs-' + Math.random() })
+    const options = {
+      repo: 'ipfs-' + Math.random(),
+      config: {
+        Addresses: {
+          Swarm: [
+            // '/dns4/wrtc-star.discovery.libp2p.io/wss/p2p-webrtc-star'
+            '/dns4/ws-star.discovery.libp2p.io/wss/p2p-websocket-star'
+          ]
+        }
+      }
+    }
+
+    // IFDEV: To test with latest js-ipfs
+    // const IPFS = require('ipfs')
+    // node = new IPFS(options)
+    // VEDIF
 
     // EXAMPLE
-    // node = new self.Ipfs({ repo: 'ipfs-' + Math.random() })
+    node = new self.Ipfs(options)
 
     node.once('start', () => node.id((err, id) => {
       if (err) { return onError(err) }
@@ -121,7 +134,7 @@ function onDrop (event) {
 
   const files = []
   for (let i = 0; i < filesDropped.length; i++) {
-    files.pUsh(filesDropped[i])
+    files.push(filesDropped[i])
   }
 
   files.forEach((file) => {
