@@ -334,7 +334,7 @@ const node = new IPFS({
   config: {
     Addresses: {
       Swarm: [
-        "/dns4/star-signal.cloud.ipfs.team/wss/p2p-webrtc-star"
+        '/dns4/wrtc-star.discovery.libp2p.io/wss/p2p-webrtc-star'
       ]
     }
   }
@@ -369,7 +369,7 @@ const node = new IPFS({
       Swarm: [
         "/ip4/0.0.0.0/tcp/4002",
         "/ip4/127.0.0.1/tcp/4003/ws",
-        "/dns4/star-signal.cloud.ipfs.team/wss/p2p-webrtc-star"
+        "/dns4/wrtc-star.discovery.libp2p.io/wss/p2p-webrtc-star"
       ]
     }
   },
@@ -394,7 +394,7 @@ npm install wrtc --global
 npm install electron-webrtc --global
 ```
 
-Then, update your IPFS Daemon config to include the multiaddr for this new transport on the `Addresses.Swarm` array. Add: `"/dns4/star-signal.cloud.ipfs.team/wss/p2p-webrtc-star"`
+Then, update your IPFS Daemon config to include the multiaddr for this new transport on the `Addresses.Swarm` array. Add: `"/dns4/wrtc-star.discovery.libp2p.io/wss/p2p-webrtc-star"`
 
 #### How can I configure an IPFS node to use a custom `signaling endpoint` for my WebRTC transport?
 
@@ -416,6 +416,26 @@ const node = new IPFS({
 ```
 
 The code above assumes you are running a local `signaling server` on port `9090`. Provide the correct values accordingly.
+
+#### Is there a more stable alternative to websocket-star that offers a similar functionality?
+
+Yes, websocket-star! A WebSockets based transport that uses a Relay to route the messages. To enable it, just do:
+
+```JavaScript
+const node = new IPFS({
+  config: {
+    Addresses: {
+      Swarm: [
+        '/dns4/ws-star.discovery.libp2p.io/wss/p2p-websocket-star'
+      ]
+    }
+  }
+})
+
+node.on('ready', () => {
+  // your instance with websocket-star is ready
+})
+```
 
 #### I see some slowness when hopping between tabs Chrome with IPFS nodes, is there a reason why?
 
