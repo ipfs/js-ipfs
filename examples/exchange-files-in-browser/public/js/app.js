@@ -37,20 +37,20 @@ function start () {
       config: {
         Addresses: {
           Swarm: [
-            // '/dns4/wrtc-star.discovery.libp2p.io/wss/p2p-webrtc-star'
-            '/dns4/ws-star.discovery.libp2p.io/wss/p2p-websocket-star'
+            '/dns4/wrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star'
+            // '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
           ]
         }
       }
     }
 
     // IFDEV: To test with latest js-ipfs
-    // const IPFS = require('ipfs')
-    // node = new IPFS(options)
+    const IPFS = require('ipfs')
+    node = new IPFS(options)
     // VEDIF
 
     // EXAMPLE
-    node = new self.Ipfs(options)
+    // node = new self.Ipfs(options)
 
     node.once('start', () => node.id((err, id) => {
       if (err) { return onError(err) }
