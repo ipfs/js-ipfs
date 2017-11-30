@@ -11,16 +11,16 @@ const libp2p = require('libp2p')
 class Node extends libp2p {
   constructor (peerInfo, peerBook, options) {
     options = options || {}
-    const wstar = new WebRTCStar()
+    const wrtcstar = new WebRTCStar()
     const wsstar = new WebSocketStar({id: peerInfo.id})
 
     const modules = {
-      transport: [new WS(), wstar, wsstar],
+      transport: [new WS(), wrtcstar, wsstar],
       connection: {
         muxer: [Multiplex],
         crypto: [SECIO]
       },
-      discovery: [wstar.discovery, wsstar.discovery]
+      discovery: [wrtcstar.discovery, wsstar.discovery]
     }
 
     if (options.bootstrap) {
