@@ -8,7 +8,7 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    const data = new Buffer(String(argv.data))
+    const data = Buffer.from(String(argv.data))
 
     argv.ipfs.pubsub.publish(argv.topic, data, (err) => {
       if (err) {

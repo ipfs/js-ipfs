@@ -2,6 +2,7 @@
 
 const series = require('async/series')
 const each = require('async/each')
+const hat = require('hat')
 
 const defaultConfig = require('./default-config.json')
 const IPFS = require('../../../src/core')
@@ -16,31 +17,28 @@ function Factory () {
 
   const nodes = []
 
-  /* yields a new started node */
-  this.spawnNode = (repoPath, config, callback) => {
+  /* yields a new started node instance */
+  this.spawnNode = (repoPath, suppliedConfig, callback) => {
     if (typeof repoPath === 'function') {
       callback = repoPath
       repoPath = undefined
     }
-    if (typeof config === 'function') {
-      callback = config
-      config = undefined
+
+    if (typeof suppliedConfig === 'function') {
+      callback = suppliedConfig
+      suppliedConfig = {}
     }
 
     if (!repoPath) {
-      repoPath = '/tmp/.ipfs-' + Math.random()
-                                 .toString()
-                                 .substring(2, 8)
+      repoPath = '/tmp/.ipfs-' + hat()
     }
 
-    config = config || defaultConfig
+    const config = Object.assign({}, defaultConfig, suppliedConfig)
 
     const repo = createTempRepo(repoPath)
     const node = new IPFS({
       repo: repo,
-      init: {
-        bits: 1024
-      },
+      init: { bits: 1024 },
       config: config,
       EXPERIMENTAL: {
         pubsub: true,
@@ -49,10 +47,7 @@ function Factory () {
     })
 
     node.once('ready', () => {
-      nodes.push({
-        repo: repo,
-        ipfs: node
-      })
+      nodes.push({ repo: repo, ipfs: node })
       callback(null, node)
     })
   }

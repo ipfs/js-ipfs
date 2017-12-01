@@ -8,7 +8,6 @@ chai.use(dirtyChai)
 const series = require('async/series')
 const parallel = require('async/parallel')
 const waterfall = require('async/waterfall')
-const bl = require('bl')
 const crypto = require('crypto')
 const pretty = require('pretty-bytes')
 const randomFs = require('random-fs')
@@ -17,10 +16,9 @@ const rimraf = require('rimraf')
 
 const rmDir = promisify(rimraf)
 
-const tmpDir = require('./util').tmpDir
-
-const GoDaemon = require('./daemons/go')
-const JsDaemon = require('./daemons/js')
+const tmpDir = require('../utils/interop-daemon-spawner/util').tmpDir
+const GoDaemon = require('../utils/interop-daemon-spawner/go')
+const JsDaemon = require('../utils/interop-daemon-spawner/js')
 
 const sizes = [
   1024,
@@ -42,12 +40,13 @@ const dirs = [
   100
 ]
 
-describe('basic', () => {
+describe('exchange files', () => {
   let goDaemon
   let jsDaemon
   let js2Daemon
 
-  before((done) => {
+  before(function (done) {
+    this.timeout(15 * 1000)
     goDaemon = new GoDaemon()
     jsDaemon = new JsDaemon({port: 1})
     js2Daemon = new JsDaemon({port: 2})
@@ -128,8 +127,7 @@ describe('basic', () => {
       const data = crypto.randomBytes(size)
       waterfall([
         (cb) => goDaemon.api.add(data, cb),
-        (res, cb) => jsDaemon.api.cat(res[0].hash, cb),
-        (stream, cb) => stream.pipe(bl(cb))
+        (res, cb) => jsDaemon.api.cat(res[0].hash, cb)
       ], (err, file) => {
         expect(err).to.not.exist()
         expect(file).to.be.eql(data)
@@ -141,8 +139,7 @@ describe('basic', () => {
       const data = crypto.randomBytes(size)
       waterfall([
         (cb) => jsDaemon.api.add(data, cb),
-        (res, cb) => goDaemon.api.cat(res[0].hash, cb),
-        (stream, cb) => stream.pipe(bl(cb))
+        (res, cb) => goDaemon.api.cat(res[0].hash, cb)
       ], (err, file) => {
         expect(err).to.not.exist()
         expect(file).to.be.eql(data)
@@ -154,8 +151,7 @@ describe('basic', () => {
       const data = crypto.randomBytes(size)
       waterfall([
         (cb) => js2Daemon.api.add(data, cb),
-        (res, cb) => jsDaemon.api.cat(res[0].hash, cb),
-        (stream, cb) => stream.pipe(bl(cb))
+        (res, cb) => jsDaemon.api.cat(res[0].hash, cb)
       ], (err, file) => {
         expect(err).to.not.exist()
         expect(file).to.be.eql(data)
@@ -164,6 +160,7 @@ describe('basic', () => {
     })
   }))
 
+  // TODO these tests are not fetching the full dir??
   describe('get directory', () => dirs.forEach((num) => {
     it(`go -> js: depth: 5, num: ${num}`, () => {
       const dir = tmpDir()
@@ -172,7 +169,7 @@ describe('basic', () => {
         depth: 5,
         number: num
       }).then(() => {
-        return goDaemon.api.util.addFromFs(dir, {recursive: true})
+        return goDaemon.api.util.addFromFs(dir, { recursive: true })
       }).then((res) => {
         const hash = res[res.length - 1].hash
         return jsDaemon.api.object.get(hash)
@@ -189,7 +186,7 @@ describe('basic', () => {
         depth: 5,
         number: num
       }).then(() => {
-        return jsDaemon.api.util.addFromFs(dir, {recursive: true})
+        return jsDaemon.api.util.addFromFs(dir, { recursive: true })
       }).then((res) => {
         const hash = res[res.length - 1].hash
         return goDaemon.api.object.get(hash)
@@ -206,7 +203,7 @@ describe('basic', () => {
         depth: 5,
         number: num
       }).then(() => {
-        return js2Daemon.api.util.addFromFs(dir, {recursive: true})
+        return js2Daemon.api.util.addFromFs(dir, { recursive: true })
       }).then((res) => {
         const hash = res[res.length - 1].hash
         return jsDaemon.api.object.get(hash)

@@ -7,11 +7,14 @@ const runOnAndOff = require('../utils/on-and-off')
 describe('id', () => runOnAndOff((thing) => {
   let ipfs
 
-  before(() => {
+  before(function () {
+    this.timeout(60 * 1000)
     ipfs = thing.ipfs
   })
 
-  it('get the id', () => {
+  it('get the id', function () {
+    this.timeout(60 * 1000)
+
     return ipfs('id').then((res) => {
       const id = JSON.parse(res)
       expect(id).to.have.property('id')

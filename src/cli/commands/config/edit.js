@@ -81,7 +81,7 @@ module.exports = {
 
     function saveConfig (config, next) {
       config = utils.isDaemonOn()
-        ? new Buffer(JSON.stringify(config)) : config
+        ? Buffer.from(JSON.stringify(config)) : config
 
       argv.ipfs.config.replace(config, (err) => {
         if (err) {

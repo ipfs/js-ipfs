@@ -13,13 +13,16 @@ const path = require('path')
 const clean = require('../utils/clean')
 
 describe('HTTP API', () => {
-  const repoExample = path.join(__dirname, '../go-ipfs-repo')
+  const repoExample = path.join(__dirname, '../fixtures/go-ipfs-repo')
   const repoTests = path.join(__dirname, '../repo-tests-run')
 
   let http = {}
 
-  before((done) => {
-    http.api = new API(repoTests)
+  before(function (done) {
+    this.timeout(60 * 1000)
+
+    const options = { enablePubsubExperiment: true }
+    http.api = new API(repoTests, null, options)
 
     ncp(repoExample, repoTests, (err) => {
       expect(err).to.not.exist()
@@ -28,28 +31,26 @@ describe('HTTP API', () => {
     })
   })
 
-  after((done) => {
-    http.api.stop((err) => {
-      expect(err).to.not.exist()
-      clean(repoTests)
-      done()
-    })
-  })
+  after((done) => http.api.stop((err) => {
+    expect(err).to.not.exist()
+    clean(repoTests)
+    done()
+  }))
 
   describe('## http-api spec tests', () => {
     fs.readdirSync(path.join(__dirname, '/spec'))
       .forEach((file) => require('./spec/' + file)(http))
   })
 
-  describe('## interface tests', () => {
+  describe('## interface-ipfs-core over ipfs-api', () => {
     fs.readdirSync(path.join(__dirname, '/interface'))
       .forEach((file) => require('./interface/' + file))
   })
 
-  describe('## custom ipfs-api tests', () => {
+  describe('## extra tests with ipfs-api', () => {
     const ctl = APIctl('/ip4/127.0.0.1/tcp/6001')
 
-    fs.readdirSync(path.join(__dirname, '/over-ipfs-api'))
-      .forEach((file) => require('./over-ipfs-api/' + file)(ctl))
+    fs.readdirSync(path.join(__dirname, '/extra'))
+      .forEach((file) => require('./extra/' + file)(ctl))
   })
 })

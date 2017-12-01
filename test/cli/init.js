@@ -5,15 +5,18 @@ const expect = require('chai').expect
 const path = require('path')
 const fs = require('fs')
 const clean = require('../utils/clean')
+const hat = require('hat')
 const ipfsExec = require('../utils/ipfs-exec')
 const os = require('os')
 
-describe('init', () => {
+describe('init', function () {
+  this.timeout(40 * 1000)
+
   let repoPath
   let ipfs
 
   const readme = fs.readFileSync(path.join(process.cwd(), '/src/init-files/init-docs/readme'))
-                   .toString('utf-8')
+    .toString('utf-8')
 
   const repoExistsSync = (p) => fs.existsSync(path.join(repoPath, p))
 
@@ -23,13 +26,15 @@ describe('init', () => {
     })
   }
   beforeEach(() => {
-    repoPath = os.tmpdir() + '/ipfs-' + Math.random().toString().substring(2, 8)
+    repoPath = os.tmpdir() + '/ipfs-' + hat()
     ipfs = ipfsExec(repoPath)
   })
 
   afterEach(() => clean(repoPath))
 
-  it('basic', () => {
+  it('basic', function () {
+    this.timeout(40 * 1000)
+
     return ipfs('init').then((out) => {
       expect(repoDirSync('blocks')).to.have.length.above(2)
       expect(repoExistsSync('config')).to.equal(true)
@@ -40,9 +45,11 @@ describe('init', () => {
       let command = out.substring(out.indexOf('files cat'), out.length - 2 /* omit the newline char */)
       return ipfs(command)
     }).then((out) => expect(out).to.equal(readme))
-  }).timeout(8000)
+  })
 
-  it('bits', () => {
+  it('bits', function () {
+    this.timeout(40 * 1000)
+
     return ipfs('init --bits 1024').then(() => {
       expect(repoDirSync('blocks')).to.have.length.above(2)
       expect(repoExistsSync('config')).to.equal(true)
@@ -50,7 +57,9 @@ describe('init', () => {
     })
   })
 
-  it('empty', () => {
+  it('empty', function () {
+    this.timeout(40 * 1000)
+
     return ipfs('init --bits 1024 --empty-repo true').then(() => {
       expect(repoDirSync('blocks')).to.have.length(2)
       expect(repoExistsSync('config')).to.equal(true)

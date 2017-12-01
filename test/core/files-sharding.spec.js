@@ -7,89 +7,111 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const pull = require('pull-stream')
-const Buffer = require('safe-buffer').Buffer
 
 const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/create-repo-nodejs.js')
 
-describe('files dir', () => {
-  const files = []
-  for (let i = 0; i < 1005; i++) {
-    files.push({
-      path: 'test-folder/' + i,
-      content: Buffer.from('some content ' + i)
-    })
+describe('files directory (sharding tests)', () => {
+  function createTestFiles () {
+    const files = []
+
+    for (let i = 0; i < 1005; i++) {
+      files.push({
+        path: 'test-folder/' + i,
+        content: Buffer.from('some content ' + i)
+      })
+    }
+
+    return files
   }
 
   describe('without sharding', () => {
     let ipfs
 
-    before((done) => {
+    before(function (done) {
+      this.timeout(40 * 1000)
+
       ipfs = new IPFS({
         repo: createTempRepo(),
         config: {
           Addresses: {
             Swarm: []
           },
-          Bootstrap: []
+          Bootstrap: [],
+          Discovery: {
+            MDNS: {
+              Enabled: false
+            }
+          }
         }
       })
-      ipfs.once('start', done)
+      ipfs.once('ready', done)
     })
 
-    after((done) => ipfs.stop(done))
+    after(function (done) {
+      this.timeout(40 * 1000)
+      ipfs.stop(done)
+    })
 
-    it('should be able to add dir without sharding', (done) => {
+    it('should be able to add dir without sharding', function (done) {
+      this.timeout(40 * 1000)
+
       pull(
-        pull.values(files),
-        ipfs.files.createAddPullStream(),
+        pull.values(createTestFiles()),
+        ipfs.files.addPullStream(),
         pull.collect((err, results) => {
           expect(err).to.not.exist()
           const last = results[results.length - 1]
-          expect(last.path).to.be.eql('test-folder')
-          expect(last.hash).to.be.eql('QmWWM8ZV6GPhqJ46WtKcUaBPNHN5yQaFsKDSQ1RE73w94Q')
+          expect(last.path).to.eql('test-folder')
+          expect(last.hash).to.eql('QmWWM8ZV6GPhqJ46WtKcUaBPNHN5yQaFsKDSQ1RE73w94Q')
           done()
         })
       )
-
-      after((done) => {
-        ipfs.stop(() => done()) // ignore stop errors
-      })
     })
   })
 
   describe('with sharding', () => {
     let ipfs
 
-    before((done) => {
+    before(function (done) {
+      this.timeout(40 * 1000)
+
       ipfs = new IPFS({
         repo: createTempRepo(),
         config: {
           Addresses: {
             Swarm: []
           },
-          Bootstrap: []
+          Bootstrap: [],
+          Discovery: {
+            MDNS: {
+              Enabled: false
+            }
+          }
         },
         EXPERIMENTAL: {
           sharding: true
         }
       })
-      ipfs.once('start', done)
+      ipfs.once('ready', done)
     })
 
-    after((done) => {
-      ipfs.stop(() => done()) // ignore stop errors
+    after(function (done) {
+      this.timeout(40 * 1000)
+      ipfs.stop(done)
     })
 
-    it('should be able to add dir with sharding', (done) => {
+    it('should be able to add dir with sharding', function (done) {
+      this.timeout(40 * 1000)
+
       pull(
-        pull.values(files),
-        ipfs.files.createAddPullStream(),
+        pull.values(createTestFiles()),
+        ipfs.files.addPullStream(),
         pull.collect((err, results) => {
           expect(err).to.not.exist()
           const last = results[results.length - 1]
-          expect(last.path).to.be.eql('test-folder')
-          expect(last.hash).to.be.eql('QmY8TxNWtNViN7syd2DHazPqu21qWfSNjzCDe78e4YMsUD')
+          expect(last.path).to.eql('test-folder')
+          expect(last.hash).to.eql('Qmb3JNLq2KcvDTSGT23qNQkMrr4Y4fYMktHh6DtC7YatLa')
           done()
         })
       )

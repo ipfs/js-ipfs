@@ -13,12 +13,12 @@ module.exports = {
       path = path.replace('/ipfs/', '')
     }
 
-    argv.ipfs.files.cat(path, (err, file) => {
-      if (err) {
-        throw err
-      }
+    const stream = argv.ipfs.files.catReadableStream(path)
 
-      file.pipe(process.stdout)
+    stream.once('error', (err) => {
+      throw err
     })
+
+    stream.pipe(process.stdout)
   }
 }

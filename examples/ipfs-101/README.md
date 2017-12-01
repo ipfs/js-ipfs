@@ -36,21 +36,21 @@ Running the code above gets you:
 IPFS Version: 0.25.0
 ```
 
-Now lets make it more interesting and add a file to IPFS. We can do it by adding another async call to the series that uses the `node.files.add` call. You can learn about IPFS API for files at [interface-ipfs-core](https://github.com/ipfs/interface-ipfs-core/tree/master/API/files).
+Now lets make it more interesting and add a file to IPFS. We can do it by adding another async call to the series that uses the `node.files.add` call. You can learn about IPFS API for files at [interface-ipfs-core](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md).
 
 ```JavaScript
 // Create the File to add, a file consists of a path + content. More details on
-// https://github.com/ipfs/interface-ipfs-core/tree/master/API/files
+// https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md
 (cb) => node.files.add({
   path: 'hello.txt',
   content: Buffer.from('Hello World')
-}, (err, result) => {
+}, (err, filesAdded) => {
   if (err) { return cb(err) }
 
   // Once the file is added, we get back an object containing the path, the
   // multihash and the sie of the file
-  console.log('\nAdded file:', result[0].path, result[0].hash)
-  fileMultihash = result[0].hash
+  console.log('\nAdded file:', filesAdded[0].path, filesAdded[0].hash)
+  fileMultihash = filesAdded[0].hash
   cb()
 })
 ```
@@ -69,13 +69,12 @@ Added file: hello.txt QmXgZAUWd8yo4tvjBETqzUy3wLx5YRzuDwUQnBwRGrAmAo
 The last step of this tutorial is retrieving the file back using the `cat` 😺 call. Add another step on the series chain that does the following:
 
 ```JavaScript
-(cb) => node.files.cat(fileMultihash, (err, stream) => {
+(cb) => node.files.cat(fileMultihash, (err, data) => {
   if (err) { return cb(err) }
 
   console.log('\nFile content:')
   // print the file to the terminal and then exit the program
-  stream.pipe(process.stdout)
-  stream.on('end', process.exit)
+  process.stdout.write(data)
 })
 ```
 

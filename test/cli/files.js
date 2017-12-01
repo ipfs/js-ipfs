@@ -11,7 +11,7 @@ const runOnAndOff = require('../utils/on-and-off')
 describe('files', () => runOnAndOff((thing) => {
   let ipfs
   const readme = fs.readFileSync(path.join(process.cwd(), '/src/init-files/init-docs/readme'))
-                   .toString('utf-8')
+    .toString('utf-8')
 
   const recursiveGetDirResults = [
     'added QmR56UJmAaZLXLdTT1ALrE9vVqV8soUEekm9BMd4FnuYqV recursive-get-dir/version',
@@ -106,7 +106,9 @@ describe('files', () => runOnAndOff((thing) => {
     ipfs = thing.ipfs
   })
 
-  it('add with progress', () => {
+  it('add with progress', function () {
+    this.timeout(30 * 1000)
+
     return ipfs('files add -p src/init-files/init-docs/readme')
       .then((out) => {
         expect(out)
@@ -114,7 +116,9 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
-  it('add', () => {
+  it('add', function () {
+    this.timeout(30 * 1000)
+
     return ipfs('files add src/init-files/init-docs/readme')
       .then((out) => {
         expect(out)
@@ -122,7 +126,9 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
-  it('add alias', () => {
+  it('add alias', function () {
+    this.timeout(30 * 1000)
+
     return ipfs('add src/init-files/init-docs/readme')
       .then((out) => {
         expect(out)
@@ -130,21 +136,27 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
-  it('add recursively test', () => {
-    return ipfs('files add -r test/test-data/recursive-get-dir')
+  it('add recursively test', function () {
+    this.timeout(60 * 1000)
+
+    return ipfs('files add -r test/fixtures/test-data/recursive-get-dir')
       .then((out) => {
         expect(out).to.eql(recursiveGetDirResults.join('\n') + '\n')
       })
   })
 
-  it('add directory with trailing slash test', () => {
-    return ipfs('files add -r test/test-data/recursive-get-dir/')
+  it('add directory with trailing slash test', function () {
+    this.timeout(30 * 1000)
+
+    return ipfs('files add -r test/fixtures/test-data/recursive-get-dir/')
       .then((out) => {
         expect(out).to.eql(recursiveGetDirResults.join('\n') + '\n')
       })
   })
 
-  it('add and wrap with a directory', () => {
+  it('add and wrap with a directory', function () {
+    this.timeout(30 * 1000)
+
     return ipfs('add -w src/init-files/init-docs/readme').then((out) => {
       expect(out).to.be.eql([
         'added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme',
@@ -153,7 +165,9 @@ describe('files', () => runOnAndOff((thing) => {
     })
   })
 
-  it('add with cid-version=0', () => {
+  it('add with cid-version=0', function () {
+    this.timeout(30 * 1000)
+
     return ipfs('add src/init-files/init-docs/readme --cid-version=0').then((out) => {
       expect(out)
         .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
@@ -169,7 +183,9 @@ describe('files', () => runOnAndOff((thing) => {
   // cid-version > 0 unless explicitly set to false.
   //
   // This retains feature parity without having to implement raw-leaves.
-  it('add with cid-version=1', () => {
+  it('add with cid-version=1', function () {
+    this.timeout(30 * 1000)
+
     return new Promise((resolve, reject) => {
       ipfs('add src/init-files/init-docs/readme --cid-version=1')
         .then(() => reject(new Error('Raw leaves not expected to be implemented')))
@@ -197,7 +213,9 @@ describe('files', () => runOnAndOff((thing) => {
   // cid-version > 0 unless explicitly set to false.
   //
   // This retains feature parity without having to implement raw-leaves.
-  it('add with cid-version=1 and raw-leaves=true', () => {
+  it('add with cid-version=1 and raw-leaves=true', function () {
+    this.timeout(30 * 1000)
+
     return new Promise((resolve, reject) => {
       ipfs('add src/init-files/init-docs/readme --cid-version=1 --raw-leaves=true')
         .then(() => reject(new Error('Raw leaves not expected to be implemented')))
@@ -208,7 +226,9 @@ describe('files', () => runOnAndOff((thing) => {
     })
   })
 
-  it('add --quiet', () => {
+  it('add --quiet', function () {
+    this.timeout(30 * 1000)
+
     return ipfs('files add -q src/init-files/init-docs/readme')
       .then((out) => {
         expect(out)
@@ -216,30 +236,38 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
-  it('add --quieter', () => {
-    return ipfs('files add -Q -w test/test-data/hello test/test-data/node.json')
+  it('add --quieter', function () {
+    this.timeout(30 * 1000)
+
+    return ipfs('files add -Q -w test/fixtures/test-data/hello test/test-data/node.json')
       .then((out) => {
         expect(out)
           .to.eql('QmYRMUVULBfj7WrdPESnwnyZmtayN6Sdrwh1nKcQ9QgQeZ\n')
       })
   })
 
-  it('add --silent', () => {
+  it('add --silent', function () {
+    this.timeout(30 * 1000)
+
     return ipfs('files add --silent src/init-files/init-docs/readme')
       .then((out) => {
         expect(out)
-        .to.eql('')
+          .to.eql('')
       })
   })
 
-  it('cat', () => {
+  it('cat', function () {
+    this.timeout(30 * 1000)
+
     return ipfs('files cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
       .then((out) => {
         expect(out).to.eql(readme)
       })
   })
 
-  it('cat alias', () => {
+  it('cat alias', function () {
+    this.timeout(20 * 1000)
+
     return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
       .then((out) => {
         expect(out).to.eql(readme)
@@ -254,7 +282,58 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
-  it('get', () => {
+  it('ls', function () {
+    this.timeout(20 * 1000)
+
+    return ipfs('ls QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
+      .then((out) => {
+        expect(out).to.eql(
+          'QmQQHYDwAQms78fPcvx1uFFsfho23YJNoewfLbi9AtdyJ9 123530 blocks/\n' +
+          'QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN 3939   config\n' +
+          'Qma13ZrhKG52MWnwtZ6fMD8jGj8d4Q9sJgn5xtKgeZw5uz 5503   datastore/\n' +
+          'QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU 7397   init-docs/\n' +
+          'QmR56UJmAaZLXLdTT1ALrE9vVqV8soUEekm9BMd4FnuYqV 10     version\n')
+      })
+  })
+
+  it('ls -v', function () {
+    this.timeout(20 * 1000)
+
+    return ipfs('ls /ipfs/QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2 -v')
+      .then((out) => {
+        expect(out).to.eql(
+          'Hash                                           Size   Name\n' +
+          'QmQQHYDwAQms78fPcvx1uFFsfho23YJNoewfLbi9AtdyJ9 123530 blocks/\n' +
+          'QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN 3939   config\n' +
+          'Qma13ZrhKG52MWnwtZ6fMD8jGj8d4Q9sJgn5xtKgeZw5uz 5503   datastore/\n' +
+          'QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU 7397   init-docs/\n' +
+          'QmR56UJmAaZLXLdTT1ALrE9vVqV8soUEekm9BMd4FnuYqV 10     version\n')
+      })
+  })
+
+  it('ls --help', function () {
+    this.timeout(20 * 1000)
+
+    return ipfs('ls --help')
+      .then((out) => {
+        expect(out.split('\n').slice(1)).to.eql(['',
+          'List files for the given directory',
+          '',
+          'Options:',
+          '  --version       Show version number                                  [boolean]',
+          '  --silent        Write no output                     [boolean] [default: false]',
+          '  --help          Show help                                            [boolean]',
+          '  -v, --headers   Print table headers (Hash, Size, Name).',
+          '                                                      [boolean] [default: false]',
+          '  --resolve-type  Resolve linked objects to find out their types. (not',
+          '                  implemented yet)                    [boolean] [default: false]',
+          '', ''])
+      })
+  })
+
+  it('get', function () {
+    this.timeout(20 * 1000)
+
     return ipfs('files get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
       .then((out) => {
         expect(out)
@@ -268,7 +347,9 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
-  it('get alias', () => {
+  it('get alias', function () {
+    this.timeout(20 * 1000)
+
     return ipfs('get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
       .then((out) => {
         expect(out)
@@ -282,7 +363,9 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
-  it('get recursively', () => {
+  it('get recursively', function () {
+    this.timeout(20 * 1000)
+
     const outDir = path.join(process.cwd(), 'QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
     rimraf(outDir)
 
@@ -293,7 +376,7 @@ describe('files', () => runOnAndOff((thing) => {
         )
 
         const outDir = path.join(process.cwd(), 'QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
-        const expectedDir = path.join(process.cwd(), 'test', 'test-data', 'recursive-get-dir')
+        const expectedDir = path.join(process.cwd(), 'test', 'fixtures', 'test-data', 'recursive-get-dir')
 
         const compareResult = compareDir(outDir, expectedDir, {
           compareContent: true,

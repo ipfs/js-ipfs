@@ -1,9 +1,10 @@
 'use strict'
 
 const series = require('async/series')
+const promisify = require('promisify-es6')
 
 module.exports = (self) => {
-  return (callback) => {
+  return promisify((callback) => {
     callback = callback || function noop () {}
     self.log('stop')
 
@@ -30,15 +31,9 @@ module.exports = (self) => {
     self._bitswap.stop()
 
     series([
-      (cb) => {
-        if (self._options.EXPERIMENTAL.pubsub) {
-          self._pubsub.stop(cb)
-        } else {
-          cb()
-        }
-      },
+      (cb) => self._pubsub.stop(cb),
       (cb) => self.libp2p.stop(cb),
       (cb) => self._repo.close(cb)
     ], done)
-  }
+  })
 }

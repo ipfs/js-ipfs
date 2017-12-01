@@ -27,18 +27,20 @@ function isDaemonOn () {
 }
 
 exports.getAPICtl = getAPICtl
-function getAPICtl () {
-  if (!isDaemonOn()) {
+function getAPICtl (apiAddr) {
+  if (!apiAddr && !isDaemonOn()) {
     throw new Error('daemon is not on')
   }
-  const apiPath = path.join(exports.getRepoPath(), 'api')
-  const apiAddr = multiaddr(fs.readFileSync(apiPath).toString())
-  return APIctl(apiAddr.toString())
+  if (!apiAddr) {
+    const apiPath = path.join(exports.getRepoPath(), 'api')
+    apiAddr = multiaddr(fs.readFileSync(apiPath).toString()).toString()
+  }
+  return APIctl(apiAddr)
 }
 
-exports.getIPFS = (callback) => {
-  if (isDaemonOn()) {
-    return callback(null, getAPICtl(), (cb) => cb())
+exports.getIPFS = (apiAddr, callback) => {
+  if (apiAddr || isDaemonOn()) {
+    return callback(null, getAPICtl(apiAddr), (cb) => cb())
   }
 
   const node = new IPFS({
@@ -99,4 +101,12 @@ exports.createProgressBar = (totalBytes) => {
     stream: process.stdout,
     total: totalBytes
   })
+}
+
+exports.rightpad = (val, n) => {
+  let result = String(val)
+  for (let i = result.length; i < n; ++i) {
+    result += ' '
+  }
+  return result
 }

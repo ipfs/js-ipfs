@@ -37,14 +37,16 @@ describe('object', () => runOnAndOff((thing) => {
   })
 
   it('put', () => {
-    return ipfs('object put test/test-data/node.json').then((out) => {
+    return ipfs('object put test/fixtures/test-data/node.json').then((out) => {
       expect(out).to.eql(
         'added QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm\n'
       )
     })
   })
 
-  it('stat', () => {
+  it('stat', function () {
+    this.timeout(40 * 1000)
+
     return ipfs('object stat QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').then((out) => {
       expect(out).to.eql([
         'NumLinks: 1',
@@ -70,9 +72,11 @@ describe('object', () => runOnAndOff((thing) => {
     })
   })
 
-  describe('patch', () => {
+  describe('patch', function () {
+    this.timeout(40 * 1000)
+
     it('append-data', () => {
-      return ipfs('object patch append-data QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n test/test-data/badconfig').then((out) => {
+      return ipfs('object patch append-data QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n test/fixtures/test-data/badconfig').then((out) => {
         expect(out).to.eql(
           'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6\n'
         )
@@ -80,7 +84,7 @@ describe('object', () => runOnAndOff((thing) => {
     })
 
     it('set-data', () => {
-      return ipfs('object patch set-data QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6 test/test-data/badconfig').then((out) => {
+      return ipfs('object patch set-data QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6 test/fixtures/test-data/badconfig').then((out) => {
         expect(out).to.eql(
           'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6\n'
         )

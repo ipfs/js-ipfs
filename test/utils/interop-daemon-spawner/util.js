@@ -7,7 +7,7 @@ const path = require('path')
 exports.tmpDir = (prefix) => {
   return path.join(
     os.tmpdir(),
-    prefix || 'tmp',
+    prefix || 'js-ipfs-interop',
     crypto.randomBytes(32).toString('hex')
   )
 }

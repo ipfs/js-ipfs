@@ -19,12 +19,14 @@ describe('config', () => runOnAndOff((thing) => {
   before(() => {
     ipfs = thing.ipfs
     configPath = path.join(ipfs.repoPath, 'config')
-    originalConfigPath = path.join(__dirname, '../go-ipfs-repo/config')
+    originalConfigPath = path.join(__dirname, '../fixtures/go-ipfs-repo/config')
     updatedConfig = () => JSON.parse(fs.readFileSync(configPath, 'utf8'))
     restoreConfig = () => fs.writeFileSync(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8')
   })
 
-  describe('get/set', () => {
+  describe('get/set', function () {
+    this.timeout(40 * 1000)
+
     it('set a config key with a string value', () => {
       return ipfs('config foo bar').then((out) => {
         expect(updatedConfig().foo).to.equal('bar')
@@ -64,7 +66,9 @@ describe('config', () => runOnAndOff((thing) => {
     })
   })
 
-  describe('show', () => {
+  describe('show', function () {
+    this.timeout(40 * 1000)
+
     it('returns the full config', () => {
       return ipfs('config show').then((out) => {
         expect(JSON.parse(out)).to.be.eql(updatedConfig())
@@ -72,9 +76,9 @@ describe('config', () => runOnAndOff((thing) => {
     })
   })
 
-  describe('replace', () => {
+  describe.skip('replace', () => {
     it('replace config with file', () => {
-      const filePath = 'test/test-data/otherconfig'
+      const filePath = 'test/fixtures/test-data/otherconfig'
       const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
       return ipfs(`config replace ${filePath}`).then((out) => {

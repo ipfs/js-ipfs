@@ -10,7 +10,7 @@ module.exports = function bitswap (self) {
   return {
     wantlist: () => {
       if (!self.isOnline()) {
-        throw OFFLINE_ERROR
+        throw new Error(OFFLINE_ERROR)
       }
 
       const list = self._bitswap.getWantlist()
@@ -18,7 +18,7 @@ module.exports = function bitswap (self) {
     },
     stat: () => {
       if (!self.isOnline()) {
-        throw OFFLINE_ERROR
+        throw new Error(OFFLINE_ERROR)
       }
 
       const stats = self._bitswap.stat()
@@ -29,7 +29,7 @@ module.exports = function bitswap (self) {
     },
     unwant: (key) => {
       if (!self.isOnline()) {
-        throw OFFLINE_ERROR
+        throw new Error(OFFLINE_ERROR)
       }
 
       // TODO: implement when https://github.com/ipfs/js-ipfs-bitswap/pull/10 is merged

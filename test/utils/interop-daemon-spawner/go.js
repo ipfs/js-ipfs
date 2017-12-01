@@ -15,13 +15,16 @@ class GoDaemon {
     this.disposable = opts.disposable
     this.node = null
     this.api = null
+    this.config = opts.config || {}
+    this.flags = opts.flags || {}
   }
 
   start (callback) {
     waterfall([
       (cb) => {
         if (this.disposable) {
-          ctl.disposable({init: this.init}, cb)
+          const config = Object.assign({ init: this.init }, this.config)
+          ctl.disposable(config, cb)
         } else if (this.init) {
           ctl.local(this.path, (err, node) => {
             if (err) {
@@ -37,7 +40,7 @@ class GoDaemon {
         this.node = node
         this.node.setConfig('Bootstrap', '[]', cb)
       },
-      (res, cb) => this.node.startDaemon(cb),
+      (res, cb) => this.node.startDaemon(this.flags, cb),
       (api, cb) => {
         this.api = api
 

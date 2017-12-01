@@ -36,7 +36,7 @@ describe('init', () => {
   afterEach((done) => repo.teardown(done))
 
   it('basic', (done) => {
-    ipfs.init({ bits: 1024 }, (err) => {
+    ipfs.init({ bits: 512 }, (err) => {
       expect(err).to.not.exist()
 
       repo.exists((err, res) => {
@@ -52,8 +52,10 @@ describe('init', () => {
     })
   })
 
-  it('set # of bits in key', (done) => {
-    ipfs.init({ bits: 2048 }, (err) => {
+  it('set # of bits in key', function (done) {
+    this.timeout(40 * 1000)
+
+    ipfs.init({ bits: 1024 }, (err) => {
       expect(err).to.not.exist()
 
       repo.config.get((err, config) => {
@@ -65,7 +67,7 @@ describe('init', () => {
   })
 
   it('init docs are written', (done) => {
-    ipfs.init({ bits: 1024 }, (err) => {
+    ipfs.init({ bits: 512 }, (err) => {
       expect(err).to.not.exist()
       const multihash = 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
 
@@ -78,11 +80,11 @@ describe('init', () => {
   })
 
   it('empty repo', (done) => {
-    ipfs.init({ bits: 1024, emptyRepo: true }, (err) => {
+    ipfs.init({ bits: 512, emptyRepo: true }, (err) => {
       expect(err).to.not.exist()
 
       // Should not have default assets
-      const multihash = new Buffer('12205e7c3ce237f936c76faf625e90f7751a9f5eeb048f59873303c215e9cce87599', 'hex')
+      const multihash = Buffer.from('12205e7c3ce237f936c76faf625e90f7751a9f5eeb048f59873303c215e9cce87599', 'hex')
 
       ipfs.object.get(multihash, {}, (err, node) => {
         expect(err).to.exist()

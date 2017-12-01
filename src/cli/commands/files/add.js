@@ -7,7 +7,6 @@ const sortBy = require('lodash.sortby')
 const pull = require('pull-stream')
 const paramap = require('pull-paramap')
 const zip = require('pull-zip')
-const toPull = require('stream-to-pull-stream')
 const getFolderSize = require('get-folder-size')
 const byteman = require('byteman')
 const waterfall = require('async/waterfall')
@@ -30,12 +29,17 @@ function checkPath (inPath, recursive) {
     throw new Error('Error: Argument \'path\' is required')
   }
 
-  // Strips trailing slash from path.
-  inPath = inPath.replace(/\/$/, '')
-
   if (inPath === '.') {
     inPath = process.cwd()
   }
+
+  // Convert to POSIX format
+  inPath = inPath
+    .split(path.sep)
+    .join('/')
+
+  // Strips trailing slash from path.
+  inPath = inPath.replace(/\/$/, '')
 
   if (fs.statSync(inPath).isDirectory() && recursive === false) {
     throw new Error(`Error: ${inPath} is a directory, use the '-r' flag to specify directories`)
@@ -218,21 +222,8 @@ module.exports = {
           }
         }
 
-        // TODO: revist when interface-ipfs-core exposes pull-streams
-
-        let createAddStream = (cb) => {
-          ipfs.files.createAddStream(options, (err, stream) => {
-            cb(err, err ? null : toPull.transform(stream))
-          })
-        }
-
-        if (typeof ipfs.files.createAddPullStream === 'function') {
-          createAddStream = (cb) => {
-            cb(null, ipfs.files.createAddPullStream(options))
-          }
-        }
-
-        createAddStream(next)
+        const thing = (cb) => cb(null, ipfs.files.addPullStream(options))
+        thing(next)
       }
     ], (err, addStream) => {
       if (err) throw err

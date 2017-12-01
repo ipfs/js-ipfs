@@ -7,110 +7,130 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const delay = require('delay')
-const waterfall = require('async/waterfall')
-const HttpAPI = require('../../src/http')
-// TODO needs to use ipfs-factory-daemon
-const createTempNode = ''
-const repoPath = require('./index').repoPath
-const ipfs = require('../utils/ipfs-exec')(repoPath)
+const series = require('async/series')
+const InstanceFactory = require('../utils/ipfs-factory-instance')
+const DaemonFactory = require('../utils/ipfs-factory-daemon')
+const ipfsExec = require('../utils/ipfs-exec')
 
-describe.skip('pubsub', () => {
+describe('pubsub', function () {
+  this.timeout(40 * 1000)
+
+  let instanceFactory
+  let daemonFactory
+  let node
+  let cli
+  let httpApi
+
   const topicA = 'nonscentsA'
   const topicB = 'nonscentsB'
   const topicC = 'nonscentsC'
-  let node
-  let id
 
-  before((done) => {
-    createTempNode(1, (err, _node) => {
+  before(function (done) {
+    this.timeout(60 * 1000)
+
+    instanceFactory = new InstanceFactory()
+    instanceFactory.spawnNode((err, _node) => {
       expect(err).to.not.exist()
       node = _node
-      node.goOnline(done)
+      done()
     })
   })
 
-  after((done) => {
-    node.goOffline(done)
+  after((done) => instanceFactory.dismantle(done))
+
+  before((done) => {
+    daemonFactory = new DaemonFactory()
+    daemonFactory.spawnNode((err, _node) => {
+      expect(err).to.not.exist()
+      httpApi = _node
+      done()
+    })
   })
 
-  describe('api running', () => {
-    let httpAPI
+  after((done) => daemonFactory.dismantle(done))
 
-    before((done) => {
-      httpAPI = new HttpAPI(repoPath)
+  before((done) => {
+    cli = ipfsExec(httpApi.repoPath)
+    done()
+  })
 
-      waterfall([
-        (cb) => httpAPI.start(cb),
-        (cb) => node.id(cb),
-        (_id, cb) => {
-          id = _id
-          ipfs(`swarm connect ${id.addresses[0]}`)
-            .then(() => cb())
-            .catch(cb)
-        }
-      ], done)
+  it('subscribe and publish', () => {
+    const sub = cli(`pubsub sub ${topicA}`)
+
+    sub.stdout.on('data', (c) => {
+      expect(c.toString().trim()).to.be.eql('world')
+      sub.kill()
     })
 
-    after((done) => {
-      httpAPI.stop(done)
+    return Promise.all([
+      sub.catch(ignoreKill),
+      delay(1000)
+        .then(() => cli(`pubsub pub ${topicA} world`))
+        .then((out) => {
+          expect(out).to.be.eql('')
+        })
+    ])
+  })
+
+  it('ls', function () {
+    this.timeout(80 * 1000)
+
+    const sub = cli(`pubsub sub ${topicB}`)
+
+    sub.stdout.once('data', (data) => {
+      expect(data.toString().trim()).to.be.eql('world')
+      cli('pubsub ls')
+        .then((out) => {
+          expect(out.trim()).to.be.eql(topicB)
+          sub.kill()
+        })
     })
 
-    it('subscribe and publish', () => {
-      const sub = ipfs(`pubsub sub ${topicA}`)
+    return Promise.all([
+      sub.catch(ignoreKill),
+      delay(200)
+        .then(() => cli(`pubsub pub ${topicB} world`))
+    ])
+  })
 
-      sub.stdout.on('data', (c) => {
-        expect(c.toString()).to.be.eql('world\n')
-        sub.kill()
-      })
+  it('peers', (done) => {
+    let sub
+    let instancePeerId
+    let peerAddress
+    const handler = (msg) => {
+      expect(msg.data.toString()).to.be.eql('world')
+      cli(`pubsub peers ${topicC}`)
+        .then((out) => {
+          expect(out.trim()).to.be.eql(instancePeerId)
+          sub.kill()
+          node.pubsub.unsubscribe(topicC, handler)
+          done()
+        })
+    }
+
+    series([
+      (cb) => httpApi.id((err, peerInfo) => {
+        expect(err).to.not.exist()
+        peerAddress = peerInfo.addresses[0]
+        expect(peerAddress).to.exist()
+        cb()
+      }),
+      (cb) => node.id((err, peerInfo) => {
+        expect(err).to.not.exist()
+        instancePeerId = peerInfo.id.toString()
+        cb()
+      }),
+      (cb) => node.swarm.connect(peerAddress, cb),
+      (cb) => node.pubsub.subscribe(topicC, handler, cb)
+    ],
+    (err) => {
+      expect(err).to.not.exist()
+      sub = cli(`pubsub sub ${topicC}`)
 
       return Promise.all([
         sub.catch(ignoreKill),
-        delay(200)
-          .then(() => ipfs(`pubsub pub ${topicA} world`))
-          .then((out) => {
-            expect(out).to.be.eql('')
-          })
-      ])
-    })
-
-    it('ls', () => {
-      const sub = ipfs(`pubsub sub ${topicB}`)
-
-      sub.stdout.once('data', (data) => {
-        expect(data.toString()).to.be.eql('world\n')
-        ipfs('pubsub ls')
-          .then((out) => {
-            expect(out).to.be.eql(topicB)
-            sub.kill()
-          })
-      })
-
-      return Promise.all([
-        sub.catch(ignoreKill),
-        delay(200)
-          .then(() => ipfs(`pubsub pub ${topicB} world`))
-      ])
-    })
-
-    it('peers', () => {
-      const handler = (msg) => {
-        expect(msg.data.toString()).to.be.eql('world')
-        ipfs(`pubsub peers ${topicC}`)
-          .then((out) => {
-            expect(out).to.be.eql(id.id)
-            sub2.kill()
-            node.pubsub.unsubscribe(topicC, handler)
-          })
-      }
-
-      const sub1 = node.pubsub.subscribe(topicC, handler)
-      const sub2 = ipfs(`pubsub sub ${topicC}`)
-
-      return Promise.all([
-        sub1,
-        sub2.catch(ignoreKill),
-        delay(200)
-          .then(() => ipfs(`pubsub pub ${topicC} world`))
+        delay(1000)
+          .then(() => cli(`pubsub pub ${topicC} world`))
       ])
     })
   })

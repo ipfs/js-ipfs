@@ -1,5 +1,5 @@
-'use strict'
 /* global self */
+'use strict'
 
 const $startButton = document.querySelector('#start')
 const $stopButton = document.querySelector('#stop')
@@ -20,10 +20,9 @@ const $details = document.querySelector('#details')
 const $allDisabledButtons = document.querySelectorAll('button:disabled')
 const $allDisabledInputs = document.querySelectorAll('input:disabled')
 const $filesList = document.querySelector('.file-list')
-const streamBuffers = require('stream-buffers')
 
 let node
-let peerInfo
+let info
 
 /*
  * Start and stop the IPFS node
@@ -33,16 +32,34 @@ function start () {
   if (!node) {
     updateView('starting', node)
 
-    node = new self.Ipfs({repo: 'ipfs-' + Math.random()})
+    const options = {
+      repo: 'ipfs-' + Math.random(),
+      config: {
+        Addresses: {
+          Swarm: [
+            // '/dns4/wrtc-star.discovery.libp2p.io/wss/p2p-webrtc-star'
+            '/dns4/ws-star.discovery.libp2p.io/wss/p2p-websocket-star'
+          ]
+        }
+      }
+    }
 
-    node.on('start', () => {
-      node.id().then((id) => {
-        peerInfo = id
-        updateView('ready', node)
-        setInterval(refreshPeerList, 1000)
-        $peers.innerHTML = '<h2>peers</h2><i>waiting for peers...</i>'
-      })
-    })
+    // IFDEV: To test with latest js-ipfs
+    // const IPFS = require('ipfs')
+    // node = new IPFS(options)
+    // VEDIF
+
+    // EXAMPLE
+    node = new self.Ipfs(options)
+
+    node.once('start', () => node.id((err, id) => {
+      if (err) { return onError(err) }
+
+      info = id
+      updateView('ready', node)
+      setInterval(refreshPeerList, 1000)
+      $peers.innerHTML = '<h2>peers</h2><i>waiting for peers...</i>'
+    }))
   }
 }
 
@@ -55,7 +72,7 @@ function stop () {
  */
 
 function createFileBlob (data, multihash) {
-  const file = new window.Blob(data, {type: 'application/octet-binary'})
+  const file = new window.Blob(data, { type: 'application/octet-binary' })
   const fileUrl = window.URL.createObjectURL(file)
 
   const listItem = document.createElement('div')
@@ -70,41 +87,26 @@ function createFileBlob (data, multihash) {
 }
 
 function getFile () {
-  const multihash = $multihashInput.value
+  const cid = $multihashInput.value
 
   $multihashInput.value = ''
 
   $errors.className = 'hidden'
 
-  if (!multihash) {
-    return console.log('no multihash was inserted')
-  }
+  if (!cid) { return console.log('no multihash was inserted') }
 
-  // files.get documentation
-  // https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#get
-  node.files.get(multihash, (err, filesStream) => {
-    if (err) {
-      return onError(err)
-    }
+  node.files.get(cid, (err, files) => {
+    if (err) { return onError(err) }
 
-    filesStream.on('data', (file) => {
+    files.forEach((file) => {
       if (file.content) {
-        const buf = []
-        // buffer up all the data in the file
-        file.content.on('data', (data) => buf.push(data))
+        console.log('Fetched file:', cid, file.content.length)
 
-        file.content.once('end', () => {
-          const listItem = createFileBlob(buf, multihash)
-
-          $filesList.insertBefore(listItem, $filesList.firstChild)
-        })
-
-        file.content.resume()
+        // TODO: FIX calling createFileBlob makes the Chrome go "Oh Snap"
+        const listItem = createFileBlob(file.content, cid)
+        $filesList.insertBefore(listItem, $filesList.firstChild)
       }
     })
-    filesStream.resume()
-
-    filesStream.on('end', () => console.log('Every file was fetched for', multihash))
   })
 }
 
@@ -115,12 +117,12 @@ function onDrop (event) {
   onDragExit()
   $errors.className = 'hidden'
   event.preventDefault()
+
   if (!node) {
-    onError('IPFS must be started before files can be added')
-    return
+    return onError('IPFS must be started before files can be added')
   }
   const dt = event.dataTransfer
-  const files = dt.files
+  const filesDropped = dt.files
 
   function readFileContents (file) {
     return new Promise((resolve) => {
@@ -130,79 +132,21 @@ function onDrop (event) {
     })
   }
 
-  let filesArray = []
-  for (let i = 0; i < files.length; i++) {
-    filesArray.push(files[i])
+  const files = []
+  for (let i = 0; i < filesDropped.length; i++) {
+    files.push(filesDropped[i])
   }
 
-  filesArray.map((file) => {
+  files.forEach((file) => {
     readFileContents(file)
       .then((buffer) => {
-        let fileSize = buffer.byteLength
+        node.files.add(Buffer.from(buffer), (err, filesAdded) => {
+          if (err) { return onError(err) }
 
-        if (fileSize < 50000000) {
-          return node.files.add([{
-            path: file.name,
-            content: new node.types.Buffer(buffer)
-          }])
-        } else {
-          // use createAddStream and chunk the file.
-          let progress = 0
-
-          let myReadableStreamBuffer = new streamBuffers.ReadableStreamBuffer({
-            // frequency: 10,   // in milliseconds.
-            chunkSize: 32048  // in bytes.
-          })
-
-          node.files.createAddStream((err, stream) => {
-            if (err) throw err
-
-            stream.on('data', (file) => {
-              $multihashInput.value = file.hash
-              $filesStatus.innerHTML = `Added ${file.path} as ${file.hash}`
-
-              if (progressbar) {
-                clearInterval(progressbar)
-                progress = 0
-              }
-            })
-
-            myReadableStreamBuffer.on('data', (chunk) => {
-              progress += chunk.byteLength
-            })
-
-            if (!myReadableStreamBuffer.destroy) {
-              myReadableStreamBuffer.destroy = () => {}
-            }
-
-            stream.write({
-              path: file.name,
-              content: myReadableStreamBuffer
-            })
-
-            myReadableStreamBuffer.put(Buffer.from(buffer))
-            myReadableStreamBuffer.stop()
-
-            myReadableStreamBuffer.on('end', () => {
-              stream.end()
-            })
-
-            myReadableStreamBuffer.resume()
-
-            // progress.
-            let progressbar = setInterval(() => {
-              console.log('progress: ', progress, '/', fileSize, ' = ', Math.floor((progress / fileSize) * 100), '%')
-            }, 5000)
-          })
-        }
-      })
-      .then((files) => {
-        if (files && files.length) {
-          $multihashInput.value = files[0].hash
-          $filesStatus.innerHTML = files
-          .map((e) => `Added ${e.path} as ${e.hash}`)
-          .join('<br>')
-        }
+          const fl = filesAdded[0]
+          $multihashInput.value = fl.hash
+          $filesStatus.innerHTML = `Added ${file.name} as ${fl.hash}`
+        })
       })
       .catch(onError)
   })
@@ -217,9 +161,7 @@ function onDrop (event) {
 function connectToPeer (event) {
   event.target.disabled = true
   node.swarm.connect($connectPeer.value, (err) => {
-    if (err) {
-      return onError(err)
-    }
+    if (err) { return onError(err) }
 
     $connectPeer.value = ''
 
@@ -291,10 +233,10 @@ function onDragExit () {
  */
 const states = {
   ready: () => {
-    const addressesHtml = peerInfo.addresses.map((address) => {
+    const addressesHtml = info.addresses.map((address) => {
       return '<li><span class="address">' + address + '</span></li>'
     }).join('')
-    $idContainer.innerText = peerInfo.id
+    $idContainer.innerText = info.id
     $addressesContainer.innerHTML = addressesHtml
     $allDisabledButtons.forEach(b => { b.disabled = false })
     $allDisabledInputs.forEach(b => { b.disabled = false })

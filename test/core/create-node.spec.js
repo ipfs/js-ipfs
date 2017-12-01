@@ -14,8 +14,10 @@ const IPFS = require('../../src/core')
 // This gets replaced by `create-repo-browser.js` in the browser
 const createTempRepo = require('../utils/create-repo-nodejs.js')
 
-describe('create node', () => {
-  it('custom repoPath', (done) => {
+describe('create node', function () {
+  it('custom repoPath', function (done) {
+    this.timeout(80 * 1000)
+
     const node = new IPFS({
       repo: '/tmp/ipfs-repo-' + Math.random(),
       config: {
@@ -38,7 +40,9 @@ describe('create node', () => {
     })
   })
 
-  it('custom repo', (done) => {
+  it('custom repo', function (done) {
+    this.timeout(80 * 1000)
+
     const node = new IPFS({
       repo: createTempRepo(),
       config: {
@@ -60,7 +64,9 @@ describe('create node', () => {
     })
   })
 
-  it('IPFS.createNode', (done) => {
+  it('IPFS.createNode', function (done) {
+    this.timeout(80 * 1000)
+
     const node = IPFS.createNode({
       repo: createTempRepo(),
       config: {
@@ -85,11 +91,13 @@ describe('create node', () => {
     })
   })
 
-  it('init: { bits: 1024 }', (done) => {
+  it('init: { bits: 1024 }', function (done) {
+    this.timeout(80 * 1000)
+
     const node = new IPFS({
       repo: createTempRepo(),
       init: {
-        bits: 1024
+        bits: 512
       },
       config: {
         Addresses: {
@@ -110,7 +118,9 @@ describe('create node', () => {
     })
   })
 
-  it('init: false errors (start default: true)', (done) => {
+  it('init: false errors (start default: true)', function (done) {
+    this.timeout(80 * 1000)
+
     const node = new IPFS({
       repo: createTempRepo(),
       init: false,
@@ -126,7 +136,9 @@ describe('create node', () => {
     })
   })
 
-  it('init: false, start: false', (done) => {
+  it('init: false, start: false', function (done) {
+    this.timeout(80 * 1000)
+
     const node = new IPFS({
       repo: createTempRepo(),
       init: false,
@@ -154,7 +166,9 @@ describe('create node', () => {
     }, 250)
   })
 
-  it('init: true, start: false', (done) => {
+  it('init: true, start: false', function (done) {
+    this.timeout(80 * 1000)
+
     const node = new IPFS({
       repo: createTempRepo(),
       init: true,
@@ -174,7 +188,9 @@ describe('create node', () => {
     node.once('ready', () => node.start())
   })
 
-  it('init: true, start: false, use callback', (done) => {
+  it('init: true, start: false, use callback', function (done) {
+    this.timeout(80 * 1000)
+
     const node = new IPFS({
       repo: createTempRepo(),
       init: true,
@@ -188,15 +204,14 @@ describe('create node', () => {
     })
 
     node.once('error', done)
-    node.once('ready', () => {
-      node.start(() => node.stop(done))
-    })
+    node.once('ready', () => node.start(() => node.stop(done)))
   })
 
-  it('overload config', (done) => {
-    if (!isNode) {
-      return done()
-    }
+  it('overload config', function (done) {
+    this.timeout(80 * 1000)
+
+    if (!isNode) { return done() }
+
     const node = new IPFS({
       repo: createTempRepo(),
       config: {
@@ -212,10 +227,7 @@ describe('create node', () => {
       node.config.get((err, config) => {
         expect(err).to.not.exist()
 
-        expect(config.Addresses.Swarm).to.eql(
-          ['/ip4/127.0.0.1/tcp/9977']
-        )
-
+        expect(config.Addresses.Swarm).to.eql(['/ip4/127.0.0.1/tcp/9977'])
         expect(config.Bootstrap).to.eql([])
 
         node.stop(done)
@@ -223,7 +235,9 @@ describe('create node', () => {
     })
   })
 
-  it('start and stop, start and stop', (done) => {
+  it('start and stop, start and stop', function (done) {
+    this.timeout(80 * 1000)
+
     const node = new IPFS({
       repo: createTempRepo(),
       config: {
@@ -242,7 +256,29 @@ describe('create node', () => {
     ], done)
   })
 
-  it('can start node twice without crash', (done) => {
+  it('stop as promised', function (done) {
+    this.timeout(80 * 1000)
+
+    const node = new IPFS({
+      repo: createTempRepo(),
+      config: {
+        Addresses: {
+          Swarm: []
+        },
+        Bootstrap: []
+      }
+    })
+
+    node.once('ready', () => {
+      node.stop()
+        .then(done)
+        .catch(done)
+    })
+  })
+
+  it('can start node twice without crash', function (done) {
+    this.timeout(80 * 1000)
+
     const options = {
       repo: createTempRepo(),
       config: {
@@ -252,13 +288,15 @@ describe('create node', () => {
         Bootstrap: []
       }
     }
+
     let node = new IPFS(options)
+
     series([
       (cb) => node.once('start', cb),
       (cb) => node.stop(cb),
       (cb) => {
         node = new IPFS(options)
-        node.on('error', cb)
+        node.once('error', cb)
         node.once('start', cb)
       },
       (cb) => node.stop(cb)

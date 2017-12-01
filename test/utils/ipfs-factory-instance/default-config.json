@@ -1,13 +1,4 @@
 {
-  "Datastore": {
-    "Type": "",
-    "Path": "",
-    "StorageMax": "",
-    "StorageGCWatermark": 0,
-    "GCPeriod": "",
-    "Params": null,
-    "NoSync": false
-  },
   "Addresses": {
     "Swarm": [
       "/ip4/127.0.0.1/tcp/0"
@@ -30,11 +21,6 @@
     "webRTCStar": {
       "Enabled": false
     }
-  },
-  "Ipns": {
-    "RepublishPeriod": "",
-    "RecordLifetime": "",
-    "ResolveCacheSize": 128
   },
   "Bootstrap": [],
   "API": {
