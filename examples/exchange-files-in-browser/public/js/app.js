@@ -72,7 +72,7 @@ function stop () {
  */
 
 function createFileBlob (data, multihash) {
-  const file = new window.Blob(data, { type: 'application/octet-binary' })
+  const file = new window.Blob([data], { type: 'application/octet-binary' })
   const fileUrl = window.URL.createObjectURL(file)
 
   const listItem = document.createElement('div')
