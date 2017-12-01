@@ -43,7 +43,7 @@
     "peer-id": "~0.10.3",
     "peer-info": "~0.11.3",
     "promisify-es6": "^1.0.3",
-    "pump": "^2.0.0",
+    "pump": "^1.0.3",
     "pull-defer": "^0.2.2",
     "pull-pushable": "^2.1.1",
     "qs": "^6.5.1",
