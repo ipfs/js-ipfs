@@ -32,9 +32,7 @@ module.exports = (send, path) => {
     let ended = false
     let writing = false
 
-    if (!options) {
-      options = {}
-    }
+    options = options || {}
 
     const multipart = new Multipart()
 
@@ -45,8 +43,8 @@ module.exports = (send, path) => {
     retStream._write = (file, enc, _next) => {
       const next = once(_next)
       try {
-        const files = prepareFile(file, Object.assign({}, options, options.qs)).map(
-          (file) => Object.assign({headers: headers(file)}, file))
+        const files = prepareFile(file, Object.assign({}, options, options.qs))
+          .map((file) => Object.assign({headers: headers(file)}, file))
 
         writing = true
         eachSeries(
@@ -117,9 +115,7 @@ module.exports = (send, path) => {
       }
 
       if (!response) {
-        // no response object, which means
-        // everything is ok, so we end the
-        // return stream
+        // no response, which means everything is ok, so we end the retStream
         return retStream.push(null) // early
       }
 
