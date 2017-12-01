@@ -2,6 +2,7 @@
 
 const promisify = require('promisify-es6')
 const setImmediate = require('async/setImmediate')
+const pkgversion = require('../../../package.json').version
 
 module.exports = function id (self) {
   return promisify((opts, callback) => {
@@ -18,7 +19,7 @@ module.exports = function id (self) {
         .map((ma) => ma.toString())
         .filter((ma) => ma.indexOf('ipfs') >= 0)
         .sort(),
-      agentVersion: 'js-ipfs',
+      agentVersion: `js-ipfs/${pkgversion}`,
       protocolVersion: '9000'
     }))
   })

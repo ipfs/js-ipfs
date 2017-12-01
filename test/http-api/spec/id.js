@@ -18,7 +18,9 @@ module.exports = (http) => {
       }, (res) => {
         expect(res.result.ID).to.equal(idResult.ID)
         expect(res.result.PublicKey).to.equal(idResult.PublicKey)
-        expect(res.result.AgentVersion).to.equal(idResult.AgentVersion)
+        const agentComponents = res.result.AgentVersion.split('/')
+        expect(agentComponents).lengthOf.above(1)
+        expect(agentComponents[0]).to.equal(idResult.AgentVersion)
         expect(res.result.ProtocolVersion).to.equal(idResult.ProtocolVersion)
         done()
       })
