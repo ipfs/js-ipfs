@@ -11,7 +11,7 @@ const libp2p = require('libp2p')
 class Node extends libp2p {
   constructor (peerInfo, peerBook, options) {
     options = options || {}
-    const wrtcstar = new WebRTCStar()
+    const wrtcstar = new WebRTCStar({id: peerInfo.id})
     const wsstar = new WebSocketStar({id: peerInfo.id})
 
     const modules = {
