@@ -1,3 +1,13 @@
+<a name="17.2.0"></a>
+# [17.2.0](https://github.com/ipfs/js-ipfs-api/compare/v17.1.3...v17.2.0) (2017-12-01)
+
+
+### Bug Fixes
+
+* propagate trailer errors correctly ([#636](https://github.com/ipfs/js-ipfs-api/issues/636)) ([62d733e](https://github.com/ipfs/js-ipfs-api/commit/62d733e))
+
+
+
 <a name="17.1.3"></a>
 ## [17.1.3](https://github.com/ipfs/js-ipfs-api/compare/v17.1.2...v17.1.3) (2017-11-23)
 
