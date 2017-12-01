@@ -100,9 +100,6 @@ function getFile () {
 
     files.forEach((file) => {
       if (file.content) {
-        console.log('Fetched file:', cid, file.content.length)
-
-        // TODO: FIX calling createFileBlob makes the Chrome go "Oh Snap"
         const listItem = createFileBlob(file.content, cid)
         $filesList.insertBefore(listItem, $filesList.firstChild)
       }
