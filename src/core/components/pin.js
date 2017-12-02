@@ -5,16 +5,16 @@ const DAGNode = dagPB.DAGNode
 const DAGLink = dagPB.DAGLink
 const CID = require('cids')
 const pinSet = require('./pin-set')
+const normalizeHashes = require('../utils').normalizeHashes
 const promisify = require('promisify-es6')
 const multihashes = require('multihashes')
 const Key = require('interface-datastore').Key
-const _ = require('lodash')
 const each = require('async/each')
 const waterfall = require('async/waterfall')
 const until = require('async/until')
 const once = require('once')
 
-const keyString = multihashes.toB58String
+const toB58String = multihashes.toB58String
 
 module.exports = function pin (self) {
   let directPins = new Set()
@@ -25,92 +25,6 @@ module.exports = function pin (self) {
 
   const repo = self._repo
   const dag = self.dag
-
-  function normalizeHashes (hashes, callback) {
-    // try to accept a variety of hash options including
-    // multihash Buffers, base58 strings, and ipfs path
-    // strings, either individually or as an array
-    if (!Array.isArray(hashes)) {
-      hashes = [hashes]
-    }
-    const normalized = {
-      hashes: [],
-      update: (multihash, cb) => {
-        try {
-          multihashes.validate(multihash)
-        } catch (err) { return cb(err) }
-
-        normalized.hashes.push(multihash)
-        cb()
-      }
-    }
-    each(hashes, (hash, cb) => {
-      if (typeof hash === 'string') {
-        // example: '/ipfs/QmRootHash/links/by/name'
-        const matched = hash.match(/^(?:\/ipfs\/)?([^/]+(?:\/[^/]+)*)\/?$/)
-        if (!matched) {
-          return cb(new Error('invalid ipfs ref path'))
-        }
-        const split = matched[1].split('/')
-        const rootHash = multihashes.fromB58String(split[0])
-        const links = split.slice(1, split.length)
-        if (!links.length) {
-          normalized.update(rootHash, cb)
-        } else {
-          // recursively follow named links to the target
-          const pathFn = (err, obj) => {
-            if (err) { return cb(err) }
-            if (links.length) {
-              const linkName = links.shift()
-              const nextLink = obj.links.filter((link) => {
-                return (link.name === linkName)
-              })
-              if (!nextLink.length) {
-                return cb(new Error(
-                  `no link named ${linkName} under ${obj.toJSON().Hash}`
-                ))
-              }
-              const nextHash = nextLink[0].multihash
-              self.object.get(nextHash, pathFn)
-            } else {
-              normalized.update(obj.multihash, cb)
-            }
-          }
-          self.object.get(rootHash, pathFn)
-        }
-      } else {
-        normalized.update(hash, cb)
-      }
-    }, (err) => {
-      if (err) { return callback(err) }
-      return callback(null, normalized.hashes)
-    })
-  }
-
-  function getRecursive (multihash, callback) {
-    // gets flat array of all DAGNodes in tree given by multihash
-    // (should this be part of dag.js API? it was in ipfs-merkle-dag)
-    callback = once(callback)
-    dag.get(new CID(multihash), (err, res) => {
-      if (err) { return callback(err) }
-      const links = res.value.links
-      const nodes = [res.value]
-      // leaf case
-      if (!links.length) {
-        return callback(null, nodes)
-      }
-      // branch case
-      links.forEach(link => {
-        getRecursive(link.multihash, (err, subNodes) => {
-          if (err) { return callback(err) }
-          nodes.push(subNodes)
-          if (nodes.length === links.length + 1) {
-            return callback(null, _.flattenDeep(nodes))
-          }
-        })
-      })
-    })
-  }
 
   const pin = {
     types: {
@@ -137,7 +51,7 @@ module.exports = function pin (self) {
       }
       callback = once(callback)
       const recursive = !options || options.recursive !== false
-      normalizeHashes(hashes, (err, mhs) => {
+      normalizeHashes(self, hashes, (err, mhs) => {
         if (err) { return callback(err) }
         const result = {
           // async result queue
@@ -153,7 +67,7 @@ module.exports = function pin (self) {
           }
         }
         mhs.forEach((multihash) => {
-          const key = keyString(multihash)
+          const key = toB58String(multihash)
           if (recursive) {
             if (recursivePins.has(key)) {
               // it's already pinned recursively
@@ -166,7 +80,7 @@ module.exports = function pin (self) {
 
             // entire graph of nested links should be
             // pinned, so make sure we have all the objects
-            getRecursive(multihash, (err) => {
+            dag.getRecursive(multihash, (err) => {
               if (err) { return callback(err) }
               // found all objects, we can add the pin
               recursivePins.add(key)
@@ -176,7 +90,7 @@ module.exports = function pin (self) {
             if (recursivePins.has(key)) {
               // recursive supersedes direct, can't have both
               return callback(
-                `${key} already pinned recursively`
+                new Error(`${key} already pinned recursively`)
               )
             }
             if (directPins.has(key)) {
@@ -205,7 +119,7 @@ module.exports = function pin (self) {
         recursive = false
       }
       callback = once(callback)
-      normalizeHashes(hashes, (err, mhs) => {
+      normalizeHashes(self, hashes, (err, mhs) => {
         if (err) { return callback(err) }
         const result = {
           // async result queue
@@ -224,7 +138,7 @@ module.exports = function pin (self) {
           pin.isPinnedWithType(multihash, pin.types.all, (err, pinned, reason) => {
             if (err) { return callback(err) }
             if (!pinned) { return callback(new Error('not pinned')) }
-            const key = keyString(multihash)
+            const key = toB58String(multihash)
             switch (reason) {
               case (pin.types.recursive):
                 if (recursive) {
@@ -272,7 +186,7 @@ module.exports = function pin (self) {
         ))
       }
       if (hashes) {
-        normalizeHashes(hashes, (err, mhs) => {
+        normalizeHashes(self, hashes, (err, mhs) => {
           if (err) { return callback(err) }
           const result = {
             // async result queue
@@ -287,7 +201,7 @@ module.exports = function pin (self) {
           mhs.forEach((multihash) => {
             pin.isPinnedWithType(multihash, type, (err, pinned, reason) => {
               if (err) { return callback(err) }
-              const key = keyString(multihash)
+              const key = toB58String(multihash)
               if (!pinned) {
                 return callback(new Error(
                   `Path ${key} is not pinned`
@@ -352,7 +266,7 @@ module.exports = function pin (self) {
 
     isPinnedWithType: (multihash, pinType, callback) => {
       // callback (err, pinned, reason)
-      const key = keyString(multihash)
+      const key = toB58String(multihash)
       // recursive
       if ((pinType === pin.types.recursive || pinType === pin.types.all) &&
           recursivePins.has(key)) {
@@ -392,7 +306,7 @@ module.exports = function pin (self) {
               if (err) { return cb(err) }
               found = has
               // if found, return the hash of the parent recursive pin
-              cb(null, found ? keyString(res.value.multihash) : null)
+              cb(null, found ? toB58String(res.value.multihash) : null)
             })
           })
         },
@@ -423,10 +337,10 @@ module.exports = function pin (self) {
         return callback(null, [])
       }
       each(rKeys, (multihash, cb) => {
-        getRecursive(multihash, (err, nodes) => {
+        dag.getRecursive(multihash, (err, nodes) => {
           if (err) { return cb(err) }
           nodes.forEach((node) => {
-            const key = keyString(node.multihash)
+            const key = toB58String(node.multihash)
             if (!directPins.has(key) && !recursivePins.has(key)) {
               // not already pinned recursively or directly
               indirectKeys.add(key)
@@ -445,7 +359,7 @@ module.exports = function pin (self) {
     flush: promisify((callback) => {
       // callback (err, root)
       const newInternalPins = new Set()
-      const logInternalKey = (mh) => newInternalPins.add(keyString(mh))
+      const logInternalKey = (mh) => newInternalPins.add(toB58String(mh))
       const handle = {
         put: (k, v, cb) => {
           handle[k] = v
@@ -462,17 +376,17 @@ module.exports = function pin (self) {
         (rRoot, cb) => DAGLink.create(pin.types.recursive, rRoot.size, rRoot.multihash, cb),
         (rLink, cb) => handle.put('rLink', rLink, cb),
         // the pin-set nodes link to an empty node, so make sure it's added to dag
-        (cb) => DAGNode.create(new Buffer(0), cb),
+        (cb) => DAGNode.create(Buffer.alloc(0), cb),
         (empty, cb) => dag.put(empty, {cid: new CID(empty.multihash)}, cb),
         // create root node with links to direct and recursive nodes
-        (cid, cb) => DAGNode.create(new Buffer(0), [handle.dLink, handle.rLink], cb),
+        (cid, cb) => DAGNode.create(Buffer.alloc(0), [handle.dLink, handle.rLink], cb),
         (root, cb) => handle.put('root', root, cb),
         // add the root node to dag
         (cb) => dag.put(handle.root, {cid: new CID(handle.root.multihash)}, cb),
         // update the internal pin set
         (cid, cb) => cb(null, logInternalKey(handle.root.multihash)),
         // save serialized root to datastore under a consistent key
-        (_, cb) => repo.closed ? repo.datastore.open(cb) : cb(null, null),  // hack for CLI tests
+        (_, cb) => repo.closed ? repo.datastore.open(cb) : cb(null, null), // hack for CLI tests
         (_, cb) => repo.datastore.put(pinDataStoreKey, handle.root.multihash, cb)
       ], (err, result) => {
         if (err) { return callback(err) }
@@ -484,7 +398,7 @@ module.exports = function pin (self) {
     load: promisify((callback) => {
       // callback (err)
       const newInternalPins = new Set()
-      const logInternalKey = (mh) => newInternalPins.add(keyString(mh))
+      const logInternalKey = (mh) => newInternalPins.add(toB58String(mh))
       const handle = {
         put: (k, v, cb) => {
           handle[k] = v
@@ -492,9 +406,9 @@ module.exports = function pin (self) {
         }
       }
       waterfall([
-        (cb) => repo.closed ? repo.datastore.open(cb) : cb(null, null),  // hack for CLI tests
+        (cb) => repo.closed ? repo.datastore.open(cb) : cb(null, null), // hack for CLI tests
         (_, cb) => repo.datastore.has(pinDataStoreKey, cb),
-        (has, cb) => has ? cb() : cb('break'),
+        (has, cb) => has ? cb() : callback(),
         (cb) => repo.datastore.get(pinDataStoreKey, cb),
         (mh, cb) => dag.get(new CID(mh), cb),
         (root, cb) => handle.put('root', root.value, cb),
@@ -504,8 +418,8 @@ module.exports = function pin (self) {
       ], (err, dKeys) => {
         if (err && err !== 'break') { return callback(err) }
         if (dKeys) {
-          directPins = new Set(dKeys.map(mh => keyString(mh)))
-          recursivePins = new Set(handle.rKeys.map(mh => keyString(mh)))
+          directPins = new Set(dKeys.map(mh => toB58String(mh)))
+          recursivePins = new Set(handle.rKeys.map(mh => toB58String(mh)))
           logInternalKey(handle.root.multihash)
           internalPins = newInternalPins
         }

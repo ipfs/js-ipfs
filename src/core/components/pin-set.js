@@ -1,6 +1,7 @@
 'use strict'
 
 const multihashes = require('multihashes')
+const toB58String = multihashes.toB58String
 const CID = require('cids')
 const protobuf = require('protons')
 const fnv1a = require('fnv1a')
@@ -22,12 +23,15 @@ const pbSchema = `
 
   package ipfs.pin;
 
+  option go_package = "pb";
+
   message Set {
     optional uint32 version = 1;
     optional uint32 fanout = 2;
     optional fixed32 seed = 3;
   }
 `
+
 const pb = protobuf(pbSchema)
 function readHeader (rootNode) {
   // rootNode.data should be a buffer of the format:
@@ -63,7 +67,7 @@ exports = module.exports = function (dag) {
       callback = once(callback)
       if (callback.called) { return }
       if (typeof childhash === 'object') {
-        childhash = multihashes.toB58String(childhash)
+        childhash = toB58String(childhash)
       }
       _links = _links || root.links.length
       _checked = _checked || 0
@@ -74,7 +78,7 @@ exports = module.exports = function (dag) {
         return callback(null, false)
       }
       root.links.forEach((link) => {
-        const bs58link = multihashes.toB58String(link.multihash)
+        const bs58link = toB58String(link.multihash)
         if (bs58link === childhash) {
           return callback(null, true)
         }
@@ -116,15 +120,15 @@ exports = module.exports = function (dag) {
     storeItems: (items, logInternalKey, callback, _depth, _subcalls, _done) => {
       // callback (err, rootNode)
       callback = once(callback)
-//      const seed = crypto.randomBytes(4).readUInt32LE(0, true)  // old nondeterministic behavior
-      const seed = _depth  // new deterministic behavior
+      // const seed = crypto.randomBytes(4).readUInt32LE(0, true)  // old nondeterministic behavior
+      const seed = _depth // new deterministic behavior
       const pbHeader = pb.Set.encode({
         version: 1,
         fanout: defaultFanout,
         seed: seed
       })
       let rootData = Buffer.concat([
-        new Buffer(varint.encode(pbHeader.length)), pbHeader
+        Buffer.from(varint.encode(pbHeader.length)), pbHeader
       ])
       let rootLinks = []
       for (let i = 0; i < defaultFanout; i++) {
@@ -139,7 +143,7 @@ exports = module.exports = function (dag) {
         const indices = []
         for (let i = 0; i < items.length; i++) {
           itemLinks.push(new DAGLink('', 1, items[i].key))
-          itemData.push(items[i].data || new Buffer(0))
+          itemData.push(items[i].data || Buffer.alloc(0))
           indices.push(i)
         }
         indices.sort((a, b) => {
@@ -162,10 +166,10 @@ exports = module.exports = function (dag) {
         _done = _done || 0
         const hashed = {}
         const hashFn = (seed, key) => {
-          const buf = new Buffer(4)
+          const buf = Buffer.alloc(4)
           buf.writeUInt32LE(seed, 0)
           const data = Buffer.concat([
-            buf, new Buffer(multihashes.toB58String(key))
+            buf, Buffer.from(toB58String(key))
           ])
           return fnv1a(data.toString('binary'))
         }
@@ -219,7 +223,7 @@ exports = module.exports = function (dag) {
       // callback (err, keys)
       callback = once(callback)
       const link = rootNode.links.filter(l => l.name === name).pop()
-      if (!link) { return callback('No link found with name ' + name) }
+      if (!link) { return callback(new Error('No link found with name ' + name)) }
       logInternalKey(link.multihash)
       dag.get(new CID(link.multihash), (err, res) => {
         if (err) { return callback(err) }
