@@ -71,6 +71,20 @@ function normalizeContent (content) {
   })
 }
 
+function pinFile (self, file, cb) {
+  // since adding paths like `directory/filename` automatically
+  // adds the directory as well as the file, we can just recursively
+  // pin root directories and top-level files and skip any files
+  // with nested paths - they'll be pinned indirectly
+  if (file.path.indexOf('/') < 0) {
+    self.pin.add(file.hash, (err) => {
+      cb(err, file)
+    })
+  } else {
+    cb(null, file)
+  }
+}
+
 class AddHelper extends Duplex {
   constructor (pullStream, push, options) {
     super(Object.assign({ objectMode: true }, options))
@@ -122,11 +136,7 @@ module.exports = function files (self) {
       pull.flatten(),
       importer(self._ipldResolver, opts),
       pull.asyncMap(prepareFile.bind(null, self, opts)),
-      pull.asyncMap((file, cb) => {
-        self.pin.add(file.hash, (err) => {
-          cb(err, file)
-        })
-      })
+      pull.asyncMap(pinFile.bind(null, self))
     )
   }
 
