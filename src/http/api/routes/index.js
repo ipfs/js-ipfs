@@ -14,4 +14,5 @@ module.exports = (server) => {
   require('./files')(server)
   require('./pubsub')(server)
   require('./debug')(server)
+  require('./webui')(server)
 }
