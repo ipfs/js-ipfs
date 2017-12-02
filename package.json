@@ -108,7 +108,7 @@
     "hapi": "^16.2.2",
     "hapi-set-header": "^1.0.2",
     "hoek": "^5.0.2",
-    "interface-datastore": "^0.3.0",
+    "interface-datastore": "^0.4.1",
     "ipfs-api": "^17.1.3",
     "ipfs-bitswap": "~0.17.4",
     "ipfs-block": "~0.6.1",
