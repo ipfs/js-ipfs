@@ -33,24 +33,24 @@ function start () {
     updateView('starting', node)
 
     const options = {
-      repo: 'ipfs-' + Math.random(),
+      repo: 'ipfs-' + Math.random() + Date.now().toString(),
       config: {
         Addresses: {
           Swarm: [
-            // '/dns4/wrtc-star.discovery.libp2p.io/wss/p2p-webrtc-star'
-            '/dns4/ws-star.discovery.libp2p.io/wss/p2p-websocket-star'
+            '/dns4/wrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star'
+            // '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
           ]
         }
       }
     }
 
     // IFDEV: To test with latest js-ipfs
-    // const IPFS = require('ipfs')
-    // node = new IPFS(options)
+    const IPFS = require('ipfs')
+    node = new IPFS(options)
     // VEDIF
 
     // EXAMPLE
-    node = new self.Ipfs(options)
+    // node = new self.Ipfs(options)
 
     node.once('start', () => node.id((err, id) => {
       if (err) { return onError(err) }
@@ -72,7 +72,7 @@ function stop () {
  */
 
 function createFileBlob (data, multihash) {
-  const file = new window.Blob(data, { type: 'application/octet-binary' })
+  const file = new window.Blob([data], { type: 'application/octet-binary' })
   const fileUrl = window.URL.createObjectURL(file)
 
   const listItem = document.createElement('div')
@@ -100,9 +100,6 @@ function getFile () {
 
     files.forEach((file) => {
       if (file.content) {
-        console.log('Fetched file:', cid, file.content.length)
-
-        // TODO: FIX calling createFileBlob makes the Chrome go "Oh Snap"
         const listItem = createFileBlob(file.content, cid)
         $filesList.insertBefore(listItem, $filesList.firstChild)
       }

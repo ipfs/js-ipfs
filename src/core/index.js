@@ -51,8 +51,6 @@ class IPFS extends EventEmitter {
     this.log = debug('jsipfs')
     this.log.err = debug('jsipfs:err')
 
-    this.on('error', (err) => this.log(err))
-
     // IPFS types
     this.types = {
       Buffer: Buffer,
