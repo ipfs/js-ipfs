@@ -4,32 +4,35 @@
 const expect = require('chai').expect
 const runOnAndOff = require('../utils/on-and-off')
 
-// use a tree of ipfs objects for recursive tests:
-//  root
-//   |`leaf
-//    `branch
-//      `subLeaf
+// file structure for recursive tests:
+//  root (init-docs)
+//   |`readme
+//    `docs
+//      `index
 
 const keys = {
-  root: 'QmWQwS2Xh1SFGMPzUVYQ52b7RC7fTfiaPHm3ZyTRZuHmer',
-  leaf: 'QmaZoTQ6wFe7EtvaePBUeXavfeRqCAq3RUMomFxBpZLrLA',
-  branch: 'QmNxjjP7dtx6pzxWGBRCrgmjX3JqKL7uF2Kjx7ExiZDbSB',
-  subLeaf: 'QmUzzznkyQL7FjjBztG3D1tTjBuxeArLceDZnuSowUggXL'
+  root: 'QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU',
+  readme: 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB',
+  docs: 'QmegvLXxpVKiZ4b57Xs1syfBVRd8CbucVHAp7KpLQdGieC',
+  index: 'QmQN88TEidd3RY2u3dpib49fERTDfKtDpvxnvczATNsfKT'
 }
 
 describe('pin', () => runOnAndOff((thing) => {
-  const filesDir = 'test/test-data/tree/'
+  const filesDir = 'test/fixtures/test-data/recursive-get-dir/init-docs'
 
   let ipfs
 
   before(() => {
     ipfs = thing.ipfs
+    return ipfs(`files add -r ${filesDir}`)
+  })
 
-    return ipfs(`object put ${filesDir + 'root.json'}`)
-      .then(() => ipfs(`object put ${filesDir + 'root.json'}`))
-      .then(() => ipfs(`object put ${filesDir + 'leaf.json'}`))
-      .then(() => ipfs(`object put ${filesDir + 'branch.json'}`))
-      .then(() => ipfs(`object put ${filesDir + 'subLeaf.json'}`))
+  // rm first because `files add` should pin recursively by default
+  it('rm (recursively by default)', () => {
+    return ipfs(`pin rm ${keys.root}`)
+      .then((out) => expect(out).to.equal(`unpinned ${keys.root}\n`))
+      .then(() => ipfs('pin ls'))
+      .then((out) => expect(out).to.equal(''))
   })
 
   it('add (recursively by default)', () => {
@@ -39,8 +42,8 @@ describe('pin', () => runOnAndOff((thing) => {
   })
 
   it('add (direct)', () => {
-    return ipfs(`pin add ${keys.leaf} --recursive false`).then((out) => {
-      expect(out).to.eql(`pinned ${keys.leaf} directly\n`)
+    return ipfs(`pin add ${keys.readme} --recursive false`).then((out) => {
+      expect(out).to.eql(`pinned ${keys.readme} directly\n`)
     })
   })
 
@@ -51,50 +54,31 @@ describe('pin', () => runOnAndOff((thing) => {
   })
 
   it('ls (direct)', () => {
-    return ipfs(`pin ls --path ${keys.leaf}`).then((out) => {
-      expect(out).to.eql(`${keys.leaf} direct\n`)
+    return ipfs(`pin ls --path ${keys.readme}`).then((out) => {
+      expect(out).to.eql(`${keys.readme} direct\n`)
     })
   })
 
   it('ls (indirect)', () => {
-    return ipfs(`pin ls --path ${keys.subLeaf}`).then((out) => {
-      expect(out).to.eql(`${keys.subLeaf} indirect through ${keys.root}\n`)
+    return ipfs(`pin ls --path ${keys.index}`).then((out) => {
+      expect(out).to.eql(`${keys.index} indirect through ${keys.root}\n`)
     })
   })
 
   it('ls (all)', () => {
     return ipfs('pin ls').then((out) => {
-      expect(out).to.include(`${keys.leaf} direct\n`)
+      expect(out.split('\n').length).to.eql(12)
       expect(out).to.include(`${keys.root} recursive\n`)
-      expect(out).to.include(`${keys.branch} indirect\n`)
-      expect(out).to.include(`${keys.subLeaf} indirect\n`)
-    })
-  })
-
-//  it('ls (quiet)', () => {
-//    return ipfs('pin ls --quiet').then((out) => {
-//      expect(out).to.include(`${keys.leaf}\n`)
-//      expect(out).to.include(`${keys.root}\n`)
-//      expect(out).to.include(`${keys.branch}\n`)
-//      expect(out).to.include(`${keys.subLeaf}\n`)
-//    })
-//  })
-
-  it('rm (recursively by default)', () => {
-    return ipfs(`pin rm ${keys.root}`).then((out) => {
-      expect(out).to.equal(`unpinned ${keys.root}\n`)
+      expect(out).to.include(`${keys.readme} direct\n`)
+      expect(out).to.include(`${keys.docs} indirect\n`)
+      expect(out).to.include(`${keys.index} indirect\n`)
     })
   })
 
   it('rm (direct)', () => {
-    return ipfs(`pin rm --recursive false ${keys.leaf}`).then((out) => {
-      expect(out).to.equal(`unpinned ${keys.leaf}\n`)
-    })
-  })
-
-  it('confirm removal', () => {
-    return ipfs('pin ls').then((out) => {
-      expect(out).to.equal('')
-    })
+    return ipfs(`pin rm --recursive false ${keys.readme}`)
+      .then((out) => expect(out).to.equal(`unpinned ${keys.readme}\n`))
+      .then(() => ipfs('pin ls'))
+      .then((out) => expect(out).to.not.include(`${keys.readme} direct\n`))
   })
 }))
