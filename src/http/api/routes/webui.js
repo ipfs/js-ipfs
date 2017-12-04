@@ -1,3 +1,5 @@
+'use strict'
+
 const resources = require('../../gateway/resources')
 
 module.exports = (server) => {
@@ -18,7 +20,7 @@ module.exports = (server) => {
       method: '*',
       path: '/webui',
       handler: (request, reply) => {
-        return reply().redirect().location('/ipfs/QmQLXHs7K98JNQdWrBB2cQLJahPhmupbDjRuH1b9ibmwVa');
+        return reply().redirect().location('/ipfs/QmQLXHs7K98JNQdWrBB2cQLJahPhmupbDjRuH1b9ibmwVa')
       }
     }
   ])
