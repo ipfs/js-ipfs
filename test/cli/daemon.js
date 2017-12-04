@@ -7,8 +7,8 @@ const ipfsCmd = require('../utils/ipfs-exec')
 const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
 const os = require('os')
-const fs = require('fs')
 const path = require('path')
+const fs = require('fs')
 
 const isWindows = os.platform() === 'win32'
 
@@ -65,7 +65,7 @@ describe('daemon', () => {
   let ipfs
 
   beforeEach(() => {
-    repoPath = '/tmp/ipfs-test-not-found-' + Math.random().toString().substring(2, 8)
+    repoPath = path.join(os.tmpdir(), 'ipfs-test-not-found-' + Math.random().toString().substring(2, 8))
     ipfs = ipfsCmd(repoPath)
   })
 
