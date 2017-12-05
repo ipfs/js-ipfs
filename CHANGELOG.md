@@ -1,3 +1,13 @@
+<a name="17.2.1"></a>
+## [17.2.1](https://github.com/ipfs/js-ipfs-api/compare/v17.2.0...v17.2.1) (2017-12-05)
+
+
+### Features
+
+* add the stat commands ([#639](https://github.com/ipfs/js-ipfs-api/issues/639)) ([76c3068](https://github.com/ipfs/js-ipfs-api/commit/76c3068))
+
+
+
 <a name="17.2.0"></a>
 # [17.2.0](https://github.com/ipfs/js-ipfs-api/compare/v17.1.3...v17.2.0) (2017-12-01)
 
