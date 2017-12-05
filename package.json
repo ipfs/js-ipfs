@@ -42,11 +42,11 @@
     "hat": "0.0.3",
     "ipfs-block": "~0.6.1",
     "ipld-dag-cbor": "~0.11.2",
-    "ipld-dag-pb": "~0.11.3",
+    "ipld-dag-pb": "~0.11.4",
     "multiaddr": "^3.0.1",
     "multihashes": "~0.4.12",
     "multihashing-async": "~0.4.7",
-    "peer-id": "~0.10.2",
+    "peer-id": "~0.10.3",
     "pull-stream": "^3.6.1"
   },
   "devDependencies": {},
