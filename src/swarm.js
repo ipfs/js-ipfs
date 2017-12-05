@@ -9,6 +9,9 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const series = require('async/series')
 const multiaddr = require('multiaddr')
+const os = require('os')
+const path = require('path')
+const hat = require('hat')
 
 module.exports = (common) => {
   describe('.swarm', function () {
@@ -125,7 +128,7 @@ module.exports = (common) => {
           }
 
           function getRepoPath () {
-            return '/tmp/.ipfs-' + Math.random().toString().substring(2, 8) + Date.now()
+            return path.join(os.tmpdir(), '.ipfs-' + hat())
           }
 
           it('Connecting two peers with one address each', (done) => {
