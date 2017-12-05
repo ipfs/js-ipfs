@@ -77,8 +77,13 @@ module.exports = function pubsub (self) {
         return setImmediate(() => callback(new Error(OFFLINE_ERROR)))
       }
 
+      if (typeof topic === 'function') {
+        callback = topic
+        topic = null
+      }
+
       const peers = Array.from(self._pubsub.peers.values())
-        .filter((peer) => peer.topics.has(topic))
+        .filter((peer) => topic ? peer.topics.has(topic) : true)
         .map((peer) => peer.info.id.toB58String())
 
       setImmediate(() => callback(null, peers))

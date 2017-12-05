@@ -102,13 +102,13 @@ exports.peers = {
     const topic = request.query.arg
     const ipfs = request.server.app.ipfs
 
-    if (!topic) {
-      return reply(new Error('Missing topic'))
-    }
-
     ipfs.pubsub.peers(topic, (err, peers) => {
       if (err) {
-        return reply(new Error(`Failed to find peers subscribed to ${topic}: ${err}`))
+        const message = topic
+          ? `Failed to find peers subscribed to ${topic}: ${err}`
+          : `Failed to find peers: ${err}`
+
+        return reply(new Error(message))
       }
 
       reply({Strings: peers})
