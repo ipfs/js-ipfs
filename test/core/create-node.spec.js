@@ -9,6 +9,7 @@ chai.use(dirtyChai)
 const series = require('async/series')
 const os = require('os')
 const path = require('path')
+const hat = require('hat')
 
 const isNode = require('detect-node')
 const IPFS = require('../../src/core')
@@ -21,7 +22,7 @@ describe('create node', function () {
     this.timeout(80 * 1000)
 
     const node = new IPFS({
-      repo: path.join(os.tmpdir(), 'ipfs-repo-' + Math.random()),
+      repo: path.join(os.tmpdir(), 'ipfs-repo-' + hat()),
       config: {
         Addresses: {
           Swarm: []
