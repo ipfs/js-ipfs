@@ -82,13 +82,9 @@ module.exports = function pubsub (self) {
         topic = null
       }
 
-      let peers = Array.from(self._pubsub.peers.values())
-
-      if (topic) {
-        peers = peers.filter((peer) => peer.topics.has(topic))
-      }
-
-      peers = peers.map((peer) => peer.info.id.toB58String())
+      const peers = Array.from(self._pubsub.peers.values())
+        .filter((peer) => topic ? peer.topics.has(topic) : true)
+        .map((peer) => peer.info.id.toB58String())
 
       setImmediate(() => callback(null, peers))
     }),
