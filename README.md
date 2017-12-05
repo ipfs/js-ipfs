@@ -14,7 +14,7 @@
   - [Badge](#badge)
 - [Install](#install)
 - [Usage](#usage)
-  - [JavaScript](#nodejs)
+  - [JavaScript](#javascript)
   - [Go](#go)
 - [API](#api)
 - [Contribute](#contribute)
