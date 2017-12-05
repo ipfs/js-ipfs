@@ -110,6 +110,14 @@ describe('submodules', () => {
     expect(repo.stat).to.be.a('function')
   })
 
+  it('stats', () => {
+    const stats = require('../src/stats')(config)
+
+    expect(stats.bitswap).to.be.a('function')
+    expect(stats.bw).to.be.a('function')
+    expect(stats.repo).to.be.a('function')
+  })
+
   it('swarm', () => {
     const swarm = require('../src/swarm')(config)
 

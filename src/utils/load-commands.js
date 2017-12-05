@@ -33,6 +33,7 @@ function requireCommands () {
     ping: require('../ping'),
     refs: require('../refs'),
     repo: require('../repo'),
+    stats: require('../stats'),
     swarm: require('../swarm'),
     pubsub: require('../pubsub'),
     update: require('../update'),

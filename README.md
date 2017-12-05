@@ -250,6 +250,10 @@ $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods "[\"PUT\", \"P
   - [`ipfs.config.get([key, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configget)
   - [`ipfs.config.set(key, value, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configset)
   - [`ipfs.config.replace(config, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configreplace)
+- stats:
+  - `ipfs.stats.bitswap([callback])`
+  - `ipfs.stats.bw([options, callback])`
+  - `ipfs.stats.repo([options, callback])`
 - log:
   - `ipfs.log.ls([callback])`
   - `ipfs.log.tail([callback])`
