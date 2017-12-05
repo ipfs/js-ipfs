@@ -8,6 +8,8 @@ chai.use(dirtyChai)
 const waterfall = require('async/waterfall')
 const crypto = require('crypto')
 const os = require('os')
+const path = require('path')
+const hat = require('hat')
 
 const GoDaemon = require('../utils/interop-daemon-spawner/go')
 const JsDaemon = require('../utils/interop-daemon-spawner/js')
@@ -22,7 +24,7 @@ function catAndCheck (daemon, hash, data, callback) {
 
 describe('repo', () => {
   it('read repo: go -> js', (done) => {
-    const dir = os.tmpdir() + '/' + Math.ceil(Math.random() * 10000)
+    const dir = path.join(os.tmpdir(), hat())
     const data = crypto.randomBytes(1024 * 5)
 
     const goDaemon = new GoDaemon({
@@ -57,7 +59,7 @@ describe('repo', () => {
   // This was last due to an update on go-ipfs that changed how datastore is
   // configured
   it.skip('read repo: js -> go', (done) => {
-    const dir = os.tmpdir() + '/' + Math.ceil(Math.random() * 10000)
+    const dir = path.join(os.tmpdir(), hat())
     const data = crypto.randomBytes(1024 * 5)
 
     const jsDaemon = new JsDaemon({init: true, disposable: false, path: dir})
