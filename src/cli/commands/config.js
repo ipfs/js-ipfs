@@ -62,7 +62,7 @@ module.exports = {
 
       argv.ipfs.config.set(key, value, (err) => {
         if (err) {
-          throw new Error('failed to read the config')
+          throw err
         }
       })
     }
