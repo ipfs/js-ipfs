@@ -1,3 +1,13 @@
+<a name="17.2.4"></a>
+## [17.2.4](https://github.com/ipfs/js-ipfs-api/compare/v17.2.3...v17.2.4) (2017-12-06)
+
+
+### Bug Fixes
+
+* stats/bw uses stream ([#640](https://github.com/ipfs/js-ipfs-api/issues/640)) ([c4e922e](https://github.com/ipfs/js-ipfs-api/commit/c4e922e))
+
+
+
 <a name="17.2.3"></a>
 ## [17.2.3](https://github.com/ipfs/js-ipfs-api/compare/v17.2.2...v17.2.3) (2017-12-05)
 
