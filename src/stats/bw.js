@@ -1,6 +1,7 @@
 'use strict'
 
 const promisify = require('promisify-es6')
+const streamToValue = require('../utils/stream-to-value')
 
 module.exports = (send) => {
   return promisify((opts, callback) => {
@@ -9,9 +10,17 @@ module.exports = (send) => {
       opts = {}
     }
 
-    send({
+    send.andTransform({
       path: 'stats/bw',
       qs: opts
-    }, callback)
+    }, streamToValue, (err, stats) => {
+      if (err) {
+        return callback(err)
+      }
+
+      // streamToValue returns an array and we're only
+      // interested in returning the object itself.
+      callback(err, stats[0])
+    })
   })
 }
