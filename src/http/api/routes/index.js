@@ -16,4 +16,5 @@ module.exports = (server) => {
   require('./debug')(server)
   require('./webui')(server)
   require('./dns')(server)
+  require('./key')(server)
 }
