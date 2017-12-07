@@ -10,11 +10,11 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    argv.ipfs.key.list((err, keys) => {
+    argv.ipfs.key.list((err, res) => {
       if (err) {
         throw err
       }
-      keys.forEach((ki) => print(`${ki.name} ${ki.id}`))
+      res.Keys.forEach((ki) => print(`${ki.Name} ${ki.Id}`))
     })
   }
 }

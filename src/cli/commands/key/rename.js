@@ -10,11 +10,11 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    argv.ipfs.key.rename(argv.name, argv.newName, (err, key) => {
+    argv.ipfs.key.rename(argv.name, argv.newName, (err, res) => {
       if (err) {
         throw err
       }
-      print(`renamed to ${key.name} ${key.id}`)
+      print(`renamed to ${res.Now} ${res.Id}`)
     })
   }
 }

@@ -10,7 +10,7 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    argv.ipfs.key.remove(argv.name, (err) => {
+    argv.ipfs.key.rm(argv.name, (err) => {
       if (err) {
         throw err
       }

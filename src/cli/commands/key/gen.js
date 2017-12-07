@@ -21,11 +21,11 @@ module.exports = {
   },
 
   handler (argv) {
-    argv.ipfs.key.generate(argv.name, argv.type, argv.size, (err, key) => {
+    argv.ipfs.key.gen(argv.name, argv.type, argv.size, (err, key) => {
       if (err) {
         throw err
       }
-      print(`generated ${key.name} ${key.id}`)
+      print(`generated ${key.Name} ${key.Id}`)
     })
   }
 }
