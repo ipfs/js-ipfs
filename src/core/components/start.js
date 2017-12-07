@@ -52,8 +52,6 @@ module.exports = (self) => {
       self._bitswap.start()
       self._blockService.setExchange(self._bitswap)
 
-      self._keychain = new Keychain(self._repo.keys, { passPhrase: 'todo do not hardcode the pass phrase' })
-
       self._pubsub = self._options.EXPERIMENTAL.pubsub
         ? new FloodSub(self._libp2pNode)
         : new NoFloodSub()

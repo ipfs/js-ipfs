@@ -2,6 +2,7 @@
 
 const peerId = require('peer-id')
 const PeerInfo = require('peer-info')
+const Keychain = require('libp2p-keychain')
 const multiaddr = require('multiaddr')
 const waterfall = require('async/waterfall')
 
@@ -11,6 +12,8 @@ const waterfall = require('async/waterfall')
 module.exports = function preStart (self) {
   return (callback) => {
     self.log('pre-start')
+
+    self._keychain = new Keychain(self._repo.keys, { passPhrase: 'todo do not hardcode the pass phrase' })
 
     waterfall([
       (cb) => self._repo.config.get(cb),
