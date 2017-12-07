@@ -1,7 +1,6 @@
 'use strict'
 
 const os = require('os')
-const crypto = require('libp2p-crypto')
 const path = require('path')
 const hat = require('hat')
 
