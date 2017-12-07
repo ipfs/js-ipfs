@@ -4,7 +4,6 @@ const series = require('async/series')
 const Bitswap = require('ipfs-bitswap')
 const FloodSub = require('libp2p-floodsub')
 const NoFloodSub = require('./no-floodsub')
-const Keychain = require('libp2p-keychain')
 const setImmediate = require('async/setImmediate')
 const promisify = require('promisify-es6')
 

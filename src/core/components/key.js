@@ -23,7 +23,7 @@ module.exports = function key (self) {
     }),
 
     rename: promisify((oldName, newName, callback) => {
-      self._keychain.put(oldName, newName, callback)
+      self._keychain.renameKey(oldName, newName, callback)
     })
   }
 }
