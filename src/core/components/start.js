@@ -4,6 +4,7 @@ const series = require('async/series')
 const Bitswap = require('ipfs-bitswap')
 const FloodSub = require('libp2p-floodsub')
 const NoFloodSub = require('./no-floodsub')
+const Keychain = require('libp2p-keychain')
 const setImmediate = require('async/setImmediate')
 const promisify = require('promisify-es6')
 
@@ -50,6 +51,8 @@ module.exports = (self) => {
 
       self._bitswap.start()
       self._blockService.setExchange(self._bitswap)
+
+      self._keychain = new Keychain(self._repo.keys, { passPhrase: 'todo do not hardcode the pass phrase' })
 
       self._pubsub = self._options.EXPERIMENTAL.pubsub
         ? new FloodSub(self._libp2pNode)
