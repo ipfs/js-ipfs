@@ -21,7 +21,11 @@ module.exports = {
   },
 
   handler (argv) {
-    argv.ipfs.key.gen(argv.name, argv.type, argv.size, (err, key) => {
+    const opts = {
+      type: argv.type,
+      size: argv.size
+    }
+    argv.ipfs.key.gen(argv.name, opts, (err, key) => {
       if (err) {
         throw err
       }

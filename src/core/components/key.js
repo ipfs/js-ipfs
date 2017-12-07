@@ -13,8 +13,8 @@ function toKeyInfo (key) {
 
 module.exports = function key (self) {
   return {
-    gen: promisify((name, type, size, callback) => {
-      self._keychain.createKey(name, type, size, (err, key) => {
+    gen: promisify((name, opts, callback) => {
+      self._keychain.createKey(name, opts.type, opts.size, (err, key) => {
         if (err) return callback(err)
         callback(null, toKeyInfo(key))
       })
