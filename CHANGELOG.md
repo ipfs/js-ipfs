@@ -1,3 +1,13 @@
+<a name="0.27.1"></a>
+## [0.27.1](https://github.com/ipfs/js-ipfs/compare/v0.27.0...v0.27.1) (2017-12-07)
+
+
+### Bug Fixes
+
+* **pubsub.peers:** remove the requirement for a topic ([#1125](https://github.com/ipfs/js-ipfs/issues/1125)) ([5601c26](https://github.com/ipfs/js-ipfs/commit/5601c26))
+
+
+
 <a name="0.27.0"></a>
 # [0.27.0](https://github.com/ipfs/js-ipfs/compare/v0.26.0...v0.27.0) (2017-12-04)
 
