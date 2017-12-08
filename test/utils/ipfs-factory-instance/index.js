@@ -3,6 +3,8 @@
 const series = require('async/series')
 const each = require('async/each')
 const hat = require('hat')
+const os = require('os')
+const path = require('path')
 
 const defaultConfig = require('./default-config.json')
 const IPFS = require('../../../src/core')
@@ -30,7 +32,7 @@ function Factory () {
     }
 
     if (!repoPath) {
-      repoPath = '/tmp/.ipfs-' + hat()
+      repoPath = path.join(os.tmpdir(), '.ipfs-' + hat())
     }
 
     const config = Object.assign({}, defaultConfig, suppliedConfig)

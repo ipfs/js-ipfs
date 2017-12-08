@@ -111,7 +111,7 @@ describe('bitswap', function () {
 
   afterEach(function (done) {
     this.timeout(60 * 1000)
-    inProcNode.stop(() => done())
+    setTimeout(() => inProcNode.stop(() => done()), 500)
   })
 
   describe('transfer a block between', () => {
