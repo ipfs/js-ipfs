@@ -36,7 +36,10 @@ module.exports = function key (self) {
     }),
 
     rm: promisify((name, callback) => {
-      self._keychain.removeKey(name, callback)
+      self._keychain.removeKey(name, (err, key) => {
+        if (err) return callback(err)
+        callback(null, { Keys: [ toKeyInfo(key) ] })
+      })
     }),
 
     rename: promisify((oldName, newName, callback) => {

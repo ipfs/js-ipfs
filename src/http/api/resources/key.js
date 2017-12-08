@@ -37,8 +37,7 @@ exports.remove = (request, reply) => {
       return applyError(reply, err)
     }
 
-    // TODO: need key info from keychain
-    return reply({ Keys: [] })
+    return reply({ Keys: [ toKeyInfo(key) ] })
   })
 }
 
