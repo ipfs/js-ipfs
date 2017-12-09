@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   height: 100vh;
   font-family: sans-serif;
@@ -73,13 +77,11 @@ h3 {
 .ipfs {
   padding-bottom: 50px;
   border-radius: 1px;
-  box-sizing: border-box;
 }
 
 #details {
   padding: 10px;
   width: 100%;
-  box-sizing: border-box;
 }
 
 ul {
@@ -111,7 +113,6 @@ button {
   height: 40px;
   margin-left: 1%;
   font-size: 16px;
-  box-sizing: border-box;
 }
 
 .multihash-wrapper button {
@@ -162,7 +163,6 @@ input {
   padding: 7px;
   border-radius: 2px;
   font-size: 9px;
-	box-sizing: border-box;
 }
 
 textarea, input, button {
@@ -173,28 +173,13 @@ button:focus, input:focus {
   outline: 3px solid #6acad1;
 }
 
-.settings {
-  padding: 15px;
-}
-
-.left {
-  box-sizing: border-box;
-}
-
-.setting-item {
-  margin-top: 20px;
-}
-
 .left, .right {
   width: 48%;
   float: left;
   background-color: rgba(255, 255, 255, 0.05);
-  box-sizing: border-box;
   margin: 1%;
   padding: 10px;
 }
-
-
 
 #files {
   padding-top: 10px;
