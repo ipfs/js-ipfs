@@ -58,7 +58,7 @@ function start () {
       info = id
       updateView('ready', node)
       setInterval(refreshPeerList, 1000)
-      $peers.innerHTML = '<h2>peers</h2><i>waiting for peers...</i>'
+      $peers.classList.add('waiting')
     }))
   }
 }
@@ -188,9 +188,12 @@ function refreshPeerList () {
         return '<li>' + addr + '</li>'
       }).join('')
 
-    $peers.innerHTML = peers.length > 0
-      ? '<h2>Remote Peers</h2><ul>' + peersAsHtml + '</ul>'
-      : '<h2>Remote Peers</h2><i>Waiting for peers...</i>'
+    if (peers.length === 0) {
+      $peers.classList.add('waiting')
+    } else {
+      $peers.classList.remove('waiting')
+      console.log(peersAsHtml)
+    }
   })
 }
 
@@ -214,12 +217,10 @@ function onError (err) {
 window.onerror = onError
 
 function onDragEnter () {
-  $dragoverPopup.style.display = 'block'
   $body.classList.add('dragging')
 }
 
 function onDragExit () {
-  $dragoverPopup.style.display = 'none'
   $body.classList.remove('dragging')
 }
 
@@ -235,7 +236,7 @@ const states = {
     $addressesContainer.innerHTML = addressesHtml
     $allDisabledButtons.forEach(b => { b.disabled = false })
     $allDisabledInputs.forEach(b => { b.disabled = false })
-    $peers.className = ''
+    $peers.querySelector('h2').classList.remove('disabled')
     $details.className = ''
     $stopButton.disabled = false
     $startButton.disabled = true
