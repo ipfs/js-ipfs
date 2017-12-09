@@ -208,8 +208,9 @@ main {
   grid-area: errors;
   color: red;
   font-style: italic;
-  font-size: 0.8em;
+  font-size: 1.125em;
   display: block;
+  margin: 0;
 }
 
 #errors.hidden {
@@ -221,8 +222,4 @@ main {
   top: 1em;
   right: 1em;
   font-size: 0.625em;
-}
-
-.error {
-  font-size: 18px;
 }

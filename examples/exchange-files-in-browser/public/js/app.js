@@ -209,7 +209,7 @@ function onError (err) {
   }
 
   $errors.innerHTML = msg
-  $errors.className.remove('hidden')
+  $errors.classList.remove('hidden')
 }
 
 window.onerror = onError
