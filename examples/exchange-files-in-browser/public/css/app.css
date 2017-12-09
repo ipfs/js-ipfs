@@ -59,15 +59,23 @@ body.dragging .dragover-popup {
   padding: 10px;
 }
 
-
 header {
   text-align: center;
-  padding-top: 1em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3em 0;
 }
 
-header h1 {
-  margin-top: 20px;
-  margin-bottom: 20px;
+header a {
+  font-size: 0;
+  border-right: 2px solid white;
+  padding-right: 6px;
+  margin-right: 6px;
+}
+
+header img {
+  height: 40px;
 }
 
 #details {
