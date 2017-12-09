@@ -1,3 +1,8 @@
+<a name="0.27.2"></a>
+## [0.27.2](https://github.com/ipfs/js-ipfs/compare/v0.27.1...v0.27.2) (2017-12-09)
+
+
+
 <a name="0.27.1"></a>
 ## [0.27.1](https://github.com/ipfs/js-ipfs/compare/v0.27.0...v0.27.1) (2017-12-07)
 
