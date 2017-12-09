@@ -11,17 +11,16 @@
       <h1>Drop file to upload</h1>
     </div>
 
-    <div class="header">
+    <header>
       <a href="https://ipfs.io" target="_blank">
         <img src="ipfs-logo.svg" height="32" id="logo" alt="ipfs logo">
       </a>
       <h1>Transfer Files</h1>
-      <div class="note">
-        <i>P.S. drop files anywhere to upload them!</i>
-      </div>
-    </div>
 
-    <div class="wrapper">
+      <i id="note">P.S. drop files anywhere to upload them!</i>
+    </header>
+
+    <main>
       <div class="box" id="daemon">
         <div>
           <button id="start" type="button">Start IPFS</button>
@@ -52,14 +51,13 @@
         <div class="multihash-wrapper">
           <input disabled id="multihash" type="text" placeholder="Multihash"/>
           <button disabled id="cat" type="button">Fetch File</button>
-          <div class="clear"></div>
         </div>
         <div class="file-list"></div>
         <div id="filesStatus"></div>
       </div>
 
       <pre id="errors" class="hidden"></pre>
-    </div>
+    </main>
 
     <!-- The IPFS node module -->
     <!-- <script src="//unpkg.com/ipfs/dist/index.min.js"></script> -->

@@ -215,14 +215,12 @@ window.onerror = onError
 
 function onDragEnter () {
   $dragoverPopup.style.display = 'block'
-  $wrapper.style.filter = 'blur(5px)'
-  $header.style.filter = 'blur(5px)'
+  $body.classList.add('dragging')
 }
 
 function onDragExit () {
   $dragoverPopup.style.display = 'none'
-  $wrapper.style.filter = ''
-  $header.style.filter = ''
+  $body.classList.remove('dragging')
 }
 
 /*

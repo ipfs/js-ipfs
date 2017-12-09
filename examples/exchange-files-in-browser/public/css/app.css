@@ -22,13 +22,17 @@ body {
   pointer-events: none;
 }
 
-.wrapper {
-  width: 800px;
-  margin: 0 auto;
-  /* filter: blur(5px); */
+main,
+header {
+  filter: none;
 }
 
-.header {
+body.dragging main,
+body.dragging header {
+  filter: blur(5px);
+}
+
+header {
   text-align: center;
   /* filter: blur(5px); */
 }
@@ -56,8 +60,7 @@ h3 {
   font-weight: 700;
 }
 
-
-.header h1 {
+header h1 {
   margin-top: 20px;
   margin-bottom: 20px;
 }
@@ -170,7 +173,9 @@ button:focus, input:focus {
   outline: 3px solid #6acad1;
 }
 
-.wrapper {
+main {
+  width: 800px;
+  margin: 0 auto;
   display: grid;
   grid-gap: 1em;
   grid-template-columns: 50% 50%;
@@ -199,21 +204,11 @@ button:focus, input:focus {
   grid-area: errors;
 }
 
-.left.centered {
-  margin: 0px auto;
-  text-align: center;
-}
-
-.clear {
-  clear: both;
-}
-
-.note {
+#note {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 10px;
-  font-size: 10px;
+  top: 1em;
+  right: 1em;
+  font-size: 0.625em;
 }
 
 #peers i {
