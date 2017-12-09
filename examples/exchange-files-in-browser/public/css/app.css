@@ -149,13 +149,9 @@ button:hover {
   font-family: monospace
 }
 
+.disabled,
+input:disabled,
 button:disabled {
-  opacity: 0.2;
-}
-input:disabled {
-  opacity: 0.2;
-}
-.disabled {
   opacity: 0.2;
 }
 
@@ -177,25 +173,12 @@ button:focus, input:focus {
   outline: 3px solid #6acad1;
 }
 
-.picture {
-  margin-top: 1em;
-  width: 100%;
-  background-color: rgba(196, 196, 196, 0.1);
-  /*padding: 0.25em;*/
-  /*font-size: 1.2em;*/
-}
-
 .settings {
   padding: 15px;
 }
 
 .left {
   box-sizing: border-box;
-  /* background-color: red; */
-}
-
-.right {
-  /* background-color: green; */
 }
 
 .setting-item {
