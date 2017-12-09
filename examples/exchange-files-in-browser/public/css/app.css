@@ -62,6 +62,7 @@ body.dragging .dragover-popup {
 
 header {
   text-align: center;
+  padding-top: 1em;
 }
 
 header h1 {
@@ -180,6 +181,7 @@ main {
 
 #peers {
   grid-area: peers;
+  overflow-y: auto;
 }
 
 #peers i {
