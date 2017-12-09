@@ -69,20 +69,6 @@ header h1 {
   margin-bottom: 20px;
 }
 
-.hidden {
-  display: none;
-}
-
-.visible {
-  display: inherit;
-  font-size: 0.8em;
-}
-
-.error {
-  font-style: italic;
-  color: red;
-}
-
 #details {
   padding: 10px;
   width: 100%;
@@ -218,6 +204,14 @@ main {
 
 #errors {
   grid-area: errors;
+  color: red;
+  font-style: italic;
+  font-size: 0.8em;
+  display: block;
+}
+
+#errors.hidden {
+  display: none;
 }
 
 #note {

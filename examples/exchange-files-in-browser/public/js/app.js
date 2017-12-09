@@ -4,15 +4,13 @@
 const $startButton = document.querySelector('#start')
 const $stopButton = document.querySelector('#stop')
 const $peers = document.querySelector('#peers')
+const $peersList = $peers.querySelector('ul')
 const $errors = document.querySelector('#errors')
 const $filesStatus = document.querySelector('#filesStatus')
 const $multihashInput = document.querySelector('#multihash')
 const $catButton = document.querySelector('#cat')
 const $connectPeer = document.querySelector('input.connect-peer')
 const $connectPeerButton = document.querySelector('button.connect-peer')
-const $dragoverPopup = document.querySelector('.dragover-popup')
-const $wrapper = document.querySelector('.wrapper')
-const $header = document.querySelector('.header')
 const $body = document.querySelector('body')
 const $idContainer = document.querySelector('.id-container')
 const $addressesContainer = document.querySelector('.addresses-container')
@@ -91,7 +89,7 @@ function getFile () {
 
   $multihashInput.value = ''
 
-  $errors.className = 'hidden'
+  $errors.classList.add('hidden')
 
   if (!cid) { return console.log('no multihash was inserted') }
 
@@ -112,7 +110,7 @@ function getFile () {
  */
 function onDrop (event) {
   onDragExit()
-  $errors.className = 'hidden'
+  $errors.classList.add('hidden')
   event.preventDefault()
 
   if (!node) {
@@ -192,7 +190,7 @@ function refreshPeerList () {
       $peers.classList.add('waiting')
     } else {
       $peers.classList.remove('waiting')
-      console.log(peersAsHtml)
+      $peersList.innerHTML = peersAsHtml
     }
   })
 }
@@ -210,8 +208,8 @@ function onError (err) {
     msg = err
   }
 
-  $errors.innerHTML = '<span class="error">' + msg + '</span>'
-  $errors.className = 'error visible'
+  $errors.innerHTML = msg
+  $errors.className.remove('hidden')
 }
 
 window.onerror = onError
