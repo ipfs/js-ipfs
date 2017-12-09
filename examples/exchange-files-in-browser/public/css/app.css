@@ -8,6 +8,8 @@ body {
   color: white;
   background: linear-gradient(to bottom,#041727 0%,#062b3f 100%);
   pointer-events: auto;
+  padding: 0;
+  margin: 0;
 }
 
 .dragover-popup {
@@ -21,7 +23,7 @@ body {
 }
 
 .wrapper {
-  width: 900px;
+  width: 800px;
   margin: 0 auto;
   /* filter: blur(5px); */
 }
@@ -72,11 +74,6 @@ h3 {
 .error {
   font-style: italic;
   color: red;
-}
-
-.ipfs {
-  padding-bottom: 50px;
-  border-radius: 1px;
 }
 
 #details {
@@ -173,22 +170,36 @@ button:focus, input:focus {
   outline: 3px solid #6acad1;
 }
 
-.left, .right {
-  width: 48%;
-  float: left;
+.wrapper {
+  display: grid;
+  grid-gap: 1em;
+  grid-template-columns: 50% 50%;
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-areas: "daemon peers" "files files" "errors errors";
+}
+
+#daemon {
+  grid-area: daemon;
+}
+
+#peers {
+  grid-area: peers;
+}
+
+.box {
   background-color: rgba(255, 255, 255, 0.05);
-  margin: 1%;
   padding: 10px;
 }
 
 #files {
-  padding-top: 10px;
-  background-color: rgba(255, 255, 255, 0.05);
-  margin: 1%;
+  grid-area: files;
+}
+
+#errors {
+  grid-area: errors;
 }
 
 .left.centered {
-  float: none;
   margin: 0px auto;
   text-align: center;
 }

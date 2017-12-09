@@ -22,43 +22,43 @@
     </div>
 
     <div class="wrapper">
-      <div id="ipfs" class="ipfs" >
-        <div class="left">
-          <div id="buttons" class="buttons">
-            <button id="start" type="button">Start IPFS</button>
-            <button id="stop" disabled type="button">Stop IPFS</button>
-          </div>
-          <div id="details" class="disabled">
-            <h2>Your daemon</h2>
-            <h3>ID</h3>
-            <pre class='id-container'>N/A</pre>
-            <h3>Addresses</h3>
-            <ul class='addresses-container'>
-              <li>Not yet online</li>
-            </ul>
-          </div>
+      <div class="box" id="daemon">
+        <div>
+          <button id="start" type="button">Start IPFS</button>
+          <button id="stop" disabled type="button">Stop IPFS</button>
         </div>
-        <div class="right">
-          <div id="peers" class="disabled">
-            <h2>Peers</h2>
-          </div>
-          <div>
-            <input disabled type="text" class="connect-peer" placeholder="Multiaddr"/>
-            <button disabled class="connect-peer">Connect to peer</button>
-          </div>
+        <div id="details" class="disabled">
+          <h2>Your daemon</h2>
+          <h3>ID</h3>
+          <pre class='id-container'>N/A</pre>
+          <h3>Addresses</h3>
+          <ul class='addresses-container'>
+            <li>Not yet online</li>
+          </ul>
         </div>
-        <div class="clear"></div>
-        <div id="files">
-          <div class="multihash-wrapper">
-            <input disabled id="multihash" type="text" placeholder="Multihash"/>
-            <button disabled id="cat" type="button">Fetch File</button>
-            <div class="clear"></div>
-          </div>
-          <div class="file-list"></div>
-          <div id="filesStatus"></div>
-        </div>
-        <pre id="errors" class="hidden"></pre>
       </div>
+
+      <div class="box" id="peers">
+        <div class="disabled">
+          <h2>Peers</h2>
+        </div>
+        <div>
+          <input disabled type="text" class="connect-peer" placeholder="Multiaddr"/>
+          <button disabled class="connect-peer">Connect to peer</button>
+        </div>
+      </div>
+
+      <div class="box" id="files">
+        <div class="multihash-wrapper">
+          <input disabled id="multihash" type="text" placeholder="Multihash"/>
+          <button disabled id="cat" type="button">Fetch File</button>
+          <div class="clear"></div>
+        </div>
+        <div class="file-list"></div>
+        <div id="filesStatus"></div>
+      </div>
+
+      <pre id="errors" class="hidden"></pre>
     </div>
 
     <!-- The IPFS node module -->
