@@ -16,9 +16,7 @@ const $idContainer = document.querySelector('.id-container')
 const $addressesContainer = document.querySelector('.addresses-container')
 const $allDisabledButtons = document.querySelectorAll('button:disabled')
 const $allDisabledInputs = document.querySelectorAll('input:disabled')
-
 const $allDisabledElements = document.querySelectorAll('.disabled')
-
 const $filesList = document.querySelector('.file-list')
 
 let node
@@ -46,12 +44,12 @@ function start () {
     }
 
     // IFDEV: To test with latest js-ipfs
-    const IPFS = require('ipfs')
-    node = new IPFS(options)
+    // const IPFS = require('ipfs')
+    // node = new IPFS(options)
     // VEDIF
 
     // EXAMPLE
-    // node = new self.Ipfs(options)
+    node = new self.Ipfs(options)
 
     Buffer = node.types.Buffer
 
@@ -263,7 +261,6 @@ const startApplication = () => {
   // Setup event listeners
   $body.addEventListener('dragenter', onDragEnter)
   $body.addEventListener('drop', onDrop)
-  // TODO should work to hide the dragover-popup but doesn't...
   $body.addEventListener('dragleave', onDragExit)
 
   $startButton.addEventListener('click', start)
