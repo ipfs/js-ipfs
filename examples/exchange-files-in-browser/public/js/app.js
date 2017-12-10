@@ -23,6 +23,7 @@ const $filesList = document.querySelector('.file-list')
 
 let node
 let info
+let Buffer
 
 /*
  * Start and stop the IPFS node
@@ -51,6 +52,8 @@ function start () {
 
     // EXAMPLE
     // node = new self.Ipfs(options)
+
+    Buffer = node.types.Buffer
 
     node.once('start', () => node.id((err, id) => {
       if (err) { return onError(err) }
