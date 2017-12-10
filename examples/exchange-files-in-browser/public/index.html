@@ -12,51 +12,53 @@
     </div>
 
     <header>
-      <a href="https://ipfs.io" target="_blank">
-        <img src="ipfs-logo.svg" alt="ipfs logo">
-      </a>
-      <h1>Transfer Files</h1>
+      <h1>InterPlanetary File Exchange</h1>
 
       <i id="note">P.S. drop files anywhere to upload them!</i>
     </header>
 
     <main>
-      <div class="box" id="daemon">
+      <pre id="errors" class="hidden"></pre>
+
+      <div class="columns">
         <div>
-          <button id="start" type="button">Start IPFS</button>
-          <button id="stop" disabled type="button">Stop IPFS</button>
-        </div>
-        <div id="details" class="disabled">
+          <div class="buttons">
+            <button id="start" type="button">Start IPFS</button>
+            <button id="stop" disabled type="button">Stop IPFS</button>
+          </div>
+
           <h2>Your daemon</h2>
+
           <h3>ID</h3>
+
           <pre class='id-container'>N/A</pre>
+
           <h3>Addresses</h3>
+
           <ul class='addresses-container'>
             <li>Not yet online</li>
           </ul>
-        </div>
-      </div>
 
-      <div class="box" id="peers">
-        <h2 class="disabled">Peers</h2>
-        <i>Waiting for peers...</i>
-        <ul></ul>
+          <div id="peers">
+            <h2>Peers</h2>
+
+            <input disabled type="text" id="peer-input" placeholder="Multiaddr"/>
+            <button disabled id="peer-btn" class="full">Connect to peer</button>
+
+            <i>Waiting for peers...</i>
+
+            <ul></ul>
+          </div>
+        </div>
+
         <div>
-          <input disabled type="text" class="connect-peer" placeholder="Multiaddr"/>
-          <button disabled class="connect-peer">Connect to peer</button>
-        </div>
-      </div>
-
-      <div class="box" id="files">
-        <div class="multihash-wrapper">
+          <h2>Files</h2>
           <input disabled id="multihash" type="text" placeholder="Multihash"/>
-          <button disabled id="cat" type="button">Fetch File</button>
-        </div>
-        <div class="file-list"></div>
-        <div id="filesStatus"></div>
-      </div>
+          <button disabled id="cat" type="button" class="full">Fetch File</button>
 
-      <pre id="errors" class="hidden"></pre>
+          <div id="filesStatus"></div>
+          <div class="file-list"></div>
+        </div>
     </main>
 
     <!-- The IPFS node module -->

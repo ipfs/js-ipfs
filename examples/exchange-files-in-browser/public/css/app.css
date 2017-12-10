@@ -13,7 +13,7 @@ body {
 }
 
 h1, h2, h3 {
-  margin: 0px;
+  margin: 0;
 }
 
 h1 {
@@ -55,9 +55,7 @@ body.dragging .dragover-popup {
   display: block;
 }
 
-#filesStatus {
-  padding: 10px;
-}
+#filesStatus {word-wrap: break-word;margin: 1em 0;}
 
 header {
   text-align: center;
@@ -65,22 +63,6 @@ header {
   justify-content: center;
   align-items: center;
   padding: 3em 0;
-}
-
-header a {
-  font-size: 0;
-  border-right: 2px solid white;
-  padding-right: 6px;
-  margin-right: 6px;
-}
-
-header img {
-  height: 40px;
-}
-
-#details {
-  padding: 10px;
-  width: 100%;
 }
 
 ul {
@@ -103,40 +85,23 @@ button {
   font-size: 15px;
   padding: 10px 25px 10px 25px;
   border-radius: 2px;
-  margin: 5px;
-}
-
-.multihash-wrapper {
-  display: flex;
-  justify-content: space-between;
-}
-
-.multihash-wrapper input {
-  width: 80%;
-  height: 40px;
-  margin-left: 1%;
-  font-size: 16px;
-}
-
-.multihash-wrapper button {
-  width: 20%;
-  margin: 0 0 0 1em;
+  margin: 1em;
 }
 
 .file-list {
   display: block;
-  margin: 10px;
+  margin: 1em 0;
 }
 
 .file-list a {
-  font-size: 16px;
   color: white;
   display: block;
+  word-wrap: break-word;
 }
 
-button.connect-peer {
-  margin: 0px;
-  margin-top: 2px;
+button.full {
+  margin: 0;
+  margin-top: 1em;
   width: 100%;
 }
 
@@ -158,38 +123,57 @@ button:disabled {
 
 input {
   width: 100%;
-  border: 2px solid #444;
+  border: 2px solid rgba(0,0,0,0.2);
   color: black;
-  padding: 7px;
+  padding: 0.7em;
   border-radius: 2px;
-  font-size: 9px;
 }
 
-textarea, input, button {
+input:hover, input:focus, input:active {
+  border-color: #6acad1;
+}
+
+input, button {
   outline: none;
-}
-
-button:focus, input:focus {
-  outline: 3px solid #6acad1;
 }
 
 main {
   width: 800px;
   margin: 0 auto;
-  display: grid;
-  grid-gap: 1em;
-  grid-template-columns: 50% 50%;
-  grid-template-rows: 20em auto auto;
-  grid-template-areas: "daemon peers" "files files" "errors errors";
 }
 
-#daemon {
-  grid-area: daemon;
+.buttons,
+.columns {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
-#peers {
-  grid-area: peers;
-  overflow-y: auto;
+.buttons > button,
+.columns > div {
+  width: calc(50% - 0.5em);
+}
+
+.buttons > button {
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.columns > div {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 1em;
+}
+
+main h2 {
+  display: block;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  border-right: 0;
+  border-left: 0;
+  text-align: center;
+  line-height: 1;
+  padding-bottom: 0.5em;
+  margin-bottom: 1em;
 }
 
 #peers i {
@@ -201,15 +185,6 @@ main {
 
 #peers.waiting i {
   display: block;
-}
-
-.box {
-  background-color: rgba(255, 255, 255, 0.05);
-  padding: 10px;
-}
-
-#files {
-  grid-area: files;
 }
 
 #errors {

@@ -9,8 +9,8 @@ const $errors = document.querySelector('#errors')
 const $filesStatus = document.querySelector('#filesStatus')
 const $multihashInput = document.querySelector('#multihash')
 const $catButton = document.querySelector('#cat')
-const $connectPeer = document.querySelector('input.connect-peer')
-const $connectPeerButton = document.querySelector('button.connect-peer')
+const $connectPeer = document.querySelector('#peer-input')
+const $connectPeerButton = document.querySelector('#peer-btn')
 const $body = document.querySelector('body')
 const $idContainer = document.querySelector('.id-container')
 const $addressesContainer = document.querySelector('.addresses-container')
@@ -56,7 +56,7 @@ function start () {
       info = id
       updateView('ready', node)
       setInterval(refreshPeerList, 1000)
-      $peers.classList.add('waiting')
+      // $peers.classList.add('waiting')
     }))
   }
 }
@@ -187,9 +187,9 @@ function refreshPeerList () {
       }).join('')
 
     if (peers.length === 0) {
-      $peers.classList.add('waiting')
+      // $peers.classList.add('waiting')
     } else {
-      $peers.classList.remove('waiting')
+      // $peers.classList.remove('waiting')
       $peersList.innerHTML = peersAsHtml
     }
   })
@@ -234,8 +234,8 @@ const states = {
     $addressesContainer.innerHTML = addressesHtml
     $allDisabledButtons.forEach(b => { b.disabled = false })
     $allDisabledInputs.forEach(b => { b.disabled = false })
-    $peers.querySelector('h2').classList.remove('disabled')
-    $details.className = ''
+    // $peers.querySelector('h2').classList.remove('disabled')
+    // $details.className = ''
     $stopButton.disabled = false
     $startButton.disabled = true
   },
