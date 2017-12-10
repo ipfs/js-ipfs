@@ -14,9 +14,11 @@ const $connectPeerButton = document.querySelector('#peer-btn')
 const $body = document.querySelector('body')
 const $idContainer = document.querySelector('.id-container')
 const $addressesContainer = document.querySelector('.addresses-container')
-const $details = document.querySelector('#details')
 const $allDisabledButtons = document.querySelectorAll('button:disabled')
 const $allDisabledInputs = document.querySelectorAll('input:disabled')
+
+const $allDisabledElements = document.querySelectorAll('.disabled')
+
 const $filesList = document.querySelector('.file-list')
 
 let node
@@ -235,7 +237,9 @@ const states = {
     $allDisabledButtons.forEach(b => { b.disabled = false })
     $allDisabledInputs.forEach(b => { b.disabled = false })
     // $peers.querySelector('h2').classList.remove('disabled')
-    // $details.className = ''
+
+    $allDisabledElements.forEach(el => { el.classList.remove('disabled') })
+
     $stopButton.disabled = false
     $startButton.disabled = true
   },

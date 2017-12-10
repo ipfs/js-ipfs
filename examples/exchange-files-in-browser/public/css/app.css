@@ -66,15 +66,15 @@ header {
 }
 
 ul {
-  margin: 0px; padding: 0px;
+  margin: 0;
+  padding: 0;
   list-style: none;
-  font-size: 11px;
 }
 
 ul li {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  font-size: 9px;
+  margin: 1em 0;
+  font-size: 0.7em;
+  font-family: monospace;
   word-wrap: break-word;
 }
 
@@ -82,9 +82,9 @@ button {
   background-color: rgba(0,0,0,0.2);
   color: #6acad1;
   border: 2px solid #6acad1;
-  font-size: 15px;
-  padding: 10px 25px 10px 25px;
-  border-radius: 2px;
+  font-size: 1em;
+  padding: 0.625em 1.5em;
+  border-radius: 0.125em;
   margin: 1em;
 }
 
@@ -100,8 +100,8 @@ button {
 }
 
 button.full {
-  margin: 0;
-  margin-top: 1em;
+  margin-right: 0;
+  margin-left: 0;
   width: 100%;
 }
 
@@ -115,7 +115,7 @@ button:hover {
   font-family: monospace
 }
 
-.disabled,
+.disabled *,
 input:disabled,
 button:disabled {
   opacity: 0.2;
@@ -155,23 +155,21 @@ main {
 }
 
 .buttons > button {
-  margin-top: 0;
-  margin-left: 0;
-  margin-right: 0;
+  margin: 0;
 }
 
-.columns > div {
+.box {
   background-color: rgba(255, 255, 255, 0.05);
   padding: 1em;
+  margin-bottom: 1em;
 }
 
-main h2 {
+.box > h2 {
   display: block;
   border-bottom: 2px solid rgba(255, 255, 255, 0.1);
   border-right: 0;
   border-left: 0;
   text-align: center;
-  line-height: 1;
   padding-bottom: 0.5em;
   margin-bottom: 1em;
 }

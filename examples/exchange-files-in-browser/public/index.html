@@ -22,24 +22,26 @@
 
       <div class="columns">
         <div>
-          <div class="buttons">
+          <div class="box buttons">
             <button id="start" type="button">Start IPFS</button>
             <button id="stop" disabled type="button">Stop IPFS</button>
           </div>
 
-          <h2>Your daemon</h2>
+          <div class="disabled box">
+            <h2>Your daemon</h2>
+  
+            <h3>ID</h3>
+  
+            <pre class='id-container'>N/A</pre>
+  
+            <h3>Addresses</h3>
+  
+            <ul class='addresses-container'>
+              <li>Not yet online</li>
+            </ul>
+          </div>
 
-          <h3>ID</h3>
-
-          <pre class='id-container'>N/A</pre>
-
-          <h3>Addresses</h3>
-
-          <ul class='addresses-container'>
-            <li>Not yet online</li>
-          </ul>
-
-          <div id="peers">
+          <div class="box disabled" id="peers">
             <h2>Peers</h2>
 
             <input disabled type="text" id="peer-input" placeholder="Multiaddr"/>
@@ -51,8 +53,9 @@
           </div>
         </div>
 
-        <div>
+        <div class="box disabled">
           <h2>Files</h2>
+
           <input disabled id="multihash" type="text" placeholder="Multihash"/>
           <button disabled id="cat" type="button" class="full">Fetch File</button>
 
