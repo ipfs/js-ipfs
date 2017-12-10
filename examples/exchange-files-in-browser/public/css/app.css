@@ -105,6 +105,7 @@ button {
   color: white;
   display: block;
   word-wrap: break-word;
+  margin: 1em 0;
 }
 
 button.full {
