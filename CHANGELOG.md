@@ -1,3 +1,13 @@
+<a name="0.36.13"></a>
+## [0.36.13](https://github.com/ipfs/interface-ipfs-core/compare/v0.36.12...v0.36.13) (2017-12-10)
+
+
+### Features
+
+* key tests ([#180](https://github.com/ipfs/interface-ipfs-core/issues/180)) ([b75e13b](https://github.com/ipfs/interface-ipfs-core/commit/b75e13b))
+
+
+
 <a name="0.36.12"></a>
 ## [0.36.12](https://github.com/ipfs/interface-ipfs-core/compare/v0.36.11...v0.36.12) (2017-12-05)
 
