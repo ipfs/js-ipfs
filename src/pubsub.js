@@ -142,6 +142,58 @@ module.exports = (common) => {
           })
         })
 
+        it('to one topic with Promise', (done) => {
+          const check = makeCheck(2, done)
+          const topic = getTopic()
+
+          const handler = (msg) => {
+            expect(msg.data.toString()).to.equal('hi')
+            expect(msg).to.have.property('seqno')
+            expect(Buffer.isBuffer(msg.seqno)).to.eql(true)
+            expect(msg).to.have.property('topicIDs').eql([topic])
+            expect(msg).to.have.property('from', ipfs1.peerId.id)
+
+            ipfs1.pubsub.unsubscribe(topic, handler)
+
+            ipfs1.pubsub.ls((err, topics) => {
+              expect(err).to.not.exist()
+              expect(topics).to.be.empty()
+              check()
+            })
+          }
+
+          ipfs1.pubsub
+            .subscribe(topic, handler)
+            .then(() => ipfs1.pubsub.publish(topic, Buffer.from('hi'), check))
+            .catch((err) => expect(err).to.not.exist())
+        })
+
+        it('to one topic with options and Promise', (done) => {
+          const check = makeCheck(2, done)
+          const topic = getTopic()
+
+          const handler = (msg) => {
+            expect(msg.data.toString()).to.equal('hi')
+            expect(msg).to.have.property('seqno')
+            expect(Buffer.isBuffer(msg.seqno)).to.eql(true)
+            expect(msg).to.have.property('topicIDs').eql([topic])
+            expect(msg).to.have.property('from', ipfs1.peerId.id)
+
+            ipfs1.pubsub.unsubscribe(topic, handler)
+
+            ipfs1.pubsub.ls((err, topics) => {
+              expect(err).to.not.exist()
+              expect(topics).to.be.empty()
+              check()
+            })
+          }
+
+          ipfs1.pubsub
+            .subscribe(topic, {}, handler)
+            .then(() => ipfs1.pubsub.publish(topic, Buffer.from('hi'), check))
+            .catch((err) => expect(err).to.not.exist())
+        })
+
         it('attaches multiple event listeners', (done) => {
           const topic = getTopic()
 
