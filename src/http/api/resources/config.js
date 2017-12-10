@@ -59,8 +59,9 @@ exports.getOrSet = {
     const value = request.pre.args.value
     const ipfs = request.server.app.ipfs
 
-    if (typeof value === 'object' &&
-        value.type === 'Buffer') {
+    // check that value exists - typeof null === 'object'
+    if (value && (typeof value === 'object' &&
+        value.type === 'Buffer')) {
       return reply({
         Message: 'Invalid value type',
         Code: 0

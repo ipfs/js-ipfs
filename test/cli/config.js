@@ -45,6 +45,12 @@ describe('config', () => runOnAndOff((thing) => {
       })
     })
 
+    it('set a config key with null', () => {
+      return ipfs('config foo null --json').then((out) => {
+        expect(updatedConfig().foo).to.equal(null)
+      })
+    })
+
     it('set a config key with json', () => {
       return ipfs('config foo {"bar":0} --json').then((out) => {
         expect(updatedConfig().foo).to.deep.equal({ bar: 0 })
