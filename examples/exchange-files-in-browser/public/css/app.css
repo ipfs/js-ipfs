@@ -199,7 +199,7 @@ main {
   font-style: italic;
   font-size: 1.125em;
   display: block;
-  margin: 0;
+  margin: 0 0 1em;
 }
 
 #errors.hidden {
