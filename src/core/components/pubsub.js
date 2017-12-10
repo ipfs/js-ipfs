@@ -24,7 +24,7 @@ module.exports = function pubsub (self) {
         }
 
         self._pubsub.on(topic, handler)
-        setImmediate(() => callback())
+        setImmediate(cb)
       }
 
       if (!callback) {
