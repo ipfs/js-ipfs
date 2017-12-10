@@ -58,7 +58,7 @@ function start () {
       info = id
       updateView('ready', node)
       setInterval(refreshPeerList, 1000)
-      // $peers.classList.add('waiting')
+      $peers.classList.add('waiting')
     }))
   }
 }
@@ -189,9 +189,9 @@ function refreshPeerList () {
       }).join('')
 
     if (peers.length === 0) {
-      // $peers.classList.add('waiting')
+      $peers.classList.add('waiting')
     } else {
-      // $peers.classList.remove('waiting')
+      $peers.classList.remove('waiting')
       $peersList.innerHTML = peersAsHtml
     }
   })
@@ -236,10 +236,7 @@ const states = {
     $addressesContainer.innerHTML = addressesHtml
     $allDisabledButtons.forEach(b => { b.disabled = false })
     $allDisabledInputs.forEach(b => { b.disabled = false })
-    // $peers.querySelector('h2').classList.remove('disabled')
-
     $allDisabledElements.forEach(el => { el.classList.remove('disabled') })
-
     $stopButton.disabled = false
     $startButton.disabled = true
   },
