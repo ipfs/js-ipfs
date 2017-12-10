@@ -12,8 +12,7 @@
     </div>
 
     <header>
-      <h1>InterPlanetary File Exchange</h1>
-
+      <h1>IPFS | InterPlanetary File Exchange</h1>
       <i id="note">P.S. drop files anywhere to upload them!</i>
     </header>
 
@@ -22,19 +21,20 @@
 
       <div class="columns">
         <div>
-          <div class="box buttons">
-            <button id="start" type="button">Start IPFS</button>
-            <button id="stop" disabled type="button">Stop IPFS</button>
-          </div>
-
-          <div class="disabled box">
+          <div class="box">
             <h2>Your daemon</h2>
-            <h3>ID</h3>
-            <pre class='id-container'>N/A</pre>
-            <h3>Addresses</h3>
-            <ul class='addresses-container'>
-              <li>Not yet online</li>
-            </ul>
+            <div class="buttons">
+              <button id="start" type="button">Start IPFS</button>
+              <button id="stop" disabled type="button">Stop IPFS</button>
+            </div>
+            <div class="disabled">
+              <h3>ID</h3>
+              <pre class='id-container'>N/A</pre>
+              <h3>Addresses</h3>
+              <ul class='addresses-container'>
+                <li>Not yet online</li>
+              </ul>
+            </div>
           </div>
 
           <div class="box disabled" id="peers">

@@ -147,7 +147,8 @@ input, button {
 }
 
 main {
-  width: 800px;
+  width: 90%;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -164,7 +165,7 @@ main {
 }
 
 .buttons > button {
-  margin: 0;
+  margin: 0 0 1em;
 }
 
 .box {
