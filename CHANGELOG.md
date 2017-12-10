@@ -1,3 +1,14 @@
+<a name="0.27.3"></a>
+## [0.27.3](https://github.com/ipfs/js-ipfs/compare/v0.27.2...v0.27.3) (2017-12-10)
+
+
+### Bug Fixes
+
+* config handler should check if value is null ([#1134](https://github.com/ipfs/js-ipfs/issues/1134)) ([0444c42](https://github.com/ipfs/js-ipfs/commit/0444c42))
+* **pubsub:** subscribe promises ([#1141](https://github.com/ipfs/js-ipfs/issues/1141)) ([558017d](https://github.com/ipfs/js-ipfs/commit/558017d))
+
+
+
 <a name="0.27.2"></a>
 ## [0.27.2](https://github.com/ipfs/js-ipfs/compare/v0.27.1...v0.27.2) (2017-12-09)
 
