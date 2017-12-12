@@ -137,10 +137,19 @@ module.exports = function files (self) {
       pull.collect((err, files) => {
         if (err) { d.end(err) }
         if (!files || !files.length) {
-          return d.end(new Error('No such file'))
+          return d.abort(new Error('No such file'))
         }
 
-        const content = files[files.length - 1].content
+        if (files.length > 1) {
+          files = files.filter((file) => file.path === ipfsPath)
+        }
+
+        const file = files[0]
+
+        const content = file.content
+        if (!content && file.type === 'dir') {
+          return d.abort(new Error('this dag node is a directory'))
+        }
         d.resolve(content)
       })
     )
@@ -206,9 +215,8 @@ module.exports = function files (self) {
     addPullStream: _addPullStream,
 
     cat: promisify((ipfsPath, callback) => {
-      const p = _catPullStream(ipfsPath)
       pull(
-        p,
+        _catPullStream(ipfsPath),
         pull.collect((err, buffers) => {
           if (err) { return callback(err) }
           callback(null, Buffer.concat(buffers))
@@ -216,11 +224,7 @@ module.exports = function files (self) {
       )
     }),
 
-    catReadableStream: (ipfsPath) => {
-      const p = _catPullStream(ipfsPath)
-
-      return toStream.source(p)
-    },
+    catReadableStream: (ipfsPath) => toStream.source(_catPullStream(ipfsPath)),
 
     catPullStream: _catPullStream,
 
