@@ -431,6 +431,31 @@ module.exports = (common) => {
             }
           })
       })
+
+      it('errors on unknown path', () => {
+        return ipfs.files.cat(smallFile.cid + '/does-not-exist')
+          .catch((err) => {
+            expect(err).to.exist()
+            expect(err.message).to.contain('No such file')
+          })
+      })
+
+      it('errors on dir path', () => {
+        const file = { path: 'dir/testfile.txt', content: smallFile.data }
+
+        return ipfs.files.add([file])
+          .then((filesAdded) => {
+            expect(filesAdded.length).to.equal(2)
+            const files = filesAdded.filter((file) => file.path === 'dir')
+            expect(files.length).to.equal(1)
+            const dir = files[0]
+            return ipfs.files.cat(dir.hash)
+              .catch((err) => {
+                expect(err).to.exist()
+                expect(err.message).to.contain('this dag node is a directory')
+              })
+          })
+      })
     })
 
     describe('.catReadableStream', () => {
