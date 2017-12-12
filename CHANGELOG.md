@@ -1,3 +1,13 @@
+<a name="0.36.15"></a>
+## [0.36.15](https://github.com/ipfs/interface-ipfs-core/compare/v0.36.14...v0.36.15) (2017-12-12)
+
+
+### Bug Fixes
+
+* cat not found message in go-ipfs ([#183](https://github.com/ipfs/interface-ipfs-core/issues/183)) ([8e3645e](https://github.com/ipfs/interface-ipfs-core/commit/8e3645e))
+
+
+
 <a name="0.36.14"></a>
 ## [0.36.14](https://github.com/ipfs/interface-ipfs-core/compare/v0.36.13...v0.36.14) (2017-12-12)
 
