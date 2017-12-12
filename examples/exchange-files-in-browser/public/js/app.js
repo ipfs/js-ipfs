@@ -6,7 +6,8 @@ const $stopButton = document.querySelector('#stop')
 const $peers = document.querySelector('#peers')
 const $peersList = $peers.querySelector('ul')
 const $errors = document.querySelector('#errors')
-const $filesStatus = document.querySelector('#filesStatus')
+const $fileHistory = document.querySelector('#file-history tbody')
+const $fileStatus = document.querySelector('#file-status')
 const $multihashInput = document.querySelector('#multihash')
 const $catButton = document.querySelector('#cat')
 const $connectPeer = document.querySelector('#peer-input')
@@ -17,7 +18,6 @@ const $addressesContainer = document.querySelector('.addresses-container')
 const $allDisabledButtons = document.querySelectorAll('button:disabled')
 const $allDisabledInputs = document.querySelectorAll('input:disabled')
 const $allDisabledElements = document.querySelectorAll('.disabled')
-const $filesList = document.querySelector('.file-list')
 
 let node
 let info
@@ -68,23 +68,24 @@ function stop () {
   window.location.href = window.location.href // refresh page
 }
 
-/*
- * Fetch files and display them to the user
- */
+function appendFile (hash, size, data) {
+  const row = document.createElement('tr')
+  row.innerHTML = `<td>${hash}</td><td>${size}</td>`
+  row.addEventListener('click', (event) => {
+    event.preventDefault()
 
-function createFileBlob (data, multihash) {
-  const file = new window.Blob([data], { type: 'application/octet-binary' })
-  const fileUrl = window.URL.createObjectURL(file)
+    const file = new window.Blob([data], { type: 'application/octet-binary' })
+    const url = window.URL.createObjectURL(file)
+    const link = document.createElement('a')
 
-  const listItem = document.createElement('div')
-  const link = document.createElement('a')
-  link.setAttribute('href', fileUrl)
-  link.setAttribute('download', multihash)
-  const date = (new Date()).toLocaleTimeString()
+    link.setAttribute('href', url)
+    link.setAttribute('download', hash)
+    link.click()
 
-  link.innerText = date + ' - ' + multihash + ' - Size: ' + file.size
-  listItem.appendChild(link)
-  return listItem
+    window.URL.revokeObjectURL(url)
+  })
+
+  $fileHistory.insertBefore(row, $fileHistory.firstChild)
 }
 
 function getFile () {
@@ -101,8 +102,7 @@ function getFile () {
 
     files.forEach((file) => {
       if (file.content) {
-        const listItem = createFileBlob(file.content, cid)
-        $filesList.insertBefore(listItem, $filesList.firstChild)
+        appendFile(cid, file.size, file.content)
       }
     })
   })
@@ -138,12 +138,16 @@ function onDrop (event) {
   files.forEach((file) => {
     readFileContents(file)
       .then((buffer) => {
-        node.files.add(Buffer.from(buffer), (err, filesAdded) => {
+        node.files.add({
+          path: file.name,
+          content: Buffer.from(buffer)
+        }, (err, filesAdded) => {
           if (err) { return onError(err) }
 
-          const fl = filesAdded[0]
-          $multihashInput.value = fl.hash
-          $filesStatus.innerHTML = `Added ${file.name} as ${fl.hash}`
+          console.log(filesAdded)
+
+          $multihashInput.value = filesAdded[0].hash
+          $fileStatus.innerHTML = `${file.name} added! Try to hit 'Fetch' button!`
         })
       })
       .catch(onError)

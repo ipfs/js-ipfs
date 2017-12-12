@@ -51,9 +51,18 @@
 
           <input disabled id="multihash" type="text" placeholder="Multihash"/>
           <button disabled id="cat" type="button" class="full">Fetch File</button>
+          
+          <p id="file-status"></p>
 
-          <div id="filesStatus"></div>
-          <div class="file-list"></div>
+          <table id="file-history">
+            <thead>
+              <tr>
+                <th>CID</th>
+                <th>Size</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
         </div>
     </main>
 

@@ -63,8 +63,6 @@ body.dragging .dragover-popup {
   display: block;
 }
 
-#filesStatus {word-wrap: break-word;margin: 1em 0;}
-
 header {
   text-align: center;
   display: flex;
@@ -94,18 +92,6 @@ button {
   padding: 0.625em 1.5em;
   border-radius: 0.125em;
   margin: .5em 0;
-}
-
-.file-list {
-  display: block;
-  margin: 1em 0;
-}
-
-.file-list a {
-  color: white;
-  display: block;
-  word-wrap: break-word;
-  margin: 1em 0;
 }
 
 button.full {
@@ -213,4 +199,46 @@ main {
   top: 1em;
   right: 1em;
   font-size: 0.625em;
+}
+
+#file-status {
+  font-style: italic;
+  color: cyan;
+  font-size: 0.8em;
+  margin: 1em 0;
+}
+
+table {
+  width: 100%;
+  margin: 1em 0;
+  word-break: break-all;
+  border-collapse: collapse;
+}
+
+table thead {
+  background-color: rgba(255, 255, 255, 0.1);
+  font-weight: normal
+}
+
+table th, table td {
+  padding: 0.5em 0;
+}
+
+table td {
+  cursor: pointer;
+}
+
+table td:last-child,
+table th:last-child {
+  width: 20%;
+  text-align: center;
+}
+
+table td:first-child {
+  width: 80%;
+  font-family: monospace;
+}
+
+table tr:hover {
+  background-color: rgba(0, 0, 0, 0.2)
 }
