@@ -1,3 +1,14 @@
+<a name="0.27.4"></a>
+## [0.27.4](https://github.com/ipfs/js-ipfs/compare/v0.27.3...v0.27.4) (2017-12-13)
+
+
+### Bug Fixes
+
+* files.cat: detect and handle rrors when unknown path and cat dir ([#1143](https://github.com/ipfs/js-ipfs/issues/1143)) ([120d291](https://github.com/ipfs/js-ipfs/commit/120d291))
+* fix bug introduced by 1143 ([#1146](https://github.com/ipfs/js-ipfs/issues/1146)) ([12cdc08](https://github.com/ipfs/js-ipfs/commit/12cdc08))
+
+
+
 <a name="0.27.3"></a>
 ## [0.27.3](https://github.com/ipfs/js-ipfs/compare/v0.27.2...v0.27.3) (2017-12-10)
 
