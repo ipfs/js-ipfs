@@ -79,7 +79,7 @@ function appendFile (name, hash, size, data) {
     const link = document.createElement('a')
 
     link.setAttribute('href', url)
-    link.setAttribute('download', hash)
+    link.setAttribute('download', name)
     link.click()
 
     window.URL.revokeObjectURL(url)
