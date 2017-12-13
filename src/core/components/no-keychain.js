@@ -5,8 +5,6 @@ function fail () {
 }
 
 class NoKeychain {
-  constructor () { }
-
   static get options () { return {} }
 
   createKey () { fail() }
@@ -17,7 +15,7 @@ class NoKeychain {
   exportKey () { fail() }
   importKey () { fail() }
   importPeer () { fail() }
-    
+
   get cms () { fail() }
 }
 
