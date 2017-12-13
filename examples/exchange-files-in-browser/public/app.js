@@ -72,10 +72,10 @@ function appendFile (name, hash, size, data) {
   const file = new window.Blob([data], { type: 'application/octet-binary' })
   const url = window.URL.createObjectURL(file)
   const row = document.createElement('tr')
-  
+
   const nameCell = document.createElement('td')
   nameCell.innerHTML = name
-  
+
   const hashCell = document.createElement('td')
   const link = document.createElement('a')
   link.innerHTML = hash
