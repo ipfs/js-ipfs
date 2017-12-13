@@ -63,10 +63,12 @@ exports.cat = {
     ipfs.files.cat(key, (err, stream) => {
       if (err) {
         log.error(err)
-        return reply({
-          Message: 'Failed to cat file: ' + err,
-          Code: 0
-        }).code(500)
+        if (err.message === 'No such file') {
+          reply({Message: 'No such file'}).code(500)
+        } else {
+          reply({Message: 'Failed to cat file: ' + err, Code: 0}).code(500)
+        }
+        return
       }
 
       // hapi is not very clever and throws if no
