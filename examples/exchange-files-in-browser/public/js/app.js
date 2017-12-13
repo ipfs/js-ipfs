@@ -4,25 +4,24 @@
 const $startButton = document.querySelector('#start')
 const $stopButton = document.querySelector('#stop')
 const $peers = document.querySelector('#peers')
+const $peersList = $peers.querySelector('ul')
 const $errors = document.querySelector('#errors')
-const $filesStatus = document.querySelector('#filesStatus')
+const $fileHistory = document.querySelector('#file-history tbody')
+const $fileStatus = document.querySelector('#file-status')
 const $multihashInput = document.querySelector('#multihash')
 const $catButton = document.querySelector('#cat')
-const $connectPeer = document.querySelector('input.connect-peer')
-const $connectPeerButton = document.querySelector('button.connect-peer')
-const $dragoverPopup = document.querySelector('.dragover-popup')
-const $wrapper = document.querySelector('.wrapper')
-const $header = document.querySelector('.header')
+const $connectPeer = document.querySelector('#peer-input')
+const $connectPeerButton = document.querySelector('#peer-btn')
 const $body = document.querySelector('body')
 const $idContainer = document.querySelector('.id-container')
 const $addressesContainer = document.querySelector('.addresses-container')
-const $details = document.querySelector('#details')
 const $allDisabledButtons = document.querySelectorAll('button:disabled')
 const $allDisabledInputs = document.querySelectorAll('input:disabled')
-const $filesList = document.querySelector('.file-list')
+const $allDisabledElements = document.querySelectorAll('.disabled')
 
 let node
 let info
+let Buffer
 
 /*
  * Start and stop the IPFS node
@@ -45,12 +44,14 @@ function start () {
     }
 
     // IFDEV: To test with latest js-ipfs
-    const IPFS = require('ipfs')
-    node = new IPFS(options)
+    // const IPFS = require('ipfs')
+    // node = new IPFS(options)
     // VEDIF
 
     // EXAMPLE
-    // node = new self.Ipfs(options)
+    node = new self.Ipfs(options)
+
+    Buffer = node.types.Buffer
 
     node.once('start', () => node.id((err, id) => {
       if (err) { return onError(err) }
@@ -58,7 +59,7 @@ function start () {
       info = id
       updateView('ready', node)
       setInterval(refreshPeerList, 1000)
-      $peers.innerHTML = '<h2>peers</h2><i>waiting for peers...</i>'
+      $peers.classList.add('waiting')
     }))
   }
 }
@@ -67,23 +68,29 @@ function stop () {
   window.location.href = window.location.href // refresh page
 }
 
-/*
- * Fetch files and display them to the user
- */
-
-function createFileBlob (data, multihash) {
+function appendFile (name, hash, size, data) {
   const file = new window.Blob([data], { type: 'application/octet-binary' })
-  const fileUrl = window.URL.createObjectURL(file)
-
-  const listItem = document.createElement('div')
+  const url = window.URL.createObjectURL(file)
+  const row = document.createElement('tr')
+  
+  const nameCell = document.createElement('td')
+  nameCell.innerHTML = name
+  
+  const hashCell = document.createElement('td')
   const link = document.createElement('a')
-  link.setAttribute('href', fileUrl)
-  link.setAttribute('download', multihash)
-  const date = (new Date()).toLocaleTimeString()
+  link.innerHTML = hash
+  link.setAttribute('href', url)
+  link.setAttribute('download', name)
+  hashCell.appendChild(link)
 
-  link.innerText = date + ' - ' + multihash + ' - Size: ' + file.size
-  listItem.appendChild(link)
-  return listItem
+  const sizeCell = document.createElement('td')
+  sizeCell.innerText = size
+
+  row.appendChild(nameCell)
+  row.appendChild(hashCell)
+  row.appendChild(sizeCell)
+
+  $fileHistory.insertBefore(row, $fileHistory.firstChild)
 }
 
 function getFile () {
@@ -91,7 +98,7 @@ function getFile () {
 
   $multihashInput.value = ''
 
-  $errors.className = 'hidden'
+  $errors.classList.add('hidden')
 
   if (!cid) { return console.log('no multihash was inserted') }
 
@@ -100,8 +107,7 @@ function getFile () {
 
     files.forEach((file) => {
       if (file.content) {
-        const listItem = createFileBlob(file.content, cid)
-        $filesList.insertBefore(listItem, $filesList.firstChild)
+        appendFile(file.name, cid, file.size, file.content)
       }
     })
   })
@@ -112,7 +118,7 @@ function getFile () {
  */
 function onDrop (event) {
   onDragExit()
-  $errors.className = 'hidden'
+  $errors.classList.add('hidden')
   event.preventDefault()
 
   if (!node) {
@@ -137,12 +143,14 @@ function onDrop (event) {
   files.forEach((file) => {
     readFileContents(file)
       .then((buffer) => {
-        node.files.add(Buffer.from(buffer), (err, filesAdded) => {
+        node.files.add({
+          path: file.name,
+          content: Buffer.from(buffer)
+        }, { wrap: true }, (err, filesAdded) => {
           if (err) { return onError(err) }
 
-          const fl = filesAdded[0]
-          $multihashInput.value = fl.hash
-          $filesStatus.innerHTML = `Added ${file.name} as ${fl.hash}`
+          $multihashInput.value = filesAdded[0].hash
+          $fileStatus.innerHTML = `${file.name} added! Try to hit 'Fetch' button!`
         })
       })
       .catch(onError)
@@ -188,9 +196,12 @@ function refreshPeerList () {
         return '<li>' + addr + '</li>'
       }).join('')
 
-    $peers.innerHTML = peers.length > 0
-      ? '<h2>Remote Peers</h2><ul>' + peersAsHtml + '</ul>'
-      : '<h2>Remote Peers</h2><i>Waiting for peers...</i>'
+    if (peers.length === 0) {
+      $peers.classList.add('waiting')
+    } else {
+      $peers.classList.remove('waiting')
+      $peersList.innerHTML = peersAsHtml
+    }
   })
 }
 
@@ -207,22 +218,18 @@ function onError (err) {
     msg = err
   }
 
-  $errors.innerHTML = '<span class="error">' + msg + '</span>'
-  $errors.className = 'error visible'
+  $errors.innerHTML = msg
+  $errors.classList.remove('hidden')
 }
 
 window.onerror = onError
 
 function onDragEnter () {
-  $dragoverPopup.style.display = 'block'
-  $wrapper.style.filter = 'blur(5px)'
-  $header.style.filter = 'blur(5px)'
+  $body.classList.add('dragging')
 }
 
 function onDragExit () {
-  $dragoverPopup.style.display = 'none'
-  $wrapper.style.filter = ''
-  $header.style.filter = ''
+  $body.classList.remove('dragging')
 }
 
 /*
@@ -237,8 +244,7 @@ const states = {
     $addressesContainer.innerHTML = addressesHtml
     $allDisabledButtons.forEach(b => { b.disabled = false })
     $allDisabledInputs.forEach(b => { b.disabled = false })
-    $peers.className = ''
-    $details.className = ''
+    $allDisabledElements.forEach(el => { el.classList.remove('disabled') })
     $stopButton.disabled = false
     $startButton.disabled = true
   },
@@ -262,7 +268,6 @@ const startApplication = () => {
   // Setup event listeners
   $body.addEventListener('dragenter', onDragEnter)
   $body.addEventListener('drop', onDrop)
-  // TODO should work to hide the dragover-popup but doesn't...
   $body.addEventListener('dragleave', onDragExit)
 
   $startButton.addEventListener('click', start)
