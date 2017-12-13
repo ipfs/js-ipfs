@@ -235,7 +235,11 @@ table th:last-child {
 }
 
 table td:first-child {
-  width: 80%;
+  width: 45%;
+}
+
+table td:nth-child(2) {
+  width: 35%;
   font-family: monospace;
 }
 

@@ -68,9 +68,9 @@ function stop () {
   window.location.href = window.location.href // refresh page
 }
 
-function appendFile (hash, size, data) {
+function appendFile (name, hash, size, data) {
   const row = document.createElement('tr')
-  row.innerHTML = `<td>${hash}</td><td>${size}</td>`
+  row.innerHTML = `<td>${name}</td><td>${hash}</td><td>${size}</td>`
   row.addEventListener('click', (event) => {
     event.preventDefault()
 
@@ -102,7 +102,7 @@ function getFile () {
 
     files.forEach((file) => {
       if (file.content) {
-        appendFile(cid, file.size, file.content)
+        appendFile(file.name, cid, file.size, file.content)
       }
     })
   })
@@ -141,10 +141,8 @@ function onDrop (event) {
         node.files.add({
           path: file.name,
           content: Buffer.from(buffer)
-        }, (err, filesAdded) => {
+        }, { wrap: true }, (err, filesAdded) => {
           if (err) { return onError(err) }
-
-          console.log(filesAdded)
 
           $multihashInput.value = filesAdded[0].hash
           $fileStatus.innerHTML = `${file.name} added! Try to hit 'Fetch' button!`
