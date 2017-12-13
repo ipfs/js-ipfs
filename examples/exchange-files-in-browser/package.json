@@ -2,7 +2,7 @@
   "name": "exchange-files-browser",
   "version": "0.0.0",
   "scripts": {
-    "bundle": "browserify public/js/app.js > public/js/bundle.js",
+    "bundle": "browserify public/app.js > public/bundle.js",
     "dev": "npm run bundle && npm run start",
     "start": "http-server -c-1 -p 12345 public"
   },
