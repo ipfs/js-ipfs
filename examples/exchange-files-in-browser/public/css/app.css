@@ -134,7 +134,6 @@ input, button {
 
 main {
   width: 90%;
-  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -224,10 +223,6 @@ table th, table td {
   padding: 0.5em 0;
 }
 
-table td {
-  cursor: pointer;
-}
-
 table td:last-child,
 table th:last-child {
   width: 20%;
@@ -245,4 +240,8 @@ table td:nth-child(2) {
 
 table tr:hover {
   background-color: rgba(0, 0, 0, 0.2)
+}
+
+table a {
+  color: inherit;
 }

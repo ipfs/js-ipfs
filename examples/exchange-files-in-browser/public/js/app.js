@@ -69,21 +69,26 @@ function stop () {
 }
 
 function appendFile (name, hash, size, data) {
+  const file = new window.Blob([data], { type: 'application/octet-binary' })
+  const url = window.URL.createObjectURL(file)
   const row = document.createElement('tr')
-  row.innerHTML = `<td>${name}</td><td>${hash}</td><td>${size}</td>`
-  row.addEventListener('click', (event) => {
-    event.preventDefault()
+  
+  const nameCell = document.createElement('td')
+  nameCell.innerHTML = name
+  
+  const hashCell = document.createElement('td')
+  const link = document.createElement('a')
+  link.innerHTML = hash
+  link.setAttribute('href', url)
+  link.setAttribute('download', name)
+  hashCell.appendChild(link)
 
-    const file = new window.Blob([data], { type: 'application/octet-binary' })
-    const url = window.URL.createObjectURL(file)
-    const link = document.createElement('a')
+  const sizeCell = document.createElement('td')
+  sizeCell.innerText = size
 
-    link.setAttribute('href', url)
-    link.setAttribute('download', name)
-    link.click()
-
-    window.URL.revokeObjectURL(url)
-  })
+  row.appendChild(nameCell)
+  row.appendChild(hashCell)
+  row.appendChild(sizeCell)
 
   $fileHistory.insertBefore(row, $fileHistory.firstChild)
 }
