@@ -293,6 +293,9 @@ module.exports = function files (self) {
 }
 
 function normalizePath (path) {
+  if (Buffer.isBuffer(path)) {
+    path = toB58String(path)
+  }
   if (path.charAt(path.length - 1) === '/') {
     path = path.substring(0, path.length - 1)
   }
