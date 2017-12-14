@@ -15,6 +15,7 @@ module.exports = (arg) => {
     get: require('./get')(send),
     getReadableStream: require('./get-readable-stream')(send),
     getPullStream: require('./get-pull-stream')(send),
+    flush: require('./flush')(send),
 
     // Specific to MFS (for now)
     cp: require('./cp')(send),

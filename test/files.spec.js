@@ -200,6 +200,10 @@ describe('.files (the MFS API part)', function () {
       ipfs.files.mkdir('/test-folder', done)
     })
 
+    it('files.flush', (done) => {
+      ipfs.files.flush('/', done)
+    })
+
     it('files.cp', (done) => {
       ipfs.files.cp([
         '/ipfs/Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',

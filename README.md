@@ -169,6 +169,7 @@ $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods "[\"PUT\", \"P
   - [`ipfs.files.get(hash, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/FILES.md#get)
     - alias to `ipfs.get`
   - `ipfs.ls`
+  - `ipfs.files.flush(path, [callback])`
   - mfs (mutable file system) specific:
     - `ipfs.files.cp`
     - `ipfs.files.ls`
