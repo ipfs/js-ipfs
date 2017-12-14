@@ -130,6 +130,11 @@ module.exports = function files (self) {
       throw new Error('You must supply an ipfsPath')
     }
 
+    ipfsPath = normalizePath(ipfsPath)
+    const pathComponents = ipfsPath.split('/')
+    const restPath = normalizePath(pathComponents.slice(1).join('/'))
+    const filterFile = (file) => (restPath && file.path === restPath) || (file.path === ipfsPath)
+
     const d = deferred.source()
 
     pull(
@@ -137,7 +142,7 @@ module.exports = function files (self) {
       pull.collect((err, files) => {
         if (err) { return d.abort(err) }
         if (files && files.length > 1) {
-          files = files.filter((file) => file.path === ipfsPath)
+          files = files.filter(filterFile)
         }
         if (!files || !files.length) {
           return d.abort(new Error('No such file'))
@@ -285,4 +290,12 @@ module.exports = function files (self) {
 
     lsPullStreamImmutable: _lsPullStreamImmutable
   }
+}
+
+function normalizePath (path) {
+  if (path.charAt(path.length - 1) === '/') {
+    path = path.substring(0, path.length - 1)
+  }
+
+  return path
 }
