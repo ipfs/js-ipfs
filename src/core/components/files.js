@@ -135,17 +135,15 @@ module.exports = function files (self) {
     pull(
       exporter(ipfsPath, self._ipldResolver),
       pull.collect((err, files) => {
-        if (err) { d.end(err) }
+        if (err) { return d.abort(err) }
+        if (files && files.length > 1) {
+          files = files.filter((file) => file.path === ipfsPath)
+        }
         if (!files || !files.length) {
           return d.abort(new Error('No such file'))
         }
 
-        if (files.length > 1) {
-          files = files.filter((file) => file.path === ipfsPath)
-        }
-
         const file = files[0]
-
         const content = file.content
         if (!content && file.type === 'dir') {
           return d.abort(new Error('this dag node is a directory'))
