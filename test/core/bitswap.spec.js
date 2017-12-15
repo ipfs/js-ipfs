@@ -261,8 +261,14 @@ describe('bitswap', function () {
 
         expect(stats).to.have.keys([
           'blocksReceived',
+          'blocksSent',
+          'dataReceived',
+          'dataSent',
+          'wantListLength',
           'wantlist',
+          'peerCount',
           'peers',
+          'providesBufferLength',
           'dupDataReceived',
           'dupBlksReceived'
         ])
