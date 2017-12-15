@@ -108,7 +108,7 @@
     "hapi-set-header": "^1.0.2",
     "hoek": "^5.0.2",
     "ipfs-api": "^17.2.4",
-    "ipfs-bitswap": "~0.17.4",
+    "ipfs-bitswap": "~0.18.0",
     "ipfs-block": "~0.6.1",
     "ipfs-block-service": "~0.13.0",
     "ipfs-multipart": "~0.1.0",

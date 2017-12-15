@@ -21,11 +21,10 @@ module.exports = function bitswap (self) {
         throw new Error(OFFLINE_ERROR)
       }
 
-      const stats = self._bitswap.stat()
-      stats.wantlist = formatWantlist(stats.wantlist)
-      stats.peers = stats.peers.map((id) => id.toB58String())
-
-      return stats
+      return Object.assign({}, self._bitswap.stat().snapshot, {
+        wantlist: formatWantlist(self._bitswap.getWantlist()),
+        peers: self._bitswap.peers().map((id) => id.toB58String())
+      })
     },
     unwant: (key) => {
       if (!self.isOnline()) {
