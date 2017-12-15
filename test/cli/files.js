@@ -311,6 +311,23 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
+  it('ls <subdir>', function () {
+    this.timeout(20 * 1000)
+
+    return ipfs('ls /ipfs/QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2/init-docs')
+      .then((out) => {
+        expect(out).to.eql(
+          'QmZTR5bcpQD7cFgTorqxZDYaew1Wqgfbd2ud9QqGPAkK2V 1688 about\n' +
+          'QmYCvbfNbCwFR45HiNP45rwJgvatpiW38D961L5qAhUM5Y 200  contact\n' +
+          'QmegvLXxpVKiZ4b57Xs1syfBVRd8CbucVHAp7KpLQdGieC 65   docs/\n' +
+          'QmY5heUM5qgRubMDD1og9fhCPA6QdkMp3QCwd4s7gJsyE7 322  help\n' +
+          'QmdncfsVm2h5Kqq9hPmU7oAVX2zTSVP3L869tgTbPYnsha 1728 quick-start\n' +
+          'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB 1102 readme\n' +
+          'QmTumTjvcYCAvRRwQ8sDRxh8ezmrcr88YFU7iYNroGGTBZ 1027 security-notes\n' +
+          'QmciSU8hfpAXKjvK5YLUSwApomGSWN5gFbP4EpDAEzu2Te 863  tour/\n')
+      })
+  })
+
   it('ls --help', function () {
     this.timeout(20 * 1000)
 
