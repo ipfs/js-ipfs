@@ -2,15 +2,6 @@
 
 const isNode = require('detect-node')
 const flatmap = require('flatmap')
-const escape = require('glob-escape')
-
-function strip (name, base) {
-  const smallBase = base
-    .split('/')
-    .slice(0, -1)
-    .join('/') + '/'
-  return name.replace(smallBase, '')
-}
 
 function loadPaths (opts, file) {
   const path = require('path')
@@ -29,41 +20,43 @@ function loadPaths (opts, file) {
   if (stats.isDirectory() && opts.recursive) {
     // glob requires a POSIX filename
     file = file.split(path.sep).join('/')
-    const globEscapedDir = escape(file) + (file.endsWith('/') ? '' : '/')
-    const mg = new glob.sync.GlobSync(`${globEscapedDir}` + '**/*', {
+    const fullDir = file + (file.endsWith('/') ? '' : '/')
+    let dirName = fullDir.split('/')
+    dirName = dirName[dirName.length - 2] + '/'
+    const mg = new glob.sync.GlobSync('**/*', {
+      cwd: file,
       follow: followSymlinks,
       dot: opts.hidden,
-      ignore: (opts.ignore || []).map((ignoreGlob) => {
-        return globEscapedDir + ignoreGlob
-      })
+      ignore: opts.ignore
     })
 
     return mg.found
       .map((name) => {
+        const fqn = fullDir + name
         // symlinks
-        if (mg.symlinks[name] === true) {
+        if (mg.symlinks[fqn] === true) {
           return {
-            path: strip(name, file),
+            path: dirName + name,
             symlink: true,
             dir: false,
-            content: fs.readlinkSync(name)
+            content: fs.readlinkSync(fqn)
           }
         }
 
         // files
-        if (mg.cache[name] === 'FILE') {
+        if (mg.cache[fqn] === 'FILE') {
           return {
-            path: strip(name, file),
+            path: dirName + name,
             symlink: false,
             dir: false,
-            content: fs.createReadStream(name)
+            content: fs.createReadStream(fqn)
           }
         }
 
         // directories
-        if (mg.cache[name] === 'DIR' || mg.cache[name] instanceof Array) {
+        if (mg.cache[fqn] === 'DIR' || mg.cache[fqn] instanceof Array) {
           return {
-            path: strip(name, file),
+            path: dirName + name,
             symlink: false,
             dir: true
           }
@@ -86,7 +79,7 @@ function prepareFile (file, opts) {
   return flatmap(files, (file) => {
     if (typeof file === 'string') {
       if (!isNode) {
-        throw new Error('Can not add paths in node')
+        throw new Error('Can only add file paths in node')
       }
 
       return loadPaths(opts, file)
