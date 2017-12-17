@@ -9,6 +9,7 @@ const isNode = require('detect-node')
 const waterfall = require('async/waterfall')
 const path = require('path')
 const FactoryClient = require('./ipfs-factory/client')
+const fs = require('fs')
 
 describe('.refs', function () {
   this.timeout(80 * 1000)
@@ -21,11 +22,21 @@ describe('.refs', function () {
 
   before((done) => {
     fc = new FactoryClient()
+    const filesPath = path.join(__dirname, '/fixtures/test-folder')
+
+    // Symlinks in a repo don't always clone well, especially on Windows.
+    // So if the 'hello-link' is not a symlink, then make it one.
+    const symlinkPath = filesPath + '/hello-link'
+    const symlinkTarget = 'files/hello.txt'
+    if (!fs.lstatSync(symlinkPath).isSymbolicLink()) {
+      fs.unlinkSync(symlinkPath)
+      fs.symlinkSync(symlinkTarget, symlinkPath)
+    }
+
     waterfall([
       (cb) => fc.spawnNode(cb),
       (node, cb) => {
         ipfs = node
-        const filesPath = path.join(__dirname, '/fixtures/test-folder')
         ipfs.util.addFromFs(filesPath, { recursive: true }, cb)
       },
       (hashes, cb) => {
