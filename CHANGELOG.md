@@ -1,3 +1,16 @@
+<a name="0.27.5"></a>
+## [0.27.5](https://github.com/ipfs/js-ipfs/compare/v0.27.4...v0.27.5) (2017-12-18)
+
+
+### Bug Fixes
+
+* cat: test file existence after filtering ([#1148](https://github.com/ipfs/js-ipfs/issues/1148)) ([34f28ef](https://github.com/ipfs/js-ipfs/commit/34f28ef)), closes [#1142](https://github.com/ipfs/js-ipfs/issues/1142)
+* ipfs.ls: allow any depth ([#1152](https://github.com/ipfs/js-ipfs/issues/1152)) ([279af78](https://github.com/ipfs/js-ipfs/commit/279af78)), closes [#1079](https://github.com/ipfs/js-ipfs/issues/1079)
+* use new bitswap stats ([#1151](https://github.com/ipfs/js-ipfs/issues/1151)) ([e223888](https://github.com/ipfs/js-ipfs/commit/e223888))
+* **files.add:** directory with odd name ([#1155](https://github.com/ipfs/js-ipfs/issues/1155)) ([058c674](https://github.com/ipfs/js-ipfs/commit/058c674))
+
+
+
 <a name="0.27.4"></a>
 ## [0.27.4](https://github.com/ipfs/js-ipfs/compare/v0.27.3...v0.27.4) (2017-12-13)
 
