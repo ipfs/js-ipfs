@@ -119,7 +119,7 @@ module.exports = (common) => {
       })
 
       it('removes a key', function (done) {
-        ipfs.key.rm(key.name, (err, res) => {
+        ipfs.key.rm(key.Name, (err, res) => {
           expect(err).to.not.exist()
           expect(res).to.exist()
           expect(res).to.have.property('Keys')
@@ -133,7 +133,7 @@ module.exports = (common) => {
       it('does not contain the removed name', (done) => {
         ipfs.key.list((err, res) => {
           expect(err).to.not.exist()
-          const found = res.Keys.filter(k => k.Name === key.name)
+          const found = res.Keys.filter(k => k.Name === key.Name)
           expect(found).to.have.length(0)
           done()
         })
