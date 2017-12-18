@@ -28,8 +28,6 @@
   <a href=""><img src="https://img.shields.io/badge/npm-%3E%3D3.0.0-orange.svg?style=flat-square" /></a>
   <a href=""><img src="https://img.shields.io/badge/Node.js-%3E%3D6.0.0-orange.svg?style=flat-square" /></a>
   <br>
-  <!-- Hidding this until we have SauceLabs situation figured out, right now it is just misleading
-  <a href="https://saucelabs.com/u/js-ipfs"><img src="https://saucelabs.com/browser-matrix/js-ipfs.svg" /></a> -->
 </p>
 
 ### Project status
@@ -494,51 +492,42 @@ A way to mitigate this in Chrome, is to run your IPFS node inside a Service Work
 > npm test
 
 # run just IPFS tests in Node.js
-> npm run test:unit:node:core
+> npm run test:node:core
 
 # run just IPFS core tests
-> npm run test:unit:node:core
+> npm run test:node:core
 
 # run just IPFS HTTP-API tests
-> npm run test:unit:node:http
+> npm run test:node:http
 
 # run just IPFS CLI tests
-> npm run test:unit:node:cli
+> npm run test:node:cli
 
 # run just IPFS core tests in the Browser (Chrome)
-> npm run test:unit:browser
+> npm run test:browser
 ```
 
 ### Run interop tests
 
-```sh
-# run all the interop tsts
-> npm run test:interop
-
-# run just IPFS interop tests in Node.js using one go-ipfs daemon and one js-ipfs daemon
-> npm run test:interop:node
-
-# run just IPFS interop testsin the Browser (Chrome) using one instance in the browser and one go-ipfs daemon
-> npm run test:interop:browser
-```
+Run the interop tests with https://github.com/ipfs/interop
 
 ### Run benchmark tests
 
 ```sh
 # run all the benchmark tests
-> npm run test:benchmark
+> npm run benchmark
 
 # run just IPFS benchmarks in Node.js
-> npm run test:benchmark:node
+> npm run benchmark:node
 
 # run just IPFS benchmarks in Node.js for an IPFS instance
-> npm run test:benchmark:node:core
+> npm run benchmark:node:core
 
 # run just IPFS benchmarks in Node.js for an IPFS daemon
-> npm run test:benchmark:node:http
+> npm run benchmark:node:http
 
 # run just IPFS benchmarks in the browser (Chrome)
-> npm run test:benchmark:browser
+> npm run benchmark:browser
 ```
 
 ### Lint
