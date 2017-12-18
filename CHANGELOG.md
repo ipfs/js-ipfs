@@ -1,3 +1,13 @@
+<a name="0.36.16"></a>
+## [0.36.16](https://github.com/ipfs/interface-ipfs-core/compare/v0.36.15...v0.36.16) (2017-12-18)
+
+
+### Bug Fixes
+
+* key.rm test ([#185](https://github.com/ipfs/interface-ipfs-core/issues/185)) ([211e2c5](https://github.com/ipfs/interface-ipfs-core/commit/211e2c5))
+
+
+
 <a name="0.36.15"></a>
 ## [0.36.15](https://github.com/ipfs/interface-ipfs-core/compare/v0.36.14...v0.36.15) (2017-12-12)
 
