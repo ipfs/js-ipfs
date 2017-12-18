@@ -154,6 +154,20 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
+  it('add directory with odd name', function () {
+    this.timeout(30 * 1000)
+    const expected = [
+      'added QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o odd-name-[v0]/odd name [v1]/hello',
+      'added QmYRMUVULBfj7WrdPESnwnyZmtayN6Sdrwh1nKcQ9QgQeZ odd-name-[v0]/odd name [v1]',
+      'added QmXJGoo27bg7ExNAtr9vRcivxDwcfHtkxatGno9HrUdR16 odd-name-[v0]'
+    ]
+
+    return ipfs('files add -r test/fixtures/odd-name-[v0]')
+      .then((out) => {
+        expect(out).to.eql(expected.join('\n') + '\n')
+      })
+  })
+
   it('add and wrap with a directory', function () {
     this.timeout(30 * 1000)
 
