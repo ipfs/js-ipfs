@@ -9,12 +9,8 @@ const print = require('../../utils').print
 
 function checkArgs (hash, outPath) {
   // format the output directory
-  if (!outPath.endsWith('/')) {
-    outPath += '/'
-  }
-
-  if (!outPath.startsWith('/')) {
-    outPath = path.join('/', outPath)
+  if (!outPath.endsWith(path.sep)) {
+    outPath += path.sep
   }
 
   return outPath
