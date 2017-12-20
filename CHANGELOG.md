@@ -1,3 +1,19 @@
+<a name="17.2.5"></a>
+## [17.2.5](https://github.com/ipfs/js-ipfs-api/compare/v17.2.4...v17.2.5) (2017-12-20)
+
+
+### Bug Fixes
+
+* **files.add:** handle weird directory names ([#646](https://github.com/ipfs/js-ipfs-api/issues/646)) ([012b86c](https://github.com/ipfs/js-ipfs-api/commit/012b86c))
+
+
+### Features
+
+* add files/flush ([#643](https://github.com/ipfs/js-ipfs-api/issues/643)) ([5c254eb](https://github.com/ipfs/js-ipfs-api/commit/5c254eb))
+* support key/rm and key/rename ([#641](https://github.com/ipfs/js-ipfs-api/issues/641)) ([113030a](https://github.com/ipfs/js-ipfs-api/commit/113030a))
+
+
+
 <a name="17.2.4"></a>
 ## [17.2.4](https://github.com/ipfs/js-ipfs-api/compare/v17.2.3...v17.2.4) (2017-12-06)
 
