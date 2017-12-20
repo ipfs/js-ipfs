@@ -14,13 +14,13 @@ module.exports = (server) => {
   api.route({
     method: '*',
     path: '/api/v0/key/gen',
-    handler: resources.key.generate
+    handler: resources.key.gen
   })
 
   api.route({
     method: '*',
     path: '/api/v0/key/rm',
-    handler: resources.key.remove
+    handler: resources.key.rm
   })
 
   api.route({

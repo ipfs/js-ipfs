@@ -29,7 +29,7 @@ exports.list = (request, reply) => {
   })
 }
 
-exports.remove = (request, reply) => {
+exports.rm = (request, reply) => {
   const ipfs = request.server.app.ipfs
   const name = request.query.arg
   ipfs._keychain.removeKey(name, (err, key) => {
@@ -60,7 +60,7 @@ exports.rename = (request, reply) => {
   })
 }
 
-exports.generate = (request, reply) => {
+exports.gen = (request, reply) => {
   const ipfs = request.server.app.ipfs
   const name = request.query.arg
   const type = request.query.type
