@@ -277,13 +277,15 @@ A complete API definition is in the works. Meanwhile, you can learn how to you u
   - [`ipfs.object.patch.setData(multihash, data, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchsetdata)
 - [pin (not implemented, yet!)](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/)
 
-#### `Security`
+#### `Crypto and Key Management`
 
 - [key](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/KEY.md)
   - `ipfs.key.gen(name, options, [callback])`
   - `ipfs.key.list([callback])`
   - `ipfs.key.rename(oldName, newName, [callback])`
   - `ipfs.key.rm(name, [callback])`
+
+- [crypto (not yet implemented)](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC)
 
 #### `Network`
 
