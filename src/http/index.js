@@ -67,6 +67,7 @@ function HttpApi (repo, config, cliArgs) {
             init: init,
             start: true,
             config: config,
+            pass: cliArgs && cliArgs.pass,
             EXPERIMENTAL: {
               pubsub: cliArgs && cliArgs.enablePubsubExperiment,
               sharding: cliArgs && cliArgs.enableShardingExperiment

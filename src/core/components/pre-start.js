@@ -13,7 +13,7 @@ module.exports = function preStart (self) {
   return (callback) => {
     self.log('pre-start')
 
-    self._keychain = new Keychain(self._repo.keys, { passPhrase: 'todo do not hardcode the pass phrase' })
+    self._keychain = new Keychain(self._repo.keys, { passPhrase: self._options.pass || 'todo do not hardcode the pass phrase' })
 
     waterfall([
       (cb) => self._repo.config.get(cb),

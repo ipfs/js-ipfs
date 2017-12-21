@@ -21,6 +21,11 @@ const cli = yargs
     default: false,
     coerce: ('silent', silent => silent ? utils.disablePrinting() : silent)
   })
+  .option('pass', {
+    desc: 'Pass phrase for the keys',
+    type: 'string',
+    default: ''
+  })
   .commandDir('commands')
   .demandCommand(1)
   .fail((msg, err, yargs) => {
@@ -59,7 +64,7 @@ if (args[0] === 'daemon' || args[0] === 'init') {
     if (err) {
       throw err
     }
-    utils.getIPFS(argv.api, (err, ipfs, cleanup) => {
+    utils.getIPFS(argv, (err, ipfs, cleanup) => {
       if (err) { throw err }
 
       cli

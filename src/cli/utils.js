@@ -38,15 +38,16 @@ function getAPICtl (apiAddr) {
   return APIctl(apiAddr)
 }
 
-exports.getIPFS = (apiAddr, callback) => {
-  if (apiAddr || isDaemonOn()) {
-    return callback(null, getAPICtl(apiAddr), (cb) => cb())
+exports.getIPFS = (argv, callback) => {
+  if (argv.api || isDaemonOn()) {
+    return callback(null, getAPICtl(argv.api), (cb) => cb())
   }
 
   const node = new IPFS({
     repo: exports.getRepoPath(),
     init: false,
     start: false,
+    pass: argv.pass,
     EXPERIMENTAL: {
       pubsub: true
     }
