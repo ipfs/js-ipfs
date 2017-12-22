@@ -76,7 +76,7 @@ module.exports = function init (self) {
           const keychain = new Keychain(self._repo.keys, keychainOptions)
           keychain.importPeer('self', { privKey: privateKey }, cb)
         } else {
-          cb()
+          cb(null, true)
         }
       },
       (_, cb) => {
