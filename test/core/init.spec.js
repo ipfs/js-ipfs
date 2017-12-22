@@ -7,6 +7,7 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const isNode = require('detect-node')
+const hat = require('hat')
 const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
 const multiaddr = require('multiaddr')
@@ -36,7 +37,7 @@ describe('init', () => {
   afterEach((done) => repo.teardown(done))
 
   it('basic', (done) => {
-    ipfs.init({ bits: 512 }, (err) => {
+    ipfs.init({ bits: 512, pass: hat() }, (err) => {
       expect(err).to.not.exist()
 
       repo.exists((err, res) => {
@@ -45,7 +46,9 @@ describe('init', () => {
 
         repo.config.get((err, config) => {
           expect(err).to.not.exist()
+          console.log(config)
           expect(config.Identity).to.exist()
+          expect(config.Keychain).to.exist()
           done()
         })
       })
@@ -55,7 +58,7 @@ describe('init', () => {
   it('set # of bits in key', function (done) {
     this.timeout(40 * 1000)
 
-    ipfs.init({ bits: 1024 }, (err) => {
+    ipfs.init({ bits: 1024, pass: hat() }, (err) => {
       expect(err).to.not.exist()
 
       repo.config.get((err, config) => {
@@ -67,7 +70,7 @@ describe('init', () => {
   })
 
   it('init docs are written', (done) => {
-    ipfs.init({ bits: 512 }, (err) => {
+    ipfs.init({ bits: 512, pass: hat() }, (err) => {
       expect(err).to.not.exist()
       const multihash = 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
 

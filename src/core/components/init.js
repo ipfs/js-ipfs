@@ -5,6 +5,7 @@ const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
 const promisify = require('promisify-es6')
 const config = require('../runtime/config-nodejs.json')
+const Keychain = require('libp2p-keychain')
 
 const addDefaultAssets = require('./init-assets')
 
@@ -36,7 +37,7 @@ module.exports = function init (self) {
     opts.emptyRepo = opts.emptyRepo || false
     opts.bits = Number(opts.bits) || 2048
     opts.log = opts.log || function () {}
-
+    let privateKey
     waterfall([
       // Verify repo does not yet exist.
       (cb) => self._repo.exists(cb),
@@ -57,6 +58,10 @@ module.exports = function init (self) {
           PeerID: keys.toB58String(),
           PrivKey: keys.privKey.bytes.toString('base64')
         }
+        if (opts.pass) {
+          privateKey = keys.privKey
+          config.Keychain = Keychain.generateOptions()
+        }
         opts.log('done')
         opts.log('peer identity: ' + config.Identity.PeerID)
 
@@ -65,10 +70,21 @@ module.exports = function init (self) {
       (_, cb) => self._repo.open(cb),
       (cb) => {
         self.log('repo opened')
+        if (opts.pass) {
+          self.log('creating keychain')
+          const keychainOptions = Object.assign({passPhrase: opts.pass}, config.Keychain)
+          const keychain = new Keychain(self._repo.keys, keychainOptions)
+          keychain.importPeer('self', { privKey: privateKey }, cb)
+        } else {
+          cb()
+        }
+      },
+      (_, cb) => {
         if (opts.emptyRepo) {
           return cb(null, true)
         }
 
+        self.log('adding assets')
         const tasks = [
           // add empty unixfs dir object (go-ipfs assumes this exists)
           (cb) => self.object.new('unixfs-dir', cb)

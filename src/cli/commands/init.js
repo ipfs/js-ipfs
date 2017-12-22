@@ -38,6 +38,7 @@ module.exports = {
     node.init({
       bits: argv.bits,
       emptyRepo: argv.emptyRepo,
+      pass: argv.pass,
       log: print
     }, (err) => {
       if (err) {
