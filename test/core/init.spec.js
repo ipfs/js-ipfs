@@ -46,7 +46,6 @@ describe('init', () => {
 
         repo.config.get((err, config) => {
           expect(err).to.not.exist()
-          console.log(config)
           expect(config.Identity).to.exist()
           expect(config.Keychain).to.exist()
           done()
