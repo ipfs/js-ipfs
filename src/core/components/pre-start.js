@@ -4,9 +4,7 @@ const peerId = require('peer-id')
 const PeerInfo = require('peer-info')
 const multiaddr = require('multiaddr')
 const waterfall = require('async/waterfall')
-
-// See https://github.com/ipfs/js-ipfs/pull/1133#issuecomment-351310534
-const Keychain = require('./no-keychain')
+const Keychain = require('libp2p-keychain')
 
 /*
  * Load stuff from Repo into memory
