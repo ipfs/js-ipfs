@@ -30,6 +30,7 @@ module.exports = (self) => {
       (cb) => self._repo.open(cb),
       (cb) => self.preStart(cb),
       (cb) => {
+        self.log('initialized')
         self.state.initialized()
         cb(null, true)
       }
@@ -56,8 +57,8 @@ module.exports = (self) => {
     if (err) {
       return self.emit('error', err)
     }
+    self.log('boot:done')
     self.emit('ready')
-    self.log('boot:done', err)
   }
 
   const tasks = []

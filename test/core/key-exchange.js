@@ -13,12 +13,11 @@ const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/create-repo-nodejs.js')
 
 describe('key exchange', () => {
-
   let ipfs
   let repo
   let selfPem
   let passwordPem = hat()
-  
+
   before(function (done) {
     this.timeout(20 * 1000)
     repo = createTempRepo()

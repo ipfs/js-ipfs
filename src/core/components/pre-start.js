@@ -19,6 +19,7 @@ module.exports = function preStart (self) {
         const pass = self._options.pass || 'todo do not hardcode the pass phrase'
         const keychainOptions = Object.assign({passPhrase: pass}, config.Keychain)
         self._keychain = new Keychain(self._repo.keys, keychainOptions)
+        self.log('keychain constructed')
         cb(null, config)
       },
       (config, cb) => {
@@ -27,6 +28,7 @@ module.exports = function preStart (self) {
         peerId.createFromPrivKey(privKey, (err, id) => cb(err, config, id))
       },
       (config, id, cb) => {
+        self.log('peer created')
         self._peerInfo = new PeerInfo(id)
 
         if (config.Addresses && config.Addresses.Swarm) {
