@@ -8,34 +8,48 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const series = require('async/series')
 const ipfsExec = require('../utils/ipfs-exec')
-const Factory = require('../utils/ipfs-factory-daemon')
+
+const parallel = require('async/parallel')
+
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create()
+
+const config = {
+  Bootstrap: [],
+  Discovery: {
+    MDNS: {
+      Enabled:
+        false
+    }
+  }
+}
 
 describe('swarm', () => {
-  let factory
   let bMultiaddr
   let ipfsA
 
+  let nodes = []
   before(function (done) {
     // CI takes longer to instantiate the daemon, so we need to increase the
     // timeout for the before step
     this.timeout(80 * 1000)
 
-    factory = new Factory()
-
     series([
       (cb) => {
-        factory.spawnNode((err, node) => {
+        df.spawn({ type: 'js', exec: `${process.cwd()}/src/cli/bin.js`, config }, (err, node) => {
           expect(err).to.not.exist()
           ipfsA = ipfsExec(node.repoPath)
+          nodes.push(node)
           cb()
         })
       },
       (cb) => {
-        factory.spawnNode((err, node) => {
+        df.spawn({ type: 'js', exec: `${process.cwd()}/src/cli/bin.js`, config }, (err, node) => {
           expect(err).to.not.exist()
-          node.id((err, id) => {
+          node.api.id((err, id) => {
             expect(err).to.not.exist()
             bMultiaddr = id.addresses[0]
+            nodes.push(node)
             cb()
           })
         })
@@ -43,7 +57,7 @@ describe('swarm', () => {
     ], done)
   })
 
-  after((done) => factory.dismantle(done))
+  after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
 
   describe('daemon on (through http-api)', function () {
     this.timeout(60 * 1000)

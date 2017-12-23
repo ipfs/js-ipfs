@@ -7,10 +7,45 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const parallel = require('async/parallel')
-const IPFSFactory = require('../utils/ipfs-factory-instance')
+const IPFS = require('../../src')
+
+const createRepo = require('../utils/create-repo-nodejs')
+
+const config = {
+  Addresses: {
+    Swarm: [`/ip4/127.0.0.1/tcp/0`],
+    API: `/ip4/127.0.0.1/tcp/0`,
+    Gateway: `/ip4/127.0.0.1/tcp/0`
+  },
+  Bootstrap: [],
+  Discovery: {
+    MDNS: {
+      Enabled:
+        false
+    }
+  }
+}
+
+function createNode (callback) {
+  const node = new IPFS({
+    repo: createRepo(),
+    init: { bits: 1024 },
+    EXPERIMENTAL: {
+      pubsub: true
+    },
+    config
+  })
+
+  node.once('ready', () => {
+    callback(null, node)
+  })
+
+  node.once('error', (err) => {
+    callback(err)
+  })
+}
 
 describe('verify that kad-dht is doing its thing', () => {
-  let factory
   let nodeA
   let nodeB
   let nodeC
@@ -18,18 +53,18 @@ describe('verify that kad-dht is doing its thing', () => {
   let addrB
   let addrC
 
+  let nodes
   before((done) => {
-    factory = new IPFSFactory()
-
     parallel([
-      (cb) => factory.spawnNode(cb),
-      (cb) => factory.spawnNode(cb),
-      (cb) => factory.spawnNode(cb)
-    ], (err, nodes) => {
+      (cb) => createNode(cb),
+      (cb) => createNode(cb),
+      (cb) => createNode(cb)
+    ], (err, _nodes) => {
       expect(err).to.not.exist()
-      nodeA = nodes[0]
-      nodeB = nodes[1]
-      nodeC = nodes[2]
+      nodes = _nodes
+      nodeA = _nodes[0]
+      nodeB = _nodes[1]
+      nodeC = _nodes[2]
       parallel([
         (cb) => nodeA.id(cb),
         (cb) => nodeB.id(cb),
@@ -47,7 +82,7 @@ describe('verify that kad-dht is doing its thing', () => {
     })
   })
 
-  after((done) => factory.dismantle(done))
+  after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
 
   it.skip('add a file in C, fetch through B in A', function (done) {
     this.timeout(10 * 1000)

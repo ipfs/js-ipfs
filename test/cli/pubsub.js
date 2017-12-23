@@ -8,16 +8,28 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const delay = require('delay')
 const series = require('async/series')
-const InstanceFactory = require('../utils/ipfs-factory-instance')
-const DaemonFactory = require('../utils/ipfs-factory-daemon')
 const ipfsExec = require('../utils/ipfs-exec')
+const createRepo = require('../utils/create-repo-nodejs')
+const IPFS = require('../../src')
+
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create()
+
+const config = {
+  Bootstrap: [],
+  Discovery: {
+    MDNS: {
+      Enabled:
+        false
+    }
+  }
+}
 
 describe('pubsub', function () {
-  this.timeout(40 * 1000)
+  this.timeout(80 * 1000)
 
-  let instanceFactory
-  let daemonFactory
   let node
+  let ipfsd
   let cli
   let httpApi
 
@@ -25,29 +37,51 @@ describe('pubsub', function () {
   const topicB = 'nonscentsB'
   const topicC = 'nonscentsC'
 
+  let repo = createRepo()
   before(function (done) {
     this.timeout(60 * 1000)
 
-    instanceFactory = new InstanceFactory()
-    instanceFactory.spawnNode((err, _node) => {
-      expect(err).to.not.exist()
-      node = _node
+    node = new IPFS({
+      repo: createRepo(),
+      init: { bits: 1024 },
+      EXPERIMENTAL: {
+        pubsub: true
+      },
+      config
+    })
+
+    node.once('ready', () => {
       done()
+    })
+
+    node.once('error', (err) => {
+      done(err)
     })
   })
 
-  after((done) => instanceFactory.dismantle(done))
+  after((done) => {
+    node.stop((err) => {
+      expect(err).to.not.exist()
+      repo.teardown(done)
+    })
+  })
 
   before((done) => {
-    daemonFactory = new DaemonFactory()
-    daemonFactory.spawnNode((err, _node) => {
+    df.spawn({
+      type: 'js',
+      args: ['--enable-pubsub-experiment'],
+      exec: `${process.cwd()}/src/cli/bin.js`,
+      config
+    }, (err, _node) => {
       expect(err).to.not.exist()
-      httpApi = _node
+      httpApi = _node.api
+      ipfsd = _node
+      httpApi.repoPath = ipfsd.repoPath
       done()
     })
   })
 
-  after((done) => daemonFactory.dismantle(done))
+  after((done) => ipfsd.stop(done))
 
   before((done) => {
     cli = ipfsExec(httpApi.repoPath)
