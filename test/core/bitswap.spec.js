@@ -17,9 +17,7 @@ const multihashing = require('multihashing-async')
 const CID = require('cids')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ type: 'js' })
-
-const dfProc = DaemonFactory.create({ type: 'proc' })
+const df = DaemonFactory.create()
 
 // This gets replaced by '../utils/create-repo-browser.js' in the browser
 const createTempRepo = require('../utils/create-repo-nodejs.js')
@@ -69,14 +67,7 @@ function connectNodes (remoteNode, inProcNode, callback) {
 let nodes = []
 
 function addNode (inProcNode, callback) {
-  df.spawn({
-    exec: `./src/cli/bin.js`,
-    config: {
-      Addresses: {
-        Swarm: [`/ip4/127.0.0.1/tcp/0/ws`]
-      }
-    }
-  }, (err, ipfsd) => {
+  df.spawn({ type: 'js', exec: `./src/cli/bin.js` }, (err, ipfsd) => {
     expect(err).to.not.exist()
     nodes.push(ipfsd)
     connectNodes(ipfsd.api, inProcNode, (err) => callback(err, ipfsd.api))
@@ -91,7 +82,8 @@ describe('bitswap', function () {
   beforeEach(function (done) {
     this.timeout(60 * 1000)
 
-    let config = {
+    let options = {
+      repo: createTempRepo(),
       config: {
         Addresses: {
           Swarm: []
@@ -106,7 +98,7 @@ describe('bitswap', function () {
     }
 
     if (isNode) {
-      config = Object.assign(config, {
+      options = Object.assign(options, {
         config: {
           Addresses: {
             Swarm: ['/ip4/127.0.0.1/tcp/0']
@@ -115,21 +107,18 @@ describe('bitswap', function () {
       })
     }
 
-    dfProc.spawn({ exec: IPFS, config }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      nodes.push(_ipfsd)
-      inProcNode = _ipfsd.api
-      done()
-    })
+    inProcNode = new IPFS(options)
+    inProcNode.on('ready', () => done())
   })
 
   afterEach(function (done) {
     this.timeout(80 * 1000)
     const tasks = nodes.map((node) => (cb) => node.stop(cb))
+    tasks.push((cb) => setTimeout(() => inProcNode.stop(() => cb()), 500))
     parallel(tasks, (err) => {
       expect(err).to.not.exist()
       nodes = []
-      done()
+      done(err)
     })
   })
 
