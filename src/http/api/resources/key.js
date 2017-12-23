@@ -73,3 +73,32 @@ exports.gen = (request, reply) => {
     return reply(toKeyInfo(key))
   })
 }
+
+exports.export = (request, reply) => {
+  const ipfs = request.server.app.ipfs
+  const name = request.query.arg
+  const password = request.query.password
+  ipfs._keychain.exportKey(name, password, (err, pem) => {
+    if (err) {
+      return applyError(reply, err)
+    }
+
+    return reply(pem).type('application/x-pem-file')
+  })
+}
+
+exports.import = (request, reply) => {
+  const ipfs = request.server.app.ipfs
+  const name = request.query.arg
+  const pem = request.query.pem
+  const password = request.query.password
+  console.log('import psd', password)
+  console.log('import pem', pem)
+  ipfs._keychain.importKey(name, pem, password, (err, key) => {
+    if (err) {
+      return applyError(reply, err)
+    }
+
+    return reply(toKeyInfo(key))
+  })
+}

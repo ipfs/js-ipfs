@@ -280,15 +280,12 @@ A complete API definition is in the works. Meanwhile, you can learn how to you u
 #### `Crypto and Key Management`
 
 - [key](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/KEY.md)
+  - `ipfs.key.export(name, password, [callback])`
   - `ipfs.key.gen(name, options, [callback])`
+  - `ipfs.key.import(name, pem, password, [callback])`
   - `ipfs.key.list([callback])`
   - `ipfs.key.rename(oldName, newName, [callback])`
   - `ipfs.key.rm(name, [callback])`
-  
-  For security reasons, the following are not available when using http-api
-  
-  - `ipfs.key.export(name, password, [callback])`
-  - `ipfs.key.import(name, pem, password, [callback])`
 
 - [crypto (not yet implemented)](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC)
 

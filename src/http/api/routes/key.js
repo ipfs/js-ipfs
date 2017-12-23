@@ -28,4 +28,16 @@ module.exports = (server) => {
     path: '/api/v0/key/rename',
     handler: resources.key.rename
   })
+
+  api.route({
+    method: '*',
+    path: '/api/v0/key/export',
+    handler: resources.key.export
+  })
+
+  api.route({
+    method: '*',
+    path: '/api/v0/key/import',
+    handler: resources.key.import
+  })
 }
