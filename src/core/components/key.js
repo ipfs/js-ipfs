@@ -53,6 +53,17 @@ module.exports = function key (self) {
         }
         callback(null, result)
       })
+    }),
+
+    import: promisify((name, pem, password, callback) => {
+      self._keychain.importKey(name, pem, password, (err, key) => {
+        if (err) return callback(err)
+        callback(null, toKeyInfo(key))
+      })
+    }),
+
+    export: promisify((name, password, callback) => {
+      self._keychain.exportKey(name, password, callback)
     })
   }
 }

@@ -15,7 +15,7 @@ module.exports = (self) => {
   const repoOpen = !self._repo.closed
 
   const customInitOptions = typeof options.init === 'object' ? options.init : {}
-  const initOptions = Object.assign({ bits: 2048 }, customInitOptions)
+  const initOptions = Object.assign({ bits: 2048, pass: self._options.pass }, customInitOptions)
 
   // Checks if a repo exists, and if so opens it
   // Will return callback with a bool indicating the existence

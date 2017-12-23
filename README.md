@@ -195,7 +195,7 @@ const node = new IPFS({
   // },
   start: true, // default
   // start: false,
-  pass: '' // default
+  pass: undefined // default
   // pass: 'pass phrase for key access',
   EXPERIMENTAL: { // enable experimental features
     pubsub: true,
@@ -284,6 +284,11 @@ A complete API definition is in the works. Meanwhile, you can learn how to you u
   - `ipfs.key.list([callback])`
   - `ipfs.key.rename(oldName, newName, [callback])`
   - `ipfs.key.rm(name, [callback])`
+  
+  For security reasons, the following are not available when using http-api
+  
+  - `ipfs.key.export(name, password, [callback])`
+  - `ipfs.key.import(name, pem, password, [callback])`
 
 - [crypto (not yet implemented)](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC)
 
