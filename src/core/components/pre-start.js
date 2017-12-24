@@ -17,7 +17,9 @@ module.exports = function preStart (self) {
       (cb) => self._repo.config.get(cb),
       (config, cb) => {
         const pass = self._options.pass
-        if (pass) {
+        if (self._keychain) {
+          // most likely an init has happened
+        } else if (pass) {
           const keychainOptions = Object.assign({passPhrase: pass}, config.Keychain)
           self._keychain = new Keychain(self._repo.keys, keychainOptions)
           self.log('keychain constructed')
