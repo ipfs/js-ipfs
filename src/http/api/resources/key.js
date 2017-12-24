@@ -92,8 +92,6 @@ exports.import = (request, reply) => {
   const name = request.query.arg
   const pem = request.query.pem
   const password = request.query.password
-  console.log('import psd', password)
-  console.log('import pem', pem)
   ipfs._keychain.importKey(name, pem, password, (err, key) => {
     if (err) {
       return applyError(reply, err)

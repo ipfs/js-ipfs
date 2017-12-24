@@ -6,6 +6,7 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
+const hat = require('hat')
 const API = require('../../src/http')
 const APIctl = require('ipfs-api')
 const ncp = require('ncp').ncp
@@ -21,7 +22,10 @@ describe('HTTP API', () => {
   before(function (done) {
     this.timeout(60 * 1000)
 
-    const options = { enablePubsubExperiment: true }
+    const options = {
+      pass: hat(),
+      enablePubsubExperiment: true
+    }
     http.api = new API(repoTests, null, options)
 
     ncp(repoExample, repoTests, (err) => {

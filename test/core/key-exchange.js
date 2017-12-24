@@ -35,7 +35,6 @@ describe('key exchange', () => {
       expect(err).to.not.exist()
       expect(pem).to.exist()
       selfPem = pem
-      console.log(pem)
       done()
     })
   })
