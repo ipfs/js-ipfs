@@ -8,6 +8,7 @@ const hat = require('hat')
 describe('key', () => runOnAndOff.off((thing) => {
   const name = 'test-key-' + hat()
   const newName = 'test-key-' + hat()
+  const pass = '--pass ' + hat()
   let ipfs
 
   before(() => {
@@ -17,7 +18,7 @@ describe('key', () => runOnAndOff.off((thing) => {
   it('gen', function () {
     this.timeout(40 * 1000)
 
-    return ipfs(`key gen ${name} --type rsa --size 2048`)
+    return ipfs(`${pass} key gen ${name} --type rsa --size 2048`)
       .then((out) => {
         expect(out).to.include(`generated ${name}`)
       })
@@ -26,7 +27,7 @@ describe('key', () => runOnAndOff.off((thing) => {
   it('list', function () {
     this.timeout(20 * 1000)
 
-    return ipfs('key list')
+    return ipfs(`${pass} key list`)
       .then((out) => {
         expect(out).to.include(name)
       })
@@ -35,7 +36,7 @@ describe('key', () => runOnAndOff.off((thing) => {
   it('rename', function () {
     this.timeout(20 * 1000)
 
-    return ipfs(`key rename ${name} ${newName}`)
+    return ipfs(`${pass} key rename ${name} ${newName}`)
       .then((out) => {
         expect(out).to.include(`renamed to ${newName}`)
       })
@@ -44,7 +45,7 @@ describe('key', () => runOnAndOff.off((thing) => {
   it('rm', function () {
     this.timeout(20 * 1000)
 
-    return ipfs(`key rm ${newName}`)
+    return ipfs(`${pass} key rm ${newName}`)
       .then((out) => {
         expect(out).to.include(newName)
       })

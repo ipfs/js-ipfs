@@ -5,7 +5,7 @@ const PeerInfo = require('peer-info')
 const multiaddr = require('multiaddr')
 const waterfall = require('async/waterfall')
 const Keychain = require('libp2p-keychain')
-
+const NoKeychain = require('./no-keychain')
 /*
  * Load stuff from Repo into memory
  */
@@ -16,10 +16,15 @@ module.exports = function preStart (self) {
     waterfall([
       (cb) => self._repo.config.get(cb),
       (config, cb) => {
-        const pass = self._options.pass || 'todo do not hardcode the pass phrase'
-        const keychainOptions = Object.assign({passPhrase: pass}, config.Keychain)
-        self._keychain = new Keychain(self._repo.keys, keychainOptions)
-        self.log('keychain constructed')
+        const pass = self._options.pass
+        if (pass) {
+          const keychainOptions = Object.assign({passPhrase: pass}, config.Keychain)
+          self._keychain = new Keychain(self._repo.keys, keychainOptions)
+          self.log('keychain constructed')
+        } else {
+          self._keychain = new NoKeychain()
+          self.log('no keychain, use --pass')
+        }
         cb(null, config)
       },
       (config, cb) => {
