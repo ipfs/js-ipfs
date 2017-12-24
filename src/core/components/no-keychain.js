@@ -1,7 +1,7 @@
 'use strict'
 
 function fail () {
-  throw new Error('Key management requires the daemon to run with \'--pass ...\'')
+  throw new Error('Key management requires \'--pass ...\' option')
 }
 
 class NoKeychain {
