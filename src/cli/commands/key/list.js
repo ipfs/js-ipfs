@@ -14,7 +14,7 @@ module.exports = {
       if (err) {
         throw err
       }
-      res.Keys.forEach((ki) => print(`${ki.Name} ${ki.Id}`))
+      res.Keys.forEach((ki) => print(`${ki.Id} ${ki.Name}`))
     })
   }
 }

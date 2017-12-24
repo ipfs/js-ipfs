@@ -14,7 +14,7 @@ module.exports = {
       if (err) {
         throw err
       }
-      print(`renamed to ${res.Now} ${res.Id}`)
+      print(`renamed to ${res.Id} ${res.Now}`)
     })
   }
 }

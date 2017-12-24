@@ -28,7 +28,7 @@ module.exports = {
       if (err) {
         throw err
       }
-      print(`imported ${key.Name} ${key.Id}`)
+      print(`imported ${key.Id} ${key.Name}`)
     })
   }
 }
