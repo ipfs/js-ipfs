@@ -145,17 +145,29 @@ module.exports = function files (self) {
       throw new Error('You must supply an ipfsPath')
     }
 
+    ipfsPath = normalizePath(ipfsPath)
+    const pathComponents = ipfsPath.split('/')
+    const restPath = normalizePath(pathComponents.slice(1).join('/'))
+    const filterFile = (file) => (restPath && file.path === restPath) || (file.path === ipfsPath)
+
     const d = deferred.source()
 
     pull(
       exporter(ipfsPath, self._ipldResolver),
       pull.collect((err, files) => {
-        if (err) { d.end(err) }
+        if (err) { return d.abort(err) }
+        if (files && files.length > 1) {
+          files = files.filter(filterFile)
+        }
         if (!files || !files.length) {
-          return d.end(new Error('No such file'))
+          return d.abort(new Error('No such file'))
         }
 
-        const content = files[files.length - 1].content
+        const file = files[0]
+        const content = file.content
+        if (!content && file.type === 'dir') {
+          return d.abort(new Error('this dag node is a directory'))
+        }
         d.resolve(content)
       })
     )
@@ -164,9 +176,11 @@ module.exports = function files (self) {
   }
 
   function _lsPullStreamImmutable (ipfsPath) {
+    const path = normalizePath(ipfsPath)
+    const depth = path.split('/').length
     return pull(
-      exporter(ipfsPath, self._ipldResolver, { maxDepth: 1 }),
-      pull.filter((node) => node.depth === 1),
+      exporter(ipfsPath, self._ipldResolver, { maxDepth: depth }),
+      pull.filter((node) => node.depth === depth),
       pull.map((node) => {
         node = Object.assign({}, node, { hash: toB58String(node.hash) })
         delete node.content
@@ -221,9 +235,8 @@ module.exports = function files (self) {
     addPullStream: _addPullStream,
 
     cat: promisify((ipfsPath, callback) => {
-      const p = _catPullStream(ipfsPath)
       pull(
-        p,
+        _catPullStream(ipfsPath),
         pull.collect((err, buffers) => {
           if (err) { return callback(err) }
           callback(null, Buffer.concat(buffers))
@@ -231,11 +244,7 @@ module.exports = function files (self) {
       )
     }),
 
-    catReadableStream: (ipfsPath) => {
-      const p = _catPullStream(ipfsPath)
-
-      return toStream.source(p)
-    },
+    catReadableStream: (ipfsPath) => toStream.source(_catPullStream(ipfsPath)),
 
     catPullStream: _catPullStream,
 
@@ -298,4 +307,18 @@ module.exports = function files (self) {
 
     lsPullStreamImmutable: _lsPullStreamImmutable
   }
+}
+
+function normalizePath (path) {
+  if (Buffer.isBuffer(path)) {
+    path = toB58String(path)
+  }
+  if (path.indexOf('/ipfs/') === 0) {
+    path = path.substring('/ipfs/'.length)
+  }
+  if (path.charAt(path.length - 1) === '/') {
+    path = path.substring(0, path.length - 1)
+  }
+
+  return path
 }

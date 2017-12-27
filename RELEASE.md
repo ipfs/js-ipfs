@@ -14,7 +14,10 @@
     - [ ] interop
     - [ ] sharness
   - [ ] Run tests of the following projects with the new release:
-    - n/a
+    - [ ] [ipfs-pubsub-room](https://github.com/ipfs-shipyard/ipfs-pubsub-room)
+    - [ ] [peerpad-core](https://github.com/ipfs-shipyard/peerpad)
+    - [ ] [ipfs-log](https://github.com/orbitdb/ipfs-log)
+    - [ ] [orbit-db](https://github.com/orbitdb/orbit-db)
 - Documentation
   - [ ] Ensure that README.md is up to date
   - [ ] Ensure that all the examples run

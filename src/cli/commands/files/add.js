@@ -81,7 +81,7 @@ function addPipeline (index, addStream, list, argv) {
       originalPath: file.path
     })),
     pull.map((file) => ({
-      path: wrapWithDirectory ? path.join(WRAPPER, file.path) : file.path,
+      path: wrapWithDirectory ? WRAPPER + file.path : file.path,
       content: fs.createReadStream(file.originalPath)
     })),
     addStream,
@@ -206,12 +206,20 @@ module.exports = {
     }
     const ipfs = argv.ipfs
 
-    let list = []
+    let list
     waterfall([
-      (next) => glob(path.join(inPath, '/**/*'), next),
+      (next) => {
+        if (fs.statSync(inPath).isDirectory()) {
+          return glob('**/*', { cwd: inPath }, next)
+        }
+        next(null, [])
+      },
       (globResult, next) => {
-        list = globResult.length === 0 ? [inPath] : globResult
-
+        if (globResult.length === 0) {
+          list = [inPath]
+        } else {
+          list = globResult.map((f) => inPath + '/' + f)
+        }
         getTotalBytes(inPath, argv.recursive, next)
       },
       (totalBytes, next) => {

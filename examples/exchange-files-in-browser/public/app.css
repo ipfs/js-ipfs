@@ -1,0 +1,247 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  font-family: sans-serif;
+  color: white;
+  background: linear-gradient(to bottom,#041727 0%,#062b3f 100%);
+  pointer-events: auto;
+  padding: 0;
+  margin: 0;
+}
+
+h1, h2, h3 {
+  margin: 0;
+}
+
+h1 {
+  font-size: 2em;
+  font-weight: 300;
+}
+
+h2 {
+  font-size: 1.25em;
+  font-weight: 700;
+}
+
+h3 {
+  font-size: 1.0em;
+  font-weight: 700;
+}
+
+main,
+header {
+  filter: none;
+}
+
+.dragover-popup {
+  position: fixed;
+  top: 0.5em;
+  left: 0.5em;
+  width: calc(100% - 1em);
+  height: calc(100% - 1em);
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  pointer-events: none;
+}
+
+.dragover-popup h1 {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) 
+}
+
+body.dragging main,
+body.dragging header {
+  filter: blur(5px);
+}
+
+body.dragging .dragover-popup {
+  display: block;
+}
+
+header {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3em 0;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+ul li {
+  margin: 1em 0;
+  font-size: 0.7em;
+  font-family: monospace;
+  word-wrap: break-word;
+}
+
+button {
+  background-color: rgba(0,0,0,0.2);
+  color: #6acad1;
+  border: 2px solid #6acad1;
+  font-size: 1em;
+  padding: 0.625em 1.5em;
+  border-radius: 0.125em;
+  margin: .5em 0;
+}
+
+button.full {
+  margin-right: 0;
+  margin-left: 0;
+  width: 100%;
+}
+
+button:hover {
+  color: white;
+  border: 2px solid white;
+  cursor: pointer;
+}
+
+.address {
+  font-family: monospace
+}
+
+.disabled *,
+input:disabled,
+button:disabled {
+  opacity: 0.2;
+}
+
+input {
+  width: 100%;
+  border: 2px solid rgba(0,0,0,0.2);
+  color: black;
+  padding: 0.7em;
+  border-radius: 2px;
+}
+
+input:hover, input:focus, input:active {
+  border-color: #6acad1;
+}
+
+input, button {
+  outline: none;
+}
+
+main {
+  width: 90%;
+  margin: 0 auto;
+}
+
+.buttons,
+.columns {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.buttons > button,
+.columns > div {
+  width: calc(50% - 0.5em);
+}
+
+.buttons > button {
+  margin: 0 0 1em;
+}
+
+.box {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 1em;
+  margin-bottom: 1em;
+}
+
+.box > h2 {
+  display: block;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  border-right: 0;
+  border-left: 0;
+  text-align: center;
+  padding-bottom: 0.5em;
+  margin-bottom: 1em;
+}
+
+#peers i {
+  display: none;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+#peers.waiting i {
+  display: block;
+}
+
+#errors {
+  grid-area: errors;
+  color: red;
+  font-style: italic;
+  font-size: 1.125em;
+  display: block;
+  margin: 0 0 1em;
+}
+
+#errors.hidden {
+  display: none;
+}
+
+#note {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  font-size: 0.625em;
+}
+
+#file-status {
+  font-style: italic;
+  color: cyan;
+  font-size: 0.8em;
+  margin: 1em 0;
+}
+
+table {
+  width: 100%;
+  margin: 1em 0;
+  word-break: break-all;
+  border-collapse: collapse;
+}
+
+table thead {
+  background-color: rgba(255, 255, 255, 0.1);
+  font-weight: normal
+}
+
+table th, table td {
+  padding: 0.5em 0;
+}
+
+table td:last-child,
+table th:last-child {
+  width: 20%;
+  text-align: center;
+}
+
+table td:first-child {
+  width: 45%;
+}
+
+table td:nth-child(2) {
+  width: 35%;
+  font-family: monospace;
+}
+
+table tr:hover {
+  background-color: rgba(0, 0, 0, 0.2)
+}
+
+table a {
+  color: inherit;
+}
