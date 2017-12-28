@@ -446,7 +446,7 @@ A way to mitigate this in Chrome, is to run your IPFS node inside a Service Work
 
 Yes you can and in many ways. Read https://github.com/ipfs/notes/issues/256 for the multiple options.
 
-If your electron-rebuild step is failing, all you need to do is:
+If your [electron-rebuild step is failing](https://github.com/ipfs/js-ipfs/issues/843), all you need to do is:
 
 ```bash
 # Electron's version.
