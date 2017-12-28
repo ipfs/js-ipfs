@@ -70,6 +70,7 @@
     "execa": "^0.9.0",
     "expose-loader": "^0.7.4",
     "form-data": "^2.3.1",
+    "go-ipfs-dep": "^0.4.13",
     "hat": "0.0.3",
     "interface-ipfs-core": "~0.40.0",
     "left-pad": "^1.2.0",
