@@ -64,6 +64,7 @@ You can check the development status at the [Waffle Board](https://waffle.io/ipf
     - [Network](#network)
     - [Node Management](#node-management)
     - [Domain data types](#domain-data-types)
+- [FAQ](#faq)
 - [Packages](#packages)
 - [Development](#development)
   - [Clone and install dependencies](#clone-and-install-dependencies)
@@ -441,6 +442,29 @@ Yes, unfortunately, due to [Chrome aggressive resource throttling policy](https:
 
 A way to mitigate this in Chrome, is to run your IPFS node inside a Service Worker, so that the IPFS instance runs in a background process. You can learn how to install an IPFS node as a service worker in here the repo [ipfs-service-worker](https://github.com/ipfs/ipfs-service-worker)
 
+#### Can I use IPFS in my Electron App?
+
+Yes you can and in many ways. Read https://github.com/ipfs/notes/issues/256 for the multiple options.
+
+If your [electron-rebuild step is failing](https://github.com/ipfs/js-ipfs/issues/843), all you need to do is:
+
+```bash
+# Electron's version.
+export npm_config_target=1.7.6
+# The architecture of Electron, can be ia32 or x64.
+export npm_config_arch=x64
+export npm_config_target_arch=x64
+# Download headers for Electron.
+export npm_config_disturl=https://atom.io/download/electron
+# Tell node-pre-gyp that we are building for Electron.
+export npm_config_runtime=electron
+# Tell node-pre-gyp to build module from source code.
+export npm_config_build_from_source=true
+# Install all dependencies, and store cache to ~/.electron-gyp.
+HOME=~/.electron-gyp npm install
+```
+
+If you find any other issue, please check the [`Electron Support` issue](https://github.com/ipfs/js-ipfs/issues/843).
 
 ## Packages
 
