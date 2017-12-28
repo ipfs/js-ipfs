@@ -16,6 +16,7 @@ module.exports = (common) => {
     ]
     const keys = []
     let ipfs
+    let withGo
 
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
@@ -27,7 +28,11 @@ module.exports = (common) => {
         factory.spawnNode((err, node) => {
           expect(err).to.not.exist()
           ipfs = node
-          done()
+          ipfs.id((err, id) => {
+            expect(err).to.not.exist()
+            withGo = id.agentVersion.startsWith('go-ipfs')
+            done()
+          })
         })
       })
     })
@@ -135,6 +140,49 @@ module.exports = (common) => {
           expect(err).to.not.exist()
           const found = res.Keys.filter(k => k.Name === key.Name)
           expect(found).to.have.length(0)
+          done()
+        })
+      })
+    })
+
+    describe('exchange', () => {
+      let selfPem
+      let passwordPem = hat()
+
+      it('exports', (done) => {
+        if (withGo) {
+          console.log('Not supported by go-ipfs yet')
+          return done()
+        }
+        ipfs.key.export('self', passwordPem, (err, pem) => {
+          expect(err).to.not.exist()
+          expect(pem).to.exist()
+          selfPem = pem
+          done()
+        })
+      })
+
+      it('imports', (done) => {
+        if (withGo) {
+          console.log('Not supported by go-ipfs yet')
+          return done()
+        }
+        ipfs.key.import('clone', selfPem, passwordPem, (err, key) => {
+          expect(err).to.not.exist()
+          expect(key).to.exist()
+          expect(key).to.have.property('Name', 'clone')
+          expect(key).to.have.property('Id')
+          done()
+        })
+      })
+
+      it('removes', (done) => {
+        if (withGo) {
+          console.log('Not supported by go-ipfs yet')
+          return done()
+        }
+        ipfs.key.rm('clone', (err) => {
+          expect(err).to.not.exist()
           done()
         })
       })
