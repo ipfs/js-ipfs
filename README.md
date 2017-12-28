@@ -286,7 +286,6 @@ A complete API definition is in the works. Meanwhile, you can learn how to you u
   - `ipfs.key.list([callback])`
   - `ipfs.key.rename(oldName, newName, [callback])`
   - `ipfs.key.rm(name, [callback])`
-
 - [crypto (not yet implemented)](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC)
 
 #### `Network`
