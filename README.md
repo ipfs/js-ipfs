@@ -464,6 +464,8 @@ export npm_config_build_from_source=true
 HOME=~/.electron-gyp npm install
 ```
 
+If you find any other issue, please check the [`Electron Support` issue](https://github.com/ipfs/js-ipfs/issues/843).
+
 ## Packages
 
 | Package | Version | Deps | DevDeps | Travis | Circle | AppVeyor | Coverage |
