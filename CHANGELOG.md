@@ -1,3 +1,13 @@
+<a name="17.2.6"></a>
+## [17.2.6](https://github.com/ipfs/js-ipfs-api/compare/v17.2.5...v17.2.6) (2017-12-28)
+
+
+### Features
+
+* support key/export and key/import ([#653](https://github.com/ipfs/js-ipfs-api/issues/653)) ([496f08e](https://github.com/ipfs/js-ipfs-api/commit/496f08e))
+
+
+
 <a name="17.2.5"></a>
 ## [17.2.5](https://github.com/ipfs/js-ipfs-api/compare/v17.2.4...v17.2.5) (2017-12-20)
 
