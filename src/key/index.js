@@ -9,6 +9,8 @@ module.exports = (arg) => {
     gen: require('./gen')(send),
     list: require('./list')(send),
     rename: require('./rename')(send),
-    rm: require('./rm')(send)
+    rm: require('./rm')(send),
+    export: require('./export')(send),
+    import: require('./import')(send)
   }
 }
