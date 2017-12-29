@@ -9,7 +9,6 @@ chai.use(dirtyChai)
 const delay = require('delay')
 const series = require('async/series')
 const ipfsExec = require('../utils/ipfs-exec')
-const createRepo = require('../utils/create-repo-nodejs')
 const IPFS = require('../../src')
 
 const DaemonFactory = require('ipfsd-ctl')
@@ -29,7 +28,8 @@ describe('pubsub', function () {
   this.timeout(80 * 1000)
 
   let node
-  let ipfsd
+  let ipfsdA
+  let ipfsdB
   let cli
   let httpApi
 
@@ -37,51 +37,43 @@ describe('pubsub', function () {
   const topicB = 'nonscentsB'
   const topicC = 'nonscentsC'
 
-  let repo = createRepo()
   before(function (done) {
     this.timeout(60 * 1000)
 
-    node = new IPFS({
-      repo: createRepo(),
-      init: { bits: 1024 },
-      EXPERIMENTAL: {
-        pubsub: true
-      },
-      config
-    })
-
-    node.once('ready', () => {
-      done()
-    })
-
-    node.once('error', (err) => {
-      done(err)
-    })
+    DaemonFactory
+      .create({ remote: false })
+      .spawn({
+        type: 'proc',
+        exec: IPFS,
+        config,
+        args: ['--enable-pubsub-experiment']
+      }, (err, _ipfsd) => {
+        expect(err).to.not.exist()
+        ipfsdA = _ipfsd
+        node = _ipfsd.api
+        done()
+      })
   })
 
-  after((done) => {
-    node.stop((err) => {
-      expect(err).to.not.exist()
-      repo.teardown(done)
-    })
-  })
+  after((done) => ipfsdB.stop(done))
 
   before((done) => {
     df.spawn({
       type: 'js',
       args: ['--enable-pubsub-experiment'],
-      exec: `${process.cwd()}/src/cli/bin.js`,
+      exec: `./src/cli/bin.js`,
       config
-    }, (err, _node) => {
+    }, (err, _ipfsd) => {
       expect(err).to.not.exist()
-      httpApi = _node.api
-      ipfsd = _node
-      httpApi.repoPath = ipfsd.repoPath
+      httpApi = _ipfsd.api
+      ipfsdB = _ipfsd
+      httpApi.repoPath = ipfsdB.repoPath
       done()
     })
   })
 
-  after((done) => ipfsd.stop(done))
+  after((done) => ipfsdA.stop(done))
+  after((done) => ipfsdB.stop(done))
 
   before((done) => {
     cli = ipfsExec(httpApi.repoPath)

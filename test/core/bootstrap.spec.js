@@ -7,42 +7,38 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const isNode = require('detect-node')
+const IPFS = require('../../src')
 
-// This gets replaced by `create-repo-browser.js` in the browser
-const createTempRepo = require('../utils/create-repo-nodejs.js')
-
-const IPFS = require('../../src/core')
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create({ remote: false })
 
 describe('bootstrap', () => {
-  if (!isNode) { return }
+  if (!isNode) {
+    return
+  }
 
   let node
+  let ipfsd
 
   before(function (done) {
     this.timeout(40 * 1000)
-    node = new IPFS({
-      repo: createTempRepo(),
-      init: {
-        bits: 1024
-      },
-      EXPERIMENTAL: {
-        pubsub: true
-      },
+    df.spawn({
+      type: 'proc',
+      exec: IPFS,
       config: {
         Addresses: {
           Swarm: ['/ip4/127.0.0.1/tcp/0']
         }
       }
-    })
-
-    node.on('error', (err) => {
+    }, (err, _ipfsd) => {
       expect(err).to.not.exist()
+      ipfsd = _ipfsd
+      node = _ipfsd.api
+      done()
     })
-
-    node.on('start', done)
   })
 
-  after((done) => node.stop(done))
+  after((done) => ipfsd.stop(done))
 
   const defaultList = [
     '/ip4/104.131.131.82/tcp/4001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ',

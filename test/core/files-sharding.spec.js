@@ -9,7 +9,9 @@ chai.use(dirtyChai)
 const pull = require('pull-stream')
 
 const IPFS = require('../../src/core')
-const createTempRepo = require('../utils/create-repo-nodejs.js')
+
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create({ remote: false })
 
 describe('files directory (sharding tests)', () => {
   function createTestFiles () {
@@ -27,12 +29,14 @@ describe('files directory (sharding tests)', () => {
 
   describe('without sharding', () => {
     let ipfs
+    let ipfsd
 
     before(function (done) {
       this.timeout(40 * 1000)
 
-      ipfs = new IPFS({
-        repo: createTempRepo(),
+      df.spawn({
+        type: 'proc',
+        exec: IPFS,
         config: {
           Addresses: {
             Swarm: []
@@ -44,13 +48,17 @@ describe('files directory (sharding tests)', () => {
             }
           }
         }
+      }, (err, _ipfsd) => {
+        expect(err).to.not.exist()
+        ipfsd = _ipfsd
+        ipfs = _ipfsd.api
+        done()
       })
-      ipfs.once('ready', done)
     })
 
     after(function (done) {
       this.timeout(40 * 1000)
-      ipfs.stop(done)
+      ipfsd.stop(done)
     })
 
     it('should be able to add dir without sharding', function (done) {
@@ -72,12 +80,15 @@ describe('files directory (sharding tests)', () => {
 
   describe('with sharding', () => {
     let ipfs
+    let ipfsd
 
     before(function (done) {
       this.timeout(40 * 1000)
 
-      ipfs = new IPFS({
-        repo: createTempRepo(),
+      df.spawn({
+        type: 'proc',
+        exec: IPFS,
+        args: ['--enable-sharding-experiment'],
         config: {
           Addresses: {
             Swarm: []
@@ -88,17 +99,18 @@ describe('files directory (sharding tests)', () => {
               Enabled: false
             }
           }
-        },
-        EXPERIMENTAL: {
-          sharding: true
         }
+      }, (err, _ipfsd) => {
+        expect(err).to.not.exist()
+        ipfsd = _ipfsd
+        ipfs = _ipfsd.api
+        done()
       })
-      ipfs.once('ready', done)
     })
 
     after(function (done) {
       this.timeout(40 * 1000)
-      ipfs.stop(done)
+      ipfsd.stop(done)
     })
 
     it('should be able to add dir with sharding', function (done) {

@@ -67,7 +67,15 @@ function connectNodes (remoteNode, inProcNode, callback) {
 let nodes = []
 
 function addNode (inProcNode, callback) {
-  df.spawn({ type: 'js', exec: `./src/cli/bin.js` }, (err, ipfsd) => {
+  df.spawn({
+    type: 'js',
+    exec: `./src/cli/bin.js`,
+    config: {
+      Addresses: {
+        Swarm: [`/ip4/127.0.0.1/tcp/0/ws`]
+      }
+    }
+  }, (err, ipfsd) => {
     expect(err).to.not.exist()
     nodes.push(ipfsd)
     connectNodes(ipfsd.api, inProcNode, (err) => callback(err, ipfsd.api))
@@ -82,8 +90,7 @@ describe('bitswap', function () {
   beforeEach(function (done) {
     this.timeout(60 * 1000)
 
-    let options = {
-      repo: createTempRepo(),
+    let config = {
       config: {
         Addresses: {
           Swarm: []
@@ -98,7 +105,7 @@ describe('bitswap', function () {
     }
 
     if (isNode) {
-      options = Object.assign(options, {
+      config = Object.assign(config, {
         config: {
           Addresses: {
             Swarm: ['/ip4/127.0.0.1/tcp/0']
@@ -107,18 +114,23 @@ describe('bitswap', function () {
       })
     }
 
-    inProcNode = new IPFS(options)
-    inProcNode.on('ready', () => done())
+    DaemonFactory
+      .create({ remote: false })
+      .spawn({ type: 'proc', exec: IPFS, config }, (err, _ipfsd) => {
+        expect(err).to.not.exist()
+        nodes.push(_ipfsd)
+        inProcNode = _ipfsd.api
+        done()
+      })
   })
 
   afterEach(function (done) {
     this.timeout(80 * 1000)
     const tasks = nodes.map((node) => (cb) => node.stop(cb))
-    tasks.push((cb) => setTimeout(() => inProcNode.stop(() => cb()), 500))
     parallel(tasks, (err) => {
       expect(err).to.not.exist()
       nodes = []
-      done(err)
+      done()
     })
   })
 

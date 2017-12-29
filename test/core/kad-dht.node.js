@@ -7,42 +7,26 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const parallel = require('async/parallel')
-const IPFS = require('../../src')
 
-const createRepo = require('../utils/create-repo-nodejs')
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create()
 
 const config = {
   Addresses: {
-    Swarm: [`/ip4/127.0.0.1/tcp/0`],
+    Swarm: [`/ip4/127.0.0.1/tcp/0`, `/ip4/127.0.0.1/tcp/0/ws`],
     API: `/ip4/127.0.0.1/tcp/0`,
     Gateway: `/ip4/127.0.0.1/tcp/0`
   },
   Bootstrap: [],
   Discovery: {
     MDNS: {
-      Enabled:
-        false
+      Enabled: false
     }
   }
 }
 
 function createNode (callback) {
-  const node = new IPFS({
-    repo: createRepo(),
-    init: { bits: 1024 },
-    EXPERIMENTAL: {
-      pubsub: true
-    },
-    config
-  })
-
-  node.once('ready', () => {
-    callback(null, node)
-  })
-
-  node.once('error', (err) => {
-    callback(err)
-  })
+  df.spawn({ type: 'js', exec: './src/cli/bin.js', config }, callback)
 }
 
 describe('verify that kad-dht is doing its thing', () => {
@@ -62,9 +46,9 @@ describe('verify that kad-dht is doing its thing', () => {
     ], (err, _nodes) => {
       expect(err).to.not.exist()
       nodes = _nodes
-      nodeA = _nodes[0]
-      nodeB = _nodes[1]
-      nodeC = _nodes[2]
+      nodeA = _nodes[0].api
+      nodeB = _nodes[1].api
+      nodeC = _nodes[2].api
       parallel([
         (cb) => nodeA.id(cb),
         (cb) => nodeB.id(cb),

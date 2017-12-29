@@ -8,7 +8,7 @@ const df = DaemonFactory.create()
 
 const common = {
   setup: function (callback) {
-    callback(null, df)
+    callback(null, df, 'js', './src/cli/bin.js')
   }
 }
 
