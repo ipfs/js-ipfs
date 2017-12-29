@@ -4,7 +4,7 @@ machine:
 
 test:
   post:
-    - npm run coverage -- --upload
+    - npm run coverage -- --upload --providers coveralls
 
 dependencies:
   pre:
