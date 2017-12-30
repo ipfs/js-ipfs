@@ -19,8 +19,12 @@ describe('\'deal with HTTP weirdness\' tests', () => {
     // go-ipfs always (currently) adds a content-type header, even if no content is present,
     // the standard behaviour for an http-api is to omit this header if no content is present
     const server = require('http').createServer((req, res) => {
-      res.writeHead(200)
-      res.end()
+      // Consume the entire request, before responding.
+      req.on('data', () => {})
+      req.on('end', () => {
+        res.writeHead(200)
+        res.end()
+      })
     })
 
     server.listen(6001, () => {
