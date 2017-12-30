@@ -575,7 +575,7 @@ module.exports = (common) => {
               ipfs2.pubsub.unsubscribe(topic, sub2)
           })
 
-          it('send/receive 10k messages', function (done) {
+          it.skip('send/receive 10k messages', function (done) {
             this.timeout(2 * 60 * 1000)
 
             const msgBase = 'msg - '
