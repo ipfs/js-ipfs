@@ -9,7 +9,7 @@ chai.use(dirtyChai)
 const parallel = require('async/parallel')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create()
+const df = DaemonFactory.create({ type: 'js' })
 
 const config = {
   Addresses: {
@@ -26,7 +26,7 @@ const config = {
 }
 
 function createNode (callback) {
-  df.spawn({ type: 'js', exec: './src/cli/bin.js', config }, callback)
+  df.spawn({ exec: './src/cli/bin.js', config }, callback)
 }
 
 describe('verify that kad-dht is doing its thing', () => {

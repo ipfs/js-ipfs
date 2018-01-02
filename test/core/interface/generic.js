@@ -5,11 +5,11 @@ const test = require('interface-ipfs-core')
 const IPFS = require('../../../src')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ remote: false })
+const df = DaemonFactory.create({ type: 'proc' })
 
 const common = {
   setup: function (callback) {
-    callback(null, df, 'proc', IPFS)
+    callback(null, df, IPFS)
   }
 }
 test.generic(common)

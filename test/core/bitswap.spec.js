@@ -17,7 +17,9 @@ const multihashing = require('multihashing-async')
 const CID = require('cids')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create()
+const df = DaemonFactory.create({ type: 'js' })
+
+const dfProc = DaemonFactory.create({ type: 'proc' })
 
 // This gets replaced by '../utils/create-repo-browser.js' in the browser
 const createTempRepo = require('../utils/create-repo-nodejs.js')
@@ -68,7 +70,6 @@ let nodes = []
 
 function addNode (inProcNode, callback) {
   df.spawn({
-    type: 'js',
     exec: `./src/cli/bin.js`,
     config: {
       Addresses: {
@@ -114,14 +115,12 @@ describe('bitswap', function () {
       })
     }
 
-    DaemonFactory
-      .create({ remote: false })
-      .spawn({ type: 'proc', exec: IPFS, config }, (err, _ipfsd) => {
-        expect(err).to.not.exist()
-        nodes.push(_ipfsd)
-        inProcNode = _ipfsd.api
-        done()
-      })
+    dfProc.spawn({ exec: IPFS, config }, (err, _ipfsd) => {
+      expect(err).to.not.exist()
+      nodes.push(_ipfsd)
+      inProcNode = _ipfsd.api
+      done()
+    })
   })
 
   afterEach(function (done) {

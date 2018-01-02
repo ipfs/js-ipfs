@@ -4,11 +4,11 @@
 const test = require('interface-ipfs-core')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create()
+const df = DaemonFactory.create({ type: 'js' })
 
 const common = {
   setup: function (callback) {
-    callback(null, df, 'js', './src/cli/bin.js')
+    callback(null, df, './src/cli/bin.js')
   }
 }
 

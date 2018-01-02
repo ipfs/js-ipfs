@@ -12,7 +12,7 @@ const ipfsExec = require('../utils/ipfs-exec')
 const IPFS = require('../../src')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create()
+const df = DaemonFactory.create({ type: 'js' })
 
 const config = {
   Bootstrap: [],
@@ -41,9 +41,8 @@ describe('pubsub', function () {
     this.timeout(60 * 1000)
 
     DaemonFactory
-      .create({ remote: false })
+      .create({ type: 'proc' })
       .spawn({
-        type: 'proc',
         exec: IPFS,
         config,
         args: ['--enable-pubsub-experiment']
@@ -59,7 +58,6 @@ describe('pubsub', function () {
 
   before((done) => {
     df.spawn({
-      type: 'js',
       args: ['--enable-pubsub-experiment'],
       exec: `./src/cli/bin.js`,
       config

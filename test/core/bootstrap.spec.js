@@ -10,7 +10,7 @@ const isNode = require('detect-node')
 const IPFS = require('../../src')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ remote: false })
+const df = DaemonFactory.create({ type: 'proc' })
 
 describe('bootstrap', () => {
   if (!isNode) {
@@ -23,7 +23,6 @@ describe('bootstrap', () => {
   before(function (done) {
     this.timeout(40 * 1000)
     df.spawn({
-      type: 'proc',
       exec: IPFS,
       config: {
         Addresses: {
@@ -76,7 +75,7 @@ describe('bootstrap', () => {
   it('add a peer to the bootstrap list', (done) => {
     node.bootstrap.add('/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT', (err, res) => {
       expect(err).to.not.exist()
-      expect(res).to.be.eql({Peers: ['/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT']})
+      expect(res).to.be.eql({ Peers: ['/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT'] })
       node.bootstrap.list((err, list) => {
         expect(err).to.not.exist()
         expect(list.Peers).to.deep.equal(updatedList)
@@ -88,7 +87,7 @@ describe('bootstrap', () => {
   it('remove a peer from the bootstrap list', (done) => {
     node.bootstrap.rm('/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT', (err, res) => {
       expect(err).to.not.exist()
-      expect(res).to.be.eql({Peers: ['/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT']})
+      expect(res).to.be.eql({ Peers: ['/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT'] })
       node.bootstrap.list((err, list) => {
         expect(err).to.not.exist()
         expect(list.Peers).to.deep.equal(defaultList)

@@ -12,7 +12,7 @@ const ipfsExec = require('../utils/ipfs-exec')
 const parallel = require('async/parallel')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create()
+const df = DaemonFactory.create({ type: 'js' })
 
 const config = {
   Bootstrap: [],
@@ -36,7 +36,7 @@ describe('swarm', () => {
 
     series([
       (cb) => {
-        df.spawn({ type: 'js', exec: `./src/cli/bin.js`, config }, (err, node) => {
+        df.spawn({ exec: `./src/cli/bin.js`, config }, (err, node) => {
           expect(err).to.not.exist()
           ipfsA = ipfsExec(node.repoPath)
           nodes.push(node)
@@ -44,7 +44,7 @@ describe('swarm', () => {
         })
       },
       (cb) => {
-        df.spawn({ type: 'js', exec: `./src/cli/bin.js`, config }, (err, node) => {
+        df.spawn({ exec: `./src/cli/bin.js`, config }, (err, node) => {
           expect(err).to.not.exist()
           node.api.id((err, id) => {
             expect(err).to.not.exist()

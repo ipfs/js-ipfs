@@ -11,7 +11,7 @@ const pull = require('pull-stream')
 const IPFS = require('../../src/core')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ remote: false })
+const df = DaemonFactory.create({ type: 'proc' })
 
 describe('files directory (sharding tests)', () => {
   function createTestFiles () {
@@ -35,7 +35,6 @@ describe('files directory (sharding tests)', () => {
       this.timeout(40 * 1000)
 
       df.spawn({
-        type: 'proc',
         exec: IPFS,
         config: {
           Addresses: {
@@ -86,7 +85,6 @@ describe('files directory (sharding tests)', () => {
       this.timeout(40 * 1000)
 
       df.spawn({
-        type: 'proc',
         exec: IPFS,
         args: ['--enable-sharding-experiment'],
         config: {

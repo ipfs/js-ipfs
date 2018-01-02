@@ -12,7 +12,7 @@ const clean = require('../utils/clean')
 const os = require('os')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create()
+const df = DaemonFactory.create({ type: 'js' })
 
 function off (tests) {
   describe('daemon off (directly to core)', () => {
@@ -49,7 +49,7 @@ function on (tests) {
       // before step
       this.timeout(60 * 1000)
 
-      df.spawn({ type: 'js', exec: `./src/cli/bin.js` }, (err, node) => {
+      df.spawn({ exec: `./src/cli/bin.js` }, (err, node) => {
         expect(err).to.not.exist()
         ipfsd = node
         thing.ipfs = ipfsExec(node.repoPath)
