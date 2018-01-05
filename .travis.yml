@@ -1,3 +1,4 @@
+# Warning: This file is automatically synced from https://github.com/ipfs/ci-sync so if you want to change it, please change it there and ask someone to sync all repositories.
 sudo: false
 language: node_js
 
@@ -13,6 +14,7 @@ matrix:
 script:
   - npm run lint
   - npm run test
+  - npm run coverage
 
 before_script:
   - export DISPLAY=:99.0
