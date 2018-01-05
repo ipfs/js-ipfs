@@ -1,3 +1,14 @@
+<a name="0.38.0"></a>
+# [0.38.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.37.0...v0.38.0) (2018-01-05)
+
+
+### Features
+
+* normalize KEY API ([#192](https://github.com/ipfs/interface-ipfs-core/issues/192)) ([5a21d6c](https://github.com/ipfs/interface-ipfs-core/commit/5a21d6c))
+* normalize NAME API ([#190](https://github.com/ipfs/interface-ipfs-core/issues/190)) ([9670c1a](https://github.com/ipfs/interface-ipfs-core/commit/9670c1a))
+
+
+
 <a name="0.37.0"></a>
 # [0.37.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.36.16...v0.37.0) (2017-12-28)
 
