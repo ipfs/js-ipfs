@@ -238,8 +238,8 @@ $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods "[\"PUT\", \"P
   - [`ipfs.swarm.disconnect(addr, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#disconnect)
   - [`ipfs.swarm.peers([opts] [, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#peers)
 - [name](https://github.com/ipfs/interface-ipfs-core/tree/master/API/name)
-  - [`ipfs.name.publish()`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/NAME.md#publish)
-  - [`ipfs.name.resolve()`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/NAME.md#resolve)
+  - [`ipfs.name.publish(addr, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/NAME.md#publish)
+  - [`ipfs.name.resolve(addr, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/NAME.md#resolve)
 
 #### `Node Management`
 
@@ -260,8 +260,12 @@ $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods "[\"PUT\", \"P
   - `ipfs.log.tail([callback])`
   - `ipfs.log.level(subsystem, level, [options, callback])`
 - key:
-  - `ipfs.key.gen(name, [options, callback])`
-  - `ipfs.key.list([options, callback])`
+  - [`ipfs.key.gen(name, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#javascript---ipfskeygenname-options-callback)
+  - [`ipfs.key.list([options, callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#javascript---ipfskeylistcallback)
+  - [`ipfs.key.rm(name, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#javascript---ipfskeyrmname-callback)
+  - [`ipfs.key.rename(oldName, newName, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#javascript---ipfskeyrenameoldname-newname-callback)
+  - [`ipfs.key.export(name, password, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#javascript---ipfskeyexportname-password-callback)
+  - [`ipfs.key.import(name, pem, password, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#javascript---ipfskeyimportname-pem-password-callback)
 
 #### `Pubsub Caveat` 
 
