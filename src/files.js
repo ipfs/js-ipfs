@@ -97,10 +97,10 @@ module.exports = (common) => {
       })
 
       it('a BIG buffer with progress enabled', (done) => {
-        let progCount = 0
+        let progCalled = false
         let accumProgress = 0
         function handler (p) {
-          progCount += 1
+          progCalled = true
           accumProgress = p
         }
 
@@ -112,7 +112,7 @@ module.exports = (common) => {
           expect(file.hash).to.equal(bigFile.cid)
           expect(file.path).to.equal(bigFile.cid)
 
-          expect(progCount).to.equal(58)
+          expect(progCalled).to.be.true()
           expect(accumProgress).to.equal(bigFile.data.length)
           done()
         })
@@ -223,10 +223,10 @@ module.exports = (common) => {
           return i + (entry.content ? entry.content.length : 0)
         }, 0)
 
-        let progCount = 0
+        let progCalled = false
         let accumProgress = 0
         const handler = (p) => {
-          progCount += 1
+          progCalled = true
           accumProgress += p
         }
 
@@ -234,7 +234,7 @@ module.exports = (common) => {
           expect(err).to.not.exist()
           const root = filesAdded[filesAdded.length - 1]
 
-          expect(progCount).to.equal(8)
+          expect(progCalled).to.be.true()
           expect(accumProgress).to.be.at.least(total)
           expect(root.path).to.equal('test-folder')
           expect(root.hash).to.equal(directory.cid)
