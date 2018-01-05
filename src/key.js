@@ -47,8 +47,8 @@ module.exports = (common) => {
           ipfs.key.gen(name, kt, (err, key) => {
             expect(err).to.not.exist()
             expect(key).to.exist()
-            expect(key).to.have.property('Name', name)
-            expect(key).to.have.property('Id')
+            expect(key).to.have.property('name', name)
+            expect(key).to.have.property('id')
             keys.push(key)
             done()
           })
@@ -62,16 +62,16 @@ module.exports = (common) => {
         ipfs.key.list((err, res) => {
           expect(err).to.not.exist()
           expect(res).to.exist()
-          expect(res.Keys).to.exist()
-          expect(res.Keys.length).to.be.above(keys.length - 1)
-          listedKeys = res.Keys
+          expect(res).to.be.an('array')
+          expect(res.length).to.be.above(keys.length - 1)
+          listedKeys = res
           done()
         })
       })
 
       it('contains the created keys', () => {
         keys.forEach(ki => {
-          const found = listedKeys.filter(lk => ki.Name === lk.Name && ki.Id === lk.Id)
+          const found = listedKeys.filter(lk => ki.name === lk.name && ki.id === lk.id)
           expect(found).to.have.length(1)
         })
       })
@@ -82,7 +82,7 @@ module.exports = (common) => {
       let newName
 
       before(() => {
-        oldName = keys[0].Name
+        oldName = keys[0].name
         newName = 'x' + oldName
       })
 
@@ -90,10 +90,10 @@ module.exports = (common) => {
         ipfs.key.rename(oldName, newName, (err, res) => {
           expect(err).to.not.exist()
           expect(res).to.exist()
-          expect(res).to.have.property('Was', oldName)
-          expect(res).to.have.property('Now', newName)
-          expect(res).to.have.property('Id', keys[0].Id)
-          keys[0].Name = newName
+          expect(res).to.have.property('was', oldName)
+          expect(res).to.have.property('now', newName)
+          expect(res).to.have.property('id', keys[0].id)
+          keys[0].name = newName
           done()
         })
       })
@@ -101,7 +101,7 @@ module.exports = (common) => {
       it('contains the new name', (done) => {
         ipfs.key.list((err, res) => {
           expect(err).to.not.exist()
-          const found = res.Keys.filter(k => k.Name === newName)
+          const found = res.filter(k => k.name === newName)
           expect(found).to.have.length(1)
           done()
         })
@@ -110,7 +110,7 @@ module.exports = (common) => {
       it('does not contain the old name', (done) => {
         ipfs.key.list((err, res) => {
           expect(err).to.not.exist()
-          const found = res.Keys.filter(k => k.Name === oldName)
+          const found = res.filter(k => k.name === oldName)
           expect(found).to.have.length(0)
           done()
         })
@@ -124,13 +124,11 @@ module.exports = (common) => {
       })
 
       it('removes a key', function (done) {
-        ipfs.key.rm(key.Name, (err, res) => {
+        ipfs.key.rm(key.name, (err, res) => {
           expect(err).to.not.exist()
           expect(res).to.exist()
-          expect(res).to.have.property('Keys')
-          expect(res.Keys).to.have.length(1)
-          expect(res.Keys[0]).to.have.property('Name', key.Name)
-          expect(res.Keys[0]).to.have.property('Id', key.Id)
+          expect(res).to.have.property('name', key.name)
+          expect(res).to.have.property('id', key.id)
           done()
         })
       })
@@ -138,7 +136,7 @@ module.exports = (common) => {
       it('does not contain the removed name', (done) => {
         ipfs.key.list((err, res) => {
           expect(err).to.not.exist()
-          const found = res.Keys.filter(k => k.Name === key.Name)
+          const found = res.filter(k => k.name === key.name)
           expect(found).to.have.length(0)
           done()
         })
@@ -170,8 +168,8 @@ module.exports = (common) => {
         ipfs.key.import('clone', selfPem, passwordPem, (err, key) => {
           expect(err).to.not.exist()
           expect(key).to.exist()
-          expect(key).to.have.property('Name', 'clone')
-          expect(key).to.have.property('Id')
+          expect(key).to.have.property('name', 'clone')
+          expect(key).to.have.property('id')
           done()
         })
       })

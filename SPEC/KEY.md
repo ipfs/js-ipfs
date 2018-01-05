@@ -23,16 +23,13 @@ If no `callback` is passed, a promise is returned.
 **Example:**
 
 ```JavaScript
-ipfs.key.add(
-  'my-key', 
-  { type: 'rsa', size: 2048 }, 
-  (err, key) => console.log(key))
+ipfs.key.gen('my-key', {
+    type: 'rsa',
+    size: 2048
+}, (err, key) => console.log(key))
 
-
-{ 
-  Name: 'my-key',
-  Id: 'Qmd4xC46Um6s24MradViGLFtMitvrR4SVexKUgPgFjMNzg'
-}
+// { id: 'QmYWqAFvLWb2G5A69JGXui2JJXzaHXiUEmQkQgor6kNNcJ',
+//  name: 'my-key' }
 ```
 
 #### `list`
@@ -43,7 +40,14 @@ ipfs.key.add(
 
 ##### `JavaScript` - ipfs.key.list([callback])
 
-`callback` must follow `function (err, keys) {}` signature, where `err` is an Error if the operation was not successful. `keys` is an object with the property `Keys` that is an array of `KeyInfo` (`name` and `id`)
+`callback` must follow `function (err, keys) {}` signature, where `err` is an Error if the operation was not successful. `keys` is an array of:
+
+```
+{
+  id: 'hash',   // string - the hash of the key
+  name: 'self'  // string - the name of the key
+}
+```
 
 If no `callback` is passed, a promise is returned.
 
@@ -52,14 +56,12 @@ If no `callback` is passed, a promise is returned.
 ```JavaScript
 ipfs.key.list((err, keys) => console.log(keys))
 
-{ 
-  Keys: [
-    { Name: 'self',
-      Id: 'QmRT6i9wXVSmxKi3MxVRduZqF3Wvv8DuV5utMXPN3BxPML' },
-    { Name: 'my-key',
-      Id: 'Qmd4xC46Um6s24MradViGLFtMitvrR4SVexKUgPgFjMNzg' } 
-  ]
-}
+// [
+//   { id: 'QmTe4tuceM2sAmuZiFsJ9tmAopA8au71NabBDdpPYDjxAb',
+//     name: 'self' },
+//   { id: 'QmWETF5QvzGnP7jKq5sPDiRjSM2fzwzNsna4wSBEzRzK6W',
+//     name: 'my-key' }
+// ]
 ```
 
 #### `rm`
@@ -73,7 +75,14 @@ ipfs.key.list((err, keys) => console.log(keys))
 Where:
 - `name` is the local name for the key
 
-`callback` must follow `function (err, key) {}` signature, where `err` is an Error if the operation was not successful. `key` is an object that describes the removed key.
+`callback` must follow `function (err, key) {}` signature, where `err` is an Error if the operation was not successful. `key` is an object that describes the removed key:
+
+```
+{
+  id: 'hash',   // string - the hash of the key
+  name: 'self'  // string - the name of the key
+}
+```
 
 If no `callback` is passed, a promise is returned.
 
@@ -82,12 +91,8 @@ If no `callback` is passed, a promise is returned.
 ```JavaScript
 ipfs.key.rm('my-key', (err, key) => console.log(key))
 
-{ 
-  Keys: [
-    { Name: 'my-key',
-      Id: 'Qmd4xC46Um6s24MradViGLFtMitvrR4SVexKUgPgFjMNzg' } 
-  ]
-}
+// { id: 'QmWETF5QvzGnP7jKq5sPDiRjSM2fzwzNsna4wSBEzRzK6W',
+//   name: 'my-key' }
 ```
 
 #### `rename`
@@ -109,17 +114,12 @@ If no `callback` is passed, a promise is returned.
 **Example:**
 
 ```JavaScript
-ipfs.key.rename(
-  'my-key', 
-  'my-new-key',
-  (err, key) => console.log(key))
-  
-{ 
-  Was: 'my-key',
-  Now: 'my-new-key',
-  Id: 'Qmd4xC46Um6s24MradViGLFtMitvrR4SVexKUgPgFjMNzg',
-  Overwrite: false
-}
+ipfs.key.rename('my-key', 'my-new-key', (err, key) => console.log(key))
+
+// { id: 'Qmd4xC46Um6s24MradViGLFtMitvrR4SVexKUgPgFjMNzg',
+//   was: 'my-key',
+//   now: 'my-new-key',
+//   overwrite: false }
 ```
 
 #### `export`
@@ -134,7 +134,7 @@ Where:
 - `name` is the local name for the key
 - `password` is the password to protect the key
 
-`callback` must follow `function (err, pem) {}` signature, where `err` is an Error if the operation was not successful. `pem` is the string representation of the key
+`callback` must follow `function (err, pem) {}` signature, where `err` is an Error if the operation was not successful. `pem` is the string representation of the key.
 
 If no `callback` is passed, a promise is returned.
 
@@ -143,12 +143,11 @@ If no `callback` is passed, a promise is returned.
 ```JavaScript
 ipfs.key.export('self', 'password', (err, pem) => console.log(pem))
 
------BEGIN ENCRYPTED PRIVATE KEY-----
-MIIFDTA/BgkqhkiG9w0BBQ0wMjAaBgkqhkiG9w0BBQwwDQQIpdO40RVyBwACAWQw
-...
-YA==
------END ENCRYPTED PRIVATE KEY-----
-
+// -----BEGIN ENCRYPTED PRIVATE KEY-----
+// MIIFDTA/BgkqhkiG9w0BBQ0wMjAaBgkqhkiG9w0BBQwwDQQIpdO40RVyBwACAWQw
+// ...
+// YA==
+// -----END ENCRYPTED PRIVATE KEY-----
 ```
 
 #### `import`
@@ -173,7 +172,6 @@ If no `callback` is passed, a promise is returned.
 ```JavaScript
 ipfs.key.import('clone', 'password', (err, key) => console.log(key))
 
-{ Name: 'clone',
-  Id: 'QmQRiays958UM7norGRQUG3tmrLq8pJdmJarwYSk2eLthQ' 
-}
+// { id: 'QmQRiays958UM7norGRQUG3tmrLq8pJdmJarwYSk2eLthQ',
+//   name: 'clone' }
 ```
