@@ -51,7 +51,7 @@ describe('.key', function () {
         ipfs.key.list((err, res) => {
           expect(err).to.not.exist()
           expect(res).to.exist()
-          expect(res.Keys.length).to.equal(3)
+          expect(res.length).to.equal(3)
           done()
         })
       })
@@ -77,7 +77,7 @@ describe('.key', function () {
       it('4 keys to show up + self', () => {
         return ipfs.key.list().then((res) => {
           expect(res).to.exist()
-          expect(res.Keys.length).to.equal(5)
+          expect(res.length).to.equal(5)
         })
       })
     })
