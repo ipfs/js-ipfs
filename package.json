@@ -21,9 +21,9 @@
   "scripts": {
     "lint": "aegir lint",
     "build": "aegir build",
-    "test": "aegir test -t node -t browser --no-cors",
+    "test": "aegir test -t node -t browser -t webworker --no-cors",
     "test:node": "aegir test -t node",
-    "test:browser": "aegir test -t browser --no-cors",
+    "test:browser": "aegir test -t browser -t webworker --no-cors",
     "test:node:core": "aegir test -t node -f test/core/**.js",
     "test:node:http": "aegir test -t node -f test/http-api/index.js",
     "test:node:gateway": "aegir test -t node -f test/gateway/index.js",
