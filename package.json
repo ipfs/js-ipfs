@@ -11,6 +11,7 @@
     "./src/core/runtime/config-nodejs.json": "./src/core/runtime/config-browser.json",
     "./src/core/runtime/libp2p-nodejs.js": "./src/core/runtime/libp2p-browser.js",
     "./src/core/runtime/repo-nodejs.js": "./src/core/runtime/repo-browser.js",
+    "./src/core/runtime/dns-nodejs.js": "./src/core/runtime/dns-browser.js",
     "./test/utils/create-repo-nodejs.js": "./test/utils/create-repo-browser.js",
     "stream": "readable-stream"
   },
