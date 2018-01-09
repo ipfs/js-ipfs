@@ -12,10 +12,11 @@ describe('dns', () => runOnAndOff((thing) => {
     ipfs = thing.ipfs
   })
 
-  it('dns record for ipfs.io', function () {
+  it('resolve ipfs.io dns', function () {
     this.timeout(60 * 1000)
 
-    return ipfs('ipfs.io').then((res) => {
+    return ipfs('dns ipfs.io').then((res) => {
+      console.log(res)
       expect(res.substr(0, 6)).to.eql('/ipfs/')
     })
   })

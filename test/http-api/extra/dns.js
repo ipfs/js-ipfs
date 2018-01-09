@@ -8,7 +8,7 @@ chai.use(dirtyChai)
 
 module.exports = (ctl) => {
   describe('.dns', () => {
-    it('get dns for ipfs.io', (done) => {
+    it('resolve ipfs.io dns', (done) => {
       ctl.dns('ipfs.io', (err, result) => {
         expect(err).to.not.exist()
         expect(result).to.exist()

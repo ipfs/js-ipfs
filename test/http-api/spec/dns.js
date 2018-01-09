@@ -11,7 +11,7 @@ module.exports = (http) => {
       api = http.api.server.select('API')
     })
 
-    it('get the id', (done) => {
+    it('resolve ipfs.io dns', (done) => {
       api.inject({
         method: 'GET',
         url: '/api/v0/dns?arg=ipfs.io'
