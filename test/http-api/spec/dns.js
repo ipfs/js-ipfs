@@ -16,7 +16,7 @@ module.exports = (http) => {
         method: 'GET',
         url: '/api/v0/dns?arg=ipfs.io'
       }, (res) => {
-        expect(res).to.have.property('Path')
+        expect(res.result).to.have.property('Path')
         done()
       })
     })
