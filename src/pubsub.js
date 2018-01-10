@@ -298,16 +298,15 @@ module.exports = (common) => {
             (cb) => ipfs3.pubsub.subscribe(topicOther, sub3, cb)
           ], (err) => {
             expect(err).to.not.exist()
-            setTimeout(() => {
-              ipfs1.pubsub.peers(topic, (err, peers) => {
-                expect(err).to.not.exist()
 
-                expect(peers).to.be.empty()
-                ipfs1.pubsub.unsubscribe(topic, sub1)
-                ipfs2.pubsub.unsubscribe(topicOther, sub2)
-                ipfs3.pubsub.unsubscribe(topicOther, sub3)
-                done()
-              }, 10000)
+            ipfs1.pubsub.peers(topic, (err, peers) => {
+              expect(err).to.not.exist()
+
+              expect(peers).to.be.empty()
+              ipfs1.pubsub.unsubscribe(topic, sub1)
+              ipfs2.pubsub.unsubscribe(topicOther, sub2)
+              ipfs3.pubsub.unsubscribe(topicOther, sub3)
+              done()
             })
           })
         })

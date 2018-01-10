@@ -12,7 +12,7 @@ pubsub API
 - `topic: string`
 - `options: Object` - (Optional), might contain the following properties:
   - `discover`: type: Boolean - Will use the DHT to find other peers.
-- `handler: (msg) => ()` - Event handler which will be called with a message object everytime one is received. The `msg` has the format `{from: string, seqno: Buffer, data: Buffer, topicCIDs: Array<string>}`.
+- `handler: (msg) => ()` - Event handler which will be called with a message object everytime one is received. The `msg` has the format `{from: string, seqno: Buffer, data: Buffer, topicIDs: Array<string>}`.
 - `callback: (Error) => ()` (Optional) Called once the subscription is established.
 
 If no `callback` is passed, a [promise][] is returned.
