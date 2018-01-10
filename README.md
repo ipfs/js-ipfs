@@ -239,7 +239,11 @@ A complete API definition is in the works. Meanwhile, you can learn how to you u
   - [`ipfs.files.addReadableStream([options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/FILES.md#addreadablestream)
   - [`ipfs.files.addPullStream([options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/FILES.md#addpullstream)
   - [`ipfs.files.cat(multihash, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/FILES.md#cat)
+  - [`ipfs.files.catReadableStream([options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/FILES.md#catreadablestream)
+  - [`ipfs.files.catPullStream([options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/FILES.md#catpullstream)
   - [`ipfs.files.get(hash, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/FILES.md#get)
+  - [`ipfs.files.getReadableStream([options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/FILES.md#getreadablestream)
+  - [`ipfs.files.getPullStream([options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/FILES.md#getpullstream)  
 
 - [block](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md)
   - [`ipfs.block.get(cid, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md#get)
