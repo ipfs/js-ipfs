@@ -52,3 +52,26 @@ ipfs.version((err, version) => {
 A great source of [examples][] can be found in the tests for this API.
 
 [examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/generic.js
+
+#### `dns`
+
+> Resolve DNS links
+
+##### `Go` **WIP**
+
+##### `JavaScript` - ipfs.dns(domain, [callback])
+
+`callback` must follow `function (err, path) {}` signature, where `err` is an error if the operation was not successful. `path` is the IPFS path for that domain.
+
+If no `callback` is passed, a promise is returned.
+
+**Example:**
+
+```JavaScript
+ipfs.dns('ipfs.io', (err, path) => {
+  if (err) {
+    throw err
+  }
+  console.log(path)
+})
+```
