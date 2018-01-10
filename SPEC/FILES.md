@@ -86,8 +86,6 @@ Returns a Readable Stream of class Duplex, where objects can be written of the f
 - progress (function): a function that will be called with the byte length of chunks as a file is added to ipfs.
 - hashAlg || hash (string): multihash hashing algorithm to use
 
-If no `callback` is passed, a promise is returned.
-
 **Example:**
 
 ```JavaScript
@@ -135,8 +133,6 @@ Returns a Pull Stream, where objects can be written of the forms
 - cid-version (integer, default 0): the CID version to use when storing the data (storage keys are based on the CID, including it's version)
 - progress (function): a function that will be called with the byte length of chunks as a file is added to ipfs.
 - hashAlg || hash (string): multihash hashing algorithm to use
-
-If no `callback` is passed, a promise is returned.
 
 **Example:**
 
