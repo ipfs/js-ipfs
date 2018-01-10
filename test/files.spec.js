@@ -62,6 +62,20 @@ describe('.files (the MFS API part)', function () {
       })
     })
 
+    it.only('files.add with empty path and buffer content', (done) => {
+      const expectedHash = 'QmWfVY9y3xjsixTgbd9AorQxH7VtMpzfx2HaWtsoUYecaX'
+      const content = Buffer.from('hello')
+
+      ipfs.files.add([{ path: '', content }], (err, res) => {
+        expect(err).to.not.exist()
+
+        expect(res).to.have.length(1)
+        expect(res[0].hash).to.equal(expectedHash)
+        expect(res[0].path).to.equal(expectedHash)
+        done()
+      })
+    })
+
     it('files.add with cid-version=1 and raw-leaves=false', (done) => {
       const expectedCid = 'zdj7Wh9x6gXdg4UAqhRYnjBTw9eJF7hvzUU4HjpnZXHYQz9jK'
       const options = { 'cid-version': 1, 'raw-leaves': false }

@@ -90,7 +90,7 @@ function prepareFile (file, opts) {
       return file
     }
 
-    if (file.path && (file.content || file.dir)) {
+    if (file.content || file.dir) {
       return file
     }
 
