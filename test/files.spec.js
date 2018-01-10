@@ -62,7 +62,7 @@ describe('.files (the MFS API part)', function () {
       })
     })
 
-    it.only('files.add with empty path and buffer content', (done) => {
+    it('files.add with empty path and buffer content', (done) => {
       const expectedHash = 'QmWfVY9y3xjsixTgbd9AorQxH7VtMpzfx2HaWtsoUYecaX'
       const content = Buffer.from('hello')
 
