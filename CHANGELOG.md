@@ -1,3 +1,19 @@
+<a name="17.2.7"></a>
+## [17.2.7](https://github.com/ipfs/js-ipfs-api/compare/v17.2.6...v17.2.7) (2018-01-11)
+
+
+### Bug Fixes
+
+* name and key tests ([#661](https://github.com/ipfs/js-ipfs-api/issues/661)) ([5ab1d02](https://github.com/ipfs/js-ipfs-api/commit/5ab1d02))
+
+
+### Features
+
+* normalize KEY API ([#659](https://github.com/ipfs/js-ipfs-api/issues/659)) ([1b10821](https://github.com/ipfs/js-ipfs-api/commit/1b10821))
+* normalize NAME API ([#658](https://github.com/ipfs/js-ipfs-api/issues/658)) ([9b8ef48](https://github.com/ipfs/js-ipfs-api/commit/9b8ef48))
+
+
+
 <a name="17.2.6"></a>
 ## [17.2.6](https://github.com/ipfs/js-ipfs-api/compare/v17.2.5...v17.2.6) (2017-12-28)
 
