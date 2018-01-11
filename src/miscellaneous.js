@@ -50,10 +50,11 @@ module.exports = (common) => {
       })
     })
 
-    it('.dns', () => {
-      return ipfs.dns('ipfs.io', (err, path) => {
+    it('.dns', (done) => {
+      ipfs.dns('ipfs.io', (err, path) => {
         expect(err).to.not.exist()
         expect(path).to.exist()
+        done()
       })
     })
 
