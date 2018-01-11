@@ -1,4 +1,4 @@
-Generic API
+Miscellaneous API
 ===========
 
 #### `id`
@@ -51,8 +51,6 @@ ipfs.version((err, version) => {
 
 A great source of [examples][] can be found in the tests for this API.
 
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/generic.js
-
 #### `dns`
 
 > Resolve DNS links
@@ -75,3 +73,7 @@ ipfs.dns('ipfs.io', (err, path) => {
   console.log(path)
 })
 ```
+
+A great source of [examples][] can be found in the tests for this API.
+
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/miscellaneous.js
