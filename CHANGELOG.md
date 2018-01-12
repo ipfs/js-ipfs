@@ -1,3 +1,13 @@
+<a name="17.3.0"></a>
+# [17.3.0](https://github.com/ipfs/js-ipfs-api/compare/v17.2.7...v17.3.0) (2018-01-12)
+
+
+### Features
+
+* /api/v0/dns ([#665](https://github.com/ipfs/js-ipfs-api/issues/665)) ([81016bb](https://github.com/ipfs/js-ipfs-api/commit/81016bb))
+
+
+
 <a name="17.2.7"></a>
 ## [17.2.7](https://github.com/ipfs/js-ipfs-api/compare/v17.2.6...v17.2.7) (2018-01-11)
 
