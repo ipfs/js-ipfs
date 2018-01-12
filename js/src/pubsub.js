@@ -13,6 +13,10 @@ const whilst = require('async/whilst')
 const each = require('async/each')
 const hat = require('hat')
 
+// On Browsers it will be false, but the tests currently aren't run
+// there anyway
+let isWindows = process.platform && process.platform === 'win32'
+
 function waitForPeers (ipfs, topic, peersToWait, callback) {
   const i = setInterval(() => {
     ipfs.pubsub.peers(topic, (err, peers) => {
@@ -67,6 +71,7 @@ module.exports = (common) => {
     let ipfs1
     let ipfs2
     let ipfs3
+    let withGo
 
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
@@ -90,7 +95,12 @@ module.exports = (common) => {
           ipfs1 = nodes[0]
           ipfs2 = nodes[1]
           ipfs3 = nodes[2]
-          done()
+
+          ipfs1.id((err, id) => {
+            expect(err).to.not.exist()
+            withGo = id.agentVersion.startsWith('go-ipfs')
+            done()
+          })
         })
       })
     })
@@ -497,7 +507,13 @@ module.exports = (common) => {
           })
         })
 
-        it('receive multiple messages', (done) => {
+        it('receive multiple messages', function (done) {
+          // TODO fix https://github.com/ipfs/interface-ipfs-core/pull/188#issuecomment-354673246
+          // and https://github.com/ipfs/go-ipfs/issues/4778
+          if (withGo && isWindows) {
+            this.skip()
+          }
+
           const inbox1 = []
           const inbox2 = []
           const outbox = ['hello', 'world', 'this', 'is', 'pubsub']
@@ -566,16 +582,22 @@ module.exports = (common) => {
           let sub1
           let sub2
 
-          before(() => {
+          beforeEach(function () {
+            // TODO fix https://github.com/ipfs/interface-ipfs-core/pull/188#issuecomment-354673246
+            // and https://github.com/ipfs/go-ipfs/issues/4778
+            if (withGo && isWindows) {
+              this.skip()
+            }
+
             topic = getTopic()
           })
 
-          after(() => {
+          afterEach(() => {
               ipfs1.pubsub.unsubscribe(topic, sub1)
               ipfs2.pubsub.unsubscribe(topic, sub2)
           })
 
-          it.skip('send/receive 10k messages', function (done) {
+          it('send/receive 10k messages', function (done) {
             this.timeout(2 * 60 * 1000)
 
             const msgBase = 'msg - '
