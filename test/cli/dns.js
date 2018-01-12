@@ -16,7 +16,6 @@ describe('dns', () => runOnAndOff((thing) => {
     this.timeout(60 * 1000)
 
     return ipfs('dns ipfs.io').then((res) => {
-      console.log(res)
       expect(res.substr(0, 6)).to.eql('/ipfs/')
     })
   })
