@@ -37,7 +37,8 @@ function requireCommands () {
     swarm: require('../swarm'),
     pubsub: require('../pubsub'),
     update: require('../update'),
-    version: require('../version')
+    version: require('../version'),
+    dns: require('../dns')
   }
 
   // TODO: crowding the 'files' namespace temporarily for interface-ipfs-core
