@@ -12,7 +12,8 @@ module.exports = (send) => {
       if (err) {
         return callback(err)
       }
-      const outputStream = pump(response, ndjson.parse())
+      const outputStream = ndjson.parse()
+      pump(response, outputStream)
       callback(null, outputStream)
     })
   })

@@ -44,7 +44,7 @@
     "promisify-es6": "^1.0.3",
     "pull-defer": "^0.2.2",
     "pull-pushable": "^2.1.2",
-    "pump": "^1.0.3",
+    "pump": "^2.0.0",
     "qs": "^6.5.1",
     "readable-stream": "^2.3.3",
     "stream-http": "^2.7.2",

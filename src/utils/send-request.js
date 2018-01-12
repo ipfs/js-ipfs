@@ -46,7 +46,8 @@ function onRes (buffer, cb) {
 
     // Return a stream of JSON objects
     if (chunkedObjects && isJson) {
-      const outputStream = pump(res, ndjson.parse())
+      const outputStream = ndjson.parse()
+      pump(res, outputStream)
       res.on('end', () => {
         let err = res.trailers['x-stream-error']
         if (err) {

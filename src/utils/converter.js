@@ -44,9 +44,10 @@ class ConverterStream extends TransformStream {
 }
 
 function converter (inputStream, callback) {
-  const outputStream = pump(
+  const outputStream = new ConverterStream()
+  pump(
     inputStream,
-    new ConverterStream(),
+    outputStream,
     (err) => {
       if (err) {
         callback(err)
