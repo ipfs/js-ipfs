@@ -8,7 +8,7 @@ module.exports = (domain, opts, callback) => {
     url += `&${prop}=${opts[prop]}`
   }
 
-  window.fetch(url, {mode: 'cors'})
+  self.fetch(url, {mode: 'cors'})
     .then((response) => {
       return response.json()
     })
