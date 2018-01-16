@@ -73,6 +73,7 @@
     "go-ipfs-dep": "^0.4.13",
     "hat": "0.0.3",
     "interface-ipfs-core": "~0.40.0",
+    "ipfsd-ctl": "^0.27.0",
     "left-pad": "^1.2.0",
     "lodash": "^4.17.4",
     "mocha": "^4.1.0",
