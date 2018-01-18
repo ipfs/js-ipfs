@@ -25,12 +25,30 @@ module.exports = {
 
   handler (argv) {
     // TODO: handle argv.{repo|commit|number}
-    argv.ipfs.version((err, version) => {
-      if (err) {
-        throw err
-      }
+    // cmdkit.BoolOption("number", "n", "Only show the version number.")
+		// cmdkit.BoolOption("commit", "Show the commit hash.")
+		// cmdkit.BoolOption("repo", "Show repo version.")
 
-      print(`js-ipfs version: ${version.version}`)
-    })
+    // const ipfsModule = argv.repo ? argv.ipfs.repo : argv.ipfs.
+    if (argv.repo) {
+      argv.ipfs.repo.version(function (err, version) {
+        if (err) {
+          throw err
+        }
+
+        print(`ipfs-repo version: ${version.version}`)
+      })
+    } else {
+      argv.ipfs.version((err, version) => {
+        if (err) {
+          throw err
+        }
+
+        console.log('verison:', version)
+
+        print(`js-ipfs version: ${version.version}`)
+      })
+    }
+
   }
 }

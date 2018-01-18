@@ -8,7 +8,7 @@ module.exports = (server) => {
 
   api.route({
     method: '*',
-    path: '/api/v0/repo',
-    handler: resources.repo
+    path: '/api/v0/repo/version',
+    handler: resources.repo.version
   })
 }
