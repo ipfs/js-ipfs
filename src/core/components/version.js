@@ -10,10 +10,17 @@ module.exports = function version (self) {
       opts = {}
     }
 
-    callback(null, {
-      version: pkg.version,
-      repo: '',
-      commit: ''
+    self.repo.version((err, repoVersion) => {
+      if (err) {
+        throw err
+      }
+
+      callback(null, {
+        version: pkg.version,
+        repo: repoVersion,
+        commit: ''
+      })
     })
+
   })
 }

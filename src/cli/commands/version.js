@@ -11,44 +11,43 @@ module.exports = {
     number: {
       alias: 'n',
       type: 'boolean',
-      default: false
+      default: false,
+      describe: 'Print only the version number'
     },
     commit: {
       type: 'boolean',
-      default: false
+      default: false,
+      describe: 'Include the version\'s commit hash'
     },
     repo: {
       type: 'boolean',
-      default: false
+      default: false,
+      describe: 'Print only the repo\'s version number'
+    },
+    all: {
+      type: 'boolean',
+      default: false,
+      describe: 'Print everything we have'
     }
   },
 
   handler (argv) {
-    // TODO: handle argv.{repo|commit|number}
-    // cmdkit.BoolOption("number", "n", "Only show the version number.")
-		// cmdkit.BoolOption("commit", "Show the commit hash.")
-		// cmdkit.BoolOption("repo", "Show repo version.")
+    argv.ipfs.version((err, version) => {
+      if (err) {
+        throw err
+      }
 
-    // const ipfsModule = argv.repo ? argv.ipfs.repo : argv.ipfs.
-    if (argv.repo) {
-      argv.ipfs.repo.version(function (err, version) {
-        if (err) {
-          throw err
-        }
-
-        print(`ipfs-repo version: ${version.version}`)
-      })
-    } else {
-      argv.ipfs.version((err, version) => {
-        if (err) {
-          throw err
-        }
-
-        console.log('verison:', version)
-
+      if (argv.repo) {
+        // go-ipfs prints only the number, even without the --number flag.
+        print(version.repo)
+      } else if (argv.number) {
+        print(`${version.version}${argv.commit ? `-${version.commit}` : ''}`)
+      } else if (argv.all) {
+        print(`js-ipfs version: ${version.version}-${version.commit}`)
+        print(`Repo version: ${version.repo}`)
+      } else {
         print(`js-ipfs version: ${version.version}`)
-      })
-    }
-
+      }
+    })
   }
 }

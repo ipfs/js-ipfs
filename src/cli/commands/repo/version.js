@@ -10,8 +10,7 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    console.log('cli/commands/repo/version:', argv.ipfs.repo, '\n')
-    argv.ipfs.repo.version(function (err, version) {
+    argv.ipfs.repo.version((err, version) => {
       if (err) {
         throw err
       }
