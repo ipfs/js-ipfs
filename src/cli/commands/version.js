@@ -37,16 +37,19 @@ module.exports = {
         throw err
       }
 
+      const withCommit = argv.all || argv.commit
+      const parsedVersion = `${version.version}${withCommit ? `-${version.commit}` : ''}`
+
       if (argv.repo) {
         // go-ipfs prints only the number, even without the --number flag.
         print(version.repo)
       } else if (argv.number) {
-        print(`${version.version}${argv.commit ? `-${version.commit}` : ''}`)
+        print(parsedVersion)
       } else if (argv.all) {
-        print(`js-ipfs version: ${version.version}-${version.commit}`)
+        print(`js-ipfs version: ${parsedVersion}`)
         print(`Repo version: ${version.repo}`)
       } else {
-        print(`js-ipfs version: ${version.version}`)
+        print(`js-ipfs version: ${parsedVersion}`)
       }
     })
   }

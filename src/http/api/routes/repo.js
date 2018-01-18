@@ -2,7 +2,6 @@
 
 const resources = require('./../resources')
 
-// TODO
 module.exports = (server) => {
   const api = server.select('API')
 
