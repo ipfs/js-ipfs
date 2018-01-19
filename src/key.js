@@ -12,11 +12,10 @@ const hat = require('hat')
 module.exports = (common) => {
   describe('.key', () => {
     const keyTypes = [
-      { type: 'rsa', size: 2048 }
+      {type: 'rsa', size: 2048}
     ]
     const keys = []
     let ipfs
-    let ipfsd
     let withGo
 
     before(function (done) {
@@ -24,12 +23,11 @@ module.exports = (common) => {
       // timeout for the before step
       this.timeout(60 * 1000)
 
-      common.setup((err, df, type, exec) => {
+      common.setup((err, factory) => {
         expect(err).to.not.exist()
-        df.spawn({ type, exec }, (err, node) => {
+        factory.spawnNode((err, node) => {
           expect(err).to.not.exist()
-          ipfsd = node
-          ipfs = node.api
+          ipfs = node
           ipfs.id((err, id) => {
             expect(err).to.not.exist()
             withGo = id.agentVersion.startsWith('go-ipfs')
@@ -39,7 +37,7 @@ module.exports = (common) => {
       })
     })
 
-    after((done) => ipfsd.stop(done))
+    after((done) => common.teardown(done))
 
     describe('.gen', () => {
       keyTypes.forEach((kt) => {

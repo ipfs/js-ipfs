@@ -11,25 +11,25 @@ chai.use(dirtyChai)
 module.exports = (common) => {
   describe('.miscellaneous', () => {
     let ipfs
-    let ipfsd
 
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
       // timeout for the before step
       this.timeout(60 * 1000)
 
-      common.setup((err, df, type, exec) => {
+      common.setup((err, factory) => {
         expect(err).to.not.exist()
-        df.spawn({ type, exec }, (err, node) => {
+        factory.spawnNode((err, node) => {
           expect(err).to.not.exist()
-          ipfs = node.api
-          ipfsd = node
+          ipfs = node
           done()
         })
       })
     })
 
-    after((done) => ipfsd.stop(done))
+    after((done) => {
+      common.teardown(done)
+    })
 
     it('.id', (done) => {
       ipfs.id((err, res) => {

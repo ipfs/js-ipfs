@@ -10,24 +10,14 @@ const series = require('async/series')
 const parallel = require('async/parallel')
 const CID = require('cids')
 
-function spawnWithId (df, type, exec, callback) {
-  if (typeof type === 'function') {
-    callback = type
-    type = undefined
-  }
-
-  if (typeof exec === 'function') {
-    callback = exec
-    exec = undefined
-  }
-
+function spawnWithId (factory, callback) {
   waterfall([
-    (cb) => df.spawn({ type, exec }, cb),
-    (node, cb) => node.api.id((err, peerId) => {
+    (cb) => factory.spawnNode(cb),
+    (node, cb) => node.id((err, peerId) => {
       if (err) {
         return cb(err)
       }
-      node.api.peerId = peerId
+      node.peerId = peerId
       cb(null, node)
     })
   ], callback)
@@ -41,26 +31,23 @@ module.exports = (common) => {
     let nodeB
     let nodeC
 
-    let ipfsdNodes
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
       // timeout for the before step
       this.timeout(60 * 1000)
 
-      common.setup((err, df, type) => {
+      common.setup((err, factory) => {
         expect(err).to.not.exist()
         series([
-          (cb) => spawnWithId(df, type, cb),
-          (cb) => spawnWithId(df, type, cb),
-          (cb) => spawnWithId(df, type, cb)
+          (cb) => spawnWithId(factory, cb),
+          (cb) => spawnWithId(factory, cb),
+          (cb) => spawnWithId(factory, cb)
         ], (err, nodes) => {
           expect(err).to.not.exist()
 
-          ipfsdNodes = nodes
-
-          nodeA = nodes[0].api
-          nodeB = nodes[1].api
-          nodeC = nodes[2].api
+          nodeA = nodes[0]
+          nodeB = nodes[1]
+          nodeC = nodes[2]
 
           parallel([
             (cb) => nodeA.swarm.connect(nodeB.peerId.addresses[0], cb),
@@ -71,7 +58,7 @@ module.exports = (common) => {
       })
     })
 
-    after((done) => parallel(ipfsdNodes.map((node) => (cb) => node.stop(cb)), done))
+    after((done) => common.teardown(done))
 
     describe('.get and .put', () => {
       it('errors when getting a non-existent key from the DHT', (done) => {

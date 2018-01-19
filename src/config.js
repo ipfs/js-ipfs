@@ -12,25 +12,23 @@ module.exports = (common) => {
   describe('.config', function () {
     this.timeout(30 * 1000)
     let ipfs
-    let ipfsd
 
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
       // timeout for the before step
       this.timeout(60 * 1000)
 
-      common.setup((err, df, type, exec) => {
+      common.setup((err, factory) => {
         expect(err).to.not.exist()
-        df.spawn({ type, exec }, (err, node) => {
+        factory.spawnNode((err, node) => {
           expect(err).to.not.exist()
-          ipfsd = node
-          ipfs = node.api
+          ipfs = node
           done()
         })
       })
     })
 
-    after((done) => ipfsd.stop(done))
+    after((done) => common.teardown(done))
 
     describe('.get', () => {
       it('retrieve the whole config', (done) => {
