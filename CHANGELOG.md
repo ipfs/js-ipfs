@@ -1,3 +1,13 @@
+<a name="0.41.0"></a>
+# [0.41.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.40.0...v0.41.0) (2018-01-19)
+
+
+### Features
+
+* use new ipfsd-ctl ([#186](https://github.com/ipfs/interface-ipfs-core/issues/186)) ([4d4ef7f](https://github.com/ipfs/interface-ipfs-core/commit/4d4ef7f))
+
+
+
 <a name="0.40.0"></a>
 # [0.40.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.39.0...v0.40.0) (2018-01-12)
 
