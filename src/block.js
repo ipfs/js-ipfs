@@ -20,23 +20,25 @@ function expectKey (block, expected, callback) {
 module.exports = (common) => {
   describe('.block', () => {
     let ipfs
+    let ipfsd
 
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
       // timeout for the before step
       this.timeout(60 * 1000)
 
-      common.setup((err, factory) => {
+      common.setup((err, df, type, exec) => {
         expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
+        df.spawn({ type, exec }, (err, node) => {
           expect(err).to.not.exist()
-          ipfs = node
+          ipfsd = node
+          ipfs = node.api
           done()
         })
       })
     })
 
-    after((done) => common.teardown(done))
+    after((done) => ipfsd.stop(done))
 
     describe('.put', () => {
       it('a buffer, using defaults', (done) => {

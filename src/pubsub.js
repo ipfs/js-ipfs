@@ -32,14 +32,24 @@ function waitForPeers (ipfs, topic, peersToWait, callback) {
   }, 500)
 }
 
-function spawnWithId (factory, callback) {
+function spawnWithId (df, type, exec, callback) {
+  if (typeof type === 'function') {
+    callback = type
+    type = undefined
+  }
+
+  if (typeof exec === 'function') {
+    callback = exec
+    exec = undefined
+  }
+
   waterfall([
-    (cb) => factory.spawnNode(cb),
-    (node, cb) => node.id((err, res) => {
+    (cb) => df.spawn({ type, exec, args: ['--enable-pubsub-experiment'] }, cb),
+    (node, cb) => node.api.id((err, res) => {
       if (err) {
         return cb(err)
       }
-      node.peerId = res
+      node.api.peerId = res
       cb(null, node)
     })
   ], callback)
@@ -68,36 +78,37 @@ module.exports = (common) => {
     let ipfs2
     let ipfs3
 
+    let ipfsdNodes
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
       // timeout for the before step
       this.timeout(100 * 1000)
 
-      common.setup((err, factory) => {
+      common.setup((err, df) => {
         if (err) {
           return done(err)
         }
 
         series([
-          (cb) => spawnWithId(factory, cb),
-          (cb) => spawnWithId(factory, cb),
-          (cb) => spawnWithId(factory, cb)
+          (cb) => spawnWithId(df, cb),
+          (cb) => spawnWithId(df, cb),
+          (cb) => spawnWithId(df, cb)
         ], (err, nodes) => {
           if (err) {
             return done(err)
           }
 
-          ipfs1 = nodes[0]
-          ipfs2 = nodes[1]
-          ipfs3 = nodes[2]
+          ipfsdNodes = nodes
+
+          ipfs1 = nodes[0].api
+          ipfs2 = nodes[1].api
+          ipfs3 = nodes[2].api
           done()
         })
       })
     })
 
-    after((done) => {
-      common.teardown(done)
-    })
+    after((done) => parallel(ipfsdNodes.map((node) => (cb) => node.stop(cb)), done))
 
     describe('single node', () => {
       describe('.publish', () => {

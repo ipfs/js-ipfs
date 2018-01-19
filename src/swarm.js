@@ -8,6 +8,7 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const series = require('async/series')
+const parallel = require('async/parallel')
 const multiaddr = require('multiaddr')
 const os = require('os')
 const path = require('path')
@@ -19,32 +20,35 @@ module.exports = (common) => {
 
     let ipfsA
     let ipfsB
-    let factoryInstance
+    let dfInstance
 
+    let nodes = []
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
       // timeout for the before step
       this.timeout(100 * 1000)
 
-      common.setup((err, factory) => {
+      common.setup((err, df, type, exec) => {
         expect(err).to.not.exist()
-        factoryInstance = factory
+        dfInstance = df
         series([
-          (cb) => factory.spawnNode((err, node) => {
+          (cb) => df.spawn({ type, exec }, (err, node) => {
             expect(err).to.not.exist()
-            ipfsA = node
+            ipfsA = node.api
+            nodes.push(node)
             cb()
           }),
-          (cb) => factory.spawnNode((err, node) => {
+          (cb) => df.spawn((err, node) => {
             expect(err).to.not.exist()
-            ipfsB = node
+            ipfsB = node.api
+            nodes.push(node)
             cb()
           })
         ], done)
       })
     })
 
-    after((done) => common.teardown(done))
+    after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
 
     let ipfsBId
 
@@ -90,7 +94,7 @@ module.exports = (common) => {
         })
 
         it('verbose', (done) => {
-          ipfsA.swarm.peers({verbose: true}, (err, peers) => {
+          ipfsA.swarm.peers({ verbose: true }, (err, peers) => {
             expect(err).to.not.exist()
             expect(peers).to.have.length.above(0)
 
@@ -132,6 +136,8 @@ module.exports = (common) => {
           }
 
           it('Connecting two peers with one address each', (done) => {
+            let nodes = []
+
             let nodeA
             let nodeB
             let nodeBAddress
@@ -139,16 +145,18 @@ module.exports = (common) => {
             const config = getConfig(addresses)
             series([
               (cb) => {
-                factoryInstance.spawnNode(getRepoPath(), config, (err, node) => {
+                dfInstance.spawn({ repoPath: getRepoPath(), config }, (err, node) => {
                   expect(err).to.not.exist()
-                  nodeA = node
+                  nodes.push(node)
+                  nodeA = node.api
                   cb()
                 })
               },
               (cb) => {
-                factoryInstance.spawnNode(getRepoPath(), config, (err, node) => {
+                dfInstance.spawn({ repoPath: getRepoPath(), config }, (err, node) => {
                   expect(err).to.not.exist()
-                  nodeB = node
+                  nodes.push(node)
+                  nodeB = node.api
                   cb()
                 })
               },
@@ -175,10 +183,15 @@ module.exports = (common) => {
                   cb()
                 })
               }
-            ], done)
+            ], (err) => {
+              expect(err).to.not.exist()
+              parallel(nodes.map((node) => (cb) => node.stop(cb)), done)
+            })
           })
 
           it('Connecting two peers with two addresses each', (done) => {
+            let nodes = []
+
             let nodeA
             let nodeB
             let nodeBAddress
@@ -194,16 +207,18 @@ module.exports = (common) => {
             ])
             series([
               (cb) => {
-                factoryInstance.spawnNode(getRepoPath(), configA, (err, node) => {
+                dfInstance.spawn({ repoPath: getRepoPath(), config: configA }, (err, node) => {
                   expect(err).to.not.exist()
-                  nodeA = node
+                  nodes.push(node)
+                  nodeA = node.api
                   cb()
                 })
               },
               (cb) => {
-                factoryInstance.spawnNode(getRepoPath(), configB, (err, node) => {
+                dfInstance.spawn({ repoPath: getRepoPath(), config: configB }, (err, node) => {
                   expect(err).to.not.exist()
-                  nodeB = node
+                  nodes.push(node)
+                  nodeB = node.api
                   cb()
                 })
               },
@@ -230,7 +245,10 @@ module.exports = (common) => {
                   cb()
                 })
               }
-            ], done)
+            ], (err) => {
+              expect(err).to.not.exist()
+              parallel(nodes.map((node) => (cb) => node.stop(cb)), done)
+            })
           })
         })
       })

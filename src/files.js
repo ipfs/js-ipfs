@@ -24,6 +24,7 @@ module.exports = (common) => {
     this.timeout(40 * 1000)
 
     let ipfs
+    let ipfsd
 
     function fixture (path) {
       return loadFixture(__dirname, path, 'interface-ipfs-core')
@@ -55,17 +56,18 @@ module.exports = (common) => {
       // timeout for the before step
       this.timeout(60 * 1000)
 
-      common.setup((err, factory) => {
+      common.setup((err, df, type, exec) => {
         expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
+        df.spawn({ type, exec }, (err, node) => {
           expect(err).to.not.exist()
-          ipfs = node
+          ipfs = node.api
+          ipfsd = node
           done()
         })
       })
     })
 
-    after((done) => common.teardown(done))
+    after((done) => ipfsd.stop(done))
 
     describe('.add', () => {
       it('a Buffer', (done) => {
