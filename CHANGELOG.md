@@ -1,3 +1,13 @@
+<a name="0.41.1"></a>
+## [0.41.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.41.0...v0.41.1) (2018-01-19)
+
+
+### Bug Fixes
+
+* Revert "feat: use new ipfsd-ctl ([#186](https://github.com/ipfs/interface-ipfs-core/issues/186))" ([#203](https://github.com/ipfs/interface-ipfs-core/issues/203)) ([67b74a3](https://github.com/ipfs/interface-ipfs-core/commit/67b74a3))
+
+
+
 <a name="0.41.0"></a>
 # [0.41.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.40.0...v0.41.0) (2018-01-19)
 
