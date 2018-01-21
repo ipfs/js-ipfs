@@ -231,7 +231,7 @@ describe('.files (the MFS API part)', function () {
     it('files.ls', (done) => {
       ipfs.files.ls('/test-folder', (err, res) => {
         expect(err).to.not.exist()
-        expect(res.Entries.length).to.equal(1)
+        expect(res.length).to.equal(1)
         done()
       })
     })
@@ -286,11 +286,11 @@ describe('.files (the MFS API part)', function () {
       ipfs.files.stat('/test-folder/test-file', (err, res) => {
         expect(err).to.not.exist()
         expect(res).to.deep.equal({
-          Hash: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
-          Size: 12,
-          CumulativeSize: 20,
-          Blocks: 0,
-          Type: 'file'
+          hash: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
+          size: 12,
+          cumulativeSize: 20,
+          blocks: 0,
+          type: 'file'
         })
 
         done()
@@ -404,7 +404,7 @@ describe('.files (the MFS API part)', function () {
     it('files.ls', () => {
       return ipfs.files.ls('/test-folder')
         .then((res) => {
-          expect(res.Entries.length).to.equal(1)
+          expect(res.length).to.equal(1)
         })
     })
 
@@ -458,11 +458,11 @@ describe('.files (the MFS API part)', function () {
       return ipfs.files.stat('/test-folder/test-file')
         .then((res) => {
           expect(res).to.deep.equal({
-            Hash: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
-            Size: 12,
-            CumulativeSize: 20,
-            Blocks: 0,
-            Type: 'file'
+            hash: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
+            size: 12,
+            cumulativeSize: 20,
+            blocks: 0,
+            type: 'file'
           })
         })
     })
