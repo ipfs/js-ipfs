@@ -12,8 +12,6 @@ exports.version = (request, reply) => {
       return reply(boom.badRequest(err))
     }
 
-    reply({
-      version: version
-    })
+    reply(version)
   })
 }
