@@ -5,7 +5,7 @@ const expect = require('chai').expect
 const pkgversion = require('../../package.json').version
 const runOnAndOff = require('../utils/on-and-off')
 
-describe.only('version', () => runOnAndOff((thing) => {
+describe('version', () => runOnAndOff((thing) => {
   let ipfs
 
   before(() => {
