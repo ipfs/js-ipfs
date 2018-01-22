@@ -15,4 +15,5 @@ module.exports = (server) => {
   require('./pubsub')(server)
   require('./debug')(server)
   require('./webui')(server)
+  require('./dns')(server)
 }

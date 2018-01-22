@@ -94,6 +94,7 @@ class IPFS extends EventEmitter {
     this.ping = components.ping(this)
     this.pubsub = components.pubsub(this)
     this.dht = components.dht(this)
+    this.dns = components.dns(this)
 
     if (this._options.EXPERIMENTAL.pubsub) {
       this.log('EXPERIMENTAL pubsub is enabled')

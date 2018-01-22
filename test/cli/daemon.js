@@ -104,7 +104,9 @@ describe('daemon', () => {
     }).catch(done)
   })
 
-  it('gives error if user hasn\'t run init before', (done) => {
+  it('gives error if user hasn\'t run init before', function (done) {
+    this.timeout(100 * 1000)
+
     const expectedError = 'no initialized ipfs repo found in ' + repoPath
 
     ipfs('daemon').catch((err) => {
