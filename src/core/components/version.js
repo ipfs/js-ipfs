@@ -22,6 +22,5 @@ module.exports = function version (self) {
         commit: ''
       })
     })
-
   })
 }
