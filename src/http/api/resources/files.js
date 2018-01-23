@@ -271,7 +271,7 @@ exports.immutableLs = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
     const key = request.pre.args.key
-    const ipfs = request.server.app.ipfs
+    const ipfs = request.server.app.ipfs // index.js assigns ipfs.ls as files.lsImmutable
 
     ipfs.ls(key, (err, files) => {
       if (err) {

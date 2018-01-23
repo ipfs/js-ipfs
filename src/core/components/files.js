@@ -164,9 +164,16 @@ module.exports = function files (self) {
   function _lsPullStreamImmutable (ipfsPath) {
     const path = normalizePath(ipfsPath)
     const depth = path.split('/').length
+    console.log('path:', path)
+    console.log('depth:', depth)
+    console.log('self._ipldResolver:', self._ipldResolver)
     return pull(
-      exporter(ipfsPath, self._ipldResolver, { maxDepth: depth }),
-      pull.filter((node) => node.depth === depth),
+      exporter(ipfsPath, self._ipldResolver, { maxDepth: global.Infinity }),
+      pull.filter((node) => {
+        console.log('node:', node)
+        node.depth === depth
+        return true
+      }),
       pull.map((node) => {
         node = Object.assign({}, node, { hash: toB58String(node.hash) })
         delete node.content
