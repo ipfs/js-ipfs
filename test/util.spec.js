@@ -9,26 +9,30 @@ chai.use(dirtyChai)
 const isNode = require('detect-node')
 const path = require('path')
 const fs = require('fs')
-const FactoryClient = require('./ipfs-factory/client')
+
+const IPFSApi = require('../src')
+
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create()
 
 describe('.util', () => {
   if (!isNode) { return }
 
+  let ipfsd
   let ipfs
-  let fc
 
   before(function (done) {
     this.timeout(20 * 1000) // slow CI
 
-    fc = new FactoryClient()
-    fc.spawnNode((err, node) => {
+    df.spawn((err, _ipfsd) => {
       expect(err).to.not.exist()
-      ipfs = node
+      ipfsd = _ipfsd
+      ipfs = IPFSApi(_ipfsd.apiAddr)
       done()
     })
   })
 
-  after((done) => fc.dismantle(done))
+  after((done) => ipfsd.stop(done))
 
   it('.streamAdd', (done) => {
     const tfpath = path.join(__dirname, '/fixtures/testfile.txt')

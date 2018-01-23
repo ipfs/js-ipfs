@@ -1,12 +1,16 @@
 /* eslint-env mocha */
 'use strict'
 
-const FactoryClient = require('./ipfs-factory/client')
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const os = require('os')
+
+const IPFSApi = require('../src')
+
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create()
 
 describe('.diag', function () {
   this.timeout(50 * 1000)
@@ -16,19 +20,19 @@ describe('.diag', function () {
     return
   }
 
+  let ipfsd
   let ipfs
-  let fc
 
   before((done) => {
-    fc = new FactoryClient()
-    fc.spawnNode((err, node) => {
+    df.spawn((err, _ipfsd) => {
       expect(err).to.not.exist()
-      ipfs = node
+      ipfsd = _ipfsd
+      ipfs = IPFSApi(_ipfsd.apiAddr)
       done()
     })
   })
 
-  after((done) => fc.dismantle(done))
+  after((done) => ipfsd.stop(done))
 
   describe('Callback API', () => {
     // Disabled in go-ipfs 0.4.10

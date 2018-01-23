@@ -2,30 +2,32 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
-const FactoryClient = require('./ipfs-factory/client')
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
+const IPFSApi = require('../src')
+
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create()
+
 describe('.key', function () {
   this.timeout(50 * 1000)
 
+  let ipfsd
   let ipfs
-  let fc
 
   before((done) => {
-    fc = new FactoryClient()
-    fc.spawnNode((err, node) => {
+    df.spawn((err, _ipfsd) => {
       expect(err).to.not.exist()
-      ipfs = node
+      ipfsd = _ipfsd
+      ipfs = IPFSApi(_ipfsd.apiAddr)
       done()
     })
   })
 
-  after((done) => {
-    fc.dismantle(done)
-  })
+  after((done) => ipfsd.stop(done))
 
   describe('Callback API', () => {
     describe('.gen', () => {
@@ -61,13 +63,13 @@ describe('.key', function () {
   describe('Promise API', () => {
     describe('.gen', () => {
       it('create a new rsa key', () => {
-        return ipfs.key.gen('foobarsa2', {type: 'rsa', size: 2048}).then((res) => {
+        return ipfs.key.gen('foobarsa2', { type: 'rsa', size: 2048 }).then((res) => {
           expect(res).to.exist()
         })
       })
 
       it('create a new ed25519 key', () => {
-        return ipfs.key.gen('bazed2', {type: 'ed25519'}).then((res) => {
+        return ipfs.key.gen('bazed2', { type: 'ed25519' }).then((res) => {
           expect(res).to.exist()
         })
       })

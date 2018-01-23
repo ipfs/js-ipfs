@@ -5,7 +5,9 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-const FactoryClient = require('./ipfs-factory/client')
+
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create()
 
 const ipfsAPI = require('../src/index.js')
 
@@ -22,19 +24,19 @@ function clientWorks (client, done) {
 describe('ipfs-api constructor tests', () => {
   describe('parameter permuations', () => {
     let apiAddr
-    let fc
+    let ipfsd
 
     before(function (done) {
       this.timeout(20 * 1000) // slow CI
-      fc = new FactoryClient()
-      fc.spawnNode((err, node) => {
+      df.spawn((err, node) => {
         expect(err).to.not.exist()
-        apiAddr = node.apiAddr
+        ipfsd = node
+        apiAddr = node.apiAddr.toString()
         done()
       })
     })
 
-    after((done) => fc.dismantle(done))
+    after((done) => ipfsd.stop(done))
 
     it('opts', (done) => {
       const splitted = apiAddr.split('/')

@@ -6,26 +6,27 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-const FactoryClient = require('./ipfs-factory/client')
+const IPFSApi = require('../src')
+
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create()
 
 describe('.commands', function () {
   this.timeout(20 * 1000)
 
+  let ipfsd
   let ipfs
-  let fc
 
   before((done) => {
-    fc = new FactoryClient()
-    fc.spawnNode((err, node) => {
+    df.spawn((err, _ipfsd) => {
       expect(err).to.not.exist()
-      ipfs = node
+      ipfsd = _ipfsd
+      ipfs = IPFSApi(_ipfsd.apiAddr)
       done()
     })
   })
 
-  after((done) => {
-    fc.dismantle(done)
-  })
+  after((done) => ipfsd.stop(done))
 
   it('lists commands', (done) => {
     ipfs.commands((err, res) => {

@@ -1,7 +1,8 @@
 'use strict'
 
-const factory = require('./test/ipfs-factory/tasks')
+const createServer = require('ipfsd-ctl').createServer
 
+const server = createServer()
 module.exports = {
   karma: {
     files: [{
@@ -9,10 +10,12 @@ module.exports = {
       watched: false,
       served: true,
       included: false
-    }]
+    }],
+    browserNoActivityTimeout: 100 * 1000,
+    singleRun: true
   },
   hooks: {
-    pre: factory.start,
-    post: factory.stop
+    pre: server.start.bind(server),
+    post: server.stop.bind(server)
   }
 }

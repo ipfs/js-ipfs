@@ -6,44 +6,56 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
+const parallel = require('async/parallel')
 const series = require('async/series')
-const FactoryClient = require('./ipfs-factory/client')
+
+const IPFSApi = require('../src')
+
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create()
 
 describe.skip('.ping', () => {
   let ipfs
+  let ipfsd
   let other
-  let fc
+  let otherd
 
   before(function (done) {
     this.timeout(20 * 1000) // slow CI
-    fc = new FactoryClient()
     series([
       (cb) => {
-        fc.spawnNode((err, node) => {
+        df.spawn((err, _ipfsd) => {
           expect(err).to.not.exist()
-          ipfs = node
+          ipfsd = _ipfsd
+          ipfs = IPFSApi(_ipfsd.apiAddr)
           cb()
         })
       },
       (cb) => {
         console.log('going to spawn second node')
-        fc.spawnNode((err, node) => {
+        df.spawn((err, node) => {
           expect(err).to.not.exist()
-          other = node
+          other = node.api
+          otherd = node
           cb()
         })
       },
       (cb) => {
-        ipfs.id((err, id) => {
+        ipfsd.api.id((err, id) => {
           expect(err).to.not.exist()
           const ma = id.addresses[0]
-          other.swarm.connect(ma, cb)
+          other.api.swarm.connect(ma, cb)
         })
       }
     ], done)
   })
 
-  after((done) => fc.dismantle(done))
+  after((done) => {
+    parallel([
+      (cb) => ipfsd.stop(cb),
+      (cb) => otherd.stop(cb)
+    ], done)
+  })
 
   describe('callback API', () => {
     it('ping another peer', (done) => {

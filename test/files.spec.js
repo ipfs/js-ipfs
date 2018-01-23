@@ -11,7 +11,10 @@ const loadFixture = require('aegir/fixtures')
 const mh = require('multihashes')
 const CID = require('cids')
 
-const FactoryClient = require('./ipfs-factory/client')
+const IPFSApi = require('../src')
+
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create()
 
 const testfile = isNode
   ? loadFixture(__dirname, '/fixtures/testfile.txt')
@@ -32,21 +35,21 @@ const HASH_ALGS = [
 describe('.files (the MFS API part)', function () {
   this.timeout(120 * 1000)
 
+  let ipfsd
   let ipfs
-  let fc
 
   const expectedMultihash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
 
   before((done) => {
-    fc = new FactoryClient()
-    fc.spawnNode((err, node) => {
+    df.spawn((err, _ipfsd) => {
       expect(err).to.not.exist()
-      ipfs = node
+      ipfsd = _ipfsd
+      ipfs = IPFSApi(_ipfsd.apiAddr)
       done()
     })
   })
 
-  after((done) => fc.dismantle(done))
+  after((done) => ipfsd.stop(done))
 
   describe('Callback API', function () {
     this.timeout(120 * 1000)

@@ -8,20 +8,25 @@ chai.use(dirtyChai)
 const isNode = require('detect-node')
 const waterfall = require('async/waterfall')
 const path = require('path')
-const FactoryClient = require('./ipfs-factory/client')
 const fs = require('fs')
+
+const IPFSApi = require('../src')
+
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create()
 
 describe('.refs', function () {
   this.timeout(80 * 1000)
 
-  if (!isNode) { return }
+  if (!isNode) {
+    return
+  }
 
   let ipfs
-  let fc
+  let ipfsd
   let folder
 
   before((done) => {
-    fc = new FactoryClient()
     const filesPath = path.join(__dirname, '/fixtures/test-folder')
 
     // Symlinks in a repo don't always clone well, especially on Windows.
@@ -34,9 +39,10 @@ describe('.refs', function () {
     }
 
     waterfall([
-      (cb) => fc.spawnNode(cb),
-      (node, cb) => {
-        ipfs = node
+      (cb) => df.spawn(cb),
+      (_ipfsd, cb) => {
+        ipfsd = _ipfsd
+        ipfs = IPFSApi(_ipfsd.apiAddr)
         ipfs.util.addFromFs(filesPath, { recursive: true }, cb)
       },
       (hashes, cb) => {
@@ -47,7 +53,7 @@ describe('.refs', function () {
     ], done)
   })
 
-  after((done) => fc.dismantle(done))
+  after((done) => ipfsd.stop(done))
 
   const result = [
     {
@@ -86,7 +92,7 @@ describe('.refs', function () {
 
   describe('Promise API', () => {
     it('refs', () => {
-      return ipfs.refs(folder, {format: '<src> <dst> <linkname>'})
+      return ipfs.refs(folder, { format: '<src> <dst> <linkname>' })
         .then((objs) => {
           expect(objs).to.eql(result)
         })
