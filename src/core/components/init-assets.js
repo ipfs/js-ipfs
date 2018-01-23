@@ -11,7 +11,7 @@ const CID = require('cids')
 // Add the default assets to the repo.
 module.exports = function addDefaultAssets (self, log, callback) {
   const initDocsPath = path.join(__dirname, '../../init-files/init-docs')
-  const index = initDocsPath.lastIndexOf('/')
+  const index = initDocsPath.lastIndexOf(path.sep)
 
   pull(
     pull.values([initDocsPath]),
