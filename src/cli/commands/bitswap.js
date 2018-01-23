@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = {
-  command: 'bitswap',
+  command: 'bitswap <command>',
 
   description: 'Interact with the bitswap agent.',
 
@@ -10,6 +10,5 @@ module.exports = {
   },
 
   handler (argv) {
-    console.log('Type `jsipfs bitswap --help` for more information about this command')
   }
 }

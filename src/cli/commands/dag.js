@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = {
-  command: 'dag',
+  command: 'dag <command>',
 
   description: 'Interact with ipld dag objects.',
 

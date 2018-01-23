@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = {
-  command: 'repo',
+  command: 'repo <command>',
 
   description: 'Manipulate the IPFS repo.',
 
