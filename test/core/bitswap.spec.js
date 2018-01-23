@@ -16,15 +16,15 @@ const isNode = require('detect-node')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
 
-const IPFS = require('../../src/core')
-
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ type: 'js', exec: `./src/cli/bin.js` })
+const df = DaemonFactory.create({ type: 'js' })
 
-const dfProc = DaemonFactory.create({ type: 'proc', exec: IPFS })
+const dfProc = DaemonFactory.create({ type: 'proc' })
 
 // This gets replaced by '../utils/create-repo-browser.js' in the browser
 const createTempRepo = require('../utils/create-repo-nodejs.js')
+
+const IPFS = require('../../src/core')
 
 function makeBlock (callback) {
   const d = Buffer.from(`IPFS is awesome ${Math.random()}`)
@@ -70,6 +70,7 @@ let nodes = []
 
 function addNode (inProcNode, callback) {
   df.spawn({
+    exec: `./src/cli/bin.js`,
     config: {
       Addresses: {
         Swarm: [`/ip4/127.0.0.1/tcp/0/ws`]
@@ -114,7 +115,7 @@ describe('bitswap', function () {
       })
     }
 
-    dfProc.spawn({ config }, (err, _ipfsd) => {
+    dfProc.spawn({ exec: IPFS, config }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       nodes.push(_ipfsd)
       inProcNode = _ipfsd.api
