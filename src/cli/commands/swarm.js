@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = {
-  command: 'swarm',
+  command: 'swarm <command>',
 
   description: 'Swarm inspection tool.',
 

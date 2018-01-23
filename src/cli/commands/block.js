@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = {
-  command: 'block',
+  command: 'block <command>',
 
   description: 'Manipulate raw IPFS blocks.',
 

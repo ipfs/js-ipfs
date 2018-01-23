@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = {
-  command: 'bootstrap',
+  command: 'bootstrap <command>',
 
   description: 'Show or edit the list of bootstrap peers.',
 

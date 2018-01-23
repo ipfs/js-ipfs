@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = {
-  command: 'files',
+  command: 'files <command>',
 
   description: 'Operations over files (add, cat, get, ls, etc)',
 

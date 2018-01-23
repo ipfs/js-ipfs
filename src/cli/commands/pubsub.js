@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = {
-  command: 'pubsub',
+  command: 'pubsub <command>',
 
   description: 'pubsub commands',
 

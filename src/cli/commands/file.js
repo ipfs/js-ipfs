@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = {
-  command: 'file',
+  command: 'file <command>',
 
   description: 'Interact with IPFS objects representing Unix filesystems.',
 
