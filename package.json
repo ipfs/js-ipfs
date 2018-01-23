@@ -41,7 +41,7 @@
     "coverage": "aegir coverage",
     "coverage-publish": "aegir-coverage publish"
   },
-  "pre-commit": [
+  "pre-push": [
     "lint",
     "test"
   ],
