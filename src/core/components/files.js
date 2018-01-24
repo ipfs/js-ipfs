@@ -161,18 +161,18 @@ module.exports = function files (self) {
     return d
   }
 
-  function _lsPullStreamImmutable (ipfsPath) {
+  function _lsPullStreamImmutable (ipfsPath, options) {
     const path = normalizePath(ipfsPath)
-    const depth = path.split('/').length
-    console.log('path:', path)
-    console.log('depth:', depth)
-    console.log('self._ipldResolver:', self._ipldResolver)
+    const recurse = options && options.recursive
+    const depth = recurse ? global.Infinity : path.split('/').length
+    // console.log('path:', path)
+    // console.log('depth:', depth)
+    // console.log('self._ipldResolver:', self._ipldResolver)
     return pull(
-      exporter(ipfsPath, self._ipldResolver, { maxDepth: global.Infinity }),
+      exporter(ipfsPath, self._ipldResolver, { maxDepth: depth }),
       pull.filter((node) => {
-        console.log('node:', node)
-        node.depth === depth
-        return true
+        // console.log('node:', node)
+        return recurse ? node.depth >= depth : node.depth === depth
       }),
       pull.map((node) => {
         node = Object.assign({}, node, { hash: toB58String(node.hash) })
@@ -285,9 +285,13 @@ module.exports = function files (self) {
       return exporter(ipfsPath, self._ipldResolver)
     },
 
-    lsImmutable: promisify((ipfsPath, callback) => {
+    lsImmutable: promisify((ipfsPath, options, callback) => {
+      if (typeof options === 'function') {
+        // options arg is optional so if it's a function then it's the callback
+        callback = options
+      }
       pull(
-        _lsPullStreamImmutable(ipfsPath),
+        _lsPullStreamImmutable(ipfsPath, options),
         pull.collect((err, values) => {
           if (err) {
             return callback(err)
@@ -297,8 +301,8 @@ module.exports = function files (self) {
       )
     }),
 
-    lsReadableStreamImmutable: (ipfsPath) => {
-      return toStream.source(_lsPullStreamImmutable(ipfsPath))
+    lsReadableStreamImmutable: (ipfsPath, options) => {
+      return toStream.source(_lsPullStreamImmutable(ipfsPath, options))
     },
 
     lsPullStreamImmutable: _lsPullStreamImmutable

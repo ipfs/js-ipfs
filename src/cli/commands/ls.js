@@ -14,8 +14,8 @@ module.exports = {
       type: 'boolean',
       default: false
     },
-    recursive: {
-      alias: 'r',
+    r: {
+      alias: 'recursive',
       desc: 'List subdirectories recursively',
       type: 'boolean',
       default: false
@@ -33,7 +33,7 @@ module.exports = {
       path = path.replace('/ipfs/', '')
     }
 
-    argv.ipfs.ls(path, (err, links) => {
+    argv.ipfs.ls(path, { recursive: argv.recursive }, (err, links) => {
       if (err) {
         throw err
       }

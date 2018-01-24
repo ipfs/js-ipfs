@@ -272,8 +272,9 @@ exports.immutableLs = {
   handler: (request, reply) => {
     const key = request.pre.args.key
     const ipfs = request.server.app.ipfs // index.js assigns ipfs.ls as files.lsImmutable
+    const recurse = request.query && request.query.recursive
 
-    ipfs.ls(key, (err, files) => {
+    ipfs.ls(key, { recursive: recurse }, (err, files) => {
       if (err) {
         reply({
           Message: 'Failed to list dir: ' + err.message,
