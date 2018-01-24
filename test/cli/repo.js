@@ -6,7 +6,7 @@ const path = require('path')
 const expect = require('chai').expect
 const runOnAndOff = require('../utils/on-and-off')
 
-function getRepoVersion(repoPath) {
+function getRepoVersion (repoPath) {
   const versionPath = path.join(repoPath, 'version')
   return String(fs.readFileSync(versionPath))
 }
