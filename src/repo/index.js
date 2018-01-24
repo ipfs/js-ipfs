@@ -7,6 +7,7 @@ module.exports = (arg) => {
 
   return {
     gc: require('./gc')(send),
-    stat: require('./stat')(send)
+    stat: require('./stat')(send),
+    version: require('./version')(send)
   }
 }

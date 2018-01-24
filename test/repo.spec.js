@@ -46,6 +46,15 @@ describe('.repo', function () {
         done()
       })
     })
+
+    it('.repo.version', (done) => {
+      ipfs.repo.version((err, res) => {
+        expect(err).to.not.exist()
+        expect(res).to.exist()
+        expect(res).to.have.a.property('Version')
+        done()
+      })
+    })
   })
 
   describe('Promise API', () => {
@@ -59,6 +68,14 @@ describe('.repo', function () {
           expect(res).to.exist()
           expect(res).to.have.a.property('NumObjects')
           expect(res).to.have.a.property('RepoSize')
+        })
+    })
+
+    it('.repo.version', () => {
+      return ipfs.repo.version()
+        .then(res => {
+          expect(res).to.exist()
+          expect(res).to.have.a.property('Version')
         })
     })
   })
