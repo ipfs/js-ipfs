@@ -7,42 +7,37 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const isNode = require('detect-node')
+const IPFS = require('../../src')
 
-// This gets replaced by `create-repo-browser.js` in the browser
-const createTempRepo = require('../utils/create-repo-nodejs.js')
-
-const IPFS = require('../../src/core')
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create({ type: 'proc' })
 
 describe('bootstrap', () => {
-  if (!isNode) { return }
+  if (!isNode) {
+    return
+  }
 
   let node
+  let ipfsd
 
   before(function (done) {
     this.timeout(40 * 1000)
-    node = new IPFS({
-      repo: createTempRepo(),
-      init: {
-        bits: 1024
-      },
-      EXPERIMENTAL: {
-        pubsub: true
-      },
+    df.spawn({
+      exec: IPFS,
       config: {
         Addresses: {
           Swarm: ['/ip4/127.0.0.1/tcp/0']
         }
       }
-    })
-
-    node.on('error', (err) => {
+    }, (err, _ipfsd) => {
       expect(err).to.not.exist()
+      ipfsd = _ipfsd
+      node = _ipfsd.api
+      done()
     })
-
-    node.on('start', done)
   })
 
-  after((done) => node.stop(done))
+  after((done) => ipfsd.stop(done))
 
   const defaultList = [
     '/ip4/104.131.131.82/tcp/4001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ',
@@ -80,7 +75,7 @@ describe('bootstrap', () => {
   it('add a peer to the bootstrap list', (done) => {
     node.bootstrap.add('/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT', (err, res) => {
       expect(err).to.not.exist()
-      expect(res).to.be.eql({Peers: ['/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT']})
+      expect(res).to.be.eql({ Peers: ['/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT'] })
       node.bootstrap.list((err, list) => {
         expect(err).to.not.exist()
         expect(list.Peers).to.deep.equal(updatedList)
@@ -92,7 +87,7 @@ describe('bootstrap', () => {
   it('remove a peer from the bootstrap list', (done) => {
     node.bootstrap.rm('/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT', (err, res) => {
       expect(err).to.not.exist()
-      expect(res).to.be.eql({Peers: ['/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT']})
+      expect(res).to.be.eql({ Peers: ['/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT'] })
       node.bootstrap.list((err, list) => {
         expect(err).to.not.exist()
         expect(list.Peers).to.deep.equal(defaultList)

@@ -1,22 +1,32 @@
 /* eslint-env mocha */
-
 'use strict'
 
 /*
 const test = require('interface-ipfs-core')
-const IPFSFactory = require('../../utils/ipfs-factory-instance')
+const parallel = require('async/parallel')
 
-let factory
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create({ type: 'proc', exec: IPFS })
 
+const nodes = []
 const common = {
   setup: function (callback) {
-    factory = new IPFSFactory()
-    callback(null, factory)
+    callback(null, {
+      spawnNode: (cb) => {
+        df.spawn((err, _ipfsd) => {
+          if (err) {
+            return cb(err)
+          }
+
+          nodes.push(_ipfsd)
+          cb(null, _ipfsd.api)
+        })
+      }
+    })
   },
   teardown: function (callback) {
-    factory.dismantle(callback)
+    parallel(nodes.map((node) => (cb) => node.stop(cb)), callback)
   }
 }
-
 test.dht(common)
 */

@@ -8,16 +8,28 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const delay = require('delay')
 const series = require('async/series')
-const InstanceFactory = require('../utils/ipfs-factory-instance')
-const DaemonFactory = require('../utils/ipfs-factory-daemon')
 const ipfsExec = require('../utils/ipfs-exec')
+const IPFS = require('../../src')
+
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create({ type: 'js' })
+
+const config = {
+  Bootstrap: [],
+  Discovery: {
+    MDNS: {
+      Enabled:
+        false
+    }
+  }
+}
 
 describe('pubsub', function () {
-  this.timeout(40 * 1000)
+  this.timeout(80 * 1000)
 
-  let instanceFactory
-  let daemonFactory
   let node
+  let ipfsdA
+  let ipfsdB
   let cli
   let httpApi
 
@@ -28,26 +40,38 @@ describe('pubsub', function () {
   before(function (done) {
     this.timeout(60 * 1000)
 
-    instanceFactory = new InstanceFactory()
-    instanceFactory.spawnNode((err, _node) => {
-      expect(err).to.not.exist()
-      node = _node
-      done()
-    })
+    DaemonFactory
+      .create({ type: 'proc' })
+      .spawn({
+        exec: IPFS,
+        config,
+        args: ['--enable-pubsub-experiment']
+      }, (err, _ipfsd) => {
+        expect(err).to.not.exist()
+        ipfsdA = _ipfsd
+        node = _ipfsd.api
+        done()
+      })
   })
 
-  after((done) => instanceFactory.dismantle(done))
+  after((done) => ipfsdB.stop(done))
 
   before((done) => {
-    daemonFactory = new DaemonFactory()
-    daemonFactory.spawnNode((err, _node) => {
+    df.spawn({
+      args: ['--enable-pubsub-experiment'],
+      exec: `./src/cli/bin.js`,
+      config
+    }, (err, _ipfsd) => {
       expect(err).to.not.exist()
-      httpApi = _node
+      httpApi = _ipfsd.api
+      ipfsdB = _ipfsd
+      httpApi.repoPath = ipfsdB.repoPath
       done()
     })
   })
 
-  after((done) => daemonFactory.dismantle(done))
+  after((done) => ipfsdA.stop(done))
+  after((done) => ipfsdB.stop(done))
 
   before((done) => {
     cli = ipfsExec(httpApi.repoPath)

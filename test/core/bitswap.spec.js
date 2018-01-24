@@ -10,13 +10,16 @@ const _ = require('lodash')
 const series = require('async/series')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
-const leftPad = require('left-pad')
 const Block = require('ipfs-block')
-const API = require('ipfs-api')
 const multiaddr = require('multiaddr')
 const isNode = require('detect-node')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
+
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create({ type: 'js' })
+
+const dfProc = DaemonFactory.create({ type: 'proc' })
 
 // This gets replaced by '../utils/create-repo-browser.js' in the browser
 const createTempRepo = require('../utils/create-repo-nodejs.js')
@@ -63,13 +66,27 @@ function connectNodes (remoteNode, inProcNode, callback) {
   ], callback)
 }
 
-function addNode (num, inProcNode, callback) {
-  num = leftPad(num, 3, 0)
+let nodes = []
 
-  const apiUrl = `/ip4/127.0.0.1/tcp/31${num}`
-  const remoteNode = new API(apiUrl)
-
-  connectNodes(remoteNode, inProcNode, (err) => callback(err, remoteNode))
+function addNode (inProcNode, callback) {
+  df.spawn({
+    exec: `./src/cli/bin.js`,
+    config: {
+      Addresses: {
+        Swarm: [`/ip4/127.0.0.1/tcp/0/ws`]
+      },
+      Discovery: {
+        MDNS: {
+          Enabled: false
+        }
+      },
+      Bootstrap: []
+    }
+  }, (err, ipfsd) => {
+    expect(err).to.not.exist()
+    nodes.push(ipfsd)
+    connectNodes(ipfsd.api, inProcNode, (err) => callback(err, ipfsd.api))
+  })
 }
 
 describe('bitswap', function () {
@@ -80,23 +97,20 @@ describe('bitswap', function () {
   beforeEach(function (done) {
     this.timeout(60 * 1000)
 
-    let options = {
-      repo: createTempRepo(),
-      config: {
-        Addresses: {
-          Swarm: []
-        },
-        Discovery: {
-          MDNS: {
-            Enabled: false
-          }
-        },
-        Bootstrap: []
-      }
+    let config = {
+      Addresses: {
+        Swarm: []
+      },
+      Discovery: {
+        MDNS: {
+          Enabled: false
+        }
+      },
+      Bootstrap: []
     }
 
     if (isNode) {
-      options = Object.assign(options, {
+      config = Object.assign({}, config, {
         config: {
           Addresses: {
             Swarm: ['/ip4/127.0.0.1/tcp/0']
@@ -105,25 +119,34 @@ describe('bitswap', function () {
       })
     }
 
-    inProcNode = new IPFS(options)
-    inProcNode.on('ready', () => done())
+    dfProc.spawn({ exec: IPFS, config }, (err, _ipfsd) => {
+      expect(err).to.not.exist()
+      nodes.push(_ipfsd)
+      inProcNode = _ipfsd.api
+      done()
+    })
   })
 
   afterEach(function (done) {
-    this.timeout(60 * 1000)
-    setTimeout(() => inProcNode.stop(() => done()), 500)
+    this.timeout(80 * 1000)
+    const tasks = nodes.map((node) => (cb) => node.stop(cb))
+    parallel(tasks, (err) => {
+      expect(err).to.not.exist()
+      nodes = []
+      done()
+    })
   })
 
   describe('transfer a block between', () => {
     it('2 peers', function (done) {
-      this.timeout(40 * 1000)
+      this.timeout(80 * 1000)
 
       let remoteNode
       let block
       waterfall([
         (cb) => parallel([
           (cb) => makeBlock(cb),
-          (cb) => addNode(13, inProcNode, cb)
+          (cb) => addNode(inProcNode, cb)
         ], cb),
         (res, cb) => {
           block = res[0]
@@ -140,7 +163,7 @@ describe('bitswap', function () {
     })
 
     it('3 peers', function (done) {
-      this.timeout(60 * 1000)
+      this.timeout(80 * 1000)
 
       let blocks
       const remoteNodes = []
@@ -151,11 +174,11 @@ describe('bitswap', function () {
           blocks = _blocks
           cb()
         }),
-        (cb) => addNode(8, inProcNode, (err, _ipfs) => {
+        (cb) => addNode(inProcNode, (err, _ipfs) => {
           remoteNodes.push(_ipfs)
           cb(err)
         }),
-        (cb) => addNode(7, inProcNode, (err, _ipfs) => {
+        (cb) => addNode(inProcNode, (err, _ipfs) => {
           remoteNodes.push(_ipfs)
           cb(err)
         }),
@@ -193,10 +216,10 @@ describe('bitswap', function () {
 
       waterfall([
         // 0. Start node
-        (cb) => addNode(12, inProcNode, cb),
+        (cb) => addNode(inProcNode, cb),
         // 1. Add file to tmp instance
         (remote, cb) => {
-          remote.files.add([{path: 'awesome.txt', content: file}], cb)
+          remote.files.add([{ path: 'awesome.txt', content: file }], cb)
         },
         // 2. Request file from local instance
         (filesAdded, cb) => inProcNode.files.cat(filesAdded[0].hash, cb)
@@ -247,7 +270,7 @@ describe('bitswap', function () {
 
     describe('while online', () => {
       before(function (done) {
-        this.timeout(40 * 1000)
+        this.timeout(80 * 1000)
 
         node.start(() => done())
       })
