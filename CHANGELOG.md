@@ -1,3 +1,19 @@
+<a name="17.5.0"></a>
+# [17.5.0](https://github.com/ipfs/js-ipfs-api/compare/v17.3.0...v17.5.0) (2018-01-24)
+
+
+### Bug Fixes
+
+* normalize stats fields ([#669](https://github.com/ipfs/js-ipfs-api/issues/669)) ([5803d39](https://github.com/ipfs/js-ipfs-api/commit/5803d39))
+
+
+### Features
+
+* /api/v0/repo/version ([#676](https://github.com/ipfs/js-ipfs-api/issues/676)) ([ecf70b9](https://github.com/ipfs/js-ipfs-api/commit/ecf70b9))
+* integrate new ipfsd-ctl ([2b1820b](https://github.com/ipfs/js-ipfs-api/commit/2b1820b))
+
+
+
 <a name="17.4.0"></a>
 # [17.4.0](https://github.com/ipfs/js-ipfs-api/compare/v17.3.0...v17.4.0) (2018-01-24)
 
