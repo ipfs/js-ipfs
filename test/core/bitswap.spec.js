@@ -74,7 +74,13 @@ function addNode (inProcNode, callback) {
     config: {
       Addresses: {
         Swarm: [`/ip4/127.0.0.1/tcp/0/ws`]
-      }
+      },
+      Discovery: {
+        MDNS: {
+          Enabled: false
+        }
+      },
+      Bootstrap: []
     }
   }, (err, ipfsd) => {
     expect(err).to.not.exist()
@@ -92,21 +98,19 @@ describe('bitswap', function () {
     this.timeout(60 * 1000)
 
     let config = {
-      config: {
-        Addresses: {
-          Swarm: []
-        },
-        Discovery: {
-          MDNS: {
-            Enabled: false
-          }
-        },
-        Bootstrap: []
-      }
+      Addresses: {
+        Swarm: []
+      },
+      Discovery: {
+        MDNS: {
+          Enabled: false
+        }
+      },
+      Bootstrap: []
     }
 
     if (isNode) {
-      config = Object.assign(config, {
+      config = Object.assign({}, config, {
         config: {
           Addresses: {
             Swarm: ['/ip4/127.0.0.1/tcp/0']
