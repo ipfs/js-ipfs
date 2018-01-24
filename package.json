@@ -1,6 +1,6 @@
 {
   "name": "ipfs-api",
-  "version": "17.3.0",
+  "version": "17.4.0",
   "description": "A client library for the IPFS HTTP API. Follows interface-ipfs-core spec",
   "main": "src/index.js",
   "browser": {
