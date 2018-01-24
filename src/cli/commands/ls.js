@@ -45,29 +45,14 @@ module.exports = {
       const multihashWidth = Math.max.apply(null, links.map((file) => file.hash.length))
       const sizeWidth = Math.max.apply(null, links.map((file) => String(file.size).length))
 
-      printFiles(argv.ipfs, argv.recursive, multihashWidth, sizeWidth, 0, links)
+      links.forEach(link => {
+        const fileName = link.type === 'dir' ? `${link.name || ''}/` : link.name
+        utils.print(
+          utils.rightpad(link.hash, multihashWidth + 1) +
+          utils.rightpad(link.size || '', sizeWidth + 1) +
+          ' '.repeat((link.depth - 1) * 2) + fileName
+        )
+      })
     })
   }
-}
-
-function printFiles(ipfs, recurse, multihashWidth, sizeWidth, depth, links) {
-  // console.log('links:', links)
-  links.forEach(link => {
-    printFile(multihashWidth, sizeWidth, depth, link)
-    if (link.type === 'dir' && recurse) {
-      ipfs.ls(link.hash, (err, files) => {
-          if (err) throw err
-          printFiles(ipfs, recurse, multihashWidth, sizeWidth, depth + 1, files)
-      })
-    }
-  })
-}
-
-function printFile(multihashWidth, sizeWidth, depth, file) {
-  const fileName = file.type === 'dir' ? `${file.name || ''}/` : file.name
-  utils.print(
-    utils.rightpad(file.hash, multihashWidth + 1) +
-    utils.rightpad(file.size || '', sizeWidth + 1) +
-    ' '.repeat(depth * 2) + fileName
-  )
 }

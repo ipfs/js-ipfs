@@ -271,10 +271,10 @@ exports.immutableLs = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
     const key = request.pre.args.key
-    const ipfs = request.server.app.ipfs // index.js assigns ipfs.ls as files.lsImmutable
-    const recurse = request.query && request.query.recursive
+    const ipfs = request.server.app.ipfs
+    const recursive = request.query && request.query.recursive === 'true'
 
-    ipfs.ls(key, { recursive: recurse }, (err, files) => {
+    ipfs.ls(key, { recursive: recursive }, (err, files) => {
       if (err) {
         reply({
           Message: 'Failed to list dir: ' + err.message,
@@ -289,7 +289,8 @@ exports.immutableLs = {
             Name: file.name,
             Hash: file.hash,
             Size: file.size,
-            Type: toTypeCode(file.type)
+            Type: toTypeCode(file.type),
+            Depth: file.depth
           }))
         }]
       })

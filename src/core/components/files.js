@@ -163,17 +163,15 @@ module.exports = function files (self) {
 
   function _lsPullStreamImmutable (ipfsPath, options) {
     const path = normalizePath(ipfsPath)
-    const recurse = options && options.recursive
-    const depth = recurse ? global.Infinity : path.split('/').length
-    // console.log('path:', path)
-    // console.log('depth:', depth)
-    // console.log('self._ipldResolver:', self._ipldResolver)
+    const recursive = options && options.recursive
+    const pathDepth = path.split('/').length
+    const maxDepth = recursive ? global.Infinity : pathDepth
+
     return pull(
-      exporter(ipfsPath, self._ipldResolver, { maxDepth: depth }),
-      pull.filter((node) => {
-        // console.log('node:', node)
-        return recurse ? node.depth >= depth : node.depth === depth
-      }),
+      exporter(ipfsPath, self._ipldResolver, { maxDepth: maxDepth }),
+      pull.filter((node) =>
+        recursive ? node.depth >= pathDepth : node.depth === pathDepth
+      ),
       pull.map((node) => {
         node = Object.assign({}, node, { hash: toB58String(node.hash) })
         delete node.content
@@ -290,6 +288,7 @@ module.exports = function files (self) {
         // options arg is optional so if it's a function then it's the callback
         callback = options
       }
+
       pull(
         _lsPullStreamImmutable(ipfsPath, options),
         pull.collect((err, values) => {
