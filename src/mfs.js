@@ -26,6 +26,7 @@ module.exports = (common) => {
           expect(err).to.not.exist()
           ipfs = node
           node.id((err, id) => {
+            expect(err).to.not.exist()
             withGo = id.agentVersion.startsWith('go-ipfs')
             done()
           })
