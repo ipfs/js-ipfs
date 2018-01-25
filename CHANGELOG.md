@@ -1,3 +1,20 @@
+<a name="0.42.0"></a>
+# [0.42.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.41.1...v0.42.0) (2018-01-25)
+
+
+### Bug Fixes
+
+* Update PUBSUB.md ([#204](https://github.com/ipfs/interface-ipfs-core/issues/204)) ([0409e3a](https://github.com/ipfs/interface-ipfs-core/commit/0409e3a))
+
+
+### Features
+
+* add stats spec ([220483f](https://github.com/ipfs/interface-ipfs-core/commit/220483f))
+* REPO spec ([#207](https://github.com/ipfs/interface-ipfs-core/issues/207)) ([803a3ef](https://github.com/ipfs/interface-ipfs-core/commit/803a3ef))
+* spec MFS Actions ([#206](https://github.com/ipfs/interface-ipfs-core/issues/206)) ([7431098](https://github.com/ipfs/interface-ipfs-core/commit/7431098))
+
+
+
 <a name="0.41.1"></a>
 ## [0.41.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.41.0...v0.41.1) (2018-01-19)
 
