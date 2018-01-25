@@ -101,9 +101,8 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.pubsub.ls(topic, callback)
+##### `JavaScript` - ipfs.pubsub.ls(callback)
 
-- `topic: string`
 - `callback: (Error, Array<string>>) => ()` - Calls back with an error or a list of topicCIDs that this peer is subscribed to.
 
 If no `callback` is passed, a promise is returned.
