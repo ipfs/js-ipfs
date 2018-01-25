@@ -2,7 +2,7 @@
   "name": "interface-ipfs-core",
   "version": "0.42.1",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
-  "main": "src/index.js",
+  "main": "js/src/index.js",
   "scripts": {
     "test": "exit 0",
     "lint": "aegir lint",
@@ -13,8 +13,8 @@
     "coverage-publish": "exit 0"
   },
   "files": [
-    "src/",
-    "test/"
+    "js/src/",
+    "js/test/"
   ],
   "repository": {
     "type": "git",
