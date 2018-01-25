@@ -11,26 +11,46 @@ module.exports = {
     number: {
       alias: 'n',
       type: 'boolean',
-      default: false
+      default: false,
+      describe: 'Print only the version number'
     },
     commit: {
       type: 'boolean',
-      default: false
+      default: false,
+      describe: `Include the version's commit hash`
     },
     repo: {
       type: 'boolean',
-      default: false
+      default: false,
+      describe: `Print only the repo's version number`
+    },
+    all: {
+      type: 'boolean',
+      default: false,
+      describe: 'Print everything we have'
     }
   },
 
   handler (argv) {
-    // TODO: handle argv.{repo|commit|number}
-    argv.ipfs.version((err, version) => {
+    argv.ipfs.version((err, ipfs) => {
       if (err) {
         throw err
       }
 
-      print(`js-ipfs version: ${version.version}`)
+      const withCommit = argv.all || argv.commit
+      const parsedVersion = `${ipfs.version}${withCommit ? `-${ipfs.commit}` : ''}`
+
+      if (argv.repo) {
+        // go-ipfs prints only the number, even without the --number flag.
+        print(ipfs.repo)
+      } else if (argv.number) {
+        print(parsedVersion)
+      } else if (argv.all) {
+        print(`js-ipfs version: ${parsedVersion}`)
+        print(`Repo version: ${ipfs.repo}`)
+      } else {
+        print(`js-ipfs version: ${parsedVersion}`)
+      }
     })
   }
 }

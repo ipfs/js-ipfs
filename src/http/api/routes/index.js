@@ -6,7 +6,7 @@ module.exports = (server) => {
   require('./bootstrap')(server)
   require('./block')(server)
   require('./object')(server)
-  // require('./repo')(server)
+  require('./repo')(server)
   require('./config')(server)
   require('./swarm')(server)
   require('./bitswap')(server)
