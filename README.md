@@ -101,6 +101,7 @@ In order to be considered "valid", an IPFS core implementation  must expose the 
 - **Node Management**
   - [Miscellaneous](/SPEC/MISCELLANEOUS.md)
   - [config](/SPEC/CONFIG.md)
+  - [stats](/SPEC/STATS.md)
 
 ## Contribute
 
