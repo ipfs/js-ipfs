@@ -1,3 +1,13 @@
+<a name="0.42.1"></a>
+## [0.42.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.42.0...v0.42.1) (2018-01-25)
+
+
+### Bug Fixes
+
+* stats not implemented on jsipfs ([#209](https://github.com/ipfs/interface-ipfs-core/issues/209)) ([af32ecf](https://github.com/ipfs/interface-ipfs-core/commit/af32ecf))
+
+
+
 <a name="0.42.0"></a>
 # [0.42.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.41.1...v0.42.0) (2018-01-25)
 
