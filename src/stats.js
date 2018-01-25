@@ -11,6 +11,7 @@ chai.use(dirtyChai)
 module.exports = (common) => {
   describe('.stats', () => {
     let ipfs
+    let withGo
 
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
@@ -22,7 +23,11 @@ module.exports = (common) => {
         factory.spawnNode((err, node) => {
           expect(err).to.not.exist()
           ipfs = node
-          done()
+          node.id((err, id) => {
+            expect(err).to.not.exist()
+            withGo = id.agentVersion.startsWith('go-ipfs')
+            done()
+          })
         })
       })
     })
@@ -32,6 +37,11 @@ module.exports = (common) => {
     })
 
     it('.bitswap', (done) => {
+      if (!withGo) {
+        console.log('Not supported in js-ipfs yet')
+        return done()
+      }
+
       ipfs.stats.bitswap((err, res) => {
         expect(err).to.not.exist()
         expect(res).to.exist()
@@ -49,6 +59,11 @@ module.exports = (common) => {
     })
 
     it('.bitswap Promise', () => {
+      if (!withGo) {
+        console.log('Not supported in js-ipfs yet')
+        return
+      }
+
       return ipfs.stats.bitswap().then((res) => {
         expect(res).to.exist()
         expect(res).to.have.a.property('provideBufLen')
@@ -64,6 +79,11 @@ module.exports = (common) => {
     })
 
     it('.bw', (done) => {
+      if (!withGo) {
+        console.log('Not supported in js-ipfs yet')
+        return done()
+      }
+
       ipfs.stats.bw((err, res) => {
         expect(err).to.not.exist()
         expect(res).to.exist()
@@ -76,6 +96,11 @@ module.exports = (common) => {
     })
 
     it('.bw Promise', () => {
+      if (!withGo) {
+        console.log('Not supported in js-ipfs yet')
+        return
+      }
+
       return ipfs.stats.bw().then((res) => {
         expect(res).to.exist()
         expect(res).to.have.a.property('totalIn')
@@ -86,6 +111,11 @@ module.exports = (common) => {
     })
 
     it('.repo', (done) => {
+      if (!withGo) {
+        console.log('Not supported in js-ipfs yet')
+        return done()
+      }
+
       ipfs.stats.repo((err, res) => {
         expect(err).to.not.exist()
         expect(res).to.exist()
@@ -99,6 +129,11 @@ module.exports = (common) => {
     })
 
     it('.repo Promise', () => {
+      if (!withGo) {
+        console.log('Not supported in js-ipfs yet')
+        return
+      }
+
       return ipfs.stats.repo().then((res) => {
         expect(res).to.exist()
         expect(res).to.have.a.property('numObjects')
