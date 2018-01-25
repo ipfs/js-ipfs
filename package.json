@@ -6,9 +6,9 @@
   "scripts": {
     "test": "exit 0",
     "lint": "aegir lint",
-    "release": "aegir release -t node --no-docs --no-build",
-    "release-minor": "aegir release -t node --type minor --no-docs --no-build",
-    "release-major": "aegir release -t node --type major --no-docs --no-build",
+    "release": "aegir release -t node --no-docs --no-build --no-test",
+    "release-minor": "aegir release -t node --type minor --no-docs --no-build --no-test",
+    "release-major": "aegir release -t node --type major --no-docs --no-build --no-test",
     "coverage": "exit 0",
     "coverage-publish": "exit 0"
   },
