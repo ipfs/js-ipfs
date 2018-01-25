@@ -18,8 +18,9 @@ const through = require('through2')
 const path = require('path')
 const bl = require('bl')
 const isNode = require('detect-node')
+const mfs = require('./mfs')
 
-module.exports = (common) => {
+const tests = (common) => {
   describe('.files', function () {
     this.timeout(40 * 1000)
 
@@ -981,4 +982,9 @@ module.exports = (common) => {
       })
     })
   })
+}
+
+module.exports = (common) => {
+  tests(common)
+  mfs(common)
 }
