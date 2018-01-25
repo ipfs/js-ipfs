@@ -287,6 +287,7 @@ module.exports = function files (self) {
       if (typeof options === 'function') {
         // options arg is optional so if it's a function then it's the callback
         callback = options
+        options = {}
       }
 
       pull(

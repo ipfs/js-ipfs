@@ -274,6 +274,9 @@ exports.immutableLs = {
     const ipfs = request.server.app.ipfs
     const recursive = request.query && request.query.recursive === 'true'
 
+    console.log('ipfs.files.ls:', ipfs.files.ls)
+    console.log('ipfs.ls:', ipfs.ls)
+
     ipfs.ls(key, { recursive: recursive }, (err, files) => {
       if (err) {
         reply({

@@ -1,5 +1,8 @@
 'use strict'
 
+const print = require('../utils').print
+
+
 module.exports = {
   command: 'files <command>',
 
@@ -11,6 +14,6 @@ module.exports = {
   },
 
   handler (argv) {
-    console.log('Type `jsipfs bitswap --help` for more instructions')
+    print('Type `jsipfs files --help` for more instructions')
   }
 }
