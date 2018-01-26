@@ -1,5 +1,6 @@
 'use strict'
 
+const os = require('os')
 const print = require('../utils').print
 
 module.exports = {
@@ -48,6 +49,8 @@ module.exports = {
       } else if (argv.all) {
         print(`js-ipfs version: ${parsedVersion}`)
         print(`Repo version: ${data.repo}`)
+        print(`System version: ${os.arch()}/${os.platform()}`)
+        print(`Node.js version: ${process.version}`)
       } else {
         print(`js-ipfs version: ${parsedVersion}`)
       }
