@@ -4,21 +4,15 @@
 const fs = require('fs')
 const path = require('path')
 const expect = require('chai').expect
+const repoVersion = require('ipfs-repo').repoVersion
 const pkgversion = require('../../package.json').version
 const runOnAndOff = require('../utils/on-and-off')
 
-function getRepoVersion (repoPath) {
-  const versionPath = path.join(repoPath, 'version')
-  return String(fs.readFileSync(versionPath))
-}
-
 describe('version', () => runOnAndOff((thing) => {
   let ipfs
-  let repoVersion
 
   before(() => {
     ipfs = thing.ipfs
-    repoVersion = getRepoVersion(ipfs.repoPath)
   })
 
   it('get the version', () => {
