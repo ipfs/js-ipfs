@@ -43,8 +43,8 @@ describe('key exchange', () => {
     ipfs.key.import('clone', selfPem, passwordPem, (err, key) => {
       expect(err).to.not.exist()
       expect(key).to.exist()
-      expect(key).to.have.property('Name', 'clone')
-      expect(key).to.have.property('Id')
+      expect(key).to.have.property('name', 'clone')
+      expect(key).to.have.property('id')
       done()
     })
   })
