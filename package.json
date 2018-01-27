@@ -68,7 +68,7 @@
     "eslint-plugin-react": "^7.5.1",
     "go-ipfs-dep": "^0.4.13",
     "gulp": "^3.9.1",
-    "interface-ipfs-core": "~0.41.0",
+    "interface-ipfs-core": "~0.43.0",
     "hapi": "^16.6.2",
     "ipfsd-ctl": "~0.27.0",
     "pre-commit": "^1.2.2",

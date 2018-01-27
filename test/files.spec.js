@@ -244,19 +244,10 @@ describe('.files (the MFS API part)', function () {
         .write('/test-folder/test-file-2.txt', Buffer.from('hello world'), {create: true}, (err) => {
           expect(err).to.not.exist()
 
-          ipfs.files.read('/test-folder/test-file-2.txt', (err, stream) => {
+          ipfs.files.read('/test-folder/test-file-2.txt', (err, buf) => {
             expect(err).to.not.exist()
-
-            let buf = ''
-            stream
-              .on('error', (err) => expect(err).to.not.exist())
-              .on('data', (data) => {
-                buf += data
-              })
-              .on('end', () => {
-                expect(buf).to.be.equal('hello world')
-                done()
-              })
+            expect(buf.toString()).to.be.equal('hello world')
+            done()
           })
         })
     })
@@ -266,21 +257,10 @@ describe('.files (the MFS API part)', function () {
         .write('/test-folder/test-file-2.txt', Buffer.from('hello world'), (err) => {
           expect(err).to.not.exist()
 
-          ipfs.files.read('/test-folder/test-file-2.txt', (err, stream) => {
+          ipfs.files.read('/test-folder/test-file-2.txt', (err, buf) => {
             expect(err).to.not.exist()
-
-            let buf = ''
-            stream
-              .on('error', (err) => {
-                expect(err).to.not.exist()
-              })
-              .on('data', (data) => {
-                buf += data
-              })
-              .on('end', () => {
-                expect(buf).to.be.equal('hello world')
-                done()
-              })
+            expect(buf.toString()).to.be.equal('hello world')
+            done()
           })
         })
     })
@@ -315,20 +295,10 @@ describe('.files (the MFS API part)', function () {
         return done()
       }
 
-      ipfs.files.read('/test-folder/test-file', (err, stream) => {
+      ipfs.files.read('/test-folder/test-file', (err, buf) => {
         expect(err).to.not.exist()
-        let buf = ''
-        stream
-          .on('error', (err) => {
-            expect(err).to.not.exist()
-          })
-          .on('data', (data) => {
-            buf += data
-          })
-          .on('end', () => {
-            expect(Buffer.from(buf)).to.deep.equal(testfile)
-            done()
-          })
+        expect(Buffer.from(buf)).to.deep.equal(testfile)
+        done()
       })
     })
 
@@ -417,19 +387,9 @@ describe('.files (the MFS API part)', function () {
         .then(() => {
           return ipfs.files.read('/test-folder/test-file-2.txt')
         })
-        .then((stream) => {
-          let buf = ''
-          stream
-            .on('error', (err) => {
-              expect(err).to.not.exist()
-            })
-            .on('data', (data) => {
-              buf += data
-            })
-            .on('end', () => {
-              expect(buf).to.be.equal('hello world')
-              done()
-            })
+        .then((buf) => {
+          expect(buf.toString()).to.be.equal('hello world')
+          done()
         })
         .catch(done)
     })
@@ -440,19 +400,9 @@ describe('.files (the MFS API part)', function () {
         .then(() => {
           return ipfs.files.read('/test-folder/test-file-2.txt')
         })
-        .then((stream) => {
-          let buf = ''
-          stream
-            .on('error', (err) => {
-              expect(err).to.not.exist()
-            })
-            .on('data', (data) => {
-              buf += data
-            })
-            .on('end', () => {
-              expect(buf).to.be.equal('hello world')
-              done()
-            })
+        .then((buf) => {
+          expect(buf.toString()).to.be.equal('hello world')
+          done()
         })
         .catch(done)
     })
@@ -482,19 +432,9 @@ describe('.files (the MFS API part)', function () {
       if (!isNode) { return done() }
 
       ipfs.files.read('/test-folder/test-file')
-        .then((stream) => {
-          let buf = ''
-          stream
-            .on('error', (err) => {
-              expect(err).to.not.exist()
-            })
-            .on('data', (data) => {
-              buf += data
-            })
-            .on('end', () => {
-              expect(Buffer.from(buf)).to.eql(testfile)
-              done()
-            })
+        .then((buf) => {
+          expect(Buffer.from(buf)).to.eql(testfile)
+          done()
         })
     })
 

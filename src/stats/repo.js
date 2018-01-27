@@ -1,4 +1,3 @@
-
 'use strict'
 
 const promisify = require('promisify-es6')
