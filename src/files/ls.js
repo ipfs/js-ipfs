@@ -3,7 +3,9 @@
 const promisify = require('promisify-es6')
 
 const transform = function (res, callback) {
-  callback(null, res.Entries.map((entry) => {
+  const entries = res.Entries || []
+
+  callback(null, entries.map((entry) => {
     return {
       name: entry.Name,
       type: entry.Type,
