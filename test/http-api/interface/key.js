@@ -3,17 +3,32 @@
 'use strict'
 
 const test = require('interface-ipfs-core')
-const FactoryClient = require('./../../utils/ipfs-factory-daemon')
+const parallel = require('async/parallel')
 
-let fc
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
+const options = {
+  //args: ['--pass ipfs-is-awesome-software']
+}
 
+const nodes = []
 const common = {
   setup: function (callback) {
-    fc = new FactoryClient()
-    callback(null, fc)
+    callback(null, {
+      spawnNode: (cb) => {
+        df.spawn((err, _ipfsd) => {
+          if (err) {
+            return cb(err)
+          }
+
+          nodes.push(_ipfsd)
+          cb(null, _ipfsd.api)
+        })
+      }
+    })
   },
   teardown: function (callback) {
-    fc.dismantle(callback)
+    parallel(nodes.map((node) => (cb) => node.stop(cb)), callback)
   }
 }
 
