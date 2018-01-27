@@ -20,7 +20,7 @@ describe('key', () => runOnAndOff.off((thing) => {
 
     return ipfs(`${pass} key gen ${name} --type rsa --size 2048`)
       .then((out) => {
-        expect(out).to.include(`generated ${name}`)
+        expect(out).to.include(name)
       })
   })
 
@@ -38,7 +38,7 @@ describe('key', () => runOnAndOff.off((thing) => {
 
     return ipfs(`${pass} key rename ${name} ${newName}`)
       .then((out) => {
-        expect(out).to.include(`renamed to ${newName}`)
+        expect(out).to.include(newName)
       })
   })
 
