@@ -29,7 +29,7 @@ module.exports = {
       if (err) {
         throw err
       }
-      print(`generated ${key.Id} ${key.Name}`)
+      print(`generated ${key.id} ${key.name}`)
     })
   }
 }
