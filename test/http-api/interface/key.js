@@ -8,7 +8,7 @@ const parallel = require('async/parallel')
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
 const options = {
-  //args: ['--pass ipfs-is-awesome-software']
+  args: ['--pass ipfs-is-awesome-software']
 }
 
 const nodes = []
@@ -16,7 +16,7 @@ const common = {
   setup: function (callback) {
     callback(null, {
       spawnNode: (cb) => {
-        df.spawn((err, _ipfsd) => {
+        df.spawn(options, (err, _ipfsd) => {
           if (err) {
             return cb(err)
           }
