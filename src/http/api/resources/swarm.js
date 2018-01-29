@@ -10,13 +10,22 @@ exports = module.exports
 // common pre request handler that parses the args and returns `addr` which is assigned to `request.pre.args`
 exports.parseAddrs = (request, reply) => {
   if (!request.query.arg) {
-    return reply("Argument 'addr' is required").code(400).takeover()
+    const err = 'Argument \'addr\' is required'
+    log.error(err)
+    return reply({
+      Code: 0,
+      Message: err
+    }).code(400).takeover()
   }
 
   try {
     multiaddr(request.query.arg)
   } catch (err) {
-    return reply("Argument 'addr' is invalid").code(500).takeover()
+    log.error(err)
+    return reply({
+      Code: 0,
+      Message: err.message
+    }).code(500).takeover()
   }
 
   return reply({
