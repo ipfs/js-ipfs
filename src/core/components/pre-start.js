@@ -18,21 +18,18 @@ module.exports = function preStart (self) {
     waterfall([
       (cb) => self._repo.config.get(cb),
       (config, cb) => {
-        // Upgrade to keychain?
-        if (!pass || config.Keychain) {
+        // Create keychain configuration, if needed.
+        if (config.Keychain) {
           return cb(null, config)
         }
         config.Keychain = Keychain.generateOptions()
         self.config.set('Keychain', config.Keychain, (err) => {
-          if (err) return cb(err)
-          const keychainOptions = Object.assign({passPhrase: pass}, config.Keychain)
-          self._keychain = new Keychain(self._repo.keys, keychainOptions)
-          importSelf = true
-          self.log('Upgrade repo for a keychain')
-          cb(null, config)
+          self.log('using default keychain options')
+          cb(err, config)
         })
       },
       (config, cb) => {
+        // Construct the keychain
         if (self._keychain) {
           // most likely an init or upgrade has happened
         } else if (pass) {
@@ -49,11 +46,21 @@ module.exports = function preStart (self) {
         const privKey = config.Identity.PrivKey
 
         peerId.createFromPrivKey(privKey, (err, id) => {
-          if (!err && importSelf) {
-            return self._keychain.importPeer('self', id, (err) => cb(err, config, id))
-          }
           cb(err, config, id)
         })
+      },
+      (config, id, cb) => {
+        // Import the private key as 'self', if needed.
+        if (!pass) {
+          return cb(null, config, id)
+        }
+        self._keychain.findKeyByName('self', (err) => {
+          if (err) {
+            self.log('Creating "self" key')
+            return self._keychain.importPeer('self', id, (err) => cb(err, config, id))
+          }
+          cb(null, config, id)
+        });
       },
       (config, id, cb) => {
         self.log('peer created')
