@@ -14,7 +14,6 @@ module.exports = function preStart (self) {
     self.log('pre-start')
 
     const pass = self._options.pass
-    let importSelf = false
     waterfall([
       (cb) => self._repo.config.get(cb),
       (config, cb) => {
@@ -60,7 +59,7 @@ module.exports = function preStart (self) {
             return self._keychain.importPeer('self', id, (err) => cb(err, config, id))
           }
           cb(null, config, id)
-        });
+        })
       },
       (config, id, cb) => {
         self.log('peer created')
