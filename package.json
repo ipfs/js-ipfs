@@ -121,7 +121,7 @@
     "libp2p-circuit": "~0.1.4",
     "libp2p-floodsub": "~0.13.1",
     "libp2p-kad-dht": "~0.6.0",
-    "libp2p-keychain": "~0.2.0",
+    "libp2p-keychain": "~0.3.0",
     "libp2p-mdns": "~0.9.1",
     "libp2p-multiplex": "~0.5.1",
     "libp2p-railing": "~0.7.1",
