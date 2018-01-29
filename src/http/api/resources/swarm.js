@@ -10,7 +10,7 @@ exports = module.exports
 // common pre request handler that parses the args and returns `addr` which is assigned to `request.pre.args`
 exports.parseAddrs = (request, reply) => {
   if (!request.query.arg) {
-    const err = 'Argument \'addr\' is required'
+    const err = 'Argument `addr` is required'
     log.error(err)
     return reply({
       Code: 0,
