@@ -1,3 +1,4 @@
+/* eslint max-nested-callbacks: ["error", 5] */
 /* eslint-env mocha */
 'use strict'
 
@@ -36,27 +37,27 @@ describe('version', () => runOnAndOff((thing) => {
 
   describe('handles --all', function () {
     it('prints js-ipfs version', () =>
-      ipfs('version --all').then(out =>
+      ipfs('version --all').then(out => {
         expect(out).to.include(`js-ipfs version: ${pkgversion}`)
-      )
+      })
     )
 
     it('prints repo version', () =>
-      ipfs('version --all').then(out =>
+      ipfs('version --all').then(out => {
         expect(out).to.include(`Repo version: ${repoVersion}`)
-      )
+      })
     )
 
     it('prints arch/platform', () =>
-      ipfs('version --all').then(out =>
+      ipfs('version --all').then(out => {
         expect(out).to.include(`System version: ${os.arch()}/${os.platform()}`)
-      )
+      })
     )
 
     it('prints Node.js version', () =>
-      ipfs('version --all').then(out =>
+      ipfs('version --all').then(out => {
         expect(out).to.include(`Node.js version: ${process.version}`)
-      )
+      })
     )
   })
 
