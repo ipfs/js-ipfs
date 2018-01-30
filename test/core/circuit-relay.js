@@ -62,65 +62,67 @@ function setupInProcNode (addrs, hop, callback) {
 const wsAddr = (addrs) => addrs.map((a) => a.toString()).find((a) => a.includes('/ws'))
 const tcpAddr = (addrs) => addrs.map((a) => a.toString()).find((a) => !a.includes('/ws'))
 
-describe(`A <-> R <-> B`, function () {
-  this.timeout(80 * 1000)
+describe('circuit relay', () => {
+  describe(`A <-> R <-> B`, function () {
+    this.timeout(80 * 1000)
 
-  let nodeA
-  let nodeAAddr
-  let nodeB
-  let nodeBAddr
-  let nodeBCircuitAddr
+    let nodeA
+    let nodeAAddr
+    let nodeB
+    let nodeBAddr
+    let nodeBCircuitAddr
 
-  let relayNode
+    let relayNode
 
-  let nodes
-  before(function (done) {
-    parallel([
-      (cb) => setupInProcNode([
-        '/ip4/0.0.0.0/tcp/0',
-        '/ip4/0.0.0.0/tcp/0/ws'
-      ], true, cb),
-      (cb) => setupInProcNode(['/ip4/0.0.0.0/tcp/0'], cb),
-      (cb) => setupInProcNode(['/ip4/0.0.0.0/tcp/0/ws'], cb)
-    ], function (err, res) {
-      expect(err).to.not.exist()
-      nodes = res.map((node) => node.ipfsd)
+    let nodes
+    before(function (done) {
+      parallel([
+        (cb) => setupInProcNode([
+          '/ip4/0.0.0.0/tcp/0',
+          '/ip4/0.0.0.0/tcp/0/ws'
+        ], true, cb),
+        (cb) => setupInProcNode(['/ip4/0.0.0.0/tcp/0'], cb),
+        (cb) => setupInProcNode(['/ip4/0.0.0.0/tcp/0/ws'], cb)
+      ], function (err, res) {
+        expect(err).to.not.exist()
+        nodes = res.map((node) => node.ipfsd)
 
-      relayNode = res[0].ipfsd
+        relayNode = res[0].ipfsd
 
-      nodeAAddr = tcpAddr(res[1].addrs)
-      nodeA = res[0].ipfsd.api
+        nodeAAddr = tcpAddr(res[1].addrs)
+        nodeA = res[0].ipfsd.api
 
-      nodeBAddr = wsAddr(res[2].addrs)
+        nodeBAddr = wsAddr(res[2].addrs)
 
-      nodeB = res[1].ipfsd.api
-      nodeBCircuitAddr = `/p2p-circuit/ipfs/${multiaddr(nodeBAddr).getPeerId()}`
+        nodeB = res[1].ipfsd.api
+        nodeBCircuitAddr = `/p2p-circuit/ipfs/${multiaddr(nodeBAddr).getPeerId()}`
 
-      done()
+        done()
+      })
     })
-  })
 
-  after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
+    after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
 
-  it('should connect', function (done) {
-    series([
-      (cb) => relayNode.api.swarm.connect(nodeAAddr, cb),
-      (cb) => setTimeout(cb, 1000),
-      (cb) => relayNode.api.swarm.connect(nodeBAddr, cb),
-      (cb) => setTimeout(cb, 1000),
-      (cb) => nodeA.swarm.connect(nodeBCircuitAddr, cb)
-    ], done)
-  })
+    it('should connect', function (done) {
+      series([
+        (cb) => relayNode.api.swarm.connect(nodeAAddr, cb),
+        (cb) => setTimeout(cb, 1000),
+        (cb) => relayNode.api.swarm.connect(nodeBAddr, cb),
+        (cb) => setTimeout(cb, 1000),
+        (cb) => nodeA.swarm.connect(nodeBCircuitAddr, cb)
+      ], done)
+    })
 
-  it('should transfer', function (done) {
-    const data = crypto.randomBytes(128)
-    waterfall([
-      (cb) => nodeA.files.add(data, cb),
-      (res, cb) => nodeB.files.cat(res[0].hash, cb),
-      (buffer, cb) => {
-        expect(buffer).to.deep.equal(data)
-        cb()
-      }
-    ], done)
+    it('should transfer', function (done) {
+      const data = crypto.randomBytes(128)
+      waterfall([
+        (cb) => nodeA.files.add(data, cb),
+        (res, cb) => nodeB.files.cat(res[0].hash, cb),
+        (buffer, cb) => {
+          expect(buffer).to.deep.equal(data)
+          cb()
+        }
+      ], done)
+    })
   })
 })
