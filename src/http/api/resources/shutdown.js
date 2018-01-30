@@ -2,8 +2,13 @@
 
 exports = module.exports
 
+/*
+ * Stop the daemon.
+ *
+ * Returns an empty response to the caller then
+ * on the next 'tick' emits SIGTERM.
+ */
 exports.do = (request, reply) => {
-  const server = request.server
-  setImmediate(() => server.stop(() => {}))
+  setImmediate(() => process.emit('SIGTERM'))
   return reply()
 }
