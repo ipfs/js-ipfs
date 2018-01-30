@@ -353,6 +353,7 @@ describe('files', () => runOnAndOff((thing) => {
           'Options:',
           '  --version       Show version number                                  [boolean]',
           '  --silent        Write no output                     [boolean] [default: false]',
+          '  --pass          Pass phrase for the keys                [string] [default: ""]',
           '  --help          Show help                                            [boolean]',
           '  -v, --headers   Print table headers (Hash, Size, Name).',
           '                                                      [boolean] [default: false]',
