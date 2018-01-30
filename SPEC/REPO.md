@@ -33,6 +33,8 @@ ipfs.repo.gc((err, res) => console.log(res))
 
 ##### `JavaScript` - ipfs.repo.stat([options, callback])
 
+`stats.repo` and `repo.stat` can be used interchangeably.
+
 Where:
 
 - `options` is an object that contains following properties
