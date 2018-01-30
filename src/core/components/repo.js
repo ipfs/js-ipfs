@@ -11,6 +11,9 @@ module.exports = function repo (self) {
     /**
      * If the repo has been initialized, report the current version.
      * Otherwise report the version that would be initialized.
+     *
+     * @param {function(Error, Number)} [callback]
+     * @returns {undefined}
      */
     version: (callback) => {
       self._repo._isInitialized(err => {

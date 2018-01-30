@@ -1,8 +1,6 @@
 /* eslint-env mocha */
 'use strict'
 
-const fs = require('fs')
-const path = require('path')
 const expect = require('chai').expect
 const repoVersion = require('ipfs-repo').repoVersion
 
