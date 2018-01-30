@@ -41,12 +41,15 @@ describe('.bitswap', function () {
   it('.stat', (done) => {
     ipfs.bitswap.stat((err, res) => {
       expect(err).to.not.exist()
-      expect(res).to.have.property('BlocksReceived')
-      expect(res).to.have.property('DupBlksReceived')
-      expect(res).to.have.property('DupDataReceived')
-      expect(res).to.have.property('Peers')
-      expect(res).to.have.property('ProvideBufLen')
-      expect(res).to.have.property('Wantlist')
+      expect(res).to.have.a.property('provideBufLen')
+      expect(res).to.have.a.property('wantlist')
+      expect(res).to.have.a.property('peers')
+      expect(res).to.have.a.property('blocksReceived')
+      expect(res).to.have.a.property('dataReceived')
+      expect(res).to.have.a.property('blocksSent')
+      expect(res).to.have.a.property('dataSent')
+      expect(res).to.have.a.property('dupBlksReceived')
+      expect(res).to.have.a.property('dupDataReceived')
 
       done()
     })
