@@ -77,3 +77,28 @@ ipfs.dns('ipfs.io', (err, path) => {
 A great source of [examples][] can be found in the tests for this API.
 
 [examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/miscellaneous.js
+
+#### `shutdown`
+
+> Stop the ipfs daemon
+
+##### `Go` **WIP**
+
+##### `JavaScript` - ipfs.shutdown([callback])
+
+`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful. 
+If no `callback` is passed, a promise is returned.
+
+**Example:**
+
+```JavaScript
+ipfs.shutdown((err) => {
+  if (err) {
+    throw err
+  }
+})
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/miscellaneous.js
