@@ -205,8 +205,10 @@ exports.add = {
     const options = {
       'cid-version': request.query['cid-version'],
       'raw-leaves': request.query['raw-leaves'],
-      progress: request.query['progress'] ? progressHandler : null
+      progress: request.query['progress'] ? progressHandler : null,
+      onlyHash: request.query['only-hash']
     }
+    console.log('http options:', options)
 
     const aborter = abortable()
     const stream = toStream.source(pull(
