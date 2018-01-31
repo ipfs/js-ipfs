@@ -139,6 +139,12 @@ module.exports = {
       type: 'boolean',
       default: false
     },
+    'only-hash': {
+      alias: 'n',
+      type: 'boolean',
+      default: false,
+      describe: 'Only chunk and hash, do not write to disk'
+    },
     'enable-sharding-experiment': {
       type: 'boolean',
       default: false
@@ -182,7 +188,8 @@ module.exports = {
       strategy: argv.trickle ? 'trickle' : 'balanced',
       shardSplitThreshold: argv.enableShardingExperiment ? argv.shardSplitThreshold : Infinity,
       'cid-version': argv['cid-version'],
-      'raw-leaves': argv['raw-leaves']
+      'raw-leaves': argv['raw-leaves'],
+      onlyHash: argv.onlyHash
     }
 
     // Temporary restriction on raw-leaves:
@@ -230,8 +237,7 @@ module.exports = {
           }
         }
 
-        const thing = (cb) => cb(null, ipfs.files.addPullStream(options))
-        thing(next)
+        next(null, ipfs.files.addPullStream(options))
       }
     ], (err, addStream) => {
       if (err) throw err
