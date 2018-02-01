@@ -2,6 +2,7 @@
 
 exports.version = require('./version')
 exports.id = require('./id')
+exports.ping = require('./ping')
 exports.bootstrap = require('./bootstrap')
 exports.repo = require('./repo')
 exports.object = require('./object')
