@@ -329,6 +329,7 @@ A complete API definition is in the works. Meanwhile, you can learn how to you u
 - [miscellaneous operations](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md)
   - [`ipfs.id([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#id)
   - [`ipfs.version([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#version)
+  - [`ipfs.shutdown([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#shutdown)
   - `ipfs.ping()`
   - `ipfs.init([options], callback)`
   - `ipfs.start([callback])`
