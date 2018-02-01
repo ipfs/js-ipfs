@@ -23,10 +23,6 @@ module.exports = (self) => {
       callback()
     }
 
-    if (self.state.state() !== 'running') {
-      return done(new Error('Not able to stop from state: ' + self.state.state()))
-    }
-
     self.state.stop()
     self._blockService.unsetExchange()
     self._bitswap.stop()
