@@ -1,3 +1,15 @@
+<a name="0.44.0"></a>
+# [0.44.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.43.0...v0.44.0) (2018-02-02)
+
+
+### Features
+
+* ipfs.shutdown test ([#214](https://github.com/ipfs/interface-ipfs-core/issues/214)) ([e911c6c](https://github.com/ipfs/interface-ipfs-core/commit/e911c6c))
+* Link stats.repo and stats.bitswap ([#210](https://github.com/ipfs/interface-ipfs-core/issues/210)) ([0c40084](https://github.com/ipfs/interface-ipfs-core/commit/0c40084))
+* shutdown spec ([9d91267](https://github.com/ipfs/interface-ipfs-core/commit/9d91267))
+
+
+
 <a name="0.43.0"></a>
 # [0.43.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.42.1...v0.43.0) (2018-01-25)
 
