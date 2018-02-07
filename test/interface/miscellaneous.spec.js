@@ -3,7 +3,6 @@
 'use strict'
 
 const test = require('interface-ipfs-core')
-const parallel = require('async/parallel')
 
 const IPFSApi = require('../../src')
 
@@ -27,7 +26,9 @@ const common = {
     })
   },
   teardown: function (callback) {
-    parallel(nodes.map((node) => (cb) => node.stop(cb)), callback)
+    // No need to stop, because the test suite does a 'stop' test.
+    // parallel(nodes.map((node) => (cb) => node.stop(cb)), callback)
+    callback()
   }
 }
 
