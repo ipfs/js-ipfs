@@ -156,9 +156,11 @@ Commands:
 
 The IPFS Daemon exposes the API defined [`http-api-spec`](https://github.com/ipfs/http-api-spec). You can use any of the IPFS HTTP-API client libraries with it, such as: [js-ipfs-api](https://github.com/ipfs/js-ipfs-api).
 
+If you want a programmatic way to spawn a IPFS Daemon using JavaScript, check out [ipfsd-ctl module](https://github.com/ipfs/js-ipfsd-ctl)
+
 ### IPFS Module
 
-Use the IPFS Module as a dependency of a project to spawn in process instances of IPFS.
+Use the IPFS Module as a dependency of a project to __spawn in process instances of IPFS__.
 
 #### Create a IPFS node instance
 
