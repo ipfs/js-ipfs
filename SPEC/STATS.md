@@ -11,7 +11,7 @@ Stats API
 
 #### `bw`
 
-> Adds an IPFS object to the pinset and also stores it to the IPFS repo. pinset is the set of hashes currently pinned (not gc'able).
+> Get IPFS bandwidth information as an object.
 
 ##### `Go` **WIP**
 
@@ -25,12 +25,14 @@ Where:
   - `poll` is used to print bandwidth at an interval.
   - `interval` is the time interval to wait between updating output, if `poll` is true.
 
-`callback` must follow `function (err, stats) {}` signature, where `err` is an error if the operation was not successful. `stats` is an Object containing the following keys:
+`callback` must follow `function (err, stat) {}` signature, where `err` is an Error if the operation was not successful.
 
-- `totalIn`
-- `totalOut`
-- `rateIn`
-- `rateOut`
+`stat` is, in both cases, an Object containing the following keys:
+
+- `totalIn` - is a [Big Int][big], in bytes.
+- `totalOut` - is a [Big Int][big], in bytes.
+- `rateIn` - is a [Big Int][big], in bytes.
+- `rateOut` - is a [Big Int][big], in bytes.
 
 If no `callback` is passed, a promise is returned.
 
@@ -39,8 +41,70 @@ If no `callback` is passed, a promise is returned.
 ```JavaScript
 ipfs.stats.bw((err, stats) => console.log(stats))
 
-// { totalIn: 15456,
-//   totalOut: 15420,
-//   rateIn: 905.0873512246716,
-//   rateOut: 893.7400053359125 }
+// { totalIn: Big {...},
+//   totalOut: Big {...},
+//   rateIn: Big {...},
+//   rateOut: Big {...} }
 ```
+
+#### `bwPullStream`
+
+> Get IPFS bandwidth information as a [Pull Stream][ps].
+
+##### `Go` **WIP**
+
+##### `JavaScript` - ipfs.stats.bwPullStream([options]) -> [Pull Stream][ps]
+
+Options are described on [`ipfs.stats.bw`](#bw).
+
+**Example:**
+
+```JavaScript
+const pull = require('pull-stream')
+const log = require('pull-stream/sinks/log')
+
+const stream = ipfs.stats.bwReadableStream({ poll: true })
+
+pull(
+  stream,
+  log()
+)
+
+// { totalIn: Big {...},
+//   totalOut: Big {...},
+//   rateIn: Big {...},
+//   rateOut: Big {...} }
+// ...
+// Ad infinitum
+```
+
+#### `bwReadableStream`
+
+> Get IPFS bandwidth information as a [Readable Stream][rs].
+
+##### `Go` **WIP**
+
+##### `JavaScript` - ipfs.stats.bwReadableStream([options]) -> [Readable Stream][rs]
+
+Options are described on [`ipfs.stats.bw`](#bw).
+
+**Examples:**
+
+```JavaScript
+const stream = ipfs.stats.bwReadableStream({ poll: true })
+
+stream.on('data', (data) => {
+  console.log(data)
+}))
+
+// { totalIn: Big {...},
+//   totalOut: Big {...},
+//   rateIn: Big {...},
+//   rateOut: Big {...} }
+// ...
+// Ad infinitum
+```
+
+[big]: https://github.com/MikeMcl/big.js/
+[rs]: https://www.npmjs.com/package/readable-stream
+[ps]: https://www.npmjs.com/package/pull-stream

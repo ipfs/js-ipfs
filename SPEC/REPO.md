@@ -42,11 +42,11 @@ Where:
 
 `callback` must follow `function (err, stats) {}` signature, where `err` is an Error if the operation was not successful and `stats` is an object containing the following keys:
 
-- `numObjects`
-- `repoSize`
-- `repoPath`
-- `version`
-- `storageMax`
+- `numObjects` is a [Big Int][1].
+- `repoSize` is a [Big Int][1], in bytes.
+- `repoPath` is a string.
+- `version` is a string.
+- `storageMax` is a [Big Int][1].
 
 If no `callback` is passed, a promise is returned.
 
@@ -81,3 +81,5 @@ ipfs.repo.version((err, version) => console.log(version))
 
 // "6"
 ```
+
+[1]: https://github.com/MikeMcl/big.js/

@@ -5,7 +5,9 @@
 
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
+const statsTests = require('./utils/stats')
 const expect = chai.expect
+const pull = require('pull-stream')
 chai.use(dirtyChai)
 
 module.exports = (common) => {
@@ -43,17 +45,7 @@ module.exports = (common) => {
       }
 
       ipfs.stats.bitswap((err, res) => {
-        expect(err).to.not.exist()
-        expect(res).to.exist()
-        expect(res).to.have.a.property('provideBufLen')
-        expect(res).to.have.a.property('wantlist')
-        expect(res).to.have.a.property('peers')
-        expect(res).to.have.a.property('blocksReceived')
-        expect(res).to.have.a.property('dataReceived')
-        expect(res).to.have.a.property('blocksSent')
-        expect(res).to.have.a.property('dataSent')
-        expect(res).to.have.a.property('dupBlksReceived')
-        expect(res).to.have.a.property('dupDataReceived')
+        statsTests.expectIsBitswap(err, res)
         done()
       })
     })
@@ -65,16 +57,7 @@ module.exports = (common) => {
       }
 
       return ipfs.stats.bitswap().then((res) => {
-        expect(res).to.exist()
-        expect(res).to.have.a.property('provideBufLen')
-        expect(res).to.have.a.property('wantlist')
-        expect(res).to.have.a.property('peers')
-        expect(res).to.have.a.property('blocksReceived')
-        expect(res).to.have.a.property('dataReceived')
-        expect(res).to.have.a.property('blocksSent')
-        expect(res).to.have.a.property('dataSent')
-        expect(res).to.have.a.property('dupBlksReceived')
-        expect(res).to.have.a.property('dupDataReceived')
+        statsTests.expectIsBitswap(null, res)
       })
     })
 
@@ -85,12 +68,7 @@ module.exports = (common) => {
       }
 
       ipfs.stats.bw((err, res) => {
-        expect(err).to.not.exist()
-        expect(res).to.exist()
-        expect(res).to.have.a.property('totalIn')
-        expect(res).to.have.a.property('totalOut')
-        expect(res).to.have.a.property('rateIn')
-        expect(res).to.have.a.property('rateOut')
+        statsTests.expectIsBandwidth(err, res)
         done()
       })
     })
@@ -102,12 +80,40 @@ module.exports = (common) => {
       }
 
       return ipfs.stats.bw().then((res) => {
-        expect(res).to.exist()
-        expect(res).to.have.a.property('totalIn')
-        expect(res).to.have.a.property('totalOut')
-        expect(res).to.have.a.property('rateIn')
-        expect(res).to.have.a.property('rateOut')
+        statsTests.expectIsBandwidth(null, res)
       })
+    })
+
+    it('.bwReadableStream', (done) => {
+      if (!withGo) {
+        console.log('Not supported in js-ipfs yet')
+        return done()
+      }
+
+      const stream = ipfs.stats.bwReadableStream()
+
+      stream.once('data', (data) => {
+        statsTests.expectIsBandwidth(null, data)
+        stream.destroy()
+        done()
+      })
+    })
+
+    it('.bwPullStream', (done) => {
+      if (!withGo) {
+        console.log('Not supported in js-ipfs yet')
+        return done()
+      }
+
+      const stream = ipfs.stats.bwPullStream()
+
+      pull(
+        stream,
+        pull.collect((err, data) => {
+          statsTests.expectIsBandwidth(err, data[0])
+          done()
+        })
+      )
     })
 
     it('.repo', (done) => {
@@ -117,13 +123,7 @@ module.exports = (common) => {
       }
 
       ipfs.stats.repo((err, res) => {
-        expect(err).to.not.exist()
-        expect(res).to.exist()
-        expect(res).to.have.a.property('numObjects')
-        expect(res).to.have.a.property('repoSize')
-        expect(res).to.have.a.property('repoPath')
-        expect(res).to.have.a.property('version')
-        expect(res).to.have.a.property('storageMax')
+        statsTests.expectIsRepo(err, res)
         done()
       })
     })
@@ -135,12 +135,7 @@ module.exports = (common) => {
       }
 
       return ipfs.stats.repo().then((res) => {
-        expect(res).to.exist()
-        expect(res).to.have.a.property('numObjects')
-        expect(res).to.have.a.property('repoSize')
-        expect(res).to.have.a.property('repoPath')
-        expect(res).to.have.a.property('version')
-        expect(res).to.have.a.property('storageMax')
+        statsTests.expectIsRepo(null, res)
       })
     })
   })

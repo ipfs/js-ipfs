@@ -17,15 +17,15 @@ Bitswap API
 
 `callback` must follow `function (err, stats) {}` signature, where `err` is an error if the operation was not successful. `stats` is an Object containing the following keys:
 
-- `provideBufLen`
+- `provideBufLen` is an integer.
 - `wantlist` (array)
 - `peers` (array)
-- `blocksReceived`
-- `dataReceived`
-- `blocksSent`
-- `dataSent`
-- `dupBlksReceived`
-- `dupDataReceived`
+- `blocksReceived` is a [Big Int][1]
+- `dataReceived` is a [Big Int][1]
+- `blocksSent` is a [Big Int][1]
+- `dataSent` is a [Big Int][1]
+- `dupBlksReceived` is a [Big Int][1]
+- `dupDataReceived` is a [Big Int][1]
 
 If no `callback` is passed, a promise is returned.
 
@@ -47,3 +47,5 @@ ipfs.stats.bitswap((err, stats) => console.log(stats))
 //   dupBlksReceived: 0,
 //  dupDataReceived: 0 }
 ```
+
+[1]: https://github.com/MikeMcl/big.js/

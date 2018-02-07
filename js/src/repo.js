@@ -5,6 +5,7 @@
 
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
+const statsTests = require('./utils/stats')
 const expect = chai.expect
 chai.use(dirtyChai)
 
@@ -46,26 +47,15 @@ module.exports = (common) => {
     })
 
     it('.stat', (done) => {
-      ipfs.repo.stat((err, stat) => {
-        expect(err).to.not.exist()
-        expect(stat).to.exist()
-        expect(stat).to.have.property('numObjects')
-        expect(stat).to.have.property('repoSize')
-        expect(stat).to.have.property('repoPath')
-        expect(stat).to.have.property('version')
-        expect(stat).to.have.property('storageMax')
+      ipfs.repo.stat((err, res) => {
+        statsTests.expectIsRepo(err, res)
         done()
       })
     })
 
     it('.stat Promise', () => {
-      return ipfs.repo.stat().then((stat) => {
-        expect(stat).to.exist()
-        expect(stat).to.have.property('numObjects')
-        expect(stat).to.have.property('repoSize')
-        expect(stat).to.have.property('repoPath')
-        expect(stat).to.have.property('version')
-        expect(stat).to.have.property('storageMax')
+      return ipfs.repo.stat().then((res) => {
+        statsTests.expectIsRepo(null, res)
       })
     })
 
