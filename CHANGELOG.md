@@ -1,3 +1,13 @@
+<a name="0.47.0"></a>
+# [0.47.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.46.0...v0.47.0) (2018-02-07)
+
+
+### Features
+
+* add stats.bwPullStream and stats.bwReadableStream ([#211](https://github.com/ipfs/interface-ipfs-core/issues/211)) ([4421eb2](https://github.com/ipfs/interface-ipfs-core/commit/4421eb2))
+
+
+
 <a name="0.46.0"></a>
 # [0.46.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.44.0...v0.46.0) (2018-02-02)
 
