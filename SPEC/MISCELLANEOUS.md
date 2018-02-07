@@ -78,13 +78,13 @@ A great source of [examples][] can be found in the tests for this API.
 
 [examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/miscellaneous.js
 
-#### `shutdown`
+#### `stop`
 
-> Stop the ipfs daemon
+> Stops the IPFS node and in case of talking with an IPFS Daemon, it stops the process.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.shutdown([callback])
+##### `JavaScript` - ipfs.stop([callback])
 
 `callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful. 
 If no `callback` is passed, a promise is returned.
@@ -92,8 +92,8 @@ If no `callback` is passed, a promise is returned.
 **Example:**
 
 ```JavaScript
-ipfs.shutdown((err) => {
-  if (err) {
+ipfs.stop((err) => {
+  if (err) { 
     throw err
   }
 })
