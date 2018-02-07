@@ -2,19 +2,15 @@
 
 const promisify = require('promisify-es6')
 const streamToValue = require('../utils/stream-to-value')
+const transformChunk = require('./bw-util')
 
-const transform = function (res, callback) {
-  streamToValue(res, (err, data) => {
+const transform = (res, callback) => {
+  return streamToValue(res, (err, data) => {
     if (err) {
       return callback(err)
     }
 
-    callback(null, {
-      totalIn: data[0].TotalIn,
-      totalOut: data[0].TotalOut,
-      rateIn: data[0].RateIn,
-      rateOut: data[0].RateOut
-    })
+    callback(null, transformChunk(data[0]))
   })
 }
 

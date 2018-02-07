@@ -1,14 +1,15 @@
 'use strict'
 
 const promisify = require('promisify-es6')
+const Big = require('big.js')
 
 const transform = function (res, callback) {
   callback(null, {
-    numObjects: res.NumObjects,
-    repoSize: res.RepoSize,
+    numObjects: new Big(res.NumObjects),
+    repoSize: new Big(res.RepoSize),
     repoPath: res.RepoPath,
     version: res.Version,
-    storageMax: res.StorageMax
+    storageMax: new Big(res.StorageMax)
   })
 }
 
