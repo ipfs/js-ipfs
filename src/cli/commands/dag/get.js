@@ -42,7 +42,7 @@ module.exports = {
       if (node._json) {
         delete node._json.multihash
         node._json.data = '0x' + node._json.data.toString('hex')
-        print(node._json)
+        print(JSON.stringify(node._json))
         return
       }
 
