@@ -173,7 +173,8 @@ module.exports = function files (self) {
         recursive ? node.depth >= pathDepth : node.depth === pathDepth
       ),
       pull.map(node => {
-        node = Object.assign({}, node, { hash: toB58String(node.hash) })
+        const cid = new CID(node.hash)
+        node = Object.assign({}, node, { hash: cid.toBaseEncodedString() })
         delete node.content
         return node
       })
@@ -292,10 +293,12 @@ module.exports = function files (self) {
       pull(
         _lsPullStreamImmutable(ipfsPath, options),
         pull.collect((err, values) => {
+          console.log('did we bug out?:', err)
           if (err) {
             callback(err)
             return
           }
+          console.log('values:', values)
           callback(null, values)
         })
       )

@@ -41,8 +41,8 @@ const cli = yargs
 const addCmd = require('./commands/files/add')
 const catCmd = require('./commands/files/cat')
 const getCmd = require('./commands/files/get')
-const lsCmd = require('./commands/files/ls')
-const aliases = [addCmd, catCmd, getCmd, lsCmd]
+// const lsCmd = require('./commands/files/ls')
+const aliases = [addCmd, catCmd, getCmd /*, lsCmd */]
 aliases.forEach((alias) => {
   cli.command(alias.command, alias.describe, alias.builder, alias.handler)
 })
