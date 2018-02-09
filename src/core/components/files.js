@@ -169,10 +169,10 @@ module.exports = function files (self) {
 
     return pull(
       exporter(ipfsPath, self._ipldResolver, { maxDepth: maxDepth }),
-      pull.filter((node) =>
+      pull.filter(node =>
         recursive ? node.depth >= pathDepth : node.depth === pathDepth
       ),
-      pull.map((node) => {
+      pull.map(node => {
         node = Object.assign({}, node, { hash: toB58String(node.hash) })
         delete node.content
         return node
@@ -285,7 +285,6 @@ module.exports = function files (self) {
 
     lsImmutable: promisify((ipfsPath, options, callback) => {
       if (typeof options === 'function') {
-        // options arg is optional so if it's a function then it's the callback
         callback = options
         options = {}
       }
@@ -294,7 +293,8 @@ module.exports = function files (self) {
         _lsPullStreamImmutable(ipfsPath, options),
         pull.collect((err, values) => {
           if (err) {
-            return callback(err)
+            callback(err)
+            return
           }
           callback(null, values)
         })
