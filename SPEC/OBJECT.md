@@ -249,14 +249,30 @@ A great source of [examples][] can be found in the tests for this API.
 
 ###### `Go` **WIP**
 
-###### `JavaScript` - ipfs.object.patch.addLink(multihash, DAGLink, [options, callback])
+###### `JavaScript` - ipfs.object.patch.addLink(multihash, link, [options, callback])
 
 `multihash` is a [multihash][] which can be passed as:
 
 - Buffer, the raw Buffer of the multihash (or of and encoded version)
 - String, the toString version of the multihash (or of an encoded version)
 
-`DAGLink` is the new link to be added on the node that is identified by the `multihash`
+`link` is the new link to be added on the node that is identified by the `multihash`, can be passed as:
+- `DAGLink`
+- Object containing: name, multihash and size properties
+
+```
+const link = {
+  name: 'Qmef7ScwzJUCg1zUSrCmPAz45m8uP5jU7SLgt2EffjBmbL',
+  size: 37,
+  multihash: 'Qmef7ScwzJUCg1zUSrCmPAz45m8uP5jU7SLgt2EffjBmbL'
+};
+```
+
+or
+
+```
+const link = new DAGLink(name, size, multihash)
+```
 
 `options` is a optional argument of type object, that can contain the following properties:
 
@@ -289,14 +305,28 @@ A great source of [examples][] can be found in the tests for this API.
 
 ###### `Go` **WIP**
 
-###### `JavaScript` - ipfs.object.patch.rmLink(multihash, DAGLink, [options, callback])
+###### `JavaScript` - ipfs.object.patch.rmLink(multihash, link, [options, callback])
 
 `multihash` is a [multihash][] which can be passed as:
 
 - Buffer, the raw Buffer of the multihash (or of and encoded version)
 - String, the toString version of the multihash (or of an encoded version)
 
-`DAGLink` is the link to be removed on the node that is identified by the `multihash`
+`link` is the link to be removed on the node that is identified by the `multihash`, can be passed as:
+- `DAGLink`
+- Object containing name property
+
+```
+const link = {
+  name: 'Qmef7ScwzJUCg1zUSrCmPAz45m8uP5jU7SLgt2EffjBmbL'
+};
+```
+
+or
+
+```
+const link = new DAGLink(name, size, multihash)
+```
 
 `options` is a optional argument of type object, that can contain the following properties:
 

@@ -680,6 +680,7 @@ module.exports = (common) => {
         let testNodeMultihash
         let testNodeWithLinkMultihash
         let testLink
+        let testLinkPlainObject
 
         const obj = {
           Data: Buffer.from('patch test object'),
@@ -698,6 +699,7 @@ module.exports = (common) => {
           let node1a
           let node1b
           let node2
+          let node3
 
           series([
             (cb) => {
@@ -736,16 +738,57 @@ module.exports = (common) => {
                 testLink = node1b.links[0]
                 cb()
               })
-            }
+            },
+            (cb) => {
+              // note: make sure we can link js plain objects
+              const content = Buffer.from(JSON.stringify({
+                title: 'serialized object',
+              }, null, 0));
+              ipfs.add(content, (err, result) => {
+                expect(err).to.not.exist()
+                expect(result).to.exist()
+                expect(result).to.have.lengthOf(1)
+                const object = result.pop()
+                node3 = {
+                  name: object.hash,
+                  multihash: object.hash,
+                  size: object.size
+                }
+                cb()
+              })
+            },
+            (cb) => {
+              ipfs.object.patch.addLink(testNodeWithLinkMultihash, node3, (err, node) => {
+                expect(err).to.not.exist()
+                expect(node).to.exist()
+                testNodeWithLinkMultihash = node.multihash
+                testLinkPlainObject = node3
+                cb()
+              })
+            },
           ], done)
         })
 
         it('.rmLink', (done) => {
-          ipfs.object.patch.rmLink(testNodeWithLinkMultihash, testLink, (err, node) => {
-            expect(err).to.not.exist()
-            expect(node.multihash).to.not.deep.equal(testNodeWithLinkMultihash)
-            done()
-          })
+          series([
+            (cb) => {
+              ipfs.object.patch.rmLink(testNodeWithLinkMultihash, testLink, (err, node) => {
+                expect(err).to.not.exist()
+                expect(node.multihash).to.not.deep.equal(testNodeWithLinkMultihash)
+                testNodeWithLinkMultihash = node.multihash
+
+                cb()
+              })
+            },
+            (cb) => {
+              ipfs.object.patch.rmLink(testNodeWithLinkMultihash, testLinkPlainObject, (err, node) => {
+                expect(err).to.not.exist()
+                expect(node.multihash).to.not.deep.equal(testNodeWithLinkMultihash)
+                console.log('node', node)
+                cb()
+              })
+            }
+          ], done)
         })
 
         it('.appendData', (done) => {
