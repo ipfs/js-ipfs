@@ -293,12 +293,10 @@ module.exports = function files (self) {
       pull(
         _lsPullStreamImmutable(ipfsPath, options),
         pull.collect((err, values) => {
-          console.log('did we bug out?:', err)
           if (err) {
             callback(err)
             return
           }
-          console.log('values:', values)
           callback(null, values)
         })
       )

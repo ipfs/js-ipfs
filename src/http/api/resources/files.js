@@ -276,14 +276,12 @@ exports.immutableLs = {
     const recursive = request.query && request.query.recursive === 'true'
 
     ipfs.ls(key, { recursive: recursive }, (err, files) => {
-      console.trace('ipfs.ls results')
       if (err) {
         reply({
           Message: 'Failed to list dir: ' + err.message,
           Code: 0
         }).code(500)
       }
-      console.log('files:', files)
 
       reply({
         Objects: [{

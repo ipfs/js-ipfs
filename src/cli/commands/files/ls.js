@@ -13,7 +13,6 @@ module.exports = {
 
   handler (argv) {
     let path = argv.key
-
     argv.ipfs.files.ls(path, (err, links) => {
       if (err) {
         throw err

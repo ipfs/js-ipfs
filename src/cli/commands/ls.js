@@ -37,7 +37,6 @@ module.exports = {
       if (err) {
         throw err
       }
-      console.log('links:', links)
 
       if (argv.headers) {
         links = [{hash: 'Hash', size: 'Size', name: 'Name'}].concat(links)
