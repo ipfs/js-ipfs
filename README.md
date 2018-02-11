@@ -45,7 +45,7 @@ You can check the development status at the [Waffle Board](https://waffle.io/ipf
 - DHT: https://github.com/ipfs/js-ipfs/pull/856
 - Relay: https://github.com/ipfs/js-ipfs/pull/1063
 
-[**Weekly Dev Calls**](https://github.com/ipfs/js-ipfs/issues/1179)
+[**`Weekly Dev Calls`**](https://github.com/ipfs/js-ipfs/issues/1179)
 
 ## Table of Contents
 
