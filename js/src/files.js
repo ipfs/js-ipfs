@@ -68,7 +68,7 @@ const tests = (common) => {
 
     after((done) => common.teardown(done))
 
-    describe.only('.add', () => {
+    describe('.add', () => {
       it('a Buffer', (done) => {
         ipfs.files.add(smallFile.data, (err, filesAdded) => {
           expect(err).to.not.exist()
