@@ -1,3 +1,13 @@
+<a name="0.49.1"></a>
+## [0.49.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.49.0...v0.49.1) (2018-02-12)
+
+
+### Bug Fixes
+
+* remove .only ([44cdaed](https://github.com/ipfs/interface-ipfs-core/commit/44cdaed))
+
+
+
 <a name="0.49.0"></a>
 # [0.49.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.48.0...v0.49.0) (2018-02-12)
 
