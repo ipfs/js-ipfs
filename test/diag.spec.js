@@ -8,23 +8,19 @@ chai.use(dirtyChai)
 const os = require('os')
 
 const IPFSApi = require('../src')
-
-const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create()
+const f = require('./utils/factory')
 
 describe('.diag', function () {
   this.timeout(50 * 1000)
 
-  if (os.platform() === 'win32') {
-    it('skip these on Windows')
-    return
-  }
+  // go-ipfs does not support these on Windows
+  if (os.platform() === 'win32') { return }
 
   let ipfsd
   let ipfs
 
   before((done) => {
-    df.spawn((err, _ipfsd) => {
+    f.spawn((err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsd = _ipfsd
       ipfs = IPFSApi(_ipfsd.apiAddr)

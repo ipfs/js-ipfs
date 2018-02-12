@@ -11,16 +11,12 @@ const path = require('path')
 const fs = require('fs')
 
 const IPFSApi = require('../src')
-
-const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create()
+const f = require('./utils/factory')
 
 describe('.refs', function () {
   this.timeout(80 * 1000)
 
-  if (!isNode) {
-    return
-  }
+  if (!isNode) { return }
 
   let ipfs
   let ipfsd
@@ -39,7 +35,7 @@ describe('.refs', function () {
     }
 
     waterfall([
-      (cb) => df.spawn(cb),
+      (cb) => f.spawn(cb),
       (_ipfsd, cb) => {
         ipfsd = _ipfsd
         ipfs = IPFSApi(_ipfsd.apiAddr)

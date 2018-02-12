@@ -10,9 +10,7 @@ const parallel = require('async/parallel')
 const series = require('async/series')
 
 const IPFSApi = require('../src')
-
-const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create()
+const f = require('./utils/factory')
 
 describe.skip('.ping', () => {
   let ipfs
@@ -22,9 +20,10 @@ describe.skip('.ping', () => {
 
   before(function (done) {
     this.timeout(20 * 1000) // slow CI
+
     series([
       (cb) => {
-        df.spawn((err, _ipfsd) => {
+        f.spawn((err, _ipfsd) => {
           expect(err).to.not.exist()
           ipfsd = _ipfsd
           ipfs = IPFSApi(_ipfsd.apiAddr)
@@ -33,7 +32,7 @@ describe.skip('.ping', () => {
       },
       (cb) => {
         console.log('going to spawn second node')
-        df.spawn((err, node) => {
+        f.spawn((err, node) => {
           expect(err).to.not.exist()
           other = node.api
           otherd = node

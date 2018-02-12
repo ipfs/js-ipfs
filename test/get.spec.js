@@ -12,9 +12,7 @@ const series = require('async/series')
 const loadFixture = require('aegir/fixtures')
 
 const IPFSApi = require('../src')
-
-const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create()
+const f = require('./utils/factory')
 
 describe('.get (specific go-ipfs features)', function () {
   this.timeout(20 * 1000)
@@ -33,7 +31,7 @@ describe('.get (specific go-ipfs features)', function () {
 
   before((done) => {
     series([
-      (cb) => df.spawn((err, _ipfsd) => {
+      (cb) => f.spawn((err, _ipfsd) => {
         expect(err).to.not.exist()
         ipfsd = _ipfsd
         ipfs = IPFSApi(_ipfsd.apiAddr)

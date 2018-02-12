@@ -6,9 +6,7 @@ const test = require('interface-ipfs-core')
 const parallel = require('async/parallel')
 
 const IPFSApi = require('../../src')
-
-const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create()
+const f = require('../utils/factory')
 
 const nodes = []
 const common = {
@@ -25,7 +23,7 @@ const common = {
           config = undefined
         }
 
-        df.spawn({ repoPath, config }, (err, _ipfsd) => {
+        f.spawn({ repoPath, config }, (err, _ipfsd) => {
           if (err) {
             return cb(err)
           }

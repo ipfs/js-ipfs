@@ -8,9 +8,7 @@ const isNode = require('detect-node')
 const parallel = require('async/parallel')
 
 const IPFSApi = require('../../src')
-
-const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create()
+const f = require('../utils/factory')
 
 if (isNode) {
   const nodes = []
@@ -18,7 +16,7 @@ if (isNode) {
     setup: function (callback) {
       callback(null, {
         spawnNode: (cb) => {
-          df.spawn({ args: ['--enable-pubsub-experiment'] },
+          f.spawn({ args: ['--enable-pubsub-experiment'] },
             (err, _ipfsd) => {
               if (err) {
                 return cb(err)
