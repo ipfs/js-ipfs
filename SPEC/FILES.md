@@ -667,14 +667,14 @@ If no `callback` is passed, a promise is returned.
 
 ```JavaScript
 // To remove a file
-ipfs.files.mkdir('/my/beautiful/file.txt', (err) => {
+ipfs.files.rm('/my/beautiful/file.txt', (err) => {
   if (err) {
     console.error(err)
   }
 })
 
 // To remove a directory
-ipfs.files.mkdir('/my/beautiful/directory', { recursive: true }, (err) => {
+ipfs.files.rm('/my/beautiful/directory', { recursive: true }, (err) => {
   if (err) {
     console.error(err)
   }
