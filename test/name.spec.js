@@ -7,16 +7,13 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const parallel = require('async/parallel')
-const isNode = require('detect-node')
 const series = require('async/series')
 const loadFixture = require('aegir/fixtures')
 
 const IPFSApi = require('../src')
 const f = require('./utils/factory')
 
-const testfile = isNode
-  ? loadFixture(__dirname, '/fixtures/testfile.txt')
-  : loadFixture(__dirname, 'fixtures/testfile.txt')
+const testfile = loadFixture('test/fixtures/testfile.txt')
 
 describe('.name', () => {
   let ipfs

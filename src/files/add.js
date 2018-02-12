@@ -4,6 +4,7 @@ const promisify = require('promisify-es6')
 const ConcatStream = require('concat-stream')
 const once = require('once')
 const isStream = require('is-stream')
+const OtherBuffer = require('buffer').Buffer
 const SendFilesStream = require('../utils/send-files-stream')
 
 module.exports = (send) => {
@@ -23,7 +24,8 @@ module.exports = (send) => {
 
     const ok = Buffer.isBuffer(_files) ||
                isStream.readable(_files) ||
-               Array.isArray(_files)
+               Array.isArray(_files) ||
+               OtherBuffer.isBuffer(_files)
 
     if (!ok) {
       return callback(new Error('"files" must be a buffer, readable stream, or array of objects'))

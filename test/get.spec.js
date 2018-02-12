@@ -18,12 +18,12 @@ describe('.get (specific go-ipfs features)', function () {
   this.timeout(20 * 1000)
 
   function fixture (path) {
-    return loadFixture(__dirname, path, 'interface-ipfs-core')
+    return loadFixture(path, 'interface-ipfs-core')
   }
 
   const smallFile = {
     cid: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
-    data: fixture('../test/fixtures/testfile.txt')
+    data: fixture('js/test/fixtures/testfile.txt')
   }
 
   let ipfsd
