@@ -1,3 +1,13 @@
+<a name="0.49.0"></a>
+# [0.49.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.48.0...v0.49.0) (2018-02-12)
+
+
+### Bug Fixes
+
+* use latest fixture loading ([#218](https://github.com/ipfs/interface-ipfs-core/issues/218)) ([e054097](https://github.com/ipfs/interface-ipfs-core/commit/e054097))
+
+
+
 <a name="0.48.0"></a>
 # [0.48.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.47.0...v0.48.0) (2018-02-07)
 
