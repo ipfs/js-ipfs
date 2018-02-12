@@ -27,27 +27,27 @@ const tests = (common) => {
     let ipfs
 
     function fixture (path) {
-      return loadFixture(__dirname, path, 'interface-ipfs-core')
+      return loadFixture(path, 'interface-ipfs-core')
     }
 
     const smallFile = {
       cid: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
-      data: fixture('../test/fixtures/testfile.txt')
+      data: fixture('js/test/fixtures/testfile.txt')
     }
     const bigFile = {
       cid: 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq',
-      data: fixture('../test/fixtures/15mb.random')
+      data: fixture('js/test/fixtures/15mb.random')
     }
 
     const directory = {
       cid: 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP',
       files: {
-        'pp.txt': fixture('../test/fixtures/test-folder/pp.txt'),
-        'holmes.txt': fixture('../test/fixtures/test-folder/holmes.txt'),
-        'jungle.txt': fixture('../test/fixtures/test-folder/jungle.txt'),
-        'alice.txt': fixture('../test/fixtures/test-folder/alice.txt'),
-        'files/hello.txt': fixture('../test/fixtures/test-folder/files/hello.txt'),
-        'files/ipfs.txt': fixture('../test/fixtures/test-folder/files/ipfs.txt')
+        'pp.txt': fixture('js/test/fixtures/test-folder/pp.txt'),
+        'holmes.txt': fixture('js/test/fixtures/test-folder/holmes.txt'),
+        'jungle.txt': fixture('js/test/fixtures/test-folder/jungle.txt'),
+        'alice.txt': fixture('js/test/fixtures/test-folder/alice.txt'),
+        'files/hello.txt': fixture('js/test/fixtures/test-folder/files/hello.txt'),
+        'files/ipfs.txt': fixture('js/test/fixtures/test-folder/files/ipfs.txt')
       }
     }
 
@@ -68,7 +68,7 @@ const tests = (common) => {
 
     after((done) => common.teardown(done))
 
-    describe('.add', () => {
+    describe.only('.add', () => {
       it('a Buffer', (done) => {
         ipfs.files.add(smallFile.data, (err, filesAdded) => {
           expect(err).to.not.exist()

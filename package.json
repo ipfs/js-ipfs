@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/ipfs/interface-ipfs-core#readme",
   "dependencies": {
-    "aegir": "^12.3.0",
+    "aegir": "^13.0.0",
     "async": "^2.6.0",
     "big.js": "^5.0.3",
     "bl": "^1.2.1",
@@ -47,7 +47,7 @@
     "multiaddr": "^3.0.2",
     "multihashes": "~0.4.13",
     "multihashing-async": "~0.4.7",
-    "peer-id": "~0.10.4",
+    "peer-id": "~0.10.6",
     "pull-stream": "^3.6.1"
   },
   "devDependencies": {},
