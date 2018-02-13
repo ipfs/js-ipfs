@@ -13,6 +13,10 @@ module.exports = (self) => {
       return callback(new Error('Already stopped'))
     }
 
+    if (self.state.state() !== 'running') {
+      return callback(new Error('Not able to stop from state: ' + self.state.state()))
+    }
+
     const done = (err) => {
       if (err) {
         self.emit('error', err)
