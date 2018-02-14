@@ -2,7 +2,7 @@
 'use strict'
 
 const test = require('interface-ipfs-core')
-const parallel = require('async/parallel')
+// const parallel = require('async/parallel')
 
 const IPFS = require('../../../src')
 
@@ -26,7 +26,8 @@ const common = {
     })
   },
   teardown: function (callback) {
-    parallel(nodes.map((node) => (cb) => node.stop(cb)), callback)
+    // Stopped by the tests themselves
+    // parallel(nodes.map((node) => (cb) => node.stop(cb)), callback)
   }
 }
 
