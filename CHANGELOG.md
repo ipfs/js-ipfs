@@ -1,3 +1,13 @@
+<a name="0.49.2"></a>
+## [0.49.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.49.1...v0.49.2) (2018-02-14)
+
+
+### Bug Fixes
+
+* remove unnecessary console.log ([e27d3e0](https://github.com/ipfs/interface-ipfs-core/commit/e27d3e0))
+
+
+
 <a name="0.49.1"></a>
 ## [0.49.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.49.0...v0.49.1) (2018-02-12)
 
