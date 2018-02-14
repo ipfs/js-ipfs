@@ -13,6 +13,7 @@ const deferred = require('pull-defer')
 const waterfall = require('async/waterfall')
 const isStream = require('is-stream')
 const Duplex = require('readable-stream').Duplex
+const OtherBuffer = require('buffer').Buffer
 const CID = require('cids')
 const toB58String = require('multihashes').toB58String
 
@@ -186,7 +187,15 @@ module.exports = function files (self) {
       if (typeof data !== 'object' &&
           !Buffer.isBuffer(data) &&
           !isStream(data)) {
-        return callback(new Error('Invalid arguments, data must be an object, Buffer or readable stream'))
+      }
+
+      const ok = Buffer.isBuffer(_files) ||
+                 isStream.readable(_files) ||
+                 Array.isArray(_files) ||
+                 OtherBuffer.isBuffer(_files)
+
+      if (!ok) {
+          return callback(new Error('Invalid arguments, data must be an object, Buffer or readable stream'))
       }
 
       pull(
