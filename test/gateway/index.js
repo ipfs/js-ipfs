@@ -13,13 +13,13 @@ const path = require('path')
 const hat = require('hat')
 const fileType = require('file-type')
 
-const bigFile = loadFixture(__dirname, '../../node_modules/interface-ipfs-core/test/fixtures/15mb.random', 'ipfs')
+const bigFile = loadFixture('js/test/fixtures/15mb.random', 'interface-ipfs-core')
 const directoryContent = {
-  'index.html': loadFixture(__dirname, './test-folder/index.html', 'ipfs'),
-  'nested-folder/hello.txt': loadFixture(__dirname, './test-folder/nested-folder/hello.txt', 'ipfs'),
-  'nested-folder/ipfs.txt': loadFixture(__dirname, './test-folder/nested-folder/ipfs.txt', 'ipfs'),
-  'nested-folder/nested.html': loadFixture(__dirname, './test-folder/nested-folder/nested.html', 'ipfs'),
-  'cat-folder/cat.jpg': loadFixture(__dirname, './test-folder/cat-folder/cat.jpg', 'ipfs')
+  'index.html': loadFixture('test/gateway/test-folder/index.html'),
+  'nested-folder/hello.txt': loadFixture('test/gateway/test-folder/nested-folder/hello.txt'),
+  'nested-folder/ipfs.txt': loadFixture('test/gateway/test-folder/nested-folder/ipfs.txt'),
+  'nested-folder/nested.html': loadFixture('test/gateway/test-folder/nested-folder/nested.html'),
+  'cat-folder/cat.jpg': loadFixture('test/gateway/test-folder/cat-folder/cat.jpg')
 }
 
 describe('HTTP Gateway', function () {
