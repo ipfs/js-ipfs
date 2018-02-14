@@ -1,3 +1,13 @@
+<a name="0.50.1"></a>
+## [0.50.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.50.0...v0.50.1) (2018-02-14)
+
+
+### Bug Fixes
+
+* add pointer to files-mfs tests ([6bc22c9](https://github.com/ipfs/interface-ipfs-core/commit/6bc22c9))
+
+
+
 <a name="0.50.0"></a>
 # [0.50.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.49.2...v0.50.0) (2018-02-14)
 
