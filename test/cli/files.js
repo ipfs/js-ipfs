@@ -323,7 +323,7 @@ describe('files', () => runOnAndOff((thing) => {
 
     it('adds a header, -v', function () {
       this.timeout(20 * 1000)
-      return ipfs('ls /ipfs/Qmzzz4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2 -v')
+      return ipfs('ls /ipfs/QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2 -v')
         .then((out) => {
           expect(out).to.eql(
             'Hash                                           Size   Name\n' +

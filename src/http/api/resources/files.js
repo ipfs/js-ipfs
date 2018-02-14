@@ -277,7 +277,7 @@ exports.immutableLs = {
 
     ipfs.ls(key, { recursive: recursive }, (err, files) => {
       if (err) {
-        reply({
+        return reply({
           Message: 'Failed to list dir: ' + err.message,
           Code: 0
         }).code(500)
