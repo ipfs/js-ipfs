@@ -6,10 +6,11 @@ const promisify = require('promisify-es6')
 module.exports = (self) => {
   return promisify((callback) => {
     callback = callback || function noop () {}
+
     self.log('stop')
 
     if (self.state.state() === 'stopped') {
-      return callback()
+      return callback(new Error('Already stopped'))
     }
 
     const done = (err) => {
