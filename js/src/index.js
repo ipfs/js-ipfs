@@ -2,6 +2,7 @@
 
 exports.object = require('./object')
 exports.files = require('./files')
+exports.filesMFS = require('./files-mfs')
 exports.config = require('./config')
 exports.pin = require('./pin')
 exports.generic = require('./miscellaneous')
