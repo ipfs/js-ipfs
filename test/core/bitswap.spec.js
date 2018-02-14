@@ -16,10 +16,9 @@ const isNode = require('detect-node')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
 
-const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ type: 'js' })
-
-const dfProc = DaemonFactory.create({ type: 'proc' })
+const IPFSFactory = require('ipfsd-ctl')
+const fDaemon = IPFSFactory.create({ type: 'js' })
+const fInProc = IPFSFactory.create({ type: 'proc' })
 
 // This gets replaced by '../utils/create-repo-browser.js' in the browser
 const createTempRepo = require('../utils/create-repo-nodejs.js')
@@ -69,7 +68,7 @@ function connectNodes (remoteNode, inProcNode, callback) {
 let nodes = []
 
 function addNode (inProcNode, callback) {
-  df.spawn({
+  fDaemon.spawn({
     exec: './src/cli/bin.js',
     config: {
       Addresses: {
@@ -89,7 +88,7 @@ function addNode (inProcNode, callback) {
   })
 }
 
-describe('bitswap', function () {
+describe.only('bitswap', function () {
   this.timeout(80 * 1000)
 
   let inProcNode // Node spawned inside this process
@@ -119,7 +118,7 @@ describe('bitswap', function () {
       })
     }
 
-    dfProc.spawn({ exec: IPFS, config }, (err, _ipfsd) => {
+    fInProc.spawn({ exec: IPFS, config: config }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       nodes.push(_ipfsd)
       inProcNode = _ipfsd.api
@@ -137,7 +136,7 @@ describe('bitswap', function () {
     })
   })
 
-  describe('transfer a block between', () => {
+  describe.only('transfer a block between', () => {
     it('2 peers', function (done) {
       this.timeout(80 * 1000)
 
