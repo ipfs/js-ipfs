@@ -73,7 +73,7 @@
     "form-data": "^2.3.2",
     "go-ipfs-dep": "^0.4.13",
     "hat": "0.0.3",
-    "interface-ipfs-core": "~0.50.0",
+    "interface-ipfs-core": "~0.50.1",
     "ipfsd-ctl": "~0.28.0",
     "left-pad": "^1.2.0",
     "lodash": "^4.17.5",
