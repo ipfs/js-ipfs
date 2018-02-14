@@ -765,7 +765,7 @@ module.exports = (common) => {
                 testLinkPlainObject = node3
                 cb()
               })
-            },
+            }
           ], done)
         })
 
@@ -784,7 +784,6 @@ module.exports = (common) => {
               ipfs.object.patch.rmLink(testNodeWithLinkMultihash, testLinkPlainObject, (err, node) => {
                 expect(err).to.not.exist()
                 expect(node.multihash).to.not.deep.equal(testNodeWithLinkMultihash)
-                console.log('node', node)
                 cb()
               })
             }
