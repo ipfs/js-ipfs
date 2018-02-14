@@ -47,10 +47,11 @@ module.exports = {
 
       links.forEach(link => {
         const fileName = link.type === 'dir' ? `${link.name || ''}/` : link.name
+        const padding = link.depth - path.split('/').length
         utils.print(
           utils.rightpad(link.hash, multihashWidth + 1) +
           utils.rightpad(link.size || '', sizeWidth + 1) +
-          ' '.repeat((link.depth - 1) * 2) + fileName
+          '  '.repeat(padding) + fileName
         )
       })
     })
