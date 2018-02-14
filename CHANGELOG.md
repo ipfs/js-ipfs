@@ -1,3 +1,22 @@
+<a name="18.0.0"></a>
+# [18.0.0](https://github.com/ipfs/js-ipfs-api/compare/v17.5.0...v18.0.0) (2018-02-14)
+
+
+### Bug Fixes
+
+* exception when dir is empty ([#680](https://github.com/ipfs/js-ipfs-api/issues/680)) ([ec04f6e](https://github.com/ipfs/js-ipfs-api/commit/ec04f6e))
+* support all the Buffer shims and load fixtures correctly ([066988f](https://github.com/ipfs/js-ipfs-api/commit/066988f))
+* update stats API ([#684](https://github.com/ipfs/js-ipfs-api/issues/684)) ([4f7999d](https://github.com/ipfs/js-ipfs-api/commit/4f7999d))
+
+
+### Features
+
+* (breaking change) stats spec, spec repo, stream to value on files read ([#679](https://github.com/ipfs/js-ipfs-api/issues/679)) ([118456e](https://github.com/ipfs/js-ipfs-api/commit/118456e))
+* **breaking change:** use stream on stats.bw ([#686](https://github.com/ipfs/js-ipfs-api/issues/686)) ([895760e](https://github.com/ipfs/js-ipfs-api/commit/895760e))
+* ipfs.stop ([5091115](https://github.com/ipfs/js-ipfs-api/commit/5091115))
+
+
+
 <a name="17.5.0"></a>
 # [17.5.0](https://github.com/ipfs/js-ipfs-api/compare/v17.3.0...v17.5.0) (2018-01-24)
 
