@@ -1,3 +1,13 @@
+<a name="0.50.0"></a>
+# [0.50.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.49.2...v0.50.0) (2018-02-14)
+
+
+### Features
+
+* factor out mfs tests to separate file ([91666ca](https://github.com/ipfs/interface-ipfs-core/commit/91666ca))
+
+
+
 <a name="0.49.2"></a>
 ## [0.49.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.49.1...v0.49.2) (2018-02-14)
 
