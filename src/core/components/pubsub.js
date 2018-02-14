@@ -1,35 +1,19 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const setImmediate = require('async/setImmediate')
-
-const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 
 module.exports = function pubsub (self) {
   return {
     subscribe: (topic, options, handler, callback) => {
-      if (!self.isOnline()) {
-        throw new Error(OFFLINE_ERROR)
-      }
-
       if (typeof options === 'function') {
         callback = handler
         handler = options
         options = {}
       }
 
-      function subscribe (cb) {
-        if (self._pubsub.listenerCount(topic) === 0) {
-          self._pubsub.subscribe(topic)
-        }
-
-        self._pubsub.on(topic, handler)
-        setImmediate(cb)
-      }
-
       if (!callback) {
         return new Promise((resolve, reject) => {
-          subscribe((err) => {
+          self.libp2p.pubsub.subscribe(topic, options, handler, (err) => {
             if (err) {
               return reject(err)
             }
@@ -37,60 +21,28 @@ module.exports = function pubsub (self) {
           })
         })
       } else {
-        subscribe(callback)
+        self.libp2p.pubsub.subscribe(topic, options, handler, callback)
       }
     },
 
     unsubscribe: (topic, handler) => {
-      self._pubsub.removeListener(topic, handler)
-
-      if (self._pubsub.listenerCount(topic) === 0) {
-        self._pubsub.unsubscribe(topic)
-      }
+      self.libp2p.pubsub.unsubscribe(topic, handler)
     },
 
     publish: promisify((topic, data, callback) => {
-      if (!self.isOnline()) {
-        return setImmediate(() => callback(new Error(OFFLINE_ERROR)))
-      }
-
-      if (!Buffer.isBuffer(data)) {
-        return setImmediate(() => callback(new Error('data must be a Buffer')))
-      }
-
-      self._pubsub.publish(topic, data)
-      setImmediate(() => callback())
+      self.libp2p.pubsub.publish(topic, data, callback)
     }),
 
     ls: promisify((callback) => {
-      if (!self.isOnline()) {
-        return setImmediate(() => callback(new Error(OFFLINE_ERROR)))
-      }
-
-      const subscriptions = Array.from(self._pubsub.subscriptions)
-
-      setImmediate(() => callback(null, subscriptions))
+      self.libp2p.pubsub.ls(callback)
     }),
 
     peers: promisify((topic, callback) => {
-      if (!self.isOnline()) {
-        return setImmediate(() => callback(new Error(OFFLINE_ERROR)))
-      }
-
-      if (typeof topic === 'function') {
-        callback = topic
-        topic = null
-      }
-
-      const peers = Array.from(self._pubsub.peers.values())
-        .filter((peer) => topic ? peer.topics.has(topic) : true)
-        .map((peer) => peer.info.id.toB58String())
-
-      setImmediate(() => callback(null, peers))
+      self.libp2p.pubsub.peers(topic, callback)
     }),
 
     setMaxListeners (n) {
-      return self._pubsub.setMaxListeners(n)
+      self.libp2p.pubsub.setMaxListeners(n)
     }
   }
 }

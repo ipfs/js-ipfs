@@ -21,6 +21,7 @@ module.exports = function libp2p (self) {
           bootstrap: get(config, 'Bootstrap'),
           modules: self._libp2pModules,
           // EXPERIMENTAL
+          pubsub: get(self._options, 'EXPERIMENTAL.pubsub', false),
           dht: get(self._options, 'EXPERIMENTAL.dht', false),
           relay: {
             enabled: get(config, 'EXPERIMENTAL.relay.enabled', false),
@@ -50,9 +51,7 @@ module.exports = function libp2p (self) {
         })
 
         self._libp2pNode.start((err) => {
-          if (err) {
-            return callback(err)
-          }
+          if (err) { return callback(err) }
 
           self._libp2pNode.peerInfo.multiaddrs.forEach((ma) => {
             console.log('Swarm listening on', ma.toString())
