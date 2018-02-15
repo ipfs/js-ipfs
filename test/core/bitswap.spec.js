@@ -88,7 +88,7 @@ function addNode (inProcNode, callback) {
   })
 }
 
-describe.only('bitswap', function () {
+describe('bitswap', function () {
   this.timeout(80 * 1000)
 
   let inProcNode // Node spawned inside this process
@@ -136,7 +136,7 @@ describe.only('bitswap', function () {
     })
   })
 
-  describe.only('transfer a block between', () => {
+  describe('transfer a block between', () => {
     it('2 peers', function (done) {
       this.timeout(80 * 1000)
 
