@@ -13,7 +13,7 @@ module.exports = function pubsub (self) {
 
       if (!callback) {
         return new Promise((resolve, reject) => {
-          self.libp2p.pubsub.subscribe(topic, options, handler, (err) => {
+          self._libp2pNode.pubsub.subscribe(topic, options, handler, (err) => {
             if (err) {
               return reject(err)
             }
@@ -21,28 +21,28 @@ module.exports = function pubsub (self) {
           })
         })
       } else {
-        self.libp2p.pubsub.subscribe(topic, options, handler, callback)
+        self._libp2pNode.pubsub.subscribe(topic, options, handler, callback)
       }
     },
 
     unsubscribe: (topic, handler) => {
-      self.libp2p.pubsub.unsubscribe(topic, handler)
+      self._libp2pNode.pubsub.unsubscribe(topic, handler)
     },
 
     publish: promisify((topic, data, callback) => {
-      self.libp2p.pubsub.publish(topic, data, callback)
+      self._libp2pNode.pubsub.publish(topic, data, callback)
     }),
 
     ls: promisify((callback) => {
-      self.libp2p.pubsub.ls(callback)
+      self._libp2pNode.pubsub.ls(callback)
     }),
 
     peers: promisify((topic, callback) => {
-      self.libp2p.pubsub.peers(topic, callback)
+      self._libp2pNode.pubsub.peers(topic, callback)
     }),
 
     setMaxListeners (n) {
-      self.libp2p.pubsub.setMaxListeners(n)
+      self._libp2pNode.pubsub.setMaxListeners(n)
     }
   }
 }
