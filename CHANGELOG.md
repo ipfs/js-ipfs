@@ -1,3 +1,13 @@
+<a name="0.52.0"></a>
+# [0.52.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.51.0...v0.52.0) (2018-02-15)
+
+
+### Features
+
+* allow stats tests to run on js-ipfs ([#216](https://github.com/ipfs/interface-ipfs-core/issues/216)) ([f6e5f55](https://github.com/ipfs/interface-ipfs-core/commit/f6e5f55))
+
+
+
 <a name="0.51.0"></a>
 # [0.51.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.50.1...v0.51.0) (2018-02-15)
 
