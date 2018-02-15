@@ -1,6 +1,5 @@
 'use strict'
 
-const mh = require('multihashes')
 const CID = require('cids')
 const multipart = require('ipfs-multipart')
 const debug = require('debug')

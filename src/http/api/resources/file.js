@@ -72,7 +72,6 @@ exports.ls = {
   // uses common parseKey method that returns a `key`
   parseArgs: exports.parseKey,
 
-  // TODO What is this?
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
     const path = request.pre.args.path
