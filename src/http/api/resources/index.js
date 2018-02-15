@@ -1,6 +1,7 @@
 'use strict'
 
 exports.version = require('./version')
+exports.shutdown = require('./shutdown')
 exports.id = require('./id')
 exports.bootstrap = require('./bootstrap')
 exports.repo = require('./repo')

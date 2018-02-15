@@ -77,6 +77,7 @@ class IPFS extends EventEmitter {
     this.preStart = components.preStart(this)
     this.start = components.start(this)
     this.stop = components.stop(this)
+    this.shutdown = this.stop
     this.isOnline = components.isOnline(this)
     //   - interface-ipfs-core defined API
     this.version = components.version(this)

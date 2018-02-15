@@ -332,7 +332,7 @@ A complete API definition is in the works. Meanwhile, you can learn how to you u
   - `ipfs.ping()`
   - `ipfs.init([options], callback)`
   - `ipfs.start([callback])`
-  - `ipfs.stop([callback])`
+  - [`ipfs.stop([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#stop)
   - `ipfs.isOnline()`
   
 - [config](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md)
