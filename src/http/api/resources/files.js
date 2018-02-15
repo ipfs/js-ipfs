@@ -38,9 +38,7 @@ exports.parseKey = (request, reply) => {
   }
 
   try {
-    return reply({
-      key: new CID(key)
-    })
+    new CID(key)
   } catch (err) {
     log.error(err)
     return reply({
@@ -48,6 +46,10 @@ exports.parseKey = (request, reply) => {
       Code: 0
     }).code(500).takeover()
   }
+
+  return reply({
+    key: request.query.arg
+  })
 }
 
 exports.cat = {
@@ -278,7 +280,7 @@ exports.immutableLs = {
         return reply({
           Message: 'Failed to list dir: ' + err.message,
           Code: 0
-        }).code(500)
+        }).code(500).takeover()
       }
 
       reply({

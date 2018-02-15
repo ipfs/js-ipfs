@@ -50,7 +50,7 @@ QmR56UJmAaZLXLdTT1ALrE9vVqV8soUEekm9BMd4FnuYqV 10     version
       })
   })
 
-  it('follows a path, ls <subdir>', function () {
+  it('follows a path, <hash>/<subdir>', function () {
     this.timeout(20 * 1000)
 
     return ipfs('ls /ipfs/QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2/init-docs')
