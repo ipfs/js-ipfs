@@ -39,11 +39,6 @@ module.exports = (common) => {
     })
 
     it('.bitswap', (done) => {
-      if (!withGo) {
-        console.log('Not supported in js-ipfs yet')
-        return done()
-      }
-
       ipfs.stats.bitswap((err, res) => {
         statsTests.expectIsBitswap(err, res)
         done()
@@ -51,11 +46,6 @@ module.exports = (common) => {
     })
 
     it('.bitswap Promise', () => {
-      if (!withGo) {
-        console.log('Not supported in js-ipfs yet')
-        return
-      }
-
       return ipfs.stats.bitswap().then((res) => {
         statsTests.expectIsBitswap(null, res)
       })
@@ -117,11 +107,6 @@ module.exports = (common) => {
     })
 
     it('.repo', (done) => {
-      if (!withGo) {
-        console.log('Not supported in js-ipfs yet')
-        return done()
-      }
-
       ipfs.stats.repo((err, res) => {
         statsTests.expectIsRepo(err, res)
         done()
@@ -129,11 +114,6 @@ module.exports = (common) => {
     })
 
     it('.repo Promise', () => {
-      if (!withGo) {
-        console.log('Not supported in js-ipfs yet')
-        return
-      }
-
       return ipfs.stats.repo().then((res) => {
         statsTests.expectIsRepo(null, res)
       })
