@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const mh = require('multihashes')
 const multipart = require('ipfs-multipart')
 const debug = require('debug')
 const tar = require('tar-stream')
@@ -37,7 +37,7 @@ exports.parseKey = (request, reply) => {
   }
 
   try {
-    new CID(key)
+    mh.fromB58String(key)
   } catch (err) {
     log.error(err)
     return reply({
@@ -46,7 +46,7 @@ exports.parseKey = (request, reply) => {
     }).code(500).takeover()
   }
 
-  return reply({
+  reply({
     key: request.query.arg
   })
 }
