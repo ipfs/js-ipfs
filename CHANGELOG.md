@@ -1,3 +1,18 @@
+<a name="0.51.0"></a>
+# [0.51.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.50.1...v0.51.0) (2018-02-15)
+
+
+### Bug Fixes
+
+* bootstrap add test ([df01cc5](https://github.com/ipfs/interface-ipfs-core/commit/df01cc5))
+
+
+### Features
+
+* **bootstrap:** add the spec ([427338e](https://github.com/ipfs/interface-ipfs-core/commit/427338e))
+
+
+
 <a name="0.50.1"></a>
 ## [0.50.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.50.0...v0.50.1) (2018-02-14)
 
