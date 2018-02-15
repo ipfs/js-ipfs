@@ -70,7 +70,7 @@ let nodes = []
 
 function addNode (inProcNode, callback) {
   df.spawn({
-    exec: `./src/cli/bin.js`,
+    exec: './src/cli/bin.js',
     config: {
       Addresses: {
         Swarm: [`/ip4/127.0.0.1/tcp/0/ws`]
