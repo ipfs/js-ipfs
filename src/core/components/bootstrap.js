@@ -1,21 +1,30 @@
 'use strict'
 
 const defaultNodes = require('../runtime/config-nodejs.json').Bootstrap
+const MultiAddr = require('multiaddr')
+const promisify = require('promisify-es6')
 
 module.exports = function bootstrap (self) {
   return {
-    list: (callback) => {
+    list: promisify((callback) => {
       self._repo.config.get((err, config) => {
         if (err) {
           return callback(err)
         }
         callback(null, {Peers: config.Bootstrap})
       })
-    },
-    add: (multiaddr, args, callback) => {
+    }),
+    add: promisify((multiaddr, args, callback) => {
       if (typeof args === 'function') {
         callback = args
         args = {default: false}
+      }
+      try {
+        if (multiaddr) 
+          new MultiAddr(multiaddr)
+      }
+      catch (err) {
+        return setImmediate(() => callback(err))
       }
       self._repo.config.get((err, config) => {
         if (err) {
@@ -36,11 +45,18 @@ module.exports = function bootstrap (self) {
           })
         })
       })
-    },
-    rm: (multiaddr, args, callback) => {
+    }),
+    rm: promisify((multiaddr, args, callback) => {
       if (typeof args === 'function') {
         callback = args
         args = {all: false}
+      }
+      try {
+        if (multiaddr) 
+          new MultiAddr(multiaddr)
+      }
+      catch (err) {
+        return setImmediate(() => callback(err))
       }
       self._repo.config.get((err, config) => {
         if (err) {
@@ -65,6 +81,6 @@ module.exports = function bootstrap (self) {
           callback(null, {Peers: res})
         })
       })
-    }
+    })
   }
 }
