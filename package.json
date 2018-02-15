@@ -1,7 +1,7 @@
 {
   "name": "ipfs-api",
   "version": "18.0.0",
-  "description": "A client library for the IPFS HTTP API. Follows interface-ipfs-core spec",
+  "description": "A client library for the IPFS HTTP API",
   "main": "src/index.js",
   "browser": {
     "glob": false,
@@ -71,7 +71,7 @@
     "eslint-plugin-react": "^7.6.1",
     "go-ipfs-dep": "^0.4.13",
     "gulp": "^3.9.1",
-    "interface-ipfs-core": "~0.50.1",
+    "interface-ipfs-core": "~0.51.0",
     "hapi": "^17.2.0",
     "ipfsd-ctl": "~0.28.0",
     "pre-commit": "^1.2.2",
