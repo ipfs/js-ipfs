@@ -56,7 +56,7 @@ module.exports = (common) => {
         })
 
         it('returns a list of bootstrap peers when called with the default option', (done) => {
-          ipfs.bootstrap.add({ default: true }, (err, res) => {
+          ipfs.bootstrap.add(null, { default: true }, (err, res) => {
             expect(err).to.not.exist()
             peers = res.Peers
             expect(peers).to.exist()
