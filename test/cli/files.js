@@ -296,18 +296,6 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
-  it('has an alias to ipfs ls', () => {
-    return ipfs('files ls QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
-      .then(out => {
-        expect(out).to.eql(
-          'QmQQHYDwAQms78fPcvx1uFFsfho23YJNoewfLbi9AtdyJ9 123530 blocks/\n' +
-          'QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN 3939   config\n' +
-          'Qma13ZrhKG52MWnwtZ6fMD8jGj8d4Q9sJgn5xtKgeZw5uz 5503   datastore/\n' +
-          'QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU 7397   init-docs/\n' +
-          'QmR56UJmAaZLXLdTT1ALrE9vVqV8soUEekm9BMd4FnuYqV 10     version\n')
-      })
-  })
-
   it('get', function () {
     this.timeout(20 * 1000)
 

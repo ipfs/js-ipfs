@@ -2,7 +2,6 @@
 
 const print = require('../utils').print
 
-
 module.exports = {
   command: 'files <command>',
 
