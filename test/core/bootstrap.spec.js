@@ -81,7 +81,7 @@ describe('bootstrap', () => {
     '/ip6/2604:a880:1:20::1d9:6001/tcp/4001/ipfs/QmSoLju6m7xTh3DuokvT3886QRYqxAzb1kShaanJgW36yx',
     '/dns4/wss0.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
     '/dns4/wss1.bootstrap.libp2p.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6',
-    '/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT'
+    '/ip4/111.111.111.111/tcp/1001/ipfs/QmXFX2P5ammdmXQgfqGkfswtEVFsZUJ5KeHRXQYCTdiTAb'
   ]
 
   it('get bootstrap list', (done) => {
@@ -93,9 +93,9 @@ describe('bootstrap', () => {
   })
 
   it('add a peer to the bootstrap list', (done) => {
-    node.bootstrap.add('/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT', (err, res) => {
+    node.bootstrap.add('/ip4/111.111.111.111/tcp/1001/ipfs/QmXFX2P5ammdmXQgfqGkfswtEVFsZUJ5KeHRXQYCTdiTAb', (err, res) => {
       expect(err).to.not.exist()
-      expect(res).to.be.eql({ Peers: ['/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT'] })
+      expect(res).to.be.eql({ Peers: ['/ip4/111.111.111.111/tcp/1001/ipfs/QmXFX2P5ammdmXQgfqGkfswtEVFsZUJ5KeHRXQYCTdiTAb'] })
       node.bootstrap.list((err, list) => {
         expect(err).to.not.exist()
         expect(list.Peers).to.deep.equal(updatedList)
@@ -105,9 +105,9 @@ describe('bootstrap', () => {
   })
 
   it('remove a peer from the bootstrap list', (done) => {
-    node.bootstrap.rm('/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT', (err, res) => {
+    node.bootstrap.rm('/ip4/111.111.111.111/tcp/1001/ipfs/QmXFX2P5ammdmXQgfqGkfswtEVFsZUJ5KeHRXQYCTdiTAb', (err, res) => {
       expect(err).to.not.exist()
-      expect(res).to.be.eql({ Peers: ['/ip4/111.111.111.111/tcp/1001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLUVIT'] })
+      expect(res).to.be.eql({ Peers: ['/ip4/111.111.111.111/tcp/1001/ipfs/QmXFX2P5ammdmXQgfqGkfswtEVFsZUJ5KeHRXQYCTdiTAb'] })
       node.bootstrap.list((err, list) => {
         expect(err).to.not.exist()
         expect(list.Peers).to.deep.equal(defaultList)
