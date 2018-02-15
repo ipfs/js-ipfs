@@ -4,14 +4,14 @@ const CID = require('cids')
 const print = require('../../utils').print
 
 module.exports = {
-  command: 'stat',
+  command: 'bitswap',
 
   describe: 'Show some diagnostic information on the bitswap agent.',
 
   builder: {},
 
   handler (argv) {
-    argv.ipfs.bitswap.stat((err, stats) => {
+    argv.ipfs.stats.bitswap((err, stats) => {
       if (err) {
         throw err
       }

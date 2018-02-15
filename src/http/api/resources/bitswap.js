@@ -21,19 +21,27 @@ exports.wantlist = (request, reply) => {
 }
 
 exports.stat = (request, reply) => {
-  let stats
-  try {
-    stats = request.server.app.ipfs.bitswap.stat()
-  } catch (err) {
-    return reply(boom.badRequest(err))
-  }
+  const ipfs = request.server.app.ipfs
 
-  reply({
-    BlocksReceived: stats.blocksReceived,
-    Wantlist: stats.wantlist,
-    Peers: stats.peers,
-    DupBlksReceived: stats.dupBlksReceived,
-    DupDataReceived: stats.dupDataReceived
+  ipfs.bitswap.stat((err, stats) => {
+    if (err) {
+      return reply({
+        Message: err.toString(),
+        Code: 0
+      }).code(500)
+    }
+
+    reply({
+      ProvideBufLen: stats.provideBufLen,
+      BlocksReceived: stats.blocksReceived,
+      Wantlist: stats.wantlist,
+      Peers: stats.peers,
+      DupBlksReceived: stats.dupBlksReceived,
+      DupDataReceived: stats.dupDataReceived,
+      DataReceived: stats.dataReceived,
+      BlocksSent: stats.blocksSent,
+      DataSent: stats.dataSent
+    })
   })
 }
 
