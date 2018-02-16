@@ -119,7 +119,7 @@
     "is-ipfs": "^0.3.2",
     "is-stream": "^1.1.0",
     "joi": "^13.1.2",
-    "libp2p": "~0.16.5",
+    "libp2p": "~0.17.0",
     "libp2p-circuit": "~0.1.4",
     "libp2p-floodsub": "~0.14.1",
     "libp2p-kad-dht": "~0.8.0",
