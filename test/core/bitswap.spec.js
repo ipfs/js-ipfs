@@ -259,8 +259,11 @@ describe('bitswap', function () {
         expect(() => node.bitswap.wantlist()).to.throw(/online/)
       })
 
-      it('.stat throws while offline', () => {
-        expect(() => node.bitswap.stat()).to.throw(/online/)
+      it('.stat gives error while offline', () => {
+        node.bitswap.stat((err, stats) => {
+          expect(err).to.exist()
+          expect(stats).to.not.exist()
+        })
       })
 
       it('throws if offline', () => {
@@ -279,22 +282,22 @@ describe('bitswap', function () {
         expect(node.bitswap.wantlist()).to.eql([])
       })
 
-      it('returns the stats', () => {
-        let stats = node.bitswap.stat()
-
-        expect(stats).to.have.keys([
-          'blocksReceived',
-          'blocksSent',
-          'dataReceived',
-          'dataSent',
-          'wantListLength',
-          'wantlist',
-          'peerCount',
-          'peers',
-          'providesBufferLength',
-          'dupDataReceived',
-          'dupBlksReceived'
-        ])
+      it('returns the stats', (done) => {
+        node.bitswap.stat((err, stats) => {
+          expect(err).to.not.exist()
+          expect(stats).to.have.keys([
+            'blocksReceived',
+            'blocksSent',
+            'dataReceived',
+            'dataSent',
+            'wantlist',
+            'peers',
+            'provideBufLen',
+            'dupDataReceived',
+            'dupBlksReceived'
+          ])
+          done()
+        })
       })
     })
   })
