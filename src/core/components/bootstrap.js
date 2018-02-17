@@ -20,10 +20,10 @@ module.exports = function bootstrap (self) {
         args = {default: false}
       }
       try {
-        if (multiaddr) 
-          new MultiAddr(multiaddr)
-      }
-      catch (err) {
+        if (multiaddr) {
+          multiaddr = new MultiAddr(multiaddr)
+        }
+      } catch (err) {
         return setImmediate(() => callback(err))
       }
       self._repo.config.get((err, config) => {
@@ -52,12 +52,13 @@ module.exports = function bootstrap (self) {
         args = {all: false}
       }
       try {
-        if (multiaddr) 
-          new MultiAddr(multiaddr)
-      }
-      catch (err) {
+        if (multiaddr) {
+          multiaddr = new MultiAddr(multiaddr)
+        }
+      } catch (err) {
         return setImmediate(() => callback(err))
       }
+
       self._repo.config.get((err, config) => {
         if (err) {
           return callback(err)
