@@ -290,11 +290,9 @@ describe('bitswap', function () {
             'blocksSent',
             'dataReceived',
             'dataSent',
-            'wantListLength',
             'wantlist',
-            'peerCount',
             'peers',
-            'providesBufferLength',
+            'provideBufLen',
             'dupDataReceived',
             'dupBlksReceived'
           ])
