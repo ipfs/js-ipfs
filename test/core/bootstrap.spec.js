@@ -115,4 +115,13 @@ describe('bootstrap', () => {
       })
     })
   })
+
+  it('fails if passing in a invalid multiaddr', (done) => {
+    node.bootstrap.add('/funky/invalid/multiaddr', (err, res) => {
+      expect(err).to.match(/not a valid Multiaddr/)
+      expect(err).to.match(/funky/)
+      expect(res).to.not.exist()
+      done()
+    })
+  })
 })
