@@ -1,5 +1,6 @@
 'use strict'
 
+const os = require('os')
 const print = require('../utils').print
 
 module.exports = {
@@ -11,26 +12,48 @@ module.exports = {
     number: {
       alias: 'n',
       type: 'boolean',
-      default: false
+      default: false,
+      describe: 'Print only the version number'
     },
     commit: {
       type: 'boolean',
-      default: false
+      default: false,
+      describe: `Include the version's commit hash`
     },
     repo: {
       type: 'boolean',
-      default: false
+      default: false,
+      describe: `Print only the repo's version number`
+    },
+    all: {
+      type: 'boolean',
+      default: false,
+      describe: 'Print everything we have'
     }
   },
 
   handler (argv) {
-    // TODO: handle argv.{repo|commit|number}
-    argv.ipfs.version((err, version) => {
+    argv.ipfs.version((err, data) => {
       if (err) {
         throw err
       }
 
-      print(`js-ipfs version: ${version.version}`)
+      const withCommit = argv.all || argv.commit
+      const parsedVersion = `${data.version}${withCommit ? `-${data.commit}` : ''}`
+
+      if (argv.repo) {
+        // go-ipfs prints only the number, even without the --number flag.
+        print(data.repo)
+      } else if (argv.number) {
+        print(parsedVersion)
+      } else if (argv.all) {
+        print(`js-ipfs version: ${parsedVersion}`)
+        print(`Repo version: ${data.repo}`)
+        print(`System version: ${os.arch()}/${os.platform()}`)
+        print(`Node.js version: ${process.version}`)
+      } else {
+        print(`js-ipfs version: ${parsedVersion}`)
+      }
     })
   }
 }
