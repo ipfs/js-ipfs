@@ -1,3 +1,23 @@
+<a name="0.27.7"></a>
+## [0.27.7](https://github.com/ipfs/js-ipfs/compare/v0.27.6...v0.27.7) (2018-01-16)
+
+
+### Features
+
+* /api/v0/dns ([#1172](https://github.com/ipfs/js-ipfs/issues/1172)) ([639024c](https://github.com/ipfs/js-ipfs/commit/639024c))
+
+
+
+<a name="0.27.6"></a>
+## [0.27.6](https://github.com/ipfs/js-ipfs/compare/v0.27.5...v0.27.6) (2018-01-07)
+
+
+### Bug Fixes
+
+* cli files on Windows ([#1159](https://github.com/ipfs/js-ipfs/issues/1159)) ([1b98fa1](https://github.com/ipfs/js-ipfs/commit/1b98fa1))
+
+
+
 <a name="0.27.5"></a>
 ## [0.27.5](https://github.com/ipfs/js-ipfs/compare/v0.27.4...v0.27.5) (2017-12-18)
 

@@ -6,10 +6,15 @@ const promisify = require('promisify-es6')
 module.exports = (self) => {
   return promisify((callback) => {
     callback = callback || function noop () {}
+
     self.log('stop')
 
     if (self.state.state() === 'stopped') {
-      return callback()
+      return callback(new Error('Already stopped'))
+    }
+
+    if (self.state.state() !== 'running') {
+      return callback(new Error('Not able to stop from state: ' + self.state.state()))
     }
 
     const done = (err) => {
@@ -20,10 +25,6 @@ module.exports = (self) => {
       self.state.stopped()
       self.emit('stop')
       callback()
-    }
-
-    if (self.state.state() !== 'running') {
-      return done(new Error('Not able to stop from state: ' + self.state.state()))
     }
 
     self.state.stop()

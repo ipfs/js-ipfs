@@ -77,6 +77,7 @@ class IPFS extends EventEmitter {
     this.preStart = components.preStart(this)
     this.start = components.start(this)
     this.stop = components.stop(this)
+    this.shutdown = this.stop
     this.isOnline = components.isOnline(this)
     //   - interface-ipfs-core defined API
     this.version = components.version(this)
@@ -95,6 +96,9 @@ class IPFS extends EventEmitter {
     this.ping = components.ping(this)
     this.pubsub = components.pubsub(this)
     this.dht = components.dht(this)
+    this.dns = components.dns(this)
+    this.key = components.key(this)
+    this.stats = components.stats(this)
 
     if (this._options.EXPERIMENTAL.pubsub) {
       this.log('EXPERIMENTAL pubsub is enabled')

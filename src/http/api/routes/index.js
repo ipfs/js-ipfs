@@ -2,12 +2,13 @@
 
 module.exports = (server) => {
   require('./version')(server)
+  require('./shutdown')(server)
   require('./id')(server)
   require('./bootstrap')(server)
   require('./block')(server)
   require('./object')(server)
   require('./pin')(server)
-  // require('./repo')(server)
+  require('./repo')(server)
   require('./config')(server)
   require('./swarm')(server)
   require('./bitswap')(server)
@@ -16,4 +17,7 @@ module.exports = (server) => {
   require('./pubsub')(server)
   require('./debug')(server)
   require('./webui')(server)
+  require('./dns')(server)
+  require('./key')(server)
+  require('./stats')(server)
 }

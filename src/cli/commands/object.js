@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = {
-  command: 'object',
+  command: 'object <command>',
 
   description: 'Interact with ipfs objects.',
 

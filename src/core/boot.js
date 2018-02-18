@@ -15,7 +15,7 @@ module.exports = (self) => {
   const repoOpen = !self._repo.closed
 
   const customInitOptions = typeof options.init === 'object' ? options.init : {}
-  const initOptions = Object.assign({ bits: 2048 }, customInitOptions)
+  const initOptions = Object.assign({ bits: 2048, pass: self._options.pass }, customInitOptions)
 
   // Checks if a repo exists, and if so opens it
   // Will return callback with a bool indicating the existence
@@ -31,6 +31,7 @@ module.exports = (self) => {
       (cb) => self.pin.load(cb),
       (cb) => self.preStart(cb),
       (cb) => {
+        self.log('initialized')
         self.state.initialized()
         cb(null, true)
       }
@@ -57,8 +58,8 @@ module.exports = (self) => {
     if (err) {
       return self.emit('error', err)
     }
+    self.log('boot:done')
     self.emit('ready')
-    self.log('boot:done', err)
   }
 
   const tasks = []

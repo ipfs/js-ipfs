@@ -45,7 +45,7 @@ module.exports = (self) => {
       self._bitswap = new Bitswap(
         self._libp2pNode,
         self._repo.blocks,
-        self._peerInfoBook
+        { statsEnabled: true }
       )
 
       self._bitswap.start()
