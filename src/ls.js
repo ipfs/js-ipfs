@@ -36,12 +36,12 @@ module.exports = (arg) => {
       }
 
       result = result.map((link) => ({
-        depth: 1,
         name: link.Name,
         path: args + '/' + link.Name,
         size: link.Size,
         hash: link.Hash,
-        type: typeOf(link)
+        type: typeOf(link),
+        depth: link.Depth || 1
       }))
 
       callback(null, result)
