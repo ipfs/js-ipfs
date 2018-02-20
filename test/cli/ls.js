@@ -26,7 +26,7 @@ describe('ls', () => runOnAndOff((thing) => {
       })
   })
 
-  it('prints nothing for non-existant hashes', function (done) {
+  it('prints nothing for non-existant hashes', function () {
     // If the daemon is off, ls should fail
     // If the daemon is on, ls should search until it hits a timeout
     return Promise.race([
