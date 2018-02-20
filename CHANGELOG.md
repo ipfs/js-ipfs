@@ -1,3 +1,13 @@
+<a name="18.1.1"></a>
+## [18.1.1](https://github.com/ipfs/js-ipfs-api/compare/v18.0.0...v18.1.1) (2018-02-20)
+
+
+### Features
+
+* support recursive ipfs ls  ([cfe95f6](https://github.com/ipfs/js-ipfs-api/commit/cfe95f6))
+
+
+
 <a name="18.1.0"></a>
 # [18.1.0](https://github.com/ipfs/js-ipfs-api/compare/v18.0.0...v18.1.0) (2018-02-20)
 
