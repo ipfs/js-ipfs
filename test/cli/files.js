@@ -345,6 +345,24 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
+  it('cat part of a file using `count`', function () {
+    this.timeout(30 * 1000)
+
+    return ipfs('files cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB --offset 21 --count 5')
+      .then((out) => {
+        expect(out).to.eql(readme.substring(21, 26))
+      })
+  })
+
+  it('cat part of a file using `length`', function () {
+    this.timeout(30 * 1000)
+
+    return ipfs('files cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB --offset 21 --length 5')
+      .then((out) => {
+        expect(out).to.eql(readme.substring(21, 26))
+      })
+  })
+
   it('cat non-existent file', () => {
     return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB/dummy')
       .then(() => expect.fail(0, 1, 'Should have thrown an error'))
