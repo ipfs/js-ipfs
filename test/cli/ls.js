@@ -26,13 +26,14 @@ describe('ls', () => runOnAndOff((thing) => {
       })
   })
 
-  it(`prints nothing for non-existant hashes`, function (done) {
-    this.slow(3200)
-    setTimeout(done, 3000)
-    ipfs('ls QmYmW4HiZhotsoSqnv2o1oSssvkRM8b9RweBoH7ao5nki2')
-      .then(() => done(
-        new Error('ipfs ls <invalid hash> found something when it should not have')
-      ))
+  it('prints nothing for non-existant hashes', function (done) {
+    // If the daemon is off, ls should fail
+    // If the daemon is on, ls should search until it hits a timeout
+    return Promise.race([
+      ipfs.fail('ls QmYmW4HiZhotsoSqnv2o1oSssvkRM8b9RweBoH7ao5nki2'),
+      new Promise((res, rej) => setTimeout(res, 4000))
+    ])
+      .catch(() => expect.fail(0, 1, 'Should have thrown or timedout'))
   })
 
   it('adds a header, -v', function () {
