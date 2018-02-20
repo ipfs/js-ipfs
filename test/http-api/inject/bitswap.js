@@ -11,7 +11,7 @@ module.exports = (http) => {
       api = http.api.server.select('API')
     })
 
-    it.only('/wantlist', (done) => {
+    it('/wantlist', (done) => {
       api.inject({
         method: 'GET',
         url: '/api/v0/bitswap/wantlist'

@@ -74,9 +74,7 @@ function HttpApi (repo, config, cliArgs) {
             },
             libp2p: libp2p
           })
-          this.log('starting the daemon')
         } catch (err) {
-          this.log.error('failed to start the daemon')
           return cb(err)
         }
 
@@ -85,10 +83,7 @@ function HttpApi (repo, config, cliArgs) {
           err.code = 'ENOENT'
           cb(err)
         })
-        this.node.once('start', () => {
-          this.log('started core')
-          cb(arguments)
-        })
+        this.node.once('start', cb)
       },
       (cb) => {
         this.log('fetching config')

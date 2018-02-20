@@ -8,7 +8,7 @@ chai.use(dirtyChai)
 
 module.exports = (ctl) => {
   describe('.version', () => {
-    it('get the version', (done) => {
+    it.only('gets the version', (done) => {
       ctl.version((err, result) => {
         console.log('Success! version results:', result)
         expect(err).to.not.exist()
