@@ -17,6 +17,18 @@ const ndjson = require('pull-ndjson')
 
 exports = module.exports
 
+function numberFromQuery (query, key) {
+  if (query && query[key] !== undefined) {
+    const value = parseInt(query[key], 10)
+
+    if (isNaN(value)) {
+      return undefined
+    }
+
+    return value
+  }
+}
+
 // common pre request handler that parses the args and returns `key` which is assigned to `request.pre.args`
 exports.parseKey = (request, reply) => {
   if (!request.query.arg) {
@@ -47,7 +59,11 @@ exports.parseKey = (request, reply) => {
   }
 
   reply({
-    key: request.query.arg
+    key: request.query.arg,
+    options: {
+      offset: numberFromQuery(request.query, 'offset'),
+      length: numberFromQuery(request.query, 'length')
+    }
   })
 }
 
@@ -58,9 +74,10 @@ exports.cat = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
     const key = request.pre.args.key
+    const options = request.pre.args.options
     const ipfs = request.server.app.ipfs
 
-    ipfs.files.cat(key, (err, stream) => {
+    ipfs.files.cat(key, options, (err, stream) => {
       if (err) {
         log.error(err)
         if (err.message === 'No such file') {
