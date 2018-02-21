@@ -92,4 +92,4 @@ ipfs.pin.rm(hash, function (err, pinset) {
 
 A great source of [examples][] can be found in the tests for this API.
 
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/pin.js
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/pin.js

@@ -146,4 +146,4 @@ ipfs.pubsub.peers(topic, (err, peerIds) => {
 
 A great source of [examples][] can be found in the tests for this API.
 
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/pubsub.js
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/pubsub.js

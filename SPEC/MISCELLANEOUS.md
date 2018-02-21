@@ -76,7 +76,7 @@ ipfs.dns('ipfs.io', (err, path) => {
 
 A great source of [examples][] can be found in the tests for this API.
 
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/miscellaneous.js
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/miscellaneous.js
 
 #### `stop`
 
@@ -101,4 +101,4 @@ ipfs.stop((err) => {
 
 A great source of [examples][] can be found in the tests for this API.
 
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/miscellaneous.js
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/miscellaneous.js

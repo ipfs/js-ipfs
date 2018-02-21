@@ -89,4 +89,4 @@ ipfs.config.replace(newConfig, (err) => {
 A great source of [examples][] can be found in the tests for this API.
 
 [promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/config.js
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/config.js

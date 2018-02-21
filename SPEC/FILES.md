@@ -831,7 +831,7 @@ ipfs.files.ls('/screenshots', function (err, files) {
 // 2018-01-22T18:08:49.184Z.png
 ```
 
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/files.js
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/files.js
 [b]: https://www.npmjs.com/package/buffer
 [rs]: https://www.npmjs.com/package/readable-stream
 [ps]: https://www.npmjs.com/package/pull-stream
