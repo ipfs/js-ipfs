@@ -26,7 +26,11 @@ const config = {
 }
 
 function createNode (callback) {
-  f.spawn({ exec: './src/cli/bin.js', config }, callback)
+  f.spawn({
+    exec: './src/cli/bin.js',
+    config,
+    initOptions: { bits: 512 }
+  }, callback)
 }
 
 describe.skip('verify that kad-dht is doing its thing', () => {

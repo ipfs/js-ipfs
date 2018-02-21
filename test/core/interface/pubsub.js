@@ -14,15 +14,17 @@ const common = {
   setup: function (callback) {
     callback(null, {
       spawnNode: (cb) => {
-        df.spawn({ args: ['--enable-pubsub-experiment'] },
-          (err, _ipfsd) => {
-            if (err) {
-              return cb(err)
-            }
+        df.spawn({
+          initOptions: { bits: 512 },
+          args: ['--enable-pubsub-experiment']
+        }, (err, _ipfsd) => {
+          if (err) {
+            return cb(err)
+          }
 
-            nodes.push(_ipfsd)
-            cb(null, _ipfsd.api)
-          })
+          nodes.push(_ipfsd)
+          cb(null, _ipfsd.api)
+        })
       }
     })
   },

@@ -24,7 +24,11 @@ const common = {
           config = undefined
         }
 
-        df.spawn({ repoPath, config }, (err, _ipfsd) => {
+        df.spawn({
+          repoPath,
+          config,
+          initOptions: { bits: 512 }
+        }, (err, _ipfsd) => {
           if (err) {
             return cb(err)
           }
