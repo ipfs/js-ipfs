@@ -14,6 +14,12 @@ module.exports = {
       type: 'boolean',
       default: false
     },
+    r: {
+      alias: 'recursive',
+      desc: 'List subdirectories recursively',
+      type: 'boolean',
+      default: false
+    },
     'resolve-type': {
       desc: 'Resolve linked objects to find out their types. (not implemented yet)',
       type: 'boolean',
@@ -27,7 +33,7 @@ module.exports = {
       path = path.replace('/ipfs/', '')
     }
 
-    argv.ipfs.ls(path, (err, links) => {
+    argv.ipfs.ls(path, { recursive: argv.recursive }, (err, links) => {
       if (err) {
         throw err
       }
@@ -36,20 +42,17 @@ module.exports = {
         links = [{hash: 'Hash', size: 'Size', name: 'Name'}].concat(links)
       }
 
-      links = links.filter((link) => link.path !== path)
-      links.forEach((link) => {
-        if (link.type === 'dir') {
-          // directory: add trailing "/"
-          link.name = (link.name || '') + '/'
-        }
-      })
       const multihashWidth = Math.max.apply(null, links.map((file) => file.hash.length))
       const sizeWidth = Math.max.apply(null, links.map((file) => String(file.size).length))
 
-      links.forEach((file) => {
-        utils.print(utils.rightpad(file.hash, multihashWidth + 1) +
-          utils.rightpad(file.size || '', sizeWidth + 1) +
-            file.name)
+      links.forEach(link => {
+        const fileName = link.type === 'dir' ? `${link.name || ''}/` : link.name
+        const padding = link.depth - path.split('/').length
+        utils.print(
+          utils.rightpad(link.hash, multihashWidth + 1) +
+          utils.rightpad(link.size || '', sizeWidth + 1) +
+          '  '.repeat(padding) + fileName
+        )
       })
     })
   }
