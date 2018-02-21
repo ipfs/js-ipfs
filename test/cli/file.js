@@ -17,12 +17,16 @@ describe('file ls', () => runOnAndOff((thing) => {
 
   it('prints a filename', () => {
     return ipfs(`file ls ${file}`)
-      .then((out) => expect(out).to.eql(`${file}\n`))
+      .then((out) => expect(out).to.eql(
+        `This functionality is deprecated, and will be removed in future versions. If possible, please use 'ipfs ls' instead.\n` +
+        `${file}\n`
+      ))
   })
 
   it('prints the filenames in a directory', () => {
     return ipfs(`file ls ${dir}`)
       .then((out) => expect(out).to.eql(
+        `This functionality is deprecated, and will be removed in future versions. If possible, please use 'ipfs ls' instead.\n` +
         'QmQQHYDwAQms78fPcvx1uFFsfho23YJNoewfLbi9AtdyJ9\n' +
         'QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN\n' +
         'Qma13ZrhKG52MWnwtZ6fMD8jGj8d4Q9sJgn5xtKgeZw5uz\n' +

@@ -1,5 +1,8 @@
 'use strict'
 
+const print = require('../utils').print
+const lsCmd = require('./ls')
+
 module.exports = {
   command: 'files <command>',
 
@@ -8,9 +11,10 @@ module.exports = {
   builder (yargs) {
     return yargs
       .commandDir('files')
+      .command(lsCmd)
   },
 
   handler (argv) {
-    console.log('Type `jsipfs bitswap --help` for more instructions')
+    print('Type `jsipfs files --help` for more instructions')
   }
 }

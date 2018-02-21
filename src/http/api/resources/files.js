@@ -272,13 +272,14 @@ exports.immutableLs = {
   handler: (request, reply) => {
     const key = request.pre.args.key
     const ipfs = request.server.app.ipfs
+    const recursive = request.query && request.query.recursive === 'true'
 
-    ipfs.ls(key, (err, files) => {
+    ipfs.ls(key, { recursive: recursive }, (err, files) => {
       if (err) {
-        reply({
+        return reply({
           Message: 'Failed to list dir: ' + err.message,
           Code: 0
-        }).code(500)
+        }).code(500).takeover()
       }
 
       reply({
@@ -288,7 +289,8 @@ exports.immutableLs = {
             Name: file.name,
             Hash: file.hash,
             Size: file.size,
-            Type: toTypeCode(file.type)
+            Type: toTypeCode(file.type),
+            Depth: file.depth
           }))
         }]
       })

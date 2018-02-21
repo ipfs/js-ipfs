@@ -11,6 +11,8 @@ module.exports = {
 
   handler (argv) {
     let path = argv.key
+    // `ipfs file ls` is deprecated. See https://ipfs.io/docs/commands/#ipfs-file-ls
+    print(`This functionality is deprecated, and will be removed in future versions. If possible, please use 'ipfs ls' instead.`)
     argv.ipfs.ls(path, (err, links) => {
       if (err) {
         throw err

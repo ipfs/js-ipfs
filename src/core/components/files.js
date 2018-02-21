@@ -176,14 +176,20 @@ module.exports = function files (self) {
     return d
   }
 
-  function _lsPullStreamImmutable (ipfsPath) {
+  function _lsPullStreamImmutable (ipfsPath, options) {
     const path = normalizePath(ipfsPath)
-    const depth = path.split('/').length
+    const recursive = options && options.recursive
+    const pathDepth = path.split('/').length
+    const maxDepth = recursive ? global.Infinity : pathDepth
+
     return pull(
-      exporter(ipfsPath, self._ipldResolver, { maxDepth: depth }),
-      pull.filter((node) => node.depth === depth),
-      pull.map((node) => {
-        node = Object.assign({}, node, { hash: toB58String(node.hash) })
+      exporter(ipfsPath, self._ipldResolver, { maxDepth: maxDepth }),
+      pull.filter(node =>
+        recursive ? node.depth >= pathDepth : node.depth === pathDepth
+      ),
+      pull.map(node => {
+        const cid = new CID(node.hash)
+        node = Object.assign({}, node, { hash: cid.toBaseEncodedString() })
         delete node.content
         return node
       })
@@ -293,20 +299,26 @@ module.exports = function files (self) {
       return exporter(ipfsPath, self._ipldResolver)
     },
 
-    lsImmutable: promisify((ipfsPath, callback) => {
+    lsImmutable: promisify((ipfsPath, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
+      }
+
       pull(
-        _lsPullStreamImmutable(ipfsPath),
+        _lsPullStreamImmutable(ipfsPath, options),
         pull.collect((err, values) => {
           if (err) {
-            return callback(err)
+            callback(err)
+            return
           }
           callback(null, values)
         })
       )
     }),
 
-    lsReadableStreamImmutable: (ipfsPath) => {
-      return toStream.source(_lsPullStreamImmutable(ipfsPath))
+    lsReadableStreamImmutable: (ipfsPath, options) => {
+      return toStream.source(_lsPullStreamImmutable(ipfsPath, options))
     },
 
     lsPullStreamImmutable: _lsPullStreamImmutable
