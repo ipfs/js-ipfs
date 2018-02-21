@@ -4,7 +4,10 @@ machine:
     version: stable
 
 test:
+  pre:
+    - npm run lint
   post:
+    - make test
     - npm run coverage -- --upload --providers coveralls
 
 dependencies:

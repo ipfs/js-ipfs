@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
 const fs = require('fs')
+const expect = require('chai').expect
 const path = require('path')
 const compareDir = require('dir-compare').compareSync
 const rimraf = require('rimraf').sync
