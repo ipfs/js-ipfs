@@ -147,7 +147,8 @@ exports.add = {
           is: 1,
           then: Joi.boolean().valid(false).required(),
           otherwise: Joi.boolean().valid(false)
-        })
+        }),
+        'only-hash': Joi.boolean()
       })
       // TODO: Necessary until validate "recursive", "stream-channels" etc.
       .options({ allowUnknown: true })
@@ -205,10 +206,10 @@ exports.add = {
     const options = {
       'cid-version': request.query['cid-version'],
       'raw-leaves': request.query['raw-leaves'],
-      progress: request.query['progress'] ? progressHandler : null,
-      onlyHash: request.query['only-hash']
+      progress: request.query.progress ? progressHandler : null,
+      onlyHash: !!request.query['only-hash']
     }
-    console.log('http options:', options)
+    console.log('http add options:', options)
 
     const aborter = abortable()
     const stream = toStream.source(pull(

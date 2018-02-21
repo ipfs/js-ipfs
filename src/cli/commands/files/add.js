@@ -189,7 +189,7 @@ module.exports = {
       shardSplitThreshold: argv.enableShardingExperiment ? argv.shardSplitThreshold : Infinity,
       'cid-version': argv['cid-version'],
       'raw-leaves': argv['raw-leaves'],
-      onlyHash: argv.onlyHash
+      onlyHash: argv['only-hash']
     }
 
     // Temporary restriction on raw-leaves:

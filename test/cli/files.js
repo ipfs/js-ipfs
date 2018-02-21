@@ -270,6 +270,22 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
+  it('add --only-hash outputs correct hash', function () {
+    return ipfs('files add --only-hash src/init-files/init-docs/readme')
+      .then(out =>
+        expect(out)
+          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
+      )
+  })
+
+  it('add --only-hash does not add the file to the datastore', function () {
+    return ipfs('files add --only-hash package.json')
+      .then(out => {
+        const speculativeHash = out.split(' ')[1]
+        return ipfs.fail(`files ls ${speculativeHash}`)
+      })
+  })
+
   it('cat', function () {
     this.timeout(30 * 1000)
 
