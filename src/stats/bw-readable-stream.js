@@ -5,7 +5,7 @@ const pump = require('pump')
 const transformChunk = require('./bw-util')
 
 module.exports = (send) => {
-  return (hash, opts) => {
+  return (opts) => {
     opts = opts || {}
 
     const pt = new Stream.Transform({

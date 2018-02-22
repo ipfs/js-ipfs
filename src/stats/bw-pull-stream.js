@@ -6,7 +6,7 @@ const transformChunk = require('./bw-util')
 const deferred = require('pull-defer')
 
 module.exports = (send) => {
-  return (hash, opts) => {
+  return (opts) => {
     opts = opts || {}
 
     const p = deferred.source()
