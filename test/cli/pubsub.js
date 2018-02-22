@@ -44,6 +44,7 @@ describe('pubsub', function () {
       .create({ type: 'proc' })
       .spawn({
         exec: IPFS,
+        initOptions: { bits: 512 },
         config,
         args: ['--enable-pubsub-experiment']
       }, (err, _ipfsd) => {
@@ -58,6 +59,7 @@ describe('pubsub', function () {
 
   before((done) => {
     df.spawn({
+      initOptions: { bits: 512 },
       args: ['--enable-pubsub-experiment'],
       exec: `./src/cli/bin.js`,
       config

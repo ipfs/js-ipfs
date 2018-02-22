@@ -24,6 +24,7 @@ describe('bootstrap', () => {
     this.timeout(40 * 1000)
     df.spawn({
       exec: IPFS,
+      initOptions: { bits: 512 },
       config: {
         Addresses: {
           Swarm: ['/ip4/127.0.0.1/tcp/0']

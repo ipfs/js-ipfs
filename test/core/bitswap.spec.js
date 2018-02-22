@@ -70,6 +70,7 @@ let nodes = []
 function addNode (inProcNode, callback) {
   fDaemon.spawn({
     exec: './src/cli/bin.js',
+    initOptions: { bits: 512 },
     config: {
       Addresses: {
         Swarm: [`/ip4/127.0.0.1/tcp/0/ws`]
@@ -118,7 +119,11 @@ describe('bitswap', function () {
       })
     }
 
-    fInProc.spawn({ exec: IPFS, config: config }, (err, _ipfsd) => {
+    fInProc.spawn({
+      exec: IPFS,
+      config: config,
+      initOptions: { bits: 512 }
+    }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       nodes.push(_ipfsd)
       inProcNode = _ipfsd.api

@@ -31,7 +31,7 @@ describe('ls', () => runOnAndOff((thing) => {
     // If the daemon is on, ls should search until it hits a timeout
     return Promise.race([
       ipfs.fail('ls QmYmW4HiZhotsoSqnv2o1oSssvkRM8b9RweBoH7ao5nki2'),
-      new Promise((res, rej) => setTimeout(res, 4000))
+      new Promise((resolve, reject) => setTimeout(resolve, 4000))
     ])
       .catch(() => expect.fail(0, 1, 'Should have thrown or timedout'))
   })
