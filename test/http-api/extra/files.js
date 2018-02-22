@@ -6,23 +6,22 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-function resolveIn(ms) {
-  return new Promise(res => setTimeout(res, ms))
-}
-
 module.exports = ctl => {
   describe('.files', () => {
     describe('.add', function () {
-      it.only('performs a speculative add, --only-hash', () => {
+      it('performs a speculative add, --only-hash', () => {
+        const content = String(Math.random() + Date.now())
+
         return ctl
-          .add(Buffer.from('Hola, Mundo'), { onlyHash: true })
-          .then(result => {
-            const lsAttempt = ctl.ls(result[0].hash)
+          .add(Buffer.from(content), { onlyHash: true })
+          .then(files => {
+            const getAttempt = ctl.object.get(files[0].hash)
               .then(() => {
-                throw new Error('ls should not find a result for a file added with --only-hash')
+                throw new Error('Should not find an object for content added with --only-hash')
               })
+
             return Promise.race([
-              lsAttempt,
+              getAttempt,
               new Promise(res => setTimeout(res, 4000))
             ])
           })

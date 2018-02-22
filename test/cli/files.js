@@ -2,6 +2,7 @@
 'use strict'
 
 const fs = require('fs')
+const os = require('os')
 const expect = require('chai').expect
 const path = require('path')
 const compareDir = require('dir-compare').compareSync
@@ -278,11 +279,21 @@ describe('files', () => runOnAndOff((thing) => {
       )
   })
 
-  it('add --only-hash does not add the file to the datastore', function () {
-    return ipfs('files add --only-hash package.json')
-      .then(out => {
-        const speculativeHash = out.split(' ')[1]
-        return ipfs.fail(`files ls ${speculativeHash}`)
+  it('add --only-hash does not add a file to the datastore', function () {
+    this.timeout(30 * 1000)
+    this.slow(10 * 1000)
+    const content = String(Math.random() + Date.now())
+    const filepath = path.join(os.tmpdir(), `${content}.txt`)
+    fs.writeFileSync(filepath, content)
+
+    return ipfs(`files add --only-hash ${filepath}`)
+      .then(hash => {
+        const speculativeHash = hash.split(' ')[1]
+        return Promise.race([
+          ipfs.fail(`object get ${speculativeHash}`),
+          new Promise(res => setTimeout(res, 5000))
+        ])
+          .then(() => fs.unlinkSync(filepath))
       })
   })
 
