@@ -287,11 +287,14 @@ describe('files', () => runOnAndOff((thing) => {
     fs.writeFileSync(filepath, content)
 
     return ipfs(`files add --only-hash ${filepath}`)
-      .then(hash => {
-        const speculativeHash = hash.split(' ')[1]
+      .then(out => {
+        const hash = out.split(' ')[1]
+
+        // 'jsipfs object get <hash>' should time out with the daemon on
+        // and should fail fast with the daemon off
         return Promise.race([
-          ipfs.fail(`object get ${speculativeHash}`),
-          new Promise(res => setTimeout(res, 5000))
+          ipfs.fail(`object get ${hash}`),
+          new Promise((resolve, reject) => setTimeout(resolve, 4000))
         ])
           .then(() => fs.unlinkSync(filepath))
       })

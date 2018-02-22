@@ -1,9 +1,9 @@
 /* eslint-env mocha */
+/* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
-const expect = chai.expect
 chai.use(dirtyChai)
 
 module.exports = ctl => {
@@ -12,8 +12,7 @@ module.exports = ctl => {
       it('performs a speculative add, --only-hash', () => {
         const content = String(Math.random() + Date.now())
 
-        return ctl
-          .add(Buffer.from(content), { onlyHash: true })
+        return ctl.add(Buffer.from(content), { onlyHash: true })
           .then(files => {
             const getAttempt = ctl.object.get(files[0].hash)
               .then(() => {
@@ -22,7 +21,7 @@ module.exports = ctl => {
 
             return Promise.race([
               getAttempt,
-              new Promise(res => setTimeout(res, 4000))
+              new Promise((resolve, reject) => setTimeout(resolve, 4000))
             ])
           })
       })

@@ -143,7 +143,7 @@ module.exports = {
       alias: 'n',
       type: 'boolean',
       default: false,
-      describe: 'Only chunk and hash, do not write to disk'
+      describe: 'Only chunk and hash, do not write'
     },
     'enable-sharding-experiment': {
       type: 'boolean',
