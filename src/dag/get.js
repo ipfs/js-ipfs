@@ -20,21 +20,10 @@ module.exports = (send) => {
     }
 
     options = options || {}
+    path = path || ''
 
     if (CID.isCID(cid)) {
       cid = cid.toBaseEncodedString()
-    }
-
-    if (typeof cid === 'string') {
-      const split = cid.split('/')
-      cid = split[0]
-      split.shift()
-
-      if (split.length > 0) {
-        path = split.join('/')
-      } else {
-        path = '/'
-      }
     }
 
     waterfall([
