@@ -35,14 +35,16 @@ module.exports = (send) => {
         }, cb)
       },
       (resolved, cb) => {
-        block(send).get(new CID(resolved['Cid']['/']), (err, blk) => cb(err, blk, resolved['RemPath']))
+        block(send).get(new CID(resolved['Cid']['/']), (err, ipfsBlock) => {
+          cb(err, ipfsBlock, resolved['RemPath'])
+        })
       },
-      (blk, path, cb) => {
-        if (blk.cid.codec === 'dag-cbor') {
-          dagCBOR.resolver.resolve(blk, path, cb)
+      (ipfsBlock, path, cb) => {
+        if (ipfsBlock.cid.codec === 'dag-cbor') {
+          dagCBOR.resolver.resolve(ipfsBlock.data, path, cb)
         }
-        if (blk.cid.codec === 'dag-pb') {
-          dagPB.resolver.resolve(blk, path, cb)
+        if (ipfsBlock.cid.codec === 'dag-pb') {
+          dagPB.resolver.resolve(ipfsBlock.data, path, cb)
         }
       }
     ], callback)
