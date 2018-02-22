@@ -209,7 +209,6 @@ exports.add = {
       progress: request.query.progress ? progressHandler : null,
       onlyHash: !!request.query['only-hash']
     }
-    console.log('http add options:', options)
 
     const aborter = abortable()
     const stream = toStream.source(pull(
