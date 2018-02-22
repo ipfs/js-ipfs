@@ -10,7 +10,8 @@ const IPFS = require('../../../src')
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ type: 'proc', exec: IPFS })
 const options = {
-  args: ['--pass ipfs-is-awesome-software']
+  args: ['--pass ipfs-is-awesome-software'],
+  initOptions: { bits: 512 }
 }
 const nodes = []
 const common = {

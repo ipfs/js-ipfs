@@ -49,7 +49,11 @@ function on (tests) {
       // before step
       this.timeout(60 * 1000)
 
-      df.spawn({ type: 'js', exec: `./src/cli/bin.js` }, (err, node) => {
+      df.spawn({
+        type: 'js',
+        exec: `./src/cli/bin.js`,
+        initOptions: { bits: 512 }
+      }, (err, node) => {
         expect(err).to.not.exist()
         ipfsd = node
         thing.ipfs = ipfsExec(node.repoPath)

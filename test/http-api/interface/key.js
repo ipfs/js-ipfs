@@ -8,7 +8,8 @@ const parallel = require('async/parallel')
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
 const options = {
-  args: ['--pass', 'ipfs-is-awesome-software']
+  args: ['--pass', 'ipfs-is-awesome-software'],
+  initOptions: { bits: 512 }
 }
 
 const nodes = []

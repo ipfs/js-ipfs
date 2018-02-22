@@ -12,7 +12,9 @@ const common = {
   setup: function (callback) {
     callback(null, {
       spawnNode: (cb) => {
-        df.spawn((err, _ipfsd) => {
+        df.spawn({
+          initOptions: { bits: 512 }
+        }, (err, _ipfsd) => {
           if (err) {
             return cb(err)
           }
