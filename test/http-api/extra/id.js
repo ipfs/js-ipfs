@@ -5,8 +5,13 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
+const getCtl = require('./utils/get-ctl.js')
 
-module.exports = (ctl) => {
+module.exports = (http) => {
+  let ctl = null
+  before(() => {
+    ctl = getCtl(http)
+  })
   describe('.id', () => {
     it('get the identity', (done) => {
       ctl.id((err, result) => {

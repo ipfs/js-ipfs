@@ -5,8 +5,13 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
+const getCtl = require('./utils/get-ctl.js')
 
-module.exports = (ctl) => {
+module.exports = (http) => {
+  let ctl = null
+  before(() => {
+    ctl = getCtl(http)
+  })
   describe('.bootstrap', () => {
     const invalidArg = 'this/Is/So/Invalid/'
     const validIp4 = '/ip4/101.236.176.52/tcp/4001/ipfs/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z'

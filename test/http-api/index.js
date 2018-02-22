@@ -8,7 +8,6 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const hat = require('hat')
 const API = require('../../src/http')
-const APIctl = require('ipfs-api')
 const ncp = require('ncp').ncp
 const path = require('path')
 const clean = require('../utils/clean')
@@ -19,9 +18,7 @@ describe('HTTP API', () => {
 
   let http = {}
 
-  before(function (done) {
-    this.timeout(60 * 1000)
-
+  const startHttpAPI = (cb) => {
     const options = {
       pass: hat(),
       enablePubsubExperiment: true
@@ -29,9 +26,27 @@ describe('HTTP API', () => {
     http.api = new API(repoTests, null, options)
 
     ncp(repoExample, repoTests, (err) => {
-      expect(err).to.not.exist()
+      if (err) {
+        return cb(err)
+      }
 
-      http.api.start(false, done)
+      http.api.start(false, (err) => {
+        if (err) {
+          return cb(err)
+        }
+        cb(null, http)
+      })
+    })
+  }
+
+  before(function (done) {
+    this.timeout(60 * 1000)
+    startHttpAPI((err, _http) => {
+      if (err) {
+        throw err
+      }
+      http = _http
+      done()
     })
   })
 
@@ -52,9 +67,13 @@ describe('HTTP API', () => {
   })
 
   describe('## extra tests with ipfs-api', () => {
-    const ctl = APIctl('/ip4/127.0.0.1/tcp/6001')
-
     fs.readdirSync(path.join(__dirname, '/extra'))
-      .forEach((file) => require('./extra/' + file)(ctl))
+      .forEach((file) => {
+        // TODO(victor) want to make all this loading of tests proper, but for now
+        if (file.includes('utils')) {
+          return
+        }
+        require('./extra/' + file)(http)
+      })
   })
 })

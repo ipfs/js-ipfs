@@ -8,8 +8,13 @@ chai.use(dirtyChai)
 
 const fs = require('fs')
 const path = require('path')
+const getCtl = require('./utils/get-ctl.js')
 
-module.exports = (ctl) => {
+module.exports = (http) => {
+  let ctl = null
+  before(() => {
+    ctl = getCtl(http)
+  })
   describe('.config', () => {
     const configPath = path.join(__dirname, '../../repo-tests-run/config')
 

@@ -4,14 +4,13 @@
 const expect = require('chai').expect
 const clean = require('../utils/clean')
 const ipfsCmd = require('../utils/ipfs-exec')
+const isWindows = require('../utils/platforms').isWindows
 const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
 const os = require('os')
 const path = require('path')
 const hat = require('hat')
 const fs = require('fs')
-
-const isWindows = os.platform() === 'win32'
 
 const checkLock = (repo, cb) => {
   // skip on windows
@@ -28,9 +27,13 @@ const checkLock = (repo, cb) => {
 }
 
 function testSignal (ipfs, sig) {
-  let proc = null
   return ipfs('init').then(() => {
-    proc = ipfs('daemon')
+    return ipfs('config', 'Addresses', JSON.stringify({
+      API: '/ip4/127.0.0.1/tcp/0',
+      Gateway: '/ip4/127.0.0.1/tcp/0'
+    }), '--json')
+  }).then(() => {
+    const proc = ipfs('daemon')
     return new Promise((resolve, reject) => {
       pull(
         toPull(proc.stdout),
@@ -77,6 +80,7 @@ describe('daemon', () => {
 
     ipfs('init').then(() => {
       return ipfs('config', 'Addresses', JSON.stringify({
+        Swarm: [],
         API: '/ip4/127.0.0.1/tcp/0',
         Gateway: '/ip4/127.0.0.1/tcp/0'
       }), '--json')
@@ -85,10 +89,12 @@ describe('daemon', () => {
     }).then((res) => {
       expect(res).to.have.string('Daemon is ready')
       done()
-    }).catch((err) => done(err))
+    }).catch(err => done(err))
   })
 
-  it('should handle SIGINT gracefully', function (done) {
+  const skipOnWindows = isWindows() ? it.skip : it
+
+  skipOnWindows('should handle SIGINT gracefully', function (done) {
     this.timeout(100 * 1000)
 
     testSignal(ipfs, 'SIGINT').then(() => {
@@ -96,7 +102,7 @@ describe('daemon', () => {
     }).catch(done)
   })
 
-  it('should handle SIGTERM gracefully', function (done) {
+  skipOnWindows('should handle SIGTERM gracefully', function (done) {
     this.timeout(100 * 1000)
 
     testSignal(ipfs, 'SIGTERM').then(() => {
@@ -105,7 +111,7 @@ describe('daemon', () => {
   })
 
   it('gives error if user hasn\'t run init before', function (done) {
-    this.timeout(100 * 1000)
+    this.timeout(30 * 1000)
 
     const expectedError = 'no initialized ipfs repo found in ' + repoPath
 

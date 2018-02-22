@@ -8,8 +8,13 @@ chai.use(dirtyChai)
 
 const multihash = require('multihashes')
 const waterfall = require('async/waterfall')
+const getCtl = require('./utils/get-ctl.js')
 
-module.exports = (ctl) => {
+module.exports = (http) => {
+  let ctl = null
+  before(() => {
+    ctl = getCtl(http)
+  })
   describe('.block', () => {
     describe('.put', () => {
       it('updates value', (done) => {

@@ -33,6 +33,11 @@ describe('HTTP Gateway', function () {
     const repoPath = path.join(os.tmpdir(), '/ipfs-' + hat())
 
     http.api = new API(repoPath, {
+      Addresses: {
+        Swarm: ['/ip4/127.0.0.1/tcp/0'],
+        API: '/ip4/127.0.0.1/tcp/0',
+        Gateway: '/ip4/127.0.0.1/tcp/0'
+      },
       Bootstrap: [],
       Discovery: {
         MDNS: {

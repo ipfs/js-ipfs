@@ -10,6 +10,7 @@ chai.use(dirtyChai)
 const fs = require('fs')
 const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
+const getCtl = require('./utils/get-ctl.js')
 
 function asJson (cb) {
   return (err, result) => {
@@ -19,7 +20,11 @@ function asJson (cb) {
   }
 }
 
-module.exports = (ctl) => {
+module.exports = (http) => {
+  let ctl = null
+  before(() => {
+    ctl = getCtl(http)
+  })
   describe('.object', () => {
     it('.new', (done) => {
       ctl.object.new(asJson((err, res) => {
