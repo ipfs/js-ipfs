@@ -5,16 +5,28 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-const getCtl = require('./utils/get-ctl.js')
 
-module.exports = (http) => {
-  let ctl = null
-  before(() => {
-    ctl = getCtl(http)
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
+
+describe('extra version', () => {
+  let ipfs = null
+  let ipfsd = null
+  before(function (done) {
+    this.timeout(20 * 1000)
+    df.spawn({ initOptions: { bits: 512 } }, (err, _ipfsd) => {
+      expect(err).to.not.exist()
+      ipfsd = _ipfsd
+      ipfs = ipfsd.api
+      done()
+    })
   })
+
+  after((done) => ipfsd.stop(done))
+
   describe('.version', () => {
     it('get the version', (done) => {
-      ctl.version((err, result) => {
+      ipfs.version((err, result) => {
         expect(err).to.not.exist()
         expect(result).to.have.a.property('version')
         expect(result).to.have.a.property('commit')
@@ -23,4 +35,4 @@ module.exports = (http) => {
       })
     })
   })
-}
+})
