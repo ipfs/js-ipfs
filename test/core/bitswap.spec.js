@@ -144,7 +144,7 @@ skipOnWindows('bitswap', function () {
   })
 
   afterEach(function (done) {
-    this.timeout(160 * 1000)
+    this.timeout(80 * 1000)
     const tasks = nodes.map((node) => (cb) => node.stop(cb))
     parallel(tasks, (err) => {
       expect(err).to.not.exist()
@@ -155,7 +155,7 @@ skipOnWindows('bitswap', function () {
 
   describe('transfer a block between', () => {
     it('2 peers', function (done) {
-      this.timeout(160 * 1000)
+      this.timeout(80 * 1000)
 
       let remoteNode
       let block
@@ -179,7 +179,7 @@ skipOnWindows('bitswap', function () {
     })
 
     it('3 peers', function (done) {
-      this.timeout(240 * 1000)
+      this.timeout(80 * 1000)
 
       let blocks
       const remoteNodes = []
@@ -254,7 +254,7 @@ skipOnWindows('bitswap', function () {
     let node
 
     before(function (done) {
-      this.timeout(80 * 1000)
+      this.timeout(40 * 1000)
 
       node = new IPFS({
         repo: createTempRepo(),
