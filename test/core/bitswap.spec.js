@@ -100,10 +100,8 @@ skipOnWindows('bitswap', function () {
   let fInProc
 
   before(function () {
-    // AEGIR_TEST_PORT is assigned in .aegir.js
-    const port = process.env.AEGIR_TEST_PORT
-    fDaemon = IPFSFactory.create({ type: 'js', port })
-    fInProc = IPFSFactory.create({ type: 'proc', port })
+    fDaemon = IPFSFactory.create({ type: 'js' })
+    fInProc = IPFSFactory.create({ type: 'proc' })
   })
 
   beforeEach(function (done) {
