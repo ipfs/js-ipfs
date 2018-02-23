@@ -4,6 +4,7 @@ const isNode = require('detect-node')
 const promisify = require('promisify-es6')
 const moduleConfig = require('../utils/module-config')
 const SendOneFile = require('../utils/send-one-file-multiple-results')
+const FileResultStreamConverter = require('../utils/file-result-stream-converter')
 
 module.exports = (arg) => {
   const sendOneFile = SendOneFile(moduleConfig(arg), 'add')
@@ -31,6 +32,10 @@ module.exports = (arg) => {
       return callback(new Error('"path" must be a string'))
     }
 
-    sendOneFile(path, { qs: opts }, callback)
+    const requestOpts = {
+      qs: opts,
+      converter: FileResultStreamConverter
+    }
+    sendOneFile(path, requestOpts, callback)
   })
 }

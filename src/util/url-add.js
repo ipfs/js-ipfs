@@ -5,6 +5,7 @@ const parseUrl = require('url').parse
 const request = require('../utils/request')
 const moduleConfig = require('../utils/module-config')
 const SendOneFile = require('../utils/send-one-file-multiple-results')
+const FileResultStreamConverter = require('../utils/file-result-stream-converter')
 
 module.exports = (arg) => {
   const sendOneFile = SendOneFile(moduleConfig(arg), 'add')
@@ -49,7 +50,11 @@ const requestWithRedirect = (url, opts, sendOneFile, callback) => {
       }
       requestWithRedirect(redirection, opts, sendOneFile, callback)
     } else {
-      sendOneFile(res, { qs: opts }, callback)
+      const requestOpts = {
+        qs: opts,
+        converter: FileResultStreamConverter
+      }
+      sendOneFile(res, requestOpts, callback)
     }
   }).end()
 }

@@ -6,7 +6,7 @@ const TransformStream = require('readable-stream').Transform
   Transforms a stream of {Name, Hash} objects to include size
   of the DAG object.
 
-  Usage: inputStream.pipe(new Converter())
+  Usage: inputStream.pipe(new FileResultStreamConverter())
 
   Input object format:
   {
@@ -22,7 +22,7 @@ const TransformStream = require('readable-stream').Transform
     size: 20
   }
 */
-class ConverterStream extends TransformStream {
+class FileResultStreamConverter extends TransformStream {
   constructor (options) {
     const opts = Object.assign({}, options || {}, { objectMode: true })
     super(opts)
@@ -41,4 +41,4 @@ class ConverterStream extends TransformStream {
   }
 }
 
-module.exports = ConverterStream
+module.exports = FileResultStreamConverter

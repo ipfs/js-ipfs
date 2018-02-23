@@ -6,7 +6,6 @@ const isStream = require('is-stream')
 const once = require('once')
 const prepareFile = require('./prepare-file')
 const Multipart = require('./multipart')
-const Converter = require('./converter')
 
 function headers (file) {
   const name = file.path
@@ -127,15 +126,27 @@ module.exports = (send, path) => {
 
       response.on('error', (err) => retStream.emit('error', err))
 
-      response.on('data', (d) => {
-        if (d.Bytes && options.progress) {
-          options.progress(d.Bytes)
-        }
-      })
-      const convertedResponse = new Converter()
-      convertedResponse.once('end', () => retStream.push(null))
-      convertedResponse.on('data', (d) => retStream.push(d))
-      response.pipe(convertedResponse)
+      if (options.converter) {
+        response.on('data', (d) => {
+          if (d.Bytes && options.progress) {
+            options.progress(d.Bytes)
+          }
+        })
+
+        const Converter = options.converter
+        const convertedResponse = new Converter()
+        convertedResponse.once('end', () => retStream.push(null))
+        convertedResponse.on('data', (d) => retStream.push(d))
+        response.pipe(convertedResponse)
+      } else {
+        response.on('data', (d) => {
+          if (d.Bytes && options.progress) {
+            options.progress(d.Bytes)
+          }
+          retStream.push(d)
+        })
+        response.once('end', () => retStream.push(null))
+      }
     })
 
     // signal the multipart that the underlying stream has drained and that
