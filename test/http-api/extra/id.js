@@ -6,6 +6,8 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
+const ncp = require('ncp').ncp
+const rimraf = require('rimraf')
 const waterfall = require('async/waterfall')
 const path = require('path')
 
@@ -13,31 +15,42 @@ const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
 
 describe('extra id', () => {
+  const repoExample = path.join(__dirname, '../../fixtures/go-ipfs-repo')
+  const repoTests = path.join(__dirname, '../../repo-tests-run')
+
   let ipfs = null
   let ipfsd = null
   before(function (done) {
     this.timeout(20 * 1000)
-    this.timeout(20 * 1000)
 
-    waterfall([
-      (cb) => df.spawn({
-        repoPath: path.join(__dirname, '../../fixtures/go-ipfs-repo'),
-        initOptions: { bits: 512 },
-        disposable: false,
-        start: true
-      }, cb),
-      (_ipfsd, cb) => {
-        ipfsd = _ipfsd
-        ipfsd.start(cb)
-      }
-    ], (err) => {
+    ncp(repoExample, repoTests, (err) => {
       expect(err).to.not.exist()
-      ipfs = ipfsd.api
-      done()
+
+      waterfall([
+        (cb) => df.spawn({
+          repoPath: path.join(__dirname, '../../fixtures/go-ipfs-repo'),
+          initOptions: { bits: 512 },
+          disposable: false,
+          start: true
+        }, cb),
+        (_ipfsd, cb) => {
+          ipfsd = _ipfsd
+          ipfsd.start(cb)
+        }
+      ], (err) => {
+        expect(err).to.not.exist()
+        ipfs = ipfsd.api
+        done()
+      })
     })
   })
 
-  after((done) => ipfsd.stop(done))
+  after((done) => {
+    rimraf(repoTests, (err) => {
+      expect(err).to.not.exist()
+      ipfsd.stop(done)
+    })
+  })
 
   describe('.id', () => {
     it('get the identity', (done) => {

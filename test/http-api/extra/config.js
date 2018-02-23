@@ -6,6 +6,8 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
+const ncp = require('ncp').ncp
+const rimraf = require('rimraf')
 const waterfall = require('async/waterfall')
 
 const fs = require('fs')
@@ -16,7 +18,8 @@ const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
 
 describe('extra config', () => {
   // TODO: this didn't seem to point anywhere
-  const configPath = path.join(__dirname, '../../fixtures/go-ipfs-repo/config')
+  const repoExample = path.join(__dirname, '../../fixtures/go-ipfs-repo')
+  const repoTests = path.join(__dirname, '../../repo-tests-run')
 
   let updatedConfig = null
 
@@ -25,26 +28,40 @@ describe('extra config', () => {
   before(function (done) {
     this.timeout(20 * 1000)
 
-    waterfall([
-      (cb) => df.spawn({
-        repoPath: path.join(__dirname, '../../fixtures/go-ipfs-repo'),
-        initOptions: { bits: 512 },
-        disposable: false,
-        start: true
-      }, cb),
-      (_ipfsd, cb) => {
-        ipfsd = _ipfsd
-        ipfsd.start(cb)
-      }
-    ], (err) => {
+    ncp(repoExample, repoTests, (err) => {
       expect(err).to.not.exist()
-      ipfs = ipfsd.api
-      updatedConfig = () => JSON.parse(fs.readFileSync(configPath, 'utf8'))
-      done()
+
+      waterfall([
+        (cb) => df.spawn({
+          repoPath: repoTests,
+          initOptions: { bits: 512 },
+          disposable: false,
+          start: true
+        }, cb),
+        (_ipfsd, cb) => {
+          ipfsd = _ipfsd
+          ipfsd.start(cb)
+        }
+      ], (err) => {
+        expect(err).to.not.exist()
+        ipfs = ipfsd.api
+
+        updatedConfig = () => {
+          const file = fs.readFileSync(path.join(__dirname, '../../repo-tests-run/config'))
+          return JSON.parse(file, 'utf8')
+        }
+
+        done()
+      })
     })
   })
 
-  after((done) => ipfsd.stop(done))
+  after((done) => {
+    rimraf(repoTests, (err) => {
+      expect(err).to.not.exist()
+      ipfsd.stop(done)
+    })
+  })
 
   describe('.config', () => {
     it('.get returns error for request with invalid argument', (done) => {
