@@ -5,10 +5,13 @@ const dagCBOR = require('ipld-dag-cbor')
 const promisify = require('promisify-es6')
 const CID = require('cids')
 const multihash = require('multihashes')
+const SendOneFile = require('../utils/send-one-file')
 
 function noop () {}
 
 module.exports = (send) => {
+  const sendOneFile = SendOneFile(send, 'dag/put')
+
   return promisify((dagNode, options, callback) => {
     if (typeof options === 'function') {
       return setImmediate(() => callback(new Error('no options were passed')))
@@ -44,16 +47,14 @@ module.exports = (send) => {
 
     function finalize (err, serialized) {
       if (err) { return callback(err) }
-
-      send({
-        path: 'dag/put',
+      const sendOptions = {
         qs: {
           hash: hashAlg,
           format: format,
           'input-enc': inputEnc
-        },
-        files: serialized
-      }, (err, result) => {
+        }
+      }
+      sendOneFile(serialized, sendOptions, (err, result) => {
         if (err) {
           return callback(err)
         }
