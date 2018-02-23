@@ -1,8 +1,6 @@
 'use strict'
 
-const pump = require('pump')
 const TransformStream = require('readable-stream').Transform
-const streamToValue = require('./stream-to-value')
 
 /*
   Transforms a stream of {Name, Hash} objects to include size
@@ -43,19 +41,4 @@ class ConverterStream extends TransformStream {
   }
 }
 
-function converter (inputStream, callback) {
-  const outputStream = new ConverterStream()
-  pump(
-    inputStream,
-    outputStream,
-    (err) => {
-      if (err) {
-        callback(err)
-      }
-    })
-
-  streamToValue(outputStream, callback)
-}
-
-exports = module.exports = converter
-exports.ConverterStream = ConverterStream
+module.exports = ConverterStream

@@ -6,7 +6,7 @@ const isStream = require('is-stream')
 const once = require('once')
 const prepareFile = require('./prepare-file')
 const Multipart = require('./multipart')
-const Converter = require('./converter').ConverterStream
+const Converter = require('./converter')
 
 function headers (file) {
   const name = file.path
