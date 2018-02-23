@@ -17,7 +17,6 @@ const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
 
 describe('extra config', () => {
-  // TODO: this didn't seem to point anywhere
   const repoExample = path.join(__dirname, '../../fixtures/go-ipfs-repo')
   const repoTests = path.join(__dirname, '../../repo-tests-run')
 
