@@ -18,7 +18,7 @@ module.exports = {
     const paths = argv['ipfs-path'].split(' ')
     const recursive = argv.recursive
     const type = recursive ? 'recursive' : 'direct'
-    argv.ipfs.pin.add(paths[0], { recursive }, (err, results) => {
+    argv.ipfs.pin.add(paths[0], { recursive: recursive }, (err, results) => {
       if (err) { throw err }
       results.forEach((res) => {
         console.log(`pinned ${res.hash} ${type}ly`)

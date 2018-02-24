@@ -65,7 +65,6 @@ exports = module.exports = function (dag) {
     hasChild: (root, childhash, callback, _links, _checked, _seen) => {
       // callback (err, has)
       callback = once(callback)
-      if (callback.called) { return }
       if (typeof childhash === 'object') {
         childhash = toB58String(childhash)
       }
@@ -83,9 +82,7 @@ exports = module.exports = function (dag) {
           return callback(null, true)
         }
         dag.get(new CID(link.multihash), (err, res) => {
-          if (err) {
-            return callback(err)
-          }
+          if (err) { return callback(err) }
           // don't check the same links twice
           if (bs58link in _seen) { return }
           _seen[bs58link] = true
@@ -180,15 +177,9 @@ exports = module.exports = function (dag) {
           hashed[h].push(items[i])
         }
         const storeItemsCb = (err, child) => {
-          if (callback.called) { return }
-          if (err) {
-            return callback(err)
-          }
+          if (err) { return callback(err) }
           dag.put(child, (err) => {
-            if (callback.called) { return }
-            if (err) {
-              return callback(err)
-            }
+            if (err) { return callback(err) }
             logInternalKey(child.multihash)
             rootLinks[this.h] = new DAGLink(
               '', child.size, child.multihash
@@ -203,19 +194,18 @@ exports = module.exports = function (dag) {
             }
           })
         }
-        _subcalls += Object.keys(hashed).length
-        for (let h in hashed) {
-          if (hashed.hasOwnProperty(h)) {
-            pinSet.storeItems(
-              hashed[h],
-              logInternalKey,
-              storeItemsCb.bind({h: h}),
-              _depth + 1,
-              _subcalls,
-              _done
-            )
-          }
-        }
+        const hashedKeys = Object.keys(hashed)
+        _subcalls += hashedKeys.length
+        hashedKeys.forEach(h => {
+          pinSet.storeItems(
+            hashed[h],
+            logInternalKey,
+            storeItemsCb.bind({h: h}),
+            _depth + 1,
+            _subcalls,
+            _done
+          )
+        })
       }
     },
 

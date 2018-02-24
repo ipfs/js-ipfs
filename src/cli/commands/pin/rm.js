@@ -17,7 +17,7 @@ module.exports = {
   handler: (argv) => {
     const paths = argv['ipfs-path'].split(' ')
     const recursive = argv.recursive
-    argv.ipfs.pin.rm(paths, { recursive }, (err, results) => {
+    argv.ipfs.pin.rm(paths, { recursive: recursive }, (err, results) => {
       if (err) { throw err }
       results.forEach((res) => {
         console.log(`unpinned ${res.hash}`)

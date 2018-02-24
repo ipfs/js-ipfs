@@ -77,7 +77,8 @@ module.exports = function dag (self) {
       )
     }),
 
-    getRecursive: promisify((multihash, callback) => {
+    // TODO - move to IPLD resolver and generalize to other IPLD formats
+    _getRecursive: promisify((multihash, callback) => {
       // gets flat array of all DAGNodes in tree given by multihash
       callback = once(callback)
       self.dag.get(new CID(multihash), (err, res) => {
@@ -90,7 +91,7 @@ module.exports = function dag (self) {
         }
         // branch case
         links.forEach(link => {
-          self.dag.getRecursive(link.multihash, (err, subNodes) => {
+          self.dag._getRecursive(link.multihash, (err, subNodes) => {
             if (err) { return callback(err) }
             nodes.push(subNodes)
             if (nodes.length === links.length + 1) {

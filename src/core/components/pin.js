@@ -10,6 +10,7 @@ const promisify = require('promisify-es6')
 const multihashes = require('multihashes')
 const Key = require('interface-datastore').Key
 const each = require('async/each')
+const series = require('async/series')
 const waterfall = require('async/waterfall')
 const until = require('async/until')
 const once = require('once')
@@ -44,7 +45,6 @@ module.exports = function pin (self) {
     set: pinSet(dag),
 
     add: promisify((hashes, options, callback) => {
-      // callback (err, pinset)
       if (typeof options === 'function') {
         callback = options
         options = null
@@ -53,65 +53,61 @@ module.exports = function pin (self) {
       const recursive = !options || options.recursive !== false
       normalizeHashes(self, hashes, (err, mhs) => {
         if (err) { return callback(err) }
-        const result = {
-          // async result queue
-          payload: [],
-          update: (hash) => {
-            result.payload.push({hash})
-            if (result.payload.length === mhs.length) {
-              pin.flush((err, root) => {
-                if (err) { return callback(err) }
-                return callback(null, result.payload)
-              })
-            }
-          }
-        }
-        mhs.forEach((multihash) => {
+        // verify that each hash can be pinned
+        series(mhs.map(multihash => cb => {
           const key = toB58String(multihash)
           if (recursive) {
             if (recursivePins.has(key)) {
               // it's already pinned recursively
-              result.update(key)
-              return
+              return cb(null, key)
             }
-
-            // recursive pin should replace direct pin
-            directPins.delete(key)
-
-            // entire graph of nested links should be
-            // pinned, so make sure we have all the objects
-            dag.getRecursive(multihash, (err) => {
-              if (err) { return callback(err) }
+            // entire graph of nested links should be pinned,
+            // so make sure we have all the objects
+            dag._getRecursive(multihash, (err) => {
+              if (err) { return cb(err) }
               // found all objects, we can add the pin
-              recursivePins.add(key)
-              result.update(key)
+              return cb(null, key)
             })
           } else {
             if (recursivePins.has(key)) {
               // recursive supersedes direct, can't have both
-              return callback(
+              return cb(
                 new Error(`${key} already pinned recursively`)
               )
             }
             if (directPins.has(key)) {
               // already directly pinned
-              result.update(key)
-              return
+              return cb(null, key)
             }
             // make sure we have the object
-            dag.get(new CID(multihash), (err, res) => {
-              if (err) { return callback(err) }
+            dag.get(new CID(multihash), (err) => {
+              if (err) { return cb(err) }
               // found the object, we can add the pin
-              directPins.add(key)
-              result.update(key)
+              return cb(null, key)
             })
           }
+        }), (err, results) => {
+          if (err) { return callback(err) }
+          // update the pin sets in memory
+          if (recursive) {
+            results.forEach(key => {
+              // recursive pin should replace direct pin
+              directPins.delete(key)
+              recursivePins.add(key)
+            })
+          } else {
+            results.forEach(key => directPins.add(key))
+          }
+          // persist updated pin sets to datastore
+          pin.flush((err, root) => {
+            if (err) { return callback(err) }
+            return callback(null, results.map(key => ({hash: key})))
+          })
         })
       })
     }),
 
     rm: promisify((hashes, options, callback) => {
-      // callback (err)
       let recursive = true
       if (typeof options === 'function') {
         callback = options
@@ -121,48 +117,45 @@ module.exports = function pin (self) {
       callback = once(callback)
       normalizeHashes(self, hashes, (err, mhs) => {
         if (err) { return callback(err) }
-        const result = {
-          // async result queue
-          payload: [],
-          update: (hash) => {
-            result.payload.push({hash})
-            if (result.payload.length === mhs.length) {
-              pin.flush((err, root) => {
-                if (err) { return callback(err) }
-                return callback(null, result.payload)
-              })
-            }
-          }
-        }
-        mhs.forEach((multihash) => {
-          pin.isPinnedWithType(multihash, pin.types.all, (err, pinned, reason) => {
-            if (err) { return callback(err) }
-            if (!pinned) { return callback(new Error('not pinned')) }
+        // verify that each hash can be unpinned
+        series(mhs.map(multihash => cb => {
+          pin.isPinnedWithType(multihash, pin.types.all, (err, res) => {
+            if (err) { return cb(err) }
+            const { pinned, reason } = res
+            if (!pinned) { return cb(new Error('not pinned')) }
             const key = toB58String(multihash)
             switch (reason) {
               case (pin.types.recursive):
                 if (recursive) {
-                  recursivePins.delete(key)
-                  return result.update(key)
+                  return cb(null, key)
+                } else {
+                  return cb(new Error(
+                    `${key} is pinned recursively`
+                  ))
                 }
-                return callback(new Error(
-                  `${key} is pinned recursively`
-                ))
               case (pin.types.direct):
-                directPins.delete(key)
-                return result.update(key)
+                return cb(null, key)
               default:
-                return callback(new Error(
+                return cb(new Error(
                   `${key} is pinned indirectly under ${reason}`
                 ))
             }
+          })
+        }), (err, results) => {
+          if (err) { return callback(err) }
+          // update the pin sets in memory
+          const pins = recursive ? recursivePins : directPins
+          results.forEach(key => pins.delete(key))
+          // persist updated pin sets to datastore
+          pin.flush((err, root) => {
+            if (err) { return callback(err) }
+            return callback(null, results.map(key => ({hash: key})))
           })
         })
       })
     }),
 
     ls: promisify((hashes, options, callback) => {
-      // callback (err, pinset)
       let type = pin.types.all
       if (typeof hashes === 'function') {
         callback = hashes
@@ -186,45 +179,40 @@ module.exports = function pin (self) {
         ))
       }
       if (hashes) {
+        // check the pinned state of specific hashes
         normalizeHashes(self, hashes, (err, mhs) => {
           if (err) { return callback(err) }
-          const result = {
-            // async result queue
-            payload: [],
-            update: (item) => {
-              result.payload.push(item)
-              if (result.payload.length === mhs.length) {
-                return callback(null, result.payload)
-              }
-            }
-          }
-          mhs.forEach((multihash) => {
-            pin.isPinnedWithType(multihash, type, (err, pinned, reason) => {
-              if (err) { return callback(err) }
+          series(mhs.map(multihash => cb => {
+            pin.isPinnedWithType(multihash, pin.types.all, (err, res) => {
+              if (err) { return cb(err) }
+              const { pinned, reason } = res
               const key = toB58String(multihash)
               if (!pinned) {
-                return callback(new Error(
+                return cb(new Error(
                   `Path ${key} is not pinned`
                 ))
               }
               switch (reason) {
                 case pin.types.direct:
                 case pin.types.recursive:
-                  result.update({
+                  return cb(null, {
                     hash: key,
                     type: reason
                   })
-                  break
                 default:
-                  result.update({
+                  return cb(null, {
                     hash: key,
                     type: `${pin.types.indirect} through ${reason}`
                   })
               }
             })
+          }), (err, results) => {
+            if (err) { return callback(err) }
+            return callback(null, results)
           })
         })
       } else {
+        // show all pinned items of type
         const result = []
         if (type === pin.types.direct || type === pin.types.all) {
           pin.directKeyStrings().forEach((hash) => {
@@ -260,35 +248,33 @@ module.exports = function pin (self) {
     }),
 
     isPinned: (multihash, callback) => {
-      // callback (err, pinned, reason)
       pin.isPinnedWithType(multihash, pin.types.all, callback)
     },
 
     isPinnedWithType: (multihash, pinType, callback) => {
-      // callback (err, pinned, reason)
       const key = toB58String(multihash)
       // recursive
       if ((pinType === pin.types.recursive || pinType === pin.types.all) &&
           recursivePins.has(key)) {
-        return callback(null, true, pin.types.recursive)
+        return callback(null, {pinned: true, reason: pin.types.recursive})
       }
       if ((pinType === pin.types.recursive)) {
-        return callback(null, false)
+        return callback(null, {pinned: false})
       }
       // direct
       if ((pinType === pin.types.direct || pinType === pin.types.all) &&
           directPins.has(key)) {
-        return callback(null, true, pin.types.direct)
+        return callback(null, {pinned: true, reason: pin.types.direct})
       }
       if ((pinType === pin.types.direct)) {
-        return callback(null, false)
+        return callback(null, {pinned: false})
       }
       if ((pinType === pin.types.internal || pinType === pin.types.all) &&
           internalPins.has(key)) {
-        return callback(null, true, pin.types.internal)
+        return callback(null, {pinned: true, reason: pin.types.internal})
       }
       if ((pinType === pin.types.internal)) {
-        return callback(null, false)
+        return callback(null, {pinned: false})
       }
 
       // indirect (default)
@@ -312,7 +298,7 @@ module.exports = function pin (self) {
         },
         (err, result) => {
           if (err) { return callback(err) }
-          return callback(null, found, result)
+          return callback(null, {pinned: found, reason: result})
         }
       )
     },
@@ -330,14 +316,13 @@ module.exports = function pin (self) {
     internalKeys: () => pin.internalKeyStrings().map(key => multihashes.fromB58String(key)),
 
     getIndirectKeys: (callback) => {
-      // callback (err, keys)
       const indirectKeys = new Set()
       const rKeys = pin.recursiveKeys()
       if (!rKeys.length) {
         return callback(null, [])
       }
       each(rKeys, (multihash, cb) => {
-        dag.getRecursive(multihash, (err, nodes) => {
+        dag._getRecursive(multihash, (err, nodes) => {
           if (err) { return cb(err) }
           nodes.forEach((node) => {
             const key = toB58String(node.multihash)
@@ -357,7 +342,6 @@ module.exports = function pin (self) {
     // encodes and writes pin key sets to the datastore
     // each key set will be stored as a DAG node, and a root node will link to both
     flush: promisify((callback) => {
-      // callback (err, root)
       const newInternalPins = new Set()
       const logInternalKey = (mh) => newInternalPins.add(toB58String(mh))
       const handle = {
@@ -396,7 +380,6 @@ module.exports = function pin (self) {
     }),
 
     load: promisify((callback) => {
-      // callback (err)
       const newInternalPins = new Set()
       const logInternalKey = (mh) => newInternalPins.add(toB58String(mh))
       const handle = {
