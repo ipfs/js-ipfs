@@ -26,7 +26,7 @@ module.exports = function addDefaultAssets (self, log, callback) {
     }),
     // Filter out directories, which are undefined from above
     pull.filter(Boolean),
-    importer(self._ipldResolver),
+    importer(self._ipld),
     pull.through((el) => {
       if (el.path === 'init-docs') {
         const cid = new CID(el.multihash)

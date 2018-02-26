@@ -80,7 +80,7 @@ exports.ls = {
     const rootDepth = subpaths.length
 
     pull(
-      exporter(path, ipfs._ipldResolver, { maxDepth: rootDepth + 1 }),
+      exporter(path, ipfs._ipld, { maxDepth: rootDepth + 1 }),
       pull.collect((err, files) => {
         if (err) {
           return reply({

@@ -115,7 +115,7 @@
     "ipfs-repo": "~0.18.7",
     "ipfs-unixfs": "~0.1.14",
     "ipfs-unixfs-engine": "~0.24.2",
-    "ipld-resolver": "~0.14.1",
+    "ipld": "^0.15.0",
     "is-ipfs": "^0.3.2",
     "is-stream": "^1.1.0",
     "joi": "^13.1.2",
