@@ -9,7 +9,7 @@ const once = require('once')
 module.exports = function dag (self) {
   return {
     put: promisify((dagNode, options, callback) => {
-      self._ipldResolver.put(dagNode, options, callback)
+      self._ipld.put(dagNode, options, callback)
     }),
 
     get: promisify((cid, path, options, callback) => {
@@ -37,7 +37,7 @@ module.exports = function dag (self) {
         }
       }
 
-      self._ipldResolver.get(cid, path, options, callback)
+      self._ipld.get(cid, path, options, callback)
     }),
 
     tree: promisify((cid, path, options, callback) => {
@@ -72,7 +72,7 @@ module.exports = function dag (self) {
       }
 
       pull(
-        self._ipldResolver.treeStream(cid, path, options),
+        self._ipld.treeStream(cid, path, options),
         pull.collect(callback)
       )
     }),

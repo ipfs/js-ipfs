@@ -1,7 +1,7 @@
 'use strict'
 
 const BlockService = require('ipfs-block-service')
-const IPLDResolver = require('ipld-resolver')
+const Ipld = require('ipld')
 const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
 const multiaddr = require('multiaddr')
@@ -68,7 +68,7 @@ class IPFS extends EventEmitter {
     this._libp2pNode = undefined
     this._bitswap = undefined
     this._blockService = new BlockService(this._repo)
-    this._ipldResolver = new IPLDResolver(this._blockService)
+    this._ipld = new Ipld(this._blockService)
     this._pubsub = undefined
 
     // IPFS Core exposed components

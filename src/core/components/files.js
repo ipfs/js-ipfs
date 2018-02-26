@@ -135,7 +135,7 @@ module.exports = function files (self) {
     return pull(
       pull.map(normalizeContent),
       pull.flatten(),
-      importer(self._ipldResolver, opts),
+      importer(self._ipld, opts),
       pull.asyncMap(prepareFile.bind(null, self, opts)),
       pull.asyncMap(pinFile.bind(null, self))
     )
@@ -154,7 +154,7 @@ module.exports = function files (self) {
     const d = deferred.source()
 
     pull(
-      exporter(ipfsPath, self._ipldResolver),
+      exporter(ipfsPath, self._ipld),
       pull.collect((err, files) => {
         if (err) { return d.abort(err) }
         if (files && files.length > 1) {
@@ -183,7 +183,7 @@ module.exports = function files (self) {
     const maxDepth = recursive ? global.Infinity : pathDepth
 
     return pull(
-      exporter(ipfsPath, self._ipldResolver, { maxDepth: maxDepth }),
+      exporter(ipfsPath, self._ipld, { maxDepth: maxDepth }),
       pull.filter(node =>
         recursive ? node.depth >= pathDepth : node.depth === pathDepth
       ),
@@ -260,7 +260,7 @@ module.exports = function files (self) {
 
     get: promisify((ipfsPath, callback) => {
       pull(
-        exporter(ipfsPath, self._ipldResolver),
+        exporter(ipfsPath, self._ipld),
         pull.asyncMap((file, cb) => {
           if (file.content) {
             pull(
@@ -282,7 +282,7 @@ module.exports = function files (self) {
     getReadableStream: (ipfsPath) => {
       return toStream.source(
         pull(
-          exporter(ipfsPath, self._ipldResolver),
+          exporter(ipfsPath, self._ipld),
           pull.map((file) => {
             if (file.content) {
               file.content = toStream.source(file.content)
@@ -296,7 +296,7 @@ module.exports = function files (self) {
     },
 
     getPullStream: (ipfsPath) => {
-      return exporter(ipfsPath, self._ipldResolver)
+      return exporter(ipfsPath, self._ipld)
     },
 
     lsImmutable: promisify((ipfsPath, options, callback) => {
