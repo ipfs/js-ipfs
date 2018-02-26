@@ -80,7 +80,7 @@ module.exports = function object (self) {
             if (err) {
               return cb(err)
             }
-            self._ipldResolver.put(node, {
+            self._ipld.put(node, {
               cid: new CID(node.multihash)
             }, (err) => {
               cb(err, node)
@@ -111,7 +111,7 @@ module.exports = function object (self) {
         if (err) {
           return callback(err)
         }
-        self._ipldResolver.put(node, {
+        self._ipld.put(node, {
           cid: new CID(node.multihash)
         }, (err) => {
           if (err) {
@@ -166,7 +166,7 @@ module.exports = function object (self) {
       }
 
       function next () {
-        self._ipldResolver.put(node, {
+        self._ipld.put(node, {
           cid: new CID(node.multihash)
         }, (err) => {
           if (err) {
@@ -193,7 +193,7 @@ module.exports = function object (self) {
       }
       const cid = new CID(mh)
 
-      self._ipldResolver.get(cid, (err, result) => {
+      self._ipld.get(cid, (err, result) => {
         if (err) {
           return callback(err)
         }
