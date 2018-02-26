@@ -22,7 +22,7 @@ function asJson (cb) {
   }
 }
 
-describe('extra object', () => {
+describe('object endpoint', () => {
   let ipfs = null
   let ipfsd = null
   before(function (done) {

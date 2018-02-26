@@ -14,9 +14,9 @@ const path = require('path')
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
 
-describe('extra id', () => {
-  const repoExample = path.join(__dirname, '../../fixtures/go-ipfs-repo')
-  const repoTests = path.join(__dirname, '../../repo-tests-run')
+describe('id endpoint', () => {
+  const repoExample = path.join(__dirname, '../fixtures/go-ipfs-repo')
+  const repoTests = path.join(__dirname, '../repo-tests-run')
 
   let ipfs = null
   let ipfsd = null
@@ -28,7 +28,7 @@ describe('extra id', () => {
 
       waterfall([
         (cb) => df.spawn({
-          repoPath: path.join(__dirname, '../../fixtures/go-ipfs-repo'),
+          repoPath: path.join(__dirname, '../fixtures/go-ipfs-repo'),
           initOptions: { bits: 512 },
           disposable: false,
           start: true

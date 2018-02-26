@@ -10,7 +10,7 @@ chai.use(dirtyChai)
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
 
-describe('extra bootstrap', () => {
+describe('bootstrap endpoint', () => {
   let ipfs = null
   let ipfsd = null
   before(function (done) {

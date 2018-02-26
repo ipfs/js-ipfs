@@ -1,5 +1,11 @@
 'use strict'
 
-require('./spec')
 require('./interface')
-require('./extra')
+require('./inject')
+require('./block')
+require('./bootstrap')
+require('./config')
+require('./dns')
+require('./id')
+require('./object')
+require('./version')

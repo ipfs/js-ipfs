@@ -9,7 +9,7 @@ chai.use(dirtyChai)
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
 
-describe('extra dns', () => {
+describe('version endpoint', () => {
   let ipfs = null
   let ipfsd = null
   before(function (done) {
@@ -24,11 +24,13 @@ describe('extra dns', () => {
 
   after((done) => ipfsd.stop(done))
 
-  describe('.dns', () => {
-    it('resolve ipfs.io dns', (done) => {
-      ipfs.dns('ipfs.io', (err, result) => {
+  describe('.version', () => {
+    it('get the version', (done) => {
+      ipfs.version((err, result) => {
         expect(err).to.not.exist()
-        expect(result).to.exist()
+        expect(result).to.have.a.property('version')
+        expect(result).to.have.a.property('commit')
+        expect(result).to.have.a.property('repo')
         done()
       })
     })

@@ -12,9 +12,10 @@ const waterfall = require('async/waterfall')
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
 
-describe('extra block', () => {
+describe('block endpoint', () => {
   let ipfs = null
   let ipfsd = null
+
   before(function (done) {
     this.timeout(20 * 1000)
 

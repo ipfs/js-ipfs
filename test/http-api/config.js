@@ -16,9 +16,9 @@ const path = require('path')
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
 
-describe('extra config', () => {
-  const repoExample = path.join(__dirname, '../../fixtures/go-ipfs-repo')
-  const repoTests = path.join(__dirname, '../../repo-tests-run')
+describe('config endpoint', () => {
+  const repoExample = path.join(__dirname, '../fixtures/go-ipfs-repo')
+  const repoTests = path.join(__dirname, '../repo-tests-run')
 
   let updatedConfig = null
 
@@ -46,7 +46,7 @@ describe('extra config', () => {
         ipfs = ipfsd.api
 
         updatedConfig = () => {
-          const file = fs.readFileSync(path.join(__dirname, '../../repo-tests-run/config'))
+          const file = fs.readFileSync(path.join(__dirname, '../repo-tests-run/config'))
           return JSON.parse(file, 'utf8')
         }
 
