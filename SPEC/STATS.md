@@ -63,7 +63,7 @@ Options are described on [`ipfs.stats.bw`](#bw).
 const pull = require('pull-stream')
 const log = require('pull-stream/sinks/log')
 
-const stream = ipfs.stats.bwReadableStream({ poll: true })
+const stream = ipfs.stats.bwPullStream({ poll: true })
 
 pull(
   stream,
