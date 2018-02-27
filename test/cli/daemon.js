@@ -14,7 +14,6 @@ const fs = require('fs')
 
 const skipOnWindows = isWindows() ? it.skip : it
 
-
 const checkLock = (repo, cb) => {
   // skip on windows
   // https://github.com/ipfs/js-ipfsd-ctl/pull/155#issuecomment-326983530
@@ -68,7 +67,6 @@ function testSignal (ipfs, sig) {
 }
 
 describe('daemon', () => {
-
   let repoPath
   let ipfs
 
