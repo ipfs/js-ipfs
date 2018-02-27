@@ -12,6 +12,9 @@ const path = require('path')
 const hat = require('hat')
 const fs = require('fs')
 
+const skipOnWindows = isWindows() ? it.skip : it
+
+
 const checkLock = (repo, cb) => {
   // skip on windows
   // https://github.com/ipfs/js-ipfsd-ctl/pull/155#issuecomment-326983530
@@ -65,6 +68,7 @@ function testSignal (ipfs, sig) {
 }
 
 describe('daemon', () => {
+
   let repoPath
   let ipfs
 
@@ -91,8 +95,6 @@ describe('daemon', () => {
       done()
     }).catch(err => done(err))
   })
-
-  const skipOnWindows = isWindows() ? it.skip : it
 
   skipOnWindows('should handle SIGINT gracefully', function (done) {
     this.timeout(100 * 1000)
