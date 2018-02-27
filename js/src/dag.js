@@ -94,10 +94,13 @@ module.exports = (common) => {
         }, done)
       })
 
-      // This works because dag-pb will serialize any object. If the object
-      // has neither a `data` nor `links` field it's serialized as an empty
-      // object
-      it.skip('dag-cbor node with wrong multicodec', (done) => {
+      it('dag-cbor node with wrong multicodec', function (done) {
+        // This works in go-ipfs because dag-pb will serialize any object. If
+        // the object has neither a `data` nor `links` field it's serialized
+        // as an empty object
+        if (withGo) {
+          this.skip()
+        }
         ipfs.dag.put(cborNode, {
           format: 'dag-pb',
           hashAlg: 'sha3-512'
@@ -252,7 +255,6 @@ module.exports = (common) => {
           }
           ipfs.dag.get(cidPb, 'Data', (err, result) => {
             expect(err).to.not.exist()
-            console.log('vmx: result', result.value)
             expect(result.value.data).to.eql(Buffer.from('I am inside a Protobuf'))
             done()
           })
