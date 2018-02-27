@@ -18,7 +18,7 @@ const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
 
 describe('config endpoint', () => {
   const repoExample = path.join(__dirname, '../fixtures/go-ipfs-repo')
-  const repoTests = path.join(__dirname, '../repo-tests-run')
+  const repoPath = path.join(__dirname, '../repo-tests-run')
 
   let updatedConfig = null
 
@@ -27,12 +27,12 @@ describe('config endpoint', () => {
   before(function (done) {
     this.timeout(20 * 1000)
 
-    ncp(repoExample, repoTests, (err) => {
+    ncp(repoExample, repoPath, (err) => {
       expect(err).to.not.exist()
 
       waterfall([
         (cb) => df.spawn({
-          repoPath: repoTests,
+          repoPath: repoPath,
           initOptions: { bits: 512 },
           disposable: false,
           start: true
@@ -46,8 +46,8 @@ describe('config endpoint', () => {
         ipfs = ipfsd.api
 
         updatedConfig = () => {
-          const file = fs.readFileSync(path.join(__dirname, '../repo-tests-run/config'))
-          return JSON.parse(file, 'utf8')
+          const config = fs.readFileSync(path.join(__dirname, '../repo-tests-run/config'))
+          return JSON.parse(config, 'utf8')
         }
 
         done()
@@ -56,7 +56,7 @@ describe('config endpoint', () => {
   })
 
   after((done) => {
-    rimraf(repoTests, (err) => {
+    rimraf(repoPath, (err) => {
       expect(err).to.not.exist()
       ipfsd.stop(done)
     })

@@ -16,19 +16,19 @@ const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
 
 describe('id endpoint', () => {
   const repoExample = path.join(__dirname, '../fixtures/go-ipfs-repo')
-  const repoTests = path.join(__dirname, '../repo-tests-run')
+  const repoPath = path.join(__dirname, '../repo-tests-run')
 
   let ipfs = null
   let ipfsd = null
   before(function (done) {
     this.timeout(20 * 1000)
 
-    ncp(repoExample, repoTests, (err) => {
+    ncp(repoExample, repoPath, (err) => {
       expect(err).to.not.exist()
 
       waterfall([
         (cb) => df.spawn({
-          repoPath: path.join(__dirname, '../fixtures/go-ipfs-repo'),
+          repoPath: repoPath,
           initOptions: { bits: 512 },
           disposable: false,
           start: true
@@ -46,7 +46,7 @@ describe('id endpoint', () => {
   })
 
   after((done) => {
-    rimraf(repoTests, (err) => {
+    rimraf(repoPath, (err) => {
       expect(err).to.not.exist()
       ipfsd.stop(done)
     })
