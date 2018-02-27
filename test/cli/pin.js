@@ -17,7 +17,7 @@ const keys = {
   index: 'QmQN88TEidd3RY2u3dpib49fERTDfKtDpvxnvczATNsfKT'
 }
 
-describe('pin', () => runOnAndOff((thing) => {
+describe('pin', () => runOnAndOff.off((thing) => {
   const filesDir = 'test/fixtures/test-data/recursive-get-dir/init-docs'
 
   let ipfs
@@ -48,20 +48,26 @@ describe('pin', () => runOnAndOff((thing) => {
   })
 
   it('ls (recursive)', () => {
-    return ipfs(`pin ls --path ${keys.root}`).then((out) => {
+    return ipfs(`pin ls ${keys.root}`).then((out) => {
       expect(out).to.eql(`${keys.root} recursive\n`)
     })
   })
 
   it('ls (direct)', () => {
-    return ipfs(`pin ls --path ${keys.readme}`).then((out) => {
+    return ipfs(`pin ls ${keys.readme}`).then((out) => {
       expect(out).to.eql(`${keys.readme} direct\n`)
     })
   })
 
   it('ls (indirect)', () => {
-    return ipfs(`pin ls --path ${keys.index}`).then((out) => {
+    return ipfs(`pin ls ${keys.index}`).then((out) => {
       expect(out).to.eql(`${keys.index} indirect through ${keys.root}\n`)
+    })
+  })
+
+  it('ls with multiple keys', () => {
+    return ipfs(`pin ls ${keys.root} ${keys.readme}`).then((out) => {
+      expect(out).to.eql(`${keys.root} recursive\n${keys.readme} direct\n`)
     })
   })
 

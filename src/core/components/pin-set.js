@@ -11,28 +11,14 @@ const DAGLink = dagPB.DAGLink
 const varint = require('varint')
 const once = require('once')
 
+const pbSchema = require('./pin.proto')
+
 const emptyKeyHash = 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
 const emptyKey = multihashes.fromB58String(emptyKeyHash)
 const defaultFanout = 256
 const maxItems = 8192
-
-// Protobuf interface
-// from go-ipfs/pin/internal/pb/header.proto
-const pbSchema = `
-  syntax = "proto2";
-
-  package ipfs.pin;
-
-  option go_package = "pb";
-
-  message Set {
-    optional uint32 version = 1;
-    optional uint32 fanout = 2;
-    optional fixed32 seed = 3;
-  }
-`
-
 const pb = protobuf(pbSchema)
+
 function readHeader (rootNode) {
   // rootNode.data should be a buffer of the format:
   // < varint(headerLength) | header | itemData... >
@@ -63,7 +49,6 @@ exports = module.exports = function (dag) {
   const pinSet = {
     // should this be part of `object` API?
     hasChild: (root, childhash, callback, _links, _checked, _seen) => {
-      // callback (err, has)
       callback = once(callback)
       if (typeof childhash === 'object') {
         childhash = toB58String(childhash)
@@ -81,11 +66,13 @@ exports = module.exports = function (dag) {
         if (bs58link === childhash) {
           return callback(null, true)
         }
+
+        // don't check the same links twice
+        if (bs58link in _seen) { return }
+        _seen[bs58link] = true
+
         dag.get(new CID(link.multihash), (err, res) => {
           if (err) { return callback(err) }
-          // don't check the same links twice
-          if (bs58link in _seen) { return }
-          _seen[bs58link] = true
 
           _checked++
           _links += res.value.links.length
@@ -95,7 +82,6 @@ exports = module.exports = function (dag) {
     },
 
     storeSet: (keys, logInternalKey, callback) => {
-      // callback (err, rootNode)
       callback = once(callback)
       const items = keys.map((key) => {
         return {
@@ -115,10 +101,8 @@ exports = module.exports = function (dag) {
     },
 
     storeItems: (items, logInternalKey, callback, _depth, _subcalls, _done) => {
-      // callback (err, rootNode)
       callback = once(callback)
-      // const seed = crypto.randomBytes(4).readUInt32LE(0, true)  // old nondeterministic behavior
-      const seed = _depth // new deterministic behavior
+      const seed = _depth
       const pbHeader = pb.Set.encode({
         version: 1,
         fanout: defaultFanout,
@@ -210,9 +194,8 @@ exports = module.exports = function (dag) {
     },
 
     loadSet: (rootNode, name, logInternalKey, callback) => {
-      // callback (err, keys)
       callback = once(callback)
-      const link = rootNode.links.filter(l => l.name === name).pop()
+      const link = rootNode.links.find(l => l.name === name)
       if (!link) { return callback(new Error('No link found with name ' + name)) }
       logInternalKey(link.multihash)
       dag.get(new CID(link.multihash), (err, res) => {
@@ -229,7 +212,6 @@ exports = module.exports = function (dag) {
     },
 
     walkItems: (node, walkerFn, logInternalKey, callback) => {
-      // callback (err)
       callback = once(callback)
       const h = readHeader(node)
       if (h.err) { return callback(h.err) }

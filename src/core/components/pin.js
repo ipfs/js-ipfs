@@ -8,7 +8,6 @@ const pinSet = require('./pin-set')
 const normalizeHashes = require('../utils').normalizeHashes
 const promisify = require('promisify-es6')
 const multihashes = require('multihashes')
-const Key = require('interface-datastore').Key
 const each = require('async/each')
 const series = require('async/series')
 const waterfall = require('async/waterfall')
@@ -22,7 +21,7 @@ module.exports = function pin (self) {
   let recursivePins = new Set()
   let internalPins = new Set()
 
-  const pinDataStoreKey = new Key('/local/pins')
+  const pinDataStoreKey = '/local/pins'
 
   const repo = self._repo
   const dag = self.dag
@@ -50,7 +49,7 @@ module.exports = function pin (self) {
         options = null
       }
       callback = once(callback)
-      const recursive = !options || options.recursive !== false
+      const recursive = options ? options.recursive : true
       normalizeHashes(self, hashes, (err, mhs) => {
         if (err) { return callback(err) }
         // verify that each hash can be pinned
@@ -63,6 +62,9 @@ module.exports = function pin (self) {
             }
             // entire graph of nested links should be pinned,
             // so make sure we have all the objects
+            // dag.tree(key, { recursive: true }, (err, res) => {
+            //   console.log('dag.tree err,res:', err, res)
+            // })
             dag._getRecursive(multihash, (err) => {
               if (err) { return cb(err) }
               // found all objects, we can add the pin
@@ -122,16 +124,16 @@ module.exports = function pin (self) {
           pin.isPinnedWithType(multihash, pin.types.all, (err, res) => {
             if (err) { return cb(err) }
             const { pinned, reason } = res
-            if (!pinned) { return cb(new Error('not pinned')) }
             const key = toB58String(multihash)
+            if (!pinned) {
+              return cb(new Error(`${key} is not pinned`))
+            }
             switch (reason) {
               case (pin.types.recursive):
                 if (recursive) {
                   return cb(null, key)
                 } else {
-                  return cb(new Error(
-                    `${key} is pinned recursively`
-                  ))
+                  return cb(new Error(`${key} is pinned recursively`))
                 }
               case (pin.types.direct):
                 return cb(null, key)
@@ -173,12 +175,12 @@ module.exports = function pin (self) {
         type = options.type.toLowerCase()
       }
       callback = once(callback)
-      if (Object.keys(pin.types).indexOf(type) < 0) {
+      if (!pin.types[type]) {
         return callback(new Error(
           `Invalid type '${type}', must be one of {direct, indirect, recursive, all}`
         ))
       }
-      if (hashes) {
+      if (hashes && hashes.length) {
         // check the pinned state of specific hashes
         normalizeHashes(self, hashes, (err, mhs) => {
           if (err) { return callback(err) }
@@ -206,10 +208,7 @@ module.exports = function pin (self) {
                   })
               }
             })
-          }), (err, results) => {
-            if (err) { return callback(err) }
-            return callback(null, results)
-          })
+          }), callback)
         })
       } else {
         // show all pinned items of type
@@ -269,6 +268,7 @@ module.exports = function pin (self) {
       if ((pinType === pin.types.direct)) {
         return callback(null, {pinned: false})
       }
+      // internal
       if ((pinType === pin.types.internal || pinType === pin.types.all) &&
           internalPins.has(key)) {
         return callback(null, {pinned: true, reason: pin.types.internal})
@@ -318,9 +318,6 @@ module.exports = function pin (self) {
     getIndirectKeys: (callback) => {
       const indirectKeys = new Set()
       const rKeys = pin.recursiveKeys()
-      if (!rKeys.length) {
-        return callback(null, [])
-      }
       each(rKeys, (multihash, cb) => {
         dag._getRecursive(multihash, (err, nodes) => {
           if (err) { return cb(err) }
@@ -391,7 +388,7 @@ module.exports = function pin (self) {
       waterfall([
         (cb) => repo.closed ? repo.datastore.open(cb) : cb(null, null), // hack for CLI tests
         (_, cb) => repo.datastore.has(pinDataStoreKey, cb),
-        (has, cb) => has ? cb() : callback(),
+        (has, cb) => has ? cb() : cb('No pins to load'),
         (cb) => repo.datastore.get(pinDataStoreKey, cb),
         (mh, cb) => dag.get(new CID(mh), cb),
         (root, cb) => handle.put('root', root.value, cb),
@@ -399,7 +396,9 @@ module.exports = function pin (self) {
         (rKeys, cb) => handle.put('rKeys', rKeys, cb),
         (cb) => pin.set.loadSet(handle.root, pin.types.direct, logInternalKey, cb)
       ], (err, dKeys) => {
-        if (err && err !== 'break') { return callback(err) }
+        if (err && err !== 'break' && err !== 'No pins to load') {
+          return callback(err)
+        }
         if (dKeys) {
           directPins = new Set(dKeys.map(mh => toB58String(mh)))
           recursivePins = new Set(handle.rKeys.map(mh => toB58String(mh)))

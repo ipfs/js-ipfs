@@ -1,5 +1,7 @@
 'use strict'
 
+const print = require('../../utils').print
+
 module.exports = {
   command: 'rm <ipfs-path>',
 
@@ -20,7 +22,7 @@ module.exports = {
     argv.ipfs.pin.rm(paths, { recursive: recursive }, (err, results) => {
       if (err) { throw err }
       results.forEach((res) => {
-        console.log(`unpinned ${res.hash}`)
+        print(`unpinned ${res.hash}`)
       })
     })
   }

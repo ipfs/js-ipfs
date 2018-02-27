@@ -9,6 +9,9 @@ module.exports = (server) => {
     method: '*',
     path: '/api/v0/pin/add',
     config: {
+      pre: [
+        { method: resources.pin.add.parseArgs, assign: 'args' }
+      ],
       handler: resources.pin.add.handler
     }
   })
@@ -17,6 +20,9 @@ module.exports = (server) => {
     method: '*',
     path: '/api/v0/pin/rm',
     config: {
+      pre: [
+        { method: resources.pin.rm.parseArgs, assign: 'args' }
+      ],
       handler: resources.pin.rm.handler
     }
   })
@@ -25,7 +31,10 @@ module.exports = (server) => {
     method: '*',
     path: '/api/v0/pin/ls',
     config: {
-      handler: resources.pin.ls
+      pre: [
+        { method: resources.pin.ls.parseArgs, assign: 'args' }
+      ],
+      handler: resources.pin.ls.handler
     }
   })
 }

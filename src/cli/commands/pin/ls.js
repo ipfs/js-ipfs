@@ -1,21 +1,20 @@
 'use strict'
 
+const print = require('../../utils').print
+
 module.exports = {
-  command: 'ls',
+  // bracket syntax with '...' tells yargs to accept a list and that it is optional
+  command: 'ls [ipfs-path...]',
 
   describe: 'List objects pinned to local storage.',
 
   builder: {
-    path: {
-      type: 'string',
-      describe: 'List pinned state of specific <ipfs-path>.'
-    },
     type: {
       type: 'string',
       alias: 't',
       default: 'all',
-      describe: ('The type of pinned keys to list. ' +
-                 'Can be "direct", "indirect", "recursive", or "all".')
+      choices: ['direct', 'indirect', 'recursive', 'all'],
+      describe: 'The type of pinned keys to list.'
     },
     quiet: {
       type: 'boolean',
@@ -26,7 +25,7 @@ module.exports = {
   },
 
   handler: (argv) => {
-    const paths = argv.path && argv.path.split(' ')
+    const paths = argv.ipfsPath || []
     const type = argv.type
     const quiet = argv.quiet
     argv.ipfs.pin.ls(paths, { type: type }, (err, results) => {
@@ -36,7 +35,7 @@ module.exports = {
         if (!quiet) {
           line += ` ${res.type}`
         }
-        console.log(line)
+        print(line)
       })
     })
   }
