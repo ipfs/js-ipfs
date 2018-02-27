@@ -75,7 +75,7 @@ describe('daemon', () => {
 
   afterEach(() => clean(repoPath))
 
-  it('do not crash if Addresses.Swarm is empty', function (done) {
+  skipOnWindows('do not crash if Addresses.Swarm is empty', function (done) {
     this.timeout(100 * 1000)
 
     ipfs('init').then(() => {
