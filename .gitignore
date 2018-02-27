@@ -34,9 +34,9 @@ node_modules
 
 lib
 dist
-test/test-data/go-ipfs-repo/LOCK
-test/test-data/go-ipfs-repo/LOG
-test/test-data/go-ipfs-repo/LOG.old
+test/fixtures/go-ipfs-repo/LOCK
+test/fixtures/go-ipfs-repo/LOG
+test/fixtures/go-ipfs-repo/LOG.old
 
 # while testing npm5
 package-lock.json
