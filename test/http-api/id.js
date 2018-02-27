@@ -11,10 +11,13 @@ const rimraf = require('rimraf')
 const waterfall = require('async/waterfall')
 const path = require('path')
 
+const isWindows = require('../utils/platforms').isWindows
+const skipOnWindows = isWindows() ? describe.skip : describe
+
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
 
-describe('id endpoint', () => {
+skipOnWindows('id endpoint', () => {
   const repoExample = path.join(__dirname, '../fixtures/go-ipfs-repo')
   const repoPath = path.join(__dirname, '../repo-tests-run')
 

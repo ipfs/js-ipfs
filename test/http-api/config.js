@@ -10,13 +10,16 @@ const ncp = require('ncp').ncp
 const rimraf = require('rimraf')
 const waterfall = require('async/waterfall')
 
+const isWindows = require('../utils/platforms').isWindows
+const skipOnWindows = isWindows() ? describe.skip : describe
+
 const fs = require('fs')
 const path = require('path')
 
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
 
-describe('config endpoint', () => {
+skipOnWindows('config endpoint', () => {
   const repoExample = path.join(__dirname, '../fixtures/go-ipfs-repo')
   const repoPath = path.join(__dirname, '../repo-tests-run')
 
