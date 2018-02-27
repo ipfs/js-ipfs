@@ -22,7 +22,7 @@
     "release-minor": "node --max-old-space-size=8192 $(npm bin)/aegir release --type minor ",
     "release-major": "node --max-old-space-size=8192 $(npm bin)/aegir release --type major ",
     "coverage": "node --max-old-space-size=8192 $(npm bin)/aegir coverage --timeout 100000",
-    "coverage-publish": "anode --max-old-space-size=8192 $(npm bin)/aegir coverage --provider coveralls --timeout 100000"
+    "coverage-publish": "node --max-old-space-size=8192 $(npm bin)/aegir coverage --provider coveralls --timeout 100000"
   },
   "dependencies": {
     "async": "^2.6.0",
