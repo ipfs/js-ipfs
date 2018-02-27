@@ -255,7 +255,7 @@ module.exports = (common) => {
           }
           ipfs.dag.get(cidPb, 'Data', (err, result) => {
             expect(err).to.not.exist()
-            expect(result.value.data).to.eql(Buffer.from('I am inside a Protobuf'))
+            expect(result.value).to.eql(Buffer.from('I am inside a Protobuf'))
             done()
           })
         })
