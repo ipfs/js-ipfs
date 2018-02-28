@@ -13,48 +13,45 @@
   </header>
   <main>
     <div class="columns box">
-      <div>
+      <div class="row">
         <div class="box">
           <label>Room (double click to change):</label>
           <span id="room"></span>
-          <input type="text" id="room-id" style="display: none;">
+          <input type="text" id="room-id" style="display: none">
         </div>
-        <div class="box">
-          <label>Messages:</label>
-          <div style="overflow-y: scroll; height: 40vh">
-            <ul id="msgs"></ul>
-          </div>
+        <div class="box msgs-box">
+          <ul id="msgs"></ul>
+        </div>
+        <div>
+          <label>message:</label>
+          <input type="text" id="message"></input>
+          <button id="send">Send</button>
         </div>
       </div>
-      <div style="overflow-wrap: break-word;">
-        <div class="box" style="overflow-y: scroll; height: 10vh">
-          <label>Peer id:</label>
-          <ul id="peer-id"></ul>
-        </div>
-        <div class="box" style="overflow-y: scroll; height: 10vh">
-          <label>Addresses:</label>
-          <ul id="addrs"></ul>
-        </div>
-        <div class="box" style="overflow-y: scroll; height: 14vh">
+      <div class="row">
+        <div class="box peers-box">
           <label>Peers Joined Room:</label>
           <ul id="peers"></ul>
         </div>
-        <div class="box" style="overflow-y: scroll; height: 14vh">
+        <div class="box peers-box">
           <label>Peers Connected:</label>
           <ul id="peers-addrs"></ul>
         </div>
+        <div>
+          <label>Connect to Peer:</label>
+          <input type="text" id="peer"></input>
+          <button id="connect">Connect</button>
+        </div>
       </div>
-    </div>
-    <div class="columns box">
-      <div>
-        <label>message:</label>
-        <input type="text" id="message"></input>
-        <button id="send">Send</button>
-      </div>
-      <div>
-        <label>Connect to Peer:</label>
-        <input type="text" id="peer"></input>
-        <button id="connect">Connect</button>
+      <div class="row">
+        <div class="box row">
+          <label>Peer id:</label>
+          <ul id="peer-id"></ul>
+        </div>
+        <div class="box addrs-box">
+          <label>Addresses:</label>
+          <ul id="addrs"></ul>
+        </div>
       </div>
     </div>
   </main>

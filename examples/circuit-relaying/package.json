@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "rm -rf dist/*",
     "build": "parcel build index.html --public-url '.'",
-    "dev": "parcel index.html",
+    "start": "parcel index.html",
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "ipfs add -r --quieter dist"
   },

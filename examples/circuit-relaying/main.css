@@ -2,19 +2,20 @@
   box-sizing: border-box;
 }
 
-html, body {
-  padding: 0;
-  margin: 0;
+body {
+  height: 100%;
 }
 
 body {
   font-family: sans-serif;
   color: white;
-  background: linear-gradient(to bottom,#041727 0%,#062b3f 100%);
+  background: linear-gradient(to bottom, #041727 0%, #062b3f 100%);
   pointer-events: auto;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   margin: 0;
 }
 
@@ -53,7 +54,7 @@ header {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) 
+  transform: translate(-50%, -50%)
 }
 
 body.dragging main,
@@ -87,7 +88,7 @@ ul li {
 }
 
 button {
-  background-color: rgba(0,0,0,0.2);
+  background-color: rgba(0, 0, 0, 0.2);
   color: #6acad1;
   border: 2px solid #6acad1;
   font-size: 1em;
@@ -120,17 +121,20 @@ button:disabled {
 
 input {
   width: 100%;
-  border: 2px solid rgba(0,0,0,0.2);
+  border: 2px solid rgba(0, 0, 0, 0.2);
   color: black;
   padding: 0.7em;
   border-radius: 2px;
 }
 
-input:hover, input:focus, input:active {
+input:hover,
+input:focus,
+input:active {
   border-color: #6acad1;
 }
 
-input, button {
+input,
+button {
   outline: none;
 }
 
@@ -144,14 +148,38 @@ main {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  height: 100%;
 }
 
-.buttons > button,
-.columns > div {
-  width: calc(50% - 0.5em);
+.msgs-box {
+  flex: 1 1 0px;
+  overflow-y: scroll;
+  min-height: 250px;
 }
 
-.buttons > button {
+.peers-box {
+  flex: 1 1 0px;
+  overflow-y: scroll;
+  min-height: 182px;
+}
+
+.addrs-box {
+  flex: 1;
+  overflow-y: scroll;
+  max-height: 273px;
+}
+
+.row {
+  display: flex; 
+  flex-direction: column;
+}
+
+.buttons>button,
+.columns>div {
+  width: calc(33% - 0.5em);
+}
+
+.buttons>button {
   margin: 0 0 1em;
 }
 
@@ -161,7 +189,7 @@ main {
   margin-bottom: 1em;
 }
 
-.box > h2 {
+.box>h2 {
   display: block;
   border-bottom: 2px solid rgba(255, 255, 255, 0.1);
   border-right: 0;
@@ -171,7 +199,7 @@ main {
   margin-bottom: 1em;
 }
 
-#peers i {
+/* #peers i {
   display: none;
   margin-top: 5px;
   margin-bottom: 5px;
@@ -180,9 +208,9 @@ main {
 
 #peers.waiting i {
   display: block;
-}
+} */
 
-#errors {
+.errors {
   grid-area: errors;
   color: red;
   font-style: italic;
@@ -191,22 +219,8 @@ main {
   margin: 0 0 1em;
 }
 
-#errors.hidden {
+.errors.hidden {
   display: none;
-}
-
-#note {
-  position: absolute;
-  top: 1em;
-  right: 1em;
-  font-size: 0.625em;
-}
-
-#file-status {
-  font-style: italic;
-  color: cyan;
-  font-size: 0.8em;
-  margin: 1em 0;
 }
 
 table {
@@ -221,7 +235,8 @@ table thead {
   font-weight: normal
 }
 
-table th, table td {
+table th,
+table td {
   padding: 0.5em 0;
 }
 
