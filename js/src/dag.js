@@ -337,18 +337,17 @@ module.exports = (common) => {
       })
     })
 
-    describe.skip('.tree', function () {
-      // TODO vmx 2018-02-22: Currently the tree API is not exposed in go-ipfs
-      if (withGo) {
-        this.skip()
-      }
-
+    describe('.tree', function () {
       let nodePb
       let nodeCbor
       let cidPb
       let cidCbor
 
-      before((done) => {
+      before(function (done) {
+        // TODO vmx 2018-02-22: Currently the tree API is not exposed in go-ipfs
+        if (withGo) {
+          this.skip()
+        }
         series([
           (cb) => {
             dagPB.DAGNode.create(Buffer.from('I am inside a Protobuf'), (err, node) => {
