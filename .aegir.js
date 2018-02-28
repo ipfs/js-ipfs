@@ -3,6 +3,7 @@
 const createServer = require('ipfsd-ctl').createServer
 
 const server = createServer()
+
 module.exports = {
   karma: {
     files: [{
