@@ -37,6 +37,10 @@ Here's what we are going to be doing, today:
 - 5. Dial the two browser nodes using a `/p2p-circuit` address
 - 6. Finally, send data from one browser using the bundled example!
 
+> We should end up with something similar to the bellow screenshot after we've gone through all the steps:
+
+![](./img/img7.png)
+
 Let's go.
 
 ### 1. Set up
@@ -91,13 +95,27 @@ In order to enable the relay functionality in `go-ipfs` we need to edit it's con
   }
 ```
 
-The two options we're looking for are `DisableRelay` and `EnableRelayHop`. We want the former (`DisableRelay`) set to `false` and the later (`EnableRelayHop`) to `true`, just like in the example above. That should set our go node as a relay!
+The two options we're looking for are `DisableRelay` and `EnableRelayHop`. We want the former (`DisableRelay`) set to `false` and the later (`EnableRelayHop`) to `true`, just like in the example above. That should set our go node as a relay. 
+
+We also need to make sure our go node is able to be dialed from the browser, for that we need to enable a transport that both the browser and the go node can communicate over. We will use the web sockets transport, although there are others that can be used, such as `webrtc-star` and `websocket-star`. To enable the transport and set the interface and port we need to edit the `~/.ipfs/config` one more time. Lets find the `Swarm` array and add our desired address there. I picked `/ip4/0.0.0.0/tcp/4004/ws` as it is a port I know is not being used by anything on my machine, but we can also use port `0` so that the OS chooses a random available port for us - either one should work.
+
+```
+  "Swarm": [
+    "/ip4/0.0.0.0/tcp/4001",
+    "/ip4/0.0.0.0/tcp/4004/ws",
+    "/ip6/::/tcp/4001"
+  ],
+```
+
+The config should look similar to the above snippet after we've edited it.
 
 ##### Setting up a `js-ipfs` node
 
-In order to do the same in `js-ipfs` we need to do something similar, however the config options are slightly different right now, that should change once this feature is not marked as experimental, but for now we have to deal with two different set of config options. Lets do this! Just as we did with `go-ipfs`, go ahead and edit `js-ipfs` config file located under `~/.jsipfs/config`, under the `EXPERIMENTAL` section. Lets add the following config:
+We need to go through similar steps to enable circuit relay in `jsipfs`, however the config options are slightly different right now -  that should change once this feature is not marked as experimental, but for now we have to deal with two different sets of options.
 
-(Note that the "EXPERIMENTAL" section might not be present in the config file, in that case, just go ahead and add it)
+Just as we did with `go-ipfs`, go ahead and edit `js-ipfs` config file located under `~/.jsipfs/config`. Lets add the following config:
+
+(Note that the "EXPERIMENTAL" section might be missing from the config file, in that case, just go ahead and add it)
 
 ```js
   "EXPERIMENTAL": {
@@ -110,32 +128,72 @@ In order to do the same in `js-ipfs` we need to do something similar, however th
   }
 ```
 
-Again, that will make our `js-ipfs` node a relay node! Exciting!
+Note that we don't have to do anything to enable the `websocket` transport as it is enabled by default in `jsipfs`.
 
 ##### Starting the relay node
 
-We can start the relay nodes by either doing `ipfs daemon` or `jsipfs daemon`, that should start our previously installed go or js nodes. We should see an output similar to the bellow one:
+We can start the relay nodes by either doing `ipfs daemon` or `jsipfs daemon`:
 
-```js
+> go ipfs
+
+```
+$ ipfs daemon
 Initializing daemon...
-Swarm listening on /p2p-circuit/ipfs/QmQR1DQNhDxsrk78ads6ccb8nDUG77c5tGK95HiXwQKUuV
-Swarm listening on /p2p-circuit/ip4/0.0.0.0/tcp/4002/ipfs/QmQR1DQNhDxsrk78ads6ccb8nDUG77c5tGK95HiXwQKUuV
-Swarm listening on /p2p-circuit/ip4/127.0.0.1/tcp/4003/ws/ipfs/QmQR1DQNhDxsrk78ads6ccb8nDUG77c5tGK95HiXwQKUuV
-Swarm listening on /ip4/127.0.0.1/tcp/4003/ws/ipfs/QmQR1DQNhDxsrk78ads6ccb8nDUG77c5tGK95HiXwQKUuV
-Swarm listening on /ip4/127.0.0.1/tcp/4002/ipfs/QmQR1DQNhDxsrk78ads6ccb8nDUG77c5tGK95HiXwQKUuV
-Swarm listening on /ip4/192.168.1.132/tcp/4002/ipfs/QmQR1DQNhDxsrk78ads6ccb8nDUG77c5tGK95HiXwQKUuV
+Swarm listening on /ip4/127.0.0.1/tcp/4001
+Swarm listening on /ip4/192.168.1.132/tcp/4001
+Swarm listening on /ip6/::1/tcp/4001
+Swarm listening on /p2p-circuit/ipfs/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF
+Swarm announcing /ip4/127.0.0.1/tcp/4001
+Swarm announcing /ip4/186.4.18.182/tcp/58986
+Swarm announcing /ip4/192.168.1.132/tcp/4001
+Swarm announcing /ip6/::1/tcp/4001
+API server listening on /ip4/127.0.0.1/tcp/5001
+Gateway (readonly) server listening on /ip4/127.0.0.1/tcp/8080
+Daemon is ready
+```
+
+In the case of go ipfs, the crucial `/ipfs/Qm...` part of the multiaddr might be missing, in that case, you can get it by running the `ipfs id` command.
+
+```
+$ ipfs id
+{
+        "ID": "QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF",
+        "PublicKey": "CAASpgIwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC84qPFzqajCfnvaJunqt48S1LIBRthXV60q5QClL+dUfOOU/m7v1ZcpNhvFFUN6tVCDaoT5AxEv0czxZiVx/njl6FVIc6tE1J+HWpc8cbAXNY6QbbyzKl/rjp7V8/QClE0JqgjIk84wnWGTwFhOEt0hnpu2XFt9iHaenSfg3EAa8K9MlbxmbawuxNLJJf7VZXkJrUNl6WOglAVU8Sqc4QaahCLVK5Dzo98zDBq1KDBxMbUgH0LTqzr6i+saxkEHZmBKO+mMVT3LzOUx1DQR4pLAw1qgoJstsIZEaJ2XLh975IiI7OKqWYH7+3NyNK2sldJK/4Zko4rH3irmnkAxLcFAgMBAAE=",
+        "Addresses": [
+                "/ip4/127.0.0.1/tcp/4001/ipfs/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF",
+                "/ip4/192.168.1.132/tcp/4001/ipfs/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF",
+                "/ip6/::1/tcp/4001/ipfs/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF",
+                "/ip4/186.4.18.182/tcp/13285/ipfs/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF",
+                "/ip4/186.4.18.182/tcp/13285/ipfs/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF"
+        ],
+        "AgentVersion": "go-ipfs/0.4.14-dev/cb5bb7dd8",
+        "ProtocolVersion": "ipfs/0.1.0"
+}
+```
+
+We can then grab the resolved multiaddr from the `Addresses` array - `/ip4/127.0.0.1/tcp/4004/ws/ipfs/Qm...`. Lets note it down somewhere and move to the next step.
+
+> js ipfs
+
+```
+$ jsipfs daemon
+Initializing daemon...
+Swarm listening on /p2p-circuit/ipfs/QmfQj8YwDdy1uP2DpZBa7k38rSGPvhHiC52cdAGWBqoVpq
+Swarm listening on /p2p-circuit/ip4/0.0.0.0/tcp/4002/ipfs/QmfQj8YwDdy1uP2DpZBa7k38rSGPvhHiC52cdAGWBqoVpq
+Swarm listening on /p2p-circuit/ip4/127.0.0.1/tcp/4003/ws/ipfs/QmfQj8YwDdy1uP2DpZBa7k38rSGPvhHiC52cdAGWBqoVpq
+Swarm listening on /ip4/127.0.0.1/tcp/4003/ws/ipfs/QmfQj8YwDdy1uP2DpZBa7k38rSGPvhHiC52cdAGWBqoVpq
+Swarm listening on /ip4/127.0.0.1/tcp/4002/ipfs/QmfQj8YwDdy1uP2DpZBa7k38rSGPvhHiC52cdAGWBqoVpq
+Swarm listening on /ip4/192.168.1.132/tcp/4002/ipfs/QmfQj8YwDdy1uP2DpZBa7k38rSGPvhHiC52cdAGWBqoVpq
 API is listening on: /ip4/127.0.0.1/tcp/5002
 Gateway (readonly) is listening on: /ip4/127.0.0.1/tcp/9090
 Daemon is ready
 ```
 
-Look out for an address similar to `/ip4/127.0.0.1/tcp/4003/ws/ipfs/...` note it down somewhere, and lets move on to the next step.
+Look out for an address similar to `/ip4/127.0.0.1/tcp/4003/ws/ipfs/Qm...` note it down somewhere, and lets move on to the next step. 
 
 ### Configure and run the bundled example
 
-Now that we have ipfs installed and initialized, lets move on to setting up the included example. This is a standard npm package, so the usual `npm install` should get us going.
-
-So, lets do it
+Now that we have ipfs installed and initialized, lets set up the included example. This is a standard npm package, so the usual `npm install` should get us going.
 
 ```
 npm install
@@ -148,15 +206,9 @@ npm run start
 Server running at http://localhost:1234
 ```
 
-The bundled example is a simple chat app, that uses another cool ipfs feature - `pubsub`. Lets open up a browser and paste the above url into the address bar. We should see something similar to the following image:
+The bundled example is a simple chat app that uses another cool ipfs feature - `pubsub`. Lets open up a browser and paste the above url into the address bar. We should see something similar to the following image:
 
 ![](./img/img1.png)
-
-### Connecting the browser nodes to the relay
-
-It's useful for the sake of this demo to run the two browser tabs side by side, like this:
-
-![](./img/img2.png)
 
 ### Connect the two browser nodes to the circuit relay
 
@@ -174,11 +226,11 @@ Now lets repeat the same steps with the second tab. After that, both of our brow
 
 ### Dial the two browser nodes using a `/p2p-circuit` address
 
-Having our both browsers running side by side (as shown in the first screenshot), lets get them connected to each other. Head out to the `Addresses` box in one of the tabs, copy the `/p2p-circuit` address and the paste it into the `Connect to Peer` box in the other tab, repeat the steps with the other tab as well.
+Having both browsers running side by side (as shown in the first screenshot), lets get them connected to each other. Head out to the `Addresses` box in one of the tabs, copy the `/p2p-circuit` address and then paste it into the `Connect to Peer` box in the other tab. Repeat these steps on the second tab.
 
 ![](./img/img5.png)
 
-Lets hit the `Connect` button on each of the tabs and we should get the two browsers connected and joined the chat room, as shown in the bellow screenshot.
+Lets hit the `Connect` button on each of the tabs and we should get the two browsers connected and join the chat room.
 
 ![](./img/img6.png)
 
@@ -192,4 +244,4 @@ Thats it!
 
 ### Conclusion
 
-Lets recap what we accomplished in this tutorial. We where able to install a js and go ipfs node and configure them as circuit relays, we connected our browsers to the relay and were able to use the bundled chat app to send messages from browser to browser.
+Lets recap what we accomplished in this tutorial. We where able to install a js and go ipfs node and configure them as circuit relays, we connected our browsers to the relay and were able to use the bundled chat app to send messages browser to browser.
