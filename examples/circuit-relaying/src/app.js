@@ -1,85 +1,27 @@
 const IPFS = require('ipfs')
-const Room = require('ipfs-pubsub-room')
+const Helpers = require('./helpers')
 
 const $peerId = document.querySelector('#peer-id')
 const $message = document.querySelector('#message')
 const $msgs = document.querySelector('#msgs')
-const $peers = document.querySelector('#peers')
 const $send = document.querySelector('#send')
 const $peer = document.querySelector('#peer')
 const $connect = document.querySelector('#connect')
 const $pAddrs = document.querySelector('#peers-addrs')
-const $addrs = document.querySelector('#addrs')
 const $room = document.querySelector('#room')
 const $roomId = document.querySelector('#room-id')
 
-const NAMESPACE = `ipfs-quick-msg`
-
-$pAddrs.value = ''
-const peersSet = new Set()
-
 let roomName = `default`
-const mkRoomName = (name) => {
-  return `${NAMESPACE}-${name}`
-}
-
 const fragment = window.location.hash.substr(1)
-let room
 if (fragment) {
   roomName = fragment
 }
 
+$pAddrs.value = ''
 $room.innerText = roomName
-const createRoom = (_ipfs, name) => {
-  const room = Room(_ipfs, mkRoomName(name))
 
-  room.on('peer joined', (peer) => {
-    console.log('peer ' + peer + ' joined')
-    peersSet.add(peer)
-    updatePeers()
-  })
-
-  room.on('peer left', (peer) => {
-    console.log('peer ' + peer + ' left')
-    peersSet.delete(peer)
-    updatePeers()
-  })
-
-  // send and receive messages
-  room.on('message', (message) => {
-    console.log('got message from ' + message.from + ': ' + message.data.toString())
-    const node = document.createElement(`li`)
-    node.classList = ``.split(' ')
-    node.innerText = `${message.from.substr(-4)}: ${message.data.toString()}`
-    $msgs.appendChild(node)
-  })
-
-  return room
-}
-
-const sendMsg = (room) => {
-  const msg = $message.value
-  if (msg.length > 0) {
-    $message.value = ''
-    room.broadcast(msg)
-    $message.focus()
-  }
-}
-
-const updatePeers = () => {
-  const tags = Array.from(peersSet).map((p) => {
-    return `<li>${p}</li>`
-  })
-  $peers.innerHTML = tags
-}
-
-const updateAddrs = (addrs) => {
-  $addrs.innerHTML = `
-  <div>
-    <ul>
-    ${addrs.map((addr) => `<li>${addr.toString()}</li>`)}
-    <ul>
-  </div>`
+const repo = () => {
+  return 'ipfs/pubsub-demo/' + Math.random()
 }
 
 const ipfs = new IPFS({
@@ -100,25 +42,33 @@ const ipfs = new IPFS({
   }
 })
 
+const peersSet = new Set()
+const helpers = Helpers(ipfs, peersSet)
+const createRoom = helpers.createRoom
+const sendMsg = helpers.sendMsg
+const updatePeers = helpers.updatePeers
+const updateAddrs = helpers.updateAddrs
+
 ipfs.once('ready', () => ipfs.id((err, info) => {
   if (err) { throw err }
   console.log('IPFS node ready with id ' + info.id)
-  let room = createRoom(ipfs, roomName)
+
+  let room = createRoom(roomName)
 
   $peerId.innerHTML = `<li>${info.id}</li>`
   updateAddrs(info.addresses)
 
-  $send.addEventListener('click', (event) => {
+  $send.addEventListener('click', () => {
     sendMsg(room)
   })
 
-  $room.addEventListener('dblclick', (event) => {
+  $room.addEventListener('dblclick', () => {
     $room.setAttribute('style', 'display: none')
     $roomId.setAttribute('style', 'display: inline')
   })
 
   $roomId.addEventListener('keyup', (event) => {
-    var kp = event.keyCode || event.which
+    const kp = event.keyCode || event.which
     if (kp === 13 && $roomId.value.length > 0) {
       let name = $roomId.value
       $room.innerText = name
@@ -129,9 +79,9 @@ ipfs.once('ready', () => ipfs.id((err, info) => {
       $roomId.value = ''
       $msgs.innerHTML = ''
       window.location.hash = name
-      room = createRoom(ipfs, name)
+      room = createRoom(name)
       peersSet.clear()
-      updatePeers()
+      updatePeers(peersSet)
     } else if (kp === 27) {
       $roomId.value = ''
       $room.setAttribute('style', 'display: inline')
@@ -140,13 +90,13 @@ ipfs.once('ready', () => ipfs.id((err, info) => {
   })
 
   $message.addEventListener('keyup', (event) => {
-    var kp = event.keyCode || event.which
+    const kp = event.keyCode || event.which
     if (kp === 13) {
       sendMsg(room)
     }
   })
 
-  $connect.addEventListener('click', (event) => {
+  $connect.addEventListener('click', () => {
     const peer = $peer.value
     $peer.value = ''
     ipfs.swarm.connect(peer, (err) => {
@@ -157,7 +107,3 @@ ipfs.once('ready', () => ipfs.id((err, info) => {
     })
   })
 }))
-
-function repo () {
-  return 'ipfs/pubsub-demo/' + Math.random()
-}
