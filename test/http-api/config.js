@@ -6,28 +6,75 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
+const ncp = require('ncp').ncp
+const rimraf = require('rimraf')
+const waterfall = require('async/waterfall')
+
+const isWindows = require('../utils/platforms').isWindows
+const skipOnWindows = isWindows() ? describe.skip : describe
+
 const fs = require('fs')
 const path = require('path')
 
-module.exports = (ctl) => {
-  describe('.config', () => {
-    const configPath = path.join(__dirname, '../../repo-tests-run/config')
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
 
-    let updatedConfig
+skipOnWindows('config endpoint', () => {
+  const repoExample = path.join(__dirname, '../fixtures/go-ipfs-repo')
+  const repoPath = path.join(__dirname, '../repo-tests-run')
 
-    before(() => {
-      updatedConfig = () => JSON.parse(fs.readFileSync(configPath, 'utf8'))
+  let updatedConfig = null
+
+  let ipfs = null
+  let ipfsd = null
+  before(function (done) {
+    this.timeout(20 * 1000)
+
+    ncp(repoExample, repoPath, (err) => {
+      expect(err).to.not.exist()
+
+      waterfall([
+        (cb) => df.spawn({
+          repoPath: repoPath,
+          initOptions: { bits: 512 },
+          disposable: false,
+          start: true
+        }, cb),
+        (_ipfsd, cb) => {
+          ipfsd = _ipfsd
+          ipfsd.start(cb)
+        }
+      ], (err) => {
+        expect(err).to.not.exist()
+        ipfs = ipfsd.api
+
+        updatedConfig = () => {
+          const config = fs.readFileSync(path.join(__dirname, '../repo-tests-run/config'))
+          return JSON.parse(config, 'utf8')
+        }
+
+        done()
+      })
     })
+  })
 
+  after((done) => {
+    rimraf(repoPath, (err) => {
+      expect(err).to.not.exist()
+      ipfsd.stop(done)
+    })
+  })
+
+  describe('.config', () => {
     it('.get returns error for request with invalid argument', (done) => {
-      ctl.config.get('kittens', (err, res) => {
+      ipfs.config.get('kittens', (err, res) => {
         expect(err).to.exist()
         done()
       })
     })
 
     it('.get returns value for request with argument', (done) => {
-      ctl.config.get('API.HTTPHeaders', (err, value) => {
+      ipfs.config.get('API.HTTPHeaders', (err, value) => {
         expect(err).not.to.exist()
         expect(value).to.equal(null)
         done()
@@ -35,35 +82,35 @@ module.exports = (ctl) => {
     })
 
     it('.set updates value for request with both args', (done) => {
-      ctl.config.set('Datastore.Path', 'kitten', (err) => {
+      ipfs.config.set('Datastore.Path', 'kitten', (err) => {
         expect(err).not.to.exist()
         done()
       })
     })
 
     it('.set returns error for request with both args and JSON flag with invalid JSON argument', (done) => {
-      ctl.config.set('Datastore.Path', 'kitten', { json: true }, (err) => {
+      ipfs.config.set('Datastore.Path', 'kitten', { json: true }, (err) => {
         expect(err).to.exist()
         done()
       })
     })
 
     it('.set updates value for request with both args and bool flag and true argument', (done) => {
-      ctl.config.set('Datastore.Path', true, (err) => {
+      ipfs.config.set('Datastore.Path', true, (err) => {
         expect(err).not.to.exist()
         done()
       })
     })
 
     it('.set updates value for request with both args and bool flag and false argument', (done) => {
-      ctl.config.set('Datastore.Path', false, (err) => {
+      ipfs.config.set('Datastore.Path', false, (err) => {
         expect(err).not.to.exist()
         done()
       })
     })
 
     it('.get updatedConfig', (done) => {
-      ctl.config.get((err, config) => {
+      ipfs.config.get((err, config) => {
         expect(err).not.to.exist()
         expect(config).to.be.eql(updatedConfig())
         done()
@@ -76,7 +123,7 @@ module.exports = (ctl) => {
       it('returns error if the config is invalid', (done) => {
         const filePath = 'test/fixtures/test-data/badconfig'
 
-        ctl.config.replace(filePath, (err) => {
+        ipfs.config.replace(filePath, (err) => {
           expect(err).to.exist()
           done()
         })
@@ -86,7 +133,7 @@ module.exports = (ctl) => {
         const filePath = 'test/fixtures/test-data/otherconfig'
         const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
-        ctl.config.replace(filePath, (err) => {
+        ipfs.config.replace(filePath, (err) => {
           expect(err).not.to.exist()
           expect(expectedConfig).to.deep.equal(updatedConfig())
           done()
@@ -94,4 +141,4 @@ module.exports = (ctl) => {
       })
     })
   })
-}
+})

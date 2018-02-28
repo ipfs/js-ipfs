@@ -17,13 +17,16 @@ const multihashing = require('multihashing-async')
 const CID = require('cids')
 
 const IPFSFactory = require('ipfsd-ctl')
-const fDaemon = IPFSFactory.create({ type: 'js' })
-const fInProc = IPFSFactory.create({ type: 'proc' })
 
 // This gets replaced by '../utils/create-repo-browser.js' in the browser
 const createTempRepo = require('../utils/create-repo-nodejs.js')
 
 const IPFS = require('../../src/core')
+
+// TODO bitswap tests on windows is failing, missing proper shutdown of daemon
+// https://github.com/ipfs/js-ipfsd-ctl/pull/205
+const isWindows = require('../utils/platforms').isWindows
+const skipOnWindows = isWindows() ? describe.skip : describe
 
 function makeBlock (callback) {
   const d = Buffer.from(`IPFS is awesome ${Math.random()}`)
@@ -67,7 +70,7 @@ function connectNodes (remoteNode, inProcNode, callback) {
 
 let nodes = []
 
-function addNode (inProcNode, callback) {
+function addNode (fDaemon, inProcNode, callback) {
   fDaemon.spawn({
     exec: './src/cli/bin.js',
     initOptions: { bits: 512 },
@@ -89,10 +92,17 @@ function addNode (inProcNode, callback) {
   })
 }
 
-describe('bitswap', function () {
+skipOnWindows('bitswap', function () {
   this.timeout(80 * 1000)
 
   let inProcNode // Node spawned inside this process
+  let fDaemon
+  let fInProc
+
+  before(function () {
+    fDaemon = IPFSFactory.create({ type: 'js' })
+    fInProc = IPFSFactory.create({ type: 'proc' })
+  })
 
   beforeEach(function (done) {
     this.timeout(60 * 1000)
@@ -150,7 +160,7 @@ describe('bitswap', function () {
       waterfall([
         (cb) => parallel([
           (cb) => makeBlock(cb),
-          (cb) => addNode(inProcNode, cb)
+          (cb) => addNode(fDaemon, inProcNode, cb)
         ], cb),
         (res, cb) => {
           block = res[0]
@@ -178,11 +188,11 @@ describe('bitswap', function () {
           blocks = _blocks
           cb()
         }),
-        (cb) => addNode(inProcNode, (err, _ipfs) => {
+        (cb) => addNode(fDaemon, inProcNode, (err, _ipfs) => {
           remoteNodes.push(_ipfs)
           cb(err)
         }),
-        (cb) => addNode(inProcNode, (err, _ipfs) => {
+        (cb) => addNode(fDaemon, inProcNode, (err, _ipfs) => {
           remoteNodes.push(_ipfs)
           cb(err)
         }),
@@ -213,14 +223,17 @@ describe('bitswap', function () {
     })
   })
 
-  describe('transfer a file between', () => {
+  describe('transfer a file between', function () {
+    this.timeout(160 * 1000)
+
     it('2 peers', (done) => {
       // TODO make this test more interesting (10Mb file)
+      // TODO remove randomness from the test
       const file = Buffer.from(`I love IPFS <3 ${Math.random()}`)
 
       waterfall([
         // 0. Start node
-        (cb) => addNode(inProcNode, cb),
+        (cb) => addNode(fDaemon, inProcNode, cb),
         // 1. Add file to tmp instance
         (remote, cb) => {
           remote.files.add([{ path: 'awesome.txt', content: file }], cb)

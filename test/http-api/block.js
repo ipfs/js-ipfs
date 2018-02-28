@@ -9,7 +9,26 @@ chai.use(dirtyChai)
 const multihash = require('multihashes')
 const waterfall = require('async/waterfall')
 
-module.exports = (ctl) => {
+const DaemonFactory = require('ipfsd-ctl')
+const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
+
+describe('block endpoint', () => {
+  let ipfs = null
+  let ipfsd = null
+
+  before(function (done) {
+    this.timeout(20 * 1000)
+
+    df.spawn({ initOptions: { bits: 512 } }, (err, _ipfsd) => {
+      expect(err).to.not.exist()
+      ipfsd = _ipfsd
+      ipfs = ipfsd.api
+      done()
+    })
+  })
+
+  after((done) => ipfsd.stop(done))
+
   describe('.block', () => {
     describe('.put', () => {
       it('updates value', (done) => {
@@ -20,7 +39,7 @@ module.exports = (ctl) => {
         }
 
         waterfall([
-          (cb) => ctl.block.put(data, cb),
+          (cb) => ipfs.block.put(data, cb),
           (block, cb) => {
             expect(block.cid.multihash).to.eql(
               multihash.fromB58String(expectedResult.key)
@@ -33,14 +52,14 @@ module.exports = (ctl) => {
 
     describe('.get', () => {
       it('returns error for request with invalid argument', (done) => {
-        ctl.block.get('invalid', (err, result) => {
+        ipfs.block.get('invalid', (err, result) => {
           expect(err).to.exist()
           done()
         })
       })
 
       it('returns value', (done) => {
-        ctl.block.get('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp', (err, result) => {
+        ipfs.block.get('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp', (err, result) => {
           expect(err).to.not.exist()
           expect(result.data.toString())
             .to.equal('hello world\n')
@@ -51,21 +70,21 @@ module.exports = (ctl) => {
 
     describe('.stat', () => {
       it('returns error for request without argument', (done) => {
-        ctl.block.stat(null, (err, result) => {
+        ipfs.block.stat(null, (err, result) => {
           expect(err).to.exist()
           done()
         })
       })
 
       it('returns error for request with invalid argument', (done) => {
-        ctl.block.stat('invalid', (err, result) => {
+        ipfs.block.stat('invalid', (err, result) => {
           expect(err).to.exist()
           done()
         })
       })
 
       it('returns value', (done) => {
-        ctl.block.stat('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp', (err, result) => {
+        ipfs.block.stat('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp', (err, result) => {
           expect(err).to.not.exist()
           expect(result.key)
             .to.equal('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
@@ -75,4 +94,4 @@ module.exports = (ctl) => {
       })
     })
   })
-}
+})
