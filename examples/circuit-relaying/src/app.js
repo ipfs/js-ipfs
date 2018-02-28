@@ -1,3 +1,5 @@
+'use strict'
+
 const IPFS = require('ipfs')
 const Helpers = require('./helpers')
 
