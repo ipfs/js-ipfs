@@ -13,7 +13,8 @@
     "./src/core/runtime/repo-nodejs.js": "./src/core/runtime/repo-browser.js",
     "./src/core/runtime/dns-nodejs.js": "./src/core/runtime/dns-browser.js",
     "./test/utils/create-repo-nodejs.js": "./test/utils/create-repo-browser.js",
-    "stream": "readable-stream"
+    "stream": "readable-stream",
+    "joi": "joi-browser"
   },
   "engines": {
     "node": ">=6.0.0",
@@ -119,6 +120,8 @@
     "is-ipfs": "^0.3.2",
     "is-stream": "^1.1.0",
     "joi": "^13.1.2",
+    "joi-browser": "^13.0.1",
+    "joi-ipfs-config": "^1.0.2",
     "libp2p": "~0.18.0",
     "libp2p-circuit": "~0.1.4",
     "libp2p-floodsub": "~0.14.1",
