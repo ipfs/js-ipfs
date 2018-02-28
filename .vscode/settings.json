@@ -1,0 +1,4 @@
+{
+	"mocha.enabled": true,
+	"jshint.enable": false
+}

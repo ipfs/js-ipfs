@@ -18,24 +18,6 @@ const NAMESPACE = `ipfs-quick-msg`
 $pAddrs.value = ''
 const peersSet = new Set()
 
-const ipfs = new IPFS({
-  repo: repo(),
-  EXPERIMENTAL: {
-    pubsub: true
-  },
-  config: {
-    EXPERIMENTAL: {
-      relay: {
-        enabled: true,
-        hop: {
-          enabled: true
-        }
-      }
-    },
-    Bootstrap: []
-  }
-})
-
 let roomName = `default`
 const mkRoomName = (name) => {
   return `${NAMESPACE}-${name}`
@@ -48,9 +30,8 @@ if (fragment) {
 }
 
 $room.innerText = roomName
-
-const createRoom = (name) => {
-  const room = Room(ipfs, mkRoomName(name))
+const createRoom = (_ipfs, name) => {
+  const room = Room(_ipfs, mkRoomName(name))
 
   room.on('peer joined', (peer) => {
     console.log('peer ' + peer + ' joined')
@@ -78,9 +59,11 @@ const createRoom = (name) => {
 
 const sendMsg = (room) => {
   const msg = $message.value
-  $message.value = ''
-  room.broadcast(msg)
-  $message.focus()
+  if (msg.length > 0) {
+    $message.value = ''
+    room.broadcast(msg)
+    $message.focus()
+  }
 }
 
 const updatePeers = () => {
@@ -90,23 +73,40 @@ const updatePeers = () => {
   $peers.innerHTML = tags
 }
 
+const updateAddrs = (addrs) => {
+  $addrs.innerHTML = `
+  <div>
+    <ul>
+    ${addrs.map((addr) => `<li>${addr.toString()}</li>`)}
+    <ul>
+  </div>`
+}
+
+const ipfs = new IPFS({
+  repo: repo(),
+  EXPERIMENTAL: {
+    pubsub: true
+  },
+  config: {
+    EXPERIMENTAL: {
+      relay: {
+        enabled: true,
+        hop: {
+          enabled: true
+        }
+      }
+    },
+    Bootstrap: []
+  }
+})
+
 ipfs.once('ready', () => ipfs.id((err, info) => {
   if (err) { throw err }
   console.log('IPFS node ready with id ' + info.id)
-
-  let room = createRoom(roomName)
+  let room = createRoom(ipfs, roomName)
 
   $peerId.innerHTML = `<li>${info.id}</li>`
-  $addrs.innerHTML += `
-  <div>
-    <ul>
-    ${
-      info
-      .addresses
-      .map((addr) => `<li>${addr.toString()}</li>`)
-    }
-    <ul>
-  </div>`
+  updateAddrs(info.addresses)
 
   $send.addEventListener('click', (event) => {
     sendMsg(room)
@@ -129,9 +129,13 @@ ipfs.once('ready', () => ipfs.id((err, info) => {
       $roomId.value = ''
       $msgs.innerHTML = ''
       window.location.hash = name
-      room = createRoom(name)
+      room = createRoom(ipfs, name)
       peersSet.clear()
       updatePeers()
+    } else if (kp === 27) {
+      $roomId.value = ''
+      $room.setAttribute('style', 'display: inline')
+      $roomId.setAttribute('style', 'display: none')
     }
   })
 
