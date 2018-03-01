@@ -524,7 +524,7 @@ It returns a [Pull Stream][os] that will yield objects of the form:
 ```JavaScript
 const validCID = 'QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
 
-const stream = ipfs.files.getReadableStream(validCID)
+const stream = ipfs.files.lsPullStream(validCID)
 
 pull(
   stream,
