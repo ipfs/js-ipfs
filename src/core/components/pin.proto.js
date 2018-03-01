@@ -2,7 +2,7 @@
  * Protobuf interface
  * from go-ipfs/pin/internal/pb/header.proto
  */
-module.exports.pbSchema = `
+module.exports = `
   syntax = "proto2";
 
   package ipfs.pin;
