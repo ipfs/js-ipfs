@@ -8,7 +8,7 @@ chai.use(dirtyChai)
 
 const Config = require('../../src/core/config')
 
-describe.only('config', () => {
+describe('config', () => {
   it('should allow empty config', () => {
     const config = {}
     expect(() => Config.validate(config)).to.not.throw()
