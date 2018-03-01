@@ -11,8 +11,8 @@ const CID = require('cids')
 const debug = require('debug')
 const extend = require('deep-extend')
 const EventEmitter = require('events')
-const Joi = require('joi').extend(require('joi-ipfs-config'))
 
+const Config = require('./config')
 const boot = require('./boot')
 const components = require('./components')
 // replaced by repo-browser when running in the browser
@@ -28,7 +28,7 @@ class IPFS extends EventEmitter {
       EXPERIMENTAL: {}
     }
 
-    options = Joi.attempt(options || {}, Joi.ipfsConfig())
+    options = Config.validate(options || {})
     this._libp2pModules = options.libp2p && options.libp2p.modules
 
     extend(this._options, options)

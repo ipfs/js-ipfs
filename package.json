@@ -121,7 +121,7 @@
     "is-stream": "^1.1.0",
     "joi": "^13.1.2",
     "joi-browser": "^13.0.1",
-    "joi-ipfs-config": "^1.0.2",
+    "joi-multiaddr": "^1.0.1",
     "libp2p": "~0.18.0",
     "libp2p-circuit": "~0.1.4",
     "libp2p-floodsub": "~0.14.1",
