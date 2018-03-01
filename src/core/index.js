@@ -12,7 +12,7 @@ const debug = require('debug')
 const extend = require('deep-extend')
 const EventEmitter = require('events')
 
-const Config = require('./config')
+const config = require('./config')
 const boot = require('./boot')
 const components = require('./components')
 // replaced by repo-browser when running in the browser
@@ -28,7 +28,7 @@ class IPFS extends EventEmitter {
       EXPERIMENTAL: {}
     }
 
-    options = Config.validate(options || {})
+    options = config.validate(options || {})
     this._libp2pModules = options.libp2p && options.libp2p.modules
 
     extend(this._options, options)

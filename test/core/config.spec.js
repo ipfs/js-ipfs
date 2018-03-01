@@ -6,45 +6,45 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-const Config = require('../../src/core/config')
+const config = require('../../src/core/config')
 
 describe('config', () => {
   it('should allow empty config', () => {
-    const config = {}
-    expect(() => Config.validate(config)).to.not.throw()
+    const cfg = {}
+    expect(() => config.validate(cfg)).to.not.throw()
   })
 
   it('should allow undefined config', () => {
-    const config = undefined
-    expect(() => Config.validate(config)).to.not.throw()
+    const cfg = undefined
+    expect(() => config.validate(cfg)).to.not.throw()
   })
 
   it('should allow unknown key at root', () => {
-    const config = { [`${Date.now()}`]: 'test' }
-    expect(() => Config.validate(config)).to.not.throw()
+    const cfg = { [`${Date.now()}`]: 'test' }
+    expect(() => config.validate(cfg)).to.not.throw()
   })
 
   it('should validate valid repo', () => {
-    const configs = [
+    const cfgs = [
       { repo: { unknown: 'value' } },
       { repo: '/path/to-repo' },
       { repo: null },
       { repo: undefined }
     ]
 
-    configs.forEach(c => expect(() => Config.validate(c)).to.not.throw())
+    cfgs.forEach(cfg => expect(() => config.validate(cfg)).to.not.throw())
   })
 
   it('should validate invalid repo', () => {
-    const configs = [
+    const cfgs = [
       { repo: 138 }
     ]
 
-    configs.forEach(c => expect(() => Config.validate(c)).to.throw())
+    cfgs.forEach(cfg => expect(() => config.validate(cfg)).to.throw())
   })
 
   it('should validate valid init', () => {
-    const configs = [
+    const cfgs = [
       { init: { bits: 138 } },
       { init: { bits: 138, unknown: 'value' } },
       { init: true },
@@ -53,59 +53,59 @@ describe('config', () => {
       { init: undefined }
     ]
 
-    configs.forEach(c => expect(() => Config.validate(c)).to.not.throw())
+    cfgs.forEach(cfg => expect(() => config.validate(cfg)).to.not.throw())
   })
 
   it('should validate invalid init', () => {
-    const configs = [
+    const cfgs = [
       { init: 138 },
       { init: { bits: 'not an int' } }
     ]
 
-    configs.forEach(c => expect(() => Config.validate(c)).to.throw())
+    cfgs.forEach(cfg => expect(() => config.validate(cfg)).to.throw())
   })
 
   it('should validate valid start', () => {
-    const configs = [
+    const cfgs = [
       { start: true },
       { start: false },
       { start: undefined }
     ]
 
-    configs.forEach(c => expect(() => Config.validate(c)).to.not.throw())
+    cfgs.forEach(cfg => expect(() => config.validate(cfg)).to.not.throw())
   })
 
   it('should validate invalid start', () => {
-    const configs = [
+    const cfgs = [
       { start: 138 },
       { start: 'make it so number 1' },
       { start: null }
     ]
 
-    configs.forEach(c => expect(() => Config.validate(c)).to.throw())
+    cfgs.forEach(cfg => expect(() => config.validate(cfg)).to.throw())
   })
 
   it('should validate valid pass', () => {
-    const configs = [
+    const cfgs = [
       { pass: 'correctbatteryhorsestaple' },
       { pass: '' },
       { pass: undefined }
     ]
 
-    configs.forEach(c => expect(() => Config.validate(c)).to.not.throw())
+    cfgs.forEach(cfg => expect(() => config.validate(cfg)).to.not.throw())
   })
 
   it('should validate invalid pass', () => {
-    const configs = [
+    const cfgs = [
       { pass: 138 },
       { pass: null }
     ]
 
-    configs.forEach(c => expect(() => Config.validate(c)).to.throw())
+    cfgs.forEach(cfg => expect(() => config.validate(cfg)).to.throw())
   })
 
   it('should validate valid EXPERIMENTAL', () => {
-    const configs = [
+    const cfgs = [
       { EXPERIMENTAL: { pubsub: true, dht: true, sharding: true } },
       { EXPERIMENTAL: { pubsub: false, dht: false, sharding: false } },
       { EXPERIMENTAL: { unknown: 'value' } },
@@ -113,21 +113,21 @@ describe('config', () => {
       { EXPERIMENTAL: undefined }
     ]
 
-    configs.forEach(c => expect(() => Config.validate(c)).to.not.throw())
+    cfgs.forEach(cfg => expect(() => config.validate(cfg)).to.not.throw())
   })
 
   it('should validate invalid EXPERIMENTAL', () => {
-    const configs = [
+    const cfgs = [
       { EXPERIMENTAL: { pubsub: 138 } },
       { EXPERIMENTAL: { dht: 138 } },
       { EXPERIMENTAL: { sharding: 138 } }
     ]
 
-    configs.forEach(c => expect(() => Config.validate(c)).to.throw())
+    cfgs.forEach(cfg => expect(() => config.validate(cfg)).to.throw())
   })
 
   it('should validate valid config', () => {
-    const configs = [
+    const cfgs = [
       { config: { Addresses: { Swarm: ['/ip4/0.0.0.0/tcp/4002'] } } },
       { config: { Addresses: { Swarm: [] } } },
       { config: { Addresses: { Swarm: undefined } } },
@@ -167,11 +167,11 @@ describe('config', () => {
       { config: undefined }
     ]
 
-    configs.forEach(c => expect(() => Config.validate(c)).to.not.throw())
+    cfgs.forEach(cfg => expect(() => config.validate(cfg)).to.not.throw())
   })
 
   it('should validate invalid config', () => {
-    const configs = [
+    const cfgs = [
       { config: { Addresses: { Swarm: 138 } } },
       { config: { Addresses: { Swarm: null } } },
 
@@ -192,11 +192,11 @@ describe('config', () => {
       { config: 138 }
     ]
 
-    configs.forEach(c => expect(() => Config.validate(c)).to.throw())
+    cfgs.forEach(cfg => expect(() => config.validate(cfg)).to.throw())
   })
 
   it('should validate valid libp2p', () => {
-    const configs = [
+    const cfgs = [
       { libp2p: { modules: {} } },
       { libp2p: { modules: { unknown: 'value' } } },
       { libp2p: { modules: null } },
@@ -206,15 +206,15 @@ describe('config', () => {
       { libp2p: undefined }
     ]
 
-    configs.forEach(c => expect(() => Config.validate(c)).to.not.throw())
+    cfgs.forEach(cfg => expect(() => config.validate(cfg)).to.not.throw())
   })
 
   it('should validate invalid libp2p', () => {
-    const configs = [
+    const cfgs = [
       { libp2p: { modules: 138 } },
       { libp2p: 138 }
     ]
 
-    configs.forEach(c => expect(() => Config.validate(c)).to.throw())
+    cfgs.forEach(cfg => expect(() => config.validate(cfg)).to.throw())
   })
 })
