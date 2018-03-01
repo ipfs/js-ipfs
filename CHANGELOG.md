@@ -1,3 +1,39 @@
+<a name="0.28.0"></a>
+# [0.28.0](https://github.com/ipfs/js-ipfs/compare/v0.27.7...v0.28.0) (2018-03-01)
+
+
+### Bug Fixes
+
+* **cli:** show help for subcommands ([8c63f8f](https://github.com/ipfs/js-ipfs/commit/8c63f8f))
+* (cli/init) use cross-platform path separator ([bbb7cc5](https://github.com/ipfs/js-ipfs/commit/bbb7cc5))
+* **dag:** print data in a readable way if it is JSON ([42545dc](https://github.com/ipfs/js-ipfs/commit/42545dc))
+* bootstrap ([d527b45](https://github.com/ipfs/js-ipfs/commit/d527b45))
+* now properly fix bootstrap in core ([9f39a6f](https://github.com/ipfs/js-ipfs/commit/9f39a6f))
+* Remove scape characteres from error message. ([68e7b5a](https://github.com/ipfs/js-ipfs/commit/68e7b5a))
+* Return swarm http errors as json ([d3a0ae1](https://github.com/ipfs/js-ipfs/commit/d3a0ae1)), closes [#1176](https://github.com/ipfs/js-ipfs/issues/1176)
+* stats tests ([a0fd355](https://github.com/ipfs/js-ipfs/commit/a0fd355))
+* use "ipld" instead of "ipld-resolver" ([e7f0432](https://github.com/ipfs/js-ipfs/commit/e7f0432))
+
+
+### Features
+
+* `ipfs version` flags + `ipfs repo version` ([#1181](https://github.com/ipfs/js-ipfs/issues/1181)) ([#1188](https://github.com/ipfs/js-ipfs/issues/1188)) ([494da7f](https://github.com/ipfs/js-ipfs/commit/494da7f))
+* Add /ip6 addresses to bootstrap ([3bca165](https://github.com/ipfs/js-ipfs/commit/3bca165)), closes [#706](https://github.com/ipfs/js-ipfs/issues/706)
+* all pubsub tests passing with libp2p pubsub ([6fe015f](https://github.com/ipfs/js-ipfs/commit/6fe015f))
+* Bootstrap API compliance ([#1218](https://github.com/ipfs/js-ipfs/issues/1218)) ([9a445d1](https://github.com/ipfs/js-ipfs/commit/9a445d1))
+* Implementation of the ipfs.key API ([#1133](https://github.com/ipfs/js-ipfs/issues/1133)) ([d945fce](https://github.com/ipfs/js-ipfs/commit/d945fce))
+* improved multiaddr validation. ([d9744a1](https://github.com/ipfs/js-ipfs/commit/d9744a1))
+* ipfs shutdown ([#1200](https://github.com/ipfs/js-ipfs/issues/1200)) ([95365fa](https://github.com/ipfs/js-ipfs/commit/95365fa))
+* jsipfs ls -r (Recursive list directory) ([#1222](https://github.com/ipfs/js-ipfs/issues/1222)) ([0f1e00f](https://github.com/ipfs/js-ipfs/commit/0f1e00f))
+* latest libp2p + other deps. Fix bugs in tests along the way ([4b79066](https://github.com/ipfs/js-ipfs/commit/4b79066))
+* reworking tests with new ipfsd-ctl ([#1167](https://github.com/ipfs/js-ipfs/issues/1167)) ([d16a129](https://github.com/ipfs/js-ipfs/commit/d16a129))
+* stats API (stats.bitswap and stats.repo) ([#1198](https://github.com/ipfs/js-ipfs/issues/1198)) ([905bdc0](https://github.com/ipfs/js-ipfs/commit/905bdc0))
+* support Jenkins ([bc66e9f](https://github.com/ipfs/js-ipfs/commit/bc66e9f))
+* use PubSub API directly from libp2p ([6b9fc95](https://github.com/ipfs/js-ipfs/commit/6b9fc95))
+* use reduces keysize ([#1232](https://github.com/ipfs/js-ipfs/issues/1232)) ([7f69628](https://github.com/ipfs/js-ipfs/commit/7f69628))
+
+
+
 <a name="0.27.7"></a>
 ## [0.27.7](https://github.com/ipfs/js-ipfs/compare/v0.27.6...v0.27.7) (2018-01-16)
 
