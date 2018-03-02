@@ -18,6 +18,7 @@ const CID = require('cids')
 const toB58String = require('multihashes').toB58String
 
 function noop () {}
+function identity (x) { return x }
 
 function prepareFile (self, opts, file, callback) {
   opts = opts || {}
@@ -72,6 +73,7 @@ function normalizeContent (content) {
   })
 }
 
+// TODO: if !opts.recursive, be sure to only pin that one
 function pinFile (self, file, cb) {
   // since adding paths like `directory/filename` automatically
   // adds the directory as well as the file, we can just recursively
@@ -125,7 +127,7 @@ module.exports = function files (self) {
     }, options)
 
     let total = 0
-    let prog = opts.progress || (() => {})
+    const prog = opts.progress || noop
     const progress = (bytes) => {
       total += bytes
       prog(total)
@@ -137,7 +139,7 @@ module.exports = function files (self) {
       pull.flatten(),
       importer(self._ipld, opts),
       pull.asyncMap(prepareFile.bind(null, self, opts)),
-      pull.asyncMap(pinFile.bind(null, self))
+      opts.pin ? pull.asyncMap(pinFile.bind(null, self)) : identity
     )
   }
 
