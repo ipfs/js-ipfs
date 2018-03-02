@@ -180,7 +180,7 @@ module.exports = function pin (self) {
           `Invalid type '${type}', must be one of {direct, indirect, recursive, all}`
         ))
       }
-      if (hashes && hashes.length) {
+      if (hashes) {
         // check the pinned state of specific hashes
         normalizeHashes(self, hashes, (err, mhs) => {
           if (err) { return callback(err) }

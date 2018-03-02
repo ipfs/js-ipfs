@@ -21,7 +21,7 @@ const keys = {
 }
 
 module.exports = (http) => {
-  describe('pin', () => {
+  describe.only('pin', () => {
     let api
 
     before((done) => {
@@ -94,7 +94,7 @@ module.exports = (http) => {
       it('finds all pinned objects', (done) => {
         api.inject({
           method: 'GET',
-          url: ('/api/v0/pin/ls')
+          url: '/api/v0/pin/ls'
         }, (res) => {
           expect(res.statusCode).to.equal(200)
           expect(res.result.Keys[keys.root].Type).to.equal('recursive')
