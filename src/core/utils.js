@@ -15,7 +15,7 @@ exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'
  * @param  {String} pathString An ipfs-path
  * @return {Object}            { root: base58 string, links: [string], ?err: Error }
  */
-const parseIpfsPath = exports.parseIpfsPath = function parseIpfsPath (pathString) {
+exports.parseIpfsPath = function parseIpfsPath (pathString) {
   const matched = pathString.match(/^(?:\/ipfs\/)?([^/]+(?:\/[^/]+)*)\/?$/)
   const errorResult = {
     error: new Error('invalid ipfs ref path')
@@ -23,16 +23,14 @@ const parseIpfsPath = exports.parseIpfsPath = function parseIpfsPath (pathString
   if (!matched) {
     return errorResult
   }
-  const split = matched[1].split('/')
-  const root = split[0]
+
+  const [root, ...links] = matched[1].split('/')
+
   try {
-    if (CID.isCID(new CID(root))) {
-      return {
-        root: root,
-        links: split.slice(1, split.length)
-      }
-    } else {
-      return errorResult
+    multihashes.fromB58String(root)
+    return {
+      root: root,
+      links: links
     }
   } catch (err) {
     return errorResult
@@ -47,8 +45,8 @@ const parseIpfsPath = exports.parseIpfsPath = function parseIpfsPath (pathString
  *  - <base58 string>
  *  - <base58 string>/link/to/another/planet
  *  - /ipfs/<base58 string>
- *  - multihash Buffer
  *  - Buffers of any of the above
+ *  - multihash Buffer
  *
  * @param  {IPFS}   ipfs       the IPFS node
  * @param  {Described above}   ipfsPaths A single or collection of ipfs-paths
@@ -69,7 +67,7 @@ exports.normalizeHashes = function normalizeHashes (ipfs, ipfsPaths, callback) {
     if (typeof path !== 'string') {
       return validate(path)
     }
-    const {error, root, links} = parseIpfsPath(path)
+    const {error, root, links} = exports.parseIpfsPath(path)
     const rootHash = multihashes.fromB58String(root)
     if (error) return cb(error)
     if (!links.length) {
