@@ -14,7 +14,9 @@ const waterfall = require('async/waterfall')
 const until = require('async/until')
 const once = require('once')
 
-const toB58String = multihashes.toB58String
+function toB58String (hash) {
+  return new CID(hash).toBaseEncodedString()
+}
 
 module.exports = function pin (self) {
   let directPins = new Set()
@@ -62,9 +64,6 @@ module.exports = function pin (self) {
             }
             // entire graph of nested links should be pinned,
             // so make sure we have all the objects
-            // dag.tree(key, { recursive: true }, (err, res) => {
-            //   console.log('dag.tree err,res:', err, res)
-            // })
             dag._getRecursive(multihash, (err) => {
               if (err) { return cb(err) }
               // found all objects, we can add the pin
@@ -73,9 +72,7 @@ module.exports = function pin (self) {
           } else {
             if (recursivePins.has(key)) {
               // recursive supersedes direct, can't have both
-              return cb(
-                new Error(`${key} already pinned recursively`)
-              )
+              return cb(new Error(`${key} already pinned recursively`))
             }
             if (directPins.has(key)) {
               // already directly pinned
@@ -103,6 +100,7 @@ module.exports = function pin (self) {
           // persist updated pin sets to datastore
           pin.flush((err, root) => {
             if (err) { return callback(err) }
+            self.log(`Added pins: ${results}`)
             return callback(null, results.map(key => ({hash: key})))
           })
         })
@@ -151,6 +149,7 @@ module.exports = function pin (self) {
           // persist updated pin sets to datastore
           pin.flush((err, root) => {
             if (err) { return callback(err) }
+            self.log(`Removed pins: ${results}`)
             return callback(null, results.map(key => ({hash: key})))
           })
         })
@@ -371,6 +370,7 @@ module.exports = function pin (self) {
         (_, cb) => repo.datastore.put(pinDataStoreKey, handle.root.multihash, cb)
       ], (err, result) => {
         if (err) { return callback(err) }
+        self.log(`Flushed ${handle.root} to the datastore.`)
         internalPins = newInternalPins
         return callback(null, handle.root)
       })
@@ -397,6 +397,7 @@ module.exports = function pin (self) {
         (cb) => pin.set.loadSet(handle.root, pin.types.direct, logInternalKey, cb)
       ], (err, dKeys) => {
         if (err && err !== 'break' && err !== 'No pins to load') {
+          console.log('*!*!*!*!*!*! Error loading:\n', err)
           return callback(err)
         }
         if (dKeys) {
@@ -405,6 +406,7 @@ module.exports = function pin (self) {
           logInternalKey(handle.root.multihash)
           internalPins = newInternalPins
         }
+        self.log('Loaded pins from the datastore')
         return callback()
       })
     })

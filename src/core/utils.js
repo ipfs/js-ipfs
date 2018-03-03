@@ -38,8 +38,8 @@ exports.parseIpfsPath = function parseIpfsPath (pathString) {
 }
 
 /**
- * Resolve various styles of an ipfs-path to the hash of the destination node after
- * following any links described in the path.
+ * Resolve various styles of an ipfs-path to the hash of the target node.
+ * Follows links in the path.
  *
  * Handles formats:
  *  - <base58 string>
