@@ -98,6 +98,10 @@ module.exports = {
         //  response.continue()
         let filetypeChecked = false
         let stream2 = new Stream.PassThrough({ highWaterMark: 1 })
+        stream2.on('error', (err) => {
+          log.error('stream2 err: ', err)
+        })
+
         let response = reply(stream2).hold()
 
         pull(
