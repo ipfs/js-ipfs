@@ -1,0 +1,32 @@
+{
+  "name": "ipfs-102",
+  "version": "0.1.0",
+  "description": "Simple multi-node example",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
+  "keywords": [
+    "ipfs"
+  ],
+  "author": "Harry Y",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ipfs/js-ipfs/issues"
+  },
+  "homepage": "https://github.com/ipfs/js-ipfs#readme",
+  "dependencies": {
+    "async": "^2.6.0",
+    "ipfs": "^0.28.0",
+    "ipfs-repo": "^0.18.7"
+  },
+  "engines": {
+    "node": ">=6.10.0"
+  }
+}
