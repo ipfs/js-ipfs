@@ -12,17 +12,17 @@
     "ipfs": false
   },
   "scripts": {
-    "test": "cross-env NODE_OPTIONS='--max-old-space-size=8192' aegir test",
+    "test": "aegir test",
     "test:node": "aegir test -t node",
-    "test:browser": "cross-env NODE_OPTIONS='--max-old-space-size=8192' aegir test -t browser",
-    "test:webworker": "cross-env NODE_OPTIONS='--max-old-space-size=8192' aegir test -t webworker",
+    "test:browser": "aegir test -t browser",
+    "test:webworker": "aegir test -t webworker",
     "lint": "aegir lint",
     "build": "aegir build",
-    "release": "cross-env NODE_OPTIONS='--max-old-space-size=8192' aegir release ",
-    "release-minor": "cross-env NODE_OPTIONS='--max-old-space-size=8192' aegir release --type minor ",
-    "release-major": "cross-env NODE_OPTIONS='--max-old-space-size=8192' aegir release --type major ",
-    "coverage": "cross-env NODE_OPTIONS='--max-old-space-size=8192' aegir coverage --timeout 100000",
-    "coverage-publish": "cross-env NODE_OPTIONS='--max-old-space-size=8192' aegir coverage --provider coveralls --timeout 100000"
+    "release": "aegir release ",
+    "release-minor": "aegir release --type minor ",
+    "release-major": "aegir release --type major ",
+    "coverage": "aegir coverage --timeout 100000",
+    "coverage-publish": "aegir coverage --provider coveralls --timeout 100000"
   },
   "dependencies": {
     "async": "^2.6.0",
@@ -68,7 +68,6 @@
     "aegir": "^13.0.6",
     "browser-process-platform": "^0.1.1",
     "chai": "^4.1.2",
-    "cross-env": "^5.1.3",
     "dirty-chai": "^2.0.1",
     "eslint-plugin-react": "^7.7.0",
     "go-ipfs-dep": "^0.4.13",
