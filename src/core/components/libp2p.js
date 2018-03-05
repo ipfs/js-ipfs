@@ -24,10 +24,13 @@ module.exports = function libp2p (self) {
           pubsub: get(self._options, 'EXPERIMENTAL.pubsub', false),
           dht: get(self._options, 'EXPERIMENTAL.dht', false),
           relay: {
-            enabled: get(config, 'EXPERIMENTAL.relay.enabled', false),
+            enabled: get(self._options, 'EXPERIMENTAL.relay.enabled',
+              get(config, 'EXPERIMENTAL.relay.enabled', false)),
             hop: {
-              enabled: get(config, 'EXPERIMENTAL.relay.hop.enabled', false),
-              active: get(config, 'EXPERIMENTAL.relay.hop.active', false)
+              enabled: get(self._options, 'EXPERIMENTAL.relay.hop.enabled',
+                get(config, 'EXPERIMENTAL.relay.hop.enabled', false)),
+              active: get(self._options, 'EXPERIMENTAL.relay.hop.active',
+                get(config, 'EXPERIMENTAL.relay.hop.active', false))
             }
           }
         }

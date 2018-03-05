@@ -32,6 +32,11 @@ const ipfs = new IPFS({
     pubsub: true
   },
   config: {
+    Addresses: {
+      Swarm: [
+        `/ip4/0.0.0.0/tcp/65000/ws/p2p-websocket-star/`
+      ]
+    },
     EXPERIMENTAL: {
       relay: {
         enabled: true,
