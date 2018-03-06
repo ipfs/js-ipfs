@@ -396,8 +396,7 @@ module.exports = function pin (self) {
         (rKeys, cb) => handle.put('rKeys', rKeys, cb),
         (cb) => pin.set.loadSet(handle.root, pin.types.direct, logInternalKey, cb)
       ], (err, dKeys) => {
-        if (err && err !== 'break' && err !== 'No pins to load') {
-          console.log('*!*!*!*!*!*! Error loading:\n', err)
+        if (err && err !== 'No pins to load') {
           return callback(err)
         }
         if (dKeys) {

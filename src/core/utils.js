@@ -87,8 +87,7 @@ exports.normalizeHashes = function normalizeHashes (ipfs, ipfsPaths, callback) {
           `no link named ${linkName} under ${obj.toJSON().Hash}`
         ))
       }
-      const nextHash = nextLink.multihash
-      ipfs.object.get(nextHash, pathFn)
+      ipfs.object.get(nextLink.multihash, pathFn)
     }
     ipfs.object.get(rootHash, pathFn)
   }, callback)

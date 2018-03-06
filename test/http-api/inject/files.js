@@ -11,19 +11,7 @@ module.exports = (http) => {
       api = http.api.server.select('API')
     })
 
-    describe('/add', () => {
-
-      // it('files are pinned by default', function (done) {
-      //   api.inject({
-      //     method: 'POST',
-      //     url: '/api/v0/add?'
-      //   }, (res) => {
-      //     expect(res.statusCode).to.equal(400)
-      //     expect(res.result.Message).to.be.a('string')
-      //     done()
-      //   })
-      // })
-    }) // TODO
+    describe('/add', () => {}) // TODO
 
     describe('/cat', () => {
       it('returns 400 for request without argument', (done) => {

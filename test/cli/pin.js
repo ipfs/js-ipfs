@@ -17,7 +17,7 @@ const keys = {
   index: 'QmQN88TEidd3RY2u3dpib49fERTDfKtDpvxnvczATNsfKT'
 }
 
-describe('pin', () => runOnAndOff.off((thing) => {
+describe('pin', () => runOnAndOff((thing) => {
   const filesDir = 'test/fixtures/test-data/recursive-get-dir/init-docs'
 
   let ipfs

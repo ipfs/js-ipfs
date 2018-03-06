@@ -21,7 +21,7 @@ const keys = {
 }
 
 module.exports = (http) => {
-  describe.only('pin', () => {
+  describe('pin', () => {
     let api
 
     before((done) => {

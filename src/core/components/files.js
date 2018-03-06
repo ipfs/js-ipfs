@@ -73,7 +73,6 @@ function normalizeContent (content) {
   })
 }
 
-// TODO: if !opts.recursive, be sure to only pin that one
 function pinFile (self, file, cb) {
   // since adding paths like `directory/filename` automatically
   // adds the directory as well as the file, we can just recursively

@@ -270,6 +270,31 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
+  it('add pins by default', function () {
+    const filePath = path.join(os.tmpdir(), hat())
+    const content = String(Math.random())
+    const file = fs.writeFileSync(filePath, content)
+
+    return ipfs(`files add -Q ${filePath}`)
+      .then(out => {
+        const hash = out.trim()
+        return ipfs(`pin ls ${hash}`)
+          .then(ls => expect(ls).to.include(hash))
+      })
+      .then(() => fs.unlinkSync(filePath))
+  })
+
+  it('add does not pin with --pin=false', function () {
+    const filePath = path.join(os.tmpdir(), hat())
+    const content = String(Math.random())
+    const file = fs.writeFileSync(filePath, content)
+
+    return ipfs(`files add -Q --pin=false ${filePath}`)
+      .then(out => ipfs(`pin ls ${out.trim()}`))
+      .then(ls => expect(ls.trim()).to.eql(''))
+      .then(() => fs.unlinkSync(filePath))
+  })
+
   it('cat', function () {
     this.timeout(30 * 1000)
 

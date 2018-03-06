@@ -13,14 +13,14 @@ const createTempRepo = require('../utils/create-repo-nodejs.js')
 const IPFS = require('../../src/core')
 const utils = require('../../src/core/utils')
 
-const rootHashString = 'QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU'
-const rootHash = multihashes.fromB58String(rootHashString)
-const rootPathString = `/ipfs/${rootHashString}/`
-const aboutHashString = 'QmZTR5bcpQD7cFgTorqxZDYaew1Wqgfbd2ud9QqGPAkK2V'
-const aboutHash = multihashes.fromB58String(aboutHashString)
-const aboutPathString = `/ipfs/${rootHashString}/about`
-
 describe('utils', () => {
+  const rootHashString = 'QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU'
+  const rootHash = multihashes.fromB58String(rootHashString)
+  const rootPathString = `/ipfs/${rootHashString}/`
+  const aboutHashString = 'QmZTR5bcpQD7cFgTorqxZDYaew1Wqgfbd2ud9QqGPAkK2V'
+  const aboutHash = multihashes.fromB58String(aboutHashString)
+  const aboutPathString = `/ipfs/${rootHashString}/about`
+
   describe('parseIpfsPath', () => {
     it('parses path with no links', function () {
       expect(utils.parseIpfsPath(rootHashString))
@@ -132,7 +132,5 @@ describe('utils', () => {
         done()
       })
     })
-
-    it('')
   })
 })
