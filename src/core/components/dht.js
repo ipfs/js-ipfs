@@ -121,11 +121,10 @@ module.exports = (self) => {
         if (err) {
           return callback(err)
         }
-        /* TODO reconsider this. go-ipfs provides anyway
+
         if (!has) {
-          return callback(new Error('Not all blocks exist locally, can not provide'))
+          return callback(new Error('block(s) not found locally, cannot provide'))
         }
-        */
 
         if (options.recursive) {
           // TODO: Implement recursive providing
