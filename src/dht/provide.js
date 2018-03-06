@@ -1,6 +1,7 @@
 'use strict'
 
 const promisify = require('promisify-es6')
+const CID = require('cids')
 
 module.exports = (send) => {
   return promisify((cids, opts, callback) => {
@@ -18,6 +19,13 @@ module.exports = (send) => {
 
     if (!Array.isArray(cids)) {
       cids = [cids]
+    }
+
+    // Validate CID(s) and serialize
+    try {
+      cids = cids.map(cid => new CID(cid).toBaseEncodedString('base58btc'))
+    } catch (err) {
+      return callback(err)
     }
 
     send({
