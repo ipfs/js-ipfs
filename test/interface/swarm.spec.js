@@ -23,7 +23,7 @@ const common = {
           config = undefined
         }
 
-        f.spawn({ repoPath, config }, (err, _ipfsd) => {
+        f.spawn({ repoPath, config, initOptions: { bits: 1024 } }, (err, _ipfsd) => {
           if (err) {
             return cb(err)
           }

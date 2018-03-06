@@ -16,7 +16,7 @@ if (isNode) {
     setup: function (callback) {
       callback(null, {
         spawnNode: (cb) => {
-          f.spawn({ args: ['--enable-pubsub-experiment'] },
+          f.spawn({ initOptions: { bits: 1024 }, args: ['--enable-pubsub-experiment'] },
             (err, _ipfsd) => {
               if (err) {
                 return cb(err)

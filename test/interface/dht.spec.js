@@ -12,7 +12,7 @@ const common = {
   setup: function (callback) {
     callback(null, {
       spawnNode: (cb) => {
-        f.spawn((err, _ipfsd) => {
+        f.spawn({ initOptions: { bits: 1024 } }, (err, _ipfsd) => {
           if (err) {
             return cb(err)
           }

@@ -27,7 +27,7 @@ describe('.name', () => {
 
     series([
       (cb) => {
-        f.spawn((err, _ipfsd) => {
+        f.spawn({ initOptions: { bits: 1024 } }, (err, _ipfsd) => {
           expect(err).to.not.exist()
           ipfsd = _ipfsd
           ipfs = IPFSApi(_ipfsd.apiAddr)
@@ -35,7 +35,7 @@ describe('.name', () => {
         })
       },
       (cb) => {
-        f.spawn((err, node) => {
+        f.spawn({ initOptions: { bits: 1024 } }, (err, node) => {
           expect(err).to.not.exist()
           other = node.api
           otherd = node

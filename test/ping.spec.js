@@ -23,7 +23,7 @@ describe.skip('.ping', () => {
 
     series([
       (cb) => {
-        f.spawn((err, _ipfsd) => {
+        f.spawn({ initOptions: { bits: 1024 } }, (err, _ipfsd) => {
           expect(err).to.not.exist()
           ipfsd = _ipfsd
           ipfs = IPFSApi(_ipfsd.apiAddr)
@@ -32,7 +32,7 @@ describe.skip('.ping', () => {
       },
       (cb) => {
         console.log('going to spawn second node')
-        f.spawn((err, node) => {
+        f.spawn({ initOptions: { bits: 1024 } }, (err, node) => {
           expect(err).to.not.exist()
           other = node.api
           otherd = node

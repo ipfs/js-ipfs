@@ -31,7 +31,7 @@ describe('.get (specific go-ipfs features)', function () {
 
   before((done) => {
     series([
-      (cb) => f.spawn((err, _ipfsd) => {
+      (cb) => f.spawn({ initOptions: { bits: 1024 } }, (err, _ipfsd) => {
         expect(err).to.not.exist()
         ipfsd = _ipfsd
         ipfs = IPFSApi(_ipfsd.apiAddr)
