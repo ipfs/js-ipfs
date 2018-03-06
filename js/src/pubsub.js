@@ -560,64 +560,76 @@ module.exports = (common) => {
           )
         })
 
-        it('send/receive 10k messages', (done) => {
-          this.timeout(2 * 60 * 1000)
+        describe('send/receive', () => {
+          let topic
+          let sub1
+          let sub2
 
-          const msgBase = 'msg - '
-          const count = 10000
-          let sendCount = 0
-          let receivedCount = 0
-          let startTime
-          let counter = 0
-          const topic = getTopic()
+          before(() => {
+            topic = getTopic()
+          })
 
-          const sub1 = (msg) => {
-            // go-ipfs can't send messages in order when there are
-            // only two nodes in the same machine ¯\_(ツ)_/¯
-            // https://github.com/ipfs/js-ipfs-api/pull/493#issuecomment-289499943
-            // const expectedMsg = msgBase + receivedCount
-            // const receivedMsg = msg.data.toString()
-            // expect(receivedMsg).to.eql(expectedMsg)
-
-            receivedCount++
-
-            if (receivedCount >= count) {
-              const duration = new Date().getTime() - startTime
-              const opsPerSec = Math.floor(count / (duration / 1000))
-
-              console.log(`Send/Receive 10k messages took: ${duration} ms, ${opsPerSec} ops / s\n`)
-
-              check()
-            }
-          }
-
-          const sub2 = (msg) => {}
-
-          function check () {
-            if (++counter === 2) {
+          after(() => {
               ipfs1.pubsub.unsubscribe(topic, sub1)
               ipfs2.pubsub.unsubscribe(topic, sub2)
-              done()
+          })
+
+          it('send/receive 10k messages', function (done) {
+            this.timeout(2 * 60 * 1000)
+
+            const msgBase = 'msg - '
+            const count = 10000
+            let sendCount = 0
+            let receivedCount = 0
+            let startTime
+            let counter = 0
+
+            sub1 = (msg) => {
+              // go-ipfs can't send messages in order when there are
+              // only two nodes in the same machine ¯\_(ツ)_/¯
+              // https://github.com/ipfs/js-ipfs-api/pull/493#issuecomment-289499943
+              // const expectedMsg = msgBase + receivedCount
+              // const receivedMsg = msg.data.toString()
+              // expect(receivedMsg).to.eql(expectedMsg)
+
+              receivedCount++
+
+              if (receivedCount >= count) {
+                const duration = new Date().getTime() - startTime
+                const opsPerSec = Math.floor(count / (duration / 1000))
+
+                console.log(`Send/Receive 10k messages took: ${duration} ms, ${opsPerSec} ops / s\n`)
+
+                check()
+              }
             }
-          }
 
-          series([
-            (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
-            (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
-            (cb) => waitForPeers(ipfs1, topic, [ipfs2.peerId.id], cb)
-          ], (err) => {
-            expect(err).to.not.exist()
-            startTime = new Date().getTime()
+            sub2 = (msg) => {}
 
-            whilst(
-              () => sendCount < count,
-              (cb) => {
-                const msgData = Buffer.from(msgBase + sendCount)
-                sendCount++
-                ipfs2.pubsub.publish(topic, msgData, cb)
-              },
-              check
-            )
+            function check () {
+              if (++counter === 2) {
+                done()
+              }
+            }
+
+            series([
+              (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
+              (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
+              (cb) => waitForPeers(ipfs1, topic, [ipfs2.peerId.id], cb)
+            ], (err) => {
+              expect(err).to.not.exist()
+              startTime = new Date().getTime()
+
+              whilst(
+                () => sendCount < count,
+                (cb) => {
+                  const msgData = Buffer.from(msgBase + sendCount)
+                  sendCount++
+                  ipfs2.pubsub.publish(topic, msgData, cb)
+                },
+                check
+              )
+            })
           })
         })
 
