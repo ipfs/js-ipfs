@@ -29,22 +29,15 @@ const repo = () => {
 const ipfs = new IPFS({
   repo: repo(),
   EXPERIMENTAL: {
-    pubsub: true
+    pubsub: true,
+    relay: {
+      enabled: true,
+      hop: {
+        enabled: true
+      }
+    }
   },
   config: {
-    Addresses: {
-      Swarm: [
-        `/ip4/0.0.0.0/tcp/65000/ws/p2p-websocket-star/`
-      ]
-    },
-    EXPERIMENTAL: {
-      relay: {
-        enabled: true,
-        hop: {
-          enabled: true
-        }
-      }
-    },
     Bootstrap: []
   }
 })

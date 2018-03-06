@@ -6,9 +6,50 @@
 
 In p2p networks there are many cases where two nodes can't talk to each other directly. That may happen because of network topology, i.e. NATs, or execution environments - for example browser nodes can't connect to each other directly because they lack any sort of socket functionality and relaying on specialized rendezvous nodes introduces an undesirable centralization point to the network. A `circuit-relay` is a way to solve this problem - it is a node that allows two other nodes that can't otherwise talk to each other, use a third node, a relay to do so.
 
+#### How does circuit relay work?
+
+>for a more in-depth explanation take a look at the [relay spec](https://github.com/libp2p/specs/blob/master/relay/README.md) and `js-libp2p-circuit` [README](https://github.com/libp2p/js-libp2p-circuit/blob/master/README.md)
+
+Here is a simple diagram depicting how a typical circuit-relay connection might look:
+
+```
++---------------------+         |          |         +---------------------+
+|       Node A        |---------> FIREWALL <---------|        Node B       |
++----------^----------+         |          |         +----------^----------+
+           |                                                    |           
+           |               +---------------------+              |           
+           +--------------->   Circuit Relay     <--------------+           
+                           +---------------------+                          
+```
+
+`Node A` tries to connect to `Node B`, but UH-OH! There is a firewall in between that's preventing it from happening. If both `Node A` and `Node B` know about a circuit relay, they can use it to establish the connection. 
+
+This is how it looks like, in somewhat simplified steps:
+
+1. `Node A` tries to connect to `Node B` over one of its know addresses
+2. Connection fails because of firewall/nat/incompatible transports/etc...
+3. Both `Node A` and `Node B` know of the same relay - `Relay`
+4. `Node A` falls back to dialing over `Node B` `'/p2p-circuit'` address, which involves:
+   1. `Node A` sends a `HOP` request to `Relay`
+   2. `Relay` extracts the destination address, figures out that a circuit to `Node B` is being requested
+   3. `Relay` sends a `STOP` request to `Node B`
+   4. `Node B` responds with a `SUCCESS` message
+   5. `Relay` proceed to create a circuit over the two nodes
+5. `Node A` and `Node B` are now connected over `Relay`
+
+Thats it!
+
+### Whats up with this `HOP` and `STOP` nonsense?
+
+Circuit relay consists of two logical parts - dialer/listener and relay (`HOP`). The listener is also known as the `STOP` node. Each of this - dial, listen and relay happen on a different node.
+
+- The dialer knows how to dial a relay (`HOP`) - `Node A`
+- The relay (`HOP`) knows how to contact a destination node (`STOP`) and create a circuit - `Relay` node
+- The listener (`STOP`) knows how to process relay requests that come from the relay (`HOP`) node - `Node B`
+
 #### A word on circuit relay addresses
 
-A circuit relay address is a multiaddress that describes how to either connect to a peer over a relay (or relays), or allow a peer to announce it is reachable over a particular relay or any relay it is already connected to. 
+A circuit relay address is a [multiaddress](https://multiformats.io/multiaddr/) that describes how to either connect to a peer over a relay (or relays), or allow a peer to announce it is reachable over a particular relay or any relay it is already connected to. 
 
 Circuit relay addresses are very flexible and can describe many different aspects of how to esablish the relayed connection. In its simplest form, it looks something like this:
 
@@ -193,7 +234,7 @@ Look out for an address similar to `/ip4/127.0.0.1/tcp/4003/ws/ipfs/Qm...` note 
 
 ### Configure and run the bundled example
 
-Now that we have ipfs installed and initialized, lets set up the included example. This is a standard npm package, so the usual `npm install` should get us going.
+Now that we have ipfs installed and initialized, lets set up the included example. This is a standard npm package, so the usual `npm install` should get us going. Lets `cd` into the `examples/circuit-relaying` directory and run:
 
 ```
 npm install
@@ -206,7 +247,7 @@ npm run start
 Server running at http://localhost:1234
 ```
 
-The bundled example is a simple chat app that uses another cool ipfs feature - `pubsub`. Lets open up a browser and paste the above url into the address bar. We should see something similar to the following image:
+The bundled example is a simple chat app that uses another cool ipfs feature - [pubsub](https://github.com/libp2p/specs/tree/master/pubsub). Lets open up a browser and paste the above url into the address bar. We should see something similar to the following image:
 
 ![](./img/img1.png)
 
@@ -244,4 +285,4 @@ Thats it!
 
 ### Conclusion
 
-Lets recap what we accomplished in this tutorial. We where able to install a js and go ipfs node and configure them as circuit relays, we connected our browsers to the relay and were able to use the bundled chat app to send messages browser to browser.
+Lets recap what we accomplished in this tutorial. We were able to install a js and go ipfs node and configure them as circuit relays, we connected our browsers to the relay and were able to use the bundled chat app to send messages browser to browser.
