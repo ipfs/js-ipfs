@@ -127,6 +127,7 @@ module.exports = function files (self) {
     }, options)
 
     let total = 0
+    const shouldPin = 'pin' in opts ? opts.pin : true
     const prog = opts.progress || noop
     const progress = (bytes) => {
       total += bytes
@@ -139,7 +140,7 @@ module.exports = function files (self) {
       pull.flatten(),
       importer(self._ipld, opts),
       pull.asyncMap(prepareFile.bind(null, self, opts)),
-      opts.pin ? pull.asyncMap(pinFile.bind(null, self)) : identity
+      shouldPin ? pull.asyncMap(pinFile.bind(null, self)) : identity
     )
   }
 

@@ -25,7 +25,7 @@ module.exports = {
   },
 
   handler: (argv) => {
-    const paths = argv.ipfsPath || []
+    const paths = argv.ipfsPath || ''
     const type = argv.type
     const quiet = argv.quiet
     argv.ipfs.pin.ls(paths, { type: type }, (err, results) => {

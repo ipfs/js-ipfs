@@ -172,6 +172,11 @@ module.exports = {
       type: 'boolean',
       default: false,
       describe: 'Write no output'
+    },
+    pin: {
+      type: 'boolean',
+      default: true,
+      describe: 'Pin this object when adding'
     }
   },
 
@@ -182,7 +187,8 @@ module.exports = {
       strategy: argv.trickle ? 'trickle' : 'balanced',
       shardSplitThreshold: argv.enableShardingExperiment ? argv.shardSplitThreshold : Infinity,
       'cid-version': argv['cid-version'],
-      'raw-leaves': argv['raw-leaves']
+      'raw-leaves': argv['raw-leaves'],
+      pin: argv.pin
     }
 
     // Temporary restriction on raw-leaves:
