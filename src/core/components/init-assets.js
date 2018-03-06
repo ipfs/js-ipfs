@@ -15,23 +15,20 @@ module.exports = function addDefaultAssets (self, log, callback) {
 
   pull(
     pull.values([initDocsPath]),
-    pull.asyncMap((val, cb) => glob(path.join(val, '/**/*'), cb)),
+    pull.asyncMap((val, cb) =>
+      glob(path.join(val, '/**/*'), { nodir: true }, cb)
+    ),
     pull.flatten(),
-    pull.map((element) => {
+    pull.map(element => {
       const addPath = element.substring(index + 1)
-
-      if (fs.statSync(element).isDirectory()) { return }
-
       return { path: addPath, content: file(element) }
     }),
-    // Filter out directories, which are undefined from above
-    pull.filter(Boolean),
-    importer(self._ipld),
-    pull.through((el) => {
-      if (el.path === 'init-docs') {
-        const cid = new CID(el.multihash)
+    self.files.addPullStream(),
+    pull.through(file => {
+      if (file.path === 'init-docs') {
+        const cid = new CID(file.hash)
         log('to get started, enter:\n')
-        log(`\t jsipfs files cat /ipfs/${cid.toBaseEncodedString()}/readme\n`)
+        log(`\tjsipfs files cat /ipfs/${cid.toBaseEncodedString()}/readme\n`)
       }
     }),
     pull.collect((err) => {

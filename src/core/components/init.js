@@ -87,12 +87,9 @@ module.exports = function init (self) {
         self.log('adding assets')
         const tasks = [
           // add empty unixfs dir object (go-ipfs assumes this exists)
-          (cb) => self.object.new('unixfs-dir', cb)
+          (cb) => self.object.new('unixfs-dir', cb),
+          (cb) => addDefaultAssets(self, opts.log, cb)
         ]
-
-        if (typeof addDefaultAssets === 'function') {
-          tasks.push((cb) => addDefaultAssets(self, opts.log, cb))
-        }
 
         parallel(tasks, (err) => {
           if (err) {
