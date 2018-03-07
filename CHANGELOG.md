@@ -1,3 +1,13 @@
+<a name="0.54.0"></a>
+# [0.54.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.53.0...v0.54.0) (2018-03-07)
+
+
+### Bug Fixes
+
+* fixes doc and adds test assertion that peer is a PeerId in return value from swarm.peers ([#230](https://github.com/ipfs/interface-ipfs-core/issues/230)) ([db530d7](https://github.com/ipfs/interface-ipfs-core/commit/db530d7))
+
+
+
 <a name="0.53.0"></a>
 # [0.53.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.52.0...v0.53.0) (2018-03-07)
 
