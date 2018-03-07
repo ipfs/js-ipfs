@@ -39,13 +39,22 @@ This is how it looks like, in somewhat simplified steps:
 
 Thats it!
 
-### Whats up with this `HOP` and `STOP` nonsense?
+#### Whats up with this `HOP` and `STOP` nonsense?
 
 Circuit relay consists of two logical parts - dialer/listener and relay (`HOP`). The listener is also known as the `STOP` node. Each of this - dial, listen and relay happen on a different node.
 
 - The dialer knows how to dial a relay (`HOP`) - `Node A`
 - The relay (`HOP`) knows how to contact a destination node (`STOP`) and create a circuit - `Relay` node
 - The listener (`STOP`) knows how to process relay requests that come from the relay (`HOP`) node - `Node B`
+
+#### A few caveats (and features).
+
+There are a couple of caveats and features to be aware of
+
+- Currently a `Relay` will only work if it already has a connection to the node being relayed to
+- No `multihop` dialing is supported, although its a planed feature for upcoming releases (no date on this one)
+  - multihop dialing is when several relays are used to establish the connection
+- It is possible to use explicit relay addresses to connect to a node, or even to listen for connections on. See next section to learn how to do this.
 
 #### A word on circuit relay addresses
 
@@ -64,6 +73,10 @@ This tells us that we want to use `QmRelay` located at address 127.0.0.1 and por
 - `/ip4/127.0.0.1/tcp/65000/ipfs/QmRelay/p2p-circuit/ip4/127.0.0.1/tcp/8080/ws/ipfs/QmPeer`
 
 We can take it a step further and encode the same information for the destination peer. In this case, we have it located at 127.0.0.1 on port 8080 and using a Web sockets transport!
+
+- `/ip4/127.0.0.1/tcp/65000/ipfs/QmRelay/p2p-circuit`
+
+If a node is configured with this address, it will use the specified host (`/ip4/127.0.0.1/tcp/65000/ipfs/QmRelay`) as a relay and it will be reachable over this relay. There could multiple addresses of this sort specified in the config, in which case the node is going to be reachable over all of them. This is useful if for example, the node is behind a firewall but wants to be reachable from the outside over a specific relay.
 
 Other use-cases are also supported by this scheme, i.e. we can have multiple hops (circuit-relay nodes) encoded in the address, something planed for future releases.
 
