@@ -421,22 +421,32 @@ module.exports = (common) => {
       })
 
       describe('multiple nodes', () => {
+        let topic
+        let sub1
+        let sub2
+
+        beforeEach(() => {
+          topic = getTopic()
+        })
+
+        afterEach(() => {
+          ipfs1.pubsub.unsubscribe(topic, sub1)
+          ipfs2.pubsub.unsubscribe(topic, sub2)
+        })
+
         it('receive messages from different node', (done) => {
           const check = makeCheck(3, done)
           const expectedString = 'hello from the other side'
-          const topic = getTopic()
 
-          const sub1 = (msg) => {
+          sub1 = (msg) => {
             expect(msg.data.toString()).to.be.eql(expectedString)
             expect(msg.from).to.eql(ipfs2.peerId.id)
-            ipfs1.pubsub.unsubscribe(topic, sub1)
             check()
           }
 
-          const sub2 = (msg) => {
+          sub2 = (msg) => {
             expect(msg.data.toString()).to.be.eql(expectedString)
             expect(msg.from).to.eql(ipfs2.peerId.id)
-            ipfs2.pubsub.unsubscribe(topic, sub2)
             check()
           }
 
@@ -455,29 +465,24 @@ module.exports = (common) => {
           const check = makeCheck(3, done)
           const expectedHex = 'a36161636179656162830103056164a16466666666f4'
           const buffer = Buffer.from(expectedHex, 'hex')
-          const topic = getTopic()
 
-          const sub1 = (msg) => {
+          sub1 = (msg) => {
             try {
               expect(msg.data.toString('hex')).to.be.eql(expectedHex)
               expect(msg.from).to.eql(ipfs2.peerId.id)
               check()
             } catch (err) {
               check(err)
-            } finally {
-              ipfs1.pubsub.unsubscribe(topic, sub1)
             }
           }
 
-          const sub2 = (msg) => {
+          sub2 = (msg) => {
             try {
               expect(msg.data.toString('hex')).to.eql(expectedHex)
               expect(msg.from).to.eql(ipfs2.peerId.id)
               check()
             } catch (err) {
               check(err)
-            } finally {
-              ipfs2.pubsub.unsubscribe(topic, sub2)
             }
           }
 
@@ -496,25 +501,21 @@ module.exports = (common) => {
           const inbox1 = []
           const inbox2 = []
           const outbox = ['hello', 'world', 'this', 'is', 'pubsub']
-          const topic = getTopic()
 
           const check = makeCheck(outbox.length * 3, (err) => {
-            ipfs1.pubsub.unsubscribe(topic, sub1)
-            ipfs2.pubsub.unsubscribe(topic, sub2)
-
             expect(inbox1.sort()).to.eql(outbox.sort())
             expect(inbox2.sort()).to.eql(outbox.sort())
 
             done(err)
           })
 
-          function sub1 (msg) {
+          sub1 = (msg) => {
             inbox1.push(msg.data.toString())
             expect(msg.from).to.eql(ipfs2.peerId.id)
             check()
           }
 
-          function sub2 (msg) {
+          sub2 = (msg) => {
             inbox2.push(msg.data.toString())
             expect(msg.from).to.be.eql(ipfs2.peerId.id)
             check()
