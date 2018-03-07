@@ -24,10 +24,10 @@ Here is a simple diagram depicting how a typical circuit-relay connection might 
 
 `Node A` tries to connect to `Node B` but, UH-OH! There is a firewall in between that's preventing it from happening. If both `Node A` and `Node B` know about a relay, they can use it to establish the connection. 
 
-This is how it looks like, in somewhat simplified steps:
+This is what it looks like, in simplified steps:
 
-1. `Node A` tries to connect to `Node B` over one of its know addresses
-2. Connection fails because of firewall/nat/incompatible transports/etc...
+1. `Node A` tries to connect to `Node B` over one of its known addresses
+2. Connection fails because of firewall/NAT/incompatible transports/etc...
 3. Both `Node A` and `Node B` know of the same relay - `Relay`
 4. `Node A` falls back to dialing over `Relay` to `Node B` using its `'/p2p-circuit'` address, which involves:
    1. `Node A` sends a `HOP` request to `Relay`
@@ -37,11 +37,11 @@ This is how it looks like, in somewhat simplified steps:
    5. `Relay` proceed to create a circuit over the two nodes
 5. `Node A` and `Node B` are now connected over `Relay`
 
-Thats it!
+That's it!
 
-#### Whats up with this `HOP` and `STOP` nonsense?
+#### What's up with this `HOP` and `STOP` nonsense?
 
-Circuit relay consists of two logical parts - dialer/listener and relay (`HOP`). The listener is also known as the `STOP` node. Each of this - dial, listen and relay happen on a different node. If we use the nodes from the above example, it looks something like this:
+Circuit relay consists of two logical parts — dialer/listener and relay (`HOP`). The listener is also known as the `STOP` node. Each of these — dial, listen, and relay — happen on a different node. If we use the nodes from the above example, it looks something like this:
 
 - The `dialer` knows how to dial a `relay` (`HOP`) - `Node A`
 - The `relay` (`HOP`) knows how to contact a destination node (`STOP`) and create a circuit - `Relay` node
@@ -49,12 +49,12 @@ Circuit relay consists of two logical parts - dialer/listener and relay (`HOP`).
 
 _Fun fact - the `HOP` and `STOP` names are also used internally by circuit to identify the network message types._
 
-#### A few caveats (and features).
+#### A few caveats (and features)
 
-There are a couple of caveats and features to be aware of
+There are a couple of caveats and features to be aware of:
 
 - A `Relay` will only work if it already has a connection to the `STOP` node
-- No `multihop` dialing is supported. Although it's a feature planed for upcoming releases (no date on this one)
+- No `multihop` dialing is supported. It's a feature planed for upcoming releases (no date on this one)
   - Multihop dialing is when several relays are used to establish the connection
 - It is possible to use explicit relay addresses to connect to a node, or even to listen for connections on. See next section to learn how to do this.
 
@@ -79,8 +79,8 @@ We can take it a step further and encode the same information for the destinatio
 - `/ip4/127.0.0.1/tcp/65000/ipfs/QmRelay/p2p-circuit`
 
 If a node is configured with this address, it will use the specified host (`/ip4/127.0.0.1/tcp/65000/ipfs/QmRelay`) as a relay and it will be reachable over this relay. 
-  - There could multiple addresses of this sort specified in the config, in which case the node is going to be reachable over all of them. 
-  - This is useful if for example, the node is behind a firewall but wants to be reachable from the outside over a specific relay.
+  - There could multiple addresses of this sort specified in the config, in which case the node will be reachable over all of them. 
+  - This is useful if, for example, the node is behind a firewall but wants to be reachable from the outside over a specific relay.
 
 Other use-cases are also supported by this scheme, e.g. we can have multiple hops (circuit-relay nodes) encoded in the address, something planed for future releases.
 
@@ -131,7 +131,7 @@ This will set up your IPFS repo in your home directory.
 
 #### Configure and run the js or go ipfs node
 
-We can either use a `go-ipfs` or a `js-ipfs` node as a relay, we'll demonstrate how to set them up in this tutorial and we encourage you to try them both out. That said, either js or go should do the trick!
+You can use a `go-ipfs` or a `js-ipfs` node as a relay. We'll demonstrate how to set both up in this tutorial and we encourage you to try both out. That said, either js or go should do the trick!
 
 ##### Setting up a `go-ipfs` node
 
@@ -153,9 +153,9 @@ In order to enable the relay functionality in `go-ipfs` we need to edit it's con
   }
 ```
 
-The two options we're looking for are `DisableRelay` and `EnableRelayHop`. We want the former (`DisableRelay`) set to `false` and the later (`EnableRelayHop`) to `true`, just like in the example above. That should set our go node as a relay. 
+The two options we're looking for are `DisableRelay` and `EnableRelayHop`. We want the former (`DisableRelay`) set to `false` and the latter (`EnableRelayHop`) to `true`, just like in the example above. That should set our go node as a relay. 
 
-We also need to make sure our go node is able to be dialed from the browser, for that we need to enable a transport that both the browser and the go node can communicate over. We will use the web sockets transport, although there are others that can be used, such as `webrtc-star` and `websocket-star`. To enable the transport and set the interface and port we need to edit the `~/.ipfs/config` one more time. Lets find the `Swarm` array and add our desired address there. I picked `/ip4/0.0.0.0/tcp/4004/ws` as it is a port I know is not being used by anything on my machine, but we can also use port `0` so that the OS chooses a random available port for us - either one should work.
+We also need to make sure our go node can be dialed from the browser. For that, we need to enable a transport that both the browser and the go node can communicate over. We will use the web sockets transport, although there are others that can be used, such as `webrtc-star` and `websocket-star`. To enable the transport and set the interface and port we need to edit the `~/.ipfs/config` one more time. Let's find the `Swarm` array and add our desired address there. I picked `/ip4/0.0.0.0/tcp/4004/ws` because it is a port I know is not being used by anything on my machine, but we can also use port `0` so that the OS chooses a random available port for us — either one should work.
 
 ```
   "Swarm": [
@@ -169,11 +169,11 @@ The config should look similar to the above snippet after we've edited it.
 
 ##### Setting up a `js-ipfs` node
 
-We need to go through similar steps to enable circuit relay in `jsipfs`, however the config options are slightly different right now -  that should change once this feature is not marked as experimental, but for now we have to deal with two different sets of options.
+We need to go through similar steps to enable circuit relay in `jsipfs`. However, the config options are slightly different — that should change once this feature is not marked as experimental, but for now we have to deal with two different sets of options.
 
-Just as we did with `go-ipfs`, go ahead and edit `js-ipfs` config file located under `~/.jsipfs/config`. Lets add the following config:
+Just as we did with `go-ipfs`, go ahead and edit `js-ipfs` config file located under `~/.jsipfs/config`. Let's add the following config:
 
-(Note that the "EXPERIMENTAL" section might be missing from the config file, in that case, just go ahead and add it)
+(Note that the "EXPERIMENTAL" section might be missing from the config file. In that case, just go ahead and add it)
 
 ```js
   "EXPERIMENTAL": {
@@ -190,7 +190,7 @@ Note that we don't have to do anything to enable the `websocket` transport as it
 
 ##### Starting the relay node
 
-We can start the relay nodes by either doing `ipfs daemon` or `jsipfs daemon`:
+We can start the relay nodes by either running `ipfs daemon` or `jsipfs daemon`:
 
 **go ipfs**
 
@@ -210,7 +210,7 @@ Gateway (readonly) server listening on /ip4/127.0.0.1/tcp/8080
 Daemon is ready
 ```
 
-In the case of go ipfs, the crucial `/ipfs/Qm...` part of the multiaddr might be missing, in that case, you can get it by running the `ipfs id` command.
+In the case of go ipfs, the crucial `/ipfs/Qm...` part of the multiaddr might be missing. In that case, you can get it by running the `ipfs id` command.
 
 ```
 $ ipfs id
@@ -229,7 +229,7 @@ $ ipfs id
 }
 ```
 
-We can then grab the resolved multiaddr from the `Addresses` array - `/ip4/127.0.0.1/tcp/4004/ws/ipfs/Qm...`. Lets note it down somewhere and move to the next step.
+We can then grab the resolved multiaddr from the `Addresses` array — `/ip4/127.0.0.1/tcp/4004/ws/ipfs/Qm...`. Let's note it down somewhere and move to the next step.
 
 **js ipfs**
 
@@ -247,24 +247,24 @@ Gateway (readonly) is listening on: /ip4/127.0.0.1/tcp/9090
 Daemon is ready
 ```
 
-Look out for an address similar to `/ip4/127.0.0.1/tcp/4003/ws/ipfs/Qm...` note it down somewhere, and lets move on to the next step. 
+Look out for an address similar to `/ip4/127.0.0.1/tcp/4003/ws/ipfs/Qm...`. Note it down somewhere, and let's move on to the next step. 
 
 ### 2. Configure and run the bundled example
 
-Now that we have ipfs installed and initialized, lets set up the included example. This is a standard npm package, so the usual `npm install` should get us going. Lets `cd` into the `examples/circuit-relaying` directory and run:
+Now that we have ipfs installed and initialized, let's set up the included example. This is a standard npm package, so the usual `npm install` should get us going. Let's `cd` into the `examples/circuit-relaying` directory and run:
 
 ```
 npm install
 ```
 
-After it finishes, we should be able to run the project with `npm start` and get a similar output to the bellow one:
+After it finishes, we should be able to run the project with `npm start` and get output similar to:
 
 ```
 npm run start
 Server running at http://localhost:1234
 ```
 
-The bundled example is a simple chat app that uses another cool ipfs feature - [pubsub](https://github.com/libp2p/specs/tree/master/pubsub). Lets open up a browser and paste the above url into the address bar. We should see something similar to the following image:
+The bundled example is a simple chat app that uses another cool ipfs feature - [pubsub](https://github.com/libp2p/specs/tree/master/pubsub). Let's open up a browser and paste the above url into the address bar. We should see something similar to the following image:
 
 ![](./img/img1.png)
 
@@ -282,21 +282,21 @@ After connecting to the IPFS node, we should see the relay peer show up under th
 
 ![](./img/img4.png)
 
-Lets repeat the same steps with the second tab. Now, both of our browser nodes should be connected to the relay and we can move on to the next step.
+Let's repeat the same steps with the second tab. Now, both of our browser nodes should be connected to the relay and we can move on to the next step.
 
 ### 4. Dial the two browser nodes using a `/p2p-circuit` address
 
-Having both browsers running side by side (as shown in the first screenshot), lets get them connected to each other. Head out to the `Addresses` box in one of the tabs, copy the `/p2p-circuit` address and then paste it into the `Connect to Peer` box in the other tab. Repeat these steps on the second tab.
+Now that both browsers are running side by side (as shown in the first screenshot), let's get them connected to each other. Head out to the `Addresses` box in one of the tabs, copy the `/p2p-circuit` address and then paste it into the `Connect to Peer` box in the other tab. Repeat these steps on the second tab.
 
 ![](./img/img5.png)
 
-Lets hit the `Connect` button on each of the tabs and we should get the two browsers connected and join the chat room.
+Let's hit the `Connect` button on each of the tabs and we should get the two browsers connected and join the chat room.
 
 ![](./img/img6.png)
 
 ### 5. Send data browser to browser.
 
-Now that we have the two browsers connected, lets try the app out. Type a few words in one of the browser windows and you should see them appear in the other as well!
+Now that we have the two browsers connected, let's try the app out. Type a few words in one of the browser windows and you should see them appear in the other as well!
 
 ![](./img/img7.png)
 
@@ -304,4 +304,4 @@ Thats it!
 
 ### Conclusion
 
-Lets recap what we accomplished in this tutorial. We were able to install a js and go ipfs node and configure them as circuit relays, we connected our browsers to the relay and were able to use the bundled chat app to send messages browser to browser.
+Let's recap what we accomplished in this tutorial. We were able to install a js and go ipfs node and configure them as circuit relays, we connected our browsers to the relay, and were able to use the bundled chat app to send messages browser to browser.
