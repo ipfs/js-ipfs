@@ -1,3 +1,14 @@
+<a name="0.53.0"></a>
+# [0.53.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.52.0...v0.53.0) (2018-03-07)
+
+
+### Bug Fixes
+
+* adapt dag tests to current environment ([7a6fc5f](https://github.com/ipfs/interface-ipfs-core/commit/7a6fc5f))
+* bwPullStream example ([59bd7ac](https://github.com/ipfs/interface-ipfs-core/commit/59bd7ac))
+
+
+
 <a name="0.52.0"></a>
 # [0.52.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.51.0...v0.52.0) (2018-02-15)
 
