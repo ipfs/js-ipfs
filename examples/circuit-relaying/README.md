@@ -55,7 +55,7 @@ There are a couple of caveats and features to be aware of:
 
 - A `Relay` will only work if it already has a connection to the `STOP` node
 - No `multihop` dialing is supported. It's a feature planed for upcoming releases (no date on this one)
-  - Multihop dialing is when several relays are used to establish the connection
+  - `multihop` dialing is when several relays are used to establish the connection
 - It is possible to use explicit relay addresses to connect to a node, or even to listen for connections on. See next section to learn how to do this.
 
 #### A word on circuit relay addresses
