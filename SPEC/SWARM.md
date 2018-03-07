@@ -88,7 +88,7 @@ If `opts.verbose` is set to `true` additional information, such as `latency` is 
 `callback` must follow `function (err, peerInfos) {}` signature, where `err` is an error if the operation was not successful. `peerInfos` will be an array of the form
 
 - `addr: Multiaddr`
-- `peer: [PeerInfo]()`
+- `peer: PeerId`
 - `latency: String` Only if `verbose: true`  was passed
 
 Starting with `go-ipfs 0.4.5` these additional properties are provided

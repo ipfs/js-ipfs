@@ -9,6 +9,7 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const series = require('async/series')
 const multiaddr = require('multiaddr')
+const PeerId = require('peer-id')
 const os = require('os')
 const path = require('path')
 const hat = require('hat')
@@ -79,6 +80,7 @@ module.exports = (common) => {
             expect(peer).to.have.a.property('addr')
             expect(multiaddr.isMultiaddr(peer.addr)).to.equal(true)
             expect(peer).to.have.a.property('peer')
+            expect(PeerId.isPeerId(peer.peer)).to.equal(true)
             expect(peer).to.not.have.a.property('latency')
 
             // only available in 0.4.5
