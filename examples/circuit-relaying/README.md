@@ -22,7 +22,7 @@ Here is a simple diagram depicting how a typical circuit-relay connection might 
                            +---------------------+                          
 ```
 
-`Node A` tries to connect to `Node B` but, UH-OH! There is a firewall in between that's preventing it from happening. If both `Node A` and `Node B` know about a circuit relay, they can use it to establish the connection. 
+`Node A` tries to connect to `Node B` but, UH-OH! There is a firewall in between that's preventing it from happening. If both `Node A` and `Node B` know about a relay, they can use it to establish the connection. 
 
 This is how it looks like, in somewhat simplified steps:
 
