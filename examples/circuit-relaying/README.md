@@ -22,14 +22,14 @@ Here is a simple diagram depicting how a typical circuit-relay connection might 
                            +---------------------+                          
 ```
 
-`Node A` tries to connect to `Node B`, but UH-OH! There is a firewall in between that's preventing it from happening. If both `Node A` and `Node B` know about a circuit relay, they can use it to establish the connection. 
+`Node A` tries to connect to `Node B` but, UH-OH! There is a firewall in between that's preventing it from happening. If both `Node A` and `Node B` know about a circuit relay, they can use it to establish the connection. 
 
 This is how it looks like, in somewhat simplified steps:
 
 1. `Node A` tries to connect to `Node B` over one of its know addresses
 2. Connection fails because of firewall/nat/incompatible transports/etc...
 3. Both `Node A` and `Node B` know of the same relay - `Relay`
-4. `Node A` falls back to dialing over `Node B` `'/p2p-circuit'` address, which involves:
+4. `Node A` falls back to dialing over `Relay` to `Node B` using its `'/p2p-circuit'` address, which involves:
    1. `Node A` sends a `HOP` request to `Relay`
    2. `Relay` extracts the destination address, figures out that a circuit to `Node B` is being requested
    3. `Relay` sends a `STOP` request to `Node B`
