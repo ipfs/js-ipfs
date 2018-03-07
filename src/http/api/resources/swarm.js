@@ -51,7 +51,7 @@ exports.peers = {
       return reply({
         Peers: peers.map((p) => {
           const res = {
-            Peer: p.peer.id.toB58String(),
+            Peer: p.peer.toB58String(),
             Addr: p.addr.toString()
           }
 

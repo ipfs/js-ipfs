@@ -31,7 +31,7 @@ module.exports = function swarm (self) {
 
         const tupple = {
           addr: connectedAddr,
-          peer: peer
+          peer: peer.id
         }
         if (verbose) {
           tupple.latency = 'unknown'
