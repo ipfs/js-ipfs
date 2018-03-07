@@ -302,6 +302,35 @@ Now that we have the two browsers connected, let's try the app out. Type a few w
 
 Thats it!
 
-### Conclusion
+### So what just happened?
 
-Let's recap what we accomplished in this tutorial. We were able to install a js and go ipfs node and configure them as circuit relays, we connected our browsers to the relay, and were able to use the bundled chat app to send messages browser to browser.
+Good question! 
+
+- We used [js-ipfs](htpps://github.com/ipfs/js-ipfs) running in the browser with circuit relay enabled:
+  - _Notice the `EXPERIMENTAL.relay.enabled` bellow_
+
+```js
+const ipfs = new IPFS({
+  repo: repo(),
+  EXPERIMENTAL: {
+    pubsub: true,
+    relay: {
+      enabled: true,
+      hop: {
+        enabled: true
+      }
+    }
+  },
+  config: {
+    Bootstrap: []
+  }
+})
+```
+
+- We connected the browser nodes to an external node over its websocket transport using the `/ip4/127.0.0.1/tcp/4003/ws/ipfs/...` multiaddr. That external node happens to be `HOP` node, meaning that it can relay connections for our browsers (and other nodes) allowing our browsers to connect
+
+- And finally we connected the two browser nodes using the `/p2p-circuit/ipfs/...` multiaddr
+
+Notice how there wasn't anything special we had to do to use the circuit once we had everything connected, all the magic is in the multiaddr! Multiaddrs are **AWESOME**!
+
+I encourage the reader to take a look at the bundled app code to see how the browser nodes get setup, suffice to say nothing changes from the perspective of using an `IPFS` node in js code, apart from the new `EXPERIMENTAL` options.
