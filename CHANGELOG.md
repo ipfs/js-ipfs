@@ -1,3 +1,14 @@
+<a name="0.28.1"></a>
+## [0.28.1](https://github.com/ipfs/js-ipfs/compare/v0.28.0...v0.28.1) (2018-03-09)
+
+
+### Bug Fixes
+
+* **gateway:** catch stream2 error ([#1243](https://github.com/ipfs/js-ipfs/issues/1243)) ([5b40b41](https://github.com/ipfs/js-ipfs/commit/5b40b41))
+* accept objects in file.add ([#1257](https://github.com/ipfs/js-ipfs/issues/1257)) ([d32dad9](https://github.com/ipfs/js-ipfs/commit/d32dad9))
+
+
+
 <a name="0.28.0"></a>
 # [0.28.0](https://github.com/ipfs/js-ipfs/compare/v0.27.7...v0.28.0) (2018-03-01)
 
