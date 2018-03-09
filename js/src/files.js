@@ -165,9 +165,9 @@ module.exports = (common) => {
         })
       })
 
-      it('add a nested directory as array of tupples', (done) => {
+      it('add a nested directory as array of tupples', function (done) {
         // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
-        if (!isNode) { return done() }
+        if (!isNode) { this.skip() }
 
         const content = (name) => ({
           path: `test-folder/${name}`,
@@ -197,9 +197,9 @@ module.exports = (common) => {
         })
       })
 
-      it('add a nested directory as array of tuppled with progress', (done) => {
+      it('add a nested directory as array of tuppled with progress', function (done) {
         // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
-        if (!isNode) { return done() }
+        if (!isNode) { this.skip() }
 
         const content = (name) => ({
           path: `test-folder/${name}`,
@@ -262,9 +262,9 @@ module.exports = (common) => {
     })
 
     describe('.addReadableStream', () => {
-      it('stream of valid files and dirs', (done) => {
+      it('stream of valid files and dirs', function (done) {
         // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
-        if (!isNode) { return done() }
+        if (!isNode) { this.skip() }
 
         const content = (name) => ({
           path: `test-folder/${name}`,
@@ -303,9 +303,9 @@ module.exports = (common) => {
     })
 
     describe('.addPullStream', () => {
-      it('stream of valid files and dirs', (done) => {
+      it('stream of valid files and dirs', function (done) {
         // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
-        if (!isNode) { return done() }
+        if (!isNode) { this.skip() }
 
         const content = (name) => ({
           path: `test-folder/${name}`,
@@ -535,9 +535,9 @@ module.exports = (common) => {
         })
       })
 
-      it('directory', (done) => {
+      it('directory', function (done) {
         // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
-        if (!isNode) { return done() }
+        if (!isNode) { this.skip() }
 
         series([
           (cb) => {
@@ -731,9 +731,9 @@ module.exports = (common) => {
     })
 
     describe('.ls', () => {
-      before((done) => {
+      before(function (done) {
         // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
-        if (!isNode) { return done() }
+        if (!isNode) { this.skip() }
 
         const content = (name) => ({
           path: `test-folder/${name}`,
@@ -763,9 +763,9 @@ module.exports = (common) => {
         })
       })
 
-      it('with a base58 encoded CID', (done) => {
+      it('with a base58 encoded CID', function (done) {
         // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
-        if (!isNode) { return done() }
+        if (!isNode) { this.skip() }
 
         const cid = 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'
         ipfs.ls(cid, (err, files) => {
@@ -831,9 +831,9 @@ module.exports = (common) => {
     })
 
     describe('.lsReadableStream', () => {
-      before((done) => {
+      before(function (done) {
         // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
-        if (!isNode) { return done() }
+        if (!isNode) { this.skip() }
 
         const content = (name) => ({
           path: `test-folder/${name}`,
@@ -863,9 +863,9 @@ module.exports = (common) => {
         })
       })
 
-      it('with a base58 encoded CID', (done) => {
+      it('with a base58 encoded CID', function (done) {
         // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
-        if (!isNode) { return done() }
+        if (!isNode) { this.skip() }
 
         const cid = 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'
         const stream = ipfs.lsReadableStream(cid)
@@ -914,10 +914,10 @@ module.exports = (common) => {
       })
     })
 
-    describe('.lsPullStream', () => {
+    describe('.lsPullStream', function (done) {
       before((done) => {
         // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
-        if (!isNode) { return done() }
+        if (!isNode) { this.skip() }
 
         const content = (name) => ({
           path: `test-folder/${name}`,
@@ -947,9 +947,9 @@ module.exports = (common) => {
         })
       })
 
-      it('with a base58 encoded CID', (done) => {
+      it('with a base58 encoded CID', function (done) {
         // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
-        if (!isNode) { return done() }
+        if (!isNode) { this.skip() }
 
         const cid = 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'
         const stream = ipfs.lsPullStream(cid)

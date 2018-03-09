@@ -37,10 +37,10 @@ module.exports = (common) => {
     after((done) => common.teardown(done))
 
     describe('.mkdir', function () {
-      it('make directory on root', (done) => {
+      it('make directory on root', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.mkdir('/test', (err) => {
@@ -49,10 +49,10 @@ module.exports = (common) => {
         })
       })
 
-      it('make directory and its parents', (done) => {
+      it('make directory and its parents', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.mkdir('/test/lv1/lv2', { p: true }, (err) => {
@@ -61,10 +61,10 @@ module.exports = (common) => {
         })
       })
 
-      it('make already existent directory', (done) => {
+      it('make already existent directory', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.mkdir('/', (err) => {
@@ -75,10 +75,10 @@ module.exports = (common) => {
     })
 
     describe('.write', function () {
-      it('expect error', (done) => {
+      it('expect error', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.write('/test/a', Buffer.from('Hello, world!'), (err) => {
@@ -87,10 +87,10 @@ module.exports = (common) => {
         })
       })
 
-      it('expect no error', (done) => {
+      it('expect no error', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.write('/test/a', Buffer.from('Hello, world!'), {create: true}, (err) => {
@@ -101,10 +101,10 @@ module.exports = (common) => {
     })
 
     describe('.cp', function () {
-      it('copy file, expect error', (done) => {
+      it('copy file, expect error', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.cp(['/test/c', '/test/b'], (err) => {
@@ -113,10 +113,10 @@ module.exports = (common) => {
         })
       })
 
-      it('copy file, expect no error', (done) => {
+      it('copy file, expect no error', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.cp(['/test/a', '/test/b'], (err) => {
@@ -125,10 +125,10 @@ module.exports = (common) => {
         })
       })
 
-      it('copy dir, expect error', (done) => {
+      it('copy dir, expect error', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.cp(['/test/lv1/lv3', '/test/lv1/lv4'], (err) => {
@@ -137,10 +137,10 @@ module.exports = (common) => {
         })
       })
 
-      it('copy dir, expect no error', (done) => {
+      it('copy dir, expect no error', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.cp(['/test/lv1/lv2', '/test/lv1/lv3'], (err) => {
@@ -151,10 +151,10 @@ module.exports = (common) => {
     })
 
     describe('.mv', function () {
-      it('move file, expect error', (done) => {
+      it('move file, expect error', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.mv(['/test/404', '/test/a'], (err) => {
@@ -163,10 +163,10 @@ module.exports = (common) => {
         })
       })
 
-      it('move file, expect no error', (done) => {
+      it('move file, expect no error', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.mv(['/test/a', '/test/c'], (err) => {
@@ -175,10 +175,10 @@ module.exports = (common) => {
         })
       })
 
-      it('move dir, expect error', (done) => {
+      it('move dir, expect error', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.mv(['/test/lv1/404', '/test/lv1'], (err) => {
@@ -187,10 +187,10 @@ module.exports = (common) => {
         })
       })
 
-      it('move dir, expect no error', (done) => {
+      it('move dir, expect no error', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.mv(['/test/lv1/lv2', '/test/lv1/lv4'], (err) => {
@@ -201,10 +201,10 @@ module.exports = (common) => {
     })
 
     describe('.rm', function () {
-      it('remove file, expect error', (done) => {
+      it('remove file, expect error', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.rm('/test/a', (err) => {
@@ -213,10 +213,10 @@ module.exports = (common) => {
         })
       })
 
-      it('remove file, expect no error', (done) => {
+      it('remove file, expect no error', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.rm('/test/c', (err) => {
@@ -225,10 +225,10 @@ module.exports = (common) => {
         })
       })
 
-      it('remove dir, expect error', (done) => {
+      it('remove dir, expect error', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.rm('/test/lv1/lv4', (err) => {
@@ -237,10 +237,10 @@ module.exports = (common) => {
         })
       })
 
-      it('remove dir, expect no error', (done) => {
+      it('remove dir, expect no error', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.rm('/test/lv1/lv4', {recursive: true}, (err) => {
@@ -251,10 +251,10 @@ module.exports = (common) => {
     })
 
     describe('.stat', function () {
-      it('stat not found, expect error', (done) => {
+      it('stat not found, expect error', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.stat('/test/404', (err) => {
@@ -263,10 +263,10 @@ module.exports = (common) => {
         })
       })
 
-      it('stat file', (done) => {
+      it('stat file', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.stat('/test/b', (err, stat) => {
@@ -282,10 +282,10 @@ module.exports = (common) => {
         })
       })
 
-      it('stat dir', (done) => {
+      it('stat dir', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.stat('/test', (err, stat) => {
@@ -303,10 +303,10 @@ module.exports = (common) => {
     })
 
     describe('.read', function () {
-      it('read not found, expect error', (done) => {
+      it('read not found, expect error', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.read('/test/404', (err, buf) => {
@@ -316,10 +316,10 @@ module.exports = (common) => {
         })
       })
 
-      it('read file', (done) => {
+      it('read file', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.read('/test/b', (err, buf) => {
@@ -331,10 +331,10 @@ module.exports = (common) => {
     })
 
     describe('.ls', function () {
-      it('ls not found, expect error', (done) => {
+      it('ls not found, expect error', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.ls('/test/404', (err, info) => {
@@ -344,10 +344,10 @@ module.exports = (common) => {
         })
       })
 
-      it('ls directory', (done) => {
+      it('ls directory', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.ls('/test', (err, info) => {
@@ -360,10 +360,10 @@ module.exports = (common) => {
         })
       })
 
-      it('ls -l directory', (done) => {
+      it('ls -l directory', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.ls('/test', { l: true }, (err, info) => {
@@ -388,10 +388,10 @@ module.exports = (common) => {
     })
 
     describe('.flush', function () {
-      it('flush not found, expect error', (done) => {
+      it('flush not found, expect error', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.flush('/test/404', (err) => {
@@ -400,10 +400,10 @@ module.exports = (common) => {
         })
       })
 
-      it('flush root', (done) => {
+      it('flush root', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.flush((err) => {
@@ -412,10 +412,10 @@ module.exports = (common) => {
         })
       })
 
-      it('flush specific dir', (done) => {
+      it('flush specific dir', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
-          return done()
+          this.skip()
         }
 
         ipfs.files.flush('/test', (err) => {

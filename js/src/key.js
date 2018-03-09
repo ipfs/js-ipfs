@@ -147,10 +147,10 @@ module.exports = (common) => {
       let selfPem
       let passwordPem = hat()
 
-      it('exports', (done) => {
+      it('exports', function (done) {
         if (withGo) {
           console.log('Not supported by go-ipfs yet')
-          return done()
+          this.skip()
         }
         ipfs.key.export('self', passwordPem, (err, pem) => {
           expect(err).to.not.exist()
@@ -160,10 +160,10 @@ module.exports = (common) => {
         })
       })
 
-      it('imports', (done) => {
+      it('imports', function (done) {
         if (withGo) {
           console.log('Not supported by go-ipfs yet')
-          return done()
+          this.skip()
         }
         ipfs.key.import('clone', selfPem, passwordPem, (err, key) => {
           expect(err).to.not.exist()
@@ -174,10 +174,10 @@ module.exports = (common) => {
         })
       })
 
-      it('removes', (done) => {
+      it('removes', function (done) {
         if (withGo) {
           console.log('Not supported by go-ipfs yet')
-          return done()
+          this.skip()
         }
         ipfs.key.rm('clone', (err) => {
           expect(err).to.not.exist()
