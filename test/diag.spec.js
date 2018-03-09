@@ -5,7 +5,7 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-const os = require('os')
+const platform = require('browser-process-platform')
 
 const IPFSApi = require('../src')
 const f = require('./utils/factory')
@@ -14,7 +14,7 @@ describe('.diag', function () {
   this.timeout(50 * 1000)
 
   // go-ipfs does not support these on Windows
-  if (os.platform() === 'win32') { return }
+  if (platform === 'win32') { return }
 
   let ipfsd
   let ipfs
