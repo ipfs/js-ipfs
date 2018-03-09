@@ -307,13 +307,13 @@ Thats it!
 Good question! 
 
 - We used [js-ipfs](htpps://github.com/ipfs/js-ipfs) running in the browser with circuit relay enabled:
-  - _Notice the `EXPERIMENTAL.relay.enabled` bellow_
+  - _Notice the `EXPERIMENTAL.relay.enabled` below_
 
+you can find it in [src/app.js](src/app.js)
 ```js
 const ipfs = new IPFS({
   repo: repo(),
   EXPERIMENTAL: {
-    pubsub: true,
     relay: {
       enabled: true,
       hop: {
@@ -327,10 +327,23 @@ const ipfs = new IPFS({
 })
 ```
 
-- We connected the browser nodes to an external node over its websocket transport using the `/ip4/127.0.0.1/tcp/4003/ws/ipfs/...` multiaddr. That external node happens to be `HOP` node, meaning that it can relay connections for our browsers (and other nodes) allowing our browsers to connect
+- We connected the browser nodes to an external node over its websocket transport using the `/ip4/127.0.0.1/tcp/4003/ws/ipfs/...` multiaddr. That external node happens to be a `HOP` node, meaning that it can relay connections for our browsers (and other nodes) allowing them to connect
 
-- And finally we connected the two browser nodes using the `/p2p-circuit/ipfs/...` multiaddr
+- And finally we connected the two browser nodes using the `/p2p-circuit/ipfs/...` multiaddr. Take a look at the code below in [src/app.js](src/app.js), lines 102-107
+
+```js
+    ipfs.swarm.connect(peer, (err) => {
+      if (err) {
+        return console.error(err)
+      }
+      $pAddrs.innerHTML += `<li>${peer.trim()}</li>`
+    })
+```
 
 Notice how there wasn't anything special we had to do to use the circuit once we had everything connected, all the magic is in the multiaddr! Multiaddrs are **AWESOME**!
 
 I encourage the reader to take a look at the bundled app code to see how the browser nodes get setup, suffice to say nothing changes from the perspective of using an `IPFS` node in js code, apart from the new `EXPERIMENTAL` options.
+
+Finally, a side note on [pubsub](https://github.com/libp2p/specs/blob/master/pubsub/README.md). We've used the amazing [ipfs-pubsub-room](https://github.com/ipfs-shipyard/ipfs-pubsub-room) module, to enable the chat functionality. Make sure to take a look at the demo [video](https://www.youtube.com/watch?v=Nv_Teb--1zg) that explains how pubsub works and how it can be used to build other applications!
+
+Cheers!
