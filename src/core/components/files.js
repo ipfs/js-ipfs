@@ -190,6 +190,8 @@ module.exports = function files (self) {
         callback = noop
       }
 
+      console.log('typeof', typeof data)
+
       const ok = Buffer.isBuffer(data) ||
                  isStream.readable(data) ||
                  Array.isArray(data) ||
@@ -197,7 +199,7 @@ module.exports = function files (self) {
                  typeof data === 'object'
 
       if (!ok) {
-        return callback(new Error('Invalid arguments, data must be an object, Buffer or readable stream'))
+        return callback(new Error('first arg must be a buffer, readable stream, an object or array of objects'))
       }
 
       pull(
