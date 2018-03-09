@@ -25,10 +25,11 @@ module.exports = (send) => {
     const ok = Buffer.isBuffer(_files) ||
                isStream.readable(_files) ||
                Array.isArray(_files) ||
-               OtherBuffer.isBuffer(_files)
+               OtherBuffer.isBuffer(_files) ||
+               typeof _files === 'object'
 
     if (!ok) {
-      return callback(new Error('"files" must be a buffer, readable stream, or array of objects'))
+      return callback(new Error('first arg must be a buffer, readable stream, an object or array of objects'))
     }
 
     const files = [].concat(_files)
