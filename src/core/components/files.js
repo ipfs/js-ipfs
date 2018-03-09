@@ -193,10 +193,11 @@ module.exports = function files (self) {
       const ok = Buffer.isBuffer(data) ||
                  isStream.readable(data) ||
                  Array.isArray(data) ||
-                 OtherBuffer.isBuffer(data)
+                 OtherBuffer.isBuffer(data) ||
+                 typeof data === 'object'
 
       if (!ok) {
-        return callback(new Error('Invalid arguments, data must be an object, Buffer or readable stream'))
+        return callback(new Error('first arg must be a buffer, readable stream, an object or array of objects'))
       }
 
       pull(
