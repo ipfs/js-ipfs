@@ -614,7 +614,29 @@ module.exports = (common) => {
         ], done)
       })
 
-      it('with ipfs path, nested value', (done) => {
+      it('with ipfs path, as object and nested value', (done) => {
+        const file = {
+          path: 'a/testfile.txt',
+          content: smallFile.data
+        }
+
+        ipfs.files.add(file, (err, filesAdded) => {
+          expect(err).to.not.exist()
+
+          filesAdded.forEach((file) => {
+            if (file.path === 'a') {
+              ipfs.files.get(`/ipfs/${file.hash}/testfile.txt`, (err, files) => {
+                expect(err).to.not.exist()
+                expect(files).to.be.length(1)
+                expect(files[0].content.toString('utf8')).to.contain('Plz add me!')
+                done()
+              })
+            }
+          })
+        })
+      })
+
+      it('with ipfs path, as array and nested value', (done) => {
         const file = {
           path: 'a/testfile.txt',
           content: smallFile.data
