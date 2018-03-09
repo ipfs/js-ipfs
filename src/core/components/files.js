@@ -190,8 +190,6 @@ module.exports = function files (self) {
         callback = noop
       }
 
-      console.log('typeof', typeof data)
-
       const ok = Buffer.isBuffer(data) ||
                  isStream.readable(data) ||
                  Array.isArray(data) ||
