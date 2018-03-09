@@ -1,3 +1,13 @@
+<a name="0.55.1"></a>
+## [0.55.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.55.0...v0.55.1) (2018-03-09)
+
+
+### Bug Fixes
+
+* files.add accepts object ([88a635a](https://github.com/ipfs/interface-ipfs-core/commit/88a635a))
+
+
+
 <a name="0.55.0"></a>
 # [0.55.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.54.0...v0.55.0) (2018-03-09)
 
