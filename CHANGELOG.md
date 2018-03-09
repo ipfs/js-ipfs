@@ -1,3 +1,13 @@
+<a name="0.55.0"></a>
+# [0.55.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.54.0...v0.55.0) (2018-03-09)
+
+
+### Bug Fixes
+
+* only skip if it is go-ipfs on Windows ([0df216f](https://github.com/ipfs/interface-ipfs-core/commit/0df216f))
+
+
+
 <a name="0.54.0"></a>
 # [0.54.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.53.0...v0.54.0) (2018-03-07)
 
