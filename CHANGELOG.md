@@ -1,3 +1,14 @@
+<a name="18.1.2"></a>
+## [18.1.2](https://github.com/ipfs/js-ipfs-api/compare/v18.1.1...v18.1.2) (2018-03-09)
+
+
+### Bug Fixes
+
+* regression on files.add and update deps ([#709](https://github.com/ipfs/js-ipfs-api/issues/709)) ([85cc2a8](https://github.com/ipfs/js-ipfs-api/commit/85cc2a8))
+* remove argument from .stats.bw* ([#699](https://github.com/ipfs/js-ipfs-api/issues/699)) ([f81dce5](https://github.com/ipfs/js-ipfs-api/commit/f81dce5))
+
+
+
 <a name="18.1.1"></a>
 ## [18.1.1](https://github.com/ipfs/js-ipfs-api/compare/v18.0.0...v18.1.1) (2018-02-20)
 
