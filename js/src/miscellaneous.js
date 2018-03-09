@@ -11,6 +11,7 @@ chai.use(dirtyChai)
 module.exports = (common) => {
   describe('.miscellaneous', () => {
     let ipfs
+    let withGo
 
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
@@ -22,7 +23,11 @@ module.exports = (common) => {
         factory.spawnNode((err, node) => {
           expect(err).to.not.exist()
           ipfs = node
-          done()
+          ipfs.id((err, id) => {
+            expect(err).to.not.exist()
+            withGo = id.agentVersion.startsWith('go-ipfs')
+            done()
+          })
         })
       })
     })
@@ -83,12 +88,15 @@ module.exports = (common) => {
     })
 
     // must be last test to run
-    it('.stop', (done) => {
-      // TODO: go-ipfs returns an error, https://github.com/ipfs/go-ipfs/issues/4078
+    it('.stop', function (done) {
+      this.timeout(10 * 1000)
       ipfs.stop((err) => {
-        if (err && err.message !== 'read ECONNRESET') {
+        // TODO: go-ipfs returns an error, https://github.com/ipfs/go-ipfs/issues/4078
+        if (!withGo) {
           expect(err).to.not.exist()
         }
+        // Trying to stop an already stopped node should return an error
+        // as the node can't respond to requests anymore
         ipfs.stop((err) => {
           expect(err).to.exist()
           done()
