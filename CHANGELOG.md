@@ -1,3 +1,13 @@
+<a name="0.56.0"></a>
+# [0.56.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.55.1...v0.56.0) (2018-03-12)
+
+
+### Features
+
+* complete files.stat with the 'with-local' option ([#227](https://github.com/ipfs/interface-ipfs-core/issues/227)) ([5969fed](https://github.com/ipfs/interface-ipfs-core/commit/5969fed))
+
+
+
 <a name="0.55.1"></a>
 ## [0.55.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.55.0...v0.55.1) (2018-03-09)
 
