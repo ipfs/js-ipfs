@@ -24,6 +24,7 @@ module.exports = (common) => {
     this.timeout(40 * 1000)
 
     let ipfs
+    let withGo
 
     function fixture (path) {
       return loadFixture(path, 'interface-ipfs-core')
@@ -60,7 +61,11 @@ module.exports = (common) => {
         factory.spawnNode((err, node) => {
           expect(err).to.not.exist()
           ipfs = node
-          done()
+          node.id((err, id) => {
+            expect(err).to.not.exist()
+            withGo = id.agentVersion.startsWith('go-ipfs')
+            done()
+          })
         })
       })
     })
@@ -1000,6 +1005,32 @@ module.exports = (common) => {
             done()
           })
         )
+      })
+    })
+
+    describe('.stat', () => {
+      before((done) => ipfs.files.add(smallFile.data, done))
+
+      it('stat outside of mfs', function (done) {
+        if (!withGo) {
+          console.log('Not supported in js-ipfs yet')
+          this.skip()
+        }
+
+        ipfs.files.stat('/ipfs/' + smallFile.cid, (err, stat) => {
+          expect(err).to.not.exist()
+          expect(stat).to.eql({
+            type: 'file',
+            blocks: 0,
+            size: 12,
+            hash: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
+            cumulativeSize: 20,
+            withLocality: false,
+            local: undefined,
+            sizeLocal: undefined
+          })
+          done()
+        })
       })
     })
   })

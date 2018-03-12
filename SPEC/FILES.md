@@ -618,6 +618,7 @@ Where:
 - `options` is an optional Object that might contain the following keys:
   - `hash` is a Boolean value to return only the hash.
   - `size` is a Boolean value to return only the size.
+  - `withLocal` is a Boolean value to compute the amount of the dag that is local, and if possible the total size.
 
 `callback` must follow the `function (err, stat) {}` signature, where `err` is an Error if the operation was not successful and `stat` is an Object with the following keys:
 
@@ -626,6 +627,10 @@ Where:
 - `cumulativeSize` is an integer with the cumulative size in Bytes.
 - `blocks` is an integer indicating the number of blocks.
 - `type` is a string that can be either `directory` or `file`.
+- `withLocality` is a boolean to indicate if locality information are present.
+- `local` is a boolean to indicate if the queried dag is fully present locally.
+- `sizeLocal` is an integer indicating the cumulative size of the data present locally.
+
 
 If no `callback` is passed, a promise is returned.
 
