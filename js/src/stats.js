@@ -63,7 +63,7 @@ module.exports = (common) => {
       })
     })
 
-    it('.bw Promise', function (done) {
+    it('.bw Promise', function () {
       if (!withGo) {
         console.log('Not supported in js-ipfs yet')
         this.skip()

@@ -919,8 +919,8 @@ module.exports = (common) => {
       })
     })
 
-    describe('.lsPullStream', function (done) {
-      before((done) => {
+    describe('.lsPullStream', () => {
+      before(function (done) {
         // TODO: https://github.com/ipfs/js-ipfs-api/issues/339
         if (!isNode) { this.skip() }
 
