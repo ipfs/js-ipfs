@@ -270,7 +270,7 @@ The bundled example is a simple chat app that uses another cool ipfs feature - [
 
 ### 3. Connect the two browser nodes to the circuit relay
 
-In order for our browser nodes to be able to messages each other, we need to get them connected. But do do that, we need to use a relay - browser nodes can't be connected directly because of lack of socket support. 
+In order for our browser nodes to be able to messages each other, we need to get them connected. But to do that, we need to use a relay - browser nodes can't be connected directly because of lack of socket support. 
 
 Remember the caveat above `Currently a Relay will only work if it already has a connection to the STOP node`? This means that we need to connect our browser nodes to the relay node first.
 
@@ -286,7 +286,7 @@ Let's repeat the same steps with the second tab. Now, both of our browser nodes 
 
 ### 4. Dial the two browser nodes using a `/p2p-circuit` address
 
-Now that both browsers are running side by side (as shown in the first screenshot), let's get them connected to each other. Head out to the `Addresses` box in one of the tabs, copy the `/p2p-circuit` address and then paste it into the `Connect to Peer` box in the other tab. Repeat these steps on the second tab.
+Now that our browsers are both connected to the relay peer, let's get them connected to each other. Head out to the `Addresses` box in one of the tabs, copy the `/p2p-circuit` address and then paste it into the `Connect to Peer` box in the other tab. Repeat these steps on the second tab.
 
 ![](./img/img5.png)
 
@@ -329,7 +329,7 @@ const ipfs = new IPFS({
 
 - We connected the browser nodes to an external node over its websocket transport using the `/ip4/127.0.0.1/tcp/4003/ws/ipfs/...` multiaddr. That external node happens to be a `HOP` node, meaning that it can relay connections for our browsers (and other nodes) allowing them to connect
 
-- And finally we connected the two browser nodes using the `/p2p-circuit/ipfs/...` multiaddr. Take a look at the code below in [src/app.js](src/app.js), lines 102-107
+- And finally we connected the two browser nodes using the `/p2p-circuit/ipfs/...` multiaddr. Take a look at the code below in [src/app.js](src/app.js#L102...L107) - lines 102-107
 
 ```js
     ipfs.swarm.connect(peer, (err) => {
@@ -340,7 +340,7 @@ const ipfs = new IPFS({
     })
 ```
 
-Notice how there wasn't anything special we had to do to use the circuit once we had everything connected, all the magic is in the multiaddr! Multiaddrs are **AWESOME**!
+The above code snippet, handles connecting to other nodes using `ipfs.swarm.connect`, notice how there wasn't anything special we had to do to use the circuit once we had everything connected, all the magic is in the multiaddr! [Multiaddrs](https://multiformats.io/multiaddr/) are **AWESOME**!
 
 I encourage the reader to take a look at the bundled app code to see how the browser nodes get setup, suffice to say nothing changes from the perspective of using an `IPFS` node in js code, apart from the new `EXPERIMENTAL` options.
 
