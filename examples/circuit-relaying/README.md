@@ -340,7 +340,7 @@ const ipfs = new IPFS({
     })
 ```
 
-The above code snippet, handles connecting to other nodes using `ipfs.swarm.connect`, notice how there wasn't anything special we had to do to use the circuit once we had everything connected, all the magic is in the multiaddr! [Multiaddrs](https://multiformats.io/multiaddr/) are **AWESOME**!
+The above code snippet handles connecting to other nodes using `ipfs.swarm.connect`. Notice how there wasn't anything special we had to do to use the circuit once we had everything connected; all the magic is in the multiaddr! [Multiaddrs](https://multiformats.io/multiaddr/) are **AWESOME**!
 
 I encourage the reader to take a look at the bundled app code to see how the browser nodes get setup, suffice to say nothing changes from the perspective of using an `IPFS` node in js code, apart from the new `EXPERIMENTAL` options.
 
