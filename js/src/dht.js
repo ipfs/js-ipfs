@@ -153,7 +153,8 @@ module.exports = (common) => {
     })
 
     describe('.query', () => {
-      it('returns the other node in the query', (done) => {
+      it('returns the other node in the query', function (done) {
+        this.timeout(150 * 1000)
         nodeA.dht.query(nodeC.peerId.id, (err, peers) => {
           expect(err).to.not.exist()
           expect(peers.map((p) => p.ID)).to.include(nodeC.peerId.id)
