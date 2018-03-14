@@ -323,14 +323,19 @@ It returns a [Readable Stream][rs] in [Object mode](https://nodejs.org/api/strea
 **Example:**
 
 ```JavaScript
-const validCID = 'QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
+const validCID = 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG'
 
 const stream = ipfs.files.getReadableStream(validCID)
 
 stream.on('data', (file) => {
   // write the file's path and contents to standard out
   console.log(file.path)
-  console.log(file.path.toString())
+  if(file.type !== 'dir') {
+    file.content.on('data', (data) => {
+      console.log(data.toString())
+    })
+    file.content.resume()
+  }
 })
 ```
 
