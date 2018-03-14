@@ -199,17 +199,6 @@ main {
   margin-bottom: 1em;
 }
 
-/* #peers i {
-  display: none;
-  margin-top: 5px;
-  margin-bottom: 5px;
-  font-size: 14px;
-}
-
-#peers.waiting i {
-  display: block;
-} */
-
 .errors {
   grid-area: errors;
   color: red;
