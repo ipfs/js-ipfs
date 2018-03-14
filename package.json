@@ -177,6 +177,7 @@
     "prometheus-gc-stats": "^0.5.0"
   },
   "contributors": [
+    "Alan Shaw <alan@tableflip.io>",
     "Andrew de Andrade <andrew@deandrade.com.br>",
     "Arpit Agarwal <93arpit@gmail.com>",
     "Arpit Agarwal <atvanguard@users.noreply.github.com>",
