@@ -51,6 +51,11 @@ module.exports = (repoPath, opts) => {
     return res
   }
 
+  /**
+   * Expect the command passed as @param arguments to fail.
+   * @return {Promise} Resolves if the command passed as @param arguments fails,
+   *                    rejects if it was successful.
+   */
   ipfs.fail = function ipfsFail () {
     let args = Array.from(arguments)
     let caught = false

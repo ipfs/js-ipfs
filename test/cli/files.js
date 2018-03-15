@@ -290,7 +290,7 @@ describe('files', () => runOnAndOff((thing) => {
       .then(out => {
         const hash = out.split(' ')[1]
 
-        // 'jsipfs object get <hash>' should time out with the daemon on
+        // 'jsipfs object get <hash>' should timeout with the daemon on
         // and should fail fast with the daemon off
         return Promise.race([
           ipfs.fail(`object get ${hash}`),
