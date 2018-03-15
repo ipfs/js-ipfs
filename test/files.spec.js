@@ -13,6 +13,7 @@ const CID = require('cids')
 
 const IPFSApi = require('../src')
 const f = require('./utils/factory')
+const expectTimeout = require('./utils/expect-timeout')
 
 const testfile = loadFixture('test/fixtures/testfile.txt')
 
@@ -102,6 +103,19 @@ describe('.files (the MFS API part)', function () {
     })
   })
 
+  it('files.add with only-hash=true', function () {
+    this.slow(10 * 1000)
+    const content = String(Math.random() + Date.now())
+
+    return ipfs.files.add(Buffer.from(content), { onlyHash: true })
+      .then(files => {
+        expect(files).to.have.length(1)
+
+        // 'ipfs.object.get(<hash>)' should timeout because content wasn't actually added
+        return expectTimeout(ipfs.object.get(files[0].hash), 4000)
+      })
+  })
+
   it('files.add with options', (done) => {
     ipfs.files.add(testfile, { pin: false }, (err, res) => {
       expect(err).to.not.exist()
@@ -110,6 +124,42 @@ describe('.files (the MFS API part)', function () {
       expect(res[0].hash).to.equal(expectedMultihash)
       expect(res[0].path).to.equal(expectedMultihash)
       done()
+    })
+  })
+
+  it('files.add pins by default', (done) => {
+    const newContent = Buffer.from(String(Math.random()))
+
+    ipfs.pin.ls((err, pins) => {
+      expect(err).to.not.exist()
+      const initialPinCount = pins.length
+      ipfs.files.add(newContent, (err, res) => {
+        expect(err).to.not.exist()
+
+        ipfs.pin.ls((err, pins) => {
+          expect(err).to.not.exist()
+          expect(pins.length).to.eql(initialPinCount + 1)
+          done()
+        })
+      })
+    })
+  })
+
+  it('files.add with pin=false', (done) => {
+    const newContent = Buffer.from(String(Math.random()))
+
+    ipfs.pin.ls((err, pins) => {
+      expect(err).to.not.exist()
+      const initialPinCount = pins.length
+      ipfs.files.add(newContent, { pin: false }, (err, res) => {
+        expect(err).to.not.exist()
+
+        ipfs.pin.ls((err, pins) => {
+          expect(err).to.not.exist()
+          expect(pins.length).to.eql(initialPinCount)
+          done()
+        })
+      })
     })
   })
 

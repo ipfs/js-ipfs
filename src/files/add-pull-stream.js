@@ -8,6 +8,6 @@ module.exports = (send) => {
   return (options) => {
     options = options || {}
     options.converter = FileResultStreamConverter
-    return toPull(SendFilesStream(send, 'add')(options))
+    return toPull(SendFilesStream(send, 'add')({ qs: options }))
   }
 }

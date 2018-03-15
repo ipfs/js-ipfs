@@ -31,7 +31,7 @@ module.exports = (send, path) => {
     let ended = false
     let writing = false
 
-    options = options || {}
+    options = options ? Object.assign({}, options, options.qs) : {}
 
     const multipart = new Multipart()
 
@@ -42,7 +42,7 @@ module.exports = (send, path) => {
     retStream._write = (file, enc, _next) => {
       const next = once(_next)
       try {
-        const files = prepareFile(file, Object.assign({}, options, options.qs))
+        const files = prepareFile(file, options)
           .map((file) => Object.assign({headers: headers(file)}, file))
 
         writing = true
@@ -75,23 +75,10 @@ module.exports = (send, path) => {
 
     const qs = options.qs || {}
 
-    if (options['cid-version'] != null) {
-      qs['cid-version'] = options['cid-version']
-    } else if (options.cidVersion != null) {
-      qs['cid-version'] = options.cidVersion
-    }
-
-    if (options['raw-leaves'] != null) {
-      qs['raw-leaves'] = options['raw-leaves']
-    } else if (options.rawLeaves != null) {
-      qs['raw-leaves'] = options.rawLeaves
-    }
-
-    if (options.hash != null) {
-      qs.hash = options.hash
-    } else if (options.hashAlg != null) {
-      qs.hash = options.hashAlg
-    }
+    qs['cid-version'] = propOrProp(options, 'cid-version', 'cidVersion')
+    qs['raw-leaves'] = propOrProp(options, 'raw-leaves', 'rawLeaves')
+    qs['only-hash'] = propOrProp(options, 'only-hash', 'onlyHash')
+    qs.hash = propOrProp(options, 'hash', 'hashAlg')
 
     const args = {
       path: path,
@@ -156,5 +143,13 @@ module.exports = (send, path) => {
     multipart.pipe(request)
 
     return retStream
+  }
+}
+
+function propOrProp (source, prop1, prop2) {
+  if (prop1 in source) {
+    return source[prop1]
+  } else if (prop2 in source) {
+    return source[prop2]
   }
 }
