@@ -1,3 +1,23 @@
+<a name="18.2.0"></a>
+# [18.2.0](https://github.com/ipfs/js-ipfs-api/compare/v18.1.2...v18.2.0) (2018-03-16)
+
+
+### Bug Fixes
+
+* disable Browser test on Windows ([385a6c3](https://github.com/ipfs/js-ipfs-api/commit/385a6c3))
+* don't create one webpack bundle for every test file ([3967e96](https://github.com/ipfs/js-ipfs-api/commit/3967e96))
+* last fixes for green ([#719](https://github.com/ipfs/js-ipfs-api/issues/719)) ([658bad2](https://github.com/ipfs/js-ipfs-api/commit/658bad2))
+* set the FileResultStreamConverter explicitly ([dfad55e](https://github.com/ipfs/js-ipfs-api/commit/dfad55e)), closes [#696](https://github.com/ipfs/js-ipfs-api/issues/696)
+* use a different remote server for test ([1fc15a5](https://github.com/ipfs/js-ipfs-api/commit/1fc15a5))
+
+
+### Features
+
+* --only-hash ([#717](https://github.com/ipfs/js-ipfs-api/issues/717)) ([1137401](https://github.com/ipfs/js-ipfs-api/commit/1137401)), closes [#700](https://github.com/ipfs/js-ipfs-api/issues/700)
+* add support for ipfs files stat --with-local ([#695](https://github.com/ipfs/js-ipfs-api/issues/695)) ([b08f21a](https://github.com/ipfs/js-ipfs-api/commit/b08f21a))
+
+
+
 <a name="18.1.2"></a>
 ## [18.1.2](https://github.com/ipfs/js-ipfs-api/compare/v18.1.1...v18.1.2) (2018-03-09)
 
