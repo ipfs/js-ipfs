@@ -1,3 +1,19 @@
+<a name="0.28.2"></a>
+## [0.28.2](https://github.com/ipfs/js-ipfs/compare/v0.28.1...v0.28.2) (2018-03-14)
+
+
+### Bug Fixes
+
+* match error if repo doesnt exist ([#1262](https://github.com/ipfs/js-ipfs/issues/1262)) ([aea69d3](https://github.com/ipfs/js-ipfs/commit/aea69d3))
+* reinstates the non local block check in dht.provide ([#1250](https://github.com/ipfs/js-ipfs/issues/1250)) ([5b736a8](https://github.com/ipfs/js-ipfs/commit/5b736a8))
+
+
+### Features
+
+* add config validation ([#1239](https://github.com/ipfs/js-ipfs/issues/1239)) ([a32dce7](https://github.com/ipfs/js-ipfs/commit/a32dce7))
+
+
+
 <a name="0.28.1"></a>
 ## [0.28.1](https://github.com/ipfs/js-ipfs/compare/v0.28.0...v0.28.1) (2018-03-09)
 

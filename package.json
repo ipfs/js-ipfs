@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.28.1",
+  "version": "0.28.2",
   "description": "JavaScript implementation of the IPFS specification",
   "bin": {
     "jsipfs": "src/cli/bin.js"
@@ -177,6 +177,7 @@
     "prometheus-gc-stats": "^0.5.1"
   },
   "contributors": [
+    "Alan Shaw <alan@tableflip.io>",
     "Andrew de Andrade <andrew@deandrade.com.br>",
     "Arpit Agarwal <93arpit@gmail.com>",
     "Arpit Agarwal <atvanguard@users.noreply.github.com>",
