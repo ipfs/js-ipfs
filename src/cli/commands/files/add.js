@@ -173,6 +173,11 @@ module.exports = {
       type: 'boolean',
       default: false,
       describe: 'Write no output'
+    },
+    pin: {
+      type: 'boolean',
+      default: true,
+      describe: 'Pin this object when adding'
     }
   },
 
