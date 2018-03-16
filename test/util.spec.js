@@ -147,7 +147,7 @@ describe('.util', () => {
         done()
       })
     })
-    
+
     it('with only-hash=true', function () {
       this.timeout(10 * 1000)
       this.slow(10 * 1000)
