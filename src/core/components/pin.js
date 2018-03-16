@@ -370,7 +370,7 @@ module.exports = function pin (self) {
         (_, cb) => repo.datastore.put(pinDataStoreKey, handle.root.multihash, cb)
       ], (err, result) => {
         if (err) { return callback(err) }
-        self.log(`Flushed ${handle.root} to the datastore.`)
+        self.log(`Flushed pins with root: ${handle.root}.`)
         internalPins = newInternalPins
         return callback(null, handle.root)
       })
