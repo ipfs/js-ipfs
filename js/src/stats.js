@@ -52,34 +52,19 @@ module.exports = (common) => {
     })
 
     it('.bw', function (done) {
-      if (!withGo) {
-        console.log('Not supported in js-ipfs yet')
-        this.skip()
-      }
-
       ipfs.stats.bw((err, res) => {
         statsTests.expectIsBandwidth(err, res)
         done()
       })
     })
 
-    it('.bw Promise', function () {
-      if (!withGo) {
-        console.log('Not supported in js-ipfs yet')
-        this.skip()
-      }
-
+    it('.bw Promise', () => {
       return ipfs.stats.bw().then((res) => {
         statsTests.expectIsBandwidth(null, res)
       })
     })
 
-    it('.bwReadableStream', function (done) {
-      if (!withGo) {
-        console.log('Not supported in js-ipfs yet')
-        this.skip()
-      }
-
+    it('.bwReadableStream', (done) => {
       const stream = ipfs.stats.bwReadableStream()
 
       stream.once('data', (data) => {
@@ -89,12 +74,7 @@ module.exports = (common) => {
       })
     })
 
-    it('.bwPullStream', function (done) {
-      if (!withGo) {
-        console.log('Not supported in js-ipfs yet')
-        this.skip()
-      }
-
+    it('.bwPullStream', (done) => {
       const stream = ipfs.stats.bwPullStream()
 
       pull(
