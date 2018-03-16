@@ -75,7 +75,7 @@
     "go-ipfs-dep": "^0.4.13",
     "hat": "0.0.3",
     "ipfsd-ctl": "~0.30.1",
-    "interface-ipfs-core": "ipfs/interface-ipfs-core#cf1cd29",
+    "interface-ipfs-core": "~0.57.0",
     "lodash": "^4.17.5",
     "mocha": "^5.0.4",
     "ncp": "^2.0.0",
