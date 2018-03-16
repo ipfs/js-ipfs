@@ -122,11 +122,7 @@
     "joi-browser": "^13.0.1",
     "joi-multiaddr": "^1.0.1",
     "libp2p": "~0.19.0",
-<<<<<<< HEAD
     "libp2p-circuit": "~0.1.5",
-=======
-    "libp2p-circuit": "~0.1.4",
->>>>>>> feat: .stats.bw*
     "libp2p-floodsub": "~0.14.1",
     "libp2p-kad-dht": "~0.9.0",
     "libp2p-keychain": "~0.3.1",
