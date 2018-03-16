@@ -1,3 +1,13 @@
+<a name="0.56.5"></a>
+## [0.56.5](https://github.com/ipfs/interface-ipfs-core/compare/v0.56.4...v0.56.5) (2018-03-16)
+
+
+### Bug Fixes
+
+* go-ipfs has not shipped withLocal yet ([58b1fe2](https://github.com/ipfs/interface-ipfs-core/commit/58b1fe2))
+
+
+
 <a name="0.56.4"></a>
 ## [0.56.4](https://github.com/ipfs/interface-ipfs-core/compare/v0.56.3...v0.56.4) (2018-03-16)
 
