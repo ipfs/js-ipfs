@@ -71,6 +71,28 @@ ipfs.dht.get(key, function (err, value) {})
 
 A great source of [examples][] can be found in the tests for this API.
 
+#### `provide`
+
+> Announce to the network that you are providing given values.
+
+##### `Go` **WIP**
+
+##### `JavaScript` - ipfs.dht.provide(cid, [callback])
+
+Where `cid` is a CID or array of CIDs.
+
+`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
+
+If no `callback` is passed, a promise is returned.
+
+**Example:**
+
+```JavaScript
+ipfs.dht.provide(cid, function (err) {})
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
 #### `put`
 
 > Store a value on the DHT
