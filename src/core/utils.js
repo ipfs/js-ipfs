@@ -3,20 +3,23 @@
 const multihashes = require('multihashes')
 const mapSeries = require('async/mapSeries')
 const CID = require('cids')
+const isIPFS = require('is-ipfs')
 
 exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'ipfs daemon\' first.'
 
 /**
  * Break an ipfs-path down into it's root hash and an array of links.
  *
- * example:
+ * examples:
+ *  b58Hash -> { root: 'b58Hash', links: [] }
+ *  b58Hash/mercury/venus -> { root: 'b58Hash', links: ['mercury', 'venus']}
  *  /ipfs/b58Hash/links/by/name -> { root: 'b58Hash', links: ['links', 'by', 'name'] }
  *
- * @param  {String} pathString An ipfs-path
+ * @param  {String} ipfsPath An ipfs-path
  * @return {Object}            { root: base58 string, links: [string], ?err: Error }
  */
-exports.parseIpfsPath = function parseIpfsPath (pathString) {
-  const matched = pathString.match(/^(?:\/ipfs\/)?([^/]+(?:\/[^/]+)*)\/?$/)
+exports.parseIpfsPath = function parseIpfsPath (ipfsPath) {
+  const matched = ipfsPath.match(/^(?:\/ipfs\/)?([^/]+(?:\/[^/]+)*)\/?$/)
   const errorResult = {
     error: new Error('invalid ipfs ref path')
   }
@@ -26,13 +29,12 @@ exports.parseIpfsPath = function parseIpfsPath (pathString) {
 
   const [root, ...links] = matched[1].split('/')
 
-  try {
-    multihashes.fromB58String(root)
+  if (isIPFS.multihash(root)) {
     return {
       root: root,
       links: links
     }
-  } catch (err) {
+  } else {
     return errorResult
   }
 }
