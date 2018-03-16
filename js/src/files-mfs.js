@@ -307,7 +307,8 @@ module.exports = (common) => {
         })
       })
 
-      it('stat withLocal file', function (done) {
+      // TODO enable this test when this feature gets released on go-ipfs
+      it.skip('stat withLocal file', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
           this.skip()
@@ -329,6 +330,7 @@ module.exports = (common) => {
         })
       })
 
+      // TODO enable this test when this feature gets released on go-ipfs
       it('stat withLocal dir', function (done) {
         if (!withGo) {
           console.log('Not supported in js-ipfs yet')
