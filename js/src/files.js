@@ -24,7 +24,7 @@ module.exports = (common) => {
     this.timeout(40 * 1000)
 
     let ipfs
-    let withGo
+    // let withGo
 
     function fixture (path) {
       return loadFixture(path, 'interface-ipfs-core')
@@ -63,7 +63,7 @@ module.exports = (common) => {
           ipfs = node
           node.id((err, id) => {
             expect(err).to.not.exist()
-            withGo = id.agentVersion.startsWith('go-ipfs')
+            // withGo = id.agentVersion.startsWith('go-ipfs')
             done()
           })
         })
