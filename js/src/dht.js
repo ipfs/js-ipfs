@@ -30,6 +30,8 @@ module.exports = (common) => {
     let nodeA
     let nodeB
     let nodeC
+    let nodeD
+    let nodeE
 
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
@@ -41,6 +43,8 @@ module.exports = (common) => {
         series([
           (cb) => spawnWithId(factory, cb),
           (cb) => spawnWithId(factory, cb),
+          (cb) => spawnWithId(factory, cb),
+          (cb) => spawnWithId(factory, cb),
           (cb) => spawnWithId(factory, cb)
         ], (err, nodes) => {
           expect(err).to.not.exist()
@@ -48,11 +52,20 @@ module.exports = (common) => {
           nodeA = nodes[0]
           nodeB = nodes[1]
           nodeC = nodes[2]
+          nodeD = nodes[3]
+          nodeE = nodes[4]
 
           parallel([
             (cb) => nodeA.swarm.connect(nodeB.peerId.addresses[0], cb),
             (cb) => nodeB.swarm.connect(nodeC.peerId.addresses[0], cb),
-            (cb) => nodeC.swarm.connect(nodeA.peerId.addresses[0], cb)
+            (cb) => nodeC.swarm.connect(nodeA.peerId.addresses[0], cb),
+            (cb) => nodeD.swarm.connect(nodeA.peerId.addresses[0], cb),
+            (cb) => nodeE.swarm.connect(nodeA.peerId.addresses[0], cb),
+            (cb) => nodeD.swarm.connect(nodeB.peerId.addresses[0], cb),
+            (cb) => nodeE.swarm.connect(nodeB.peerId.addresses[0], cb),
+            (cb) => nodeD.swarm.connect(nodeC.peerId.addresses[0], cb),
+            (cb) => nodeE.swarm.connect(nodeC.peerId.addresses[0], cb),
+            (cb) => nodeD.swarm.connect(nodeE.peerId.addresses[0], cb),
           ], done)
         })
       })
