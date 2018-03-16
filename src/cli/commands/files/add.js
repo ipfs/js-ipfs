@@ -186,10 +186,12 @@ module.exports = {
     const index = inPath.lastIndexOf('/') + 1
     const options = {
       strategy: argv.trickle ? 'trickle' : 'balanced',
-      shardSplitThreshold: argv.enableShardingExperiment ? argv.shardSplitThreshold : Infinity,
+      shardSplitThreshold: argv.enableShardingExperiment
+        ? argv.shardSplitThreshold
+        : Infinity,
       'cid-version': argv['cid-version'],
       'raw-leaves': argv['raw-leaves'],
-      onlyHash: argv['only-hash']
+      'only-hash': argv['only-hash']
     }
 
     // Temporary restriction on raw-leaves:
