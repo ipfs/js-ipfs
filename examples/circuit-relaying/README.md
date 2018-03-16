@@ -39,7 +39,7 @@ This is what it looks like, in simplified steps:
 
 That's it!
 
-#### What's up with this `HOP` and `STOP` nonsense?
+#### What's up with this `HOP` and `STOP`?
 
 Circuit relay consists of two logical parts — dialer/listener and relay (`HOP`). The listener is also known as the `STOP` node. Each of these — dial, listen, and relay — happen on a different node. If we use the nodes from the above example, it looks something like this:
 
@@ -332,12 +332,12 @@ const ipfs = new IPFS({
 - And finally we connected the two browser nodes using the `/p2p-circuit/ipfs/...` multiaddr. Take a look at the code below in [src/app.js](src/app.js#L102...L107) - lines 102-107
 
 ```js
-    ipfs.swarm.connect(peer, (err) => {
-      if (err) {
-        return console.error(err)
-      }
-      $pAddrs.innerHTML += `<li>${peer.trim()}</li>`
-    })
+ipfs.swarm.connect(peer, (err) => {
+  if (err) {
+    return console.error(err)
+  }
+  $pAddrs.innerHTML += `<li>${peer.trim()}</li>`
+})
 ```
 
 The above code snippet handles connecting to other nodes using `ipfs.swarm.connect`. Notice how there wasn't anything special we had to do to use the circuit once we had everything connected; all the magic is in the multiaddr! [Multiaddrs](https://multiformats.io/multiaddr/) are **AWESOME**!
