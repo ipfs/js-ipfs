@@ -1,3 +1,14 @@
+<a name="0.56.1"></a>
+## [0.56.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.56.0...v0.56.1) (2018-03-16)
+
+
+### Bug Fixes
+
+* don't error to specific ([ec16016](https://github.com/ipfs/interface-ipfs-core/commit/ec16016))
+* fix broken stat tests ([#236](https://github.com/ipfs/interface-ipfs-core/issues/236)) ([fcb8341](https://github.com/ipfs/interface-ipfs-core/commit/fcb8341)), closes [/github.com/ipfs/interface-ipfs-core/commit/c4934ca0b3b43f5bfc1ff5dd38f85d945d3244de#diff-0a6449ecfa8b9e3d807f53dde24eca71R66](https://github.com//github.com/ipfs/interface-ipfs-core/commit/c4934ca0b3b43f5bfc1ff5dd38f85d945d3244de/issues/diff-0a6449ecfa8b9e3d807f53dde24eca71R66)
+
+
+
 <a name="0.56.0"></a>
 # [0.56.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.55.1...v0.56.0) (2018-03-12)
 
