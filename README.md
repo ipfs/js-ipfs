@@ -205,7 +205,13 @@ const node = new IPFS({
   EXPERIMENTAL: { // enable experimental features
     pubsub: true,
     sharding: true, // enable dir sharding
-    dht: true // enable KadDHT, currently not interopable with go-ipfs
+    dht: true, // enable KadDHT, currently not interopable with go-ipfs
+    relay: {
+      enabled: true, // enable circuit relay dialer and listener
+      hop: {
+        enabled: true // enable circuit relay HOP (make this node a relay) 
+      }
+    }
   },
   config: { // overload the default IPFS node config, find defaults at https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime
     Addresses: {

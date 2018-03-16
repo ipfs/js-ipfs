@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>IPFS simple messaging</title>
+<meta name="description" content="Simple chat app on ipfs">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="./main.css">
+
+<body>
+  <header>
+    <h1>IPFS Simple Messaging</h1>
+  </header>
+  <main>
+    <div class="columns box">
+      <div class="row">
+        <div class="box">
+          <label>Room (double click to change):</label>
+          <span id="room"></span>
+          <input type="text" id="room-id" style="display: none">
+        </div>
+        <div class="box msgs-box">
+          <ul id="msgs"></ul>
+        </div>
+        <div>
+          <label>message:</label>
+          <input type="text" id="message"></input>
+          <button id="send">Send</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="box peers-box">
+          <label>Peers Joined Room:</label>
+          <ul id="peers"></ul>
+        </div>
+        <div class="box peers-box">
+          <label>Peers Connected:</label>
+          <ul id="peers-addrs"></ul>
+        </div>
+        <div>
+          <label>Connect to Peer:</label>
+          <input type="text" id="peer"></input>
+          <button id="connect">Connect</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="box row">
+          <label>Peer id:</label>
+          <ul id="peer-id"></ul>
+        </div>
+        <div class="box addrs-box">
+          <label>Addresses:</label>
+          <ul id="addrs"></ul>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="src/app.js"></script>
+</body>
+
+</html>
