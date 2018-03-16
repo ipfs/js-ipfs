@@ -23,7 +23,7 @@ function prepareFile (self, opts, file, callback) {
   opts = opts || {}
 
   waterfall([
-    (cb) => self.object.get(file.multihash, cb),
+    (cb) => opts.onlyHash ? cb(null, file) : self.object.get(file.multihash, cb),
     (node, cb) => {
       let cid = new CID(node.multihash)
 

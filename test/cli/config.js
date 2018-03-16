@@ -68,7 +68,8 @@ describe('config', () => runOnAndOff((thing) => {
     })
 
     it('call config with no arguments', () => {
-      return ipfs.fail('config')
+      return ipfs('config')
+        .then(out => expect(out).to.include('bin.js config <key> [value]'))
     })
   })
 

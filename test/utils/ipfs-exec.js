@@ -51,15 +51,28 @@ module.exports = (repoPath, opts) => {
     return res
   }
 
+  /**
+   * Expect the command passed as @param arguments to fail.
+   * @return {Promise} Resolves if the command passed as @param arguments fails,
+   *                    rejects if it was successful.
+   */
   ipfs.fail = function ipfsFail () {
     let args = Array.from(arguments)
+    let caught = false
     if (args.length === 1) {
       args = args[0].split(' ')
     }
 
-    return exec(args).catch((err) => {
-      expect(err).to.exist()
-    })
+    return exec(args)
+      .catch(err => {
+        caught = true
+        expect(err).to.exist()
+      })
+      .then(() => {
+        if (!caught) {
+          throw new Error(`jsipfs expected to fail during command: jsipfs ${args.join(' ')}`)
+        }
+      })
   }
 
   return ipfs
