@@ -1012,10 +1012,8 @@ module.exports = (common) => {
       before((done) => ipfs.files.add(smallFile.data, done))
 
       it('stat outside of mfs', function (done) {
-        if (!withGo) {
-          console.log('Not supported in js-ipfs yet')
-          this.skip()
-        }
+        console.log('Not supported in js-ipfs or go-ipfs yet')
+        this.skip()
 
         ipfs.files.stat('/ipfs/' + smallFile.cid, (err, stat) => {
           expect(err).to.not.exist()
