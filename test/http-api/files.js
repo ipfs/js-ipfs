@@ -4,7 +4,11 @@
 
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
+const DaemonFactory = require('ipfsd-ctl')
+const expect = chai.expect
 chai.use(dirtyChai)
+
+const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
 
 describe('.files', () => {
   let ipfs = null
@@ -19,7 +23,10 @@ describe('.files', () => {
     })
   })
 
-  after((done) => ipfsd.stop(done))
+  after(function (done) {
+    this.timeout(10 * 1000)
+    ipfsd.stop(done)
+  })
 
   describe('.add', function () {
     it('performs a speculative add, --only-hash', () => {
