@@ -143,7 +143,7 @@ exports.add = {
         // cid-version > 0 unless explicitly set to false.
         //
         // This retains feature parity without having to implement raw-leaves.
-        'raw-leaves': Joi.any().when('cid-version', {
+        'raw-leaves': Joi.boolean().when('cid-version', {
           is: 1,
           then: Joi.boolean().valid(false).required(),
           otherwise: Joi.boolean().valid(false)
@@ -204,10 +204,10 @@ exports.add = {
     }
 
     const options = {
-      'cid-version': request.query['cid-version'],
-      'raw-leaves': request.query['raw-leaves'],
+      cidVersion: request.query['cid-version'],
+      rawLeaves: request.query['raw-leaves'],
       progress: request.query.progress ? progressHandler : null,
-      onlyHash: Boolean(request.query['only-hash'])
+      onlyHash: request.query['only-hash']
     }
 
     const aborter = abortable()
