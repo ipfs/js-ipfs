@@ -80,6 +80,8 @@ You can check the development status at the [Waffle Board](https://waffle.io/ipf
 
 ## Install
 
+### npm
+
 This project is available through [npm](https://www.npmjs.com/). To install run
 
 ```bash
