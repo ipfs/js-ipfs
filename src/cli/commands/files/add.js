@@ -139,6 +139,12 @@ module.exports = {
       type: 'boolean',
       default: false
     },
+    'only-hash': {
+      alias: 'n',
+      type: 'boolean',
+      default: false,
+      describe: 'Only chunk and hash, do not write'
+    },
     'enable-sharding-experiment': {
       type: 'boolean',
       default: false
@@ -180,9 +186,12 @@ module.exports = {
     const index = inPath.lastIndexOf('/') + 1
     const options = {
       strategy: argv.trickle ? 'trickle' : 'balanced',
-      shardSplitThreshold: argv.enableShardingExperiment ? argv.shardSplitThreshold : Infinity,
-      'cid-version': argv['cid-version'],
-      'raw-leaves': argv['raw-leaves']
+      shardSplitThreshold: argv.enableShardingExperiment
+        ? argv.shardSplitThreshold
+        : Infinity,
+      cidVersion: argv.cidVersion,
+      rawLeaves: argv.rawLeaves,
+      onlyHash: argv.onlyHash
     }
 
     // Temporary restriction on raw-leaves:
@@ -193,15 +202,15 @@ module.exports = {
     // cid-version > 0 unless explicitly set to false.
     //
     // This retains feature parity without having to implement raw-leaves.
-    if (argv['cid-version'] > 0 && argv['raw-leaves'] !== false) {
+    if (options.cidVersion > 0 && options.rawLeaves !== false) {
       throw new Error('Implied argument raw-leaves must be passed and set to false when cid-version is > 0')
     }
 
-    if (argv['raw-leaves']) {
+    if (options.rawLeaves) {
       throw new Error('Not implemented: raw-leaves')
     }
 
-    if (argv.enableShardingExperiment && utils.isDaemonOn()) {
+    if (options.enableShardingExperiment && utils.isDaemonOn()) {
       throw new Error('Error: Enabling the sharding experiment should be done on the daemon')
     }
     const ipfs = argv.ipfs
@@ -230,8 +239,7 @@ module.exports = {
           }
         }
 
-        const thing = (cb) => cb(null, ipfs.files.addPullStream(options))
-        thing(next)
+        next(null, ipfs.files.addPullStream(options))
       }
     ], (err, addStream) => {
       if (err) throw err

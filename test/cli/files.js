@@ -2,6 +2,7 @@
 'use strict'
 
 const fs = require('fs')
+const os = require('os')
 const expect = require('chai').expect
 const path = require('path')
 const compareDir = require('dir-compare').compareSync
@@ -267,6 +268,35 @@ describe('files', () => runOnAndOff((thing) => {
       .then((out) => {
         expect(out)
           .to.eql('')
+      })
+  })
+
+  it('add --only-hash outputs correct hash', function () {
+    return ipfs('files add --only-hash src/init-files/init-docs/readme')
+      .then(out =>
+        expect(out)
+          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
+      )
+  })
+
+  it('add --only-hash does not add a file to the datastore', function () {
+    this.timeout(30 * 1000)
+    this.slow(10 * 1000)
+    const content = String(Math.random() + Date.now())
+    const filepath = path.join(os.tmpdir(), `${content}.txt`)
+    fs.writeFileSync(filepath, content)
+
+    return ipfs(`files add --only-hash ${filepath}`)
+      .then(out => {
+        const hash = out.split(' ')[1]
+
+        // 'jsipfs object get <hash>' should timeout with the daemon on
+        // and should fail fast with the daemon off
+        return Promise.race([
+          ipfs.fail(`object get ${hash}`),
+          new Promise((resolve, reject) => setTimeout(resolve, 4000))
+        ])
+          .then(() => fs.unlinkSync(filepath))
       })
   })
 
