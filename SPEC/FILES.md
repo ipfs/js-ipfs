@@ -619,7 +619,7 @@ ipfs.files.mkdir('/my/beautiful/directory', (err) => {
 
 Where:
 
-- `path` is the path to the directory to make.
+- `path` is the path to the directory to stat.
 - `options` is an optional Object that might contain the following keys:
   - `hash` is a Boolean value to return only the hash.
   - `size` is a Boolean value to return only the size.
