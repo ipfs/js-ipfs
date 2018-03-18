@@ -146,7 +146,7 @@ module.exports = function files (self) {
           files = files.filter(filterFile)
         }
         if (!files || !files.length) {
-          return d.abort(new Error('No such file'))
+          return d.abort(new Error(`no link named "${restPath}" under ${pathComponents[0]}`))
         }
 
         const file = files[0]

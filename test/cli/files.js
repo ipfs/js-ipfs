@@ -322,7 +322,11 @@ describe('files', () => runOnAndOff((thing) => {
     return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB/dummy')
       .then(() => expect.fail(0, 1, 'Should have thrown an error'))
       .catch((err) => {
+        const message = err.stderr.match(/^Error:(?: Failed to cat file: Error:)? (.*)$/m)[1]
         expect(err).to.exist()
+        expect(message).to.eql(
+          'no link named "dummy" under QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
+        )
       })
   })
 
