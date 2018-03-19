@@ -33,7 +33,9 @@ function prepareFile (self, opts, file, callback) {
   }
 
   waterfall([
-    (cb) => opts.onlyHash ? cb(null, file) : self.object.get(file.multihash, opts, cb),
+    (cb) => opts.onlyHash
+      ? cb(null, file)
+      : self.object.get(file.multihash, opts, cb),
     (node, cb) => {
       const b58Hash = cid.toBaseEncodedString()
 
@@ -88,6 +90,22 @@ function normalizeContent (opts, content) {
   })
 }
 
+function pinFile (self, opts, file, cb) {
+  // since adding paths like `directory/filename` automatically
+  // adds the directory as well as the file, we can just pin the target file
+  // and all parent dirs will be pinned indirectly
+  const pin = 'pin' in opts ? opts.pin : true
+  const isTargetFile = !file.path.includes('/')
+  const shouldPin = pin && isTargetFile && !opts.onlyHash
+  if (shouldPin) {
+    self.pin.add(file.hash, (err) => {
+      cb(err, file)
+    })
+  } else {
+    cb(null, file)
+  }
+}
+
 class AddHelper extends Duplex {
   constructor (pullStream, push, options) {
     super(Object.assign({ objectMode: true }, options))
@@ -131,7 +149,7 @@ module.exports = function files (self) {
     }
 
     let total = 0
-    const shouldPin = 'pin' in opts ? opts.pin : true
+
     const prog = opts.progress || noop
     const progress = (bytes) => {
       total += bytes
@@ -144,7 +162,7 @@ module.exports = function files (self) {
       pull.flatten(),
       importer(self._ipld, opts),
       pull.asyncMap(prepareFile.bind(null, self, opts)),
-      shouldPin ? pull.asyncMap(pinFile.bind(null, self)) : identity
+      pull.asyncMap(pinFile.bind(null, self, opts))
     )
   }
 

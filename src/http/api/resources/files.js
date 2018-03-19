@@ -228,7 +228,8 @@ exports.add = {
       progress: request.query.progress ? progressHandler : null,
       onlyHash: request.query['only-hash'],
       hashAlg: request.query['hash'],
-      wrapWithDirectory: request.query['wrap-with-directory']
+      wrapWithDirectory: request.query['wrap-with-directory'],
+      pin: request.query.pin
     }
 
     const aborter = abortable()

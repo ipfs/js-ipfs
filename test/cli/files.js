@@ -5,6 +5,7 @@ const fs = require('fs')
 const os = require('os')
 const expect = require('chai').expect
 const path = require('path')
+const hat = require('hat')
 const compareDir = require('dir-compare').compareSync
 const rimraf = require('rimraf').sync
 const CID = require('cids')
@@ -287,31 +288,31 @@ describe('files', () => runOnAndOff((thing) => {
 
   it('add --only-hash outputs correct hash', function () {
     return ipfs('files add --only-hash src/init-files/init-docs/readme')
-    .then(out =>
-      expect(out)
-      .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
-    )
+      .then(out =>
+        expect(out)
+          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
+      )
   })
 
   it('add --only-hash does not add a file to the datastore', function () {
     this.timeout(30 * 1000)
     this.slow(10 * 1000)
-    const content = String(Math.random() + Date.now())
+    const content = String(Math.random())
     const filepath = path.join(os.tmpdir(), `${content}.txt`)
     fs.writeFileSync(filepath, content)
 
     return ipfs(`files add --only-hash ${filepath}`)
-    .then(out => {
-      const hash = out.split(' ')[1]
+      .then(out => {
+        const hash = out.split(' ')[1]
 
-      // 'jsipfs object get <hash>' should timeout with the daemon on
-      // and should fail fast with the daemon off
-      return Promise.race([
-        ipfs.fail(`object get ${hash}`),
-        new Promise((resolve, reject) => setTimeout(resolve, 4000))
-      ])
-      .then(() => fs.unlinkSync(filepath))
-    })
+        // 'jsipfs object get <hash>' should timeout with the daemon on
+        // and should fail fast with the daemon off
+        return Promise.race([
+          ipfs.fail(`object get ${hash}`),
+          new Promise((resolve, reject) => setTimeout(resolve, 4000))
+        ])
+          .then(() => fs.unlinkSync(filepath))
+      })
   })
 
   it('add pins by default', function () {
@@ -329,13 +330,23 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   it('add does not pin with --pin=false', function () {
+    this.timeout(20 * 1000)
     const filePath = path.join(os.tmpdir(), hat())
     const content = String(Math.random())
     const file = fs.writeFileSync(filePath, content)
 
     return ipfs(`files add -Q --pin=false ${filePath}`)
-      .then(out => ipfs(`pin ls ${out.trim()}`))
-      .then(ls => expect(ls.trim()).to.eql(''))
+      .then(out => {
+        const lsAttempt = ipfs(`pin ls ${out.trim()}`)
+          .then(ls => {
+            expect(ls.trim()).to.eql('')
+          })
+
+        return Promise.race([
+          lsAttempt,
+          new Promise((resolve, reject) => setTimeout(resolve, 4000))
+        ])
+      })
       .then(() => fs.unlinkSync(filePath))
   })
 

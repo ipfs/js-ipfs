@@ -3,9 +3,9 @@
 const print = require('../../utils').print
 
 module.exports = {
-  command: 'add <ipfs-path>',
+  command: 'add <ipfs-path...>',
 
-  describe: 'Pins objects to local storage.',
+  describe: 'Pins object to local storage.',
 
   builder: {
     recursive: {
@@ -17,10 +17,9 @@ module.exports = {
   },
 
   handler (argv) {
-    const paths = argv['ipfs-path'].split(' ')
     const recursive = argv.recursive
     const type = recursive ? 'recursive' : 'direct'
-    argv.ipfs.pin.add(paths[0], { recursive: recursive }, (err, results) => {
+    argv.ipfs.pin.add(argv.ipfsPath, { recursive: recursive }, (err, results) => {
       if (err) { throw err }
       results.forEach((res) => {
         print(`pinned ${res.hash} ${type}ly`)

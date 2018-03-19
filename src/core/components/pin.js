@@ -247,11 +247,11 @@ module.exports = function pin (self) {
       }
     }),
 
-    isPinned: (multihash, callback) => {
+    isPinned: promisify((multihash, callback) => {
       pin.isPinnedWithType(multihash, pin.types.all, callback)
-    },
+    }),
 
-    isPinnedWithType: (multihash, pinType, callback) => {
+    isPinnedWithType: promisify((multihash, pinType, callback) => {
       const key = toB58String(multihash)
       // recursive
       if ((pinType === pin.types.recursive || pinType === pin.types.all) &&
@@ -302,7 +302,7 @@ module.exports = function pin (self) {
           return callback(null, {pinned: found, reason: result})
         }
       )
-    },
+    }),
 
     directKeyStrings: () => Array.from(directPins),
 
@@ -316,7 +316,7 @@ module.exports = function pin (self) {
 
     internalKeys: () => pin.internalKeyStrings().map(key => multihashes.fromB58String(key)),
 
-    getIndirectKeys: (callback) => {
+    getIndirectKeys: promisify(callback => {
       const indirectKeys = new Set()
       const rKeys = pin.recursiveKeys()
       each(rKeys, (multihash, cb) => {
@@ -335,7 +335,7 @@ module.exports = function pin (self) {
         if (err) { return callback(err) }
         callback(null, Array.from(indirectKeys))
       })
-    },
+    }),
 
     // encodes and writes pin key sets to the datastore
     // each key set will be stored as a DAG node, and a root node will link to both

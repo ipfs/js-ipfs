@@ -3,7 +3,7 @@
 const print = require('../../utils').print
 
 module.exports = {
-  command: 'rm <ipfs-path>',
+  command: 'rm <ipfs-path...>',
 
   describe: 'Removes the pinned object from local storage.',
 
@@ -17,9 +17,8 @@ module.exports = {
   },
 
   handler: (argv) => {
-    const paths = argv['ipfs-path'].split(' ')
     const recursive = argv.recursive
-    argv.ipfs.pin.rm(paths, { recursive: recursive }, (err, results) => {
+    argv.ipfs.pin.rm(argv.ipfsPath, { recursive: recursive }, (err, results) => {
       if (err) { throw err }
       results.forEach((res) => {
         print(`unpinned ${res.hash}`)
