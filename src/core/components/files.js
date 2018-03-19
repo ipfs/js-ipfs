@@ -131,22 +131,36 @@ module.exports = function files (self) {
       throw new Error('You must supply an ipfsPath')
     }
 
+    let bestMatch = 0
+
     ipfsPath = normalizePath(ipfsPath)
     const pathComponents = ipfsPath.split('/')
     const restPath = normalizePath(pathComponents.slice(1).join('/'))
-    const filterFile = (file) => (restPath && file.path === restPath) || (file.path === ipfsPath)
+    const filterFile = (file) => {
+      if (file.path === ipfsPath.substring(0, file.path.length)) {
+        const matchedNodes = file.path.split('/').length
+
+        if (matchedNodes > bestMatch) {
+          bestMatch = matchedNodes
+        }
+      }
+
+      return (restPath && file.path === restPath) || (file.path === ipfsPath)
+    }
 
     const d = deferred.source()
 
     pull(
-      exporter(ipfsPath, self._ipld),
+      exporter(pathComponents[0], self._ipld),
       pull.collect((err, files) => {
         if (err) { return d.abort(err) }
         if (files && files.length > 1) {
           files = files.filter(filterFile)
         }
         if (!files || !files.length) {
-          return d.abort(new Error(`no link named "${restPath}" under ${pathComponents[0]}`))
+          const parent = pathComponents.slice(0, bestMatch).join('/')
+          const link = pathComponents.slice(bestMatch).join('/')
+          return d.abort(new Error(`no link named "${link}" under ${parent}`))
         }
 
         const file = files[0]
