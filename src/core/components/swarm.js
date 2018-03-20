@@ -3,7 +3,6 @@
 const multiaddr = require('multiaddr')
 const promisify = require('promisify-es6')
 const values = require('lodash.values')
-const PeerId = require('peer-id')
 
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 
