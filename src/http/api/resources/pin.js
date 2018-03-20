@@ -19,7 +19,7 @@ function parseArgs (request, reply) {
 
   return reply({
     path: request.query.arg,
-    recursive: recursive,
+    recursive: recursive
   })
 }
 

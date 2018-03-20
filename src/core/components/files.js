@@ -21,7 +21,6 @@ const toB58String = require('multihashes').toB58String
 const WRAPPER = 'wrapper/'
 
 function noop () {}
-function identity (x) { return x }
 
 function prepareFile (self, opts, file, callback) {
   opts = opts || {}

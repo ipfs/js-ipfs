@@ -318,7 +318,7 @@ describe('files', () => runOnAndOff((thing) => {
   it('add pins by default', function () {
     const filePath = path.join(os.tmpdir(), hat())
     const content = String(Math.random())
-    const file = fs.writeFileSync(filePath, content)
+    fs.writeFileSync(filePath, content)
 
     return ipfs(`files add -Q ${filePath}`)
       .then(out => {
@@ -333,7 +333,7 @@ describe('files', () => runOnAndOff((thing) => {
     this.timeout(20 * 1000)
     const filePath = path.join(os.tmpdir(), hat())
     const content = String(Math.random())
-    const file = fs.writeFileSync(filePath, content)
+    fs.writeFileSync(filePath, content)
 
     return ipfs(`files add -Q --pin=false ${filePath}`)
       .then(out => {

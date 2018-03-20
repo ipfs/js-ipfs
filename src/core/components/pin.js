@@ -411,7 +411,7 @@ module.exports = function pin (self) {
       waterfall([
         (cb) => repo.closed ? repo.datastore.open(cb) : cb(null, null), // hack for CLI tests
         (_, cb) => repo.datastore.has(pinDataStoreKey, cb),
-        (has, cb) => has ? cb() : cb('No pins to load'),
+        (has, cb) => has ? cb() : cb(new Error('No pins to load')),
         (cb) => repo.datastore.get(pinDataStoreKey, cb),
         (mh, cb) => dag.get(new CID(mh), cb),
         (root, cb) => handle.put('root', root.value, cb),
@@ -419,7 +419,7 @@ module.exports = function pin (self) {
         (rKeys, cb) => handle.put('rKeys', rKeys, cb),
         (cb) => pin.set.loadSet(handle.root, pin.types.direct, logInternalKey, cb)
       ], (err, dKeys) => {
-        if (err && err !== 'No pins to load') {
+        if (err && err.message !== 'No pins to load') {
           return callback(err)
         }
         if (dKeys) {

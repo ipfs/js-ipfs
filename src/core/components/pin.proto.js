@@ -1,3 +1,5 @@
+'use strict'
+
 /**
  * Protobuf interface
  * from go-ipfs/pin/internal/pb/header.proto

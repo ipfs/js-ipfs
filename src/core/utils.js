@@ -3,7 +3,6 @@
 const multihashes = require('multihashes')
 const promisify = require('promisify-es6')
 const map = require('async/map')
-const CID = require('cids')
 const isIPFS = require('is-ipfs')
 
 exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'ipfs daemon\' first.'
@@ -74,7 +73,7 @@ const resolvePaths = promisify(function (ipfs, ipfsPaths, callback) {
     let parsedPath
     try {
       parsedPath = exports.parseIpfsPath(path)
-    } catch(err) {
+    } catch (err) {
       return cb(err)
     }
 

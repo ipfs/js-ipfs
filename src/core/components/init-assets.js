@@ -1,9 +1,7 @@
 'use strict'
 
 const path = require('path')
-const fs = require('fs')
 const glob = require('glob')
-const importer = require('ipfs-unixfs-engine').importer
 const pull = require('pull-stream')
 const file = require('pull-file')
 const CID = require('cids')
