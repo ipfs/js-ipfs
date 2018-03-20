@@ -330,6 +330,20 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
+  it('cat specifies missing link in a nested directory', function () {
+    this.timeout(20 * 1000)
+    
+    return ipfs('cat QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU/docs/wrongdir/dummy')
+      .then(() => expect.fail(0, 1, 'Should have thrown an error'))
+      .catch((err) => {
+        const message = err.stderr.match(/^Error:(?: Failed to cat file: Error:)? (.*)$/m)[1]
+        expect(err).to.exist()
+        expect(message).to.eql(
+          'no link named "wrongdir/dummy" under QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU/docs'
+        )
+      })
+  })
+
   it('get', function () {
     this.timeout(20 * 1000)
 

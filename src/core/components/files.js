@@ -135,6 +135,7 @@ module.exports = function files (self) {
 
     ipfsPath = normalizePath(ipfsPath)
     const pathComponents = ipfsPath.split('/')
+    const prePath = normalizePath(pathComponents.slice(0, 1).join('/'))
     const restPath = normalizePath(pathComponents.slice(1).join('/'))
     const filterFile = (file) => {
       if (file.path === ipfsPath.substring(0, file.path.length)) {
@@ -151,10 +152,10 @@ module.exports = function files (self) {
     const d = deferred.source()
 
     pull(
-      exporter(pathComponents[0], self._ipld),
+      exporter(prePath, self._ipld),
       pull.collect((err, files) => {
         if (err) { return d.abort(err) }
-        if (files && files.length > 1) {
+        if (files) {
           files = files.filter(filterFile)
         }
         if (!files || !files.length) {
