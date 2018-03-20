@@ -11,8 +11,8 @@ Let us know if you find any issue or if you want to contribute and add a new tut
 - [Tutorial: Interact with IPFS directly from your Terminal](./ipfs-cli-fun)
 - [Tutorial: Resolve through IPLD graphs with the dag API](./traverse-ipld-graphs)
 - [Tutorial: Use IPFS to explore the Ethereum BlockChain](./explore-ethereum-blockchain)
-- [Tutorial: How to build an application with IPFS PubSub Room](https://www.youtube.com/watch?v=Nv_Teb--1zg)
-- [Tutorial: How to build an Collaborative Editing Application with IPFS using CRDT](https://www.youtube.com/watch?v=-kdx8rJd8rQ)
+- [Tutorial (Video): How to build an application with IPFS PubSub Room](https://www.youtube.com/watch?v=Nv_Teb--1zg)
+- [Tutorial (Video): How to build an Collaborative Editing Application with IPFS using CRDT](https://www.youtube.com/watch?v=-kdx8rJd8rQ)
 - [Tutorial - Understanding Circuit Relay](./circuit-relaying)
 ## Examples
 
