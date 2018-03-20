@@ -196,7 +196,9 @@ exports = module.exports = function (dag) {
     loadSet: (rootNode, name, logInternalKey, callback) => {
       callback = once(callback)
       const link = rootNode.links.find(l => l.name === name)
-      if (!link) { return callback(new Error('No link found with name ' + name)) }
+      if (!link) {
+        return callback(new Error('No link found with name ' + name))
+      }
       logInternalKey(link.multihash)
       dag.get(new CID(link.multihash), (err, res) => {
         if (err) { return callback(err) }
