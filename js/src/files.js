@@ -18,6 +18,7 @@ const through = require('through2')
 const path = require('path')
 const bl = require('bl')
 const isNode = require('detect-node')
+const CID = require('cids')
 
 module.exports = (common) => {
   describe('.files', function () {
@@ -368,6 +369,16 @@ module.exports = (common) => {
       it('with a multihash', (done) => {
         const cid = Buffer.from(bs58.decode(smallFile.cid))
 
+        ipfs.files.cat(cid, (err, data) => {
+          expect(err).to.not.exist()
+          expect(data.toString()).to.contain('Plz add me!')
+          done()
+        })
+      })
+
+      it('with a cid object', (done) => {
+        const cid = new CID(smallFile.cid)
+      
         ipfs.files.cat(cid, (err, data) => {
           expect(err).to.not.exist()
           expect(data.toString()).to.contain('Plz add me!')
