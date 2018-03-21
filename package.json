@@ -27,7 +27,7 @@
     "test:node": "aegir test -t node",
     "test:browser": "aegir test -t browser --no-cors",
     "test:webworker": "aegir test -t webworker --no-cors",
-    "test:node:core": "aegir test -t node -f test/core/**.js",
+    "test:node:core": "aegir test -t node -f test/core/**/*.js",
     "test:node:http": "aegir test -t node -f test/http-api/index.js",
     "test:node:gateway": "aegir test -t node -f test/gateway/index.js",
     "test:node:cli": "aegir test -t node -f test/cli/index.js",
