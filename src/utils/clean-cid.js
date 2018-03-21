@@ -7,6 +7,9 @@ module.exports = function (cid) {
   if (Buffer.isBuffer(cid)) {
     cid = bs58.encode(cid)
   }
+  if (CID.isCID(cid)) {
+    cid = cid.toBaseEncodedString()
+  }
   if (typeof cid !== 'string') {
     throw new Error('unexpected cid type: ' + typeof cid)
   }
