@@ -138,6 +138,8 @@ module.exports = function files (self) {
     const prePath = normalizePath(pathComponents.slice(0, 1).join('/'))
     const restPath = normalizePath(pathComponents.slice(1).join('/'))
     const filterFile = (file) => {
+      // Save off best match to provide a better error message if file
+      // isn't found.
       if (file.path === ipfsPath.substring(0, file.path.length)) {
         if (file.depth > bestMatch.depth) {
           bestMatch = file
@@ -157,9 +159,25 @@ module.exports = function files (self) {
           files = files.filter(filterFile)
         }
         if (!files || !files.length) {
-          const hash = toB58String(bestMatch.hash)
+          // File used as directory
+          if (bestMatch.type === 'file') {
+            const path = bestMatch.path.substring(0, bestMatch.path.length - bestMatch.name.length - 1)
+            return d.abort(new Error(
+              `"${bestMatch.name}" is a file not a directory under ${path}`
+            ))
+          }
+
           const link = pathComponents[bestMatch.depth + 1]
-          return d.abort(new Error(`no link named "${link}" under ${hash}`))
+
+          // Missing directory
+          if (bestMatch.depth < pathComponents.length - 2) {
+            return d.abort(new Error(
+              `no directory named "${link}" under ${bestMatch.path}`
+            ))
+          }
+
+          // Missing file
+          return d.abort(new Error(`no file named "${link}" under ${bestMatch.path}`))
         }
 
         const file = files[0]

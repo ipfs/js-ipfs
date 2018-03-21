@@ -319,13 +319,13 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   it('cat non-existent file', () => {
-    return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB/dummy')
+    return ipfs('cat QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU/dummy')
       .then(() => expect.fail(0, 1, 'Should have thrown an error'))
       .catch((err) => {
         const message = err.stderr.match(/^Error:(?: Failed to cat file: Error:)? (.*)$/m)[1]
         expect(err).to.exist()
         expect(message).to.eql(
-          'no link named "dummy" under QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
+          'no file named "dummy" under QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU'
         )
       })
   })
@@ -336,7 +336,7 @@ describe('files', () => runOnAndOff((thing) => {
       .catch((err) => {
         const message = err.stderr.match(/^Error:(?: Failed to cat file: Error:)? (.*)$/m)[1]
         expect(message).to.eql(
-          'no link named "wrong-dir" under QmegvLXxpVKiZ4b57Xs1syfBVRd8CbucVHAp7KpLQdGieC'
+          'no directory named "wrong-dir" under QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2/init-docs/docs'
         )
       })
   })
@@ -347,7 +347,18 @@ describe('files', () => runOnAndOff((thing) => {
       .catch((err) => {
         const message = err.stderr.match(/^Error:(?: Failed to cat file: Error:)? (.*)$/m)[1]
         expect(message).to.eql(
-          'no link named "dummy" under QmegvLXxpVKiZ4b57Xs1syfBVRd8CbucVHAp7KpLQdGieC'
+          'no file named "dummy" under QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2/init-docs/docs'
+        )
+      })
+  })
+
+  it('cat specifies a link is not a directory', () => {
+    return ipfs('cat QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2/init-docs/docs/index/dummy')
+      .then(() => expect.fail(0, 1, 'Should have thrown an error'))
+      .catch((err) => {
+        const message = err.stderr.match(/^Error:(?: Failed to cat file: Error:)? (.*)$/m)[1]
+        expect(message).to.eql(
+          '"index" is a file not a directory under QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2/init-docs/docs'
         )
       })
   })
