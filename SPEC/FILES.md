@@ -166,6 +166,7 @@ pull(
 ipfsPath can be of type:
 
 - [`cid`][cid] of type:
+  - a [CID](https://github.com/ipfs/js-cid) instance
   - [Buffer][b], the raw Buffer of the cid
   - String, the base58 encoded version of the cid
 - String, including the ipfs handler, a cid and a path to traverse to, ie:
