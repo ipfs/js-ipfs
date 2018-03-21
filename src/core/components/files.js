@@ -131,7 +131,7 @@ module.exports = function files (self) {
       throw new Error('You must supply an ipfsPath')
     }
 
-    let bestMatch = 0
+    let bestMatch = { depth: -1 }
 
     ipfsPath = normalizePath(ipfsPath)
     const pathComponents = ipfsPath.split('/')
@@ -139,10 +139,8 @@ module.exports = function files (self) {
     const restPath = normalizePath(pathComponents.slice(1).join('/'))
     const filterFile = (file) => {
       if (file.path === ipfsPath.substring(0, file.path.length)) {
-        const matchedNodes = file.path.split('/').length
-
-        if (matchedNodes > bestMatch) {
-          bestMatch = matchedNodes
+        if (file.depth > bestMatch.depth) {
+          bestMatch = file
         }
       }
 
@@ -159,9 +157,9 @@ module.exports = function files (self) {
           files = files.filter(filterFile)
         }
         if (!files || !files.length) {
-          const parent = pathComponents.slice(0, bestMatch).join('/')
-          const link = pathComponents.slice(bestMatch).join('/')
-          return d.abort(new Error(`no link named "${link}" under ${parent}`))
+          const hash = toB58String(bestMatch.hash)
+          const link = pathComponents[bestMatch.depth + 1]
+          return d.abort(new Error(`no link named "${link}" under ${hash}`))
         }
 
         const file = files[0]
