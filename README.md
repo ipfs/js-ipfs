@@ -194,11 +194,8 @@ const repo = <IPFS Repo instance or repo path>
 const node = new IPFS({
   repo: repo,
   init: true, // default
-  // init: false, // If you have already initialized the repo via `new IPFS()`.
-  //              // Be careful using this on an IPFSRepo instance you have
-  //              // initialized yourself -- the IPFS constructor initializes
-  //              // repos with extra options, so calling `init()` on an
-  //              // IPFSRepo may not always be compatible with IPFS.
+  // init: false, // You will need to set init: false after time you start instantiate a node as
+  //              // the repo will be already initiated then.
   // init: {
   //   bits: 1024 // size of the RSA key generated
   // },
