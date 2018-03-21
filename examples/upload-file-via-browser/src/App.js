@@ -13,7 +13,6 @@ class App extends React.Component {
     // bind methods
     this.captureFile = this.captureFile.bind(this)
     this.saveToIpfs = this.saveToIpfs.bind(this)
-    this.arrayBufferToString = this.arrayBufferToString.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
@@ -38,10 +37,6 @@ class App extends React.Component {
       }).catch((err) => {
         console.error(err)
       })
-  }
-
-  arrayBufferToString (arrayBuffer) {
-    return String.fromCharCode.apply(null, new Uint16Array(arrayBuffer))
   }
 
   handleSubmit (event) {
