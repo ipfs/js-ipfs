@@ -315,6 +315,9 @@ function normalizePath (path) {
   if (Buffer.isBuffer(path)) {
     path = toB58String(path)
   }
+  if (CID.isCID(path)) {
+    path = path.toBaseEncodedString()
+  }
   if (path.indexOf('/ipfs/') === 0) {
     path = path.substring('/ipfs/'.length)
   }
