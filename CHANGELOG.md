@@ -1,3 +1,13 @@
+<a name="0.58.0"></a>
+# [0.58.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.57.0...v0.58.0) (2018-03-22)
+
+
+### Bug Fixes
+
+* wrong description ([bad70ac](https://github.com/ipfs/interface-ipfs-core/commit/bad70ac))
+
+
+
 <a name="0.57.0"></a>
 # [0.57.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.56.6...v0.57.0) (2018-03-16)
 
