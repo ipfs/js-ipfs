@@ -1,3 +1,13 @@
+<a name="18.2.1"></a>
+## [18.2.1](https://github.com/ipfs/js-ipfs-api/compare/v18.2.0...v18.2.1) (2018-03-22)
+
+
+### Features
+
+* add ability to files.cat with a cid instance ([aeeb94e](https://github.com/ipfs/js-ipfs-api/commit/aeeb94e))
+
+
+
 <a name="18.2.0"></a>
 # [18.2.0](https://github.com/ipfs/js-ipfs-api/compare/v18.1.2...v18.2.0) (2018-03-16)
 
