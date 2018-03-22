@@ -73,7 +73,7 @@
     "go-ipfs-dep": "^0.4.13",
     "gulp": "^3.9.1",
     "hapi": "^17.2.3",
-    "interface-ipfs-core": "~0.56.5",
+    "interface-ipfs-core": "~0.58.0",
     "ipfs": "~0.28.2",
     "ipfsd-ctl": "~0.30.1",
     "pre-commit": "^1.2.2",
