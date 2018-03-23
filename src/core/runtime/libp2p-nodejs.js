@@ -6,7 +6,7 @@ const WS = require('libp2p-websockets')
 const WebSocketStar = require('libp2p-websocket-star')
 const Railing = require('libp2p-railing')
 const KadDHT = require('libp2p-kad-dht')
-const Multiplex = require('libp2p-multiplex')
+const Multiplex = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
 const libp2p = require('libp2p')
 
