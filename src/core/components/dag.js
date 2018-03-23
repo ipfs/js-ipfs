@@ -35,6 +35,8 @@ module.exports = function dag (self) {
         } else {
           path = '/'
         }
+      } else if (Buffer.isBuffer(cid)) {
+        cid = new CID(cid)
       }
 
       self._ipld.get(cid, path, options, callback)

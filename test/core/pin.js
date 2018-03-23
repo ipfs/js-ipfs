@@ -58,7 +58,7 @@ describe('pin', function () {
     })
   })
 
-  after(done => repo.teardown(done))
+  after(done => ipfs.stop(done))
 
   /**
     getIndirectKeys,

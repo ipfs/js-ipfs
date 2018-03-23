@@ -12,6 +12,7 @@ const Key = require('interface-datastore').Key
 const each = require('async/each')
 const series = require('async/series')
 const waterfall = require('async/waterfall')
+const parallel = require('async/parallel')
 const until = require('async/until')
 const once = require('once')
 
@@ -57,7 +58,7 @@ module.exports = function pin (self) {
       resolvePaths(self, paths, (err, mhs) => {
         if (err) { return callback(err) }
         // verify that each hash can be pinned
-        series(mhs.map(multihash => cb => {
+        parallel(mhs.map(multihash => cb => {
           const key = toB58String(multihash)
           if (recursive) {
             if (recursivePins.has(key)) {

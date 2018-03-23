@@ -90,14 +90,13 @@ function normalizeContent (opts, content) {
 }
 
 function pinFile (self, opts, file, cb) {
-  // since adding paths like `directory/filename` automatically
-  // adds the directory as well as the file, we can just pin the target file
-  // and all parent dirs will be pinned indirectly
+  // Pin a file if it is the root dir of a recursive add or the single file
+  // of a direct add.
   const pin = 'pin' in opts ? opts.pin : true
-  const isTargetFile = !file.path.includes('/')
-  const shouldPin = pin && isTargetFile && !opts.onlyHash
+  const isRootDir = !file.path.includes('/')
+  const shouldPin = pin && isRootDir && !opts.onlyHash
   if (shouldPin) {
-    self.pin.add(file.hash, (err) => {
+    return self.pin.add(file.hash, (err) => {
       cb(err, file)
     })
   } else {
