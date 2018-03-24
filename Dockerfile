@@ -25,6 +25,7 @@ RUN apt-get update \
   && apt-get purge --yes $BUILD_DEPS \
   && rm -rf /usr/share/doc /usr/share/locale \
   && rm -rf /usr/local/share/.cache \
-  && rm -rf node_modules/go-ipfs-dep/go-ipfs/ipfs
+  && rm -rf node_modules/go-ipfs-dep/go-ipfs/ipfs \
+  && ln -s $(pwd)/src/cli/bin.js /usr/local/bin/jsipfs
 
 CMD ./init-and-daemon.sh
