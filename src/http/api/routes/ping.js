@@ -13,7 +13,8 @@ module.exports = (server) => {
         parse: false,
         output: 'stream'
       },
-      handler: resources.ping.get
+      handler: resources.ping.get.handler,
+      validate: resources.ping.get.validate
     }
   })
 }

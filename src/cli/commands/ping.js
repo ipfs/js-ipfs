@@ -1,5 +1,9 @@
 'use strict'
 
+const pull = require('pull-stream/pull')
+const drain = require('pull-stream/sinks/drain')
+const pullCatch = require('pull-catch')
+
 const print = require('../utils').print
 
 module.exports = {
@@ -19,26 +23,20 @@ module.exports = {
     const peerId = argv.peerId
     const count = argv.count || 10
 
-    print('PING ' + peerId)
-
-    let noOfTimes = 0
-    let totalTime = 0
-
-    const pingCb = (err, p) => {
-      if (err) {
-        throw err
-      }
-      let time = p.Time
-      totalTime = totalTime + time
-      noOfTimes = noOfTimes + 1
-      print('Pong received: time=' + time + ' ms')
-      if (noOfTimes === count) {
-        print('Average latency: ' + totalTime / count + 'ms')
-      }
-    }
-
-    for (let i = 0; i < count; i++) {
-      argv.ipfs.ping(peerId, pingCb)
-    }
+    pull(
+      argv.ipfs.pingPullStream(peerId, { count }),
+      pullCatch(err => {
+        throw err 
+      }),
+      drain(({ Time, Text }) => {
+        // Check if it's a pong
+        if (Time) {
+          print(`Pong received: time=${Time} ms`)
+        // Status response
+        } else {
+          print(Text)
+        }
+      })
+    )
   }
 }
