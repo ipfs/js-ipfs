@@ -69,8 +69,12 @@ describe('submodules', () => {
 
   it('ping', () => {
     const ping = require('../src/ping')(config)
+    const pingPullStream = require('../src/ping-pull-stream')(config)
+    const pingReadableStream = require('../src/ping-readable-stream')(config)
 
     expect(ping).to.be.a('function')
+    expect(pingPullStream).to.be.a('function')
+    expect(pingReadableStream).to.be.a('function')
   })
 
   it('log', () => {

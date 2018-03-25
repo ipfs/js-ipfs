@@ -31,6 +31,8 @@ function requireCommands () {
     object: require('../object'),
     pin: require('../pin'),
     ping: require('../ping'),
+    pingReadableStream: require('../ping-readable-stream'),
+    pingPullStream: require('../ping-pull-stream'),
     refs: require('../refs'),
     repo: require('../repo'),
     stop: require('../stop'),

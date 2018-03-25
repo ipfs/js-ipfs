@@ -77,6 +77,7 @@
     "ipfs": "~0.28.2",
     "ipfsd-ctl": "~0.30.4",
     "pre-commit": "^1.2.2",
+    "pull-stream": "^3.6.2",
     "socket.io": "^2.0.4",
     "socket.io-client": "^2.0.4",
     "stream-equal": "^1.1.1"
