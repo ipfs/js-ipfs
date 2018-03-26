@@ -4,13 +4,15 @@ const promisify = require('promisify-es6')
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
-const Readable = require('readable-stream').Readable
+const pull = require('pull-stream/pull')
+const take = require('pull-stream/throughs/take')
+const Pushable = require('pull-pushable')
+const ndjson = require('pull-ndjson')
 
 function getPacket (msg) {
   // Default msg
   const basePacket = {Success: false, Time: 0, Text: ''}
-  // ndjson
-  return `${JSON.stringify(Object.assign({}, basePacket, msg))}\n`
+  return Object.assign({}, basePacket, msg)
 }
 
 module.exports = function ping (self) {
@@ -19,9 +21,14 @@ module.exports = function ping (self) {
       return cb(new Error(OFFLINE_ERROR))
     }
 
-    const source = new Readable({
-      read: function () {}
+    const source = Pushable(function (err) {
+      console.log('stream closed!', err)
     })
+
+    const response = pull(
+      source,
+      ndjson.serialize()
+    )
 
     let peer
     try {
@@ -34,21 +41,33 @@ module.exports = function ping (self) {
     }
 
     self._libp2pNode.ping(peer, (err, p) => {
+      if (err) {
+        console.log('ERROR', err)
+        return source.abort(err)
+      }
       let packetCount = 0 
       let totalTime = 0
       source.push(getPacket({Success: true, Text: `PING ${peerId}`}))
       p.on('ping', (time) => {
+        console.log('ON PING')
         source.push(getPacket({ Success: true, Time: time }))
         totalTime += time
         packetCount++
+        console.log(packetCount, count)
         if (packetCount >= count) {
           const average = totalTime/count
           p.stop()
           source.push(getPacket({ Success: false, Text: `Average latency: ${average}ms`}))
-          source.push(null)
+          source.end()
         }
       })
+      console.log('Setup handler')
+      p.on('error', (err) => {
+        console.log('ERROR BATATA', err)
+        source.abort(err)
+      })
     })
-    cb(null, source)
+    
+    cb(null, response)
   })
 }
