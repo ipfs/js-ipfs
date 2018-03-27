@@ -12,10 +12,16 @@ module.exports = (arg) => {
       callback = opts
       opts = {}
     }
+
+    if (opts.n && opts.count) {
+      return callback(new Error('Use either n or count, not both'))
+    }
+
     // Default number of packtes to 1
     if (!opts.n && !opts.count) {
       opts.n = 1
     }
+
     const request = {
       path: 'ping',
       args: id,
