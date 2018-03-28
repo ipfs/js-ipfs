@@ -1,3 +1,19 @@
+<a name="19.0.0"></a>
+# [19.0.0](https://github.com/ipfs/js-ipfs-api/compare/v18.2.1...v19.0.0) (2018-03-28)
+
+
+### Bug Fixes
+
+* **bitswap:** 0.4.14 returns empty array instead of null ([5e37a54](https://github.com/ipfs/js-ipfs-api/commit/5e37a54))
+* **ping:** tests were failing and there it was missing to catch when count and n are used at the same time ([2181568](https://github.com/ipfs/js-ipfs-api/commit/2181568))
+
+
+### Features
+
+* streamable ping and optional packet number ([#723](https://github.com/ipfs/js-ipfs-api/issues/723)) ([3f3ce8a](https://github.com/ipfs/js-ipfs-api/commit/3f3ce8a))
+
+
+
 <a name="18.2.1"></a>
 ## [18.2.1](https://github.com/ipfs/js-ipfs-api/compare/v18.2.0...v18.2.1) (2018-03-22)
 
