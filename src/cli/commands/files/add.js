@@ -14,8 +14,6 @@ const utils = require('../../utils')
 const print = require('../../utils').print
 const createProgressBar = require('../../utils').createProgressBar
 
-const WRAPPER = 'wrapper/'
-
 function checkPath (inPath, recursive) {
   // This function is to check for the following possible inputs
   // 1) "." add the cwd but throw error for no recursion flag
@@ -58,7 +56,6 @@ function getTotalBytes (path, recursive, cb) {
 
 function addPipeline (index, addStream, list, argv) {
   const {
-    wrapWithDirectory,
     quiet,
     quieter,
     silent
@@ -78,17 +75,9 @@ function addPipeline (index, addStream, list, argv) {
     pull.filter((file) => !file.isDirectory),
     pull.map((file) => ({
       path: file.path.substring(index, file.path.length),
-      originalPath: file.path
-    })),
-    pull.map((file) => ({
-      path: wrapWithDirectory ? WRAPPER + file.path : file.path,
-      content: fs.createReadStream(file.originalPath)
+      content: fs.createReadStream(file.path)
     })),
     addStream,
-    pull.map((file) => ({
-      hash: file.hash,
-      path: wrapWithDirectory ? file.path.substring(WRAPPER.length) : file.path
-    })),
     pull.collect((err, added) => {
       if (err) {
         throw err
@@ -191,7 +180,8 @@ module.exports = {
         : Infinity,
       cidVersion: argv.cidVersion,
       rawLeaves: argv.rawLeaves,
-      onlyHash: argv.onlyHash
+      onlyHash: argv.onlyHash,
+      wrapWithDirectory: argv.wrapWithDirectory
     }
 
     // Temporary restriction on raw-leaves:

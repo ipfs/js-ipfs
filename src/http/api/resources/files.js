@@ -148,7 +148,8 @@ exports.add = {
           then: Joi.boolean().valid(false).required(),
           otherwise: Joi.boolean().valid(false)
         }),
-        'only-hash': Joi.boolean()
+        'only-hash': Joi.boolean(),
+        'wrap-with-directory': Joi.boolean()
       })
       // TODO: Necessary until validate "recursive", "stream-channels" etc.
       .options({ allowUnknown: true })
@@ -207,7 +208,8 @@ exports.add = {
       cidVersion: request.query['cid-version'],
       rawLeaves: request.query['raw-leaves'],
       progress: request.query.progress ? progressHandler : null,
-      onlyHash: request.query['only-hash']
+      onlyHash: request.query['only-hash'],
+      wrapWithDirectory: request.query['wrap-with-directory']
     }
 
     const aborter = abortable()
@@ -245,7 +247,7 @@ exports.add = {
       ipfs.files.addPullStream(options),
       pull.map((file) => {
         return {
-          Name: file.path ? file.path : file.hash,
+          Name: file.path, //addPullStream already turned this into a hash if it wanted to
           Hash: file.hash,
           Size: file.size
         }
