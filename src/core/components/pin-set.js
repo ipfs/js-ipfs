@@ -129,26 +129,15 @@ exports = module.exports = function (dag) {
       logInternalKey(emptyKey)
 
       if (items.length <= maxItems) {
-        // the items will fit in a single root node
-        const itemLinks = []
-        const itemData = []
-        const indices = []
+        const nodes = items
+          .map(item => ({
+            link: new DAGLink('', 1, item.key),
+            data: item.data || Buffer.alloc(0)
+          }))
+          .sort((a, b) => Buffer.compare(a.link.multihash, b.link.multihash))
 
-        for (let i = 0; i < items.length; i++) {
-          itemLinks.push(new DAGLink('', 1, items[i].key))
-          itemData.push(items[i].data || Buffer.alloc(0))
-          indices.push(i)
-        }
-        indices.sort((a, b) => {
-          const x = Buffer.compare(itemLinks[a].multihash, itemLinks[b].multihash)
-          if (x) { return x }
-          return (a < b ? -1 : 1)
-        })
-
-        const sortedLinks = indices.map(i => { return itemLinks[i] })
-        const sortedData = indices.map(i => { return itemData[i] })
-        rootLinks = rootLinks.concat(sortedLinks)
-        rootData = Buffer.concat([rootData].concat(sortedData))
+        rootLinks = rootLinks.concat(nodes.map(item => item.link))
+        rootData = Buffer.concat([rootData].concat(nodes.map(item => item.data)))
 
         DAGNode.create(rootData, rootLinks, (err, rootNode) => {
           if (err) { return callback(err) }
