@@ -31,10 +31,16 @@ module.exports = (common) => {
       return loadFixture(path, 'interface-ipfs-core')
     }
 
+    const wrapDirectory = {
+      path: 'wrapper/',
+      cid: 'QmbzKtHxQXJnWG9VR66TscUfcoK3CV4nceRsCdyAEsEj9A'
+    }
+
     const smallFile = {
       cid: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
       data: fixture('js/test/fixtures/testfile.txt')
     }
+
     const bigFile = {
       cid: 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq',
       data: fixture('js/test/fixtures/15mb.random')
@@ -256,6 +262,19 @@ module.exports = (common) => {
           done()
         })
       })
+
+      it('wrapWithDirectory', (done) => {
+        return ipfs.files.add({ path: 'testfile.txt', content: smallFile.data }, { wrapWithDirectory: true }, (err, filesAdded) => {
+          expect(err).to.not.exist();
+          expect(filesAdded).to.have.length(2);
+          const file = filesAdded[0];
+          const wrapped = filesAdded[1]
+          expect(file.hash).to.equal(smallFile.cid)
+          expect(file.path).to.equal('testfile.txt')
+          expect(wrapped.path).to.equal(wrapDirectory.cid);
+          done();
+        });
+      });
 
       it('Promise test', () => {
         return ipfs.files.add(smallFile.data)
