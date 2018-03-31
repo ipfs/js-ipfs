@@ -16,8 +16,8 @@ We try to frame our ongoing work using a process based on quarterly Objectives a
 
 - `PX` - achingbrain - The MFS is implemented in js-ipfs
 - `PX` - achingbrain - npm on IPFS is used as a test vector of js-ipfs capabilities
-- `PX` - OWNER - js-ipfs in the browser can load a dataset of at least 100Gb (and create archives.js.ipfs.io)
-- `PX` - OWNER - js-ipfs in Node.js can load a dataset of at least 1TB (use npm to prove it)
+- `PX` - OWNER - js-ipfs in the browser can fetch a dataset of at least 100Gb (and create archives.js.ipfs.io)
+- `PX` - OWNER - js-ipfs in Node.js can add and transfer a dataset of at least 1TB (use npm to prove it)
 - `PX` - jacobheun - A S3 IPFS Repo backend exists and it is easily pluggable on `new IPFS`
 - `PX` - OWNER - The PIN API is finished and merged.
 
