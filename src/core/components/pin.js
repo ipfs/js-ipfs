@@ -65,6 +65,7 @@ module.exports = function pin (self) {
               // it's already pinned recursively
               return cb(null, key)
             }
+
             // entire graph of nested links should be pinned,
             // so make sure we have all the objects
             dag._getRecursive(multihash, (err) => {
@@ -81,6 +82,7 @@ module.exports = function pin (self) {
               // already directly pinned
               return cb(null, key)
             }
+
             // make sure we have the object
             dag.get(new CID(multihash), (err) => {
               if (err) { return cb(err) }
@@ -92,18 +94,13 @@ module.exports = function pin (self) {
           if (err) { return callback(err) }
           // update the pin sets in memory
           if (recursive) {
-            results.forEach(key => {
-              // recursive pin should replace direct pin
-              directPins.delete(key) // TODO questionable
-              recursivePins.add(key)
-            })
+            results.forEach(key => recursivePins.add(key))
           } else {
             results.forEach(key => directPins.add(key))
           }
           // persist updated pin sets to datastore
           pin.flush((err, root) => {
             if (err) { return callback(err) }
-            self.log(`Added pins: ${results}`)
             return callback(null, results.map(key => ({hash: key})))
           })
         })
@@ -150,12 +147,8 @@ module.exports = function pin (self) {
 
           // update the pin sets in memory
           results.forEach(key => {
-            if (recursive) {
-              if (recursivePins.has(key)) {
-                recursivePins.delete(key)
-              } else {
-                directPins.delete(key)
-              }
+            if (recursive && recursivePins.has(key)) {
+              recursivePins.delete(key)
             } else {
               directPins.delete(key)
             }
@@ -271,28 +264,29 @@ module.exports = function pin (self) {
 
     isPinnedWithType: promisify((multihash, pinType, callback) => {
       const key = toB58String(multihash)
+      const { recursive, direct, internal, all } = pin.types
       // recursive
-      if ((pinType === pin.types.recursive || pinType === pin.types.all) &&
+      if ((pinType === recursive || pinType === all) &&
           recursivePins.has(key)) {
-        return callback(null, {pinned: true, reason: pin.types.recursive})
+        return callback(null, {pinned: true, reason: recursive})
       }
-      if ((pinType === pin.types.recursive)) {
+      if ((pinType === recursive)) {
         return callback(null, {pinned: false})
       }
       // direct
-      if ((pinType === pin.types.direct || pinType === pin.types.all) &&
+      if ((pinType === direct || pinType === all) &&
           directPins.has(key)) {
-        return callback(null, {pinned: true, reason: pin.types.direct})
+        return callback(null, {pinned: true, reason: direct})
       }
-      if ((pinType === pin.types.direct)) {
+      if ((pinType === direct)) {
         return callback(null, {pinned: false})
       }
       // internal
-      if ((pinType === pin.types.internal || pinType === pin.types.all) &&
+      if ((pinType === internal || pinType === all) &&
           internalPins.has(key)) {
-        return callback(null, {pinned: true, reason: pin.types.internal})
+        return callback(null, {pinned: true, reason: internal})
       }
-      if ((pinType === pin.types.internal)) {
+      if ((pinType === internal)) {
         return callback(null, {pinned: false})
       }
 
@@ -339,9 +333,7 @@ module.exports = function pin (self) {
       const rKeys = pin.recursiveKeys()
       each(rKeys, (multihash, cb) => {
         dag._getRecursive(multihash, (err, nodes) => {
-          if (err) {
-            return cb(err)
-          }
+          if (err) { return cb(err) }
 
           nodes.forEach(node => {
             const key = toB58String(node.multihash)

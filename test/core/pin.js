@@ -304,7 +304,7 @@ describe('pin', function () {
         .then(ls => expect(ls.length).to.eql(0))
         .then(() => pin.load())
         .then(() => pin.ls())
-        .then(ls => expect(ls.length).to.be.gt(0))
+        .then(ls => expect(ls.length).to.eql(4))
     })
   })
 
@@ -315,7 +315,7 @@ describe('pin', function () {
 
     it('flushes', function () {
       return pin.ls()
-        .then(ls => expect(ls.length).to.be.gt(0))
+        .then(ls => expect(ls.length).to.eql(4))
         .then(() => {
           pin.clear()
           return pin.flush()

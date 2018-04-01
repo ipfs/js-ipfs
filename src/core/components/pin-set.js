@@ -62,32 +62,32 @@ exports = module.exports = function (dag) {
   const pinSet = {
     // should this be part of `object` API?
     hasChild: (root, childhash, callback) => {
-      let seen = {}
-      if (typeof childhash === 'object') {
+      const seen = {}
+      if (CID.isCID(childhash) || Buffer.isBuffer(childhash)) {
         childhash = toB58String(childhash)
       }
 
-      function searchChildren (root, cb, _links, _checked) {
-        if (!root.links.length && _links === _checked) {
+      function searchChildren (root, cb, numToCheck, numChecked) {
+        if (!root.links.length && numToCheck === numChecked) {
           // all nodes have been checked
           return cb(null, false)
         }
 
-        some(root.links, (link, cb) => {
-          const bs58Link = toB58String(link.multihash)
+        some(root.links, ({ multihash }, someCb) => {
+          const bs58Link = toB58String(multihash)
           if (bs58Link in seen) return
           if (bs58Link === childhash) {
-            return cb(null, true)
+            return someCb(null, true)
           }
 
           seen[bs58Link] = true
 
-          dag.get(link.multihash, (err, res) => {
-            if (err) return cb(err)
+          dag.get(multihash, (err, { value }) => {
+            if (err) { return someCb(err) }
 
-            _checked++
-            _links += res.value.links.length
-            searchChildren(res.value, cb, _links, _checked)
+            numChecked++
+            numToCheck += value.links.length
+            searchChildren(value, someCb, numToCheck, numChecked)
           })
         }, cb)
       }
@@ -96,12 +96,12 @@ exports = module.exports = function (dag) {
     },
 
     storeSet: (keys, logInternalKey, callback) => {
-      const items = keys.map(key => ({
+      const pins = keys.map(key => ({
         key: key,
         data: null
       }))
 
-      pinSet.storeItems(items, logInternalKey, (err, rootNode) => {
+      pinSet.storeItems(pins, logInternalKey, (err, rootNode) => {
         if (err) { return callback(err) }
         const opts = { cid: new CID(rootNode.multihash) }
         dag.put(rootNode, opts, (err, cid) => {
@@ -112,61 +112,66 @@ exports = module.exports = function (dag) {
       })
     },
 
-    storeItems: (items, logInternalKey, callback, _depth, _subcalls, _done) => {
+    storeItems: (pins, logInternalKey, callback, _depth = 0, _binsToFill = 0, _binsFilled = 0) => {
       callback = once(callback)
       const pbHeader = pb.Set.encode({
         version: 1,
         fanout: defaultFanout,
         seed: _depth
       })
-      let rootData = Buffer.concat([
+      const headerBuf = Buffer.concat([
         Buffer.from(varint.encode(pbHeader.length)), pbHeader
       ])
-      let rootLinks = []
+      const fanoutLinks = []
       for (let i = 0; i < defaultFanout; i++) {
-        rootLinks.push(new DAGLink('', 1, emptyKey))
+        fanoutLinks.push(new DAGLink('', 1, emptyKey))
       }
       logInternalKey(emptyKey)
 
-      if (items.length <= maxItems) {
-        const nodes = items
+      if (pins.length <= maxItems) {
+        const nodes = pins
           .map(item => ({
             link: new DAGLink('', 1, item.key),
             data: item.data || Buffer.alloc(0)
           }))
+          // sorting makes any ordering of `pins` produce the same DAGNode
           .sort((a, b) => Buffer.compare(a.link.multihash, b.link.multihash))
 
-        rootLinks = rootLinks.concat(nodes.map(item => item.link))
-        rootData = Buffer.concat([rootData].concat(nodes.map(item => item.data)))
+        const rootLinks = fanoutLinks.concat(nodes.map(item => item.link))
+        const rootData = Buffer.concat(
+          [headerBuf].concat(nodes.map(item => item.data))
+        )
 
         DAGNode.create(rootData, rootLinks, (err, rootNode) => {
           if (err) { return callback(err) }
           return callback(null, rootNode)
         })
       } else {
-        // need to split up the items into multiple root nodes
+        // If the array of pins is > maxItems, we:
+        //  - distribute the pins among `defaultFanout` bins
+        //    - create a DAGNode for each bin
+        //      - add each pin of that bin as a DAGLink
+        //  - create a root DAGNode
+        //    - store each bin as a DAGLink
+        //  - send that root DAGNode via `callback`
         // (using go-ipfs' "wasteful but simple" approach for consistency)
-        _subcalls = _subcalls || 0
-        _done = _done || 0
-        const hashed = {}
 
-        // items will be distributed among `defaultFanout` bins
-        items.forEach(item => {
-          const bin = hash(_depth, item.key) % defaultFanout
-          hashed[bin] = hashed[bin] || []
-          hashed[bin].push(item)
-        })
+        const bins = pins.reduce((bins, pin) => {
+          const n = hash(_depth, pin.key) % defaultFanout
+          bins[n] = n in bins ? bins[n].concat([pin]) : [pin]
+          return bins
+        }, {})
 
-        const hashedKeys = Object.keys(hashed)
-        _subcalls += hashedKeys.length
-        hashedKeys.forEach(bin => {
+        const binKeys = Object.keys(bins)
+        _binsToFill += binKeys.length
+        binKeys.forEach(n => {
           pinSet.storeItems(
-            hashed[bin],
+            bins[n],
             logInternalKey,
-            (err, child) => storeItemsCb(err, child, bin),
+            (err, child) => storeItemsCb(err, child, n),
             _depth + 1,
-            _subcalls,
-            _done
+            _binsToFill,
+            _binsFilled
           )
         })
       }
@@ -174,16 +179,17 @@ exports = module.exports = function (dag) {
       function storeItemsCb (err, child, bin) {
         if (err) { return callback(err) }
         const cid = new CID(child._multihash)
+
         dag.put(child, { cid }, (err) => {
           if (err) { return callback(err) }
 
           logInternalKey(child.multihash)
-          rootLinks[bin] = new DAGLink('', child.size, child.multihash)
-          _done++
+          fanoutLinks[bin] = new DAGLink('', child.size, child.multihash)
+          _binsFilled++
 
-          if (_done === _subcalls) {
+          if (_binsFilled === _binsToFill) {
             // all finished
-            DAGNode.create(rootData, rootLinks, (err, rootNode) => {
+            DAGNode.create(headerBuf, fanoutLinks, (err, rootNode) => {
               if (err) { return callback(err) }
               return callback(null, rootNode)
             })
@@ -203,15 +209,15 @@ exports = module.exports = function (dag) {
       dag.get(link.multihash, (err, res) => {
         if (err) { return callback(err) }
         const keys = []
-        const walkerFn = link => keys.push(link.multihash)
-        pinSet.walkItems(res.value, walkerFn, logInternalKey, err => {
+        const step = link => keys.push(link.multihash)
+        pinSet.walkItems(res.value, step, logInternalKey, err => {
           if (err) { return callback(err) }
           return callback(null, keys)
         })
       })
     },
 
-    walkItems: (node, walkerFn, logInternalKey, callback) => {
+    walkItems: (node, step, logInternalKey, callback) => {
       callback = once(callback)
       let pbh
       try {
@@ -222,37 +228,40 @@ exports = module.exports = function (dag) {
       let subwalkCount = 0
       let finishedCount = 0
 
-      const walkCb = (err) => {
+      node.links.forEach((link, idx) => {
+        if (idx < pbh.header.fanout) {
+          // the first pbh.header.fanout links are fanout bins
+          // if a link is not 'empty', dig into and walk its DAGLinks
+          const linkHash = link.multihash
+          logInternalKey(linkHash)
+
+          if (!emptyKey.equals(linkHash)) {
+            subwalkCount++
+
+            // walk the links of this fanout bin
+            dag.get(linkHash, (err, res) => {
+              if (err) { return callback(err) }
+              pinSet.walkItems(res.value, step, logInternalKey, walkCb)
+            })
+          }
+        } else {
+          // otherwise, the link is a pin
+          return step(link, idx, pbh.data)
+        }
+      })
+
+      if (!subwalkCount) {
+        // reached end of pins and found no non-empty fanout bins
+        return callback()
+      }
+
+      function walkCb (err) {
         if (err) { return callback(err) }
         finishedCount++
         if (subwalkCount === finishedCount) {
           // done walking
           return callback()
         }
-      }
-
-      for (let i = 0; i < node.links.length; i++) {
-        const link = node.links[i]
-        if (i >= pbh.header.fanout) {
-          // item link
-          walkerFn(link, i, pbh.data)
-        } else {
-          // fanout link
-          logInternalKey(link.multihash)
-          if (!emptyKey.equals(link.multihash)) {
-            subwalkCount++
-
-            dag.get(link.multihash, (err, res) => {
-              if (err) { return callback(err) }
-              pinSet.walkItems(
-                res.value, walkerFn, logInternalKey, walkCb
-              )
-            })
-          }
-        }
-      }
-      if (!subwalkCount) {
-        return callback()
       }
     }
   }

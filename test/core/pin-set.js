@@ -29,7 +29,7 @@ function noop () {}
  * @return {void}
  */
 function createNodes (num, callback) {
-  let items = []
+  const items = []
   for (let i = 0; i < num; i++) {
     items.push(cb =>
       createNode(String(i), (err, node) => cb(err, node._multihash))
@@ -67,12 +67,11 @@ describe('pinset', function () {
 
   describe('storeItems', function () {
     it('generates a root node with links and hash', function (done) {
-      const expectedRootHash = 'QmYrQ8xraCsNsvziXhMLgCCcaiLqRGVXcTwsynrJkacDPq'
+      const expectedRootHash = 'QmcLiSTjcjoVC2iuGbk6A2PVcWV3WvjZT4jxfNis1vjyrR'
 
       createNode('data', (err, node) => {
         expect(err).to.not.exist()
         const nodeHash = node._multihash
-
         pinset.storeSet([nodeHash], noop, (err, rootNode) => {
           expect(err).to.not.exist()
           const node = rootNode.toJSON()
@@ -91,7 +90,7 @@ describe('pinset', function () {
   describe('handles large sets', function () {
     it('handles storing items > maxItems', function (done) {
       this.timeout(19 * 1000)
-      const expectedHash = 'QmWKEc6JAq1bKQ6jyFLtoVB5PBApBk1FYjgYekj9sMQgT6'
+      const expectedHash = 'QmbvhSy83QWfgLXDpYjDmLWBFfGc8utoqjcXHyj3gYuasT'
       const count = maxItems + 1
       createNodes(count, (err, nodes) => {
         expect(err).to.not.exist()
@@ -99,7 +98,7 @@ describe('pinset', function () {
           expect(err).to.not.exist()
 
           node = node.toJSON()
-          expect(node.size).to.eql(3183411)
+          expect(node.size).to.eql(3184696)
           expect(node.links).to.have.length(defaultFanout)
           expect(node.multihash).to.eql(expectedHash)
 
@@ -166,7 +165,7 @@ describe('pinset', function () {
 
     it('visits all non-fanout links of a root node', function (done) {
       const seen = []
-      const walk = (link, idx, data) => seen.push({ link, idx, data })
+      const walker = (link, idx, data) => seen.push({ link, idx, data })
 
       createNodes(defaultFanout, (err, nodes) => {
         expect(err).to.not.exist()
@@ -174,7 +173,7 @@ describe('pinset', function () {
         pinset.storeSet(nodes, noop, (err, node) => {
           expect(err).to.not.exist()
 
-          pinset.walkItems(node, walk, noop, err => {
+          pinset.walkItems(node, walker, noop, err => {
             expect(err).to.not.exist()
             expect(seen).to.have.length(defaultFanout)
             expect(seen[0].idx).to.eql(defaultFanout)
