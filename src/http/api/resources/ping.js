@@ -37,7 +37,7 @@ exports.get = {
       const responseStream = toStream.source(pullStream)
       const stream2 = new PassThrough()
       pump(responseStream, stream2)
-      return reply(stream2).type('application/json').header('x-chunked-output', '1')
+      return reply(stream2).type('application/json').header('X-Chunked-Output', '1')
     })
   }
 }

@@ -9,10 +9,6 @@ module.exports = (server) => {
     method: '*',
     path: '/api/v0/ping',
     config: {
-      payload: {
-        parse: false,
-        output: 'stream'
-      },
       handler: resources.ping.get.handler,
       validate: resources.ping.get.validate
     }

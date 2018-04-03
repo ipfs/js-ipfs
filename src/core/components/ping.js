@@ -1,13 +1,16 @@
 'use strict'
 
 const promisify = require('promisify-es6')
+const debug = require('debug')
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
 const pull = require('pull-stream/pull')
-const take = require('pull-stream/throughs/take')
 const Pushable = require('pull-pushable')
 const ndjson = require('pull-ndjson')
+
+const log = debug('jsipfs:ping')
+log.error = debug('jsipfs:ping:error')
 
 function getPacket (msg) {
   // Default msg
@@ -21,9 +24,7 @@ module.exports = function ping (self) {
       return cb(new Error(OFFLINE_ERROR))
     }
 
-    const source = Pushable(function (err) {
-      console.log('stream closed!', err)
-    })
+    const source = Pushable()
 
     const response = pull(
       source,
@@ -42,30 +43,35 @@ module.exports = function ping (self) {
 
     self._libp2pNode.ping(peer, (err, p) => {
       if (err) {
-        console.log('ERROR', err)
-        return source.abort(err)
+        log.error(err)
+        source.push(getPacket({Text: err.toString()}))
+        return source.end(err)
       }
+
       let packetCount = 0 
       let totalTime = 0
       source.push(getPacket({Success: true, Text: `PING ${peerId}`}))
+
       p.on('ping', (time) => {
-        console.log('ON PING')
         source.push(getPacket({ Success: true, Time: time }))
         totalTime += time
         packetCount++
-        console.log(packetCount, count)
         if (packetCount >= count) {
           const average = totalTime/count
           p.stop()
-          source.push(getPacket({ Success: false, Text: `Average latency: ${average}ms`}))
+          source.push(getPacket({ Success: true, Text: `Average latency: ${average}ms` }))
           source.end()
         }
       })
-      console.log('Setup handler')
+
       p.on('error', (err) => {
-        console.log('ERROR BATATA', err)
-        source.abort(err)
+        log.error(err)
+        p.stop()
+        source.push(getPacket({Text: err.toString()}))
+        source.end(err)
       })
+
+      p.start()
     })
     
     cb(null, response)
