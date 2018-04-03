@@ -156,4 +156,13 @@ describe('.util', () => {
         .then(out => expectTimeout(ipfs.object.get(out[0].hash), 4000))
     })
   })
+
+  describe('.getEndpointConfig', () => {
+    it('should return the endpoint configured host and port', function () {
+      const endpoint = ipfs.util.getEndpointConfig()
+
+      expect(endpoint).to.have.property('host')
+      expect(endpoint).to.have.property('port')
+    })
+  })
 })

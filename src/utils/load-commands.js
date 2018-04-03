@@ -55,11 +55,12 @@ function requireCommands () {
     return files
   }
 
-  cmds.util = function (send) {
+  cmds.util = function (send, config) {
     const util = {
       addFromFs: require('../util/fs-add')(send),
       addFromStream: require('../files/add')(send),
-      addFromURL: require('../util/url-add')(send)
+      addFromURL: require('../util/url-add')(send),
+      getEndpointConfig: require('../util/get-endpoint-config')(config)
     }
     return util
   }
@@ -67,12 +68,12 @@ function requireCommands () {
   return cmds
 }
 
-function loadCommands (send) {
+function loadCommands (send, config) {
   const files = requireCommands()
   const cmds = {}
 
   Object.keys(files).forEach((file) => {
-    cmds[file] = files[file](send)
+    cmds[file] = files[file](send, config)
   })
 
   return cmds

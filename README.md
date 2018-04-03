@@ -372,6 +372,12 @@ ipfs.util.addFromStream(<readable-stream>, (err, result) => {
 })
 ```
 
+##### Get endpoint configuration (host and port)
+
+> `ipfs.util.getEndpointConfig()`
+
+This returns an object containing the `host` and the `port`
+
 ### Callbacks and Promises
 
 If you do not pass in a callback all API functions will return a `Promise`. For example:
