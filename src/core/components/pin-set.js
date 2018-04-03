@@ -67,6 +67,8 @@ exports = module.exports = function (dag) {
         childhash = toB58String(childhash)
       }
 
+      return searchChildren(root, callback, root.links.length, 0)
+
       function searchChildren (root, cb, numToCheck, numChecked) {
         if (!root.links.length && numToCheck === numChecked) {
           // all nodes have been checked
@@ -91,8 +93,6 @@ exports = module.exports = function (dag) {
           })
         }, cb)
       }
-
-      return searchChildren(root, callback, root.links.length, 0)
     },
 
     storeSet: (keys, logInternalKey, callback) => {
@@ -112,90 +112,95 @@ exports = module.exports = function (dag) {
       })
     },
 
-    storeItems: (pins, logInternalKey, callback, _depth = 0, _binsToFill = 0, _binsFilled = 0) => {
-      callback = once(callback)
-      const pbHeader = pb.Set.encode({
-        version: 1,
-        fanout: defaultFanout,
-        seed: _depth
-      })
-      const headerBuf = Buffer.concat([
-        Buffer.from(varint.encode(pbHeader.length)), pbHeader
-      ])
-      const fanoutLinks = []
-      for (let i = 0; i < defaultFanout; i++) {
-        fanoutLinks.push(new DAGLink('', 1, emptyKey))
-      }
+    storeItems: (items, logInternalKey, callback) => {
       logInternalKey(emptyKey)
 
-      if (pins.length <= maxItems) {
-        const nodes = pins
-          .map(item => ({
-            link: new DAGLink('', 1, item.key),
-            data: item.data || Buffer.alloc(0)
-          }))
-          // sorting makes any ordering of `pins` produce the same DAGNode
-          .sort((a, b) => Buffer.compare(a.link.multihash, b.link.multihash))
+      return storePins(items, callback)
 
-        const rootLinks = fanoutLinks.concat(nodes.map(item => item.link))
-        const rootData = Buffer.concat(
-          [headerBuf].concat(nodes.map(item => item.data))
-        )
-
-        DAGNode.create(rootData, rootLinks, (err, rootNode) => {
-          if (err) { return callback(err) }
-          return callback(null, rootNode)
+      function storePins(pins, cb, depth = 0, binsToFill = 0, binsFilled = 0) {
+        cb = once(cb)
+        const pbHeader = pb.Set.encode({
+          version: 1,
+          fanout: defaultFanout,
+          seed: depth
         })
-      } else {
-        // If the array of pins is > maxItems, we:
-        //  - distribute the pins among `defaultFanout` bins
-        //    - create a DAGNode for each bin
-        //      - add each pin of that bin as a DAGLink
-        //  - create a root DAGNode
-        //    - store each bin as a DAGLink
-        //  - send that root DAGNode via `callback`
-        // (using go-ipfs' "wasteful but simple" approach for consistency)
+        const headerBuf = Buffer.concat([
+          Buffer.from(varint.encode(pbHeader.length)), pbHeader
+        ])
+        const fanoutLinks = []
+        for (let i = 0; i < defaultFanout; i++) {
+          fanoutLinks.push(new DAGLink('', 1, emptyKey))
+        }
 
-        const bins = pins.reduce((bins, pin) => {
-          const n = hash(_depth, pin.key) % defaultFanout
-          bins[n] = n in bins ? bins[n].concat([pin]) : [pin]
-          return bins
-        }, {})
+        if (pins.length <= maxItems) {
+          const nodes = pins
+            .map(item => ({
+              link: new DAGLink('', 1, item.key),
+              data: item.data || Buffer.alloc(0)
+            }))
+            // sorting makes any ordering of `pins` produce the same DAGNode
+            .sort((a, b) => Buffer.compare(a.link.multihash, b.link.multihash))
 
-        const binKeys = Object.keys(bins)
-        _binsToFill += binKeys.length
-        binKeys.forEach(n => {
-          pinSet.storeItems(
-            bins[n],
-            logInternalKey,
-            (err, child) => storeItemsCb(err, child, n),
-            _depth + 1,
-            _binsToFill,
-            _binsFilled
+          const rootLinks = fanoutLinks.concat(nodes.map(item => item.link))
+          const rootData = Buffer.concat(
+            [headerBuf].concat(nodes.map(item => item.data))
           )
-        })
+
+          DAGNode.create(rootData, rootLinks, (err, rootNode) => {
+            if (err) { return cb(err) }
+            return cb(null, rootNode)
+          })
+        } else {
+          // If the array of pins is > maxItems, we:
+          //  - distribute the pins among `defaultFanout` bins
+          //    - create a DAGNode for each bin
+          //      - add each pin of that bin as a DAGLink
+          //  - create a root DAGNode
+          //    - store each bin as a DAGLink
+          //  - send that root DAGNode via `cb`
+          // (using go-ipfs' "wasteful but simple" approach for consistency)
+
+          const bins = pins.reduce((bins, pin) => {
+            const n = hash(depth, pin.key) % defaultFanout
+            bins[n] = n in bins ? bins[n].concat([pin]) : [pin]
+            return bins
+          }, {})
+
+          const binKeys = Object.keys(bins)
+          binsToFill += binKeys.length
+          binKeys.forEach(n => {
+            storePins(
+              bins[n],
+              (err, child) => storeChild(err, child, n),
+              depth + 1,
+              binsToFill,
+              binsFilled
+            )
+          })
+        }
+
+        function storeChild (err, child, bin) {
+          if (err) { return cb(err) }
+
+          const cid = new CID(child._multihash)
+          dag.put(child, { cid }, (err) => {
+            if (err) { return cb(err) }
+
+            logInternalKey(child.multihash)
+            fanoutLinks[bin] = new DAGLink('', child.size, child.multihash)
+            binsFilled++
+
+            if (binsFilled === binsToFill) {
+              // all finished
+              DAGNode.create(headerBuf, fanoutLinks, (err, rootNode) => {
+                if (err) { return cb(err) }
+                return cb(null, rootNode)
+              })
+            }
+          })
+        }
       }
 
-      function storeItemsCb (err, child, bin) {
-        if (err) { return callback(err) }
-        const cid = new CID(child._multihash)
-
-        dag.put(child, { cid }, (err) => {
-          if (err) { return callback(err) }
-
-          logInternalKey(child.multihash)
-          fanoutLinks[bin] = new DAGLink('', child.size, child.multihash)
-          _binsFilled++
-
-          if (_binsFilled === _binsToFill) {
-            // all finished
-            DAGNode.create(headerBuf, fanoutLinks, (err, rootNode) => {
-              if (err) { return callback(err) }
-              return callback(null, rootNode)
-            })
-          }
-        })
-      }
     },
 
     loadSet: (rootNode, name, logInternalKey, callback) => {
