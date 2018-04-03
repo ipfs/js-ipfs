@@ -13,7 +13,7 @@ const each = require('async/each')
 const series = require('async/series')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
-const until = require('async/until')
+const someLimit = require('async/someLimit')
 const once = require('once')
 
 function toB58String (hash) {
@@ -292,26 +292,22 @@ module.exports = function pin (self) {
 
       // indirect (default)
       // check each recursive key to see if multihash is under it
-      const rKeys = pin.recursiveKeys()
-      let found = false
-      until(
-        // search until multihash was found or no more keys to check
-        () => (found || !rKeys.length),
-        (cb) => {
-          const key = rKeys.pop()
-          dag.get(new CID(key), (err, res) => {
-            if (err) { return cb(err) }
-            pin.set.hasChild(res.value, multihash, (err, has) => {
-              if (err) { return cb(err) }
-              found = has
-              // if found, return the hash of the parent recursive pin
-              cb(null, found ? toB58String(res.value.multihash) : null)
-            })
+      // arbitrary limit, enables handling 1000s of pins.
+      let foundPin
+      someLimit(pin.recursiveKeys(), 100, (key, cb) => {
+        dag.get(new CID(key), (err, res) => {
+          if (err) { return cb(err) }
+
+          pin.set.hasChild(res.value, multihash, (err, has) => {
+            if (has) {
+              foundPin = toB58String(res.value.multihash)
+            }
+            cb(err, has)
           })
-        },
-        (err, result) => {
+        })
+      }, (err, found) => {
           if (err) { return callback(err) }
-          return callback(null, {pinned: found, reason: result})
+          return callback(null, { pinned: found, reason: foundPin })
         }
       )
     }),
