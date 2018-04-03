@@ -265,7 +265,11 @@ node.on('error', errorObject => console.error(errorObject))
 
 Start listening for connections with other IPFS nodes on the network. In most cases, you do not need to call this method — `new IPFS()` will automatically do it for you.
 
-**Returns a promise** that resolves when the node is started. You can also pass a callback like `(error) => {...}` or listen for the `start` event to determine when the node has finished starting.
+This method is asynchronous. There are several ways to be notified when the node has finished starting:
+
+1. If you call `node.start()` with no arguments, it returns a promise.
+2. If you pass a function as the final argument, it will be called when the node is started. *(Note: this method will **not** return a promise if you use a callback function.)*
+3. You can listen for the [`start` event](#events).
 
 ```js
 const node = new IPFS({ start: false })
@@ -294,7 +298,11 @@ node.start()
 
 Close and stop listening for connections with other IPFS nodes, then release access to the node’s repo.
 
-**Returns a promise** that resolves when the node is completely stopped. You can also pass a callback like `(error) => {...}` or listen for the `stop` event to determine when the node has stopped.
+This method is asynchronous. There are several ways to be notified when the node has completely stopped:
+
+1. If you call `node.stop()` with no arguments, it returns a promise.
+2. If you pass a function as the final argument, it will be called when the node is stopped. *(Note: this method will **not** return a promise if you use a callback function.)*
+3. You can listen for the [`stop` event](#events).
 
 ```js
 const node = new IPFS()
