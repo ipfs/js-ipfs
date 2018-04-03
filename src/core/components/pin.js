@@ -306,10 +306,9 @@ module.exports = function pin (self) {
           })
         })
       }, (err, found) => {
-          if (err) { return callback(err) }
-          return callback(null, { pinned: found, reason: foundPin })
-        }
-      )
+        if (err) { return callback(err) }
+        return callback(null, { pinned: found, reason: foundPin })
+      })
     }),
 
     directKeyStrings: () => Array.from(directPins),

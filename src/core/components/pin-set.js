@@ -117,7 +117,7 @@ exports = module.exports = function (dag) {
 
       return storePins(items, callback)
 
-      function storePins(pins, cb, depth = 0, binsToFill = 0, binsFilled = 0) {
+      function storePins (pins, cb, depth = 0, binsToFill = 0, binsFilled = 0) {
         cb = once(cb)
         const pbHeader = pb.Set.encode({
           version: 1,
@@ -200,7 +200,6 @@ exports = module.exports = function (dag) {
           })
         }
       }
-
     },
 
     loadSet: (rootNode, name, logInternalKey, callback) => {
