@@ -1,3 +1,13 @@
+<a name="0.59.0"></a>
+# [0.59.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.58.0...v0.59.0) (2018-04-03)
+
+
+### Features
+
+* add wrapWithDirectory to files.add et al ([03eec9e](https://github.com/ipfs/interface-ipfs-core/commit/03eec9e))
+
+
+
 <a name="0.58.0"></a>
 # [0.58.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.57.0...v0.58.0) (2018-03-22)
 
