@@ -48,7 +48,7 @@ module.exports = function ping (self) {
         return source.end(err)
       }
 
-      let packetCount = 0 
+      let packetCount = 0
       let totalTime = 0
       source.push(getPacket({Success: true, Text: `PING ${peerId}`}))
 
@@ -57,7 +57,7 @@ module.exports = function ping (self) {
         totalTime += time
         packetCount++
         if (packetCount >= count) {
-          const average = totalTime/count
+          const average = totalTime / count
           p.stop()
           source.push(getPacket({ Success: true, Text: `Average latency: ${average}ms` }))
           source.end()
@@ -73,7 +73,7 @@ module.exports = function ping (self) {
 
       p.start()
     })
-    
+
     cb(null, response)
   })
 }

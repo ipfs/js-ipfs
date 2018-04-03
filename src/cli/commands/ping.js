@@ -26,7 +26,7 @@ module.exports = {
     pull(
       argv.ipfs.pingPullStream(peerId, { count }),
       pullCatch(err => {
-        throw err 
+        throw err
       }),
       drain(({ Time, Text }) => {
         // Check if it's a pong

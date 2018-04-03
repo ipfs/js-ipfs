@@ -13,7 +13,8 @@ exports.get = {
     query: Joi.object().keys({
       n: Joi.alternatives()
         .when('count', {
-          is: true, then: Joi.any().forbidden(),
+          is: true,
+          then: Joi.any().forbidden(),
           otherwise: Joi.number().greater(0)
         }),
       count: Joi.number().greater(0),
