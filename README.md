@@ -103,6 +103,8 @@ In order to be considered "valid", an IPFS core implementation  must expose the 
   - [config](/SPEC/CONFIG.md)
   - [stats](/SPEC/STATS.md)
   - [repo](/SPEC/REPO.md)
+- [**Types**](/SPEC/TYPES.md)
+- [**Util**](/SPEC/UTIL.md)
 
 ## Contribute
 
