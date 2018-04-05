@@ -22,7 +22,6 @@ module.exports = {
   handler (argv) {
     const peerId = argv.peerId
     const count = argv.count || 10
-
     pull(
       argv.ipfs.pingPullStream(peerId, { count }),
       pullCatch(err => {

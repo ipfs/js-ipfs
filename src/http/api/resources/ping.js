@@ -19,7 +19,7 @@ exports.get = {
         }),
       count: Joi.number().greater(0),
       arg: Joi.string()
-    })
+    }).unknown()
   },
   handler: (request, reply) => {
     const ipfs = request.server.app.ipfs
