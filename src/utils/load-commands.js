@@ -42,6 +42,7 @@ function requireCommands () {
     pubsub: require('../pubsub'),
     update: require('../update'),
     version: require('../version'),
+    types: require('../types'),
     dns: require('../dns')
   }
 
@@ -61,7 +62,9 @@ function requireCommands () {
       addFromFs: require('../util/fs-add')(send),
       addFromStream: require('../files/add')(send),
       addFromURL: require('../util/url-add')(send),
-      getEndpointConfig: require('../util/get-endpoint-config')(config)
+      getEndpointConfig: require('../util/get-endpoint-config')(config),
+      crypto: require('libp2p-crypto'),
+      isIPFS: require('is-ipfs')
     }
     return util
   }

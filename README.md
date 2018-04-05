@@ -308,6 +308,20 @@ This means:
 - See https://github.com/ipfs/js-ipfs for details on
   pubsub in js-ipfs
 
+#### `Domain data types`
+
+A set of data types are exposed directly from the IPFS instance under `ipfs.types`. That way you're not required to import/require the following.
+
+- [`ipfs.types.Buffer`](https://www.npmjs.com/package/buffer)
+- [`ipfs.types.PeerId`](https://github.com/libp2p/js-peer-id)
+- [`ipfs.types.PeerInfo`](https://github.com/libp2p/js-peer-info)
+- [`ipfs.types.multiaddr`](https://github.com/multiformats/js-multiaddr)
+- [`ipfs.types.multibase`](https://github.com/multiformats/multibase)
+- [`ipfs.types.multihash`](https://github.com/multiformats/js-multihash)
+- [`ipfs.types.CID`](https://github.com/ipld/js-cid)
+- [`ipfs.types.dagPB`](https://github.com/ipld/js-ipld-dag-pb)
+- [`ipfs.types.dagCBOR`](https://github.com/ipld/js-ipld-dag-cbor)
+
 #### `Utility functions`
 
 Adding to the methods defined by [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core), `js-ipfs-api` exposes a set of extra utility methods. These utility functions are scoped behind the `ipfs.util`.
@@ -377,6 +391,18 @@ ipfs.util.addFromStream(<readable-stream>, (err, result) => {
 > `ipfs.util.getEndpointConfig()`
 
 This returns an object containing the `host` and the `port`
+
+##### Get libp2p crypto primitives
+
+> `ipfs.util.crypto`
+
+This contains an object with the crypto primitives
+
+##### Get is-ipfs utilities
+
+> `ipfs.util.isIPFS`
+
+This contains an object with the is-ipfs utilities to help identifying IPFS resources
 
 ### Callbacks and Promises
 

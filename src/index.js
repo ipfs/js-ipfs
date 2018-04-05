@@ -38,7 +38,7 @@ function IpfsAPI (hostOrMultiaddr, port, opts) {
   const requestAPI = sendRequest(config)
   const cmds = loadCommands(requestAPI, config)
   cmds.send = requestAPI
-  cmds.Buffer = Buffer
+  cmds.Buffer = Buffer // Added buffer in types (this should be removed once a breaking change is release)
 
   return cmds
 }

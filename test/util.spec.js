@@ -165,4 +165,20 @@ describe('.util', () => {
       expect(endpoint).to.have.property('port')
     })
   })
+
+  describe('.crypto', () => {
+    it('should contain the crypto primitives object', function () {
+      const cripto = ipfs.util.crypto
+
+      expect(cripto).to.exist()
+    })
+  })
+
+  describe('.isIPFS', () => {
+    it('should contain the isIPFS utilities object', function () {
+      const isIPFS = ipfs.util.isIPFS
+
+      expect(isIPFS).to.exist()
+    })
+  })
 })
