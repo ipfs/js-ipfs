@@ -49,13 +49,13 @@ function parseIpfsPath (ipfsPath) {
  *  - multihash Buffer
  *  - Arrays of the above
  *
- * @param  {IPFS}   ipfs                 the IPFS node
- * @param  {Described above}   ipfsPaths A single or collection of ipfs-paths
+ * @param  {IPFS}               objectAPI The IPFS object api
+ * @param  {Described above}    ipfsPaths A single or collection of ipfs-paths
  * @param  {Function<err, res>} callback res is Array<Buffer(hash)>
  *                              if no callback is passed, returns a Promise
  * @return {Promise|void}
  */
-const resolvePaths = promisify(function (ipfs, ipfsPaths, callback) {
+const resolvePath = promisify(function (objectAPI, ipfsPaths, callback) {
   if (!Array.isArray(ipfsPaths)) {
     ipfsPaths = [ipfsPaths]
   }
@@ -83,7 +83,7 @@ const resolvePaths = promisify(function (ipfs, ipfsPaths, callback) {
       return cb(null, rootHash)
     }
 
-    ipfs.object.get(rootHash, follow.bind(null, rootLinks))
+    objectAPI.get(rootHash, follow.bind(null, rootLinks))
 
     // recursively follow named links to the target node
     function follow (links, err, obj) {
@@ -103,10 +103,10 @@ const resolvePaths = promisify(function (ipfs, ipfsPaths, callback) {
         ))
       }
 
-      ipfs.object.get(nextObj.multihash, follow.bind(null, links.slice(1)))
+      objectAPI.get(nextObj.multihash, follow.bind(null, links.slice(1)))
     }
   }, callback)
 })
 
 exports.parseIpfsPath = parseIpfsPath
-exports.resolvePaths = resolvePaths
+exports.resolvePath = resolvePath

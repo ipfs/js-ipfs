@@ -59,7 +59,7 @@ describe('utils', () => {
     })
   })
 
-  describe('resolvePaths', function () {
+  describe('resolvePath', function () {
     this.timeout(80 * 1000)
     const fixtures = [
       'test/fixtures/planets/mercury/wiki.md',
@@ -80,12 +80,10 @@ describe('utils', () => {
       node.once('ready', () => node.files.add(fixtures, done))
     })
 
-    after(done => {
-      repo.teardown(done)
-    })
+    after(done => node.stop(done))
 
     it('handles base58 hash format', (done) => {
-      utils.resolvePaths(node, rootHash, (err, hashes) => {
+      utils.resolvePath(node.object, rootHash, (err, hashes) => {
         expect(err).to.not.exist()
         expect(hashes.length).to.equal(1)
         expect(hashes[0]).to.deep.equal(rootMultihash)
@@ -94,7 +92,7 @@ describe('utils', () => {
     })
 
     it('handles multihash format', (done) => {
-      utils.resolvePaths(node, aboutMultihash, (err, hashes) => {
+      utils.resolvePath(node.object, aboutMultihash, (err, hashes) => {
         expect(err).to.not.exist()
         expect(hashes.length).to.equal(1)
         expect(hashes[0]).to.deep.equal(aboutMultihash)
@@ -104,7 +102,7 @@ describe('utils', () => {
 
     it('handles ipfs paths format', function (done) {
       this.timeout(200 * 1000)
-      utils.resolvePaths(node, aboutPath, (err, hashes) => {
+      utils.resolvePath(node.object, aboutPath, (err, hashes) => {
         expect(err).to.not.exist()
         expect(hashes.length).to.equal(1)
         expect(hashes[0]).to.deep.equal(aboutMultihash)
@@ -113,7 +111,8 @@ describe('utils', () => {
     })
 
     it('handles an array', (done) => {
-      utils.resolvePaths(node, [rootHash, rootPath, rootMultihash], (err, hashes) => {
+      const paths = [rootHash, rootPath, rootMultihash]
+      utils.resolvePath(node.object, paths, (err, hashes) => {
         expect(err).to.not.exist()
         expect(hashes.length).to.equal(3)
         expect(hashes[0]).to.deep.equal(rootMultihash)
@@ -124,14 +123,14 @@ describe('utils', () => {
     })
 
     it('should error on invalid hashes', function (done) {
-      utils.resolvePaths(node, '/ipfs/asdlkjahsdfkjahsdfd', err => {
+      utils.resolvePath(node.object, '/ipfs/asdlkjahsdfkjahsdfd', err => {
         expect(err).to.exist()
         done()
       })
     })
 
     it(`should error when a link doesn't exist`, function (done) {
-      utils.resolvePaths(node, `${aboutPath}/fusion`, err => {
+      utils.resolvePath(node.object, `${aboutPath}/fusion`, err => {
         expect(err.message).to.include(
           `no link named "fusion" under QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q`
         )

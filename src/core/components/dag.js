@@ -79,7 +79,7 @@ module.exports = function dag (self) {
       )
     }),
 
-    // TODO - move to IPLD resolver and generalize to other IPLD formats
+    // TODO - use IPLD selectors once they are implemented
     _getRecursive: promisify((multihash, callback) => {
       // gets flat array of all DAGNodes in tree given by multihash
       callback = once(callback)
