@@ -110,6 +110,14 @@ describe('daemon', () => {
     }).catch(done)
   })
 
+  skipOnWindows('should handle SIGHUP gracefully', function (done) {
+    this.timeout(100 * 1000)
+
+    testSignal(ipfs, 'SIGHUP').then(() => {
+      checkLock(repoPath, done)
+    }).catch(done)
+  })
+
   it('gives error if user hasn\'t run init before', function (done) {
     this.timeout(100 * 1000)
 
