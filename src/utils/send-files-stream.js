@@ -78,6 +78,7 @@ module.exports = (send, path) => {
     qs['cid-version'] = propOrProp(options, 'cid-version', 'cidVersion')
     qs['raw-leaves'] = propOrProp(options, 'raw-leaves', 'rawLeaves')
     qs['only-hash'] = propOrProp(options, 'only-hash', 'onlyHash')
+    qs['wrap-with-directory'] = propOrProp(options, 'wrap-with-directory', 'wrapWithDirectory')
     qs.hash = propOrProp(options, 'hash', 'hashAlg')
 
     const args = {
