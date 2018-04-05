@@ -1,14 +1,14 @@
 'use strict'
 
 module.exports = {
-  command: 'cat <ipfs-path>',
+  command: 'cat <ipfsPath>',
 
   describe: 'Fetch and cat an IPFS path referencing a file',
 
   builder: {},
 
   handler (argv) {
-    let path = argv['ipfs-path']
+    let path = argv['ipfsPath']
     if (path.indexOf('/ipfs/') !== 1) {
       path = path.replace('/ipfs/', '')
     }

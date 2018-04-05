@@ -45,7 +45,7 @@ function fileHandler (dir) {
 }
 
 module.exports = {
-  command: 'get <ipfs-path>',
+  command: 'get <ipfsPath>',
 
   describe: 'Fetch a file or directory with files references from an IPFS Path',
 
@@ -58,7 +58,8 @@ module.exports = {
   },
 
   handler (argv) {
-    const ipfsPath = argv['ipfs-path']
+    const ipfsPath = argv['ipfsPath']
+
     const dir = checkArgs(ipfsPath, argv.output)
 
     const stream = argv.ipfs.files.getReadableStream(ipfsPath)

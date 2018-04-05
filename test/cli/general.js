@@ -10,4 +10,12 @@ describe('general cli options', () => runOnAndOff.off((thing) => {
       expect(out).to.be.empty()
     })
   })
+
+  it('should handle unknown arguments correctly', () => {
+    return thing.ipfs('random --again').then((out) => {
+      expect(out).to.include('Unknown arguments: again, random')
+      expect(out).to.include('random')
+      expect(out).to.include('again')
+    })
+  })
 }))
