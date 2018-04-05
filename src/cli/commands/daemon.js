@@ -53,5 +53,6 @@ module.exports = {
     // listen for graceful termination
     process.on('SIGTERM', cleanup)
     process.on('SIGINT', cleanup)
+    process.on('SIGHUP', cleanup)
   }
 }
