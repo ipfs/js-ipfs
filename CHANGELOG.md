@@ -1,3 +1,13 @@
+<a name="0.60.1"></a>
+## [0.60.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.60.0...v0.60.1) (2018-04-05)
+
+
+### Bug Fixes
+
+* fix wrapWithDirectory test ([a97c087](https://github.com/ipfs/interface-ipfs-core/commit/a97c087))
+
+
+
 <a name="0.60.0"></a>
 # [0.60.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.59.0...v0.60.0) (2018-04-05)
 
