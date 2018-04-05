@@ -593,8 +593,8 @@ module.exports = (common) => {
           })
 
           afterEach(() => {
-              ipfs1.pubsub.unsubscribe(topic, sub1)
-              ipfs2.pubsub.unsubscribe(topic, sub2)
+            ipfs1.pubsub.unsubscribe(topic, sub1)
+            ipfs2.pubsub.unsubscribe(topic, sub2)
           })
 
           it('send/receive 10k messages', function (done) {

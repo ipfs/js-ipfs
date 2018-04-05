@@ -265,16 +265,16 @@ module.exports = (common) => {
 
       it('wrapWithDirectory', (done) => {
         return ipfs.files.add({ path: 'testfile.txt', content: smallFile.data }, { wrapWithDirectory: true }, (err, filesAdded) => {
-          expect(err).to.not.exist();
-          expect(filesAdded).to.have.length(2);
-          const file = filesAdded[0];
+          expect(err).to.not.exist()
+          expect(filesAdded).to.have.length(2)
+          const file = filesAdded[0]
           const wrapped = filesAdded[1]
           expect(file.hash).to.equal(smallFile.cid)
           expect(file.path).to.equal('testfile.txt')
-          expect(wrapped.path).to.equal(wrapDirectory.cid);
-          done();
-        });
-      });
+          expect(wrapped.path).to.equal(wrapDirectory.cid)
+          done()
+        })
+      })
 
       it('Promise test', () => {
         return ipfs.files.add(smallFile.data)
@@ -397,7 +397,7 @@ module.exports = (common) => {
 
       it('with a cid object', (done) => {
         const cid = new CID(smallFile.cid)
-      
+
         ipfs.files.cat(cid, (err, data) => {
           expect(err).to.not.exist()
           expect(data.toString()).to.contain('Plz add me!')

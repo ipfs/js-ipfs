@@ -65,7 +65,7 @@ module.exports = (common) => {
             (cb) => nodeE.swarm.connect(nodeB.peerId.addresses[0], cb),
             (cb) => nodeD.swarm.connect(nodeC.peerId.addresses[0], cb),
             (cb) => nodeE.swarm.connect(nodeC.peerId.addresses[0], cb),
-            (cb) => nodeD.swarm.connect(nodeE.peerId.addresses[0], cb),
+            (cb) => nodeD.swarm.connect(nodeE.peerId.addresses[0], cb)
           ], done)
         })
       })
