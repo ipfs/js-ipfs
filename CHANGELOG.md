@@ -1,3 +1,13 @@
+<a name="0.60.0"></a>
+# [0.60.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.59.0...v0.60.0) (2018-04-05)
+
+
+### Features
+
+* Provide access to bundled libraries when in browser ([db83b50](https://github.com/ipfs/interface-ipfs-core/commit/db83b50))
+
+
+
 <a name="0.59.0"></a>
 # [0.59.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.58.0...v0.59.0) (2018-04-03)
 
