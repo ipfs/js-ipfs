@@ -1,3 +1,26 @@
+<a name="20.0.0"></a>
+# [20.0.0](https://github.com/ipfs/js-ipfs-api/compare/v19.0.0...v20.0.0) (2018-04-05)
+
+
+### Bug Fixes
+
+* **dag:** js-ipld format resolver take the raw block ([2683c7e](https://github.com/ipfs/js-ipfs-api/commit/2683c7e))
+* **dag:** path logic for DAG get was wrong ([d2b203b](https://github.com/ipfs/js-ipfs-api/commit/d2b203b))
+* **dag:** use SendOneFile for dag put ([9c37213](https://github.com/ipfs/js-ipfs-api/commit/9c37213))
+
+
+### Features
+
+* dag.put ([9463d3a](https://github.com/ipfs/js-ipfs-api/commit/9463d3a))
+* **dag:** proper get implementation ([7ba0343](https://github.com/ipfs/js-ipfs-api/commit/7ba0343))
+* **dag:** rebase, use waterfall for put ([ad9eab8](https://github.com/ipfs/js-ipfs-api/commit/ad9eab8))
+* **dag:** update option names to reflect go-ipfs API ([9bf1c6c](https://github.com/ipfs/js-ipfs-api/commit/9bf1c6c))
+* Provide access to bundled libraries when in browser ([#732](https://github.com/ipfs/js-ipfs-api/issues/732)) ([994bdad](https://github.com/ipfs/js-ipfs-api/commit/994bdad)), closes [#406](https://github.com/ipfs/js-ipfs-api/issues/406)
+* public-readonly-method-for-getting-host-and-port ([41d32e3](https://github.com/ipfs/js-ipfs-api/commit/41d32e3)), closes [#580](https://github.com/ipfs/js-ipfs-api/issues/580)
+* Wrap with dir ([#730](https://github.com/ipfs/js-ipfs-api/issues/730)) ([160860e](https://github.com/ipfs/js-ipfs-api/commit/160860e))
+
+
+
 <a name="19.0.0"></a>
 # [19.0.0](https://github.com/ipfs/js-ipfs-api/compare/v18.2.1...v19.0.0) (2018-03-28)
 
