@@ -271,7 +271,7 @@ module.exports = (common) => {
           const wrapped = filesAdded[1]
           expect(file.hash).to.equal(smallFile.cid)
           expect(file.path).to.equal('testfile.txt')
-          expect(wrapped.path).to.equal(wrapDirectory.cid)
+          expect(wrapped.path).to.equal('')
           done()
         })
       })
