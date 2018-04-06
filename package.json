@@ -119,7 +119,7 @@
     "is-stream": "^1.1.0",
     "joi": "^13.1.2",
     "joi-browser": "^13.0.1",
-    "joi-multiaddr": "^1.0.1",
+    "joi-multiaddr": "^2.0.0",
     "libp2p": "~0.19.2",
     "libp2p-circuit": "~0.1.5",
     "libp2p-floodsub": "~0.14.1",
