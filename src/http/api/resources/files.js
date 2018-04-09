@@ -207,7 +207,8 @@ exports.add = {
       cidVersion: request.query['cid-version'],
       rawLeaves: request.query['raw-leaves'],
       progress: request.query.progress ? progressHandler : null,
-      onlyHash: request.query['only-hash']
+      onlyHash: request.query['only-hash'],
+      hashAlg: request.query['hash']
     }
 
     const aborter = abortable()

@@ -10,6 +10,7 @@ const zip = require('pull-zip')
 const getFolderSize = require('get-folder-size')
 const byteman = require('byteman')
 const waterfall = require('async/waterfall')
+const mh = require('multihashes')
 const utils = require('../../utils')
 const print = require('../../utils').print
 const createProgressBar = require('../../utils').createProgressBar
@@ -162,6 +163,11 @@ module.exports = {
       type: 'integer',
       describe: 'Cid version. Non-zero value will change default of \'raw-leaves\' to true. (experimental)'
     },
+    hash: {
+      type: 'string',
+      choices: Object.keys(mh.names),
+      describe: 'Hash function to use. Will set Cid version to 1 if used. (experimental)'
+    },
     quiet: {
       alias: 'q',
       type: 'boolean',
@@ -191,7 +197,8 @@ module.exports = {
         : Infinity,
       cidVersion: argv.cidVersion,
       rawLeaves: argv.rawLeaves,
-      onlyHash: argv.onlyHash
+      onlyHash: argv.onlyHash,
+      hashAlg: argv.hash
     }
 
     // Temporary restriction on raw-leaves:
@@ -204,6 +211,18 @@ module.exports = {
     // This retains feature parity without having to implement raw-leaves.
     if (options.cidVersion > 0 && options.rawLeaves !== false) {
       throw new Error('Implied argument raw-leaves must be passed and set to false when cid-version is > 0')
+    }
+
+    // Temporary restriction on raw-leaves:
+    // When hash != undefined then raw-leaves MUST be present and false.
+    //
+    // This is because raw-leaves is not yet implemented in js-ipfs,
+    // and go-ipfs changes the value of raw-leaves to true when
+    // hash != undefined unless explicitly set to false.
+    //
+    // This retains feature parity without having to implement raw-leaves.
+    if (options.hash && options.rawLeaves !== false) {
+      throw new Error('Implied argument raw-leaves must be passed and set to false when hash argument is specified')
     }
 
     if (options.rawLeaves) {
