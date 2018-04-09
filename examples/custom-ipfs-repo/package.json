@@ -1,0 +1,17 @@
+{
+  "name": "custom-ipfs-repo",
+  "version": "0.1.0",
+  "description": "Customizing your ipfs repo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "async": "^2.6.0",
+    "datastore-fs": "^0.4.2",
+    "ipfs": "file:../../",
+    "ipfs-repo": "^0.18.7"
+  }
+}

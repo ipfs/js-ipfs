@@ -21,6 +21,7 @@ Let us know if you find any issue or if you want to contribute and add a new tut
 - [js-ipfs in the browser with a `<script>` tag](./browser-script-tag)
 - [js-ipfs in electron](./run-in-electron)
 - [Using streams to add a directory of files to ipfs](./browser-add-readable-stream)
+- [Customizing the ipfs repository](./custom-ipfs-repo)
 
 ## Understanding the IPFS Stack
 
