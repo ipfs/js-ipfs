@@ -11,15 +11,17 @@ module.exports = {
 
   describe: 'Start a long-running daemon process',
 
-  builder: {
-    'enable-sharding-experiment': {
-      type: 'boolean',
-      default: false
-    },
-    'enable-pubsub-experiment': {
-      type: 'boolean',
-      default: false
-    }
+  builder (yargs) {
+    return yargs
+      .epilog(utils.ipfsPathHelp)
+      .option('enable-sharding-experiment', {
+        type: 'boolean',
+        default: false
+      })
+      .option('enable-pubsub-experiment', {
+        type: 'boolean',
+        default: false
+      })
   },
 
   handler (argv) {

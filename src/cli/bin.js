@@ -29,6 +29,7 @@ const cli = yargs
     default: ''
   })
   .commandDir('commands')
+  .epilog(utils.ipfsPathHelp)
   .demandCommand(1)
   .fail((msg, err, yargs) => {
     if (err) {
