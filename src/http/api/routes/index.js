@@ -19,4 +19,5 @@ module.exports = (server) => {
   require('./dns')(server)
   require('./key')(server)
   require('./stats')(server)
+  require('./ping')(server)
 }
