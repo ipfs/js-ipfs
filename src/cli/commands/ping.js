@@ -1,7 +1,7 @@
 'use strict'
 
 const utils = require('../utils')
-const print = require('../utils').print
+// const print = require('../utils').print
 
 module.exports = {
   command: 'ping <peerId>',
@@ -22,7 +22,7 @@ module.exports = {
     }
 
     const peerId = argv.peerId
-    const count = argv.count || 10
+    // const count = argv.count || 10
 
     argv.ipfs.ping(peerId, (err, p) => {
       if (err) {
