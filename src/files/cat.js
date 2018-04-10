@@ -20,7 +20,12 @@ module.exports = (send) => {
       }
     }
 
-    send({ path: 'cat', args: hash, buffer: opts.buffer }, (err, stream) => {
+    const query = {
+      offset: opts.offset,
+      length: opts.length
+    }
+
+    send({ path: 'cat', args: hash, buffer: opts.buffer, qs: query }, (err, stream) => {
       if (err) { return callback(err) }
 
       stream.pipe(bl((err, data) => {
