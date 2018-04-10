@@ -46,10 +46,19 @@ exports.stat = (request, reply) => {
 }
 
 exports.unwant = {
-  // uses common parseKey method that returns a `key`
+  // uses common parseKey method that assigns a `key` to request.pre.args
   parseArgs: parseKey,
 
+  // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
-    reply(boom.badRequest(new Error('Not implemented yet')))
+    const key = request.pre.args.key
+    const ipfs = request.server.app.ipfs
+    try {
+      ipfs.bitswap.unwant(key)
+    } catch (err) {
+      return reply(boom.badRequest(err))
+    }
+
+    reply({ Key: key })
   }
 }

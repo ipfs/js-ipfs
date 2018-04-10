@@ -23,8 +23,7 @@ describe('bitswap', () => runOn((thing) => {
     })
   })
 
-  // TODO @hacdias fix this with https://github.com/ipfs/js-ipfs/pull/1198
-  it.skip('stat', function () {
+  it('stat', function () {
     this.timeout(20 * 1000)
 
     return ipfs('bitswap stat').then((out) => {
@@ -38,6 +37,12 @@ describe('bitswap', () => runOn((thing) => {
         '  partners [0]',
         '    '
       ].join('\n') + '\n')
+    })
+  })
+
+  it('unwant', function () {
+    return ipfs('bitswap unwant ' + key).then((out) => {
+      expect(out).to.eql(`Key ${key} removed from wantlist\n`)
     })
   })
 }))
