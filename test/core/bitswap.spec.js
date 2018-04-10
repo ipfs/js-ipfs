@@ -283,7 +283,7 @@ skipOnWindows('bitswap', function () {
         })
       })
 
-      it('throws if offline', () => {
+      it('.unwant throws if offline', () => {
         expect(() => node.bitswap.unwant('my key')).to.throw(/online/)
       })
     })

@@ -45,7 +45,7 @@ module.exports = function bitswap (self) {
         throw new Error(OFFLINE_ERROR)
       }
 
-      // TODO: implement when https://github.com/ipfs/js-ipfs-bitswap/pull/10 is merged
+      self._bitswap.unwant(key)
     }
   }
 }

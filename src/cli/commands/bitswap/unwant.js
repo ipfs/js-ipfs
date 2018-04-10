@@ -1,11 +1,21 @@
 'use strict'
 
+const print = require('../../utils').print
+
 module.exports = {
   command: 'unwant <key>',
 
-  describe: 'Remove a given block from your wantlist.',
+  describe: 'Removes a given block from your wantlist.',
 
+  builder: {
+    key: {
+      alias: 'k',
+      describe: 'Key to remove from your wantlist',
+      type: 'string'
+    }
+  },
   handler (argv) {
-    throw new Error('Not implemented yet')
+    argv.ipfs.bitswap.unwant(argv.key)
+    print(`Key ${argv.key} removed from wantlist`)
   }
 }
