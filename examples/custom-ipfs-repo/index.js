@@ -2,7 +2,6 @@
 
 const series = require('async/series')
 const IPFS = require('ipfs')
-const Repo = require('ipfs-repo')
 
 // Create our custom options
 const customRepositoryOptions = {
@@ -36,10 +35,10 @@ const customRepositoryOptions = {
   locker: false
 }
 
-// Initialize our repo and IPFS node
-const myRepo = new Repo('/tmp/custom-repo/.ipfs', customRepositoryOptions)
+// Initialize our IPFS node with the custom repo options
 const node = new IPFS({
-  repo: myRepo
+  repo: '/tmp/custom-repo/.ipfs',
+  repoOptions: customRepositoryOptions
 })
 
 // Test the new repo by adding and fetching some data
