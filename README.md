@@ -23,6 +23,7 @@
   - [Use in a browser with browserify, webpack or any other bundler](#use-in-a-browser-with-browserify-webpack-or-any-other-bundler)
   - [Use in a browser Using a script tag](#use-in-a-browser-using-a-script-tag)
 - [Contribute](#contribute)
+- [Changelog](#changelog)
 - [License](#license)
 
 ## Install
@@ -59,11 +60,17 @@ Loading this module through a script tag will make the `mfs` obj available in th
 
 ## Contribute
 
-All are welcome, please join in! Open an [issue](https://github.com/ipfs/js-ipfs-mfs/issues) or send a [PR](https://github.com/ipfs/js-ipfs-mfs/pulls)!
+All are welcome, please join in!
 
 This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
 
+Open an [issue](https://github.com/ipfs/js-ipfs-mfs/issues) or send a [PR](https://github.com/ipfs/js-ipfs-mfs/pulls) - see [CONTRIBUTING.md](./CONTRIBUTING.md) for how to make sure your branch is ready for PRing.
+
 [![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/contributing.md)
+
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for details of what has changed between releases.
 
 ## License
 
