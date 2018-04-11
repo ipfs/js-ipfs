@@ -1,0 +1,15 @@
+# Warning: This file is automatically synced from https://github.com/ipfs/ci-sync so if you want to change it, please change it there and ask someone to sync all repositories.
+machine:
+  node:
+    version: stable
+
+dependencies:
+  pre:
+    - google-chrome --version
+    - curl -L -o google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    - sudo dpkg -i google-chrome.deb || true
+    - sudo apt-get update
+    - sudo apt-get install -f
+    - sudo apt-get install --only-upgrade lsb-base
+    - sudo dpkg -i google-chrome.deb
+    - google-chrome --version

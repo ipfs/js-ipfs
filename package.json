@@ -1,0 +1,54 @@
+{
+  "name": "ipfs-mfs",
+  "version": "0.0.1",
+  "description": "JavaScript implementation of the IPFS Mutable File System",
+  "main": "src/index.js",
+  "browser": {
+    "fs": false
+  },
+  "scripts": {
+    "test": "aegir test",
+    "test:node": "aegir test -t node",
+    "test:browser": "aegir test -t browser -t webworker",
+    "build": "aegir build",
+    "lint": "aegir lint",
+    "release": "aegir release",
+    "release-minor": "aegir release --type minor",
+    "release-major": "aegir release --type major",
+    "coverage": "aegir coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs-mfs.git"
+  },
+  "keywords": [
+    "IPFS"
+  ],
+  "author": "Alex Potsides <alex.potsides@protocol.ai>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ipfs/js-ipfs-mfs/issues"
+  },
+  "engines": {
+    "node": ">=6.0.0",
+    "npm": ">=3.0.0"
+  },
+  "homepage": "https://github.com/ipfs/js-ipfs-mfs#readme",
+  "devDependencies": {
+    "aegir": "^13.0.6",
+    "chai": "^4.1.2",
+    "dirty-chai": "^2.0.1",
+    "pre-commit": "^1.2.2",
+    "safe-buffer": "^5.1.1"
+  },
+  "dependencies": {
+    
+  },
+  "pre-commit": [
+    "lint",
+    "test"
+  ],
+  "contributors": [
+    "Alex Potsides <alex.potsides@protocol.ai>"
+  ]
+}
