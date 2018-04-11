@@ -3,6 +3,12 @@ machine:
   node:
     version: stable
 
+test:
+  pre:
+    - npm run lint
+  post:
+    - npm run coverage -- --upload --providers coveralls
+
 dependencies:
   pre:
     - google-chrome --version
