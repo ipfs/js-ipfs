@@ -16,10 +16,11 @@ We try to frame our ongoing work using a process based on quarterly Objectives a
 
 - `PX` - achingbrain - The MFS is implemented in js-ipfs.
 - `PX` - achingbrain - npm on IPFS is used as a test vector of js-ipfs capabilities.
-- `PX` - OWNER - js-ipfs in the browser can fetch a dataset of at least 100Gb (and create archives.js.ipfs.io).
+- `PX` - hugomrdias - js-ipfs in the browser can fetch a dataset of at least 100Gb (and create archives.js.ipfs.io).
 - `PX` - OWNER - js-ipfs in Node.js can add and transfer a dataset of at least 1TB.
 - `PX` - jacobheun - A S3 IPFS Repo backend exists and it is easily pluggable on `new IPFS`.
-- `PX` - OWNER - The PIN API is finished and merged.
+- `PX` - JonKrone - The PIN API is finished and merged.
+- `PX` - vasco-stantos - js-ipfs Service Worker gateway.
 
 ### The APIs are more ergonomic and developer productivity is off the charts
 
@@ -29,16 +30,22 @@ We try to frame our ongoing work using a process based on quarterly Objectives a
 - `PX` - VictorBjelkholm - Every env (i.e Linux, Windows, Mac OS X, Firefox, Chrome, Safari, Edge) test run is parallelized in CI.
 - `PX` - VictorBjelkholm - CLI, HTTP-API and Core Tests of js-ipfs are parallelized in CI.
 - `PX` - fsdiogo - A repo migration utility exists and migration is a good experience for js-ipfs users.
+- `PX` - wraithgar - Achieve CLI and HTTP-API feature parity with go-ipfs for all the commands and endpoints planned (see https://github.com/ipfs/ipfs/blob/master/IMPLEMENTATION_STATUS.md)
+- `PX` - wraithgar - Bring code coverage up to 100% everywhere!
 
 ### libp2p levels up, learns new superpowers and a dedicated team is formed
 
-- `PX` - OWNER - libp2p has primitives to keep connections under control.
+- `PX` - hugomrdias - libp2p has primitives to keep connections under control.
 - `PX` - dryajov - Readable Streams no more! Reduce the overhead of Readable -> Pull in libp2p-mplex.
 - `PX` - diasdavid - The libp2p.next() refactor is complete.
 - `PX` - diasdavid - Delegated Peer Routing and Content Routing modules are created.
 - `PX` - diasdavid - Browsers no longer rely on static rendezvous points for Discovery.
 - `PX` - jacobheun - js-libp2p gets its Private Networks implementation.
 - `PX` - diasdavid - js-libp2p gets its own OKR spreadsheet for next Q3.
+- `PX` - vasco-stantos - The name system (IPNS) works locally.
+- `PX` - vasco-stantos - IPNS over PubSub.
+- `PX` - vasco-stantos - IPNS over the DHT.
+- `PX` - dryajov - NAT Traversal for the TCP Transport.
 
 ### The Community is pumped by having a selection of example applications, blog posts and video tutorials on how to build DApps with IPFS
 
