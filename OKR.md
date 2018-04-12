@@ -32,6 +32,7 @@ We try to frame our ongoing work using a process based on quarterly Objectives a
 - `PX` - fsdiogo - A repo migration utility exists and migration is a good experience for js-ipfs users.
 - `PX` - wraithgar - Achieve CLI and HTTP-API feature parity with go-ipfs for all the commands and endpoints planned (see https://github.com/ipfs/ipfs/blob/master/IMPLEMENTATION_STATUS.md)
 - `PX` - wraithgar - Bring code coverage up to 100% everywhere!
+- `PX` - diasdavid - Every js-ipfs/js-libp2p/js-ipld and js-multiformats module has an assigned maintainer with clear responsibilities.
 
 ### libp2p levels up, learns new superpowers and a dedicated team is formed
 
