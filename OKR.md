@@ -27,9 +27,9 @@ We try to frame our ongoing work using a process based on quarterly Objectives a
 - `PX` - vmx - Complete the first milestone of the Awesome Endeavour - Flow.
 - `PX` - vmx - Roadmap and Kickstart the second milestone for the Awesome Endeavour - Flow.
 - `PX` - fsdiogo - Make js-ipfs uglify friendly again.
+- `PX` - fsdiogo - A repo migration utility exists and migration is a good experience for js-ipfs users.
 - `PX` - VictorBjelkholm - Every env (i.e Linux, Windows, Mac OS X, Firefox, Chrome, Safari, Edge) test run is parallelized in CI.
 - `PX` - VictorBjelkholm - CLI, HTTP-API and Core Tests of js-ipfs are parallelized in CI.
-- `PX` - fsdiogo - A repo migration utility exists and migration is a good experience for js-ipfs users.
 - `PX` - wraithgar - Achieve CLI and HTTP-API feature parity with go-ipfs for all the commands and endpoints planned (see https://github.com/ipfs/ipfs/blob/master/IMPLEMENTATION_STATUS.md)
 - `PX` - wraithgar - Bring code coverage up to 100% everywhere!
 - `PX` - diasdavid - Every js-ipfs/js-libp2p/js-ipld and js-multiformats module has an assigned maintainer with clear responsibilities.
@@ -38,15 +38,15 @@ We try to frame our ongoing work using a process based on quarterly Objectives a
 
 - `PX` - hugomrdias - libp2p has primitives to keep connections under control.
 - `PX` - dryajov - Readable Streams no more! Reduce the overhead of Readable -> Pull in libp2p-mplex.
+- `PX` - dryajov - NAT Traversal for the TCP Transport.
 - `PX` - diasdavid - The libp2p.next() refactor is complete.
 - `PX` - diasdavid - Delegated Peer Routing and Content Routing modules are created.
 - `PX` - diasdavid - Browsers no longer rely on static rendezvous points for Discovery.
-- `PX` - jacobheun - js-libp2p gets its Private Networks implementation.
 - `PX` - diasdavid - js-libp2p gets its own OKR spreadsheet for next Q3.
+- `PX` - jacobheun - js-libp2p gets its Private Networks implementation.
 - `PX` - vasco-stantos - The name system (IPNS) works locally.
 - `PX` - vasco-stantos - IPNS over PubSub.
 - `PX` - vasco-stantos - IPNS over the DHT.
-- `PX` - dryajov - NAT Traversal for the TCP Transport.
 
 ### The Community is pumped by having a selection of example applications, blog posts and video tutorials on how to build DApps with IPFS
 
