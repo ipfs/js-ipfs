@@ -38,11 +38,21 @@
     "aegir": "^13.0.6",
     "chai": "^4.1.2",
     "dirty-chai": "^2.0.1",
+    "ipfs": "^0.28.2",
     "pre-commit": "^1.2.2",
-    "safe-buffer": "^5.1.1"
+    "safe-buffer": "^5.1.1",
+    "tmp": "0.0.33"
   },
   "dependencies": {
-    
+    "async": "^2.6.0",
+    "bs58": "^4.0.1",
+    "cids": "~0.5.3",
+    "debug": "^3.1.0",
+    "interface-datastore": "^0.4.2",
+    "ipfs-unixfs": "^0.1.14",
+    "ipfs-unixfs-engine": "~0.27.0",
+    "promisify-es6": "^1.0.3",
+    "pull-stream": "^3.6.7"
   },
   "pre-commit": [
     "lint",
