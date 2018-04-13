@@ -2,5 +2,6 @@
 
 module.exports = {
   ls: require('./ls'),
-  mkdir: require('./mkdir')
+  mkdir: require('./mkdir'),
+  stat: require('./stat')
 }

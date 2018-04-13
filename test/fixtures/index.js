@@ -10,7 +10,8 @@ const {
 } = require('async')
 const {
   ls,
-  mkdir
+  mkdir,
+  stat
 } = require('../../src/core')
 
 const createMfs = promisify((cb) => {
@@ -27,6 +28,7 @@ const createMfs = promisify((cb) => {
       done(null, {
         ls: ls(node),
         mkdir: mkdir(node),
+        stat: stat(node),
         node: node
       })
     }
@@ -34,5 +36,6 @@ const createMfs = promisify((cb) => {
 })
 
 module.exports = {
-  createMfs
+  createMfs,
+  EMPTY_DIRECTORY_HASH: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
 }
