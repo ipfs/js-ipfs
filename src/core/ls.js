@@ -7,6 +7,9 @@ const {
   collect
 } = pull
 const {
+  waterfall
+} = require('async')
+const {
   withMfsRoot,
   validatePath
 } = require('./utils')
@@ -36,27 +39,29 @@ module.exports = function mfsLs (ipfs) {
         return callback(error)
       }
 
-      pull(
-        exporter(`/ipfs/${root}${path}`, ipfs._ipld),
-        collect((error, results) => {
-          if (error) {
-            return callback(error)
-          }
-
+      waterfall([
+        (done) => pull(
+          exporter(`/ipfs/${root}${path}`, ipfs._ipld),
+          collect(done)
+        ),
+        (results, done) => {
           if (!results || !results.length) {
             return callback(new Error('file does not exist'))
           }
 
-          const files = (results[0].links || []).map(link => ({
+          done(null, results[0])
+        },
+        (result, done) => {
+          const files = (result.links || []).map(link => ({
             name: link.name,
             type: link.type,
             size: link.size,
             hash: link.multihash
           }))
 
-          callback(null, files)
-        })
-      )
+          done(null, files)
+        }
+      ], callback)
     })
   })
 }

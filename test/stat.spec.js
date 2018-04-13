@@ -65,7 +65,7 @@ describe('stat', function () {
 
   it('returns only a hash', () => {
     const path = '/empty-directory'
-    
+
     return mfs.mkdir('/empty-directory')
       .then(() => mfs.stat(path, {
         hash: true
