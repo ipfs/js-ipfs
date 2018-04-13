@@ -280,8 +280,7 @@ module.exports = function object (self) {
 
       rmLink (multihash, linkRef, options, callback) {
         editAndSave((node, cb) => {
-          if (linkRef.constructor &&
-              linkRef.constructor.name === 'DAGLink') {
+          if (DAGLink.isDAGLink(linkRef)) {
             linkRef = linkRef._name
           }
           DAGNode.rmLink(node, linkRef, cb)
