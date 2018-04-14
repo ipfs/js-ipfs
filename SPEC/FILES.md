@@ -162,9 +162,9 @@ pull(
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.files.cat(ipfsPath, [callback])
+##### `JavaScript` - ipfs.files.cat(ipfsPath, [options], [callback])
 
-ipfsPath can be of type:
+`ipfsPath` can be of type:
 
 - [`cid`][cid] of type:
   - a [CID](https://github.com/ipfs/js-cid) instance
@@ -174,6 +174,10 @@ ipfsPath can be of type:
   - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66'
   - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
   - 'QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
+
+`options` is an optional object that may contain the following keys:
+  - `offset` is an optional byte offset to start the stream at
+  - `length` is an optional number of bytes to read from the stream
 
 `callback` must follow `function (err, file) {}` signature, where `err` is an error if the operation was not successful and `file` is a [Buffer][b]
 
@@ -199,9 +203,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.files.catReadableStream(ipfsPath) -> [Readable Stream][rs]
+##### `JavaScript` - ipfs.files.catReadableStream(ipfsPath, [options]) -> [Readable Stream][rs]
 
-ipfsPath can be of type:
+`ipfsPath` can be of type:
 
 - [`cid`][cid] of type:
   - a [CID](https://github.com/ipfs/js-cid) instance
@@ -211,6 +215,10 @@ ipfsPath can be of type:
   - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66'
   - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
   - 'QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
+
+`options` is an optional object that may contain the following keys:
+  - `offset` is an optional byte offset to start the stream at
+  - `length` is an optional number of bytes to read from the stream
 
 Returns a [Readable Stream][rs] with the contents of the file.
 
@@ -228,9 +236,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.files.catPullStream(ipfsPath) -> [Pull Stream][rs]
+##### `JavaScript` - ipfs.files.catPullStream(ipfsPath, [options]) -> [Pull Stream][rs]
 
-ipfsPath can be of type:
+`ipfsPath` can be of type:
 
 - [`cid`][cid] of type:
   - [Buffer][b], the raw Buffer of the cid
@@ -239,6 +247,10 @@ ipfsPath can be of type:
   - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66'
   - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
   - 'QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
+
+`options` is an optional object that may contain the following keys:
+  - `offset` is an optional byte offset to start the stream at
+  - `length` is an optional number of bytes to read from the stream
 
 Returns a [Pull Stream][ps] with the contents of the file.
 

@@ -25,7 +25,7 @@ module.exports = (common) => {
     this.timeout(40 * 1000)
 
     let ipfs
-    // let withGo
+    let withGo
 
     function fixture (path) {
       return loadFixture(path, 'interface-ipfs-core')
@@ -70,7 +70,7 @@ module.exports = (common) => {
           ipfs = node
           node.id((err, id) => {
             expect(err).to.not.exist()
-            // withGo = id.agentVersion.startsWith('go-ipfs')
+            withGo = id.agentVersion.startsWith('go-ipfs')
             done()
           })
         })
@@ -493,6 +493,22 @@ module.exports = (common) => {
               })
           })
       })
+
+      it('exports a chunk of a file', (done) => {
+        if (withGo) { this.skip() }
+
+        const offset = 1
+        const length = 3
+
+        ipfs.files.cat(smallFile.cid, {
+          offset,
+          length
+        }, (err, data) => {
+          expect(err).to.not.exist()
+          expect(data.toString()).to.equal('lz ')
+          done()
+        })
+      })
     })
 
     describe('.catReadableStream', () => {
@@ -504,6 +520,24 @@ module.exports = (common) => {
         stream.pipe(bl((err, data) => {
           expect(err).to.not.exist()
           expect(data).to.eql(bigFile.data)
+          done()
+        }))
+      })
+
+      it('exports a chunk of a file in a ReadableStream', (done) => {
+        if (withGo) { this.skip() }
+
+        const offset = 1
+        const length = 3
+
+        const stream = ipfs.files.catReadableStream(smallFile.cid, {
+          offset,
+          length
+        })
+
+        stream.pipe(bl((err, data) => {
+          expect(err).to.not.exist()
+          expect(data.toString()).to.equal('lz ')
           done()
         }))
       })
@@ -521,6 +555,27 @@ module.exports = (common) => {
             expect(err).to.not.exist()
             expect(data.length).to.equal(smallFile.data.length)
             expect(data).to.eql(smallFile.data.toString())
+            done()
+          })
+        )
+      })
+
+      it('exports a chunk of a file in a PullStream', (done) => {
+        if (withGo) { this.skip() }
+
+        const offset = 1
+        const length = 3
+
+        const stream = ipfs.files.catPullStream(smallFile.cid, {
+          offset,
+          length
+        })
+
+        pull(
+          stream,
+          pull.concat((err, data) => {
+            expect(err).to.not.exist()
+            expect(data.toString()).to.equal('lz ')
             done()
           })
         )
