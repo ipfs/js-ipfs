@@ -14,6 +14,8 @@ updateNotifier({
   updateCheckInterval: 1000 * 60 * 60 * 24 * 7 // 1 week
 }).notify()
 
+const args = process.argv.slice(2)
+
 const cli = yargs
   .option('silent', {
     desc: 'Write no output',
@@ -27,11 +29,17 @@ const cli = yargs
     default: ''
   })
   .commandDir('commands')
+  .epilog(utils.ipfsPathHelp)
   .demandCommand(1)
   .fail((msg, err, yargs) => {
     if (err) {
       throw err // preserve stack
     }
+
+    if (args.length > 0) {
+      print(msg)
+    }
+
     yargs.showHelp()
   })
 
@@ -46,14 +54,12 @@ aliases.forEach((alias) => {
   cli.command(alias.command, alias.describe, alias.builder, alias.handler)
 })
 
-const args = process.argv.slice(2)
-
 // Need to skip to avoid locking as these commands
 // don't require a daemon
 if (args[0] === 'daemon' || args[0] === 'init') {
   cli
     .help()
-    .strict(false)
+    .strict()
     .completion()
     .parse(args)
 } else {
@@ -69,7 +75,7 @@ if (args[0] === 'daemon' || args[0] === 'init') {
 
       cli
         .help()
-        .strict(false)
+        .strict()
         .completion()
         .parse(args, { ipfs: ipfs }, (err, argv, output) => {
           if (output) { print(output) }

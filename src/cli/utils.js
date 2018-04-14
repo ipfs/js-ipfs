@@ -111,3 +111,7 @@ exports.rightpad = (val, n) => {
   }
   return result
 }
+
+exports.ipfsPathHelp = 'ipfs uses a repository in the local file system. By default, the repo is ' +
+  'located at ~/.jsipfs. To change the repo location, set the $IPFS_PATH environment variable:\n\n' +
+  'export IPFS_PATH=/path/to/ipfsrepo\n'

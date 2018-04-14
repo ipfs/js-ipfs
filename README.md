@@ -58,14 +58,19 @@ You can check the development status at the [Waffle Board](https://waffle.io/ipf
   - [IPFS CLI](#ipfs-cli)
   - [IPFS Daemon](#ipfs-daemon)
   - [IPFS Module (use IPFS as a module in Node.js or in the Browser)](#ipfs-module)
-    - [How to create a IPFS node instance](#create-a-ipfs-node-instance)
   - [Tutorials and Examples](#tutorials-and-examples)
   - [API Docs](#api)
-    - [Files](#files)
-    - [Graph](#graph)
-    - [Network](#network)
-    - [Node Management](#node-management)
-    - [Domain data types](#domain-data-types)
+    - [Constructor](#ipfs-constructor)
+    - [Events](#events)
+    - [start](#nodestartcallback)
+    - [stop](#nodestopcallback)
+    - [Core API](#core-api)
+      - [Files](#files)
+      - [Graph](#graph)
+      - [Crypto and Key Management](#crypto-and-key-management)
+      - [Network](#network)
+      - [Node Management](#node-management)
+      - [Domain data types](#domain-data-types)
 - [FAQ](#faq)
 - [Running js-ipfs with Docker](#running-js-ipfs-with-docker)
 - [Packages](#packages)
@@ -163,11 +168,7 @@ If you want a programmatic way to spawn a IPFS Daemon using JavaScript, check ou
 
 ### IPFS Module
 
-Use the IPFS Module as a dependency of a project to __spawn in process instances of IPFS__.
-
-#### Create a IPFS node instance
-
-Creating an IPFS instance couldn't be easier, all you have to do is:
+Use the IPFS Module as a dependency of a project to __spawn in process instances of IPFS__. Create an instance by calling `new IPFS()` and waiting for its `ready` event:
 
 ```JavaScript
 // Create the IPFS node instance
@@ -183,70 +184,158 @@ node.on('ready', () => {
 })
 ```
 
-#### Advanced options when creating an IPFS node.
-
-When starting a node, you can:
-
-```JavaScript
-// IPFS will need a repo, it can create one for you or you can pass
-// it a repo instance of the type IPFS Repo
-// https://github.com/ipfs/js-ipfs-repo
-const repo = <IPFS Repo instance or repo path>
-
-const node = new IPFS({
-  repo: repo,
-  init: true, // default
-  // init: false, // You will need to set init: false after time you start instantiate a node as
-  //              // the repo will be already initiated then.
-  // init: {
-  //   bits: 1024 // size of the RSA key generated
-  // },
-  start: true, // default
-  // start: false,
-  pass: undefined // default
-  // pass: 'pass phrase for key access',
-  EXPERIMENTAL: { // enable experimental features
-    pubsub: true,
-    sharding: true, // enable dir sharding
-    dht: true, // enable KadDHT, currently not interopable with go-ipfs
-    relay: {
-      enabled: true, // enable circuit relay dialer and listener
-      hop: {
-        enabled: true // enable circuit relay HOP (make this node a relay) 
-      }
-    }
-  },
-  config: { // overload the default IPFS node config, find defaults at https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime
-    Addresses: {
-      Swarm: [
-        '/ip4/127.0.0.1/tcp/1337'
-      ]
-    }
-  },
-  libp2p: { // add custom modules to the libp2p stack of your node
-    modules: {}
-  }
-})
-
-// Events
-
-node.on('ready', () => {})    // Node is ready to use when you first create it
-node.on('error', (err) => {}) // Node has hit some error while initing/starting
-
-node.on('init', () => {})     // Node has successfully finished initing the repo
-node.on('start', () => {})    // Node has started
-node.on('stop', () => {})     // Node has stopped
-```
-
 ### [Tutorials and Examples](/examples)
 
 You can find some examples and tutorials in the [examples](/examples) folder, these exist to help you get started using `js-ipfs`.
 
 ### API
 
+#### IPFS Constructor
+
+```js
+const node = new IPFS([options])
+```
+
+Creates and returns an instance of an IPFS node. Use the `options` argument to specify advanced configuration. It is an object with any of these properties:
+
+- `repo` (string or [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo) instance): The file path at which to store the IPFS node’s data. Alternatively, you can set up a customized storage system by providing an [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo) instance. (Default: `'~/.jsipfs'` in Node.js, `'ipfs'` in browsers.)
+
+    Example:
+    
+    ```js
+    // Store data outside your user directory
+    const node = new IPFS({ repo: '/var/ipfs/data' })
+    ```
+
+- `init` (boolean or object): Initialize the repo when creating the IPFS node. (Default: `true`)
+
+    If you have already initialized a repo before creating your IPFS node (e.g. you are loading a repo that was saved to disk from a previous run of your program), you must make sure to set this to `false`. Note that *initializing* a repo is different from creating an instance of [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo). The IPFS constructor sets many special properties when initializing a repo, so you should usually not try and call `repoInstance.init()` yourself.
+    
+    Instead of a boolean, you may provide an object with custom initialization options.
+    
+- `start` (boolean): If `false`, do not automatically start the IPFS node. Instead, you’ll need to manually call `node.start()` yourself. (Default: `true`)
+
+- `pass` (string): A passphrase to encrypt your keys.
+
+- `EXPERIMENTAL` (object): Enable and configure experimental features.
+    - `pubsub` (boolean): Enable libp2p pub-sub. (Default: `false`)
+    - `sharding` (boolean): Enable directory sharding. Directories that have many child objects will be represented by multiple DAG nodes instead of just one. It can improve lookup performance when a directory has several thousand files or more. (Default: `false`)
+    - `dht` (boolean): Enable KadDHT. **This is currently not interopable with `go-ipfs`.**
+    - `relay` (object): Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipfs/js-ipfs/tree/master/examples/circuit-relaying) to learn more).
+        - `enabled` (boolean): Enable circuit relay dialer and listener. (Default: `false`)
+        - `hop` (object)
+            - `enabled` (boolean): Make this node a relay (other nodes can connect *through* it). (Default: `false`)
+            - `active` (boolean): Make this an *active* relay node. Active relay nodes will attempt to dial a destination peer even if that peer is not yet connected to the relay. (Default: `false`)
+            
+- `config` (object) Modify the default IPFS node config. Find the Node.js defaults at [`src/core/runtime/config-nodejs.json`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/config-nodejs.json) and the browser defaults at [`src/core/runtime/config-browser.json`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/config-browser.json). This object will be *merged* with the default config; it will not replace it.
+  
+- `libp2p` (object) add custom modules to the libp2p stack of your node
+    - `modules` (object):
+        - `transport` (Array<[libp2p.Transport](https://github.com/libp2p/interface-transport)>): An array of additional Libp2p transport instances to use. See [libp2p/interface-transport](https://github.com/libp2p/interface-transport) for details.
+        - `discovery` (Array<[libp2p.PeerDiscovery](https://github.com/libp2p/interface-peer-discovery)>): An array of additional Libp2p peer discovery instances to use. See [libp2p/peer-discovery](https://github.com/libp2p/interface-peer-discovery) for details.
+
+#### Events
+
+IPFS instances are Node.js [EventEmitters](https://nodejs.org/dist/latest-v8.x/docs/api/events.html#events_class_eventemitter). You can listen for events by calling `node.on('event', handler)`:
+
+```js
+const node = new IPFS({ repo: '/var/ipfs/data' })
+node.on('error', errorObject => console.error(errorObject))
+```
+
+- `error` is always accompanied by an `Error` object with information about the error that ocurred.
+
+    ```js
+    node.on('error', error => {
+      console.error(error.message)
+    })
+    ```
+
+- `init` is emitted after a new repo has been initialized. It will not be emitted if you set the `init: false` option on the constructor.
+
+- `ready` is emitted when a node is ready to use. This is the final event you will receive when creating a node (after `init` and `start`).
+
+    When creating a new IPFS node, you should almost always wait for the `ready` event before calling methods or interacting with the node.
+
+- `start` is emitted when a node has started listening for connections. It will not be emitted if you set the `start: false` option on the constructor.
+
+- `stop` is emitted when a node has closed all connections and released access to its repo. This is usually the result of calling [`node.stop()`](#nodestopcallback).
+
+#### `node.start([callback])`
+
+Start listening for connections with other IPFS nodes on the network. In most cases, you do not need to call this method — `new IPFS()` will automatically do it for you.
+
+This method is asynchronous. There are several ways to be notified when the node has finished starting:
+
+1. If you call `node.start()` with no arguments, it returns a promise.
+2. If you pass a function as the final argument, it will be called when the node is started. *(Note: this method will **not** return a promise if you use a callback function.)*
+3. You can listen for the [`start` event](#events).
+
+```js
+const node = new IPFS({ start: false })
+
+// Use a promise:
+node.start()
+  .then(() => console.log('Node started!'))
+  .catch(error => console.error('Node failed to start!', error))
+
+// OR use a callback:
+node.start(error => {
+  if (error) {
+    console.error('Node failed to start!', error)
+    return
+  }
+  console.log('Node started!')
+})
+
+// OR use events:
+node.on('error', error => console.error('Something went terribly wrong!', error))
+node.on('start', () => console.log('Node started!'))
+node.start()
+```
+
+#### `node.stop([callback])`
+
+Close and stop listening for connections with other IPFS nodes, then release access to the node’s repo.
+
+This method is asynchronous. There are several ways to be notified when the node has completely stopped:
+
+1. If you call `node.stop()` with no arguments, it returns a promise.
+2. If you pass a function as the final argument, it will be called when the node is stopped. *(Note: this method will **not** return a promise if you use a callback function.)*
+3. You can listen for the [`stop` event](#events).
+
+```js
+const node = new IPFS()
+node.on('ready', () => {
+  console.log('Node is ready to use!')
+  
+  // Stop with a promise:
+  node.stop()
+    .then(() => console.log('Node stopped!'))
+    .catch(error => console.error('Node failed to stop cleanly!', error))
+  
+  // OR use a callback:
+  node.stop(error => {
+    if (error) {
+      console.error('Node failed to stop cleanly!', error)
+      return
+    }
+    console.log('Node stopped!')
+  })
+  
+  // OR use events:
+  node.on('error', error => console.error('Something went terribly wrong!', error))
+  node.stop()
+})
+```
+
+#### Core API
+
 [![](https://github.com/ipfs/interface-ipfs-core/raw/master/img/badge.png)](https://github.com/ipfs/interface-ipfs-core)
 
-A complete API definition is in the works. Meanwhile, you can learn how to you use js-ipfs through the standard interface at [![](https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg)](https://github.com/ipfs/interface-ipfs-core).
+The IPFS core API provides all functionality that is not specific to setting up and starting or stopping a node. This API is available directly on an IPFS instance, on the command line (when using the CLI interface), and as an HTTP REST API. For a complete reference, see [![](https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg)](https://github.com/ipfs/interface-ipfs-core).
+
+The core API is grouped into several areas:
 
 #### `Files`
 
@@ -523,6 +612,10 @@ HOME=~/.electron-gyp npm install
 
 If you find any other issue, please check the [`Electron Support` issue](https://github.com/ipfs/js-ipfs/issues/843).
 
+#### Have more questions?
+
+Ask for help in our forum at https://discuss.ipfs.io or in IRC (#ipfs on Freenode).
+
 ## Running js-ipfs with Docker
 
 We have automatic Docker builds setup with Docker Hub: https://hub.docker.com/r/ipfs/js-ipfs/
@@ -728,7 +821,6 @@ IPFS implementation in JavaScript is a work in progress. As such, there's a few 
   * **Perform code reviews**. More eyes will help (a) speed the project along, (b) ensure quality, and (c) reduce possible future bugs.
   * Take a look at go-ipfs and some of the planning repositories or issues: for instance, the [libp2p spec](https://github.com/ipfs/specs/pull/19). Contributions here that would be most helpful are **top-level comments** about how it should look based on our understanding. Again, the more eyes the better.
   * **Add tests**. There can never be enough tests.
-  * **Contribute to the [FAQ repository](https://github.com/ipfs/faq/issues)** with any questions you have about IPFS or any of the relevant technology. A good example would be asking, 'What is a merkledag tree?'. If you don't know a term, odds are, someone else doesn't either. Eventually, we should have a good understanding of where we need to improve communications and teaching together to make IPFS and IPN better.
 
 ### Want to hack on IPFS?
 
