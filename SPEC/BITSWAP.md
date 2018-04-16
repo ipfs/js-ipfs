@@ -17,6 +17,8 @@
 - CID, a CID instance
 - String, the base58 encoded version of the multihash
 
+##### `Go` **WIP**
+
 ### `bitswap.wantlist`
 
 (not spec'ed yet)
