@@ -5,7 +5,7 @@ const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
 const path = require('path')
-const fs = require('fs')
+const fs = require('fs-extra')
 
 const {
   createMfs
@@ -15,11 +15,16 @@ describe('write', function () {
   this.timeout(30000)
 
   let mfs
+  let smallFile
 
   before(() => {
-    return createMfs()
-      .then(instance => {
+    return Promise.all([
+      createMfs(),
+      fs.readFile(path.join(__dirname, 'fixtures', 'small-file.txt'))
+    ])
+      .then(([instance, smallFileBuffer]) => {
         mfs = instance
+        smallFile = smallFileBuffer
       })
   })
 
@@ -28,7 +33,6 @@ describe('write', function () {
   })
 
   it('writes a small file', () => {
-    const smallFile = fs.readFileSync(path.join(__dirname, 'fixtures', 'small-file.txt'))
     const filePath = '/small-file.txt'
 
     return mfs.write(filePath, smallFile)
@@ -39,7 +43,6 @@ describe('write', function () {
   })
 
   it('writes a deeply nested small file', () => {
-    const smallFile = fs.readFileSync(path.join(__dirname, 'fixtures', 'small-file.txt'))
     const filePath = '/foo/bar/baz/qux/quux/garply/small-file.txt'
 
     return mfs.write(filePath, smallFile, {

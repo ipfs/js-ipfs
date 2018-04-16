@@ -4,6 +4,8 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
+const fs = require('fs')
+const path = require('path')
 
 const {
   createMfs,
@@ -14,11 +16,19 @@ describe('stat', function () {
   this.timeout(30000)
 
   let mfs
+  let smallFile
+  let largeFile
 
   before(() => {
-    return createMfs()
-      .then(instance => {
+    return Promise.all([
+      createMfs(),
+      fs.readFile(path.join(__dirname, 'fixtures', 'small-file.txt')),
+      fs.readFile(path.join(__dirname, 'fixtures', 'large-file.jpg'))
+    ])
+      .then(([instance, smallFileBuffer, largeFileBuffer]) => {
         mfs = instance
+        smallFile = smallFileBuffer
+        largeFile = largeFileBuffer
       })
   })
 
@@ -93,7 +103,33 @@ describe('stat', function () {
 
   })
 
-  it.skip('stats a file', () => {
+  it('stats a small file', () => {
+    const filePath = '/stat/small-file.txt'
 
+    return mfs.write(filePath, smallFile, {
+      parents: true
+    })
+      .then(() => mfs.stat(filePath))
+      .then((stats) => {
+        expect(stats.size).to.equal(smallFile.length)
+        expect(stats.cumulativeSize).to.equal(21)
+        expect(stats.childBlocks).to.equal(0)
+        expect(stats.type).to.equal('file')
+      })
+  })
+
+  it('stats a large file', () => {
+    const filePath = '/stat/large-file.txt'
+
+    return mfs.write(filePath, largeFile, {
+      parents: true
+    })
+      .then(() => mfs.stat(filePath))
+      .then((stats) => {
+        expect(stats.size).to.equal(largeFile.length)
+        expect(stats.cumulativeSize).to.equal(490800)
+        expect(stats.childBlocks).to.equal(2)
+        expect(stats.type).to.equal('file')
+      })
   })
 })
