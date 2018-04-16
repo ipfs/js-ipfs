@@ -35,8 +35,7 @@ module.exports = (send) => {
 const validUrl = (url) => typeof url === 'string' && url.startsWith('http')
 
 const requestWithRedirect = (url, opts, sendOneFile, callback) => {
-  request(parseUrl(url).protocol)(url, (res) => {
-    res.once('error', callback)
+  const req = request(parseUrl(url).protocol)(url, (res) => {
     if (res.statusCode >= 400) {
       return callback(new Error(`Failed to download with ${res.statusCode}`))
     }
@@ -55,5 +54,9 @@ const requestWithRedirect = (url, opts, sendOneFile, callback) => {
       }
       sendOneFile(res, requestOpts, callback)
     }
-  }).end()
+  })
+
+  req.once('error', callback)
+
+  req.end()
 }

@@ -155,6 +155,14 @@ describe('.util', () => {
       return ipfs.util.addFromURL('http://www.randomtext.me/#/gibberish', { onlyHash: true })
         .then(out => expectTimeout(ipfs.object.get(out[0].hash), 4000))
     })
+
+    it('with invalid url', function (done) {
+      ipfs.util.addFromURL('http://invalid', (err, result) => {
+        expect(err.code).to.equal('ENOTFOUND')
+        expect(result).to.not.exist()
+        done()
+      })
+    })
   })
 
   describe('.getEndpointConfig', () => {
