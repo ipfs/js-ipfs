@@ -2,6 +2,7 @@
 
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
+const series = require('async/series')
 const expect = chai.expect
 const statsTests = require('./utils/stats')
 const spawn = require('./utils/spawn')
@@ -10,7 +11,8 @@ const CID = require('cids')
 
 module.exports = (common) => {
   describe('.bitswap online', () => {
-    let ipfs
+    let ipfsA
+    let ipfsB
     let withGo
     const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
 
@@ -21,32 +23,51 @@ module.exports = (common) => {
 
       common.setup((err, factory) => {
         expect(err).to.not.exist()
-        spawn.spawnNodeWithId(factory, (err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          withGo = node.peerId.agentVersion.startsWith('go-ipfs')
-          ipfs.block.get(key)
-            .then(() => {})
-            .catch(() => {})
-          done()
-        })
+        series([
+          (cb) => spawn.spawnNodeWithId(factory, (err, node) => {
+            expect(err).to.not.exist()
+            ipfsA = node
+            withGo = node.peerId.agentVersion.startsWith('go-ipfs')
+            cb()
+            //ipfsA.block.get(key)
+              //.then(() => {})
+              //.catch(() => {})
+            //cb()
+          }),
+          (cb) => spawn.spawnNodeWithId(factory, (err, node) => {
+            expect(err).to.not.exist()
+            ipfsB = node
+            ipfsB.block.get(new CID(key))
+              .then(() => {})
+              .catch(() => {})
+            ipfsA.swarm.connect(node.peerId.addresses[0], cb)
+          })
+        ], done)
       })
     })
 
     after((done) => common.teardown(done))
 
     it('.stat', (done) => {
-
-      ipfs.bitswap.stat((err, stats) => {
+      ipfsA.bitswap.stat((err, stats) => {
+        expect(err).to.not.exist()
         statsTests.expectIsBitswap(err, stats)
         done()
       })
     })
 
     it('.wantlist', (done) => {
-      ipfs.bitswap.wantlist((err, list) => {
+      ipfsA.bitswap.wantlist((err, list) => {
         expect(err).to.not.exist()
         expect(list.Keys).to.have.length(1);
+        expect(list.Keys[0]['/']).to.equal(key)
+        done()
+      })
+    })
+
+    it('.wantlist peerid', (done) => {
+      ipfsA.bitswap.wantlist(ipfsBId, (err, list) => {
+        expect(err).to.not.exist()
         expect(list.Keys[0]['/']).to.equal(key)
         done()
       })
@@ -56,9 +77,9 @@ module.exports = (common) => {
       if (withGo) {
         this.skip()
       }
-      ipfs.bitswap.unwant(key, (err) => {
+      ipfsA.bitswap.unwant(key, (err) => {
         expect(err).to.not.exist();
-        ipfs.bitswap.wantlist((err, list) => {
+        ipfsA.bitswap.wantlist((err, list) => {
           expect(err).to.not.exist();
           expect(list.Keys).to.be.empty()
           done()
