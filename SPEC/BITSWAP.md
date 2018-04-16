@@ -4,7 +4,20 @@
 * [bitswap.unwant](#bitswapunwant)
 * [bitswap.stat](#bitswapstat)
 
-#### `bitswap.wantlist`
+#### `unwant`
+
+> Removes a given block from your wantlist
+
+##### `Go` **WIP**
+
+##### `JavaScript` - ipfs.bitswap.unwant(cid)
+
+`cid` is a [cid][cid] which can be passed as:
+
+- CID, a CID instance
+- String, the base58 encoded version of the multihash
+
+### `bitswap.wantlist`
 
 (not spec'ed yet)
 
