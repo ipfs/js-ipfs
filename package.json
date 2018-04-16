@@ -38,7 +38,6 @@
     "aegir": "^13.0.6",
     "chai": "^4.1.2",
     "dirty-chai": "^2.0.1",
-    "fs-extra": "^5.0.0",
     "ipfs": "^0.28.2",
     "pre-commit": "^1.2.2",
     "safe-buffer": "^5.1.1",

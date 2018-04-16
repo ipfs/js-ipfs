@@ -4,8 +4,8 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
-const fs = require('fs')
 const path = require('path')
+const loadFixture = require('aegir/fixtures')
 
 const {
   createMfs,
@@ -16,19 +16,13 @@ describe('stat', function () {
   this.timeout(30000)
 
   let mfs
-  let smallFile
-  let largeFile
+  let smallFile = loadFixture(path.join('test', 'fixtures', 'small-file.txt'))
+  let largeFile = loadFixture(path.join('test', 'fixtures', 'large-file.jpg'))
 
   before(() => {
-    return Promise.all([
-      createMfs(),
-      fs.readFile(path.join(__dirname, 'fixtures', 'small-file.txt')),
-      fs.readFile(path.join(__dirname, 'fixtures', 'large-file.jpg'))
-    ])
-      .then(([instance, smallFileBuffer, largeFileBuffer]) => {
+    return createMfs()
+      .then(instance => {
         mfs = instance
-        smallFile = smallFileBuffer
-        largeFile = largeFileBuffer
       })
   })
 
