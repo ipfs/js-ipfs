@@ -7,9 +7,9 @@
     "fs": false
   },
   "scripts": {
-    "test": "aegir test",
+    "test": "aegir test -f test/browser.js",
     "test:node": "aegir test -t node",
-    "test:browser": "aegir test -t browser -t webworker",
+    "test:browser": "aegir test -t browser -t webworker -f test/browser.js",
     "build": "aegir build",
     "lint": "aegir lint",
     "release": "aegir release",
@@ -50,7 +50,7 @@
     "debug": "^3.1.0",
     "interface-datastore": "^0.4.2",
     "ipfs-unixfs": "^0.1.14",
-    "ipfs-unixfs-engine": "~0.27.0",
+    "ipfs-unixfs-engine": "^0.28.1",
     "promisify-es6": "^1.0.3",
     "pull-stream": "^3.6.7"
   },
