@@ -8,11 +8,7 @@ const {
   race,
   waterfall
 } = require('async')
-const {
-  ls,
-  mkdir,
-  stat
-} = require('../../src/core')
+const core = require('../../src/core')
 
 const createMfs = promisify((cb) => {
   let node = ipfs.createNode({
@@ -25,12 +21,17 @@ const createMfs = promisify((cb) => {
       (next) => node.once('ready', next)
     ], (error) => done(error, node)),
     (node, done) => {
-      done(null, {
-        ls: ls(node),
-        mkdir: mkdir(node),
-        stat: stat(node),
-        node: node
-      })
+      const mfs = {
+        node
+      }
+
+      for (let key in core) {
+        if (core.hasOwnProperty(key)) {
+          mfs[key] = core[key](node)
+        }
+      }
+
+      done(null, mfs)
     }
   ], cb)
 })

@@ -71,14 +71,24 @@ module.exports = function mfsStat (ipfs) {
             (next) => ipfs.dag.get(new CID(result.hash), next),
             (result, next) => next(null, result.value),
             (node, next) => {
-              const data = unmarshal(node.data)
+              const meta = unmarshal(node.data)
+
+              let size = 0
+
+              if (meta.data && meta.data.length) {
+                size = meta.data.length
+              }
+
+              if (meta.blockSizes && meta.blockSizes.length) {
+                size = meta.blockSizes.reduce((acc, curr) => acc + curr, 0)
+              }
 
               next(null, {
                 hash: node.multihash,
-                size: data.blockSizes.reduce((acc, curr) => acc + curr, 0),
+                size: size,
                 cumulativeSize: node.size,
-                childBlocks: node.links.length,
-                type: data.type
+                childBlocks: meta.blockSizes.length,
+                type: meta.type
               })
             }
           ], done)
