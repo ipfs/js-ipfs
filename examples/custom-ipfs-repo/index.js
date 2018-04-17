@@ -90,4 +90,10 @@ node.on('ready', () => {
     .catch((err) => {
       console.log('File Processing Error:', err)
     })
+    // After everything is done, shut the node down
+    // We don't need to worry about catching errors here
+    .then(() => {
+      console.log('\n\nStopping the node')
+      return node.stop()
+    })
 })
