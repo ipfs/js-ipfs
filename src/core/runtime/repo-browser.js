@@ -2,7 +2,7 @@
 
 const IPFSRepo = require('ipfs-repo')
 
-module.exports = (dir, options) => {
+module.exports = (dir) => {
   const repoPath = dir || 'ipfs'
-  return new IPFSRepo(repoPath, options)
+  return new IPFSRepo(repoPath)
 }

@@ -43,7 +43,7 @@ class IPFS extends EventEmitter {
 
     if (typeof options.repo === 'string' ||
         options.repo === undefined) {
-      this._repo = defaultRepo(options.repo, options.repoPath)
+      this._repo = defaultRepo(options.repo)
     } else {
       this._repo = options.repo
     }

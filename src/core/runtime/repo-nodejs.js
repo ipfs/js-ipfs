@@ -4,8 +4,8 @@ const os = require('os')
 const IPFSRepo = require('ipfs-repo')
 const path = require('path')
 
-module.exports = (dir, options) => {
+module.exports = (dir) => {
   const repoPath = dir || path.join(os.homedir(), '.jsipfs')
 
-  return new IPFSRepo(repoPath, options)
+  return new IPFSRepo(repoPath)
 }
