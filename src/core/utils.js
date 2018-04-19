@@ -116,11 +116,11 @@ const addLink = (ipfs, options, callback) => {
 
   waterfall([
     (done) => {
-      // remove the old link if necessary
+      // Remove the old link if necessary
       DAGNode.rmLink(options.parent, options.name, done)
     },
     (parent, done) => {
-      // add the new link
+      // Add the new link to the parent
       DAGNode.addLink(parent, new DAGLink(options.name, options.child.size, options.child.hash || options.child.multihash), done)
     },
     (parent, done) => {
@@ -128,7 +128,7 @@ const addLink = (ipfs, options, callback) => {
         return done()
       }
 
-      // add the new parent DAGNode
+      // Persist the new parent DAGNode
       ipfs.dag.put(parent, {
         cid: new CID(parent.hash || parent.multihash)
       }, (error) => done(error, parent))
@@ -167,14 +167,13 @@ const traverseTo = (ipfs, path, options, callback) => {
             node: rootNode,
             parent: null
           }, (parent, {pathSegment, index}, done) => {
-            const lastPathSegment = index === pathSegments.length - 1
             const existingLink = parent.node.links.find(link => link.name === pathSegment)
 
             log(`Looking for ${pathSegment} in ${parent.name}`)
 
             if (!existingLink) {
-              if (!lastPathSegment && !options.parents) {
-                return done(new Error(`Cannot create ${path} - intermediate directory '${pathSegment}' did not exist: Try again with the --parents flag`))
+              if (!options.parents) {
+                return done(new Error(`Cannot traverse to ${path} - '${pathSegment}' did not exist: Try again with the --parents flag`))
               }
 
               log(`Adding empty directory '${pathSegment}' to parent ${parent.name}`)

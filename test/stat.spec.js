@@ -101,6 +101,7 @@ describe('stat', function () {
     const filePath = '/stat/small-file.txt'
 
     return mfs.write(filePath, smallFile, {
+      create: true,
       parents: true
     })
       .then(() => mfs.stat(filePath))
@@ -116,6 +117,7 @@ describe('stat', function () {
     const filePath = '/stat/large-file.txt'
 
     return mfs.write(filePath, largeFile, {
+      create: true,
       parents: true
     })
       .then(() => mfs.stat(filePath))

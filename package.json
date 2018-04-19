@@ -52,7 +52,9 @@
     "ipfs-unixfs": "^0.1.14",
     "ipfs-unixfs-engine": "^0.28.1",
     "promisify-es6": "^1.0.3",
-    "pull-stream": "^3.6.7"
+    "pull-paramap": "^1.2.2",
+    "pull-stream": "^3.6.7",
+    "pull-traverse": "^1.0.3"
   },
   "pre-commit": [
     "lint",

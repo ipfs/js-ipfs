@@ -14,6 +14,7 @@ const {
   validatePath,
   traverseTo
 } = require('./utils')
+const log = require('debug')('mfs:read')
 
 const defaultOptions = {
   offset: 0,
@@ -34,6 +35,8 @@ module.exports = function mfsRead (ipfs) {
     } catch (error) {
       return callback(error)
     }
+
+    log(`Reading ${path}`)
 
     waterfall([
       (done) => traverseTo(ipfs, path, {

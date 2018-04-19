@@ -31,7 +31,9 @@ describe('read', function () {
   it('reads a small file', () => {
     const filePath = '/small-file.txt'
 
-    return mfs.write(filePath, smallFile)
+    return mfs.write(filePath, smallFile, {
+      create: true
+    })
       .then(() => mfs.read(filePath))
       .then((buffer) => {
         expect(buffer).to.deep.equal(smallFile)
