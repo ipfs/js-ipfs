@@ -156,7 +156,26 @@ module.exports = (common) => {
         })
       })
 
-      it('a Readable Stream', (done) => {
+      it('adds from readable stream', (done) => {
+        const expectedCid = 'QmVv4Wz46JaZJeH5PMV4LGbRiiMKEmszPYY3g6fjGnVXBS'
+
+        const rs = new Readable()
+        rs.push(Buffer.from('some data'))
+        rs.push(null)
+
+        ipfs.files.add(rs, (err, filesAdded) => {
+          expect(err).to.not.exist()
+
+          expect(filesAdded).to.be.length(1)
+          const file = filesAdded[0]
+          expect(file.path).to.equal(expectedCid)
+          expect(file.size).to.equal(17)
+          expect(file.hash).to.equal(expectedCid)
+          done()
+        })
+      })
+
+      it('adds from array of objects with readable stream content', (done) => {
         const expectedCid = 'QmVv4Wz46JaZJeH5PMV4LGbRiiMKEmszPYY3g6fjGnVXBS'
 
         const rs = new Readable()
@@ -175,6 +194,37 @@ module.exports = (common) => {
           expect(file.hash).to.equal(expectedCid)
           done()
         })
+      })
+
+      it('adds from pull stream (callback)', (done) => {
+        const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
+
+        ipfs.files.add(pull.values([Buffer.from('test')]), (err, res) => {
+          if (err) return done(err)
+          expect(res).to.have.length(1)
+          expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
+          done()
+        })
+      })
+
+      it('adds from pull stream (promise)', () => {
+        const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
+
+        return ipfs.files.add(pull.values([Buffer.from('test')]))
+          .then((res) => {
+            expect(res).to.have.length(1)
+            expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
+          })
+      })
+
+      it('adds from array of objects with pull stream content', () => {
+        const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
+
+        return ipfs.files.add([{ content: pull.values([Buffer.from('test')]) }])
+          .then((res) => {
+            expect(res).to.have.length(1)
+            expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
+          })
       })
 
       it('add a nested directory as array of tupples', function (done) {
@@ -364,6 +414,21 @@ module.exports = (common) => {
                 done()
               }
             })
+          })
+        )
+      })
+
+      it('adds with object chunks and pull stream content', (done) => {
+        const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
+
+        pull(
+          pull.values([{ content: pull.values([Buffer.from('test')]) }]),
+          ipfs.files.addPullStream(),
+          pull.collect((err, res) => {
+            if (err) return done(err)
+            expect(res).to.have.length(1)
+            expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
+            done()
           })
         )
       })
