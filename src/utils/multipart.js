@@ -2,6 +2,8 @@
 
 const Transform = require('stream').Transform
 const isNode = require('detect-node')
+const isSource = require('is-pull-stream').isSource
+const toStream = require('pull-stream-to-stream')
 
 const PADDING = '--'
 const NEW_LINE = '\r\n'
@@ -73,6 +75,10 @@ class Multipart extends Transform {
       this.push(content)
       this.push(NEW_LINE_BUFFER)
       return callback() // early
+    }
+
+    if (isSource(content)) {
+      content = toStream.source(content)
     }
 
     // From now on we assume content is a stream

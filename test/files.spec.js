@@ -10,6 +10,7 @@ const isNode = require('detect-node')
 const loadFixture = require('aegir/fixtures')
 const mh = require('multihashes')
 const CID = require('cids')
+const pull = require('pull-stream')
 
 const IPFSApi = require('../src')
 const f = require('./utils/factory')
@@ -270,6 +271,52 @@ describe('.files (the MFS API part)', function () {
         done()
       })
     })
+  })
+
+  it('files.addPullStream with object chunks and pull stream content', (done) => {
+    const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
+
+    pull(
+      pull.values([{ content: pull.values([Buffer.from('test')]) }]),
+      ipfs.files.addPullStream(),
+      pull.collect((err, res) => {
+        if (err) return done(err)
+        expect(res).to.have.length(1)
+        expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
+        done()
+      })
+    )
+  })
+
+  it('files.add with pull stream (callback)', (done) => {
+    const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
+
+    ipfs.files.add(pull.values([Buffer.from('test')]), (err, res) => {
+      if (err) return done(err)
+      expect(res).to.have.length(1)
+      expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
+      done()
+    })
+  })
+
+  it('files.add with pull stream (promise)', () => {
+    const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
+
+    return ipfs.files.add(pull.values([Buffer.from('test')]))
+      .then((res) => {
+        expect(res).to.have.length(1)
+        expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
+      })
+  })
+
+  it('files.add with array of objects with pull stream content', () => {
+    const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
+
+    return ipfs.files.add([{ content: pull.values([Buffer.from('test')]) }])
+      .then((res) => {
+        expect(res).to.have.length(1)
+        expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
+      })
   })
 
   it('files.mkdir', (done) => {
