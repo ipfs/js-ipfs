@@ -1,4 +1,6 @@
-{
+'use strict'
+
+module.exports = () => ({
   "Addresses": {
     "Swarm": [
     ],
@@ -24,4 +26,4 @@
     "/dns4/wss0.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic",
     "/dns4/wss1.bootstrap.libp2p.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6"
   ]
-}
+})
