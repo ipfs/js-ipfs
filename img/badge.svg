@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="173px" height="58px" viewBox="0 0 173 58" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <rect id="path-1" x="1" y="1" width="171" height="56"></rect>
+  </defs>
+  <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+    <g id="Rectangle-1">
+      <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+      <rect stroke="#000000" stroke-width="2" x="2" y="2" width="169" height="54"></rect>
+    </g>
+    <text id="IPFS-Core-API" font-family="HelveticaNeue-Medium, Helvetica Neue, Helvetica" font-size="16" font-weight="400" fill="#000000">
+      <tspan x="57" y="26">IPFS Core API</tspan>
+    </text>
+    <g id="Compatible" transform="translate(57.000000, 30.000000)" fill="#000000" font-family="HelveticaNeue-LightItalic, Helvetica Neue, Helvetica" font-size="14" font-style="italic" font-weight="300">
+      <text id="e">
+        <tspan x="97" y="13">e</tspan>
+      </text>
+      <text id="l">
+        <tspan x="91" y="13">l</tspan>
+      </text>
+      <text id="b">
+        <tspan x="80" y="13">b</tspan>
+      </text>
+      <text id="i">
+        <tspan x="73" y="13">i</tspan>
+      </text>
+      <text id="t">
+        <tspan x="64" y="13">t</tspan>
+      </text>
+      <text id="a">
+        <tspan x="52" y="13">a</tspan>
+      </text>
+      <text id="p">
+        <tspan x="40" y="13">p</tspan>
+      </text>
+      <text id="m">
+        <tspan x="25" y="13">m</tspan>
+      </text>
+      <text id="o">
+        <tspan x="14" y="13">o</tspan>
+      </text>
+      <text id="C">
+        <tspan x="0" y="13">C</tspan>
+      </text>
+    </g>
+    <g id="ipfs-logo" transform="translate(10.000000, 8.000000)" fill-rule="nonzero">
+      <g id="Group">
+        <polygon id="Shape" fill="#000000" points="0.02625 32.229883 18.50125 42.9589279 36.97625 32.229883 36.97625 10.7717934 18.50125 0.0435867446 0.02625 10.7726316"></polygon>
+        <path d="M16.5941667,2.62777778 L3.19916667,10.4068382 C3.22593833,10.6460875 3.2259375,10.8875665 3.19916667,11.1268074 L16.595,18.9058678 C17.7245,18.0675774 19.26525,18.0675774 20.39475,18.9058678 L33.7905833,11.1267236 C33.7638117,10.8874743 33.7636725,10.6461127 33.7905,10.4068717 L20.3955,2.62781131 C19.266,3.46610175 17.7251667,3.46610175 16.5955833,2.62781131 L16.5941667,2.62777778 Z M35.0766667,13.2755166 L21.6666667,21.1412476 C21.8236667,22.5443216 21.0532417,23.8864581 19.76675,24.4512417 L19.7818017,39.9228596 C20.0011767,40.0191612 20.2090267,40.1398378 20.401635,40.2827856 L33.7974683,32.503809 C33.6404683,31.1007349 34.4108933,29.7585146 35.697385,29.193731 L35.697385,13.6357778 C35.47801,13.5394762 35.2700433,13.4187996 35.077435,13.2758519 L35.0766667,13.2755166 Z M1.92583333,13.3619776 C1.73323333,13.5049253 1.52538333,13.6257193 1.306,13.7220209 L1.306,29.2799741 C2.5925,29.8447409 3.36291667,31.1868942 3.20591667,32.5899682 L16.6009167,40.3690287 C16.7935167,40.2260809 17.0014917,40.1052869 17.2208667,40.0089854 L17.2208667,24.4510322 C15.9343667,23.8862653 15.16395,22.5441121 15.32095,21.141038 L1.92595,13.3616423 L1.92583333,13.3619776 Z" id="Shape" fill="#D8D8D8"></path>
+      </g>
+      <g id="Group" fill="#000000">
+        <polygon id="Shape" fill-opacity="0.25098" points="18.5 42.971501 36.975 32.2424561 36.975 10.7843665 18.5 21.5134113"></polygon>
+        <polygon id="Shape" fill-opacity="0.039216" points="18.5 42.971501 18.5 21.5134113 0.025 10.7843665 0.025 32.2424561"></polygon>
+        <polygon id="Shape" fill-opacity="0.13" points="0.0248333333 10.7843665 18.4998333 21.5134113 36.9748333 10.7843665 18.4998333 0.0553216374"></polygon>
+      </g>
+    </g>
+  </g>
+</svg>
