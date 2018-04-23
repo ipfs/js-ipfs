@@ -83,9 +83,11 @@ const updateMfsRoot = (ipfs, buffer, callback) => {
     return callback(new Error('Please run jsipfs init first'))
   }
 
-  if (!Buffer.isBuffer(buffer)) {
-    buffer = bs58.encode(buffer)
+  if (typeof buffer === 'string' || buffer instanceof String) {
+    buffer = bs58.decode(buffer)
   }
+
+  log(`New MFS root will be ${bs58.encode(buffer)}`)
 
   waterfall([
     (cb) => repo.closed ? datastore.open(cb) : cb(),

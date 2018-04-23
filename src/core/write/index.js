@@ -182,6 +182,8 @@ module.exports = function mfsWrite (ipfs) {
             // Store new containing folder CID
             containingFolder.node = newContaingFolder
 
+            log(`New CID for the containing folder is ${bs58.encode(newContaingFolder.multihash)}`)
+
             next(error)
           }),
 
@@ -192,6 +194,10 @@ module.exports = function mfsWrite (ipfs) {
           (newRoot, next) => updateMfsRoot(ipfs, newRoot.node.multihash, next)
         ], done)
       }
-    ], callback)
+    ], (error, result) => {
+      log(`Finished write operation`, error, result)
+
+      callback(error, result)
+    })
   })
 }

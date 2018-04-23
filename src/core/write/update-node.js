@@ -130,10 +130,7 @@ const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
               })
             )
           }),
-          collect((error, results) => {
-            log('finally', error, results)
-            done(error, results && results[0])
-          })
+          collect((error, results) => done(error, results && results[0]))
         )
       }
     }
