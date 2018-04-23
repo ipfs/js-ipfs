@@ -559,7 +559,7 @@ module.exports = (common) => {
           })
       })
 
-      it('exports a chunk of a file', (done) => {
+      it('exports a chunk of a file', function (done) {
         if (withGo) { this.skip() }
 
         const offset = 1
@@ -589,7 +589,7 @@ module.exports = (common) => {
         }))
       })
 
-      it('exports a chunk of a file in a ReadableStream', (done) => {
+      it('exports a chunk of a file in a ReadableStream', function (done) {
         if (withGo) { this.skip() }
 
         const offset = 1
@@ -625,7 +625,7 @@ module.exports = (common) => {
         )
       })
 
-      it('exports a chunk of a file in a PullStream', (done) => {
+      it('exports a chunk of a file in a PullStream', function (done) {
         if (withGo) { this.skip() }
 
         const offset = 1
