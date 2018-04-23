@@ -1,14 +1,10 @@
 'use strict'
 
-const exporter = require('ipfs-unixfs-engine').exporter
 const unmarshal = require('ipfs-unixfs').unmarshal
 const promisify = require('promisify-es6')
-const pull = require('pull-stream/pull')
 const bs58 = require('bs58')
 const CID = require('cids')
-const collect = require('pull-stream/sinks/collect')
 const {
-  withMfsRoot,
   validatePath,
   traverseTo
 } = require('./utils')
