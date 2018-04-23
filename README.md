@@ -211,11 +211,15 @@ Creates and returns an instance of an IPFS node. Use the `options` argument to s
 
     If you have already initialized a repo before creating your IPFS node (e.g. you are loading a repo that was saved to disk from a previous run of your program), you must make sure to set this to `false`. Note that *initializing* a repo is different from creating an instance of [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo). The IPFS constructor sets many special properties when initializing a repo, so you should usually not try and call `repoInstance.init()` yourself.
     
-    Instead of a boolean, you may provide an object with custom initialization options.
+    Instead of a boolean, you may provide an object with custom initialization options. All properties are optional:
+    
+    - `init.emptyRepo` (boolean) Whether to remove built-in assets, like the instructional tour and empty mutable file system, from the repo. (Default: `false`)
+    - `init.bits` (number) Number of bits to use in the generated key pair. (Default: `2048`)
+    - `init.pass` (string) A passphrase to encrypt keys. You should generally use the top-level `pass` option instead of the `init.pass` option (this one will take its value from the top-level option if not set).
     
 - `start` (boolean): If `false`, do not automatically start the IPFS node. Instead, you’ll need to manually call `node.start()` yourself. (Default: `true`)
 
-- `pass` (string): A passphrase to encrypt your keys.
+- `pass` (string): A passphrase to encrypt/decrypt your keys.
 
 - `EXPERIMENTAL` (object): Enable and configure experimental features.
     - `pubsub` (boolean): Enable libp2p pub-sub. (Default: `false`)
