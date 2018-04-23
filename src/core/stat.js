@@ -67,10 +67,6 @@ module.exports = function mfsStat (ipfs) {
           type: meta.type
         })
       }
-    ], (error, stats) => {
-      log(error, stats)
-
-      callback(error, stats)
-    })
+    ], callback)
   })
 }

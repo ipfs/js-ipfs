@@ -38,13 +38,17 @@ module.exports = function mfsRead (ipfs) {
       (done) => traverseTo(ipfs, path, {
         parents: false
       }, done),
-      (file, done) => {
+      (result, done) => {
+        log('traversed to', result)
+
         pull(
-          exporter(new CID(file.node.multihash), ipfs._ipld, {
+          exporter(new CID(result.node.multihash), ipfs._ipld, {
             offset: options.offset,
             length: options.length
           }),
           collect((error, files) => {
+            log(error, files)
+
             if (error) {
               return done(error)
             }
@@ -52,6 +56,8 @@ module.exports = function mfsRead (ipfs) {
             pull(
               files[0].content,
               collect((error, data) => {
+                log(error, data)
+
                 if (error) {
                   return done(error)
                 }

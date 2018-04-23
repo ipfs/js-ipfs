@@ -212,16 +212,8 @@ describe('write', function () {
         create: true
       })
         .then(() => mfs.write(path, newContent))
-        .then((result) => {
-          console.info('result', result)
-
-          return mfs.stat(path)
-        })
-        .then((stats) => {
-          console.info('stats', stats)
-
-          expect(stats.size).to.equal(contentSize)
-        })
+        .then((result) => mfs.stat(path))
+        .then((stats) => expect(stats.size).to.equal(contentSize))
         .then(() => {
           console.info('reading')
 
