@@ -1,3 +1,14 @@
+<a name="0.64.0"></a>
+# [0.64.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.62.0...v0.64.0) (2018-04-23)
+
+
+### Features
+
+* adds pull stream tests for files.add ([d75986a](https://github.com/ipfs/interface-ipfs-core/commit/d75986a))
+* better badge ([#246](https://github.com/ipfs/interface-ipfs-core/issues/246)) ([a3869bf](https://github.com/ipfs/interface-ipfs-core/commit/a3869bf))
+
+
+
 <a name="0.63.0"></a>
 # [0.63.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.62.0...v0.63.0) (2018-04-23)
 
