@@ -7,7 +7,7 @@
     "fs": false
   },
   "scripts": {
-    "test": "aegir test -f test/browser.js",
+    "test": "DEBUG=mfs:* aegir test -f test/browser.js",
     "test:node": "aegir test -t node",
     "test:browser": "aegir test -t browser -t webworker -f test/browser.js",
     "build": "aegir build",
