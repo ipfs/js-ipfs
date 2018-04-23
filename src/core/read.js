@@ -41,33 +41,25 @@ module.exports = function mfsRead (ipfs) {
       (result, done) => {
         log('traversed to', result)
 
-        pull(
-          exporter(new CID(result.node.multihash), ipfs._ipld, {
-            offset: options.offset,
-            length: options.length
-          }),
-          collect((error, files) => {
-            log(error, files)
-
-            if (error) {
-              return done(error)
-            }
-
-            pull(
-              files[0].content,
-              collect((error, data) => {
-                log(error, data)
-
-                if (error) {
-                  return done(error)
-                }
-
-                done(null, Buffer.concat(data))
-              })
-            )
-          })
-        )
+        waterfall([
+          (next) => pull(
+            exporter(new CID(result.node.multihash), ipfs._ipld, {
+              offset: options.offset,
+              length: options.length
+            }),
+            collect(next)
+          ),
+          (files, next) => pull(
+            files[0].content,
+            collect(next)
+          ),
+          (data, next) => next(null, Buffer.concat(data))
+        ], done)
       }
-    ], callback)
+    ], (error, result) => {
+      log('Read result', error, result)
+
+      callback(error, result)
+    })
   })
 }
