@@ -1,3 +1,13 @@
+<a name="0.64.1"></a>
+## [0.64.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.64.0...v0.64.1) (2018-04-23)
+
+
+### Bug Fixes
+
+* this.skip needs to be under a function declaration ([2545ddd](https://github.com/ipfs/interface-ipfs-core/commit/2545ddd))
+
+
+
 <a name="0.64.0"></a>
 # [0.64.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.62.0...v0.64.0) (2018-04-23)
 
