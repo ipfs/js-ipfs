@@ -194,10 +194,6 @@ module.exports = function mfsWrite (ipfs) {
           (newRoot, next) => updateMfsRoot(ipfs, newRoot.node.multihash, next)
         ], done)
       }
-    ], (error, result) => {
-      log(`Finished write operation`, error, result)
-
-      callback(error, result)
-    })
+    ], (error, result) => callback(error, result))
   })
 }

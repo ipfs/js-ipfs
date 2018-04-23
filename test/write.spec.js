@@ -223,6 +223,11 @@ describe('write', function () {
         .then((buffer) => {
           expect(buffer).to.deep.equal(newContent)
         })
+        .catch(error => {
+          console.error(error)
+
+          throw error
+        })
     })
   })
 
