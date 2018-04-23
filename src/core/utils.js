@@ -10,11 +10,10 @@ const {
   DAGNode,
   DAGLink
 } = dagPb
-const {
-  waterfall,
-  reduce,
-  doWhilst
-} = require('async')
+const waterfall = require('async/waterfall')
+const reduce = require('async/reduce')
+const doWhilst = require('async/doWhilst')
+const asyncMap = require('pull-stream/throughs/async-map')
 
 const MFS_ROOT_KEY = new Key('/local/filesroot')
 const FILE_SEPARATOR = '/'
@@ -252,6 +251,27 @@ const updateTree = (ipfs, child, callback) => {
   )
 }
 
+const limitStreamBytes = (limit) => {
+  let bytesRead = 0
+
+  return asyncMap((buffer, cb) => {
+    if (bytesRead > limit) {
+      // Ugh. https://github.com/standard/standard/issues/623
+      const foo = true
+      return cb(foo)
+    }
+
+    // If we only need to return part of this buffer, slice it to make it smaller
+    if (bytesRead + buffer.length > limit) {
+      buffer = buffer.slice(0, limit - bytesRead)
+    }
+
+    bytesRead = bytesRead + buffer.length
+
+    cb(null, buffer)
+  })
+}
+
 module.exports = {
   validatePath,
   withMfsRoot,
@@ -259,5 +279,6 @@ module.exports = {
   traverseTo,
   addLink,
   updateTree,
+  limitStreamBytes,
   FILE_SEPARATOR
 }

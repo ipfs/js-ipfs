@@ -4,20 +4,16 @@ const UnixFs = require('ipfs-unixfs')
 const {
   unmarshal
 } = UnixFs
-const pull = require('pull-stream')
-const {
-  values,
-  collect,
-  asyncMap,
-  filter
-} = pull
+const pull = require('pull-stream/pull')
+const values = require('pull-stream/sources/values')
+const collect = require('pull-stream/sinks/collect')
+const asyncMap = require('pull-stream/throughs/async-map')
+const filter = require('pull-stream/throughs/filter')
 const paramap = require('pull-paramap')
 const {
   leafFirst
 } = require('pull-traverse')
-const {
-  waterfall
-} = require('async')
+const waterfall = require('async/waterfall')
 const CID = require('cids')
 const findFileSize = require('./find-file-size')
 const {
@@ -26,20 +22,21 @@ const {
 } = require('ipld-dag-pb')
 const log = require('debug')('mfs:write:update-node')
 const bs58 = require('bs58')
+const {
+  limitStreamBytes
+} = require('../utils')
 
-const updateNode = (ipfs, cidToUpdate, newContent, options, callback) => {
+const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
   let offset = options.offset || 0
 
   // Where we want to start writing in the stream
   let streamStart = offset
 
   // Where we want to stop writing in the stream
-  const streamEnd = offset + (options.length || newContent.length)
+  const streamEnd = offset + options.length
 
   // Where we currently are in the stream
   let streamPosition = 0
-
-  log(`Updating ${cidToUpdate.toBaseEncodedString()} with ${streamEnd - streamStart} bytes starting at offset ${offset}`)
 
   waterfall([
     (done) => ipfs.dag.get(cidToUpdate, done),
@@ -47,12 +44,14 @@ const updateNode = (ipfs, cidToUpdate, newContent, options, callback) => {
       const node = result.value
       const fileSize = findFileSize(node)
 
-      if (offset + newContent.length > fileSize) {
+      log(`Updating bytes ${streamStart}-${streamEnd} of ${fileSize} bytes from ${cidToUpdate.toBaseEncodedString()} with source`)
+
+      if (streamEnd > fileSize) {
         // We are going to expand the file. this can lead to the DAG structure
         // changing so reimport the whole file instead
         //
         // Create a stream from the existing node, then switch to the
-        // newContent buffer when required
+        // passed buffer when required
         log(`New bytes would expand the file and potentially reorder the DAG, reimporting instead`)
 
         return done(new Error('Expanding files is not implemented yet'))
@@ -62,71 +61,83 @@ const updateNode = (ipfs, cidToUpdate, newContent, options, callback) => {
         log(`Updating one or more more leaf nodes`)
 
         pull(
-          leafFirst({
-            parent: null,
-            link: null,
-            index: null,
-            node,
-            nodeStart: 0,
-            nodeEnd: fileSize
-          }, visitor),
-          paramap(updateNodeData),
-          filter(Boolean),
-          asyncMap((link, next) => {
-            if (!link.parent || !link.index) {
-              return next(null, link)
-            }
+          source,
+          limitStreamBytes(options.length),
+          asyncMap((buffer, done) => {
+            // Find the DAGNodes that contain the data at the specified offset/length
+            // Merge the data and create new DAGNodes with the merged data
+            // Keep a record of the new CIDs and update the tree
+            pull(
+              leafFirst({
+                parent: null,
+                link: null,
+                index: null,
+                node,
+                nodeStart: streamPosition,
+                nodeEnd: fileSize
+              }, findDAGNodesWithRequestedData),
+              paramap(updateNodeData(buffer)),
+              filter(Boolean),
+              asyncMap((link, next) => {
+                if (!link.parent || !link.index) {
+                  return next(null, link)
+                }
 
-            // Create a new list of links
-            const links = link.parent.node.links.map((existingLink, index) => {
-              if (index === link.index) {
-                return new DAGLink('', link.size, link.multihash)
-              }
+                // Create a new list of links
+                const links = link.parent.node.links.map((existingLink, index) => {
+                  if (index === link.index) {
+                    return new DAGLink('', link.size, link.multihash)
+                  }
 
-              return existingLink
-            })
+                  return existingLink
+                })
 
-            // Update node's parent
-            waterfall([
-              // Create a DAGNode with the new data
-              (cb) => DAGNode.create(link.parent.node.data, links, cb),
-              (newNode, cb) => {
-                // Persist it
-                ipfs.dag.put(newNode, {
-                  cid: new CID(newNode.multihash)
-                }, (error) => cb(error, newNode))
-              },
-              (newNode, cb) => {
-                link.parent.node = newNode
+                // Update node's parent
+                waterfall([
+                  // Create a DAGNode with the new data
+                  (cb) => DAGNode.create(link.parent.node.data, links, cb),
+                  (newNode, cb) => {
+                    // Persist it
+                    ipfs.dag.put(newNode, {
+                      cid: new CID(newNode.multihash)
+                    }, (error) => cb(error, newNode))
+                  },
+                  (newNode, cb) => {
+                    link.parent.node = newNode
 
-                cb(null, link)
-              }
-            ], next)
+                    cb(null, link)
+                  }
+                ], next)
+              }),
+              collect((error, results) => {
+                let updatedRoot
+
+                if (!error) {
+                  updatedRoot = results[0]
+
+                  while (updatedRoot.parent) {
+                    updatedRoot = updatedRoot.parent
+                  }
+
+                  if (updatedRoot.node) {
+                    updatedRoot = updatedRoot.node
+                  }
+                }
+
+                offset += buffer.length
+
+                done(error, updatedRoot)
+              })
+            )
           }),
-          collect((error, results) => {
-            let updatedRoot
-
-            if (!error) {
-              updatedRoot = results[0]
-
-              while (updatedRoot.parent) {
-                updatedRoot = updatedRoot.parent
-              }
-
-              if (updatedRoot.node) {
-                updatedRoot = updatedRoot.node
-              }
-            }
-
-            done(error, updatedRoot)
-          })
+          collect((error, results) => done(error, results && results[0]))
         )
       }
     }
   ], callback)
 
   // Returns a pull stream that will load the data from the children of the passed node
-  function visitor ({ node }) {
+  function findDAGNodesWithRequestedData ({ node }) {
     const meta = unmarshal(node.data)
 
     log(`Node links ${node.links.length}, block sizes ${meta.blockSizes}`)
@@ -181,56 +192,58 @@ const updateNode = (ipfs, cidToUpdate, newContent, options, callback) => {
     )
   }
 
-  function updateNodeData ({ parent, link, nodeStart, node, index }, done) {
-    if (!node || !node.data) {
-      return done()
-    }
-
-    waterfall([
-      (next) => next(null, unmarshal(node.data)),
-      (meta, next) => {
-        if (!meta || !meta.data || !meta.data.length) {
-          return next()
-        }
-
-        const targetStart = streamStart - nodeStart
-        const sourceStart = 0
-        let sourceEnd = streamEnd - streamStart
-
-        if (meta.data.length < sourceEnd) {
-          // we need to write to another DAGNode so increment the streamStart
-          // by the number of bytes from newContent we've written
-          streamStart += meta.data.length
-        }
-
-        const newData = Buffer.from(meta.data)
-        newContent.copy(newData, targetStart, sourceStart, sourceEnd)
-
-        const nodeData = new UnixFs(meta.type, newData).marshal()
-
-        waterfall([
-          // Create a DAGNode with the new data
-          (cb) => DAGNode.create(nodeData, cb),
-          (newNode, cb) => {
-            // Persist it
-            ipfs.dag.put(newNode, {
-              cid: new CID(newNode.multihash)
-            }, (error) => cb(error, newNode))
-          },
-          (newNode, cb) => {
-            log(`Created DAGNode with new data with hash ${bs58.encode(newNode.multihash)}`)
-
-            // Store the CID and friends so we can update it's parent's links
-            cb(null, {
-              parent: parent,
-              index: index,
-              multihash: newNode.multihash,
-              size: newNode.size
-            })
-          }
-        ], next)
+  function updateNodeData (newContent) {
+    return ({ parent, link, nodeStart, node, index }, done) => {
+      if (!node || !node.data) {
+        return done()
       }
-    ], done)
+
+      waterfall([
+        (next) => next(null, unmarshal(node.data)),
+        (meta, next) => {
+          if (!meta || !meta.data || !meta.data.length) {
+            return next()
+          }
+
+          const targetStart = streamStart - nodeStart
+          const sourceStart = 0
+          let sourceEnd = streamEnd - streamStart
+
+          if (meta.data.length < sourceEnd) {
+            // we need to write to another DAGNode so increment the streamStart
+            // by the number of bytes from buffer we've written
+            streamStart += meta.data.length
+          }
+
+          const newData = Buffer.from(meta.data)
+          newContent.copy(newData, targetStart, sourceStart, sourceEnd)
+
+          const nodeData = new UnixFs(meta.type, newData).marshal()
+
+          waterfall([
+            // Create a DAGNode with the new data
+            (cb) => DAGNode.create(nodeData, cb),
+            (newNode, cb) => {
+              // Persist it
+              ipfs.dag.put(newNode, {
+                cid: new CID(newNode.multihash)
+              }, (error) => cb(error, newNode))
+            },
+            (newNode, cb) => {
+              log(`Created DAGNode with new data with hash ${bs58.encode(newNode.multihash)}`)
+
+              // Store the CID and friends so we can update it's parent's links
+              cb(null, {
+                parent: parent,
+                index: index,
+                multihash: newNode.multihash,
+                size: newNode.size
+              })
+            }
+          ], next)
+        }
+      ], done)
+    }
   }
 }
 

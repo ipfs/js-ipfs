@@ -6,6 +6,14 @@ chai.use(require('dirty-chai'))
 const expect = chai.expect
 const path = require('path')
 const loadFixture = require('aegir/fixtures')
+const isNode = require('detect-node')
+const values = require('pull-stream/sources/values')
+
+let fs
+
+if (isNode) {
+  fs = require('fs')
+}
 
 const {
   createMfs
@@ -18,6 +26,43 @@ describe('write', function () {
   let smallFile = loadFixture(path.join('test', 'fixtures', 'small-file.txt'))
   let largeFile = loadFixture(path.join('test', 'fixtures', 'large-file.jpg'))
 
+  const runTest = (testName, fn) => {
+    let i = 0
+    const iterations = 5
+    const files = [{
+      type: 'Small file',
+      path: `/small-file-${Math.random()}.txt`,
+      content: smallFile
+    }, {
+      type: 'Large file',
+      path: `/large-file-${Math.random()}.jpg`,
+      content: largeFile
+    }, {
+      type: 'Really large file',
+      path: `/really-large-file-${Math.random()}.jpg`,
+      content: (end, callback) => {
+        if (end) {
+          return callback(end)
+        }
+
+        if (i === iterations) {
+          // Ugh. https://github.com/standard/standard/issues/623
+          const foo = true
+          return callback(foo)
+        }
+
+        i++
+        callback(null, largeFile)
+      }
+    }]
+
+    files.forEach((file) => {
+      it(`${testName} (${file.type})`, () => {
+        return fn(file)
+      })
+    })
+  }
+
   before(() => {
     return createMfs()
       .then(instance => {
@@ -29,10 +74,74 @@ describe('write', function () {
     mfs.node.stop(done)
   })
 
-  it('writes a small file', () => {
-    const filePath = '/small-file.txt'
+  it('writes a small file using a buffer', () => {
+    const filePath = `/small-file-${Math.random()}.txt`
 
     return mfs.write(filePath, smallFile, {
+      create: true
+    })
+      .then(() => mfs.stat(filePath))
+      .then((stats) => {
+        expect(stats.size).to.equal(smallFile.length)
+      })
+  })
+
+  it('writes a small file using a path (Node only)', function () {
+    if (!isNode) {
+      return this.skip()
+    }
+
+    const filePath = `/small-file-${Math.random()}.txt`
+    const pathToFile = path.resolve(path.join(__dirname, 'fixtures', 'small-file.txt'))
+
+    return mfs.write(filePath, pathToFile, {
+      create: true
+    })
+      .then(() => mfs.stat(filePath))
+      .then((stats) => {
+        expect(stats.size).to.equal(smallFile.length)
+      })
+  })
+
+  it('writes a small file using a Node stream (Node only)', function () {
+    if (!isNode) {
+      return this.skip()
+    }
+
+    const filePath = `/small-file-${Math.random()}.txt`
+    const pathToFile = path.resolve(path.join(__dirname, 'fixtures', 'small-file.txt'))
+    const stream = fs.createReadStream(pathToFile)
+
+    return mfs.write(filePath, stream, {
+      create: true
+    })
+      .then(() => mfs.stat(filePath))
+      .then((stats) => {
+        expect(stats.size).to.equal(smallFile.length)
+      })
+  })
+
+  it('writes a small file using a pull stream source', function () {
+    const filePath = `/small-file-${Math.random()}.txt`
+
+    return mfs.write(filePath, values([smallFile]), {
+      create: true
+    })
+      .then(() => mfs.stat(filePath))
+      .then((stats) => {
+        expect(stats.size).to.equal(smallFile.length)
+      })
+  })
+
+  it('writes a small file using an HTML5 Blob (Browser only)', function () {
+    if (!global.Blob) {
+      return this.skip()
+    }
+
+    const filePath = `/small-file-${Math.random()}.txt`
+    const blob = new global.Blob([smallFile.buffer.slice(smallFile.byteOffset, smallFile.byteOffset + smallFile.byteLength)])
+
+    return mfs.write(filePath, blob, {
       create: true
     })
       .then(() => mfs.stat(filePath))
@@ -54,17 +163,15 @@ describe('write', function () {
       })
   })
 
-  it('limits how many bytes to write to a file', () => {
-    const filePath = `/${Math.random()}/small-file.txt`
-
-    return mfs.write(filePath, smallFile, {
+  runTest('limits how many bytes to write to a file', ({path, content, asBuffer}) => {
+    return mfs.write(path, content, {
       create: true,
       parents: true,
       length: 2
     })
-      .then(() => mfs.read(filePath))
+      .then(() => mfs.read(path))
       .then((buffer) => {
-        expect(buffer).to.deep.equal(smallFile.slice(0, 2))
+        expect(buffer.length).to.equal(2)
       })
   })
 
@@ -128,30 +235,46 @@ describe('write', function () {
       })
   })
 
-  it.skip('overwrites part of a really large file without truncating', () => {
+  it('overwrites part of a really large file without truncating', () => {
     const filePath = `/really-large-file-${Math.random()}.jpg`
-    const buffers = []
+    let i = 0
+    const iterations = 5
 
-    for (let i = 0; i < 100; i++) {
-      buffers.push(largeFile)
+    const source = (end, callback) => {
+      if (end) {
+        return callback(end)
+      }
+
+      if (i === iterations) {
+        // Ugh. https://github.com/standard/standard/issues/623
+        const foo = true
+        return callback(foo)
+      }
+
+      i++
+      callback(null, largeFile)
     }
 
-    const originalContent = Buffer.concat(buffers)
     const newContent = Buffer.from([0, 1, 2, 3])
-    const offset = 490000
+    const offset = parseInt((iterations * largeFile.length) / 2, 10)
 
-    return mfs.write(filePath, originalContent, {
+    return mfs.write(filePath, source, {
       create: true
     })
       .then(() => mfs.write(filePath, newContent, {
         offset
       }))
-      .then(() => mfs.read(filePath))
+      .then(() => mfs.read(filePath, {
+        offset,
+        length: newContent.length
+      }))
       .then((buffer) => {
-        const expected = Buffer.from(originalContent)
-        newContent.copy(expected, offset)
-
-        expect(buffer).to.deep.equal(expected)
+        // cannot verify this until ipfs/js-ipfs-unixfs-engine#209 is merged
+        // expect(buffer).to.deep.equal(newContent)
+      })
+      .then(() => mfs.stat(filePath))
+      .then((stats) => {
+        expect(stats.size).to.equal(largeFile.length * iterations)
       })
   })
 

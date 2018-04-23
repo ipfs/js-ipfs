@@ -3,19 +3,15 @@
 const exporter = require('ipfs-unixfs-engine').exporter
 const unmarshal = require('ipfs-unixfs').unmarshal
 const promisify = require('promisify-es6')
-const pull = require('pull-stream')
+const pull = require('pull-stream/pull')
 const bs58 = require('bs58')
 const CID = require('cids')
-const {
-  collect
-} = pull
+const collect = require('pull-stream/sinks/collect')
 const {
   withMfsRoot,
   validatePath
 } = require('./utils')
-const {
-  waterfall
-} = require('async')
+const waterfall = require('async/waterfall')
 
 const defaultOptions = {
   hash: false,

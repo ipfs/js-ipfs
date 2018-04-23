@@ -1,20 +1,22 @@
 'use strict'
 
-const {
-  waterfall
-} = require('async')
-const pull = require('pull-stream')
-const {
-  values,
-  collect
-} = pull
+const waterfall = require('async/waterfall')
+const pull = require('pull-stream/pull')
+const values = require('pull-stream/sources/values')
+const collect = require('pull-stream/sinks/collect')
 const importer = require('ipfs-unixfs-engine').importer
+const {
+  limitStreamBytes
+} = require('../utils')
 
-const importNode = (ipfs, parent, fileName, buffer, options, callback) => {
+const importNode = (ipfs, parent, fileName, source, options, callback) => {
   waterfall([
     (done) => pull(
       values([{
-        content: buffer
+        content: pull(
+          source,
+          limitStreamBytes(options.length)
+        )
       }]),
       importer(ipfs._ipld, {
         progress: options.progress,
@@ -27,7 +29,7 @@ const importNode = (ipfs, parent, fileName, buffer, options, callback) => {
     (results, done) => {
       const imported = results[0]
 
-      return done(null, {
+      done(null, {
         size: imported.size,
         multihash: imported.multihash
       })

@@ -2,13 +2,9 @@
 
 const exporter = require('ipfs-unixfs-engine').exporter
 const promisify = require('promisify-es6')
-const pull = require('pull-stream')
-const {
-  collect
-} = pull
-const {
-  waterfall
-} = require('async')
+const pull = require('pull-stream/pull')
+const collect = require('pull-stream/sinks/collect')
+const waterfall = require('async/waterfall')
 const {
   withMfsRoot,
   validatePath

@@ -10,10 +10,8 @@ const {
   DAGNode,
   DAGLink
 } = dagPb
-const {
-  waterfall,
-  reduce
-} = require('async')
+const waterfall = require('async/waterfall')
+const reduce = require('async/reduce')
 const {
   withMfsRoot,
   updateMfsRoot,
