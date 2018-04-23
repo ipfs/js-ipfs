@@ -26,17 +26,19 @@ describe('write', function () {
   let smallFile = loadFixture(path.join('test', 'fixtures', 'small-file.txt'))
   let largeFile = loadFixture(path.join('test', 'fixtures', 'large-file.jpg'))
 
-  const runTest = (testName, fn) => {
+  const runTest = (fn) => {
     let i = 0
     const iterations = 5
     const files = [{
       type: 'Small file',
       path: `/small-file-${Math.random()}.txt`,
-      content: smallFile
+      content: smallFile,
+      contentSize: smallFile.length
     }, {
       type: 'Large file',
       path: `/large-file-${Math.random()}.jpg`,
-      content: largeFile
+      content: largeFile,
+      contentSize: largeFile.length
     }, {
       type: 'Really large file',
       path: `/really-large-file-${Math.random()}.jpg`,
@@ -53,13 +55,12 @@ describe('write', function () {
 
         i++
         callback(null, largeFile)
-      }
+      },
+      contentSize: largeFile.length * iterations
     }]
 
     files.forEach((file) => {
-      it(`${testName} (${file.type})`, () => {
-        return fn(file)
-      })
+      fn(file)
     })
   }
 
@@ -163,18 +164,6 @@ describe('write', function () {
       })
   })
 
-  runTest('limits how many bytes to write to a file', ({path, content, asBuffer}) => {
-    return mfs.write(path, content, {
-      create: true,
-      parents: true,
-      length: 2
-    })
-      .then(() => mfs.read(path))
-      .then((buffer) => {
-        expect(buffer.length).to.equal(2)
-      })
-  })
-
   it('refuses to write to a file in a folder that does not exist', () => {
     const filePath = `/${Math.random()}/small-file.txt`
 
@@ -201,97 +190,65 @@ describe('write', function () {
       })
   })
 
-  it('overwrites part of a small file without truncating', () => {
-    const filePath = `/small-file-${Math.random()}.txt`
-    const newContent = Buffer.from('Goodbye world')
-
-    return mfs.write(filePath, smallFile, {
-      create: true
-    })
-      .then(() => mfs.write(filePath, newContent))
-      .then(() => mfs.read(filePath))
-      .then((buffer) => {
-        expect(buffer).to.deep.equal(newContent)
+  runTest(({type, path, content}) => {
+    it(`limits how many bytes to write to a file (${type})`, () => {
+      return mfs.write(path, content, {
+        create: true,
+        parents: true,
+        length: 2
       })
+        .then(() => mfs.read(path))
+        .then((buffer) => {
+          expect(buffer.length).to.equal(2)
+        })
+    })
   })
 
-  it('overwrites part of a large file without truncating', () => {
-    const filePath = `/large-file-${Math.random()}.jpg`
-    const newContent = Buffer.from([0, 1, 2, 3])
-    const offset = 490000
+  runTest(({type, path, content, contentSize}) => {
+    it(`overwrites start of a file without truncating (${type})`, () => {
+      const newContent = Buffer.from('Goodbye world')
 
-    return mfs.write(filePath, largeFile, {
-      create: true
-    })
-      .then(() => mfs.write(filePath, newContent, {
-        offset
-      }))
-      .then(() => mfs.read(filePath))
-      .then((buffer) => {
-        const expected = Buffer.from(largeFile)
-        newContent.copy(expected, offset)
-
-        expect(buffer).to.deep.equal(expected)
+      return mfs.write(path, content, {
+        create: true
       })
+        .then(() => mfs.write(path, newContent))
+        .then(() => mfs.stat(path))
+        .then((stats) => {
+          expect(stats.size).to.equal(contentSize)
+        })
+        .then(() => mfs.read(path, {
+          offset: 0,
+          length: newContent.length
+        }))
+        .then((buffer) => {
+          expect(buffer).to.deep.equal(newContent)
+        })
+    })
   })
 
-  it('overwrites part of a really large file without truncating', () => {
-    const filePath = `/really-large-file-${Math.random()}.jpg`
-    let i = 0
-    const iterations = 5
+  runTest(({type, path, content, contentSize}) => {
+    it(`pads the start of a new file when an offset is specified (${type})`, () => {
+      const offset = 10
 
-    const source = (end, callback) => {
-      if (end) {
-        return callback(end)
-      }
-
-      if (i === iterations) {
-        // Ugh. https://github.com/standard/standard/issues/623
-        const foo = true
-        return callback(foo)
-      }
-
-      i++
-      callback(null, largeFile)
-    }
-
-    const newContent = Buffer.from([0, 1, 2, 3])
-    const offset = parseInt((iterations * largeFile.length) / 2, 10)
-
-    return mfs.write(filePath, source, {
-      create: true
-    })
-      .then(() => mfs.write(filePath, newContent, {
-        offset
-      }))
-      .then(() => mfs.read(filePath, {
+      return mfs.write(path, content, {
         offset,
-        length: newContent.length
-      }))
-      .then((buffer) => {
-        // cannot verify this until ipfs/js-ipfs-unixfs-engine#209 is merged
-        // expect(buffer).to.deep.equal(newContent)
+        create: true
       })
-      .then(() => mfs.stat(filePath))
-      .then((stats) => {
-        expect(stats.size).to.equal(largeFile.length * iterations)
-      })
-  })
-
-  it('pads the start of a new file when an offset is specified', () => {
-    const filePath = `/small-file-${Math.random()}.txt`
-
-    return mfs.write(filePath, smallFile, {
-      offset: 10,
-      create: true
+        .then(() => mfs.stat(path))
+        .then((stats) => {
+          expect(stats.size).to.equal(offset + contentSize)
+        })
+        .then(() => mfs.read(path, {
+          offset: 0,
+          length: offset
+        }))
+        .then((buffer) => {
+          expect(buffer).to.deep.equal(Buffer.alloc(offset, 0))
+        })
     })
-      .then(() => mfs.read(filePath))
-      .then((buffer) => {
-        expect(buffer).to.deep.equal(Buffer.concat([Buffer.alloc(10, 0), smallFile]))
-      })
   })
 
-  it.skip('truncates a file before writing', () => {
+  it.skip('truncates a file when requested', () => {
 
   })
 

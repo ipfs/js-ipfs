@@ -54,7 +54,7 @@
     "filereader-stream": "^1.0.0",
     "interface-datastore": "^0.4.2",
     "ipfs-unixfs": "^0.1.14",
-    "ipfs-unixfs-engine": "^0.28.1",
+    "ipfs-unixfs-engine": "^0.29.0",
     "is-pull-stream": "0.0.0",
     "is-stream": "^1.1.0",
     "promisify-es6": "^1.0.3",

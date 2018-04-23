@@ -79,7 +79,7 @@ const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
               paramap(updateNodeData(buffer)),
               filter(Boolean),
               asyncMap((link, next) => {
-                if (!link.parent || !link.index) {
+                if (!link.parent || link.index === undefined) {
                   return next(null, link)
                 }
 
@@ -198,49 +198,46 @@ const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
         return done()
       }
 
+      const meta = unmarshal(node.data)
+
+      if (!meta || !meta.data || !meta.data.length) {
+        return done()
+      }
+
+      const targetStart = streamStart - nodeStart
+      const sourceStart = 0
+      let sourceEnd = streamEnd - streamStart
+
+      if (meta.data.length < sourceEnd) {
+        // we need to write to another DAGNode so increment the streamStart
+        // by the number of bytes from buffer we've written
+        streamStart += meta.data.length
+      }
+
+      const newData = Buffer.from(meta.data)
+      newContent.copy(newData, targetStart, sourceStart, sourceEnd)
+
+      const nodeData = new UnixFs(meta.type, newData).marshal()
+
       waterfall([
-        (next) => next(null, unmarshal(node.data)),
-        (meta, next) => {
-          if (!meta || !meta.data || !meta.data.length) {
-            return next()
-          }
+        // Create a DAGNode with the new data
+        (cb) => DAGNode.create(nodeData, cb),
+        (newNode, cb) => {
+          // Persist it
+          ipfs.dag.put(newNode, {
+            cid: new CID(newNode.multihash)
+          }, (error) => cb(error, newNode))
+        },
+        (newNode, cb) => {
+          log(`Created DAGNode with new data with hash ${bs58.encode(newNode.multihash)}`)
 
-          const targetStart = streamStart - nodeStart
-          const sourceStart = 0
-          let sourceEnd = streamEnd - streamStart
-
-          if (meta.data.length < sourceEnd) {
-            // we need to write to another DAGNode so increment the streamStart
-            // by the number of bytes from buffer we've written
-            streamStart += meta.data.length
-          }
-
-          const newData = Buffer.from(meta.data)
-          newContent.copy(newData, targetStart, sourceStart, sourceEnd)
-
-          const nodeData = new UnixFs(meta.type, newData).marshal()
-
-          waterfall([
-            // Create a DAGNode with the new data
-            (cb) => DAGNode.create(nodeData, cb),
-            (newNode, cb) => {
-              // Persist it
-              ipfs.dag.put(newNode, {
-                cid: new CID(newNode.multihash)
-              }, (error) => cb(error, newNode))
-            },
-            (newNode, cb) => {
-              log(`Created DAGNode with new data with hash ${bs58.encode(newNode.multihash)}`)
-
-              // Store the CID and friends so we can update it's parent's links
-              cb(null, {
-                parent: parent,
-                index: index,
-                multihash: newNode.multihash,
-                size: newNode.size
-              })
-            }
-          ], next)
+          // Store the CID and friends so we can update it's parent's links
+          cb(null, {
+            parent: parent,
+            index: index,
+            multihash: newNode.multihash,
+            size: newNode.size
+          })
         }
       ], done)
     }
