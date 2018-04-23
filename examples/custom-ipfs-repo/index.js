@@ -100,4 +100,8 @@ node.on('ready', () => {
       console.log('\n\nStopping the node')
       return node.stop()
     })
+    // Let users know where they can inspect the repo
+    .then(() => {
+      console.log('Check "/tmp/custom-repo/.ipfs" to see what your customized repository looks like on disk.')
+    })
 })
