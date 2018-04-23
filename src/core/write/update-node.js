@@ -79,6 +79,8 @@ const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
               paramap(updateNodeData(buffer)),
               filter(Boolean),
               asyncMap((link, next) => {
+                log('link', link)
+
                 if (!link.parent || link.index === undefined) {
                   return next(null, link)
                 }
@@ -91,6 +93,8 @@ const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
 
                   return existingLink
                 })
+
+                log('links', links)
 
                 // Update node's parent
                 waterfall([
@@ -105,11 +109,15 @@ const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
                   (newNode, cb) => {
                     link.parent.node = newNode
 
+                    log('updated parent', newNode)
+
                     cb(null, link)
                   }
                 ], next)
               }),
               collect((error, results) => {
+                log('updated node', error, results)
+
                 let updatedRoot
 
                 if (!error) {
