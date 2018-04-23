@@ -3,7 +3,6 @@
 const unmarshal = require('ipfs-unixfs').unmarshal
 const promisify = require('promisify-es6')
 const bs58 = require('bs58')
-const CID = require('cids')
 const {
   validatePath,
   traverseTo
@@ -47,32 +46,26 @@ module.exports = function mfsStat (ipfs) {
           })
         }
 
-        waterfall([
-          (next) => ipfs.dag.get(new CID(node.multihash), next),
-          (result, next) => next(null, result.value),
-          (node, next) => {
-            const meta = unmarshal(node.data)
-            log('Node meta', meta)
+        const meta = unmarshal(node.data)
+        log('Node meta', meta)
 
-            let size = 0
+        let size = 0
 
-            if (meta.data && meta.data.length) {
-              size = meta.data.length
-            }
+        if (meta.data && meta.data.length) {
+          size = meta.data.length
+        }
 
-            if (meta.blockSizes && meta.blockSizes.length) {
-              size = meta.blockSizes.reduce((acc, curr) => acc + curr, 0)
-            }
+        if (meta.blockSizes && meta.blockSizes.length) {
+          size = meta.blockSizes.reduce((acc, curr) => acc + curr, 0)
+        }
 
-            next(null, {
-              hash: node.multihash,
-              size: size,
-              cumulativeSize: node.size,
-              childBlocks: meta.blockSizes.length,
-              type: meta.type
-            })
-          }
-        ], done)
+        done(null, {
+          hash: node.multihash,
+          size: size,
+          cumulativeSize: node.size,
+          childBlocks: meta.blockSizes.length,
+          type: meta.type
+        })
       }
     ], (error, stats) => {
       log(error, stats)
