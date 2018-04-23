@@ -25,26 +25,30 @@ const customRepositoryOptions = {
    * in `storageBackends`. If you create a custom datastore, this is where you can pass in
    * custom constructor arguments. You can see an S3 datastore example at:
    * https://github.com/ipfs/js-datastore-s3/tree/master/examples/full-s3-repo
+   *
+   * NOTE: The following options are being overriden for demonstration purposes only.
+   * In most instances you can simply use the default options, by not passing in any
+   * overrides, which is recommended if you have no need to override.
    */
   storageBackendOptions: {
     root: {
-      extension: '.ipfsroot', // Used by datastore-fs; Appended to all files
+      extension: '.ipfsroot', // Defaults to ''. Used by datastore-fs; Appended to all files
       errorIfExists: false, // Used by datastore-fs; If the datastore exists, don't throw an error
       createIfMissing: true // Used by datastore-fs; If the datastore doesn't exist yet, create it
     },
     blocks: {
       sharding: false, // Used by IPFSRepo Blockstore to determine sharding; Ignored by datastore-fs
-      extension: '.ipfsblock',
+      extension: '.ipfsblock', // Defaults to '.data'.
       errorIfExists: false,
       createIfMissing: true
     },
     keys: {
-      extension: '.ipfskey',
+      extension: '.ipfskey', // No extension by default
       errorIfExists: false,
       createIfMissing: true
     },
     datastore: {
-      extension: '.ipfsds',
+      extension: '.ipfsds', // No extension by default
       errorIfExists: false,
       createIfMissing: true
     }

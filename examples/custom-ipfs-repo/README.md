@@ -16,6 +16,9 @@ You can find full details on customization in the [IPFS Repo Docs](https://githu
 
 ## Other Options
 
+### Custom `storageBackends`
+This example leverages [datastore-fs](https://github.com/ipfs/js-datastore-fs) to store all data in the IPFS Repo. You can customize each of the 4 `storageBackends` to meet the needs of your project. For an example on how to manage your entire IPFS REPO on S3, you can see the [datastore-s3 example](https://github.com/ipfs/js-datastore-s3/tree/master/examples/full-s3-repo).
+
 ### Custom Repo Lock
 This example uses one of the locks that comes with IPFS Repo. If you would like to control how locking happens, such as with a centralized S3 IPFS Repo, you can pass in your own custom lock. See [custom-lock.js](./custom-lock.js) for an example of a custom lock that can be used for [datastore-s3](https://github.com/ipfs/js-datastore-s3).
 
