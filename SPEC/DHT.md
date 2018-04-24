@@ -20,7 +20,7 @@ If no `callback` is passed, a promise is returned.
 ```JavaScript
 var id = PeerId.create()
 
-ipfs.dht.findPeer(id, function (err, peerInfo) {
+ipfs.dht.findpeer(id, function (err, peerInfo) {
   // peerInfo will contain the multiaddrs of that peer
 })
 ```
@@ -44,7 +44,7 @@ If no `callback` is passed, a promise is returned.
 **Example:**
 
 ```JavaScript
-ipfs.dht.findProvs(multihash, function (err, peerInfos) {})
+ipfs.dht.findprovs(multihash, function (err, peerInfos) {})
 ```
 
 A great source of [examples][] can be found in the tests for this API.
