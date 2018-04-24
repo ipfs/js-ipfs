@@ -89,7 +89,7 @@ const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
                     return new DAGLink('', link.size, link.multihash)
                   }
 
-                  return existingLink
+                  return new DAGLink('', existingLink.size, existingLink.multihash)
                 })
 
                 // Update node's parent
@@ -97,10 +97,19 @@ const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
                   // Create a DAGNode with the new data
                   (cb) => DAGNode.create(link.parent.node.data, links, cb),
                   (newNode, cb) => {
+                    log(`Persisting new parent DAGNode ${bs58.encode(newNode.multihash)} with links:`)
+
                     // Persist it
                     ipfs.dag.put(newNode, {
-                      cid: new CID(newNode.multihash)
-                    }, (error) => cb(error, newNode))
+                      format: options.format,
+                      hashAlg: options.hashAlg
+                    }, (error, cid) => {
+                      log(`New parent CID ${cid.toBaseEncodedString()}`)
+
+                      link.parent.node = newNode
+
+                      cb(error, newNode)
+                    })
                   },
                   (newNode, cb) => {
                     link.parent.node = newNode
@@ -125,6 +134,8 @@ const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
                 }
 
                 offset += buffer.length
+
+                log(`Updated root is ${bs58.encode(updatedRoot.multihash)}`)
 
                 done(error, updatedRoot)
               })
@@ -229,7 +240,7 @@ const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
           }, (error) => cb(error, newNode))
         },
         (newNode, cb) => {
-          log(`Created DAGNode with new data with hash ${bs58.encode(newNode.multihash)}`)
+          log(`Created DAGNode with new data with hash ${bs58.encode(newNode.multihash)} to replace ${bs58.encode(node.multihash)}`)
 
           // Store the CID and friends so we can update it's parent's links
           cb(null, {

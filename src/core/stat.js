@@ -8,7 +8,6 @@ const {
   traverseTo
 } = require('./utils')
 const waterfall = require('async/waterfall')
-const log = require('debug')('mfs:stat')
 
 const defaultOptions = {
   hash: false,
@@ -34,8 +33,6 @@ module.exports = function mfsStat (ipfs) {
     waterfall([
       (done) => traverseTo(ipfs, path, options, done),
       ({ node }, done) => {
-        log('Traversed to', node)
-
         if (options.hash) {
           return done(null, {
             hash: bs58.encode(node.multihash)
@@ -47,7 +44,6 @@ module.exports = function mfsStat (ipfs) {
         }
 
         const meta = unmarshal(node.data)
-        log('Node meta', meta)
 
         let size = 0
 

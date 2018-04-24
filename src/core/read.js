@@ -2,7 +2,6 @@
 
 const exporter = require('ipfs-unixfs-engine').exporter
 const promisify = require('promisify-es6')
-const CID = require('cids')
 const pull = require('pull-stream/pull')
 const collect = require('pull-stream/sinks/collect')
 const waterfall = require('async/waterfall')
@@ -39,11 +38,9 @@ module.exports = function mfsRead (ipfs) {
         parents: false
       }, done),
       (result, done) => {
-        log('traversed to', result)
-
         waterfall([
           (next) => pull(
-            exporter(new CID(result.node.multihash), ipfs._ipld, {
+            exporter(result.node.multihash, ipfs._ipld, {
               offset: options.offset,
               length: options.length
             }),
@@ -56,10 +53,6 @@ module.exports = function mfsRead (ipfs) {
           (data, next) => next(null, Buffer.concat(data))
         ], done)
       }
-    ], (error, result) => {
-      log('Read result', error, result)
-
-      callback(error, result)
-    })
+    ], callback)
   })
 }

@@ -36,7 +36,8 @@ const defaultOptions = {
   truncate: false, // whether to truncate the file first
   rawLeaves: false,
   cidVersion: undefined,
-  hash: undefined,
+  hashAlg: 'sha2-256',
+  format: 'dag-pb',
   parents: false, // whether to create intermediate directories if they do not exist
   progress: undefined,
   strategy: 'balanced',
@@ -183,6 +184,10 @@ module.exports = function mfsWrite (ipfs) {
             containingFolder.node = newContaingFolder
 
             log(`New CID for the containing folder is ${bs58.encode(newContaingFolder.multihash)}`)
+
+            newContaingFolder.links.forEach(link => {
+              log(`${link.name} ${bs58.encode(link.multihash)}`)
+            })
 
             next(error)
           }),

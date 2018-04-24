@@ -214,19 +214,11 @@ describe('write', function () {
         .then(() => mfs.write(path, newContent))
         .then((result) => mfs.stat(path))
         .then((stats) => expect(stats.size).to.equal(contentSize))
-        .then(() => {
-          console.info('reading')
-
-          return mfs.read(path, {
-            offset: 0,
-            length: newContent.length
-          })
-        })
-        .then((buffer) => {
-          console.info('buffer', buffer)
-
-          expect(buffer).to.deep.equal(newContent)
-        })
+        .then(() => mfs.read(path, {
+          offset: 0,
+          length: newContent.length
+        }))
+        .then((buffer) => expect(buffer).to.deep.equal(newContent))
     })
   })
 
