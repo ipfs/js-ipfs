@@ -307,13 +307,13 @@ describe('create node', function () {
       (cb) => node.stop(cb)
     ], done)
   })
-  
+
   it('does not share identity with a simultaneously created node', function (done) {
     this.timeout(80 * 1000)
-    
-    let _nodeNumber = 0;
+
+    let _nodeNumber = 0
     function createNode () {
-      _nodeNumber++;
+      _nodeNumber++
       return new IPFS({
         repo: createTempRepo(),
         init: { emptyRepo: true },
@@ -330,10 +330,10 @@ describe('create node', function () {
         }
       })
     }
-    
+
     const nodeA = createNode()
     const nodeB = createNode()
-    
+
     waterfall([
       (cb) => parallel([
         (cb) => nodeA.once('start', cb),
