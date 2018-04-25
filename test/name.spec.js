@@ -21,6 +21,7 @@ describe('.name', () => {
   let other
   let otherd
   let name
+  let testFileCid
 
   before(function (done) {
     this.timeout(20 * 1000)
@@ -48,6 +49,13 @@ describe('.name', () => {
           const ma = id.addresses[0]
           other.swarm.connect(ma, cb)
         })
+      },
+      (cb) => {
+        ipfs.files.add(testfile, (err, res) => {
+          expect(err).to.not.exist()
+          testFileCid = res[0].hash
+          cb()
+        })
       }
     ], done)
   })
@@ -59,23 +67,10 @@ describe('.name', () => {
     ], done)
   })
 
-  it('add file for testing', (done) => {
-    const expectedMultihash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
-
-    ipfs.files.add(testfile, (err, res) => {
-      expect(err).to.not.exist()
-
-      expect(res).to.have.length(1)
-      expect(res[0].hash).to.equal(expectedMultihash)
-      expect(res[0].path).to.equal(expectedMultihash)
-      done()
-    })
-  })
-
   it('.name.publish', function (done) {
-    this.timeout(100 * 1000)
+    this.timeout(5 * 60 * 1000)
 
-    ipfs.name.publish('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP', (err, res) => {
+    ipfs.name.publish(testFileCid, (err, res) => {
       expect(err).to.not.exist()
       name = res
       expect(name).to.exist()
