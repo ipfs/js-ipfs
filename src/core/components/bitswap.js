@@ -4,21 +4,23 @@ const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 const promisify = require('promisify-es6')
 const setImmediate = require('async/setImmediate')
 const Big = require('big.js')
+const CID = require('cids')
 
 function formatWantlist (list) {
-  return Array.from(list).map((e) => e[1])
+  return Array.from(list).map((e) => ({ '/': e[1].cid.toBaseEncodedString() }))
 }
 
 module.exports = function bitswap (self) {
   return {
-    wantlist: () => {
+    wantlist: promisify((callback) => {
       if (!self.isOnline()) {
-        throw new Error(OFFLINE_ERROR)
+        return setImmediate(() => callback(new Error(OFFLINE_ERROR)))
       }
 
-      const list = self._bitswap.getWantlist()
-      return formatWantlist(list)
-    },
+      let list = self._bitswap.getWantlist()
+      list = formatWantlist(list)
+      callback(null, { Keys: list })
+    }),
 
     stat: promisify((callback) => {
       if (!self.isOnline()) {
@@ -40,12 +42,21 @@ module.exports = function bitswap (self) {
       })
     }),
 
-    unwant: (key) => {
+    unwant: promisify((keys, callback) => {
       if (!self.isOnline()) {
-        throw new Error(OFFLINE_ERROR)
+        return setImmediate(() => callback(new Error(OFFLINE_ERROR)))
       }
 
-      self._bitswap.unwant(key)
-    }
+      if (!Array.isArray(keys)) {
+        keys = [keys]
+      }
+      keys = keys.map((key) => {
+        if (CID.isCID(key)) {
+          return key
+        }
+        return new CID(key)
+      })
+      callback(null, self._bitswap.unwant(keys))
+    })
   }
 }
