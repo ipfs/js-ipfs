@@ -15,7 +15,11 @@ module.exports = {
     }
   },
   handler (argv) {
-    argv.ipfs.bitswap.unwant(argv.key)
-    print(`Key ${argv.key} removed from wantlist`)
+    argv.ipfs.bitswap.unwant(argv.key, (err) => {
+      if (err) {
+        throw err
+      }
+      print(`Key ${argv.key} removed from wantlist`)
+    })
   }
 }

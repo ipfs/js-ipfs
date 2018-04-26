@@ -7,16 +7,11 @@ const parseKey = require('./block').parseKey
 exports = module.exports
 
 exports.wantlist = (request, reply) => {
-  let list
-  try {
-    list = request.server.app.ipfs.bitswap.wantlist()
-    list = list.map((entry) => entry.cid.toBaseEncodedString())
-  } catch (err) {
-    return reply(boom.badRequest(err))
-  }
-
-  reply({
-    Keys: list
+  request.server.app.ipfs.bitswap.wantlist((err, list) => {
+    if (err) {
+      return reply(boom.badRequest(err))
+    }
+    reply(list)
   })
 }
 
@@ -53,12 +48,11 @@ exports.unwant = {
   handler: (request, reply) => {
     const key = request.pre.args.key
     const ipfs = request.server.app.ipfs
-    try {
-      ipfs.bitswap.unwant(key)
-    } catch (err) {
-      return reply(boom.badRequest(err))
-    }
-
-    reply({ Key: key })
+    ipfs.bitswap.unwant(key, (err) => {
+      if (err) {
+        return reply(boom.badRequest(err))
+      }
+      reply({ key: key.toBaseEncodedString() })
+    })
   }
 }

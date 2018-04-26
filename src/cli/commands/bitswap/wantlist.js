@@ -21,8 +21,8 @@ module.exports = {
       if (err) {
         throw err
       }
-      res.Keys.forEach((cidStr) => {
-        print(cidStr)
+      res.Keys.forEach((cid) => {
+        print(cid['/'])
       })
     })
   }
