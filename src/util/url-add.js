@@ -35,7 +35,9 @@ module.exports = (send) => {
 const validUrl = (url) => typeof url === 'string' && url.startsWith('http')
 
 const requestWithRedirect = (url, opts, sendOneFile, callback) => {
-  const req = request(parseUrl(url).protocol)(url, (res) => {
+  const parsedUrl = parseUrl(url)
+
+  const req = request(parsedUrl.protocol)(url, (res) => {
     if (res.statusCode >= 400) {
       return callback(new Error(`Failed to download with ${res.statusCode}`))
     }
@@ -46,13 +48,18 @@ const requestWithRedirect = (url, opts, sendOneFile, callback) => {
       if (!validUrl(redirection)) {
         return callback(new Error('redirection url must be an http(s) url'))
       }
+
       requestWithRedirect(redirection, opts, sendOneFile, callback)
     } else {
       const requestOpts = {
         qs: opts,
         converter: FileResultStreamConverter
       }
-      sendOneFile(res, requestOpts, callback)
+
+      sendOneFile({
+        content: res,
+        path: parsedUrl.pathname.split('/').pop()
+      }, requestOpts, callback)
     }
   })
 

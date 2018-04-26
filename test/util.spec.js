@@ -156,6 +156,19 @@ describe('.util', () => {
         .then(out => expectTimeout(ipfs.object.get(out[0].hash), 4000))
     })
 
+    it('with wrap-with-directory=true', (done) => {
+      ipfs.util.addFromURL('http://ipfs.io/ipfs/QmWjppACLcFLQ2qL38unKQvJBhXH3RUtcGLPk7zmrTwV61/969165.jpg', {
+        wrapWithDirectory: true
+      }, (err, result) => {
+        expect(err).to.not.exist()
+        expect(result[0].hash).to.equal('QmaL9zy7YUfvWmtD5ZXp42buP7P4xmZJWFkm78p8FJqgjg')
+        expect(result[0].path).to.equal('969165.jpg')
+        expect(result[1].hash).to.equal('QmWjppACLcFLQ2qL38unKQvJBhXH3RUtcGLPk7zmrTwV61')
+        expect(result.length).to.equal(2)
+        done()
+      })
+    })
+
     it('with invalid url', function (done) {
       ipfs.util.addFromURL('http://invalid', (err, result) => {
         expect(err.code).to.equal('ENOTFOUND')
