@@ -11,7 +11,10 @@ exports.wantlist = (request, reply) => {
     if (err) {
       return reply(boom.badRequest(err))
     }
-    reply(list)
+    list = list.map((entry) => entry.cid.toBaseEncodedString())
+    reply({
+      Keys: list
+    })
   })
 }
 

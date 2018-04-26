@@ -19,9 +19,9 @@ module.exports = {
       }
 
       if (block) {
-        print(block.data)
+        process.stdout.write(block.data)
       } else {
-        print('Block was unwanted before it could be remotely retrieved')
+        process.stderr.write('Block was unwanted before it could be remotely retrieved')
       }
     })
   }
