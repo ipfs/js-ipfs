@@ -8,11 +8,11 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "browserify": "^14.4.0",
-    "http-server": "^0.10.0"
+    "browserify": "^16.2.0",
+    "http-server": "^0.11.1"
   },
   "dependencies": {
-    "stream-buffers": "^3.0.1",
-    "ipfs": "file:../../"
+    "ipfs": "file:../../",
+    "stream-buffers": "^3.0.1"
   }
 }

@@ -1,20 +1,22 @@
 /* global self */
 'use strict'
 
-const $startButton = document.querySelector('#start')
-const $stopButton = document.querySelector('#stop')
+// Daemon
+const $daemonId = document.querySelector('.daemon-id')
+const $daemonAddresses = document.querySelector('.daemon-addresses')
+const $logs = document.querySelector('#logs')
+// Peers
 const $peers = document.querySelector('#peers')
-const $peersList = $peers.querySelector('ul')
-const $errors = document.querySelector('#errors')
+const $peersList = $peers.querySelector('tbody')
+const $multiaddrInput = document.querySelector('#multiaddr-input')
+const $connectButton = document.querySelector('#peer-btn')
+// Files
+const $multihashInput = document.querySelector('#multihash-input')
+const $fetchButton = document.querySelector('#fetch-btn')
+const $dragContainer = document.querySelector('#drag-container')
 const $fileHistory = document.querySelector('#file-history tbody')
-const $fileStatus = document.querySelector('#file-status')
-const $multihashInput = document.querySelector('#multihash')
-const $catButton = document.querySelector('#cat')
-const $connectPeer = document.querySelector('#peer-input')
-const $connectPeerButton = document.querySelector('#peer-btn')
-const $body = document.querySelector('body')
-const $idContainer = document.querySelector('.id-container')
-const $addressesContainer = document.querySelector('.addresses-container')
+const $emptyRow = document.querySelector('.empty-row')
+// Misc
 const $allDisabledButtons = document.querySelectorAll('button:disabled')
 const $allDisabledInputs = document.querySelectorAll('input:disabled')
 const $allDisabledElements = document.querySelectorAll('.disabled')
@@ -23,50 +25,42 @@ let node
 let info
 let Buffer
 
-/*
- * Start and stop the IPFS node
- */
+/* ===========================================================================
+   Start the IPFS node
+   =========================================================================== */
 
 function start () {
   if (!node) {
-    updateView('starting', node)
-
     const options = {
-      repo: 'ipfs-' + Math.random() + Date.now().toString(),
+      repo: 'ipfs-' + Math.random(),
       config: {
         Addresses: {
-          Swarm: [
-            // '/dns4/wrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star'
-            '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
-          ]
+          Swarm: ['/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star']
         }
       }
     }
 
-    // IFDEV: To test with latest js-ipfs
-    // const IPFS = require('ipfs')
     // node = new IPFS(options)
-    // VEDIF
-
-    // EXAMPLE
     node = new self.Ipfs(options)
 
     Buffer = node.types.Buffer
 
-    node.once('start', () => node.id((err, id) => {
-      if (err) { return onError(err) }
-
-      info = id
-      updateView('ready', node)
-      setInterval(refreshPeerList, 1000)
-      $peers.classList.add('waiting')
-    }))
+    node.once('start', () => {
+      node.id()
+        .then((id) => {
+          info = id
+          updateView('ready', node)
+          onSuccess('Daemon is ready.')
+          setInterval(refreshPeerList, 1000)
+        })
+        .catch((error) => onError(err))
+    })
   }
 }
 
-function stop () {
-  window.location.href = window.location.href // refresh page
-}
+/* ===========================================================================
+   Files handling
+   =========================================================================== */
 
 function appendFile (name, hash, size, data) {
   const file = new window.Blob([data], { type: 'application/octet-binary' })
@@ -77,18 +71,22 @@ function appendFile (name, hash, size, data) {
   nameCell.innerHTML = name
 
   const hashCell = document.createElement('td')
-  const link = document.createElement('a')
-  link.innerHTML = hash
-  link.setAttribute('href', url)
-  link.setAttribute('download', name)
-  hashCell.appendChild(link)
+  hashCell.innerHTML = hash
 
   const sizeCell = document.createElement('td')
   sizeCell.innerText = size
 
+  const downloadCell = document.createElement('td')
+  const link = document.createElement('a')
+  link.setAttribute('href', url)
+  link.setAttribute('download', name)
+  link.innerHTML = '<img width=20 class="table-action" src="download.svg" alt="Download" />'
+  downloadCell.appendChild(link)
+
   row.appendChild(nameCell)
   row.appendChild(hashCell)
   row.appendChild(sizeCell)
+  row.appendChild(downloadCell)
 
   $fileHistory.insertBefore(row, $fileHistory.firstChild)
 }
@@ -98,32 +96,34 @@ function getFile () {
 
   $multihashInput.value = ''
 
-  $errors.classList.add('hidden')
+  if (!cid) {
+    return onError('No multihash was inserted.')
+  }
 
-  if (!cid) { return console.log('no multihash was inserted') }
-
-  node.files.get(cid, (err, files) => {
-    if (err) { return onError(err) }
-
-    files.forEach((file) => {
-      if (file.content) {
-        appendFile(file.name, cid, file.size, file.content)
-      }
+  node.files.get(cid)
+    .then((files) => {
+      files.forEach((file) => {
+        if (file.content) {
+          appendFile(file.name, cid, file.size, file.content)
+          onSuccess(`The ${file.name} file was added.`)
+          $emptyRow.style.display = 'none'
+        }
+      })
     })
-  })
+    .catch((error) => onError('The inserted multihash is invalid.'))
 }
 
-/*
- * Drag and drop
- */
+/* Drag & Drop
+   =========================================================================== */
+
+const onDragEnter = () => $dragContainer.classList.add('dragging')
+
+const onDragLeave = () => $dragContainer.classList.remove('dragging')
+
 function onDrop (event) {
-  onDragExit()
-  $errors.classList.add('hidden')
+  onDragLeave()
   event.preventDefault()
 
-  if (!node) {
-    return onError('IPFS must be started before files can be added')
-  }
   const dt = event.dataTransfer
   const filesDropped = dt.files
 
@@ -147,67 +147,71 @@ function onDrop (event) {
           path: file.name,
           content: Buffer.from(buffer)
         }, { wrap: true }, (err, filesAdded) => {
-          if (err) { return onError(err) }
+          if (err) {
+            return onError(err)
+          }
 
-          $multihashInput.value = filesAdded[0].hash
-          $fileStatus.innerHTML = `${file.name} added! Try to hit 'Fetch' button!`
+          // As we are wrapping the content we use that hash to keep
+          // the original file name when adding it to the table
+          $multihashInput.value = filesAdded[1].hash
+
+          getFile()
         })
       })
       .catch(onError)
   })
 }
 
-/*
- * Network related functions
- */
-
-// Get peers from IPFS and display them
+/* ===========================================================================
+   Peers handling
+   =========================================================================== */
 
 function connectToPeer (event) {
-  event.target.disabled = true
-  node.swarm.connect($connectPeer.value, (err) => {
-    if (err) { return onError(err) }
+  const multiaddr = $multiaddrInput.value
 
-    $connectPeer.value = ''
+  if (!multiaddr) {
+    return onError('No multiaddr was inserted.')
+  }
 
-    setTimeout(() => {
-      event.target.disabled = false
-    }, 500)
-  })
+  node.swarm.connect(multiaddr)
+    .then(() => {
+      onSuccess(`Successfully connected to peer.`)
+      $multiaddrInput.value = ''
+    })
+    .catch((error) => onError('The inserted multiaddr is invalid.'))
 }
 
 function refreshPeerList () {
-  node.swarm.peers((err, peers) => {
-    if (err) {
-      return onError(err)
-    }
-    const peersAsHtml = peers
-      .map((peer) => {
-        if (peer.addr) {
-          const addr = peer.addr.toString()
-          if (addr.indexOf('ipfs') >= 0) {
-            return addr
-          } else {
-            return addr + peer.peer.id.toB58String()
+  node.swarm.peers()
+    .then((peers) => {
+      const peersAsHtml = peers
+        .map((peer) => {
+          if (peer.addr) {
+            const addr = peer.addr.toString()
+            if (addr.indexOf('ipfs') >= 0) {
+              return addr
+            } else {
+              return addr + peer.peer.id.toB58String()
+            }
           }
-        }
-      })
-      .map((addr) => {
-        return '<li>' + addr + '</li>'
-      }).join('')
+        })
+        .map((addr) => {
+          return `<tr><td>${addr}</td></tr>`
+        }).join('')
 
-    if (peers.length === 0) {
-      $peers.classList.add('waiting')
-    } else {
-      $peers.classList.remove('waiting')
-      $peersList.innerHTML = peersAsHtml
-    }
-  })
+        $peersList.innerHTML = peersAsHtml
+    })
+    .catch((error) => onError(error))
 }
 
-/*
- * UI functions
- */
+/* ===========================================================================
+   Error handling
+   =========================================================================== */
+
+function onSuccess (msg) {
+  $logs.classList.add('success')
+  $logs.innerHTML = msg
+}
 
 function onError (err) {
   let msg = 'An error occured, check the dev console'
@@ -218,38 +222,26 @@ function onError (err) {
     msg = err
   }
 
-  $errors.innerHTML = msg
-  $errors.classList.remove('hidden')
+  $logs.classList.remove('success')
+  $logs.innerHTML = msg
 }
 
 window.onerror = onError
 
-function onDragEnter () {
-  $body.classList.add('dragging')
-}
+/* ===========================================================================
+   App states
+   =========================================================================== */
 
-function onDragExit () {
-  $body.classList.remove('dragging')
-}
-
-/*
- * App states
- */
 const states = {
   ready: () => {
     const addressesHtml = info.addresses.map((address) => {
-      return '<li><span class="address">' + address + '</span></li>'
+      return `<li><pre>${address}</pre></li>`
     }).join('')
-    $idContainer.innerText = info.id
-    $addressesContainer.innerHTML = addressesHtml
+    $daemonId.innerText = info.id
+    $daemonAddresses.innerHTML = addressesHtml
     $allDisabledButtons.forEach(b => { b.disabled = false })
     $allDisabledInputs.forEach(b => { b.disabled = false })
     $allDisabledElements.forEach(el => { el.classList.remove('disabled') })
-    $stopButton.disabled = false
-    $startButton.disabled = true
-  },
-  starting: () => {
-    $startButton.disabled = true
   }
 }
 
@@ -261,19 +253,19 @@ function updateView (state, ipfs) {
   }
 }
 
-/*
- * Boot this application!
- */
+/* ===========================================================================
+   Boot the app
+   =========================================================================== */
+
 const startApplication = () => {
   // Setup event listeners
-  $body.addEventListener('dragenter', onDragEnter)
-  $body.addEventListener('drop', onDrop)
-  $body.addEventListener('dragleave', onDragExit)
+  $dragContainer.addEventListener('dragenter', onDragEnter)
+  $dragContainer.addEventListener('drop', onDrop)
+  $dragContainer.addEventListener('dragleave', onDragLeave)
+  $fetchButton.addEventListener('click', getFile)
+  $connectButton.addEventListener('click', connectToPeer)
 
-  $startButton.addEventListener('click', start)
-  $stopButton.addEventListener('click', stop)
-  $catButton.addEventListener('click', getFile)
-  $connectPeerButton.addEventListener('click', connectToPeer)
+  start();
 }
 
 startApplication()
