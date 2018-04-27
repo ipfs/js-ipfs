@@ -110,6 +110,14 @@ describe('daemon', () => {
     }).catch(done)
   })
 
+  skipOnWindows('should handle SIGHUP gracefully', function (done) {
+    this.timeout(100 * 1000)
+
+    testSignal(ipfs, 'SIGHUP').then(() => {
+      checkLock(repoPath, done)
+    }).catch(done)
+  })
+
   it('gives error if user hasn\'t run init before', function (done) {
     this.timeout(100 * 1000)
 
@@ -117,6 +125,15 @@ describe('daemon', () => {
 
     ipfs('daemon').catch((err) => {
       expect(err.stdout).to.have.string(expectedError)
+      done()
+    })
+  })
+
+  it('should present ipfs path help when option help is received', function (done) {
+    this.timeout(100 * 1000)
+
+    ipfs('daemon --help').then((res) => {
+      expect(res).to.have.string('export IPFS_PATH=/path/to/ipfsrepo')
       done()
     })
   })

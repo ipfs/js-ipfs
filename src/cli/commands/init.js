@@ -5,19 +5,14 @@ const IPFS = require('../../core')
 const utils = require('../utils')
 const print = utils.print
 
-const ipfsPathHelp = 'ipfs uses a repository in the local file system. By default, the repo is ' +
-  'located at ~/.ipfs.\nTo change the repo location, set the $IPFS_PATH environment variable:\n\n' +
-  '\texport IPFS_PATH=/path/to/ipfsrepo\n'
-
 module.exports = {
   command: 'init',
 
   describe: 'Initialize a local IPFS node',
 
   builder (yargs) {
-    print(ipfsPathHelp)
-
     return yargs
+      .epilog(utils.ipfsPathHelp)
       .option('bits', {
         type: 'number',
         alias: 'b',

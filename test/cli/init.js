@@ -66,4 +66,13 @@ describe('init', function () {
       expect(repoExistsSync('version')).to.equal(true)
     })
   })
+
+  it('should present ipfs path help when option help is received', function (done) {
+    this.timeout(100 * 1000)
+
+    ipfs('init --help').then((res) => {
+      expect(res).to.have.string('export IPFS_PATH=/path/to/ipfsrepo')
+      done()
+    })
+  })
 })

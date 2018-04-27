@@ -191,7 +191,11 @@ module.exports = function object (self) {
       } catch (err) {
         return callback(err)
       }
-      const cid = new CID(mh)
+      let cid = new CID(mh)
+
+      if (options.cidVersion === 1) {
+        cid = cid.toV1()
+      }
 
       self._ipld.get(cid, (err, result) => {
         if (err) {
@@ -214,6 +218,7 @@ module.exports = function object (self) {
         if (err) {
           return callback(err)
         }
+
         callback(null, node.data)
       })
     }),
@@ -275,8 +280,7 @@ module.exports = function object (self) {
 
       rmLink (multihash, linkRef, options, callback) {
         editAndSave((node, cb) => {
-          if (linkRef.constructor &&
-              linkRef.constructor.name === 'DAGLink') {
+          if (DAGLink.isDAGLink(linkRef)) {
             linkRef = linkRef._name
           }
           DAGNode.rmLink(node, linkRef, cb)
