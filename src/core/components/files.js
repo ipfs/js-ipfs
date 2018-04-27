@@ -35,7 +35,6 @@ function prepareFile (self, opts, file, callback) {
     (node, cb) => {
       const b58Hash = cid.toBaseEncodedString()
 
-
       cb(null, {
         path: opts.wrapWithDirectory ? file.path.substring(WRAPPER.length) : (file.path || b58Hash),
         hash: b58Hash,
