@@ -39,10 +39,11 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - `ipfs.pubsub.unsubscribe(topic, handler)`
+##### `JavaScript` - `ipfs.pubsub.unsubscribe(topic, handler, callback)`
 
 - `topic: string` - The topic to unsubscribe from
 - `handler: (msg) => ()` - The handler to remove.
+- `callback: (Error) => ()` (Optional) Called once the unsubscribe is done.
 
 This works like `EventEmitter.removeListener`, as that only the `handler` passed to a `subscribe` call before is removed from listening. The underlying subscription will only be canceled once all listeners for a topic have been removed.
 
