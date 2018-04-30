@@ -3,7 +3,7 @@
 
 const expect = require('chai').expect
 const qs = require('qs')
-const defaultList = require('../../../src/core/runtime/config-nodejs.json').Bootstrap
+const defaultList = require('../../../src/core/runtime/config-nodejs.js')().Bootstrap
 
 module.exports = (http) => {
   describe('/bootstrap', () => {

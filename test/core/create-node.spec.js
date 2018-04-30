@@ -7,6 +7,8 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const series = require('async/series')
+const waterfall = require('async/waterfall')
+const parallel = require('async/parallel')
 const os = require('os')
 const path = require('path')
 const hat = require('hat')
@@ -304,5 +306,52 @@ describe('create node', function () {
       },
       (cb) => node.stop(cb)
     ], done)
+  })
+
+  it('does not share identity with a simultaneously created node', function (done) {
+    this.timeout(80 * 1000)
+
+    let _nodeNumber = 0
+    function createNode () {
+      _nodeNumber++
+      return new IPFS({
+        repo: createTempRepo(),
+        init: { emptyRepo: true },
+        config: {
+          Addresses: {
+            API: `/ip4/127.0.0.1/tcp/${5010 + _nodeNumber}`,
+            Gateway: `/ip4/127.0.0.1/tcp/${9090 + _nodeNumber}`,
+            Swarm: [
+              `/ip4/0.0.0.0/tcp/${4010 + _nodeNumber * 2}`,
+              `/ip4/127.0.0.1/tcp/${4011 + _nodeNumber * 2}/ws`
+            ]
+          },
+          Bootstrap: []
+        }
+      })
+    }
+
+    const nodeA = createNode()
+    const nodeB = createNode()
+
+    waterfall([
+      (cb) => parallel([
+        (cb) => nodeA.once('start', cb),
+        (cb) => nodeB.once('start', cb)
+      ], cb),
+      (_, cb) => parallel([
+        (cb) => nodeA.id(cb),
+        (cb) => nodeB.id(cb)
+      ], cb),
+      ([idA, idB], cb) => {
+        expect(idA.id).to.not.equal(idB.id)
+        cb()
+      }
+    ], (error) => {
+      parallel([
+        (cb) => nodeA.stop(cb),
+        (cb) => nodeB.stop(cb)
+      ], (stopError) => done(error || stopError))
+    })
   })
 })

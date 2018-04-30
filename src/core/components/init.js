@@ -4,7 +4,7 @@ const peerId = require('peer-id')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
 const promisify = require('promisify-es6')
-const config = require('../runtime/config-nodejs.json')
+const defaultConfig = require('../runtime/config-nodejs.js')
 const Keychain = require('libp2p-keychain')
 
 const addDefaultAssets = require('./init-assets')
@@ -37,6 +37,7 @@ module.exports = function init (self) {
     opts.emptyRepo = opts.emptyRepo || false
     opts.bits = Number(opts.bits) || 2048
     opts.log = opts.log || function () {}
+    const config = defaultConfig()
     let privateKey
     waterfall([
       // Verify repo does not yet exist.

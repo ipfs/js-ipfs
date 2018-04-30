@@ -6,7 +6,7 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const IPFS = require('..')
-const list = require('../src/core/runtime/config-browser.json').Bootstrap
+const list = require('../src/core/runtime/config-browser.js')().Bootstrap
 
 /*
  * These tests were graciously made for lgierth, so that he can test the
