@@ -36,6 +36,7 @@ module.exports = (send) => {
       if (err) { return callback(err) }
 
       const files = []
+
       stream.pipe(through.obj((file, enc, next) => {
         if (file.content) {
           file.content.pipe(concat((content) => {

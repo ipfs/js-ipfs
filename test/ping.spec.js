@@ -155,15 +155,15 @@ describe('.ping', function () {
     let packetNum = 0
     ipfs.pingReadableStream(otherId)
       .on('data', data => {
-        packetNum++
         expect(data).to.be.an('object')
         expect(data).to.have.keys('Success', 'Time', 'Text')
+        packetNum++
       })
       .on('error', err => {
         expect(err).not.to.exist()
       })
       .on('end', () => {
-        expect(packetNum).to.equal(3)
+        expect(packetNum).to.be.above(2)
         done()
       })
   })
