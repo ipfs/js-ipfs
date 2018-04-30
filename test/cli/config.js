@@ -58,7 +58,7 @@ describe('config', () => runOnAndOff((thing) => {
     })
 
     it('set a config key with invalid json', () => {
-      return ipfs.fail('config foo {"bar:0} --json')
+      return ipfs.fail('config foo {\\"bar:0} --json')
     })
 
     it('get a config key value', () => {
