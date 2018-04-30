@@ -322,8 +322,7 @@ describe('create node', function () {
             API: `/ip4/127.0.0.1/tcp/${5010 + _nodeNumber}`,
             Gateway: `/ip4/127.0.0.1/tcp/${9090 + _nodeNumber}`,
             Swarm: [
-              `/ip4/0.0.0.0/tcp/${4010 + _nodeNumber * 2}`,
-              `/ip4/127.0.0.1/tcp/${4011 + _nodeNumber * 2}/ws`
+              `/ip4/0.0.0.0/tcp/${4010 + _nodeNumber * 2}`
             ]
           },
           Bootstrap: []
