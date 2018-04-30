@@ -1,3 +1,22 @@
+<a name="20.1.0"></a>
+# [20.1.0](https://github.com/ipfs/js-ipfs-api/compare/v20.0.1...v20.1.0) (2018-04-30)
+
+
+### Bug Fixes
+
+* adding files by pull stream ([2fa16c5](https://github.com/ipfs/js-ipfs-api/commit/2fa16c5))
+* handle request errors in addFromURL ([7c5cea5](https://github.com/ipfs/js-ipfs-api/commit/7c5cea5))
+* increase timeout for name.publish and fix setup code ([ceb1106](https://github.com/ipfs/js-ipfs-api/commit/ceb1106))
+* ipfs add url wrap doesn't work ([#750](https://github.com/ipfs/js-ipfs-api/issues/750)) ([f6f1bf0](https://github.com/ipfs/js-ipfs-api/commit/f6f1bf0))
+
+
+### Features
+
+* Add offset/length arguments to files.cat ([17967c1](https://github.com/ipfs/js-ipfs-api/commit/17967c1))
+* get it ready for release ([#751](https://github.com/ipfs/js-ipfs-api/issues/751)) ([1885af4](https://github.com/ipfs/js-ipfs-api/commit/1885af4))
+
+
+
 <a name="20.0.1"></a>
 ## [20.0.1](https://github.com/ipfs/js-ipfs-api/compare/v20.0.0...v20.0.1) (2018-04-12)
 

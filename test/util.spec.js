@@ -140,7 +140,9 @@ describe('.util', () => {
       })
     })
 
-    it('.urlAdd http with redirection', (done) => {
+    it('.urlAdd http with redirection', function (done) {
+      this.timeout(20 * 1000)
+
       ipfs.util.addFromURL('https://coverartarchive.org/release/6e2a1694-d8b9-466a-aa33-b1077b2333c1', (err, result) => {
         expect(err).to.not.exist()
         expect(result[0].hash).to.equal('QmSUdDvmXuq5YGrL4M3SEz7UZh5eT9WMuAsd9K34sambSj')
