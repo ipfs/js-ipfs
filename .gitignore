@@ -3,6 +3,8 @@
 test/repo-tests*
 **/bundle.js
 docs
+.vscode
+.eslintrc
 # Logs
 logs
 *.log
