@@ -10,7 +10,12 @@ const isNode = require('detect-node')
 const hat = require('hat')
 const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
+const dagCBOR = require('ipld-dag-cbor')
+const dagPB = require('ipld-dag-pb')
+const crypto = require('libp2p-crypto')
+const isIPFS = require('is-ipfs')
 const multiaddr = require('multiaddr')
+const multibase = require('multibase')
 const multihash = require('multihashes')
 const CID = require('cids')
 const IPFS = require('../../src/core')
@@ -101,8 +106,18 @@ describe('init', () => {
       PeerId: PeerId,
       PeerInfo: PeerInfo,
       multiaddr: multiaddr,
+      multibase: multibase,
       multihash: multihash,
-      CID: CID
+      CID: CID,
+      dagPB: dagPB,
+      dagCBOR: dagCBOR
+    })
+  })
+
+  it('util', () => {
+    expect(ipfs.util).to.be.deep.equal({
+      crypto: crypto,
+      isIPFS: isIPFS
     })
   })
 })
