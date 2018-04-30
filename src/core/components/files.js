@@ -17,6 +17,8 @@ const OtherBuffer = require('buffer').Buffer
 const CID = require('cids')
 const toB58String = require('multihashes').toB58String
 
+const WRAPPER = 'wrapper/'
+
 function noop () {}
 
 function prepareFile (self, opts, file, callback) {
@@ -34,7 +36,7 @@ function prepareFile (self, opts, file, callback) {
       const b58Hash = cid.toBaseEncodedString()
 
       cb(null, {
-        path: file.path || b58Hash,
+        path: opts.wrapWithDirectory ? file.path.substring(WRAPPER.length) : (file.path || b58Hash),
         hash: b58Hash,
         size: node.size
       })
@@ -42,7 +44,7 @@ function prepareFile (self, opts, file, callback) {
   ], callback)
 }
 
-function normalizeContent (content) {
+function normalizeContent (opts, content) {
   if (!Array.isArray(content)) {
     content = [content]
   }
@@ -66,6 +68,14 @@ function normalizeContent (content) {
       if (isStream.readable(data.content)) {
         data.content = toPull.source(data.content)
       }
+    }
+
+    if (opts.wrapWithDirectory && !data.path) {
+      throw new Error('Must provide a path when wrapping with a directory')
+    }
+
+    if (opts.wrapWithDirectory) {
+      data.path = WRAPPER + data.path
     }
 
     return data
@@ -123,7 +133,7 @@ module.exports = function files (self) {
 
     opts.progress = progress
     return pull(
-      pull.map(normalizeContent),
+      pull.map(normalizeContent.bind(null, opts)),
       pull.flatten(),
       importer(self._ipld, opts),
       pull.asyncMap(prepareFile.bind(null, self, opts))
