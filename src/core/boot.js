@@ -72,7 +72,7 @@ module.exports = (self) => {
     // No repo, but need should init one
     if (doInit && !hasRepo) {
       tasks.push((cb) => self.init(initOptions, cb))
-      // we know we will have a repo for all follwing tasks
+      // we know we will have a repo for all following tasks
       // if the above succeeds
       hasRepo = true
     }
@@ -98,8 +98,12 @@ module.exports = (self) => {
     // Need to start up the node
     if (doStart) {
       if (!hasRepo) {
-        console.log('WARNING, trying to start ipfs node on uninitialized repo, maybe forgot to set "init: true"')
-        return done(new Error('Uninitalized repo'))
+        return done(
+          Object.assign(new Error('repo is not initialized yet'), {
+            code: 'ERR_REPO_NOT_INITIALIZED',
+            path: self._repo.path
+          })
+        )
       } else {
         tasks.push((cb) => self.start(cb))
       }

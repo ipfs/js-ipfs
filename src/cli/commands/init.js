@@ -2,8 +2,7 @@
 
 const Repo = require('ipfs-repo')
 const IPFS = require('../../core')
-const utils = require('../utils')
-const print = utils.print
+const { ipfsPathHelp, getRepoPath, print } = require('../utils')
 
 module.exports = {
   command: 'init',
@@ -12,7 +11,7 @@ module.exports = {
 
   builder (yargs) {
     return yargs
-      .epilog(utils.ipfsPathHelp)
+      .epilog(ipfsPathHelp)
       .option('bits', {
         type: 'number',
         alias: 'b',
@@ -22,33 +21,26 @@ module.exports = {
       .option('emptyRepo', {
         alias: 'e',
         type: 'boolean',
-        describe: "Don't add and pin help files to the local storage"
+        describe: 'Don\'t add and pin help files to the local storage'
       })
   },
 
   handler (argv) {
-    const path = utils.getRepoPath()
+    const path = getRepoPath()
 
     print(`initializing ipfs node at ${path}`)
 
-    const node = new IPFS({
+    return IPFS.createNodePromise({
       repo: new Repo(path),
       init: false,
       start: false
-    })
-
-    node.init({
-      bits: argv.bits,
-      emptyRepo: argv.emptyRepo,
-      pass: argv.pass,
-      log: print
-    }, (err) => {
-      if (err) {
-        if (err.code === 'EACCES') {
-          err.message = `EACCES: permission denied, stat $IPFS_PATH/version`
-        }
-        throw err
-      }
+    }).then(node => {
+      return node.init({
+        bits: argv.bits,
+        emptyRepo: argv.emptyRepo,
+        pass: argv.pass,
+        log: print
+      })
     })
   }
 }

@@ -1,5 +1,6 @@
 'use strict'
-const print = require('../utils').print
+
+const {print, getNodeOrAPI} = require('../utils')
 
 module.exports = {
   command: 'id',
@@ -15,12 +16,11 @@ module.exports = {
 
   handler (argv) {
     // TODO: handle argv.format
-    argv.ipfs.id((err, id) => {
-      if (err) {
-        throw err
-      }
-
-      print(JSON.stringify(id, '', 2))
-    })
+    return getNodeOrAPI(argv)
+      .then(node => Promise.all([Promise.resolve(node), node.id()]))
+      .then(([node, id]) => {
+        print(JSON.stringify(id, '', 2))
+        node.stop()
+      })
   }
 }

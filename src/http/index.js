@@ -81,7 +81,6 @@ function HttpApi (repo, config, cliArgs) {
 
         this.node.once('error', (err) => {
           this.log('error starting core', err)
-          err.code = 'ENOENT'
           cb(err)
         })
         this.node.once('start', cb)

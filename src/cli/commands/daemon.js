@@ -2,9 +2,8 @@
 
 const HttpAPI = require('../../http')
 const utils = require('../utils')
+const promisify = require('promisify-es6')
 const print = utils.print
-
-let httpAPI
 
 module.exports = {
   command: 'daemon',
@@ -31,21 +30,8 @@ module.exports = {
   handler (argv) {
     print('Initializing daemon...')
 
-    const repoPath = utils.getRepoPath()
-    httpAPI = new HttpAPI(process.env.IPFS_PATH, null, argv)
-
-    httpAPI.start((err) => {
-      if (err && err.code === 'ENOENT' && err.message.match(/Uninitalized repo/i)) {
-        print('Error: no initialized ipfs repo found in ' + repoPath)
-        print('please run: jsipfs init')
-        process.exit(1)
-      }
-      if (err) {
-        throw err
-      }
-      print('Daemon is ready')
-    })
-
+    const httpAPI = new HttpAPI(process.env.IPFS_PATH, null, argv)
+    const start = promisify(httpAPI.start)
     const cleanup = () => {
       print(`Received interrupt signal, shutting down..`)
       httpAPI.stop((err) => {
@@ -60,5 +46,7 @@ module.exports = {
     process.on('SIGTERM', cleanup)
     process.on('SIGINT', cleanup)
     process.on('SIGHUP', cleanup)
+
+    return start().then(() => print('Daemon is ready'))
   }
 }

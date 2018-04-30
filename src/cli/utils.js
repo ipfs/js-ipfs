@@ -38,14 +38,13 @@ function getAPICtl (apiAddr) {
   return APIctl(apiAddr)
 }
 
-exports.getIPFS = (argv, callback) => {
+exports.getNodeOrAPI = (argv) => {
+  log('get node or api async')
   if (argv.api || isDaemonOn()) {
-    return callback(null, getAPICtl(argv.api), (cb) => cb())
+    return Promise.resolve(getAPICtl(argv.api))
   }
-
-  // Required inline to reduce startup time
-  const IPFS = require('../core')
-  const node = new IPFS({
+  const {createReadyNodePromise} = require('../core')
+  return IPFS.createReadyNodePromise({
     repo: exports.getRepoPath(),
     init: false,
     start: false,
@@ -54,22 +53,6 @@ exports.getIPFS = (argv, callback) => {
       pubsub: true
     }
   })
-
-  const cleanup = (cb) => {
-    if (node && node._repo && !node._repo.closed) {
-      node._repo.close(() => cb())
-    } else {
-      cb()
-    }
-  }
-
-  node.on('error', (err) => {
-    throw err
-  })
-
-  node.once('ready', () => {
-    callback(null, node, cleanup)
-  })
 }
 
 exports.getRepoPath = () => {
@@ -77,7 +60,10 @@ exports.getRepoPath = () => {
 }
 
 let visible = true
-exports.disablePrinting = () => { visible = false }
+exports.disablePrinting = (silent) => {
+  visible = !silent
+  return silent
+}
 
 exports.print = (msg, newline) => {
   if (newline === undefined) {

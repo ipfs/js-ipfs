@@ -138,8 +138,65 @@ class IPFS extends EventEmitter {
   }
 }
 
-exports = module.exports = IPFS
+module.exports = IPFS
 
-exports.createNode = (options) => {
+IPFS.createNode = (options) => {
   return new IPFS(options)
+}
+
+/**
+ * Static factory method to create a node wrapped with a Promise
+ *
+ * The Promise does *NOT* wait for the Ready Event to resolve with a IPFS instance
+ * and rejects with Error Events.
+ *
+ * @param {object} options
+ * @returns {IPFS}
+ */
+IPFS.createNodePromise = (options) => {
+  return new Promise((resolve, reject) => {
+    const node = new IPFS(options)
+
+    node.on('error', err => {
+      reject(err)
+    })
+
+    resolve(node)
+  })
+}
+
+/**
+ * Static factory method to create a ready node wrapped with a Promise
+*
+ * The Promise waits for the Ready Event to resolve with a IPFS instance
+ * and rejects with Error Events or a repo not initialized.
+ *
+ * @param {Object} options IPFS constructor options
+ * @returns {IPFS}
+ */
+IPFS.createReadyNodePromise = (options = {}) => {
+  return new Promise((resolve, reject) => {
+    const node = new IPFS(options)
+
+    node.once('error', err => {
+      reject(err)
+    })
+
+    node.once('ready', () => {
+      /**
+       * We shouldn't need to do this but until we get a unified error from ipfs-repo
+       * we catch it here
+       */
+      node._repo._isInitialized((err) => {
+        if (err) {
+          reject(Object.assign(new Error('repo is not initialized yet'),
+            {
+              code: 'ERR_REPO_NOT_INITIALIZED',
+              path: node._repo.path
+            }))
+        }
+        resolve(node)
+      })
+    })
+  })
 }
