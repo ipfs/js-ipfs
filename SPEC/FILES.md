@@ -30,8 +30,9 @@ If no `content` is passed, then the path is treated as an empty directory
 - cid-version (integer, default 0): the CID version to use when storing the data (storage keys are based on the CID, including it's version)
 - progress (function): a function that will be called with the byte length of chunks as a file is added to ipfs.
 - recursive (boolean): for when a Path is passed, this option can be enabled to add recursively all the files.
-- hashAlg || hash (string): multihash hashing algorithm to use
-- wrapWithDirectory (boolean): adds a wrapping node around the content
+- hashAlg || hash (string): multihash hashing algorithm to use.
+- wrapWithDirectory (boolean): adds a wrapping node around the content.
+- onlyHash (boolean): doesn't actually add the file to IPFS, but rather calculates its hash.
 
 `callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res` will be an array of:
 

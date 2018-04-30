@@ -19,6 +19,7 @@ const path = require('path')
 const bl = require('bl')
 const isNode = require('detect-node')
 const CID = require('cids')
+const expectTimeout = require('./utils/expect-timeout')
 
 module.exports = (common) => {
   describe('.files', function () {
@@ -332,6 +333,19 @@ module.exports = (common) => {
             const file = filesAdded[0]
             expect(file.hash).to.equal(smallFile.cid)
             expect(file.path).to.equal(smallFile.cid)
+          })
+      })
+
+      it('files.add with only-hash=true', () => {
+        this.slow(10 * 1000)
+        const content = String(Math.random() + Date.now())
+    
+        return ipfs.files.add(Buffer.from(content), { onlyHash: true })
+          .then(files => {
+            expect(files).to.have.length(1)
+    
+            // 'ipfs.object.get(<hash>)' should timeout because content wasn't actually added
+            return expectTimeout(ipfs.object.get(files[0].hash), 4000)
           })
       })
     })
