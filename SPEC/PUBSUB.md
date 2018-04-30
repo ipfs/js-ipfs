@@ -7,13 +7,13 @@ pubsub API
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.pubsub.subscribe(topic, options, handler, callback)
+##### `JavaScript` - ipfs.pubsub.subscribe(options, callback)
 
-- `topic: string`
-- `options: Object` - (Optional), might contain the following properties:
-  - `discover`: type: Boolean - Will use the DHT to find other peers.
-- `handler: (msg) => ()` - Event handler which will be called with a message object everytime one is received. The `msg` has the format `{from: string, seqno: Buffer, data: Buffer, topicIDs: Array<string>}`.
-- `callback: (Error) => ()` (Optional) Called once the subscription is established.
+- `options: Object`: Object containing the following properties:
+  - `topic: string`
+  - `discover: Boolean` - Will use the DHT to find other peers.
+  - `handler: (msg) => ()` - Event handler which will be called with a message object everytime one is received. The `msg` has the format `{from: string, seqno: Buffer, data: Buffer, topicIDs: Array<string>}`.
+- `callback: (Error) => ()` Called once the subscription is established.
 
 If no `callback` is passed, a [promise][] is returned.
 
@@ -28,7 +28,10 @@ const receiveMsg = (msg) => {
   console.log(msg.data.toString())
 }
 
-ipfs.pubsub.subscribe(topic, receiveMsg)
+ipfs.pubsub.subscribe({
+  topic: topic,
+  handler: receiveMsg
+})
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -39,11 +42,14 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - `ipfs.pubsub.unsubscribe(topic, handler, callback)`
+##### `JavaScript` - `ipfs.pubsub.unsubscribe(options, callback)`
 
-- `topic: string` - The topic to unsubscribe from
-- `handler: (msg) => ()` - The handler to remove.
+- `options: Object`: Object containing the following properties:
+  - `topic: string` - The topic to unsubscribe from
+  - `handler: (msg) => ()` - The handler to remove.
 - `callback: (Error) => ()` (Optional) Called once the unsubscribe is done.
+
+If no `callback` is passed, a [promise][] is returned.
 
 This works like `EventEmitter.removeListener`, as that only the `handler` passed to a `subscribe` call before is removed from listening. The underlying subscription will only be canceled once all listeners for a topic have been removed.
 
@@ -56,12 +62,18 @@ const receiveMsg = (msg) => {
   console.log(msg.toString())
 }
 
-ipfs.pubsub.subscribe(topic, receiveMsg)
-
-setTimeout(() => {
-  // unsubscribe a second later
-  ipfs.pubsub.unsubscribe(topic, receiveMsg)
-}, 1000)
+ipfs.pubsub.subscribe({
+  topic: topic,
+  handler: receiveMsg
+}, () => {
+  setTimeout(() => {
+    // unsubscribe a second later
+    ipfs.pubsub.unsubscribe({
+      topic: topic,
+      handler: receiveMsg
+    })
+  }, 1000)
+})
 ```
 
 A great source of [examples][] can be found in the tests for this API.
