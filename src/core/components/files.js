@@ -145,7 +145,7 @@ module.exports = function files (self) {
     )
   }
 
-  function _catPullStream (ipfsPath) {
+  function _catPullStream (ipfsPath, options) {
     if (typeof ipfsPath === 'function') {
       throw new Error('You must supply an ipfsPath')
     }
@@ -158,7 +158,7 @@ module.exports = function files (self) {
     const d = deferred.source()
 
     pull(
-      exporter(ipfsPath, self._ipld),
+      exporter(ipfsPath, self._ipld, options),
       pull.collect((err, files) => {
         if (err) { return d.abort(err) }
         if (files && files.length > 1) {
@@ -185,9 +185,12 @@ module.exports = function files (self) {
     const recursive = options && options.recursive
     const pathDepth = path.split('/').length
     const maxDepth = recursive ? global.Infinity : pathDepth
+    const opts = Object.assign({}, {
+      maxDepth: maxDepth
+    }, options)
 
     return pull(
-      exporter(ipfsPath, self._ipld, { maxDepth: maxDepth }),
+      exporter(ipfsPath, self._ipld, opts),
       pull.filter(node =>
         recursive ? node.depth >= pathDepth : node.depth === pathDepth
       ),
@@ -270,9 +273,18 @@ module.exports = function files (self) {
 
     addPullStream: _addPullStream,
 
-    cat: promisify((ipfsPath, callback) => {
+    cat: promisify((ipfsPath, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
+      }
+
+      if (typeof callback !== 'function') {
+        throw new Error('Please supply a callback to ipfs.files.cat')
+      }
+
       pull(
-        _catPullStream(ipfsPath),
+        _catPullStream(ipfsPath, options),
         pull.collect((err, buffers) => {
           if (err) { return callback(err) }
           callback(null, Buffer.concat(buffers))
@@ -280,13 +292,22 @@ module.exports = function files (self) {
       )
     }),
 
-    catReadableStream: (ipfsPath) => toStream.source(_catPullStream(ipfsPath)),
+    catReadableStream: (ipfsPath, options) => toStream.source(_catPullStream(ipfsPath, options)),
 
-    catPullStream: _catPullStream,
+    catPullStream: (ipfsPath, options) => _catPullStream(ipfsPath, options),
 
-    get: promisify((ipfsPath, callback) => {
+    get: promisify((ipfsPath, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
+      }
+
+      if (typeof callback !== 'function') {
+        throw new Error('Please supply a callback to ipfs.files.get')
+      }
+
       pull(
-        exporter(ipfsPath, self._ipld),
+        exporter(ipfsPath, self._ipld, options),
         pull.asyncMap((file, cb) => {
           if (file.content) {
             pull(
@@ -305,10 +326,10 @@ module.exports = function files (self) {
       )
     }),
 
-    getReadableStream: (ipfsPath) => {
+    getReadableStream: (ipfsPath, options) => {
       return toStream.source(
         pull(
-          exporter(ipfsPath, self._ipld),
+          exporter(ipfsPath, self._ipld, options),
           pull.map((file) => {
             if (file.content) {
               file.content = toStream.source(file.content)
@@ -321,8 +342,8 @@ module.exports = function files (self) {
       )
     },
 
-    getPullStream: (ipfsPath) => {
-      return exporter(ipfsPath, self._ipld)
+    getPullStream: (ipfsPath, options) => {
+      return exporter(ipfsPath, self._ipld, options)
     },
 
     lsImmutable: promisify((ipfsPath, options, callback) => {
