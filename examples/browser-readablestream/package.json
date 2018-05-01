@@ -1,0 +1,22 @@
+{
+  "name": "browser-videostream",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "start": "npm run build && http-server dist -a 127.0.0.1 -p 8888"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "html-webpack-plugin": "^2.30.1",
+    "http-server": "^0.11.1",
+    "uglifyjs-webpack-plugin": "^1.2.0",
+    "webpack": "^3.11.0"
+  },
+  "dependencies": {
+    "videostream": "^2.4.2"
+  }
+}
