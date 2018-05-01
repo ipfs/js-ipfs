@@ -12,6 +12,7 @@ const toPull = require('stream-to-pull-stream')
 const deferred = require('pull-defer')
 const waterfall = require('async/waterfall')
 const isStream = require('is-stream')
+const isSource = require('is-pull-stream').isSource
 const Duplex = require('readable-stream').Duplex
 const OtherBuffer = require('buffer').Buffer
 const CID = require('cids')
@@ -58,6 +59,10 @@ function normalizeContent (opts, content) {
     // Readable stream input
     if (isStream.readable(data)) {
       data = { path: '', content: toPull.source(data) }
+    }
+
+    if (isSource(data)) {
+      data = { path: '', content: data }
     }
 
     if (data && data.content && typeof data.content !== 'function') {
@@ -199,40 +204,56 @@ module.exports = function files (self) {
   }
 
   return {
-    add: promisify((data, options = {}, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      } else if (!callback || typeof callback !== 'function') {
-        callback = noop
+    add: (() => {
+      const add = promisify((data, options = {}, callback) => {
+        if (typeof options === 'function') {
+          callback = options
+          options = {}
+        } else if (!callback || typeof callback !== 'function') {
+          callback = noop
+        }
+
+        const ok = Buffer.isBuffer(data) ||
+                   isStream.readable(data) ||
+                   Array.isArray(data) ||
+                   OtherBuffer.isBuffer(data) ||
+                   typeof data === 'object' ||
+                   isSource(data)
+
+        if (!ok) {
+          return callback(new Error('first arg must be a buffer, readable stream, pull stream, an object or array of objects'))
+        }
+
+        // CID v0 is for multihashes encoded with sha2-256
+        if (options.hashAlg && options.cidVersion !== 1) {
+          options.cidVersion = 1
+        }
+
+        pull(
+          pull.values([data]),
+          _addPullStream(options),
+          sort((a, b) => {
+            if (a.path < b.path) return 1
+            if (a.path > b.path) return -1
+            return 0
+          }),
+          pull.collect(callback)
+        )
+      })
+
+      return function () {
+        const args = Array.from(arguments)
+
+        // If we files.add(<pull stream>), then promisify thinks the pull stream
+        // is a callback! Add an empty options object in this case so that a
+        // promise is returned.
+        if (args.length === 1 && isSource(args[0])) {
+          args.push({})
+        }
+
+        return add.apply(null, args)
       }
-
-      const ok = Buffer.isBuffer(data) ||
-                 isStream.readable(data) ||
-                 Array.isArray(data) ||
-                 OtherBuffer.isBuffer(data) ||
-                 typeof data === 'object'
-
-      if (!ok) {
-        return callback(new Error('first arg must be a buffer, readable stream, an object or array of objects'))
-      }
-
-      // CID v0 is for multihashes encoded with sha2-256
-      if (options.hashAlg && options.cidVersion !== 1) {
-        options.cidVersion = 1
-      }
-
-      pull(
-        pull.values([data]),
-        _addPullStream(options),
-        sort((a, b) => {
-          if (a.path < b.path) return 1
-          if (a.path > b.path) return -1
-          return 0
-        }),
-        pull.collect(callback)
-      )
-    }),
+    })(),
 
     addReadableStream: (options) => {
       options = options || {}
