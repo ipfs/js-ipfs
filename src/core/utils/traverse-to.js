@@ -48,7 +48,7 @@ const traverseTo = (ipfs, path, options, callback) => {
             node: rootNode,
             parent: null
           }, (parent, {pathSegment, index}, done) => {
-            log(`Looking for ${pathSegment} in ${parent.name} ${bs58.encode(parent.node.multihash)}s`)
+            log(`Looking for ${pathSegment} in ${parent.name} ${bs58.encode(parent.node.multihash)}`)
 
             parent.node.links.forEach(link => {
               log(`${bs58.encode(link.multihash)} ${link.name}`)

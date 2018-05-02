@@ -60,7 +60,7 @@ describe('stat', function () {
     return mfs.mkdir('/empty-directory')
       .then(() => mfs.stat(path))
       .then(stats => {
-        expect(stats.size).to.equal(0)
+        expect(stats.size).to.equal(undefined)
         expect(stats.cumulativeSize).to.equal(4)
         expect(stats.childBlocks).to.equal(0)
         expect(stats.type).to.equal('directory')

@@ -8,6 +8,12 @@ const path = require('path')
 const loadFixture = require('aegir/fixtures')
 const isNode = require('detect-node')
 const values = require('pull-stream/sources/values')
+const bufferStream = require('./fixtures/buffer-stream')
+const CID = require('cids')
+const UnixFs = require('ipfs-unixfs')
+const {
+  MAX_CHUNK_SIZE
+} = require('../src/core/utils')
 
 let fs
 
@@ -212,7 +218,7 @@ describe('write', function () {
         create: true
       })
         .then(() => mfs.write(path, newContent))
-        .then((result) => mfs.stat(path))
+        .then(() => mfs.stat(path))
         .then((stats) => expect(stats.size).to.equal(contentSize))
         .then(() => mfs.read(path, {
           offset: 0,
@@ -244,8 +250,101 @@ describe('write', function () {
     })
   })
 
-  it.skip('truncates a file when requested', () => {
+  runTest(({type, path, content, contentSize}) => {
+    it(`expands a file when an offset is specified (${type})`, () => {
+      const offset = contentSize - 1
+      const newContent = Buffer.from('Oh hai!')
 
+      return mfs.write(path, content, {
+        create: true
+      })
+        .then(() => mfs.write(path, newContent, {
+          offset
+        }))
+        .then(() => mfs.stat(path))
+        .then((stats) => expect(stats.size).to.equal(contentSize + newContent.length - 1))
+        .then(() => mfs.read(path, {
+          offset
+        }))
+        .then((buffer) => expect(buffer).to.deep.equal(newContent))
+    })
+  })
+
+  runTest(({type, path, content, contentSize}) => {
+    it(`expands a file when an offset is specified and the offset is longer than the file (${type})`, () => {
+      const offset = contentSize + 5
+      const newContent = Buffer.from('Oh hai!')
+
+      return mfs.write(path, content, {
+        create: true
+      })
+        .then(() => mfs.write(path, newContent, {
+          offset
+        }))
+        .then(() => mfs.stat(path))
+        .then((stats) => expect(stats.size).to.equal(newContent.length + offset))
+        .then(() => mfs.read(path, {
+          offset: offset - 5
+        }))
+        .then((buffer) => expect(buffer).to.deep.equal(Buffer.concat([Buffer.from([0, 0, 0, 0, 0]), newContent])))
+    })
+  })
+
+  it(`expands one DAGNode into a balanced tree`, () => {
+    const path = `/some-file-${Math.random()}.txt`
+    const data = []
+
+    return mfs.write(path, bufferStream(MAX_CHUNK_SIZE - 10, {
+      collector: (bytes) => data.push(bytes)
+    }), {
+      create: true
+    })
+      .then(() => mfs.stat(path))
+      .then((stats) => mfs.node.dag.get(new CID(stats.hash)))
+      .then((result) => result.value)
+      .then((node) => {
+        expect(node.links.length).to.equal(0)
+
+        const meta = UnixFs.unmarshal(node.data)
+
+        expect(meta.fileSize()).to.equal(data.reduce((acc, curr) => acc + curr.length, 0))
+        expect(meta.data).to.deep.equal(data.reduce((acc, curr) => Buffer.concat([acc, curr]), Buffer.alloc(0)))
+      })
+      .then(() => mfs.write(path, bufferStream(20, {
+        collector: (bytes) => data.push(bytes)
+      }), {
+        offset: MAX_CHUNK_SIZE - 10
+      }))
+      .then(() => mfs.stat(path))
+      .then((stats) => mfs.node.dag.get(new CID(stats.hash)))
+      .then((result) => result.value)
+      .then((node) => {
+        expect(node.links.length).to.equal(2)
+
+        const meta = UnixFs.unmarshal(node.data)
+
+        expect(meta.fileSize()).to.equal(data.reduce((acc, curr) => acc + curr.length, 0))
+        expect(meta.data).to.equal(undefined)
+      })
+      .then(() => mfs.read(path))
+      .then((buffer) => expect(buffer).to.deep.equal(data.reduce((acc, curr) => Buffer.concat([acc, curr]), Buffer.alloc(0))))
+  })
+
+  runTest(({type, path, content}) => {
+    it.skip(`truncates a file when requested (${type})`, () => {
+      const newContent = Buffer.from('Oh hai!')
+
+      return mfs.write(path, content, {
+        create: true
+      })
+        .then(() => mfs.write(path, newContent, {
+          truncate: true
+        }))
+        .then(() => mfs.stat(path))
+        .then((stats) => expect(stats.size).to.equal(newContent.length))
+        .then(() => mfs.read(path))
+        .then((buffer) => expect(buffer).to.deep.equal(newContent))
+    })
   })
 
   it.skip('writes a file with raw blocks for newly created leaf nodes', () => {
