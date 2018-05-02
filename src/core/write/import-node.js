@@ -6,17 +6,23 @@ const values = require('pull-stream/sources/values')
 const collect = require('pull-stream/sinks/collect')
 const importer = require('ipfs-unixfs-engine').importer
 const {
-  limitStreamBytes
+  loadNode
 } = require('../utils')
 
-const importNode = (ipfs, parent, fileName, source, options, callback) => {
+const defaultOptions = {
+  progress: undefined,
+  hash: undefined,
+  cidVersion: undefined,
+  strategy: undefined
+}
+
+const importStream = (ipfs, source, options, callback) => {
+  options = Object.assign({}, defaultOptions, options)
+
   waterfall([
-    (done) => pull(
+    (cb) => pull(
       values([{
-        content: pull(
-          source,
-          limitStreamBytes(options.length)
-        )
+        content: pull(source)
       }]),
       importer(ipfs._ipld, {
         progress: options.progress,
@@ -24,17 +30,10 @@ const importNode = (ipfs, parent, fileName, source, options, callback) => {
         cidVersion: options.cidVersion,
         strategy: options.strategy
       }),
-      collect(done)
+      collect(cb)
     ),
-    (results, done) => {
-      const imported = results[0]
-
-      done(null, {
-        size: imported.size,
-        multihash: imported.multihash
-      })
-    }
+    (results, cb) => loadNode(ipfs, results[0], cb)
   ], callback)
 }
 
-module.exports = importNode
+module.exports = importStream

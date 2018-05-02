@@ -9,6 +9,7 @@ const {
   traverseTo,
   addLink,
   updateTree,
+  limitStreamBytes,
   FILE_SEPARATOR
 } = require('../utils')
 const values = require('pull-stream/sources/values')
@@ -22,6 +23,7 @@ const isNode = require('detect-node')
 const fileReaderStream = require('filereader-stream')
 const isPullStream = require('is-pull-stream')
 const cat = require('pull-cat')
+const pull = require('pull-stream/pull')
 
 let fs
 
@@ -165,8 +167,13 @@ module.exports = function mfsWrite (ipfs) {
                 ])
               }
 
+              source = pull(
+                source,
+                limitStreamBytes(options.length)
+              )
+
               log('Importing file', fileName)
-              importNode(ipfs, containingFolder, fileName, source, options, next)
+              importNode(ipfs, source, options, next)
             }
           },
 

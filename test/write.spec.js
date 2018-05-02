@@ -81,6 +81,26 @@ describe('write', function () {
     mfs.node.stop(done)
   })
 
+  it('explodes if it cannot convert content to a pull stream', () => {
+    return mfs.write('/foo', -1, {
+      create: true
+    })
+      .then(() => expect(false).to.equal(true))
+      .catch((error) => {
+        expect(error.message).to.contain('Don\'t know how to convert -1 into a pull stream source')
+      })
+  })
+
+  it('explodes if given an invalid path', () => {
+    return mfs.write('foo', null, {
+      create: true
+    })
+      .then(() => expect(false).to.equal(true))
+      .catch((error) => {
+        expect(error.message).to.contain('paths must start with a leading /')
+      })
+  })
+
   it('writes a small file using a buffer', () => {
     const filePath = `/small-file-${Math.random()}.txt`
 
@@ -107,6 +127,24 @@ describe('write', function () {
       .then(() => mfs.stat(filePath))
       .then((stats) => {
         expect(stats.size).to.equal(smallFile.length)
+      })
+  })
+
+  it('writes part of a small file using a path (Node only)', function () {
+    if (!isNode) {
+      return this.skip()
+    }
+
+    const filePath = `/small-file-${Math.random()}.txt`
+    const pathToFile = path.resolve(path.join(__dirname, 'fixtures', 'small-file.txt'))
+
+    return mfs.write(filePath, pathToFile, {
+      create: true,
+      length: 2
+    })
+      .then(() => mfs.stat(filePath))
+      .then((stats) => {
+        expect(stats.size).to.equal(2)
       })
   })
 
