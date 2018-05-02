@@ -15,39 +15,41 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-describe('.types', function () {
-  let ipfs
+module.exports = (common) => {
+  describe('.types', function () {
+    let ipfs
 
-  before(function (done) {
-    // CI takes longer to instantiate the daemon, so we need to increase the
-    // timeout for the before step
-    this.timeout(60 * 1000)
+    before(function (done) {
+      // CI takes longer to instantiate the daemon, so we need to increase the
+      // timeout for the before step
+      this.timeout(60 * 1000)
 
-    common.setup((err, factory) => {
-      expect(err).to.not.exist()
-      factory.spawnNode((err, node) => {
+      common.setup((err, factory) => {
         expect(err).to.not.exist()
-        ipfs = node
-        done()
+        factory.spawnNode((err, node) => {
+          expect(err).to.not.exist()
+          ipfs = node
+          done()
+        })
+      })
+    })
+
+    after((done) => {
+      common.teardown(done)
+    })
+
+    it('types object', () => {
+      expect(ipfs.types).to.be.deep.equal({
+        Buffer: Buffer,
+        PeerId: PeerId,
+        PeerInfo: PeerInfo,
+        multiaddr: multiaddr,
+        multibase: multibase,
+        multihash: multihash,
+        CID: CID,
+        dagPB: dagPB,
+        dagCBOR: dagCBOR
       })
     })
   })
-
-  after((done) => {
-    common.teardown(done)
-  })
-
-  it('types object', () => {
-    expect(ipfs.types).to.be.deep.equal({
-      Buffer: Buffer,
-      PeerId: PeerId,
-      PeerInfo: PeerInfo,
-      multiaddr: multiaddr,
-      multibase: multibase,
-      multihash: multihash,
-      CID: CID,
-      dagPB: dagPB,
-      dagCBOR: dagCBOR
-    })
-  })
-})
+}
