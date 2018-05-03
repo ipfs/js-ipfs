@@ -369,7 +369,7 @@ describe('write', function () {
   })
 
   runTest(({type, path, content}) => {
-    it.skip(`truncates a file when requested (${type})`, () => {
+    it(`truncates a file after writing (${type})`, () => {
       const newContent = Buffer.from('Oh hai!')
 
       return mfs.write(path, content, {

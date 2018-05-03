@@ -119,7 +119,7 @@ module.exports = function mfsWrite (ipfs) {
       return callback(new Error('cannot have negative byte count'))
     }
 
-    if (options.length === 0) {
+    if (options.length === 0 && !options.truncate) {
       return callback()
     }
 

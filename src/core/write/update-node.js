@@ -25,6 +25,7 @@ const {
 } = require('../utils')
 const importNode = require('./import-node')
 const updateNodeBytes = require('./update-tree')
+const truncateNode = require('./truncate-node')
 
 const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
   let offset = options.offset || 0
@@ -159,6 +160,13 @@ const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
           }
 
           next(null, updatedNode)
+        },
+        (updatedNode, cb) => {
+          if (options.truncate) {
+            return truncateNode(ipfs, updatedNode, streamEnd, options, cb)
+          }
+
+          cb(null, updatedNode)
         }
       ], done)
     }
