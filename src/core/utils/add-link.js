@@ -39,7 +39,7 @@ const addLink = (ipfs, options, callback) => {
     },
     (parent, done) => {
       if (!options.flush) {
-        return done()
+        return done(null, parent)
       }
 
       // Persist the new parent DAGNode

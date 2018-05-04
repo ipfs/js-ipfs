@@ -50,7 +50,7 @@ describe('stat', function () {
     return mfs.stat('/i-do-not-exist')
       .then(() => expect.fail('No error was thrown for a non-existent file'))
       .catch(error => {
-        expect(error.message).to.contain('Cannot traverse to')
+        expect(error.message).to.contain('Path /i-do-not-exist did not exist')
       })
   })
 

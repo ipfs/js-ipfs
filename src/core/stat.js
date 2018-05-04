@@ -8,6 +8,7 @@ const {
   traverseTo
 } = require('./utils')
 const waterfall = require('async/waterfall')
+const log = require('debug')('mfs:stat')
 
 const defaultOptions = {
   hash: false,
@@ -29,6 +30,8 @@ module.exports = function mfsStat (ipfs) {
     } catch (error) {
       return callback(error)
     }
+
+    log(`Fetching stats for ${path}`)
 
     waterfall([
       (done) => traverseTo(ipfs, path, options, done),

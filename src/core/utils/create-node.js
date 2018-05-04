@@ -5,7 +5,14 @@ const {
   DAGNode
 } = require('ipld-dag-pb')
 
+const defaultOptions = {
+  format: 'dag-pb',
+  hashAlg: 'sha2-256'
+}
+
 const createNode = (ipfs, data, links, options, callback) => {
+  options = Object.assign({}, defaultOptions, options)
+
   waterfall([
     // Create a DAGNode with the new data
     (cb) => DAGNode.create(data, links, cb),

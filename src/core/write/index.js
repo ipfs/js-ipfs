@@ -173,7 +173,10 @@ module.exports = function mfsWrite (ipfs) {
               )
 
               log('Importing file', fileName)
-              importNode(ipfs, source, options, next)
+              importNode(ipfs, source, options, (error, result) => {
+                log(`Imported file ${fileName}`)
+                next(error, result)
+              })
             }
           },
 
