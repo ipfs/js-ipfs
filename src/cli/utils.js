@@ -1,21 +1,15 @@
 'use strict'
 
-const fs = require('fs')
-const os = require('os')
-const APIctl = require('ipfs-api')
-const multiaddr = require('multiaddr')
-const IPFS = require('../core')
 const path = require('path')
 const debug = require('debug')
 const log = debug('cli')
 log.error = debug('cli:error')
-const Progress = require('progress')
-const byteman = require('byteman')
 
 exports = module.exports
 
 exports.isDaemonOn = isDaemonOn
 function isDaemonOn () {
+  const fs = require('fs')
   try {
     fs.readFileSync(path.join(exports.getRepoPath(), 'api'))
     log('daemon is on')
@@ -28,10 +22,15 @@ function isDaemonOn () {
 
 exports.getAPICtl = getAPICtl
 function getAPICtl (apiAddr) {
+  const APIctl = require('ipfs-api')
+
   if (!apiAddr && !isDaemonOn()) {
     throw new Error('daemon is not on')
   }
   if (!apiAddr) {
+    const fs = require('fs')
+    const multiaddr = require('multiaddr')
+
     const apiPath = path.join(exports.getRepoPath(), 'api')
     apiAddr = multiaddr(fs.readFileSync(apiPath).toString()).toString()
   }
@@ -42,6 +41,7 @@ exports.getIPFS = (argv, callback) => {
   if (argv.api || isDaemonOn()) {
     return callback(null, getAPICtl(argv.api), (cb) => cb())
   }
+  const IPFS = require('../core')
 
   const node = new IPFS({
     repo: exports.getRepoPath(),
@@ -71,6 +71,7 @@ exports.getIPFS = (argv, callback) => {
 }
 
 exports.getRepoPath = () => {
+  const os = require('os')
   return process.env.IPFS_PATH || os.homedir() + '/.jsipfs'
 }
 
@@ -92,6 +93,9 @@ exports.print = (msg, newline) => {
 }
 
 exports.createProgressBar = (totalBytes) => {
+  const Progress = require('progress')
+  const byteman = require('byteman')
+
   const total = byteman(totalBytes, 2, 'MB')
   const barFormat = `:progress / ${total} [:bar] :percent :etas`
 

@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../utils').print
-
 module.exports = {
   command: 'sub <topic>',
 
@@ -10,6 +8,8 @@ module.exports = {
   builder: {},
 
   handler (argv) {
+    const print = require('../../utils').print
+
     const handler = (msg) => {
       print(msg.data.toString())
     }

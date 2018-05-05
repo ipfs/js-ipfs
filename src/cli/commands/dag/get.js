@@ -1,8 +1,5 @@
 'use strict'
 
-const CID = require('cids')
-const print = require('../../utils').print
-
 module.exports = {
   command: 'get <cid path>',
 
@@ -16,6 +13,9 @@ module.exports = {
   },
 
   handler (argv) {
+    const CID = require('cids')
+    const print = require('../../utils').print
+
     const refParts = argv.cidpath.split('/')
     const cidString = refParts[0]
     const path = refParts.slice(1).join('/')

@@ -1,6 +1,4 @@
 'use strict'
-const print = require('../utils').print
-
 module.exports = {
   command: 'id',
 
@@ -14,6 +12,8 @@ module.exports = {
   },
 
   handler (argv) {
+    const print = require('../utils').print
+
     // TODO: handle argv.format
     argv.ipfs.id((err, id) => {
       if (err) {

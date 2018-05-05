@@ -1,8 +1,5 @@
 'use strict'
 
-const utils = require('../../utils')
-const print = require('../../utils').print
-
 module.exports = {
   command: 'disconnect <address>',
 
@@ -11,6 +8,9 @@ module.exports = {
   builder: {},
 
   handler (argv) {
+    const utils = require('../../utils')
+    const print = require('../../utils').print
+
     if (!utils.isDaemonOn()) {
       throw new Error('This command must be run in online mode. Try running \'ipfs daemon\' first.')
     }

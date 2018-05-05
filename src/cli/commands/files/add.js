@@ -1,105 +1,6 @@
 'use strict'
 
-const fs = require('fs')
-const path = require('path')
-const glob = require('glob')
-const sortBy = require('lodash.sortby')
-const pull = require('pull-stream')
-const paramap = require('pull-paramap')
-const zip = require('pull-zip')
-const getFolderSize = require('get-folder-size')
-const byteman = require('byteman')
-const waterfall = require('async/waterfall')
 const mh = require('multihashes')
-const utils = require('../../utils')
-const print = require('../../utils').print
-const createProgressBar = require('../../utils').createProgressBar
-
-function checkPath (inPath, recursive) {
-  // This function is to check for the following possible inputs
-  // 1) "." add the cwd but throw error for no recursion flag
-  // 2) "." -r return the cwd
-  // 3) "/some/path" but throw error for no recursion
-  // 4) "/some/path" -r
-  // 5) No path, throw err
-  // 6) filename.type return the cwd + filename
-
-  if (!inPath) {
-    throw new Error('Error: Argument \'path\' is required')
-  }
-
-  if (inPath === '.') {
-    inPath = process.cwd()
-  }
-
-  // Convert to POSIX format
-  inPath = inPath
-    .split(path.sep)
-    .join('/')
-
-  // Strips trailing slash from path.
-  inPath = inPath.replace(/\/$/, '')
-
-  if (fs.statSync(inPath).isDirectory() && recursive === false) {
-    throw new Error(`Error: ${inPath} is a directory, use the '-r' flag to specify directories`)
-  }
-
-  return inPath
-}
-
-function getTotalBytes (path, recursive, cb) {
-  if (recursive) {
-    getFolderSize(path, cb)
-  } else {
-    fs.stat(path, (err, stat) => cb(err, stat.size))
-  }
-}
-
-function addPipeline (index, addStream, list, argv) {
-  const {
-    quiet,
-    quieter,
-    silent
-  } = argv
-  pull(
-    zip(
-      pull.values(list),
-      pull(
-        pull.values(list),
-        paramap(fs.stat.bind(fs), 50)
-      )
-    ),
-    pull.map((pair) => ({
-      path: pair[0],
-      isDirectory: pair[1].isDirectory()
-    })),
-    pull.filter((file) => !file.isDirectory),
-    pull.map((file) => ({
-      path: file.path.substring(index, file.path.length),
-      content: fs.createReadStream(file.path)
-    })),
-    addStream,
-    pull.collect((err, added) => {
-      if (err) {
-        throw err
-      }
-
-      if (silent) return
-      if (quieter) return print(added.pop().hash)
-
-      sortBy(added, 'path')
-        .reverse()
-        .map((file) => {
-          const log = [ 'added', file.hash ]
-
-          if (!quiet && file.path.length > 0) log.push(file.path)
-
-          return log.join(' ')
-        })
-        .forEach((msg) => print(msg))
-    })
-  )
-}
 
 module.exports = {
   command: 'add <file>',
@@ -177,6 +78,106 @@ module.exports = {
   },
 
   handler (argv) {
+    const fs = require('fs')
+    const path = require('path')
+    const glob = require('glob')
+    const sortBy = require('lodash.sortby')
+    const pull = require('pull-stream')
+    const paramap = require('pull-paramap')
+    const zip = require('pull-zip')
+    const getFolderSize = require('get-folder-size')
+    const byteman = require('byteman')
+    const waterfall = require('async/waterfall')
+    const utils = require('../../utils')
+    const print = require('../../utils').print
+    const createProgressBar = require('../../utils').createProgressBar
+
+    function checkPath (inPath, recursive) {
+      // This function is to check for the following possible inputs
+      // 1) "." add the cwd but throw error for no recursion flag
+      // 2) "." -r return the cwd
+      // 3) "/some/path" but throw error for no recursion
+      // 4) "/some/path" -r
+      // 5) No path, throw err
+      // 6) filename.type return the cwd + filename
+
+      if (!inPath) {
+        throw new Error('Error: Argument \'path\' is required')
+      }
+
+      if (inPath === '.') {
+        inPath = process.cwd()
+      }
+
+      // Convert to POSIX format
+      inPath = inPath
+        .split(path.sep)
+        .join('/')
+
+      // Strips trailing slash from path.
+      inPath = inPath.replace(/\/$/, '')
+
+      if (fs.statSync(inPath).isDirectory() && recursive === false) {
+        throw new Error(`Error: ${inPath} is a directory, use the '-r' flag to specify directories`)
+      }
+
+      return inPath
+    }
+
+    function getTotalBytes (path, recursive, cb) {
+      if (recursive) {
+        getFolderSize(path, cb)
+      } else {
+        fs.stat(path, (err, stat) => cb(err, stat.size))
+      }
+    }
+
+    function addPipeline (index, addStream, list, argv) {
+      const {
+        quiet,
+        quieter,
+        silent
+      } = argv
+      pull(
+        zip(
+          pull.values(list),
+          pull(
+            pull.values(list),
+            paramap(fs.stat.bind(fs), 50)
+          )
+        ),
+        pull.map((pair) => ({
+          path: pair[0],
+          isDirectory: pair[1].isDirectory()
+        })),
+        pull.filter((file) => !file.isDirectory),
+        pull.map((file) => ({
+          path: file.path.substring(index, file.path.length),
+          content: fs.createReadStream(file.path)
+        })),
+        addStream,
+        pull.collect((err, added) => {
+          if (err) {
+            throw err
+          }
+
+          if (silent) return
+          if (quieter) return print(added.pop().hash)
+
+          sortBy(added, 'path')
+            .reverse()
+            .map((file) => {
+              const log = [ 'added', file.hash ]
+
+              if (!quiet && file.path.length > 0) log.push(file.path)
+
+              return log.join(' ')
+            })
+            .forEach((msg) => print(msg))
+        })
+      )
+    }
+
     const inPath = checkPath(argv.file, argv.recursive)
     const index = inPath.lastIndexOf('/') + 1
     const options = {

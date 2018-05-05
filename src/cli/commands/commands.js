@@ -1,7 +1,4 @@
 'use strict'
-const print = require('../utils').print
-const path = require('path')
-const glob = require('glob').sync
 
 module.exports = {
   command: 'commands',
@@ -9,6 +6,9 @@ module.exports = {
   describe: 'List all available commands',
 
   handler () {
+    const print = require('../utils').print
+    const path = require('path')
+    const glob = require('glob').sync
     const basePath = path.resolve(__dirname, '..')
 
     // modeled after https://github.com/vdemedes/ronin/blob/master/lib/program.js#L78

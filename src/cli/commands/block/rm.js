@@ -1,9 +1,5 @@
 'use strict'
 
-const utils = require('../../utils')
-const mh = require('multihashes')
-const print = utils.print
-
 module.exports = {
   command: 'rm <key>',
 
@@ -12,6 +8,9 @@ module.exports = {
   builder: {},
 
   handler (argv) {
+    const utils = require('../../utils')
+    const print = utils.print
+    const mh = require('multihashes')
     if (utils.isDaemonOn()) {
       // TODO implement this once `js-ipfs-api` supports it
       throw new Error('rm block with daemon running is not yet implemented')

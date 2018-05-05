@@ -1,7 +1,5 @@
 'use strict'
 
-const utils = require('../utils')
-
 module.exports = {
   command: 'ls <key>',
 
@@ -28,6 +26,8 @@ module.exports = {
   },
 
   handler (argv) {
+    const utils = require('../utils')
+
     let path = argv.key
     if (path.startsWith('/ipfs/')) {
       path = path.replace('/ipfs/', '')

@@ -1,7 +1,6 @@
 'use strict'
 
 const fs = require('fs')
-const print = require('../../utils').print
 
 module.exports = {
   command: 'import <name>',
@@ -24,6 +23,8 @@ module.exports = {
   },
 
   handler (argv) {
+    const print = require('../../utils').print
+
     argv.ipfs.key.import(argv.name, argv.input, argv.passin, (err, key) => {
       if (err) {
         throw err

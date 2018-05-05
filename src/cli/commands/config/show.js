@@ -1,10 +1,5 @@
 'use strict'
 
-const debug = require('debug')
-const log = debug('cli:config')
-log.error = debug('cli:config:error')
-const print = require('../../utils').print
-
 module.exports = {
   command: 'show',
 
@@ -13,6 +8,11 @@ module.exports = {
   builder: {},
 
   handler (argv) {
+    const debug = require('debug')
+    const log = debug('cli:config')
+    log.error = debug('cli:config:error')
+    const print = require('../../utils').print
+
     if (argv._handled) return
     argv._handled = true
 

@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../utils').print
-
 module.exports = {
   command: 'add [<peer>]',
 
@@ -16,6 +14,8 @@ module.exports = {
   },
 
   handler (argv) {
+    const print = require('../../utils').print
+
     argv.ipfs.bootstrap.add(argv.peer, {
       default: argv.default
     }, (err, list) => {

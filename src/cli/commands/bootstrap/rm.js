@@ -1,10 +1,5 @@
 'use strict'
 
-const debug = require('debug')
-const log = debug('cli:bootstrap')
-log.error = debug('cli:bootstrap:error')
-const print = require('../../utils').print
-
 module.exports = {
   command: 'rm [<peer>]',
 
@@ -19,6 +14,11 @@ module.exports = {
   },
 
   handler (argv) {
+    const debug = require('debug')
+    const log = debug('cli:bootstrap')
+    log.error = debug('cli:bootstrap:error')
+    const print = require('../../utils').print
+
     argv.ipfs.bootstrap.rm(argv.peer, {
       all: argv.all
     }, (err, list) => {

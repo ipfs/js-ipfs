@@ -1,12 +1,5 @@
 'use strict'
 
-const spawn = require('child_process').spawn
-const fs = require('fs')
-const temp = require('temp')
-const waterfall = require('async/waterfall')
-
-const utils = require('../../utils')
-
 module.exports = {
   command: 'edit',
 
@@ -15,6 +8,12 @@ module.exports = {
   builder: {},
 
   handler (argv) {
+    const spawn = require('child_process').spawn
+    const fs = require('fs')
+    const temp = require('temp')
+    const waterfall = require('async/waterfall')
+
+    const utils = require('../../utils')
     if (argv._handled) return
     argv._handled = true
 
