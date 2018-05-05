@@ -551,10 +551,10 @@ module.exports = (common) => {
         })
       })
 
-      describe('load tests', function () {
+      describe('light-load tests', function () {
         before(() => {
-          ipfs1.pubsub.setMaxListeners(10 * 1000)
-          ipfs2.pubsub.setMaxListeners(10 * 1000)
+          ipfs1.pubsub.setMaxListeners(10 * 10)
+          ipfs2.pubsub.setMaxListeners(10 * 10)
         })
 
         after(() => {
@@ -562,8 +562,8 @@ module.exports = (common) => {
           ipfs2.pubsub.setMaxListeners(10)
         })
 
-        it('call publish 1k times', (done) => {
-          const count = 1000
+        it('call publish 10 times', (done) => {
+          const count = 10
           let sendCount = 0
           const topic = getTopic()
 
@@ -597,11 +597,11 @@ module.exports = (common) => {
             ipfs2.pubsub.unsubscribe(topic, sub2)
           })
 
-          it('send/receive 10k messages', function (done) {
+          it('send/receive 100 messages', function (done) {
             this.timeout(2 * 60 * 1000)
 
             const msgBase = 'msg - '
-            const count = 10000
+            const count = 100
             let sendCount = 0
             let receivedCount = 0
             let startTime
@@ -621,7 +621,7 @@ module.exports = (common) => {
                 const duration = new Date().getTime() - startTime
                 const opsPerSec = Math.floor(count / (duration / 1000))
 
-                console.log(`Send/Receive 10k messages took: ${duration} ms, ${opsPerSec} ops / s\n`)
+                console.log(`Send/Receive 100 messages took: ${duration} ms, ${opsPerSec} ops / s\n`)
 
                 check()
               }
@@ -656,8 +656,8 @@ module.exports = (common) => {
           })
         })
 
-        it('call subscribe/unsubscribe 1k times', (done) => {
-          const count = 1000
+        it('call subscribe/unsubscribe 10 times', (done) => {
+          const count = 10
           let sendCount = 0
           const handlers = []
 
