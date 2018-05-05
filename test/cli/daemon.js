@@ -5,8 +5,6 @@ const expect = require('chai').expect
 const clean = require('../utils/clean')
 const ipfsCmd = require('../utils/ipfs-exec')
 const isWindows = require('../utils/platforms').isWindows
-const pull = require('pull-stream')
-const toPull = require('stream-to-pull-stream')
 const os = require('os')
 const path = require('path')
 const hat = require('hat')
@@ -37,31 +35,20 @@ function testSignal (ipfs, sig) {
   }).then(() => {
     const proc = ipfs('daemon')
     return new Promise((resolve, reject) => {
-      pull(
-        toPull(proc.stdout),
-        pull.collect((err, res) => {
-          expect(err).to.not.exist()
-          const data = res.toString()
-          if (data.includes(`Daemon is ready`)) {
-            if (proc.kill(sig)) {
-              resolve()
-            } else {
-              reject(new Error(`Unable to ${sig} process`))
-            }
+      proc.stdout.on('data', (data) => {
+        if (data.toString().includes(`Daemon is ready`)) {
+          if (proc.kill(sig)) {
+            resolve()
+          } else {
+            reject(new Error(`Unable to ${sig} process`))
           }
-        })
-      )
-
-      pull(
-        toPull(proc.stderr),
-        pull.collect((err, res) => {
-          expect(err).to.not.exist()
-          const data = res.toString()
-          if (data.length > 0) {
-            reject(new Error(data))
-          }
-        })
-      )
+        }
+      })
+      proc.stderr.on('data', (data) => {
+        if (data.toString().length > 0) {
+          reject(new Error(data))
+        }
+      })
     })
   })
 }
@@ -79,6 +66,8 @@ describe('daemon', () => {
 
   skipOnWindows('do not crash if Addresses.Swarm is empty', function (done) {
     this.timeout(100 * 1000)
+    // These tests are flaky, but retrying 3 times seems to make it work 99% of the time
+    this.retries(3)
 
     ipfs('init').then(() => {
       return ipfs('config', 'Addresses', JSON.stringify({
@@ -87,10 +76,18 @@ describe('daemon', () => {
         Gateway: '/ip4/127.0.0.1/tcp/0'
       }), '--json')
     }).then(() => {
-      return ipfs('daemon')
-    }).then((res) => {
-      expect(res).to.have.string('Daemon is ready')
-      done()
+      const res = ipfs('daemon')
+      const timeout = setTimeout(() => {
+        done(new Error('Daemon did not get ready in time'))
+      }, 1000 * 60)
+      res.stdout.on('data', (data) => {
+        const line = data.toString()
+        if (line.includes('Daemon is ready')) {
+          clearInterval(timeout)
+          res.kill()
+          done()
+        }
+      })
     }).catch(err => done(err))
   })
 
