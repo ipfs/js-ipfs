@@ -1,3 +1,23 @@
+<a name="0.64.3"></a>
+## [0.64.3](https://github.com/ipfs/interface-ipfs-core/compare/v0.64.2...v0.64.3) (2018-05-06)
+
+
+### Bug Fixes
+
+* Typos on bundled libraries pull request ([2972426](https://github.com/ipfs/interface-ipfs-core/commit/2972426))
+
+
+### Features
+
+* add onlyHash option to files.add ([#259](https://github.com/ipfs/interface-ipfs-core/issues/259)) ([63179b9](https://github.com/ipfs/interface-ipfs-core/commit/63179b9))
+
+
+### Performance Improvements
+
+* **pubsub:** Change pubsub tests to do lighter load testing ([90a1520](https://github.com/ipfs/interface-ipfs-core/commit/90a1520))
+
+
+
 <a name="0.64.2"></a>
 ## [0.64.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.64.1...v0.64.2) (2018-04-23)
 
