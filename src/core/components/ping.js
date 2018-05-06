@@ -50,12 +50,10 @@ function getPeer (libp2pNode, statusStream, peerId, cb) {
     console.log(peer)
     return cb(null, peer)
   } catch (err) {
-    // Check if we have support for peerRouting
-    if (!libp2pNode.peerRouting) {
-      return cb(new Error('Peer not found in peer book and no peer routing mechanism enabled'))
-    }
+    log('Peer not found in peer book, trying peer routing')
     // Share lookup status just as in the go implemmentation
     statusStream.push(getPacket({Success: true, Text: `Looking up peer ${peerId}`}))
+    // Try to use peerRouting
     libp2pNode.peerRouting.findPeer(peerId, cb)
   }
 }
