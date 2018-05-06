@@ -23,7 +23,7 @@ const config = {
   }
 }
 
-describe.only('ping', function () {
+describe('ping', function () {
   this.timeout(60 * 1000)
   let ipfsdA
   let ipfsdB

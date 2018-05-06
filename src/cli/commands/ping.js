@@ -9,7 +9,7 @@ const print = require('../utils').print
 module.exports = {
   command: 'ping <peerId>',
 
-  describe: 'Measure the latency of a connection',
+  description: 'Measure the latency of a connection',
 
   builder: {
     count: {
