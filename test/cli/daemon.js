@@ -79,7 +79,7 @@ describe('daemon', () => {
       const res = ipfs('daemon')
       const timeout = setTimeout(() => {
         done(new Error('Daemon did not get ready in time'))
-      }, 1000 * 60)
+      }, 1000 * 120)
       res.stdout.on('data', (data) => {
         const line = data.toString()
         if (line.includes('Daemon is ready')) {
