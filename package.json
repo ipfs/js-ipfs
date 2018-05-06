@@ -106,7 +106,7 @@
     "hapi-set-header": "^1.0.2",
     "hoek": "^5.0.3",
     "human-to-milliseconds": "^1.0.0",
-    "ipfs-api": "^20.2.0",
+    "ipfs-api": "^20.2.1",
     "ipfs-bitswap": "~0.20.0",
     "ipfs-block": "~0.7.1",
     "ipfs-block-service": "~0.14.0",
