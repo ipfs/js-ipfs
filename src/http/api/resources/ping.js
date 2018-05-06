@@ -13,12 +13,12 @@ exports.get = {
     query: Joi.object().keys({
       n: Joi.alternatives()
         .when('count', {
-          is: true,
+          is: Joi.any().exist(),
           then: Joi.any().forbidden(),
           otherwise: Joi.number().greater(0)
         }),
       count: Joi.number().greater(0),
-      arg: Joi.string()
+      arg: Joi.string().required()
     }).unknown()
   },
   handler: (request, reply) => {
@@ -26,7 +26,6 @@ exports.get = {
     const peerId = request.query.arg
     // Default count to 10
     const count = request.query.n || request.query.count || 10
-
     ipfs.ping(peerId, count, (err, pullStream) => {
       if (err) {
         return reply(boom.badRequest(err))

@@ -4,14 +4,13 @@
 
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
-const delay = require('delay')
 const series = require('async/series')
+const DaemonFactory = require('ipfsd-ctl')
 const ipfsExec = require('../utils/ipfs-exec')
 
-const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ type: 'js' })
+const expect = chai.expect
+chai.use(dirtyChai)
 
 const config = {
   Bootstrap: [],
@@ -66,6 +65,7 @@ describe('ping', function () {
     }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsdA = _ipfsd
+      // Without DHT we need to have an already established connection
       ipfsdA.api.swarm.connect(bMultiaddr, done)
     })
   })
@@ -91,7 +91,7 @@ describe('ping', function () {
     ping.stdout.on('end', () => {
       expect(result).to.have.lengthOf(12)
       expect(result[0]).to.equal(`PING ${ipfsdBId}`)
-      for(let i = 1; i < 11; i++) {
+      for (let i = 1; i < 11; i++) {
         expect(result[i]).to.match(/^Pong received: time=\d+ ms$/)
       }
       expect(result[11]).to.match(/^Average latency: \d+(.\d+)?ms$/)
