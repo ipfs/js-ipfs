@@ -7,6 +7,10 @@
 
 > A test suite and interface you can use to implement a IPFS core interface.
 
+## Lead Maintainer
+
+[Alan Shaw](http://github.com/alanshaw).
+
 ## Table of Contents
 
 - [Background](#background)
