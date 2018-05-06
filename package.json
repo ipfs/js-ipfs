@@ -2,6 +2,7 @@
   "name": "ipfs",
   "version": "0.28.2",
   "description": "JavaScript implementation of the IPFS specification",
+  "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "bin": {
     "jsipfs": "src/cli/bin.js"
   },
@@ -54,7 +55,6 @@
   "keywords": [
     "IPFS"
   ],
-  "author": "David Dias <daviddias@ipfs.io>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ipfs/js-ipfs/issues"
@@ -79,7 +79,6 @@
     "mocha": "^5.1.1",
     "ncp": "^2.0.0",
     "nexpect": "^0.5.0",
-    "pre-commit": "^1.2.2",
     "pretty-bytes": "^4.0.2",
     "qs": "^6.5.2",
     "random-fs": "^1.0.3",

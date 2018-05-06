@@ -47,6 +47,14 @@ You can check the development status at the [Waffle Board](https://waffle.io/ipf
 
 [**`Weekly Dev Calls`**](https://github.com/ipfs/js-ipfs/issues/1179)
 
+## Tech Lead
+
+[David Dias](https://github.com/diasdavid)
+
+## Lead Maintainer
+
+[Alan Shaw](https://github.com/alanshaw)
+
 ## Table of Contents
 
 - [Install](#install)
