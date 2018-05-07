@@ -28,6 +28,10 @@
 
 > A client library for the IPFS HTTP API, implemented in JavaScript. This client library implements the [interface-ipfs-core](https://github.com/ipfs/interface-ipfs-core) enabling applications to change between a embebed js-ipfs node and any remote IPFS node without having to change the code. In addition, this client library implements a set of utility functions.
 
+## Lead Maintainer
+
+[Alan Shaw](http://github.com/alanshaw).
+
 ## Table of Contents
 
 - [Install](#install)

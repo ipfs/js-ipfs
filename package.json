@@ -2,6 +2,7 @@
   "name": "ipfs-api",
   "version": "20.2.1",
   "description": "A client library for the IPFS HTTP API",
+  "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "main": "src/index.js",
   "browser": {
     "glob": false,
@@ -93,7 +94,6 @@
   "keywords": [
     "ipfs"
   ],
-  "author": "Matt Bell <mappum@gmail.com>",
   "contributors": [
     "Alan Shaw <alan@tableflip.io>",
     "Alex Mingoia <talk@alexmingoia.com>",
