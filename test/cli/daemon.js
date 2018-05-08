@@ -83,7 +83,7 @@ describe('daemon', () => {
       res.stdout.on('data', (data) => {
         const line = data.toString()
         if (line.includes('Daemon is ready')) {
-          clearInterval(timeout)
+          clearTimeout(timeout)
           res.kill()
           done()
         }
