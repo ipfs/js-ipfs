@@ -1,5 +1,6 @@
-/* global self */
 'use strict'
+
+const IPFS = require('ipfs')
 
 // Daemon
 const $daemonId = document.querySelector('.daemon-id')
@@ -40,8 +41,7 @@ function start () {
       }
     }
 
-    // node = new IPFS(options)
-    node = new self.Ipfs(options)
+    node = new IPFS(options)
 
     Buffer = node.types.Buffer
 
@@ -80,7 +80,7 @@ function appendFile (name, hash, size, data) {
   const link = document.createElement('a')
   link.setAttribute('href', url)
   link.setAttribute('download', name)
-  link.innerHTML = '<img width=20 class="table-action" src="download.svg" alt="Download" />'
+  link.innerHTML = '<img width=20 class="table-action" src="assets/download.svg" alt="Download" />'
   downloadCell.appendChild(link)
 
   row.appendChild(nameCell)
