@@ -1,9 +1,9 @@
 'use strict'
 
 module.exports = {
-  command: 'cp <source> <dest>',
+  command: 'mv <source> <dest>',
 
-  describe: 'Copy files between locations in the mfs.',
+  describe: 'Move files around. Just like traditional unix mv',
 
   builder: {
     parents: {
@@ -29,7 +29,7 @@ module.exports = {
       recursive
     } = argv
 
-    ipfs.mfs.cp(source, dest, {
+    ipfs.mfs.mv(source, dest, {
       parents,
       recursive
     }, (error) => {

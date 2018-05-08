@@ -33,7 +33,7 @@ describe('cp', function () {
         throw new Error('No error was thrown for missing files')
       })
       .catch(error => {
-        expect(error.message).to.contain('Please specify a source(s) and a destination')
+        expect(error.message).to.contain('Please supply at least one source')
       })
   })
 
@@ -43,17 +43,17 @@ describe('cp', function () {
         throw new Error('No error was thrown for missing files')
       })
       .catch(error => {
-        expect(error.message).to.contain('Please specify a source(s) and a destination')
+        expect(error.message).to.contain('Please supply at least one source')
       })
   })
 
-  it('refuses to copy files without files', () => {
+  it('refuses to copy files without files even with options', () => {
     return mfs.cp('destination', {})
       .then(() => {
         throw new Error('No error was thrown for missing files')
       })
       .catch(error => {
-        expect(error.message).to.contain('Please specify a path to copy')
+        expect(error.message).to.contain('Please supply at least one source')
       })
   })
 

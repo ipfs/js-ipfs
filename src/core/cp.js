@@ -4,18 +4,19 @@ const promisify = require('promisify-es6')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
 const series = require('async/series')
-const path = require('path')
 const UnixFs = require('ipfs-unixfs')
 const {
   traverseTo,
   addLink,
   updateTree,
-  updateMfsRoot
+  updateMfsRoot,
+  toSourcesAndDestination
 } = require('./utils')
 const stat = require('./stat')
 
 const defaultOptions = {
   parents: false,
+  recursive: false,
   flush: true,
   format: 'dag-pb',
   hashAlg: 'sha2-256'
@@ -24,36 +25,19 @@ const defaultOptions = {
 module.exports = function mfsCp (ipfs) {
   return promisify(function () {
     const args = Array.prototype.slice.call(arguments)
-    const callback = args.pop()
+    const {
+      sources,
+      destination,
+      options,
+      callback
+    } = toSourcesAndDestination(args, defaultOptions)
 
-    if (args.length < 2) {
-      return callback(new Error('Please specify a source(s) and a destination'))
+    if (!sources.length) {
+      return callback(new Error('Please supply at least one source'))
     }
 
-    let destination = args.pop()
-    let options = {}
-
-    if (typeof destination !== 'string') {
-      options = destination
-      destination = args.pop()
-    }
-
-    options = Object.assign({}, defaultOptions, options)
-
-    const sources = args.map(source => ({
-      path: source,
-      name: path.basename(source),
-      dir: path.dirname(source)
-    }))
-
-    destination = {
-      path: destination,
-      name: path.basename(destination),
-      dir: path.dirname(destination)
-    }
-
-    if (sources.length < 1) {
-      return callback(new Error('Please specify a path to copy'))
+    if (!destination) {
+      return callback(new Error('Please supply a destination'))
     }
 
     traverseTo(ipfs, destination.path, {}, (error, result) => {

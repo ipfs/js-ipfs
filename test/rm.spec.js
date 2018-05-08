@@ -36,7 +36,7 @@ describe('rm', function () {
         throw new Error('No error was thrown for missing paths')
       })
       .catch(error => {
-        expect(error.message).to.contain('Please specify a path to remove')
+        expect(error.message).to.contain('Please supply at least one path to remove')
       })
   })
 
@@ -79,6 +79,37 @@ describe('rm', function () {
       })
       .catch(error => {
         expect(error.message).to.contain(`Path ${file} did not exist`)
+      })
+  })
+
+  it('removes multiple files', () => {
+    const file1 = `/some-file-${Math.random()}.txt`
+    const file2 = `/some-file-${Math.random()}.txt`
+
+    return mfs.write(file1, bufferStream(100), {
+      create: true,
+      parents: true
+    })
+      .then(() => mfs.write(file2, bufferStream(100), {
+        create: true,
+        parents: true
+      }))
+      .then(() => mfs.rm(file1, file2, {
+        recursive: true
+      }))
+      .then(() => mfs.stat(file1))
+      .then(() => {
+        throw new Error('File #1 was not removed')
+      })
+      .catch(error => {
+        expect(error.message).to.contain(`Path ${file1} did not exist`)
+      })
+      .then(() => mfs.stat(file2))
+      .then(() => {
+        throw new Error('File #2 was not removed')
+      })
+      .catch(error => {
+        expect(error.message).to.contain(`Path ${file2} did not exist`)
       })
   })
 

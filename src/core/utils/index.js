@@ -4,6 +4,8 @@ const constants = require('./constants')
 
 module.exports = {
   endPullStream: require('./end-pull-stream'),
+  toSources: require('./to-sources'),
+  toSourcesAndDestination: require('./to-sources-and-destination'),
   validatePath: require('./validate-path'),
   withMfsRoot: require('./with-mfs-root'),
   updateMfsRoot: require('./update-mfs-root'),
