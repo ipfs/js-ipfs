@@ -3,6 +3,7 @@
 const promisify = require('promisify-es6')
 const debug = require('debug')
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
+const PeerId = require('peer-id')
 const pull = require('pull-stream/pull')
 const Pushable = require('pull-pushable')
 const ndjson = require('pull-ndjson')
@@ -23,14 +24,15 @@ module.exports = function ping (self) {
       source,
       ndjson.serialize()
     )
-
     waterfall([
       getPeer.bind(null, self._libp2pNode, source, peerId),
       runPing.bind(null, self._libp2pNode, source, count)
     ], (err) => {
-      log.error(err)
-      source.push(getPacket({Text: err.toString()}))
-      return source.end(err)
+      if (err) {
+        log.error(err)
+        source.push(getPacket({Text: err.toString()}))
+        source.end(err)
+      }
     })
 
     cb(null, response)
@@ -47,19 +49,19 @@ function getPeer (libp2pNode, statusStream, peerId, cb) {
   let peer
   try {
     peer = libp2pNode.peerBook.get(peerId)
-    console.log(peer)
     return cb(null, peer)
   } catch (err) {
     log('Peer not found in peer book, trying peer routing')
     // Share lookup status just as in the go implemmentation
     statusStream.push(getPacket({Success: true, Text: `Looking up peer ${peerId}`}))
     // Try to use peerRouting
-    libp2pNode.peerRouting.findPeer(peerId, cb)
+    libp2pNode.peerRouting.findPeer(PeerId.createFromB58String(peerId), cb)
   }
 }
 
 function runPing (libp2pNode, statusStream, count, peer, cb) {
   libp2pNode.ping(peer, (err, p) => {
+    log('Got peer', peer)
     if (err) {
       return cb(err)
     }
