@@ -3,6 +3,7 @@
 exports.version = require('./version')
 exports.shutdown = require('./shutdown')
 exports.id = require('./id')
+exports.ping = require('./ping')
 exports.bootstrap = require('./bootstrap')
 exports.repo = require('./repo')
 exports.object = require('./object')
