@@ -15,9 +15,9 @@ exports.get = {
         .when('count', {
           is: Joi.any().exist(),
           then: Joi.any().forbidden(),
-          otherwise: Joi.number().greater(0)
+          otherwise: Joi.number().integer().greater(0)
         }),
-      count: Joi.number().greater(0),
+      count: Joi.number().integer().greater(0),
       arg: Joi.string().required()
     }).unknown()
   },
