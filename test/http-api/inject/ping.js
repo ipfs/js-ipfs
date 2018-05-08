@@ -19,7 +19,7 @@ module.exports = (http) => {
     it('returns 400 if both n and count are provided', (done) => {
       api.inject({
         method: 'GET',
-        url: `/api/v0/ping?arg=someRandomId&n=1&count=1`
+        url: `/api/v0/ping?arg=peerid&n=1&count=1`
       }, (res) => {
         expect(res.statusCode).to.equal(400)
         done()
@@ -39,7 +39,7 @@ module.exports = (http) => {
     it('returns 200 and the response stream with the ping result', (done) => {
       api.inject({
         method: 'GET',
-        url: `/api/v0/ping?arg=someRandomId`
+        url: `/api/v0/ping?arg=peerid`
       }, (res) => {
         expect(res.statusCode).to.equal(200)
         expect(res.headers['x-chunked-output']).to.equal('1')

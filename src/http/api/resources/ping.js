@@ -11,10 +11,15 @@ exports = module.exports
 exports.get = {
   validate: {
     query: Joi.object().keys({
-      n: Joi.number().greater(0),
+      n: Joi.alternatives()
+        .when('count', {
+          is: Joi.any().exist(),
+          then: Joi.any().forbidden(),
+          otherwise: Joi.number().greater(0)
+        }),
       count: Joi.number().greater(0),
       arg: Joi.string().required()
-    }).xor('n', 'count').unknown()
+    }).unknown()
   },
   handler: (request, reply) => {
     const ipfs = request.server.app.ipfs
