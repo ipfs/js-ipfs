@@ -2,7 +2,6 @@
 
 const pull = require('pull-stream/pull')
 const drain = require('pull-stream/sinks/drain')
-const pullCatch = require('pull-catch')
 
 const print = require('../utils').print
 
@@ -24,9 +23,6 @@ module.exports = {
     const count = argv.count || 10
     pull(
       argv.ipfs.pingPullStream(peerId, { count }),
-      pullCatch(err => {
-        throw err
-      }),
       drain(({ Time, Text }) => {
         // Check if it's a pong
         if (Time) {

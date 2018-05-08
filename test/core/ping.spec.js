@@ -5,7 +5,6 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const pull = require('pull-stream/pull')
 const drain = require('pull-stream/sinks/drain')
-const pullCatch = require('pull-catch')
 const parallel = require('async/parallel')
 const DaemonFactory = require('ipfsd-ctl')
 const isNode = require('detect-node')
@@ -86,16 +85,14 @@ describe('ping', function () {
       const count = 3
       pull(
         ipfsdA.api.pingPullStream(ipfsdBId, { count }),
-        pullCatch(err => {
-          expect(err).to.not.exist()
-        }),
         drain(({ Success, Time, Text }) => {
           expect(Success).to.be.true()
           // It's a pong
           if (Time) {
             packetNum++
           }
-        }, () => {
+        }, (err) => {
+          expect(err).to.not.exist()
           expect(packetNum).to.equal(count)
           done()
         })
@@ -107,9 +104,6 @@ describe('ping', function () {
       const count = 2
       pull(
         ipfsdA.api.pingPullStream('unknown', { count }),
-        pullCatch(err => {
-          expect(err).to.not.exist()
-        }),
         drain(({ Success, Time, Text }) => {
           messageNum++
           // Assert that the ping command falls back to the peerRouting
@@ -121,7 +115,8 @@ describe('ping', function () {
           if (messageNum === 2) {
             expect(Success).to.be.false()
           }
-        }, () => {
+        }, (err) => {
+          expect(err).to.not.exist()
           expect(messageNum).to.equal(count)
           done()
         })
@@ -196,9 +191,6 @@ describe('ping', function () {
       const count = 3
       pull(
         ipfsdA.api.pingPullStream(ipfsdCId, { count }),
-        pullCatch(err => {
-          expect(err).to.not.exist()
-        }),
         drain(({ Success, Time, Text }) => {
           messageNum++
           expect(Success).to.be.true()
@@ -210,7 +202,8 @@ describe('ping', function () {
           if (Time) {
             packetNum++
           }
-        }, () => {
+        }, (err) => {
+          expect(err).to.not.exist()
           expect(packetNum).to.equal(count)
           done()
         })
