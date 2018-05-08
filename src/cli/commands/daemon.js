@@ -22,6 +22,10 @@ module.exports = {
         type: 'boolean',
         default: false
       })
+      .option('enable-dht-experiment', {
+        type: 'boolean',
+        default: false
+      })
   },
 
   handler (argv) {
