@@ -6,12 +6,6 @@ module.exports = {
   describe: 'Copy files between locations in the mfs.',
 
   builder: {
-    recursive: {
-      alias: 'r',
-      type: 'boolean',
-      default: false,
-      describe: 'Copy directories recursively'
-    },
     parents: {
       alias: 'p',
       type: 'boolean',
@@ -25,12 +19,10 @@ module.exports = {
       source,
       dest,
       ipfs,
-      recursive,
       parents
     } = argv
 
     ipfs.mfs.cp(source, dest, {
-      recursive,
       parents
     }, (error) => {
       if (error) {

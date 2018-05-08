@@ -5,6 +5,7 @@ const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
 const series = require('async/series')
 const path = require('path')
+const UnixFs = require('ipfs-unixfs')
 const {
   traverseTo,
   addLink,
@@ -14,7 +15,6 @@ const {
 const stat = require('./stat')
 
 const defaultOptions = {
-  recursive: false,
   parents: false,
   flush: true,
   format: 'dag-pb',
@@ -56,11 +56,23 @@ module.exports = function mfsCp (ipfs) {
       return callback(new Error('Please specify a path to copy'))
     }
 
-    if (sources.length === 1) {
-      return copyToFile(ipfs, sources.pop(), destination, options, callback)
-    }
+    traverseTo(ipfs, destination.path, {}, (error, result) => {
+      if (error) {
+        if (sources.length === 1) {
+          return copyToFile(ipfs, sources.pop(), destination, options, callback)
+        } else {
+          return copyToDirectory(ipfs, sources, destination, options, callback)
+        }
+      }
 
-    copyToDirectory(ipfs, sources, destination, options, callback)
+      const meta = UnixFs.unmarshal(result.node.data)
+
+      if (meta.type === 'directory') {
+        return copyToDirectory(ipfs, sources, destination, options, callback)
+      }
+
+      callback(new Error('Directory already has entry by that name'))
+    })
   })
 }
 
@@ -71,7 +83,7 @@ const copyToFile = (ipfs, source, destination, options, callback) => {
         (next) => stat(ipfs)(source.path, options, next),
         (next) => stat(ipfs)(destination.path, options, (error) => {
           if (!error) {
-            return next(new Error('Destination exists'))
+            return next(new Error('Directory already has entry by that name'))
           }
 
           next()
