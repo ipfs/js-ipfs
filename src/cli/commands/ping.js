@@ -1,7 +1,6 @@
 'use strict'
 
 const pull = require('pull-stream/pull')
-const drain = require('pull-stream/sinks/drain')
 
 const print = require('../utils').print
 
@@ -23,7 +22,7 @@ module.exports = {
     const count = argv.count || 10
     pull(
       argv.ipfs.pingPullStream(peerId, { count }),
-      drain(({ Time, Text }) => {
+      pull.drain(({ Time, Text }) => {
         // Check if it's a pong
         if (Time) {
           print(`Pong received: time=${Time} ms`)
