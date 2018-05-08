@@ -147,13 +147,15 @@ IPFS.createNode = (options) => {
 /**
  * Static factory method to create a node wrapped with a Promise
  *
- * The Promise does *NOT* wait for the Ready Event to resolve with a IPFS instance
- * and rejects with Error Events.
+ * The Promise waits for the Ready Event to resolve with a IPFS instance
+ * and rejects with Error Events. Rejections can be customized the with
+ * second param.
  *
- * @param {object} options
+ * @param {object} options - IPFS node options
+ * @param {object} stateOptions - Node state options to reject with error
  * @returns {IPFS}
  */
-IPFS.createNodePromise = (options) => {
+IPFS.createNodePromise = (options = {}, stateOptions = {}) => {
   return new Promise((resolve, reject) => {
     const node = new IPFS(options)
 
@@ -161,42 +163,17 @@ IPFS.createNodePromise = (options) => {
       reject(err)
     })
 
-    resolve(node)
-  })
-}
-
-/**
- * Static factory method to create a ready node wrapped with a Promise
-*
- * The Promise waits for the Ready Event to resolve with a IPFS instance
- * and rejects with Error Events or a repo not initialized.
- *
- * @param {Object} options IPFS constructor options
- * @returns {IPFS}
- */
-IPFS.createReadyNodePromise = (options = {}) => {
-  return new Promise((resolve, reject) => {
-    const node = new IPFS(options)
-
-    node.once('error', err => {
-      reject(err)
-    })
-
     node.once('ready', () => {
-      /**
-       * We shouldn't need to do this but until we get a unified error from ipfs-repo
-       * we catch it here
-       */
-      node._repo._isInitialized((err) => {
-        if (err) {
-          reject(Object.assign(new Error('repo is not initialized yet'),
-            {
-              code: 'ERR_REPO_NOT_INITIALIZED',
-              path: node._repo.path
-            }))
-        }
+      if (stateOptions.forceInitialized) {
+        node._repo._isInitialized((err) => {
+          if (err) {
+            reject(err)
+          }
+          resolve(node)
+        })
+      } else {
         resolve(node)
-      })
+      }
     })
   })
 }

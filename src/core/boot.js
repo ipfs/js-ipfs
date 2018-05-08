@@ -36,15 +36,7 @@ module.exports = (self) => {
       }
     ], (err, res) => {
       if (err) {
-        // If the error is that no repo exists,
-        // which happens when the version file is not found
-        // we just want to signal that no repo exist, not
-        // fail the whole process.
-        // TODO: improve datastore and ipfs-repo implemenations so this error is a bit more unified
-        if (err.message.match(/not found/) || // indexeddb
-          err.message.match(/ENOENT/) || // fs
-          err.message.match(/No value/) // memory
-        ) {
+        if (err.code === 'ERR_REPO_NOT_INITIALIZED') {
           return cb(null, false)
         }
         return cb(err)

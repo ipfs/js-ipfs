@@ -19,15 +19,7 @@ module.exports = function repo (self) {
     version: promisify((callback) => {
       self._repo._isInitialized(err => {
         if (err) {
-          // TODO: (dryajov) This is really hacky, there must be a better way
-          const match = [
-            /Key not found in database \[\/version\]/,
-            /ENOENT/,
-            /not yet initialized/
-          ].some((m) => {
-            return m.test(err.message)
-          })
-          if (match) {
+          if (err.code === 'ERR_REPO_NOT_INITIALIZED') {
             // this repo has not been initialized
             return callback(null, repoVersion)
           }

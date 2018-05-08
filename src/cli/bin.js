@@ -77,7 +77,7 @@ let cli = yargs(argv)
   // .recommendCommands()
   .completion()
 
-if (argv[0] === 'daemon' || argv[0] === 'init' || argv[0] === 'id') {
+if (['daemon', 'init', 'id', 'version'].includes(argv[0])) {
   args = cli.fail((msg, err, yargs) => {
     if (err instanceof Error && err.message && !msg) {
       msg = err.message
