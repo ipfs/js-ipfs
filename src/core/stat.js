@@ -34,7 +34,9 @@ module.exports = function mfsStat (ipfs) {
     log(`Fetching stats for ${path}`)
 
     waterfall([
-      (done) => traverseTo(ipfs, path, options, done),
+      (done) => traverseTo(ipfs, path, {
+        withCreateHint: false
+      }, done),
       ({ node }, done) => {
         if (options.hash) {
           return done(null, {

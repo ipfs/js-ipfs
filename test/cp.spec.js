@@ -28,7 +28,9 @@ describe('cp', function () {
 
   it('refuses to copy files without arguments', () => {
     return mfs.cp()
-      .then(() => expect.fail('No error was thrown for missing files'))
+      .then(() => {
+        throw new Error('No error was thrown for missing files')
+      })
       .catch(error => {
         expect(error.message).to.contain('Please specify a source(s) and a destination')
       })
@@ -36,7 +38,9 @@ describe('cp', function () {
 
   it('refuses to copy files without files', () => {
     return mfs.cp('destination')
-      .then(() => expect.fail('No error was thrown for missing files'))
+      .then(() => {
+        throw new Error('No error was thrown for missing files')
+      })
       .catch(error => {
         expect(error.message).to.contain('Please specify a source(s) and a destination')
       })
@@ -44,7 +48,9 @@ describe('cp', function () {
 
   it('refuses to copy files without files', () => {
     return mfs.cp('destination', {})
-      .then(() => expect.fail('No error was thrown for missing files'))
+      .then(() => {
+        throw new Error('No error was thrown for missing files')
+      })
       .catch(error => {
         expect(error.message).to.contain('Please specify a path to copy')
       })
@@ -52,7 +58,9 @@ describe('cp', function () {
 
   it('refuses to copy a file to a non-existent directory', () => {
     return mfs.cp('/i-do-not-exist', '/output')
-      .then(() => expect.fail('No error was thrown for a non-existent file'))
+      .then(() => {
+        throw new Error('No error was thrown for a non-existent file')
+      })
       .catch(error => {
         expect(error.message).to.contain('did not exist')
       })

@@ -17,7 +17,8 @@ const createNode = require('./create-node')
 const defaultOptions = {
   parents: false,
   flush: true,
-  createLastComponent: false
+  createLastComponent: false,
+  withCreateHint: true
 }
 
 const traverseTo = (ipfs, path, options, callback) => {
@@ -62,7 +63,13 @@ const traverseTo = (ipfs, path, options, callback) => {
               }
 
               if (!options.parents) {
-                return done(new Error(`Cannot find ${path} - '${pathSegment}' did not exist: Try again with the --parents flag to create it`))
+                let message = `Cannot find ${path} - ${pathSegment} did not exist`
+
+                if (options.withCreateHint) {
+                  message += ': Try again with the --parents flag to create it'
+                }
+
+                return done(new Error(message))
               }
 
               log(`Adding empty directory '${pathSegment}' to parent ${parent.name}`)

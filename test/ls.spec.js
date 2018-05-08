@@ -27,7 +27,9 @@ describe('ls', function () {
 
   it('refuses to lists files with an empty path', () => {
     return mfs.ls('')
-      .then(() => expect.fail('No error was thrown for an empty path'))
+      .then(() => {
+        throw new Error('No error was thrown for an empty path')
+      })
       .catch(error => {
         expect(error.message).to.contain('paths must not be empty')
       })
@@ -35,7 +37,9 @@ describe('ls', function () {
 
   it('refuses to lists files with an invalid path', () => {
     return mfs.ls('not-valid')
-      .then(() => expect.fail('No error was thrown for an empty path'))
+      .then(() => {
+        throw new Error('No error was thrown for an empty path')
+      })
       .catch(error => {
         expect(error.message).to.contain('paths must start with a leading /')
       })
@@ -50,7 +54,9 @@ describe('ls', function () {
 
   it('fails to list non-existent file', () => {
     return mfs.ls('/i-do-not-exist')
-      .then(() => expect.fail('No error was thrown for a non-existent file'))
+      .then(() => {
+        throw new Error('No error was thrown for a non-existent file')
+      })
       .catch(error => {
         expect(error.message).to.contain('file does not exist')
       })
