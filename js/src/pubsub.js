@@ -63,7 +63,7 @@ function makeCheck (n, done) {
 }
 
 module.exports = (common) => {
-  describe('.pubsub', function () {
+  describe.only('.pubsub', function () {
     this.timeout(80 * 1000)
 
     const getTopic = () => 'pubsub-tests-' + hat()
@@ -205,7 +205,7 @@ module.exports = (common) => {
           }
 
           ipfs1.pubsub
-            .subscribe(topic, {}, handler)
+            .subscribe(topic, handler, {})
             .then(() => ipfs1.pubsub.publish(topic, Buffer.from('hi'), check))
             .catch((err) => expect(err).to.not.exist())
         })
@@ -218,7 +218,7 @@ module.exports = (common) => {
             expect(msg.data.toString()).to.eql('hello')
 
             series([
-              (cb) => ipfs1.pubsub.unsubscribe(topic, handler1, cb)
+              (cb) => ipfs1.pubsub.unsubscribe(topic, handler1, cb),
               (cb) => ipfs1.pubsub.ls(cb),
               (cb) => ipfs1.pubsub.unsubscribe(topic, handler2, cb),
               (cb) => ipfs1.pubsub.ls(cb)
@@ -226,9 +226,9 @@ module.exports = (common) => {
               expect(err).to.not.exist()
 
               // Still subscribed as there is one listener left
-              expect(res[0]).to.eql([topic])
+              expect(res[1]).to.eql([topic])
               // Now all listeners are gone no subscription anymore
-              expect(res[2]).to.eql([])
+              expect(res[3]).to.eql([])
               check()
             })
           }
@@ -310,12 +310,13 @@ module.exports = (common) => {
 
             ipfs1.pubsub.peers(topic, (err, peers) => {
               expect(err).to.not.exist()
-
               expect(peers).to.be.empty()
-              ipfs1.pubsub.unsubscribe(topic, sub1)
-              ipfs2.pubsub.unsubscribe(topicOther, sub2)
-              ipfs3.pubsub.unsubscribe(topicOther, sub3)
-              done()
+
+              parallel([
+                (cb) => ipfs1.pubsub.unsubscribe(topic, sub1, cb),
+                (cb) => ipfs2.pubsub.unsubscribe(topicOther, sub2, cb),
+                (cb) => ipfs3.pubsub.unsubscribe(topicOther, sub3, cb)
+              ], done)
             })
           })
         })
@@ -335,11 +336,12 @@ module.exports = (common) => {
             (cb) => waitForPeers(ipfs1, topic, [ipfs2.peerId.id], cb)
           ], (err) => {
             expect(err).to.not.exist()
-            ipfs1.pubsub.unsubscribe(topic, sub1)
-            ipfs2.pubsub.unsubscribe(topic, sub2)
-            ipfs3.pubsub.unsubscribe(topic, sub3)
 
-            done()
+            parallel([
+              (cb) => ipfs1.pubsub.unsubscribe(topic, sub1, cb),
+              (cb) => ipfs2.pubsub.unsubscribe(topic, sub2, cb),
+              (cb) => ipfs3.pubsub.unsubscribe(topic, sub3, cb)
+            ], done)
           })
         })
 
@@ -359,11 +361,12 @@ module.exports = (common) => {
             ], cb)
           ], (err) => {
             expect(err).to.not.exist()
-            ipfs1.pubsub.unsubscribe(topic, sub1)
-            ipfs2.pubsub.unsubscribe(topic, sub2)
-            ipfs3.pubsub.unsubscribe(topic, sub3)
 
-            done()
+            parallel([
+              (cb) => ipfs1.pubsub.unsubscribe(topic, sub1, cb),
+              (cb) => ipfs2.pubsub.unsubscribe(topic, sub2, cb),
+              (cb) => ipfs3.pubsub.unsubscribe(topic, sub3, cb)
+            ], done)
           })
         })
       })
@@ -415,11 +418,9 @@ module.exports = (common) => {
               expect(list.sort())
                 .to.eql(topics.map((t) => t.name).sort())
 
-              topics.forEach((t) => {
-                ipfs1.pubsub.unsubscribe(t.name, t.handler)
-              })
-
-              done()
+              parallel(topics.map((t) => {
+                return (cb) => ipfs1.pubsub.unsubscribe(t.name, t.handler, cb)
+              }), done)
             })
           })
         })
@@ -436,8 +437,8 @@ module.exports = (common) => {
 
         afterEach((done) => {
           parallel([
-           (cb) => ipfs1.pubsub.unsubscribe(topic, sub1, cb)
-           (cb) => ipfs2.pubsub.unsubscribe(topic, sub2, cb)
+            (cb) => ipfs1.pubsub.unsubscribe(topic, sub1, cb),
+            (cb) => ipfs2.pubsub.unsubscribe(topic, sub2, cb)
           ], done)
         })
 
@@ -589,9 +590,11 @@ module.exports = (common) => {
             topic = getTopic()
           })
 
-          afterEach(() => {
-            ipfs1.pubsub.unsubscribe(topic, sub1)
-            ipfs2.pubsub.unsubscribe(topic, sub2)
+          afterEach((done) => {
+            parallel([
+              (cb) => ipfs1.pubsub.unsubscribe(topic, sub1, cb),
+              (cb) => ipfs2.pubsub.unsubscribe(topic, sub2, cb)
+            ], done)
           })
 
           it('send/receive 10k messages', function (done) {
@@ -672,7 +675,7 @@ module.exports = (common) => {
               expect(err).to.not.exist()
               each(
                 handlers,
-                (handler, cb) => ipfs1.pubsub.unsubscribe(someTopic, handler, cb)
+                (handler, cb) => ipfs1.pubsub.unsubscribe(someTopic, handler, cb),
                 (err) => {
                   expect(err).to.not.exist()
                   ipfs1.pubsub.ls((err, topics) => {
@@ -680,8 +683,8 @@ module.exports = (common) => {
                     expect(topics).to.eql([])
                     done()
                   })
-                })
-              })
+                }
+              )
             }
           )
         })
