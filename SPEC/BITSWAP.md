@@ -4,9 +4,13 @@
 * [bitswap.unwant](#bitswapunwant)
 * [bitswap.stat](#bitswapstat)
 
-#### `bitswap.wantlist` (not spec'ed yet)
+#### `bitswap.wantlist`
 
-#### `bitswap.unwant` (not spec'ed yet)
+(not spec'ed yet)
+
+#### `bitswap.unwant`
+
+(not spec'ed yet)
 
 #### `bitswap.stat`
 
