@@ -1,5 +1,9 @@
-Miscellaneous API
-===========
+# Miscellaneous API
+
+* [id](#id)
+* [version](#version)
+* [dns](#dns)
+* [stop](#stop)
 
 #### `id`
 
@@ -86,14 +90,14 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `JavaScript` - ipfs.stop([callback])
 
-`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful. 
+`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
 If no `callback` is passed, a promise is returned.
 
 **Example:**
 
 ```JavaScript
 ipfs.stop((err) => {
-  if (err) { 
+  if (err) {
     throw err
   }
 })

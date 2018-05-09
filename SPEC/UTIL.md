@@ -1,5 +1,4 @@
-UTIL API
-=======
+# Util API
 
 A set of utils are exposed directly from the IPFS instance under `ipfs.util`. That way you're not required to import/require the following:
 

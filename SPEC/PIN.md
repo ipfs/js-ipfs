@@ -1,7 +1,10 @@
-Pin API
-=======
+# Pin API
 
-#### `add`
+* [pin.add](#pinadd)
+* [pin.ls](#pinls)
+* [pin.rm](#pinrm)
+
+#### `pin.add`
 
 > Adds an IPFS object to the pinset and also stores it to the IPFS repo. pinset is the set of hashes currently pinned (not gc'able).
 
@@ -21,7 +24,7 @@ Where:
 {
   hash: 'QmHash'
 }
-``` 
+```
 
 If no `callback` is passed, a promise is returned.
 
@@ -31,7 +34,7 @@ If no `callback` is passed, a promise is returned.
 ipfs.pin.add(hash, function (err) {})
 ```
 
-#### `ls`
+#### `pin.ls`
 
 > List all the objects pinned to local storage or under a specific hash.
 
@@ -62,7 +65,7 @@ ipfs.pin.ls(function (err, pinset) {
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `rm`
+#### `pin.rm`
 
 > Remove a hash from the pinset
 
@@ -75,7 +78,7 @@ Where:
 - `options` is an object that can contain the following keys
   - 'recursive' - Recursively unpin the object linked. Type: bool. Default: `false`
 
-`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful. 
+`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
 
 If no `callback` is passed, a promise is returned.
 

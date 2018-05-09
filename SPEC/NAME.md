@@ -1,7 +1,9 @@
-Name API
-========
+# Name API
 
-#### `publish`
+* [name.publish](#namepublish)
+* [name.resolve](#nameresolve)
+
+#### `name.publish`
 
 > Publish an IPNS name with a given value.
 
@@ -22,7 +24,7 @@ Name API
 }
 ```
 
-`callback` must follow `function (err, name) {}` signature, where `err` is an error if the operation was not successful. `name` is an object that contains the IPNS hash and the IPFS hash, such as: 
+`callback` must follow `function (err, name) {}` signature, where `err` is an error if the operation was not successful. `name` is an object that contains the IPNS hash and the IPFS hash, such as:
 
 ```JavaScript
 {
@@ -53,7 +55,7 @@ ipfs.name.publish(addr, function (err, res) {
 
 This way, you can republish a new version of your website under the same address. By default, `ipfs.name.publish` will use the Peer ID. If you want to have multiple websites (for example) under the same IPFS module, you can always check the [key API](./KEY.md).
 
-#### `resolve`
+#### `name.resolve`
 
 > Resolve an IPNS name.
 

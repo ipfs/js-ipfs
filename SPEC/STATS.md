@@ -1,15 +1,20 @@
-Stats API
-=======
+# Stats API
 
-#### `bitswap`
+* [stats.bitswap](#statsbitswap)
+* [stats.repo](#statsrepo)
+* [stats.bw](#statsbw)
+* [stats.bwPullStream](#statsbwpullstream)
+* [stats.bwReadableStream](#statsbwreadablestream)
+
+#### `stats.bitswap`
 
 `stats.bitswap` and `bitswap.stat` can be used interchangeably. See [`bitswap.stat`](./BITSWAP.md#stat) for more details.
 
-#### `repo`
+#### `stats.repo`
 
 `stats.repo` and `repo.stat` can be used interchangeably. See [`repo.stat`](./REPO.md#stat) for more details.
 
-#### `bw`
+#### `stats.bw`
 
 > Get IPFS bandwidth information as an object.
 
@@ -47,7 +52,7 @@ ipfs.stats.bw((err, stats) => console.log(stats))
 //   rateOut: Big {...} }
 ```
 
-#### `bwPullStream`
+#### `stats.bwPullStream`
 
 > Get IPFS bandwidth information as a [Pull Stream][ps].
 
@@ -78,7 +83,7 @@ pull(
 // Ad infinitum
 ```
 
-#### `bwReadableStream`
+#### `stats.bwReadableStream`
 
 > Get IPFS bandwidth information as a [Readable Stream][rs].
 

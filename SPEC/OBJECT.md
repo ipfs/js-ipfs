@@ -1,5 +1,15 @@
-object API
-==========
+# Object API
+
+* [object.new](#objectnew)
+* [object.put](#objectput)
+* [object.get](#objectget)
+* [object.data](#objectdata)
+* [object.links](#objectlinks)
+* [object.stat](#objectstat)
+* [object.patch.addLink](#objectpatch)
+* [object.patch.rmLink](#objectpatchrmlink)
+* [object.patch.appendData](#objectpatchappenddata)
+* [object.patch.setData](#objectpatchsetdata)
 
 #### `object.new`
 
@@ -142,6 +152,7 @@ ipfs.object.data(multihash, (err, data) => {
   console.log(data.toString())
   // Logs:
   // some data
+})
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -179,6 +190,7 @@ ipfs.object.links(multihash, (err, links) => {
   console.log(links)
   // Logs:
   // []
+})
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -260,7 +272,7 @@ A great source of [examples][] can be found in the tests for this API.
 - `DAGLink`
 - Object containing: name, multihash and size properties
 
-```
+```js
 const link = {
   name: 'Qmef7ScwzJUCg1zUSrCmPAz45m8uP5jU7SLgt2EffjBmbL',
   size: 37,
@@ -270,7 +282,7 @@ const link = {
 
 or
 
-```
+```js
 const link = new DAGLink(name, size, multihash)
 ```
 
@@ -316,7 +328,7 @@ A great source of [examples][] can be found in the tests for this API.
 - `DAGLink`
 - Object containing name property
 
-```
+```js
 const link = {
   name: 'Qmef7ScwzJUCg1zUSrCmPAz45m8uP5jU7SLgt2EffjBmbL'
 };
@@ -324,7 +336,7 @@ const link = {
 
 or
 
-```
+```js
 const link = new DAGLink(name, size, multihash)
 ```
 

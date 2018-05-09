@@ -1,9 +1,30 @@
-files API
-=========
+# Files API
 
 > The files API enables users to use the File System abstraction of IPFS.
 
-#### `add`
+* [files.add](#filesadd)
+* [files.addReadableStream](#filesaddreadablestream)
+* [files.addPullStream](#filesaddpullstream)
+* [files.cat](#filescat)
+* [files.catReadableStream](#filescatreadablestream)
+* [files.catPullStream](#filescatpullstream)
+* [files.get](#filesget)
+* [files.getReadableStream](#filesgetreadablestream)
+* [files.getPullStream](#filesgetpullstream)
+* [ls](#ls)
+* [lsReadableStream](#lsreadablestream)
+* [lsPullStream](#lspullstream)
+* [files.cp](#filescp)
+* [files.mkdir](#filesmkdir)
+* [files.stat](#filesmkdir)
+* [files.rm](#filesrm)
+* [files.read](#filesread)
+* [files.write](#fileswrite)
+* [files.mv](#filesmv)
+* [files.flush](#filesflush)
+* [files.ls](#filesls)
+
+#### `files.add`
 
 > Add files and data to IPFS.
 
@@ -63,7 +84,7 @@ ipfs.files.add(files, function (err, files) {
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `addReadableStream`
+#### `files.addReadableStream`
 
 > Add files and data to IPFS using a [Readable Stream][rs] of class Duplex.
 
@@ -112,7 +133,7 @@ stream.end()
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `addPullStream`
+#### `files.addPullStream`
 
 > Add files and data to IPFS using a [Pull Stream][ps].
 
@@ -157,7 +178,7 @@ pull(
 )
 ```
 
-#### `cat`
+#### `files.cat`
 
 > Returns a file addressed by a valid IPFS Path.
 
@@ -198,7 +219,7 @@ ipfs.files.cat(ipfsPath, function (err, file) {
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `catReadableStream`
+#### `files.catReadableStream`
 
 > Returns a [Readable Stream][rs] containing the contents of a file addressed by a valid IPFS Path.
 
@@ -231,7 +252,7 @@ const stream = ipfs.files.catReadableStream(ipfsPath)
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `catPullStream`
+#### `files.catPullStream`
 
 > Returns a [Pull Stream][ps] containing the contents of a file addressed by a valid IPFS Path.
 
@@ -263,7 +284,7 @@ const stream = ipfs.files.catPullStream(ipfsPath)
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `get`
+#### `files.get`
 
 > Fetch a file or an entire directory tree from IPFS that is addressed by a valid IPFS Path.
 
@@ -309,7 +330,7 @@ ipfs.files.get(validCID, function (err, files) {
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `getReadableStream`
+#### `files.getReadableStream`
 
 > Fetch a file or an entire directory tree from IPFS that is addressed by a valid IPFS Path. The files will be yielded as Readable Streams.
 
@@ -357,7 +378,7 @@ stream.on('data', (file) => {
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `getPullStream`
+#### `files.getPullStream`
 
 > Fetch a file or an entire directory tree from IPFS that is addressed by a valid IPFS Path. The files will be yielded as Readable Streams.
 
@@ -496,7 +517,7 @@ It returns a [Readable Stream][rs] in [Object mode](https://nodejs.org/api/strea
 ```JavaScript
 const validCID = 'QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
 
-const stream = ipfs.files.lsReadableStream(validCID)
+const stream = ipfs.lsReadableStream(validCID)
 
 stream.on('data', (file) => {
   // write the file's path and contents to standard out
@@ -545,7 +566,7 @@ It returns a [Pull Stream][os] that will yield objects of the form:
 ```JavaScript
 const validCID = 'QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
 
-const stream = ipfs.files.lsPullStream(validCID)
+const stream = ipfs.lsPullStream(validCID)
 
 pull(
   stream,
@@ -561,16 +582,14 @@ pull(
 
 A great source of [examples][] can be found in the tests for this API.
 
---------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------
+---
 
-Mutable File System
-===================
+## Mutable File System
 
 The Mutable File System (MFS) is a virtual file system on top of IPFS that exposes a Unix like API over a virtual directory. It enables users to write and read from paths without having to worry about updating the graph. It enables things like [ipfs-blob-store](https://github.com/ipfs/ipfs-blob-store) to exist.
 
 
-#### `cp`
+#### `files.cp`
 
 > Copy files.
 
@@ -597,7 +616,7 @@ ipfs.files.cp(['/src-file', '/dst-file'], (err) => {
 })
 ```
 
-#### `mkdir`
+#### `files.mkdir`
 
 > Make a directory.
 
@@ -625,7 +644,7 @@ ipfs.files.mkdir('/my/beautiful/directory', (err) => {
 })
 ```
 
-#### `stat`
+#### `files.stat`
 
 > Get file or directory status.
 
@@ -671,7 +690,7 @@ ipfs.files.stat('/file.txt', (err, stats) => {
 // }
 ```
 
-#### `rm`
+#### `files.rm`
 
 > Remove a file or directory.
 
@@ -707,7 +726,7 @@ ipfs.files.rm('/my/beautiful/directory', { recursive: true }, (err) => {
 })
 ```
 
-#### `read`
+#### `files.read`
 
 > Read a file.
 
@@ -736,7 +755,7 @@ ipfs.files.read('/hello-world', (err, buf) => {
 // Hello, World!
 ```
 
-#### `write`
+#### `files.write`
 
 > Write to a file.
 
@@ -768,7 +787,7 @@ ipfs.files.write('/hello-world', Buffer.from('Hello, world!'), (err) => {
 })
 ```
 
-#### `mv`
+#### `files.mv`
 
 > Move files.
 
@@ -795,7 +814,7 @@ ipfs.files.mv(['/src-file', '/dst-file'], (err) => {
 })
 ```
 
-#### `flush`
+#### `files.flush`
 
 > Flush a given path's data to the disk
 
@@ -821,7 +840,7 @@ ipfs.files.flush('/', (err) => {
 })
 ```
 
-#### `ls`
+#### `files.ls`
 
 > List directories in the local mutable namespace.
 
@@ -834,7 +853,7 @@ Where:
 - `path` is the path to show listing for. Defaults to `/`.
 - `options` is an optional Object that might contain the following keys:
   - `l` is a Boolean value o use long listing format.
-  
+
 `callback` must follow `function (err, files) {}` signature, where `err` is an error if the operation was not successful. `files` is an array containing Objects that contain the following keys:
 
 - `name` which is the file's name.

@@ -1,7 +1,10 @@
-block API
-=========
+# Block API
 
-#### `get`
+* [block.get](#blockget)
+* [block.put](#blockput)
+* [block.stat](#blockstat)
+
+#### `block.get`
 
 > Get a raw IPFS block.
 
@@ -37,7 +40,7 @@ ipfs.block.get(cid, function (err, block) {
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `put`
+#### `block.put`
 
 > Stores input as an IPFS block.
 
@@ -107,7 +110,7 @@ ipfs.block.put(blob, cid, (err, block) => {
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `stat`
+#### `block.stat`
 
 > Print information of a raw IPFS block.
 

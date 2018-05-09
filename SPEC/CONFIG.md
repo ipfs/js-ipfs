@@ -1,5 +1,8 @@
-config API
-==========
+# Config API
+
+* [config.get](#configget)
+* [config.set](#configset)
+* [config.replace](#configreplace)
 
 #### `config.get`
 

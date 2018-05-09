@@ -1,7 +1,10 @@
-dag API
-=======
+# DAG API
 
 > The dag API comes to replace the `object API`, it support the creation and manipulation of dag-pb object, as well as other IPLD formats (i.e dag-cbor, ethereum-block, git, etc)
+
+* [dag.put](#dagput)
+* [dag.get](#dagget)
+* [dag.tree](#dagtree)
 
 #### `dag.put`
 
