@@ -7,8 +7,6 @@ pubsub API
 * [pubsub.ls](#pubsubls)
 * [pubsub.peers](#pubsubpeers)
 
----
-
 #### `pubsub.subscribe`
 
 > Subscribe to a pubsub topic.
@@ -20,7 +18,7 @@ pubsub API
 - `topic: String`
 - `handler: (msg) => {}` - Event handler which will be called with a message object everytime one is received. The `msg` has the format `{from: String, seqno: Buffer, data: Buffer, topicIDs: Array<String>}`.
 - `options: Object` - (Optional) Object containing the following properties:
-  - `discover: Boolean` - Will use the DHT to find other peers.
+  - `discover: Boolean` - (Default: `false`) Will use the DHT to find other peers.
 - `callback: (Error) => {}` - (Optional) Called once the subscription is established.
 
 If no `callback` is passed, a [promise][] is returned.
