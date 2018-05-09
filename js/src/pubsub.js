@@ -63,7 +63,7 @@ function makeCheck (n, done) {
 }
 
 module.exports = (common) => {
-  describe.only('.pubsub', function () {
+  describe('.pubsub', function () {
     this.timeout(80 * 1000)
 
     const getTopic = () => 'pubsub-tests-' + hat()
