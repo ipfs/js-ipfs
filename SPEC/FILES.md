@@ -728,11 +728,11 @@ ipfs.files.rm('/my/beautiful/directory', { recursive: true }, (err) => {
 
 #### `files.read`
 
-> Read a file.
+> Read a file into a [`Buffer`][b].
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.files.read(path, [options, callback])
+##### `JavaScript` - ipfs.files.read(path, [options], [callback])
 
 Where:
 
@@ -741,7 +741,7 @@ Where:
   - `offset` is an Integer with the byte offset to begin reading from.
   - `count` is an Integer with the maximum number of bytes to read.
 
-`callback` must follow the `function (err, buf) {}` signature, where `err` is an Error if the operation was not successful and `buf` is a Buffer with the contents of `path`.
+`callback` must follow the `function (err, buf) {}` signature, where `err` is an Error if the operation was not successful and `buf` is a [`Buffer`][b] with the contents of `path`.
 
 If no `callback` is passed, a promise is returned.
 
@@ -749,7 +749,69 @@ If no `callback` is passed, a promise is returned.
 
 ```JavaScript
 ipfs.files.read('/hello-world', (err, buf) => {
-  console.log(buf.toString())
+  console.log(buf.toString('utf8'))
+})
+
+// Hello, World!
+```
+
+#### `readReadableStream`
+
+> Read a file into a [`ReadableStream`][rs].
+
+##### `Go` **WIP**
+
+##### `JavaScript` - ipfs.files.readReadableStream(path, [options], [callback])
+
+Where:
+
+- `path` is the path of the object to read.
+- `options` is an optional Object that might contain the following keys:
+  - `offset` is an Integer with the byte offset to begin reading from.
+  - `count` is an Integer with the maximum number of bytes to read.
+
+`callback` must follow the `function (err, stream) {}` signature, where `err` is an Error if the operation was not successful and `stream` is a [`ReadableStream`][rs] with the contents of `path`.
+
+If no `callback` is passed, a promise is returned.
+
+**Example:**
+
+```JavaScript
+ipfs.files.readReadableStream('/hello-world', (err, stream) => {
+  stream.on('data', (buf) => console.log(buf.toString('utf8')))
+})
+
+// Hello, World!
+```
+
+#### `readPullStream`
+
+> Read a file into a [`PullStream`][ps].
+
+##### `Go` **WIP**
+
+##### `JavaScript` - ipfs.files.readReadableStream(path, [options], [callback])
+
+Where:
+
+- `path` is the path of the object to read.
+- `options` is an optional Object that might contain the following keys:
+  - `offset` is an Integer with the byte offset to begin reading from.
+  - `count` is an Integer with the maximum number of bytes to read.
+
+`callback` must follow the `function (err, stream) {}` signature, where `err` is an Error if the operation was not successful and `stream` is a [`PullStream`][ps] with the contents of `path`.
+
+If no `callback` is passed, a promise is returned.
+
+**Example:**
+
+```JavaScript
+ipfs.files.readPullStream('/hello-world', (err, stream) => {
+  pull(
+    stream,
+    through(buf => console.log(buf.toString('utf8'))),
+    collect(err => {})
+  )
 })
 
 // Hello, World!
