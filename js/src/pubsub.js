@@ -11,7 +11,6 @@ const each = require('async/each')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
 const whilst = require('async/whilst')
-const each = require('async/each')
 const hat = require('hat')
 
 // On Browsers it will be false, but the tests currently aren't run
