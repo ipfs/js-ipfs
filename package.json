@@ -44,6 +44,7 @@
     "dirty-chai": "^2.0.1",
     "ipfs": "~0.28.2",
     "pre-commit": "^1.2.2",
+    "pre-push": "^0.1.1",
     "safe-buffer": "^5.1.1",
     "sign-commit": "~0.1.0",
     "tmp": "~0.0.33"
