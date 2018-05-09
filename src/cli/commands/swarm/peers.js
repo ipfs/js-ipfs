@@ -1,10 +1,5 @@
 'use strict'
 
-const mafmt = require('mafmt')
-const multiaddr = require('multiaddr')
-const utils = require('../../utils')
-const print = require('../../utils').print
-
 module.exports = {
   command: 'peers',
 
@@ -13,6 +8,11 @@ module.exports = {
   builder: {},
 
   handler (argv) {
+    const mafmt = require('mafmt')
+    const multiaddr = require('multiaddr')
+    const utils = require('../../utils')
+    const print = require('../../utils').print
+
     if (!utils.isDaemonOn()) {
       throw new Error('This command must be run in online mode. Try running \'ipfs daemon\' first.')
     }

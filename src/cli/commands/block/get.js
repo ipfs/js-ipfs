@@ -1,7 +1,5 @@
 'use strict'
 
-const CID = require('cids')
-
 module.exports = {
   command: 'get <key>',
 
@@ -10,6 +8,7 @@ module.exports = {
   builder: {},
 
   handler (argv) {
+    const CID = require('cids')
     const cid = new CID(argv.key)
 
     argv.ipfs.block.get(cid, (err, block) => {

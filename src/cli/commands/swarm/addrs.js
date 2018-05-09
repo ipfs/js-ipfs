@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../utils').print
-
 module.exports = {
   command: 'addrs',
 
@@ -13,6 +11,8 @@ module.exports = {
   },
 
   handler (argv) {
+    const print = require('../../utils').print
+
     argv.ipfs.swarm.addrs((err, res) => {
       if (err) {
         throw err

@@ -1,7 +1,5 @@
 'use strict'
 
-const fs = require('fs')
-
 module.exports = {
   command: 'export <name>',
 
@@ -23,6 +21,8 @@ module.exports = {
   },
 
   handler (argv) {
+    const fs = require('fs')
+
     argv.ipfs.key.export(argv.name, argv.passout, (err, pem) => {
       if (err) {
         throw err

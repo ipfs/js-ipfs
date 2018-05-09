@@ -1,6 +1,4 @@
 'use strict'
-const print = require('../utils').print
-
 module.exports = {
   command: 'dns <domain>',
 
@@ -13,6 +11,8 @@ module.exports = {
   },
 
   handler (argv) {
+    const print = require('../utils').print
+
     argv.ipfs.dns(argv['domain'], (err, path) => {
       if (err) {
         throw err

@@ -1,9 +1,5 @@
 'use strict'
 
-const path = require('path')
-const fs = require('fs')
-const utils = require('../../utils')
-
 module.exports = {
   command: 'replace <file>',
 
@@ -12,6 +8,10 @@ module.exports = {
   builder: {},
 
   handler (argv) {
+    const path = require('path')
+    const fs = require('fs')
+    const utils = require('../../utils')
+
     if (argv._handled) return
     argv._handled = true
 

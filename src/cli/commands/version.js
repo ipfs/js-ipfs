@@ -1,8 +1,5 @@
 'use strict'
 
-const os = require('os')
-const print = require('../utils').print
-
 module.exports = {
   command: 'version',
 
@@ -33,6 +30,9 @@ module.exports = {
   },
 
   handler (argv) {
+    const print = require('../utils').print
+
+    const os = require('os')
     argv.ipfs.version((err, data) => {
       if (err) {
         throw err

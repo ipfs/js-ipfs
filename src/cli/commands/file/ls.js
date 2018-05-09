@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../utils').print
-
 module.exports = {
   command: 'ls <key>',
 
@@ -10,6 +8,8 @@ module.exports = {
   builder: {},
 
   handler (argv) {
+    const print = require('../../utils').print
+
     let path = argv.key
     // `ipfs file ls` is deprecated. See https://ipfs.io/docs/commands/#ipfs-file-ls
     print(`This functionality is deprecated, and will be removed in future versions. If possible, please use 'ipfs ls' instead.`)

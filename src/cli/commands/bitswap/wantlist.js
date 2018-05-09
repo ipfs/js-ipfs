@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../utils').print
-
 module.exports = {
   command: 'wantlist',
 
@@ -16,6 +14,8 @@ module.exports = {
   },
 
   handler (argv) {
+    const print = require('../../utils').print
+
     // TODO: handle argv.peer
     argv.ipfs.bitswap.wantlist((err, res) => {
       if (err) {

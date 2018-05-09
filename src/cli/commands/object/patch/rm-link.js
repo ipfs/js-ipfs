@@ -1,11 +1,5 @@
 'use strict'
 
-const DAGLink = require('ipld-dag-pb').DAGLink
-const debug = require('debug')
-const log = debug('cli:object')
-log.error = debug('cli:object:error')
-const print = require('../../../utils').print
-
 module.exports = {
   command: 'rm-link <root> <link>',
 
@@ -14,6 +8,11 @@ module.exports = {
   builder: {},
 
   handler (argv) {
+    const DAGLink = require('ipld-dag-pb').DAGLink
+    const debug = require('debug')
+    const log = debug('cli:object')
+    log.error = debug('cli:object:error')
+    const print = require('../../../utils').print
     // TODO rmLink should support removing by name and/or multihash
     // without having to know everything, which in fact it does, however,
     // since it expectes a DAGLink type, we have to pass some fake size and

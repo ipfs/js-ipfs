@@ -1,8 +1,5 @@
 'use strict'
 
-const CID = require('cids')
-const print = require('../../utils').print
-
 module.exports = {
   command: 'stat <key>',
 
@@ -11,6 +8,8 @@ module.exports = {
   builder: {},
 
   handler (argv) {
+    const CID = require('cids')
+    const print = require('../../utils').print
     argv.ipfs.block.stat(new CID(argv.key), (err, stats) => {
       if (err) {
         throw err

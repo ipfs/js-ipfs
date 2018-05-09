@@ -1,9 +1,5 @@
 'use strict'
 
-const dagPB = require('ipld-dag-pb')
-const DAGLink = dagPB.DAGLink
-const print = require('../../../utils').print
-
 module.exports = {
   command: 'add-link <root> <name> <ref>',
 
@@ -12,6 +8,10 @@ module.exports = {
   builder: {},
 
   handler (argv) {
+    const dagPB = require('ipld-dag-pb')
+    const DAGLink = dagPB.DAGLink
+    const print = require('../../../utils').print
+
     const ipfs = argv.ipfs
     ipfs.object.get(argv.ref, {
       enc: 'base58'

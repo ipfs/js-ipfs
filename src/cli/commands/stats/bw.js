@@ -1,7 +1,5 @@
 'use strict'
 
-const pull = require('pull-stream')
-
 module.exports = {
   command: 'bw',
 
@@ -27,6 +25,7 @@ module.exports = {
   },
 
   handler (argv) {
+    const pull = require('pull-stream')
     const stream = argv.ipfs.stats.bwPullStream({
       peer: argv.peer,
       proto: argv.proto,

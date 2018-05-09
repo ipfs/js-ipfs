@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../utils').print
-
 module.exports = {
   command: 'repo',
 
@@ -15,6 +13,8 @@ module.exports = {
   },
 
   handler (argv) {
+    const print = require('../../utils').print
+
     argv.ipfs.stats.repo({human: argv.human}, (err, stats) => {
       if (err) {
         throw err

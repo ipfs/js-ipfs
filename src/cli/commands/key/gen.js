@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../utils').print
-
 module.exports = {
   command: 'gen <name>',
 
@@ -21,6 +19,8 @@ module.exports = {
   },
 
   handler (argv) {
+    const print = require('../../utils').print
+
     const opts = {
       type: argv.type,
       size: argv.size
