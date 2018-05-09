@@ -138,7 +138,9 @@ module.exports = (common) => {
             expect(msg).to.have.property('topicIDs').eql([topic])
             expect(msg).to.have.property('from', ipfs1.peerId.id)
 
-            ipfs1.pubsub.unsubscribe(topic, handler, () => {
+            ipfs1.pubsub.unsubscribe(topic, handler, (err) => {
+              expect(err).to.not.exist()
+
               ipfs1.pubsub.ls((err, topics) => {
                 expect(err).to.not.exist()
                 expect(topics).to.be.empty()
@@ -164,7 +166,9 @@ module.exports = (common) => {
             expect(msg).to.have.property('topicIDs').eql([topic])
             expect(msg).to.have.property('from', ipfs1.peerId.id)
 
-            ipfs1.pubsub.unsubscribe(topic, handler, () => {
+            ipfs1.pubsub.unsubscribe(topic, handler, (err) => {
+              expect(err).to.not.exist()
+
               ipfs1.pubsub.ls((err, topics) => {
                 expect(err).to.not.exist()
                 expect(topics).to.be.empty()
@@ -190,7 +194,9 @@ module.exports = (common) => {
             expect(msg).to.have.property('topicIDs').eql([topic])
             expect(msg).to.have.property('from', ipfs1.peerId.id)
 
-            ipfs1.pubsub.unsubscribe(topic, handler, () => {
+            ipfs1.pubsub.unsubscribe(topic, handler, (err) => {
+              expect(err).to.not.exist()
+
               ipfs1.pubsub.ls((err, topics) => {
                 expect(err).to.not.exist()
                 expect(topics).to.be.empty()
@@ -251,9 +257,7 @@ module.exports = (common) => {
             ipfs1.pubsub.unsubscribe(topic, handler, check)
           }
 
-          ipfs1.pubsub.subscribe(topic, {
-            discover: true
-          }, handler, (err) => {
+          ipfs1.pubsub.subscribe(topic, handler, { discover: true }, (err) => {
             expect(err).to.not.exist()
             ipfs1.pubsub.publish(topic, Buffer.from('hi'), check)
           })
