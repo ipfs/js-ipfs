@@ -175,11 +175,10 @@ describe('ping', function () {
       parallel([
         ipfsdA.api.swarm.connect.bind(ipfsdA.api, bMultiaddr),
         ipfsdB.api.swarm.connect.bind(ipfsdB.api, cMultiaddr)
-      ], done)
+      ], (err) => setTimeout(() => done(err), 500)) // FIXME timeout needed for connections to succeed  
     })
 
-    // FIXME timeout needed for connections to succeed
-    before((done) => setTimeout(done, 100))
+
 
     after((done) => ipfsdA.stop(done))
     after((done) => ipfsdB.stop(done))
