@@ -72,7 +72,7 @@ describe('.pubsub is not supported in the browser, yet!', function () {
       describe('.subscribe', () => {
         const handler = () => {}
         it('throws an error if called in the browser', (done) => {
-          ipfs.pubsub.subscribe(topic, {}, handler, (err, topics) => {
+          ipfs.pubsub.subscribe(topic, handler, {}, (err, topics) => {
             expect(err).to.exist()
             expect(err.message).to.equal(expectedError)
             done()
@@ -115,7 +115,7 @@ describe('.pubsub is not supported in the browser, yet!', function () {
       describe('.subscribe', () => {
         const handler = () => {}
         it('throws an error if called in the browser', (done) => {
-          ipfs.pubsub.subscribe(topic, {}, handler)
+          ipfs.pubsub.subscribe(topic, handler, {})
             .catch((err) => {
               expect(err).to.exist()
               expect(err.message).to.equal(expectedError)
@@ -148,14 +148,11 @@ describe('.pubsub is not supported in the browser, yet!', function () {
 
     describe('.unsubscribe', () => {
       it('throws an error if called in the browser', (done) => {
-        try {
-          ipfs.pubsub.unsubscribe()
-          done('unsubscribe() didn\'t throw an error')
-        } catch (err) {
+        ipfs.pubsub.unsubscribe('test', () => {}, (err) => {
           expect(err).to.exist()
           expect(err.message).to.equal(expectedError)
           done()
-        }
+        })
       })
     })
   })

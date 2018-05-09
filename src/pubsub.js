@@ -19,14 +19,13 @@ module.exports = (arg) => {
   const subscriptions = {}
   ps.id = Math.random()
   return {
-    subscribe: (topic, options, handler, callback) => {
+    subscribe: (topic, handler, options, callback) => {
       const defaultOptions = {
         discover: false
       }
 
       if (typeof options === 'function') {
-        callback = handler
-        handler = options
+        callback = options
         options = defaultOptions
       }
 
@@ -39,14 +38,15 @@ module.exports = (arg) => {
         if (!callback) {
           return Promise.reject(NotSupportedError())
         }
-        return callback(NotSupportedError())
+
+        return process.nextTick(() => callback(NotSupportedError()))
       }
 
       // promisify doesn't work as we always pass a
       // function as last argument (`handler`)
       if (!callback) {
         return new Promise((resolve, reject) => {
-          subscribe(topic, options, handler, (err) => {
+          subscribe(topic, handler, options, (err) => {
             if (err) {
               return reject(err)
             }
@@ -55,24 +55,40 @@ module.exports = (arg) => {
         })
       }
 
-      subscribe(topic, options, handler, callback)
+      subscribe(topic, handler, options, callback)
     },
-    unsubscribe: (topic, handler) => {
+    unsubscribe: (topic, handler, callback) => {
       if (!isNode) {
-        throw NotSupportedError()
+        if (!callback) {
+          return Promise.reject(NotSupportedError())
+        }
+
+        return process.nextTick(() => callback(NotSupportedError()))
       }
 
       if (ps.listenerCount(topic) === 0 || !subscriptions[topic]) {
-        throw new Error(`Not subscribed to '${topic}'`)
+        const err = new Error(`Not subscribed to '${topic}'`)
+
+        if (!callback) {
+          return Promise.reject(err)
+        }
+
+        return process.nextTick(() => callback(err))
       }
 
       ps.removeListener(topic, handler)
 
-      // Drop the request once we are actualy done
+      // Drop the request once we are actually done
       if (ps.listenerCount(topic) === 0) {
         subscriptions[topic].abort()
         subscriptions[topic] = null
       }
+
+      if (!callback) {
+        return Promise.resolve()
+      }
+
+      process.nextTick(() => callback())
     },
     publish: promisify((topic, data, callback) => {
       if (!isNode) {
@@ -118,7 +134,7 @@ module.exports = (arg) => {
     }
   }
 
-  function subscribe (topic, options, handler, callback) {
+  function subscribe (topic, handler, options, callback) {
     ps.on(topic, handler)
 
     if (subscriptions[topic]) {
