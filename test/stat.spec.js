@@ -32,7 +32,9 @@ describe('stat', function () {
 
   it('refuses to stat files with an empty path', () => {
     return mfs.stat('')
-      .then(() => expect.fail('No error was thrown for an empty path'))
+      .then(() => {
+        throw new Error('No error was thrown for an empty path')
+      })
       .catch(error => {
         expect(error.message).to.contain('paths must not be empty')
       })
@@ -40,7 +42,9 @@ describe('stat', function () {
 
   it('refuses to lists files with an invalid path', () => {
     return mfs.stat('not-valid')
-      .then(() => expect.fail('No error was thrown for an empty path'))
+      .then(() => {
+        throw new Error('No error was thrown for an empty path')
+      })
       .catch(error => {
         expect(error.message).to.contain('paths must start with a leading /')
       })
@@ -48,9 +52,11 @@ describe('stat', function () {
 
   it('fails to stat non-existent file', () => {
     return mfs.stat('/i-do-not-exist')
-      .then(() => expect.fail('No error was thrown for a non-existent file'))
+      .then(() => {
+        throw new Error('No error was thrown for a non-existent file')
+      })
       .catch(error => {
-        expect(error.message).to.contain('Cannot traverse to')
+        expect(error.message).to.contain('Path /i-do-not-exist did not exist')
       })
   })
 
@@ -60,7 +66,7 @@ describe('stat', function () {
     return mfs.mkdir('/empty-directory')
       .then(() => mfs.stat(path))
       .then(stats => {
-        expect(stats.size).to.equal(0)
+        expect(stats.size).to.equal(undefined)
         expect(stats.cumulativeSize).to.equal(4)
         expect(stats.childBlocks).to.equal(0)
         expect(stats.type).to.equal('directory')

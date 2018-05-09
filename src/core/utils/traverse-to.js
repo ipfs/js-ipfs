@@ -4,10 +4,6 @@ const bs58 = require('bs58')
 const CID = require('cids')
 const log = require('debug')('mfs:utils:traverse-to')
 const UnixFS = require('ipfs-unixfs')
-const dagPb = require('ipld-dag-pb')
-const {
-  DAGNode
-} = dagPb
 const waterfall = require('async/waterfall')
 const reduce = require('async/reduce')
 const withMfsRoot = require('./with-mfs-root')
@@ -16,12 +12,17 @@ const addLink = require('./add-link')
 const {
   FILE_SEPARATOR
 } = require('./constants')
+const createNode = require('./create-node')
+
+const defaultOptions = {
+  parents: false,
+  flush: true,
+  createLastComponent: false,
+  withCreateHint: true
+}
 
 const traverseTo = (ipfs, path, options, callback) => {
-  options = Object.assign({}, {
-    parents: false,
-    flush: true
-  }, options)
+  options = Object.assign({}, defaultOptions, options)
 
   waterfall([
     (done) => withMfsRoot(ipfs, done),
@@ -48,7 +49,7 @@ const traverseTo = (ipfs, path, options, callback) => {
             node: rootNode,
             parent: null
           }, (parent, {pathSegment, index}, done) => {
-            log(`Looking for ${pathSegment} in ${parent.name} ${bs58.encode(parent.node.multihash)}s`)
+            log(`Looking for ${pathSegment} in ${parent.name} ${bs58.encode(parent.node.multihash)}`)
 
             parent.node.links.forEach(link => {
               log(`${bs58.encode(link.multihash)} ${link.name}`)
@@ -57,14 +58,24 @@ const traverseTo = (ipfs, path, options, callback) => {
             const existingLink = parent.node.links.find(link => link.name === pathSegment)
 
             if (!existingLink) {
+              if (index === pathSegments.length - 1 && !options.parents && !this.createLastComponent) {
+                return done(new Error(`Path ${path} did not exist`))
+              }
+
               if (!options.parents) {
-                return done(new Error(`Cannot traverse to ${path} - '${pathSegment}' did not exist: Try again with the --parents flag`))
+                let message = `Cannot find ${path} - ${pathSegment} did not exist`
+
+                if (options.withCreateHint) {
+                  message += ': Try again with the --parents flag to create it'
+                }
+
+                return done(new Error(message))
               }
 
               log(`Adding empty directory '${pathSegment}' to parent ${parent.name}`)
 
               return waterfall([
-                (next) => DAGNode.create(new UnixFS('directory').marshal(), [], next),
+                (next) => createNode(ipfs, new UnixFS('directory').marshal(), [], options, next),
                 (emptyDirectory, next) => {
                   addLink(ipfs, {
                     parent: parent.node,
@@ -81,7 +92,11 @@ const traverseTo = (ipfs, path, options, callback) => {
                     })
                   })
                 }
-              ], done)
+              ], (error, child) => {
+                trail.push(child)
+
+                done(error, child)
+              })
             }
 
             let hash = existingLink.hash || existingLink.multihash

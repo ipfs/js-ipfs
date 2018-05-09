@@ -9,6 +9,7 @@ const {
   traverseTo,
   addLink,
   updateTree,
+  limitStreamBytes,
   FILE_SEPARATOR
 } = require('../utils')
 const values = require('pull-stream/sources/values')
@@ -22,6 +23,7 @@ const isNode = require('detect-node')
 const fileReaderStream = require('filereader-stream')
 const isPullStream = require('is-pull-stream')
 const cat = require('pull-cat')
+const pull = require('pull-stream/pull')
 
 let fs
 
@@ -117,7 +119,7 @@ module.exports = function mfsWrite (ipfs) {
       return callback(new Error('cannot have negative byte count'))
     }
 
-    if (options.length === 0) {
+    if (options.length === 0 && !options.truncate) {
       return callback()
     }
 
@@ -165,8 +167,16 @@ module.exports = function mfsWrite (ipfs) {
                 ])
               }
 
+              source = pull(
+                source,
+                limitStreamBytes(options.length)
+              )
+
               log('Importing file', fileName)
-              importNode(ipfs, containingFolder, fileName, source, options, next)
+              importNode(ipfs, source, options, (error, result) => {
+                log(`Imported file ${fileName}`)
+                next(error, result)
+              })
             }
           },
 
@@ -199,6 +209,6 @@ module.exports = function mfsWrite (ipfs) {
           (newRoot, next) => updateMfsRoot(ipfs, newRoot.node.multihash, next)
         ], done)
       }
-    ], (error, result) => callback(error, result))
+    ], (error) => callback(error))
   })
 }

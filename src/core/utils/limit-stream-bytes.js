@@ -1,15 +1,14 @@
 'use strict'
 
 const asyncMap = require('pull-stream/throughs/async-map')
+const endPullStream = require('./end-pull-stream')
 
 const limitStreamBytes = (limit) => {
   let bytesRead = 0
 
   return asyncMap((buffer, cb) => {
     if (bytesRead > limit) {
-      // Ugh. https://github.com/standard/standard/issues/623
-      const foo = true
-      return cb(foo)
+      endPullStream(cb)
     }
 
     // If we only need to return part of this buffer, slice it to make it smaller

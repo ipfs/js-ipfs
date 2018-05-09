@@ -8,6 +8,7 @@ const {
   traverseTo
 } = require('./utils')
 const waterfall = require('async/waterfall')
+const log = require('debug')('mfs:stat')
 
 const defaultOptions = {
   hash: false,
@@ -30,8 +31,12 @@ module.exports = function mfsStat (ipfs) {
       return callback(error)
     }
 
+    log(`Fetching stats for ${path}`)
+
     waterfall([
-      (done) => traverseTo(ipfs, path, options, done),
+      (done) => traverseTo(ipfs, path, {
+        withCreateHint: false
+      }, done),
       ({ node }, done) => {
         if (options.hash) {
           return done(null, {
@@ -45,19 +50,9 @@ module.exports = function mfsStat (ipfs) {
 
         const meta = unmarshal(node.data)
 
-        let size = 0
-
-        if (meta.data && meta.data.length) {
-          size = meta.data.length
-        }
-
-        if (meta.blockSizes && meta.blockSizes.length) {
-          size = meta.blockSizes.reduce((acc, curr) => acc + curr, 0)
-        }
-
         done(null, {
           hash: node.multihash,
-          size: size,
+          size: meta.fileSize(),
           cumulativeSize: node.size,
           childBlocks: meta.blockSizes.length,
           type: meta.type
