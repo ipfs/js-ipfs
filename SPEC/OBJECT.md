@@ -6,7 +6,7 @@
 * [object.data](#objectdata)
 * [object.links](#objectlinks)
 * [object.stat](#objectstat)
-* [object.patch.addLink](#objectpatch)
+* [object.patch.addLink](#objectpatchaddlink)
 * [object.patch.rmLink](#objectpatchrmlink)
 * [object.patch.appendData](#objectpatchappenddata)
 * [object.patch.setData](#objectpatchsetdata)
