@@ -1,10 +1,9 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const pull = require('pull-stream/pull')
-const collect = require('pull-stream/sinks/collect')
 const waterfall = require('async/waterfall')
 const readPullStream = require('./read-pull-stream')
+const toStream = require('pull-stream-to-stream')
 
 module.exports = function mfsRead (ipfs) {
   return promisify((path, options, callback) => {
@@ -15,11 +14,7 @@ module.exports = function mfsRead (ipfs) {
 
     waterfall([
       (cb) => readPullStream(ipfs)(path, options, cb),
-      (stream, cb) => pull(
-        stream,
-        collect(cb)
-      ),
-      (buffers, cb) => cb(null, Buffer.concat(buffers))
+      (stream, cb) => cb(null, toStream.source(stream))
     ], callback)
   })
 }
