@@ -33,16 +33,13 @@ exports.subscribe = {
     res.write('{}\n')
 
     const unsubscribe = () => {
-      ipfs.pubsub.unsubscribe(topic, handler)
-      res.end()
+      ipfs.pubsub.unsubscribe(topic, handler, () => res.end())
     }
 
     request.once('disconnect', unsubscribe)
     request.once('finish', unsubscribe)
 
-    ipfs.pubsub.subscribe(topic, {
-      discover: discover
-    }, handler, (err) => {
+    ipfs.pubsub.subscribe(topic, handler, { discover: discover }, (err) => {
       if (err) {
         return reply(err)
       }

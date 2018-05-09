@@ -4,10 +4,9 @@ const promisify = require('promisify-es6')
 
 module.exports = function pubsub (self) {
   return {
-    subscribe: (topic, options, handler, callback) => {
+    subscribe: (topic, handler, options, callback) => {
       if (typeof options === 'function') {
-        callback = handler
-        handler = options
+        callback = options
         options = {}
       }
 
@@ -20,13 +19,19 @@ module.exports = function pubsub (self) {
             resolve()
           })
         })
-      } else {
-        self._libp2pNode.pubsub.subscribe(topic, options, handler, callback)
       }
+
+      self._libp2pNode.pubsub.subscribe(topic, options, handler, callback)
     },
 
-    unsubscribe: (topic, handler) => {
+    unsubscribe: (topic, handler, callback) => {
       self._libp2pNode.pubsub.unsubscribe(topic, handler)
+
+      if (!callback) {
+        return Promise.resolve()
+      }
+
+      process.nextTick(() => callback())
     },
 
     publish: promisify((topic, data, callback) => {
