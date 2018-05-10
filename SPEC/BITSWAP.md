@@ -4,7 +4,7 @@
 * [bitswap.unwant](#bitswapunwant)
 * [bitswap.stat](#bitswapstat)
 
-#### `unwant`
+#### `bitswap.unwant`
 
 > Removes a given block from your wantlist
 
@@ -21,11 +21,20 @@
 
 ### `bitswap.wantlist`
 
-(not spec'ed yet)
+> Returns the wantlist, optionally limited by peerID
 
-#### `bitswap.unwant`
+#### `Go` **WIP**
 
-(not spec'ed yet)
+#### `JavaScript` - ipfs.bitswap.wantlist([peerId])
+
+```JavaScript
+ipfs.bitswap.wantlist((err, list) => console.log(list))
+
+//[ { Wantlist object }, ... ]
+
+ipfs.bitswap.wantlist(peerId, (err, list) => console.log(list))
+
+//[ { Wantlist object }, ... ]
 
 #### `bitswap.stat`
 
