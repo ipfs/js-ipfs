@@ -1,22 +1,28 @@
 'use strict'
 
+const {
+  asBoolean
+} = require('./utils')
+
 module.exports = {
   command: 'cp <source> <dest>',
 
-  describe: 'Copy files between locations in the mfs.',
+  describe: 'Copy files between locations in the mfs',
 
   builder: {
     parents: {
       alias: 'p',
       type: 'boolean',
       default: false,
+      coerce: asBoolean,
       describe: 'Create any non-existent intermediate directories'
     },
     recursive: {
       alias: 'r',
       type: 'boolean',
       default: false,
-      describe: 'Remove directories recursively'
+      coerce: asBoolean,
+      describe: 'Copy directories recursively'
     }
   },
 

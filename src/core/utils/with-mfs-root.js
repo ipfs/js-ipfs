@@ -19,7 +19,7 @@ const withMfsRoot = (ipfs, callback) => {
 
   waterfall([
     // Open the repo if it's been closed
-    (cb) => repo.closed ? datastore.open(cb) : cb(),
+    (cb) => datastore.open((error) => cb(error)),
     (cb) => {
       // Load the MFS root CID
       datastore.get(MFS_ROOT_KEY, (error, result) => {

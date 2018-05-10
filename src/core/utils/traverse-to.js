@@ -24,12 +24,22 @@ const defaultOptions = {
 const traverseTo = (ipfs, path, options, callback) => {
   options = Object.assign({}, defaultOptions, options)
 
+  log(`Traversing to ${path}`)
+
   waterfall([
     (done) => withMfsRoot(ipfs, done),
     (root, done) => {
-      const pathSegments = validatePath(path)
+      try {
+        path = validatePath(path)
+      } catch (error) {
+        return done(error)
+      }
+
+      const pathSegments = path
         .split(FILE_SEPARATOR)
         .filter(Boolean)
+
+      log(`pathSegments ${pathSegments}`)
 
       const trail = []
 

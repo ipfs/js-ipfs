@@ -58,7 +58,7 @@ describe('ls', function () {
         throw new Error('No error was thrown for a non-existent file')
       })
       .catch(error => {
-        expect(error.message).to.contain('file does not exist')
+        expect(error.message).to.contain('did not exist')
       })
   })
 })

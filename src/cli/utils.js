@@ -15,7 +15,20 @@ const print = (msg = '', newline = true) => {
   process.stdout.write(msg)
 }
 
+const asBoolean = (value) => {
+  if (value === false || value === true) {
+    return value
+  }
+
+  if (value === undefined) {
+    return true
+  }
+
+  return false
+}
+
 module.exports = {
   disablePrinting,
-  print
+  print,
+  asBoolean
 }

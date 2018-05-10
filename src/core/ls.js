@@ -1,13 +1,13 @@
 'use strict'
 
-const exporter = require('ipfs-unixfs-engine').exporter
 const promisify = require('promisify-es6')
-const pull = require('pull-stream/pull')
-const collect = require('pull-stream/sinks/collect')
 const waterfall = require('async/waterfall')
+const map = require('async/map')
+const bs58 = require('bs58')
+const UnixFs = require('ipfs-unixfs')
 const {
-  withMfsRoot,
-  validatePath
+  traverseTo,
+  loadNode
 } = require('./utils')
 
 const defaultOptions = {
@@ -16,48 +16,43 @@ const defaultOptions = {
 
 module.exports = function mfsLs (ipfs) {
   return promisify((path, options, callback) => {
-    withMfsRoot(ipfs, (error, root) => {
-      if (error) {
-        return callback(error)
-      }
+    if (typeof options === 'function') {
+      callback = options
+      options = {}
+    }
 
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
+    options = Object.assign({}, defaultOptions, options)
 
-      options = Object.assign({}, defaultOptions, options)
+    waterfall([
+      (cb) => traverseTo(ipfs, path, {}, cb),
+      (result, cb) => {
+        const meta = UnixFs.unmarshal(result.node.data)
 
-      try {
-        path = validatePath(path)
-        root = root.toBaseEncodedString()
-      } catch (error) {
-        return callback(error)
-      }
+        if (meta.type === 'directory') {
+          map(result.node.links, (link, next) => {
+            waterfall([
+              (done) => loadNode(ipfs, link, done),
+              (node, done) => {
+                const meta = UnixFs.unmarshal(node.data)
 
-      waterfall([
-        (done) => pull(
-          exporter(`/ipfs/${root}${path}`, ipfs._ipld),
-          collect(done)
-        ),
-        (results, done) => {
-          if (!results || !results.length) {
-            return callback(new Error('file does not exist'))
-          }
-
-          done(null, results[0])
-        },
-        (result, done) => {
-          const files = (result.links || []).map(link => ({
-            name: link.name,
-            type: link.type,
-            size: link.size,
-            hash: link.multihash
-          }))
-
-          done(null, files)
+                done(null, {
+                  name: link.name,
+                  type: meta.type,
+                  hash: bs58.encode(node.multihash),
+                  size: meta.fileSize() || 0
+                })
+              }
+            ], next)
+          }, cb)
+        } else {
+          cb(null, [{
+            name: result.name,
+            type: meta.type,
+            hash: bs58.encode(result.node.multihash),
+            size: meta.fileSize() || 0
+          }])
         }
-      ], callback)
-    })
+      }
+    ], callback)
   })
 }

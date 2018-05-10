@@ -1,19 +1,24 @@
 'use strict'
 
 const {
-  print
+  print,
+  asBoolean
 } = require('./utils')
+const {
+  FILE_SEPARATOR
+} = require('../core/utils')
 
 module.exports = {
-  command: 'ls <path>',
+  command: 'ls [path]',
 
-  describe: 'List directories in the local mutable namespace.',
+  describe: 'List mfs directories',
 
   builder: {
     long: {
       alias: 'l',
       type: 'boolean',
       default: false,
+      coerce: asBoolean,
       describe: 'Use long listing format.'
     }
   },
@@ -25,20 +30,50 @@ module.exports = {
       long
     } = argv
 
-    ipfs.mfs.ls(path, {
+    ipfs.mfs.ls(path || FILE_SEPARATOR, {
       long
     }, (error, files) => {
       if (error) {
         throw error
       }
 
-      files.forEach(link => {
-        if (long) {
-          return print(`${link.name} ${link.hash} ${link.size}`)
-        }
+      if (long) {
+        const table = []
+        const lengths = {}
 
-        print(link.name)
-      })
+        files.forEach(link => {
+          const row = {
+            name: `${link.name}`,
+            hash: `${link.hash}`,
+            size: `${link.size}`
+          }
+
+          Object.keys(row).forEach(key => {
+            const value = row[key]
+
+            lengths[key] = lengths[key] > value.length ? lengths[key] : value.length
+          })
+
+          table.push(row)
+        })
+
+        table.forEach(row => {
+          let line = ''
+
+          Object.keys(row).forEach(key => {
+            const value = row[key]
+
+            line += value.padEnd(lengths[key] - value.length)
+            line += '\t'
+          })
+
+          print(line)
+        })
+
+        return
+      }
+
+      files.forEach(link => print(link.name))
     })
   }
 }

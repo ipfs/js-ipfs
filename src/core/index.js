@@ -1,6 +1,6 @@
 'use strict'
 
-module.exports = {
+const core = {
   cp: require('./cp'),
   ls: require('./ls'),
   mkdir: require('./mkdir'),
@@ -11,4 +11,16 @@ module.exports = {
   rm: require('./rm'),
   stat: require('./stat'),
   write: require('./write')
+}
+
+module.exports = (ipfs) => {
+  const mfs = {}
+
+  for (let key in core) {
+    if (core.hasOwnProperty(key)) {
+      mfs[key] = core[key](ipfs)
+    }
+  }
+
+  return mfs
 }

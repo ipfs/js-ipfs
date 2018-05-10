@@ -1,19 +1,21 @@
 'use strict'
 
 const {
-  print
+  print,
+  asBoolean
 } = require('./utils')
 
 module.exports = {
   command: 'mkdir <path>',
 
-  describe: 'Make directories.',
+  describe: 'Make mfs directories',
 
   builder: {
     parents: {
       alias: 'p',
       type: 'boolean',
       default: false,
+      coerce: asBoolean,
       describe: 'No error if existing, make parent directories as needed.'
     },
     cidVersion: {
@@ -28,6 +30,7 @@ module.exports = {
     flush: {
       alias: 'f',
       type: 'boolean',
+      coerce: asBoolean,
       describe: 'Weird undocumented option'
     }
   },

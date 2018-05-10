@@ -85,9 +85,9 @@ const updateTree = (ipfs, node, fileSize, streamStart, streamEnd, source, option
               if (updatedRoot.node) {
                 updatedRoot = updatedRoot.node
               }
-            }
 
-            log(`Updated root is ${bs58.encode(updatedRoot.multihash)}`)
+              log(`Updated root is ${bs58.encode(updatedRoot.multihash)}`)
+            }
 
             done(error, updatedRoot)
           })
@@ -175,6 +175,11 @@ const updateTree = (ipfs, node, fileSize, streamStart, streamEnd, source, option
       }
 
       const newData = Buffer.from(meta.data)
+
+      if (sourceEnd === Infinity) {
+        sourceEnd = undefined
+      }
+
       newContent.copy(newData, targetStart, sourceStart, sourceEnd)
 
       const nodeData = new UnixFs(meta.type, newData).marshal()
