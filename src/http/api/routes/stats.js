@@ -9,7 +9,7 @@ module.exports = (server) => {
     method: '*',
     path: '/api/v0/stats/bitswap',
     config: {
-      handler: resources.stats.bitswap
+      handler: resources.stats.bitswap.handler
     }
   })
 

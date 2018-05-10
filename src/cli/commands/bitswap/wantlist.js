@@ -16,8 +16,7 @@ module.exports = {
   },
 
   handler (argv) {
-    // TODO: handle argv.peer
-    argv.ipfs.bitswap.wantlist((err, res) => {
+    argv.ipfs.bitswap.wantlist(argv.peer, (err, res) => {
       if (err) {
         throw err
       }

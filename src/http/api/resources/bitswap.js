@@ -6,41 +6,44 @@ const parseKey = require('./block').parseKey
 
 exports = module.exports
 
-exports.wantlist = (request, reply) => {
-  request.server.app.ipfs.bitswap.wantlist((err, list) => {
-    if (err) {
-      return reply(boom.badRequest(err))
-    }
-    list = list.map((entry) => entry.cid.toBaseEncodedString())
-    reply({
-      Keys: list
+exports.wantlist = {
+  handler: (request, reply) => {
+    const peerId = request.query.arg
+    let list
+    request.server.app.ipfs.bitswap.wantlist(peerId, (err, list) => {
+      if (err) {
+        return reply(boom.badRequest(err))
+      }
+      reply(list)
     })
-  })
+  }
 }
 
-exports.stat = (request, reply) => {
-  const ipfs = request.server.app.ipfs
+exports.stat = {
+  handler: (request, reply) => {
+    const ipfs = request.server.app.ipfs
 
-  ipfs.bitswap.stat((err, stats) => {
-    if (err) {
-      return reply({
-        Message: err.toString(),
-        Code: 0
-      }).code(500)
-    }
+    ipfs.bitswap.stat((err, stats) => {
+      if (err) {
+        return reply({
+          Message: err.toString(),
+          Code: 0
+        }).code(500)
+      }
 
-    reply({
-      ProvideBufLen: stats.provideBufLen,
-      BlocksReceived: stats.blocksReceived,
-      Wantlist: stats.wantlist,
-      Peers: stats.peers,
-      DupBlksReceived: stats.dupBlksReceived,
-      DupDataReceived: stats.dupDataReceived,
-      DataReceived: stats.dataReceived,
-      BlocksSent: stats.blocksSent,
-      DataSent: stats.dataSent
+      reply({
+        ProvideBufLen: stats.provideBufLen,
+        BlocksReceived: stats.blocksReceived,
+        Wantlist: stats.wantlist,
+        Peers: stats.peers,
+        DupBlksReceived: stats.dupBlksReceived,
+        DupDataReceived: stats.dupDataReceived,
+        DataReceived: stats.dataReceived,
+        BlocksSent: stats.blocksSent,
+        DataSent: stats.dataSent
+      })
     })
-  })
+  }
 }
 
 exports.unwant = {
