@@ -1,11 +1,18 @@
-Bitswap API
-=======
+# Bitswap API
 
-#### `wantlist` (not spec'ed yet)
+* [bitswap.wantlist](#bitswapwantlist)
+* [bitswap.unwant](#bitswapunwant)
+* [bitswap.stat](#bitswapstat)
 
-#### `unwant` (not spec'ed yet)
+#### `bitswap.wantlist`
 
-#### `stat`
+(not spec'ed yet)
+
+#### `bitswap.unwant`
+
+(not spec'ed yet)
+
+#### `bitswap.stat`
 
 > Adds an IPFS object to the pinset and also stores it to the IPFS repo. pinset is the set of hashes currently pinned (not gc'able).
 

@@ -1,7 +1,13 @@
-Key API
-=======
+# Key API
 
-#### `gen`
+* [key.gen](#keygen)
+* [key.list](#keylist)
+* [key.rm](#keyrm)
+* [key.rename](#keyrename)
+* [key.export](#keyexport)
+* [key.import](#keyimport)
+
+#### `key.gen`
 
 > Generate a new key
 
@@ -32,7 +38,7 @@ ipfs.key.gen('my-key', {
 //  name: 'my-key' }
 ```
 
-#### `list`
+#### `key.list`
 
 > List all the keys
 
@@ -64,7 +70,7 @@ ipfs.key.list((err, keys) => console.log(keys))
 // ]
 ```
 
-#### `rm`
+#### `key.rm`
 
 > Remove a key
 
@@ -95,7 +101,7 @@ ipfs.key.rm('my-key', (err, key) => console.log(key))
 //   name: 'my-key' }
 ```
 
-#### `rename`
+#### `key.rename`
 
 > Rename a key
 
@@ -122,7 +128,7 @@ ipfs.key.rename('my-key', 'my-new-key', (err, key) => console.log(key))
 //   overwrite: false }
 ```
 
-#### `export`
+#### `key.export`
 
 > Export a key in a PEM encoded password protected PKCS #8
 
@@ -150,7 +156,7 @@ ipfs.key.export('self', 'password', (err, pem) => console.log(pem))
 // -----END ENCRYPTED PRIVATE KEY-----
 ```
 
-#### `import`
+#### `key.import`
 
 > Import a PEM encoded password protected PKCS #8 key
 

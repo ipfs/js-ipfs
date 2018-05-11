@@ -1,7 +1,13 @@
-DHT API
-=======
+# DHT API
 
-#### `findpeer`
+* [dht.findpeer](#dhtfindpeer)
+* [dht.findprovs](#dhtfindprovs)
+* [dht.get](#dhtget)
+* [dht.provide](#dhtprovide)
+* [dht.put](#dhtput)
+* [dht.query](#dhtquery)
+
+#### `dht.findpeer`
 
 > Retrieve the Peer Info of a reachable node in the network.
 
@@ -27,7 +33,7 @@ ipfs.dht.findpeer(id, function (err, peerInfo) {
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `findprovs`
+#### `dht.findprovs`
 
 > Retrieve the providers for content that is addressed by an hash.
 
@@ -49,7 +55,7 @@ ipfs.dht.findprovs(multihash, function (err, peerInfos) {})
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `get`
+#### `dht.get`
 
 > Retrieve a value from DHT
 
@@ -71,7 +77,7 @@ ipfs.dht.get(key, function (err, value) {})
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `provide`
+#### `dht.provide`
 
 > Announce to the network that you are providing given values.
 
@@ -93,7 +99,7 @@ ipfs.dht.provide(cid, function (err) {})
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `put`
+#### `dht.put`
 
 > Store a value on the DHT
 
@@ -103,7 +109,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 Where `key` is a string and `value` can be of any type.
 
-`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful. 
+`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
 
 If no `callback` is passed, a promise is returned.
 
@@ -115,7 +121,7 @@ ipfs.dht.put(key, value, function (err) {})
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `query`
+#### `dht.query`
 
 > Queries the network for the 'closest peers' to a given key. 'closest' is defined by the rules of the underlying Peer Routing mechanism.
 

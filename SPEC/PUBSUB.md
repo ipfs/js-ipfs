@@ -1,5 +1,10 @@
-pubsub API
-==========
+# PubSub API
+
+* [pubsub.subscribe](#pubsubsubscribe)
+* [pubsub.unsubscribe](#pubsubunsubscribe)
+* [pubsub.publish](#pubsubpublish)
+* [pubsub.ls](#pubsubls)
+* [pubsub.peers](#pubsubpeers)
 
 * [pubsub.subscribe](#pubsubsubscribe)
 * [pubsub.unsubscribe](#pubsubunsubscribe)

@@ -1,7 +1,13 @@
-Swarm API
-=========
+# Swarm API
 
-#### `addrs`
+* [swarm.addrs](#swarmaddrs)
+* [swarm.connect](#swarmconnect)
+* [swarm.disconnect](#swarmdisconnect)
+* [swarm.peers](#swarmpeers)
+* [swarm.filters.add](#swarmfiltersadd)
+* [swarm.filters.rm](#swarmfiltersrm)
+
+#### `swarm.addrs`
 
 > List of known addresses of each peer connected.
 
@@ -26,7 +32,7 @@ ipfs.swarm.addrs(function (err, addrs) {
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `connect`
+#### `swarm.connect`
 
 > Open a connection to a given address.
 
@@ -53,7 +59,7 @@ ipfs.swarm.connect(addr, function (err) {
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `disconnect`
+#### `swarm.disconnect`
 
 > Close a connection on a given address.
 
@@ -75,7 +81,7 @@ ipfs.swarm.disconnect(addr, function (err) {})
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `peers`
+#### `swarm.peers`
 
 > List out the peers that we have connections with.
 
@@ -115,7 +121,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > NOT IMPLEMENTED YET
 
-#### `filters`
+#### `swarm.filters`
 
 > Display current multiaddr filters. Filters are a way to set up rules for the network connections established.
 
@@ -133,7 +139,7 @@ Example:
 ipfs.swarm.filters(function (err, filters) {})
 ```
 
-#### `filters.add`
+#### `swarm.filters.add`
 
 > Add another filter.
 
@@ -153,7 +159,7 @@ Example:
 ipfs.swarm.filters.add(filter, function (err) {})
 ```
 
-#### `filters.rm`
+#### `swarm.filters.rm`
 
 > Remove a filter
 

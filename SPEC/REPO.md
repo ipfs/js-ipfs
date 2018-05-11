@@ -1,7 +1,10 @@
-Repo API
-=======
+# Repo API
 
-#### `gc`
+* [repo.gc](#repogc)
+* [repo.stat](#repostat)
+* [repo.version](#repoversion)
+
+#### `repo.gc`
 
 > Perform a garbage collection sweep on the repo.
 
@@ -25,7 +28,7 @@ If no `callback` is passed, a promise is returned.
 ipfs.repo.gc((err, res) => console.log(res))
 ```
 
-#### `stat`
+#### `repo.stat`
 
 > Get stats for the currently used repo.
 
@@ -62,7 +65,7 @@ ipfs.repo.stat((err, stats) => console.log(stats))
 //   storageMax: 10000000000 }
 ```
 
-#### `version`
+#### `repo.version`
 
 > Show the repo version.
 

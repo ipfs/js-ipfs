@@ -1,5 +1,4 @@
-TYPES API
-=======
+# Types API
 
 A set of data types are exposed directly from the IPFS instance under `ipfs.types`. That way you're not required to import/require the following.
 

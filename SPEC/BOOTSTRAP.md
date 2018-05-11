@@ -1,13 +1,16 @@
-Bootstrap API
-=============
+# Bootstrap API
 
 > Manipulates the `bootstrap list`, which contains
   the addresses of the bootstrap nodes. These are the trusted peers from
   which to learn about other peers in the network.
-  
+
 > Only edit this list if you understand the risks of adding or removing nodes from this list.
 
-#### `add`
+* [bootstrap.add](#bootstrapadd)
+* [bootstrap.list](#bootstraplist)
+* [bootstrap.rm](#bootstraprm)
+
+#### `bootstrap.add`
 
 > Add a peer address to the bootstrap list
 
@@ -19,7 +22,7 @@ Bootstrap API
 - `opts.default` if true, add the default peers to the list
 - `callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res.Peers` is an array of added addresses.
 
-#### `list`
+#### `bootstrap.list`
 
 > List all peer addresses in the bootstrap list
 
@@ -30,7 +33,7 @@ Bootstrap API
 - `callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res.Peers` is an array of addresses.
 
 
-#### `rm`
+#### `bootstrap.rm`
 
 > Remove a peer address from the bootstrap list
 
