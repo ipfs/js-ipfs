@@ -61,9 +61,9 @@ describe('stat', function () {
   })
 
   it('stats an empty directory', () => {
-    const path = '/empty-directory'
+    const path = `/directory-${Math.random()}`
 
-    return mfs.mkdir('/empty-directory')
+    return mfs.mkdir(path)
       .then(() => mfs.stat(path))
       .then(stats => {
         expect(stats.size).to.equal(undefined)
@@ -74,9 +74,9 @@ describe('stat', function () {
   })
 
   it('returns only a hash', () => {
-    const path = '/empty-directory'
+    const path = `/directory-${Math.random()}`
 
-    return mfs.mkdir('/empty-directory')
+    return mfs.mkdir(path)
       .then(() => mfs.stat(path, {
         hash: true
       }))
@@ -87,9 +87,9 @@ describe('stat', function () {
   })
 
   it('returns only the size', () => {
-    const path = '/empty-directory'
+    const path = `/directory-${Math.random()}`
 
-    return mfs.mkdir('/empty-directory')
+    return mfs.mkdir(path)
       .then(() => mfs.stat(path, {
         size: true
       }))

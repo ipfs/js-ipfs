@@ -10,9 +10,7 @@ const {
   loadNode
 } = require('./utils')
 
-const defaultOptions = {
-  long: false
-}
+const defaultOptions = {}
 
 module.exports = function mfsLs (ipfs) {
   return promisify((path, options, callback) => {

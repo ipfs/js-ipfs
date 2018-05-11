@@ -45,10 +45,35 @@ describe('ls', function () {
       })
   })
 
-  it('lists files in the root', () => {
-    return mfs.ls('/')
+  it('lists files in a directory', () => {
+    const fileName = `small-file-${Math.random()}.txt`
+    const content = Buffer.from('Hello world')
+
+    return mfs.write(`/${fileName}`, content, {
+      create: true
+    })
+      .then(() => mfs.ls('/', {}))
       .then(files => {
-        expect(files.length).to.equal(0)
+        expect(files.length).to.equal(1)
+        expect(files[0].name).to.equal(fileName)
+        expect(files[0].type).to.equal('file')
+        expect(files[0].size).to.equal(content.length)
+      })
+  })
+
+  it('lists a file', () => {
+    const fileName = `small-file-${Math.random()}.txt`
+    const content = Buffer.from('Hello world')
+
+    return mfs.write(`/${fileName}`, content, {
+      create: true
+    })
+      .then(() => mfs.ls(`/${fileName}`))
+      .then(files => {
+        expect(files.length).to.equal(1)
+        expect(files[0].name).to.equal(fileName)
+        expect(files[0].type).to.equal('file')
+        expect(files[0].size).to.equal(content.length)
       })
   })
 

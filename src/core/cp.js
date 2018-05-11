@@ -13,6 +13,7 @@ const {
   toSourcesAndDestination
 } = require('./utils')
 const stat = require('./stat')
+const log = require('debug')('mfs:cp')
 
 const defaultOptions = {
   parents: false,
@@ -43,8 +44,10 @@ module.exports = function mfsCp (ipfs) {
     traverseTo(ipfs, destination.path, {}, (error, result) => {
       if (error) {
         if (sources.length === 1) {
+          log('Only one source, copying to a file')
           return copyToFile(ipfs, sources.pop(), destination, options, callback)
         } else {
+          log('Multiple sources, copying to a directory')
           return copyToDirectory(ipfs, sources, destination, options, callback)
         }
       }
