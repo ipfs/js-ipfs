@@ -1,3 +1,16 @@
+<a name="0.65.0"></a>
+# [0.65.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.64.3...v0.65.0) (2018-05-11)
+
+
+### Bug Fixes
+
+* many fixes for pubsub tests with new async unsubscribe ([2019c45](https://github.com/ipfs/interface-ipfs-core/commit/2019c45))
+* pubsub subscribe call with options ([c43f8bc](https://github.com/ipfs/interface-ipfs-core/commit/c43f8bc))
+* remove .only ([251cffd](https://github.com/ipfs/interface-ipfs-core/commit/251cffd))
+* remove duplicate async.each ([f798597](https://github.com/ipfs/interface-ipfs-core/commit/f798597))
+
+
+
 <a name="0.64.3"></a>
 ## [0.64.3](https://github.com/ipfs/interface-ipfs-core/compare/v0.64.2...v0.64.3) (2018-05-06)
 
