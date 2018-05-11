@@ -39,8 +39,6 @@ const traverseTo = (ipfs, path, options, callback) => {
         .split(FILE_SEPARATOR)
         .filter(Boolean)
 
-      log(`pathSegments ${pathSegments}`)
-
       const trail = []
 
       waterfall([

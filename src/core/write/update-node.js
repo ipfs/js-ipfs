@@ -18,6 +18,7 @@ const {
 const log = require('debug')('mfs:write:update-node')
 const {
   limitStreamBytes,
+  countStreamBytes,
   createNode,
   zeros,
   loadNode,
@@ -33,8 +34,8 @@ const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
   // Where we want to start writing in the stream
   let streamStart = offset
 
-  // Where we want to stop writing in the stream
-  const streamEnd = offset + options.length
+  // Where we want to stop writing in the stream and truncate if requested
+  let streamEnd = offset + options.length
 
   // Where we currently are in the file
   let destinationStreamPosition = streamStart
@@ -77,6 +78,14 @@ const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
         source,
         filter(Boolean),
         limitStreamBytes(options.length + paddingBytesLength),
+        countStreamBytes((count) => {
+          // we normally don't know how long a stream is but if we're going to truncate the file
+          // after writing we need to know how many bytes have been emitted in order to truncate
+          // after the last byte so count them..
+          if (streamEnd === Infinity) {
+            streamEnd = offset + count
+          }
+        }),
         map((buffer) => {
           log(`Writing ${buffer.length} at ${destinationStreamPosition} of ${fileSize}`)
 

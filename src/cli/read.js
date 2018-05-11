@@ -43,7 +43,7 @@ module.exports = {
         pull(
           stream,
           through(buffer => {
-            print(buffer)
+            print(buffer, false)
           }),
           collect(cb)
         )

@@ -385,6 +385,42 @@ describe('write', function () {
     })
   })
 
+  runTest(({type, path, content}) => {
+    it(`truncates a file after writing with a stream (${type})`, () => {
+      const newContent = Buffer.from('Oh hai!')
+      const stream = values([newContent])
+
+      return mfs.write(path, content, {
+        create: true
+      })
+        .then(() => mfs.write(path, stream, {
+          truncate: true
+        }))
+        .then(() => mfs.stat(path))
+        .then((stats) => expect(stats.size).to.equal(newContent.length))
+        .then(() => mfs.read(path))
+        .then((buffer) => expect(buffer).to.deep.equal(newContent))
+    })
+  })
+
+  runTest(({type, path, content}) => {
+    it(`truncates a file after writing with a stream with an offset (${type})`, () => {
+      const offset = 100
+      const newContent = Buffer.from('Oh hai!')
+      const stream = values([newContent])
+
+      return mfs.write(path, content, {
+        create: true
+      })
+        .then(() => mfs.write(path, stream, {
+          truncate: true,
+          offset
+        }))
+        .then(() => mfs.stat(path))
+        .then((stats) => expect(stats.size).to.equal(offset + newContent.length))
+    })
+  })
+
   it.skip('writes a file with raw blocks for newly created leaf nodes', () => {
 
   })
