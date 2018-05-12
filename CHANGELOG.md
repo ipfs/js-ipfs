@@ -1,3 +1,21 @@
+<a name="21.0.0"></a>
+# [21.0.0](https://github.com/ipfs/js-ipfs-api/compare/v20.2.1...v21.0.0) (2018-05-12)
+
+
+### Bug Fixes
+
+* make pubsub.unsubscribe async and alter pubsub.subscribe signature ([b98f8f3](https://github.com/ipfs/js-ipfs-api/commit/b98f8f3))
+
+
+### BREAKING CHANGES
+
+* pubsub.unsubscribe is now async and argument order for pubsub.subscribe has changed
+
+License: MIT
+Signed-off-by: Alan Shaw <alan@tableflip.io>
+
+
+
 <a name="20.2.1"></a>
 ## [20.2.1](https://github.com/ipfs/js-ipfs-api/compare/v20.2.0...v20.2.1) (2018-05-06)
 
