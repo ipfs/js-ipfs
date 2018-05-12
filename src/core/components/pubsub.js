@@ -1,6 +1,7 @@
 'use strict'
 
 const promisify = require('promisify-es6')
+const setImmediate = require('async/setImmediate')
 
 module.exports = function pubsub (self) {
   return {
@@ -31,7 +32,7 @@ module.exports = function pubsub (self) {
         return Promise.resolve()
       }
 
-      process.nextTick(() => callback())
+      setImmediate(() => callback())
     },
 
     publish: promisify((topic, data, callback) => {
