@@ -60,7 +60,7 @@ describe('object', () => runOnAndOff((thing) => {
 
   it('data', () => {
     return ipfs('object data QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').then((out) => {
-      expect(out).to.eql('another\n')
+      expect(out).to.eql('another')
     })
   })
 
