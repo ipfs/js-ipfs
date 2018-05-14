@@ -599,8 +599,8 @@ The Mutable File System (MFS) is a virtual file system on top of IPFS that expos
 
 Where:
 
-- `from` is the path of the source object to copy.
-- `to` is the path of the destination object to copy to.
+- `from` is the path of the source file to copy.
+- `to` is the path of the destination file to copy to.
 
 `callback` must follow the `function (err) {}` signature, where `err` is an Error if the operation was not successful.
 
@@ -700,7 +700,7 @@ ipfs.files.stat('/file.txt', (err, stats) => {
 
 Where:
 
-- `path` is the path of the object to remove.
+- `path` is the path of the file to remove.
 - `options` is an optional Object that might contain the following keys:
   - `recursive` is a Boolean value to decide whether or not to remove directories recursively.
 
@@ -736,7 +736,7 @@ ipfs.files.rm('/my/beautiful/directory', { recursive: true }, (err) => {
 
 Where:
 
-- `path` is the path of the object to read.
+- `path` is the path of the file to read.
 - `options` is an optional Object that might contain the following keys:
   - `offset` is an Integer with the byte offset to begin reading from.
   - `count` is an Integer with the maximum number of bytes to read.
@@ -765,7 +765,7 @@ ipfs.files.read('/hello-world', (err, buf) => {
 
 Where:
 
-- `path` is the path of the object to read.
+- `path` is the path of the file to read.
 - `options` is an optional Object that might contain the following keys:
   - `offset` is an Integer with the byte offset to begin reading from.
   - `count` is an Integer with the maximum number of bytes to read.
@@ -790,11 +790,11 @@ ipfs.files.readReadableStream('/hello-world', (err, stream) => {
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.files.readReadableStream(path, [options], [callback])
+##### `JavaScript` - ipfs.files.readPullStream(path, [options], [callback])
 
 Where:
 
-- `path` is the path of the object to read.
+- `path` is the path of the file to read.
 - `options` is an optional Object that might contain the following keys:
   - `offset` is an Integer with the byte offset to begin reading from.
   - `count` is an Integer with the maximum number of bytes to read.
@@ -827,10 +827,13 @@ ipfs.files.readPullStream('/hello-world', (err, stream) => {
 
 Where:
 
-- `path` is the path of the object to write.
+- `path` is the path of the file to write.
 - `content` can be:
-  - a Buffer instance.
-  - a Path (caveat: will only work in Node.js).
+  - a [`Buffer`][b]
+  - a [`PullStream`][ps]
+  - a [`ReadableStream`][rs]
+  - a [`Blob`][blob] (caveat: will only work in the browser)
+  - a string path to a file (caveat: will only work in Node.js)
 - `options` is an optional Object that might contain the following keys:
   - `offset` is an Integer with the byte offset to begin writing at.
   - `create` is a Boolean to indicate to create the file if it doesn't exist.
@@ -859,8 +862,8 @@ ipfs.files.write('/hello-world', Buffer.from('Hello, world!'), (err) => {
 
 Where:
 
-- `from` is the path of the source object to move.
-- `to` is the path of the destination object to move to.
+- `from` is the path of the source file to move.
+- `to` is the path of the destination file to move to.
 
 `callback` must follow the `function (err) {}` signature, where `err` is an Error if the operation was not successful.
 
@@ -943,3 +946,4 @@ ipfs.files.ls('/screenshots', function (err, files) {
 [rs]: https://www.npmjs.com/package/readable-stream
 [ps]: https://www.npmjs.com/package/pull-stream
 [cid]: https://www.npmjs.com/package/cids
+[blob]: https://developer.mozilla.org/en-US/docs/Web/API/Blob
