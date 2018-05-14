@@ -32,7 +32,7 @@ function spawnNode ({ dht = false }, cb) {
   }, cb)
 }
 
-describe('ping', function () {
+describe.only('ping', function () {
   this.timeout(60 * 1000)
 
   if (!isNode) return
@@ -85,10 +85,10 @@ describe('ping', function () {
       const count = 3
       pull(
         ipfsdA.api.pingPullStream(ipfsdBId, { count }),
-        drain(({ Success, Time, Text }) => {
-          expect(Success).to.be.true()
+        drain(({ success, time, text }) => {
+          expect(success).to.be.true()
           // It's a pong
-          if (Time) {
+          if (time) {
             packetNum++
           }
         }, (err) => {
@@ -104,16 +104,16 @@ describe('ping', function () {
       const count = 2
       pull(
         ipfsdA.api.pingPullStream('unknown', { count }),
-        drain(({ Success, Time, Text }) => {
+        drain(({ success, time, text }) => {
           messageNum++
           // Assert that the ping command falls back to the peerRouting
           if (messageNum === 1) {
-            expect(Text).to.include('Looking up')
+            expect(text).to.include('Looking up')
           }
 
           // Fails accordingly while trying to use peerRouting
           if (messageNum === 2) {
-            expect(Success).to.be.false()
+            expect(success).to.be.false()
           }
         }, (err) => {
           expect(err).to.not.exist()
@@ -175,10 +175,8 @@ describe('ping', function () {
       parallel([
         ipfsdA.api.swarm.connect.bind(ipfsdA.api, bMultiaddr),
         ipfsdB.api.swarm.connect.bind(ipfsdB.api, cMultiaddr)
-      ], (err) => setTimeout(() => done(err), 500)) // FIXME timeout needed for connections to succeed  
+      ], (err) => setTimeout(() => done(err), 500)) // FIXME timeout needed for connections to succeed
     })
-
-
 
     after((done) => ipfsdA.stop(done))
     after((done) => ipfsdB.stop(done))
@@ -190,15 +188,15 @@ describe('ping', function () {
       const count = 3
       pull(
         ipfsdA.api.pingPullStream(ipfsdCId, { count }),
-        drain(({ Success, Time, Text }) => {
+        drain(({ success, time, text }) => {
           messageNum++
-          expect(Success).to.be.true()
+          expect(success).to.be.true()
           // Assert that the ping command falls back to the peerRouting
           if (messageNum === 1) {
-            expect(Text).to.include('Looking up')
+            expect(text).to.include('Looking up')
           }
           // It's a pong
-          if (Time) {
+          if (time) {
             packetNum++
           }
         }, (err) => {
