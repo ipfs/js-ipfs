@@ -5,6 +5,7 @@ const dagCBOR = require('ipld-dag-cbor')
 const promisify = require('promisify-es6')
 const CID = require('cids')
 const multihash = require('multihashes')
+const setImmediate = require('async/setImmediate')
 const SendOneFile = require('../utils/send-one-file')
 
 function noop () {}

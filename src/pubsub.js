@@ -4,6 +4,7 @@ const promisify = require('promisify-es6')
 const EventEmitter = require('events')
 const eos = require('end-of-stream')
 const isNode = require('detect-node')
+const setImmediate = require('async/setImmediate')
 const PubsubMessageStream = require('./utils/pubsub-message-stream')
 const stringlistToArray = require('./utils/stringlist-to-array')
 const moduleConfig = require('./utils/module-config')
@@ -39,7 +40,7 @@ module.exports = (arg) => {
           return Promise.reject(NotSupportedError())
         }
 
-        return process.nextTick(() => callback(NotSupportedError()))
+        return setImmediate(() => callback(NotSupportedError()))
       }
 
       // promisify doesn't work as we always pass a
@@ -63,7 +64,7 @@ module.exports = (arg) => {
           return Promise.reject(NotSupportedError())
         }
 
-        return process.nextTick(() => callback(NotSupportedError()))
+        return setImmediate(() => callback(NotSupportedError()))
       }
 
       if (ps.listenerCount(topic) === 0 || !subscriptions[topic]) {
@@ -73,7 +74,7 @@ module.exports = (arg) => {
           return Promise.reject(err)
         }
 
-        return process.nextTick(() => callback(err))
+        return setImmediate(() => callback(err))
       }
 
       ps.removeListener(topic, handler)
@@ -88,7 +89,7 @@ module.exports = (arg) => {
         return Promise.resolve()
       }
 
-      process.nextTick(() => callback())
+      setImmediate(() => callback())
     },
     publish: promisify((topic, data, callback) => {
       if (!isNode) {
