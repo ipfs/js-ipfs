@@ -2,6 +2,8 @@
 
 'use strict'
 
+const fs = require('fs')
+const path = require('path')
 const yargs = require('yargs/yargs')
 const updateNotifier = require('update-notifier')
 const readPkgUp = require('read-pkg-up')
@@ -18,16 +20,16 @@ updateNotifier({
 }).notify()
 
 const MSG_USAGE = `Usage:
-  ipfs - Global p2p merkle-dag filesystem.
+ipfs - Global p2p merkle-dag filesystem.
 
   ipfs [options] <command> ...`
-const MSG_EPILOGUE = `Use 'ipfs <command> --help' to learn more about each command.
+  const MSG_EPILOGUE = `Use 'ipfs <command> --help' to learn more about each command.
 
 ipfs uses a repository in the local file system. By default, the repo is
 located at ~/.ipfs. To change the repo location, set the $IPFS_PATH
 environment variable:
 
-  export IPFS_PATH=/path/to/ipfsrepo
+export IPFS_PATH=/path/to/ipfsrepo
 
 EXIT STATUS
 
@@ -39,6 +41,9 @@ The CLI will exit with one of the following values:
 const MSG_NO_CMD = 'You need at least one command before moving on'
 
 const argv = process.argv.slice(2)
+const commandNames = fs.readdirSync(path.join(__dirname, 'commands'))
+const isCommand = commandNames.includes(`${argv[0]}.js`)
+
 let args = {}
 let cli = yargs(argv)
   .usage(MSG_USAGE)
@@ -63,13 +68,25 @@ let cli = yargs(argv)
     desc: 'Use a specific API instance.',
     type: 'string'
   })
-  .commandDir('commands')
-  // NOTE: This creates an alias of
-  // `jsipfs files {add, get, cat}` to `jsipfs {add, get, cat}`.
-  // This will stay until https://github.com/ipfs/specs/issues/98 is resolved.
-  .command(addCmd)
-  .command(catCmd)
-  .command(getCmd)
+  .commandDir('commands', {
+    // Only include the commands for the sub-system we're using, or include all
+    // if no sub-system command has been passed.
+    include (path, filename) {
+      if (!isCommand) return true
+      return `${argv[0]}.js` === filename
+    }
+  })
+
+  if(!isCommand){
+    cli
+    // NOTE: This creates an alias of
+    // `jsipfs files {add, get, cat}` to `jsipfs {add, get, cat}`.
+    // This will stay until https://github.com/ipfs/specs/issues/98 is resolved.
+    .command(addCmd)
+    .command(catCmd)
+    .command(getCmd)
+  }
+  cli
   .demandCommand(1, MSG_NO_CMD)
   .alias('help', 'h')
   .epilogue(MSG_EPILOGUE)

@@ -44,7 +44,7 @@ exports.getNodeOrAPI = (argv, stateOptions = {forceInitialized: true}) => {
     return Promise.resolve(getAPICtl(argv.api))
   }
 
-  const {createNodePromise} = require('../core')
+  const IPFS = require('../core')
   return IPFS.createNodePromise({
     repo: exports.getRepoPath(),
     init: false,
