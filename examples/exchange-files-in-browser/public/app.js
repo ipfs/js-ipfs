@@ -2,9 +2,9 @@
 
 const IPFS = require('ipfs')
 
-// Daemon
-const $daemonId = document.querySelector('.daemon-id')
-const $daemonAddresses = document.querySelector('.daemon-addresses')
+// Node
+const $nodeId = document.querySelector('.node-id')
+const $nodeAddresses = document.querySelector('.node-addresses')
 const $logs = document.querySelector('#logs')
 // Peers
 const $peers = document.querySelector('#peers')
@@ -50,7 +50,7 @@ function start () {
         .then((id) => {
           info = id
           updateView('ready', node)
-          onSuccess('Daemon is ready.')
+          onSuccess('Node is ready.')
           setInterval(refreshPeerList, 1000)
         })
         .catch((error) => onError(err))
@@ -110,7 +110,7 @@ function getFile () {
         }
       })
     })
-    .catch((error) => onError('The inserted multihash is invalid.'))
+    .catch((error) => onError('An error occurred when fetching the files.'))
 }
 
 /* Drag & Drop
@@ -178,7 +178,7 @@ function connectToPeer (event) {
       onSuccess(`Successfully connected to peer.`)
       $multiaddrInput.value = ''
     })
-    .catch((error) => onError('The inserted multiaddr is invalid.'))
+    .catch((error) => onError('An error occurred when connecting to the peer.'))
 }
 
 function refreshPeerList () {
@@ -237,8 +237,8 @@ const states = {
     const addressesHtml = info.addresses.map((address) => {
       return `<li><pre>${address}</pre></li>`
     }).join('')
-    $daemonId.innerText = info.id
-    $daemonAddresses.innerHTML = addressesHtml
+    $nodeId.innerText = info.id
+    $nodeAddresses.innerHTML = addressesHtml
     $allDisabledButtons.forEach(b => { b.disabled = false })
     $allDisabledInputs.forEach(b => { b.disabled = false })
     $allDisabledElements.forEach(el => { el.classList.remove('disabled') })

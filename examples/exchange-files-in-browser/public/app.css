@@ -167,35 +167,35 @@ table tbody tr:hover {
   margin-bottom: 1em;
 }
 
-/* Daemon
+/* Node
    =========================================================================== */
 
-.box.daemon > div {
+.box.node > div {
   display: flex;
   margin-bottom: 1em;
 }
 
-.box.daemon > div:last-child {
+.box.node > div:last-child {
   margin-bottom: 0;
 }
 
-.box.daemon > div > h3 {
+.box.node > div > h3 {
   flex: 0 0 15%;
 }
 
-.box.daemon > div pre,
-.box.daemon > div > ul {
+.box.node > div pre,
+.box.node > div > ul {
   flex: 0 0 85%;
   margin: 0;
 }
 
-.box.daemon ul {
+.box.node ul {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.daemon-addresses li {
+.node-addresses li {
   margin-bottom: 0.5em;
   font-size: 0.7em;
   word-wrap: break-word;
