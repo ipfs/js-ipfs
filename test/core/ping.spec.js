@@ -32,7 +32,7 @@ function spawnNode ({ dht = false }, cb) {
   }, cb)
 }
 
-describe.only('ping', function () {
+describe('ping', function () {
   this.timeout(60 * 1000)
 
   if (!isNode) return
