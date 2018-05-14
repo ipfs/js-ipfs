@@ -12,6 +12,7 @@ const parallel = require('async/parallel')
 const series = require('async/series')
 
 const IPFSApi = require('../src')
+const PingMessageStream = require('../src/utils/ping-message-stream')
 const f = require('./utils/factory')
 
 describe('.ping', function () {
@@ -77,10 +78,10 @@ describe('.ping', function () {
       expect(res).to.be.an('array')
       expect(res).to.have.lengthOf(3)
       res.forEach(packet => {
-        expect(packet).to.have.keys('Success', 'Time', 'Text')
-        expect(packet.Time).to.be.a('number')
+        expect(packet).to.have.keys('success', 'time', 'text')
+        expect(packet.time).to.be.a('number')
       })
-      const resultMsg = res.find(packet => packet.Text.includes('Average latency'))
+      const resultMsg = res.find(packet => packet.text.includes('Average latency'))
       expect(resultMsg).to.exist()
       done()
     })
@@ -92,10 +93,10 @@ describe('.ping', function () {
       expect(res).to.be.an('array')
       expect(res).to.have.lengthOf(4)
       res.forEach(packet => {
-        expect(packet).to.have.keys('Success', 'Time', 'Text')
-        expect(packet.Time).to.be.a('number')
+        expect(packet).to.have.keys('success', 'time', 'text')
+        expect(packet.time).to.be.a('number')
       })
-      const resultMsg = res.find(packet => packet.Text.includes('Average latency'))
+      const resultMsg = res.find(packet => packet.text.includes('Average latency'))
       expect(resultMsg).to.exist()
       done()
     })
@@ -107,10 +108,10 @@ describe('.ping', function () {
       expect(res).to.be.an('array')
       expect(res).to.have.lengthOf(4)
       res.forEach(packet => {
-        expect(packet).to.have.keys('Success', 'Time', 'Text')
-        expect(packet.Time).to.be.a('number')
+        expect(packet).to.have.keys('success', 'time', 'text')
+        expect(packet.time).to.be.a('number')
       })
-      const resultMsg = res.find(packet => packet.Text.includes('Average latency'))
+      const resultMsg = res.find(packet => packet.text.includes('Average latency'))
       expect(resultMsg).to.exist()
       done()
     })
@@ -131,10 +132,10 @@ describe('.ping', function () {
         expect(res).to.be.an('array')
         expect(res).to.have.lengthOf(3)
         res.forEach(packet => {
-          expect(packet).to.have.keys('Success', 'Time', 'Text')
-          expect(packet.Time).to.be.a('number')
+          expect(packet).to.have.keys('success', 'time', 'text')
+          expect(packet.time).to.be.a('number')
         })
-        const resultMsg = res.find(packet => packet.Text.includes('Average latency'))
+        const resultMsg = res.find(packet => packet.text.includes('Average latency'))
         expect(resultMsg).to.exist()
       })
   })
@@ -147,10 +148,10 @@ describe('.ping', function () {
         expect(data).to.be.an('array')
         expect(data).to.have.lengthOf(3)
         data.forEach(packet => {
-          expect(packet).to.have.keys('Success', 'Time', 'Text')
-          expect(packet.Time).to.be.a('number')
+          expect(packet).to.have.keys('success', 'time', 'text')
+          expect(packet.time).to.be.a('number')
         })
-        const resultMsg = data.find(packet => packet.Text.includes('Average latency'))
+        const resultMsg = data.find(packet => packet.text.includes('Average latency'))
         expect(resultMsg).to.exist()
         done()
       })
@@ -162,7 +163,7 @@ describe('.ping', function () {
     ipfs.pingReadableStream(otherId)
       .on('data', data => {
         expect(data).to.be.an('object')
-        expect(data).to.have.keys('Success', 'Time', 'Text')
+        expect(data).to.have.keys('success', 'time', 'text')
         packetNum++
       })
       .on('error', err => {
@@ -172,5 +173,12 @@ describe('.ping', function () {
         expect(packetNum).to.be.above(2)
         done()
       })
+  })
+
+  it('message conversion fails if invalid message is received', () => {
+    const messageConverter = new PingMessageStream()
+    expect(() => {
+      messageConverter.write({some: 'InvalidMessage'})
+    }).to.throw('Invalid ping message received')
   })
 })

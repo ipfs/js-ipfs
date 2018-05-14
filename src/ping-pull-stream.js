@@ -2,7 +2,9 @@
 
 const toPull = require('stream-to-pull-stream')
 const deferred = require('pull-defer')
+const pump = require('pump')
 const moduleConfig = require('./utils/module-config')
+const PingMessageStream = require('./utils/ping-message-stream')
 
 module.exports = (arg) => {
   const send = moduleConfig(arg)
@@ -18,10 +20,13 @@ module.exports = (arg) => {
       qs: opts
     }
     const p = deferred.source()
+    const response = new PingMessageStream()
 
     send(request, (err, stream) => {
       if (err) { return p.abort(err) }
-      p.resolve(toPull.source(stream))
+
+      pump(stream, response)
+      p.resolve(toPull.source(response))
     })
 
     return p

@@ -1,8 +1,10 @@
 'use strict'
 
 const promisify = require('promisify-es6')
+const pump = require('pump')
+const concat = require('concat-stream')
 const moduleConfig = require('./utils/module-config')
-const streamToValue = require('./utils/stream-to-value')
+const PingMessageStream = require('./utils/ping-message-stream')
 
 module.exports = (arg) => {
   const send = moduleConfig(arg)
@@ -30,14 +32,16 @@ module.exports = (arg) => {
 
     // Transform the response stream to a value:
     // [{ Success: <boolean>, Time: <number>, Text: <string> }]
-    const transform = (res, callback) => {
-      streamToValue(res, (err, res) => {
-        if (err) {
-          return callback(err)
+    const transform = (stream, callback) => {
+      const messageConverter = new PingMessageStream()
+      pump(
+        stream,
+        messageConverter,
+        concat({encoding: 'object'}, (data) => callback(null, data)),
+        (err) => {
+          if (err) callback(err)
         }
-
-        callback(null, res)
-      })
+      )
     }
 
     send.andTransform(request, transform, callback)
