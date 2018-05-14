@@ -1,7 +1,6 @@
 'use strict'
 
-const pull = require('pull-stream/pull')
-
+const pull = require('pull-stream')
 const print = require('../utils').print
 
 module.exports = {

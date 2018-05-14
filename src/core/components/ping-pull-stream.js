@@ -26,7 +26,7 @@ module.exports = function pingPullStream (self) {
     ], (err) => {
       if (err) {
         log.error(err)
-        source.push(getPacket({ text: err.toString() }))
+        source.push(getPacket({ success: false, text: err.toString() }))
         source.end(err)
       }
     })
@@ -43,16 +43,25 @@ function getPacket (msg) {
 
 function getPeer (libp2pNode, statusStream, peerId, cb) {
   let peer
+
   try {
     peer = libp2pNode.peerBook.get(peerId)
   } catch (err) {
     log('Peer not found in peer book, trying peer routing')
     // Share lookup status just as in the go implemmentation
     statusStream.push(getPacket({ text: `Looking up peer ${peerId}` }))
+
     // Try to use peerRouting
-    return libp2pNode.peerRouting.findPeer(PeerId.createFromB58String(peerId), cb)
+    try {
+      peerId = PeerId.createFromB58String(peerId)
+    } catch (err) {
+      return cb(err)
+    }
+
+    return libp2pNode.peerRouting.findPeer(peerId, cb)
   }
-  return cb(null, peer)
+
+  cb(null, peer)
 }
 
 function runPing (libp2pNode, statusStream, count, peer, cb) {
