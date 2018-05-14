@@ -19,7 +19,11 @@ const once = require('once')
 // arbitrary limit to number of concurrent dag operations
 const concurrencyLimit = 300
 
-function toB58String (hash) {
+function toB58String (hash, tst) {
+  if (Buffer.isBuffer(hash)) {
+    hash = multihashes.toB58String(hash)
+  }
+
   return new CID(hash).toBaseEncodedString()
 }
 
@@ -71,7 +75,7 @@ module.exports = function pin (self) {
 
             // entire graph of nested links should be pinned,
             // so make sure we have all the objects
-            dag._getRecursive(multihash, (err) => {
+            dag._getRecursive(key, (err) => {
               if (err) { return cb(err) }
               // found all objects, we can add the pin
               return cb(null, key)

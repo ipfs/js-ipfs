@@ -4,7 +4,7 @@ const print = require('../../utils').print
 
 module.exports = {
   // bracket syntax with '...' tells yargs to optionally accept a list
-  command: 'ls [ipfs-path...]',
+  command: 'ls [ipfsPath...]',
 
   describe: 'List objects pinned to local storage.',
 

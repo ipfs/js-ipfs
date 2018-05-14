@@ -3,7 +3,7 @@
 const print = require('../../utils').print
 
 module.exports = {
-  command: 'rm <ipfs-path...>',
+  command: 'rm <ipfsPath...>',
 
   describe: 'Removes the pinned object from local storage.',
 

@@ -96,9 +96,7 @@ function pinFile (self, opts, file, cb) {
   const isRootDir = !file.path.includes('/')
   const shouldPin = pin && isRootDir && !opts.onlyHash
   if (shouldPin) {
-    return self.pin.add(file.hash, (err) => {
-      cb(err, file)
-    })
+    return self.pin.add(file.hash, err => cb(err, file))
   } else {
     cb(null, file)
   }

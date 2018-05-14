@@ -3,7 +3,7 @@
 const print = require('../../utils').print
 
 module.exports = {
-  command: 'add <ipfs-path...>',
+  command: 'add <ipfsPath...>',
 
   describe: 'Pins object to local storage.',
 
