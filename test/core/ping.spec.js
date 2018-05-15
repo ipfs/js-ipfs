@@ -170,12 +170,28 @@ describe('ping', function () {
 
     // Connect the nodes
     before(function (done) {
-      this.timeout(60 * 1000)
+      this.timeout(30 * 1000)
+      let interval
+
+      // Check to see if peers are already connected
+      const checkConnections = () => {
+        ipfsdB.api.swarm.peers((err, peerInfos) => {
+          if (err) return done(err)
+
+          if (peerInfos.length > 1) {
+            clearInterval(interval)
+            return done()
+          }
+        })
+      }
 
       parallel([
         ipfsdA.api.swarm.connect.bind(ipfsdA.api, bMultiaddr),
         ipfsdB.api.swarm.connect.bind(ipfsdB.api, cMultiaddr)
-      ], (err) => setTimeout(() => done(err), 500)) // FIXME timeout needed for connections to succeed
+      ], (err) => {
+        if (err) return done(err)
+        interval = setInterval(checkConnections, 300)
+      })
     })
 
     after((done) => ipfsdA.stop(done))
