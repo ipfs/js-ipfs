@@ -476,5 +476,27 @@ module.exports = (common) => {
         })
       })
     })
+
+    // TODO (achingbrain) - Not yet supported in js-ipfs or go-ipfs yet')
+    describe.skip('.stat', () => {
+      before((done) => ipfs.files.add(smallFile.data, done))
+
+      it.skip('stat outside of mfs', function (done) {
+        ipfs.files.stat('/ipfs/' + smallFile.cid, (err, stat) => {
+          expect(err).to.not.exist()
+          expect(stat).to.eql({
+            type: 'file',
+            blocks: 0,
+            size: 12,
+            hash: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
+            cumulativeSize: 20,
+            withLocality: false,
+            local: undefined,
+            sizeLocal: undefined
+          })
+          done()
+        })
+      })
+    })
   })
 }

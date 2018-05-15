@@ -1171,29 +1171,5 @@ module.exports = (common) => {
         )
       })
     })
-
-    describe('.stat', () => {
-      before((done) => ipfs.files.add(smallFile.data, done))
-
-      it('stat outside of mfs', function (done) {
-        console.log('Not supported in js-ipfs or go-ipfs yet')
-        this.skip()
-
-        ipfs.files.stat('/ipfs/' + smallFile.cid, (err, stat) => {
-          expect(err).to.not.exist()
-          expect(stat).to.eql({
-            type: 'file',
-            blocks: 0,
-            size: 12,
-            hash: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
-            cumulativeSize: 20,
-            withLocality: false,
-            local: undefined,
-            sizeLocal: undefined
-          })
-          done()
-        })
-      })
-    })
   })
 }
