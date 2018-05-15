@@ -6,22 +6,9 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const waterfall = require('async/waterfall')
-const series = require('async/series')
 const parallel = require('async/parallel')
 const CID = require('cids')
-
-function spawnWithId (factory, callback) {
-  waterfall([
-    (cb) => factory.spawnNode(cb),
-    (node, cb) => node.id((err, peerId) => {
-      if (err) {
-        return cb(err)
-      }
-      node.peerId = peerId
-      cb(null, node)
-    })
-  ], callback)
-}
+const { spawnNodesWithId } = require('./utils/spawn')
 
 module.exports = (common) => {
   describe('.dht', function () {
@@ -40,13 +27,8 @@ module.exports = (common) => {
 
       common.setup((err, factory) => {
         expect(err).to.not.exist()
-        series([
-          (cb) => spawnWithId(factory, cb),
-          (cb) => spawnWithId(factory, cb),
-          (cb) => spawnWithId(factory, cb),
-          (cb) => spawnWithId(factory, cb),
-          (cb) => spawnWithId(factory, cb)
-        ], (err, nodes) => {
+
+        spawnNodesWithId(5, factory, (err, nodes) => {
           expect(err).to.not.exist()
 
           nodeA = nodes[0]

@@ -8,10 +8,10 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const series = require('async/series')
 const each = require('async/each')
-const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
 const whilst = require('async/whilst')
 const hat = require('hat')
+const { spawnNodesWithId } = require('./utils/spawn')
 
 // On Browsers it will be false, but the tests currently aren't run
 // there anyway
@@ -34,19 +34,6 @@ function waitForPeers (ipfs, topic, peersToWait, callback) {
       }
     })
   }, 500)
-}
-
-function spawnWithId (factory, callback) {
-  waterfall([
-    (cb) => factory.spawnNode(cb),
-    (node, cb) => node.id((err, res) => {
-      if (err) {
-        return cb(err)
-      }
-      node.peerId = res
-      cb(null, node)
-    })
-  ], callback)
 }
 
 function makeCheck (n, done) {
@@ -83,11 +70,7 @@ module.exports = (common) => {
           return done(err)
         }
 
-        series([
-          (cb) => spawnWithId(factory, cb),
-          (cb) => spawnWithId(factory, cb),
-          (cb) => spawnWithId(factory, cb)
-        ], (err, nodes) => {
+        spawnNodesWithId(3, factory, (err, nodes) => {
           if (err) {
             return done(err)
           }

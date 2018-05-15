@@ -7,6 +7,7 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
+const { spawnNodeWithId } = require('./utils/spawn')
 
 module.exports = (common) => {
   describe('.miscellaneous', () => {
@@ -20,14 +21,11 @@ module.exports = (common) => {
 
       common.setup((err, factory) => {
         expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
+        spawnNodeWithId(factory, (err, node) => {
           expect(err).to.not.exist()
           ipfs = node
-          ipfs.id((err, id) => {
-            expect(err).to.not.exist()
-            withGo = id.agentVersion.startsWith('go-ipfs')
-            done()
-          })
+          withGo = node.peerId.agentVersion.startsWith('go-ipfs')
+          done()
         })
       })
     })
