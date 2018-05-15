@@ -52,6 +52,8 @@ module.exports = {
         } else {
           print(`js-ipfs version: ${parsedVersion}`)
         }
+
+        node.clean();
       })
   }
 }

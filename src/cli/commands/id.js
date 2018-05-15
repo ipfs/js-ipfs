@@ -20,7 +20,7 @@ module.exports = {
       .then(node => Promise.all([node, node.id()]))
       .then(([node, id]) => {
         print(JSON.stringify(id, '', 2))
-        node.stop()
+        node.clean()
       })
   }
 }

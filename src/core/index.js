@@ -136,6 +136,35 @@ class IPFS extends EventEmitter {
 
     boot(this)
   }
+
+
+  /**
+   * Clean a node after usage, checks the current state and calls the needed methods
+   * Until _repo.close return a promise we just throw the error to perserve the stack
+   *
+   * @memberof IPFS
+   */
+  clean() {
+    this.log('cleaning: state ', this.state.state())
+    switch (this.state.state()) {
+      case 'stopped':
+        this._repo.close(err => {
+          if(err) {
+            throw err
+          }
+        });
+        break;
+      case 'running':
+        this.stop(err => {
+          if(err) {
+            throw err
+          }
+        })
+        break;
+      default:
+        break;
+    }
+  }
 }
 
 module.exports = IPFS
@@ -160,6 +189,7 @@ IPFS.createNodePromise = (options = {}, stateOptions = {}) => {
     const node = new IPFS(options)
 
     node.on('error', err => {
+      node.clean()
       reject(err)
     })
 
