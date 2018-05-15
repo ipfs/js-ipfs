@@ -44,6 +44,7 @@ exports.getNodeOrAPI = (argv, stateOptions = {forceInitialized: true}) => {
     return Promise.resolve(getAPICtl(argv.api))
   }
 
+  // Required inline to reduce startup time
   const IPFS = require('../core')
   return IPFS.createNodePromise({
     repo: exports.getRepoPath(),

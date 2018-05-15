@@ -8,9 +8,6 @@ const yargs = require('yargs/yargs')
 const updateNotifier = require('update-notifier')
 const readPkgUp = require('read-pkg-up')
 const { disablePrinting, print, getNodeOrAPI } = require('./utils')
-const addCmd = require('./commands/files/add')
-const catCmd = require('./commands/files/cat')
-const getCmd = require('./commands/files/get')
 
 const pkg = readPkgUp.sync({cwd: __dirname}).pkg
 
@@ -23,7 +20,8 @@ const MSG_USAGE = `Usage:
 ipfs - Global p2p merkle-dag filesystem.
 
   ipfs [options] <command> ...`
-  const MSG_EPILOGUE = `Use 'ipfs <command> --help' to learn more about each command.
+
+const MSG_EPILOGUE = `Use 'ipfs <command> --help' to learn more about each command.
 
 ipfs uses a repository in the local file system. By default, the repo is
 located at ~/.ipfs. To change the repo location, set the $IPFS_PATH
@@ -82,9 +80,9 @@ let cli = yargs(argv)
     // NOTE: This creates an alias of
     // `jsipfs files {add, get, cat}` to `jsipfs {add, get, cat}`.
     // This will stay until https://github.com/ipfs/specs/issues/98 is resolved.
-    .command(addCmd)
-    .command(catCmd)
-    .command(getCmd)
+    .command(require('./commands/files/add'))
+    .command(require('./commands/files/cat'))
+    .command(require('./commands/files/get'))
   }
   cli
   .demandCommand(1, MSG_NO_CMD)
