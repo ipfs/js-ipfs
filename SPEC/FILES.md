@@ -19,6 +19,8 @@
 * [files.stat](#filesmkdir)
 * [files.rm](#filesrm)
 * [files.read](#filesread)
+* [files.readReadableStream](#filesreadreadablestream)
+* [files.readPullStream](#filesreadpullstream)
 * [files.write](#fileswrite)
 * [files.mv](#filesmv)
 * [files.flush](#filesflush)
@@ -761,7 +763,7 @@ ipfs.files.read('/hello-world', (err, buf) => {
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.files.readReadableStream(path, [options], [callback])
+##### `JavaScript` - ipfs.files.readReadableStream(path, [options])
 
 Where:
 
@@ -770,16 +772,13 @@ Where:
   - `offset` is an Integer with the byte offset to begin reading from.
   - `count` is an Integer with the maximum number of bytes to read.
 
-`callback` must follow the `function (err, stream) {}` signature, where `err` is an Error if the operation was not successful and `stream` is a [`ReadableStream`][rs] with the contents of `path`.
-
-If no `callback` is passed, a promise is returned.
+Returns a [`ReadableStream`][rs] with the contents of `path`.
 
 **Example:**
 
 ```JavaScript
-ipfs.files.readReadableStream('/hello-world', (err, stream) => {
-  stream.on('data', (buf) => console.log(buf.toString('utf8')))
-})
+const stream = ipfs.files.readReadableStream('/hello-world')
+stream.on('data', (buf) => console.log(buf.toString('utf8')))
 
 // Hello, World!
 ```
@@ -790,7 +789,7 @@ ipfs.files.readReadableStream('/hello-world', (err, stream) => {
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.files.readPullStream(path, [options], [callback])
+##### `JavaScript` - ipfs.files.readPullStream(path, [options])
 
 Where:
 
@@ -799,20 +798,16 @@ Where:
   - `offset` is an Integer with the byte offset to begin reading from.
   - `count` is an Integer with the maximum number of bytes to read.
 
-`callback` must follow the `function (err, stream) {}` signature, where `err` is an Error if the operation was not successful and `stream` is a [`PullStream`][ps] with the contents of `path`.
-
-If no `callback` is passed, a promise is returned.
+Returns a [`PullStream`][ps] with the contents of `path`.
 
 **Example:**
 
 ```JavaScript
-ipfs.files.readPullStream('/hello-world', (err, stream) => {
-  pull(
-    stream,
-    through(buf => console.log(buf.toString('utf8'))),
-    collect(err => {})
-  )
-})
+pull(
+  ipfs.files.readPullStream('/hello-world'),
+  through(buf => console.log(buf.toString('utf8'))),
+  collect(err => {})
+)
 
 // Hello, World!
 ```
