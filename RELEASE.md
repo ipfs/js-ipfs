@@ -6,6 +6,8 @@
 
 # 🔦 Highlights
 
+# 🏗 API Changes
+
 # ✅ Release Checklist
 
 - Robustness and quality
