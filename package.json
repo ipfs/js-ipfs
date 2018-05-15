@@ -2,6 +2,7 @@
   "name": "ipfs-mfs",
   "version": "0.0.1",
   "description": "JavaScript implementation of the IPFS Mutable File System",
+  "leadMaintainer": "Alex Potsides <alex.potsides@protocol.ai>",
   "main": "src/index.js",
   "browser": {
     "fs": false
@@ -25,7 +26,6 @@
   "keywords": [
     "IPFS"
   ],
-  "author": "Alex Potsides <alex.potsides@protocol.ai>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ipfs/js-ipfs-mfs/issues"

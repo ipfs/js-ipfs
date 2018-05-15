@@ -15,6 +15,10 @@
 
 [The MFS spec can be found inside the ipfs/specs repository](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#mutable-file-system)
 
+## Lead Maintainer
+
+[Alex Potsides](https://github.com/achingbrain)
+
 ## Table of Contents
 
 - [Install](#install)
