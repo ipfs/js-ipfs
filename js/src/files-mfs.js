@@ -5,6 +5,7 @@
 
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
+const loadFixture = require('aegir/fixtures')
 const expect = chai.expect
 chai.use(dirtyChai)
 
@@ -477,8 +478,13 @@ module.exports = (common) => {
       })
     })
 
-    // TODO (achingbrain) - Not yet supported in js-ipfs or go-ipfs yet')
+    // TODO: (achingbrain) - Not yet supported in js-ipfs or go-ipfs yet')
     describe.skip('.stat', () => {
+      const smallFile = {
+        cid: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
+        data: loadFixture('js/test/fixtures/testfile.txt', 'interface-ipfs-core')
+      }
+
       before((done) => ipfs.files.add(smallFile.data, done))
 
       it.skip('stat outside of mfs', function (done) {

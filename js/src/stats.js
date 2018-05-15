@@ -13,7 +13,6 @@ chai.use(dirtyChai)
 module.exports = (common) => {
   describe('.stats', () => {
     let ipfs
-    let withGo
 
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
@@ -25,11 +24,7 @@ module.exports = (common) => {
         factory.spawnNode((err, node) => {
           expect(err).to.not.exist()
           ipfs = node
-          node.id((err, id) => {
-            expect(err).to.not.exist()
-            withGo = id.agentVersion.startsWith('go-ipfs')
-            done()
-          })
+          done()
         })
       })
     })
