@@ -161,13 +161,27 @@ describe('.util', () => {
     })
 
     it('with wrap-with-directory=true', (done) => {
-      ipfs.util.addFromURL('http://ipfs.io/ipfs/QmWjppACLcFLQ2qL38unKQvJBhXH3RUtcGLPk7zmrTwV61/969165.jpg', {
+      ipfs.util.addFromURL('http://ipfs.io/ipfs/QmWjppACLcFLQ2qL38unKQvJBhXH3RUtcGLPk7zmrTwV61/969165.jpg?foo=bar#buzz', {
         wrapWithDirectory: true
       }, (err, result) => {
         expect(err).to.not.exist()
         expect(result[0].hash).to.equal('QmaL9zy7YUfvWmtD5ZXp42buP7P4xmZJWFkm78p8FJqgjg')
         expect(result[0].path).to.equal('969165.jpg')
         expect(result[1].hash).to.equal('QmWjppACLcFLQ2qL38unKQvJBhXH3RUtcGLPk7zmrTwV61')
+        expect(result.length).to.equal(2)
+        done()
+      })
+    })
+
+    it('with wrap-with-directory=true and URL-escaped file name', (done) => {
+      // Sample URL contains URL-escaped ( ) and local diacritics
+      ipfs.util.addFromURL('https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Doma%C5%BElice%2C_Jir%C3%A1skova_43_%289102%29.jpg/320px-Doma%C5%BElice%2C_Jir%C3%A1skova_43_%289102%29.jpg?foo=bar#buzz', {
+        wrapWithDirectory: true
+      }, (err, result) => {
+        expect(err).to.not.exist()
+        expect(result[0].hash).to.equal('QmRJ9ExxSMV4BLF9ZJUb2mLngupm6BXZEek755VHGTJo2Y')
+        expect(result[0].path).to.equal('320px-Domažlice,_Jiráskova_43_(9102).jpg')
+        expect(result[1].hash).to.equal('QmbxsHFU3sCfr8wszDHuDLA76C2xCv9HT8L3aC1pBwgaHk')
         expect(result.length).to.equal(2)
         done()
       })
