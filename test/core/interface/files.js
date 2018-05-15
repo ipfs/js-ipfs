@@ -6,16 +6,18 @@ const parallel = require('async/parallel')
 
 const IPFS = require('../../../src')
 
-const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ type: 'proc', exec: IPFS })
+const IPFSFactory = require('ipfsd-ctl')
+const f = IPFSFactory.create({ type: 'proc', exec: IPFS })
 
 const nodes = []
 const common = {
   setup: function (callback) {
     callback(null, {
       spawnNode: (cb) => {
-        df.spawn({
-          initOptions: { bits: 512 }
+        f.spawn({
+          initOptions: {
+            bits: 512
+          }
         }, (err, _ipfsd) => {
           if (err) {
             return cb(err)
