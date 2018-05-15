@@ -164,7 +164,7 @@ IPFS.createNodePromise = (options = {}, stateOptions = {}) => {
     })
 
     node.once('ready', () => {
-      if (stateOptions.forceInitialized) {
+      if (stateOptions.forceRepoInitialized) {
         node._repo._isInitialized((err) => {
           if (err) {
             reject(err)

@@ -33,9 +33,9 @@ module.exports = {
   },
 
   handler (argv) {
-    return getNodeOrAPI(argv, {forceInitialized: false})
-      .then(node => node.version())
-      .then(data => {
+    return getNodeOrAPI(argv, {forceRepoInitialized: false})
+      .then(node => Promise.all([node, node.version()]))
+      .then(([node, data])=> {
         const withCommit = argv.all || argv.commit
         const parsedVersion = `${data.version}${withCommit ? `-${data.commit}` : ''}`
 

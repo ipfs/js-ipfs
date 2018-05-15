@@ -38,7 +38,7 @@ function getAPICtl (apiAddr) {
   return APIctl(apiAddr)
 }
 
-exports.getNodeOrAPI = (argv, stateOptions = {forceInitialized: true}) => {
+exports.getNodeOrAPI = (argv, stateOptions = {forceRepoInitialized: true}) => {
   log('get node or api async')
   if (argv.api || isDaemonOn()) {
     return Promise.resolve(getAPICtl(argv.api))
