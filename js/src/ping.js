@@ -28,7 +28,7 @@ module.exports = (common) => {
     let ipfsdB
 
     before(function (done) {
-      this.timeout(30 * 1000)
+      this.timeout(60 * 1000)
 
       common.setup((err, factory) => {
         if (err) return done(err)

@@ -7,7 +7,7 @@ function waitUntilConnected (fromNode, toNode, opts, cb) {
   }
 
   opts = opts || {}
-  opts.timeout = opts.timeout || 15000
+  opts.timeout = opts.timeout || 30000
   opts.interval = opts.interval || 1000
 
   const startTime = Date.now()
