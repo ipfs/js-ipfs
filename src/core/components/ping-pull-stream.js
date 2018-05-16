@@ -55,7 +55,9 @@ function getPeer (libp2pNode, statusStream, peerId, cb) {
     try {
       peerId = PeerId.createFromB58String(peerId)
     } catch (err) {
-      return cb(err)
+      return cb(Object.assign(err, {
+        message: `failed to parse peer address '${peerId}': input isn't valid multihash`
+      }))
     }
 
     return libp2pNode.peerRouting.findPeer(peerId, cb)
