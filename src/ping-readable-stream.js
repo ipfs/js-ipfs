@@ -21,8 +21,7 @@ module.exports = (arg) => {
     const response = new PingMessageStream()
 
     send(request, (err, stream) => {
-      if (err) { return response.destroy(err) }
-
+      if (err) { return response.emit('error', err) }
       pump(stream, response)
     })
 

@@ -2,7 +2,7 @@
 
 const promisify = require('promisify-es6')
 const pump = require('pump')
-const concat = require('concat-stream')
+const Writable = require('readable-stream').Writable
 const moduleConfig = require('./utils/module-config')
 const PingMessageStream = require('./utils/ping-message-stream')
 
@@ -31,16 +31,22 @@ module.exports = (arg) => {
     }
 
     // Transform the response stream to a value:
-    // [{ Success: <boolean>, Time: <number>, Text: <string> }]
+    // [{ success: <boolean>, time: <number>, text: <string> }]
     const transform = (stream, callback) => {
       const messageConverter = new PingMessageStream()
+      const responses = []
+
       pump(
         stream,
         messageConverter,
-        concat({encoding: 'object'}, (data) => callback(null, data)),
-        (err) => {
-          if (err) callback(err)
-        }
+        new Writable({
+          objectMode: true,
+          write (chunk, enc, cb) {
+            responses.push(chunk)
+            cb()
+          }
+        }),
+        (err) => callback(err, responses)
       )
     }
 

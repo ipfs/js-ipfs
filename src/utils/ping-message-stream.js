@@ -13,6 +13,10 @@ class PingMessageStream extends TransformStream {
     try {
       const msg = pingMessageConverter(obj)
       this.push(msg)
+
+      if (!msg.success) {
+        throw new Error(msg.text)
+      }
     } catch (err) {
       return callback(err)
     }
