@@ -24,7 +24,10 @@ describe('.repo', function () {
     })
   })
 
-  after((done) => ipfsd.stop(done))
+  after((done) => {
+    if (!ipfsd) return done()
+    ipfsd.stop(done)
+  })
 
   it('.repo.gc', (done) => {
     ipfs.repo.gc((err, res) => {

@@ -25,7 +25,10 @@ describe('.key', function () {
     })
   })
 
-  after((done) => ipfsd.stop(done))
+  after((done) => {
+    if (!ipfsd) return done()
+    ipfsd.stop(done)
+  })
 
   describe('Callback API', () => {
     describe('.gen', () => {

@@ -35,7 +35,10 @@ describe('ipfs-api constructor tests', () => {
       })
     })
 
-    after((done) => ipfsd.stop(done))
+    after((done) => {
+      if (!ipfsd) return done()
+      ipfsd.stop(done)
+    })
 
     it('opts', (done) => {
       const splitted = apiAddr.split('/')

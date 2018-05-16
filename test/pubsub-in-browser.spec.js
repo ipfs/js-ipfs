@@ -55,7 +55,10 @@ describe('.pubsub is not supported in the browser, yet!', function () {
     })
   })
 
-  after((done) => ipfsd.stop(done))
+  after((done) => {
+    if (!ipfsd) return done()
+    ipfsd.stop(done)
+  })
 
   describe('everything errors', () => {
     describe('Callback API', () => {

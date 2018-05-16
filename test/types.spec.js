@@ -34,7 +34,10 @@ describe('.types', function () {
     })
   })
 
-  after((done) => ipfsd.stop(done))
+  after((done) => {
+    if (!ipfsd) return done()
+    ipfsd.stop(done)
+  })
 
   it('types object', () => {
     expect(ipfs.types).to.be.deep.equal({

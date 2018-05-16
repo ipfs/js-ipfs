@@ -47,7 +47,10 @@ describe('.files (the MFS API part)', function () {
     })
   })
 
-  after((done) => ipfsd.stop(done))
+  after((done) => {
+    if (!ipfsd) return done()
+    ipfsd.stop(done)
+  })
 
   it('add file for testing', (done) => {
     ipfs.files.add(testfile, (err, res) => {

@@ -25,7 +25,10 @@ describe('.commands', function () {
     })
   })
 
-  after((done) => ipfsd.stop(done))
+  after((done) => {
+    if (!ipfsd) return done()
+    ipfsd.stop(done)
+  })
 
   it('lists commands', (done) => {
     ipfs.commands((err, res) => {
