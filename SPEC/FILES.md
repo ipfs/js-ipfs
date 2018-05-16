@@ -757,7 +757,7 @@ ipfs.files.read('/hello-world', (err, buf) => {
 // Hello, World!
 ```
 
-#### `readReadableStream`
+#### `files.readReadableStream`
 
 > Read a file into a [`ReadableStream`][rs].
 
@@ -783,7 +783,7 @@ stream.on('data', (buf) => console.log(buf.toString('utf8')))
 // Hello, World!
 ```
 
-#### `readPullStream`
+#### `files.readPullStream`
 
 > Read a file into a [`PullStream`][ps].
 
