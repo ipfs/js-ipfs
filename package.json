@@ -52,7 +52,8 @@
     "multihashing-async": "~0.4.8",
     "peer-id": "~0.10.7",
     "peer-info": "^0.14.1",
-    "pull-stream": "^3.6.7"
+    "pull-stream": "^3.6.7",
+    "pump": "^3.0.0"
   },
   "devDependencies": {},
   "contributors": [
