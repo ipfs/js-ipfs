@@ -32,11 +32,6 @@ module.exports = (common) => {
       return loadFixture(path, 'interface-ipfs-core')
     }
 
-    const wrapDirectory = {
-      path: 'wrapper/',
-      cid: 'QmbzKtHxQXJnWG9VR66TscUfcoK3CV4nceRsCdyAEsEj9A'
-    }
-
     const smallFile = {
       cid: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
       data: fixture('js/test/fixtures/testfile.txt')
@@ -339,11 +334,11 @@ module.exports = (common) => {
       it('files.add with only-hash=true', () => {
         this.slow(10 * 1000)
         const content = String(Math.random() + Date.now())
-    
+
         return ipfs.files.add(Buffer.from(content), { onlyHash: true })
           .then(files => {
             expect(files).to.have.length(1)
-    
+
             // 'ipfs.object.get(<hash>)' should timeout because content wasn't actually added
             return expectTimeout(ipfs.object.get(files[0].hash), 4000)
           })

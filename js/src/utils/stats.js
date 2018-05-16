@@ -3,7 +3,6 @@
 
 'use strict'
 
-const Big = require('big.js')
 const { expect } = require('chai')
 
 const isBigInt = (n) => {
