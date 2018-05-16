@@ -23,7 +23,7 @@ function expectIsPingResponse (obj) {
 }
 
 module.exports = (common) => {
-  describe.only('.ping', function () {
+  describe('.ping', function () {
     let ipfsdA
     let ipfsdB
 
