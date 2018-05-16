@@ -1,3 +1,19 @@
+<a name="0.65.9"></a>
+## [0.65.9](https://github.com/ipfs/interface-ipfs-core/compare/v0.65.8...v0.65.9) (2018-05-16)
+
+
+### Bug Fixes
+
+* add "files." to read* headers ([8b39b12](https://github.com/ipfs/interface-ipfs-core/commit/8b39b12))
+* linting warnings ([aae31b0](https://github.com/ipfs/interface-ipfs-core/commit/aae31b0))
+
+
+### Features
+
+* add utils to spawn multiple nodes and get their ID ([e77a2f6](https://github.com/ipfs/interface-ipfs-core/commit/e77a2f6))
+
+
+
 <a name="0.65.8"></a>
 ## [0.65.8](https://github.com/ipfs/interface-ipfs-core/compare/v0.65.7...v0.65.8) (2018-05-15)
 
