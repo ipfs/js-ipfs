@@ -6,7 +6,9 @@ const dirtyChai = require('dirty-chai')
 const pull = require('pull-stream')
 const pump = require('pump')
 const { Writable } = require('stream')
+const series = require('async/series')
 const { spawnNodesWithId } = require('./utils/spawn')
+const { waitUntilConnected } = require('./utils/connections')
 
 const expect = chai.expect
 chai.use(dirtyChai)
@@ -21,7 +23,7 @@ function expectIsPingResponse (obj) {
 }
 
 module.exports = (common) => {
-  describe('.ping', function () {
+  describe.only('.ping', function () {
     let ipfsdA
     let ipfsdB
 
@@ -31,12 +33,17 @@ module.exports = (common) => {
       common.setup((err, factory) => {
         if (err) return done(err)
 
-        spawnNodesWithId(2, factory, (err, nodes) => {
-          if (err) return done(err)
-          ipfsdA = nodes[0]
-          ipfsdB = nodes[1]
-          done()
-        })
+        series([
+          (cb) => {
+            spawnNodesWithId(2, factory, (err, nodes) => {
+              if (err) return cb(err)
+              ipfsdA = nodes[0]
+              ipfsdB = nodes[1]
+              cb()
+            })
+          },
+          (cb) => waitUntilConnected(ipfsdA, ipfsdB, cb)
+        ], done)
       })
     })
 
