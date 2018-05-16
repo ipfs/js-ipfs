@@ -57,7 +57,6 @@
   "devDependencies": {},
   "contributors": [
     "Alan Shaw <alan@tableflip.io>",
-    "Alex Potsides <alex@achingbrain.net>",
     "David Dias <daviddias.p@gmail.com>",
     "Dmitriy Ryajov <dryajov@gmail.com>",
     "Enrico Marino <enrico.marino@email.com>",
@@ -83,6 +82,7 @@
     "Thiago Delgado <thiagodelgado111@gmail.com>",
     "Vasco Santos <vasco.santos@moxy.studio>",
     "Volker Mische <volker.mische@gmail.com>",
+    "achingbrain <alex@achingbrain.net>",
     "greenkeeperio-bot <support@greenkeeper.io>",
     "haad <haad@headbanggames.com>",
     "kumavis <kumavis@users.noreply.github.com>",
