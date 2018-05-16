@@ -13,6 +13,7 @@ const PeerId = require('peer-id')
 const os = require('os')
 const path = require('path')
 const hat = require('hat')
+const { spawnNodes } = require('./utils/spawn')
 
 module.exports = (common) => {
   describe('.swarm', function () {
@@ -30,18 +31,13 @@ module.exports = (common) => {
       common.setup((err, factory) => {
         expect(err).to.not.exist()
         factoryInstance = factory
-        series([
-          (cb) => factory.spawnNode((err, node) => {
-            expect(err).to.not.exist()
-            ipfsA = node
-            cb()
-          }),
-          (cb) => factory.spawnNode((err, node) => {
-            expect(err).to.not.exist()
-            ipfsB = node
-            cb()
-          })
-        ], done)
+
+        spawnNodes(2, factory, (err, nodes) => {
+          expect(err).to.not.exist()
+          ipfsA = nodes[0]
+          ipfsB = nodes[1]
+          done()
+        })
       })
     })
 

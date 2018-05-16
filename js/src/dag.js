@@ -13,6 +13,7 @@ const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const dagCBOR = require('ipld-dag-cbor')
 const CID = require('cids')
+const { spawnNodeWithId } = require('./utils/spawn')
 
 module.exports = (common) => {
   describe('.dag', () => {
@@ -26,14 +27,12 @@ module.exports = (common) => {
 
       common.setup((err, factory) => {
         expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
+
+        spawnNodeWithId(factory, (err, node) => {
           expect(err).to.not.exist()
           ipfs = node
-          ipfs.id((err, id) => {
-            expect(err).to.not.exist()
-            withGo = id.agentVersion.startsWith('go-ipfs')
-            done()
-          })
+          withGo = node.peerId.agentVersion.startsWith('go-ipfs')
+          done()
         })
       })
     })
