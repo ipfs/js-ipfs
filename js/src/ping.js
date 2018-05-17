@@ -6,7 +6,9 @@ const dirtyChai = require('dirty-chai')
 const pull = require('pull-stream')
 const pump = require('pump')
 const { Writable } = require('stream')
+const series = require('async/series')
 const { spawnNodesWithId } = require('./utils/spawn')
+const { waitUntilConnected } = require('./utils/connections')
 
 const expect = chai.expect
 chai.use(dirtyChai)
@@ -26,17 +28,22 @@ module.exports = (common) => {
     let ipfsdB
 
     before(function (done) {
-      this.timeout(30 * 1000)
+      this.timeout(60 * 1000)
 
       common.setup((err, factory) => {
         if (err) return done(err)
 
-        spawnNodesWithId(2, factory, (err, nodes) => {
-          if (err) return done(err)
-          ipfsdA = nodes[0]
-          ipfsdB = nodes[1]
-          done()
-        })
+        series([
+          (cb) => {
+            spawnNodesWithId(2, factory, (err, nodes) => {
+              if (err) return cb(err)
+              ipfsdA = nodes[0]
+              ipfsdB = nodes[1]
+              cb()
+            })
+          },
+          (cb) => waitUntilConnected(ipfsdA, ipfsdB, cb)
+        ], done)
       })
     })
 
