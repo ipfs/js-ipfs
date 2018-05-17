@@ -62,8 +62,14 @@ describe('.name', () => {
 
   after((done) => {
     parallel([
-      (cb) => ipfsd.stop(cb),
-      (cb) => otherd.stop(cb)
+      (cb) => {
+        if (!ipfsd) return cb()
+        ipfsd.stop(cb)
+      },
+      (cb) => {
+        if (!otherd) return cb()
+        otherd.stop(cb)
+      }
     ], done)
   })
 

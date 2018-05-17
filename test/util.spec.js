@@ -32,7 +32,10 @@ describe('.util', () => {
     })
   })
 
-  after((done) => ipfsd.stop(done))
+  after((done) => {
+    if (!ipfsd) return done()
+    ipfsd.stop(done)
+  })
 
   it('.streamAdd', (done) => {
     const tfpath = path.join(__dirname, '/fixtures/testfile.txt')

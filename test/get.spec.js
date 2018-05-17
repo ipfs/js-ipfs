@@ -41,7 +41,10 @@ describe('.get (specific go-ipfs features)', function () {
     ], done)
   })
 
-  after((done) => ipfsd.stop(done))
+  after((done) => {
+    if (!ipfsd) return done()
+    ipfsd.stop(done)
+  })
 
   it('no compression args', (done) => {
     ipfs.get(smallFile.cid, (err, files) => {

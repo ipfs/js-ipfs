@@ -25,7 +25,10 @@ describe('.log', function () {
     })
   })
 
-  after((done) => ipfsd.stop(done))
+  after((done) => {
+    if (!ipfsd) return done()
+    ipfsd.stop(done)
+  })
 
   it('.log.tail', (done) => {
     const req = ipfs.log.tail((err, res) => {

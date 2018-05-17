@@ -28,7 +28,10 @@ describe('.diag', function () {
     })
   })
 
-  after((done) => ipfsd.stop(done))
+  after((done) => {
+    if (!ipfsd) return done()
+    ipfsd.stop(done)
+  })
 
   describe('Callback API', () => {
     // Disabled in go-ipfs 0.4.10

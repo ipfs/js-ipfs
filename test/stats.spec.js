@@ -24,7 +24,10 @@ describe('stats', function () {
     })
   })
 
-  after((done) => ipfsd.stop(done))
+  after((done) => {
+    if (!ipfsd) return done()
+    ipfsd.stop(done)
+  })
 
   it('.stats.bitswap', (done) => {
     ipfs.stats.bitswap((err, res) => {

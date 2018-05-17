@@ -49,7 +49,10 @@ describe('.refs', function () {
     ], done)
   })
 
-  after((done) => ipfsd.stop(done))
+  after((done) => {
+    if (!ipfsd) return done()
+    ipfsd.stop(done)
+  })
 
   const result = [
     {
