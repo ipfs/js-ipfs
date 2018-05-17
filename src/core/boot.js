@@ -3,6 +3,7 @@
 const waterfall = require('async/waterfall')
 const series = require('async/series')
 const extend = require('deep-extend')
+const RepoErrors = require('ipfs-repo/src/errors')
 
 // Boot an IPFS node depending on the options set
 module.exports = (self) => {
@@ -40,7 +41,14 @@ module.exports = (self) => {
         // which happens when the version file is not found
         // we just want to signal that no repo exist, not
         // fail the whole process.
-        // TODO: improve datastore and ipfs-repo implemenations so this error is a bit more unified
+
+        // Use standardized errors as much as possible
+        if (err.code === RepoErrors.ERR_REPO_NOT_INITIALIZED) {
+          return cb(null, false)
+        }
+
+        // TODO: As error codes continue to be standardized, this logic can be phase out;
+        // it is here to maintain compatability
         if (err.message.match(/not found/) || // indexeddb
           err.message.match(/ENOENT/) || // fs
           err.message.match(/No value/) // memory
