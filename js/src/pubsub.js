@@ -21,6 +21,7 @@ function waitForPeers (ipfs, topic, peersToWait, callback) {
   const i = setInterval(() => {
     ipfs.pubsub.peers(topic, (err, peers) => {
       if (err) {
+        clearInterval(i)
         return callback(err)
       }
 
