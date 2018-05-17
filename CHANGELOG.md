@@ -1,3 +1,16 @@
+<a name="0.66.1"></a>
+## [0.66.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.66.0...v0.66.1) (2018-05-17)
+
+
+### Bug Fixes
+
+* increase timeouts ([9cba111](https://github.com/ipfs/interface-ipfs-core/commit/9cba111))
+* remove .only ([45fab1c](https://github.com/ipfs/interface-ipfs-core/commit/45fab1c))
+* wait until nodes are connected before starting ping tests ([1b60f24](https://github.com/ipfs/interface-ipfs-core/commit/1b60f24))
+* **pubsub:** clear interval on error ([d074e13](https://github.com/ipfs/interface-ipfs-core/commit/d074e13))
+
+
+
 <a name="0.66.0"></a>
 # [0.66.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.65.9...v0.66.0) (2018-05-16)
 
