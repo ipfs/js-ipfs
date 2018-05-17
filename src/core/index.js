@@ -30,6 +30,7 @@ class IPFS extends EventEmitter {
     this._options = {
       init: true,
       start: true,
+      boot: true,
       EXPERIMENTAL: {}
     }
 
@@ -88,6 +89,7 @@ class IPFS extends EventEmitter {
     this.stop = components.stop(this)
     this.shutdown = this.stop
     this.isOnline = components.isOnline(this)
+    this.boot = components.boot(this)
     //   - interface-ipfs-core defined API
     this.version = components.version(this)
     this.id = components.id(this)
@@ -134,12 +136,21 @@ class IPFS extends EventEmitter {
       isIPFS: isIPFS
     }
 
-    boot(this)
+    if (this._options.boot) {
+      boot(this)
+    }
   }
 }
 
-exports = module.exports = IPFS
-
-exports.createNode = (options) => {
+IPFS.createNode = (options) => {
   return new IPFS(options)
 }
+
+IPFS.bootNewNode = (opts = {}) => {
+  const options = Object.assign(opts, { boot: false })
+  const node = new IPFS(options)
+
+  return node.boot()
+}
+
+module.exports = IPFS
