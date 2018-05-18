@@ -72,7 +72,7 @@ describe('.get (specific go-ipfs features)', function () {
       'compression-level': 10
     }, (err, files) => {
       expect(err).to.exist()
-      expect(err.toString()).to.equal('Error: Compression level must be between 1 and 9')
+      expect(err.toString()).to.equal('Error: compression level must be between 1 and 9')
       done()
     })
   })
