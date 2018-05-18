@@ -21,9 +21,9 @@ module.exports = (send) => {
         return callback(err)
       }
 
+      // go-ipfs <= 0.4.4
       if (result.Strings) {
-        // go-ipfs <= 0.4.4
-        callback(null, result.Strings.map((p) => {
+        return callback(null, result.Strings.map((p) => {
           const res = {}
 
           if (verbose) {
@@ -40,26 +40,26 @@ module.exports = (send) => {
 
           return res
         }))
-      } else if (result.Peers) {
-        // go-ipfs >= 0.4.5
-        callback(null, result.Peers.map((p) => {
-          const res = {
-            addr: multiaddr(p.Addr),
-            peer: PeerId.createFromB58String(p.Peer),
-            muxer: p.Muxer
-          }
-
-          if (p.Latency) {
-            res.latency = p.Latency
-          }
-
-          if (p.Streams) {
-            res.streams = p.Streams
-          }
-
-          return res
-        }))
       }
+
+      // go-ipfs >= 0.4.5
+      callback(null, (result.Peers || []).map((p) => {
+        const res = {
+          addr: multiaddr(p.Addr),
+          peer: PeerId.createFromB58String(p.Peer),
+          muxer: p.Muxer
+        }
+
+        if (p.Latency) {
+          res.latency = p.Latency
+        }
+
+        if (p.Streams) {
+          res.streams = p.Streams
+        }
+
+        return res
+      }))
     })
   })
 }
