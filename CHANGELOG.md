@@ -1,3 +1,13 @@
+<a name="0.66.2"></a>
+## [0.66.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.66.1...v0.66.2) (2018-05-18)
+
+
+### Bug Fixes
+
+* spawn in series ([d976699](https://github.com/ipfs/interface-ipfs-core/commit/d976699))
+
+
+
 <a name="0.66.1"></a>
 ## [0.66.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.66.0...v0.66.1) (2018-05-17)
 
