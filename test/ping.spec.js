@@ -15,7 +15,12 @@ const IPFSApi = require('../src')
 const PingMessageStream = require('../src/utils/ping-message-stream')
 const f = require('./utils/factory')
 
-describe('.ping', function () {
+// Determine if a ping response object is a pong, or something else, like a status message
+function isPong (pingResponse) {
+  return Boolean(pingResponse && pingResponse.time)
+}
+
+describe.only('.ping', function () {
   let ipfs
   let ipfsd
   let other
@@ -76,7 +81,7 @@ describe('.ping', function () {
     ipfs.ping(otherId, (err, res) => {
       expect(err).to.not.exist()
       expect(res).to.be.an('array')
-      expect(res).to.have.lengthOf(3)
+      expect(res.filter(isPong)).to.have.lengthOf(1)
       res.forEach(packet => {
         expect(packet).to.have.keys('success', 'time', 'text')
         expect(packet.time).to.be.a('number')
@@ -91,7 +96,7 @@ describe('.ping', function () {
     ipfs.ping(otherId, { count: 2 }, (err, res) => {
       expect(err).to.not.exist()
       expect(res).to.be.an('array')
-      expect(res).to.have.lengthOf(4)
+      expect(res.filter(isPong)).to.have.lengthOf(2)
       res.forEach(packet => {
         expect(packet).to.have.keys('success', 'time', 'text')
         expect(packet.time).to.be.a('number')
@@ -106,7 +111,7 @@ describe('.ping', function () {
     ipfs.ping(otherId, { n: 2 }, (err, res) => {
       expect(err).to.not.exist()
       expect(res).to.be.an('array')
-      expect(res).to.have.lengthOf(4)
+      expect(res.filter(isPong)).to.have.lengthOf(2)
       res.forEach(packet => {
         expect(packet).to.have.keys('success', 'time', 'text')
         expect(packet.time).to.be.a('number')
@@ -130,7 +135,7 @@ describe('.ping', function () {
     return ipfs.ping(otherId)
       .then((res) => {
         expect(res).to.be.an('array')
-        expect(res).to.have.lengthOf(3)
+        expect(res.filter(isPong)).to.have.lengthOf(1)
         res.forEach(packet => {
           expect(packet).to.have.keys('success', 'time', 'text')
           expect(packet.time).to.be.a('number')
@@ -146,7 +151,7 @@ describe('.ping', function () {
       collect((err, data) => {
         expect(err).to.not.exist()
         expect(data).to.be.an('array')
-        expect(data).to.have.lengthOf(3)
+        expect(data.filter(isPong)).to.have.lengthOf(1)
         data.forEach(packet => {
           expect(packet).to.have.keys('success', 'time', 'text')
           expect(packet.time).to.be.a('number')
@@ -164,13 +169,13 @@ describe('.ping', function () {
       .on('data', data => {
         expect(data).to.be.an('object')
         expect(data).to.have.keys('success', 'time', 'text')
-        packetNum++
+        if (isPong(data)) packetNum++
       })
       .on('error', err => {
         expect(err).not.to.exist()
       })
       .on('end', () => {
-        expect(packetNum).to.be.above(2)
+        expect(packetNum).to.equal(1)
         done()
       })
   })
