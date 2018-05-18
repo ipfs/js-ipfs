@@ -86,6 +86,10 @@ var ipfs = ipfsAPI('/ip4/127.0.0.1/tcp/5001')
 
 // or using options
 var ipfs = ipfsAPI({host: 'localhost', port: '5001', protocol: 'http'})
+
+// or specifying a specific API path
+var ipfs = ipfsAPI({host: '1.1.1.1', port: '80', 'api-path': '/ipfs/api/v0'})
+
 ```
 ### Importing a sub-module and usage
 ```javascript
@@ -197,7 +201,7 @@ $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods "[\"PUT\", \"P
   - [`ipfs.dag.put(dagNode, options, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DAG.md#dagput)
   - [`ipfs.dag.get(cid [, path, options], callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DAG.md#dagget)
   - [`ipfs.dag.tree(cid [, path, options], callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DAG.md#dagtree)
-  
+
 - [object](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md).
   - [`ipfs.object.new([template][, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectnew)
   - [`ipfs.object.put(obj, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectput)
@@ -223,30 +227,30 @@ $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods "[\"PUT\", \"P
   - `ipfs.bootstrap.list`
   - `ipfs.bootstrap.add`
   - `ipfs.bootstrap.rm`
-  
+
 - [bitswap](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/)
   - `ipfs.bitswap.wantlist()`
   - `ipfs.bitswap.stat()`
   - `ipfs.bitswap.unwant()`
-  
+
 - [dht](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/)
   - [`ipfs.dht.findprovs()`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DHT.md#findprovs)
   - [`ipfs.dht.get()`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DHT.md#get)
   - [`ipfs.dht.put()`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DHT.md#put)
-  
+
 - [pubsub](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md)
   - [`ipfs.pubsub.subscribe(topic, handler, options, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubsubscribe)
   - [`ipfs.pubsub.unsubscribe(topic, handler, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubunsubscribe)
   - [`ipfs.pubsub.publish(topic, data, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubpublish)
   - [`ipfs.pubsub.ls(topic, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubls)
   - [`ipfs.pubsub.peers(topic, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubpeers)
-  
+
 - [swarm](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md)
   - [`ipfs.swarm.addrs([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#addrs)
   - [`ipfs.swarm.connect(addr, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#connect)
   - [`ipfs.swarm.disconnect(addr, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#disconnect)
   - [`ipfs.swarm.peers([opts] [, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#peers)
-  
+
 - [name](https://github.com/ipfs/interface-ipfs-core/tree/master/API/name)
   - [`ipfs.name.publish(addr, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/NAME.md#publish)
   - [`ipfs.name.resolve(addr, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/NAME.md#resolve)
@@ -261,17 +265,17 @@ $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods "[\"PUT\", \"P
   - `ipfs.pingReadableStream(id, [options])`
   - [`ipfs.dns(domain, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#dns)
   - [`ipfs.stop([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#stop). Alias to `ipfs.shutdown`.
-  
+
 - [config](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md)
   - [`ipfs.config.get([key, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configget)
   - [`ipfs.config.set(key, value, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configset)
   - [`ipfs.config.replace(config, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configreplace)
-  
+
 - [stats](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md)
   - [`ipfs.stats.bitswap([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#bitswap)
   - [`ipfs.stats.bw([options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#bw)
   - [`ipfs.stats.repo([options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#repo)
-  
+
 - log
   - `ipfs.log.ls([callback])`
   - `ipfs.log.tail([callback])`
@@ -281,7 +285,7 @@ $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods "[\"PUT\", \"P
   - [`ipfs.repo.gc([options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/REPO.md#gc)
   - [`ipfs.repo.stat([options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/REPO.md#stat)
   - [`ipfs.repo.version([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/REPO.md#version)
-  
+
 - [key](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md)
   - [`ipfs.key.gen(name, options, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#javascript---ipfskeygenname-options-callback)
   - [`ipfs.key.list([options, callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#javascript---ipfskeylistcallback)
@@ -290,7 +294,7 @@ $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods "[\"PUT\", \"P
   - [`ipfs.key.export(name, password, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#javascript---ipfskeyexportname-password-callback)
   - [`ipfs.key.import(name, pem, password, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#javascript---ipfskeyimportname-pem-password-callback)
 
-#### `Pubsub Caveat` 
+#### `Pubsub Caveat`
 
 **Currently, the [PubSub API only works in Node.js envinroment](https://github.com/ipfs/js-ipfs-api/issues/518)**
 
@@ -339,7 +343,7 @@ Complete documentation for these methods is coming with: https://github.com/ipfs
 Reads a file or folder from `path` on the filesystem  and adds it to IPFS. Options:
 - **recursive**: If `path` is a directory, use option `{ recursive: true }` to add the directory and all its sub-directories.
   - **ignore**: To exclude fileglobs from the directory, use option `{ ignore: ['ignore/this/folder/**', 'and/this/file'] }`.
-  - **hidden**: hidden/dot files (files or folders starting with a `.`, for example, `.git/`) are not included by default. To add them, use the option `{ hidden: true }`. 
+  - **hidden**: hidden/dot files (files or folders starting with a `.`, for example, `.git/`) are not included by default. To add them, use the option `{ hidden: true }`.
 
 ```JavaScript
 ipfs.util.addFromFs('path/to/a/folder', { recursive: true , ignore: ['subfolder/to/ignore/**']}, (err, result) => {
