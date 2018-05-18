@@ -16,7 +16,7 @@
 * [lsPullStream](#lspullstream)
 * [files.cp](#filescp)
 * [files.mkdir](#filesmkdir)
-* [files.stat](#filesmkdir)
+* [files.stat](#filesstat)
 * [files.rm](#filesrm)
 * [files.read](#filesread)
 * [files.readReadableStream](#filesreadreadablestream)
@@ -590,28 +590,49 @@ A great source of [examples][] can be found in the tests for this API.
 
 The Mutable File System (MFS) is a virtual file system on top of IPFS that exposes a Unix like API over a virtual directory. It enables users to write and read from paths without having to worry about updating the graph. It enables things like [ipfs-blob-store](https://github.com/ipfs/ipfs-blob-store) to exist.
 
-
 #### `files.cp`
 
 > Copy files.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.files.cp([from, to], [callback])
+##### `JavaScript` - ipfs.files.cp(...from, to, [options], [callback])
 
 Where:
 
-- `from` is the path of the source file to copy.
-- `to` is the path of the destination file to copy to.
+- `from` is the path(s) of the source to copy.  It might be:
+  - An existing MFS path (e.g. `/my-dir/my-file.txt`)
+  - An IPFS path (e.g. `/ipfs/QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks`)
+- `to` is the path of the destination to copy to
+- `options` is an optional Object that might contain the following keys:
+  - `parents` is a Boolean value to decide whether or not to make the parent directories if they don't exist (default: false)
+  - `format` is what type of nodes to write any newly created directories as (default: `dag-pb`)
+  - `hashAlg` is which algorithm to use when creating CIDs for newly created directories (default: `sha2-256`)
+  - `flush` is a Boolean value to decide whether or not to immediately flush MFS changes to disk (default: true)
+- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occured if the operation was not successful
 
-`callback` must follow the `function (err) {}` signature, where `err` is an Error if the operation was not successful.
+If there are multiple sources, `to` will be treated as a directory, otherwise it will be treated as the same type as `from`.
+
+If `from` is an IPFS path, and an MFS path exists with the same name, the IPFS path will be chosen.
 
 If no `callback` is passed, a promise is returned.
 
 **Example:**
 
 ```JavaScript
-ipfs.files.cp(['/src-file', '/dst-file'], (err) => {
+ipfs.files.cp('/src-file', '/dst-file', (err) => {s
+  if (err) {
+    console.error(err)
+  }
+})
+
+ipfs.files.cp('/src-dir', '/dst-dir', (err) => {s
+  if (err) {
+    console.error(err)
+  }
+})
+
+ipfs.files.cp('/src-file1', '/src-file2', '/dst-dir', (err) => {
   if (err) {
     console.error(err)
   }
@@ -624,15 +645,17 @@ ipfs.files.cp(['/src-file', '/dst-file'], (err) => {
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.files.mkdir(path, [options, callback])
+##### `JavaScript` - ipfs.files.mkdir(path, [options], [callback])
 
 Where:
 
-- `path` is the path to the directory to make.
+- `path` is the path to the directory to make
 - `options` is an optional Object that might contain the following keys:
-  - `parents` is a Boolean value to decide whether or not to make the parent directories if they don't exist.
-
-`callback` must follow the `function (err) {}` signature, where `err` is an Error if the operation was not successful.
+  - `parents` is a Boolean value to decide whether or not to make the parent directories if they don't exist  (default: false)
+  - `format` is what type of nodes to write any newly created directories as (default: `dag-pb`)
+  - `hashAlg` is which algorithm to use when creating CIDs for newly created directories (default: `sha2-256`)
+  - `flush` is a Boolean value to decide whether or not to immediately flush MFS changes to disk  (default: true)
+- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occured if the operation was not successful
 
 If no `callback` is passed, a promise is returned.
 
@@ -652,27 +675,25 @@ ipfs.files.mkdir('/my/beautiful/directory', (err) => {
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.files.stat(path, [options, callback])
+##### `JavaScript` - ipfs.files.stat(path, [options], [callback])
 
 Where:
 
-- `path` is the path to the directory to stat.
+- `path` is the path to the file or directory to stat
 - `options` is an optional Object that might contain the following keys:
-  - `hash` is a Boolean value to return only the hash.
-  - `size` is a Boolean value to return only the size.
-  - `withLocal` is a Boolean value to compute the amount of the dag that is local, and if possible the total size.
+  - `hash` is a Boolean value to return only the hash  (default: false)
+  - `size` is a Boolean value to return only the size  (default: false)
+  - `withLocal` is a Boolean value to compute the amount of the dag that is local, and if possible the total size  (default: false)
+- `callback` is an optional function with the signature `function (error, stats) {}`, where `error` may be an Error that occured if the operation was not successful and `stat` is an Object with the following keys:
 
-`callback` must follow the `function (err, stat) {}` signature, where `err` is an Error if the operation was not successful and `stat` is an Object with the following keys:
-
-- `hash` is a string with the hash.
-- `size` is an integer with the size in Bytes.
-- `cumulativeSize` is an integer with the cumulative size in Bytes.
-- `blocks` is an integer indicating the number of blocks.
-- `type` is a string that can be either `directory` or `file`.
-- `withLocality` is a boolean to indicate if locality information are present.
-- `local` is a boolean to indicate if the queried dag is fully present locally.
-- `sizeLocal` is an integer indicating the cumulative size of the data present locally.
-
+- `hash` is a string with the hash
+- `size` is an integer with the file size in Bytes
+- `cumulativeSize` is an integer with the size of the DAGNodes making up the file in Bytes
+- `type` is a string that can be either `directory` or `file`
+- `blocks` if `type` is `directory`, this is the number of files in the directory. If it is `file` it is the number of blocks that make up the file
+- `withLocality` is a boolean to indicate if locality information are present
+- `local` is a boolean to indicate if the queried dag is fully present locally
+- `sizeLocal` is an integer indicating the cumulative size of the data present locally
 
 If no `callback` is passed, a promise is returned.
 
@@ -698,15 +719,14 @@ ipfs.files.stat('/file.txt', (err, stats) => {
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.files.rm(path, [options, callback])
+##### `JavaScript` - ipfs.files.rm(...paths, [options], [callback])
 
 Where:
 
-- `path` is the path of the file to remove.
+- `paths` are one or more paths to remove
 - `options` is an optional Object that might contain the following keys:
-  - `recursive` is a Boolean value to decide whether or not to remove directories recursively.
-
-`callback` must follow the `function (err) {}` signature, where `err` is an Error if the operation was not successful.
+  - `recursive` is a Boolean value to decide whether or not to remove directories recursively  (default: false)
+- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occured if the operation was not successful
 
 If no `callback` is passed, a promise is returned.
 
@@ -715,6 +735,13 @@ If no `callback` is passed, a promise is returned.
 ```JavaScript
 // To remove a file
 ipfs.files.rm('/my/beautiful/file.txt', (err) => {
+  if (err) {
+    console.error(err)
+  }
+})
+
+// To remove multiple files
+ipfs.files.rm('/my/beautiful/file.txt', '/my/other/file.txt', (err) => {
   if (err) {
     console.error(err)
   }
@@ -738,19 +765,20 @@ ipfs.files.rm('/my/beautiful/directory', { recursive: true }, (err) => {
 
 Where:
 
-- `path` is the path of the file to read.
+- `path` is the path of the file to read and must point to a file
 - `options` is an optional Object that might contain the following keys:
-  - `offset` is an Integer with the byte offset to begin reading from.
-  - `count` is an Integer with the maximum number of bytes to read.
-
-`callback` must follow the `function (err, buf) {}` signature, where `err` is an Error if the operation was not successful and `buf` is a [`Buffer`][b] with the contents of `path`.
+  - `offset` is an Integer with the byte offset to begin reading from  (default: 0)
+  - `length` is an Integer with the maximum number of bytes to read (default: Read to end of stream)
+- `callback` is an optional function with the signature `function (error, buffer) {}`, where `error` may be an Error that occured if the operation was not successful and `buffer` is a [`Buffer`][b] with the contents of `path`
 
 If no `callback` is passed, a promise is returned.
+
+N.b. this method is likely to result in high memory usage, you should use [files.readReadableStream](#filesreadreadablestream) or [files.readPullStream](#filesreadpullstream) instead where possible.
 
 **Example:**
 
 ```JavaScript
-ipfs.files.read('/hello-world', (err, buf) => {
+ipfs.files.read('/hello-world', (error, buf) => {
   console.log(buf.toString('utf8'))
 })
 
@@ -767,10 +795,10 @@ ipfs.files.read('/hello-world', (err, buf) => {
 
 Where:
 
-- `path` is the path of the file to read.
+- `path` is the path of the file to read and must point to a file
 - `options` is an optional Object that might contain the following keys:
-  - `offset` is an Integer with the byte offset to begin reading from.
-  - `count` is an Integer with the maximum number of bytes to read.
+  - `offset` is an Integer with the byte offset to begin reading from  (default: 0)
+  - `length` is an Integer with the maximum number of bytes to read (default: Read to end of stream)
 
 Returns a [`ReadableStream`][rs] with the contents of `path`.
 
@@ -793,10 +821,10 @@ stream.on('data', (buf) => console.log(buf.toString('utf8')))
 
 Where:
 
-- `path` is the path of the file to read.
+- `path` is the path of the file to read and must point to a file
 - `options` is an optional Object that might contain the following keys:
-  - `offset` is an Integer with the byte offset to begin reading from.
-  - `count` is an Integer with the maximum number of bytes to read.
+  - `offset` is an Integer with the byte offset to begin reading from (default: 0)
+  - `length` is an Integer with the maximum number of bytes to read (default: Read to end of stream)
 
 Returns a [`PullStream`][ps] with the contents of `path`.
 
@@ -818,11 +846,11 @@ pull(
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.files.write(path, content, [options, callback])
+##### `JavaScript` - ipfs.files.write(path, content, [options], [callback])
 
 Where:
 
-- `path` is the path of the file to write.
+- `path` is the path of the file to write
 - `content` can be:
   - a [`Buffer`][b]
   - a [`PullStream`][ps]
@@ -830,12 +858,11 @@ Where:
   - a [`Blob`][blob] (caveat: will only work in the browser)
   - a string path to a file (caveat: will only work in Node.js)
 - `options` is an optional Object that might contain the following keys:
-  - `offset` is an Integer with the byte offset to begin writing at.
-  - `create` is a Boolean to indicate to create the file if it doesn't exist.
-  - `truncate` is a Boolean to indicate if the file should be truncated to size 0 before writing.
-  - `count` is an Integer with the maximum number of bytes to read.
-
-`callback` must follow the `function (err) {}` signature, where `err` is an Error if the operation was not successful.
+  - `offset` is an Integer with the byte offset to begin writing at (default: 0)
+  - `create` is a Boolean to indicate to create the file if it doesn't exist (default: false)
+  - `truncate` is a Boolean to indicate if the file should be truncated after writing all the bytes from `content` (default: false)
+  - `length` is an Integer with the maximum number of bytes to read (default: Read all bytes from `content`)
+- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occured if the operation was not successful
 
 If no `callback` is passed, a promise is returned.
 
@@ -853,21 +880,39 @@ ipfs.files.write('/hello-world', Buffer.from('Hello, world!'), (err) => {
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.files.mv([from, to], [callback])
+##### `JavaScript` - ipfs.files.mv(...from, to, [options], [callback])
 
 Where:
 
-- `from` is the path of the source file to move.
-- `to` is the path of the destination file to move to.
+- `from` is the path(s) of the source to move
+- `to` is the path of the destination to move to
+- `options` is an optional Object that might contain the following keys:
+  - `parents` is a Boolean value to decide whether or not to make the parent directories if they don't exist (default: false)
+  - `format` is what type of nodes to write any newly created directories as (default: `dag-pb`)
+  - `hashAlg` is which algorithm to use when creating CIDs for newly created directories (default: `sha2-256`)
+  - `flush` is a Boolean value to decide whether or not to immediately flush MFS changes to disk (default: true)
+- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occured if the operation was not successful
 
-`callback` must follow the `function (err) {}` signature, where `err` is an Error if the operation was not successful.
+If there are multiple sources, `to` will be treated as a directory, otherwise it will be treated as the same type as `from`.
 
 If no `callback` is passed, a promise is returned.
 
 **Example:**
 
 ```JavaScript
-ipfs.files.mv(['/src-file', '/dst-file'], (err) => {
+ipfs.files.mv('/src-file', '/dst-file', (err) => {
+  if (err) {
+    console.error(err)
+  }
+})
+
+ipfs.files.mv('/src-dir', '/dst-dir', (err) => {
+  if (err) {
+    console.error(err)
+  }
+})
+
+ipfs.files.mv('/src-file1', '/src-file2', '/dst-dir', (err) => {
   if (err) {
     console.error(err)
   }
@@ -880,13 +925,12 @@ ipfs.files.mv(['/src-file', '/dst-file'], (err) => {
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.files.flush([path, callback])
+##### `JavaScript` - ipfs.files.flush([...paths], [callback])
 
 Where:
 
-- `path` is the path to flush. Default is `/`.
-
-`callback` must follow the `function (err) {}` signature, where `err` is an Error if the operation was not successful.
+- `paths` are an optional string paths to flush (default: `/`)
+- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occured if the operation was not successful
 
 If no `callback` is passed, a promise is returned.
 
@@ -906,20 +950,17 @@ ipfs.files.flush('/', (err) => {
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.files.ls([path, options, callback])
+##### `JavaScript` - ipfs.files.ls([path], [callback])
 
 Where:
 
-- `path` is the path to show listing for. Defaults to `/`.
-- `options` is an optional Object that might contain the following keys:
-  - `l` is a Boolean value o use long listing format.
+- `path` is an optional string to show listing for (default: `/`)
+- `callback` is an optional function with the signature `function (error, files) {}`, where `error` may be an Error that occured if the operation was not successful and `files` is an array containing Objects that contain the following keys:
 
-`callback` must follow `function (err, files) {}` signature, where `err` is an error if the operation was not successful. `files` is an array containing Objects that contain the following keys:
-
-- `name` which is the file's name.
-- `type` which i the object's type (`directory` or `file`).
-- `size` the size of the file in bytes.
-- `hash` the hash of the file.
+- `name` which is the file's name
+- `type` which i the object's type (`directory` or `file`)
+- `size` the size of the file in bytes
+- `hash` the hash of the file
 
 If no `callback` is passed, a promise is returned.
 
