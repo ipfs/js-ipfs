@@ -85,7 +85,7 @@ module.exports = {
       flush
     } = argv
 
-    ipfs.mfs.write(path, process.stdin, {
+    ipfs.files.write(path, process.stdin, {
       offset,
       length,
       create,

@@ -4,7 +4,6 @@ const unmarshal = require('ipfs-unixfs').unmarshal
 const promisify = require('promisify-es6')
 const bs58 = require('bs58')
 const {
-  validatePath,
   traverseTo
 } = require('./utils')
 const waterfall = require('async/waterfall')
@@ -25,12 +24,6 @@ module.exports = function mfsStat (ipfs) {
 
     options = Object.assign({}, defaultOptions, options)
 
-    try {
-      path = validatePath(path)
-    } catch (error) {
-      return callback(error)
-    }
-
     log(`Fetching stats for ${path}`)
 
     waterfall([
@@ -50,12 +43,21 @@ module.exports = function mfsStat (ipfs) {
 
         const meta = unmarshal(node.data)
 
+        let blocks = node.links.length
+
+        if (meta.type === 'file') {
+          blocks = meta.blockSizes.length
+        }
+
         done(null, {
-          hash: node.multihash,
-          size: meta.fileSize(),
+          hash: bs58.encode(node.multihash),
+          size: meta.fileSize() || 0,
           cumulativeSize: node.size,
-          childBlocks: meta.blockSizes.length,
-          type: meta.type
+          blocks: blocks,
+          type: meta.type,
+          local: undefined,
+          sizeLocal: undefined,
+          withLocality: false
         })
       }
     ], callback)

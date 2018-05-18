@@ -2,6 +2,7 @@
 
 const promisify = require('promisify-es6')
 const waterfall = require('async/waterfall')
+const log = require('debug')('mfs:mkdir')
 const {
   updateMfsRoot,
   updateTree,
@@ -10,7 +11,7 @@ const {
 } = require('./utils')
 
 const defaultOptions = {
-  parents: true,
+  parents: false,
   hash: undefined,
   cidVersion: undefined
 }
@@ -24,6 +25,8 @@ module.exports = function mfsMkdir (ipfs) {
 
     options = Object.assign({}, defaultOptions, options)
 
+    options.parents = options.p || options.parents
+
     if (!path) {
       return callback(new Error('no path given to Mkdir'))
     }
@@ -34,6 +37,8 @@ module.exports = function mfsMkdir (ipfs) {
       return callback(options.parents ? null : new Error(`cannot create directory '${FILE_SEPARATOR}': Already exists`))
     }
 
+    log(`Creating ${path}`)
+
     waterfall([
       (cb) => {
         traverseTo(ipfs, path, {
@@ -41,10 +46,12 @@ module.exports = function mfsMkdir (ipfs) {
           createLastComponent: false
         }, (error) => {
           if (!error) {
+            log(`${path} already existed`)
             return cb(new Error('Already exists'))
           }
 
           if (error.message.includes('did not exist')) {
+            log(`${path} did not exist`)
             return cb()
           }
 

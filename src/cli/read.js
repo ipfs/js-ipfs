@@ -35,7 +35,7 @@ module.exports = {
     } = argv
 
     waterfall([
-      (cb) => ipfs.mfs.readPullStream(path, {
+      (cb) => ipfs.files.readPullStream(path, {
         offset,
         length
       }, cb),

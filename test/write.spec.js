@@ -8,12 +8,6 @@ const path = require('path')
 const loadFixture = require('aegir/fixtures')
 const isNode = require('detect-node')
 const values = require('pull-stream/sources/values')
-const bufferStream = require('./fixtures/buffer-stream')
-const CID = require('cids')
-const UnixFs = require('ipfs-unixfs')
-const {
-  MAX_CHUNK_SIZE
-} = require('../src/core/utils')
 
 let fs
 
@@ -328,46 +322,6 @@ describe('write', function () {
     })
   })
 
-  it(`expands one DAGNode into a balanced tree`, () => {
-    const path = `/some-file-${Math.random()}.txt`
-    const data = []
-
-    return mfs.write(path, bufferStream(MAX_CHUNK_SIZE - 10, {
-      collector: (bytes) => data.push(bytes)
-    }), {
-      create: true
-    })
-      .then(() => mfs.stat(path))
-      .then((stats) => mfs.node.dag.get(new CID(stats.hash)))
-      .then((result) => result.value)
-      .then((node) => {
-        expect(node.links.length).to.equal(0)
-
-        const meta = UnixFs.unmarshal(node.data)
-
-        expect(meta.fileSize()).to.equal(data.reduce((acc, curr) => acc + curr.length, 0))
-        expect(meta.data).to.deep.equal(data.reduce((acc, curr) => Buffer.concat([acc, curr]), Buffer.alloc(0)))
-      })
-      .then(() => mfs.write(path, bufferStream(20, {
-        collector: (bytes) => data.push(bytes)
-      }), {
-        offset: MAX_CHUNK_SIZE - 10
-      }))
-      .then(() => mfs.stat(path))
-      .then((stats) => mfs.node.dag.get(new CID(stats.hash)))
-      .then((result) => result.value)
-      .then((node) => {
-        expect(node.links.length).to.equal(2)
-
-        const meta = UnixFs.unmarshal(node.data)
-
-        expect(meta.fileSize()).to.equal(data.reduce((acc, curr) => acc + curr.length, 0))
-        expect(meta.data).to.equal(undefined)
-      })
-      .then(() => mfs.read(path))
-      .then((buffer) => expect(buffer).to.deep.equal(data.reduce((acc, curr) => Buffer.concat([acc, curr]), Buffer.alloc(0))))
-  })
-
   runTest(({type, path, content}) => {
     it(`truncates a file after writing (${type})`, () => {
       const newContent = Buffer.from('Oh hai!')
@@ -419,6 +373,10 @@ describe('write', function () {
         .then(() => mfs.stat(path))
         .then((stats) => expect(stats.size).to.equal(offset + newContent.length))
     })
+  })
+
+  it.skip('supports concurrent writes', () => {
+
   })
 
   it.skip('writes a file with raw blocks for newly created leaf nodes', () => {

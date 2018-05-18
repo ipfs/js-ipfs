@@ -35,7 +35,7 @@ module.exports = {
       recursive
     } = argv
 
-    ipfs.mfs.mv(source, dest, {
+    ipfs.files.mv(source, dest, {
       parents,
       recursive
     }, (error) => {

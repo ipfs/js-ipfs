@@ -136,10 +136,12 @@ describe('cp', function () {
   it('copies directories recursively', () => {
     const directory = `/source-directory-${Math.random()}`
     const subDirectory = `/source-directory-${Math.random()}`
-    const source = `${directory}/${subDirectory}`
+    const source = `${directory}${subDirectory}`
     const destination = `/dest-directory-${Math.random()}`
 
-    return mfs.mkdir(source)
+    return mfs.mkdir(source, {
+      parents: true
+    })
       .then(() => mfs.cp(directory, destination))
       .then(() => mfs.stat(destination))
       .then((stats) => {

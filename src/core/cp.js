@@ -17,7 +17,6 @@ const log = require('debug')('mfs:cp')
 
 const defaultOptions = {
   parents: false,
-  recursive: false,
   flush: true,
   format: 'dag-pb',
   hashAlg: 'sha2-256'
@@ -40,6 +39,8 @@ module.exports = function mfsCp (ipfs) {
     if (!destination) {
       return callback(new Error('Please supply a destination'))
     }
+
+    options.parents = options.p || options.parents
 
     traverseTo(ipfs, destination.path, {}, (error, result) => {
       if (error) {
@@ -82,7 +83,10 @@ const copyToFile = (ipfs, source, destination, options, callback) => {
       waterfall([
         (next) => addLink(ipfs, {
           parent: dest.node,
-          child: sourceStats, // nb. file size here is not including protobuf wrapper so is wrong
+          child: {
+            size: sourceStats.cumulativeSize,
+            hash: sourceStats.hash
+          },
           name: destination.name
         }, next),
         (newParent, next) => {
@@ -122,7 +126,10 @@ const copyToDirectory = (ipfs, sources, destination, options, callback) => {
             return (dest, done) => {
               return addLink(ipfs, {
                 parent: dest,
-                child: sourceStat, // nb. file size here is not including protobuf wrapper so is wrong
+                child: {
+                  size: sourceStat.cumulativeSize,
+                  hash: sourceStat.hash
+                },
                 name: sources[index].name
               }, done)
             }

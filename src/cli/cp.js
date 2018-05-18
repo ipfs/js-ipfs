@@ -17,12 +17,17 @@ module.exports = {
       coerce: asBoolean,
       describe: 'Create any non-existent intermediate directories'
     },
-    recursive: {
-      alias: 'r',
-      type: 'boolean',
-      default: false,
-      coerce: asBoolean,
-      describe: 'Copy directories recursively'
+    format: {
+      alias: 'h',
+      type: 'string',
+      default: 'dag-pb',
+      describe: 'If intermediate directories are created, use this format to create them (experimental)'
+    },
+    hash: {
+      alias: 'h',
+      type: 'string',
+      default: 'sha2-256',
+      describe: 'Hash function to use. Will set Cid version to 1 if used. (experimental)'
     }
   },
 
@@ -32,12 +37,14 @@ module.exports = {
       dest,
       ipfs,
       parents,
-      recursive
+      format,
+      hash
     } = argv
 
-    ipfs.mfs.cp(source, dest, {
+    ipfs.files.cp(source, dest, {
       parents,
-      recursive
+      format,
+      hashAlg: hash
     }, (error) => {
       if (error) {
         throw error

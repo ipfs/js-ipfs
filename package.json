@@ -38,13 +38,13 @@
   "devDependencies": {
     "@commitlint/cli": "^6.2.0",
     "@commitlint/config-conventional": "^6.1.3",
-    "aegir": "^13.0.6",
+    "aegir": "^13.1.0",
     "chai": "^4.1.2",
     "cross-env": "^5.1.4",
     "dirty-chai": "^2.0.1",
     "ipfs": "~0.28.2",
     "pre-commit": "^1.2.2",
-    "pre-push": "^0.1.1",
+    "pre-push": "~0.1.1",
     "safe-buffer": "^5.1.1",
     "sign-commit": "~0.1.0",
     "tmp": "~0.0.33"

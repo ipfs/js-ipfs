@@ -28,11 +28,15 @@ const importStream = (ipfs, source, options, callback) => {
         progress: options.progress,
         hashAlg: options.hash,
         cidVersion: options.cidVersion,
-        strategy: options.strategy
+        strategy: options.strategy,
+        rawLeafNodes: true,
+        reduceSingleLeafToSelf: false
       }),
       collect(cb)
     ),
-    (results, cb) => loadNode(ipfs, results[0], cb)
+    (results, cb) => {
+      return loadNode(ipfs, results[0], cb)
+    }
   ], callback)
 }
 

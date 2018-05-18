@@ -16,27 +16,31 @@ const defaultOptions = {
   hashAlg: 'sha2-256'
 }
 
-module.exports = function mfsCp (ipfs) {
+module.exports = function mfsMv (ipfs) {
   return promisify(function () {
+    let args = Array.prototype.slice.call(arguments)
+
+    if (Array.isArray(args[0])) {
+      args = args[0].concat(args.slice(1))
+    }
+
     const {
+      sources,
+      options,
       callback
-    } = toSources(Array.prototype.slice.call(arguments), defaultOptions)
+    } = toSources(args, defaultOptions)
 
     // remove the callback
-    const cpArgs = Array.prototype.slice.call(arguments)
-      .filter(arg => typeof arg !== 'function')
+    const cpArgs = sources
+      .map(source => source.path).concat(options)
 
-    // remove the last string in the args as it'll be the destination
-    const lastStringIndex = cpArgs.reduce((acc, curr, index) => {
-      if (typeof curr === 'string') {
-        return index
-      }
-
-      return acc
-    }, -1)
-    const rmArgs = cpArgs
-      .filter((arg, index) => index !== lastStringIndex)
-      .slice(0, cpArgs.length - 1)
+    // remove the last source as it'll be the destination
+    const rmArgs = sources
+      .slice(0, -1)
+      .map(source => source.path)
+      .concat(Object.assign(options, {
+        recursive: true
+      }))
 
     series([
       (cb) => cp(ipfs).apply(null, cpArgs.concat(cb)),

@@ -24,18 +24,40 @@ const defaultOptions = {
 const traverseTo = (ipfs, path, options, callback) => {
   options = Object.assign({}, defaultOptions, options)
 
-  log(`Traversing to ${path}`)
+  log('Traversing to', path)
+
+  waterfall([
+    (cb) => validatePath(path, cb),
+    (path, cb) => {
+      if (path.type === 'mfs') {
+        return traverseToMfsObject(ipfs, path, options, cb)
+      }
+
+      return traverseToIpfsObject(ipfs, path, options, cb)
+    }
+  ], callback)
+}
+
+const traverseToIpfsObject = (ipfs, path, options, callback) => {
+  log('IPFS', path)
+
+  waterfall([
+    (cb) => ipfs.dag.get(path.path, cb),
+    (result, cb) => cb(null, {
+      name: path.name,
+      node: result && result.value,
+      parent: null
+    })
+  ], callback)
+}
+
+const traverseToMfsObject = (ipfs, path, options, callback) => {
+  log('MFS', path)
 
   waterfall([
     (done) => withMfsRoot(ipfs, done),
     (root, done) => {
-      try {
-        path = validatePath(path)
-      } catch (error) {
-        return done(error)
-      }
-
-      const pathSegments = path
+      const pathSegments = path.path
         .split(FILE_SEPARATOR)
         .filter(Boolean)
 
@@ -66,12 +88,14 @@ const traverseTo = (ipfs, path, options, callback) => {
             const existingLink = parent.node.links.find(link => link.name === pathSegment)
 
             if (!existingLink) {
-              if (index === pathSegments.length - 1 && !options.parents && !this.createLastComponent) {
-                return done(new Error(`Path ${path} did not exist`))
-              }
+              const lastComponent = index === pathSegments.length - 1
 
-              if (!options.parents) {
-                let message = `Cannot find ${path} - ${pathSegment} did not exist`
+              log(`index ${index} pathSegments.length ${pathSegments.length} pathSegment ${pathSegment} lastComponent ${lastComponent}`, options)
+
+              if (lastComponent && !options.createLastComponent) {
+                return done(new Error(`Path ${path.path} did not exist`))
+              } else if (!lastComponent && !options.parents) {
+                let message = `Cannot find ${path.path} - ${pathSegment} did not exist`
 
                 if (options.withCreateHint) {
                   message += ': Try again with the --parents flag to create it'

@@ -30,7 +30,7 @@ module.exports = {
       long
     } = argv
 
-    ipfs.mfs.ls(path || FILE_SEPARATOR, {
+    ipfs.files.ls(path || FILE_SEPARATOR, {
       long
     }, (error, files) => {
       if (error) {

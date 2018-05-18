@@ -2,6 +2,7 @@
 
 const core = {
   cp: require('./cp'),
+  flush: require('./flush'),
   ls: require('./ls'),
   mkdir: require('./mkdir'),
   mv: require('./mv'),

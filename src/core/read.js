@@ -19,7 +19,9 @@ module.exports = function mfsRead (ipfs) {
         stream,
         collect(cb)
       ),
-      (buffers, cb) => cb(null, Buffer.concat(buffers))
+      (buffers, cb) => {
+        cb(null, Buffer.concat(buffers))
+      }
     ], callback)
   })
 }

@@ -6,7 +6,6 @@ const pull = require('pull-stream/pull')
 const collect = require('pull-stream/sinks/collect')
 const waterfall = require('async/waterfall')
 const {
-  validatePath,
   traverseTo
 } = require('./utils')
 const log = require('debug')('mfs:read-pull-stream')
@@ -24,12 +23,6 @@ module.exports = function mfsReadPullStream (ipfs) {
     }
 
     options = Object.assign({}, defaultOptions, options)
-
-    try {
-      path = validatePath(path)
-    } catch (error) {
-      return callback(error)
-    }
 
     log(`Reading ${path}`)
 

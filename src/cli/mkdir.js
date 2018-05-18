@@ -45,7 +45,7 @@ module.exports = {
       flush
     } = argv
 
-    ipfs.mfs.mkdir(path, {
+    ipfs.files.mkdir(path, {
       parents,
       cidVersion,
       hash,

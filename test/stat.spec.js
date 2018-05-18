@@ -66,9 +66,9 @@ describe('stat', function () {
     return mfs.mkdir(path)
       .then(() => mfs.stat(path))
       .then(stats => {
-        expect(stats.size).to.equal(undefined)
+        expect(stats.size).to.equal(0)
         expect(stats.cumulativeSize).to.equal(4)
-        expect(stats.childBlocks).to.equal(0)
+        expect(stats.blocks).to.equal(0)
         expect(stats.type).to.equal('directory')
       })
   })
@@ -113,8 +113,8 @@ describe('stat', function () {
       .then(() => mfs.stat(filePath))
       .then((stats) => {
         expect(stats.size).to.equal(smallFile.length)
-        expect(stats.cumulativeSize).to.equal(21)
-        expect(stats.childBlocks).to.equal(0)
+        expect(stats.cumulativeSize).to.equal(71)
+        expect(stats.blocks).to.equal(1)
         expect(stats.type).to.equal('file')
       })
   })
@@ -130,7 +130,7 @@ describe('stat', function () {
       .then((stats) => {
         expect(stats.size).to.equal(largeFile.length)
         expect(stats.cumulativeSize).to.equal(490800)
-        expect(stats.childBlocks).to.equal(2)
+        expect(stats.blocks).to.equal(2)
         expect(stats.type).to.equal('file')
       })
   })
