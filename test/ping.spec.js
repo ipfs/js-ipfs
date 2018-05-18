@@ -20,7 +20,7 @@ function isPong (pingResponse) {
   return Boolean(pingResponse && pingResponse.time)
 }
 
-describe.only('.ping', function () {
+describe('.ping', function () {
   let ipfs
   let ipfsd
   let other
