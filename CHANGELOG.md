@@ -1,3 +1,20 @@
+<a name="22.0.0"></a>
+# [22.0.0](https://github.com/ipfs/js-ipfs-api/compare/v21.0.0...v22.0.0) (2018-05-20)
+
+
+### Bug Fixes
+
+* callback from unsub after stream ends ([51a80f2](https://github.com/ipfs/js-ipfs-api/commit/51a80f2))
+* do not fail stop node if failed start node ([533760f](https://github.com/ipfs/js-ipfs-api/commit/533760f))
+* **ping:** convert the ping messages to lowercase ([632af40](https://github.com/ipfs/js-ipfs-api/commit/632af40))
+* more robust ping tests ([fc6d301](https://github.com/ipfs/js-ipfs-api/commit/fc6d301))
+* remove .only ([0e21c8a](https://github.com/ipfs/js-ipfs-api/commit/0e21c8a))
+* result.Peers can be null, ensure callback is called ([f5f2e83](https://github.com/ipfs/js-ipfs-api/commit/f5f2e83))
+* update asserted error message ([17c1f1c](https://github.com/ipfs/js-ipfs-api/commit/17c1f1c))
+* use async/setImmediate vs process.nextTick ([faa51b4](https://github.com/ipfs/js-ipfs-api/commit/faa51b4))
+
+
+
 <a name="21.0.0"></a>
 # [21.0.0](https://github.com/ipfs/js-ipfs-api/compare/v20.2.1...v21.0.0) (2018-05-12)
 
