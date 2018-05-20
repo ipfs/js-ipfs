@@ -60,7 +60,7 @@
     "stream-http": "^2.8.2",
     "stream-to-pull-stream": "^1.7.2",
     "streamifier": "^0.1.1",
-    "tar-stream": "^1.6.0"
+    "tar-stream": "^1.6.1"
   },
   "engines": {
     "node": ">=6.0.0",
@@ -76,15 +76,15 @@
     "chai": "^4.1.2",
     "cross-env": "^5.1.5",
     "dirty-chai": "^2.0.1",
-    "eslint-plugin-react": "^7.8.1",
+    "eslint-plugin-react": "^7.8.2",
     "go-ipfs-dep": "~0.4.15",
     "gulp": "^3.9.1",
     "interface-ipfs-core": "~0.66.2",
     "ipfs": "~0.28.2",
     "ipfsd-ctl": "~0.36.0",
     "pull-stream": "^3.6.8",
-    "socket.io": "^2.1.0",
-    "socket.io-client": "^2.1.0",
+    "socket.io": "^2.1.1",
+    "socket.io-client": "^2.1.1",
     "stream-equal": "^1.1.1"
   },
   "pre-push": [
