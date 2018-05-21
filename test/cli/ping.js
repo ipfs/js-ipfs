@@ -76,8 +76,15 @@ describe('ping', function () {
     done()
   })
 
-  after((done) => ipfsdA.stop(done))
-  after((done) => ipfsdB.stop(done))
+  after((done) => {
+    if (!ipfsdA) return done()
+    ipfsdA.stop(done)
+  })
+
+  after((done) => {
+    if (!ipfsdB) return done()
+    ipfsdB.stop(done)
+  })
 
   it('ping host', (done) => {
     this.timeout(60 * 1000)

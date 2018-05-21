@@ -6,6 +6,7 @@ const dirtyChai = require('dirty-chai')
 const pull = require('pull-stream/pull')
 const drain = require('pull-stream/sinks/drain')
 const parallel = require('async/parallel')
+const series = require('async/series')
 const DaemonFactory = require('ipfsd-ctl')
 const isNode = require('detect-node')
 
@@ -48,7 +49,7 @@ describe('ping', function () {
     before(function (done) {
       this.timeout(60 * 1000)
 
-      parallel([
+      series([
         spawnNode.bind(null, { dht: false }),
         spawnNode.bind(null, { dht: false })
       ], (err, ipfsd) => {
@@ -77,15 +78,22 @@ describe('ping', function () {
       ipfsdA.api.swarm.connect(bMultiaddr, done)
     })
 
-    after((done) => ipfsdA.stop(done))
-    after((done) => ipfsdB.stop(done))
+    after((done) => {
+      if (!ipfsdA) return done()
+      ipfsdA.stop(done)
+    })
+
+    after((done) => {
+      if (!ipfsdB) return done()
+      ipfsdB.stop(done)
+    })
 
     it('sends the specified number of packets', (done) => {
       let packetNum = 0
       const count = 3
       pull(
         ipfsdA.api.pingPullStream(ipfsdBId, { count }),
-        drain(({ success, time, text }) => {
+        drain(({ success, time }) => {
           expect(success).to.be.true()
           // It's a pong
           if (time) {
@@ -100,10 +108,11 @@ describe('ping', function () {
     })
 
     it('pinging an unknown peer will fail accordingly', (done) => {
+      const unknownPeerId = 'QmUmaEnH1uMmvckMZbh3yShaasvELPW4ZLPWnB4entMTEn'
       let messageNum = 0
       const count = 2
       pull(
-        ipfsdA.api.pingPullStream('unknown', { count }),
+        ipfsdA.api.pingPullStream(unknownPeerId, { count }),
         drain(({ success, time, text }) => {
           messageNum++
           // Assert that the ping command falls back to the peerRouting
@@ -116,7 +125,8 @@ describe('ping', function () {
             expect(success).to.be.false()
           }
         }, (err) => {
-          expect(err).to.not.exist()
+          expect(err).to.exist()
+          expect(err.message).to.include('DHT is not available')
           expect(messageNum).to.equal(count)
           done()
         })
@@ -139,7 +149,7 @@ describe('ping', function () {
     before(function (done) {
       this.timeout(60 * 1000)
 
-      parallel([
+      series([
         spawnNode.bind(null, { dht: true }),
         spawnNode.bind(null, { dht: true }),
         spawnNode.bind(null, { dht: true })
@@ -194,9 +204,20 @@ describe('ping', function () {
       })
     })
 
-    after((done) => ipfsdA.stop(done))
-    after((done) => ipfsdB.stop(done))
-    after((done) => ipfsdC.stop(done))
+    after((done) => {
+      if (!ipfsdA) return done()
+      ipfsdA.stop(done)
+    })
+
+    after((done) => {
+      if (!ipfsdB) return done()
+      ipfsdB.stop(done)
+    })
+
+    after((done) => {
+      if (!ipfsdC) return done()
+      ipfsdC.stop(done)
+    })
 
     it('if enabled uses the DHT peer routing to find peer', (done) => {
       let messageNum = 0
