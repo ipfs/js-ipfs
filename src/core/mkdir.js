@@ -1,6 +1,5 @@
 'use strict'
 
-const promisify = require('promisify-es6')
 const waterfall = require('async/waterfall')
 const log = require('debug')('mfs:mkdir')
 const {
@@ -16,8 +15,8 @@ const defaultOptions = {
   cidVersion: undefined
 }
 
-module.exports = function mfsMkdir (ipfs) {
-  return promisify((path, options, callback) => {
+module.exports = (ipfs) => {
+  return function mfsMkdir (path, options, callback) {
     if (typeof options === 'function') {
       callback = options
       options = {}
@@ -66,5 +65,5 @@ module.exports = function mfsMkdir (ipfs) {
       (result, cb) => updateTree(ipfs, result, cb),
       (newRoot, next) => updateMfsRoot(ipfs, newRoot.node.multihash, next)
     ], callback)
-  })
+  }
 }

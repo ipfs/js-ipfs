@@ -8,6 +8,7 @@ const path = require('path')
 const loadFixture = require('aegir/fixtures')
 const isNode = require('detect-node')
 const values = require('pull-stream/sources/values')
+const bufferStream = require('./fixtures/buffer-stream')
 
 let fs
 
@@ -375,8 +376,30 @@ describe('write', function () {
     })
   })
 
-  it.skip('supports concurrent writes', () => {
+  it('supports concurrent writes', () => {
+    const files = []
 
+    for (let i = 0; i < 10; i++) {
+      files.push({
+        name: `source-file-${Math.random()}.txt`,
+        source: bufferStream(100)
+      })
+    }
+
+    return Promise.all(
+      files.map(({name, source}) => mfs.write(`/concurrent/${name}`, source, {
+        create: true,
+        parents: true
+      }))
+    )
+      .then(() => mfs.ls('/concurrent'))
+      .then(listing => {
+        expect(listing.length).to.equal(files.length)
+
+        listing.forEach(listedFile => {
+          expect(files.find(file => file.name === listedFile.name))
+        })
+      })
   })
 
   it.skip('writes a file with raw blocks for newly created leaf nodes', () => {

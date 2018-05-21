@@ -1,6 +1,5 @@
 'use strict'
 
-const promisify = require('promisify-es6')
 const waterfall = require('async/waterfall')
 const {
   traverseTo,
@@ -9,8 +8,8 @@ const {
 
 const defaultOptions = {}
 
-module.exports = function mfsFlush (ipfs) {
-  return promisify(function (path, options, callback) {
+module.exports = (ipfs) => {
+  return function mfsFlush (path, options, callback) {
     if (typeof options === 'function') {
       callback = options
       options = {}
@@ -34,5 +33,5 @@ module.exports = function mfsFlush (ipfs) {
         cb()
       }
     ], callback)
-  })
+  }
 }

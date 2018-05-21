@@ -1,19 +1,25 @@
 'use strict'
 
-const promisify = require('promisify-es6')
 const waterfall = require('async/waterfall')
 const map = require('async/map')
 const bs58 = require('bs58')
 const UnixFs = require('ipfs-unixfs')
 const {
   traverseTo,
-  loadNode
+  loadNode,
+  FILE_SEPARATOR
 } = require('./utils')
 
 const defaultOptions = {}
 
-module.exports = function mfsLs (ipfs) {
-  return promisify((path, options, callback) => {
+module.exports = (ipfs) => {
+  return function mfsLs (path, options, callback) {
+    if (typeof path === 'function') {
+      callback = path
+      path = FILE_SEPARATOR
+      options = {}
+    }
+
     if (typeof options === 'function') {
       callback = options
       options = {}
@@ -52,5 +58,5 @@ module.exports = function mfsLs (ipfs) {
         }
       }
     ], callback)
-  })
+  }
 }

@@ -63,6 +63,7 @@
     "ipfs-unixfs-engine": "~0.29.0",
     "is-pull-stream": "~0.0.0",
     "is-stream": "^1.1.0",
+    "key_mutex": "achingbrain/key_mutex",
     "promisify-es6": "^1.0.3",
     "pull-cat": "^1.1.11",
     "pull-paramap": "^1.2.2",

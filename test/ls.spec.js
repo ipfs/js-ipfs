@@ -25,6 +25,22 @@ describe('ls', function () {
     mfs.node.stop(done)
   })
 
+  it('lists the root directory by default', () => {
+    const fileName = `small-file-${Math.random()}.txt`
+    const content = Buffer.from('Hello world')
+
+    return mfs.write(`/${fileName}`, content, {
+      create: true
+    })
+      .then(() => mfs.ls())
+      .then(files => {
+        expect(files.length).to.equal(1)
+        expect(files[0].name).to.equal(fileName)
+        expect(files[0].type).to.equal('file')
+        expect(files[0].size).to.equal(content.length)
+      })
+  })
+
   it('refuses to lists files with an empty path', () => {
     return mfs.ls('')
       .then(() => {
@@ -49,10 +65,11 @@ describe('ls', function () {
     const fileName = `small-file-${Math.random()}.txt`
     const content = Buffer.from('Hello world')
 
-    return mfs.write(`/${fileName}`, content, {
-      create: true
+    return mfs.write(`/dir/${fileName}`, content, {
+      create: true,
+      parents: true
     })
-      .then(() => mfs.ls('/', {}))
+      .then(() => mfs.ls('/dir', {}))
       .then(files => {
         expect(files.length).to.equal(1)
         expect(files[0].name).to.equal(fileName)

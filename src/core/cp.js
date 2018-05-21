@@ -1,6 +1,5 @@
 'use strict'
 
-const promisify = require('promisify-es6')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
 const series = require('async/series')
@@ -22,8 +21,8 @@ const defaultOptions = {
   hashAlg: 'sha2-256'
 }
 
-module.exports = function mfsCp (ipfs) {
-  return promisify(function () {
+module.exports = (ipfs) => {
+  return function mfsCp () {
     const args = Array.prototype.slice.call(arguments)
     const {
       sources,
@@ -61,7 +60,7 @@ module.exports = function mfsCp (ipfs) {
 
       callback(new Error('Directory already has entry by that name'))
     })
-  })
+  }
 }
 
 const copyToFile = (ipfs, source, destination, options, callback) => {

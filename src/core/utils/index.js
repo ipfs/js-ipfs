@@ -9,6 +9,7 @@ module.exports = {
   endPullStream: require('./end-pull-stream'),
   limitStreamBytes: require('./limit-stream-bytes'),
   loadNode: require('./load-node'),
+  lock: require('./lock'),
   toSourcesAndDestination: require('./to-sources-and-destination'),
   toSources: require('./to-sources'),
   traverseTo: require('./traverse-to'),

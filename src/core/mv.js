@@ -1,6 +1,5 @@
 'use strict'
 
-const promisify = require('promisify-es6')
 const series = require('async/series')
 const {
   toSources
@@ -16,8 +15,8 @@ const defaultOptions = {
   hashAlg: 'sha2-256'
 }
 
-module.exports = function mfsMv (ipfs) {
-  return promisify(function () {
+module.exports = (ipfs) => {
+  return function mfsMv () {
     let args = Array.prototype.slice.call(arguments)
 
     if (Array.isArray(args[0])) {
@@ -46,5 +45,5 @@ module.exports = function mfsMv (ipfs) {
       (cb) => cp(ipfs).apply(null, cpArgs.concat(cb)),
       (cb) => rm(ipfs).apply(null, rmArgs.concat(cb))
     ], callback)
-  })
+  }
 }

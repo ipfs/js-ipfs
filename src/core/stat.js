@@ -1,7 +1,6 @@
 'use strict'
 
 const unmarshal = require('ipfs-unixfs').unmarshal
-const promisify = require('promisify-es6')
 const bs58 = require('bs58')
 const {
   traverseTo
@@ -15,8 +14,8 @@ const defaultOptions = {
   withLocal: false
 }
 
-module.exports = function mfsStat (ipfs) {
-  return promisify((path, options, callback) => {
+module.exports = (ipfs) => {
+  return function mfsStat (path, options, callback) {
     if (typeof options === 'function') {
       callback = options
       options = {}
@@ -61,5 +60,5 @@ module.exports = function mfsStat (ipfs) {
         })
       }
     ], callback)
-  })
+  }
 }
