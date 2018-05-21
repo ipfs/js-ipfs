@@ -11,6 +11,6 @@
   "dependencies": {
     "datastore-fs": "~0.4.2",
     "ipfs": "file:../../",
-    "ipfs-repo": "^0.20.0"
+    "ipfs-repo": "~0.20.0"
   }
 }
