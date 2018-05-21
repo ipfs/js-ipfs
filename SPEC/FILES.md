@@ -601,7 +601,7 @@ The Mutable File System (MFS) is a virtual file system on top of IPFS that expos
 Where:
 
 - `from` is the path(s) of the source to copy.  It might be:
-  - An existing MFS path (e.g. `/my-dir/my-file.txt`)
+  - An existing MFS path to a file or a directory (e.g. `/my-dir/my-file.txt`)
   - An IPFS path (e.g. `/ipfs/QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks`)
 - `to` is the path of the destination to copy to
 - `options` is an optional Object that might contain the following keys:
@@ -611,7 +611,11 @@ Where:
   - `flush` is a Boolean value to decide whether or not to immediately flush MFS changes to disk (default: true)
 - `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occured if the operation was not successful
 
-If there are multiple sources, `to` will be treated as a directory, otherwise it will be treated as the same type as `from`.
+If `from` has multiple values then `to` must be a directory.
+
+If `from` has a single value and `to` exists and is a directory, `from` will be copied into `to`.
+
+If `from` has a single value and `to` exists and is a file, `from` must be a file and the contents of `to` will be replaced with the contents of `from` otherwise an error will be returned.
 
 If `from` is an IPFS path, and an MFS path exists with the same name, the IPFS path will be chosen.
 
@@ -620,18 +624,21 @@ If no `callback` is passed, a promise is returned.
 **Example:**
 
 ```JavaScript
-ipfs.files.cp('/src-file', '/dst-file', (err) => {s
+// To copy a file
+ipfs.files.cp('/src-file', '/dst-file', (err) => {
   if (err) {
     console.error(err)
   }
 })
 
-ipfs.files.cp('/src-dir', '/dst-dir', (err) => {s
+// To copy a directory
+ipfs.files.cp('/src-dir', '/dst-dir', (err) => {
   if (err) {
     console.error(err)
   }
 })
 
+// To copy multiple files to a directory
 ipfs.files.cp('/src-file1', '/src-file2', '/dst-dir', (err) => {
   if (err) {
     console.error(err)
@@ -684,7 +691,7 @@ Where:
   - `hash` is a Boolean value to return only the hash  (default: false)
   - `size` is a Boolean value to return only the size  (default: false)
   - `withLocal` is a Boolean value to compute the amount of the dag that is local, and if possible the total size  (default: false)
-- `callback` is an optional function with the signature `function (error, stats) {}`, where `error` may be an Error that occured if the operation was not successful and `stat` is an Object with the following keys:
+- `callback` is an optional function with the signature `function (error, stats) {}`, where `error` may be an Error that occured if the operation was not successful and `stats` is an Object with the following keys:
 
 - `hash` is a string with the hash
 - `size` is an integer with the file size in Bytes
@@ -765,7 +772,7 @@ ipfs.files.rm('/my/beautiful/directory', { recursive: true }, (err) => {
 
 Where:
 
-- `path` is the path of the file to read and must point to a file
+- `path` is the path of the file to read and must point to a file (and not a directory)
 - `options` is an optional Object that might contain the following keys:
   - `offset` is an Integer with the byte offset to begin reading from  (default: 0)
   - `length` is an Integer with the maximum number of bytes to read (default: Read to end of stream)
@@ -795,7 +802,7 @@ ipfs.files.read('/hello-world', (error, buf) => {
 
 Where:
 
-- `path` is the path of the file to read and must point to a file
+- `path` is the path of the file to read and must point to a file (and not a directory)
 - `options` is an optional Object that might contain the following keys:
   - `offset` is an Integer with the byte offset to begin reading from  (default: 0)
   - `length` is an Integer with the maximum number of bytes to read (default: Read to end of stream)
@@ -821,7 +828,7 @@ stream.on('data', (buf) => console.log(buf.toString('utf8')))
 
 Where:
 
-- `path` is the path of the file to read and must point to a file
+- `path` is the path of the file to read and must point to a file (and not a directory)
 - `options` is an optional Object that might contain the following keys:
   - `offset` is an Integer with the byte offset to begin reading from (default: 0)
   - `length` is an Integer with the maximum number of bytes to read (default: Read to end of stream)
@@ -893,7 +900,15 @@ Where:
   - `flush` is a Boolean value to decide whether or not to immediately flush MFS changes to disk (default: true)
 - `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occured if the operation was not successful
 
-If there are multiple sources, `to` will be treated as a directory, otherwise it will be treated as the same type as `from`.
+If `from` has multiple values then `to` must be a directory.
+
+If `from` has a single value and `to` exists and is a directory, `from` will be moved into `to`.
+
+If `from` has a single value and `to` exists and is a file, `from` must be a file and the contents of `to` will be replaced with the contents of `from` otherwise an error will be returned.
+
+If `from` is an IPFS path, and an MFS path exists with the same name, the IPFS path will be chosen.
+
+All values of `from` will be removed after the operation is complete, unless they are an IPFS path.
 
 If no `callback` is passed, a promise is returned.
 
