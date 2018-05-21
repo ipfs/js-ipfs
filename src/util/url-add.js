@@ -55,10 +55,11 @@ const requestWithRedirect = (url, opts, sendOneFile, callback) => {
         qs: opts,
         converter: FileResultStreamConverter
       }
+      const fileName = decodeURIComponent(parsedUrl.pathname.split('/').pop())
 
       sendOneFile({
         content: res,
-        path: parsedUrl.pathname.split('/').pop()
+        path: fileName
       }, requestOpts, callback)
     }
   })
