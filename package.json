@@ -41,7 +41,7 @@
     "is-ipfs": "~0.3.2",
     "is-pull-stream": "0.0.0",
     "is-stream": "^1.1.0",
-    "libp2p-crypto": "^0.13.0",
+    "libp2p-crypto": "~0.13.0",
     "lru-cache": "^4.1.3",
     "multiaddr": "^5.0.0",
     "multibase": "~0.4.0",
@@ -51,7 +51,7 @@
     "peer-id": "~0.10.7",
     "peer-info": "~0.14.1",
     "promisify-es6": "^1.0.3",
-    "pull-defer": "^0.2.2",
+    "pull-defer": "~0.2.2",
     "pull-pushable": "^2.2.0",
     "pull-stream-to-stream": "^1.3.4",
     "pump": "^3.0.0",
@@ -59,7 +59,7 @@
     "readable-stream": "^2.3.6",
     "stream-http": "^2.8.2",
     "stream-to-pull-stream": "^1.7.2",
-    "streamifier": "^0.1.1",
+    "streamifier": "~0.1.1",
     "tar-stream": "^1.6.1"
   },
   "engines": {
