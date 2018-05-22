@@ -256,10 +256,10 @@ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods "[\"PUT\", \"POS
   - [`ipfs.pubsub.unsubscribe(topic, handler, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PUBSUB.md#pubsubunsubscribe)
 
 - [swarm](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/SWARM.md)
-  - [`ipfs.swarm.addrs([callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/SWARM.md#addrs)
-  - [`ipfs.swarm.connect(addr, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/SWARM.md#connect)
-  - [`ipfs.swarm.disconnect(addr, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/SWARM.md#disconnect)
-  - [`ipfs.swarm.peers([options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/SWARM.md#peers)
+  - [`ipfs.swarm.addrs([callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/SWARM.md#swarmaddrs)
+  - [`ipfs.swarm.connect(addr, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/SWARM.md#swarmconnect)
+  - [`ipfs.swarm.disconnect(addr, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/SWARM.md#swarmdisconnect)
+  - [`ipfs.swarm.peers([options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/SWARM.md#swarmpeers)
 
 - [name](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md)
   - [`ipfs.name.publish(addr, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md#namepublish)
