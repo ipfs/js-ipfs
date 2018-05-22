@@ -22,6 +22,9 @@ const $allDisabledButtons = document.querySelectorAll('button:disabled')
 const $allDisabledInputs = document.querySelectorAll('input:disabled')
 const $allDisabledElements = document.querySelectorAll('.disabled')
 
+const FILES = []
+const workspace = location.hash
+
 let node
 let info
 let Buffer
@@ -33,6 +36,9 @@ let Buffer
 function start () {
   if (!node) {
     const options = {
+      EXPERIMENTAL: {
+        pubsub: true
+      },
       repo: 'ipfs-' + Math.random(),
       config: {
         Addresses: {
@@ -52,15 +58,50 @@ function start () {
           updateView('ready', node)
           onSuccess('Node is ready.')
           setInterval(refreshPeerList, 1000)
+          setInterval(sendFileList, 10000)
         })
         .catch((error) => onError(err))
+
+      subscribeToWorkpsace()
     })
   }
 }
 
 /* ===========================================================================
+   Pubsub
+   =========================================================================== */
+
+const messageHandler = (message) => {
+  const myNode = info. id
+  const hash = message.data.toString()
+  const messageSender = message.from
+
+  // append new files when someone uploads them
+  if (myNode !== messageSender && !isFileInList(hash)) {
+    $multihashInput.value = hash
+    getFile()
+  }
+}
+
+const subscribeToWorkpsace = () => {
+  node.pubsub.subscribe(workspace, messageHandler)
+    .catch(() => onError('An error occurred when subscribing to the workspace.'))
+}
+
+const publishHash = (hash) => {
+  const data = Buffer.from(hash)
+
+  node.pubsub.publish(workspace, data)
+    .catch((error) =>  onError('An error occurred when publishing the message.'))
+}
+
+/* ===========================================================================
    Files handling
    =========================================================================== */
+
+const isFileInList = (hash) => FILES.indexOf(hash) !== -1
+
+const sendFileList = () => FILES.forEach((hash) => publishHash(hash))
 
 function appendFile (name, hash, size, data) {
   const file = new window.Blob([data], { type: 'application/octet-binary' })
@@ -89,22 +130,28 @@ function appendFile (name, hash, size, data) {
   row.appendChild(downloadCell)
 
   $fileHistory.insertBefore(row, $fileHistory.firstChild)
+
+  publishHash(hash)
 }
 
 function getFile () {
-  const cid = $multihashInput.value
+  const hash = $multihashInput.value
 
   $multihashInput.value = ''
 
-  if (!cid) {
+  if (!hash) {
     return onError('No multihash was inserted.')
+  } else if (isFileInList(hash)) {
+    return onSuccess('The file is already in the current workspace.')
   }
 
-  node.files.get(cid)
+  FILES.push(hash)
+
+  node.files.get(hash)
     .then((files) => {
       files.forEach((file) => {
         if (file.content) {
-          appendFile(file.name, cid, file.size, file.content)
+          appendFile(file.name, hash, file.size, file.content)
           onSuccess(`The ${file.name} file was added.`)
           $emptyRow.style.display = 'none'
         }
@@ -260,12 +307,13 @@ function updateView (state, ipfs) {
 const startApplication = () => {
   // Setup event listeners
   $dragContainer.addEventListener('dragenter', onDragEnter)
+  $dragContainer.addEventListener('dragover', onDragEnter)
   $dragContainer.addEventListener('drop', onDrop)
   $dragContainer.addEventListener('dragleave', onDragLeave)
   $fetchButton.addEventListener('click', getFile)
   $connectButton.addEventListener('click', connectToPeer)
 
-  start();
+  start()
 }
 
 startApplication()
