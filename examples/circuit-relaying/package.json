@@ -19,8 +19,8 @@
   },
   "devDependencies": {
     "aegir": "^13.0.5",
-    "http-server": "^0.10.0",
-    "ipfs-css": "^0.2.0",
+    "http-server": "~0.10.0",
+    "ipfs-css": "~0.2.0",
     "parcel-bundler": "^1.6.2",
     "tachyons": "^4.9.1"
   }

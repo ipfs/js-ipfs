@@ -2,8 +2,6 @@
 
 > This example is heavily inspired by [electron-quick-start](https://github.com/electron/electron-quick-start).
 
-**DISCLAIMER:** This example is still a work in progress, it currently doesn't work due to the usage of native dependencies that Electron is not supporting.
-
 To try it by yourself, do:
 
 ```

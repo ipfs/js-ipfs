@@ -9,7 +9,7 @@
   "license": "MIT",
   "devDependencies": {
     "browserify": "^14.4.0",
-    "http-server": "^0.10.0"
+    "http-server": "~0.10.0"
   },
   "dependencies": {
     "stream-buffers": "^3.0.1",
