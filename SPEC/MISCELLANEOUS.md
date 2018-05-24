@@ -131,7 +131,7 @@ Where:
     }
     ```
 
-    Note that ping response objects aren't all "pongs". A "pong" message can be identified by a truthy `success` property and a `time` property greater than 0. Other ping responses are failures or status updates.
+    Note that not all ping response objects are "pongs". A "pong" message can be identified by a truthy `success` property and an empty `text` property. Other ping responses are failures or status updates.
 
     If no `callback` is passed, a promise is returned.
 
@@ -179,7 +179,7 @@ Returns a [`PullStream`][ps] of ping response objects of the form:
 }
 ```
 
-Note that ping response objects aren't all "pongs". A "pong" message can be identified by a truthy `success` property and a `time` property greater than 0. Other ping responses are failures or status updates.
+Note that not all ping response objects are "pongs". A "pong" message can be identified by a truthy `success` property and an empty `text` property. Other ping responses are failures or status updates.
 
 **Example:**
 
@@ -224,7 +224,7 @@ Returns a [`ReadableStream`][rs] of ping response objects of the form:
 }
 ```
 
-Note that ping response objects aren't all "pongs". A "pong" message can be identified by a truthy `success` property and a `time` property greater than 0. Other ping responses are failures or status updates.
+Note that not all ping response objects are "pongs". A "pong" message can be identified by a truthy `success` property and an empty `text` property. Other ping responses are failures or status updates.
 
 **Example:**
 
