@@ -1,0 +1,50 @@
+{
+  "name": "js-ipfs-http-response",
+  "version": "0.1.0",
+  "description": "Creates an HTTP response from an IPFS Hash",
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "aegir lint",
+    "release": "aegir release",
+    "build": "aegir build",
+    "test": "aegir test -t node"
+  },
+  "pre-push": [
+    "lint",
+    "test"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs-http-response.git"
+  },
+  "keywords": [
+    "ipfs",
+    "http",
+    "response"
+  ],
+  "author": "Vasco Santos <vasco.santos@moxy.studio>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ipfs/js-ipfs-http-response/issues"
+  },
+  "homepage": "https://github.com/ipfs/js-ipfs-http-response#readme",
+  "dependencies": {
+    "async": "^2.6.0",
+    "cids": "^0.5.3",
+    "debug": "^3.1.0",
+    "file-type": "^8.0.0",
+    "filesize": "^3.6.1",
+    "ipfs-unixfs": "^0.1.14",
+    "mime-types": "^2.1.18",
+    "multihashes": "^0.4.13",
+    "promisify-es6": "^1.0.3",
+    "readable-stream-node-to-web": "^1.0.1"
+  },
+  "devDependencies": {
+    "aegir": "^13.1.0",
+    "chai": "^4.1.2",
+    "dirty-chai": "^2.0.1",
+    "ipfs": "^0.28.2",
+    "ipfsd-ctl": "^0.36.0"
+  }
+}
