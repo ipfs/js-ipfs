@@ -22,6 +22,11 @@ function expectIsPingResponse (obj) {
   expect(obj.text).to.be.a('string')
 }
 
+// Determine if a ping response object is a pong, or something else, like a status message
+function isPong (pingResponse) {
+  return Boolean(pingResponse && pingResponse.success && !pingResponse.text)
+}
+
 module.exports = (common) => {
   describe('.ping', function () {
     let ipfsdA
@@ -57,7 +62,7 @@ module.exports = (common) => {
         ipfsdA.ping(ipfsdB.peerId.id, { count }, (err, responses) => {
           expect(err).to.not.exist()
           responses.forEach(expectIsPingResponse)
-          const pongs = responses.filter(r => Boolean(r.time))
+          const pongs = responses.filter(isPong)
           expect(pongs.length).to.equal(count)
           done()
         })
@@ -94,10 +99,10 @@ module.exports = (common) => {
         const count = 3
         pull(
           ipfsdA.pingPullStream(ipfsdB.peerId.id, { count }),
-          pull.drain(({ success, time }) => {
-            expect(success).to.be.true()
+          pull.drain((res) => {
+            expect(res.success).to.be.true()
             // It's a pong
-            if (time) {
+            if (isPong(res)) {
               packetNum++
             }
           }, (err) => {
@@ -159,10 +164,10 @@ module.exports = (common) => {
           ipfsdA.pingReadableStream(ipfsdB.peerId.id, { count }),
           new Writable({
             objectMode: true,
-            write ({ success, time }, enc, cb) {
-              expect(success).to.be.true()
+            write (res, enc, cb) {
+              expect(res.success).to.be.true()
               // It's a pong
-              if (time) {
+              if (isPong(res)) {
                 packetNum++
               }
 
