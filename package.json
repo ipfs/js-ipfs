@@ -1,5 +1,5 @@
 {
-  "name": "js-ipfs-http-response",
+  "name": "ipfs-http-response",
   "version": "0.1.0",
   "description": "Creates an HTTP response from an IPFS Hash",
   "main": "src/index.js",
