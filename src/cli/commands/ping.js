@@ -21,9 +21,9 @@ module.exports = {
     const count = argv.count || 10
     pull(
       argv.ipfs.pingPullStream(peerId, { count }),
-      pull.drain(({ time, text }) => {
+      pull.drain(({ success, time, text }) => {
         // Check if it's a pong
-        if (time) {
+        if (success && !text) {
           print(`Pong received: time=${time} ms`)
         // Status response
         } else {

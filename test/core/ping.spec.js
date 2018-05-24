@@ -33,6 +33,11 @@ function spawnNode ({ dht = false }, cb) {
   }, cb)
 }
 
+// Determine if a ping response object is a pong, or something else, like a status message
+function isPong (pingResponse) {
+  return Boolean(pingResponse && pingResponse.success && !pingResponse.text)
+}
+
 describe('ping', function () {
   this.timeout(60 * 1000)
 
@@ -93,10 +98,10 @@ describe('ping', function () {
       const count = 3
       pull(
         ipfsdA.api.pingPullStream(ipfsdBId, { count }),
-        drain(({ success, time }) => {
-          expect(success).to.be.true()
+        drain((res) => {
+          expect(res.success).to.be.true()
           // It's a pong
-          if (time) {
+          if (isPong(res)) {
             packetNum++
           }
         }, (err) => {
@@ -225,15 +230,15 @@ describe('ping', function () {
       const count = 3
       pull(
         ipfsdA.api.pingPullStream(ipfsdCId, { count }),
-        drain(({ success, time, text }) => {
+        drain((res) => {
           messageNum++
-          expect(success).to.be.true()
+          expect(res.success).to.be.true()
           // Assert that the ping command falls back to the peerRouting
           if (messageNum === 1) {
-            expect(text).to.include('Looking up')
+            expect(res.text).to.include('Looking up')
           }
           // It's a pong
-          if (time) {
+          if (isPong(res)) {
             packetNum++
           }
         }, (err) => {
