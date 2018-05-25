@@ -1,3 +1,13 @@
+<a name="0.66.3"></a>
+## [0.66.3](https://github.com/ipfs/interface-ipfs-core/compare/v0.66.2...v0.66.3) (2018-05-25)
+
+
+### Bug Fixes
+
+* correctly differentiate pong responses ([688f4d7](https://github.com/ipfs/interface-ipfs-core/commit/688f4d7))
+
+
+
 <a name="0.66.2"></a>
 ## [0.66.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.66.1...v0.66.2) (2018-05-18)
 
