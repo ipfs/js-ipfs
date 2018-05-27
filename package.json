@@ -1,7 +1,8 @@
 {
   "name": "ipfs-http-response",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Creates an HTTP response from an IPFS Hash",
+  "leadMaintainer": "Vasco Santos <vasco.santos@moxy.studio>",
   "main": "src/index.js",
   "scripts": {
     "lint": "aegir lint",
