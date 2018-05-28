@@ -15,8 +15,8 @@
   "author": "David Dias <daviddias@ipfs.io>",
   "license": "MIT",
   "devDependencies": {
-    "electron": "~1.6.11",
-    "electron-rebuild": "^1.5.11",
+    "electron": "^2.0.0",
+    "electron-rebuild": "^1.7.2",
     "ipfs": "ipfs/js-ipfs"
   }
 }

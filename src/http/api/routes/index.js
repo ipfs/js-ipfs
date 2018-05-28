@@ -9,6 +9,7 @@ module.exports = (server) => {
   require('./object')(server)
   require('./repo')(server)
   require('./config')(server)
+  require('./ping')(server)
   require('./swarm')(server)
   require('./bitswap')(server)
   require('./file')(server)

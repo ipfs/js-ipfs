@@ -190,3 +190,14 @@ Copy and paste the *multihash* and fetch the file in the browser!
 ![](img/fetch.png)
 
 You can also open two browser tabs, drag and drop files in one of them, and fetch them in the other!
+
+But the coolest thing about this tutorial is `pubsub`! You can open two tabs that will share files through workspaces named after the url. Try opening two tabs with the following url:
+
+```
+http://127.0.0.1:12345/#file-exchange
+# You can substitute `file-exchange` with anything you like, just make sure the two tabs are in the same workspace.
+```
+
+Now every file that you upload in one tab will appear in the other! You can even open a new tab in that workspace and it will sync the files that were added before!
+
+![](img/pubsub.png)
