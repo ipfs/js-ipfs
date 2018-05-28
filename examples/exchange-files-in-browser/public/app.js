@@ -15,6 +15,7 @@ const $connectButton = document.querySelector('#peer-btn')
 const $multihashInput = document.querySelector('#multihash-input')
 const $fetchButton = document.querySelector('#fetch-btn')
 const $dragContainer = document.querySelector('#drag-container')
+const $progressBar = document.querySelector('#progress-bar')
 const $fileHistory = document.querySelector('#file-history tbody')
 const $emptyRow = document.querySelector('.empty-row')
 // Misc
@@ -24,6 +25,8 @@ const $allDisabledElements = document.querySelectorAll('.disabled')
 
 const FILES = []
 const workspace = location.hash
+
+let fileSize = 0
 
 let node
 let info
@@ -102,6 +105,14 @@ const publishHash = (hash) => {
 const isFileInList = (hash) => FILES.indexOf(hash) !== -1
 
 const sendFileList = () => FILES.forEach((hash) => publishHash(hash))
+
+const updateProgress = (bytesLoaded) => {
+  let percent = 100 - ((bytesLoaded / fileSize) * 100)
+
+  $progressBar.style.transform = `translateX(${-percent}%)`
+}
+
+const resetProgress = () => $progressBar.style.transform = 'translateX(-100%)'
 
 function appendFile (name, hash, size, data) {
   const file = new window.Blob([data], { type: 'application/octet-binary' })
@@ -190,10 +201,12 @@ function onDrop (event) {
   files.forEach((file) => {
     readFileContents(file)
       .then((buffer) => {
+        fileSize = file.size
+
         node.files.add({
           path: file.name,
           content: Buffer.from(buffer)
-        }, { wrap: true }, (err, filesAdded) => {
+        }, { wrap: true, progress: updateProgress }, (err, filesAdded) => {
           if (err) {
             return onError(err)
           }
@@ -202,6 +215,7 @@ function onDrop (event) {
           // the original file name when adding it to the table
           $multihashInput.value = filesAdded[1].hash
 
+          resetProgress()
           getFile()
         })
       })

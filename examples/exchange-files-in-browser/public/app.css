@@ -273,6 +273,20 @@ table tbody tr:hover {
   margin-left: 1em;
 }
 
+#progress-container {
+  margin-top: 1em;
+  border-radius: 0.5em;
+  background-color: #0B3A53;
+  overflow-x: hidden;
+}
+
+#progress-bar {
+  height: 1em;
+  border-radius: 0.5em;
+  background-color: #6ACAD1;
+  transform: translateX(-100%);
+}
+
 /* ===========================================================================
    Responsiveness
    =========================================================================== */
