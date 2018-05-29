@@ -1,2 +1,2 @@
 // Warning: This file is automatically synced from https://github.com/ipfs/ci-sync so if you want to change it, please change it there and ask someone to sync all repositories.
-javascript()
+javascript(['nodejs_versions': ['8.11.1','9.2.0','10.0.0']])
