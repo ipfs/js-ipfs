@@ -29,7 +29,7 @@ module.exports = {
     const type = argv.type
     const quiet = argv.quiet
 
-    argv.ipfs.pin.ls(paths, { type: type }, (err, results) => {
+    argv.ipfs.pin.ls(paths, { type }, (err, results) => {
       if (err) { throw err }
       results.forEach((res) => {
         let line = res.hash

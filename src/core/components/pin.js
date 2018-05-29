@@ -19,11 +19,7 @@ const once = require('once')
 // arbitrary limit to number of concurrent dag operations
 const concurrencyLimit = 300
 
-function toB58String (hash, tst) {
-  if (Buffer.isBuffer(hash)) {
-    hash = multihashes.toB58String(hash)
-  }
-
+function toB58String (hash) {
   return new CID(hash).toBaseEncodedString()
 }
 
@@ -64,6 +60,7 @@ module.exports = function pin (self) {
 
       resolvePath(self.object, paths, (err, mhs) => {
         if (err) { return callback(err) }
+
         // verify that each hash can be pinned
         parallel(mhs.map(multihash => cb => {
           const key = toB58String(multihash)
@@ -425,8 +422,8 @@ module.exports = function pin (self) {
           return callback(err)
         }
         if (dKeys) {
-          directPins = new Set(dKeys.map(mh => toB58String(mh)))
-          recursivePins = new Set(handle.rKeys.map(mh => toB58String(mh)))
+          directPins = new Set(dKeys.map(toB58String))
+          recursivePins = new Set(handle.rKeys.map(toB58String))
           logInternalKey(handle.root.multihash)
           internalPins = newInternalPins
         }

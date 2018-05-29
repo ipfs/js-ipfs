@@ -83,14 +83,17 @@ module.exports = function dag (self) {
     _getRecursive: promisify((multihash, callback) => {
       // gets flat array of all DAGNodes in tree given by multihash
       callback = once(callback)
+
       self.dag.get(new CID(multihash), (err, res) => {
         if (err) { return callback(err) }
         const links = res.value.links
         const nodes = [res.value]
+
         // leaf case
         if (!links.length) {
           return callback(null, nodes)
         }
+
         // branch case
         links.forEach(link => {
           self.dag._getRecursive(link.multihash, (err, subNodes) => {

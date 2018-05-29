@@ -94,7 +94,7 @@ function pinFile (self, opts, file, cb) {
   // of a direct add.
   const pin = 'pin' in opts ? opts.pin : true
   const isRootDir = !file.path.includes('/')
-  const shouldPin = pin && isRootDir && !opts.onlyHash
+  const shouldPin = pin && isRootDir && !opts.onlyHash && !opts.hashAlg
   if (shouldPin) {
     return self.pin.add(file.hash, err => cb(err, file))
   } else {

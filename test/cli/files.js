@@ -316,6 +316,7 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   it('add pins by default', function () {
+    this.timeout(10 * 1000)
     const filePath = path.join(os.tmpdir(), hat())
     const content = String(Math.random())
     fs.writeFileSync(filePath, content)
