@@ -3,7 +3,7 @@
 const waterfall = require('async/waterfall')
 const series = require('async/series')
 const extend = require('deep-extend')
-const RepoErrors = require('ipfs-repo/src/errors')
+const RepoErrors = require('ipfs-repo').errors
 
 // Boot an IPFS node depending on the options set
 module.exports = (self) => {
