@@ -1,71 +1,120 @@
-/* global self */
+/* global location */
 'use strict'
 
-const $startButton = document.querySelector('#start')
-const $stopButton = document.querySelector('#stop')
+const IPFS = require('ipfs')
+
+// Node
+const $nodeId = document.querySelector('.node-id')
+const $nodeAddresses = document.querySelector('.node-addresses')
+const $logs = document.querySelector('#logs')
+// Peers
 const $peers = document.querySelector('#peers')
-const $peersList = $peers.querySelector('ul')
-const $errors = document.querySelector('#errors')
+const $peersList = $peers.querySelector('tbody')
+const $multiaddrInput = document.querySelector('#multiaddr-input')
+const $connectButton = document.querySelector('#peer-btn')
+// Files
+const $multihashInput = document.querySelector('#multihash-input')
+const $fetchButton = document.querySelector('#fetch-btn')
+const $dragContainer = document.querySelector('#drag-container')
+const $progressBar = document.querySelector('#progress-bar')
 const $fileHistory = document.querySelector('#file-history tbody')
-const $fileStatus = document.querySelector('#file-status')
-const $multihashInput = document.querySelector('#multihash')
-const $catButton = document.querySelector('#cat')
-const $connectPeer = document.querySelector('#peer-input')
-const $connectPeerButton = document.querySelector('#peer-btn')
-const $body = document.querySelector('body')
-const $idContainer = document.querySelector('.id-container')
-const $addressesContainer = document.querySelector('.addresses-container')
+const $emptyRow = document.querySelector('.empty-row')
+// Misc
 const $allDisabledButtons = document.querySelectorAll('button:disabled')
 const $allDisabledInputs = document.querySelectorAll('input:disabled')
 const $allDisabledElements = document.querySelectorAll('.disabled')
+
+const FILES = []
+const workspace = location.hash
+
+let fileSize = 0
 
 let node
 let info
 let Buffer
 
-/*
- * Start and stop the IPFS node
- */
+/* ===========================================================================
+   Start the IPFS node
+   =========================================================================== */
 
 function start () {
   if (!node) {
-    updateView('starting', node)
-
     const options = {
-      repo: 'ipfs-' + Math.random() + Date.now().toString(),
+      EXPERIMENTAL: {
+        pubsub: true
+      },
+      repo: 'ipfs-' + Math.random(),
       config: {
         Addresses: {
-          Swarm: [
-            // '/dns4/wrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star'
-            '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
-          ]
+          Swarm: ['/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star']
         }
       }
     }
 
-    // IFDEV: To test with latest js-ipfs
-    // const IPFS = require('ipfs')
-    // node = new IPFS(options)
-    // VEDIF
-
-    // EXAMPLE
-    node = new self.Ipfs(options)
+    node = new IPFS(options)
 
     Buffer = node.types.Buffer
 
-    node.once('start', () => node.id((err, id) => {
-      if (err) { return onError(err) }
+    node.once('start', () => {
+      node.id()
+        .then((id) => {
+          info = id
+          updateView('ready', node)
+          onSuccess('Node is ready.')
+          setInterval(refreshPeerList, 1000)
+          setInterval(sendFileList, 10000)
+        })
+        .catch((error) => onError(error))
 
-      info = id
-      updateView('ready', node)
-      setInterval(refreshPeerList, 1000)
-      $peers.classList.add('waiting')
-    }))
+      subscribeToWorkpsace()
+    })
   }
 }
 
-function stop () {
-  window.location.href = window.location.href // refresh page
+/* ===========================================================================
+   Pubsub
+   =========================================================================== */
+
+const messageHandler = (message) => {
+  const myNode = info.id
+  const hash = message.data.toString()
+  const messageSender = message.from
+
+  // append new files when someone uploads them
+  if (myNode !== messageSender && !isFileInList(hash)) {
+    $multihashInput.value = hash
+    getFile()
+  }
+}
+
+const subscribeToWorkpsace = () => {
+  node.pubsub.subscribe(workspace, messageHandler)
+    .catch(() => onError('An error occurred when subscribing to the workspace.'))
+}
+
+const publishHash = (hash) => {
+  const data = Buffer.from(hash)
+
+  node.pubsub.publish(workspace, data)
+    .catch(() => onError('An error occurred when publishing the message.'))
+}
+
+/* ===========================================================================
+   Files handling
+   =========================================================================== */
+
+const isFileInList = (hash) => FILES.indexOf(hash) !== -1
+
+const sendFileList = () => FILES.forEach((hash) => publishHash(hash))
+
+const updateProgress = (bytesLoaded) => {
+  let percent = 100 - ((bytesLoaded / fileSize) * 100)
+
+  $progressBar.style.transform = `translateX(${-percent}%)`
+}
+
+const resetProgress = () => {
+  $progressBar.style.transform = 'translateX(-100%)'
 }
 
 function appendFile (name, hash, size, data) {
@@ -77,53 +126,65 @@ function appendFile (name, hash, size, data) {
   nameCell.innerHTML = name
 
   const hashCell = document.createElement('td')
-  const link = document.createElement('a')
-  link.innerHTML = hash
-  link.setAttribute('href', url)
-  link.setAttribute('download', name)
-  hashCell.appendChild(link)
+  hashCell.innerHTML = hash
 
   const sizeCell = document.createElement('td')
   sizeCell.innerText = size
 
+  const downloadCell = document.createElement('td')
+  const link = document.createElement('a')
+  link.setAttribute('href', url)
+  link.setAttribute('download', name)
+  link.innerHTML = '<img width=20 class="table-action" src="assets/download.svg" alt="Download" />'
+  downloadCell.appendChild(link)
+
   row.appendChild(nameCell)
   row.appendChild(hashCell)
   row.appendChild(sizeCell)
+  row.appendChild(downloadCell)
 
   $fileHistory.insertBefore(row, $fileHistory.firstChild)
+
+  publishHash(hash)
 }
 
 function getFile () {
-  const cid = $multihashInput.value
+  const hash = $multihashInput.value
 
   $multihashInput.value = ''
 
-  $errors.classList.add('hidden')
+  if (!hash) {
+    return onError('No multihash was inserted.')
+  } else if (isFileInList(hash)) {
+    return onSuccess('The file is already in the current workspace.')
+  }
 
-  if (!cid) { return console.log('no multihash was inserted') }
+  FILES.push(hash)
 
-  node.files.get(cid, (err, files) => {
-    if (err) { return onError(err) }
-
-    files.forEach((file) => {
-      if (file.content) {
-        appendFile(file.name, cid, file.size, file.content)
-      }
+  node.files.get(hash)
+    .then((files) => {
+      files.forEach((file) => {
+        if (file.content) {
+          appendFile(file.name, hash, file.size, file.content)
+          onSuccess(`The ${file.name} file was added.`)
+          $emptyRow.style.display = 'none'
+        }
+      })
     })
-  })
+    .catch(() => onError('An error occurred when fetching the files.'))
 }
 
-/*
- * Drag and drop
- */
+/* Drag & Drop
+   =========================================================================== */
+
+const onDragEnter = () => $dragContainer.classList.add('dragging')
+
+const onDragLeave = () => $dragContainer.classList.remove('dragging')
+
 function onDrop (event) {
-  onDragExit()
-  $errors.classList.add('hidden')
+  onDragLeave()
   event.preventDefault()
 
-  if (!node) {
-    return onError('IPFS must be started before files can be added')
-  }
   const dt = event.dataTransfer
   const filesDropped = dt.files
 
@@ -143,71 +204,78 @@ function onDrop (event) {
   files.forEach((file) => {
     readFileContents(file)
       .then((buffer) => {
+        fileSize = file.size
+
         node.files.add({
           path: file.name,
           content: Buffer.from(buffer)
-        }, { wrap: true }, (err, filesAdded) => {
-          if (err) { return onError(err) }
+        }, { wrap: true, progress: updateProgress }, (err, filesAdded) => {
+          if (err) {
+            return onError(err)
+          }
 
-          $multihashInput.value = filesAdded[0].hash
-          $fileStatus.innerHTML = `${file.name} added! Try to hit 'Fetch' button!`
+          // As we are wrapping the content we use that hash to keep
+          // the original file name when adding it to the table
+          $multihashInput.value = filesAdded[1].hash
+
+          resetProgress()
+          getFile()
         })
       })
       .catch(onError)
   })
 }
 
-/*
- * Network related functions
- */
-
-// Get peers from IPFS and display them
+/* ===========================================================================
+   Peers handling
+   =========================================================================== */
 
 function connectToPeer (event) {
-  event.target.disabled = true
-  node.swarm.connect($connectPeer.value, (err) => {
-    if (err) { return onError(err) }
+  const multiaddr = $multiaddrInput.value
 
-    $connectPeer.value = ''
+  if (!multiaddr) {
+    return onError('No multiaddr was inserted.')
+  }
 
-    setTimeout(() => {
-      event.target.disabled = false
-    }, 500)
-  })
+  node.swarm.connect(multiaddr)
+    .then(() => {
+      onSuccess(`Successfully connected to peer.`)
+      $multiaddrInput.value = ''
+    })
+    .catch(() => onError('An error occurred when connecting to the peer.'))
 }
 
 function refreshPeerList () {
-  node.swarm.peers((err, peers) => {
-    if (err) {
-      return onError(err)
-    }
-    const peersAsHtml = peers
-      .map((peer) => {
-        if (peer.addr) {
-          const addr = peer.addr.toString()
-          if (addr.indexOf('ipfs') >= 0) {
-            return addr
-          } else {
-            return addr + peer.peer.id.toB58String()
+  node.swarm.peers()
+    .then((peers) => {
+      const peersAsHtml = peers.reverse()
+        .map((peer) => {
+          if (peer.addr) {
+            const addr = peer.addr.toString()
+            if (addr.indexOf('ipfs') >= 0) {
+              return addr
+            } else {
+              return addr + peer.peer.id.toB58String()
+            }
           }
-        }
-      })
-      .map((addr) => {
-        return '<li>' + addr + '</li>'
-      }).join('')
+        })
+        .map((addr) => {
+          return `<tr><td>${addr}</td></tr>`
+        }).join('')
 
-    if (peers.length === 0) {
-      $peers.classList.add('waiting')
-    } else {
-      $peers.classList.remove('waiting')
       $peersList.innerHTML = peersAsHtml
-    }
-  })
+    })
+    .catch((error) => onError(error))
 }
 
-/*
- * UI functions
- */
+/* ===========================================================================
+   Error handling
+   =========================================================================== */
+
+function onSuccess (msg) {
+  $logs.classList.add('success')
+  $logs.innerHTML = msg
+}
 
 function onError (err) {
   let msg = 'An error occured, check the dev console'
@@ -218,38 +286,26 @@ function onError (err) {
     msg = err
   }
 
-  $errors.innerHTML = msg
-  $errors.classList.remove('hidden')
+  $logs.classList.remove('success')
+  $logs.innerHTML = msg
 }
 
 window.onerror = onError
 
-function onDragEnter () {
-  $body.classList.add('dragging')
-}
+/* ===========================================================================
+   App states
+   =========================================================================== */
 
-function onDragExit () {
-  $body.classList.remove('dragging')
-}
-
-/*
- * App states
- */
 const states = {
   ready: () => {
     const addressesHtml = info.addresses.map((address) => {
-      return '<li><span class="address">' + address + '</span></li>'
+      return `<li><pre>${address}</pre></li>`
     }).join('')
-    $idContainer.innerText = info.id
-    $addressesContainer.innerHTML = addressesHtml
+    $nodeId.innerText = info.id
+    $nodeAddresses.innerHTML = addressesHtml
     $allDisabledButtons.forEach(b => { b.disabled = false })
     $allDisabledInputs.forEach(b => { b.disabled = false })
     $allDisabledElements.forEach(el => { el.classList.remove('disabled') })
-    $stopButton.disabled = false
-    $startButton.disabled = true
-  },
-  starting: () => {
-    $startButton.disabled = true
   }
 }
 
@@ -261,19 +317,20 @@ function updateView (state, ipfs) {
   }
 }
 
-/*
- * Boot this application!
- */
+/* ===========================================================================
+   Boot the app
+   =========================================================================== */
+
 const startApplication = () => {
   // Setup event listeners
-  $body.addEventListener('dragenter', onDragEnter)
-  $body.addEventListener('drop', onDrop)
-  $body.addEventListener('dragleave', onDragExit)
+  $dragContainer.addEventListener('dragenter', onDragEnter)
+  $dragContainer.addEventListener('dragover', onDragEnter)
+  $dragContainer.addEventListener('drop', onDrop)
+  $dragContainer.addEventListener('dragleave', onDragLeave)
+  $fetchButton.addEventListener('click', getFile)
+  $connectButton.addEventListener('click', connectToPeer)
 
-  $startButton.addEventListener('click', start)
-  $stopButton.addEventListener('click', stop)
-  $catButton.addEventListener('click', getFile)
-  $connectPeerButton.addEventListener('click', connectToPeer)
+  start()
 }
 
 startApplication()
