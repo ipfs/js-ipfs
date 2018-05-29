@@ -1,3 +1,4 @@
+/* global location */
 'use strict'
 
 const IPFS = require('ipfs')
@@ -63,7 +64,7 @@ function start () {
           setInterval(refreshPeerList, 1000)
           setInterval(sendFileList, 10000)
         })
-        .catch((error) => onError(err))
+        .catch((error) => onError(error))
 
       subscribeToWorkpsace()
     })
@@ -75,7 +76,7 @@ function start () {
    =========================================================================== */
 
 const messageHandler = (message) => {
-  const myNode = info. id
+  const myNode = info.id
   const hash = message.data.toString()
   const messageSender = message.from
 
@@ -95,7 +96,7 @@ const publishHash = (hash) => {
   const data = Buffer.from(hash)
 
   node.pubsub.publish(workspace, data)
-    .catch((error) =>  onError('An error occurred when publishing the message.'))
+    .catch(() => onError('An error occurred when publishing the message.'))
 }
 
 /* ===========================================================================
@@ -112,7 +113,9 @@ const updateProgress = (bytesLoaded) => {
   $progressBar.style.transform = `translateX(${-percent}%)`
 }
 
-const resetProgress = () => $progressBar.style.transform = 'translateX(-100%)'
+const resetProgress = () => {
+  $progressBar.style.transform = 'translateX(-100%)'
+}
 
 function appendFile (name, hash, size, data) {
   const file = new window.Blob([data], { type: 'application/octet-binary' })
@@ -168,7 +171,7 @@ function getFile () {
         }
       })
     })
-    .catch((error) => onError('An error occurred when fetching the files.'))
+    .catch(() => onError('An error occurred when fetching the files.'))
 }
 
 /* Drag & Drop
@@ -239,7 +242,7 @@ function connectToPeer (event) {
       onSuccess(`Successfully connected to peer.`)
       $multiaddrInput.value = ''
     })
-    .catch((error) => onError('An error occurred when connecting to the peer.'))
+    .catch(() => onError('An error occurred when connecting to the peer.'))
 }
 
 function refreshPeerList () {
@@ -260,7 +263,7 @@ function refreshPeerList () {
           return `<tr><td>${addr}</td></tr>`
         }).join('')
 
-        $peersList.innerHTML = peersAsHtml
+      $peersList.innerHTML = peersAsHtml
     })
     .catch((error) => onError(error))
 }
