@@ -245,7 +245,7 @@ function connectToPeer (event) {
 function refreshPeerList () {
   node.swarm.peers()
     .then((peers) => {
-      const peersAsHtml = peers
+      const peersAsHtml = peers.reverse()
         .map((peer) => {
           if (peer.addr) {
             const addr = peer.addr.toString()
