@@ -1,3 +1,54 @@
+<a name="0.29.0"></a>
+# [0.29.0](https://github.com/ipfs/js-ipfs/compare/v0.28.2...v0.29.0) (2018-05-29)
+
+
+### Bug Fixes
+
+* Add ipfs path to cli help ([64c3bfb](https://github.com/ipfs/js-ipfs/commit/64c3bfb))
+* change ^ to ~ on 0.x.x deps ([#1345](https://github.com/ipfs/js-ipfs/issues/1345)) ([de95989](https://github.com/ipfs/js-ipfs/commit/de95989))
+* change default config from JSON file to JS module to prevent having it doubly used ([#1324](https://github.com/ipfs/js-ipfs/issues/1324)) ([c3d2d1e](https://github.com/ipfs/js-ipfs/commit/c3d2d1e)), closes [#1316](https://github.com/ipfs/js-ipfs/issues/1316)
+* changes peer prop in return value from swarm.peers to be a PeerId  ([#1252](https://github.com/ipfs/js-ipfs/issues/1252)) ([e174866](https://github.com/ipfs/js-ipfs/commit/e174866))
+* configure webpack to not use esmodules in dependencies ([4486acc](https://github.com/ipfs/js-ipfs/commit/4486acc))
+* Display error when using unkown cli option ([a849d2f](https://github.com/ipfs/js-ipfs/commit/a849d2f))
+* docker init script sed in non existent file ([#1246](https://github.com/ipfs/js-ipfs/issues/1246)) ([75d47c3](https://github.com/ipfs/js-ipfs/commit/75d47c3))
+* files.add with pull streams ([0e601a7](https://github.com/ipfs/js-ipfs/commit/0e601a7))
+* make pubsub.unsubscribe async and alter pubsub.subscribe signature ([a115829](https://github.com/ipfs/js-ipfs/commit/a115829))
+* remove unused var ([#1273](https://github.com/ipfs/js-ipfs/issues/1273)) ([c1e8db1](https://github.com/ipfs/js-ipfs/commit/c1e8db1))
+* typo ([#1367](https://github.com/ipfs/js-ipfs/issues/1367)) ([2679129](https://github.com/ipfs/js-ipfs/commit/2679129))
+* use async/setImmediate vs process.nextTick ([af55608](https://github.com/ipfs/js-ipfs/commit/af55608))
+
+
+### Features
+
+* .stats.bw* - Bandwidth Stats ([#1230](https://github.com/ipfs/js-ipfs/issues/1230)) ([9694925](https://github.com/ipfs/js-ipfs/commit/9694925))
+* add ability to files.cat with a cid instance ([2e332c8](https://github.com/ipfs/js-ipfs/commit/2e332c8))
+* Add support for specifying hash algorithms in files.add ([a2954cb](https://github.com/ipfs/js-ipfs/commit/a2954cb))
+* allow dht to be enabled via cli arg ([#1340](https://github.com/ipfs/js-ipfs/issues/1340)) ([7bb838f](https://github.com/ipfs/js-ipfs/commit/7bb838f))
+* Allows for byte offsets when using ipfs.files.cat and friends to request slices of files ([a93971a](https://github.com/ipfs/js-ipfs/commit/a93971a))
+* Circuit Relay ([#1063](https://github.com/ipfs/js-ipfs/issues/1063)) ([f7eaa43](https://github.com/ipfs/js-ipfs/commit/f7eaa43))
+* cli: add IPFS_PATH info to init command help ([#1274](https://github.com/ipfs/js-ipfs/issues/1274)) ([e189b72](https://github.com/ipfs/js-ipfs/commit/e189b72))
+* handle SIGHUP ([7a817cf](https://github.com/ipfs/js-ipfs/commit/7a817cf))
+* ipfs.ping cli, http-api and core ([#1342](https://github.com/ipfs/js-ipfs/issues/1342)) ([b8171b1](https://github.com/ipfs/js-ipfs/commit/b8171b1))
+* jsipfs add --only-hash ([#1233](https://github.com/ipfs/js-ipfs/issues/1233)) ([#1266](https://github.com/ipfs/js-ipfs/issues/1266)) ([bddc5b4](https://github.com/ipfs/js-ipfs/commit/bddc5b4))
+* Provide access to bundled libraries when in browser ([#1297](https://github.com/ipfs/js-ipfs/issues/1297)) ([4905c2d](https://github.com/ipfs/js-ipfs/commit/4905c2d))
+* use class-is for type checks ([5b2cf8c](https://github.com/ipfs/js-ipfs/commit/5b2cf8c))
+* wrap with directory ([#1329](https://github.com/ipfs/js-ipfs/issues/1329)) ([47285a7](https://github.com/ipfs/js-ipfs/commit/47285a7))
+
+
+### Performance Improvements
+
+* **cli:** load only sub-system modules and inline require ipfs ([3820be0](https://github.com/ipfs/js-ipfs/commit/3820be0))
+
+
+### BREAKING CHANGES
+
+* pubsub.unsubscribe is now async and argument order for pubsub.subscribe has changed
+
+License: MIT
+Signed-off-by: Alan Shaw <alan@tableflip.io>
+
+
+
 <a name="0.28.2"></a>
 ## [0.28.2](https://github.com/ipfs/js-ipfs/compare/v0.28.1...v0.28.2) (2018-03-14)
 
