@@ -64,7 +64,7 @@ A circuit relay address is a [multiaddress](https://multiformats.io/multiaddr/) 
 
 Circuit relay addresses are very flexible and can describe many different aspects of how to esablish the relayed connection. In its simplest form, it looks something like this:
 
-- `/p2p-circuit/ipfs/QmPerr`
+- `/p2p-circuit/ipfs/QmPeer`
 
 If we want to be specific as to which transport we want to use to establish the relay, we can encode that in the address as well:
 
