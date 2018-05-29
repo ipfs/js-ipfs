@@ -32,6 +32,7 @@ module.exports = (self) => {
       (cb) => {
         self.log('initialized')
         self.state.initialized()
+        self.emit('init')
         cb(null, true)
       }
     ], (err, res) => {

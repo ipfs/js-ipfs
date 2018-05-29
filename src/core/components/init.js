@@ -22,6 +22,7 @@ module.exports = function init (self) {
         return callback(err)
       }
 
+      self.log('initialized')
       self.state.initialized()
       self.emit('init')
       callback(null, res)
