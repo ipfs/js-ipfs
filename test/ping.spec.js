@@ -17,7 +17,7 @@ const f = require('./utils/factory')
 
 // Determine if a ping response object is a pong, or something else, like a status message
 function isPong (pingResponse) {
-  return Boolean(pingResponse && pingResponse.time)
+  return Boolean(pingResponse && pingResponse.success && !pingResponse.text)
 }
 
 describe('.ping', function () {
