@@ -680,7 +680,6 @@ module.exports = (common) => {
         let testNodeMultihash
         let testNodeWithLinkMultihash
         let testLink
-        let testLinkPlainObject
 
         const obj = {
           Data: Buffer.from('patch test object'),
@@ -699,7 +698,6 @@ module.exports = (common) => {
           let node1a
           let node1b
           let node2
-          let node3
 
           series([
             (cb) => {
@@ -928,10 +926,10 @@ module.exports = (common) => {
         }
 
         before(() => {
-          return ipfs.object.put(obj, (err, node) => {
-            expect(err).to.not.exist()
-            testNodeMultihash = node.multihash
-          })
+          return ipfs.object.put(obj)
+            .then((node) => {
+              testNodeMultihash = node.multihash
+            })
         })
 
         it('.addLink', () => {
