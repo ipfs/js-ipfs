@@ -110,7 +110,7 @@
     "ipfs-block": "~0.7.1",
     "ipfs-block-service": "~0.14.0",
     "ipfs-multipart": "~0.1.0",
-    "ipfs-repo": "~0.22.0",
+    "ipfs-repo": "^0.22.1",
     "ipfs-unixfs": "~0.1.14",
     "ipfs-unixfs-engine": "~0.29.0",
     "ipld": "~0.17.1",
