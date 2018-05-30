@@ -1,3 +1,13 @@
+<a name="0.66.4"></a>
+## [0.66.4](https://github.com/ipfs/interface-ipfs-core/compare/v0.66.3...v0.66.4) (2018-05-30)
+
+
+### Bug Fixes
+
+* wait for put in object.patch.addLink before hook ([31c52d1](https://github.com/ipfs/interface-ipfs-core/commit/31c52d1))
+
+
+
 <a name="0.66.3"></a>
 ## [0.66.3](https://github.com/ipfs/interface-ipfs-core/compare/v0.66.2...v0.66.3) (2018-05-25)
 
