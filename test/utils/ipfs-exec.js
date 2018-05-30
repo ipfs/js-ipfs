@@ -13,7 +13,7 @@ const _ = require('lodash')
 // The top level export is a function that can be passed a `repoPath`
 // and optional `opts` to customize the execution of the commands.
 // This function returns the actual executer, which consists of
-// `ipfs('files get <hash>')` and `ipfs.fail('files get <hash>')`
+// `ipfs('get <hash>')` and `ipfs.fail('files get <hash>')`
 // The first one executes and asserts that the command ran successfully
 // and returns a promise which is resolved to `stdout` of the command.
 // The `.fail` variation asserts that the command exited with `Code > 0`

@@ -126,7 +126,7 @@ describe('files', () => runOnAndOff((thing) => {
   it('add with progress', function () {
     this.timeout(30 * 1000)
 
-    return ipfs('files add -p src/init-files/init-docs/readme')
+    return ipfs('add -p src/init-files/init-docs/readme')
       .then((out) => {
         expect(out)
           .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
@@ -136,7 +136,7 @@ describe('files', () => runOnAndOff((thing) => {
   it('add', function () {
     this.timeout(30 * 1000)
 
-    return ipfs('files add src/init-files/init-docs/readme')
+    return ipfs('add src/init-files/init-docs/readme')
       .then((out) => {
         expect(out)
           .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
@@ -156,7 +156,7 @@ describe('files', () => runOnAndOff((thing) => {
   it('add recursively test', function () {
     this.timeout(60 * 1000)
 
-    return ipfs('files add -r test/fixtures/test-data/recursive-get-dir')
+    return ipfs('add -r test/fixtures/test-data/recursive-get-dir')
       .then((out) => {
         expect(out).to.eql(recursiveGetDirResults.join('\n') + '\n')
       })
@@ -165,7 +165,7 @@ describe('files', () => runOnAndOff((thing) => {
   it('add directory with trailing slash test', function () {
     this.timeout(30 * 1000)
 
-    return ipfs('files add -r test/fixtures/test-data/recursive-get-dir/')
+    return ipfs('add -r test/fixtures/test-data/recursive-get-dir/')
       .then((out) => {
         expect(out).to.eql(recursiveGetDirResults.join('\n') + '\n')
       })
@@ -179,7 +179,7 @@ describe('files', () => runOnAndOff((thing) => {
       'added QmXJGoo27bg7ExNAtr9vRcivxDwcfHtkxatGno9HrUdR16 odd-name-[v0]'
     ]
 
-    return ipfs('files add -r test/fixtures/odd-name-[v0]')
+    return ipfs('add -r test/fixtures/odd-name-[v0]')
       .then((out) => {
         expect(out).to.eql(expected.join('\n') + '\n')
       })
@@ -260,7 +260,7 @@ describe('files', () => runOnAndOff((thing) => {
   it('add --quiet', function () {
     this.timeout(30 * 1000)
 
-    return ipfs('files add -q src/init-files/init-docs/readme')
+    return ipfs('add -q src/init-files/init-docs/readme')
       .then((out) => {
         expect(out)
           .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB\n')
@@ -270,7 +270,7 @@ describe('files', () => runOnAndOff((thing) => {
   it('add --quieter', function () {
     this.timeout(30 * 1000)
 
-    return ipfs('files add -Q -w test/fixtures/test-data/hello test/test-data/node.json')
+    return ipfs('add -Q -w test/fixtures/test-data/hello test/test-data/node.json')
       .then((out) => {
         expect(out)
           .to.eql('QmYRMUVULBfj7WrdPESnwnyZmtayN6Sdrwh1nKcQ9QgQeZ\n')
@@ -280,7 +280,7 @@ describe('files', () => runOnAndOff((thing) => {
   it('add --silent', function () {
     this.timeout(30 * 1000)
 
-    return ipfs('files add --silent src/init-files/init-docs/readme')
+    return ipfs('add --silent src/init-files/init-docs/readme')
       .then((out) => {
         expect(out)
           .to.eql('')
@@ -288,7 +288,7 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   it('add --only-hash outputs correct hash', function () {
-    return ipfs('files add --only-hash src/init-files/init-docs/readme')
+    return ipfs('add --only-hash src/init-files/init-docs/readme')
       .then(out =>
         expect(out)
           .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
@@ -302,7 +302,7 @@ describe('files', () => runOnAndOff((thing) => {
     const filepath = path.join(os.tmpdir(), `${content}.txt`)
     fs.writeFileSync(filepath, content)
 
-    return ipfs(`files add --only-hash ${filepath}`)
+    return ipfs(`add --only-hash ${filepath}`)
       .then(out => {
         const hash = out.split(' ')[1]
 
@@ -322,7 +322,7 @@ describe('files', () => runOnAndOff((thing) => {
     const content = String(Math.random())
     fs.writeFileSync(filePath, content)
 
-    return ipfs(`files add -Q ${filePath}`)
+    return ipfs(`add -Q ${filePath}`)
       .then(out => {
         const hash = out.trim()
         return ipfs(`pin ls ${hash}`)
@@ -337,7 +337,7 @@ describe('files', () => runOnAndOff((thing) => {
     const content = String(Math.random())
     fs.writeFileSync(filePath, content)
 
-    return ipfs(`files add -Q --pin=false ${filePath}`)
+    return ipfs(`add -Q --pin=false ${filePath}`)
       .then(out => ipfs.fail(`pin ls ${out.trim()}`))
       .then(() => clean(filePath))
   })
@@ -358,7 +358,7 @@ describe('files', () => runOnAndOff((thing) => {
   it('cat', function () {
     this.timeout(30 * 1000)
 
-    return ipfs('files cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+    return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
       .then((out) => {
         expect(out).to.eql(readme)
       })
@@ -376,7 +376,7 @@ describe('files', () => runOnAndOff((thing) => {
   it('cat part of a file using `count`', function () {
     this.timeout(30 * 1000)
 
-    return ipfs('files cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB --offset 21 --count 5')
+    return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB --offset 21 --count 5')
       .then((out) => {
         expect(out).to.eql(readme.substring(21, 26))
       })
@@ -385,7 +385,7 @@ describe('files', () => runOnAndOff((thing) => {
   it('cat part of a file using `length`', function () {
     this.timeout(30 * 1000)
 
-    return ipfs('files cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB --offset 21 --length 5')
+    return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB --offset 21 --length 5')
       .then((out) => {
         expect(out).to.eql(readme.substring(21, 26))
       })
@@ -402,7 +402,7 @@ describe('files', () => runOnAndOff((thing) => {
   it('get', function () {
     this.timeout(20 * 1000)
 
-    return ipfs('files get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+    return ipfs('get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
       .then((out) => {
         expect(out)
           .to.eql('Saving file(s) QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB\n')
@@ -437,7 +437,7 @@ describe('files', () => runOnAndOff((thing) => {
     const outDir = path.join(process.cwd(), 'Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
     rimraf(outDir)
 
-    return ipfs('files get Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
+    return ipfs('get Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
       .then((out) => {
         expect(out).to.eql(
           'Saving file(s) Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z\n'
