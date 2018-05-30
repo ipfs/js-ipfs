@@ -16,6 +16,9 @@ const CID = require('cids')
 const debug = require('debug')
 const extend = require('deep-extend')
 const EventEmitter = require('events')
+const waterfall = require('async/waterfall')
+const series = require('async/series')
+const defaults = require('lodash/defaultsDeep')
 
 const config = require('./config')
 const boot = require('./boot')
@@ -124,16 +127,6 @@ class IPFS extends EventEmitter {
     this.stats = components.stats(this)
     this.resolve = components.resolve(this)
 
-    if (this._options.EXPERIMENTAL.pubsub) {
-      this.log('EXPERIMENTAL pubsub is enabled')
-    }
-    if (this._options.EXPERIMENTAL.sharding) {
-      this.log('EXPERIMENTAL sharding is enabled')
-    }
-    if (this._options.EXPERIMENTAL.dht) {
-      this.log('EXPERIMENTAL Kademlia DHT is enabled')
-    }
-
     this.state = require('./state')(this)
 
     // ipfs.ls
@@ -154,7 +147,49 @@ class IPFS extends EventEmitter {
       this.files[key] = mfs[key]
     })
 
-    boot(this)
+    series([
+      (cb) => {
+        waterfall([
+          (done) => this._repo.config.get((error, config) => {
+            if (error) {
+              this.log(error)
+            }
+
+            done(null, config || {})
+          }),
+          (config, done) => {
+            this._options = defaults({}, config, this._options)
+
+            done()
+          }
+        ], cb)
+      },
+      (cb) => {
+        if (this._options.EXPERIMENTAL.pubsub) {
+          this.log('EXPERIMENTAL pubsub is enabled')
+        }
+
+        if (this._options.EXPERIMENTAL.sharding) {
+          this.log('EXPERIMENTAL sharding is enabled')
+        }
+
+        if (this._options.EXPERIMENTAL.dht) {
+          this.log('EXPERIMENTAL Kademlia DHT is enabled')
+        }
+
+        if (this._options.EXPERIMENTAL.relay) {
+          this.log('EXPERIMENTAL Relay is enabled')
+        }
+
+        cb()
+      }
+    ], (error) => {
+      if (error) {
+        return this.emit('error', error)
+      }
+
+      boot(this)
+    })
   }
 }
 
