@@ -1,3 +1,15 @@
+<a name="22.0.1"></a>
+## [22.0.1](https://github.com/ipfs/js-ipfs-api/compare/v22.0.0...v22.0.1) (2018-05-30)
+
+
+### Bug Fixes
+
+* configure webpack to not use esmodules in dependencies ([dc14333](https://github.com/ipfs/js-ipfs-api/commit/dc14333))
+* correctly differentiate pong responses ([4ad25a3](https://github.com/ipfs/js-ipfs-api/commit/4ad25a3))
+* util.addFromURL with URL-escaped file ([a3bd811](https://github.com/ipfs/js-ipfs-api/commit/a3bd811))
+
+
+
 <a name="22.0.0"></a>
 # [22.0.0](https://github.com/ipfs/js-ipfs-api/compare/v21.0.0...v22.0.0) (2018-05-20)
 
