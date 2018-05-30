@@ -1,3 +1,14 @@
+<a name="0.29.1"></a>
+## [0.29.1](https://github.com/ipfs/js-ipfs/compare/v0.29.0...v0.29.1) (2018-05-30)
+
+
+### Bug Fixes
+
+* check for repo uninitialized error ([dcf5ea5](https://github.com/ipfs/js-ipfs/commit/dcf5ea5))
+* update ipfs-repo errors require ([4d1318d](https://github.com/ipfs/js-ipfs/commit/4d1318d))
+
+
+
 <a name="0.29.0"></a>
 # [0.29.0](https://github.com/ipfs/js-ipfs/compare/v0.28.2...v0.29.0) (2018-05-29)
 
