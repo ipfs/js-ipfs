@@ -26,7 +26,6 @@ function toB58String (hash) {
 module.exports = function pin (self) {
   let directPins = new Set()
   let recursivePins = new Set()
-  let internalPins = new Set()
 
   const pinDataStoreKey = new Key('/local/pins')
 
@@ -38,14 +37,12 @@ module.exports = function pin (self) {
       direct: 'direct',
       recursive: 'recursive',
       indirect: 'indirect',
-      internal: 'internal',
       all: 'all'
     },
 
     clear: () => {
       directPins.clear()
       recursivePins.clear()
-      internalPins.clear()
     },
 
     set: pinSet(dag),
@@ -270,7 +267,7 @@ module.exports = function pin (self) {
 
     isPinnedWithType: promisify((multihash, type, callback) => {
       const key = toB58String(multihash)
-      const { recursive, direct, internal, all } = pin.types
+      const { recursive, direct, all } = pin.types
       // recursive
       if ((type === recursive || type === all) && recursivePins.has(key)) {
         return callback(null, {pinned: true, reason: recursive})
@@ -283,13 +280,6 @@ module.exports = function pin (self) {
         return callback(null, {pinned: true, reason: direct})
       }
       if ((type === direct)) {
-        return callback(null, {pinned: false})
-      }
-      // internal
-      if ((type === internal || type === all) && internalPins.has(key)) {
-        return callback(null, {pinned: true, reason: internal})
-      }
-      if ((type === internal)) {
         return callback(null, {pinned: false})
       }
 
@@ -318,13 +308,9 @@ module.exports = function pin (self) {
 
     recursiveKeyStrings: () => Array.from(recursivePins),
 
-    internalKeyStrings: () => Array.from(internalPins),
-
     directKeys: () => pin.directKeyStrings().map(key => multihashes.fromB58String(key)),
 
     recursiveKeys: () => pin.recursiveKeyStrings().map(key => multihashes.fromB58String(key)),
-
-    internalKeys: () => pin.internalKeyStrings().map(key => multihashes.fromB58String(key)),
 
     getIndirectKeys: promisify(callback => {
       const indirectKeys = new Set()
@@ -352,8 +338,6 @@ module.exports = function pin (self) {
     // encodes and writes pin key sets to the datastore
     // each key set will be stored as a DAG node, and a root node will link to both
     flush: promisify((callback) => {
-      const newInternalPins = new Set()
-      const logInternalKey = (mh) => newInternalPins.add(toB58String(mh))
       const handle = {
         put: (k, v, cb) => {
           handle[k] = v
@@ -363,12 +347,12 @@ module.exports = function pin (self) {
 
       waterfall([
         // create link to direct keys node
-        (cb) => pin.set.storeSet(pin.directKeys(), logInternalKey, cb),
+        (cb) => pin.set.storeSet(pin.directKeys(), cb),
         (dRoot, cb) => DAGLink.create(pin.types.direct, dRoot.size, dRoot.multihash, cb),
         (dLink, cb) => handle.put('dLink', dLink, cb),
 
         // create link to recursive keys node
-        (cb) => pin.set.storeSet(pin.recursiveKeys(), logInternalKey, cb),
+        (cb) => pin.set.storeSet(pin.recursiveKeys(), cb),
         (rRoot, cb) => DAGLink.create(pin.types.recursive, rRoot.size, rRoot.multihash, cb),
         (rLink, cb) => handle.put('rLink', rLink, cb),
 
@@ -383,23 +367,17 @@ module.exports = function pin (self) {
         // add the root node to dag
         (cb) => dag.put(handle.root, {cid: new CID(handle.root.multihash)}, cb),
 
-        // update the internal pin set
-        (cid, cb) => cb(null, logInternalKey(handle.root.multihash)),
-
         // save serialized root to datastore under a consistent key
         (_, cb) => repo.closed ? repo.datastore.open(cb) : cb(null, null), // hack for CLI tests
         (_, cb) => repo.datastore.put(pinDataStoreKey, handle.root.multihash, cb)
       ], (err, result) => {
         if (err) { return callback(err) }
         self.log(`Flushed pins with root: ${handle.root}.`)
-        internalPins = newInternalPins
         return callback(null, handle.root)
       })
     }),
 
     load: promisify(callback => {
-      const newInternalPins = new Set()
-      const logInternalKey = (mh) => newInternalPins.add(toB58String(mh))
       const handle = {
         put: (k, v, cb) => {
           handle[k] = v
@@ -414,9 +392,9 @@ module.exports = function pin (self) {
         (cb) => repo.datastore.get(pinDataStoreKey, cb),
         (mh, cb) => dag.get(new CID(mh), cb),
         (root, cb) => handle.put('root', root.value, cb),
-        (cb) => pin.set.loadSet(handle.root, pin.types.recursive, logInternalKey, cb),
+        (cb) => pin.set.loadSet(handle.root, pin.types.recursive, cb),
         (rKeys, cb) => handle.put('rKeys', rKeys, cb),
-        (cb) => pin.set.loadSet(handle.root, pin.types.direct, logInternalKey, cb)
+        (cb) => pin.set.loadSet(handle.root, pin.types.direct, cb)
       ], (err, dKeys) => {
         if (err && err.message !== 'No pins to load') {
           return callback(err)
@@ -424,8 +402,6 @@ module.exports = function pin (self) {
         if (dKeys) {
           directPins = new Set(dKeys.map(toB58String))
           recursivePins = new Set(handle.rKeys.map(toB58String))
-          logInternalKey(handle.root.multihash)
-          internalPins = newInternalPins
         }
         self.log('Loaded pins from the datastore')
         return callback()

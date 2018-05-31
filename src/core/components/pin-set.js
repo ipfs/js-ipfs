@@ -95,26 +95,23 @@ exports = module.exports = function (dag) {
       }
     },
 
-    storeSet: (keys, logInternalKey, callback) => {
+    storeSet: (keys, callback) => {
       const pins = keys.map(key => ({
         key: key,
         data: null
       }))
 
-      pinSet.storeItems(pins, logInternalKey, (err, rootNode) => {
+      pinSet.storeItems(pins, (err, rootNode) => {
         if (err) { return callback(err) }
         const opts = { cid: new CID(rootNode.multihash) }
         dag.put(rootNode, opts, (err, cid) => {
           if (err) { return callback(err) }
-          logInternalKey(rootNode.multihash)
           callback(null, rootNode)
         })
       })
     },
 
-    storeItems: (items, logInternalKey, callback) => {
-      logInternalKey(emptyKey)
-
+    storeItems: (items, callback) => {
       return storePins(items, callback)
 
       function storePins (pins, cb, depth = 0, binsToFill = 0, binsFilled = 0) {
@@ -186,7 +183,6 @@ exports = module.exports = function (dag) {
           dag.put(child, { cid }, (err) => {
             if (err) { return cb(err) }
 
-            logInternalKey(child.multihash)
             fanoutLinks[bin] = new DAGLink('', child.size, child.multihash)
             binsFilled++
 
@@ -202,26 +198,25 @@ exports = module.exports = function (dag) {
       }
     },
 
-    loadSet: (rootNode, name, logInternalKey, callback) => {
+    loadSet: (rootNode, name, callback) => {
       callback = once(callback)
       const link = rootNode.links.find(l => l.name === name)
       if (!link) {
         return callback(new Error('No link found with name ' + name))
       }
-      logInternalKey(link.multihash)
 
       dag.get(link.multihash, (err, res) => {
         if (err) { return callback(err) }
         const keys = []
         const step = link => keys.push(link.multihash)
-        pinSet.walkItems(res.value, step, logInternalKey, err => {
+        pinSet.walkItems(res.value, step, err => {
           if (err) { return callback(err) }
           return callback(null, keys)
         })
       })
     },
 
-    walkItems: (node, step, logInternalKey, callback) => {
+    walkItems: (node, step, callback) => {
       callback = once(callback)
       let pbh
       try {
@@ -237,7 +232,6 @@ exports = module.exports = function (dag) {
           // the first pbh.header.fanout links are fanout bins
           // if a link is not 'empty', dig into and walk its DAGLinks
           const linkHash = link.multihash
-          logInternalKey(linkHash)
 
           if (!emptyKey.equals(linkHash)) {
             subwalkCount++
@@ -245,7 +239,7 @@ exports = module.exports = function (dag) {
             // walk the links of this fanout bin
             dag.get(linkHash, (err, res) => {
               if (err) { return callback(err) }
-              pinSet.walkItems(res.value, step, logInternalKey, walkCb)
+              pinSet.walkItems(res.value, step, walkCb)
             })
           }
         } else {

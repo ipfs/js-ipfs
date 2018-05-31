@@ -19,8 +19,6 @@ const createTempRepo = require('../utils/create-repo-nodejs')
 const defaultFanout = 256
 const maxItems = 8192
 
-function noop () {}
-
 /**
  * Creates @param num DAGNodes, limited to 500 at a time to save memory
  * @param  {[type]}   num      the number of nodes to create
@@ -63,7 +61,10 @@ describe('pinset', function () {
     })
   })
 
-  after(done => ipfs.stop(done))
+  after(function (done) {
+    this.timeout(10 * 1000)
+    ipfs.stop(done)
+  })
 
   describe('storeItems', function () {
     it('generates a root node with links and hash', function (done) {
@@ -72,7 +73,7 @@ describe('pinset', function () {
       createNode('data', (err, node) => {
         expect(err).to.not.exist()
         const nodeHash = node._multihash
-        pinset.storeSet([nodeHash], noop, (err, rootNode) => {
+        pinset.storeSet([nodeHash], (err, rootNode) => {
           expect(err).to.not.exist()
           const node = rootNode.toJSON()
           expect(node.multihash).to.eql(expectedRootHash)
@@ -94,7 +95,7 @@ describe('pinset', function () {
       const count = maxItems + 1
       createNodes(count, (err, nodes) => {
         expect(err).to.not.exist()
-        pinset.storeSet(nodes, noop, (err, node) => {
+        pinset.storeSet(nodes, (err, node) => {
           expect(err).to.not.exist()
 
           node = node.toJSON()
@@ -102,7 +103,7 @@ describe('pinset', function () {
           expect(node.links).to.have.length(defaultFanout)
           expect(node.multihash).to.eql(expectedHash)
 
-          pinset.loadSet(node, '', noop, (err, loaded) => {
+          pinset.loadSet(node, '', (err, loaded) => {
             expect(err).to.not.exist()
             expect(loaded).to.have.length(30)
             const hashes = loaded.map(l => new CID(l).toBaseEncodedString())
@@ -133,11 +134,11 @@ describe('pinset', function () {
       createNodes(limit, (err, nodes) => {
         expect(err).to.not.exist()
         series([
-          cb => pinset.storeSet(nodes.slice(0, -1), noop, (err, res) => {
+          cb => pinset.storeSet(nodes.slice(0, -1), (err, res) => {
             expect(err).to.not.exist()
             cb(null, res)
           }),
-          cb => pinset.storeSet(nodes, noop, (err, res) => {
+          cb => pinset.storeSet(nodes, (err, res) => {
             expect(err).to.not.exist()
             cb(null, res)
           })
@@ -155,7 +156,7 @@ describe('pinset', function () {
       createNode('datum', (err, node) => {
         expect(err).to.not.exist()
 
-        pinset.walkItems(node, noop, noop, (err, res) => {
+        pinset.walkItems(node, () => {}, (err, res) => {
           expect(err).to.exist()
           expect(res).to.not.exist()
           done()
@@ -170,10 +171,10 @@ describe('pinset', function () {
       createNodes(defaultFanout, (err, nodes) => {
         expect(err).to.not.exist()
 
-        pinset.storeSet(nodes, noop, (err, node) => {
+        pinset.storeSet(nodes, (err, node) => {
           expect(err).to.not.exist()
 
-          pinset.walkItems(node, walker, noop, err => {
+          pinset.walkItems(node, walker, err => {
             expect(err).to.not.exist()
             expect(seen).to.have.length(defaultFanout)
             expect(seen[0].idx).to.eql(defaultFanout)
