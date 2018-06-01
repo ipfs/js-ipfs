@@ -23,7 +23,7 @@ module.exports = function repo (self) {
           const match = [
             /Key not found in database \[\/version\]/,
             /ENOENT/,
-            /not yet initialized/
+            /repo is not initialized yet/
           ].some((m) => {
             return m.test(err.message)
           })
