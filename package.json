@@ -6,7 +6,7 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "aegir lint",
-    "release": "aegir release",
+    "release": "aegir release --target node",
     "build": "aegir build",
     "test": "aegir test -t node"
   },
