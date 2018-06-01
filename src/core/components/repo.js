@@ -38,7 +38,14 @@ module.exports = function repo (self) {
       })
     }),
 
-    gc: () => {},
+    gc: promisify((options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
+      }
+
+      callback(new Error('Not implemented'))
+    }),
 
     stat: promisify((options, callback) => {
       if (typeof options === 'function') {
