@@ -21,10 +21,30 @@
 This project consists on creating a HTTP response from an IPFS Hash. This response can be a file, a directory list view or the entry point of a web page.
 
 ```js
-const ipfsHttpResponse = require('ipfs-http-response')
+const { getResponse } = require('ipfs-http-response')
 
-ipfsHttpResponse(ipfsNode, ipfsPath)
-  .then((response) => {
+getResponse(ipfsNode, ipfsPath)
+  .then((result) => {
+    ...
+  })
+```
+
+This module also exports the used ipfs resolver, which should be used when the response needs to be customized.
+
+```js
+const { resolver } = require('ipfs-http-response')
+
+resolver.multihash(ipfsNode, ipfsPath)
+  .then((result) => {
+    ...
+  })
+```
+
+```js
+const { resolver } = require('ipfs-http-response')
+
+resolver.directory(node, path, multihash)
+  .then((result) => {
     ...
   })
 ```

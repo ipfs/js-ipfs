@@ -10,7 +10,7 @@ const loadFixture = require('aegir/fixtures')
 const ipfs = require('ipfs')
 const DaemonFactory = require('ipfsd-ctl')
 
-const ipfsHttpResponse = require('../src')
+const { getResponse } = require('../src')
 const makeWebResponseEnv = require('./utils/web-response-env')
 
 const df = DaemonFactory.create({ type: 'proc', exec: ipfs })
@@ -46,7 +46,7 @@ describe('resolve file', function () {
   })
 
   it('should resolve a multihash', async () => {
-    const res = await ipfsHttpResponse(ipfs, `/ipfs/${file.cid}`)
+    const res = await getResponse(ipfs, `/ipfs/${file.cid}`)
 
     expect(res).to.exist()
     expect(res).to.deep.include({
@@ -98,7 +98,7 @@ describe('resolve directory', function () {
   })
 
   it('should return the list of files of a directory', async () => {
-    const res = await ipfsHttpResponse(ipfs, `/ipfs/${directory.cid}`, directory.cid)
+    const res = await getResponse(ipfs, `/ipfs/${directory.cid}`, directory.cid)
 
     expect(res).to.exist()
   })
@@ -149,7 +149,7 @@ describe('resolve web page', function () {
   })
 
   it('should return the entry point of a web page when a trying to fetch a directory containing a web page', async () => {
-    const res = await ipfsHttpResponse(ipfs, `/ipfs/${webpage.cid}`, webpage.cid)
+    const res = await getResponse(ipfs, `/ipfs/${webpage.cid}`, webpage.cid)
 
     expect(res).to.exist()
     expect(res).to.equal(`/ipfs/${webpage.cid}/index.html`)
