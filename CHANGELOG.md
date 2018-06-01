@@ -1,3 +1,14 @@
+<a name="0.29.2"></a>
+## [0.29.2](https://github.com/ipfs/js-ipfs/compare/v0.29.1...v0.29.2) (2018-06-01)
+
+
+### Bug Fixes
+
+* adds missing breaking changes for 0.29 to changelog ([#1370](https://github.com/ipfs/js-ipfs/issues/1370)) ([61ba99e](https://github.com/ipfs/js-ipfs/commit/61ba99e))
+* dont fail on uninitialized repo ([#1374](https://github.com/ipfs/js-ipfs/issues/1374)) ([6f0a95b](https://github.com/ipfs/js-ipfs/commit/6f0a95b))
+
+
+
 <a name="0.29.1"></a>
 ## [0.29.1](https://github.com/ipfs/js-ipfs/compare/v0.29.0...v0.29.1) (2018-05-30)
 
