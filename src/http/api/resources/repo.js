@@ -2,6 +2,21 @@
 
 exports = module.exports
 
+exports.gc = (request, reply) => {
+  const ipfs = request.server.app.ipfs
+
+  ipfs.repo.gc((err) => {
+    if (err) {
+      return reply({
+        Message: err.toString(),
+        Code: 0
+      }).code(500)
+    }
+
+    reply()
+  })
+}
+
 exports.version = (request, reply) => {
   const ipfs = request.server.app.ipfs
 
