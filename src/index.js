@@ -16,7 +16,7 @@ const header = (status = 200, statusText = 'OK', headers = {}) => ({
   headers
 })
 
-module.exports = (ipfsNode, ipfsPath) => {
+const response = (ipfsNode, ipfsPath) => {
   // handle hash resolve error (simple hash, test for directory now)
   const handleResolveError = (node, path, error) => {
     if (error) {
@@ -99,4 +99,9 @@ module.exports = (ipfsNode, ipfsPath) => {
         resolve(handleResolveError(ipfsNode, ipfsPath, error))
       })
   })
+}
+
+module.exports = {
+  getResponse: response,
+  resolver: resolver
 }
