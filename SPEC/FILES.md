@@ -16,7 +16,7 @@
 * [lsPullStream](#lspullstream)
 * [files.cp](#filescp)
 * [files.mkdir](#filesmkdir)
-* [files.stat](#filesmkdir)
+* [files.stat](#filesstat)
 * [files.rm](#filesrm)
 * [files.read](#filesread)
 * [files.readReadableStream](#filesreadreadablestream)
