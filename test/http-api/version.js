@@ -22,7 +22,10 @@ describe('version endpoint', () => {
     })
   })
 
-  after((done) => ipfsd.stop(done))
+  after(function (done) {
+    this.timeout(20 * 1000)
+    ipfsd.stop(done)
+  })
 
   describe('.version', () => {
     it('get the version', (done) => {
