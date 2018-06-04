@@ -1,3 +1,13 @@
+<a name="0.29.3"></a>
+## [0.29.3](https://github.com/ipfs/js-ipfs/compare/v0.29.2...v0.29.3) (2018-06-04)
+
+
+### Bug Fixes
+
+* **repo:** do not hang on calls to repo gc ([9fff46f](https://github.com/ipfs/js-ipfs/commit/9fff46f))
+
+
+
 <a name="0.29.2"></a>
 ## [0.29.2](https://github.com/ipfs/js-ipfs/compare/v0.29.1...v0.29.2) (2018-06-01)
 
