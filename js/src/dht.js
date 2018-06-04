@@ -14,6 +14,7 @@ module.exports = (common) => {
   describe('.dht', function () {
     this.timeout(80 * 1000)
 
+    let withGo
     let nodeA
     let nodeB
     let nodeC
@@ -47,7 +48,12 @@ module.exports = (common) => {
             (cb) => nodeE.swarm.connect(nodeB.peerId.addresses[0], cb),
             (cb) => nodeD.swarm.connect(nodeC.peerId.addresses[0], cb),
             (cb) => nodeE.swarm.connect(nodeC.peerId.addresses[0], cb),
-            (cb) => nodeD.swarm.connect(nodeE.peerId.addresses[0], cb)
+            (cb) => nodeD.swarm.connect(nodeE.peerId.addresses[0], cb),
+            (cb) => nodeA.id((err, id) => {
+              expect(err).to.not.exist()
+              withGo = id.agentVersion.startsWith('go-ipfs')
+              cb()
+            })
           ], done)
         })
       })
@@ -63,14 +69,21 @@ module.exports = (common) => {
         })
       })
 
-      // TODO: fix - go-ipfs errors with  Error: key was not found (type 6)
-      // https://github.com/ipfs/go-ipfs/issues/3862
-      it.skip('fetches value after it was put on another node', (done) => {
+      it('fetches value after it was put on another node', function (done) {
+        this.timeout(80 * 1000)
+
+        if (withGo) {
+          // go-ipfs errors with  Error: key was not found (type 6)
+          // https://github.com/ipfs/go-ipfs/issues/3862
+          this.skip()
+        }
+
+        // TODO - this test needs to keep tryingl instead of the setTimeout
         waterfall([
           (cb) => nodeB.object.new('unixfs-dir', cb),
-          (node, cb) => setTimeout(() => cb(null, node), 1000),
-          (node, cb) => {
-            const multihash = node.toJSON().multihash
+          (dagNode, cb) => setTimeout(() => cb(null, dagNode), 20000),
+          (dagNode, cb) => {
+            const multihash = dagNode.toJSON().multihash
 
             nodeA.dht.get(multihash, cb)
           },
@@ -79,14 +92,6 @@ module.exports = (common) => {
             cb()
           }
         ], done)
-      })
-
-      it('Promises support', (done) => {
-        nodeA.dht.get('non-existing', { timeout: '100ms' })
-          .catch((err) => {
-            expect(err).to.exist()
-            done()
-          })
       })
     })
 
@@ -100,9 +105,13 @@ module.exports = (common) => {
         })
       })
 
-      // TODO checking what is exactly go-ipfs returning
-      // https://github.com/ipfs/go-ipfs/issues/3862#issuecomment-294168090
-      it.skip('fails to find other peer, if peer doesnt exist()s', (done) => {
+      it('fails to find other peer, if peer does not exist', function (done) {
+        if (withGo) {
+          // TODO checking what is exactly go-ipfs returning
+          // https://github.com/ipfs/go-ipfs/issues/3862#issuecomment-294168090
+          this.skip()
+        }
+
         nodeA.dht.findpeer('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ', (err, peer) => {
           expect(err).to.not.exist()
           expect(peer).to.be.equal(null)
@@ -177,28 +186,27 @@ module.exports = (common) => {
       it.skip('recursive', () => {})
     })
 
-    describe.skip('findprovs', () => {
-      it('basic', (done) => {
-        const cid = new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxxx')
+    describe('findprovs', () => {
+      it('provide from one node and find it through another node', function (done) {
+        if (withGo) {
+          // TODO go-ipfs endpoint doesn't conform with the others
+          // https://github.com/ipfs/go-ipfs/issues/5047
+          this.skip()
+        }
 
         waterfall([
-          (cb) => nodeB.dht.provide(cid, cb),
-          (cb) => nodeC.dht.findprovs(cid, cb),
+          (cb) => nodeE.object.new('unixfs-dir', cb),
+          (dagNode, cb) => {
+            const cidV0 = new CID(dagNode.toJSON().multihash)
+            nodeE.dht.provide(cidV0, (err) => cb(err, cidV0))
+          },
+          (cidV0, cb) => nodeC.dht.findprovs(cidV0, cb),
           (provs, cb) => {
             expect(provs.map((p) => p.toB58String()))
-              .to.eql([nodeB.peerId.id])
+              .to.eql([nodeE.peerId.id])
             cb()
           }
         ], done)
-      })
-
-      it('Promises support', (done) => {
-        nodeB.dht.findprovs('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
-          .then((res) => {
-            expect(res).to.be.an('array')
-            done()
-          })
-          .catch((err) => done(err))
       })
     })
 
@@ -207,7 +215,7 @@ module.exports = (common) => {
         const timeout = 150 * 1000
         this.timeout(timeout)
 
-        // This test is flaky. DHT works best with >= 20 nodes. Therefore a
+        // This test is meh. DHT works best with >= 20 nodes. Therefore a
         // failure might happen, but we don't want to report it as such.
         // Hence skip the test before the timeout is reached
         const timeoutId = setTimeout(function () {
