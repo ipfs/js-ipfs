@@ -10,7 +10,7 @@ describe('interface-ipfs-core tests', () => {
 
   tests.bitswap(defaultCommonFactory)
 
-  tests.block(defaultCommonFactory, { only: true })
+  tests.block(defaultCommonFactory)
 
   tests.bootstrap(defaultCommonFactory)
 
