@@ -26,8 +26,8 @@
     "coverage-publish": "aegir coverage --provider coveralls --timeout 100000"
   },
   "dependencies": {
-    "async": "^2.6.0",
-    "big.js": "^5.0.3",
+    "async": "^2.6.1",
+    "big.js": "^5.1.2",
     "bs58": "^4.0.1",
     "cids": "~0.5.3",
     "concat-stream": "^1.6.2",
@@ -57,7 +57,7 @@
     "pump": "^3.0.0",
     "qs": "^6.5.2",
     "readable-stream": "^2.3.6",
-    "stream-http": "^2.8.2",
+    "stream-http": "^2.8.3",
     "stream-to-pull-stream": "^1.7.2",
     "streamifier": "~0.1.1",
     "tar-stream": "^1.6.1"
@@ -71,17 +71,16 @@
     "url": "https://github.com/ipfs/js-ipfs-api"
   },
   "devDependencies": {
-    "aegir": "^13.1.0",
+    "aegir": "^14.0.0",
     "browser-process-platform": "~0.1.1",
     "chai": "^4.1.2",
-    "cross-env": "^5.1.5",
+    "cross-env": "^5.1.6",
     "dirty-chai": "^2.0.1",
-    "eslint-plugin-react": "^7.8.2",
+    "eslint-plugin-react": "^7.9.1",
     "go-ipfs-dep": "~0.4.15",
     "gulp": "^3.9.1",
-    "interface-ipfs-core": "~0.66.2",
-    "ipfs": "~0.28.2",
-    "ipfsd-ctl": "~0.36.0",
+    "interface-ipfs-core": "~0.67.0",
+    "ipfsd-ctl": "~0.37.3",
     "pull-stream": "^3.6.8",
     "socket.io": "^2.1.1",
     "socket.io-client": "^2.1.1",
