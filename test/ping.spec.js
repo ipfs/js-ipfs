@@ -21,6 +21,8 @@ function isPong (pingResponse) {
 }
 
 describe('.ping', function () {
+  this.timeout(10 * 1000)
+
   let ipfs
   let ipfsd
   let other
