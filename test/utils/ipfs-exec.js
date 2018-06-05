@@ -72,7 +72,12 @@ module.exports = function ipfsExec (repoPath) {
 
         yargs().option('api').parse(argv, (err, getIPFSArgs, output) => {
           if (err) throw err
-          utils.getIPFS(Object.assign(getIPFSArgs, {api: '/ip4/127.0.0.1/tcp/5002'}), (err, ipfs, _cleanup) => {
+          // console.log(utils.isDaemonOn())
+          // utils.getIPFS(getIPFSArgs, (err, ipfs, _cleanup) => {
+            // utils.getIPFS(Object.assign(getIPFSArgs, {api: false}), (err, ipfs, _cleanup) => {
+          // console.log('daemon?', argv[0])
+          const api = argv[0] === 'daemon' ? '/ip4/127.0.0.1/tcp/5002' : false
+          utils.getIPFS(Object.assign(getIPFSArgs, {api}), (err, ipfs, _cleanup) => {
             if (err) throw err
             cleanup = _cleanup
             parser.parse(argv, {ipfs, onComplete}, (err, argv, _output) => {

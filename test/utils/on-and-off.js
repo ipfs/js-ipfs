@@ -84,8 +84,10 @@ function on (tests) {
 
     after(function (done) {
       this.timeout(20 * 1000)
-      clean(repoPath)
-      setImmediate(done)
+      thing.ipfs('shutdown').then(() => {
+        clean(repoPath)
+        setImmediate(done)
+      })
     })
 
     tests(thing)

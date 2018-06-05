@@ -15,7 +15,6 @@ exports = module.exports
 exports.isDaemonOn = isDaemonOn
 function isDaemonOn () {
   try {
-    console.log(path.join(exports.getRepoPath(), 'api'))
     fs.readFileSync(path.join(exports.getRepoPath(), 'api'))
     log('daemon is on')
     return true

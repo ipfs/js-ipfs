@@ -14,13 +14,13 @@ if (!useNew) {
   thing.ipfs.repoPath = repoPath
   thing.ipfs('init').then(() => {
     thing.ipfs('daemon').then(() => {
-      thing.ipfs('files add src/init-files/init-docs/readme')
-        .then((out) => {
-          expect(out)
-            .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
-          console.log('All goodie!')
-          thing.ipfs('shutdown')
-        })
+    thing.ipfs('files add src/init-files/init-docs/readme')
+      .then((out) => {
+        expect(out)
+          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
+        console.log('All goodie!')
+        thing.ipfs('shutdown')
+      })
     })
   })
 } else {
