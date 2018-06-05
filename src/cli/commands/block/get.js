@@ -1,6 +1,7 @@
 'use strict'
 
 const CID = require('cids')
+const print = require('../../utils').print
 
 module.exports = {
   command: 'get <key>',
@@ -17,7 +18,8 @@ module.exports = {
         throw err
       }
 
-      process.stdout.write(block.data)
+      if (argv.onComplete) argv.onComplete()
+      print(block.data, false)
     })
   }
 }

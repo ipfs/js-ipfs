@@ -4,7 +4,7 @@
 const expect = require('chai').expect
 const runOnAndOff = require('../utils/on-and-off')
 
-describe('block', () => runOnAndOff((thing) => {
+describe.only('block', () => runOnAndOff((thing) => {
   let ipfs
 
   before(() => {

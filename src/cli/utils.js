@@ -15,6 +15,7 @@ exports = module.exports
 exports.isDaemonOn = isDaemonOn
 function isDaemonOn () {
   try {
+    console.log(path.join(exports.getRepoPath(), 'api'))
     fs.readFileSync(path.join(exports.getRepoPath(), 'api'))
     log('daemon is on')
     return true
@@ -77,7 +78,11 @@ exports.getRepoPath = () => {
 }
 
 let visible = true
+let streamToWrite = process.stdout
 exports.disablePrinting = () => { visible = false }
+exports.setPrintStream = (newStream) => {
+  streamToWrite = newStream
+}
 
 exports.print = (msg, newline) => {
   if (newline === undefined) {
@@ -89,7 +94,7 @@ exports.print = (msg, newline) => {
       msg = ''
     }
     msg = newline ? msg + '\n' : msg
-    process.stdout.write(msg)
+    streamToWrite.write(msg)
   }
 }
 

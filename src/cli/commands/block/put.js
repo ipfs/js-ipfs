@@ -8,7 +8,7 @@ const Block = require('ipfs-block')
 const waterfall = require('async/waterfall')
 const print = require('../../utils').print
 
-function addBlock (data, opts) {
+function addBlock (data, opts, callback) {
   const ipfs = opts.ipfs
   let cid
 
@@ -28,6 +28,7 @@ function addBlock (data, opts) {
       throw err
     }
     print(cid.toBaseEncodedString())
+    callback(err)
   })
 }
 
@@ -60,7 +61,7 @@ module.exports = {
   handler (argv) {
     if (argv.block) {
       const buf = fs.readFileSync(argv.block)
-      return addBlock(buf, argv)
+      return addBlock(buf, argv, argv.onComplete || function () {})
     }
 
     process.stdin.pipe(bl((err, input) => {

@@ -55,7 +55,7 @@ function getTotalBytes (path, recursive, cb) {
   }
 }
 
-function addPipeline (index, addStream, list, argv) {
+function addPipeline (index, addStream, list, argv, callback) {
   const {
     quiet,
     quieter,
@@ -97,6 +97,7 @@ function addPipeline (index, addStream, list, argv) {
           return log.join(' ')
         })
         .forEach((msg) => print(msg))
+      callback()
     })
   )
 }
@@ -253,7 +254,7 @@ module.exports = {
     ], (err, addStream) => {
       if (err) throw err
 
-      addPipeline(index, addStream, list, argv)
+      addPipeline(index, addStream, list, argv, argv.onComplete || function () {})
     })
   }
 }

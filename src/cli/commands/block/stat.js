@@ -18,6 +18,7 @@ module.exports = {
 
       print('Key: ' + stats.key)
       print('Size: ' + stats.size)
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }
