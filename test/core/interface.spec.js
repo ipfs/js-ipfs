@@ -18,9 +18,25 @@ describe('interface-ipfs-core tests', () => {
 
   tests.dag(defaultCommonFactory)
 
-  tests.dht(defaultCommonFactory, { skip: !isNode })
+  // TODO: DHT is not implemented in js-ipfs yet!
+  tests.dht(defaultCommonFactory, { skip: true })
 
-  tests.files(defaultCommonFactory)
+  tests.files(defaultCommonFactory, {
+    skip: [
+      // TODO: MFS is not implemented in js-ipfs yet!
+      'cp',
+      'mkdir',
+      'stat',
+      'rm',
+      'read',
+      'readReadableStream',
+      'readPullStream',
+      'write',
+      'mv',
+      'flush',
+      'ls'
+    ]
+  })
 
   tests.generic(CommonFactory.create({
     // No need to stop, because the test suite does a 'stop' test.
@@ -46,6 +62,9 @@ describe('interface-ipfs-core tests', () => {
       initOptions: { bits: 512 }
     }
   }), { skip: !isNode })
+
+  // TODO: repo.gc is not implemented in js-ipfs yet!
+  tests.repo(defaultCommonFactory, { skip: ['gc'] })
 
   tests.stats(defaultCommonFactory)
 
