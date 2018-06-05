@@ -108,7 +108,7 @@ If no `callback` is passed, a promise is returned.
 
 ```JavaScript
 const topic = 'fruit-of-the-day'
-const msg = new Buffer('banana')
+const msg = Buffer.from('banana')
 
 ipfs.pubsub.publish(topic, msg, (err) => {
   if (err) {
