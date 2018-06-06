@@ -8,11 +8,11 @@ module.exports = (server) => {
   api.route({
     method: '*',
     path: '/api/v0/shutdown',
-    // handler: resources.shutdown.do
-    handler: () => {
-      server.stop({ timeout: 10000 }).then(function (err) {
-        console.log('hapi server stopped')
-      })
-    }
+    handler: resources.shutdown.do
+    // handler: () => {
+    //   server.stop({ timeout: 10000 }).then(function (err) {
+    //     console.log('hapi server stopped')
+    //   })
+    // }
   })
 }

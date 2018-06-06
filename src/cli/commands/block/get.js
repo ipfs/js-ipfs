@@ -18,8 +18,8 @@ module.exports = {
         throw err
       }
 
-      if (argv.onComplete) argv.onComplete()
       print(block.data, false)
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

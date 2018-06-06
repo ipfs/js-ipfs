@@ -43,9 +43,27 @@ module.exports = function ipfsExec (repoPath) {
         debug('onComplete called')
         cleanup((err) => {
           if (err) return reject(err)
+          debug('Resolving value:', JSON.stringify(output.join('')))
           resolve(output.join(''))
         })
       }
+      // if (argv[0] === 'shutdown') {
+      //   process.on('SIGTERM', function () {
+      //     console.log('someone is trying to terminate us!')
+      //   })
+      // }
+      // if (argv[0] === 'shutdown') {
+      //   debug('shutdown called, getting IPFS')
+      //   utils.getIPFS({api: '/ip4/127.0.0.1/tcp/5002'}, (err, ipfs, _cleanup) => {
+      //     if (err) throw err
+      //     debug('Got IPFS node, stopping')
+      //     ipfs.shutdown(() => {
+      //       debug('Got stop event, time to cleanup')
+      //       _cleanup(resolve)
+      //     })
+      //     return
+      //   })
+      // }
       if (argv[0] === 'init') {
         debug('Init called, getting IPFS')
         utils.getIPFS({api: false}, (err, ipfs, _cleanup) => {
@@ -61,6 +79,7 @@ module.exports = function ipfsExec (repoPath) {
         var stream = require('stream')
         var writable = new stream.Writable({
           write: function (chunk, encoding, next) {
+            debug('received a little chunk', chunk.toString())
             output.push(chunk.toString())
             if (chunk.toString() === 'Daemon is ready\n') {
               onComplete()

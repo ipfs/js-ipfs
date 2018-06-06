@@ -52,7 +52,7 @@ module.exports = {
         if (err) {
           throw err
         }
-        process.exit(0)
+        // process.exit(0)
       })
     }
 
