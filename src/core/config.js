@@ -36,7 +36,7 @@ const schema = Joi.object().keys({
     Bootstrap: Joi.array().items(Joi.multiaddr().IPFS().options({ convert: false }))
   }).allow(null),
   libp2p: Joi.object().keys({
-    modules: Joi.object().allow(null) // TODO: schemas for libp2p modules?
+    modules: Joi.any().allow(null) // TODO: schemas for libp2p modules?
   }).allow(null)
 }).options({ allowUnknown: true })
 

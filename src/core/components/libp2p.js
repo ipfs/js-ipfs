@@ -19,7 +19,7 @@ module.exports = function libp2p (self) {
           mdns: get(config, 'Discovery.MDNS.Enabled'),
           webRTCStar: get(config, 'Discovery.webRTCStar.Enabled'),
           bootstrap: get(config, 'Bootstrap'),
-          modules: self._libp2pModules,
+          modules: prepareModules(self, self._libp2pModules),
           // EXPERIMENTAL
           pubsub: get(self._options, 'EXPERIMENTAL.pubsub', false),
           dht: get(self._options, 'EXPERIMENTAL.dht', false),
@@ -68,4 +68,11 @@ module.exports = function libp2p (self) {
       self._libp2pNode.stop(callback)
     })
   }
+}
+
+function prepareModules (self, modules) {
+  if (typeof modules === 'function') {
+    return modules(self._peerInfo)
+  }
+  return modules
 }
