@@ -24,7 +24,7 @@ const debug = require('debug')('jsipfs:ipfs-exec')
 module.exports = function ipfsExec (repoPath) {
   process.env.IPFS_PATH = repoPath
 
-  return function (args) {
+  const ipfsExec = function (args) {
     let argv = args.split(' ')
     // cat, add, get are aliases to `files *`
     if (['cat', 'add', 'get'].includes(argv[0])) {
@@ -36,7 +36,12 @@ module.exports = function ipfsExec (repoPath) {
 
     const description = cli.describe || cli.description || ''
     const parser = yargs.command(cli.command, description, cli.builder, cli.handler)
+      .strict(false)
+      .skipValidation('key')
+      .skipValidation('value')
+
     debug('Parsed command')
+
     return new Promise((resolve, reject) => {
       let output = []
       // Placeholder callback for cleanup. Should be replaced with a proper one
@@ -89,7 +94,7 @@ module.exports = function ipfsExec (repoPath) {
         })
         utils.setPrintStream(writable)
 
-        yargs().option('api').parse(argv, (err, getIPFSArgs, output) => {
+        yargs().option('api').strict(false).parse(argv, (err, getIPFSArgs, output) => {
           if (err) throw err
           // If it's daemon command, we should set the multiaddr for api
           const api = argv[0] === 'daemon' ? '/ip4/127.0.0.1/tcp/5002' : false
@@ -97,7 +102,11 @@ module.exports = function ipfsExec (repoPath) {
             if (err) return reject(err)
             cleanup = _cleanup
             try {
-              parser.parse(argv, {ipfs, onComplete}, (err, argv, _output) => {
+              parser.parse(argv, {
+                ipfs,
+                onComplete,
+                stdoutStream: writable
+              }, (err, argv, _output) => {
                 if (err) return reject(err)
               })
             } catch (err) {
@@ -111,6 +120,14 @@ module.exports = function ipfsExec (repoPath) {
       }
     })
   }
+  ipfsExec.repoPath = repoPath
+  ipfsExec.fail = (args) => {
+    console.log('Lol, you want me to fail?')
+    return new Promise((resolve) => {
+      resolve('sure')
+    })
+  }
+  return ipfsExec
 }
 // module.exports = (repoPath, opts) => {
 //   const env = _.clone(process.env)

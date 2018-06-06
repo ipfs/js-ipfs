@@ -197,8 +197,6 @@ module.exports = {
       wrapWithDirectory: argv.wrapWithDirectory
     }
 
-    console.log(options)
-
     // Temporary restriction on raw-leaves:
     // When cid-version=1 then raw-leaves MUST be present and false.
     //

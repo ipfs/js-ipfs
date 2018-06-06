@@ -32,9 +32,10 @@ module.exports = {
     const stream = argv.ipfs.files.catReadableStream(path, options)
 
     stream.once('error', (err) => {
-      throw err
+      argv.onComplete(err)
     })
 
-    stream.pipe(process.stdout)
+    stream.once('end', argv.onComplete || function () {})
+    stream.pipe(argv.stdoutStream || process.stdout)
   }
 }

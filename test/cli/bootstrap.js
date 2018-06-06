@@ -5,7 +5,7 @@
 const expect = require('chai').expect
 const runOnAndOff = require('../utils/on-and-off')
 
-describe('bootstrap', () => runOnAndOff((thing) => {
+describe.only('bootstrap', () => runOnAndOff((thing) => {
   let ipfs
 
   before(() => {

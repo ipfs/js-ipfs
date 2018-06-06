@@ -1,6 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
+require('trace')
+require('clarify')
+Error.stackTraceLimit = Infinity
+
 const fs = require('fs')
 const os = require('os')
 const expect = require('chai').expect
@@ -23,7 +27,7 @@ const HASH_ALGS = [
   'keccak-512'
 ]
 
-describe.only('files', () => runOnAndOff((thing) => {
+describe('files', () => runOnAndOff((thing) => {
   let ipfs
   const readme = fs.readFileSync(path.join(process.cwd(), '/src/init-files/init-docs/readme'))
     .toString('utf-8')
