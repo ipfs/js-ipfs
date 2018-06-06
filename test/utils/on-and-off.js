@@ -69,25 +69,20 @@ function on (tests) {
     // })
 
     // tests(thing)
-    before(function () {
+    before(function (done) {
       this.timeout(5 * 1000)
 
       repoPath = os.tmpdir() + '/ipfs-' + hat()
       thing.ipfs = ipfsExec(repoPath)
       thing.ipfs.repoPath = repoPath
-      return thing.ipfs('init').then(() => {
-        return thing.ipfs('daemon')
-      }).then(() => {
-        console.log('daemon running!')
+      thing.ipfs('init').then(() => {
+        thing.ipfs('daemon').then(() => done())
       })
     })
 
     after(function (done) {
       this.timeout(20 * 1000)
-      thing.ipfs('shutdown').then(() => {
-        clean(repoPath)
-        setImmediate(done)
-      })
+      thing.ipfs('shutdown').then(() => done())
     })
 
     tests(thing)

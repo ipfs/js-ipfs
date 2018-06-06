@@ -22,6 +22,17 @@ if (!useNew) {
       expect(out).to.eql('there is no newline at end of this file')
       return thing.ipfs('shutdown')
     }).then(() => {
+      console.log('Now were donie, lets do it again')
+      return thing.ipfs('daemon')
+    }).then(() => {
+      return thing.ipfs('block put test/fixtures/test-data/no-newline')
+    }).then((out) => {
+      expect(out).to.eql('QmTwbQs4sGcCiPxV97SpbHS7QgmVg9SiKxcG1AcF1Ly2SL\n')
+      return thing.ipfs('block get QmTwbQs4sGcCiPxV97SpbHS7QgmVg9SiKxcG1AcF1Ly2SL')
+    }).then((out) => {
+      expect(out).to.eql('there is no newline at end of this file')
+      return thing.ipfs('shutdown')
+    }).then(() => {
       console.log('Now were donie')
     })
       // thing.ipfs('files add src/init-files/init-docs/readme')

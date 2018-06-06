@@ -24,6 +24,7 @@ module.exports = {
       res.Keys.forEach((cidStr) => {
         print(cidStr)
       })
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

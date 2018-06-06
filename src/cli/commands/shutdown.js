@@ -8,7 +8,7 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    argv.ipfs.shutdown((err) => {
+    argv.ipfs.stop((err) => {
       if (err) {
         throw err
       }

@@ -25,7 +25,11 @@ module.exports = function ipfsExec (repoPath) {
   process.env.IPFS_PATH = repoPath
 
   return function (args) {
-    const argv = args.split(' ')
+    let argv = args.split(' ')
+    // cat, add, get are aliases to files *
+    if (['cat', 'add', 'get'].includes(argv[0])) {
+      argv = ['files'].concat(argv)
+    }
     debug('Running', argv)
     const cliToLoad = argv[0]
     let cli = require('../../src/cli/commands/' + cliToLoad)
@@ -43,8 +47,14 @@ module.exports = function ipfsExec (repoPath) {
         debug('onComplete called')
         cleanup((err) => {
           if (err) return reject(err)
-          debug('Resolving value:', JSON.stringify(output.join('')))
-          resolve(output.join(''))
+          debug('cleanup done, resolving value:', JSON.stringify(output.join('')))
+          // Lets wait a bit for the shutdown to actually finish
+          // TODO race-condition somewhere in shutdown, and it returns before
+          // actually finishing, that's why we have the wait
+          const timeout = argv[0] === 'shutdown' ? 1000 : 0
+          setTimeout(() => {
+            resolve(output.join(''))
+          }, timeout)
         })
       }
       // if (argv[0] === 'shutdown') {
