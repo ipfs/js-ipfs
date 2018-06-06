@@ -27,7 +27,7 @@ const HASH_ALGS = [
   'keccak-512'
 ]
 
-describe('files', () => runOnAndOff((thing) => {
+describe.only('files', () => runOnAndOff((thing) => {
   let ipfs
   const readme = fs.readFileSync(path.join(process.cwd(), '/src/init-files/init-docs/readme'))
     .toString('utf-8')
@@ -378,33 +378,39 @@ describe('files', () => runOnAndOff((thing) => {
   it('get', function () {
     this.timeout(20 * 1000)
 
-    return ipfs('files get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
-      .then((out) => {
-        expect(out)
-          .to.eql('Saving file(s) QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB\n')
+    return Promise.resolve().then(() => {
+      return ipfs('files add src/init-files/init-docs/readme')
+    }).then((out) => {
+      return ipfs('files get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+    }).then((out) => {
+      expect(out)
+        .to.eql('Saving file(s) QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB\n')
 
-        const file = path.join(process.cwd(), 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+      const file = path.join(process.cwd(), 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-        expect(fs.readFileSync(file).toString()).to.eql(readme)
+      expect(fs.readFileSync(file).toString()).to.eql(readme)
 
-        rimraf(file)
-      })
+      rimraf(file)
+    })
   })
 
   it('get alias', function () {
     this.timeout(20 * 1000)
 
-    return ipfs('get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
-      .then((out) => {
-        expect(out)
-          .to.eql('Saving file(s) QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB\n')
+    return Promise.resolve().then(() => {
+      return ipfs('files add src/init-files/init-docs/readme')
+    }).then((out) => {
+      return ipfs('get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+    }).then((out) => {
+      expect(out)
+        .to.eql('Saving file(s) QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB\n')
 
-        const file = path.join(process.cwd(), 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+      const file = path.join(process.cwd(), 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-        expect(fs.readFileSync(file).toString()).to.eql(readme)
+      expect(fs.readFileSync(file).toString()).to.eql(readme)
 
-        rimraf(file)
-      })
+      rimraf(file)
+    })
   })
 
   it('get recursively', function () {
@@ -412,23 +418,27 @@ describe('files', () => runOnAndOff((thing) => {
 
     const outDir = path.join(process.cwd(), 'QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
     rimraf(outDir)
+    return Promise.resolve().then(() => {
+      return ipfs('files add -r test/fixtures/test-data/recursive-get-dir')
+    }).then((out) => {
+      expect(out).to.eql(recursiveGetDirResults.join('\n') + '\n')
+    }).then(() => {
+      return ipfs('files get QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
+    }).then((out) => {
+      expect(out).to.eql(
+        'Saving file(s) QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2\n'
+      )
 
-    return ipfs('files get QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
-      .then((out) => {
-        expect(out).to.eql(
-          'Saving file(s) QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2\n'
-        )
+      const outDir = path.join(process.cwd(), 'QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
+      const expectedDir = path.join(process.cwd(), 'test', 'fixtures', 'test-data', 'recursive-get-dir')
 
-        const outDir = path.join(process.cwd(), 'QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
-        const expectedDir = path.join(process.cwd(), 'test', 'fixtures', 'test-data', 'recursive-get-dir')
-
-        const compareResult = compareDir(outDir, expectedDir, {
-          compareContent: true,
-          compareSize: true
-        })
-
-        expect(compareResult.differences).to.equal(0)
-        rimraf(outDir)
+      const compareResult = compareDir(outDir, expectedDir, {
+        compareContent: true,
+        compareSize: true
       })
+
+      expect(compareResult.differences).to.equal(0)
+      rimraf(outDir)
+    })
   })
 }))
