@@ -84,8 +84,13 @@ function addPipeline (index, addStream, list, argv, callback) {
         throw err
       }
 
-      if (silent) return
-      if (quieter) return print(added.pop().hash)
+      if (silent) {
+        return callback()
+      }
+      if (quieter) {
+        print(added.pop().hash)
+        return callback()
+      }
 
       sortBy(added, 'path')
         .reverse()
@@ -97,7 +102,7 @@ function addPipeline (index, addStream, list, argv, callback) {
           return log.join(' ')
         })
         .forEach((msg) => print(msg))
-      callback()
+      return callback()
     })
   )
 }
@@ -191,6 +196,8 @@ module.exports = {
       hashAlg: argv.hash,
       wrapWithDirectory: argv.wrapWithDirectory
     }
+
+    console.log(options)
 
     // Temporary restriction on raw-leaves:
     // When cid-version=1 then raw-leaves MUST be present and false.

@@ -26,7 +26,7 @@ module.exports = function ipfsExec (repoPath) {
 
   return function (args) {
     let argv = args.split(' ')
-    // cat, add, get are aliases to files *
+    // cat, add, get are aliases to `files *`
     if (['cat', 'add', 'get'].includes(argv[0])) {
       argv = ['files'].concat(argv)
     }
@@ -39,9 +39,13 @@ module.exports = function ipfsExec (repoPath) {
     debug('Parsed command')
     return new Promise((resolve, reject) => {
       let output = []
+      // Placeholder callback for cleanup. Should be replaced with a proper one
+      // later on
       let cleanup = () => {
         debug('WARNING: placeholder cleanup called...')
       }
+      // This callback gets injected into the CLI commands who can call it when
+      // they are done with their operations
       const onComplete = (err) => {
         if (err) return reject(err)
         debug('onComplete called')
@@ -57,23 +61,9 @@ module.exports = function ipfsExec (repoPath) {
           }, timeout)
         })
       }
-      // if (argv[0] === 'shutdown') {
-      //   process.on('SIGTERM', function () {
-      //     console.log('someone is trying to terminate us!')
-      //   })
-      // }
-      // if (argv[0] === 'shutdown') {
-      //   debug('shutdown called, getting IPFS')
-      //   utils.getIPFS({api: '/ip4/127.0.0.1/tcp/5002'}, (err, ipfs, _cleanup) => {
-      //     if (err) throw err
-      //     debug('Got IPFS node, stopping')
-      //     ipfs.shutdown(() => {
-      //       debug('Got stop event, time to cleanup')
-      //       _cleanup(resolve)
-      //     })
-      //     return
-      //   })
-      // }
+
+      // init works differently from other commands, as we don't care about having
+      // a daemon running when running it
       if (argv[0] === 'init') {
         debug('Init called, getting IPFS')
         utils.getIPFS({api: false}, (err, ipfs, _cleanup) => {
@@ -101,17 +91,21 @@ module.exports = function ipfsExec (repoPath) {
 
         yargs().option('api').parse(argv, (err, getIPFSArgs, output) => {
           if (err) throw err
-          // console.log(utils.isDaemonOn())
-          // utils.getIPFS(getIPFSArgs, (err, ipfs, _cleanup) => {
-            // utils.getIPFS(Object.assign(getIPFSArgs, {api: false}), (err, ipfs, _cleanup) => {
-          // console.log('daemon?', argv[0])
+          // If it's daemon command, we should set the multiaddr for api
           const api = argv[0] === 'daemon' ? '/ip4/127.0.0.1/tcp/5002' : false
           utils.getIPFS(Object.assign(getIPFSArgs, {api}), (err, ipfs, _cleanup) => {
-            if (err) throw err
+            if (err) return reject(err)
             cleanup = _cleanup
-            parser.parse(argv, {ipfs, onComplete}, (err, argv, _output) => {
-              if (err) return reject(err)
-            })
+            try {
+              parser.parse(argv, {ipfs, onComplete}, (err, argv, _output) => {
+                if (err) return reject(err)
+              })
+            } catch (err) {
+              output = err.toString()
+              cleanup(() => {
+                reject(output)
+              })
+            }
           })
         })
       }
