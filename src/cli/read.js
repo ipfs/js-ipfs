@@ -34,28 +34,30 @@ module.exports = {
       length
     } = argv
 
-    return new Promise((resolve, reject) => {
-      waterfall([
-        (cb) => ipfs.files.readPullStream(path, {
-          offset,
-          length
-        }, cb),
-        (stream, cb) => {
-          pull(
-            stream,
-            through(buffer => {
-              print(buffer, false)
-            }),
-            collect(cb)
-          )
-        }
-      ], (error) => {
-        if (error) {
-          return reject(error)
-        }
+    argv.resolve(
+      new Promise((resolve, reject) => {
+        waterfall([
+          (cb) => ipfs.files.readPullStream(path, {
+            offset,
+            length
+          }, cb),
+          (stream, cb) => {
+            pull(
+              stream,
+              through(buffer => {
+                print(buffer, false)
+              }),
+              collect(cb)
+            )
+          }
+        ], (error) => {
+          if (error) {
+            return reject(error)
+          }
 
-        resolve()
+          resolve()
+        })
       })
-    })
+    )
   }
 }

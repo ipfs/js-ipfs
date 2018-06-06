@@ -85,19 +85,21 @@ module.exports = {
       flush
     } = argv
 
-    return ipfs.files.write(path, process.stdin, {
-      offset,
-      length,
-      create,
-      truncate,
-      rawLeaves,
-      cidVersion,
-      hashAlg,
-      format,
-      parents,
-      progress,
-      strategy,
-      flush
-    })
+    argv.resolve(
+      ipfs.files.write(path, process.stdin, {
+        offset,
+        length,
+        create,
+        truncate,
+        rawLeaves,
+        cidVersion,
+        hashAlg,
+        format,
+        parents,
+        progress,
+        strategy,
+        flush
+      })
+    )
   }
 }

@@ -17,6 +17,8 @@ module.exports = {
       ipfs
     } = argv
 
-    return ipfs.files.flush(path || FILE_SEPARATOR, {})
+    argv.resolve(
+      ipfs.files.flush(path || FILE_SEPARATOR, {})
+    )
   }
 }

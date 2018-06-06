@@ -44,11 +44,13 @@ module.exports = {
       flush
     } = argv
 
-    return ipfs.files.mkdir(path, {
-      parents,
-      cidVersion,
-      hash,
-      flush
-    })
+    argv.resolve(
+      ipfs.files.mkdir(path, {
+        parents,
+        cidVersion,
+        hash,
+        flush
+      })
+    )
   }
 }
