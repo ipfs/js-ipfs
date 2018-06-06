@@ -41,14 +41,10 @@ module.exports = {
       hash
     } = argv
 
-    ipfs.files.cp(source, dest, {
+    return ipfs.files.cp(source, dest, {
       parents,
       format,
       hashAlg: hash
-    }, (error) => {
-      if (error) {
-        throw error
-      }
     })
   }
 }

@@ -30,50 +30,45 @@ module.exports = {
       long
     } = argv
 
-    ipfs.files.ls(path || FILE_SEPARATOR, {
-      long
-    }, (error, files) => {
-      if (error) {
-        throw error
-      }
+    return ipfs.files.ls(path || FILE_SEPARATOR)
+      .then(files => {
+        if (long) {
+          const table = []
+          const lengths = {}
 
-      if (long) {
-        const table = []
-        const lengths = {}
+          files.forEach(link => {
+            const row = {
+              name: `${link.name}`,
+              hash: `${link.hash}`,
+              size: `${link.size}`
+            }
 
-        files.forEach(link => {
-          const row = {
-            name: `${link.name}`,
-            hash: `${link.hash}`,
-            size: `${link.size}`
-          }
+            Object.keys(row).forEach(key => {
+              const value = row[key]
 
-          Object.keys(row).forEach(key => {
-            const value = row[key]
+              lengths[key] = lengths[key] > value.length ? lengths[key] : value.length
+            })
 
-            lengths[key] = lengths[key] > value.length ? lengths[key] : value.length
+            table.push(row)
           })
 
-          table.push(row)
-        })
+          table.forEach(row => {
+            let line = ''
 
-        table.forEach(row => {
-          let line = ''
+            Object.keys(row).forEach(key => {
+              const value = row[key]
 
-          Object.keys(row).forEach(key => {
-            const value = row[key]
+              line += value.padEnd(lengths[key])
+              line += '\t'
+            })
 
-            line += value.padEnd(lengths[key] - value.length)
-            line += '\t'
+            print(line)
           })
 
-          print(line)
-        })
+          return
+        }
 
-        return
-      }
-
-      files.forEach(link => print(link.name))
-    })
+        files.forEach(link => print(link.name))
+      })
   }
 }

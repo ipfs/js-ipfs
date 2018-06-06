@@ -85,7 +85,7 @@ module.exports = {
       flush
     } = argv
 
-    ipfs.files.write(path, process.stdin, {
+    return ipfs.files.write(path, process.stdin, {
       offset,
       length,
       create,
@@ -98,10 +98,6 @@ module.exports = {
       progress,
       strategy,
       flush
-    }, (error) => {
-      if (error) {
-        throw error
-      }
     })
   }
 }

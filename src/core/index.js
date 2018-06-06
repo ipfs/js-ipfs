@@ -22,20 +22,31 @@ const writeOperations = {
   write: require('./write')
 }
 
+const wrap = (ipfs, mfs, operations, lock) => {
+  Object.keys(operations).forEach(key => {
+    if (operations.hasOwnProperty(key)) {
+      mfs[key] = promisify(lock(operations[key](ipfs)))
+    }
+  })
+}
+
+const readLock = (operation) => {
+  return lock.readLock(operation)
+}
+
+const writeLock = (operation) => {
+  return lock.writeLock(operation)
+}
+
+const noLock = (operation) => {
+  return operation
+}
+
 module.exports = (ipfs) => {
   const mfs = {}
 
-  Object.keys(readOperations).forEach(key => {
-    if (readOperations.hasOwnProperty(key)) {
-      mfs[key] = promisify(lock.readLock(readOperations[key](ipfs)))
-    }
-  })
-
-  Object.keys(writeOperations).forEach(key => {
-    if (writeOperations.hasOwnProperty(key)) {
-      mfs[key] = promisify(lock.writeLock(writeOperations[key](ipfs)))
-    }
-  })
+  wrap(ipfs, mfs, readOperations, global.MFS_DISABLE_CONCURRENCY ? noLock : readLock)
+  wrap(ipfs, mfs, writeOperations, global.MFS_DISABLE_CONCURRENCY ? noLock : writeLock)
 
   return mfs
 }

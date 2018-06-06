@@ -22,8 +22,16 @@ const updateMfsRoot = (ipfs, buffer, callback) => {
   log(`New MFS root will be ${bs58.encode(buffer)}`)
 
   waterfall([
-    (cb) => repo.closed ? datastore.open(cb) : cb(),
-    (cb) => datastore.put(MFS_ROOT_KEY, buffer, cb)
+    (cb) => {
+      if (repo.closed) {
+        log('Opening datastore')
+        return datastore.open((error) => cb(error))
+      }
+
+      log('Datastore was already open')
+      cb()
+    },
+    (cb) => datastore.put(MFS_ROOT_KEY, buffer, (error) => cb(error))
   ], (error) => callback(error, buffer))
 }
 

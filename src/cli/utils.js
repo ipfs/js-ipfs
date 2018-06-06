@@ -11,6 +11,10 @@ const print = (msg = '', newline = true) => {
     return
   }
 
+  if (msg instanceof Error && process.env.DEBUG) {
+    msg = msg.stack
+  }
+
   msg = newline ? msg + '\n' : msg
   process.stdout.write(msg)
 }

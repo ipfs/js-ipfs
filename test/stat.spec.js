@@ -113,8 +113,8 @@ describe('stat', function () {
       .then(() => mfs.stat(filePath))
       .then((stats) => {
         expect(stats.size).to.equal(smallFile.length)
-        expect(stats.cumulativeSize).to.equal(71)
-        expect(stats.blocks).to.equal(1)
+        expect(stats.cumulativeSize).to.equal(21)
+        expect(stats.blocks).to.equal(0)
         expect(stats.type).to.equal('file')
       })
   })

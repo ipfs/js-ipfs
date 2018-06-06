@@ -319,7 +319,9 @@ describe('write', function () {
         .then(() => mfs.read(path, {
           offset: offset - 5
         }))
-        .then((buffer) => expect(buffer).to.deep.equal(Buffer.concat([Buffer.from([0, 0, 0, 0, 0]), newContent])))
+        .then((buffer) => {
+          expect(buffer).to.deep.equal(Buffer.concat([Buffer.from([0, 0, 0, 0, 0]), newContent]))
+        })
     })
   })
 
@@ -376,7 +378,11 @@ describe('write', function () {
     })
   })
 
-  it('supports concurrent writes', () => {
+  it('supports concurrent writes', function () {
+    if (global.MFS_DISABLE_CONCURRENCY) {
+      return this.skip()
+    }
+
     const files = []
 
     for (let i = 0; i < 10; i++) {

@@ -17,10 +17,6 @@ module.exports = {
       ipfs
     } = argv
 
-    ipfs.files.flush(path || FILE_SEPARATOR, {}, (error) => {
-      if (error) {
-        throw error
-      }
-    })
+    return ipfs.files.flush(path || FILE_SEPARATOR, {})
   }
 }

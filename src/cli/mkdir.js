@@ -1,7 +1,6 @@
 'use strict'
 
 const {
-  print,
   asBoolean
 } = require('./utils')
 
@@ -45,17 +44,11 @@ module.exports = {
       flush
     } = argv
 
-    ipfs.files.mkdir(path, {
+    return ipfs.files.mkdir(path, {
       parents,
       cidVersion,
       hash,
       flush
-    }, (error, result) => {
-      if (error) {
-        throw error
-      }
-
-      print(result)
     })
   }
 }

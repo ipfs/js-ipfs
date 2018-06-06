@@ -1,8 +1,8 @@
 'use strict'
 
 const {
-  print,
-  asBoolean
+  asBoolean,
+  print
 } = require('./utils')
 
 module.exports = {
@@ -54,28 +54,25 @@ Type: <type>`,
       withLocal
     } = argv
 
-    ipfs.files.stat(path, {
+    return ipfs.files.stat(path, {
       withLocal
-    }, (error, stats) => {
-      if (error) {
-        throw error
-      }
-
-      if (hash) {
-        return print(stats.hash)
-      }
-
-      if (size) {
-        return print(stats.size)
-      }
-
-      print(format
-        .replace('<hash>', stats.hash)
-        .replace('<size>', stats.size)
-        .replace('<cumulsize>', stats.cumulativeSize)
-        .replace('<childs>', stats.blocks)
-        .replace('<type>', stats.type)
-      )
     })
+      .then((stats) => {
+        if (hash) {
+          return print(stats.hash)
+        }
+
+        if (size) {
+          return print(stats.size)
+        }
+
+        print(format
+          .replace('<hash>', stats.hash)
+          .replace('<size>', stats.size)
+          .replace('<cumulsize>', stats.cumulativeSize)
+          .replace('<childs>', stats.blocks)
+          .replace('<type>', stats.type)
+        )
+      })
   }
 }

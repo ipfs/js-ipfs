@@ -23,6 +23,9 @@ const {
 const importNode = require('./import-node')
 const updateNodeBytes = require('./update-tree')
 const truncateNode = require('./truncate-node')
+const {
+  DAGLink
+} = require('ipld-dag-pb')
 
 const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
   let offset = options.offset || 0
@@ -130,14 +133,26 @@ const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
 
           if (appendedMeta.fileSize()) {
             // add all links from appendedNode to the updatedNode
-            log('Added data to existing node', appendedMeta.data)
-
             const links = updatedNode.links
 
-            appendedNode.links.forEach((link, index) => {
-              updatedMeta.addBlockSize(appendedMeta.blockSizes[index])
-              links.push(link)
-            })
+            if (appendedMeta.data && appendedMeta.data.length) {
+              log('New data was found on appended node')
+
+              if (appendedNode.links && appendedNode.links.length) {
+                log('New data was also found on appended node children')
+              }
+
+              updatedMeta.addBlockSize(appendedMeta.fileSize())
+
+              links.push(new DAGLink('', appendedNode.size, appendedNode.multihash))
+            } else if (appendedNode.links && appendedNode.links.length) {
+              log('New data required multiple DAGNodes')
+
+              appendedNode.links.forEach((link, index) => {
+                updatedMeta.addBlockSize(appendedMeta.blockSizes[index])
+                links.push(link)
+              })
+            }
 
             // create a new node with all the links
             return createNode(ipfs, updatedMeta.marshal(), links, options, next)

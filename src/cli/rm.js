@@ -26,12 +26,8 @@ module.exports = {
       recursive
     } = argv
 
-    ipfs.files.rm(path, {
+    return ipfs.files.rm(path, {
       recursive
-    }, (error) => {
-      if (error) {
-        throw error
-      }
     })
   }
 }
