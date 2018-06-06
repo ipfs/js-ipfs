@@ -27,7 +27,7 @@ const HASH_ALGS = [
   'keccak-512'
 ]
 
-describe.only('files', () => runOnAndOff((thing) => {
+describe('files', () => runOnAndOff((thing) => {
   let ipfs
   const readme = fs.readFileSync(path.join(process.cwd(), '/src/init-files/init-docs/readme'))
     .toString('utf-8')
