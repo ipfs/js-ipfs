@@ -38,11 +38,6 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.generic(CommonFactory.create({
-    // No need to stop, because the test suite does a 'stop' test.
-    createTeardown: cb => cb()
-  }))
-
   tests.key(CommonFactory.create({
     spawnOptions: {
       args: ['--pass ipfs-is-awesome-software'],
@@ -51,6 +46,11 @@ describe('interface-ipfs-core tests', () => {
   }))
 
   tests.ls(defaultCommonFactory)
+
+  tests.miscellaneous(CommonFactory.create({
+    // No need to stop, because the test suite does a 'stop' test.
+    createTeardown: () => cb => cb()
+  }))
 
   tests.object(defaultCommonFactory)
 
