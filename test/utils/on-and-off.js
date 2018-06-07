@@ -85,6 +85,7 @@ function on (tests) {
       thing.ipfs('shutdown').then(() => done())
     })
 
+    console.log(tests)
     tests(thing)
   })
 }

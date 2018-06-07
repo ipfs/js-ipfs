@@ -4,7 +4,7 @@
 const expect = require('chai').expect
 const runOn = require('../utils/on-and-off').on
 
-describe('bitswap', () => runOn((thing) => {
+describe.only('bitswap', () => runOn((thing) => {
   let ipfs
   const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
 

@@ -52,6 +52,10 @@ module.exports = {
         if (err) {
           throw err
         }
+        process.removeAllListeners('SIGTERM')
+        process.removeAllListeners('SIGINT')
+        process.removeAllListeners('SIGHUP')
+        print('Shutdown complete')
         // process.exit(0)
       })
     }

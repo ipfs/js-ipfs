@@ -1,9 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-require('trace')
-require('clarify')
-Error.stackTraceLimit = Infinity
+// require('trace')
+// require('clarify')
+// Error.stackTraceLimit = Infinity
 
 const fs = require('fs')
 const os = require('os')
@@ -367,12 +367,19 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
-  it('cat non-existent file', () => {
-    return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB/dummy')
-      .then(() => expect.fail(0, 1, 'Should have thrown an error'))
-      .catch((err) => {
-        expect(err).to.exist()
+  it.skip('cat non-existent file', (done) => {
+    try {
+      ipfs('files add src/init-files/init-docs/readme').then(() => {
+        ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB/dummy')
+          .then(() => {
+            expect.fail(0, 1, 'Should have thrown an error')
+            done()
+          })
       })
+    } catch (err) {
+      expect(err).to.exists()
+      done()
+    }
   })
 
   it('get', function () {

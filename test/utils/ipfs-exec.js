@@ -60,7 +60,7 @@ module.exports = function ipfsExec (repoPath) {
           // Lets wait a bit for the shutdown to actually finish
           // TODO race-condition somewhere in shutdown, and it returns before
           // actually finishing, that's why we have the wait
-          const timeout = argv[0] === 'shutdown' ? 1000 : 0
+          const timeout = argv[0] === 'shutdown' ? 100 : 0
           setTimeout(() => {
             resolve(output.join(''))
           }, timeout)
@@ -75,7 +75,11 @@ module.exports = function ipfsExec (repoPath) {
           if (err) throw err
           ipfs.once('init', () => {
             debug('Got init event, time to cleanup')
-            _cleanup(resolve)
+            ipfs.config.set('Addresses.Swarm', [
+              '/ip4/127.0.0.1/tcp/0'
+            ], () => {
+              _cleanup(resolve)
+            })
           })
           debug('Got IPFS node, initting')
           ipfs.init()
@@ -84,10 +88,11 @@ module.exports = function ipfsExec (repoPath) {
         var stream = require('stream')
         var writable = new stream.Writable({
           write: function (chunk, encoding, next) {
-            debug('received a little chunk', chunk.toString())
+            debug('received a little chunk', JSON.stringify(chunk.toString()))
             output.push(chunk.toString())
-            if (chunk.toString() === 'Daemon is ready\n') {
+            if (chunk.toString() === 'Daemon is ready\n' || chunk.toString() === 'Shutdown complete\n') {
               onComplete()
+              this.end()
             }
             next()
           }
@@ -96,24 +101,24 @@ module.exports = function ipfsExec (repoPath) {
 
         yargs().option('api').strict(false).parse(argv, (err, getIPFSArgs, output) => {
           if (err) throw err
+          const isDaemonCmd = argv[0] === 'daemon'
           // If it's daemon command, we should set the multiaddr for api
-          const api = argv[0] === 'daemon' ? '/ip4/127.0.0.1/tcp/5002' : false
+          const api = isDaemonCmd ? '/ip4/127.0.0.1/tcp/5002' : false
           utils.getIPFS(Object.assign(getIPFSArgs, {api}), (err, ipfs, _cleanup) => {
             if (err) return reject(err)
-            cleanup = _cleanup
+            cleanup = _cleanup.bind(this)
             try {
               parser.parse(argv, {
-                ipfs,
-                onComplete,
+                ipfs: ipfs,
+                onComplete: isDaemonCmd ? function () {} : onComplete,
                 stdoutStream: writable
               }, (err, argv, _output) => {
                 if (err) return reject(err)
+                cleanup(() => {})
+                // no need to do anything after the command because we have onComplete
               })
             } catch (err) {
-              output = err.toString()
-              cleanup(() => {
-                reject(output)
-              })
+              cleanup(() => onComplete(err))
             }
           })
         })
