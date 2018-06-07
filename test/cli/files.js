@@ -7,13 +7,18 @@
 
 const fs = require('fs')
 const os = require('os')
-const expect = require('chai').expect
+const chai = require('chai')
+chai.use(require('dirty-chai'))
+chai.use(require('chai-as-promised'))
+
 const path = require('path')
 const compareDir = require('dir-compare').compareSync
 const rimraf = require('rimraf').sync
 const CID = require('cids')
 const mh = require('multihashes')
 const runOnAndOff = require('../utils/on-and-off')
+
+const expect = chai.expect
 
 // TODO: Test against all algorithms Object.keys(mh.names)
 // This subset is known to work with both go-ipfs and js-ipfs as of 2017-09-05
@@ -368,18 +373,17 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   it.skip('cat non-existent file', (done) => {
-    try {
-      ipfs('files add src/init-files/init-docs/readme').then(() => {
-        ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB/dummy')
-          .then(() => {
-            expect.fail(0, 1, 'Should have thrown an error')
-            done()
-          })
+    ipfs('files add src/init-files/init-docs/readme')
+      .then(() => {
+        return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB/dummy')
       })
-    } catch (err) {
-      expect(err).to.exists()
-      done()
-    }
+      .then(() => {
+        done(new Error('Should have thrown!'))
+      })
+      .catch((err) => {
+        expect(err).to.match(/No such file/)
+        done()
+      })
   })
 
   it('get', function () {
