@@ -21,14 +21,14 @@ describe('interface-ipfs-core over ipfs-api tests', () => {
 
   tests.files(defaultCommonFactory)
 
-  tests.generic(defaultCommonFactory, { skip: true })
-
   tests.key(CommonFactory.create({
     spawnOptions: {
       args: ['--pass', 'ipfs-is-awesome-software'],
       initOptions: { bits: 512 }
     }
   }))
+
+  tests.miscellaneous(defaultCommonFactory)
 
   tests.object(defaultCommonFactory)
 
