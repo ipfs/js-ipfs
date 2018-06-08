@@ -6,12 +6,6 @@
 * [pubsub.ls](#pubsubls)
 * [pubsub.peers](#pubsubpeers)
 
-* [pubsub.subscribe](#pubsubsubscribe)
-* [pubsub.unsubscribe](#pubsubunsubscribe)
-* [pubsub.publish](#pubsubpublish)
-* [pubsub.ls](#pubsubls)
-* [pubsub.peers](#pubsubpeers)
-
 #### `pubsub.subscribe`
 
 > Subscribe to a pubsub topic.
