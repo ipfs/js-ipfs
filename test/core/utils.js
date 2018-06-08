@@ -48,12 +48,31 @@ describe('utils', () => {
         })
     })
 
+    it('parses path with leading and trailing slashes', function () {
+      expect(utils.parseIpfsPath(`/${rootHash}/`))
+        .to.deep.equal({
+          hash: rootHash,
+          links: []
+        })
+    })
+
+    it('parses non sha2-256 paths', function () {
+      // There are many, many hashing algorithms. Just one should be a sufficient
+      // indicator. Used go-ipfs@0.4.13 `add --hash=keccak-512` to generate
+      const keccak512 = 'zB7S6ZdcqsTqvNhBpx3SbFTocRpAUHj1w9WQXQGyWBVEsLStNfaaNtsdFUQbRk4tYPZvnpGbtDN5gEH4uVzUwsFyJh9Ei'
+      expect(utils.parseIpfsPath(keccak512))
+      .to.deep.equal({
+        hash: keccak512,
+        links: []
+      })
+    })
+
     it('returns error for malformed path', function () {
       const fn = () => utils.parseIpfsPath(`${rootHash}//about`)
       expect(fn).to.throw('invalid ipfs ref path')
     })
 
-    it('returns error if root is not a valid multihash', function () {
+    it('returns error if root is not a valid sha2-256 multihash', function () {
       const fn = () => utils.parseIpfsPath('invalid/ipfs/path')
       expect(fn).to.throw('invalid ipfs ref path')
     })

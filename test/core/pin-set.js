@@ -14,6 +14,7 @@ const { DAGNode } = require('ipld-dag-pb')
 const CID = require('CIDs')
 
 const IPFS = require('../../src/core')
+const createPinSet = require('../../src/core/components/pin-set')
 const createTempRepo = require('../utils/create-repo-nodejs')
 
 const defaultFanout = 256
@@ -46,9 +47,9 @@ function createNode (data, links = [], callback) {
   DAGNode.create(data, links, callback)
 }
 
-describe('pinset', function () {
+describe('pinSet', function () {
   let ipfs
-  let pinset
+  let pinSet
   let repo
 
   before(function (done) {
@@ -56,7 +57,7 @@ describe('pinset', function () {
     repo = createTempRepo()
     ipfs = new IPFS({ repo })
     ipfs.on('ready', () => {
-      pinset = ipfs.pin.set
+      pinSet = createPinSet(ipfs.dag)
       done()
     })
   })
@@ -73,7 +74,7 @@ describe('pinset', function () {
       createNode('data', (err, node) => {
         expect(err).to.not.exist()
         const nodeHash = node._multihash
-        pinset.storeSet([nodeHash], (err, rootNode) => {
+        pinSet.storeSet([nodeHash], (err, rootNode) => {
           expect(err).to.not.exist()
           const node = rootNode.toJSON()
           expect(node.multihash).to.eql(expectedRootHash)
@@ -95,7 +96,7 @@ describe('pinset', function () {
       const count = maxItems + 1
       createNodes(count, (err, nodes) => {
         expect(err).to.not.exist()
-        pinset.storeSet(nodes, (err, node) => {
+        pinSet.storeSet(nodes, (err, node) => {
           expect(err).to.not.exist()
 
           node = node.toJSON()
@@ -103,13 +104,13 @@ describe('pinset', function () {
           expect(node.links).to.have.length(defaultFanout)
           expect(node.multihash).to.eql(expectedHash)
 
-          pinset.loadSet(node, '', (err, loaded) => {
+          pinSet.loadSet(node, '', (err, loaded) => {
             expect(err).to.not.exist()
             expect(loaded).to.have.length(30)
             const hashes = loaded.map(l => new CID(l).toBaseEncodedString())
 
             // just check the first node, assume all are children if successful
-            pinset.hasChild(node, hashes[0], (err, has) => {
+            pinSet.hasDescendant(node, hashes[0], (err, has) => {
               expect(err).to.not.exist()
               expect(has).to.eql(true)
               done()
@@ -121,7 +122,7 @@ describe('pinset', function () {
 
     // This test is largely taken from go-ipfs/pin/set_test.go
     // It fails after reaching maximum call stack depth but I don't believe it's
-    // infinite. We need to reference go's pinset impl to make sure
+    // infinite. We need to reference go's pinSet impl to make sure
     // our sharding behaves correctly, or perhaps this test is misguided
     it.skip('stress test: stores items > (maxItems * defaultFanout) + 1', function (done) {
       this.timeout(180 * 1000)
@@ -134,11 +135,11 @@ describe('pinset', function () {
       createNodes(limit, (err, nodes) => {
         expect(err).to.not.exist()
         series([
-          cb => pinset.storeSet(nodes.slice(0, -1), (err, res) => {
+          cb => pinSet.storeSet(nodes.slice(0, -1), (err, res) => {
             expect(err).to.not.exist()
             cb(null, res)
           }),
-          cb => pinset.storeSet(nodes, (err, res) => {
+          cb => pinSet.storeSet(nodes, (err, res) => {
             expect(err).to.not.exist()
             cb(null, res)
           })
@@ -156,7 +157,7 @@ describe('pinset', function () {
       createNode('datum', (err, node) => {
         expect(err).to.not.exist()
 
-        pinset.walkItems(node, () => {}, (err, res) => {
+        pinSet.walkItems(node, () => {}, (err, res) => {
           expect(err).to.exist()
           expect(res).to.not.exist()
           done()
@@ -171,10 +172,10 @@ describe('pinset', function () {
       createNodes(defaultFanout, (err, nodes) => {
         expect(err).to.not.exist()
 
-        pinset.storeSet(nodes, (err, node) => {
+        pinSet.storeSet(nodes, (err, node) => {
           expect(err).to.not.exist()
 
-          pinset.walkItems(node, walker, err => {
+          pinSet.walkItems(node, walker, err => {
             expect(err).to.not.exist()
             expect(seen).to.have.length(defaultFanout)
             expect(seen[0].idx).to.eql(defaultFanout)

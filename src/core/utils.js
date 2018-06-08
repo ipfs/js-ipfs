@@ -4,11 +4,12 @@ const CID = require('cids')
 const multihashes = require('multihashes')
 const promisify = require('promisify-es6')
 const map = require('async/map')
+const isIpfs = require('is-ipfs')
 
 exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'ipfs daemon\' first.'
 
 /**
- * Break an ipfs-path down into it's hash hash and an array of links.
+ * Break an ipfs-path down into it's hash and an array of links.
  *
  * examples:
  *  b58Hash -> { hash: 'b58Hash', links: [] }
@@ -21,20 +22,18 @@ exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'
  */
 function parseIpfsPath (ipfsPath) {
   const invalidPathErr = new Error('invalid ipfs ref path')
-
-  const matched = ipfsPath.match(/^(?:\/ipfs\/)?([^/]+(?:\/[^/]+)*)\/?$/)
+  ipfsPath = ipfsPath.replace(/^\/ipfs\//, '')
+  const matched = ipfsPath.match(/([^/]+(?:\/[^/]+)*)\/?$/)
   if (!matched) {
     throw invalidPathErr
   }
 
   const [hash, ...links] = matched[1].split('/')
 
-  try {
-    if (CID.isCID(new CID(hash))) {
-      return { hash, links }
-    }
-    throw invalidPathErr
-  } catch (err) {
+  // check that a CID can be constructed with the hash
+  if (isIpfs.cid(hash)) {
+    return { hash, links }
+  } else {
     throw invalidPathErr
   }
 }

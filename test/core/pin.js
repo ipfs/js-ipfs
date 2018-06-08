@@ -44,8 +44,25 @@ describe('pin', function () {
       type = undefined
     }
 
-    return pin.isPinnedWithType(hash, type || pin.types.all)
+    return pin._isPinnedWithType(hash, type || pin.types.all)
       .then(result => expect(result.pinned).to.eql(pinned))
+  }
+
+  function clearPins () {
+    return pin.ls()
+      .then(ls => {
+        const pinsToRemove = ls
+          .filter(out => out.type === pin.types.recursive)
+          .map(out => pin.rm(out.hash))
+        return Promise.all(pinsToRemove)
+      })
+      .then(() => pin.ls())
+      .then(ls => {
+        const pinsToRemove = ls
+          .filter(out => out.type === pin.types.direct)
+          .map(out => pin.rm(out.hash))
+        return Promise.all(pinsToRemove)
+      })
   }
 
   before(function (done) {
@@ -60,24 +77,21 @@ describe('pin', function () {
 
   after(done => ipfs.stop(done))
 
-  /**
-    getIndirectKeys,
-   */
-
-  describe('isPinned', function () {
+  describe('isPinnedWithType', function () {
     beforeEach(function () {
-      pin.clear()
+      return clearPins()
+        .then(() => pin.add(pins.root))
     })
 
     it('when node is pinned', function () {
       return pin.add(pins.solarWiki)
-        .then(() => pin.isPinned(pins.solarWiki))
+        .then(() => pin._isPinnedWithType(pins.solarWiki, pin.types.all))
         .then(pinned => expect(pinned.pinned).to.eql(true))
     })
 
     it('when node is not in datastore', function () {
       const falseHash = `${pins.root.slice(0, -2)}ss`
-      return pin.isPinned(falseHash)
+      return pin._isPinnedWithType(falseHash, pin.types.all)
         .then(pinned => {
           expect(pinned.pinned).to.eql(false)
           expect(pinned.reason).to.eql(undefined)
@@ -85,18 +99,12 @@ describe('pin', function () {
     })
 
     it('when node is in datastore but not pinned', function () {
-      return expectPinned(pins.root, false)
-    })
-  })
-
-  describe('isPinnedWithType', function () {
-    beforeEach(function () {
-      pin.clear()
-      return pin.add(pins.root)
+      return pin.rm(pins.root)
+        .then(() => expectPinned(pins.root, false))
     })
 
     it('when pinned recursively', function () {
-      return pin.isPinnedWithType(pins.root, pin.types.recursive)
+      return pin._isPinnedWithType(pins.root, pin.types.recursive)
         .then(result => {
           expect(result.pinned).to.eql(true)
           expect(result.reason).to.eql(pin.types.recursive)
@@ -104,7 +112,7 @@ describe('pin', function () {
     })
 
     it('when pinned indirectly', function () {
-      return pin.isPinnedWithType(pins.mercuryWiki, pin.types.indirect)
+      return pin._isPinnedWithType(pins.mercuryWiki, pin.types.indirect)
         .then(result => {
           expect(result.pinned).to.eql(true)
           expect(result.reason).to.eql(pins.root)
@@ -114,7 +122,7 @@ describe('pin', function () {
     it('when pinned directly', function () {
       return pin.add(pins.mercuryDir, { recursive: false })
         .then(() => {
-          return pin.isPinnedWithType(pins.mercuryDir, pin.types.direct)
+          return pin._isPinnedWithType(pins.mercuryDir, pin.types.direct)
             .then(result => {
               expect(result.pinned).to.eql(true)
               expect(result.reason).to.eql(pin.types.direct)
@@ -123,15 +131,15 @@ describe('pin', function () {
     })
 
     it('when not pinned', function () {
-      pin.clear()
-      return pin.isPinnedWithType(pins.mercuryDir, pin.types.direct)
+      return clearPins()
+        .then(() => pin._isPinnedWithType(pins.mercuryDir, pin.types.direct))
         .then(pin => expect(pin.pinned).to.eql(false))
     })
   })
 
   describe('add', function () {
     beforeEach(function () {
-      pin.clear()
+      return clearPins()
     })
 
     it('recursive', function () {
@@ -184,11 +192,11 @@ describe('pin', function () {
 
   describe('ls', function () {
     before(function () {
-      pin.clear()
-      return Promise.all([
-        pin.add(pins.root),
-        pin.add(pins.mercuryDir, { recursive: false })
-      ])
+      return clearPins()
+        .then(() => Promise.all([
+          pin.add(pins.root),
+          pin.add(pins.mercuryDir, { recursive: false })
+        ]))
     })
 
     it('lists pins of a particular hash', function () {
@@ -208,7 +216,7 @@ describe('pin', function () {
       it('all', function () {
         return pin.ls()
           .then(out =>
-            expect(out).to.deep.eql([
+            expect(out).to.deep.include.members([
               { type: 'recursive',
                 hash: 'QmTAMavb995EHErSrKo7mB8dYkpaSJxu6ys1a6XJyB2sys' },
               { type: 'indirect',
@@ -224,7 +232,7 @@ describe('pin', function () {
       it('direct', function () {
         return pin.ls({ type: 'direct' })
           .then(out =>
-            expect(out).to.deep.eql([
+            expect(out).to.deep.include.members([
               { type: 'direct',
                 hash: 'QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q' }
             ])
@@ -234,7 +242,7 @@ describe('pin', function () {
       it('recursive', function () {
         return pin.ls({ type: 'recursive' })
           .then(out =>
-            expect(out).to.deep.eql([
+            expect(out).to.deep.include.members([
               { type: 'recursive',
                 hash: 'QmTAMavb995EHErSrKo7mB8dYkpaSJxu6ys1a6XJyB2sys' }
             ])
@@ -244,7 +252,7 @@ describe('pin', function () {
       it('indirect', function () {
         return pin.ls({ type: 'indirect' })
           .then(out =>
-            expect(out).to.deep.eql([
+            expect(out).to.deep.include.members([
               { type: 'indirect',
                 hash: 'QmTMbkDfvHwq3Aup6Nxqn3KKw9YnoKzcZvuArAfQ9GF3QG' },
               { type: 'indirect',
@@ -259,8 +267,8 @@ describe('pin', function () {
 
   describe('rm', function () {
     beforeEach(function () {
-      pin.clear()
-      return pin.add(pins.root)
+      return clearPins()
+        .then(() => pin.add(pins.root))
     })
 
     it('a recursive pin', function () {
@@ -274,8 +282,8 @@ describe('pin', function () {
     })
 
     it('a direct pin', function () {
-      pin.clear()
-      return pin.add(pins.mercuryDir, { recursive: false })
+      return clearPins()
+        .then(() => pin.add(pins.mercuryDir, { recursive: false }))
         .then(() => pin.rm(pins.mercuryDir))
         .then(() => expectPinned(pins.mercuryDir, false))
     })
@@ -293,21 +301,6 @@ describe('pin', function () {
     })
   })
 
-  describe('load', function () {
-    before(function () {
-      return pin.add(pins.root)
-    })
-
-    it('loads', function () {
-      pin.clear()
-      return pin.ls()
-        .then(ls => expect(ls.length).to.eql(0))
-        .then(() => pin.load())
-        .then(() => pin.ls())
-        .then(ls => expect(ls.length).to.eql(4))
-    })
-  })
-
   describe('flush', function () {
     beforeEach(function () {
       return pin.add(pins.root)
@@ -317,12 +310,13 @@ describe('pin', function () {
       return pin.ls()
         .then(ls => expect(ls.length).to.eql(4))
         .then(() => {
-          pin.clear()
-          return pin.flush()
+          // indirectly trigger a datastore flush by adding something
+          return clearPins()
+            .then(() => pin.add(pins.mercuryWiki))
         })
-        .then(() => pin.load())
+        .then(() => pin._load())
         .then(() => pin.ls())
-        .then(ls => expect(ls.length).to.eql(0))
+        .then(ls => expect(ls.length).to.eql(1))
     })
   })
 })

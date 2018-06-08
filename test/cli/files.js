@@ -11,6 +11,7 @@ const rimraf = require('rimraf').sync
 const CID = require('cids')
 const mh = require('multihashes')
 const runOnAndOff = require('../utils/on-and-off')
+const clean = require('../utils/clean')
 
 // TODO: Test against all algorithms Object.keys(mh.names)
 // This subset is known to work with both go-ipfs and js-ipfs as of 2017-09-05
@@ -311,7 +312,7 @@ describe('files', () => runOnAndOff((thing) => {
           ipfs.fail(`object get ${hash}`),
           new Promise((resolve, reject) => setTimeout(resolve, 4000))
         ])
-          .then(() => fs.unlinkSync(filepath))
+          .then(() => clean(filepath))
       })
   })
 
@@ -327,7 +328,7 @@ describe('files', () => runOnAndOff((thing) => {
         return ipfs(`pin ls ${hash}`)
           .then(ls => expect(ls).to.include(hash))
       })
-      .then(() => fs.unlinkSync(filePath))
+      .then(() => clean(filePath))
   })
 
   it('add does not pin with --pin=false', function () {
@@ -337,18 +338,8 @@ describe('files', () => runOnAndOff((thing) => {
     fs.writeFileSync(filePath, content)
 
     return ipfs(`files add -Q --pin=false ${filePath}`)
-      .then(out => {
-        const lsAttempt = ipfs(`pin ls ${out.trim()}`)
-          .then(ls => {
-            expect(ls.trim()).to.eql('')
-          })
-
-        return Promise.race([
-          lsAttempt,
-          new Promise((resolve, reject) => setTimeout(resolve, 4000))
-        ])
-      })
-      .then(() => fs.unlinkSync(filePath))
+      .then(out => ipfs.fail(`pin ls ${out.trim()}`))
+      .then(() => clean(filePath))
   })
 
   HASH_ALGS.forEach((name) => {

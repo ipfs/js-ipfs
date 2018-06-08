@@ -1,36 +1,101 @@
+/* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
-const dagPB = require('ipld-dag-pb')
-const DAGNode = dagPB.DAGNode
-const DAGLink = dagPB.DAGLink
-const CID = require('cids')
-const pinSet = require('./pin-set')
-const resolvePath = require('../utils').resolvePath
 const promisify = require('promisify-es6')
+const { DAGNode, DAGLink } = require('ipld-dag-pb')
+const CID = require('cids')
 const multihashes = require('multihashes')
-const Key = require('interface-datastore').Key
-const eachLimit = require('async/eachLimit')
-const series = require('async/series')
-const waterfall = require('async/waterfall')
-const parallel = require('async/parallel')
-const someLimit = require('async/someLimit')
-const once = require('once')
+const async = require('async')
+const { Key } = require('interface-datastore')
 
-// arbitrary limit to number of concurrent dag operations
+const createPinSet = require('./pin-set')
+const { resolvePath } = require('../utils')
+
+// arbitrary limit to the number of concurrent dag operations
 const concurrencyLimit = 300
+const pinDataStoreKey = new Key('/local/pins')
 
 function toB58String (hash) {
   return new CID(hash).toBaseEncodedString()
 }
 
 module.exports = function pin (self) {
+  const repo = self._repo
+  const dag = self.dag
+  const pinset = createPinSet(dag)
+
   let directPins = new Set()
   let recursivePins = new Set()
 
-  const pinDataStoreKey = new Key('/local/pins')
+  const directKeys = () =>
+    Array.from(directPins).map(key => multihashes.fromB58String(key))
+  const recursiveKeys = () =>
+    Array.from(recursivePins).map(key => multihashes.fromB58String(key))
 
-  const repo = self._repo
-  const dag = self.dag
+  function getIndirectKeys (callback) {
+    const indirectKeys = new Set()
+    async.eachLimit(recursiveKeys(), concurrencyLimit, (multihash, cb) => {
+      dag._getRecursive(multihash, (err, nodes) => {
+        if (err) { return cb(err) }
+
+        nodes
+          .map(({ multihash }) => toB58String(multihash))
+          // recursive pins pre-empt indirect pins
+          .filter(key => !recursivePins.has(key))
+          .forEach(key => indirectKeys.add(key))
+
+        cb()
+      })
+    }, (err) => {
+      if (err) { return callback(err) }
+      callback(null, Array.from(indirectKeys))
+    })
+  }
+
+  // Encode and write pin key sets to the datastore:
+  // a DAGLink for each of the recursive and direct pinsets
+  // a DAGNode holding those as DAGLinks, a kind of root pin
+  function flushPins (callback) {
+    let dLink, rLink, root
+    async.series([
+      // create a DAGLink to the node with direct pins
+      cb => async.waterfall([
+        cb => pinset.storeSet(directKeys(), cb),
+        (node, cb) => DAGLink.create(pin.types.direct, node.size, node.multihash, cb),
+        (link, cb) => { dLink = link; cb(null) }
+      ], cb),
+
+      // create a DAGLink to the node with recursive pins
+      cb => async.waterfall([
+        cb => pinset.storeSet(recursiveKeys(), cb),
+        (node, cb) => DAGLink.create(pin.types.recursive, node.size, node.multihash, cb),
+        (link, cb) => { rLink = link; cb(null) }
+      ], cb),
+
+      // the pin-set nodes link to a special 'empty' node, so make sure it exists
+      cb => DAGNode.create(Buffer.alloc(0), (err, empty) => {
+        if (err) { return cb(err) }
+        dag.put(empty, { cid: new CID(empty.multihash) }, cb)
+      }),
+
+      // create a root node with DAGLinks to the direct and recursive DAGs
+      cb => DAGNode.create(Buffer.alloc(0), [dLink, rLink], (err, node) => {
+        if (err) { return cb(err) }
+        root = node
+        dag.put(root, { cid: new CID(root.multihash) }, cb)
+      }),
+
+      // hack for CLI tests
+      cb => repo.closed ? repo.datastore.open(cb) : cb(null, null),
+
+      // save root to datastore under a consistent key
+      cb => repo.datastore.put(pinDataStoreKey, root.multihash, cb)
+    ], (err, res) => {
+      if (err) { return callback(err) }
+      self.log(`Flushed pins with root: ${root}`)
+      return callback(null, root)
+    })
+  }
 
   const pin = {
     types: {
@@ -40,26 +105,18 @@ module.exports = function pin (self) {
       all: 'all'
     },
 
-    clear: () => {
-      directPins.clear()
-      recursivePins.clear()
-    },
-
-    set: pinSet(dag),
-
     add: promisify((paths, options, callback) => {
       if (typeof options === 'function') {
         callback = options
         options = null
       }
-      callback = once(callback)
       const recursive = options ? options.recursive : true
 
       resolvePath(self.object, paths, (err, mhs) => {
         if (err) { return callback(err) }
 
         // verify that each hash can be pinned
-        parallel(mhs.map(multihash => cb => {
+        async.map(mhs, (multihash, cb) => {
           const key = toB58String(multihash)
           if (recursive) {
             if (recursivePins.has(key)) {
@@ -91,7 +148,7 @@ module.exports = function pin (self) {
               return cb(null, key)
             })
           }
-        }), (err, results) => {
+        }, (err, results) => {
           if (err) { return callback(err) }
 
           // update the pin sets in memory
@@ -99,7 +156,7 @@ module.exports = function pin (self) {
           results.forEach(key => pinset.add(key))
 
           // persist updated pin sets to datastore
-          pin.flush((err, root) => {
+          flushPins((err, root) => {
             if (err) { return callback(err) }
             return callback(null, results.map(key => ({hash: key})))
           })
@@ -114,14 +171,13 @@ module.exports = function pin (self) {
       } else if (options && options.recursive === false) {
         recursive = false
       }
-      callback = once(callback)
 
       resolvePath(self.object, paths, (err, mhs) => {
         if (err) { return callback(err) }
 
         // verify that each hash can be unpinned
-        series(mhs.map(multihash => cb => {
-          pin.isPinnedWithType(multihash, pin.types.all, (err, res) => {
+        async.map(mhs, (multihash, cb) => {
+          pin._isPinnedWithType(multihash, pin.types.all, (err, res) => {
             if (err) { return cb(err) }
             const { pinned, reason } = res
             const key = toB58String(multihash)
@@ -144,7 +200,7 @@ module.exports = function pin (self) {
                 ))
             }
           })
-        }), (err, results) => {
+        }, (err, results) => {
           if (err) { return callback(err) }
 
           // update the pin sets in memory
@@ -157,7 +213,7 @@ module.exports = function pin (self) {
           })
 
           // persist updated pin sets to datastore
-          pin.flush((err, root) => {
+          flushPins((err, root) => {
             if (err) { return callback(err) }
             self.log(`Removed pins: ${results}`)
             return callback(null, results.map(key => ({hash: key})))
@@ -183,7 +239,6 @@ module.exports = function pin (self) {
       if (options && options.type) {
         type = options.type.toLowerCase()
       }
-      callback = once(callback)
       if (!pin.types[type]) {
         return callback(new Error(
           `Invalid type '${type}', must be one of {direct, indirect, recursive, all}`
@@ -195,8 +250,8 @@ module.exports = function pin (self) {
         resolvePath(self.object, paths, (err, mhs) => {
           if (err) { return callback(err) }
 
-          series(mhs.map(multihash => cb => {
-            pin.isPinnedWithType(multihash, pin.types.all, (err, res) => {
+          async.mapSeries(mhs, (multihash, cb) => {
+            pin._isPinnedWithType(multihash, pin.types.all, (err, res) => {
               if (err) { return cb(err) }
               const { pinned, reason } = res
               const key = toB58String(multihash)
@@ -218,54 +273,50 @@ module.exports = function pin (self) {
                   })
               }
             })
-          }), callback)
+          }, callback)
         })
       } else {
         // show all pinned items of type
-        let result = []
+        let pins = []
         if (type === pin.types.direct || type === pin.types.all) {
-          pin.directKeyStrings().forEach(hash => {
-            result.push({
+          pins = pins.concat(
+            Array.from(directPins).map(hash => ({
               type: pin.types.direct,
-              hash: hash
-            })
-          })
+              hash
+            }))
+          )
         }
         if (type === pin.types.recursive || type === pin.types.all) {
-          pin.recursiveKeyStrings().forEach(hash => {
-            result.push({
+          pins = pins.concat(
+            Array.from(recursivePins).map(hash => ({
               type: pin.types.recursive,
-              hash: hash
-            })
-          })
+              hash
+            }))
+          )
         }
         if (type === pin.types.indirect || type === pin.types.all) {
-          pin.getIndirectKeys((err, hashes) => {
+          getIndirectKeys((err, indirects) => {
             if (err) { return callback(err) }
-            hashes.forEach(hash => {
-              if (directPins.has(hash)) {
-                // if an indirect pin is also pinned directly,
-                // use only the indirect entry
-                result = result.filter(pin => pin.hash !== hash)
-              }
-              result.push({
+            pins = pins
+              // if something is pinned both directly and indirectly,
+              // report the indirect entry
+              .filter(({ hash }) =>
+                !indirects.includes(hash) ||
+                (indirects.includes(hash) && !directPins.has(hash))
+              )
+              .concat(indirects.map(hash => ({
                 type: pin.types.indirect,
-                hash: hash
-              })
-            })
-            return callback(null, result)
+                hash
+              })))
+            return callback(null, pins)
           })
         } else {
-          return callback(null, result)
+          return callback(null, pins)
         }
       }
     }),
 
-    isPinned: promisify((multihash, callback) => {
-      pin.isPinnedWithType(multihash, pin.types.all, callback)
-    }),
-
-    isPinnedWithType: promisify((multihash, type, callback) => {
+    _isPinnedWithType: promisify((multihash, type, callback) => {
       const key = toB58String(multihash)
       const { recursive, direct, all } = pin.types
       // recursive
@@ -287,11 +338,11 @@ module.exports = function pin (self) {
       // check each recursive key to see if multihash is under it
       // arbitrary limit, enables handling 1000s of pins.
       let foundPin
-      someLimit(pin.recursiveKeys(), concurrencyLimit, (key, cb) => {
+      async.someLimit(recursiveKeys(), concurrencyLimit, (key, cb) => {
         dag.get(new CID(key), (err, res) => {
           if (err) { return cb(err) }
 
-          pin.set.hasChild(res.value, multihash, (err, has) => {
+          pinset.hasDescendant(res.value, multihash, (err, has) => {
             if (has) {
               foundPin = toB58String(res.value.multihash)
             }
@@ -304,109 +355,39 @@ module.exports = function pin (self) {
       })
     }),
 
-    directKeyStrings: () => Array.from(directPins),
-
-    recursiveKeyStrings: () => Array.from(recursivePins),
-
-    directKeys: () => pin.directKeyStrings().map(key => multihashes.fromB58String(key)),
-
-    recursiveKeys: () => pin.recursiveKeyStrings().map(key => multihashes.fromB58String(key)),
-
-    getIndirectKeys: promisify(callback => {
-      const indirectKeys = new Set()
-      const rKeys = pin.recursiveKeys()
-      eachLimit(rKeys, concurrencyLimit, (multihash, cb) => {
-        dag._getRecursive(multihash, (err, nodes) => {
-          if (err) { return cb(err) }
-
-          nodes.forEach(node => {
-            const key = toB58String(node.multihash)
-            if (!recursivePins.has(key)) {
-              // not already pinned recursively
-              indirectKeys.add(key)
-            }
-          })
-
-          cb()
-        })
-      }, (err) => {
-        if (err) { return callback(err) }
-        callback(null, Array.from(indirectKeys))
-      })
-    }),
-
-    // encodes and writes pin key sets to the datastore
-    // each key set will be stored as a DAG node, and a root node will link to both
-    flush: promisify((callback) => {
-      const handle = {
-        put: (k, v, cb) => {
-          handle[k] = v
-          cb()
-        }
-      }
-
-      waterfall([
-        // create link to direct keys node
-        (cb) => pin.set.storeSet(pin.directKeys(), cb),
-        (dRoot, cb) => DAGLink.create(pin.types.direct, dRoot.size, dRoot.multihash, cb),
-        (dLink, cb) => handle.put('dLink', dLink, cb),
-
-        // create link to recursive keys node
-        (cb) => pin.set.storeSet(pin.recursiveKeys(), cb),
-        (rRoot, cb) => DAGLink.create(pin.types.recursive, rRoot.size, rRoot.multihash, cb),
-        (rLink, cb) => handle.put('rLink', rLink, cb),
-
-        // the pin-set nodes link to an empty node, so make sure it's added to dag
-        (cb) => DAGNode.create(Buffer.alloc(0), cb),
-        (empty, cb) => dag.put(empty, {cid: new CID(empty.multihash)}, cb),
-
-        // create root node with links to direct and recursive nodes
-        (cid, cb) => DAGNode.create(Buffer.alloc(0), [handle.dLink, handle.rLink], cb),
-        (root, cb) => handle.put('root', root, cb),
-
-        // add the root node to dag
-        (cb) => dag.put(handle.root, {cid: new CID(handle.root.multihash)}, cb),
-
-        // save serialized root to datastore under a consistent key
-        (_, cb) => repo.closed ? repo.datastore.open(cb) : cb(null, null), // hack for CLI tests
-        (_, cb) => repo.datastore.put(pinDataStoreKey, handle.root.multihash, cb)
-      ], (err, result) => {
-        if (err) { return callback(err) }
-        self.log(`Flushed pins with root: ${handle.root}.`)
-        return callback(null, handle.root)
-      })
-    }),
-
-    load: promisify(callback => {
-      const handle = {
-        put: (k, v, cb) => {
-          handle[k] = v
-          cb()
-        }
-      }
-
-      waterfall([
-        (cb) => repo.closed ? repo.datastore.open(cb) : cb(null, null), // hack for CLI tests
+    _load: promisify(callback => {
+      async.waterfall([
+        // hack for CLI tests
+        (cb) => repo.closed ? repo.datastore.open(cb) : cb(null, null),
         (_, cb) => repo.datastore.has(pinDataStoreKey, cb),
         (has, cb) => has ? cb() : cb(new Error('No pins to load')),
         (cb) => repo.datastore.get(pinDataStoreKey, cb),
-        (mh, cb) => dag.get(new CID(mh), cb),
-        (root, cb) => handle.put('root', root.value, cb),
-        (cb) => pin.set.loadSet(handle.root, pin.types.recursive, cb),
-        (rKeys, cb) => handle.put('rKeys', rKeys, cb),
-        (cb) => pin.set.loadSet(handle.root, pin.types.direct, cb)
-      ], (err, dKeys) => {
-        if (err && err.message !== 'No pins to load') {
-          return callback(err)
+        (mh, cb) => dag.get(new CID(mh), cb)
+      ], (err, pinRoot) => {
+        if (err) {
+          if (err.message === 'No pins to load') {
+            self.log('No pins to load')
+            return callback()
+          } else {
+            return callback(err)
+          }
         }
-        if (dKeys) {
+
+        async.parallel([
+          cb => pinset.loadSet(pinRoot.value, pin.types.recursive, cb),
+          cb => pinset.loadSet(pinRoot.value, pin.types.direct, cb)
+        ], (err, [rKeys, dKeys]) => {
+          if (err) { return callback(err) }
+
           directPins = new Set(dKeys.map(toB58String))
-          recursivePins = new Set(handle.rKeys.map(toB58String))
-        }
-        self.log('Loaded pins from the datastore')
-        return callback()
+          recursivePins = new Set(rKeys.map(toB58String))
+
+          self.log('Loaded pins from the datastore')
+          return callback(null)
+        })
       })
     })
   }
+
   return pin
 }
