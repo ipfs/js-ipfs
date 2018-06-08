@@ -38,7 +38,7 @@ describe('interface-ipfs-core over ipfs-api tests', () => {
 
   tests.key(CommonFactory.create({
     spawnOptions: {
-      args: ['--pass', 'ipfs-is-awesome-software'],
+      args: ['--pass ipfs-is-awesome-software'],
       initOptions: { bits: 512 }
     }
   }))
