@@ -56,6 +56,7 @@ describe('interface-ipfs-core tests', () => {
 
   tests.pin(defaultCommonFactory)
 
+  // FIXME: ping implementation requires DHT
   tests.ping(defaultCommonFactory, { skip: !isNode })
 
   tests.pubsub(CommonFactory.create({
@@ -63,10 +64,15 @@ describe('interface-ipfs-core tests', () => {
       args: ['--enable-pubsub-experiment'],
       initOptions: { bits: 512 }
     }
-  }), { skip: !isNode })
+  }))
 
-  // TODO: repo.gc is not implemented in js-ipfs yet!
-  tests.repo(defaultCommonFactory, { skip: ['gc'] })
+  tests.repo(defaultCommonFactory, {
+    skip: [
+      // repo.gc
+      // TODO: repo.gc is not implemented in js-ipfs yet!
+      'gc'
+    ]
+  })
 
   tests.stats(defaultCommonFactory)
 
@@ -101,7 +107,9 @@ describe('interface-ipfs-core tests', () => {
     }
   }), { skip: !isNode })
 
+  // FIXME: currently failing
   tests.types(defaultCommonFactory, { skip: true })
 
+  // FIXME: currently failing
   tests.util(defaultCommonFactory, { skip: true })
 })
