@@ -32,10 +32,7 @@ describe('interface-ipfs-core over ipfs-api tests', () => {
       'write',
       'mv',
       'flush',
-      'ls',
-      // files.catReadableStream
-      // FIXME currently failing
-      'should export a chunk of a file in a Readable Stream'
+      'ls'
     ]
   })
 
