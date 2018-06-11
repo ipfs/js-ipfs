@@ -1,6 +1,5 @@
 'use strict'
 
-const CID = require('cids')
 const print = require('../../utils').print
 
 module.exports = {
@@ -17,11 +16,7 @@ module.exports = {
       }
 
       stats.wantlist = stats.wantlist || []
-      stats.wantlist = stats.wantlist.map((entry) => {
-        const buf = Buffer.from(entry.cid.hash.data)
-        const cid = new CID(entry.cid.version, entry.cid.codec, buf)
-        return cid.toBaseEncodedString()
-      })
+      stats.wantlist = stats.wantlist.map(entry => entry['/'])
       stats.peers = stats.peers || []
 
       print(`bitswap status

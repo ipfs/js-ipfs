@@ -3,7 +3,7 @@
 const print = require('../../utils').print
 
 module.exports = {
-  command: 'wantlist',
+  command: 'wantlist [peer]',
 
   describe: 'Print out all blocks currently on the bitswap wantlist for the local peer.',
 
