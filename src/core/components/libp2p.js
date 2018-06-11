@@ -4,6 +4,7 @@
 const Node = require('../runtime/libp2p-nodejs')
 const promisify = require('promisify-es6')
 const get = require('lodash.get')
+const Rendezvous = require('libp2p-rendezvous')
 
 module.exports = function libp2p (self) {
   return {
@@ -33,6 +34,8 @@ module.exports = function libp2p (self) {
         }
 
         self._libp2pNode = new Node(self._peerInfo, self._peerInfoBook, options)
+        const rendezvous = self.rendezvous = new Rendezvous(self._libp2pNode)
+        self._libp2pNode.modules.discovery.push(rendezvous)
 
         self._libp2pNode.on('peer:discovery', (peerInfo) => {
           const dial = () => {
