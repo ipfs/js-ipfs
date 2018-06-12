@@ -9,16 +9,7 @@ const {
   loadNode
 } = require('../utils')
 
-const defaultOptions = {
-  progress: undefined,
-  hash: undefined,
-  cidVersion: undefined,
-  strategy: undefined
-}
-
 const importStream = (ipfs, source, options, callback) => {
-  options = Object.assign({}, defaultOptions, options)
-
   waterfall([
     (cb) => pull(
       values([{
@@ -29,8 +20,8 @@ const importStream = (ipfs, source, options, callback) => {
         hashAlg: options.hash,
         cidVersion: options.cidVersion,
         strategy: options.strategy,
-        rawLeafNodes: true,
-        reduceSingleLeafToSelf: false
+        rawLeafNodes: options.rawLeafNodes,
+        reduceSingleLeafToSelf: options.reduceSingleLeafToSelf
       }),
       collect(cb)
     ),

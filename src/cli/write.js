@@ -39,6 +39,19 @@ module.exports = {
       coerce: asBoolean,
       describe: 'Truncate the file after writing'
     },
+    rawLeaves: {
+      alias: 'r',
+      type: 'boolean',
+      default: true,
+      coerce: asBoolean,
+      describe: 'Whether to write leaf nodes as raw UnixFS nodes'
+    },
+    reduceSingleLeafToSelf: {
+      type: 'boolean',
+      default: false,
+      coerce: asBoolean,
+      describe: 'If a file can fit in one DAGNode, only use one DAGNode instead of storing the data in a child'
+    },
     flush: {
       alias: 'f',
       type: 'boolean',
@@ -76,6 +89,7 @@ module.exports = {
       create,
       truncate,
       rawLeaves,
+      reduceSingleLeafToSelf,
       cidVersion,
       hashAlg,
       format,
@@ -91,7 +105,8 @@ module.exports = {
         length,
         create,
         truncate,
-        rawLeaves,
+        rawLeafNodes: rawLeaves,
+        reduceSingleLeafToSelf,
         cidVersion,
         hashAlg,
         format,

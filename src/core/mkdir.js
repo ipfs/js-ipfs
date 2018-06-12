@@ -64,6 +64,6 @@ module.exports = (ipfs) => {
       }, cb),
       (result, cb) => updateTree(ipfs, result, cb),
       (newRoot, next) => updateMfsRoot(ipfs, newRoot.node.multihash, next)
-    ], callback)
+    ], (error) => callback(error))
   }
 }

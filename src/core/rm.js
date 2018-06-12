@@ -36,7 +36,7 @@ module.exports = (ipfs) => {
       sources.map(source => {
         return (done) => removePath(ipfs, source.path, options, done)
       }),
-      callback
+      (error) => callback(error)
     )
   }
 }

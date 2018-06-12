@@ -36,13 +36,14 @@ const defaultOptions = {
   length: undefined, // how many bytes from the incoming buffer to write
   create: false, // whether to create the file if it does not exist
   truncate: false, // whether to truncate the file first
-  rawLeaves: false,
+  rawLeafNodes: false,
+  reduceSingleLeafToSelf: false,
   cidVersion: undefined,
   hashAlg: 'sha2-256',
   format: 'dag-pb',
   parents: false, // whether to create intermediate directories if they do not exist
   progress: undefined,
-  strategy: 'balanced',
+  strategy: 'trickle',
   flush: true
 }
 
@@ -139,7 +140,7 @@ module.exports = function mfsWrite (ipfs) {
             createLastComponent: options.parents
           }), (error, result) => next(error, source, result)),
           (source, containingFolder, next) => {
-            updateOrImport(ipfs, options, path, source, containingFolder, callback)
+            updateOrImport(ipfs, options, path, source, containingFolder, next)
           }
         ], done)
       }

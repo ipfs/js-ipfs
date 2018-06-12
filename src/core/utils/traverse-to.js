@@ -52,8 +52,6 @@ const traverseToIpfsObject = (ipfs, path, options, callback) => {
 }
 
 const traverseToMfsObject = (ipfs, path, options, callback) => {
-  log('MFS', path)
-
   waterfall([
     (done) => withMfsRoot(ipfs, done),
     (root, done) => {
