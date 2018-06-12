@@ -21,6 +21,13 @@ module.exports = (send) => {
       callback = opts
       opts = {}
     }
+
+    if (typeof (args) === 'function') {
+      callback = args
+      opts = {}
+      args = null
+    }
+
     return send.andTransform({
       path: 'files/ls',
       args: args,
