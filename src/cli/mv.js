@@ -1,21 +1,27 @@
 'use strict'
 
+const {
+  asBoolean
+} = require('./utils')
+
 module.exports = {
   command: 'mv <source> <dest>',
 
-  describe: 'Move files around. Just like traditional unix mv',
+  describe: 'Move mfs files around',
 
   builder: {
     parents: {
       alias: 'p',
       type: 'boolean',
       default: false,
+      coerce: asBoolean,
       describe: 'Create any non-existent intermediate directories'
     },
     recursive: {
       alias: 'r',
       type: 'boolean',
       default: false,
+      coerce: asBoolean,
       describe: 'Remove directories recursively'
     }
   },
@@ -29,13 +35,11 @@ module.exports = {
       recursive
     } = argv
 
-    ipfs.mfs.mv(source, dest, {
-      parents,
-      recursive
-    }, (error) => {
-      if (error) {
-        throw error
-      }
-    })
+    argv.resolve(
+      ipfs.files.mv(source, dest, {
+        parents,
+        recursive
+      })
+    )
   }
 }

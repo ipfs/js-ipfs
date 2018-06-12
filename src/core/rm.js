@@ -1,6 +1,5 @@
 'use strict'
 
-const promisify = require('promisify-es6')
 const UnixFs = require('ipfs-unixfs')
 const waterfall = require('async/waterfall')
 const series = require('async/series')
@@ -20,8 +19,8 @@ const defaultOptions = {
   recursive: false
 }
 
-module.exports = function mfsRm (ipfs) {
-  return promisify(function () {
+module.exports = (ipfs) => {
+  return function mfsRm () {
     const args = Array.prototype.slice.call(arguments)
     const {
       sources,
@@ -37,9 +36,9 @@ module.exports = function mfsRm (ipfs) {
       sources.map(source => {
         return (done) => removePath(ipfs, source.path, options, done)
       }),
-      callback
+      (error) => callback(error)
     )
-  })
+  }
 }
 
 const removePath = (ipfs, path, options, callback) => {

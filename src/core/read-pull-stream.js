@@ -1,12 +1,10 @@
 'use strict'
 
 const exporter = require('ipfs-unixfs-engine').exporter
-const promisify = require('promisify-es6')
 const pull = require('pull-stream/pull')
 const collect = require('pull-stream/sinks/collect')
 const waterfall = require('async/waterfall')
 const {
-  validatePath,
   traverseTo
 } = require('./utils')
 const log = require('debug')('mfs:read-pull-stream')
@@ -16,20 +14,14 @@ const defaultOptions = {
   length: undefined
 }
 
-module.exports = function mfsReadPullStream (ipfs) {
-  return promisify((path, options, callback) => {
+module.exports = (ipfs) => {
+  return function mfsReadPullStream (path, options, callback) {
     if (typeof options === 'function') {
       callback = options
       options = {}
     }
 
     options = Object.assign({}, defaultOptions, options)
-
-    try {
-      path = validatePath(path)
-    } catch (error) {
-      return callback(error)
-    }
 
     log(`Reading ${path}`)
 
@@ -50,5 +42,5 @@ module.exports = function mfsReadPullStream (ipfs) {
         ], done)
       }
     ], callback)
-  })
+  }
 }

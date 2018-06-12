@@ -7,6 +7,11 @@ function toSources (args, defaultOptions) {
   const callback = args.filter(arg => typeof arg === 'function').pop()
   const options = Object.assign({}, defaultOptions, args.filter(arg => typeof arg === 'object').pop() || {})
 
+  // Support weird mfs.mv([source, dest], options, callback) signature
+  if (Array.isArray(args[0])) {
+    args = args[0]
+  }
+
   const sources = args
     .filter(arg => typeof arg === 'string')
     .map(source => {

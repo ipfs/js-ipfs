@@ -28,7 +28,9 @@ const truncateNode = (ipfs, dagNode, newLength, options, callback) => {
           progress: options.progress,
           hashAlg: options.hash,
           cidVersion: options.cidVersion,
-          strategy: options.strategy
+          strategy: options.strategy,
+          rawLeafNodes: true,
+          reduceSingleLeafToSelf: false
         }),
         collect(cb)
       )

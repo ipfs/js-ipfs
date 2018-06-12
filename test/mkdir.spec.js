@@ -32,6 +32,14 @@ describe('mkdir', function () {
     })
   })
 
+  it('refuses to create a directory without a leading slash', (done) => {
+    mfs.mkdir('foo', (error) => {
+      expect(error.message).to.contain('paths must start with a leading /')
+
+      done()
+    })
+  })
+
   it('refuses to recreate the root directory when -p is false', (done) => {
     mfs.mkdir('/', {
       parents: false
@@ -42,20 +50,12 @@ describe('mkdir', function () {
     })
   })
 
-  it('silently refuses to recreate the root directory', (done) => {
-    mfs.mkdir('/', {}, (error) => {
-      expect(error).not.exist()
-
-      done()
-    })
-  })
-
   it('refuses to create a nested directory when -p is false', () => {
     return mfs.mkdir('/foo/bar/baz', {
       parents: false
     })
       .catch(error => {
-        expect(error.message).to.contain("intermediate directory 'foo' did not exist")
+        expect(error.message).to.contain('foo did not exist')
       })
   })
 
@@ -72,7 +72,9 @@ describe('mkdir', function () {
   it('refuses to create a directory that already exists', () => {
     const path = '/qux/quux/quuux'
 
-    return mfs.mkdir(path)
+    return mfs.mkdir(path, {
+      parents: true
+    })
       .then(() => mfs.mkdir(path, {
         parents: false
       }))

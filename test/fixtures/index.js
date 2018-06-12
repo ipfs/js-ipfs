@@ -21,15 +21,8 @@ const createMfs = promisify((cb) => {
       (next) => node.once('ready', next)
     ], (error) => done(error, node)),
     (node, done) => {
-      const mfs = {
-        node
-      }
-
-      for (let key in core) {
-        if (core.hasOwnProperty(key)) {
-          mfs[key] = core[key](node)
-        }
-      }
+      const mfs = core(node)
+      mfs.node = node
 
       done(null, mfs)
     }

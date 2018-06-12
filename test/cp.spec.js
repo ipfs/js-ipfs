@@ -5,7 +5,6 @@ const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
 const bufferStream = require('./fixtures/buffer-stream')
-const bs58 = require('bs58')
 
 const {
   createMfs
@@ -136,10 +135,12 @@ describe('cp', function () {
   it('copies directories recursively', () => {
     const directory = `/source-directory-${Math.random()}`
     const subDirectory = `/source-directory-${Math.random()}`
-    const source = `${directory}/${subDirectory}`
+    const source = `${directory}${subDirectory}`
     const destination = `/dest-directory-${Math.random()}`
 
-    return mfs.mkdir(source)
+    return mfs.mkdir(source, {
+      parents: true
+    })
       .then(() => mfs.cp(directory, destination))
       .then(() => mfs.stat(destination))
       .then((stats) => {
@@ -188,7 +189,7 @@ describe('cp', function () {
       ))
   })
 
-  it.skip('copies files from ipfs paths', () => {
+  it('copies files from ipfs paths', () => {
     const source = `/source-file-${Math.random()}.txt`
     const destination = `/dest-file-${Math.random()}.txt`
 
@@ -196,7 +197,9 @@ describe('cp', function () {
       create: true
     })
       .then(() => mfs.stat(source))
-      .then((stats) => mfs.cp(`/ipfs/${bs58.encode(stats.hash)}`, destination))
+      .then((stats) => {
+        return mfs.cp(`/ipfs/${stats.hash}`, destination)
+      })
       .then(() => mfs.stat(destination))
       .then((stats) => {
         expect(stats.size).to.equal(100)

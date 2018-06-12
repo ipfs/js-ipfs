@@ -9,11 +9,6 @@ const loadFixture = require('aegir/fixtures')
 const isNode = require('detect-node')
 const values = require('pull-stream/sources/values')
 const bufferStream = require('./fixtures/buffer-stream')
-const CID = require('cids')
-const UnixFs = require('ipfs-unixfs')
-const {
-  MAX_CHUNK_SIZE
-} = require('../src/core/utils')
 
 let fs
 
@@ -324,48 +319,10 @@ describe('write', function () {
         .then(() => mfs.read(path, {
           offset: offset - 5
         }))
-        .then((buffer) => expect(buffer).to.deep.equal(Buffer.concat([Buffer.from([0, 0, 0, 0, 0]), newContent])))
+        .then((buffer) => {
+          expect(buffer).to.deep.equal(Buffer.concat([Buffer.from([0, 0, 0, 0, 0]), newContent]))
+        })
     })
-  })
-
-  it(`expands one DAGNode into a balanced tree`, () => {
-    const path = `/some-file-${Math.random()}.txt`
-    const data = []
-
-    return mfs.write(path, bufferStream(MAX_CHUNK_SIZE - 10, {
-      collector: (bytes) => data.push(bytes)
-    }), {
-      create: true
-    })
-      .then(() => mfs.stat(path))
-      .then((stats) => mfs.node.dag.get(new CID(stats.hash)))
-      .then((result) => result.value)
-      .then((node) => {
-        expect(node.links.length).to.equal(0)
-
-        const meta = UnixFs.unmarshal(node.data)
-
-        expect(meta.fileSize()).to.equal(data.reduce((acc, curr) => acc + curr.length, 0))
-        expect(meta.data).to.deep.equal(data.reduce((acc, curr) => Buffer.concat([acc, curr]), Buffer.alloc(0)))
-      })
-      .then(() => mfs.write(path, bufferStream(20, {
-        collector: (bytes) => data.push(bytes)
-      }), {
-        offset: MAX_CHUNK_SIZE - 10
-      }))
-      .then(() => mfs.stat(path))
-      .then((stats) => mfs.node.dag.get(new CID(stats.hash)))
-      .then((result) => result.value)
-      .then((node) => {
-        expect(node.links.length).to.equal(2)
-
-        const meta = UnixFs.unmarshal(node.data)
-
-        expect(meta.fileSize()).to.equal(data.reduce((acc, curr) => acc + curr.length, 0))
-        expect(meta.data).to.equal(undefined)
-      })
-      .then(() => mfs.read(path))
-      .then((buffer) => expect(buffer).to.deep.equal(data.reduce((acc, curr) => Buffer.concat([acc, curr]), Buffer.alloc(0))))
   })
 
   runTest(({type, path, content}) => {
@@ -383,6 +340,72 @@ describe('write', function () {
         .then(() => mfs.read(path))
         .then((buffer) => expect(buffer).to.deep.equal(newContent))
     })
+  })
+
+  runTest(({type, path, content}) => {
+    it(`truncates a file after writing with a stream (${type})`, () => {
+      const newContent = Buffer.from('Oh hai!')
+      const stream = values([newContent])
+
+      return mfs.write(path, content, {
+        create: true
+      })
+        .then(() => mfs.write(path, stream, {
+          truncate: true
+        }))
+        .then(() => mfs.stat(path))
+        .then((stats) => expect(stats.size).to.equal(newContent.length))
+        .then(() => mfs.read(path))
+        .then((buffer) => expect(buffer).to.deep.equal(newContent))
+    })
+  })
+
+  runTest(({type, path, content}) => {
+    it(`truncates a file after writing with a stream with an offset (${type})`, () => {
+      const offset = 100
+      const newContent = Buffer.from('Oh hai!')
+      const stream = values([newContent])
+
+      return mfs.write(path, content, {
+        create: true
+      })
+        .then(() => mfs.write(path, stream, {
+          truncate: true,
+          offset
+        }))
+        .then(() => mfs.stat(path))
+        .then((stats) => expect(stats.size).to.equal(offset + newContent.length))
+    })
+  })
+
+  it('supports concurrent writes', function () {
+    if (global.MFS_DISABLE_CONCURRENCY) {
+      return this.skip()
+    }
+
+    const files = []
+
+    for (let i = 0; i < 10; i++) {
+      files.push({
+        name: `source-file-${Math.random()}.txt`,
+        source: bufferStream(100)
+      })
+    }
+
+    return Promise.all(
+      files.map(({name, source}) => mfs.write(`/concurrent/${name}`, source, {
+        create: true,
+        parents: true
+      }))
+    )
+      .then(() => mfs.ls('/concurrent'))
+      .then(listing => {
+        expect(listing.length).to.equal(files.length)
+
+        listing.forEach(listedFile => {
+          expect(files.find(file => file.name === listedFile.name))
+        })
+      })
   })
 
   it.skip('writes a file with raw blocks for newly created leaf nodes', () => {

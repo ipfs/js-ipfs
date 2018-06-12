@@ -1,19 +1,20 @@
 'use strict'
 
 const {
-  print
+  asBoolean
 } = require('./utils')
 
 module.exports = {
   command: 'mkdir <path>',
 
-  describe: 'Make directories.',
+  describe: 'Make mfs directories',
 
   builder: {
     parents: {
       alias: 'p',
       type: 'boolean',
       default: false,
+      coerce: asBoolean,
       describe: 'No error if existing, make parent directories as needed.'
     },
     cidVersion: {
@@ -28,6 +29,7 @@ module.exports = {
     flush: {
       alias: 'f',
       type: 'boolean',
+      coerce: asBoolean,
       describe: 'Weird undocumented option'
     }
   },
@@ -42,17 +44,13 @@ module.exports = {
       flush
     } = argv
 
-    ipfs.mfs.mkdir(path, {
-      parents,
-      cidVersion,
-      hash,
-      flush
-    }, (error, result) => {
-      if (error) {
-        throw error
-      }
-
-      print(result)
-    })
+    argv.resolve(
+      ipfs.files.mkdir(path, {
+        parents,
+        cidVersion,
+        hash,
+        flush
+      })
+    )
   }
 }

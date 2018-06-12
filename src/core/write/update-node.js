@@ -12,20 +12,20 @@ const map = require('pull-stream/throughs/map')
 const filter = require('pull-stream/throughs/filter')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
-const {
-  DAGLink
-} = require('ipld-dag-pb')
 const log = require('debug')('mfs:write:update-node')
 const {
   limitStreamBytes,
+  countStreamBytes,
   createNode,
   zeros,
-  loadNode,
-  MAX_CHUNK_SIZE
+  loadNode
 } = require('../utils')
 const importNode = require('./import-node')
 const updateNodeBytes = require('./update-tree')
 const truncateNode = require('./truncate-node')
+const {
+  DAGLink
+} = require('ipld-dag-pb')
 
 const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
   let offset = options.offset || 0
@@ -33,8 +33,8 @@ const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
   // Where we want to start writing in the stream
   let streamStart = offset
 
-  // Where we want to stop writing in the stream
-  const streamEnd = offset + options.length
+  // Where we want to stop writing in the stream and truncate if requested
+  let streamEnd = offset + options.length
 
   // Where we currently are in the file
   let destinationStreamPosition = streamStart
@@ -77,6 +77,14 @@ const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
         source,
         filter(Boolean),
         limitStreamBytes(options.length + paddingBytesLength),
+        countStreamBytes((count) => {
+          // we normally don't know how long a stream is but if we're going to truncate the file
+          // after writing we need to know how many bytes have been emitted in order to truncate
+          // after the last byte so count them..
+          if (streamEnd === Infinity) {
+            streamEnd = offset + count
+          }
+        }),
         map((buffer) => {
           log(`Writing ${buffer.length} at ${destinationStreamPosition} of ${fileSize}`)
 
@@ -124,39 +132,30 @@ const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
           const appendedMeta = unmarshal(appendedNode.data)
 
           if (appendedMeta.fileSize()) {
-            // both nodes are small
-            if (!updatedNode.links.length && !appendedNode.links.length) {
-              const totalDataLength = updatedMeta.data.length + appendedMeta.data.length
+            // add all links from appendedNode to the updatedNode
+            const links = updatedNode.links
 
-              if (totalDataLength < MAX_CHUNK_SIZE) {
-                // Our data should fit into one DAGNode so merge the data from both nodes..
-                const newMeta = new UnixFs(updatedMeta.type, Buffer.concat([updatedMeta.data, appendedMeta.data]))
+            if (appendedMeta.data && appendedMeta.data.length) {
+              log('New data was found on appended node')
 
-                log('combined two nodes')
-                return createNode(ipfs, newMeta.marshal(), [], options, next)
-              } else {
-                // We expanded one DAGNode into two so create a tree
-                const link1 = new DAGLink('', updatedNode.data.length, updatedNode.multihash)
-                const link2 = new DAGLink('', appendedNode.data.length, appendedNode.multihash)
-
-                const newMeta = new UnixFs(updatedMeta.type)
-                newMeta.addBlockSize(updatedMeta.fileSize())
-                newMeta.addBlockSize(appendedMeta.fileSize())
-
-                log('created one new node from two small nodes')
-                return createNode(ipfs, newMeta.marshal(), [link1, link2], options, next)
+              if (appendedNode.links && appendedNode.links.length) {
+                log('New data was also found on appended node children')
               }
+
+              updatedMeta.addBlockSize(appendedMeta.fileSize())
+
+              links.push(new DAGLink('', appendedNode.size, appendedNode.multihash))
+            } else if (appendedNode.links && appendedNode.links.length) {
+              log('New data required multiple DAGNodes')
+
+              appendedNode.links.forEach((link, index) => {
+                updatedMeta.addBlockSize(appendedMeta.blockSizes[index])
+                links.push(link)
+              })
             }
 
-            // if we added new bytes, add them to the root node of the original file
-            // this is consistent with the go implementation but probably not the right thing to do
-
-            // update UnixFs metadata on the root node
-            updatedMeta.addBlockSize(appendedMeta.fileSize())
-
-            return createNode(ipfs, updatedMeta.marshal(), updatedNode.links.concat(
-              new DAGLink('', appendedNode.data.length, appendedNode.multihash)
-            ), options, next)
+            // create a new node with all the links
+            return createNode(ipfs, updatedMeta.marshal(), links, options, next)
           }
 
           next(null, updatedNode)

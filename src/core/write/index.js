@@ -3,14 +3,14 @@
 const promisify = require('promisify-es6')
 const CID = require('cids')
 const waterfall = require('async/waterfall')
+const parallel = require('async/parallel')
 const {
   updateMfsRoot,
   validatePath,
   traverseTo,
   addLink,
   updateTree,
-  limitStreamBytes,
-  FILE_SEPARATOR
+  limitStreamBytes
 } = require('../utils')
 const values = require('pull-stream/sources/values')
 const log = require('debug')('mfs:write')
@@ -36,17 +36,22 @@ const defaultOptions = {
   length: undefined, // how many bytes from the incoming buffer to write
   create: false, // whether to create the file if it does not exist
   truncate: false, // whether to truncate the file first
-  rawLeaves: false,
+  rawLeafNodes: false,
+  reduceSingleLeafToSelf: false,
   cidVersion: undefined,
   hashAlg: 'sha2-256',
   format: 'dag-pb',
   parents: false, // whether to create intermediate directories if they do not exist
   progress: undefined,
-  strategy: 'balanced',
+  strategy: 'trickle',
   flush: true
 }
 
 const toPullSource = (content, options, callback) => {
+  if (!content) {
+    return callback(new Error('paths must start with a leading /'))
+  }
+
   // Buffers
   if (Buffer.isBuffer(content)) {
     log('Content was a buffer')
@@ -105,12 +110,6 @@ module.exports = function mfsWrite (ipfs) {
 
     options = Object.assign({}, defaultOptions, options)
 
-    try {
-      path = validatePath(path)
-    } catch (error) {
-      return callback(error)
-    }
-
     if (options.offset < 0) {
       return callback(new Error('cannot have negative write offset'))
     }
@@ -123,92 +122,102 @@ module.exports = function mfsWrite (ipfs) {
       return callback()
     }
 
-    const parts = path
-      .split(FILE_SEPARATOR)
-      .filter(Boolean)
-    const fileName = parts.pop()
+    if (!options.length) {
+      options.length = Infinity
+    }
 
     waterfall([
-      (done) => toPullSource(content, options, done),
+      (done) => {
+        parallel([
+          (next) => toPullSource(content, options, next),
+          (next) => validatePath(path, next)
+        ], done)
+      },
       // walk the mfs tree to the containing folder node
-      (source, done) => traverseTo(ipfs, `${FILE_SEPARATOR}${parts.join(FILE_SEPARATOR)}`, options, (error, result) => done(error, source, result)),
-      (source, containingFolder, done) => {
-        if (!options.length) {
-          options.length = Infinity
-        }
-
+      ([source, path], done) => {
         waterfall([
-          (next) => {
-            const existingChild = containingFolder.node.links.reduce((last, child) => {
-              if (child.name === fileName) {
-                return child
-              }
-
-              return last
-            }, null)
-
-            if (existingChild) {
-              log('Updating linked DAGNode', bs58.encode(existingChild.multihash))
-
-              // overwrite the existing file or part of it, possibly truncating what's left
-              updateNode(ipfs, new CID(existingChild.multihash), source, options, next)
-            } else {
-              if (!options.create) {
-                return next(new Error('file does not exist'))
-              }
-
-              if (options.offset) {
-                options.length += options.offset
-
-                // pad the start of the stream with a buffer full of zeros
-                source = cat([
-                  values([Buffer.alloc(options.offset, 0)]),
-                  source
-                ])
-              }
-
-              source = pull(
-                source,
-                limitStreamBytes(options.length)
-              )
-
-              log('Importing file', fileName)
-              importNode(ipfs, source, options, (error, result) => {
-                log(`Imported file ${fileName}`)
-                next(error, result)
-              })
-            }
-          },
-
-          // Add or replace the DAGLink in the containing directory
-          (child, next) => addLink(ipfs, {
-            parent: containingFolder.node,
-            name: fileName,
-            child: {
-              multihash: child.multihash || child.hash,
-              size: child.size
-            },
-            flush: options.flush
-          }, (error, newContaingFolder) => {
-            // Store new containing folder CID
-            containingFolder.node = newContaingFolder
-
-            log(`New CID for the containing folder is ${bs58.encode(newContaingFolder.multihash)}`)
-
-            newContaingFolder.links.forEach(link => {
-              log(`${link.name} ${bs58.encode(link.multihash)}`)
-            })
-
-            next(error)
-          }),
-
-          // Update the MFS tree from the containingFolder upwards
-          (next) => updateTree(ipfs, containingFolder, next),
-
-          // Update the MFS record with the new CID for the root of the tree
-          (newRoot, next) => updateMfsRoot(ipfs, newRoot.node.multihash, next)
+          (next) => traverseTo(ipfs, path.directory, Object.assign({}, options, {
+            createLastComponent: options.parents
+          }), (error, result) => next(error, source, result)),
+          (source, containingFolder, next) => {
+            updateOrImport(ipfs, options, path, source, containingFolder, next)
+          }
         ], done)
       }
     ], (error) => callback(error))
   })
+}
+
+const updateOrImport = (ipfs, options, path, source, containingFolder, callback) => {
+  waterfall([
+    (next) => {
+      const existingChild = containingFolder.node.links.reduce((last, child) => {
+        if (child.name === path.name) {
+          return child
+        }
+
+        return last
+      }, null)
+
+      if (existingChild) {
+        log('Updating linked DAGNode', bs58.encode(existingChild.multihash))
+
+        // overwrite the existing file or part of it, possibly truncating what's left
+        updateNode(ipfs, new CID(existingChild.multihash), source, options, next)
+      } else {
+        if (!options.create) {
+          return next(new Error('file does not exist'))
+        }
+
+        if (options.offset) {
+          options.length += options.offset
+
+          // pad the start of the stream with a buffer full of zeros
+          source = cat([
+            values([Buffer.alloc(options.offset, 0)]),
+            source
+          ])
+        }
+
+        source = pull(
+          source,
+          limitStreamBytes(options.length)
+        )
+
+        log('Importing file', path.name)
+        importNode(ipfs, source, options, (error, result) => {
+          log(`Imported file ${path.name}`)
+          next(error, result)
+        })
+      }
+    },
+
+    // Add or replace the DAGLink in the containing directory
+    (child, next) => addLink(ipfs, {
+      parent: containingFolder.node,
+      name: path.name,
+      child: {
+        multihash: child.multihash || child.hash,
+        size: child.size
+      },
+      flush: options.flush
+    }, (error, newContaingFolder) => {
+      // Store new containing folder CID
+      containingFolder.node = newContaingFolder
+
+      log(`New CID for the containing folder is ${bs58.encode(newContaingFolder.multihash)}`)
+
+      newContaingFolder.links.forEach(link => {
+        log(`${link.name} ${bs58.encode(link.multihash)}`)
+      })
+
+      next(error)
+    }),
+
+    // Update the MFS tree from the containingFolder upwards
+    (next) => updateTree(ipfs, containingFolder, next),
+
+    // Update the MFS record with the new CID for the root of the tree
+    (newRoot, next) => updateMfsRoot(ipfs, newRoot.node.multihash, next)
+  ], callback)
 }

@@ -62,6 +62,18 @@ Loading this module through a script tag will make the `mfs` obj available in th
 <script src="https://npmcdn.com/ipfs-mfs/dist/index.js"></script>
 ```
 
+### A note on concurrency
+
+The mfs works by storing a reference to the root node's CID in LevelDB. LevelDB does not support concurrent access so there are read/write locks around bits of the code that modify the the root node's CID.
+
+A lock is kept on the main thread and any requests to read/write from workers or the main thread itself are queued pending release of the lock by the existing holder.
+
+Reads are executed together, writes are executed sequentially and prevent any reads from starting.
+
+If you are using IPFS in a single process or with the node [cluster](https://nodejs.org/api/cluster.html) module this should be completely transparent.
+
+If you are using [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) there is no way to globally listen to messages sent between workers and the main thread so you will need to also use the [observable-webworkers](https://www.npmjs.com/package/observable-webworkers) module to ensure the right message transports are set up to allow requesting/releasing the locks.
+
 ## Contribute
 
 All are welcome, please join in!

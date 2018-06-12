@@ -61,22 +61,22 @@ describe('stat', function () {
   })
 
   it('stats an empty directory', () => {
-    const path = '/empty-directory'
+    const path = `/directory-${Math.random()}`
 
-    return mfs.mkdir('/empty-directory')
+    return mfs.mkdir(path)
       .then(() => mfs.stat(path))
       .then(stats => {
-        expect(stats.size).to.equal(undefined)
+        expect(stats.size).to.equal(0)
         expect(stats.cumulativeSize).to.equal(4)
-        expect(stats.childBlocks).to.equal(0)
+        expect(stats.blocks).to.equal(0)
         expect(stats.type).to.equal('directory')
       })
   })
 
   it('returns only a hash', () => {
-    const path = '/empty-directory'
+    const path = `/directory-${Math.random()}`
 
-    return mfs.mkdir('/empty-directory')
+    return mfs.mkdir(path)
       .then(() => mfs.stat(path, {
         hash: true
       }))
@@ -87,9 +87,9 @@ describe('stat', function () {
   })
 
   it('returns only the size', () => {
-    const path = '/empty-directory'
+    const path = `/directory-${Math.random()}`
 
-    return mfs.mkdir('/empty-directory')
+    return mfs.mkdir(path)
       .then(() => mfs.stat(path, {
         size: true
       }))
@@ -113,8 +113,8 @@ describe('stat', function () {
       .then(() => mfs.stat(filePath))
       .then((stats) => {
         expect(stats.size).to.equal(smallFile.length)
-        expect(stats.cumulativeSize).to.equal(21)
-        expect(stats.childBlocks).to.equal(0)
+        expect(stats.cumulativeSize).to.equal(71)
+        expect(stats.blocks).to.equal(1)
         expect(stats.type).to.equal('file')
       })
   })
@@ -130,7 +130,7 @@ describe('stat', function () {
       .then((stats) => {
         expect(stats.size).to.equal(largeFile.length)
         expect(stats.cumulativeSize).to.equal(490800)
-        expect(stats.childBlocks).to.equal(2)
+        expect(stats.blocks).to.equal(2)
         expect(stats.type).to.equal('file')
       })
   })

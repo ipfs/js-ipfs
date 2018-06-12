@@ -25,6 +25,22 @@ describe('ls', function () {
     mfs.node.stop(done)
   })
 
+  it('lists the root directory by default', () => {
+    const fileName = `small-file-${Math.random()}.txt`
+    const content = Buffer.from('Hello world')
+
+    return mfs.write(`/${fileName}`, content, {
+      create: true
+    })
+      .then(() => mfs.ls())
+      .then(files => {
+        expect(files.length).to.equal(1)
+        expect(files[0].name).to.equal(fileName)
+        expect(files[0].type).to.equal('file')
+        expect(files[0].size).to.equal(content.length)
+      })
+  })
+
   it('refuses to lists files with an empty path', () => {
     return mfs.ls('')
       .then(() => {
@@ -45,10 +61,36 @@ describe('ls', function () {
       })
   })
 
-  it('lists files in the root', () => {
-    return mfs.ls('/')
+  it('lists files in a directory', () => {
+    const fileName = `small-file-${Math.random()}.txt`
+    const content = Buffer.from('Hello world')
+
+    return mfs.write(`/dir/${fileName}`, content, {
+      create: true,
+      parents: true
+    })
+      .then(() => mfs.ls('/dir', {}))
       .then(files => {
-        expect(files.length).to.equal(0)
+        expect(files.length).to.equal(1)
+        expect(files[0].name).to.equal(fileName)
+        expect(files[0].type).to.equal('file')
+        expect(files[0].size).to.equal(content.length)
+      })
+  })
+
+  it('lists a file', () => {
+    const fileName = `small-file-${Math.random()}.txt`
+    const content = Buffer.from('Hello world')
+
+    return mfs.write(`/${fileName}`, content, {
+      create: true
+    })
+      .then(() => mfs.ls(`/${fileName}`))
+      .then(files => {
+        expect(files.length).to.equal(1)
+        expect(files[0].name).to.equal(fileName)
+        expect(files[0].type).to.equal('file')
+        expect(files[0].size).to.equal(content.length)
       })
   })
 
@@ -58,7 +100,7 @@ describe('ls', function () {
         throw new Error('No error was thrown for a non-existent file')
       })
       .catch(error => {
-        expect(error.message).to.contain('file does not exist')
+        expect(error.message).to.contain('did not exist')
       })
   })
 })

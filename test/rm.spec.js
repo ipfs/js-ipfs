@@ -134,18 +134,20 @@ describe('rm', function () {
     const subdirectory = `/directory-${Math.random()}`
     const path = `${directory}${subdirectory}`
 
-    return mfs.mkdir(path)
+    return mfs.mkdir(path, {
+      parents: true
+    })
       .then(() => mfs.rm(directory, {
         recursive: true
       }))
-      .then(() => mfs.stat(subdirectory))
+      .then(() => mfs.ls(subdirectory))
       .then(() => {
         throw new Error('File was not removed')
       })
       .catch(error => {
         expect(error.message).to.contain(`Path ${subdirectory} did not exist`)
       })
-      .then(() => mfs.stat(directory))
+      .then(() => mfs.ls(directory))
       .then(() => {
         throw new Error('Directory was not removed')
       })

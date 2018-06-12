@@ -1,6 +1,5 @@
 'use strict'
 
-const promisify = require('promisify-es6')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
 const series = require('async/series')
@@ -13,17 +12,17 @@ const {
   toSourcesAndDestination
 } = require('./utils')
 const stat = require('./stat')
+const log = require('debug')('mfs:cp')
 
 const defaultOptions = {
   parents: false,
-  recursive: false,
   flush: true,
   format: 'dag-pb',
   hashAlg: 'sha2-256'
 }
 
-module.exports = function mfsCp (ipfs) {
-  return promisify(function () {
+module.exports = (ipfs) => {
+  return function mfsCp () {
     const args = Array.prototype.slice.call(arguments)
     const {
       sources,
@@ -40,11 +39,15 @@ module.exports = function mfsCp (ipfs) {
       return callback(new Error('Please supply a destination'))
     }
 
+    options.parents = options.p || options.parents
+
     traverseTo(ipfs, destination.path, {}, (error, result) => {
       if (error) {
         if (sources.length === 1) {
+          log('Only one source, copying to a file')
           return copyToFile(ipfs, sources.pop(), destination, options, callback)
         } else {
+          log('Multiple sources, copying to a directory')
           return copyToDirectory(ipfs, sources, destination, options, callback)
         }
       }
@@ -57,7 +60,7 @@ module.exports = function mfsCp (ipfs) {
 
       callback(new Error('Directory already has entry by that name'))
     })
-  })
+  }
 }
 
 const copyToFile = (ipfs, source, destination, options, callback) => {
@@ -79,7 +82,10 @@ const copyToFile = (ipfs, source, destination, options, callback) => {
       waterfall([
         (next) => addLink(ipfs, {
           parent: dest.node,
-          child: sourceStats, // nb. file size here is not including protobuf wrapper so is wrong
+          child: {
+            size: sourceStats.cumulativeSize,
+            hash: sourceStats.hash
+          },
           name: destination.name
         }, next),
         (newParent, next) => {
@@ -119,7 +125,10 @@ const copyToDirectory = (ipfs, sources, destination, options, callback) => {
             return (dest, done) => {
               return addLink(ipfs, {
                 parent: dest,
-                child: sourceStat, // nb. file size here is not including protobuf wrapper so is wrong
+                child: {
+                  size: sourceStat.cumulativeSize,
+                  hash: sourceStat.hash
+                },
                 name: sources[index].name
               }, done)
             }
