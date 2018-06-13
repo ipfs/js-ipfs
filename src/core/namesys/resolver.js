@@ -1,7 +1,7 @@
 'use strict'
 
 const IpnsEntry = require('./pb/ipnsEntry')
-const utils = require('./utils')
+// const utils = require('./utils')
 
 class IpnsResolver {
   constructor (repo) {

@@ -18,7 +18,6 @@ module.exports = (server) => {
     method: '*',
     path: '/api/v0/name/publish',
     config: {
-      handler: resources.name.publish.handler,
       handler: resources.name.publish.handler
     }
   })
