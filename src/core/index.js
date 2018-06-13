@@ -20,6 +20,7 @@ const EventEmitter = require('events')
 const config = require('./config')
 const boot = require('./boot')
 const components = require('./components')
+const Namesys = require('./namesys')
 // replaced by repo-browser when running in the browser
 const defaultRepo = require('./runtime/repo-nodejs')
 const preload = require('./preload')
@@ -89,6 +90,7 @@ class IPFS extends EventEmitter {
     this._pubsub = undefined
     this._preload = preload(this)
     this._mfsPreload = mfsPreload(this)
+    this._namesys = new Namesys(null, this._repo)
 
     // IPFS Core exposed components
     //   - for booting up a node
@@ -110,6 +112,7 @@ class IPFS extends EventEmitter {
     this.libp2p = components.libp2p(this)
     this.swarm = components.swarm(this)
     this.files = components.files(this)
+    this.name = components.name(this)
     this.bitswap = components.bitswap(this)
     this.pin = components.pin(this)
     this.ping = components.ping(this)
