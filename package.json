@@ -35,7 +35,7 @@
     "flatmap": "0.0.3",
     "glob": "^7.1.2",
     "ipfs-block": "~0.7.1",
-    "ipfs-unixfs": "~0.1.14",
+    "ipfs-unixfs": "~0.1.15",
     "ipld-dag-cbor": "~0.12.0",
     "ipld-dag-pb": "~0.14.4",
     "is-ipfs": "~0.3.2",
