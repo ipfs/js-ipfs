@@ -36,7 +36,7 @@ const defaultOptions = {
   length: undefined, // how many bytes from the incoming buffer to write
   create: false, // whether to create the file if it does not exist
   truncate: false, // whether to truncate the file first
-  rawLeafNodes: false,
+  rawLeafNodes: true,
   reduceSingleLeafToSelf: false,
   cidVersion: undefined,
   hashAlg: 'sha2-256',
