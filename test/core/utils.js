@@ -61,10 +61,10 @@ describe('utils', () => {
       // indicator. Used go-ipfs@0.4.13 `add --hash=keccak-512` to generate
       const keccak512 = 'zB7S6ZdcqsTqvNhBpx3SbFTocRpAUHj1w9WQXQGyWBVEsLStNfaaNtsdFUQbRk4tYPZvnpGbtDN5gEH4uVzUwsFyJh9Ei'
       expect(utils.parseIpfsPath(keccak512))
-      .to.deep.equal({
-        hash: keccak512,
-        links: []
-      })
+        .to.deep.equal({
+          hash: keccak512,
+          links: []
+        })
     })
 
     it('returns error for malformed path', function () {

@@ -25,8 +25,7 @@ function parseArgs (request, reply) {
 
 exports.ls = {
   parseArgs: (request, reply) => {
-    const ipfs = request.server.app.ipfs
-    const type = request.query.type || ipfs.pin.types.all
+    const type = request.query.type || 'all'
 
     return reply({
       path: request.query.arg,

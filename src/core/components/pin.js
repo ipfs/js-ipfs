@@ -23,6 +23,12 @@ module.exports = function pin (self) {
   const repo = self._repo
   const dag = self.dag
   const pinset = createPinSet(dag)
+  const types = {
+    direct: 'direct',
+    recursive: 'recursive',
+    indirect: 'indirect',
+    all: 'all'
+  }
 
   let directPins = new Set()
   let recursivePins = new Set()
@@ -61,14 +67,14 @@ module.exports = function pin (self) {
       // create a DAGLink to the node with direct pins
       cb => async.waterfall([
         cb => pinset.storeSet(directKeys(), cb),
-        (node, cb) => DAGLink.create(pin.types.direct, node.size, node.multihash, cb),
+        (node, cb) => DAGLink.create(types.direct, node.size, node.multihash, cb),
         (link, cb) => { dLink = link; cb(null) }
       ], cb),
 
       // create a DAGLink to the node with recursive pins
       cb => async.waterfall([
         cb => pinset.storeSet(recursiveKeys(), cb),
-        (node, cb) => DAGLink.create(pin.types.recursive, node.size, node.multihash, cb),
+        (node, cb) => DAGLink.create(types.recursive, node.size, node.multihash, cb),
         (link, cb) => { rLink = link; cb(null) }
       ], cb),
 
@@ -98,13 +104,6 @@ module.exports = function pin (self) {
   }
 
   const pin = {
-    types: {
-      direct: 'direct',
-      recursive: 'recursive',
-      indirect: 'indirect',
-      all: 'all'
-    },
-
     add: promisify((paths, options, callback) => {
       if (typeof options === 'function') {
         callback = options
@@ -177,7 +176,7 @@ module.exports = function pin (self) {
 
         // verify that each hash can be unpinned
         async.map(mhs, (multihash, cb) => {
-          pin._isPinnedWithType(multihash, pin.types.all, (err, res) => {
+          pin._isPinnedWithType(multihash, types.all, (err, res) => {
             if (err) { return cb(err) }
             const { pinned, reason } = res
             const key = toB58String(multihash)
@@ -186,13 +185,13 @@ module.exports = function pin (self) {
             }
 
             switch (reason) {
-              case (pin.types.recursive):
+              case (types.recursive):
                 if (recursive) {
                   return cb(null, key)
                 } else {
                   return cb(new Error(`${key} is pinned recursively`))
                 }
-              case (pin.types.direct):
+              case (types.direct):
                 return cb(null, key)
               default:
                 return cb(new Error(
@@ -223,7 +222,7 @@ module.exports = function pin (self) {
     }),
 
     ls: promisify((paths, options, callback) => {
-      let type = pin.types.all
+      let type = types.all
       if (typeof paths === 'function') {
         callback = paths
         options = null
@@ -239,7 +238,7 @@ module.exports = function pin (self) {
       if (options && options.type) {
         type = options.type.toLowerCase()
       }
-      if (!pin.types[type]) {
+      if (!types[type]) {
         return callback(new Error(
           `Invalid type '${type}', must be one of {direct, indirect, recursive, all}`
         ))
@@ -251,7 +250,7 @@ module.exports = function pin (self) {
           if (err) { return callback(err) }
 
           async.mapSeries(mhs, (multihash, cb) => {
-            pin._isPinnedWithType(multihash, pin.types.all, (err, res) => {
+            pin._isPinnedWithType(multihash, types.all, (err, res) => {
               if (err) { return cb(err) }
               const { pinned, reason } = res
               const key = toB58String(multihash)
@@ -260,8 +259,8 @@ module.exports = function pin (self) {
               }
 
               switch (reason) {
-                case pin.types.direct:
-                case pin.types.recursive:
+                case types.direct:
+                case types.recursive:
                   return cb(null, {
                     hash: key,
                     type: reason
@@ -269,7 +268,7 @@ module.exports = function pin (self) {
                 default:
                   return cb(null, {
                     hash: key,
-                    type: `${pin.types.indirect} through ${reason}`
+                    type: `${types.indirect} through ${reason}`
                   })
               }
             })
@@ -278,23 +277,23 @@ module.exports = function pin (self) {
       } else {
         // show all pinned items of type
         let pins = []
-        if (type === pin.types.direct || type === pin.types.all) {
+        if (type === types.direct || type === types.all) {
           pins = pins.concat(
             Array.from(directPins).map(hash => ({
-              type: pin.types.direct,
+              type: types.direct,
               hash
             }))
           )
         }
-        if (type === pin.types.recursive || type === pin.types.all) {
+        if (type === types.recursive || type === types.all) {
           pins = pins.concat(
             Array.from(recursivePins).map(hash => ({
-              type: pin.types.recursive,
+              type: types.recursive,
               hash
             }))
           )
         }
-        if (type === pin.types.indirect || type === pin.types.all) {
+        if (type === types.indirect || type === types.all) {
           getIndirectKeys((err, indirects) => {
             if (err) { return callback(err) }
             pins = pins
@@ -305,7 +304,7 @@ module.exports = function pin (self) {
                 (indirects.includes(hash) && !directPins.has(hash))
               )
               .concat(indirects.map(hash => ({
-                type: pin.types.indirect,
+                type: types.indirect,
                 hash
               })))
             return callback(null, pins)
@@ -318,7 +317,7 @@ module.exports = function pin (self) {
 
     _isPinnedWithType: promisify((multihash, type, callback) => {
       const key = toB58String(multihash)
-      const { recursive, direct, all } = pin.types
+      const { recursive, direct, all } = types
       // recursive
       if ((type === recursive || type === all) && recursivePins.has(key)) {
         return callback(null, {pinned: true, reason: recursive})
@@ -374,8 +373,8 @@ module.exports = function pin (self) {
         }
 
         async.parallel([
-          cb => pinset.loadSet(pinRoot.value, pin.types.recursive, cb),
-          cb => pinset.loadSet(pinRoot.value, pin.types.direct, cb)
+          cb => pinset.loadSet(pinRoot.value, types.recursive, cb),
+          cb => pinset.loadSet(pinRoot.value, types.direct, cb)
         ], (err, [rKeys, dKeys]) => {
           if (err) { return callback(err) }
 

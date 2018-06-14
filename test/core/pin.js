@@ -24,6 +24,12 @@ const pins = {
   mercuryDir: 'QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q',
   mercuryWiki: 'QmVgSHAdMxFAuMP2JiMAYkB8pCWP1tcB9djqvq8GKAFiHi'
 }
+const pinTypes = {
+  direct: 'direct',
+  recursive: 'recursive',
+  indirect: 'indirect',
+  all: 'all'
+}
 
 describe('pin', function () {
   const fixtures = [
@@ -44,7 +50,7 @@ describe('pin', function () {
       type = undefined
     }
 
-    return pin._isPinnedWithType(hash, type || pin.types.all)
+    return pin._isPinnedWithType(hash, type || pinTypes.all)
       .then(result => expect(result.pinned).to.eql(pinned))
   }
 
@@ -52,14 +58,14 @@ describe('pin', function () {
     return pin.ls()
       .then(ls => {
         const pinsToRemove = ls
-          .filter(out => out.type === pin.types.recursive)
+          .filter(out => out.type === pinTypes.recursive)
           .map(out => pin.rm(out.hash))
         return Promise.all(pinsToRemove)
       })
       .then(() => pin.ls())
       .then(ls => {
         const pinsToRemove = ls
-          .filter(out => out.type === pin.types.direct)
+          .filter(out => out.type === pinTypes.direct)
           .map(out => pin.rm(out.hash))
         return Promise.all(pinsToRemove)
       })
@@ -85,13 +91,13 @@ describe('pin', function () {
 
     it('when node is pinned', function () {
       return pin.add(pins.solarWiki)
-        .then(() => pin._isPinnedWithType(pins.solarWiki, pin.types.all))
+        .then(() => pin._isPinnedWithType(pins.solarWiki, pinTypes.all))
         .then(pinned => expect(pinned.pinned).to.eql(true))
     })
 
     it('when node is not in datastore', function () {
       const falseHash = `${pins.root.slice(0, -2)}ss`
-      return pin._isPinnedWithType(falseHash, pin.types.all)
+      return pin._isPinnedWithType(falseHash, pinTypes.all)
         .then(pinned => {
           expect(pinned.pinned).to.eql(false)
           expect(pinned.reason).to.eql(undefined)
@@ -104,15 +110,15 @@ describe('pin', function () {
     })
 
     it('when pinned recursively', function () {
-      return pin._isPinnedWithType(pins.root, pin.types.recursive)
+      return pin._isPinnedWithType(pins.root, pinTypes.recursive)
         .then(result => {
           expect(result.pinned).to.eql(true)
-          expect(result.reason).to.eql(pin.types.recursive)
+          expect(result.reason).to.eql(pinTypes.recursive)
         })
     })
 
     it('when pinned indirectly', function () {
-      return pin._isPinnedWithType(pins.mercuryWiki, pin.types.indirect)
+      return pin._isPinnedWithType(pins.mercuryWiki, pinTypes.indirect)
         .then(result => {
           expect(result.pinned).to.eql(true)
           expect(result.reason).to.eql(pins.root)
@@ -122,17 +128,17 @@ describe('pin', function () {
     it('when pinned directly', function () {
       return pin.add(pins.mercuryDir, { recursive: false })
         .then(() => {
-          return pin._isPinnedWithType(pins.mercuryDir, pin.types.direct)
+          return pin._isPinnedWithType(pins.mercuryDir, pinTypes.direct)
             .then(result => {
               expect(result.pinned).to.eql(true)
-              expect(result.reason).to.eql(pin.types.direct)
+              expect(result.reason).to.eql(pinTypes.direct)
             })
         })
     })
 
     it('when not pinned', function () {
       return clearPins()
-        .then(() => pin._isPinnedWithType(pins.mercuryDir, pin.types.direct))
+        .then(() => pin._isPinnedWithType(pins.mercuryDir, pinTypes.direct))
         .then(pin => expect(pin.pinned).to.eql(false))
     })
   })
@@ -165,8 +171,8 @@ describe('pin', function () {
         .then(() => pin.add(pins.root))
         .then(() => Promise.all([
           // solarWiki is pinned both directly and indirectly o.O
-          expectPinned(pins.solarWiki, pin.types.direct),
-          expectPinned(pins.solarWiki, pin.types.indirect)
+          expectPinned(pins.solarWiki, pinTypes.direct),
+          expectPinned(pins.solarWiki, pinTypes.indirect)
         ]))
     })
 
@@ -208,7 +214,7 @@ describe('pin', function () {
       return pin.ls()
         .then(ls => {
           const pinType = ls.find(out => out.hash === pins.mercuryDir).type
-          expect(pinType).to.eql(pin.types.indirect)
+          expect(pinType).to.eql(pinTypes.indirect)
         })
     })
 

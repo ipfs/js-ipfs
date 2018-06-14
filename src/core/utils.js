@@ -1,6 +1,5 @@
 'use strict'
 
-const CID = require('cids')
 const multihashes = require('multihashes')
 const promisify = require('promisify-es6')
 const map = require('async/map')
