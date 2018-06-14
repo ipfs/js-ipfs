@@ -56,6 +56,7 @@ If no `content` is passed, then the path is treated as an empty directory
 - hashAlg || hash (string): multihash hashing algorithm to use.
 - wrapWithDirectory (boolean): adds a wrapping node around the content.
 - onlyHash (boolean): doesn't actually add the file to IPFS, but rather calculates its hash.
+- pin (boolean, default true): pin this object when adding.
 
 `callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res` will be an array of:
 
@@ -109,6 +110,7 @@ Returns a Readable Stream of class Duplex, where objects can be written of the f
 - progress (function): a function that will be called with the byte length of chunks as a file is added to ipfs.
 - hashAlg || hash (string): multihash hashing algorithm to use
 - wrapWithDirectory (boolean): adds a wrapping node around the content
+- pin (boolean, default true): pin this object when adding.
 
 **Example:**
 
@@ -158,6 +160,7 @@ Returns a Pull Stream, where objects can be written of the forms
 - progress (function): a function that will be called with the byte length of chunks as a file is added to ipfs.
 - hashAlg || hash (string): multihash hashing algorithm to use
 - wrapWithDirectory (boolean): adds a wrapping node around the content
+- pin (boolean, default true): pin this object when adding.
 
 **Example:**
 
