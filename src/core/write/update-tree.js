@@ -75,7 +75,7 @@ const updateTree = (ipfs, node, fileSize, streamStart, streamEnd, source, option
           collect((error, results) => {
             let updatedRoot
 
-            if (!error) {
+            if (!error && results && results.length) {
               updatedRoot = results[0]
 
               while (updatedRoot.parent) {
