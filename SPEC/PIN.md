@@ -16,7 +16,7 @@ Where:
 
 - `hash` is an IPFS multihash.
 - `options` is an object that can contain the following keys
-  - 'recursive' - Recursively pin the object linked. Type: bool. Default: `false`
+  - 'recursive' - Recursively pin the object linked. Type: bool. Default: `true`
 
 `callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res` is an array of objects that represent the files that were pinned. Example:
 
@@ -76,7 +76,7 @@ A great source of [examples][] can be found in the tests for this API.
 Where:
 - `hash` is a multihash.
 - `options` is an object that can contain the following keys
-  - 'recursive' - Recursively unpin the object linked. Type: bool. Default: `false`
+  - 'recursive' - Recursively unpin the object linked. Type: bool. Default: `true`
 
 `callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
 
