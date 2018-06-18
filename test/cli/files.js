@@ -44,12 +44,12 @@ describe('files', () => runOnAndOff((thing) => {
     'added QmeiTxVN4xAjxUzHzBqCpK3GaT3GeiLQeJRpYDXDfLeEmR recursive-get-dir/datastore/MANIFEST-000014',
     'added QmQpc75sJGUv59dAwHF7vazBGV9o6C7z587Dp9nv7HYAps recursive-get-dir/datastore/LOG.old',
     'added QmbFNLNr9at9eK5LrNyUdyE5cdLb5yaT9DkjXw7BK68kcM recursive-get-dir/datastore/LOG',
-    'added QmfJMCvenrj4SKKRc48DYPxwVdS44qCUCqqtbqhJuSTWXP recursive-get-dir/datastore/LOCK',
+    'added QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH recursive-get-dir/datastore/LOCK',
     'added QmVJi93Yj5RW3NuqqxonGz3jAXUYHrdQvWrURxg1TiLEuX recursive-get-dir/datastore/CURRENT',
     'added QmcJ6TXPMPm6puSC9vpxuG57PyfGpr8bvTgkKU9SHHU5Uo recursive-get-dir/datastore/000010.ldb',
     'added QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU recursive-get-dir/datastore/000005.ldb',
     'added QmfExFwdFKspsY2q5WnhQjd1QDKnjpTQ4UkiHqqQxV7h67 recursive-get-dir/datastore/000002.ldb',
-    'added Qma13ZrhKG52MWnwtZ6fMD8jGj8d4Q9sJgn5xtKgeZw5uz recursive-get-dir/datastore',
+    'added QmUqyZtPmsRy1U5Mo8kz2BAMmk1hfJ7yW1KAFTMB2odsFv recursive-get-dir/datastore',
     'added QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN recursive-get-dir/config',
     'added QmbJgQa4XNBFvGQcLbWBNtvWZetbCUKiyAQNfePoTzwf9L recursive-get-dir/blocks/CIQPD/CIQPDQJBGYDZNMOAGGYNRNMP2VDKWBWGAEDDEJDACM3SGG3VIANDDXI.data',
     'added QmSCUPYy4CfFt9nA61J9v2DMfJygQAJjaUcRmygDbVME2D recursive-get-dir/blocks/CIQPD',
@@ -61,8 +61,8 @@ describe('files', () => runOnAndOff((thing) => {
     'added Qmec4atiyfysPR8HU5gPfjKY1NpQDY2kmSeeadx8wLEBqY recursive-get-dir/blocks/CIQOM',
     'added QmeBypQ2yE4t4Loybhby15DjkeLDXJKCcgMfxTXeFnHa8F recursive-get-dir/blocks/CIQOL/CIQOLBQZSZAODJGGH6RYYVBUXHTS3SM5EORZDU63LYPEFUAFE4SBM4I.data',
     'added Qmd6s8LXAEjW7y9QbGSzeuewrRBYjJHmcazG3Hk7cJ74da recursive-get-dir/blocks/CIQOL',
-    'added QmfJMCvenrj4SKKRc48DYPxwVdS44qCUCqqtbqhJuSTWXP recursive-get-dir/blocks/CIQOH/CIQOHMGEIKMPYHAUTL57JSEZN64SIJ5OIHSGJG4TJSSJLGI3PBJLQVI.data',
-    'added QmdiJnDhn4Bb1odByw1BA5qpXssjxgttVz42tpEfo7HNUe recursive-get-dir/blocks/CIQOH',
+    'added QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH recursive-get-dir/blocks/CIQOH/CIQOHMGEIKMPYHAUTL57JSEZN64SIJ5OIHSGJG4TJSSJLGI3PBJLQVI.data',
+    'added QmTnaav9VTSVyLu8PvRzh4gJ8heF9rpdWzeDb7rMx5DkxV recursive-get-dir/blocks/CIQOH',
     'added Qmc1nasezDdPyZiXB5VB6Aygzswcr6QkauzzXMeUGouHTN recursive-get-dir/blocks/CIQMB/CIQMB7DLJFKD267QJ2B5FJNHZPTSVA7IB6OHXSQ2XSVEEKMKK6RT75I.data',
     'added QmeqJBkwmzsVR79HBKLW7AYhfAMxMaJs5dGHSgey5ezy7N recursive-get-dir/blocks/CIQMB',
     'added QmaSjzSSRanYzRGPXQY6m5SWfSkkfcnzNkurJEQc4chPJx recursive-get-dir/blocks/CIQLB/CIQLBS5HG4PRCRQ7O4EBXFD5QN6MTI5YBYMCVQJDXPKCOVR6RMLHZFQ.data',
@@ -113,8 +113,8 @@ describe('files', () => runOnAndOff((thing) => {
     'added QmSCq2peGvGDXZKuX565UczxRpgzsiPPF3PgcJq9zDbByL recursive-get-dir/blocks/CIQDD',
     'added QmdgaiKe1HFfhrZvLwTFCrXmgTojhSWuBvyFXUVc8KzJVc recursive-get-dir/blocks/CIQBE/CIQBED3K6YA5I3QQWLJOCHWXDRK5EXZQILBCKAPEDUJENZ5B5HJ5R3A.data',
     'added QmYwUkwNwJN2cevwXKL48DRpbbjbdLWyyLANG3BKTtsTZ8 recursive-get-dir/blocks/CIQBE',
-    'added QmQQHYDwAQms78fPcvx1uFFsfho23YJNoewfLbi9AtdyJ9 recursive-get-dir/blocks',
-    'added QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2 recursive-get-dir'
+    'added QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT recursive-get-dir/blocks',
+    'added Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z recursive-get-dir'
   ]
 
   before(() => {
@@ -406,16 +406,16 @@ describe('files', () => runOnAndOff((thing) => {
   it('get recursively', function () {
     this.timeout(20 * 1000)
 
-    const outDir = path.join(process.cwd(), 'QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
+    const outDir = path.join(process.cwd(), 'Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
     rimraf(outDir)
 
-    return ipfs('files get QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
+    return ipfs('files get Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
       .then((out) => {
         expect(out).to.eql(
-          'Saving file(s) QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2\n'
+          'Saving file(s) Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z\n'
         )
 
-        const outDir = path.join(process.cwd(), 'QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
+        const outDir = path.join(process.cwd(), 'Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
         const expectedDir = path.join(process.cwd(), 'test', 'fixtures', 'test-data', 'recursive-get-dir')
 
         const compareResult = compareDir(outDir, expectedDir, {
