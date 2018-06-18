@@ -1,3 +1,14 @@
+<a name="22.1.0"></a>
+# [22.1.0](https://github.com/ipfs/js-ipfs-api/compare/v22.0.2...v22.1.0) (2018-06-18)
+
+
+### Features
+
+* add support for custom headers to send-request ([#741](https://github.com/ipfs/js-ipfs-api/issues/741)) ([7fb2e07](https://github.com/ipfs/js-ipfs-api/commit/7fb2e07))
+* implement bitswap wantlist peer ID param and bitswap unwant ([#761](https://github.com/ipfs/js-ipfs-api/issues/761)) ([73a153e](https://github.com/ipfs/js-ipfs-api/commit/73a153e))
+
+
+
 <a name="22.0.2"></a>
 ## [22.0.2](https://github.com/ipfs/js-ipfs-api/compare/v22.0.1...v22.0.2) (2018-06-14)
 
