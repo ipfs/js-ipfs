@@ -1,3 +1,23 @@
+<a name="0.68.0"></a>
+# [0.68.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.67.0...v0.68.0) (2018-06-18)
+
+
+### Bug Fixes
+
+* improve bitswap wantlist and unwant docs ([7737546](https://github.com/ipfs/interface-ipfs-core/commit/7737546))
+* linting errors ([fcc834c](https://github.com/ipfs/interface-ipfs-core/commit/fcc834c))
+* removes duplicated TOC for pubsub ([a358cf7](https://github.com/ipfs/interface-ipfs-core/commit/a358cf7))
+
+
+### Features
+
+* add bitswap.unwant javascript spec ([df4e677](https://github.com/ipfs/interface-ipfs-core/commit/df4e677))
+* add bitswap.unwant javascript spec ([d75a361](https://github.com/ipfs/interface-ipfs-core/commit/d75a361))
+* add bitswap.unwant javascript spec ([c291ca9](https://github.com/ipfs/interface-ipfs-core/commit/c291ca9))
+* add peerId param to bitswap.wantlist ([9f81bcb](https://github.com/ipfs/interface-ipfs-core/commit/9f81bcb))
+
+
+
 <a name="0.67.0"></a>
 # [0.67.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.66.4...v0.67.0) (2018-06-04)
 
