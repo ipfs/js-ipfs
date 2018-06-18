@@ -161,6 +161,21 @@ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Credentials "[\"true\"]"
 ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods "[\"PUT\", \"POST\", \"GET\"]"
 ```
 
+### Custom Headers
+
+If you wish to send custom headers with each request made by this library, for example, the Authorization header. You can use the config to do so:
+
+```
+const ipfs = IpfsApi({
+  host: 'localhost',
+  port: 5001,
+  protocol: 'http',
+  headers: {
+    authorization: 'Bearer ' + TOKEN
+  }
+})
+```
+
 ## Usage
 
 ### API
