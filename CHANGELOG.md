@@ -1,3 +1,13 @@
+<a name="0.68.1"></a>
+## [0.68.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.68.0...v0.68.1) (2018-06-18)
+
+
+### Bug Fixes
+
+* removes error code checks for bitswap offline tests ([b152856](https://github.com/ipfs/interface-ipfs-core/commit/b152856))
+
+
+
 <a name="0.68.0"></a>
 # [0.68.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.67.0...v0.68.0) (2018-06-18)
 
