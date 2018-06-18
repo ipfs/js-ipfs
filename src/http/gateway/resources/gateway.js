@@ -9,7 +9,7 @@ const fileType = require('file-type')
 const mime = require('mime-types')
 const Stream = require('readable-stream')
 
-const gatewayResolver = require('../resolver')
+const { resolver } = require('ipfs-http-response')
 const PathUtils = require('../utils/path')
 
 module.exports = {
@@ -37,7 +37,7 @@ module.exports = {
         // switch case with true feels so wrong.
         switch (true) {
           case (errorToString === 'Error: This dag node is a directory'):
-            gatewayResolver.resolveDirectory(ipfs, ref, err.fileName, (err, data) => {
+            resolver.directory(ipfs, ref, err.fileName, (err, data) => {
               if (err) {
                 log.error(err)
                 return reply(err.toString()).code(500)
@@ -71,7 +71,7 @@ module.exports = {
       }
     }
 
-    return gatewayResolver.resolveMultihash(ipfs, ref, (err, data) => {
+    return resolver.multihash(ipfs, ref, (err, data) => {
       if (err) {
         return handleGatewayResolverError(err)
       }
