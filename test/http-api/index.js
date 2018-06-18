@@ -1,6 +1,5 @@
 'use strict'
 
-require('./bitswap')
 require('./block')
 require('./bootstrap')
 require('./config')

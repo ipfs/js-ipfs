@@ -8,7 +8,7 @@ exports = module.exports
 
 exports.wantlist = {
   handler: (request, reply) => {
-    const peerId = request.query.arg
+    const peerId = request.query.peer
     request.server.app.ipfs.bitswap.wantlist(peerId, (err, list) => {
       if (err) {
         return reply(boom.badRequest(err))
