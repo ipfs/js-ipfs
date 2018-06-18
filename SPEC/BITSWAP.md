@@ -4,13 +4,58 @@
 * [bitswap.unwant](#bitswapunwant)
 * [bitswap.stat](#bitswapstat)
 
-#### `bitswap.wantlist`
-
-(not spec'ed yet)
-
 #### `bitswap.unwant`
 
-(not spec'ed yet)
+> Removes a given block from your wantlist
+
+##### `Go` **WIP**
+
+##### `JavaScript` - ipfs.bitswap.unwant(cid, [callback])
+
+`cid` is a [cid][cid] which can be passed as:
+
+- CID, a CID instance
+- String, the base58 encoded version of the multihash
+
+`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
+
+  **Example:**
+
+  ```JavaScript
+  ipfs.bitswap.unwant('QmSoLSafTMBsPKadTEgaXctDQVcqN88CNLHXMkTNwMKPnu', (err) => {
+    if (err) throw err
+    console.log('Done')
+  })
+  ```
+
+##### `Go` **WIP**
+
+### `bitswap.wantlist`
+
+> Returns the wantlist, optionally filtered by peer ID
+
+#### `Go` **WIP**
+
+#### `JavaScript` - ipfs.bitswap.wantlist([peerId], [callback])
+
+`callback` must follow `function (err, list) {}` signature, where `err` is an error if the operation was not successful. `list` is an Object containing the following keys:
+
+- `Keys` An array of objects containing the following keys:
+    - `/` A string multihash
+
+If no `callback` is passed, a promise is returned.
+
+**Example:**
+
+```JavaScript
+ipfs.bitswap.wantlist((err, list) => console.log(list))
+
+// { Keys: [{ '/': 'QmHash' }] }
+
+ipfs.bitswap.wantlist(peerId, (err, list) => console.log(list))
+
+// { Keys: [{ '/': 'QmHash' }] }
+```
 
 #### `bitswap.stat`
 
