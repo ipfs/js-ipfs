@@ -120,11 +120,6 @@ module.exports = (common) => {
     it('.stat gives error while offline', (done) => {
       ipfs.bitswap.stat((err, stats) => {
         expect(err).to.exist()
-        // When run against core we get our expected error, when run
-        // as part of the http tests we get a connection refused
-        if (err.code !== 'ECONNREFUSED') {
-          expect(err).to.match(/online mode/)
-        }
         expect(stats).to.not.exist()
         done()
       })
@@ -133,11 +128,6 @@ module.exports = (common) => {
     it('.wantlist gives error if offline', (done) => {
       ipfs.bitswap.wantlist((err, list) => {
         expect(err).to.exist()
-        // When run against core we get our expected error, when run
-        // as part of the http tests we get a connection refused
-        if (err.code !== 'ECONNREFUSED') {
-          expect(err).to.match(/online mode/)
-        }
         expect(list).to.not.exist()
         done()
       })
@@ -147,11 +137,6 @@ module.exports = (common) => {
       const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
       ipfs.bitswap.unwant(key, (err) => {
         expect(err).to.exist()
-        // When run against core we get our expected error, when run
-        // as part of the http tests we get a connection refused
-        if (err.code !== 'ECONNREFUSED') {
-          expect(err).to.match(/online mode/)
-        }
         done()
       })
     })
