@@ -74,9 +74,9 @@ exports = module.exports = function (dag) {
 
           seen[bs58Link] = true
 
-          dag.get(multihash, (err, { value }) => {
+          dag.get(multihash, (err, res) => {
             if (err) { return someCb(err) }
-            searchChildren(value, someCb)
+            searchChildren(res.value, someCb)
           })
         }, cb)
       }

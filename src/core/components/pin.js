@@ -157,7 +157,7 @@ module.exports = function pin (self) {
           // persist updated pin sets to datastore
           flushPins((err, root) => {
             if (err) { return callback(err) }
-            return callback(null, results.map(key => ({hash: key})))
+            return callback(null, results.map(hash => ({ hash })))
           })
         })
       })
@@ -215,7 +215,7 @@ module.exports = function pin (self) {
           flushPins((err, root) => {
             if (err) { return callback(err) }
             self.log(`Removed pins: ${results}`)
-            return callback(null, results.map(key => ({hash: key})))
+            return callback(null, results.map(hash => ({ hash })))
           })
         })
       })
@@ -375,8 +375,9 @@ module.exports = function pin (self) {
         async.parallel([
           cb => pinset.loadSet(pinRoot.value, types.recursive, cb),
           cb => pinset.loadSet(pinRoot.value, types.direct, cb)
-        ], (err, [rKeys, dKeys]) => {
+        ], (err, keys) => {
           if (err) { return callback(err) }
+          const [ rKeys, dKeys ] = keys
 
           directPins = new Set(dKeys.map(toB58String))
           recursivePins = new Set(rKeys.map(toB58String))

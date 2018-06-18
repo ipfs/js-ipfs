@@ -39,7 +39,7 @@ module.exports = function dag (self) {
         try {
           cid = new CID(cid)
         } catch (err) {
-          callback(err)
+          return callback(err)
         }
       }
 
