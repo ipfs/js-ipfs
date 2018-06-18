@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 'use strict'
 
 const chai = require('chai')
@@ -60,7 +61,7 @@ module.exports = (common) => {
     it('.wantlist', (done) => {
       ipfsB.bitswap.wantlist((err, list) => {
         expect(err).to.not.exist()
-        expect(list.Keys).to.have.length(1);
+        expect(list.Keys).to.have.length(1)
         expect(list.Keys[0]['/']).to.equal(key)
         done()
       })
@@ -79,9 +80,9 @@ module.exports = (common) => {
         this.skip()
       }
       ipfsB.bitswap.unwant(key, (err) => {
-        expect(err).to.not.exist();
+        expect(err).to.not.exist()
         ipfsB.bitswap.wantlist((err, list) => {
-          expect(err).to.not.exist();
+          expect(err).to.not.exist()
           expect(list.Keys).to.be.empty()
           done()
         })
@@ -119,8 +120,8 @@ module.exports = (common) => {
     it('.stat gives error while offline', (done) => {
       ipfs.bitswap.stat((err, stats) => {
         expect(err).to.exist()
-        //When run against core we get our expected error, when run
-        //as part of the http tests we get a connection refused
+        // When run against core we get our expected error, when run
+        // as part of the http tests we get a connection refused
         if (err.code !== 'ECONNREFUSED') {
           expect(err).to.match(/online mode/)
         }
@@ -132,8 +133,8 @@ module.exports = (common) => {
     it('.wantlist gives error if offline', (done) => {
       ipfs.bitswap.wantlist((err, list) => {
         expect(err).to.exist()
-        //When run against core we get our expected error, when run
-        //as part of the http tests we get a connection refused
+        // When run against core we get our expected error, when run
+        // as part of the http tests we get a connection refused
         if (err.code !== 'ECONNREFUSED') {
           expect(err).to.match(/online mode/)
         }
@@ -146,8 +147,8 @@ module.exports = (common) => {
       const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
       ipfs.bitswap.unwant(key, (err) => {
         expect(err).to.exist()
-        //When run against core we get our expected error, when run
-        //as part of the http tests we get a connection refused
+        // When run against core we get our expected error, when run
+        // as part of the http tests we get a connection refused
         if (err.code !== 'ECONNREFUSED') {
           expect(err).to.match(/online mode/)
         }
