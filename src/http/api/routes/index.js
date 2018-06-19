@@ -7,6 +7,7 @@ module.exports = (server) => {
   require('./bootstrap')(server)
   require('./block')(server)
   require('./object')(server)
+  require('./pin')(server)
   require('./repo')(server)
   require('./config')(server)
   require('./ping')(server)

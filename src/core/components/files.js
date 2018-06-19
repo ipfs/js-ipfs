@@ -32,7 +32,9 @@ function prepareFile (self, opts, file, callback) {
   }
 
   waterfall([
-    (cb) => opts.onlyHash ? cb(null, file) : self.object.get(file.multihash, opts, cb),
+    (cb) => opts.onlyHash
+      ? cb(null, file)
+      : self.object.get(file.multihash, opts, cb),
     (node, cb) => {
       const b58Hash = cid.toBaseEncodedString()
 
@@ -87,6 +89,19 @@ function normalizeContent (opts, content) {
   })
 }
 
+function pinFile (self, opts, file, cb) {
+  // Pin a file if it is the root dir of a recursive add or the single file
+  // of a direct add.
+  const pin = 'pin' in opts ? opts.pin : true
+  const isRootDir = !file.path.includes('/')
+  const shouldPin = pin && isRootDir && !opts.onlyHash && !opts.hashAlg
+  if (shouldPin) {
+    return self.pin.add(file.hash, err => cb(err, file))
+  } else {
+    cb(null, file)
+  }
+}
+
 class AddHelper extends Duplex {
   constructor (pullStream, push, options) {
     super(Object.assign({ objectMode: true }, options))
@@ -130,7 +145,8 @@ module.exports = function files (self) {
     }
 
     let total = 0
-    let prog = opts.progress || (() => {})
+
+    const prog = opts.progress || noop
     const progress = (bytes) => {
       total += bytes
       prog(total)
@@ -141,7 +157,8 @@ module.exports = function files (self) {
       pull.map(normalizeContent.bind(null, opts)),
       pull.flatten(),
       importer(self._ipld, opts),
-      pull.asyncMap(prepareFile.bind(null, self, opts))
+      pull.asyncMap(prepareFile.bind(null, self, opts)),
+      pull.asyncMap(pinFile.bind(null, self, opts))
     )
   }
 

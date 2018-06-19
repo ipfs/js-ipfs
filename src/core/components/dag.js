@@ -3,6 +3,8 @@
 const promisify = require('promisify-es6')
 const CID = require('cids')
 const pull = require('pull-stream')
+const mapAsync = require('async/map')
+const flattenDeep = require('lodash.flattendeep')
 
 module.exports = function dag (self) {
   return {
@@ -32,6 +34,12 @@ module.exports = function dag (self) {
           path = split.join('/')
         } else {
           path = '/'
+        }
+      } else if (Buffer.isBuffer(cid)) {
+        try {
+          cid = new CID(cid)
+        } catch (err) {
+          return callback(err)
         }
       }
 
@@ -73,6 +81,23 @@ module.exports = function dag (self) {
         self._ipld.treeStream(cid, path, options),
         pull.collect(callback)
       )
+    }),
+
+    // TODO - use IPLD selectors once they are implemented
+    _getRecursive: promisify((multihash, callback) => {
+      // gets flat array of all DAGNodes in tree given by multihash
+
+      self.dag.get(new CID(multihash), (err, res) => {
+        if (err) { return callback(err) }
+
+        mapAsync(res.value.links, (link, cb) => {
+          self.dag._getRecursive(link.multihash, cb)
+        }, (err, nodes) => {
+          // console.log('nodes:', nodes)
+          if (err) return callback(err)
+          callback(null, flattenDeep([res.value, nodes]))
+        })
+      })
     })
   }
 }

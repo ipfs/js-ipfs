@@ -101,6 +101,7 @@ class IPFS extends EventEmitter {
     this.swarm = components.swarm(this)
     this.files = components.files(this)
     this.bitswap = components.bitswap(this)
+    this.pin = components.pin(this)
     this.ping = components.ping(this)
     this.pingPullStream = components.pingPullStream(this)
     this.pingReadableStream = components.pingReadableStream(this)

@@ -166,6 +166,7 @@ exports.add = {
           otherwise: Joi.boolean().valid(false)
         }),
         'only-hash': Joi.boolean(),
+        pin: Joi.boolean().default(true),
         'wrap-with-directory': Joi.boolean()
       })
       // TODO: Necessary until validate "recursive", "stream-channels" etc.
@@ -227,7 +228,8 @@ exports.add = {
       progress: request.query.progress ? progressHandler : null,
       onlyHash: request.query['only-hash'],
       hashAlg: request.query['hash'],
-      wrapWithDirectory: request.query['wrap-with-directory']
+      wrapWithDirectory: request.query['wrap-with-directory'],
+      pin: request.query.pin
     }
 
     const aborter = abortable()

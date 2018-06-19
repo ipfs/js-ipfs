@@ -28,7 +28,7 @@ describe('key exchange', () => {
     ipfs.on('ready', () => done())
   })
 
-  after((done) => repo.teardown(done))
+  after((done) => ipfs.stop(done))
 
   it('exports', (done) => {
     ipfs.key.export('self', passwordPem, (err, pem) => {
