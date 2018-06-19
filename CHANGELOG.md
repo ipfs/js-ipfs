@@ -1,3 +1,13 @@
+<a name="0.68.2"></a>
+## [0.68.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.68.1...v0.68.2) (2018-06-19)
+
+
+### Bug Fixes
+
+* increase bitswap setup timeout for CI ([5886445](https://github.com/ipfs/interface-ipfs-core/commit/5886445))
+
+
+
 <a name="0.68.1"></a>
 ## [0.68.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.68.0...v0.68.1) (2018-06-18)
 
