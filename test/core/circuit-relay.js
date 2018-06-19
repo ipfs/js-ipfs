@@ -38,17 +38,15 @@ function setupInProcNode (addrs, hop, callback) {
   }
 
   procDf.spawn({
+    relay: {
+      enabled: true,
+      hop: {
+        enabled: hop
+      }
+    },
     config: Object.assign({}, baseConf, {
       Addresses: {
         Swarm: addrs
-      },
-      EXPERIMENTAL: {
-        relay: {
-          enabled: true,
-          hop: {
-            enabled: hop
-          }
-        }
       }
     })
   }, (err, ipfsd) => {

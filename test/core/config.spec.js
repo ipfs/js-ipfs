@@ -104,6 +104,30 @@ describe('config', () => {
     cfgs.forEach(cfg => expect(() => config.validate(cfg)).to.throw())
   })
 
+  it('should validate valid relay', () => {
+    const cfgs = [
+      { relay: { enabled: true, hop: { enabled: true } } },
+      { relay: { enabled: false, hop: { enabled: false } } },
+      { relay: { enabled: false, hop: null } },
+      { relay: { enabled: false } },
+      { relay: null },
+      { relay: undefined }
+    ]
+
+    cfgs.forEach(cfg => expect(() => config.validate(cfg)).to.not.throw())
+  })
+
+  it('should validate invalid relay', () => {
+    const cfgs = [
+      { relay: 138 },
+      { relay: { enabled: 138 } },
+      { relay: { enabled: true, hop: 138 } },
+      { relay: { enabled: true, hop: { enabled: 138 } } }
+    ]
+
+    cfgs.forEach(cfg => expect(() => config.validate(cfg)).to.throw())
+  })
+
   it('should validate valid EXPERIMENTAL', () => {
     const cfgs = [
       { EXPERIMENTAL: { pubsub: true, dht: true, sharding: true } },

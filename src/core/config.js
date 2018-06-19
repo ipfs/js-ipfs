@@ -13,6 +13,13 @@ const schema = Joi.object().keys({
   ).allow(null),
   start: Joi.boolean(),
   pass: Joi.string().allow(''),
+  relay: Joi.object().keys({
+    enabled: Joi.boolean(),
+    hop: Joi.object().keys({
+      enabled: Joi.boolean(),
+      active: Joi.boolean()
+    }).allow(null)
+  }).allow(null),
   EXPERIMENTAL: Joi.object().keys({
     pubsub: Joi.boolean(),
     sharding: Joi.boolean(),

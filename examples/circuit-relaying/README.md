@@ -22,7 +22,7 @@ Here is a simple diagram depicting how a typical circuit-relay connection might 
                            +---------------------+                          
 ```
 
-`Node A` tries to connect to `Node B` but, UH-OH! There is a firewall in between that's preventing it from happening. If both `Node A` and `Node B` know about a relay, they can use it to establish the connection. 
+`Node A` tries to connect to `Node B` but, UH-OH! There is a firewall in between that's preventing it from happening. If both `Node A` and `Node B` know about a relay, they can use it to establish the connection.
 
 This is what it looks like, in simplified steps:
 
@@ -60,7 +60,7 @@ There are a couple of caveats and features to be aware of:
 
 #### A word on circuit relay addresses
 
-A circuit relay address is a [multiaddress](https://multiformats.io/multiaddr/) that describes how to either connect to a peer over a relay (or relays), or allow a peer to announce it is reachable over a particular relay or any relay it is already connected to. 
+A circuit relay address is a [multiaddress](https://multiformats.io/multiaddr/) that describes how to either connect to a peer over a relay (or relays), or allow a peer to announce it is reachable over a particular relay or any relay it is already connected to.
 
 Circuit relay addresses are very flexible and can describe many different aspects of how to esablish the relayed connection. In its simplest form, it looks something like this:
 
@@ -78,8 +78,8 @@ We can take it a step further and encode the same information for the destinatio
 
 - `/ip4/127.0.0.1/tcp/65000/ipfs/QmRelay/p2p-circuit`
 
-If a node is configured with this address, it will use the specified host (`/ip4/127.0.0.1/tcp/65000/ipfs/QmRelay`) as a relay and it will be reachable over this relay. 
-  - There could multiple addresses of this sort specified in the config, in which case the node will be reachable over all of them. 
+If a node is configured with this address, it will use the specified host (`/ip4/127.0.0.1/tcp/65000/ipfs/QmRelay`) as a relay and it will be reachable over this relay.
+  - There could multiple addresses of this sort specified in the config, in which case the node will be reachable over all of them.
   - This is useful if, for example, the node is behind a firewall but wants to be reachable from the outside over a specific relay.
 
 Other use-cases are also supported by this scheme, e.g. we can have multiple hops (circuit-relay nodes) encoded in the address, something planed for future releases.
@@ -153,7 +153,7 @@ In order to enable the relay functionality in `go-ipfs` we need to edit it's con
   }
 ```
 
-The two options we're looking for are `DisableRelay` and `EnableRelayHop`. We want the former (`DisableRelay`) set to `false` and the latter (`EnableRelayHop`) to `true`, just like in the example above. That should set our go node as a relay. 
+The two options we're looking for are `DisableRelay` and `EnableRelayHop`. We want the former (`DisableRelay`) set to `false` and the latter (`EnableRelayHop`) to `true`, just like in the example above. That should set our go node as a relay.
 
 We also need to make sure our go node can be dialed from the browser. For that, we need to enable a transport that both the browser and the go node can communicate over. We will use the web sockets transport, although there are others that can be used, such as `webrtc-star` and `websocket-star`. To enable the transport and set the interface and port we need to edit the `~/.ipfs/config` one more time. Let's find the `Swarm` array and add our desired address there. I picked `/ip4/0.0.0.0/tcp/4004/ws` because it is a port I know is not being used by anything on my machine, but we can also use port `0` so that the OS chooses a random available port for us — either one should work.
 
@@ -173,15 +173,11 @@ We need to go through similar steps to enable circuit relay in `jsipfs`. However
 
 Just as we did with `go-ipfs`, go ahead and edit `js-ipfs` config file located under `~/.jsipfs/config`. Let's add the following config:
 
-(Note that the "EXPERIMENTAL" section might be missing from the config file. In that case, just go ahead and add it)
-
 ```js
-  "EXPERIMENTAL": {
-    "relay": {
-      "enabled": true,
-      "hop": {
-        "enabled": true
-      }
+  "relay": {
+    "enabled": true,
+    "hop": {
+      "enabled": true
     }
   }
 ```
@@ -247,7 +243,7 @@ Gateway (readonly) is listening on: /ip4/127.0.0.1/tcp/9090
 Daemon is ready
 ```
 
-Look out for an address similar to `/ip4/127.0.0.1/tcp/4003/ws/ipfs/Qm...`. Note it down somewhere, and let's move on to the next step. 
+Look out for an address similar to `/ip4/127.0.0.1/tcp/4003/ws/ipfs/Qm...`. Note it down somewhere, and let's move on to the next step.
 
 ### 2. Configure and run the bundled example
 
@@ -270,7 +266,7 @@ The bundled example is a simple chat app that uses another cool ipfs feature - [
 
 ### 3. Connect the two browser nodes to the circuit relay
 
-In order for our browser nodes to be able to messages each other, we need to get them connected. But to do that, we need to use a relay - browser nodes can't be connected directly because of lack of socket support. 
+In order for our browser nodes to be able to messages each other, we need to get them connected. But to do that, we need to use a relay - browser nodes can't be connected directly because of lack of socket support.
 
 Remember the caveat above `Currently a Relay will only work if it already has a connection to the STOP node`? This means that we need to connect our browser nodes to the relay node first.
 
@@ -304,21 +300,19 @@ Thats it!
 
 ### So what just happened?
 
-Good question! 
+Good question!
 
 - We used [js-ipfs](htpps://github.com/ipfs/js-ipfs) running in the browser with circuit relay enabled:
-  - _Notice the `EXPERIMENTAL.relay.enabled` below_
+  - _Notice the `relay.enabled` below_
 
 you can find it in [src/app.js](src/app.js)
 ```js
 const ipfs = new IPFS({
   repo: repo(),
-  EXPERIMENTAL: {
-    relay: {
-      enabled: true,
-      hop: {
-        enabled: true
-      }
+  relay: {
+    enabled: true,
+    hop: {
+      enabled: true
     }
   },
   config: {
