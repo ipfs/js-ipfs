@@ -10,7 +10,7 @@ module.exports = {
       validityType = ipnsEntryProto.ValidityType.EOL
     }
 
-    return {
+    const entry = {
       value: value,
       signature: signature,
       validityType: validityType,
@@ -19,6 +19,16 @@ module.exports = {
       ttl: ttl,
       pubKey: pubKey
     }
+
+    return Object.keys(entry).reduce((acc, key) => {
+      const reducedEntry = acc
+
+      if (entry[key] !== undefined) {
+        reducedEntry[key] = entry[key]
+      }
+
+      return reducedEntry
+    }, {})
   },
   // Marshal
   marshal: (ipnsEntry) => {
@@ -27,5 +37,6 @@ module.exports = {
   // Unmarshal
   unmarshal: (marsheled) => {
     return ipnsEntryProto.decode(marsheled)
-  }
+  },
+  validityType: ipnsEntryProto.ValidityType
 }

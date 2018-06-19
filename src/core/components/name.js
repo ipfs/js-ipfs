@@ -1,8 +1,11 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
+const series = require('async/series')
 const human = require('human-to-milliseconds')
+const path = require('../ipns/path')
+
+const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 
 const keyLookup = (ipfsNode, kname, cb) => {
   if (kname === 'self') {
@@ -18,29 +21,6 @@ const keyLookup = (ipfsNode, kname, cb) => {
   })
 }
 
-const publish = (ipfsNode, privateKey, ipfsPath, publishOptions, callback) => {
-  // Should verify if exists ?
-  if (publishOptions.verifyIfExists) {
-    // TODO resolve
-    // https://github.com/ipfs/go-ipfs/blob/master/core/commands/publish.go#L172
-  }
-
-  // Add pubValidTime
-
-  // Publish
-  const eol = new Date(Date.now())
-
-  ipfsNode._namesys.publishWithEOL(privateKey, ipfsPath, eol, (err, res) => {
-    if (err) {
-      callback(err)
-    }
-
-    // TODO HERE HERE HERE
-
-    callback(null, res)
-  })
-}
-
 module.exports = function name (self) {
   return {
     /**
@@ -51,64 +31,55 @@ module.exports = function name (self) {
      *
      * Examples: TODO such as in go
      *
-     * @param {String} ipfsPath
-     * @param {Object} options
+     * @param {String} value ipfs path of the object to be published.
+     * @param {boolean} resolve resolve given path before publishing.
+     * @param {String} lifetime time duration that the record will be valid for.
+    This accepts durations such as "300s", "1.5h" or "2h45m". Valid time units are
+    "ns", "us" (or "µs"), "ms", "s", "m", "h".
+     * @param {String} ttl time duration this record should be cached for (caution: experimental).
+     * @param {String} key name of the key to be used or a valid PeerID, as listed by 'ipfs key list -l'.
      * @param {function(Error)} [callback]
      * @returns {Promise|void}
      */
-    publish: promisify((ipfsPath, callback) => {
-      // https://github.com/ipfs/go-ipfs/blob/master/core/commands/publish.go
+    publish: promisify((value, resolve = true, lifetime = '24h', ttl, key = 'self', callback) => {
       if (!self.isOnline()) {
         return callback(new Error(OFFLINE_ERROR))
       }
 
-      // TODO Validate Mounts IPNS - cannot manually publish while IPNS is mounted
-
-      // TODO Validate Node identity not validated
-
-      // TODO Parse options and create object
-      const options = {
-        resolve: true,
-        d: '24h',
-        ttl: undefined,
-        key: 'self'
+      // Parse ipfs path value
+      try {
+        value = path.parsePath(value)
+      } catch (err) {
+        return callback(err)
       }
 
-      // TODO Create waterfall
-      /* waterfall([
-        (cb) => human(options.d || '1s', cb),
-      ], callback) */
-
-      human(options.d || '1s', (err, value) => {
+      series([
+        (cb) => human(lifetime || '1s', cb),
+        // (cb) => ttl ? human(ttl, cb) : cb(),
+        (cb) => keyLookup(self, key, cb),
+        (cb) => resolve ? path.resolvePath(self, value, cb) : cb() // if not resolved, and error will stop the execution
+      ], (err, results) => {
         if (err) {
-          return callback(new Error('Error parsing lifetime option'))
+          return callback(err)
         }
 
-        const publishOptions = {
-          verifyIfExists: options.resolve,
-          pubValidTime: value
-        }
+        const pubValidTime = results[0]
+        const privateKey = results[1]
 
-        // TODO Date.now() + value
+        // TODO IMPROVEMENT - Handle ttl for cache
+        // const ttl = results[1]
+        // const privateKey = results[2]
 
-        // TODO TTL integration
+        // Calculate eol
+        const eol = new Date(Date.now() + pubValidTime)
 
-        // Get Key
-        keyLookup(self, options.key, (err, key) => {
+        // Start publishing process
+        self._ipns.publish(privateKey, value, eol, (err, res) => {
           if (err) {
-            return callback(err)
+            callback(err)
           }
 
-          // TODO ParsePath
-          // https://github.com/ipfs/go-ipfs/blob/master/path/path.go
-
-          publish(self, key, ipfsPath, publishOptions, (err, result) => {
-            if (err) {
-              callback(err)
-            }
-
-            return callback(null, result)
-          })
+          callback(null, res)
         })
       })
     }),
@@ -125,16 +96,9 @@ module.exports = function name (self) {
     resolve: promisify((name, nocache, recursive, callback) => {
       const local = true
 
-      if (typeof name === 'function') {
-        callback = name
-        name = undefined
-      }
-
       if (!self.isOnline()) {
         return callback(new Error(OFFLINE_ERROR))
       }
-
-      // let resolver = self._namesys.ipnsResolver
 
       if (local && nocache) {
         return callback(new Error('Cannot specify both local and nocache'))
@@ -149,9 +113,15 @@ module.exports = function name (self) {
         name = `/ipns/${name}`
       }
 
+      // TODO local public key?
       const pubKey = self._peerInfo.id.pubKey
+      const options = {
+        local: local,
+        nocache: nocache,
+        recursive: recursive
+      }
 
-      self._namesys.resolve(name, pubKey, (err, result) => {
+      self._ipns.resolve(name, pubKey, options, (err, result) => {
         if (err) {
           return callback(err)
         }

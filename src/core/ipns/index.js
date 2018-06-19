@@ -3,13 +3,15 @@
 const peerId = require('peer-id')
 const series = require('async/series')
 // const QuickLRU = require('quick-lru');
+// Consider using https://github.com/dominictarr/hashlru
 
 const IpnsPublisher = require('./publisher')
 const IpnsResolver = require('./resolver')
+const path = require('./path')
 
 // const defaultRecordTtl = 60 * 1000
 
-class Namesys {
+class IPNS {
   constructor (routing, repo, peerInfo) {
     this.ipnsPublisher = new IpnsPublisher(routing, repo)
     this.ipnsResolver = new IpnsResolver(repo)
@@ -17,10 +19,8 @@ class Namesys {
   }
 
   // Resolve
-  resolve (name, pubKey, callback) {
-    // this.ipnsResolver.resolve()
-
-    this.ipnsResolver.resolve(name, pubKey, (err, result) => {
+  resolve (name, pubKey, options, callback) {
+    this.ipnsResolver.resolve(name, pubKey, options, (err, result) => {
       if (err) {
         return callback(err)
       }
@@ -29,13 +29,8 @@ class Namesys {
     })
   }
 
-  // publish (value = ipfsPath)
-  publish (privKey, value) {
-    // TODO https://github.com/ipfs/go-ipfs/blob/master/namesys/namesys.go#L111
-  }
-
-  // publish with EOL (value = ipfsPath)
-  publishWithEOL (privKey, value, eol, callback) {
+  // Publish
+  publish (privKey, value, eol, callback) {
     series([
       (cb) => peerId.createFromPrivKey(privKey.bytes.toString('base64'), cb),
       (cb) => this.ipnsPublisher.publishWithEOL(privKey, value, eol, cb)
@@ -44,7 +39,7 @@ class Namesys {
         return callback(err)
       }
 
-      // TODO Add to cache
+      // TODO IMPROVEMENT - Add to cache
       // this.cache.set(id.toB58String(), {
       //   val: value,
       //   eol: Date.now() + ttl
@@ -55,4 +50,5 @@ class Namesys {
   }
 }
 
-exports = module.exports = Namesys
+exports = module.exports = IPNS
+exports.path = path

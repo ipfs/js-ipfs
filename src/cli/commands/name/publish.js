@@ -19,7 +19,7 @@ module.exports = {
         throw err
       }
 
-      print(`Published to ${result.value}: /ipfs/${result.name}`)
+      print(`Published to ${result.name}: ${result.value}`)
     })
   }
 }

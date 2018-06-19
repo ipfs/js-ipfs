@@ -84,8 +84,14 @@
   },
   "dependencies": {
     "@nodeutils/defaults-deep": "^1.1.0",
+<<<<<<< HEAD
     "async": "^2.6.1",
     "big.js": "^5.1.2",
+=======
+    "async": "^2.6.0",
+    "base32-encode": "^1.0.0",
+    "big.js": "^5.0.3",
+>>>>>>> wip
     "binary-querystring": "~0.1.2",
     "bl": "^2.0.1",
     "boom": "^7.2.0",
