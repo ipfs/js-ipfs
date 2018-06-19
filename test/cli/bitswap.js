@@ -10,7 +10,8 @@ describe('bitswap', () => runOn((thing) => {
   let peerId
   const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
 
-  before((done) => {
+  before(function (done) {
+    this.timeout(60 * 1000)
     ipfs = thing.ipfs
     ipfs('block get ' + key)
       .then(() => {})
@@ -18,7 +19,7 @@ describe('bitswap', () => runOn((thing) => {
     PeerId.create((err, peer) => {
       expect(err).to.not.exist()
       peerId = peer.toB58String()
-      setTimeout(done, 250)
+      done()
     })
   })
 
