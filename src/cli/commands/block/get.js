@@ -19,7 +19,7 @@ module.exports = {
       }
 
       if (block) {
-        print(block.data)
+        print(block.data, false)
       } else {
         print('Block was unwanted before it could be remotely retrieved')
       }
