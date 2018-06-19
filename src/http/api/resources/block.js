@@ -48,7 +48,13 @@ exports.get = {
         }).code(500)
       }
 
-      return reply(block.data)
+      if (block) {
+        return reply(block.data)
+      }
+      return reply({
+        Message: 'Block was unwanted before it could be remotely retrieved',
+        Code: 0
+      }).code(404)
     })
   }
 }

@@ -7,16 +7,11 @@ const parseKey = require('./block').parseKey
 exports = module.exports
 
 exports.wantlist = (request, reply) => {
-  let list
-  try {
-    list = request.server.app.ipfs.bitswap.wantlist()
-    list = list.map((entry) => entry.cid.toBaseEncodedString())
-  } catch (err) {
-    return reply(boom.badRequest(err))
-  }
-
-  reply({
-    Keys: list
+  request.server.app.ipfs.bitswap.wantlist((err, list) => {
+    if (err) {
+      return reply(boom.badRequest(err))
+    }
+    reply(list)
   })
 }
 
@@ -46,10 +41,18 @@ exports.stat = (request, reply) => {
 }
 
 exports.unwant = {
-  // uses common parseKey method that returns a `key`
+  // uses common parseKey method that assigns a `key` to request.pre.args
   parseArgs: parseKey,
 
+  // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
-    reply(boom.badRequest(new Error('Not implemented yet')))
+    const key = request.pre.args.key
+    const ipfs = request.server.app.ipfs
+    ipfs.bitswap.unwant(key, (err) => {
+      if (err) {
+        return reply(boom.badRequest(err))
+      }
+      reply({ key: key.toBaseEncodedString() })
+    })
   }
 }
