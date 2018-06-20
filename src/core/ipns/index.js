@@ -1,6 +1,6 @@
 'use strict'
 
-const peerId = require('peer-id')
+const { createFromPrivKey } = require('peer-id')
 const series = require('async/series')
 // const QuickLRU = require('quick-lru');
 // Consider using https://github.com/dominictarr/hashlru
@@ -32,7 +32,7 @@ class IPNS {
   // Publish
   publish (privKey, value, eol, callback) {
     series([
-      (cb) => peerId.createFromPrivKey(privKey.bytes.toString('base64'), cb),
+      (cb) => createFromPrivKey(privKey.bytes.toString('base64'), cb),
       (cb) => this.ipnsPublisher.publishWithEOL(privKey, value, eol, cb)
     ], (err, results) => {
       if (err) {

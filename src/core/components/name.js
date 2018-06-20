@@ -3,9 +3,9 @@
 const promisify = require('promisify-es6')
 const series = require('async/series')
 const human = require('human-to-milliseconds')
-const path = require('../ipns/path')
 
-const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
+const errors = require('../utils')
+const path = require('../ipns/path')
 
 const keyLookup = (ipfsNode, kname, cb) => {
   if (kname === 'self') {
@@ -35,7 +35,7 @@ module.exports = function name (self) {
      * @param {boolean} resolve resolve given path before publishing.
      * @param {String} lifetime time duration that the record will be valid for.
     This accepts durations such as "300s", "1.5h" or "2h45m". Valid time units are
-    "ns", "us" (or "µs"), "ms", "s", "m", "h".
+    "ms", "s", "m", "h".
      * @param {String} ttl time duration this record should be cached for (caution: experimental).
      * @param {String} key name of the key to be used or a valid PeerID, as listed by 'ipfs key list -l'.
      * @param {function(Error)} [callback]
@@ -43,10 +43,10 @@ module.exports = function name (self) {
      */
     publish: promisify((value, resolve = true, lifetime = '24h', ttl, key = 'self', callback) => {
       if (!self.isOnline()) {
-        return callback(new Error(OFFLINE_ERROR))
+        return callback(new Error(errors.OFFLINE_ERROR))
       }
 
-      // Parse ipfs path value
+      // Parse path value
       try {
         value = path.parsePath(value)
       } catch (err) {
@@ -97,7 +97,7 @@ module.exports = function name (self) {
       const local = true
 
       if (!self.isOnline()) {
-        return callback(new Error(OFFLINE_ERROR))
+        return callback(new Error(errors.OFFLINE_ERROR))
       }
 
       if (local && nocache) {

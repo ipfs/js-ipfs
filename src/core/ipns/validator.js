@@ -1,5 +1,7 @@
 'use strict'
 
+const IpnsEntry = require('./pb/ipnsEntry')
+
 // Create IPNS Entry data for being signed
 const getDataForSignature = (value, validityType, validity) => {
   const valueBuffer = Buffer.from(value)
@@ -33,10 +35,12 @@ const verify = (publicKey, entry, callback) => {
     }
 
     // Validate EOL
-    const validityDate = Date.parse(validity.toString())
+    if (validityType === IpnsEntry.validityType.EOL) {
+      const validityDate = Date.parse(validity.toString())
 
-    if (validityDate < Date.now()) {
-      return callback(new Error('record has expired'))
+      if (validityDate < Date.now()) {
+        return callback(new Error('record has expired'))
+      }
     }
 
     return callback(null, null)

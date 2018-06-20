@@ -4,7 +4,7 @@ const IpnsEntry = require('./pb/ipnsEntry')
 const utils = require('./utils')
 const validator = require('./validator')
 
-const multihash = require('multihashes')
+const { fromB58String } = require('multihashes')
 
 class IpnsResolver {
   constructor (repo) {
@@ -38,7 +38,7 @@ class IpnsResolver {
 
   // https://github.com/ipfs/go-ipfs-routing/blob/master/offline/offline.go
   resolveLocal (name, publicKey, callback) {
-    const ipnsKey = utils.generateIpnsDsKey(multihash.fromB58String(name))
+    const ipnsKey = utils.generateIpnsDsKey(fromB58String(name))
 
     this.repo.datastore.get(ipnsKey, (err, dsVal) => {
       if (err) {

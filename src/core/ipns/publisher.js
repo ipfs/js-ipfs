@@ -4,7 +4,7 @@ const peerId = require('peer-id')
 const waterfall = require('async/waterfall')
 
 const IpnsEntry = require('./pb/ipnsEntry')
-const utils = require('./utils')
+const { generateIpnsDsKey } = require('./utils')
 const validator = require('./validator')
 
 const defaultRecordTtl = 60 * 60 * 1000
@@ -46,8 +46,8 @@ class IpnsPublisher {
 
   // Returns the record this node has published corresponding to the given peer ID.
   // If `checkRouting` is true and we have no existing record, this method will check the routing system for any existing records.
-  getPublished (peerId, checkRouting, callback) {
-    this.repo.datastore.get(utils.generateIpnsDsKey(peerId.id), (err, dsVal) => {
+  getPublished (peerIdResult, checkRouting, callback) {
+    this.repo.datastore.get(generateIpnsDsKey(peerIdResult.id), (err, dsVal) => {
       let result
 
       if (!err) {
@@ -59,7 +59,7 @@ class IpnsPublisher {
       } else if (err.notFound) {
         if (!checkRouting) {
           return callback(null, {
-            peerId: peerId
+            peerIdResult: peerIdResult
           })
         }
         // TODO ROUTING
@@ -71,7 +71,7 @@ class IpnsPublisher {
       result = IpnsEntry.unmarshal(dsVal)
 
       return callback(null, {
-        peerId: peerId,
+        peerIdResult: peerIdResult,
         record: result
       })
     })
@@ -105,7 +105,7 @@ class IpnsPublisher {
         callback(err)
       }
 
-      const { peerId, record } = result
+      const { peerIdResult, record } = result
 
       // Determinate the record sequence number
       let seqNumber = 0
@@ -125,7 +125,7 @@ class IpnsPublisher {
         const data = IpnsEntry.marshal(entryData)
 
         // Store the new record
-        this.repo.datastore.put(utils.generateIpnsDsKey(peerId.id), data, (err, res) => {
+        this.repo.datastore.put(generateIpnsDsKey(peerIdResult.id), data, (err, res) => {
           if (err) {
             return callback(err)
           }
