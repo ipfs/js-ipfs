@@ -3,7 +3,7 @@
 const print = require('../../utils').print
 
 module.exports = {
-  command: 'wantlist',
+  command: 'wantlist [peer]',
 
   describe: 'Print out all blocks currently on the bitswap wantlist for the local peer.',
 
@@ -16,13 +16,12 @@ module.exports = {
   },
 
   handler (argv) {
-    // TODO: handle argv.peer
-    argv.ipfs.bitswap.wantlist((err, res) => {
+    argv.ipfs.bitswap.wantlist(argv.peer, (err, res) => {
       if (err) {
         throw err
       }
-      res.Keys.forEach((cidStr) => {
-        print(cidStr)
+      res.Keys.forEach((cid) => {
+        print(cid['/'])
       })
     })
   }

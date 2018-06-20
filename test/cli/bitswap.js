@@ -3,17 +3,24 @@
 
 const expect = require('chai').expect
 const runOn = require('../utils/on-and-off').on
+const PeerId = require('peer-id')
 
 describe('bitswap', () => runOn((thing) => {
   let ipfs
+  let peerId
   const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
 
-  before((done) => {
+  before(function (done) {
+    this.timeout(60 * 1000)
     ipfs = thing.ipfs
     ipfs('block get ' + key)
       .then(() => {})
       .catch(() => {})
-    setTimeout(done, 800)
+    PeerId.create((err, peer) => {
+      expect(err).to.not.exist()
+      peerId = peer.toB58String()
+      done()
+    })
   })
 
   it('wantlist', function () {
@@ -23,8 +30,14 @@ describe('bitswap', () => runOn((thing) => {
     })
   })
 
-  // TODO @hacdias fix this with https://github.com/ipfs/js-ipfs/pull/1198
-  it.skip('stat', function () {
+  it('wantlist peerid', function () {
+    this.timeout(20 * 1000)
+    return ipfs('bitswap wantlist ' + peerId).then((out) => {
+      expect(out).to.eql('')
+    })
+  })
+
+  it('stat', function () {
     this.timeout(20 * 1000)
 
     return ipfs('bitswap stat').then((out) => {
@@ -38,6 +51,12 @@ describe('bitswap', () => runOn((thing) => {
         '  partners [0]',
         '    '
       ].join('\n') + '\n')
+    })
+  })
+
+  it('unwant', function () {
+    return ipfs('bitswap unwant ' + key).then((out) => {
+      expect(out).to.eql(`Key ${key} removed from wantlist\n`)
     })
   })
 }))

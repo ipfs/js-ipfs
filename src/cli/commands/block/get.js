@@ -1,6 +1,7 @@
 'use strict'
 
 const CID = require('cids')
+const print = require('../../utils').print
 
 module.exports = {
   command: 'get <key>',
@@ -17,7 +18,11 @@ module.exports = {
         throw err
       }
 
-      process.stdout.write(block.data)
+      if (block) {
+        print(block.data, false)
+      } else {
+        print('Block was unwanted before it could be remotely retrieved')
+      }
     })
   }
 }

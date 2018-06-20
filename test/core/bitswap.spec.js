@@ -18,9 +18,6 @@ const CID = require('cids')
 
 const IPFSFactory = require('ipfsd-ctl')
 
-// This gets replaced by '../utils/create-repo-browser.js' in the browser
-const createTempRepo = require('../utils/create-repo-nodejs.js')
-
 const IPFS = require('../../src/core')
 
 // TODO bitswap tests on windows is failing, missing proper shutdown of daemon
@@ -244,77 +241,6 @@ skipOnWindows('bitswap', function () {
         expect(err).to.not.exist()
         expect(data).to.eql(file)
         done()
-      })
-    })
-  })
-
-  describe('api', () => {
-    let node
-
-    before(function (done) {
-      this.timeout(40 * 1000)
-
-      node = new IPFS({
-        repo: createTempRepo(),
-        start: false,
-        config: {
-          Addresses: {
-            Swarm: []
-          },
-          Discovery: {
-            MDNS: {
-              Enabled: false
-            }
-          }
-        }
-      })
-      node.on('ready', () => done())
-    })
-
-    describe('while offline', () => {
-      it('.wantlist throws if offline', () => {
-        expect(() => node.bitswap.wantlist()).to.throw(/online/)
-      })
-
-      it('.stat gives error while offline', () => {
-        node.bitswap.stat((err, stats) => {
-          expect(err).to.exist()
-          expect(stats).to.not.exist()
-        })
-      })
-
-      it('throws if offline', () => {
-        expect(() => node.bitswap.unwant('my key')).to.throw(/online/)
-      })
-    })
-
-    describe('while online', () => {
-      before(function (done) {
-        this.timeout(80 * 1000)
-
-        node.start(() => done())
-      })
-
-      it('.wantlist returns an array of wanted blocks', () => {
-        expect(node.bitswap.wantlist()).to.eql([])
-      })
-
-      it('returns the stats', (done) => {
-        node.bitswap.stat((err, stats) => {
-          expect(err).to.not.exist()
-          expect(stats).to.have.keys([
-            'blocksReceived',
-            'blocksSent',
-            'dataReceived',
-            'dataSent',
-            'wantlist',
-            'peers',
-            'provideBufLen',
-            'dupDataReceived',
-            'dupBlksReceived'
-          ])
-          done()
-        })
       })
     })
   })

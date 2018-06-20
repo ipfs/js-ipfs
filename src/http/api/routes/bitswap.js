@@ -9,7 +9,7 @@ module.exports = (server) => {
     method: '*',
     path: '/api/v0/bitswap/wantlist',
     config: {
-      handler: resources.bitswap.wantlist
+      handler: resources.bitswap.wantlist.handler
     }
   })
 
@@ -17,7 +17,7 @@ module.exports = (server) => {
     method: '*',
     path: '/api/v0/bitswap/stat',
     config: {
-      handler: resources.bitswap.stat
+      handler: resources.bitswap.stat.handler
     }
   })
 
