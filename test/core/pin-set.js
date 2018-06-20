@@ -11,7 +11,7 @@ const parallelLimit = require('async/parallelLimit')
 const series = require('async/series')
 const { fromB58String } = require('multihashes')
 const { DAGNode } = require('ipld-dag-pb')
-const CID = require('CIDs')
+const CID = require('cids')
 
 const IPFS = require('../../src/core')
 const createPinSet = require('../../src/core/components/pin-set')
