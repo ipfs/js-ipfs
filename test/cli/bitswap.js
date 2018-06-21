@@ -41,16 +41,16 @@ describe('bitswap', () => runOn((thing) => {
     this.timeout(20 * 1000)
 
     return ipfs('bitswap stat').then((out) => {
-      expect(out).to.be.eql([
+      expect(out).to.include([
         'bitswap status',
         '  blocks received: 0',
         '  dup blocks received: 0',
         '  dup data received: 0B',
         '  wantlist [1 keys]',
         `    ${key}`,
-        '  partners [0]',
-        '    '
-      ].join('\n') + '\n')
+        // We sometimes pick up partners while the tests run so our assertion ends here
+        '  partners'
+      ].join('\n'))
     })
   })
 
