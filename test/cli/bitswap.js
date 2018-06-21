@@ -50,7 +50,7 @@ describe('bitswap', () => runOn((thing) => {
         `    ${key}`,
         // We sometimes pick up partners while the tests run so our assertion ends here
         '  partners'
-      ].join('\n') + '\n')
+      ].join('\n'))
     })
   })
 
