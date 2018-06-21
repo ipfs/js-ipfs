@@ -33,4 +33,4 @@ We use labels to tag urgency and the difficulty of an issue. The current label s
 
 ## Weekly Core Dev Team Calls
 
-[ⒿⓈ⚡️ js-ipfs Dev Team Weekly Sync 🙌🏽](https://github.com/ipfs/js-ipfs/issues/1179)
+[⚡️ⒿⓈ Core Dev Team Weekly Sync 🙌🏽](https://github.com/ipfs/pm/issues/650)
