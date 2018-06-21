@@ -100,7 +100,11 @@ function HttpApi (repo, config, cliArgs) {
               routes: {
                 cors: true
               }
-            }
+            },
+            debug: process.env.DEBUG ? {
+              request: ['*'],
+              log: ['*']
+            } : undefined
           })
 
           this.server.app.ipfs = this.node
