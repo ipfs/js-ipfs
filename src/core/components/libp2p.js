@@ -48,7 +48,12 @@ module.exports = function libp2p (self) {
               dht: get(self._options, 'EXPERIMENTAL.dht', false),
               pubsub: get(self._options, 'EXPERIMENTAL.pubsub', false)
             }
-          }
+          },
+          connectionManager: get(
+            self._options,
+            'EXPERIMENTAL.connectionManager',
+            get(config, 'EXPERIMENTAL.connectionManager')
+          )
         }
 
         const libp2pOptions = defaultsDeep(
