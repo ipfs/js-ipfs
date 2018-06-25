@@ -34,11 +34,18 @@ module.exports = (send) => {
     const transform = (res, callback) => {
       if (Buffer.isBuffer(res)) {
         callback(null, new Block(res, cid))
+      // For empty blocks, concat-stream can't infer the encoding so we are
+      // passed back an empty array
+      } else if (Array.isArray(res) && res.length === 0) {
+        callback(null, new Block(Buffer.alloc(0), cid))
       } else {
         streamToValue(res, (err, data) => {
           if (err) {
             return callback(err)
           }
+          // For empty blocks, concat-stream can't infer the encoding so we are
+          // passed back an empty array
+          if (!data.length) data = Buffer.alloc(0)
           callback(null, new Block(data, cid))
         })
       }
