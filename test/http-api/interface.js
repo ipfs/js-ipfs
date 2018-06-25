@@ -9,6 +9,8 @@ describe('interface-ipfs-core over ipfs-api tests', () => {
     factoryOptions: { exec: 'src/cli/bin.js' }
   })
 
+  tests.bitswap(defaultCommonFactory)
+
   tests.block(defaultCommonFactory)
 
   tests.bootstrap(defaultCommonFactory)
