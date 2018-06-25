@@ -1,3 +1,13 @@
+<a name="22.1.1"></a>
+## [22.1.1](https://github.com/ipfs/js-ipfs-api/compare/v22.1.0...v22.1.1) (2018-06-25)
+
+
+### Bug Fixes
+
+* get block with empty data ([#789](https://github.com/ipfs/js-ipfs-api/issues/789)) ([88edd83](https://github.com/ipfs/js-ipfs-api/commit/88edd83))
+
+
+
 <a name="22.1.0"></a>
 # [22.1.0](https://github.com/ipfs/js-ipfs-api/compare/v22.0.2...v22.1.0) (2018-06-18)
 
