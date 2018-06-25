@@ -3,6 +3,7 @@
 const yargs = require('yargs')
 const utils = require('../../src/cli/utils')
 const debug = require('debug')('jsipfs:ipfs-exec')
+const stream = require('stream')
 // const execa = require('execa')
 // const chai = require('chai')
 // const dirtyChai = require('dirty-chai')
@@ -32,9 +33,13 @@ module.exports = function ipfsExec (repoPath) {
     }
     debug('Running', argv)
     const cliToLoad = argv[0]
+    // Load the actual source for the command
     let cli = require('../../src/cli/commands/' + cliToLoad)
 
+    // Some commands use different ways of the description...
     const description = cli.describe || cli.description || ''
+
+    // Load the parser for the command
     const parser = yargs.command(cli.command, description, cli.builder, cli.handler)
       .strict(false)
       .skipValidation('key')
@@ -43,17 +48,30 @@ module.exports = function ipfsExec (repoPath) {
     debug('Parsed command')
 
     return new Promise((resolve, reject) => {
+      // Save output we receive so we can return it
       let output = []
       // Placeholder callback for cleanup. Should be replaced with a proper one
       // later on
-      let cleanup = () => {
+      let cleanup = (cb) => {
         debug('WARNING: placeholder cleanup called...')
+        cb()
       }
+      // Make sure onComplete only gets called once
+      let onCompleteWasCalled = false
       // This callback gets injected into the CLI commands who can call it when
       // they are done with their operations
       const onComplete = (err) => {
+        // Disable rest of function if already called before
+        if (onCompleteWasCalled) {
+          // Tracing to figure out where it comes from, it should not happen
+          console.trace()
+          console.log('onComplete was called a second time...')
+          return
+        }
+        onCompleteWasCalled = true
         if (err) return reject(err)
         debug('onComplete called')
+        // Make sure we cleanup once we're done
         cleanup((err) => {
           if (err) return reject(err)
           debug('cleanup done, resolving value:', JSON.stringify(output.join('')))
@@ -75,24 +93,30 @@ module.exports = function ipfsExec (repoPath) {
           if (err) throw err
           ipfs.once('init', () => {
             debug('Got init event, time to cleanup')
+            // Bind to localhost and random port
             ipfs.config.set('Addresses.Swarm', [
               '/ip4/127.0.0.1/tcp/0'
             ], () => {
-              _cleanup(resolve)
+              cleanup = _cleanup
+              onComplete()
             })
           })
           debug('Got IPFS node, initting')
-          ipfs.init()
+          ipfs.init({bits: 512})
         })
       } else {
-        var stream = require('stream')
+        // Create stream for injection to get stdout
         var writable = new stream.Writable({
           write: function (chunk, encoding, next) {
             debug('received a little chunk', JSON.stringify(chunk.toString()))
             output.push(chunk.toString())
+            // TODO shitty implementation, should call onComplete when daemon/shutdown
+            // commands finish, but without having to rely on stdout
             if (chunk.toString() === 'Daemon is ready\n' || chunk.toString() === 'Shutdown complete\n') {
+              debug('received either daemon is ready or shutdown complete, so calling onComplete()')
               onComplete()
-              this.end()
+              // this.destroy()
+              utils.setPrintStream(process.stdout)
             }
             next()
           }
@@ -127,7 +151,7 @@ module.exports = function ipfsExec (repoPath) {
   }
   ipfsExec.repoPath = repoPath
   ipfsExec.fail = (args) => {
-    console.log('Lol, you want me to fail?')
+    console.log('Warning: ipfsExec.fail called, tests should be failing here')
     return new Promise((resolve) => {
       resolve('sure')
     })

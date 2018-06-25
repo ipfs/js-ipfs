@@ -85,10 +85,12 @@ function on (tests) {
       thing.ipfs('shutdown').then(() => done())
     })
 
-    console.log(tests)
     tests(thing)
   })
 }
+
+// const offTests = []
+// const onTests
 
 /*
  * CLI Utility to run the tests offline (daemon off) and online (daemon on)

@@ -2,24 +2,21 @@
 'use strict'
 
 const expect = require('chai').expect
-const runOn = require('../utils/on-and-off').on
 
-describe.only('bitswap', () => runOn((thing) => {
+module.exports = (thing) => describe.only('bitswap', () => {
   let ipfs
   const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
 
-  before((done) => {
-    ipfs = thing.ipfs
-    ipfs('block get ' + key)
-      .then(() => {})
-      .catch(() => {})
-    setTimeout(done, 800)
-  })
-
   it('wantlist', function () {
     this.timeout(20 * 1000)
-    return ipfs('bitswap wantlist').then((out) => {
-      expect(out).to.eql(key + '\n')
+    thing.ipfs('block get ' + key).catch(() => {})
+    return new Promise((resolve) => {
+      setTimeout(() => {
+          thing.ipfs('bitswap wantlist').then((out) => {
+            expect(out).to.eql(key + '\n')
+            resolve()
+          })
+      }, 1000)
     })
   })
 
@@ -40,4 +37,5 @@ describe.only('bitswap', () => runOn((thing) => {
       ].join('\n') + '\n')
     })
   })
-}))
+})
+module.exports.part = 'online'
