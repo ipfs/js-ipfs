@@ -30,7 +30,7 @@ describe('.ping', function () {
   let otherId
 
   before(function (done) {
-    this.timeout(20 * 1000) // slow CI
+    this.timeout(30 * 1000) // slow CI
 
     series([
       (cb) => {
@@ -50,18 +50,22 @@ describe('.ping', function () {
         })
       },
       (cb) => {
-        ipfsd.api.id((err, id) => {
-          expect(err).to.not.exist()
-          const ma = id.addresses[0]
-          other.swarm.connect(ma, cb)
-        })
-      },
-      (cb) => {
-        other.id((err, id) => {
-          expect(err).to.not.exist()
-          otherId = id.id
-          cb()
-        })
+        parallel([
+          (cb) => {
+            ipfs.id((err, id) => {
+              expect(err).to.not.exist()
+              const ma = id.addresses[0]
+              other.swarm.connect(ma, cb)
+            })
+          },
+          (cb) => {
+            other.id((err, id) => {
+              expect(err).to.not.exist()
+              otherId = id.id
+              cb()
+            })
+          }
+        ], cb)
       }
     ], done)
   })
