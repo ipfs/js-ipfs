@@ -1,16 +1,18 @@
 const waterfall = require('async/waterfall')
 const timesSeries = require('async/timesSeries')
+const map = require('async/map')
+
+function identify (node, cb) {
+  node.id((err, id) => {
+    if (err) return cb(err)
+    node.peerId = id
+    cb(null, node)
+  })
+}
 
 // Spawn a node, get it's id and set it as `peerId` on the node
 function spawnNodeWithId (factory, callback) {
-  waterfall([
-    (cb) => factory.spawnNode(cb),
-    (node, cb) => node.id((err, id) => {
-      if (err) return cb(err)
-      node.peerId = id
-      cb(null, node)
-    })
-  ], callback)
+  waterfall([(cb) => factory.spawnNode(cb), identify], callback)
 }
 
 exports.spawnNodeWithId = spawnNodeWithId
@@ -24,7 +26,10 @@ exports.spawnNodes = spawnNodes
 
 // Spawn n nodes, getting their id's and setting them as `peerId` on the nodes
 function spawnNodesWithId (n, factory, callback) {
-  timesSeries(n, (_, cb) => spawnNodeWithId(factory, cb), callback)
+  spawnNodes(n, factory, (err, nodes) => {
+    if (err) return callback(err)
+    map(nodes, identify, callback)
+  })
 }
 
 exports.spawnNodesWithId = spawnNodesWithId
