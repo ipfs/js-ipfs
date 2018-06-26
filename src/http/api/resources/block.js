@@ -49,8 +49,9 @@ exports.get = {
       }
 
       if (block) {
-        return reply(block.data)
+        return reply(block.data).header('X-Stream-Output', '1')
       }
+
       return reply({
         Message: 'Block was unwanted before it could be remotely retrieved',
         Code: 0
@@ -63,32 +64,40 @@ exports.put = {
   // pre request handler that parses the args and returns `data` which is assigned to `request.pre.args`
   parseArgs: (request, reply) => {
     if (!request.payload) {
-      return reply("File argument 'data' is required").code(400).takeover()
+      return reply({
+        Message: "File argument 'data' is required",
+        Code: 0
+      }).code(400).takeover()
     }
 
     const parser = multipart.reqParser(request.payload)
     var file
 
     parser.on('file', (fileName, fileStream) => {
+      file = Buffer.alloc(0)
+
       fileStream.on('data', (data) => {
-        file = data
+        file = Buffer.concat([file, data])
       })
     })
 
     parser.on('end', () => {
       if (!file) {
-        return reply("File argument 'data' is required").code(400).takeover()
+        return reply({
+          Message: "File argument 'data' is required",
+          Code: 0
+        }).code(400).takeover()
       }
 
       return reply({
-        data: file.toString()
+        data: file
       })
     })
   },
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
-    const data = Buffer.from(request.pre.args.data)
+    const data = request.pre.args.data
     const ipfs = request.server.app.ipfs
 
     waterfall([
