@@ -92,7 +92,7 @@ module.exports = function pin (self) {
       }),
 
       // hack for CLI tests
-      cb => repo.closed ? repo.datastore.open(cb) : cb(null, null),
+      cb => repo.closed ? repo.open(cb) : cb(null, null),
 
       // save root to datastore under a consistent key
       cb => repo.datastore.put(pinDataStoreKey, root.multihash, cb)
