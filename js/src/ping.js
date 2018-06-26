@@ -8,7 +8,6 @@ const pump = require('pump')
 const { Writable } = require('stream')
 const series = require('async/series')
 const { spawnNodesWithId } = require('./utils/spawn')
-const { waitUntilConnected } = require('./utils/connections')
 
 const expect = chai.expect
 chai.use(dirtyChai)
@@ -29,8 +28,8 @@ function isPong (pingResponse) {
 
 module.exports = (common) => {
   describe('.ping', function () {
-    let ipfsdA
-    let ipfsdB
+    let ipfsA
+    let ipfsB
 
     before(function (done) {
       this.timeout(60 * 1000)
@@ -42,12 +41,12 @@ module.exports = (common) => {
           (cb) => {
             spawnNodesWithId(2, factory, (err, nodes) => {
               if (err) return cb(err)
-              ipfsdA = nodes[0]
-              ipfsdB = nodes[1]
+              ipfsA = nodes[0]
+              ipfsB = nodes[1]
               cb()
             })
           },
-          (cb) => waitUntilConnected(ipfsdA, ipfsdB, cb)
+          (cb) => ipfsA.swarm.connect(ipfsB.peerId.addresses[0], cb)
         ], done)
       })
     })
@@ -59,7 +58,7 @@ module.exports = (common) => {
 
       it('sends the specified number of packets', (done) => {
         const count = 3
-        ipfsdA.ping(ipfsdB.peerId.id, { count }, (err, responses) => {
+        ipfsA.ping(ipfsB.peerId.id, { count }, (err, responses) => {
           expect(err).to.not.exist()
           responses.forEach(expectIsPingResponse)
           const pongs = responses.filter(isPong)
@@ -72,7 +71,7 @@ module.exports = (common) => {
         const unknownPeerId = 'QmUmaEnH1uMmvckMZbh3yShaasvELPW4ZLPWnB4entMTEn'
         const count = 2
 
-        ipfsdA.ping(unknownPeerId, { count }, (err, responses) => {
+        ipfsA.ping(unknownPeerId, { count }, (err, responses) => {
           expect(err).to.exist()
           expect(responses[0].text).to.include('Looking up')
           expect(responses[1].success).to.be.false()
@@ -83,7 +82,7 @@ module.exports = (common) => {
       it('fails when pinging an invalid peer', (done) => {
         const invalidPeerId = 'not a peer ID'
         const count = 2
-        ipfsdA.ping(invalidPeerId, { count }, (err, responses) => {
+        ipfsA.ping(invalidPeerId, { count }, (err, responses) => {
           expect(err).to.exist()
           expect(err.message).to.include('failed to parse peer address')
           done()
@@ -98,7 +97,7 @@ module.exports = (common) => {
         let packetNum = 0
         const count = 3
         pull(
-          ipfsdA.pingPullStream(ipfsdB.peerId.id, { count }),
+          ipfsA.pingPullStream(ipfsB.peerId.id, { count }),
           pull.drain((res) => {
             expect(res.success).to.be.true()
             // It's a pong
@@ -118,7 +117,7 @@ module.exports = (common) => {
         const unknownPeerId = 'QmUmaEnH1uMmvckMZbh3yShaasvELPW4ZLPWnB4entMTEn'
         const count = 2
         pull(
-          ipfsdA.pingPullStream(unknownPeerId, { count }),
+          ipfsA.pingPullStream(unknownPeerId, { count }),
           pull.drain((res) => {
             expectIsPingResponse(res)
             messageNum++
@@ -143,7 +142,7 @@ module.exports = (common) => {
         const invalidPeerId = 'not a peer ID'
         const count = 2
         pull(
-          ipfsdA.pingPullStream(invalidPeerId, { count }),
+          ipfsA.pingPullStream(invalidPeerId, { count }),
           pull.collect((err) => {
             expect(err).to.exist()
             expect(err.message).to.include('failed to parse peer address')
@@ -161,7 +160,7 @@ module.exports = (common) => {
         const count = 3
 
         pump(
-          ipfsdA.pingReadableStream(ipfsdB.peerId.id, { count }),
+          ipfsA.pingReadableStream(ipfsB.peerId.id, { count }),
           new Writable({
             objectMode: true,
             write (res, enc, cb) {
@@ -188,7 +187,7 @@ module.exports = (common) => {
         const count = 2
 
         pump(
-          ipfsdA.pingReadableStream(unknownPeerId, { count }),
+          ipfsA.pingReadableStream(unknownPeerId, { count }),
           new Writable({
             objectMode: true,
             write (res, enc, cb) {
@@ -220,7 +219,7 @@ module.exports = (common) => {
         const count = 2
 
         pump(
-          ipfsdA.pingReadableStream(invalidPeerId, { count }),
+          ipfsA.pingReadableStream(invalidPeerId, { count }),
           new Writable({
             objectMode: true,
             write: (chunk, enc, cb) => cb()
