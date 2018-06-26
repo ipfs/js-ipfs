@@ -1,3 +1,13 @@
+<a name="0.69.1"></a>
+## [0.69.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.69.0...v0.69.1) (2018-06-26)
+
+
+### Bug Fixes
+
+* do not rely on discovery for ping tests ([3acd6fd](https://github.com/ipfs/interface-ipfs-core/commit/3acd6fd)), closes [#310](https://github.com/ipfs/interface-ipfs-core/issues/310)
+
+
+
 <a name="0.69.0"></a>
 # [0.69.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.68.2...v0.69.0) (2018-06-22)
 
