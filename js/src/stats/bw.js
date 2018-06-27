@@ -1,16 +1,15 @@
 /* eslint-env mocha */
 'use strict'
 
-const crypto = require('libp2p-crypto')
-const isIPFS = require('is-ipfs')
-const { getDescribe, getIt, expect } = require('./utils/mocha')
+const { expectIsBandwidth } = require('./utils')
+const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.util', function () {
+  describe('.stats.bw', () => {
     let ipfs
 
     before(function (done) {
@@ -30,10 +29,16 @@ module.exports = (createCommon, options) => {
 
     after((done) => common.teardown(done))
 
-    it('should have a util object with the required values', () => {
-      expect(ipfs.util).to.be.deep.equal({
-        crypto: crypto,
-        isIPFS: isIPFS
+    it('should get bandwidth stats', function (done) {
+      ipfs.stats.bw((err, res) => {
+        expectIsBandwidth(err, res)
+        done()
+      })
+    })
+
+    it('should get bandwidth stats (promised)', () => {
+      return ipfs.stats.bw().then((res) => {
+        expectIsBandwidth(null, res)
       })
     })
   })

@@ -1,16 +1,19 @@
 /* eslint-env mocha */
 'use strict'
 
-const crypto = require('libp2p-crypto')
-const isIPFS = require('is-ipfs')
-const { getDescribe, getIt, expect } = require('./utils/mocha')
+const hat = require('hat')
+const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.util', function () {
+  describe('.key.gen', () => {
+    const keyTypes = [
+      { type: 'rsa', size: 2048 }
+    ]
+
     let ipfs
 
     before(function (done) {
@@ -30,10 +33,17 @@ module.exports = (createCommon, options) => {
 
     after((done) => common.teardown(done))
 
-    it('should have a util object with the required values', () => {
-      expect(ipfs.util).to.be.deep.equal({
-        crypto: crypto,
-        isIPFS: isIPFS
+    keyTypes.forEach((kt) => {
+      it(`should generate a new ${kt.type} key`, function (done) {
+        this.timeout(20 * 1000)
+        const name = hat()
+        ipfs.key.gen(name, kt, (err, key) => {
+          expect(err).to.not.exist()
+          expect(key).to.exist()
+          expect(key).to.have.property('name', name)
+          expect(key).to.have.property('id')
+          done()
+        })
       })
     })
   })

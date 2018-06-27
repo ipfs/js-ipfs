@@ -1,16 +1,14 @@
 /* eslint-env mocha */
 'use strict'
 
-const crypto = require('libp2p-crypto')
-const isIPFS = require('is-ipfs')
-const { getDescribe, getIt, expect } = require('./utils/mocha')
+const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.util', function () {
+  describe('.stop', () => {
     let ipfs
 
     before(function (done) {
@@ -28,12 +26,23 @@ module.exports = (createCommon, options) => {
       })
     })
 
-    after((done) => common.teardown(done))
+    after((done) => {
+      common.teardown(done)
+    })
 
-    it('should have a util object with the required values', () => {
-      expect(ipfs.util).to.be.deep.equal({
-        crypto: crypto,
-        isIPFS: isIPFS
+    // must be last test to run
+    it('should stop the node', function (done) {
+      this.timeout(10 * 1000)
+
+      ipfs.stop((err) => {
+        expect(err).to.not.exist()
+
+        // Trying to stop an already stopped node should return an error
+        // as the node can't respond to requests anymore
+        ipfs.stop((err) => {
+          expect(err).to.exist()
+          done()
+        })
       })
     })
   })

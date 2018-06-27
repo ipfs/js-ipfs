@@ -1,16 +1,14 @@
 /* eslint-env mocha */
 'use strict'
 
-const crypto = require('libp2p-crypto')
-const isIPFS = require('is-ipfs')
-const { getDescribe, getIt, expect } = require('./utils/mocha')
+const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.util', function () {
+  describe('.repo.version', () => {
     let ipfs
 
     before(function (done) {
@@ -30,10 +28,17 @@ module.exports = (createCommon, options) => {
 
     after((done) => common.teardown(done))
 
-    it('should have a util object with the required values', () => {
-      expect(ipfs.util).to.be.deep.equal({
-        crypto: crypto,
-        isIPFS: isIPFS
+    it('should get the repo version', (done) => {
+      ipfs.repo.version((err, version) => {
+        expect(err).to.not.exist()
+        expect(version).to.exist()
+        done()
+      })
+    })
+
+    it('should get the repo version (promised)', () => {
+      return ipfs.repo.version().then((version) => {
+        expect(version).to.exist()
       })
     })
   })

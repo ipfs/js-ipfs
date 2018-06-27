@@ -1,3 +1,5 @@
+'use strict'
+
 const waterfall = require('async/waterfall')
 const timesSeries = require('async/timesSeries')
 const map = require('async/map')
