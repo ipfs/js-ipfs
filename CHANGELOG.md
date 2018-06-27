@@ -1,3 +1,31 @@
+<a name="0.70.0"></a>
+# [0.70.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.69.1...v0.70.0) (2018-06-27)
+
+
+### Features
+
+* modularise tests by command, add tools to skip and only ([#290](https://github.com/ipfs/interface-ipfs-core/issues/290)) ([e232d8c](https://github.com/ipfs/interface-ipfs-core/commit/e232d8c))
+
+
+### BREAKING CHANGES
+
+* Consumers of this test suite now have fine grained control over what tests are run. Tests can now be skipped and "onlyed" (run only specific tests). This can be done on a test, command and sub-system level. See the updated usage guide for instructions: https://github.com/ipfs/interface-ipfs-core/blob/master/README.md#usage.
+
+This means that tests skips depending on implementation (e.g. go/js), environment (e.g. node/browser) or platform (e.g. macOS/linux/windows) that were previously present in this suite have been removed. Consumers of this library should add their own skips based on the implementation that's being tested and the environment/platform that the tests are running on.
+
+The following other breaking changes have been made:
+
+1. The common object passed to test suites has changed. It must now be a function that returns a common object (same shape and functions as before).
+2. The `ipfs.ls` tests (not MFS `ipfs.files.ls`) is now a root level suite. You'll need to import it and use like `tests.ls(createCommon)` to have those tests run.
+3. The `generic` suite (an alias to `miscellaneous`) has been removed.
+
+See https://github.com/ipfs/interface-ipfs-core/pull/290 for more details.
+
+License: MIT
+Signed-off-by: Alan Shaw <alan@tableflip.io>
+
+
+
 <a name="0.69.1"></a>
 ## [0.69.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.69.0...v0.69.1) (2018-06-26)
 
