@@ -14,16 +14,16 @@ const columns = [
 // Headings are a string
 // Arrays are packages. Index 0 is the GitHub repo and index 1 is the npm package
 const rows = [
-  'Repo',
-  ['ipfs/js-ipfs-repo', 'ipfs-repo'],
+  'Files',
+  ['ipfs/js-ipfs-unixfs-engine', 'ipfs-unixfs-engine'],
 
   'DAG',
   ['ipld/js-ipld', 'ipld'],
   ['ipld/js-ipld-dag-pb', 'ipld-dag-pb'],
   ['ipld/js-ipld-dag-cbor', 'ipld-dag-cbor'],
 
-  'Files',
-  ['ipfs/js-ipfs-unixfs-engine', 'ipfs-unixfs-engine'],
+  'Repo',
+  ['ipfs/js-ipfs-repo', 'ipfs-repo'],
 
   'Exchange',
   ['ipfs/js-ipfs-block-service', 'ipfs-block-service'],
@@ -51,16 +51,16 @@ const rows = [
   ['multiformats/js-multiaddr', 'multiaddr'],
   ['multiformats/js-multihash', 'multihashes'],
 
-  'Generics/Utils',
-  ['ipfs/js-ipfs-api', 'ipfs-api'],
-  ['fbaiodias/ipfs-multipart', 'ipfs-multipart'],
-  ['ipfs/is-ipfs', 'is-ipfs'],
-  ['multiformats/js-multihashing', 'multihashing'],
-  ['multiformats/js-mafmt', 'mafmt'],
-
   'Crypto',
   ['libp2p/js-libp2p-crypto', 'libp2p-crypto'],
-  ['libp2p/js-libp2p-keychain', 'libp2p-keychain']
+  ['libp2p/js-libp2p-keychain', 'libp2p-keychain'],
+  
+  'Generics/Utils',
+  ['ipfs/js-ipfs-api', 'ipfs-api'],
+  ['ipfs/ipfs-multipart', 'ipfs-multipart'],
+  ['ipfs/is-ipfs', 'is-ipfs'],
+  ['multiformats/js-multihashing', 'multihashing'],
+  ['multiformats/js-mafmt', 'mafmt']
 ]
 
 const isItemPackage = (item) => {
