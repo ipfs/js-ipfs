@@ -81,9 +81,7 @@ const packageBadges = [
     return `[![Build Status](https://ci.ipfs.team/buildStatus/icon?job=${gh}/master)](https://ci.ipfs.team/job/${jenkinsPath}/job/master/)`
   },
   // Coverage
-  (gh, npm) => `[![Coverage Status](https://coveralls.io/repos/github/${gh}/badge.svg?branch=master)](https://coveralls.io/github/${gh}?branch=master)`
-  // TODO once we're ready for codecov badge instead of coveralls
-  // (gh, npm) => `[![Coverage Status](https://codecov.io/gh/${gh}/branch/master/graph/badge.svg)](https://codecov.io/gh/${gh})`
+  (gh, npm) => `[![Coverage Status](https://codecov.io/gh/${gh}/branch/master/graph/badge.svg)](https://codecov.io/gh/${gh})`
 ]
 
 // Creates the table row for a package
