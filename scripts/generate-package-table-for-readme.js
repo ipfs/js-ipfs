@@ -30,7 +30,7 @@ const rows = [
   ['ipfs/js-ipfs-block-service', 'ipfs-block-service'],
   ['ipfs/js-ipfs-bitswap', 'ipfs-bitswap'],
 
-  'Swarm/libp2p',
+  'libp2p',
   ['libp2p/js-libp2p', 'libp2p'],
   ['libp2p/js-libp2p-circuit', 'libp2p-circuit'],
   ['libp2p/js-libp2p-floodsub', 'libp2p-floodsub'],
@@ -54,7 +54,7 @@ const rows = [
 
   'Generics/Utils',
   ['ipfs/js-ipfs-api', 'ipfs-api'],
-  ['xicombd/ipfs-multipart', 'ipfs-multipart'],
+  ['fbaiodias/ipfs-multipart', 'ipfs-multipart'],
   ['ipfs/is-ipfs', 'is-ipfs'],
   ['multiformats/js-multihashing', 'multihashing'],
   ['multiformats/js-mafmt', 'mafmt'],
