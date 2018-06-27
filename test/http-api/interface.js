@@ -17,24 +17,58 @@ describe('interface-ipfs-core over ipfs-api tests', () => {
 
   tests.config(defaultCommonFactory)
 
-  tests.dag(defaultCommonFactory, { skip: true })
+  tests.dag(defaultCommonFactory)
 
-  tests.dht(defaultCommonFactory, { skip: true })
+  tests.dht(defaultCommonFactory, {
+    skip: { reason: 'TODO: DHT is not implemented in js-ipfs yet!' }
+  })
 
   tests.files(defaultCommonFactory, {
     skip: [
-      // TODO: MFS is not implemented in js-ipfs yet!
-      'cp',
-      'mkdir',
-      'stat',
-      'rm',
-      'read',
-      'readReadableStream',
-      'readPullStream',
-      'write',
-      'mv',
-      'flush',
-      'ls'
+      {
+        name: 'cp',
+        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
+      },
+      {
+        name: 'mkdir',
+        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
+      },
+      {
+        name: 'stat',
+        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
+      },
+      {
+        name: 'rm',
+        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
+      },
+      {
+        name: 'read',
+        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
+      },
+      {
+        name: 'readReadableStream',
+        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
+      },
+      {
+        name: 'readPullStream',
+        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
+      },
+      {
+        name: 'write',
+        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
+      },
+      {
+        name: 'mv',
+        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
+      },
+      {
+        name: 'flush',
+        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
+      },
+      {
+        name: 'ls',
+        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
+      }
     ]
   })
 
@@ -52,8 +86,7 @@ describe('interface-ipfs-core over ipfs-api tests', () => {
 
   tests.object(defaultCommonFactory)
 
-  // TODO: pin is not implemented in js-ipfs yet!
-  tests.pin(defaultCommonFactory, { skip: true })
+  tests.pin(defaultCommonFactory)
 
   tests.ping(defaultCommonFactory)
 
@@ -67,8 +100,10 @@ describe('interface-ipfs-core over ipfs-api tests', () => {
   tests.repo(defaultCommonFactory, {
     skip: [
       // repo.gc
-      // TODO: repo.gc is not implemented in js-ipfs yet!
-      'gc'
+      {
+        name: 'gc',
+        reason: 'TODO: repo.gc is not implemented in js-ipfs yet!'
+      }
     ]
   })
 
@@ -105,9 +140,7 @@ describe('interface-ipfs-core over ipfs-api tests', () => {
     }
   }))
 
-  // FIXME: currently failing
-  tests.types(defaultCommonFactory, { skip: true })
+  tests.types(defaultCommonFactory, { skip: { reason: 'FIXME: currently failing' } })
 
-  // FIXME: currently failing
-  tests.util(defaultCommonFactory, { skip: true })
+  tests.util(defaultCommonFactory, { skip: { reason: 'FIXME: currently failing' } })
 })
