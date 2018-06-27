@@ -16,7 +16,7 @@ function getDescribe (config) {
     if (config.only === true) return describe.only
     if (config.skip === true) return describe.skip
 
-    if (typeof config.skip === 'object' && config.skip.reason) {
+    if (config.skip && typeof config.skip === 'object' && config.skip.reason) {
       const _describe = (name, impl) => {
         describe.skip(`${name} (${config.skip.reason})`, impl)
       }
