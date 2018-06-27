@@ -67,6 +67,7 @@
     "is-stream": "^1.1.0",
     "joi": "^13.4.0",
     "mortice": "^1.0.0",
+    "once": "^1.4.0",
     "promisify-es6": "^1.0.3",
     "pull-cat": "^1.1.11",
     "pull-paramap": "^1.2.2",

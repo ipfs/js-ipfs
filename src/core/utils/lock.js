@@ -41,7 +41,7 @@ const performOperation = (type, func, args, callback) => {
 module.exports = {
   readLock: (func) => {
     return function () {
-      const args = Array.prototype.slice.call(arguments)
+      const args = Array.from(arguments)
       let callback = args.pop()
 
       performOperation('read', func, args, callback)
@@ -50,7 +50,7 @@ module.exports = {
 
   writeLock: (func) => {
     return function () {
-      const args = Array.prototype.slice.call(arguments)
+      const args = Array.from(arguments)
       let callback = args.pop()
 
       performOperation('write', func, args, callback)

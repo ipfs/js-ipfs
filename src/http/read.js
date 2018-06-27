@@ -28,7 +28,14 @@ const mfsRead = (api) => {
               stream._readableState = {}
             }
 
-            return reply(stream).header('X-Stream-Output', '1')
+            reply(stream).header('X-Stream-Output', '1')
+          })
+          .catch(error => {
+            reply({
+              Message: error.message,
+              Code: 0,
+              Type: 'error'
+            }).code(500).takeover()
           })
       },
       validate: {
@@ -36,11 +43,13 @@ const mfsRead = (api) => {
           allowUnknown: true,
           stripUnknown: true
         },
-        query: {
+        query: Joi.object().keys({
           arg: Joi.string().required(),
           offset: Joi.number().integer().min(0),
           length: Joi.number().integer().min(0)
-        }
+        })
+          .rename('o', 'offset')
+          .rename('n', 'length')
       }
     }
   })

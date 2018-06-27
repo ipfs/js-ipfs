@@ -20,16 +20,24 @@ const mfsRm = (api) => {
           recursive
         })
           .then(() => reply())
+          .catch(error => {
+            reply({
+              Message: error.message,
+              Code: 0,
+              Type: 'error'
+            }).code(500).takeover()
+          })
       },
       validate: {
         options: {
           allowUnknown: true,
           stripUnknown: true
         },
-        query: {
+        query: Joi.object().keys({
           arg: Joi.string().required(),
           recursive: Joi.boolean().default(false)
-        }
+        })
+          .rename('r', 'recursive')
       }
     }
   })

@@ -21,7 +21,7 @@ const defaultOptions = {
 
 module.exports = (ipfs) => {
   return function mfsRm () {
-    const args = Array.prototype.slice.call(arguments)
+    const args = Array.from(arguments)
     const {
       sources,
       options,

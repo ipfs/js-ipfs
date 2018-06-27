@@ -79,10 +79,6 @@ const traverseToMfsObject = (ipfs, path, options, callback) => {
           }, (parent, {pathSegment, index}, done) => {
             log(`Looking for ${pathSegment} in ${parent.name} ${bs58.encode(parent.node.multihash)}`)
 
-            parent.node.links.forEach(link => {
-              log(`${bs58.encode(link.multihash)} ${link.name}`)
-            })
-
             const existingLink = parent.node.links.find(link => link.name === pathSegment)
 
             if (!existingLink) {
@@ -162,7 +158,7 @@ const traverseToMfsObject = (ipfs, path, options, callback) => {
 
       path
         .reverse()
-        .forEach((segment, index) => log(segment))
+        .forEach((segment) => log(segment))
     }
 
     callback(error, trail)

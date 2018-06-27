@@ -64,6 +64,14 @@ module.exports = (ipfs) => {
       }, cb),
       (result, cb) => updateTree(ipfs, result, cb),
       (newRoot, next) => updateMfsRoot(ipfs, newRoot.node.multihash, next)
-    ], (error) => callback(error))
+    ], (error) => {
+      if (error && error.message === 'Already exists' && options.parents) {
+        // when the directory already exists and we are creating intermediate
+        // directories, do not error out (consistent with mkdir -p)
+        error = null
+      }
+
+      callback(error)
+    })
   }
 }

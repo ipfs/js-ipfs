@@ -23,7 +23,7 @@ const defaultOptions = {
 
 module.exports = (ipfs) => {
   return function mfsCp () {
-    const args = Array.prototype.slice.call(arguments)
+    const args = Array.from(arguments)
     const {
       sources,
       destination,

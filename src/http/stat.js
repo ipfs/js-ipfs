@@ -35,18 +35,25 @@ const mfsStat = (api) => {
               SizeLocal: stats.sizeLocal
             })
           })
+          .catch(error => {
+            reply({
+              Message: error.message,
+              Code: 0,
+              Type: 'error'
+            }).code(500).takeover()
+          })
       },
       validate: {
         options: {
           allowUnknown: true,
           stripUnknown: true
         },
-        query: {
+        query: Joi.object().keys({
           arg: Joi.string().default('/'),
           hash: Joi.boolean().default(false),
           size: Joi.boolean().default(false),
           withLocal: Joi.boolean().default(false)
-        }
+        })
       }
     }
   })

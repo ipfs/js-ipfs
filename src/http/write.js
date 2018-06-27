@@ -2,6 +2,7 @@
 
 const Joi = require('joi')
 const multipart = require('ipfs-multipart')
+const once = require('once')
 
 const mfsWrite = (api) => {
   api.route({
@@ -35,11 +36,14 @@ const mfsWrite = (api) => {
         const parser = multipart.reqParser(request.payload)
         let filesParsed = false
 
+        reply = once(reply)
+
         parser.on('file', (_, fileStream) => {
           if (filesParsed) {
             return reply({
               Message: 'Please only send one file',
-              code: 0
+              Code: 0,
+              Type: 'error'
             }).code(400).takeover()
           }
 
@@ -62,23 +66,26 @@ const mfsWrite = (api) => {
             .catch(error => {
               reply({
                 Message: error.message,
-                code: 0
+                Code: 0,
+                Type: 'error'
               }).code(500).takeover()
             })
         })
 
-        parser.on('error', () => {
-          return reply({
-            Message: "File argument 'data' is required.",
-            code: 0
-          }).code(400).takeover()
+        parser.on('error', (error) => {
+          reply({
+            Message: error.message,
+            Code: 0,
+            Type: 'error'
+          }).code(500).takeover()
         })
 
         parser.on('end', () => {
           if (!filesParsed) {
             return reply({
               Message: "File argument 'data' is required.",
-              code: 0
+              Code: 0,
+              Type: 'error'
             }).code(400).takeover()
           }
 
@@ -90,7 +97,7 @@ const mfsWrite = (api) => {
           allowUnknown: true,
           stripUnknown: true
         },
-        query: {
+        query: Joi.object().keys({
           arg: Joi.string().required(),
           offset: Joi.number().integer().min(0),
           length: Joi.number().integer().min(0),
@@ -116,7 +123,10 @@ const mfsWrite = (api) => {
             'trickle'
           ]).default('trickle'),
           flush: Joi.boolean().default(true)
-        }
+        })
+          .rename('o', 'offset')
+          .rename('e', 'create')
+          .rename('t', 'truncate')
       }
     }
   })

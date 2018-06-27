@@ -5,6 +5,8 @@ const pull = require('pull-stream/pull')
 const values = require('pull-stream/sources/values')
 const collect = require('pull-stream/sinks/collect')
 const importer = require('ipfs-unixfs-engine').importer
+const bs58 = require('bs58')
+const log = require('debug')('mfs:import-node')
 const {
   loadNode
 } = require('../utils')
@@ -26,6 +28,8 @@ const importStream = (ipfs, source, options, callback) => {
       collect(cb)
     ),
     (results, cb) => {
+      log(`Imported file ${bs58.encode(results[0].multihash)}`)
+
       return loadNode(ipfs, results[0], cb)
     }
   ], callback)

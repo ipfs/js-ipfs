@@ -13,12 +13,11 @@ const mfsLs = (api) => {
         } = request.server.app
         const {
           arg,
-          long,
-          l
+          long
         } = request.query
 
         return ipfs.files.ls(arg, {
-          long: long || l
+          long
         })
           .then(files => {
             reply({
@@ -30,17 +29,24 @@ const mfsLs = (api) => {
               }))
             })
           })
+          .catch(error => {
+            reply({
+              Message: error.message,
+              Code: 0,
+              Type: 'error'
+            }).code(500).takeover()
+          })
       },
       validate: {
         options: {
           allowUnknown: true,
           stripUnknown: true
         },
-        query: {
+        query: Joi.object().keys({
           arg: Joi.string().default('/'),
-          long: Joi.boolean().default(false),
-          l: Joi.boolean().default(false)
-        }
+          long: Joi.boolean().default(false)
+        })
+          .rename('l', 'long')
       }
     }
   })

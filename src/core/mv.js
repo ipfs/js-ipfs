@@ -17,7 +17,7 @@ const defaultOptions = {
 
 module.exports = (ipfs) => {
   return function mfsMv () {
-    let args = Array.prototype.slice.call(arguments)
+    let args = Array.from(arguments)
 
     if (Array.isArray(args[0])) {
       args = args[0].concat(args.slice(1))

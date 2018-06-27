@@ -186,7 +186,7 @@ const updateOrImport = (ipfs, options, path, source, containingFolder, callback)
 
         log('Importing file', path.name)
         importNode(ipfs, source, options, (error, result) => {
-          log(`Imported file ${path.name}`)
+          log(`Imported file ${path.name} ${bs58.encode(result.multihash)}`)
           next(error, result)
         })
       }
