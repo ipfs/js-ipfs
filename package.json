@@ -2,6 +2,7 @@
   "name": "ipfs-multipart",
   "version": "0.1.0",
   "description": "A set of utilities to help dealing with IPFS multipart.",
+  "leadMaintainer": "Hugo Dias <mail@hugodias.me>",
   "main": "lib/index.js",
   "scripts": {
     "test": "mocha test/index.js",
