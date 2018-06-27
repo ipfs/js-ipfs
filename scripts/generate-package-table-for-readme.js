@@ -7,7 +7,6 @@ const columns = [
   'Package',
   'Version',
   'Deps',
-  'DevDeps',
   'CI',
   'Coverage'
 ]
@@ -74,8 +73,6 @@ const packageBadges = [
   // Version
   (gh, npm) => `[![npm](https://img.shields.io/npm/v/${npm}.svg?maxAge=86400&style=flat-square)](//github.com/${gh}/releases)`,
   // Deps
-  (gh, npm) => `[![Dep](https://david-dm.org/${gh}.svg?style=flat-square)](https://david-dm.org/${gh})`,
-  // DevDeps
   (gh, npm) => `[![Dep](https://david-dm.org/${gh}.svg?style=flat-square)](https://david-dm.org/${gh})`,
   // CI
   (gh, npm) => {
