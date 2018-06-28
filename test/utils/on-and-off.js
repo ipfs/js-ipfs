@@ -14,23 +14,48 @@ const os = require('os')
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create()
 
+let sharedDaemonOff
+let sharedDaemonOn
+
+function daemonOff (cb) {
+  if (sharedDaemonOff) {
+    return cb(null, false, sharedDaemonOff)
+  }
+  const repoPath = os.tmpdir() + '/ipfs-test-' + hat()
+  sharedDaemonOff = ipfsExec(repoPath)
+  sharedDaemonOff.repoPath = repoPath
+  sharedDaemonOff('init').then(() => {
+    cb(null, true, sharedDaemonOff)
+  })
+}
+
+function cleanDaemon (daemon) {
+  clean(daemon.repoPath)
+  sharedDaemonOff = undefined
+}
+
 function off (tests) {
   describe('daemon off (directly to core)', () => {
     let thing = {}
-    let repoPath
+    let shouldClean
 
-    before(function () {
+    before(function (done) {
       this.timeout(60 * 1000)
 
-      repoPath = os.tmpdir() + '/ipfs-' + hat()
-      thing.ipfs = ipfsExec(repoPath)
-      thing.ipfs.repoPath = repoPath
-      return thing.ipfs('init')
+      daemonOff((err, isNew, ipfs) => {
+        expect(err).to.not.exist()
+        shouldClean = isNew
+        thing.ipfs = ipfs
+        done()
+      })
     })
 
     after(function (done) {
-      this.timeout(20 * 1000)
-      clean(repoPath)
+      if (shouldClean) {
+        this.timeout(20 * 1000)
+        cleanDaemon(thing.ipfs)
+        sharedDaemonOff = undefined
+      }
       setImmediate(done)
     })
 
@@ -38,33 +63,58 @@ function off (tests) {
   })
 }
 
+function daemonOn (cb) {
+  if (sharedDaemonOn) {
+    return cb(null, false, sharedDaemonOn)
+  }
+  df.spawn({
+    type: 'js',
+    exec: `./src/cli/bin.js`,
+    initOptions: { bits: 512 }
+  }, (err, node) => {
+    expect(err).to.not.exist()
+    const ipfs = ipfsExec(node.repoPath)
+    ipfs.repoPath = node.repoPath
+    sharedDaemonOn = ipfs
+    cb(null, true, ipfs, node)
+  })
+}
+
+function stopDaemon (node, cb) {
+  node.stop((err) => {
+    expect(err).to.not.exist()
+    sharedDaemonOn = undefined
+    cb()
+  })
+}
+
 function on (tests) {
   describe('daemon on (through http-api)', () => {
     let thing = {}
-
+    let shouldClean
     let ipfsd
+
     before(function (done) {
       // CI takes longer to instantiate the daemon,
       // so we need to increase the timeout for the
       // before step
       this.timeout(60 * 1000)
-
-      df.spawn({
-        type: 'js',
-        exec: `./src/cli/bin.js`,
-        initOptions: { bits: 512 }
-      }, (err, node) => {
+      daemonOn((err, isNew, ipfs, node) => {
         expect(err).to.not.exist()
+        shouldClean = isNew
+        thing.ipfs = ipfs
         ipfsd = node
-        thing.ipfs = ipfsExec(node.repoPath)
-        thing.ipfs.repoPath = node.repoPath
         done()
       })
     })
 
     after(function (done) {
+      if (!shouldClean) {
+        setImmediate(done)
+        return
+      }
       this.timeout(15 * 1000)
-      ipfsd.stop(done)
+      stopDaemon(ipfsd, done)
     })
 
     tests(thing)
@@ -79,5 +129,9 @@ exports = module.exports = (tests) => {
   on(tests)
 }
 
+exports.daemonOn = daemonOn
+exports.daemonOff = daemonOff
+exports.stopDaemon = stopDaemon
+exports.cleanDaemon = cleanDaemon
 exports.off = off
 exports.on = on
