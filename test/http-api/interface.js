@@ -17,7 +17,9 @@ describe('interface-ipfs-core over ipfs-api tests', () => {
 
   tests.config(defaultCommonFactory)
 
-  tests.dag(defaultCommonFactory)
+  tests.dag(defaultCommonFactory, {
+    skip: { reason: 'TODO: DAG HTTP endpoints not implemented in js-ipfs yet!' }
+  })
 
   tests.dht(defaultCommonFactory, {
     skip: { reason: 'TODO: DHT is not implemented in js-ipfs yet!' }
