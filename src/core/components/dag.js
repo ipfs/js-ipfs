@@ -9,6 +9,21 @@ const flattenDeep = require('lodash/flattenDeep')
 module.exports = function dag (self) {
   return {
     put: promisify((dagNode, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+      } else if (options.cid && (options.format || options.hashAlg)) {
+        return callback(new Error('Can\'t put dag node. Please provide either `cid` OR `format` and `hashAlg` options.'))
+      } else if ((options.format && !options.hashAlg) || (!options.format && options.hashAlg)) {
+        return callback(new Error('Can\'t put dag node. Please provide `format` AND `hashAlg` options.'))
+      }
+
+      const optionDefaults = {
+        format: 'dag-cbor',
+        hashAlg: 'sha2-255'
+      }
+
+      options = options.cid ? options : Object.assign({}, optionDefaults, options)
+
       self._ipld.put(dagNode, options, callback)
     }),
 
