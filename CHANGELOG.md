@@ -1,3 +1,13 @@
+<a name="22.2.0"></a>
+# [22.2.0](https://github.com/ipfs/js-ipfs-api/compare/v22.1.1...v22.2.0) (2018-06-29)
+
+
+### Features
+
+* logs path & querystring for requests ([#796](https://github.com/ipfs/js-ipfs-api/issues/796)) ([4e55d19](https://github.com/ipfs/js-ipfs-api/commit/4e55d19))
+
+
+
 <a name="22.1.1"></a>
 ## [22.1.1](https://github.com/ipfs/js-ipfs-api/compare/v22.1.0...v22.1.1) (2018-06-25)
 
