@@ -37,7 +37,11 @@ function onRes (buffer, cb) {
     const isJson = res.headers['content-type'] &&
                    res.headers['content-type'].indexOf('application/json') === 0
 
-    log(res.req.method, `${res.req.getHeaders().host}${res.req.path}`, res.statusCode, res.statusMessage)
+    if (isNode) {
+      log(res.req.method, `${res.req.getHeaders().host}${res.req.path}`, res.statusCode, res.statusMessage)
+    } else {
+      log(res.url, res.statusCode, res.statusMessage)
+    }
 
     if (res.statusCode >= 400 || !res.statusCode) {
       return parseError(res, cb)
