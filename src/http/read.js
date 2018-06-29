@@ -48,8 +48,14 @@ const mfsRead = (api) => {
           offset: Joi.number().integer().min(0),
           length: Joi.number().integer().min(0)
         })
-          .rename('o', 'offset')
-          .rename('n', 'length')
+          .rename('o', 'offset', {
+            override: true,
+            ignoreUndefined: true
+          })
+          .rename('n', 'length', {
+            override: true,
+            ignoreUndefined: true
+          })
       }
     }
   })

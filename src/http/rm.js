@@ -37,7 +37,10 @@ const mfsRm = (api) => {
           arg: Joi.string().required(),
           recursive: Joi.boolean().default(false)
         })
-          .rename('r', 'recursive')
+          .rename('r', 'recursive', {
+            override: true,
+            ignoreUndefined: true
+          })
       }
     }
   })

@@ -55,7 +55,10 @@ const mfsMkdir = (api) => {
           ]).default(0),
           flush: Joi.boolean().default(true)
         })
-          .rename('p', 'parents')
+          .rename('p', 'parents', {
+            override: true,
+            ignoreUndefined: true
+          })
       }
     }
   })

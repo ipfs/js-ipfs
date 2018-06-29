@@ -46,7 +46,10 @@ const mfsLs = (api) => {
           arg: Joi.string().default('/'),
           long: Joi.boolean().default(false)
         })
-          .rename('l', 'long')
+          .rename('l', 'long', {
+            override: true,
+            ignoreUndefined: true
+          })
       }
     }
   })

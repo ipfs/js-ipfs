@@ -124,9 +124,18 @@ const mfsWrite = (api) => {
           ]).default('trickle'),
           flush: Joi.boolean().default(true)
         })
-          .rename('o', 'offset')
-          .rename('e', 'create')
-          .rename('t', 'truncate')
+          .rename('o', 'offset', {
+            override: true,
+            ignoreUndefined: true
+          })
+          .rename('e', 'create', {
+            override: true,
+            ignoreUndefined: true
+          })
+          .rename('t', 'truncate', {
+            override: true,
+            ignoreUndefined: true
+          })
       }
     }
   })
