@@ -457,10 +457,10 @@ describe('.files (the MFS API part)', function () {
   it('files.stat file that does not exist()', (done) => {
     ipfs.files.stat('/test-folder/does-not-exist()', (err, res) => {
       expect(err).to.exist()
-      if (err.code === 0) {
-        return done()
-      }
-      throw err
+      expect(err.code).to.equal(0)
+      expect(err.type).to.equal('error')
+
+      done()
     })
   })
 
