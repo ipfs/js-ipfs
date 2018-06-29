@@ -65,14 +65,6 @@ module.exports = (createCommon, options) => {
       }, done)
     })
 
-    // This works because dag-cbor will just treat pbNode as a regular object
-    it.skip('should not put dag-pb node with wrong multicodec', (done) => {
-      ipfs.dag.put(pbNode, 'dag-cbor', 'sha3-512', (err) => {
-        expect(err).to.exist()
-        done()
-      })
-    })
-
     it('should put dag-cbor with default hash func (sha2-256)', (done) => {
       ipfs.dag.put(cborNode, {
         format: 'dag-cbor',
@@ -85,16 +77,6 @@ module.exports = (createCommon, options) => {
         format: 'dag-cbor',
         hashAlg: 'sha3-512'
       }, done)
-    })
-
-    it('should not put dag-cbor node with wrong multicodec', (done) => {
-      ipfs.dag.put(cborNode, {
-        format: 'dag-pb',
-        hashAlg: 'sha3-512'
-      }, (err) => {
-        expect(err).to.exist()
-        done()
-      })
     })
 
     it('should return the cid', (done) => {
