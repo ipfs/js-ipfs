@@ -100,7 +100,11 @@ describe('interface-ipfs-core tests', () => {
       args: ['--enable-pubsub-experiment'],
       initOptions: { bits: 512 }
     }
-  }))
+  }), {
+    skip: isNode ? null : {
+      reason: 'FIXME: disabled because no swarm addresses'
+    }
+  })
 
   tests.repo(defaultCommonFactory, {
     skip: [
