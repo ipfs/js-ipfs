@@ -1,3 +1,13 @@
+<a name="22.2.1"></a>
+## [22.2.1](https://github.com/ipfs/js-ipfs-api/compare/v22.2.0...v22.2.1) (2018-06-29)
+
+
+### Bug Fixes
+
+* res.req only in Node.js, in browser use res.url instead ([#798](https://github.com/ipfs/js-ipfs-api/issues/798)) ([e8a5ab9](https://github.com/ipfs/js-ipfs-api/commit/e8a5ab9))
+
+
+
 <a name="22.2.0"></a>
 # [22.2.0](https://github.com/ipfs/js-ipfs-api/compare/v22.1.1...v22.2.0) (2018-06-29)
 
