@@ -1,8 +1,15 @@
 'use strict'
 
+const debug = require('debug')
 const promisify = require('promisify-es6')
 const series = require('async/series')
+const waterfall = require('async/waterfall')
 const human = require('human-to-milliseconds')
+
+const crypto = require('libp2p-crypto')
+
+const log = debug('jsipfs:name')
+log.error = debug('jsipfs:name:error')
 
 const errors = require('../utils')
 const path = require('../ipns/path')
@@ -11,13 +18,22 @@ const keyLookup = (ipfsNode, kname, cb) => {
   if (kname === 'self') {
     return cb(null, ipfsNode._peerInfo.id.privKey)
   }
-  // TODO validate - jsipfs daemon --pass 123456sddadesfgefrsfesfefsfeesfe
-  ipfsNode._keychain.findKeyByName(kname, (err, key) => {
+
+  // jsipfs key gen --type=rsa --size=2048 mykey --pass 12345678901234567890
+  // jsipfs daemon --pass 12345678901234567890
+  // jsipfs name publish QmPao1o1nEdDYAToEDf34CovQHaycmhr7sagbD3DZAEW9L --key mykey
+  const pass = ipfsNode._options.pass
+
+  waterfall([
+    (cb) => ipfsNode._keychain.exportKey(kname, pass, cb),
+    (pem, cb) => crypto.keys.import(pem, pass, cb)
+  ], (err, privateKey) => {
     if (err) {
+      // TODO add log
       return cb(err)
     }
 
-    return cb(null, key)
+    return cb(null, privateKey)
   })
 }
 
@@ -35,7 +51,7 @@ module.exports = function name (self) {
      * @param {boolean} resolve resolve given path before publishing.
      * @param {String} lifetime time duration that the record will be valid for.
     This accepts durations such as "300s", "1.5h" or "2h45m". Valid time units are
-    "ms", "s", "m", "h".
+    "ns", "ms", "s", "m", "h". Default is 24h.
      * @param {String} ttl time duration this record should be cached for (caution: experimental).
      * @param {String} key name of the key to be used or a valid PeerID, as listed by 'ipfs key list -l'.
      * @param {function(Error)} [callback]
@@ -43,13 +59,17 @@ module.exports = function name (self) {
      */
     publish: promisify((value, resolve = true, lifetime = '24h', ttl, key = 'self', callback) => {
       if (!self.isOnline()) {
-        return callback(new Error(errors.OFFLINE_ERROR))
+        const error = errors.OFFLINE_ERROR
+
+        log.error(error)
+        return callback(new Error(error))
       }
 
       // Parse path value
       try {
         value = path.parsePath(value)
       } catch (err) {
+        log.error(err)
         return callback(err)
       }
 
@@ -57,25 +77,26 @@ module.exports = function name (self) {
         (cb) => human(lifetime || '1s', cb),
         // (cb) => ttl ? human(ttl, cb) : cb(),
         (cb) => keyLookup(self, key, cb),
-        (cb) => resolve ? path.resolvePath(self, value, cb) : cb() // if not resolved, and error will stop the execution
+        // verify if the path exists, if not, an error will stop the execution
+        (cb) => resolve ? path.resolvePath(self, value, cb) : cb()
       ], (err, results) => {
         if (err) {
+          log.error(err)
           return callback(err)
         }
 
-        const pubValidTime = results[0]
+        // Calculate eol with nanoseconds precision
+        const pubLifetime = results[0].toFixed(6)
         const privateKey = results[1]
 
         // TODO IMPROVEMENT - Handle ttl for cache
         // const ttl = results[1]
         // const privateKey = results[2]
 
-        // Calculate eol
-        const eol = new Date(Date.now() + pubValidTime)
-
         // Start publishing process
-        self._ipns.publish(privateKey, value, eol, (err, res) => {
+        self._ipns.publish(privateKey, value, pubLifetime, (err, res) => {
           if (err) {
+            log.error(err)
             callback(err)
           }
 
@@ -97,10 +118,14 @@ module.exports = function name (self) {
       const local = true
 
       if (!self.isOnline()) {
-        return callback(new Error(errors.OFFLINE_ERROR))
+        const error = errors.OFFLINE_ERROR
+
+        log.error(error)
+        return callback(new Error(error))
       }
 
       if (local && nocache) {
+        log.error('Cannot specify both local and nocache')
         return callback(new Error('Cannot specify both local and nocache'))
       }
 
@@ -113,16 +138,16 @@ module.exports = function name (self) {
         name = `/ipns/${name}`
       }
 
-      // TODO local public key?
-      const pubKey = self._peerInfo.id.pubKey
+      const localPublicKey = self._peerInfo.id.pubKey
       const options = {
         local: local,
         nocache: nocache,
         recursive: recursive
       }
 
-      self._ipns.resolve(name, pubKey, options, (err, result) => {
+      self._ipns.resolve(name, localPublicKey, options, (err, result) => {
         if (err) {
+          log.error(err)
           return callback(err)
         }
 

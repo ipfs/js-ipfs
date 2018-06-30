@@ -84,14 +84,8 @@
   },
   "dependencies": {
     "@nodeutils/defaults-deep": "^1.1.0",
-<<<<<<< HEAD
     "async": "^2.6.1",
     "big.js": "^5.1.2",
-=======
-    "async": "^2.6.0",
-    "base32-encode": "^1.0.0",
-    "big.js": "^5.0.3",
->>>>>>> wip
     "binary-querystring": "~0.1.2",
     "bl": "^2.0.1",
     "boom": "^7.2.0",
@@ -124,6 +118,7 @@
     "ipld": "~0.17.3",
     "ipld-dag-cbor": "~0.12.1",
     "ipld-dag-pb": "~0.14.6",
+    "ipns": "^0.1.1",
     "is-ipfs": "~0.4.2",
     "is-pull-stream": "~0.0.0",
     "is-stream": "^1.1.0",
@@ -158,7 +153,6 @@
     "peer-info": "~0.14.1",
     "progress": "^2.0.0",
     "promisify-es6": "^1.0.3",
-    "protons": "^1.0.1",
     "pull-abortable": "^4.1.1",
     "pull-defer": "~0.2.2",
     "pull-file": "^1.1.0",

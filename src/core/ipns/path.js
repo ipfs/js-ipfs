@@ -5,11 +5,23 @@ const CID = require('cids')
 const BAD_PATH_ERROR = new Error('invalid \'ipfs ref\' path')
 const NO_COMPONENTS_ERROR = new Error('path must contain at least one component')
 
-// Should verify if the value exists before publishing it
+// https://github.com/ipfs/go-ipfs/blob/master/core/pathresolver.go#L25
+// https://github.com/ipfs/go-ipfs/blob/master/path/path.go
+// https://github.com/ipfs/go-ipfs/blob/master/namesys/namesys.go
+// https://github.com/ipfs/go-ipfs/blob/master/namesys/routing.go
+// resolves the given path by parsing out protocol-specific entries
+// (e.g. /ipns/<node-key>) and then going through the /ipfs/ entries and returning the final node
 const resolvePath = (ipfsNode, value, callback) => {
   if (value.startsWith('/ipns/')) {
+    const parts = value.split('/') // caution, I still have the first entry of the array empty
+
+    if (parts.length < 3 || parts[2] === '') {
+      return callback(NO_COMPONENTS_ERROR)
+    }
+
     // TODO resolve local?
     // TODO Resolve from DHT
+
     return callback(new Error('not implemented yet'))
   }
 

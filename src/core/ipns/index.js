@@ -5,6 +5,10 @@ const series = require('async/series')
 // const QuickLRU = require('quick-lru');
 // Consider using https://github.com/dominictarr/hashlru
 
+const debug = require('debug')
+const log = debug('jsipfs:ipns')
+log.error = debug('jsipfs:ipns:error')
+
 const IpnsPublisher = require('./publisher')
 const IpnsResolver = require('./resolver')
 const path = require('./path')
@@ -30,10 +34,10 @@ class IPNS {
   }
 
   // Publish
-  publish (privKey, value, eol, callback) {
+  publish (privKey, value, lifetime, callback) {
     series([
       (cb) => createFromPrivKey(privKey.bytes.toString('base64'), cb),
-      (cb) => this.ipnsPublisher.publishWithEOL(privKey, value, eol, cb)
+      (cb) => this.ipnsPublisher.publishWithEOL(privKey, value, lifetime, cb)
     ], (err, results) => {
       if (err) {
         return callback(err)
