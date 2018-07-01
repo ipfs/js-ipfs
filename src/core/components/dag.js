@@ -4,7 +4,7 @@ const promisify = require('promisify-es6')
 const CID = require('cids')
 const pull = require('pull-stream')
 const mapAsync = require('async/map')
-const flattenDeep = require('lodash.flattendeep')
+const flattenDeep = require('lodash/flattenDeep')
 
 module.exports = function dag (self) {
   return {
