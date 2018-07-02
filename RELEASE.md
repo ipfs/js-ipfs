@@ -39,7 +39,7 @@ Would you like to contribute to the IPFS project and don't know how? Well, there
 - Join an IPFS All Hands, introduce yourself and let us know where you would like to contribute - https://github.com/ipfs/pm/#all-hands-call
 - Hack with IPFS and show us what you made! The All Hands call is also the perfect venue for demos, join in and show us what you built
 - Join the discussion at http://discuss.ipfs.io/ and help users finding their answers.
-- Join the [ⒿⓈ⚡️ js-ipfs Dev Team Weekly Sync 🙌🏽](https://github.com/ipfs/js-ipfs/issues/1179) and be part of the Sprint action!
+- Join the [⚡️ⒿⓈ Core Dev Team Weekly Sync 🙌🏽](https://github.com/ipfs/pm/issues/650) and be part of the Sprint action!
 
 # ⁉️ Do you have questions?
 
