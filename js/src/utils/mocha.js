@@ -8,6 +8,8 @@ chai.use(dirtyChai)
 
 module.exports.expect = chai.expect
 
+const isObject = (o) => Object.prototype.toString.call(o) === '[object Object]'
+
 // Get a "describe" function that is optionally 'skipped' or 'onlyed'
 // If skip/only are boolean true, or an object with a reason property, then we
 // want to skip/only the whole suite
@@ -16,7 +18,9 @@ function getDescribe (config) {
     if (config.only === true) return describe.only
     if (config.skip === true) return describe.skip
 
-    if (config.skip && typeof config.skip === 'object' && config.skip.reason) {
+    if (isObject(config.skip)) {
+      if (!config.skip.reason) return describe.skip
+
       const _describe = (name, impl) => {
         describe.skip(`${name} (${config.skip.reason})`, impl)
       }
@@ -44,7 +48,7 @@ function getIt (config) {
   const _it = (name, impl) => {
     if (Array.isArray(config.skip)) {
       const skip = config.skip
-        .map((s) => s && typeof s === 'object' ? s : { name: s })
+        .map((s) => isObject(s) ? s : { name: s })
         .find((s) => s.name === name)
 
       if (skip) {
