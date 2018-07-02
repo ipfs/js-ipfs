@@ -1,6 +1,7 @@
 'use strict'
 
 const cp = require('./cp')
+const flush = require('./flush')
 const ls = require('./ls')
 const mkdir = require('./mkdir')
 const mv = require('./mv')
@@ -11,6 +12,7 @@ const write = require('./write')
 
 module.exports = (api) => {
   cp(api)
+  flush(api)
   ls(api)
   mkdir(api)
   mv(api)
