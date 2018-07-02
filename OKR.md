@@ -4,13 +4,25 @@ We try to frame our ongoing work using a process based on quarterly Objectives a
 
 ## 2018 Q3
 
-**Objective 1**
-- KR 1
-- KR 2 
+**The Connectivity Magic story is figured out and solved**
 
-**Objective 2**
-- KR 1
-- KR 2 
+- A js-ipfs Daemon will always find other IPFS Daemons (js & go) in the LAN 
+- The rendezvous protocol is a sound solution for DApps (e.g. PeerPad & others)
+- The DHT is enabled by default in js-ipfs
+- Handles correctly a scenario where the number of Connections grows (through Conn Management Strategy)
+- ... MOAR :D
+
+**Daemon is as reliable as it can be**
+
+- A Daemon runs for 10 days without a crash
+- One or more js-ipfs daemons are part of the Bootsrapper nodes 
+- js-ipfs can handle 1TB of data, both Node.js and Browser.
+- npm on IPFS over js-ipfs is a sound way to install deps and gets used for CI
+- ... MOAR :D
+
+**New user/contributor experience is extraordinary**
+- js.ipfs.io is finished and published
+- ... MOAR :D
 
 Once these OKRs are finished, you will be able to find them on the [2018 Q3 IPFS OKRs Spreadsheet](https://docs.google.com/spreadsheets/d/19vjigg4locq4fO6JXyobS2yTx-k-fSzlFM5ngZDPDbQ/edit#gid=274358435)
 
