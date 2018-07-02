@@ -34,7 +34,6 @@ class IPFS extends EventEmitter {
     }
 
     options = config.validate(options || {})
-    this._libp2pModules = options.libp2p && options.libp2p.modules
 
     extend(this._options, options)
 
@@ -119,9 +118,6 @@ class IPFS extends EventEmitter {
     }
     if (this._options.EXPERIMENTAL.dht) {
       this.log('EXPERIMENTAL Kademlia DHT is enabled')
-    }
-    if (this._options.EXPERIMENTAL.relay) {
-      this.log('EXPERIMENTAL Relay is enabled')
     }
 
     this.state = require('./state')(this)

@@ -9,6 +9,10 @@ const once = require('once')
 
 const IPFS = require('../core')
 const WStar = require('libp2p-webrtc-star')
+const TCP = require('libp2p-tcp')
+const MulticastDNS = require('libp2p-mdns')
+const WS = require('libp2p-websockets')
+const Bootstrap = require('libp2p-railing')
 const errorHandler = require('./error-handler')
 
 function uriToMultiaddr (uri) {
@@ -55,8 +59,8 @@ function HttpApi (repo, config, cliArgs) {
           const using = wrtc ? 'wrtc' : 'electron-webrtc'
           console.log(`Using ${using} for webrtc support`)
           const wstar = new WStar({ wrtc: (wrtc || electronWebRTC) })
-          libp2p.modules.transport = [wstar]
-          libp2p.modules.discovery = [wstar.discovery]
+          libp2p.modules.transport = [TCP, WS, wstar]
+          libp2p.modules.peerDiscovery = [MulticastDNS, Bootstrap, wstar.discovery]
         }
 
         // try-catch so that programmer errors are not swallowed during testing
