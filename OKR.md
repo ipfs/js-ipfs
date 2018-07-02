@@ -22,6 +22,7 @@ We try to frame our ongoing work using a process based on quarterly Objectives a
 
 **New user/contributor experience is extraordinary**
 - js.ipfs.io is finished and published
+- Onboard 2 new full time contributors
 - ... MOAR :D
 
 Once these OKRs are finished, you will be able to find them on the [2018 Q3 IPFS OKRs Spreadsheet](https://docs.google.com/spreadsheets/d/19vjigg4locq4fO6JXyobS2yTx-k-fSzlFM5ngZDPDbQ/edit#gid=274358435)
