@@ -114,8 +114,8 @@ module.exports = function name (self) {
      * @param {function(Error)} [callback]
      * @returns {Promise|void}
      */
-    resolve: promisify((name, nocache, recursive, callback) => {
-      const local = true
+    resolve: promisify((name, nocache = false, recursive = false, callback) => {
+      const local = true // self._options.local
 
       if (!self.isOnline()) {
         const error = errors.OFFLINE_ERROR
@@ -138,6 +138,7 @@ module.exports = function name (self) {
         name = `/ipns/${name}`
       }
 
+      // TODO Public key
       const localPublicKey = self._peerInfo.id.pubKey
       const options = {
         local: local,

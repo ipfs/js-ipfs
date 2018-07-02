@@ -22,7 +22,7 @@ const resolvePath = (ipfsNode, value, callback) => {
     // TODO resolve local?
     // TODO Resolve from DHT
 
-    return callback(new Error('not implemented yet'))
+    return callback(null)
   }
 
   ipfsNode.dag.get(value.substring('/ipfs/'.length), (err, value) => {

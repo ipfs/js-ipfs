@@ -8,13 +8,25 @@ module.exports = {
   describe: 'Resolve IPNS names.',
 
   builder: {
-    format: {
-      type: 'string'
+    nocache: {
+      alias: 'n',
+      describe: 'Do not use cached entries. Default: false.',
+      default: false
+    },
+    recursive: {
+      alias: 'r',
+      recursive: 'Resolve until the result is not an IPNS name. Default: false.',
+      default: false
     }
   },
 
   handler (argv) {
-    argv.ipfs.name.resolve(argv['name'], (err, result) => {
+    const opts = {
+      nocache: argv.nocache,
+      recursive: argv.recursive
+    }
+
+    argv.ipfs.name.resolve(argv['name'], opts, (err, result) => {
       if (err) {
         throw err
       }
