@@ -1,3 +1,15 @@
+<a name="0.70.3"></a>
+## [0.70.3](https://github.com/ipfs/interface-ipfs-core/compare/v0.70.2...v0.70.3) (2018-07-03)
+
+
+### Bug Fixes
+
+* allow passing only to suites with skip lists ([#321](https://github.com/ipfs/interface-ipfs-core/issues/321)) ([c47c4ce](https://github.com/ipfs/interface-ipfs-core/commit/c47c4ce))
+* allow skip with object but no reason ([#318](https://github.com/ipfs/interface-ipfs-core/issues/318)) ([ef91026](https://github.com/ipfs/interface-ipfs-core/commit/ef91026))
+* license ([#312](https://github.com/ipfs/interface-ipfs-core/issues/312)) ([8fa3e98](https://github.com/ipfs/interface-ipfs-core/commit/8fa3e98))
+
+
+
 <a name="0.70.2"></a>
 ## [0.70.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.70.1...v0.70.2) (2018-06-29)
 
