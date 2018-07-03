@@ -70,6 +70,7 @@ module.exports = (ipfs) => {
         }
 
         if (!options.long) {
+          file.type = 0
           file.size = 0
           file.hash = ''
         }
