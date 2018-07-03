@@ -31,7 +31,9 @@ module.exports = {
     } = argv
 
     argv.resolve(
-      ipfs.files.ls(path || FILE_SEPARATOR)
+      ipfs.files.ls(path || FILE_SEPARATOR, {
+        long
+      })
         .then(files => {
           if (long) {
             const table = []

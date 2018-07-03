@@ -21,17 +21,12 @@ const mfsLs = (api) => {
         })
           .then(files => {
             reply({
-              Entries: files.map(file => {
-                const output = {
-                  Name: file.name,
-                  Type: file.type
-                }
-
-                if (long) {
-                  output.Size = file.size
-                  output.Hash = file.hash
-                }
-              })
+              Entries: files.map(file => ({
+                Name: file.name,
+                Type: file.type,
+                Size: file.size,
+                Hash: file.hash
+              }))
             })
           })
           .catch(error => {

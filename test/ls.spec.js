@@ -4,6 +4,9 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
+const {
+  FILE_TYPES
+} = require('../src')
 
 const {
   createMfs
@@ -36,8 +39,9 @@ describe('ls', function () {
       .then(files => {
         expect(files.length).to.equal(1)
         expect(files[0].name).to.equal(fileName)
-        expect(files[0].type).to.equal('file')
-        expect(files[0].size).to.equal(content.length)
+        expect(files[0].type).to.equal(FILE_TYPES.file)
+        expect(files[0].size).to.equal(0)
+        expect(files[0].hash).to.equal('')
       })
   })
 
@@ -62,18 +66,40 @@ describe('ls', function () {
   })
 
   it('lists files in a directory', () => {
+    const dirName = `dir-${Math.random()}`
     const fileName = `small-file-${Math.random()}.txt`
     const content = Buffer.from('Hello world')
 
-    return mfs.write(`/dir/${fileName}`, content, {
+    return mfs.write(`/${dirName}/${fileName}`, content, {
       create: true,
       parents: true
     })
-      .then(() => mfs.ls('/dir', {}))
+      .then(() => mfs.ls(`/${dirName}`, {}))
       .then(files => {
         expect(files.length).to.equal(1)
         expect(files[0].name).to.equal(fileName)
-        expect(files[0].type).to.equal('file')
+        expect(files[0].type).to.equal(FILE_TYPES.file)
+        expect(files[0].size).to.equal(0)
+        expect(files[0].hash).to.equal('')
+      })
+  })
+
+  it('lists files in a directory with meta data', () => {
+    const dirName = `dir-${Math.random()}`
+    const fileName = `small-file-${Math.random()}.txt`
+    const content = Buffer.from('Hello world')
+
+    return mfs.write(`/${dirName}/${fileName}`, content, {
+      create: true,
+      parents: true
+    })
+      .then(() => mfs.ls(`/${dirName}`, {
+        long: true
+      }))
+      .then(files => {
+        expect(files.length).to.equal(1)
+        expect(files[0].name).to.equal(fileName)
+        expect(files[0].type).to.equal(FILE_TYPES.file)
         expect(files[0].size).to.equal(content.length)
       })
   })
@@ -89,7 +115,26 @@ describe('ls', function () {
       .then(files => {
         expect(files.length).to.equal(1)
         expect(files[0].name).to.equal(fileName)
-        expect(files[0].type).to.equal('file')
+        expect(files[0].type).to.equal(FILE_TYPES.file)
+        expect(files[0].size).to.equal(0)
+        expect(files[0].hash).to.equal('')
+      })
+  })
+
+  it('lists a file with meta data', () => {
+    const fileName = `small-file-${Math.random()}.txt`
+    const content = Buffer.from('Hello world')
+
+    return mfs.write(`/${fileName}`, content, {
+      create: true
+    })
+      .then(() => mfs.ls(`/${fileName}`, {
+        long: true
+      }))
+      .then(files => {
+        expect(files.length).to.equal(1)
+        expect(files[0].name).to.equal(fileName)
+        expect(files[0].type).to.equal(FILE_TYPES.file)
         expect(files[0].size).to.equal(content.length)
       })
   })

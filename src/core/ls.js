@@ -7,10 +7,13 @@ const UnixFs = require('ipfs-unixfs')
 const {
   traverseTo,
   loadNode,
-  FILE_SEPARATOR
+  FILE_SEPARATOR,
+  FILE_TYPES
 } = require('./utils')
 
-const defaultOptions = {}
+const defaultOptions = {
+  long: false
+}
 
 module.exports = (ipfs) => {
   return function mfsLs (path, options, callback) {
@@ -26,6 +29,8 @@ module.exports = (ipfs) => {
     }
 
     options = Object.assign({}, defaultOptions, options)
+
+    options.long = options.l || options.long
 
     waterfall([
       (cb) => traverseTo(ipfs, path, {}, cb),
@@ -56,6 +61,31 @@ module.exports = (ipfs) => {
             size: meta.fileSize() || 0
           }])
         }
+      },
+
+      // https://github.com/ipfs/go-ipfs/issues/5026
+      (files, cb) => cb(null, files.map(file => {
+        if (FILE_TYPES.hasOwnProperty(file.type)) {
+          file.type = FILE_TYPES[file.type]
+        }
+
+        if (!options.long) {
+          file.size = 0
+          file.hash = ''
+        }
+
+        return file
+      })),
+
+      // https://github.com/ipfs/go-ipfs/issues/5181
+      (files, cb) => {
+        if (options.long) {
+          return cb(null, files.sort((a, b) => {
+            return a.name.localeCompare(b.name)
+          }))
+        }
+
+        cb(null, files)
       }
     ], callback)
   }

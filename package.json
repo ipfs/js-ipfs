@@ -5,7 +5,8 @@
   "leadMaintainer": "Alex Potsides <alex.potsides@protocol.ai>",
   "main": "src/index.js",
   "browser": {
-    "fs": false
+    "fs": false,
+    "joi": "joi-browser"
   },
   "scripts": {
     "test": "cross-env aegir test -f test/browser.js",
@@ -66,6 +67,7 @@
     "is-pull-stream": "~0.0.0",
     "is-stream": "^1.1.0",
     "joi": "^13.4.0",
+    "joi-browser": "^13.0.1",
     "mortice": "^1.0.0",
     "once": "^1.4.0",
     "promisify-es6": "^1.0.3",

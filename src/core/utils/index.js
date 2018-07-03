@@ -21,5 +21,6 @@ module.exports = {
 
   FILE_SEPARATOR: constants.FILE_SEPARATOR,
   MAX_CHUNK_SIZE: constants.MAX_CHUNK_SIZE,
-  MAX_LINKS: constants.MAX_LINKS
+  MAX_LINKS: constants.MAX_LINKS,
+  FILE_TYPES: constants.FILE_TYPES
 }
