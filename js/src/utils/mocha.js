@@ -15,7 +15,6 @@ const isObject = (o) => Object.prototype.toString.call(o) === '[object Object]'
 // want to skip/only the whole suite
 function getDescribe (config) {
   if (config) {
-    if (config.only === true) return describe.only
     if (config.skip === true) return describe.skip
 
     if (isObject(config.skip)) {
@@ -30,6 +29,8 @@ function getDescribe (config) {
 
       return _describe
     }
+
+    if (config.only === true) return describe.only
   }
 
   return describe
