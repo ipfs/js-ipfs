@@ -247,6 +247,8 @@ Creates and returns an instance of an IPFS node. Use the `options` argument to s
                 - `enabled` (boolean): whether this module is enabled or disabled
                 - `[custom config]` (any): other keys are specific to the module
 
+- `connectionManager` (object): Configure the libp2p connection manager, see the [documentation for available options](https://github.com/libp2p/js-libp2p-connection-manager#create-a-connectionmanager).
+
 #### Events
 
 IPFS instances are Node.js [EventEmitters](https://nodejs.org/dist/latest-v8.x/docs/api/events.html#events_class_eventemitter). You can listen for events by calling `node.on('event', handler)`:

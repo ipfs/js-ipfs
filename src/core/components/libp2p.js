@@ -49,11 +49,8 @@ module.exports = function libp2p (self) {
               pubsub: get(self._options, 'EXPERIMENTAL.pubsub', false)
             }
           },
-          connectionManager: get(
-            self._options,
-            'EXPERIMENTAL.connectionManager',
-            get(config, 'EXPERIMENTAL.connectionManager')
-          )
+          connectionManager: get(self._options, 'connectionManager',
+            get(config, 'connectionManager', false))
         }
 
         const libp2pOptions = defaultsDeep(
