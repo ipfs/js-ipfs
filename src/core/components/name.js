@@ -14,9 +14,12 @@ log.error = debug('jsipfs:name:error')
 const errors = require('../utils')
 const path = require('../ipns/path')
 
-const keyLookup = (ipfsNode, kname, cb) => {
+const ERR_CANNOT_GET_KEY = 'ERR_CANNOT_GET_KEY'
+const ERR_NOCACHE_AND_LOCAL = 'ERR_NOCACHE_AND_LOCAL'
+
+const keyLookup = (ipfsNode, kname, callback) => {
   if (kname === 'self') {
-    return cb(null, ipfsNode._peerInfo.id.privKey)
+    return callback(null, ipfsNode._peerInfo.id.privKey)
   }
 
   // jsipfs key gen --type=rsa --size=2048 mykey --pass 12345678901234567890
@@ -29,11 +32,13 @@ const keyLookup = (ipfsNode, kname, cb) => {
     (pem, cb) => crypto.keys.import(pem, pass, cb)
   ], (err, privateKey) => {
     if (err) {
-      // TODO add log
-      return cb(err)
+      const error = `cannot get the specified key`
+
+      log.error(error)
+      return callback(Object.assign(new Error(error), { code: ERR_CANNOT_GET_KEY }))
     }
 
-    return cb(null, privateKey)
+    return callback(null, privateKey)
   })
 }
 
@@ -44,8 +49,6 @@ module.exports = function name (self) {
      * the private key enables publishing new (signed) values. In both publish
      * and resolve, the default name used is the node's own PeerID,
      * which is the hash of its public key.
-     *
-     * Examples: TODO such as in go
      *
      * @param {String} value ipfs path of the object to be published.
      * @param {boolean} resolve resolve given path before publishing.
@@ -117,7 +120,7 @@ module.exports = function name (self) {
      * @returns {Promise|void}
      */
     resolve: promisify((name, nocache = false, recursive = false, callback) => {
-      const local = true // self._options.local
+      const local = true // TODO ROUTING - use self._options.local
 
       if (!self.isOnline()) {
         const error = errors.OFFLINE_ERROR
@@ -127,8 +130,10 @@ module.exports = function name (self) {
       }
 
       if (local && nocache) {
-        log.error('Cannot specify both local and nocache')
-        return callback(new Error('Cannot specify both local and nocache'))
+        const error = 'Cannot specify both local and nocache'
+
+        log.error(error)
+        return callback(Object.assign(new Error(error), { code: ERR_NOCACHE_AND_LOCAL }))
       }
 
       // Set node id as name for being resolved, if it is not received
@@ -140,7 +145,7 @@ module.exports = function name (self) {
         name = `/ipns/${name}`
       }
 
-      // TODO Public key
+      // TODO ROUTING - public key from network instead
       const localPublicKey = self._peerInfo.id.pubKey
       const options = {
         local: local,
@@ -148,14 +153,7 @@ module.exports = function name (self) {
         recursive: recursive
       }
 
-      self._ipns.resolve(name, localPublicKey, options, (err, result) => {
-        if (err) {
-          log.error(err)
-          return callback(err)
-        }
-
-        return callback(null, result)
-      })
+      self._ipns.resolve(name, localPublicKey, options, callback)
     })
   }
 }

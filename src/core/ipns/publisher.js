@@ -7,17 +7,16 @@ const debug = require('debug')
 const log = debug('jsipfs:ipns:publisher')
 log.error = debug('jsipfs:ipns:publisher:error')
 
+const ipns = require('ipns')
+
+const ERR_CREATING_IPNS_RECORD = 'ERR_CREATING_IPNS_RECORD'
 const ERR_INVALID_IPNS_RECORD = 'ERR_INVALID_IPNS_RECORD'
 const ERR_STORING_IN_DATASTORE = 'ERR_STORING_IN_DATASTORE'
-
-const ipns = require('ipns')
+const ERR_UNEXPECTED_DATASTORE_RESPONSE = 'ERR_UNEXPECTED_DATASTORE_RESPONSE'
 
 const defaultRecordTtl = 60 * 60 * 1000
 
-/*
-  IpnsPublisher is capable of publishing and resolving names to the IPFS
-  routing system.
-  */
+// IpnsPublisher is capable of publishing and resolving names to the IPFS routing system.
 class IpnsPublisher {
   constructor (routing, repo) {
     this.routing = routing
@@ -31,23 +30,15 @@ class IpnsPublisher {
         return callback(err)
       }
 
-      // TODO ROUTING - Add record
+      // TODO ROUTING - Add record (with public key)
 
-      log(`${value} was published correctly with EOL`)
       callback(null, record)
     })
   }
 
   // Accepts a keypair, as well as a value (ipfsPath), and publishes it out to the routing system
   publish (privKey, value, callback) {
-    this.publishWithEOL(privKey, value, defaultRecordTtl, (err, res) => {
-      if (err) {
-        return callback(err)
-      }
-
-      log(`${value} was published correctly`)
-      callback(res)
-    })
+    this.publishWithEOL(privKey, value, defaultRecordTtl, callback)
   }
 
   // Returns the record this node has published corresponding to the given peer ID.
@@ -60,8 +51,10 @@ class IpnsPublisher {
         if (Buffer.isBuffer(dsVal)) {
           result = dsVal
         } else {
-          log.error(`found ipns record that we couldn't convert to a value`)
-          return callback(Object.assign(new Error('found ipns record that we couldn\'t convert to a value'), { code: ERR_INVALID_IPNS_RECORD }))
+          const error = `found ipns record that we couldn't convert to a value`
+
+          log.error(error)
+          return callback(Object.assign(new Error(error), { code: ERR_INVALID_IPNS_RECORD }))
         }
       } else if (err.notFound) {
         if (!checkRouting) {
@@ -69,10 +62,12 @@ class IpnsPublisher {
             peerIdResult: peerIdResult
           })
         }
-        // TODO ROUTING
+        // TODO ROUTING - get
       } else {
-        log.error(`unexpected error getting the ipns record from datastore`)
-        return callback(err)
+        const error = `unexpected error getting the ipns record ${peerIdResult.id} from datastore`
+
+        log.error(error)
+        return callback(Object.assign(new Error(error), { code: ERR_UNEXPECTED_DATASTORE_RESPONSE }))
       }
 
       // unmarshal data
@@ -88,7 +83,7 @@ class IpnsPublisher {
   updateOrCreateRecord (privKey, value, validity, callback) {
     waterfall([
       (cb) => peerId.createFromPrivKey(privKey.bytes.toString('base64'), cb),
-      (id, cb) => this.getPublished(id, false, cb)
+      (id, cb) => this.getPublished(id, false, cb) // TODO ROUTING - change to true
     ], (err, result) => {
       if (err) {
         callback(err)
@@ -105,8 +100,10 @@ class IpnsPublisher {
       // Create record
       ipns.create(privKey, value, seqNumber, validity, (err, entryData) => {
         if (err) {
-          log.error(`ipns record for ${value} could not be created`)
-          return callback(err)
+          const error = `ipns record for ${value} could not be created`
+
+          log.error(error)
+          return callback(Object.assign(new Error(error), { code: ERR_CREATING_IPNS_RECORD }))
         }
 
         // TODO IMPROVEMENT - set ttl (still experimental feature for go)

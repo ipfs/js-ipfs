@@ -2,30 +2,41 @@
 
 const CID = require('cids')
 
-const BAD_PATH_ERROR = new Error('invalid \'ipfs ref\' path')
-const NO_COMPONENTS_ERROR = new Error('path must contain at least one component')
+const debug = require('debug')
+const log = debug('jsipfs:ipns:path')
+log.error = debug('jsipfs:ipns:path:error')
 
-// https://github.com/ipfs/go-ipfs/blob/master/core/pathresolver.go#L25
-// https://github.com/ipfs/go-ipfs/blob/master/path/path.go
-// https://github.com/ipfs/go-ipfs/blob/master/namesys/namesys.go
-// https://github.com/ipfs/go-ipfs/blob/master/namesys/routing.go
+const ERR_BAD_PATH = 'ERR_BAD_PATH'
+const ERR_NO_COMPONENTS = 'ERR_NO_COMPONENTS'
+
 // resolves the given path by parsing out protocol-specific entries
 // (e.g. /ipns/<node-key>) and then going through the /ipfs/ entries and returning the final node
-const resolvePath = (ipfsNode, value, callback) => {
-  if (value.startsWith('/ipns/')) {
-    const parts = value.split('/') // caution, I still have the first entry of the array empty
+const resolvePath = (ipfsNode, name, callback) => {
+  // ipns path
+  if (name.startsWith('/ipns/')) {
+    log(`resolve ipns path ${name}`)
+
+    const local = true // TODO ROUTING - use self._options.local
+    const parts = name.split('/')
 
     if (parts.length < 3 || parts[2] === '') {
-      return callback(NO_COMPONENTS_ERROR)
+      const error = 'path must contain at least one component'
+
+      log.error(error)
+      return callback(Object.assign(new Error(error), { code: ERR_NO_COMPONENTS }))
     }
 
-    // TODO resolve local?
-    // TODO Resolve from DHT
+    // TODO ROUTING - public key from network instead
+    const localPublicKey = ipfsNode._peerInfo.id.pubKey
+    const options = {
+      local: local
+    }
 
-    return callback(null)
+    return ipfsNode._ipns.resolve(name, localPublicKey, options, callback)
   }
 
-  ipfsNode.dag.get(value.substring('/ipfs/'.length), (err, value) => {
+  // ipfs path
+  ipfsNode.dag.get(name.substring('/ipfs/'.length), (err, value) => {
     if (err) {
       return callback(err)
     }
@@ -38,6 +49,7 @@ const resolvePath = (ipfsNode, value, callback) => {
 // The returned path will always be prefixed with /ipfs/ or /ipns/.
 // If the received string is not a valid ipfs path, an error will be returned
 const parsePath = (pathStr) => {
+  const badPathError = `invalid 'ipfs ref' path`
   const parts = pathStr.split('/')
 
   if (parts.length === 1) {
@@ -52,15 +64,18 @@ const parsePath = (pathStr) => {
   }
 
   if (parts.length < 3) {
-    throw BAD_PATH_ERROR
+    log.error(badPathError)
+    throw Object.assign(new Error(badPathError), { code: ERR_BAD_PATH })
   }
 
   if (parts[1] === 'ipfs') {
     if (!parseCidToPath(parts[2])) {
-      throw BAD_PATH_ERROR
+      log.error(badPathError)
+      throw Object.assign(new Error(badPathError), { code: ERR_BAD_PATH })
     }
   } else if (parts[1] !== 'ipns') {
-    throw BAD_PATH_ERROR
+    log.error(badPathError)
+    throw Object.assign(new Error(badPathError), { code: ERR_BAD_PATH })
   }
   return pathStr
 }
@@ -68,7 +83,10 @@ const parsePath = (pathStr) => {
 // parseCidToPath takes a CID in string form and returns a valid ipfs Path.
 const parseCidToPath = (value) => {
   if (value === '') {
-    throw NO_COMPONENTS_ERROR
+    const error = 'path must contain at least one component'
+
+    log.error(error)
+    throw Object.assign(new Error(error), { code: ERR_NO_COMPONENTS })
   }
 
   const cid = new CID(value)
