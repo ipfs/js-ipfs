@@ -188,6 +188,6 @@ This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/c
 
 ## License
 
-MIT
+Copyright (c) Protocol Labs, Inc. under the **MIT License**. See [LICENSE.md](./LICENSE.md) for details.
 
 [UnixFS]: https://github.com/ipfs/specs/tree/master/unixfs
