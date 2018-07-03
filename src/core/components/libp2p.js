@@ -50,7 +50,7 @@ module.exports = function libp2p (self) {
             }
           },
           connectionManager: get(self._options, 'connectionManager',
-            get(config, 'connectionManager', false))
+            get(config, 'connectionManager', {}))
         }
 
         const libp2pOptions = defaultsDeep(
