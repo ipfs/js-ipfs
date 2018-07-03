@@ -1,3 +1,13 @@
+<a name="0.71.0"></a>
+# [0.71.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.70.3...v0.71.0) (2018-07-03)
+
+
+### Bug Fixes
+
+* revert to serialized pubsub operations ([#319](https://github.com/ipfs/interface-ipfs-core/issues/319)) ([4b5534e](https://github.com/ipfs/interface-ipfs-core/commit/4b5534e))
+
+
+
 <a name="0.70.3"></a>
 ## [0.70.3](https://github.com/ipfs/interface-ipfs-core/compare/v0.70.2...v0.70.3) (2018-07-03)
 
