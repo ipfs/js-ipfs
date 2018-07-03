@@ -15,11 +15,15 @@
 ##### `JavaScript` - ipfs.dag.put(dagNode, options, callback)
 
 - `dagNode` - a DAG node that follows one of the supported IPLD formats.
-- `options` - a object that might contain the follwing values:
+- `options` - a object that might contain the following values:
     - `format` - The IPLD format multicodec.
     - `hashAlg` - The hash algorithm to be used over the serialized dagNode.
   - or
     - `cid` - the CID of the node passed.
+  - or
+  - if no `options` are given, `ipfs.dag.put()` uses the following defaults:
+    - `format: 'dag-cbor'`
+    - `hashAlg: 'sha2-256'`
   - **Note** - You should only pass the CID or the format + hashAlg pair and not both
 - `callback` must follow `function (err, cid) {}` signature, where `err` is an error if the operation was not successful and CID is the CID generated through the process or the one that was passed
 

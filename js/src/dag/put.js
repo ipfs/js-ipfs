@@ -5,6 +5,7 @@ const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const dagCBOR = require('ipld-dag-cbor')
 const CID = require('cids')
+const multihash = require('multihashes')
 const { spawnNodeWithId } = require('../utils/spawn')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
@@ -92,6 +93,19 @@ module.exports = (createCommon, options) => {
           expect(cid.buffer).to.eql(_cid.buffer)
           done()
         })
+      })
+    })
+
+    it('should not fail when calling put without options', (done) => {
+      ipfs.dag.put(cborNode, done)
+    })
+
+    it('should set defaults when calling put without options', (done) => {
+      ipfs.dag.put(cborNode, (err, cid) => {
+        expect(err).to.not.exist()
+        expect(cid.codec).to.equal('dag-cbor')
+        expect(multihash.decode(cid.multihash).name).to.equal('sha2-256')
+        done()
       })
     })
 
