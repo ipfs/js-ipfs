@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const times = require('async/times')
+const timesSeries = require('async/timesSeries')
 const hat = require('hat')
 const { getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -50,7 +50,7 @@ module.exports = (createCommon, options) => {
       const count = 10
       const topic = getTopic()
 
-      times(count, (_, cb) => {
+      timesSeries(count, (_, cb) => {
         ipfs.pubsub.publish(topic, Buffer.from(hat()), cb)
       }, done)
     })

@@ -7,6 +7,7 @@ const series = require('async/series')
 const { spawnNodesWithId } = require('../utils/spawn')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { expectIsPingResponse, isPong } = require('./utils')
+const { connect } = require('../utils/swarm')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -34,7 +35,7 @@ module.exports = (createCommon, options) => {
               cb()
             })
           },
-          (cb) => ipfsA.swarm.connect(ipfsB.peerId.addresses[0], cb)
+          (cb) => connect(ipfsA, ipfsB.peerId.addresses[0], cb)
         ], done)
       })
     })

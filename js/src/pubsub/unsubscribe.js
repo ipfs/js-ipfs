@@ -2,7 +2,7 @@
 'use strict'
 
 const each = require('async/each')
-const times = require('async/times')
+const timesSeries = require('async/timesSeries')
 const { getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
@@ -37,7 +37,7 @@ module.exports = (createCommon, options) => {
       const count = 10
       const someTopic = getTopic()
 
-      times(count, (_, cb) => {
+      timesSeries(count, (_, cb) => {
         const handler = (msg) => {}
         ipfs.pubsub.subscribe(someTopic, handler, (err) => cb(err, handler))
       }, (err, handlers) => {

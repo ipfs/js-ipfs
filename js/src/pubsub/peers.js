@@ -2,10 +2,11 @@
 'use strict'
 
 const parallel = require('async/parallel')
-const auto = require('async/auto')
+const series = require('async/series')
 const { spawnNodesWithId } = require('../utils/spawn')
 const { waitForPeers, getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const { connect } = require('../utils/swarm')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -46,9 +47,8 @@ module.exports = (createCommon, options) => {
       const ipfs3Addr = ipfs3.peerId.addresses.find((a) => a.includes('127.0.0.1'))
 
       parallel([
-        (cb) => ipfs1.swarm.connect(ipfs2Addr, cb),
-        (cb) => ipfs1.swarm.connect(ipfs3Addr, cb),
-        (cb) => ipfs2.swarm.connect(ipfs3Addr, cb)
+        (cb) => connect(ipfs1, [ipfs2Addr, ipfs3Addr], cb),
+        (cb) => connect(ipfs2, ipfs3Addr, cb)
       ], done)
     })
 
@@ -73,7 +73,7 @@ module.exports = (createCommon, options) => {
       const topic = getTopic()
       const topicOther = topic + 'different topic'
 
-      parallel([
+      series([
         (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
         (cb) => ipfs2.pubsub.subscribe(topicOther, sub2, cb),
         (cb) => ipfs3.pubsub.subscribe(topicOther, sub3, cb)
@@ -101,14 +101,12 @@ module.exports = (createCommon, options) => {
       const sub3 = (msg) => {}
       const topic = getTopic()
 
-      auto({
-        sub1: (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
-        sub2: (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
-        sub3: (cb) => ipfs3.pubsub.subscribe(topic, sub3, cb),
-        peers: ['sub1', 'sub2', 'sub3', (_, cb) => {
-          waitForPeers(ipfs1, topic, [ipfs2.peerId.id], cb)
-        }]
-      }, (err) => {
+      series([
+        (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
+        (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
+        (cb) => ipfs3.pubsub.subscribe(topic, sub3, cb),
+        (cb) => waitForPeers(ipfs1, topic, [ipfs2.peerId.id], 30000, cb)
+      ], (err) => {
         expect(err).to.not.exist()
 
         parallel([
@@ -125,17 +123,15 @@ module.exports = (createCommon, options) => {
       const sub3 = (msg) => {}
       const topic = getTopic()
 
-      auto({
-        sub1: (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
-        sub2: (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
-        sub3: (cb) => ipfs3.pubsub.subscribe(topic, sub3, cb),
-        peers: ['sub1', 'sub2', 'sub3', (_, cb) => {
-          waitForPeers(ipfs1, topic, [
-            ipfs2.peerId.id,
-            ipfs3.peerId.id
-          ], cb)
-        }]
-      }, (err) => {
+      series([
+        (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
+        (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
+        (cb) => ipfs3.pubsub.subscribe(topic, sub3, cb),
+        (cb) => waitForPeers(ipfs1, topic, [
+          ipfs2.peerId.id,
+          ipfs3.peerId.id
+        ], 30000, cb)
+      ], (err) => {
         expect(err).to.not.exist()
 
         parallel([

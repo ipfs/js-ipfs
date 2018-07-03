@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const times = require('async/times')
+const timesSeries = require('async/timesSeries')
 const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
@@ -33,7 +33,7 @@ module.exports = (createCommon, options) => {
     it('should list all the keys', function (done) {
       this.timeout(60 * 1000)
 
-      times(3, (n, cb) => {
+      timesSeries(3, (n, cb) => {
         ipfs.key.gen(hat(), { type: 'rsa', size: 2048 }, cb)
       }, (err, keys) => {
         expect(err).to.not.exist()

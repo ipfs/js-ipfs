@@ -3,6 +3,7 @@
 
 const { spawnNodesWithId } = require('../utils/spawn')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const { connect } = require('../utils/swarm')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -29,7 +30,7 @@ module.exports = (createCommon, options) => {
           nodeA = nodes[0]
           nodeB = nodes[1]
 
-          nodeB.swarm.connect(nodeA.peerId.addresses[0], done)
+          connect(nodeB, nodeA.peerId.addresses[0], done)
         })
       })
     })

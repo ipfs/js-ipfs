@@ -3,11 +3,11 @@
 
 const series = require('async/series')
 const parallel = require('async/parallel')
-const times = require('async/times')
-const auto = require('async/auto')
+const timesSeries = require('async/timesSeries')
 const { spawnNodesWithId } = require('../utils/spawn')
 const { waitForPeers, makeCheck, getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const { connect } = require('../utils/swarm')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -182,7 +182,7 @@ module.exports = (createCommon, options) => {
           check()
         }
 
-        parallel([
+        series([
           (cb) => ipfs1.pubsub.subscribe(topic, handler1, cb),
           (cb) => ipfs1.pubsub.subscribe(topic, handler2, cb)
         ], (err) => {
@@ -218,7 +218,7 @@ module.exports = (createCommon, options) => {
         }
 
         const ipfs2Addr = ipfs2.peerId.addresses.find((a) => a.includes('127.0.0.1'))
-        ipfs1.swarm.connect(ipfs2Addr, done)
+        connect(ipfs1, ipfs2Addr, done)
       })
 
       let topic
@@ -252,13 +252,11 @@ module.exports = (createCommon, options) => {
           check()
         }
 
-        auto({
-          sub1: (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
-          sub2: (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
-          peers: ['sub1', 'sub2', (_, cb) => {
-            waitForPeers(ipfs2, topic, [ipfs1.peerId.id], cb)
-          }]
-        }, (err) => {
+        series([
+          (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
+          (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
+          (cb) => waitForPeers(ipfs2, topic, [ipfs1.peerId.id], 30000, cb)
+        ], (err) => {
           expect(err).to.not.exist()
 
           ipfs2.pubsub.publish(topic, Buffer.from(expectedString), check)
@@ -290,13 +288,11 @@ module.exports = (createCommon, options) => {
           }
         }
 
-        auto({
-          sub1: (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
-          sub2: (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
-          peers: ['sub1', 'sub2', (_, cb) => {
-            waitForPeers(ipfs2, topic, [ipfs1.peerId.id], cb)
-          }]
-        }, (err) => {
+        series([
+          (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
+          (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
+          (cb) => waitForPeers(ipfs2, topic, [ipfs1.peerId.id], 30000, cb)
+        ], (err) => {
           expect(err).to.not.exist()
 
           ipfs2.pubsub.publish(topic, buffer, check)
@@ -327,13 +323,11 @@ module.exports = (createCommon, options) => {
           check()
         }
 
-        auto({
-          sub1: (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
-          sub2: (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
-          peers: ['sub1', 'sub2', (_, cb) => {
-            waitForPeers(ipfs2, topic, [ipfs1.peerId.id], cb)
-          }]
-        }, (err) => {
+        series([
+          (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
+          (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
+          (cb) => waitForPeers(ipfs2, topic, [ipfs1.peerId.id], 30000, cb)
+        ], (err) => {
           expect(err).to.not.exist()
 
           outbox.forEach((msg) => {
@@ -379,17 +373,15 @@ module.exports = (createCommon, options) => {
           }
         }
 
-        auto({
-          sub1: (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
-          sub2: (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
-          peers: ['sub1', 'sub2', (_, cb) => {
-            waitForPeers(ipfs1, topic, [ipfs2.peerId.id], cb)
-          }]
-        }, (err) => {
+        series([
+          (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
+          (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
+          (cb) => waitForPeers(ipfs1, topic, [ipfs2.peerId.id], 30000, cb)
+        ], (err) => {
           expect(err).to.not.exist()
           startTime = new Date().getTime()
 
-          times(count, (sendCount, cb) => {
+          timesSeries(count, (sendCount, cb) => {
             const msgData = Buffer.from(msgBase + sendCount)
             ipfs2.pubsub.publish(topic, msgData, cb)
           }, check)

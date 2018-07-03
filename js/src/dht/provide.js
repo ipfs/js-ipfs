@@ -4,6 +4,7 @@
 const CID = require('cids')
 const { spawnNodesWithId } = require('../utils/spawn')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const { connect } = require('../utils/swarm')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -26,7 +27,7 @@ module.exports = (createCommon, options) => {
         spawnNodesWithId(2, factory, (err, nodes) => {
           expect(err).to.not.exist()
           ipfs = nodes[0]
-          ipfs.swarm.connect(nodes[1].peerId.addresses[0], done)
+          connect(ipfs, nodes[1].peerId.addresses[0], done)
         })
       })
     })

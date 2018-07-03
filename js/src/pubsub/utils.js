@@ -2,7 +2,9 @@
 
 const hat = require('hat')
 
-function waitForPeers (ipfs, topic, peersToWait, callback) {
+function waitForPeers (ipfs, topic, peersToWait, waitForMs, callback) {
+  const start = Date.now()
+
   const checkPeers = () => {
     ipfs.pubsub.peers(topic, (err, peers) => {
       if (err) {
@@ -15,6 +17,10 @@ function waitForPeers (ipfs, topic, peersToWait, callback) {
 
       if (missingPeers.length === 0) {
         return callback()
+      }
+
+      if (Date.now() > start + waitForMs) {
+        return callback(new Error('Timed out waiting for peers'))
       }
 
       setTimeout(checkPeers, 10)

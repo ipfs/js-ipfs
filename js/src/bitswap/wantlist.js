@@ -5,6 +5,7 @@ const waterfall = require('async/waterfall')
 const { spawnNodesWithId } = require('../utils/spawn')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { waitForWantlistKey } = require('./utils')
+const { connect } = require('../utils/swarm')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -33,7 +34,7 @@ module.exports = (createCommon, options) => {
           // Add key to the wantlist for ipfsB
           ipfsB.block.get(key, () => {})
 
-          ipfsA.swarm.connect(ipfsB.peerId.addresses[0], done)
+          connect(ipfsA, ipfsB.peerId.addresses[0], done)
         })
       })
     })

@@ -2,6 +2,7 @@
 'use strict'
 
 const each = require('async/each')
+const eachSeries = require('async/eachSeries')
 const { getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
@@ -68,7 +69,7 @@ module.exports = (createCommon, options) => {
         handler () {}
       }]
 
-      each(topics, (t, cb) => {
+      eachSeries(topics, (t, cb) => {
         ipfs.pubsub.subscribe(t.name, t.handler, cb)
       }, (err) => {
         expect(err).to.not.exist()
