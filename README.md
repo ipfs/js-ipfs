@@ -4,7 +4,6 @@
 [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
 [![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-[![Build Status](https://travis-ci.org/ipfs/js-ipfs-mfs.svg?style=flat-square&branch=master)](https://travis-ci.org/ipfs/js-ipfs-mfs)
 [![Coverage Status](https://coveralls.io/repos/github/ipfs/js-ipfs-mfs/badge.svg?branch=master)](https://coveralls.io/github/ipfs/js-ipfs-mfs?branch=master)
 [![Dependency Status](https://david-dm.org/ipfs/js-ipfs-mfs.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-mfs)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
@@ -21,14 +20,18 @@
 
 ## Table of Contents
 
-- [Install](#install)
-  - [npm](#npm)
-  - [Use in Node.js](#use-in-nodejs)
-  - [Use in a browser with browserify, webpack or any other bundler](#use-in-a-browser-with-browserify-webpack-or-any-other-bundler)
-  - [Use in a browser Using a script tag](#use-in-a-browser-using-a-script-tag)
-- [Contribute](#contribute)
-- [Changelog](#changelog)
-- [License](#license)
+- [ipfs-mfs JavaScript Implementation](#ipfs-mfs-javascript-implementation)
+  - [Lead Maintainer](#lead-maintainer)
+  - [Table of Contents](#table-of-contents)
+  - [Install](#install)
+    - [npm](#npm)
+    - [Use in Node.js](#use-in-nodejs)
+    - [Use in a browser with browserify, webpack or any other bundler](#use-in-a-browser-with-browserify-webpack-or-any-other-bundler)
+    - [Use in a browser using a script tag](#use-in-a-browser-using-a-script-tag)
+    - [A note on concurrency](#a-note-on-concurrency)
+  - [Contribute](#contribute)
+  - [Changelog](#changelog)
+  - [License](#license)
 
 ## Install
 
