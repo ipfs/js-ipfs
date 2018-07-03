@@ -82,7 +82,7 @@ module.exports = (ipfs) => {
       (files, cb) => {
         if (options.long) {
           return cb(null, files.sort((a, b) => {
-            return a.name.localeCompare(b.name)
+            return b.name.localeCompare(a.name)
           }))
         }
 
