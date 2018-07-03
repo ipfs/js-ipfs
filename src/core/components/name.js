@@ -52,7 +52,9 @@ module.exports = function name (self) {
      * @param {String} lifetime time duration that the record will be valid for.
     This accepts durations such as "300s", "1.5h" or "2h45m". Valid time units are
     "ns", "ms", "s", "m", "h". Default is 24h.
-     * @param {String} ttl time duration this record should be cached for (caution: experimental).
+     * @param {String} ttl time duration this record should be cached for (NOT IMPLEMENTED YET).
+     * This accepts durations such as "300s", "1.5h" or "2h45m". Valid time units are
+     "ns", "ms", "s", "m", "h" (caution: experimental).
      * @param {String} key name of the key to be used or a valid PeerID, as listed by 'ipfs key list -l'.
      * @param {function(Error)} [callback]
      * @returns {Promise|void}
