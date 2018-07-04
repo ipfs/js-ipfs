@@ -408,6 +408,45 @@ describe('write', function () {
       })
   })
 
+  it('rewrites really big files', function () {
+    let expectedBytes = Buffer.alloc(0)
+    let originalBytes = Buffer.alloc(0)
+    const initialStream = bufferStream(1024 * 300, {
+      collector: (bytes) => {
+        originalBytes = Buffer.concat([originalBytes, bytes])
+      }
+    })
+    const newDataStream = bufferStream(1024 * 300, {
+      collector: (bytes) => {
+        expectedBytes = Buffer.concat([expectedBytes, bytes])
+      }
+    })
+
+    const fileName = `/rewrite/file-${Math.random()}.txt`
+
+    return mfs.write(fileName, initialStream, {
+      create: true,
+      parents: true
+    })
+      .then(() => mfs.write(fileName, newDataStream, {
+        offset: 0
+      }))
+      .then(() => mfs.read(fileName))
+      .then(actualBytes => {
+        for (var i = 0; i < expectedBytes.length; i++) {
+          if (expectedBytes[i] !== actualBytes[i]) {
+            if (originalBytes[i] === actualBytes[i]) {
+              throw new Error(`Bytes at index ${i} were not overwritten - expected ${expectedBytes[i]} actual ${originalBytes[i]}`)
+            }
+
+            throw new Error(`Bytes at index ${i} not equal - expected ${expectedBytes[i]} actual ${actualBytes[i]}`)
+          }
+        }
+
+        expect(actualBytes).to.deep.equal(expectedBytes)
+      })
+  })
+
   it.skip('writes a file with raw blocks for newly created leaf nodes', () => {
 
   })

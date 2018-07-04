@@ -31,6 +31,10 @@ const mfsRead = (api) => {
             reply(stream).header('X-Stream-Output', '1')
           })
           .catch(error => {
+            if (error.message.includes('did not exist')) {
+              error.message = 'file does not exist'
+            }
+
             reply({
               Message: error.message,
               Code: 0,

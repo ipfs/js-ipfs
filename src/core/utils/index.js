@@ -4,6 +4,7 @@ const constants = require('./constants')
 
 module.exports = {
   addLink: require('./add-link'),
+  bufferPullStreamSource: require('./buffer-pull-stream-source'),
   countStreamBytes: require('./count-stream-bytes'),
   createNode: require('./create-node'),
   endPullStream: require('./end-pull-stream'),

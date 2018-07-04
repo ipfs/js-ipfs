@@ -21,7 +21,7 @@ const {
   loadNode
 } = require('../utils')
 const importNode = require('./import-node')
-const updateNodeBytes = require('./update-tree')
+const updateTree = require('./update-tree')
 const truncateNode = require('./truncate-node')
 const {
   DAGLink
@@ -119,7 +119,7 @@ const updateNode = (ipfs, cidToUpdate, source, options, callback) => {
           // wait for both streams to end
           parallel([
             // set up pull stream for replacing bytes
-            (cb) => updateNodeBytes(ipfs, node, fileSize, streamStart, streamEnd, updateSource, options, cb),
+            (cb) => updateTree(ipfs, node, fileSize, streamStart, streamEnd, updateSource, options, cb),
 
             // setup pull stream for appending bytes
             (cb) => importNode(ipfs, appendSource, options, cb)
