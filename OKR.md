@@ -14,7 +14,7 @@ We try to frame our ongoing work using a process based on quarterly Objectives a
 
 **Daemon is as reliable as it can be**
 
-- A Daemon runs for 10 days without a crash
+- A Daemon runs for 10 days without a crash - @alanshaw
 - One or more js-ipfs daemons are part of the Bootsrapper nodes 
 - js-ipfs can handle 1TB of data, both Node.js and Browser - @hugomrdias
 - npm on IPFS over js-ipfs is a sound way to install deps and gets used for CI - @achingbrain
@@ -24,7 +24,7 @@ We try to frame our ongoing work using a process based on quarterly Objectives a
 - js.ipfs.io is finished and published - @diasdavid
 - Onboard 2 new full time contributors - @diasdavid
 - Complete the Awesome Endeavour, Documentation
-- Cut CI testing time in js-ipfs and js-ipfs-api by 50% (2x)
+- Cut CI testing time in js-ipfs and js-ipfs-api by 50% (2x) - @alanshaw
 
 Once these OKRs are finished, you will be able to find them on the [2018 Q3 IPFS OKRs Spreadsheet](https://docs.google.com/spreadsheets/d/19vjigg4locq4fO6JXyobS2yTx-k-fSzlFM5ngZDPDbQ/edit#gid=274358435)
 
