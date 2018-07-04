@@ -82,7 +82,7 @@ describe('mkdir', function () {
         throw new Error('Did not refuse to create a path that already exists')
       })
       .catch((error) => {
-        expect(error.message).to.contain('Already exists')
+        expect(error.message).to.contain('file already exists')
       })
   })
 
