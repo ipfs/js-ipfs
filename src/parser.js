@@ -16,7 +16,7 @@ const parseDisposition = (disposition) => {
   const details = {}
   details.type = disposition.split(';')[0]
   if (details.type === 'file' || details.type === 'form-data') {
-    const namePattern = /\ filename=\"(.[^\"]+)\"/
+    const namePattern = / filename="(.[^"]+)"/
     const matches = disposition.match(namePattern)
     details.name = matches ? matches[1] : ''
   }

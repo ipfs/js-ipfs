@@ -3,15 +3,17 @@
   "version": "0.1.0",
   "description": "A set of utilities to help dealing with IPFS multipart.",
   "leadMaintainer": "Hugo Dias <mail@hugodias.me>",
-  "main": "lib/index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "mocha test/index.js",
-    "lint": "standard --verbose | snazzy"
+    "lint": "aegir lint",
+    "build": "aegir build",
+    "test": "aegir test -t node",
+    "release": "aegir release --target node",
+    "release-minor": "aegir release --type minor --target node",
+    "release-major": "aegir release --type major --target node",
+    "coverage": "aegir coverage",
+    "coverage-publish": "aegir coverage --provider codecov"
   },
-  "pre-commit": [
-    "test",
-    "lint"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/xicombd/ipfs-multipart.git"
@@ -28,16 +30,13 @@
   },
   "homepage": "https://github.com/xicombd/ipfs-multipart#readme",
   "devDependencies": {
-    "chai": "^3.5.0",
+    "aegir": "^14.0.0",
+    "chai": "^4.1.2",
     "ipfs-api": "github:ipfs/js-ipfs-api#1fd9749",
-    "mocha": "^2.4.5",
-    "pre-commit": "^1.1.2",
-    "request": "^2.69.0",
-    "snazzy": "^3.0.0",
-    "standard": "^6.0.7"
+    "request": "^2.87.0"
   },
   "dependencies": {
-    "content": "^3.0.0",
-    "dicer": "^0.2.5"
+    "content": "^4.0.5",
+    "dicer": "~0.2.5"
   }
 }

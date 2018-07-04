@@ -1,5 +1,7 @@
-/* eslint-env mocha */
 'use strict'
+
+/* eslint-env mocha */
+/* eslint-disable no-unused-expressions */
 
 const expect = require('chai').expect
 const APIctl = require('ipfs-api')
@@ -187,7 +189,7 @@ describe('parser', () => {
     })
 
     it('parses ctl.add buffer correctly', (done) => {
-      ctl.add(new Buffer('hello world'), (err, res) => {
+      ctl.add(Buffer.from('hello world'), (err, res) => {
         expect(err).to.not.exist
 
         expect(files.length).to.equal(1)

@@ -1,3 +1,5 @@
+'use strict'
+
 const content = require('content')
 const Parser = require('./parser')
 
