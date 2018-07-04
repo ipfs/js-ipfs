@@ -7,10 +7,10 @@ We try to frame our ongoing work using a process based on quarterly Objectives a
 **The Connectivity Magic story is figured out and solved**
 
 - A js-ipfs Daemon will always find other IPFS Daemons (js & go) in the LAN 
+- A js-ipfs node (Browser & Desktop) always finds files that are on the Gateways
 - The rendezvous protocol is a sound solution for DApps (e.g. PeerPad & others)
 - The DHT is enabled by default in js-ipfs
 - Handles correctly a scenario where the number of Connections grows (through Conn Management Strategy)
-- ... MOAR :D
 
 **Daemon is as reliable as it can be**
 
@@ -18,12 +18,13 @@ We try to frame our ongoing work using a process based on quarterly Objectives a
 - One or more js-ipfs daemons are part of the Bootsrapper nodes 
 - js-ipfs can handle 1TB of data, both Node.js and Browser - @hugomrdias
 - npm on IPFS over js-ipfs is a sound way to install deps and gets used for CI - @achingbrain
-- ... MOAR :D
 
 **New user/contributor experience is extraordinary**
+
 - js.ipfs.io is finished and published - @diasdavid
 - Onboard 2 new full time contributors - @diasdavid
-- ... MOAR :D
+- Complete the Awesome Endeavour, Documentation
+- Cut CI testing time in js-ipfs and js-ipfs-api by 50% (2x)
 
 Once these OKRs are finished, you will be able to find them on the [2018 Q3 IPFS OKRs Spreadsheet](https://docs.google.com/spreadsheets/d/19vjigg4locq4fO6JXyobS2yTx-k-fSzlFM5ngZDPDbQ/edit#gid=274358435)
 
