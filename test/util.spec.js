@@ -160,7 +160,9 @@ describe('.util', () => {
         .then(out => expectTimeout(ipfs.object.get(out[0].hash), 4000))
     })
 
-    it('with wrap-with-directory=true', (done) => {
+    it('with wrap-with-directory=true', function (done) {
+      this.timeout(20 * 1000)
+
       ipfs.util.addFromURL('http://ipfs.io/ipfs/QmWjppACLcFLQ2qL38unKQvJBhXH3RUtcGLPk7zmrTwV61/969165.jpg?foo=bar#buzz', {
         wrapWithDirectory: true
       }, (err, result) => {
