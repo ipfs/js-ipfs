@@ -34,3 +34,4 @@ node_modules
 
 # Lockfile
 package-lock.json
+yarn.lock

@@ -16,19 +16,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xicombd/ipfs-multipart.git"
+    "url": "git+https://github.com/ipfs/js-ipfs-multipart.git"
   },
   "keywords": [
     "ipfs",
     "multipart",
     "files"
   ],
-  "author": "Francisco Dias <francisco@baiodias.com> (http://franciscodias.net/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/xicombd/ipfs-multipart/issues"
+    "url": "https://github.com/ipfs/js-ipfs-multipart/issues"
   },
-  "homepage": "https://github.com/xicombd/ipfs-multipart#readme",
+  "homepage": "https://github.com/ipfs/js-ipfs-multipart#readme",
   "devDependencies": {
     "aegir": "^14.0.0",
     "chai": "^4.1.2",
