@@ -13,6 +13,6 @@ module.exports = (send) => {
       path: 'files/mkdir',
       args: args,
       qs: opts
-    }, callback)
+    }, (error) => callback(error))
   })
 }

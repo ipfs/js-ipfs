@@ -22,6 +22,6 @@ module.exports = (send) => {
       path: 'files/rm',
       args: path,
       qs: opts
-    }, callback)
+    }, (error) => callback(error))
   })
 }

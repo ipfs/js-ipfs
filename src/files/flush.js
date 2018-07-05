@@ -12,6 +12,6 @@ module.exports = (send) => {
     return send({
       path: 'files/flush',
       args: args
-    }, callback)
+    }, (error) => callback(error))
   })
 }

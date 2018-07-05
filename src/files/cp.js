@@ -15,6 +15,6 @@ module.exports = (send) => {
       path: 'files/cp',
       args: sources,
       qs: opts
-    }, callback)
+    }, (error) => callback(error))
   })
 }
