@@ -9,6 +9,7 @@ const log = debug('cli')
 log.error = debug('cli:error')
 const Progress = require('progress')
 const byteman = require('byteman')
+const promisify = require('promisify-es6')
 
 exports = module.exports
 
@@ -40,7 +41,7 @@ function getAPICtl (apiAddr) {
 
 exports.getIPFS = (argv, callback) => {
   if (argv.api || isDaemonOn()) {
-    return callback(null, getAPICtl(argv.api), (cb) => cb())
+    return callback(null, getAPICtl(argv.api), promisify((cb) => cb()))
   }
 
   // Required inline to reduce startup time
@@ -55,13 +56,13 @@ exports.getIPFS = (argv, callback) => {
     }
   })
 
-  const cleanup = (cb) => {
+  const cleanup = promisify((cb) => {
     if (node && node._repo && !node._repo.closed) {
-      node._repo.close(() => cb())
+      node._repo.close((err) => cb(err))
     } else {
       cb()
     }
-  }
+  })
 
   node.on('error', (err) => {
     throw err

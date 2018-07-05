@@ -74,6 +74,7 @@ You can check the development status at the [Waffle Board](https://waffle.io/ipf
       - [Network](#network)
       - [Node Management](#node-management)
       - [Domain data types](#domain-data-types)
+      - [Util](#util)
 - [FAQ](#faq)
 - [Running js-ipfs with Docker](#running-js-ipfs-with-docker)
 - [Packages](#packages)

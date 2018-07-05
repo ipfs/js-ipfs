@@ -9,7 +9,7 @@ describe('ls', () => runOnAndOff((thing) => {
 
   before(() => {
     ipfs = thing.ipfs
-    return ipfs('files add -r test/fixtures/test-data/recursive-get-dir')
+    return ipfs('add -r test/fixtures/test-data/recursive-get-dir')
   })
 
   it('prints added files', function () {

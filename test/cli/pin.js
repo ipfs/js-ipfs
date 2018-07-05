@@ -24,7 +24,7 @@ describe('pin', () => runOnAndOff(thing => {
   before(function () {
     this.timeout(15 * 1000)
     ipfs = thing.ipfs
-    return ipfs(`files add -r ${fixturePath}`)
+    return ipfs(`add -r ${fixturePath}`)
   })
 
   describe('rm', function () {

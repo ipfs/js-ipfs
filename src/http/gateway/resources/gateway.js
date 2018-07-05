@@ -17,7 +17,8 @@ module.exports = {
     if (!request.params.cid) {
       return reply({
         Message: 'Path Resolve error: path must contain at least one component',
-        Code: 0
+        Code: 0,
+        Type: 'error'
       }).code(400).takeover()
     }
 
@@ -63,10 +64,10 @@ module.exports = {
             return reply(errorToString).code(404)
           case (errorToString.startsWith('Error: multihash length inconsistent')):
           case (errorToString.startsWith('Error: Non-base58 character')):
-            return reply({ Message: errorToString, code: 0 }).code(400)
+            return reply({ Message: errorToString, Code: 0, Type: 'error' }).code(400)
           default:
             log.error(err)
-            return reply({ Message: errorToString, code: 0 }).code(500)
+            return reply({ Message: errorToString, Code: 0, Type: 'error' }).code(500)
         }
       }
     }

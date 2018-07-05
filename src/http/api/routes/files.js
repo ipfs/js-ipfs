@@ -1,6 +1,7 @@
 'use strict'
 
 const resources = require('./../resources')
+const mfs = require('ipfs-mfs/http')
 
 module.exports = (server) => {
   const api = server.select('API')
@@ -54,4 +55,6 @@ module.exports = (server) => {
       handler: resources.files.immutableLs.handler
     }
   })
+
+  mfs(api)
 }

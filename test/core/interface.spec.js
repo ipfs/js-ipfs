@@ -29,54 +29,7 @@ describe('interface-ipfs-core tests', () => {
     skip: { reason: 'TODO: DHT is not implemented in js-ipfs yet!' }
   })
 
-  tests.files(defaultCommonFactory, {
-    skip: [
-      {
-        name: 'cp',
-        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
-      },
-      {
-        name: 'mkdir',
-        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
-      },
-      {
-        name: 'stat',
-        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
-      },
-      {
-        name: 'rm',
-        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
-      },
-      {
-        name: 'read',
-        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
-      },
-      {
-        name: 'readReadableStream',
-        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
-      },
-      {
-        name: 'readPullStream',
-        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
-      },
-      {
-        name: 'write',
-        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
-      },
-      {
-        name: 'mv',
-        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
-      },
-      {
-        name: 'flush',
-        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
-      },
-      {
-        name: 'ls',
-        reason: 'TODO: MFS is not implemented in js-ipfs yet!'
-      }
-    ]
-  })
+  tests.files(defaultCommonFactory)
 
   tests.key(CommonFactory.create({
     spawnOptions: {

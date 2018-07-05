@@ -14,9 +14,15 @@ module.exports = (api, server) => {
 
     let statusCode = 200
     let msg = 'Sorry, something went wrong, please retrace your steps.'
+    let code = 1
 
     if (res.isBoom) {
       statusCode = res.output.payload.statusCode
+      msg = res.output.payload.message
+
+      if (res.data && res.data.code !== undefined) {
+        code = res.data.code
+      }
 
       if (res.message && res.isDeveloperError) {
         msg = res.message.replace('Uncaught error: ', '')
@@ -36,7 +42,8 @@ module.exports = (api, server) => {
 
       reply({
         Message: msg,
-        Code: 1
+        Code: code,
+        Type: 'error'
       }).code(statusCode)
       return
     }

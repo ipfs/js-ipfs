@@ -7,6 +7,7 @@ const schema = Joi.object().keys({
     Joi.object(), // TODO: schema for IPFS repo
     Joi.string()
   ).allow(null),
+  repoOwner: Joi.boolean().default(true),
   init: Joi.alternatives().try(
     Joi.boolean(),
     Joi.object().keys({ bits: Joi.number().integer() })
