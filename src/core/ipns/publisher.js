@@ -71,7 +71,16 @@ class IpnsPublisher {
       }
 
       // unmarshal data
-      result = ipns.unmarshal(dsVal)
+      try {
+        result = ipns.unmarshal(dsVal)
+      } catch (err) {
+        const error = `found ipns record that we couldn't convert to a value`
+
+        log.error(error)
+        return callback(null, {
+          peerIdResult: peerIdResult
+        })
+      }
 
       return callback(null, {
         peerIdResult: peerIdResult,

@@ -48,7 +48,8 @@ class IPNS {
 
   // Resolve
   resolve (name, pubKey, options, callback) {
-    if (!options.nocache) {
+    // If recursive, we should not try to get the cached value
+    if (!options.nocache && !options.recursive) {
       // Try to get the record from cache
       const id = name.split('/')[2]
       const result = this.cache.get(id)

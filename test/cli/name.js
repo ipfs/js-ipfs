@@ -1,4 +1,4 @@
-/* eslint max-nested-callbacks: ["error", 5] */
+/* eslint max-nested-callbacks: ["error", 6] */
 /* eslint-env mocha */
 'use strict'
 
@@ -7,6 +7,7 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
+const hat = require('hat')
 const ipfsExec = require('../utils/ipfs-exec')
 
 const DaemonFactory = require('ipfsd-ctl')
@@ -15,9 +16,16 @@ const df = DaemonFactory.create({ type: 'js' })
 const checkAll = (bits) => string => bits.every(bit => string.includes(bit))
 
 describe.only('name', () => {
+  const passPhrase = hat()
+  const pass = '--pass ' + passPhrase
+  const name = 'test-key-' + hat()
+
   let ipfs
+  let ipfsd
+
   let cidAdded
   let nodeId
+  let keyId
 
   before(function (done) {
     this.timeout(80 * 1000)
@@ -25,55 +33,149 @@ describe.only('name', () => {
     df.spawn({
       exec: `./src/cli/bin.js`,
       config: {},
+      args: pass.split(' '),
       initOptions: { bits: 512 }
-    }, (err, node) => {
+    }, (err, _ipfsd) => {
       expect(err).to.not.exist()
-      ipfs = ipfsExec(node.repoPath)
 
-      ipfs('id').then((res) => {
-        const id = JSON.parse(res)
-        expect(id).to.have.property('id')
+      ipfsd = _ipfsd
+      ipfs = ipfsExec(_ipfsd.repoPath)
 
-        nodeId = id.id
+      ipfs(`${pass} key gen ${name} --type rsa --size 2048`).then((out) => {
+        expect(out).to.include(name)
 
-        ipfs('files add src/init-files/init-docs/readme')
-          .then((out) => {
+        keyId = out.split(' ')[1]
+
+        ipfs('id').then((res) => {
+          const id = JSON.parse(res)
+
+          expect(id).to.have.property('id')
+          nodeId = id.id
+
+          ipfs('files add src/init-files/init-docs/readme').then((out) => {
             cidAdded = out.split(' ')[1]
             done()
           })
+        })
       })
     })
   })
 
-  it('name publish should publish correctly when the file was already added', function () {
+  after(function (done) {
+    if (ipfsd) {
+      ipfsd.stop(() => done())
+    } else {
+      done()
+    }
+  })
+
+  it('name publish should publish correctly when the file was already added', function (done) {
     this.timeout(60 * 1000)
 
-    return ipfs(`name publish ${cidAdded}`).then((res) => {
+    ipfs(`name publish ${cidAdded}`).then((res) => {
       expect(res).to.exist()
       expect(res).to.satisfy(checkAll([cidAdded, nodeId]))
+
+      done()
     })
   })
 
-  /* TODO resolve unexistant file does not resolve error
-  it('name publish should return an error when the file was not already added', function () {
+  it('name resolve should get the entry correctly', function (done) {
+    this.timeout(60 * 1000)
+
+    ipfs(`name publish ${cidAdded}`).then((res) => {
+      expect(res).to.exist()
+
+      ipfs('name resolve').then((res) => {
+        expect(res).to.exist()
+        expect(res).to.satisfy(checkAll([cidAdded]))
+
+        done()
+      })
+    })
+  })
+
+  it('name publish should publish correctly when the file was not added but resolve is disabled', function (done) {
     this.timeout(60 * 1000)
 
     const notAddedCid = 'QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
 
-    return ipfs(`name publish ${notAddedCid}`).then((res) => {
+    ipfs(`name publish ${notAddedCid} --resolve false`).then((res) => {
       expect(res).to.exist()
-      expect(res).to.satisfy(checkAll([cidAdded, nodeId]))
-    })
-  }) */
+      expect(res).to.satisfy(checkAll([notAddedCid, nodeId]))
 
-  it('name resolve should get the entry correctly', function () {
+      done()
+    })
+  })
+
+  it('name resolve should not get the entry correctly if its validity time expired', function (done) {
     this.timeout(60 * 1000)
 
-    return ipfs(`name publish ${cidAdded}`).then((res) => {
+    ipfs(`name publish ${cidAdded} --lifetime 10ns`).then((res) => {
       expect(res).to.exist()
-      return ipfs('name resolve').then((res) => {
+
+      setTimeout(function () {
+        ipfs('name resolve')
+          .then((res) => {
+            expect(res).to.not.exist()
+          })
+          .catch((err) => {
+            expect(err).to.exist()
+            done()
+          })
+      }, 1)
+    })
+  })
+
+  it('name publish should publish correctly when a new key is used', function (done) {
+    this.timeout(60 * 1000)
+
+    ipfs(`name publish ${cidAdded} --key ${name}`).then((res) => {
+      expect(res).to.exist()
+      expect(res).to.satisfy(checkAll([cidAdded, keyId]))
+
+      done()
+    })
+  })
+
+  it('name resolve should return the immediate pointing record, unless using the recursive parameter', function (done) {
+    this.timeout(60 * 1000)
+
+    ipfs(`name publish ${cidAdded}`).then((res) => {
+      expect(res).to.exist()
+      expect(res).to.satisfy(checkAll([cidAdded, nodeId]))
+
+      ipfs(`name publish /ipns/${nodeId} --key ${name}`).then((res) => {
         expect(res).to.exist()
-        expect(res).to.satisfy(checkAll([cidAdded]))
+        expect(res).to.satisfy(checkAll([nodeId, keyId]))
+
+        ipfs(`name resolve ${keyId}`).then((res) => {
+          expect(res).to.exist()
+          expect(res).to.satisfy(checkAll([nodeId]))
+
+          done()
+        })
+      })
+    })
+  })
+
+  it('name resolve should go recursively until finding an ipfs hash', function (done) {
+    this.timeout(60 * 1000)
+
+    ipfs(`name publish ${cidAdded}`).then((res) => {
+      expect(res).to.exist()
+      expect(res).to.satisfy(checkAll([cidAdded, nodeId]))
+
+      ipfs(`name publish /ipns/${nodeId} --key ${name}`).then((res) => {
+        expect(res).to.exist()
+        expect(res).to.satisfy(checkAll([nodeId, keyId]))
+
+        ipfs(`name resolve ${keyId} --recursive`).then((res) => {
+          expect(res).to.exist()
+          expect(res).to.satisfy(checkAll([cidAdded]))
+
+          done()
+        })
       })
     })
   })

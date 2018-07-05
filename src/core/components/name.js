@@ -83,7 +83,7 @@ module.exports = function name (self) {
         // (cb) => ttl ? human(ttl, cb) : cb(),
         (cb) => keyLookup(self, key, cb),
         // verify if the path exists, if not, an error will stop the execution
-        (cb) => resolve ? path.resolvePath(self, value, cb) : cb()
+        (cb) => resolve === true || resolve === 'true' ? path.resolvePath(self, value, cb) : cb()
       ], (err, results) => {
         if (err) {
           log.error(err)
