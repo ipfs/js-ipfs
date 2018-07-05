@@ -109,6 +109,18 @@ module.exports = (createCommon, options) => {
       })
     })
 
+    it('should override hash algoritm default and resolve with it', (done) => {
+      ipfs.dag.put(cborNode, {
+        format: 'dag-cbor',
+        hashAlg: 'sha3-512'
+      }, (err, cid) => {
+        expect(err).to.not.exist()
+        expect(cid.codec).to.equal('dag-cbor')
+        expect(multihash.decode(cid.multihash).name).to.equal('sha3-512')
+        done()
+      })
+    })
+
     it.skip('should put by passing the cid instead of format and hashAlg', (done) => {})
 
     // TODO it.skip('Promises support', (done) => {})
