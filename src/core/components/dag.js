@@ -19,7 +19,7 @@ module.exports = function dag (self) {
 
       const optionDefaults = {
         format: 'dag-cbor',
-        hashAlg: 'sha2-255'
+        hashAlg: 'sha2-256'
       }
 
       options = options.cid ? options : Object.assign({}, optionDefaults, options)
