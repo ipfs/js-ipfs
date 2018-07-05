@@ -12,7 +12,7 @@ const WStar = require('libp2p-webrtc-star')
 const TCP = require('libp2p-tcp')
 const MulticastDNS = require('libp2p-mdns')
 const WS = require('libp2p-websockets')
-const Bootstrap = require('libp2p-railing')
+const Bootstrap = require('libp2p-bootstrap')
 const errorHandler = require('./error-handler')
 
 function uriToMultiaddr (uri) {
