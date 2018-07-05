@@ -1,3 +1,18 @@
+<a name="22.2.2"></a>
+## [22.2.2](https://github.com/ipfs/js-ipfs-api/compare/v22.2.1...v22.2.2) (2018-07-05)
+
+
+### Bug Fixes
+
+* ignore response body for some mfs commands ([#805](https://github.com/ipfs/js-ipfs-api/issues/805)) ([b604a64](https://github.com/ipfs/js-ipfs-api/commit/b604a64))
+
+
+### Features
+
+* modular interface tests ([#785](https://github.com/ipfs/js-ipfs-api/issues/785)) ([2426072](https://github.com/ipfs/js-ipfs-api/commit/2426072)), closes [#339](https://github.com/ipfs/js-ipfs-api/issues/339) [#802](https://github.com/ipfs/js-ipfs-api/issues/802) [#801](https://github.com/ipfs/js-ipfs-api/issues/801)
+
+
+
 <a name="22.2.1"></a>
 ## [22.2.1](https://github.com/ipfs/js-ipfs-api/compare/v22.2.0...v22.2.1) (2018-06-29)
 
