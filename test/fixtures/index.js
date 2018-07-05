@@ -9,10 +9,17 @@ const {
   waterfall
 } = require('async')
 const core = require('../../src/core')
+const isWebWorker = require('detect-webworker')
 
 const createMfs = promisify((cb) => {
   let node = ipfs.createNode({
-    repo: path.join(os.tmpdir(), `ipfs-mfs-tests-${Math.random()}`)
+    repo: path.join(os.tmpdir(), `ipfs-mfs-tests-${Math.random()}`),
+    mfs: {
+      // https://github.com/Joris-van-der-Wel/karma-mocha-webworker/issues/4
+      // There is no IPFS node running on the main thread so run it on the
+      // worker along with the tests
+      repoOwner: isWebWorker
+    }
   })
 
   waterfall([

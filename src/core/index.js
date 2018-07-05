@@ -2,7 +2,7 @@
 
 const promisify = require('promisify-es6')
 const {
-  lock
+  createLock
 } = require('./utils')
 
 const readOperations = {
@@ -30,23 +30,29 @@ const wrap = (ipfs, mfs, operations, lock) => {
   })
 }
 
-const readLock = (operation) => {
-  return lock.readLock(operation)
+const defaultOptions = {
+  repoOwner: true
 }
 
-const writeLock = (operation) => {
-  return lock.writeLock(operation)
-}
+module.exports = (ipfs, options) => {
+  const {
+    repoOwner
+  } = Object.assign({}, defaultOptions || {}, options)
 
-const noLock = (operation) => {
-  return operation
-}
+  const lock = createLock(repoOwner)
 
-module.exports = (ipfs) => {
+  const readLock = (operation) => {
+    return lock.readLock(operation)
+  }
+
+  const writeLock = (operation) => {
+    return lock.writeLock(operation)
+  }
+
   const mfs = {}
 
-  wrap(ipfs, mfs, readOperations, global.MFS_DISABLE_CONCURRENCY ? noLock : readLock)
-  wrap(ipfs, mfs, writeOperations, global.MFS_DISABLE_CONCURRENCY ? noLock : writeLock)
+  wrap(ipfs, mfs, readOperations, readLock)
+  wrap(ipfs, mfs, writeOperations, writeLock)
 
   return mfs
 }

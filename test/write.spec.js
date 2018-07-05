@@ -379,10 +379,6 @@ describe('write', function () {
   })
 
   it('supports concurrent writes', function () {
-    if (global.MFS_DISABLE_CONCURRENCY) {
-      return this.skip()
-    }
-
     const files = []
 
     for (let i = 0; i < 10; i++) {
