@@ -69,7 +69,9 @@ describe('object', () => runOnAndOff((thing) => {
     })
   })
 
-  it('unadulterated data', () => {
+  it('unadulterated data', function () {
+    this.timeout(10 * 1000)
+
     // has to be big enough to span several DAGNodes
     const data = crypto.randomBytes(1024 * 300)
     const file = path.join(os.tmpdir(), `file-${Math.random()}.txt`)
