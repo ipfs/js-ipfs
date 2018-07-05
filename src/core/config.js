@@ -25,6 +25,7 @@ const schema = Joi.object().keys({
     sharding: Joi.boolean(),
     dht: Joi.boolean()
   }).allow(null),
+  connectionManager: Joi.object().allow(null),
   config: Joi.object().keys({
     Addresses: Joi.object().keys({
       Swarm: Joi.array().items(Joi.multiaddr().options({ convert: false })),
