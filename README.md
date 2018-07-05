@@ -1,8 +1,16 @@
 ipfs-multipart
 ====
 
-[![build status](https://travis-ci.org/xicombd/ipfs-multipart.svg)](http://travis-ci.org/xicombd/ipfs-multipart)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)
+[![made by Protocol Labs](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://protocol.ai)
+[![Project IPFS](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
+[![freenode #ipfs](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
+[![Codecov branch](https://img.shields.io/codecov/c/github/ipfs/js-ipfs-multipart/master.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs-multipart)
+[![Dependency Status](https://david-dm.org/ipfs/js-ipfs-multipart.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-multipart)
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
+[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+
+
+
 
 > A set of utilities to help dealing with [IPFS](https://ipfs.io/) multipart.
 
@@ -12,7 +20,7 @@ ipfs-multipart
 
 ## Install
 ```
-npm i --save ipfs-multipart
+npm install ipfs-multipart
 ```
 
 ## Usage
@@ -52,6 +60,14 @@ http.createServer((req, res) => {
 })
 ```
 
+## Contribute
+
+See [the contribute file](https://github.com/ipfs/community/blob/master/contributing.md) and our [code of conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md)!
+
+PRs accepted.
+
+Small note: If editing the Readme, please conform to the [standard-readme](https://github.com/RichardLitt/standard-readme) specification.
+
 ## License
 
-MIT
+[MIT](LICENSE) © Protocol Labs Inc.
