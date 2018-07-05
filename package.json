@@ -18,8 +18,7 @@
     "release": "aegir release",
     "release-minor": "aegir release --type minor",
     "release-major": "aegir release --type major",
-    "coverage": "aegir coverage",
-    "commit-lint": "commitlint --extends=@commitlint/config-conventional --from=remotes/origin/master --to=HEAD"
+    "coverage": "aegir coverage"
   },
   "repository": {
     "type": "git",
@@ -38,18 +37,13 @@
   },
   "homepage": "https://github.com/ipfs/js-ipfs-mfs#readme",
   "devDependencies": {
-    "@commitlint/cli": "^6.2.0",
-    "@commitlint/config-conventional": "^6.1.3",
     "aegir": "^14.0.0",
     "chai": "^4.1.2",
     "cross-env": "^5.1.4",
     "detect-webworker": "^1.0.0",
     "dirty-chai": "^2.0.1",
     "ipfs": "~0.29.0",
-    "pre-commit": "^1.2.2",
-    "pre-push": "~0.1.1",
     "safe-buffer": "^5.1.1",
-    "sign-commit": "~0.1.0",
     "tmp": "~0.0.33"
   },
   "dependencies": {
@@ -79,13 +73,6 @@
     "pull-traverse": "^1.0.3",
     "stream-to-pull-stream": "^1.7.2"
   },
-  "pre-commit": [
-    "lint",
-    "test"
-  ],
-  "pre-push": [
-    "commit-lint"
-  ],
   "contributors": [
     "achingbrain <alex@achingbrain.net>"
   ]
