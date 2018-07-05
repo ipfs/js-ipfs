@@ -73,15 +73,15 @@ const packageBadges = [
   // Version
   (gh, npm) => `[![npm](https://img.shields.io/npm/v/${npm}.svg?maxAge=86400&style=flat-square)](//github.com/${gh}/releases)`,
   // Deps
-  (gh, npm) => `[![Dep](https://david-dm.org/${gh}.svg?style=flat-square)](https://david-dm.org/${gh})`,
+  (gh, npm) => `[![Deps](https://david-dm.org/${gh}.svg?style=flat-square)](https://david-dm.org/${gh})`,
   // CI
   (gh, npm) => {
     // Need to fix the path for jenkins links, as jenkins adds `/job/` between everything
     const jenkinsPath = gh.split('/').join('/job/')
-    return `[![Build Status](https://ci.ipfs.team/buildStatus/icon?job=${gh}/master)](https://ci.ipfs.team/job/${jenkinsPath}/job/master/)`
+    return `[![jenkins](https://ci.ipfs.team/buildStatus/icon?job=${gh}/master)](https://ci.ipfs.team/job/${jenkinsPath}/job/master/)`
   },
   // Coverage
-  (gh, npm) => `[![Coverage Status](https://codecov.io/gh/${gh}/branch/master/graph/badge.svg)](https://codecov.io/gh/${gh})`
+  (gh, npm) => `[![codecov](https://codecov.io/gh/${gh}/branch/master/graph/badge.svg)](https://codecov.io/gh/${gh})`
 ]
 
 // Creates the table row for a package
