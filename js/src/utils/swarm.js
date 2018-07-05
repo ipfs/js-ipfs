@@ -1,3 +1,5 @@
+'use strict'
+
 const eachSeries = require('async/eachSeries')
 
 function connect (fromNode, toAddrs, cb) {

@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+/* eslint max-nested-callbacks: ["error", 6] */
 'use strict'
 
 const waterfall = require('async/waterfall')
