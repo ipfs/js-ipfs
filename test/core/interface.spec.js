@@ -16,7 +16,14 @@ describe('interface-ipfs-core tests', () => {
 
   tests.config(defaultCommonFactory)
 
-  tests.dag(defaultCommonFactory)
+  tests.dag(defaultCommonFactory, {
+    skip: [
+      {
+        name: 'should override hash algoritm default and resolve with it',
+        reason: 'https://github.com/ipld/js-ipld/pull/133 needs to land first'
+      }
+    ]
+  })
 
   tests.dht(defaultCommonFactory, {
     skip: { reason: 'TODO: DHT is not implemented in js-ipfs yet!' }
