@@ -19,7 +19,7 @@ The hls.js library ships with an HTTP based content loader only, but it's fortun
 ```html
 <script src="https://unpkg.com/ipfs/dist/index.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-<script src="https://unpkg.com/hlsjs-ipfs-loader@0.1.1/dist/index.js"></script>
+<script src="https://unpkg.com/hlsjs-ipfs-loader@0.1.2/dist/index.js"></script>
 ```
 
 ## Generating HLS content
