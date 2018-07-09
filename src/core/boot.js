@@ -1,7 +1,7 @@
 'use strict'
 
 const waterfall = require('async/waterfall')
-const series = require('async/series')
+const auto = require('async/auto')
 const extend = require('deep-extend')
 const RepoErrors = require('ipfs-repo').errors
 
@@ -27,16 +27,7 @@ module.exports = (self) => {
       return cb(null, true)
     }
 
-    series([
-      (cb) => self._repo.open(cb),
-      (cb) => self.pin._load(cb),
-      (cb) => self.preStart(cb),
-      (cb) => {
-        self.log('initialized')
-        self.state.initialized()
-        cb(null, true)
-      }
-    ], (err, res) => {
+    self._repo.open((err, res) => {
       if (err) {
         // If the error is that no repo exists,
         // which happens when the version file is not found
@@ -62,59 +53,60 @@ module.exports = (self) => {
     })
   }
 
-  const done = (err) => {
+  const tasks = {
+    repoExists: (cb) => maybeOpenRepo(cb),
+    repoCreated: ['repoExists', (res, cb) => {
+      if (!doInit || res.repoExists) return cb(null, false)
+      // No repo, but need should init one
+      self.init(initOptions, (err) => {
+        if (err) return cb(err)
+        cb(null, true)
+      })
+    }],
+    loadPinset: ['repoExists', (res, cb) => {
+      if (!res.repoExists) return cb()
+      self.pin._load(cb)
+    }],
+    setConfig: ['repoExists', 'repoCreated', (res, cb) => {
+      if (!setConfig) return cb()
+
+      if (!res.repoExists && !res.repoCreated) {
+        console.log('WARNING, trying to set config on uninitialized repo, maybe forgot to set "init: true"')
+        return cb()
+      }
+
+      waterfall([
+        (cb) => self.config.get(cb),
+        (config, cb) => {
+          extend(config, options.config)
+          self.config.replace(config, cb)
+        }
+      ], cb)
+    }],
+    initialize: ['repoExists', 'loadPinset', 'repoCreated', 'setConfig', (res, cb) => {
+      self.log('initialized')
+      self.state.initialized()
+      cb(null, true)
+    }],
+    start: ['repoExists', 'repoCreated', 'initialize', (res, cb) => {
+      if (!doStart) return cb()
+
+      // If the repo didn't already exists and wasn't just created then can't start
+      if (!res.repoExists && !res.repoCreated) {
+        console.log('WARNING, trying to start ipfs node on uninitialized repo, maybe forgot to set "init: true"')
+        return cb(new Error('Uninitalized repo'))
+      }
+
+      self.start(cb)
+    }]
+  }
+
+  // Do the actual boot sequence
+  auto(tasks, (err) => {
     if (err) {
       return self.emit('error', err)
     }
-    self.log('boot:done')
+    self.log('booted')
     self.emit('ready')
-  }
-
-  const tasks = []
-
-  // check if there as a repo and if so open it
-  maybeOpenRepo((err, hasRepo) => {
-    if (err) {
-      return done(err)
-    }
-
-    // No repo, but need should init one
-    if (doInit && !hasRepo) {
-      tasks.push((cb) => self.init(initOptions, cb))
-      // we know we will have a repo for all follwing tasks
-      // if the above succeeds
-      hasRepo = true
-    }
-
-    // Need to set config
-    if (setConfig) {
-      if (!hasRepo) {
-        console.log('WARNING, trying to set config on uninitialized repo, maybe forgot to set "init: true"')
-      } else {
-        tasks.push((cb) => {
-          waterfall([
-            (cb) => self.config.get(cb),
-            (config, cb) => {
-              extend(config, options.config)
-
-              self.config.replace(config, cb)
-            }
-          ], cb)
-        })
-      }
-    }
-
-    // Need to start up the node
-    if (doStart) {
-      if (!hasRepo) {
-        console.log('WARNING, trying to start ipfs node on uninitialized repo, maybe forgot to set "init: true"')
-        return done(new Error('Uninitalized repo'))
-      } else {
-        tasks.push((cb) => self.start(cb))
-      }
-    }
-
-    // Do the actual boot sequence
-    series(tasks, done)
   })
 }

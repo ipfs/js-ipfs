@@ -7,7 +7,7 @@ const promisify = require('promisify-es6')
 
 module.exports = (self) => {
   return promisify((callback) => {
-    callback = callback || function noop () {}
+    self.log('starting')
 
     const done = (err) => {
       if (err) {
@@ -16,6 +16,7 @@ module.exports = (self) => {
       }
 
       self.state.started()
+      self.log('started')
       setImmediate(() => self.emit('start'))
       callback()
     }
