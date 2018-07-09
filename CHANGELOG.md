@@ -1,3 +1,48 @@
+<a name="0.30.0"></a>
+# [0.30.0](https://github.com/ipfs/js-ipfs/compare/v0.29.3...v0.30.0) (2018-07-09)
+
+
+### Bug Fixes
+
+* allow put empty block & add X-Stream-Output header on get ([#1408](https://github.com/ipfs/js-ipfs/issues/1408)) ([52f7aa7](https://github.com/ipfs/js-ipfs/commit/52f7aa7))
+* broken contributing links ([#1386](https://github.com/ipfs/js-ipfs/issues/1386)) ([cd449ff](https://github.com/ipfs/js-ipfs/commit/cd449ff))
+* do not stringify output of object data ([#1398](https://github.com/ipfs/js-ipfs/issues/1398)) ([4e51a69](https://github.com/ipfs/js-ipfs/commit/4e51a69))
+* **dag:** fix default hash algorithm for put() api ([#1419](https://github.com/ipfs/js-ipfs/issues/1419)) ([1a36375](https://github.com/ipfs/js-ipfs/commit/1a36375)), closes [/github.com/ipld/js-ipld/blob/d3d78e053ebd3f8c85a8b5579715be8812773d4d/src/index.js#L236-L239](https://github.com//github.com/ipld/js-ipld/blob/d3d78e053ebd3f8c85a8b5579715be8812773d4d/src/index.js/issues/L236-L239)
+* **dag:** make options in `put` API optional ([#1415](https://github.com/ipfs/js-ipfs/issues/1415)) ([d299ed7](https://github.com/ipfs/js-ipfs/commit/d299ed7)), closes [#1395](https://github.com/ipfs/js-ipfs/issues/1395)
+* **tests:** loosen assertion for bitswap.stat test ([#1404](https://github.com/ipfs/js-ipfs/issues/1404)) ([4290256](https://github.com/ipfs/js-ipfs/commit/4290256))
+* update hlsjs-ipfs-loader version ([#1422](https://github.com/ipfs/js-ipfs/issues/1422)) ([6b14812](https://github.com/ipfs/js-ipfs/commit/6b14812))
+
+
+### Features
+
+* (BREAKING CHANGE) new libp2p configuration ([#1401](https://github.com/ipfs/js-ipfs/issues/1401)) ([9c60909](https://github.com/ipfs/js-ipfs/commit/9c60909))
+* expose libp2p connection manager configuration options ([#1410](https://github.com/ipfs/js-ipfs/issues/1410)) ([2615f76](https://github.com/ipfs/js-ipfs/commit/2615f76))
+* implement bitswap.wantlist peerid and bitswap.unwant ([#1349](https://github.com/ipfs/js-ipfs/issues/1349)) ([45b705d](https://github.com/ipfs/js-ipfs/commit/45b705d))
+* mfs implementation ([#1360](https://github.com/ipfs/js-ipfs/issues/1360)) ([871d24e](https://github.com/ipfs/js-ipfs/commit/871d24e)), closes [#1425](https://github.com/ipfs/js-ipfs/issues/1425)
+* modular interface tests ([#1389](https://github.com/ipfs/js-ipfs/issues/1389)) ([18888be](https://github.com/ipfs/js-ipfs/commit/18888be))
+* pin API ([#1045](https://github.com/ipfs/js-ipfs/issues/1045)) ([2a5cc5e](https://github.com/ipfs/js-ipfs/commit/2a5cc5e)), closes [#1249](https://github.com/ipfs/js-ipfs/issues/1249)
+
+
+### Performance Improvements
+
+* use lodash ([#1414](https://github.com/ipfs/js-ipfs/issues/1414)) ([5637330](https://github.com/ipfs/js-ipfs/commit/5637330))
+
+
+### BREAKING CHANGES
+
+* libp2p configuration has changed
+
+    * old: `libp2p.modules.discovery`
+    * new: `libp2p.modules.peerDiscovery`
+
+License: MIT
+Signed-off-by: David Dias <mail@daviddias.me>
+
+License: MIT
+Signed-off-by: Alan Shaw <alan@tableflip.io>
+
+
+
 <a name="0.29.3"></a>
 ## [0.29.3](https://github.com/ipfs/js-ipfs/compare/v0.29.2...v0.29.3) (2018-06-04)
 
