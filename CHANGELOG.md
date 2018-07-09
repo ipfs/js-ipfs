@@ -7,7 +7,7 @@
 * allow put empty block & add X-Stream-Output header on get ([#1408](https://github.com/ipfs/js-ipfs/issues/1408)) ([52f7aa7](https://github.com/ipfs/js-ipfs/commit/52f7aa7))
 * broken contributing links ([#1386](https://github.com/ipfs/js-ipfs/issues/1386)) ([cd449ff](https://github.com/ipfs/js-ipfs/commit/cd449ff))
 * do not stringify output of object data ([#1398](https://github.com/ipfs/js-ipfs/issues/1398)) ([4e51a69](https://github.com/ipfs/js-ipfs/commit/4e51a69))
-* **dag:** fix default hash algorithm for put() api ([#1419](https://github.com/ipfs/js-ipfs/issues/1419)) ([1a36375](https://github.com/ipfs/js-ipfs/commit/1a36375)), closes [/github.com/ipld/js-ipld/blob/d3d78e053ebd3f8c85a8b5579715be8812773d4d/src/index.js#L236-L239](https://github.com//github.com/ipld/js-ipld/blob/d3d78e053ebd3f8c85a8b5579715be8812773d4d/src/index.js/issues/L236-L239)
+* **dag:** fix default hash algorithm for put() api ([#1419](https://github.com/ipfs/js-ipfs/issues/1419)) ([1a36375](https://github.com/ipfs/js-ipfs/commit/1a36375))
 * **dag:** make options in `put` API optional ([#1415](https://github.com/ipfs/js-ipfs/issues/1415)) ([d299ed7](https://github.com/ipfs/js-ipfs/commit/d299ed7)), closes [#1395](https://github.com/ipfs/js-ipfs/issues/1395)
 * **tests:** loosen assertion for bitswap.stat test ([#1404](https://github.com/ipfs/js-ipfs/issues/1404)) ([4290256](https://github.com/ipfs/js-ipfs/commit/4290256))
 * update hlsjs-ipfs-loader version ([#1422](https://github.com/ipfs/js-ipfs/issues/1422)) ([6b14812](https://github.com/ipfs/js-ipfs/commit/6b14812))
