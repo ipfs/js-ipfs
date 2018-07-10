@@ -58,7 +58,7 @@ module.exports = (ipfs) => {
         return copyToDirectory(ipfs, sources, destination, options, callback)
       }
 
-      callback(new Error('Directory already has entry by that name'))
+      callback(new Error('Error: directory already has entry by that name'))
     })
   }
 }
@@ -70,7 +70,7 @@ const copyToFile = (ipfs, source, destination, options, callback) => {
         (next) => stat(ipfs)(source.path, options, next),
         (next) => stat(ipfs)(destination.path, options, (error) => {
           if (!error) {
-            return next(new Error('Directory already has entry by that name'))
+            return next(new Error('Error: directory already has entry by that name'))
           }
 
           next()
@@ -95,7 +95,7 @@ const copyToFile = (ipfs, source, destination, options, callback) => {
         (newRoot, cb) => updateMfsRoot(ipfs, newRoot.node.multihash, cb)
       ], cb)
     }
-  ], callback)
+  ], (error) => callback(error))
 }
 
 const copyToDirectory = (ipfs, sources, destination, options, callback) => {
@@ -118,29 +118,51 @@ const copyToDirectory = (ipfs, sources, destination, options, callback) => {
       const sourceStats = results[0]
 
       waterfall([
-        (next) => waterfall([
-          (done) => done(null, dest.node)
-        ].concat(
-          sourceStats.map((sourceStat, index) => {
-            return (dest, done) => {
-              return addLink(ipfs, {
-                parent: dest,
-                child: {
-                  size: sourceStat.cumulativeSize,
-                  hash: sourceStat.hash
-                },
-                name: sources[index].name
-              }, done)
-            }
-          })
-        ), next),
+        // ensure targets do not exist
+        (next) => {
+          parallel(
+            sources.map(source => {
+              return (cb) => {
+                stat(ipfs)(`${destination.path}/${source.name}`, options, (error) => {
+                  if (!error) {
+                    return cb(new Error('Error: directory already has entry by that name'))
+                  }
+
+                  cb()
+                })
+              }
+            }),
+            (error) => next(error)
+          )
+        },
+        // add links to target directory
+        (next) => {
+          waterfall([
+            (done) => done(null, dest.node)
+          ].concat(
+            sourceStats.map((sourceStat, index) => {
+              return (dest, done) => {
+                return addLink(ipfs, {
+                  parent: dest,
+                  child: {
+                    size: sourceStat.cumulativeSize,
+                    hash: sourceStat.hash
+                  },
+                  name: sources[index].name
+                }, done)
+              }
+            })
+          ), next)
+        },
+        // update mfs tree
         (newParent, next) => {
           dest.node = newParent
 
           updateTree(ipfs, dest, next)
         },
+        // save new root CID
         (newRoot, cb) => updateMfsRoot(ipfs, newRoot.node.multihash, cb)
       ], cb)
     }
-  ], callback)
+  ], (error) => callback(error))
 }

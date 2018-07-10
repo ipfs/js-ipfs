@@ -33,7 +33,7 @@ module.exports = (ipfs) => {
     path = path.trim()
 
     if (path === FILE_SEPARATOR) {
-      return callback(options.parents ? null : new Error(`cannot create directory '${FILE_SEPARATOR}': file already exists`))
+      return callback(options.parents ? null : new Error(`Error: cannot create directory '${FILE_SEPARATOR}': Already exists`))
     }
 
     log(`Creating ${path}`)
@@ -65,7 +65,7 @@ module.exports = (ipfs) => {
       (result, cb) => updateTree(ipfs, result, cb),
       (newRoot, next) => updateMfsRoot(ipfs, newRoot.node.multihash, next)
     ], (error) => {
-      if (error && error.message === 'file already exists' && options.parents) {
+      if (error && error.message === 'Already exists' && options.parents) {
         // when the directory already exists and we are creating intermediate
         // directories, do not error out (consistent with mkdir -p)
         error = null

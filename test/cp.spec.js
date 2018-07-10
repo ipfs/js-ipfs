@@ -81,7 +81,22 @@ describe('cp', function () {
         throw new Error('No error was thrown for a non-existent file')
       })
       .catch(error => {
-        expect(error.message).to.contain('Directory already has entry by that name')
+        expect(error.message).to.contain('directory already has entry by that name')
+      })
+  })
+
+  it('refuses to copy a file to itself', () => {
+    const source = `/source-file-${Math.random()}.txt`
+
+    return mfs.write(source, bufferStream(100), {
+      create: true
+    })
+      .then(() => mfs.cp(source, source))
+      .then(() => {
+        throw new Error('No error was thrown for a non-existent file')
+      })
+      .catch(error => {
+        expect(error.message).to.contain('directory already has entry by that name')
       })
   })
 
