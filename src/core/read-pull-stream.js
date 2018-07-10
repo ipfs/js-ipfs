@@ -4,6 +4,7 @@ const exporter = require('ipfs-unixfs-engine').exporter
 const pull = require('pull-stream/pull')
 const collect = require('pull-stream/sinks/collect')
 const waterfall = require('async/waterfall')
+const UnixFs = require('ipfs-unixfs')
 const {
   traverseTo
 } = require('./utils')
@@ -30,9 +31,16 @@ module.exports = (ipfs) => {
         parents: false
       }, done),
       (result, done) => {
+        const node = result.node
+        const meta = UnixFs.unmarshal(node.data)
+
+        if (meta.type !== 'file') {
+          return done(new Error(`Error: ${path} was not a file`))
+        }
+
         waterfall([
           (next) => pull(
-            exporter(result.node.multihash, ipfs._ipld, {
+            exporter(node.multihash, ipfs._ipld, {
               offset: options.offset,
               length: options.length
             }),

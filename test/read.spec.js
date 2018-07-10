@@ -145,6 +145,15 @@ describe('read', function () {
           .then((result) => method.collect(result))
           .then((buffer) => expect(buffer).to.deep.equal(data.slice(offset, offset + length)))
       })
+
+      it('refuses to read a directory', () => {
+        const path = '/'
+
+        return method.read(path)
+          .catch(error => {
+            expect(error.message).to.contain('was not a file')
+          })
+      })
     })
   })
 })
