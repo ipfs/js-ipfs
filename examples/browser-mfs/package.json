@@ -1,0 +1,24 @@
+{
+  "name": "browser-mfs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "start": "npm run build && http-server dist -a 127.0.0.1 -p 8888"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "html-webpack-plugin": "^3.2.0",
+    "http-server": "~0.11.1",
+    "uglifyjs-webpack-plugin": "^1.2.0",
+    "webpack": "^4.15.1",
+    "webpack-cli": "^3.0.8"
+  },
+  "dependencies": {
+    "ipfs": "../../",
+    "mime-sniffer": "~0.0.3"
+  }
+}
