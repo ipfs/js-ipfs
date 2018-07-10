@@ -32,12 +32,12 @@
     "url": "https://github.com/ipfs/js-ipfs-mfs/issues"
   },
   "engines": {
-    "node": ">=6.0.0",
+    "node": ">=8.0.0",
     "npm": ">=3.0.0"
   },
   "homepage": "https://github.com/ipfs/js-ipfs-mfs#readme",
   "devDependencies": {
-    "aegir": "^14.0.0",
+    "aegir": "^15.0.0",
     "chai": "^4.1.2",
     "cross-env": "^5.1.4",
     "detect-webworker": "^1.0.0",
