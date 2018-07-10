@@ -1,3 +1,13 @@
+<a name="22.2.3"></a>
+## [22.2.3](https://github.com/ipfs/js-ipfs-api/compare/v22.2.2...v22.2.3) (2018-07-10)
+
+
+### Bug Fixes
+
+* Request logging broken in Electron ([#808](https://github.com/ipfs/js-ipfs-api/issues/808)) ([52298ae](https://github.com/ipfs/js-ipfs-api/commit/52298ae))
+
+
+
 <a name="22.2.2"></a>
 ## [22.2.2](https://github.com/ipfs/js-ipfs-api/compare/v22.2.1...v22.2.2) (2018-07-05)
 
