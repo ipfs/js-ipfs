@@ -1,3 +1,13 @@
+<a name="0.0.16"></a>
+## [0.0.16](https://github.com/ipfs/js-ipfs-mfs/compare/v0.0.15...v0.0.16) (2018-07-10)
+
+
+### Bug Fixes
+
+* handle copying files onto each other ([749b7a2](https://github.com/ipfs/js-ipfs-mfs/commit/749b7a2))
+
+
+
 <a name="0.0.15"></a>
 ## [0.0.15](https://github.com/ipfs/js-ipfs-mfs/compare/v0.0.14...v0.0.15) (2018-07-10)
 
