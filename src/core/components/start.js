@@ -10,9 +10,12 @@ module.exports = (self) => {
     series([
       (cb) => {
         switch (self.state.state()) {
-          case 'initialized': return self.preStart(cb)
-          case 'stopped': return cb()
-          default: cb(new Error(`Not able to start from state: ${self.state.state()}`))
+          case 'initialized':
+            return self.preStart(cb)
+          case 'stopped':
+            return cb()
+          default:
+            cb(new Error(`Not able to start from state: ${self.state.state()}`))
         }
       },
       (cb) => {
@@ -30,6 +33,7 @@ module.exports = (self) => {
 
         self._bitswap.start()
         self._blockService.setExchange(self._bitswap)
+        cb()
       }
     ], (err) => {
       if (err) {

@@ -53,11 +53,8 @@ module.exports = (self) => {
     (cb) => maybeOpenRepo(cb),
     (repoOpened, cb) => {
       if (!doInit || repoOpened) return cb(null, repoOpened)
-      // No repo, but need should init one
-      self.init(initOptions, (err) => {
-        if (err) return cb(err)
-        cb(null, true)
-      })
+      // No repo, but should init one
+      self.init(initOptions, (err) => cb(err, true))
     },
     (initialized, cb) => {
       if (initialized) {
