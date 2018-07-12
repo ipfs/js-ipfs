@@ -16,8 +16,7 @@ We try to frame our ongoing work using a process based on quarterly Objectives a
 - `P0` - @alanshaw -      A Daemon runs for 10 days without a crash 
 - `P2` - ??? -            One or more js-ipfs daemons are part of the Bootsrapper nodes 
 - `P0` - @hugomrdias -    js-ipfs can handle 1TB of data, both Node.js and Browser
-- `P1` - @achingbrain -   npm on IPFS over js-ipfs is a sound way to install deps and gets used for CI
-- `P1` - ??? -            
+- `P1` - @achingbrain -   npm on IPFS over js-ipfs is a sound way to install deps and gets used for CI     
 
 **New user/contributor experience is extraordinary**
 
