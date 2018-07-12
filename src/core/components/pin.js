@@ -19,7 +19,7 @@ function toB58String (hash) {
   return new CID(hash).toBaseEncodedString()
 }
 
-module.exports = function pin (self) {
+module.exports = (self) => {
   const repo = self._repo
   const dag = self.dag
   const pinset = createPinSet(dag)
