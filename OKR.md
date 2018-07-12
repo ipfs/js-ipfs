@@ -6,11 +6,9 @@ We try to frame our ongoing work using a process based on quarterly Objectives a
 
 **The Connectivity Magic story is figured out and solved**
 
-- A js-ipfs Daemon will always find other IPFS Daemons (js & go) in the LAN 
+- A js-ipfs Daemon will always find other IPFS Daemons (js & go) in the LAN (MulticastDNS) - @diasdavid
+- The DHT is enabled by default in js-ipfs - @diasdavid
 - A js-ipfs node (Browser & Desktop) always finds files that are on the Gateways
-- The rendezvous protocol is a sound solution for DApps (e.g. PeerPad & others)
-- The DHT is enabled by default in js-ipfs
-- Handles correctly a scenario where the number of Connections grows (through Conn Management Strategy)
 
 **Daemon is as reliable as it can be**
 
