@@ -8,7 +8,8 @@ We try to frame our ongoing work using a process based on quarterly Objectives a
 
 - `P1` - @diasdavid -     A js-ipfs Daemon will always find other IPFS Daemons (js & go) in the LAN (MulticastDNS)
 - `P0` - @diasdavid -     The DHT is enabled by default in js-ipfs
-- `P0` - ???        -      A js-ipfs node (Browser & Desktop) always finds files that are on the Gateways
+- `P1` - @diasdavid -     Circuit Relay Interop tests are merged 
+- `P0` - ???        -     A js-ipfs node (Browser & Desktop) always finds files that are on the Gateways
 
 **Daemon is as reliable as it can be**
 
@@ -16,6 +17,7 @@ We try to frame our ongoing work using a process based on quarterly Objectives a
 - `P2` - ??? -            One or more js-ipfs daemons are part of the Bootsrapper nodes 
 - `P0` - @hugomrdias -    js-ipfs can handle 1TB of data, both Node.js and Browser
 - `P1` - @achingbrain -   npm on IPFS over js-ipfs is a sound way to install deps and gets used for CI
+- `P1` - ??? -            
 
 **New user/contributor experience is extraordinary**
 
