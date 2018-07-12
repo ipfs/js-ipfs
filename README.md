@@ -552,7 +552,7 @@ const node = new IPFS({
   libp2p: {
     modules: {
       transport: [wstar],
-      discovery: [wstar.discovery]
+      peerDiscovery: [wstar.discovery]
     }
   }
 })
