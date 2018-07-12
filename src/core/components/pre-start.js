@@ -5,17 +5,38 @@ const PeerInfo = require('peer-info')
 const multiaddr = require('multiaddr')
 const waterfall = require('async/waterfall')
 const Keychain = require('libp2p-keychain')
+const extend = require('deep-extend')
 const NoKeychain = require('./no-keychain')
 /*
  * Load stuff from Repo into memory
  */
 module.exports = function preStart (self) {
   return (callback) => {
+    if (self.state.state() !== 'initialized') {
+      return callback(new Error('Not able to pre-start from state: ' + self.state.state()))
+    }
+
     self.log('pre-start')
+    self.state.preStart()
 
     const pass = self._options.pass
     waterfall([
       (cb) => self._repo.config.get(cb),
+      (config, cb) => {
+        if (!self._options.config) {
+          return cb(null, config)
+        }
+
+        extend(config, self._options.config)
+
+        self.config.replace(config, (err) => {
+          if (err) {
+            return cb(err)
+          }
+
+          cb(null, config)
+        })
+      },
       (config, cb) => {
         // Create keychain configuration, if needed.
         if (config.Keychain) {
@@ -78,7 +99,15 @@ module.exports = function preStart (self) {
         }
 
         cb()
+      },
+      (cb) => self.pin._load(cb)
+    ], (err) => {
+      if (err) {
+        return callback(err)
       }
-    ], callback)
+      self.log('pre-started')
+      self.state.preStarted()
+      callback()
+    })
   }
 }
