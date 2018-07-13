@@ -43,14 +43,6 @@ module.exports = (self) => {
     s('initialized')
   }
 
-  s.preStart = () => {
-    s('preStart')
-  }
-
-  s.preStarted = () => {
-    s('preStarted')
-  }
-
   s.stop = () => {
     s('stop')
   }
