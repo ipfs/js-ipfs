@@ -25,6 +25,8 @@ We try to frame our ongoing work using a process based on quarterly Objectives a
 - `P0` - @diasdavid -     Onboard 2 new full time contributors 
 - `P2` - ???        -     Complete the Awesome Endeavour, Documentation
 - `P2` - @alanshaw  -     Cut CI testing time in js-ipfs and js-ipfs-api by 50% (2x) 
+- `P0` - @alanshaw  -     js-ipfs fully support uses base32 CIDv1 by default
+
 
 Once these OKRs are finished, you will be able to find them on the [2018 Q3 IPFS OKRs Spreadsheet](https://docs.google.com/spreadsheets/d/19vjigg4locq4fO6JXyobS2yTx-k-fSzlFM5ngZDPDbQ/edit#gid=274358435)
 
