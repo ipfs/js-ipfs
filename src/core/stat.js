@@ -6,7 +6,7 @@ const {
   traverseTo
 } = require('./utils')
 const waterfall = require('async/waterfall')
-const log = require('debug')('mfs:stat')
+const log = require('debug')('ipfs:mfs:stat')
 
 const defaultOptions = {
   hash: false,

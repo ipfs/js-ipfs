@@ -2,7 +2,7 @@
 
 const waterfall = require('async/waterfall')
 const CID = require('cids')
-const log = require('debug')('mfs:utils:load-node')
+const log = require('debug')('ipfs:mfs:utils:load-node')
 const bs58 = require('bs58')
 
 const loadNode = (ipfs, cid, callback) => {

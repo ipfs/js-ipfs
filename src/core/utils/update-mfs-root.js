@@ -1,7 +1,7 @@
 'use strict'
 
 const bs58 = require('bs58')
-const log = require('debug')('mfs:utils:update-mfs:root')
+const log = require('debug')('ipfs:mfs:utils:update-mfs:root')
 const waterfall = require('async/waterfall')
 const {
   MFS_ROOT_KEY

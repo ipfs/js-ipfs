@@ -13,7 +13,7 @@ const {
   limitStreamBytes
 } = require('../utils')
 const values = require('pull-stream/sources/values')
-const log = require('debug')('mfs:write')
+const log = require('debug')('ipfs:mfs:write')
 const bs58 = require('bs58')
 const importNode = require('./import-node')
 const updateNode = require('./update-node')

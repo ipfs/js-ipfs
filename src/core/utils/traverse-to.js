@@ -2,7 +2,7 @@
 
 const bs58 = require('bs58')
 const CID = require('cids')
-const log = require('debug')('mfs:utils:traverse-to')
+const log = require('debug')('ipfs:mfs:utils:traverse-to')
 const UnixFS = require('ipfs-unixfs')
 const waterfall = require('async/waterfall')
 const reduce = require('async/reduce')

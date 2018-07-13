@@ -1,7 +1,7 @@
 'use strict'
 
 const mortice = require('mortice')
-const log = require('debug')('mfs:lock')
+const log = require('debug')('ipfs:mfs:lock')
 
 module.exports = (repoOwner) => {
   const mutex = mortice({

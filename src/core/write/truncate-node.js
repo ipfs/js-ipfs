@@ -6,7 +6,7 @@ const pull = require('pull-stream/pull')
 const values = require('pull-stream/sources/values')
 const asyncMap = require('pull-stream/throughs/async-map')
 const collect = require('pull-stream/sinks/collect')
-const log = require('debug')('mfs:write:truncate-node')
+const log = require('debug')('ipfs:mfs:write:truncate-node')
 const {
   loadNode
 } = require('../utils')

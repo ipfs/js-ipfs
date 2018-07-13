@@ -6,7 +6,7 @@ const values = require('pull-stream/sources/values')
 const collect = require('pull-stream/sinks/collect')
 const importer = require('ipfs-unixfs-engine').importer
 const bs58 = require('bs58')
-const log = require('debug')('mfs:import-node')
+const log = require('debug')('ipfs:mfs:import-node')
 const {
   loadNode
 } = require('../utils')

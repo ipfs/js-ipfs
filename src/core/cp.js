@@ -12,7 +12,7 @@ const {
   toSourcesAndDestination
 } = require('./utils')
 const stat = require('./stat')
-const log = require('debug')('mfs:cp')
+const log = require('debug')('ipfs:mfs:cp')
 
 const defaultOptions = {
   parents: false,

@@ -8,7 +8,7 @@ const UnixFs = require('ipfs-unixfs')
 const {
   traverseTo
 } = require('./utils')
-const log = require('debug')('mfs:read-pull-stream')
+const log = require('debug')('ipfs:mfs:read-pull-stream')
 
 const defaultOptions = {
   offset: 0,

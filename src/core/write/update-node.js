@@ -12,7 +12,7 @@ const map = require('pull-stream/throughs/map')
 const filter = require('pull-stream/throughs/filter')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
-const log = require('debug')('mfs:write:update-node')
+const log = require('debug')('ipfs:mfs:write:update-node')
 const {
   limitStreamBytes,
   countStreamBytes,

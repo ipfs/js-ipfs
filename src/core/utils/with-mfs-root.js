@@ -2,7 +2,7 @@
 
 const bs58 = require('bs58')
 const CID = require('cids')
-const log = require('debug')('mfs:utils:with-mfs-root')
+const log = require('debug')('ipfs:mfs:utils:with-mfs-root')
 const waterfall = require('async/waterfall')
 
 const {

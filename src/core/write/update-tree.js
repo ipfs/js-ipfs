@@ -7,7 +7,7 @@ const asyncMap = require('pull-stream/throughs/async-map')
 const filter = require('pull-stream/throughs/filter')
 const collect = require('pull-stream/sinks/collect')
 const paramap = require('pull-paramap')
-const log = require('debug')('mfs:write:update-tree')
+const log = require('debug')('ipfs:mfs:write:update-tree')
 const UnixFs = require('ipfs-unixfs')
 const {
   unmarshal

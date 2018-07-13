@@ -1,7 +1,7 @@
 'use strict'
 
 const waterfall = require('async/waterfall')
-const log = require('debug')('mfs:mkdir')
+const log = require('debug')('ipfs:mfs:mkdir')
 const {
   updateMfsRoot,
   updateTree,
