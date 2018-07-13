@@ -21,6 +21,13 @@ module.exports = function preStart (self) {
 
     const pass = self._options.pass
     waterfall([
+      (cb) => {
+        // The repo may be closed if previously stopped
+        if (self._repo.closed) {
+          return self._repo.open(cb)
+        }
+        cb()
+      },
       (cb) => self._repo.config.get(cb),
       (config, cb) => {
         if (!self._options.config) {

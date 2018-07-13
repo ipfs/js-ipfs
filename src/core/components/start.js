@@ -19,6 +19,13 @@ module.exports = (self) => {
         }
       },
       (cb) => {
+        // The repo may be closed if previously stopped
+        if (self._repo.closed) {
+          return self._repo.open(cb)
+        }
+        cb()
+      },
+      (cb) => {
         self.log('starting')
         self.state.start()
         cb()

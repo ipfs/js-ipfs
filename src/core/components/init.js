@@ -27,7 +27,7 @@ module.exports = function init (self) {
       callback(null, res)
     }
 
-    if (self.state.state() !== 'uninitalized') {
+    if (self.state.state() !== 'uninitialized') {
       return done(new Error('Not able to init from state: ' + self.state.state()))
     }
 
