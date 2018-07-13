@@ -10,9 +10,6 @@ module.exports = (self) => {
   const doInit = options.init
   const doStart = options.start
 
-  const customInitOptions = typeof options.init === 'object' ? options.init : {}
-  const initOptions = Object.assign({ bits: 2048, pass: self._options.pass }, customInitOptions)
-
   // Do the actual boot sequence
   waterfall([
     // Checks if a repo exists, and if so opens it
@@ -30,27 +27,21 @@ module.exports = (self) => {
         cb(null, true)
       })
     },
-    // Initialize the repo if it was not opened
     (repoOpened, cb) => {
+      // Init with existing initialized, opened, repo
       if (repoOpened) {
-        self.log('initialized')
-        self.state.initialized()
-        return cb()
+        return self.init({ repo: self._repo }, (err) => cb(err))
       }
 
-      if (!doInit) {
-        return cb()
+      if (doInit) {
+        const initOptions = Object.assign(
+          { bits: 2048, pass: self._options.pass },
+          typeof options.init === 'object' ? options.init : {}
+        )
+        return self.init(initOptions, (err) => cb(err))
       }
 
-      // No repo, but should init one
-      self.init(initOptions, (err) => cb(err))
-    },
-    (cb) => {
-      // No problem, we can't preStart until we're initialized
-      if (!self.state.state() !== 'initialized') {
-        return cb()
-      }
-      self.preStart(cb)
+      cb()
     },
     (cb) => {
       // No problem, we don't have to start the node

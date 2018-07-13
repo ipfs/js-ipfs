@@ -12,22 +12,10 @@ const NoKeychain = require('./no-keychain')
  */
 module.exports = function preStart (self) {
   return (callback) => {
-    if (self.state.state() !== 'initialized') {
-      return callback(new Error('Not able to pre-start from state: ' + self.state.state()))
-    }
-
     self.log('pre-start')
-    self.state.preStart()
 
     const pass = self._options.pass
     waterfall([
-      (cb) => {
-        // The repo may be closed if previously stopped
-        if (self._repo.closed) {
-          return self._repo.open(cb)
-        }
-        cb()
-      },
       (cb) => self._repo.config.get(cb),
       (config, cb) => {
         if (!self._options.config) {
@@ -108,13 +96,6 @@ module.exports = function preStart (self) {
         cb()
       },
       (cb) => self.pin._load(cb)
-    ], (err) => {
-      if (err) {
-        return callback(err)
-      }
-      self.log('pre-started')
-      self.state.preStarted()
-      callback()
-    })
+    ], callback)
   }
 }

@@ -10,16 +10,10 @@ module.exports = (self) => {
   const s = fsm('uninitialized', {
     uninitialized: {
       init: 'initializing',
-      initialized: 'initialized'
+      initialized: 'stopped'
     },
     initializing: {
-      initialized: 'initialized'
-    },
-    initialized: {
-      preStart: 'preStarting'
-    },
-    preStarting: {
-      preStarted: 'stopped'
+      initialized: 'stopped'
     },
     stopped: {
       start: 'starting'
