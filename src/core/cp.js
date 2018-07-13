@@ -58,7 +58,7 @@ module.exports = (ipfs) => {
         return copyToDirectory(ipfs, sources, destination, options, callback)
       }
 
-      callback(new Error('Error: directory already has entry by that name'))
+      callback(new Error('directory already has entry by that name'))
     })
   }
 }
@@ -70,7 +70,7 @@ const copyToFile = (ipfs, source, destination, options, callback) => {
         (next) => stat(ipfs)(source.path, options, next),
         (next) => stat(ipfs)(destination.path, options, (error) => {
           if (!error) {
-            return next(new Error('Error: directory already has entry by that name'))
+            return next(new Error('directory already has entry by that name'))
           }
 
           next()
@@ -125,7 +125,7 @@ const copyToDirectory = (ipfs, sources, destination, options, callback) => {
               return (cb) => {
                 stat(ipfs)(`${destination.path}/${source.name}`, options, (error) => {
                   if (!error) {
-                    return cb(new Error('Error: directory already has entry by that name'))
+                    return cb(new Error('directory already has entry by that name'))
                   }
 
                   cb()

@@ -86,6 +86,17 @@ describe('mkdir', function () {
       })
   })
 
+  it('does not error when creating a directory that already exists and parents is true', () => {
+    const path = '/qux/quux/quuux'
+
+    return mfs.mkdir(path, {
+      parents: true
+    })
+      .then(() => mfs.mkdir(path, {
+        parents: true
+      }))
+  })
+
   it('creates a nested directory when -p is true', function () {
     const path = '/foo/bar/baz'
 

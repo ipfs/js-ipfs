@@ -29,8 +29,9 @@ module.exports = {
     flush: {
       alias: 'f',
       type: 'boolean',
+      default: true,
       coerce: asBoolean,
-      describe: 'Weird undocumented option'
+      describe: 'Flush the changes to disk immediately'
     }
   },
 

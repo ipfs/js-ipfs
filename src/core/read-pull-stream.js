@@ -35,7 +35,7 @@ module.exports = (ipfs) => {
         const meta = UnixFs.unmarshal(node.data)
 
         if (meta.type !== 'file') {
-          return done(new Error(`Error: ${path} was not a file`))
+          return done(new Error(`${path} was not a file`))
         }
 
         waterfall([
