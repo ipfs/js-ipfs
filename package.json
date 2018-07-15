@@ -72,25 +72,21 @@
     "url": "https://github.com/ipfs/js-ipfs-api"
   },
   "devDependencies": {
-    "aegir": "^14.0.0",
+    "aegir": "^15.0.0",
     "browser-process-platform": "~0.1.1",
     "chai": "^4.1.2",
     "cross-env": "^5.2.0",
     "dirty-chai": "^2.0.1",
     "eslint-plugin-react": "^7.10.0",
-    "go-ipfs-dep": "~0.4.15",
+    "go-ipfs-dep": "~0.4.16",
     "gulp": "^3.9.1",
     "interface-ipfs-core": "~0.72.1",
-    "ipfsd-ctl": "~0.37.5",
+    "ipfsd-ctl": "~0.38.0",
     "pull-stream": "^3.6.8",
     "socket.io": "^2.1.1",
     "socket.io-client": "^2.1.1",
     "stream-equal": "^1.1.1"
   },
-  "pre-push": [
-    "lint",
-    "test"
-  ],
   "keywords": [
     "ipfs"
   ],
