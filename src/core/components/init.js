@@ -22,17 +22,30 @@ module.exports = function init (self) {
         return callback(err)
       }
 
-      self.state.initialized()
-      self.emit('init')
-      callback(null, res)
+      self.preStart((err) => {
+        if (err) {
+          self.emit('error', err)
+          return callback(err)
+        }
+
+        self.state.initialized()
+        self.emit('init')
+        callback(null, res)
+      })
     }
 
-    if (self.state.state() !== 'uninitalized') {
+    if (self.state.state() !== 'uninitialized') {
       return done(new Error('Not able to init from state: ' + self.state.state()))
     }
 
     self.state.init()
     self.log('init')
+
+    // An initialized, open repo was passed, use this one!
+    if (opts.repo) {
+      self._repo = opts.repo
+      return done(null, true)
+    }
 
     opts.emptyRepo = opts.emptyRepo || false
     opts.bits = Number(opts.bits) || 2048

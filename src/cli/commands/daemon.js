@@ -35,7 +35,7 @@ module.exports = {
     httpAPI = new HttpAPI(process.env.IPFS_PATH, null, argv)
 
     httpAPI.start((err) => {
-      if (err && err.code === 'ENOENT' && err.message.match(/Uninitalized repo/i)) {
+      if (err && err.code === 'ENOENT' && err.message.match(/uninitialized/i)) {
         print('Error: no initialized ipfs repo found in ' + repoPath)
         print('please run: jsipfs init')
         process.exit(1)

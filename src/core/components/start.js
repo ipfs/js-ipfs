@@ -7,8 +7,6 @@ const promisify = require('promisify-es6')
 
 module.exports = (self) => {
   return promisify((callback) => {
-    callback = callback || function noop () {}
-
     const done = (err) => {
       if (err) {
         setImmediate(() => self.emit('error', err))
@@ -21,7 +19,7 @@ module.exports = (self) => {
     }
 
     if (self.state.state() !== 'stopped') {
-      return done(new Error('Not able to start from state: ' + self.state.state()))
+      return done(new Error(`Not able to start from state: ${self.state.state()}`))
     }
 
     self.log('starting')
@@ -29,24 +27,23 @@ module.exports = (self) => {
 
     series([
       (cb) => {
+        // The repo may be closed if previously stopped
         self._repo.closed
           ? self._repo.open(cb)
           : cb()
       },
-      (cb) => self.preStart(cb),
-      (cb) => self.libp2p.start(cb)
-    ], (err) => {
-      if (err) { return done(err) }
+      (cb) => self.libp2p.start(cb),
+      (cb) => {
+        self._bitswap = new Bitswap(
+          self._libp2pNode,
+          self._repo.blocks,
+          { statsEnabled: true }
+        )
 
-      self._bitswap = new Bitswap(
-        self._libp2pNode,
-        self._repo.blocks,
-        { statsEnabled: true }
-      )
-
-      self._bitswap.start()
-      self._blockService.setExchange(self._bitswap)
-      done()
-    })
+        self._bitswap.start()
+        self._blockService.setExchange(self._bitswap)
+        cb()
+      }
+    ], done)
   })
 }

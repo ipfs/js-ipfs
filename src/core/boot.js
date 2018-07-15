@@ -1,8 +1,6 @@
 'use strict'
 
 const waterfall = require('async/waterfall')
-const series = require('async/series')
-const extend = require('deep-extend')
 const RepoErrors = require('ipfs-repo').errors
 
 // Boot an IPFS node depending on the options set
@@ -11,110 +9,79 @@ module.exports = (self) => {
   const options = self._options
   const doInit = options.init
   const doStart = options.start
-  const config = options.config
-  const setConfig = config && typeof config === 'object'
-  const repoOpen = !self._repo.closed
 
-  const customInitOptions = typeof options.init === 'object' ? options.init : {}
-  const initOptions = Object.assign({ bits: 2048, pass: self._options.pass }, customInitOptions)
+  // Do the actual boot sequence
+  waterfall([
+    // Checks if a repo exists, and if so opens it
+    // Will return callback with a bool indicating the existence
+    // of the repo
+    (cb) => {
+      // nothing to do
+      if (!self._repo.closed) {
+        return cb(null, true)
+      }
 
-  // Checks if a repo exists, and if so opens it
-  // Will return callback with a bool indicating the existence
-  // of the repo
-  const maybeOpenRepo = (cb) => {
-    // nothing to do
-    if (repoOpen) {
-      return cb(null, true)
-    }
-
-    series([
-      (cb) => self._repo.open(cb),
-      (cb) => self.pin._load(cb),
-      (cb) => self.preStart(cb),
-      (cb) => {
-        self.log('initialized')
-        self.state.initialized()
+      self._repo.open((err, res) => {
+        if (isRepoUninitializedError(err)) return cb(null, false)
+        if (err) return cb(err)
         cb(null, true)
+      })
+    },
+    (repoOpened, cb) => {
+      // Init with existing initialized, opened, repo
+      if (repoOpened) {
+        return self.init({ repo: self._repo }, (err) => cb(err))
       }
-    ], (err, res) => {
-      if (err) {
-        // If the error is that no repo exists,
-        // which happens when the version file is not found
-        // we just want to signal that no repo exist, not
-        // fail the whole process.
 
-        // Use standardized errors as much as possible
-        if (err.code === RepoErrors.ERR_REPO_NOT_INITIALIZED) {
-          return cb(null, false)
-        }
-
-        // TODO: As error codes continue to be standardized, this logic can be phase out;
-        // it is here to maintain compatability
-        if (err.message.match(/not found/) || // indexeddb
-          err.message.match(/ENOENT/) || // fs
-          err.message.match(/No value/) // memory
-        ) {
-          return cb(null, false)
-        }
-        return cb(err)
+      if (doInit) {
+        const initOptions = Object.assign(
+          { bits: 2048, pass: self._options.pass },
+          typeof options.init === 'object' ? options.init : {}
+        )
+        return self.init(initOptions, (err) => cb(err))
       }
-      cb(null, res)
-    })
-  }
 
-  const done = (err) => {
+      cb()
+    },
+    (cb) => {
+      // No problem, we don't have to start the node
+      if (!doStart) {
+        return cb()
+      }
+      self.start(cb)
+    }
+  ], (err) => {
     if (err) {
       return self.emit('error', err)
     }
-    self.log('boot:done')
+    self.log('booted')
     self.emit('ready')
+  })
+}
+
+function isRepoUninitializedError (err) {
+  if (!err) {
+    return false
   }
 
-  const tasks = []
+  // If the error is that no repo exists,
+  // which happens when the version file is not found
+  // we just want to signal that no repo exist, not
+  // fail the whole process.
 
-  // check if there as a repo and if so open it
-  maybeOpenRepo((err, hasRepo) => {
-    if (err) {
-      return done(err)
-    }
+  // Use standardized errors as much as possible
+  if (err.code === RepoErrors.ERR_REPO_NOT_INITIALIZED) {
+    return true
+  }
 
-    // No repo, but need should init one
-    if (doInit && !hasRepo) {
-      tasks.push((cb) => self.init(initOptions, cb))
-      // we know we will have a repo for all follwing tasks
-      // if the above succeeds
-      hasRepo = true
-    }
+  // TODO: As error codes continue to be standardized, this logic can be phase out;
+  // it is here to maintain compatability
+  if (err.message.match(/not found/) || // indexeddb
+    err.message.match(/ENOENT/) || // fs
+    err.message.match(/No value/) // memory
+  ) {
+    return true
+  }
 
-    // Need to set config
-    if (setConfig) {
-      if (!hasRepo) {
-        console.log('WARNING, trying to set config on uninitialized repo, maybe forgot to set "init: true"')
-      } else {
-        tasks.push((cb) => {
-          waterfall([
-            (cb) => self.config.get(cb),
-            (config, cb) => {
-              extend(config, options.config)
-
-              self.config.replace(config, cb)
-            }
-          ], cb)
-        })
-      }
-    }
-
-    // Need to start up the node
-    if (doStart) {
-      if (!hasRepo) {
-        console.log('WARNING, trying to start ipfs node on uninitialized repo, maybe forgot to set "init: true"')
-        return done(new Error('Uninitalized repo'))
-      } else {
-        tasks.push((cb) => self.start(cb))
-      }
-    }
-
-    // Do the actual boot sequence
-    series(tasks, done)
-  })
+  return false
 }
