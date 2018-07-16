@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const each = require('async/each')
+const eachSeries = require('async/eachSeries')
 const timesSeries = require('async/timesSeries')
 const { getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -42,7 +42,7 @@ module.exports = (createCommon, options) => {
         ipfs.pubsub.subscribe(someTopic, handler, (err) => cb(err, handler))
       }, (err, handlers) => {
         expect(err).to.not.exist()
-        each(
+        eachSeries(
           handlers,
           (handler, cb) => ipfs.pubsub.unsubscribe(someTopic, handler, cb),
           (err) => {

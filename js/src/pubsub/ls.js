@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 'use strict'
 
-const each = require('async/each')
 const eachSeries = require('async/eachSeries')
 const { getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -80,7 +79,7 @@ module.exports = (createCommon, options) => {
           expect(list.sort())
             .to.eql(topics.map((t) => t.name).sort())
 
-          each(topics, (t, cb) => {
+          eachSeries(topics, (t, cb) => {
             ipfs.pubsub.unsubscribe(t.name, t.handler, cb)
           }, done)
         })
