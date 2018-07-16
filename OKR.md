@@ -6,8 +6,8 @@ We try to frame our ongoing work using a process based on quarterly Objectives a
 
 **The Connectivity Magic story is figured out and solved**
 
-- `P1` - @diasdavid -     A js-ipfs Daemon will always find other IPFS Daemons (js & go) in the LAN (MulticastDNS)
 - `P0` - @diasdavid -     The DHT is enabled by default in js-ipfs
+- `P1` - @diasdavid -     A js-ipfs Daemon will always find other IPFS Daemons (js & go) in the LAN (MulticastDNS)
 - `P1` - @diasdavid -     Circuit Relay Interop tests are finalized and merged (depends on go-ipfs 0.4.16)
 - `P0` - ???        -     A js-ipfs node (Browser & Desktop) always finds files that are on the Gateways
 
@@ -16,17 +16,15 @@ We try to frame our ongoing work using a process based on quarterly Objectives a
 - `P0` - @alanshaw -      A Daemon runs for 10 days without a crash 
 - `P2` - ??? -            One or more js-ipfs daemons are part of the Bootsrapper nodes 
 - `P0` - @hugomrdias -    js-ipfs can handle 1TB of data, both Node.js and Browser
-- `P1` - @achingbrain -   npm on IPFS over js-ipfs is a sound way to install deps and gets used for CI
-- `P?` - ??? -            <Something on integration testing between Desktop, Browser and go-ipfs nodes with multiple network configs>
+- `P0` - @achingbrain -   npm on IPFS over js-ipfs is a sound way to install deps and gets used for CI
+- `P0` - @achingbrain -   IPTB runs js-ipfs daemons and browser nodes. A IPTB interop test hardness exists
 
 **New user/contributor experience is extraordinary**
 
 - `P0` - @diasdavid -     js.ipfs.io is finished and published 
 - `P0` - @diasdavid -     Onboard 2 new full time contributors 
-- `P2` - ???        -     Complete the Awesome Endeavour, Documentation
-- `P2` - @alanshaw  -     Cut CI testing time in js-ipfs and js-ipfs-api by 50% (2x) 
 - `P0` - @alanshaw  -     js-ipfs fully support uses base32 CIDv1 by default
-
+- `P2` - @alanshaw  -     Cut CI testing time in js-ipfs and js-ipfs-api by 50% (2x) 
 
 Once these OKRs are finished, you will be able to find them on the [2018 Q3 IPFS OKRs Spreadsheet](https://docs.google.com/spreadsheets/d/19vjigg4locq4fO6JXyobS2yTx-k-fSzlFM5ngZDPDbQ/edit#gid=274358435)
 
