@@ -64,7 +64,9 @@ describe('.name', () => {
     ], done)
   })
 
-  after((done) => {
+  after(function (done) {
+    this.timeout(10 * 1000)
+
     parallel([
       (cb) => {
         if (!ipfsd) return cb()
