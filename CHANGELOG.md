@@ -1,3 +1,13 @@
+<a name="0.72.1"></a>
+## [0.72.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.72.0...v0.72.1) (2018-07-16)
+
+
+### Bug Fixes
+
+* unsubscribe in series for go-ipfs ([#326](https://github.com/ipfs/interface-ipfs-core/issues/326)) ([8e487da](https://github.com/ipfs/interface-ipfs-core/commit/8e487da))
+
+
+
 <a name="0.72.0"></a>
 # [0.72.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.71.0...v0.72.0) (2018-07-05)
 
