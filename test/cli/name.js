@@ -15,7 +15,7 @@ const df = DaemonFactory.create({ type: 'js' })
 
 const checkAll = (bits) => string => bits.every(bit => string.includes(bit))
 
-describe.only('name', () => {
+describe('name', () => {
   const passPhrase = hat()
   const pass = '--pass ' + passPhrase
   const name = 'test-key-' + hat()

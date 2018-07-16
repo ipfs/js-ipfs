@@ -12,7 +12,6 @@ const ERR_NO_COMPONENTS = 'ERR_NO_COMPONENTS'
 // resolves the given path by parsing out protocol-specific entries
 // (e.g. /ipns/<node-key>) and then going through the /ipfs/ entries and returning the final node
 const resolvePath = (ipfsNode, name, callback) => {
-  console.log('resolve path');
   // ipns path
   if (name.startsWith('/ipns/')) {
     log(`resolve ipns path ${name}`)

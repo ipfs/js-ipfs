@@ -99,14 +99,7 @@ module.exports = function name (self) {
         // const privateKey = results[2]
 
         // Start publishing process
-        self._ipns.publish(privateKey, value, pubLifetime, (err, res) => {
-          if (err) {
-            log.error(err)
-            callback(err)
-          }
-
-          callback(null, res)
-        })
+        self._ipns.publish(privateKey, value, pubLifetime, callback)
       })
     }),
 

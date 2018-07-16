@@ -101,7 +101,7 @@ class IpnsResolver {
 
     this.repo.datastore.get(ipnsKey, (err, dsVal) => {
       if (err) {
-        const error = 'local record requested was not found'
+        const error = `local record requested was not found for ${name} (${ipnsKey})`
 
         log.error(error)
         return callback(Object.assign(new Error(error), { code: ERR_NO_LOCAL_RECORD_FOUND }))

@@ -11,7 +11,7 @@ chai.use(dirtyChai)
 const checkAll = (bits) => string => bits.every(bit => string.includes(bit))
 
 module.exports = (http) => {
-  describe.only('/name', function () {
+  describe('/name', function () {
     const cid = 'QmbndGRXYRyfU41TUvc52gMrwq87JJg18QsDPcCeaMcM61'
     let api
 
