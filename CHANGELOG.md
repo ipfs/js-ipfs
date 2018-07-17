@@ -1,3 +1,15 @@
+<a name="22.2.4"></a>
+## [22.2.4](https://github.com/ipfs/js-ipfs-api/compare/v22.2.3...v22.2.4) (2018-07-17)
+
+
+### Bug Fixes
+
+* increase browserNoActivityTimeout to account for before ([328e338](https://github.com/ipfs/js-ipfs-api/commit/328e338))
+* increase timeout for .name after all ([3dc4313](https://github.com/ipfs/js-ipfs-api/commit/3dc4313))
+* missing debug dependency fixes [#809](https://github.com/ipfs/js-ipfs-api/issues/809) ([#810](https://github.com/ipfs/js-ipfs-api/issues/810)) ([0f1fe95](https://github.com/ipfs/js-ipfs-api/commit/0f1fe95))
+
+
+
 <a name="22.2.3"></a>
 ## [22.2.3](https://github.com/ipfs/js-ipfs-api/compare/v22.2.2...v22.2.3) (2018-07-10)
 
