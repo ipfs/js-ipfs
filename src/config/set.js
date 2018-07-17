@@ -12,9 +12,7 @@ module.exports = (send) => {
       return callback(new Error('Invalid key type'))
     }
 
-    if (typeof value !== 'object' &&
-      typeof value !== 'boolean' &&
-      typeof value !== 'string') {
+    if (value === undefined || Buffer.isBuffer(value)) {
       return callback(new Error('Invalid value type'))
     }
 
