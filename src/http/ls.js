@@ -13,11 +13,13 @@ const mfsLs = (api) => {
         } = request.server.app
         const {
           arg,
-          long
+          long,
+          cidBase
         } = request.query
 
         return ipfs.files.ls(arg, {
-          long
+          long,
+          cidBase
         })
           .then(files => {
             reply({
@@ -44,7 +46,8 @@ const mfsLs = (api) => {
         },
         query: Joi.object().keys({
           arg: Joi.string().default('/'),
-          long: Joi.boolean().default(false)
+          long: Joi.boolean().default(false),
+          cidBase: Joi.string().default('base58btc')
         })
           .rename('l', 'long', {
             override: true,

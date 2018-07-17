@@ -9,7 +9,8 @@ const loadFixture = require('aegir/fixtures')
 
 const {
   createMfs,
-  EMPTY_DIRECTORY_HASH
+  EMPTY_DIRECTORY_HASH,
+  EMPTY_DIRECTORY_HASH_BASE32
 } = require('./helpers')
 
 describe('stat', function () {
@@ -86,6 +87,20 @@ describe('stat', function () {
       })
   })
 
+  it('returns only a base32 hash', () => {
+    const path = `/directory-${Math.random()}`
+
+    return mfs.mkdir(path)
+      .then(() => mfs.stat(path, {
+        hash: true,
+        cidBase: 'base32'
+      }))
+      .then(stats => {
+        expect(Object.keys(stats).length).to.equal(1)
+        expect(stats.hash).to.equal(EMPTY_DIRECTORY_HASH_BASE32)
+      })
+  })
+
   it('returns only the size', () => {
     const path = `/directory-${Math.random()}`
 
@@ -128,6 +143,25 @@ describe('stat', function () {
     })
       .then(() => mfs.stat(filePath))
       .then((stats) => {
+        expect(stats.size).to.equal(largeFile.length)
+        expect(stats.cumulativeSize).to.equal(490800)
+        expect(stats.blocks).to.equal(2)
+        expect(stats.type).to.equal('file')
+      })
+  })
+
+  it('stats a large file with base32', () => {
+    const filePath = '/stat/large-file.txt'
+
+    return mfs.write(filePath, largeFile, {
+      create: true,
+      parents: true
+    })
+      .then(() => mfs.stat(filePath, {
+        cidBase: 'base32'
+      }))
+      .then((stats) => {
+        expect(stats.hash.startsWith('b')).to.equal(true)
         expect(stats.size).to.equal(largeFile.length)
         expect(stats.cumulativeSize).to.equal(490800)
         expect(stats.blocks).to.equal(2)

@@ -20,6 +20,11 @@ module.exports = {
       default: false,
       coerce: asBoolean,
       describe: 'Use long listing format.'
+    },
+    cidBase: {
+      alias: 'cid-base',
+      default: 'base58btc',
+      describe: 'CID base to use.'
     }
   },
 
@@ -27,12 +32,14 @@ module.exports = {
     let {
       path,
       ipfs,
-      long
+      long,
+      cidBase
     } = argv
 
     argv.resolve(
       ipfs.files.ls(path || FILE_SEPARATOR, {
-        long
+        long,
+        cidBase
       })
         .then(files => {
           if (long) {

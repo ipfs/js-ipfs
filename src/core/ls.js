@@ -2,17 +2,18 @@
 
 const waterfall = require('async/waterfall')
 const map = require('async/map')
-const bs58 = require('bs58')
 const UnixFs = require('ipfs-unixfs')
 const {
   traverseTo,
   loadNode,
+  formatCid,
   FILE_SEPARATOR,
   FILE_TYPES
 } = require('./utils')
 
 const defaultOptions = {
-  long: false
+  long: false,
+  cidBase: 'base58btc'
 }
 
 module.exports = (ipfs) => {
@@ -47,7 +48,7 @@ module.exports = (ipfs) => {
                 done(null, {
                   name: link.name,
                   type: meta.type,
-                  hash: bs58.encode(node.multihash),
+                  hash: formatCid(node.multihash, options.cidBase),
                   size: meta.fileSize() || 0
                 })
               }
@@ -57,7 +58,7 @@ module.exports = (ipfs) => {
           cb(null, [{
             name: result.name,
             type: meta.type,
-            hash: bs58.encode(result.node.multihash),
+            hash: formatCid(result.node.multihash, options.cidBase),
             size: meta.fileSize() || 0
           }])
         }

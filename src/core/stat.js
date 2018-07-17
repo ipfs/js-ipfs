@@ -1,9 +1,9 @@
 'use strict'
 
 const unmarshal = require('ipfs-unixfs').unmarshal
-const bs58 = require('bs58')
 const {
-  traverseTo
+  traverseTo,
+  formatCid
 } = require('./utils')
 const waterfall = require('async/waterfall')
 const log = require('debug')('ipfs:mfs:stat')
@@ -11,7 +11,8 @@ const log = require('debug')('ipfs:mfs:stat')
 const defaultOptions = {
   hash: false,
   size: false,
-  withLocal: false
+  withLocal: false,
+  cidBase: 'base58btc'
 }
 
 module.exports = (ipfs) => {
@@ -32,7 +33,7 @@ module.exports = (ipfs) => {
       ({ node }, done) => {
         if (options.hash) {
           return done(null, {
-            hash: bs58.encode(node.multihash)
+            hash: formatCid(node.multihash, options.cidBase)
           })
         } else if (options.size) {
           return done(null, {
@@ -49,7 +50,7 @@ module.exports = (ipfs) => {
         }
 
         done(null, {
-          hash: bs58.encode(node.multihash),
+          hash: formatCid(node.multihash, options.cidBase),
           size: meta.fileSize() || 0,
           cumulativeSize: node.size,
           blocks: blocks,

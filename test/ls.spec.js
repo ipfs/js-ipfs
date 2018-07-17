@@ -139,6 +139,26 @@ describe('ls', function () {
       })
   })
 
+  it('lists a file with a base32 hash', () => {
+    const fileName = `small-file-${Math.random()}.txt`
+    const content = Buffer.from('Hello world')
+
+    return mfs.write(`/${fileName}`, content, {
+      create: true
+    })
+      .then(() => mfs.ls(`/${fileName}`, {
+        long: true,
+        cidBase: 'base32'
+      }))
+      .then(files => {
+        expect(files.length).to.equal(1)
+        expect(files[0].name).to.equal(fileName)
+        expect(files[0].type).to.equal(FILE_TYPES.file)
+        expect(files[0].size).to.equal(content.length)
+        expect(files[0].hash.startsWith('b')).to.equal(true)
+      })
+  })
+
   it('fails to list non-existent file', () => {
     return mfs.ls('/i-do-not-exist')
       .then(() => {

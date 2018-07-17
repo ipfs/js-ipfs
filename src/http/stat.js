@@ -15,13 +15,15 @@ const mfsStat = (api) => {
           arg,
           hash,
           size,
-          withLocal
+          withLocal,
+          cidBase
         } = request.query
 
         return ipfs.files.stat(arg, {
           hash,
           size,
-          withLocal
+          withLocal,
+          cidBase
         })
           .then(stats => {
             reply({
@@ -52,7 +54,8 @@ const mfsStat = (api) => {
           arg: Joi.string().default('/'),
           hash: Joi.boolean().default(false),
           size: Joi.boolean().default(false),
-          withLocal: Joi.boolean().default(false)
+          withLocal: Joi.boolean().default(false),
+          cidBase: Joi.string().default('base58btc')
         })
       }
     }
