@@ -1,9 +1,9 @@
 'use strict'
 
-const multihashes = require('multihashes')
 const promisify = require('promisify-es6')
 const map = require('async/map')
 const isIpfs = require('is-ipfs')
+const CID = require('cids')
 
 exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'ipfs daemon\' first.'
 
@@ -61,12 +61,15 @@ const resolvePath = promisify(function (objectAPI, ipfsPaths, callback) {
 
   map(ipfsPaths, (path, cb) => {
     if (typeof path !== 'string') {
+      let cid
+
       try {
-        multihashes.validate(path)
+        cid = new CID(path)
       } catch (err) {
         return cb(err)
       }
-      return cb(null, path)
+
+      return cb(null, cid.buffer)
     }
 
     let parsedPath
@@ -76,10 +79,10 @@ const resolvePath = promisify(function (objectAPI, ipfsPaths, callback) {
       return cb(err)
     }
 
-    const rootHash = multihashes.fromB58String(parsedPath.hash)
+    const rootHash = new CID(parsedPath.hash)
     const rootLinks = parsedPath.links
     if (!rootLinks.length) {
-      return cb(null, rootHash)
+      return cb(null, rootHash.buffer)
     }
 
     objectAPI.get(rootHash, follow.bind(null, rootLinks))
