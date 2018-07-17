@@ -132,15 +132,14 @@ module.exports = (createCommon, options) => {
       })
     })
 
-    // TODO: (achingbrain) - Not yet supported in js-ipfs or go-ipfs yet')
-    it.skip('should stat outside of mfs', function (done) {
+    it('should stat outside of mfs', function (done) {
       ipfs.files.stat('/ipfs/' + fixtures.smallFile.cid, (err, stat) => {
         expect(err).to.not.exist()
         expect(stat).to.eql({
           type: 'file',
           blocks: 0,
           size: 12,
-          hash: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
+          hash: fixtures.smallFile.cid,
           cumulativeSize: 20,
           withLocality: false,
           local: undefined,
