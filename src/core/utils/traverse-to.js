@@ -1,6 +1,5 @@
 'use strict'
 
-const bs58 = require('bs58')
 const CID = require('cids')
 const log = require('debug')('ipfs:mfs:utils:traverse-to')
 const UnixFS = require('ipfs-unixfs')
@@ -77,8 +76,6 @@ const traverseToMfsObject = (ipfs, path, options, callback) => {
             node: rootNode,
             parent: null
           }, (parent, {pathSegment, index}, done) => {
-            log(`Looking for ${pathSegment} in ${parent.name} ${bs58.encode(parent.node.multihash)}`)
-
             const existingLink = parent.node.links.find(link => link.name === pathSegment)
 
             if (!existingLink) {
@@ -114,6 +111,7 @@ const traverseToMfsObject = (ipfs, path, options, callback) => {
                     next(error, {
                       name: pathSegment,
                       node: emptyDirectory,
+                      cid: new CID(emptyDirectory.multihash),
                       parent: parent
                     })
                   })
@@ -126,43 +124,31 @@ const traverseToMfsObject = (ipfs, path, options, callback) => {
             }
 
             let hash = existingLink.hash || existingLink.multihash
+            const cid = new CID(hash)
 
             // child existed, fetch it
-            ipfs.dag.get(new CID(hash), (error, result) => {
-              log(`Loaded ${bs58.encode(result.value.multihash)} from ${bs58.encode(hash)}`)
+            ipfs.dag.get(cid, (error, result) => {
+              if (error) {
+                return done(error)
+              }
+
+              const node = result.value
+
               const child = {
                 name: pathSegment,
-                node: result && result.value,
+                node,
                 parent: parent
               }
 
               trail.push(child)
 
-              done(error, child)
+              done(null, child)
             })
           }, cb)
         }
       ], done)
     }
-  ], (error, trail) => {
-    if (!error) {
-      let node = trail
-      let path = []
-
-      while (node) {
-        path.push(`${node.name} ${bs58.encode(node.node.multihash)}`)
-        node = node.parent
-      }
-
-      log('Path:')
-
-      path
-        .reverse()
-        .forEach((segment) => log(segment))
-    }
-
-    callback(error, trail)
-  })
+  ], callback)
 }
 
 module.exports = traverseTo

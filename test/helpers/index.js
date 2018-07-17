@@ -38,5 +38,7 @@ const createMfs = promisify((cb) => {
 
 module.exports = {
   createMfs,
+  bufferStream: require('./buffer-stream'),
+  collectLeafCids: require('./collect-leaf-cids'),
   EMPTY_DIRECTORY_HASH: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
 }

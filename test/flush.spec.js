@@ -3,7 +3,7 @@
 
 const {
   createMfs
-} = require('./fixtures')
+} = require('./helpers')
 
 describe('flush', function () {
   this.timeout(30000)

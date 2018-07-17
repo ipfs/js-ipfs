@@ -10,7 +10,7 @@ const {
 
 const {
   createMfs
-} = require('./fixtures')
+} = require('./helpers')
 
 describe('ls', function () {
   this.timeout(30000)

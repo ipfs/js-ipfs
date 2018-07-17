@@ -12,7 +12,7 @@ const {
 const defaultOptions = {
   parents: false,
   hash: undefined,
-  cidVersion: undefined
+  cidVersion: 0
 }
 
 module.exports = (ipfs) => {

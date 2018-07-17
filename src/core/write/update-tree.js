@@ -9,10 +9,10 @@ const collect = require('pull-stream/sinks/collect')
 const paramap = require('pull-paramap')
 const log = require('debug')('ipfs:mfs:write:update-tree')
 const UnixFs = require('ipfs-unixfs')
+const CID = require('cids')
 const {
   unmarshal
 } = UnixFs
-const bs58 = require('bs58')
 const {
   leafFirst
 } = require('pull-traverse')
@@ -83,7 +83,7 @@ const updateTree = (ipfs, root, fileSize, streamStart, streamEnd, source, option
             updatedRoot = updatedRoot.node
           }
 
-          log(`Updated root is ${bs58.encode(updatedRoot.multihash)}`)
+          log(`Updated root is ${new CID(updatedRoot.multihash).toBaseEncodedString()}`)
         }
 
         cb(error, updatedRoot)
@@ -186,8 +186,6 @@ const updateTree = (ipfs, root, fileSize, streamStart, streamEnd, source, option
         // Create a DAGNode with the new data
         (nodeData, cb) => createNode(ipfs, nodeData, [], options, cb),
         (newNode, cb) => {
-          log(`Created DAGNode with new data with hash ${bs58.encode(newNode.multihash)} to replace ${bs58.encode(node.multihash)}`)
-
           // Store the CID and friends so we can update it's parent's links
           cb(null, {
             parent: parent,

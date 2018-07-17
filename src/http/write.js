@@ -103,7 +103,7 @@ const mfsWrite = (api) => {
           length: Joi.number().integer().min(0),
           create: Joi.boolean().default(false),
           truncate: Joi.boolean().default(false),
-          rawLeaves: Joi.boolean().default(true),
+          rawLeaves: Joi.boolean().default(false),
           cidVersion: Joi.number().integer().valid([
             0,
             1
