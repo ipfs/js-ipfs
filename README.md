@@ -42,6 +42,11 @@ You can check the development status at the [Waffle Board](https://waffle.io/ipf
 
 [**`Weekly Core Dev Calls`**](https://github.com/ipfs/pm/issues/650)
 
+
+### Upgrading from < 0.30.0
+
+If you're upgrading from < 0.30.0 you might run into errors when installing dependencies due to non-existing git hooks. For fixes, please refer to the [changelog](https://github.com/ipfs/js-ipfs/blob/master/CHANGELOG.md#breaking-changes).
+
 ## Tech Lead
 
 [David Dias](https://github.com/diasdavid)
@@ -360,10 +365,10 @@ The core API is grouped into several areas:
   - [`ipfs.files.addPullStream([options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesaddpullstream)
   - [`ipfs.files.addReadableStream([options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesaddreadablestream)
   - [`ipfs.files.cat(ipfsPath, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescat). Alias to `ipfs.cat`.
-  - [`ipfs.files.catPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescatpullstream)  
+  - [`ipfs.files.catPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescatpullstream)
   - [`ipfs.files.catReadableStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescatreadablestream)
   - [`ipfs.files.get(ipfsPath, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesget). Alias to `ipfs.get`.
-  - [`ipfs.files.getPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesgetpullstream)  
+  - [`ipfs.files.getPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesgetpullstream)
   - [`ipfs.files.getReadableStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesgetreadablestream)
   - [`ipfs.ls(ipfsPath, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#ls)
   - [`ipfs.lsPullStream(ipfsPath)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#lspullstream)
