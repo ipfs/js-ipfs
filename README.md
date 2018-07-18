@@ -753,7 +753,7 @@ Please use the same script if you need to update this table.
 > npm test
 
 # run just IPFS tests in Node.js
-> npm run test:node:core
+> npm run test:node
 
 # run just IPFS core tests
 > npm run test:node:core
