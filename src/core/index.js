@@ -108,6 +108,8 @@ class IPFS extends EventEmitter {
     }
 
     this.state = require('./state')(this)
+    
+    this.ready = new Promise(resolve => this.once('ready', resolve))
 
     boot(this)
   }
