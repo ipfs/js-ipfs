@@ -6,13 +6,14 @@ chai.use(require('dirty-chai'))
 const expect = chai.expect
 const path = require('path')
 const loadFixture = require('aegir/fixtures')
-const bufferStream = require('./fixtures/buffer-stream')
+const {
+  bufferStream
+} = require('./helpers')
 const pull = require('pull-stream/pull')
 const collect = require('pull-stream/sinks/collect')
-
 const {
   createMfs
-} = require('./fixtures')
+} = require('./helpers')
 
 describe('read', function () {
   this.timeout(30000)
@@ -63,7 +64,7 @@ describe('read', function () {
           data = Buffer.concat([data, buffer])
         })
 
-        stream.on('end', (buffer) => {
+        stream.on('end', () => {
           resolve(data)
         })
 

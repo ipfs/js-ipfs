@@ -6,7 +6,7 @@ chai.use(require('dirty-chai'))
 const expect = chai.expect
 const {
   createMfs
-} = require('./fixtures')
+} = require('./helpers')
 
 describe('mkdir', function () {
   this.timeout(30000)

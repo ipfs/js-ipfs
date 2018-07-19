@@ -16,7 +16,7 @@ module.exports = {
       describe: 'Create any non-existent intermediate directories'
     },
     create: {
-      alias: 'c',
+      alias: 'e',
       type: 'boolean',
       default: false,
       coerce: asBoolean,
@@ -42,7 +42,7 @@ module.exports = {
     rawLeaves: {
       alias: 'r',
       type: 'boolean',
-      default: true,
+      default: false,
       coerce: asBoolean,
       describe: 'Whether to write leaf nodes as raw UnixFS nodes'
     },
@@ -65,9 +65,9 @@ module.exports = {
       default: 'balanced'
     },
     cidVersion: {
-      alias: 'c',
+      alias: ['cid-ver', 'cid-version'],
       type: 'number',
-      default: 1
+      default: 0
     },
     hashAlg: {
       alias: 'h',
@@ -105,7 +105,7 @@ module.exports = {
         length,
         create,
         truncate,
-        rawLeafNodes: rawLeaves,
+        rawLeaves,
         reduceSingleLeafToSelf,
         cidVersion,
         hashAlg,

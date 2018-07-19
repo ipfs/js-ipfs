@@ -14,37 +14,31 @@ const {
 } = require('../utils')
 const values = require('pull-stream/sources/values')
 const log = require('debug')('ipfs:mfs:write')
-const bs58 = require('bs58')
 const importNode = require('./import-node')
 const updateNode = require('./update-node')
 const toPull = require('stream-to-pull-stream')
 const isStream = require('is-stream')
-const isNode = require('detect-node')
 const fileReaderStream = require('filereader-stream')
 const isPullStream = require('is-pull-stream')
 const cat = require('pull-cat')
 const pull = require('pull-stream/pull')
-
-let fs
-
-if (isNode) {
-  fs = require('fs')
-}
+const fs = require('fs')
 
 const defaultOptions = {
   offset: 0, // the offset in the file to begin writing
   length: undefined, // how many bytes from the incoming buffer to write
   create: false, // whether to create the file if it does not exist
   truncate: false, // whether to truncate the file first
-  rawLeafNodes: true,
+  rawLeaves: false,
   reduceSingleLeafToSelf: false,
-  cidVersion: undefined,
+  cidVersion: 0,
   hashAlg: 'sha2-256',
   format: 'dag-pb',
   parents: false, // whether to create intermediate directories if they do not exist
   progress: undefined,
   strategy: 'trickle',
-  flush: true
+  flush: true,
+  leafType: 'raw'
 }
 
 const toPullSource = (content, options, callback) => {
@@ -160,10 +154,11 @@ const updateOrImport = (ipfs, options, path, source, containingFolder, callback)
       }, null)
 
       if (existingChild) {
-        log('Updating linked DAGNode', bs58.encode(existingChild.multihash))
+        const cid = new CID(existingChild.multihash)
+        log(`Updating linked DAGNode ${cid.toBaseEncodedString()}`)
 
         // overwrite the existing file or part of it, possibly truncating what's left
-        updateNode(ipfs, new CID(existingChild.multihash), source, options, next)
+        updateNode(ipfs, cid, source, options, next)
       } else {
         if (!options.create) {
           return next(new Error('file does not exist'))
@@ -185,10 +180,7 @@ const updateOrImport = (ipfs, options, path, source, containingFolder, callback)
         )
 
         log('Importing file', path.name)
-        importNode(ipfs, source, options, (error, result) => {
-          log(`Imported file ${path.name} ${bs58.encode(result.multihash)}`)
-          next(error, result)
-        })
+        importNode(ipfs, source, options, next)
       }
     },
 
@@ -204,12 +196,6 @@ const updateOrImport = (ipfs, options, path, source, containingFolder, callback)
     }, (error, newContaingFolder) => {
       // Store new containing folder CID
       containingFolder.node = newContaingFolder
-
-      log(`New CID for the containing folder is ${bs58.encode(newContaingFolder.multihash)}`)
-
-      newContaingFolder.links.forEach(link => {
-        log(`${link.name} ${bs58.encode(link.multihash)}`)
-      })
 
       next(error)
     }),

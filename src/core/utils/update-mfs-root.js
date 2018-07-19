@@ -1,8 +1,8 @@
 'use strict'
 
-const bs58 = require('bs58')
 const log = require('debug')('ipfs:mfs:utils:update-mfs:root')
 const waterfall = require('async/waterfall')
+const CID = require('cids')
 const {
   MFS_ROOT_KEY
 } = require('./constants')
@@ -15,11 +15,9 @@ const updateMfsRoot = (ipfs, buffer, callback) => {
     return callback(new Error('Please run jsipfs init first'))
   }
 
-  if (typeof buffer === 'string' || buffer instanceof String) {
-    buffer = bs58.decode(buffer)
-  }
+  const cid = new CID(buffer)
 
-  log(`New MFS root will be ${bs58.encode(buffer)}`)
+  log(`New MFS root will be ${cid.toBaseEncodedString()}`)
 
   waterfall([
     (cb) => {
@@ -31,8 +29,8 @@ const updateMfsRoot = (ipfs, buffer, callback) => {
       log('Datastore was already open')
       cb()
     },
-    (cb) => datastore.put(MFS_ROOT_KEY, buffer, (error) => cb(error))
-  ], (error) => callback(error, buffer))
+    (cb) => datastore.put(MFS_ROOT_KEY, cid.buffer, (error) => cb(error))
+  ], (error) => callback(error, cid))
 }
 
 module.exports = updateMfsRoot

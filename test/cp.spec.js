@@ -4,11 +4,11 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
-const bufferStream = require('./fixtures/buffer-stream')
 
 const {
-  createMfs
-} = require('./fixtures')
+  createMfs,
+  bufferStream
+} = require('./helpers')
 
 describe('cp', function () {
   this.timeout(30000)

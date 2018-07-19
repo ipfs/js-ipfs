@@ -1,6 +1,5 @@
 'use strict'
 
-const bs58 = require('bs58')
 const CID = require('cids')
 const log = require('debug')('ipfs:mfs:utils:with-mfs-root')
 const waterfall = require('async/waterfall')
@@ -32,21 +31,21 @@ const withMfsRoot = (ipfs, callback) => {
               path: '/'
             }, next),
             // Turn the hash into a Buffer
-            ([{hash}], next) => next(null, bs58.decode(hash)),
-            (buffer, next) => repo.closed ? datastore.open((error) => next(error, buffer)) : next(null, buffer),
+            ([{hash}], next) => next(null, new CID(hash)),
+            (cid, next) => repo.closed ? datastore.open((error) => next(error, cid)) : next(null, cid),
             // Store the Buffer in the datastore
-            (buffer, next) => datastore.put(MFS_ROOT_KEY, buffer, (error) => next(error, buffer))
+            (cid, next) => datastore.put(MFS_ROOT_KEY, cid.buffer, (error) => next(error, cid))
           ], cb)
         }
 
-        cb(error, result)
+        cb(error, new CID(result))
       })
     },
     // Turn the Buffer into a CID
-    (hash, cb) => {
-      log(`Fetched MFS root ${bs58.encode(hash)}`)
+    (cid, cb) => {
+      log(`Fetched MFS root ${cid.toBaseEncodedString()}`)
 
-      cb(null, new CID(hash))
+      cb(null, cid)
     }
     // Invoke the API function with the root CID
   ], callback)

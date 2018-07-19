@@ -8,17 +8,17 @@ const path = require('path')
 const loadFixture = require('aegir/fixtures')
 const isNode = require('detect-node')
 const values = require('pull-stream/sources/values')
-const bufferStream = require('./fixtures/buffer-stream')
+const {
+  bufferStream,
+  collectLeafCids,
+  createMfs
+} = require('./helpers')
 
 let fs
 
 if (isNode) {
   fs = require('fs')
 }
-
-const {
-  createMfs
-} = require('./fixtures')
 
 describe('write', function () {
   this.timeout(30000)
@@ -378,6 +378,23 @@ describe('write', function () {
     })
   })
 
+  runTest(({type, path, content}) => {
+    it(`writes a file with raw blocks for newly created leaf nodes (${type})`, () => {
+      return mfs.write(path, content, {
+        create: true,
+        rawLeaves: true
+      })
+        .then(() => mfs.stat(path))
+        .then((stats) => collectLeafCids(mfs.node, stats.hash))
+        .then((cids) => {
+          const rawNodes = cids
+            .filter(cid => cid.codec === 'raw')
+
+          expect(rawNodes).to.not.be.empty()
+        })
+    })
+  })
+
   it('supports concurrent writes', function () {
     const files = []
 
@@ -441,10 +458,6 @@ describe('write', function () {
 
         expect(actualBytes).to.deep.equal(expectedBytes)
       })
-  })
-
-  it.skip('writes a file with raw blocks for newly created leaf nodes', () => {
-
   })
 
   it.skip('writes a file with a different CID version to the parent', () => {

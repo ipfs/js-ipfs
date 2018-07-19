@@ -10,7 +10,7 @@ const loadFixture = require('aegir/fixtures')
 const {
   createMfs,
   EMPTY_DIRECTORY_HASH
-} = require('./fixtures')
+} = require('./helpers')
 
 describe('stat', function () {
   this.timeout(30000)
