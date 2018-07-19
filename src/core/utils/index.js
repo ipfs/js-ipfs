@@ -9,6 +9,7 @@ module.exports = {
   createLock: require('./create-lock'),
   createNode: require('./create-node'),
   endPullStream: require('./end-pull-stream'),
+  formatCid: require('./format-cid'),
   limitStreamBytes: require('./limit-stream-bytes'),
   loadNode: require('./load-node'),
   toSourcesAndDestination: require('./to-sources-and-destination'),

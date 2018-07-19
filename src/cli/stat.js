@@ -41,6 +41,11 @@ Type: <type>`,
       default: false,
       coerce: asBoolean,
       describe: 'Compute the amount of the dag that is local, and if possible the total size'
+    },
+    cidBase: {
+      alias: 'cid-base',
+      default: 'base58btc',
+      describe: 'CID base to use.'
     }
   },
 
