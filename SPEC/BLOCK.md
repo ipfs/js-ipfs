@@ -158,4 +158,4 @@ A great source of [examples][] can be found in the tests for this API.
 
 [block]:https://github.com/ipfs/js-ipfs-block
 [multihash]:https://github.com/multiformats/multihash
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/block.js
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/block

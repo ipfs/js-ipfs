@@ -242,6 +242,6 @@ stream.on('data', (res) => {
 
 A great source of [examples][] can be found in the tests for this API.
 
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/miscellaneous.js
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/miscellaneous
 [rs]: https://www.npmjs.com/package/readable-stream
 [ps]: https://www.npmjs.com/package/pull-stream
