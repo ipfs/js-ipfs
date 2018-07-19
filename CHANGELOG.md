@@ -1,3 +1,14 @@
+<a name="0.1.1"></a>
+## [0.1.1](https://github.com/ipfs/js-ipfs-mfs/compare/v0.1.0...v0.1.1) (2018-07-19)
+
+
+### Features
+
+* adds --cid-base argument to stringify cids in different bases ([5ee75a6](https://github.com/ipfs/js-ipfs-mfs/commit/5ee75a6))
+* support --raw-leaves ([61f77dc](https://github.com/ipfs/js-ipfs-mfs/commit/61f77dc))
+
+
+
 <a name="0.1.0"></a>
 # [0.1.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.0.17...v0.1.0) (2018-07-13)
 
