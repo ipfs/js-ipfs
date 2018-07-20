@@ -36,11 +36,13 @@ function prepareFile (self, opts, file, callback) {
       ? cb(null, file)
       : self.object.get(file.multihash, opts, cb),
     (node, cb) => {
-      const b58Hash = cid.toBaseEncodedString()
+      const hash = cid.toBaseEncodedString(opts.cidBase)
 
       cb(null, {
-        path: opts.wrapWithDirectory ? file.path.substring(WRAPPER.length) : (file.path || b58Hash),
-        hash: b58Hash,
+        path: opts.wrapWithDirectory
+          ? file.path.substring(WRAPPER.length)
+          : (file.path || hash),
+        hash: hash,
         size: node.size
       })
     }
@@ -144,6 +146,10 @@ module.exports = function files (self) {
       opts.cidVersion = 1
     }
 
+    if (opts.cidBase && opts.cidVersion !== 1) {
+      opts.cidVersion = 1
+    }
+
     let total = 0
 
     const prog = opts.progress || noop
@@ -243,6 +249,10 @@ module.exports = function files (self) {
 
         // CID v0 is for multihashes encoded with sha2-256
         if (options.hashAlg && options.cidVersion !== 1) {
+          options.cidVersion = 1
+        }
+
+        if (options.cidBase && options.cidVersion !== 1) {
           options.cidVersion = 1
         }
 

@@ -152,6 +152,10 @@ module.exports = {
       type: 'integer',
       describe: 'Cid version. Non-zero value will change default of \'raw-leaves\' to true. (experimental)'
     },
+    'cid-base': {
+      type: 'string',
+      describe: 'The multibase of the printed CID for added files. (experimental)'
+    },
     hash: {
       type: 'string',
       choices: Object.keys(mh.names),
@@ -190,6 +194,7 @@ module.exports = {
         ? argv.shardSplitThreshold
         : Infinity,
       cidVersion: argv.cidVersion,
+      cidBase: argv.cidBase,
       rawLeaves: argv.rawLeaves,
       onlyHash: argv.onlyHash,
       hashAlg: argv.hash,
@@ -207,6 +212,10 @@ module.exports = {
     // This retains feature parity without having to implement raw-leaves.
     if (options.cidVersion > 0 && options.rawLeaves !== false) {
       throw new Error('Implied argument raw-leaves must be passed and set to false when cid-version is > 0')
+    }
+
+    if (options.cidBase && options.cidVersion !== 1) {
+      options.cidVersion = 1
     }
 
     // Temporary restriction on raw-leaves:
