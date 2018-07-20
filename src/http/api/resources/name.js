@@ -14,9 +14,9 @@ exports.resolve = {
   },
   handler: (request, reply) => {
     const ipfs = request.server.app.ipfs
-    const { arg, nocache, recursive } = request.query
+    const { arg } = request.query
 
-    ipfs.name.resolve(arg, nocache, recursive, (err, res) => {
+    ipfs.name.resolve(arg, request.query, (err, res) => {
       if (err) {
         return reply({
           Message: err.toString(),
@@ -43,9 +43,9 @@ exports.publish = {
   },
   handler: (request, reply) => {
     const ipfs = request.server.app.ipfs
-    const { arg, resolve, lifetime, ttl, key } = request.query
+    const { arg } = request.query
 
-    ipfs.name.publish(arg, resolve, lifetime, ttl, key, (err, res) => {
+    ipfs.name.publish(arg, request.query, (err, res) => {
       if (err) {
         return reply({
           Message: err.toString(),

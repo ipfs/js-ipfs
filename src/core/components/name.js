@@ -51,18 +51,26 @@ module.exports = function name (self) {
      * which is the hash of its public key.
      *
      * @param {String} value ipfs path of the object to be published.
-     * @param {boolean} resolve resolve given path before publishing.
-     * @param {String} lifetime time duration that the record will be valid for.
+     * @param {Object} options ipfs publish options.
+     * @param {boolean} options.resolve resolve given path before publishing.
+     * @param {String} options.lifetime time duration that the record will be valid for.
     This accepts durations such as "300s", "1.5h" or "2h45m". Valid time units are
     "ns", "ms", "s", "m", "h". Default is 24h.
-     * @param {String} ttl time duration this record should be cached for (NOT IMPLEMENTED YET).
+     * @param {String} options.ttl time duration this record should be cached for (NOT IMPLEMENTED YET).
      * This accepts durations such as "300s", "1.5h" or "2h45m". Valid time units are
      "ns", "ms", "s", "m", "h" (caution: experimental).
-     * @param {String} key name of the key to be used or a valid PeerID, as listed by 'ipfs key list -l'.
+     * @param {String} options.key name of the key to be used or a valid PeerID, as listed by 'ipfs key list -l'.
      * @param {function(Error)} [callback]
      * @returns {Promise|void}
      */
-    publish: promisify((value, resolve = true, lifetime = '24h', ttl, key = 'self', callback) => {
+    publish: promisify((value, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
+      }
+
+      const { resolve = true, lifetime = '24h', key = 'self' } = options;
+
       if (!self.isOnline()) {
         const error = errors.OFFLINE_ERROR
 
@@ -107,12 +115,20 @@ module.exports = function name (self) {
      * Given a key, query the DHT for its best value.
      *
      * @param {String} name ipns name to resolve. Defaults to your node's peerID.
-     * @param {boolean} nocache do not use cached entries.
-     * @param {boolean} recursive resolve until the result is not an IPNS name.
+     * @param {Object} options ipfs resolve options.
+     * @param {boolean} options.nocache do not use cached entries.
+     * @param {boolean} options.recursive resolve until the result is not an IPNS name.
      * @param {function(Error)} [callback]
      * @returns {Promise|void}
      */
-    resolve: promisify((name, nocache = false, recursive = false, callback) => {
+    resolve: promisify((name, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
+      }
+
+      const { nocache = false, recursive = false } = options;
+
       const local = true // TODO ROUTING - use self._options.local
 
       if (!self.isOnline()) {
@@ -140,13 +156,13 @@ module.exports = function name (self) {
 
       // TODO ROUTING - public key from network instead
       const localPublicKey = self._peerInfo.id.pubKey
-      const options = {
-        local: local,
-        nocache: nocache,
-        recursive: recursive
+      const resolveOptions = {
+        nocache,
+        recursive,
+        local
       }
 
-      self._ipns.resolve(name, localPublicKey, options, callback)
+      self._ipns.resolve(name, localPublicKey, resolveOptions, callback)
     })
   }
 }
