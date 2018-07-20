@@ -19,7 +19,8 @@ module.exports = {
     },
     cidVersion: {
       alias: ['cid-ver', 'cid-version'],
-      type: 'integer',
+      type: 'number',
+      default: 0,
       describe: 'Cid version to use. (experimental).'
     },
     hash: {

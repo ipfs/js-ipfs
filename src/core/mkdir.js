@@ -25,6 +25,7 @@ module.exports = (ipfs) => {
     options = Object.assign({}, defaultOptions, options)
 
     options.parents = options.p || options.parents
+    options.cidVersion = options.cidVersion || 0
 
     if (!path) {
       return callback(new Error('no path given to Mkdir'))

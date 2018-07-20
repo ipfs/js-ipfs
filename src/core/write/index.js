@@ -120,6 +120,8 @@ module.exports = function mfsWrite (ipfs) {
       options.length = Infinity
     }
 
+    options.cidVersion = options.cidVersion || 0
+
     waterfall([
       (done) => {
         parallel([
