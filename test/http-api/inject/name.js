@@ -19,31 +19,31 @@ module.exports = (http) => {
       api = http.api.server.select('API')
     })
 
-    it('publish a record correctly', (done) => {
+    it('should publish a record correctly', (done) => {
       api.inject({
         method: 'GET',
         url: `/api/v0/name/publish?arg=${cid}&resolve=false`
       }, (res) => {
         expect(res).to.exist()
-        expect(res.result.Value).to.equal(cid)
+        expect(res.result.Value).to.equal(`/ipfs/${cid}`)
         done()
       })
     })
 
-    it('resolve a record correctly', (done) => {
+    it('should resolve a record correctly', (done) => {
       api.inject({
         method: 'GET',
         url: `/api/v0/name/publish?arg=${cid}&resolve=false`
       }, (res) => {
         expect(res).to.exist()
-        expect(res.result.Value).to.equal(cid)
+        expect(res.result.Value).to.equal(`/ipfs/${cid}`)
 
         api.inject({
           method: 'GET',
           url: `/api/v0/name/resolve`
         }, (res) => {
           expect(res).to.exist()
-          expect(res.result.Path).to.satisfy(checkAll([cid]))
+          expect(res.result.Path).to.satisfy(checkAll([`/ipfs/${cid}`]))
 
           done()
         })

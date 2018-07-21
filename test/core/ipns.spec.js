@@ -43,24 +43,24 @@ describe('ipns', () => {
 
   after((done) => ipfsd.stop(done))
 
-  it('name publish should publish correctly', (done) => {
-    node.name.publish(ipfsRef, false, '5m', '1m', 'self', (err, res) => {
+  it('should publish correctly with the default params', (done) => {
+    node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
       expect(err).to.not.exist()
       expect(res).to.exist()
-      expect(res).to.equal(nodeId)
+      expect(res.Name).to.equal(nodeId)
       done()
     })
   })
 
-  it('name resolve should be performed correctly', (done) => {
-    node.name.publish(ipfsRef, false, '5m', '1m', 'self', (err, res) => {
+  it('name resolve should return the ipfs path', (done) => {
+    node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
       expect(err).to.not.exist()
       expect(res).to.exist()
 
-      node.name.resolve(nodeId, false, false, (err, res) => {
+      node.name.resolve(nodeId, (err, res) => {
         expect(err).to.not.exist()
         expect(res).to.exist()
-        expect(res).to.equal(ipfsRef)
+        expect(res.Path).to.equal(ipfsRef)
         done()
       })
     })

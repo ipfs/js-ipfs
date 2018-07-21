@@ -42,7 +42,11 @@ class IPNS {
       log(`IPNS value ${value} was cached correctly`)
 
       this.cache.set(id, value, { ttl: ttl })
-      callback(null, id)
+
+      callback(null, {
+        Name: id,
+        Value: value
+      })
     })
   }
 
@@ -55,7 +59,9 @@ class IPNS {
       const result = this.cache.get(id)
 
       if (result) {
-        return callback(null, result)
+        return callback(null, {
+          Path: result
+        })
       }
     }
 
@@ -67,7 +73,9 @@ class IPNS {
 
       log(`IPNS record from ${name} was resolved correctly`)
 
-      return callback(null, result)
+      return callback(null, {
+        Path: result
+      })
     })
   }
 }

@@ -69,7 +69,7 @@ module.exports = function name (self) {
         options = {}
       }
 
-      const { resolve = true, lifetime = '24h', key = 'self' } = options;
+      const { resolve = true, lifetime = '24h', key = 'self' } = options
 
       if (!self.isOnline()) {
         const error = errors.OFFLINE_ERROR
@@ -127,7 +127,7 @@ module.exports = function name (self) {
         options = {}
       }
 
-      const { nocache = false, recursive = false } = options;
+      const { nocache = false, recursive = false } = options
 
       const local = true // TODO ROUTING - use self._options.local
 

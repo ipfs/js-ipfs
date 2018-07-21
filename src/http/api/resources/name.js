@@ -24,9 +24,7 @@ exports.resolve = {
         }).code(500)
       }
 
-      return reply({
-        Path: res
-      }).code(200)
+      return reply(res).code(200)
     })
   }
 }
@@ -53,10 +51,7 @@ exports.publish = {
         }).code(500)
       }
 
-      return reply({
-        Name: res,
-        Value: arg
-      }).code(200)
+      return reply(res).code(200)
     })
   }
 }

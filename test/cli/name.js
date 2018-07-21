@@ -69,7 +69,7 @@ describe('name', () => {
     }
   })
 
-  it('name publish should publish correctly when the file was already added', function (done) {
+  it('should publish correctly when the file was already added', function (done) {
     this.timeout(60 * 1000)
 
     ipfs(`name publish ${cidAdded}`).then((res) => {
@@ -80,7 +80,7 @@ describe('name', () => {
     })
   })
 
-  it('name resolve should get the entry correctly', function (done) {
+  it('should get the entry correctly', function (done) {
     this.timeout(60 * 1000)
 
     ipfs(`name publish ${cidAdded}`).then((res) => {
@@ -95,7 +95,7 @@ describe('name', () => {
     })
   })
 
-  it('name publish should publish correctly when the file was not added but resolve is disabled', function (done) {
+  it('should publish correctly when the file was not added but resolve is disabled', function (done) {
     this.timeout(60 * 1000)
 
     const notAddedCid = 'QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
@@ -108,7 +108,7 @@ describe('name', () => {
     })
   })
 
-  it('name resolve should not get the entry correctly if its validity time expired', function (done) {
+  it('should not get the entry correctly if its validity time expired', function (done) {
     this.timeout(60 * 1000)
 
     ipfs(`name publish ${cidAdded} --lifetime 10ns`).then((res) => {
@@ -127,7 +127,7 @@ describe('name', () => {
     })
   })
 
-  it('name publish should publish correctly when a new key is used', function (done) {
+  it('should publish correctly when a new key is used', function (done) {
     this.timeout(60 * 1000)
 
     ipfs(`name publish ${cidAdded} --key ${name}`).then((res) => {
@@ -138,7 +138,7 @@ describe('name', () => {
     })
   })
 
-  it('name resolve should return the immediate pointing record, unless using the recursive parameter', function (done) {
+  it('should return the immediate pointing record, unless using the recursive parameter', function (done) {
     this.timeout(60 * 1000)
 
     ipfs(`name publish ${cidAdded}`).then((res) => {
@@ -159,7 +159,7 @@ describe('name', () => {
     })
   })
 
-  it('name resolve should go recursively until finding an ipfs hash', function (done) {
+  it('should go recursively until finding an ipfs hash', function (done) {
     this.timeout(60 * 1000)
 
     ipfs(`name publish ${cidAdded}`).then((res) => {
