@@ -44,8 +44,8 @@ class IPNS {
       this.cache.set(id, value, { ttl: ttl })
 
       callback(null, {
-        Name: id,
-        Value: value
+        name: id,
+        value: value
       })
     })
   }
@@ -60,7 +60,7 @@ class IPNS {
 
       if (result) {
         return callback(null, {
-          Path: result
+          path: result
         })
       }
     }
@@ -74,7 +74,7 @@ class IPNS {
       log(`IPNS record from ${name} was resolved correctly`)
 
       return callback(null, {
-        Path: result
+        path: result
       })
     })
   }

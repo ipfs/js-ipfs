@@ -47,12 +47,12 @@ describe('ipns', () => {
     node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
       expect(err).to.not.exist()
       expect(res).to.exist()
-      expect(res.Name).to.equal(nodeId)
+      expect(res.name).to.equal(nodeId)
       done()
     })
   })
 
-  it('name resolve should return the ipfs path', (done) => {
+  it('should publish and then resolve correctly', (done) => {
     node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
       expect(err).to.not.exist()
       expect(res).to.exist()
@@ -60,7 +60,7 @@ describe('ipns', () => {
       node.name.resolve(nodeId, (err, res) => {
         expect(err).to.not.exist()
         expect(res).to.exist()
-        expect(res.Path).to.equal(ipfsRef)
+        expect(res.path).to.equal(ipfsRef)
         done()
       })
     })

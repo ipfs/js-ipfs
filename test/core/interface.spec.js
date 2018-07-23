@@ -72,7 +72,6 @@ describe('interface-ipfs-core tests', () => {
       initOptions: { bits: 512 }
     }
   })) */
-
   tests.object(defaultCommonFactory)
 
   tests.pin(defaultCommonFactory)

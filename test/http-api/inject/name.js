@@ -19,7 +19,7 @@ module.exports = (http) => {
       api = http.api.server.select('API')
     })
 
-    it('should publish a record correctly', (done) => {
+    it('should publish a record', (done) => {
       api.inject({
         method: 'GET',
         url: `/api/v0/name/publish?arg=${cid}&resolve=false`
@@ -30,7 +30,7 @@ module.exports = (http) => {
       })
     })
 
-    it('should resolve a record correctly', (done) => {
+    it('should publish and resolve a record', (done) => {
       api.inject({
         method: 'GET',
         url: `/api/v0/name/publish?arg=${cid}&resolve=false`

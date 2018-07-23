@@ -80,7 +80,7 @@ describe('name', () => {
     })
   })
 
-  it('should get the entry correctly', function (done) {
+  it('should publish and resolve an entry with the default options', function (done) {
     this.timeout(60 * 1000)
 
     ipfs(`name publish ${cidAdded}`).then((res) => {
