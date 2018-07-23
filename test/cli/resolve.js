@@ -7,7 +7,7 @@ const isIpfs = require('is-ipfs')
 
 const runOnAndOff = require('../utils/on-and-off')
 
-describe.only('resolve', () => runOnAndOff((thing) => {
+describe('resolve', () => runOnAndOff((thing) => {
   let ipfs
 
   before(() => {
