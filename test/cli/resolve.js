@@ -7,14 +7,16 @@ const isIpfs = require('is-ipfs')
 
 const runOnAndOff = require('../utils/on-and-off')
 
-describe('resolve', () => runOnAndOff((thing) => {
+describe.only('resolve', () => runOnAndOff((thing) => {
   let ipfs
 
   before(() => {
     ipfs = thing.ipfs
   })
 
-  it('should resolve an IPFS hash', () => {
+  it('should resolve an IPFS hash', function () {
+    this.timeout(10 * 1000)
+
     const filePath = path.join(process.cwd(), '/src/init-files/init-docs/readme')
     let hash
 
@@ -29,7 +31,9 @@ describe('resolve', () => runOnAndOff((thing) => {
       })
   })
 
-  it('should resolve an IPFS path link', () => {
+  it('should resolve an IPFS path link', function () {
+    this.timeout(10 * 1000)
+
     const filePath = path.join(process.cwd(), '/src/init-files/init-docs/readme')
     let fileHash, rootHash
 
