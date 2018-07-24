@@ -6,6 +6,8 @@ const parallel = require('async/parallel')
 const promisify = require('promisify-es6')
 const defaultConfig = require('../runtime/config-nodejs.js')
 const Keychain = require('libp2p-keychain')
+const Unixfs = require('ipfs-unixfs')
+const { DAGNode } = require('ipld-dag-pb')
 
 const addDefaultAssets = require('./init-assets')
 
@@ -81,8 +83,8 @@ module.exports = function init (self) {
           PeerID: keys.toB58String(),
           PrivKey: keys.privKey.bytes.toString('base64')
         }
+        privateKey = keys.privKey
         if (opts.pass) {
-          privateKey = keys.privKey
           config.Keychain = Keychain.generateOptions()
         }
         opts.log('done')
@@ -102,14 +104,16 @@ module.exports = function init (self) {
           cb(null, true)
         }
       },
-      (_, cb) => {
+      (_, cb) => DAGNode.create(new Unixfs('directory').marshal(), cb),
+      (emptyDirNode, cb) => {
         if (opts.emptyRepo) {
           return cb(null, true)
         }
 
         const tasks = [
           // add empty unixfs dir object (go-ipfs assumes this exists)
-          (cb) => self.object.new('unixfs-dir', cb)
+          (cb) => self.object.new('unixfs-dir', cb),
+          (cb) => self._ipns.initializeKeyspace(privateKey, emptyDirNode.toJSON().multihash, cb)
         ]
 
         if (typeof addDefaultAssets === 'function') {

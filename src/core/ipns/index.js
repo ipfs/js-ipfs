@@ -78,6 +78,11 @@ class IPNS {
       })
     })
   }
+
+  // Initialize keyspace - sets the ipns record for the given key to point to an empty directory
+  initializeKeyspace (privKey, value, callback) {
+    this.ipnsPublisher.publish(privKey, value, callback)
+  }
 }
 
 exports = module.exports = IPNS
