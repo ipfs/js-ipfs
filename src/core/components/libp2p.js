@@ -58,6 +58,19 @@ module.exports = function libp2p (self) {
           libp2pDefaults
         )
 
+        // Add the addresses for the preload nodes to the bootstrap addresses
+        if (get(self._options, 'preload.enabled')) {
+          let bootstrapList = libp2pOptions.config.peerDiscovery.bootstrap.list
+
+          const preloadBootstrap = get(self._options, 'preload.addresses', [])
+            .map(address => address.bootstrap)
+            .filter(Boolean) // A preload node doesn't _have_ to be added to the boostrap
+            .filter(address => !bootstrapList.includes(address)) // De-dupe
+
+          bootstrapList = bootstrapList.concat(preloadBootstrap)
+          libp2pOptions.config.peerDiscovery.bootstrap.list = bootstrapList
+        }
+
         self._libp2pNode = new Node(libp2pOptions)
 
         self._libp2pNode.on('peer:discovery', (peerInfo) => {

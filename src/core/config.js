@@ -8,6 +8,21 @@ const schema = Joi.object().keys({
     Joi.string()
   ).allow(null),
   repoOwner: Joi.boolean().default(true),
+  preload: Joi.object().keys({
+    enabled: Joi.boolean().default(false),
+    addresses: Joi.array()
+      .items(Joi.object().keys({
+        bootstrap: Joi.multiaddr().options({ convert: false }),
+        gateway: Joi.multiaddr().options({ convert: false })
+      }))
+      .default([{
+        bootstrap: '/dns4/wss0.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
+        gateway: '/dns4/wss0.bootstrap.libp2p.io/tcp/443'
+      }, {
+        bootstrap: '/dns4/wss1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
+        gateway: '/dns4/wss1.bootstrap.libp2p.io/tcp/443'
+      }])
+  }).allow(null),
   init: Joi.alternatives().try(
     Joi.boolean(),
     Joi.object().keys({ bits: Joi.number().integer() })
