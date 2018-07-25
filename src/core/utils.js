@@ -107,5 +107,93 @@ const resolvePath = promisify(function (objectAPI, ipfsPaths, callback) {
   }, callback)
 })
 
+/**
+ * Parses chunker string into options used by DAGBuilder in ipfs-unixfs-engine
+ *
+ *
+ * @param  {String}   chunker Chunker algorithm supported formats:
+ *                    "default" ("")
+ *                    "size-{size}",
+ *                    "rabin"
+ *                    "rabin-{avg}"
+ *                    "rabin-{min}-{avg}-{max}"
+ *
+ * @return {Object}   Chunker options for DAGBuilder
+ */
+function parseChunkerString(chunker) {
+  if (!chunker || chunker === '' || chunker === 'default') {
+    return {
+      chunker: 'fixed',
+    }
+  } else if (chunker.startsWith('size-')) {
+    const sizeStr = chunker.split("-")[1]
+    const size = parseInt(sizeStr)
+    if (isNaN(size)) {
+      throw new Error("Parameter avg must be an integer")
+    }
+    return {
+      chunker: 'fixed',
+      chunkerOptions: {
+        maxChunkSize: size
+      }
+    }
+  } else if (chunker.startsWith('rabin')) {
+    return {
+      chunker: 'rabin',
+      chunkerOptions: parseRabinString(chunker)
+    }
+  } else {
+    throw new Error(`unrecognized chunker option: ${chunker}`)
+  }
+}
+
+/**
+ * Parses rabin chunker string
+ *
+ * @param  {String}   chunker Chunker algorithm supported formats:
+ *                            "rabin"
+ *                            "rabin-{avg}"
+ *                            "rabin-{min}-{avg}-{max}"
+ *
+ * @return {Object}   rabin chunker options
+ */
+function parseRabinString(chunker) {
+  const options = {}
+  const parts = chunker.split("-")
+  switch (parts.length) {
+    case 1:
+      options.avgChunkSize = 262144
+      break
+    case 2:
+      options.avgChunkSize = parseInt(parts[1])
+      if (isNaN(options.avgBlockSize)) {
+        throw new Error("Parameter avg must be an integer")
+      }
+      break
+    case 4:
+      options.minChunkSize = parseSub(parts[1].split(":"), "min")
+      options.avgChunkSize = parseSub(parts[2].split(":"), "avg")
+      options.maxChunkSize = parseSub(parts[3].split(":"), "max")
+      break
+    default:
+      throw new Error("incorrect format (expected 'rabin' 'rabin-[avg]' or 'rabin-[min]-[avg]-[max]'")
+  }
+
+  return options
+}
+
+function parseSub(sub, name) {
+  if (sub.length > 1 && sub[0] !== name) {
+    throw new Error("Parameter order must be min:avg:max")
+  }
+  let size = parseInt(sub[sub.length-1])
+  if (isNaN(size)) {
+    throw new Error(`Parameter ${name} must be an integer`)
+  }
+
+  return size
+}
+
 exports.parseIpfsPath = parseIpfsPath
 exports.resolvePath = resolvePath
+exports.parseChunkerString = parseChunkerString
