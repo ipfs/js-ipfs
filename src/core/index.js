@@ -22,6 +22,7 @@ const boot = require('./boot')
 const components = require('./components')
 // replaced by repo-browser when running in the browser
 const defaultRepo = require('./runtime/repo-nodejs')
+const preload = require('./preload')
 
 class IPFS extends EventEmitter {
   constructor (options) {
@@ -78,6 +79,7 @@ class IPFS extends EventEmitter {
     this._blockService = new BlockService(this._repo)
     this._ipld = new Ipld(this._blockService)
     this._pubsub = undefined
+    this._preload = preload(this._options.preload)
 
     // IPFS Core exposed components
     //   - for booting up a node
