@@ -98,7 +98,7 @@ function preloadFile (self, opts, file, cb) {
 
   if (!shouldPreload) return cb(null, file)
 
-  self._preload(new CID(file.hash), (err) => {
+  self._preload(file.hash, (err) => {
     // Preload error is not fatal
     if (err) console.error(err)
     cb(null, file)
