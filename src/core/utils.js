@@ -166,7 +166,7 @@ function parseRabinString(chunker) {
       break
     case 2:
       options.avgChunkSize = parseInt(parts[1])
-      if (isNaN(options.avgBlockSize)) {
+      if (isNaN(options.avgChunkSize)) {
         throw new Error("Parameter avg must be an integer")
       }
       break
