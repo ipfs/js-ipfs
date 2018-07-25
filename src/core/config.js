@@ -10,18 +10,12 @@ const schema = Joi.object().keys({
   repoOwner: Joi.boolean().default(true),
   preload: Joi.object().keys({
     enabled: Joi.boolean().default(false),
-    addresses: Joi.array()
-      .items(Joi.object().keys({
-        bootstrap: Joi.multiaddr().options({ convert: false }),
-        gateway: Joi.multiaddr().options({ convert: false })
-      }))
-      .default([{
-        bootstrap: '/dns4/wss0.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
-        gateway: '/dns4/wss0.bootstrap.libp2p.io/tcp/443'
-      }, {
-        bootstrap: '/dns4/wss1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
-        gateway: '/dns4/wss1.bootstrap.libp2p.io/tcp/443'
-      }])
+    gateways: Joi.array()
+      .items(Joi.multiaddr().options({ convert: false }))
+      .default([
+        '/dns4/wss0.bootstrap.libp2p.io/https',
+        '/dns4/wss1.bootstrap.libp2p.io/https'
+      ])
   }).allow(null),
   init: Joi.alternatives().try(
     Joi.boolean(),
