@@ -135,6 +135,10 @@ module.exports = {
       default: false,
       describe: 'Only chunk and hash, do not write'
     },
+    'chunker': {
+      default: 'default',
+      describe: 'Chunking algorithm to use, formatted like [default, size-{size}, rabin, rabin-{avg}, rabin-{min}-{avg}-{max}]',
+    },
     'enable-sharding-experiment': {
       type: 'boolean',
       default: false
@@ -195,7 +199,8 @@ module.exports = {
       onlyHash: argv.onlyHash,
       hashAlg: argv.hash,
       wrapWithDirectory: argv.wrapWithDirectory,
-      pin: argv.pin
+      pin: argv.pin,
+      chunker: argv.chunker
     }
 
     if (options.enableShardingExperiment && utils.isDaemonOn()) {
