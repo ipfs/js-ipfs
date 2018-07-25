@@ -4,6 +4,7 @@ const setImmediate = require('async/setImmediate')
 const each = require('async/each')
 const toUri = require('multiaddr-to-uri')
 const debug = require('debug')
+const CID = require('cids')
 const preload = require('./runtime/preload-nodejs')
 
 const log = debug('jsipfs:preload')
@@ -44,7 +45,15 @@ module.exports = (options) => {
         return cb(err)
       }
 
-      const url = `${gatewayUri}/ipfs/${cid.toBaseEncodedString()}#${redirectOptOutHint}`
+      if (typeof cid !== 'string') {
+        try {
+          cid = new CID(cid).toBaseEncodedString()
+        } catch (err) {
+          return cb(err)
+        }
+      }
+
+      const url = `${gatewayUri}/ipfs/${cid}#${redirectOptOutHint}`
       preload(url, cb)
     }, callback)
   }
