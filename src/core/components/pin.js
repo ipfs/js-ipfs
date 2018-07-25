@@ -4,7 +4,6 @@
 const promisify = require('promisify-es6')
 const { DAGNode, DAGLink } = require('ipld-dag-pb')
 const CID = require('cids')
-const multihashes = require('multihashes')
 const async = require('async')
 const { Key } = require('interface-datastore')
 
@@ -34,9 +33,9 @@ module.exports = (self) => {
   let recursivePins = new Set()
 
   const directKeys = () =>
-    Array.from(directPins).map(key => multihashes.fromB58String(key))
+    Array.from(directPins).map(key => new CID(key).buffer)
   const recursiveKeys = () =>
-    Array.from(recursivePins).map(key => multihashes.fromB58String(key))
+    Array.from(recursivePins).map(key => new CID(key).buffer)
 
   function getIndirectKeys (callback) {
     const indirectKeys = new Set()
