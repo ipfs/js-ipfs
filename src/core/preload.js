@@ -17,7 +17,7 @@ const redirectOptOutHint = 'x-ipfs-preload'
 
 module.exports = (options) => {
   options = options || {}
-  options.enabled = !!options.enabled
+  options.enabled = Boolean(options.enabled)
   options.gateways = options.gateways || []
 
   if (!options.enabled || !options.gateways.length) {
