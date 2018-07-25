@@ -137,14 +137,7 @@ module.exports = {
     },
     'chunker': {
       default: 'default',
-      describe: 'Chunking algorithm to use',
-      choices: [
-        "default",
-        "size-{size}",
-        "rabin",
-        "rabin-{avg}",
-        "rabin-{min}-{avg}-{max}"
-      ]
+      describe: 'Chunking algorithm to use, formatted like [default, size-{size}, rabin, rabin-{avg}, rabin-{min}-{avg}-{max}]',
     },
     'enable-sharding-experiment': {
       type: 'boolean',
