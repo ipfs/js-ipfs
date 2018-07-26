@@ -15,7 +15,7 @@ const truncateNode = (ipfs, dagNode, newLength, options, callback) => {
   log(`Truncating ${dagNode.multihash} to ${newLength} bytes`)
 
   pull(
-    exporter(dagNode.multihash, ipfs._ipld, {
+    exporter(dagNode.multihash, ipfs.dag, {
       offset: 0,
       length: newLength
     }),
@@ -24,7 +24,7 @@ const truncateNode = (ipfs, dagNode, newLength, options, callback) => {
         values([{
           content: file.content
         }]),
-        importer(ipfs._ipld, {
+        importer(ipfs.dag, {
           progress: options.progress,
           hashAlg: options.hash,
           cidVersion: options.cidVersion,

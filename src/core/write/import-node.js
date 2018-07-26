@@ -15,7 +15,7 @@ const importStream = (ipfs, source, options, callback) => {
       values([{
         content: pull(source)
       }]),
-      importer(ipfs._ipld, {
+      importer(ipfs.dag, {
         progress: options.progress,
         hashAlg: options.hashAlg,
         cidVersion: options.cidVersion,

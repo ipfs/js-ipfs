@@ -55,7 +55,7 @@
     "filereader-stream": "^2.0.0",
     "interface-datastore": "~0.4.2",
     "ipfs-unixfs": "~0.1.15",
-    "ipfs-unixfs-engine": "~0.31.2",
+    "ipfs-unixfs-engine": "~0.31.3",
     "is-pull-stream": "~0.0.0",
     "is-stream": "^1.1.0",
     "joi": "^13.4.0",

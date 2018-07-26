@@ -40,7 +40,7 @@ module.exports = (ipfs) => {
 
         waterfall([
           (next) => pull(
-            exporter(node.multihash, ipfs._ipld, {
+            exporter(node.multihash, ipfs.dag, {
               offset: options.offset,
               length: options.length
             }),
