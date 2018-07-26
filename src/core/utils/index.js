@@ -11,6 +11,7 @@ module.exports = {
   formatCid: require('./format-cid'),
   limitStreamBytes: require('./limit-stream-bytes'),
   loadNode: require('./load-node'),
+  toPullSource: require('./to-pull-source'),
   toSourcesAndDestination: require('./to-sources-and-destination'),
   toSources: require('./to-sources'),
   traverseTo: require('./traverse-to'),

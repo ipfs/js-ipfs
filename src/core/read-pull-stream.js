@@ -2,11 +2,14 @@
 
 const exporter = require('ipfs-unixfs-engine').exporter
 const pull = require('pull-stream/pull')
+const once = require('pull-stream/sources/once')
+const asyncMap = require('pull-stream/throughs/async-map')
+const defer = require('pull-defer')
 const collect = require('pull-stream/sinks/collect')
-const waterfall = require('async/waterfall')
 const UnixFs = require('ipfs-unixfs')
 const {
-  traverseTo
+  traverseTo,
+  createLock
 } = require('./utils')
 const log = require('debug')('ipfs:mfs:read-pull-stream')
 
@@ -16,39 +19,49 @@ const defaultOptions = {
 }
 
 module.exports = (ipfs) => {
-  return function mfsReadPullStream (path, options, callback) {
-    if (typeof options === 'function') {
-      callback = options
-      options = {}
-    }
-
+  return function mfsReadPullStream (path, options = {}) {
     options = Object.assign({}, defaultOptions, options)
 
     log(`Reading ${path}`)
 
-    waterfall([
-      (done) => traverseTo(ipfs, path, {
-        parents: false
-      }, done),
-      (result, done) => {
+    const deferred = defer.source()
+
+    pull(
+      once(path),
+      asyncMap((path, cb) => {
+        createLock().readLock((next) => {
+          traverseTo(ipfs, path, {
+            parents: false
+          }, next)
+        })(cb)
+      }),
+      asyncMap((result, cb) => {
         const node = result.node
         const meta = UnixFs.unmarshal(node.data)
 
         if (meta.type !== 'file') {
-          return done(new Error(`${path} was not a file`))
+          return cb(new Error(`${path} was not a file`))
         }
 
-        waterfall([
-          (next) => pull(
-            exporter(node.multihash, ipfs.dag, {
-              offset: options.offset,
-              length: options.length
-            }),
-            collect(next)
-          ),
-          (files, next) => next(null, files[0].content)
-        ], done)
-      }
-    ], callback)
+        pull(
+          exporter(node.multihash, ipfs.dag, {
+            offset: options.offset,
+            length: options.length
+          }),
+          collect((error, files) => {
+            cb(error, error ? null : files[0].content)
+          })
+        )
+      }),
+      collect((error, streams) => {
+        if (error) {
+          return deferred.abort(error)
+        }
+
+        deferred.resolve(streams[0])
+      })
+    )
+
+    return deferred
   }
 }

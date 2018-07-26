@@ -1,6 +1,9 @@
 'use strict'
 
 const Joi = require('joi')
+const {
+  PassThrough
+} = require('stream')
 
 const mfsRead = (api) => {
   api.route({
@@ -17,30 +20,34 @@ const mfsRead = (api) => {
           length
         } = request.query
 
-        return ipfs.files.readReadableStream(arg, {
+        const stream = ipfs.files.readReadableStream(arg, {
           offset,
           length
         })
-          .then(stream => {
-            if (!stream._read) {
-              // make the stream look like a Streams2 to appease Hapi
-              stream._read = () => {}
-              stream._readableState = {}
-            }
 
-            reply(stream).header('X-Stream-Output', '1')
-          })
-          .catch(error => {
-            if (error.message.includes('did not exist')) {
-              error.message = 'file does not exist'
-            }
+        if (!stream._read) {
+          // make the stream look like a Streams2 to appease Hapi
+          stream._read = () => {}
+          stream._readableState = {}
+        }
 
-            reply({
-              Message: error.message,
-              Code: 0,
-              Type: 'error'
-            }).code(500).takeover()
-          })
+        stream.once('data', (chunk) => {
+          const passThrough = new PassThrough()
+
+          reply(passThrough)
+            .header('X-Stream-Output', '1')
+
+          passThrough.write(chunk)
+          stream.pipe(passThrough)
+        })
+
+        stream.once('error', (error) => {
+          reply({
+            Message: error.message,
+            Code: 0,
+            Type: 'error'
+          }).code(500).takeover()
+        })
       },
       validate: {
         options: {

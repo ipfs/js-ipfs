@@ -5,24 +5,21 @@ const CID = require('cids')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
 const {
+  createLock,
   updateMfsRoot,
   validatePath,
   traverseTo,
   addLink,
   updateTree,
-  limitStreamBytes
+  limitStreamBytes,
+  toPullSource
 } = require('../utils')
 const values = require('pull-stream/sources/values')
 const log = require('debug')('ipfs:mfs:write')
 const importNode = require('./import-node')
 const updateNode = require('./update-node')
-const toPull = require('stream-to-pull-stream')
-const isStream = require('is-stream')
-const fileReaderStream = require('filereader-stream')
-const isPullStream = require('is-pull-stream')
 const cat = require('pull-cat')
 const pull = require('pull-stream/pull')
-const fs = require('fs')
 
 const defaultOptions = {
   offset: 0, // the offset in the file to begin writing
@@ -39,60 +36,6 @@ const defaultOptions = {
   strategy: 'trickle',
   flush: true,
   leafType: 'raw'
-}
-
-const toPullSource = (content, options, callback) => {
-  if (!content) {
-    return callback(new Error('paths must start with a leading /'))
-  }
-
-  // Buffers
-  if (Buffer.isBuffer(content)) {
-    log('Content was a buffer')
-
-    options.length = options.length || content.length
-
-    return callback(null, values([content]))
-  }
-
-  // Paths, node only
-  if (typeof content === 'string' || content instanceof String) {
-    log('Content was a path')
-
-    // Find out the file size if options.length has not been specified
-    return waterfall([
-      (done) => options.length ? done(null, {
-        size: options.length
-      }) : fs.stat(content, done),
-      (stats, done) => {
-        options.length = stats.size
-
-        done(null, toPull.source(fs.createReadStream(content)))
-      }
-    ], callback)
-  }
-
-  // HTML5 Blob objects (including Files)
-  if (global.Blob && content instanceof global.Blob) {
-    log('Content was an HTML5 Blob')
-    options.length = options.length || content.size
-
-    content = fileReaderStream(content)
-  }
-
-  // Node streams
-  if (isStream(content)) {
-    log('Content was a Node stream')
-    return callback(null, toPull.source(content))
-  }
-
-  // Pull stream
-  if (isPullStream.isSource(content)) {
-    log('Content was a pull-stream')
-    return callback(null, content)
-  }
-
-  callback(new Error(`Don't know how to convert ${content} into a pull stream source`))
 }
 
 module.exports = function mfsWrite (ipfs) {
@@ -132,10 +75,22 @@ module.exports = function mfsWrite (ipfs) {
       // walk the mfs tree to the containing folder node
       ([source, path], done) => {
         waterfall([
-          (next) => traverseTo(ipfs, path.directory, Object.assign({}, options, {
-            createLastComponent: options.parents
-          }), (error, result) => next(error, source, result)),
-          (source, containingFolder, next) => {
+          (next) => {
+            const opts = Object.assign({}, options, {
+              createLastComponent: options.parents
+            })
+
+            if (opts.createLastComponent) {
+              createLock().writeLock((callback) => {
+                traverseTo(ipfs, path.directory, opts, (error, result) => callback(error, { source, containingFolder: result }))
+              })(next)
+            } else {
+              createLock().readLock((callback) => {
+                traverseTo(ipfs, path.directory, opts, (error, result) => callback(error, { source, containingFolder: result }))
+              })(next)
+            }
+          },
+          ({ source, containingFolder }, next) => {
             updateOrImport(ipfs, options, path, source, containingFolder, next)
           }
         ], done)
@@ -186,26 +141,43 @@ const updateOrImport = (ipfs, options, path, source, containingFolder, callback)
       }
     },
 
-    // Add or replace the DAGLink in the containing directory
-    (child, next) => addLink(ipfs, {
-      parent: containingFolder.node,
-      name: path.name,
-      child: {
-        multihash: child.multihash || child.hash,
-        size: child.size
-      },
-      flush: options.flush
-    }, (error, newContaingFolder) => {
-      // Store new containing folder CID
-      containingFolder.node = newContaingFolder
+    // The slow bit is done, now add or replace the DAGLink in the containing directory
+    // re-reading the path to the containing folder in case it has changed in the interim
+    (child, next) => {
+      createLock().writeLock((callback) => {
+        const opts = Object.assign({}, options, {
+          createLastComponent: options.parents
+        })
 
-      next(error)
-    }),
+        traverseTo(ipfs, path.directory, opts, (error, containingFolder) => {
+          if (error) {
+            return callback(error)
+          }
 
-    // Update the MFS tree from the containingFolder upwards
-    (next) => updateTree(ipfs, containingFolder, next),
+          waterfall([
+            (next) => {
+              addLink(ipfs, {
+                parent: containingFolder.node,
+                name: path.name,
+                child: {
+                  multihash: child.multihash || child.hash,
+                  size: child.size
+                },
+                flush: options.flush
+              }, (error, newContaingFolder) => {
+                // Store new containing folder CID
+                containingFolder.node = newContaingFolder
 
-    // Update the MFS record with the new CID for the root of the tree
-    (newRoot, next) => updateMfsRoot(ipfs, newRoot.node.multihash, next)
-  ], callback)
+                next(error)
+              })
+            },
+            // Update the MFS tree from the containingFolder upwards
+            (next) => updateTree(ipfs, containingFolder, next),
+
+            // Update the MFS record with the new CID for the root of the tree
+            (newRoot, next) => updateMfsRoot(ipfs, newRoot.node.multihash, next)
+          ], callback)
+        })
+      })(next)
+    }], callback)
 }

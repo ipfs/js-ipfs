@@ -213,7 +213,7 @@ describe('write', function () {
         throw new Error('Writing a file to a non-existent folder without the --parents flag should have failed')
       })
       .catch((error) => {
-        expect(error.message).to.contain('did not exist')
+        expect(error.message).to.contain('does not exist')
       })
   })
 
