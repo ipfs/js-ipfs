@@ -25,6 +25,7 @@ module.exports = self => {
     }
   }
 
+  let stopped = true
   let requests = []
   const apiUris = options.addresses.map(apiAddrToUri)
 
@@ -41,9 +42,10 @@ module.exports = self => {
 
     const fallbackApiUris = Array.from(apiUris)
     let request
+    const now = Date.now()
 
     retry({ times: fallbackApiUris.length }, (cb) => {
-      if (self.state.state() === 'stopped') return cb()
+      if (stopped) return cb(new Error(`preload aborted for ${cid}`))
 
       // Remove failed request from a previous attempt
       requests = requests.filter(r => r !== request)
@@ -59,14 +61,18 @@ module.exports = self => {
         return callback(err)
       }
 
+      log(`preloaded ${cid} in ${Date.now() - now}ms`)
       callback()
     })
   }
 
-  api.start = () => {}
+  api.start = () => {
+    stopped = false
+  }
 
   api.stop = () => {
-    log(`canceling ${requests.length} pending preload requests`)
+    stopped = true
+    log(`canceling ${requests.length} pending preload request(s)`)
     requests.forEach(r => r.cancel())
     requests = []
   }
