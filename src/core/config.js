@@ -10,12 +10,7 @@ const schema = Joi.object().keys({
   repoOwner: Joi.boolean().default(true),
   preload: Joi.object().keys({
     enabled: Joi.boolean().default(true),
-    addresses: Joi.array()
-      .items(Joi.multiaddr().options({ convert: false }))
-      .default([
-        '/dnsaddr/node0.preload.ipfs.io',
-        '/dnsaddr/node1.preload.ipfs.io'
-      ])
+    addresses: Joi.array().items(Joi.multiaddr().options({ convert: false }))
   }).allow(null),
   init: Joi.alternatives().try(
     Joi.boolean(),

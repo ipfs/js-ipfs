@@ -27,7 +27,7 @@ module.exports = function preload (url, callback) {
   }, (res) => {
     if (res.statusCode < 200 || res.statusCode >= 300) {
       res.resume()
-      log.error('failed to preload', url, res.statusCode, res.statusMessage)
+      log.error('failed to preload', url.href, res.statusCode, res.statusMessage)
       return callback(new Error(`failed to preload ${url}`))
     }
 
@@ -38,7 +38,7 @@ module.exports = function preload (url, callback) {
     })
 
     res.on('error', err => {
-      log.error('response error preloading', url, err)
+      log.error('response error preloading', url.href, err)
       callback(err)
     })
 
@@ -49,7 +49,7 @@ module.exports = function preload (url, callback) {
   })
 
   req.on('error', err => {
-    log.error('request error preloading', url, err)
+    log.error('request error preloading', url.href, err)
     callback(err)
   })
 

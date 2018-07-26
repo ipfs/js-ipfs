@@ -31,7 +31,14 @@ class IPFS extends EventEmitter {
     this._options = {
       init: true,
       start: true,
-      EXPERIMENTAL: {}
+      EXPERIMENTAL: {},
+      preload: {
+        enabled: true,
+        addresses: [
+          '/dnsaddr/node0.preload.ipfs.io/https',
+          '/dnsaddr/node1.preload.ipfs.io/https'
+        ]
+      }
     }
 
     options = config.validate(options || {})

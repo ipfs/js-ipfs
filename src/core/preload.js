@@ -26,22 +26,10 @@ module.exports = self => {
     }
   }
 
-  let stopped = true
   let requests = []
-
-  self.on('start', () => {
-    stopped = false
-  })
-
-  self.on('stop', () => {
-    stopped = true
-    requests.forEach(r => r.cancel())
-    requests = []
-  })
-
   const apiUris = options.addresses.map(apiAddrToUri)
 
-  return (cid, callback) => {
+  const api = (cid, callback) => {
     callback = callback || noop
 
     if (typeof cid !== 'string') {
@@ -56,17 +44,17 @@ module.exports = self => {
     let request
 
     retry({ times: shuffledApiUris.length }, (cb) => {
-      if (stopped) return cb()
+      if (self.state.state() === 'stopped') return cb()
 
       // Remove failed request from a previous attempt
-      requests = requests.filter(r => r === request)
+      requests = requests.filter(r => r !== request)
 
       const apiUri = shuffledApiUris.pop()
 
       request = preload(`${apiUri}/api/v0/refs?r=true&arg=${cid}`, cb)
       requests = requests.concat(request)
     }, (err) => {
-      requests = requests.filter(r => r === request)
+      requests = requests.filter(r => r !== request)
 
       if (err) {
         return callback(err)
@@ -75,6 +63,16 @@ module.exports = self => {
       callback()
     })
   }
+
+  api.start = () => {}
+
+  api.stop = () => {
+    log(`canceling ${requests.length} pending preload requests`)
+    requests.forEach(r => r.cancel())
+    requests = []
+  }
+
+  return api
 }
 
 function apiAddrToUri (addr) {
