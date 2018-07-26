@@ -226,6 +226,7 @@ describe('config', () => {
       { libp2p: { modules: null } },
       { libp2p: { modules: undefined } },
       { libp2p: { unknown: 'value' } },
+      { libp2p: () => {} },
       { libp2p: null },
       { libp2p: undefined }
     ]

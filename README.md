@@ -301,8 +301,11 @@ Modify the default IPFS node config. This object will be *merged* with the defau
 | Type | Default |
 |------|---------|
 | object | [`libp2p-nodejs.js`](https://github.com/ipfs/js-ipfs/blob/master/src/core/runtime/libp2p-nodejs.js) in Node.js, [`libp2p-browser.js`](https://github.com/ipfs/js-ipfs/blob/master/src/core/runtime/libp2p-browser.js) in browsers |
+| function | [`libp2p generator`](examples/custom-libp2p) |
 
-Add custom modules to the libp2p stack of your node.
+The libp2p option allows you to build your libp2p node by configuration, or via a generator. If you are looking to just modify the below options, using the object format is the quickest way to get the default features of libp2p. If you need to create a more customized libp2p node, such as with custom transports or peer/content routers that need some of the ipfs data on startup, a generator is a great way to achieve this.
+
+You can see the generator in action in the [custom libp2p example](examples/custom-libp2p).
 
 - `modules` (object):
     - `transport` (Array<[libp2p.Transport](https://github.com/libp2p/interface-transport)>): An array of Libp2p transport classes/instances to use _instead_ of the defaults. See [libp2p/interface-transport](https://github.com/libp2p/interface-transport) for details.
