@@ -23,6 +23,7 @@ const components = require('./components')
 // replaced by repo-browser when running in the browser
 const defaultRepo = require('./runtime/repo-nodejs')
 const preload = require('./preload')
+const mfsPreload = require('./mfs-preload')
 
 class IPFS extends EventEmitter {
   constructor (options) {
@@ -87,6 +88,7 @@ class IPFS extends EventEmitter {
     this._ipld = new Ipld(this._blockService)
     this._pubsub = undefined
     this._preload = preload(this)
+    this._mfsPreload = mfsPreload(this)
 
     // IPFS Core exposed components
     //   - for booting up a node
@@ -143,7 +145,7 @@ class IPFS extends EventEmitter {
     }
 
     // ipfs.files
-    const mfs = components.mfs(this, this._options)
+    const mfs = components.mfs(this)
 
     Object.keys(mfs).forEach(key => {
       this.files[key] = mfs[key]

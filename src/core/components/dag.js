@@ -24,7 +24,11 @@ module.exports = function dag (self) {
 
       options = options.cid ? options : Object.assign({}, optionDefaults, options)
 
-      self._ipld.put(dagNode, options, callback)
+      self._ipld.put(dagNode, options, (err, cid) => {
+        if (err) return callback(err)
+        if (options.preload !== false) self._preload(cid)
+        callback(null, cid)
+      })
     }),
 
     get: promisify((cid, path, options, callback) => {
