@@ -31,7 +31,7 @@ module.exports = function preload (url, callback) {
       return callback(new Error(`failed to preload ${url}`))
     }
 
-    res.on('data', chunk => log(chunk))
+    res.on('data', chunk => log(`data ${chunk}`))
 
     res.on('abort', () => {
       callback(new Error('request aborted'))
