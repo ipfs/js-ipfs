@@ -30,6 +30,7 @@ module.exports = (self) => {
     self.state.stop()
     self._blockService.unsetExchange()
     self._bitswap.stop()
+    self._preload.stop()
 
     series([
       (cb) => self.libp2p.stop(cb),
