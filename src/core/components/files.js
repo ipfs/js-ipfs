@@ -18,6 +18,7 @@ const OtherBuffer = require('buffer').Buffer
 const CID = require('cids')
 const toB58String = require('multihashes').toB58String
 const errCode = require('err-code')
+const parseChunkerString = require('../utils').parseChunkerString
 
 const WRAPPER = 'wrapper/'
 
@@ -148,12 +149,13 @@ class AddHelper extends Duplex {
 }
 
 module.exports = function files (self) {
-  function _addPullStream (options) {
+  function _addPullStream (options = {}) {
+    const chunkerOptions = parseChunkerString(options.chunker)
     const opts = Object.assign({}, {
       shardSplitThreshold: self._options.EXPERIMENTAL.sharding
         ? 1000
         : Infinity
-    }, options)
+    }, options, chunkerOptions)
 
     if (opts.hashAlg && opts.cidVersion !== 1) {
       opts.cidVersion = 1

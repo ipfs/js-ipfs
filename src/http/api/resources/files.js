@@ -221,7 +221,8 @@ exports.add = {
       onlyHash: request.query['only-hash'],
       hashAlg: request.query['hash'],
       wrapWithDirectory: request.query['wrap-with-directory'],
-      pin: request.query.pin
+      pin: request.query.pin,
+      chunker: request.query['chunker']
     }
 
     const aborter = abortable()
