@@ -6,33 +6,29 @@ const toUri = require('multiaddr-to-uri')
 const URL = require('url').URL || self.URL
 
 const defaultPort = 1138
-const defaultAddr = `/dnsaddr/localhost/tcp/${defaultPort}/http`
+const defaultAddr = `/dnsaddr/localhost/tcp/${defaultPort}`
 
 module.exports.defaultAddr = defaultAddr
 
-// Create a mock preload IPFS node with a gateway that'll respond 204 to a HEAD
-// request. It also remembers the preload URLs it has been called with, and you
-// can ask it for them and also clear them by issuing a GET/DELETE request.
+// Create a mock preload IPFS node with a gateway that'll respond 200 to a
+// request for /api/v0/refs?arg=*. It remembers the preload CIDs it has been
+// called with, and you can ask it for them and also clear them by issuing a
+// GET/DELETE request to /cids.
 module.exports.createNode = () => {
-  let urls = []
+  let cids = []
 
   const server = http.createServer((req, res) => {
-    switch (req.method) {
-      case 'HEAD':
-        res.statusCode = 204
-        urls = urls.concat(req.url)
-        break
-      case 'DELETE':
-        res.statusCode = 204
-        urls = []
-        break
-      case 'GET':
-        res.statusCode = 200
-        res.setHeader('Content-Type', 'application/json')
-        res.write(JSON.stringify(urls))
-        break
-      default:
-        res.statusCode = 500
+    if (req.url.startsWith('/api/v0/refs')) {
+      const arg = new URL(`https://ipfs.io${req.url}`).searchParams.get('arg')
+      cids = cids.concat(arg)
+    } else if (req.method === 'DELETE' && req.url === '/cids') {
+      res.statusCode = 204
+      cids = []
+    } else if (req.method === 'GET' && req.url === '/cids') {
+      res.setHeader('Content-Type', 'application/json')
+      res.write(JSON.stringify(cids))
+    } else {
+      res.statusCode = 500
     }
 
     res.end()
@@ -52,13 +48,14 @@ module.exports.createNode = () => {
 }
 
 function parseMultiaddr (addr) {
-  let url = toUri(addr)
-  url = url.startsWith('http://') ? url : `http://${url}`
-  return new URL(url)
+  if (!(addr.endsWith('http') || addr.endsWith('https'))) {
+    addr = addr + '/http'
+  }
+  return new URL(toUri(addr))
 }
 
-// Get the stored preload URLs for the server at `addr`
-module.exports.getPreloadUrls = (addr, cb) => {
+// Get the stored preload CIDs for the server at `addr`
+module.exports.getPreloadCids = (addr, cb) => {
   if (typeof addr === 'function') {
     cb = addr
     addr = defaultAddr
@@ -66,10 +63,10 @@ module.exports.getPreloadUrls = (addr, cb) => {
 
   const { protocol, hostname, port } = parseMultiaddr(addr)
 
-  const req = http.get({ protocol, hostname, port }, (res) => {
+  const req = http.get({ protocol, hostname, port, path: '/cids' }, (res) => {
     if (res.statusCode !== 200) {
       res.resume()
-      return cb(new Error('failed to get preloaded URLs from mock preload node'))
+      return cb(new Error('failed to get preloaded CIDs from mock preload node'))
     }
 
     let data = ''
@@ -92,7 +89,7 @@ module.exports.getPreloadUrls = (addr, cb) => {
 }
 
 // Clear the stored preload URLs for the server at `addr`
-module.exports.clearPreloadUrls = (addr, cb) => {
+module.exports.clearPreloadCids = (addr, cb) => {
   if (typeof addr === 'function') {
     cb = addr
     addr = defaultAddr
@@ -104,12 +101,13 @@ module.exports.clearPreloadUrls = (addr, cb) => {
     method: 'DELETE',
     protocol,
     hostname,
-    port
+    port,
+    path: '/cids'
   }, (res) => {
     res.resume()
 
     if (res.statusCode !== 204) {
-      return cb(new Error('failed to reset mock preload node'))
+      return cb(new Error('failed to clear CIDs from mock preload node'))
     }
 
     cb()

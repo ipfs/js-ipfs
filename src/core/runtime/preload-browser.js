@@ -27,4 +27,11 @@ module.exports = function preload (url, callback) {
   }
 
   req.send()
+
+  return {
+    cancel: () => {
+      req.abort()
+      callback(new Error('request aborted'))
+    }
+  }
 }

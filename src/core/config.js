@@ -9,12 +9,12 @@ const schema = Joi.object().keys({
   ).allow(null),
   repoOwner: Joi.boolean().default(true),
   preload: Joi.object().keys({
-    enabled: Joi.boolean().default(false),
-    gateways: Joi.array()
+    enabled: Joi.boolean().default(true),
+    addresses: Joi.array()
       .items(Joi.multiaddr().options({ convert: false }))
       .default([
-        '/dns4/wss0.bootstrap.libp2p.io/https',
-        '/dns4/wss1.bootstrap.libp2p.io/https'
+        '/dnsaddr/node0.preload.ipfs.io',
+        '/dnsaddr/node1.preload.ipfs.io'
       ])
   }).allow(null),
   init: Joi.alternatives().try(

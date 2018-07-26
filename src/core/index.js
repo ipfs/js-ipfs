@@ -79,7 +79,7 @@ class IPFS extends EventEmitter {
     this._blockService = new BlockService(this._repo)
     this._ipld = new Ipld(this._blockService)
     this._pubsub = undefined
-    this._preload = preload(this._options.preload)
+    this._preload = preload(this)
 
     // IPFS Core exposed components
     //   - for booting up a node
