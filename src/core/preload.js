@@ -1,26 +1,24 @@
 'use strict'
 
 const setImmediate = require('async/setImmediate')
-const each = require('async/each')
+const retry = require('async/retry')
 const toUri = require('multiaddr-to-uri')
 const debug = require('debug')
 const CID = require('cids')
+const shuffle = require('lodash/shuffle')
 const preload = require('./runtime/preload-nodejs')
 
 const log = debug('jsipfs:preload')
 log.error = debug('jsipfs:preload:error')
 
-// Tools like IPFS Companion redirect requests to IPFS gateways to your local
-// gateway. This is a hint to those tools that they shouldn't redirect these
-// requests as they will effectively disable the preloading.
-const redirectOptOutHint = 'x-ipfs-preload'
+const noop = (err) => { if (err) log.error(err) }
 
-module.exports = (options) => {
-  options = options || {}
+module.exports = self => {
+  const options = self._options.preload || {}
   options.enabled = Boolean(options.enabled)
-  options.gateways = options.gateways || []
+  options.addresses = options.addresses || []
 
-  if (!options.enabled || !options.gateways.length) {
+  if (!options.enabled || !options.addresses.length) {
     return (_, callback) => {
       if (callback) {
         setImmediate(() => callback())
@@ -28,33 +26,60 @@ module.exports = (options) => {
     }
   }
 
-  const noop = (err) => {
-    if (err) log.error(err)
-  }
+  let stopped = true
+  let requests = []
+
+  self.on('start', () => {
+    stopped = false
+  })
+
+  self.on('stop', () => {
+    stopped = true
+    requests.forEach(r => r.cancel())
+    requests = []
+  })
+
+  const apiUris = options.addresses.map(apiAddrToUri)
 
   return (cid, callback) => {
     callback = callback || noop
 
-    each(options.gateways, (gatewayAddr, cb) => {
-      let gatewayUri
-
+    if (typeof cid !== 'string') {
       try {
-        gatewayUri = toUri(gatewayAddr)
-        gatewayUri = gatewayUri.startsWith('http') ? gatewayUri : `http://${gatewayUri}`
+        cid = new CID(cid).toBaseEncodedString()
       } catch (err) {
-        return cb(err)
+        return setImmediate(() => callback(err))
+      }
+    }
+
+    const shuffledApiUris = shuffle(apiUris)
+    let request
+
+    retry({ times: shuffledApiUris.length }, (cb) => {
+      if (stopped) return cb()
+
+      // Remove failed request from a previous attempt
+      requests = requests.filter(r => r === request)
+
+      const apiUri = shuffledApiUris.pop()
+
+      request = preload(`${apiUri}/api/v0/refs?r=true&arg=${cid}`, cb)
+      requests = requests.concat(request)
+    }, (err) => {
+      requests = requests.filter(r => r === request)
+
+      if (err) {
+        return callback(err)
       }
 
-      if (typeof cid !== 'string') {
-        try {
-          cid = new CID(cid).toBaseEncodedString()
-        } catch (err) {
-          return cb(err)
-        }
-      }
-
-      const url = `${gatewayUri}/ipfs/${cid}#${redirectOptOutHint}`
-      preload(url, cb)
-    }, callback)
+      callback()
+    })
   }
+}
+
+function apiAddrToUri (addr) {
+  if (!(addr.endsWith('http') || addr.endsWith('https'))) {
+    addr = addr + '/http'
+  }
+  return toUri(addr)
 }

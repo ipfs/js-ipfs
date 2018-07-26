@@ -11,7 +11,7 @@ chai.use(dirtyChai)
 const MockPreloadNode = require('../utils/mock-preload-node')
 const IPFS = require('../../src')
 
-describe('preload', () => {
+describe.only('preload', () => {
   let ipfs
 
   before((done) => {
@@ -23,14 +23,14 @@ describe('preload', () => {
       },
       preload: {
         enabled: true,
-        gateways: [MockPreloadNode.defaultAddr]
+        addresses: [MockPreloadNode.defaultAddr]
       }
     })
 
     ipfs.on('ready', done)
   })
 
-  afterEach((done) => MockPreloadNode.clearPreloadUrls(done))
+  afterEach((done) => MockPreloadNode.clearPreloadCids(done))
 
   after((done) => ipfs.stop(done))
 
@@ -38,12 +38,15 @@ describe('preload', () => {
     ipfs.files.add(Buffer.from(hat()), (err, res) => {
       expect(err).to.not.exist()
 
-      MockPreloadNode.getPreloadUrls((err, urls) => {
-        expect(err).to.not.exist()
-        expect(urls.length).to.equal(1)
-        expect(urls[0]).to.equal(`/ipfs/${res[0].hash}`)
-        done()
-      })
+      // Wait for preloading to finish
+      setTimeout(() => {
+        MockPreloadNode.getPreloadCids((err, cids) => {
+          expect(err).to.not.exist()
+          expect(cids.length).to.equal(1)
+          expect(cids[0]).to.equal(res[0].hash)
+          done()
+        })
+      }, 100)
     })
   })
 
@@ -57,19 +60,19 @@ describe('preload', () => {
     }], (err, res) => {
       expect(err).to.not.exist()
 
-      MockPreloadNode.getPreloadUrls((err, urls) => {
-        expect(err).to.not.exist()
-        expect(urls.length).to.equal(res.length)
-        res.forEach(file => {
-          const url = urls.find(url => url === `/ipfs/${file.hash}`)
-          expect(url).to.exist()
+      // Wait for preloading to finish
+      setTimeout(() => {
+        MockPreloadNode.getPreloadCids((err, cids) => {
+          expect(err).to.not.exist()
+          expect(cids.length).to.equal(res.length)
+          res.forEach(file => expect(cids).to.include(file.hash))
+          done()
         })
-        done()
-      })
+      }, 100)
     })
   })
 
-  it('should preload root dir for multiple content added with ipfs.files.add', (done) => {
+  it('should preload multiple content and intermediate dirs added with ipfs.files.add', (done) => {
     ipfs.files.add([{
       path: 'dir0/dir1/file0',
       content: Buffer.from(hat())
@@ -85,16 +88,19 @@ describe('preload', () => {
       const rootDir = res.find(file => file.path === 'dir0')
       expect(rootDir).to.exist()
 
-      MockPreloadNode.getPreloadUrls((err, urls) => {
-        expect(err).to.not.exist()
-        expect(urls.length).to.equal(1)
-        expect(urls[0]).to.equal(`/ipfs/${rootDir.hash}`)
-        done()
-      })
+      // Wait for preloading to finish
+      setTimeout(() => {
+        MockPreloadNode.getPreloadCids((err, cids) => {
+          expect(err).to.not.exist()
+          expect(cids.length).to.equal(1)
+          expect(cids[0]).to.equal(rootDir.hash)
+          done()
+        })
+      }, 100)
     })
   })
 
-  it('should preload wrapping dir for content added with ipfs.files.add and wrapWithDirectory option', (done) => {
+  it('should preload multiple content and wrapping dir for content added with ipfs.files.add and wrapWithDirectory option', (done) => {
     ipfs.files.add([{
       path: 'dir0/dir1/file0',
       content: Buffer.from(hat())
@@ -110,11 +116,14 @@ describe('preload', () => {
       const wrappingDir = res.find(file => file.path === '')
       expect(wrappingDir).to.exist()
 
-      MockPreloadNode.getPreloadUrls((err, urls) => {
-        expect(err).to.not.exist()
-        expect(urls.length).to.equal(1)
-        expect(urls[0]).to.equal(`/ipfs/${wrappingDir.hash}`)
-        done()
+      // Wait for preloading to finish
+      setTimeout(() => {
+        MockPreloadNode.getPreloadCids((err, cids) => {
+          expect(err).to.not.exist()
+          expect(cids.length).to.equal(1)
+          expect(cids[0]).to.equal(wrappingDir.hash)
+          done()
+        })
       })
     })
   })

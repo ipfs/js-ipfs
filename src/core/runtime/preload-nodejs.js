@@ -1,6 +1,7 @@
 'use strict'
 
 const http = require('http')
+const https = require('https')
 const { URL } = require('url')
 const debug = require('debug')
 const setImmediate = require('async/setImmediate')
@@ -17,27 +18,47 @@ module.exports = function preload (url, callback) {
     return setImmediate(() => callback(err))
   }
 
-  const req = http.request({
-    protocol: url.protocol,
+  const transport = url.protocol === 'https:' ? https : http
+
+  const req = transport.get({
     hostname: url.hostname,
     port: url.port,
-    path: url.pathname,
-    method: 'HEAD'
+    path: url.pathname + url.search
   }, (res) => {
-    res.resume()
-
     if (res.statusCode < 200 || res.statusCode >= 300) {
+      res.resume()
       log.error('failed to preload', url, res.statusCode, res.statusMessage)
       return callback(new Error(`failed to preload ${url}`))
     }
 
-    callback()
+    res.on('data', chunk => log(chunk))
+
+    res.on('abort', () => {
+      callback(new Error('request aborted'))
+    })
+
+    res.on('error', err => {
+      log.error('response error preloading', url, err)
+      callback(err)
+    })
+
+    res.on('end', () => {
+      // If aborted, callback is called in the abort handler
+      if (!res.aborted) callback()
+    })
   })
 
   req.on('error', err => {
-    log.error('error preloading', url, err)
+    log.error('request error preloading', url, err)
     callback(err)
   })
 
-  req.end()
+  return {
+    cancel: () => {
+      // No need to call callback here
+      // before repsonse - called in req error handler
+      // after response - called in res abort hander
+      req.abort()
+    }
+  }
 }

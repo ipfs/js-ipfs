@@ -89,20 +89,18 @@ function normalizeContent (opts, content) {
   })
 }
 
-function preloadFile (self, opts, file, cb) {
+function preloadFile (self, opts, file) {
   const isRootFile = opts.wrapWithDirectory
     ? file.path === ''
     : !file.path.includes('/')
 
   const shouldPreload = isRootFile && !opts.onlyHash && opts.preload !== false
 
-  if (!shouldPreload) return cb(null, file)
+  if (shouldPreload) {
+    self._preload(file.hash)
+  }
 
-  self._preload(file.hash, (err) => {
-    // Preload error is not fatal
-    if (err) console.error(err)
-    cb(null, file)
-  })
+  return file
 }
 
 function pinFile (self, opts, file, cb) {
@@ -174,7 +172,7 @@ module.exports = function files (self) {
       pull.flatten(),
       importer(self._ipld, opts),
       pull.asyncMap(prepareFile.bind(null, self, opts)),
-      pull.asyncMap(preloadFile.bind(null, self, opts)),
+      pull.map(preloadFile.bind(null, self, opts)),
       pull.asyncMap(pinFile.bind(null, self, opts))
     )
   }
