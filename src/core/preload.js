@@ -5,7 +5,6 @@ const retry = require('async/retry')
 const toUri = require('multiaddr-to-uri')
 const debug = require('debug')
 const CID = require('cids')
-const shuffle = require('lodash/shuffle')
 const preload = require('./runtime/preload-nodejs')
 
 const log = debug('jsipfs:preload')
@@ -40,16 +39,16 @@ module.exports = self => {
       }
     }
 
-    const shuffledApiUris = shuffle(apiUris)
+    const fallbackApiUris = Array.from(apiUris)
     let request
 
-    retry({ times: shuffledApiUris.length }, (cb) => {
+    retry({ times: fallbackApiUris.length }, (cb) => {
       if (self.state.state() === 'stopped') return cb()
 
       // Remove failed request from a previous attempt
       requests = requests.filter(r => r !== request)
 
-      const apiUri = shuffledApiUris.pop()
+      const apiUri = fallbackApiUris.shift()
 
       request = preload(`${apiUri}/api/v0/refs?r=true&arg=${cid}`, cb)
       requests = requests.concat(request)
