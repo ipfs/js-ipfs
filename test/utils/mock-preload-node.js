@@ -55,11 +55,13 @@ function parseMultiaddr (addr) {
 }
 
 // Get the stored preload CIDs for the server at `addr`
-module.exports.getPreloadCids = (addr, cb) => {
+const getPreloadCids = (addr, cb) => {
   if (typeof addr === 'function') {
     cb = addr
     addr = defaultAddr
   }
+
+  addr = addr || defaultAddr
 
   const { protocol, hostname, port } = parseMultiaddr(addr)
 
@@ -88,12 +90,16 @@ module.exports.getPreloadCids = (addr, cb) => {
   req.on('error', cb)
 }
 
+module.exports.getPreloadCids = getPreloadCids
+
 // Clear the stored preload URLs for the server at `addr`
 module.exports.clearPreloadCids = (addr, cb) => {
   if (typeof addr === 'function') {
     cb = addr
     addr = defaultAddr
   }
+
+  addr = addr || defaultAddr
 
   const { protocol, hostname, port } = parseMultiaddr(addr)
 
@@ -115,4 +121,37 @@ module.exports.clearPreloadCids = (addr, cb) => {
 
   req.on('error', cb)
   req.end()
+}
+
+// Wait for the passed CIDs to appear in the CID list from the preload node
+module.exports.waitForCids = (cids, opts, cb) => {
+  if (typeof opts === 'function') {
+    cb = opts
+    opts = {}
+  }
+
+  opts = opts || {}
+  opts.timeout = opts.timeout || 1000
+
+  cids = Array.isArray(cids) ? cids : [cids]
+
+  const start = Date.now()
+
+  const checkForCid = () => {
+    getPreloadCids(opts.addr, (err, preloadCids) => {
+      if (err) return cb(err)
+
+      if (cids.every(cid => preloadCids.includes(cid))) {
+        return cb()
+      }
+
+      if (Date.now() > start + opts.timeout) {
+        return cb(new Error('Timed out waiting for CIDs to be preloaded'))
+      }
+
+      setTimeout(checkForCid, 10)
+    })
+  }
+
+  checkForCid()
 }
