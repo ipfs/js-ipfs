@@ -14,7 +14,7 @@ chai.use(dirtyChai)
 const MockPreloadNode = require('../utils/mock-preload-node')
 const IPFS = require('../../src')
 
-describe.only('preload', () => {
+describe('preload', () => {
   let ipfs
 
   before((done) => {

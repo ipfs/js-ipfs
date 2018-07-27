@@ -26,7 +26,11 @@ module.exports = function dag (self) {
 
       self._ipld.put(dagNode, options, (err, cid) => {
         if (err) return callback(err)
-        if (options.preload !== false) self._preload(cid)
+
+        if (options.preload !== false) {
+          self._preload(cid)
+        }
+
         callback(null, cid)
       })
     }),
