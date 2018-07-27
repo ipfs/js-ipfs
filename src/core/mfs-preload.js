@@ -22,12 +22,14 @@ module.exports = (self, options) => {
       if (rootCid !== stats.hash) {
         log(`preloading updated MFS root ${rootCid} -> ${stats.hash}`)
 
-        self._preload(stats.hash, (err) => {
+        return self._preload(stats.hash, (err) => {
           timeoutId = setTimeout(preloadMfs, options.interval)
           if (err) return log.error(`failed to preload MFS root ${stats.hash}`, err)
           rootCid = stats.hash
         })
       }
+
+      timeoutId = setTimeout(preloadMfs, options.interval)
     })
   }
 
