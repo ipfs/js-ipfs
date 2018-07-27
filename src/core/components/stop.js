@@ -31,9 +31,9 @@ module.exports = (self) => {
     self._blockService.unsetExchange()
     self._bitswap.stop()
     self._preload.stop()
-    self._mfsPreload.stop()
 
     series([
+      (cb) => self._mfsPreload.stop(cb),
       (cb) => self.libp2p.stop(cb),
       (cb) => self._repo.close(cb)
     ], done)
