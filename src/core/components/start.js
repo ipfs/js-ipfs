@@ -34,9 +34,6 @@ module.exports = (self) => {
       },
       (cb) => self.libp2p.start(cb),
       (cb) => {
-        self._preload.start()
-        self._mfsPreload.start()
-
         self._bitswap = new Bitswap(
           self._libp2pNode,
           self._repo.blocks,
@@ -45,7 +42,9 @@ module.exports = (self) => {
 
         self._bitswap.start()
         self._blockService.setExchange(self._bitswap)
-        cb()
+
+        self._preload.start()
+        self._mfsPreload.start(cb)
       }
     ], done)
   })
