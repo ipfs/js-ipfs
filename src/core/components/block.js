@@ -52,6 +52,11 @@ module.exports = function block (self) {
           if (err) {
             return cb(err)
           }
+
+          if (options.preload !== false) {
+            self._preload(block.cid)
+          }
+
           cb(null, block)
         })
       ], callback)

@@ -80,14 +80,14 @@ module.exports = (self) => {
       // the pin-set nodes link to a special 'empty' node, so make sure it exists
       cb => DAGNode.create(Buffer.alloc(0), (err, empty) => {
         if (err) { return cb(err) }
-        dag.put(empty, { cid: new CID(empty.multihash) }, cb)
+        dag.put(empty, { cid: new CID(empty.multihash), preload: false }, cb)
       }),
 
       // create a root node with DAGLinks to the direct and recursive DAGs
       cb => DAGNode.create(Buffer.alloc(0), [dLink, rLink], (err, node) => {
         if (err) { return cb(err) }
         root = node
-        dag.put(root, { cid: new CID(root.multihash) }, cb)
+        dag.put(root, { cid: new CID(root.multihash), preload: false }, cb)
       }),
 
       // hack for CLI tests
