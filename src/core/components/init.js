@@ -54,6 +54,7 @@ module.exports = function init (self) {
     opts.log = opts.log || function () {}
     const config = defaultConfig()
     let privateKey
+
     waterfall([
       // Verify repo does not yet exist.
       (cb) => self._repo.exists(cb),
@@ -77,13 +78,13 @@ module.exports = function init (self) {
           peerId.create({ bits: opts.bits }, cb)
         }
       },
-      (keys, cb) => {
+      (peerId, cb) => {
         self.log('identity generated')
         config.Identity = {
-          PeerID: keys.toB58String(),
-          PrivKey: keys.privKey.bytes.toString('base64')
+          PeerID: peerId.toB58String(),
+          PrivKey: peerId.privKey.bytes.toString('base64')
         }
-        privateKey = keys.privKey
+        privateKey = peerId.privKey
         if (opts.pass) {
           config.Keychain = Keychain.generateOptions()
         }

@@ -1,7 +1,7 @@
 'use strict'
 
 const peerId = require('peer-id')
-const waterfall = require('async/waterfall')
+const series = require('async/series')
 
 const debug = require('debug')
 const log = debug('jsipfs:ipns:publisher')
@@ -25,20 +25,80 @@ class IpnsPublisher {
 
   // publish record with a eol
   publishWithEOL (privKey, value, lifetime, callback) {
-    this.updateOrCreateRecord(privKey, value, lifetime, (err, record) => {
+    peerId.createFromPrivKey(privKey.bytes.toString('base64'), (err, peerIdResult) => {
       if (err) {
-        return callback(err)
+        callback(err)
       }
 
-      // TODO ROUTING - Add record (with public key)
+      this.updateOrCreateRecord(privKey, value, lifetime, peerIdResult, (err, record) => {
+        if (err) {
+          return callback(err)
+        }
 
-      callback(null, record)
+        this.putRecordToRouting(record, peerIdResult, callback)
+      })
     })
   }
 
   // Accepts a keypair, as well as a value (ipfsPath), and publishes it out to the routing system
   publish (privKey, value, callback) {
     this.publishWithEOL(privKey, value, defaultRecordTtl, callback)
+  }
+
+  putRecordToRouting(record, peerIdResult, callback) {
+    const publicKey = peerIdResult._pubKey
+
+    ipns.embedPublicKey(publicKey, record, (err, embedPublicKeyRecord) => {
+      if (err) {
+        return callback(err)
+      }
+      
+      const { ipnsKey, pkKey } = ipns.getIdKeys(peerIdResult.id)
+      
+      series([
+        (cb) => this.publishEntry(ipnsKey, record, cb),
+        // Publish the public key if a public key cannot be extracted from the ID
+        // We will be able to deprecate this part in the future, since the public keys will be only in the peerId
+        (cb) => embedPublicKeyRecord ? this.publishPublicKey(pkKey, publicKey, cb) : cb(),
+      ], (err) => {
+        if (err) {
+          return callback(err)
+        }
+
+        return callback(null, embedPublicKeyRecord || record)
+      })
+    })
+  }
+
+  publishEntry (key, entry, callback) {    
+    // Marshal record
+    const data = ipns.marshal(entry)
+    
+    // TODO Routing - this should be replaced by a put to the DHT
+    this.repo.datastore.put(key, data, (err, res) => {
+      if (err) {
+        log.error(`ipns record for ${value} could not be stored in the routing`)
+        return callback(Object.assign(new Error(`ipns record for ${value} could not be stored in the routing`), { code: ERR_STORING_IN_DATASTORE }))
+      }
+
+      log(`ipns record for ${key.toString()} was stored in the routing`)
+      return callback(null, res)
+    })
+  }
+
+  publishPublicKey (key, publicKey, callback) {
+    console.log('publish public key');
+    
+    // TODO Routing - this should be replaced by a put to the DHT
+    this.repo.datastore.put(key, publicKey.bytes, (err, res) => {
+      if (err) {
+        log.error(`public key for ${value} could not be stored in the routing`)
+        return callback(Object.assign(new Error(`public key for ${value} could not be stored in the routing`), { code: ERR_STORING_IN_DATASTORE }))
+      }
+
+      log(`public key for ${key.toString()} was stored in the routing`)
+      return callback(null, res)
+    })
   }
 
   // Returns the record this node has published corresponding to the given peer ID.
@@ -58,9 +118,7 @@ class IpnsPublisher {
         }
       } else if (err.notFound) {
         if (!checkRouting) {
-          return callback(null, {
-            peerIdResult: peerIdResult
-          })
+          return callback(null, null)
         }
         // TODO ROUTING - get
       } else {
@@ -77,28 +135,18 @@ class IpnsPublisher {
         const error = `found ipns record that we couldn't convert to a value`
 
         log.error(error)
-        return callback(null, {
-          peerIdResult: peerIdResult
-        })
+        return callback(null, null)
       }
 
-      return callback(null, {
-        peerIdResult: peerIdResult,
-        record: result
-      })
+      return callback(null, result)
     })
   }
 
-  updateOrCreateRecord (privKey, value, validity, callback) {
-    waterfall([
-      (cb) => peerId.createFromPrivKey(privKey.bytes.toString('base64'), cb),
-      (id, cb) => this.getPublished(id, false, cb) // TODO ROUTING - change to true
-    ], (err, result) => {
+  updateOrCreateRecord(privKey, value, validity, peerIdResult, callback) {
+    this.getPublished(peerIdResult, false, (err, record) => { // TODO ROUTING - change to true
       if (err) {
         callback(err)
       }
-
-      const { peerIdResult, record } = result
 
       // Determinate the record sequence number
       let seqNumber = 0
