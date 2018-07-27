@@ -89,6 +89,20 @@ function normalizeContent (opts, content) {
   })
 }
 
+function preloadFile (self, opts, file) {
+  const isRootFile = opts.wrapWithDirectory
+    ? file.path === ''
+    : !file.path.includes('/')
+
+  const shouldPreload = isRootFile && !opts.onlyHash && opts.preload !== false
+
+  if (shouldPreload) {
+    self._preload(file.hash)
+  }
+
+  return file
+}
+
 function pinFile (self, opts, file, cb) {
   // Pin a file if it is the root dir of a recursive add or the single file
   // of a direct add.
@@ -158,6 +172,7 @@ module.exports = function files (self) {
       pull.flatten(),
       importer(self._ipld, opts),
       pull.asyncMap(prepareFile.bind(null, self, opts)),
+      pull.map(preloadFile.bind(null, self, opts)),
       pull.asyncMap(pinFile.bind(null, self, opts))
     )
   }

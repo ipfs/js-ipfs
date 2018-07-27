@@ -90,7 +90,7 @@ exports = module.exports = function (dag) {
 
       pinSet.storeItems(pins, (err, rootNode) => {
         if (err) { return callback(err) }
-        const opts = { cid: new CID(rootNode.multihash) }
+        const opts = { cid: new CID(rootNode.multihash), preload: false }
         dag.put(rootNode, opts, (err, cid) => {
           if (err) { return callback(err) }
           callback(null, rootNode)
@@ -168,7 +168,8 @@ exports = module.exports = function (dag) {
         function storeChild (err, child, binIdx, cb) {
           if (err) { return cb(err) }
 
-          dag.put(child, { cid: new CID(child._multihash) }, err => {
+          const opts = { cid: new CID(child._multihash), preload: false }
+          dag.put(child, opts, err => {
             if (err) { return cb(err) }
             fanoutLinks[binIdx] = new DAGLink('', child.size, child.multihash)
             cb(null)

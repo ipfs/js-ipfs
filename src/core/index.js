@@ -22,6 +22,8 @@ const boot = require('./boot')
 const components = require('./components')
 // replaced by repo-browser when running in the browser
 const defaultRepo = require('./runtime/repo-nodejs')
+const preload = require('./preload')
+const mfsPreload = require('./mfs-preload')
 
 class IPFS extends EventEmitter {
   constructor (options) {
@@ -30,7 +32,14 @@ class IPFS extends EventEmitter {
     this._options = {
       init: true,
       start: true,
-      EXPERIMENTAL: {}
+      EXPERIMENTAL: {},
+      preload: {
+        enabled: true,
+        addresses: [
+          '/dnsaddr/node0.preload.ipfs.io/https',
+          '/dnsaddr/node1.preload.ipfs.io/https'
+        ]
+      }
     }
 
     options = config.validate(options || {})
@@ -78,6 +87,8 @@ class IPFS extends EventEmitter {
     this._blockService = new BlockService(this._repo)
     this._ipld = new Ipld(this._blockService)
     this._pubsub = undefined
+    this._preload = preload(this)
+    this._mfsPreload = mfsPreload(this)
 
     // IPFS Core exposed components
     //   - for booting up a node
@@ -134,7 +145,7 @@ class IPFS extends EventEmitter {
     }
 
     // ipfs.files
-    const mfs = components.mfs(this, this._options)
+    const mfs = components.mfs(this)
 
     Object.keys(mfs).forEach(key => {
       this.files[key] = mfs[key]

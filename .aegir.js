@@ -1,8 +1,11 @@
 'use strict'
 
-const createServer = require('ipfsd-ctl').createServer
+const IPFSFactory = require('ipfsd-ctl')
+const parallel = require('async/parallel')
+const MockPreloadNode = require('./test/utils/mock-preload-node')
 
-const server = createServer()
+const ipfsdServer = IPFSFactory.createServer()
+const preloadNode = MockPreloadNode.createNode()
 
 module.exports = {
   webpack: {
@@ -21,9 +24,29 @@ module.exports = {
     singleRun: true
   },
   hooks: {
+    node: {
+      pre: (cb) => preloadNode.start(cb),
+      post: (cb) => preloadNode.stop(cb)
+    },
     browser: {
-      pre: server.start.bind(server),
-      post: server.stop.bind(server)
+      pre: (cb) => {
+        parallel([
+          (cb) => {
+            ipfsdServer.start()
+            cb()
+          },
+          (cb) => preloadNode.start(cb)
+        ], cb)
+      },
+      post: (cb) => {
+        parallel([
+          (cb) => {
+            ipfsdServer.stop()
+            cb()
+          },
+          (cb) => preloadNode.stop(cb)
+        ], cb)
+      }
     }
   }
 }

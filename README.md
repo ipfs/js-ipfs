@@ -231,6 +231,9 @@ Creates and returns an instance of an IPFS node. Use the `options` argument to s
         - `enabled` (boolean): Make this node a relay (other nodes can connect *through* it). (Default: `false`)
         - `active` (boolean): Make this an *active* relay node. Active relay nodes will attempt to dial a destination peer even if that peer is not yet connected to the relay. (Default: `false`)
 
+- `preload` (object): Configure external nodes that will preload content added to this node
+    - `enabled` (boolean): Enable content preloading (Default: `true`)
+    - `addresses` (array): Multiaddr API addresses of nodes that should preload content. NOTE: nodes specified here should also be added to your node's bootstrap address list at `config.Boostrap`
 - `EXPERIMENTAL` (object): Enable and configure experimental features.
     - `pubsub` (boolean): Enable libp2p pub-sub. (Default: `false`)
     - `sharding` (boolean): Enable directory sharding. Directories that have many child objects will be represented by multiple DAG nodes instead of just one. It can improve lookup performance when a directory has several thousand files or more. (Default: `false`)
