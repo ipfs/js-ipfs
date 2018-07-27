@@ -8,6 +8,10 @@ const schema = Joi.object().keys({
     Joi.string()
   ).allow(null),
   repoOwner: Joi.boolean().default(true),
+  preload: Joi.object().keys({
+    enabled: Joi.boolean().default(true),
+    addresses: Joi.array().items(Joi.multiaddr().options({ convert: false }))
+  }).allow(null),
   init: Joi.alternatives().try(
     Joi.boolean(),
     Joi.object().keys({ bits: Joi.number().integer() })

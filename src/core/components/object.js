@@ -80,10 +80,17 @@ module.exports = function object (self) {
             if (err) {
               return cb(err)
             }
-            self._ipld.put(node, {
-              cid: new CID(node.multihash)
-            }, (err) => {
-              cb(err, node)
+
+            const cid = new CID(node.multihash)
+
+            self._ipld.put(node, { cid }, (err) => {
+              if (err) return cb(err)
+
+              if (options.preload !== false) {
+                self._preload(cid)
+              }
+
+              cb(null, node)
             })
           })
         }
@@ -92,11 +99,19 @@ module.exports = function object (self) {
   }
 
   return {
-    new: promisify((template, callback) => {
+    new: promisify((template, options, callback) => {
       if (typeof template === 'function') {
         callback = template
         template = undefined
+        options = {}
       }
+
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
+      }
+
+      options = options || {}
 
       let data
 
@@ -111,11 +126,16 @@ module.exports = function object (self) {
         if (err) {
           return callback(err)
         }
-        self._ipld.put(node, {
-          cid: new CID(node.multihash)
-        }, (err) => {
+
+        const cid = new CID(node.multihash)
+
+        self._ipld.put(node, { cid }, (err) => {
           if (err) {
             return callback(err)
+          }
+
+          if (options.preload !== false) {
+            self._preload(cid)
           }
 
           callback(null, node)
@@ -166,11 +186,15 @@ module.exports = function object (self) {
       }
 
       function next () {
-        self._ipld.put(node, {
-          cid: new CID(node.multihash)
-        }, (err) => {
+        const cid = new CID(node.multihash)
+
+        self._ipld.put(node, { cid }, (err) => {
           if (err) {
             return callback(err)
+          }
+
+          if (options.preload !== false) {
+            self._preload(cid)
           }
 
           self.object.get(node.multihash, callback)
@@ -282,6 +306,8 @@ module.exports = function object (self) {
         editAndSave((node, cb) => {
           if (DAGLink.isDAGLink(linkRef)) {
             linkRef = linkRef._name
+          } else if (linkRef && linkRef.name) {
+            linkRef = linkRef.name
           }
           DAGNode.rmLink(node, linkRef, cb)
         })(multihash, options, callback)
