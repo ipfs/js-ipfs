@@ -192,4 +192,12 @@ describe('preload', () => {
       MockPreloadNode.waitForCids(block.cid.toBaseEncodedString(), done)
     })
   })
+
+  it('should preload content added with dag.put', (done) => {
+    const obj = { test: hat() }
+    ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' }, (err, cid) => {
+      expect(err).to.not.exist()
+      MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
+    })
+  })
 })
