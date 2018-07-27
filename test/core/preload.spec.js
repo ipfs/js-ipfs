@@ -185,4 +185,11 @@ describe.only('preload', () => {
       })
     })
   })
+
+  it('should preload content added with block.put', (done) => {
+    ipfs.block.put(Buffer.from(hat()), (err, block) => {
+      expect(err).to.not.exist()
+      MockPreloadNode.waitForCids(block.cid.toBaseEncodedString(), done)
+    })
+  })
 })
