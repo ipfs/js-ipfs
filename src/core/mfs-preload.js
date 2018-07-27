@@ -31,16 +31,21 @@ module.exports = (self, options) => {
     })
   }
 
+  let stopped = true
+
   return {
     start () {
+      stopped = false
       self.files.stat('/', (err, stats) => {
         if (err) return log.error('failed to stat MFS root for preload', err)
+        if (stopped) return // Stopped inbetween!
         rootCid = stats.hash
         log(`monitoring MFS root ${rootCid}`)
         timeoutId = setTimeout(preloadMfs, options.interval)
       })
     },
     stop () {
+      stopped = true
       clearTimeout(timeoutId)
     }
   }
