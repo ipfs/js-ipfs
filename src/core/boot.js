@@ -30,7 +30,10 @@ module.exports = (self) => {
     (repoOpened, cb) => {
       // Init with existing initialized, opened, repo
       if (repoOpened) {
-        return self.init({ repo: self._repo }, (err) => cb(err))
+        return self.init({ repo: self._repo }, (err) => {
+          if (err) return cb(Object.assign(err, { emitted: true }))
+          cb()
+        })
       }
 
       if (doInit) {
@@ -38,7 +41,10 @@ module.exports = (self) => {
           { bits: 2048, pass: self._options.pass },
           typeof options.init === 'object' ? options.init : {}
         )
-        return self.init(initOptions, (err) => cb(err))
+        return self.init(initOptions, (err) => {
+          if (err) return cb(Object.assign(err, { emitted: true }))
+          cb()
+        })
       }
 
       cb()
@@ -48,11 +54,18 @@ module.exports = (self) => {
       if (!doStart) {
         return cb()
       }
-      self.start(cb)
+
+      self.start((err) => {
+        if (err) return cb(Object.assign(err, { emitted: true }))
+        cb()
+      })
     }
   ], (err) => {
     if (err) {
-      return self.emit('error', err)
+      if (!err.emitted) {
+        self.emit('error', err)
+      }
+      return
     }
     self.log('booted')
     self.emit('ready')
