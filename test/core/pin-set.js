@@ -53,7 +53,7 @@ describe('pinSet', function () {
   let repo
 
   before(function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(80 * 1000)
     repo = createTempRepo()
     ipfs = new IPFS({ repo })
     ipfs.on('ready', () => {
@@ -63,7 +63,7 @@ describe('pinSet', function () {
   })
 
   after(function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(80 * 1000)
     ipfs.stop(done)
   })
 
