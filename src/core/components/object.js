@@ -1,6 +1,7 @@
 'use strict'
 
 const waterfall = require('async/waterfall')
+const setImmediate = require('async/setImmediate')
 const promisify = require('promisify-es6')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
@@ -8,7 +9,6 @@ const DAGLink = dagPB.DAGLink
 const CID = require('cids')
 const mh = require('multihashes')
 const Unixfs = require('ipfs-unixfs')
-const assert = require('assert')
 
 function normalizeMultihash (multihash, enc) {
   if (typeof multihash === 'string') {
@@ -116,7 +116,9 @@ module.exports = function object (self) {
       let data
 
       if (template) {
-        assert(template === 'unixfs-dir', 'unkown template')
+        if (template !== 'unixfs-dir') {
+          return setImmediate(() => callback(new Error('unknown template')))
+        }
         data = (new Unixfs('directory')).marshal()
       } else {
         data = Buffer.alloc(0)

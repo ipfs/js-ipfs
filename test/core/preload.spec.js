@@ -97,6 +97,49 @@ describe('preload', () => {
     })
   })
 
+  it('should preload content retrieved with files.cat', (done) => {
+    ipfs.files.add(Buffer.from(hat()), { preload: false }, (err, res) => {
+      expect(err).to.not.exist()
+      ipfs.files.cat(res[0].hash, (err) => {
+        expect(err).to.not.exist()
+        MockPreloadNode.waitForCids(res[0].hash, done)
+      })
+    })
+  })
+
+  it('should preload content retrieved with files.get', (done) => {
+    ipfs.files.add(Buffer.from(hat()), { preload: false }, (err, res) => {
+      expect(err).to.not.exist()
+      ipfs.files.get(res[0].hash, (err) => {
+        expect(err).to.not.exist()
+        MockPreloadNode.waitForCids(res[0].hash, done)
+      })
+    })
+  })
+
+  it('should preload content retrieved with ls', (done) => {
+    ipfs.files.add([{
+      path: 'dir0/dir1/file0',
+      content: Buffer.from(hat())
+    }, {
+      path: 'dir0/dir1/file1',
+      content: Buffer.from(hat())
+    }, {
+      path: 'dir0/file2',
+      content: Buffer.from(hat())
+    }], { wrapWithDirectory: true }, (err, res) => {
+      expect(err).to.not.exist()
+
+      const wrappingDir = res.find(file => file.path === '')
+      expect(wrappingDir).to.exist()
+
+      ipfs.ls(wrappingDir.hash, (err) => {
+        expect(err).to.not.exist()
+        MockPreloadNode.waitForCids(wrappingDir.hash, done)
+      })
+    })
+  })
+
   it('should preload content added with object.new', (done) => {
     ipfs.object.new((err, node) => {
       expect(err).to.not.exist()
@@ -186,10 +229,41 @@ describe('preload', () => {
     })
   })
 
+  it('should preload content retrieved with object.get', (done) => {
+    ipfs.object.new(null, { preload: false }, (err, node) => {
+      expect(err).to.not.exist()
+      ipfs.object.get(node.multihash, (err) => {
+        expect(err).to.not.exist()
+        const cid = new CID(node.multihash)
+        MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
+      })
+    })
+  })
+
   it('should preload content added with block.put', (done) => {
     ipfs.block.put(Buffer.from(hat()), (err, block) => {
       expect(err).to.not.exist()
       MockPreloadNode.waitForCids(block.cid.toBaseEncodedString(), done)
+    })
+  })
+
+  it('should preload content retrieved with block.get', (done) => {
+    ipfs.block.put(Buffer.from(hat()), { preload: false }, (err, block) => {
+      expect(err).to.not.exist()
+      ipfs.block.get(block.cid, (err) => {
+        expect(err).to.not.exist()
+        MockPreloadNode.waitForCids(block.cid.toBaseEncodedString(), done)
+      })
+    })
+  })
+
+  it('should preload content retrieved with block.stat', (done) => {
+    ipfs.block.put(Buffer.from(hat()), { preload: false }, (err, block) => {
+      expect(err).to.not.exist()
+      ipfs.block.stat(block.cid, (err) => {
+        expect(err).to.not.exist()
+        MockPreloadNode.waitForCids(block.cid.toBaseEncodedString(), done)
+      })
     })
   })
 
@@ -198,6 +272,18 @@ describe('preload', () => {
     ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' }, (err, cid) => {
       expect(err).to.not.exist()
       MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
+    })
+  })
+
+  it('should preload content retrieved with dag.get', (done) => {
+    const obj = { test: hat() }
+    const opts = { format: 'dag-cbor', hashAlg: 'sha2-256', preload: false }
+    ipfs.dag.put(obj, opts, (err, cid) => {
+      expect(err).to.not.exist()
+      ipfs.dag.get(cid, (err) => {
+        expect(err).to.not.exist()
+        MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
+      })
     })
   })
 })
