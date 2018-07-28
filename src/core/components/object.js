@@ -221,6 +221,10 @@ module.exports = function object (self) {
         cid = cid.toV1()
       }
 
+      if (options.preload !== false) {
+        self._preload(cid)
+      }
+
       self._ipld.get(cid, (err, result) => {
         if (err) {
           return callback(err)
