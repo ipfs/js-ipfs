@@ -5,7 +5,7 @@
 const fileType = require('file-type')
 const mimeTypes = require('mime-types')
 const stream = require('stream')
-const nodeToWebStream = require('readable-stream-node-to-web')
+const toBlob = require('stream-to-blob')
 
 const resolver = require('./resolver')
 const pathUtils = require('./utils/path')
@@ -68,7 +68,7 @@ const response = (ipfsNode, ipfsPath) => {
 
         readableStream.once('error', (error) => {
           if (error) {
-            resolve(new Response(error.toString(), header(500, 'Service Worker Error')))
+            resolve(new Response(error.toString(), header(500, 'Error fetching the file')))
           }
         })
 
@@ -79,19 +79,30 @@ const response = (ipfsNode, ipfsPath) => {
           if (filetypeChecked) {
             return
           }
+
           filetypeChecked = true
           // return Response with mime type
           const fileSignature = fileType(chunk)
           const mimeType = mimeTypes.lookup(fileSignature ? fileSignature.ext : null)
 
-          if (mimeType) {
-            resolve(
-              new Response(typeof ReadableStream === 'function' ? nodeToWebStream(responseStream) : responseStream,
-                header(200, 'OK', { 'Content-Type': mimeTypes.contentType(mimeType) }))
-            )
+          if (typeof Blob === 'undefined') {
+            if (mimeType) {
+              resolve(new Response(responseStream, header(200, 'OK', { 'Content-Type': mimeTypes.contentType(mimeType) })))
+            } else {
+              resolve(new Response(responseStream, header()))
+            }
           } else {
-            resolve(new Response(typeof ReadableStream === 'function' ? nodeToWebStream(responseStream) : responseStream,
-              header()))
+            toBlob(responseStream, (err, blob) => {
+              if (err) {
+                resolve(new Response(err.toString(), header(500, 'Error fetching the file')))
+              }
+
+              if (mimeType) {
+                resolve(new Response(blob, header(200, 'OK', { 'Content-Type': mimeTypes.contentType(mimeType) })))
+              } else {
+                resolve(new Response(blob, header()))
+              }
+            })
           }
         })
       })

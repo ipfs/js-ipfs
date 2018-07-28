@@ -39,7 +39,7 @@
     "mime-types": "^2.1.18",
     "multihashes": "^0.4.13",
     "promisify-es6": "^1.0.3",
-    "readable-stream-node-to-web": "^1.0.1"
+    "stream-to-blob": "^1.0.1"
   },
   "devDependencies": {
     "aegir": "^13.1.0",
