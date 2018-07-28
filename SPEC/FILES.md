@@ -160,6 +160,7 @@ If no `content` is passed, then the path is treated as an empty directory
 - wrapWithDirectory (boolean): adds a wrapping node around the content.
 - onlyHash (boolean): doesn't actually add the file to IPFS, but rather calculates its hash.
 - pin (boolean, default true): pin this object when adding.
+- raw-leaves (boolean, default false): if true, DAG leaves will contain raw file data and not be wrapped in a protobuf
 
 `callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res` will be an array of:
 
@@ -696,6 +697,7 @@ Where:
   - `hash` is a Boolean value to return only the hash  (default: false)
   - `size` is a Boolean value to return only the size  (default: false)
   - `withLocal` is a Boolean value to compute the amount of the dag that is local, and if possible the total size  (default: false)
+  - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
 - `callback` is an optional function with the signature `function (error, stats) {}`, where `error` may be an Error that occured if the operation was not successful and `stats` is an Object with the following keys:
 
 - `hash` is a string with the hash
@@ -874,6 +876,8 @@ Where:
   - `create` is a Boolean to indicate to create the file if it doesn't exist (default: false)
   - `truncate` is a Boolean to indicate if the file should be truncated after writing all the bytes from `content` (default: false)
   - `length` is an Integer with the maximum number of bytes to read (default: Read all bytes from `content`)
+  - `raw-leaves`: if true, DAG leaves will contain raw file data and not be wrapped in a protobuf (boolean, default false)
+  - `cid-version`: the CID version to use when storing the data (storage keys are based on the CID, including it's version) (integer, default 0)
 - `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occured if the operation was not successful
 
 If no `callback` is passed, a promise is returned.
@@ -970,11 +974,14 @@ ipfs.files.flush('/', (err) => {
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.files.ls([path], [callback])
+##### `JavaScript` - ipfs.files.ls([path], [options], [callback])
 
 Where:
 
 - `path` is an optional string to show listing for (default: `/`)
+- `options` is an optional Object that might contain the following keys:
+  - `long` is a Boolean value to decide whether or not to populate `type`, `size` and `hash` (default: false)
+  - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
 - `callback` is an optional function with the signature `function (error, files) {}`, where `error` may be an Error that occured if the operation was not successful and `files` is an array containing Objects that contain the following keys:
 
 - `name` which is the file's name
