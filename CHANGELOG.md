@@ -1,3 +1,13 @@
+<a name="0.1.3"></a>
+## [0.1.3](https://github.com/ipfs/js-ipfs-http-response/compare/v0.1.2...v0.1.3) (2018-07-28)
+
+
+### Bug Fixes
+
+* firefox using readable stream ([#3](https://github.com/ipfs/js-ipfs-http-response/issues/3)) ([0bff82d](https://github.com/ipfs/js-ipfs-http-response/commit/0bff82d))
+
+
+
 <a name="0.1.2"></a>
 ## 0.1.2 (2018-06-01)
 
