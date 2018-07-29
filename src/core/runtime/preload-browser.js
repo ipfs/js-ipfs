@@ -9,29 +9,21 @@ log.error = debug('jsipfs:preload:error')
 module.exports = function preload (url, callback) {
   log(url)
 
-  const req = new self.XMLHttpRequest()
+  const controller = new AbortController()
+  const signal = controller.signal
 
-  req.open('GET', url)
-
-  req.onreadystatechange = function () {
-    if (this.readyState !== this.DONE) {
-      return
-    }
-
-    if (this.status < 200 || this.status >= 300) {
-      log.error('failed to preload', url, this.status, this.statusText)
-      return callback(new Error(`failed to preload ${url}`))
-    }
-
-    callback()
-  }
-
-  req.send()
+  fetch(url, { signal })
+    .then(res => {
+      if (!res.ok) {
+        log.error('failed to preload', url, res.status, res.statusText)
+        throw new Error(`failed to preload ${url}`)
+      }
+      return res.text()
+    })
+    .then(() => callback())
+    .catch(callback)
 
   return {
-    cancel: () => {
-      req.abort()
-      callback(new Error('request aborted'))
-    }
+    cancel: () => controller.abort()
   }
 }
