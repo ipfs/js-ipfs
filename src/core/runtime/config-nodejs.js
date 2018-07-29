@@ -10,9 +10,6 @@ module.exports = () => ({
     Gateway: '/ip4/127.0.0.1/tcp/9090'
   },
   Datastore: {
-    StorageGCWatermark: 90,
-    GCPeriod: '1h',
-    BloomFilterSize: 0,
     Spec: {
       type: 'mount',
       mounts: [
