@@ -23,7 +23,9 @@ const createMockPreload = () => {
 }
 
 describe('MFS preload', () => {
-  it('should preload MFS root periodically', (done) => {
+  it('should preload MFS root periodically', function (done) {
+    this.timeout(80 * 1000)
+
     // CIDs returned from our mock files.stat function
     const statCids = ['QmInitial', 'QmSame', 'QmSame', 'QmUpdated']
     // The CIDs we expect to have been preloaded
@@ -48,7 +50,7 @@ describe('MFS preload', () => {
           ).to.deep.equal(expectedPreloadCids)
           done()
         })
-      }, statCids.length * (interval + 5))
+      }, statCids.length * (interval * 2))
     })
   })
 })

@@ -11,7 +11,7 @@ module.exports = function preload (url, callback) {
 
   const req = new self.XMLHttpRequest()
 
-  req.open('HEAD', url)
+  req.open('GET', url)
 
   req.onreadystatechange = function () {
     if (this.readyState !== this.DONE) {

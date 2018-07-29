@@ -360,7 +360,7 @@ module.exports = (self) => {
         (_, cb) => repo.datastore.has(pinDataStoreKey, cb),
         (has, cb) => has ? cb() : cb(new Error('No pins to load')),
         (cb) => repo.datastore.get(pinDataStoreKey, cb),
-        (mh, cb) => dag.get(new CID(mh), cb)
+        (mh, cb) => dag.get(new CID(mh), '', { preload: false }, cb)
       ], (err, pinRoot) => {
         if (err) {
           if (err.message === 'No pins to load') {

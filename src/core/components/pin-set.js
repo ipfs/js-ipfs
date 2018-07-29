@@ -74,7 +74,7 @@ exports = module.exports = function (dag) {
 
           seen[bs58Link] = true
 
-          dag.get(multihash, (err, res) => {
+          dag.get(multihash, '', { preload: false }, (err, res) => {
             if (err) { return someCb(err) }
             searchChildren(res.value, someCb)
           })
@@ -184,7 +184,7 @@ exports = module.exports = function (dag) {
         return callback(new Error('No link found with name ' + name))
       }
 
-      dag.get(link.multihash, (err, res) => {
+      dag.get(link.multihash, '', { preload: false }, (err, res) => {
         if (err) { return callback(err) }
         const keys = []
         const step = link => keys.push(link.multihash)
@@ -211,7 +211,7 @@ exports = module.exports = function (dag) {
 
           if (!emptyKey.equals(linkHash)) {
             // walk the links of this fanout bin
-            return dag.get(linkHash, (err, res) => {
+            return dag.get(linkHash, '', { preload: false }, (err, res) => {
               if (err) { return eachCb(err) }
               pinSet.walkItems(res.value, step, eachCb)
             })

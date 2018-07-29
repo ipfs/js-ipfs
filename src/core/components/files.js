@@ -182,10 +182,16 @@ module.exports = function files (self) {
       throw new Error('You must supply an ipfsPath')
     }
 
+    options = options || {}
+
     ipfsPath = normalizePath(ipfsPath)
     const pathComponents = ipfsPath.split('/')
     const restPath = normalizePath(pathComponents.slice(1).join('/'))
     const filterFile = (file) => (restPath && file.path === restPath) || (file.path === ipfsPath)
+
+    if (options.preload !== false) {
+      self._preload(pathComponents[0])
+    }
 
     const d = deferred.source()
 
@@ -213,16 +219,21 @@ module.exports = function files (self) {
   }
 
   function _lsPullStreamImmutable (ipfsPath, options) {
+    options = options || {}
+
     const path = normalizePath(ipfsPath)
-    const recursive = options && options.recursive
-    const pathDepth = path.split('/').length
+    const recursive = options.recursive
+    const pathComponents = path.split('/')
+    const pathDepth = pathComponents.length
     const maxDepth = recursive ? global.Infinity : pathDepth
-    const opts = Object.assign({}, {
-      maxDepth: maxDepth
-    }, options)
+    options.maxDepth = options.maxDepth || maxDepth
+
+    if (options.preload !== false) {
+      self._preload(pathComponents[0])
+    }
 
     return pull(
-      exporter(ipfsPath, self._ipld, opts),
+      exporter(ipfsPath, self._ipld, options),
       pull.filter(node =>
         recursive ? node.depth >= pathDepth : node.depth === pathDepth
       ),
@@ -334,8 +345,11 @@ module.exports = function files (self) {
         options = {}
       }
 
-      if (typeof callback !== 'function') {
-        throw new Error('Please supply a callback to ipfs.files.get')
+      options = options || {}
+
+      if (options.preload !== false) {
+        const pathComponents = normalizePath(ipfsPath).split('/')
+        self._preload(pathComponents[0])
       }
 
       pull(
@@ -359,6 +373,13 @@ module.exports = function files (self) {
     }),
 
     getReadableStream: (ipfsPath, options) => {
+      options = options || {}
+
+      if (options.preload !== false) {
+        const pathComponents = normalizePath(ipfsPath).split('/')
+        self._preload(pathComponents[0])
+      }
+
       return toStream.source(
         pull(
           exporter(ipfsPath, self._ipld, options),
@@ -375,6 +396,13 @@ module.exports = function files (self) {
     },
 
     getPullStream: (ipfsPath, options) => {
+      options = options || {}
+
+      if (options.preload !== false) {
+        const pathComponents = normalizePath(ipfsPath).split('/')
+        self._preload(pathComponents[0])
+      }
+
       return exporter(ipfsPath, self._ipld, options)
     },
 
@@ -382,6 +410,13 @@ module.exports = function files (self) {
       if (typeof options === 'function') {
         callback = options
         options = {}
+      }
+
+      options = options || {}
+
+      if (options.preload !== false) {
+        const pathComponents = normalizePath(ipfsPath).split('/')
+        self._preload(pathComponents[0])
       }
 
       pull(
@@ -397,6 +432,13 @@ module.exports = function files (self) {
     }),
 
     lsReadableStreamImmutable: (ipfsPath, options) => {
+      options = options || {}
+
+      if (options.preload !== false) {
+        const pathComponents = normalizePath(ipfsPath).split('/')
+        self._preload(pathComponents[0])
+      }
+
       return toStream.source(_lsPullStreamImmutable(ipfsPath, options))
     },
 
