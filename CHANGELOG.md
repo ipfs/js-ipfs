@@ -1,3 +1,14 @@
+<a name="0.31.1"></a>
+## [0.31.1](https://github.com/ipfs/js-ipfs/compare/v0.31.0...v0.31.1) (2018-07-29)
+
+
+### Bug Fixes
+
+* logo link ([a9219ad](https://github.com/ipfs/js-ipfs/commit/a9219ad))
+* XMLHTTPRequest is deprecated and unavailable in service workers ([#1478](https://github.com/ipfs/js-ipfs/issues/1478)) ([7d6f0ca](https://github.com/ipfs/js-ipfs/commit/7d6f0ca))
+
+
+
 <a name="0.31.0"></a>
 # [0.31.0](https://github.com/ipfs/js-ipfs/compare/v0.30.1...v0.31.0) (2018-07-29)
 
