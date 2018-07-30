@@ -1,6 +1,6 @@
 # Customizing the libp2p node
 
-This example shows you how to make full use of the ipfs configuration to create a libp2p generator function. As IPFS applications become more complex, their needs for a custom libp2p node also grow. Instead of fighting with configuration options, you can use your own libp2p generator to get exactly what you need. This example shows you how.
+This example shows you how to make full use of the ipfs configuration to create a libp2p factory function. As IPFS applications become more complex, their needs for a custom libp2p node also grow. Instead of fighting with configuration options, you can use your own libp2p factory to get exactly what you need. This example shows you how.
 
 ## Run this example
 

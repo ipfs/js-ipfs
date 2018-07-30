@@ -13,13 +13,13 @@ const SECIO = require('libp2p-secio')
 const assert = require('assert')
 
 /**
- * This is the generator we will use to generate our fully customized libp2p node.
+ * This is the factory we will use to create our fully customized libp2p node.
  *
  * @param {*} _ipfsNode The ipfs node. This houses the PeerInfo and PeerBook that modules may need
  * @param {*} _ipfsConfig The config that is fetched from the ipfs-repo
  * @returns {Libp2p} Our new libp2p node
  */
-const libp2pGenerator = (_ipfsNode, _ipfsConfig) => {
+const libp2pFactory = (_ipfsNode, _ipfsConfig) => {
   // Set convenience variables to clearly showcase some of the useful things that are available
   const peerInfo = _ipfsNode._peerInfo
   const peerBook = _ipfsNode._peerBook
@@ -89,9 +89,9 @@ const libp2pGenerator = (_ipfsNode, _ipfsConfig) => {
   })
 }
 
-// Now that we have our custom generator, let's start up the ipfs node!
+// Now that we have our custom factory, let's start up the ipfs node!
 const node = new IPFS({
-  libp2p: libp2pGenerator
+  libp2p: libp2pFactory
 })
 
 // Listen for the node to start, so we can log out some metrics
