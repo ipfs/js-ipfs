@@ -5,7 +5,6 @@ const CID = require('cids')
 const pull = require('pull-stream')
 const mapAsync = require('async/map')
 const flattenDeep = require('lodash/flattenDeep')
-const isPlainObject = require('lodash/isPlainObject')
 
 module.exports = function dag (self) {
   return {
@@ -13,15 +12,12 @@ module.exports = function dag (self) {
       if (typeof options === 'function') {
         callback = options
         options = {}
-      } else if (isPlainObject(options)) {
-        if (options.cid && (options.format || options.hashAlg)) {
-          return callback(new Error('Can\'t put dag node. Please provide either `cid` OR `format` and `hashAlg` options.'))
-        } else if ((options.format && !options.hashAlg) || (!options.format && options.hashAlg)) {
-          return callback(new Error('Can\'t put dag node. Please provide `format` AND `hashAlg` options.'))
-        }
-      } else {
-        options = {}
+      } else if (options && options.cid && (options.format || options.hashAlg)) {
+        return callback(new Error('Can\'t put dag node. Please provide either `cid` OR `format` and `hashAlg` options.'))
+      } else if (options && ((options.format && !options.hashAlg) || (!options.format && options.hashAlg))) {
+        return callback(new Error('Can\'t put dag node. Please provide `format` AND `hashAlg` options.'))
       }
+      options = options || {}
 
       const optionDefaults = {
         format: 'dag-cbor',
