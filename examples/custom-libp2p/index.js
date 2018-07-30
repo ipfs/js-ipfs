@@ -21,8 +21,8 @@ const assert = require('assert')
  */
 const libp2pFactory = (_ipfsNode, _ipfsConfig) => {
   // Set convenience variables to clearly showcase some of the useful things that are available
-  const peerInfo = _ipfsNode._peerInfo
-  const peerBook = _ipfsNode._peerBook
+  const peerInfo = _ipfsNode.peerInfo
+  const peerBook = _ipfsNode.peerBook
   const bootstrapList = _ipfsConfig.Bootstrap
 
   // Create our WebSocketStar transport and give it our PeerId, straight from the ipfs node
