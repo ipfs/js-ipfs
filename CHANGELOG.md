@@ -1,3 +1,13 @@
+<a name="0.2.4"></a>
+## [0.2.4](https://github.com/ipfs/js-ipfs-mfs/compare/v0.2.3...v0.2.4) (2018-07-31)
+
+
+### Bug Fixes
+
+* prevent returning from http write command early ([1018e7d](https://github.com/ipfs/js-ipfs-mfs/commit/1018e7d))
+
+
+
 <a name="0.2.3"></a>
 ## [0.2.3](https://github.com/ipfs/js-ipfs-mfs/compare/v0.2.2...v0.2.3) (2018-07-26)
 
