@@ -63,6 +63,7 @@ const mfsWrite = (api) => {
             strategy,
             flush
           })
+            .then(() => reply())
             .catch(error => {
               reply({
                 Message: error.message,
@@ -78,18 +79,6 @@ const mfsWrite = (api) => {
             Code: 0,
             Type: 'error'
           }).code(500).takeover()
-        })
-
-        parser.on('end', () => {
-          if (!filesParsed) {
-            return reply({
-              Message: "File argument 'data' is required.",
-              Code: 0,
-              Type: 'error'
-            }).code(400).takeover()
-          }
-
-          reply()
         })
       },
       validate: {

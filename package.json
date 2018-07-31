@@ -43,6 +43,7 @@
     "detect-webworker": "^1.0.0",
     "dirty-chai": "^2.0.1",
     "ipfs": "~0.30.0",
+    "pull-buffer-stream": "^1.0.0",
     "safe-buffer": "^5.1.1",
     "tmp": "~0.0.33"
   },

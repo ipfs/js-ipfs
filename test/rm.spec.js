@@ -4,9 +4,9 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
+const bufferStream = require('pull-buffer-stream')
 const {
-  createMfs,
-  bufferStream
+  createMfs
 } = require('./helpers')
 const {
   FILE_SEPARATOR

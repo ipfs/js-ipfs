@@ -42,7 +42,7 @@ const updateTree = (ipfs, root, fileSize, streamStart, streamEnd, source, option
         nodeStart: streamPosition,
         nodeEnd: fileSize
       }, findDAGNodesWithRequestedData),
-      paramap(updateNodeData(source)),
+      asyncMap(updateNodeData(source)),
       filter(Boolean),
       asyncMap((link, next) => {
         if (!link.parent || link.index === undefined) {
@@ -179,7 +179,11 @@ const updateTree = (ipfs, root, fileSize, streamStart, streamEnd, source, option
             sourceEnd = undefined
           }
 
-          sourceData.copy(newData, targetStart, sourceStart, sourceEnd)
+          try {
+            sourceData.copy(newData, targetStart, sourceStart, sourceEnd)
+          } catch (error) {
+            return cb(error)
+          }
 
           cb(null, new UnixFs(meta.type, newData).marshal())
         },
