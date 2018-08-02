@@ -50,7 +50,8 @@
     "ipfsd-ctl": "^0.36.0"
   },
   "contributors": [
-    "Vasco Santos <vasco.santos@ua.pt>",
-    "Vasco Santos <vasco.santos@moxy.studio>"
+    "André Cruz <andremiguelcruz@msn.com>",
+    "Vasco Santos <vasco.santos@moxy.studio>",
+    "Vasco Santos <vasco.santos@ua.pt>"
   ]
 }
