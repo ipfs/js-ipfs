@@ -114,7 +114,7 @@ describe('.util', () => {
 
   describe('.urlAdd', () => {
     it('http', function (done) {
-      this.timeout(20 * 1000)
+      this.timeout(40 * 1000)
 
       ipfs.util.addFromURL('http://example.com/', (err, result) => {
         expect(err).to.not.exist()
@@ -124,7 +124,7 @@ describe('.util', () => {
     })
 
     it('https', function (done) {
-      this.timeout(20 * 1000)
+      this.timeout(40 * 1000)
 
       ipfs.util.addFromURL('https://example.com/', (err, result) => {
         expect(err).to.not.exist()
@@ -134,7 +134,7 @@ describe('.util', () => {
     })
 
     it('http with redirection', function (done) {
-      this.timeout(20 * 1000)
+      this.timeout(40 * 1000)
 
       ipfs.util.addFromURL('http://covers.openlibrary.org/book/id/969165.jpg', (err, result) => {
         expect(err).to.not.exist()
@@ -143,8 +143,8 @@ describe('.util', () => {
       })
     })
 
-    it('.urlAdd http with redirection', function (done) {
-      this.timeout(20 * 1000)
+    it('https with redirection', function (done) {
+      this.timeout(40 * 1000)
 
       ipfs.util.addFromURL('https://coverartarchive.org/release/6e2a1694-d8b9-466a-aa33-b1077b2333c1', (err, result) => {
         expect(err).to.not.exist()
@@ -161,7 +161,7 @@ describe('.util', () => {
     })
 
     it('with wrap-with-directory=true', function (done) {
-      this.timeout(20 * 1000)
+      this.timeout(40 * 1000)
 
       ipfs.util.addFromURL('http://ipfs.io/ipfs/QmWjppACLcFLQ2qL38unKQvJBhXH3RUtcGLPk7zmrTwV61/969165.jpg?foo=bar#buzz', {
         wrapWithDirectory: true
@@ -175,7 +175,9 @@ describe('.util', () => {
       })
     })
 
-    it('with wrap-with-directory=true and URL-escaped file name', (done) => {
+    it('with wrap-with-directory=true and URL-escaped file name', function (done) {
+      this.timeout(40 * 1000)
+
       // Sample URL contains URL-escaped ( ) and local diacritics
       ipfs.util.addFromURL('https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Doma%C5%BElice%2C_Jir%C3%A1skova_43_%289102%29.jpg/320px-Doma%C5%BElice%2C_Jir%C3%A1skova_43_%289102%29.jpg?foo=bar#buzz', {
         wrapWithDirectory: true
@@ -189,7 +191,7 @@ describe('.util', () => {
       })
     })
 
-    it('with invalid url', function (done) {
+    it('with invalid url', (done) => {
       ipfs.util.addFromURL('http://invalid', (err, result) => {
         expect(err.code).to.equal('ENOTFOUND')
         expect(result).to.not.exist()
