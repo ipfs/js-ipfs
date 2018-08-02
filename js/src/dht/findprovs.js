@@ -1,11 +1,23 @@
 /* eslint-env mocha */
 'use strict'
 
+const multihashing = require('multihashing-async')
+const Crypto = require('crypto')
 const waterfall = require('async/waterfall')
 const CID = require('cids')
 const { spawnNodesWithId } = require('../utils/spawn')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { connect } = require('../utils/swarm')
+
+function fakeCid (cb) {
+  const bytes = Crypto.randomBytes(Math.round(Math.random() * 1000))
+  multihashing(bytes, 'sha2-256', (err, mh) => {
+    if (err) {
+      cb(err)
+    }
+    cb(null, new CID(0, 'dag-pb', mh))
+  })
+}
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -52,6 +64,19 @@ module.exports = (createCommon, options) => {
             .to.eql([nodeB.peerId.id])
           cb()
         }
+      ], done)
+    })
+
+    it('should take options to override timeout config', function (done) {
+      const options = {
+        timeout: 1
+      }
+      waterfall([
+        (cb) => fakeCid(cb),
+        (cidV0, cb) => nodeA.dht.findprovs(cidV0, options, (err) => {
+          expect(err).to.exist()
+          cb(null)
+        })
       ], done)
     })
   })

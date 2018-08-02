@@ -39,9 +39,12 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.dht.findprovs(hash, [callback])
+##### `JavaScript` - ipfs.dht.findprovs(hash, [options], callback])
 
 Where `hash` is a multihash.
+
+`options` an optional object with the following properties
+  - `timeout` - a maximum timeout in milliseconds
 
 `callback` must follow `function (err, peerInfos) {}` signature, where `err` is an error if the operation was not successful. `peerInfos` is an array of objects of type [PeerInfo](https://github.com/libp2p/js-peer-info)
 
@@ -51,6 +54,8 @@ If no `callback` is passed, a promise is returned.
 
 ```JavaScript
 ipfs.dht.findprovs(multihash, function (err, peerInfos) {})
+
+ipfs.dht.findprovs(multihash, { timeout: 4000 }, function (err, peerInfos) {})
 ```
 
 A great source of [examples][] can be found in the tests for this API.
