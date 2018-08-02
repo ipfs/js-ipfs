@@ -1,3 +1,13 @@
+<a name="0.1.4"></a>
+## [0.1.4](https://github.com/ipfs/js-ipfs-http-response/compare/v0.1.3...v0.1.4) (2018-08-02)
+
+
+### Bug Fixes
+
+* fix content-type by doing a fall-back using extensions ([#5](https://github.com/ipfs/js-ipfs-http-response/issues/5)) ([19acbae](https://github.com/ipfs/js-ipfs-http-response/commit/19acbae))
+
+
+
 <a name="0.1.3"></a>
 ## [0.1.3](https://github.com/ipfs/js-ipfs-http-response/compare/v0.1.2...v0.1.3) (2018-07-28)
 
