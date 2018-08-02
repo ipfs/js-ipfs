@@ -1,3 +1,19 @@
+<a name="22.3.0"></a>
+# [22.3.0](https://github.com/ipfs/js-ipfs-api/compare/v22.2.4...v22.3.0) (2018-08-02)
+
+
+### Bug Fixes
+
+* config.set rejects buffer values ([#800](https://github.com/ipfs/js-ipfs-api/issues/800)) ([f3e6bf1](https://github.com/ipfs/js-ipfs-api/commit/f3e6bf1))
+
+
+### Features
+
+* compatible with go-ipfs 0.4.16 ([8536ee4](https://github.com/ipfs/js-ipfs-api/commit/8536ee4))
+* expose mfs files.read*Stream methods ([#823](https://github.com/ipfs/js-ipfs-api/issues/823)) ([70c9df1](https://github.com/ipfs/js-ipfs-api/commit/70c9df1))
+
+
+
 <a name="22.2.4"></a>
 ## [22.2.4](https://github.com/ipfs/js-ipfs-api/compare/v22.2.3...v22.2.4) (2018-07-17)
 
