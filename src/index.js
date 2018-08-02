@@ -2,13 +2,12 @@
 
 'use strict'
 
-const fileType = require('file-type')
-const mimeTypes = require('mime-types')
 const stream = require('stream')
 const toBlob = require('stream-to-blob')
 
 const resolver = require('./resolver')
 const pathUtils = require('./utils/path')
+const detectContentType = require('./utils/content-type')
 
 const header = (status = 200, statusText = 'OK', headers = {}) => ({
   status,
@@ -73,21 +72,20 @@ const response = (ipfsNode, ipfsPath) => {
         })
 
         // return only after first chunk being checked
-        let filetypeChecked = false
+        let contentTypeDetected = false
         readableStream.on('data', (chunk) => {
           // check mime on first chunk
-          if (filetypeChecked) {
+          if (contentTypeDetected) {
             return
           }
 
-          filetypeChecked = true
+          contentTypeDetected = true
           // return Response with mime type
-          const fileSignature = fileType(chunk)
-          const mimeType = mimeTypes.lookup(fileSignature ? fileSignature.ext : null)
+          const contentType = detectContentType(ipfsPath, chunk)
 
           if (typeof Blob === 'undefined') {
-            if (mimeType) {
-              resolve(new Response(responseStream, header(200, 'OK', { 'Content-Type': mimeTypes.contentType(mimeType) })))
+            if (contentType) {
+              resolve(new Response(responseStream, header(200, 'OK', { 'Content-Type': contentType })))
             } else {
               resolve(new Response(responseStream, header()))
             }
@@ -97,8 +95,8 @@ const response = (ipfsNode, ipfsPath) => {
                 resolve(new Response(err.toString(), header(500, 'Error fetching the file')))
               }
 
-              if (mimeType) {
-                resolve(new Response(blob, header(200, 'OK', { 'Content-Type': mimeTypes.contentType(mimeType) })))
+              if (contentType) {
+                resolve(new Response(blob, header(200, 'OK', { 'Content-Type': contentType })))
               } else {
                 resolve(new Response(blob, header()))
               }
