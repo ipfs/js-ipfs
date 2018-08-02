@@ -100,6 +100,10 @@ module.exports = (createCommon, options) => {
       ipfs.dag.put(cborNode, done)
     })
 
+    it('should not fail when calling put without options (promised)', () => {
+      return ipfs.dag.put(cborNode)
+    })
+
     it('should set defaults when calling put without options', (done) => {
       ipfs.dag.put(cborNode, (err, cid) => {
         expect(err).to.not.exist()
@@ -107,6 +111,14 @@ module.exports = (createCommon, options) => {
         expect(multihash.decode(cid.multihash).name).to.equal('sha2-256')
         done()
       })
+    })
+
+    it('should set defaults when calling put without options (promised)', () => {
+      return ipfs.dag.put(cborNode)
+        .then((cid) => {
+          expect(cid.codec).to.equal('dag-cbor')
+          expect(multihash.decode(cid.multihash).name).to.equal('sha2-256')
+        })
     })
 
     it('should override hash algoritm default and resolve with it', (done) => {
