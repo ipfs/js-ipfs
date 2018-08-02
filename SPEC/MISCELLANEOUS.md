@@ -7,6 +7,7 @@
 * [ping](#ping)
 * [pingPullStream](#pingpullstream)
 * [pingReadableStream](#pingreadablestream)
+* [resolve](#resolve)
 
 #### `id`
 
@@ -237,6 +238,76 @@ stream.on('data', (res) => {
   } else {
     console.log(res.text)
   }
+})
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
+#### `resolve`
+
+> Resolve the value of names to IPFS
+
+There are a number of mutable name protocols that can link among themselves and into IPNS. For example IPNS references can (currently) point at an IPFS object, and DNS links can point at other DNS links, IPNS entries, or IPFS objects. This command accepts any of these identifiers and resolves them to the referenced item.
+
+##### `Go` **WIP**
+
+##### `JavaScript` - ipfs.resolve(name, [options], [callback])
+
+Where:
+
+- `name` (string): The name to resolve
+- `options` is an optional object that might include the following properties:
+  - `recursive` (boolean, default false): Resolve until the result is an IPFS name
+
+`callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res` is a string, the resolved name.
+
+If no `callback` is passed, a promise is returned.
+
+**Examples:**
+
+Resolve the value of your identity:
+
+```JavaScript
+const name = '/ipns/QmatmE9msSfkKxoffpHwNLNKgwZG8eT9Bud6YoPab52vpy'
+
+ipfs.resolve(name, (err, res) => {
+  if (err) {
+    throw err
+  }
+  console.log(res) // /ipfs/Qmcqtw8FfrVSBaRmbWwHxt3AuySBhJLcvmFYi3Lbc4xnwj
+})
+```
+
+Resolve the value of another name recursively:
+
+```JavaScript
+const name = '/ipns/QmbCMUZw6JFeZ7Wp9jkzbye3Fzp2GGcPgC3nmeUjfVF87n'
+
+// Where:
+// /ipns/QmbCMUZw6JFeZ7Wp9jkzbye3Fzp2GGcPgC3nmeUjfVF87n
+// ...resolves to:
+// /ipns/QmatmE9msSfkKxoffpHwNLNKgwZG8eT9Bud6YoPab52vpy
+// ...which in turn resolves to:
+// /ipfs/Qmcqtw8FfrVSBaRmbWwHxt3AuySBhJLcvmFYi3Lbc4xnwj
+
+ipfs.resolve(name, { recursive: true }, (err, res) => {
+  if (err) {
+    throw err
+  }
+  console.log(res) // /ipfs/Qmcqtw8FfrVSBaRmbWwHxt3AuySBhJLcvmFYi3Lbc4xnwj
+})
+```
+
+Resolve the value of an IPFS path:
+
+```JavaScript
+const name = '/ipfs/QmeZy1fGbwgVSrqbfh9fKQrAWgeyRnj7h8fsHS1oy3k99x/beep/boop'
+
+ipfs.resolve(name, (err, res) => {
+  if (err) {
+    throw err
+  }
+  console.log(res) // /ipfs/QmYRMjyvAiHKN9UTi8Bzt1HUspmSRD8T8DwxfSMzLgBon1
 })
 ```
 
