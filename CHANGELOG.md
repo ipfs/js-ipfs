@@ -1,3 +1,13 @@
+<a name="0.2.5"></a>
+## [0.2.5](https://github.com/ipfs/js-ipfs-mfs/compare/v0.2.4...v0.2.5) (2018-08-02)
+
+
+### Bug Fixes
+
+* removes extra sort added to ensure go compatibility ([c211941](https://github.com/ipfs/js-ipfs-mfs/commit/c211941)), closes [ipfs/go-ipfs#5181](https://github.com/ipfs/go-ipfs/issues/5181)
+
+
+
 <a name="0.2.4"></a>
 ## [0.2.4](https://github.com/ipfs/js-ipfs-mfs/compare/v0.2.3...v0.2.4) (2018-07-31)
 
