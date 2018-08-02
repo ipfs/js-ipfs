@@ -1,3 +1,13 @@
+<a name="0.31.2"></a>
+## [0.31.2](https://github.com/ipfs/js-ipfs/compare/v0.31.1...v0.31.2) (2018-08-02)
+
+
+### Bug Fixes
+
+* fix content-type by doing a fall-back using extensions ([#1482](https://github.com/ipfs/js-ipfs/issues/1482)) ([d528b3f](https://github.com/ipfs/js-ipfs/commit/d528b3f))
+
+
+
 <a name="0.31.1"></a>
 ## [0.31.1](https://github.com/ipfs/js-ipfs/compare/v0.31.0...v0.31.1) (2018-07-29)
 
