@@ -12,6 +12,21 @@ const Stream = require('readable-stream')
 const { resolver } = require('ipfs-http-response')
 const PathUtils = require('../utils/path')
 
+function detectContentType (ref, chunk) {
+  let fileSignature
+
+  // try to guess the filetype based on the first bytes
+  // note that `file-type` doesn't support svgs, therefore we assume it's a svg if ref looks like it
+  if (!ref.endsWith('.svg')) {
+    fileSignature = fileType(chunk)
+  }
+
+  // if we were unable to, fallback to the `ref` which might contain the extension
+  const mimeType = mime.lookup(fileSignature ? fileSignature.ext : ref)
+
+  return mime.contentType(mimeType)
+}
+
 module.exports = {
   checkCID: (request, reply) => {
     if (!request.params.cid) {
@@ -97,7 +112,7 @@ module.exports = {
         }
 
         //  response.continue()
-        let filetypeChecked = false
+        let contentTypeDetected = false
         let stream2 = new Stream.PassThrough({ highWaterMark: 1 })
         stream2.on('error', (err) => {
           log.error('stream2 err: ', err)
@@ -108,29 +123,20 @@ module.exports = {
         pull(
           toPull.source(stream),
           pull.through((chunk) => {
-            // Check file type.  do this once.
-            if (chunk.length > 0 && !filetypeChecked) {
-              log('got first chunk')
-              let fileSignature = fileType(chunk)
-              log('file type: ', fileSignature)
-
-              filetypeChecked = true
-              const mimeType = mime.lookup(fileSignature
-                ? fileSignature.ext
-                : null)
+            // Guess content-type (only once)
+            if (chunk.length > 0 && !contentTypeDetected) {
+              let contentType = detectContentType(ref, chunk)
+              contentTypeDetected = true
 
               log('ref ', ref)
-              log('mime-type ', mimeType)
+              log('mime-type ', contentType)
 
-              if (mimeType) {
-                log('writing mimeType')
-
-                response
-                  .header('Content-Type', mime.contentType(mimeType))
-                  .send()
-              } else {
-                response.send()
+              if (contentType) {
+                log('writing content-type header')
+                response.header('Content-Type', contentType)
               }
+
+              response.send()
             }
 
             stream2.write(chunk)
