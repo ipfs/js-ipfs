@@ -77,18 +77,7 @@ module.exports = (ipfs) => {
         }
 
         return file
-      })),
-
-      // https://github.com/ipfs/go-ipfs/issues/5181
-      (files, cb) => {
-        if (options.long) {
-          return cb(null, files.sort((a, b) => {
-            return b.name.localeCompare(a.name)
-          }))
-        }
-
-        cb(null, files)
-      }
+      }))
     ], callback)
   }
 }
