@@ -54,8 +54,8 @@ module.exports = (createCommon, options) => {
         ipfs.files.ls(testDir, (err, info) => {
           expect(err).to.not.exist()
           expect(info).to.eql([
-            { name: 'b', type: 0, size: 0, hash: '' },
-            { name: 'lv1', type: 0, size: 0, hash: '' }
+            { name: 'lv1', type: 0, size: 0, hash: '' },
+            { name: 'b', type: 0, size: 0, hash: '' }
           ])
           done()
         })
