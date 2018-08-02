@@ -56,12 +56,19 @@ module.exports = (self) => {
      * @param {function(Error, Array<PeerInfo>)} [callback]
      * @returns {Promise<PeerInfo>|void}
      */
-    findprovs: promisify((key, callback) => {
+    findprovs: promisify((key, opts, callback) => {
       if (typeof key === 'string') {
         key = new CID(key)
       }
 
-      self._libp2pNode.contentRouting.findProviders(key, callback)
+      if (typeof opts === 'function') {
+        callback = opts
+        opts = {}
+      }
+
+      opts = opts || {}
+
+      self._libp2pNode.contentRouting.findProviders(key, opts.timeout || null, callback)
     }),
 
     /**
