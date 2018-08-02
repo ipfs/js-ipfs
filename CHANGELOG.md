@@ -1,3 +1,13 @@
+<a name="0.74.0"></a>
+# [0.74.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.73.0...v0.74.0) (2018-08-02)
+
+
+### Features
+
+* **dht:** add API to allow options in `findprovs()` ([#337](https://github.com/ipfs/interface-ipfs-core/issues/337)) ([99f74f5](https://github.com/ipfs/interface-ipfs-core/commit/99f74f5)), closes [/github.com/ipfs/js-ipfs/issues/1322#issuecomment-385336102](https://github.com//github.com/ipfs/js-ipfs/issues/1322/issues/issuecomment-385336102)
+
+
+
 <a name="0.73.0"></a>
 # [0.73.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.72.1...v0.73.0) (2018-08-02)
 
