@@ -8,7 +8,7 @@ const isNode = require('detect-node')
 describe('interface-ipfs-core tests', () => {
   const defaultCommonFactory = CommonFactory.create()
 
-  tests.bitswap(defaultCommonFactory, { skip: !isNode })
+  tests.bitswap(defaultCommonFactory)
 
   tests.block(defaultCommonFactory)
 
