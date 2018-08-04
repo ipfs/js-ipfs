@@ -985,7 +985,7 @@ Where:
 - `callback` is an optional function with the signature `function (error, files) {}`, where `error` may be an Error that occured if the operation was not successful and `files` is an array containing Objects that contain the following keys:
 
 - `name` which is the file's name
-- `type` which i the object's type (`directory` or `file`)
+- `type` which is the object's type (`directory` or `file`)
 - `size` the size of the file in bytes
 - `hash` the hash of the file
 
