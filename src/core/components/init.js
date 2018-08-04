@@ -61,10 +61,20 @@ module.exports = function init (self) {
           return cb(new Error('repo already exists'))
         }
 
-        // Generate peer identity keypair + transform to desired format + add to config.
-        opts.log(`generating ${opts.bits}-bit RSA keypair...`, false)
-        self.log('generating peer id: %s bits', opts.bits)
-        peerId.create({ bits: opts.bits }, cb)
+        if (opts.pregenId) {
+          // Use pregenerated Id
+          self.log('using pregenerated id')
+          cb(null, opts.pregenId)
+        } else if (process.env.IPFS_PREGENERATED_PRIVATE_KEY) {
+          // Use pregenerated Id from env
+          self.log('using pregenerated id from env')
+          peerId.createFromPrivKey(Buffer.from(process.env.IPFS_PREGENERATED_PRIVATE_KEY, 'base64'), cb)
+        } else {
+          // Generate peer identity keypair + transform to desired format + add to config.
+          opts.log(`generating ${opts.bits}-bit RSA keypair...`, false)
+          self.log('generating peer id: %s bits', opts.bits)
+          peerId.create({ bits: opts.bits }, cb)
+        }
       },
       (keys, cb) => {
         self.log('identity generated')
