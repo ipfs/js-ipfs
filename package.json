@@ -104,7 +104,7 @@
     "hoek": "^5.0.3",
     "human-to-milliseconds": "^1.0.0",
     "interface-datastore": "~0.4.2",
-    "ipfs-api": "^22.2.4",
+    "ipfs-api": "^23.0.0",
     "ipfs-bitswap": "~0.20.3",
     "ipfs-block": "~0.7.1",
     "ipfs-block-service": "~0.14.0",
