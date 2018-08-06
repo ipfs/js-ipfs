@@ -43,6 +43,7 @@ function requireCommands () {
     update: require('../update'),
     version: require('../version'),
     types: require('../types'),
+    resolve: require('../resolve'),
     dns: require('../dns')
   }
 

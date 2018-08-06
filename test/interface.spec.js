@@ -174,9 +174,7 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'should stop the node',
         reason: 'FIXME go-ipfs returns an error https://github.com/ipfs/go-ipfs/issues/4078'
-      },
-      // resolve
-      'resolve'
+      }
     ]
   })
 
