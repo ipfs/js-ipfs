@@ -23,6 +23,7 @@ module.exports = {
       results.forEach((res) => {
         print(`unpinned ${res.hash}`)
       })
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

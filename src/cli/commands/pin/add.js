@@ -24,6 +24,7 @@ module.exports = {
       results.forEach((res) => {
         print(`pinned ${res.hash} ${type}ly`)
       })
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

@@ -27,6 +27,7 @@ module.exports = {
   handler: (argv) => {
     const paths = argv.ipfsPath
     const type = argv.type
+
     const quiet = argv.quiet
 
     argv.ipfs.pin.ls(paths, { type }, (err, results) => {
@@ -38,9 +39,7 @@ module.exports = {
         }
         print(line)
       })
-      // setTimeout(() => {
       if (argv.onComplete) argv.onComplete()
-      // }, 100)
     })
   }
 }

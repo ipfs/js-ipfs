@@ -4,7 +4,7 @@
 const expect = require('chai').expect
 const createProgressBar = require('../../src/cli/utils').createProgressBar
 
-describe('progress bar', () => {
+const test = (thing) => describe('progress-bar', () => {
   it('created with the correct properties', () => {
     const total = 1000
 
@@ -13,3 +13,5 @@ describe('progress bar', () => {
     expect(typeof bar.tick).to.eql('function')
   })
 })
+test.part = 'standalone'
+module.exports = test

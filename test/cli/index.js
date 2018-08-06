@@ -12,11 +12,38 @@ const ipfsExec = require('../utils/ipfs-exec')
 // `online` => only online
 // `standalone` => doesn't do anything, just run the tests
 
+/*
+- [ ] bitswap.js
+- [ ] block.js
+- [ ] bootstrap.js
+- [ ] commands.js
+- [ ] config.js
+- [ ] daemon.js
+- [ ] dag.js
+- [ ] dns.js
+- [ ] file.js
+- [ ] files.js
+- [ ] general.js
+- [ ] id.js
+- [ ] index.js
+- [ ] init.js
+- [ ] key.js
+- [ ] ls.js
+- [ ] object.js
+- [X] pin.js
+- [X] ping.js
+- [X] progress-bar.js
+- [ ] pubsub.js
+- [X] repo.js
+- [X] swarm.js
+- [X] version.js
+*/
+
 describe('cli', () => {
   const tests = []
   fs.readdirSync(__dirname)
     .filter((file) => file !== 'index.js')
-    .filter((file) => file === 'ping.js')
+    .filter((file) => file === 'object.js')
   // .filter((file) => file === 'files.js' || file === 'block.js' || file === 'bitswap.js')
     .forEach((file) => {
       console.log('Gonna run tests for ' + file)
