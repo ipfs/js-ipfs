@@ -9,7 +9,7 @@ const hat = require('hat')
 const ipfsExec = require('../utils/ipfs-exec')
 const os = require('os')
 
-const test = (thing) => describe('init', function () {
+const test = (thing) => describe.skip('init', function () {
   this.timeout(40 * 1000)
 
   let repoPath
@@ -32,7 +32,7 @@ const test = (thing) => describe('init', function () {
 
   afterEach(() => clean(repoPath))
 
-  it.only('basic', function () {
+  it('basic', function () {
     this.timeout(40 * 1000)
 
     console.log('before init')

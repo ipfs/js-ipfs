@@ -24,7 +24,7 @@ const config = {
   }
 }
 
-const test = () => describe('pubsub', () => {
+const test = () => describe.skip('pubsub', () => {
   let node
   let ipfsdA
   let ipfsdB

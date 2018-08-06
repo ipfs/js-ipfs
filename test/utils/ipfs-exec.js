@@ -101,6 +101,25 @@ module.exports = function ipfsExec (repoPath) {
         })
       }
 
+      // Create stream for injection to get stdout
+      const writeable = new stream.Writable({
+        write: function (chunk, encoding, next) {
+          debug('received a little chunk', JSON.stringify(chunk.toString()))
+          outputStream.push(chunk)
+          output.push(chunk.toString())
+          // TODO shitty implementation, should call onComplete when daemon/shutdown
+          // commands finish, but without having to rely on stdout
+          if (chunk.toString() === 'Daemon is ready\n' || chunk.toString() === 'Shutdown complete\n') {
+            debug('received either daemon is ready or shutdown complete, so calling onComplete()')
+            onComplete()
+            // this.destroy()
+            utils.setPrintStream(process.stdout)
+          }
+          next()
+        }
+      })
+      utils.setPrintStream(writeable)
+
       // init works differently from other commands, as we don't care about having
       // a daemon running when running it
       if (argv[0] === 'init') {
@@ -121,26 +140,6 @@ module.exports = function ipfsExec (repoPath) {
           ipfs.init({bits: 512})
         })
       } else {
-        // Create stream for injection to get stdout
-        const writeable = new stream.Writable({
-          write: function (chunk, encoding, next) {
-            debug('received a little chunk', JSON.stringify(chunk.toString()))
-            outputStream.push(chunk)
-            output.push(chunk.toString())
-            // TODO shitty implementation, should call onComplete when daemon/shutdown
-            // commands finish, but without having to rely on stdout
-            if (chunk.toString() === 'Daemon is ready\n' || chunk.toString() === 'Shutdown complete\n') {
-              debug('received either daemon is ready or shutdown complete, so calling onComplete()')
-              onComplete()
-              // this.destroy()
-              utils.setPrintStream(process.stdout)
-            }
-            next()
-          }
-        })
-        utils.setPrintStream(writeable)
-        // export writeable as stdout?
-
         debug('Parsing argv')
         yargs().option('api').strict(false).parse(argv, (err, getIPFSArgs, output) => {
           if (err) throw err
