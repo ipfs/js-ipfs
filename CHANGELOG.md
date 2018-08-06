@@ -1,3 +1,14 @@
+<a name="0.75.0"></a>
+# [0.75.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.74.1...v0.75.0) (2018-08-06)
+
+
+### Bug Fixes
+
+* expect config to be an object ([#344](https://github.com/ipfs/interface-ipfs-core/issues/344)) ([eca00b9](https://github.com/ipfs/interface-ipfs-core/commit/eca00b9))
+* more time for CI to resolve recursively ([79b747e](https://github.com/ipfs/interface-ipfs-core/commit/79b747e))
+
+
+
 <a name="0.74.1"></a>
 ## [0.74.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.74.0...v0.74.1) (2018-08-06)
 
