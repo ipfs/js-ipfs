@@ -1,3 +1,13 @@
+<a name="0.75.1"></a>
+## [0.75.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.75.0...v0.75.1) (2018-08-06)
+
+
+### Bug Fixes
+
+* ensure test for resolve recursive has another node ([#346](https://github.com/ipfs/interface-ipfs-core/issues/346)) ([09c2637](https://github.com/ipfs/interface-ipfs-core/commit/09c2637))
+
+
+
 <a name="0.75.0"></a>
 # [0.75.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.74.1...v0.75.0) (2018-08-06)
 
