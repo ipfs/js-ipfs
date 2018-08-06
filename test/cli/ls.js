@@ -2,9 +2,8 @@
 'use strict'
 
 const expect = require('chai').expect
-const runOnAndOff = require('../utils/on-and-off')
 
-describe('ls', () => runOnAndOff((thing) => {
+module.exports = (thing) => describe('ls', () => {
   let ipfs
 
   before(() => {
@@ -89,4 +88,4 @@ describe('ls', () => runOnAndOff((thing) => {
         )
       })
   })
-}))
+})

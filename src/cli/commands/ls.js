@@ -54,6 +54,7 @@ module.exports = {
           '  '.repeat(padding) + fileName
         )
       })
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

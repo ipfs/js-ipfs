@@ -28,7 +28,7 @@ const ipfsExec = require('../utils/ipfs-exec')
 - [ ] index.js
 - [ ] init.js
 - [ ] key.js
-- [ ] ls.js
+- [X] ls.js
 - [X] object.js
 - [X] pin.js
 - [X] ping.js
@@ -43,7 +43,7 @@ describe('cli', () => {
   const tests = []
   fs.readdirSync(__dirname)
     .filter((file) => file !== 'index.js')
-    .filter((file) => file === 'object.js')
+    .filter((file) => file === 'ls.js')
   // .filter((file) => file === 'files.js' || file === 'block.js' || file === 'bitswap.js')
     .forEach((file) => {
       console.log('Gonna run tests for ' + file)
