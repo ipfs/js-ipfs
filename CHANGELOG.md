@@ -1,3 +1,13 @@
+<a name="0.74.1"></a>
+## [0.74.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.74.0...v0.74.1) (2018-08-06)
+
+
+### Bug Fixes
+
+* give more time for teardown after resolve ([#345](https://github.com/ipfs/interface-ipfs-core/issues/345)) ([1db498f](https://github.com/ipfs/interface-ipfs-core/commit/1db498f))
+
+
+
 <a name="0.74.0"></a>
 # [0.74.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.73.0...v0.74.0) (2018-08-02)
 
