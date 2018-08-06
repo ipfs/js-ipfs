@@ -31,11 +31,16 @@ module.exports = function ipfsExec (repoPath) {
     let cliToLoad = argv[0]
     if (['cat', 'add', 'get'].includes(argv[0])) {
       cliToLoad = 'files/' + argv[0]
-      argv = ['files'].concat(argv)
+      // argv = ['files'].concat(argv)
     }
+    // if (argv[0] === 'pin') {
+    //   cliToLoad = 'pin/' + argv[1]
+    // }
     debug('Running', argv)
     // Load the actual source for the command
-    let cli = require('../../src/cli/commands/' + cliToLoad)
+    const cliFullpath = '../../src/cli/commands/' + cliToLoad
+    debug('Gonna require', cliFullpath)
+    let cli = require(cliFullpath)
 
     // Some commands use different ways of the description...
     const description = cli.describe || cli.description || ''
@@ -124,25 +129,31 @@ module.exports = function ipfsExec (repoPath) {
         })
         utils.setPrintStream(writable)
 
+        debug('Parsing argv')
         yargs().option('api').strict(false).parse(argv, (err, getIPFSArgs, output) => {
           if (err) throw err
           const isDaemonCmd = argv[0] === 'daemon'
           // If it's daemon command, we should set the multiaddr for api
           const api = isDaemonCmd ? '/ip4/127.0.0.1/tcp/5002' : false
+          debug('Getting IPFS')
           utils.getIPFS(Object.assign(getIPFSArgs, {api}), (err, ipfs, _cleanup) => {
             if (err) return reject(err)
             cleanup = _cleanup.bind(this)
             try {
+              debug('Actually make the call')
               parser.parse(argv, {
                 ipfs: ipfs,
                 onComplete: isDaemonCmd ? function () {} : onComplete,
                 stdoutStream: writable
               }, (err, argv, _output) => {
                 if (err) return reject(err)
-                cleanup(() => {})
+                // cleanup(() => {})
+                debug('Callback called, waiting for onComplete')
+                // onComplete()
                 // no need to do anything after the command because we have onComplete
               })
             } catch (err) {
+              debug('Got error', err)
               cleanup(() => onComplete(err))
             }
           })

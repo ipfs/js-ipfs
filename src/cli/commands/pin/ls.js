@@ -38,6 +38,9 @@ module.exports = {
         }
         print(line)
       })
+      // setTimeout(() => {
+      if (argv.onComplete) argv.onComplete()
+      // }, 100)
     })
   }
 }
