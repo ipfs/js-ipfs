@@ -4,6 +4,9 @@
 const isIpfs = require('is-ipfs')
 const loadFixture = require('aegir/fixtures')
 const hat = require('hat')
+const waterfall = require('async/waterfall')
+const { spawnNodeWithId } = require('../utils/spawn')
+const { connect } = require('../utils/swarm')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 module.exports = (createCommon, options) => {
@@ -12,15 +15,16 @@ module.exports = (createCommon, options) => {
   const common = createCommon()
 
   describe('.resolve', () => {
-    let ipfs
+    let factory, ipfs
 
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
       // timeout for the before step
       this.timeout(60 * 1000)
 
-      common.setup((err, factory) => {
+      common.setup((err, f) => {
         expect(err).to.not.exist()
+        factory = f
         factory.spawnNode((err, node) => {
           expect(err).to.not.exist()
           ipfs = node
@@ -97,18 +101,25 @@ module.exports = (createCommon, options) => {
 
     // Test resolve turns /ipns/QmPeerHash into /ipns/domain.com into /ipfs/QmHash
     it('should resolve IPNS link recursively', function (done) {
-      this.timeout(4 * 60 * 1000)
+      this.timeout(5 * 60 * 1000)
 
-      ipfs.name.publish('/ipns/ipfs.io', { resolve: false }, (err, res) => {
-        expect(err).to.not.exist()
-
-        ipfs.resolve(`/ipns/${res.name}`, { recursive: true }, (err, res) => {
-          expect(err).to.not.exist()
-          expect(res).to.not.equal('/ipns/ipfs.io')
-          expect(isIpfs.ipfsPath(res)).to.be.true()
-          done()
-        })
-      })
+      waterfall([
+        // Ensure node has another node to publish a name to
+        (cb) => spawnNodeWithId(factory, cb),
+        (ipfsB, cb) => {
+          const addr = ipfsB.peerId.addresses.find((a) => a.includes('127.0.0.1'))
+          connect(ipfs, addr, cb)
+        },
+        (cb) => ipfs.name.publish('/ipns/ipfs.io', { resolve: false }, cb),
+        (res, cb) => {
+          ipfs.resolve(`/ipns/${res.name}`, { recursive: true }, (err, res) => {
+            expect(err).to.not.exist()
+            expect(res).to.not.equal('/ipns/ipfs.io')
+            expect(isIpfs.ipfsPath(res)).to.be.true()
+            cb()
+          })
+        }
+      ], done)
     })
   })
 }
