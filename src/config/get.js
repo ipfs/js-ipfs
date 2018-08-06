@@ -2,6 +2,14 @@
 
 const promisify = require('promisify-es6')
 
+const toObject = function (res, callback) {
+  if (Buffer.isBuffer(res)) {
+    callback(null, JSON.parse(res.toString()))
+  } else {
+    callback(null, res)
+  }
+}
+
 module.exports = (send) => {
   return promisify((key, callback) => {
     if (typeof key === 'function') {
@@ -10,18 +18,18 @@ module.exports = (send) => {
     }
 
     if (!key) {
-      send({
+      send.andTransform({
         path: 'config/show',
         buffer: true
-      }, callback)
+      }, toObject, callback)
       return
     }
 
-    send({
+    send.andTransform({
       path: 'config',
       args: key,
       buffer: true
-    }, (err, response) => {
+    }, toObject, (err, response) => {
       if (err) {
         return callback(err)
       }
