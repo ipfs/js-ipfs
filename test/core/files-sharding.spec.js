@@ -30,7 +30,7 @@ describe('files directory (sharding tests)', () => {
     return files
   }
 
-  describe.only('files cat non-existant hash', () => {
+  describe('files cat non-existant hash', () => {
     let ipfs
 
     before(function (done) {
@@ -43,7 +43,7 @@ describe('files directory (sharding tests)', () => {
     //   this.timeout(40 * 1000)
     //   ipfsd.stop(done)
     // })
-    it.only('hello world', (done) => {
+    it('hello world', (done) => {
       const hash = 'QmWWM8ZV6GPhqJ46WtKcUaBPNHN5yQaFsKDSQ1RE73w94Q'
       // expect(last.hash).to.eql('')
       const repoPath = path.join(os.tmpdir(), hat())
