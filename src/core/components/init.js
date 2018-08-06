@@ -22,17 +22,30 @@ module.exports = function init (self) {
         return callback(err)
       }
 
-      self.state.initialized()
-      self.emit('init')
-      callback(null, res)
+      self.preStart((err) => {
+        if (err) {
+          self.emit('error', err)
+          return callback(err)
+        }
+
+        self.state.initialized()
+        self.emit('init')
+        callback(null, res)
+      })
     }
 
-    if (self.state.state() !== 'uninitalized') {
+    if (self.state.state() !== 'uninitialized') {
       return done(new Error('Not able to init from state: ' + self.state.state()))
     }
 
     self.state.init()
     self.log('init')
+
+    // An initialized, open repo was passed, use this one!
+    if (opts.repo) {
+      self._repo = opts.repo
+      return done(null, true)
+    }
 
     opts.emptyRepo = opts.emptyRepo || false
     opts.bits = Number(opts.bits) || 2048
@@ -85,16 +98,18 @@ module.exports = function init (self) {
           return cb(null, true)
         }
 
-        self.log('adding assets')
         const tasks = [
           // add empty unixfs dir object (go-ipfs assumes this exists)
           (cb) => self.object.new('unixfs-dir', cb)
         ]
 
         if (typeof addDefaultAssets === 'function') {
+          // addDefaultAssets is undefined on browsers.
+          // See package.json browser config
           tasks.push((cb) => addDefaultAssets(self, opts.log, cb))
         }
 
+        self.log('adding assets')
         parallel(tasks, (err) => {
           if (err) {
             cb(err)

@@ -2,40 +2,61 @@
 'use strict'
 
 const expect = require('chai').expect
+const runOn = require('../utils/on-and-off').on
+const PeerId = require('peer-id')
 
-module.exports = (thing) => describe('bitswap', () => {
+describe('bitswap', () => runOn((thing) => {
   let ipfs
+  let peerId
   const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
 
-  it('wantlist', function () {
-    this.timeout(20 * 1000)
-    thing.ipfs('block get ' + key).catch(() => {})
-    return new Promise((resolve) => {
-      setTimeout(() => {
-          thing.ipfs('bitswap wantlist').then((out) => {
-            expect(out).to.eql(key + '\n')
-            resolve()
-          })
-      }, 1000)
+  before(function (done) {
+    this.timeout(60 * 1000)
+    ipfs = thing.ipfs
+    ipfs('block get ' + key)
+      .then(() => {})
+      .catch(() => {})
+    PeerId.create((err, peer) => {
+      expect(err).to.not.exist()
+      peerId = peer.toB58String()
+      done()
     })
   })
 
-  // TODO @hacdias fix this with https://github.com/ipfs/js-ipfs/pull/1198
-  it.skip('stat', function () {
+  it('wantlist', function () {
+    this.timeout(20 * 1000)
+    return ipfs('bitswap wantlist').then((out) => {
+      expect(out).to.eql(key + '\n')
+    })
+  })
+
+  it('wantlist peerid', function () {
+    this.timeout(20 * 1000)
+    return ipfs('bitswap wantlist ' + peerId).then((out) => {
+      expect(out).to.eql('')
+    })
+  })
+
+  it('stat', function () {
     this.timeout(20 * 1000)
 
     return ipfs('bitswap stat').then((out) => {
-      expect(out).to.be.eql([
+      expect(out).to.include([
         'bitswap status',
         '  blocks received: 0',
         '  dup blocks received: 0',
         '  dup data received: 0B',
         '  wantlist [1 keys]',
         `    ${key}`,
-        '  partners [0]',
-        '    '
-      ].join('\n') + '\n')
+        // We sometimes pick up partners while the tests run so our assertion ends here
+        '  partners'
+      ].join('\n'))
     })
   })
-})
-module.exports.part = 'online'
+
+  it('unwant', function () {
+    return ipfs('bitswap unwant ' + key).then((out) => {
+      expect(out).to.eql(`Key ${key} removed from wantlist\n`)
+    })
+  })
+}))

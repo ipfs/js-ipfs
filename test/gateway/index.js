@@ -19,7 +19,9 @@ const directoryContent = {
   'nested-folder/hello.txt': loadFixture('test/gateway/test-folder/nested-folder/hello.txt'),
   'nested-folder/ipfs.txt': loadFixture('test/gateway/test-folder/nested-folder/ipfs.txt'),
   'nested-folder/nested.html': loadFixture('test/gateway/test-folder/nested-folder/nested.html'),
-  'cat-folder/cat.jpg': loadFixture('test/gateway/test-folder/cat-folder/cat.jpg')
+  'cat-folder/cat.jpg': loadFixture('test/gateway/test-folder/cat-folder/cat.jpg'),
+  'unsniffable-folder/hexagons-xml.svg': loadFixture('test/gateway/test-folder/unsniffable-folder/hexagons-xml.svg'),
+  'unsniffable-folder/hexagons.svg': loadFixture('test/gateway/test-folder/unsniffable-folder/hexagons.svg')
 }
 
 describe('HTTP Gateway', function () {
@@ -113,6 +115,22 @@ describe('HTTP Gateway', function () {
           expect(file.hash).to.equal(expectedMultihash)
           cb()
         })
+      },
+      (cb) => {
+        const expectedMultihash = 'QmVZoGxDvKM9KExc8gaL4uTbhdNtWhzQR7ndrY7J1gWs3F'
+
+        let dir = [
+          content('unsniffable-folder/hexagons-xml.svg'),
+          content('unsniffable-folder/hexagons.svg')
+        ]
+
+        http.api.node.files.add(dir, (err, res) => {
+          expect(err).to.not.exist()
+          const file = res[res.length - 2]
+          expect(file.path).to.equal('test-folder/unsniffable-folder')
+          expect(file.hash).to.equal(expectedMultihash)
+          cb()
+        })
       }
     ], done)
   })
@@ -166,7 +184,7 @@ describe('HTTP Gateway', function () {
     })
   })
 
-  it('load a non text file', (done) => {
+  it('load a jpg file', (done) => {
     let kitty = 'QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ/cat.jpg'
 
     gateway.inject({
@@ -179,6 +197,34 @@ describe('HTTP Gateway', function () {
       let fileSignature = fileType(res.rawPayload)
       expect(fileSignature.mime).to.equal('image/jpeg')
       expect(fileSignature.ext).to.equal('jpg')
+
+      done()
+    })
+  })
+
+  it('load a svg file (unsniffable)', (done) => {
+    let hexagons = 'QmVZoGxDvKM9KExc8gaL4uTbhdNtWhzQR7ndrY7J1gWs3F/hexagons.svg'
+
+    gateway.inject({
+      method: 'GET',
+      url: '/ipfs/' + hexagons
+    }, (res) => {
+      expect(res.statusCode).to.equal(200)
+      expect(res.headers['content-type']).to.equal('image/svg+xml')
+
+      done()
+    })
+  })
+
+  it('load a svg file with xml leading declaration (unsniffable)', (done) => {
+    let hexagons = 'QmVZoGxDvKM9KExc8gaL4uTbhdNtWhzQR7ndrY7J1gWs3F/hexagons-xml.svg'
+
+    gateway.inject({
+      method: 'GET',
+      url: '/ipfs/' + hexagons
+    }, (res) => {
+      expect(res.statusCode).to.equal(200)
+      expect(res.headers['content-type']).to.equal('image/svg+xml')
 
       done()
     })

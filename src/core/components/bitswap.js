@@ -4,21 +4,42 @@ const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 const promisify = require('promisify-es6')
 const setImmediate = require('async/setImmediate')
 const Big = require('big.js')
+const CID = require('cids')
+const PeerId = require('peer-id')
 
 function formatWantlist (list) {
-  return Array.from(list).map((e) => e[1])
+  return Array.from(list).map((e) => ({ '/': e[1].cid.toBaseEncodedString() }))
 }
 
 module.exports = function bitswap (self) {
   return {
-    wantlist: () => {
-      if (!self.isOnline()) {
-        throw new Error(OFFLINE_ERROR)
+    wantlist: promisify((peerId, callback) => {
+      if (!callback) {
+        callback = peerId
+        peerId = undefined
       }
 
-      const list = self._bitswap.getWantlist()
-      return formatWantlist(list)
-    },
+      if (!self.isOnline()) {
+        return setImmediate(() => callback(new Error(OFFLINE_ERROR)))
+      }
+
+      let list
+      if (peerId) {
+        try {
+          peerId = PeerId.createFromB58String(peerId)
+        } catch (e) {
+          peerId = null
+        }
+        if (!peerId) {
+          return setImmediate(() => callback(new Error('Invalid peerId')))
+        }
+        list = self._bitswap.wantlistForPeer(peerId)
+      } else {
+        list = self._bitswap.getWantlist()
+      }
+      list = formatWantlist(list)
+      return setImmediate(() => callback(null, { Keys: list }))
+    }),
 
     stat: promisify((callback) => {
       if (!self.isOnline()) {
@@ -40,12 +61,21 @@ module.exports = function bitswap (self) {
       })
     }),
 
-    unwant: (key) => {
+    unwant: promisify((keys, callback) => {
       if (!self.isOnline()) {
-        throw new Error(OFFLINE_ERROR)
+        return setImmediate(() => callback(new Error(OFFLINE_ERROR)))
       }
 
-      // TODO: implement when https://github.com/ipfs/js-ipfs-bitswap/pull/10 is merged
-    }
+      if (!Array.isArray(keys)) {
+        keys = [keys]
+      }
+      keys = keys.map((key) => {
+        if (CID.isCID(key)) {
+          return key
+        }
+        return new CID(key)
+      })
+      return setImmediate(() => callback(null, self._bitswap.unwant(keys)))
+    })
   }
 }

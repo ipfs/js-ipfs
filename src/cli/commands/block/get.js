@@ -18,7 +18,11 @@ module.exports = {
         throw err
       }
 
-      print(block.data, false)
+      if (block) {
+        print(block.data, false)
+      } else {
+        print('Block was unwanted before it could be remotely retrieved')
+      }
       if (argv.onComplete) argv.onComplete()
     })
   }

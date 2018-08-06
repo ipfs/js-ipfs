@@ -9,8 +9,20 @@ const promisify = require('promisify-es6')
 
 module.exports = function block (self) {
   return {
-    get: promisify((cid, callback) => {
+    get: promisify((cid, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
+      }
+
+      options = options || {}
+
       cid = cleanCid(cid)
+
+      if (options.preload !== false) {
+        self._preload(cid)
+      }
+
       self._blockService.get(cid, callback)
     }),
     put: promisify((block, options, callback) => {
@@ -52,6 +64,11 @@ module.exports = function block (self) {
           if (err) {
             return cb(err)
           }
+
+          if (options.preload !== false) {
+            self._preload(block.cid)
+          }
+
           cb(null, block)
         })
       ], callback)
@@ -60,8 +77,17 @@ module.exports = function block (self) {
       cid = cleanCid(cid)
       self._blockService.delete(cid, callback)
     }),
-    stat: promisify((cid, callback) => {
+    stat: promisify((cid, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
+      }
+
       cid = cleanCid(cid)
+
+      if (options.preload !== false) {
+        self._preload(cid)
+      }
 
       self._blockService.get(cid, (err, block) => {
         if (err) {

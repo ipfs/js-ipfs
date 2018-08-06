@@ -123,7 +123,7 @@ describe('create node', function () {
     })
   })
 
-  it('init: false errors (start default: true)', function (done) {
+  it('init: false errors (start default: true) and errors only once', function (done) {
     this.timeout(80 * 1000)
 
     const node = new IPFS({
@@ -135,10 +135,24 @@ describe('create node', function () {
         }
       }
     })
-    node.once('error', (err) => {
-      expect(err).to.exist()
-      done()
-    })
+
+    const shouldHappenOnce = () => {
+      let timeoutId = null
+
+      return (err) => {
+        expect(err).to.exist()
+
+        // Bad news, this handler has been executed before
+        if (timeoutId) {
+          clearTimeout(timeoutId)
+          return done(new Error('error handler called multiple times'))
+        }
+
+        timeoutId = setTimeout(done, 100)
+      }
+    }
+
+    node.on('error', shouldHappenOnce())
   })
 
   it('init: false, start: false', function (done) {

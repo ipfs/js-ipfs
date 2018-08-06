@@ -3,7 +3,7 @@
 const fs = require('fs')
 const path = require('path')
 const glob = require('glob')
-const sortBy = require('lodash.sortby')
+const sortBy = require('lodash/sortBy')
 const pull = require('pull-stream')
 const paramap = require('pull-paramap')
 const zip = require('pull-zip')
@@ -151,12 +151,13 @@ module.exports = {
     },
     'raw-leaves': {
       type: 'boolean',
-      default: undefined,
+      default: false,
       describe: 'Use raw blocks for leaf nodes. (experimental)'
     },
     'cid-version': {
       type: 'integer',
-      describe: 'Cid version. Non-zero value will change default of \'raw-leaves\' to true. (experimental)'
+      describe: 'CID version. Defaults to 0 unless an option that depends on CIDv1 is passed. (experimental)',
+      default: 0
     },
     hash: {
       type: 'string',
@@ -179,6 +180,11 @@ module.exports = {
       type: 'boolean',
       default: false,
       describe: 'Write no output'
+    },
+    pin: {
+      type: 'boolean',
+      default: true,
+      describe: 'Pin this object when adding'
     }
   },
 
@@ -194,35 +200,8 @@ module.exports = {
       rawLeaves: argv.rawLeaves,
       onlyHash: argv.onlyHash,
       hashAlg: argv.hash,
-      wrapWithDirectory: argv.wrapWithDirectory
-    }
-
-    // Temporary restriction on raw-leaves:
-    // When cid-version=1 then raw-leaves MUST be present and false.
-    //
-    // This is because raw-leaves is not yet implemented in js-ipfs,
-    // and go-ipfs changes the value of raw-leaves to true when
-    // cid-version > 0 unless explicitly set to false.
-    //
-    // This retains feature parity without having to implement raw-leaves.
-    if (options.cidVersion > 0 && options.rawLeaves !== false) {
-      throw new Error('Implied argument raw-leaves must be passed and set to false when cid-version is > 0')
-    }
-
-    // Temporary restriction on raw-leaves:
-    // When hash != undefined then raw-leaves MUST be present and false.
-    //
-    // This is because raw-leaves is not yet implemented in js-ipfs,
-    // and go-ipfs changes the value of raw-leaves to true when
-    // hash != undefined unless explicitly set to false.
-    //
-    // This retains feature parity without having to implement raw-leaves.
-    if (options.hash && options.rawLeaves !== false) {
-      throw new Error('Implied argument raw-leaves must be passed and set to false when hash argument is specified')
-    }
-
-    if (options.rawLeaves) {
-      throw new Error('Not implemented: raw-leaves')
+      wrapWithDirectory: argv.wrapWithDirectory,
+      pin: argv.pin
     }
 
     if (options.enableShardingExperiment && utils.isDaemonOn()) {

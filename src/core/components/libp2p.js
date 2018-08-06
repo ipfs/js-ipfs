@@ -3,7 +3,8 @@
 // libp2p-nodejs gets replaced by libp2p-browser when webpacked/browserified
 const Node = require('../runtime/libp2p-nodejs')
 const promisify = require('promisify-es6')
-const get = require('lodash.get')
+const get = require('lodash/get')
+const defaultsDeep = require('@nodeutils/defaults-deep')
 
 module.exports = function libp2p (self) {
   return {
@@ -15,27 +16,49 @@ module.exports = function libp2p (self) {
           return callback(err)
         }
 
-        const options = {
-          mdns: get(config, 'Discovery.MDNS.Enabled'),
-          webRTCStar: get(config, 'Discovery.webRTCStar.Enabled'),
-          bootstrap: get(config, 'Bootstrap'),
-          modules: self._libp2pModules,
-          // EXPERIMENTAL
-          pubsub: get(self._options, 'EXPERIMENTAL.pubsub', false),
-          dht: get(self._options, 'EXPERIMENTAL.dht', false),
-          relay: {
-            enabled: get(self._options, 'EXPERIMENTAL.relay.enabled',
-              get(config, 'EXPERIMENTAL.relay.enabled', false)),
-            hop: {
-              enabled: get(self._options, 'EXPERIMENTAL.relay.hop.enabled',
-                get(config, 'EXPERIMENTAL.relay.hop.enabled', false)),
-              active: get(self._options, 'EXPERIMENTAL.relay.hop.active',
-                get(config, 'EXPERIMENTAL.relay.hop.active', false))
+        const libp2pDefaults = {
+          peerInfo: self._peerInfo,
+          peerBook: self._peerInfoBook,
+          config: {
+            peerDiscovery: {
+              mdns: {
+                enabled: get(self._options, 'config.Discovery.MDNS.Enabled',
+                  get(config, 'Discovery.MDNS.Enabled', true))
+              },
+              webRTCStar: {
+                enabled: get(self._options, 'config.Discovery.webRTCStar.Enabled',
+                  get(config, 'Discovery.webRTCStar.Enabled', true))
+              },
+              bootstrap: {
+                list: get(self._options, 'config.Bootstrap',
+                  get(config, 'Bootstrap', []))
+              }
+            },
+            relay: {
+              enabled: get(self._options, 'relay.enabled',
+                get(config, 'relay.enabled', false)),
+              hop: {
+                enabled: get(self._options, 'relay.hop.enabled',
+                  get(config, 'relay.hop.enabled', false)),
+                active: get(self._options, 'relay.hop.active',
+                  get(config, 'relay.hop.active', false))
+              }
+            },
+            EXPERIMENTAL: {
+              dht: get(self._options, 'EXPERIMENTAL.dht', false),
+              pubsub: get(self._options, 'EXPERIMENTAL.pubsub', false)
             }
-          }
+          },
+          connectionManager: get(self._options, 'connectionManager',
+            get(config, 'connectionManager', {}))
         }
 
-        self._libp2pNode = new Node(self._peerInfo, self._peerInfoBook, options)
+        const libp2pOptions = defaultsDeep(
+          get(self._options, 'libp2p', {}),
+          libp2pDefaults
+        )
+
+        self._libp2pNode = new Node(libp2pOptions)
 
         self._libp2pNode.on('peer:discovery', (peerInfo) => {
           const dial = () => {

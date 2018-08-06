@@ -30,7 +30,7 @@
   <code style="display:block; white-space:pre-wrap; background-color:#d7d6d6">
     node.files.add(new node.types.Buffer('Hello world!'), (err, filesAdded) => {
       if (err) {
-        return console.error('Error - ipfs files add', err, res)
+        return console.error('Error - ipfs add', err, res)
       }
 
       filesAdded.forEach((file) => console.log('successfully stored', file.hash))

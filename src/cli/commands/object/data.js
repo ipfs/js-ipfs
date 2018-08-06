@@ -17,7 +17,7 @@ module.exports = {
         throw err
       }
 
-      print(data.toString(), false)
+      print(data, false)
     })
   }
 }

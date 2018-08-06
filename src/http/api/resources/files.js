@@ -34,7 +34,8 @@ exports.parseKey = (request, reply) => {
   if (!request.query.arg) {
     return reply({
       Message: "Argument 'key' is required",
-      Code: 0
+      Code: 0,
+      Type: 'error'
     }).code(400).takeover()
   }
 
@@ -54,7 +55,8 @@ exports.parseKey = (request, reply) => {
     log.error(err)
     return reply({
       Message: 'invalid ipfs ref path',
-      Code: 0
+      Code: 0,
+      Type: 'error'
     }).code(500).takeover()
   }
 
@@ -81,9 +83,9 @@ exports.cat = {
       if (err) {
         log.error(err)
         if (err.message === 'No such file') {
-          reply({Message: 'No such file'}).code(500)
+          reply({Message: 'No such file', Code: 0, Type: 'error'}).code(500)
         } else {
-          reply({Message: 'Failed to cat file: ' + err, Code: 0}).code(500)
+          reply({Message: 'Failed to cat file: ' + err, Code: 0, Type: 'error'}).code(500)
         }
         return
       }
@@ -151,21 +153,10 @@ exports.add = {
   validate: {
     query: Joi.object()
       .keys({
-        'cid-version': Joi.number().integer().min(0).max(1),
-        // Temporary restriction on raw-leaves:
-        // When cid-version=1 then raw-leaves MUST be present and false.
-        //
-        // This is because raw-leaves is not yet implemented in js-ipfs,
-        // and go-ipfs changes the value of raw-leaves to true when
-        // cid-version > 0 unless explicitly set to false.
-        //
-        // This retains feature parity without having to implement raw-leaves.
-        'raw-leaves': Joi.boolean().when('cid-version', {
-          is: 1,
-          then: Joi.boolean().valid(false).required(),
-          otherwise: Joi.boolean().valid(false)
-        }),
+        'cid-version': Joi.number().integer().min(0).max(1).default(0),
+        'raw-leaves': Joi.boolean(),
         'only-hash': Joi.boolean(),
+        pin: Joi.boolean().default(true),
         'wrap-with-directory': Joi.boolean()
       })
       // TODO: Necessary until validate "recursive", "stream-channels" etc.
@@ -176,7 +167,8 @@ exports.add = {
     if (!request.payload) {
       return reply({
         Message: 'Array, Buffer, or String is required.',
-        code: 0
+        Code: 0,
+        Type: 'error'
       }).code(400).takeover()
     }
 
@@ -210,7 +202,8 @@ exports.add = {
       if (!filesParsed) {
         return reply({
           Message: "File argument 'data' is required.",
-          code: 0
+          Code: 0,
+          Type: 'error'
         }).code(400).takeover()
       }
       fileAdder.end()
@@ -227,7 +220,8 @@ exports.add = {
       progress: request.query.progress ? progressHandler : null,
       onlyHash: request.query['only-hash'],
       hashAlg: request.query['hash'],
-      wrapWithDirectory: request.query['wrap-with-directory']
+      wrapWithDirectory: request.query['wrap-with-directory'],
+      pin: request.query.pin
     }
 
     const aborter = abortable()
@@ -300,7 +294,8 @@ exports.immutableLs = {
       if (err) {
         return reply({
           Message: 'Failed to list dir: ' + err.message,
-          Code: 0
+          Code: 0,
+          Type: 'error'
         }).code(500).takeover()
       }
 

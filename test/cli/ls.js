@@ -9,17 +9,17 @@ describe('ls', () => runOnAndOff((thing) => {
 
   before(() => {
     ipfs = thing.ipfs
-    return ipfs('files add -r test/fixtures/test-data/recursive-get-dir')
+    return ipfs('add -r test/fixtures/test-data/recursive-get-dir')
   })
 
   it('prints added files', function () {
     this.timeout(20 * 1000)
-    return ipfs('ls QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2')
+    return ipfs('ls Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
       .then((out) => {
         expect(out).to.eql(
-          'QmQQHYDwAQms78fPcvx1uFFsfho23YJNoewfLbi9AtdyJ9 123530 blocks/\n' +
+          'QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT 123530 blocks/\n' +
           'QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN 3939   config\n' +
-          'Qma13ZrhKG52MWnwtZ6fMD8jGj8d4Q9sJgn5xtKgeZw5uz 5503   datastore/\n' +
+          'QmUqyZtPmsRy1U5Mo8kz2BAMmk1hfJ7yW1KAFTMB2odsFv 5503   datastore/\n' +
           'QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU 7397   init-docs/\n' +
           'QmR56UJmAaZLXLdTT1ALrE9vVqV8soUEekm9BMd4FnuYqV 10     version\n'
         )
@@ -38,13 +38,13 @@ describe('ls', () => runOnAndOff((thing) => {
 
   it('adds a header, -v', function () {
     this.timeout(20 * 1000)
-    return ipfs('ls /ipfs/QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2 -v')
+    return ipfs('ls /ipfs/Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z -v')
       .then((out) => {
         expect(out).to.eql(
           'Hash                                           Size   Name\n' +
-          'QmQQHYDwAQms78fPcvx1uFFsfho23YJNoewfLbi9AtdyJ9 123530 blocks/\n' +
+          'QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT 123530 blocks/\n' +
           'QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN 3939   config\n' +
-          'Qma13ZrhKG52MWnwtZ6fMD8jGj8d4Q9sJgn5xtKgeZw5uz 5503   datastore/\n' +
+          'QmUqyZtPmsRy1U5Mo8kz2BAMmk1hfJ7yW1KAFTMB2odsFv 5503   datastore/\n' +
           'QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU 7397   init-docs/\n' +
           'QmR56UJmAaZLXLdTT1ALrE9vVqV8soUEekm9BMd4FnuYqV 10     version\n'
         )
@@ -54,7 +54,7 @@ describe('ls', () => runOnAndOff((thing) => {
   it('follows a path, <hash>/<subdir>', function () {
     this.timeout(20 * 1000)
 
-    return ipfs('ls /ipfs/QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2/init-docs')
+    return ipfs('ls /ipfs/Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z/init-docs')
       .then((out) => {
         expect(out).to.eql(
           'QmZTR5bcpQD7cFgTorqxZDYaew1Wqgfbd2ud9QqGPAkK2V 1688 about\n' +
@@ -73,7 +73,7 @@ describe('ls', () => runOnAndOff((thing) => {
     this.slow(2000)
     this.timeout(20 * 1000)
 
-    return ipfs('ls -r /ipfs/QmYmW4HiZhotsoSqnv2o1oUusvkRM8b9RweBoH7ao5nki2/init-docs')
+    return ipfs('ls -r /ipfs/Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z/init-docs')
       .then(out => {
         expect(out).to.eql(
           'QmZTR5bcpQD7cFgTorqxZDYaew1Wqgfbd2ud9QqGPAkK2V 1688 about\n' +

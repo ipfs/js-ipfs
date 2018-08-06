@@ -4,6 +4,11 @@
 
 const expect = require('chai').expect
 const runOnAndOff = require('../utils/on-and-off')
+const UnixFs = require('ipfs-unixfs')
+const path = require('path')
+const fs = require('fs')
+const crypto = require('crypto')
+const os = require('os')
 
 describe('object', () => runOnAndOff((thing) => {
   let ipfs
@@ -62,6 +67,27 @@ describe('object', () => runOnAndOff((thing) => {
     return ipfs('object data QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').then((out) => {
       expect(out).to.eql('another')
     })
+  })
+
+  it('unadulterated data', function () {
+    this.timeout(10 * 1000)
+
+    // has to be big enough to span several DAGNodes
+    const data = crypto.randomBytes(1024 * 300)
+    const file = path.join(os.tmpdir(), `file-${Math.random()}.txt`)
+
+    fs.writeFileSync(file, data)
+
+    return ipfs(`add ${file}`)
+      .then((out) => {
+        return ipfs.raw(`object data ${out.split(' ')[1]}`)
+      })
+      .then((out) => {
+        const meta = UnixFs.unmarshal(out)
+
+        expect(meta.type).to.equal('file')
+        expect(meta.fileSize()).to.equal(data.length)
+      })
   })
 
   it('links', () => {

@@ -30,6 +30,7 @@ function fileHandler (dir) {
         callback(err)
       } else {
         const fullFilePath = path.join(dir, file.path)
+
         if (file.content) {
           file.content
             .pipe(fs.createWriteStream(fullFilePath))

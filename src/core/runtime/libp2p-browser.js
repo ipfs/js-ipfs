@@ -5,38 +5,54 @@ const WebRTCStar = require('libp2p-webrtc-star')
 const WebSocketStar = require('libp2p-websocket-star')
 const Multiplex = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
-const Railing = require('libp2p-railing')
+const Bootstrap = require('libp2p-bootstrap')
 const libp2p = require('libp2p')
+const defaultsDeep = require('@nodeutils/defaults-deep')
 
 class Node extends libp2p {
-  constructor (peerInfo, peerBook, options) {
-    options = options || {}
-    const wrtcstar = new WebRTCStar({id: peerInfo.id})
-    const wsstar = new WebSocketStar({id: peerInfo.id})
+  constructor (_options) {
+    const wrtcstar = new WebRTCStar({id: _options.peerInfo.id})
+    const wsstar = new WebSocketStar({id: _options.peerInfo.id})
 
-    const modules = {
-      transport: [new WS(), wrtcstar, wsstar],
-      connection: {
-        muxer: [Multiplex],
-        crypto: [SECIO]
+    const defaults = {
+      modules: {
+        transport: [
+          WS,
+          wrtcstar,
+          wsstar
+        ],
+        streamMuxer: [
+          Multiplex
+        ],
+        connEncryption: [
+          SECIO
+        ],
+        peerDiscovery: [
+          wrtcstar.discovery,
+          wsstar.discovery,
+          Bootstrap
+        ]
       },
-      discovery: [wrtcstar.discovery, wsstar.discovery]
+      config: {
+        peerDiscovery: {
+          bootstrap: {
+            enabled: true
+          },
+          webRTCStar: {
+            enabled: true
+          },
+          websocketStar: {
+            enabled: true
+          }
+        },
+        EXPERIMENTAL: {
+          dht: false,
+          pubsub: false
+        }
+      }
     }
 
-    if (options.bootstrap) {
-      const r = new Railing(options.bootstrap)
-      modules.discovery.push(r)
-    }
-
-    if (options.modules && options.modules.transport) {
-      options.modules.transport.forEach((t) => modules.transport.push(t))
-    }
-
-    if (options.modules && options.modules.discovery) {
-      options.modules.discovery.forEach((d) => modules.discovery.push(d))
-    }
-
-    super(modules, peerInfo, peerBook, options)
+    super(defaultsDeep(_options, defaults))
   }
 }
 

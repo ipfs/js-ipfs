@@ -1,3 +1,105 @@
+<a name="0.31.2"></a>
+## [0.31.2](https://github.com/ipfs/js-ipfs/compare/v0.31.1...v0.31.2) (2018-08-02)
+
+
+### Bug Fixes
+
+* fix content-type by doing a fall-back using extensions ([#1482](https://github.com/ipfs/js-ipfs/issues/1482)) ([d528b3f](https://github.com/ipfs/js-ipfs/commit/d528b3f))
+
+
+
+<a name="0.31.1"></a>
+## [0.31.1](https://github.com/ipfs/js-ipfs/compare/v0.31.0...v0.31.1) (2018-07-29)
+
+
+### Bug Fixes
+
+* logo link ([a9219ad](https://github.com/ipfs/js-ipfs/commit/a9219ad))
+* XMLHTTPRequest is deprecated and unavailable in service workers ([#1478](https://github.com/ipfs/js-ipfs/issues/1478)) ([7d6f0ca](https://github.com/ipfs/js-ipfs/commit/7d6f0ca))
+
+
+
+<a name="0.31.0"></a>
+# [0.31.0](https://github.com/ipfs/js-ipfs/compare/v0.30.1...v0.31.0) (2018-07-29)
+
+
+### Bug Fixes
+
+* emit boot error only once ([#1472](https://github.com/ipfs/js-ipfs/issues/1472)) ([45b80a0](https://github.com/ipfs/js-ipfs/commit/45b80a0))
+
+
+### Features
+
+* preload content ([#1464](https://github.com/ipfs/js-ipfs/issues/1464)) ([bffe080](https://github.com/ipfs/js-ipfs/commit/bffe080)), closes [#1459](https://github.com/ipfs/js-ipfs/issues/1459)
+* preload on content fetch requests ([#1475](https://github.com/ipfs/js-ipfs/issues/1475)) ([649b755](https://github.com/ipfs/js-ipfs/commit/649b755)), closes [#1473](https://github.com/ipfs/js-ipfs/issues/1473)
+* remove decomissioned bootstrappers ([e3868f4](https://github.com/ipfs/js-ipfs/commit/e3868f4))
+* rm decomissioned bootstrappers - nodejs ([90e9f68](https://github.com/ipfs/js-ipfs/commit/90e9f68))
+* support --raw-leaves ([#1454](https://github.com/ipfs/js-ipfs/issues/1454)) ([1f63e8c](https://github.com/ipfs/js-ipfs/commit/1f63e8c))
+
+
+### Reverts
+
+* docs: add migration note about upgrading from < 0.30.0 ([#1450](https://github.com/ipfs/js-ipfs/issues/1450)) ([#1456](https://github.com/ipfs/js-ipfs/issues/1456)) ([f4344b0](https://github.com/ipfs/js-ipfs/commit/f4344b0))
+
+
+
+<a name="0.30.1"></a>
+## [0.30.1](https://github.com/ipfs/js-ipfs/compare/v0.30.0...v0.30.1) (2018-07-17)
+
+
+### Bug Fixes
+
+* aegir docs fails if outer funtion is called pin ([#1429](https://github.com/ipfs/js-ipfs/issues/1429)) ([a08a17d](https://github.com/ipfs/js-ipfs/commit/a08a17d))
+* double pre start ([#1437](https://github.com/ipfs/js-ipfs/issues/1437)) ([e6ad63e](https://github.com/ipfs/js-ipfs/commit/e6ad63e))
+* fixing circuit-relaying example ([#1443](https://github.com/ipfs/js-ipfs/issues/1443)) ([a681fc5](https://github.com/ipfs/js-ipfs/commit/a681fc5)), closes [#1423](https://github.com/ipfs/js-ipfs/issues/1423)
+
+
+
+<a name="0.30.0"></a>
+# [0.30.0](https://github.com/ipfs/js-ipfs/compare/v0.29.3...v0.30.0) (2018-07-09)
+
+
+### Bug Fixes
+
+* allow put empty block & add X-Stream-Output header on get ([#1408](https://github.com/ipfs/js-ipfs/issues/1408)) ([52f7aa7](https://github.com/ipfs/js-ipfs/commit/52f7aa7))
+* broken contributing links ([#1386](https://github.com/ipfs/js-ipfs/issues/1386)) ([cd449ff](https://github.com/ipfs/js-ipfs/commit/cd449ff))
+* do not stringify output of object data ([#1398](https://github.com/ipfs/js-ipfs/issues/1398)) ([4e51a69](https://github.com/ipfs/js-ipfs/commit/4e51a69))
+* **dag:** fix default hash algorithm for put() api ([#1419](https://github.com/ipfs/js-ipfs/issues/1419)) ([1a36375](https://github.com/ipfs/js-ipfs/commit/1a36375))
+* **dag:** make options in `put` API optional ([#1415](https://github.com/ipfs/js-ipfs/issues/1415)) ([d299ed7](https://github.com/ipfs/js-ipfs/commit/d299ed7)), closes [#1395](https://github.com/ipfs/js-ipfs/issues/1395)
+* **tests:** loosen assertion for bitswap.stat test ([#1404](https://github.com/ipfs/js-ipfs/issues/1404)) ([4290256](https://github.com/ipfs/js-ipfs/commit/4290256))
+* update hlsjs-ipfs-loader version ([#1422](https://github.com/ipfs/js-ipfs/issues/1422)) ([6b14812](https://github.com/ipfs/js-ipfs/commit/6b14812))
+
+
+### Features
+
+* (BREAKING CHANGE) new libp2p configuration ([#1401](https://github.com/ipfs/js-ipfs/issues/1401)) ([9c60909](https://github.com/ipfs/js-ipfs/commit/9c60909))
+* expose libp2p connection manager configuration options ([#1410](https://github.com/ipfs/js-ipfs/issues/1410)) ([2615f76](https://github.com/ipfs/js-ipfs/commit/2615f76))
+* implement bitswap.wantlist peerid and bitswap.unwant ([#1349](https://github.com/ipfs/js-ipfs/issues/1349)) ([45b705d](https://github.com/ipfs/js-ipfs/commit/45b705d))
+* mfs implementation ([#1360](https://github.com/ipfs/js-ipfs/issues/1360)) ([871d24e](https://github.com/ipfs/js-ipfs/commit/871d24e)), closes [#1425](https://github.com/ipfs/js-ipfs/issues/1425)
+* modular interface tests ([#1389](https://github.com/ipfs/js-ipfs/issues/1389)) ([18888be](https://github.com/ipfs/js-ipfs/commit/18888be))
+* pin API ([#1045](https://github.com/ipfs/js-ipfs/issues/1045)) ([2a5cc5e](https://github.com/ipfs/js-ipfs/commit/2a5cc5e)), closes [#1249](https://github.com/ipfs/js-ipfs/issues/1249)
+
+
+### Performance Improvements
+
+* use lodash ([#1414](https://github.com/ipfs/js-ipfs/issues/1414)) ([5637330](https://github.com/ipfs/js-ipfs/commit/5637330))
+
+
+### BREAKING CHANGES
+
+* libp2p configuration has changed
+
+    * old: `libp2p.modules.discovery`
+    * new: `libp2p.modules.peerDiscovery`
+
+License: MIT
+Signed-off-by: David Dias <mail@daviddias.me>
+
+License: MIT
+Signed-off-by: Alan Shaw <alan@tableflip.io>
+
+
+
 <a name="0.29.3"></a>
 ## [0.29.3](https://github.com/ipfs/js-ipfs/compare/v0.29.2...v0.29.3) (2018-06-04)
 
@@ -74,16 +176,10 @@
 
 ### BREAKING CHANGES
 
-1. Argument order for `pubsub.subscribe` has changed:
-    * Old: `pubsub.subscribe(topic, [options], handler, [callback]): Promise`
-    * New: `pubsub.subscribe(topic, handler, [options], [callback]): Promise`
-2. The `pubsub.unsubscribe` method has become async meaning that it now takes a callback or returns a promise:
-    * Old: `pubsub.unsubscribe(topic, handler): undefined`
-    * New: `pubsub.unsubscribe(topic, handler, [callback]): Promise`
-3. Property names on response objects for `ping` are now lowered:
-    * Old: `{ Success, Time, Text }`
-    * New: `{ success, time, text }`
-4. In the CLI, `jsipfs object data` no longer returns a newline after the end of the returned data
+* pubsub.unsubscribe is now async and argument order for pubsub.subscribe has changed
+
+License: MIT
+Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 

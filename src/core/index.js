@@ -22,6 +22,8 @@ const boot = require('./boot')
 const components = require('./components')
 // replaced by repo-browser when running in the browser
 const defaultRepo = require('./runtime/repo-nodejs')
+const preload = require('./preload')
+const mfsPreload = require('./mfs-preload')
 
 class IPFS extends EventEmitter {
   constructor (options) {
@@ -30,11 +32,17 @@ class IPFS extends EventEmitter {
     this._options = {
       init: true,
       start: true,
-      EXPERIMENTAL: {}
+      EXPERIMENTAL: {},
+      preload: {
+        enabled: true,
+        addresses: [
+          '/dnsaddr/node0.preload.ipfs.io/https',
+          '/dnsaddr/node1.preload.ipfs.io/https'
+        ]
+      }
     }
 
     options = config.validate(options || {})
-    this._libp2pModules = options.libp2p && options.libp2p.modules
 
     extend(this._options, options)
 
@@ -79,6 +87,8 @@ class IPFS extends EventEmitter {
     this._blockService = new BlockService(this._repo)
     this._ipld = new Ipld(this._blockService)
     this._pubsub = undefined
+    this._preload = preload(this)
+    this._mfsPreload = mfsPreload(this)
 
     // IPFS Core exposed components
     //   - for booting up a node
@@ -101,6 +111,7 @@ class IPFS extends EventEmitter {
     this.swarm = components.swarm(this)
     this.files = components.files(this)
     this.bitswap = components.bitswap(this)
+    this.pin = components.pin(this)
     this.ping = components.ping(this)
     this.pingPullStream = components.pingPullStream(this)
     this.pingReadableStream = components.pingReadableStream(this)
@@ -119,9 +130,6 @@ class IPFS extends EventEmitter {
     if (this._options.EXPERIMENTAL.dht) {
       this.log('EXPERIMENTAL Kademlia DHT is enabled')
     }
-    if (this._options.EXPERIMENTAL.relay) {
-      this.log('EXPERIMENTAL Relay is enabled')
-    }
 
     this.state = require('./state')(this)
 
@@ -135,6 +143,13 @@ class IPFS extends EventEmitter {
       crypto: crypto,
       isIPFS: isIPFS
     }
+
+    // ipfs.files
+    const mfs = components.mfs(this)
+
+    Object.keys(mfs).forEach(key => {
+      this.files[key] = mfs[key]
+    })
 
     boot(this)
   }

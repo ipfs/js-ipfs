@@ -32,7 +32,9 @@ function prepareFile (self, opts, file, callback) {
   }
 
   waterfall([
-    (cb) => opts.onlyHash ? cb(null, file) : self.object.get(file.multihash, opts, cb),
+    (cb) => opts.onlyHash
+      ? cb(null, file)
+      : self.object.get(file.multihash, opts, cb),
     (node, cb) => {
       const b58Hash = cid.toBaseEncodedString()
 
@@ -87,6 +89,33 @@ function normalizeContent (opts, content) {
   })
 }
 
+function preloadFile (self, opts, file) {
+  const isRootFile = opts.wrapWithDirectory
+    ? file.path === ''
+    : !file.path.includes('/')
+
+  const shouldPreload = isRootFile && !opts.onlyHash && opts.preload !== false
+
+  if (shouldPreload) {
+    self._preload(file.hash)
+  }
+
+  return file
+}
+
+function pinFile (self, opts, file, cb) {
+  // Pin a file if it is the root dir of a recursive add or the single file
+  // of a direct add.
+  const pin = 'pin' in opts ? opts.pin : true
+  const isRootDir = !file.path.includes('/')
+  const shouldPin = pin && isRootDir && !opts.onlyHash && !opts.hashAlg
+  if (shouldPin) {
+    return self.pin.add(file.hash, err => cb(err, file))
+  } else {
+    cb(null, file)
+  }
+}
+
 class AddHelper extends Duplex {
   constructor (pullStream, push, options) {
     super(Object.assign({ objectMode: true }, options))
@@ -130,7 +159,8 @@ module.exports = function files (self) {
     }
 
     let total = 0
-    let prog = opts.progress || (() => {})
+
+    const prog = opts.progress || noop
     const progress = (bytes) => {
       total += bytes
       prog(total)
@@ -141,7 +171,9 @@ module.exports = function files (self) {
       pull.map(normalizeContent.bind(null, opts)),
       pull.flatten(),
       importer(self._ipld, opts),
-      pull.asyncMap(prepareFile.bind(null, self, opts))
+      pull.asyncMap(prepareFile.bind(null, self, opts)),
+      pull.map(preloadFile.bind(null, self, opts)),
+      pull.asyncMap(pinFile.bind(null, self, opts))
     )
   }
 
@@ -150,10 +182,16 @@ module.exports = function files (self) {
       throw new Error('You must supply an ipfsPath')
     }
 
+    options = options || {}
+
     ipfsPath = normalizePath(ipfsPath)
     const pathComponents = ipfsPath.split('/')
     const restPath = normalizePath(pathComponents.slice(1).join('/'))
     const filterFile = (file) => (restPath && file.path === restPath) || (file.path === ipfsPath)
+
+    if (options.preload !== false) {
+      self._preload(pathComponents[0])
+    }
 
     const d = deferred.source()
 
@@ -181,16 +219,21 @@ module.exports = function files (self) {
   }
 
   function _lsPullStreamImmutable (ipfsPath, options) {
+    options = options || {}
+
     const path = normalizePath(ipfsPath)
-    const recursive = options && options.recursive
-    const pathDepth = path.split('/').length
+    const recursive = options.recursive
+    const pathComponents = path.split('/')
+    const pathDepth = pathComponents.length
     const maxDepth = recursive ? global.Infinity : pathDepth
-    const opts = Object.assign({}, {
-      maxDepth: maxDepth
-    }, options)
+    options.maxDepth = options.maxDepth || maxDepth
+
+    if (options.preload !== false) {
+      self._preload(pathComponents[0])
+    }
 
     return pull(
-      exporter(ipfsPath, self._ipld, opts),
+      exporter(ipfsPath, self._ipld, options),
       pull.filter(node =>
         recursive ? node.depth >= pathDepth : node.depth === pathDepth
       ),
@@ -302,8 +345,11 @@ module.exports = function files (self) {
         options = {}
       }
 
-      if (typeof callback !== 'function') {
-        throw new Error('Please supply a callback to ipfs.files.get')
+      options = options || {}
+
+      if (options.preload !== false) {
+        const pathComponents = normalizePath(ipfsPath).split('/')
+        self._preload(pathComponents[0])
       }
 
       pull(
@@ -327,6 +373,13 @@ module.exports = function files (self) {
     }),
 
     getReadableStream: (ipfsPath, options) => {
+      options = options || {}
+
+      if (options.preload !== false) {
+        const pathComponents = normalizePath(ipfsPath).split('/')
+        self._preload(pathComponents[0])
+      }
+
       return toStream.source(
         pull(
           exporter(ipfsPath, self._ipld, options),
@@ -343,6 +396,13 @@ module.exports = function files (self) {
     },
 
     getPullStream: (ipfsPath, options) => {
+      options = options || {}
+
+      if (options.preload !== false) {
+        const pathComponents = normalizePath(ipfsPath).split('/')
+        self._preload(pathComponents[0])
+      }
+
       return exporter(ipfsPath, self._ipld, options)
     },
 
@@ -350,6 +410,13 @@ module.exports = function files (self) {
       if (typeof options === 'function') {
         callback = options
         options = {}
+      }
+
+      options = options || {}
+
+      if (options.preload !== false) {
+        const pathComponents = normalizePath(ipfsPath).split('/')
+        self._preload(pathComponents[0])
       }
 
       pull(
@@ -365,6 +432,13 @@ module.exports = function files (self) {
     }),
 
     lsReadableStreamImmutable: (ipfsPath, options) => {
+      options = options || {}
+
+      if (options.preload !== false) {
+        const pathComponents = normalizePath(ipfsPath).split('/')
+        self._preload(pathComponents[0])
+      }
+
       return toStream.source(_lsPullStreamImmutable(ipfsPath, options))
     },
 

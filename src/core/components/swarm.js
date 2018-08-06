@@ -2,7 +2,7 @@
 
 const multiaddr = require('multiaddr')
 const promisify = require('promisify-es6')
-const values = require('lodash.values')
+const values = require('lodash/values')
 
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 

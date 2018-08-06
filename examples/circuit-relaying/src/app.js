@@ -28,14 +28,14 @@ const repo = () => {
 
 const ipfs = new IPFS({
   repo: repo(),
-  EXPERIMENTAL: {
-    pubsub: true, // enable pubsub
-    relay: {
-      enabled: true, // enable relay dialer/listener (STOP)
-      hop: {
-        enabled: true // make this node a relay (HOP)
-      }
+  relay: {
+    enabled: true, // enable relay dialer/listener (STOP)
+    hop: {
+      enabled: true // make this node a relay (HOP)
     }
+  },
+  EXPERIMENTAL: {
+    pubsub: true // enable pubsub
   },
   config: {
     Bootstrap: []

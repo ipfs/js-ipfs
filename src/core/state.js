@@ -7,8 +7,8 @@ log.error = debug('jsipfs:state:error')
 const fsm = require('fsm-event')
 
 module.exports = (self) => {
-  const s = fsm('uninitalized', {
-    uninitalized: {
+  const s = fsm('uninitialized', {
+    uninitialized: {
       init: 'initializing',
       initialized: 'stopped'
     },

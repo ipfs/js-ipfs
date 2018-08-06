@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <style type="text/css">
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+button {
+  font-size: 1.5em;
+  padding: 5px 10px;
+}
+
+#container {
+  height: calc(100vh - 60px);
+  padding: 20px;
+  border: 10px transparent;
+}
+
+#container.drag-over {
+  border: 10px dashed green;
+}
+
+#buttons {
+  height: 50px;
+}
+
+#display {
+  display: flex;
+  height: calc(100vh - 90px);
+}
+
+#log {
+  flex-grow: 2;
+  padding: 10px;
+  height: calc(100vh - 120px);
+  overflow: auto;
+}
+
+#log p {
+  font-family: "Lucida Console", Monaco, monospace;
+  margin: 0;
+  white-space: pre;
+  line-height: 1.4;
+}
+
+#log p.error {
+  color: red;
+}
+
+#log p.output {
+  color: green;
+}
+
+#files {
+  width: 50vw;
+}
+
+#files pre {
+  margin: 0;
+  line-height: 1.4;
+}
+
+#modal-screen {
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.4);
+  top: 0;
+  left: 0;
+}
+
+.modal {
+  -webkit-box-shadow: 0px 0px 92px -3px rgba(0, 0, 0, 0.4);
+  -moz-box-shadow: 0px 0px 92px -3px rgba(0, 0, 0, 0.4);
+  box-shadow: 0px 0px 92px -3px rgba(0, 0, 0, 0.4);
+  background-color: white;
+
+  position: absolute;
+  top: 50px;
+  width: 500px;
+  margin-left: 50%;
+  left: -250px;
+  padding: 20px;
+  display: none;
+}
+
+.modal h2 {
+  margin-top: 10px;
+}
+
+.modal input {
+  font-size: 1.5em;
+  padding: 5px 10px;
+}
+
+.modal label, .modal input, .modal checkbox, .modal button {
+  display: block;
+  margin: 10px 0;
+}
+    </style>
+  </head>
+  <body>
+    <div id="container" ondrop="dropHandler(event)" ondragover="dragOverHandler(event)">
+      <div id="buttons">
+        <button id="button-cp" disabled>cp</button>
+        <button id="button-mkdir" disabled>mkdir</button>
+        <button id="button-mv" disabled>mv</button>
+        <button id="button-read" disabled>read</button>
+        <button id="button-rm" disabled>rm</button>
+        <button id="button-stat" disabled>stat</button>
+      </div>
+      <div id="display">
+        <div id="files"></div>
+        <div id="log"></div>
+      </div>
+    </div>
+
+    <div id="modal-screen"></div>
+
+    <div id="form-mkdir" class="modal">
+      <h2>mkdir</h2>
+
+      <label for="form-mkdir-path">path:</label>
+      <input type="text" id="form-mkdir-path" value="/" />
+
+      <label for="form-mkdir-parents">format:</label>
+      <input type="text" id="form-mkdir-format" value="dag-pb" />
+
+      <label for="form-mkdir-parents">hashAlg:</label>
+      <input type="text" id="form-mkdir-hashalg" value="sha2-256" />
+
+      <label for="form-mkdir-parents">parents:</label>
+      <input type="checkbox" id="form-mkdir-parents" checked />
+
+      <label for="form-mkdir-parents">flush:</label>
+      <input type="checkbox" id="form-mkdir-flush" checked />
+
+      <button id="button-form-mkdir-submit">Go!</button>
+    </div>
+
+    <div id="form-cp" class="modal">
+      <h2>cp</h2>
+
+      <label for="form-cp-path">path:</label>
+      <input type="text" id="form-cp-path" value="/" />
+
+      <label for="form-cp-dest">destination:</label>
+      <input type="text" id="form-cp-dest" value="/" />
+
+      <label for="form-cp-parents">format:</label>
+      <input type="text" id="form-cp-format" value="dag-pb" />
+
+      <label for="form-cp-parents">hashAlg:</label>
+      <input type="text" id="form-cp-hashalg" value="sha2-256" />
+
+      <label for="form-cp-parents">parents:</label>
+      <input type="checkbox" id="form-cp-parents" checked />
+
+      <label for="form-cp-parents">flush:</label>
+      <input type="checkbox" id="form-cp-flush" checked />
+
+      <button id="button-form-cp-submit">Go!</button>
+    </div>
+
+    <div id="form-mv" class="modal">
+      <h2>mv</h2>
+
+      <label for="form-mv-path">path:</label>
+      <input type="text" id="form-mv-path" value="/" />
+
+      <label for="form-mv-dest">destination:</label>
+      <input type="text" id="form-mv-dest" value="/" />
+
+      <label for="form-mv-parents">format:</label>
+      <input type="text" id="form-mv-format" value="dag-pb" />
+
+      <label for="form-mv-parents">hashAlg:</label>
+      <input type="text" id="form-mv-hashalg" value="sha2-256" />
+
+      <label for="form-mv-parents">parents:</label>
+      <input type="checkbox" id="form-mv-parents" checked />
+
+      <label for="form-mv-parents">flush:</label>
+      <input type="checkbox" id="form-mv-flush" checked />
+
+      <button id="button-form-mv-submit">Go!</button>
+    </div>
+
+    <div id="form-rm" class="modal">
+      <h2>rm</h2>
+
+      <label for="form-rm-path">path:</label>
+      <input type="text" id="form-rm-path" value="/" />
+
+      <label for="form-mkdir-recursive">recursive:</label>
+      <input type="checkbox" id="form-rm-recursive" checked />
+
+      <button id="button-form-rm-submit">Go!</button>
+    </div>
+
+    <div id="form-stat" class="modal">
+      <h2>stat</h2>
+
+      <label for="form-stat-path">path:</label>
+      <input type="text" id="form-stat-path" value="/" />
+
+      <label for="form-stat-hash">hash:</label>
+      <input type="checkbox" id="form-stat-hash" />
+
+      <label for="form-stat-size">size:</label>
+      <input type="checkbox" id="form-stat-size" />
+
+      <label for="form-stat-withlocal">withLocal:</label>
+      <input type="checkbox" id="form-stat-withlocal" checked />
+
+      <button id="button-form-stat-submit">Go!</button>
+    </div>
+
+    <div id="form-read" class="modal">
+      <h2>read</h2>
+
+      <label for="form-read-path">path:</label>
+      <input type="text" id="form-read-path" value="/" />
+
+      <label for="form-read-offset">offset:</label>
+      <input type="number" id="form-read-offset" value="" />
+
+      <label for="form-read-length">length:</label>
+      <input type="number" id="form-read-length" value="" />
+
+      <button id="button-form-read-submit">Go!</button>
+    </div>
+  </body>
+</html>
