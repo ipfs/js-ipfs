@@ -97,7 +97,7 @@ module.exports = (createCommon, options) => {
 
     // Test resolve turns /ipns/QmPeerHash into /ipns/domain.com into /ipfs/QmHash
     it('should resolve IPNS link recursively', function (done) {
-      this.timeout(2 * 60 * 1000)
+      this.timeout(4 * 60 * 1000)
 
       ipfs.name.publish('/ipns/ipfs.io', { resolve: false }, (err, res) => {
         expect(err).to.not.exist()
