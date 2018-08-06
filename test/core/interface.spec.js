@@ -57,7 +57,14 @@ describe('interface-ipfs-core tests', () => {
   tests.miscellaneous(CommonFactory.create({
     // No need to stop, because the test suite does a 'stop' test.
     createTeardown: () => cb => cb()
-  }))
+  }), {
+    skip: [
+      {
+        name: 'resolve',
+        reason: 'TODO: not implemented'
+      }
+    ]
+  })
 
   tests.object(defaultCommonFactory)
 
