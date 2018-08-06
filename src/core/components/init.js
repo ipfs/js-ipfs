@@ -61,14 +61,13 @@ module.exports = function init (self) {
           return cb(new Error('repo already exists'))
         }
 
-        if (opts.pregenId) {
-          // Use pregenerated Id
-          self.log('using pregenerated id')
-          cb(null, opts.pregenId)
-        } else if (process.env.IPFS_PREGENERATED_PRIVATE_KEY) {
-          // Use pregenerated Id from env
-          self.log('using pregenerated id from env')
-          peerId.createFromPrivKey(Buffer.from(process.env.IPFS_PREGENERATED_PRIVATE_KEY, 'base64'), cb)
+        if (opts.privateKey) {
+          self.log('using user-supplied private-key')
+          if (typeof opts.privateKey === 'object') {
+            cb(null, opts.privateKey)
+          } else {
+            peerId.createFromPrivKey(Buffer.from(opts.privateKey, 'base64'), cb)
+          }
         } else {
           // Generate peer identity keypair + transform to desired format + add to config.
           opts.log(`generating ${opts.bits}-bit RSA keypair...`, false)
