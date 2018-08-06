@@ -3,7 +3,7 @@
 
 const expect = require('chai').expect
 
-module.exports = (thing) => describe.only('bitswap', () => {
+module.exports = (thing) => describe('bitswap', () => {
   let ipfs
   const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
 

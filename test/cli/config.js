@@ -7,9 +7,10 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const fs = require('fs')
 const path = require('path')
-const runOnAndOff = require('../utils/on-and-off')
+// const runOnAndOff = require('../utils/on-and-off')
 
-describe('config', () => runOnAndOff((thing) => {
+module.exports = (thing) => describe.only('config', () => {
+  // describe.only('config', () => runOnAndOff((thing) => {
   let ipfs
   let configPath
   let originalConfigPath
@@ -24,10 +25,10 @@ describe('config', () => runOnAndOff((thing) => {
     restoreConfig = () => fs.writeFileSync(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8')
   })
 
-  describe('get/set', function () {
+  describe.only('get/set', function () {
     this.timeout(40 * 1000)
 
-    it('set a config key with a string value', () => {
+    it.only('set a config key with a string value', () => {
       return ipfs('config foo bar').then((out) => {
         expect(updatedConfig().foo).to.equal('bar')
       })
@@ -98,4 +99,4 @@ describe('config', () => runOnAndOff((thing) => {
       restoreConfig()
     })
   })
-}))
+})
