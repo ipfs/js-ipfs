@@ -29,7 +29,8 @@ module.exports = (createCommon, options) => {
       })
     })
 
-    after((done) => {
+    after(function (done) {
+      this.timeout(10 * 1000)
       common.teardown(done)
     })
 
