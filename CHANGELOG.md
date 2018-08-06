@@ -1,3 +1,18 @@
+<a name="23.0.0"></a>
+# [23.0.0](https://github.com/ipfs/js-ipfs-api/compare/v22.3.0...v23.0.0) (2018-08-06)
+
+
+### Bug Fixes
+
+* config get ([#825](https://github.com/ipfs/js-ipfs-api/issues/825)) ([ef5a4a3](https://github.com/ipfs/js-ipfs-api/commit/ef5a4a3))
+
+
+### Features
+
+* add resolve cmd ([#826](https://github.com/ipfs/js-ipfs-api/issues/826)) ([c7ad0e4](https://github.com/ipfs/js-ipfs-api/commit/c7ad0e4))
+
+
+
 <a name="22.3.0"></a>
 # [22.3.0](https://github.com/ipfs/js-ipfs-api/compare/v22.2.4...v22.3.0) (2018-08-02)
 
