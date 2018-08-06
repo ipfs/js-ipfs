@@ -6,9 +6,8 @@ const os = require('os')
 const expect = require('chai').expect
 const repoVersion = require('ipfs-repo').repoVersion
 const pkgversion = require('../../package.json').version
-const runOnAndOff = require('../utils/on-and-off')
 
-describe('version', () => runOnAndOff((thing) => {
+module.exports = (thing) => describe('version', () => {
   let ipfs
 
   before(() => {
@@ -66,4 +65,4 @@ describe('version', () => runOnAndOff((thing) => {
       expect(out).to.eql(`${repoVersion}\n`)
     )
   )
-}))
+})

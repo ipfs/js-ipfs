@@ -54,6 +54,7 @@ module.exports = {
       } else {
         print(`js-ipfs version: ${parsedVersion}`)
       }
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }
