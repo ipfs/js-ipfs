@@ -16,7 +16,7 @@ describe('cli', () => {
   const tests = []
   fs.readdirSync(__dirname)
     .filter((file) => file !== 'index.js')
-    .filter((file) => file === 'swarm.js')
+    .filter((file) => file === 'repo.js')
   // .filter((file) => file === 'files.js' || file === 'block.js' || file === 'bitswap.js')
     .forEach((file) => {
       console.log('Gonna run tests for ' + file)

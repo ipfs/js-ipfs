@@ -16,6 +16,7 @@ module.exports = {
       }
 
       print(version)
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }
