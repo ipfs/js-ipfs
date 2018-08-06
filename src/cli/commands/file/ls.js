@@ -24,6 +24,7 @@ module.exports = {
       }
 
       links.forEach((file) => print(file.hash))
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

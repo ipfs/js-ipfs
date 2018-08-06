@@ -2,11 +2,10 @@
 'use strict'
 
 const expect = require('chai').expect
-const runOnAndOff = require('../utils/on-and-off')
 
 const commandCount = 77
 
-describe('commands', () => runOnAndOff((thing) => {
+module.exports = (thing) => describe('commands', () => {
   let ipfs
 
   before(function () {
@@ -19,4 +18,4 @@ describe('commands', () => runOnAndOff((thing) => {
       expect(out.split('\n')).to.have.length(commandCount + 1)
     })
   })
-}))
+})

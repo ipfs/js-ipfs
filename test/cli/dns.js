@@ -2,9 +2,8 @@
 'use strict'
 
 const expect = require('chai').expect
-const runOnAndOff = require('../utils/on-and-off')
 
-describe('dns', () => runOnAndOff((thing) => {
+module.exports = (thing) => describe('dns', () => {
   let ipfs
 
   before(function () {
@@ -19,4 +18,4 @@ describe('dns', () => runOnAndOff((thing) => {
       expect(res.substr(0, 6)).to.eql('/ipfs/')
     })
   })
-}))
+})

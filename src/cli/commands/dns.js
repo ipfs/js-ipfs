@@ -19,6 +19,7 @@ module.exports = {
       }
 
       print(path)
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

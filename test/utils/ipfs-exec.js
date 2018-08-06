@@ -38,6 +38,9 @@ module.exports = function ipfsExec (repoPath) {
       console.log('Using global --pass siwtch')
       cliToLoad = argv[2]
     }
+    if (argv[0] === 'help') {
+      cliToLoad = 'commands'
+    }
     // if (argv[0] === 'pin') {
     //   cliToLoad = 'pin/' + argv[1]
     // }

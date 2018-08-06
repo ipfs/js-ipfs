@@ -3,9 +3,8 @@
 'use strict'
 
 const expect = require('chai').expect
-const runOnAndOff = require('../utils/on-and-off')
 
-describe('bootstrap', () => runOnAndOff((thing) => {
+module.exports = (thing) => describe('bootstrap', () => {
   let ipfs
 
   before(() => {
@@ -103,4 +102,4 @@ describe('bootstrap', () => runOnAndOff((thing) => {
       expect(out).to.equal('')
     })
   })
-}))
+})

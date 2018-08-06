@@ -43,11 +43,14 @@ describe('cli', () => {
   const tests = []
   fs.readdirSync(__dirname)
     .filter((file) => file !== 'index.js')
-    .filter((file) => file === 'version.js' || file === 'swarm.js' || file === 'repo.js')
-  // .filter((file) => file === 'files.js' || file === 'block.js' || file === 'bitswap.js')
+  // .filter((file) => file === 'daemon.js')
     .forEach((file) => {
       console.log('Gonna run tests for ' + file)
-      tests.push(require('./' + file))
+      const t = require('./' + file)
+      if (typeof t !== 'function') {
+        throw new Error(`Test loaded from ${file} was not a function. Make sure you are exporting the describe-suite`)
+      }
+      tests.push(t)
     })
   let didTestsRun
   describe('with daemon offline', () => {

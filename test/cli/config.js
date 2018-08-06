@@ -7,10 +7,8 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const fs = require('fs')
 const path = require('path')
-// const runOnAndOff = require('../utils/on-and-off')
 
 module.exports = (thing) => describe('config', () => {
-// describe.only('config', () => runOnAndOff((thing) => {
   let ipfs
   let configPath
   let originalConfigPath

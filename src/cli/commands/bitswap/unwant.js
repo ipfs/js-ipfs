@@ -20,6 +20,7 @@ module.exports = {
         throw err
       }
       print(`Key ${argv.key} removed from wantlist`)
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

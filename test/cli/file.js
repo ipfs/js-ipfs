@@ -2,11 +2,10 @@
 'use strict'
 
 const expect = require('chai').expect
-const runOnAndOff = require('../utils/on-and-off')
 const file = 'QmR56UJmAaZLXLdTT1ALrE9vVqV8soUEekm9BMd4FnuYqV'
 const dir = 'Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z'
 
-describe('file ls', () => runOnAndOff((thing) => {
+module.exports = (thing) => describe('file ls', () => {
   let ipfs
 
   before(function () {
@@ -34,4 +33,4 @@ describe('file ls', () => runOnAndOff((thing) => {
         'QmR56UJmAaZLXLdTT1ALrE9vVqV8soUEekm9BMd4FnuYqV\n'
       ))
   })
-}))
+})
