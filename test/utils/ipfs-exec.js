@@ -28,11 +28,12 @@ module.exports = function ipfsExec (repoPath) {
   const ipfsExec = function (args) {
     let argv = args.split(' ')
     // cat, add, get are aliases to `files *`
+    let cliToLoad = argv[0]
     if (['cat', 'add', 'get'].includes(argv[0])) {
+      cliToLoad = 'files/' + argv[0]
       argv = ['files'].concat(argv)
     }
     debug('Running', argv)
-    const cliToLoad = argv[0]
     // Load the actual source for the command
     let cli = require('../../src/cli/commands/' + cliToLoad)
 

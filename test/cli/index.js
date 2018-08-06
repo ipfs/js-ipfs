@@ -11,8 +11,10 @@ describe('cli', () => {
   const tests = []
   fs.readdirSync(__dirname)
     .filter((file) => file !== 'index.js')
-    .filter((file) => file === 'files.js' || file === 'block.js' || file === 'bitswap.js')
+    .filter((file) => file === 'config.js')
+  // .filter((file) => file === 'files.js' || file === 'block.js' || file === 'bitswap.js')
     .forEach((file) => {
+      console.log('Gonna run tests for ' + file)
       tests.push(require('./' + file))
     })
   describe('with daemon offline', () => {
@@ -54,3 +56,13 @@ describe('cli', () => {
     })
   })
 })
+// /* eslint-env mocha */
+// 'use strict'
+//
+// const fs = require('fs')
+//
+// describe('cli', () => {
+//   fs.readdirSync(__dirname)
+//     .filter((file) => file !== 'index.js')
+//     .forEach((file) => require('./' + file))
+// })

@@ -9,8 +9,8 @@ const fs = require('fs')
 const path = require('path')
 // const runOnAndOff = require('../utils/on-and-off')
 
-module.exports = (thing) => describe.only('config', () => {
-  // describe.only('config', () => runOnAndOff((thing) => {
+module.exports = (thing) => describe('config', () => {
+// describe.only('config', () => runOnAndOff((thing) => {
   let ipfs
   let configPath
   let originalConfigPath
@@ -25,10 +25,10 @@ module.exports = (thing) => describe.only('config', () => {
     restoreConfig = () => fs.writeFileSync(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8')
   })
 
-  describe.only('get/set', function () {
+  describe('get/set', function () {
     this.timeout(40 * 1000)
 
-    it.only('set a config key with a string value', () => {
+    it('set a config key with a string value', () => {
       return ipfs('config foo bar').then((out) => {
         expect(updatedConfig().foo).to.equal('bar')
       })

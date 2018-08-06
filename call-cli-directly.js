@@ -31,9 +31,9 @@ const tests = async () => {
   }).then(() => {
     return thing.ipfs('shutdown')
   }).catch((err) => {
-    console.log('sorry, hit a error')
-    console.log(err)
-    process.exit(1)
+    console.error('sorry, hit a error')
+    console.error(err)
+    // process.exit(1)
   })
 
   // Make sure CLI can fail and goes into .catch
@@ -41,8 +41,8 @@ const tests = async () => {
   await thing.ipfs('init').then(() => {
     return thing.ipfs('files add src/init-files/init-docs/readme --cid-version=1')
   }).then((out) => {
-    console.log('Not supposed to be here')
-    process.exit(1)
+    console.error('Not supposed to be here')
+    // process.exit(1)
   }).catch(() => {
     console.log('Everything OK')
   })
@@ -58,8 +58,8 @@ const tests = async () => {
   }).then((out) => {
     console.log('Everything OK')
   }).catch(() => {
-    console.log('Not supposed to be here')
-    process.exit(1)
+    console.error('Not supposed to be here')
+    // process.exit(1)
   })
 
   // Just start a daemon, put a block, get it then turn of daemon and repeat once again
@@ -88,8 +88,8 @@ const tests = async () => {
       console.log('Now were donie')
     })
   }).catch(() => {
-    console.log('Not supposed to be here')
-    process.exit(1)
+    console.error('Not supposed to be here')
+    // process.exit(1)
   })
 }
 
