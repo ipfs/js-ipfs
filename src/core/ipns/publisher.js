@@ -1,6 +1,7 @@
 'use strict'
 
 const peerId = require('peer-id')
+const Record = require('libp2p-record').Record
 const series = require('async/series')
 
 const debug = require('debug')
@@ -56,10 +57,10 @@ class IpnsPublisher {
       const { ipnsKey, pkKey } = ipns.getIdKeys(peerIdResult.id)
       
       series([
-        (cb) => this.publishEntry(ipnsKey, record, cb),
+        (cb) => this.publishEntry(ipnsKey, embedPublicKeyRecord || record, peerIdResult, cb),
         // Publish the public key if a public key cannot be extracted from the ID
         // We will be able to deprecate this part in the future, since the public keys will be only in the peerId
-        (cb) => embedPublicKeyRecord ? this.publishPublicKey(pkKey, publicKey, cb) : cb(),
+        (cb) => embedPublicKeyRecord ? this.publishPublicKey(pkKey, publicKey, peerIdResult, cb) : cb(),
       ], (err) => {
         if (err) {
           return callback(err)
@@ -70,12 +71,15 @@ class IpnsPublisher {
     })
   }
 
-  publishEntry (key, entry, callback) {    
+  publishEntry(key, entry, peerIdResult, callback) {    
     // Marshal record
-    const data = ipns.marshal(entry)
+    const entryData = ipns.marshal(entry)
+
+    // Marshal to libp2p record
+    const rec = new Record(key.toBuffer(), entryData, peerIdResult)
     
     // TODO Routing - this should be replaced by a put to the DHT
-    this.repo.datastore.put(key, data, (err, res) => {
+    this.repo.datastore.put(key, rec.serialize(), (err, res) => {
       if (err) {
         log.error(`ipns record for ${value} could not be stored in the routing`)
         return callback(Object.assign(new Error(`ipns record for ${value} could not be stored in the routing`), { code: ERR_STORING_IN_DATASTORE }))
@@ -86,11 +90,13 @@ class IpnsPublisher {
     })
   }
 
-  publishPublicKey (key, publicKey, callback) {
+  publishPublicKey(key, publicKey, peerIdResult, callback) {
     console.log('publish public key');
+    // Marshal to libp2p record
+    const rec = new Record(key.toBuffer(), publicKey.bytes, peerIdResult)
     
     // TODO Routing - this should be replaced by a put to the DHT
-    this.repo.datastore.put(key, publicKey.bytes, (err, res) => {
+    this.repo.datastore.put(key, rec.serialize(), (err, res) => {
       if (err) {
         log.error(`public key for ${value} could not be stored in the routing`)
         return callback(Object.assign(new Error(`public key for ${value} could not be stored in the routing`), { code: ERR_STORING_IN_DATASTORE }))

@@ -154,15 +154,13 @@ module.exports = function name (self) {
         name = `/ipns/${name}`
       }
 
-      // TODO ROUTING - public key from network instead
-      const localPublicKey = self._peerInfo.id.pubKey
       const resolveOptions = {
         nocache,
         recursive,
         local
       }
 
-      self._ipns.resolve(name, localPublicKey, resolveOptions, callback)
+      self._ipns.resolve(name, self._peerInfo.id, resolveOptions, callback)
     })
   }
 }

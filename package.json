@@ -133,6 +133,7 @@
     "libp2p-keychain": "~0.3.1",
     "libp2p-mdns": "~0.12.0",
     "libp2p-mplex": "~0.8.0",
+    "libp2p-record": "~0.5.1",
     "libp2p-secio": "~0.10.0",
     "libp2p-tcp": "~0.12.0",
     "libp2p-webrtc-star": "~0.15.3",

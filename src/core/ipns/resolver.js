@@ -2,6 +2,7 @@
 
 const ipns = require('ipns')
 const { fromB58String } = require('multihashes')
+const Record = require('libp2p-record').Record
 
 const debug = require('debug')
 const log = debug('jsipfs:ipns:resolver')
@@ -21,7 +22,7 @@ class IpnsResolver {
     this._resolver = undefined // Add Router resolver
   }
 
-  resolve (name, publicKey, options, callback) {
+  resolve (name, peerId, options, callback) {
     const nameSegments = name.split('/')
 
     if (nameSegments.length !== 3 || nameSegments[0] !== '') {
@@ -53,9 +54,7 @@ class IpnsResolver {
       return callback(new Error('not implemented yet'))
     }
 
-    // TODO Routing - Get public key from routing
-
-    this.resolver(key, publicKey, depth, resolverFn, (err, res) => {
+    this.resolver(key, depth, peerId, resolverFn, (err, res) => {
       if (err) {
         return callback(err)
       }
@@ -66,7 +65,7 @@ class IpnsResolver {
   }
 
   // Recursive resolver according to the specified depth
-  resolver (name, publicKey, depth, resolverFn, callback) {
+  resolver(name, depth, peerId, resolverFn, callback) {
     // bind resolver function
     this._resolver = resolverFn
 
@@ -78,7 +77,7 @@ class IpnsResolver {
       return callback(Object.assign(new Error(error), { code: ERR_RESOLVE_RECURSION_LIMIT }))
     }
 
-    this._resolver(name, publicKey, (err, res) => {
+    this._resolver(name, peerId, (err, res) => {
       if (err) {
         return callback(err)
       }
@@ -91,13 +90,13 @@ class IpnsResolver {
       }
 
       // continue recursively until depth equals 0
-      return this.resolver(nameSegments[2], publicKey, depth - 1, resolverFn, callback)
+      return this.resolver(nameSegments[2], depth - 1, peerId, resolverFn, callback)
     })
   }
 
   // resolve ipns entries locally using the datastore
-  resolveLocal (name, publicKey, callback) {
-    const ipnsKey = ipns.getLocalKey(fromB58String(name))
+  resolveLocal(name, peerId, callback) {
+    const { ipnsKey } = ipns.getIdKeys(fromB58String(name))
 
     this.repo.datastore.get(ipnsKey, (err, dsVal) => {
       if (err) {
@@ -114,15 +113,22 @@ class IpnsResolver {
         return callback(Object.assign(new Error(error), { code: ERR_INVALID_RECORD_RECEIVED }))
       }
 
-      const ipnsEntry = ipns.unmarshal(dsVal)
+      const record = Record.deserialize(dsVal)
+      const ipnsEntry = ipns.unmarshal(record.value)
 
-      // Record validation
-      ipns.validate(publicKey, ipnsEntry, (err) => {
+      ipns.extractPublicKey(peerId, ipnsEntry, (err, pubKey) => {
         if (err) {
           return callback(err)
         }
 
-        return callback(null, ipnsEntry.value.toString())
+        // Record validation
+        ipns.validate(pubKey, ipnsEntry, (err) => {
+          if (err) {
+            return callback(err)
+          }
+
+          return callback(null, ipnsEntry.value.toString())
+        })
       })
     })
   }

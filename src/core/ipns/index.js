@@ -51,7 +51,7 @@ class IPNS {
   }
 
   // Resolve
-  resolve (name, pubKey, options, callback) {
+  resolve (name, peerId, options, callback) {
     // If recursive, we should not try to get the cached value
     if (!options.nocache && !options.recursive) {
       // Try to get the record from cache
@@ -65,7 +65,7 @@ class IPNS {
       }
     }
 
-    this.ipnsResolver.resolve(name, pubKey, options, (err, result) => {
+    this.ipnsResolver.resolve(name, peerId, options, (err, result) => {
       if (err) {
         log.error(err)
         return callback(err)
