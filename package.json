@@ -53,9 +53,9 @@
     "peer-id": "~0.11.0",
     "peer-info": "~0.14.1",
     "pull-stream": "^3.6.8",
-    "pump": "^3.0.0"
+    "pump": "^3.0.0",
+    "is-plain-object": "^2.0.4"
   },
-  "devDependencies": {},
   "contributors": [
     "Alan Shaw <alan@tableflip.io>",
     "Alex Potsides <alex@achingbrain.net>",
