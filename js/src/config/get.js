@@ -2,6 +2,7 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const isPlainObject = require('is-plain-object')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -32,7 +33,8 @@ module.exports = (createCommon, options) => {
     it('should retrieve the whole config', (done) => {
       ipfs.config.get((err, config) => {
         expect(err).to.not.exist()
-        expect(config).to.exist()
+        expect(config).to.be.an('object')
+        expect(isPlainObject(config)).to.equal(true)
         done()
       })
     })
@@ -40,7 +42,8 @@ module.exports = (createCommon, options) => {
     it('should retrieve the whole config (promised)', () => {
       return ipfs.config.get()
         .then((config) => {
-          expect(config).to.exist()
+          expect(config).to.be.an('object')
+          expect(isPlainObject(config)).to.equal(true)
         })
     })
 
