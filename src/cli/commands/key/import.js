@@ -29,6 +29,7 @@ module.exports = {
         throw err
       }
       print(`imported ${key.id} ${key.name}`)
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

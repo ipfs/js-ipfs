@@ -15,6 +15,7 @@ module.exports = {
         throw err
       }
       print(`renamed to ${res.id} ${res.now}`)
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }
