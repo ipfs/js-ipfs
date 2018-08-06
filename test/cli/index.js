@@ -45,7 +45,6 @@ describe('cli', () => {
     .filter((file) => file !== 'index.js')
   // .filter((file) => file === 'daemon.js')
     .forEach((file) => {
-      console.log('Gonna run tests for ' + file)
       const t = require('./' + file)
       if (typeof t !== 'function') {
         throw new Error(`Test loaded from ${file} was not a function. Make sure you are exporting the describe-suite`)
