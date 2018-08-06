@@ -22,15 +22,14 @@ const config = {
   }
 }
 
-describe('ping', function () {
-  this.timeout(60 * 1000)
+const test = (thing) => describe('ping', () => {
   let ipfsdA
   let ipfsdB
   let bMultiaddr
   let ipfsdBId
   let cli
 
-  before((done) => {
+  before(function (done) {
     this.timeout(60 * 1000)
     series([
       (cb) => {
@@ -70,7 +69,7 @@ describe('ping', function () {
     })
   })
 
-  before((done) => {
+  before(function (done) {
     this.timeout(60 * 1000)
     cli = ipfsExec(ipfsdA.repoPath)
     done()
@@ -86,7 +85,7 @@ describe('ping', function () {
     ipfsdB.stop(done)
   })
 
-  it('ping host', (done) => {
+  it('ping host', function (done) {
     this.timeout(60 * 1000)
     const ping = cli(`ping ${ipfsdBId}`)
     const result = []
@@ -110,7 +109,7 @@ describe('ping', function () {
     })
   })
 
-  it('ping host with --n option', (done) => {
+  it('ping host with --n option', function (done) {
     this.timeout(60 * 1000)
     const ping = cli(`ping --n 1 ${ipfsdBId}`)
     const result = []
@@ -132,16 +131,18 @@ describe('ping', function () {
     })
   })
 
-  it('ping host with --count option', (done) => {
+  it('ping host with --count option', function (done) {
     this.timeout(60 * 1000)
     const ping = cli(`ping --count 1 ${ipfsdBId}`)
     const result = []
     ping.stdout.on('data', (output) => {
       const packets = output.toString().split('\n').slice(0, -1)
+      console.log('received', packets)
       result.push(...packets)
     })
 
     ping.stdout.on('end', () => {
+      console.log('it finally endede')
       expect(result).to.have.lengthOf(3)
       expect(result[0]).to.equal(`PING ${ipfsdBId}`)
       expect(result[1]).to.match(/^Pong received: time=\d+ ms$/)
@@ -154,3 +155,5 @@ describe('ping', function () {
     })
   })
 })
+test.part = 'standalone'
+module.exports = test

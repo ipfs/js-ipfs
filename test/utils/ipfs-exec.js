@@ -26,6 +26,7 @@ module.exports = function ipfsExec (repoPath) {
   process.env.IPFS_PATH = repoPath
 
   const ipfsExec = function (args) {
+    const outputStream = new stream.PassThrough()
     let argv = args.split(' ')
     // cat, add, get are aliases to `files *`
     let cliToLoad = argv[0]
@@ -53,7 +54,8 @@ module.exports = function ipfsExec (repoPath) {
 
     debug('Parsed command')
 
-    return new Promise((resolve, reject) => {
+    const res = new Promise((resolve, reject) => {
+      // return new Promise((resolve, reject) => {
       // Save output we receive so we can return it
       let output = []
       // Placeholder callback for cleanup. Should be replaced with a proper one
@@ -77,6 +79,7 @@ module.exports = function ipfsExec (repoPath) {
         onCompleteWasCalled = true
         if (err) return reject(err)
         debug('onComplete called')
+        outputStream.push(null)
         // Make sure we cleanup once we're done
         cleanup((err) => {
           if (err) return reject(err)
@@ -112,9 +115,10 @@ module.exports = function ipfsExec (repoPath) {
         })
       } else {
         // Create stream for injection to get stdout
-        var writable = new stream.Writable({
+        const writeable = new stream.Writable({
           write: function (chunk, encoding, next) {
             debug('received a little chunk', JSON.stringify(chunk.toString()))
+            outputStream.push(chunk)
             output.push(chunk.toString())
             // TODO shitty implementation, should call onComplete when daemon/shutdown
             // commands finish, but without having to rely on stdout
@@ -127,7 +131,8 @@ module.exports = function ipfsExec (repoPath) {
             next()
           }
         })
-        utils.setPrintStream(writable)
+        utils.setPrintStream(writeable)
+        // export writeable as stdout?
 
         debug('Parsing argv')
         yargs().option('api').strict(false).parse(argv, (err, getIPFSArgs, output) => {
@@ -144,7 +149,7 @@ module.exports = function ipfsExec (repoPath) {
               parser.parse(argv, {
                 ipfs: ipfs,
                 onComplete: isDaemonCmd ? function () {} : onComplete,
-                stdoutStream: writable
+                stdoutStream: writeable
               }, (err, argv, _output) => {
                 if (err) return reject(err)
                 // cleanup(() => {})
@@ -160,6 +165,8 @@ module.exports = function ipfsExec (repoPath) {
         })
       }
     })
+    res.stdout = outputStream
+    return res
   }
   ipfsExec.repoPath = repoPath
   ipfsExec.fail = (args) => {

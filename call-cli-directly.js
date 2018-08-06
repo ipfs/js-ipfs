@@ -28,7 +28,11 @@ const getThing = () => {
     .then(out => {
       console.log('got output from add')
       hash = out.trim()
-      return thing.ipfs(`pin ls ${hash}`)
+      const lsCall = thing.ipfs(`pin ls ${hash}`)
+      lsCall.stdout.on('data', (data) => {
+        console.log('got data', data)
+      })
+      return lsCall
     })
     .then(ls => {
       console.log('got output from ls')
