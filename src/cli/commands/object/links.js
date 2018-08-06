@@ -22,6 +22,7 @@ module.exports = {
 
         print(`${link.multihash} ${link.size} ${link.name}`)
       })
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

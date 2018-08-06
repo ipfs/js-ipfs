@@ -32,6 +32,7 @@ module.exports = {
       }
 
       print(JSON.stringify(answer))
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

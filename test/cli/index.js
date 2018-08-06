@@ -29,7 +29,7 @@ const ipfsExec = require('../utils/ipfs-exec')
 - [ ] init.js
 - [ ] key.js
 - [ ] ls.js
-- [ ] object.js
+- [X] object.js
 - [X] pin.js
 - [X] ping.js
 - [X] progress-bar.js
