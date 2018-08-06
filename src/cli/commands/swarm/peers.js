@@ -30,6 +30,7 @@ module.exports = {
         const addr = ma.toString()
         print(addr)
       })
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

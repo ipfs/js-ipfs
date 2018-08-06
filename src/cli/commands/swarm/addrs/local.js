@@ -26,6 +26,7 @@ module.exports = {
       res.forEach((addr) => {
         print(addr.toString())
       })
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }
