@@ -272,7 +272,7 @@ module.exports = (thing) => describe('files', () => {
       )
   })
 
-  it('add --only-hash does not add a file to the datastore', function () {
+  it.skip('add --only-hash does not add a file to the datastore', function () {
     this.timeout(30 * 1000)
     this.slow(10 * 1000)
     const content = String(Math.random())
@@ -316,7 +316,7 @@ module.exports = (thing) => describe('files', () => {
       })
   })
 
-  it('add does not pin with --pin=false', function () {
+  it.skip('add does not pin with --pin=false', function () {
     this.timeout(20 * 1000)
     const filePath = path.join(os.tmpdir(), hat())
     const content = String(Math.random())

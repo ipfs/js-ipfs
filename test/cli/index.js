@@ -12,44 +12,35 @@ const ipfsExec = require('../utils/ipfs-exec')
 // `online` => only online
 // `standalone` => doesn't do anything, just run the tests
 
-/*
-- [ ] bitswap.js
-- [ ] block.js
-- [ ] bootstrap.js
-- [ ] commands.js
-- [ ] config.js
-- [ ] daemon.js
-- [ ] dag.js
-- [ ] dns.js
-- [ ] file.js
-- [ ] files.js
-- [ ] general.js
-- [ ] id.js
-- [ ] index.js
-- [ ] init.js
-- [X] key.js
-- [X] ls.js
-- [X] object.js
-- [X] pin.js
-- [X] ping.js
-- [X] progress-bar.js
-- [ ] pubsub.js
-- [X] repo.js
-- [X] swarm.js
-- [X] version.js
-*/
-
 describe('cli', () => {
-  const tests = []
+  const tests = {
+    offline: [],
+    online: [],
+    standalone: []
+  }
   fs.readdirSync(__dirname)
     .filter((file) => file !== 'index.js')
-  // .filter((file) => file === 'daemon.js')
+  // .filter((file) => file === 'bitswap.js')
     .forEach((file) => {
       const t = require('./' + file)
       if (typeof t !== 'function') {
         throw new Error(`Test loaded from ${file} was not a function. Make sure you are exporting the describe-suite`)
       }
-      tests.push(t)
+      if (t.part === 'standalone') {
+        tests.standalone.push(t)
+        return
+      }
+      if (!t.part) {
+        tests.online.push(t)
+        tests.offline.push(t)
+        return
+      }
+      if (t.part === 'online') {
+        tests.online.push(t)
+      }
+      if (t.part === 'offline') {
+        tests.offline.push(t)
+      }
     })
   let didTestsRun
   describe('with daemon offline', () => {
@@ -60,11 +51,9 @@ describe('cli', () => {
       thing.ipfs.repoPath = repoPath
       return thing.ipfs('init')
     })
-    tests.forEach(t => {
-      if (t.part === 'offline' || !t.part) {
-        didTestsRun = true
-        t(thing)
-      }
+    tests.offline.forEach(t => {
+      didTestsRun = true
+      t(thing)
     })
   })
   describe('with daemon online', () => {
@@ -73,41 +62,38 @@ describe('cli', () => {
       const repoPath = os.tmpdir() + '/ipfs-' + hat()
       thing.ipfs = ipfsExec(repoPath)
       thing.ipfs.repoPath = repoPath
-      return thing.ipfs('init').then(() => {
-        return thing.ipfs('daemon')
-      })
+      try {
+        return thing.ipfs('init').then(() => {
+          return thing.ipfs('daemon').catch((err) => {
+            console.log('caught daemon err')
+            console.log(err)
+          })
+        }).catch((err) => {
+          console.log('caught init err')
+          console.log(err)
+        })
+      } catch (err) {
+        console.log('some error with getting daemon online')
+        console.log(err)
+      }
     })
     after(function cliAfterDaemonOnline () {
-      this.timeout(1000 * 10)
-      this.timeout = 10000
+      this.timeout(1000 * 100)
+      this.timeout = 1000 * 100
       return thing.ipfs('shutdown')
     })
-    tests.forEach(t => {
-      if (t.part === 'online' || !t.part) {
-        didTestsRun = true
-        t(thing)
-      }
+    tests.online.forEach(t => {
+      didTestsRun = true
+      t(thing)
     })
   })
   describe('standalone cli tests', () => {
-    tests.forEach(t => {
-      if (t.part === 'standalone') {
-        didTestsRun = true
-        t()
-      }
+    tests.standalone.forEach(t => {
+      didTestsRun = true
+      t()
     })
   })
   if (!didTestsRun) {
     console.log('WARNING: Seems like no tests were run. Make sure the `part` property is correctly set')
   }
 })
-// /* eslint-env mocha */
-// 'use strict'
-//
-// const fs = require('fs')
-//
-// describe('cli', () => {
-//   fs.readdirSync(__dirname)
-//     .filter((file) => file !== 'index.js')
-//     .forEach((file) => require('./' + file))
-// })

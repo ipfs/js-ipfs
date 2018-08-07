@@ -15,7 +15,11 @@ module.exports = {
 
     argv.ipfs.block.get(cid, (err, block) => {
       if (err) {
-        throw err
+        if (argv.onComplete) {
+          return argv.onComplete(err)
+        } else {
+          throw err
+        }
       }
 
       if (block) {

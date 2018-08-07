@@ -4,7 +4,7 @@
 const expect = require('chai').expect
 const PeerId = require('peer-id')
 
-const test = (thing) => describe.skip('bitswap', () => {
+const test = (thing) => describe('bitswap', () => {
   let ipfs
   let peerId
   const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
@@ -12,9 +12,8 @@ const test = (thing) => describe.skip('bitswap', () => {
   before(function (done) {
     this.timeout(60 * 1000)
     ipfs = thing.ipfs
-    ipfs('block get ' + key)
-      .then(() => {})
-      .catch(() => {})
+    // This adds a entry in the bitswap wantlist for testing
+    ipfs.fail('block get ' + key)
     PeerId.create((err, peer) => {
       if (err) {
         return done(err)
@@ -56,7 +55,7 @@ const test = (thing) => describe.skip('bitswap', () => {
   })
 
   // TODO Uncaught Error: Block was unwanted before it could be remotely retrieved
-  it.skip('unwant', function () {
+  it('unwant', function () {
     return ipfs('bitswap unwant ' + key).then((out) => {
       expect(out).to.eql(`Key ${key} removed from wantlist\n`)
     })

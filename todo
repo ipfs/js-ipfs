@@ -1,8 +1,11 @@
 - [ ] Handle process.exit in src/cli/commands/daemon.js
 - [ ] Make sure src/cli/commands/shutdown.js is correct
 - [ ] Correct src/http/api/routes/shutdown.js
+- [ ] Write tests for `ipfs-exec`
+  - [ ] Make sure failures print stderr and stdout
 - [ ] Make all tests work
-  - [ ] bitswap
+  - [X] bitswap
+    - [X] Test fails when the initial `block get` request is failing
   - [ ] config
   - [ ] daemon
   - [ ] files `cat non-existent file`
