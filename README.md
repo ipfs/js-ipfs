@@ -103,7 +103,7 @@ Requires npm@3 and node@6 or above, tested on OSX & Linux, expected to work on W
 
 To include this project programmatically:
 
-```JavaScript
+```js
 const IPFS = require('ipfs')
 const node = new IPFS()
 ```
@@ -174,7 +174,7 @@ If you want a programmatic way to spawn a IPFS Daemon using JavaScript, check ou
 
 Use the IPFS Module as a dependency of a project to __spawn in process instances of IPFS__. Create an instance by calling `new IPFS()` and waiting for its `ready` event:
 
-```JavaScript
+```js
 // Create the IPFS node instance
 const node = new IPFS()
 
