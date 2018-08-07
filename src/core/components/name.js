@@ -22,9 +22,6 @@ const keyLookup = (ipfsNode, kname, callback) => {
     return callback(null, ipfsNode._peerInfo.id.privKey)
   }
 
-  // jsipfs key gen --type=rsa --size=2048 mykey --pass 12345678901234567890
-  // jsipfs daemon --pass 12345678901234567890
-  // jsipfs name publish QmPao1o1nEdDYAToEDf34CovQHaycmhr7sagbD3DZAEW9L --key mykey
   const pass = ipfsNode._options.pass
 
   waterfall([
@@ -91,14 +88,14 @@ module.exports = function name (self) {
         // (cb) => ttl ? human(ttl, cb) : cb(),
         (cb) => keyLookup(self, key, cb),
         // verify if the path exists, if not, an error will stop the execution
-        (cb) => resolve === true || resolve === 'true' ? path.resolvePath(self, value, cb) : cb()
+        (cb) => resolve.toString() === 'true' ? path.resolvePath(self, value, cb) : cb()
       ], (err, results) => {
         if (err) {
           log.error(err)
           return callback(err)
         }
 
-        // Calculate eol with nanoseconds precision
+        // Calculate lifetime with nanoseconds precision
         const pubLifetime = results[0].toFixed(6)
         const privateKey = results[1]
 

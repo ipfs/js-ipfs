@@ -65,7 +65,7 @@ class IpnsResolver {
   }
 
   // Recursive resolver according to the specified depth
-  resolver(name, depth, peerId, resolverFn, callback) {
+  resolver (name, depth, peerId, resolverFn, callback) {
     // bind resolver function
     this._resolver = resolverFn
 
@@ -95,7 +95,7 @@ class IpnsResolver {
   }
 
   // resolve ipns entries locally using the datastore
-  resolveLocal(name, peerId, callback) {
+  resolveLocal (name, peerId, callback) {
     const { ipnsKey } = ipns.getIdKeys(fromB58String(name))
 
     this.repo.datastore.get(ipnsKey, (err, dsVal) => {

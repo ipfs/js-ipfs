@@ -9,15 +9,17 @@ const log = debug('jsipfs:ipns')
 log.error = debug('jsipfs:ipns:error')
 
 const IpnsPublisher = require('./publisher')
+const IpnsRepublisher = require('./republisher')
 const IpnsResolver = require('./resolver')
 const path = require('./path')
 
 const defaultRecordTtl = 60 * 1000
 
 class IPNS {
-  constructor (routing, repo, peerInfo) {
-    this.ipnsPublisher = new IpnsPublisher(routing, repo)
-    this.ipnsResolver = new IpnsResolver(routing, repo)
+  constructor (routing, ipfs) {
+    this.publisher = new IpnsPublisher(routing, ipfs._repo)
+    this.republisher = new IpnsRepublisher(this.publisher, ipfs)
+    this.resolver = new IpnsResolver(routing, ipfs._repo)
     this.cache = new Receptacle({ max: 1000 }) // Create an LRU cache with max 1000 items
   }
 
@@ -25,7 +27,7 @@ class IPNS {
   publish (privKey, value, lifetime, callback) {
     series([
       (cb) => createFromPrivKey(privKey.bytes.toString('base64'), cb),
-      (cb) => this.ipnsPublisher.publishWithEOL(privKey, value, lifetime, cb)
+      (cb) => this.publisher.publishWithEOL(privKey, value, lifetime, cb)
     ], (err, results) => {
       if (err) {
         log.error(err)
@@ -39,9 +41,9 @@ class IPNS {
       const ttEol = parseFloat(lifetime)
       const ttl = (ttEol < defaultRecordTtl) ? ttEol : defaultRecordTtl
 
-      log(`IPNS value ${value} was cached correctly`)
-
       this.cache.set(id, value, { ttl: ttl })
+
+      log(`IPNS value ${value} was cached correctly`)
 
       callback(null, {
         name: id,
@@ -65,7 +67,7 @@ class IPNS {
       }
     }
 
-    this.ipnsResolver.resolve(name, peerId, options, (err, result) => {
+    this.resolver.resolve(name, peerId, options, (err, result) => {
       if (err) {
         log.error(err)
         return callback(err)
@@ -81,7 +83,7 @@ class IPNS {
 
   // Initialize keyspace - sets the ipns record for the given key to point to an empty directory
   initializeKeyspace (privKey, value, callback) {
-    this.ipnsPublisher.publish(privKey, value, callback)
+    this.publisher.publish(privKey, value, callback)
   }
 }
 

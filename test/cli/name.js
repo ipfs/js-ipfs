@@ -52,7 +52,7 @@ describe('name', () => {
           expect(id).to.have.property('id')
           nodeId = id.id
 
-          ipfs('files add src/init-files/init-docs/readme').then((out) => {
+          ipfs('add src/init-files/init-docs/readme').then((out) => {
             cidAdded = out.split(' ')[1]
             done()
           })

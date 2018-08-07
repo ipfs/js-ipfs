@@ -90,7 +90,7 @@ class IPFS extends EventEmitter {
     this._pubsub = undefined
     this._preload = preload(this)
     this._mfsPreload = mfsPreload(this)
-    this._ipns = new IPNS(null, this._repo)
+    this._ipns = new IPNS(null, this)
 
     // IPFS Core exposed components
     //   - for booting up a node

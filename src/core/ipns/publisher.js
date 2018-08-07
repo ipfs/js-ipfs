@@ -46,21 +46,21 @@ class IpnsPublisher {
     this.publishWithEOL(privKey, value, defaultRecordTtl, callback)
   }
 
-  putRecordToRouting(record, peerIdResult, callback) {
+  putRecordToRouting (record, peerIdResult, callback) {
     const publicKey = peerIdResult._pubKey
 
     ipns.embedPublicKey(publicKey, record, (err, embedPublicKeyRecord) => {
       if (err) {
         return callback(err)
       }
-      
+
       const { ipnsKey, pkKey } = ipns.getIdKeys(peerIdResult.id)
-      
+
       series([
         (cb) => this.publishEntry(ipnsKey, embedPublicKeyRecord || record, peerIdResult, cb),
         // Publish the public key if a public key cannot be extracted from the ID
         // We will be able to deprecate this part in the future, since the public keys will be only in the peerId
-        (cb) => embedPublicKeyRecord ? this.publishPublicKey(pkKey, publicKey, peerIdResult, cb) : cb(),
+        (cb) => embedPublicKeyRecord ? this.publishPublicKey(pkKey, publicKey, peerIdResult, cb) : cb()
       ], (err) => {
         if (err) {
           return callback(err)
@@ -71,18 +71,18 @@ class IpnsPublisher {
     })
   }
 
-  publishEntry(key, entry, peerIdResult, callback) {    
+  publishEntry (key, entry, peerIdResult, callback) {
     // Marshal record
     const entryData = ipns.marshal(entry)
 
     // Marshal to libp2p record
     const rec = new Record(key.toBuffer(), entryData, peerIdResult)
-    
+
     // TODO Routing - this should be replaced by a put to the DHT
     this.repo.datastore.put(key, rec.serialize(), (err, res) => {
       if (err) {
-        log.error(`ipns record for ${value} could not be stored in the routing`)
-        return callback(Object.assign(new Error(`ipns record for ${value} could not be stored in the routing`), { code: ERR_STORING_IN_DATASTORE }))
+        log.error(`ipns record for ${key.toString()} could not be stored in the routing`)
+        return callback(Object.assign(new Error(`ipns record for ${key.toString()} could not be stored in the routing`), { code: ERR_STORING_IN_DATASTORE }))
       }
 
       log(`ipns record for ${key.toString()} was stored in the routing`)
@@ -90,16 +90,15 @@ class IpnsPublisher {
     })
   }
 
-  publishPublicKey(key, publicKey, peerIdResult, callback) {
-    console.log('publish public key');
+  publishPublicKey (key, publicKey, peerIdResult, callback) {
     // Marshal to libp2p record
     const rec = new Record(key.toBuffer(), publicKey.bytes, peerIdResult)
-    
+
     // TODO Routing - this should be replaced by a put to the DHT
     this.repo.datastore.put(key, rec.serialize(), (err, res) => {
       if (err) {
-        log.error(`public key for ${value} could not be stored in the routing`)
-        return callback(Object.assign(new Error(`public key for ${value} could not be stored in the routing`), { code: ERR_STORING_IN_DATASTORE }))
+        log.error(`public key for ${key.toString()} could not be stored in the routing`)
+        return callback(Object.assign(new Error(`public key for ${key.toString()} could not be stored in the routing`), { code: ERR_STORING_IN_DATASTORE }))
       }
 
       log(`public key for ${key.toString()} was stored in the routing`)
@@ -148,7 +147,7 @@ class IpnsPublisher {
     })
   }
 
-  updateOrCreateRecord(privKey, value, validity, peerIdResult, callback) {
+  updateOrCreateRecord (privKey, value, validity, peerIdResult, callback) {
     this.getPublished(peerIdResult, false, (err, record) => { // TODO ROUTING - change to true
       if (err) {
         callback(err)
