@@ -45,10 +45,6 @@
     "coverage": "aegir coverage",
     "coverage-publish": "aegir-coverage publish"
   },
-  "pre-push": [
-    "lint",
-    "test"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"

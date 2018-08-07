@@ -176,10 +176,16 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 ### BREAKING CHANGES
 
-* pubsub.unsubscribe is now async and argument order for pubsub.subscribe has changed
-
-License: MIT
-Signed-off-by: Alan Shaw <alan@tableflip.io>
+1. Argument order for `pubsub.subscribe` has changed:
+    * Old: `pubsub.subscribe(topic, [options], handler, [callback]): Promise`
+    * New: `pubsub.subscribe(topic, handler, [options], [callback]): Promise`
+2. The `pubsub.unsubscribe` method has become async meaning that it now takes a callback or returns a promise:
+    * Old: `pubsub.unsubscribe(topic, handler): undefined`
+    * New: `pubsub.unsubscribe(topic, handler, [callback]): Promise`
+3. Property names on response objects for `ping` are now lowered:
+    * Old: `{ Success, Time, Text }`
+    * New: `{ success, time, text }`
+4. In the CLI, `jsipfs object data` no longer returns a newline after the end of the returned data
 
 
 
@@ -1014,6 +1020,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 <a name="0.0.2"></a>
 ## 0.0.2 (2016-01-11)
+
 
 
 
