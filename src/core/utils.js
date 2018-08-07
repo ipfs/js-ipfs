@@ -132,7 +132,7 @@ function parseChunkerString (chunker) {
     const sizeStr = chunker.split('-')[1]
     const size = parseInt(sizeStr)
     if (isNaN(size)) {
-      throw new Error('Parameter avg must be an integer')
+      throw new Error('Chunker parameter size must be an integer')
     }
     return {
       chunker: 'fixed',
@@ -146,7 +146,7 @@ function parseChunkerString (chunker) {
       chunkerOptions: parseRabinString(chunker)
     }
   } else {
-    throw new Error(`unrecognized chunker option: ${chunker}`)
+    throw new Error(`Unrecognized chunker option: ${chunker}`)
   }
 }
 
@@ -170,7 +170,7 @@ function parseRabinString (chunker) {
     case 2:
       options.avgChunkSize = parseInt(parts[1])
       if (isNaN(options.avgChunkSize)) {
-        throw new Error('Parameter avg must be an integer')
+        throw new Error('Chunker parameter avg must be an integer')
       }
       break
     case 4:
@@ -179,7 +179,7 @@ function parseRabinString (chunker) {
       options.maxChunkSize = parseSub(parts[3].split(':'), 'max')
       break
     default:
-      throw new Error('incorrect format (expected "rabin" "rabin-[avg]" or "rabin-[min]-[avg]-[max]"')
+      throw new Error('Incorrect chunker format (expected "rabin" "rabin-[avg]" or "rabin-[min]-[avg]-[max]"')
   }
 
   return options
@@ -187,11 +187,11 @@ function parseRabinString (chunker) {
 
 function parseSub (sub, name) {
   if (sub.length > 1 && sub[0] !== name) {
-    throw new Error('Parameter order must be min:avg:max')
+    throw new Error('Chunker parameter order must be min:avg:max')
   }
   let size = parseInt(sub[sub.length - 1])
   if (isNaN(size)) {
-    throw new Error(`Parameter ${name} must be an integer`)
+    throw new Error(`Chunker parameter ${name} must be an integer`)
   }
 
   return size

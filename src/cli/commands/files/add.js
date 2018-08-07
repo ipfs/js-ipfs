@@ -136,7 +136,7 @@ module.exports = {
       describe: 'Only chunk and hash, do not write'
     },
     chunker: {
-      default: 'default',
+      default: 'size-262144',
       describe: 'Chunking algorithm to use, formatted like [default, size-{size}, rabin, rabin-{avg}, rabin-{min}-{avg}-{max}]'
     },
     'enable-sharding-experiment': {

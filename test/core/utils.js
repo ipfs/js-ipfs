@@ -203,5 +203,25 @@ describe('utils', () => {
       expect(options.chunkerOptions).to.have.property('avgChunkSize').to.equal(92)
       expect(options.chunkerOptions).to.have.property('maxChunkSize').to.equal(184)
     })
+
+    it('throws an error for unsupported chunker type', () => {
+      const fn = () => utils.parseChunkerString('fake-512')
+      expect(fn).to.throw(Error)
+    })
+
+    it('throws an error for incorrect format string', () => {
+      const fn = () => utils.parseChunkerString('fixed-abc')
+      expect(fn).to.throw(Error)
+    })
+
+    it('throws an error for incorrect rabin format string', () => {
+      let fn = () => utils.parseChunkerString('rabin-1-2-3-4')
+      expect(fn).to.throw(Error)
+    })
+
+    it('throws an error for non integer rabin parameters', () => {
+      const fn = () => utils.parseChunkerString('rabin-abc')
+      expect(fn).to.throw(Error)
+    })
   })
 })
