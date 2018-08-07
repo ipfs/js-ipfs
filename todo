@@ -1,0 +1,17 @@
+- [ ] Handle process.exit in src/cli/commands/daemon.js
+- [ ] Make sure src/cli/commands/shutdown.js is correct
+- [ ] Correct src/http/api/routes/shutdown.js
+- [ ] Make all tests work
+  - [ ] bitswap
+  - [ ] config
+  - [ ] daemon
+  - [ ] files `cat non-existent file`
+  - [ ] general
+  - [ ] init
+  - [ ] object `unadulterated data`
+- [ ] Restore
+  - [ ] files `add pins by default`
+  - [ ] test/core/files-sharding.spec.js
+- [ ] Clean & ?document
+  - [ ] test/utils/ipfs-exec.js
+  - [ ] test/utils/on-and-off.js
