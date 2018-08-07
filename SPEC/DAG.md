@@ -36,7 +36,7 @@ const obj = { simple: 'object' }
 
 ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha3-512' }, (err, cid) => {
   console.log(cid.toBaseEncodedString())
-  // zdpuAzE1oAAMpsfdoexcJv6PmL9UhE8nddUYGU32R98tzV5fv
+  // zBwWX9ecx5F4X54WAjmFLErnBT6ByfNxStr5ovowTL7AhaUR98RWvXPS1V3HqV1qs3r5Ec5ocv7eCdbqYQREXNUfYNuKG
 })
 ```
 
