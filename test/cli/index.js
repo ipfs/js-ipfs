@@ -7,6 +7,9 @@ const os = require('os')
 
 const ipfsExec = require('../utils/ipfs-exec')
 
+require('clarify')
+require('trace')
+
 // Tests can have a `.part` property that decides when tests gets run
 // `offline` => only offline
 // `online` => only online
@@ -43,39 +46,15 @@ describe('cli', () => {
       }
     })
   let didTestsRun
-  describe('with daemon offline', () => {
-    let thing = {}
-    before(() => {
-      const repoPath = os.tmpdir() + '/ipfs-' + hat()
-      thing.ipfs = ipfsExec(repoPath)
-      thing.ipfs.repoPath = repoPath
-      return thing.ipfs('init')
-    })
-    tests.offline.forEach(t => {
-      didTestsRun = true
-      t(thing)
-    })
-  })
   describe('with daemon online', () => {
     let thing = {}
     before(() => {
       const repoPath = os.tmpdir() + '/ipfs-' + hat()
       thing.ipfs = ipfsExec(repoPath)
       thing.ipfs.repoPath = repoPath
-      try {
-        return thing.ipfs('init').then(() => {
-          return thing.ipfs('daemon').catch((err) => {
-            console.log('caught daemon err')
-            console.log(err)
-          })
-        }).catch((err) => {
-          console.log('caught init err')
-          console.log(err)
-        })
-      } catch (err) {
-        console.log('some error with getting daemon online')
-        console.log(err)
-      }
+      return thing.ipfs('init').then(() => {
+        return thing.ipfs('daemon')
+      })
     })
     after(function cliAfterDaemonOnline () {
       this.timeout(1000 * 100)
@@ -83,6 +62,20 @@ describe('cli', () => {
       return thing.ipfs('shutdown')
     })
     tests.online.forEach(t => {
+      didTestsRun = true
+      t(thing)
+    })
+  })
+  describe('with daemon offline', () => {
+    let thing = {}
+    before(() => {
+      console.log('before is running')
+      const repoPath = os.tmpdir() + '/ipfs-' + hat()
+      thing.ipfs = ipfsExec(repoPath)
+      thing.ipfs.repoPath = repoPath
+      return thing.ipfs('init')
+    })
+    tests.offline.forEach(t => {
       didTestsRun = true
       t(thing)
     })

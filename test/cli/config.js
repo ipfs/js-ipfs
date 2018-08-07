@@ -8,7 +8,7 @@ chai.use(dirtyChai)
 const fs = require('fs')
 const path = require('path')
 
-module.exports = (thing) => describe('config', () => {
+module.exports = (thing) => describe.only('config', () => {
   let ipfs
   let configPath
   let originalConfigPath
@@ -20,7 +20,7 @@ module.exports = (thing) => describe('config', () => {
     configPath = path.join(ipfs.repoPath, 'config')
     originalConfigPath = path.join(__dirname, '../fixtures/go-ipfs-repo/config')
     updatedConfig = () => JSON.parse(fs.readFileSync(configPath, 'utf8'))
-    restoreConfig = () => fs.writeFileSync(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8')
+    restoreConfig = (cb) => fs.writeFile(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8', cb)
   })
 
   describe('get/set', function () {
@@ -66,10 +66,11 @@ module.exports = (thing) => describe('config', () => {
       })
     })
 
-    // TODO skipped as not sure we can do this properly yet
-    it.skip('call config with no arguments', () => {
-      return ipfs('config')
-        .then(out => expect(out).to.include('bin.js config <key> [value]'))
+    it('call config with no arguments', () => {
+      return ipfs.fail('config')
+        .catch(out => {
+          expect(out).to.include('bin.js config <key> [value]')
+        })
     })
   })
 
@@ -77,14 +78,16 @@ module.exports = (thing) => describe('config', () => {
     this.timeout(40 * 1000)
 
     it('returns the full config', () => {
+      console.log('Running show test')
       return ipfs('config show').then((out) => {
         expect(JSON.parse(out)).to.be.eql(updatedConfig())
       })
     })
   })
 
-  describe.skip('replace', () => {
+  describe('replace', () => {
     it('replace config with file', () => {
+      console.log('Running replace test')
       const filePath = 'test/fixtures/test-data/otherconfig'
       const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
@@ -93,8 +96,8 @@ module.exports = (thing) => describe('config', () => {
       })
     })
 
-    after(() => {
-      restoreConfig()
+    after((done) => {
+      restoreConfig(done)
     })
   })
 })

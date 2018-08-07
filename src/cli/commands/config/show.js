@@ -22,7 +22,7 @@ module.exports = {
       }
 
       print(JSON.stringify(config, null, 4))
-      if (argv.onComplete) argv.onComplete()
+      if (argv.onComplete) argv.onComplete(err)
     })
   }
 }

@@ -135,7 +135,7 @@ const makeCLICall = (args) => {
       })
     } else {
       debug('Parsing argv')
-      yargs().option('api').strict(false).parse(argv, (err, getIPFSArgs, output) => {
+      yargs().option('api').strict(false).parse(argv, (err, getIPFSArgs, initialParseOutput) => {
         if (err) throw err
         const isDaemonCmd = argv[0] === 'daemon'
         // If it's daemon command, we should set the multiaddr for api
@@ -151,6 +151,9 @@ const makeCLICall = (args) => {
               onComplete: isDaemonCmd ? function () {} : onComplete,
               stdoutStream: writeable
             }, (err, argv, _output) => {
+              if (_output) {
+                _output.split('\n').forEach(line => output.push(line))
+              }
               if (err) return reject(err)
               // cleanup(() => {})
               debug('Callback called, waiting for onComplete')
