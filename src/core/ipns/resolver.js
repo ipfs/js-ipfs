@@ -19,7 +19,7 @@ class IpnsResolver {
   constructor (routing, repo) {
     this.routing = routing
     this.repo = repo
-    this._resolver = undefined // Add Router resolver
+    this._resolver = undefined // TODO Routing - add Router resolver
   }
 
   resolve (name, peerId, options, callback) {
@@ -42,7 +42,7 @@ class IpnsResolver {
     }
 
     // Get the intended resoulver function
-    // TODO set default resolverFn
+    // TODO Routing - set default resolverFn
 
     let resolverFn
 
@@ -60,7 +60,7 @@ class IpnsResolver {
       }
 
       log(`${name} was locally resolved correctly`)
-      return callback(null, res)
+      callback(null, res)
     })
   }
 
@@ -90,7 +90,7 @@ class IpnsResolver {
       }
 
       // continue recursively until depth equals 0
-      return this.resolver(nameSegments[2], depth - 1, peerId, resolverFn, callback)
+      this.resolver(nameSegments[2], depth - 1, peerId, resolverFn, callback)
     })
   }
 
@@ -127,7 +127,7 @@ class IpnsResolver {
             return callback(err)
           }
 
-          return callback(null, ipnsEntry.value.toString())
+          callback(null, ipnsEntry.value.toString())
         })
       })
     })

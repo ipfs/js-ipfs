@@ -66,7 +66,7 @@ class IpnsPublisher {
           return callback(err)
         }
 
-        return callback(null, embedPublicKeyRecord || record)
+        callback(null, embedPublicKeyRecord || record)
       })
     })
   }
@@ -86,7 +86,7 @@ class IpnsPublisher {
       }
 
       log(`ipns record for ${key.toString()} was stored in the routing`)
-      return callback(null, res)
+      callback(null, res)
     })
   }
 
@@ -102,7 +102,7 @@ class IpnsPublisher {
       }
 
       log(`public key for ${key.toString()} was stored in the routing`)
-      return callback(null, res)
+      callback(null, res)
     })
   }
 
@@ -143,7 +143,7 @@ class IpnsPublisher {
         return callback(null, null)
       }
 
-      return callback(null, result)
+      callback(null, result)
     })
   }
 
@@ -181,7 +181,7 @@ class IpnsPublisher {
           }
 
           log(`ipns record for ${value} was stored in the datastore`)
-          return callback(null, entryData)
+          callback(null, entryData)
         })
       })
     })

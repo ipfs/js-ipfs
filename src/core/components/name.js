@@ -14,7 +14,6 @@ log.error = debug('jsipfs:name:error')
 const errors = require('../utils')
 const path = require('../ipns/path')
 
-const ERR_CANNOT_GET_KEY = 'ERR_CANNOT_GET_KEY'
 const ERR_NOCACHE_AND_LOCAL = 'ERR_NOCACHE_AND_LOCAL'
 
 const keyLookup = (ipfsNode, kname, callback) => {
@@ -29,10 +28,8 @@ const keyLookup = (ipfsNode, kname, callback) => {
     (pem, cb) => crypto.keys.import(pem, pass, cb)
   ], (err, privateKey) => {
     if (err) {
-      const error = `cannot get the specified key`
-
-      log.error(error)
-      return callback(Object.assign(new Error(error), { code: ERR_CANNOT_GET_KEY }))
+      log.error(err)
+      return callback(Object.assign(new Error(err), { code: ERR_CANNOT_GET_KEY }))
     }
 
     return callback(null, privateKey)

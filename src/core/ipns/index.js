@@ -75,13 +75,14 @@ class IPNS {
 
       log(`IPNS record from ${name} was resolved correctly`)
 
-      return callback(null, {
+      callback(null, {
         path: result
       })
     })
   }
 
-  // Initialize keyspace - sets the ipns record for the given key to point to an empty directory
+  // Initialize keyspace
+  // sets the ipns record for the given key to point to an empty directory
   initializeKeyspace (privKey, value, callback) {
     this.publisher.publish(privKey, value, callback)
   }

@@ -46,9 +46,7 @@ class IpnsRepublisher {
       if (this.ipfs._keychain && Boolean(pass)) {
         this.ipfs._keychain.listKeys((err, list) => {
           if (err) {
-            const error = 'cannot get the list of available keys in the keychain'
-
-            log.error(error)
+            log.error(err)
             return
           }
 
@@ -58,6 +56,7 @@ class IpnsRepublisher {
               (pem, cb) => crypto.keys.import(pem, pass, cb)
             ], (err, privKey) => {
               if (err) {
+                log.error(err)
                 return
               }
 
@@ -65,10 +64,7 @@ class IpnsRepublisher {
             })
           }, (err) => {
             if (err) {
-              console.log('err', err)
-              const error = 'cannot republish entry from the keychain'
-
-              log.error(error)
+              log.error(err)
             }
           })
         })
@@ -92,7 +88,7 @@ class IpnsRepublisher {
   getLastValue (id, callback) {
     this.repo.datastore.get(ipns.getLocalKey(id.id), (err, dsVal) => {
       // error handling
-      // no need for republish
+      // no need to republish
       if (err && err.notFound) {
         const error = `no previous entry for record with id: ${id}`
 
