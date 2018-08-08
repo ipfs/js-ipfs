@@ -3,6 +3,7 @@
 - [ ] Correct src/http/api/routes/shutdown.js
 - [ ] Write tests for `ipfs-exec`
   - [ ] Make sure failures print stderr and stdout
+- [ ] Fix race condition "config.replace" + "config.show"
 - [ ] Make all tests work
   - [X] bitswap
     - [X] Test fails when the initial `block get` request is failing

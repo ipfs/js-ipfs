@@ -78,7 +78,6 @@ module.exports = (thing) => describe.only('config', () => {
     this.timeout(40 * 1000)
 
     it('returns the full config', () => {
-      console.log('Running show test')
       return ipfs('config show').then((out) => {
         expect(JSON.parse(out)).to.be.eql(updatedConfig())
       })
@@ -87,7 +86,6 @@ module.exports = (thing) => describe.only('config', () => {
 
   describe('replace', () => {
     it('replace config with file', () => {
-      console.log('Running replace test')
       const filePath = 'test/fixtures/test-data/otherconfig'
       const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
