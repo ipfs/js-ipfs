@@ -115,8 +115,7 @@ const resolvePath = promisify(function (objectAPI, ipfsPaths, callback) {
  *
  *
  * @param  {String}   chunker Chunker algorithm supported formats:
- *                    "default" ("")
- *                    "size-{size}",
+ *                    "size-{size}"
  *                    "rabin"
  *                    "rabin-{avg}"
  *                    "rabin-{min}-{avg}-{max}"
@@ -124,7 +123,7 @@ const resolvePath = promisify(function (objectAPI, ipfsPaths, callback) {
  * @return {Object}   Chunker options for DAGBuilder
  */
 function parseChunkerString (chunker) {
-  if (!chunker || chunker === '') {
+  if (!chunker) {
     return {
       chunker: 'fixed'
     }
