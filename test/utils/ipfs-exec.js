@@ -182,7 +182,7 @@ module.exports = function ipfsExec (repoPath) {
   ipfsExec.fail = (args) => {
     return new Promise((resolve, reject) => {
       // Reverse resolve/reject as we want the command to fail here
-      makeCLICall(args).then(reject).catch(resolve)
+      return makeCLICall(args).then(reject).catch(resolve)
     })
   }
   return ipfsExec

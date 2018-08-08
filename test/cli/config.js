@@ -8,7 +8,7 @@ chai.use(dirtyChai)
 const fs = require('fs')
 const path = require('path')
 
-module.exports = (thing) => describe.only('config', () => {
+module.exports = (thing) => describe('config', () => {
   let ipfs
   let configPath
   let originalConfigPath
@@ -65,18 +65,9 @@ module.exports = (thing) => describe.only('config', () => {
         expect(out).to.exist()
       })
     })
-
-    it('call config with no arguments', () => {
-      return ipfs.fail('config')
-        .catch(out => {
-          expect(out).to.include('bin.js config <key> [value]')
-        })
-    })
   })
 
   describe('show', function () {
-    this.timeout(40 * 1000)
-
     it('returns the full config', () => {
       return ipfs('config show').then((out) => {
         expect(JSON.parse(out)).to.be.eql(updatedConfig())
@@ -84,7 +75,7 @@ module.exports = (thing) => describe.only('config', () => {
     })
   })
 
-  describe('replace', () => {
+  describe('replace', function () {
     it('replace config with file', () => {
       const filePath = 'test/fixtures/test-data/otherconfig'
       const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))
