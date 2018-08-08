@@ -232,7 +232,7 @@ Instead of a boolean, you may provide an object with custom initialization optio
 
 - `emptyRepo` (boolean) Whether to remove built-in assets, like the instructional tour and empty mutable file system, from the repo. (Default: `false`)
 - `bits` (number) Number of bits to use in the generated key pair. (Default: `2048`)
-- `pass` (string) A passphrase to encrypt keys. You should generally use the top-level `pass` option instead of the `pass` option (this one will take its value from the top-level option if not set).
+- `pass` (string) A passphrase to encrypt keys. You should generally use the [top-level `pass` option](#optionspass) instead of the `init.pass` option (this one will take its value from the top-level option if not set).
 
 ##### `options.start`
 
@@ -240,7 +240,7 @@ Instead of a boolean, you may provide an object with custom initialization optio
 |------|---------|
 | boolean | `true` |
 
- If `false`, do not automatically start the IPFS node. Instead, you’ll need to manually call `node.start()` yourself.
+ If `false`, do not automatically start the IPFS node. Instead, you’ll need to manually call [`node.start()`](#nodestartcallback) yourself.
 
 ##### `options.pass`
 
@@ -254,7 +254,7 @@ A passphrase to encrypt/decrypt your keys.
 
 | Type | Default |
 |------|---------|
-| object | `{ enabled: false, { hop: enabled: false, active: false } }` |
+| object | `{ enabled: false, hop: { enabled: false, active: false } }` |
 
 Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipfs/js-ipfs/tree/master/examples/circuit-relaying) to learn more).
 
@@ -272,7 +272,7 @@ Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipf
 Configure external nodes that will preload content added to this node.
 
 - `enabled` (boolean): Enable content preloading (Default: `true`)
-- `addresses` (array): Multiaddr API addresses of nodes that should preload content. NOTE: nodes specified here should also be added to your node's bootstrap address list at `config.Boostrap`
+- `addresses` (array): Multiaddr API addresses of nodes that should preload content. **NOTE:** nodes specified here should also be added to your node's bootstrap address list at [`config.Boostrap`](#optionsconfig).
 
 ##### `options.EXPERIMENTAL`
 
@@ -290,15 +290,15 @@ Enable and configure experimental features.
 
 | Type | Default |
 |------|---------|
-| object |  [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/config-nodejs.js) in Node.js [`config-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/config-browser.js) in browsers |
+| object |  [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/config-nodejs.js) in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/config-browser.js) in browsers |
 
-Modify the default IPFS node config. . This object will be *merged* with the default config; it will not replace it.
+Modify the default IPFS node config. This object will be *merged* with the default config; it will not replace it.
 
 ##### `options.libp2p`
 
 | Type | Default |
 |------|---------|
-| object | [`libp2p-nodejs.js`](https://github.com/ipfs/js-ipfs/blob/master/src/core/runtime/libp2p-nodejs.js) in Node.js and [`libp2p-browser.js`](https://github.com/ipfs/js-ipfs/blob/master/src/core/runtime/libp2p-browser.js) in browsers |
+| object | [`libp2p-nodejs.js`](https://github.com/ipfs/js-ipfs/blob/master/src/core/runtime/libp2p-nodejs.js) in Node.js, [`libp2p-browser.js`](https://github.com/ipfs/js-ipfs/blob/master/src/core/runtime/libp2p-browser.js) in browsers |
 
 Add custom modules to the libp2p stack of your node.
 
@@ -429,10 +429,10 @@ The core API is grouped into several areas:
   - [`ipfs.files.addPullStream([options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesaddpullstream)
   - [`ipfs.files.addReadableStream([options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesaddreadablestream)
   - [`ipfs.files.cat(ipfsPath, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescat). Alias to `ipfs.cat`.
-  - [`ipfs.files.catPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescatpullstream)  
+  - [`ipfs.files.catPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescatpullstream)
   - [`ipfs.files.catReadableStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescatreadablestream)
   - [`ipfs.files.get(ipfsPath, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesget). Alias to `ipfs.get`.
-  - [`ipfs.files.getPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesgetpullstream)  
+  - [`ipfs.files.getPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesgetpullstream)
   - [`ipfs.files.getReadableStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesgetreadablestream)
   - [`ipfs.ls(ipfsPath, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#ls)
   - [`ipfs.lsPullStream(ipfsPath)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#lspullstream)
