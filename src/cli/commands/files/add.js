@@ -137,7 +137,7 @@ module.exports = {
     },
     chunker: {
       default: 'size-262144',
-      describe: 'Chunking algorithm to use, formatted like [default, size-{size}, rabin, rabin-{avg}, rabin-{min}-{avg}-{max}]'
+      describe: 'Chunking algorithm to use, formatted like [size-{size}, rabin, rabin-{avg}, rabin-{min}-{avg}-{max}]'
     },
     'enable-sharding-experiment': {
       type: 'boolean',

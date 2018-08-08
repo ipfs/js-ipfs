@@ -124,7 +124,7 @@ const resolvePath = promisify(function (objectAPI, ipfsPaths, callback) {
  * @return {Object}   Chunker options for DAGBuilder
  */
 function parseChunkerString (chunker) {
-  if (!chunker || chunker === '' || chunker === 'default') {
+  if (!chunker || chunker === '') {
     return {
       chunker: 'fixed'
     }
