@@ -36,7 +36,7 @@ module.exports = {
       ttl: argv.ttl
     }
 
-    argv.ipfs.name.publish(argv['ipfsPath'], opts, (err, result) => {
+    argv.ipfs.name.publish(argv.ipfsPath, opts, (err, result) => {
       if (err) {
         throw err
       }

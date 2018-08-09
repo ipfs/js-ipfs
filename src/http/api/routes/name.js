@@ -19,7 +19,7 @@ module.exports = (server) => {
     path: '/api/v0/name/publish',
     config: {
       handler: resources.name.publish.handler,
-      validate: resources.name.resolve.validate
+      validate: resources.name.publish.validate
     }
   })
 }

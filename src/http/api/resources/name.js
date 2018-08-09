@@ -37,7 +37,6 @@ exports.publish = {
       arg: Joi.string().required(),
       resolve: Joi.boolean().default(true),
       lifetime: Joi.string().default('24h'),
-      ttl: Joi.string(),
       key: Joi.string().default('self')
     }).unknown()
   },

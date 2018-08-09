@@ -10,6 +10,7 @@ log.error = debug('jsipfs:ipns:resolver:error')
 
 const ERR_INVALID_NAME_SYNTAX = 'ERR_INVALID_NAME_SYNTAX'
 const ERR_INVALID_RECORD_RECEIVED = 'ERR_INVALID_RECORD_RECEIVED'
+const ERR_INVALID_PARAMETER = 'ERR_INVALID_PARAMETER'
 const ERR_NO_LOCAL_RECORD_FOUND = 'ERR_NO_LOCAL_RECORD_FOUND'
 const ERR_RESOLVE_RECURSION_LIMIT = 'ERR_RESOLVE_RECURSION_LIMIT'
 
@@ -17,19 +18,35 @@ const defaultMaximumRecursiveDepth = 32
 
 class IpnsResolver {
   constructor (routing, repo) {
-    this.routing = routing
-    this.repo = repo
+    this._routing = routing
+    this._repo = repo
     this._resolver = undefined // TODO Routing - add Router resolver
   }
 
   resolve (name, peerId, options, callback) {
+    if (typeof options === 'function') {
+      callback = options
+      options = {}
+    }
+
+    if (typeof name !== 'string') {
+      const errMsg = `one or more of the provided parameters are not valid`
+
+      log.error(errMsg)
+      return callback(Object.assign(new Error(errMsg), { code: ERR_INVALID_PARAMETER }))
+    }
+
+    options = options || {}
+    const recursive = options.recursive && options.recursive.toString() === 'true'
+    const local = !(options.local === false)
+
     const nameSegments = name.split('/')
 
     if (nameSegments.length !== 3 || nameSegments[0] !== '') {
-      const error = `invalid name syntax for ${name}`
+      const errMsg = `invalid name syntax for ${name}`
 
-      log.error(error)
-      return callback(Object.assign(new Error(error), { code: ERR_INVALID_NAME_SYNTAX }))
+      log.error(errMsg)
+      return callback(Object.assign(new Error(errMsg), { code: ERR_INVALID_NAME_SYNTAX }))
     }
 
     const key = nameSegments[2]
@@ -37,7 +54,7 @@ class IpnsResolver {
     // Define a maximum depth if recursive option enabled
     let depth
 
-    if (options.recursive) {
+    if (recursive) {
       depth = defaultMaximumRecursiveDepth
     }
 
@@ -46,8 +63,8 @@ class IpnsResolver {
 
     let resolverFn
 
-    if (options.local) {
-      resolverFn = this.resolveLocal
+    if (local) {
+      resolverFn = this._resolveLocal
     }
 
     if (!resolverFn) {
@@ -71,10 +88,10 @@ class IpnsResolver {
 
     // Exceeded recursive maximum depth
     if (depth === 0) {
-      const error = `could not resolve name (recursion limit of ${defaultMaximumRecursiveDepth} exceeded)`
+      const errMsg = `could not resolve name (recursion limit of ${defaultMaximumRecursiveDepth} exceeded)`
 
-      log.error(error)
-      return callback(Object.assign(new Error(error), { code: ERR_RESOLVE_RECURSION_LIMIT }))
+      log.error(errMsg)
+      return callback(Object.assign(new Error(errMsg), { code: ERR_RESOLVE_RECURSION_LIMIT }))
     }
 
     this._resolver(name, peerId, (err, res) => {
@@ -95,22 +112,22 @@ class IpnsResolver {
   }
 
   // resolve ipns entries locally using the datastore
-  resolveLocal (name, peerId, callback) {
+  _resolveLocal (name, peerId, callback) {
     const { ipnsKey } = ipns.getIdKeys(fromB58String(name))
 
-    this.repo.datastore.get(ipnsKey, (err, dsVal) => {
+    this._repo.datastore.get(ipnsKey, (err, dsVal) => {
       if (err) {
-        const error = `local record requested was not found for ${name} (${ipnsKey})`
+        const errMsg = `local record requested was not found for ${name} (${ipnsKey})`
 
-        log.error(error)
-        return callback(Object.assign(new Error(error), { code: ERR_NO_LOCAL_RECORD_FOUND }))
+        log.error(errMsg)
+        return callback(Object.assign(new Error(errMsg), { code: ERR_NO_LOCAL_RECORD_FOUND }))
       }
 
       if (!Buffer.isBuffer(dsVal)) {
-        const error = `found ipns record that we couldn't convert to a value`
+        const errMsg = `found ipns record that we couldn't convert to a value`
 
-        log.error(error)
-        return callback(Object.assign(new Error(error), { code: ERR_INVALID_RECORD_RECEIVED }))
+        log.error(errMsg)
+        return callback(Object.assign(new Error(errMsg), { code: ERR_INVALID_RECORD_RECEIVED }))
       }
 
       const record = Record.deserialize(dsVal)

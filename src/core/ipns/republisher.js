@@ -2,7 +2,7 @@
 
 const ipns = require('ipns')
 const crypto = require('libp2p-crypto')
-const peerId = require('peer-id')
+const PeerId = require('peer-id')
 
 const debug = require('debug')
 const each = require('async/each')
@@ -18,33 +18,41 @@ const defaultRecordLifetime = 24 * hour
 
 const ERR_NO_ENTRY_FOUND = 'ERR_NO_ENTRY_FOUND'
 const ERR_INVALID_IPNS_RECORD = 'ERR_INVALID_IPNS_RECORD'
+const ERR_INVALID_PEER_ID = 'ERR_INVALID_PEER_ID'
+const ERR_UNDEFINED_PARAMETER = 'ERR_UNDEFINED_PARAMETER'
 
 class IpnsRepublisher {
   constructor (publisher, ipfs) {
-    this.publisher = publisher
-    this.ipfs = ipfs
-    this.repo = ipfs._repo
+    this._publisher = publisher
+    this._ipfs = ipfs
+    this._repo = ipfs._repo
+    this._interval = null
   }
 
   start () {
-    setInterval(() => {
-      this.republishEntries(this.ipfs._peerInfo.id.privKey, this.ipfs._options.pass)
+    this._interval = setInterval(() => {
+      this._republishEntries(this._ipfs._peerInfo.id.privKey, this._ipfs._options.pass)
     }, defaultBroadcastInterval)
   }
 
-  republishEntries (privateKey, pass) {
+  stop () {
+    clearInterval(this._interval)
+  }
+
+  _republishEntries (privateKey, pass) {
     // TODO: Should use list of published entries.
     // We can't currently *do* that because go uses this method for now.
-    this.republishEntry(privateKey, (err) => {
+    this._republishEntry(privateKey, (err) => {
       if (err) {
-        const error = 'cannot republish entry for the node\'s private key'
+        const errMsg = 'cannot republish entry for the node\'s private key'
 
-        log.error(error)
+        log.error(errMsg)
         return
       }
 
-      if (this.ipfs._keychain && Boolean(pass)) {
-        this.ipfs._keychain.listKeys((err, list) => {
+      // keychain needs pass to get the cryptographic keys
+      if (this._ipfs._keychain && Boolean(pass)) {
+        this._ipfs._keychain.listKeys((err, list) => {
           if (err) {
             log.error(err)
             return
@@ -52,7 +60,7 @@ class IpnsRepublisher {
 
           each(list, (key, cb) => {
             waterfall([
-              (cb) => this.ipfs._keychain.exportKey(key.name, pass, cb),
+              (cb) => this._ipfs._keychain.exportKey(key.name, pass, cb),
               (pem, cb) => crypto.keys.import(pem, pass, cb)
             ], (err, privKey) => {
               if (err) {
@@ -60,7 +68,7 @@ class IpnsRepublisher {
                 return
               }
 
-              this.republishEntry(privKey, cb)
+              this._republishEntry(privKey, cb)
             })
           }, (err) => {
             if (err) {
@@ -72,37 +80,51 @@ class IpnsRepublisher {
     })
   }
 
-  republishEntry (privateKey, callback) {
+  _republishEntry (privateKey, callback) {
+    if (!privateKey || !privateKey.bytes) {
+      const errMsg = `one or more of the provided parameters are not defined`
+
+      log.error(errMsg)
+      return callback(Object.assign(new Error(errMsg), { code: ERR_UNDEFINED_PARAMETER }))
+    }
+
     waterfall([
-      (cb) => peerId.createFromPrivKey(privateKey.bytes.toString('base64'), cb),
-      (peerIdResult, cb) => this.getLastValue(peerIdResult, cb)
+      (cb) => PeerId.createFromPrivKey(privateKey.bytes, cb),
+      (peerId, cb) => this._getPreviousValue(peerId, cb)
     ], (err, value) => {
       if (err) {
         return callback(err.code === ERR_NO_ENTRY_FOUND ? null : err)
       }
 
-      this.publisher.publishWithEOL(privateKey, value, defaultRecordLifetime, callback)
+      this._publisher.publishWithEOL(privateKey, value, defaultRecordLifetime, callback)
     })
   }
 
-  getLastValue (id, callback) {
-    this.repo.datastore.get(ipns.getLocalKey(id.id), (err, dsVal) => {
+  _getPreviousValue (peerId, callback) {
+    if (!(peerId instanceof PeerId)) {
+      const errMsg = `peerId received is not valid`
+
+      log.error(errMsg)
+      return callback(Object.assign(new Error(errMsg), { code: ERR_INVALID_PEER_ID }))
+    }
+
+    this._repo.datastore.get(ipns.getLocalKey(peerId.id), (err, dsVal) => {
       // error handling
       // no need to republish
       if (err && err.notFound) {
-        const error = `no previous entry for record with id: ${id}`
+        const errMsg = `no previous entry for record with id: ${peerId.id}`
 
-        log.error(error)
-        return callback(Object.assign(new Error(error), { code: ERR_NO_ENTRY_FOUND }))
+        log.error(errMsg)
+        return callback(Object.assign(new Error(errMsg), { code: ERR_NO_ENTRY_FOUND }))
       } else if (err) {
         return callback(err)
       }
 
       if (!Buffer.isBuffer(dsVal)) {
-        const error = `found ipns record that we couldn't convert to a value`
+        const errMsg = `found ipns record that we couldn't process`
 
-        log.error(error)
-        return callback(Object.assign(new Error(error), { code: ERR_INVALID_IPNS_RECORD }))
+        log.error(errMsg)
+        return callback(Object.assign(new Error(errMsg), { code: ERR_INVALID_IPNS_RECORD }))
       }
 
       // unmarshal data
@@ -110,10 +132,10 @@ class IpnsRepublisher {
       try {
         record = ipns.unmarshal(dsVal)
       } catch (err) {
-        const error = `found ipns record that we couldn't convert to a value`
+        const errMsg = `found ipns record that we couldn't convert to a value`
 
-        log.error(error)
-        return callback(error)
+        log.error(errMsg)
+        return callback(Object.assign(new Error(errMsg), { code: ERR_INVALID_IPNS_RECORD }))
       }
 
       callback(null, record.value)

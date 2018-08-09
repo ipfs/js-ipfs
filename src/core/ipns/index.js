@@ -26,7 +26,7 @@ class IPNS {
   // Publish
   publish (privKey, value, lifetime, callback) {
     series([
-      (cb) => createFromPrivKey(privKey.bytes.toString('base64'), cb),
+      (cb) => createFromPrivKey(privKey.bytes, cb),
       (cb) => this.publisher.publishWithEOL(privKey, value, lifetime, cb)
     ], (err, results) => {
       if (err) {

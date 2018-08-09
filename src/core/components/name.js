@@ -5,7 +5,6 @@ const promisify = require('promisify-es6')
 const series = require('async/series')
 const waterfall = require('async/waterfall')
 const human = require('human-to-milliseconds')
-
 const crypto = require('libp2p-crypto')
 
 const log = debug('jsipfs:name')
@@ -30,7 +29,7 @@ const keyLookup = (ipfsNode, kname, callback) => {
   ], (err, privateKey) => {
     if (err) {
       log.error(err)
-      return callback(Object.assign(new Error(err), { code: ERR_CANNOT_GET_KEY }))
+      return callback(Object.assign(err, { code: ERR_CANNOT_GET_KEY }))
     }
 
     return callback(null, privateKey)
@@ -64,7 +63,10 @@ module.exports = function name (self) {
         options = {}
       }
 
-      const { resolve = true, lifetime = '24h', key = 'self' } = options
+      options = options || {}
+      const resolve = !(options.resolve === false)
+      const lifetime = options.lifetime || '24h'
+      const key = options.key || 'self'
 
       if (!self.isOnline()) {
         const error = errors.OFFLINE_ERROR
@@ -82,7 +84,7 @@ module.exports = function name (self) {
       }
 
       series([
-        (cb) => human(lifetime || '1s', cb),
+        (cb) => human(lifetime, cb),
         // (cb) => ttl ? human(ttl, cb) : cb(),
         (cb) => keyLookup(self, key, cb),
         // verify if the path exists, if not, an error will stop the execution
@@ -122,11 +124,13 @@ module.exports = function name (self) {
         options = {}
       }
 
-      const { nocache = false, recursive = false } = options
+      options = options || {}
+      const nocache = options.nocache && options.nocache.toString() === 'true'
+      const recursive = options.recursive && options.recursive.toString() === 'true'
 
       const local = true // TODO ROUTING - use self._options.local
 
-      if (!self.isOnline()) {
+      if (!self.isOnline() && !local) {
         const error = errors.OFFLINE_ERROR
 
         log.error(error)
@@ -134,7 +138,7 @@ module.exports = function name (self) {
       }
 
       if (local && nocache) {
-        const error = 'Cannot specify both local and nocache'
+        const error = 'cannot specify both local and nocache'
 
         log.error(error)
         return callback(Object.assign(new Error(error), { code: ERR_NOCACHE_AND_LOCAL }))

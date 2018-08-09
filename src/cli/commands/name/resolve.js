@@ -26,12 +26,16 @@ module.exports = {
       recursive: argv.recursive
     }
 
-    argv.ipfs.name.resolve(argv['name'], opts, (err, result) => {
+    argv.ipfs.name.resolve(argv.name, opts, (err, result) => {
       if (err) {
         throw err
       }
 
-      print(`result: ${result}`)
+      if (result && result.path) {
+        print(result.path)
+      } else {
+        print(result)
+      }
     })
   }
 }
