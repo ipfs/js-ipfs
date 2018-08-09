@@ -97,7 +97,9 @@ This project is available through [npm](https://www.npmjs.com/). To install run
 > npm install ipfs --save
 ```
 
-Requires npm@3 and node@6 or above, tested on OSX & Linux, expected to work on Windows.
+We support both the Current and Active LTS versions of Node.js. Please see [nodejs.org](https://nodejs.org/) for what these currently are.
+
+This project is tested on OSX & Linux, expected to work on Windows.
 
 ### Use in Node.js
 
