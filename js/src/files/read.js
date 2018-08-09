@@ -35,9 +35,9 @@ module.exports = (createCommon, options) => {
     it('should not read not found, expect error', (done) => {
       const testDir = `/test-${hat()}`
 
-      ipfs.files.read(`${testDir}/404`, (err, buf) => {
+      ipfs.files.read(`${testDir}/404`, (err) => {
         expect(err).to.exist()
-        expect(buf).to.not.exist()
+        expect(err.message).to.contain('does not exist')
         done()
       })
     })

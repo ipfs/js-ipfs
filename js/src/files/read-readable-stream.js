@@ -38,7 +38,7 @@ module.exports = (createCommon, options) => {
 
       const stream = ipfs.files.readReadableStream(`${testDir}/404`)
 
-      stream.on('error', (err) => {
+      stream.once('error', (err) => {
         expect(err).to.exist()
         expect(err.message).to.contain('does not exist')
         done()
