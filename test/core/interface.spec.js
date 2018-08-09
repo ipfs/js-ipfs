@@ -22,28 +22,7 @@ describe('interface-ipfs-core tests', () => {
     skip: { reason: 'TODO: DHT is not implemented in js-ipfs yet!' }
   })
 
-  tests.files(defaultCommonFactory, {
-    skip: [
-      // files.ls
-      {
-        name: 'should ls directory',
-        reason: 'FIXME: https://github.com/ipfs/js-ipfs-mfs/issues/7'
-      },
-      {
-        name: 'should ls -l directory',
-        reason: 'FIXME: https://github.com/ipfs/js-ipfs-mfs/issues/7'
-      },
-      // files.read*Stream
-      {
-        name: 'readPullStream',
-        reason: 'FIXME: https://github.com/ipfs/js-ipfs-mfs/issues/8'
-      },
-      {
-        name: 'readReadableStream',
-        reason: 'FIXME: https://github.com/ipfs/js-ipfs-mfs/issues/8'
-      }
-    ]
-  })
+  tests.files(defaultCommonFactory)
 
   tests.key(CommonFactory.create({
     spawnOptions: {
