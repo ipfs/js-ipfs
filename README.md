@@ -202,56 +202,122 @@ const node = new IPFS([options])
 
 Creates and returns an instance of an IPFS node. Use the `options` argument to specify advanced configuration. It is an object with any of these properties:
 
-- `repo` (string or [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo) instance): The file path at which to store the IPFS node’s data. Alternatively, you can set up a customized storage system by providing an [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo) instance. (Default: `'~/.jsipfs'` in Node.js, `'ipfs'` in browsers.)
 
-    Example:
+##### `options.repo`
 
-    ```js
-    // Store data outside your user directory
-    const node = new IPFS({ repo: '/var/ipfs/data' })
-    ```
+| Type | Default |
+|------|---------|
+| string or [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo) instance | `'~/.jsipfs'` in Node.js, `'ipfs'` in browsers |
 
-- `init` (boolean or object): Initialize the repo when creating the IPFS node. (Default: `true`)
+The file path at which to store the IPFS node’s data. Alternatively, you can set up a customized storage system by providing an [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo) instance.
 
-    If you have already initialized a repo before creating your IPFS node (e.g. you are loading a repo that was saved to disk from a previous run of your program), you must make sure to set this to `false`. Note that *initializing* a repo is different from creating an instance of [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo). The IPFS constructor sets many special properties when initializing a repo, so you should usually not try and call `repoInstance.init()` yourself.
+Example:
 
-    Instead of a boolean, you may provide an object with custom initialization options. All properties are optional:
+```js
+// Store data outside your user directory
+const node = new IPFS({ repo: '/var/ipfs/data' })
+```
 
-    - `init.emptyRepo` (boolean) Whether to remove built-in assets, like the instructional tour and empty mutable file system, from the repo. (Default: `false`)
-    - `init.bits` (number) Number of bits to use in the generated key pair. (Default: `2048`)
-    - `init.pass` (string) A passphrase to encrypt keys. You should generally use the top-level `pass` option instead of the `init.pass` option (this one will take its value from the top-level option if not set).
+##### `options.init`
 
-- `start` (boolean): If `false`, do not automatically start the IPFS node. Instead, you’ll need to manually call `node.start()` yourself. (Default: `true`)
+| Type | Default |
+|------|---------|
+| boolean or object | `true` |
 
-- `pass` (string): A passphrase to encrypt/decrypt your keys.
+Initialize the repo when creating the IPFS node.
 
-- `relay` (object): Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipfs/js-ipfs/tree/master/examples/circuit-relaying) to learn more).
-    - `enabled` (boolean): Enable circuit relay dialer and listener. (Default: `false`)
-    - `hop` (object)
-        - `enabled` (boolean): Make this node a relay (other nodes can connect *through* it). (Default: `false`)
-        - `active` (boolean): Make this an *active* relay node. Active relay nodes will attempt to dial a destination peer even if that peer is not yet connected to the relay. (Default: `false`)
+If you have already initialized a repo before creating your IPFS node (e.g. you are loading a repo that was saved to disk from a previous run of your program), you must make sure to set this to `false`. Note that *initializing* a repo is different from creating an instance of [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo). The IPFS constructor sets many special properties when initializing a repo, so you should usually not try and call `repoInstance.init()` yourself.
 
-- `preload` (object): Configure external nodes that will preload content added to this node
-    - `enabled` (boolean): Enable content preloading (Default: `true`)
-    - `addresses` (array): Multiaddr API addresses of nodes that should preload content. NOTE: nodes specified here should also be added to your node's bootstrap address list at `config.Boostrap`
-- `EXPERIMENTAL` (object): Enable and configure experimental features.
-    - `pubsub` (boolean): Enable libp2p pub-sub. (Default: `false`)
-    - `sharding` (boolean): Enable directory sharding. Directories that have many child objects will be represented by multiple DAG nodes instead of just one. It can improve lookup performance when a directory has several thousand files or more. (Default: `false`)
-    - `dht` (boolean): Enable KadDHT. **This is currently not interopable with `go-ipfs`.**
+Instead of a boolean, you may provide an object with custom initialization options. All properties are optional:
 
-- `config` (object) Modify the default IPFS node config. Find the Node.js defaults at [`src/core/runtime/config-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/config-nodejs.js) and the browser defaults at [`src/core/runtime/config-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/config-browser.js). This object will be *merged* with the default config; it will not replace it.
+- `emptyRepo` (boolean) Whether to remove built-in assets, like the instructional tour and empty mutable file system, from the repo. (Default: `false`)
+- `bits` (number) Number of bits to use in the generated key pair. (Default: `2048`)
+- `pass` (string) A passphrase to encrypt keys. You should generally use the [top-level `pass` option](#optionspass) instead of the `init.pass` option (this one will take its value from the top-level option if not set).
 
-- `libp2p` (object) add custom modules to the libp2p stack of your node
-    - `modules` (object):
-        - `transport` (Array<[libp2p.Transport](https://github.com/libp2p/interface-transport)>): An array of Libp2p transport classes/instances to use _instead_ of the defaults. See [libp2p/interface-transport](https://github.com/libp2p/interface-transport) for details.
-        - `peerDiscovery` (Array<[libp2p.PeerDiscovery](https://github.com/libp2p/interface-peer-discovery)>): An array of Libp2p peer discovery classes/instances to use _instead_ of the defaults. See [libp2p/peer-discovery](https://github.com/libp2p/interface-peer-discovery) for details. If passing a class, configuration can be passed using the config section below under the key corresponding to you module's unique `tag` (a static property on the class)
-    - `config` (object):
-        - `peerDiscovery` (object):
-            - `[PeerDiscovery.tag]` (object): configuration for a peer discovery module
-                - `enabled` (boolean): whether this module is enabled or disabled
-                - `[custom config]` (any): other keys are specific to the module
+##### `options.start`
 
-- `connectionManager` (object): Configure the libp2p connection manager, see the [documentation for available options](https://github.com/libp2p/js-libp2p-connection-manager#create-a-connectionmanager).
+| Type | Default |
+|------|---------|
+| boolean | `true` |
+
+ If `false`, do not automatically start the IPFS node. Instead, you’ll need to manually call [`node.start()`](#nodestartcallback) yourself.
+
+##### `options.pass`
+
+| Type | Default |
+|------|---------|
+| string | `null` |
+
+A passphrase to encrypt/decrypt your keys.
+
+##### `options.relay`
+
+| Type | Default |
+|------|---------|
+| object | `{ enabled: false, hop: { enabled: false, active: false } }` |
+
+Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipfs/js-ipfs/tree/master/examples/circuit-relaying) to learn more).
+
+- `enabled` (boolean): Enable circuit relay dialer and listener. (Default: `false`)
+- `hop` (object)
+    - `enabled` (boolean): Make this node a relay (other nodes can connect *through* it). (Default: `false`)
+    - `active` (boolean): Make this an *active* relay node. Active relay nodes will attempt to dial a destination peer even if that peer is not yet connected to the relay. (Default: `false`)
+
+##### `options.preload`
+
+| Type | Default |
+|------|---------|
+| object | `{ enabled: true, addresses: [...] }` |
+
+Configure external nodes that will preload content added to this node.
+
+- `enabled` (boolean): Enable content preloading (Default: `true`)
+- `addresses` (array): Multiaddr API addresses of nodes that should preload content. **NOTE:** nodes specified here should also be added to your node's bootstrap address list at [`config.Boostrap`](#optionsconfig).
+
+##### `options.EXPERIMENTAL`
+
+| Type | Default |
+|------|---------|
+| object | `{ pubsub: false, sharding: false, dht: false }` |
+
+Enable and configure experimental features.
+
+- `pubsub` (boolean): Enable libp2p pub-sub. (Default: `false`)
+- `sharding` (boolean): Enable directory sharding. Directories that have many child objects will be represented by multiple DAG nodes instead of just one. It can improve lookup performance when a directory has several thousand files or more. (Default: `false`)
+- `dht` (boolean): Enable KadDHT. **This is currently not interopable with `go-ipfs`.**
+
+##### `options.config`
+
+| Type | Default |
+|------|---------|
+| object |  [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/config-nodejs.js) in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/config-browser.js) in browsers |
+
+Modify the default IPFS node config. This object will be *merged* with the default config; it will not replace it.
+
+##### `options.libp2p`
+
+| Type | Default |
+|------|---------|
+| object | [`libp2p-nodejs.js`](https://github.com/ipfs/js-ipfs/blob/master/src/core/runtime/libp2p-nodejs.js) in Node.js, [`libp2p-browser.js`](https://github.com/ipfs/js-ipfs/blob/master/src/core/runtime/libp2p-browser.js) in browsers |
+
+Add custom modules to the libp2p stack of your node.
+
+- `modules` (object):
+    - `transport` (Array<[libp2p.Transport](https://github.com/libp2p/interface-transport)>): An array of Libp2p transport classes/instances to use _instead_ of the defaults. See [libp2p/interface-transport](https://github.com/libp2p/interface-transport) for details.
+    - `peerDiscovery` (Array<[libp2p.PeerDiscovery](https://github.com/libp2p/interface-peer-discovery)>): An array of Libp2p peer discovery classes/instances to use _instead_ of the defaults. See [libp2p/peer-discovery](https://github.com/libp2p/interface-peer-discovery) for details. If passing a class, configuration can be passed using the config section below under the key corresponding to you module's unique `tag` (a static property on the class)
+- `config` (object):
+    - `peerDiscovery` (object):
+        - `[PeerDiscovery.tag]` (object): configuration for a peer discovery module
+            - `enabled` (boolean): whether this module is enabled or disabled
+            - `[custom config]` (any): other keys are specific to the module
+
+##### `options.connectionManager`
+
+| Type | Default |
+|------|---------|
+| object | [defaults](https://github.com/libp2p/js-libp2p-connection-manager#create-a-connectionmanager) |
+
+Configure the libp2p connection manager.
 
 #### Events
 
@@ -363,10 +429,10 @@ The core API is grouped into several areas:
   - [`ipfs.files.addPullStream([options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesaddpullstream)
   - [`ipfs.files.addReadableStream([options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesaddreadablestream)
   - [`ipfs.files.cat(ipfsPath, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescat). Alias to `ipfs.cat`.
-  - [`ipfs.files.catPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescatpullstream)  
+  - [`ipfs.files.catPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescatpullstream)
   - [`ipfs.files.catReadableStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescatreadablestream)
   - [`ipfs.files.get(ipfsPath, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesget). Alias to `ipfs.get`.
-  - [`ipfs.files.getPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesgetpullstream)  
+  - [`ipfs.files.getPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesgetpullstream)
   - [`ipfs.files.getReadableStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesgetreadablestream)
   - [`ipfs.ls(ipfsPath, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#ls)
   - [`ipfs.lsPullStream(ipfsPath)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#lspullstream)
