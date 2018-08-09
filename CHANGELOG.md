@@ -1,3 +1,14 @@
+<a name="0.31.4"></a>
+## [0.31.4](https://github.com/ipfs/js-ipfs/compare/v0.31.3...v0.31.4) (2018-08-09)
+
+
+### Bug Fixes
+
+* consistent badge style in docs ([#1494](https://github.com/ipfs/js-ipfs/issues/1494)) ([4a72e23](https://github.com/ipfs/js-ipfs/commit/4a72e23))
+* files.ls and files.read*Stream tests ([#1493](https://github.com/ipfs/js-ipfs/issues/1493)) ([a0bc79b](https://github.com/ipfs/js-ipfs/commit/a0bc79b))
+
+
+
 <a name="0.31.3"></a>
 ## [0.31.3](https://github.com/ipfs/js-ipfs/compare/v0.31.2...v0.31.3) (2018-08-09)
 
