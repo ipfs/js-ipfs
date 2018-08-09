@@ -1,3 +1,15 @@
+<a name="0.31.3"></a>
+## [0.31.3](https://github.com/ipfs/js-ipfs/compare/v0.31.2...v0.31.3) (2018-08-09)
+
+
+### Bug Fixes
+
+* failing tests in master ([#1488](https://github.com/ipfs/js-ipfs/issues/1488)) ([e607560](https://github.com/ipfs/js-ipfs/commit/e607560))
+* **dag:** check dag.put options for plain object ([#1480](https://github.com/ipfs/js-ipfs/issues/1480)) ([d0b671b](https://github.com/ipfs/js-ipfs/commit/d0b671b)), closes [#1479](https://github.com/ipfs/js-ipfs/issues/1479)
+* **dht:** allow for options object in `findProvs()` API ([#1457](https://github.com/ipfs/js-ipfs/issues/1457)) ([99911b1](https://github.com/ipfs/js-ipfs/commit/99911b1)), closes [#1322](https://github.com/ipfs/js-ipfs/issues/1322)
+
+
+
 <a name="0.31.2"></a>
 ## [0.31.2](https://github.com/ipfs/js-ipfs/compare/v0.31.1...v0.31.2) (2018-08-02)
 
