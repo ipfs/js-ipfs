@@ -1,3 +1,14 @@
+<a name="0.75.2"></a>
+## [0.75.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.75.1...v0.75.2) (2018-08-09)
+
+
+### Bug Fixes
+
+* **spec/dag:** fix wrong example output for sha3-512 hash algorithm ([#347](https://github.com/ipfs/interface-ipfs-core/issues/347)) ([bfdda8a](https://github.com/ipfs/interface-ipfs-core/commit/bfdda8a)), closes [#307](https://github.com/ipfs/interface-ipfs-core/issues/307)
+* update error messages in line with go ([#348](https://github.com/ipfs/interface-ipfs-core/issues/348)) ([a173a42](https://github.com/ipfs/interface-ipfs-core/commit/a173a42))
+
+
+
 <a name="0.75.1"></a>
 ## [0.75.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.75.0...v0.75.1) (2018-08-06)
 
