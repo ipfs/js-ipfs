@@ -13,17 +13,25 @@ const SECIO = require('libp2p-secio')
 const assert = require('assert')
 
 /**
+ * Options for the libp2p factory
+ * @typedef {Object} libp2pFactory~options
+ * @property {PeerInfo} peerInfo - The PeerInfo of the IPFS node
+ * @property {PeerBook} peerBook - The PeerBook of the IPFS node
+ * @property {Object} config - The config of the IPFS node
+ * @property {Object} options - The options given to the IPFS node
+ */
+
+/**
  * This is the factory we will use to create our fully customized libp2p node.
  *
- * @param {*} _ipfsNode The ipfs node. This houses the PeerInfo and PeerBook that modules may need
- * @param {*} _ipfsConfig The config that is fetched from the ipfs-repo
+ * @param {libp2pFactory~options} opts The options to use when generating the libp2p node
  * @returns {Libp2p} Our new libp2p node
  */
-const libp2pFactory = (_ipfsNode, _ipfsConfig) => {
+const libp2pFactory = (opts) => {
   // Set convenience variables to clearly showcase some of the useful things that are available
-  const peerInfo = _ipfsNode.peerInfo
-  const peerBook = _ipfsNode.peerBook
-  const bootstrapList = _ipfsConfig.Bootstrap
+  const peerInfo = opts.peerInfo
+  const peerBook = opts.peerBook
+  const bootstrapList = opts.config.Bootstrap
 
   // Create our WebSocketStar transport and give it our PeerId, straight from the ipfs node
   const wsstar = new WebSocketStar({

@@ -153,20 +153,6 @@ class IPFS extends EventEmitter {
 
     boot(this)
   }
-
-  /**
-   * @type {PeerBook}
-   */
-  get peerBook () {
-    return this._peerInfoBook
-  }
-
-  /**
-   * @type {PeerInfo}
-   */
-  get peerInfo () {
-    return this._peerInfo
-  }
 }
 
 exports = module.exports = IPFS

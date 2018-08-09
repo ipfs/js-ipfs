@@ -65,19 +65,19 @@ describe('libp2p customization', function () {
     })
   })
 
-  describe('generator', () => {
-    it('should allow for using a libp2p generator', (done) => {
+  describe('factory', () => {
+    it('should allow for using a libp2p factory', (done) => {
       const ipfs = {
         _peerInfo: peerInfo,
         _peerBook: peerBook,
         config: mockConfig,
         _options: {
-          libp2p: (_ipfs, _ipfsConfig) => {
-            const wsstar = new WebSocketStar({id: _ipfs._peerInfo.id})
+          libp2p: (opts) => {
+            const wsstar = new WebSocketStar({id: opts.peerInfo.id})
 
             return new Libp2p({
-              peerInfo: _ipfs._peerInfo,
-              peerBook: _ipfs._peerBook,
+              peerInfo: opts.peerInfo,
+              peerBook: opts.peerBook,
               modules: {
                 transport: [
                   wsstar

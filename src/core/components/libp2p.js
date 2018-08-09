@@ -16,42 +16,42 @@ module.exports = function libp2p (self) {
           return callback(err)
         }
 
-        const defaultGenerator = (_ipfs, _config) => {
+        const defaultFactory = (opts) => {
           const libp2pDefaults = {
-            peerInfo: _ipfs._peerInfo,
-            peerBook: _ipfs._peerInfoBook,
+            peerInfo: opts.peerInfo,
+            peerBook: opts.peerBook,
             config: {
               peerDiscovery: {
                 mdns: {
-                  enabled: get(_ipfs._options, 'config.Discovery.MDNS.Enabled',
-                    get(_config, 'Discovery.MDNS.Enabled', true))
+                  enabled: get(opts.options, 'config.Discovery.MDNS.Enabled',
+                    get(opts.config, 'Discovery.MDNS.Enabled', true))
                 },
                 webRTCStar: {
-                  enabled: get(_ipfs._options, 'config.Discovery.webRTCStar.Enabled',
-                    get(_config, 'Discovery.webRTCStar.Enabled', true))
+                  enabled: get(opts.options, 'config.Discovery.webRTCStar.Enabled',
+                    get(opts.config, 'Discovery.webRTCStar.Enabled', true))
                 },
                 bootstrap: {
-                  list: get(_ipfs._options, 'config.Bootstrap',
-                    get(_config, 'Bootstrap', []))
+                  list: get(opts.options, 'config.Bootstrap',
+                    get(opts.config, 'Bootstrap', []))
                 }
               },
               relay: {
-                enabled: get(_ipfs._options, 'relay.enabled',
-                  get(_config, 'relay.enabled', false)),
+                enabled: get(opts.options, 'relay.enabled',
+                  get(opts.config, 'relay.enabled', false)),
                 hop: {
-                  enabled: get(_ipfs._options, 'relay.hop.enabled',
-                    get(_config, 'relay.hop.enabled', false)),
-                  active: get(_ipfs._options, 'relay.hop.active',
-                    get(_config, 'relay.hop.active', false))
+                  enabled: get(opts.options, 'relay.hop.enabled',
+                    get(opts.config, 'relay.hop.enabled', false)),
+                  active: get(opts.options, 'relay.hop.active',
+                    get(opts.config, 'relay.hop.active', false))
                 }
               },
               EXPERIMENTAL: {
-                dht: get(_ipfs._options, 'EXPERIMENTAL.dht', false),
-                pubsub: get(_ipfs._options, 'EXPERIMENTAL.pubsub', false)
+                dht: get(opts.options, 'EXPERIMENTAL.dht', false),
+                pubsub: get(opts.options, 'EXPERIMENTAL.pubsub', false)
               }
             },
-            connectionManager: get(_ipfs._options, 'connectionManager',
-              get(_config, 'connectionManager', {}))
+            connectionManager: get(opts.options, 'connectionManager',
+              get(opts.config, 'connectionManager', {}))
           }
 
           const libp2pOptions = defaultsDeep(
@@ -62,13 +62,18 @@ module.exports = function libp2p (self) {
           return new Node(libp2pOptions)
         }
 
-        // Always create libp2p via a generator
-        let libp2pGenerator = get(self._options, 'libp2p', null)
-        if (typeof libp2pGenerator !== 'function') {
-          libp2pGenerator = defaultGenerator
+        // Always create libp2p via a factory
+        let libp2pFactory = get(self._options, 'libp2p', null)
+        if (typeof libp2pFactory !== 'function') {
+          libp2pFactory = defaultFactory
         }
 
-        self._libp2pNode = libp2pGenerator(self, config)
+        self._libp2pNode = libp2pFactory({
+          options: self._options,
+          config: config,
+          peerInfo: self._peerInfo,
+          peerBook: self._peerInfoBook
+        })
 
         self._libp2pNode.on('peer:discovery', (peerInfo) => {
           const dial = () => {
