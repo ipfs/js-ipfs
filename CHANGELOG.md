@@ -1,3 +1,13 @@
+<a name="0.3.0"></a>
+# [0.3.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.2.5...v0.3.0) (2018-08-09)
+
+
+### Performance Improvements
+
+* write files to repo outside of write lock ([63940b4](https://github.com/ipfs/js-ipfs-mfs/commit/63940b4))
+
+
+
 <a name="0.2.5"></a>
 ## [0.2.5](https://github.com/ipfs/js-ipfs-mfs/compare/v0.2.4...v0.2.5) (2018-08-02)
 
