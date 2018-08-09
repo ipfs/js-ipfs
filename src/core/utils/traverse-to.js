@@ -84,9 +84,9 @@ const traverseToMfsObject = (ipfs, path, options, callback) => {
               log(`index ${index} pathSegments.length ${pathSegments.length} pathSegment ${pathSegment} lastComponent ${lastComponent}`, options)
 
               if (lastComponent && !options.createLastComponent) {
-                return done(new Error(`Path ${path.path} did not exist`))
+                return done(new Error(`Path ${path.path} does not exist`))
               } else if (!lastComponent && !options.parents) {
-                let message = `Cannot find ${path.path} - ${pathSegment} did not exist`
+                let message = `Cannot find ${path.path} - ${pathSegment} does not exist`
 
                 if (options.withCreateHint) {
                   message += ': Try again with the --parents flag to create it'

@@ -50,8 +50,8 @@ module.exports = (ipfs) => {
             return cb(new Error('file already exists'))
           }
 
-          if (error.message.includes('did not exist')) {
-            log(`${path} did not exist`)
+          if (error.message.includes('does not exist')) {
+            log(`${path} does not exist`)
             return cb()
           }
 

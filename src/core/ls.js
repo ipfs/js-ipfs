@@ -13,7 +13,8 @@ const {
 
 const defaultOptions = {
   long: false,
-  cidBase: 'base58btc'
+  cidBase: 'base58btc',
+  unsorted: false
 }
 
 module.exports = (ipfs) => {
@@ -62,6 +63,17 @@ module.exports = (ipfs) => {
             size: meta.fileSize() || 0
           }])
         }
+      },
+
+      // https://github.com/ipfs/go-ipfs/issues/5181
+      (files, cb) => {
+        if (options.unsorted) {
+          return cb(null, files)
+        }
+
+        return cb(null, files.sort((a, b) => {
+          return b.name.localeCompare(a.name)
+        }))
       },
 
       // https://github.com/ipfs/go-ipfs/issues/5026

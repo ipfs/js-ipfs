@@ -3,7 +3,13 @@
 const mortice = require('mortice')
 const log = require('debug')('ipfs:mfs:lock')
 
+let lock
+
 module.exports = (repoOwner) => {
+  if (lock) {
+    return lock
+  }
+
   const mutex = mortice({
     // ordinarily the main thread would store the read/write lock but
     // if we are the thread that owns the repo, we can store the lock
@@ -17,7 +23,8 @@ module.exports = (repoOwner) => {
     mutex[`${type}Lock`](() => {
       return new Promise((resolve, reject) => {
         args.push((error, result) => {
-          log(`${type} operation callback invoked${error ? ' with error' : ''}`)
+          log(`${type} operation callback invoked${error ? ' with error: ' + error.message : ''}`)
+
           if (error) {
             return reject(error)
           }
@@ -35,7 +42,7 @@ module.exports = (repoOwner) => {
         cb(null, result)
       })
       .catch((error) => {
-        log(`Finished ${type} operation with error`)
+        log(`Finished ${type} operation with error: ${error.message}`)
         if (callback) {
           return callback(error)
         }
@@ -46,7 +53,7 @@ module.exports = (repoOwner) => {
       })
   }
 
-  return {
+  lock = {
     readLock: (func) => {
       return function () {
         const args = Array.from(arguments)
@@ -65,4 +72,6 @@ module.exports = (repoOwner) => {
       }
     }
   }
+
+  return lock
 }

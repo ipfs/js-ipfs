@@ -21,6 +21,13 @@ module.exports = {
       coerce: asBoolean,
       describe: 'Use long listing format.'
     },
+    unsorted: {
+      alias: 'U',
+      type: 'boolean',
+      default: false,
+      coerce: asBoolean,
+      describe: 'Do not sort; list entries in directory order.'
+    },
     cidBase: {
       alias: 'cid-base',
       default: 'base58btc',
@@ -33,12 +40,14 @@ module.exports = {
       path,
       ipfs,
       long,
+      unsorted,
       cidBase
     } = argv
 
     argv.resolve(
       ipfs.files.ls(path || FILE_SEPARATOR, {
         long,
+        unsorted,
         cidBase
       })
         .then(files => {

@@ -32,11 +32,15 @@ describe('read', function () {
 
   const methods = [{
     name: 'read',
-    read: function () { return mfs.read.apply(mfs, arguments) },
+    read: function () {
+      return mfs.read.apply(mfs, arguments)
+    },
     collect: (buffer) => buffer
   }, {
     name: 'readPullStream',
-    read: function () { return mfs.readPullStream.apply(mfs, arguments) },
+    read: function () {
+      return Promise.resolve(mfs.readPullStream.apply(mfs, arguments))
+    },
     collect: (stream) => {
       return new Promise((resolve, reject) => {
         pull(
@@ -53,7 +57,9 @@ describe('read', function () {
     }
   }, {
     name: 'readReadableStream',
-    read: function () { return mfs.readReadableStream.apply(mfs, arguments) },
+    read: function () {
+      return Promise.resolve(mfs.readReadableStream.apply(mfs, arguments))
+    },
     collect: (stream) => {
       return new Promise((resolve, reject) => {
         let data = Buffer.alloc(0)
@@ -66,7 +72,9 @@ describe('read', function () {
           resolve(data)
         })
 
-        stream.on('error', (error) => reject(error))
+        stream.on('error', (error) => {
+          reject(error)
+        })
       })
     }
   }]
@@ -149,6 +157,7 @@ describe('read', function () {
         const path = '/'
 
         return method.read(path)
+          .then((stream) => method.collect(stream))
           .catch(error => {
             expect(error.message).to.contain('was not a file')
           })

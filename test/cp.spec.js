@@ -62,7 +62,7 @@ describe('cp', function () {
         throw new Error('No error was thrown for a non-existent file')
       })
       .catch(error => {
-        expect(error.message).to.contain('did not exist')
+        expect(error.message).to.contain('does not exist')
       })
   })
 

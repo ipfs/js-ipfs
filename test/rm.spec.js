@@ -76,7 +76,7 @@ describe('rm', function () {
         throw new Error('File was not removed')
       })
       .catch(error => {
-        expect(error.message).to.contain(`Path ${file} did not exist`)
+        expect(error.message).to.contain(`Path ${file} does not exist`)
       })
   })
 
@@ -100,14 +100,14 @@ describe('rm', function () {
         throw new Error('File #1 was not removed')
       })
       .catch(error => {
-        expect(error.message).to.contain(`Path ${file1} did not exist`)
+        expect(error.message).to.contain(`Path ${file1} does not exist`)
       })
       .then(() => mfs.stat(file2))
       .then(() => {
         throw new Error('File #2 was not removed')
       })
       .catch(error => {
-        expect(error.message).to.contain(`Path ${file2} did not exist`)
+        expect(error.message).to.contain(`Path ${file2} does not exist`)
       })
   })
 
@@ -123,7 +123,7 @@ describe('rm', function () {
         throw new Error('Directory was not removed')
       })
       .catch(error => {
-        expect(error.message).to.contain(`Path ${directory} did not exist`)
+        expect(error.message).to.contain(`Path ${directory} does not exist`)
       })
   })
 
@@ -143,14 +143,14 @@ describe('rm', function () {
         throw new Error('File was not removed')
       })
       .catch(error => {
-        expect(error.message).to.contain(`Path ${subdirectory} did not exist`)
+        expect(error.message).to.contain(`Path ${subdirectory} does not exist`)
       })
       .then(() => mfs.ls(directory))
       .then(() => {
         throw new Error('Directory was not removed')
       })
       .catch(error => {
-        expect(error.message).to.contain(`Path ${directory} did not exist`)
+        expect(error.message).to.contain(`Path ${directory} does not exist`)
       })
   })
 
@@ -170,14 +170,14 @@ describe('rm', function () {
         throw new Error('File was not removed')
       })
       .catch(error => {
-        expect(error.message).to.contain(`Path ${file} did not exist`)
+        expect(error.message).to.contain(`Path ${file} does not exist`)
       })
       .then(() => mfs.stat(`/${directory}`))
       .then(() => {
         throw new Error('Directory was not removed')
       })
       .catch(error => {
-        expect(error.message).to.contain(`${directory} did not exist`)
+        expect(error.message).to.contain(`${directory} does not exist`)
       })
   })
 })

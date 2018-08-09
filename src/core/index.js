@@ -5,28 +5,38 @@ const {
   createLock
 } = require('./utils')
 
+// These operations are read-locked at the function level and will execute simultaneously
 const readOperations = {
   ls: require('./ls'),
-  read: require('./read'),
-  readPullStream: require('./read-pull-stream'),
-  readReadableStream: require('./read-readable-stream'),
   stat: require('./stat')
 }
 
+// These operations are locked at the function level and will execute in series
 const writeOperations = {
   cp: require('./cp'),
   flush: require('./flush'),
   mkdir: require('./mkdir'),
   mv: require('./mv'),
-  rm: require('./rm'),
-  write: require('./write')
+  rm: require('./rm')
 }
 
-const wrap = (ipfs, mfs, operations, lock) => {
+// These operations are asynchronous and manage their own locking
+const upwrappedOperations = {
+  write: require('./write'),
+  read: require('./read')
+}
+
+// These operations are synchronous and manage their own locking
+const upwrappedSynchronousOperations = {
+  readPullStream: require('./read-pull-stream'),
+  readReadableStream: require('./read-readable-stream')
+}
+
+const wrap = ({
+  ipfs, mfs, operations, lock
+}) => {
   Object.keys(operations).forEach(key => {
-    if (operations.hasOwnProperty(key)) {
-      mfs[key] = promisify(lock(operations[key](ipfs)))
-    }
+    mfs[key] = promisify(lock(operations[key](ipfs)))
   })
 }
 
@@ -51,8 +61,20 @@ module.exports = (ipfs, options) => {
 
   const mfs = {}
 
-  wrap(ipfs, mfs, readOperations, readLock)
-  wrap(ipfs, mfs, writeOperations, writeLock)
+  wrap({
+    ipfs, mfs, operations: readOperations, lock: readLock
+  })
+  wrap({
+    ipfs, mfs, operations: writeOperations, lock: writeLock
+  })
+
+  Object.keys(upwrappedOperations).forEach(key => {
+    mfs[key] = promisify(upwrappedOperations[key](ipfs))
+  })
+
+  Object.keys(upwrappedSynchronousOperations).forEach(key => {
+    mfs[key] = upwrappedSynchronousOperations[key](ipfs)
+  })
 
   return mfs
 }
