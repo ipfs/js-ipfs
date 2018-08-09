@@ -15,6 +15,7 @@ const errors = require('../utils')
 const path = require('../ipns/path')
 
 const ERR_NOCACHE_AND_LOCAL = 'ERR_NOCACHE_AND_LOCAL'
+const ERR_CANNOT_GET_KEY = 'ERR_CANNOT_GET_KEY'
 
 const keyLookup = (ipfsNode, kname, callback) => {
   if (kname === 'self') {
