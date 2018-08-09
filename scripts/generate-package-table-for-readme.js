@@ -54,7 +54,7 @@ const rows = [
   'Crypto',
   ['libp2p/js-libp2p-crypto', 'libp2p-crypto'],
   ['libp2p/js-libp2p-keychain', 'libp2p-keychain'],
-  
+
   'Generics/Utils',
   ['ipfs/js-ipfs-api', 'ipfs-api'],
   ['ipfs/ipfs-multipart', 'ipfs-multipart'],
@@ -71,9 +71,9 @@ const packageBadges = [
   // Package
   (gh, npm) => `[\`${npm}\`](//github.com/${gh})`,
   // Version
-  (gh, npm) => `[![npm](https://img.shields.io/npm/v/${npm}.svg?maxAge=86400&style=flat-square)](//github.com/${gh}/releases)`,
+  (gh, npm) => `[![npm](https://img.shields.io/npm/v/${npm}.svg?maxAge=86400&style=flat)](//github.com/${gh}/releases)`,
   // Deps
-  (gh, npm) => `[![Deps](https://david-dm.org/${gh}.svg?style=flat-square)](https://david-dm.org/${gh})`,
+  (gh, npm) => `[![Deps](https://david-dm.org/${gh}.svg?style=flat)](https://david-dm.org/${gh})`,
   // CI
   (gh, npm) => {
     // Need to fix the path for jenkins links, as jenkins adds `/job/` between everything
