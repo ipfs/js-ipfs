@@ -65,13 +65,13 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  /* TODO uncomment once interface-ipfs-core PR get merged
   tests.name(CommonFactory.create({
     spawnOptions: {
       args: ['--pass ipfs-is-awesome-software'],
       initOptions: { bits: 512 }
     }
-  })) */
+  }))
+
   tests.object(defaultCommonFactory)
 
   tests.pin(defaultCommonFactory)
