@@ -31,7 +31,7 @@ class IpnsRepublisher {
     this._onCancel = null
   }
 
-  start() {
+  start () {
     const periodically = (cb) => {
       this._republishEntries(this._ipfs._peerInfo.id.privKey, this._ipfs._options.pass, () => {
         if (this._canceled) {
@@ -44,7 +44,7 @@ class IpnsRepublisher {
     periodically()
   }
 
-  stop(cb) {
+  stop (cb) {
     this._canceled = true
     if (this._timeoutId) {
       // Not running

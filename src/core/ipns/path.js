@@ -6,7 +6,6 @@ const debug = require('debug')
 const log = debug('jsipfs:ipns:path')
 log.error = debug('jsipfs:ipns:path:error')
 
-const ERR_BAD_PATH = 'ERR_BAD_PATH'
 const ERR_NO_COMPONENTS = 'ERR_NO_COMPONENTS'
 
 // resolves the given path by parsing out protocol-specific entries
