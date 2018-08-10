@@ -26,20 +26,36 @@ class IpnsRepublisher {
     this._publisher = publisher
     this._ipfs = ipfs
     this._repo = ipfs._repo
-    this._interval = null
+    this._timeoutId = null
+    this._canceled = false
+    this._onCancel = null
   }
 
-  start () {
-    this._interval = setInterval(() => {
-      this._republishEntries(this._ipfs._peerInfo.id.privKey, this._ipfs._options.pass)
-    }, defaultBroadcastInterval)
+  start() {
+    const periodically = (cb) => {
+      this._republishEntries(this._ipfs._peerInfo.id.privKey, this._ipfs._options.pass, () => {
+        if (this._canceled) {
+          return this._onCancel()
+        }
+        this._timeoutId = setTimeout(() => periodically(cb), defaultBroadcastInterval)
+      })
+    }
+
+    periodically()
   }
 
-  stop () {
-    clearInterval(this._interval)
+  stop(cb) {
+    this._canceled = true
+    if (this._timeoutId) {
+      // Not running
+      clearTimeout(this._timeoutId)
+      return cb()
+    }
+
+    this._onCancel = cb
   }
 
-  _republishEntries (privateKey, pass) {
+  _republishEntries (privateKey, pass, callback) {
     // TODO: Should use list of published entries.
     // We can't currently *do* that because go uses this method for now.
     this._republishEntry(privateKey, (err) => {
@@ -74,6 +90,7 @@ class IpnsRepublisher {
             if (err) {
               log.error(err)
             }
+            callback(null)
           })
         })
       }
