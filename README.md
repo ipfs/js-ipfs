@@ -5,7 +5,7 @@
 [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
-> A test suite and interface you can use to implement a IPFS core interface.
+> A test suite and interface you can use to implement an IPFS core interface.
 
 ## Lead Maintainer
 
