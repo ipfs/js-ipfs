@@ -67,10 +67,10 @@ module.exports = function name (self) {
       const key = options.key || 'self'
 
       if (!self.isOnline()) {
-        const error = utils.OFFLINE_ERROR
+        const errMsg = utils.OFFLINE_ERROR
 
-        log.error(error)
-        return callback(errcode(new Error(error), 'OFFLINE_ERROR'))
+        log.error(errMsg)
+        return callback(errcode(errMsg, 'OFFLINE_ERROR'))
       }
 
       // TODO: params related logic should be in the core implementation
@@ -131,10 +131,10 @@ module.exports = function name (self) {
       const local = true // TODO ROUTING - use self._options.local
 
       if (!self.isOnline() && !local) {
-        const error = utils.OFFLINE_ERROR
+        const errMsg = utils.OFFLINE_ERROR
 
-        log.error(error)
-        return callback(errcode(new Error(error), 'OFFLINE_ERROR'))
+        log.error(errMsg)
+        return callback(errcode(errMsg, 'OFFLINE_ERROR'))
       }
 
       // TODO: params related logic should be in the core implementation
