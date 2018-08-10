@@ -4,20 +4,13 @@ const PeerId = require('peer-id')
 const Record = require('libp2p-record').Record
 const { Key } = require('interface-datastore')
 const series = require('async/series')
+const errcode = require('err-code')
 
 const debug = require('debug')
 const log = debug('jsipfs:ipns:publisher')
 log.error = debug('jsipfs:ipns:publisher:error')
 
 const ipns = require('ipns')
-
-const ERR_CREATING_IPNS_RECORD = 'ERR_CREATING_IPNS_RECORD'
-const ERR_INVALID_IPNS_RECORD = 'ERR_INVALID_IPNS_RECORD'
-const ERR_INVALID_DATASTORE_KEY = 'ERR_INVALID_DATASTORE_KEY'
-const ERR_INVALID_PEER_ID = 'ERR_INVALID_PEER_ID'
-const ERR_STORING_IN_DATASTORE = 'ERR_STORING_IN_DATASTORE'
-const ERR_UNEXPECTED_DATASTORE_RESPONSE = 'ERR_UNEXPECTED_DATASTORE_RESPONSE'
-const ERR_UNDEFINED_PARAMETER = 'ERR_UNDEFINED_PARAMETER'
 
 const defaultRecordTtl = 60 * 60 * 1000
 
@@ -34,7 +27,7 @@ class IpnsPublisher {
       const errMsg = `one or more of the provided parameters are not defined`
 
       log.error(errMsg)
-      return callback(Object.assign(new Error(errMsg), { code: ERR_UNDEFINED_PARAMETER }))
+      return callback(errcode(new Error(errMsg), 'ERR_UNDEFINED_PARAMETER'))
     }
 
     PeerId.createFromPrivKey(privKey.bytes, (err, peerId) => {
@@ -62,7 +55,7 @@ class IpnsPublisher {
       const errMsg = `peerId received is not valid`
 
       log.error(errMsg)
-      return callback(Object.assign(new Error(errMsg), { code: ERR_INVALID_PEER_ID }))
+      return callback(errcode(new Error(errMsg), 'ERR_INVALID_PEER_ID'))
     }
 
     const publicKey = peerId._pubKey
@@ -101,7 +94,7 @@ class IpnsPublisher {
       const errMsg = `datastore key does not have a valid format`
 
       log.error(errMsg)
-      return callback(Object.assign(new Error(errMsg), { code: ERR_INVALID_DATASTORE_KEY }))
+      return callback(errcode(new Error(errMsg), 'ERR_INVALID_DATASTORE_KEY'))
     }
 
     let rec
@@ -118,8 +111,10 @@ class IpnsPublisher {
     // TODO Routing - this should be replaced by a put to the DHT
     this._repo.datastore.put(key, rec.serialize(), (err, res) => {
       if (err) {
-        log.error(`ipns record for ${key.toString()} could not be stored in the routing`)
-        return callback(Object.assign(new Error(`ipns record for ${key.toString()} could not be stored in the routing`), { code: ERR_STORING_IN_DATASTORE }))
+        const errMsg = `ipns record for ${key.toString()} could not be stored in the routing`
+
+        log.error(errMsg)
+        return callback(errcode(new Error(errMsg), 'ERR_STORING_IN_DATASTORE'))
       }
 
       log(`ipns record for ${key.toString()} was stored in the routing`)
@@ -132,14 +127,14 @@ class IpnsPublisher {
       const errMsg = `datastore key does not have a valid format`
 
       log.error(errMsg)
-      return callback(Object.assign(new Error(errMsg), { code: ERR_INVALID_DATASTORE_KEY }))
+      return callback(errcode(new Error(errMsg), 'ERR_INVALID_DATASTORE_KEY'))
     }
 
     if (!publicKey || !publicKey.bytes) {
       const errMsg = `one or more of the provided parameters are not defined`
 
       log.error(errMsg)
-      return callback(Object.assign(new Error(errMsg), { code: ERR_UNDEFINED_PARAMETER }))
+      return callback(errcode(new Error(errMsg), 'ERR_UNDEFINED_PARAMETER'))
     }
 
     let rec
@@ -154,8 +149,10 @@ class IpnsPublisher {
     // TODO Routing - this should be replaced by a put to the DHT
     this._repo.datastore.put(key, rec.serialize(), (err, res) => {
       if (err) {
-        log.error(`public key for ${key.toString()} could not be stored in the routing`)
-        return callback(Object.assign(new Error(`public key for ${key.toString()} could not be stored in the routing`), { code: ERR_STORING_IN_DATASTORE }))
+        const errMsg = `public key for ${key.toString()} could not be stored in the routing`
+
+        log.error(errMsg)
+        return callback(errcode(new Error(errMsg), 'ERR_STORING_IN_DATASTORE'))
       }
 
       log(`public key for ${key.toString()} was stored in the routing`)
@@ -170,7 +167,7 @@ class IpnsPublisher {
       const errMsg = `peerId received is not valid`
 
       log.error(errMsg)
-      return callback(Object.assign(new Error(errMsg), { code: ERR_INVALID_PEER_ID }))
+      return callback(errcode(new Error(errMsg), 'ERR_INVALID_PEER_ID'))
     }
 
     options = options || {}
@@ -184,7 +181,7 @@ class IpnsPublisher {
           const errMsg = `unexpected error getting the ipns record ${peerId.id} from datastore`
 
           log.error(errMsg)
-          return callback(Object.assign(new Error(errMsg), { code: ERR_UNEXPECTED_DATASTORE_RESPONSE }))
+          return callback(errcode(new Error(errMsg), 'ERR_UNEXPECTED_DATASTORE_RESPONSE'))
         } else {
           if (!checkRouting) {
             return callback(null, null)
@@ -200,7 +197,7 @@ class IpnsPublisher {
         const errMsg = `found ipns record that we couldn't convert to a value`
 
         log.error(errMsg)
-        return callback(Object.assign(new Error(errMsg), { code: ERR_INVALID_IPNS_RECORD }))
+        return callback(errcode(new Error(errMsg), 'ERR_INVALID_IPNS_RECORD'))
       }
 
       // unmarshal data
@@ -222,7 +219,7 @@ class IpnsPublisher {
       const errMsg = `peerId received is not valid`
 
       log.error(errMsg)
-      return callback(Object.assign(new Error(errMsg), { code: ERR_INVALID_PEER_ID }))
+      return callback(errcode(new Error(errMsg), 'ERR_INVALID_PEER_ID'))
     }
 
     const getPublishedOptions = {
@@ -246,7 +243,7 @@ class IpnsPublisher {
           const errMsg = `ipns record for ${value} could not be created`
 
           log.error(errMsg)
-          return callback(Object.assign(new Error(errMsg), { code: ERR_CREATING_IPNS_RECORD }))
+          return callback(errcode(new Error(errMsg), 'ERR_CREATING_IPNS_RECORD'))
         }
 
         // TODO IMPROVEMENT - set ttl (still experimental feature for go)
@@ -257,8 +254,10 @@ class IpnsPublisher {
         // Store the new record
         this._repo.datastore.put(ipns.getLocalKey(peerId.id), data, (err, res) => {
           if (err) {
-            log.error(`ipns record for ${value} could not be stored in the datastore`)
-            return callback(Object.assign(new Error(`ipns record for ${value} could not be stored in the datastore`), { code: ERR_STORING_IN_DATASTORE }))
+            const errMsg = `ipns record for ${value} could not be stored in the datastore`
+
+            log.error(errMsg)
+            return callback(errcode(new Error(errMsg), 'ERR_STORING_IN_DATASTORE'))
           }
 
           log(`ipns record for ${value} was stored in the datastore`)

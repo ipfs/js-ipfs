@@ -6,8 +6,6 @@ const debug = require('debug')
 const log = debug('jsipfs:ipns:path')
 log.error = debug('jsipfs:ipns:path:error')
 
-const ERR_NO_COMPONENTS = 'ERR_NO_COMPONENTS'
-
 // resolves the given path by parsing out protocol-specific entries
 // (e.g. /ipns/<node-key>) and then going through the /ipfs/ entries and returning the final node
 const resolvePath = (ipfsNode, name, callback) => {
@@ -16,7 +14,6 @@ const resolvePath = (ipfsNode, name, callback) => {
     log(`resolve ipns path ${name}`)
 
     const local = true // TODO ROUTING - use self._options.local
-    const parts = name.split('/')
 
     const options = {
       local: local

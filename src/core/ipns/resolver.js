@@ -3,16 +3,11 @@
 const ipns = require('ipns')
 const { fromB58String } = require('multihashes')
 const Record = require('libp2p-record').Record
+const errcode = require('err-code')
 
 const debug = require('debug')
 const log = debug('jsipfs:ipns:resolver')
 log.error = debug('jsipfs:ipns:resolver:error')
-
-const ERR_INVALID_NAME_SYNTAX = 'ERR_INVALID_NAME_SYNTAX'
-const ERR_INVALID_RECORD_RECEIVED = 'ERR_INVALID_RECORD_RECEIVED'
-const ERR_INVALID_PARAMETER = 'ERR_INVALID_PARAMETER'
-const ERR_NO_LOCAL_RECORD_FOUND = 'ERR_NO_LOCAL_RECORD_FOUND'
-const ERR_RESOLVE_RECURSION_LIMIT = 'ERR_RESOLVE_RECURSION_LIMIT'
 
 const defaultMaximumRecursiveDepth = 32
 
@@ -33,7 +28,7 @@ class IpnsResolver {
       const errMsg = `one or more of the provided parameters are not valid`
 
       log.error(errMsg)
-      return callback(Object.assign(new Error(errMsg), { code: ERR_INVALID_PARAMETER }))
+      return callback(errcode(new Error(errMsg), 'ERR_INVALID_PARAMETER'))
     }
 
     options = options || {}
@@ -46,7 +41,7 @@ class IpnsResolver {
       const errMsg = `invalid name syntax for ${name}`
 
       log.error(errMsg)
-      return callback(Object.assign(new Error(errMsg), { code: ERR_INVALID_NAME_SYNTAX }))
+      return callback(errcode(new Error(errMsg), 'ERR_INVALID_NAME_SYNTAX'))
     }
 
     const key = nameSegments[2]
@@ -91,7 +86,7 @@ class IpnsResolver {
       const errMsg = `could not resolve name (recursion limit of ${defaultMaximumRecursiveDepth} exceeded)`
 
       log.error(errMsg)
-      return callback(Object.assign(new Error(errMsg), { code: ERR_RESOLVE_RECURSION_LIMIT }))
+      return callback(errcode(new Error(errMsg), 'ERR_RESOLVE_RECURSION_LIMIT'))
     }
 
     this._resolver(name, peerId, (err, res) => {
@@ -120,14 +115,14 @@ class IpnsResolver {
         const errMsg = `local record requested was not found for ${name} (${ipnsKey})`
 
         log.error(errMsg)
-        return callback(Object.assign(new Error(errMsg), { code: ERR_NO_LOCAL_RECORD_FOUND }))
+        return callback(errcode(new Error(errMsg), 'ERR_NO_LOCAL_RECORD_FOUND'))
       }
 
       if (!Buffer.isBuffer(dsVal)) {
         const errMsg = `found ipns record that we couldn't convert to a value`
 
         log.error(errMsg)
-        return callback(Object.assign(new Error(errMsg), { code: ERR_INVALID_RECORD_RECEIVED }))
+        return callback(errcode(new Error(errMsg), 'ERR_INVALID_RECORD_RECEIVED'))
       }
 
       const record = Record.deserialize(dsVal)

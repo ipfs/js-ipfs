@@ -6,15 +6,13 @@ const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
 const human = require('human-to-milliseconds')
 const crypto = require('libp2p-crypto')
+const errcode = require('err-code')
 
 const log = debug('jsipfs:name')
 log.error = debug('jsipfs:name:error')
 
 const utils = require('../utils')
 const path = require('../ipns/path')
-
-const ERR_NOCACHE_AND_LOCAL = 'ERR_NOCACHE_AND_LOCAL'
-const ERR_CANNOT_GET_KEY = 'ERR_CANNOT_GET_KEY'
 
 const keyLookup = (ipfsNode, kname, callback) => {
   if (kname === 'self') {
@@ -29,7 +27,7 @@ const keyLookup = (ipfsNode, kname, callback) => {
   ], (err, privateKey) => {
     if (err) {
       log.error(err)
-      return callback(Object.assign(err, { code: ERR_CANNOT_GET_KEY }))
+      return callback(errcode(err, 'ERR_CANNOT_GET_KEY'))
     }
 
     return callback(null, privateKey)
@@ -72,7 +70,7 @@ module.exports = function name (self) {
         const error = utils.OFFLINE_ERROR
 
         log.error(error)
-        return callback(new Error(error))
+        return callback(errcode(new Error(error), 'OFFLINE_ERROR'))
       }
 
       // TODO: params related logic should be in the core implementation
@@ -136,7 +134,7 @@ module.exports = function name (self) {
         const error = utils.OFFLINE_ERROR
 
         log.error(error)
-        return callback(new Error(error))
+        return callback(errcode(new Error(error), 'OFFLINE_ERROR'))
       }
 
       // TODO: params related logic should be in the core implementation
@@ -145,7 +143,7 @@ module.exports = function name (self) {
         const error = 'cannot specify both local and nocache'
 
         log.error(error)
-        return callback(Object.assign(new Error(error), { code: ERR_NOCACHE_AND_LOCAL }))
+        return callback(errcode(new Error(error), 'ERR_NOCACHE_AND_LOCAL'))
       }
 
       // Set node id as name for being resolved, if it is not received

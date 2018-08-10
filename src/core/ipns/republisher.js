@@ -3,6 +3,7 @@
 const ipns = require('ipns')
 const crypto = require('libp2p-crypto')
 const PeerId = require('peer-id')
+const errcode = require('err-code')
 
 const debug = require('debug')
 const each = require('async/each')
@@ -15,11 +16,6 @@ const hour = 60 * minute
 
 const defaultBroadcastInterval = 4 * hour
 const defaultRecordLifetime = 24 * hour
-
-const ERR_NO_ENTRY_FOUND = 'ERR_NO_ENTRY_FOUND'
-const ERR_INVALID_IPNS_RECORD = 'ERR_INVALID_IPNS_RECORD'
-const ERR_INVALID_PEER_ID = 'ERR_INVALID_PEER_ID'
-const ERR_UNDEFINED_PARAMETER = 'ERR_UNDEFINED_PARAMETER'
 
 class IpnsRepublisher {
   constructor (publisher, ipfs) {
@@ -102,7 +98,7 @@ class IpnsRepublisher {
       const errMsg = `one or more of the provided parameters are not defined`
 
       log.error(errMsg)
-      return callback(Object.assign(new Error(errMsg), { code: ERR_UNDEFINED_PARAMETER }))
+      return callback(errcode(new Error(errMsg), 'ERR_UNDEFINED_PARAMETER'))
     }
 
     waterfall([
@@ -110,7 +106,7 @@ class IpnsRepublisher {
       (peerId, cb) => this._getPreviousValue(peerId, cb)
     ], (err, value) => {
       if (err) {
-        return callback(err.code === ERR_NO_ENTRY_FOUND ? null : err)
+        return callback(err.code === 'ERR_NO_ENTRY_FOUND' ? null : err)
       }
 
       this._publisher.publishWithEOL(privateKey, value, defaultRecordLifetime, callback)
@@ -122,7 +118,7 @@ class IpnsRepublisher {
       const errMsg = `peerId received is not valid`
 
       log.error(errMsg)
-      return callback(Object.assign(new Error(errMsg), { code: ERR_INVALID_PEER_ID }))
+      return callback(errcode(new Error(errMsg), 'ERR_INVALID_PEER_ID'))
     }
 
     this._repo.datastore.get(ipns.getLocalKey(peerId.id), (err, dsVal) => {
@@ -132,7 +128,7 @@ class IpnsRepublisher {
         const errMsg = `no previous entry for record with id: ${peerId.id}`
 
         log.error(errMsg)
-        return callback(Object.assign(new Error(errMsg), { code: ERR_NO_ENTRY_FOUND }))
+        return callback(errcode(new Error(errMsg), 'ERR_NO_ENTRY_FOUND'))
       } else if (err) {
         return callback(err)
       }
@@ -141,7 +137,7 @@ class IpnsRepublisher {
         const errMsg = `found ipns record that we couldn't process`
 
         log.error(errMsg)
-        return callback(Object.assign(new Error(errMsg), { code: ERR_INVALID_IPNS_RECORD }))
+        return callback(errcode(new Error(errMsg), 'ERR_INVALID_IPNS_RECORD'))
       }
 
       // unmarshal data
@@ -152,7 +148,7 @@ class IpnsRepublisher {
         const errMsg = `found ipns record that we couldn't convert to a value`
 
         log.error(errMsg)
-        return callback(Object.assign(new Error(errMsg), { code: ERR_INVALID_IPNS_RECORD }))
+        return callback(errcode(new Error(errMsg), 'ERR_INVALID_IPNS_RECORD'))
       }
 
       callback(null, record.value)
