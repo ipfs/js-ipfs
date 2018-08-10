@@ -361,24 +361,28 @@ This method is asynchronous. There are several ways to be notified when the node
 ```js
 const node = new IPFS({ start: false })
 
-// Use a promise:
-node.start()
-  .then(() => console.log('Node started!'))
-  .catch(error => console.error('Node failed to start!', error))
+node.on('ready', () => {
+  console.log('Node is ready to use!')
 
-// OR use a callback:
-node.start(error => {
-  if (error) {
-    console.error('Node failed to start!', error)
-    return
-  }
-  console.log('Node started!')
+  // Use a promise:
+  node.start()
+    .then(() => console.log('Node started!'))
+    .catch(error => console.error('Node failed to start!', error))
+
+  // OR use a callback:
+  node.start(error => {
+    if (error) {
+      console.error('Node failed to start!', error)
+      return
+    }
+    console.log('Node started!')
+  })
+
+  // OR use events:
+  node.on('error', error => console.error('Something went terribly wrong!', error))
+  node.on('start', () => console.log('Node started!'))
+  node.start()
 })
-
-// OR use events:
-node.on('error', error => console.error('Something went terribly wrong!', error))
-node.on('start', () => console.log('Node started!'))
-node.start()
 ```
 
 #### `node.stop([callback])`
