@@ -150,7 +150,12 @@ class AddHelper extends Duplex {
 
 module.exports = function files (self) {
   function _addPullStream (options = {}) {
-    const chunkerOptions = parseChunkerString(options.chunker)
+    let chunkerOptions
+    try {
+      chunkerOptions = parseChunkerString(options.chunker)
+    } catch (err) {
+      return pull.map(() => { throw err })
+    }
     const opts = Object.assign({}, {
       shardSplitThreshold: self._options.EXPERIMENTAL.sharding
         ? 1000
