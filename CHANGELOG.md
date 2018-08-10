@@ -1,3 +1,13 @@
+<a name="0.76.0"></a>
+# [0.76.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.75.2...v0.76.0) (2018-08-10)
+
+
+### Features
+
+* ipns working locally ([#327](https://github.com/ipfs/interface-ipfs-core/issues/327)) ([49a4827](https://github.com/ipfs/interface-ipfs-core/commit/49a4827))
+
+
+
 <a name="0.75.2"></a>
 ## [0.75.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.75.1...v0.75.2) (2018-08-09)
 
