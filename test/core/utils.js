@@ -58,7 +58,7 @@ describe('utils', () => {
 
     it('normalize path with no ipfs path, nor ipns path nor cid should throw an exception', function () {
       try {
-        let ipfsPath = utils.normalizePath(`/${rootHash}/`)
+        utils.normalizePath(`/${rootHash}/`)
       } catch (err) {
         expect(err).to.exist()
       }

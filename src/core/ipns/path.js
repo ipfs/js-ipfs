@@ -18,13 +18,6 @@ const resolvePath = (ipfsNode, name, callback) => {
     const local = true // TODO ROUTING - use self._options.local
     const parts = name.split('/')
 
-    if (parts.length < 3 || parts[2] === '') {
-      const errMsg = 'path must contain at least one component'
-
-      log.error(errMsg)
-      return callback(Object.assign(new Error(errMsg), { code: ERR_NO_COMPONENTS }))
-    }
-
     const options = {
       local: local
     }

@@ -104,7 +104,7 @@ module.exports = function init (self) {
         }
       },
       // add empty unixfs dir object (go-ipfs assumes this exists)
-      (emptyDirNode, cb) => {
+      (_, cb) => {
         if (opts.emptyRepo) {
           return cb(null, true)
         }

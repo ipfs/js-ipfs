@@ -2,8 +2,8 @@
 
 const debug = require('debug')
 const promisify = require('promisify-es6')
-const series = require('async/series')
 const waterfall = require('async/waterfall')
+const parallel = require('async/parallel')
 const human = require('human-to-milliseconds')
 const crypto = require('libp2p-crypto')
 
@@ -85,7 +85,7 @@ module.exports = function name (self) {
         return callback(err)
       }
 
-      series([
+      parallel([
         (cb) => human(lifetime, cb),
         // (cb) => ttl ? human(ttl, cb) : cb(),
         (cb) => keyLookup(self, key, cb),
