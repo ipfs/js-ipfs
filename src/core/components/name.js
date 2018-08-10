@@ -10,7 +10,7 @@ const crypto = require('libp2p-crypto')
 const log = debug('jsipfs:name')
 log.error = debug('jsipfs:name:error')
 
-const errors = require('../utils')
+const utils = require('../utils')
 const path = require('../ipns/path')
 
 const ERR_NOCACHE_AND_LOCAL = 'ERR_NOCACHE_AND_LOCAL'
@@ -69,15 +69,17 @@ module.exports = function name (self) {
       const key = options.key || 'self'
 
       if (!self.isOnline()) {
-        const error = errors.OFFLINE_ERROR
+        const error = utils.OFFLINE_ERROR
 
         log.error(error)
         return callback(new Error(error))
       }
 
-      // Parse path value
+      // TODO: params related logic should be in the core implementation
+
+      // Normalize path value
       try {
-        value = path.parsePath(value)
+        value = utils.normalizePath(value)
       } catch (err) {
         log.error(err)
         return callback(err)
@@ -131,11 +133,13 @@ module.exports = function name (self) {
       const local = true // TODO ROUTING - use self._options.local
 
       if (!self.isOnline() && !local) {
-        const error = errors.OFFLINE_ERROR
+        const error = utils.OFFLINE_ERROR
 
         log.error(error)
         return callback(new Error(error))
       }
+
+      // TODO: params related logic should be in the core implementation
 
       if (local && nocache) {
         const error = 'cannot specify both local and nocache'

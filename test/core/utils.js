@@ -56,6 +56,32 @@ describe('utils', () => {
         })
     })
 
+    it('normalize path with no ipfs path, nor ipns path nor cid should throw an exception', function () {
+      try {
+        let ipfsPath = utils.normalizePath(`/${rootHash}/`)
+      } catch (err) {
+        expect(err).to.exist()
+      }
+    })
+
+    it('normalize path should return an ipfs path, when an ipfs path is provided', function () {
+      const ipfsPath = `/ipfs/${rootHash}`
+      expect(utils.normalizePath(ipfsPath))
+        .to.equal(ipfsPath)
+    })
+
+    it('normalize path should return an ipfs path, when a cid is provided', function () {
+      const ipfsPath = `/ipfs/${rootHash}`
+      expect(utils.normalizePath(rootHash))
+        .to.equal(ipfsPath)
+    })
+
+    it('normalize path should return an ipns path, when an ipns path is provided', function () {
+      const ipnsPath = `/ipns/${rootHash}`
+      expect(utils.normalizePath(ipnsPath))
+        .to.equal(ipnsPath)
+    })
+
     it('parses non sha2-256 paths', function () {
       // There are many, many hashing algorithms. Just one should be a sufficient
       // indicator. Used go-ipfs@0.4.13 `add --hash=keccak-512` to generate

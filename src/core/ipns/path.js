@@ -43,20 +43,6 @@ const resolvePath = (ipfsNode, name, callback) => {
   })
 }
 
-// parsePath returns a well-formed ipfs Path.
-// The returned path will always be prefixed with /ipfs/ or /ipns/.
-// If the received string is not a valid ipfs path, an error will be returned
-const parsePath = (pathStr) => {
-  if (isIPFS.cid(pathStr)) {
-    return `/ipfs/${pathStr}`
-  } else if (isIPFS.path(pathStr)) {
-    return pathStr
-  } else {
-    throw Object.assign(new Error(`invalid 'ipfs ref' path`), { code: ERR_BAD_PATH })
-  }
-}
-
 module.exports = {
-  resolvePath,
-  parsePath
+  resolvePath
 }

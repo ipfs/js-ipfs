@@ -8,8 +8,11 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
+const fs = require('fs')
+
 const isNode = require('detect-node')
 const IPFS = require('../../src')
+const ipnsPath = require('../../src/core/ipns/path')
 
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ type: 'proc' })
@@ -140,6 +143,65 @@ describe('name', function () {
             expect(res.path).to.equal(`/ipns/${nodeId}`)
             done()
           })
+        })
+      })
+    })
+  })
+})
+
+describe('ipns.path', function () {
+  const path = 'test/fixtures/planets/solar-system.md'
+  const fixture = {
+    path,
+    content: fs.readFileSync(path)
+  }
+
+  let node
+  let ipfsd
+  let nodeId
+
+  if (!isNode) {
+    return
+  }
+
+  before(function (done) {
+    this.timeout(40 * 1000)
+    df.spawn({
+      exec: IPFS,
+      args: [`--pass ${hat()}`]
+    }, (err, _ipfsd) => {
+      expect(err).to.not.exist()
+      node = _ipfsd.api
+      ipfsd = _ipfsd
+
+      node.id().then((res) => {
+        expect(res.id).to.exist()
+
+        nodeId = res.id
+        done()
+      })
+    })
+  })
+
+  after((done) => ipfsd.stop(done))
+
+  it('should resolve an ipfs path correctly', function (done) {
+    node.files.add(fixture, (err, res) => {
+      ipnsPath.resolvePath(node, `/ipfs/${res[0].hash}`, (err, value) => {
+        expect(err).to.not.exist()
+        expect(value).to.exist()
+        done()
+      })
+    })
+  })
+
+  it('should resolve an ipns path correctly', function (done) {
+    node.files.add(fixture, (err, res) => {
+      node.name.publish(`/ipfs/${res[0].hash}`, (err, res) => {
+        ipnsPath.resolvePath(node, `/ipns/${nodeId}`, (err, value) => {
+          expect(err).to.not.exist()
+          expect(value).to.exist()
+          done()
         })
       })
     })
