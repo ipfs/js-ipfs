@@ -104,14 +104,18 @@ module.exports = function init (self) {
         }
       },
       // add empty unixfs dir object (go-ipfs assumes this exists)
-      (_, cb) => self.object.new('unixfs-dir', cb),
       (emptyDirNode, cb) => {
         if (opts.emptyRepo) {
           return cb(null, true)
         }
 
         const tasks = [
-          (cb) => self._ipns.initializeKeyspace(privateKey, emptyDirNode.toJSON().multihash, cb)
+          (cb) => {
+            waterfall([
+              (cb) => self.object.new('unixfs-dir', cb),
+              (emptyDirNode, cb) => self._ipns.initializeKeyspace(privateKey, emptyDirNode.toJSON().multihash, cb)
+            ], cb)
+          }
         ]
 
         if (typeof addDefaultAssets === 'function') {
