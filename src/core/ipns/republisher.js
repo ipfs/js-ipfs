@@ -37,12 +37,14 @@ class IpnsRepublisher {
       })
     }
 
-    periodically()
+    setTimeout(() => {
+      periodically()
+    }, minute)
   }
 
   stop (cb) {
     this._canceled = true
-    if (this._timeoutId) {
+    if (this._timeoutId || !this._onCancel) {
       // Not running
       clearTimeout(this._timeoutId)
       return cb()
