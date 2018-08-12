@@ -9,6 +9,7 @@ const DAGLink = dagPB.DAGLink
 const CID = require('cids')
 const mh = require('multihashes')
 const Unixfs = require('ipfs-unixfs')
+const errCode = require('err-code')
 
 function normalizeMultihash (multihash, enc) {
   if (typeof multihash === 'string') {
@@ -188,7 +189,13 @@ module.exports = function object (self) {
       }
 
       function next () {
-        const cid = new CID(node.multihash)
+        let cid
+
+        try {
+          cid = new CID(node.multihash)
+        } catch (err) {
+          return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+        }
 
         self._ipld.put(node, { cid }, (err) => {
           if (err) {
@@ -210,14 +217,14 @@ module.exports = function object (self) {
         options = {}
       }
 
-      let mh
+      let mh, cid
 
       try {
         mh = normalizeMultihash(multihash, options.enc)
+        cid = new CID(mh)
       } catch (err) {
-        return callback(err)
+        return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
       }
-      let cid = new CID(mh)
 
       if (options.cidVersion === 1) {
         cid = cid.toV1()
