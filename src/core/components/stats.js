@@ -5,6 +5,7 @@ const Big = require('big.js')
 const Pushable = require('pull-pushable')
 const human = require('human-to-milliseconds')
 const toStream = require('pull-stream-to-stream')
+const errCode = require('err-code')
 
 function bandwidthStats (self, opts) {
   return new Promise((resolve, reject) => {
@@ -49,7 +50,9 @@ module.exports = function stats (self) {
 
     if (opts.poll) {
       human(opts.interval || '1s', (err, value) => {
-        if (err) throw err
+        if (err) {
+          return stream.end(errCode(err, 'ERR_INVALID_POLL_INTERVAL'))
+        }
 
         interval = setInterval(() => {
           bandwidthStats(self, opts)
