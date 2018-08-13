@@ -7,6 +7,11 @@ const CID = require('cids')
 const waterfall = require('async/waterfall')
 const block = require('../block')
 
+const resolvers = {
+  'dag-cbor': dagCBOR.resolver,
+  'dag-pb': dagPB.resolver
+}
+
 module.exports = (send) => {
   return promisify((cid, path, options, callback) => {
     if (typeof path === 'function') {
@@ -40,12 +45,14 @@ module.exports = (send) => {
         })
       },
       (ipfsBlock, path, cb) => {
-        if (ipfsBlock.cid.codec === 'dag-cbor') {
-          dagCBOR.resolver.resolve(ipfsBlock.data, path, cb)
+        const dagResolver = resolvers[ipfsBlock.cid.codec]
+        if (!dagResolver) {
+          const error = new Error('ipfs-api is missing DAG resolver for "' + ipfsBlock.cid.codec + '" multicodec')
+          error.missingMulticodec = ipfsBlock.cid.codec
+          cb(error)
+          return
         }
-        if (ipfsBlock.cid.codec === 'dag-pb') {
-          dagPB.resolver.resolve(ipfsBlock.data, path, cb)
-        }
+        dagResolver.resolve(ipfsBlock.data, path, cb)
       }
     ], callback)
   })
