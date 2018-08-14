@@ -41,11 +41,16 @@ module.exports = (send) => {
 
     send({
       path: 'object/get',
-      args: cidB58Str
+      args: cidB58Str,
+      qs: {
+        'data-encoding': 'base64'
+      }
     }, (err, result) => {
       if (err) {
         return callback(err)
       }
+
+      result.Data = Buffer.from(result.Data, 'base64')
 
       const links = result.Links.map((l) => {
         return new DAGLink(l.Name, l.Size, Buffer.from(bs58.decode(l.Hash)))
