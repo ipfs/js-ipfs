@@ -10,7 +10,7 @@ chai.use(dirtyChai)
 const series = require('async/series')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
-
+const CID = require('cids')
 const IPFSApi = require('../src')
 const f = require('./utils/factory')
 
@@ -71,12 +71,17 @@ describe('.dag', function () {
   })
 
   it('should callback with error when missing DAG resolver for raw multicodec', (done) => {
-    // CIDv1 with multicodec = raw
-    const cid = 'bafkreigh2akiscaildcqabsyg3dfr6chu3fgpregiymsck7e7aqa4s52zy'
-    ipfs.dag.get(cid, (err, result) => {
-      expect(result).to.not.exist()
-      expect(err.message).to.equal('ipfs-api is missing DAG resolver for "raw" multicodec')
-      done()
+    ipfs.dag.put(Buffer.from([0, 1, 2, 3]), {
+      // CIDv1 with multicodec = raw
+      cid: new CID('bafkreigh2akiscaildcqabsyg3dfr6chu3fgpregiymsck7e7aqa4s52zy')
+    }, (err, cid) => {
+      expect(err).to.not.exist()
+
+      ipfs.dag.get(cid, (err, result) => {
+        expect(result).to.not.exist()
+        expect(err.message).to.equal('ipfs-api is missing DAG resolver for "raw" multicodec')
+        done()
+      })
     })
   })
 })
