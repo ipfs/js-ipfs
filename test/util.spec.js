@@ -10,6 +10,11 @@ const isNode = require('detect-node')
 const path = require('path')
 const fs = require('fs')
 const os = require('os')
+const http = require('http')
+const https = require('https')
+const each = require('async/each')
+const waterfall = require('async/waterfall')
+const parallel = require('async/parallel')
 
 const IPFSApi = require('../src')
 const f = require('./utils/factory')
@@ -32,7 +37,8 @@ describe('.util', () => {
     })
   })
 
-  after((done) => {
+  after(function (done) {
+    this.timeout(10 * 1000)
     if (!ipfsd) return done()
     ipfsd.stop(done)
   })
@@ -113,81 +119,257 @@ describe('.util', () => {
   })
 
   describe('.urlAdd', () => {
-    it('http', function (done) {
-      this.timeout(40 * 1000)
+    let testServers = []
 
-      ipfs.util.addFromURL('http://example.com/', (err, result) => {
-        expect(err).to.not.exist()
-        expect(result.length).to.equal(1)
-        done()
+    const sslOpts = {
+      key: fs.readFileSync(path.join(__dirname, 'fixtures', 'ssl', 'privkey.pem')),
+      cert: fs.readFileSync(path.join(__dirname, 'fixtures', 'ssl', 'cert.pem'))
+    }
+
+    const startTestServer = (handler, opts, cb) => {
+      if (typeof opts === 'function') {
+        cb = opts
+        opts = {}
+      }
+
+      const server = opts.secure
+        ? https.createServer(sslOpts, handler)
+        : http.createServer(handler)
+
+      server.listen((err) => {
+        if (err) return cb(err)
+        testServers.push(server)
+        cb(null, server)
+      })
+    }
+
+    beforeEach(() => {
+      // Instructs node to not reject our snake oil SSL certificate when it
+      // can't verify the certificate authority
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
+    })
+
+    afterEach((done) => {
+      // Reinstate unauthorised SSL cert rejection
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = 1
+
+      each(testServers, (server, cb) => server.close(cb), (err) => {
+        testServers = []
+        done(err)
       })
     })
 
-    it('https', function (done) {
-      this.timeout(40 * 1000)
+    it('http', (done) => {
+      const data = Buffer.from(`TEST${Date.now()}`)
 
-      ipfs.util.addFromURL('https://example.com/', (err, result) => {
+      parallel({
+        server: (cb) => {
+          const handler = (req, res) => {
+            res.write(data)
+            res.end()
+          }
+          startTestServer(handler, cb)
+        },
+        expectedResult: (cb) => ipfs.add(data, cb)
+      }, (err, taskResult) => {
         expect(err).to.not.exist()
-        expect(result.length).to.equal(1)
-        done()
+        const { server, expectedResult } = taskResult
+
+        const url = `http://127.0.0.1:${server.address().port}/`
+        ipfs.util.addFromURL(url, (err, result) => {
+          expect(err).to.not.exist()
+          expect(result).to.deep.equal(expectedResult)
+          done()
+        })
       })
     })
 
-    it('http with redirection', function (done) {
-      this.timeout(40 * 1000)
+    it('https', (done) => {
+      const data = Buffer.from(`TEST${Date.now()}`)
 
-      ipfs.util.addFromURL('http://covers.openlibrary.org/book/id/969165.jpg', (err, result) => {
+      parallel({
+        server: (cb) => {
+          const handler = (req, res) => {
+            res.write(data)
+            res.end()
+          }
+          startTestServer(handler, { secure: true }, cb)
+        },
+        expectedResult: (cb) => ipfs.add(data, cb)
+      }, (err, taskResult) => {
         expect(err).to.not.exist()
-        expect(result[0].hash).to.equal('QmaL9zy7YUfvWmtD5ZXp42buP7P4xmZJWFkm78p8FJqgjg')
-        done()
+        const { server, expectedResult } = taskResult
+
+        const url = `https://127.0.0.1:${server.address().port}/`
+        ipfs.util.addFromURL(url, (err, result) => {
+          expect(err).to.not.exist()
+          expect(result).to.deep.equal(expectedResult)
+          done()
+        })
       })
     })
 
-    it('https with redirection', function (done) {
-      this.timeout(40 * 1000)
+    it('http with redirection', (done) => {
+      const data = Buffer.from(`TEST${Date.now()}`)
 
-      ipfs.util.addFromURL('https://coverartarchive.org/release/6e2a1694-d8b9-466a-aa33-b1077b2333c1', (err, result) => {
+      waterfall([
+        (cb) => {
+          const handler = (req, res) => {
+            res.write(data)
+            res.end()
+          }
+          startTestServer(handler, cb)
+        },
+        (serverA, cb) => {
+          const url = `http://127.0.0.1:${serverA.address().port}`
+          const handler = (req, res) => {
+            res.statusCode = 302
+            res.setHeader('Location', url)
+            res.end()
+          }
+          startTestServer(handler, (err, serverB) => {
+            if (err) return cb(err)
+            cb(null, { a: serverA, b: serverB })
+          })
+        }
+      ], (err, servers) => {
         expect(err).to.not.exist()
-        expect(result[0].hash).to.equal('QmSUdDvmXuq5YGrL4M3SEz7UZh5eT9WMuAsd9K34sambSj')
-        done()
+
+        ipfs.add(data, (err, res) => {
+          expect(err).to.not.exist()
+
+          const expectedHash = res[0].hash
+          const url = `http://127.0.0.1:${servers.b.address().port}`
+
+          ipfs.util.addFromURL(url, (err, result) => {
+            expect(err).to.not.exist()
+            expect(result[0].hash).to.equal(expectedHash)
+            done()
+          })
+        })
       })
     })
 
-    it('with only-hash=true', function () {
-      this.timeout(40 * 1000)
+    it('https with redirection', (done) => {
+      const data = Buffer.from(`TEST${Date.now()}`)
 
-      return ipfs.util.addFromURL('http://www.randomtext.me/#/gibberish', { onlyHash: true })
-        .then(out => expectTimeout(ipfs.object.get(out[0].hash), 4000))
-    })
-
-    it('with wrap-with-directory=true', function (done) {
-      this.timeout(40 * 1000)
-
-      ipfs.util.addFromURL('http://ipfs.io/ipfs/QmWjppACLcFLQ2qL38unKQvJBhXH3RUtcGLPk7zmrTwV61/969165.jpg?foo=bar#buzz', {
-        wrapWithDirectory: true
-      }, (err, result) => {
+      waterfall([
+        (cb) => {
+          const handler = (req, res) => {
+            res.write(data)
+            res.end()
+          }
+          startTestServer(handler, { secure: true }, cb)
+        },
+        (serverA, cb) => {
+          const url = `https://127.0.0.1:${serverA.address().port}`
+          const handler = (req, res) => {
+            res.statusCode = 302
+            res.setHeader('Location', url)
+            res.end()
+          }
+          startTestServer(handler, { secure: true }, (err, serverB) => {
+            if (err) return cb(err)
+            cb(null, { a: serverA, b: serverB })
+          })
+        }
+      ], (err, servers) => {
         expect(err).to.not.exist()
-        expect(result[0].hash).to.equal('QmaL9zy7YUfvWmtD5ZXp42buP7P4xmZJWFkm78p8FJqgjg')
-        expect(result[0].path).to.equal('969165.jpg')
-        expect(result[1].hash).to.equal('QmWjppACLcFLQ2qL38unKQvJBhXH3RUtcGLPk7zmrTwV61')
-        expect(result.length).to.equal(2)
-        done()
+
+        ipfs.add(data, (err, res) => {
+          expect(err).to.not.exist()
+
+          const expectedHash = res[0].hash
+          const url = `https://127.0.0.1:${servers.b.address().port}`
+
+          ipfs.util.addFromURL(url, (err, result) => {
+            expect(err).to.not.exist()
+            expect(result[0].hash).to.equal(expectedHash)
+            done()
+          })
+        })
       })
     })
 
-    it('with wrap-with-directory=true and URL-escaped file name', function (done) {
-      this.timeout(40 * 1000)
+    it('with only-hash=true', (done) => {
+      const handler = (req, res) => {
+        res.write(`TEST${Date.now()}`)
+        res.end()
+      }
 
-      // Sample URL contains URL-escaped ( ) and local diacritics
-      ipfs.util.addFromURL('https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Doma%C5%BElice%2C_Jir%C3%A1skova_43_%289102%29.jpg/320px-Doma%C5%BElice%2C_Jir%C3%A1skova_43_%289102%29.jpg?foo=bar#buzz', {
-        wrapWithDirectory: true
-      }, (err, result) => {
+      startTestServer(handler, (err, server) => {
         expect(err).to.not.exist()
-        expect(result[0].hash).to.equal('QmRJ9ExxSMV4BLF9ZJUb2mLngupm6BXZEek755VHGTJo2Y')
-        expect(result[0].path).to.equal('320px-Domažlice,_Jiráskova_43_(9102).jpg')
-        expect(result[1].hash).to.equal('QmbxsHFU3sCfr8wszDHuDLA76C2xCv9HT8L3aC1pBwgaHk')
-        expect(result.length).to.equal(2)
-        done()
+
+        const url = `http://127.0.0.1:${server.address().port}/`
+
+        ipfs.util.addFromURL(url, { onlyHash: true }, (err, res) => {
+          expect(err).to.not.exist()
+
+          // A successful object.get for this size data took my laptop ~14ms
+          let didTimeout = false
+          const timeoutId = setTimeout(() => {
+            didTimeout = true
+            done()
+          }, 500)
+
+          ipfs.object.get(res[0].hash, () => {
+            clearTimeout(timeoutId)
+            if (didTimeout) return
+            expect(new Error('did not timeout')).to.not.exist()
+          })
+        })
+      })
+    })
+
+    it('with wrap-with-directory=true', (done) => {
+      const filename = `TEST${Date.now()}.txt`
+      const data = Buffer.from(`TEST${Date.now()}`)
+
+      parallel({
+        server: (cb) => startTestServer((req, res) => {
+          res.write(data)
+          res.end()
+        }, cb),
+        expectedResult: (cb) => {
+          ipfs.add([{ path: filename, content: data }], { wrapWithDirectory: true }, cb)
+        }
+      }, (err, taskResult) => {
+        expect(err).to.not.exist()
+
+        const { server, expectedResult } = taskResult
+        const url = `http://127.0.0.1:${server.address().port}/${filename}?foo=bar#buzz`
+
+        ipfs.util.addFromURL(url, { wrapWithDirectory: true }, (err, result) => {
+          expect(err).to.not.exist()
+          expect(result).to.deep.equal(expectedResult)
+          done()
+        })
+      })
+    })
+
+    it('with wrap-with-directory=true and URL-escaped file name', (done) => {
+      const filename = '320px-Domažlice,_Jiráskova_43_(9102).jpg'
+      const data = Buffer.from(`TEST${Date.now()}`)
+
+      parallel({
+        server: (cb) => startTestServer((req, res) => {
+          res.write(data)
+          res.end()
+        }, cb),
+        expectedResult: (cb) => {
+          ipfs.add([{ path: filename, content: data }], { wrapWithDirectory: true }, cb)
+        }
+      }, (err, taskResult) => {
+        expect(err).to.not.exist()
+
+        const { server, expectedResult } = taskResult
+        const url = `http://127.0.0.1:${server.address().port}/${encodeURIComponent(filename)}?foo=bar#buzz`
+
+        ipfs.util.addFromURL(url, { wrapWithDirectory: true }, (err, result) => {
+          expect(err).to.not.exist()
+          expect(result).to.deep.equal(expectedResult)
+          done()
+        })
       })
     })
 
