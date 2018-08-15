@@ -168,7 +168,7 @@ exports = module.exports = function (dag) {
         function storeChild (err, child, binIdx, cb) {
           if (err) { return cb(err) }
 
-          const opts = { cid: new CID(child._multihash), preload: false }
+          const opts = { cid: new CID(child.multihash), preload: false }
           dag.put(child, opts, err => {
             if (err) { return cb(err) }
             fanoutLinks[binIdx] = new DAGLink('', child.size, child.multihash)

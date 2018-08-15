@@ -31,7 +31,7 @@ function createNodes (num, callback) {
   const items = []
   for (let i = 0; i < num; i++) {
     items.push(cb =>
-      createNode(String(i), (err, node) => cb(err, node._multihash))
+      createNode(String(i), (err, node) => cb(err, node.multihash))
     )
   }
 
@@ -73,7 +73,7 @@ describe('pinSet', function () {
 
       createNode('data', (err, node) => {
         expect(err).to.not.exist()
-        const nodeHash = node._multihash
+        const nodeHash = node.multihash
         pinSet.storeSet([nodeHash], (err, rootNode) => {
           expect(err).to.not.exist()
           const node = rootNode.toJSON()
