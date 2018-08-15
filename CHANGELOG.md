@@ -1,3 +1,21 @@
+<a name="24.0.0"></a>
+# [24.0.0](https://github.com/ipfs/js-ipfs-api/compare/v23.0.0...v24.0.0) (2018-08-15)
+
+
+### Bug Fixes
+
+* add test data to IPFS before fetching it ([#832](https://github.com/ipfs/js-ipfs-api/issues/832)) ([b2a77d6](https://github.com/ipfs/js-ipfs-api/commit/b2a77d6))
+* BREAKING CHANGE use data-encoding arg so data is not corrupted ([#806](https://github.com/ipfs/js-ipfs-api/issues/806)) ([553c3fb](https://github.com/ipfs/js-ipfs-api/commit/553c3fb))
+* dag.get return error on missing multicodec ([#831](https://github.com/ipfs/js-ipfs-api/issues/831)) ([ff7c7e5](https://github.com/ipfs/js-ipfs-api/commit/ff7c7e5))
+* remove external urls from addFromURL tests ([#834](https://github.com/ipfs/js-ipfs-api/issues/834)) ([7cf7998](https://github.com/ipfs/js-ipfs-api/commit/7cf7998)), closes [#803](https://github.com/ipfs/js-ipfs-api/issues/803)
+
+
+### BREAKING CHANGES
+
+* Requires go-ipfs 0.4.17 as it allows for specifying the data encoding format when requesting object data.
+
+
+
 <a name="23.0.0"></a>
 # [23.0.0](https://github.com/ipfs/js-ipfs-api/compare/v22.3.0...v23.0.0) (2018-08-06)
 
