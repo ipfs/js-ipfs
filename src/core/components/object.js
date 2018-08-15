@@ -221,6 +221,11 @@ module.exports = function object (self) {
 
       try {
         mh = normalizeMultihash(multihash, options.enc)
+      } catch (err) {
+        return setImmediate(() => callback(errCode(err, 'ERR_INVALID_MULTIHASH')))
+      }
+
+      try {
         cid = new CID(mh)
       } catch (err) {
         return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
