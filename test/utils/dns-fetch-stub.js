@@ -1,9 +1,8 @@
-/* eslint-env browser */
 'use strict'
 
-const _fetch = typeof self === 'undefined' ? null : self.fetch
-
-module.exports = () => {
+// Create a fetch stub with a fall through to the provided fetch implementation
+// if the URL doesn't match https://ipfs.io/api/v0/dns?arg=ipfs.io.
+module.exports = (fetch) => {
   return function () {
     if (arguments[0].startsWith('https://ipfs.io/api/v0/dns?arg=ipfs.io')) {
       return Promise.resolve({
@@ -12,6 +11,6 @@ module.exports = () => {
         })
       })
     }
-    return _fetch.apply(this, arguments)
+    return fetch.apply(this, arguments)
   }
 }

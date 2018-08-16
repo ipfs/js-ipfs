@@ -14,7 +14,7 @@ describe('interface-ipfs-core tests', () => {
     const fetch = self.fetch
 
     before(() => {
-      self.fetch = dnsFetchStub()
+      self.fetch = dnsFetchStub(fetch)
     })
 
     after(() => {
