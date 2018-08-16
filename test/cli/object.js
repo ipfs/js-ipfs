@@ -41,7 +41,9 @@ describe('object', () => runOnAndOff((thing) => {
     })
   })
 
-  it('get with data', () => {
+  it('get with data', function () {
+    this.timeout(15 * 1000)
+
     return ipfs('object new')
       .then((out) => out.trim())
       .then((hash) => ipfs(`object patch set-data ${hash} test/fixtures/test-data/hello`))
@@ -53,7 +55,9 @@ describe('object', () => runOnAndOff((thing) => {
       })
   })
 
-  it('get while overriding data-encoding', () => {
+  it('get while overriding data-encoding', function () {
+    this.timeout(15 * 1000)
+
     return ipfs('object new')
       .then((out) => out.trim())
       .then((hash) => ipfs(`object patch set-data ${hash} test/fixtures/test-data/hello`))
