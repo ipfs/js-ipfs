@@ -1,3 +1,15 @@
+<a name="0.76.1"></a>
+## [0.76.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.76.0...v0.76.1) (2018-08-16)
+
+
+### Bug Fixes
+
+* allow retries for DNS test due to dependence on external services ([#352](https://github.com/ipfs/interface-ipfs-core/issues/352)) ([5b3f5a8](https://github.com/ipfs/interface-ipfs-core/commit/5b3f5a8))
+* typo ([b9dc12a](https://github.com/ipfs/interface-ipfs-core/commit/b9dc12a))
+* typo ([2fbf551](https://github.com/ipfs/interface-ipfs-core/commit/2fbf551))
+
+
+
 <a name="0.76.0"></a>
 # [0.76.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.75.2...v0.76.0) (2018-08-10)
 
