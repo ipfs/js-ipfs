@@ -32,6 +32,7 @@ module.exports = (createCommon, options) => {
 
     it('should resolve a DNS link', function (done) {
       this.timeout(20 * 1000)
+      this.retries(3)
 
       ipfs.dns('ipfs.io', (err, path) => {
         expect(err).to.not.exist()
