@@ -1,11 +1,27 @@
-/* eslint-env mocha */
+/* eslint-env mocha, browser */
 'use strict'
 
 const tests = require('interface-ipfs-core')
 const CommonFactory = require('../utils/interface-common-factory')
 const isNode = require('detect-node')
+const dnsFetchStub = require('../utils/dns-fetch-stub')
 
 describe('interface-ipfs-core tests', () => {
+  // ipfs.dns in the browser calls out to https://ipfs.io/api/v0/dns.
+  // The following code stubs self.fetch to return a static CID for calls
+  // to https://ipfs.io/api/v0/dns?arg=ipfs.io.
+  if (!isNode) {
+    const fetch = self.fetch
+
+    before(() => {
+      self.fetch = dnsFetchStub()
+    })
+
+    after(() => {
+      self.fetch = fetch
+    })
+  }
+
   const defaultCommonFactory = CommonFactory.create()
 
   tests.bitswap(defaultCommonFactory, { skip: !isNode })
