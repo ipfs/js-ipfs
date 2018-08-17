@@ -5,7 +5,9 @@ const multihash = require('multihashes')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
 const waterfall = require('async/waterfall')
+const setImmediate = require('async/setImmediate')
 const promisify = require('promisify-es6')
+const errCode = require('err-code')
 
 module.exports = function block (self) {
   return {
@@ -17,7 +19,11 @@ module.exports = function block (self) {
 
       options = options || {}
 
-      cid = cleanCid(cid)
+      try {
+        cid = cleanCid(cid)
+      } catch (err) {
+        return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+      }
 
       if (options.preload !== false) {
         self._preload(cid)
@@ -74,7 +80,11 @@ module.exports = function block (self) {
       ], callback)
     }),
     rm: promisify((cid, callback) => {
-      cid = cleanCid(cid)
+      try {
+        cid = cleanCid(cid)
+      } catch (err) {
+        return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+      }
       self._blockService.delete(cid, callback)
     }),
     stat: promisify((cid, options, callback) => {
@@ -83,7 +93,11 @@ module.exports = function block (self) {
         options = {}
       }
 
-      cid = cleanCid(cid)
+      try {
+        cid = cleanCid(cid)
+      } catch (err) {
+        return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+      }
 
       if (options.preload !== false) {
         self._preload(cid)
