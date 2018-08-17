@@ -85,7 +85,9 @@ exports.get = {
 
       const nodeJSON = node.toJSON()
 
-      nodeJSON.data = nodeJSON.data ? nodeJSON.data.toString() : ''
+      if (Buffer.isBuffer(node.data)) {
+        nodeJSON.data = node.data.toString(request.query['data-encoding'] || undefined)
+      }
 
       const answer = {
         Data: nodeJSON.data,
