@@ -1,3 +1,13 @@
+<a name="0.31.6"></a>
+## [0.31.6](https://github.com/ipfs/js-ipfs/compare/v0.31.5...v0.31.6) (2018-08-17)
+
+
+### Features
+
+* adds data-encoding argument to control data encoding ([#1420](https://github.com/ipfs/js-ipfs/issues/1420)) ([1eb8485](https://github.com/ipfs/js-ipfs/commit/1eb8485))
+
+
+
 <a name="0.31.5"></a>
 ## [0.31.5](https://github.com/ipfs/js-ipfs/compare/v0.31.4...v0.31.5) (2018-08-17)
 
