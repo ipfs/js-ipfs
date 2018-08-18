@@ -19,7 +19,9 @@ const IPFS = require('../../src')
 describe('preload', () => {
   let ipfs
 
-  before((done) => {
+  before(function (done) {
+    this.timeout(10 * 1000)
+
     ipfs = new IPFS({
       repo: path.join(os.tmpdir(), hat()),
       config: {
