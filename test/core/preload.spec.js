@@ -2,6 +2,8 @@
 /* eslint-env mocha */
 'use strict'
 
+const path = require('path')
+const os = require('os')
 const hat = require('hat')
 const CID = require('cids')
 const parallel = require('async/parallel')
@@ -19,6 +21,7 @@ describe('preload', () => {
 
   before((done) => {
     ipfs = new IPFS({
+      repo: path.join(os.tmpdir(), hat()),
       config: {
         Addresses: {
           Swarm: []
@@ -283,6 +286,33 @@ describe('preload', () => {
       ipfs.dag.get(cid, (err) => {
         expect(err).to.not.exist()
         MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
+      })
+    })
+  })
+
+  it('should not preload if disabled', (done) => {
+    const ipfs = new IPFS({
+      repo: path.join(os.tmpdir(), hat()),
+      config: {
+        Addresses: {
+          Swarm: []
+        }
+      },
+      preload: {
+        enabled: false,
+        addresses: [MockPreloadNode.defaultAddr]
+      }
+    })
+
+    ipfs.on('ready', () => {
+      ipfs.files.add(Buffer.from(hat()), (err, res) => {
+        expect(err).to.not.exist()
+
+        MockPreloadNode.waitForCids(res[0].hash, (err) => {
+          expect(err).to.exist()
+          expect(err.code).to.equal('ERR_TIMEOUT')
+          done()
+        })
       })
     })
   })
