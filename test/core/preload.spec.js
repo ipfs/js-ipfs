@@ -290,7 +290,9 @@ describe('preload', () => {
     })
   })
 
-  it('should not preload if disabled', (done) => {
+  it('should not preload if disabled', function (done) {
+    this.timeout(10 * 1000)
+
     const ipfs = new IPFS({
       repo: path.join(os.tmpdir(), hat()),
       config: {
