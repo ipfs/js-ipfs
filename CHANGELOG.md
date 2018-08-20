@@ -1,3 +1,13 @@
+<a name="0.3.1"></a>
+## [0.3.1](https://github.com/ipfs/js-ipfs-mfs/compare/v0.3.0...v0.3.1) (2018-08-20)
+
+
+### Bug Fixes
+
+* make error messages consistent with go for interop tests ([08f60c3](https://github.com/ipfs/js-ipfs-mfs/commit/08f60c3))
+
+
+
 <a name="0.3.0"></a>
 # [0.3.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.2.5...v0.3.0) (2018-08-09)
 
