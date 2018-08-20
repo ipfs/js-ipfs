@@ -67,7 +67,7 @@ describe('mv', function () {
         throw new Error('File was copied but not removed')
       })
       .catch(error => {
-        expect(error.message).to.contain(`Path ${source} does not exist`)
+        expect(error.message).to.contain('does not exist')
       })
   })
 
@@ -88,7 +88,7 @@ describe('mv', function () {
         throw new Error('Directory was copied but not removed')
       })
       .catch(error => {
-        expect(error.message).to.contain(`Path ${source} does not exist`)
+        expect(error.message).to.contain('does not exist')
       })
   })
 
@@ -115,7 +115,7 @@ describe('mv', function () {
         throw new Error('Directory was copied but not removed')
       })
       .catch(error => {
-        expect(error.message).to.contain(`Cannot find ${source} - ${directory} does not exist`)
+        expect(error.message).to.contain('does not exist')
       })
   })
 })

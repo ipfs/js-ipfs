@@ -44,7 +44,7 @@ const mfsRead = (api) => {
         stream.once('error', (error) => {
           reply({
             Message: error.message,
-            Code: 0,
+            Code: error.code || 0,
             Type: 'error'
           }).code(500).takeover()
         })

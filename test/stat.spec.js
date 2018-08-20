@@ -57,7 +57,7 @@ describe('stat', function () {
         throw new Error('No error was thrown for a non-existent file')
       })
       .catch(error => {
-        expect(error.message).to.contain('Path /i-do-not-exist does not exist')
+        expect(error.message).to.contain('does not exist')
       })
   })
 

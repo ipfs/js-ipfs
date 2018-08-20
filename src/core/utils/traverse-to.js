@@ -12,6 +12,9 @@ const {
   FILE_SEPARATOR
 } = require('./constants')
 const createNode = require('./create-node')
+const {
+  NonFatalError
+} = require('./errors')
 
 const defaultOptions = {
   parents: false,
@@ -84,15 +87,11 @@ const traverseToMfsObject = (ipfs, path, options, callback) => {
               log(`index ${index} pathSegments.length ${pathSegments.length} pathSegment ${pathSegment} lastComponent ${lastComponent}`, options)
 
               if (lastComponent && !options.createLastComponent) {
-                return done(new Error(`Path ${path.path} does not exist`))
+                log(`Last segment of ${path} did not exist`)
+                return done(new NonFatalError('file does not exist'))
               } else if (!lastComponent && !options.parents) {
-                let message = `Cannot find ${path.path} - ${pathSegment} does not exist`
-
-                if (options.withCreateHint) {
-                  message += ': Try again with the --parents flag to create it'
-                }
-
-                return done(new Error(message))
+                log(`Cannot traverse to ${path} - ${pathSegment} did not exist`)
+                return done(new NonFatalError('file does not exist'))
               }
 
               log(`Adding empty directory '${pathSegment}' to parent ${parent.name}`)

@@ -8,6 +8,7 @@ module.exports = {
   countStreamBytes: require('./count-stream-bytes'),
   createLock: require('./create-lock'),
   createNode: require('./create-node'),
+  errors: require('./errors'),
   formatCid: require('./format-cid'),
   limitStreamBytes: require('./limit-stream-bytes'),
   loadNode: require('./load-node'),

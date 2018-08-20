@@ -55,7 +55,7 @@ describe('mkdir', function () {
       parents: false
     })
       .catch(error => {
-        expect(error.message).to.contain('foo does not exist')
+        expect(error.message).to.contain('does not exist')
       })
   })
 
