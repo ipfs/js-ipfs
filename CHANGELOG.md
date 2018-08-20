@@ -1,3 +1,37 @@
+<a name="0.31.7"></a>
+## [0.31.7](https://github.com/ipfs/js-ipfs/compare/v0.31.6...v0.31.7) (2018-08-20)
+
+
+### Bug Fixes
+
+* fails to start when preload disabled ([#1516](https://github.com/ipfs/js-ipfs/issues/1516)) ([511ab47](https://github.com/ipfs/js-ipfs/commit/511ab47)), closes [#1514](https://github.com/ipfs/js-ipfs/issues/1514)
+* npm publishes examples folder ([#1513](https://github.com/ipfs/js-ipfs/issues/1513)) ([4a68ac1](https://github.com/ipfs/js-ipfs/commit/4a68ac1))
+
+
+
+<a name="0.31.6"></a>
+## [0.31.6](https://github.com/ipfs/js-ipfs/compare/v0.31.5...v0.31.6) (2018-08-17)
+
+
+### Features
+
+* adds data-encoding argument to control data encoding ([#1420](https://github.com/ipfs/js-ipfs/issues/1420)) ([1eb8485](https://github.com/ipfs/js-ipfs/commit/1eb8485))
+
+
+
+<a name="0.31.5"></a>
+## [0.31.5](https://github.com/ipfs/js-ipfs/compare/v0.31.4...v0.31.5) (2018-08-17)
+
+
+### Bug Fixes
+
+* add missing space after emoji ([5cde7c1](https://github.com/ipfs/js-ipfs/commit/5cde7c1))
+* improper input validation ([#1506](https://github.com/ipfs/js-ipfs/issues/1506)) ([91a482b](https://github.com/ipfs/js-ipfs/commit/91a482b))
+* object.patch.rmLink not working ([#1508](https://github.com/ipfs/js-ipfs/issues/1508)) ([afd3255](https://github.com/ipfs/js-ipfs/commit/afd3255))
+* stub out call to fetch for ipfs.dns test in browser ([#1512](https://github.com/ipfs/js-ipfs/issues/1512)) ([86c3d81](https://github.com/ipfs/js-ipfs/commit/86c3d81))
+
+
+
 <a name="0.31.4"></a>
 ## [0.31.4](https://github.com/ipfs/js-ipfs/compare/v0.31.3...v0.31.4) (2018-08-09)
 

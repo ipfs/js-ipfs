@@ -4,8 +4,16 @@
 const promisify = require('promisify-es6')
 const { DAGNode, DAGLink } = require('ipld-dag-pb')
 const CID = require('cids')
-const async = require('async')
+const map = require('async/map')
+const mapSeries = require('async/mapSeries')
+const series = require('async/series')
+const parallel = require('async/parallel')
+const eachLimit = require('async/eachLimit')
+const waterfall = require('async/waterfall')
+const someLimit = require('async/someLimit')
+const setImmediate = require('async/setImmediate')
 const { Key } = require('interface-datastore')
+const errCode = require('err-code')
 
 const createPinSet = require('./pin-set')
 const { resolvePath } = require('../utils')
@@ -16,6 +24,11 @@ const pinDataStoreKey = new Key('/local/pins')
 
 function toB58String (hash) {
   return new CID(hash).toBaseEncodedString()
+}
+
+function invalidPinTypeErr (type) {
+  const errMsg = `Invalid type '${type}', must be one of {direct, indirect, recursive, all}`
+  return errCode(new Error(errMsg), 'ERR_INVALID_PIN_TYPE')
 }
 
 module.exports = (self) => {
@@ -39,7 +52,7 @@ module.exports = (self) => {
 
   function getIndirectKeys (callback) {
     const indirectKeys = new Set()
-    async.eachLimit(recursiveKeys(), concurrencyLimit, (multihash, cb) => {
+    eachLimit(recursiveKeys(), concurrencyLimit, (multihash, cb) => {
       dag._getRecursive(multihash, (err, nodes) => {
         if (err) { return cb(err) }
 
@@ -62,16 +75,16 @@ module.exports = (self) => {
   // a DAGNode holding those as DAGLinks, a kind of root pin
   function flushPins (callback) {
     let dLink, rLink, root
-    async.series([
+    series([
       // create a DAGLink to the node with direct pins
-      cb => async.waterfall([
+      cb => waterfall([
         cb => pinset.storeSet(directKeys(), cb),
         (node, cb) => DAGLink.create(types.direct, node.size, node.multihash, cb),
         (link, cb) => { dLink = link; cb(null) }
       ], cb),
 
       // create a DAGLink to the node with recursive pins
-      cb => async.waterfall([
+      cb => waterfall([
         cb => pinset.storeSet(recursiveKeys(), cb),
         (node, cb) => DAGLink.create(types.recursive, node.size, node.multihash, cb),
         (link, cb) => { rLink = link; cb(null) }
@@ -114,7 +127,7 @@ module.exports = (self) => {
         if (err) { return callback(err) }
 
         // verify that each hash can be pinned
-        async.map(mhs, (multihash, cb) => {
+        map(mhs, (multihash, cb) => {
           const key = toB58String(multihash)
           if (recursive) {
             if (recursivePins.has(key)) {
@@ -174,7 +187,7 @@ module.exports = (self) => {
         if (err) { return callback(err) }
 
         // verify that each hash can be unpinned
-        async.map(mhs, (multihash, cb) => {
+        map(mhs, (multihash, cb) => {
           pin._isPinnedWithType(multihash, types.all, (err, res) => {
             if (err) { return cb(err) }
             const { pinned, reason } = res
@@ -235,12 +248,13 @@ module.exports = (self) => {
         paths = null
       }
       if (options && options.type) {
+        if (typeof options.type !== 'string') {
+          return setImmediate(() => callback(invalidPinTypeErr(options.type)))
+        }
         type = options.type.toLowerCase()
       }
-      if (!types[type]) {
-        return callback(new Error(
-          `Invalid type '${type}', must be one of {direct, indirect, recursive, all}`
-        ))
+      if (!Object.keys(types).includes(type)) {
+        return setImmediate(() => callback(invalidPinTypeErr(type)))
       }
 
       if (paths) {
@@ -248,7 +262,7 @@ module.exports = (self) => {
         resolvePath(self.object, paths, (err, mhs) => {
           if (err) { return callback(err) }
 
-          async.mapSeries(mhs, (multihash, cb) => {
+          mapSeries(mhs, (multihash, cb) => {
             pin._isPinnedWithType(multihash, types.all, (err, res) => {
               if (err) { return cb(err) }
               const { pinned, reason } = res
@@ -336,7 +350,7 @@ module.exports = (self) => {
       // check each recursive key to see if multihash is under it
       // arbitrary limit, enables handling 1000s of pins.
       let foundPin
-      async.someLimit(recursiveKeys(), concurrencyLimit, (key, cb) => {
+      someLimit(recursiveKeys(), concurrencyLimit, (key, cb) => {
         dag.get(new CID(key), (err, res) => {
           if (err) { return cb(err) }
 
@@ -354,7 +368,7 @@ module.exports = (self) => {
     }),
 
     _load: promisify(callback => {
-      async.waterfall([
+      waterfall([
         // hack for CLI tests
         (cb) => repo.closed ? repo.datastore.open(cb) : cb(null, null),
         (_, cb) => repo.datastore.has(pinDataStoreKey, cb),
@@ -371,7 +385,7 @@ module.exports = (self) => {
           }
         }
 
-        async.parallel([
+        parallel([
           cb => pinset.loadSet(pinRoot.value, types.recursive, cb),
           cb => pinset.loadSet(pinRoot.value, types.direct, cb)
         ], (err, keys) => {

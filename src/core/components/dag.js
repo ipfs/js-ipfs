@@ -4,7 +4,9 @@ const promisify = require('promisify-es6')
 const CID = require('cids')
 const pull = require('pull-stream')
 const mapAsync = require('async/map')
+const setImmediate = require('async/setImmediate')
 const flattenDeep = require('lodash/flattenDeep')
+const errCode = require('err-code')
 
 module.exports = function dag (self) {
   return {
@@ -52,7 +54,13 @@ module.exports = function dag (self) {
 
       if (typeof cid === 'string') {
         const split = cid.split('/')
-        cid = new CID(split[0])
+
+        try {
+          cid = new CID(split[0])
+        } catch (err) {
+          return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+        }
+
         split.shift()
 
         if (split.length > 0) {
@@ -64,7 +72,7 @@ module.exports = function dag (self) {
         try {
           cid = new CID(cid)
         } catch (err) {
-          return callback(err)
+          return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
         }
       }
 
@@ -96,7 +104,13 @@ module.exports = function dag (self) {
 
       if (typeof cid === 'string') {
         const split = cid.split('/')
-        cid = new CID(split[0])
+
+        try {
+          cid = new CID(split[0])
+        } catch (err) {
+          return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+        }
+
         split.shift()
 
         if (split.length > 0) {
@@ -127,7 +141,15 @@ module.exports = function dag (self) {
 
       options = options || {}
 
-      self.dag.get(new CID(multihash), '', options, (err, res) => {
+      let cid
+
+      try {
+        cid = new CID(multihash)
+      } catch (err) {
+        return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+      }
+
+      self.dag.get(cid, '', options, (err, res) => {
         if (err) { return callback(err) }
 
         mapAsync(res.value.links, (link, cb) => {

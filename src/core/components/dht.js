@@ -5,7 +5,9 @@ const every = require('async/every')
 const PeerId = require('peer-id')
 const CID = require('cids')
 const each = require('async/each')
+const setImmediate = require('async/setImmediate')
 // const bsplit = require('buffer-split')
+const errCode = require('err-code')
 
 module.exports = (self) => {
   return {
@@ -57,8 +59,19 @@ module.exports = (self) => {
      * @returns {Promise<PeerInfo>|void}
      */
     findprovs: promisify((key, opts, callback) => {
+      if (typeof opts === 'function') {
+        callback = opts
+        opts = {}
+      }
+
+      opts = opts || {}
+
       if (typeof key === 'string') {
-        key = new CID(key)
+        try {
+          key = new CID(key)
+        } catch (err) {
+          return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+        }
       }
 
       if (typeof opts === 'function') {

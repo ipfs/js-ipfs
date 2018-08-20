@@ -41,6 +41,34 @@ describe('object', () => runOnAndOff((thing) => {
     })
   })
 
+  it('get with data', function () {
+    this.timeout(15 * 1000)
+
+    return ipfs('object new')
+      .then((out) => out.trim())
+      .then((hash) => ipfs(`object patch set-data ${hash} test/fixtures/test-data/hello`))
+      .then((out) => out.trim())
+      .then((hash) => ipfs(`object get ${hash}`))
+      .then((out) => {
+        const result = JSON.parse(out)
+        expect(result.Data).to.eql('aGVsbG8gd29ybGQK')
+      })
+  })
+
+  it('get while overriding data-encoding', function () {
+    this.timeout(15 * 1000)
+
+    return ipfs('object new')
+      .then((out) => out.trim())
+      .then((hash) => ipfs(`object patch set-data ${hash} test/fixtures/test-data/hello`))
+      .then((out) => out.trim())
+      .then((hash) => ipfs(`object get --data-encoding=utf8 ${hash}`))
+      .then((out) => {
+        const result = JSON.parse(out)
+        expect(result.Data).to.eql('hello world\n')
+      })
+  })
+
   it('put', () => {
     return ipfs('object put test/fixtures/test-data/node.json').then((out) => {
       expect(out).to.eql(

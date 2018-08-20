@@ -239,4 +239,14 @@ describe('bitswap', function () {
       })
     })
   })
+
+  describe('unwant', () => {
+    it('should callback with error for invalid CID input', (done) => {
+      inProcNode.bitswap.unwant('INVALID CID', (err) => {
+        expect(err).to.exist()
+        expect(err.code).to.equal('ERR_INVALID_CID')
+        done()
+      })
+    })
+  })
 })

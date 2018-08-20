@@ -6,6 +6,7 @@ const setImmediate = require('async/setImmediate')
 const Big = require('big.js')
 const CID = require('cids')
 const PeerId = require('peer-id')
+const errCode = require('err-code')
 
 function formatWantlist (list) {
   return Array.from(list).map((e) => ({ '/': e[1].cid.toBaseEncodedString() }))
@@ -69,12 +70,18 @@ module.exports = function bitswap (self) {
       if (!Array.isArray(keys)) {
         keys = [keys]
       }
-      keys = keys.map((key) => {
-        if (CID.isCID(key)) {
-          return key
-        }
-        return new CID(key)
-      })
+
+      try {
+        keys = keys.map((key) => {
+          if (CID.isCID(key)) {
+            return key
+          }
+          return new CID(key)
+        })
+      } catch (err) {
+        return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+      }
+
       return setImmediate(() => callback(null, self._bitswap.unwant(keys)))
     })
   }
