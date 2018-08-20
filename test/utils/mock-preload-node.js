@@ -4,6 +4,7 @@
 const http = require('http')
 const toUri = require('multiaddr-to-uri')
 const URL = require('url').URL || self.URL
+const errCode = require('err-code')
 
 const defaultPort = 1138
 const defaultAddr = `/dnsaddr/localhost/tcp/${defaultPort}`
@@ -146,10 +147,10 @@ module.exports.waitForCids = (cids, opts, cb) => {
       }
 
       if (Date.now() > start + opts.timeout) {
-        return cb(new Error('Timed out waiting for CIDs to be preloaded'))
+        return cb(errCode(new Error('Timed out waiting for CIDs to be preloaded'), 'ERR_TIMEOUT'))
       }
 
-      setTimeout(checkForCid, 10)
+      setTimeout(checkForCid, 5)
     })
   }
 

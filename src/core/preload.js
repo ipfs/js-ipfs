@@ -18,11 +18,14 @@ module.exports = self => {
   options.addresses = options.addresses || []
 
   if (!options.enabled || !options.addresses.length) {
-    return (_, callback) => {
+    const api = (_, callback) => {
       if (callback) {
         setImmediate(() => callback())
       }
     }
+    api.start = () => {}
+    api.stop = () => {}
+    return api
   }
 
   let stopped = true
