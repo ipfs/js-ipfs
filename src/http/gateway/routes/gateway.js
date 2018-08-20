@@ -3,9 +3,7 @@
 const resources = require('../resources')
 
 module.exports = (server) => {
-  const gateway = server.select('Gateway')
-
-  gateway.route({
+  server.route({
     method: '*',
     path: '/ipfs/{cid*}',
     config: {

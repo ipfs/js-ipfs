@@ -1,11 +1,11 @@
 'use strict'
 
-const series = require('async/series')
 const Hapi = require('hapi')
 const debug = require('debug')
 const multiaddr = require('multiaddr')
 const setHeader = require('hapi-set-header')
-const once = require('once')
+const { promisify } = require('util')
+const URL = require('url')
 
 const IPFS = require('../core')
 const WStar = require('libp2p-webrtc-star')
@@ -15,169 +15,230 @@ const WS = require('libp2p-websockets')
 const Bootstrap = require('libp2p-bootstrap')
 const errorHandler = require('./error-handler')
 
+const log = debug('jsipfs:http-api')
+log.error = debug('jsipfs:http-api:error')
+
 function uriToMultiaddr (uri) {
-  const ipPort = uri.split('/')[2].split(':')
-  return `/ip4/${ipPort[0]}/tcp/${ipPort[1]}`
+  uri = new URL(uri)
+  return `/ip4/${uri.host}/tcp/${uri.port}`
 }
 
-function HttpApi (repo, config, cliArgs) {
-  this.node = undefined
-  this.server = undefined
+class HttpApi {
+  constructor (repo, config, cliArgs) {
+    this.node = null
+    this.servers = { api: null, gateway: null }
 
-  this.log = debug('jsipfs:http-api')
-  this.log.error = debug('jsipfs:http-api:error')
+    this._options = { repo, config, cliArgs }
 
-  if (process.env.IPFS_MONITORING) {
-    // Setup debug metrics collection
-    const prometheusClient = require('prom-client')
-    const prometheusGcStats = require('prometheus-gc-stats')
-    const collectDefaultMetrics = prometheusClient.collectDefaultMetrics
-    collectDefaultMetrics({ timeout: 5000 })
-    prometheusGcStats(prometheusClient.register)()
-  }
-
-  this.start = (init, callback) => {
-    if (typeof init === 'function') {
-      callback = init
-      init = false
+    if (process.env.IPFS_MONITORING) {
+      // Setup debug metrics collection
+      const prometheusClient = require('prom-client')
+      const prometheusGcStats = require('prometheus-gc-stats')
+      prometheusClient.collectDefaultMetrics({ timeout: 5000 })
+      prometheusGcStats(prometheusClient.register)()
     }
-    this.log('starting')
-
-    series([
-      (cb) => {
-        cb = once(cb)
-
-        const libp2p = { modules: {} }
-
-        // Attempt to use any of the WebRTC versions available globally
-        let electronWebRTC
-        let wrtc
-        try { electronWebRTC = require('electron-webrtc')() } catch (err) {}
-        try { wrtc = require('wrtc') } catch (err) {}
-
-        if (wrtc || electronWebRTC) {
-          const using = wrtc ? 'wrtc' : 'electron-webrtc'
-          console.log(`Using ${using} for webrtc support`)
-          const wstar = new WStar({ wrtc: (wrtc || electronWebRTC) })
-          libp2p.modules.transport = [TCP, WS, wstar]
-          libp2p.modules.peerDiscovery = [MulticastDNS, Bootstrap, wstar.discovery]
-        }
-
-        // try-catch so that programmer errors are not swallowed during testing
-        try {
-          // start the daemon
-          this.node = new IPFS({
-            repo: repo,
-            init: init,
-            start: true,
-            config: config,
-            pass: cliArgs && cliArgs.pass,
-            EXPERIMENTAL: {
-              pubsub: cliArgs && cliArgs.enablePubsubExperiment,
-              dht: cliArgs && cliArgs.enableDhtExperiment,
-              sharding: cliArgs && cliArgs.enableShardingExperiment
-            },
-            libp2p: libp2p
-          })
-        } catch (err) {
-          return cb(err)
-        }
-
-        this.node.once('error', (err) => {
-          this.log('error starting core', err)
-          err.code = 'ENOENT'
-          cb(err)
-        })
-        this.node.once('start', cb)
-      },
-      (cb) => {
-        this.log('fetching config')
-        this.node._repo.config.get((err, config) => {
-          if (err) {
-            return callback(err)
-          }
-
-          // CORS is enabled by default
-          // TODO: shouldn't, fix this
-          this.server = new Hapi.Server({
-            connections: {
-              routes: {
-                cors: true
-              }
-            },
-            debug: process.env.DEBUG ? {
-              request: ['*'],
-              log: ['*']
-            } : undefined
-          })
-
-          this.server.app.ipfs = this.node
-          const api = config.Addresses.API.split('/')
-          const gateway = config.Addresses.Gateway.split('/')
-
-          // select which connection with server.select(<label>) to add routes
-          this.server.connection({
-            host: api[2],
-            port: api[4],
-            labels: 'API'
-          })
-
-          this.server.connection({
-            host: gateway[2],
-            port: gateway[4],
-            labels: 'Gateway'
-          })
-
-          // Nicer errors
-          errorHandler(this, this.server)
-
-          // load routes
-          require('./api/routes')(this.server)
-          // load gateway routes
-          require('./gateway/routes')(this.server)
-
-          // Set default headers
-          setHeader(this.server,
-            'Access-Control-Allow-Headers',
-            'X-Stream-Output, X-Chunked-Output, X-Content-Length')
-          setHeader(this.server,
-            'Access-Control-Expose-Headers',
-            'X-Stream-Output, X-Chunked-Output, X-Content-Length')
-
-          this.server.start(cb)
-        })
-      },
-      (cb) => {
-        const api = this.server.select('API')
-        const gateway = this.server.select('Gateway')
-        this.apiMultiaddr = multiaddr('/ip4/127.0.0.1/tcp/' + api.info.port)
-        api.info.ma = uriToMultiaddr(api.info.uri)
-        gateway.info.ma = uriToMultiaddr(gateway.info.uri)
-
-        console.log('API is listening on: %s', api.info.ma)
-        console.log('Gateway (readonly) is listening on: %s', gateway.info.ma)
-
-        // for the CLI to know the where abouts of the API
-        this.node._repo.apiAddr.set(api.info.ma, cb)
-      }
-    ], (err) => {
-      this.log('done', err)
-      callback(err)
-    })
   }
 
-  this.stop = (callback) => {
-    this.log('stopping')
-    series([
-      (cb) => this.server.stop(cb),
-      (cb) => this.node.stop(cb)
-    ], (err) => {
-      if (err) {
-        this.log.error(err)
-        console.log('There were errors stopping')
-      }
-      callback()
+  async start (init) {
+    log('starting')
+
+    const node = await this._startNode(init)
+    let config
+
+    try {
+      await this._getConfig(node)
+    } catch (err) {
+      log.error(err)
+      await node.stop()
+      throw err
+    }
+
+    let api
+
+    try {
+      api = await this._startApiServer(node, config)
+      api.info.ma = uriToMultiaddr(api.info.uri)
+      this.apiMultiaddr = multiaddr('/ip4/127.0.0.1/tcp/' + api.info.port)
+      await promisify((ma, cb) => node._repo.apiAddr.set(ma, cb))(api.info.ma)
+      this.servers.api = api
+      console.log('API is listening on: %s', api.info.ma)
+    } catch (err) {
+      log.error(err)
+      await node.stop()
+      throw err
+    }
+
+    let gateway
+
+    try {
+      gateway = await this._startGatewayServer(node, config)
+      gateway.info.ma = uriToMultiaddr(gateway.info.uri)
+      this.servers.gateway = gateway
+      console.log('Gateway (readonly) is listening on: %s', gateway.info.ma)
+    } catch (err) {
+      log.error(err)
+      await node.stop()
+      await api.stop()
+      throw err
+    }
+
+    this.node = node
+    this.servers = { api, gateway }
+
+    log('done')
+  }
+
+  async _startNode (init) {
+    const libp2p = { modules: {} }
+
+    // Attempt to use any of the WebRTC versions available globally
+    let electronWebRTC
+    try { electronWebRTC = require('electron-webrtc')() } catch (err) {}
+
+    let wrtc
+    try { wrtc = require('wrtc') } catch (err) {}
+
+    if (wrtc || electronWebRTC) {
+      const using = wrtc ? 'wrtc' : 'electron-webrtc'
+      console.log(`Using ${using} for webrtc support`)
+      const wstar = new WStar({ wrtc: (wrtc || electronWebRTC) })
+      libp2p.modules.transport = [TCP, WS, wstar]
+      libp2p.modules.peerDiscovery = [MulticastDNS, Bootstrap, wstar.discovery]
+    }
+
+    const { repo, config, cliArgs } = this._options
+
+    // start the daemon
+    const node = new IPFS({
+      repo,
+      init,
+      start: true,
+      config,
+      pass: cliArgs.pass,
+      EXPERIMENTAL: {
+        pubsub: cliArgs.enablePubsubExperiment,
+        dht: cliArgs.enableDhtExperiment,
+        sharding: cliArgs.enableShardingExperiment
+      },
+      libp2p
     })
+
+    await new Promise((resolve, reject) => {
+      const onStart = () => {
+        // remove error listener so future errors aren't swallowed
+        node.removeListener('error', onError)
+        resolve(node)
+      }
+      const onError = (err) => {
+        log('error starting core', err)
+        err.code = 'ENOENT'
+        reject(err)
+      }
+      node.on('start', onStart)
+      node.on('error', reject)
+    })
+
+    return node
+  }
+
+  _getConfig (node) {
+    log('fetching config')
+    return promisify((cb) => node._repo.config.get(cb))
+  }
+
+  async _startApiServer (node, config) {
+    const api = config.Addresses.API.split('/')
+
+    // CORS is enabled by default
+    // TODO: shouldn't, fix this
+    const server = Hapi.Server({
+      host: api[2],
+      port: api[4],
+      connections: {
+        routes: {
+          cors: true
+        }
+      },
+      debug: process.env.DEBUG ? {
+        request: ['*'],
+        log: ['*']
+      } : undefined,
+      app: {
+        ipfs: node
+      }
+    })
+
+    // Nicer errors
+    // errorHandler(this, server)
+
+    // load routes
+    // require('./api/routes')(server)
+
+    // Set default headers
+    setHeader(server,
+      'Access-Control-Allow-Headers',
+      'X-Stream-Output, X-Chunked-Output, X-Content-Length')
+    setHeader(server,
+      'Access-Control-Expose-Headers',
+      'X-Stream-Output, X-Chunked-Output, X-Content-Length')
+
+    await server.start()
+    return server
+  }
+
+  async _startGatewayServer (node, config) {
+    const gateway = config.Addresses.Gateway.split('/')
+
+    // CORS is enabled by default
+    // TODO: shouldn't, fix this
+    const server = Hapi.Server({
+      host: gateway[2],
+      port: gateway[4],
+      connections: {
+        routes: {
+          cors: true
+        }
+      },
+      debug: process.env.DEBUG ? {
+        request: ['*'],
+        log: ['*']
+      } : undefined,
+      app: {
+        ipfs: node
+      }
+    })
+
+    // Nicer errors
+    // errorHandler(this, server)
+
+    // load gateway routes
+    require('./gateway/routes')(server)
+
+    // Set default headers
+    setHeader(server,
+      'Access-Control-Allow-Headers',
+      'X-Stream-Output, X-Chunked-Output, X-Content-Length')
+    setHeader(server,
+      'Access-Control-Expose-Headers',
+      'X-Stream-Output, X-Chunked-Output, X-Content-Length')
+
+    await server.start()
+    return server
+  }
+
+  async stop (options) {
+    log('stopping')
+
+    try {
+      await Promise.all([
+        this.servers.api.stop(options),
+        this.servers.gateway.stop(options),
+        this.node.stop()
+      ])
+    } catch (err) {
+      log.error(err)
+      console.log('There were errors stopping')
+    }
   }
 }
 

@@ -1,14 +1,10 @@
 'use strict'
 
-const Hoek = require('hoek')
+const debug = require('debug')
+const log = debug('jsipfs:http:error-handler')
 
-module.exports = (api, server) => {
-  server.ext('onRequest', (request, reply) => {
-    request.handleError = handleError
-    reply.continue()
-  })
-
-  server.ext('onPreResponse', (request, reply) => {
+module.exports = (server) => {
+  server.ext('onPreResponse', (request, h) => {
     const res = request.response
     const req = request.raw.req
 
@@ -37,25 +33,16 @@ module.exports = (api, server) => {
         response: res.output.payload
       }
 
-      api.log.error(res.stack)
+      log(res.stack)
       server.log('error', debug)
 
-      reply({
+      return h.response({
         Message: msg,
         Code: code,
         Type: 'error'
       }).code(statusCode)
-      return
     }
 
-    reply.continue()
+    return h.continue
   })
-}
-
-function handleError (error, errorMessage) {
-  if (errorMessage) {
-    return Hoek.assert(!error, errorMessage)
-  }
-
-  return Hoek.assert(!error, error)
 }

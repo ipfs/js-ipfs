@@ -1,15 +1,17 @@
 'use strict'
 
 const debug = require('debug')
-const log = debug('jsipfs:http-gateway')
-log.error = debug('jsipfs:http-gateway:error')
+const log = debug('jsipfs:http:gateway')
+log.error = debug('jsipfs:http:gateway:error')
 const pull = require('pull-stream')
-const toPull = require('stream-to-pull-stream')
 const fileType = require('file-type')
 const mime = require('mime-types')
 const Stream = require('readable-stream')
+const { promisify } = require('util')
 
 const { resolver } = require('ipfs-http-response')
+const multihashResolver = promisify(resolver.multihash.bind(resolver))
+
 const PathUtils = require('../utils/path')
 
 function detectContentType (ref, chunk) {
@@ -28,20 +30,20 @@ function detectContentType (ref, chunk) {
 }
 
 module.exports = {
-  checkCID: (request, reply) => {
+  checkCID (request, h) {
     if (!request.params.cid) {
-      return reply({
+      return h.response({
         Message: 'Path Resolve error: path must contain at least one component',
         Code: 0,
         Type: 'error'
       }).code(400).takeover()
     }
 
-    return reply({
+    return {
       ref: `/ipfs/${request.params.cid}`
-    })
+    }
   },
-  handler: (request, reply) => {
+  async handler (request, h) {
     const ref = request.pre.args.ref
     const ipfs = request.server.app.ipfs
 
@@ -56,97 +58,90 @@ module.exports = {
             resolver.directory(ipfs, ref, err.fileName, (err, data) => {
               if (err) {
                 log.error(err)
-                return reply(err.toString()).code(500)
+                return h.response(err.toString()).code(500)
               }
               if (typeof data === 'string') {
                 // no index file found
                 if (!ref.endsWith('/')) {
                   // for a directory, if URL doesn't end with a /
                   // append / and redirect permanent to that URL
-                  return reply.redirect(`${ref}/`).permanent(true)
+                  return h.redirect(`${ref}/`).permanent(true)
                 } else {
                   // send directory listing
-                  return reply(data)
+                  return data
                 }
               } else {
                 // found index file
                 // redirect to URL/<found-index-file>
-                return reply.redirect(PathUtils.joinURLParts(ref, data[0].name))
+                return h.redirect(PathUtils.joinURLParts(ref, data[0].name))
               }
             })
             break
           case (errorToString.startsWith('Error: no link named')):
-            return reply(errorToString).code(404)
+            return h.response(errorToString).code(404)
           case (errorToString.startsWith('Error: multihash length inconsistent')):
           case (errorToString.startsWith('Error: Non-base58 character')):
-            return reply({ Message: errorToString, Code: 0, Type: 'error' }).code(400)
+            return h.response({ Message: errorToString, Code: 0, Type: 'error' }).code(400)
           default:
             log.error(err)
-            return reply({ Message: errorToString, Code: 0, Type: 'error' }).code(500)
+            return h.response({ Message: errorToString, Code: 0, Type: 'error' }).code(500)
         }
       }
     }
 
-    return resolver.multihash(ipfs, ref, (err, data) => {
-      if (err) {
-        return handleGatewayResolverError(err)
-      }
+    let data
 
-      const stream = ipfs.files.catReadableStream(data.multihash)
-      stream.once('error', (err) => {
-        if (err) {
-          log.error(err)
-          return reply(err.toString()).code(500)
-        }
+    try {
+      data = multihashResolver(ipfs, ref)
+    } catch (err) {
+      return handleGatewayResolverError(err)
+    }
+
+    if (ref.endsWith('/')) {
+      // remove trailing slash for files
+      return h.redirect(PathUtils.removeTrailingSlash(ref)).permanent(true)
+    }
+
+    return new Promise((resolve, reject) => {
+      let contentTypeDetected = false
+      const stream = new Stream.PassThrough({ highWaterMark: 1 })
+
+      stream.on('error', (err) => {
+        log.error('stream err: ', err)
       })
 
-      if (ref.endsWith('/')) {
-        // remove trailing slash for files
-        return reply
-          .redirect(PathUtils.removeTrailingSlash(ref))
-          .permanent(true)
-      } else {
-        if (!stream._read) {
-          stream._read = () => {}
-          stream._readableState = {}
-        }
+      pull(
+        ipfs.files.catPullStream(data.multihash),
+        pull.through((chunk) => {
+          // Guess content-type (only once)
+          if (chunk.length > 0 && !contentTypeDetected) {
+            let contentType = detectContentType(ref, chunk)
+            contentTypeDetected = true
 
-        //  response.continue()
-        let contentTypeDetected = false
-        let stream2 = new Stream.PassThrough({ highWaterMark: 1 })
-        stream2.on('error', (err) => {
-          log.error('stream2 err: ', err)
-        })
+            log('ref ', ref)
+            log('mime-type ', contentType)
 
-        let response = reply(stream2).hold()
-
-        pull(
-          toPull.source(stream),
-          pull.through((chunk) => {
-            // Guess content-type (only once)
-            if (chunk.length > 0 && !contentTypeDetected) {
-              let contentType = detectContentType(ref, chunk)
-              contentTypeDetected = true
-
-              log('ref ', ref)
-              log('mime-type ', contentType)
-
-              if (contentType) {
-                log('writing content-type header')
-                response.header('Content-Type', contentType)
-              }
-
-              response.send()
+            if (contentType) {
+              log('writing content-type header')
+              stream.headers = { 'Content-Type': contentType }
             }
 
-            stream2.write(chunk)
-          }),
-          pull.onEnd(() => {
-            log('stream ended.')
-            stream2.end()
-          })
-        )
-      }
+            resolve(stream)
+          }
+
+          stream.write(chunk)
+        }),
+        pull.onEnd((err) => {
+          if (err) {
+            if (contentTypeDetected) {
+              return stream.emit('error', err)
+            }
+            return reject(err)
+          }
+          log('stream ended.')
+          stream.end()
+        })
+      )
     })
   }
 }
