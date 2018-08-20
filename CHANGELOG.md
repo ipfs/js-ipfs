@@ -1,3 +1,14 @@
+<a name="0.31.7"></a>
+## [0.31.7](https://github.com/ipfs/js-ipfs/compare/v0.31.6...v0.31.7) (2018-08-20)
+
+
+### Bug Fixes
+
+* fails to start when preload disabled ([#1516](https://github.com/ipfs/js-ipfs/issues/1516)) ([511ab47](https://github.com/ipfs/js-ipfs/commit/511ab47)), closes [#1514](https://github.com/ipfs/js-ipfs/issues/1514)
+* npm publishes examples folder ([#1513](https://github.com/ipfs/js-ipfs/issues/1513)) ([4a68ac1](https://github.com/ipfs/js-ipfs/commit/4a68ac1))
+
+
+
 <a name="0.31.6"></a>
 ## [0.31.6](https://github.com/ipfs/js-ipfs/compare/v0.31.5...v0.31.6) (2018-08-17)
 
