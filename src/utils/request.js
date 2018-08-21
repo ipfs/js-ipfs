@@ -1,12 +1,12 @@
 'use strict'
 
-const httpRequest = require('http').request
-const httpsRequest = require('https').request
+const http = require('http')
+const https = require('https')
 
 module.exports = (protocol) => {
   if (protocol.indexOf('https') === 0) {
-    return httpsRequest
+    return https.request
   }
 
-  return httpRequest
+  return http.request
 }
