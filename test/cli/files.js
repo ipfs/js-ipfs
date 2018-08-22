@@ -231,7 +231,7 @@ describe('files', () => runOnAndOff((thing) => {
     return ipfs('add src/init-files/init-docs/readme --cid-version=1 --raw-leaves=true')
       .then((out) => {
         expect(out)
-          .to.eql('added zdj7WiLc855B1KPRgV7Fh8ivjuAhePE1tuJafmxH5HmmSjqaD readme\n')
+          .to.eql('added zdj7WWeQ43G6JJvLWQWZpyHuAMq6uYWRjkBXFad11vE2LHhQ7 readme\n')
       })
   })
 
