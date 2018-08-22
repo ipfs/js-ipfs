@@ -145,7 +145,6 @@ module.exports = {
     },
     'raw-leaves': {
       type: 'boolean',
-      default: false,
       describe: 'Use raw blocks for leaf nodes. (experimental)'
     },
     'cid-version': {
