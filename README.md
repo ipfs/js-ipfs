@@ -757,17 +757,14 @@ $ curl --silent localhost:5002/api/v0/id | jq .ID
 
 ## Packages
 
-Listing of the main packages used in the IPFS ecosystem. There are also three
-specifications worth linking here:
+Listing of the main packages used in the IPFS ecosystem. There are also three specifications worth linking here:
 
 - [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core)
 - [`http-api-spec`](https://github.com/ipfs/http-api-spec)
 - [`cli spec`](https://github.com/ipfs/specs/tree/master/public-api/cli)
 
-<!---
-This table is generated from the script located in `scripts/generate-package-table-for-readme.js`
-Please use the same script if you need to update this table.
--->
+> This table is generated using the module `package-table` with `package-table --data=package-list.json`.
+
 | Package | Version | Deps | CI | Coverage |
 | ---------|---------|---------|---------|--------- |
 | **Files** |
