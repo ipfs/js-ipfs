@@ -1,6 +1,6 @@
-# Customizing the libp2p node
+# Customizing your libp2p bundle
 
-This example shows you how to make full use of the ipfs configuration to create a libp2p factory function. As IPFS applications become more complex, their needs for a custom libp2p node also grow. Instead of fighting with configuration options, you can use your own libp2p factory to get exactly what you need. This example shows you how.
+This example shows you how to make full use of the ipfs configuration to create a libp2p bundle function. As IPFS applications become more complex, their needs for a custom libp2p bundle also grow. Instead of fighting with configuration options, you can use your own libp2p bundle function to get exactly what you need.
 
 ## Run this example
 

@@ -13,8 +13,8 @@ const SECIO = require('libp2p-secio')
 const assert = require('assert')
 
 /**
- * Options for the libp2p factory
- * @typedef {Object} libp2pFactory~options
+ * Options for the libp2p bundle
+ * @typedef {Object} libp2pBundle~options
  * @property {PeerInfo} peerInfo - The PeerInfo of the IPFS node
  * @property {PeerBook} peerBook - The PeerBook of the IPFS node
  * @property {Object} config - The config of the IPFS node
@@ -22,12 +22,12 @@ const assert = require('assert')
  */
 
 /**
- * This is the factory we will use to create our fully customized libp2p node.
+ * This is the factory we will use to create our fully customized libp2p bundle.
  *
- * @param {libp2pFactory~options} opts The options to use when generating the libp2p node
+ * @param {libp2pBundle~options} opts The options to use when generating the libp2p node
  * @returns {Libp2p} Our new libp2p node
  */
-const libp2pFactory = (opts) => {
+const libp2pBundle = (opts) => {
   // Set convenience variables to clearly showcase some of the useful things that are available
   const peerInfo = opts.peerInfo
   const peerBook = opts.peerBook
@@ -97,9 +97,9 @@ const libp2pFactory = (opts) => {
   })
 }
 
-// Now that we have our custom factory, let's start up the ipfs node!
+// Now that we have our custom libp2p bundle, let's start up the ipfs node!
 const node = new IPFS({
-  libp2p: libp2pFactory
+  libp2p: libp2pBundle
 })
 
 // Listen for the node to start, so we can log out some metrics
