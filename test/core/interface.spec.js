@@ -55,8 +55,12 @@ describe('interface-ipfs-core tests', () => {
   }), {
     skip: [
       {
-        name: 'resolve',
-        reason: 'TODO: not implemented'
+        name: 'should resolve an IPNS DNS link',
+        reason: 'TODO IPNS not implemented yet'
+      },
+      {
+        name: 'should resolve IPNS link recursively',
+        reason: 'TODO IPNS not implemented yet'
       }
     ]
   })
