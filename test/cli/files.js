@@ -205,33 +205,63 @@ describe('files', () => runOnAndOff((thing) => {
     })
   })
 
-  it('add with cid-version=1', function () {
+  it('add with cid-version=1 < default max chunk size', function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add src/init-files/init-docs/readme --cid-version=1')
+    return ipfs('add test/fixtures/less-than-default-max-chunk-size --cid-version=1')
       .then((out) => {
         expect(out)
-          .to.eql('added zdj7WWeQ43G6JJvLWQWZpyHuAMq6uYWRjkBXFad11vE2LHhQ7 readme\n')
+          .to.eql('added zb2rhh5LdXumxQfNZCqV8pmcC56LX71ERgf2qCNQsmZnwYYx9 less-than-default-max-chunk-size\n')
       })
   })
 
-  it('add with cid-version=1 and raw-leaves=false', function () {
+  it('add with cid-version=1 > default max chunk size', function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add src/init-files/init-docs/readme --cid-version=1 --raw-leaves=false')
+    return ipfs('add test/fixtures/greater-than-default-max-chunk-size --cid-version=1')
       .then((out) => {
         expect(out)
-          .to.eql('added zdj7WWeQ43G6JJvLWQWZpyHuAMq6uYWRjkBXFad11vE2LHhQ7 readme\n')
+          .to.eql('added zdj7WbyyZoWVifUHUe58SNS184PpN8qAuCP6HpAY91iA8CveT greater-than-default-max-chunk-size\n')
       })
   })
 
-  it('add with cid-version=1 and raw-leaves=true', function () {
+  it('add with cid-version=1 and raw-leaves=false < default max chunk size', function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add src/init-files/init-docs/readme --cid-version=1 --raw-leaves=true')
+    return ipfs(`add test/fixtures/less-than-default-max-chunk-size --cid-version=1 --raw-leaves=false`)
       .then((out) => {
         expect(out)
-          .to.eql('added zdj7WiLc855B1KPRgV7Fh8ivjuAhePE1tuJafmxH5HmmSjqaD readme\n')
+          .to.eql('added zdj7WWPWpmpFkrWJBhUEZ4QkGumsFsEdkaaEGs7U4dzJraogp less-than-default-max-chunk-size\n')
+      })
+  })
+
+  it('add with cid-version=1 and raw-leaves=false > default max chunk size', function () {
+    this.timeout(30 * 1000)
+
+    return ipfs(`add test/fixtures/greater-than-default-max-chunk-size --cid-version=1 --raw-leaves=false`)
+      .then((out) => {
+        expect(out)
+          .to.eql('added zdj7WmYojH6vMkDQFNDNwUy2ZawrggqAhS6jjRJwb1C4KXZni greater-than-default-max-chunk-size\n')
+      })
+  })
+
+  it('add with cid-version=1 and raw-leaves=true < default max chunk size', function () {
+    this.timeout(30 * 1000)
+
+    return ipfs('add test/fixtures/less-than-default-max-chunk-size --cid-version=1 --raw-leaves=true')
+      .then((out) => {
+        expect(out)
+          .to.eql('added zb2rhh5LdXumxQfNZCqV8pmcC56LX71ERgf2qCNQsmZnwYYx9 less-than-default-max-chunk-size\n')
+      })
+  })
+
+  it('add with cid-version=1 and raw-leaves=true > default max chunk size', function () {
+    this.timeout(30 * 1000)
+
+    return ipfs('add test/fixtures/greater-than-default-max-chunk-size --cid-version=1 --raw-leaves=true')
+      .then((out) => {
+        expect(out)
+          .to.eql('added zdj7WbyyZoWVifUHUe58SNS184PpN8qAuCP6HpAY91iA8CveT greater-than-default-max-chunk-size\n')
       })
   })
 
