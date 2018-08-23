@@ -355,35 +355,55 @@ Start listening for connections with other IPFS nodes on the network. In most ca
 This method is asynchronous. There are several ways to be notified when the node has finished starting:
 
 1. If you call `node.start()` with no arguments, it returns a promise.
-2. If you pass a function as the final argument, it will be called when the node is started. *(Note: this method will **not** return a promise if you use a callback function.)*
+
+    ```js
+    const node = new IPFS({ start: false })
+
+    node.on('ready', async () => {
+      console.log('Node is ready to use!')
+
+      try {
+        await node.start()
+        console.log('Node started!')
+      } catch (error) {
+        console.error('Node failed to start!', error)
+      }
+    })
+    ```
+
+2. If you pass a function as the final argument, it will be called when the node is started (Note: this method will **not** return a promise if you use a callback function).
+
+    ```js
+    const node = new IPFS({ start: false })
+
+    node.on('ready', () => {
+      console.log('Node is ready to use!')
+
+      node.start(error => {
+        if (error) {
+          return console.error('Node failed to start!', error)
+        }
+        console.log('Node started!')
+      })
+    })
+    ```
+
 3. You can listen for the [`start` event](#events).
 
-```js
-const node = new IPFS({ start: false })
+    ```js
+    const node = new IPFS({ start: false })
 
-node.on('ready', () => {
-  console.log('Node is ready to use!')
+    node.on('ready', () => {
+      console.log('Node is ready to use!')
+      node.start()
+    })
 
-  // Use a promise:
-  node.start()
-    .then(() => console.log('Node started!'))
-    .catch(error => console.error('Node failed to start!', error))
+    node.on('error', error => {
+      console.error('Something went terribly wrong!', error)
+    })
 
-  // OR use a callback:
-  node.start(error => {
-    if (error) {
-      console.error('Node failed to start!', error)
-      return
-    }
-    console.log('Node started!')
-  })
-
-  // OR use events:
-  node.on('error', error => console.error('Something went terribly wrong!', error))
-  node.on('start', () => console.log('Node started!'))
-  node.start()
-})
-```
+    node.on('start', () => console.log('Node started!'))
+    ```
 
 #### `node.stop([callback])`
 
@@ -392,33 +412,55 @@ Close and stop listening for connections with other IPFS nodes, then release acc
 This method is asynchronous. There are several ways to be notified when the node has completely stopped:
 
 1. If you call `node.stop()` with no arguments, it returns a promise.
-2. If you pass a function as the final argument, it will be called when the node is stopped. *(Note: this method will **not** return a promise if you use a callback function.)*
+
+    ```js
+    const node = new IPFS()
+
+    node.on('ready', async () => {
+      console.log('Node is ready to use!')
+
+      try {
+        await node.stop()
+        console.log('Node stopped!')
+      } catch (error) {
+        console.error('Node failed to stop cleanly!', error)
+      }
+    })
+    ```
+
+2. If you pass a function as the final argument, it will be called when the node is stopped (Note: this method will **not** return a promise if you use a callback function).
+
+    ```js
+    const node = new IPFS()
+
+    node.on('ready', () => {
+      console.log('Node is ready to use!')
+
+      node.stop(error => {
+        if (error) {
+          return console.error('Node failed to stop cleanly!', error)
+        }
+        console.log('Node stopped!')
+      })
+    })
+    ```
+
 3. You can listen for the [`stop` event](#events).
 
-```js
-const node = new IPFS()
-node.on('ready', () => {
-  console.log('Node is ready to use!')
+    ```js
+    const node = new IPFS()
 
-  // Stop with a promise:
-  node.stop()
-    .then(() => console.log('Node stopped!'))
-    .catch(error => console.error('Node failed to stop cleanly!', error))
+    node.on('ready', () => {
+      console.log('Node is ready to use!')
+      node.stop()
+    })
 
-  // OR use a callback:
-  node.stop(error => {
-    if (error) {
-      console.error('Node failed to stop cleanly!', error)
-      return
-    }
-    console.log('Node stopped!')
-  })
+    node.on('error', error => {
+      console.error('Something went terribly wrong!', error)
+    })
 
-  // OR use events:
-  node.on('error', error => console.error('Something went terribly wrong!', error))
-  node.stop()
-})
-```
+    node.on('stop', () => console.log('Node stopped!'))
+    ```
 
 #### Core API
 
