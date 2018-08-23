@@ -470,7 +470,7 @@ The IPFS core API provides all functionality that is not specific to setting up 
 
 The core API is grouped into several areas:
 
-#### `Files`
+#### Files
 
 - [files](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md)
   - [`ipfs.files.add(data, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesadd). Alias to `ipfs.add`.
@@ -503,7 +503,7 @@ The core API is grouped into several areas:
   - [`ipfs.block.put(block, cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md#put)
   - [`ipfs.block.stat(cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md#stat)
 
-#### `Graph`
+#### Graph
 
 - [dag](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DAG.md)
   - [`ipfs.dag.put(dagNode, options, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DAG.md#dagput)
@@ -521,9 +521,13 @@ The core API is grouped into several areas:
   - [`ipfs.object.patch.rmLink(multihash, DAGLink, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchrmlink)
   - [`ipfs.object.patch.appendData(multihash, data, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchappenddata)
   - [`ipfs.object.patch.setData(multihash, data, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchsetdata)
-- [pin (not implemented, yet!)](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/)
 
-#### `Crypto and Key Management`
+- [pin](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PIN.md)
+  - [`ipfs.pin.add(hash, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PIN.md#pinadd)
+  - [`ipfs.pin.ls([hash], [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PIN.md#pinls)
+  - [`ipfs.pin.rm(hash, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PIN.md#pinrm)
+
+#### Crypto and Key Management
 
 - [key](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/KEY.md)
   - `ipfs.key.export(name, password, [callback])`
@@ -534,7 +538,7 @@ The core API is grouped into several areas:
   - `ipfs.key.rm(name, [callback])`
 - [crypto (not yet implemented)](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC)
 
-#### `Network`
+#### Network
 
 - [bootstrap](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/)
   - `ipfs.bootstrap.list`
@@ -566,7 +570,7 @@ The core API is grouped into several areas:
   - [`ipfs.swarm.disconnect(addr, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#disconnect)
   - [`ipfs.swarm.peers([opts] [, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#peers)
 
-#### `Node Management`
+#### Node Management
 
 - [miscellaneous operations](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md)
   - [`ipfs.id([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#id)
@@ -595,7 +599,7 @@ The core API is grouped into several areas:
   - [`ipfs.config.set(key, value, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configset)
   - [`ipfs.config.replace(config, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configreplace)
 
-#### `Domain data types`
+#### Domain data types
 
 A set of data types are exposed directly from the IPFS instance under `ipfs.types`. That way you're not required to import/require the following.
 
@@ -609,7 +613,7 @@ A set of data types are exposed directly from the IPFS instance under `ipfs.type
 - [`ipfs.types.dagPB`](https://github.com/ipld/js-ipld-dag-pb)
 - [`ipfs.types.dagCBOR`](https://github.com/ipld/js-ipld-dag-cbor)
 
-#### `Util`
+#### Util
 
 A set of utils are exposed directly from the IPFS instance under `ipfs.util`. That way you're not required to import/require the following:
 
