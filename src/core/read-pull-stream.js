@@ -43,6 +43,8 @@ module.exports = (ipfs) => {
           return cb(new Error(`${path} was not a file`))
         }
 
+        log(`Getting ${path} content`)
+
         pull(
           exporter(node.multihash, ipfs.dag, {
             offset: options.offset,
@@ -58,6 +60,11 @@ module.exports = (ipfs) => {
           return deferred.abort(error)
         }
 
+        if (!streams.length) {
+          return deferred.abort(new Error(`Could not load content stream from ${path}`))
+        }
+
+        log(`Got ${path} content`)
         deferred.resolve(streams[0])
       })
     )
