@@ -157,7 +157,8 @@ exports.add = {
         'raw-leaves': Joi.boolean(),
         'only-hash': Joi.boolean(),
         pin: Joi.boolean().default(true),
-        'wrap-with-directory': Joi.boolean()
+        'wrap-with-directory': Joi.boolean(),
+        chunker: Joi.string()
       })
       // TODO: Necessary until validate "recursive", "stream-channels" etc.
       .options({ allowUnknown: true })
@@ -221,7 +222,8 @@ exports.add = {
       onlyHash: request.query['only-hash'],
       hashAlg: request.query['hash'],
       wrapWithDirectory: request.query['wrap-with-directory'],
-      pin: request.query.pin
+      pin: request.query.pin,
+      chunker: request.query.chunker
     }
 
     const aborter = abortable()
