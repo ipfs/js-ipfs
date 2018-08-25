@@ -161,6 +161,11 @@ If no `content` is passed, then the path is treated as an empty directory
 - onlyHash (boolean): doesn't actually add the file to IPFS, but rather calculates its hash.
 - pin (boolean, default true): pin this object when adding.
 - raw-leaves (boolean, default false): if true, DAG leaves will contain raw file data and not be wrapped in a protobuf
+- chunker (string, default size-262144): chunking algorithm used to build ipfs DAGs. Available formats:
+  - size-{size}
+  - rabin
+  - rabin-{avg}
+  - rabin-{min}-{avg}-{max}
 
 `callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res` will be an array of:
 
