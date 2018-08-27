@@ -22,7 +22,7 @@ const assert = require('assert')
  */
 
 /**
- * This is the factory we will use to create our fully customized libp2p bundle.
+ * This is the bundle we will use to create our fully customized libp2p bundle.
  *
  * @param {libp2pBundle~options} opts The options to use when generating the libp2p node
  * @returns {Libp2p} Our new libp2p node

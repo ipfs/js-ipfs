@@ -16,7 +16,7 @@ module.exports = function libp2p (self) {
           return callback(err)
         }
 
-        const defaultFactory = (opts) => {
+        const defaultBundle = (opts) => {
           const libp2pDefaults = {
             peerInfo: opts.peerInfo,
             peerBook: opts.peerBook,
@@ -62,13 +62,13 @@ module.exports = function libp2p (self) {
           return new Node(libp2pOptions)
         }
 
-        // Always create libp2p via a factory
-        let libp2pFactory = get(self._options, 'libp2p', null)
-        if (typeof libp2pFactory !== 'function') {
-          libp2pFactory = defaultFactory
+        // Always create libp2p via a bundle function
+        let libp2pBundle = get(self._options, 'libp2p', null)
+        if (typeof libp2pBundle !== 'function') {
+          libp2pBundle = defaultBundle
         }
 
-        self._libp2pNode = libp2pFactory({
+        self._libp2pNode = libp2pBundle({
           options: self._options,
           config: config,
           peerInfo: self._peerInfo,

@@ -65,8 +65,8 @@ describe('libp2p customization', function () {
     })
   })
 
-  describe('factory', () => {
-    it('should allow for using a libp2p factory', (done) => {
+  describe('bundle', () => {
+    it('should allow for using a libp2p bundle', (done) => {
       const ipfs = {
         _peerInfo: peerInfo,
         _peerBook: peerBook,
