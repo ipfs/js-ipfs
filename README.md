@@ -14,9 +14,8 @@
 
 <p align="center">
   <a href="https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fipfs%2Fjs-ipfs-api?ref=badge_small" alt="FOSSA Status"><img src="https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fipfs%2Fjs-ipfs-api.svg?type=small"/></a>
-  <a href="https://travis-ci.org/ipfs/js-ipfs-api"><img src="https://travis-ci.org/ipfs/js-ipfs-api.svg?branch=master" /></a>
-  <a href="https://circleci.com/gh/ipfs/js-ipfs-api"><img src="https://circleci.com/gh/ipfs/js-ipfs-api.svg?style=svg" /></a>
-  <a href="https://coveralls.io/github/ipfs/js-ipfs-api?branch=master"><img src="https://coveralls.io/repos/github/ipfs/js-ipfs-api/badge.svg?branch=master"></a>
+  <a href="https://ci.ipfs.team/job/ipfs/job/js-ipfs-api/job/master/"><img src="https://ci.ipfs.team/buildStatus/icon?job=ipfs/js-ipfs-api/master" /></a>
+  <a href="https://codecov.io/gh/ipfs/js-ipfs-api"><img src="https://codecov.io/gh/ipfs/js-ipfs-api/branch/master/graph/badge.svg"></a>
   <br>
   <a href="https://david-dm.org/ipfs/js-ipfs-api"><img src="https://david-dm.org/ipfs/js-ipfs-api.svg?style=flat-square" /></a>
   <a href="https://github.com/feross/standard"><img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square"></a>
