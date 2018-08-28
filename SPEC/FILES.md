@@ -880,6 +880,7 @@ Where:
   - `offset` is an Integer with the byte offset to begin writing at (default: 0)
   - `create` is a Boolean to indicate to create the file if it doesn't exist (default: false)
   - `truncate` is a Boolean to indicate if the file should be truncated after writing all the bytes from `content` (default: false)
+  - `parents` is a Boolean value to decide whether or not to make the parent directories if they don't exist (default: false)
   - `length` is an Integer with the maximum number of bytes to read (default: Read all bytes from `content`)
   - `raw-leaves`: if true, DAG leaves will contain raw file data and not be wrapped in a protobuf (boolean, default false)
   - `cid-version`: the CID version to use when storing the data (storage keys are based on the CID, including it's version) (integer, default 0)
