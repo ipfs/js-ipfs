@@ -15,7 +15,7 @@ module.exports = (thing) => describe('dns', () => {
     this.timeout(60 * 1000)
 
     return ipfs('dns ipfs.io').then((res) => {
-      expect(res.substr(0, 6)).to.eql('/ipfs/')
+      expect(res.substr(0, 6)).to.eql('/ipns/')
     })
   })
 })

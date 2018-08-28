@@ -17,6 +17,8 @@ const Duplex = require('readable-stream').Duplex
 const OtherBuffer = require('buffer').Buffer
 const CID = require('cids')
 const toB58String = require('multihashes').toB58String
+const errCode = require('err-code')
+const parseChunkerString = require('../utils').parseChunkerString
 
 const WRAPPER = 'wrapper/'
 
@@ -147,12 +149,18 @@ class AddHelper extends Duplex {
 }
 
 module.exports = function files (self) {
-  function _addPullStream (options) {
+  function _addPullStream (options = {}) {
+    let chunkerOptions
+    try {
+      chunkerOptions = parseChunkerString(options.chunker)
+    } catch (err) {
+      return pull.map(() => { throw err })
+    }
     const opts = Object.assign({}, {
       shardSplitThreshold: self._options.EXPERIMENTAL.sharding
         ? 1000
         : Infinity
-    }, options)
+    }, options, chunkerOptions)
 
     if (opts.hashAlg && opts.cidVersion !== 1) {
       opts.cidVersion = 1
@@ -348,7 +356,14 @@ module.exports = function files (self) {
       options = options || {}
 
       if (options.preload !== false) {
-        const pathComponents = normalizePath(ipfsPath).split('/')
+        let pathComponents
+
+        try {
+          pathComponents = normalizePath(ipfsPath).split('/')
+        } catch (err) {
+          return setImmediate(() => callback(errCode(err, 'ERR_INVALID_PATH')))
+        }
+
         self._preload(pathComponents[0])
       }
 
@@ -376,7 +391,14 @@ module.exports = function files (self) {
       options = options || {}
 
       if (options.preload !== false) {
-        const pathComponents = normalizePath(ipfsPath).split('/')
+        let pathComponents
+
+        try {
+          pathComponents = normalizePath(ipfsPath).split('/')
+        } catch (err) {
+          return toStream.source(pull.error(errCode(err, 'ERR_INVALID_PATH')))
+        }
+
         self._preload(pathComponents[0])
       }
 
@@ -399,7 +421,14 @@ module.exports = function files (self) {
       options = options || {}
 
       if (options.preload !== false) {
-        const pathComponents = normalizePath(ipfsPath).split('/')
+        let pathComponents
+
+        try {
+          pathComponents = normalizePath(ipfsPath).split('/')
+        } catch (err) {
+          return pull.error(errCode(err, 'ERR_INVALID_PATH'))
+        }
+
         self._preload(pathComponents[0])
       }
 
@@ -414,11 +443,6 @@ module.exports = function files (self) {
 
       options = options || {}
 
-      if (options.preload !== false) {
-        const pathComponents = normalizePath(ipfsPath).split('/')
-        self._preload(pathComponents[0])
-      }
-
       pull(
         _lsPullStreamImmutable(ipfsPath, options),
         pull.collect((err, values) => {
@@ -432,13 +456,6 @@ module.exports = function files (self) {
     }),
 
     lsReadableStreamImmutable: (ipfsPath, options) => {
-      options = options || {}
-
-      if (options.preload !== false) {
-        const pathComponents = normalizePath(ipfsPath).split('/')
-        self._preload(pathComponents[0])
-      }
-
       return toStream.source(_lsPullStreamImmutable(ipfsPath, options))
     },
 

@@ -31,7 +31,7 @@
     - [ ] Reddit
   - [ ] Blog post
 
-# 🙌🏽Want to contribute?
+# 🙌🏽 Want to contribute?
 
 Would you like to contribute to the IPFS project and don't know how? Well, there are a few places you can get started:
 

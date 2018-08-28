@@ -7,7 +7,12 @@ module.exports = {
 
   describe: 'Get and serialize the DAG node named by <key>',
 
-  builder: {},
+  builder: {
+    'data-encoding': {
+      type: 'string',
+      default: 'base64'
+    }
+  },
 
   handler (argv) {
     argv.ipfs.object.get(argv.key, {enc: 'base58'}, (err, node) => {
@@ -16,7 +21,9 @@ module.exports = {
       }
       const nodeJSON = node.toJSON()
 
-      nodeJSON.data = nodeJSON.data ? nodeJSON.data.toString() : ''
+      if (Buffer.isBuffer(node.data)) {
+        nodeJSON.data = node.data.toString(argv['data-encoding'] || undefined)
+      }
 
       const answer = {
         Data: nodeJSON.data,

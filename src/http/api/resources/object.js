@@ -85,7 +85,9 @@ exports.get = {
 
       const nodeJSON = node.toJSON()
 
-      nodeJSON.data = nodeJSON.data ? nodeJSON.data.toString() : ''
+      if (Buffer.isBuffer(node.data)) {
+        nodeJSON.data = node.data.toString(request.query['data-encoding'] || undefined)
+      }
 
       const answer = {
         Data: nodeJSON.data,
@@ -520,7 +522,7 @@ exports.patchRmLink = {
 
     if (!request.query.arg[1]) {
       return reply({
-        Message: 'cannot create link with no name!',
+        Message: 'cannot remove link with no name!',
         Code: 0
       }).code(500).takeover()
     }
@@ -545,11 +547,11 @@ exports.patchRmLink = {
     const link = request.pre.args.link
     const ipfs = request.server.app.ipfs
 
-    ipfs.object.patch.rmLink(root, link, (err, node) => {
+    ipfs.object.patch.rmLink(root, { name: link }, (err, node) => {
       if (err) {
         log.error(err)
         return reply({
-          Message: 'Failed to add link to object: ' + err,
+          Message: 'Failed to remove link from object: ' + err,
           Code: 0
         }).code(500)
       }

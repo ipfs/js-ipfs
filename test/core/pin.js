@@ -81,7 +81,10 @@ describe('pin', function () {
     })
   })
 
-  after(done => ipfs.stop(done))
+  after(function (done) {
+    this.timeout(20 * 1000)
+    ipfs.stop(done)
+  })
 
   describe('isPinnedWithType', function () {
     beforeEach(function () {

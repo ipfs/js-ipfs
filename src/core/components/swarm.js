@@ -1,6 +1,5 @@
 'use strict'
 
-const multiaddr = require('multiaddr')
 const promisify = require('promisify-es6')
 const values = require('lodash/values')
 
@@ -67,20 +66,12 @@ module.exports = function swarm (self) {
         return callback(new Error(OFFLINE_ERROR))
       }
 
-      if (typeof maddr === 'string') {
-        maddr = multiaddr(maddr)
-      }
-
       self._libp2pNode.dial(maddr, callback)
     }),
 
     disconnect: promisify((maddr, callback) => {
       if (!self.isOnline()) {
         return callback(new Error(OFFLINE_ERROR))
-      }
-
-      if (typeof maddr === 'string') {
-        maddr = multiaddr(maddr)
       }
 
       self._libp2pNode.hangUp(maddr, callback)

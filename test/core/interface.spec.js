@@ -1,11 +1,27 @@
-/* eslint-env mocha */
+/* eslint-env mocha, browser */
 'use strict'
 
 const tests = require('interface-ipfs-core')
 const CommonFactory = require('../utils/interface-common-factory')
 const isNode = require('detect-node')
+const dnsFetchStub = require('../utils/dns-fetch-stub')
 
 describe('interface-ipfs-core tests', () => {
+  // ipfs.dns in the browser calls out to https://ipfs.io/api/v0/dns.
+  // The following code stubs self.fetch to return a static CID for calls
+  // to https://ipfs.io/api/v0/dns?arg=ipfs.io.
+  if (!isNode) {
+    const fetch = self.fetch
+
+    before(() => {
+      self.fetch = dnsFetchStub(fetch)
+    })
+
+    after(() => {
+      self.fetch = fetch
+    })
+  }
+
   const defaultCommonFactory = CommonFactory.create()
 
   tests.bitswap(defaultCommonFactory, { skip: !isNode })
@@ -22,28 +38,7 @@ describe('interface-ipfs-core tests', () => {
     skip: { reason: 'TODO: DHT is not implemented in js-ipfs yet!' }
   })
 
-  tests.files(defaultCommonFactory, {
-    skip: [
-      // files.ls
-      {
-        name: 'should ls directory',
-        reason: 'FIXME: https://github.com/ipfs/js-ipfs-mfs/issues/7'
-      },
-      {
-        name: 'should ls -l directory',
-        reason: 'FIXME: https://github.com/ipfs/js-ipfs-mfs/issues/7'
-      },
-      // files.read*Stream
-      {
-        name: 'readPullStream',
-        reason: 'FIXME: https://github.com/ipfs/js-ipfs-mfs/issues/8'
-      },
-      {
-        name: 'readReadableStream',
-        reason: 'FIXME: https://github.com/ipfs/js-ipfs-mfs/issues/8'
-      }
-    ]
-  })
+  tests.files(defaultCommonFactory)
 
   tests.key(CommonFactory.create({
     spawnOptions: {
@@ -60,8 +55,12 @@ describe('interface-ipfs-core tests', () => {
   }), {
     skip: [
       {
-        name: 'resolve',
-        reason: 'TODO: not implemented'
+        name: 'should resolve an IPNS DNS link',
+        reason: 'TODO IPNS not implemented yet'
+      },
+      {
+        name: 'should resolve IPNS link recursively',
+        reason: 'TODO IPNS not implemented yet'
       }
     ]
   })

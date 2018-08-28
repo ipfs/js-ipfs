@@ -1,3 +1,60 @@
+<a name="0.31.7"></a>
+## [0.31.7](https://github.com/ipfs/js-ipfs/compare/v0.31.6...v0.31.7) (2018-08-20)
+
+
+### Bug Fixes
+
+* fails to start when preload disabled ([#1516](https://github.com/ipfs/js-ipfs/issues/1516)) ([511ab47](https://github.com/ipfs/js-ipfs/commit/511ab47)), closes [#1514](https://github.com/ipfs/js-ipfs/issues/1514)
+* npm publishes examples folder ([#1513](https://github.com/ipfs/js-ipfs/issues/1513)) ([4a68ac1](https://github.com/ipfs/js-ipfs/commit/4a68ac1))
+
+
+
+<a name="0.31.6"></a>
+## [0.31.6](https://github.com/ipfs/js-ipfs/compare/v0.31.5...v0.31.6) (2018-08-17)
+
+
+### Features
+
+* adds data-encoding argument to control data encoding ([#1420](https://github.com/ipfs/js-ipfs/issues/1420)) ([1eb8485](https://github.com/ipfs/js-ipfs/commit/1eb8485))
+
+
+
+<a name="0.31.5"></a>
+## [0.31.5](https://github.com/ipfs/js-ipfs/compare/v0.31.4...v0.31.5) (2018-08-17)
+
+
+### Bug Fixes
+
+* add missing space after emoji ([5cde7c1](https://github.com/ipfs/js-ipfs/commit/5cde7c1))
+* improper input validation ([#1506](https://github.com/ipfs/js-ipfs/issues/1506)) ([91a482b](https://github.com/ipfs/js-ipfs/commit/91a482b))
+* object.patch.rmLink not working ([#1508](https://github.com/ipfs/js-ipfs/issues/1508)) ([afd3255](https://github.com/ipfs/js-ipfs/commit/afd3255))
+* stub out call to fetch for ipfs.dns test in browser ([#1512](https://github.com/ipfs/js-ipfs/issues/1512)) ([86c3d81](https://github.com/ipfs/js-ipfs/commit/86c3d81))
+
+
+
+<a name="0.31.4"></a>
+## [0.31.4](https://github.com/ipfs/js-ipfs/compare/v0.31.3...v0.31.4) (2018-08-09)
+
+
+### Bug Fixes
+
+* consistent badge style in docs ([#1494](https://github.com/ipfs/js-ipfs/issues/1494)) ([4a72e23](https://github.com/ipfs/js-ipfs/commit/4a72e23))
+* files.ls and files.read*Stream tests ([#1493](https://github.com/ipfs/js-ipfs/issues/1493)) ([a0bc79b](https://github.com/ipfs/js-ipfs/commit/a0bc79b))
+
+
+
+<a name="0.31.3"></a>
+## [0.31.3](https://github.com/ipfs/js-ipfs/compare/v0.31.2...v0.31.3) (2018-08-09)
+
+
+### Bug Fixes
+
+* failing tests in master ([#1488](https://github.com/ipfs/js-ipfs/issues/1488)) ([e607560](https://github.com/ipfs/js-ipfs/commit/e607560))
+* **dag:** check dag.put options for plain object ([#1480](https://github.com/ipfs/js-ipfs/issues/1480)) ([d0b671b](https://github.com/ipfs/js-ipfs/commit/d0b671b)), closes [#1479](https://github.com/ipfs/js-ipfs/issues/1479)
+* **dht:** allow for options object in `findProvs()` API ([#1457](https://github.com/ipfs/js-ipfs/issues/1457)) ([99911b1](https://github.com/ipfs/js-ipfs/commit/99911b1)), closes [#1322](https://github.com/ipfs/js-ipfs/issues/1322)
+
+
+
 <a name="0.31.2"></a>
 ## [0.31.2](https://github.com/ipfs/js-ipfs/compare/v0.31.1...v0.31.2) (2018-08-02)
 

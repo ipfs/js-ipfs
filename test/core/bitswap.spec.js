@@ -20,11 +20,6 @@ const IPFSFactory = require('ipfsd-ctl')
 
 const IPFS = require('../../src/core')
 
-// TODO bitswap tests on windows is failing, missing proper shutdown of daemon
-// https://github.com/ipfs/js-ipfsd-ctl/pull/205
-const isWindows = require('../utils/platforms').isWindows
-const skipOnWindows = isWindows() ? describe.skip : describe
-
 function makeBlock (callback) {
   const d = Buffer.from(`IPFS is awesome ${Math.random()}`)
 
@@ -89,7 +84,7 @@ function addNode (fDaemon, inProcNode, callback) {
   })
 }
 
-skipOnWindows('bitswap', function () {
+describe('bitswap', function () {
   this.timeout(80 * 1000)
 
   let inProcNode // Node spawned inside this process
@@ -240,6 +235,16 @@ skipOnWindows('bitswap', function () {
       ], (err, data) => {
         expect(err).to.not.exist()
         expect(data).to.eql(file)
+        done()
+      })
+    })
+  })
+
+  describe('unwant', () => {
+    it('should callback with error for invalid CID input', (done) => {
+      inProcNode.bitswap.unwant('INVALID CID', (err) => {
+        expect(err).to.exist()
+        expect(err.code).to.equal('ERR_INVALID_CID')
         done()
       })
     })
