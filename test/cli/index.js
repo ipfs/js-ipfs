@@ -53,6 +53,8 @@ describe('cli', () => {
       thing.ipfs = ipfsExec(repoPath)
       thing.ipfs.repoPath = repoPath
       return thing.ipfs('init').then(() => {
+        return thing.ipfs('config preload.enabled false --bool')
+      }).then(() => {
         return thing.ipfs('daemon')
       })
     })
