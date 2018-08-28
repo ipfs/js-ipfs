@@ -186,7 +186,8 @@ class IpnsPublisher {
           if (!checkRouting) {
             return callback(null, null)
           } else {
-            // TODO ROUTING - get
+            // TODO ROUTING - get from DHT
+            return callback(new Error('not implemented yet'))
           }
         }
       }
