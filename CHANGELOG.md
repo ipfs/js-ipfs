@@ -1,3 +1,13 @@
+<a name="0.77.0"></a>
+# [0.77.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.76.1...v0.77.0) (2018-08-28)
+
+
+### Bug Fixes
+
+* remove bitswap.unwant ([#353](https://github.com/ipfs/interface-ipfs-core/issues/353)) ([6065f63](https://github.com/ipfs/interface-ipfs-core/commit/6065f63)), closes [#339](https://github.com/ipfs/interface-ipfs-core/issues/339)
+
+
+
 <a name="0.76.1"></a>
 ## [0.76.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.76.0...v0.76.1) (2018-08-16)
 
