@@ -32,19 +32,19 @@ ipfs.bitswap.wantlist(peerId, (err, list) => console.log(list))
 
 #### `bitswap.stat`
 
-> Adds an IPFS object to the pinset and also stores it to the IPFS repo. pinset is the set of hashes currently pinned (not gc'able).
+> Show diagnostic information on the bitswap agent.
 
 ##### `Go` **WIP**
 
 ##### `JavaScript` - ipfs.bitswap.stat([callback])
 
-`stats.bitswap` and `bitswap.stat` can be used interchangeably.
+Note: `bitswap.stat` and `stats.bitswap` can be used interchangeably.
 
 `callback` must follow `function (err, stats) {}` signature, where `err` is an error if the operation was not successful. `stats` is an Object containing the following keys:
 
 - `provideBufLen` is an integer.
-- `wantlist` (array)
-- `peers` (array)
+- `wantlist` (array of CIDs)
+- `peers` (array of peer IDs)
 - `blocksReceived` is a [Big Int][1]
 - `dataReceived` is a [Big Int][1]
 - `blocksSent` is a [Big Int][1]
@@ -57,10 +57,10 @@ If no `callback` is passed, a promise is returned.
 **Example:**
 
 ```JavaScript
-ipfs.stats.bitswap((err, stats) => console.log(stats))
+ipfs.bitswap.stat((err, stats) => console.log(stats))
 
 // { provideBufLen: 0,
-//   wantlist: null,
+//   wantlist: [ { '/': 'QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM' } ],
 //   peers:
 //    [ 'QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM',
 //      'QmSoLSafTMBsPKadTEgaXctDQVcqN88CNLHXMkTNwMKPnu',

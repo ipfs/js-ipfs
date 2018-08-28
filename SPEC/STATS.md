@@ -8,11 +8,15 @@
 
 #### `stats.bitswap`
 
-`stats.bitswap` and `bitswap.stat` can be used interchangeably. See [`bitswap.stat`](./BITSWAP.md#stat) for more details.
+> Show diagnostic information on the bitswap agent.
+
+Note: `stats.bitswap` and `bitswap.stat` can be used interchangeably. See [`bitswap.stat`](./BITSWAP.md#bitswapstat) for more details.
 
 #### `stats.repo`
 
-`stats.repo` and `repo.stat` can be used interchangeably. See [`repo.stat`](./REPO.md#stat) for more details.
+> Get stats for the currently used repo.
+
+Note: `stats.repo` and `repo.stat` can be used interchangeably. See [`repo.stat`](./REPO.md#repostat) for more details.
 
 #### `stats.bw`
 
