@@ -18,7 +18,8 @@ module.exports = {
   handler (argv) {
     argv.ipfs.resolve(argv.name, { recursive: argv.recursive }, (err, res) => {
       if (err) throw err
-      print(res)
+      argv.printer(res)
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }
