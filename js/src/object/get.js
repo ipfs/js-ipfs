@@ -7,6 +7,8 @@ const bs58 = require('bs58')
 const series = require('async/series')
 const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const UnixFs = require('ipfs-unixfs')
+const crypto = require('crypto')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -284,6 +286,40 @@ module.exports = (createCommon, options) => {
           cb()
         }
       ], done)
+    })
+
+    it('supplies unadulterated data', () => {
+      // has to be big enough to span several DAGNodes
+      let required = 1024 * 3000
+
+      // can't just request `required` random bytes in the browser yet
+      // as it's more than 65536:
+      // https://github.com/crypto-browserify/randombytes/pull/15
+      let data = Buffer.alloc(0)
+      const maxBytes = 65536
+      let next = maxBytes
+
+      while (data.length !== required) {
+        data = Buffer.concat([data, crypto.randomBytes(next)])
+        next = maxBytes
+
+        if (data.length + maxBytes > required) {
+          next = required - data.length
+        }
+      }
+
+      return ipfs.files.add({
+        path: '',
+        content: data
+      })
+        .then((result) => {
+          return ipfs.object.get(result[0].hash)
+        })
+        .then((node) => {
+          const meta = UnixFs.unmarshal(node.data)
+
+          expect(meta.fileSize()).to.equal(data.length)
+        })
     })
   })
 }
