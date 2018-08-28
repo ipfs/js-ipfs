@@ -1,7 +1,5 @@
 'use strict'
 
-const Repo = require('ipfs-repo')
-const IPFS = require('../../core')
 const utils = require('../utils')
 const print = utils.print
 
@@ -30,6 +28,10 @@ module.exports = {
     const path = utils.getRepoPath()
 
     print(`initializing ipfs node at ${path}`)
+
+    // Required inline to reduce startup time
+    const IPFS = require('../../core')
+    const Repo = require('ipfs-repo')
 
     const node = new IPFS({
       repo: new Repo(path),
