@@ -149,7 +149,18 @@ const makeCLICall = (args) => {
             parser.parse(argv, {
               ipfs: ipfs,
               onComplete: isDaemonCmd ? function () {} : onComplete,
-              stdoutStream: writeable
+              stdoutStream: writeable,
+              printer: (msg, newline) => {
+                if (newline === undefined) {
+                  newline = true
+                }
+
+                if (msg === undefined) {
+                  msg = ''
+                }
+                msg = newline ? msg + '\n' : msg
+                writeable.write(msg)
+              }
             }, (err, argv, _output) => {
               if (_output) {
                 _output.split('\n').forEach(line => output.push(line))
