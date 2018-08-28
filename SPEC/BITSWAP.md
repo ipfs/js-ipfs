@@ -1,34 +1,7 @@
 # Bitswap API
 
 * [bitswap.wantlist](#bitswapwantlist)
-* [bitswap.unwant](#bitswapunwant)
 * [bitswap.stat](#bitswapstat)
-
-#### `bitswap.unwant`
-
-> Removes a given block from your wantlist
-
-##### `Go` **WIP**
-
-##### `JavaScript` - ipfs.bitswap.unwant(cid, [callback])
-
-`cid` is a [cid][cid] which can be passed as:
-
-- CID, a CID instance
-- String, the base58 encoded version of the multihash
-
-`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
-
-  **Example:**
-
-  ```JavaScript
-  ipfs.bitswap.unwant('QmSoLSafTMBsPKadTEgaXctDQVcqN88CNLHXMkTNwMKPnu', (err) => {
-    if (err) throw err
-    console.log('Done')
-  })
-  ```
-
-##### `Go` **WIP**
 
 ### `bitswap.wantlist`
 
