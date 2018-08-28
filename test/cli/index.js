@@ -7,8 +7,8 @@ const os = require('os')
 
 const ipfsExec = require('../utils/ipfs-exec')
 
-require('clarify')
-require('trace')
+// require('clarify')
+// require('trace')
 
 // Tests can have a `.part` property that decides when tests gets run
 // `offline` => only offline
@@ -61,9 +61,11 @@ describe('cli', () => {
       this.timeout = 1000 * 100
       return thing.ipfs('shutdown')
     })
-    tests.online.forEach(t => {
-      didTestsRun = true
-      t(thing)
+    describe('tests', () => {
+      tests.online.forEach(t => {
+        didTestsRun = true
+        t(thing)
+      })
     })
   })
   describe('with daemon offline', () => {
@@ -73,17 +75,23 @@ describe('cli', () => {
       const repoPath = os.tmpdir() + '/ipfs-' + hat()
       thing.ipfs = ipfsExec(repoPath)
       thing.ipfs.repoPath = repoPath
-      return thing.ipfs('init')
+      return thing.ipfs('init').then(() => {
+        return thing.ipfs('config preload.enabled false --bool')
+      })
     })
-    tests.offline.forEach(t => {
-      didTestsRun = true
-      t(thing)
+    describe('tests', () => {
+      tests.offline.forEach(t => {
+        didTestsRun = true
+        t(thing)
+      })
     })
   })
   describe('standalone cli tests', () => {
-    tests.standalone.forEach(t => {
-      didTestsRun = true
-      t()
+    describe('tests', () => {
+      tests.standalone.forEach(t => {
+        didTestsRun = true
+        t()
+      })
     })
   })
   if (!didTestsRun) {

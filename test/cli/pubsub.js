@@ -24,6 +24,7 @@ const config = {
   }
 }
 
+// TODO dealing with long living streams, will be fun
 const test = () => describe.skip('pubsub', () => {
   let node
   let ipfsdA

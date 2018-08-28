@@ -9,6 +9,7 @@ const hat = require('hat')
 const ipfsExec = require('../utils/ipfs-exec')
 const os = require('os')
 
+// TODO wants again it's own implementation of the cli
 const test = (thing) => describe.skip('init', function () {
   this.timeout(40 * 1000)
 

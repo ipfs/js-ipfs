@@ -2,7 +2,8 @@
 
 const yargs = require('yargs')
 const utils = require('../../src/cli/utils')
-const debug = require('debug')('jsipfs:ipfs-exec')
+// const debug = require('debug')('jsipfs:ipfs-exec')
+const D = require('debug')
 const stream = require('stream')
 // const execa = require('execa')
 // const chai = require('chai')
@@ -38,11 +39,12 @@ const makeCLICall = (args) => {
   if (argv[0] === 'help') {
     cliToLoad = 'commands'
   }
-  debug('Running', argv)
   // Load the actual source for the command
   const cliFullpath = '../../src/cli/commands/' + cliToLoad
-  debug('Gonna require', cliFullpath)
   let cli = require(cliFullpath)
+  const debug = D('jsipfs:ipfs-exec:' + cli.command)
+  debug('Running', argv)
+  debug('Required', cliFullpath)
 
   // Some commands use different ways of the description...
   const description = cli.describe || cli.description || ''
@@ -107,6 +109,7 @@ const makeCLICall = (args) => {
           debug('received either daemon is ready or shutdown complete, so calling onComplete()')
           onComplete()
           this.destroy()
+          // TODO probably this that leads to shitty stuff...
           utils.setPrintStream(process.stdout)
         }
         next()

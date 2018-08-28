@@ -2,7 +2,6 @@
 'use strict'
 
 const expect = require('chai').expect
-const runOnAndOff = require('../utils/on-and-off')
 
 // TODO have to figure out how to make this work exactly.
 // Problem is that there is no `help` command to load...
