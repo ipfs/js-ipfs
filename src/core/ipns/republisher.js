@@ -22,35 +22,68 @@ class IpnsRepublisher {
     this._publisher = publisher
     this._ipfs = ipfs
     this._repo = ipfs._repo
-    this._timeoutId = null
-    this._canceled = false
-    this._onCancel = null
+    this._republishHandle = null
   }
 
   start () {
-    const periodically = (cb) => {
-      this._republishEntries(this._ipfs._peerInfo.id.privKey, this._ipfs._options.pass, () => {
-        if (this._canceled) {
-          return this._onCancel()
-        }
-        this._timeoutId = setTimeout(() => periodically(cb), defaultBroadcastInterval)
-      })
+    if (this._republishHandle) {
+      const errMsg = 'already running'
+
+      log.error(errMsg)
+      throw errcode(new Error(errMsg), 'ERR_REPUBLISH_ALREADY_RUNNING')
     }
 
-    setTimeout(() => {
-      periodically()
+    // TODO: this handler should be isolated in another module
+    const republishHandle = {
+      _onCancel: null,
+      _timeoutId: null,
+      runPeriodically: (fn, period) => {
+        republishHandle._timeoutId = setTimeout(() => {
+          republishHandle._timeoutId = null
+
+          fn((nextPeriod) => {
+            // Was republish cancelled while fn was being called?
+            if (republishHandle._onCancel) {
+              return republishHandle._onCancel()
+            }
+            // Schedule next
+            republishHandle.runPeriodically(fn, nextPeriod || period)
+          })
+        }, period)
+      },
+      cancel: (cb) => {
+        // Not currently running a republish, can callback immediately
+        if (republishHandle._timeoutId) {
+          clearTimeout(republishHandle._timeoutId)
+          return cb()
+        }
+        // Wait for republish to finish then call callback
+        republishHandle._onCancel = cb
+      }
+    }
+
+    const { privKey } = this._ipfs._peerInfo.id
+    const { pass } = this._ipfs._options
+
+    republishHandle.runPeriodically((done) => {
+      this._republishEntries(privKey, pass, () => done(defaultBroadcastInterval))
     }, minute)
+
+    this._republishHandle = republishHandle
   }
 
-  stop (cb) {
-    this._canceled = true
-    if (this._timeoutId || !this._onCancel) {
-      // Not running
-      clearTimeout(this._timeoutId)
-      return cb()
+  stop (callback) {
+    const republishHandle = this._republishHandle
+
+    if (!republishHandle) {
+      const errMsg = 'not running'
+
+      log.error(errMsg)
+      return callback(errcode(new Error(errMsg), 'ERR_REPUBLISH_NOT_RUNNING'))
     }
 
-    this._onCancel = cb
+    this._republishHandle = null
+    republishHandle.cancel(callback)
   }
 
   _republishEntries (privateKey, pass, callback) {
@@ -91,6 +124,8 @@ class IpnsRepublisher {
             callback(null)
           })
         })
+      } else {
+        callback(null)
       }
     })
   }
