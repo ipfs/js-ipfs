@@ -128,7 +128,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 ```JavaScript
 {
-  cid: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
+  key: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
   size: 10
 }
 ```
