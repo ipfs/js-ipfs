@@ -134,4 +134,29 @@ describe('daemon', () => {
       done()
     })
   })
+
+  it('uses config from repo config', function () {
+    this.timeout(100 * 1000)
+    return ipfs('init').then(() => {
+      return ipfs('config EXPERIMENTAL.pubsub true --bool')
+    }).then(() => {
+      const config = JSON.parse(fs.readFileSync(path.join(repoPath, 'config')))
+      expect(config.EXPERIMENTAL.pubsub).to.equal(true)
+      return ipfs('config EXPERIMENTAL.pubsub')
+    }).then((out) => {
+      expect(out.trim()).to.equal('true')
+      const proc = ipfs('daemon')
+      return new Promise((resolve, reject) => {
+        proc.stdout.on('data', (data) => {
+          if (data.toString().includes(`Daemon is ready`)) {
+            resolve()
+          }
+        })
+      })
+    }).then(() => {
+      return ipfs('pubsub ls')
+    }).then((out) => {
+      expect(out).to.equal('')
+    })
+  })
 })
