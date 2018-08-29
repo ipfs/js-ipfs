@@ -1,6 +1,9 @@
 'use strict'
 
-const _ = require('lodash')
+const mapValues = require('lodash/mapValues')
+const keyBy = require('lodash/keyBy')
+const multibase = require('multibase')
+const Joi = require('joi')
 const debug = require('debug')
 const log = debug('jsipfs:http-api:pin')
 log.error = debug('jsipfs:http-api:pin:error')
@@ -24,6 +27,12 @@ function parseArgs (request, reply) {
 }
 
 exports.ls = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   parseArgs: (request, reply) => {
     const type = request.query.type || 'all'
 
@@ -36,7 +45,9 @@ exports.ls = {
   handler: (request, reply) => {
     const { path, type } = request.pre.args
     const ipfs = request.server.app.ipfs
-    ipfs.pin.ls(path, { type }, (err, result) => {
+    const cidBase = request.query['cid-base']
+
+    ipfs.pin.ls(path, { type, cidBase }, (err, result) => {
       if (err) {
         log.error(err)
         return reply({
@@ -46,8 +57,8 @@ exports.ls = {
       }
 
       return reply({
-        Keys: _.mapValues(
-          _.keyBy(result, obj => obj.hash),
+        Keys: mapValues(
+          keyBy(result, obj => obj.hash),
           obj => ({ Type: obj.type })
         )
       })
@@ -56,12 +67,20 @@ exports.ls = {
 }
 
 exports.add = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   parseArgs: parseArgs,
 
   handler: (request, reply) => {
     const ipfs = request.server.app.ipfs
     const { path, recursive } = request.pre.args
-    ipfs.pin.add(path, { recursive }, (err, result) => {
+    const cidBase = request.query['cid-base']
+
+    ipfs.pin.add(path, { recursive, cidBase }, (err, result) => {
       if (err) {
         log.error(err)
         return reply({
@@ -78,12 +97,20 @@ exports.add = {
 }
 
 exports.rm = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   parseArgs: parseArgs,
 
   handler: (request, reply) => {
     const ipfs = request.server.app.ipfs
     const { path, recursive } = request.pre.args
-    ipfs.pin.rm(path, { recursive }, (err, result) => {
+    const cidBase = request.query['cid-base']
+
+    ipfs.pin.rm(path, { recursive, cidBase }, (err, result) => {
       if (err) {
         log.error(err)
         return reply({

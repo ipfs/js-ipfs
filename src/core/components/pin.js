@@ -14,8 +14,11 @@ const detectLimit = require('async/detectLimit')
 const setImmediate = require('async/setImmediate')
 const { Key } = require('interface-datastore')
 const errCode = require('err-code')
+const multibase = require('multibase')
+
 const createPinSet = require('./pin-set')
 const { resolvePath } = require('../utils')
+const { cidToString } = require('../../utils/cid')
 
 // arbitrary limit to the number of concurrent dag operations
 const concurrencyLimit = 300
@@ -143,9 +146,16 @@ module.exports = (self) => {
         callback = options
         options = {}
       }
+
       options = options || {}
 
       const recursive = options.recursive == null ? true : options.recursive
+
+      if (options.cidBase && !multibase.names.includes(options.cidBase)) {
+        return setImmediate(() => {
+          callback(errCode(new Error('invalid multibase'), 'ERR_INVALID_MULTIBASE'))
+        })
+      }
 
       resolvePath(self.object, paths, (err, mhs) => {
         if (err) { return callback(err) }
@@ -193,18 +203,25 @@ module.exports = (self) => {
           // persist updated pin sets to datastore
           flushPins((err, root) => {
             if (err) { return callback(err) }
-            return callback(null, results.map(hash => ({ hash })))
+            callback(null, results.map(hash => ({ hash: cidToString(hash, options.cidBase) })))
           })
         })
       })
     }),
 
     rm: promisify((paths, options, callback) => {
-      let recursive = true
       if (typeof options === 'function') {
         callback = options
-      } else if (options && options.recursive === false) {
-        recursive = false
+      }
+
+      options = options || {}
+
+      const recursive = options.recursive == null ? true : options.recursive
+
+      if (options.cidBase && !multibase.names.includes(options.cidBase)) {
+        return setImmediate(() => {
+          callback(errCode(new Error('invalid multibase'), 'ERR_INVALID_MULTIBASE'))
+        })
       }
 
       resolvePath(self.object, paths, (err, mhs) => {
@@ -251,7 +268,7 @@ module.exports = (self) => {
           flushPins((err, root) => {
             if (err) { return callback(err) }
             self.log(`Removed pins: ${results}`)
-            return callback(null, results.map(hash => ({ hash })))
+            callback(null, results.map(hash => ({ hash: cidToString(hash, options.cidBase) })))
           })
         })
       })
@@ -261,7 +278,7 @@ module.exports = (self) => {
       let type = types.all
       if (typeof paths === 'function') {
         callback = paths
-        options = null
+        options = {}
         paths = null
       }
       if (typeof options === 'function') {
@@ -271,7 +288,10 @@ module.exports = (self) => {
         options = paths
         paths = null
       }
-      if (options && options.type) {
+
+      options = options || {}
+
+      if (options.type) {
         if (typeof options.type !== 'string') {
           return setImmediate(() => callback(invalidPinTypeErr(options.type)))
         }
@@ -279,6 +299,12 @@ module.exports = (self) => {
       }
       if (!Object.keys(types).includes(type)) {
         return setImmediate(() => callback(invalidPinTypeErr(type)))
+      }
+
+      if (options.cidBase && !multibase.names.includes(options.cidBase)) {
+        return setImmediate(() => {
+          callback(errCode(new Error('invalid multibase'), 'ERR_INVALID_MULTIBASE'))
+        })
       }
 
       if (paths) {
@@ -345,10 +371,11 @@ module.exports = (self) => {
                 type: types.indirect,
                 hash
               })))
+              .map(p => Object.assign(p, { hash: cidToString(p.hash, options.cidBase) }))
             return callback(null, pins)
           })
         } else {
-          return callback(null, pins)
+          callback(null, pins.map(p => Object.assign(p, { hash: cidToString(p.hash, options.cidBase) })))
         }
       }
     }),

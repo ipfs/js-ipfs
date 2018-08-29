@@ -2,6 +2,9 @@
 
 const CID = require('cids')
 const multipart = require('ipfs-multipart')
+const Joi = require('joi')
+const multibase = require('multibase')
+const { cidToString } = require('../../../utils/cid')
 const debug = require('debug')
 const log = debug('jsipfs:http-api:block')
 log.error = debug('jsipfs:http-api:block:error')
@@ -57,6 +60,12 @@ exports.get = {
 }
 
 exports.put = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   // pre request handler that parses the args and returns `data` which is assigned to `request.pre.args`
   parseArgs: (request, reply) => {
     if (!request.payload) {
@@ -110,7 +119,7 @@ exports.put = {
       }
 
       return reply({
-        Key: block.cid.toBaseEncodedString(),
+        Key: cidToString(block.cid, request.query['cid-base']),
         Size: block.data.length
       })
     })
@@ -140,13 +149,21 @@ exports.del = {
 }
 
 exports.stat = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   // uses common parseKey method that returns a `key`
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
     const key = request.pre.args.key
-    request.server.app.ipfs.block.stat(key, (err, stats) => {
+    const cidBase = request.query['cid-base']
+
+    request.server.app.ipfs.block.stat(key, { cidBase }, (err, stats) => {
       if (err) {
         log.error(err)
         return reply({

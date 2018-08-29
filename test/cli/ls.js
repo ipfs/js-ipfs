@@ -89,4 +89,19 @@ describe('ls', () => runOnAndOff((thing) => {
         )
       })
   })
+
+  it('should ls and print CIDs encoded in specified base', function () {
+    this.timeout(20 * 1000)
+
+    return ipfs('ls Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z --cid-base=base64')
+      .then((out) => {
+        expect(out).to.eql(
+          'mAXASILidvV1YroHLqBvmuXko1Ly1UVenZV1K+MvhsjXhdvZQ 123530 blocks/\n' +
+          'mAXASIBT4ZYkQw0IApLoNHBxSjpezyayKZHJyxmFKpt0I3sK5 3939   config\n' +
+          'mAXASIGCpScP8zpa0CqUgyVCR/Cm0Co8pnULGe3seXSsOnJsJ 5503   datastore/\n' +
+          'mAXASIF58POI3+TbHb69iXpD3dRqfXusEj1mHMwPCFenM6HWZ 7397   init-docs/\n' +
+          'mAXASICiW5ai+KiU60glImEMMkiHaNSOAivpXspriIhJO8iHI 10     version\n'
+        )
+      })
+  })
 }))

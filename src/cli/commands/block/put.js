@@ -6,7 +6,9 @@ const bl = require('bl')
 const fs = require('fs')
 const Block = require('ipfs-block')
 const waterfall = require('async/waterfall')
-const print = require('../../utils').print
+const multibase = require('multibase')
+const { print } = require('../../utils')
+const { cidToString } = require('../../../utils/cid')
 
 function addBlock (data, opts) {
   const ipfs = opts.ipfs
@@ -27,7 +29,7 @@ function addBlock (data, opts) {
     if (err) {
       throw err
     }
-    print(cid.toBaseEncodedString())
+    print(cidToString(cid, opts.cidBase))
   })
 }
 
@@ -54,6 +56,11 @@ module.exports = {
       describe: 'cid version',
       type: 'number',
       default: 0
+    },
+    'cid-base': {
+      describe: 'Number base to display CIDs in.',
+      type: 'string',
+      choices: multibase.names
     }
   },
 

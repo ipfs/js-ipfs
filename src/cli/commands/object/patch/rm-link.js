@@ -1,9 +1,8 @@
 'use strict'
 
-const debug = require('debug')
-const log = debug('cli:object')
-log.error = debug('cli:object:error')
-const print = require('../../../utils').print
+const multibase = require('multibase')
+const { print } = require('../../../utils')
+const { cidToString } = require('../../../../utils/cid')
 
 module.exports = {
   command: 'rm-link <root> <link>',
@@ -12,8 +11,9 @@ module.exports = {
 
   builder: {
     'cid-base': {
-      default: 'base58btc',
-      describe: 'CID base to use.'
+      describe: 'Number base to display CIDs in.',
+      type: 'string',
+      choices: multibase.names
     }
   },
 
@@ -25,7 +25,7 @@ module.exports = {
         throw err
       }
 
-      print(cid.toBaseEncodedString(argv.cidBase))
+      print(cidToString(cid, argv.cidBase))
     })
   }
 }

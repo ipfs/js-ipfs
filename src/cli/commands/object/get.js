@@ -1,7 +1,9 @@
 'use strict'
 
-const print = require('../../utils').print
+const multibase = require('multibase')
+const { print } = require('../../utils')
 const dagPB = require('ipld-dag-pb')
+const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
   command: 'get <key>',
@@ -14,8 +16,9 @@ module.exports = {
       default: 'base64'
     },
     'cid-base': {
-      default: 'base58btc',
-      describe: 'CID base to use.'
+      describe: 'Number base to display CIDs in.',
+      type: 'string',
+      choices: multibase.names
     }
   },
 
@@ -38,13 +41,13 @@ module.exports = {
 
         const answer = {
           Data: data,
-          Hash: result.toBaseEncodedString(argv.cidBase),
+          Hash: cidToString(result, argv.cidBase),
           Size: node.size,
           Links: node.links.map((l) => {
             return {
               Name: l.name,
               Size: l.size,
-              Hash: l.cid.toBaseEncodedString(argv.cidBase)
+              Hash: cidToString(l.cid, argv.cidBase)
             }
           })
         }

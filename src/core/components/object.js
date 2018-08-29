@@ -11,6 +11,7 @@ const CID = require('cids')
 const mh = require('multihashes')
 const Unixfs = require('ipfs-unixfs')
 const errCode = require('err-code')
+const { cidToString } = require('../../utils/cid')
 
 function normalizeMultihash (multihash, enc) {
   if (typeof multihash === 'string') {
@@ -293,6 +294,8 @@ module.exports = function object (self) {
         options = {}
       }
 
+      options = options || {}
+
       waterfall([
         (cb) => self.object.get(multihash, options, cb),
         (node, cb) => {
@@ -311,7 +314,7 @@ module.exports = function object (self) {
         const linkLength = result.node.links.reduce((a, l) => a + l.size, 0)
 
         callback(null, {
-          Hash: result.cid.toBaseEncodedString(),
+          Hash: cidToString(result.cid, options.cidBase),
           NumLinks: result.node.links.length,
           BlockSize: blockSize,
           LinksSize: blockSize - result.node.data.length,

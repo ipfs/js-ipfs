@@ -2,7 +2,9 @@
 
 const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
-const print = require('../../../utils').print
+const multibase = require('multibase')
+const { print } = require('../../../utils')
+const { cidToString } = require('../../../../utils/cid')
 
 module.exports = {
   command: 'add-link <root> <name> <ref>',
@@ -11,8 +13,9 @@ module.exports = {
 
   builder: {
     'cid-base': {
-      default: 'base58btc',
-      describe: 'CID base to use.'
+      describe: 'Number base to display CIDs in.',
+      type: 'string',
+      choices: multibase.names
     }
   },
 
@@ -39,7 +42,7 @@ module.exports = {
             throw err
           }
 
-          print(cid.toBaseEncodedString(argv.cidBase))
+          print(cidToString(result, argv.cidBase))
         })
       })
     })

@@ -3,6 +3,7 @@
 'use strict'
 
 const expect = require('chai').expect
+const CID = require('cids')
 const runOnAndOff = require('../utils/on-and-off')
 
 // fixture structure:
@@ -32,6 +33,14 @@ describe('pin', () => runOnAndOff(thing => {
       return ipfs(`pin rm ${pins.root}`)
         .then(out => expect(out).to.equal(`unpinned ${pins.root}\n`))
     })
+
+    it('should rm and print CIDs encoded in specified base', () => {
+      return ipfs(`pin rm ${pins.root} --cid-base=base64`)
+        .then(out => {
+          const b64CidStr = new CID(pins.root).toV1().toBaseEncodedString('base64')
+          expect(out).to.eql(`unpinned ${b64CidStr}\n`)
+        })
+    })
   })
 
   describe('add', function () {
@@ -47,6 +56,14 @@ describe('pin', () => runOnAndOff(thing => {
         .then(out =>
           expect(out).to.eql(`pinned ${pins.solarWiki} directly\n`)
         )
+    })
+
+    it('should add and print CIDs encoded in specified base', () => {
+      return ipfs(`pin add ${pins.root} --cid-base=base64`)
+        .then(out => {
+          const b64CidStr = new CID(pins.root).toV1().toBaseEncodedString('base64')
+          expect(out).to.eql(`pinned ${b64CidStr} recursively\n`)
+        })
     })
   })
 
@@ -72,6 +89,14 @@ describe('pin', () => runOnAndOff(thing => {
         const firstLineParts = out.split(/\s/)[0].split(' ')
         expect(firstLineParts).to.have.length(1)
       })
+    })
+
+    it('should ls and print CIDs encoded in specified base', () => {
+      return ipfs(`pin ls ${pins.root} --cid-base=base64`)
+        .then(out => {
+          const b64CidStr = new CID(pins.root).toV1().toBaseEncodedString('base64')
+          expect(out).to.eql(`${b64CidStr} recursive\n`)
+        })
     })
   })
 }))

@@ -26,8 +26,7 @@ module.exports = function (self) {
         recursive ? node.depth >= pathDepth : node.depth === pathDepth
       ),
       pull.map(node => {
-        const cid = new CID(node.hash)
-        node = Object.assign({}, node, { hash: cid.toBaseEncodedString() })
+        node.hash = new CID(node.hash).toBaseEncodedString()
         delete node.content
         return node
       })

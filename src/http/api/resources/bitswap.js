@@ -1,28 +1,45 @@
 'use strict'
 
 const boom = require('boom')
-
+const Joi = require('joi')
+const multibase = require('multibase')
+const { cidToString } = require('../../../utils/cid')
 const parseKey = require('./block').parseKey
 
 exports = module.exports
 
 exports.wantlist = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   handler: (request, reply) => {
     const peerId = request.query.peer
-    request.server.app.ipfs.bitswap.wantlist(peerId, (err, list) => {
+    const cidBase = request.query['cid-base']
+
+    request.server.app.ipfs.bitswap.wantlist(peerId, { cidBase }, (err, list) => {
       if (err) {
         return reply(boom.badRequest(err))
       }
-      reply(list)
+      reply({ Keys: list })
     })
   }
 }
 
 exports.stat = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   handler: (request, reply) => {
     const ipfs = request.server.app.ipfs
+    const cidBase = request.query['cid-base']
 
-    ipfs.bitswap.stat((err, stats) => {
+    ipfs.bitswap.stat({ cidBase }, (err, stats) => {
       if (err) {
         return reply({
           Message: err.toString(),
@@ -33,7 +50,7 @@ exports.stat = {
       reply({
         ProvideBufLen: stats.provideBufLen,
         BlocksReceived: stats.blocksReceived,
-        Wantlist: stats.wantlist,
+        Wantlist: stats.wantlist.map(cid => ({ '/': cid })),
         Peers: stats.peers,
         DupBlksReceived: stats.dupBlksReceived,
         DupDataReceived: stats.dupDataReceived,
@@ -46,6 +63,12 @@ exports.stat = {
 }
 
 exports.unwant = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   // uses common parseKey method that assigns a `key` to request.pre.args
   parseArgs: parseKey,
 
@@ -57,7 +80,7 @@ exports.unwant = {
       if (err) {
         return reply(boom.badRequest(err))
       }
-      reply({ key: key.toBaseEncodedString() })
+      reply({ key: cidToString(key, request.query['cid-base']) })
     })
   }
 }
