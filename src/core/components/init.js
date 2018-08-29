@@ -61,10 +61,19 @@ module.exports = function init (self) {
           return cb(new Error('repo already exists'))
         }
 
-        // Generate peer identity keypair + transform to desired format + add to config.
-        opts.log(`generating ${opts.bits}-bit RSA keypair...`, false)
-        self.log('generating peer id: %s bits', opts.bits)
-        peerId.create({ bits: opts.bits }, cb)
+        if (opts.privateKey) {
+          self.log('using user-supplied private-key')
+          if (typeof opts.privateKey === 'object') {
+            cb(null, opts.privateKey)
+          } else {
+            peerId.createFromPrivKey(Buffer.from(opts.privateKey, 'base64'), cb)
+          }
+        } else {
+          // Generate peer identity keypair + transform to desired format + add to config.
+          opts.log(`generating ${opts.bits}-bit RSA keypair...`, false)
+          self.log('generating peer id: %s bits', opts.bits)
+          peerId.create({ bits: opts.bits }, cb)
+        }
       },
       (keys, cb) => {
         self.log('identity generated')
