@@ -2,17 +2,18 @@
 
 const bl = require('bl')
 const fs = require('fs')
-const print = require('../../utils').print
+const CID = require('cids')
+const multibase = require('multibase')
+const { print } = require('../../utils')
+const { cidToString } = require('../../../utils/cid')
 
-function putNode (buf, enc, ipfs) {
-  ipfs.object.put(buf, {enc: enc}, (err, node) => {
+function putNode (buf, options, ipfs) {
+  ipfs.object.put(buf, { enc: options.inputEnc }, (err, node) => {
     if (err) {
       throw err
     }
 
-    const nodeJSON = node.toJSON()
-
-    print(`added ${nodeJSON.multihash}`)
+    print(`added ${cidToString(new CID(node.multihash), options.cidBase)}`)
   })
 }
 
@@ -25,6 +26,11 @@ module.exports = {
     'input-enc': {
       type: 'string',
       default: 'json'
+    },
+    'cid-base': {
+      describe: 'Number base to display CIDs in.',
+      type: 'string',
+      choices: multibase.names
     }
   },
 
@@ -32,7 +38,7 @@ module.exports = {
     const ipfs = argv.ipfs
     if (argv.data) {
       const buf = fs.readFileSync(argv.data)
-      return putNode(buf, argv.inputEnc, ipfs)
+      return putNode(buf, argv, ipfs)
     }
 
     process.stdin.pipe(bl((err, input) => {
@@ -40,7 +46,7 @@ module.exports = {
         throw err
       }
 
-      putNode(input, argv.inputEnc, ipfs)
+      putNode(input, argv, ipfs)
     }))
   }
 }

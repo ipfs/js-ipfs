@@ -1,6 +1,8 @@
 'use strict'
 
-const print = require('../../utils').print
+const multibase = require('multibase')
+const { print } = require('../../utils')
+const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
   command: 'unwant <key>',
@@ -12,6 +14,11 @@ module.exports = {
       alias: 'k',
       describe: 'Key to remove from your wantlist',
       type: 'string'
+    },
+    'cid-base': {
+      describe: 'Number base to display CIDs in.',
+      type: 'string',
+      choices: multibase.names
     }
   },
   handler (argv) {
@@ -19,7 +26,7 @@ module.exports = {
       if (err) {
         throw err
       }
-      print(`Key ${argv.key} removed from wantlist`)
+      print(`Key ${cidToString(argv.key, argv.cidBase)} removed from wantlist`)
     })
   }
 }

@@ -5,18 +5,20 @@ const bl = require('bl')
 const debug = require('debug')
 const log = debug('cli:object')
 log.error = debug('cli:object:error')
-const print = require('../../../utils').print
+const CID = require('cids')
+const multibase = require('multibase')
+const { print } = require('../../../utils')
+const { cidToString } = require('../../../../utils/cid')
 
-function parseAndAddNode (key, data, ipfs) {
+function parseAndAddNode (key, data, ipfs, options) {
   ipfs.object.patch.setData(key, data, {
     enc: 'base58'
   }, (err, node) => {
     if (err) {
       throw err
     }
-    const nodeJSON = node.toJSON()
 
-    print(nodeJSON.multihash)
+    print(cidToString(new CID(node.multihash), options.cidBase))
   })
 }
 
@@ -25,12 +27,18 @@ module.exports = {
 
   describe: 'Set data field of an ipfs object',
 
-  builder: {},
+  builder: {
+    'cid-base': {
+      describe: 'Number base to display CIDs in.',
+      type: 'string',
+      choices: multibase.names
+    }
+  },
 
   handler (argv) {
     const ipfs = argv.ipfs
     if (argv.data) {
-      return parseAndAddNode(argv.root, fs.readFileSync(argv.data), ipfs)
+      return parseAndAddNode(argv.root, fs.readFileSync(argv.data), ipfs, argv)
     }
 
     process.stdin.pipe(bl((err, input) => {
@@ -38,7 +46,7 @@ module.exports = {
         throw err
       }
 
-      parseAndAddNode(argv.root, input, ipfs)
+      parseAndAddNode(argv.root, input, ipfs, argv)
     }))
   }
 }

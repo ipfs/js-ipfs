@@ -14,6 +14,8 @@ const toStream = require('pull-stream-to-stream')
 const abortable = require('pull-abortable')
 const Joi = require('joi')
 const ndjson = require('pull-ndjson')
+const multibase = require('multibase')
+const { cidToString } = require('../../../utils/cid')
 
 exports = module.exports
 
@@ -154,6 +156,7 @@ exports.add = {
     query: Joi.object()
       .keys({
         'cid-version': Joi.number().integer().min(0).max(1).default(0),
+        'cid-base': Joi.string().valid(multibase.names),
         'raw-leaves': Joi.boolean(),
         'only-hash': Joi.boolean(),
         pin: Joi.boolean().default(true),
@@ -217,6 +220,7 @@ exports.add = {
 
     const options = {
       cidVersion: request.query['cid-version'],
+      cidBase: request.query['cid-base'],
       rawLeaves: request.query['raw-leaves'],
       progress: request.query.progress ? progressHandler : null,
       onlyHash: request.query['only-hash'],
@@ -283,6 +287,12 @@ exports.add = {
 }
 
 exports.immutableLs = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   // uses common parseKey method that returns a `key`
   parseArgs: exports.parseKey,
 
@@ -291,8 +301,9 @@ exports.immutableLs = {
     const key = request.pre.args.key
     const ipfs = request.server.app.ipfs
     const recursive = request.query && request.query.recursive === 'true'
+    const cidBase = request.query['cid-base']
 
-    ipfs.ls(key, { recursive: recursive }, (err, files) => {
+    ipfs.ls(key, { recursive, cidBase }, (err, files) => {
       if (err) {
         return reply({
           Message: 'Failed to list dir: ' + err.message,
@@ -303,7 +314,7 @@ exports.immutableLs = {
 
       reply({
         Objects: [{
-          Hash: key,
+          Hash: cidToString(key, cidBase),
           Links: files.map((file) => ({
             Name: file.name,
             Hash: file.hash,

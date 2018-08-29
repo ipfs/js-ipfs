@@ -7,6 +7,9 @@ const DAGLink = dagPB.DAGLink
 const DAGNode = dagPB.DAGNode
 const waterfall = require('async/waterfall')
 const series = require('async/series')
+const Joi = require('joi')
+const multibase = require('multibase')
+const { cidToString } = require('../../../utils/cid')
 const debug = require('debug')
 const log = debug('jsipfs:http-api:object')
 log.error = debug('jsipfs:http-api:object:error')
@@ -32,39 +35,53 @@ exports.parseKey = (request, reply) => {
   }
 }
 
-exports.new = (request, reply) => {
-  const ipfs = request.server.app.ipfs
-  const template = request.query.arg
+exports.new = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
 
-  ipfs.object.new(template, (err, node) => {
-    if (err) {
-      log.error(err)
-      return reply({
-        Message: `Failed to create object: ${err.message}`,
-        Code: 0
-      }).code(500)
-    }
+  handler (request, reply) {
+    const ipfs = request.server.app.ipfs
+    const template = request.query.arg
 
-    const nodeJSON = node.toJSON()
+    ipfs.object.new(template, (err, node) => {
+      if (err) {
+        log.error(err)
+        return reply({
+          Message: `Failed to create object: ${err.message}`,
+          Code: 0
+        }).code(500)
+      }
 
-    const answer = {
-      Data: nodeJSON.data,
-      Hash: nodeJSON.multihash,
-      Size: nodeJSON.size,
-      Links: nodeJSON.links.map((l) => {
-        return {
-          Name: l.name,
-          Size: l.size,
-          Hash: l.multihash
-        }
-      })
-    }
+      const nodeJSON = node.toJSON()
 
-    return reply(answer)
-  })
+      const answer = {
+        Data: nodeJSON.data,
+        Hash: cidToString(node.multihash, request.query['cid-base']),
+        Size: nodeJSON.size,
+        Links: nodeJSON.links.map((l) => {
+          return {
+            Name: l.name,
+            Size: l.size,
+            Hash: cidToString(l.multihash, request.query['cid-base'])
+          }
+        })
+      }
+
+      return reply(answer)
+    })
+  }
 }
 
 exports.get = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   // uses common parseKey method that returns a `key`
   parseArgs: exports.parseKey,
 
@@ -91,13 +108,13 @@ exports.get = {
 
       const answer = {
         Data: nodeJSON.data,
-        Hash: nodeJSON.multihash,
+        Hash: cidToString(node.multihash, request.query['cid-base']),
         Size: nodeJSON.size,
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: l.multihash
+            Hash: cidToString(l.multihash, request.query['cid-base'])
           }
         })
       }
@@ -108,6 +125,12 @@ exports.get = {
 }
 
 exports.put = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   // pre request handler that parses the args and returns `node`
   // which is assigned to `request.pre.args`
   parseArgs: (request, reply) => {
@@ -215,13 +238,13 @@ exports.put = {
 
       const answer = {
         Data: nodeJSON.data,
-        Hash: nodeJSON.multihash,
+        Hash: cidToString(node.multihash, request.query['cid-base']),
         Size: nodeJSON.size,
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: l.multihash
+            Hash: cidToString(l.multihash, request.query['cid-base'])
           }
         })
       }
@@ -232,6 +255,12 @@ exports.put = {
 }
 
 exports.stat = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   // uses common parseKey method that returns a `key`
   parseArgs: exports.parseKey,
 
@@ -239,8 +268,9 @@ exports.stat = {
   handler: (request, reply) => {
     const ipfs = request.server.app.ipfs
     const key = request.pre.args.key
+    const cidBase = request.query['cid-base']
 
-    ipfs.object.stat(key, (err, stats) => {
+    ipfs.object.stat(key, { cidBase }, (err, stats) => {
       if (err) {
         log.error(err)
         return reply({
@@ -278,6 +308,12 @@ exports.data = {
 }
 
 exports.links = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   // uses common parseKey method that returns a `key`
   parseArgs: exports.parseKey,
 
@@ -298,12 +334,12 @@ exports.links = {
       const nodeJSON = node.toJSON()
 
       return reply({
-        Hash: nodeJSON.multihash,
+        Hash: cidToString(node.multihash, request.query['cid-base']),
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: l.multihash
+            Hash: cidToString(l.multihash, request.query['cid-base'])
           }
         })
       })
@@ -351,6 +387,12 @@ exports.parseKeyAndData = (request, reply) => {
 }
 
 exports.patchAppendData = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   // uses common parseKeyAndData method that returns a `data` & `key`
   parseArgs: exports.parseKeyAndData,
 
@@ -374,13 +416,13 @@ exports.patchAppendData = {
 
       const answer = {
         Data: nodeJSON.data,
-        Hash: nodeJSON.multihash,
+        Hash: cidToString(node.multihash, request.query['cid-base']),
         Size: nodeJSON.size,
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: l.multihash
+            Hash: cidToString(l.multihash, request.query['cid-base'])
           }
         })
       }
@@ -391,6 +433,12 @@ exports.patchAppendData = {
 }
 
 exports.patchSetData = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   // uses common parseKeyAndData method that returns a `data` & `key`
   parseArgs: exports.parseKeyAndData,
 
@@ -413,14 +461,26 @@ exports.patchSetData = {
       const nodeJSON = node.toJSON()
 
       return reply({
-        Hash: nodeJSON.multihash,
-        Links: nodeJSON.links
+        Hash: cidToString(node.multihash, request.query['cid-base']),
+        Links: nodeJSON.links.map((l) => {
+          return {
+            Name: l.name,
+            Size: l.size,
+            Hash: cidToString(l.multihash, request.query['cid-base'])
+          }
+        })
       })
     })
   }
 }
 
 exports.patchAddLink = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   // pre request handler that parses the args and returns `root`, `name` & `ref` which is assigned to `request.pre.args`
   parseArgs: (request, reply) => {
     if (!(request.query.arg instanceof Array) ||
@@ -495,13 +555,13 @@ exports.patchAddLink = {
 
         const answer = {
           Data: nodeJSON.data,
-          Hash: nodeJSON.multihash,
+          Hash: cidToString(node.multihash, request.query['cid-base']),
           Size: nodeJSON.size,
           Links: nodeJSON.links.map((l) => {
             return {
               Name: l.name,
               Size: l.size,
-              Hash: l.multihash
+              Hash: cidToString(l.multihash, request.query['cid-base'])
             }
           })
         }
@@ -513,6 +573,12 @@ exports.patchAddLink = {
 }
 
 exports.patchRmLink = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   // pre request handler that parses the args and returns `root` & `link` which is assigned to `request.pre.args`
   parseArgs: (request, reply) => {
     if (!(request.query.arg instanceof Array) ||
@@ -560,13 +626,13 @@ exports.patchRmLink = {
 
       const answer = {
         Data: nodeJSON.data,
-        Hash: nodeJSON.multihash,
+        Hash: cidToString(node.multihash, request.query['cid-base']),
         Size: nodeJSON.size,
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: l.multihash
+            Hash: cidToString(l.multihash, request.query['cid-base'])
           }
         })
       }

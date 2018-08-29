@@ -10,7 +10,6 @@ const pushable = require('pull-pushable')
 const toStream = require('pull-stream-to-stream')
 const toPull = require('stream-to-pull-stream')
 const deferred = require('pull-defer')
-const waterfall = require('async/waterfall')
 const isStream = require('is-stream')
 const isSource = require('is-pull-stream').isSource
 const Duplex = require('readable-stream').Duplex
@@ -18,13 +17,15 @@ const OtherBuffer = require('buffer').Buffer
 const CID = require('cids')
 const toB58String = require('multihashes').toB58String
 const errCode = require('err-code')
+const multibase = require('multibase')
 const parseChunkerString = require('../utils').parseChunkerString
+const { cidToString } = require('../../utils/cid')
 
 const WRAPPER = 'wrapper/'
 
 function noop () {}
 
-function prepareFile (self, opts, file, callback) {
+function prepareFile (file, opts) {
   opts = opts || {}
 
   let cid = new CID(file.multihash)
@@ -33,23 +34,18 @@ function prepareFile (self, opts, file, callback) {
     cid = cid.toV1()
   }
 
-  waterfall([
-    (cb) => opts.onlyHash
-      ? cb(null, file)
-      : self.object.get(file.multihash, opts, cb),
-    (node, cb) => {
-      const b58Hash = cid.toBaseEncodedString()
+  const cidStr = cidToString(cid, opts.cidBase)
 
-      cb(null, {
-        path: opts.wrapWithDirectory ? file.path.substring(WRAPPER.length) : (file.path || b58Hash),
-        hash: b58Hash,
-        size: node.size
-      })
-    }
-  ], callback)
+  return {
+    path: opts.wrapWithDirectory
+      ? file.path.substring(WRAPPER.length)
+      : (file.path || cidStr),
+    hash: cidStr,
+    size: file.size
+  }
 }
 
-function normalizeContent (opts, content) {
+function normalizeContent (content, opts) {
   if (!Array.isArray(content)) {
     content = [content]
   }
@@ -91,7 +87,7 @@ function normalizeContent (opts, content) {
   })
 }
 
-function preloadFile (self, opts, file) {
+function preloadFile (file, self, opts) {
   const isRootFile = opts.wrapWithDirectory
     ? file.path === ''
     : !file.path.includes('/')
@@ -105,7 +101,7 @@ function preloadFile (self, opts, file) {
   return file
 }
 
-function pinFile (self, opts, file, cb) {
+function pinFile (file, self, opts, cb) {
   // Pin a file if it is the root dir of a recursive add or the single file
   // of a direct add.
   const pin = 'pin' in opts ? opts.pin : true
@@ -149,18 +145,27 @@ class AddHelper extends Duplex {
 }
 
 module.exports = function files (self) {
-  function _addPullStream (options = {}) {
+  function _addPullStream (options) {
+    options = options || {}
+
     let chunkerOptions
     try {
       chunkerOptions = parseChunkerString(options.chunker)
     } catch (err) {
       return pull.map(() => { throw err })
     }
+
     const opts = Object.assign({}, {
       shardSplitThreshold: self._options.EXPERIMENTAL.sharding
         ? 1000
         : Infinity
     }, options, chunkerOptions)
+
+    if (opts.cidBase && !multibase.names.includes(opts.cidBase)) {
+      return pull.map(() => {
+        throw errCode(new Error('invalid multibase'), 'ERR_INVALID_MULTIBASE')
+      })
+    }
 
     if (opts.hashAlg && opts.cidVersion !== 1) {
       opts.cidVersion = 1
@@ -176,12 +181,12 @@ module.exports = function files (self) {
 
     opts.progress = progress
     return pull(
-      pull.map(normalizeContent.bind(null, opts)),
+      pull.map(content => normalizeContent(content, opts)),
       pull.flatten(),
       importer(self._ipld, opts),
-      pull.asyncMap(prepareFile.bind(null, self, opts)),
-      pull.map(preloadFile.bind(null, self, opts)),
-      pull.asyncMap(pinFile.bind(null, self, opts))
+      pull.map(file => prepareFile(file, opts)),
+      pull.map(file => preloadFile(file, self, opts)),
+      pull.asyncMap((file, cb) => pinFile(file, self, opts, cb))
     )
   }
 
@@ -236,6 +241,10 @@ module.exports = function files (self) {
     const maxDepth = recursive ? global.Infinity : pathDepth
     options.maxDepth = options.maxDepth || maxDepth
 
+    if (options.cidBase && !multibase.names.includes(options.cidBase)) {
+      return pull.error(errCode(new Error('invalid multibase'), 'ERR_INVALID_MULTIBASE'))
+    }
+
     if (options.preload !== false) {
       self._preload(pathComponents[0])
     }
@@ -246,8 +255,7 @@ module.exports = function files (self) {
         recursive ? node.depth >= pathDepth : node.depth === pathDepth
       ),
       pull.map(node => {
-        const cid = new CID(node.hash)
-        node = Object.assign({}, node, { hash: cid.toBaseEncodedString() })
+        node = Object.assign({}, node, { hash: cidToString(node.hash, options.cidBase) })
         delete node.content
         return node
       })
@@ -273,11 +281,6 @@ module.exports = function files (self) {
 
         if (!ok) {
           return callback(new Error('first arg must be a buffer, readable stream, pull stream, an object or array of objects'))
-        }
-
-        // CID v0 is for multihashes encoded with sha2-256
-        if (options.hashAlg && options.cidVersion !== 1) {
-          options.cidVersion = 1
         }
 
         pull(

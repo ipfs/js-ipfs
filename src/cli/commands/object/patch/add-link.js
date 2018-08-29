@@ -2,14 +2,23 @@
 
 const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
-const print = require('../../../utils').print
+const CID = require('cids')
+const multibase = require('multibase')
+const { print } = require('../../../utils')
+const { cidToString } = require('../../../../utils/cid')
 
 module.exports = {
   command: 'add-link <root> <name> <ref>',
 
   describe: 'Add a link to a given object',
 
-  builder: {},
+  builder: {
+    'cid-base': {
+      describe: 'Number base to display CIDs in.',
+      type: 'string',
+      choices: multibase.names
+    }
+  },
 
   handler (argv) {
     const ipfs = argv.ipfs
@@ -29,7 +38,7 @@ module.exports = {
           throw err
         }
 
-        print(nodeB.toJSON().multihash)
+        print(cidToString(new CID(nodeB.multihash), argv.cidBase))
       })
     })
   }

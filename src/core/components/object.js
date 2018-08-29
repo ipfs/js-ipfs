@@ -10,6 +10,8 @@ const CID = require('cids')
 const mh = require('multihashes')
 const Unixfs = require('ipfs-unixfs')
 const errCode = require('err-code')
+const multibase = require('multibase')
+const { cidToString } = require('../../utils/cid')
 
 function normalizeMultihash (multihash, enc) {
   if (typeof multihash === 'string') {
@@ -292,6 +294,14 @@ module.exports = function object (self) {
         options = {}
       }
 
+      options = options || {}
+
+      if (options.cidBase && !multibase.names.includes(options.cidBase)) {
+        return setImmediate(() => {
+          callback(errCode(new Error('invalid multibase'), 'ERR_INVALID_MULTIBASE'))
+        })
+      }
+
       self.object.get(multihash, options, (err, node) => {
         if (err) {
           return callback(err)
@@ -305,10 +315,8 @@ module.exports = function object (self) {
           const blockSize = serialized.length
           const linkLength = node.links.reduce((a, l) => a + l.size, 0)
 
-          const nodeJSON = node.toJSON()
-
           callback(null, {
-            Hash: nodeJSON.multihash,
+            Hash: cidToString(node.multihash, options.cidBase),
             NumLinks: node.links.length,
             BlockSize: blockSize,
             LinksSize: blockSize - node.data.length,

@@ -1,6 +1,9 @@
 'use strict'
 
-const print = require('../../utils').print
+const CID = require('cids')
+const multibase = require('multibase')
+const { print } = require('../../utils')
+const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
   command: 'get <key>',
@@ -11,6 +14,11 @@ module.exports = {
     'data-encoding': {
       type: 'string',
       default: 'base64'
+    },
+    'cid-base': {
+      describe: 'Number base to display CIDs in.',
+      type: 'string',
+      choices: multibase.names
     }
   },
 
@@ -27,13 +35,13 @@ module.exports = {
 
       const answer = {
         Data: nodeJSON.data,
-        Hash: nodeJSON.multihash,
+        Hash: cidToString(new CID(node.multihash), argv.cidBase),
         Size: nodeJSON.size,
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: l.multihash
+            Hash: cidToString(new CID(l.multihash), argv.cidBase)
           }
         })
       }
