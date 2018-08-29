@@ -44,6 +44,7 @@ module.exports = (self) => {
         self._blockService.setExchange(self._bitswap)
 
         self._preload.start()
+        self._ipns.republisher.start()
         self._mfsPreload.start(cb)
       }
     ], done)
