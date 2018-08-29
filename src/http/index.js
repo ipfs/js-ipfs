@@ -75,6 +75,7 @@ function HttpApi (repo, config, cliArgs) {
             pass: cliArgs && cliArgs.pass,
             EXPERIMENTAL: {
               pubsub: cliArgs && cliArgs.enablePubsubExperiment,
+              ipnsPubsub: cliArgs && cliArgs.enableNamesysPubsub,
               dht: cliArgs && cliArgs.enableDhtExperiment,
               sharding: cliArgs && cliArgs.enableShardingExperiment
             },

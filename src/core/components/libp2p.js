@@ -45,7 +45,7 @@ module.exports = function libp2p (self) {
               },
               EXPERIMENTAL: {
                 dht: get(opts.options, 'EXPERIMENTAL.dht', false),
-                pubsub: get(opts.options, 'EXPERIMENTAL.pubsub', false)
+                pubsub: get(opts.options, 'EXPERIMENTAL.pubsub', false) || get(opts.options, 'EXPERIMENTAL.ipnsPubsub', false)
               }
             },
             connectionManager: get(opts.options, 'connectionManager',

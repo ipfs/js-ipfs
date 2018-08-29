@@ -15,6 +15,9 @@ const UnixFs = require('ipfs-unixfs')
 const IPNS = require('../ipns')
 const OfflineDatastore = require('../ipns/routing/offline-datastore')
 
+const IPNS = require('../ipns')
+const OfflineDatastore = require('../ipns/routing/offline-datastore')
+
 const addDefaultAssets = require('./init-assets')
 
 module.exports = function init (self) {

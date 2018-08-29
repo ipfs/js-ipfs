@@ -22,4 +22,29 @@ module.exports = (server) => {
       validate: resources.name.publish.validate
     }
   })
+
+  api.route({
+    method: '*',
+    path: '/api/v0/name/pubsub/state',
+    config: {
+      handler: resources.name.pubsub.state.handler
+    }
+  })
+
+  api.route({
+    method: '*',
+    path: '/api/v0/name/pubsub/subs',
+    config: {
+      handler: resources.name.pubsub.subs.handler
+    }
+  })
+
+  api.route({
+    method: '*',
+    path: '/api/v0/name/pubsub/cancel',
+    config: {
+      handler: resources.name.pubsub.cancel.handler,
+      validate: resources.name.pubsub.cancel.validate
+    }
+  })
 }

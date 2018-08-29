@@ -29,6 +29,7 @@ const schema = Joi.object().keys({
   }).allow(null),
   EXPERIMENTAL: Joi.object().keys({
     pubsub: Joi.boolean(),
+    namesysPubsub: Joi.boolean(),
     sharding: Joi.boolean(),
     dht: Joi.boolean()
   }).allow(null),

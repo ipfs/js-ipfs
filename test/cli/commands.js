@@ -4,7 +4,7 @@
 const expect = require('chai').expect
 const runOnAndOff = require('../utils/on-and-off')
 
-const commandCount = 82
+const commandCount = 86
 describe('commands', () => runOnAndOff((thing) => {
   let ipfs
 
