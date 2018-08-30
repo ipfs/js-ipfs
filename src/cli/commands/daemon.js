@@ -1,6 +1,5 @@
 'use strict'
 
-const HttpAPI = require('../../http')
 const utils = require('../utils')
 const print = utils.print
 
@@ -32,6 +31,9 @@ module.exports = {
     print('Initializing daemon...')
 
     const repoPath = utils.getRepoPath()
+
+    // Required inline to reduce startup time
+    const HttpAPI = require('../../http')
     httpAPI = new HttpAPI(process.env.IPFS_PATH, null, argv)
 
     httpAPI.start((err) => {

@@ -5,6 +5,7 @@ const map = require('async/map')
 const isIpfs = require('is-ipfs')
 const CID = require('cids')
 
+const ERR_BAD_PATH = 'ERR_BAD_PATH'
 exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'ipfs daemon\' first.'
 
 /**
@@ -34,6 +35,29 @@ function parseIpfsPath (ipfsPath) {
     return { hash, links }
   } else {
     throw invalidPathErr
+  }
+}
+
+/**
+ * Returns a well-formed ipfs Path.
+ * The returned path will always be prefixed with /ipfs/ or /ipns/.
+ * If the received string is not a valid ipfs path, an error will be returned
+ * examples:
+ *  b58Hash -> { hash: 'b58Hash', links: [] }
+ *  b58Hash/mercury/venus -> { hash: 'b58Hash', links: ['mercury', 'venus']}
+ *  /ipfs/b58Hash/links/by/name -> { hash: 'b58Hash', links: ['links', 'by', 'name'] }
+ *
+ * @param  {String} pathStr An ipfs-path, or ipns-path or a cid
+ * @return {String} ipfs-path or ipns-path
+ * @throws on an invalid @param ipfsPath
+ */
+const normalizePath = (pathStr) => {
+  if (isIpfs.cid(pathStr)) {
+    return `/ipfs/${pathStr}`
+  } else if (isIpfs.path(pathStr)) {
+    return pathStr
+  } else {
+    throw Object.assign(new Error(`invalid ${pathStr} path`), { code: ERR_BAD_PATH })
   }
 }
 
@@ -190,6 +214,7 @@ function parseChunkSize (str, name) {
   return size
 }
 
+exports.normalizePath = normalizePath
 exports.parseIpfsPath = parseIpfsPath
 exports.resolvePath = resolvePath
 exports.parseChunkerString = parseChunkerString

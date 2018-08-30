@@ -52,6 +52,7 @@ module.exports = function init (self) {
     opts.log = opts.log || function () {}
     const config = defaultConfig()
     let privateKey
+
     waterfall([
       // Verify repo does not yet exist.
       (cb) => self._repo.exists(cb),
@@ -61,19 +62,28 @@ module.exports = function init (self) {
           return cb(new Error('repo already exists'))
         }
 
-        // Generate peer identity keypair + transform to desired format + add to config.
-        opts.log(`generating ${opts.bits}-bit RSA keypair...`, false)
-        self.log('generating peer id: %s bits', opts.bits)
-        peerId.create({ bits: opts.bits }, cb)
+        if (opts.privateKey) {
+          self.log('using user-supplied private-key')
+          if (typeof opts.privateKey === 'object') {
+            cb(null, opts.privateKey)
+          } else {
+            peerId.createFromPrivKey(Buffer.from(opts.privateKey, 'base64'), cb)
+          }
+        } else {
+          // Generate peer identity keypair + transform to desired format + add to config.
+          opts.log(`generating ${opts.bits}-bit RSA keypair...`, false)
+          self.log('generating peer id: %s bits', opts.bits)
+          peerId.create({ bits: opts.bits }, cb)
+        }
       },
-      (keys, cb) => {
+      (peerId, cb) => {
         self.log('identity generated')
         config.Identity = {
-          PeerID: keys.toB58String(),
-          PrivKey: keys.privKey.bytes.toString('base64')
+          PeerID: peerId.toB58String(),
+          PrivKey: peerId.privKey.bytes.toString('base64')
         }
+        privateKey = peerId.privKey
         if (opts.pass) {
-          privateKey = keys.privKey
           config.Keychain = Keychain.generateOptions()
         }
         opts.log('done')
@@ -93,14 +103,19 @@ module.exports = function init (self) {
           cb(null, true)
         }
       },
+      // add empty unixfs dir object (go-ipfs assumes this exists)
       (_, cb) => {
         if (opts.emptyRepo) {
           return cb(null, true)
         }
 
         const tasks = [
-          // add empty unixfs dir object (go-ipfs assumes this exists)
-          (cb) => self.object.new('unixfs-dir', cb)
+          (cb) => {
+            waterfall([
+              (cb) => self.object.new('unixfs-dir', cb),
+              (emptyDirNode, cb) => self._ipns.initializeKeyspace(privateKey, emptyDirNode.toJSON().multihash, cb)
+            ], cb)
+          }
         ]
 
         if (typeof addDefaultAssets === 'function') {

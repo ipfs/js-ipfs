@@ -70,6 +70,7 @@ You can check the development status at the [Waffle Board](https://waffle.io/ipf
     - [Core API](#core-api)
       - [Files](#files)
       - [Graph](#graph)
+      - [Name](#name)
       - [Crypto and Key Management](#crypto-and-key-management)
       - [Network](#network)
       - [Node Management](#node-management)
@@ -251,6 +252,7 @@ Instead of a boolean, you may provide an object with custom initialization optio
 
 - `emptyRepo` (boolean) Whether to remove built-in assets, like the instructional tour and empty mutable file system, from the repo. (Default: `false`)
 - `bits` (number) Number of bits to use in the generated key pair. (Default: `2048`)
+- `privateKey` (string/PeerId) A pre-generated private key to use. Can be either a base64 string or a [PeerId](https://github.com/libp2p/js-peer-id) instance. **NOTE: This overrides `bits`.**
 - `pass` (string) A passphrase to encrypt keys. You should generally use the [top-level `pass` option](#optionspass) instead of the `init.pass` option (this one will take its value from the top-level option if not set).
 
 ##### `options.start`
@@ -544,6 +546,12 @@ The core API is grouped into several areas:
   - [`ipfs.pin.ls([hash], [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PIN.md#pinls)
   - [`ipfs.pin.rm(hash, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PIN.md#pinrm)
 
+### Name
+
+- [name](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md)
+  - [`ipfs.name.publish(value, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md#namepublish)
+  - [`ipfs.name.resolve(value, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md#nameresolve)
+
 #### Crypto and Key Management
 
 - [key](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/KEY.md)
@@ -836,6 +844,8 @@ Listing of the main packages used in the IPFS ecosystem. There are also three sp
 | [`ipld`](//github.com/ipld/js-ipld) | [![npm](https://img.shields.io/npm/v/ipld.svg?maxAge=86400&style=flat)](//github.com/ipld/js-ipld/releases) | [![Dep](https://david-dm.org/ipld/js-ipld.svg?style=flat)](https://david-dm.org/ipld/js-ipld) | [![Build Status](https://ci.ipfs.team/buildStatus/icon?job=ipld/js-ipld/master)](https://ci.ipfs.team/job/ipld/job/js-ipld/job/master/) | [![Coverage Status](https://codecov.io/gh/ipld/js-ipld/branch/master/graph/badge.svg)](https://codecov.io/gh/ipld/js-ipld) |
 | [`ipld-dag-pb`](//github.com/ipld/js-ipld-dag-pb) | [![npm](https://img.shields.io/npm/v/ipld-dag-pb.svg?maxAge=86400&style=flat)](//github.com/ipld/js-ipld-dag-pb/releases) | [![Dep](https://david-dm.org/ipld/js-ipld-dag-pb.svg?style=flat)](https://david-dm.org/ipld/js-ipld-dag-pb) | [![Build Status](https://ci.ipfs.team/buildStatus/icon?job=ipld/js-ipld-dag-pb/master)](https://ci.ipfs.team/job/ipld/job/js-ipld-dag-pb/job/master/) | [![Coverage Status](https://codecov.io/gh/ipld/js-ipld-dag-pb/branch/master/graph/badge.svg)](https://codecov.io/gh/ipld/js-ipld-dag-pb) |
 | [`ipld-dag-cbor`](//github.com/ipld/js-ipld-dag-cbor) | [![npm](https://img.shields.io/npm/v/ipld-dag-cbor.svg?maxAge=86400&style=flat)](//github.com/ipld/js-ipld-dag-cbor/releases) | [![Dep](https://david-dm.org/ipld/js-ipld-dag-cbor.svg?style=flat)](https://david-dm.org/ipld/js-ipld-dag-cbor) | [![Build Status](https://ci.ipfs.team/buildStatus/icon?job=ipld/js-ipld-dag-cbor/master)](https://ci.ipfs.team/job/ipld/job/js-ipld-dag-cbor/job/master/) | [![Coverage Status](https://codecov.io/gh/ipld/js-ipld-dag-cbor/branch/master/graph/badge.svg)](https://codecov.io/gh/ipld/js-ipld-dag-cbor) |
+| **Name** |
+| [`ipns`](//github.com/ipfs/js-ipns) | [![npm](https://img.shields.io/npm/v/ipns.svg?maxAge=86400&style=flat)](//github.com/ipfs/js-ipns/releases) | [![Dep](https://david-dm.org/ipfs/js-ipns.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipns) | [![Build Status](https://ci.ipfs.team/buildStatus/icon?job=ipfs/js-ipns/master)](https://ci.ipfs.team/job/ipfs/job/js-ipns/job/master/) | [![Coverage Status](https://codecov.io/gh/ipfs/js-ipns/branch/master/graph/badge.svg)](https://codecov.io/gh/ipfs/js-ipns) |
 | **Repo** |
 | [`ipfs-repo`](//github.com/ipfs/js-ipfs-repo) | [![npm](https://img.shields.io/npm/v/ipfs-repo.svg?maxAge=86400&style=flat)](//github.com/ipfs/js-ipfs-repo/releases) | [![Dep](https://david-dm.org/ipfs/js-ipfs-repo.svg?style=flat)](https://david-dm.org/ipfs/js-ipfs-repo) | [![Build Status](https://ci.ipfs.team/buildStatus/icon?job=ipfs/js-ipfs-repo/master)](https://ci.ipfs.team/job/ipfs/job/js-ipfs-repo/job/master/) | [![Coverage Status](https://codecov.io/gh/ipfs/js-ipfs-repo/branch/master/graph/badge.svg)](https://codecov.io/gh/ipfs/js-ipfs-repo) |
 | **Exchange** |

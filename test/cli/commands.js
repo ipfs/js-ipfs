@@ -3,7 +3,7 @@
 
 const expect = require('chai').expect
 
-const commandCount = 78
+const commandCount = 81
 
 module.exports = (thing) => describe('commands', () => {
   let ipfs

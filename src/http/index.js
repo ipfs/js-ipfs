@@ -71,6 +71,7 @@ function HttpApi (repo, config, cliArgs) {
             init: init,
             start: true,
             config: config,
+            local: cliArgs && cliArgs.local,
             pass: cliArgs && cliArgs.pass,
             EXPERIMENTAL: {
               pubsub: cliArgs && cliArgs.enablePubsubExperiment,
