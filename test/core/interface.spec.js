@@ -6,6 +6,8 @@ const CommonFactory = require('../utils/interface-common-factory')
 const isNode = require('detect-node')
 const dnsFetchStub = require('../utils/dns-fetch-stub')
 
+const reusableKey = require('../utils/keys/2.js')
+
 describe('interface-ipfs-core tests', () => {
   // ipfs.dns in the browser calls out to https://ipfs.io/api/v0/dns.
   // The following code stubs self.fetch to return a static CID for calls
@@ -43,7 +45,7 @@ describe('interface-ipfs-core tests', () => {
   tests.key(CommonFactory.create({
     spawnOptions: {
       args: ['--pass ipfs-is-awesome-software'],
-      initOptions: { bits: 512 }
+      initOptions: { privateKey: reusableKey }
     }
   }))
 
@@ -68,7 +70,7 @@ describe('interface-ipfs-core tests', () => {
   tests.name(CommonFactory.create({
     spawnOptions: {
       args: ['--pass ipfs-is-awesome-software'],
-      initOptions: { bits: 512 }
+      initOptions: { privateKey: reusableKey }
     }
   }))
 
@@ -85,10 +87,27 @@ describe('interface-ipfs-core tests', () => {
   tests.pubsub(CommonFactory.create({
     spawnOptions: {
       args: ['--enable-pubsub-experiment'],
-      initOptions: { bits: 512 }
+      initOptions: { privateKey: reusableKey }
     }
   }), {
-    skip: isNode ? null : {
+    skip: isNode ? [
+      {
+        name: 'should receive messages from a different node',
+        reason: 'Currently dont work well when running the entire suite'
+      },
+      {
+        name: 'should round trip a non-utf8 binary buffer',
+        reason: 'Currently dont work well when running the entire suite'
+      },
+      {
+        name: 'should receive multiple messages',
+        reason: 'Currently dont work well when running the entire suite'
+      },
+      {
+        name: 'send/receive 100 messages',
+        reason: 'Currently dont work well when running the entire suite'
+      }
+    ] : {
       reason: 'FIXME: disabled because no swarm addresses'
     }
   })
@@ -107,9 +126,11 @@ describe('interface-ipfs-core tests', () => {
 
   tests.swarm(CommonFactory.create({
     createSetup ({ ipfsFactory, nodes }) {
+      let howManyTimesCalled = 0
       return callback => {
         callback(null, {
           spawnNode (repoPath, config, cb) {
+            howManyTimesCalled = howManyTimesCalled + 1
             if (typeof repoPath === 'function') {
               cb = repoPath
               repoPath = undefined
@@ -119,8 +140,9 @@ describe('interface-ipfs-core tests', () => {
               cb = config
               config = undefined
             }
+            const keyToUse = require(`../utils/keys/${howManyTimesCalled}.js`)
 
-            const spawnOptions = { repoPath, config, initOptions: { bits: 512 } }
+            const spawnOptions = { repoPath, config, initOptions: { privateKey: keyToUse } }
 
             ipfsFactory.spawn(spawnOptions, (err, _ipfsd) => {
               if (err) {
