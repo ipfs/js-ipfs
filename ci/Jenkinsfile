@@ -1,2 +1,6 @@
 // Warning: This file is automatically synced from https://github.com/ipfs/ci-sync so if you want to change it, please change it there and ask someone to sync all repositories.
-javascript()
+javascript([
+  'node_modules': [
+    'ipfsd-ctl': 'github:ipfs/js-ipfsd-ctl#feat/allow-private-key-passing',
+  ]
+])
