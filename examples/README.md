@@ -23,6 +23,7 @@ Let us know if you find any issue or if you want to contribute and add a new tut
 - [js-ipfs in electron](./run-in-electron)
 - [Using streams to add a directory of files to ipfs](./browser-add-readable-stream)
 - [Customizing the ipfs repository](./custom-ipfs-repo)
+- [Customizing your libp2p bundle](./custom-libp2p)
 - [Streaming video from ipfs to the browser using `ReadableStream`s](./browser-readablestream)
 - [The Mutable File System in the browser](./browser-mfs)
 
