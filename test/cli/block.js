@@ -54,6 +54,7 @@ module.exports = (thing) => describe('block', () => {
       })
   })
 
+  // TODO skipped because block rm doesnt work with running daemon
   it.skip('rm', function () {
     this.timeout(40 * 1000)
 

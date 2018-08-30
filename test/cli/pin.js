@@ -74,4 +74,5 @@ module.exports = (thing) => describe('pin', () => {
       })
     })
   })
+
 })
