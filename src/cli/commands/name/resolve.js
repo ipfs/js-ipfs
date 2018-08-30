@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../utils').print
-
 module.exports = {
   command: 'resolve [<name>]',
 
@@ -28,14 +26,19 @@ module.exports = {
 
     argv.ipfs.name.resolve(argv.name, opts, (err, result) => {
       if (err) {
-        throw err
+        if (argv.onComplete) {
+          return argv.onComplete(err)
+        } else {
+          throw err
+        }
       }
 
       if (result && result.path) {
-        print(result.path)
+        argv.printer(result.path)
       } else {
-        print(result)
+        argv.printer(result)
       }
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

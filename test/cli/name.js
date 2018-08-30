@@ -15,7 +15,7 @@ const df = DaemonFactory.create({ type: 'js' })
 
 const checkAll = (bits) => string => bits.every(bit => string.includes(bit))
 
-describe('name', () => {
+const test = (thing) => describe('name', () => {
   const passPhrase = hat()
   const pass = '--pass ' + passPhrase
   const name = 'test-key-' + hat()
@@ -62,6 +62,7 @@ describe('name', () => {
   })
 
   after(function (done) {
+    this.timeout(80 * 1000)
     if (ipfsd) {
       ipfsd.stop(() => done())
     } else {
@@ -180,3 +181,5 @@ describe('name', () => {
     })
   })
 })
+test.part = 'standalone'
+module.exports = test
