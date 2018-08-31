@@ -88,6 +88,22 @@ if (args[0] === 'daemon' || args[0] === 'init') {
         cli.command(alias)
       })
 
+      const cmdsToLoad = [
+        'block',
+        'id',
+        'object'
+      ]
+
+      const Commands = require('../commands.js')
+      const commands = new Commands()
+
+      cmdsToLoad.forEach((cmd) => {
+        const module = require('../core/components/' + cmd)
+        commands.add(module.__api)
+      })
+
+      commands.initCLI(cli)
+
       cli
         .commandDir('commands')
         .help()
@@ -96,7 +112,7 @@ if (args[0] === 'daemon' || args[0] === 'init') {
 
       let exitCode = 0
 
-      const parser = new YargsPromise(cli, { ipfs })
+      const parser = new YargsPromise(cli, { ipfs, printer: print })
       parser.parse(args)
         .then(({ data, argv }) => {
           if (data) {
@@ -110,7 +126,7 @@ if (args[0] === 'daemon' || args[0] === 'init') {
           if (arg.message) {
             print(arg.message)
           } else if (arg.error && arg.error.message) {
-            print(arg.error.message)
+            print(arg.error.stack)
           } else {
             print('Unknown error, please re-run the command with DEBUG=ipfs:cli to see debug output')
           }

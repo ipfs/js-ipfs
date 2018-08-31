@@ -24,3 +24,28 @@ module.exports = function id (self) {
     }))
   })
 }
+
+module.exports.__api = {
+  root: true,
+  name: 'id',
+  description: 'Shows IPFS Node ID info',
+  call: (self, options, callback) => {
+    return self.id(callback)
+  },
+  cli: {
+    post: (id, printer) => {
+      printer(JSON.stringify(id, null, 2))
+    }
+  },
+  http: {
+    post: (id) => {
+      return {
+        ID: id.id,
+        PublicKey: id.publicKey,
+        Addresses: id.addresses,
+        AgentVersion: id.agentVersion,
+        ProtocolVersion: id.protocolVersion
+      }
+    }
+  }
+}

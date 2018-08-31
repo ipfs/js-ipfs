@@ -132,6 +132,22 @@ function HttpApi (repo, config, cliArgs) {
           // Nicer errors
           errorHandler(this, this.server)
 
+          const cmdsToLoad = [
+            'block',
+            'id',
+            'object'
+          ]
+
+          const Commands = require('../commands.js')
+          const commands = new Commands()
+
+          cmdsToLoad.forEach((cmd) => {
+            const module = require('../core/components/' + cmd)
+            commands.add(module.__api)
+          })
+
+          commands.initHTTP(this.server)
+
           // load routes
           require('./api/routes')(this.server)
           // load gateway routes

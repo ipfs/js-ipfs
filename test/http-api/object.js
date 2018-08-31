@@ -16,7 +16,7 @@ const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
 
 function asJson (cb) {
   return (err, result) => {
-    expect(err).to.not.exist()
+    if (err) return cb(err)
     const nodeJSON = result.toJSON()
     cb(null, nodeJSON)
   }
@@ -41,7 +41,7 @@ describe('object endpoint', () => {
   describe('.object', () => {
     it('.new', (done) => {
       ipfs.object.new(asJson((err, res) => {
-        expect(err).to.not.exist()
+        if (err) return done(err)
         expect(res.multihash)
           .to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
         expect(res.links).to.be.eql([])
@@ -98,7 +98,7 @@ describe('object endpoint', () => {
         }
 
         ipfs.object.put(filePath, { enc: 'json' }, asJson((err, res) => {
-          expect(err).to.not.exist()
+          if (err) done(err)
           expect(res).to.eql(expectedResult)
           done()
         }))

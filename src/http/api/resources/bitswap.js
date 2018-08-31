@@ -2,7 +2,8 @@
 
 const boom = require('boom')
 
-const parseKey = require('./block').parseKey
+// This now lives in components/block
+const getKey = require('../../../core/components/block')._getKey
 
 exports = module.exports
 
@@ -46,8 +47,8 @@ exports.stat = {
 }
 
 exports.unwant = {
-  // uses common parseKey method that assigns a `key` to request.pre.args
-  parseArgs: parseKey,
+  // uses common getKey method that assigns a `key` to request.pre.args
+  parseArgs: getKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
