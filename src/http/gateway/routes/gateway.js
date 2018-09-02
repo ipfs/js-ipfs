@@ -12,7 +12,10 @@ module.exports = (server) => {
       pre: [
         { method: resources.gateway.checkCID, assign: 'args' }
       ],
-      handler: resources.gateway.handler
+      handler: resources.gateway.handler,
+      ext: {
+        onPostHandler: { method: resources.gateway.afterHandler }
+      }
     }
   })
 }

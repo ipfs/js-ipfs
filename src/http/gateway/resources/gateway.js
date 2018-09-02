@@ -8,6 +8,7 @@ const toPull = require('stream-to-pull-stream')
 const fileType = require('file-type')
 const mime = require('mime-types')
 const Stream = require('readable-stream')
+const CID = require('cids')
 
 const { resolver } = require('ipfs-http-response')
 const PathUtils = require('../utils/path')
@@ -41,6 +42,7 @@ module.exports = {
       ref: `/ipfs/${request.params.cid}`
     })
   },
+
   handler: (request, reply) => {
     const ref = request.pre.args.ref
     const ipfs = request.server.app.ipfs
@@ -120,6 +122,15 @@ module.exports = {
 
         let response = reply(stream2).hold()
 
+        // Etag maps directly to an identifier for a specific version of a resource
+        // TODO: change to .cid.toBaseEncodedString() after switch to new js-ipfs-http-response
+        response.header('Etag', `"${data.multihash}"`)
+
+        // Set headers specific to the immutable namespace
+        if (ref.startsWith('/ipfs/')) {
+          response.header('Cache-Control', 'public, max-age=29030400, immutable')
+        }
+
         pull(
           toPull.source(stream),
           pull.through((chunk) => {
@@ -148,5 +159,21 @@ module.exports = {
         )
       }
     })
+  },
+
+  afterHandler: (request, reply) => {
+    const response = request.response
+    if (response.statusCode === 200) {
+      const ref = request.pre.args.ref
+      response.header('X-Ipfs-Path', ref)
+      if (ref.startsWith('/ipfs/')) {
+        const rootCid = ref.split('/')[2]
+        const ipfsOrigin = new CID(rootCid).toV1().toBaseEncodedString('base32')
+        response.header('Suborigin', 'ipfs000' + ipfsOrigin)
+      }
+      // TODO: we don't have case-insensitive solution for /ipns/ yet (https://github.com/ipfs/go-ipfs/issues/5287)
+    }
+    reply.continue()
   }
+
 }
