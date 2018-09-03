@@ -26,7 +26,7 @@ module.exports = function addDefaultAssets (self, log, callback) {
       if (file.path === 'init-docs') {
         const cid = new CID(file.hash)
         log('to get started, enter:\n')
-        log(`\tjsipfs files cat /ipfs/${cid.toBaseEncodedString()}/readme\n`)
+        log(`\tjsipfs cat /ipfs/${cid.toBaseEncodedString()}/readme\n`)
       }
     }),
     pull.collect((err) => {
