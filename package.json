@@ -170,6 +170,7 @@
     "stream-to-pull-stream": "^1.7.2",
     "tar-stream": "^1.6.1",
     "temp": "~0.8.3",
+    "tempy": "^0.2.1",
     "through2": "^2.0.3",
     "update-notifier": "^2.5.0",
     "yargs": "^12.0.1",

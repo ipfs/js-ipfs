@@ -103,7 +103,11 @@ function HttpApi (repo, config, cliArgs) {
           this.server = new Hapi.Server({
             connections: {
               routes: {
-                cors: true
+                cors: {
+                  origin: ['*'],
+                  additionalHeaders: ['X-Stream-Output, X-Chunked-Output, X-Content-Length', 'Content-Type', 'Content-Range', 'IPFS-CHUNK-NAME', 'IPFS-CHUNK-ID', 'ipfs-chunk-boundary'],
+                  additionalExposedHeaders: ['X-Stream-Output, X-Chunked-Output, X-Content-Length']
+                }
               }
             },
             debug: process.env.DEBUG ? {
@@ -136,14 +140,6 @@ function HttpApi (repo, config, cliArgs) {
           require('./api/routes')(this.server)
           // load gateway routes
           require('./gateway/routes')(this.server)
-
-          // Set default headers
-          setHeader(this.server,
-            'Access-Control-Allow-Headers',
-            'X-Stream-Output, X-Chunked-Output, X-Content-Length')
-          setHeader(this.server,
-            'Access-Control-Expose-Headers',
-            'X-Stream-Output, X-Chunked-Output, X-Content-Length')
 
           this.server.start(cb)
         })
