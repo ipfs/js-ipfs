@@ -18,6 +18,7 @@
   - [ ] Publish a release candidate to npm
       ```sh
       # Current version is 0.31.7, to publish a release candidate for 0.32.0:
+      npm run build
       npm version 0.32.0-rc.1
       # Publish with "next" tag to ensure people still get 0.31.7 when they `npm i ipfs`
       npm publish --tag next
