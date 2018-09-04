@@ -116,11 +116,11 @@ module.exports = (server) => {
       handler: (request, reply) => {
         console.log('received')
         console.log(request.headers['content-range'])
-        console.log(request.headers['ipfs-chunk-id'])
-        console.log(request.headers['ipfs-chunk-name'])
-        const boundary = request.headers['ipfs-chunk-boundary']
-        const id = request.headers['ipfs-chunk-name'] // change name to id
-        const index = Number(request.headers['ipfs-chunk-id'])
+        console.log(request.headers['x-ipfs-chunk-index'])
+        console.log(request.headers['x-ipfs-chunk-group-uuid'])
+        const boundary = request.headers['x-ipfs-chunk-boundary']
+        const id = request.headers['x-ipfs-chunk-group-uuid'] // change name to id
+        const index = Number(request.headers['x-ipfs-chunk-index'])
         const file = path.join(filesDir, id)
         const match = request.headers['content-range'].match(/(\d+)-(\d+)\/(\d+|\*)/)
         const ipfs = request.server.app.ipfs
@@ -160,7 +160,7 @@ module.exports = (server) => {
           // return;
         }
 
-        if (index === -1) {
+        if (start === total) {
           // check if size + payload.length === total
           /* all chunks have been received */
           stream.on('finish', function () {

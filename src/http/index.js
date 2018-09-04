@@ -105,7 +105,7 @@ function HttpApi (repo, config, cliArgs) {
               routes: {
                 cors: {
                   origin: ['*'],
-                  additionalHeaders: ['X-Stream-Output, X-Chunked-Output, X-Content-Length', 'Content-Type', 'Content-Range', 'IPFS-CHUNK-NAME', 'IPFS-CHUNK-ID', 'ipfs-chunk-boundary'],
+                  additionalHeaders: ['X-Stream-Output, X-Chunked-Output, X-Content-Length', 'Content-Type', 'Content-Range', 'x-ipfs-chunk-index', 'x-ipfs-chunk-group-uuid', 'x-ipfs-chunk-boundary'],
                   additionalExposedHeaders: ['X-Stream-Output, X-Chunked-Output, X-Content-Length']
                 }
               }
