@@ -11,26 +11,35 @@ describe('bitswap', () => runOn((thing) => {
   let peerId
   const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
 
-  before(function (done) {
-    this.timeout(2 * 60 * 1000)
+  before(() => {
     ipfs = thing.ipfs
-    ipfs('block get ' + key)
-      .then(() => {})
-      .catch(() => {})
+  })
+
+  before(() => {
+    ipfs('block get ' + key).catch(() => {})
+  })
+
+  before(function (done) {
+    this.timeout(60 * 1000)
 
     PeerId.create({ bits: 512 }, (err, peer) => {
       expect(err).to.not.exist()
       peerId = peer.toB58String()
-
-      waitFor((cb) => {
-        ipfs('bitswap wantlist')
-          .then(out => cb(null, out.includes(key)))
-          .catch(cb)
-      }, {
-        name: key + ' to be wanted',
-        timeout: 60 * 1000
-      }, done)
+      done()
     })
+  })
+
+  before(function (done) {
+    this.timeout(2 * 60 * 1000)
+
+    waitFor((cb) => {
+      ipfs('bitswap wantlist')
+        .then(out => cb(null, out.includes(key)))
+        .catch(cb)
+    }, {
+      name: key + ' to be wanted',
+      timeout: 60 * 1000
+    }, done)
   })
 
   it('wantlist', function () {
