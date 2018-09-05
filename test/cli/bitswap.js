@@ -25,15 +25,7 @@ describe('bitswap', () => runOn((thing) => {
     PeerId.create({ bits: 512 }, (err, peer) => {
       expect(err).to.not.exist()
       peerId = peer.toB58String()
-
-      waitFor((cb) => {
-        ipfs('bitswap wantlist')
-          .then(out => cb(null, out.includes(key)))
-          .catch(cb)
-      }, {
-        name: key + ' to be wanted',
-        timeout: 60 * 1000
-      }, done)
+      done()
     })
   })
 
