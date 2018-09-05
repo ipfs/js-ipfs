@@ -32,11 +32,13 @@ describe('bitswap', () => runOn((thing) => {
   before(function (done) {
     this.timeout(2 * 60 * 1000)
 
-    waitFor((cb) => {
+    const test = (cb) => {
       ipfs('bitswap wantlist')
         .then(out => cb(null, out.includes(key)))
         .catch(cb)
-    }, {
+    }
+
+    waitFor(test, {
       name: key + ' to be wanted',
       timeout: 60 * 1000
     }, done)

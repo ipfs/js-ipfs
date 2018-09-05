@@ -1,3 +1,5 @@
+'use strict'
+
 // Wait for async function `test` to callback(null, true) or timeout after
 // options.timeout milliseconds.
 module.exports = function waitFor (test, options, callback) {
