@@ -6,57 +6,107 @@ const fs = require('fs')
 const path = require('path')
 const tempy = require('tempy')
 const multipart = require('ipfs-multipart')
-const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
+const toStream = require('pull-stream-to-stream')
+const pull = require('pull-stream')
 const pushable = require('pull-pushable')
+const abortable = require('pull-abortable')
+const { serialize } = require('pull-ndjson')
 
 const streams = []
 const filesDir = tempy.directory()
 
-const createMultipartStream = (readStream, boundary, ipfs, cb) => {
-  const parser = new multipart.Parser({ boundary: boundary })
-  readStream.pipe(parser)
+const responseError = (msg, code, request, abortStream) => {
+  const err = JSON.stringify({ Message: msg, Code: code })
+  request.raw.res.addTrailers({
+    'X-Stream-Error': err
+  })
+  abortStream.abort()
+}
+const createMultipartStream = (readStream, boundary, ipfs, request, reply, cb) => {
   const fileAdder = pushable()
+  const parser = new multipart.Parser({ boundary: boundary })
+  let filesParsed = false
+
+  readStream.pipe(parser)
 
   parser.on('file', (fileName, fileStream) => {
-    fileName = decodeURIComponent(fileName)
-
-    const filePair = {
-      path: fileName,
+    console.log('File: ', fileName)
+    filesParsed = true
+    fileAdder.push({
+      path: decodeURIComponent(fileName),
       content: toPull(fileStream)
-    }
-    console.log(filePair)
-    fileAdder.push(filePair)
+    })
   })
 
   parser.on('directory', (directory) => {
-    directory = decodeURIComponent(directory)
     fileAdder.push({
-      path: directory,
+      path: decodeURIComponent(directory),
       content: ''
     })
   })
 
   parser.on('end', () => {
+    console.log('multipart end')
     fileAdder.end()
+    if (!filesParsed) {
+      reply({
+        Message: "File argument 'data' is required.",
+        Code: 0,
+        Type: 'error'
+      }).code(400).takeover()
+    }
   })
+
+  const pushStream = pushable()
+  const abortStream = abortable()
+  const replyStream = toStream.source(pull(
+    pushStream,
+    abortStream,
+    serialize()
+  ))
+
+  // Fix Hapi Error: Stream must have a streams2 readable interface
+  if (!replyStream._read) {
+    replyStream._read = () => {}
+    replyStream._readableState = {}
+    replyStream.unpipe = () => {}
+  }
+
+  // setup reply
+  reply(replyStream)
+    .header('x-chunked-output', '1')
+    .header('content-type', 'application/json')
+    .header('Trailer', 'X-Stream-Error')
+
+  const progressHandler = (bytes) => {
+    pushStream.push({ Bytes: bytes })
+  }
+  // ipfs add options
+  const options = {
+    cidVersion: request.query['cid-version'],
+    rawLeaves: request.query['raw-leaves'],
+    progress: request.query.progress ? progressHandler : null,
+    onlyHash: request.query['only-hash'],
+    hashAlg: request.query.hash,
+    wrapWithDirectory: request.query['wrap-with-directory'],
+    pin: request.query.pin,
+    chunker: request.query.chunker
+  }
 
   pull(
     fileAdder,
-    ipfs.files.addPullStream(),
-    pull.map((file) => {
-      return {
-        Name: file.path, // addPullStream already turned this into a hash if it wanted to
-        Hash: file.hash,
-        Size: file.size
-      }
-    }),
+    ipfs.files.addPullStream(options),
     pull.collect((err, files) => {
       if (err) {
-        cb(err)
-        return
+        return responseError(err.msg, 0, request)
       }
-      cb(null, files)
+      if (files.length === 0) {
+        return responseError('Failed to add files.', 0, request)
+      }
+      console.log(files)
+      files.forEach((f) => pushStream.push(f))
+      pushStream.end()
     })
   )
 
@@ -111,7 +161,7 @@ module.exports = (server) => {
     config: {
       payload: {
         parse: false,
-        maxBytes: 10048576
+        maxBytes: 10485760
       },
       handler: (request, reply) => {
         console.log('received')
@@ -166,13 +216,7 @@ module.exports = (server) => {
           stream.on('finish', function () {
             console.log('add to ipfs from the file')
             var readStream = fs.createReadStream(file)
-            createMultipartStream(readStream, boundary, ipfs, (err, files) => {
-              if (err) {
-                console.error(err)
-              }
-              console.log('finished adding to ipfs', files)
-              reply({files})
-            })
+            createMultipartStream(readStream, boundary, ipfs, request, reply)
           })
 
           stream.end()
