@@ -4,6 +4,7 @@
 const expect = require('chai').expect
 const runOn = require('../utils/on-and-off').on
 const PeerId = require('peer-id')
+const waitFor = require('../utils/wait-for')
 
 describe('bitswap', () => runOn((thing) => {
   let ipfs
@@ -11,15 +12,24 @@ describe('bitswap', () => runOn((thing) => {
   const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
 
   before(function (done) {
-    this.timeout(60 * 1000)
+    this.timeout(2 * 60 * 1000)
     ipfs = thing.ipfs
     ipfs('block get ' + key)
       .then(() => {})
       .catch(() => {})
+
     PeerId.create({ bits: 512 }, (err, peer) => {
       expect(err).to.not.exist()
       peerId = peer.toB58String()
-      done()
+
+      waitFor((cb) => {
+        ipfs('bitswap wantlist')
+          .then(out => cb(null, out.includes(key)))
+          .catch(cb)
+      }, {
+        name: key + ' to be wanted',
+        timeout: 60 * 1000
+      }, done)
     })
   })
 
