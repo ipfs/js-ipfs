@@ -34,7 +34,7 @@ module.exports = (createCommon, options) => {
       this.timeout(20 * 1000)
       this.retries(3)
 
-      ipfs.dns('ipfs.io', (err, path) => {
+      ipfs.dns('ipfs.io', {r: true}, (err, path) => {
         expect(err).to.not.exist()
         expect(path).to.exist()
         done()

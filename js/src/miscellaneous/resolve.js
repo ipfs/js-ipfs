@@ -92,7 +92,7 @@ module.exports = (createCommon, options) => {
     it('should resolve an IPNS DNS link', function (done) {
       this.timeout(20 * 1000)
 
-      ipfs.resolve('/ipns/ipfs.io', (err, path) => {
+      ipfs.resolve('/ipns/ipfs.io', {r: true}, (err, path) => {
         expect(err).to.not.exist()
         expect(isIpfs.ipfsPath(path)).to.be.true()
         done()
