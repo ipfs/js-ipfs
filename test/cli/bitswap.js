@@ -16,7 +16,7 @@ describe('bitswap', () => runOn((thing) => {
     ipfs('block get ' + key)
       .then(() => {})
       .catch(() => {})
-    PeerId.create((err, peer) => {
+    PeerId.create({ bits: 512 }, (err, peer) => {
       expect(err).to.not.exist()
       peerId = peer.toB58String()
       done()
