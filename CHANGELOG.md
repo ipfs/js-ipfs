@@ -1,3 +1,16 @@
+<a name="0.77.1"></a>
+## [0.77.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.77.0...v0.77.1) (2018-09-05)
+
+
+### Bug Fixes
+
+* bitswap.stat docs ([#355](https://github.com/ipfs/interface-ipfs-core/issues/355)) ([f146e1b](https://github.com/ipfs/interface-ipfs-core/commit/f146e1b))
+* block CID links ([#356](https://github.com/ipfs/interface-ipfs-core/issues/356)) ([9c4d6e1](https://github.com/ipfs/interface-ipfs-core/commit/9c4d6e1))
+* block stat return value key ([1e02740](https://github.com/ipfs/interface-ipfs-core/commit/1e02740))
+* ipfs.io now should be resolved recursively ([#362](https://github.com/ipfs/interface-ipfs-core/issues/362)) ([d80d3a3](https://github.com/ipfs/interface-ipfs-core/commit/d80d3a3))
+
+
+
 <a name="0.77.0"></a>
 # [0.77.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.76.1...v0.77.0) (2018-08-28)
 
