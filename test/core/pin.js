@@ -82,7 +82,7 @@ describe('pin', function () {
   })
 
   after(function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(60 * 1000)
     ipfs.stop(done)
   })
 
