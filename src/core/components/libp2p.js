@@ -1,7 +1,5 @@
 'use strict'
 
-// libp2p-nodejs gets replaced by libp2p-browser when webpacked/browserified
-const Node = require('../runtime/libp2p-nodejs')
 const promisify = require('promisify-es6')
 const get = require('lodash/get')
 const defaultsDeep = require('@nodeutils/defaults-deep')
@@ -59,6 +57,9 @@ module.exports = function libp2p (self) {
             libp2pDefaults
           )
 
+          // Required inline to reduce startup time
+          // Note: libp2p-nodejs gets replaced by libp2p-browser when webpacked/browserified
+          const Node = require('../runtime/libp2p-nodejs')
           return new Node(libp2pOptions)
         }
 
