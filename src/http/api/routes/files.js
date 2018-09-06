@@ -16,23 +16,14 @@ const { serialize } = require('pull-ndjson')
 const streams = []
 const filesDir = tempy.directory()
 
-const responseError = (msg, code, request, abortStream) => {
-  const err = JSON.stringify({ Message: msg, Code: code })
-  request.raw.res.addTrailers({
-    'X-Stream-Error': err
-  })
-  abortStream.abort()
-}
-const createMultipartStream = (readStream, boundary, ipfs, request, reply, cb) => {
+const createMultipartReply = (readStream, boundary, ipfs, query, reply) => {
   const fileAdder = pushable()
   const parser = new multipart.Parser({ boundary: boundary })
-  let filesParsed = false
 
   readStream.pipe(parser)
 
   parser.on('file', (fileName, fileStream) => {
     console.log('File: ', fileName)
-    filesParsed = true
     fileAdder.push({
       path: decodeURIComponent(fileName),
       content: toPull(fileStream)
@@ -49,14 +40,9 @@ const createMultipartStream = (readStream, boundary, ipfs, request, reply, cb) =
   parser.on('end', () => {
     console.log('multipart end')
     fileAdder.end()
-    if (!filesParsed) {
-      reply({
-        Message: "File argument 'data' is required.",
-        Code: 0,
-        Type: 'error'
-      }).code(400).takeover()
-    }
   })
+
+  // TODO: handle multipart errors
 
   const pushStream = pushable()
   const abortStream = abortable()
@@ -77,21 +63,20 @@ const createMultipartStream = (readStream, boundary, ipfs, request, reply, cb) =
   reply(replyStream)
     .header('x-chunked-output', '1')
     .header('content-type', 'application/json')
-    .header('Trailer', 'X-Stream-Error')
 
   const progressHandler = (bytes) => {
     pushStream.push({ Bytes: bytes })
   }
   // ipfs add options
   const options = {
-    cidVersion: request.query['cid-version'],
-    rawLeaves: request.query['raw-leaves'],
-    progress: request.query.progress ? progressHandler : null,
-    onlyHash: request.query['only-hash'],
-    hashAlg: request.query.hash,
-    wrapWithDirectory: request.query['wrap-with-directory'],
-    pin: request.query.pin,
-    chunker: request.query.chunker
+    cidVersion: query['cid-version'],
+    rawLeaves: query['raw-leaves'],
+    progress: query.progress ? progressHandler : null,
+    onlyHash: query['only-hash'],
+    hashAlg: query.hash,
+    wrapWithDirectory: query['wrap-with-directory'],
+    pin: query.pin,
+    chunker: query.chunker
   }
 
   pull(
@@ -99,12 +84,14 @@ const createMultipartStream = (readStream, boundary, ipfs, request, reply, cb) =
     ipfs.files.addPullStream(options),
     pull.collect((err, files) => {
       if (err) {
-        return responseError(err.msg, 0, request)
+        pushStream.push({
+          Message: err.toString(),
+          Code: 0,
+          Type: 'error'
+        })
+        pushStream.end()
+        return
       }
-      if (files.length === 0) {
-        return responseError('Failed to add files.', 0, request)
-      }
-      console.log(files)
       files.forEach((f) => pushStream.push(f))
       pushStream.end()
     })
@@ -216,7 +203,7 @@ module.exports = (server) => {
           stream.on('finish', function () {
             console.log('add to ipfs from the file')
             var readStream = fs.createReadStream(file)
-            createMultipartStream(readStream, boundary, ipfs, request, reply)
+            createMultipartReply(readStream, boundary, ipfs, request.query, reply)
           })
 
           stream.end()

@@ -165,7 +165,6 @@ exports.add = {
   },
 
   handler: (request, reply) => {
-    console.log('yoo')
     if (!request.payload) {
       return reply({
         Message: 'Array, Buffer, or String is required.',
@@ -184,10 +183,6 @@ exports.add = {
     parser.on('file', (fileName, fileStream) => {
       fileName = decodeURIComponent(fileName)
 
-      console.log('file', fileName)
-      fileStream.on('data', (d) => {
-        console.log(d.byteLength)
-      })
       const filePair = {
         path: fileName,
         content: toPull(fileStream)
@@ -198,7 +193,6 @@ exports.add = {
 
     parser.on('directory', (directory) => {
       directory = decodeURIComponent(directory)
-      console.log('directory', directory)
       fileAdder.push({
         path: directory,
         content: ''
