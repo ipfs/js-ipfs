@@ -1,10 +1,12 @@
 'use strict'
 
-const resources = require('./../resources')
-const mfs = require('ipfs-mfs/http')
 const fs = require('fs')
 const path = require('path')
 const tempy = require('tempy')
+const del = require('del')
+const StreamConcat = require('stream-concat')
+const boom = require('boom')
+const glob = require('fast-glob')
 const multipart = require('ipfs-multipart')
 const toPull = require('stream-to-pull-stream')
 const toStream = require('pull-stream-to-stream')
@@ -12,18 +14,18 @@ const pull = require('pull-stream')
 const pushable = require('pull-pushable')
 const abortable = require('pull-abortable')
 const { serialize } = require('pull-ndjson')
+const mfs = require('ipfs-mfs/http')
+const resources = require('./../resources')
 
-const streams = []
 const filesDir = tempy.directory()
 
-const createMultipartReply = (readStream, boundary, ipfs, query, reply) => {
+const createMultipartReply = (readStream, boundary, ipfs, query, reply, cb) => {
   const fileAdder = pushable()
   const parser = new multipart.Parser({ boundary: boundary })
 
   readStream.pipe(parser)
 
   parser.on('file', (fileName, fileStream) => {
-    console.log('File: ', fileName)
     fileAdder.push({
       path: decodeURIComponent(fileName),
       content: toPull(fileStream)
@@ -38,7 +40,6 @@ const createMultipartReply = (readStream, boundary, ipfs, query, reply) => {
   })
 
   parser.on('end', () => {
-    console.log('multipart end')
     fileAdder.end()
   })
 
@@ -94,10 +95,9 @@ const createMultipartReply = (readStream, boundary, ipfs, query, reply) => {
       }
       files.forEach((f) => pushStream.push(f))
       pushStream.end()
+      cb()
     })
   )
-
-  return parser
 }
 module.exports = (server) => {
   const api = server.select('API')
@@ -142,7 +142,6 @@ module.exports = (server) => {
   })
 
   api.route({
-    // TODO fix method
     method: 'POST',
     path: '/api/v0/add-chunked',
     config: {
@@ -151,65 +150,59 @@ module.exports = (server) => {
         maxBytes: 10485760
       },
       handler: (request, reply) => {
-        console.log('received')
-        console.log(request.headers['content-range'])
-        console.log(request.headers['x-ipfs-chunk-index'])
-        console.log(request.headers['x-ipfs-chunk-group-uuid'])
+        // console.log('received')
+        // console.log(request.headers['content-range'])
+        // console.log(request.headers['x-ipfs-chunk-index'])
+        // console.log(request.headers['x-ipfs-chunk-group-uuid'])
         const boundary = request.headers['x-ipfs-chunk-boundary']
-        const id = request.headers['x-ipfs-chunk-group-uuid'] // change name to id
+        const id = request.headers['x-ipfs-chunk-group-uuid']
         const index = Number(request.headers['x-ipfs-chunk-index'])
-        const file = path.join(filesDir, id)
+        const file = path.join(filesDir, id) + '-' + index
         const match = request.headers['content-range'].match(/(\d+)-(\d+)\/(\d+|\*)/)
         const ipfs = request.server.app.ipfs
-        // if (!match || !match[1] || !match[2] || !match[3]) {
-        /* malformed content-range header */
-        // res.send('Bad Request', 400)
-        //   return;
-        // }
+
+        if (!match || !match[1] || !match[2] || !match[3]) {
+          return boom.badRequest('malformed content-range header')
+        }
 
         const start = parseInt(match[1])
         const end = parseInt(match[2])
         const total = parseInt(match[3])
-        // console.log(start, end, total, index, boundary)
 
-        let stream = streams[id]
-        if (!stream) {
-          console.log('create new stream', file)
-          stream = fs.createWriteStream(file, {flags: 'a+'})
-          streams[id] = stream
-        }
-
-        console.log('stream', file)
-        let size = 0
-        if (fs.existsSync(file)) {
-          size = fs.statSync(file).size
-        }
-
-        if ((end + 1) === size) {
-          /* duplicate chunk */
-          // res.send('Created', 201)
-          // return;
-        }
-
-        if (start !== size) {
-          /* missing chunk */
-          // res.send('Bad Request', 400)
-          // return;
-        }
+        // TODO validate duplicates, missing chunks
 
         if (start === total) {
-          // check if size + payload.length === total
           /* all chunks have been received */
-          stream.on('finish', function () {
-            console.log('add to ipfs from the file')
-            var readStream = fs.createReadStream(file)
-            createMultipartReply(readStream, boundary, ipfs, request.query, reply)
+          const base = path.join(filesDir, id) + '-'
+          const pattern = base + '*'
+          const files = glob.sync(pattern)
+
+          files.sort((a, b) => {
+            return Number(a.replace(base, '')) - Number(b.replace(base, ''))
           })
 
-          stream.end()
+          let fileIndex = 0
+          const nextStream = () => fileIndex === files.length ? null : fs.createReadStream(files[fileIndex++])
+          createMultipartReply(
+            new StreamConcat(nextStream),
+            boundary,
+            ipfs,
+            request.query,
+            reply,
+            () => {
+              console.log('Finished adding')
+              del(pattern, { force: true })
+                .then(paths => {
+                  console.log('Deleted files and folders:\n', paths.join('\n'))
+                })
+                .catch(console.error)
+            }
+          )
         } else {
+          const stream = fs.createWriteStream(file)
           stream.write(request.payload)
-          /* this chunk has been processed successfully */
+
+          // TODO handle errors
           reply({ Bytes: request.payload.length })
         }
       }
