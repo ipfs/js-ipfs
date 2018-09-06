@@ -40,7 +40,7 @@ describe('Check that a js-ipfs node can indeed contact the bootstrappers', () =>
   it('a node connects to bootstrappers', function (done) {
     this.timeout(2 * 60 * 1000)
 
-    waitFor((cb) => {
+    const test = (cb) => {
       ipfsd.api.swarm.peers((err, peers) => {
         if (err) return cb(err)
 
@@ -52,6 +52,8 @@ describe('Check that a js-ipfs node can indeed contact the bootstrappers', () =>
 
         cb(null, bootstrapList.every(addr => peerList.includes(addr)))
       })
-    }, { name: 'connect to all bootstrap nodes', timeout: 60 * 1000 }, done)
+    }
+
+    waitFor(test, { name: 'connect to all bootstrap nodes', timeout: 60 * 1000 }, done)
   })
 })
