@@ -26,10 +26,7 @@ describe('.files', () => {
     })
   })
 
-  after(function (done) {
-    this.timeout(10 * 1000)
-    ipfsd.stop(done)
-  })
+  after((done) => ipfsd.stop(done))
 
   describe('.add', function () {
     it('performs a speculative add, --only-hash', () => {
