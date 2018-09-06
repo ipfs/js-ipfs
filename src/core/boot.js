@@ -88,7 +88,7 @@ function isRepoUninitializedError (err) {
   }
 
   // TODO: As error codes continue to be standardized, this logic can be phase out;
-  // it is here to maintain compatability
+  // it is here to maintain compatibility
   if (err.message.match(/not found/) || // indexeddb
     err.message.match(/ENOENT/) || // fs
     err.message.match(/No value/) // memory
