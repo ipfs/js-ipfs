@@ -127,6 +127,8 @@ describe('utils', () => {
 
     after(done => node.stop(done))
 
+    after(done => repo.teardown(done))
+
     it('handles base58 hash format', (done) => {
       utils.resolvePath(node.object, rootHash, (err, hashes) => {
         expect(err).to.not.exist()

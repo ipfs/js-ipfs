@@ -20,6 +20,14 @@ const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/create-repo-nodejs.js')
 
 describe('create node', function () {
+  let tempRepo
+
+  beforeEach(() => {
+    tempRepo = createTempRepo()
+  })
+
+  afterEach((done) => tempRepo.teardown(done))
+
   it('custom repoPath', function (done) {
     this.timeout(80 * 1000)
 
@@ -49,7 +57,7 @@ describe('create node', function () {
     this.timeout(80 * 1000)
 
     const node = new IPFS({
-      repo: createTempRepo(),
+      repo: tempRepo,
       config: {
         Addresses: {
           Swarm: []
@@ -73,7 +81,7 @@ describe('create node', function () {
     this.timeout(80 * 1000)
 
     const node = IPFS.createNode({
-      repo: createTempRepo(),
+      repo: tempRepo,
       config: {
         Addresses: {
           Swarm: []
@@ -100,7 +108,7 @@ describe('create node', function () {
     this.timeout(80 * 1000)
 
     const node = new IPFS({
-      repo: createTempRepo(),
+      repo: tempRepo,
       init: {
         bits: 512
       },
@@ -127,7 +135,7 @@ describe('create node', function () {
     this.timeout(80 * 1000)
 
     const node = new IPFS({
-      repo: createTempRepo(),
+      repo: tempRepo,
       init: false,
       config: {
         Addresses: {
@@ -159,7 +167,7 @@ describe('create node', function () {
     this.timeout(80 * 1000)
 
     const node = new IPFS({
-      repo: createTempRepo(),
+      repo: tempRepo,
       init: false,
       start: false,
       config: {
@@ -189,7 +197,7 @@ describe('create node', function () {
     this.timeout(80 * 1000)
 
     const node = new IPFS({
-      repo: createTempRepo(),
+      repo: tempRepo,
       init: true,
       start: false,
       config: {
@@ -211,7 +219,7 @@ describe('create node', function () {
     this.timeout(80 * 1000)
 
     const node = new IPFS({
-      repo: createTempRepo(),
+      repo: tempRepo,
       init: true,
       start: false,
       config: {
@@ -232,7 +240,7 @@ describe('create node', function () {
     if (!isNode) { return done() }
 
     const node = new IPFS({
-      repo: createTempRepo(),
+      repo: tempRepo,
       config: {
         Addresses: {
           Swarm: ['/ip4/127.0.0.1/tcp/9977']
@@ -258,7 +266,7 @@ describe('create node', function () {
     this.timeout(80 * 1000)
 
     const node = new IPFS({
-      repo: createTempRepo(),
+      repo: tempRepo,
       config: {
         Addresses: {
           Swarm: []
@@ -279,7 +287,7 @@ describe('create node', function () {
     this.timeout(80 * 1000)
 
     const node = new IPFS({
-      repo: createTempRepo(),
+      repo: tempRepo,
       config: {
         Addresses: {
           Swarm: []
@@ -299,7 +307,7 @@ describe('create node', function () {
     this.timeout(80 * 1000)
 
     const options = {
-      repo: createTempRepo(),
+      repo: tempRepo,
       config: {
         Addresses: {
           Swarm: []
@@ -323,13 +331,13 @@ describe('create node', function () {
   })
 
   it('does not share identity with a simultaneously created node', function (done) {
-    this.timeout(80 * 1000)
+    this.timeout(2 * 60 * 1000)
 
     let _nodeNumber = 0
-    function createNode () {
+    function createNode (repo) {
       _nodeNumber++
       return new IPFS({
-        repo: createTempRepo(),
+        repo: tempRepo,
         init: { emptyRepo: true },
         config: {
           Addresses: {
@@ -344,10 +352,19 @@ describe('create node', function () {
       })
     }
 
-    const nodeA = createNode()
-    const nodeB = createNode()
+    let repoA
+    let repoB
+    let nodeA
+    let nodeB
 
     waterfall([
+      (cb) => {
+        repoA = createTempRepo()
+        repoB = createTempRepo()
+        nodeA = createNode(repoA)
+        nodeB = createNode(repoB)
+        cb()
+      },
       (cb) => parallel([
         (cb) => nodeA.once('start', cb),
         (cb) => nodeB.once('start', cb)
@@ -364,7 +381,14 @@ describe('create node', function () {
       parallel([
         (cb) => nodeA.stop(cb),
         (cb) => nodeB.stop(cb)
-      ], (stopError) => done(error || stopError))
+      ], (stopError) => {
+        parallel([
+          (cb) => repoA.teardown(cb),
+          (cb) => repoB.teardown(cb)
+        ], (teardownError) => {
+          done(error || stopError || teardownError)
+        })
+      })
     })
   })
 })

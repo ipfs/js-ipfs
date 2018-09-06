@@ -6,40 +6,52 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const IPFS = require('..')
-const list = require('../src/core/runtime/config-browser.js')().Bootstrap
+const IPFSFactory = require('ipfsd-ctl')
+const bootstrapList = require('../src/core/runtime/config-browser.js')().Bootstrap
+const waitFor = require('./utils/wait-for')
 
 /*
  * These tests were graciously made for lgierth, so that he can test the
  * WebSockets Bootstrappers easily <3
  */
-describe('Check that a js-ipfs node can indeed contact the bootstrappers', function () {
-  this.timeout(60 * 1000)
+describe.only('Check that a js-ipfs node can indeed contact the bootstrappers', () => {
+  let ipfsd
 
-  it('a node connects to bootstrapers', (done) => {
-    const node = new IPFS({
+  before(function (done) {
+    this.timeout(30 * 1000)
+
+    const factory = IPFSFactory.create({ type: 'proc', exec: IPFS })
+
+    factory.spawn({
       config: {
         Addresses: {
           Swarm: []
         }
       }
+    }, (err, node) => {
+      expect(err).to.not.exist()
+      ipfsd = node
+      done()
     })
+  })
 
-    node.on('ready', check)
+  after(done => ipfsd.stop(done))
 
-    function check () {
-      node.swarm.peers((err, peers) => {
-        expect(err).to.not.exist()
+  it('a node connects to bootstrappers', function (done) {
+    this.timeout(2 * 60 * 1000)
 
-        if (peers.length !== list.length) {
-          return setTimeout(check, 2000)
-        }
+    waitFor((cb) => {
+      ipfsd.api.swarm.peers((err, peers) => {
+        if (err) return cb(err)
 
         const peerList = peers.map((peer) => peer.addr.toString())
-        expect(peers.length).to.equal(list.length)
-        expect(peerList).to.eql(list)
 
-        node.stop(done)
+        if (peerList.length !== bootstrapList.length) {
+          return cb(null, false)
+        }
+
+        cb(null, bootstrapList.every(addr => peerList.includes(addr)))
       })
-    }
+    }, { name: 'connect to all bootstrap nodes', timeout: 60 * 1000 }, done)
   })
 })

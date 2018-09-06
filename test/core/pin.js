@@ -86,6 +86,8 @@ describe('pin', function () {
     ipfs.stop(done)
   })
 
+  after((done) => repo.teardown(done))
+
   describe('isPinnedWithType', function () {
     beforeEach(function () {
       return clearPins()
