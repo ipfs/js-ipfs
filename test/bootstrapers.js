@@ -14,7 +14,7 @@ const waitFor = require('./utils/wait-for')
  * These tests were graciously made for lgierth, so that he can test the
  * WebSockets Bootstrappers easily <3
  */
-describe.only('Check that a js-ipfs node can indeed contact the bootstrappers', () => {
+describe('Check that a js-ipfs node can indeed contact the bootstrappers', () => {
   let ipfsd
 
   before(function (done) {
