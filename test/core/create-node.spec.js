@@ -337,7 +337,7 @@ describe('create node', function () {
     function createNode (repo) {
       _nodeNumber++
       return new IPFS({
-        repo: tempRepo,
+        repo,
         init: { emptyRepo: true },
         config: {
           Addresses: {
