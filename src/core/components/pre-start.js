@@ -6,7 +6,6 @@ const multiaddr = require('multiaddr')
 const waterfall = require('async/waterfall')
 const Keychain = require('libp2p-keychain')
 const extend = require('deep-extend')
-const NoKeychain = require('./no-keychain')
 /*
  * Load stuff from Repo into memory
  */
@@ -45,15 +44,10 @@ module.exports = function preStart (self) {
       },
       (config, cb) => {
         // Construct the keychain
-        if (self._keychain) {
-          // most likely an init or upgrade has happened
-        } else if (pass) {
+        if (!self._keychain) {
           const keychainOptions = Object.assign({passPhrase: pass}, config.Keychain)
           self._keychain = new Keychain(self._repo.keys, keychainOptions)
           self.log('keychain constructed')
-        } else {
-          self._keychain = new NoKeychain()
-          self.log('no keychain, use --pass')
         }
         cb(null, config)
       },

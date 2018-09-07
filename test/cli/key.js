@@ -5,7 +5,7 @@ const expect = require('chai').expect
 const runOnAndOff = require('../utils/on-and-off')
 const hat = require('hat')
 
-describe('key', () => runOnAndOff.off((thing) => {
+describe.only('key', () => runOnAndOff.off((thing) => {
   const name = 'test-key-' + hat()
   const newName = 'test-key-' + hat()
   const pass = '--pass ' + hat()
@@ -19,6 +19,7 @@ describe('key', () => runOnAndOff.off((thing) => {
     this.timeout(40 * 1000)
 
     return ipfs(`${pass} key gen ${name} --type rsa --size 2048`)
+      .then(() => ipfs(`${pass} key list -l`))
       .then((out) => {
         expect(out).to.include(name)
       })
@@ -28,6 +29,15 @@ describe('key', () => runOnAndOff.off((thing) => {
     this.timeout(20 * 1000)
 
     return ipfs(`${pass} key list`)
+      .then((out) => {
+        expect(out).to.include(name)
+      })
+  })
+
+  it('list without password', function () {
+    this.timeout(20 * 1000)
+
+    return ipfs(`key list`)
       .then((out) => {
         expect(out).to.include(name)
       })

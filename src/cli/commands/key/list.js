@@ -7,14 +7,25 @@ module.exports = {
 
   describe: 'List all local keys',
 
-  builder: {},
+  builder: {
+    long: {
+      alias: 'l',
+      describe: 'Show extra information about keys',
+      default: false
+    }
+  },
 
   handler (argv) {
     argv.ipfs.key.list((err, keys) => {
       if (err) {
         throw err
       }
-      keys.forEach((ki) => print(`${ki.id} ${ki.name}`))
+
+      if (argv.long) {
+        keys.forEach((ki) => print(`${ki.id} ${ki.name}`))
+      } else {
+        keys.forEach((ki) => print(ki.name))
+      }
     })
   }
 }

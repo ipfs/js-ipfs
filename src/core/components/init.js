@@ -83,9 +83,9 @@ module.exports = function init (self) {
           PrivKey: peerId.privKey.bytes.toString('base64')
         }
         privateKey = peerId.privKey
-        if (opts.pass) {
-          config.Keychain = Keychain.generateOptions()
-        }
+
+        config.Keychain = Keychain.generateOptions()
+
         opts.log('done')
         opts.log('peer identity: ' + config.Identity.PeerID)
 
@@ -94,14 +94,10 @@ module.exports = function init (self) {
       (_, cb) => self._repo.open(cb),
       (cb) => {
         self.log('repo opened')
-        if (opts.pass) {
-          self.log('creating keychain')
-          const keychainOptions = Object.assign({passPhrase: opts.pass}, config.Keychain)
-          self._keychain = new Keychain(self._repo.keys, keychainOptions)
-          self._keychain.importPeer('self', { privKey: privateKey }, cb)
-        } else {
-          cb(null, true)
-        }
+        self.log('creating keychain')
+        const keychainOptions = Object.assign({passPhrase: opts.pass}, config.Keychain)
+        self._keychain = new Keychain(self._repo.keys, keychainOptions)
+        self._keychain.importPeer('self', { privKey: privateKey }, cb)
       },
       // add empty unixfs dir object (go-ipfs assumes this exists)
       (_, cb) => {
