@@ -72,9 +72,7 @@ describe.skip('verify that kad-dht is doing its thing', () => {
 
   after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
 
-  it.skip('add a file in C, fetch through B in A', function (done) {
-    this.timeout(10 * 1000)
-
+  it.skip('add a file in C, fetch through B in A', (done) => {
     const file = {
       path: 'testfile.txt',
       content: Buffer.from('hello kad')

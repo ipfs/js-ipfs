@@ -14,9 +14,7 @@ describe('resolve', () => runOnAndOff((thing) => {
     ipfs = thing.ipfs
   })
 
-  it('should resolve an IPFS hash', function () {
-    this.timeout(10 * 1000)
-
+  it('should resolve an IPFS hash', () => {
     const filePath = path.join(process.cwd(), '/src/init-files/init-docs/readme')
     let hash
 
@@ -31,9 +29,7 @@ describe('resolve', () => runOnAndOff((thing) => {
       })
   })
 
-  it('should resolve an IPFS path link', function () {
-    this.timeout(10 * 1000)
-
+  it('should resolve an IPFS path link', () => {
     const filePath = path.join(process.cwd(), '/src/init-files/init-docs/readme')
     let fileHash, rootHash
 

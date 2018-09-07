@@ -82,9 +82,11 @@ describe('pin', function () {
   })
 
   after(function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(60 * 1000)
     ipfs.stop(done)
   })
+
+  after((done) => repo.teardown(done))
 
   describe('isPinnedWithType', function () {
     beforeEach(function () {
@@ -185,15 +187,13 @@ describe('pin', function () {
         .catch(err => expect(err).to.match(/already pinned recursively/))
     })
 
-    it('can\'t pin item not in datastore', function () {
-      this.timeout(10 * 1000)
+    it('can\'t pin item not in datastore', () => {
       const falseHash = `${pins.root.slice(0, -2)}ss`
       return expectTimeout(pin.add(falseHash), 4000)
     })
 
     // TODO block rm breaks subsequent tests
-    it.skip('needs all children in datastore to pin recursively', function () {
-      this.timeout(10 * 1000)
+    it.skip('needs all children in datastore to pin recursively', () => {
       return ipfs.block.rm(pins.mercuryWiki)
         .then(() => expectTimeout(pin.add(pins.root), 4000))
     })
