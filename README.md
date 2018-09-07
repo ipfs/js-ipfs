@@ -677,7 +677,7 @@ node.on('ready', () => {
 
 #### Is there WebRTC support for js-ipfs with Node.js?
 
-Yes, however, bare in mind that there isn't a 100% stable solution to use WebRTC in Node.js, use it at your own risk. The most tested options are:
+Yes, however, bear in mind that there isn't a 100% stable solution to use WebRTC in Node.js, use it at your own risk. The most tested options are:
 
 - [wrtc](https://npmjs.org/wrtc) - Follow the install instructions.
 - [electron-webrtc](https://npmjs.org/electron-webrtc)
