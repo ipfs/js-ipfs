@@ -6,6 +6,7 @@ const tempy = require('tempy')
 const del = require('del')
 const StreamConcat = require('stream-concat')
 const boom = require('boom')
+const pump = require('pump')
 const glob = require('fast-glob')
 const multipart = require('ipfs-multipart')
 const toPull = require('stream-to-pull-stream')
@@ -21,8 +22,10 @@ const filesDir = tempy.directory()
 
 const createMultipartReply = (readStream, boundary, ipfs, query, reply, cb) => {
   const fileAdder = pushable()
-  const parser = new multipart.Parser({ boundary: boundary })
+  let parser = null
 
+  // use the other multipart factory for non chunked to get the boundary
+  parser = new multipart.Parser({ boundary: boundary })
   readStream.pipe(parser)
 
   parser.on('file', (fileName, fileStream) => {
@@ -147,19 +150,38 @@ module.exports = (server) => {
     config: {
       payload: {
         parse: false,
-        maxBytes: 10485760
+        output: 'stream',
+        maxBytes: 1000 * 1024 * 1024
+        // maxBytes: 10485760
       },
       handler: (request, reply) => {
         // console.log('received')
         // console.log(request.headers['content-range'])
         // console.log(request.headers['x-ipfs-chunk-index'])
         // console.log(request.headers['x-ipfs-chunk-group-uuid'])
-        const boundary = request.headers['x-ipfs-chunk-boundary']
         const id = request.headers['x-ipfs-chunk-group-uuid']
+        const boundary = request.headers['x-ipfs-chunk-boundary']
+        const ipfs = request.server.app.ipfs
+
+        // non chunked
+
+        if (!id) {
+          createMultipartReply(
+            request.payload,
+            boundary,
+            ipfs,
+            request.query,
+            reply,
+            () => {
+              console.log('Finished adding')
+            }
+          )
+
+          return
+        }
         const index = Number(request.headers['x-ipfs-chunk-index'])
         const file = path.join(filesDir, id) + '-' + index
         const match = request.headers['content-range'].match(/(\d+)-(\d+)\/(\d+|\*)/)
-        const ipfs = request.server.app.ipfs
 
         if (!match || !match[1] || !match[2] || !match[3]) {
           return boom.badRequest('malformed content-range header')
@@ -199,11 +221,16 @@ module.exports = (server) => {
             }
           )
         } else {
-          const stream = fs.createWriteStream(file)
-          stream.write(request.payload)
-
-          // TODO handle errors
-          reply({ Bytes: request.payload.length })
+          pump(
+            request.payload,
+            fs.createWriteStream(file),
+            (err) => {
+              if (err) {
+                reply(err)
+              }
+              reply({ Bytes: total })
+            }
+          )
         }
       }
     }
