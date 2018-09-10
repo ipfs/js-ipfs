@@ -17,7 +17,7 @@
     - [ ] sharness
   - [ ] Run tests of the following projects with the new release:
     - [ ] [ipfs-pubsub-room](https://github.com/ipfs-shipyard/ipfs-pubsub-room)
-    - [ ] [peerpad-core](https://github.com/ipfs-shipyard/peerpad)
+    - [ ] [peer-star-app](https://github.com/ipfs-shipyard/peer-star-app)
     - [ ] [ipfs-log](https://github.com/orbitdb/ipfs-log)
     - [ ] [orbit-db](https://github.com/orbitdb/orbit-db)
 - Documentation
