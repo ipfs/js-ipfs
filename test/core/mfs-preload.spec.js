@@ -7,6 +7,7 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
+const waitFor = require('../utils/wait-for')
 const mfsPreload = require('../../src/core/mfs-preload')
 
 const createMockFilesStat = (cids = []) => {
@@ -15,11 +16,12 @@ const createMockFilesStat = (cids = []) => {
 }
 
 const createMockPreload = () => {
-  return function preload (cid, cb) {
-    preload.cids = preload.cids || []
+  const preload = (cid, cb) => {
     preload.cids.push(cid)
     cb()
   }
+  preload.cids = []
+  return preload
 }
 
 describe('MFS preload', () => {
@@ -41,16 +43,17 @@ describe('MFS preload', () => {
     preloader.start((err) => {
       expect(err).to.not.exist()
 
-      setTimeout(() => {
-        preloader.stop((err) => {
-          expect(err).to.not.exist()
-          expect(
-            // Slice off any extra CIDs it processed
-            mockPreload.cids.slice(0, expectedPreloadCids.length)
-          ).to.deep.equal(expectedPreloadCids)
-          done()
-        })
-      }, statCids.length * (interval * 2))
+      const test = (cb) => {
+        // Slice off any extra CIDs it processed
+        const cids = mockPreload.cids.slice(0, expectedPreloadCids.length)
+        if (cids.length !== expectedPreloadCids.length) return cb(null, false)
+        cb(null, cids.every((cid, i) => cid === expectedPreloadCids[i]))
+      }
+
+      waitFor(test, { name: 'CIDs to be preloaded' }, (err) => {
+        expect(err).to.not.exist()
+        preloader.stop(done)
+      })
     })
   })
 })
