@@ -238,7 +238,6 @@ module.exports = (server) => {
             }
           )
         } else {
-          console.log(file)
           pump(
             request.payload,
             fs.createWriteStream(file),
