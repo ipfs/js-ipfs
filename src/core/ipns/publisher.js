@@ -40,7 +40,7 @@ class IpnsPublisher {
           return callback(err)
         }
 
-        this._putRecordToRouting(record, peerId, callback)
+        this._putRecordToRouting(record, peerId, privKey, callback)
       })
     })
   }
@@ -50,7 +50,7 @@ class IpnsPublisher {
     this.publishWithEOL(privKey, value, defaultRecordTtl, callback)
   }
 
-  _putRecordToRouting (record, peerId, callback) {
+  _putRecordToRouting (record, peerId, privKey, callback) {
     if (!(peerId instanceof PeerId)) {
       const errMsg = `peerId received is not valid`
 
@@ -74,10 +74,10 @@ class IpnsPublisher {
       }
 
       series([
-        (cb) => this._publishEntry(keys.ipnsKey, embedPublicKeyRecord || record, peerId, cb),
+        (cb) => this._publishEntry(keys.ipnsKey, embedPublicKeyRecord || record, peerId, privKey, cb),
         // Publish the public key if a public key cannot be extracted from the ID
         // We will be able to deprecate this part in the future, since the public keys will be only in the peerId
-        (cb) => embedPublicKeyRecord ? this._publishPublicKey(keys.pkKey, publicKey, peerId, cb) : cb()
+        (cb) => embedPublicKeyRecord ? this._publishPublicKey(keys.pkKey, publicKey, peerId, privKey, cb) : cb()
       ], (err) => {
         if (err) {
           log.error(err)
@@ -89,7 +89,7 @@ class IpnsPublisher {
     })
   }
 
-  _publishEntry (key, entry, peerId, callback) {
+  _publishEntry (key, entry, peerId, privKey, callback) {
     if (!(key instanceof Key)) {
       const errMsg = `datastore key does not have a valid format`
 
@@ -108,21 +108,28 @@ class IpnsPublisher {
       return callback(err)
     }
 
-    // TODO Routing - this should be replaced by a put to the DHT
-    this._repo.datastore.put(key, rec.serialize(), (err, res) => {
+    rec.serializeSigned(privKey, (err, serializedRecord) => {
       if (err) {
-        const errMsg = `ipns record for ${key.toString()} could not be stored in the routing`
-
-        log.error(errMsg)
-        return callback(errcode(new Error(errMsg), 'ERR_STORING_IN_DATASTORE'))
+        log.error(err)
+        return callback(err)
       }
 
-      log(`ipns record for ${key.toString()} was stored in the routing`)
-      callback(null, res)
+      // TODO Routing - this should be replaced by a put to the DHT
+      this._repo.datastore.put(key, serializedRecord, (err, res) => {
+        if (err) {
+          const errMsg = `ipns record for ${key.toString()} could not be stored in the routing`
+
+          log.error(errMsg)
+          return callback(errcode(new Error(errMsg), 'ERR_STORING_IN_DATASTORE'))
+        }
+
+        log(`ipns record for ${key.toString()} was stored in the routing`)
+        callback(null, res)
+      })
     })
   }
 
-  _publishPublicKey (key, publicKey, peerId, callback) {
+  _publishPublicKey (key, publicKey, peerId, privKey, callback) {
     if (!(key instanceof Key)) {
       const errMsg = `datastore key does not have a valid format`
 
@@ -146,17 +153,24 @@ class IpnsPublisher {
       return callback(err)
     }
 
-    // TODO Routing - this should be replaced by a put to the DHT
-    this._repo.datastore.put(key, rec.serialize(), (err, res) => {
+    rec.serializeSigned(privKey, (err, serializedRecord) => {
       if (err) {
-        const errMsg = `public key for ${key.toString()} could not be stored in the routing`
-
-        log.error(errMsg)
-        return callback(errcode(new Error(errMsg), 'ERR_STORING_IN_DATASTORE'))
+        log.error(err)
+        return callback(err)
       }
 
-      log(`public key for ${key.toString()} was stored in the routing`)
-      callback(null, res)
+      // TODO Routing - this should be replaced by a put to the DHT
+      this._repo.datastore.put(key, serializedRecord, (err, res) => {
+        if (err) {
+          const errMsg = `public key for ${key.toString()} could not be stored in the routing`
+
+          log.error(errMsg)
+          return callback(errcode(new Error(errMsg), 'ERR_STORING_IN_DATASTORE'))
+        }
+
+        log(`public key for ${key.toString()} was stored in the routing`)
+        callback(null, res)
+      })
     })
   }
 
