@@ -8,7 +8,9 @@ const StreamConcat = require('stream-concat')
 const boom = require('boom')
 const pump = require('pump')
 const glob = require('fast-glob')
-const multipart = require('ipfs-multipart')
+const Joi = require('joi')
+const content = require('content')
+const { Parser } = require('ipfs-multipart')
 const toPull = require('stream-to-pull-stream')
 const toStream = require('pull-stream-to-stream')
 const pull = require('pull-stream')
@@ -20,12 +22,24 @@ const resources = require('./../resources')
 
 const filesDir = tempy.directory()
 
-const createMultipartReply = (readStream, boundary, ipfs, query, reply, cb) => {
-  const fileAdder = pushable()
-  let parser = null
+const parseChunkedInput = (request) => {
+  const input = request.headers['x-chunked-input']
+  const regex = /^uuid="([^"]+)";\s*index=(\d*)/i
 
-  // use the other multipart factory for non chunked to get the boundary
-  parser = new multipart.Parser({ boundary: boundary })
+  if (!input) {
+    return null
+  }
+  const match = input.match(regex)
+
+  return [match[1], Number(match[2])]
+}
+
+const createMultipartReply = (readStream, request, reply, cb) => {
+  const fileAdder = pushable()
+  const boundary = content.type(request.headers['content-type']).boundary
+  const ipfs = request.server.app.ipfs
+  const query = request.query
+  const parser = new Parser({ boundary: boundary })
   readStream.pipe(parser)
 
   parser.on('file', (fileName, fileStream) => {
@@ -46,7 +60,7 @@ const createMultipartReply = (readStream, boundary, ipfs, query, reply, cb) => {
     fileAdder.end()
   })
 
-  // TODO: handle multipart errors
+  parser.on('error', err => cb(err))
 
   const pushStream = pushable()
   const abortStream = abortable()
@@ -136,7 +150,7 @@ module.exports = (server) => {
     config: {
       payload: {
         parse: false,
-        output: 'stream',
+        // output: 'stream',
         maxBytes: 10048576
       },
       handler: resources.files.add.handler,
@@ -154,48 +168,49 @@ module.exports = (server) => {
         maxBytes: 1000 * 1024 * 1024
         // maxBytes: 10485760
       },
+      validate: {
+        headers: {
+          'content-range': Joi.string().regex(/(\d+)-(\d+)\/(\d+|\*)/),
+          'x-chunked-input': Joi.string().regex(/^uuid="([^"]+)";\s*index=(\d*)/i)
+        },
+        options: {
+          allowUnknown: true
+        }
+      },
       handler: (request, reply) => {
-        // console.log('received')
-        // console.log(request.headers['content-range'])
-        // console.log(request.headers['x-ipfs-chunk-index'])
-        // console.log(request.headers['x-ipfs-chunk-group-uuid'])
-        const id = request.headers['x-ipfs-chunk-group-uuid']
-        const boundary = request.headers['x-ipfs-chunk-boundary']
-        const ipfs = request.server.app.ipfs
+        const chunkedInput = parseChunkedInput(request)
+
+        if (boom.isBoom(chunkedInput)) {
+          return reply(chunkedInput)
+        }
 
         // non chunked
-
-        if (!id) {
+        if (!chunkedInput) {
           createMultipartReply(
             request.payload,
-            boundary,
-            ipfs,
-            request.query,
+            request,
             reply,
-            () => {
+            (err) => {
+              if (err) {
+                return reply(err)
+              }
               console.log('Finished adding')
             }
           )
 
           return
         }
-        const index = Number(request.headers['x-ipfs-chunk-index'])
-        const file = path.join(filesDir, id) + '-' + index
-        const match = request.headers['content-range'].match(/(\d+)-(\d+)\/(\d+|\*)/)
 
-        if (!match || !match[1] || !match[2] || !match[3]) {
-          return boom.badRequest('malformed content-range header')
-        }
-
-        const start = parseInt(match[1])
-        const end = parseInt(match[2])
-        const total = parseInt(match[3])
+        // chunked
+        const [uuid, index] = chunkedInput
+        const [, start, , total] = request.headers['content-range'].match(/(\d+)-(\d+)\/(\d+|\*)/)
+        const file = path.join(filesDir, uuid) + '-' + index
 
         // TODO validate duplicates, missing chunks
 
         if (start === total) {
           /* all chunks have been received */
-          const base = path.join(filesDir, id) + '-'
+          const base = path.join(filesDir, uuid) + '-'
           const pattern = base + '*'
           const files = glob.sync(pattern)
 
@@ -207,26 +222,29 @@ module.exports = (server) => {
           const nextStream = () => fileIndex === files.length ? null : fs.createReadStream(files[fileIndex++])
           createMultipartReply(
             new StreamConcat(nextStream),
-            boundary,
-            ipfs,
-            request.query,
+            request,
             reply,
-            () => {
+            (err) => {
+              if (err) {
+                return reply(err)
+              }
+
               console.log('Finished adding')
-              del(pattern, { force: true })
-                .then(paths => {
-                  console.log('Deleted files and folders:\n', paths.join('\n'))
-                })
-                .catch(console.error)
+              // del(pattern, { force: true })
+              //   .then(paths => {
+              //     console.log('Deleted files and folders:\n', paths.join('\n'))
+              //   })
+              //   .catch(console.error)
             }
           )
         } else {
+          console.log(file)
           pump(
             request.payload,
             fs.createWriteStream(file),
             (err) => {
               if (err) {
-                reply(err)
+                return reply(err)
               }
               reply({ Bytes: total })
             }
