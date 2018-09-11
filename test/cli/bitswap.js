@@ -20,7 +20,7 @@ describe('bitswap', () => runOn((thing) => {
   })
 
   before(function (done) {
-    this.timeout(2 * 60 * 1000)
+    this.timeout(60 * 1000)
 
     PeerId.create({ bits: 512 }, (err, peer) => {
       expect(err).to.not.exist()
