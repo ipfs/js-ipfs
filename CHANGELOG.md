@@ -1,3 +1,13 @@
+<a name="0.32.0"></a>
+# [0.32.0](https://github.com/ipfs/js-ipfs/compare/v0.32.0-rc.2...v0.32.0) (2018-09-11)
+
+
+### Bug Fixes
+
+* ipns publish resolve option overwritten ([#1556](https://github.com/ipfs/js-ipfs/issues/1556)) ([ef7d2c8](https://github.com/ipfs/js-ipfs/commit/ef7d2c8))
+
+
+
 <a name="0.31.7"></a>
 ## [0.31.7](https://github.com/ipfs/js-ipfs/compare/v0.31.6...v0.31.7) (2018-08-20)
 
