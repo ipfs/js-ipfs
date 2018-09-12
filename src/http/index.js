@@ -4,7 +4,6 @@ const series = require('async/series')
 const Hapi = require('hapi')
 const debug = require('debug')
 const multiaddr = require('multiaddr')
-const setHeader = require('hapi-set-header')
 const once = require('once')
 
 const IPFS = require('../core')

@@ -230,11 +230,11 @@ module.exports = (server) => {
               }
 
               console.log('Finished adding')
-              // del(pattern, { force: true })
-              //   .then(paths => {
-              //     console.log('Deleted files and folders:\n', paths.join('\n'))
-              //   })
-              //   .catch(console.error)
+              del(pattern, { force: true })
+                .then(paths => {
+                  console.log('Deleted files and folders:\n', paths.join('\n'))
+                })
+                .catch(console.error)
             }
           )
         } else {
