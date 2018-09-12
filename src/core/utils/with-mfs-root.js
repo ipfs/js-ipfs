@@ -38,7 +38,8 @@ const withMfsRoot = (ipfs, callback) => {
           ], cb)
         }
 
-        cb(error, new CID(result))
+        const cid = result ? new CID(result) : null
+        cb(error, cid)
       })
     },
     // Turn the Buffer into a CID
