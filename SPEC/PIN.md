@@ -10,7 +10,7 @@
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.pin.add(hash, [options, callback])
+##### `JavaScript` - ipfs.pin.add(hash, [options], [callback])
 
 Where:
 
@@ -40,7 +40,7 @@ ipfs.pin.add(hash, function (err) {})
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.pin.ls([hash, options, callback])
+##### `JavaScript` - ipfs.pin.ls([hash], [options], [callback])
 
 Where:
 
@@ -71,7 +71,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.pin.rm(hash, [options, callback])
+##### `JavaScript` - ipfs.pin.rm(hash, [options], [callback])
 
 Where:
 - `hash` is a multihash.
