@@ -305,7 +305,7 @@ Enable and configure experimental features.
 
 - `pubsub` (boolean): Enable libp2p pub-sub. (Default: `false`)
 - `sharding` (boolean): Enable directory sharding. Directories that have many child objects will be represented by multiple DAG nodes instead of just one. It can improve lookup performance when a directory has several thousand files or more. (Default: `false`)
-- `dht` (boolean): Enable KadDHT. **This is currently not interopable with `go-ipfs`.**
+- `dht` (boolean): Enable KadDHT. **This is currently not interoperable with `go-ipfs`.**
 
 ##### `options.config`
 
@@ -352,7 +352,7 @@ const node = new IPFS({ repo: '/var/ipfs/data' })
 node.on('error', errorObject => console.error(errorObject))
 ```
 
-- `error` is always accompanied by an `Error` object with information about the error that ocurred.
+- `error` is always accompanied by an `Error` object with information about the error that occurred.
 
     ```js
     node.on('error', error => {
