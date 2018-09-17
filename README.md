@@ -917,6 +917,9 @@ Listing of the main packages used in the IPFS ecosystem. There are also three sp
 
 # run just IPFS core tests in the Browser (Chrome)
 > npm run test:browser
+
+# run some interface tests (block API) on Node.js
+> npm run test:node:interface -- --grep '.block'
 ```
 
 ### Run interop tests

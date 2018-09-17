@@ -33,6 +33,7 @@
     "test:node:http": "aegir test -t node -f test/http-api/index.js --timeout=10000",
     "test:node:gateway": "aegir test -t node -f test/gateway/index.js --timeout=10000",
     "test:node:cli": "aegir test -t node -f test/cli/index.js --timeout=10000",
+    "test:node:interface": "aegir test -t node -f test/core/interface.spec.js --timeout=10000",
     "test:bootstrapers": "IPFS_TEST=bootstrapers aegir test -t browser -f test/bootstrapers.js --timeout=10000",
     "benchmark": "echo \"Error: no benchmarks yet\" && exit 1",
     "benchmark:node": "echo \"Error: no benchmarks yet\" && exit 1",
