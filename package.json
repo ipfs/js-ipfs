@@ -128,7 +128,7 @@
     "libp2p": "~0.23.0",
     "libp2p-bootstrap": "~0.9.3",
     "libp2p-circuit": "~0.2.0",
-    "libp2p-crypto": "^0.13.0",
+    "libp2p-crypto": "~0.13.0",
     "libp2p-floodsub": "~0.15.0",
     "libp2p-kad-dht": "~0.10.1",
     "libp2p-keychain": "~0.3.1",
