@@ -13,7 +13,7 @@ const deferred = require('pull-defer')
 const waterfall = require('async/waterfall')
 const isStream = require('is-stream')
 const isSource = require('is-pull-stream').isSource
-const Duplex = require('readable-stream').Duplex
+const Duplex = require('stream').Duplex
 const OtherBuffer = require('buffer').Buffer
 const CID = require('cids')
 const toB58String = require('multihashes').toB58String
@@ -136,6 +136,7 @@ class AddHelper extends Duplex {
         if (end instanceof Error) {
           this.emit('error', end)
         }
+        this.push(null)
       } else {
         this.push(data)
       }

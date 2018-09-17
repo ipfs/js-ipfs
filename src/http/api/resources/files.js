@@ -1,5 +1,7 @@
 'use strict'
 
+const path = require('path')
+const fs = require('fs')
 const mh = require('multihashes')
 const multipart = require('ipfs-multipart')
 const debug = require('debug')
@@ -10,10 +12,21 @@ const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
 const pushable = require('pull-pushable')
 const each = require('async/each')
+const content = require('content')
 const toStream = require('pull-stream-to-stream')
 const abortable = require('pull-abortable')
 const Joi = require('joi')
+const pump = require('pump')
+const tempy = require('tempy')
 const ndjson = require('pull-ndjson')
+const {
+  parseChunkedInput,
+  createMultipartReply,
+  matchMultipartEnd,
+  processAndAdd
+} = require('../utils/add-experimental')
+
+const filesDir = tempy.directory()
 
 exports = module.exports
 
@@ -278,6 +291,78 @@ exports.add = {
         files.forEach((f) => replyStream.push(f))
         replyStream.end()
       })
+    )
+  }
+}
+
+exports.addExperimental = {
+  validate: {
+    query: Joi.object()
+      .keys({
+        'cid-version': Joi.number().integer().min(0).max(1).default(0),
+        'raw-leaves': Joi.boolean(),
+        'only-hash': Joi.boolean(),
+        pin: Joi.boolean().default(true),
+        'wrap-with-directory': Joi.boolean(),
+        chunker: Joi.string()
+      })
+    // TODO: Necessary until validate "recursive", "stream-channels" etc.
+      .options({ allowUnknown: true }),
+    headers: {
+      'content-range': Joi.string().regex(/(\d+)-(\d+)\/(\d+|\*)/),
+      'x-chunked-input': Joi.string().regex(/^uuid="([^"]+)";\s*index=(\d*)/i)
+    },
+    options: {
+      allowUnknown: true
+    }
+  },
+
+  handler: (request, reply) => {
+    const chunkedInput = parseChunkedInput(request)
+
+    // non chunked
+    if (!chunkedInput) {
+      createMultipartReply(
+        request.payload,
+        request,
+        reply,
+        (err) => {
+          if (err) {
+            return reply(err)
+          }
+        }
+      )
+
+      return
+    }
+
+    // chunked
+    const [uuid, index] = chunkedInput
+    const [, , , total] = request.headers['content-range'].match(/(\d+)-(\d+)\/(\d+|\*)/)
+    const file = path.join(filesDir, uuid) + '-' + index
+
+    // TODO validate duplicates, missing chunks when resumeable and concurrent request are supported
+
+    pump(
+      request.payload,
+      fs.createWriteStream(file),
+      (err) => {
+        if (err) {
+          return reply(err)
+        }
+        const boundary = content.type(request.headers['content-type']).boundary
+        matchMultipartEnd(file, boundary, (err, isEnd) => {
+          if (err) {
+            return reply(err)
+          }
+
+          if (isEnd) {
+            processAndAdd(uuid, filesDir, request, reply)
+          } else {
+            reply({ Bytes: total })
+          }
+        })
+      }
     )
   }
 }
