@@ -39,6 +39,8 @@ module.exports = function block (self) {
         options = {}
       }
 
+      options = options || {}
+
       if (Array.isArray(block)) {
         return callback(new Error('Array is not supported'))
       }
@@ -92,6 +94,8 @@ module.exports = function block (self) {
         callback = options
         options = {}
       }
+
+      options = options || {}
 
       try {
         cid = cleanCid(cid)

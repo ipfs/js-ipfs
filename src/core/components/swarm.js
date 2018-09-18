@@ -13,6 +13,8 @@ module.exports = function swarm (self) {
         opts = {}
       }
 
+      opts = opts || {}
+
       if (!self.isOnline()) {
         return callback(new Error(OFFLINE_ERROR))
       }

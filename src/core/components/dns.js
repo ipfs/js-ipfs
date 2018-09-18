@@ -15,6 +15,8 @@ module.exports = () => {
       opts = {}
     }
 
+    opts = opts || {}
+
     dns(domain, opts, callback)
   })
 }
