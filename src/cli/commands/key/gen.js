@@ -16,7 +16,8 @@ module.exports = {
     size: {
       alias: 's',
       describe: 'size of the key to generate.',
-      default: '2048'
+      default: '2048',
+      type: 'number'
     }
   },
 
