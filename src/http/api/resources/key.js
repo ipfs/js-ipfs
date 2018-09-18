@@ -64,7 +64,7 @@ exports.gen = (request, reply) => {
   const ipfs = request.server.app.ipfs
   const name = request.query.arg
   const type = request.query.type
-  const size = request.query.size
+  const size = parseInt(request.query.size)
   ipfs._keychain.createKey(name, type, size, (err, key) => {
     if (err) {
       return applyError(reply, err)
