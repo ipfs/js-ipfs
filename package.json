@@ -37,7 +37,7 @@
   },
   "homepage": "https://github.com/ipfs/js-ipfs-mfs#readme",
   "devDependencies": {
-    "aegir": "^15.0.0",
+    "aegir": "^15.2.0",
     "chai": "^4.1.2",
     "detect-node": "^2.0.3",
     "detect-webworker": "^1.0.0",
@@ -54,7 +54,7 @@
     "debug": "^3.1.0",
     "file-api": "~0.10.4",
     "filereader-stream": "^2.0.0",
-    "interface-datastore": "~0.4.2",
+    "interface-datastore": "~0.5.0",
     "ipfs-unixfs": "~0.1.15",
     "ipfs-unixfs-engine": "~0.32.1",
     "is-pull-stream": "~0.0.0",
