@@ -32,7 +32,7 @@ ipfs.id(function (err, identity) {
 })
 ```
 
-A great source of [examples][] can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/miscellaneous/id.js) can be found in the tests for this API.
 
 #### `version`
 
@@ -57,7 +57,7 @@ ipfs.version((err, version) => {
 })
 ```
 
-A great source of [examples][] can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/miscellaneous/version.js) can be found in the tests for this API.
 
 #### `dns`
 
@@ -82,9 +82,7 @@ ipfs.dns('ipfs.io', (err, path) => {
 })
 ```
 
-A great source of [examples][] can be found in the tests for this API.
-
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/miscellaneous.js
+A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/miscellaneous/dns.js) can be found in the tests for this API.
 
 #### `stop`
 
@@ -107,7 +105,7 @@ ipfs.stop((err) => {
 })
 ```
 
-A great source of [examples][] can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/miscellaneous/stop.js) can be found in the tests for this API.
 
 #### `ping`
 
@@ -154,7 +152,7 @@ ipfs.ping('Qmhash', function (err, responses) {
 })
 ```
 
-A great source of [examples][] can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/interface-ipfs-core/tree/master/js/src/ping) can be found in the tests for this API.
 
 #### `pingPullStream`
 
@@ -199,7 +197,7 @@ pull(
 )
 ```
 
-A great source of [examples][] can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/interface-ipfs-core/tree/master/js/src/ping) can be found in the tests for this API.
 
 #### `pingReadableStream`
 
@@ -241,7 +239,7 @@ stream.on('data', (res) => {
 })
 ```
 
-A great source of [examples][] can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/interface-ipfs-core/tree/master/js/src/ping) can be found in the tests for this API.
 
 #### `resolve`
 
@@ -311,7 +309,7 @@ ipfs.resolve(name, (err, res) => {
 })
 ```
 
-A great source of [examples][] can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/miscellaneous/resolve.js) can be found in the tests for this API.
 
 [examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/miscellaneous
 [rs]: https://www.npmjs.com/package/readable-stream
