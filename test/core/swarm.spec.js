@@ -38,7 +38,7 @@ describe('swarm', () => {
   })
 
   describe('peers', () => {
-    it.only('should not error when passed null options', (done) => {
+    it('should not error when passed null options', (done) => {
       ipfs.swarm.peers(null, (err) => {
         expect(err).to.not.exist()
         done()
