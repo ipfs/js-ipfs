@@ -900,7 +900,7 @@ Listing of the main packages used in the IPFS ecosystem. There are also three sp
 ### Run tests
 
 ```sh
-# run all the unit tsts
+# run all the unit tests
 > npm test
 
 # run just IPFS tests in Node.js
@@ -917,6 +917,9 @@ Listing of the main packages used in the IPFS ecosystem. There are also three sp
 
 # run just IPFS core tests in the Browser (Chrome)
 > npm run test:browser
+
+# run some interface tests (block API) on Node.js
+> npm run test:node:interface -- --grep '.block'
 ```
 
 ### Run interop tests
