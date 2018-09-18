@@ -183,6 +183,8 @@
     "prometheus-gc-stats": "~0.5.1"
   },
   "contributors": [
+    "0xflotus <0xflotus@gmail.com>",
+    "Alan Shaw <alan.shaw@protocol.ai>",
     "Alan Shaw <alan@tableflip.io>",
     "Alex Potsides <alex@achingbrain.net>",
     "Andrew de Andrade <andrew@deandrade.com.br>",
@@ -240,6 +242,7 @@
     "Mithgol <getgit@mithgol.ru>",
     "My9Bot <34904312+My9Bot@users.noreply.github.com>",
     "Nuno Nogueira <nunofmn@gmail.com>",
+    "Oli Evans <oli@tableflip.io>",
     "Oskar Nyberg <oskar@oskarnyberg.com>",
     "Pascal Precht <pascal.precht@googlemail.com>",
     "Pau Ramon Revilla <masylum@gmail.com>",
