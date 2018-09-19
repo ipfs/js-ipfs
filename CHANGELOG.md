@@ -1,3 +1,13 @@
+<a name="0.32.2"></a>
+## [0.32.2](https://github.com/ipfs/js-ipfs/compare/v0.32.1...v0.32.2) (2018-09-19)
+
+
+### Bug Fixes
+
+* coerce key gen size to number ([#1582](https://github.com/ipfs/js-ipfs/issues/1582)) ([25d820d](https://github.com/ipfs/js-ipfs/commit/25d820d))
+
+
+
 <a name="0.32.1"></a>
 ## [0.32.1](https://github.com/ipfs/js-ipfs/compare/v0.32.0...v0.32.1) (2018-09-18)
 
