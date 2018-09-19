@@ -55,16 +55,16 @@ module.exports = (createCommon, options) => {
 
         ipfs.files.stat(`${testDir}/b`, (err, stat) => {
           expect(err).to.not.exist()
-          expect(stat).to.eql({
+          expect(stat).to.include({
             type: 'file',
             blocks: 1,
             size: 13,
             hash: 'QmcZojhwragQr5qhTeFAmELik623Z21e3jBTpJXoQ9si1T',
             cumulativeSize: 71,
-            withLocality: false,
-            local: undefined,
-            sizeLocal: undefined
+            withLocality: false
           })
+          expect(stat.local).to.be.undefined()
+          expect(stat.sizeLocal).to.be.undefined()
           done()
         })
       })
@@ -81,16 +81,16 @@ module.exports = (createCommon, options) => {
 
         ipfs.files.stat(testDir, (err, stat) => {
           expect(err).to.not.exist()
-          expect(stat).to.eql({
+          expect(stat).to.include({
             type: 'directory',
             blocks: 1,
             size: 0,
             hash: 'QmQGn7EvzJZRbhcwHrp4UeMeS56WsLmrey9JhfkymjzXQu',
             cumulativeSize: 118,
-            withLocality: false,
-            local: undefined,
-            sizeLocal: undefined
+            withLocality: false
           })
+          expect(stat.local).to.be.undefined()
+          expect(stat.sizeLocal).to.be.undefined()
           done()
         })
       })
@@ -135,16 +135,16 @@ module.exports = (createCommon, options) => {
     it('should stat outside of mfs', function (done) {
       ipfs.files.stat('/ipfs/' + fixtures.smallFile.cid, (err, stat) => {
         expect(err).to.not.exist()
-        expect(stat).to.eql({
+        expect(stat).to.include({
           type: 'file',
           blocks: 0,
           size: 12,
           hash: fixtures.smallFile.cid,
           cumulativeSize: 20,
-          withLocality: false,
-          local: undefined,
-          sizeLocal: undefined
+          withLocality: false
         })
+        expect(stat.local).to.be.undefined()
+        expect(stat.sizeLocal).to.be.undefined()
         done()
       })
     })
