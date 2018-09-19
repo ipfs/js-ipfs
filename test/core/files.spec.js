@@ -6,7 +6,7 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-
+const hat = require('hat')
 const pull = require('pull-stream')
 const IPFSFactory = require('ipfsd-ctl')
 const IPFS = require('../../src/core')
@@ -73,6 +73,15 @@ describe('files', () => {
           done()
         })
       )
+    })
+  })
+
+  describe('add', () => {
+    it('should not error when passed null options', (done) => {
+      ipfs.files.add(Buffer.from(hat()), null, (err) => {
+        expect(err).to.not.exist()
+        done()
+      })
     })
   })
 })

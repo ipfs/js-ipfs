@@ -256,13 +256,13 @@ module.exports = function files (self) {
 
   return {
     add: (() => {
-      const add = promisify((data, options = {}, callback) => {
+      const add = promisify((data, options, callback) => {
         if (typeof options === 'function') {
           callback = options
           options = {}
-        } else if (!callback || typeof callback !== 'function') {
-          callback = noop
         }
+
+        options = options || {}
 
         const ok = Buffer.isBuffer(data) ||
                    isStream.readable(data) ||

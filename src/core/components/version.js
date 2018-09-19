@@ -13,7 +13,7 @@ module.exports = function version (self) {
 
     self.repo.version((err, repoVersion) => {
       if (err) {
-        callback(err)
+        return callback(err)
       }
 
       callback(null, {

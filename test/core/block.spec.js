@@ -6,6 +6,7 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
+const hat = require('hat')
 
 const IPFSFactory = require('ipfsd-ctl')
 const IPFS = require('../../src/core')
@@ -47,6 +48,15 @@ describe('block', () => {
     })
   })
 
+  describe('put', () => {
+    it('should not error when passed null options', (done) => {
+      ipfs.block.put(Buffer.from(hat()), null, (err) => {
+        expect(err).to.not.exist()
+        done()
+      })
+    })
+  })
+
   describe('rm', () => {
     it('should callback with error for invalid CID input', (done) => {
       ipfs.block.rm('INVALID CID', (err) => {
@@ -63,6 +73,17 @@ describe('block', () => {
         expect(err).to.exist()
         expect(err.code).to.equal('ERR_INVALID_CID')
         done()
+      })
+    })
+
+    it('should not error when passed null options', (done) => {
+      ipfs.block.put(Buffer.from(hat()), (err, block) => {
+        expect(err).to.not.exist()
+
+        ipfs.block.stat(block.cid, null, (err) => {
+          expect(err).to.not.exist()
+          done()
+        })
       })
     })
   })
