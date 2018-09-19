@@ -705,14 +705,14 @@ Where:
   - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
 - `callback` is an optional function with the signature `function (error, stats) {}`, where `error` may be an Error that occured if the operation was not successful and `stats` is an Object with the following keys:
 
-- `hash` is a string with the hash
-- `size` is an integer with the file size in Bytes
-- `cumulativeSize` is an integer with the size of the DAGNodes making up the file in Bytes
-- `type` is a string that can be either `directory` or `file`
-- `blocks` if `type` is `directory`, this is the number of files in the directory. If it is `file` it is the number of blocks that make up the file
-- `withLocality` is a boolean to indicate if locality information are present
-- `local` is a boolean to indicate if the queried dag is fully present locally
-- `sizeLocal` is an integer indicating the cumulative size of the data present locally
+  - `hash` is a string with the hash
+  - `size` is an integer with the file size in Bytes
+  - `cumulativeSize` is an integer with the size of the DAGNodes making up the file in Bytes
+  - `type` is a string that can be either `directory` or `file`
+  - `blocks` if `type` is `directory`, this is the number of files in the directory. If it is `file` it is the number of blocks that make up the file
+  - `withLocality` is a boolean to indicate if locality information are present
+  - `local` is a boolean to indicate if the queried dag is fully present locally
+  - `sizeLocal` is an integer indicating the cumulative size of the data present locally
 
 If no `callback` is passed, a promise is returned.
 
@@ -990,10 +990,10 @@ Where:
   - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
 - `callback` is an optional function with the signature `function (error, files) {}`, where `error` may be an Error that occured if the operation was not successful and `files` is an array containing Objects that contain the following keys:
 
-- `name` which is the file's name
-- `type` which is the object's type (`directory` or `file`)
-- `size` the size of the file in bytes
-- `hash` the hash of the file
+  - `name` which is the file's name
+  - `type` which is the object's type (`directory` or `file`)
+  - `size` the size of the file in bytes
+  - `hash` the hash of the file
 
 If no `callback` is passed, a promise is returned.
 
