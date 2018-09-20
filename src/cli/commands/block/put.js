@@ -1,35 +1,19 @@
 'use strict'
 
-const CID = require('cids')
-const multihashing = require('multihashing-async')
 const bl = require('bl')
 const fs = require('fs')
-const Block = require('ipfs-block')
-const waterfall = require('async/waterfall')
 const multibase = require('multibase')
 const { print } = require('../../utils')
 const { cidToString } = require('../../../utils/cid')
 
 function addBlock (data, opts) {
   const ipfs = opts.ipfs
-  let cid
 
-  waterfall([
-    (cb) => multihashing(data, opts.mhtype || 'sha2-256', cb),
-    (multihash, cb) => {
-      if (opts.format !== 'dag-pb' || opts.version !== 0) {
-        cid = new CID(1, opts.format || 'dag-pb', multihash)
-      } else {
-        cid = new CID(0, 'dag-pb', multihash)
-      }
-
-      ipfs.block.put(new Block(data, cid), cb)
-    }
-  ], (err) => {
+  ipfs.block.put(data, (err, block) => {
     if (err) {
       throw err
     }
-    print(cidToString(cid, opts.cidBase))
+    print(cidToString(block.cid, opts.cidBase))
   })
 }
 
