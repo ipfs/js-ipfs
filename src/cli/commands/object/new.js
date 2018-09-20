@@ -17,13 +17,13 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.ipfs.object.new(argv.template, (err, cid) => {
+  handler ({ ipfs, template, cidBase }) {
+    ipfs.object.new(template, (err, cid) => {
       if (err) {
         throw err
       }
 
-      print(cidToString(cid, argv.cidBase))
+      print(cidToString(cid, cidBase))
     })
   }
 }

@@ -22,11 +22,10 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    const { recursive, cidBase } = argv
+  handler ({ ipfs, ipfsPath, recursive, cidBase }) {
     const type = recursive ? 'recursive' : 'direct'
 
-    argv.ipfs.pin.add(argv.ipfsPath, { recursive, cidBase }, (err, results) => {
+    ipfs.pin.add(ipfsPath, { recursive, cidBase }, (err, results) => {
       if (err) { throw err }
       results.forEach((res) => {
         print(`pinned ${res.hash} ${type}ly`)

@@ -17,15 +17,15 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.ipfs.object.patch.rmLink(argv.root, { name: argv.link }, {
+  handler ({ ipfs, root, link, cidBase }) {
+    ipfs.object.patch.rmLink(root, { name: link }, {
       enc: 'base58'
     }, (err, cid) => {
       if (err) {
         throw err
       }
 
-      print(cidToString(cid, argv.cidBase))
+      print(cidToString(cid, cidBase))
     })
   }
 }

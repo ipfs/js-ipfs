@@ -17,16 +17,14 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.ipfs.object.links(argv.key, {
-      enc: 'base58'
-    }, (err, links) => {
+  handler ({ ipfs, key, cidBase }) {
+    ipfs.object.links(key, { enc: 'base58' }, (err, links) => {
       if (err) {
         throw err
       }
 
       links.forEach((link) => {
-        print(`${cidToString(link.cid, argv.cidBase)} ${link.size} ${link.name}`)
+        print(`${cidToString(link.cid, cidBase)} ${link.size} ${link.name}`)
       })
     })
   }

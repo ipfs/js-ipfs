@@ -1,3 +1,5 @@
+'use strict'
+
 const CID = require('cids')
 
 // Stringify a CID in the requested base, auto-converting to v1 if necessary

@@ -21,10 +21,8 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    const { peer, cidBase } = argv
-
-    argv.ipfs.bitswap.wantlist(peer, { cidBase }, (err, cids) => {
+  handler ({ ipfs, peer, cidBase }) {
+    ipfs.bitswap.wantlist(peer, { cidBase }, (err, cids) => {
       if (err) {
         throw err
       }
