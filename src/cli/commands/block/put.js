@@ -9,7 +9,7 @@ const { cidToString } = require('../../../utils/cid')
 function addBlock (data, opts) {
   const ipfs = opts.ipfs
 
-  ipfs.block.put(data, (err, block) => {
+  ipfs.block.put(data, opts, (err, block) => {
     if (err) {
       throw err
     }
@@ -38,8 +38,7 @@ module.exports = {
     },
     version: {
       describe: 'cid version',
-      type: 'number',
-      default: 0
+      type: 'number'
     },
     'cid-base': {
       describe: 'Number base to display CIDs in.',
