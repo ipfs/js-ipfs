@@ -57,17 +57,18 @@ module.exports = (createCommon, options) => {
     })
 
     it('should put a buffer, using options', (done) => {
-      const expectedHash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
-      const blob = Buffer.from('blorb')
+      const blob = Buffer.from(`TEST${Date.now()}`)
 
       ipfs.block.put(blob, {
-        format: 'dag-pb',
-        mhtype: 'sha2-256',
-        version: 0
+        format: 'raw',
+        mhtype: 'sha2-512',
+        version: 1
       }, (err, block) => {
         expect(err).to.not.exist()
         expect(block.data).to.be.eql(blob)
-        expect(block.cid.multihash).to.eql(multihash.fromB58String(expectedHash))
+        expect(block.cid.version).to.equal(1)
+        expect(block.cid.codec).to.equal('raw')
+        expect(multihash.decode(block.cid.multihash).name).to.equal('sha2-512')
         done()
       })
     })
