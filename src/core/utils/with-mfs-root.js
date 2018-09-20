@@ -22,7 +22,8 @@ const withMfsRoot = (ipfs, callback) => {
     (cb) => {
       // Load the MFS root CID
       datastore.get(MFS_ROOT_KEY, (error, result) => {
-        if (error && error.notFound) {
+        // Once datastore-level releases its error.code addition, we can remove error.notFound logic
+        if (error && (error.notFound || error.code === 'ERR_NOT_FOUND')) {
           log('Creating new MFS root')
 
           return waterfall([
@@ -38,7 +39,8 @@ const withMfsRoot = (ipfs, callback) => {
           ], cb)
         }
 
-        cb(error, new CID(result))
+        const cid = result ? new CID(result) : null
+        cb(error, cid)
       })
     },
     // Turn the Buffer into a CID
