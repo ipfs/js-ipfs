@@ -58,6 +58,7 @@
     "is-plain-object": "^2.0.4"
   },
   "contributors": [
+    "Alan Shaw <alan.shaw@protocol.ai>",
     "Alan Shaw <alan@tableflip.io>",
     "Alex Potsides <alex@achingbrain.net>",
     "Andrey <muzzzy@gmail.com>",
