@@ -30,11 +30,10 @@ module.exports = {
     }
   },
 
-  handler: (argv) => {
-    const paths = argv.ipfsPath
-    const { type, quiet, cidBase } = argv
+  handler: ({ ipfs, ipfsPath, type, quiet, cidBase }) => {
+    const paths = ipfsPath
 
-    argv.ipfs.pin.ls(paths, { type, cidBase }, (err, results) => {
+    ipfs.pin.ls(paths, { type, cidBase }, (err, results) => {
       if (err) { throw err }
       results.forEach((res) => {
         let line = res.hash

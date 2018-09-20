@@ -3,7 +3,6 @@
 const debug = require('debug')
 const log = debug('cli:object')
 log.error = debug('cli:object:error')
-const CID = require('cids')
 const multibase = require('multibase')
 const { print } = require('../../utils')
 const { cidToString } = require('../../../utils/cid')
@@ -21,13 +20,13 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.ipfs.object.new(argv.template, (err, node) => {
+  handler ({ ipfs, template, cidBase }) {
+    ipfs.object.new(template, (err, node) => {
       if (err) {
         throw err
       }
 
-      print(cidToString(new CID(node.multihash), argv.cidBase))
+      print(cidToString(node.multihash, cidBase))
     })
   }
 }

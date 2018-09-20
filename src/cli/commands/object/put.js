@@ -2,7 +2,6 @@
 
 const bl = require('bl')
 const fs = require('fs')
-const CID = require('cids')
 const multibase = require('multibase')
 const { print } = require('../../utils')
 const { cidToString } = require('../../../utils/cid')
@@ -13,7 +12,7 @@ function putNode (buf, options, ipfs) {
       throw err
     }
 
-    print(`added ${cidToString(new CID(node.multihash), options.cidBase)}`)
+    print(`added ${cidToString(node.multihash, options.cidBase)}`)
   })
 }
 

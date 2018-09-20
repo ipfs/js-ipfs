@@ -21,12 +21,12 @@ module.exports = {
       choices: multibase.names
     }
   },
-  handler (argv) {
-    argv.ipfs.bitswap.unwant(argv.key, (err) => {
+  handler ({ ipfs, key, cidBase }) {
+    ipfs.bitswap.unwant(key, (err) => {
       if (err) {
         throw err
       }
-      print(`Key ${cidToString(argv.key, argv.cidBase)} removed from wantlist`)
+      print(`Key ${cidToString(key, cidBase)} removed from wantlist`)
     })
   }
 }

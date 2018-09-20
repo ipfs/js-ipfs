@@ -16,10 +16,8 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    const { key, cidBase } = argv
-
-    argv.ipfs.block.stat(key, { cidBase }, (err, stats) => {
+  handler ({ ipfs, key, cidBase }) {
+    ipfs.block.stat(key, { cidBase }, (err, stats) => {
       if (err) {
         throw err
       }

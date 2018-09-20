@@ -1,6 +1,5 @@
 'use strict'
 
-const CID = require('cids')
 const multibase = require('multibase')
 const { print } = require('../../utils')
 const { cidToString } = require('../../../utils/cid')
@@ -22,26 +21,26 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.ipfs.object.get(argv.key, {enc: 'base58'}, (err, node) => {
+  handler ({ ipfs, key, dataEncoding, cidBase }) {
+    ipfs.object.get(key, {enc: 'base58'}, (err, node) => {
       if (err) {
         throw err
       }
       const nodeJSON = node.toJSON()
 
       if (Buffer.isBuffer(node.data)) {
-        nodeJSON.data = node.data.toString(argv['data-encoding'] || undefined)
+        nodeJSON.data = node.data.toString(dataEncoding)
       }
 
       const answer = {
         Data: nodeJSON.data,
-        Hash: cidToString(new CID(node.multihash), argv.cidBase),
+        Hash: cidToString(node.multihash, cidBase),
         Size: nodeJSON.size,
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: cidToString(new CID(l.multihash), argv.cidBase)
+            Hash: cidToString(l.multihash, cidBase)
           }
         })
       }

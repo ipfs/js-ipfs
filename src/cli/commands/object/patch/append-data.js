@@ -5,7 +5,6 @@ const fs = require('fs')
 const debug = require('debug')
 const log = debug('cli:object')
 log.error = debug('cli:object:error')
-const CID = require('cids')
 const multibase = require('multibase')
 const { print } = require('../../../utils')
 const { cidToString } = require('../../../../utils/cid')
@@ -18,7 +17,7 @@ function appendData (key, data, ipfs, options) {
       throw err
     }
 
-    print(cidToString(new CID(node.multihash), options.cidBase))
+    print(cidToString(node.multihash, options.cidBase))
   })
 }
 

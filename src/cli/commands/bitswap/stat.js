@@ -16,10 +16,8 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    const { cidBase } = argv
-
-    argv.ipfs.bitswap.stat({ cidBase }, (err, stats) => {
+  handler ({ ipfs, cidBase }) {
+    ipfs.bitswap.stat({ cidBase }, (err, stats) => {
       if (err) {
         throw err
       }
