@@ -2,7 +2,6 @@
 
 const multibase = require('multibase')
 const { print } = require('../../utils')
-const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
   command: 'rm <ipfsPath...>',
@@ -27,7 +26,7 @@ module.exports = {
     ipfs.pin.rm(ipfsPath, { recursive, cidBase }, (err, results) => {
       if (err) { throw err }
       results.forEach((res) => {
-        print(`unpinned ${cidToString(res.hash, argv.cidBase)}`)
+        print(`unpinned ${res.hash}`)
       })
     })
   }
