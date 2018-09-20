@@ -1,23 +1,16 @@
 'use strict'
 
-const multibase = require('multibase')
-const print = require('../../utils').print
+const { print } = require('../../utils')
 
 module.exports = {
   command: 'stat <key>',
 
   describe: 'Get stats for the DAG node named by <key>',
 
-  builder: {
-    'cid-base': {
-      describe: 'Number base to display CIDs in.',
-      type: 'string',
-      choices: multibase.names
-    }
-  },
+  builder: {},
 
-  handler ({ ipfs, key, cidBase }) {
-    ipfs.object.stat(key, { enc: 'base58', cidBase }, (err, stats) => {
+  handler ({ ipfs, key }) {
+    ipfs.object.stat(key, { enc: 'base58' }, (err, stats) => {
       if (err) {
         throw err
       }

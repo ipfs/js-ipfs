@@ -268,9 +268,8 @@ exports.stat = {
   handler: (request, reply) => {
     const ipfs = request.server.app.ipfs
     const key = request.pre.args.key
-    const cidBase = request.query['cid-base']
 
-    ipfs.object.stat(key, { cidBase }, (err, stats) => {
+    ipfs.object.stat(key, (err, stats) => {
       if (err) {
         log.error(err)
         return reply({
@@ -279,7 +278,9 @@ exports.stat = {
         }).code(500)
       }
 
-      return reply(stats)
+      reply(Object.assign(stats, {
+        Hash: cidToString(stats.Hash, request.query['cid-base'])
+      }))
     })
   }
 }

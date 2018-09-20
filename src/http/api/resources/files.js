@@ -220,7 +220,6 @@ exports.add = {
 
     const options = {
       cidVersion: request.query['cid-version'],
-      cidBase: request.query['cid-base'],
       rawLeaves: request.query['raw-leaves'],
       progress: request.query.progress ? progressHandler : null,
       onlyHash: request.query['only-hash'],
@@ -266,7 +265,7 @@ exports.add = {
       pull.map((file) => {
         return {
           Name: file.path, // addPullStream already turned this into a hash if it wanted to
-          Hash: file.hash,
+          Hash: cidToString(file.hash, request.query['cid-base']),
           Size: file.size
         }
       }),
@@ -301,9 +300,8 @@ exports.immutableLs = {
     const key = request.pre.args.key
     const ipfs = request.server.app.ipfs
     const recursive = request.query && request.query.recursive === 'true'
-    const cidBase = request.query['cid-base']
 
-    ipfs.ls(key, { recursive, cidBase }, (err, files) => {
+    ipfs.ls(key, { recursive }, (err, files) => {
       if (err) {
         return reply({
           Message: 'Failed to list dir: ' + err.message,
@@ -314,10 +312,10 @@ exports.immutableLs = {
 
       reply({
         Objects: [{
-          Hash: cidToString(key, cidBase),
+          Hash: cidToString(key, request.query['cid-base']),
           Links: files.map((file) => ({
             Name: file.name,
-            Hash: file.hash,
+            Hash: cidToString(file.hash, request.query['cid-base']),
             Size: file.size,
             Type: toTypeCode(file.type),
             Depth: file.depth

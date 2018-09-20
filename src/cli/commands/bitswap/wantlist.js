@@ -2,6 +2,7 @@
 
 const multibase = require('multibase')
 const { print } = require('../../utils')
+const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
   command: 'wantlist [peer]',
@@ -22,11 +23,14 @@ module.exports = {
   },
 
   handler ({ ipfs, peer, cidBase }) {
-    ipfs.bitswap.wantlist(peer, { cidBase }, (err, cids) => {
+    ipfs.bitswap.wantlist(peer, (err, res) => {
       if (err) {
         throw err
       }
-      cids.forEach((cid) => print(cid))
+
+      res.Keys.forEach((cid) => {
+        print(cidToString(cid['/'], cidBase))
+      })
     })
   }
 }

@@ -17,9 +17,7 @@ const OtherBuffer = require('buffer').Buffer
 const CID = require('cids')
 const toB58String = require('multihashes').toB58String
 const errCode = require('err-code')
-const multibase = require('multibase')
 const parseChunkerString = require('../utils').parseChunkerString
-const { cidToString } = require('../../utils/cid')
 
 const WRAPPER = 'wrapper/'
 
@@ -30,11 +28,11 @@ function prepareFile (file, opts) {
 
   let cid = new CID(file.multihash)
 
-  if (opts.cidVersion === 1) {
+  if (cid.version !== 1 && opts.cidVersion === 1) {
     cid = cid.toV1()
   }
 
-  const cidStr = cidToString(cid, opts.cidBase)
+  const cidStr = cid.toBaseEncodedString()
 
   return {
     path: opts.wrapWithDirectory
@@ -161,12 +159,6 @@ module.exports = function files (self) {
         : Infinity
     }, options, chunkerOptions)
 
-    if (opts.cidBase && !multibase.names.includes(opts.cidBase)) {
-      return pull.map(() => {
-        throw errCode(new Error('invalid multibase'), 'ERR_INVALID_MULTIBASE')
-      })
-    }
-
     if (opts.hashAlg && opts.cidVersion !== 1) {
       opts.cidVersion = 1
     }
@@ -241,10 +233,6 @@ module.exports = function files (self) {
     const maxDepth = recursive ? global.Infinity : pathDepth
     options.maxDepth = options.maxDepth || maxDepth
 
-    if (options.cidBase && !multibase.names.includes(options.cidBase)) {
-      return pull.error(errCode(new Error('invalid multibase'), 'ERR_INVALID_MULTIBASE'))
-    }
-
     if (options.preload !== false) {
       self._preload(pathComponents[0])
     }
@@ -255,7 +243,7 @@ module.exports = function files (self) {
         recursive ? node.depth >= pathDepth : node.depth === pathDepth
       ),
       pull.map(node => {
-        node = Object.assign({}, node, { hash: cidToString(node.hash, options.cidBase) })
+        node = Object.assign({}, node, { hash: new CID(node.hash).toBaseEncodedString() })
         delete node.content
         return node
       })

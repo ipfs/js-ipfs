@@ -13,6 +13,7 @@ const waterfall = require('async/waterfall')
 const mh = require('multihashes')
 const multibase = require('multibase')
 const { print, isDaemonOn, createProgressBar } = require('../../utils')
+const { cidToString } = require('../../../utils/cid')
 
 function checkPath (inPath, recursive) {
   // This function is to check for the following possible inputs
@@ -58,7 +59,8 @@ function addPipeline (index, addStream, list, argv) {
   const {
     quiet,
     quieter,
-    silent
+    silent,
+    cidBase
   } = argv
   pull(
     zip(
@@ -84,12 +86,12 @@ function addPipeline (index, addStream, list, argv) {
       }
 
       if (silent) return
-      if (quieter) return print(added.pop().hash)
+      if (quieter) return print(cidToString(added.pop().hash, cidBase))
 
       sortBy(added, 'path')
         .reverse()
         .map((file) => {
-          const log = [ 'added', file.hash ]
+          const log = [ 'added', cidToString(file.hash, cidBase) ]
 
           if (!quiet && file.path.length > 0) log.push(file.path)
 

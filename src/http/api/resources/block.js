@@ -171,7 +171,7 @@ exports.stat = {
     const key = request.pre.args.key
     const cidBase = request.query['cid-base']
 
-    request.server.app.ipfs.block.stat(key, { cidBase }, (err, stats) => {
+    request.server.app.ipfs.block.stat(key, (err, stats) => {
       if (err) {
         log.error(err)
         return reply({
@@ -181,7 +181,7 @@ exports.stat = {
       }
 
       return reply({
-        Key: stats.key,
+        Key: cidToString(stats.key, cidBase),
         Size: stats.size
       })
     })
