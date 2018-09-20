@@ -33,22 +33,22 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.ipfs.ls(argv.key, { recursive: argv.recursive, cidBase: argv.cidBase }, (err, links) => {
+  handler ({ ipfs, key, recursive, headers, cidBase }) {
+    ipfs.ls(key, { recursive, cidBase }, (err, links) => {
       if (err) {
         throw err
       }
 
-      if (argv.headers) {
+      if (headers) {
         links = [{ hash: 'Hash', size: 'Size', name: 'Name' }].concat(links)
       }
 
       const multihashWidth = Math.max.apply(null, links.map((file) => file.hash.length))
       const sizeWidth = Math.max.apply(null, links.map((file) => String(file.size).length))
 
-      let pathParts = argv.key.split('/')
+      let pathParts = key.split('/')
 
-      if (argv.key.startsWith('/ipfs/')) {
+      if (key.startsWith('/ipfs/')) {
         pathParts = pathParts.slice(2)
       }
 
