@@ -1,3 +1,14 @@
+<a name="0.78.0"></a>
+# [0.78.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.77.1...v0.78.0) (2018-09-20)
+
+
+### Bug Fixes
+
+* example links in miscellaneous spec section ([#364](https://github.com/ipfs/interface-ipfs-core/issues/364)) ([45e8142](https://github.com/ipfs/interface-ipfs-core/commit/45e8142))
+* test for buffer with options ([#370](https://github.com/ipfs/interface-ipfs-core/issues/370)) ([d456245](https://github.com/ipfs/interface-ipfs-core/commit/d456245))
+
+
+
 <a name="0.77.1"></a>
 ## [0.77.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.77.0...v0.77.1) (2018-09-05)
 
