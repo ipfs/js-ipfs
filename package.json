@@ -42,7 +42,7 @@
     "detect-node": "^2.0.3",
     "detect-webworker": "^1.0.0",
     "dirty-chai": "^2.0.1",
-    "ipfs": "~0.31.2",
+    "ipfs": "~0.32.2",
     "pull-buffer-stream": "^1.0.0",
     "safe-buffer": "^5.1.1",
     "tmp": "~0.0.33"
@@ -51,7 +51,7 @@
     "async": "^2.6.1",
     "blob": "~0.0.4",
     "cids": "~0.5.3",
-    "debug": "^3.1.0",
+    "debug": "^4.0.1",
     "file-api": "~0.10.4",
     "filereader-stream": "^2.0.0",
     "interface-datastore": "~0.5.0",
