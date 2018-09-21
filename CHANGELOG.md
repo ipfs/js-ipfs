@@ -1,3 +1,13 @@
+<a name="24.0.2"></a>
+## [24.0.2](https://github.com/ipfs/js-ipfs-api/compare/v24.0.1...v24.0.2) (2018-09-21)
+
+
+### Bug Fixes
+
+* block.put options ([#844](https://github.com/ipfs/js-ipfs-api/issues/844)) ([e290a38](https://github.com/ipfs/js-ipfs-api/commit/e290a38))
+
+
+
 <a name="24.0.1"></a>
 ## [24.0.1](https://github.com/ipfs/js-ipfs-api/compare/v24.0.0...v24.0.1) (2018-08-21)
 
