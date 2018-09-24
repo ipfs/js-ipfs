@@ -53,7 +53,7 @@ module.exports = {
         // switch case with true feels so wrong.
         switch (true) {
           case (errorToString === 'Error: This dag node is a directory'):
-            resolver.directory(ipfs, ref, err.fileName, (err, data) => {
+            resolver.directory(ipfs, ref, err.cid, (err, data) => {
               if (err) {
                 log.error(err)
                 return reply(err.toString()).code(500)
@@ -87,12 +87,12 @@ module.exports = {
       }
     }
 
-    return resolver.multihash(ipfs, ref, (err, data) => {
+    return resolver.cid(ipfs, ref, (err, data) => {
       if (err) {
         return handleGatewayResolverError(err)
       }
 
-      const stream = ipfs.files.catReadableStream(data.multihash)
+      const stream = ipfs.files.catReadableStream(data.cid)
       stream.once('error', (err) => {
         if (err) {
           log.error(err)
