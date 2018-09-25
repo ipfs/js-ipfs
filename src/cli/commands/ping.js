@@ -22,7 +22,6 @@ module.exports = {
     pull(
       argv.ipfs.pingPullStream(peerId, { count }),
       pull.drain(({ success, time, text }) => {
-        console.log(success, time, text)
         // Check if it's a pong
         if (success && !text) {
           print(`Pong received: time=${time} ms`)

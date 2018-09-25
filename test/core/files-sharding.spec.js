@@ -30,46 +30,6 @@ describe('files directory (sharding tests)', () => {
     return files
   }
 
-  describe('files cat non-existant hash', () => {
-    let ipfs
-
-    before(function (done) {
-      this.timeout(40 * 1000)
-
-      // ipfs.init(done)
-    })
-
-    // after(function (done) {
-    //   this.timeout(40 * 1000)
-    //   ipfsd.stop(done)
-    // })
-    it('hello world', (done) => {
-      const hash = 'QmWWM8ZV6GPhqJ46WtKcUaBPNHN5yQaFsKDSQ1RE73w94Q'
-      // expect(last.hash).to.eql('')
-      const repoPath = path.join(os.tmpdir(), hat())
-      ipfs = new IPFS({
-        repo: repoPath,
-        start: false,
-        init: true
-      })
-      ipfs.once('error', done)
-      ipfs.once('init', () => {
-        const stream = ipfs.files.catReadableStream(hash, {})
-        stream.pipe(process.stdout)
-        stream.once('error', done)
-        stream.once('end', done)
-      })
-
-      // stream.once('error', (err) => {
-      // st// argv.onComplete(err)
-      // })// st
-
-      // stream.once('end', argv.onComplete || function () {})
-      // console.log('heh, done')
-      // done()
-    })
-  })
-
   describe('without sharding', () => {
     let ipfs
     let ipfsd

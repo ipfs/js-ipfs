@@ -205,7 +205,7 @@ module.exports = (thing) => describe('files', () => {
   })
 
   // TODO makes `pin ls` crash
-  // https://gitnub.com/ipfs/js-ipfs/issues/1531
+  // https://github.com/ipfs/js-ipfs/issues/1531
   it.skip('add with cid-version=1 < default max chunk size', function () {
     this.timeout(30 * 1000)
 
@@ -217,7 +217,7 @@ module.exports = (thing) => describe('files', () => {
   })
 
   // TODO makes `pin ls` crash
-  // https://gitnub.com/ipfs/js-ipfs/issues/1531
+  // https://github.com/ipfs/js-ipfs/issues/1531
   it.skip('add with cid-version=1 > default max chunk size', function () {
     this.timeout(30 * 1000)
 
@@ -229,7 +229,7 @@ module.exports = (thing) => describe('files', () => {
   })
 
   // TODO makes `pin ls` crash
-  // https://gitnub.com/ipfs/js-ipfs/issues/1531
+  // https://github.com/ipfs/js-ipfs/issues/1531
   it.skip('add with cid-version=1 and raw-leaves=false < default max chunk size', function () {
     this.timeout(30 * 1000)
 
@@ -241,7 +241,7 @@ module.exports = (thing) => describe('files', () => {
   })
 
   // TODO makes `pin ls` crash
-  // https://gitnub.com/ipfs/js-ipfs/issues/1531
+  // https://github.com/ipfs/js-ipfs/issues/1531
   it.skip('add with cid-version=1 and raw-leaves=false > default max chunk size', function () {
     this.timeout(30 * 1000)
 
@@ -252,9 +252,8 @@ module.exports = (thing) => describe('files', () => {
       })
   })
 
-
   // TODO makes `pin ls` crash
-  // https://gitnub.com/ipfs/js-ipfs/issues/1531
+  // https://github.com/ipfs/js-ipfs/issues/1531
   it.skip('add with cid-version=1 and raw-leaves=true < default max chunk size', function () {
     this.timeout(30 * 1000)
 
@@ -266,7 +265,7 @@ module.exports = (thing) => describe('files', () => {
   })
 
   // TODO makes `pin ls` crash
-  // https://gitnub.com/ipfs/js-ipfs/issues/1531
+  // https://github.com/ipfs/js-ipfs/issues/1531
   it.skip('add with cid-version=1 and raw-leaves=true > default max chunk size', function () {
     this.timeout(30 * 1000)
 

@@ -9,10 +9,5 @@ module.exports = (server) => {
     method: '*',
     path: '/api/v0/shutdown',
     handler: resources.shutdown.do
-    // handler: () => {
-    //   server.stop({ timeout: 10000 }).then(function (err) {
-    //     console.log('hapi server stopped')
-    //   })
-    // }
   })
 }

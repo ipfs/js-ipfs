@@ -1,5 +1,8 @@
 #! /usr/bin/env bash
 
+# This script uses js-ipfs to generate a bunch of test-keys to be used in tests
+# There are many of them to prevent collision with Peer IDs
+
 for I in {1..65}
 do
   export IPFS_PATH=$(mktemp -d)

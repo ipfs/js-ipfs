@@ -2,7 +2,6 @@
 'use strict'
 
 const expect = require('chai').expect
-const runOnAndOff = require('../utils/on-and-off')
 
 const test = (thing) => describe('dag', () => {
   let ipfs

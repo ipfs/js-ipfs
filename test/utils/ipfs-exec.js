@@ -2,18 +2,9 @@
 
 const yargs = require('yargs')
 const utils = require('../../src/cli/utils')
-// const debug = require('debug')('jsipfs:ipfs-exec')
 const D = require('debug')
 const stream = require('stream')
-// const execa = require('execa')
-// const chai = require('chai')
-// const dirtyChai = require('dirty-chai')
-// const expect = chai.expect
-// chai.use(dirtyChai)
-
-// const _ = require('lodash')
-
-// This is our new test utility to easily check and execute ipfs cli commands.
+// This is our new new test utility to easily check and execute ipfs cli commands.
 //
 // The top level export is a function that can be passed a `repoPath`
 // and optional `opts` to customize the execution of the commands.
@@ -30,7 +21,6 @@ const makeCLICall = (args) => {
   let cliToLoad = argv[0]
   if (['cat', 'add', 'get'].includes(argv[0])) {
     cliToLoad = 'files/' + argv[0]
-    // argv = ['files'].concat(argv)
   }
   if (argv[0] === '--pass') {
     console.log('Using global --pass siwtch')
@@ -58,11 +48,10 @@ const makeCLICall = (args) => {
   debug('Parsed command')
 
   const res = new Promise((resolve, reject) => {
-    // return new Promise((resolve, reject) => {
     // Save output we receive so we can return it
     let output = []
-    // Placeholder callback for cleanup. Should be replaced with a proper one
-    // later on
+    // Placeholder callback for cleanup. Will be replaced with a proper one
+    // later on in the code
     let cleanup = (cb) => {
       debug('WARNING: placeholder cleanup called...')
       cb()
@@ -72,7 +61,7 @@ const makeCLICall = (args) => {
     // This callback gets injected into the CLI commands who can call it when
     // they are done with their operations
     const onComplete = (err) => {
-      // Disable rest of function if already called before
+      // Ignore rest of function if already called before
       if (onCompleteWasCalled) {
         // Tracing to figure out where it comes from, it should not happen
         console.trace()
@@ -103,13 +92,12 @@ const makeCLICall = (args) => {
         debug('received a little chunk', JSON.stringify(chunk.toString()))
         outputStream.push(chunk)
         output.push(chunk.toString())
-        // TODO shitty implementation, should call onComplete when daemon/shutdown
+        // TODO bad implementation, should call onComplete when daemon/shutdown
         // commands finish, but without having to rely on stdout
         if (chunk.toString() === 'Daemon is ready\n' || chunk.toString() === 'Shutdown complete\n') {
           debug('received either daemon is ready or shutdown complete, so calling onComplete()')
           onComplete()
           this.destroy()
-          // TODO probably this that leads to shitty stuff...
           utils.setPrintStream(process.stdout)
         }
         next()
@@ -169,10 +157,7 @@ const makeCLICall = (args) => {
                 _output.split('\n').forEach(line => output.push(line))
               }
               if (err) return reject(err)
-              // cleanup(() => {})
               debug('Callback called, waiting for onComplete')
-              // onComplete()
-              // no need to do anything after the command because we have onComplete
             })
           } catch (err) {
             debug('Got error', err)

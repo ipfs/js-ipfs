@@ -137,12 +137,10 @@ const test = (thing) => describe('ping', () => {
     const result = []
     ping.stdout.on('data', (output) => {
       const packets = output.toString().split('\n').slice(0, -1)
-      console.log('received', packets)
       result.push(...packets)
     })
 
     ping.stdout.on('end', () => {
-      console.log('it finally endede')
       expect(result).to.have.lengthOf(3)
       expect(result[0]).to.equal(`PING ${ipfsdBId}`)
       expect(result[1]).to.match(/^Pong received: time=\d+ ms$/)

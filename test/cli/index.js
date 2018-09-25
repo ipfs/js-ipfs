@@ -7,9 +7,6 @@ const os = require('os')
 
 const ipfsExec = require('../utils/ipfs-exec')
 
-// require('clarify')
-// require('trace')
-
 // Tests can have a `.part` property that decides when tests gets run
 // `offline` => only offline
 // `online` => only online
@@ -23,7 +20,6 @@ describe('cli', () => {
   }
   fs.readdirSync(__dirname)
     .filter((file) => file !== 'index.js')
-  // .filter((file) => file === 'bitswap.js')
     .forEach((file) => {
       const t = require('./' + file)
       if (typeof t !== 'function') {

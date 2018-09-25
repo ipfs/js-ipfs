@@ -175,7 +175,7 @@ function HttpApi (repo, config, cliArgs) {
     ], (err) => {
       if (err) {
         this.log.error(err)
-        console.log('Trying to shutdown...')
+        console.log('There were errors stopping')
       }
       callback()
     })
