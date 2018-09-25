@@ -40,10 +40,16 @@ function prepareFile (self, opts, file, callback) {
     (node, cb) => {
       const b58Hash = cid.toBaseEncodedString()
 
+      let size = node.size
+
+      if (Buffer.isBuffer(node)) {
+        size = node.length
+      }
+
       cb(null, {
         path: opts.wrapWithDirectory ? file.path.substring(WRAPPER.length) : (file.path || b58Hash),
         hash: b58Hash,
-        size: node.size
+        size
       })
     }
   ], callback)
