@@ -70,6 +70,8 @@ module.exports = function object (self) {
         options = {}
       }
 
+      options = options || {}
+
       waterfall([
         (cb) => {
           self.object.get(multihash, options, cb)
@@ -151,6 +153,8 @@ module.exports = function object (self) {
         options = {}
       }
 
+      options = options || {}
+
       const encoding = options.enc
       let node
 
@@ -216,6 +220,8 @@ module.exports = function object (self) {
         callback = options
         options = {}
       }
+
+      options = options || {}
 
       let mh, cid
 

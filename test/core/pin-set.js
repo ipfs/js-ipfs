@@ -67,6 +67,8 @@ describe('pinSet', function () {
     ipfs.stop(done)
   })
 
+  after((done) => repo.teardown(done))
+
   describe('storeItems', function () {
     it('generates a root node with links and hash', function (done) {
       const expectedRootHash = 'QmcLiSTjcjoVC2iuGbk6A2PVcWV3WvjZT4jxfNis1vjyrR'

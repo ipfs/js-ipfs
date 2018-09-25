@@ -133,13 +133,20 @@ class IpnsResolver {
           return callback(err)
         }
 
-        // Record validation
-        ipns.validate(pubKey, ipnsEntry, (err) => {
+        // libp2p record signature validation
+        record.verifySignature(pubKey, (err) => {
           if (err) {
             return callback(err)
           }
 
-          callback(null, ipnsEntry.value.toString())
+          // IPNS entry validation
+          ipns.validate(pubKey, ipnsEntry, (err) => {
+            if (err) {
+              return callback(err)
+            }
+
+            callback(null, ipnsEntry.value.toString())
+          })
         })
       })
     })

@@ -1,3 +1,47 @@
+<a name="0.32.2"></a>
+## [0.32.2](https://github.com/ipfs/js-ipfs/compare/v0.32.1...v0.32.2) (2018-09-19)
+
+
+### Bug Fixes
+
+* coerce key gen size to number ([#1582](https://github.com/ipfs/js-ipfs/issues/1582)) ([25d820d](https://github.com/ipfs/js-ipfs/commit/25d820d))
+
+
+
+<a name="0.32.1"></a>
+## [0.32.1](https://github.com/ipfs/js-ipfs/compare/v0.32.0...v0.32.1) (2018-09-18)
+
+
+### Bug Fixes
+
+* add libp2p-crypto to deps list ([#1572](https://github.com/ipfs/js-ipfs/issues/1572)) ([7eaf571](https://github.com/ipfs/js-ipfs/commit/7eaf571)), closes [#1571](https://github.com/ipfs/js-ipfs/issues/1571)
+* enable tests in node that were not being included ([#1499](https://github.com/ipfs/js-ipfs/issues/1499)) ([2585431](https://github.com/ipfs/js-ipfs/commit/2585431))
+* fix `block rm` command ([#1576](https://github.com/ipfs/js-ipfs/issues/1576)) ([af30ea5](https://github.com/ipfs/js-ipfs/commit/af30ea5))
+* mfs preload test ([#1551](https://github.com/ipfs/js-ipfs/issues/1551)) ([7c7a5a6](https://github.com/ipfs/js-ipfs/commit/7c7a5a6))
+
+
+### Performance Improvements
+
+* faster startup time ([#1542](https://github.com/ipfs/js-ipfs/issues/1542)) ([2790e6d](https://github.com/ipfs/js-ipfs/commit/2790e6d))
+
+
+
+<a name="0.32.0"></a>
+# [0.32.0](https://github.com/ipfs/js-ipfs/compare/v0.32.0-rc.2...v0.32.0) (2018-09-11)
+
+
+### Bug Fixes
+
+* ipns publish resolve option overwritten ([#1556](https://github.com/ipfs/js-ipfs/issues/1556)) ([ef7d2c8](https://github.com/ipfs/js-ipfs/commit/ef7d2c8))
+
+
+### Features
+
+* Added `ipfs.name.publish` and `ipfs.name.resolve`. This only works on your local node for the moment until the DHT lands. [API docs can be found here](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md).
+* Added `ipfs.resolve` API. Note that this is a partial implementation allowing you to resolve IPFS paths like `/ipfs/QmRootHash/path/to/file` to `/ipfs/QmFileHash`. It does not support IPNS yet.
+* `ipfs.files.add*` now supports a `chunker` option, see [the API docs](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesadd) for details
+
+
 <a name="0.31.7"></a>
 ## [0.31.7](https://github.com/ipfs/js-ipfs/compare/v0.31.6...v0.31.7) (2018-08-20)
 

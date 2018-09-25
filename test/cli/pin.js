@@ -27,8 +27,7 @@ module.exports = (thing) => describe('pin', () => {
   })
 
   describe('rm', function () {
-    it('recursively (default)', function () {
-      this.timeout(10 * 1000)
+    it('recursively (default)', () => {
       return ipfs(`pin rm ${pins.root}`)
         .then(out => expect(out).to.equal(`unpinned ${pins.root}\n`))
     })

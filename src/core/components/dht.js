@@ -28,6 +28,8 @@ module.exports = (self) => {
         options = {}
       }
 
+      options = options || {}
+
       self._libp2pNode.dht.get(key, options.timeout, callback)
     }),
 
@@ -133,6 +135,8 @@ module.exports = (self) => {
         callback = options
         options = {}
       }
+
+      options = options || {}
 
       // ensure blocks are actually local
       every(keys, (key, cb) => {

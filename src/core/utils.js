@@ -109,7 +109,7 @@ const resolvePath = promisify(function (objectAPI, ipfsPaths, callback) {
       return cb(null, rootHash.buffer)
     }
 
-    objectAPI.get(rootHash, follow.bind(null, rootLinks))
+    objectAPI.get(rootHash.multihash, follow.bind(null, rootLinks))
 
     // recursively follow named links to the target node
     function follow (links, err, obj) {

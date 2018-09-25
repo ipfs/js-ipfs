@@ -81,6 +81,8 @@ module.exports = function stats (self) {
         opts = {}
       }
 
+      opts = opts || {}
+
       bandwidthStats(self, opts)
         .then((stats) => callback(null, stats))
         .catch((err) => callback(err))

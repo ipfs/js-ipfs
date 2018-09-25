@@ -7,6 +7,7 @@ module.exports = {
 
   builder: {
     resolve: {
+      alias: 'r',
       describe: 'Resolve given path before publishing. Default: true.',
       default: true
     },
@@ -27,8 +28,16 @@ module.exports = {
   },
 
   handler (argv) {
+    // yargs-promise adds resolve/reject properties to argv
+    // resolve should use the alias as resolve will always be overwritten to a function
+    let resolve = true
+
+    if (argv.r === false || argv.r === 'false') {
+      resolve = false
+    }
+
     const opts = {
-      resolve: argv.resolve,
+      resolve,
       lifetime: argv.lifetime,
       key: argv.key,
       ttl: argv.ttl

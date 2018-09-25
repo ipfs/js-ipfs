@@ -7,6 +7,7 @@ const promisify = require('promisify-es6')
 module.exports = function key (self) {
   return {
     gen: promisify((name, opts, callback) => {
+      opts = opts || {}
       self._keychain.createKey(name, opts.type, opts.size, callback)
     }),
 

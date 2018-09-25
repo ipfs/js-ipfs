@@ -30,6 +30,8 @@ describe('key exchange', () => {
 
   after((done) => ipfs.stop(done))
 
+  after((done) => repo.teardown(done))
+
   it('exports', (done) => {
     ipfs.key.export('self', passwordPem, (err, pem) => {
       expect(err).to.not.exist()

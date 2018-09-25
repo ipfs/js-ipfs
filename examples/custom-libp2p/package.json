@@ -1,0 +1,23 @@
+{
+  "name": "custom-libp2p",
+  "version": "0.1.0",
+  "description": "Customizing your libp2p node",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "ipfs": "file:../../",
+    "libp2p": "~0.22.0",
+    "libp2p-kad-dht": "~0.10.1",
+    "libp2p-mdns": "~0.12.0",
+    "libp2p-mplex": "~0.8.0",
+    "libp2p-railing": "~0.9.2",
+    "libp2p-secio": "~0.10.0",
+    "libp2p-spdy": "~0.12.1",
+    "libp2p-tcp": "~0.12.0",
+    "libp2p-websocket-star": "~0.8.1"
+  }
+}

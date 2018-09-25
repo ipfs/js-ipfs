@@ -75,9 +75,7 @@ describe('init', () => {
     })
   })
 
-  it('pregenerated key is being used', function (done) {
-    this.timeout(10 * 1000)
-
+  it('pregenerated key is being used', (done) => {
     ipfs.init({ privateKey }, (err) => {
       expect(err).to.not.exist()
 

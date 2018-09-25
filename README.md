@@ -81,7 +81,7 @@ You can check the development status at the [Waffle Board](https://waffle.io/ipf
 - [Packages](#packages)
 - [Development](#development)
   - [Clone and install dependencies](#clone-and-install-dependencies)
-  - [Run Tests](#run-unit-tests)
+  - [Run Tests](#run-tests)
   - [Lint](#lint)
   - [Build a dist version](#build-a-dist-version)
 - [Contribute](#contribute)
@@ -290,7 +290,7 @@ Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipf
 |------|---------|
 | object | `{ enabled: true, addresses: [...] }` |
 
-Configure external nodes that will preload content added to this node.
+Configure remote preload nodes. The remote will preload content added on this node, and also attempt to preload objects requested by this node.
 
 - `enabled` (boolean): Enable content preloading (Default: `true`)
 - `addresses` (array): Multiaddr API addresses of nodes that should preload content. **NOTE:** nodes specified here should also be added to your node's bootstrap address list at [`config.Boostrap`](#optionsconfig).
@@ -305,7 +305,7 @@ Enable and configure experimental features.
 
 - `pubsub` (boolean): Enable libp2p pub-sub. (Default: `false`)
 - `sharding` (boolean): Enable directory sharding. Directories that have many child objects will be represented by multiple DAG nodes instead of just one. It can improve lookup performance when a directory has several thousand files or more. (Default: `false`)
-- `dht` (boolean): Enable KadDHT. **This is currently not interopable with `go-ipfs`.**
+- `dht` (boolean): Enable KadDHT. **This is currently not interoperable with `go-ipfs`.**
 
 ##### `options.config`
 
@@ -320,8 +320,11 @@ Modify the default IPFS node config. This object will be *merged* with the defau
 | Type | Default |
 |------|---------|
 | object | [`libp2p-nodejs.js`](https://github.com/ipfs/js-ipfs/blob/master/src/core/runtime/libp2p-nodejs.js) in Node.js, [`libp2p-browser.js`](https://github.com/ipfs/js-ipfs/blob/master/src/core/runtime/libp2p-browser.js) in browsers |
+| function | [`libp2p bundle`](examples/custom-libp2p) |
 
-Add custom modules to the libp2p stack of your node.
+The libp2p option allows you to build your libp2p node by configuration, or via a bundle function. If you are looking to just modify the below options, using the object format is the quickest way to get the default features of libp2p. If you need to create a more customized libp2p node, such as with custom transports or peer/content routers that need some of the ipfs data on startup, a custom bundle is a great way to achieve this.
+
+You can see the bundle in action in the [custom libp2p example](examples/custom-libp2p).
 
 - `modules` (object):
     - `transport` (Array<[libp2p.Transport](https://github.com/libp2p/interface-transport)>): An array of Libp2p transport classes/instances to use _instead_ of the defaults. See [libp2p/interface-transport](https://github.com/libp2p/interface-transport) for details.
@@ -349,7 +352,7 @@ const node = new IPFS({ repo: '/var/ipfs/data' })
 node.on('error', errorObject => console.error(errorObject))
 ```
 
-- `error` is always accompanied by an `Error` object with information about the error that ocurred.
+- `error` is always accompanied by an `Error` object with information about the error that occurred.
 
     ```js
     node.on('error', error => {
@@ -518,109 +521,112 @@ The core API is grouped into several areas:
     - [`ipfs.files.write(path, content, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#fileswrite)
 
 - [block](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md)
-  - [`ipfs.block.get(cid, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md#get)
-  - [`ipfs.block.put(block, cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md#put)
-  - [`ipfs.block.stat(cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md#stat)
+  - [`ipfs.block.get(cid, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md#blockget)
+  - [`ipfs.block.put(block, cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md#blockput)
+  - [`ipfs.block.stat(cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md#blockstat)
 
 #### Graph
 
 - [dag](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DAG.md)
-  - [`ipfs.dag.put(dagNode, options, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DAG.md#dagput)
-  - [`ipfs.dag.get(cid [, path, options], callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DAG.md#dagget)
-  - [`ipfs.dag.tree(cid [, path, options], callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DAG.md#dagtree)
+  - [`ipfs.dag.put(dagNode, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DAG.md#dagput)
+  - [`ipfs.dag.get(cid, [path], [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DAG.md#dagget)
+  - [`ipfs.dag.tree(cid, [path], [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DAG.md#dagtree)
 
-- [object](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md).
-  - [`ipfs.object.new([template][, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectnew)
-  - [`ipfs.object.put(obj, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectput)
-  - [`ipfs.object.get(multihash, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectget)
-  - [`ipfs.object.data(multihash, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectdata)
-  - [`ipfs.object.links(multihash, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectlinks)
-  - [`ipfs.object.stat(multihash, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectstat)
-  - [`ipfs.object.patch.addLink(multihash, DAGLink, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchaddlink)
-  - [`ipfs.object.patch.rmLink(multihash, DAGLink, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchrmlink)
-  - [`ipfs.object.patch.appendData(multihash, data, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchappenddata)
-  - [`ipfs.object.patch.setData(multihash, data, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchsetdata)
+- [object](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md)
+  - [`ipfs.object.new([template], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectnew)
+  - [`ipfs.object.put(obj, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectput)
+  - [`ipfs.object.get(multihash, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectget)
+  - [`ipfs.object.data(multihash, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectdata)
+  - [`ipfs.object.links(multihash, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectlinks)
+  - [`ipfs.object.stat(multihash, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectstat)
+  - [`ipfs.object.patch.addLink(multihash, DAGLink, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchaddlink)
+  - [`ipfs.object.patch.rmLink(multihash, DAGLink, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchrmlink)
+  - [`ipfs.object.patch.appendData(multihash, data, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchappenddata)
+  - [`ipfs.object.patch.setData(multihash, data, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchsetdata)
 
 - [pin](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PIN.md)
   - [`ipfs.pin.add(hash, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PIN.md#pinadd)
   - [`ipfs.pin.ls([hash], [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PIN.md#pinls)
   - [`ipfs.pin.rm(hash, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PIN.md#pinrm)
 
-### Name
+#### Name
 
 - [name](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md)
-  - [`ipfs.name.publish(value, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md#namepublish)
-  - [`ipfs.name.resolve(value, [options, callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md#nameresolve)
+  - [`ipfs.name.publish(value, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md#namepublish)
+  - [`ipfs.name.resolve(value, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md#nameresolve)
 
 #### Crypto and Key Management
 
 - [key](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/KEY.md)
-  - `ipfs.key.export(name, password, [callback])`
-  - `ipfs.key.gen(name, options, [callback])`
-  - `ipfs.key.import(name, pem, password, [callback])`
-  - `ipfs.key.list([callback])`
-  - `ipfs.key.rename(oldName, newName, [callback])`
-  - `ipfs.key.rm(name, [callback])`
-- [crypto (not yet implemented)](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC)
+  - [`ipfs.key.export(name, password, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keyexport)
+  - [`ipfs.key.gen(name, options, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keygen)
+  - [`ipfs.key.import(name, pem, password, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keyimport)
+  - [`ipfs.key.list([callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keylist)
+  - [`ipfs.key.rename(oldName, newName, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keyrename)
+  - [`ipfs.key.rm(name, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keyrm)
+
+- crypto (not implemented yet)
 
 #### Network
 
-- [bootstrap](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/)
-  - `ipfs.bootstrap.list`
-  - `ipfs.bootstrap.add`
-  - `ipfs.bootstrap.rm`
+- [bootstrap](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BOOTSTRAP.md)
+  - [`ipfs.bootstrap.list([callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BOOTSTRAP.md#bootstraplist)
+  - [`ipfs.bootstrap.add(addr, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BOOTSTRAP.md#bootstrapadd)
+  - [`ipfs.bootstrap.rm(peer, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BOOTSTRAP.md#bootstraprm)
 
-- [bitswap](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/)
-  - `ipfs.bitswap.wantlist()`
-  - `ipfs.bitswap.stat()`
-  - `ipfs.bitswap.unwant()`
+- [bitswap](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BITSWAP.md)
+  - [`ipfs.bitswap.wantlist([peerId], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BITSWAP.md#bitswapwantlist)
+  - [`ipfs.bitswap.stat([callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BITSWAP.md#bitswapstat)
 
-- [dht (not implemented, yet!)](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/)
+- dht (not implemented yet)
 
 - [pubsub](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md)
-  - [`ipfs.pubsub.subscribe(topic, handler, options, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubsubscribe)
-  - [`ipfs.pubsub.unsubscribe(topic, handler, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubunsubscribe)
-  - [`ipfs.pubsub.publish(topic, data, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubpublish)
-  - [`ipfs.pubsub.ls(topic, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubls)
-  - [`ipfs.pubsub.peers(topic, callback)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubpeers)
+  - [`ipfs.pubsub.subscribe(topic, handler, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubsubscribe)
+  - [`ipfs.pubsub.unsubscribe(topic, handler, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubunsubscribe)
+  - [`ipfs.pubsub.publish(topic, data, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubpublish)
+  - [`ipfs.pubsub.ls(topic, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubls)
+  - [`ipfs.pubsub.peers(topic, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubpeers)
 
-- [libp2p](https://github.com/libp2p/interface-libp2p). Every IPFS instance also exposes the libp2p SPEC at `ipfs.libp2p`. The formal interface for this SPEC hasn't been defined by you can find documentation at its implementations:
+- [libp2p](https://github.com/libp2p/interface-libp2p). Every IPFS instance also exposes the libp2p SPEC at `ipfs.libp2p`. The formal interface for this SPEC hasn't been defined but you can find documentation at its implementations:
   - [Node.js bundle](./src/core/runtime/libp2p-nodejs.js)
   - [Browser Bundle](./src/core/runtime/libp2p-browser.js)
   - [libp2p baseclass](https://github.com/libp2p/js-libp2p)
 
 - [swarm](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md)
-  - [`ipfs.swarm.addrs([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#addrs)
-  - [`ipfs.swarm.connect(addr, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#connect)
-  - [`ipfs.swarm.disconnect(addr, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#disconnect)
-  - [`ipfs.swarm.peers([opts] [, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#peers)
+  - [`ipfs.swarm.addrs([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#swarmaddrs)
+  - [`ipfs.swarm.connect(addr, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#swarmconnect)
+  - [`ipfs.swarm.disconnect(addr, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#swarmdisconnect)
+  - [`ipfs.swarm.peers([options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#swarmpeers)
 
 #### Node Management
 
 - [miscellaneous operations](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md)
   - [`ipfs.id([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#id)
   - [`ipfs.version([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#version)
-  - `ipfs.ping()`
-  - `ipfs.init([options], callback)`
+  - [`ipfs.ping(peerId, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#ping)
+  - [`ipfs.pingReadableStream(peerId, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#pingreadablestream)
+  - [`ipfs.pingPullStream(peerId, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#pingpullstream)
+  - `ipfs.init([options], [callback])`
   - `ipfs.start([callback])`
   - [`ipfs.stop([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#stop)
   - `ipfs.isOnline()`
+  - [`ipfs.resolve(name, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#resolve)
 
 - [repo](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/REPO.md)
   - `ipfs.repo.init`
-  - [`ipfs.repo.stat([options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/REPO.md#stat)
-  - [`ipfs.repo.version([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/REPO.md#version)
-  - `ipfs.repo.gc([options, callback])` (not implemented, yet!)
+  - [`ipfs.repo.stat([options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/REPO.md#repostat)
+  - [`ipfs.repo.version([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/REPO.md#repoversion)
+  - `ipfs.repo.gc([options], [callback])` (not implemented yet)
 
 - [stats](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md)
-  - [`ipfs.stats.bitswap([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#bitswap)
-  - [`ipfs.stats.bw([options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#bw)
-  - [`ipfs.stats.bwPullStream([options]) -> Pull Stream`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#bwpullstream)
-  - [`ipfs.stats.bwReadableStream([options]) -> Readable Stream`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#bwreadablestream)
-  - [`ipfs.stats.repo([options, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#repo)
+  - [`ipfs.stats.bitswap([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#statsbitswap)
+  - [`ipfs.stats.bw([options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#statsbw)
+  - [`ipfs.stats.bwPullStream([options]) -> Pull Stream`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#statsbwpullstream)
+  - [`ipfs.stats.bwReadableStream([options]) -> Readable Stream`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#statsbwreadablestream)
+  - [`ipfs.stats.repo([options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#statsrepo)
 
 - [config](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md)
-  - [`ipfs.config.get([key, callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configget)
+  - [`ipfs.config.get([key], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configget)
   - [`ipfs.config.set(key, value, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configset)
   - [`ipfs.config.replace(config, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configreplace)
 
@@ -632,7 +638,7 @@ A set of data types are exposed directly from the IPFS instance under `ipfs.type
 - [`ipfs.types.PeerId`](https://github.com/libp2p/js-peer-id)
 - [`ipfs.types.PeerInfo`](https://github.com/libp2p/js-peer-info)
 - [`ipfs.types.multiaddr`](https://github.com/multiformats/js-multiaddr)
-- [`ipfs.types.multibase`](https://github.com/multiformats/multibase)
+- [`ipfs.types.multibase`](https://github.com/multiformats/js-multibase)
 - [`ipfs.types.multihash`](https://github.com/multiformats/js-multihash)
 - [`ipfs.types.CID`](https://github.com/ipld/js-cid)
 - [`ipfs.types.dagPB`](https://github.com/ipld/js-ipld-dag-pb)
@@ -671,7 +677,7 @@ node.on('ready', () => {
 
 #### Is there WebRTC support for js-ipfs with Node.js?
 
-Yes, however, bare in mind that there isn't a 100% stable solution to use WebRTC in Node.js, use it at your own risk. The most tested options are:
+Yes, however, bear in mind that there isn't a 100% stable solution to use WebRTC in Node.js, use it at your own risk. The most tested options are:
 
 - [wrtc](https://npmjs.org/wrtc) - Follow the install instructions.
 - [electron-webrtc](https://npmjs.org/electron-webrtc)
@@ -681,7 +687,7 @@ To add WebRTC support in a IPFS node instance, do:
 ```JavaScript
 const wrtc = require('wrtc') // or require('electron-webrtc')()
 const WStar = require('libp2p-webrtc-star')
-const wstar = new WStar({ wrtc: wrtc })
+const wstar = new WStar({ wrtc })
 
 const node = new IPFS({
   repo: 'your-repo-path',
@@ -891,10 +897,10 @@ Listing of the main packages used in the IPFS ecosystem. There are also three sp
 > npm install
 ```
 
-### Run unit tests
+### Run tests
 
 ```sh
-# run all the unit tsts
+# run all the unit tests
 > npm test
 
 # run just IPFS tests in Node.js
@@ -911,6 +917,9 @@ Listing of the main packages used in the IPFS ecosystem. There are also three sp
 
 # run just IPFS core tests in the Browser (Chrome)
 > npm run test:browser
+
+# run some interface tests (block API) on Node.js
+> npm run test:node:interface -- --grep '.block'
 ```
 
 ### Run interop tests
@@ -946,7 +955,7 @@ Run the interop tests with https://github.com/ipfs/interop
 
 ### Build a dist version
 
-```
+```sh
 > npm run build
 ```
 
@@ -963,7 +972,7 @@ Run the interop tests with https://github.com/ipfs/interop
 src                 # Main source code folder
 ├── cli             # Implementation of the IPFS CLI
 │   └── ...
-├── http-api        # The HTTP-API implementation of IPFS as defined by http-api-spec
+├── http            # The HTTP-API implementation of IPFS as defined by http-api-spec
 ├── core            # IPFS implementation, the core (what gets loaded in browser)
 │   ├── components  # Each of IPFS subcomponent
 │   └── ...

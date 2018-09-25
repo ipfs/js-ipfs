@@ -15,9 +15,18 @@
     - [ ] unit
     - [ ] interop
     - [ ] sharness
+  - [ ] Publish a release candidate to npm
+      ```sh
+      # Current version is 0.31.7, to publish a release candidate for 0.32.0:
+      npm run build
+      npm version 0.32.0-rc.1
+      # Publish with "next" tag to ensure people still get 0.31.7 when they `npm i ipfs`
+      npm publish --tag next
+      git push origin master v0.32.0-rc.1
+      ```
   - [ ] Run tests of the following projects with the new release:
     - [ ] [ipfs-pubsub-room](https://github.com/ipfs-shipyard/ipfs-pubsub-room)
-    - [ ] [peerpad-core](https://github.com/ipfs-shipyard/peerpad)
+    - [ ] [peer-star-app](https://github.com/ipfs-shipyard/peer-star-app)
     - [ ] [ipfs-log](https://github.com/orbitdb/ipfs-log)
     - [ ] [orbit-db](https://github.com/orbitdb/orbit-db)
 - Documentation

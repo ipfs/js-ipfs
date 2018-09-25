@@ -7,11 +7,10 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-const pull = require('pull-stream')
 const IPFSFactory = require('ipfsd-ctl')
 const IPFS = require('../../src/core')
 
-describe('stats', () => {
+describe('swarm', () => {
   let ipfsd, ipfs
 
   before(function (done) {
@@ -38,22 +37,9 @@ describe('stats', () => {
     }
   })
 
-  describe('bwPullStream', () => {
-    it('should return erroring stream for invalid interval option', (done) => {
-      pull(
-        ipfs.stats.bwPullStream({ poll: true, interval: 'INVALID INTERVAL' }),
-        pull.collect((err) => {
-          expect(err).to.exist()
-          expect(err.code).to.equal('ERR_INVALID_POLL_INTERVAL')
-          done()
-        })
-      )
-    })
-  })
-
-  describe('bw', () => {
+  describe('peers', () => {
     it('should not error when passed null options', (done) => {
-      ipfs.stats.bw(null, (err) => {
+      ipfs.swarm.peers(null, (err) => {
         expect(err).to.not.exist()
         done()
       })
