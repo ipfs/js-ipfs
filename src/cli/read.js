@@ -3,7 +3,6 @@
 const pull = require('pull-stream/pull')
 const through = require('pull-stream/throughs/through')
 const collect = require('pull-stream/sinks/collect')
-const waterfall = require('async/waterfall')
 const {
   print
 } = require('./utils')
@@ -36,27 +35,22 @@ module.exports = {
 
     argv.resolve(
       new Promise((resolve, reject) => {
-        waterfall([
-          (cb) => ipfs.files.readPullStream(path, {
+        pull(
+          ipfs.files.readPullStream(path, {
             offset,
             length
-          }, cb),
-          (stream, cb) => {
-            pull(
-              stream,
-              through(buffer => {
-                print(buffer, false)
-              }),
-              collect(cb)
-            )
-          }
-        ], (error) => {
-          if (error) {
-            return reject(error)
-          }
+          }),
+          through(buffer => {
+            print(buffer, false)
+          }),
+          collect((error) => {
+            if (error) {
+              return reject(error)
+            }
 
-          resolve()
-        })
+            resolve()
+          })
+        )
       })
     )
   }
