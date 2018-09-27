@@ -28,7 +28,7 @@ module.exports = {
   },
 
   handler (argv) {
-    print('Initializing daemon...')
+    print('Initializing IPFS daemon...')
 
     const repoPath = utils.getRepoPath()
 
