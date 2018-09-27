@@ -83,5 +83,30 @@ describe('files', () => {
         done()
       })
     })
+
+    it('should add a file with a v1 CID', (done) => {
+      ipfs.files.add(Buffer.from([0, 1, 2]), {
+        cidVersion: 1
+      }, (err, files) => {
+        expect(err).to.not.exist()
+        expect(files.length).to.equal(1)
+        expect(files[0].hash).to.equal('zb2rhiNedvrkpYhcrgtpmhKk5UPzcgizgSXaQLYXNY745BmYP')
+        expect(files[0].size).to.equal(3)
+        done()
+      })
+    })
+
+    it('should add a file with a v1 CID and not raw leaves', (done) => {
+      ipfs.files.add(Buffer.from([0, 1, 2]), {
+        cidVersion: 1,
+        rawLeaves: false
+      }, (err, files) => {
+        expect(err).to.not.exist()
+        expect(files.length).to.equal(1)
+        expect(files[0].hash).to.equal('zdj7WcDSFNSsZkdkbpSDGeLsBtHbYKyvPQsaw6PpeeYdGqoAx')
+        expect(files[0].size).to.equal(11)
+        done()
+      })
+    })
   })
 })
