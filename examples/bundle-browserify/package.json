@@ -11,9 +11,8 @@
   "license": "MIT",
   "devDependencies": {
     "browserify": "^13.1.1",
-    "ipfs-api": "^11.1.0",
+    "ipfs-api": "^24.0.0",
     "http-server": "~0.9.0"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
