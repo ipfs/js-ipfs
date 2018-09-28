@@ -54,7 +54,7 @@ This module uses node.js, and can be installed through npm:
 npm install --save ipfs-api
 ```
 
-**Note:** ipfs-api requires Node.js v6 (LTS) or higher.
+We support both the Current and Active LTS versions of Node.js. Please see [nodejs.org](https://nodejs.org/) for what these currently are.
 
 ### Running the daemon with the right port
 
