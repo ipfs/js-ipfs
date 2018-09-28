@@ -1,3 +1,17 @@
+<a name="0.32.3"></a>
+## [0.32.3](https://github.com/ipfs/js-ipfs/compare/v0.32.2...v0.32.3) (2018-09-28)
+
+
+### Bug Fixes
+
+* allow null/undefined options ([#1581](https://github.com/ipfs/js-ipfs/issues/1581)) ([c73bd2f](https://github.com/ipfs/js-ipfs/commit/c73bd2f)), closes [#1574](https://github.com/ipfs/js-ipfs/issues/1574)
+* block.put with non default options ([#1600](https://github.com/ipfs/js-ipfs/issues/1600)) ([4ba0a24](https://github.com/ipfs/js-ipfs/commit/4ba0a24))
+* ipns datastore get not found ([#1558](https://github.com/ipfs/js-ipfs/issues/1558)) ([4e99cf5](https://github.com/ipfs/js-ipfs/commit/4e99cf5))
+* report correct size for raw dag nodes ([#1591](https://github.com/ipfs/js-ipfs/issues/1591)) ([549f2f6](https://github.com/ipfs/js-ipfs/commit/549f2f6)), closes [#1585](https://github.com/ipfs/js-ipfs/issues/1585)
+* revert libp2p records being signed for ipns ([#1570](https://github.com/ipfs/js-ipfs/issues/1570)) ([855b3bd](https://github.com/ipfs/js-ipfs/commit/855b3bd))
+
+
+
 <a name="0.32.2"></a>
 ## [0.32.2](https://github.com/ipfs/js-ipfs/compare/v0.32.1...v0.32.2) (2018-09-19)
 
