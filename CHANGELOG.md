@@ -1,3 +1,16 @@
+<a name="0.4.0"></a>
+# [0.4.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.3.2...v0.4.0) (2018-09-28)
+
+
+### Bug Fixes
+
+* allow for graceful release with datastore-level ([64ff6a1](https://github.com/ipfs/js-ipfs-mfs/commit/64ff6a1))
+* avoid creating a cid with a null result ([59bcf3c](https://github.com/ipfs/js-ipfs-mfs/commit/59bcf3c))
+* update database not found error ([62212c4](https://github.com/ipfs/js-ipfs-mfs/commit/62212c4))
+* update read cli to use returned pull stream ([62cf0cd](https://github.com/ipfs/js-ipfs-mfs/commit/62cf0cd))
+
+
+
 <a name="0.3.2"></a>
 ## [0.3.2](https://github.com/ipfs/js-ipfs-mfs/compare/v0.3.1...v0.3.2) (2018-08-23)
 
