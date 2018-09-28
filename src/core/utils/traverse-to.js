@@ -87,10 +87,10 @@ const traverseToMfsObject = (ipfs, path, options, callback) => {
               log(`index ${index} pathSegments.length ${pathSegments.length} pathSegment ${pathSegment} lastComponent ${lastComponent}`, options)
 
               if (lastComponent && !options.createLastComponent) {
-                log(`Last segment of ${path} did not exist`)
+                log(`Last segment of ${path.path} did not exist`)
                 return done(new NonFatalError('file does not exist'))
               } else if (!lastComponent && !options.parents) {
-                log(`Cannot traverse to ${path} - ${pathSegment} did not exist`)
+                log(`Cannot traverse to ${path.path} - ${pathSegment} did not exist`)
                 return done(new NonFatalError('file does not exist'))
               }
 

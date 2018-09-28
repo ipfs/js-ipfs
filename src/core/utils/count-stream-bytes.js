@@ -7,6 +7,8 @@ const countStreamBytes = (callback) => {
 
   return through((buffer) => {
     bytesRead += buffer.length
+
+    return buffer
   }, () => {
     callback(bytesRead)
   })
