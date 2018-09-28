@@ -18,7 +18,10 @@
 
 ## Usage
 
-This project consists on creating a HTTP response from an IPFS Hash. This response can be a file, a directory list view or the entry point of a web page.
+
+### Creating HTTP Response
+
+This project creates a HTTP response for an IPFS Path. This response can be a file, a HTML with directory listing or the entry point of a web page.
 
 ```js
 const { getResponse } = require('ipfs-http-response')
@@ -29,24 +32,31 @@ getResponse(ipfsNode, ipfsPath)
   })
 ```
 
-This module also exports the used ipfs resolver, which should be used when the response needs to be customized.
+### Using protocol-agnostic resolver
+
+This module also exports the used ipfs `resolver`, which should be used when the response needs to be customized or non-HTTP transport is used:
 
 ```js
 const { resolver } = require('ipfs-http-response')
 
-resolver.multihash(ipfsNode, ipfsPath)
+resolver.cid(ipfsNode, ipfsPath)
   .then((result) => {
     ...
   })
 ```
 
+If `ipfsPath` points at a directory, `resolver.cid` will throw Error `This dag node is a directory` with a `cid` attribute that can be passed to `resolver.directory`:
+
+
 ```js
 const { resolver } = require('ipfs-http-response')
 
-resolver.directory(node, path, multihash)
+resolver.directory(ipfsNode, ipfsPath, cid)
   .then((result) => {
     ...
   })
 ```
+
+`result` will be either a `string` with HTML directory listing or an array with CIDs of `index` pages present in inspected directory.
 
 ![ipfs-http-response usage](docs/ipfs-http-response.png "ipfs-http-response usage")

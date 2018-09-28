@@ -9,6 +9,7 @@ const resolver = require('./resolver')
 const pathUtils = require('./utils/path')
 const detectContentType = require('./utils/content-type')
 
+// TODO: pass path and add Etag and X-Ipfs-Path + tests
 const header = (status = 200, statusText = 'OK', headers = {}) => ({
   status,
   statusText,
@@ -25,7 +26,7 @@ const response = (ipfsNode, ipfsPath) => {
         // switch case with true feels so wrong.
         switch (true) {
           case (errorString === 'Error: This dag node is a directory'):
-            resolver.directory(node, path, error.fileName)
+            resolver.directory(node, path, error.cid)
               .then((content) => {
                 // dir render
                 if (typeof content === 'string') {
@@ -59,9 +60,9 @@ const response = (ipfsNode, ipfsPath) => {
       resolve(Response.redirect(pathUtils.removeTrailingSlash(ipfsPath)))
     }
 
-    resolver.multihash(ipfsNode, ipfsPath)
+    resolver.cid(ipfsNode, ipfsPath)
       .then((resolvedData) => {
-        const readableStream = ipfsNode.files.catReadableStream(resolvedData.multihash)
+        const readableStream = ipfsNode.files.catReadableStream(resolvedData.cid)
         const responseStream = new stream.PassThrough({ highWaterMark: 1 })
         readableStream.pipe(responseStream)
 

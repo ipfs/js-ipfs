@@ -1,12 +1,21 @@
 'use strict'
 
 /* eslint-disable no-unused-vars */
-function splitPath (path) {
+
+// Converts path or url to an array starting at CID
+function cidArray (path) {
   if (path[path.length - 1] === '/') {
     path = path.substring(0, path.length - 1)
   }
-
-  return path.substring(6).split('/')
+  // skip /ipxs/ prefix
+  if (path.match(/^\/ip[fn]s\//)) {
+    path = path.substring(6)
+  }
+  // skip ipxs:// protocol
+  if (path.match(/^ip[fn]s:\/\//)) {
+    path = path.substring(7)
+  }
+  return path.split('/')
 }
 
 function removeLeadingSlash (url) {
@@ -40,7 +49,7 @@ function joinURLParts (...urls) {
 }
 
 module.exports = {
-  splitPath,
+  cidArray,
   removeLeadingSlash,
   removeTrailingSlash,
   removeSlashFromBothEnds,

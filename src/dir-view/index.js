@@ -5,21 +5,20 @@ const filesize = require('filesize')
 const mainStyle = require('./style')
 const pathUtil = require('../utils/path')
 
-function getParentDirectoryURL (originalParts) {
-  const parts = originalParts.slice()
-
+function getParentHref (path) {
+  const parts = pathUtil.cidArray(path).slice()
   if (parts.length > 1) {
-    parts.pop()
+    // drop the last segment in a safe way that works for both paths and urls
+    return path.replace(`/${parts.pop()}`, '')
   }
-
-  return [ '', 'ipfs' ].concat(parts).join('/')
+  return path
 }
 
 function buildFilesList (path, links) {
   const rows = links.map((link) => {
     let row = [
       `<div class="ipfs-icon ipfs-_blank">&nbsp;</div>`,
-      `<a href="${pathUtil.joinURLParts(path, link.name)}">${link.name}</a>`,
+      `<a href="${path}${path.endsWith('/') ? '' : '/'}${link.name}">${link.name}</a>`,
       filesize(link.size)
     ]
 
@@ -32,9 +31,6 @@ function buildFilesList (path, links) {
 }
 
 function buildTable (path, links) {
-  const parts = pathUtil.splitPath(path)
-  const parentDirectoryURL = getParentDirectoryURL(parts)
-
   return `
     <table class="table table-striped">
       <tbody>
@@ -43,7 +39,7 @@ function buildTable (path, links) {
             <div class="ipfs-icon ipfs-_blank">&nbsp;</div>
           </td>
           <td class="padding">
-            <a href="${parentDirectoryURL}">..</a>
+            <a href="${getParentHref(path)}">..</a>
           </td>
           <td></td>
         </tr>

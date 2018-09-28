@@ -18,14 +18,21 @@ function getIndexFiles (links) {
     'index.htm',
     'index.shtml'
   ]
-
-  return links.filter((link) => INDEX_HTML_FILES.indexOf(link.name) !== -1)
+  // directory
+  let indexes = links.filter((link) => INDEX_HTML_FILES.indexOf(link.name) !== -1)
+  if (indexes.length) {
+    return indexes
+  }
+  // hamt-sharded-directory uses a 2 char prefix
+  return links.filter((link) => {
+    return link.name.length > 2 && INDEX_HTML_FILES.indexOf(link.name.substring(2)) !== -1
+  })
 }
 
-const directory = promisify((ipfs, path, multihash, callback) => {
-  mh.validate(mh.fromB58String(multihash))
+const directory = promisify((ipfs, path, cid, callback) => {
+  cid = new CID(cid)
 
-  ipfs.object.get(multihash, { enc: 'base58' }, (err, dagNode) => {
+  ipfs.object.get(cid.buffer, (err, dagNode) => {
     if (err) {
       return callback(err)
     }
@@ -41,17 +48,20 @@ const directory = promisify((ipfs, path, multihash, callback) => {
   })
 })
 
-const multihash = promisify((ipfs, path, callback) => {
-  const parts = pathUtil.splitPath(path)
-  let firstMultihash = parts.shift()
+const cid = promisify((ipfs, path, callback) => {
+  const parts = pathUtil.cidArray(path)
+  let firstCid = parts.shift()
   let currentCid
+
+  // TODO: replace below with ipfs.resolve(path, {recursive: true})
+  // (requires changes to js-ipfs/js-ipfs-api)
 
   reduce(
     parts,
-    firstMultihash,
+    firstCid,
     (memo, item, next) => {
       try {
-        currentCid = new CID(mh.fromB58String(memo))
+        currentCid = new CID(memo)
       } catch (err) {
         return next(err)
       }
@@ -65,35 +75,52 @@ const multihash = promisify((ipfs, path, callback) => {
         }
 
         const dagNode = result.value
-        // find multihash of requested named-file in current dagNode's links
-        let multihashOfNextFile
+        // find multihash/cid of requested named-file in current dagNode's links
+        let cidOfNextFile
         const nextFileName = item
 
-        for (let link of dagNode.links) {
-          if (link.name === nextFileName) {
-            // found multihash of requested named-file
-            multihashOfNextFile = mh.toB58String(link.multihash)
-            log('found multihash: ', multihashOfNextFile)
-            break
+        try {
+          for (let link of dagNode.links) {
+            if (link.name === nextFileName) {
+              // found multihash/cid of requested named-file
+              try {
+                // assume a Buffer with a valid CID
+                // (cid is allowed instead of multihash since https://github.com/ipld/js-ipld-dag-pb/pull/80)
+                cidOfNextFile = new CID(link.multihash)
+              } catch (err) {
+                // fallback to multihash
+                cidOfNextFile = new CID(mh.toB58String(link.multihash))
+              }
+              break
+            }
           }
+        } catch (err) {
+          return next(err)
         }
 
-        if (!multihashOfNextFile) {
-          return next(new Error(`no link named "${nextFileName}" under ${memo}`))
+        if (!cidOfNextFile) {
+          const missingLinkErr = new Error(`no link named "${nextFileName}" under ${memo}`)
+          missingLinkErr.parentDagNode = memo
+          missingLinkErr.missingLinkName = nextFileName
+          return next(missingLinkErr)
         }
 
-        next(null, multihashOfNextFile)
+        next(null, cidOfNextFile)
       })
-    }, (err, result) => {
+    }, (err, cid) => {
       if (err) {
         return callback(err)
       }
 
-      let cid
       try {
-        cid = new CID(mh.fromB58String(result))
+        cid = new CID(cid)
       } catch (err) {
         return callback(err)
+      }
+
+      if (cid.codec === 'raw') {
+        // no need for additional lookup, its raw data
+        callback(null, { cid })
       }
 
       ipfs.dag.get(cid, (err, dagResult) => {
@@ -101,20 +128,37 @@ const multihash = promisify((ipfs, path, callback) => {
           return callback(err)
         }
 
-        let dagDataObj = Unixfs.unmarshal(dagResult.value.data)
-        if (dagDataObj.type === 'directory') {
-          let isDirErr = new Error('This dag node is a directory')
-          // add memo (last multihash) as a fileName so it can be used by directory
-          isDirErr.fileName = result
-          return callback(isDirErr)
+        try {
+          let dagDataObj = Unixfs.unmarshal(dagResult.value.data)
+          // There are at least two types of directories:
+          // - "directory"
+          // - "hamt-sharded-directory" (example: QmT5NvUtoM5nWFfrQdVrFtvGfKFmG7AHE8P34isapyhCxX)
+          if (dagDataObj.type === 'directory' || dagDataObj.type === 'hamt-sharded-directory') {
+            let isDirErr = new Error('This dag node is a directory')
+            // store memo of last multihash so it can be used by directory
+            isDirErr.cid = isDirErr.fileName = cid
+            isDirErr.dagDirType = dagDataObj.type
+            return callback(isDirErr)
+          }
+        } catch (err) {
+          return callback(err)
         }
 
-        callback(null, { multihash: result })
+        callback(null, { cid })
       })
     })
 })
 
+const multihash = promisify((ipfs, path, callback) => {
+  // deprecated, use 'cid' instead
+  // (left for backward-compatibility)
+  cid(ipfs, path)
+    .then((result) => { callback(null, { multihash: mh.toB58String(result.cid.multihash) }) })
+    .catch((err) => { callback(err) })
+})
+
 module.exports = {
   directory: directory,
+  cid: cid,
   multihash: multihash
 }
