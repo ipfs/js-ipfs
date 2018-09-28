@@ -2,9 +2,6 @@
 
 const CID = require('cids')
 const multipart = require('ipfs-multipart')
-const Block = require('ipfs-block')
-const waterfall = require('async/waterfall')
-const multihashing = require('multihashing-async')
 const Buffer = require('safe-buffer').Buffer
 const debug = require('debug')
 const log = debug('jsipfs:http-api:block')
@@ -100,15 +97,11 @@ exports.put = {
     const data = request.pre.args.data
     const ipfs = request.server.app.ipfs
 
-    waterfall([
-      (cb) => multihashing(data, 'sha2-256', (err, multihash) => {
-        if (err) {
-          return cb(err)
-        }
-        cb(null, new Block(data, new CID(multihash)))
-      }),
-      (block, cb) => ipfs.block.put(block, cb)
-    ], (err, block) => {
+    ipfs.block.put(data, {
+      mhtype: request.query.mhtype,
+      format: request.query.format,
+      version: request.query.version && parseInt(request.query.version)
+    }, (err, block) => {
       if (err) {
         log.error(err)
         return reply({
