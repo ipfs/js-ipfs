@@ -1,13 +1,13 @@
 'use strict'
 
-var IPFS = require('ipfs')
+const IPFS = require('ipfs')
 
 const node = new IPFS({ repo: String(Math.random() + Date.now()) })
 
 node.once('ready', () => console.log('IPFS node is ready'))
 
 function store () {
-  var toStore = document.getElementById('source').value
+  const toStore = document.getElementById('source').value
 
   node.files.add(Buffer.from(toStore), (err, res) => {
     if (err || !res) {
