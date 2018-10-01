@@ -493,8 +493,23 @@ describe('write', function () {
       })
   })
 
+  // https://github.com/ipld/js-ipld/issues/157
   it.skip('writes a file with a different CID version to the parent', () => {
+    const directory = '/cid-versions'
+    const fileName = `${directory}/file.txt`
+    const expectedBytes = Buffer.from([0, 1, 2, 3])
 
+    return mfs.mkdir(directory, {
+      cidVersion: 0
+    })
+      .then(() => mfs.write(fileName, expectedBytes, {
+        create: true,
+        cidVersion: 1
+      }))
+      .then(() => mfs.read(fileName))
+      .then(actualBytes => {
+        expect(actualBytes).to.deep.equal(expectedBytes)
+      })
   })
 
   it.skip('writes a file with a different hash function to the parent', () => {
