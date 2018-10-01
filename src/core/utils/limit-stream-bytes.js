@@ -7,7 +7,7 @@ const limitStreamBytes = (limit) => {
 
   return asyncMap((buffer, cb) => {
     if (bytesRead > limit) {
-      cb(true) // eslint-disable-line standard/no-callback-literal
+      return cb(true) // eslint-disable-line standard/no-callback-literal
     }
 
     // If we only need to return part of this buffer, slice it to make it smaller

@@ -21,13 +21,13 @@ const writeOperations = {
 }
 
 // These operations are asynchronous and manage their own locking
-const upwrappedOperations = {
+const unwrappedOperations = {
   write: require('./write'),
   read: require('./read')
 }
 
 // These operations are synchronous and manage their own locking
-const upwrappedSynchronousOperations = {
+const unwrappedSynchronousOperations = {
   readPullStream: require('./read-pull-stream'),
   readReadableStream: require('./read-readable-stream')
 }
@@ -68,12 +68,12 @@ module.exports = (ipfs, options) => {
     ipfs, mfs, operations: writeOperations, lock: writeLock
   })
 
-  Object.keys(upwrappedOperations).forEach(key => {
-    mfs[key] = promisify(upwrappedOperations[key](ipfs))
+  Object.keys(unwrappedOperations).forEach(key => {
+    mfs[key] = promisify(unwrappedOperations[key](ipfs))
   })
 
-  Object.keys(upwrappedSynchronousOperations).forEach(key => {
-    mfs[key] = upwrappedSynchronousOperations[key](ipfs)
+  Object.keys(unwrappedSynchronousOperations).forEach(key => {
+    mfs[key] = unwrappedSynchronousOperations[key](ipfs)
   })
 
   return mfs

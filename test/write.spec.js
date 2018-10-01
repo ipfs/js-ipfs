@@ -96,6 +96,39 @@ describe('write', function () {
       })
   })
 
+  it('explodes if given a negtive offset', () => {
+    return mfs.write('/foo.txt', Buffer.from('foo'), {
+      offset: -1
+    })
+      .then(() => expect(false).to.equal(true))
+      .catch((error) => {
+        expect(error.message).to.contain('cannot have negative write offset')
+      })
+  })
+
+  it('explodes if given a negative length', () => {
+    return mfs.write('/foo.txt', Buffer.from('foo'), {
+      length: -1
+    })
+      .then(() => expect(false).to.equal(true))
+      .catch((error) => {
+        expect(error.message).to.contain('cannot have negative byte count')
+      })
+  })
+
+  it('creates a zero length file when passed a zero length', () => {
+    return mfs.write('/foo.txt', Buffer.from('foo'), {
+      length: 0,
+      create: true
+    })
+      .then(() => mfs.ls('/'))
+      .then((files) => {
+        expect(files.length).to.equal(1)
+        expect(files[0].name).to.equal('foo.txt')
+        expect(files[0].size).to.equal(0)
+      })
+  })
+
   it('writes a small file using a buffer', () => {
     const filePath = `/small-file-${Math.random()}.txt`
 

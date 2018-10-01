@@ -1,7 +1,6 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const CID = require('cids')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
 const {
@@ -11,15 +10,11 @@ const {
   traverseTo,
   addLink,
   updateTree,
-  limitStreamBytes,
-  toPullSource
+  toPullSource,
+  loadNode
 } = require('../utils')
-const values = require('pull-stream/sources/values')
-const log = require('debug')('ipfs:mfs:write')
-const importNode = require('./import-node')
-const updateNode = require('./update-node')
-const cat = require('pull-cat')
-const pull = require('pull-stream/pull')
+
+const write = require('./write')
 
 const defaultOptions = {
   offset: 0, // the offset in the file to begin writing
@@ -55,11 +50,7 @@ module.exports = function mfsWrite (ipfs) {
       return callback(new Error('cannot have negative byte count'))
     }
 
-    if (options.length === 0 && !options.truncate) {
-      return callback()
-    }
-
-    if (!options.length) {
+    if (!options.length && options.length !== 0) {
       options.length = Infinity
     }
 
@@ -111,34 +102,18 @@ const updateOrImport = (ipfs, options, path, source, containingFolder, callback)
       }, null)
 
       if (existingChild) {
-        const cid = new CID(existingChild.multihash)
-        log(`Updating linked DAGNode ${cid.toBaseEncodedString()}`)
-
-        // overwrite the existing file or part of it, possibly truncating what's left
-        updateNode(ipfs, cid, source, options, next)
-      } else {
-        if (!options.create) {
-          return next(new Error('file does not exist'))
-        }
-
-        if (options.offset) {
-          options.length += options.offset
-
-          // pad the start of the stream with a buffer full of zeros
-          source = cat([
-            values([Buffer.alloc(options.offset, 0)]),
-            source
-          ])
-        }
-
-        source = pull(
-          source,
-          limitStreamBytes(options.length)
-        )
-
-        log('Importing file', path.name)
-        importNode(ipfs, source, options, next)
+        return loadNode(ipfs, existingChild, next)
       }
+
+      if (!options.create) {
+        return next(new Error('file does not exist'))
+      }
+
+      next(null, null)
+    },
+
+    (existingChild, next) => {
+      write(ipfs, existingChild, source, options, next)
     },
 
     // The slow bit is done, now add or replace the DAGLink in the containing directory
@@ -176,7 +151,9 @@ const updateOrImport = (ipfs, options, path, source, containingFolder, callback)
 
             // Update the MFS record with the new CID for the root of the tree
             (newRoot, next) => updateMfsRoot(ipfs, newRoot.node.multihash, next)
-          ], callback)
+          ], (error, result) => {
+            callback(error, result)
+          })
         })
       })(next)
     }], callback)

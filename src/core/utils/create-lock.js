@@ -23,7 +23,7 @@ module.exports = (repoOwner) => {
     mutex[`${type}Lock`](() => {
       return new Promise((resolve, reject) => {
         args.push((error, result) => {
-          log(`${type} operation callback invoked${error ? ' with error: ' + error.message : ''}`)
+          log(`${type.substring(0, 1).toUpperCase()}${type.substring(1)} operation callback invoked${error ? ' with error: ' + error.message : ''}`)
 
           if (error) {
             return reject(error)
