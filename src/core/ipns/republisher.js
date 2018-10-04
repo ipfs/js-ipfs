@@ -151,7 +151,7 @@ class IpnsRepublisher {
   }
 
   _getPreviousValue (peerId, callback) {
-    if (!(peerId instanceof PeerId)) {
+    if (!(PeerId.isPeerId(peerId))) {
       const errMsg = `peerId received is not valid`
 
       log.error(errMsg)
