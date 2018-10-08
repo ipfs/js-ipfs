@@ -177,7 +177,7 @@ class IpnsPublisher {
       let result
 
       if (err) {
-        if (err.code !== 'ERR_NOT_FOUND') {
+        if (err.code !== 'ERR_NOT_FOUND' && !err.notFound) {
           const errMsg = `unexpected error getting the ipns record ${peerId.id} from datastore`
 
           log.error(errMsg)
