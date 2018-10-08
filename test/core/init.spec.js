@@ -10,7 +10,6 @@ const isNode = require('detect-node')
 const hat = require('hat')
 const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
-const dagCBOR = require('ipld-dag-cbor')
 const dagPB = require('ipld-dag-pb')
 const crypto = require('libp2p-crypto')
 const isIPFS = require('is-ipfs')
@@ -123,8 +122,7 @@ describe('init', () => {
       multibase: multibase,
       multihash: multihash,
       CID: CID,
-      dagPB: dagPB,
-      dagCBOR: dagCBOR
+      dagPB: dagPB
     })
   })
 
