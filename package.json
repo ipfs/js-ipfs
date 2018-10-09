@@ -58,7 +58,7 @@
     "pump": "^3.0.0",
     "qs": "^6.5.2",
     "readable-stream": "^2.3.6",
-    "stream-http": "^2.8.3",
+    "stream-http": "^3.0.0",
     "stream-to-pull-stream": "^1.7.2",
     "streamifier": "~0.1.1",
     "tar-stream": "^1.6.1"
