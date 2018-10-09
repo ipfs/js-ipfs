@@ -13,6 +13,10 @@ const isNode = require('detect-node')
 const expect = chai.expect
 chai.use(dirtyChai)
 const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
+const dfProc = DaemonFactory.create({
+  exec: require('../../'),
+  type: 'proc'
+})
 
 const config = {
   Bootstrap: [],
@@ -24,9 +28,10 @@ const config = {
   }
 }
 
-function spawnNode ({ dht = false }, cb) {
+function spawnNode ({ dht = false, type = 'js' }, cb) {
   const args = dht ? ['--enable-dht-experiment'] : []
-  df.spawn({
+  const factory = type === 'js' ? df : dfProc
+  factory.spawn({
     args,
     config,
     initOptions: { bits: 512 }
@@ -42,6 +47,61 @@ describe('ping', function () {
   this.timeout(60 * 1000)
 
   if (!isNode) return
+
+  describe('in-process daemon', function () {
+    let ipfsdA
+    let ipfsdB
+    let bMultiaddr
+    let ipfsdBId
+
+    // Spawn nodes
+    before(function (done) {
+      this.timeout(60 * 1000)
+
+      series([
+        spawnNode.bind(null, { dht: false, type: 'proc' }),
+        spawnNode.bind(null, { dht: false })
+      ], (err, ipfsd) => {
+        expect(err).to.not.exist()
+        ipfsdA = ipfsd[0]
+        ipfsdB = ipfsd[1]
+        done()
+      })
+    })
+
+    // Get the peer info object
+    before(async function () {
+      this.timeout(60 * 1000)
+
+      const peerInfo = await ipfsdB.api.id()
+
+      ipfsdBId = peerInfo.id
+      bMultiaddr = peerInfo.addresses[0]
+    })
+
+    // Connect the nodes
+    before(async function () {
+      this.timeout(60 * 1000)
+      await ipfsdA.api.swarm.connect(bMultiaddr)
+    })
+
+    after(async () => {
+      if (!ipfsdA) return
+      await ipfsdA.stop()
+    })
+
+    after(async () => {
+      if (!ipfsdB) return
+      await ipfsdB.stop()
+    })
+
+    it('can ping via a promise without options', async () => {
+      const res = await ipfsdA.api.ping(ipfsdBId)
+
+      expect(res.length).to.be.ok()
+      expect(res[0].success).to.be.true()
+    })
+  })
 
   describe('DHT disabled', function () {
     // Without DHT nodes need to be previously connected
