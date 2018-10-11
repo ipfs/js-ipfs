@@ -43,6 +43,7 @@
     "is-pull-stream": "0.0.0",
     "is-stream": "^1.1.0",
     "libp2p-crypto": "~0.13.0",
+    "lodash": "^4.17.11",
     "lru-cache": "^4.1.3",
     "multiaddr": "^5.0.0",
     "multibase": "~0.4.0",
