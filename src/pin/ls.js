@@ -1,7 +1,7 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const _ = require('lodash')
+const keys = require('lodash/keys')
 
 module.exports = (send) => {
   return promisify((hash, opts, callback) => {
@@ -28,7 +28,7 @@ module.exports = (send) => {
       if (err) {
         return callback(err)
       }
-      callback(null, _.keys(res.Keys).map(hash => (
+      callback(null, keys(res.Keys).map(hash => (
         { hash, type: res.Keys[hash].Type }
       )))
     })

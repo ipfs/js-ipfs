@@ -1,7 +1,8 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const _ = require('lodash')
+const mapKeys = require('lodash/mapKeys')
+const kebabCase = require('lodash/kebabCase')
 
 const transform = function (data, callback) {
   callback(null, {
@@ -23,7 +24,7 @@ module.exports = (send) => {
       opts = {}
     }
 
-    opts = _.mapKeys(opts, (v, k) => _.kebabCase(k))
+    opts = mapKeys(opts, (v, k) => kebabCase(k))
 
     send.andTransform({
       path: 'files/stat',
