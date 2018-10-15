@@ -34,8 +34,45 @@ describe('interface-ipfs-core tests', () => {
 
   tests.dag(defaultCommonFactory)
 
-  tests.dht(defaultCommonFactory, {
-    skip: { reason: 'TODO: DHT is not implemented in js-ipfs yet!' }
+  const dhtCommonFactory = CommonFactory.create({
+    spawnOptions: {
+      initOptions: { bits: 512 },
+      EXPERIMENTAL: {
+        dht: true
+      }
+    }
+  })
+
+  tests.dht(dhtCommonFactory, {
+    skip: [
+      // dht.provide
+      {
+        name: 'should provide local CID',
+        reason: 'FIXME: Circuit not enabled and all transports failed to dial peer'
+      },
+      {
+        name: 'should allow multiple CIDs to be passed',
+        reason: 'FIXME: Circuit not enabled and all transports failed to dial peer'
+      },
+      {
+        name: 'should provide a CIDv1',
+        reason: 'FIXME: Circuit not enabled and all transports failed to dial peer'
+      },
+      // dht.get
+      {
+        name: 'should get a value after it was put on another node',
+        reason: 'FIXME: callback is not a function'
+      },
+      // dht.findprovs
+      {
+        name: 'should provide from one node and find it through another node',
+        reason: 'FIXME: Timeout of 80000ms exceeded'
+      },
+      {
+        name: 'should return the other node in the query',
+        reason: 'FIXME: always auto-skiped from within test'
+      }
+    ]
   })
 
   tests.files(defaultCommonFactory)
