@@ -3,7 +3,7 @@
 /* global Ipfs */
 /* eslint-env browser */
 
-const repoPath = 'ipfs-' + Math.random()
+const repoPath = `ipfs-${Math.random()}`
 const ipfs = new Ipfs({ repo: repoPath })
 
 ipfs.on('ready', () => {
