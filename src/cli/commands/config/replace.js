@@ -24,6 +24,7 @@ module.exports = {
       if (err) {
         throw err
       }
+      if (argv.onComplete) argv.onComplete(err)
     })
   }
 }

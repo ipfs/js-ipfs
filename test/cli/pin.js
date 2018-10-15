@@ -3,7 +3,6 @@
 'use strict'
 
 const expect = require('chai').expect
-const runOnAndOff = require('../utils/on-and-off')
 
 // fixture structure:
 //  planets/
@@ -18,7 +17,7 @@ const pins = {
   mercuryWiki: 'QmVgSHAdMxFAuMP2JiMAYkB8pCWP1tcB9djqvq8GKAFiHi'
 }
 
-describe('pin', () => runOnAndOff(thing => {
+module.exports = (thing) => describe('pin', () => {
   let ipfs
 
   before(function () {
@@ -74,4 +73,5 @@ describe('pin', () => runOnAndOff(thing => {
       })
     })
   })
-}))
+
+})

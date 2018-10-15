@@ -78,7 +78,11 @@ exports.getRepoPath = () => {
 }
 
 let visible = true
+let streamToWrite = process.stdout
 exports.disablePrinting = () => { visible = false }
+exports.setPrintStream = (newStream) => {
+  streamToWrite = newStream
+}
 
 exports.print = (msg, newline) => {
   if (newline === undefined) {
@@ -90,7 +94,7 @@ exports.print = (msg, newline) => {
       msg = ''
     }
     msg = newline ? msg + '\n' : msg
-    process.stdout.write(msg)
+    streamToWrite.write(msg)
   }
 }
 

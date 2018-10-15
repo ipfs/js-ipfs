@@ -46,6 +46,7 @@ module.exports = {
         } else {
           print(value)
         }
+        if (argv.onComplete) argv.onComplete(err)
       })
     } else {
       // Set the new value of a given key
@@ -64,6 +65,7 @@ module.exports = {
         if (err) {
           throw err
         }
+        if (argv.onComplete) argv.onComplete(err)
       })
     }
   }

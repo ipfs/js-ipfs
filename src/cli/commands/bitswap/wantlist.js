@@ -23,6 +23,7 @@ module.exports = {
       res.Keys.forEach((cid) => {
         print(cid['/'])
       })
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

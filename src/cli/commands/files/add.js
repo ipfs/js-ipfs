@@ -55,7 +55,7 @@ function getTotalBytes (path, recursive, cb) {
   }
 }
 
-function addPipeline (index, addStream, list, argv) {
+function addPipeline (index, addStream, list, argv, callback) {
   const {
     quiet,
     quieter,
@@ -84,8 +84,13 @@ function addPipeline (index, addStream, list, argv) {
         throw err
       }
 
-      if (silent) return
-      if (quieter) return print(added.pop().hash)
+      if (silent) {
+        return callback()
+      }
+      if (quieter) {
+        print(added.pop().hash)
+        return callback()
+      }
 
       sortBy(added, 'path')
         .reverse()
@@ -97,6 +102,7 @@ function addPipeline (index, addStream, list, argv) {
           return log.join(' ')
         })
         .forEach((msg) => print(msg))
+      return callback()
     })
   )
 }
@@ -236,7 +242,7 @@ module.exports = {
     ], (err, addStream) => {
       if (err) throw err
 
-      addPipeline(index, addStream, list, argv)
+      addPipeline(index, addStream, list, argv, argv.onComplete || function () {})
     })
   }
 }

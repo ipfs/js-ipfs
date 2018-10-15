@@ -96,7 +96,7 @@ if (args[0] === 'daemon' || args[0] === 'init') {
 
       let exitCode = 0
 
-      const parser = new YargsPromise(cli, { ipfs })
+      const parser = new YargsPromise(cli, {ipfs, printer: print})
       parser.parse(args)
         .then(({ data, argv }) => {
           if (data) {

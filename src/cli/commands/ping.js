@@ -29,6 +29,8 @@ module.exports = {
         } else {
           print(text)
         }
+      }, () => {
+        if (argv.onComplete) argv.onComplete()
       })
     )
   }

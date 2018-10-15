@@ -2,10 +2,9 @@
 'use strict'
 
 const expect = require('chai').expect
-const runOnAndOff = require('../utils/on-and-off')
 const hat = require('hat')
 
-describe('key', () => runOnAndOff.off((thing) => {
+const test = (thing) => describe('key', () => {
   const name = 'test-key-' + hat()
   const newName = 'test-key-' + hat()
   const pass = '--pass ' + hat()
@@ -50,4 +49,6 @@ describe('key', () => runOnAndOff.off((thing) => {
         expect(out).to.include(newName)
       })
   })
-}))
+})
+test.part = 'offline'
+module.exports = test

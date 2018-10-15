@@ -21,6 +21,7 @@ module.exports = {
       }
 
       print(res.Strings[0])
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

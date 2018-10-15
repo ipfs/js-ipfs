@@ -58,5 +58,6 @@ module.exports = {
         throw err
       }
     })
+    node.once('init', argv.onComplete || function () {})
   }
 }

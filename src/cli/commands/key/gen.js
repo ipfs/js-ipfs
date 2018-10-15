@@ -31,6 +31,7 @@ module.exports = {
         throw err
       }
       print(`generated ${key.id} ${key.name}`)
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

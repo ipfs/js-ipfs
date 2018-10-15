@@ -7,7 +7,7 @@ const log = debug('cli:object')
 log.error = debug('cli:object:error')
 const print = require('../../../utils').print
 
-function appendData (key, data, ipfs) {
+function appendData (key, data, ipfs, cb) {
   ipfs.object.patch.appendData(key, data, {
     enc: 'base58'
   }, (err, node) => {
@@ -17,6 +17,7 @@ function appendData (key, data, ipfs) {
     const nodeJSON = node.toJSON()
 
     print(nodeJSON.multihash)
+    if (cb) cb()
   })
 }
 
@@ -30,7 +31,7 @@ module.exports = {
   handler (argv) {
     const ipfs = argv.ipfs
     if (argv.data) {
-      return appendData(argv.root, fs.readFileSync(argv.data), ipfs)
+      return appendData(argv.root, fs.readFileSync(argv.data), ipfs, argv.onComplete)
     }
 
     process.stdin.pipe(bl((err, input) => {
@@ -38,7 +39,7 @@ module.exports = {
         throw err
       }
 
-      appendData(argv.root, input, ipfs)
+      appendData(argv.root, input, ipfs, argv.onComplete)
     }))
   }
 }

@@ -27,6 +27,7 @@ module.exports = {
           print(`\t${res}`)
         })
       })
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

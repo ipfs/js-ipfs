@@ -2,9 +2,8 @@
 'use strict'
 
 const expect = require('chai').expect
-const runOnAndOff = require('../utils/on-and-off')
 
-describe('dag', () => runOnAndOff.off((thing) => {
+const test = (thing) => describe('dag', () => {
   let ipfs
 
   before(() => {
@@ -24,4 +23,6 @@ describe('dag', () => runOnAndOff.off((thing) => {
       expect(out).to.be.eql('0x' + expectHash.toString('hex') + '\n')
     })
   })
-}))
+})
+test.part = 'offline'
+module.exports = test

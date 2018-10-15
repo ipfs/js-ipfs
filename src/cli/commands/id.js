@@ -21,6 +21,7 @@ module.exports = {
       }
 
       print(JSON.stringify(id, '', 2))
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

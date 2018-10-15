@@ -2,10 +2,10 @@
 'use strict'
 
 const expect = require('chai').expect
-const runOnAndOff = require('../utils/on-and-off')
 
 const commandCount = 81
-describe('commands', () => runOnAndOff((thing) => {
+
+module.exports = (thing) => describe('commands', () => {
   let ipfs
 
   before(function () {
@@ -14,8 +14,9 @@ describe('commands', () => runOnAndOff((thing) => {
   })
 
   it('list the commands', () => {
+    console.log('NOTE: This command shows a `YError` but its OK as arguments are missing on purpose')
     return ipfs('commands').then((out) => {
       expect(out.split('\n')).to.have.length(commandCount + 1)
     })
   })
-}))
+})

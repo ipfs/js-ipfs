@@ -4,7 +4,7 @@ const bl = require('bl')
 const fs = require('fs')
 const print = require('../../utils').print
 
-function putNode (buf, enc, ipfs) {
+function putNode (buf, enc, ipfs, cb) {
   ipfs.object.put(buf, {enc: enc}, (err, node) => {
     if (err) {
       throw err
@@ -13,6 +13,7 @@ function putNode (buf, enc, ipfs) {
     const nodeJSON = node.toJSON()
 
     print(`added ${nodeJSON.multihash}`)
+    if (cb) cb()
   })
 }
 
@@ -32,7 +33,7 @@ module.exports = {
     const ipfs = argv.ipfs
     if (argv.data) {
       const buf = fs.readFileSync(argv.data)
-      return putNode(buf, argv.inputEnc, ipfs)
+      return putNode(buf, argv.inputEnc, ipfs, argv.onComplete)
     }
 
     process.stdin.pipe(bl((err, input) => {
@@ -40,7 +41,7 @@ module.exports = {
         throw err
       }
 
-      putNode(input, argv.inputEnc, ipfs)
+      putNode(input, argv.inputEnc, ipfs, argv.onComplete)
     }))
   }
 }

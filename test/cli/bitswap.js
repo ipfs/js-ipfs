@@ -2,11 +2,10 @@
 'use strict'
 
 const expect = require('chai').expect
-const runOn = require('../utils/on-and-off').on
 const PeerId = require('peer-id')
 const waitFor = require('../utils/wait-for')
 
-describe('bitswap', () => runOn((thing) => {
+const test = (thing) => describe('bitswap', () => {
   let ipfs
   let peerId
   const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
@@ -75,9 +74,12 @@ describe('bitswap', () => runOn((thing) => {
     })
   })
 
+  // TODO Uncaught Error: Block was unwanted before it could be remotely retrieved
   it('unwant', function () {
     return ipfs('bitswap unwant ' + key).then((out) => {
       expect(out).to.eql(`Key ${key} removed from wantlist\n`)
     })
   })
-}))
+})
+test.part = 'online'
+module.exports = test

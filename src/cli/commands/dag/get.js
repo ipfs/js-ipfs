@@ -21,13 +21,17 @@ module.exports = {
     const path = refParts.slice(1).join('/')
     const cid = new CID(cidString)
 
+    const onComplete = argv.onComplete || function () {}
+
     const options = {
       localResolve: argv.localResolve
     }
 
     argv.ipfs.dag.get(cid, path, options, (err, result) => {
       if (err) {
-        return print(`dag get failed: ${err.message}`)
+        print(`dag get failed: ${err.message}`)
+        onComplete()
+        return
       }
 
       if (options.localResolve) {
@@ -43,11 +47,13 @@ module.exports = {
         delete node._json.multihash
         node._json.data = '0x' + node._json.data.toString('hex')
         print(JSON.stringify(node._json))
+        onComplete()
         return
       }
 
       if (Buffer.isBuffer(node)) {
         print('0x' + node.toString('hex'))
+        onComplete()
         return
       }
 
@@ -56,6 +62,7 @@ module.exports = {
       } else {
         print(node)
       }
+      onComplete()
     })
   }
 }

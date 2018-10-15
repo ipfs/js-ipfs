@@ -18,13 +18,12 @@ const config = {
   Bootstrap: [],
   Discovery: {
     MDNS: {
-      Enabled:
-        false
+      Enabled: false
     }
   }
 }
 
-describe('swarm', () => {
+const test = () => describe('swarm', () => {
   let bMultiaddr
   let ipfsA
 
@@ -65,47 +64,52 @@ describe('swarm', () => {
     ], done)
   })
 
-  after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
+  after((done) => parallel(nodes.map((node) => (cb) => {
+    try {
+      node.stop(cb)
+    } catch (err) {
+      console.log('Unable to stop node because of:')
+      console.log(err)
+    }
+  }), done))
 
-  describe('daemon on (through http-api)', function () {
-    this.timeout(60 * 1000)
-
-    it('connect', () => {
-      return ipfsA('swarm', 'connect', bMultiaddr).then((out) => {
-        expect(out).to.eql(`connect ${bMultiaddr} success\n`)
-      })
+  it('connect', () => {
+    return ipfsA(`swarm connect ${bMultiaddr}`).then((out) => {
+      expect(out).to.eql(`connect ${bMultiaddr} success\n`)
     })
+  })
 
-    it('peers', () => {
-      return ipfsA('swarm peers').then((out) => {
-        expect(out).to.eql(bMultiaddr + '\n')
-      })
+  it('peers', () => {
+    return ipfsA('swarm peers').then((out) => {
+      expect(out).to.eql(bMultiaddr + '\n')
     })
+  })
 
-    it('addrs', () => {
-      return ipfsA('swarm addrs').then((out) => {
-        expect(out).to.have.length.above(1)
-      })
+  it('addrs', () => {
+    return ipfsA('swarm addrs').then((out) => {
+      expect(out).to.have.length.above(1)
     })
+  })
 
-    it('addrs local', () => {
-      return ipfsA('swarm addrs local').then((out) => {
-        expect(out).to.have.length.above(1)
-      })
+  it('addrs local', () => {
+    return ipfsA('swarm addrs local').then((out) => {
+      expect(out).to.have.length.above(1)
     })
+  })
 
-    it('disconnect', () => {
-      return ipfsA('swarm', 'disconnect', bMultiaddr).then((out) => {
-        expect(out).to.eql(
-          `disconnect ${bMultiaddr} success\n`
-        )
-      })
+  it('disconnect', () => {
+    return ipfsA(`swarm disconnect ${bMultiaddr}`).then((out) => {
+      expect(out).to.eql(
+        `disconnect ${bMultiaddr} success\n`
+      )
     })
+  })
 
-    it('`peers` should not throw after `disconnect`', () => {
-      return ipfsA('swarm peers').then((out) => {
-        expect(out).to.be.empty()
-      })
+  it('`peers` should not throw after `disconnect`', () => {
+    return ipfsA('swarm peers').then((out) => {
+      expect(out).to.be.empty()
     })
   })
 })
+module.exports = test
+test.part = 'standalone'

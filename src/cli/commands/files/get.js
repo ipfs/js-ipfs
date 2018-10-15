@@ -74,6 +74,7 @@ module.exports = {
       pull.asyncMap(fileHandler(dir)),
       pull.onEnd((err) => {
         if (err) { throw err }
+        if (argv.onComplete) argv.onComplete()
       })
     )
   }

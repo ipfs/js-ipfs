@@ -7,11 +7,14 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const pull = require('pull-stream')
+const os = require('os')
+const path = require('path')
+const hat = require('hat')
 
 const IPFS = require('../../src/core')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ type: 'proc' })
+const df = DaemonFactory.create({ type: 'proc', exec: IPFS })
 
 describe('files directory (sharding tests)', () => {
   function createTestFiles () {

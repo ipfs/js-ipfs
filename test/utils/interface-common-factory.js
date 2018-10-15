@@ -9,14 +9,25 @@ const IPFS = require('../../src')
 function createFactory (options) {
   options = options || {}
 
-  options.factoryOptions = options.factoryOptions || { type: 'proc', exec: IPFS }
-  options.spawnOptions = options.spawnOptions || { initOptions: { bits: 512 } }
+  options.factoryOptions = options.factoryOptions || {
+    type: 'proc',
+    exec: IPFS,
+    initOptions: {
+      privateKey: require('./keys/1.js')
+    }
+  }
+
+  options.spawnOptions = options.spawnOptions || { initOptions: {
+    privateKey: require('./keys/1.js')
+  }}
 
   if (options.factoryOptions.type !== 'proc') {
     options.factoryOptions.IpfsApi = options.factoryOptions.IpfsApi || IpfsApi
   }
 
   const ipfsFactory = IPFSFactory.create(options.factoryOptions)
+  // Start at two as we use key 1 as default
+  let keyID = 2
 
   return function createCommon () {
     const nodes = []
@@ -28,6 +39,8 @@ function createFactory (options) {
       setup = (callback) => {
         callback(null, {
           spawnNode (cb) {
+            options.spawnOptions.initOptions.privateKey = require(`./keys/${keyID}`)
+            keyID = keyID + 1
             ipfsFactory.spawn(options.spawnOptions, (err, _ipfsd) => {
               if (err) {
                 return cb(err)

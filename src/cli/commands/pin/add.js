@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../utils').print
-
 module.exports = {
   command: 'add <ipfsPath...>',
 
@@ -22,8 +20,9 @@ module.exports = {
     argv.ipfs.pin.add(argv.ipfsPath, { recursive: recursive }, (err, results) => {
       if (err) { throw err }
       results.forEach((res) => {
-        print(`pinned ${res.hash} ${type}ly`)
+        argv.printer(`pinned ${res.hash} ${type}ly`)
       })
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

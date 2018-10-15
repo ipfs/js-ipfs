@@ -1,0 +1,21 @@
+- [ ] Handle process.exit in src/cli/commands/daemon.js
+- [ ] Make sure src/cli/commands/shutdown.js is correct
+- [ ] Correct src/http/api/routes/shutdown.js
+- [ ] Write tests for `ipfs-exec`
+  - [ ] Make sure failures print stderr and stdout
+- [ ] Fix race condition "config.replace" + "config.show"
+- [ ] Make all tests work
+  - [X] bitswap
+    - [X] Test fails when the initial `block get` request is failing
+  - [ ] config
+  - [ ] daemon
+  - [ ] files `cat non-existent file`
+  - [ ] general
+  - [ ] init
+  - [ ] object `unadulterated data`
+- [ ] Restore
+  - [ ] files `add pins by default`
+  - [ ] test/core/files-sharding.spec.js
+- [ ] Clean & ?document
+  - [ ] test/utils/ipfs-exec.js
+  - [ ] test/utils/on-and-off.js

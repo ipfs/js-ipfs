@@ -5,9 +5,7 @@ const path = require('path')
 const expect = require('chai').expect
 const isIpfs = require('is-ipfs')
 
-const runOnAndOff = require('../utils/on-and-off')
-
-describe('resolve', () => runOnAndOff((thing) => {
+module.exports = (thing) => describe('resolve', () => {
   let ipfs
 
   before(() => {
@@ -49,4 +47,4 @@ describe('resolve', () => runOnAndOff((thing) => {
         expect(out).to.contain(`/ipfs/${fileHash}`)
       })
   })
-}))
+})

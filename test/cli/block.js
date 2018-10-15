@@ -2,9 +2,8 @@
 'use strict'
 
 const expect = require('chai').expect
-const runOnAndOff = require('../utils/on-and-off')
 
-describe('block', () => runOnAndOff((thing) => {
+module.exports = (thing) => describe('block', () => {
   let ipfs
 
   before(() => {
@@ -55,6 +54,7 @@ describe('block', () => runOnAndOff((thing) => {
       })
   })
 
+  // TODO skipped because block rm doesnt work with running daemon
   it.skip('rm', function () {
     this.timeout(40 * 1000)
 
@@ -65,4 +65,4 @@ describe('block', () => runOnAndOff((thing) => {
         )
       })
   })
-}))
+})

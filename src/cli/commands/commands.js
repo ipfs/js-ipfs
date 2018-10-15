@@ -8,7 +8,7 @@ module.exports = {
 
   describe: 'List all available commands',
 
-  handler () {
+  handler (argv) {
     const basePath = path.resolve(__dirname, '..')
 
     // modeled after https://github.com/vdemedes/ronin/blob/master/lib/program.js#L78
@@ -24,5 +24,6 @@ module.exports = {
     }).sort().map((cmd) => `ipfs ${cmd}`)
 
     print(['ipfs'].concat(cmds).join('\n'))
+    if (argv.onComplete) argv.onComplete()
   }
 }

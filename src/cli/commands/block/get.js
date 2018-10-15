@@ -15,7 +15,11 @@ module.exports = {
 
     argv.ipfs.block.get(cid, (err, block) => {
       if (err) {
-        throw err
+        if (argv.onComplete) {
+          return argv.onComplete(err)
+        } else {
+          throw err
+        }
       }
 
       if (block) {
@@ -23,6 +27,7 @@ module.exports = {
       } else {
         print('Block was unwanted before it could be remotely retrieved')
       }
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

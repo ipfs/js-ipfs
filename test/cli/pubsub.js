@@ -24,9 +24,8 @@ const config = {
   }
 }
 
-describe('pubsub', function () {
-  this.timeout(80 * 1000)
-
+// TODO dealing with long living streams, will be fun
+const test = () => describe.skip('pubsub', () => {
   let node
   let ipfsdA
   let ipfsdB
@@ -167,3 +166,6 @@ function ignoreKill (err) {
     throw err
   }
 }
+
+test.part = 'standalone'
+module.exports = test

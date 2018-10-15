@@ -18,6 +18,7 @@ module.exports = {
       }
 
       print(data, false)
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

@@ -16,6 +16,7 @@ module.exports = {
       }
 
       list.Peers.forEach((node) => print(node))
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

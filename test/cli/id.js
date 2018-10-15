@@ -2,9 +2,8 @@
 'use strict'
 
 const expect = require('chai').expect
-const runOnAndOff = require('../utils/on-and-off')
 
-describe('id', () => runOnAndOff((thing) => {
+module.exports = (thing) => describe('id', () => {
   let ipfs
 
   before(function () {
@@ -22,4 +21,4 @@ describe('id', () => runOnAndOff((thing) => {
       expect(id).to.have.property('addresses')
     })
   })
-}))
+})

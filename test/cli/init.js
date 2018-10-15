@@ -9,7 +9,8 @@ const hat = require('hat')
 const ipfsExec = require('../utils/ipfs-exec')
 const os = require('os')
 
-describe('init', function () {
+// TODO wants again it's own implementation of the cli
+const test = (thing) => describe.skip('init', function () {
   this.timeout(40 * 1000)
 
   let repoPath
@@ -35,14 +36,19 @@ describe('init', function () {
   it('basic', function () {
     this.timeout(40 * 1000)
 
+    console.log('before init')
     return ipfs('init').then((out) => {
+      console.log('after init')
+      console.log(out)
       expect(repoDirSync('blocks')).to.have.length.above(2)
       expect(repoExistsSync('config')).to.equal(true)
       expect(repoExistsSync('version')).to.equal(true)
 
       // Test that the following was written when init-ing the repo
       // jsipfs files cat /ipfs/QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr/readme
+      console.log(out)
       let command = out.substring(out.indexOf('cat'), out.length - 2 /* omit the newline char */)
+      console.log(command)
       return ipfs(command)
     }).then((out) => expect(out).to.equal(readme))
   })
@@ -76,3 +82,5 @@ describe('init', function () {
     })
   })
 })
+test.part = 'standalone'
+module.exports = test

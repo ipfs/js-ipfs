@@ -32,6 +32,7 @@ module.exports = {
       } else {
         fs.writeFileSync(argv.output, pem)
       }
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

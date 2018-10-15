@@ -53,7 +53,8 @@ function testSignal (ipfs, sig) {
   })
 }
 
-describe('daemon', () => {
+// TODO this is tricky as well, as it wants it's own implementation of the daemon
+const test = () => describe.skip('daemon', () => {
   let repoPath
   let ipfs
 
@@ -70,11 +71,11 @@ describe('daemon', () => {
     this.retries(3)
 
     ipfs('init').then(() => {
-      return ipfs('config', 'Addresses', JSON.stringify({
+      return ipfs(`config Addresses ${JSON.stringify({
         Swarm: [],
         API: '/ip4/127.0.0.1/tcp/0',
         Gateway: '/ip4/127.0.0.1/tcp/0'
-      }), '--json')
+      })} --json`)
     }).then(() => {
       const res = ipfs('daemon')
       const timeout = setTimeout(() => {
@@ -135,3 +136,5 @@ describe('daemon', () => {
     })
   })
 })
+test.part = 'standalone'
+module.exports = test

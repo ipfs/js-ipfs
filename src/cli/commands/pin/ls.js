@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../utils').print
-
 module.exports = {
   // bracket syntax with '...' tells yargs to optionally accept a list
   command: 'ls [ipfsPath...]',
@@ -27,6 +25,7 @@ module.exports = {
   handler: (argv) => {
     const paths = argv.ipfsPath
     const type = argv.type
+
     const quiet = argv.quiet
 
     argv.ipfs.pin.ls(paths, { type }, (err, results) => {
@@ -36,8 +35,9 @@ module.exports = {
         if (!quiet) {
           line += ` ${res.type}`
         }
-        print(line)
+        argv.printer(line)
       })
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

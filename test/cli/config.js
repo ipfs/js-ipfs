@@ -7,9 +7,8 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const fs = require('fs')
 const path = require('path')
-const runOnAndOff = require('../utils/on-and-off')
 
-describe('config', () => runOnAndOff((thing) => {
+module.exports = (thing) => describe('config', () => {
   let ipfs
   let configPath
   let originalConfigPath
@@ -21,7 +20,7 @@ describe('config', () => runOnAndOff((thing) => {
     configPath = path.join(ipfs.repoPath, 'config')
     originalConfigPath = path.join(__dirname, '../fixtures/go-ipfs-repo/config')
     updatedConfig = () => JSON.parse(fs.readFileSync(configPath, 'utf8'))
-    restoreConfig = () => fs.writeFileSync(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8')
+    restoreConfig = (cb) => fs.writeFile(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8', cb)
   })
 
   describe('get/set', function () {
@@ -66,16 +65,9 @@ describe('config', () => runOnAndOff((thing) => {
         expect(out).to.exist()
       })
     })
-
-    it('call config with no arguments', () => {
-      return ipfs('config')
-        .then(out => expect(out).to.include('bin.js config <key> [value]'))
-    })
   })
 
   describe('show', function () {
-    this.timeout(40 * 1000)
-
     it('returns the full config', () => {
       return ipfs('config show').then((out) => {
         expect(JSON.parse(out)).to.be.eql(updatedConfig())
@@ -83,7 +75,7 @@ describe('config', () => runOnAndOff((thing) => {
     })
   })
 
-  describe.skip('replace', () => {
+  describe('replace', function () {
     it('replace config with file', () => {
       const filePath = 'test/fixtures/test-data/otherconfig'
       const expectedConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'))
@@ -93,8 +85,8 @@ describe('config', () => runOnAndOff((thing) => {
       })
     })
 
-    after(() => {
-      restoreConfig()
+    after((done) => {
+      restoreConfig(done)
     })
   })
-}))
+})

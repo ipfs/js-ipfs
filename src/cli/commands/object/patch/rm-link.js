@@ -23,6 +23,7 @@ module.exports = {
       const nodeJSON = node.toJSON()
 
       print(nodeJSON.multihash)
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

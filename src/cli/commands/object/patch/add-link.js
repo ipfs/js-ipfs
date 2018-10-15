@@ -30,6 +30,7 @@ module.exports = {
         }
 
         print(nodeB.toJSON().multihash)
+        if (argv.onComplete) argv.onComplete()
       })
     })
   }

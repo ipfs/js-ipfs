@@ -22,6 +22,7 @@ module.exports = {
       Object.keys(stats).forEach((key) => {
         print(`${key}: ${stats[key]}`)
       })
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

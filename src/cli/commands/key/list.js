@@ -15,6 +15,7 @@ module.exports = {
         throw err
       }
       keys.forEach((ki) => print(`${ki.id} ${ki.name}`))
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }

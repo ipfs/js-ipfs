@@ -27,6 +27,7 @@ module.exports = {
     ${stats.wantlist.join('\n    ')}
   partners [${stats.peers.length}]
     ${stats.peers.join('\n    ')}`)
+      if (argv.onComplete) argv.onComplete()
     })
   }
 }
