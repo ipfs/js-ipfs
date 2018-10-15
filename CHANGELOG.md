@@ -1,3 +1,15 @@
+<a name="25.0.0"></a>
+# [25.0.0](https://github.com/ipfs/js-ipfs-api/compare/v24.0.2...v25.0.0) (2018-10-15)
+
+
+### Bug Fixes
+
+* >150mb bodies no longer crashing Chromium ([#868](https://github.com/ipfs/js-ipfs-api/issues/868)) ([180da77](https://github.com/ipfs/js-ipfs-api/commit/180da77)), closes [#654](https://github.com/ipfs/js-ipfs-api/issues/654)
+* add bl module to package dependencies ([#853](https://github.com/ipfs/js-ipfs-api/issues/853)) ([#854](https://github.com/ipfs/js-ipfs-api/issues/854)) ([834934f](https://github.com/ipfs/js-ipfs-api/commit/834934f))
+* add lodash dependency ([#873](https://github.com/ipfs/js-ipfs-api/issues/873)) ([c510cb7](https://github.com/ipfs/js-ipfs-api/commit/c510cb7)), closes [#870](https://github.com/ipfs/js-ipfs-api/issues/870)
+
+
+
 <a name="24.0.2"></a>
 ## [24.0.2](https://github.com/ipfs/js-ipfs-api/compare/v24.0.1...v24.0.2) (2018-09-21)
 
