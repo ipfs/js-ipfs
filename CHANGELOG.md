@@ -1,3 +1,13 @@
+<a name="0.79.0"></a>
+# [0.79.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.78.0...v0.79.0) (2018-10-15)
+
+
+### Bug Fixes
+
+* dht find peer and providers ([#368](https://github.com/ipfs/interface-ipfs-core/issues/368)) ([40f796f](https://github.com/ipfs/interface-ipfs-core/commit/40f796f))
+
+
+
 <a name="0.78.0"></a>
 # [0.78.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.77.1...v0.78.0) (2018-09-20)
 
