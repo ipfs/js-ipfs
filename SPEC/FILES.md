@@ -181,17 +181,45 @@ If no `callback` is passed, a promise is returned.
 
 **Example:**
 
+In the browser, assuming `ipfs = new Ipfs(...)`:
+
+```js
+let content = ipfs.types.Buffer.from('ABC');
+let results = await ipfs.files.add(content);
+let hash = results[0].hash; // "Qm...WW"
+```
+
+Now [ipfs.io/ipfs/Qm...WW](https://ipfs.io/ipfs/QmNz1UBzpdd4HfZ3qir3aPiRdX5a93XwTuDNyXRc6PKhWW)
+returns the "ABC" string.
+
+The following allows you to add multiple files at once. Note that intermediate directories in file paths will be automatically created and returned in the response along with files:
+
 ```JavaScript
 const files = [
   {
     path: '/tmp/myfile.txt',
-    content: (Buffer or Readable stream)
+    content:  ipfs.types.Buffer.from('ABC')
   }
 ]
 
-ipfs.files.add(files, function (err, files) {
-  // 'files' will be an array of objects containing paths and the multihashes of the files added
-})
+const results = await ipfs.files.add(files);
+```
+
+The `results` array:
+
+```json
+[
+  {
+    "path": "tmp",
+    "hash": "QmWXdjNC362aPDtwHPUE9o2VMqPeNeCQuTBTv1NsKtwypg",
+    "size": 67
+  },
+  {
+    "path": "/tmp/myfile.txt",
+    "hash": "QmNz1UBzpdd4HfZ3qir3aPiRdX5a93XwTuDNyXRc6PKhWW",
+    "size": 11
+  }
+]
 ```
 
 A great source of [examples][] can be found in the tests for this API.
