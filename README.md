@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-    <a href="https://ci.ipfs.team/job/ipfs/job/js-ipfs-unixfs-engine/job/master/"><img src="https://ci.ipfs.team/buildStatus/icon?job=ipfs/js-ipfs-unixfs-engine/master" /></a>
+    <a href="https://ci.ipfs.team/job/ipfs/job/js-ipfs/job/master/"><img src="https://ci.ipfs.team/buildStatus/icon?job=ipfs/js-ipfs/master" /></a>
   <a href="https://codecov.io/gh/ipfs/js-ipfs"><img src="https://codecov.io/gh/ipfs/js-ipfs/branch/master/graph/badge.svg" /></a>
   <a href="https://david-dm.org/ipfs/js-ipfs"><img src="https://david-dm.org/ipfs/js-ipfs.svg?style=flat" /></a>
   <a href="https://github.com/feross/standard"><img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat"></a>
