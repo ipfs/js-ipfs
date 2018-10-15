@@ -28,6 +28,7 @@
   "dependencies": {
     "async": "^2.6.1",
     "big.js": "^5.1.2",
+    "bl": "^2.0.1",
     "bs58": "^4.0.1",
     "cids": "~0.5.3",
     "concat-stream": "^1.6.2",
