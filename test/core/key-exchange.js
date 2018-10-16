@@ -41,7 +41,9 @@ describe('key exchange', () => {
     })
   })
 
-  it('imports', (done) => {
+  it('imports', function (done) {
+    this.timeout(20 * 1000)
+
     ipfs.key.import('clone', selfPem, passwordPem, (err, key) => {
       expect(err).to.not.exist()
       expect(key).to.exist()
