@@ -12,7 +12,7 @@ module.exports = {
       if (err) {
         throw err
       } else {
-        result.strings.forEach((s) => {
+        result.forEach((s) => {
           print(s)
         })
       }

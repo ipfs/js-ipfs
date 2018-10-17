@@ -143,9 +143,7 @@ class Pubsub {
         }
       })
 
-      callback(null, {
-        strings
-      })
+      callback(null, strings)
     })
   }
 
