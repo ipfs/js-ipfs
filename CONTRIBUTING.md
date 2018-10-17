@@ -1,6 +1,6 @@
 # Contributing guidelines
 
-IPFS as a project, including js-ipfs and all of its modules, follows the [standard IPFS Community contributing guidelines](https://github.com/ipfs/community/blob/master/contributing.md).
+IPFS as a project, including js-ipfs and all of its modules, follows the [standard IPFS Community contributing guidelines](https://github.com/ipfs/community/blob/master/CONTRIBUTING.md).
 
 We also adhere to the [IPFS JavaScript Community contributing guidelines](https://github.com/ipfs/community/blob/master/CONTRIBUTING_JS.md) which provide additional information of how to collaborate and contribute in the JavaScript implementation of IPFS.
 
