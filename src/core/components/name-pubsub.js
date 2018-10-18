@@ -8,7 +8,9 @@ const log = debug('jsipfs:name-pubsub')
 log.error = debug('jsipfs:name-pubsub:error')
 
 const isNamePubsubEnabled = (node) => (
-  node._options.EXPERIMENTAL.ipnsPubsub && node._libp2pNode._floodSub
+  Boolean(node._options.EXPERIMENTAL.ipnsPubsub &&
+    node._libp2pNode &&
+    node._libp2pNode._floodSub)
 )
 
 module.exports = function namePubsub (self) {
@@ -20,7 +22,7 @@ module.exports = function namePubsub (self) {
      */
     state: promisify((callback) => {
       callback(null, {
-        enabled: Boolean(isNamePubsubEnabled(self))
+        enabled: isNamePubsubEnabled(self)
       })
     }),
     /**
@@ -35,7 +37,7 @@ module.exports = function namePubsub (self) {
         const errMsg = 'IPNS pubsub subsystem is not enabled'
 
         log.error(errMsg)
-        return callback(errcode(errMsg, 'ERR_IPNS_PS_NOT_ENABLED'))
+        return callback(errcode(errMsg, 'ERR_IPNS_PUBSUB_NOT_ENABLED'))
       }
 
       self._ipns.pubsub.cancel(name, callback)
@@ -51,7 +53,7 @@ module.exports = function namePubsub (self) {
         const errMsg = 'IPNS pubsub subsystem is not enabled'
 
         log.error(errMsg)
-        return callback(errcode(errMsg, 'ERR_IPNS_PS_NOT_ENABLED'))
+        return callback(errcode(errMsg, 'ERR_IPNS_PUBSUB_NOT_ENABLED'))
       }
 
       self._ipns.pubsub.getSubscriptions(callback)

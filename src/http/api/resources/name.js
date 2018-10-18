@@ -92,7 +92,7 @@ exports.pubsub = {
         }
 
         return reply({
-          Strings: res.strings
+          Strings: res
         }).code(200)
       })
     }

@@ -8,7 +8,7 @@ const promisify = require('promisify-es6')
 const { TieredDatastore } = require('datastore-core')
 
 const IPNS = require('../ipns')
-const Pubsub = require('../ipns/routing/pubsub')
+const PubsubDatastore = require('../ipns/routing/pubsub-datastore')
 const OfflineDatastore = require('../ipns/routing/offline-datastore')
 
 module.exports = (self) => {
@@ -44,11 +44,14 @@ module.exports = (self) => {
         const ipnsStores = []
 
         // Add IPNS pubsub if enabled
-        let pubsub
+        let pubsubDs
         if (get(self._options, 'EXPERIMENTAL.ipnsPubsub', false)) {
-          pubsub = new Pubsub(self)
+          const pubsub = self._libp2pNode.pubsub
+          const localDatastore = self._repo.datastore
+          const peerId = self._peerInfo.id
 
-          ipnsStores.push(pubsub)
+          pubsubDs = new PubsubDatastore(pubsub, localDatastore, peerId)
+          ipnsStores.push(pubsubDs)
         }
 
         // NOTE: IPNS routing is being replaced by the local repo datastore while the IPNS over DHT is not ready
@@ -58,7 +61,7 @@ module.exports = (self) => {
 
         // Create ipns routing with a set of datastores
         const routing = new TieredDatastore(ipnsStores)
-        self._ipns = new IPNS(routing, self._repo, self._peerInfo, self._keychain, self._options, pubsub)
+        self._ipns = new IPNS(routing, self._repo, self._peerInfo, self._keychain, self._options, pubsubDs)
 
         self._bitswap = new Bitswap(
           self._libp2pNode,

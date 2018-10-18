@@ -3,7 +3,7 @@
 const ipns = require('ipns')
 const { fromB58String, toB58String } = require('multihashes')
 const PeerId = require('peer-id')
-const DatastorePubsub = require('datastore-pubsub')
+const PubsubDatastore = require('datastore-pubsub')
 
 const errcode = require('err-code')
 const debug = require('debug')
@@ -14,18 +14,14 @@ const ipnsNS = '/ipns/'
 const ipnsNSLength = ipnsNS.length
 
 // Pubsub aims to manage the pubsub subscriptions for IPNS
-class Pubsub {
-  constructor (node) {
-    const pubsub = node._libp2pNode.pubsub
-    const localDatastore = node._repo.datastore
-    const peerId = node._peerInfo.id
+class IpnsPubsubDatastore {
+  constructor (pubsub, localDatastore, peerId) {
     this._pubsub = pubsub
-
     this._subscriptions = {}
 
-    // Bind _handleSubscriptionKey function, which is called by datastorePubsub.
+    // Bind _handleSubscriptionKey function, which is called by PubsubDatastore.
     this._handleSubscriptionKey = this._handleSubscriptionKey.bind(this)
-    this._dsPubsub = new DatastorePubsub(pubsub, localDatastore, peerId, ipns.validator, this._handleSubscriptionKey)
+    this._pubsubDs = new PubsubDatastore(pubsub, localDatastore, peerId, ipns.validator, this._handleSubscriptionKey)
   }
 
   /**
@@ -37,20 +33,20 @@ class Pubsub {
    */
   put (key, value, callback) {
     if (!Buffer.isBuffer(key)) {
-      const errMsg = `key does not have a valid format`
+      const errMsg = `key ${key} does not have a valid format`
 
       log.error(errMsg)
       return callback(errcode(new Error(errMsg), 'ERR_INVALID_KEY'))
     }
 
     if (!Buffer.isBuffer(value)) {
-      const errMsg = `received value is not a buffer`
+      const errMsg = `received value ${value} is not a buffer`
 
       log.error(errMsg)
       return callback(errcode(new Error(errMsg), 'ERR_INVALID_VALUE_RECEIVED'))
     }
 
-    this._dsPubsub.put(key, value, callback)
+    this._pubsubDs.put(key, value, callback)
   }
 
   /**
@@ -63,13 +59,13 @@ class Pubsub {
    */
   get (key, callback) {
     if (!Buffer.isBuffer(key)) {
-      const errMsg = `key does not have a valid format`
+      const errMsg = `key ${key} does not have a valid format`
 
       log.error(errMsg)
       return callback(errcode(new Error(errMsg), 'ERR_INVALID_KEY'))
     }
 
-    this._dsPubsub.get(key, (err, res) => {
+    this._pubsubDs.get(key, (err, res) => {
       // Add topic subscribed
       const ns = key.slice(0, ipnsNSLength)
 
@@ -82,6 +78,7 @@ class Pubsub {
         log(`subscribed pubsub ${stringifiedTopic}: ${id}`)
       }
 
+      // If no data was obtained, after storing the subscription, return the error.
       if (err) {
         return callback(err)
       }
@@ -119,36 +116,13 @@ class Pubsub {
    * @returns {void}
    */
   getSubscriptions (callback) {
-    this._pubsub.ls((err, res) => {
-      if (err || !res) {
-        log.error(err)
-        return callback(err)
-      }
+    const subscriptions = Object.values(this._subscriptions)
 
-      // Iterate over subscriptions
-      const strings = []
-      res.forEach((subs) => {
-        const ns = subs.substring(0, ipnsNSLength)
-        const subscription = this._subscriptions[subs]
-
-        if (ns === ipnsNS && subscription) {
-          // Verify valid PeerID
-          try {
-            PeerId.createFromBytes(Buffer.from(subscription))
-            // add to the list
-            strings.push(`/ipns/${subscription}`)
-          } catch (err) {
-            log.error('ipns key not a valid peer ID')
-          }
-        }
-      })
-
-      callback(null, strings)
-    })
+    return callback(null, subscriptions.map((sub) => `/ipns/${sub}`))
   }
 
   /**
-   * Get pubsub subscriptions related to ipns.
+   * Cancel pubsub subscriptions related to ipns.
    * @param {String} name ipns path to cancel the pubsub subscription.
    * @param {function(Error, Object)} callback
    * @returns {void}
@@ -166,16 +140,6 @@ class Pubsub {
       name = name.substring(ipnsNSLength)
     }
 
-    // Verify peerId validity
-    try {
-      PeerId.createFromBytes(Buffer.from(name))
-    } catch (err) {
-      const errMsg = `ipns key is not a valid peer ID`
-
-      log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_INVALID_IPNS_KEY'))
-    }
-
     const stringifiedTopic = Object.keys(this._subscriptions).find((key) => this._subscriptions[key] === name)
 
     // Not found topic
@@ -189,7 +153,7 @@ class Pubsub {
     try {
       const bufTopic = Buffer.from(stringifiedTopic)
 
-      this._dsPubsub.unsubscribe(bufTopic)
+      this._pubsubDs.unsubscribe(bufTopic)
     } catch (err) {
       return callback(err)
     }
@@ -203,4 +167,4 @@ class Pubsub {
   }
 }
 
-exports = module.exports = Pubsub
+exports = module.exports = IpnsPubsubDatastore
