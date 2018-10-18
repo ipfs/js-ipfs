@@ -80,6 +80,7 @@
   "dependencies": {
     "@nodeutils/defaults-deep": "^1.1.0",
     "async": "^2.6.1",
+    "base32.js": "~0.1.0",
     "big.js": "^5.2.2",
     "binary-querystring": "~0.1.2",
     "bl": "^2.1.2",
@@ -89,8 +90,13 @@
     "cid-tool": "~0.2.0",
     "cids": "~0.5.5",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "datastore-core": "~0.6.0",
 =======
+=======
+    "class-is": "^1.1.0",
+    "datastore-core": "~0.4.0",
+>>>>>>> fix: second pass of code review
     "datastore-pubsub": "~0.0.2",
 >>>>>>> feat: ipns over pubsub
     "debug": "^4.1.0",

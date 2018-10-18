@@ -4,14 +4,48 @@ const debug = require('debug')
 const errcode = require('err-code')
 const promisify = require('promisify-es6')
 
+const IpnsPubsubDatastore = require('../ipns/routing/pubsub-datastore')
+
 const log = debug('jsipfs:name-pubsub')
 log.error = debug('jsipfs:name-pubsub:error')
 
-const isNamePubsubEnabled = (node) => (
-  Boolean(node._options.EXPERIMENTAL.ipnsPubsub &&
-    node._libp2pNode &&
-    node._libp2pNode._floodSub)
-)
+// Is pubsub enabled
+const isNamePubsubEnabled = (node) => {
+  let pubsub
+  try {
+    pubsub = getPubsubRouting(node)
+  } catch (err) {
+    return false
+  }
+
+  return Boolean(pubsub)
+}
+
+// Get pubsub from IPNS routing
+const getPubsubRouting = (node) => {
+  if (!node._ipns || !node._options.EXPERIMENTAL.ipnsPubsub) {
+    const errMsg = 'IPNS pubsub subsystem is not enabled'
+
+    log.error(errMsg)
+    throw errcode(errMsg, 'ERR_IPNS_PUBSUB_NOT_ENABLED')
+  }
+
+  // Only one store and it is pubsub
+  if (IpnsPubsubDatastore.isIpnsPubsubDatastore(node._ipns.routing)) {
+    return node._ipns.routing
+  }
+
+  // Find in tiered
+  const pubsub = (node._ipns.routing.stores || []).find(s => IpnsPubsubDatastore.isIpnsPubsubDatastore(s))
+
+  if (!pubsub) {
+    const errMsg = 'IPNS pubsub datastore not found'
+
+    log.error(errMsg)
+    throw errcode(errMsg, 'ERR_PUBSUB_DATASTORE_NOT_FOUND')
+  }
+  return pubsub
+}
 
 module.exports = function namePubsub (self) {
   return {
@@ -33,14 +67,14 @@ module.exports = function namePubsub (self) {
      * @returns {Promise|void}
      */
     cancel: promisify((name, callback) => {
-      if (!isNamePubsubEnabled(self)) {
-        const errMsg = 'IPNS pubsub subsystem is not enabled'
-
-        log.error(errMsg)
-        return callback(errcode(errMsg, 'ERR_IPNS_PUBSUB_NOT_ENABLED'))
+      let pubsub
+      try {
+        pubsub = getPubsubRouting(self)
+      } catch (err) {
+        return callback(err)
       }
 
-      self._ipns.pubsub.cancel(name, callback)
+      pubsub.cancel(name, callback)
     }),
     /**
      * Show current name subscriptions.
@@ -49,14 +83,14 @@ module.exports = function namePubsub (self) {
      * @returns {Promise|void}
      */
     subs: promisify((callback) => {
-      if (!isNamePubsubEnabled(self)) {
-        const errMsg = 'IPNS pubsub subsystem is not enabled'
-
-        log.error(errMsg)
-        return callback(errcode(errMsg, 'ERR_IPNS_PUBSUB_NOT_ENABLED'))
+      let pubsub
+      try {
+        pubsub = getPubsubRouting(self)
+      } catch (err) {
+        return callback(err)
       }
 
-      self._ipns.pubsub.getSubscriptions(callback)
+      pubsub.getSubscriptions(callback)
     })
   }
 }

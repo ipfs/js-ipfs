@@ -2,8 +2,9 @@
 
 const ipns = require('ipns')
 const { fromB58String, toB58String } = require('multihashes')
-const PeerId = require('peer-id')
 const PubsubDatastore = require('datastore-pubsub')
+
+const withIs = require('class-is')
 
 const errcode = require('err-code')
 const debug = require('debug')
@@ -167,4 +168,5 @@ class IpnsPubsubDatastore {
   }
 }
 
-exports = module.exports = IpnsPubsubDatastore
+// exports = module.exports = IpnsPubsubDatastore
+exports = module.exports = withIs(IpnsPubsubDatastore, { className: 'IpnsPubsubDatastore', symbolName: '@js-ipfs/ipns/IpnsPubsubDatastore' })

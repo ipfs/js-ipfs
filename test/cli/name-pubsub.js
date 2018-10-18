@@ -82,10 +82,9 @@ describe('name-pubsub', () => {
     })
 
     // Connect
-    before(function (done) {
-      ipfsA('swarm', 'connect', bMultiaddr).then((out) => {
+    before(function () {
+      return ipfsA('swarm', 'connect', bMultiaddr).then((out) => {
         expect(out).to.eql(`connect ${bMultiaddr} success\n`)
-        done()
       })
     })
 
@@ -97,63 +96,69 @@ describe('name-pubsub', () => {
         done()
       })
 
-      it('should get enabled state of pubsub', function (done) {
-        ipfsA('name pubsub state').then((res) => {
+      it('should get enabled state of pubsub', function () {
+        return ipfsA('name pubsub state').then((res) => {
           expect(res).to.exist()
           expect(res).to.have.string('enabled') // enabled
-
-          done()
         })
       })
 
-      it('should subscribe on name resolve', function (done) {
+      it('should subscribe on name resolve', function () {
         this.timeout(80 * 1000)
 
-        ipfsB(`name resolve ${nodeAId.id}`).catch((err) => {
-          expect(err).to.exist() // Not available (subscribed)
+        return ipfsB(`name resolve ${nodeAId.id}`)
+          .catch((err) => {
+            expect(err).to.exist() // Not available (subscribed)
 
-          ipfsB('pubsub ls').then((res) => {
-            expect(res).to.exist()
-            expect(res).to.have.string('/ipns/') // have an ipns subscribtion
-
-            ipfsB('name pubsub subs').then((res) => {
-              expect(res).to.exist()
-              expect(res).to.have.string(`/ipns/${nodeAId.id}`) // have subscription
-
-              done()
-            })
-          })
-        })
-      })
-
-      it('should be able to cancel subscriptions', function (done) {
-        this.timeout(80 * 1000)
-
-        ipfsA(`name pubsub cancel /ipns/${nodeBId.id}`).then((res) => {
-          expect(res).to.exist()
-          expect(res).to.have.string('no subscription') // tried to cancel a not yet subscribed id
-
-          ipfsA(`name resolve ${nodeBId.id}`).catch((err) => {
-            expect(err).to.exist() // Not available (subscribed now)
-
-            ipfsA(`name pubsub cancel /ipns/${nodeBId.id}`).then((res) => {
-              expect(res).to.exist()
-              expect(res).to.have.string('canceled') // canceled now
-
-              ipfsA('pubsub ls').then((res) => {
+            return Promise.all([
+              ipfsB('pubsub ls'),
+              ipfsB('name pubsub subs')
+            ])
+              .then((res) => {
                 expect(res).to.exist()
-                expect(res).to.not.have.string('/ipns/') // ipns subscribtion not available
 
-                ipfsA('name pubsub subs').then((res) => {
-                  expect(res).to.exist()
-                  expect(res).to.not.have.string(`/ipns/${nodeBId.id}`) // ipns subscribtion not available
+                expect(res[0]).to.exist()
+                expect(res[0]).to.have.string('/ipns/') // have an ipns subscribtion
 
-                  done()
-                })
+                expect(res[1]).to.exist()
+                expect(res[1]).to.have.string(`/ipns/${nodeAId.id}`) // have subscription
               })
-            })
           })
-        })
+      })
+
+      it('should be able to cancel subscriptions', function () {
+        this.timeout(80 * 1000)
+
+        return ipfsA(`name pubsub cancel /ipns/${nodeBId.id}`)
+          .then((res) => {
+            expect(res).to.exist()
+            expect(res).to.have.string('no subscription') // tried to cancel a not yet subscribed id
+
+            return ipfsA(`name resolve ${nodeBId.id}`)
+              .catch((err) => {
+                expect(err).to.exist() // Not available (subscribed now)
+
+                return ipfsA(`name pubsub cancel /ipns/${nodeBId.id}`)
+                  .then((res) => {
+                    expect(res).to.exist()
+                    expect(res).to.have.string('canceled') // canceled now
+
+                    return Promise.all([
+                      ipfsA('pubsub ls'),
+                      ipfsA('name pubsub subs')
+                    ])
+                      .then((res) => {
+                        expect(res).to.exist()
+
+                        expect(res[0]).to.exist()
+                        expect(res[0]).to.not.have.string('/ipns/') // ipns subscribtion not available
+
+                        expect(res[1]).to.exist()
+                        expect(res[1]).to.not.have.string(`/ipns/${nodeBId.id}`) // ipns subscribtion not available
+                      })
+                  })
+              })
+          })
       })
     })
 
@@ -168,35 +173,40 @@ describe('name-pubsub', () => {
         })
       })
 
-      it('should publish the received record to the subscriber', function (done) {
+      it('should publish the received record to the subscriber', function () {
         this.timeout(80 * 1000)
 
-        ipfsB(`name resolve ${nodeBId.id}`).then((res) => {
-          expect(res).to.exist()
-          expect(res).to.satisfy(checkAll([emptyDirCid])) // Empty dir received (subscribed)
+        return ipfsB(`name resolve ${nodeBId.id}`)
+          .then((res) => {
+            expect(res).to.exist()
+            expect(res).to.satisfy(checkAll([emptyDirCid])) // Empty dir received (subscribed)
 
-          ipfsA(`name resolve ${nodeBId.id}`).catch((err) => {
-            expect(err).to.exist() // Not available (subscribed now)
+            return ipfsA(`name resolve ${nodeBId.id}`)
+              .catch((err) => {
+                expect(err).to.exist() // Not available (subscribed now)
 
-            ipfsB(`name publish ${cidAdded}`).then((res) => {
-              // published to IpfsB and published through pubsub to ipfsa
-              expect(res).to.exist()
-              expect(res).to.satisfy(checkAll([cidAdded, nodeBId.id]))
+                return ipfsB(`name publish ${cidAdded}`)
+                  .then((res) => {
+                    // published to IpfsB and published through pubsub to ipfsa
+                    expect(res).to.exist()
+                    expect(res).to.satisfy(checkAll([cidAdded, nodeBId.id]))
 
-              ipfsB(`name resolve ${nodeBId.id}`).then((res) => {
-                expect(res).to.exist()
-                expect(res).to.satisfy(checkAll([cidAdded]))
+                    return Promise.all([
+                      ipfsB(`name resolve ${nodeBId.id}`),
+                      ipfsA(`name resolve ${nodeBId.id}`)
+                    ])
+                      .then((res) => {
+                        expect(res).to.exist()
 
-                ipfsA(`name resolve ${nodeBId.id}`).then((res) => {
-                  expect(res).to.exist()
-                  expect(res).to.satisfy(checkAll([cidAdded])) // value propagated to node B
+                        expect(res[0]).to.exist()
+                        expect(res[0]).to.satisfy(checkAll([cidAdded]))
 
-                  done()
-                })
+                        expect(res[1]).to.exist()
+                        expect(res[1]).to.satisfy(checkAll([cidAdded])) // value propagated to node B
+                      })
+                  })
               })
-            })
           })
-        })
       })
     })
   })
@@ -237,7 +247,7 @@ describe('name-pubsub', () => {
     it('should get error getting the available subscriptions', function (done) {
       ipfsA('name pubsub subs').catch((err) => {
         expect(err).to.exist() // error as it is disabled
-
+        expect(err.toString()).to.have.string('IPNS pubsub subsystem is not enabled')
         done()
       })
     })
@@ -245,6 +255,7 @@ describe('name-pubsub', () => {
     it('should get error canceling a subscription', function (done) {
       ipfsA('name pubsub cancel /ipns/QmSWxaPcGgf4TDnFEBDWz2JnbHywF14phmY9hNcAeBEK5v').catch((err) => {
         expect(err).to.exist() // error as it is disabled
+        expect(err.toString()).to.have.string('IPNS pubsub subsystem is not enabled')
 
         done()
       })

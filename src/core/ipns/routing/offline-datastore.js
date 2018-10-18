@@ -3,11 +3,6 @@
 const { Key } = require('interface-datastore')
 const { encodeBase32 } = require('./utils')
 
-const errcode = require('err-code')
-const debug = require('debug')
-const log = debug('jsipfs:ipns:offline-datastore')
-log.error = debug('jsipfs:ipns:offline-datastore:error')
-
 // Offline datastore aims to mimic the same encoding as routing when storing records
 // to the local datastore
 class OfflineDatastore {
