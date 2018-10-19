@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
+const crypto = require('crypto')
 const expect = require('chai').expect
 
 module.exports = (http) => {
@@ -11,7 +12,32 @@ module.exports = (http) => {
       api = http.api.server.select('API')
     })
 
-    describe('/add', () => {}) // TODO
+    describe('/add', () => {
+      it('should add buffer bigger than Hapi default max bytes (1024 * 1024)', (done) => {
+        const payload = Buffer.from([
+          '',
+          '------------287032381131322',
+          'Content-Disposition: form-data; name="test"; filename="test.txt"',
+          'Content-Type: text/plain',
+          '',
+          crypto.randomBytes(1024 * 1024 * 2).toString('hex'),
+          '------------287032381131322--'
+        ].join('\r\n'))
+
+        api.inject({
+          method: 'POST',
+          url: '/api/v0/add',
+          headers: {
+            'Content-Type': 'multipart/form-data; boundary=----------287032381131322'
+          },
+          payload
+        }, (res) => {
+          expect(res.statusCode).to.not.equal(413) // Payload too large
+          expect(res.statusCode).to.equal(200)
+          done()
+        })
+      })
+    })
 
     describe('/cat', () => {
       it('returns 400 for request without argument', (done) => {
