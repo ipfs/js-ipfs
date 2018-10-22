@@ -11,6 +11,21 @@ const Progress = require('progress')
 const byteman = require('byteman')
 const promisify = require('promisify-es6')
 
+// All known IPLD formats
+const ipldBitcoin = require('ipld-bitcoin')
+const ipldDagCbor = require('ipld-dag-cbor')
+const ipldDagPb = require('ipld-dag-pb')
+const ipldEthAccountSnapshot = require('ipld-ethereum').ethAccountSnapshot
+const ipldEthBlock = require('ipld-ethereum').ethBlock
+const ipldEthBlockList = require('ipld-ethereum').ethBlockList
+const ipldEthStateTrie = require('ipld-ethereum').ethStateTrie
+const ipldEthStorageTrie = require('ipld-ethereum').ethStorageTrie
+const ipldEthTrie = require('ipld-ethereum').ethTxTrie
+const ipldEthTx = require('ipld-ethereum').ethTx
+const ipldGit = require('ipld-git')
+const ipldRaw = require('ipld-raw')
+const ipldZcash = require('ipld-zcash')
+
 exports = module.exports
 
 exports.isDaemonOn = isDaemonOn

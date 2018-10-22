@@ -15,6 +15,21 @@ const debug = require('debug')
 const extend = require('deep-extend')
 const EventEmitter = require('events')
 
+// All known IPLD formats
+const ipldBitcoin = require('ipld-bitcoin')
+const ipldDagCbor = require('ipld-dag-cbor')
+const ipldDagPb = require('ipld-dag-pb')
+const ipldEthAccountSnapshot = require('ipld-ethereum').ethAccountSnapshot
+const ipldEthBlock = require('ipld-ethereum').ethBlock
+const ipldEthBlockList = require('ipld-ethereum').ethBlockList
+const ipldEthStateTrie = require('ipld-ethereum').ethStateTrie
+const ipldEthStorageTrie = require('ipld-ethereum').ethStorageTrie
+const ipldEthTrie = require('ipld-ethereum').ethTxTrie
+const ipldEthTx = require('ipld-ethereum').ethTx
+const ipldGit = require('ipld-git')
+const ipldRaw = require('ipld-raw')
+const ipldZcash = require('ipld-zcash')
+
 const config = require('./config')
 const boot = require('./boot')
 const components = require('./components')
@@ -72,7 +87,9 @@ class IPFS extends EventEmitter {
       multiaddr: multiaddr,
       multibase: multibase,
       multihash: multihash,
-      CID: CID
+      CID: CID,
+      dagPB: ipldDagPb,
+      dagCBOR: ipldDagCbor
     }
 
     // IPFS Core Internals
@@ -82,7 +99,14 @@ class IPFS extends EventEmitter {
     this._libp2pNode = undefined
     this._bitswap = undefined
     this._blockService = new BlockService(this._repo)
-    this._ipld = new Ipld(this._blockService)
+    this._ipld = new Ipld({
+      blockService: this._blockService,
+      formats: [
+        ipldBitcoin, ipldDagCbor, ipldDagPb, ipldEthAccountSnapshot,
+        ipldEthBlock, ipldEthBlockList, ipldEthStateTrie, ipldEthStorageTrie,
+        ipldEthTrie, ipldEthTx, ipldGit, ipldRaw, ipldZcash
+      ]
+    })
     this._preload = preload(this)
     this._mfsPreload = mfsPreload(this)
     this._ipns = new IPNS(null, this)
