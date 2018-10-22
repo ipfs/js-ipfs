@@ -37,7 +37,8 @@ module.exports = (server) => {
     config: {
       payload: {
         parse: false,
-        output: 'stream'
+        output: 'stream',
+        maxBytes: Number.MAX_SAFE_INTEGER
       },
       handler: resources.files.add.handler,
       validate: resources.files.add.validate

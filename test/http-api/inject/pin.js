@@ -135,7 +135,7 @@ module.exports = (http) => {
           url: '/api/v0/pin/ls'
         }, (res) => {
           expect(res.statusCode).to.equal(200)
-          expect(res.result.Keys).to.have.all.keys(Object.values(pins))
+          expect(res.result.Keys).to.include.all.keys(Object.values(pins))
           done()
         })
       })
@@ -158,14 +158,10 @@ module.exports = (http) => {
           url: `/api/v0/pin/ls?type=recursive`
         }, (res) => {
           expect(res.statusCode).to.equal(200)
-          expect(res.result.Keys).to.deep.eql({
-            QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn: {
-              Type: 'recursive'
-            },
-            QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVzxTt3qVe: {
-              Type: 'recursive'
-            }
-          })
+          expect(res.result.Keys['QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'])
+            .to.deep.eql({ Type: 'recursive' })
+          expect(res.result.Keys['QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVzxTt3qVe'])
+            .to.deep.eql({ Type: 'recursive' })
           done()
         })
       })
