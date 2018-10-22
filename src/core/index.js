@@ -86,7 +86,18 @@ class IPFS extends EventEmitter {
     this._libp2pNode = undefined
     this._bitswap = undefined
     this._blockService = new BlockService(this._repo)
-    this._ipld = new Ipld(this._blockService)
+
+    // Make sure IPLD has the correct BlockService
+    const ipldDefaults = {
+      blockService: this._blockService
+    }
+    if (this._options.ipld === undefined) {
+      this._options.ipld = ipldDefaults
+    } else if (this._options.ipld.blockService === undefined) {
+      this._options.ipld.blockService = ipldDefaults.blockService
+    }
+    this._ipld = new Ipld(this._options.ipld)
+
     this._preload = preload(this)
     this._mfsPreload = mfsPreload(this)
     this._ipns = new IPNS(null, this)

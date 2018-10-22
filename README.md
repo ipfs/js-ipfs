@@ -295,6 +295,14 @@ Configure remote preload nodes. The remote will preload content added on this no
 - `enabled` (boolean): Enable content preloading (Default: `true`)
 - `addresses` (array): Multiaddr API addresses of nodes that should preload content. **NOTE:** nodes specified here should also be added to your node's bootstrap address list at [`config.Boostrap`](#optionsconfig).
 
+##### `options.ipld`
+
+| Type | Default |
+|------|---------|
+| object | `{ blockService: ...}` |
+
+Pass options into [IPLD](https://github.com/ipld/js-ipld). It can be used to pass in [IPLD formats](https://github.com/ipld/interface-ipld-format) that are not the default ones [`dag-cbor`](https://github.com/ipld/js-ipld-dag-cbor) and [`dag-pb`](https://github.com/ipld/js-ipld-dag-pb). For more information see the [js-ipld readmel](https://github.com/ipld/js-ipld#readme).
+
 ##### `options.EXPERIMENTAL`
 
 | Type | Default |
