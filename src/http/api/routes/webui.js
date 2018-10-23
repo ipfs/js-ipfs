@@ -20,7 +20,7 @@ module.exports = (server) => {
       method: '*',
       path: '/webui',
       handler: (request, reply) => {
-        return reply().redirect().location('/ipfs/QmSDgpiHco5yXdyVTfhKxr3aiJ82ynz8V14QcGKicM3rVh')
+        return reply().redirect().location('/ipfs/QmNs2xy5LaECKB7sXMBBap8vN9qP6KqAba8udQqN9ZyogV')
       }
     }
   ])
