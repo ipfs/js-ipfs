@@ -53,7 +53,7 @@ class App extends React.Component {
 
         node.files.cat(hash, (err, data) => {
           if (err) { throw err }
-          self.setState({added_file_contents: data})
+          self.setState({added_file_contents: data.toString()})
         })
       })
     }
