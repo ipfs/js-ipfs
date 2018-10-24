@@ -44,7 +44,8 @@
     "release-minor": "aegir release --type minor -t node -t browser",
     "release-major": "aegir release --type major -t node -t browser",
     "coverage": "aegir coverage",
-    "coverage-publish": "aegir-coverage publish"
+    "coverage-publish": "aegir-coverage publish",
+    "dep-check-unused": "npx dependency-check package.json './test/**/*.js' './src/**/*.js' --extra"
   },
   "repository": {
     "type": "git",
@@ -60,28 +61,20 @@
   "homepage": "https://github.com/ipfs/js-ipfs#readme",
   "devDependencies": {
     "aegir": "^15.1.0",
-    "buffer-loader": "~0.0.1",
     "chai": "^4.1.2",
     "delay": "^3.0.0",
     "detect-node": "^2.0.3",
     "dir-compare": "^1.4.0",
     "dirty-chai": "^2.0.1",
-    "eslint-plugin-react": "^7.10.0",
     "execa": "~0.10.0",
-    "expose-loader": "~0.7.5",
     "form-data": "^2.3.2",
     "hat": "0.0.3",
     "interface-ipfs-core": "~0.78.0",
     "ipfsd-ctl": "~0.39.3",
-    "mocha": "^5.2.0",
     "ncp": "^2.0.0",
-    "nexpect": "~0.5.0",
-    "pretty-bytes": "^5.1.0",
     "qs": "^6.5.2",
-    "random-fs": "^1.0.3",
     "rimraf": "^2.6.2",
-    "stream-to-promise": "^2.2.0",
-    "transform-loader": "~0.2.4"
+    "stream-to-promise": "^2.2.0"
   },
   "dependencies": {
     "@nodeutils/defaults-deep": "^1.1.0",
@@ -97,7 +90,6 @@
     "debug": "^3.1.0",
     "err-code": "^1.1.2",
     "file-type": "^8.1.0",
-    "filesize": "^3.6.1",
     "fnv1a": "^1.0.1",
     "fsm-event": "^2.1.0",
     "get-folder-size": "^2.0.0",
@@ -129,9 +121,7 @@
     "joi-multiaddr": "^2.0.0",
     "libp2p": "~0.23.0",
     "libp2p-bootstrap": "~0.9.3",
-    "libp2p-circuit": "~0.2.0",
     "libp2p-crypto": "~0.13.0",
-    "libp2p-floodsub": "~0.15.0",
     "libp2p-kad-dht": "~0.10.1",
     "libp2p-keychain": "~0.3.1",
     "libp2p-mdns": "~0.12.0",
@@ -151,7 +141,6 @@
     "multibase": "~0.5.0",
     "multihashes": "~0.4.13",
     "once": "^1.4.0",
-    "path-exists": "^3.0.0",
     "peer-book": "~0.8.0",
     "peer-id": "~0.11.0",
     "peer-info": "~0.14.1",
@@ -173,10 +162,8 @@
     "stream-to-pull-stream": "^1.7.2",
     "tar-stream": "^1.6.1",
     "temp": "~0.8.3",
-    "through2": "^2.0.3",
     "update-notifier": "^2.5.0",
     "yargs": "^12.0.1",
-    "yargs-parser": "^10.1.0",
     "yargs-promise": "^1.1.0"
   },
   "optionalDependencies": {
