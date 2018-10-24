@@ -2,7 +2,7 @@
 
 This tutorial will help you exchange files between browser nodes and go-ipfs or js-ipfs nodes!
 
-**Note:** As `js-ipfs@0.29.0` currently doesn't support DHT peer discovery, the peer from which you are fetching data should be within the reach (local or in public IP) of the browser node.
+**Note:** As `js-ipfs@0.32.x` currently doesn't support DHT peer discovery, the peer from which you are fetching data should be within the reach (local or in public IP) of the browser node.
 
 That being said, we will explain how to circumvent these caveats and once they are fixed, we'll update the tutorial as well.
 
