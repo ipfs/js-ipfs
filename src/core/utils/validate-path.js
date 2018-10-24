@@ -29,7 +29,7 @@ const validatePath = (path, callback) => {
 
   if (path.substring(0, IPFS_PREFIX.length) === IPFS_PREFIX) {
     return callback(null, {
-      type: 'ifps',
+      type: 'ipfs',
       path: path.substring(IPFS_PREFIX.length + 1),
       directory,
       name
