@@ -183,6 +183,27 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
+  // TODO: uncomment after https://github.com/ipfs/interface-ipfs-core/pull/361 being merged and a new release
+  tests.namePubsub(CommonFactory.create({
+    spawnOptions: {
+      args: ['--enable-namesys-pubsub'],
+      initOptions: { bits: 1024 }
+    }
+  }), {
+    skip: [
+      // name.pubsub.cancel
+      {
+        name: 'should cancel a subscription correctly returning true',
+        reason: 'go-ipfs is really slow for publishing and resolving ipns records, unless in offline mode'
+      },
+      // name.pubsub.subs
+      {
+        name: 'should get the list of subscriptions updated after a resolve',
+        reason: 'go-ipfs is really slow for publishing and resolving ipns records, unless in offline mode'
+      }
+    ]
+  })
+
   tests.object(defaultCommonFactory)
 
   tests.pin(defaultCommonFactory)

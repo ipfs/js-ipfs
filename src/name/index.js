@@ -7,6 +7,7 @@ module.exports = (arg) => {
 
   return {
     publish: require('./publish')(send),
-    resolve: require('./resolve')(send)
+    resolve: require('./resolve')(send),
+    pubsub: require('./pubsub')(send)
   }
 }
