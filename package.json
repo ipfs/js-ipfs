@@ -44,8 +44,7 @@
     "release-minor": "aegir release --type minor -t node -t browser",
     "release-major": "aegir release --type major -t node -t browser",
     "coverage": "aegir coverage",
-    "coverage-publish": "aegir-coverage publish",
-    "dep-check-unused": "npx dependency-check package.json './test/**/*.js' './src/**/*.js' --extra"
+    "coverage-publish": "aegir-coverage publish"
   },
   "repository": {
     "type": "git",
