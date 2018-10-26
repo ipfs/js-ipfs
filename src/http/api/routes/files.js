@@ -12,9 +12,9 @@ module.exports = (server) => {
     path: '/api/v0/cat',
     config: {
       pre: [
-        { method: resources.files.cat.parseArgs, assign: 'args' }
+        { method: resources.cat.parseArgs, assign: 'args' }
       ],
-      handler: resources.files.cat.handler
+      handler: resources.cat.handler
     }
   })
 
@@ -24,9 +24,9 @@ module.exports = (server) => {
     path: '/api/v0/get',
     config: {
       pre: [
-        { method: resources.files.get.parseArgs, assign: 'args' }
+        { method: resources.get.parseArgs, assign: 'args' }
       ],
-      handler: resources.files.get.handler
+      handler: resources.get.handler
     }
   })
 
@@ -40,8 +40,8 @@ module.exports = (server) => {
         output: 'stream',
         maxBytes: Number.MAX_SAFE_INTEGER
       },
-      handler: resources.files.add.handler,
-      validate: resources.files.add.validate
+      handler: resources.add.handler,
+      validate: resources.add.validate
     }
   })
 
