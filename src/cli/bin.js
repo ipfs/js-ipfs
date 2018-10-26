@@ -69,19 +69,8 @@ if (args[0] === 'daemon' || args[0] === 'init') {
         throw err
       }
 
-      // add mfs commands
+      // add MFS (Files API) commands
       mfs(cli)
-
-      // NOTE: This creates an alias of
-      // `jsipfs files {add, get, cat}` to `jsipfs {add, get, cat}`.
-      // This will stay until https://github.com/ipfs/specs/issues/98 is resolved.
-      const addCmd = require('./commands/files/add')
-      const catCmd = require('./commands/files/cat')
-      const getCmd = require('./commands/files/get')
-      const aliases = [addCmd, catCmd, getCmd]
-      aliases.forEach((alias) => {
-        cli.command(alias)
-      })
 
       cli
         .commandDir('commands')
@@ -113,7 +102,7 @@ if (args[0] === 'daemon' || args[0] === 'init') {
           exitCode = 1
         })
         .then(() => cleanup())
-        .catch(() => {})
+        .catch((e) => {})
         .then(() => {
           if (exitCode !== 0) {
             process.exit(exitCode)

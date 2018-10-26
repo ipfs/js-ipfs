@@ -29,7 +29,7 @@ module.exports = {
       length: argv.length
     }
 
-    const stream = argv.ipfs.files.catReadableStream(path, options)
+    const stream = argv.ipfs.catReadableStream(path, options)
 
     stream.once('error', (err) => {
       throw err
