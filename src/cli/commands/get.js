@@ -5,7 +5,7 @@ const path = require('path')
 const mkdirp = require('mkdirp')
 const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
-const print = require('../../utils').print
+const print = require('../utils').print
 
 function checkArgs (hash, outPath) {
   // format the output directory
@@ -63,7 +63,7 @@ module.exports = {
 
     const dir = checkArgs(ipfsPath, argv.output)
 
-    const stream = argv.ipfs.files.getReadableStream(ipfsPath)
+    const stream = argv.ipfs.getReadableStream(ipfsPath)
 
     stream.once('error', (err) => {
       if (err) { throw err }
