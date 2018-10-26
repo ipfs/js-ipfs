@@ -70,7 +70,7 @@ describe('HTTP Gateway', function () {
           emptyDir('nested-folder/empty')
         ]
 
-        http.api.node.files.add(dirs, (err, res) => {
+        http.api.node.add(dirs, (err, res) => {
           expect(err).to.not.exist()
           const root = res[res.length - 1]
 
@@ -82,7 +82,7 @@ describe('HTTP Gateway', function () {
       (cb) => {
         const expectedMultihash = 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq'
 
-        http.api.node.files.add(bigFile, (err, res) => {
+        http.api.node.add(bigFile, (err, res) => {
           expect(err).to.not.exist()
           const file = res[0]
           expect(file.path).to.equal(expectedMultihash)
@@ -93,7 +93,7 @@ describe('HTTP Gateway', function () {
       (cb) => {
         const expectedMultihash = 'QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o'
 
-        http.api.node.files.add(Buffer.from('hello world' + '\n'), { cidVersion: 0 }, (err, res) => {
+        http.api.node.add(Buffer.from('hello world' + '\n'), { cidVersion: 0 }, (err, res) => {
           expect(err).to.not.exist()
           const file = res[0]
           expect(file.path).to.equal(expectedMultihash)
@@ -108,7 +108,7 @@ describe('HTTP Gateway', function () {
           content('cat-folder/cat.jpg')
         ]
 
-        http.api.node.files.add(dir, (err, res) => {
+        http.api.node.add(dir, (err, res) => {
           expect(err).to.not.exist()
           const file = res[1]
           expect(file.path).to.equal('test-folder/cat-folder')
@@ -124,7 +124,7 @@ describe('HTTP Gateway', function () {
           content('unsniffable-folder/hexagons.svg')
         ]
 
-        http.api.node.files.add(dir, (err, res) => {
+        http.api.node.add(dir, (err, res) => {
           expect(err).to.not.exist()
           const file = res[res.length - 2]
           expect(file.path).to.equal('test-folder/unsniffable-folder')

@@ -77,7 +77,7 @@ describe('pin', function () {
     ipfs = new IPFS({ repo })
     ipfs.on('ready', () => {
       pin = ipfs.pin
-      ipfs.files.add(fixtures, done)
+      ipfs.add(fixtures, done)
     })
   })
 

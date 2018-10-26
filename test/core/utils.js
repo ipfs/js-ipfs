@@ -122,7 +122,7 @@ describe('utils', () => {
       node = new IPFS({
         repo: repo
       })
-      node.once('ready', () => node.files.add(fixtures, done))
+      node.once('ready', () => node.add(fixtures, done))
     })
 
     after(done => node.stop(done))

@@ -78,7 +78,42 @@ describe('interface-ipfs-core tests', () => {
     ] : true
   })
 
-  tests.files(defaultCommonFactory)
+  tests.filesRegular(defaultCommonFactory, {
+    skip: [
+      // .addFromStream
+      isNode ? null : {
+        name: 'same as .add',
+        reason: 'Designed for Node.js only'
+      },
+      // .addFromFs
+      isNode ? null : {
+        name: 'a directory',
+        reason: 'Designed for Node.js only'
+      },
+      isNode ? null : {
+        name: 'a directory with an odd name',
+        reason: 'Designed for Node.js only'
+      },
+      isNode ? null : {
+        name: 'add and ignore a directory',
+        reason: 'Designed for Node.js only'
+      },
+      isNode ? null : {
+        name: 'a file',
+        reason: 'Designed for Node.js only'
+      },
+      isNode ? null : {
+        name: 'a hidden file in a directory',
+        reason: 'Designed for Node.js only'
+      },
+      isNode ? null : {
+        name: 'a with only-hash=true',
+        reason: 'Designed for Node.js only'
+      }
+    ]
+  })
+
+  tests.filesMFS(defaultCommonFactory)
 
   tests.key(CommonFactory.create({
     spawnOptions: {

@@ -42,7 +42,7 @@ describe('files', () => {
   describe('get', () => {
     it('should callback with error for invalid IPFS path input', (done) => {
       const invalidPath = null
-      ipfs.files.get(invalidPath, (err) => {
+      ipfs.get(invalidPath, (err) => {
         expect(err).to.exist()
         expect(err.code).to.equal('ERR_INVALID_PATH')
         done()
@@ -53,7 +53,7 @@ describe('files', () => {
   describe('getReadableStream', () => {
     it('should return erroring stream for invalid IPFS path input', (done) => {
       const invalidPath = null
-      const stream = ipfs.files.getReadableStream(invalidPath)
+      const stream = ipfs.getReadableStream(invalidPath)
 
       stream.on('error', (err) => {
         expect(err).to.exist()
@@ -67,7 +67,7 @@ describe('files', () => {
     it('should return erroring stream for invalid IPFS path input', (done) => {
       const invalidPath = null
       pull(
-        ipfs.files.getPullStream(invalidPath),
+        ipfs.getPullStream(invalidPath),
         pull.collect((err) => {
           expect(err).to.exist()
           expect(err.code).to.equal('ERR_INVALID_PATH')
@@ -79,14 +79,14 @@ describe('files', () => {
 
   describe('add', () => {
     it('should not error when passed null options', (done) => {
-      ipfs.files.add(Buffer.from(hat()), null, (err) => {
+      ipfs.add(Buffer.from(hat()), null, (err) => {
         expect(err).to.not.exist()
         done()
       })
     })
 
     it('should add a file with a v1 CID', (done) => {
-      ipfs.files.add(Buffer.from([0, 1, 2]), {
+      ipfs.add(Buffer.from([0, 1, 2]), {
         cidVersion: 1
       }, (err, files) => {
         expect(err).to.not.exist()
@@ -98,7 +98,7 @@ describe('files', () => {
     })
 
     it('should add a file with a v1 CID and not raw leaves', (done) => {
-      ipfs.files.add(Buffer.from([0, 1, 2]), {
+      ipfs.add(Buffer.from([0, 1, 2]), {
         cidVersion: 1,
         rawLeaves: false
       }, (err, files) => {
