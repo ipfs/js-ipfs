@@ -49,15 +49,15 @@ describe('preload', () => {
 
   after((done) => repo.teardown(done))
 
-  it('should preload content added with files.add', (done) => {
-    ipfs.files.add(Buffer.from(hat()), (err, res) => {
+  it('should preload content added with add', (done) => {
+    ipfs.add(Buffer.from(hat()), (err, res) => {
       expect(err).to.not.exist()
       MockPreloadNode.waitForCids(res[0].hash, done)
     })
   })
 
-  it('should preload multiple content added with files.add', (done) => {
-    ipfs.files.add([{
+  it('should preload multiple content added with add', (done) => {
+    ipfs.add([{
       content: Buffer.from(hat())
     }, {
       content: Buffer.from(hat())
@@ -69,8 +69,8 @@ describe('preload', () => {
     })
   })
 
-  it('should preload multiple content and intermediate dirs added with files.add', (done) => {
-    ipfs.files.add([{
+  it('should preload multiple content and intermediate dirs added with add', (done) => {
+    ipfs.add([{
       path: 'dir0/dir1/file0',
       content: Buffer.from(hat())
     }, {
@@ -89,8 +89,8 @@ describe('preload', () => {
     })
   })
 
-  it('should preload multiple content and wrapping dir for content added with files.add and wrapWithDirectory option', (done) => {
-    ipfs.files.add([{
+  it('should preload multiple content and wrapping dir for content added with add and wrapWithDirectory option', (done) => {
+    ipfs.add([{
       path: 'dir0/dir1/file0',
       content: Buffer.from(hat())
     }, {
@@ -109,20 +109,20 @@ describe('preload', () => {
     })
   })
 
-  it('should preload content retrieved with files.cat', (done) => {
-    ipfs.files.add(Buffer.from(hat()), { preload: false }, (err, res) => {
+  it('should preload content retrieved with cat', (done) => {
+    ipfs.add(Buffer.from(hat()), { preload: false }, (err, res) => {
       expect(err).to.not.exist()
-      ipfs.files.cat(res[0].hash, (err) => {
+      ipfs.cat(res[0].hash, (err) => {
         expect(err).to.not.exist()
         MockPreloadNode.waitForCids(res[0].hash, done)
       })
     })
   })
 
-  it('should preload content retrieved with files.get', (done) => {
-    ipfs.files.add(Buffer.from(hat()), { preload: false }, (err, res) => {
+  it('should preload content retrieved with get', (done) => {
+    ipfs.add(Buffer.from(hat()), { preload: false }, (err, res) => {
       expect(err).to.not.exist()
-      ipfs.files.get(res[0].hash, (err) => {
+      ipfs.get(res[0].hash, (err) => {
         expect(err).to.not.exist()
         MockPreloadNode.waitForCids(res[0].hash, done)
       })
@@ -130,7 +130,7 @@ describe('preload', () => {
   })
 
   it('should preload content retrieved with ls', (done) => {
-    ipfs.files.add([{
+    ipfs.add([{
       path: 'dir0/dir1/file0',
       content: Buffer.from(hat())
     }, {
@@ -382,7 +382,7 @@ describe('preload disabled', () => {
   after((done) => repo.teardown(done))
 
   it('should not preload if disabled', (done) => {
-    ipfs.files.add(Buffer.from(hat()), (err, res) => {
+    ipfs.add(Buffer.from(hat()), (err, res) => {
       expect(err).to.not.exist()
 
       MockPreloadNode.waitForCids(res[0].hash, (err) => {

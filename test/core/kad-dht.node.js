@@ -78,10 +78,10 @@ describe.skip('verify that kad-dht is doing its thing', () => {
       content: Buffer.from('hello kad')
     }
 
-    nodeC.files.add(file, (err, filesAdded) => {
+    nodeC.add(file, (err, filesAdded) => {
       expect(err).to.not.exist()
 
-      nodeA.files.cat(filesAdded[0].hash, (err, data) => {
+      nodeA.cat(filesAdded[0].hash, (err, data) => {
         expect(err).to.not.exist()
         expect(data.length).to.equal(file.data.length)
         expect(data).to.eql(file.data)

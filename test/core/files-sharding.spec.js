@@ -66,7 +66,7 @@ describe('files directory (sharding tests)', () => {
 
       pull(
         pull.values(createTestFiles()),
-        ipfs.files.addPullStream(),
+        ipfs.addPullStream(),
         pull.collect((err, results) => {
           expect(err).to.not.exist()
           const last = results[results.length - 1]
@@ -118,7 +118,7 @@ describe('files directory (sharding tests)', () => {
 
       pull(
         pull.values(createTestFiles()),
-        ipfs.files.addPullStream(),
+        ipfs.addPullStream(),
         pull.collect((err, results) => {
           expect(err).to.not.exist()
           const last = results[results.length - 1]

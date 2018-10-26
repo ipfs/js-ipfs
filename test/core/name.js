@@ -21,7 +21,7 @@ const df = DaemonFactory.create({ type: 'proc' })
 
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
 
-describe('name', function () {
+describe.only('name', function () {
   if (!isNode) {
     return
   }
@@ -402,10 +402,15 @@ describe('name', function () {
     it('should resolve an ipfs path correctly', function (done) {
       node.files.add(fixture, (err, res) => {
         expect(err).to.not.exist()
-        ipnsPath.resolvePath(node, `/ipfs/${res[0].hash}`, (err, value) => {
+
+        node.name.publish(`/ipfs/${res[0].hash}`, (err, res) => {
           expect(err).to.not.exist()
-          expect(value).to.exist()
-          done()
+
+          ipnsPath.resolvePath(node, `/ipfs/${res[0].hash}`, (err, value) => {
+            expect(err).to.not.exist()
+            expect(value).to.exist()
+            done()
+          })
         })
       })
     })
