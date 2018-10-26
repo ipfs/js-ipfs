@@ -1,4 +1,0 @@
-# Please see https://help.github.com/articles/about-codeowners/ for more information
-
-# JavaScript Core Interface Tests
-/js/src/ @VictorBjelkholm @travisperson
