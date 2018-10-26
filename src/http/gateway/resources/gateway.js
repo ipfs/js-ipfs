@@ -94,7 +94,7 @@ module.exports = {
         return handleGatewayResolverError(err)
       }
 
-      const stream = ipfs.files.catReadableStream(data.multihash)
+      const stream = ipfs.catReadableStream(data.multihash)
       stream.once('error', (err) => {
         if (err) {
           log.error(err)
