@@ -18,6 +18,9 @@ This tutorial goes through several operations over IPLD graphs using the [DAG AP
 ## [traverse through a slice of the ethereum blockchain](./eth.js)
 
 ## [traverse through a git repo](./git.js)
+The example objects contained in "git-objects" have already been decompressed with zlib.  An example of how to do this:
+
+    $ cat .git/objects/7d/df25817f57c2090a9568cdb17106a76dad7d04 | zlib-flate -uncompress > 7ddf25817f57c2090a9568cdb17106a76dad7d04 
 
 ## Video of the demos
 
