@@ -147,7 +147,6 @@ class IPFS extends EventEmitter {
     this.dag = components.dag(this)
     this.libp2p = components.libp2p(this)
     this.swarm = components.swarm(this)
-    this.files = components.files(this)
     this.name = components.name(this)
     this.bitswap = components.bitswap(this)
     this.pin = components.pin(this)
@@ -173,27 +172,32 @@ class IPFS extends EventEmitter {
 
     this.state = require('./state')(this)
 
-    // ipfs.ls
-    this.ls = this.files.lsImmutable
-    this.lsReadableStream = this.files.lsReadableStreamImmutable
-    this.lsPullStream = this.files.lsPullStreamImmutable
+    // ipfs regular Files APIs
+    const filesRegular = components.filesRegular(this)
+    this.add = filesRegular.add
+    this.addReadableStream = filesRegular.addReadableStream
+    this.addPullStream = filesRegular.addPullStream
+    // TODO create this.addFromFs
+    // TODO create this.addFromStream
+    // TODO create this.addFromUrl
+    this.cat = filesRegular.catImmutable
+    this.catReadableStream = filesRegular.catReadableStream
+    this.catPullStream = filesRegular.catPullStream
+    this.get = filesRegular.getImmutable
+    this.getReadableStream = filesRegular.getReadableStream
+    this.getPullStream = filesRegular.getPullStream
+    this.ls = filesRegular.lsImmutable
+    this.lsReadableStream = filesRegular.lsReadableStream
+    this.lsPullStream = filesRegular.lsPullStream
+
+    // ipfs.files API (aka MFS)
+    this.files = components.filesMFS(this)
 
     // ipfs.util
     this.util = {
-      crypto: crypto,
-      isIPFS: isIPFS
+      crypto,
+      isIPFS
     }
-
-    // ipfs.files
-    const mfs = components.mfs({
-      ipld: this._ipld,
-      repo: this._repo,
-      repoOwner: (this._options.mfs && this._options.mfs.repoOwner) || true
-    })
-
-    Object.keys(mfs).forEach(key => {
-      this.files[key] = mfs[key]
-    })
 
     boot(this)
   }
