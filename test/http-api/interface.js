@@ -25,7 +25,8 @@ describe('interface-ipfs-core over ipfs-api tests', () => {
     skip: { reason: 'TODO: DHT is not implemented in js-ipfs yet!' }
   })
 
-  tests.files(defaultCommonFactory)
+  tests.filesRegular(defaultCommonFactory)
+  tests.filesMFS(defaultCommonFactory)
 
   tests.key(CommonFactory.create({
     spawnOptions: {

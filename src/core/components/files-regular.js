@@ -24,6 +24,23 @@ const WRAPPER = 'wrapper/'
 
 function noop () {}
 
+function normalizePath (path) {
+  if (Buffer.isBuffer(path)) {
+    path = toB58String(path)
+  }
+  if (CID.isCID(path)) {
+    path = path.toBaseEncodedString()
+  }
+  if (path.indexOf('/ipfs/') === 0) {
+    path = path.substring('/ipfs/'.length)
+  }
+  if (path.charAt(path.length - 1) === '/') {
+    path = path.substring(0, path.length - 1)
+  }
+
+  return path
+}
+
 function prepareFile (self, opts, file, callback) {
   opts = opts || {}
 
@@ -47,7 +64,9 @@ function prepareFile (self, opts, file, callback) {
       }
 
       cb(null, {
-        path: opts.wrapWithDirectory ? file.path.substring(WRAPPER.length) : (file.path || b58Hash),
+        path: opts.wrapWithDirectory
+          ? file.path.substring(WRAPPER.length)
+          : (file.path || b58Hash),
         hash: b58Hash,
         size
       })
@@ -154,7 +173,8 @@ class AddHelper extends Duplex {
   }
 }
 
-module.exports = function files (self) {
+module.exports = function (self) {
+  // Internal add func that gets used by all add funcs
   function _addPullStream (options = {}) {
     let chunkerOptions
     try {
@@ -191,6 +211,7 @@ module.exports = function files (self) {
     )
   }
 
+  // Internal cat func that gets used by all cat funcs
   function _catPullStream (ipfsPath, options) {
     if (typeof ipfsPath === 'function') {
       throw new Error('You must supply an ipfsPath')
@@ -232,7 +253,8 @@ module.exports = function files (self) {
     return d
   }
 
-  function _lsPullStreamImmutable (ipfsPath, options) {
+  // Internal ls func that gets used by all ls funcs
+  function _lsPullStream (ipfsPath, options) {
     options = options || {}
 
     const path = normalizePath(ipfsPath)
@@ -301,7 +323,7 @@ module.exports = function files (self) {
       return function () {
         const args = Array.from(arguments)
 
-        // If we files.add(<pull stream>), then promisify thinks the pull stream
+        // If we .add(<pull stream>), then promisify thinks the pull stream
         // is a callback! Add an empty options object in this case so that a
         // promise is returned.
         if (args.length === 1 && isSource(args[0])) {
@@ -337,7 +359,7 @@ module.exports = function files (self) {
       }
 
       if (typeof callback !== 'function') {
-        throw new Error('Please supply a callback to ipfs.files.cat')
+        throw new Error('Please supply a callback to ipfs.cat')
       }
 
       pull(
@@ -441,7 +463,7 @@ module.exports = function files (self) {
       return exporter(ipfsPath, self._ipld, options)
     },
 
-    lsImmutable: promisify((ipfsPath, options, callback) => {
+    ls: promisify((ipfsPath, options, callback) => {
       if (typeof options === 'function') {
         callback = options
         options = {}
@@ -450,7 +472,7 @@ module.exports = function files (self) {
       options = options || {}
 
       pull(
-        _lsPullStreamImmutable(ipfsPath, options),
+        _lsPullStream(ipfsPath, options),
         pull.collect((err, values) => {
           if (err) {
             callback(err)
@@ -461,27 +483,10 @@ module.exports = function files (self) {
       )
     }),
 
-    lsReadableStreamImmutable: (ipfsPath, options) => {
-      return toStream.source(_lsPullStreamImmutable(ipfsPath, options))
+    lsReadableStream: (ipfsPath, options) => {
+      return toStream.source(_lsPullStream(ipfsPath, options))
     },
 
-    lsPullStreamImmutable: _lsPullStreamImmutable
+    lsPullStream: _lsPullStream
   }
-}
-
-function normalizePath (path) {
-  if (Buffer.isBuffer(path)) {
-    path = toB58String(path)
-  }
-  if (CID.isCID(path)) {
-    path = path.toBaseEncodedString()
-  }
-  if (path.indexOf('/ipfs/') === 0) {
-    path = path.substring('/ipfs/'.length)
-  }
-  if (path.charAt(path.length - 1) === '/') {
-    path = path.substring(0, path.length - 1)
-  }
-
-  return path
 }
