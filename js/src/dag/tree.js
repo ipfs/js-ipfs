@@ -58,7 +58,7 @@ module.exports = (createCommon, options) => {
         (cb) => {
           nodeCbor = {
             someData: 'I am inside a Cbor object',
-            pb: { '/': cidPb.toBaseEncodedString() }
+            pb: cidPb
           }
 
           dagCBOR.util.cid(nodeCbor, (err, cid) => {
