@@ -3,8 +3,6 @@
 
 const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
-const dagCBOR = require('ipld-dag-cbor')
-const dagPB = require('ipld-dag-pb')
 const multiaddr = require('multiaddr')
 const multibase = require('multibase')
 const multihash = require('multihashes')
@@ -47,9 +45,7 @@ describe('.types', function () {
       multiaddr: multiaddr,
       multibase: multibase,
       multihash: multihash,
-      CID: CID,
-      dagPB: dagPB,
-      dagCBOR: dagCBOR
+      CID: CID
     })
   })
 })
