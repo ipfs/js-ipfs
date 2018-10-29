@@ -51,7 +51,7 @@ class IpnsPublisher {
   }
 
   _putRecordToRouting (record, peerId, callback) {
-    if (!(peerId instanceof PeerId)) {
+    if (!(PeerId.isPeerId(peerId))) {
       const errMsg = `peerId received is not valid`
 
       log.error(errMsg)
@@ -90,7 +90,7 @@ class IpnsPublisher {
   }
 
   _publishEntry (key, entry, peerId, callback) {
-    if (!(key instanceof Key)) {
+    if (!(Key.isKey(key))) {
       const errMsg = `datastore key does not have a valid format`
 
       log.error(errMsg)
@@ -123,7 +123,7 @@ class IpnsPublisher {
   }
 
   _publishPublicKey (key, publicKey, peerId, callback) {
-    if (!(key instanceof Key)) {
+    if ((!Key.isKey(key))) {
       const errMsg = `datastore key does not have a valid format`
 
       log.error(errMsg)
@@ -163,7 +163,7 @@ class IpnsPublisher {
   // Returns the record this node has published corresponding to the given peer ID.
   // If `checkRouting` is true and we have no existing record, this method will check the routing system for any existing records.
   _getPublished (peerId, options, callback) {
-    if (!(peerId instanceof PeerId)) {
+    if (!(PeerId.isPeerId(peerId))) {
       const errMsg = `peerId received is not valid`
 
       log.error(errMsg)
@@ -216,7 +216,7 @@ class IpnsPublisher {
   }
 
   _updateOrCreateRecord (privKey, value, validity, peerId, callback) {
-    if (!(peerId instanceof PeerId)) {
+    if (!(PeerId.isPeerId(peerId))) {
       const errMsg = `peerId received is not valid`
 
       log.error(errMsg)
