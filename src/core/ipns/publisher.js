@@ -102,7 +102,7 @@ class IpnsPublisher {
       // Marshal record
       const entryData = ipns.marshal(entry)
       // Marshal to libp2p record
-      rec = new Record(key.toBuffer(), entryData, peerId)
+      rec = new Record(key.toBuffer(), entryData)
     } catch (err) {
       log.error(err)
       return callback(err)
@@ -140,7 +140,7 @@ class IpnsPublisher {
     let rec
     try {
       // Marshal to libp2p record
-      rec = new Record(key.toBuffer(), publicKey.bytes, peerId)
+      rec = new Record(key.toBuffer(), publicKey.bytes)
     } catch (err) {
       log.error(err)
       return callback(err)
