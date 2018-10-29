@@ -4,7 +4,7 @@ const peerId = require('peer-id')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
 const promisify = require('promisify-es6')
-const extend = require('deep-extend')
+const defaultsDeep = require('@nodeutils/defaults-deep')
 const defaultConfig = require('../runtime/config-nodejs.js')
 const Keychain = require('libp2p-keychain')
 
@@ -52,7 +52,7 @@ module.exports = function init (self) {
     opts.bits = Number(opts.bits) || 2048
     opts.log = opts.log || function () {}
 
-    const config = extend(defaultConfig(), self._options.config)
+    const config = defaultsDeep(self._options.config, defaultConfig())
     let privateKey
 
     waterfall([
