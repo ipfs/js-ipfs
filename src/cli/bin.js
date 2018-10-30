@@ -31,11 +31,6 @@ const cli = yargs
     type: 'string',
     default: ''
   })
-  .option('local', {
-    desc: 'Run the command locally, instead of using the daemon',
-    type: 'boolean',
-    default: false
-  })
   .epilog(utils.ipfsPathHelp)
   .demandCommand(1)
   .fail((msg, err, yargs) => {

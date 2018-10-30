@@ -25,6 +25,11 @@ module.exports = {
         type: 'boolean',
         default: false
       })
+      .option('local', {
+        desc: 'Run commands locally to the daemon',
+        type: 'boolean',
+        default: false
+      })
   },
 
   handler (argv) {
