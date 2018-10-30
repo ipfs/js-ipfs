@@ -1,3 +1,8 @@
+<a name="26.0.1"></a>
+## [26.0.1](https://github.com/ipfs/js-ipfs-api/compare/v26.0.0...v26.0.1) (2018-10-30)
+
+
+
 <a name="26.0.0"></a>
 # [26.0.0](https://github.com/ipfs/js-ipfs-api/compare/v25.0.0...v26.0.0) (2018-10-30)
 
