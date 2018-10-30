@@ -12,14 +12,12 @@ module.exports = (send) => {
     }
     if (typeof opts === 'function') {
       callback = opts
+      opts = null
     }
     if (hash && hash.type) {
       opts = hash
       hash = null
-    } else {
-      opts = null
     }
-
     send({
       path: 'pin/ls',
       args: hash,
