@@ -1,3 +1,83 @@
+<a name="26.0.0"></a>
+# [26.0.0](https://github.com/ipfs/js-ipfs-api/compare/v25.0.0...v26.0.0) (2018-10-30)
+
+
+### Bug Fixes
+
+* add missing and remove unused dependencies ([#879](https://github.com/ipfs/js-ipfs-api/issues/879)) ([979d8b5](https://github.com/ipfs/js-ipfs-api/commit/979d8b5))
+
+
+### Chores
+
+* remove ipld formats re-export ([#872](https://github.com/ipfs/js-ipfs-api/issues/872)) ([c534375](https://github.com/ipfs/js-ipfs-api/commit/c534375))
+* update to ipld-dag-cbor 0.13 ([0652ac0](https://github.com/ipfs/js-ipfs-api/commit/0652ac0))
+
+
+### Features
+
+* ipns over pubsub ([#846](https://github.com/ipfs/js-ipfs-api/issues/846)) ([ef49e95](https://github.com/ipfs/js-ipfs-api/commit/ef49e95))
+
+
+### BREAKING CHANGES
+
+* dag-cbor nodes now represent links as CID objects
+
+The API for [dag-cbor](https://github.com/ipld/js-ipld-dag-cbor) changed.
+Links are no longer represented as JSON objects (`{"/": "base-encoded-cid"}`,
+but as [CID objects](https://github.com/ipld/js-cid). `ipfs.dag.get()` and
+now always return links as CID objects. `ipfs.dag.put()` also expects links
+to be represented as CID objects. The old-style JSON objects representation
+is still supported, but deprecated.
+
+Prior to this change:
+
+```js
+const cid = new CID('QmXed8RihWcWFXRRmfSRG9yFjEbXNxu1bDwgCFAN8Dxcq5')
+// Link as JSON object representation
+const putCid = await ipfs.dag.put({link: {'/': cid.toBaseEncodedString()}})
+const result = await ipfs.dag.get(putCid)
+console.log(result.value)
+
+```
+
+Output:
+
+```js
+{ link:
+   { '/':
+      <Buffer 12 20 8a…> } }
+```
+
+Now:
+
+```js
+const cid = new CID('QmXed8RihWcWFXRRmfSRG9yFjEbXNxu1bDwgCFAN8Dxcq5')
+// Link as CID object
+const putCid = await ipfs.dag.put({link: cid})
+const result = await ipfs.dag.get(putCid)
+console.log(result.value)
+```
+
+Output:
+
+```js
+{ link:
+   CID {
+     codec: 'dag-pb',
+     version: 0,
+     multihash:
+      <Buffer 12 20 8a…> } }
+```
+
+See https://github.com/ipld/ipld/issues/44 for more information on why this
+change was made.
+* remove `types.dagCBOR` and `types.dagPB` from public API
+
+If you need the `ipld-dag-cbor` or `ipld-dag-pb` module in the Browser,
+you need to bundle them yourself.
+
+
+
 <a name="25.0.0"></a>
 # [25.0.0](https://github.com/ipfs/js-ipfs-api/compare/v24.0.2...v25.0.0) (2018-10-15)
 
