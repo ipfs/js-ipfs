@@ -87,9 +87,7 @@ class IPFS extends EventEmitter {
       multiaddr: multiaddr,
       multibase: multibase,
       multihash: multihash,
-      CID: CID,
-      dagPB: ipldDagPb,
-      dagCBOR: ipldDagCbor
+      CID: CID
     }
 
     // IPFS Core Internals

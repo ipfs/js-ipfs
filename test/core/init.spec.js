@@ -15,8 +15,6 @@ const isIPFS = require('is-ipfs')
 const multiaddr = require('multiaddr')
 const multibase = require('multibase')
 const multihash = require('multihashes')
-const ipldDagCbor = require('ipld-dag-cbor')
-const ipldDagPb = require('ipld-dag-pb')
 const CID = require('cids')
 const IPFS = require('../../src/core')
 
@@ -122,9 +120,7 @@ describe('init', () => {
       multiaddr: multiaddr,
       multibase: multibase,
       multihash: multihash,
-      CID: CID,
-      dagPB: ipldDagPb,
-      dagCBOR: ipldDagCbor
+      CID: CID
     })
   })
 
