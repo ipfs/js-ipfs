@@ -36,7 +36,7 @@ createNode((err, ipfs) => {
       const myData = {
         name: 'David',
         likes: ['js-ipfs', 'icecream', 'steak'],
-        hobbies: [{ '/': cidPBNode.toBaseEncodedString() }]
+        hobbies: [cidPBNode]
       }
 
       ipfs.dag.put(myData, { format: 'dag-cbor', hashAlg: 'sha3-512' }, (err, cid) => {
