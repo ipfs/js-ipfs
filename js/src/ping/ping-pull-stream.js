@@ -80,20 +80,21 @@ module.exports = (createCommon, options) => {
             expect(res.success).to.be.false()
           }
         }, (err) => {
-          expect(err).to.exist()
+          expect(err).to.not.exist()
           done()
         })
       )
     })
 
-    it('should fail when pinging an invalid peer over pull stream', (done) => {
+    it('should fail when pinging an invalid peer id over pull stream', (done) => {
       const invalidPeerId = 'not a peer ID'
       const count = 2
       pull(
         ipfsA.pingPullStream(invalidPeerId, { count }),
-        pull.collect((err) => {
+        pull.collect((err, results) => {
           expect(err).to.exist()
           expect(err.message).to.include('failed to parse peer address')
+          expect(results).to.not.exist()
           done()
         })
       )

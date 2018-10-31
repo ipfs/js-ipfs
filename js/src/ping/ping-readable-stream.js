@@ -68,7 +68,7 @@ module.exports = (createCommon, options) => {
       )
     })
 
-    it('should fail when pinging an unknown peer over readable stream', (done) => {
+    it('should fail when pinging peer that is not available over readable stream', (done) => {
       let messageNum = 0
       const unknownPeerId = 'QmUmaEnH1uMmvckMZbh3yShaasvELPW4ZLPWnB4entMTEn'
       const count = 2
@@ -95,13 +95,13 @@ module.exports = (createCommon, options) => {
           }
         }),
         (err) => {
-          expect(err).to.exist()
+          expect(err).to.not.exist()
           done()
         }
       )
     })
 
-    it('should fail when pinging an invalid peer over readable stream', (done) => {
+    it('should fail when pinging an invalid peer id over readable stream', (done) => {
       const invalidPeerId = 'not a peer ID'
       const count = 2
 

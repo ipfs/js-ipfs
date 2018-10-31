@@ -51,24 +51,25 @@ module.exports = (createCommon, options) => {
       })
     })
 
-    it('should fail when pinging an unknown peer', (done) => {
-      const unknownPeerId = 'QmUmaEnH1uMmvckMZbh3yShaasvELPW4ZLPWnB4entMTEn'
+    it('should fail when pinging a peer that is not available', (done) => {
+      const notAvailablePeerId = 'QmUmaEnH1uMmvckMZbh3yShaasvELPW4ZLPWnB4entMTEn'
       const count = 2
 
-      ipfsA.ping(unknownPeerId, { count }, (err, responses) => {
-        expect(err).to.exist()
+      ipfsA.ping(notAvailablePeerId, { count }, (err, responses) => {
+        expect(err).to.not.exist()
         expect(responses[0].text).to.include('Looking up')
         expect(responses[1].success).to.be.false()
         done()
       })
     })
 
-    it('should fail when pinging an invalid peer', (done) => {
+    it('should fail when pinging an invalid peer Id', (done) => {
       const invalidPeerId = 'not a peer ID'
       const count = 2
       ipfsA.ping(invalidPeerId, { count }, (err, responses) => {
         expect(err).to.exist()
         expect(err.message).to.include('failed to parse peer address')
+        expect(responses).to.not.exist()
         done()
       })
     })
