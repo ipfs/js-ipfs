@@ -1,3 +1,14 @@
+<a name="0.84.0"></a>
+# [0.84.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.83.0...v0.84.0) (2018-10-31)
+
+
+### Bug Fixes
+
+* ping tests ([cd00d5d](https://github.com/ipfs/interface-ipfs-core/commit/cd00d5d))
+* remove antipattern from ping tests ([2e822b6](https://github.com/ipfs/interface-ipfs-core/commit/2e822b6))
+
+
+
 <a name="0.83.0"></a>
 # [0.83.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.82.0...v0.83.0) (2018-10-30)
 
