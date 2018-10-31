@@ -1,3 +1,8 @@
+<a name="0.84.1"></a>
+## [0.84.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.84.0...v0.84.1) (2018-10-31)
+
+
+
 <a name="0.84.0"></a>
 # [0.84.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.83.0...v0.84.0) (2018-10-31)
 
