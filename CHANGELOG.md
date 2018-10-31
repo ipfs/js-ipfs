@@ -1,3 +1,13 @@
+<a name="26.1.0"></a>
+# [26.1.0](https://github.com/ipfs/js-ipfs-api/compare/v26.0.3...v26.1.0) (2018-10-31)
+
+
+### Bug Fixes
+
+* make ping not mix errors with responses ([#883](https://github.com/ipfs/js-ipfs-api/issues/883)) ([80725f2](https://github.com/ipfs/js-ipfs-api/commit/80725f2))
+
+
+
 <a name="26.0.3"></a>
 ## [26.0.3](https://github.com/ipfs/js-ipfs-api/compare/v26.0.2...v26.0.3) (2018-10-31)
 
