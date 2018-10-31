@@ -4,13 +4,15 @@ const utils = require('../utils')
 const print = utils.print
 
 module.exports = {
-  command: 'init',
-
+  command: 'init [config] [options]',
   describe: 'Initialize a local IPFS node',
-
   builder (yargs) {
     return yargs
       .epilog(utils.ipfsPathHelp)
+      .positional('config', {
+        describe: 'Node config, this should JSON and will be merged with the default config. Check https://github.com/ipfs/js-ipfs#optionsconfig',
+        type: 'string'
+      })
       .option('bits', {
         type: 'number',
         alias: 'b',
@@ -41,7 +43,8 @@ module.exports = {
     const node = new IPFS({
       repo: new Repo(path),
       init: false,
-      start: false
+      start: false,
+      config: argv.config
     })
 
     node.init({
