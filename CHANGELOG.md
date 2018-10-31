@@ -1,3 +1,13 @@
+<a name="0.84.3"></a>
+## [0.84.3](https://github.com/ipfs/interface-ipfs-core/compare/v0.84.2...v0.84.3) (2018-10-31)
+
+
+### Bug Fixes
+
+* we cant rely on error messages yet, not standardized ([fdb4998](https://github.com/ipfs/interface-ipfs-core/commit/fdb4998))
+
+
+
 <a name="0.84.2"></a>
 ## [0.84.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.84.1...v0.84.2) (2018-10-31)
 
