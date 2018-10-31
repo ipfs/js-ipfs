@@ -36,15 +36,12 @@ module.exports = (http) => {
       })
     })
 
-    it('returns 200 and the response stream with the ping result', (done) => {
+    it('returns 500 for incorrect Peer Id', (done) => {
       api.inject({
         method: 'GET',
         url: `/api/v0/ping?arg=peerid`
       }, (res) => {
-        expect(res.statusCode).to.equal(200)
-        expect(res.headers['x-chunked-output']).to.equal('1')
-        expect(res.headers['transfer-encoding']).to.equal('chunked')
-        expect(res.headers['content-type']).to.include('application/json')
+        expect(res.statusCode).to.equal(500)
         done()
       })
     })

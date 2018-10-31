@@ -91,17 +91,6 @@ module.exports = (http) => {
     })
 
     describe('/peers', () => {
-      it('returns 200 if no topic is provided', (done) => {
-        api.inject({
-          method: 'GET',
-          url: `/api/v0/pubsub/peers`
-        }, (res) => {
-          expect(res.statusCode).to.equal(200)
-          expect(res.result.Strings).to.be.eql([])
-          done()
-        })
-      })
-
       it('returns 200 if not subscribed to a topic', (done) => {
         api.inject({
           method: 'GET',

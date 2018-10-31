@@ -18,7 +18,7 @@ exports.subscribe = {
 
     const ipfs = request.server.app.ipfs
 
-    const res = new PassThrough({highWaterMark: 1})
+    const res = new PassThrough({ highWaterMark: 1 })
 
     const handler = (msg) => {
       res.write(JSON.stringify({
@@ -89,7 +89,7 @@ exports.ls = {
         return reply(new Error(`Failed to list subscriptions: ${err}`))
       }
 
-      reply({Strings: subscriptions})
+      reply({ Strings: subscriptions })
     })
   }
 }
@@ -108,7 +108,7 @@ exports.peers = {
         return reply(new Error(message))
       }
 
-      reply({Strings: peers})
+      reply({ Strings: peers })
     })
   }
 }

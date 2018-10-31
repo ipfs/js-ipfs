@@ -93,7 +93,7 @@ describe('HTTP Gateway', function () {
       (cb) => {
         const expectedMultihash = 'QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o'
 
-        http.api.node.files.add(Buffer.from('hello world' + '\n'), {cidVersion: 0}, (err, res) => {
+        http.api.node.files.add(Buffer.from('hello world' + '\n'), { cidVersion: 0 }, (err, res) => {
           expect(err).to.not.exist()
           const file = res[0]
           expect(file.path).to.equal(expectedMultihash)

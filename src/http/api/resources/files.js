@@ -83,9 +83,9 @@ exports.cat = {
       if (err) {
         log.error(err)
         if (err.message === 'No such file') {
-          reply({Message: 'No such file', Code: 0, Type: 'error'}).code(500)
+          reply({ Message: 'No such file', Code: 0, Type: 'error' }).code(500)
         } else {
-          reply({Message: 'Failed to cat file: ' + err, Code: 0, Type: 'error'}).code(500)
+          reply({ Message: 'Failed to cat file: ' + err, Code: 0, Type: 'error' }).code(500)
         }
         return
       }

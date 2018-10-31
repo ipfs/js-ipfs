@@ -98,7 +98,7 @@ module.exports = function init (self) {
         self.log('repo opened')
         if (opts.pass) {
           self.log('creating keychain')
-          const keychainOptions = Object.assign({passPhrase: opts.pass}, config.Keychain)
+          const keychainOptions = Object.assign({ passPhrase: opts.pass }, config.Keychain)
           self._keychain = new Keychain(self._repo.keys, keychainOptions)
           self._keychain.importPeer('self', { privKey: privateKey }, cb)
         } else {

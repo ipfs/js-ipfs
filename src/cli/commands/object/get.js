@@ -15,7 +15,7 @@ module.exports = {
   },
 
   handler (argv) {
-    argv.ipfs.object.get(argv.key, {enc: 'base58'}, (err, node) => {
+    argv.ipfs.object.get(argv.key, { enc: 'base58' }, (err, node) => {
       if (err) {
         throw err
       }

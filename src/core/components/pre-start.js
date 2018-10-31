@@ -48,7 +48,7 @@ module.exports = function preStart (self) {
         if (self._keychain) {
           // most likely an init or upgrade has happened
         } else if (pass) {
-          const keychainOptions = Object.assign({passPhrase: pass}, config.Keychain)
+          const keychainOptions = Object.assign({ passPhrase: pass }, config.Keychain)
           self._keychain = new Keychain(self._repo.keys, keychainOptions)
           self.log('keychain constructed')
         } else {

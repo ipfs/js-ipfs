@@ -333,17 +333,17 @@ module.exports = (self) => {
       const { recursive, direct, all } = types
       // recursive
       if ((type === recursive || type === all) && recursivePins.has(key)) {
-        return callback(null, {pinned: true, reason: recursive})
+        return callback(null, { pinned: true, reason: recursive })
       }
       if ((type === recursive)) {
-        return callback(null, {pinned: false})
+        return callback(null, { pinned: false })
       }
       // direct
       if ((type === direct || type === all) && directPins.has(key)) {
-        return callback(null, {pinned: true, reason: direct})
+        return callback(null, { pinned: true, reason: direct })
       }
       if ((type === direct)) {
-        return callback(null, {pinned: false})
+        return callback(null, { pinned: false })
       }
 
       // indirect (default)

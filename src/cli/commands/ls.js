@@ -39,7 +39,7 @@ module.exports = {
       }
 
       if (argv.headers) {
-        links = [{hash: 'Hash', size: 'Size', name: 'Name'}].concat(links)
+        links = [{ hash: 'Hash', size: 'Size', name: 'Name' }].concat(links)
       }
 
       const multihashWidth = Math.max.apply(null, links.map((file) => file.hash.length))
