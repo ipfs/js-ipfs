@@ -79,7 +79,6 @@ module.exports = (createCommon, options) => {
         ipfsA.pingPullStream(invalidPeerId, { count }),
         pull.collect((err, results) => {
           expect(err).to.exist()
-          expect(err.message).to.include('failed to parse peer address')
           done()
         })
       )

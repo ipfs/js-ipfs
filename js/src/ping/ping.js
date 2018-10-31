@@ -66,7 +66,6 @@ module.exports = (createCommon, options) => {
       const count = 2
       ipfsA.ping(invalidPeerId, { count }, (err, responses) => {
         expect(err).to.exist()
-        expect(err.message).to.include('failed to parse peer address')
         expect(responses).to.not.exist()
         done()
       })

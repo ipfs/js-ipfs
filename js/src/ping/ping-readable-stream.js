@@ -95,7 +95,6 @@ module.exports = (createCommon, options) => {
         }),
         (err) => {
           expect(err).to.exist()
-          expect(err.message).to.include('failed to parse peer address')
           done()
         }
       )
