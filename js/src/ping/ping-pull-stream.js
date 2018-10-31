@@ -5,6 +5,7 @@ const pull = require('pull-stream')
 const series = require('async/series')
 const { spawnNodesWithId } = require('../utils/spawn')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const { isPong } = require('./utils.js')
 const { connect } = require('../utils/swarm')
 
 module.exports = (createCommon, options) => {
@@ -13,7 +14,7 @@ module.exports = (createCommon, options) => {
   const common = createCommon()
 
   describe('.pingPullStream', function () {
-    this.timeout(35 * 1000)
+    this.timeout(40 * 1000)
 
     let ipfsA
     let ipfsB
@@ -48,9 +49,9 @@ module.exports = (createCommon, options) => {
         pull.drain((res) => {
           expect(res.success).to.be.true()
           // It's a pong
-          // if (isPong(res)) { TODO understand why this was here, it was not defined
-          //   packetNum++
-          // }
+          if (isPong(res)) {
+            packetNum++
+          }
         }, (err) => {
           expect(err).to.not.exist()
           expect(packetNum).to.equal(count)
