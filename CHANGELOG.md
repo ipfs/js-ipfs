@@ -1,3 +1,13 @@
+<a name="26.0.2"></a>
+## [26.0.2](https://github.com/ipfs/js-ipfs-api/compare/v26.0.0...v26.0.2) (2018-10-31)
+
+
+### Bug Fixes
+
+* pin.ls ignored opts when hash was present ([#875](https://github.com/ipfs/js-ipfs-api/issues/875)) ([0b46750](https://github.com/ipfs/js-ipfs-api/commit/0b46750)), closes [/github.com/ipfs-shipyard/ipfs-companion/issues/360#issuecomment-427525801](https://github.com//github.com/ipfs-shipyard/ipfs-companion/issues/360/issues/issuecomment-427525801)
+
+
+
 <a name="26.0.1"></a>
 ## [26.0.1](https://github.com/ipfs/js-ipfs-api/compare/v26.0.0...v26.0.1) (2018-10-30)
 
