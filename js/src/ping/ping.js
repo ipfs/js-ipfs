@@ -13,7 +13,7 @@ module.exports = (createCommon, options) => {
   const common = createCommon()
 
   describe('.ping', function () {
-    this.timeout(60 * 1000)
+    this.timeout(30 * 1000)
 
     let ipfsA
     let ipfsB
@@ -56,9 +56,7 @@ module.exports = (createCommon, options) => {
       const count = 2
 
       ipfsA.ping(notAvailablePeerId, { count }, (err, responses) => {
-        expect(err).to.not.exist()
-        expect(responses[0].text).to.include('Looking up')
-        expect(responses[1].success).to.be.false()
+        expect(err).to.exist()
         done()
       })
     })

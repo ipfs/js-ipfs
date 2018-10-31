@@ -14,7 +14,7 @@ module.exports = (createCommon, options) => {
   const common = createCommon()
 
   describe('.pingPullStream', function () {
-    this.timeout(60 * 1000)
+    this.timeout(30 * 1000)
 
     let ipfsA
     let ipfsB
@@ -61,26 +61,12 @@ module.exports = (createCommon, options) => {
     })
 
     it('should fail when pinging an unknown peer over pull stream', (done) => {
-      let messageNum = 0
       const unknownPeerId = 'QmUmaEnH1uMmvckMZbh3yShaasvELPW4ZLPWnB4entMTEn'
       const count = 2
       pull(
         ipfsA.pingPullStream(unknownPeerId, { count }),
-        pull.drain((res) => {
-          expectIsPingResponse(res)
-          messageNum++
-
-          // First message should be "looking up" response
-          if (messageNum === 1) {
-            expect(res.text).to.include('Looking up')
-          }
-
-          // Second message should be a failure response
-          if (messageNum === 2) {
-            expect(res.success).to.be.false()
-          }
-        }, (err) => {
-          expect(err).to.not.exist()
+        pull.collect((err, results) => {
+          expect(err).to.exist()
           done()
         })
       )
@@ -94,7 +80,6 @@ module.exports = (createCommon, options) => {
         pull.collect((err, results) => {
           expect(err).to.exist()
           expect(err.message).to.include('failed to parse peer address')
-          expect(results).to.not.exist()
           done()
         })
       )

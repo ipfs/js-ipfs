@@ -15,7 +15,7 @@ module.exports = (createCommon, options) => {
   const common = createCommon()
 
   describe('.pingReadableStream', function () {
-    this.timeout(60 * 1000)
+    this.timeout(30 * 1000)
 
     let ipfsA
     let ipfsB
@@ -69,33 +69,16 @@ module.exports = (createCommon, options) => {
     })
 
     it('should fail when pinging peer that is not available over readable stream', (done) => {
-      let messageNum = 0
       const unknownPeerId = 'QmUmaEnH1uMmvckMZbh3yShaasvELPW4ZLPWnB4entMTEn'
-      const count = 2
 
       pump(
-        ipfsA.pingReadableStream(unknownPeerId, { count }),
+        ipfsA.pingReadableStream(unknownPeerId, {}),
         new Writable({
           objectMode: true,
-          write (res, enc, cb) {
-            expectIsPingResponse(res)
-            messageNum++
-
-            // First message should be "looking up" response
-            if (messageNum === 1) {
-              expect(res.text).to.include('Looking up')
-            }
-
-            // Second message should be a failure response
-            if (messageNum === 2) {
-              expect(res.success).to.be.false()
-            }
-
-            cb()
-          }
+          write: (res, enc, cb) => cb()
         }),
         (err) => {
-          expect(err).to.not.exist()
+          expect(err).to.exist()
           done()
         }
       )
@@ -103,10 +86,9 @@ module.exports = (createCommon, options) => {
 
     it('should fail when pinging an invalid peer id over readable stream', (done) => {
       const invalidPeerId = 'not a peer ID'
-      const count = 2
 
       pump(
-        ipfsA.pingReadableStream(invalidPeerId, { count }),
+        ipfsA.pingReadableStream(invalidPeerId, {}),
         new Writable({
           objectMode: true,
           write: (chunk, enc, cb) => cb()
