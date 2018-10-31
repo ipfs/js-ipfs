@@ -5,7 +5,7 @@ const fs = require('fs')
 const print = require('../../utils').print
 
 function putNode (buf, enc, ipfs) {
-  ipfs.object.put(buf, {enc: enc}, (err, node) => {
+  ipfs.object.put(buf, { enc: enc }, (err, node) => {
     if (err) {
       throw err
     }

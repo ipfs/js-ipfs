@@ -73,7 +73,7 @@ describe('libp2p customization', function () {
         config: mockConfig,
         _options: {
           libp2p: (opts) => {
-            const wsstar = new WebSocketStar({id: opts.peerInfo.id})
+            const wsstar = new WebSocketStar({ id: opts.peerInfo.id })
 
             return new Libp2p({
               peerInfo: opts.peerInfo,
@@ -147,7 +147,7 @@ describe('libp2p customization', function () {
     })
 
     it('should allow for overriding via options', (done) => {
-      const wsstar = new WebSocketStar({id: peerInfo.id})
+      const wsstar = new WebSocketStar({ id: peerInfo.id })
 
       const ipfs = {
         _peerInfo: peerInfo,

@@ -15,7 +15,7 @@ module.exports = {
   },
 
   handler (argv) {
-    argv.ipfs.stats.repo({human: argv.human}, (err, stats) => {
+    argv.ipfs.stats.repo({ human: argv.human }, (err, stats) => {
       if (err) {
         throw err
       }

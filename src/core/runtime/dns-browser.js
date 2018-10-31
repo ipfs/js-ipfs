@@ -1,3 +1,4 @@
+/* global self */
 'use strict'
 
 module.exports = (domain, opts, callback) => {
@@ -8,7 +9,7 @@ module.exports = (domain, opts, callback) => {
     url += `&${prop}=${opts[prop]}`
   }
 
-  self.fetch(url, {mode: 'cors'})
+  self.fetch(url, { mode: 'cors' })
     .then((response) => {
       return response.json()
     })

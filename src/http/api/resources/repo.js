@@ -38,7 +38,7 @@ exports.stat = (request, reply) => {
   const ipfs = request.server.app.ipfs
   const human = request.query.human === 'true'
 
-  ipfs.repo.stat({human: human}, (err, stat) => {
+  ipfs.repo.stat({ human: human }, (err, stat) => {
     if (err) {
       return reply({
         Message: err.toString(),

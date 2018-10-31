@@ -39,7 +39,7 @@ exports.peers = {
     const verbose = rawVerbose === 'true'
     const ipfs = request.server.app.ipfs
 
-    ipfs.swarm.peers({verbose: verbose}, (err, peers) => {
+    ipfs.swarm.peers({ verbose: verbose }, (err, peers) => {
       if (err) {
         log.error(err)
         return reply({

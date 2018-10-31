@@ -13,7 +13,7 @@ const defaultsDeep = require('@nodeutils/defaults-deep')
 
 class Node extends libp2p {
   constructor (_options) {
-    const wsstar = new WebSocketStar({id: _options.peerInfo.id})
+    const wsstar = new WebSocketStar({ id: _options.peerInfo.id })
 
     const defaults = {
       modules: {

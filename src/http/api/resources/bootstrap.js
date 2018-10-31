@@ -38,7 +38,7 @@ exports.add = {
         return applyError(reply, new Error('Not a valid multiaddr'))
       }
     } else {
-      reply({default: def})
+      reply({ default: def })
     }
   },
   handler (request, reply) {
@@ -46,7 +46,7 @@ exports.add = {
     const addr = request.pre.args.addr
     const def = request.pre.args.default
 
-    ipfs.bootstrap.add(addr && addr.toString(), {default: def}, (err, list) => {
+    ipfs.bootstrap.add(addr && addr.toString(), { default: def }, (err, list) => {
       if (err) {
         return applyError(reply, err)
       }
@@ -71,7 +71,7 @@ exports.rm = {
         return applyError(reply, new Error('Not a valid multiaddr'))
       }
     } else {
-      reply({all: all})
+      reply({ all: all })
     }
   },
   handler (request, reply) {
@@ -79,7 +79,7 @@ exports.rm = {
     const addr = request.pre.args.addr
     const all = request.pre.args.all
 
-    ipfs.bootstrap.rm(addr && addr.toString(), {all: all}, (err, list) => {
+    ipfs.bootstrap.rm(addr && addr.toString(), { all: all }, (err, list) => {
       if (err) {
         return applyError(reply, err)
       }

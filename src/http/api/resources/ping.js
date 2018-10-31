@@ -23,8 +23,14 @@ exports.get = {
   handler: (request, reply) => {
     const ipfs = request.server.app.ipfs
     const peerId = request.query.arg
+
     // Default count to 10
     const count = request.query.n || request.query.count || 10
+
+    // Streams from pull-stream-to-stream don't seem to be compatible
+    // with the stream2 readable interface
+    // see: https://github.com/hapijs/hapi/blob/c23070a3de1b328876d5e64e679a147fafb04b38/lib/response.js#L533
+    // and: https://github.com/pull-stream/pull-stream-to-stream/blob/e436acee18b71af8e71d1b5d32eee642351517c7/index.js#L28
 
     const source = pull(
       ipfs.pingPullStream(peerId, { count: count }),
@@ -36,13 +42,25 @@ exports.get = {
       ndjson.serialize()
     )
 
-    // Streams from pull-stream-to-stream don't seem to be compatible
-    // with the stream2 readable interface
-    // see: https://github.com/hapijs/hapi/blob/c23070a3de1b328876d5e64e679a147fafb04b38/lib/response.js#L533
-    // and: https://github.com/pull-stream/pull-stream-to-stream/blob/e436acee18b71af8e71d1b5d32eee642351517c7/index.js#L28
     const responseStream = toStream.source(source)
     const stream2 = new PassThrough()
+    let replied = false
     pump(responseStream, stream2)
-    return reply(stream2).type('application/json').header('X-Chunked-Output', '1')
+
+    // FIXME: This is buffering all ping responses before sending them so that
+    // we can capture the error if it happens. #fixTheHTTPAPI
+    responseStream.on('error', (err) => {
+      if (!replied) {
+        replied = true
+        reply(err)
+      }
+    })
+
+    responseStream.on('end', () => {
+      if (!replied) {
+        replied = true
+        reply(stream2).type('application/json').header('X-Chunked-Output', '1')
+      }
+    })
   }
 }

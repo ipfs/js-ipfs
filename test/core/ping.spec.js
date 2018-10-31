@@ -172,26 +172,20 @@ describe('ping', function () {
       )
     })
 
-    it('pinging an unknown peer will fail accordingly', (done) => {
+    it('pinging a not available peer will fail accordingly', (done) => {
       const unknownPeerId = 'QmUmaEnH1uMmvckMZbh3yShaasvELPW4ZLPWnB4entMTEn'
       let messageNum = 0
-      const count = 2
+      const count = 1
       pull(
-        ipfsdA.api.pingPullStream(unknownPeerId, { count }),
+        ipfsdA.api.pingPullStream(unknownPeerId, {}),
         drain(({ success, time, text }) => {
           messageNum++
           // Assert that the ping command falls back to the peerRouting
           if (messageNum === 1) {
             expect(text).to.include('Looking up')
           }
-
-          // Fails accordingly while trying to use peerRouting
-          if (messageNum === 2) {
-            expect(success).to.be.false()
-          }
         }, (err) => {
           expect(err).to.exist()
-          expect(err.message).to.include('DHT is not available')
           expect(messageNum).to.equal(count)
           done()
         })

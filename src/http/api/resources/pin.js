@@ -48,7 +48,7 @@ exports.ls = {
       return reply({
         Keys: _.mapValues(
           _.keyBy(result, obj => obj.hash),
-          obj => ({Type: obj.type})
+          obj => ({ Type: obj.type })
         )
       })
     })

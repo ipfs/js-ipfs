@@ -227,7 +227,7 @@ module.exports = {
         if (argv.progress) {
           const bar = createProgressBar(totalBytes)
           options.progress = function (byteLength) {
-            bar.update(byteLength / totalBytes, {progress: byteman(byteLength, 2, 'MB')})
+            bar.update(byteLength / totalBytes, { progress: byteman(byteLength, 2, 'MB') })
           }
         }
 

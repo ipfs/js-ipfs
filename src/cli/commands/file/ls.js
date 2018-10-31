@@ -20,7 +20,7 @@ module.exports = {
 
       // Single file? Then print its hash
       if (links.length === 0) {
-        links = [{hash: path}]
+        links = [{ hash: path }]
       }
 
       links.forEach((file) => print(file.hash))
