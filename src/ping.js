@@ -46,7 +46,12 @@ module.exports = (arg) => {
             cb()
           }
         }),
-        (err) => callback(err, responses)
+        (err) => {
+          if (err) {
+            return callback(err)
+          }
+          callback(null, responses)
+        }
       )
     }
 
