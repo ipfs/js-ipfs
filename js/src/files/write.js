@@ -43,7 +43,7 @@ module.exports = (createCommon, options) => {
     it('should write to non existent file with create flag', function (done) {
       const testPath = `/test-${hat()}`
 
-      ipfs.files.write(testPath, Buffer.from('Hello, world!'), {create: true}, (err) => {
+      ipfs.files.write(testPath, Buffer.from('Hello, world!'), { create: true }, (err) => {
         expect(err).to.not.exist()
 
         ipfs.files.stat(testPath, (err, stats) => {
@@ -57,7 +57,7 @@ module.exports = (createCommon, options) => {
     it('should write to deeply nested non existent file with create and parents flags', function (done) {
       const testPath = `/foo/bar/baz/test-${hat()}`
 
-      ipfs.files.write(testPath, Buffer.from('Hello, world!'), {create: true, parents: true}, (err) => {
+      ipfs.files.write(testPath, Buffer.from('Hello, world!'), { create: true, parents: true }, (err) => {
         expect(err).to.not.exist()
 
         ipfs.files.stat(testPath, (err, stats) => {

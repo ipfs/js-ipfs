@@ -98,7 +98,7 @@ module.exports = (createCommon, options) => {
 
     // TODO enable this test when this feature gets released on go-ipfs
     it.skip('should stat withLocal file', function (done) {
-      ipfs.files.stat('/test/b', {withLocal: true}, (err, stat) => {
+      ipfs.files.stat('/test/b', { withLocal: true }, (err, stat) => {
         expect(err).to.not.exist()
         expect(stat).to.eql({
           type: 'file',
@@ -116,7 +116,7 @@ module.exports = (createCommon, options) => {
 
     // TODO enable this test when this feature gets released on go-ipfs
     it.skip('should stat withLocal dir', function (done) {
-      ipfs.files.stat('/test', {withLocal: true}, (err, stat) => {
+      ipfs.files.stat('/test', { withLocal: true }, (err, stat) => {
         expect(err).to.not.exist()
         expect(stat).to.eql({
           type: 'directory',

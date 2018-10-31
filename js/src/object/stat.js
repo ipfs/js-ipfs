@@ -68,7 +68,7 @@ module.exports = (createCommon, options) => {
       return ipfs.object.put(testObj, (err, node) => {
         expect(err).to.not.exist()
 
-        return ipfs.object.stat('QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ', {enc: 'base58'})
+        return ipfs.object.stat('QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ', { enc: 'base58' })
           .then((stats) => {
             const expected = {
               Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',

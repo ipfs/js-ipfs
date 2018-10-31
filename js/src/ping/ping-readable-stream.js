@@ -6,7 +6,6 @@ const { Writable } = require('stream')
 const series = require('async/series')
 const { spawnNodesWithId } = require('../utils/spawn')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { expectIsPingResponse, isPong } = require('./utils')
 const { connect } = require('../utils/swarm')
 
 module.exports = (createCommon, options) => {
@@ -53,9 +52,9 @@ module.exports = (createCommon, options) => {
           write (res, enc, cb) {
             expect(res.success).to.be.true()
             // It's a pong
-            if (isPong(res)) {
-              packetNum++
-            }
+            // if (isPong(res)) { // TODO understand why this was here, not defined before
+            //  packetNum++
+            // }
 
             cb()
           }
