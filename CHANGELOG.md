@@ -1,3 +1,119 @@
+<a name="0.33.0"></a>
+# [0.33.0](https://github.com/ipfs/js-ipfs/compare/v0.33.0-rc.4...v0.33.0) (2018-11-01)
+
+
+
+<a name="0.33.0-rc.4"></a>
+# [0.33.0-rc.4](https://github.com/ipfs/js-ipfs/compare/v0.33.0-rc.3...v0.33.0-rc.4) (2018-11-01)
+
+
+### Bug Fixes
+
+* remove accidentally committed code ([66fa8ef](https://github.com/ipfs/js-ipfs/commit/66fa8ef))
+* remove local option from global commands ([#1648](https://github.com/ipfs/js-ipfs/issues/1648)) ([8e963f9](https://github.com/ipfs/js-ipfs/commit/8e963f9))
+* remove npm script ([df32ac4](https://github.com/ipfs/js-ipfs/commit/df32ac4))
+* remove unused deps ([f7189fb](https://github.com/ipfs/js-ipfs/commit/f7189fb))
+* use class is function on ipns ([#1617](https://github.com/ipfs/js-ipfs/issues/1617)) ([c240d49](https://github.com/ipfs/js-ipfs/commit/c240d49)), closes [js-peer-id#84](https://github.com/js-peer-id/issues/84) [interface-datastore#24](https://github.com/interface-datastore/issues/24) [#1615](https://github.com/ipfs/js-ipfs/issues/1615)
+
+
+### Chores
+
+* remove ipld formats re-export ([#1626](https://github.com/ipfs/js-ipfs/issues/1626)) ([3ee7b5e](https://github.com/ipfs/js-ipfs/commit/3ee7b5e))
+* update to js-ipld 0.19 ([#1668](https://github.com/ipfs/js-ipfs/issues/1668)) ([74edafd](https://github.com/ipfs/js-ipfs/commit/74edafd))
+
+
+### Features
+
+* add support to pass config in the init cmd ([#1662](https://github.com/ipfs/js-ipfs/issues/1662)) ([588891c](https://github.com/ipfs/js-ipfs/commit/588891c))
+* get Ping to work properly ([27d5a57](https://github.com/ipfs/js-ipfs/commit/27d5a57))
+
+
+### BREAKING CHANGES
+
+* dag-cbor nodes now represent links as CID objects
+
+The API for [dag-cbor](https://github.com/ipld/js-ipld-dag-cbor) changed.
+Links are no longer represented as JSON objects (`{"/": "base-encoded-cid"}`,
+but as [CID objects](https://github.com/ipld/js-cid). `ipfs.dag.get()` and now always return links as CID objects. `ipfs.dag.put()` also expects links to be represented as CID objects. The old-style JSON objects representation is still
+supported, but deprecated.
+
+Prior to this change:
+
+```js
+const cid = new CID('QmXed8RihWcWFXRRmfSRG9yFjEbXNxu1bDwgCFAN8Dxcq5')
+// Link as JSON object representation
+const putCid = await ipfs.dag.put({link: {'/': cid.toBaseEncodedString()}})
+const result = await ipfs.dag.get(putCid)
+console.log(result.value)
+
+```
+
+Output:
+
+```js
+{ link:
+   { '/':
+      <Buffer 12 20 8a…> } }
+```
+
+Now:
+
+```js
+const cid = new CID('QmXed8RihWcWFXRRmfSRG9yFjEbXNxu1bDwgCFAN8Dxcq5')
+// Link as CID object
+const putCid = await ipfs.dag.put({link: cid})
+const result = await ipfs.dag.get(putCid)
+console.log(result.value)
+```
+
+Output:
+
+```js
+{ link:
+   CID {
+     codec: 'dag-pb',
+     version: 0,
+     multihash:
+      <Buffer 12 20 8a…> } }
+```
+
+See https://github.com/ipld/ipld/issues/44 for more information on why this
+change was made.
+* remove `types.dagCBOR` and `types.dagPB` from public API
+
+If you need the `ipld-dag-cbor` or `ipld-dag-pb` module in the Browser,
+you need to bundle them yourself.
+
+
+
+<a name="0.33.0-rc.3"></a>
+# [0.33.0-rc.3](https://github.com/ipfs/js-ipfs/compare/v0.33.0-rc.2...v0.33.0-rc.3) (2018-10-24)
+
+
+
+<a name="0.33.0-rc.2"></a>
+# [0.33.0-rc.2](https://github.com/ipfs/js-ipfs/compare/v0.33.0-rc.1...v0.33.0-rc.2) (2018-10-23)
+
+
+
+<a name="0.33.0-rc.1"></a>
+# [0.33.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.32.3...v0.33.0-rc.1) (2018-10-19)
+
+
+### Bug Fixes
+
+* make ipfs.ping() options optional ([#1627](https://github.com/ipfs/js-ipfs/issues/1627)) ([08f06b6](https://github.com/ipfs/js-ipfs/commit/08f06b6)), closes [#1616](https://github.com/ipfs/js-ipfs/issues/1616)
+
+
+### Features
+
+* **gateway:** X-Ipfs-Path, Etag, Cache-Control, Suborigin ([#1537](https://github.com/ipfs/js-ipfs/issues/1537)) ([fc5bef7](https://github.com/ipfs/js-ipfs/commit/fc5bef7))
+* add cid command ([#1560](https://github.com/ipfs/js-ipfs/issues/1560)) ([a22c791](https://github.com/ipfs/js-ipfs/commit/a22c791))
+* show Web UI url in daemon output ([#1595](https://github.com/ipfs/js-ipfs/issues/1595)) ([9a82b05](https://github.com/ipfs/js-ipfs/commit/9a82b05))
+* update to Web UI 2.0 ([#1647](https://github.com/ipfs/js-ipfs/issues/1647)) ([aea85aa](https://github.com/ipfs/js-ipfs/commit/aea85aa))
+
+
+
 <a name="0.32.3"></a>
 ## [0.32.3](https://github.com/ipfs/js-ipfs/compare/v0.32.2...v0.32.3) (2018-09-28)
 
