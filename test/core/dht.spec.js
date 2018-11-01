@@ -14,7 +14,7 @@ describe('dht', () => {
   let ipfsd, ipfs
 
   before(function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(30 * 1000)
 
     const factory = IPFSFactory.create({ type: 'proc' })
 
