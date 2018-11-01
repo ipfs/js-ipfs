@@ -34,7 +34,9 @@ z45oqTRwExySeMeivsU1Y9UdzWDp2mx71TtQhmTGzRaXCcsNujj
 z45oqTRzb9a5xyvx5RbfSXH1K5jibyZ4AxnXyYReuLw7KU5veYw
 ```
 
-## Explore these blocks using the DAG api
+## Explore these blocks using the DAG API
+
+NOTE: Currently your js-ipfs daemon must NOT be running for the following examples to work.
 
 Some examples
 
