@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.33.0-rc.4",
+  "version": "0.33.0",
   "description": "JavaScript implementation of the IPFS specification",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "bin": {
@@ -177,6 +177,7 @@
   },
   "contributors": [
     "0xflotus <0xflotus@gmail.com>",
+    "A_A <21040751+Otto-AA@users.noreply.github.com>",
     "Alan Shaw <alan.shaw@protocol.ai>",
     "Alan Shaw <alan@tableflip.io>",
     "Alex Potsides <alex@achingbrain.net>",
@@ -217,6 +218,8 @@
     "Henrique Dias <hacdias@gmail.com>",
     "Henry Rodrick <moshisushi@gmail.com>",
     "Heo Sangmin <heo@mapiacompany.com>",
+    "Hugo Dias <mail@hugodias.me>",
+    "Hugo Dias <hugomrdias@gmail.com>",
     "Jacob Heun <jacobheun@gmail.com>",
     "Jacob Heun <jake@andyet.net>",
     "Jade Meskill <jade.meskill@gmail.com>",
@@ -229,11 +232,13 @@
     "Lars Gierth <larsg@systemli.org>",
     "Lukas Drgon <lukas.drgon@gmail.com>",
     "Maciej Krüger <mkg20001@gmail.com>",
+    "Marcin Rataj <lidel@lidel.org>",
     "Marius Darila <marius.darila@gmail.com>",
     "Mat Kelly <machawk1@gmail.com>",
     "Michelle Lee <michelle@protocol.ai>",
     "Mikeal Rogers <mikeal.rogers@gmail.com>",
     "Mithgol <getgit@mithgol.ru>",
+    "Molly <momack2@users.noreply.github.com>",
     "My9Bot <34904312+My9Bot@users.noreply.github.com>",
     "Nuno Nogueira <nunofmn@gmail.com>",
     "Oli Evans <oli@tableflip.io>",
@@ -261,6 +266,7 @@
     "Yahya <ya7yaz@gmail.com>",
     "Yole <yole@ultiledger.io>",
     "bitspill <bitspill+github@bitspill.net>",
+    "datafatmunger <jbg@peerparty.org>",
     "haad <haad@headbanggames.com>",
     "jbenet <juan@benet.ai>",
     "jonahweissman <19804455+jonahweissman@users.noreply.github.com>",
@@ -271,8 +277,8 @@
     "robbsolter <35879806+robbsolter@users.noreply.github.com>",
     "seungwon-kang <ksw3894@gmail.com>",
     "tcme <hi@this-connect.me>",
+    "victorbjelkholm <victorbjelkholm@gmail.com>",
     "Łukasz Magiera <magik6k@users.noreply.github.com>",
-    "Максим Ильин <negamaxi@gmail.com>",
-    "ᴠɪᴄᴛᴏʀ ʙᴊᴇʟᴋʜᴏʟᴍ <victorbjelkholm@gmail.com>"
+    "Максим Ильин <negamaxi@gmail.com>"
   ]
 }
