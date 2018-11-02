@@ -44,7 +44,7 @@ describe('interface-ipfs-core tests', () => {
   })
 
   tests.dht(dhtCommonFactory, {
-    skip: [
+    skip: isNode ? [
       // dht.provide
       {
         name: 'should provide local CID',
@@ -72,7 +72,7 @@ describe('interface-ipfs-core tests', () => {
         name: 'should return the other node in the query',
         reason: 'FIXME: always auto-skiped from within test'
       }
-    ]
+    ] : true
   })
 
   tests.files(defaultCommonFactory)
