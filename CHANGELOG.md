@@ -1,3 +1,13 @@
+<a name="26.1.1"></a>
+## [26.1.1](https://github.com/ipfs/js-ipfs-api/compare/v26.1.0...v26.1.1) (2018-11-03)
+
+
+### Features
+
+* go-ipfs 0.4.18 ([9178e7d](https://github.com/ipfs/js-ipfs-api/commit/9178e7d))
+
+
+
 <a name="26.1.0"></a>
 # [26.1.0](https://github.com/ipfs/js-ipfs-api/compare/v26.0.3...v26.1.0) (2018-10-31)
 
