@@ -1,3 +1,14 @@
+<a name="26.1.2"></a>
+## [26.1.2](https://github.com/ipfs/js-ipfs-api/compare/v26.1.0...v26.1.2) (2018-11-03)
+
+
+### Features
+
+* go-ipfs 0.4.18 ([e3e4d6c](https://github.com/ipfs/js-ipfs-api/commit/e3e4d6c))
+* upload example works with big files ([62b844f](https://github.com/ipfs/js-ipfs-api/commit/62b844f))
+
+
+
 <a name="26.1.1"></a>
 ## [26.1.1](https://github.com/ipfs/js-ipfs-api/compare/v26.1.0...v26.1.1) (2018-11-03)
 
