@@ -74,11 +74,11 @@ const traverseToMfsObject = (ipfs, path, options, callback) => {
             parent: null
           })
 
-          reduce(pathSegments.map((pathSegment, index) => ({pathSegment, index})), {
+          reduce(pathSegments.map((pathSegment, index) => ({ pathSegment, index })), {
             name: FILE_SEPARATOR,
             node: rootNode,
             parent: null
-          }, (parent, {pathSegment, index}, done) => {
+          }, (parent, { pathSegment, index }, done) => {
             const existingLink = parent.node.links.find(link => link.name === pathSegment)
 
             if (!existingLink) {

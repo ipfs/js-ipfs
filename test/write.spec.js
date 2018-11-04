@@ -262,7 +262,7 @@ describe('write', function () {
       })
   })
 
-  runTest(({type, path, content}) => {
+  runTest(({ type, path, content }) => {
     it(`limits how many bytes to write to a file (${type})`, () => {
       return mfs.write(path, content, {
         create: true,
@@ -276,7 +276,7 @@ describe('write', function () {
     })
   })
 
-  runTest(({type, path, content, contentSize}) => {
+  runTest(({ type, path, content, contentSize }) => {
     it(`overwrites start of a file without truncating (${type})`, () => {
       const newContent = Buffer.from('Goodbye world')
 
@@ -294,7 +294,7 @@ describe('write', function () {
     })
   })
 
-  runTest(({type, path, content, contentSize}) => {
+  runTest(({ type, path, content, contentSize }) => {
     it(`pads the start of a new file when an offset is specified (${type})`, () => {
       const offset = 10
 
@@ -316,7 +316,7 @@ describe('write', function () {
     })
   })
 
-  runTest(({type, path, content, contentSize}) => {
+  runTest(({ type, path, content, contentSize }) => {
     it(`expands a file when an offset is specified (${type})`, () => {
       const offset = contentSize - 1
       const newContent = Buffer.from('Oh hai!')
@@ -336,7 +336,7 @@ describe('write', function () {
     })
   })
 
-  runTest(({type, path, content, contentSize}) => {
+  runTest(({ type, path, content, contentSize }) => {
     it(`expands a file when an offset is specified and the offset is longer than the file (${type})`, () => {
       const offset = contentSize + 5
       const newContent = Buffer.from('Oh hai!')
@@ -358,7 +358,7 @@ describe('write', function () {
     })
   })
 
-  runTest(({type, path, content}) => {
+  runTest(({ type, path, content }) => {
     it(`truncates a file after writing (${type})`, () => {
       const newContent = Buffer.from('Oh hai!')
 
@@ -375,7 +375,7 @@ describe('write', function () {
     })
   })
 
-  runTest(({type, path, content}) => {
+  runTest(({ type, path, content }) => {
     it(`truncates a file after writing with a stream (${type})`, () => {
       const newContent = Buffer.from('Oh hai!')
       const stream = values([newContent])
@@ -393,7 +393,7 @@ describe('write', function () {
     })
   })
 
-  runTest(({type, path, content}) => {
+  runTest(({ type, path, content }) => {
     it(`truncates a file after writing with a stream with an offset (${type})`, () => {
       const offset = 100
       const newContent = Buffer.from('Oh hai!')
@@ -411,7 +411,7 @@ describe('write', function () {
     })
   })
 
-  runTest(({type, path, content}) => {
+  runTest(({ type, path, content }) => {
     it(`writes a file with raw blocks for newly created leaf nodes (${type})`, () => {
       return mfs.write(path, content, {
         create: true,
@@ -439,7 +439,7 @@ describe('write', function () {
     }
 
     return Promise.all(
-      files.map(({name, source}) => mfs.write(`/concurrent/${name}`, source, {
+      files.map(({ name, source }) => mfs.write(`/concurrent/${name}`, source, {
         create: true,
         parents: true
       }))
