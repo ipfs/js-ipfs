@@ -1,4 +1,4 @@
-# ipfs-mfs JavaScript Implementation
+# MFS (Mutable File System) JavaScript Implementation
 
 [![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
 [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
@@ -21,18 +21,15 @@
 
 ## Table of Contents
 
-- [ipfs-mfs JavaScript Implementation](#ipfs-mfs-javascript-implementation)
-  - [Lead Maintainer](#lead-maintainer)
-  - [Table of Contents](#table-of-contents)
-  - [Install](#install)
-    - [npm](#npm)
-    - [Use in Node.js](#use-in-nodejs)
-    - [Use in a browser with browserify, webpack or any other bundler](#use-in-a-browser-with-browserify-webpack-or-any-other-bundler)
-    - [Use in a browser using a script tag](#use-in-a-browser-using-a-script-tag)
-    - [A note on concurrency](#a-note-on-concurrency)
-  - [Contribute](#contribute)
-  - [Changelog](#changelog)
-  - [License](#license)
+- [Install](#install)
+  - [npm](#npm)
+  - [Use in Node.js](#use-in-nodejs)
+  - [Use in a browser with browserify, webpack or any other bundler](#use-in-a-browser-with-browserify-webpack-or-any-other-bundler)
+  - [Use in a browser using a script tag](#use-in-a-browser-using-a-script-tag)
+  - [A note on concurrency](#a-note-on-concurrency)
+- [Contribute](#contribute)
+- [Changelog](#changelog)
+- [License](#license)
 
 ## Install
 
