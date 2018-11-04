@@ -28,11 +28,11 @@ const withMfsRoot = (ipfs, callback) => {
 
           return waterfall([
             // Store an empty node as the root
-            (next) => ipfs.files.add({
+            (next) => ipfs.add({
               path: '/'
             }, next),
             // Turn the hash into a Buffer
-            ([{hash}], next) => next(null, new CID(hash)),
+            ([{ hash }], next) => next(null, new CID(hash)),
             (cid, next) => repo.closed ? datastore.open((error) => next(error, cid)) : next(null, cid),
             // Store the Buffer in the datastore
             (cid, next) => datastore.put(MFS_ROOT_KEY, cid.buffer, (error) => next(error, cid))
