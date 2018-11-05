@@ -106,7 +106,7 @@ describe('interface-ipfs-core over ipfs-api tests', () => {
     }
   }))
 
-  tests.types(defaultCommonFactory, { skip: { reason: 'FIXME: currently failing' } })
+  tests.types(defaultCommonFactory)
 
   tests.util(defaultCommonFactory, { skip: { reason: 'FIXME: currently failing' } })
 })
