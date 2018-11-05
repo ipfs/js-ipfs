@@ -39,6 +39,9 @@ describe('interface-ipfs-core tests', () => {
       initOptions: { bits: 512 },
       EXPERIMENTAL: {
         dht: true
+      },
+      config: {
+        Bootstrap: []
       }
     }
   })
@@ -154,7 +157,10 @@ describe('interface-ipfs-core tests', () => {
 
             if (typeof config === 'function') {
               cb = config
-              config = undefined
+            }
+
+            config = config || {
+              Bootstrap: []
             }
 
             const spawnOptions = { repoPath, config, initOptions: { bits: 512 } }

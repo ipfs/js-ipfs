@@ -10,7 +10,7 @@ function createFactory (options) {
   options = options || {}
 
   options.factoryOptions = options.factoryOptions || { type: 'proc', exec: IPFS }
-  options.spawnOptions = options.spawnOptions || { initOptions: { bits: 512 } }
+  options.spawnOptions = options.spawnOptions || { initOptions: { bits: 512 }, config: { Bootstrap: [] } }
 
   if (options.factoryOptions.type !== 'proc') {
     options.factoryOptions.IpfsApi = options.factoryOptions.IpfsApi || IpfsApi

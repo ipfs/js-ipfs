@@ -33,6 +33,7 @@ skipOnWindows('id endpoint', () => {
         (cb) => df.spawn({
           repoPath: repoPath,
           initOptions: { bits: 512 },
+          config: { Bootstrap: [] },
           disposable: false,
           start: true
         }, cb),

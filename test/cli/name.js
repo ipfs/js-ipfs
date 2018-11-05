@@ -32,7 +32,9 @@ describe('name', () => {
 
     df.spawn({
       exec: `./src/cli/bin.js`,
-      config: {},
+      config: {
+        Bootstrap: []
+      },
       args: pass.split(' '),
       initOptions: { bits: 512 }
     }, (err, _ipfsd) => {
