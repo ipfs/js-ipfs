@@ -1,3 +1,13 @@
+<a name="0.33.1"></a>
+## [0.33.1](https://github.com/ipfs/js-ipfs/compare/v0.33.0...v0.33.1) (2018-11-05)
+
+
+### Bug Fixes
+
+* over eager preload ([#1693](https://github.com/ipfs/js-ipfs/issues/1693)) ([f14c20d](https://github.com/ipfs/js-ipfs/commit/f14c20d))
+
+
+
 <a name="0.33.0"></a>
 # [0.33.0](https://github.com/ipfs/js-ipfs/compare/v0.33.0-rc.4...v0.33.0) (2018-11-01)
 
