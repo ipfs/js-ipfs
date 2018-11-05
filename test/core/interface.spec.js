@@ -157,6 +157,7 @@ describe('interface-ipfs-core tests', () => {
 
             if (typeof config === 'function') {
               cb = config
+              config = null
             }
 
             config = config || {
