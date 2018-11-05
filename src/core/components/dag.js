@@ -50,7 +50,14 @@ module.exports = function dag (self) {
 
       if (typeof options === 'function') {
         callback = options
-        options = {}
+
+        // Allow options in path position
+        if (typeof path !== 'string') {
+          options = path
+          path = null
+        } else {
+          options = {}
+        }
       }
 
       options = options || {}
@@ -156,7 +163,7 @@ module.exports = function dag (self) {
         if (err) { return callback(err) }
 
         mapAsync(res.value.links, (link, cb) => {
-          self.dag._getRecursive(link.multihash, cb)
+          self.dag._getRecursive(link.multihash, options, cb)
         }, (err, nodes) => {
           // console.log('nodes:', nodes)
           if (err) return callback(err)
