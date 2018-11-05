@@ -141,9 +141,14 @@ describe('preload', () => {
       const wrappingDir = res.find(file => file.path === '')
       expect(wrappingDir).to.exist()
 
-      ipfs.ls(wrappingDir.hash, (err) => {
+      // Adding these files with have preloaded wrappingDir.hash, clear it out
+      MockPreloadNode.clearPreloadCids((err) => {
         expect(err).to.not.exist()
-        MockPreloadNode.waitForCids(wrappingDir.hash, done)
+
+        ipfs.ls(wrappingDir.hash, (err) => {
+          expect(err).to.not.exist()
+          MockPreloadNode.waitForCids(wrappingDir.hash, done)
+        })
       })
     })
   })

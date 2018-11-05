@@ -36,7 +36,7 @@ function prepareFile (self, opts, file, callback) {
   waterfall([
     (cb) => opts.onlyHash
       ? cb(null, file)
-      : self.object.get(file.multihash, opts, cb),
+      : self.object.get(file.multihash, Object.assign({}, opts, { preload: false }), cb),
     (node, cb) => {
       const b58Hash = cid.toBaseEncodedString()
 
@@ -118,7 +118,7 @@ function pinFile (self, opts, file, cb) {
   const isRootDir = !file.path.includes('/')
   const shouldPin = pin && isRootDir && !opts.onlyHash && !opts.hashAlg
   if (shouldPin) {
-    return self.pin.add(file.hash, err => cb(err, file))
+    return self.pin.add(file.hash, { preload: false }, err => cb(err, file))
   } else {
     cb(null, file)
   }

@@ -206,11 +206,7 @@ module.exports = function object (self) {
             return callback(err)
           }
 
-          if (options.preload !== false) {
-            self._preload(cid)
-          }
-
-          self.object.get(node.multihash, callback)
+          self.object.get(node.multihash, { preload: options.preload }, callback)
         })
       }
     }),

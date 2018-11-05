@@ -119,9 +119,11 @@ module.exports = (self) => {
     add: promisify((paths, options, callback) => {
       if (typeof options === 'function') {
         callback = options
-        options = null
+        options = {}
       }
-      const recursive = options ? options.recursive : true
+      options = options || {}
+
+      const recursive = options.recursive == null ? true : options.recursive
 
       resolvePath(self.object, paths, (err, mhs) => {
         if (err) { return callback(err) }
@@ -137,7 +139,7 @@ module.exports = (self) => {
 
             // entire graph of nested links should be pinned,
             // so make sure we have all the objects
-            dag._getRecursive(key, (err) => {
+            dag._getRecursive(key, { preload: options.preload }, (err) => {
               if (err) { return cb(err) }
               // found all objects, we can add the pin
               return cb(null, key)
@@ -153,7 +155,7 @@ module.exports = (self) => {
             }
 
             // make sure we have the object
-            dag.get(new CID(multihash), (err) => {
+            dag.get(new CID(multihash), { preload: options.preload }, (err) => {
               if (err) { return cb(err) }
               // found the object, we can add the pin
               return cb(null, key)

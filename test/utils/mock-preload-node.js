@@ -142,7 +142,22 @@ module.exports.waitForCids = (cids, opts, cb) => {
     getPreloadCids(opts.addr, (err, preloadCids) => {
       if (err) return cb(err)
 
-      if (cids.every(cid => preloadCids.includes(cid))) {
+      // See if our cached preloadCids includes all the cids we're looking for.
+      const { missing, duplicates } = cids.reduce((results, cid) => {
+        const count = preloadCids.filter(preloadedCid => preloadedCid === cid).length
+        if (count === 0) {
+          results.missing.push(cid)
+        } else if (count > 1) {
+          results.duplicates.push(cid)
+        }
+        return results
+      }, { missing: [], duplicates: [] })
+
+      if (duplicates.length) {
+        return cb(errCode(new Error(`Multiple occurances of ${duplicates} found`), 'ERR_DUPLICATE'))
+      }
+
+      if (missing.length === 0) {
         return cb()
       }
 
