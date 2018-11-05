@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.33.0",
+  "version": "0.33.1",
   "description": "JavaScript implementation of the IPFS specification",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "bin": {
