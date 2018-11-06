@@ -23,5 +23,6 @@ module.exports = [
   ...require('./key'),
   ...require('./stats'),
   require('./resolve'),
-  ...require('./name')
+  ...require('./name'),
+  ...require('./dht')
 ]
