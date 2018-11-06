@@ -41,7 +41,9 @@ describe('kad-dht is routing content and peers correctly', () => {
   let addrC
 
   let nodes
-  before((done) => {
+  before(function (done) {
+    this.timeout(30 * 1000)
+
     parallel([
       (cb) => createNode(cb),
       (cb) => createNode(cb),
@@ -77,10 +79,10 @@ describe('kad-dht is routing content and peers correctly', () => {
       content: Buffer.from('hello kad 1')
     }
 
-    nodeB.files.add(file, (err, filesAdded) => {
+    nodeB.add(file, (err, filesAdded) => {
       expect(err).to.not.exist()
 
-      nodeA.files.cat(filesAdded[0].hash, (err, data) => {
+      nodeA.cat(filesAdded[0].hash, (err, data) => {
         expect(err).to.not.exist()
         expect(data).to.eql(file.content)
         done()

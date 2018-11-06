@@ -7,7 +7,6 @@ const CID = require('cids')
 const multihash = require('multihashes')
 const each = require('async/each')
 const setImmediate = require('async/setImmediate')
-// const bsplit = require('buffer-split')
 const errCode = require('err-code')
 
 module.exports = (self) => {
@@ -35,7 +34,7 @@ module.exports = (self) => {
         }
       }
 
-      self._libp2pNode.dht.get(key, options.timeout, callback)
+      self._libp2pNode.dht.get(key, options, callback)
     }),
 
     /**
@@ -76,6 +75,7 @@ module.exports = (self) => {
       }
 
       opts = opts || {}
+      opts.maxNumProviders = opts['num-providers']
 
       if (typeof key === 'string') {
         try {
@@ -85,14 +85,23 @@ module.exports = (self) => {
         }
       }
 
-      if (typeof opts === 'function') {
-        callback = opts
-        opts = {}
-      }
+      self._libp2pNode.contentRouting.findProviders(key, opts, (err, res) => {
+        if (err) {
+          return callback(err)
+        }
 
-      opts = opts || {}
+        // convert to go-ipfs return value, we need to revisit
+        // this. For now will just conform.
+        const goResult = {
+          responses: res.map((peerInfo) => ({
+            id: peerInfo.id.toB58String(),
+            addrs: peerInfo.multiaddrs.toArray().map((a) => a.toString())
+          })),
+          type: 4
+        }
 
-      self._libp2pNode.contentRouting.findProviders(key, opts.timeout || null, callback)
+        callback(null, goResult)
+      })
     }),
 
     /**
@@ -114,14 +123,13 @@ module.exports = (self) => {
 
         // convert to go-ipfs return value, we need to revisit
         // this. For now will just conform.
-        const goResult = [
-          {
-            Responses: [{
-              ID: info.id.toB58String(),
-              Addresses: info.multiaddrs.toArray().map((a) => a.toString())
-            }]
-          }
-        ]
+        const goResult = {
+          responses: [{
+            id: info.id.toB58String(),
+            addrs: info.multiaddrs.toArray().map((a) => a.toString())
+          }],
+          type: 2
+        }
 
         callback(null, goResult)
       })
@@ -178,7 +186,11 @@ module.exports = (self) => {
      */
     query: promisify((peerId, callback) => {
       if (typeof peerId === 'string') {
-        peerId = PeerId.createFromB58String(peerId)
+        try {
+          peerId = PeerId.createFromB58String(peerId)
+        } catch (err) {
+          callback(err)
+        }
       }
 
       // TODO expose this method in peerRouting

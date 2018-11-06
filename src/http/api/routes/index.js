@@ -23,4 +23,5 @@ module.exports = (server) => {
   require('./stats')(server)
   require('./resolve')(server)
   require('./name')(server)
+  require('./dht')(server)
 }

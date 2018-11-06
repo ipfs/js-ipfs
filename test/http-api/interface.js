@@ -21,8 +21,24 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
     skip: { reason: 'TODO: DAG HTTP endpoints not implemented in js-ipfs yet!' }
   })
 
-  tests.dht(defaultCommonFactory, {
-    skip: { reason: 'TODO: unskip when https://github.com/ipfs/js-ipfs/pull/856 is merged' }
+  tests.dht(CommonFactory.create({
+    spawnOptions: {
+      args: ['--enable-dht-experiment'],
+      initOptions: { bits: 512 }
+    }
+  }), {
+    skip: [
+      // dht.get
+      {
+        name: 'should get a value after it was put on another node',
+        reason: 'Needs https://github.com/ipfs/interface-ipfs-core/pull/383'
+      },
+      // dht.findprovs
+      {
+        name: 'should take options to override timeout config',
+        reason: 'Returns empty result'
+      }
+    ]
   })
 
   tests.filesRegular(defaultCommonFactory)
