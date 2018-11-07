@@ -8,6 +8,9 @@ const defaultsDeep = require('@nodeutils/defaults-deep')
 const defaultConfig = require('../runtime/config-nodejs.js')
 const Keychain = require('libp2p-keychain')
 
+const IPNS = require('../ipns')
+const OfflineDatastore = require('../ipns/routing/offline-datastore')
+
 const addDefaultAssets = require('./init-assets')
 
 module.exports = function init (self) {
@@ -104,6 +107,13 @@ module.exports = function init (self) {
         } else {
           cb(null, true)
         }
+      },
+      // Setup offline routing for IPNS. This is primarily used for offline ipns modifications, such as the initializeKeyspace feature.
+      (_, cb) => {
+        const offlineDatastore = new OfflineDatastore(self._repo)
+
+        self._ipns = new IPNS(offlineDatastore, self)
+        cb(null, true)
       },
       // add empty unixfs dir object (go-ipfs assumes this exists)
       (_, cb) => {

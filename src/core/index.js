@@ -18,7 +18,7 @@ const EventEmitter = require('events')
 const config = require('./config')
 const boot = require('./boot')
 const components = require('./components')
-const IPNS = require('./ipns')
+
 // replaced by repo-browser when running in the browser
 const defaultRepo = require('./runtime/repo-nodejs')
 const preload = require('./preload')
@@ -126,7 +126,7 @@ class IPFS extends EventEmitter {
     })
     this._preload = preload(this)
     this._mfsPreload = mfsPreload(this)
-    this._ipns = new IPNS(null, this)
+    this._ipns = undefined
 
     // IPFS Core exposed components
     //   - for booting up a node
