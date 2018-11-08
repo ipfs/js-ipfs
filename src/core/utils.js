@@ -105,31 +105,33 @@ const resolvePath = promisify(function (objectAPI, ipfsPaths, callback) {
 
     const rootHash = new CID(parsedPath.hash)
     const rootLinks = parsedPath.links
+
     if (!rootLinks.length) {
       return cb(null, rootHash.buffer)
     }
 
-    objectAPI.get(rootHash.multihash, follow.bind(null, rootLinks))
+    objectAPI.get(rootHash, follow.bind(null, rootHash, rootLinks))
 
     // recursively follow named links to the target node
-    function follow (links, err, obj) {
+    function follow (cid, links, err, obj) {
       if (err) {
         return cb(err)
       }
+
       if (!links.length) {
         // done tracing, obj is the target node
-        return cb(null, obj.multihash)
+        return cb(null, cid.buffer)
       }
 
       const linkName = links[0]
       const nextObj = obj.links.find(link => link.name === linkName)
       if (!nextObj) {
         return cb(new Error(
-          `no link named "${linkName}" under ${obj.toJSON().multihash}`
+          `no link named "${linkName}" under ${cid.toBaseEncodedString()}`
         ))
       }
 
-      objectAPI.get(nextObj.multihash, follow.bind(null, links.slice(1)))
+      objectAPI.get(nextObj.cid, follow.bind(null, nextObj.cid, links.slice(1)))
     }
   }, callback)
 })

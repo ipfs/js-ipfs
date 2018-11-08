@@ -7,7 +7,12 @@ module.exports = {
 
   describe: 'Outputs the links pointed to by the specified object',
 
-  builder: {},
+  builder: {
+    'cid-base': {
+      default: 'base58btc',
+      describe: 'CID base to use.'
+    }
+  },
 
   handler (argv) {
     argv.ipfs.object.links(argv.key, {
@@ -18,9 +23,7 @@ module.exports = {
       }
 
       links.forEach((link) => {
-        link = link.toJSON()
-
-        print(`${link.multihash} ${link.size} ${link.name}`)
+        print(`${link.cid.toBaseEncodedString(argv.cidBase)} ${link.size} ${link.name}`)
       })
     })
   }

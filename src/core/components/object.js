@@ -1,6 +1,7 @@
 'use strict'
 
 const waterfall = require('async/waterfall')
+const parallel = require('async/parallel')
 const setImmediate = require('async/setImmediate')
 const promisify = require('promisify-es6')
 const dagPB = require('ipld-dag-pb')
@@ -20,6 +21,8 @@ function normalizeMultihash (multihash, enc) {
     return Buffer.from(multihash, enc)
   } else if (Buffer.isBuffer(multihash)) {
     return multihash
+  } else if (CID.isCID(multihash)) {
+    return multihash.buffer
   } else {
     throw new Error('unsupported multihash')
   }
@@ -84,9 +87,11 @@ module.exports = function object (self) {
               return cb(err)
             }
 
-            const cid = new CID(node.multihash)
-
-            self._ipld.put(node, { cid }, (err) => {
+            self._ipld.put(node, {
+              version: 0,
+              hashAlg: 'sha2-256',
+              format: 'dag-pb'
+            }, (err, cid) => {
               if (err) return cb(err)
 
               if (options.preload !== false) {
@@ -132,9 +137,11 @@ module.exports = function object (self) {
           return callback(err)
         }
 
-        const cid = new CID(node.multihash)
-
-        self._ipld.put(node, { cid }, (err) => {
+        self._ipld.put(node, {
+          version: 0,
+          hashAlg: 'sha2-256',
+          format: 'dag-pb'
+        }, (err, cid) => {
           if (err) {
             return callback(err)
           }
@@ -176,7 +183,7 @@ module.exports = function object (self) {
             next()
           })
         }
-      } else if (obj.multihash) {
+      } else if (DAGNode.isDAGNode(obj)) {
         // already a dag node
         node = obj
         next()
@@ -193,20 +200,18 @@ module.exports = function object (self) {
       }
 
       function next () {
-        let cid
-
-        try {
-          cid = new CID(node.multihash)
-        } catch (err) {
-          return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
-        }
-
-        self._ipld.put(node, { cid }, (err) => {
+        self._ipld.put(node, {
+          version: 0,
+          hashAlg: 'sha2-256',
+          format: 'dag-pb'
+        }, (err, cid) => {
           if (err) {
             return callback(err)
           }
 
-          self.object.get(node.multihash, { preload: options.preload }, callback)
+          self.object.get(cid, {
+            preload: options.preload
+          }, callback)
         })
       }
     }),
@@ -246,9 +251,7 @@ module.exports = function object (self) {
           return callback(err)
         }
 
-        const node = result.value
-
-        callback(null, node)
+        callback(null, result.value)
       })
     }),
 
@@ -288,29 +291,30 @@ module.exports = function object (self) {
         options = {}
       }
 
-      self.object.get(multihash, options, (err, node) => {
+      waterfall([
+        (cb) => self.object.get(multihash, options, cb),
+        (node, cb) => {
+          parallel({
+            serialized: (next) => dagPB.util.serialize(node, next),
+            cid: (next) => dagPB.util.cid(node, next),
+            node: (next) => next(null, node)
+          }, cb)
+        }
+      ], (err, result) => {
         if (err) {
           return callback(err)
         }
 
-        dagPB.util.serialize(node, (err, serialized) => {
-          if (err) {
-            return callback(err)
-          }
+        const blockSize = result.serialized.length
+        const linkLength = result.node.links.reduce((a, l) => a + l.size, 0)
 
-          const blockSize = serialized.length
-          const linkLength = node.links.reduce((a, l) => a + l.size, 0)
-
-          const nodeJSON = node.toJSON()
-
-          callback(null, {
-            Hash: nodeJSON.multihash,
-            NumLinks: node.links.length,
-            BlockSize: blockSize,
-            LinksSize: blockSize - node.data.length,
-            DataSize: node.data.length,
-            CumulativeSize: blockSize + linkLength
-          })
+        callback(null, {
+          Hash: result.cid.toBaseEncodedString(),
+          NumLinks: result.node.links.length,
+          BlockSize: blockSize,
+          LinksSize: blockSize - result.node.data.length,
+          DataSize: result.node.data.length,
+          CumulativeSize: blockSize + linkLength
         })
       })
     }),

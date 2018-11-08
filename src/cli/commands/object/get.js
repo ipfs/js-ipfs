@@ -1,6 +1,11 @@
 'use strict'
 
 const print = require('../../utils').print
+const {
+  util: {
+    cid
+  }
+} = require('ipld-dag-pb')
 
 module.exports = {
   command: 'get <key>',
@@ -11,6 +16,10 @@ module.exports = {
     'data-encoding': {
       type: 'string',
       default: 'base64'
+    },
+    'cid-base': {
+      default: 'base58btc',
+      describe: 'CID base to use.'
     }
   },
 
@@ -19,26 +28,33 @@ module.exports = {
       if (err) {
         throw err
       }
-      const nodeJSON = node.toJSON()
 
-      if (Buffer.isBuffer(node.data)) {
-        nodeJSON.data = node.data.toString(argv['data-encoding'] || undefined)
-      }
+      cid(node, (err, result) => {
+        if (err) {
+          throw err
+        }
 
-      const answer = {
-        Data: nodeJSON.data,
-        Hash: nodeJSON.multihash,
-        Size: nodeJSON.size,
-        Links: nodeJSON.links.map((l) => {
-          return {
-            Name: l.name,
-            Size: l.size,
-            Hash: l.multihash
-          }
-        })
-      }
+        let data = node.data
 
-      print(JSON.stringify(answer))
+        if (Buffer.isBuffer(data)) {
+          data = node.data.toString(argv.dataEncoding || undefined)
+        }
+
+        const answer = {
+          Data: data,
+          Hash: result.toBaseEncodedString(argv.cidBase),
+          Size: node.size,
+          Links: node.links.map((l) => {
+            return {
+              Name: l.name,
+              Size: l.size,
+              Hash: l.cid.toBaseEncodedString(argv.cidBase)
+            }
+          })
+        }
+
+        print(JSON.stringify(answer))
+      })
     })
   }
 }

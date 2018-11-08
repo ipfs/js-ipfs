@@ -7,6 +7,10 @@ const promisify = require('promisify-es6')
 const defaultsDeep = require('@nodeutils/defaults-deep')
 const defaultConfig = require('../runtime/config-nodejs.js')
 const Keychain = require('libp2p-keychain')
+const {
+  DAGNode
+} = require('ipld-dag-pb')
+const UnixFs = require('ipfs-unixfs')
 
 const addDefaultAssets = require('./init-assets')
 
@@ -114,8 +118,13 @@ module.exports = function init (self) {
         const tasks = [
           (cb) => {
             waterfall([
-              (cb) => self.object.new('unixfs-dir', cb),
-              (emptyDirNode, cb) => self._ipns.initializeKeyspace(privateKey, emptyDirNode.toJSON().multihash, cb)
+              (cb) => DAGNode.create(new UnixFs('directory').marshal(), cb),
+              (node, cb) => self.dag.put(node, {
+                version: 0,
+                format: 'dag-pb',
+                hashAlg: 'sha2-256'
+              }, cb),
+              (cid, cb) => self._ipns.initializeKeyspace(privateKey, cid.toBaseEncodedString(), cb)
             ], cb)
           }
         ]

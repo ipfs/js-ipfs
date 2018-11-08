@@ -45,10 +45,14 @@ describe('object endpoint', () => {
     it('.new', (done) => {
       ipfs.object.new(asJson((err, res) => {
         expect(err).to.not.exist()
-        expect(res.multihash)
-          .to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
         expect(res.links).to.be.eql([])
-        done()
+
+        dagPB.util.cid(res, (err, cid) => {
+          expect(err).to.not.exist()
+          expect(cid.toBaseEncodedString())
+            .to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
+          done()
+        })
       }))
     })
 
@@ -91,10 +95,9 @@ describe('object endpoint', () => {
         const filePath = fs.readFileSync('test/fixtures/test-data/node.json')
         const expectedResult = {
           data: Buffer.from('another'),
-          multihash: 'QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm',
           links: [{
             name: 'some link',
-            multihash: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
+            cid: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
             size: 8
           }],
           size: 68
@@ -103,7 +106,13 @@ describe('object endpoint', () => {
         ipfs.object.put(filePath, { enc: 'json' }, asJson((err, res) => {
           expect(err).to.not.exist()
           expect(res).to.eql(expectedResult)
-          done()
+
+          dagPB.util.cid(res, (err, cid) => {
+            expect(err).to.not.exist()
+            expect(cid.toBaseEncodedString())
+              .to.equal('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
+            done()
+          })
         }))
       })
     })
@@ -179,7 +188,7 @@ describe('object endpoint', () => {
       it('returns value', (done) => {
         const expectedResult = {
           name: 'some link',
-          multihash: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
+          cid: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
           size: 8
         }
 
@@ -213,7 +222,6 @@ describe('object endpoint', () => {
         const filePath = 'test/fixtures/test-data/badnode.json'
         const expectedResult = {
           data: fs.readFileSync(filePath),
-          multihash: 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6',
           links: [],
           size: 19
         }
@@ -221,7 +229,13 @@ describe('object endpoint', () => {
         ipfs.object.patch.appendData(key, filePath, { enc: 'base58' }, asJson((err, res) => {
           expect(err).to.not.exist()
           expect(res).to.eql(expectedResult)
-          done()
+
+          dagPB.util.cid(res, (err, cid) => {
+            expect(err).to.not.exist()
+            expect(cid.toBaseEncodedString())
+              .to.equal('QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6')
+            done()
+          })
         }))
       })
     })
@@ -248,7 +262,6 @@ describe('object endpoint', () => {
         const filePath = 'test/fixtures/test-data/badnode.json'
         const expectedResult = {
           data: fs.readFileSync(filePath),
-          multihash: 'QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6',
           links: [],
           size: 19
         }
@@ -256,7 +269,13 @@ describe('object endpoint', () => {
         ipfs.object.patch.setData(key, filePath, { enc: 'base58' }, asJson((err, res) => {
           expect(err).to.not.exist()
           expect(res).to.eql(expectedResult)
-          done()
+
+          dagPB.util.cid(res, (err, cid) => {
+            expect(err).to.not.exist()
+            expect(cid.toBaseEncodedString())
+              .to.equal('QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6')
+            done()
+          })
         }))
       })
     })
@@ -294,13 +313,18 @@ describe('object endpoint', () => {
         const link = new DAGLink(name, 10, ref)
         ipfs.object.patch.addLink(root, link, { enc: 'base58' }, asJson((err, res) => {
           expect(err).not.to.exist()
-          expect(res.multihash).to.equal('QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK')
           expect(res.links[0]).to.eql({
             name: 'foo',
-            multihash: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn',
+            cid: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn',
             size: 4
           })
-          done()
+
+          dagPB.util.cid(res, (err, cid) => {
+            expect(err).to.not.exist()
+            expect(cid.toBaseEncodedString())
+              .to.equal('QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK')
+            done()
+          })
         }))
       })
     })
