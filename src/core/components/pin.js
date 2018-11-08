@@ -2,7 +2,7 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const { DAGNode, DAGLink } = require('ipld-dag-pb')
+const { DAGNode, DAGLink, util } = require('ipld-dag-pb')
 const CID = require('cids')
 const map = require('async/map')
 const mapSeries = require('async/mapSeries')
@@ -10,11 +10,10 @@ const series = require('async/series')
 const parallel = require('async/parallel')
 const eachLimit = require('async/eachLimit')
 const waterfall = require('async/waterfall')
-const someLimit = require('async/someLimit')
+const detectLimit = require('async/detectLimit')
 const setImmediate = require('async/setImmediate')
 const { Key } = require('interface-datastore')
 const errCode = require('err-code')
-
 const createPinSet = require('./pin-set')
 const { resolvePath } = require('../utils')
 
@@ -54,15 +53,23 @@ module.exports = (self) => {
     const indirectKeys = new Set()
     eachLimit(recursiveKeys(), concurrencyLimit, (multihash, cb) => {
       dag._getRecursive(multihash, (err, nodes) => {
-        if (err) { return cb(err) }
+        if (err) {
+          return cb(err)
+        }
 
-        nodes
-          .map(({ multihash }) => toB58String(multihash))
-          // recursive pins pre-empt indirect pins
-          .filter(key => !recursivePins.has(key))
-          .forEach(key => indirectKeys.add(key))
+        map(nodes, (node, cb) => util.cid(node, cb), (err, cids) => {
+          if (err) {
+            return cb(err)
+          }
 
-        cb()
+          cids
+            .map(cids => cids.toBaseEncodedString())
+            // recursive pins pre-empt indirect pins
+            .filter(key => !recursivePins.has(key))
+            .forEach(key => indirectKeys.add(key))
+
+          cb()
+        })
       })
     }, (err) => {
       if (err) { return callback(err) }
@@ -79,28 +86,43 @@ module.exports = (self) => {
       // create a DAGLink to the node with direct pins
       cb => waterfall([
         cb => pinset.storeSet(directKeys(), cb),
-        (node, cb) => DAGLink.create(types.direct, node.size, node.multihash, cb),
+        ({ node, cid }, cb) => DAGLink.create(types.direct, node.size, cid, cb),
         (link, cb) => { dLink = link; cb(null) }
       ], cb),
 
       // create a DAGLink to the node with recursive pins
       cb => waterfall([
         cb => pinset.storeSet(recursiveKeys(), cb),
-        (node, cb) => DAGLink.create(types.recursive, node.size, node.multihash, cb),
+        ({ node, cid }, cb) => DAGLink.create(types.recursive, node.size, cid, cb),
         (link, cb) => { rLink = link; cb(null) }
       ], cb),
 
       // the pin-set nodes link to a special 'empty' node, so make sure it exists
       cb => DAGNode.create(Buffer.alloc(0), (err, empty) => {
         if (err) { return cb(err) }
-        dag.put(empty, { cid: new CID(empty.multihash), preload: false }, cb)
+        dag.put(empty, {
+          version: 0,
+          hashAlg: 'sha2-256',
+          format: 'dag-pb',
+          preload: false
+        }, cb)
       }),
 
       // create a root node with DAGLinks to the direct and recursive DAGs
       cb => DAGNode.create(Buffer.alloc(0), [dLink, rLink], (err, node) => {
         if (err) { return cb(err) }
         root = node
-        dag.put(root, { cid: new CID(root.multihash), preload: false }, cb)
+        dag.put(root, {
+          version: 0,
+          hashAlg: 'sha2-256',
+          format: 'dag-pb',
+          preload: false
+        }, (err, cid) => {
+          if (!err) {
+            root.multihash = cid.buffer
+          }
+          cb(err)
+        })
       }),
 
       // hack for CLI tests
@@ -261,34 +283,35 @@ module.exports = (self) => {
 
       if (paths) {
         // check the pinned state of specific hashes
-        resolvePath(self.object, paths, (err, mhs) => {
-          if (err) { return callback(err) }
+        waterfall([
+          (cb) => resolvePath(self.object, paths, cb),
+          (hashes, cb) => mapSeries(hashes, (hash, done) => pin._isPinnedWithType(hash, types.all, done), cb),
+          (results, cb) => {
+            results = results
+              .filter(result => result.pinned)
+              .map(({ key, reason }) => {
+                switch (reason) {
+                  case types.direct:
+                  case types.recursive:
+                    return {
+                      hash: key,
+                      type: reason
+                    }
+                  default:
+                    return {
+                      hash: key,
+                      type: `${types.indirect} through ${reason}`
+                    }
+                }
+              })
 
-          mapSeries(mhs, (multihash, cb) => {
-            pin._isPinnedWithType(multihash, types.all, (err, res) => {
-              if (err) { return cb(err) }
-              const { pinned, reason } = res
-              const key = toB58String(multihash)
-              if (!pinned) {
-                return cb(new Error(`Path ${key} is not pinned`))
-              }
+            if (!results.length) {
+              return cb(new Error(`Path is not pinned`))
+            }
 
-              switch (reason) {
-                case types.direct:
-                case types.recursive:
-                  return cb(null, {
-                    hash: key,
-                    type: reason
-                  })
-                default:
-                  return cb(null, {
-                    hash: key,
-                    type: `${types.indirect} through ${reason}`
-                  })
-              }
-            })
-          }, callback)
-        })
+            cb(null, results)
+          }
+        ], callback)
       } else {
         // show all pinned items of type
         let pins = []
@@ -333,40 +356,53 @@ module.exports = (self) => {
     _isPinnedWithType: promisify((multihash, type, callback) => {
       const key = toB58String(multihash)
       const { recursive, direct, all } = types
+
       // recursive
       if ((type === recursive || type === all) && recursivePins.has(key)) {
-        return callback(null, { pinned: true, reason: recursive })
+        return callback(null, {
+          key,
+          pinned: true,
+          reason: recursive
+        })
       }
-      if ((type === recursive)) {
-        return callback(null, { pinned: false })
+
+      if (type === recursive) {
+        return callback(null, {
+          key,
+          pinned: false
+        })
       }
+
       // direct
       if ((type === direct || type === all) && directPins.has(key)) {
-        return callback(null, { pinned: true, reason: direct })
+        return callback(null, {
+          key,
+          pinned: true,
+          reason: direct
+        })
       }
-      if ((type === direct)) {
-        return callback(null, { pinned: false })
+
+      if (type === direct) {
+        return callback(null, {
+          key,
+          pinned: false
+        })
       }
 
       // indirect (default)
       // check each recursive key to see if multihash is under it
       // arbitrary limit, enables handling 1000s of pins.
-      let foundPin
-      someLimit(recursiveKeys(), concurrencyLimit, (key, cb) => {
-        dag.get(new CID(key), (err, res) => {
-          if (err) { return cb(err) }
-
-          pinset.hasDescendant(res.value, multihash, (err, has) => {
-            if (has) {
-              foundPin = toB58String(res.value.multihash)
-            }
-            cb(err, has)
-          })
-        })
-      }, (err, found) => {
-        if (err) { return callback(err) }
-        return callback(null, { pinned: found, reason: foundPin })
-      })
+      detectLimit(recursiveKeys().map(key => new CID(key)), concurrencyLimit, (cid, cb) => {
+        waterfall([
+          (done) => dag.get(cid, '', { preload: false }, done),
+          (result, done) => done(null, result.value),
+          (node, done) => pinset.hasDescendant(node, key, done)
+        ], cb)
+      }, (err, cid) => callback(err, {
+        key,
+        pinned: Boolean(cid),
+        reason: cid
+      }))
     }),
 
     _load: promisify(callback => {
@@ -376,7 +412,9 @@ module.exports = (self) => {
         (_, cb) => repo.datastore.has(pinDataStoreKey, cb),
         (has, cb) => has ? cb() : cb(new Error('No pins to load')),
         (cb) => repo.datastore.get(pinDataStoreKey, cb),
-        (mh, cb) => dag.get(new CID(mh), '', { preload: false }, cb)
+        (mh, cb) => {
+          dag.get(new CID(mh), '', { preload: false }, cb)
+        }
       ], (err, pinRoot) => {
         if (err) {
           if (err.message === 'No pins to load') {

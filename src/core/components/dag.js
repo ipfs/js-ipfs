@@ -163,7 +163,7 @@ module.exports = function dag (self) {
         if (err) { return callback(err) }
 
         mapAsync(res.value.links, (link, cb) => {
-          self.dag._getRecursive(link.multihash, options, cb)
+          self.dag._getRecursive(link.cid, options, cb)
         }, (err, nodes) => {
           // console.log('nodes:', nodes)
           if (err) return callback(err)

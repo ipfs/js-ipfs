@@ -6,6 +6,11 @@ const debug = require('debug')
 const log = debug('cli:object')
 log.error = debug('cli:object:error')
 const print = require('../../../utils').print
+const {
+  util: {
+    cid
+  }
+} = require('ipld-dag-pb')
 
 function parseAndAddNode (key, data, ipfs) {
   ipfs.object.patch.setData(key, data, {
@@ -14,9 +19,14 @@ function parseAndAddNode (key, data, ipfs) {
     if (err) {
       throw err
     }
-    const nodeJSON = node.toJSON()
 
-    print(nodeJSON.multihash)
+    cid(node, (err, cid) => {
+      if (err) {
+        throw err
+      }
+
+      print(cid.toBaseEncodedString())
+    })
   })
 }
 

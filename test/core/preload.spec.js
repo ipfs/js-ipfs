@@ -3,13 +3,17 @@
 'use strict'
 
 const hat = require('hat')
-const CID = require('cids')
 const parallel = require('async/parallel')
 const waterfall = require('async/waterfall')
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
+const {
+  util: {
+    cid
+  }
+} = require('ipld-dag-pb')
 
 const MockPreloadNode = require('../utils/mock-preload-node')
 const IPFS = require('../../src')
@@ -157,8 +161,11 @@ describe('preload', () => {
     ipfs.object.new((err, node) => {
       expect(err).to.not.exist()
 
-      const cid = new CID(node.multihash)
-      MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
+      cid(node, (err, result) => {
+        expect(err).to.not.exist()
+
+        MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
+      })
     })
   })
 
@@ -166,27 +173,43 @@ describe('preload', () => {
     ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, (err, node) => {
       expect(err).to.not.exist()
 
-      const cid = new CID(node.multihash)
-      MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
+      cid(node, (err, result) => {
+        expect(err).to.not.exist()
+
+        MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
+      })
     })
   })
 
   it('should preload content added with object.patch.addLink', (done) => {
     parallel({
-      parent: (cb) => ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, cb),
-      link: (cb) => ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, cb)
-    }, (err, nodes) => {
+      parent: (cb) => {
+        waterfall([
+          (done) => ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, done),
+          (node, done) => cid(node, (err, cid) => done(err, { node, cid }))
+        ], cb)
+      },
+      link: (cb) => {
+        waterfall([
+          (done) => ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, done),
+          (node, done) => cid(node, (err, cid) => done(err, { node, cid }))
+        ], cb)
+      }
+    }, (err, result) => {
       expect(err).to.not.exist()
 
-      ipfs.object.patch.addLink(nodes.parent.multihash, {
+      ipfs.object.patch.addLink(result.parent.cid, {
         name: 'link',
-        multihash: nodes.link.multihash,
-        size: nodes.link.size
+        cid: result.link.cid,
+        size: result.link.node.size
       }, (err, node) => {
         expect(err).to.not.exist()
 
-        const cid = new CID(node.multihash)
-        MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
+        cid(node, (err, result) => {
+          expect(err).to.not.exist()
+
+          MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
+        })
       })
     })
   })
@@ -194,24 +217,32 @@ describe('preload', () => {
   it('should preload content added with object.patch.rmLink', (done) => {
     waterfall([
       (cb) => ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, cb),
-      (link, cb) => {
+      (node, cb) => cid(node, (err, cid) => cb(err, { node, cid })),
+      ({ node, cid }, cb) => {
         ipfs.object.put({
           Data: Buffer.from(hat()),
           Links: [{
             name: 'link',
-            multihash: link.multihash,
-            size: link.size
+            cid: cid,
+            size: node.size
           }]
         }, cb)
       }
     ], (err, parent) => {
       expect(err).to.not.exist()
 
-      ipfs.object.patch.rmLink(parent.multihash, { name: 'link' }, (err, node) => {
+      cid(parent, (err, result) => {
         expect(err).to.not.exist()
 
-        const cid = new CID(node.multihash)
-        MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
+        ipfs.object.patch.rmLink(result, { name: 'link' }, (err, node) => {
+          expect(err).to.not.exist()
+
+          cid(node, (err, result) => {
+            expect(err).to.not.exist()
+
+            MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
+          })
+        })
       })
     })
   })
@@ -220,11 +251,18 @@ describe('preload', () => {
     ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, (err, node) => {
       expect(err).to.not.exist()
 
-      ipfs.object.patch.setData(node.multihash, Buffer.from(hat()), (err, node) => {
+      cid(node, (err, result) => {
         expect(err).to.not.exist()
 
-        const cid = new CID(node.multihash)
-        MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
+        ipfs.object.patch.setData(result, Buffer.from(hat()), (err, node) => {
+          expect(err).to.not.exist()
+
+          cid(node, (err, result) => {
+            expect(err).to.not.exist()
+
+            MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
+          })
+        })
       })
     })
   })
@@ -233,11 +271,18 @@ describe('preload', () => {
     ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, (err, node) => {
       expect(err).to.not.exist()
 
-      ipfs.object.patch.appendData(node.multihash, Buffer.from(hat()), (err, node) => {
+      cid(node, (err, result) => {
         expect(err).to.not.exist()
 
-        const cid = new CID(node.multihash)
-        MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
+        ipfs.object.patch.appendData(result, Buffer.from(hat()), (err, node) => {
+          expect(err).to.not.exist()
+
+          cid(node, (err, result) => {
+            expect(err).to.not.exist()
+
+            MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
+          })
+        })
       })
     })
   })
@@ -245,10 +290,15 @@ describe('preload', () => {
   it('should preload content retrieved with object.get', (done) => {
     ipfs.object.new(null, { preload: false }, (err, node) => {
       expect(err).to.not.exist()
-      ipfs.object.get(node.multihash, (err) => {
+
+      cid(node, (err, result) => {
         expect(err).to.not.exist()
-        const cid = new CID(node.multihash)
-        MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
+
+        ipfs.object.get(result, (err) => {
+          expect(err).to.not.exist()
+
+          MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
+        })
       })
     })
   })

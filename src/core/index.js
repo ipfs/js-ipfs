@@ -185,7 +185,11 @@ class IPFS extends EventEmitter {
     }
 
     // ipfs.files
-    const mfs = components.mfs(this)
+    const mfs = components.mfs({
+      ipld: this._ipld,
+      repo: this._repo,
+      repoOwner: (this._options.mfs && this._options.mfs.repoOwner) || true
+    })
 
     Object.keys(mfs).forEach(key => {
       this.files[key] = mfs[key]

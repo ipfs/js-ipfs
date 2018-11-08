@@ -126,7 +126,7 @@ describe('pin', function () {
       return pin._isPinnedWithType(pins.mercuryWiki, pinTypes.indirect)
         .then(result => {
           expect(result.pinned).to.eql(true)
-          expect(result.reason).to.eql(pins.root)
+          expect(result.reason.toBaseEncodedString()).to.eql(pins.root)
         })
     })
 
