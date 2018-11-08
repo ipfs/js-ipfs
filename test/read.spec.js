@@ -26,10 +26,6 @@ describe('read', function () {
       })
   })
 
-  after((done) => {
-    mfs.node.stop(done)
-  })
-
   const methods = [{
     name: 'read',
     read: function () {

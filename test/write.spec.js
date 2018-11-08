@@ -72,10 +72,6 @@ describe('write', function () {
       })
   })
 
-  after((done) => {
-    mfs.node.stop(done)
-  })
-
   it('explodes if it cannot convert content to a pull stream', () => {
     return mfs.write('/foo', -1, {
       create: true
@@ -418,7 +414,7 @@ describe('write', function () {
         rawLeaves: true
       })
         .then(() => mfs.stat(path))
-        .then((stats) => collectLeafCids(mfs.node, stats.hash))
+        .then((stats) => collectLeafCids(mfs, stats.hash))
         .then((cids) => {
           const rawNodes = cids
             .filter(cid => cid.codec === 'raw')

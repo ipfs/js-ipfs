@@ -22,10 +22,6 @@ describe('cp', function () {
       })
   })
 
-  after((done) => {
-    mfs.node.stop(done)
-  })
-
   it('refuses to copy files without arguments', () => {
     return mfs.cp()
       .then(() => {

@@ -1,6 +1,10 @@
 'use strict'
 
 const CID = require('cids')
+const UnixFs = require('ipfs-unixfs')
+const {
+  DAGNode
+} = require('ipld-dag-pb')
 const log = require('debug')('ipfs:mfs:utils:with-mfs-root')
 const waterfall = require('async/waterfall')
 
@@ -8,39 +12,31 @@ const {
   MFS_ROOT_KEY
 } = require('./constants')
 
-const withMfsRoot = (ipfs, callback) => {
-  const repo = ipfs._repo
-  const datastore = repo && repo.datastore
-
-  if (!repo || !datastore) {
-    return callback(new Error('Please run jsipfs init first'))
-  }
-
+const withMfsRoot = (context, callback) => {
   waterfall([
     // Open the repo if it's been closed
-    (cb) => datastore.open((error) => cb(error)),
+    (cb) => context.repo.datastore.open((error) => cb(error)),
     (cb) => {
       // Load the MFS root CID
-      datastore.get(MFS_ROOT_KEY, (error, result) => {
+      context.repo.datastore.get(MFS_ROOT_KEY, (error, result) => {
         // Once datastore-level releases its error.code addition, we can remove error.notFound logic
         if (error && (error.notFound || error.code === 'ERR_NOT_FOUND')) {
           log('Creating new MFS root')
 
           return waterfall([
             // Store an empty node as the root
-            (next) => ipfs.add({
-              path: '/'
+            (next) => DAGNode.create(new UnixFs('directory').marshal(), next),
+            (node, next) => context.ipld.put(node, {
+              version: 0,
+              hashAlg: 'sha2-256',
+              format: 'dag-pb'
             }, next),
-            // Turn the hash into a Buffer
-            ([{ hash }], next) => next(null, new CID(hash)),
-            (cid, next) => repo.closed ? datastore.open((error) => next(error, cid)) : next(null, cid),
             // Store the Buffer in the datastore
-            (cid, next) => datastore.put(MFS_ROOT_KEY, cid.buffer, (error) => next(error, cid))
+            (cid, next) => context.repo.datastore.put(MFS_ROOT_KEY, cid.buffer, (error) => next(error, cid))
           ], cb)
         }
 
-        const cid = result ? new CID(result) : null
-        cb(error, cid)
+        cb(error, result ? new CID(result) : null)
       })
     },
     // Turn the Buffer into a CID

@@ -15,7 +15,7 @@ const defaultOptions = {
   hashAlg: 'sha2-256'
 }
 
-module.exports = (ipfs) => {
+module.exports = (context) => {
   return function mfsMv () {
     let args = Array.from(arguments)
 
@@ -42,8 +42,8 @@ module.exports = (ipfs) => {
       }))
 
     series([
-      (cb) => cp(ipfs).apply(null, cpArgs.concat(cb)),
-      (cb) => rm(ipfs).apply(null, rmArgs.concat(cb))
+      (cb) => cp(context).apply(null, cpArgs.concat(cb)),
+      (cb) => rm(context).apply(null, rmArgs.concat(cb))
     ], callback)
   }
 }

@@ -21,7 +21,7 @@ const defaultOptions = {
   hashAlg: 'sha2-256'
 }
 
-module.exports = (ipfs) => {
+module.exports = (context) => {
   return function mfsCp () {
     const args = Array.from(arguments)
     const {
@@ -41,21 +41,21 @@ module.exports = (ipfs) => {
 
     options.parents = options.p || options.parents
 
-    traverseTo(ipfs, destination.path, {}, (error, result) => {
+    traverseTo(context, destination.path, {}, (error, result) => {
       if (error) {
         if (sources.length === 1) {
           log('Only one source, copying to a file')
-          return copyToFile(ipfs, sources.pop(), destination, options, callback)
+          return copyToFile(context, sources.pop(), destination, options, callback)
         } else {
           log('Multiple sources, copying to a directory')
-          return copyToDirectory(ipfs, sources, destination, options, callback)
+          return copyToDirectory(context, sources, destination, options, callback)
         }
       }
 
       const meta = UnixFs.unmarshal(result.node.data)
 
       if (meta.type === 'directory') {
-        return copyToDirectory(ipfs, sources, destination, options, callback)
+        return copyToDirectory(context, sources, destination, options, callback)
       }
 
       callback(new Error('directory already has entry by that name'))
@@ -63,52 +63,51 @@ module.exports = (ipfs) => {
   }
 }
 
-const copyToFile = (ipfs, source, destination, options, callback) => {
+const copyToFile = (context, source, destination, options, callback) => {
   waterfall([
     (cb) => {
       parallel([
-        (next) => stat(ipfs)(source.path, options, next),
-        (next) => stat(ipfs)(destination.path, options, (error) => {
+        (next) => stat(context)(source.path, options, next),
+        (next) => stat(context)(destination.path, options, (error) => {
           if (!error) {
             return next(new Error('directory already has entry by that name'))
           }
 
           next()
         }),
-        (next) => traverseTo(ipfs, destination.dir, options, next)
+        (next) => traverseTo(context, destination.dir, options, next)
       ], cb)
     },
     ([sourceStats, _, dest], cb) => {
       waterfall([
-        (next) => addLink(ipfs, {
+        (next) => addLink(context, {
           parent: dest.node,
-          child: {
-            size: sourceStats.cumulativeSize,
-            hash: sourceStats.hash
-          },
+          size: sourceStats.cumulativeSize,
+          cid: sourceStats.hash,
           name: destination.name
         }, next),
-        (newParent, next) => {
-          dest.node = newParent
-          updateTree(ipfs, dest, next)
+        ({ node, cid }, next) => {
+          dest.node = node
+          dest.cid = cid
+          updateTree(context, dest, next)
         },
-        (newRoot, cb) => updateMfsRoot(ipfs, newRoot.node.multihash, cb)
+        ({ node, cid }, cb) => updateMfsRoot(context, cid, cb)
       ], cb)
     }
   ], (error) => callback(error))
 }
 
-const copyToDirectory = (ipfs, sources, destination, options, callback) => {
+const copyToDirectory = (context, sources, destination, options, callback) => {
   waterfall([
     (cb) => {
       series([
         // stat in parallel
         (done) => parallel(
-          sources.map(source => (next) => stat(ipfs)(source.path, options, next)),
+          sources.map(source => (next) => stat(context)(source.path, options, next)),
           done
         ),
         // this could end up changing the root mfs node so do it after parallel
-        (done) => traverseTo(ipfs, destination.path, Object.assign({}, options, {
+        (done) => traverseTo(context, destination.path, Object.assign({}, options, {
           createLastComponent: true
         }), done)
       ], cb)
@@ -123,7 +122,7 @@ const copyToDirectory = (ipfs, sources, destination, options, callback) => {
           parallel(
             sources.map(source => {
               return (cb) => {
-                stat(ipfs)(`${destination.path}/${source.name}`, options, (error) => {
+                stat(context)(`${destination.path}/${source.name}`, options, (error) => {
                   if (!error) {
                     return cb(new Error('directory already has entry by that name'))
                   }
@@ -138,16 +137,14 @@ const copyToDirectory = (ipfs, sources, destination, options, callback) => {
         // add links to target directory
         (next) => {
           waterfall([
-            (done) => done(null, dest.node)
+            (done) => done(null, dest)
           ].concat(
             sourceStats.map((sourceStat, index) => {
               return (dest, done) => {
-                return addLink(ipfs, {
-                  parent: dest,
-                  child: {
-                    size: sourceStat.cumulativeSize,
-                    hash: sourceStat.hash
-                  },
+                return addLink(context, {
+                  parent: dest.node,
+                  size: sourceStat.cumulativeSize,
+                  cid: sourceStat.hash,
                   name: sources[index].name
                 }, done)
               }
@@ -155,13 +152,14 @@ const copyToDirectory = (ipfs, sources, destination, options, callback) => {
           ), next)
         },
         // update mfs tree
-        (newParent, next) => {
-          dest.node = newParent
+        ({ node, cid }, next) => {
+          dest.node = node
+          dest.cid = cid
 
-          updateTree(ipfs, dest, next)
+          updateTree(context, dest, next)
         },
         // save new root CID
-        (newRoot, cb) => updateMfsRoot(ipfs, newRoot.node.multihash, cb)
+        (newRoot, cb) => updateMfsRoot(context, newRoot.cid, cb)
       ], cb)
     }
   ], (error) => callback(error))

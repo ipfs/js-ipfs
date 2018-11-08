@@ -24,10 +24,6 @@ describe('rm', function () {
       })
   })
 
-  after((done) => {
-    mfs.node.stop(done)
-  })
-
   it('refuses to remove files without arguments', () => {
     return mfs.rm()
       .then(() => {

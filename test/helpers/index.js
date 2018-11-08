@@ -1,40 +1,33 @@
 'use strict'
 
-const ipfs = require('ipfs')
-const path = require('path')
-const os = require('os')
-const promisify = require('promisify-es6')
-const {
-  race,
-  waterfall
-} = require('async')
 const core = require('../../src/core')
 const isWebWorker = require('detect-webworker')
+const promisify = require('promisify-es6')
+const InMemoryDataStore = require('interface-datastore').MemoryDatastore
+const inMemoryIpld = promisify(require('ipld').inMemory)
 
-const createMfs = promisify((cb) => {
-  let node = ipfs.createNode({
-    repo: path.join(os.tmpdir(), `ipfs-mfs-tests-${Math.random()}`),
-    mfs: {
-      // https://github.com/Joris-van-der-Wel/karma-mocha-webworker/issues/4
-      // There is no IPFS node running on the main thread so run it on the
-      // worker along with the tests
-      repoOwner: isWebWorker
-    }
+const createMfs = async () => {
+  let ipld = await inMemoryIpld()
+  let datastore = new InMemoryDataStore()
+
+  const mfs = core({
+    ipld,
+    repo: {
+      datastore
+    },
+
+    // https://github.com/Joris-van-der-Wel/karma-mocha-webworker/issues/4
+    // There is no IPFS node running on the main thread so run it on the
+    // worker along with the tests
+    repoOwner: isWebWorker
   })
 
-  waterfall([
-    (done) => race([
-      (next) => node.once('error', next),
-      (next) => node.once('ready', next)
-    ], (error) => done(error, node)),
-    (node, done) => {
-      const mfs = core(node)
-      mfs.node = node
+  // to allow tests to verify information
+  mfs.ipld = ipld
+  mfs.datastore = datastore
 
-      done(null, mfs)
-    }
-  ], cb)
-})
+  return mfs
+}
 
 module.exports = {
   createMfs,

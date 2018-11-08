@@ -17,10 +17,6 @@ describe('flush', function () {
       })
   })
 
-  after((done) => {
-    mfs.node.stop(done)
-  })
-
   it('flushes the root node', () => {
     return mfs.flush()
   })

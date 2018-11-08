@@ -18,7 +18,7 @@ const defaultOptions = {
   length: undefined
 }
 
-module.exports = (ipfs) => {
+module.exports = (context) => {
   return function mfsReadPullStream (path, options = {}) {
     options = Object.assign({}, defaultOptions, options)
 
@@ -30,13 +30,12 @@ module.exports = (ipfs) => {
       once(path),
       asyncMap((path, cb) => {
         createLock().readLock((next) => {
-          traverseTo(ipfs, path, {
+          traverseTo(context, path, {
             parents: false
           }, next)
         })(cb)
       }),
-      asyncMap((result, cb) => {
-        const node = result.node
+      asyncMap(({ node, cid }, cb) => {
         const meta = UnixFs.unmarshal(node.data)
 
         if (meta.type !== 'file') {
@@ -46,7 +45,7 @@ module.exports = (ipfs) => {
         log(`Getting ${path} content`)
 
         pull(
-          exporter(node.multihash, ipfs.dag, {
+          exporter(cid, context.ipld, {
             offset: options.offset,
             length: options.length
           }),

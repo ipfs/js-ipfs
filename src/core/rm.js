@@ -6,7 +6,6 @@ const series = require('async/series')
 const {
   DAGNode
 } = require('ipld-dag-pb')
-const CID = require('cids')
 const {
   traverseTo,
   updateTree,
@@ -16,10 +15,13 @@ const {
 } = require('./utils')
 
 const defaultOptions = {
-  recursive: false
+  recursive: false,
+  cidVersion: 0,
+  hashAlg: 'sha2-256',
+  codec: 'dag-pb'
 }
 
-module.exports = (ipfs) => {
+module.exports = (context) => {
   return function mfsRm () {
     const args = Array.from(arguments)
     const {
@@ -34,20 +36,20 @@ module.exports = (ipfs) => {
 
     series(
       sources.map(source => {
-        return (done) => removePath(ipfs, source.path, options, done)
+        return (done) => removePath(context, source.path, options, done)
       }),
       (error) => callback(error)
     )
   }
 }
 
-const removePath = (ipfs, path, options, callback) => {
+const removePath = (context, path, options, callback) => {
   if (path === FILE_SEPARATOR) {
     return callback(new Error('Cannot delete root'))
   }
 
   waterfall([
-    (cb) => traverseTo(ipfs, path, {
+    (cb) => traverseTo(context, path, {
       withCreateHint: false
     }, cb),
     (result, cb) => {
@@ -60,16 +62,22 @@ const removePath = (ipfs, path, options, callback) => {
       waterfall([
         (next) => DAGNode.rmLink(result.parent.node, result.name, next),
         (newParentNode, next) => {
-          ipfs.dag.put(newParentNode, {
-            cid: new CID(newParentNode.hash || newParentNode.multihash)
-          }, (error) => next(error, newParentNode))
+          context.ipld.put(newParentNode, {
+            version: options.cidVersion,
+            format: options.codec,
+            hashAlg: options.hashAlg
+          }, (error, cid) => next(error, {
+            node: newParentNode,
+            cid
+          }))
         },
-        (newParentNode, next) => {
-          result.parent.node = newParentNode
+        ({ node, cid }, next) => {
+          result.parent.node = node
+          result.parent.cid = cid
 
-          updateTree(ipfs, result.parent, next)
+          updateTree(context, result.parent, next)
         },
-        (newRoot, next) => updateMfsRoot(ipfs, newRoot.node.multihash, next)
+        (newRoot, next) => updateMfsRoot(context, newRoot.cid, next)
       ], cb)
     }
   ], callback)

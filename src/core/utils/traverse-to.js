@@ -5,13 +5,15 @@ const log = require('debug')('ipfs:mfs:utils:traverse-to')
 const UnixFS = require('ipfs-unixfs')
 const waterfall = require('async/waterfall')
 const reduce = require('async/reduce')
+const {
+  DAGNode
+} = require('ipld-dag-pb')
 const withMfsRoot = require('./with-mfs-root')
 const validatePath = require('./validate-path')
 const addLink = require('./add-link')
 const {
   FILE_SEPARATOR
 } = require('./constants')
-const createNode = require('./create-node')
 const {
   NonFatalError
 } = require('./errors')
@@ -20,10 +22,13 @@ const defaultOptions = {
   parents: false,
   flush: true,
   createLastComponent: false,
-  withCreateHint: true
+  withCreateHint: true,
+  cidVersion: 0,
+  format: 'dag-pb',
+  hashAlg: 'sha2-256'
 }
 
-const traverseTo = (ipfs, path, options, callback) => {
+const traverseTo = (context, path, options, callback) => {
   options = Object.assign({}, defaultOptions, options)
 
   log('Traversing to', path)
@@ -32,30 +37,33 @@ const traverseTo = (ipfs, path, options, callback) => {
     (cb) => validatePath(path, cb),
     (path, cb) => {
       if (path.type === 'mfs') {
-        return traverseToMfsObject(ipfs, path, options, cb)
+        return traverseToMfsObject(context, path, options, cb)
       }
 
-      return traverseToIpfsObject(ipfs, path, options, cb)
+      return traverseToIpfsObject(context, path, options, cb)
     }
   ], callback)
 }
 
-const traverseToIpfsObject = (ipfs, path, options, callback) => {
+const traverseToIpfsObject = (context, path, options, callback) => {
   log('IPFS', path)
 
+  const cid = new CID(path.path)
+
   waterfall([
-    (cb) => ipfs.dag.get(path.path, cb),
+    (cb) => context.ipld.get(cid, cb),
     (result, cb) => cb(null, {
       name: path.name,
       node: result && result.value,
-      parent: null
+      parent: null,
+      cid
     })
   ], callback)
 }
 
-const traverseToMfsObject = (ipfs, path, options, callback) => {
+const traverseToMfsObject = (context, path, options, callback) => {
   waterfall([
-    (done) => withMfsRoot(ipfs, done),
+    (done) => withMfsRoot(context, done),
     (root, done) => {
       const pathSegments = path.path
         .split(FILE_SEPARATOR)
@@ -64,20 +72,22 @@ const traverseToMfsObject = (ipfs, path, options, callback) => {
       const trail = []
 
       waterfall([
-        (cb) => ipfs.dag.get(root, cb),
+        (cb) => context.ipld.get(root, cb),
         (result, cb) => {
           const rootNode = result.value
 
           trail.push({
             name: FILE_SEPARATOR,
             node: rootNode,
-            parent: null
+            parent: null,
+            cid: root
           })
 
           reduce(pathSegments.map((pathSegment, index) => ({ pathSegment, index })), {
             name: FILE_SEPARATOR,
             node: rootNode,
-            parent: null
+            parent: null,
+            cid: root
           }, (parent, { pathSegment, index }, done) => {
             const existingLink = parent.node.links.find(link => link.name === pathSegment)
 
@@ -97,20 +107,26 @@ const traverseToMfsObject = (ipfs, path, options, callback) => {
               log(`Adding empty directory '${pathSegment}' to parent ${parent.name}`)
 
               return waterfall([
-                (next) => createNode(ipfs, new UnixFS('directory').marshal(), [], options, next),
+                (next) => createNode(context, new UnixFS('directory').marshal(), [], options, next),
                 (emptyDirectory, next) => {
-                  addLink(ipfs, {
+                  addLink(context, {
                     parent: parent.node,
-                    child: emptyDirectory,
+                    size: emptyDirectory.node.size,
+                    cid: emptyDirectory.cid,
                     name: pathSegment,
                     flush: options.flush
-                  }, (error, updatedParent) => {
-                    parent.node = updatedParent
+                  }, (error, result) => {
+                    if (error) {
+                      return next(error)
+                    }
 
-                    next(error, {
+                    parent.node = result.node
+                    parent.cid = result.cid
+
+                    next(null, {
                       name: pathSegment,
-                      node: emptyDirectory,
-                      cid: new CID(emptyDirectory.multihash),
+                      node: emptyDirectory.node,
+                      cid: emptyDirectory.cid,
                       parent: parent
                     })
                   })
@@ -122,11 +138,8 @@ const traverseToMfsObject = (ipfs, path, options, callback) => {
               })
             }
 
-            let hash = existingLink.hash || existingLink.multihash
-            const cid = new CID(hash)
-
             // child existed, fetch it
-            ipfs.dag.get(cid, (error, result) => {
+            context.ipld.get(existingLink.cid, (error, result) => {
               if (error) {
                 return done(error)
               }
@@ -136,7 +149,8 @@ const traverseToMfsObject = (ipfs, path, options, callback) => {
               const child = {
                 name: pathSegment,
                 node,
-                parent: parent
+                parent: parent,
+                cid: existingLink.cid
               }
 
               trail.push(child)
@@ -146,6 +160,26 @@ const traverseToMfsObject = (ipfs, path, options, callback) => {
           }, cb)
         }
       ], done)
+    }
+  ], callback)
+}
+
+const createNode = (context, data, links, options, callback) => {
+  options = Object.assign({}, defaultOptions, options)
+
+  waterfall([
+    // Create a DAGNode with the new data
+    (cb) => DAGNode.create(data, links, cb),
+    (newNode, cb) => {
+      // Persist it
+      context.ipld.put(newNode, {
+        version: options.cidVersion,
+        format: options.format,
+        hashAlg: options.hashAlg
+      }, (error, cid) => cb(error, {
+        node: newNode,
+        cid
+      }))
     }
   ], callback)
 }

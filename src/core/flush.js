@@ -8,7 +8,7 @@ const {
 
 const defaultOptions = {}
 
-module.exports = (ipfs) => {
+module.exports = (context) => {
   return function mfsFlush (path, options, callback) {
     if (typeof options === 'function') {
       callback = options
@@ -28,7 +28,7 @@ module.exports = (ipfs) => {
     options = Object.assign({}, defaultOptions, options)
 
     waterfall([
-      (cb) => traverseTo(ipfs, path, {}, cb),
+      (cb) => traverseTo(context, path, {}, cb),
       (root, cb) => {
         cb()
       }
