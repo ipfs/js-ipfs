@@ -266,7 +266,7 @@ describe('interface-ipfs-core tests', () => {
     }
   }))
 
-  tests.types(defaultCommonFactory, { skip: { reason: 'FIXME currently failing' } })
+  tests.types(defaultCommonFactory)
 
   tests.util(defaultCommonFactory, { skip: { reason: 'FIXME currently failing' } })
 })
