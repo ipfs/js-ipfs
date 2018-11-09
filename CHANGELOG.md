@@ -1,3 +1,13 @@
+<a name="0.2.1"></a>
+## [0.2.1](https://github.com/ipfs/js-ipfs-http-response/compare/v0.1.4...v0.2.1) (2018-11-09)
+
+
+### Bug Fixes
+
+* use .cid property before falling back to .multihash ([#12](https://github.com/ipfs/js-ipfs-http-response/issues/12)) ([1c1a478](https://github.com/ipfs/js-ipfs-http-response/commit/1c1a478))
+
+
+
 <a name="0.2.0"></a>
 ## [0.2.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.1.4...v0.2.0) (2018-09-28)
 
