@@ -86,7 +86,7 @@ const cid = promisify((ipfs, path, callback) => {
               try {
                 // assume a Buffer with a valid CID
                 // (cid is allowed instead of multihash since https://github.com/ipld/js-ipld-dag-pb/pull/80)
-                cidOfNextFile = new CID(link.multihash)
+                cidOfNextFile = new CID(link.cid)
               } catch (err) {
                 // fallback to multihash
                 cidOfNextFile = new CID(mh.toB58String(link.multihash))
