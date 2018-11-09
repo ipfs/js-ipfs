@@ -39,6 +39,7 @@
     - [ ] IRC
     - [ ] Reddit
   - [ ] Blog post
+  - [ ] Copy release notes to the [GitHub Release description](https://github.com/ipfs/js-ipfs/releases)
 
 # 🙌🏽 Want to contribute?
 
