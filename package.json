@@ -108,7 +108,7 @@
     "ipfs-repo": "~0.25.0",
     "ipfs-unixfs": "~0.1.16",
     "ipfs-unixfs-engine": "~0.33.0",
-    "ipld": "^0.19.3",
+    "ipld": "~0.19.3",
     "ipld-bitcoin": "~0.1.8",
     "ipld-dag-pb": "~0.14.11",
     "ipld-ethereum": "^2.0.1",
