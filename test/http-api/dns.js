@@ -14,7 +14,10 @@ describe('dns endpoint', () => {
   let ipfsd = null
   before(function (done) {
     this.timeout(20 * 1000)
-    df.spawn({ initOptions: { bits: 512 } }, (err, _ipfsd) => {
+    df.spawn({
+      initOptions: { bits: 512 },
+      config: { Bootstrap: [] }
+    }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsd = _ipfsd
       ipfs = ipfsd.api

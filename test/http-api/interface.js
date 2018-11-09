@@ -90,6 +90,10 @@ describe('interface-ipfs-core over ipfs-api tests', () => {
               config = undefined
             }
 
+            config = config || {
+              Bootstrap: []
+            }
+
             const spawnOptions = { repoPath, config, initOptions: { bits: 512 } }
 
             ipfsFactory.spawn(spawnOptions, (err, _ipfsd) => {

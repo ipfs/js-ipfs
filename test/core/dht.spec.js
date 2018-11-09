@@ -20,7 +20,8 @@ describe('dht', () => {
 
     factory.spawn({
       exec: IPFS,
-      initOptions: { bits: 512 }
+      initOptions: { bits: 512 },
+      config: { Bootstrap: [] }
     }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsd = _ipfsd

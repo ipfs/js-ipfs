@@ -32,7 +32,8 @@ describe('name', function () {
     this.timeout(40 * 1000)
     df.spawn({
       exec: IPFS,
-      args: [`--pass ${hat()}`]
+      args: [`--pass ${hat()}`],
+      config: { Bootstrap: [] }
     }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsd = _ipfsd
@@ -168,7 +169,8 @@ describe('ipns.path', function () {
     this.timeout(40 * 1000)
     df.spawn({
       exec: IPFS,
-      args: [`--pass ${hat()}`]
+      args: [`--pass ${hat()}`],
+      config: { Bootstrap: [] }
     }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       node = _ipfsd.api
