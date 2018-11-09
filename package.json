@@ -51,6 +51,7 @@
     "ipfsd-ctl": "~0.39.1"
   },
   "contributors": [
+    "Alex Potsides <alex@achingbrain.net>",
     "André Cruz <andremiguelcruz@msn.com>",
     "Marcin Rataj <lidel@lidel.org>",
     "Vasco Santos <vasco.santos@moxy.studio>",
