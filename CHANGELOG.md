@@ -1,3 +1,14 @@
+<a name="0.5.0"></a>
+# [0.5.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.4.2...v0.5.0) (2018-11-12)
+
+
+### Bug Fixes
+
+* updates ipld-dag-pb dep to version without .cid properties ([fa9029d](https://github.com/ipfs/js-ipfs-mfs/commit/fa9029d)), closes [ipld/js-ipld-dag-pb#99](https://github.com/ipld/js-ipld-dag-pb/issues/99) [#24](https://github.com/ipfs/js-ipfs-mfs/issues/24)
+* use ipfs.add instead of files.add ([6aa245f](https://github.com/ipfs/js-ipfs-mfs/commit/6aa245f))
+
+
+
 <a name="0.4.2"></a>
 ## [0.4.2](https://github.com/ipfs/js-ipfs-mfs/compare/v0.4.1...v0.4.2) (2018-10-24)
 
