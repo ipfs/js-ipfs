@@ -15,14 +15,12 @@ module.exports = (createCommon, options) => {
   const common = createCommon()
 
   describe('.pingReadableStream', function () {
-    this.timeout(30 * 1000)
+    this.timeout(60 * 1000)
 
     let ipfsA
     let ipfsB
 
     before(function (done) {
-      this.timeout(60 * 1000)
-
       common.setup((err, factory) => {
         if (err) return done(err)
 

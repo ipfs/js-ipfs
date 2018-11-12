@@ -13,7 +13,7 @@ module.exports = (createCommon, options) => {
   const common = createCommon()
 
   describe('.ping', function () {
-    this.timeout(40 * 1000)
+    this.timeout(60 * 1000)
 
     let ipfsA
     let ipfsB
