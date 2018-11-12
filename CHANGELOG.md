@@ -1,3 +1,13 @@
+<a name="0.85.0"></a>
+# [0.85.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.84.3...v0.85.0) (2018-11-12)
+
+
+### Bug Fixes
+
+* updates ipld-dag-pb dep to version without .cid properties ([#388](https://github.com/ipfs/interface-ipfs-core/issues/388)) ([b8f7b9a](https://github.com/ipfs/interface-ipfs-core/commit/b8f7b9a))
+
+
+
 <a name="0.84.3"></a>
 ## [0.84.3](https://github.com/ipfs/interface-ipfs-core/compare/v0.84.2...v0.84.3) (2018-10-31)
 
