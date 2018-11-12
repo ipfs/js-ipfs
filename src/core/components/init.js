@@ -108,7 +108,8 @@ module.exports = function init (self) {
           cb(null, true)
         }
       },
-      // Setup offline routing for IPNS. This is primarily used for offline ipns modifications, such as the initializeKeyspace feature.
+      // Setup the offline routing for IPNS.
+      // This is primarily used for offline ipns modifications, such as the initializeKeyspace feature.
       (_, cb) => {
         const offlineDatastore = new OfflineDatastore(self._repo)
 

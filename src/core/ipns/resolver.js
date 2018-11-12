@@ -1,7 +1,6 @@
 'use strict'
 
 const ipns = require('ipns')
-const { fromB58String } = require('multihashes')
 const Record = require('libp2p-record').Record
 const PeerId = require('peer-id')
 const errcode = require('err-code')
@@ -91,7 +90,7 @@ class IpnsResolver {
   // resolve ipns entries from the provided routing
   _resolveName (name, callback) {
     const peerId = PeerId.createFromB58String(name)
-    const { routingKey } = ipns.getIdKeys(fromB58String(name))
+    const { routingKey } = ipns.getIdKeys(peerId.toBytes())
 
     // TODO DHT - get public key from routing?
     // https://github.com/ipfs/go-ipfs/blob/master/namesys/routing.go#L70
