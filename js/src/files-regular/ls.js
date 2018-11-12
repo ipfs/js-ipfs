@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { fixtures } = require('../files/utils')
+const { fixtures } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 module.exports = (createCommon, options) => {
@@ -50,7 +50,7 @@ module.exports = (createCommon, options) => {
         emptyDir('files/empty')
       ]
 
-      ipfs.files.add(dirs, (err, res) => {
+      ipfs.add(dirs, (err, res) => {
         expect(err).to.not.exist()
         const root = res[res.length - 1]
 

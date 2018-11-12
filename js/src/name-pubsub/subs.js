@@ -36,7 +36,7 @@ module.exports = (createCommon, options) => {
           ipfs = node
           nodeId = node.peerId.id
 
-          ipfs.files.add(fixture.data, { pin: false }, (err, res) => {
+          ipfs.add(fixture.data, { pin: false }, (err, res) => {
             expect(err).to.not.exist()
 
             value = res[0].path

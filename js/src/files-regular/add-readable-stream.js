@@ -9,7 +9,7 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.files.addReadableStream', function () {
+  describe('.addReadableStream', function () {
     this.timeout(40 * 1000)
 
     let ipfs
@@ -50,7 +50,7 @@ module.exports = (createCommon, options) => {
         emptyDir('files/empty')
       ]
 
-      const stream = ipfs.files.addReadableStream()
+      const stream = ipfs.addReadableStream()
 
       stream.on('error', (err) => {
         expect(err).to.not.exist()

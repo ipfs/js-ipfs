@@ -10,7 +10,7 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.files.addPullStream', function () {
+  describe('.addPullStream', function () {
     this.timeout(40 * 1000)
 
     let ipfs
@@ -51,7 +51,7 @@ module.exports = (createCommon, options) => {
         emptyDir('files/empty')
       ]
 
-      const stream = ipfs.files.addPullStream()
+      const stream = ipfs.addPullStream()
 
       pull(
         pull.values(files),
@@ -74,7 +74,7 @@ module.exports = (createCommon, options) => {
 
       pull(
         pull.values([{ content: pull.values([Buffer.from('test')]) }]),
-        ipfs.files.addPullStream(),
+        ipfs.addPullStream(),
         pull.collect((err, res) => {
           if (err) return done(err)
           expect(res).to.have.length(1)

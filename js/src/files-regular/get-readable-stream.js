@@ -11,7 +11,7 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.files.getReadableStream', function () {
+  describe('.getReadableStream', function () {
     this.timeout(40 * 1000)
 
     let ipfs
@@ -31,12 +31,12 @@ module.exports = (createCommon, options) => {
       })
     })
 
-    before((done) => ipfs.files.add(fixtures.smallFile.data, done))
+    before((done) => ipfs.add(fixtures.smallFile.data, done))
 
     after((done) => common.teardown(done))
 
     it('should return a Readable Stream of Readable Streams', (done) => {
-      const stream = ipfs.files.getReadableStream(fixtures.smallFile.cid)
+      const stream = ipfs.getReadableStream(fixtures.smallFile.cid)
 
       let files = []
       stream.pipe(through.obj((file, enc, next) => {

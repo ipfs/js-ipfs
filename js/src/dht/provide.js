@@ -35,7 +35,7 @@ module.exports = (createCommon, options) => {
     after((done) => common.teardown(done))
 
     it('should provide local CID', (done) => {
-      ipfs.files.add(Buffer.from('test'), (err, res) => {
+      ipfs.add(Buffer.from('test'), (err, res) => {
         if (err) return done(err)
 
         ipfs.dht.provide(new CID(res[0].hash), (err) => {
@@ -56,7 +56,7 @@ module.exports = (createCommon, options) => {
     })
 
     it('should allow multiple CIDs to be passed', (done) => {
-      ipfs.files.add([Buffer.from('t0'), Buffer.from('t1')], (err, res) => {
+      ipfs.add([Buffer.from('t0'), Buffer.from('t1')], (err, res) => {
         if (err) return done(err)
 
         ipfs.dht.provide([
@@ -70,7 +70,7 @@ module.exports = (createCommon, options) => {
     })
 
     it('should provide a CIDv1', (done) => {
-      ipfs.files.add(Buffer.from('test'), { 'cid-version': 1 }, (err, res) => {
+      ipfs.add(Buffer.from('test'), { 'cid-version': 1 }, (err, res) => {
         if (err) return done(err)
 
         const cid = new CID(res[0].hash)

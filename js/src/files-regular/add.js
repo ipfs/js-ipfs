@@ -13,7 +13,7 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.files.add', function () {
+  describe('.add', function () {
     this.timeout(40 * 1000)
 
     let ipfs
@@ -36,7 +36,7 @@ module.exports = (createCommon, options) => {
     after((done) => common.teardown(done))
 
     it('should add a Buffer', (done) => {
-      ipfs.files.add(fixtures.smallFile.data, (err, filesAdded) => {
+      ipfs.add(fixtures.smallFile.data, (err, filesAdded) => {
         expect(err).to.not.exist()
 
         expect(filesAdded).to.have.length(1)
@@ -50,7 +50,7 @@ module.exports = (createCommon, options) => {
     })
 
     it('should add a Buffer (promised)', () => {
-      return ipfs.files.add(fixtures.smallFile.data)
+      return ipfs.add(fixtures.smallFile.data)
         .then((filesAdded) => {
           const file = filesAdded[0]
           expect(file.hash).to.equal(fixtures.smallFile.cid)
@@ -59,7 +59,7 @@ module.exports = (createCommon, options) => {
     })
 
     it('should add a BIG Buffer', (done) => {
-      ipfs.files.add(fixtures.bigFile.data, (err, filesAdded) => {
+      ipfs.add(fixtures.bigFile.data, (err, filesAdded) => {
         expect(err).to.not.exist()
 
         expect(filesAdded).to.have.length(1)
@@ -80,7 +80,7 @@ module.exports = (createCommon, options) => {
         accumProgress = p
       }
 
-      ipfs.files.add(fixtures.bigFile.data, { progress: handler }, (err, filesAdded) => {
+      ipfs.add(fixtures.bigFile.data, { progress: handler }, (err, filesAdded) => {
         expect(err).to.not.exist()
 
         expect(filesAdded).to.have.length(1)
@@ -97,7 +97,7 @@ module.exports = (createCommon, options) => {
     it('should add a Buffer as tuple', (done) => {
       const tuple = { path: 'testfile.txt', content: fixtures.smallFile.data }
 
-      ipfs.files.add([
+      ipfs.add([
         tuple
       ], (err, filesAdded) => {
         expect(err).to.not.exist()
@@ -114,7 +114,7 @@ module.exports = (createCommon, options) => {
     it('should not be able to add by path', (done) => {
       const validPath = path.join(process.cwd() + '/package.json')
 
-      ipfs.files.add(validPath, (err, res) => {
+      ipfs.add(validPath, (err, res) => {
         expect(err).to.exist()
         done()
       })
@@ -127,7 +127,7 @@ module.exports = (createCommon, options) => {
       rs.push(Buffer.from('some data'))
       rs.push(null)
 
-      ipfs.files.add(rs, (err, filesAdded) => {
+      ipfs.add(rs, (err, filesAdded) => {
         expect(err).to.not.exist()
 
         expect(filesAdded).to.be.length(1)
@@ -148,7 +148,7 @@ module.exports = (createCommon, options) => {
 
       const tuple = { path: 'data.txt', content: rs }
 
-      ipfs.files.add([tuple], (err, filesAdded) => {
+      ipfs.add([tuple], (err, filesAdded) => {
         expect(err).to.not.exist()
 
         expect(filesAdded).to.be.length(1)
@@ -163,7 +163,7 @@ module.exports = (createCommon, options) => {
     it('should add pull stream', (done) => {
       const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
 
-      ipfs.files.add(pull.values([Buffer.from('test')]), (err, res) => {
+      ipfs.add(pull.values([Buffer.from('test')]), (err, res) => {
         if (err) return done(err)
         expect(res).to.have.length(1)
         expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
@@ -174,7 +174,7 @@ module.exports = (createCommon, options) => {
     it('should add pull stream (promised)', () => {
       const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
 
-      return ipfs.files.add(pull.values([Buffer.from('test')]))
+      return ipfs.add(pull.values([Buffer.from('test')]))
         .then((res) => {
           expect(res).to.have.length(1)
           expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
@@ -184,7 +184,7 @@ module.exports = (createCommon, options) => {
     it('should add array of objects with pull stream content (promised)', () => {
       const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
 
-      return ipfs.files.add([{ content: pull.values([Buffer.from('test')]) }])
+      return ipfs.add([{ content: pull.values([Buffer.from('test')]) }])
         .then((res) => {
           expect(res).to.have.length(1)
           expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
@@ -210,7 +210,7 @@ module.exports = (createCommon, options) => {
         emptyDir('files/empty')
       ]
 
-      ipfs.files.add(dirs, (err, res) => {
+      ipfs.add(dirs, (err, res) => {
         expect(err).to.not.exist()
         const root = res[res.length - 1]
 
@@ -250,7 +250,7 @@ module.exports = (createCommon, options) => {
         accumProgress += p
       }
 
-      ipfs.files.add(dirs, { progress: handler }, (err, filesAdded) => {
+      ipfs.add(dirs, { progress: handler }, (err, filesAdded) => {
         expect(err).to.not.exist()
         const root = filesAdded[filesAdded.length - 1]
 
@@ -265,7 +265,7 @@ module.exports = (createCommon, options) => {
     it('should fail when passed invalid input', (done) => {
       const nonValid = 'sfdasfasfs'
 
-      ipfs.files.add(nonValid, (err, result) => {
+      ipfs.add(nonValid, (err, result) => {
         expect(err).to.exist()
         done()
       })
@@ -274,7 +274,7 @@ module.exports = (createCommon, options) => {
     it('should wrap content in a directory', (done) => {
       const data = { path: 'testfile.txt', content: fixtures.smallFile.data }
 
-      ipfs.files.add(data, { wrapWithDirectory: true }, (err, filesAdded) => {
+      ipfs.add(data, { wrapWithDirectory: true }, (err, filesAdded) => {
         expect(err).to.not.exist()
         expect(filesAdded).to.have.length(2)
         const file = filesAdded[0]
@@ -290,7 +290,7 @@ module.exports = (createCommon, options) => {
       this.slow(10 * 1000)
       const content = String(Math.random() + Date.now())
 
-      return ipfs.files.add(Buffer.from(content), { onlyHash: true })
+      return ipfs.add(Buffer.from(content), { onlyHash: true })
         .then(files => {
           expect(files).to.have.length(1)
 

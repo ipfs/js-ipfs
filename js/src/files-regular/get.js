@@ -12,7 +12,7 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.files.get', function () {
+  describe('.get', function () {
     this.timeout(40 * 1000)
 
     let ipfs
@@ -34,15 +34,15 @@ module.exports = (createCommon, options) => {
 
     before((done) => {
       parallel([
-        (cb) => ipfs.files.add(fixtures.smallFile.data, cb),
-        (cb) => ipfs.files.add(fixtures.bigFile.data, cb)
+        (cb) => ipfs.add(fixtures.smallFile.data, cb),
+        (cb) => ipfs.add(fixtures.bigFile.data, cb)
       ], done)
     })
 
     after((done) => common.teardown(done))
 
     it('should get with a base58 encoded multihash', (done) => {
-      ipfs.files.get(fixtures.smallFile.cid, (err, files) => {
+      ipfs.get(fixtures.smallFile.cid, (err, files) => {
         expect(err).to.not.exist()
 
         expect(files).to.be.length(1)
@@ -53,7 +53,7 @@ module.exports = (createCommon, options) => {
     })
 
     it('should get with a base58 encoded multihash (promised)', () => {
-      return ipfs.files.get(fixtures.smallFile.cid)
+      return ipfs.get(fixtures.smallFile.cid)
         .then((files) => {
           expect(files).to.be.length(1)
           expect(files[0].path).to.equal(fixtures.smallFile.cid)
@@ -63,7 +63,7 @@ module.exports = (createCommon, options) => {
 
     it('should get with a Buffer multihash', (done) => {
       const cidBuf = Buffer.from(bs58.decode(fixtures.smallFile.cid))
-      ipfs.files.get(cidBuf, (err, files) => {
+      ipfs.get(cidBuf, (err, files) => {
         expect(err).to.not.exist()
 
         expect(files).to.be.length(1)
@@ -74,7 +74,7 @@ module.exports = (createCommon, options) => {
     })
 
     it('should get a BIG file', (done) => {
-      ipfs.files.get(fixtures.bigFile.cid, (err, files) => {
+      ipfs.get(fixtures.bigFile.cid, (err, files) => {
         expect(err).to.not.exist()
 
         expect(files.length).to.equal(1)
@@ -106,7 +106,7 @@ module.exports = (createCommon, options) => {
             emptyDir('files/empty')
           ]
 
-          ipfs.files.add(dirs, (err, res) => {
+          ipfs.add(dirs, (err, res) => {
             expect(err).to.not.exist()
             const root = res[res.length - 1]
 
@@ -116,7 +116,7 @@ module.exports = (createCommon, options) => {
           })
         },
         (cb) => {
-          ipfs.files.get(fixtures.directory.cid, (err, files) => {
+          ipfs.get(fixtures.directory.cid, (err, files) => {
             expect(err).to.not.exist()
 
             files = files.sort((a, b) => {
@@ -167,12 +167,12 @@ module.exports = (createCommon, options) => {
         content: fixtures.smallFile.data
       }
 
-      ipfs.files.add(file, (err, filesAdded) => {
+      ipfs.add(file, (err, filesAdded) => {
         expect(err).to.not.exist()
 
         filesAdded.forEach((file) => {
           if (file.path === 'a') {
-            ipfs.files.get(`/ipfs/${file.hash}/testfile.txt`, (err, files) => {
+            ipfs.get(`/ipfs/${file.hash}/testfile.txt`, (err, files) => {
               expect(err).to.not.exist()
               expect(files).to.be.length(1)
               expect(files[0].content.toString('utf8')).to.contain('Plz add me!')
@@ -189,12 +189,12 @@ module.exports = (createCommon, options) => {
         content: fixtures.smallFile.data
       }
 
-      ipfs.files.add([file], (err, filesAdded) => {
+      ipfs.add([file], (err, filesAdded) => {
         expect(err).to.not.exist()
 
         filesAdded.forEach((file) => {
           if (file.path === 'a') {
-            ipfs.files.get(`/ipfs/${file.hash}/testfile.txt`, (err, files) => {
+            ipfs.get(`/ipfs/${file.hash}/testfile.txt`, (err, files) => {
               expect(err).to.not.exist()
               expect(files).to.be.length(1)
               expect(files[0].content.toString('utf8')).to.contain('Plz add me!')
@@ -208,7 +208,7 @@ module.exports = (createCommon, options) => {
     it('should error on invalid key', () => {
       const invalidCid = 'somethingNotMultihash'
 
-      return ipfs.files.get(invalidCid)
+      return ipfs.get(invalidCid)
         .catch((err) => {
           expect(err).to.exist()
           const errString = err.toString()

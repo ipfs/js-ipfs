@@ -10,7 +10,7 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.files.getPullStream', function () {
+  describe('.getPullStream', function () {
     this.timeout(40 * 1000)
 
     let ipfs
@@ -30,12 +30,12 @@ module.exports = (createCommon, options) => {
       })
     })
 
-    before((done) => ipfs.files.add(fixtures.smallFile.data, done))
+    before((done) => ipfs.add(fixtures.smallFile.data, done))
 
     after((done) => common.teardown(done))
 
     it('should return a Pull Stream of Pull Streams', (done) => {
-      const stream = ipfs.files.getPullStream(fixtures.smallFile.cid)
+      const stream = ipfs.getPullStream(fixtures.smallFile.cid)
 
       pull(
         stream,

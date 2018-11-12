@@ -41,7 +41,7 @@ module.exports = (createCommon, options) => {
     it('should resolve an IPFS hash', (done) => {
       const content = loadFixture('js/test/fixtures/testfile.txt', 'interface-ipfs-core')
 
-      ipfs.files.add(content, (err, res) => {
+      ipfs.add(content, (err, res) => {
         expect(err).to.not.exist()
         expect(isIpfs.cid(res[0].hash)).to.be.true()
 
@@ -58,7 +58,7 @@ module.exports = (createCommon, options) => {
       const path = '/path/to/testfile.txt'
       const content = loadFixture('js/test/fixtures/testfile.txt', 'interface-ipfs-core')
 
-      ipfs.files.add([{ path, content }], { wrapWithDirectory: true }, (err, res) => {
+      ipfs.add([{ path, content }], { wrapWithDirectory: true }, (err, res) => {
         expect(err).to.not.exist()
 
         const rootHash = res.find(r => r.path === '').hash

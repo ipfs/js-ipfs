@@ -32,13 +32,13 @@ module.exports = (createCommon, options) => {
       function populate () {
         parallel([
           (cb) => {
-            ipfs.files.add(fixtures.files[0].data, { pin: false }, (err, res) => {
+            ipfs.add(fixtures.files[0].data, { pin: false }, (err, res) => {
               if (err) return cb(err)
               ipfs.pin.add(fixtures.files[0].cid, { recursive: true }, cb)
             })
           },
           (cb) => {
-            ipfs.files.add(fixtures.files[1].data, { pin: false }, (err, res) => {
+            ipfs.add(fixtures.files[1].data, { pin: false }, (err, res) => {
               if (err) return cb(err)
               ipfs.pin.add(fixtures.files[1].cid, { recursive: false }, cb)
             })

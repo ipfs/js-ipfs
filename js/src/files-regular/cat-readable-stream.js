@@ -10,7 +10,7 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.files.catReadableStream', function () {
+  describe('.catReadableStream', function () {
     this.timeout(40 * 1000)
 
     let ipfs
@@ -30,13 +30,13 @@ module.exports = (createCommon, options) => {
       })
     })
 
-    before((done) => ipfs.files.add(fixtures.bigFile.data, done))
-    before((done) => ipfs.files.add(fixtures.smallFile.data, done))
+    before((done) => ipfs.add(fixtures.bigFile.data, done))
+    before((done) => ipfs.add(fixtures.smallFile.data, done))
 
     after((done) => common.teardown(done))
 
     it('should return a Readable Stream for a CID', (done) => {
-      const stream = ipfs.files.catReadableStream(fixtures.bigFile.cid)
+      const stream = ipfs.catReadableStream(fixtures.bigFile.cid)
 
       stream.pipe(bl((err, data) => {
         expect(err).to.not.exist()
@@ -49,7 +49,7 @@ module.exports = (createCommon, options) => {
       const offset = 1
       const length = 3
 
-      const stream = ipfs.files.catReadableStream(fixtures.smallFile.cid, {
+      const stream = ipfs.catReadableStream(fixtures.smallFile.cid, {
         offset,
         length
       })

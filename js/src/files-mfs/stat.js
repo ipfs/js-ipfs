@@ -3,7 +3,7 @@
 
 const series = require('async/series')
 const hat = require('hat')
-const { fixtures } = require('./utils')
+const { fixtures } = require('../files-regular/utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 module.exports = (createCommon, options) => {
@@ -31,7 +31,7 @@ module.exports = (createCommon, options) => {
       })
     })
 
-    before((done) => ipfs.files.add(fixtures.smallFile.data, done))
+    before((done) => ipfs.add(fixtures.smallFile.data, done))
 
     after((done) => common.teardown(done))
 

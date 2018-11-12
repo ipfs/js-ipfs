@@ -33,7 +33,7 @@ module.exports = (createCommon, options) => {
           ipfs = node
           nodeId = node.peerId.id
 
-          ipfs.files.add(fixture.data, { pin: false }, done)
+          ipfs.add(fixture.data, { pin: false }, done)
         })
       })
     })

@@ -31,7 +31,7 @@ module.exports = (createCommon, options) => {
 
       function populate () {
         each(fixtures.files, (file, cb) => {
-          ipfs.files.add(file.data, { pin: false }, cb)
+          ipfs.add(file.data, { pin: false }, cb)
         }, done)
       }
     })
