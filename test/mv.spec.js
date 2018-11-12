@@ -21,10 +21,6 @@ describe('mv', function () {
       })
   })
 
-  after((done) => {
-    mfs.node.stop(done)
-  })
-
   it('refuses to move files without arguments', () => {
     return mfs.mv()
       .then(() => {

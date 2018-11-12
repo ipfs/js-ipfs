@@ -20,10 +20,6 @@ describe('mkdir', function () {
       })
   })
 
-  after((done) => {
-    mfs.node.stop(done)
-  })
-
   it('requires a directory', (done) => {
     mfs.mkdir('', (error) => {
       expect(error.message).to.contain('no path given')

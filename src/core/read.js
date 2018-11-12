@@ -4,7 +4,7 @@ const pull = require('pull-stream/pull')
 const collect = require('pull-stream/sinks/collect')
 const readPullStream = require('./read-pull-stream')
 
-module.exports = (ipfs) => {
+module.exports = (context) => {
   return function mfsRead (path, options, callback) {
     if (typeof options === 'function') {
       callback = options
@@ -12,7 +12,7 @@ module.exports = (ipfs) => {
     }
 
     pull(
-      readPullStream(ipfs)(path, options),
+      readPullStream(context)(path, options),
       collect((error, buffers) => {
         if (error) {
           return callback(error)

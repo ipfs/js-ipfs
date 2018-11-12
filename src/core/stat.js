@@ -15,7 +15,7 @@ const defaultOptions = {
   cidBase: 'base58btc'
 }
 
-module.exports = (ipfs) => {
+module.exports = (context) => {
   return function mfsStat (path, options, callback) {
     if (typeof options === 'function') {
       callback = options
@@ -27,13 +27,13 @@ module.exports = (ipfs) => {
     log(`Fetching stats for ${path}`)
 
     waterfall([
-      (done) => traverseTo(ipfs, path, {
+      (done) => traverseTo(context, path, {
         withCreateHint: false
       }, done),
-      ({ node }, done) => {
+      ({ node, cid }, done) => {
         if (options.hash) {
           return done(null, {
-            hash: formatCid(node.multihash, options.cidBase)
+            hash: formatCid(cid, options.cidBase)
           })
         } else if (options.size) {
           return done(null, {
@@ -50,7 +50,7 @@ module.exports = (ipfs) => {
         }
 
         done(null, {
-          hash: formatCid(node.multihash, options.cidBase),
+          hash: formatCid(cid, options.cidBase),
           size: meta.fileSize() || 0,
           cumulativeSize: node.size,
           blocks: blocks,

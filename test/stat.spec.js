@@ -27,10 +27,6 @@ describe('stat', function () {
       })
   })
 
-  after((done) => {
-    mfs.node.stop(done)
-  })
-
   it('refuses to stat files with an empty path', () => {
     return mfs.stat('')
       .then(() => {

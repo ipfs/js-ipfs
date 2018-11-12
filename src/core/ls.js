@@ -17,7 +17,7 @@ const defaultOptions = {
   unsorted: false
 }
 
-module.exports = (ipfs) => {
+module.exports = (context) => {
   return function mfsLs (path, options, callback) {
     if (typeof path === 'function') {
       callback = path
@@ -35,21 +35,21 @@ module.exports = (ipfs) => {
     options.long = options.l || options.long
 
     waterfall([
-      (cb) => traverseTo(ipfs, path, {}, cb),
+      (cb) => traverseTo(context, path, {}, cb),
       (result, cb) => {
         const meta = UnixFs.unmarshal(result.node.data)
 
         if (meta.type === 'directory') {
           map(result.node.links, (link, next) => {
             waterfall([
-              (done) => loadNode(ipfs, link, done),
-              (node, done) => {
+              (done) => loadNode(context, link, done),
+              ({ node, cid }, done) => {
                 const meta = UnixFs.unmarshal(node.data)
 
                 done(null, {
                   name: link.name,
                   type: meta.type,
-                  hash: formatCid(node.multihash, options.cidBase),
+                  hash: formatCid(cid, options.cidBase),
                   size: meta.fileSize() || 0
                 })
               }
@@ -59,7 +59,7 @@ module.exports = (ipfs) => {
           cb(null, [{
             name: result.name,
             type: meta.type,
-            hash: formatCid(result.node.multihash, options.cidBase),
+            hash: formatCid(result.cid, options.cidBase),
             size: meta.fileSize() || 0
           }])
         }

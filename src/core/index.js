@@ -1,5 +1,6 @@
 'use strict'
 
+const assert = require('assert')
 const promisify = require('promisify-es6')
 const {
   createLock
@@ -33,21 +34,26 @@ const unwrappedSynchronousOperations = {
 }
 
 const wrap = ({
-  ipfs, mfs, operations, lock
+  options, mfs, operations, lock
 }) => {
   Object.keys(operations).forEach(key => {
-    mfs[key] = promisify(lock(operations[key](ipfs)))
+    mfs[key] = promisify(lock(operations[key](options)))
   })
 }
 
 const defaultOptions = {
-  repoOwner: true
+  repoOwner: true,
+  ipld: null,
+  repo: null
 }
 
-module.exports = (ipfs, options) => {
+module.exports = (options) => {
   const {
     repoOwner
   } = Object.assign({}, defaultOptions || {}, options)
+
+  assert(options.ipld, 'MFS requires an IPLD instance')
+  assert(options.repo, 'MFS requires an ipfs-repo instance')
 
   const lock = createLock(repoOwner)
 
@@ -62,18 +68,18 @@ module.exports = (ipfs, options) => {
   const mfs = {}
 
   wrap({
-    ipfs, mfs, operations: readOperations, lock: readLock
+    options, mfs, operations: readOperations, lock: readLock
   })
   wrap({
-    ipfs, mfs, operations: writeOperations, lock: writeLock
+    options, mfs, operations: writeOperations, lock: writeLock
   })
 
   Object.keys(unwrappedOperations).forEach(key => {
-    mfs[key] = promisify(unwrappedOperations[key](ipfs))
+    mfs[key] = promisify(unwrappedOperations[key](options))
   })
 
   Object.keys(unwrappedSynchronousOperations).forEach(key => {
-    mfs[key] = unwrappedSynchronousOperations[key](ipfs)
+    mfs[key] = unwrappedSynchronousOperations[key](options)
   })
 
   return mfs

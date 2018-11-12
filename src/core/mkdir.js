@@ -15,7 +15,7 @@ const defaultOptions = {
   cidVersion: 0
 }
 
-module.exports = (ipfs) => {
+module.exports = (context) => {
   return function mfsMkdir (path, options, callback) {
     if (typeof options === 'function') {
       callback = options
@@ -41,7 +41,7 @@ module.exports = (ipfs) => {
 
     waterfall([
       (cb) => {
-        traverseTo(ipfs, path, {
+        traverseTo(context, path, {
           parents: false,
           createLastComponent: false
         }, (error) => {
@@ -58,13 +58,13 @@ module.exports = (ipfs) => {
           return cb(error)
         })
       },
-      (cb) => traverseTo(ipfs, path, {
+      (cb) => traverseTo(context, path, {
         parents: options.parents,
         flush: options.flush,
         createLastComponent: true
       }, cb),
-      (result, cb) => updateTree(ipfs, result, cb),
-      (newRoot, next) => updateMfsRoot(ipfs, newRoot.node.multihash, next)
+      (result, cb) => updateTree(context, result, cb),
+      (newRoot, next) => updateMfsRoot(context, newRoot.cid, next)
     ], (error) => {
       if (error && error.message.includes('file already exists') && options.parents) {
         // when the directory already exists and we are creating intermediate

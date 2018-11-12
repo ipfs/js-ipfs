@@ -50,7 +50,7 @@ const defaultOptions = {
   leafType: 'raw'
 }
 
-module.exports = function mfsWrite (ipfs) {
+module.exports = function mfsWrite (context) {
   return promisify((path, content, options, callback) => {
     if (typeof options === 'function') {
       callback = options
@@ -90,16 +90,16 @@ module.exports = function mfsWrite (ipfs) {
 
             if (opts.createLastComponent) {
               createLock().writeLock((callback) => {
-                traverseTo(ipfs, path.directory, opts, (error, result) => callback(error, { source, containingFolder: result }))
+                traverseTo(context, path.directory, opts, (error, result) => callback(error, { source, containingFolder: result }))
               })(next)
             } else {
               createLock().readLock((callback) => {
-                traverseTo(ipfs, path.directory, opts, (error, result) => callback(error, { source, containingFolder: result }))
+                traverseTo(context, path.directory, opts, (error, result) => callback(error, { source, containingFolder: result }))
               })(next)
             }
           },
           ({ source, containingFolder }, next) => {
-            updateOrImport(ipfs, options, path, source, containingFolder, next)
+            updateOrImport(context, options, path, source, containingFolder, next)
           }
         ], done)
       }
@@ -107,7 +107,7 @@ module.exports = function mfsWrite (ipfs) {
   })
 }
 
-const updateOrImport = (ipfs, options, path, source, containingFolder, callback) => {
+const updateOrImport = (context, options, path, source, containingFolder, callback) => {
   waterfall([
     (next) => {
       const existingChild = containingFolder.node.links.reduce((last, child) => {
@@ -119,7 +119,7 @@ const updateOrImport = (ipfs, options, path, source, containingFolder, callback)
       }, null)
 
       if (existingChild) {
-        return loadNode(ipfs, existingChild, next)
+        return loadNode(context, existingChild, next)
       }
 
       if (!options.create) {
@@ -129,8 +129,12 @@ const updateOrImport = (ipfs, options, path, source, containingFolder, callback)
       next(null, null)
     },
 
-    (existingChild, next) => {
-      write(ipfs, existingChild, source, options, next)
+    (result, next) => {
+      const {
+        cid, node
+      } = result || {}
+
+      write(context, cid, node, source, options, next)
     },
 
     // The slow bit is done, now add or replace the DAGLink in the containing directory
@@ -141,33 +145,32 @@ const updateOrImport = (ipfs, options, path, source, containingFolder, callback)
           createLastComponent: options.parents
         })
 
-        traverseTo(ipfs, path.directory, opts, (error, containingFolder) => {
+        traverseTo(context, path.directory, opts, (error, containingFolder) => {
           if (error) {
             return callback(error)
           }
 
           waterfall([
             (next) => {
-              addLink(ipfs, {
+              addLink(context, {
                 parent: containingFolder.node,
                 name: path.name,
-                child: {
-                  multihash: child.multihash || child.hash,
-                  size: child.size
-                },
+                cid: child.multihash || child.hash,
+                size: child.size,
                 flush: options.flush
-              }, (error, newContaingFolder) => {
+              }, (error, { node, cid }) => {
                 // Store new containing folder CID
-                containingFolder.node = newContaingFolder
+                containingFolder.node = node
+                containingFolder.cid = cid
 
                 next(error)
               })
             },
             // Update the MFS tree from the containingFolder upwards
-            (next) => updateTree(ipfs, containingFolder, next),
+            (next) => updateTree(context, containingFolder, next),
 
             // Update the MFS record with the new CID for the root of the tree
-            (newRoot, next) => updateMfsRoot(ipfs, newRoot.node.multihash, next)
+            (newRoot, next) => updateMfsRoot(context, newRoot.cid, next)
           ], (error, result) => {
             callback(error, result)
           })
@@ -176,12 +179,10 @@ const updateOrImport = (ipfs, options, path, source, containingFolder, callback)
     }], callback)
 }
 
-const write = (ipfs, existingNode, source, options, callback) => {
-  let existingNodeCid
+const write = (context, existingNodeCid, existingNode, source, options, callback) => {
   let existingNodeMeta
 
   if (existingNode) {
-    existingNodeCid = new CID(existingNode.multihash)
     existingNodeMeta = unmarshal(existingNode.data)
     log(`Overwriting file ${existingNodeCid.toBaseEncodedString()} offset ${options.offset} length ${options.length}`)
   } else {
@@ -200,7 +201,7 @@ const write = (ipfs, existingNode, source, options, callback) => {
       sources.push(startFile)
 
       pull(
-        exporter(existingNodeCid, ipfs.dag, {
+        exporter(existingNodeCid, context.ipld, {
           offset: 0,
           length: options.offset
         }),
@@ -237,7 +238,7 @@ const write = (ipfs, existingNode, source, options, callback) => {
           if (fileSize > offset) {
             log(`Writing last ${fileSize - offset} of ${fileSize} bytes from original file`)
             pull(
-              exporter(existingNodeCid, ipfs.dag, {
+              exporter(existingNodeCid, context.ipld, {
                 offset
               }),
               collect((error, files) => {
@@ -269,7 +270,7 @@ const write = (ipfs, existingNode, source, options, callback) => {
       path: '',
       content: cat(sources)
     }]),
-    importer(ipfs.dag, {
+    importer(context.ipld, {
       progress: options.progress,
       hashAlg: options.hash,
       cidVersion: options.cidVersion,

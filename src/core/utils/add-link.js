@@ -1,27 +1,38 @@
 'use strict'
 
-const CID = require('cids')
-const dagPb = require('ipld-dag-pb')
 const {
   DAGNode,
-  DAGLink
-} = dagPb
+  DAGLink,
+  util: {
+    cid
+  }
+} = require('ipld-dag-pb')
 const waterfall = require('async/waterfall')
 
-const addLink = (ipfs, options, callback) => {
-  options = Object.assign({}, {
-    parent: undefined,
-    child: undefined,
-    name: '',
-    flush: true
-  }, options)
+const defaultOptions = {
+  parent: undefined,
+  cid: undefined,
+  name: '',
+  size: undefined,
+  flush: true,
+  cidVersion: 0,
+  hashAlg: 'sha2-256',
+  codec: 'dag-pb'
+}
+
+const addLink = (context, options, callback) => {
+  options = Object.assign({}, defaultOptions, options)
 
   if (!options.parent) {
-    return callback(new Error('No parent passed to addLink'))
+    return callback(new Error('No parent DAGNode passed to addLink'))
   }
 
-  if (!options.child) {
-    return callback(new Error('No child passed to addLink'))
+  if (!options.cid) {
+    return callback(new Error('No child cid passed to addLink'))
+  }
+
+  if (!options.size) {
+    return callback(new Error('No child size passed to addLink'))
   }
 
   waterfall([
@@ -35,17 +46,30 @@ const addLink = (ipfs, options, callback) => {
     },
     (parent, done) => {
       // Add the new link to the parent
-      DAGNode.addLink(parent, new DAGLink(options.name, options.child.size, options.child.hash || options.child.multihash), done)
+      DAGNode.addLink(parent, new DAGLink(options.name, options.size, options.cid), done)
     },
     (parent, done) => {
       if (!options.flush) {
-        return done(null, parent)
+        return cid(parent, {
+          version: options.cidVersion,
+          hashAlg: options.hashAlg
+        }, (err, cid) => {
+          done(err, {
+            node: parent,
+            cid
+          })
+        })
       }
 
       // Persist the new parent DAGNode
-      ipfs.dag.put(parent, {
-        cid: new CID(parent.hash || parent.multihash)
-      }, (error) => done(error, parent))
+      context.ipld.put(parent, {
+        version: options.cidVersion,
+        format: options.codec,
+        hashAlg: options.hashAlg
+      }, (error, cid) => done(error, {
+        node: parent,
+        cid
+      }))
     }
   ], callback)
 }

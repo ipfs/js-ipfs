@@ -24,10 +24,6 @@ describe('ls', function () {
       })
   })
 
-  after((done) => {
-    mfs.node.stop(done)
-  })
-
   it('lists the root directory by default', () => {
     const fileName = `small-file-${Math.random()}.txt`
     const content = Buffer.from('Hello world')
