@@ -1,6 +1,6 @@
 {
   "name": "interface-ipfs-core",
-  "version": "0.85.0",
+  "version": "0.86.0",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "main": "js/src/index.js",
@@ -52,10 +52,9 @@
     "ipfs-unixfs": "~0.1.16",
     "ipld-dag-cbor": "~0.13.0",
     "ipld-dag-pb": "~0.15.0",
-    "is-ipfs": "~0.4.7",
+    "is-ipfs": "~0.4.2",
     "libp2p-crypto": "~0.14.0",
     "into-stream": "^4.0.0",
-    "is-ipfs": "~0.4.2",
     "is-plain-object": "^2.0.4",
     "multiaddr": "^5.0.0",
     "multibase": "~0.5.0",
@@ -64,8 +63,7 @@
     "peer-id": "~0.12.0",
     "peer-info": "~0.14.1",
     "pull-stream": "^3.6.9",
-    "pump": "^3.0.0",
-    "is-plain-object": "^2.0.4"
+    "pump": "^3.0.0"
   },
   "contributors": [
     "Alan Shaw <alan.shaw@protocol.ai>",
