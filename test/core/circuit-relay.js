@@ -38,10 +38,14 @@ function setupInProcNode (addrs, hop, callback) {
   }
 
   procDf.spawn({
-    relay: {
-      enabled: true,
-      hop: {
-        enabled: hop
+    libp2p: {
+      config: {
+        relay: {
+          enabled: true,
+          hop: {
+            enabled: hop
+          }
+        }
       }
     },
     config: Object.assign({}, baseConf, {
@@ -73,7 +77,7 @@ describe('circuit relay', () => {
     let relayNode
 
     let nodes
-    before(function (done) {
+    before('create and connect', function (done) {
       parallel([
         (cb) => setupInProcNode([
           '/ip4/0.0.0.0/tcp/0',
@@ -88,28 +92,28 @@ describe('circuit relay', () => {
         relayNode = res[0].ipfsd
 
         nodeAAddr = tcpAddr(res[1].addrs)
-        nodeA = res[0].ipfsd.api
+        nodeA = res[1].ipfsd.api
 
         nodeBAddr = wsAddr(res[2].addrs)
 
-        nodeB = res[1].ipfsd.api
+        nodeB = res[2].ipfsd.api
         nodeBCircuitAddr = `/p2p-circuit/ipfs/${multiaddr(nodeBAddr).getPeerId()}`
 
-        done()
+        // ensure we have an address string
+        expect(nodeAAddr).to.be.a('string')
+        expect(nodeBAddr).to.be.a('string')
+        expect(nodeBCircuitAddr).to.be.a('string')
+
+        series([
+          (cb) => relayNode.api.swarm.connect(nodeAAddr, cb),
+          (cb) => relayNode.api.swarm.connect(nodeBAddr, cb),
+          (cb) => setTimeout(cb, 1000),
+          (cb) => nodeA.swarm.connect(nodeBCircuitAddr, cb)
+        ], done)
       })
     })
 
     after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
-
-    it('should connect', function (done) {
-      series([
-        (cb) => relayNode.api.swarm.connect(nodeAAddr, cb),
-        (cb) => setTimeout(cb, 1000),
-        (cb) => relayNode.api.swarm.connect(nodeBAddr, cb),
-        (cb) => setTimeout(cb, 1000),
-        (cb) => nodeA.swarm.connect(nodeBCircuitAddr, cb)
-      ], done)
-    })
 
     it('should transfer', function (done) {
       const data = crypto.randomBytes(128)
