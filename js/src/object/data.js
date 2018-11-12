@@ -1,9 +1,13 @@
 /* eslint-env mocha */
+/* eslint-disable max-nested-callbacks */
 'use strict'
 
 const bs58 = require('bs58')
 const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const {
+  calculateCid
+} = require('../utils/dag-pb')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -41,36 +45,40 @@ module.exports = (createCommon, options) => {
       ipfs.object.put(testObj, (err, node) => {
         expect(err).to.not.exist()
 
-        ipfs.object.data(node.multihash, (err, data) => {
+        calculateCid(node, (err, nodeCid) => {
           expect(err).to.not.exist()
 
-          // because js-ipfs-api can't infer
-          // if the returned Data is Buffer or String
-          if (typeof data === 'string') {
-            data = Buffer.from(data)
-          }
-          expect(node.data).to.eql(data)
-          done()
+          ipfs.object.data(nodeCid, (err, data) => {
+            expect(err).to.not.exist()
+
+            // because js-ipfs-api can't infer
+            // if the returned Data is Buffer or String
+            if (typeof data === 'string') {
+              data = Buffer.from(data)
+            }
+            expect(node.data).to.eql(data)
+            done()
+          })
         })
       })
     })
 
-    it('should get data by multihash (promised)', () => {
+    it('should get data by multihash (promised)', async () => {
       const testObj = {
         Data: Buffer.from(hat()),
         Links: []
       }
 
-      return ipfs.object.put(testObj).then((node) => {
-        return ipfs.object.data(node.multihash).then((data) => {
-          // because js-ipfs-api can't infer
-          // if the returned Data is Buffer or String
-          if (typeof data === 'string') {
-            data = Buffer.from(data)
-          }
-          expect(node.data).to.deep.equal(data)
-        })
-      })
+      const node = await ipfs.object.put(testObj)
+      const nodeCid = await calculateCid(node)
+      let data = await ipfs.object.data(nodeCid)
+
+      // because js-ipfs-api can't infer
+      // if the returned Data is Buffer or String
+      if (typeof data === 'string') {
+        data = Buffer.from(data)
+      }
+      expect(node.data).to.deep.equal(data)
     })
 
     it('should get data by base58 encoded multihash', (done) => {
@@ -82,16 +90,20 @@ module.exports = (createCommon, options) => {
       ipfs.object.put(testObj, (err, node) => {
         expect(err).to.not.exist()
 
-        ipfs.object.data(bs58.encode(node.multihash), { enc: 'base58' }, (err, data) => {
+        calculateCid(node, (err, nodeCid) => {
           expect(err).to.not.exist()
 
-          // because js-ipfs-api can't infer
-          // if the returned Data is Buffer or String
-          if (typeof data === 'string') {
-            data = Buffer.from(data)
-          }
-          expect(node.data).to.eql(data)
-          done()
+          ipfs.object.data(bs58.encode(nodeCid.buffer), { enc: 'base58' }, (err, data) => {
+            expect(err).to.not.exist()
+
+            // because js-ipfs-api can't infer
+            // if the returned Data is Buffer or String
+            if (typeof data === 'string') {
+              data = Buffer.from(data)
+            }
+            expect(node.data).to.eql(data)
+            done()
+          })
         })
       })
     })
@@ -105,16 +117,20 @@ module.exports = (createCommon, options) => {
       ipfs.object.put(testObj, (err, node) => {
         expect(err).to.not.exist()
 
-        ipfs.object.data(bs58.encode(node.multihash).toString(), { enc: 'base58' }, (err, data) => {
+        calculateCid(node, (err, nodeCid) => {
           expect(err).to.not.exist()
 
-          // because js-ipfs-api can't infer if the
-          // returned Data is Buffer or String
-          if (typeof data === 'string') {
-            data = Buffer.from(data)
-          }
-          expect(node.data).to.eql(data)
-          done()
+          ipfs.object.data(bs58.encode(nodeCid.buffer).toString(), { enc: 'base58' }, (err, data) => {
+            expect(err).to.not.exist()
+
+            // because js-ipfs-api can't infer if the
+            // returned Data is Buffer or String
+            if (typeof data === 'string') {
+              data = Buffer.from(data)
+            }
+            expect(node.data).to.eql(data)
+            done()
+          })
         })
       })
     })

@@ -6,6 +6,9 @@ const DAGNode = dagPB.DAGNode
 const series = require('async/series')
 const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const {
+  asDAGLink
+} = require('../utils/dag-pb')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -45,24 +48,21 @@ module.exports = (createCommon, options) => {
         const nodeJSON = node.toJSON()
         expect(nodeJSON.data).to.eql(obj.Data)
         expect(nodeJSON.links).to.eql(obj.Links)
-        expect(nodeJSON.multihash).to.exist()
         done()
       })
     })
 
-    it('should put an object (promised)', () => {
+    it('should put an object (promised)', async () => {
       const obj = {
         Data: Buffer.from(hat()),
         Links: []
       }
 
-      return ipfs.object.put(obj)
-        .then((node) => {
-          const nodeJSON = node.toJSON()
-          expect(obj.Data).to.deep.equal(nodeJSON.data)
-          expect(obj.Links).to.deep.equal(nodeJSON.links)
-          expect(nodeJSON.multihash).to.exist()
-        })
+      const node = await ipfs.object.put(obj)
+
+      const nodeJSON = node.toJSON()
+      expect(obj.Data).to.deep.equal(nodeJSON.data)
+      expect(obj.Links).to.deep.equal(nodeJSON.links)
     })
 
     it('should put a JSON encoded Buffer', (done) => {
@@ -83,7 +83,6 @@ module.exports = (createCommon, options) => {
         const nodeJSON = node.toJSON()
 
         expect(nodeJSON.data).to.eql(node.data)
-        expect(nodeJSON.multihash).to.exist()
         done()
       })
     })
@@ -112,7 +111,6 @@ module.exports = (createCommon, options) => {
             expect(err).to.not.exist()
             expect(node.data).to.deep.equal(node.data)
             expect(node.links).to.deep.equal(node.links)
-            expect(node.multihash).to.eql(storedNode.multihash)
             cb()
           })
         }
@@ -126,7 +124,6 @@ module.exports = (createCommon, options) => {
         const nodeJSON = node.toJSON()
         expect(data).to.deep.equal(nodeJSON.data)
         expect([]).to.deep.equal(nodeJSON.links)
-        expect(nodeJSON.multihash).to.exist()
         done()
       })
     })
@@ -171,12 +168,14 @@ module.exports = (createCommon, options) => {
           })
         },
         (cb) => {
-          const link = node2.toJSON()
-          link.name = 'some-link'
-          DAGNode.addLink(node1a, link, (err, node) => {
+          asDAGLink(node2, 'some-link', (err, link) => {
             expect(err).to.not.exist()
-            node1b = node
-            cb()
+
+            DAGNode.addLink(node1a, link, (err, node) => {
+              expect(err).to.not.exist()
+              node1b = node
+              cb()
+            })
           })
         },
         (cb) => {

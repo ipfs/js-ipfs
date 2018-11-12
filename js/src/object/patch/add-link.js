@@ -5,6 +5,11 @@ const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const series = require('async/series')
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
+const {
+  calculateCid,
+  createDAGNode,
+  addLinkToDAGNode
+} = require('../../utils/dag-pb')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -35,6 +40,7 @@ module.exports = (createCommon, options) => {
 
     it('should add a link to an existing node', (done) => {
       let testNodeMultihash
+      let node1bMultihash
       let node1a
       let node1b
       let node2
@@ -48,8 +54,12 @@ module.exports = (createCommon, options) => {
         (cb) => {
           ipfs.object.put(obj, (err, node) => {
             expect(err).to.not.exist()
-            testNodeMultihash = node.multihash
-            cb()
+
+            calculateCid(node, (err, result) => {
+              expect(err).to.not.exist()
+              testNodeMultihash = result
+              cb()
+            })
           })
         },
         (cb) => {
@@ -72,19 +82,34 @@ module.exports = (createCommon, options) => {
           ipfs.object.put(node2, cb)
         },
         (cb) => {
-          const link = node2.toJSON()
-          link.name = 'link-to-node'
-          DAGNode.addLink(node1a, link, (err, node) => {
+          calculateCid(node2, (err, result) => {
             expect(err).to.not.exist()
-            node1b = node
-            cb()
+
+            DAGNode.addLink(node1a, {
+              name: 'link-to-node',
+              size: node2.toJSON().size,
+              cid: result
+            }, (err, node) => {
+              expect(err).to.not.exist()
+              node1b = node
+
+              calculateCid(node1b, (err, result) => {
+                expect(err).to.not.exist()
+                node1bMultihash = result
+                cb()
+              })
+            })
           })
         },
         (cb) => {
           ipfs.object.patch.addLink(testNodeMultihash, node1b.links[0], (err, node) => {
             expect(err).to.not.exist()
-            expect(node1b.multihash).to.eql(node.multihash)
-            cb()
+
+            calculateCid(node, (err, result) => {
+              expect(err).to.not.exist()
+              expect(node1bMultihash).to.eql(result)
+              cb()
+            })
           })
         }
         /* TODO: revisit this assertions.
@@ -119,61 +144,27 @@ module.exports = (createCommon, options) => {
       ], done)
     })
 
-    it('should add a link to an existing node (promised)', () => {
-      let testNodeMultihash
-      let node1a
-      let node1b
-      let node2
-
+    it('should add a link to an existing node (promised)', async () => {
       const obj = {
         Data: Buffer.from('patch test object (promised)'),
         Links: []
       }
 
-      return ipfs.object.put(obj)
-        .then((node) => {
-          testNodeMultihash = node.multihash
-        })
-        .then(() => new Promise((resolve, reject) => {
-          DAGNode.create(obj.Data, obj.Links, function (err, node) {
-            if (err) {
-              return reject(err)
-            }
-            return resolve(node)
-          })
-        }))
-        .then((node) => {
-          node1a = node
-          return new Promise((resolve, reject) => {
-            DAGNode.create(Buffer.from('some other node'), function (err, node) {
-              if (err) {
-                return reject(err)
-              }
-              return resolve(node)
-            })
-          }).then((node1) => {
-            node2 = node1
-            return ipfs.object.put(node2)
-          })
-        })
-        .then(() => {
-          const link = node2.toJSON()
-          link.name = 'link-to-node'
-          return new Promise((resolve, reject) => {
-            DAGNode.addLink(node1a, link, function (err, node) {
-              if (err) {
-                return reject(err)
-              }
-              return resolve(node)
-            })
-          }).then((node) => {
-            node1b = node
-            return ipfs.object.patch.addLink(testNodeMultihash, node1b.links[0])
-          })
-        })
-        .then((node) => {
-          expect(node1b.multihash).to.eql(node.multihash)
-        })
+      const parent = await ipfs.object.put(obj)
+      const parentCid = await calculateCid(parent)
+      const child = await ipfs.object.put(await createDAGNode(Buffer.from('some other node'), []))
+      const childCid = await calculateCid(child)
+      const newParent = await addLinkToDAGNode(parent, {
+        name: 'link-to-node',
+        size: child.size,
+        cid: childCid
+      })
+      const newParentCid = await calculateCid(newParent)
+
+      const nodeFromObjectPatch = await ipfs.object.patch.addLink(parentCid, newParent.links[0])
+      const nodeFromObjectPatchCid = await calculateCid(nodeFromObjectPatch)
+
+      expect(newParentCid).to.eql(nodeFromObjectPatchCid)
     })
   })
 }

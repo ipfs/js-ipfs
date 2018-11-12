@@ -1,7 +1,11 @@
 /* eslint-env mocha */
+/* eslint-disable max-nested-callbacks */
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
+const {
+  calculateCid
+} = require('../../utils/dag-pb')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -39,28 +43,35 @@ module.exports = (createCommon, options) => {
       ipfs.object.put(obj, (err, node) => {
         expect(err).to.not.exist()
 
-        ipfs.object.patch.appendData(node.multihash, Buffer.from('append'), (err, patchedNode) => {
+        calculateCid(node, (err, nodeCid) => {
           expect(err).to.not.exist()
-          expect(patchedNode.multihash).to.not.deep.equal(node.multihash)
-          done()
+
+          ipfs.object.patch.appendData(nodeCid, Buffer.from('append'), (err, patchedNode) => {
+            expect(err).to.not.exist()
+
+            calculateCid(patchedNode, (err, patchedNodeCid) => {
+              expect(err).to.not.exist()
+              expect(patchedNodeCid).to.not.deep.equal(nodeCid)
+
+              done()
+            })
+          })
         })
       })
     })
 
-    it('should append data to an existing node (promised)', () => {
+    it('should append data to an existing node (promised)', async () => {
       const obj = {
         Data: Buffer.from('patch test object (promised)'),
         Links: []
       }
 
-      return ipfs.object.put(obj)
-        .then((node) => {
-          return ipfs.object.patch.appendData(node.multihash, Buffer.from('append'))
-            .then((patchedNode) => ({ patchedNode, node }))
-        })
-        .then(({ patchedNode, node }) => {
-          expect(patchedNode.multihash).to.not.deep.equal(node.multihash)
-        })
+      const node = await ipfs.object.put(obj)
+      const nodeCid = await calculateCid(node)
+      const patchedNode = await ipfs.object.patch.appendData(nodeCid, Buffer.from('append'))
+      const patchedNodeCid = await calculateCid(patchedNode)
+
+      expect(nodeCid).to.not.deep.equal(patchedNodeCid)
     })
   })
 }

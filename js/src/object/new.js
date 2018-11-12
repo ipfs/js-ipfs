@@ -2,6 +2,9 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const {
+  calculateCid
+} = require('../utils/dag-pb')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -33,27 +36,31 @@ module.exports = (createCommon, options) => {
     it('should create a new object with no template', (done) => {
       ipfs.object.new((err, node) => {
         expect(err).to.not.exist()
-        const nodeJSON = node.toJSON()
-        expect(nodeJSON.multihash).to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-        done()
+
+        calculateCid(node, (err, cid) => {
+          expect(err).to.not.exist()
+          expect(cid.toBaseEncodedString()).to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
+          done()
+        })
       })
     })
 
-    it('should create a new object with no template (promised)', () => {
-      return ipfs.object.new()
-        .then((node) => {
-          const nodeJSON = node.toJSON()
-          expect(nodeJSON.multihash).to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-        })
+    it('should create a new object with no template (promised)', async () => {
+      const node = await ipfs.object.new()
+      const cid = await calculateCid(node)
+
+      expect(cid.toBaseEncodedString()).to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
     })
 
     it('should create a new object with unixfs-dir template', (done) => {
       ipfs.object.new('unixfs-dir', (err, node) => {
         expect(err).to.not.exist()
-        const nodeJSON = node.toJSON()
-        expect(nodeJSON.multihash)
-          .to.equal('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
-        done()
+
+        calculateCid(node, (err, cid) => {
+          expect(err).to.not.exist()
+          expect(cid.toBaseEncodedString()).to.equal('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
+          done()
+        })
       })
     })
   })

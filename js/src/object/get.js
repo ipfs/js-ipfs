@@ -3,12 +3,15 @@
 
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
-const bs58 = require('bs58')
 const series = require('async/series')
 const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const UnixFs = require('ipfs-unixfs')
 const crypto = require('crypto')
+const {
+  calculateCid,
+  asDAGLink
+} = require('../utils/dag-pb')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -44,6 +47,7 @@ module.exports = (createCommon, options) => {
       }
 
       let node1
+      let node1Cid
       let node2
 
       series([
@@ -51,11 +55,18 @@ module.exports = (createCommon, options) => {
           ipfs.object.put(obj, (err, node) => {
             expect(err).to.not.exist()
             node1 = node
-            cb()
+
+            calculateCid(node, (err, result) => {
+              expect(err).to.not.exist()
+
+              node1Cid = result
+
+              cb()
+            })
           })
         },
         (cb) => {
-          ipfs.object.get(node1.multihash, (err, node) => {
+          ipfs.object.get(node1Cid, (err, node) => {
             expect(err).to.not.exist()
             node2 = node
 
@@ -70,30 +81,29 @@ module.exports = (createCommon, options) => {
         (cb) => {
           expect(node1.data).to.eql(node2.data)
           expect(node1.links).to.eql(node2.links)
-          expect(node1.multihash).to.eql(node2.multihash)
           cb()
         }
       ], done)
     })
 
-    it('should get object by multihash (promised)', () => {
+    it('should get object by multihash (promised)', async () => {
       const testObj = {
         Data: Buffer.from(hat()),
         Links: []
       }
 
-      return ipfs.object.put(testObj).then((node1) => {
-        return ipfs.object.get(node1.multihash).then((node2) => {
-          // because js-ipfs-api can't infer if the
-          // returned Data is Buffer or String
-          if (typeof node2.data === 'string') {
-            node2.data = Buffer.from(node2.data)
-          }
+      const node1 = await ipfs.object.put(testObj)
+      const node1Cid = await calculateCid(node1)
+      const node2 = await ipfs.object.get(node1Cid)
 
-          expect(node1.data).to.deep.equal(node2.data)
-          expect(node1.links).to.deep.equal(node2.links)
-        })
-      })
+      // because js-ipfs-api can't infer if the
+      // returned Data is Buffer or String
+      if (typeof node2.data === 'string') {
+        node2.data = Buffer.from(node2.data)
+      }
+
+      expect(node1.data).to.deep.equal(node2.data)
+      expect(node1.links).to.deep.equal(node2.links)
     })
 
     it('should get object by multihash string', (done) => {
@@ -103,19 +113,28 @@ module.exports = (createCommon, options) => {
       }
 
       let node1
+      let node1Cid
       let node2
+      let node2Cid
 
       series([
         (cb) => {
           ipfs.object.put(obj, (err, node) => {
             expect(err).to.not.exist()
             node1 = node
-            cb()
+
+            calculateCid(node, (err, result) => {
+              expect(err).to.not.exist()
+
+              node1Cid = result
+
+              cb()
+            })
           })
         },
         (cb) => {
           // get object from ipfs multihash string
-          ipfs.object.get(node1.toJSON().multihash, (err, node) => {
+          ipfs.object.get(node1Cid.toBaseEncodedString(), (err, node) => {
             expect(err).to.not.exist()
             // because js-ipfs-api can't infer if the
             // returned Data is Buffer or String
@@ -123,44 +142,52 @@ module.exports = (createCommon, options) => {
               node.data = Buffer.from(node.data)
             }
             node2 = node
-            cb()
+
+            calculateCid(node, (err, result) => {
+              expect(err).to.not.exist()
+
+              node2Cid = result
+
+              cb()
+            })
           })
         },
         (cb) => {
           expect(node1.data).to.eql(node2.data)
           expect(node1.links).to.eql(node2.links)
-          expect(node1.multihash).to.eql(node2.multihash)
+          expect(node1Cid).to.deep.eql(node2Cid)
           cb()
         }
       ], done)
     })
 
-    it('should get object by multihash string (promised)', () => {
+    it('should get object by multihash string (promised)', async () => {
       const obj = {
         Data: Buffer.from(hat()),
         Links: []
       }
 
-      return ipfs.object.put(obj)
-        .then((node1) => {
-          return ipfs.object.get(node1.toJSON().multihash)
-            .then((node2) => {
-              // because js-ipfs-api can't infer if the
-              // returned Data is Buffer or String
-              if (typeof node2.data === 'string') {
-                node2.data = Buffer.from(node2.data)
-              }
+      const node1 = await ipfs.object.put(obj)
+      const node1Cid = await calculateCid(node1)
+      const node2 = await ipfs.object.get(node1Cid.toBaseEncodedString())
+      const node2Cid = await calculateCid(node2)
+      // because js-ipfs-api can't infer if the
+      // returned Data is Buffer or String
+      if (typeof node2.data === 'string') {
+        node2.data = Buffer.from(node2.data)
+      }
 
-              expect(node1.data).to.deep.equal(node2.data)
-              expect(node1.links).to.deep.equal(node2.links)
-            })
-        })
+      expect(node1.data).to.deep.equal(node2.data)
+      expect(node1.links).to.deep.equal(node2.links)
+      expect(node1Cid).to.deep.eql(node2Cid)
     })
 
     it('should get object with links by multihash string', (done) => {
       let node1a
       let node1b
+      let node1bCid
       let node1c
+      let node1cCid
       let node2
 
       series([
@@ -168,6 +195,7 @@ module.exports = (createCommon, options) => {
           DAGNode.create(Buffer.from('Some data 1'), (err, node) => {
             expect(err).to.not.exist()
             node1a = node
+
             cb()
           })
         },
@@ -175,23 +203,36 @@ module.exports = (createCommon, options) => {
           DAGNode.create(Buffer.from('Some data 2'), (err, node) => {
             expect(err).to.not.exist()
             node2 = node
+
             cb()
           })
         },
         (cb) => {
-          const link = node2.toJSON()
-          link.name = 'some-link'
-          DAGNode.addLink(node1a, link, (err, node) => {
+          asDAGLink(node2, 'some-link', (err, link) => {
             expect(err).to.not.exist()
-            node1b = node
-            cb()
+
+            DAGNode.addLink(node1a, link, (err, node) => {
+              expect(err).to.not.exist()
+              node1b = node
+              cb()
+            })
           })
         },
         (cb) => {
-          ipfs.object.put(node1b, cb)
+          ipfs.object.put(node1b, (err, node) => {
+            expect(err).to.not.exist()
+
+            calculateCid(node, (err, result) => {
+              expect(err).to.not.exist()
+
+              node1bCid = result
+
+              cb()
+            })
+          })
         },
         (cb) => {
-          ipfs.object.get(node1b.multihash, (err, node) => {
+          ipfs.object.get(node1bCid, (err, node) => {
             expect(err).to.not.exist()
 
             // because js-ipfs-api can't infer if the
@@ -201,12 +242,19 @@ module.exports = (createCommon, options) => {
             }
 
             node1c = node
-            cb()
+
+            calculateCid(node, (err, result) => {
+              expect(err).to.not.exist()
+
+              node1cCid = result
+
+              cb()
+            })
           })
         },
         (cb) => {
           expect(node1a.data).to.eql(node1c.data)
-          expect(node1b.multihash).to.eql(node1c.multihash)
+          expect(node1bCid).to.eql(node1cCid)
           cb()
         }
       ], done)
@@ -219,18 +267,27 @@ module.exports = (createCommon, options) => {
       }
 
       let node1a
+      let node1aCid
       let node1b
+      let node1bCid
 
       series([
         (cb) => {
           ipfs.object.put(obj, (err, node) => {
             expect(err).to.not.exist()
             node1a = node
-            cb()
+
+            calculateCid(node, (err, result) => {
+              expect(err).to.not.exist()
+
+              node1aCid = result
+
+              cb()
+            })
           })
         },
         (cb) => {
-          ipfs.object.get(node1a.multihash, { enc: 'base58' }, (err, node) => {
+          ipfs.object.get(node1aCid, { enc: 'base58' }, (err, node) => {
             expect(err).to.not.exist()
             // because js-ipfs-api can't infer if the
             // returned Data is Buffer or String
@@ -238,11 +295,18 @@ module.exports = (createCommon, options) => {
               node.data = Buffer.from(node.data)
             }
             node1b = node
-            cb()
+
+            calculateCid(node, (err, result) => {
+              expect(err).to.not.exist()
+
+              node1bCid = result
+
+              cb()
+            })
           })
         },
         (cb) => {
-          expect(node1a.multihash).to.eql(node1b.multihash)
+          expect(node1aCid).to.deep.eql(node1bCid)
           expect(node1a.data).to.eql(node1b.data)
           expect(node1a.links).to.eql(node1b.links)
           cb()
@@ -257,18 +321,27 @@ module.exports = (createCommon, options) => {
       }
 
       let node1a
+      let node1aCid
       let node1b
+      let node1bCid
 
       series([
         (cb) => {
           ipfs.object.put(obj, (err, node) => {
             expect(err).to.not.exist()
             node1a = node
-            cb()
+
+            calculateCid(node, (err, result) => {
+              expect(err).to.not.exist()
+
+              node1aCid = result
+
+              cb()
+            })
           })
         },
         (cb) => {
-          ipfs.object.get(bs58.encode(node1a.multihash).toString(), { enc: 'base58' }, (err, node) => {
+          ipfs.object.get(node1aCid.toBaseEncodedString(), { enc: 'base58' }, (err, node) => {
             expect(err).to.not.exist()
             // because js-ipfs-api can't infer if the
             // returned Data is Buffer or String
@@ -276,11 +349,18 @@ module.exports = (createCommon, options) => {
               node.data = Buffer.from(node.data)
             }
             node1b = node
-            cb()
+
+            calculateCid(node, (err, result) => {
+              expect(err).to.not.exist()
+
+              node1bCid = result
+
+              cb()
+            })
           })
         },
         (cb) => {
-          expect(node1a.multihash).to.eql(node1b.multihash)
+          expect(node1aCid).to.deep.eql(node1bCid)
           expect(node1a.data).to.eql(node1b.data)
           expect(node1a.links).to.eql(node1b.links)
           cb()

@@ -46,7 +46,7 @@ module.exports = (createCommon, options) => {
         (cb) => {
           const someData = Buffer.from('some other data')
 
-          pbNode = DAGNode.create(someData, (err, node) => {
+          DAGNode.create(someData, (err, node) => {
             expect(err).to.not.exist()
             pbNode = node
             cb()

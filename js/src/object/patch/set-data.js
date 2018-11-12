@@ -1,7 +1,11 @@
 /* eslint-env mocha */
+/* eslint-disable max-nested-callbacks */
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
+const {
+  calculateCid
+} = require('../../utils/dag-pb')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -39,28 +43,34 @@ module.exports = (createCommon, options) => {
       ipfs.object.put(obj, (err, node) => {
         expect(err).to.not.exist()
 
-        ipfs.object.patch.setData(node.multihash, Buffer.from('set'), (err, patchedNode) => {
+        calculateCid(node, (err, nodeCid) => {
           expect(err).to.not.exist()
-          expect(node.multihash).to.not.deep.equal(patchedNode.multihash)
-          done()
+
+          ipfs.object.patch.setData(nodeCid, Buffer.from('set'), (err, patchedNode) => {
+            expect(err).to.not.exist()
+
+            calculateCid(patchedNode, (err, patchedNodeCid) => {
+              expect(err).to.not.exist()
+
+              done()
+            })
+          })
         })
       })
     })
 
-    it('should set data for an existing node (promised)', () => {
+    it('should set data for an existing node (promised)', async () => {
       const obj = {
         Data: Buffer.from('patch test object (promised)'),
         Links: []
       }
 
-      return ipfs.object.put(obj)
-        .then((node) => {
-          return ipfs.object.patch.setData(node.multihash, Buffer.from('set'))
-            .then((patchedNode) => ({ patchedNode, node }))
-        })
-        .then(({ patchedNode, node }) => {
-          expect(node.multihash).to.not.deep.equal(patchedNode.multihash)
-        })
+      const node = await ipfs.object.put(obj)
+      const nodeCid = await calculateCid(node)
+      const patchedNode = await ipfs.object.patch.setData(nodeCid, Buffer.from('set'))
+      const patchedNodeCid = await calculateCid(patchedNode)
+
+      expect(nodeCid).to.not.deep.equal(patchedNodeCid)
     })
   })
 }

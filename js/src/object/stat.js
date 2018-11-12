@@ -1,11 +1,15 @@
 /* eslint-env mocha */
+/* eslint-disable max-nested-callbacks */
 'use strict'
 
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
-const bs58 = require('bs58')
 const series = require('async/series')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const {
+  calculateCid,
+  asDAGLink
+} = require('../utils/dag-pb')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -43,33 +47,11 @@ module.exports = (createCommon, options) => {
       ipfs.object.put(testObj, (err, node) => {
         expect(err).to.not.exist()
 
-        ipfs.object.stat(node.multihash, (err, stats) => {
+        calculateCid(node, (err, cid) => {
           expect(err).to.not.exist()
-          const expected = {
-            Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
-            NumLinks: 0,
-            BlockSize: 17,
-            LinksSize: 2,
-            DataSize: 15,
-            CumulativeSize: 17
-          }
-          expect(expected).to.deep.equal(stats)
-          done()
-        })
-      })
-    })
 
-    it('should get stats for object by multihash (promised)', () => {
-      const testObj = {
-        Data: Buffer.from('get test object'),
-        Links: []
-      }
-
-      return ipfs.object.put(testObj, (err, node) => {
-        expect(err).to.not.exist()
-
-        return ipfs.object.stat('QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ', { enc: 'base58' })
-          .then((stats) => {
+          ipfs.object.stat(cid, (err, stats) => {
+            expect(err).to.not.exist()
             const expected = {
               Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
               NumLinks: 0,
@@ -79,13 +61,37 @@ module.exports = (createCommon, options) => {
               CumulativeSize: 17
             }
             expect(expected).to.deep.equal(stats)
+            done()
           })
+        })
       })
+    })
+
+    it('should get stats for object by multihash (promised)', async () => {
+      const testObj = {
+        Data: Buffer.from('get test object'),
+        Links: []
+      }
+
+      await ipfs.object.put(testObj)
+      const stats = await ipfs.object.stat('QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ', { enc: 'base58' })
+
+      const expected = {
+        Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
+        NumLinks: 0,
+        BlockSize: 17,
+        LinksSize: 2,
+        DataSize: 15,
+        CumulativeSize: 17
+      }
+
+      expect(expected).to.deep.equal(stats)
     })
 
     it('should get stats for object with links by multihash', (done) => {
       let node1a
       let node1b
+      let node1bCid
       let node2
 
       series([
@@ -104,20 +110,33 @@ module.exports = (createCommon, options) => {
           })
         },
         (cb) => {
-          const link = node2.toJSON()
-          link.name = 'some-link'
-
-          DAGNode.addLink(node1a, link, (err, node) => {
+          asDAGLink(node2, 'some-link', (err, link) => {
             expect(err).to.not.exist()
-            node1b = node
-            cb()
+
+            DAGNode.addLink(node1a, link, (err, node) => {
+              expect(err).to.not.exist()
+
+              node1b = node
+
+              cb()
+            })
           })
         },
         (cb) => {
-          ipfs.object.put(node1b, cb)
+          ipfs.object.put(node1b, (err, node) => {
+            expect(err).to.not.exist()
+
+            calculateCid(node, (err, cid) => {
+              expect(err).to.not.exist()
+
+              node1bCid = cid
+
+              cb()
+            })
+          })
         },
         (cb) => {
-          ipfs.object.stat(node1b.multihash, (err, stats) => {
+          ipfs.object.stat(node1bCid, (err, stats) => {
             expect(err).to.not.exist()
             const expected = {
               Hash: 'QmPR7W4kaADkAo4GKEVVPQN81EDUFCHJtqejQZ5dEG7pBC',
@@ -143,18 +162,22 @@ module.exports = (createCommon, options) => {
       ipfs.object.put(testObj, (err, node) => {
         expect(err).to.not.exist()
 
-        ipfs.object.stat(bs58.encode(node.multihash), { enc: 'base58' }, (err, stats) => {
+        calculateCid(node, (err, cid) => {
           expect(err).to.not.exist()
-          const expected = {
-            Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
-            NumLinks: 0,
-            BlockSize: 17,
-            LinksSize: 2,
-            DataSize: 15,
-            CumulativeSize: 17
-          }
-          expect(expected).to.deep.equal(stats)
-          done()
+
+          ipfs.object.stat(cid.buffer, { enc: 'base58' }, (err, stats) => {
+            expect(err).to.not.exist()
+            const expected = {
+              Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
+              NumLinks: 0,
+              BlockSize: 17,
+              LinksSize: 2,
+              DataSize: 15,
+              CumulativeSize: 17
+            }
+            expect(expected).to.deep.equal(stats)
+            done()
+          })
         })
       })
     })
@@ -168,18 +191,22 @@ module.exports = (createCommon, options) => {
       ipfs.object.put(testObj, (err, node) => {
         expect(err).to.not.exist()
 
-        ipfs.object.stat(bs58.encode(node.multihash).toString(), { enc: 'base58' }, (err, stats) => {
+        calculateCid(node, (err, cid) => {
           expect(err).to.not.exist()
-          const expected = {
-            Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
-            NumLinks: 0,
-            BlockSize: 17,
-            LinksSize: 2,
-            DataSize: 15,
-            CumulativeSize: 17
-          }
-          expect(expected).to.deep.equal(stats)
-          done()
+
+          ipfs.object.stat(cid.toBaseEncodedString(), { enc: 'base58' }, (err, stats) => {
+            expect(err).to.not.exist()
+            const expected = {
+              Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
+              NumLinks: 0,
+              BlockSize: 17,
+              LinksSize: 2,
+              DataSize: 15,
+              CumulativeSize: 17
+            }
+            expect(expected).to.deep.equal(stats)
+            done()
+          })
         })
       })
     })
