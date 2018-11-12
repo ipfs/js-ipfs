@@ -1,3 +1,13 @@
+<a name="0.86.0"></a>
+# [0.86.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.85.0...v0.86.0) (2018-11-12)
+
+
+### Features
+
+* move regular files api to top level, add addFromFs and addFromUrl ([#378](https://github.com/ipfs/interface-ipfs-core/issues/378)) ([3dc7278](https://github.com/ipfs/interface-ipfs-core/commit/3dc7278))
+
+
+
 <a name="0.85.0"></a>
 # [0.85.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.84.3...v0.85.0) (2018-11-12)
 
