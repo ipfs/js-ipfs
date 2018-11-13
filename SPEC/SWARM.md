@@ -102,6 +102,13 @@ Starting with `go-ipfs 0.4.5` these additional properties are provided
 - `muxer: String` - The type of stream muxer the peer is usng
 - `streams: []String` - Only if `verbose: true`, a list of currently open streams
 
+If an error occurs trying to create an individual `peerInfo` object, it will have the properties
+
+- `error: Error` - the error that occurred
+- `rawPeerInfo: Object` - the raw data for the peer
+
+and all other properties may be undefined.
+
 If no `callback` is passed, a promise is returned.
 
 **Example:**
