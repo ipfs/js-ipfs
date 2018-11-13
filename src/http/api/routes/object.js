@@ -9,7 +9,8 @@ module.exports = (server) => {
     method: '*',
     path: '/api/v0/object/new',
     config: {
-      handler: resources.object.new
+      handler: resources.object.new.handler,
+      validate: resources.object.new.validate
     }
   })
 
@@ -20,7 +21,8 @@ module.exports = (server) => {
       pre: [
         { method: resources.object.get.parseArgs, assign: 'args' }
       ],
-      handler: resources.object.get.handler
+      handler: resources.object.get.handler,
+      validate: resources.object.get.validate
     }
   })
 
@@ -35,7 +37,8 @@ module.exports = (server) => {
       pre: [
         { method: resources.object.put.parseArgs, assign: 'args' }
       ],
-      handler: resources.object.put.handler
+      handler: resources.object.put.handler,
+      validate: resources.object.put.validate
     }
   })
 
@@ -46,7 +49,8 @@ module.exports = (server) => {
       pre: [
         { method: resources.object.stat.parseArgs, assign: 'args' }
       ],
-      handler: resources.object.stat.handler
+      handler: resources.object.stat.handler,
+      validate: resources.object.stat.validate
     }
   })
 
@@ -68,7 +72,8 @@ module.exports = (server) => {
       pre: [
         { method: resources.object.links.parseArgs, assign: 'args' }
       ],
-      handler: resources.object.links.handler
+      handler: resources.object.links.handler,
+      validate: resources.object.links.validate
     }
   })
 
@@ -83,7 +88,8 @@ module.exports = (server) => {
       pre: [
         { method: resources.object.patchAppendData.parseArgs, assign: 'args' }
       ],
-      handler: resources.object.patchAppendData.handler
+      handler: resources.object.patchAppendData.handler,
+      validate: resources.object.patchAppendData.validate
     }
   })
 
@@ -98,7 +104,8 @@ module.exports = (server) => {
       pre: [
         { method: resources.object.patchSetData.parseArgs, assign: 'args' }
       ],
-      handler: resources.object.patchSetData.handler
+      handler: resources.object.patchSetData.handler,
+      validate: resources.object.patchSetData.validate
     }
   })
 
@@ -109,7 +116,8 @@ module.exports = (server) => {
       pre: [
         { method: resources.object.patchAddLink.parseArgs, assign: 'args' }
       ],
-      handler: resources.object.patchAddLink.handler
+      handler: resources.object.patchAddLink.handler,
+      validate: resources.object.patchAddLink.validate
     }
   })
 
@@ -120,7 +128,8 @@ module.exports = (server) => {
       pre: [
         { method: resources.object.patchRmLink.parseArgs, assign: 'args' }
       ],
-      handler: resources.object.patchRmLink.handler
+      handler: resources.object.patchRmLink.handler,
+      validate: resources.object.patchRmLink.validate
     }
   })
 }

@@ -23,7 +23,7 @@ exports.wantlist = {
       if (err) {
         return reply(boom.badRequest(err))
       }
-      reply({ Keys: list })
+      reply({ Keys: list.map(cid => ({ '/': cid })) })
     })
   }
 }

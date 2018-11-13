@@ -9,7 +9,8 @@ module.exports = (server) => {
     method: '*',
     path: '/api/v0/bitswap/wantlist',
     config: {
-      handler: resources.bitswap.wantlist.handler
+      handler: resources.bitswap.wantlist.handler,
+      validate: resources.bitswap.wantlist.validate
     }
   })
 
@@ -17,7 +18,8 @@ module.exports = (server) => {
     method: '*',
     path: '/api/v0/bitswap/stat',
     config: {
-      handler: resources.bitswap.stat.handler
+      handler: resources.bitswap.stat.handler,
+      validate: resources.bitswap.stat.validate
     }
   })
 
@@ -28,7 +30,8 @@ module.exports = (server) => {
       pre: [
         { method: resources.bitswap.unwant.parseArgs, assign: 'args' }
       ],
-      handler: resources.bitswap.unwant.handler
+      handler: resources.bitswap.unwant.handler,
+      validate: resources.bitswap.unwant.validate
     }
   })
 }
