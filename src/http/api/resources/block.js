@@ -126,7 +126,7 @@ exports.put = {
   }
 }
 
-exports.del = {
+exports.rm = {
   // uses common parseKey method that returns a `key`
   parseArgs: exports.parseKey,
 

@@ -56,6 +56,50 @@ module.exports = (http) => {
           })
         })
       })
+
+      it('should put a value and return a base64 encoded CID', (done) => {
+        const form = new FormData()
+        const filePath = 'test/fixtures/test-data/hello'
+        form.append('data', fs.createReadStream(filePath))
+        const headers = form.getHeaders()
+        const expectedResult = {
+          Key: 'mAXASIKlIkE8vD0ebj4GXaUswGEsNLtHBzSoewPuF0pmhkqRH',
+          Size: 12
+        }
+
+        streamToPromise(form).then((payload) => {
+          api.inject({
+            method: 'POST',
+            url: '/api/v0/block/put?cid-base=base64',
+            headers: headers,
+            payload: payload
+          }, (res) => {
+            expect(res.statusCode).to.equal(200)
+            expect(res.result).to.deep.equal(expectedResult)
+            done()
+          })
+        })
+      })
+
+      it('should not put a value for invalid cid-base option', (done) => {
+        const form = new FormData()
+        const filePath = 'test/fixtures/test-data/hello'
+        form.append('data', fs.createReadStream(filePath))
+        const headers = form.getHeaders()
+
+        streamToPromise(form).then((payload) => {
+          api.inject({
+            method: 'POST',
+            url: '/api/v0/block/put?cid-base=invalid',
+            headers: headers,
+            payload: payload
+          }, (res) => {
+            expect(res.statusCode).to.equal(400)
+            expect(res.result.Message).to.include('child "cid-base" fails')
+            done()
+          })
+        })
+      })
     })
 
     describe('/block/get', () => {
