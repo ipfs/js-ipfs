@@ -39,12 +39,12 @@ module.exports = (send) => {
           Links: []
         }
       }
-    } else if (obj.multihash) {
+    } else if (DAGNode.isDAGNode(obj)) {
       tmpObj = {
         Data: obj.data.toString(),
         Links: obj.links.map((l) => {
           const link = l.toJSON()
-          link.hash = link.multihash
+          link.hash = link.cid
           return link
         })
       }
@@ -82,7 +82,7 @@ module.exports = (send) => {
 
       let node
 
-      if (obj.multihash) {
+      if (DAGNode.isDAGNode(obj)) {
         node = obj
       } else if (options.enc === 'protobuf') {
         dagPB.util.deserialize(obj, (err, _node) => {
@@ -106,14 +106,14 @@ module.exports = (send) => {
       next()
 
       function next () {
-        const nodeJSON = node.toJSON()
-        if (nodeJSON.multihash !== result.Hash) {
-          const err = new Error('multihashes do not match')
-          return callback(err)
-        }
+        dagPB.util.cid(node, (err, cid) => {
+          if (err) {
+            return callback(err)
+          }
 
-        cache.set(result.Hash, node)
-        callback(null, node)
+          cache.set(cid.toBaseEncodedString(), node)
+          callback(null, node)
+        })
       }
     })
   })
