@@ -100,26 +100,27 @@ bitswap.unwant(key, (err) => {
 })
 ```
 
-### In a web browser through Browserify
+### In a web browser
+
+**through Browserify**
 
 Same as in Node.js, you just have to [browserify](http://browserify.org) the code before serving it. See the browserify repo for how to do that.
 
 See the example in the [examples folder](/examples/bundle-browserify) to get a boilerplate.
 
-### In a web browser through webpack
+**through webpack**
 
 See the example in the [examples folder](/examples/bundle-webpack) to get an idea on how to use js-ipfs-api with webpack.
 
-### In a web browser from CDN
+**from CDN**
 
-Instead of a local installation (and browserification) you may request a remote copy of IPFS API from [unpkg CDN](https://unpkg.com/).
+Instead of a local installation (and browserification) you may request a remote copy of IPFS API from [unpkg CDN](https://unpkg.com/).
 
 To always request the latest version, use the following:
 
 ```html
 <!-- loading the minified version -->
 <script src="https://unpkg.com/ipfs-api/dist/index.min.js"></script>
-
 <!-- loading the human-readable (not minified) version -->
 <script src="https://unpkg.com/ipfs-api/dist/index.js"></script>
 ```
@@ -141,13 +142,13 @@ crossorigin="anonymous"></script>
 CDN-based IPFS API provides the `IpfsApi` constructor as a method of the global `window` object. Example:
 
 ```js
-var ipfs = window.IpfsApi('localhost', '5001')
+const ipfs = window.IpfsApi('localhost', '5001')
 ```
 
 If you omit the host and port, the API will parse `window.host`, and use this information. This also works, and can be useful if you want to write apps that can be run from multiple different gateways:
 
 ```js
-var ipfs = window.IpfsApi()
+const ipfs = window.IpfsApi()
 ```
 
 ### CORS
@@ -185,31 +186,34 @@ const ipfs = IpfsApi({
 
 #### Files
 
-- [files](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md)
-  - [`ipfs.files.add(data, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesadd). Alias to `ipfs.add`.
-  - [`ipfs.files.addPullStream([options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesaddpullstream)
-  - [`ipfs.files.addReadableStream([options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesaddreadablestream)
-  - [`ipfs.files.cat(ipfsPath, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescat). Alias to `ipfs.cat`.
-  - [`ipfs.files.catPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescatpullstream)  
-  - [`ipfs.files.catReadableStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescatreadablestream)
-  - [`ipfs.files.get(ipfsPath, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesget). Alias to `ipfs.get`.
-  - [`ipfs.files.getPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesgetpullstream)  
-  - [`ipfs.files.getReadableStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesgetreadablestream)
+- [Regular Files API](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md)
+  - [`ipfs.add(data, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#add)
+  - [`ipfs.addPullStream([options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#addpullstream)
+  - [`ipfs.addReadableStream([options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#addreadablestream)
+  - [`ipfs.addFromStream(stream, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#addfromstream)
+  - [`ipfs.addFromFs(path, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#addfromfs)
+  - [`ipfs.addFromUrl(url, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#addfromurl)
+  - [`ipfs.cat(ipfsPath, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#cat)
+  - [`ipfs.catPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#catpullstream)
+  - [`ipfs.catReadableStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#catreadablestream)
+  - [`ipfs.get(ipfsPath, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#get)
+  - [`ipfs.getPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#getpullstream)
+  - [`ipfs.getReadableStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#getreadablestream)
   - [`ipfs.ls(ipfsPath, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#ls)
   - [`ipfs.lsPullStream(ipfsPath)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#lspullstream)
   - [`ipfs.lsReadableStream(ipfsPath)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#lsreadablestream)
-  - [MFS (mutable file system) specific](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#mutable-file-system)
-    - [`ipfs.files.cp([from, to], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescp)
-    - [`ipfs.files.flush([path], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesflush)
-    - [`ipfs.files.ls([path], [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesls)
-    - [`ipfs.files.mkdir(path, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesmkdir)
-    - [`ipfs.files.mv([from, to], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesmv)
-    - [`ipfs.files.read(path, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesread)
-    - [`ipfs.files.readPullStream(path, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesreadpullstream)
-    - [`ipfs.files.readReadableStream(path, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesreadreadablestream)
-    - [`ipfs.files.rm(path, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesrm)
-    - [`ipfs.files.stat(path, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesstat)
-    - [`ipfs.files.write(path, content, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#fileswrite)
+- [MFS (mutable file system) specific](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#mutable-file-system)
+  - [`ipfs.files.cp([from, to], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescp)
+  - [`ipfs.files.flush([path], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesflush)
+  - [`ipfs.files.ls([path], [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesls)
+  - [`ipfs.files.mkdir(path, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesmkdir)
+  - [`ipfs.files.mv([from, to], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesmv)
+  - [`ipfs.files.read(path, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesread)
+  - [`ipfs.files.readPullStream(path, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesreadpullstream)
+  - [`ipfs.files.readReadableStream(path, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesreadreadablestream)
+  - [`ipfs.files.rm(path, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesrm)
+  - [`ipfs.files.stat(path, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesstat)
+  - [`ipfs.files.write(path, content, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#fileswrite)
 
 - [block](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BLOCK.md)
   - [`ipfs.block.get(cid, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BLOCK.md#blockget)
@@ -359,68 +363,11 @@ A set of data types are exposed directly from the IPFS instance under `ipfs.type
 - [`ipfs.types.dagPB`](https://github.com/ipld/js-ipld-dag-pb)
 - [`ipfs.types.dagCBOR`](https://github.com/ipld/js-ipld-dag-cbor)
 
-#### Utility functions
+#### Extra (util) functions
 
 Adding to the methods defined by [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core), `js-ipfs-api` exposes a set of extra utility methods. These utility functions are scoped behind the `ipfs.util`.
 
 Complete documentation for these methods is coming with: https://github.com/ipfs/js-ipfs-api/pull/305
-
-##### Add files or entire directories from the FileSystem to IPFS
-
-> `ipfs.util.addFromFs(path, option, callback)`
-
-Reads a file or folder from `path` on the filesystem  and adds it to IPFS. Options:
-- **recursive**: If `path` is a directory, use option `{ recursive: true }` to add the directory and all its sub-directories.
-  - **ignore**: To exclude fileglobs from the directory, use option `{ ignore: ['ignore/this/folder/**', 'and/this/file'] }`.
-  - **hidden**: hidden/dot files (files or folders starting with a `.`, for example, `.git/`) are not included by default. To add them, use the option `{ hidden: true }`.
-
-```JavaScript
-ipfs.util.addFromFs('path/to/a/folder', { recursive: true , ignore: ['subfolder/to/ignore/**']}, (err, result) => {
-  if (err) { throw err }
-  console.log(result)
-})
-```
-
-`result` is an array of objects describing the files that were added, such as:
-
-```js
-[
-  {
-    path: 'test-folder',
-    hash: 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6',
-    size: 2278
-  },
-  // ...
-]
-```
-
-##### Add a file from a URL to IPFS
-
-> `ipfs.util.addFromURL(url, callback)`
-
-```JavaScript
-ipfs.util.addFromURL('http://example.com/', (err, result) => {
-  if (err) {
-    throw err
-  }
-  console.log(result)
-})
-```
-
-##### Add a file from a stream to IPFS
-
-> `ipfs.util.addFromStream(stream, callback)`
-
-This is very similar to `ipfs.files.add({path:'', content: stream})`. It is like the reverse of cat
-
-```JavaScript
-ipfs.util.addFromStream(<readable-stream>, (err, result) => {
-  if (err) {
-    throw err
-  }
-  console.log(result)
-})
-```
 
 ##### Get endpoint configuration (host and port)
 
@@ -440,22 +387,6 @@ This contains an object with the crypto primitives
 
 This contains an object with the is-ipfs utilities to help identifying IPFS resources
 
-### Callbacks and Promises
-
-If you do not pass in a callback all API functions will return a `Promise`. For example:
-
-```js
-ipfs.id()
-  .then((id) => {
-    console.log('my id is: ', id)
-  })
-  .catch((err) => {
-    console.log('Fail: ', err)
-  })
-```
-
-This relies on a global `Promise` object. If you are in an environment where that is not yet available you need to bring your own polyfill.
-
 ## Development
 
 ### Testing
@@ -466,10 +397,10 @@ We run tests by executing `npm test` in a terminal window. This will run both No
 
 The js-ipfs-api is a work in progress. As such, there's a few things you can do right now to help out:
 
-* **[Check out the existing issues](https://github.com/ipfs/js-ipfs-api/issues)**!
-* **Perform code reviews**. More eyes will help a) speed the project along b) ensure quality and c) reduce possible future bugs.
-* **Add tests**. There can never be enough tests. Note that interface tests exist inside [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core/tree/master/js/src).
-* **Contribute to the [FAQ repository](https://github.com/ipfs/faq/issues)** with any questions you have about IPFS or any of the relevant technology. A good example would be asking, 'What is a merkledag tree?'. If you don't know a term, odds are, someone else doesn't either. Eventually, we should have a good understanding of where we need to improve communications and teaching together to make IPFS and IPN better.
+- **[Check out the existing issues](https://github.com/ipfs/js-ipfs-api/issues)**!
+- **Perform code reviews**. More eyes will help a) speed the project along b) ensure quality and c) reduce possible future bugs.
+- **Add tests**. There can never be enough tests. Note that interface tests exist inside [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core/tree/master/js/src).
+- **Contribute to the [FAQ repository](https://github.com/ipfs/faq/issues)** with any questions you have about IPFS or any of the relevant technology. A good example would be asking, 'What is a merkledag tree?'. If you don't know a term, odds are, someone else doesn't either. Eventually, we should have a good understanding of where we need to improve communications and teaching together to make IPFS and IPN better.
 
 **Want to hack on IPFS?**
 

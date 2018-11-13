@@ -37,12 +37,12 @@ describe('.get (specific go-ipfs features)', function () {
         ipfs = IPFSApi(_ipfsd.apiAddr)
         cb()
       }),
-      (cb) => ipfs.files.add(smallFile.data, cb)
+      (cb) => ipfs.add(smallFile.data, cb)
     ], done)
   })
 
   after((done) => {
-    if (!ipfsd) return done()
+    if (!ipfsd) { return done() }
     ipfsd.stop(done)
   })
 
@@ -83,9 +83,7 @@ describe('.get (specific go-ipfs features)', function () {
   })
 
   it('add path containing "+"s (for testing get)', (done) => {
-    if (!isNode) {
-      return done()
-    }
+    if (!isNode) { return done() }
 
     const filename = 'ti,c64x+mega++mod-pic.txt'
     const subdir = 'tmp/c++files'
@@ -101,9 +99,7 @@ describe('.get (specific go-ipfs features)', function () {
   })
 
   it('get path containing "+"s', (done) => {
-    if (!isNode) {
-      return done()
-    }
+    if (!isNode) { return done() }
 
     const cid = 'QmPkmARcqjo5fqK1V1o8cFsuaXxWYsnwCNLJUYS4KeZyff'
     let count = 0

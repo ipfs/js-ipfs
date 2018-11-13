@@ -53,7 +53,7 @@ describe('.name', () => {
             })
           },
           (cb) => {
-            ipfs.files.add(testfile, (err, res) => {
+            ipfs.add(testfile, (err, res) => {
               expect(err).to.not.exist()
               testFileCid = res[0].hash
               cb()

@@ -165,26 +165,37 @@ describe('submodules', () => {
     expect(pubsub.peers).to.be.a('function')
   })
 
-  it('files', () => {
-    const files = require('../src/files')(config)
+  it('files regular API', () => {
+    const filesRegular = require('../src/files-regular')(config)
 
-    expect(files.add).to.be.a('function')
-    expect(files.addReadableStream).to.be.a('function')
-    expect(files.addPullStream).to.be.a('function')
-    expect(files.get).to.be.a('function')
-    expect(files.getReadableStream).to.be.a('function')
-    expect(files.getPullStream).to.be.a('function')
-    expect(files.cat).to.be.a('function')
-    expect(files.catReadableStream).to.be.a('function')
-    expect(files.catPullStream).to.be.a('function')
-    expect(files.cp).to.be.a('function')
-    expect(files.ls).to.be.a('function')
-    expect(files.mkdir).to.be.a('function')
-    expect(files.stat).to.be.a('function')
-    expect(files.rm).to.be.a('function')
-    expect(files.read).to.be.a('function')
-    expect(files.write).to.be.a('function')
-    expect(files.mv).to.be.a('function')
+    expect(filesRegular.add).to.be.a('function')
+    expect(filesRegular.addReadableStream).to.be.a('function')
+    expect(filesRegular.addPullStream).to.be.a('function')
+    expect(filesRegular.addFromStream).to.be.a('function')
+    expect(filesRegular.addFromFs).to.be.a('function')
+    expect(filesRegular.addFromUrl).to.be.a('function')
+    expect(filesRegular.get).to.be.a('function')
+    expect(filesRegular.getReadableStream).to.be.a('function')
+    expect(filesRegular.getPullStream).to.be.a('function')
+    expect(filesRegular.cat).to.be.a('function')
+    expect(filesRegular.catReadableStream).to.be.a('function')
+    expect(filesRegular.catPullStream).to.be.a('function')
+    expect(filesRegular.ls).to.be.a('function')
+    expect(filesRegular.lsReadableStream).to.be.a('function')
+    expect(filesRegular.lsPullStream).to.be.a('function')
+  })
+
+  it('files MFS API', () => {
+    const filesMFS = require('../src/files-mfs')(config)
+
+    expect(filesMFS.cp).to.be.a('function')
+    expect(filesMFS.ls).to.be.a('function')
+    expect(filesMFS.mkdir).to.be.a('function')
+    expect(filesMFS.stat).to.be.a('function')
+    expect(filesMFS.rm).to.be.a('function')
+    expect(filesMFS.read).to.be.a('function')
+    expect(filesMFS.write).to.be.a('function')
+    expect(filesMFS.mv).to.be.a('function')
   })
 
   it('commands', () => {
@@ -193,28 +204,10 @@ describe('submodules', () => {
     expect(commands).to.be.a('function')
   })
 
-  it('ls', () => {
-    const ls = require('../src/ls')(config)
-
-    expect(ls).to.be.a('function')
-  })
-
   it('mount', () => {
     const mount = require('../src/mount')(config)
 
     expect(mount).to.be.a('function')
-  })
-
-  it('fs-add', () => {
-    const fsAdd = require('../src/util/fs-add')(config)
-
-    expect(fsAdd).to.be.a('function')
-  })
-
-  it('url-add', () => {
-    const urlAdd = require('../src/util/url-add')(config)
-
-    expect(urlAdd).to.be.a('function')
   })
 
   it('refs', () => {
@@ -222,23 +215,5 @@ describe('submodules', () => {
 
     expect(refs).to.be.a('function')
     expect(refs.local).to.be.a('function')
-  })
-
-  it('add', () => {
-    const add = require('../src/add')(config)
-
-    expect(add).to.be.a('function')
-  })
-
-  it('get', () => {
-    const get = require('../src/get')(config)
-
-    expect(get).to.be.a('function')
-  })
-
-  it('cat', () => {
-    const cat = require('../src/cat')(config)
-
-    expect(cat).to.be.a('function')
   })
 })

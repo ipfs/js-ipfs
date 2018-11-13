@@ -1,7 +1,8 @@
 'use strict'
 
-const moduleConfig = require('./utils/module-config')
-const Stream = require('readable-stream')
+const moduleConfig = require('../utils/module-config')
+const pull = require('pull-stream')
+const deferred = require('pull-defer')
 
 module.exports = (arg) => {
   const send = moduleConfig(arg)
@@ -12,10 +13,12 @@ module.exports = (arg) => {
       opts = {}
     }
 
-    const pt = new Stream.PassThrough({objectMode: true})
+    const p = deferred.source()
 
     send({ path: 'ls', args: args, qs: opts }, (err, results) => {
-      if (err) { return callback(err) }
+      if (err) {
+        return callback(err)
+      }
 
       let result = results.Objects
       if (!result) {
@@ -41,11 +44,10 @@ module.exports = (arg) => {
         type: typeOf(link)
       }))
 
-      result.forEach((item) => pt.write(item))
-      pt.end()
+      p.resolve(pull.values(result))
     })
 
-    return pt
+    return p
   }
 }
 

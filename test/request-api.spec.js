@@ -54,7 +54,7 @@ describe('trailer headers', () => {
     server.listen(6001, () => {
       const ipfs = ipfsAPI('/ip4/127.0.0.1/tcp/6001')
       /* eslint-disable */
-      ipfs.files.add(Buffer.from('Hello there!'), (err, res) => {
+      ipfs.add(Buffer.from('Hello there!'), (err, res) => {
         // TODO: error's are not being correctly
         // propagated with Trailer headers yet
         // expect(err).to.exist()

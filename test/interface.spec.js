@@ -7,7 +7,7 @@ const CommonFactory = require('./utils/interface-common-factory')
 const IPFSApi = require('../src')
 const isWindows = process.platform && process.platform === 'win32'
 
-describe('interface-ipfs-core tests', () => {
+describe.only('interface-ipfs-core tests', () => {
   const defaultCommonFactory = CommonFactory.create()
 
   tests.bitswap(defaultCommonFactory, {
@@ -91,9 +91,9 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.files(defaultCommonFactory, {
+  tests.filesRegular(defaultCommonFactory, {
     skip: [
-      // files.add
+      // .add
       isNode ? null : {
         name: 'should add a nested directory as array of tupples',
         reason: 'FIXME https://github.com/ipfs/js-ipfs-api/issues/339'
@@ -102,17 +102,32 @@ describe('interface-ipfs-core tests', () => {
         name: 'should add a nested directory as array of tupples with progress',
         reason: 'FIXME https://github.com/ipfs/js-ipfs-api/issues/339'
       },
-      // files.addPullStream
+      // .addPullStream
       isNode ? null : {
         name: 'should add pull stream of valid files and dirs',
         reason: 'FIXME https://github.com/ipfs/js-ipfs-api/issues/339'
       },
-      // files.addReadableStream
+      // .addReadableStream
       isNode ? null : {
         name: 'should add readable stream of valid files and dirs',
         reason: 'FIXME https://github.com/ipfs/js-ipfs-api/issues/339'
       },
-      // files.catPullStream
+      // .addFromStream
+      isNode ? null : {
+        name: 'addFromStream',
+        reason: 'Not designed to run in the browser'
+      },
+      // .addFromFs
+      isNode ? null : {
+        name: 'addFromFs',
+        reason: 'Not designed to run in the browser'
+      },
+      // .addFromUrl
+      isNode ? null : {
+        name: 'addFromUrl',
+        reason: 'Not designed to run in the browser'
+      },
+      // .catPullStream
       {
         name: 'should export a chunk of a file',
         reason: 'TODO not implemented in go-ipfs yet'
@@ -125,18 +140,30 @@ describe('interface-ipfs-core tests', () => {
         name: 'should export a chunk of a file in a Readable Stream',
         reason: 'TODO not implemented in go-ipfs yet'
       },
-      // files.get
+      // .get
       isNode ? null : {
         name: 'should get a directory',
         reason: 'FIXME https://github.com/ipfs/js-ipfs-api/issues/339'
       },
-      // files.write
-      {
-        name: 'should write to deeply nested non existent file with create and parents flags',
-        reason: 'TODO remove when 0.4.18 is released https://github.com/ipfs/go-ipfs/pull/5359'
+      // .ls
+      isNode ? null : {
+        name: 'should ls with a base58 encoded CID',
+        reason: 'FIXME https://github.com/ipfs/js-ipfs-api/issues/339'
+      },
+      // .lsPullStream
+      isNode ? null : {
+        name: 'should pull stream ls with a base58 encoded CID',
+        reason: 'FIXME https://github.com/ipfs/js-ipfs-api/issues/339'
+      },
+      // .lsReadableStream
+      isNode ? null : {
+        name: 'should readable stream ls with a base58 encoded CID',
+        reason: 'FIXME https://github.com/ipfs/js-ipfs-api/issues/339'
       }
     ]
   })
+
+  tests.filesMFS(defaultCommonFactory)
 
   tests.key(defaultCommonFactory, {
     skip: [
@@ -149,26 +176,6 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'import',
         reason: 'TODO not implemented in go-ipfs yet'
-      }
-    ]
-  })
-
-  tests.ls(defaultCommonFactory, {
-    skip: [
-      // lsPullStream
-      isNode ? null : {
-        name: 'should pull stream ls with a base58 encoded CID',
-        reason: 'FIXME https://github.com/ipfs/js-ipfs-api/issues/339'
-      },
-      // lsReadableStream
-      isNode ? null : {
-        name: 'should readable stream ls with a base58 encoded CID',
-        reason: 'FIXME https://github.com/ipfs/js-ipfs-api/issues/339'
-      },
-      // ls
-      isNode ? null : {
-        name: 'should ls with a base58 encoded CID',
-        reason: 'FIXME https://github.com/ipfs/js-ipfs-api/issues/339'
       }
     ]
   })

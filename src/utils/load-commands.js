@@ -2,72 +2,75 @@
 
 function requireCommands () {
   const cmds = {
-    // Files (not MFS)
-    add: require('../files/add'),
-    addReadableStream: require('../files/add-readable-stream'),
-    addPullStream: require('../files/add-pull-stream'),
-    cat: require('../files/cat'),
-    catReadableStream: require('../files/cat-readable-stream'),
-    catPullStream: require('../files/cat-pull-stream'),
-    get: require('../files/get'),
-    getReadableStream: require('../files/get-readable-stream'),
-    getPullStream: require('../files/get-pull-stream'),
-    ls: require('../ls'),
-    lsReadableStream: require('../ls-readable-stream'),
-    lsPullStream: require('../ls-pull-stream'),
+    // Files Regular (not MFS)
+    add: require('../files-regular/add'),
+    addReadableStream: require('../files-regular/add-readable-stream'),
+    addPullStream: require('../files-regular/add-pull-stream'),
+    addFromFs: require('../files-regular/add-from-fs'),
+    addFromURL: require('../files-regular/add-from-url'),
+    addFromStream: require('../files-regular/add'),
+    cat: require('../files-regular/cat'),
+    catReadableStream: require('../files-regular/cat-readable-stream'),
+    catPullStream: require('../files-regular/cat-pull-stream'),
+    get: require('../files-regular/get'),
+    getReadableStream: require('../files-regular/get-readable-stream'),
+    getPullStream: require('../files-regular/get-pull-stream'),
+    ls: require('../files-regular/ls'),
+    lsReadableStream: require('../files-regular/ls-readable-stream'),
+    lsPullStream: require('../files-regular/ls-pull-stream'),
 
-    bitswap: require('../bitswap'),
+    // Block
     block: require('../block'),
+    bitswap: require('../bitswap'),
+
+    // Graph
+    dag: require('../dag'),
+    object: require('../object'),
+    pin: require('../pin'),
+
+    // Network
     bootstrap: require('../bootstrap'),
+    dht: require('../dht'),
+    name: require('../name'),
+    ping: require('../ping'),
+    pingReadableStream: require('../ping-readable-stream'),
+    pingPullStream: require('../ping-pull-stream'),
+    swarm: require('../swarm'),
+    pubsub: require('../pubsub'),
+    dns: require('../dns'),
+
+    // Miscellaneous
     commands: require('../commands'),
     config: require('../config'),
-    dag: require('../dag'),
-    dht: require('../dht'),
     diag: require('../diag'),
     id: require('../id'),
     key: require('../key'),
     log: require('../log'),
     mount: require('../mount'),
-    name: require('../name'),
-    object: require('../object'),
-    pin: require('../pin'),
-    ping: require('../ping'),
-    pingReadableStream: require('../ping-readable-stream'),
-    pingPullStream: require('../ping-pull-stream'),
     refs: require('../refs'),
     repo: require('../repo'),
     stop: require('../stop'),
     stats: require('../stats'),
-    swarm: require('../swarm'),
-    pubsub: require('../pubsub'),
     update: require('../update'),
     version: require('../version'),
     types: require('../types'),
-    resolve: require('../resolve'),
-    dns: require('../dns')
+    resolve: require('../resolve')
   }
 
   // shutdown is an alias for stop
   cmds.shutdown = cmds.stop
 
-  // TODO: crowding the 'files' namespace temporarily for interface-ipfs-core
-  // compatibility, until 'files vs mfs' naming decision is resolved.
-  cmds.files = function (send) {
-    const files = require('../files')(send)
-
-    return files
+  // Files MFS (Mutable Filesystem)
+  cmds.files = (send) => {
+    return require('../files-mfs')(send)
   }
 
-  cmds.util = function (send, config) {
-    const util = {
-      addFromFs: require('../util/fs-add')(send),
-      addFromStream: require('../files/add')(send),
-      addFromURL: require('../util/url-add')(send),
+  cmds.util = (send, config) => {
+    return {
       getEndpointConfig: require('../util/get-endpoint-config')(config),
       crypto: require('libp2p-crypto'),
       isIPFS: require('is-ipfs')
     }
-    return util
   }
 
   return cmds

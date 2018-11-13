@@ -51,8 +51,8 @@ describe('.files (the MFS API part)', function () {
     ipfsd.stop(done)
   })
 
-  it('add file for testing', (done) => {
-    ipfs.files.add(testfile, (err, res) => {
+  it('.add file for testing', (done) => {
+    ipfs.add(testfile, (err, res) => {
       expect(err).to.not.exist()
 
       expect(res).to.have.length(1)
@@ -62,13 +62,13 @@ describe('.files (the MFS API part)', function () {
     })
   })
 
-  it('files.add with Buffer module', (done) => {
+  it('.add with Buffer module', (done) => {
     let Buffer = require('buffer').Buffer
 
     let expectedBufferMultihash = 'QmWfVY9y3xjsixTgbd9AorQxH7VtMpzfx2HaWtsoUYecaX'
     let file = Buffer.from('hello')
 
-    ipfs.files.add(file, (err, res) => {
+    ipfs.add(file, (err, res) => {
       expect(err).to.not.exist()
 
       expect(res).to.have.length(1)
@@ -78,11 +78,11 @@ describe('.files (the MFS API part)', function () {
     })
   })
 
-  it('files.add with empty path and buffer content', (done) => {
+  it('.add with empty path and buffer content', (done) => {
     const expectedHash = 'QmWfVY9y3xjsixTgbd9AorQxH7VtMpzfx2HaWtsoUYecaX'
     const content = Buffer.from('hello')
 
-    ipfs.files.add([{ path: '', content }], (err, res) => {
+    ipfs.add([{ path: '', content }], (err, res) => {
       expect(err).to.not.exist()
 
       expect(res).to.have.length(1)
@@ -92,11 +92,11 @@ describe('.files (the MFS API part)', function () {
     })
   })
 
-  it('files.add with cid-version=1 and raw-leaves=false', (done) => {
+  it('.add with cid-version=1 and raw-leaves=false', (done) => {
     const expectedCid = 'zdj7Wh9x6gXdg4UAqhRYnjBTw9eJF7hvzUU4HjpnZXHYQz9jK'
     const options = { 'cid-version': 1, 'raw-leaves': false }
 
-    ipfs.files.add(testfile, options, (err, res) => {
+    ipfs.add(testfile, options, (err, res) => {
       expect(err).to.not.exist()
 
       expect(res).to.have.length(1)
@@ -106,11 +106,11 @@ describe('.files (the MFS API part)', function () {
     })
   })
 
-  it('files.add with only-hash=true', function () {
+  it('.add with only-hash=true', function () {
     this.slow(10 * 1000)
     const content = String(Math.random() + Date.now())
 
-    return ipfs.files.add(Buffer.from(content), { onlyHash: true })
+    return ipfs.add(Buffer.from(content), { onlyHash: true })
       .then(files => {
         expect(files).to.have.length(1)
 
@@ -119,8 +119,8 @@ describe('.files (the MFS API part)', function () {
       })
   })
 
-  it('files.add with options', (done) => {
-    ipfs.files.add(testfile, { pin: false }, (err, res) => {
+  it('.add with options', (done) => {
+    ipfs.add(testfile, { pin: false }, (err, res) => {
       expect(err).to.not.exist()
 
       expect(res).to.have.length(1)
@@ -130,13 +130,13 @@ describe('.files (the MFS API part)', function () {
     })
   })
 
-  it('files.add pins by default', (done) => {
+  it('.add pins by default', (done) => {
     const newContent = Buffer.from(String(Math.random()))
 
     ipfs.pin.ls((err, pins) => {
       expect(err).to.not.exist()
       const initialPinCount = pins.length
-      ipfs.files.add(newContent, (err, res) => {
+      ipfs.add(newContent, (err, res) => {
         expect(err).to.not.exist()
 
         ipfs.pin.ls((err, pins) => {
@@ -148,13 +148,13 @@ describe('.files (the MFS API part)', function () {
     })
   })
 
-  it('files.add with pin=false', (done) => {
+  it('.add with pin=false', (done) => {
     const newContent = Buffer.from(String(Math.random()))
 
     ipfs.pin.ls((err, pins) => {
       expect(err).to.not.exist()
       const initialPinCount = pins.length
-      ipfs.files.add(newContent, { pin: false }, (err, res) => {
+      ipfs.add(newContent, { pin: false }, (err, res) => {
         expect(err).to.not.exist()
 
         ipfs.pin.ls((err, pins) => {
@@ -167,7 +167,7 @@ describe('.files (the MFS API part)', function () {
   })
 
   HASH_ALGS.forEach((name) => {
-    it(`files.add with hash=${name} and raw-leaves=false`, (done) => {
+    it(`.add with hash=${name} and raw-leaves=false`, (done) => {
       const content = String(Math.random() + Date.now())
       const file = {
         path: content + '.txt',
@@ -175,7 +175,7 @@ describe('.files (the MFS API part)', function () {
       }
       const options = { hash: name, 'raw-leaves': false }
 
-      ipfs.files.add([file], options, (err, res) => {
+      ipfs.add([file], options, (err, res) => {
         if (err) return done(err)
         expect(res).to.have.length(1)
         const cid = new CID(res[0].hash)
@@ -185,7 +185,7 @@ describe('.files (the MFS API part)', function () {
     })
   })
 
-  it('files.add file with progress option', (done) => {
+  it('.add file with progress option', (done) => {
     let progress
     let progressCount = 0
 
@@ -194,7 +194,7 @@ describe('.files (the MFS API part)', function () {
       progress = p
     }
 
-    ipfs.files.add(testfile, { progress: progressHandler }, (err, res) => {
+    ipfs.add(testfile, { progress: progressHandler }, (err, res) => {
       expect(err).to.not.exist()
 
       expect(res).to.have.length(1)
@@ -205,7 +205,7 @@ describe('.files (the MFS API part)', function () {
     })
   })
 
-  it('files.add big file with progress option', (done) => {
+  it('.add big file with progress option', (done) => {
     let progress = 0
     let progressCount = 0
 
@@ -215,7 +215,7 @@ describe('.files (the MFS API part)', function () {
     }
 
     // TODO: needs to be using a big file
-    ipfs.files.add(testfile, { progress: progressHandler }, (err, res) => {
+    ipfs.add(testfile, { progress: progressHandler }, (err, res) => {
       expect(err).to.not.exist()
 
       expect(res).to.have.length(1)
@@ -226,7 +226,7 @@ describe('.files (the MFS API part)', function () {
     })
   })
 
-  it('files.add directory with progress option', (done) => {
+  it('.add directory with progress option', (done) => {
     let progress = 0
     let progressCount = 0
 
@@ -236,7 +236,7 @@ describe('.files (the MFS API part)', function () {
     }
 
     // TODO: needs to be using a directory
-    ipfs.files.add(testfile, { progress: progressHandler }, (err, res) => {
+    ipfs.add(testfile, { progress: progressHandler }, (err, res) => {
       expect(err).to.not.exist()
 
       expect(res).to.have.length(1)
@@ -247,8 +247,8 @@ describe('.files (the MFS API part)', function () {
     })
   })
 
-  it('files.add without progress options', (done) => {
-    ipfs.files.add(testfile, (err, res) => {
+  it('.add without progress options', (done) => {
+    ipfs.add(testfile, (err, res) => {
       expect(err).to.not.exist()
 
       expect(res).to.have.length(1)
@@ -257,7 +257,7 @@ describe('.files (the MFS API part)', function () {
   })
 
   HASH_ALGS.forEach((name) => {
-    it(`files.add with hash=${name} and raw-leaves=false`, (done) => {
+    it(`.add with hash=${name} and raw-leaves=false`, (done) => {
       const content = String(Math.random() + Date.now())
       const file = {
         path: content + '.txt',
@@ -265,8 +265,9 @@ describe('.files (the MFS API part)', function () {
       }
       const options = { hash: name, 'raw-leaves': false }
 
-      ipfs.files.add([file], options, (err, res) => {
-        if (err) return done(err)
+      ipfs.add([file], options, (err, res) => {
+        expect(err).to.not.exist()
+
         expect(res).to.have.length(1)
         const cid = new CID(res[0].hash)
         expect(mh.decode(cid.multihash).name).to.equal(name)
@@ -275,14 +276,15 @@ describe('.files (the MFS API part)', function () {
     })
   })
 
-  it('files.addPullStream with object chunks and pull stream content', (done) => {
+  it('.addPullStream with object chunks and pull stream content', (done) => {
     const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
 
     pull(
       pull.values([{ content: pull.values([Buffer.from('test')]) }]),
-      ipfs.files.addPullStream(),
+      ipfs.addPullStream(),
       pull.collect((err, res) => {
-        if (err) return done(err)
+        expect(err).to.not.exist()
+
         expect(res).to.have.length(1)
         expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
         done()
@@ -290,34 +292,35 @@ describe('.files (the MFS API part)', function () {
     )
   })
 
-  it('files.add with pull stream (callback)', (done) => {
+  it('.add with pull stream (callback)', (done) => {
     const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
 
-    ipfs.files.add(pull.values([Buffer.from('test')]), (err, res) => {
-      if (err) return done(err)
+    ipfs.add(pull.values([Buffer.from('test')]), (err, res) => {
+      expect(err).to.not.exist()
+
       expect(res).to.have.length(1)
       expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
       done()
     })
   })
 
-  it('files.add with pull stream (promise)', () => {
+  it('.add with pull stream (promise)', () => {
     const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
 
-    return ipfs.files.add(pull.values([Buffer.from('test')]))
+    return ipfs.add(pull.values([Buffer.from('test')]))
       .then((res) => {
         expect(res).to.have.length(1)
         expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
       })
   })
 
-  it('files.add with array of objects with pull stream content', () => {
+  it('.add with array of objects with pull stream content', () => {
     const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
 
-    return ipfs.files.add([{ content: pull.values([Buffer.from('test')]) }])
+    return ipfs.add([{ content: pull.values([Buffer.from('test')]) }])
       .then((res) => {
         expect(res).to.have.length(1)
-        expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
+        expect(res[0]).to.eql({ path: expectedCid, hash: expectedCid, size: 12 })
       })
   })
 
@@ -407,7 +410,7 @@ describe('.files (the MFS API part)', function () {
 
   it('files.write', (done) => {
     ipfs.files
-      .write('/test-folder/test-file-2.txt', Buffer.from('hello world'), {create: true}, (err) => {
+      .write('/test-folder/test-file-2.txt', Buffer.from('hello world'), { create: true }, (err) => {
         expect(err).to.not.exist()
 
         ipfs.files.read('/test-folder/test-file-2.txt', (err, buf) => {
@@ -483,6 +486,6 @@ describe('.files (the MFS API part)', function () {
   })
 
   it('files.rm', (done) => {
-    ipfs.files.rm('/test-folder', {recursive: true}, done)
+    ipfs.files.rm('/test-folder', { recursive: true }, done)
   })
 })

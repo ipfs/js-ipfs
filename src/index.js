@@ -1,4 +1,5 @@
 'use strict'
+/* global self */
 
 const multiaddr = require('multiaddr')
 const loadCommands = require('./utils/load-commands')

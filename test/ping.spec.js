@@ -21,7 +21,7 @@ function isPong (pingResponse) {
 }
 
 describe('.ping', function () {
-  this.timeout(10 * 1000)
+  this.timeout(20 * 1000)
 
   let ipfs
   let ipfsd
@@ -131,7 +131,7 @@ describe('.ping', function () {
   it('.ping fails with count & n', function (done) {
     this.timeout(20 * 1000)
 
-    ipfs.ping(otherId, {count: 2, n: 2}, (err, res) => {
+    ipfs.ping(otherId, { count: 2, n: 2 }, (err, res) => {
       expect(err).to.exist()
       done()
     })
@@ -189,7 +189,7 @@ describe('.ping', function () {
   it('message conversion fails if invalid message is received', () => {
     const messageConverter = new PingMessageStream()
     expect(() => {
-      messageConverter.write({some: 'InvalidMessage'})
+      messageConverter.write({ some: 'InvalidMessage' })
     }).to.throw('Invalid ping message received')
   })
 })

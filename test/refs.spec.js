@@ -39,7 +39,7 @@ describe('.refs', function () {
       (_ipfsd, cb) => {
         ipfsd = _ipfsd
         ipfs = IPFSApi(_ipfsd.apiAddr)
-        ipfs.util.addFromFs(filesPath, { recursive: true }, cb)
+        ipfs.addFromFs(filesPath, { recursive: true }, cb)
       },
       (hashes, cb) => {
         folder = hashes[hashes.length - 1].hash
