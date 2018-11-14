@@ -2,7 +2,6 @@
 
 const CID = require('cids')
 const multipart = require('ipfs-multipart')
-const Buffer = require('safe-buffer').Buffer
 const debug = require('debug')
 const log = debug('jsipfs:http-api:block')
 log.error = debug('jsipfs:http-api:block:error')

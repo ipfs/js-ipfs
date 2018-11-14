@@ -5,7 +5,7 @@ const PeerInfo = require('peer-info')
 const multiaddr = require('multiaddr')
 const waterfall = require('async/waterfall')
 const Keychain = require('libp2p-keychain')
-const extend = require('deep-extend')
+const defaultsDeep = require('@nodeutils/defaults-deep')
 const NoKeychain = require('./no-keychain')
 /*
  * Load stuff from Repo into memory
@@ -22,7 +22,7 @@ module.exports = function preStart (self) {
           return cb(null, config)
         }
 
-        extend(config, self._options.config)
+        config = defaultsDeep(self._options.config, config)
 
         self.config.replace(config, (err) => {
           if (err) {
