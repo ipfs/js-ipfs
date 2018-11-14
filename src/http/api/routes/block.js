@@ -12,8 +12,7 @@ module.exports = (server) => {
       pre: [
         { method: resources.block.get.parseArgs, assign: 'args' }
       ],
-      handler: resources.block.get.handler,
-      validate: resources.block.get.validate
+      handler: resources.block.get.handler
     }
   })
 
