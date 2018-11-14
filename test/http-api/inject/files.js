@@ -59,7 +59,7 @@ module.exports = (http) => {
             expect(multibase.isEncoded(JSON.parse(res.result).Hash)).to.deep.equal('base64')
             done()
           })
-        }).catch(err => console.error(err))
+        })
       })
 
       it('should add data without pinning and return a base64 encoded CID', (done) => {
@@ -78,7 +78,7 @@ module.exports = (http) => {
             expect(multibase.isEncoded(JSON.parse(res.result).Hash)).to.deep.equal('base64')
             done()
           })
-        }).catch(err => console.error(err))
+        })
       })
     })
 
@@ -121,6 +121,37 @@ module.exports = (http) => {
 
     describe('/get', () => {}) // TODO
 
-    describe('/ls', () => {}) // TODO
+    describe('/ls', () => {
+      it('should list directory contents and return a base64 encoded CIDs', (done) => {
+        const form = new FormData()
+        form.append('file', Buffer.from('TEST' + Date.now()), { filename: 'data.txt' })
+        const headers = form.getHeaders()
+
+        streamToPromise(form).then((payload) => {
+          api.inject({
+            method: 'POST',
+            url: '/api/v0/add?wrap-with-directory=true',
+            headers: headers,
+            payload: payload
+          }, (res) => {
+            expect(res.statusCode).to.equal(200)
+
+            const files = res.result.trim().split('\n').map(r => JSON.parse(r))
+            const dir = files[files.length - 1]
+
+            api.inject({
+              method: 'POST',
+              url: '/api/v0/ls?cid-base=base64&arg=' + dir.Hash
+            }, (res) => {
+              expect(res.statusCode).to.equal(200)
+              res.result.Objects.forEach(item => {
+                expect(multibase.isEncoded(item.Hash)).to.deep.equal('base64')
+              })
+              done()
+            })
+          })
+        })
+      })
+    })
   })
 }
