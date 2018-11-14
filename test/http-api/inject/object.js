@@ -10,6 +10,7 @@ chai.use(dirtyChai)
 const fs = require('fs')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
+const multibase = require('multibase')
 
 module.exports = (http) => {
   describe('/object', () => {
@@ -29,6 +30,17 @@ module.exports = (http) => {
           expect(res.result.Hash)
             .to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
           expect(res.result.Links).to.be.eql([])
+          done()
+        })
+      })
+
+      it('should create a new object and return a base64 encoded CID', (done) => {
+        api.inject({
+          method: 'POST',
+          url: '/api/v0/object/new?cid-base=base64'
+        }, (res) => {
+          expect(res.statusCode).to.equal(200)
+          expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
           done()
         })
       })
@@ -67,6 +79,24 @@ module.exports = (http) => {
           expect(res.result.Links).to.eql([])
           expect(res.result.Data).to.be.empty()
           done()
+        })
+      })
+
+      it('should get object and return a base64 encoded CID', (done) => {
+        api.inject({
+          method: 'POST',
+          url: '/api/v0/object/new'
+        }, (res) => {
+          expect(res.statusCode).to.equal(200)
+
+          api.inject({
+            method: 'POST',
+            url: '/api/v0/object/get?cid-base=base64&arg=' + res.result.Hash
+          }, (res) => {
+            expect(res.statusCode).to.equal(200)
+            expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
+            done()
+          })
         })
       })
     })
@@ -134,6 +164,25 @@ module.exports = (http) => {
           }, (res) => {
             expect(res.statusCode).to.equal(200)
             expect(res.result).to.eql(expectedResult)
+            done()
+          })
+        })
+      })
+
+      it('should put data and return a base64 encoded CID', (done) => {
+        const form = new FormData()
+        form.append('file', JSON.stringify({ Data: 'TEST' + Date.now(), Links: [] }), { filename: 'node.json' })
+        const headers = form.getHeaders()
+
+        streamToPromise(form).then((payload) => {
+          api.inject({
+            method: 'POST',
+            url: '/api/v0/object/put?cid-base=base64',
+            headers: headers,
+            payload: payload
+          }, (res) => {
+            expect(res.statusCode).to.equal(200)
+            expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
             done()
           })
         })
