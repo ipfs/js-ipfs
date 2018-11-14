@@ -9,7 +9,7 @@ const streamToPromise = require('stream-to-promise')
 const multibase = require('multibase')
 
 module.exports = (http) => {
-  describe.only('/block', () => {
+  describe('/block', () => {
     let api
 
     before(() => {
