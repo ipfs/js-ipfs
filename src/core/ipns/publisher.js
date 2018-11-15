@@ -56,7 +56,6 @@ class IpnsPublisher {
       log.error(errMsg)
       return callback(errcode(new Error(errMsg), 'ERR_INVALID_PEER_ID'))
     }
-
     const publicKey = peerId._pubKey
 
     ipns.embedPublicKey(publicKey, record, (err, embedPublicKeyRecord) => {
@@ -162,45 +161,54 @@ class IpnsPublisher {
     const checkRouting = !(options.checkRouting === false)
 
     this._repo.datastore.get(ipns.getLocalKey(peerId.id), (err, dsVal) => {
-      let result
-
       if (err) {
         if (err.code !== 'ERR_NOT_FOUND') {
           const errMsg = `unexpected error getting the ipns record ${peerId.id} from datastore`
 
           log.error(errMsg)
           return callback(errcode(new Error(errMsg), 'ERR_UNEXPECTED_DATASTORE_RESPONSE'))
-        } else {
-          if (!checkRouting) {
-            return callback(null, null)
-          } else {
-            // TODO ROUTING - get from DHT
-            return callback(new Error('not implemented yet'))
-          }
         }
-      }
 
-      if (Buffer.isBuffer(dsVal)) {
-        result = dsVal
+        if (!checkRouting) {
+          return callback(null, null)
+        }
+
+        // Try to get from routing
+        let keys
+        try {
+          keys = ipns.getIdKeys(peerId.toBytes())
+        } catch (err) {
+          log.error(err)
+          return callback(err)
+        }
+
+        this._routing.get(keys.routingKey.toBuffer(), (err, res) => {
+          if (err) {
+            return callback(err)
+          }
+
+          // unmarshal data
+          this._unmarshalData(res, callback)
+        })
       } else {
-        const errMsg = `found ipns record that we couldn't convert to a value`
-
-        log.error(errMsg)
-        return callback(errcode(new Error(errMsg), 'ERR_INVALID_IPNS_RECORD'))
+        // unmarshal data
+        this._unmarshalData(dsVal, callback)
       }
-
-      // unmarshal data
-      try {
-        result = ipns.unmarshal(dsVal)
-      } catch (err) {
-        const errMsg = `found ipns record that we couldn't convert to a value`
-
-        log.error(errMsg)
-        return callback(null, null)
-      }
-
-      callback(null, result)
     })
+  }
+
+  _unmarshalData (data, callback) {
+    let result
+    try {
+      result = ipns.unmarshal(data)
+    } catch (err) {
+      const errMsg = `found ipns record that we couldn't convert to a value`
+
+      log.error(errMsg)
+      return callback(errcode(new Error(errMsg), 'ERR_INVALID_RECORD_DATA'))
+    }
+
+    callback(null, result)
   }
 
   _updateOrCreateRecord (privKey, value, validity, peerId, callback) {
@@ -212,12 +220,17 @@ class IpnsPublisher {
     }
 
     const getPublishedOptions = {
-      checkRouting: false // TODO ROUTING - change to true
+      checkRouting: true
     }
 
     this._getPublished(peerId, getPublishedOptions, (err, record) => {
       if (err) {
-        return callback(err)
+        if (err.code !== 'ERR_NOT_FOUND') {
+          const errMsg = `unexpected error when determining the last published IPNS record for ${peerId.id}`
+
+          log.error(errMsg)
+          return callback(errcode(new Error(errMsg), 'ERR_DETERMINING_PUBLISHED_RECORD'))
+        }
       }
 
       // Determinate the record sequence number

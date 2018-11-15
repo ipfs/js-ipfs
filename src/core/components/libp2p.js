@@ -3,6 +3,7 @@
 const promisify = require('promisify-es6')
 const get = require('lodash/get')
 const defaultsDeep = require('@nodeutils/defaults-deep')
+const ipnsUtils = require('../ipns/routing/utils')
 
 module.exports = function libp2p (self) {
   return {
@@ -16,6 +17,7 @@ module.exports = function libp2p (self) {
 
         const defaultBundle = (opts) => {
           const libp2pDefaults = {
+            datastore: opts.datastore,
             peerInfo: opts.peerInfo,
             peerBook: opts.peerBook,
             config: {
@@ -41,6 +43,14 @@ module.exports = function libp2p (self) {
                     get(opts.config, 'relay.hop.enabled', false)),
                   active: get(opts.options, 'relay.hop.active',
                     get(opts.config, 'relay.hop.active', false))
+                }
+              },
+              dht: {
+                validators: {
+                  ipns: ipnsUtils.validator
+                },
+                selectors: {
+                  ipns: ipnsUtils.selector
                 }
               },
               EXPERIMENTAL: {
@@ -72,6 +82,7 @@ module.exports = function libp2p (self) {
         self._libp2pNode = libp2pBundle({
           options: self._options,
           config: config,
+          datastore: self._repo.datastore,
           peerInfo: self._peerInfo,
           peerBook: self._peerInfoBook
         })

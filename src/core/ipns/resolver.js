@@ -1,8 +1,10 @@
 'use strict'
 
 const ipns = require('ipns')
+const crypto = require('libp2p-crypto')
 const PeerId = require('peer-id')
 const errcode = require('err-code')
+const auto = require('async/auto')
 
 const debug = require('debug')
 const log = debug('jsipfs:ipns:resolver')
@@ -96,14 +98,15 @@ class IpnsResolver {
       return callback(err)
     }
 
-    const { routingKey } = ipns.getIdKeys(peerId.toBytes())
+    const { routingKey, routingPubKey } = ipns.getIdKeys(peerId.toBytes())
 
-    // TODO DHT - get public key from routing?
-    // https://github.com/ipfs/go-ipfs/blob/master/namesys/routing.go#L70
-    // https://github.com/libp2p/go-libp2p-routing/blob/master/routing.go#L99
-
-    this._routing.get(routingKey.toBuffer(), (err, res) => {
-      if (err) {
+    auto({
+      // Name should be the hash of a public key retrievable from ipfs.
+      // We retrieve public key to add it to the PeerId, as the IPNS record may not have it.
+      pubKey: (cb) => this._routing.get(routingPubKey.toBuffer(), cb),
+      record: (cb) => this._routing.get(routingKey.toBuffer(), cb)
+    }, (err, res) => {
+      if (err && !res.record) {
         if (err.code !== 'ERR_NOT_FOUND') {
           const errMsg = `unexpected error getting the ipns record ${peerId.id}`
 
@@ -116,9 +119,24 @@ class IpnsResolver {
         return callback(errcode(new Error(errMsg), 'ERR_NO_RECORD_FOUND'))
       }
 
+      // If public key was found in the routing, add it to the peer id
+      // otherwise, wait to check if it is embedded in the record.
+      if (res.pubKey) {
+        try {
+          // Insert it into the peer id public key, to be validated by IPNS validator
+          peerId.pubKey = crypto.keys.unmarshalPublicKey(res.pubKey)
+        } catch (err) {
+          const errMsg = `found public key record that we couldn't convert to a value`
+
+          log.error(errMsg)
+          return callback(errcode(new Error(errMsg), 'ERR_INVALID_PUB_KEY_RECEIVED'))
+        }
+      }
+
+      // IPNS entry
       let ipnsEntry
       try {
-        ipnsEntry = ipns.unmarshal(res)
+        ipnsEntry = ipns.unmarshal(res.record)
       } catch (err) {
         const errMsg = `found ipns record that we couldn't convert to a value`
 
