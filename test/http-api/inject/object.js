@@ -11,6 +11,7 @@ const fs = require('fs')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 const multibase = require('multibase')
+const waterfall = require('async/waterfall')
 
 module.exports = (http) => {
   describe('/object', () => {
@@ -41,6 +42,17 @@ module.exports = (http) => {
         }, (res) => {
           expect(res.statusCode).to.equal(200)
           expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
+          done()
+        })
+      })
+
+      it('should not create a new object for invalid cid-base option', (done) => {
+        api.inject({
+          method: 'POST',
+          url: '/api/v0/object/new?cid-base=invalid'
+        }, (res) => {
+          expect(res.statusCode).to.equal(400)
+          expect(res.result.Message).to.include('child "cid-base" fails')
           done()
         })
       })
@@ -95,6 +107,24 @@ module.exports = (http) => {
           }, (res) => {
             expect(res.statusCode).to.equal(200)
             expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
+            done()
+          })
+        })
+      })
+
+      it('should not get an object for invalid cid-base option', (done) => {
+        api.inject({
+          method: 'POST',
+          url: '/api/v0/object/new'
+        }, (res) => {
+          expect(res.statusCode).to.equal(200)
+
+          api.inject({
+            method: 'POST',
+            url: '/api/v0/object/get?cid-base=invalid&arg=' + res.result.Hash
+          }, (res) => {
+            expect(res.statusCode).to.equal(400)
+            expect(res.result.Message).to.include('child "cid-base" fails')
             done()
           })
         })
@@ -187,6 +217,25 @@ module.exports = (http) => {
           })
         })
       })
+
+      it('should not put data for invalid cid-base option', (done) => {
+        const form = new FormData()
+        form.append('file', JSON.stringify({ Data: 'TEST' + Date.now(), Links: [] }), { filename: 'node.json' })
+        const headers = form.getHeaders()
+
+        streamToPromise(form).then((payload) => {
+          api.inject({
+            method: 'POST',
+            url: '/api/v0/object/put?cid-base=invalid',
+            headers: headers,
+            payload: payload
+          }, (res) => {
+            expect(res.statusCode).to.equal(400)
+            expect(res.result.Message).to.include('child "cid-base" fails')
+            done()
+          })
+        })
+      })
     })
 
     describe('/stat', () => {
@@ -226,6 +275,42 @@ module.exports = (http) => {
           expect(res.result.DataSize).to.equal(7)
           expect(res.result.CumulativeSize).to.equal(60 + 8)
           done()
+        })
+      })
+
+      it('should stat object and return a base64 encoded CID', (done) => {
+        api.inject({
+          method: 'POST',
+          url: '/api/v0/object/new'
+        }, (res) => {
+          expect(res.statusCode).to.equal(200)
+
+          api.inject({
+            method: 'POST',
+            url: '/api/v0/object/stat?cid-base=base64&arg=' + res.result.Hash
+          }, (res) => {
+            expect(res.statusCode).to.equal(200)
+            expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
+            done()
+          })
+        })
+      })
+
+      it('should not stat object for invalid cid-base option', (done) => {
+        api.inject({
+          method: 'POST',
+          url: '/api/v0/object/new'
+        }, (res) => {
+          expect(res.statusCode).to.equal(200)
+
+          api.inject({
+            method: 'POST',
+            url: '/api/v0/object/stat?cid-base=invalid&arg=' + res.result.Hash
+          }, (res) => {
+            expect(res.statusCode).to.equal(400)
+            expect(res.result.Message).to.include('child "cid-base" fails')
+            done()
+          })
         })
       })
     })
@@ -307,6 +392,98 @@ module.exports = (http) => {
           done()
         })
       })
+
+      it('should list object links and return a base64 encoded CID', (done) => {
+        waterfall([
+          (cb) => {
+            api.inject({
+              method: 'POST',
+              url: '/api/v0/object/new'
+            }, (res) => {
+              expect(res.statusCode).to.equal(200)
+              cb(null, res.result.Hash)
+            })
+          },
+          (linkHash, cb) => {
+            const form = new FormData()
+            form.append('file', JSON.stringify({
+              Data: 'TEST' + Date.now(),
+              Links: [{ Name: 'emptyNode', Hash: linkHash, Size: 8 }]
+            }), { filename: 'node.json' })
+            const headers = form.getHeaders()
+
+            streamToPromise(form).then((payload) => {
+              api.inject({
+                method: 'POST',
+                url: '/api/v0/object/put',
+                headers: headers,
+                payload: payload
+              }, (res) => {
+                expect(res.statusCode).to.equal(200)
+                cb(null, res.result.Hash)
+              })
+            })
+          }
+        ], (err, hash) => {
+          expect(err).to.not.exist()
+
+          api.inject({
+            method: 'POST',
+            url: '/api/v0/object/links?cid-base=base64&arg=' + hash
+          }, (res) => {
+            expect(res.statusCode).to.equal(200)
+            expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
+            expect(res.result.Links).to.have.length(1)
+            expect(multibase.isEncoded(res.result.Links[0].Hash)).to.deep.equal('base64')
+            done()
+          })
+        })
+      })
+
+      it('should not list object links for invalid cid-base option', (done) => {
+        waterfall([
+          (cb) => {
+            api.inject({
+              method: 'POST',
+              url: '/api/v0/object/new'
+            }, (res) => {
+              expect(res.statusCode).to.equal(200)
+              cb(null, res.result.Hash)
+            })
+          },
+          (linkHash, cb) => {
+            const form = new FormData()
+            form.append('file', JSON.stringify({
+              Data: 'TEST' + Date.now(),
+              Links: [{ Name: 'emptyNode', Hash: linkHash, Size: 8 }]
+            }), { filename: 'node.json' })
+            const headers = form.getHeaders()
+
+            streamToPromise(form).then((payload) => {
+              api.inject({
+                method: 'POST',
+                url: '/api/v0/object/put',
+                headers: headers,
+                payload: payload
+              }, (res) => {
+                expect(res.statusCode).to.equal(200)
+                cb(null, res.result.Hash)
+              })
+            })
+          }
+        ], (err, hash) => {
+          expect(err).to.not.exist()
+
+          api.inject({
+            method: 'POST',
+            url: '/api/v0/object/links?cid-base=invalid&arg=' + hash
+          }, (res) => {
+            expect(res.statusCode).to.equal(400)
+            expect(res.result.Message).to.include('child "cid-base" fails')
+            done()
+          })
+        })
+      })
     })
 
     describe('/patch/append-data', () => {
@@ -379,6 +556,58 @@ module.exports = (http) => {
             expect(res.statusCode).to.equal(200)
             expect(res.result).to.deep.equal(expectedResult)
             done()
+          })
+        })
+      })
+
+      it('should append data to object and return a base64 encoded CID', (done) => {
+        api.inject({
+          method: 'POST',
+          url: '/api/v0/object/new'
+        }, (res) => {
+          expect(res.statusCode).to.equal(200)
+
+          const form = new FormData()
+          form.append('data', Buffer.from('TEST' + Date.now()))
+          const headers = form.getHeaders()
+
+          streamToPromise(form).then((payload) => {
+            api.inject({
+              method: 'POST',
+              url: '/api/v0/object/patch/append-data?cid-base=base64&arg=' + res.result.Hash,
+              headers: headers,
+              payload: payload
+            }, (res) => {
+              expect(res.statusCode).to.equal(200)
+              expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
+              done()
+            })
+          })
+        })
+      })
+
+      it('should not append data to object for invalid cid-base option', (done) => {
+        api.inject({
+          method: 'POST',
+          url: '/api/v0/object/new'
+        }, (res) => {
+          expect(res.statusCode).to.equal(200)
+
+          const form = new FormData()
+          form.append('data', Buffer.from('TEST' + Date.now()))
+          const headers = form.getHeaders()
+
+          streamToPromise(form).then((payload) => {
+            api.inject({
+              method: 'POST',
+              url: '/api/v0/object/patch/append-data?cid-base=invalid&arg=' + res.result.Hash,
+              headers: headers,
+              payload: payload
+            }, (res) => {
+              expect(res.statusCode).to.equal(400)
+              expect(res.result.Message).to.include('child "cid-base" fails')
+              done()
+            })
           })
         })
       })
@@ -455,6 +684,58 @@ module.exports = (http) => {
           })
         })
       })
+
+      it('should set data for object and return a base64 encoded CID', (done) => {
+        api.inject({
+          method: 'POST',
+          url: '/api/v0/object/new'
+        }, (res) => {
+          expect(res.statusCode).to.equal(200)
+
+          const form = new FormData()
+          form.append('data', Buffer.from('TEST' + Date.now()))
+          const headers = form.getHeaders()
+
+          streamToPromise(form).then((payload) => {
+            api.inject({
+              method: 'POST',
+              url: '/api/v0/object/patch/set-data?cid-base=base64&arg=' + res.result.Hash,
+              headers: headers,
+              payload: payload
+            }, (res) => {
+              expect(res.statusCode).to.equal(200)
+              expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
+              done()
+            })
+          })
+        })
+      })
+
+      it('should not set data for object for invalid cid-base option', (done) => {
+        api.inject({
+          method: 'POST',
+          url: '/api/v0/object/new'
+        }, (res) => {
+          expect(res.statusCode).to.equal(200)
+
+          const form = new FormData()
+          form.append('data', Buffer.from('TEST' + Date.now()))
+          const headers = form.getHeaders()
+
+          streamToPromise(form).then((payload) => {
+            api.inject({
+              method: 'POST',
+              url: '/api/v0/object/patch/set-data?cid-base=invalid&arg=' + res.result.Hash,
+              headers: headers,
+              payload: payload
+            }, (res) => {
+              expect(res.statusCode).to.equal(400)
+              expect(res.result.Message).to.include('child "cid-base" fails')
+              done()
+            })
+          })
+        })
+      })
     })
 
     describe('/patch/add-link', () => {
@@ -519,6 +800,42 @@ module.exports = (http) => {
           done()
         })
       })
+
+      it('should add a link to an object and return a base64 encoded CID', (done) => {
+        api.inject({
+          method: 'POST',
+          url: '/api/v0/object/new'
+        }, (res) => {
+          expect(res.statusCode).to.equal(200)
+
+          api.inject({
+            method: 'POST',
+            url: `/api/v0/object/patch/add-link?cid-base=base64&arg=${res.result.Hash}&arg=test&arg=${res.result.Hash}`
+          }, (res) => {
+            expect(res.statusCode).to.equal(200)
+            expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
+            done()
+          })
+        })
+      })
+
+      it('should not add a link to an object for invalid cid-base option', (done) => {
+        api.inject({
+          method: 'POST',
+          url: '/api/v0/object/new'
+        }, (res) => {
+          expect(res.statusCode).to.equal(200)
+
+          api.inject({
+            method: 'POST',
+            url: `/api/v0/object/patch/add-link?cid-base=invalid&arg=${res.result.Hash}&arg=test&arg=${res.result.Hash}`
+          }, (res) => {
+            expect(res.statusCode).to.equal(400)
+            expect(res.result.Message).to.include('child "cid-base" fails')
+            done()
+          })
+        })
+      })
     })
 
     describe('/patch/rm-link', () => {
@@ -576,6 +893,100 @@ module.exports = (http) => {
           expect(res.statusCode).to.equal(200)
           expect(res.result.Hash).to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
           done()
+        })
+      })
+
+      it('should remove a link from an object and return a base64 encoded CID', (done) => {
+        const linkName = 'TEST' + Date.now()
+
+        waterfall([
+          (cb) => {
+            api.inject({
+              method: 'POST',
+              url: '/api/v0/object/new'
+            }, (res) => {
+              expect(res.statusCode).to.equal(200)
+              cb(null, res.result.Hash)
+            })
+          },
+          (linkHash, cb) => {
+            const form = new FormData()
+            form.append('file', JSON.stringify({
+              Data: 'TEST' + Date.now(),
+              Links: [{ Name: linkName, Hash: linkHash, Size: 8 }]
+            }), { filename: 'node.json' })
+            const headers = form.getHeaders()
+
+            streamToPromise(form).then((payload) => {
+              api.inject({
+                method: 'POST',
+                url: '/api/v0/object/put',
+                headers: headers,
+                payload: payload
+              }, (res) => {
+                expect(res.statusCode).to.equal(200)
+                cb(null, res.result.Hash, linkHash)
+              })
+            })
+          }
+        ], (err, hash) => {
+          expect(err).to.not.exist()
+
+          api.inject({
+            method: 'POST',
+            url: `/api/v0/object/patch/rm-link?cid-base=base64&arg=${hash}&arg=${linkName}`
+          }, (res) => {
+            expect(res.statusCode).to.equal(200)
+            expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
+            done()
+          })
+        })
+      })
+
+      it('should not remove a link from an object for invalid cid-base option', (done) => {
+        const linkName = 'TEST' + Date.now()
+
+        waterfall([
+          (cb) => {
+            api.inject({
+              method: 'POST',
+              url: '/api/v0/object/new'
+            }, (res) => {
+              expect(res.statusCode).to.equal(200)
+              cb(null, res.result.Hash)
+            })
+          },
+          (linkHash, cb) => {
+            const form = new FormData()
+            form.append('file', JSON.stringify({
+              Data: 'TEST' + Date.now(),
+              Links: [{ Name: linkName, Hash: linkHash, Size: 8 }]
+            }), { filename: 'node.json' })
+            const headers = form.getHeaders()
+
+            streamToPromise(form).then((payload) => {
+              api.inject({
+                method: 'POST',
+                url: '/api/v0/object/put',
+                headers: headers,
+                payload: payload
+              }, (res) => {
+                expect(res.statusCode).to.equal(200)
+                cb(null, res.result.Hash)
+              })
+            })
+          }
+        ], (err, hash) => {
+          expect(err).to.not.exist()
+
+          api.inject({
+            method: 'POST',
+            url: `/api/v0/object/patch/rm-link?cid-base=invalid&arg=${hash}&arg=${linkName}`
+          }, (res) => {
+            expect(res.statusCode).to.equal(400)
+            expect(res.result.Message).to.include('child "cid-base" fails')
+            done()
+          })
         })
       })
     })
