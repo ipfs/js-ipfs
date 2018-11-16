@@ -23,7 +23,7 @@ module.exports = {
       default: 0,
       describe: 'Cid version to use. (experimental).'
     },
-    hash: {
+    hashAlg: {
       type: 'string',
       describe: 'Hash function to use. Will set Cid version to 1 if used. (experimental).'
     },
@@ -42,7 +42,7 @@ module.exports = {
       ipfs,
       parents,
       cidVersion,
-      hash,
+      hashAlg,
       flush
     } = argv
 
@@ -50,7 +50,7 @@ module.exports = {
       ipfs.files.mkdir(path, {
         parents,
         cidVersion,
-        hash,
+        hashAlg,
         flush
       })
     )

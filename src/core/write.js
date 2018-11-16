@@ -272,7 +272,7 @@ const write = (context, existingNodeCid, existingNode, source, options, callback
     }]),
     importer(context.ipld, {
       progress: options.progress,
-      hashAlg: options.hash,
+      hashAlg: options.hashAlg,
       cidVersion: options.cidVersion,
       strategy: options.strategy,
       rawLeaves: options.rawLeaves,

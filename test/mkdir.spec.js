@@ -4,8 +4,10 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
+const multihash = require('multihashes')
 const {
-  createMfs
+  createMfs,
+  cidAtPath
 } = require('./helpers')
 
 describe('mkdir', function () {
@@ -105,11 +107,42 @@ describe('mkdir', function () {
       })
   })
 
-  it.skip('creates a nested directory with a different CID version to the parent', () => {
+  it('creates a nested directory with a different CID version to the parent', async () => {
+    const directory = `cid-versions-${Math.random()}`
+    const directoryPath = `/${directory}`
+    const subDirectory = `cid-versions-${Math.random()}`
+    const subDirectoryPath = `${directoryPath}/${subDirectory}`
 
+    await mfs.mkdir(directoryPath, {
+      cidVersion: 0
+    })
+
+    expect((await cidAtPath(directoryPath, mfs)).version).to.equal(0)
+
+    await mfs.mkdir(subDirectoryPath, {
+      cidVersion: 1
+    })
+
+    expect((await cidAtPath(subDirectoryPath, mfs)).version).to.equal(1)
   })
 
-  it.skip('creates a nested directory with a different hash function to the parent', () => {
+  it('creates a nested directory with a different hash function to the parent', async () => {
+    const directory = `cid-versions-${Math.random()}`
+    const directoryPath = `/${directory}`
+    const subDirectory = `cid-versions-${Math.random()}`
+    const subDirectoryPath = `${directoryPath}/${subDirectory}`
 
+    await mfs.mkdir(directoryPath, {
+      cidVersion: 0
+    })
+
+    expect((await cidAtPath(directoryPath, mfs)).version).to.equal(0)
+
+    await mfs.mkdir(subDirectoryPath, {
+      cidVersion: 1,
+      hashAlg: 'sha2-512'
+    })
+
+    expect(multihash.decode((await cidAtPath(subDirectoryPath, mfs)).multihash).name).to.equal('sha2-512')
   })
 })
