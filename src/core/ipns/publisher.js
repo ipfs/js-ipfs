@@ -32,7 +32,7 @@ class IpnsPublisher {
 
     PeerId.createFromPrivKey(privKey.bytes, (err, peerId) => {
       if (err) {
-        callback(err)
+        return callback(err)
       }
 
       this._updateOrCreateRecord(privKey, value, lifetime, peerId, (err, record) => {

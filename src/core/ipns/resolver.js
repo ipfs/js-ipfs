@@ -89,7 +89,14 @@ class IpnsResolver {
 
   // resolve ipns entries from the provided routing
   _resolveName (name, callback) {
-    const peerId = PeerId.createFromB58String(name)
+    let peerId
+
+    try {
+      peerId = PeerId.createFromB58String(name)
+    } catch (err) {
+      return callback(err)
+    }
+
     const { routingKey } = ipns.getIdKeys(peerId.toBytes())
 
     // TODO DHT - get public key from routing?
@@ -97,11 +104,18 @@ class IpnsResolver {
     // https://github.com/libp2p/go-libp2p-routing/blob/master/routing.go#L99
 
     this._routing.get(routingKey.toBuffer(), (err, res) => {
-      if (err || !res) {
+      if (err) {
         const errMsg = `record requested was not found for ${name} (${routingKey}) in the network`
 
         log.error(errMsg)
-        return callback(errcode(new Error(errMsg), 'ERR_NO_NETWORK_RECORD_FOUND'))
+        return callback(errcode(new Error(errMsg), 'ERR_NO_RECORD_FOUND'))
+      }
+
+      if (!res) {
+        const errMsg = `record requested was empty for ${name} (${routingKey}) in the network`
+
+        log.error(errMsg)
+        return callback(errcode(new Error(errMsg), 'ERR_EMPTY_RECORD_FOUND'))
       }
 
       if (!Buffer.isBuffer(res)) {
@@ -111,8 +125,15 @@ class IpnsResolver {
         return callback(errcode(new Error(errMsg), 'ERR_INVALID_RECORD_RECEIVED'))
       }
 
-      const record = Record.deserialize(res)
-      const ipnsEntry = ipns.unmarshal(record.value)
+      let ipnsEntry
+
+      try {
+        const record = Record.deserialize(res)
+        ipnsEntry = ipns.unmarshal(record.value)
+      } catch (err) {
+        log.error(err)
+        return callback(err)
+      }
 
       ipns.extractPublicKey(peerId, ipnsEntry, (err, pubKey) => {
         if (err) {

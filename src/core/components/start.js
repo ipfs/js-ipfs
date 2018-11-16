@@ -43,14 +43,14 @@ module.exports = (self) => {
 
         // TODO Add IPNS pubsub if enabled
 
-        // NOTE: Until the IPNS over DHT is not ready, it is being replaced by the local repo datastore
-        // When DHT is added, If local option enabled, should receive offlineDatastore as well
+        // NOTE: IPNS routing is being replaced by the local repo datastore while the IPNS over DHT is not ready
+        // When DHT is added, if local option enabled, should receive offlineDatastore as well
         const offlineDatastore = new OfflineDatastore(self._repo)
         ipnsStores.push(offlineDatastore)
 
         // Create ipns routing with a set of datastores
         const routing = new TieredDatastore(ipnsStores)
-        self._ipns = new IPNS(routing, self)
+        self._ipns = new IPNS(routing, self._repo, self._peerInfo, self._keychain, self._options)
 
         self._bitswap = new Bitswap(
           self._libp2pNode,

@@ -74,12 +74,12 @@
     "ncp": "^2.0.0",
     "qs": "^6.5.2",
     "rimraf": "^2.6.2",
+    "sinon": "^7.1.1",
     "stream-to-promise": "^2.2.0"
   },
   "dependencies": {
     "@nodeutils/defaults-deep": "^1.1.0",
     "async": "^2.6.1",
-    "base32.js": "~0.1.0",
     "big.js": "^5.2.2",
     "binary-querystring": "~0.1.2",
     "bl": "^2.1.2",
