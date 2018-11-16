@@ -11,7 +11,7 @@ const {
 
 const defaultOptions = {
   parents: false,
-  hash: undefined,
+  hashAlg: undefined,
   cidVersion: 0
 }
 
@@ -61,7 +61,9 @@ module.exports = (context) => {
       (cb) => traverseTo(context, path, {
         parents: options.parents,
         flush: options.flush,
-        createLastComponent: true
+        createLastComponent: true,
+        cidVersion: options.cidVersion,
+        hashAlg: options.hashAlg
       }, cb),
       (result, cb) => updateTree(context, result, cb),
       (newRoot, next) => updateMfsRoot(context, newRoot.cid, next)

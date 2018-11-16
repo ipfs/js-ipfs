@@ -9,9 +9,11 @@ const loadFixture = require('aegir/fixtures')
 const isNode = require('detect-node')
 const values = require('pull-stream/sources/values')
 const bufferStream = require('pull-buffer-stream')
+const multihash = require('multihashes')
 const {
   collectLeafCids,
-  createMfs
+  createMfs,
+  cidAtPath
 } = require('./helpers')
 
 let fs
@@ -489,26 +491,116 @@ describe('write', function () {
       })
   })
 
-  // https://github.com/ipld/js-ipld/issues/157
-  it.skip('writes a file with a different CID version to the parent', () => {
-    const directory = '/cid-versions'
-    const fileName = `${directory}/file.txt`
+  it('writes a file with a different CID version to the parent', async () => {
+    const directory = `cid-versions-${Math.random()}`
+    const directoryPath = `/${directory}`
+    const fileName = `file-${Math.random()}.txt`
+    const filePath = `${directoryPath}/${fileName}`
     const expectedBytes = Buffer.from([0, 1, 2, 3])
 
-    return mfs.mkdir(directory, {
+    await mfs.mkdir(directoryPath, {
       cidVersion: 0
     })
-      .then(() => mfs.write(fileName, expectedBytes, {
-        create: true,
-        cidVersion: 1
-      }))
-      .then(() => mfs.read(fileName))
-      .then(actualBytes => {
-        expect(actualBytes).to.deep.equal(expectedBytes)
-      })
+
+    expect((await cidAtPath(directoryPath, mfs)).version).to.equal(0)
+
+    await mfs.write(filePath, expectedBytes, {
+      create: true,
+      cidVersion: 1
+    })
+
+    expect((await cidAtPath(filePath, mfs)).version).to.equal(1)
+
+    const actualBytes = await mfs.read(filePath)
+
+    expect(actualBytes).to.deep.equal(expectedBytes)
   })
 
-  it.skip('writes a file with a different hash function to the parent', () => {
+  it('overwrites a file with a different CID version', async () => {
+    const directory = `cid-versions-${Math.random()}`
+    const directoryPath = `/${directory}`
+    const fileName = `file-${Math.random()}.txt`
+    const filePath = `${directoryPath}/${fileName}`
+    const expectedBytes = Buffer.from([0, 1, 2, 3])
 
+    await mfs.mkdir(directoryPath, {
+      cidVersion: 0
+    })
+
+    expect((await cidAtPath(directoryPath, mfs)).version).to.equal(0)
+
+    await mfs.write(filePath, Buffer.from([5, 6]), {
+      create: true,
+      cidVersion: 0
+    })
+
+    expect((await cidAtPath(filePath, mfs)).version).to.equal(0)
+
+    await mfs.write(filePath, expectedBytes, {
+      cidVersion: 1
+    })
+
+    expect((await cidAtPath(filePath, mfs)).version).to.equal(1)
+
+    const actualBytes = await mfs.read(filePath)
+
+    expect(actualBytes).to.deep.equal(expectedBytes)
+  })
+
+  it('partially overwrites a file with a different CID version', async () => {
+    const directory = `cid-versions-${Math.random()}`
+    const directoryPath = `/${directory}`
+    const fileName = `file-${Math.random()}.txt`
+    const filePath = `${directoryPath}/${fileName}`
+
+    await mfs.mkdir(directoryPath, {
+      cidVersion: 0
+    })
+
+    expect((await cidAtPath(directoryPath, mfs)).version).to.equal(0)
+
+    await mfs.write(filePath, Buffer.from([5, 6, 7, 8, 9, 10, 11]), {
+      create: true,
+      cidVersion: 0
+    })
+
+    expect((await cidAtPath(filePath, mfs)).version).to.equal(0)
+
+    await mfs.write(filePath, Buffer.from([0, 1, 2, 3]), {
+      cidVersion: 1,
+      offset: 1
+    })
+
+    expect((await cidAtPath(filePath, mfs)).version).to.equal(1)
+
+    const actualBytes = await mfs.read(filePath)
+
+    expect(actualBytes).to.deep.equal(Buffer.from([5, 0, 1, 2, 3, 10, 11]))
+  })
+
+  it('writes a file with a different hash function to the parent', async () => {
+    const directory = `cid-versions-${Math.random()}`
+    const directoryPath = `/${directory}`
+    const fileName = `file-${Math.random()}.txt`
+    const filePath = `${directoryPath}/${fileName}`
+    const expectedBytes = Buffer.from([0, 1, 2, 3])
+
+    await mfs.mkdir(directoryPath, {
+      cidVersion: 0
+    })
+
+    expect((await cidAtPath(directoryPath, mfs)).version).to.equal(0)
+
+    await mfs.write(filePath, expectedBytes, {
+      create: true,
+      cidVersion: 1,
+      hashAlg: 'sha2-512'
+    })
+
+    expect(multihash.decode((await cidAtPath(filePath, mfs)).multihash).name).to.equal('sha2-512')
+
+    const actualBytes = await mfs.read(filePath)
+
+    expect(actualBytes).to.deep.equal(expectedBytes)
   })
 })

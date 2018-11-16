@@ -43,6 +43,7 @@
     "detect-webworker": "^1.0.0",
     "dirty-chai": "^2.0.1",
     "ipld": "~0.20.0",
+    "multihashes": "~0.4.14",
     "pull-buffer-stream": "^1.0.0",
     "pull-traverse": "^1.0.3"
   },
