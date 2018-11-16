@@ -7,12 +7,11 @@ const expect = chai.expect
 const multihash = require('multihashes')
 const {
   createMfs,
-  cidAtPath
+  cidAtPath,
+  createShardedDirectory
 } = require('./helpers')
 
 describe('mkdir', function () {
-  this.timeout(30000)
-
   let mfs
 
   before(() => {
@@ -144,5 +143,15 @@ describe('mkdir', function () {
     })
 
     expect(multihash.decode((await cidAtPath(subDirectoryPath, mfs)).multihash).name).to.equal('sha2-512')
+  })
+
+  it('makes a directory inside a sharded directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+    const dirPath = `${shardedDirPath}/subdir-${Math.random()}`
+
+    await mfs.mkdir(`${dirPath}`)
+
+    expect((await mfs.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+    expect((await mfs.stat(dirPath)).type).to.equal('directory')
   })
 })

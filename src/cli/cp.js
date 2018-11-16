@@ -23,11 +23,16 @@ module.exports = {
       default: 'dag-pb',
       describe: 'If intermediate directories are created, use this format to create them (experimental)'
     },
-    hash: {
+    'hash-alg': {
       alias: 'h',
       type: 'string',
       default: 'sha2-256',
-      describe: 'Hash function to use. Will set Cid version to 1 if used. (experimental)'
+      describe: 'Hash function to use. Will set CID version to 1 if used'
+    },
+    'shard-split-threshold': {
+      type: 'number',
+      default: 1000,
+      describe: 'If a directory has more links than this, it will be transformed into a hamt-sharded-directory'
     }
   },
 
@@ -38,14 +43,16 @@ module.exports = {
       ipfs,
       parents,
       format,
-      hash
+      hashAlg,
+      shardSplitThreshold
     } = argv
 
     argv.resolve(
       ipfs.files.cp(source, dest, {
         parents,
         format,
-        hashAlg: hash
+        hashAlg,
+        shardSplitThreshold
       })
     )
   }

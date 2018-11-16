@@ -1,15 +1,15 @@
 'use strict'
 
-const exporter = require('ipfs-unixfs-engine').exporter
+const exporter = require('ipfs-unixfs-exporter')
 const pull = require('pull-stream/pull')
 const once = require('pull-stream/sources/once')
 const asyncMap = require('pull-stream/throughs/async-map')
+const flatten = require('pull-stream/throughs/flatten')
+const filter = require('pull-stream/throughs/filter')
 const defer = require('pull-defer')
 const collect = require('pull-stream/sinks/collect')
-const UnixFs = require('ipfs-unixfs')
 const {
-  traverseTo,
-  createLock
+  toMfsPath
 } = require('./utils')
 const log = require('debug')('ipfs:mfs:read-pull-stream')
 
@@ -31,43 +31,41 @@ module.exports = (context) => {
 
     pull(
       once(path),
-      asyncMap((path, cb) => {
-        createLock().readLock((next) => {
-          traverseTo(context, path, {
-            parents: false
-          }, next)
-        })(cb)
-      }),
-      asyncMap(({ node, cid }, cb) => {
-        const meta = UnixFs.unmarshal(node.data)
+      asyncMap((path, cb) => toMfsPath(context, path, cb)),
+      asyncMap(({ mfsPath, root }, cb) => {
+        log(`Exporting ${mfsPath}`)
 
-        if (meta.type !== 'file') {
-          return cb(new Error(`${path} was not a file`))
-        }
-
-        log(`Getting ${path} content`)
-
-        pull(
-          exporter(cid, context.ipld, {
+        return pull(
+          exporter(mfsPath, context.ipld, {
             offset: options.offset,
             length: options.length
           }),
-          collect((error, files) => {
-            cb(error, error ? null : files[0].content)
-          })
+          collect(cb)
         )
       }),
-      collect((error, streams) => {
+      flatten(),
+      filter(),
+      collect((error, files) => {
         if (error) {
           return deferred.abort(error)
         }
 
-        if (!streams.length) {
+        if (!files || !files.length) {
+          return deferred.abort(new Error(`${path} does not exist`))
+        }
+
+        const file = files[0]
+
+        if (file.type !== 'file') {
+          return deferred.abort(new Error(`${path} was not a file`))
+        }
+
+        if (!file.content) {
           return deferred.abort(new Error(`Could not load content stream from ${path}`))
         }
 
         log(`Got ${path} content`)
-        deferred.resolve(streams[0])
+        deferred.resolve(files[0].content)
       })
     )
 

@@ -1,8 +1,6 @@
 'use strict'
 
-const waterfall = require('async/waterfall')
 const {
-  traverseTo,
   FILE_SEPARATOR
 } = require('./utils')
 
@@ -27,11 +25,6 @@ module.exports = (context) => {
 
     options = Object.assign({}, defaultOptions, options)
 
-    waterfall([
-      (cb) => traverseTo(context, path, {}, cb),
-      (root, cb) => {
-        cb()
-      }
-    ], callback)
+    callback()
   }
 }

@@ -1,15 +1,19 @@
 'use strict'
 
 const waterfall = require('async/waterfall')
-const map = require('async/map')
 const UnixFs = require('ipfs-unixfs')
+const exporter = require('ipfs-unixfs-exporter')
 const {
-  traverseTo,
   loadNode,
   formatCid,
+  toMfsPath,
   FILE_SEPARATOR,
   FILE_TYPES
 } = require('./utils')
+const pull = require('pull-stream/pull')
+const collect = require('pull-stream/sinks/collect')
+const asyncMap = require('pull-stream/throughs/async-map')
+const filter = require('pull-stream/throughs/filter')
 
 const defaultOptions = {
   long: false,
@@ -34,35 +38,61 @@ module.exports = (context) => {
 
     options.long = options.l || options.long
 
+    // if we are listing a file we want ls to return something
+    // if it's a directory it's ok for the results to be empty
+    let errorOnMissing = true
+
     waterfall([
-      (cb) => traverseTo(context, path, {}, cb),
-      (result, cb) => {
-        const meta = UnixFs.unmarshal(result.node.data)
+      (cb) => toMfsPath(context, path, cb),
+      ({ mfsPath, depth }, cb) => {
+        const maxDepth = depth + 1
 
-        if (meta.type === 'directory') {
-          map(result.node.links, (link, next) => {
-            waterfall([
-              (done) => loadNode(context, link, done),
-              ({ node, cid }, done) => {
-                const meta = UnixFs.unmarshal(node.data)
+        pull(
+          exporter(mfsPath, context.ipld, {
+            maxDepth
+          }),
+          filter(node => {
+            if (node.depth === depth && node.type === 'dir') {
+              errorOnMissing = false
+            }
 
-                done(null, {
-                  name: link.name,
-                  type: meta.type,
-                  hash: formatCid(cid, options.cidBase),
-                  size: meta.fileSize() || 0
-                })
+            if (errorOnMissing) {
+              return node.depth === depth
+            }
+
+            return node.depth === maxDepth
+          }),
+
+          // load DAGNodes for each file
+          asyncMap((file, cb) => {
+            if (!options.long) {
+              return cb(null, {
+                name: file.name,
+                type: 0,
+                size: 0,
+                hash: ''
+              })
+            }
+
+            loadNode(context, {
+              cid: file.hash
+            }, (err, result) => {
+              if (err) {
+                return cb(err)
               }
-            ], next)
-          }, cb)
-        } else {
-          cb(null, [{
-            name: result.name,
-            type: meta.type,
-            hash: formatCid(result.cid, options.cidBase),
-            size: meta.fileSize() || 0
-          }])
-        }
+
+              const meta = UnixFs.unmarshal(result.node.data)
+
+              cb(null, {
+                name: file.name,
+                type: meta.type,
+                hash: formatCid(file.hash, options.cidBase),
+                size: meta.fileSize() || 0
+              })
+            })
+          }),
+          collect(cb)
+        )
       },
 
       // https://github.com/ipfs/go-ipfs/issues/5181
@@ -78,18 +108,24 @@ module.exports = (context) => {
 
       // https://github.com/ipfs/go-ipfs/issues/5026
       (files, cb) => cb(null, files.map(file => {
+        if (!options.long) {
+          return file
+        }
+
         if (FILE_TYPES.hasOwnProperty(file.type)) {
           file.type = FILE_TYPES[file.type]
         }
 
-        if (!options.long) {
-          file.type = 0
-          file.size = 0
-          file.hash = ''
+        return file
+      })),
+
+      (files, cb) => {
+        if (!files.length && errorOnMissing) {
+          return cb(new Error(path + ' does not exist'))
         }
 
-        return file
-      }))
+        cb(null, files)
+      }
     ], callback)
   }
 }

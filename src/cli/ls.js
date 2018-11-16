@@ -28,8 +28,7 @@ module.exports = {
       coerce: asBoolean,
       describe: 'Do not sort; list entries in directory order.'
     },
-    cidBase: {
-      alias: 'cid-base',
+    'cid-base': {
       default: 'base58btc',
       describe: 'CID base to use.'
     }

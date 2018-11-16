@@ -15,13 +15,15 @@ const mfsCp = (api) => {
           arg,
           parents,
           format,
-          hashAlg
+          hashAlg,
+          shardSplitThreshold
         } = request.query
 
         const args = arg.concat({
           parents,
           format,
-          hashAlg
+          hashAlg,
+          shardSplitThreshold
         })
 
         return ipfs.files.cp.apply(null, args)

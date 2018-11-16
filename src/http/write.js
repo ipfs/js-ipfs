@@ -30,7 +30,8 @@ const mfsWrite = (api) => {
           parents,
           progress,
           strategy,
-          flush
+          flush,
+          shardSplitThreshold
         } = request.query
 
         const parser = multipart.reqParser(request.payload)
@@ -61,7 +62,8 @@ const mfsWrite = (api) => {
             parents,
             progress,
             strategy,
-            flush
+            flush,
+            shardSplitThreshold
           })
             .then(() => reply())
             .catch(error => {

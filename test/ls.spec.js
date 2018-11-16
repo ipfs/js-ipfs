@@ -9,12 +9,11 @@ const {
 } = require('../src')
 
 const {
-  createMfs
+  createMfs,
+  createShardedDirectory
 } = require('./helpers')
 
 describe('ls', function () {
-  this.timeout(30000)
-
   let mfs
 
   before(() => {
@@ -163,5 +162,55 @@ describe('ls', function () {
       .catch(error => {
         expect(error.message).to.contain('does not exist')
       })
+  })
+
+  it('lists a sharded directory contents', async () => {
+    const shardSplitThreshold = 10
+    const fileCount = 11
+    const dirPath = await createShardedDirectory(mfs, shardSplitThreshold, fileCount)
+
+    const files = await mfs.ls(dirPath, {
+      long: true
+    })
+
+    expect(files.length).to.equal(fileCount)
+
+    files.forEach(file => {
+      // should be a file
+      expect(file.type).to.equal(0)
+    })
+  })
+
+  it('lists a file inside a sharded directory directly', async () => {
+    const dirPath = await createShardedDirectory(mfs)
+
+    const files = await mfs.ls(dirPath, {
+      long: true
+    })
+
+    const filePath = `${dirPath}/${files[0].name}`
+
+    // should be able to ls new file directly
+    expect(await mfs.ls(filePath, {
+      long: true
+    })).to.not.be.empty()
+  })
+
+  it('lists the contents of a directory inside a sharded directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+    const dirPath = `${shardedDirPath}/subdir-${Math.random()}`
+    const fileName = `small-file-${Math.random()}.txt`
+
+    await mfs.mkdir(`${dirPath}`)
+    await mfs.write(`${dirPath}/${fileName}`, Buffer.from([0, 1, 2, 3]), {
+      create: true
+    })
+
+    const files = await mfs.ls(dirPath, {
+      long: true
+    })
+
+    expect(files.length).to.equal(1)
+    expect(files.filter(file => file.name === fileName)).to.be.ok()
   })
 })

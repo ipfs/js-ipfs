@@ -1,47 +1,54 @@
 'use strict'
 
-const doWhilst = require('async/doWhilst')
+const waterfall = require('async/waterfall')
+const reduceRight = require('async/reduceRight')
 const addLink = require('./add-link')
 
-const updateTree = (context, child, callback) => {
-  doWhilst(
-    (next) => {
-      if (!child.parent) {
-        const previousChild = child
-        child = null
+const defaultOptions = {
+  shardSplitThreshold: 1000
+}
 
-        return next(null, {
-          node: previousChild.node,
-          cid: previousChild.cid
-        })
-      }
+const updateTree = (context, trail, options, callback) => {
+  options = Object.assign({}, defaultOptions, options)
 
-      addLink(context, {
-        parent: child.parent.node,
-        size: child.node.size,
-        cid: child.cid,
-        name: child.name,
-        flush: true
-      }, (error, result) => {
-        if (error) {
-          return next(error)
+  waterfall([
+    (cb) => context.ipld.getMany(trail.map(node => node.cid), cb),
+    (nodes, cb) => {
+      let index = trail.length - 1
+
+      reduceRight(trail, null, (child, node, done) => {
+        const dagNode = nodes[index]
+        const cid = trail[index].cid
+        index--
+
+        if (!child) {
+          // first item in the list
+          return done(null, node)
         }
 
-        child.parent.node = result.node
-        child.parent.cid = result.cid
+        addLink(context, {
+          parent: dagNode,
+          parentCid: cid,
+          name: child.name,
+          cid: child.cid,
+          size: child.size,
+          flush: options.flush,
+          shardSplitThreshold: options.shardSplitThreshold
+        }, (err, result) => {
+          if (err) {
+            return done(err)
+          }
 
-        const previousChild = child
-        child = child.parent
-
-        next(null, {
-          node: previousChild.node,
-          cid: previousChild.cid
+          done(err, {
+            cid: result.cid,
+            node: result.node,
+            name: node.name,
+            size: result.node.size
+          })
         })
-      })
-    },
-    () => Boolean(child),
-    callback
-  )
+      }, cb)
+    }
+  ], callback)
 }
 
 module.exports = updateTree

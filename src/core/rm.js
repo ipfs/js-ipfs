@@ -1,16 +1,14 @@
 'use strict'
 
-const UnixFs = require('ipfs-unixfs')
 const waterfall = require('async/waterfall')
 const series = require('async/series')
 const {
-  DAGNode
-} = require('ipld-dag-pb')
-const {
-  traverseTo,
   updateTree,
   updateMfsRoot,
   toSources,
+  removeLink,
+  toMfsPath,
+  toTrail,
   FILE_SEPARATOR
 } = require('./utils')
 
@@ -18,28 +16,29 @@ const defaultOptions = {
   recursive: false,
   cidVersion: 0,
   hashAlg: 'sha2-256',
-  codec: 'dag-pb'
+  format: 'dag-pb'
 }
 
 module.exports = (context) => {
   return function mfsRm () {
     const args = Array.from(arguments)
-    const {
-      sources,
-      options,
-      callback
-    } = toSources(args, defaultOptions)
+    const callback = args.pop()
 
-    if (!sources.length) {
-      return callback(new Error('Please supply at least one path to remove'))
-    }
+    waterfall([
+      (cb) => toSources(context, args, defaultOptions, cb),
+      ({ sources, options }, cb) => {
+        if (!sources.length) {
+          return cb(new Error('Please supply at least one path to remove'))
+        }
 
-    series(
-      sources.map(source => {
-        return (done) => removePath(context, source.path, options, done)
-      }),
-      (error) => callback(error)
-    )
+        series(
+          sources.map(source => {
+            return (done) => removePath(context, source.path, options, done)
+          }),
+          (error) => cb(error)
+        )
+      }
+    ], callback)
   }
 }
 
@@ -49,36 +48,37 @@ const removePath = (context, path, options, callback) => {
   }
 
   waterfall([
-    (cb) => traverseTo(context, path, {
-      withCreateHint: false
-    }, cb),
-    (result, cb) => {
-      const meta = UnixFs.unmarshal(result.node.data)
+    (cb) => toMfsPath(context, path, cb),
+    ({ mfsPath, parts }, cb) => toTrail(context, mfsPath, options, (err, trail) => cb(err, { mfsPath, parts, trail })),
+    ({ trail }, cb) => {
+      const child = trail.pop()
+      const parent = trail[trail.length - 1]
 
-      if (meta.type === 'directory' && !options.recursive) {
+      if (!parent) {
+        return cb(new Error(`${path} does not exist`))
+      }
+
+      if (child.type === 'dir' && !options.recursive) {
         return cb(new Error(`${path} is a directory, use -r to remove directories`))
       }
 
       waterfall([
-        (next) => DAGNode.rmLink(result.parent.node, result.name, next),
-        (newParentNode, next) => {
-          context.ipld.put(newParentNode, {
-            version: options.cidVersion,
-            format: options.codec,
-            hashAlg: options.hashAlg
-          }, (error, cid) => next(error, {
-            node: newParentNode,
-            cid
-          }))
-        },
-        ({ node, cid }, next) => {
-          result.parent.node = node
-          result.parent.cid = cid
+        (done) => removeLink(context, {
+          parentCid: parent.cid,
+          name: child.name
+        }, done),
+        ({ cid }, done) => {
+          parent.cid = cid
 
-          updateTree(context, result.parent, next)
-        },
-        (newRoot, next) => updateMfsRoot(context, newRoot.cid, next)
+          done(null, trail)
+        }
       ], cb)
-    }
+    },
+
+    // update the tree with the new child
+    (trail, cb) => updateTree(context, trail, options, cb),
+
+    // Update the MFS record with the new CID for the root of the tree
+    ({ cid }, cb) => updateMfsRoot(context, cid, cb)
   ], callback)
 }

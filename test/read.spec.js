@@ -10,12 +10,11 @@ const bufferStream = require('pull-buffer-stream')
 const pull = require('pull-stream/pull')
 const collect = require('pull-stream/sinks/collect')
 const {
-  createMfs
+  createMfs,
+  createShardedDirectory
 } = require('./helpers')
 
 describe('read', function () {
-  this.timeout(30000)
-
   let mfs
   let smallFile = loadFixture(path.join('test', 'fixtures', 'small-file.txt'))
 
@@ -197,6 +196,30 @@ describe('read', function () {
           .catch(error => {
             expect(error.message).to.contain('was not a file')
           })
+      })
+
+      it('refuses to read a non-existent file', async () => {
+        try {
+          const stream = await method.read(`/file-${Math.random()}.txt`)
+          await method.collect(stream)
+          throw new Error('Should have errored on non-existent file')
+        } catch (error) {
+          expect(error.message).to.contain('does not exist')
+        }
+      })
+
+      it('reads file from inside a sharded directory', async () => {
+        const shardedDirPath = await createShardedDirectory(mfs)
+        const filePath = `${shardedDirPath}/file-${Math.random()}.txt`
+        const content = Buffer.from([0, 1, 2, 3, 4])
+
+        await mfs.write(filePath, content, {
+          create: true
+        })
+
+        const stream = await method.read(filePath)
+
+        expect(await method.collect(stream)).to.deep.equal(content)
       })
     })
   })

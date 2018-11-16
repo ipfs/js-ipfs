@@ -1,10 +1,9 @@
 'use strict'
 
-const path = require('path')
+const toMfsPath = require('./to-mfs-path')
 
-function toSources (args, defaultOptions) {
+function toSources (context, args, defaultOptions, callback) {
   args = args.slice()
-  const callback = args.filter(arg => typeof arg === 'function').pop()
   const options = Object.assign({}, defaultOptions, args.filter(arg => typeof arg === 'object').pop() || {})
 
   // Support weird mfs.mv([source, dest], options, callback) signature
@@ -14,21 +13,14 @@ function toSources (args, defaultOptions) {
 
   const sources = args
     .filter(arg => typeof arg === 'string')
-    .map(source => {
-      source = source.trim()
+    .map(source => source.trim())
 
-      return {
-        path: source,
-        name: path.basename(source),
-        dir: path.dirname(source)
-      }
+  toMfsPath(context, sources, (err, sources) => {
+    callback(err, {
+      sources,
+      options
     })
-
-  return {
-    sources,
-    options,
-    callback
-  }
+  })
 }
 
 module.exports = toSources

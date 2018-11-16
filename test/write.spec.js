@@ -8,13 +8,19 @@ const path = require('path')
 const loadFixture = require('aegir/fixtures')
 const isNode = require('detect-node')
 const values = require('pull-stream/sources/values')
+const pull = require('pull-stream/pull')
+const collect = require('pull-stream/sinks/collect')
+const importer = require('ipfs-unixfs-importer')
 const bufferStream = require('pull-buffer-stream')
 const multihash = require('multihashes')
 const {
   collectLeafCids,
   createMfs,
-  cidAtPath
+  cidAtPath,
+  createShardedDirectory
 } = require('./helpers')
+const crypto = require('crypto')
+const CID = require('cids')
 
 let fs
 
@@ -23,8 +29,6 @@ if (isNode) {
 }
 
 describe('write', function () {
-  this.timeout(30000)
-
   let mfs
   let smallFile = loadFixture(path.join('test', 'fixtures', 'small-file.txt'))
   let largeFile = loadFixture(path.join('test', 'fixtures', 'large-file.jpg'))
@@ -119,7 +123,9 @@ describe('write', function () {
       length: 0,
       create: true
     })
-      .then(() => mfs.ls('/'))
+      .then(() => mfs.ls('/', {
+        long: true
+      }))
       .then((files) => {
         expect(files.length).to.equal(1)
         expect(files[0].name).to.equal('foo.txt')
@@ -221,6 +227,25 @@ describe('write', function () {
       })
   })
 
+  it('writes a small file with an escaped slash in the title', async () => {
+    const filePath = `/small-\\/file-${Math.random()}.txt`
+
+    await mfs.write(filePath, smallFile, {
+      create: true
+    })
+
+    const stats = await mfs.stat(filePath)
+
+    expect(stats.size).to.equal(smallFile.length)
+
+    try {
+      await mfs.stat('/small-\\')
+      throw new Error('Created path section before escape as directory')
+    } catch (error) {
+      expect(error.message).to.include('does not exist')
+    }
+  })
+
   it('writes a deeply nested small file', () => {
     const filePath = '/foo/bar/baz/qux/quux/garply/small-file.txt'
 
@@ -258,6 +283,24 @@ describe('write', function () {
       .catch((error) => {
         expect(error.message).to.contain('file does not exist')
       })
+  })
+
+  it('refuses to write to a path that has a file in it', async () => {
+    const filePath = `/small-file-${Math.random()}.txt`
+
+    await mfs.write(filePath, Buffer.from([0, 1, 2, 3]), {
+      create: true
+    })
+
+    try {
+      await mfs.write(`${filePath}/other-file-${Math.random()}.txt`, Buffer.from([0, 1, 2, 3]), {
+        create: true
+      })
+
+      throw new Error('Writing a path with a file in it should have failed')
+    } catch (error) {
+      expect(error.message).to.contain('Not a directory')
+    }
   })
 
   runTest(({ type, path, content }) => {
@@ -491,6 +534,147 @@ describe('write', function () {
       })
   })
 
+  it('shards a large directory when writing too many links to it', async () => {
+    const shardSplitThreshold = 10
+    const dirPath = `/sharded-dir-${Math.random()}`
+    const newFile = `file-${Math.random()}`
+    const newFilePath = `/${dirPath}/${newFile}`
+
+    await mfs.mkdir(dirPath, {
+      shardSplitThreshold
+    })
+
+    for (let i = 0; i < shardSplitThreshold; i++) {
+      await mfs.write(`/${dirPath}/file-${Math.random()}`, Buffer.from([0, 1, 2, 3]), {
+        create: true,
+        shardSplitThreshold
+      })
+    }
+
+    expect((await mfs.stat(dirPath)).type).to.equal('directory')
+
+    await mfs.write(newFilePath, Buffer.from([0, 1, 2, 3]), {
+      create: true,
+      shardSplitThreshold
+    })
+
+    expect((await mfs.stat(dirPath)).type).to.equal('hamt-sharded-directory')
+
+    const files = await mfs.ls(dirPath, {
+      long: true
+    })
+
+    // new file should be in directory
+    expect(files.filter(file => file.name === newFile).pop()).to.be.ok()
+  })
+
+  it('writes a file to an already sharded directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+
+    const newFile = `file-${Math.random()}`
+    const newFilePath = `${shardedDirPath}/${newFile}`
+
+    await mfs.write(newFilePath, Buffer.from([0, 1, 2, 3]), {
+      create: true
+    })
+
+    // should still be a sharded directory
+    expect((await mfs.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+
+    const files = await mfs.ls(shardedDirPath, {
+      long: true
+    })
+
+    // new file should be in the directory
+    expect(files.filter(file => file.name === newFile).pop()).to.be.ok()
+
+    // should be able to ls new file directly
+    expect(await mfs.ls(newFilePath, {
+      long: true
+    })).to.not.be.empty()
+  })
+
+  it('overwrites a file in a sharded directory when positions do not match', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+    const newFile = 'file-0.6944395883502592'
+    const newFilePath = `${shardedDirPath}/${newFile}`
+    const newContent = Buffer.from([3, 2, 1, 0])
+
+    await mfs.write(newFilePath, Buffer.from([0, 1, 2, 3]), {
+      create: true
+    })
+
+    // should still be a sharded directory
+    expect((await mfs.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+
+    // overwrite the file
+    await mfs.write(newFilePath, newContent, {
+      create: true
+    })
+
+    // read the file back
+    expect(await mfs.read(newFilePath)).to.deep.equal(newContent)
+
+    // should be able to ls new file directly
+    expect(await mfs.ls(newFilePath, {
+      long: true
+    })).to.not.be.empty()
+  })
+
+  it('overwrites file in a sharded directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+    const newFile = `file-${Math.random()}`
+    const newFilePath = `${shardedDirPath}/${newFile}`
+    const newContent = Buffer.from([3, 2, 1, 0])
+
+    await mfs.write(newFilePath, Buffer.from([0, 1, 2, 3]), {
+      create: true
+    })
+
+    // should still be a sharded directory
+    expect((await mfs.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+
+    // overwrite the file
+    await mfs.write(newFilePath, newContent, {
+      create: true
+    })
+
+    // read the file back
+    expect(await mfs.read(newFilePath)).to.deep.equal(newContent)
+
+    // should be able to ls new file directly
+    expect(await mfs.ls(newFilePath, {
+      long: true
+    })).to.not.be.empty()
+  })
+
+  it('overwrites a file in a subshard of a sharded directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs, 10, 75)
+    const newFile = `file-1a.txt`
+    const newFilePath = `${shardedDirPath}/${newFile}`
+    const newContent = Buffer.from([3, 2, 1, 0])
+
+    await mfs.write(newFilePath, Buffer.from([0, 1, 2, 3]), {
+      create: true
+    })
+
+    // should still be a sharded directory
+    expect((await mfs.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+
+    // overwrite the file
+    await mfs.write(newFilePath, newContent, {
+      create: true
+    })
+
+    // read the file back
+    expect(await mfs.read(newFilePath)).to.deep.equal(newContent)
+
+    // should be able to ls new file directly
+    expect(await mfs.ls(newFilePath, {
+      long: true
+    })).to.not.be.empty()
+  })
+
   it('writes a file with a different CID version to the parent', async () => {
     const directory = `cid-versions-${Math.random()}`
     const directoryPath = `/${directory}`
@@ -602,5 +786,58 @@ describe('write', function () {
     const actualBytes = await mfs.read(filePath)
 
     expect(actualBytes).to.deep.equal(expectedBytes)
+  })
+
+  it('results in the same hash as a sharded directory created by the importer', async () => {
+    const shardSplitThreshold = 10
+
+    const createShardedDir = (files) => {
+      return new Promise((resolve, reject) => {
+        pull(
+          values(files),
+          importer(mfs.ipld, {
+            shardSplitThreshold,
+            reduceSingleLeafToSelf: false, // same as go-ipfs-mfs implementation, differs from `ipfs add`(!)
+            leafType: 'raw' // same as go-ipfs-mfs implementation, differs from `ipfs add`(!)
+          }),
+          collect((err, files) => {
+            if (err) {
+              return reject(files)
+            }
+
+            const dir = files[files.length - 1]
+
+            resolve(new CID(dir.multihash))
+          })
+        )
+      })
+    }
+
+    const dirPath = `/sharded-dir-${Math.random()}`
+    const fileCount = 100
+    const files = new Array(fileCount).fill(0).map((_, index) => ({
+      path: `${dirPath}/file-${index}`,
+      content: crypto.randomBytes(5)
+    }))
+    const allFiles = files.map(file => ({
+      ...file
+    }))
+    const someFiles = files.map(file => ({
+      ...file
+    }))
+    const newFile = someFiles.pop()
+
+    const dirWithAllFiles = await createShardedDir(allFiles)
+    const dirWithSomeFiles = await createShardedDir(someFiles)
+
+    await mfs.cp(`/ipfs/${dirWithSomeFiles.toBaseEncodedString()}`, dirPath)
+
+    await mfs.write(newFile.path, newFile.content, {
+      create: true
+    })
+
+    const stats = await mfs.stat(dirPath)
+
+    expect(new CID(stats.hash)).to.deep.equal(dirWithAllFiles)
   })
 })
