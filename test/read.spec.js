@@ -128,6 +128,25 @@ describe('read', function () {
           .then((buffer) => expect(buffer).to.deep.equal(data.slice(0, length)))
       })
 
+      it('reads a file with a legacy count argument', () => {
+        const path = `/some-file-${Math.random()}.txt`
+        let data = Buffer.alloc(0)
+        const length = 10
+
+        return mfs.write(path, bufferStream(100, {
+          collector: (bytes) => {
+            data = Buffer.concat([data, bytes])
+          }
+        }), {
+          create: true
+        })
+          .then(() => method.read(path, {
+            count: length
+          }))
+          .then((result) => method.collect(result))
+          .then((buffer) => expect(buffer).to.deep.equal(data.slice(0, length)))
+      })
+
       it('reads a file with an offset and a length', () => {
         const path = `/some-file-${Math.random()}.txt`
         let data = Buffer.alloc(0)
@@ -144,6 +163,27 @@ describe('read', function () {
           .then(() => method.read(path, {
             offset,
             length
+          }))
+          .then((result) => method.collect(result))
+          .then((buffer) => expect(buffer).to.deep.equal(data.slice(offset, offset + length)))
+      })
+
+      it('reads a file with an offset and a legacy count argument', () => {
+        const path = `/some-file-${Math.random()}.txt`
+        let data = Buffer.alloc(0)
+        const offset = 10
+        const length = 10
+
+        return mfs.write(path, bufferStream(100, {
+          collector: (bytes) => {
+            data = Buffer.concat([data, bytes])
+          }
+        }), {
+          create: true
+        })
+          .then(() => method.read(path, {
+            offset,
+            count: length
           }))
           .then((result) => method.collect(result))
           .then((buffer) => expect(buffer).to.deep.equal(data.slice(offset, offset + length)))

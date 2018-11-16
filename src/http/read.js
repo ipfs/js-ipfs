@@ -17,12 +17,14 @@ const mfsRead = (api) => {
         const {
           arg,
           offset,
-          length
+          length,
+          count
         } = request.query
 
         const stream = ipfs.files.readReadableStream(arg, {
           offset,
-          length
+          length,
+          count
         })
 
         if (!stream._read) {

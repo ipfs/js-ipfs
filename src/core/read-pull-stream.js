@@ -22,6 +22,9 @@ module.exports = (context) => {
   return function mfsReadPullStream (path, options = {}) {
     options = Object.assign({}, defaultOptions, options)
 
+    // support legacy go arguments
+    options.length = options.length || options.count
+
     log(`Reading ${path}`)
 
     const deferred = defer.source()
