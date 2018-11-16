@@ -1,3 +1,13 @@
+<a name="0.5.2"></a>
+## [0.5.2](https://github.com/ipfs/js-ipfs-mfs/compare/v0.5.1...v0.5.2) (2018-11-16)
+
+
+### Bug Fixes
+
+* support `count` as well as `length` ([e787bf9](https://github.com/ipfs/js-ipfs-mfs/commit/e787bf9)), closes [#21](https://github.com/ipfs/js-ipfs-mfs/issues/21)
+
+
+
 <a name="0.5.1"></a>
 ## [0.5.1](https://github.com/ipfs/js-ipfs-mfs/compare/v0.5.0...v0.5.1) (2018-11-16)
 
