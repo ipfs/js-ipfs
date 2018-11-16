@@ -4,14 +4,11 @@ const { Key } = require('interface-datastore')
 const { Record } = require('libp2p-record')
 const { encodeBase32 } = require('./utils')
 
-<<<<<<< HEAD
 const errcode = require('err-code')
 const debug = require('debug')
 const log = debug('jsipfs:ipns:offline-datastore')
 log.error = debug('jsipfs:ipns:offline-datastore:error')
 
-=======
->>>>>>> refactor: ipns routing logic moved to instantiation
 // Offline datastore aims to mimic the same encoding as routing when storing records
 // to the local datastore
 class OfflineDatastore {

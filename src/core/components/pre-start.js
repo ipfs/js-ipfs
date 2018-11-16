@@ -7,10 +7,6 @@ const waterfall = require('async/waterfall')
 const Keychain = require('libp2p-keychain')
 const defaultsDeep = require('@nodeutils/defaults-deep')
 const NoKeychain = require('./no-keychain')
-
-const IPNS = require('../ipns')
-const OfflineDatastore = require('../ipns/routing/offline-datastore')
-
 /*
  * Load stuff from Repo into memory
  */
@@ -97,13 +93,6 @@ module.exports = function preStart (self) {
           })
         }
 
-        cb()
-      },
-      // Setup offline routing for IPNS.
-      (cb) => {
-        const offlineDatastore = new OfflineDatastore(self._repo)
-
-        self._ipns = new IPNS(offlineDatastore, self)
         cb()
       },
       (cb) => self.pin._load(cb)
