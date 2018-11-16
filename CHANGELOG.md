@@ -1,3 +1,13 @@
+<a name="0.5.1"></a>
+## [0.5.1](https://github.com/ipfs/js-ipfs-mfs/compare/v0.5.0...v0.5.1) (2018-11-16)
+
+
+### Features
+
+* allow write and mkdir with different hash algs and cid versions ([0a12b3e](https://github.com/ipfs/js-ipfs-mfs/commit/0a12b3e))
+
+
+
 <a name="0.5.0"></a>
 # [0.5.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.4.2...v0.5.0) (2018-11-12)
 
