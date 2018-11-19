@@ -488,5 +488,9 @@ module.exports = function (self) {
     },
 
     lsPullStream: _lsPullStream
+
+    // TODO create addFromFs
+    // TODO create addFromStream
+    // TODO create addFromUrl
   }
 }

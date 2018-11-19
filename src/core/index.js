@@ -137,6 +137,7 @@ class IPFS extends EventEmitter {
     this.shutdown = this.stop
     this.isOnline = components.isOnline(this)
     //   - interface-ipfs-core defined API
+    Object.assign(this, components.filesRegular(this))
     this.version = components.version(this)
     this.id = components.id(this)
     this.repo = components.repo(this)
@@ -145,6 +146,7 @@ class IPFS extends EventEmitter {
     this.block = components.block(this)
     this.object = components.object(this)
     this.dag = components.dag(this)
+    this.files = components.filesMFS(this)
     this.libp2p = components.libp2p(this)
     this.swarm = components.swarm(this)
     this.name = components.name(this)
@@ -171,27 +173,6 @@ class IPFS extends EventEmitter {
     }
 
     this.state = require('./state')(this)
-
-    // ipfs regular Files APIs
-    const filesRegular = components.filesRegular(this)
-    this.add = filesRegular.add
-    this.addReadableStream = filesRegular.addReadableStream
-    this.addPullStream = filesRegular.addPullStream
-    // TODO create this.addFromFs
-    // TODO create this.addFromStream
-    // TODO create this.addFromUrl
-    this.cat = filesRegular.catImmutable
-    this.catReadableStream = filesRegular.catReadableStream
-    this.catPullStream = filesRegular.catPullStream
-    this.get = filesRegular.getImmutable
-    this.getReadableStream = filesRegular.getReadableStream
-    this.getPullStream = filesRegular.getPullStream
-    this.ls = filesRegular.lsImmutable
-    this.lsReadableStream = filesRegular.lsReadableStream
-    this.lsPullStream = filesRegular.lsPullStream
-
-    // ipfs.files API (aka MFS)
-    this.files = components.filesMFS(this)
 
     // ipfs.util
     this.util = {

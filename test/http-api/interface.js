@@ -26,6 +26,7 @@ describe('interface-ipfs-core over ipfs-api tests', () => {
   })
 
   tests.filesRegular(defaultCommonFactory)
+
   tests.filesMFS(defaultCommonFactory)
 
   tests.key(CommonFactory.create({

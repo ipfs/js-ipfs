@@ -282,7 +282,7 @@ exports.add = {
   }
 }
 
-exports.immutableLs = {
+exports.ls = {
   // uses common parseKey method that returns a `key`
   parseArgs: exports.parseKey,
 

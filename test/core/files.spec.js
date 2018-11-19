@@ -11,7 +11,7 @@ const pull = require('pull-stream')
 const IPFSFactory = require('ipfsd-ctl')
 const IPFS = require('../../src/core')
 
-describe.only('files', () => {
+describe('files', () => {
   let ipfsd, ipfs
 
   before(function (done) {
