@@ -47,6 +47,26 @@
     "coverage-publish": "aegir-coverage publish",
     "dep-check": "npx dependency-check package.json './test/**/*.js' './src/**/*.js'"
   },
+  "renovate": {
+    "extends": [
+      "config:base",
+      ":preserveSemverRanges"
+    ],
+    "packageRules": [
+      {
+        "packagePatterns": [
+          ".*"
+        ],
+        "enabled": false
+      },
+      {
+        "packageNames": [
+          "^ipfs"
+        ],
+        "enabled": true
+      }
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
