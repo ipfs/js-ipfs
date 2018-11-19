@@ -102,7 +102,7 @@ if (args[0] === 'daemon' || args[0] === 'init') {
           exitCode = 1
         })
         .then(() => cleanup())
-        .catch((e) => {})
+        .catch(() => {})
         .then(() => {
           if (exitCode !== 0) {
             process.exit(exitCode)

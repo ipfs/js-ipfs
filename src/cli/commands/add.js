@@ -231,7 +231,7 @@ module.exports = {
           }
         }
 
-        next(null, ipfs.files.addPullStream(options))
+        next(null, ipfs.addPullStream(options))
       }
     ], (err, addStream) => {
       if (err) throw err
