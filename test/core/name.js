@@ -322,15 +322,15 @@ describe('name', function () {
 
         node.name.resolve(nodeId, { nocache: true }, (err, res) => {
           expect(err).to.exist()
-          expect(err.code).to.equal('ERR_NO_RECORD_FOUND')
+          expect(err.code).to.equal('ERR_UNEXPECTED_ERROR_GETTING_RECORD')
           stub.restore()
           done()
         })
       })
     })
 
-    it('should publish and then fail to resolve if does not get any data', function (done) {
-      const stub = sinon.stub(node._ipns.resolver._routing, 'get').callsArgWith(1, undefined, undefined)
+    it('should publish and then fail to resolve if does not find the record', function (done) {
+      const stub = sinon.stub(node._ipns.resolver._routing, 'get').callsArgWith(1, { code: 'ERR_NOT_FOUND' })
 
       node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
         expect(err).to.not.exist()
@@ -338,7 +338,7 @@ describe('name', function () {
 
         node.name.resolve(nodeId, { nocache: true }, (err, res) => {
           expect(err).to.exist()
-          expect(err.code).to.equal('ERR_EMPTY_RECORD_FOUND')
+          expect(err.code).to.equal('ERR_NO_RECORD_FOUND')
           stub.restore()
           done()
         })

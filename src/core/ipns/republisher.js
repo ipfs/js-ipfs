@@ -100,7 +100,7 @@ class IpnsRepublisher {
       }
 
       // keychain needs pass to get the cryptographic keys
-      if (this._keychain && Boolean(pass)) {
+      if (pass) {
         this._keychain.listKeys((err, list) => {
           if (err) {
             log.error(err)

@@ -105,34 +105,27 @@ class IpnsResolver {
 
     this._routing.get(routingKey.toBuffer(), (err, res) => {
       if (err) {
+        if (err.code !== 'ERR_NOT_FOUND') {
+          const errMsg = `unexpected error getting the ipns record ${peerId.id}`
+
+          log.error(errMsg)
+          return callback(errcode(new Error(errMsg), 'ERR_UNEXPECTED_ERROR_GETTING_RECORD'))
+        }
         const errMsg = `record requested was not found for ${name} (${routingKey}) in the network`
 
         log.error(errMsg)
         return callback(errcode(new Error(errMsg), 'ERR_NO_RECORD_FOUND'))
       }
 
-      if (!res) {
-        const errMsg = `record requested was empty for ${name} (${routingKey}) in the network`
-
-        log.error(errMsg)
-        return callback(errcode(new Error(errMsg), 'ERR_EMPTY_RECORD_FOUND'))
-      }
-
-      if (!Buffer.isBuffer(res)) {
-        const errMsg = `found ipns record that we couldn't convert to a value`
-
-        log.error(errMsg)
-        return callback(errcode(new Error(errMsg), 'ERR_INVALID_RECORD_RECEIVED'))
-      }
-
       let ipnsEntry
-
       try {
         const record = Record.deserialize(res)
         ipnsEntry = ipns.unmarshal(record.value)
       } catch (err) {
-        log.error(err)
-        return callback(err)
+        const errMsg = `found ipns record that we couldn't convert to a value`
+
+        log.error(errMsg)
+        return callback(errcode(new Error(errMsg), 'ERR_INVALID_RECORD_RECEIVED'))
       }
 
       ipns.extractPublicKey(peerId, ipnsEntry, (err, pubKey) => {
