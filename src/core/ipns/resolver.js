@@ -1,8 +1,8 @@
 'use strict'
 
 const ipns = require('ipns')
-const { fromB58String } = require('multihashes')
 const Record = require('libp2p-record').Record
+const PeerId = require('peer-id')
 const errcode = require('err-code')
 
 const debug = require('debug')
@@ -12,13 +12,11 @@ log.error = debug('jsipfs:ipns:resolver:error')
 const defaultMaximumRecursiveDepth = 32
 
 class IpnsResolver {
-  constructor (routing, repo) {
+  constructor (routing) {
     this._routing = routing
-    this._repo = repo
-    this._resolver = undefined // TODO Routing - add Router resolver
   }
 
-  resolve (name, peerId, options, callback) {
+  resolve (name, options, callback) {
     if (typeof options === 'function') {
       callback = options
       options = {}
@@ -33,7 +31,6 @@ class IpnsResolver {
 
     options = options || {}
     const recursive = options.recursive && options.recursive.toString() === 'true'
-    const local = !(options.local === false)
 
     const nameSegments = name.split('/')
 
@@ -53,20 +50,7 @@ class IpnsResolver {
       depth = defaultMaximumRecursiveDepth
     }
 
-    // Get the intended resoulver function
-    // TODO Routing - set default resolverFn
-
-    let resolverFn
-
-    if (local) {
-      resolverFn = this._resolveLocal
-    }
-
-    if (!resolverFn) {
-      return callback(new Error('not implemented yet'))
-    }
-
-    this.resolver(key, depth, peerId, resolverFn, (err, res) => {
+    this.resolver(key, depth, (err, res) => {
       if (err) {
         return callback(err)
       }
@@ -77,10 +61,7 @@ class IpnsResolver {
   }
 
   // Recursive resolver according to the specified depth
-  resolver (name, depth, peerId, resolverFn, callback) {
-    // bind resolver function
-    this._resolver = resolverFn
-
+  resolver (name, depth, callback) {
     // Exceeded recursive maximum depth
     if (depth === 0) {
       const errMsg = `could not resolve name (recursion limit of ${defaultMaximumRecursiveDepth} exceeded)`
@@ -89,7 +70,7 @@ class IpnsResolver {
       return callback(errcode(new Error(errMsg), 'ERR_RESOLVE_RECURSION_LIMIT'))
     }
 
-    this._resolver(name, peerId, (err, res) => {
+    this._resolveName(name, (err, res) => {
       if (err) {
         return callback(err)
       }
@@ -102,31 +83,50 @@ class IpnsResolver {
       }
 
       // continue recursively until depth equals 0
-      this.resolver(nameSegments[2], depth - 1, peerId, resolverFn, callback)
+      this.resolver(nameSegments[2], depth - 1, callback)
     })
   }
 
-  // resolve ipns entries locally using the datastore
-  _resolveLocal (name, peerId, callback) {
-    const { ipnsKey } = ipns.getIdKeys(fromB58String(name))
+  // resolve ipns entries from the provided routing
+  _resolveName (name, callback) {
+    let peerId
 
-    this._repo.datastore.get(ipnsKey, (err, dsVal) => {
+    try {
+      peerId = PeerId.createFromB58String(name)
+    } catch (err) {
+      return callback(err)
+    }
+
+    const { routingKey } = ipns.getIdKeys(peerId.toBytes())
+
+    // TODO DHT - get public key from routing?
+    // https://github.com/ipfs/go-ipfs/blob/master/namesys/routing.go#L70
+    // https://github.com/libp2p/go-libp2p-routing/blob/master/routing.go#L99
+
+    this._routing.get(routingKey.toBuffer(), (err, res) => {
       if (err) {
-        const errMsg = `local record requested was not found for ${name} (${ipnsKey})`
+        if (err.code !== 'ERR_NOT_FOUND') {
+          const errMsg = `unexpected error getting the ipns record ${peerId.id}`
+
+          log.error(errMsg)
+          return callback(errcode(new Error(errMsg), 'ERR_UNEXPECTED_ERROR_GETTING_RECORD'))
+        }
+        const errMsg = `record requested was not found for ${name} (${routingKey}) in the network`
 
         log.error(errMsg)
-        return callback(errcode(new Error(errMsg), 'ERR_NO_LOCAL_RECORD_FOUND'))
+        return callback(errcode(new Error(errMsg), 'ERR_NO_RECORD_FOUND'))
       }
 
-      if (!Buffer.isBuffer(dsVal)) {
+      let ipnsEntry
+      try {
+        const record = Record.deserialize(res)
+        ipnsEntry = ipns.unmarshal(record.value)
+      } catch (err) {
         const errMsg = `found ipns record that we couldn't convert to a value`
 
         log.error(errMsg)
         return callback(errcode(new Error(errMsg), 'ERR_INVALID_RECORD_RECEIVED'))
       }
-
-      const record = Record.deserialize(dsVal)
-      const ipnsEntry = ipns.unmarshal(record.value)
 
       ipns.extractPublicKey(peerId, ipnsEntry, (err, pubKey) => {
         if (err) {

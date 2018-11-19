@@ -4,6 +4,7 @@ const { createFromPrivKey } = require('peer-id')
 const series = require('async/series')
 const Receptacle = require('receptacle')
 
+const errcode = require('err-code')
 const debug = require('debug')
 const log = debug('jsipfs:ipns')
 log.error = debug('jsipfs:ipns:error')
@@ -16,11 +17,12 @@ const path = require('./path')
 const defaultRecordTtl = 60 * 1000
 
 class IPNS {
-  constructor (routing, ipfs) {
-    this.publisher = new IpnsPublisher(routing, ipfs._repo)
-    this.republisher = new IpnsRepublisher(this.publisher, ipfs)
-    this.resolver = new IpnsResolver(routing, ipfs._repo)
+  constructor (routing, repo, peerInfo, keychain, options) {
+    this.publisher = new IpnsPublisher(routing, repo)
+    this.republisher = new IpnsRepublisher(this.publisher, repo, peerInfo, keychain, options)
+    this.resolver = new IpnsResolver(routing)
     this.cache = new Receptacle({ max: 1000 }) // Create an LRU cache with max 1000 items
+    this.routing = routing
   }
 
   // Publish
@@ -53,7 +55,21 @@ class IPNS {
   }
 
   // Resolve
-  resolve (name, peerId, options, callback) {
+  resolve (name, options, callback) {
+    if (typeof name !== 'string') {
+      const errMsg = `name received is not valid`
+
+      log.error(errMsg)
+      return callback(errcode(new Error(errMsg), 'ERR_INVALID_NAME'))
+    }
+
+    if (typeof options === 'function') {
+      callback = options
+      options = {}
+    }
+
+    options = options || {}
+
     // If recursive, we should not try to get the cached value
     if (!options.nocache && !options.recursive) {
       // Try to get the record from cache
@@ -67,7 +83,7 @@ class IPNS {
       }
     }
 
-    this.resolver.resolve(name, peerId, options, (err, result) => {
+    this.resolver.resolve(name, options, (err, result) => {
       if (err) {
         log.error(err)
         return callback(err)

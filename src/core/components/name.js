@@ -128,7 +128,7 @@ module.exports = function name (self) {
       const nocache = options.nocache && options.nocache.toString() === 'true'
       const recursive = options.recursive && options.recursive.toString() === 'true'
 
-      const local = true // TODO ROUTING - use self._options.local
+      const local = self._options.local
 
       if (!self.isOnline() && !local) {
         const errMsg = utils.OFFLINE_ERROR
@@ -157,11 +157,10 @@ module.exports = function name (self) {
 
       const resolveOptions = {
         nocache,
-        recursive,
-        local
+        recursive
       }
 
-      self._ipns.resolve(name, self._peerInfo.id, resolveOptions, callback)
+      self._ipns.resolve(name, resolveOptions, callback)
     })
   }
 }

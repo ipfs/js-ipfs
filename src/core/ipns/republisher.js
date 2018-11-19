@@ -18,10 +18,12 @@ const defaultBroadcastInterval = 4 * hour
 const defaultRecordLifetime = 24 * hour
 
 class IpnsRepublisher {
-  constructor (publisher, ipfs) {
+  constructor (publisher, repo, peerInfo, keychain, options) {
     this._publisher = publisher
-    this._ipfs = ipfs
-    this._repo = ipfs._repo
+    this._repo = repo
+    this._peerInfo = peerInfo
+    this._keychain = keychain
+    this._options = options
     this._republishHandle = null
   }
 
@@ -62,8 +64,8 @@ class IpnsRepublisher {
       }
     }
 
-    const { privKey } = this._ipfs._peerInfo.id
-    const { pass } = this._ipfs._options
+    const { privKey } = this._peerInfo.id
+    const { pass } = this._options
 
     republishHandle.runPeriodically((done) => {
       this._republishEntries(privKey, pass, () => done(defaultBroadcastInterval))
@@ -98,8 +100,8 @@ class IpnsRepublisher {
       }
 
       // keychain needs pass to get the cryptographic keys
-      if (this._ipfs._keychain && Boolean(pass)) {
-        this._ipfs._keychain.listKeys((err, list) => {
+      if (pass) {
+        this._keychain.listKeys((err, list) => {
           if (err) {
             log.error(err)
             return
@@ -107,7 +109,7 @@ class IpnsRepublisher {
 
           each(list, (key, cb) => {
             waterfall([
-              (cb) => this._ipfs._keychain.exportKey(key.name, pass, cb),
+              (cb) => this._keychain.exportKey(key.name, pass, cb),
               (pem, cb) => crypto.keys.import(pem, pass, cb)
             ], (err, privKey) => {
               if (err) {
