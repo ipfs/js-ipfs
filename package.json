@@ -173,8 +173,8 @@
     "tar-stream": "^1.6.2",
     "temp": "~0.8.3",
     "update-notifier": "^2.5.0",
-    "yargs": "^12.0.2",
     "varint": "^5.0.0",
+    "yargs": "^12.0.5",
     "yargs-promise": "^1.1.0"
   },
   "optionalDependencies": {

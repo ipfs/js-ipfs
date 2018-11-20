@@ -8,7 +8,6 @@ module.exports = {
   describe: 'Removes the pinned object from local storage.',
 
   builder: {
-    'ipfs-path': {}, // Temporary fix for https://github.com/yargs/yargs-parser/issues/151
     recursive: {
       type: 'boolean',
       alias: 'r',

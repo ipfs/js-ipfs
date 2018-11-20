@@ -9,7 +9,6 @@ module.exports = {
   describe: 'List objects pinned to local storage.',
 
   builder: {
-    'ipfs-path': {}, // Temporary fix for https://github.com/yargs/yargs-parser/issues/151
     type: {
       type: 'string',
       alias: 't',
