@@ -126,11 +126,11 @@ exports.get = {
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
-    const cid = request.pre.args.key
+    const key = request.pre.args.key
     const ipfs = request.server.app.ipfs
     const pack = tar.pack()
 
-    ipfs.get(cid, (err, filesArray) => {
+    ipfs.get(key, (err, filesArray) => {
       if (err) {
         log.error(err)
         pack.emit('error', err)
@@ -312,7 +312,7 @@ exports.ls = {
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
-    const key = request.pre.args.key
+    const { key } = request.pre.args
     const ipfs = request.server.app.ipfs
     const recursive = request.query && request.query.recursive === 'true'
     const cidBase = request.query['cid-base']
@@ -328,7 +328,7 @@ exports.ls = {
 
       reply({
         Objects: [{
-          Hash: cidToString(key, cidBase),
+          Hash: key,
           Links: files.map((file) => ({
             Name: file.name,
             Hash: cidToString(file.hash, cidBase),

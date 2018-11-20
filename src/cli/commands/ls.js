@@ -2,6 +2,7 @@
 
 const multibase = require('multibase')
 const { print, rightpad } = require('../utils')
+const { cidToString } = require('../../utils/cid')
 
 module.exports = {
   command: 'ls <key>',
@@ -34,10 +35,12 @@ module.exports = {
   },
 
   handler ({ ipfs, key, recursive, headers, cidBase }) {
-    ipfs.ls(key, { recursive, cidBase }, (err, links) => {
+    ipfs.ls(key, { recursive }, (err, links) => {
       if (err) {
         throw err
       }
+
+      links = links.map(file => Object.assign(file, { hash: cidToString(file.hash, cidBase) }))
 
       if (headers) {
         links = [{ hash: 'Hash', size: 'Size', name: 'Name' }].concat(links)

@@ -368,7 +368,7 @@ describe('files', () => runOnAndOff((thing) => {
 
     return ipfs('add test/fixtures/test-data/hello --cid-base=base64')
       .then((out) => {
-        expect(out).to.eql('added mAXASIKlIkE8vD0ebj4GXaUswGEsNLtHBzSoewPuF0pmhkqRH hello\n')
+        expect(out).to.eql('added mAXASIEbUSBS5xa8UHDqqt8BdxehE6tX5HxKFiwIeukV2i0wO hello\n')
       })
   })
 
