@@ -3,16 +3,25 @@
 const bl = require('bl')
 const fs = require('fs')
 const print = require('../../utils').print
+const {
+  util: {
+    cid
+  }
+} = require('ipld-dag-pb')
 
-function putNode (buf, enc, ipfs) {
+function putNode (buf, enc, ipfs, cidEnc) {
   ipfs.object.put(buf, { enc: enc }, (err, node) => {
     if (err) {
       throw err
     }
 
-    const nodeJSON = node.toJSON()
+    cid(node, (err, cid) => {
+      if (err) {
+        throw err
+      }
 
-    print(`added ${nodeJSON.multihash}`)
+      print(`added ${cid.toBaseEncodedString(cidEnc)}`)
+    })
   })
 }
 
@@ -25,6 +34,10 @@ module.exports = {
     'input-enc': {
       type: 'string',
       default: 'json'
+    },
+    'cid-base': {
+      default: 'base58btc',
+      describe: 'CID base to use.'
     }
   },
 
@@ -40,7 +53,7 @@ module.exports = {
         throw err
       }
 
-      putNode(input, argv.inputEnc, ipfs)
+      putNode(input, argv.inputEnc, ipfs, argv.cidBase)
     }))
   }
 }

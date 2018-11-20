@@ -11,9 +11,9 @@ const getFolderSize = require('get-folder-size')
 const byteman = require('byteman')
 const waterfall = require('async/waterfall')
 const mh = require('multihashes')
-const utils = require('../../utils')
-const print = require('../../utils').print
-const createProgressBar = require('../../utils').createProgressBar
+const utils = require('../utils')
+const print = require('../utils').print
+const createProgressBar = require('../utils').createProgressBar
 
 function checkPath (inPath, recursive) {
   // This function is to check for the following possible inputs
@@ -231,7 +231,7 @@ module.exports = {
           }
         }
 
-        next(null, ipfs.files.addPullStream(options))
+        next(null, ipfs.addPullStream(options))
       }
     ], (err, addStream) => {
       if (err) throw err

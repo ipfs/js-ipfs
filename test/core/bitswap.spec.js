@@ -228,10 +228,10 @@ describe('bitswap', function () {
         (cb) => addNode(fDaemon, inProcNode, cb),
         // 1. Add file to tmp instance
         (remote, cb) => {
-          remote.files.add([{ path: 'awesome.txt', content: file }], cb)
+          remote.add([{ path: 'awesome.txt', content: file }], cb)
         },
         // 2. Request file from local instance
-        (filesAdded, cb) => inProcNode.files.cat(filesAdded[0].hash, cb)
+        (filesAdded, cb) => inProcNode.cat(filesAdded[0].hash, cb)
       ], (err, data) => {
         expect(err).to.not.exist()
         expect(data).to.eql(file)

@@ -9,8 +9,12 @@ chai.use(dirtyChai)
 
 const parallelLimit = require('async/parallelLimit')
 const series = require('async/series')
-const { fromB58String } = require('multihashes')
-const { DAGNode } = require('ipld-dag-pb')
+const {
+  util: {
+    cid
+  },
+  DAGNode
+} = require('ipld-dag-pb')
 const CID = require('cids')
 
 const IPFS = require('../../src/core')
@@ -31,7 +35,7 @@ function createNodes (num, callback) {
   const items = []
   for (let i = 0; i < num; i++) {
     items.push(cb =>
-      createNode(String(i), (err, node) => cb(err, node.multihash))
+      createNode(String(i), (err, res) => cb(err, res.cid.toBaseEncodedString()))
     )
   }
 
@@ -44,7 +48,18 @@ function createNode (data, links = [], callback) {
     links = []
   }
 
-  DAGNode.create(data, links, callback)
+  DAGNode.create(data, links, (err, node) => {
+    if (err) {
+      return callback(err)
+    }
+
+    cid(node, (err, result) => {
+      callback(err, {
+        node,
+        cid: result
+      })
+    })
+  })
 }
 
 describe('pinSet', function () {
@@ -73,17 +88,16 @@ describe('pinSet', function () {
     it('generates a root node with links and hash', function (done) {
       const expectedRootHash = 'QmcLiSTjcjoVC2iuGbk6A2PVcWV3WvjZT4jxfNis1vjyrR'
 
-      createNode('data', (err, node) => {
+      createNode('data', (err, result) => {
         expect(err).to.not.exist()
-        const nodeHash = node.multihash
+        const nodeHash = result.cid.toBaseEncodedString()
         pinSet.storeSet([nodeHash], (err, rootNode) => {
           expect(err).to.not.exist()
-          const node = rootNode.toJSON()
-          expect(node.multihash).to.eql(expectedRootHash)
-          expect(node.links).to.have.length(defaultFanout + 1)
+          expect(rootNode.cid.toBaseEncodedString()).to.eql(expectedRootHash)
+          expect(rootNode.node.links).to.have.length(defaultFanout + 1)
 
-          const lastLink = node.links[node.links.length - 1]
-          const mhash = fromB58String(lastLink.multihash)
+          const lastLink = rootNode.node.links[rootNode.node.links.length - 1]
+          const mhash = lastLink.cid.toBaseEncodedString()
           expect(mhash).to.eql(nodeHash)
           done()
         })
@@ -96,23 +110,22 @@ describe('pinSet', function () {
       this.timeout(19 * 1000)
       const expectedHash = 'QmbvhSy83QWfgLXDpYjDmLWBFfGc8utoqjcXHyj3gYuasT'
       const count = maxItems + 1
-      createNodes(count, (err, nodes) => {
+      createNodes(count, (err, cids) => {
         expect(err).to.not.exist()
-        pinSet.storeSet(nodes, (err, node) => {
+        pinSet.storeSet(cids, (err, result) => {
           expect(err).to.not.exist()
 
-          node = node.toJSON()
-          expect(node.size).to.eql(3184696)
-          expect(node.links).to.have.length(defaultFanout)
-          expect(node.multihash).to.eql(expectedHash)
+          expect(result.node.size).to.eql(3184696)
+          expect(result.node.links).to.have.length(defaultFanout)
+          expect(result.cid.toBaseEncodedString()).to.eql(expectedHash)
 
-          pinSet.loadSet(node, '', (err, loaded) => {
+          pinSet.loadSet(result.node, '', (err, loaded) => {
             expect(err).to.not.exist()
             expect(loaded).to.have.length(30)
             const hashes = loaded.map(l => new CID(l).toBaseEncodedString())
 
             // just check the first node, assume all are children if successful
-            pinSet.hasDescendant(node, hashes[0], (err, has) => {
+            pinSet.hasDescendant(result.node, hashes[0], (err, has) => {
               expect(err).to.not.exist()
               expect(has).to.eql(true)
               done()
@@ -174,10 +187,10 @@ describe('pinSet', function () {
       createNodes(defaultFanout, (err, nodes) => {
         expect(err).to.not.exist()
 
-        pinSet.storeSet(nodes, (err, node) => {
+        pinSet.storeSet(nodes, (err, result) => {
           expect(err).to.not.exist()
 
-          pinSet.walkItems(node, walker, err => {
+          pinSet.walkItems(result.node, walker, err => {
             expect(err).to.not.exist()
             expect(seen).to.have.length(defaultFanout)
             expect(seen[0].idx).to.eql(defaultFanout)

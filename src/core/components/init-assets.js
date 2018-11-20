@@ -21,7 +21,7 @@ module.exports = function addDefaultAssets (self, log, callback) {
       const addPath = element.substring(index + 1)
       return { path: addPath, content: file(element) }
     }),
-    self.files.addPullStream(),
+    self.addPullStream(),
     pull.through(file => {
       if (file.path === 'init-docs') {
         const cid = new CID(file.hash)

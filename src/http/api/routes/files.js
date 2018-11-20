@@ -12,9 +12,9 @@ module.exports = (server) => {
     path: '/api/v0/cat',
     config: {
       pre: [
-        { method: resources.files.cat.parseArgs, assign: 'args' }
+        { method: resources.filesRegular.cat.parseArgs, assign: 'args' }
       ],
-      handler: resources.files.cat.handler
+      handler: resources.filesRegular.cat.handler
     }
   })
 
@@ -24,9 +24,9 @@ module.exports = (server) => {
     path: '/api/v0/get',
     config: {
       pre: [
-        { method: resources.files.get.parseArgs, assign: 'args' }
+        { method: resources.filesRegular.get.parseArgs, assign: 'args' }
       ],
-      handler: resources.files.get.handler
+      handler: resources.filesRegular.get.handler
     }
   })
 
@@ -40,8 +40,8 @@ module.exports = (server) => {
         output: 'stream',
         maxBytes: Number.MAX_SAFE_INTEGER
       },
-      handler: resources.files.add.handler,
-      validate: resources.files.add.validate
+      handler: resources.filesRegular.add.handler,
+      validate: resources.filesRegular.add.validate
     }
   })
 
@@ -51,9 +51,9 @@ module.exports = (server) => {
     path: '/api/v0/ls',
     config: {
       pre: [
-        { method: resources.files.immutableLs.parseArgs, assign: 'args' }
+        { method: resources.filesRegular.ls.parseArgs, assign: 'args' }
       ],
-      handler: resources.files.immutableLs.handler
+      handler: resources.filesRegular.ls.handler
     }
   })
 

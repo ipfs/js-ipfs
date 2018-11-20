@@ -118,8 +118,8 @@ describe('circuit relay', () => {
     it('should transfer', function (done) {
       const data = crypto.randomBytes(128)
       waterfall([
-        (cb) => nodeA.files.add(data, cb),
-        (res, cb) => nodeB.files.cat(res[0].hash, cb),
+        (cb) => nodeA.add(data, cb),
+        (res, cb) => nodeB.cat(res[0].hash, cb),
         (buffer, cb) => {
           expect(buffer).to.deep.equal(data)
           cb()

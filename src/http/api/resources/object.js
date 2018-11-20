@@ -6,7 +6,6 @@ const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
 const DAGNode = dagPB.DAGNode
 const waterfall = require('async/waterfall')
-const series = require('async/series')
 const debug = require('debug')
 const log = debug('jsipfs:http-api:object')
 log.error = debug('jsipfs:http-api:object:error')
@@ -36,7 +35,10 @@ exports.new = (request, reply) => {
   const ipfs = request.server.app.ipfs
   const template = request.query.arg
 
-  ipfs.object.new(template, (err, node) => {
+  waterfall([
+    (cb) => ipfs.object.new(template, cb),
+    (node, cb) => dagPB.util.cid(node, (err, cid) => cb(err, { node, cid }))
+  ], (err, results) => {
     if (err) {
       log.error(err)
       return reply({
@@ -45,17 +47,17 @@ exports.new = (request, reply) => {
       }).code(500)
     }
 
-    const nodeJSON = node.toJSON()
+    const nodeJSON = results.node.toJSON()
 
     const answer = {
       Data: nodeJSON.data,
-      Hash: nodeJSON.multihash,
+      Hash: results.cid.toBaseEncodedString(),
       Size: nodeJSON.size,
       Links: nodeJSON.links.map((l) => {
         return {
           Name: l.name,
           Size: l.size,
-          Hash: l.multihash
+          Hash: l.cid
         }
       })
     }
@@ -74,7 +76,10 @@ exports.get = {
     const enc = request.query.enc || 'base58'
     const ipfs = request.server.app.ipfs
 
-    ipfs.object.get(key, { enc: enc }, (err, node) => {
+    waterfall([
+      (cb) => ipfs.object.get(key, { enc: enc }, cb),
+      (node, cb) => dagPB.util.cid(node, (err, cid) => cb(err, { node, cid }))
+    ], (err, results) => {
       if (err) {
         log.error(err)
         return reply({
@@ -83,21 +88,21 @@ exports.get = {
         }).code(500)
       }
 
-      const nodeJSON = node.toJSON()
+      const nodeJSON = results.node.toJSON()
 
-      if (Buffer.isBuffer(node.data)) {
-        nodeJSON.data = node.data.toString(request.query['data-encoding'] || undefined)
+      if (Buffer.isBuffer(results.node.data)) {
+        nodeJSON.data = results.node.data.toString(request.query['data-encoding'] || undefined)
       }
 
       const answer = {
         Data: nodeJSON.data,
-        Hash: nodeJSON.multihash,
+        Hash: results.cid.toBaseEncodedString(),
         Size: nodeJSON.size,
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: l.multihash
+            Hash: l.cid
           }
         })
       }
@@ -128,25 +133,28 @@ exports.put = {
       // TODO fix: stream is not emitting the 'end' event
       stream.on('data', (data) => {
         if (enc === 'protobuf') {
-          dagPB.util.deserialize(data, (err, node) => {
+          waterfall([
+            (cb) => dagPB.util.deserialize(data, cb),
+            (node, cb) => dagPB.util.cid(node, (err, cid) => cb(err, { node, cid }))
+          ], (err, results) => {
             if (err) {
               return reply({
-                Message: 'Failed to receive protobuf encoded: ' + err,
+                Message: 'Failed to put object: ' + err,
                 Code: 0
               }).code(500).takeover()
             }
 
-            const nodeJSON = node.toJSON()
+            const nodeJSON = results.node.toJSON()
 
             const answer = {
               Data: nodeJSON.data,
-              Hash: nodeJSON.multihash,
+              Hash: results.cid.toBaseEncodedString(),
               Size: nodeJSON.size,
               Links: nodeJSON.links.map((l) => {
                 return {
                   Name: l.name,
                   Size: l.size,
-                  Hash: l.multihash
+                  Hash: l.cid
                 }
               })
             }
@@ -190,18 +198,11 @@ exports.put = {
     const ipfs = request.server.app.ipfs
     let node = request.pre.args.node
 
-    series([
-      (cb) => {
-        DAGNode.create(Buffer.from(node.Data), node.Links, (err, _node) => {
-          if (err) {
-            return cb(err)
-          }
-          node = _node
-          cb()
-        })
-      },
-      (cb) => ipfs.object.put(node, cb)
-    ], (err) => {
+    waterfall([
+      (cb) => DAGNode.create(Buffer.from(node.Data), node.Links, cb),
+      (node, cb) => ipfs.object.put(node, cb),
+      (node, cb) => dagPB.util.cid(node, (err, cid) => cb(err, { cid, node }))
+    ], (err, results) => {
       if (err) {
         log.error(err)
 
@@ -211,17 +212,17 @@ exports.put = {
         }).code(500)
       }
 
-      const nodeJSON = node.toJSON()
+      const nodeJSON = results.node.toJSON()
 
       const answer = {
         Data: nodeJSON.data,
-        Hash: nodeJSON.multihash,
+        Hash: results.cid.toBaseEncodedString(),
         Size: nodeJSON.size,
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: l.multihash
+            Hash: l.cid
           }
         })
       }
@@ -244,7 +245,7 @@ exports.stat = {
       if (err) {
         log.error(err)
         return reply({
-          Message: 'Failed to get object: ' + err,
+          Message: 'Failed to stat object: ' + err,
           Code: 0
         }).code(500)
       }
@@ -267,7 +268,7 @@ exports.data = {
       if (err) {
         log.error(err)
         return reply({
-          Message: 'Failed to get object: ' + err,
+          Message: 'Failed to get object data: ' + err,
           Code: 0
         }).code(500)
       }
@@ -286,24 +287,27 @@ exports.links = {
     const key = request.pre.args.key
     const ipfs = request.server.app.ipfs
 
-    ipfs.object.get(key, (err, node) => {
+    waterfall([
+      (cb) => ipfs.object.get(key, cb),
+      (node, cb) => dagPB.util.cid(node, (err, cid) => cb(err, { node, cid }))
+    ], (err, results) => {
       if (err) {
         log.error(err)
         return reply({
-          Message: 'Failed to get object: ' + err,
+          Message: 'Failed to get object links: ' + err,
           Code: 0
         }).code(500)
       }
 
-      const nodeJSON = node.toJSON()
+      const nodeJSON = results.node.toJSON()
 
       return reply({
-        Hash: nodeJSON.multihash,
+        Hash: results.cid.toBaseEncodedString(),
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: l.multihash
+            Hash: l.cid
           }
         })
       })
@@ -360,27 +364,30 @@ exports.patchAppendData = {
     const data = request.pre.args.data
     const ipfs = request.server.app.ipfs
 
-    ipfs.object.patch.appendData(key, data, (err, node) => {
+    waterfall([
+      (cb) => ipfs.object.patch.appendData(key, data, cb),
+      (node, cb) => dagPB.util.cid(node, (err, cid) => cb(err, { node, cid }))
+    ], (err, results) => {
       if (err) {
         log.error(err)
 
         return reply({
-          Message: 'Failed to apend data to object: ' + err,
+          Message: 'Failed to append data to object: ' + err,
           Code: 0
         }).code(500)
       }
 
-      const nodeJSON = node.toJSON()
+      const nodeJSON = results.node.toJSON()
 
       const answer = {
         Data: nodeJSON.data,
-        Hash: nodeJSON.multihash,
+        Hash: results.cid.toBaseEncodedString(),
         Size: nodeJSON.size,
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: l.multihash
+            Hash: l.cid
           }
         })
       }
@@ -400,20 +407,23 @@ exports.patchSetData = {
     const data = request.pre.args.data
     const ipfs = request.server.app.ipfs
 
-    ipfs.object.patch.setData(key, data, (err, node) => {
+    waterfall([
+      (cb) => ipfs.object.patch.setData(key, data, cb),
+      (node, cb) => dagPB.util.cid(node, (err, cid) => cb(err, { node, cid }))
+    ], (err, results) => {
       if (err) {
         log.error(err)
 
         return reply({
-          Message: 'Failed to apend data to object: ' + err,
+          Message: 'Failed to set data on object: ' + err,
           Code: 0
         }).code(500)
       }
 
-      const nodeJSON = node.toJSON()
+      const nodeJSON = results.node.toJSON()
 
       return reply({
-        Hash: nodeJSON.multihash,
+        Hash: results.cid.toBaseEncodedString(),
         Links: nodeJSON.links
       })
     })
@@ -464,50 +474,35 @@ exports.patchAddLink = {
     const ref = request.pre.args.ref
     const ipfs = request.server.app.ipfs
 
-    ipfs.object.get(ref, (err, linkedObj) => {
+    waterfall([
+      (cb) => ipfs.object.get(ref, cb),
+      (node, cb) => ipfs.object.patch.addLink(root, new DAGLink(name, node.size, ref), cb),
+      (node, cb) => dagPB.util.cid(node, (err, cid) => cb(err, { node, cid }))
+    ], (err, results) => {
       if (err) {
         log.error(err)
         return reply({
-          Message: 'Failed to get linked object: ' + err,
+          Message: 'Failed to add link to object: ' + err,
           Code: 0
         }).code(500)
       }
 
-      waterfall([
-        (cb) => {
-          const link = new DAGLink(
-            name,
-            linkedObj.size,
-            linkedObj.multihash)
-          cb(null, link)
-        },
-        (link, cb) => ipfs.object.patch.addLink(root, link, cb)
-      ], (err, node) => {
-        if (err) {
-          log.error(err)
-          return reply({
-            Message: 'Failed to get linked object: ' + err,
-            Code: 0
-          }).code(500)
-        }
+      const nodeJSON = results.node.toJSON()
 
-        const nodeJSON = node.toJSON()
+      const answer = {
+        Data: nodeJSON.data,
+        Hash: results.cid.toBaseEncodedString(),
+        Size: nodeJSON.size,
+        Links: nodeJSON.links.map((l) => {
+          return {
+            Name: l.name,
+            Size: l.size,
+            Hash: l.cid
+          }
+        })
+      }
 
-        const answer = {
-          Data: nodeJSON.data,
-          Hash: nodeJSON.multihash,
-          Size: nodeJSON.size,
-          Links: nodeJSON.links.map((l) => {
-            return {
-              Name: l.name,
-              Size: l.size,
-              Hash: l.multihash
-            }
-          })
-        }
-
-        return reply(answer)
-      })
+      return reply(answer)
     })
   }
 }
@@ -547,7 +542,10 @@ exports.patchRmLink = {
     const link = request.pre.args.link
     const ipfs = request.server.app.ipfs
 
-    ipfs.object.patch.rmLink(root, { name: link }, (err, node) => {
+    waterfall([
+      (cb) => ipfs.object.patch.rmLink(root, { name: link }, cb),
+      (node, cb) => dagPB.util.cid(node, (err, cid) => cb(err, { node, cid }))
+    ], (err, results) => {
       if (err) {
         log.error(err)
         return reply({
@@ -556,17 +554,17 @@ exports.patchRmLink = {
         }).code(500)
       }
 
-      const nodeJSON = node.toJSON()
+      const nodeJSON = results.node.toJSON()
 
       const answer = {
         Data: nodeJSON.data,
-        Hash: nodeJSON.multihash,
+        Hash: results.cid.toBaseEncodedString(),
         Size: nodeJSON.size,
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: l.multihash
+            Hash: l.cid
           }
         })
       }

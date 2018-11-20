@@ -78,7 +78,21 @@ describe('interface-ipfs-core tests', () => {
     ] : true
   })
 
-  tests.files(defaultCommonFactory)
+  tests.filesRegular(defaultCommonFactory, {
+    skip: [{
+      name: 'addFromStream',
+      reason: 'TODO: not implemented yet'
+    }, {
+      name: 'addFromFs',
+      reason: 'TODO: not implemented yet'
+    }, {
+      name: 'addFromUrl',
+      reason: 'TODO: not implemented yet'
+    }]
+  })
+
+  // TODO needs MFS module to be updated
+  // tests.filesMFS(defaultCommonFactory)
 
   tests.key(CommonFactory.create({
     spawnOptions: {
@@ -86,8 +100,6 @@ describe('interface-ipfs-core tests', () => {
       initOptions: { bits: 512 }
     }
   }))
-
-  tests.ls(defaultCommonFactory)
 
   tests.miscellaneous(CommonFactory.create({
     // No need to stop, because the test suite does a 'stop' test.

@@ -79,7 +79,7 @@ exports.cat = {
     const options = request.pre.args.options
     const ipfs = request.server.app.ipfs
 
-    ipfs.files.cat(key, options, (err, stream) => {
+    ipfs.cat(key, options, (err, stream) => {
       if (err) {
         log.error(err)
         if (err.message === 'No such file') {
@@ -113,7 +113,7 @@ exports.get = {
     const ipfs = request.server.app.ipfs
     const pack = tar.pack()
 
-    ipfs.files.get(cid, (err, filesArray) => {
+    ipfs.get(cid, (err, filesArray) => {
       if (err) {
         log.error(err)
         pack.emit('error', err)
@@ -258,7 +258,7 @@ exports.add = {
 
     pull(
       fileAdder,
-      ipfs.files.addPullStream(options),
+      ipfs.addPullStream(options),
       pull.map((file) => {
         return {
           Name: file.path, // addPullStream already turned this into a hash if it wanted to
@@ -282,7 +282,7 @@ exports.add = {
   }
 }
 
-exports.immutableLs = {
+exports.ls = {
   // uses common parseKey method that returns a `key`
   parseArgs: exports.parseKey,
 

@@ -3,13 +3,17 @@
 'use strict'
 
 const hat = require('hat')
-const CID = require('cids')
 const parallel = require('async/parallel')
 const waterfall = require('async/waterfall')
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
+const {
+  util: {
+    cid
+  }
+} = require('ipld-dag-pb')
 
 const MockPreloadNode = require('../utils/mock-preload-node')
 const IPFS = require('../../src')
@@ -45,15 +49,15 @@ describe('preload', () => {
 
   after((done) => repo.teardown(done))
 
-  it('should preload content added with files.add', (done) => {
-    ipfs.files.add(Buffer.from(hat()), (err, res) => {
+  it('should preload content added with add', (done) => {
+    ipfs.add(Buffer.from(hat()), (err, res) => {
       expect(err).to.not.exist()
       MockPreloadNode.waitForCids(res[0].hash, done)
     })
   })
 
-  it('should preload multiple content added with files.add', (done) => {
-    ipfs.files.add([{
+  it('should preload multiple content added with add', (done) => {
+    ipfs.add([{
       content: Buffer.from(hat())
     }, {
       content: Buffer.from(hat())
@@ -65,8 +69,8 @@ describe('preload', () => {
     })
   })
 
-  it('should preload multiple content and intermediate dirs added with files.add', (done) => {
-    ipfs.files.add([{
+  it('should preload multiple content and intermediate dirs added with add', (done) => {
+    ipfs.add([{
       path: 'dir0/dir1/file0',
       content: Buffer.from(hat())
     }, {
@@ -85,8 +89,8 @@ describe('preload', () => {
     })
   })
 
-  it('should preload multiple content and wrapping dir for content added with files.add and wrapWithDirectory option', (done) => {
-    ipfs.files.add([{
+  it('should preload multiple content and wrapping dir for content added with add and wrapWithDirectory option', (done) => {
+    ipfs.add([{
       path: 'dir0/dir1/file0',
       content: Buffer.from(hat())
     }, {
@@ -105,20 +109,20 @@ describe('preload', () => {
     })
   })
 
-  it('should preload content retrieved with files.cat', (done) => {
-    ipfs.files.add(Buffer.from(hat()), { preload: false }, (err, res) => {
+  it('should preload content retrieved with cat', (done) => {
+    ipfs.add(Buffer.from(hat()), { preload: false }, (err, res) => {
       expect(err).to.not.exist()
-      ipfs.files.cat(res[0].hash, (err) => {
+      ipfs.cat(res[0].hash, (err) => {
         expect(err).to.not.exist()
         MockPreloadNode.waitForCids(res[0].hash, done)
       })
     })
   })
 
-  it('should preload content retrieved with files.get', (done) => {
-    ipfs.files.add(Buffer.from(hat()), { preload: false }, (err, res) => {
+  it('should preload content retrieved with get', (done) => {
+    ipfs.add(Buffer.from(hat()), { preload: false }, (err, res) => {
       expect(err).to.not.exist()
-      ipfs.files.get(res[0].hash, (err) => {
+      ipfs.get(res[0].hash, (err) => {
         expect(err).to.not.exist()
         MockPreloadNode.waitForCids(res[0].hash, done)
       })
@@ -126,7 +130,7 @@ describe('preload', () => {
   })
 
   it('should preload content retrieved with ls', (done) => {
-    ipfs.files.add([{
+    ipfs.add([{
       path: 'dir0/dir1/file0',
       content: Buffer.from(hat())
     }, {
@@ -157,8 +161,11 @@ describe('preload', () => {
     ipfs.object.new((err, node) => {
       expect(err).to.not.exist()
 
-      const cid = new CID(node.multihash)
-      MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
+      cid(node, (err, result) => {
+        expect(err).to.not.exist()
+
+        MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
+      })
     })
   })
 
@@ -166,27 +173,43 @@ describe('preload', () => {
     ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, (err, node) => {
       expect(err).to.not.exist()
 
-      const cid = new CID(node.multihash)
-      MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
+      cid(node, (err, result) => {
+        expect(err).to.not.exist()
+
+        MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
+      })
     })
   })
 
   it('should preload content added with object.patch.addLink', (done) => {
     parallel({
-      parent: (cb) => ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, cb),
-      link: (cb) => ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, cb)
-    }, (err, nodes) => {
+      parent: (cb) => {
+        waterfall([
+          (done) => ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, done),
+          (node, done) => cid(node, (err, cid) => done(err, { node, cid }))
+        ], cb)
+      },
+      link: (cb) => {
+        waterfall([
+          (done) => ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, done),
+          (node, done) => cid(node, (err, cid) => done(err, { node, cid }))
+        ], cb)
+      }
+    }, (err, result) => {
       expect(err).to.not.exist()
 
-      ipfs.object.patch.addLink(nodes.parent.multihash, {
+      ipfs.object.patch.addLink(result.parent.cid, {
         name: 'link',
-        multihash: nodes.link.multihash,
-        size: nodes.link.size
+        cid: result.link.cid,
+        size: result.link.node.size
       }, (err, node) => {
         expect(err).to.not.exist()
 
-        const cid = new CID(node.multihash)
-        MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
+        cid(node, (err, result) => {
+          expect(err).to.not.exist()
+
+          MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
+        })
       })
     })
   })
@@ -194,24 +217,32 @@ describe('preload', () => {
   it('should preload content added with object.patch.rmLink', (done) => {
     waterfall([
       (cb) => ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, cb),
-      (link, cb) => {
+      (node, cb) => cid(node, (err, cid) => cb(err, { node, cid })),
+      ({ node, cid }, cb) => {
         ipfs.object.put({
           Data: Buffer.from(hat()),
           Links: [{
             name: 'link',
-            multihash: link.multihash,
-            size: link.size
+            cid: cid,
+            size: node.size
           }]
         }, cb)
       }
     ], (err, parent) => {
       expect(err).to.not.exist()
 
-      ipfs.object.patch.rmLink(parent.multihash, { name: 'link' }, (err, node) => {
+      cid(parent, (err, result) => {
         expect(err).to.not.exist()
 
-        const cid = new CID(node.multihash)
-        MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
+        ipfs.object.patch.rmLink(result, { name: 'link' }, (err, node) => {
+          expect(err).to.not.exist()
+
+          cid(node, (err, result) => {
+            expect(err).to.not.exist()
+
+            MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
+          })
+        })
       })
     })
   })
@@ -220,11 +251,18 @@ describe('preload', () => {
     ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, (err, node) => {
       expect(err).to.not.exist()
 
-      ipfs.object.patch.setData(node.multihash, Buffer.from(hat()), (err, node) => {
+      cid(node, (err, result) => {
         expect(err).to.not.exist()
 
-        const cid = new CID(node.multihash)
-        MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
+        ipfs.object.patch.setData(result, Buffer.from(hat()), (err, node) => {
+          expect(err).to.not.exist()
+
+          cid(node, (err, result) => {
+            expect(err).to.not.exist()
+
+            MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
+          })
+        })
       })
     })
   })
@@ -233,11 +271,18 @@ describe('preload', () => {
     ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, (err, node) => {
       expect(err).to.not.exist()
 
-      ipfs.object.patch.appendData(node.multihash, Buffer.from(hat()), (err, node) => {
+      cid(node, (err, result) => {
         expect(err).to.not.exist()
 
-        const cid = new CID(node.multihash)
-        MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
+        ipfs.object.patch.appendData(result, Buffer.from(hat()), (err, node) => {
+          expect(err).to.not.exist()
+
+          cid(node, (err, result) => {
+            expect(err).to.not.exist()
+
+            MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
+          })
+        })
       })
     })
   })
@@ -245,10 +290,15 @@ describe('preload', () => {
   it('should preload content retrieved with object.get', (done) => {
     ipfs.object.new(null, { preload: false }, (err, node) => {
       expect(err).to.not.exist()
-      ipfs.object.get(node.multihash, (err) => {
+
+      cid(node, (err, result) => {
         expect(err).to.not.exist()
-        const cid = new CID(node.multihash)
-        MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
+
+        ipfs.object.get(result, (err) => {
+          expect(err).to.not.exist()
+
+          MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
+        })
       })
     })
   })
@@ -332,7 +382,7 @@ describe('preload disabled', () => {
   after((done) => repo.teardown(done))
 
   it('should not preload if disabled', (done) => {
-    ipfs.files.add(Buffer.from(hat()), (err, res) => {
+    ipfs.add(Buffer.from(hat()), (err, res) => {
       expect(err).to.not.exist()
 
       MockPreloadNode.waitForCids(res[0].hash, (err) => {
