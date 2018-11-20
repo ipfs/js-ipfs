@@ -235,7 +235,6 @@ exports.add = {
 
     const options = {
       cidVersion: request.query['cid-version'],
-      cidBase: request.query['cid-base'],
       rawLeaves: request.query['raw-leaves'],
       progress: request.query.progress ? progressHandler : null,
       onlyHash: request.query['only-hash'],
@@ -281,7 +280,7 @@ exports.add = {
       pull.map((file) => {
         return {
           Name: file.path, // addPullStream already turned this into a hash if it wanted to
-          Hash: file.hash,
+          Hash: cidToString(file.hash, request.query['cid-base']),
           Size: file.size
         }
       }),
@@ -318,7 +317,7 @@ exports.ls = {
     const recursive = request.query && request.query.recursive === 'true'
     const cidBase = request.query['cid-base']
 
-    ipfs.ls(key, { recursive, cidBase }, (err, files) => {
+    ipfs.ls(key, { recursive }, (err, files) => {
       if (err) {
         return reply({
           Message: 'Failed to list dir: ' + err.message,

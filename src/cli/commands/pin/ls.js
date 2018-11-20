@@ -2,6 +2,7 @@
 
 const multibase = require('multibase')
 const { print } = require('../../utils')
+const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
   // bracket syntax with '...' tells yargs to optionally accept a list
@@ -33,10 +34,10 @@ module.exports = {
   handler: ({ ipfs, ipfsPath, type, quiet, cidBase }) => {
     const paths = ipfsPath
 
-    ipfs.pin.ls(paths, { type, cidBase }, (err, results) => {
+    ipfs.pin.ls(paths, { type }, (err, results) => {
       if (err) { throw err }
       results.forEach((res) => {
-        let line = res.hash
+        let line = cidToString(res.hash, cidBase)
         if (!quiet) {
           line += ` ${res.type}`
         }

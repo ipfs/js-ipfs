@@ -2,6 +2,7 @@
 
 const multibase = require('multibase')
 const print = require('../../utils').print
+const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
   command: 'stat <key>',
@@ -17,7 +18,7 @@ module.exports = {
   },
 
   handler ({ ipfs, key, cidBase }) {
-    ipfs.object.stat(key, { enc: 'base58', cidBase }, (err, stats) => {
+    ipfs.object.stat(key, { enc: 'base58' }, (err, stats) => {
       if (err) {
         throw err
       }
@@ -25,7 +26,7 @@ module.exports = {
       delete stats.Hash // only for js-ipfs-http-client output
 
       Object.keys(stats).forEach((key) => {
-        print(`${key}: ${stats[key]}`)
+        print(`${key}: ${cidToString(stats[key], cidBase)}`)
       })
     })
   }

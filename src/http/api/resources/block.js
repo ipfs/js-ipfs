@@ -161,9 +161,8 @@ exports.stat = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler: (request, reply) => {
     const key = request.pre.args.key
-    const cidBase = request.query['cid-base']
 
-    request.server.app.ipfs.block.stat(key, { cidBase }, (err, stats) => {
+    request.server.app.ipfs.block.stat(key, (err, stats) => {
       if (err) {
         log.error(err)
         return reply({
@@ -173,7 +172,7 @@ exports.stat = {
       }
 
       return reply({
-        Key: stats.key,
+        Key: cidToString(stats.key, request.query['cid-base']),
         Size: stats.size
       })
     })

@@ -7,8 +7,6 @@ const waterfall = require('async/waterfall')
 const setImmediate = require('async/setImmediate')
 const promisify = require('promisify-es6')
 const errCode = require('err-code')
-const multibase = require('multibase')
-const { cidToString } = require('../../utils/cid')
 
 module.exports = function block (self) {
   return {
@@ -118,12 +116,6 @@ module.exports = function block (self) {
         return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
       }
 
-      if (options.cidBase && !multibase.names.includes(options.cidBase)) {
-        return setImmediate(() => {
-          callback(errCode(new Error('invalid multibase'), 'ERR_INVALID_MULTIBASE'))
-        })
-      }
-
       if (options.preload !== false) {
         self._preload(cid)
       }
@@ -133,7 +125,7 @@ module.exports = function block (self) {
           return callback(err)
         }
         callback(null, {
-          key: cidToString(cid, options.cidBase),
+          key: cid.toString(),
           size: block.data.length
         })
       })

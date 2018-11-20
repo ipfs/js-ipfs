@@ -19,11 +19,11 @@ exports.wantlist = {
     const peerId = request.query.peer
     const cidBase = request.query['cid-base']
 
-    request.server.app.ipfs.bitswap.wantlist(peerId, { cidBase }, (err, list) => {
+    request.server.app.ipfs.bitswap.wantlist(peerId, (err, list) => {
       if (err) {
         return reply(boom.badRequest(err))
       }
-      reply({ Keys: list.map(cid => ({ '/': cid })) })
+      reply({ Keys: list.Keys.map(cid => ({ '/': cidToString(cid, cidBase) })) })
     })
   }
 }
@@ -39,7 +39,7 @@ exports.stat = {
     const ipfs = request.server.app.ipfs
     const cidBase = request.query['cid-base']
 
-    ipfs.bitswap.stat({ cidBase }, (err, stats) => {
+    ipfs.bitswap.stat((err, stats) => {
       if (err) {
         return reply({
           Message: err.toString(),
@@ -47,10 +47,12 @@ exports.stat = {
         }).code(500)
       }
 
+      stats.wantlist = stats.wantlist.Keys.map(cid => ({ '/': cidToString(cid, cidBase) }))
+
       reply({
         ProvideBufLen: stats.provideBufLen,
         BlocksReceived: stats.blocksReceived,
-        Wantlist: stats.wantlist.map(cid => ({ '/': cid })),
+        Wantlist: stats.wantlist,
         Peers: stats.peers,
         DupBlksReceived: stats.dupBlksReceived,
         DupDataReceived: stats.dupDataReceived,

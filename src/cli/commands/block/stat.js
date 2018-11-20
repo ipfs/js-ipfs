@@ -2,6 +2,7 @@
 
 const multibase = require('multibase')
 const { print } = require('../../utils')
+const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
   command: 'stat <key>',
@@ -17,12 +18,12 @@ module.exports = {
   },
 
   handler ({ ipfs, key, cidBase }) {
-    ipfs.block.stat(key, { cidBase }, (err, stats) => {
+    ipfs.block.stat(key, (err, stats) => {
       if (err) {
         throw err
       }
 
-      print('Key: ' + stats.key)
+      print('Key: ' + cidToString(stats.key, cidBase))
       print('Size: ' + stats.size)
     })
   }

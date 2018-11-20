@@ -7,35 +7,21 @@ const Big = require('big.js')
 const CID = require('cids')
 const PeerId = require('peer-id')
 const errCode = require('err-code')
-const multibase = require('multibase')
-const { cidToString } = require('../../utils/cid')
 
 function formatWantlist (list, cidBase) {
-  return Array.from(list).map((e) => cidToString(e[1].cid, cidBase))
+  return Array.from(list).map((e) => ({ '/': e[1].cid.toBaseEncodedString() }))
 }
 
 module.exports = function bitswap (self) {
   return {
-    wantlist: promisify((peerId, options, callback) => {
+    wantlist: promisify((peerId, callback) => {
       if (typeof peerId === 'function') {
         callback = peerId
-        options = {}
         peerId = null
-      } else if (typeof options === 'function') {
-        callback = options
-        options = {}
       }
-
-      options = options || {}
 
       if (!self.isOnline()) {
         return setImmediate(() => callback(new Error(OFFLINE_ERROR)))
-      }
-
-      if (options.cidBase && !multibase.names.includes(options.cidBase)) {
-        return setImmediate(() => {
-          callback(errCode(new Error('invalid multibase'), 'ERR_INVALID_MULTIBASE'))
-        })
       }
 
       let list
@@ -53,25 +39,12 @@ module.exports = function bitswap (self) {
         list = self._bitswap.getWantlist()
       }
 
-      setImmediate(() => callback(null, formatWantlist(list, options.cidBase)))
+      setImmediate(() => callback(null, formatWantlist(list)))
     }),
 
-    stat: promisify((options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-
-      options = options || {}
-
+    stat: promisify((callback) => {
       if (!self.isOnline()) {
         return setImmediate(() => callback(new Error(OFFLINE_ERROR)))
-      }
-
-      if (options.cidBase && !multibase.names.includes(options.cidBase)) {
-        return setImmediate(() => {
-          callback(errCode(new Error('invalid multibase'), 'ERR_INVALID_MULTIBASE'))
-        })
       }
 
       const snapshot = self._bitswap.stat().snapshot
@@ -80,7 +53,7 @@ module.exports = function bitswap (self) {
         callback(null, {
           provideBufLen: parseInt(snapshot.providesBufferLength.toString()),
           blocksReceived: new Big(snapshot.blocksReceived),
-          wantlist: formatWantlist(self._bitswap.getWantlist(), options.cidBase),
+          wantlist: formatWantlist(self._bitswap.getWantlist()),
           peers: self._bitswap.peers().map((id) => id.toB58String()),
           dupBlksReceived: new Big(snapshot.dupBlksReceived),
           dupDataReceived: new Big(snapshot.dupDataReceived),

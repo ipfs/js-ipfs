@@ -2,6 +2,7 @@
 
 const multibase = require('multibase')
 const { print } = require('../../utils')
+const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
   command: 'stat',
@@ -17,12 +18,12 @@ module.exports = {
   },
 
   handler ({ ipfs, cidBase }) {
-    ipfs.bitswap.stat({ cidBase }, (err, stats) => {
+    ipfs.bitswap.stat((err, stats) => {
       if (err) {
         throw err
       }
 
-      stats.wantlist = stats.wantlist || []
+      stats.wantlist = stats.wantlist.Keys.map(cid => cidToString(cid, cidBase))
       stats.peers = stats.peers || []
 
       print(`bitswap status

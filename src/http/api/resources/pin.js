@@ -4,6 +4,7 @@ const mapValues = require('lodash/mapValues')
 const keyBy = require('lodash/keyBy')
 const multibase = require('multibase')
 const Joi = require('joi')
+const { cidToString } = require('../../../utils/cid')
 const debug = require('debug')
 const log = debug('jsipfs:http-api:pin')
 log.error = debug('jsipfs:http-api:pin:error')
@@ -45,9 +46,8 @@ exports.ls = {
   handler: (request, reply) => {
     const { path, type } = request.pre.args
     const ipfs = request.server.app.ipfs
-    const cidBase = request.query['cid-base']
 
-    ipfs.pin.ls(path, { type, cidBase }, (err, result) => {
+    ipfs.pin.ls(path, { type }, (err, result) => {
       if (err) {
         log.error(err)
         return reply({
@@ -58,7 +58,7 @@ exports.ls = {
 
       return reply({
         Keys: mapValues(
-          keyBy(result, obj => obj.hash),
+          keyBy(result, obj => cidToString(obj.hash, request.query['cid-base'])),
           obj => ({ Type: obj.type })
         )
       })
@@ -78,9 +78,8 @@ exports.add = {
   handler: (request, reply) => {
     const ipfs = request.server.app.ipfs
     const { path, recursive } = request.pre.args
-    const cidBase = request.query['cid-base']
 
-    ipfs.pin.add(path, { recursive, cidBase }, (err, result) => {
+    ipfs.pin.add(path, { recursive }, (err, result) => {
       if (err) {
         log.error(err)
         return reply({
@@ -90,7 +89,7 @@ exports.add = {
       }
 
       return reply({
-        Pins: result.map(obj => obj.hash)
+        Pins: result.map(obj => cidToString(obj.hash, request.query['cid-base']))
       })
     })
   }
@@ -108,9 +107,8 @@ exports.rm = {
   handler: (request, reply) => {
     const ipfs = request.server.app.ipfs
     const { path, recursive } = request.pre.args
-    const cidBase = request.query['cid-base']
 
-    ipfs.pin.rm(path, { recursive, cidBase }, (err, result) => {
+    ipfs.pin.rm(path, { recursive }, (err, result) => {
       if (err) {
         log.error(err)
         return reply({
@@ -120,7 +118,7 @@ exports.rm = {
       }
 
       return reply({
-        Pins: result.map(obj => obj.hash)
+        Pins: result.map(obj => cidToString(obj.hash, request.query['cid-base']))
       })
     })
   }

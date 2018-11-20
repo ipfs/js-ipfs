@@ -2,6 +2,7 @@
 
 const multibase = require('multibase')
 const { print } = require('../../utils')
+const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
   command: 'add <ipfsPath...>',
@@ -25,10 +26,10 @@ module.exports = {
   handler ({ ipfs, ipfsPath, recursive, cidBase }) {
     const type = recursive ? 'recursive' : 'direct'
 
-    ipfs.pin.add(ipfsPath, { recursive, cidBase }, (err, results) => {
+    ipfs.pin.add(ipfsPath, { recursive }, (err, results) => {
       if (err) { throw err }
       results.forEach((res) => {
-        print(`pinned ${res.hash} ${type}ly`)
+        print(`pinned ${cidToString(res.hash, cidBase)} ${type}ly`)
       })
     })
   }
