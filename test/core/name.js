@@ -400,7 +400,7 @@ describe.only('name', function () {
     after((done) => ipfsd.stop(done))
 
     it('should resolve an ipfs path correctly', function (done) {
-      node.files.add(fixture, (err, res) => {
+      node.add(fixture, (err, res) => {
         expect(err).to.not.exist()
 
         node.name.publish(`/ipfs/${res[0].hash}`, (err, res) => {
@@ -416,7 +416,7 @@ describe.only('name', function () {
     })
 
     it('should resolve an ipns path correctly', function (done) {
-      node.files.add(fixture, (err, res) => {
+      node.add(fixture, (err, res) => {
         expect(err).to.not.exist()
         node.name.publish(`/ipfs/${res[0].hash}`, (err, res) => {
           expect(err).to.not.exist()
