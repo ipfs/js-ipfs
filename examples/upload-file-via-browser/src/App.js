@@ -23,7 +23,7 @@ class App extends React.Component {
     event.stopPropagation()
     event.preventDefault()
     const file = event.target.files[0]
-    if (document.getElementById("keepFilename").checked) {
+    if (document.getElementById('keepFilename').checked) {
       this.saveToIpfsWithFilename(file)
     } else {
       this.saveToIpfs(file)
@@ -63,7 +63,7 @@ class App extends React.Component {
       .then((response) => {
         console.log(response)
         // CID of wrapping directory is returned last
-        ipfsId = response[response.length-1].hash
+        ipfsId = response[response.length - 1].hash
         console.log(ipfsId)
         this.setState({added_file_hash: ipfsId})
       }).catch((err) => {
@@ -80,7 +80,7 @@ class App extends React.Component {
       <div>
         <form id='captureMedia' onSubmit={this.handleSubmit}>
           <input type='file' onChange={this.captureFile} /><br/>
-          <label for='keepFilename'><input type='checkbox' id='keepFilename' name='keepFilename' /> keep filename</label>
+          <label htmlFor='keepFilename'><input type='checkbox' id='keepFilename' name='keepFilename' /> keep filename</label>
         </form>
         <div>
           <a target='_blank'

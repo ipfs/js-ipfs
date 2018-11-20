@@ -1,9 +1,10 @@
 'use strict'
 
-let path = require('path')
-let webpack = require('webpack')
+const path = require('path')
+const webpack = require('webpack')
 
 module.exports = {
+  mode: 'development',
   devtool: 'eval',
   entry: [
     'webpack-dev-server/client?http://localhost:3000',
@@ -19,11 +20,21 @@ module.exports = {
     new webpack.HotModuleReplacementPlugin()
   ],
   module: {
-    loaders: [{
-      test: /\.js$/,
-      loaders: ['react-hot-loader', 'babel-loader'],
-      include: path.join(__dirname, 'src')
-    }]
+    rules: [
+      {
+        test: /\.js$/,
+        include: path.join(__dirname, 'src'),
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-env', '@babel/preset-react'],
+              plugins: ['react-hot-loader/babel']
+            }
+          }
+        ]
+      }
+    ]
   },
   node: {
     fs: 'empty',
