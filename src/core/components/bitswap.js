@@ -39,7 +39,7 @@ module.exports = function bitswap (self) {
         list = self._bitswap.getWantlist()
       }
 
-      setImmediate(() => callback(null, formatWantlist(list)))
+      setImmediate(() => callback(null, { Keys: formatWantlist(list) }))
     }),
 
     stat: promisify((callback) => {

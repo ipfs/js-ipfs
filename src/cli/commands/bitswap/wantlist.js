@@ -23,11 +23,11 @@ module.exports = {
   },
 
   handler ({ ipfs, peer, cidBase }) {
-    ipfs.bitswap.wantlist(peer, (err, cids) => {
+    ipfs.bitswap.wantlist(peer, (err, list) => {
       if (err) {
         throw err
       }
-      cids.forEach((cid) => print(cidToString(cid, cidBase)))
+      list.Keys.forEach(k => print(cidToString(k['/'], cidBase)))
     })
   }
 }

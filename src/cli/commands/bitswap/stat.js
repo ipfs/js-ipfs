@@ -23,7 +23,7 @@ module.exports = {
         throw err
       }
 
-      stats.wantlist = stats.wantlist.Keys.map(cid => cidToString(cid, cidBase))
+      stats.wantlist = stats.wantlist.map(k => cidToString(k['/'], cidBase))
       stats.peers = stats.peers || []
 
       print(`bitswap status

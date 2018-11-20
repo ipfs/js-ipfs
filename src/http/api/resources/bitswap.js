@@ -23,7 +23,7 @@ exports.wantlist = {
       if (err) {
         return reply(boom.badRequest(err))
       }
-      reply({ Keys: list.Keys.map(cid => ({ '/': cidToString(cid, cidBase) })) })
+      reply({ Keys: list.Keys.map(k => ({ '/': cidToString(k['/'], cidBase) })) })
     })
   }
 }
@@ -47,7 +47,7 @@ exports.stat = {
         }).code(500)
       }
 
-      stats.wantlist = stats.wantlist.Keys.map(cid => ({ '/': cidToString(cid, cidBase) }))
+      stats.wantlist = stats.wantlist.map(k => ({ '/': cidToString(k['/'], cidBase) }))
 
       reply({
         ProvideBufLen: stats.provideBufLen,
