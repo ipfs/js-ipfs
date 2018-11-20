@@ -181,10 +181,6 @@
     "prom-client": "^11.1.3",
     "prometheus-gc-stats": "~0.6.0"
   },
-  "peerDependencies": {
-    "electron-webrtc": "~0.3.0",
-    "wrtc": "~0.2.1"
-  },
   "contributors": [
     "0xflotus <0xflotus@gmail.com>",
     "A_A <21040751+Otto-AA@users.noreply.github.com>",
