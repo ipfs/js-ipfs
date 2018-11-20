@@ -109,7 +109,7 @@
     "ipfs-http-response": "~0.2.1",
     "ipfs-mfs": "~0.5.2",
     "ipfs-multipart": "~0.1.0",
-    "ipfs-repo": "~0.25.0",
+    "ipfs-repo": "0.25.0",
     "ipfs-unixfs": "~0.1.16",
     "ipfs-unixfs-engine": "~0.34.0",
     "ipld": "~0.20.1",
