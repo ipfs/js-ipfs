@@ -34,8 +34,11 @@ describe('pin', () => runOnAndOff(thing => {
         .then(out => expect(out).to.equal(`unpinned ${pins.root}\n`))
     })
 
-    it('should rm and print CIDs encoded in specified base', () => {
-      return ipfs(`pin rm ${pins.root} --cid-base=base64`)
+    it('should rm and print CIDs encoded in specified base', function () {
+      this.timeout(30 * 1000)
+
+      return ipfs(`add -r ${fixturePath}`)
+        .then(() => ipfs(`pin rm ${pins.root} --cid-base=base64`))
         .then(out => {
           const b64CidStr = new CID(pins.root).toV1().toBaseEncodedString('base64')
           expect(out).to.eql(`unpinned ${b64CidStr}\n`)
