@@ -44,10 +44,11 @@ exports.getIPFS = (argv, callback) => {
     return callback(null, getAPICtl(argv.api), promisify((cb) => cb()))
   }
 
+  debugger
   // Required inline to reduce startup time
   const IPFS = require('../core')
   const node = new IPFS({
-    print: argv.print,
+    silent: argv.silent,
     repo: exports.getRepoPath(),
     init: false,
     start: false,

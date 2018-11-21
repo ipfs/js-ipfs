@@ -107,7 +107,7 @@ module.exports = function libp2p (self) {
           if (err) { return callback(err) }
 
           self._libp2pNode.peerInfo.multiaddrs.forEach((ma) => {
-            self._print('Swarm listening on ', console.log(ma.toString()))
+            self._print('Swarm listening on', ma.toString())
           })
 
           callback()
