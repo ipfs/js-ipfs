@@ -89,7 +89,6 @@ class IpnsPubsubDatastore {
   }
 
   // Modify subscription key to have a proper encoding
-  // Without this, the utf-8 encoding gets the key broken
   _handleSubscriptionKey (key, callback) {
     const subscriber = this._subscriptions[key]
 

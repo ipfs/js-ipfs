@@ -8,6 +8,8 @@ const errPubsubDisabled = () => {
   return errCode(new Error('pubsub experiment is not enabled'), 'ERR_PUBSUB_DISABLED')
 }
 
+const pubsubEnabled = (options) => options.EXPERIMENTAL.pubsub || options.EXPERIMENTAL.ipnsPubsub
+
 module.exports = function pubsub (self) {
   return {
     subscribe: (topic, handler, options, callback) => {
@@ -16,7 +18,7 @@ module.exports = function pubsub (self) {
         options = {}
       }
 
-      if (!self._options.EXPERIMENTAL.pubsub) {
+      if (!pubsubEnabled(self._options)) {
         return callback
           ? setImmediate(() => callback(errPubsubDisabled()))
           : Promise.reject(errPubsubDisabled())
@@ -37,7 +39,7 @@ module.exports = function pubsub (self) {
     },
 
     unsubscribe: (topic, handler, callback) => {
-      if (!self._options.EXPERIMENTAL.pubsub) {
+      if (!pubsubEnabled(self._options)) {
         return callback
           ? setImmediate(() => callback(errPubsubDisabled()))
           : Promise.reject(errPubsubDisabled())
@@ -53,28 +55,28 @@ module.exports = function pubsub (self) {
     },
 
     publish: promisify((topic, data, callback) => {
-      if (!self._options.EXPERIMENTAL.pubsub) {
+      if (!pubsubEnabled(self._options)) {
         return setImmediate(() => callback(errPubsubDisabled()))
       }
       self._libp2pNode.pubsub.publish(topic, data, callback)
     }),
 
     ls: promisify((callback) => {
-      if (!self._options.EXPERIMENTAL.pubsub) {
+      if (!pubsubEnabled(self._options)) {
         return setImmediate(() => callback(errPubsubDisabled()))
       }
       self._libp2pNode.pubsub.ls(callback)
     }),
 
     peers: promisify((topic, callback) => {
-      if (!self._options.EXPERIMENTAL.pubsub) {
+      if (!pubsubEnabled(self._options)) {
         return setImmediate(() => callback(errPubsubDisabled()))
       }
       self._libp2pNode.pubsub.peers(topic, callback)
     }),
 
     setMaxListeners (n) {
-      if (!self._options.EXPERIMENTAL.pubsub) {
+      if (!pubsubEnabled(self._options)) {
         throw errPubsubDisabled()
       }
       self._libp2pNode.pubsub.setMaxListeners(n)

@@ -1,6 +1,7 @@
 'use strict'
 
 const { Key } = require('interface-datastore')
+const Record = require('libp2p-record').Record
 const { encodeBase32 } = require('./utils')
 
 const errcode = require('err-code')
@@ -48,7 +49,10 @@ class OfflineDatastore {
       return callback(errcode(new Error(errMsg), 'ERR_GENERATING_ROUTING_KEY'))
     }
 
-    this._repo.datastore.put(routingKey, value, callback)
+    // Marshal to libp2p record as the DHT does
+    let record = new Record(key, value)
+
+    this._repo.datastore.put(routingKey, record.serialize(), callback)
   }
 
   /**
@@ -76,7 +80,22 @@ class OfflineDatastore {
       return callback(errcode(new Error(errMsg), 'ERR_GENERATING_ROUTING_KEY'))
     }
 
-    this._repo.datastore.get(routingKey, callback)
+    this._repo.datastore.get(routingKey, (err, res) => {
+      if (err) {
+        return callback(err)
+      }
+
+      // Unmarshal libp2p record as the DHT does
+      let record
+      try {
+        record = Record.deserialize(res)
+      } catch (err) {
+        log.error(err)
+        return callback(err)
+      }
+
+      callback(null, record.value)
+    })
   }
 
   // encode key properly - base32(/ipns/{cid})
