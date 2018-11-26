@@ -25,12 +25,12 @@ function getDescribe (config) {
       }
 
       _describe.skip = describe.skip
-      _describe.only = describe.only
+      _describe.only = describe.only // eslint-disable-line
 
       return _describe
     }
 
-    if (config.only === true) return describe.only
+    if (config.only === true) return describe.only  // eslint-disable-line
   }
 
   return describe
@@ -59,14 +59,14 @@ function getIt (config) {
     }
 
     if (Array.isArray(config.only)) {
-      if (config.only.includes(name)) return it.only(name, impl)
+      if (config.only.includes(name)) return it.only(name, impl) // eslint-disable-line
     }
 
     it(name, impl)
   }
 
   _it.skip = it.skip
-  _it.only = it.only
+  _it.only = it.only // eslint-disable-line
 
   return _it
 }
