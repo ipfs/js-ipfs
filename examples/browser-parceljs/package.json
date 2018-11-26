@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "browserslist": [
+    "last 2 Chrome versions"
+  ],
   "scripts": {
     "lint": "standard public/**/*.js",
     "test": "echo \"Error: no test specified\" && exit 1",
