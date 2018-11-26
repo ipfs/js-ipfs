@@ -31,7 +31,7 @@ module.exports = (http) => {
           if (res.statusCode !== 200) {
             return cb(new Error(`unexpected status ${res.statusCode}`))
           }
-          const wanted = !!res.result.Keys.find(k => k['/'] === wantedCid)
+          const wanted = Boolean(res.result.Keys.find(k => k['/'] === wantedCid))
           cb(null, wanted)
         })
       }
