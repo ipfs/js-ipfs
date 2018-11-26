@@ -31,11 +31,16 @@ describe('.log', function () {
   })
 
   it('.log.tail', (done) => {
+    let i = setInterval(() => {
+      ipfs.files.add(Buffer.from('just adding some data to generate logs'))
+    }, 1000)
+
     const req = ipfs.log.tail((err, res) => {
       expect(err).to.not.exist()
       expect(req).to.exist()
 
       res.once('data', (obj) => {
+        clearInterval(i)
         expect(obj).to.be.an('object')
         done()
       })
