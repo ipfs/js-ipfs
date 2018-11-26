@@ -7,6 +7,7 @@ docs
 test/setup/tmp-disposable-nodes-addrs.json
 dist
 coverage
+.nyc_output
 **/*.swp
 examples/sub-module/**/bundle.js
 examples/sub-module/**/*-minified.js

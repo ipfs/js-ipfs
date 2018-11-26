@@ -39,7 +39,7 @@ describe('.dag', function () {
     const data = Buffer.from('some data')
     DAGNode.create(data, (err, node) => {
       expect(err).to.not.exist()
-      ipfs.dag.put(node, {format: 'dag-pb', hashAlg: 'sha2-256'}, (err, cid) => {
+      ipfs.dag.put(node, { format: 'dag-pb', hashAlg: 'sha2-256' }, (err, cid) => {
         expect(err).to.not.exist()
         cid = cid.toV0()
         expect(cid.codec).to.equal('dag-pb')
@@ -56,8 +56,8 @@ describe('.dag', function () {
   })
 
   it('should be able to put and get a DAG node with format dag-cbor', (done) => {
-    const cbor = {foo: 'dag-cbor-bar'}
-    ipfs.dag.put(cbor, {format: 'dag-cbor', hashAlg: 'sha2-256'}, (err, cid) => {
+    const cbor = { foo: 'dag-cbor-bar' }
+    ipfs.dag.put(cbor, { format: 'dag-cbor', hashAlg: 'sha2-256' }, (err, cid) => {
       expect(err).to.not.exist()
       expect(cid.codec).to.equal('dag-cbor')
       cid = cid.toBaseEncodedString('base32')

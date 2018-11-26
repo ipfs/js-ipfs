@@ -4,7 +4,7 @@ const promisify = require('promisify-es6')
 const ConcatStream = require('concat-stream')
 const once = require('once')
 const isStream = require('is-stream')
-const OtherBuffer = require('buffer').Buffer
+const isString = require('lodash/isString')
 const isSource = require('is-pull-stream').isSource
 const FileResultStreamConverter = require('../utils/file-result-stream-converter')
 const SendFilesStream = require('../utils/send-files-stream')
@@ -25,15 +25,23 @@ module.exports = (send) => {
     }
     options.converter = FileResultStreamConverter
 
-    const ok = Buffer.isBuffer(_files) ||
-               isStream.readable(_files) ||
-               Array.isArray(_files) ||
-               OtherBuffer.isBuffer(_files) ||
-               typeof _files === 'object' ||
-               isSource(_files)
+    // Buffer, pull stream or Node.js stream
+    const isBufferOrStream = obj => Buffer.isBuffer(obj) || isStream.readable(obj) || isSource(obj)
+    // An object like { content?, path? }, where content isBufferOrStream and path isString
+    const isContentObject = obj => {
+      if (typeof obj !== 'object') return false
+      // path is optional if content is present
+      if (obj.content) return isBufferOrStream(obj.content)
+      // path must be a non-empty string if no content
+      return Boolean(obj.path) && isString(obj.path)
+    }
+    // An input atom: a buffer, stream or content object
+    const isInput = obj => isBufferOrStream(obj) || isContentObject(obj)
+    // All is ok if data isInput or data is an array of isInput
+    const ok = isInput(_files) || (Array.isArray(_files) && _files.every(isInput))
 
     if (!ok) {
-      return callback(new Error('first arg must be a buffer, readable stream, pull stream, an object or array of objects'))
+      return callback(new Error('invalid input: expected buffer, readable stream, pull stream, object or array of objects'))
     }
 
     const files = [].concat(_files)

@@ -43,7 +43,7 @@ module.exports = (send, path) => {
       const next = once(_next)
       try {
         const files = prepareFile(file, options)
-          .map((file) => Object.assign({headers: headers(file)}, file))
+          .map((file) => Object.assign({ headers: headers(file) }, file))
 
         writing = true
         eachSeries(

@@ -1,7 +1,7 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const parseUrl = require('url').parse
+const { URL } = require('url')
 const request = require('../utils/request')
 const SendOneFile = require('../utils/send-one-file-multiple-results')
 const FileResultStreamConverter = require('../utils/file-result-stream-converter')
@@ -35,7 +35,7 @@ module.exports = (send) => {
 const validUrl = (url) => typeof url === 'string' && url.startsWith('http')
 
 const requestWithRedirect = (url, opts, sendOneFile, callback) => {
-  const parsedUrl = parseUrl(url)
+  const parsedUrl = new URL(url)
 
   const req = request(parsedUrl.protocol)(url, (res) => {
     if (res.statusCode >= 400) {

@@ -10,7 +10,7 @@ module.exports = (send) => {
   return (path, opts) => {
     opts = opts || {}
 
-    const pt = new Stream.PassThrough({objectMode: true})
+    const pt = new Stream.PassThrough({ objectMode: true })
 
     try {
       path = cleanCID(path)

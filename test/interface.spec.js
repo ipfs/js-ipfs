@@ -7,7 +7,7 @@ const CommonFactory = require('./utils/interface-common-factory')
 const IPFSApi = require('../src')
 const isWindows = process.platform && process.platform === 'win32'
 
-describe.only('interface-ipfs-core tests', () => {
+describe('interface-ipfs-core tests', () => {
   const defaultCommonFactory = CommonFactory.create()
 
   tests.bitswap(defaultCommonFactory, {
