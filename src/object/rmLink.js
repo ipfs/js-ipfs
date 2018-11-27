@@ -1,11 +1,10 @@
 'use strict'
 
 const promisify = require('promisify-es6')
+const CID = require('cids')
 const cleanMultihash = require('../utils/clean-multihash')
 
 module.exports = (send) => {
-  const objectGet = require('./get')(send)
-
   return promisify((multihash, dLink, opts, callback) => {
     if (typeof opts === 'function') {
       callback = opts
@@ -31,7 +30,7 @@ module.exports = (send) => {
       if (err) {
         return callback(err)
       }
-      objectGet(result.Hash, { enc: 'base58' }, callback)
+      callback(null, new CID(result.Hash))
     })
   })
 }

@@ -4,7 +4,6 @@ const promisify = require('promisify-es6')
 const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
 const cleanMultihash = require('../utils/clean-multihash')
-const bs58 = require('bs58')
 const LRU = require('lru-cache')
 const lruOptions = {
   max: 128
@@ -46,7 +45,7 @@ module.exports = (send) => {
 
       if (result.Links) {
         links = result.Links.map((l) => {
-          return new DAGLink(l.Name, l.Size, Buffer.from(bs58.decode(l.Hash)))
+          return new DAGLink(l.Name, l.Size, l.Hash)
         })
       }
       callback(null, links)

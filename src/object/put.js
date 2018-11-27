@@ -1,14 +1,9 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const dagPB = require('ipld-dag-pb')
-const DAGNode = dagPB.DAGNode
-const LRU = require('lru-cache')
-const lruOptions = {
-  max: 128
-}
+const CID = require('cids')
+const { DAGNode } = require('ipld-dag-pb')
 
-const cache = LRU(lruOptions)
 const SendOneFile = require('../utils/send-one-file')
 const once = require('once')
 
@@ -72,49 +67,7 @@ module.exports = (send) => {
         return callback(err) // early
       }
 
-      if (Buffer.isBuffer(obj)) {
-        if (!options.enc) {
-          obj = { Data: obj, Links: [] }
-        } else if (options.enc === 'json') {
-          obj = JSON.parse(obj.toString())
-        }
-      }
-
-      let node
-
-      if (DAGNode.isDAGNode(obj)) {
-        node = obj
-      } else if (options.enc === 'protobuf') {
-        dagPB.util.deserialize(obj, (err, _node) => {
-          if (err) {
-            return callback(err)
-          }
-          node = _node
-          next()
-        })
-        return
-      } else {
-        DAGNode.create(Buffer.from(obj.Data), obj.Links, (err, _node) => {
-          if (err) {
-            return callback(err)
-          }
-          node = _node
-          next()
-        })
-        return
-      }
-      next()
-
-      function next () {
-        dagPB.util.cid(node, (err, cid) => {
-          if (err) {
-            return callback(err)
-          }
-
-          cache.set(cid.toBaseEncodedString(), node)
-          callback(null, node)
-        })
-      }
+      callback(null, new CID(result.Hash))
     })
   })
 }

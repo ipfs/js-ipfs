@@ -32,7 +32,7 @@ describe('.log', function () {
 
   it('.log.tail', (done) => {
     let i = setInterval(() => {
-      ipfs.files.add(Buffer.from('just adding some data to generate logs'))
+      ipfs.add(Buffer.from('just adding some data to generate logs'))
     }, 1000)
 
     const req = ipfs.log.tail((err, res) => {
