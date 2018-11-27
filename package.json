@@ -36,7 +36,6 @@
   },
   "homepage": "https://github.com/ipfs/interface-ipfs-core#readme",
   "dependencies": {
-    "aegir": "^17.0.1",
     "async": "^2.6.1",
     "big.js": "^5.2.2",
     "bl": "^2.1.2",
@@ -64,6 +63,9 @@
     "peer-info": "~0.14.1",
     "pull-stream": "^3.6.9",
     "pump": "^3.0.0"
+  },
+  "devDependencies": {
+    "aegir": "^17.0.1"
   },
   "contributors": [
     "Alan Shaw <alan.shaw@protocol.ai>",
