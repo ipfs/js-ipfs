@@ -9,7 +9,7 @@ const {
   calculateCid,
   createDAGNode,
   addLinkToDAGNode
-} = require('../../utils/dag-pb')
+} = require('../utils')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -39,11 +39,12 @@ module.exports = (createCommon, options) => {
     after((done) => common.teardown(done))
 
     it('should add a link to an existing node', (done) => {
-      let testNodeMultihash
-      let node1bMultihash
+      let testNodeCid
+      let node1bCid
       let node1a
       let node1b
       let node2
+      let node2Cid
 
       const obj = {
         Data: Buffer.from('patch test object'),
@@ -52,14 +53,10 @@ module.exports = (createCommon, options) => {
 
       series([
         (cb) => {
-          ipfs.object.put(obj, (err, node) => {
+          ipfs.object.put(obj, (err, cid) => {
             expect(err).to.not.exist()
-
-            calculateCid(node, (err, result) => {
-              expect(err).to.not.exist()
-              testNodeMultihash = result
-              cb()
-            })
+            testNodeCid = cid
+            cb()
           })
         },
         (cb) => {
@@ -79,37 +76,33 @@ module.exports = (createCommon, options) => {
         (cb) => {
           // note: we need to put the linked obj, otherwise IPFS won't
           // timeout. Reason: it needs the node to get its size
-          ipfs.object.put(node2, cb)
+          ipfs.object.put(node2, (err, cid) => {
+            expect(err).to.not.exist()
+            node2Cid = cid
+            cb()
+          })
         },
         (cb) => {
-          calculateCid(node2, (err, result) => {
+          DAGNode.addLink(node1a, {
+            name: 'link-to-node',
+            size: node2.toJSON().size,
+            cid: node2Cid
+          }, (err, node) => {
             expect(err).to.not.exist()
+            node1b = node
 
-            DAGNode.addLink(node1a, {
-              name: 'link-to-node',
-              size: node2.toJSON().size,
-              cid: result
-            }, (err, node) => {
+            dagPB.util.cid(node, (err, cid) => {
               expect(err).to.not.exist()
-              node1b = node
-
-              calculateCid(node1b, (err, result) => {
-                expect(err).to.not.exist()
-                node1bMultihash = result
-                cb()
-              })
+              node1bCid = cid
+              cb()
             })
           })
         },
         (cb) => {
-          ipfs.object.patch.addLink(testNodeMultihash, node1b.links[0], (err, node) => {
+          ipfs.object.patch.addLink(testNodeCid, node1b.links[0], (err, cid) => {
             expect(err).to.not.exist()
-
-            calculateCid(node, (err, result) => {
-              expect(err).to.not.exist()
-              expect(node1bMultihash).to.eql(result)
-              cb()
-            })
+            expect(node1bCid).to.eql(cid)
+            cb()
           })
         }
         /* TODO: revisit this assertions.
@@ -150,19 +143,17 @@ module.exports = (createCommon, options) => {
         Links: []
       }
 
-      const parent = await ipfs.object.put(obj)
-      const parentCid = await calculateCid(parent)
-      const child = await ipfs.object.put(await createDAGNode(Buffer.from('some other node'), []))
-      const childCid = await calculateCid(child)
+      const parentCid = await ipfs.object.put(obj)
+      const parent = await ipfs.object.get(parentCid)
+      const childCid = await ipfs.object.put(await createDAGNode(Buffer.from('some other node'), []))
+      const child = await ipfs.object.get(childCid)
       const newParent = await addLinkToDAGNode(parent, {
         name: 'link-to-node',
         size: child.size,
         cid: childCid
       })
       const newParentCid = await calculateCid(newParent)
-
-      const nodeFromObjectPatch = await ipfs.object.patch.addLink(parentCid, newParent.links[0])
-      const nodeFromObjectPatchCid = await calculateCid(nodeFromObjectPatch)
+      const nodeFromObjectPatchCid = await ipfs.object.patch.addLink(parentCid, newParent.links[0])
 
       expect(newParentCid).to.eql(nodeFromObjectPatchCid)
     })

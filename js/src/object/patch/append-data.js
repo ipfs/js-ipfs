@@ -3,9 +3,6 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
-const {
-  calculateCid
-} = require('../../utils/dag-pb')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -40,22 +37,13 @@ module.exports = (createCommon, options) => {
         Links: []
       }
 
-      ipfs.object.put(obj, (err, node) => {
+      ipfs.object.put(obj, (err, nodeCid) => {
         expect(err).to.not.exist()
 
-        calculateCid(node, (err, nodeCid) => {
+        ipfs.object.patch.appendData(nodeCid, Buffer.from('append'), (err, patchedNodeCid) => {
           expect(err).to.not.exist()
-
-          ipfs.object.patch.appendData(nodeCid, Buffer.from('append'), (err, patchedNode) => {
-            expect(err).to.not.exist()
-
-            calculateCid(patchedNode, (err, patchedNodeCid) => {
-              expect(err).to.not.exist()
-              expect(patchedNodeCid).to.not.deep.equal(nodeCid)
-
-              done()
-            })
-          })
+          expect(patchedNodeCid).to.not.deep.equal(nodeCid)
+          done()
         })
       })
     })
@@ -66,10 +54,8 @@ module.exports = (createCommon, options) => {
         Links: []
       }
 
-      const node = await ipfs.object.put(obj)
-      const nodeCid = await calculateCid(node)
-      const patchedNode = await ipfs.object.patch.appendData(nodeCid, Buffer.from('append'))
-      const patchedNodeCid = await calculateCid(patchedNode)
+      const nodeCid = await ipfs.object.put(obj)
+      const patchedNodeCid = await ipfs.object.patch.appendData(nodeCid, Buffer.from('append'))
 
       expect(nodeCid).to.not.deep.equal(patchedNodeCid)
     })

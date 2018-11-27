@@ -5,10 +5,7 @@ const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
 const series = require('async/series')
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
-const {
-  calculateCid,
-  asDAGLink
-} = require('../../utils/dag-pb')
+const { asDAGLink } = require('../utils')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -56,28 +53,20 @@ module.exports = (createCommon, options) => {
 
       series([
         (cb) => {
-          ipfs.object.put(obj1, (err, node) => {
+          ipfs.object.put(obj1, (err, cid) => {
             expect(err).to.not.exist()
-
-            calculateCid(node, (err, result) => {
-              expect(err).to.not.exist()
-
-              node1aCid = result
-
-              cb()
-            })
+            node1aCid = cid
+            cb()
           })
         },
         (cb) => {
-          ipfs.object.put(obj2, (err, node) => {
+          ipfs.object.put(obj2, (err, cid) => {
             expect(err).to.not.exist()
-            node2 = node
+            node2Cid = cid
 
-            calculateCid(node, (err, result) => {
+            ipfs.object.get(cid, (err, node) => {
               expect(err).to.not.exist()
-
-              node2Cid = result
-
+              node2 = node
               cb()
             })
           })
@@ -85,30 +74,18 @@ module.exports = (createCommon, options) => {
         (cb) => {
           testLink = new DAGLink('link-to-node', node2.size, node2Cid)
 
-          ipfs.object.patch.addLink(node1aCid, testLink, (err, node) => {
+          ipfs.object.patch.addLink(node1aCid, testLink, (err, cid) => {
             expect(err).to.not.exist()
-
-            calculateCid(node, (err, result) => {
-              expect(err).to.not.exist()
-
-              node1bCid = result
-
-              cb()
-            })
+            node1bCid = cid
+            cb()
           })
         },
         (cb) => {
-          ipfs.object.patch.rmLink(node1bCid, testLink, (err, node) => {
+          ipfs.object.patch.rmLink(node1bCid, testLink, (err, cid) => {
             expect(err).to.not.exist()
-
-            calculateCid(node, (err, result) => {
-              expect(err).to.not.exist()
-
-              expect(result).to.not.deep.equal(node1bCid)
-              expect(result).to.deep.equal(node1aCid)
-
-              cb()
-            })
+            expect(cid).to.not.deep.equal(node1bCid)
+            expect(cid).to.deep.equal(node1aCid)
+            cb()
           })
         }
         /* TODO: revisit this assertions.
@@ -134,14 +111,12 @@ module.exports = (createCommon, options) => {
         Links: []
       }
 
-      const node = await ipfs.object.put(obj1)
-      const nodeCid = await calculateCid(node)
-      const child = await ipfs.object.put(obj2)
+      const nodeCid = await ipfs.object.put(obj1)
+      const childCid = await ipfs.object.put(obj2)
+      const child = await ipfs.object.get(childCid)
       const childAsDAGLink = await asDAGLink(child, 'my-link')
-      const parent = await ipfs.object.patch.addLink(nodeCid, childAsDAGLink)
-      const parentCid = await calculateCid(parent)
-      const withoutChild = await ipfs.object.patch.rmLink(parentCid, childAsDAGLink)
-      const withoutChildCid = await calculateCid(withoutChild)
+      const parentCid = await ipfs.object.patch.addLink(nodeCid, childAsDAGLink)
+      const withoutChildCid = await ipfs.object.patch.rmLink(parentCid, childAsDAGLink)
 
       expect(withoutChildCid).to.not.deep.equal(parentCid)
       expect(withoutChildCid).to.deep.equal(nodeCid)

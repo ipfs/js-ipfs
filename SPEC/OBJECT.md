@@ -17,22 +17,22 @@
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.object.new([template][, callback])
+##### `JavaScript` - ipfs.object.new([template], [callback])
 
 `template` if defined, must be a string `unixfs-dir` and if that is passed, the created node will be an empty unixfs style directory.
 
-`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][]
+`callback` must follow `function (err, cid) {}` signature, where `err` is an error if the operation was not successful and `cid` is an instance of [CID][].
 
 If no `callback` is passed, a [promise][] is returned.
 
 **Example:**
 
 ```JavaScript
-ipfs.object.new('unixfs-dir', (err, node) => {
+ipfs.object.new('unixfs-dir', (err, cid) => {
   if (err) {
     throw err
   }
-  console.log(node.toJSON().multihash)
+  console.log(cid.toString())
   // Logs:
   // QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn
 })
@@ -46,7 +46,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.object.put(obj, [options, callback])
+##### `JavaScript` - ipfs.object.put(obj, [options], [callback])
 
 `obj` is the MerkleDAG Node to be stored. Can of type:
 
@@ -58,7 +58,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 - `enc`, the encoding of the Buffer (json, yml, etc), if passed a Buffer.
 
-`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][]
+`callback` must follow `function (err, cid) {}` signature, where `err` is an error if the operation was not successful and `cid` is an instance of [CID][].
 
 If no `callback` is passed, a [promise][] is returned.
 
@@ -70,11 +70,11 @@ const obj = {
   Links: []
 }
 
-ipfs.object.put(obj, (err, node) => {
+ipfs.object.put(obj, (err, cid) => {
   if (err) {
     throw err
   }
-  console.log(node.toJSON().multihash)
+  console.log(cid.toString())
   // Logs:
   // QmPb5f92FxKPYdT3QNBd1GKiL4tZUXUrzF4Hkpdr3Gf1gK
 })
@@ -88,7 +88,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.object.get(multihash, [options, callback])
+##### `JavaScript` - ipfs.object.get(multihash, [options], [callback])
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -112,9 +112,9 @@ ipfs.object.get(multihash, (err, node) => {
   if (err) {
     throw err
   }
-  console.log(node.toJSON().multihash)
+  console.log(node.data)
   // Logs:
-  // QmPb5f92FxKPYdT3QNBd1GKiL4tZUXUrzF4Hkpdr3Gf1gK
+  // some data
 })
 ```
 
@@ -126,7 +126,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.object.data(multihash, [options, callback])
+##### `JavaScript` - ipfs.object.data(multihash, [options], [callback])
 `multihash` is a [multihash][] which can be passed as:
 
 - Buffer, the raw Buffer of the multihash (or of and encoded version)
@@ -163,7 +163,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.object.links(multihash, [options, callback])
+##### `JavaScript` - ipfs.object.links(multihash, [options], [callback])
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -201,7 +201,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `Go` **WIP**
 
-##### `JavaScript` - ipfs.object.stat(multihash, [options, callback])
+##### `JavaScript` - ipfs.object.stat(multihash, [options], [callback])
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -261,7 +261,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 ###### `Go` **WIP**
 
-###### `JavaScript` - ipfs.object.patch.addLink(multihash, link, [options, callback])
+###### `JavaScript` - ipfs.object.patch.addLink(multihash, link, [options], [callback])
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -290,7 +290,7 @@ const link = new DAGLink(name, size, multihash)
 
 - `enc`, the encoding of multihash (base58, base64, etc), if any.
 
-`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][] that resulted by the operation of adding a Link.
+`callback` must follow `function (err, cid) {}` signature, where `err` is an error if the operation was not successful and `cid` is an instance of [CID][] - the CID of the new DAG node that was created due to the operation.
 
 If no `callback` is passed, a [promise][] is returned.
 
@@ -301,11 +301,11 @@ ipfs.object.patch.addLink(node, {
   name: 'some-link'
   size: 10
   multihash: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD'
-}, (err, newNode) => {
+}, (err, cid) => {
   if (err) {
     throw err
   }
-  // newNode is node with the added link
+  // cid is CID of the DAG node created by adding a link
 })
 ```
 
@@ -317,7 +317,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 ###### `Go` **WIP**
 
-###### `JavaScript` - ipfs.object.patch.rmLink(multihash, link, [options, callback])
+###### `JavaScript` - ipfs.object.patch.rmLink(multihash, link, [options], [callback])
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -325,26 +325,26 @@ A great source of [examples][] can be found in the tests for this API.
 - String, the toString version of the multihash (or of an encoded version)
 
 `link` is the link to be removed on the node that is identified by the `multihash`, can be passed as:
+
 - `DAGLink`
-- Object containing name property
 
-```js
-const link = {
-  name: 'Qmef7ScwzJUCg1zUSrCmPAz45m8uP5jU7SLgt2EffjBmbL'
-};
-```
+    ```js
+    const link = new DAGLink(name, size, multihash)
+    ```
 
-or
+- Object containing a `name` property
 
-```js
-const link = new DAGLink(name, size, multihash)
+    ```js
+    const link = {
+      name: 'Qmef7ScwzJUCg1zUSrCmPAz45m8uP5jU7SLgt2EffjBmbL'
+    };
 ```
 
 `options` is a optional argument of type object, that can contain the following properties:
 
 - `enc`, the encoding of multihash (base58, base64, etc), if any.
 
-`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][] that resulted by the operation of adding a Link.
+`callback` must follow `function (err, cid) {}` signature, where `err` is an error if the operation was not successful and `cid` is an instance of [CID][] - the CID of the new DAG node that was created due to the operation.
 
 If no `callback` is passed, a [promise][] is returned.
 
@@ -361,7 +361,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 ###### `Go` **WIP**
 
-###### `JavaScript` - ipfs.object.patch.appendData(multihash, data, [options, callback])
+###### `JavaScript` - ipfs.object.patch.appendData(multihash, data, [options], [callback])
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -374,7 +374,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 - `enc`, the encoding of multihash (base58, base64, etc), if any.
 
-`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][] that resulted by the operation of adding a Link.
+`callback` must follow `function (err, cid) {}` signature, where `err` is an error if the operation was not successful and `cid` is an instance of [CID][] - the CID of the new DAG node that was created due to the operation.
 
 If no `callback` is passed, a [promise][] is returned.
 
@@ -396,7 +396,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 ###### `Go` **WIP**
 
-###### `JavaScript` - ipfs.object.patch.setData(multihash, data, [options, callback])
+###### `JavaScript` - ipfs.object.patch.setData(multihash, data, [options], [callback])
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -409,23 +409,23 @@ A great source of [examples][] can be found in the tests for this API.
 
 - `enc`, the encoding of multihash (base58, base64, etc), if any.
 
-`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][] that resulted by the operation of adding a Link.
+`callback` must follow `function (err, cid) {}` signature, where `err` is an error if the operation was not successful and `cid` is an instance of [CID][] - the CID of the new DAG node that was created due to the operation.
 
 If no `callback` is passed, a [promise][] is returned.
 
 **Example:**
 
 ```JavaScript
-ipfs.object.patch.setData(multihash, new Buffer('more data'), (err, node) => {
+ipfs.object.patch.setData(multihash, new Buffer('more data'), (err, cid) => {
   if (err) {
     throw err
   }
 })
-
 ```
 
 A great source of [examples][] can be found in the tests for this API.
 
+[CID]: https://github.com/multiformats/js-cid
 [DAGNode]: https://github.com/ipld/js-ipld-dag-pb
 [multihash]: http://github.com/multiformats/multihash
 [promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise

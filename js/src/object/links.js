@@ -7,10 +7,7 @@ const DAGNode = dagPB.DAGNode
 const series = require('async/series')
 const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const {
-  calculateCid,
-  asDAGLink
-} = require('../utils/dag-pb')
+const { asDAGLink } = require('./utils')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -45,10 +42,10 @@ module.exports = (createCommon, options) => {
         Links: []
       }
 
-      ipfs.object.put(testObj, (err, node) => {
+      ipfs.object.put(testObj, (err, cid) => {
         expect(err).to.not.exist()
 
-        calculateCid(node, (err, cid) => {
+        ipfs.object.get(cid, (err, node) => {
           expect(err).to.not.exist()
 
           ipfs.object.links(cid, (err, links) => {
@@ -66,8 +63,8 @@ module.exports = (createCommon, options) => {
         Links: []
       }
 
-      const node = await ipfs.object.put(testObj)
-      const cid = await calculateCid(node)
+      const cid = await ipfs.object.put(testObj)
+      const node = await ipfs.object.get(cid)
       const links = await ipfs.object.links(cid)
 
       expect(node.links).to.eql(links)
@@ -103,11 +100,9 @@ module.exports = (createCommon, options) => {
               expect(err).to.not.exist()
               node1b = node
 
-              calculateCid(node, (err, cid) => {
+              dagPB.util.cid(node, (err, cid) => {
                 expect(err).to.not.exist()
-
                 node1bCid = cid
-
                 cb()
               })
             })
@@ -132,10 +127,10 @@ module.exports = (createCommon, options) => {
         Links: []
       }
 
-      ipfs.object.put(testObj, (err, node) => {
+      ipfs.object.put(testObj, (err, cid) => {
         expect(err).to.not.exist()
 
-        calculateCid(node, (err, cid) => {
+        ipfs.object.get(cid, (err, node) => {
           expect(err).to.not.exist()
 
           ipfs.object.links(cid.buffer, { enc: 'base58' }, (err, links) => {
@@ -153,10 +148,10 @@ module.exports = (createCommon, options) => {
         Links: []
       }
 
-      ipfs.object.put(testObj, (err, node) => {
+      ipfs.object.put(testObj, (err, cid) => {
         expect(err).to.not.exist()
 
-        calculateCid(node, (err, cid) => {
+        ipfs.object.get(cid, (err, node) => {
           expect(err).to.not.exist()
 
           ipfs.object.links(cid.toBaseEncodedString(), { enc: 'base58' }, (err, links) => {

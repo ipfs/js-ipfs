@@ -8,6 +8,4 @@ A set of data types are exposed directly from the IPFS instance under `ipfs.type
 - [`ipfs.types.multiaddr`](https://github.com/multiformats/js-multiaddr)
 - [`ipfs.types.multibase`](https://github.com/multiformats/multibase)
 - [`ipfs.types.multihash`](https://github.com/multiformats/js-multihash)
-- [`ipfs.types.CID`](https://github.com/ipld/js-cid)
-- [`ipfs.types.dagPB`](https://github.com/ipld/js-ipld-dag-pb)
-- [`ipfs.types.dagCBOR`](https://github.com/ipld/js-ipld-dag-cbor)
+- [`ipfs.types.CID`](https://github.com/multiformats/js-cid)

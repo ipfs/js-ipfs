@@ -8,10 +8,7 @@ const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const UnixFs = require('ipfs-unixfs')
 const crypto = require('crypto')
-const {
-  calculateCid,
-  asDAGLink
-} = require('../utils/dag-pb')
+const { asDAGLink } = require('./utils')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -52,15 +49,13 @@ module.exports = (createCommon, options) => {
 
       series([
         (cb) => {
-          ipfs.object.put(obj, (err, node) => {
+          ipfs.object.put(obj, (err, cid) => {
             expect(err).to.not.exist()
-            node1 = node
+            node1Cid = cid
 
-            calculateCid(node, (err, result) => {
+            ipfs.object.get(cid, (err, node) => {
               expect(err).to.not.exist()
-
-              node1Cid = result
-
+              node1 = node
               cb()
             })
           })
@@ -92,8 +87,8 @@ module.exports = (createCommon, options) => {
         Links: []
       }
 
-      const node1 = await ipfs.object.put(testObj)
-      const node1Cid = await calculateCid(node1)
+      const node1Cid = await ipfs.object.put(testObj)
+      const node1 = await ipfs.object.get(node1Cid)
       const node2 = await ipfs.object.get(node1Cid)
 
       // because js-ipfs-api can't infer if the
@@ -115,19 +110,16 @@ module.exports = (createCommon, options) => {
       let node1
       let node1Cid
       let node2
-      let node2Cid
 
       series([
         (cb) => {
-          ipfs.object.put(obj, (err, node) => {
+          ipfs.object.put(obj, (err, cid) => {
             expect(err).to.not.exist()
-            node1 = node
+            node1Cid = cid
 
-            calculateCid(node, (err, result) => {
+            ipfs.object.get(node1Cid, (err, node) => {
               expect(err).to.not.exist()
-
-              node1Cid = result
-
+              node1 = node
               cb()
             })
           })
@@ -142,20 +134,12 @@ module.exports = (createCommon, options) => {
               node.data = Buffer.from(node.data)
             }
             node2 = node
-
-            calculateCid(node, (err, result) => {
-              expect(err).to.not.exist()
-
-              node2Cid = result
-
-              cb()
-            })
+            cb()
           })
         },
         (cb) => {
           expect(node1.data).to.eql(node2.data)
           expect(node1.links).to.eql(node2.links)
-          expect(node1Cid).to.deep.eql(node2Cid)
           cb()
         }
       ], done)
@@ -167,10 +151,10 @@ module.exports = (createCommon, options) => {
         Links: []
       }
 
-      const node1 = await ipfs.object.put(obj)
-      const node1Cid = await calculateCid(node1)
+      const node1Cid = await ipfs.object.put(obj)
+      const node1 = await ipfs.object.get(node1Cid)
       const node2 = await ipfs.object.get(node1Cid.toBaseEncodedString())
-      const node2Cid = await calculateCid(node2)
+
       // because js-ipfs-api can't infer if the
       // returned Data is Buffer or String
       if (typeof node2.data === 'string') {
@@ -179,7 +163,6 @@ module.exports = (createCommon, options) => {
 
       expect(node1.data).to.deep.equal(node2.data)
       expect(node1.links).to.deep.equal(node2.links)
-      expect(node1Cid).to.deep.eql(node2Cid)
     })
 
     it('should get object with links by multihash string', (done) => {
@@ -187,7 +170,6 @@ module.exports = (createCommon, options) => {
       let node1b
       let node1bCid
       let node1c
-      let node1cCid
       let node2
 
       series([
@@ -219,16 +201,10 @@ module.exports = (createCommon, options) => {
           })
         },
         (cb) => {
-          ipfs.object.put(node1b, (err, node) => {
+          ipfs.object.put(node1b, (err, cid) => {
             expect(err).to.not.exist()
-
-            calculateCid(node, (err, result) => {
-              expect(err).to.not.exist()
-
-              node1bCid = result
-
-              cb()
-            })
+            node1bCid = cid
+            cb()
           })
         },
         (cb) => {
@@ -242,19 +218,11 @@ module.exports = (createCommon, options) => {
             }
 
             node1c = node
-
-            calculateCid(node, (err, result) => {
-              expect(err).to.not.exist()
-
-              node1cCid = result
-
-              cb()
-            })
+            cb()
           })
         },
         (cb) => {
           expect(node1a.data).to.eql(node1c.data)
-          expect(node1bCid).to.eql(node1cCid)
           cb()
         }
       ], done)
@@ -269,19 +237,16 @@ module.exports = (createCommon, options) => {
       let node1a
       let node1aCid
       let node1b
-      let node1bCid
 
       series([
         (cb) => {
-          ipfs.object.put(obj, (err, node) => {
+          ipfs.object.put(obj, (err, cid) => {
             expect(err).to.not.exist()
-            node1a = node
+            node1aCid = cid
 
-            calculateCid(node, (err, result) => {
+            ipfs.object.get(cid, (err, node) => {
               expect(err).to.not.exist()
-
-              node1aCid = result
-
+              node1a = node
               cb()
             })
           })
@@ -295,18 +260,10 @@ module.exports = (createCommon, options) => {
               node.data = Buffer.from(node.data)
             }
             node1b = node
-
-            calculateCid(node, (err, result) => {
-              expect(err).to.not.exist()
-
-              node1bCid = result
-
-              cb()
-            })
+            cb()
           })
         },
         (cb) => {
-          expect(node1aCid).to.deep.eql(node1bCid)
           expect(node1a.data).to.eql(node1b.data)
           expect(node1a.links).to.eql(node1b.links)
           cb()
@@ -323,19 +280,16 @@ module.exports = (createCommon, options) => {
       let node1a
       let node1aCid
       let node1b
-      let node1bCid
 
       series([
         (cb) => {
-          ipfs.object.put(obj, (err, node) => {
+          ipfs.object.put(obj, (err, cid) => {
             expect(err).to.not.exist()
-            node1a = node
+            node1aCid = cid
 
-            calculateCid(node, (err, result) => {
+            ipfs.object.get(cid, (err, node) => {
               expect(err).to.not.exist()
-
-              node1aCid = result
-
+              node1a = node
               cb()
             })
           })
@@ -349,18 +303,10 @@ module.exports = (createCommon, options) => {
               node.data = Buffer.from(node.data)
             }
             node1b = node
-
-            calculateCid(node, (err, result) => {
-              expect(err).to.not.exist()
-
-              node1bCid = result
-
-              cb()
-            })
+            cb()
           })
         },
         (cb) => {
-          expect(node1aCid).to.deep.eql(node1bCid)
           expect(node1a.data).to.eql(node1b.data)
           expect(node1a.links).to.eql(node1b.links)
           cb()
@@ -368,7 +314,7 @@ module.exports = (createCommon, options) => {
       ], done)
     })
 
-    it('supplies unadulterated data', () => {
+    it('should supply unaltered data', () => {
       // has to be big enough to span several DAGNodes
       let required = 1024 * 3000
 

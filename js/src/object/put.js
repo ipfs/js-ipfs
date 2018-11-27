@@ -6,9 +6,7 @@ const DAGNode = dagPB.DAGNode
 const series = require('async/series')
 const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const {
-  asDAGLink
-} = require('../utils/dag-pb')
+const { asDAGLink } = require('./utils')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -43,12 +41,16 @@ module.exports = (createCommon, options) => {
         Links: []
       }
 
-      ipfs.object.put(obj, (err, node) => {
+      ipfs.object.put(obj, (err, cid) => {
         expect(err).to.not.exist()
-        const nodeJSON = node.toJSON()
-        expect(nodeJSON.data).to.eql(obj.Data)
-        expect(nodeJSON.links).to.eql(obj.Links)
-        done()
+
+        ipfs.object.get(cid, (err, node) => {
+          expect(err).to.not.exist()
+          const nodeJSON = node.toJSON()
+          expect(nodeJSON.data).to.eql(obj.Data)
+          expect(nodeJSON.links).to.eql(obj.Links)
+          done()
+        })
       })
     })
 
@@ -58,7 +60,8 @@ module.exports = (createCommon, options) => {
         Links: []
       }
 
-      const node = await ipfs.object.put(obj)
+      const cid = await ipfs.object.put(obj)
+      const node = await ipfs.object.get(cid)
 
       const nodeJSON = node.toJSON()
       expect(obj.Data).to.deep.equal(nodeJSON.data)
@@ -78,12 +81,15 @@ module.exports = (createCommon, options) => {
 
       const buf = Buffer.from(JSON.stringify(obj2))
 
-      ipfs.object.put(buf, { enc: 'json' }, (err, node) => {
+      ipfs.object.put(buf, { enc: 'json' }, (err, cid) => {
         expect(err).to.not.exist()
-        const nodeJSON = node.toJSON()
 
-        expect(nodeJSON.data).to.eql(node.data)
-        done()
+        ipfs.object.get(cid, (err, node) => {
+          expect(err).to.not.exist()
+          const nodeJSON = node.toJSON()
+          expect(nodeJSON.data).to.eql(node.data)
+          done()
+        })
       })
     })
 
@@ -107,11 +113,14 @@ module.exports = (createCommon, options) => {
           })
         },
         (cb) => {
-          ipfs.object.put(serialized, { enc: 'protobuf' }, (err, storedNode) => {
+          ipfs.object.put(serialized, { enc: 'protobuf' }, (err, cid) => {
             expect(err).to.not.exist()
-            expect(node.data).to.deep.equal(node.data)
-            expect(node.links).to.deep.equal(node.links)
-            cb()
+            ipfs.object.get(cid, (err, node) => {
+              expect(err).to.not.exist()
+              expect(node.data).to.deep.equal(node.data)
+              expect(node.links).to.deep.equal(node.links)
+              cb()
+            })
           })
         }
       ], done)
@@ -119,23 +128,31 @@ module.exports = (createCommon, options) => {
 
     it('should put a Buffer as data', (done) => {
       const data = Buffer.from(hat())
-      ipfs.object.put(data, (err, node) => {
+      ipfs.object.put(data, (err, cid) => {
         expect(err).to.not.exist()
-        const nodeJSON = node.toJSON()
-        expect(data).to.deep.equal(nodeJSON.data)
-        expect([]).to.deep.equal(nodeJSON.links)
-        done()
+
+        ipfs.object.get(cid, (err, node) => {
+          expect(err).to.not.exist()
+          const nodeJSON = node.toJSON()
+          expect(data).to.deep.equal(nodeJSON.data)
+          expect([]).to.deep.equal(nodeJSON.links)
+          done()
+        })
       })
     })
 
     it('should put a Protobuf DAGNode', (done) => {
       DAGNode.create(Buffer.from(hat()), (err, dNode) => {
         expect(err).to.not.exist()
-        ipfs.object.put(dNode, (err, node) => {
+        ipfs.object.put(dNode, (err, cid) => {
           expect(err).to.not.exist()
-          expect(dNode.data).to.deep.equal(node.data)
-          expect(dNode.links).to.deep.equal(node.links)
-          done()
+
+          ipfs.object.get(cid, (err, node) => {
+            expect(err).to.not.exist()
+            expect(dNode.data).to.deep.equal(node.data)
+            expect(dNode.links).to.deep.equal(node.links)
+            done()
+          })
         })
       })
     })
@@ -179,12 +196,16 @@ module.exports = (createCommon, options) => {
           })
         },
         (cb) => {
-          ipfs.object.put(node1b, (err, node) => {
+          ipfs.object.put(node1b, (err, cid) => {
             expect(err).to.not.exist()
-            expect(node1b.data).to.deep.equal(node.data)
-            expect(node1b.links.map((l) => l.toJSON()))
-              .to.deep.equal(node.links.map((l) => l.toJSON()))
-            cb()
+
+            ipfs.object.get(cid, (err, node) => {
+              expect(err).to.not.exist()
+              expect(node1b.data).to.deep.equal(node.data)
+              expect(node1b.links.map((l) => l.toJSON()))
+                .to.deep.equal(node.links.map((l) => l.toJSON()))
+              cb()
+            })
           })
         }
       ], done)

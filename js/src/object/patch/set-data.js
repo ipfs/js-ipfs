@@ -3,9 +3,6 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
-const {
-  calculateCid
-} = require('../../utils/dag-pb')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -39,21 +36,19 @@ module.exports = (createCommon, options) => {
         Data: Buffer.from('patch test object'),
         Links: []
       }
+      const patchData = Buffer.from('set')
 
-      ipfs.object.put(obj, (err, node) => {
+      ipfs.object.put(obj, (err, nodeCid) => {
         expect(err).to.not.exist()
 
-        calculateCid(node, (err, nodeCid) => {
+        ipfs.object.patch.setData(nodeCid, patchData, (err, patchedNodeCid) => {
           expect(err).to.not.exist()
+          expect(nodeCid).to.not.deep.equal(patchedNodeCid)
 
-          ipfs.object.patch.setData(nodeCid, Buffer.from('set'), (err, patchedNode) => {
+          ipfs.object.get(patchedNodeCid, (err, patchedNode) => {
             expect(err).to.not.exist()
-
-            calculateCid(patchedNode, (err, patchedNodeCid) => {
-              expect(err).to.not.exist()
-
-              done()
-            })
+            expect(patchedNode.data).to.eql(patchData)
+            done()
           })
         })
       })
@@ -64,13 +59,14 @@ module.exports = (createCommon, options) => {
         Data: Buffer.from('patch test object (promised)'),
         Links: []
       }
+      const patchData = Buffer.from('set')
 
-      const node = await ipfs.object.put(obj)
-      const nodeCid = await calculateCid(node)
-      const patchedNode = await ipfs.object.patch.setData(nodeCid, Buffer.from('set'))
-      const patchedNodeCid = await calculateCid(patchedNode)
+      const nodeCid = await ipfs.object.put(obj)
+      const patchedNodeCid = await ipfs.object.patch.setData(nodeCid, patchData)
+      const patchedNode = await ipfs.object.get(patchedNodeCid)
 
       expect(nodeCid).to.not.deep.equal(patchedNodeCid)
+      expect(patchedNode.data).to.eql(patchData)
     })
   })
 }

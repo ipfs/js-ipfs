@@ -5,9 +5,6 @@
 const bs58 = require('bs58')
 const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const {
-  calculateCid
-} = require('../utils/dag-pb')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -42,23 +39,19 @@ module.exports = (createCommon, options) => {
         Links: []
       }
 
-      ipfs.object.put(testObj, (err, node) => {
+      ipfs.object.put(testObj, (err, nodeCid) => {
         expect(err).to.not.exist()
 
-        calculateCid(node, (err, nodeCid) => {
+        ipfs.object.data(nodeCid, (err, data) => {
           expect(err).to.not.exist()
 
-          ipfs.object.data(nodeCid, (err, data) => {
-            expect(err).to.not.exist()
-
-            // because js-ipfs-api can't infer
-            // if the returned Data is Buffer or String
-            if (typeof data === 'string') {
-              data = Buffer.from(data)
-            }
-            expect(node.data).to.eql(data)
-            done()
-          })
+          // because js-ipfs-api can't infer
+          // if the returned Data is Buffer or String
+          if (typeof data === 'string') {
+            data = Buffer.from(data)
+          }
+          expect(testObj.Data).to.eql(data)
+          done()
         })
       })
     })
@@ -69,8 +62,7 @@ module.exports = (createCommon, options) => {
         Links: []
       }
 
-      const node = await ipfs.object.put(testObj)
-      const nodeCid = await calculateCid(node)
+      const nodeCid = await ipfs.object.put(testObj)
       let data = await ipfs.object.data(nodeCid)
 
       // because js-ipfs-api can't infer
@@ -78,7 +70,7 @@ module.exports = (createCommon, options) => {
       if (typeof data === 'string') {
         data = Buffer.from(data)
       }
-      expect(node.data).to.deep.equal(data)
+      expect(testObj.Data).to.deep.equal(data)
     })
 
     it('should get data by base58 encoded multihash', (done) => {
@@ -87,23 +79,19 @@ module.exports = (createCommon, options) => {
         Links: []
       }
 
-      ipfs.object.put(testObj, (err, node) => {
+      ipfs.object.put(testObj, (err, nodeCid) => {
         expect(err).to.not.exist()
 
-        calculateCid(node, (err, nodeCid) => {
+        ipfs.object.data(bs58.encode(nodeCid.buffer), { enc: 'base58' }, (err, data) => {
           expect(err).to.not.exist()
 
-          ipfs.object.data(bs58.encode(nodeCid.buffer), { enc: 'base58' }, (err, data) => {
-            expect(err).to.not.exist()
-
-            // because js-ipfs-api can't infer
-            // if the returned Data is Buffer or String
-            if (typeof data === 'string') {
-              data = Buffer.from(data)
-            }
-            expect(node.data).to.eql(data)
-            done()
-          })
+          // because js-ipfs-api can't infer
+          // if the returned Data is Buffer or String
+          if (typeof data === 'string') {
+            data = Buffer.from(data)
+          }
+          expect(testObj.Data).to.eql(data)
+          done()
         })
       })
     })
@@ -114,23 +102,19 @@ module.exports = (createCommon, options) => {
         Links: []
       }
 
-      ipfs.object.put(testObj, (err, node) => {
+      ipfs.object.put(testObj, (err, nodeCid) => {
         expect(err).to.not.exist()
 
-        calculateCid(node, (err, nodeCid) => {
+        ipfs.object.data(bs58.encode(nodeCid.buffer).toString(), { enc: 'base58' }, (err, data) => {
           expect(err).to.not.exist()
 
-          ipfs.object.data(bs58.encode(nodeCid.buffer).toString(), { enc: 'base58' }, (err, data) => {
-            expect(err).to.not.exist()
-
-            // because js-ipfs-api can't infer if the
-            // returned Data is Buffer or String
-            if (typeof data === 'string') {
-              data = Buffer.from(data)
-            }
-            expect(node.data).to.eql(data)
-            done()
-          })
+          // because js-ipfs-api can't infer if the
+          // returned Data is Buffer or String
+          if (typeof data === 'string') {
+            data = Buffer.from(data)
+          }
+          expect(testObj.Data).to.eql(data)
+          done()
         })
       })
     })

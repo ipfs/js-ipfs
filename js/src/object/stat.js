@@ -6,10 +6,7 @@ const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const series = require('async/series')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const {
-  calculateCid,
-  asDAGLink
-} = require('../utils/dag-pb')
+const { asDAGLink } = require('./utils')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -44,25 +41,21 @@ module.exports = (createCommon, options) => {
         Links: []
       }
 
-      ipfs.object.put(testObj, (err, node) => {
+      ipfs.object.put(testObj, (err, cid) => {
         expect(err).to.not.exist()
 
-        calculateCid(node, (err, cid) => {
+        ipfs.object.stat(cid, (err, stats) => {
           expect(err).to.not.exist()
-
-          ipfs.object.stat(cid, (err, stats) => {
-            expect(err).to.not.exist()
-            const expected = {
-              Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
-              NumLinks: 0,
-              BlockSize: 17,
-              LinksSize: 2,
-              DataSize: 15,
-              CumulativeSize: 17
-            }
-            expect(expected).to.deep.equal(stats)
-            done()
-          })
+          const expected = {
+            Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
+            NumLinks: 0,
+            BlockSize: 17,
+            LinksSize: 2,
+            DataSize: 15,
+            CumulativeSize: 17
+          }
+          expect(expected).to.deep.equal(stats)
+          done()
         })
       })
     })
@@ -123,16 +116,10 @@ module.exports = (createCommon, options) => {
           })
         },
         (cb) => {
-          ipfs.object.put(node1b, (err, node) => {
+          ipfs.object.put(node1b, (err, cid) => {
             expect(err).to.not.exist()
-
-            calculateCid(node, (err, cid) => {
-              expect(err).to.not.exist()
-
-              node1bCid = cid
-
-              cb()
-            })
+            node1bCid = cid
+            cb()
           })
         },
         (cb) => {
@@ -159,25 +146,21 @@ module.exports = (createCommon, options) => {
         Links: []
       }
 
-      ipfs.object.put(testObj, (err, node) => {
+      ipfs.object.put(testObj, (err, cid) => {
         expect(err).to.not.exist()
 
-        calculateCid(node, (err, cid) => {
+        ipfs.object.stat(cid.buffer, { enc: 'base58' }, (err, stats) => {
           expect(err).to.not.exist()
-
-          ipfs.object.stat(cid.buffer, { enc: 'base58' }, (err, stats) => {
-            expect(err).to.not.exist()
-            const expected = {
-              Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
-              NumLinks: 0,
-              BlockSize: 17,
-              LinksSize: 2,
-              DataSize: 15,
-              CumulativeSize: 17
-            }
-            expect(expected).to.deep.equal(stats)
-            done()
-          })
+          const expected = {
+            Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
+            NumLinks: 0,
+            BlockSize: 17,
+            LinksSize: 2,
+            DataSize: 15,
+            CumulativeSize: 17
+          }
+          expect(expected).to.deep.equal(stats)
+          done()
         })
       })
     })
@@ -188,25 +171,21 @@ module.exports = (createCommon, options) => {
         Links: []
       }
 
-      ipfs.object.put(testObj, (err, node) => {
+      ipfs.object.put(testObj, (err, cid) => {
         expect(err).to.not.exist()
 
-        calculateCid(node, (err, cid) => {
+        ipfs.object.stat(cid.toBaseEncodedString(), { enc: 'base58' }, (err, stats) => {
           expect(err).to.not.exist()
-
-          ipfs.object.stat(cid.toBaseEncodedString(), { enc: 'base58' }, (err, stats) => {
-            expect(err).to.not.exist()
-            const expected = {
-              Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
-              NumLinks: 0,
-              BlockSize: 17,
-              LinksSize: 2,
-              DataSize: 15,
-              CumulativeSize: 17
-            }
-            expect(expected).to.deep.equal(stats)
-            done()
-          })
+          const expected = {
+            Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
+            NumLinks: 0,
+            BlockSize: 17,
+            LinksSize: 2,
+            DataSize: 15,
+            CumulativeSize: 17
+          }
+          expect(expected).to.deep.equal(stats)
+          done()
         })
       })
     })
