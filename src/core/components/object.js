@@ -98,7 +98,7 @@ module.exports = function object (self) {
                 self._preload(cid)
               }
 
-              cb(null, node)
+              cb(null, cid)
             })
           })
         }
@@ -150,7 +150,7 @@ module.exports = function object (self) {
             self._preload(cid)
           }
 
-          callback(null, node)
+          callback(null, cid)
         })
       })
     }),
@@ -209,9 +209,11 @@ module.exports = function object (self) {
             return callback(err)
           }
 
-          self.object.get(cid, {
-            preload: options.preload
-          }, callback)
+          if (options.preload !== false) {
+            self._preload(cid)
+          }
+
+          callback(null, cid)
         })
       }
     }),
