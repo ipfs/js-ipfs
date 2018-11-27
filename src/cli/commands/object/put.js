@@ -3,25 +3,14 @@
 const bl = require('bl')
 const fs = require('fs')
 const print = require('../../utils').print
-const {
-  util: {
-    cid
-  }
-} = require('ipld-dag-pb')
 
 function putNode (buf, enc, ipfs, cidEnc) {
-  ipfs.object.put(buf, { enc: enc }, (err, node) => {
+  ipfs.object.put(buf, { enc: enc }, (err, cid) => {
     if (err) {
       throw err
     }
 
-    cid(node, (err, cid) => {
-      if (err) {
-        throw err
-      }
-
-      print(`added ${cid.toBaseEncodedString(cidEnc)}`)
-    })
+    print(`added ${cid.toBaseEncodedString(cidEnc)}`)
   })
 }
 

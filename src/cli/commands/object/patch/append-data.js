@@ -6,27 +6,16 @@ const debug = require('debug')
 const log = debug('cli:object')
 log.error = debug('cli:object:error')
 const print = require('../../../utils').print
-const {
-  util: {
-    cid
-  }
-} = require('ipld-dag-pb')
 
 function appendData (key, data, ipfs) {
   ipfs.object.patch.appendData(key, data, {
     enc: 'base58'
-  }, (err, node) => {
+  }, (err, cid) => {
     if (err) {
       throw err
     }
 
-    cid(node, (err, cid) => {
-      if (err) {
-        throw err
-      }
-
-      print(cid.toBaseEncodedString())
-    })
+    print(cid.toBaseEncodedString())
   })
 }
 
