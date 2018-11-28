@@ -1,5 +1,8 @@
 'use strict'
 
+const pull = require('pull-stream/pull')
+const onEnd = require('pull-stream/sinks/on-end')
+const through = require('pull-stream/throughs/through')
 const {
   print,
   asBoolean
@@ -21,12 +24,12 @@ module.exports = {
       coerce: asBoolean,
       describe: 'Use long listing format.'
     },
-    unsorted: {
-      alias: 'U',
+    sort: {
+      alias: 's',
       type: 'boolean',
       default: false,
       coerce: asBoolean,
-      describe: 'Do not sort; list entries in directory order.'
+      describe: 'Sort entries by name'
     },
     'cid-base': {
       default: 'base58btc',
@@ -39,55 +42,55 @@ module.exports = {
       path,
       ipfs,
       long,
-      unsorted,
+      sort,
       cidBase
     } = argv
 
     argv.resolve(
-      ipfs.files.ls(path || FILE_SEPARATOR, {
-        long,
-        unsorted,
-        cidBase
-      })
-        .then(files => {
-          if (long) {
-            const table = []
-            const lengths = {}
-
-            files.forEach(link => {
-              const row = {
-                name: `${link.name}`,
-                hash: `${link.hash}`,
-                size: `${link.size}`
+      new Promise((resolve, reject) => {
+        if (sort) {
+          ipfs.files.ls(path || FILE_SEPARATOR, {
+            long,
+            sort,
+            cidBase
+          })
+            .then(files => {
+              if (long) {
+                files.forEach(link => {
+                  print(`${link.name}\t${link.hash}\t${link.size}`)
+                })
+              } else {
+                files.forEach(link => print(link.name))
               }
 
-              Object.keys(row).forEach(key => {
-                const value = row[key]
-
-                lengths[key] = lengths[key] > value.length ? lengths[key] : value.length
-              })
-
-              table.push(row)
+              resolve()
             })
+            .catch(reject)
 
-            table.forEach(row => {
-              let line = ''
+          return
+        }
 
-              Object.keys(row).forEach(key => {
-                const value = row[key]
+        pull(
+          ipfs.files.lsPullStream(path, {
+            long,
+            cidBase
+          }),
+          through(file => {
+            if (long) {
+              print(`${file.name}\t${file.hash}\t${file.size}`)
+            } else {
+              print(file.name)
+            }
+          }),
+          onEnd((error) => {
+            if (error) {
+              return reject(error)
+            }
 
-                line += value.padEnd(lengths[key])
-                line += '\t'
-              })
-
-              print(line)
-            })
-
-            return
-          }
-
-          files.forEach(link => print(link.name))
-        })
+            resolve()
+          })
+        )
+      })
     )
   }
 }

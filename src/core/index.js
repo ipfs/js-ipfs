@@ -30,7 +30,9 @@ const unwrappedOperations = {
 // These operations are synchronous and manage their own locking
 const unwrappedSynchronousOperations = {
   readPullStream: require('./read-pull-stream'),
-  readReadableStream: require('./read-readable-stream')
+  readReadableStream: require('./read-readable-stream'),
+  lsPullStream: require('./ls-pull-stream'),
+  lsReadableStream: require('./ls-readable-stream')
 }
 
 const wrap = ({
