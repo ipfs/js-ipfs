@@ -4,7 +4,8 @@ const Key = require('interface-datastore').Key
 
 const FILE_TYPES = {
   file: 0,
-  directory: 1
+  directory: 1,
+  'hamt-sharded-directory': 1
 }
 
 module.exports = {

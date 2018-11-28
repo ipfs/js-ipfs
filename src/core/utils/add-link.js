@@ -72,7 +72,7 @@ const addLink = (context, options, callback) => {
     return addToShardedDirectory(context, options, callback)
   }
 
-  if (options.parent.links.length === options.shardSplitThreshold) {
+  if (options.parent.links.length >= options.shardSplitThreshold) {
     log('Converting directory to sharded directory')
 
     return convertToShardedDirectory(context, options, callback)
@@ -151,8 +151,21 @@ const addToShardedDirectory = async (context, options, callback) => {
     })
   }
 
+  const existingFile = options.parent.links
+    .filter(link => link.name.substring(2) === options.name)
+    .pop()
+
+  if (existingFile) {
+    log(`Updating file ${existingFile.name}`)
+
+    return addToDirectory(context, {
+      ...options,
+      name: existingFile.name
+    }, callback)
+  }
+
   const existingUnshardedFile = options.parent.links
-    .filter(link => link.name.substring(0, 2) === prefix || link.name.substring(2) === options.name)
+    .filter(link => link.name.substring(0, 2) === prefix)
     .pop()
 
   if (existingUnshardedFile) {
@@ -194,7 +207,7 @@ const addToShardedDirectory = async (context, options, callback) => {
     })
   }
 
-  log(`Updating or appending ${prefix + options.name} to shard`)
+  log(`Appending ${prefix + options.name} to shard`)
 
   return addToDirectory(context, {
     ...options,
