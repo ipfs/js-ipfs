@@ -1,3 +1,95 @@
+<a name="27.0.0"></a>
+# [27.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v26.1.2...v27.0.0) (2018-11-28)
+
+
+### Bug Fixes
+
+* also retry with misnemed format "dag-cbor" as "cbor" ([#888](https://github.com/ipfs/js-ipfs-http-client/issues/888)) ([348a144](https://github.com/ipfs/js-ipfs-http-client/commit/348a144))
+* better input validation for add ([#876](https://github.com/ipfs/js-ipfs-http-client/issues/876)) ([315b7f7](https://github.com/ipfs/js-ipfs-http-client/commit/315b7f7))
+* fix log.tail by calling add after listening for events ([#882](https://github.com/ipfs/js-ipfs-http-client/issues/882)) ([da35b0f](https://github.com/ipfs/js-ipfs-http-client/commit/da35b0f))
+* handle peer-info validation errors ([#887](https://github.com/ipfs/js-ipfs-http-client/issues/887)) ([6e6d7a2](https://github.com/ipfs/js-ipfs-http-client/commit/6e6d7a2)), closes [#885](https://github.com/ipfs/js-ipfs-http-client/issues/885)
+* updates ipld-dag-pb dep to version without .cid properties ([#889](https://github.com/ipfs/js-ipfs-http-client/issues/889)) ([ac30a82](https://github.com/ipfs/js-ipfs-http-client/commit/ac30a82))
+
+
+### Code Refactoring
+
+* object API write methods now return CIDs ([#896](https://github.com/ipfs/js-ipfs-http-client/issues/896)) ([38bed14](https://github.com/ipfs/js-ipfs-http-client/commit/38bed14))
+* rename library to ipfs-http-client ([#897](https://github.com/ipfs/js-ipfs-http-client/issues/897)) ([d40cb6c](https://github.com/ipfs/js-ipfs-http-client/commit/d40cb6c))
+* updated files API ([#878](https://github.com/ipfs/js-ipfs-http-client/issues/878)) ([39f4733](https://github.com/ipfs/js-ipfs-http-client/commit/39f4733))
+
+
+### BREAKING CHANGES
+
+* the `ipfs-api` library has been renamed to `ipfs-http-client`.
+
+Now install via `npm install ipfs-http-client`.
+
+Note that in the browser build the object attached to `window` is now `window.IpfsHttpClient`.
+
+License: MIT
+Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
+* Object API refactor.
+
+Object API methods that write DAG nodes now return a CID instead of a DAG node. Affected methods:
+
+* `ipfs.object.new`
+* `ipfs.object.patch.addLink`
+* `ipfs.object.patch.appendData`
+* `ipfs.object.patch.rmLink`
+* `ipfs.object.patch.setData`
+* `ipfs.object.put`
+
+Example:
+
+```js
+// Before
+const dagNode = await ipfs.object.new()
+```
+
+```js
+// After
+const cid = await ipfs.object.new() // now returns a CID
+const dagNode = await ipfs.object.get(cid) // fetch the DAG node that was created
+```
+
+IMPORTANT: `DAGNode` instances, which are part of the IPLD dag-pb format have been refactored.
+
+These instances no longer have `multihash`, `cid` or `serialized` properties.
+
+This effects the following API methods that return these types of objects:
+
+* `ipfs.object.get`
+* `ipfs.dag.get`
+
+See https://github.com/ipld/js-ipld-dag-pb/pull/99 for more information.
+
+License: MIT
+Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
+* Files API methods `add*`, `cat*`, `get*` have moved from `files` to the root namespace.
+
+Specifically, the following changes have been made:
+
+* `ipfs.files.add` => `ipfs.add`
+* `ipfs.files.addPullStream` => `ipfs.addPullStream`
+* `ipfs.files.addReadableStream` => `ipfs.addReadableStream`
+* `ipfs.files.cat` => `ipfs.cat`
+* `ipfs.files.catPullStream` => `ipfs.catPullStream`
+* `ipfs.files.catReadableStream` => `ipfs.catReadableStream`
+* `ipfs.files.get` => `ipfs.get`
+* `ipfs.files.getPullStream` => `ipfs.getPullStream`
+* `ipfs.files.getReadableStream` => `ipfs.getReadableStream`
+
+Additionally, `addFromFs`, `addFromUrl`, `addFromStream` have moved from `util` to the root namespace:
+
+* `ipfs.util.addFromFs` => `ipfs.addFromFs`
+* `ipfs.util.addFromUrl` => `ipfs.addFromUrl`
+* `ipfs.util.addFromStream` => `ipfs.addFromStream`
+
+License: MIT
+Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
+
+
+
 <a name="26.1.2"></a>
 ## [26.1.2](https://github.com/ipfs/js-ipfs-http-client/compare/v26.1.0...v26.1.2) (2018-11-03)
 
