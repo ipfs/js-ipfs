@@ -1,8 +1,8 @@
 'use strict'
 const React = require('react')
-const ipfsAPI = require('ipfs-api')
+const ipfsClient = require('ipfs-http-client')
 
-const ipfs = ipfsAPI('localhost', '5001')
+const ipfs = ipfsClient('localhost', '5001')
 const stringToUse = 'hello world from webpacked IPFS'
 
 class App extends React.Component {

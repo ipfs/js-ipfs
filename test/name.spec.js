@@ -10,7 +10,7 @@ const parallel = require('async/parallel')
 const series = require('async/series')
 const loadFixture = require('aegir/fixtures')
 
-const IPFSApi = require('../src')
+const ipfsClient = require('../src')
 const f = require('./utils/factory')
 
 const testfile = loadFixture('test/fixtures/testfile.txt')
@@ -31,7 +31,7 @@ describe('.name', () => {
         f.spawn({ initOptions: { bits: 1024 } }, (err, _ipfsd) => {
           expect(err).to.not.exist()
           ipfsd = _ipfsd
-          ipfs = IPFSApi(_ipfsd.apiAddr)
+          ipfs = ipfsClient(_ipfsd.apiAddr)
           cb()
         })
       },

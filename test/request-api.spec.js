@@ -6,7 +6,7 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const isNode = require('detect-node')
-const ipfsAPI = require('../src/index.js')
+const ipfsClient = require('../src/index.js')
 const ndjson = require('ndjson')
 const pump = require('pump')
 
@@ -28,7 +28,7 @@ describe('\'deal with HTTP weirdness\' tests', () => {
     })
 
     server.listen(6001, () => {
-      ipfsAPI('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json', (err) => {
+      ipfsClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json', (err) => {
         expect(err).to.not.exist()
         server.close(done)
       })
@@ -37,7 +37,7 @@ describe('\'deal with HTTP weirdness\' tests', () => {
 })
 
 describe('trailer headers', () => {
-  // TODO: needs fixing https://github.com/ipfs/js-ipfs-api/pull/624#issuecomment-344181950
+  // TODO: needs fixing https://github.com/ipfs/js-ipfs-http-client/pull/624#issuecomment-344181950
   it.skip('should deal with trailer x-stream-error correctly', (done) => {
     if (!isNode) { return done() }
 
@@ -52,7 +52,7 @@ describe('trailer headers', () => {
     })
 
     server.listen(6001, () => {
-      const ipfs = ipfsAPI('/ip4/127.0.0.1/tcp/6001')
+      const ipfs = ipfsClient('/ip4/127.0.0.1/tcp/6001')
       /* eslint-disable */
       ipfs.add(Buffer.from('Hello there!'), (err, res) => {
         // TODO: error's are not being correctly

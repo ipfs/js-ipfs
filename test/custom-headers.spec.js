@@ -7,7 +7,7 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-const IPFSApi = require('../src')
+const ipfsClient = require('../src')
 const f = require('./utils/factory')
 
 describe('custom headers', function () {
@@ -21,7 +21,7 @@ describe('custom headers', function () {
     f.spawn({ initOptions: { bits: 1024 } }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsd = _ipfsd
-      ipfs = IPFSApi({
+      ipfs = ipfsClient({
         host: 'localhost',
         port: 6001,
         protocol: 'http',

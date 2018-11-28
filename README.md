@@ -13,11 +13,11 @@
 </p>
 
 <p align="center">
-  <a href="https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fipfs%2Fjs-ipfs-api?ref=badge_small" alt="FOSSA Status"><img src="https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fipfs%2Fjs-ipfs-api.svg?type=small"/></a>
-  <a href="https://ci.ipfs.team/job/ipfs/job/js-ipfs-api/job/master/"><img src="https://ci.ipfs.team/buildStatus/icon?job=ipfs/js-ipfs-api/master" /></a>
-  <a href="https://codecov.io/gh/ipfs/js-ipfs-api"><img src="https://codecov.io/gh/ipfs/js-ipfs-api/branch/master/graph/badge.svg"></a>
+  <a href="https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fipfs%2Fjs-ipfs-http-client?ref=badge_small" alt="FOSSA Status"><img src="https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fipfs%2Fjs-ipfs-http-client.svg?type=small"/></a>
+  <a href="https://ci.ipfs.team/job/ipfs/job/js-ipfs-http-client/job/master/"><img src="https://ci.ipfs.team/buildStatus/icon?job=ipfs/js-ipfs-http-client/master" /></a>
+  <a href="https://codecov.io/gh/ipfs/js-ipfs-http-client"><img src="https://codecov.io/gh/ipfs/js-ipfs-http-client/branch/master/graph/badge.svg"></a>
   <br>
-  <a href="https://david-dm.org/ipfs/js-ipfs-api"><img src="https://david-dm.org/ipfs/js-ipfs-api.svg?style=flat-square" /></a>
+  <a href="https://david-dm.org/ipfs/js-ipfs-http-client"><img src="https://david-dm.org/ipfs/js-ipfs-http-client.svg?style=flat-square" /></a>
   <a href="https://github.com/feross/standard"><img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square"></a>
   <a href="https://github.com/RichardLitt/standard-readme"><img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square" /></a>
   <a href=""><img src="https://img.shields.io/badge/npm-%3E%3D3.0.0-orange.svg?style=flat-square" /></a>
@@ -51,7 +51,7 @@
 This module uses node.js, and can be installed through npm:
 
 ```bash
-npm install --save ipfs-api
+npm install --save ipfs-http-client
 ```
 
 We support both the Current and Active LTS versions of Node.js. Please see [nodejs.org](https://nodejs.org/) for what these currently are.
@@ -75,27 +75,27 @@ To interact with the API, you need to have a local daemon running. It needs to b
 ### Importing the module and usage
 
 ```javascript
-var ipfsAPI = require('ipfs-api')
+var ipfsClient = require('ipfs-http-client')
 
 // connect to ipfs daemon API server
-var ipfs = ipfsAPI('localhost', '5001', {protocol: 'http'}) // leaving out the arguments will default to these values
+var ipfs = ipfsClient('localhost', '5001', { protocol: 'http' }) // leaving out the arguments will default to these values
 
 // or connect with multiaddr
-var ipfs = ipfsAPI('/ip4/127.0.0.1/tcp/5001')
+var ipfs = ipfsClient('/ip4/127.0.0.1/tcp/5001')
 
 // or using options
-var ipfs = ipfsAPI({host: 'localhost', port: '5001', protocol: 'http'})
+var ipfs = ipfsClient({ host: 'localhost', port: '5001', protocol: 'http' })
 
 // or specifying a specific API path
-var ipfs = ipfsAPI({host: '1.1.1.1', port: '80', 'api-path': '/ipfs/api/v0'})
+var ipfs = ipfsClient({ host: '1.1.1.1', port: '80', 'api-path': '/ipfs/api/v0' })
 ```
 
 ### Importing a sub-module and usage
 
 ```javascript
-const bitswap = require('ipfs-api/src/bitswap')('/ip4/127.0.0.1/tcp/5001')
+const bitswap = require('ipfs-http-client/src/bitswap')('/ip4/127.0.0.1/tcp/5001')
 
-bitswap.unwant(key, (err) => {
+bitswap.wantlist(key, (err) => {
   // ...
 })
 ```
@@ -110,7 +110,7 @@ See the example in the [examples folder](/examples/bundle-browserify) to get a b
 
 **through webpack**
 
-See the example in the [examples folder](/examples/bundle-webpack) to get an idea on how to use js-ipfs-api with webpack.
+See the example in the [examples folder](/examples/bundle-webpack) to get an idea on how to use `js-ipfs-http-client` with webpack.
 
 **from CDN**
 
@@ -120,9 +120,9 @@ To always request the latest version, use the following:
 
 ```html
 <!-- loading the minified version -->
-<script src="https://unpkg.com/ipfs-api/dist/index.min.js"></script>
+<script src="https://unpkg.com/ipfs-http-client/dist/index.min.js"></script>
 <!-- loading the human-readable (not minified) version -->
-<script src="https://unpkg.com/ipfs-api/dist/index.js"></script>
+<script src="https://unpkg.com/ipfs-http-client/dist/index.js"></script>
 ```
 
 For maximum security you may also decide to:
@@ -134,26 +134,26 @@ For maximum security you may also decide to:
 Example:
 
 ```html
-<script src="https://unpkg.com/ipfs-api@9.0.0/dist/index.js"
+<script src="https://unpkg.com/ipfs-http-client@9.0.0/dist/index.js"
 integrity="sha384-5bXRcW9kyxxnSMbOoHzraqa7Z0PQWIao+cgeg327zit1hz5LZCEbIMx/LWKPReuB"
 crossorigin="anonymous"></script>
 ```
 
-CDN-based IPFS API provides the `IpfsApi` constructor as a method of the global `window` object. Example:
+CDN-based IPFS API provides the `IpfsHttpClient` constructor as a method of the global `window` object. Example:
 
 ```js
-const ipfs = window.IpfsApi('localhost', '5001')
+const ipfs = window.IpfsHttpClient('localhost', '5001')
 ```
 
-If you omit the host and port, the API will parse `window.host`, and use this information. This also works, and can be useful if you want to write apps that can be run from multiple different gateways:
+If you omit the host and port, the client will parse `window.host`, and use this information. This also works, and can be useful if you want to write apps that can be run from multiple different gateways:
 
 ```js
-const ipfs = window.IpfsApi()
+const ipfs = window.IpfsHttpClient()
 ```
 
 ### CORS
 
-In a web browser IPFS API (either browserified or CDN-based) might encounter an error saying that the origin is not allowed. This would be a CORS ("Cross Origin Resource Sharing") failure: IPFS servers are designed to reject requests from unknown domains by default. You can whitelist the domain that you are calling from by changing your ipfs config like this:
+In a web browser IPFS HTTP client (either browserified or CDN-based) might encounter an error saying that the origin is not allowed. This would be a CORS ("Cross Origin Resource Sharing") failure: IPFS servers are designed to reject requests from unknown domains by default. You can whitelist the domain that you are calling from by changing your ipfs config like this:
 
 ```bash
 ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin "[\"http://example.com\"]"
@@ -165,8 +165,8 @@ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods "[\"PUT\", \"POS
 
 If you wish to send custom headers with each request made by this library, for example, the Authorization header. You can use the config to do so:
 
-```
-const ipfs = IpfsApi({
+```js
+const ipfs = ipfsClient({
   host: 'localhost',
   port: 5001,
   protocol: 'http',
@@ -182,7 +182,7 @@ const ipfs = IpfsApi({
 
 [![IPFS Core API Compatible](https://cdn.rawgit.com/ipfs/interface-ipfs-core/master/img/badge.svg)](https://github.com/ipfs/interface-ipfs-core)
 
-> `js-ipfs-api` follows the spec defined by [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core), which concerns the interface to expect from IPFS implementations. This interface is a currently active endeavor. You can use it today to consult the methods available.
+> `js-ipfs-http-client` follows the spec defined by [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core), which concerns the interface to expect from IPFS implementations. This interface is a currently active endeavor. You can use it today to consult the methods available.
 
 #### Files
 
@@ -329,18 +329,18 @@ const ipfs = IpfsApi({
 
 #### Pubsub Caveat
 
-**Currently, the [PubSub API only works in Node.js environment](https://github.com/ipfs/js-ipfs-api/issues/518)**
+**Currently, the [PubSub API only works in Node.js environment](https://github.com/ipfs/js-ipfs-http-client/issues/518)**
 
 We currently don't support pubsub when run in the browser, and we test it with separate set of tests to make sure if it's being used in the browser, pubsub errors.
 
-More info: https://github.com/ipfs/js-ipfs-api/issues/518
+More info: https://github.com/ipfs/js-ipfs-http-client/issues/518
 
 This means:
-- You can use pubsub from js-ipfs-api in Node.js
-- You can use pubsub from js-ipfs-api in Electron
-  (when js-ipfs-api is ran in the main process of Electron)
-- You can't use pubsub from js-ipfs-api in the browser
-- You can't use pubsub from js-ipfs-api in Electron's
+- You can use pubsub from js-ipfs-http-client in Node.js
+- You can use pubsub from js-ipfs-http-client in Electron
+  (when js-ipfs-http-client is ran in the main process of Electron)
+- You can't use pubsub from js-ipfs-http-client in the browser
+- You can't use pubsub from js-ipfs-http-client in Electron's
   renderer process
 - You can use pubsub from js-ipfs in the browsers
 - You can use pubsub from js-ipfs in Node.js
@@ -360,14 +360,12 @@ A set of data types are exposed directly from the IPFS instance under `ipfs.type
 - [`ipfs.types.multibase`](https://github.com/multiformats/multibase)
 - [`ipfs.types.multihash`](https://github.com/multiformats/js-multihash)
 - [`ipfs.types.CID`](https://github.com/ipld/js-cid)
-- [`ipfs.types.dagPB`](https://github.com/ipld/js-ipld-dag-pb)
-- [`ipfs.types.dagCBOR`](https://github.com/ipld/js-ipld-dag-cbor)
 
 #### Extra (util) functions
 
-Adding to the methods defined by [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core), `js-ipfs-api` exposes a set of extra utility methods. These utility functions are scoped behind the `ipfs.util`.
+Adding to the methods defined by [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core), `js-ipfs-http-client` exposes a set of extra utility methods. These utility functions are scoped behind the `ipfs.util`.
 
-Complete documentation for these methods is coming with: https://github.com/ipfs/js-ipfs-api/pull/305
+Complete documentation for these methods is coming with: https://github.com/ipfs/js-ipfs-http-client/pull/305
 
 ##### Get endpoint configuration (host and port)
 
@@ -395,9 +393,9 @@ We run tests by executing `npm test` in a terminal window. This will run both No
 
 ## Contribute
 
-The js-ipfs-api is a work in progress. As such, there's a few things you can do right now to help out:
+The js-ipfs-http-client is a work in progress. As such, there's a few things you can do right now to help out:
 
-- **[Check out the existing issues](https://github.com/ipfs/js-ipfs-api/issues)**!
+- **[Check out the existing issues](https://github.com/ipfs/js-ipfs-http-client/issues)**!
 - **Perform code reviews**. More eyes will help a) speed the project along b) ensure quality and c) reduce possible future bugs.
 - **Add tests**. There can never be enough tests. Note that interface tests exist inside [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core/tree/master/js/src).
 - **Contribute to the [FAQ repository](https://github.com/ipfs/faq/issues)** with any questions you have about IPFS or any of the relevant technology. A good example would be asking, 'What is a merkledag tree?'. If you don't know a term, odds are, someone else doesn't either. Eventually, we should have a good understanding of where we need to improve communications and teaching together to make IPFS and IPN better.
@@ -414,4 +412,4 @@ This module started as a direct mapping from the go-ipfs cli to a JavaScript imp
 
 [MIT](LICENSE)
 
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fipfs%2Fjs-ipfs-api.svg?type=large)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fipfs%2Fjs-ipfs-api?ref=badge_large)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fipfs%2Fjs-ipfs-http-client.svg?type=large)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fipfs%2Fjs-ipfs-http-client?ref=badge_large)

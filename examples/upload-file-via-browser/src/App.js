@@ -1,6 +1,6 @@
 'use strict'
 const React = require('react')
-const ipfsAPI = require('ipfs-api')
+const ipfsClient = require('ipfs-http-client')
 
 // create a stream from a file, which enables uploads of big files without allocating memory twice
 const fileReaderPullStream = require('pull-file-reader')
@@ -11,7 +11,7 @@ class App extends React.Component {
     this.state = {
       added_file_hash: null
     }
-    this.ipfsApi = ipfsAPI('localhost', '5001')
+    this.ipfs = ipfsClient('localhost', '5001')
 
     // bind methods
     this.captureFile = this.captureFile.bind(this)
@@ -35,7 +35,7 @@ class App extends React.Component {
   saveToIpfs (file) {
     let ipfsId
     const fileStream = fileReaderPullStream(file)
-    this.ipfsApi.add(fileStream, { progress: (prog) => console.log(`received: ${prog}`) })
+    this.ipfs.add(fileStream, { progress: (prog) => console.log(`received: ${prog}`) })
       .then((response) => {
         console.log(response)
         ipfsId = response[0].hash
@@ -59,7 +59,7 @@ class App extends React.Component {
       wrapWithDirectory: true,
       progress: (prog) => console.log(`received: ${prog}`)
     }
-    this.ipfsApi.add(fileDetails, options)
+    this.ipfs.add(fileDetails, options)
       .then((response) => {
         console.log(response)
         // CID of wrapping directory is returned last

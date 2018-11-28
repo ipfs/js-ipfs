@@ -1,7 +1,7 @@
 {
   "name": "bundle-browserify",
   "version": "1.0.0",
-  "description": "Bundle js-ipfs-api with Browserify",
+  "description": "Bundle js-ipfs-http-client with Browserify",
   "main": "index.js",
   "scripts": {
     "start": "browserify index.js > bundle.js && http-server -a 127.0.0.1 -p 8888"
@@ -11,7 +11,7 @@
   "license": "MIT",
   "devDependencies": {
     "browserify": "^13.1.1",
-    "ipfs-api": "../../",
+    "ipfs-http-client": "../../",
     "http-server": "~0.9.0"
   },
   "dependencies": {}

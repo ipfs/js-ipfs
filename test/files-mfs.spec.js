@@ -11,7 +11,7 @@ const mh = require('multihashes')
 const CID = require('cids')
 const pull = require('pull-stream')
 
-const IPFSApi = require('../src')
+const ipfsClient = require('../src')
 const f = require('./utils/factory')
 const expectTimeout = require('./utils/expect-timeout')
 
@@ -41,7 +41,7 @@ describe('.files (the MFS API part)', function () {
     f.spawn({ initOptions: { bits: 1024 } }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsd = _ipfsd
-      ipfs = IPFSApi(_ipfsd.apiAddr)
+      ipfs = ipfsClient(_ipfsd.apiAddr)
       done()
     })
   })

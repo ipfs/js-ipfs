@@ -4,7 +4,7 @@
 const tests = require('interface-ipfs-core')
 const isNode = require('detect-node')
 const CommonFactory = require('./utils/interface-common-factory')
-const IPFSApi = require('../src')
+const ipfsClient = require('../src')
 const isWindows = process.platform && process.platform === 'win32'
 
 describe('interface-ipfs-core tests', () => {
@@ -43,7 +43,7 @@ describe('interface-ipfs-core tests', () => {
       // config.replace
       {
         name: 'replace',
-        reason: 'FIXME Waiting for fix on go-ipfs https://github.com/ipfs/js-ipfs-api/pull/307#discussion_r69281789 and https://github.com/ipfs/go-ipfs/issues/2927'
+        reason: 'FIXME Waiting for fix on go-ipfs https://github.com/ipfs/js-ipfs-http-client/pull/307#discussion_r69281789 and https://github.com/ipfs/go-ipfs/issues/2927'
       }
     ]
   })
@@ -96,21 +96,21 @@ describe('interface-ipfs-core tests', () => {
       // .add
       isNode ? null : {
         name: 'should add a nested directory as array of tupples',
-        reason: 'FIXME https://github.com/ipfs/js-ipfs-api/issues/339'
+        reason: 'FIXME https://github.com/ipfs/js-ipfs-http-client/issues/339'
       },
       isNode ? null : {
         name: 'should add a nested directory as array of tupples with progress',
-        reason: 'FIXME https://github.com/ipfs/js-ipfs-api/issues/339'
+        reason: 'FIXME https://github.com/ipfs/js-ipfs-http-client/issues/339'
       },
       // .addPullStream
       isNode ? null : {
         name: 'should add pull stream of valid files and dirs',
-        reason: 'FIXME https://github.com/ipfs/js-ipfs-api/issues/339'
+        reason: 'FIXME https://github.com/ipfs/js-ipfs-http-client/issues/339'
       },
       // .addReadableStream
       isNode ? null : {
         name: 'should add readable stream of valid files and dirs',
-        reason: 'FIXME https://github.com/ipfs/js-ipfs-api/issues/339'
+        reason: 'FIXME https://github.com/ipfs/js-ipfs-http-client/issues/339'
       },
       // .addFromStream
       isNode ? null : {
@@ -143,22 +143,22 @@ describe('interface-ipfs-core tests', () => {
       // .get
       isNode ? null : {
         name: 'should get a directory',
-        reason: 'FIXME https://github.com/ipfs/js-ipfs-api/issues/339'
+        reason: 'FIXME https://github.com/ipfs/js-ipfs-http-client/issues/339'
       },
       // .ls
       isNode ? null : {
         name: 'should ls with a base58 encoded CID',
-        reason: 'FIXME https://github.com/ipfs/js-ipfs-api/issues/339'
+        reason: 'FIXME https://github.com/ipfs/js-ipfs-http-client/issues/339'
       },
       // .lsPullStream
       isNode ? null : {
         name: 'should pull stream ls with a base58 encoded CID',
-        reason: 'FIXME https://github.com/ipfs/js-ipfs-api/issues/339'
+        reason: 'FIXME https://github.com/ipfs/js-ipfs-http-client/issues/339'
       },
       // .lsReadableStream
       isNode ? null : {
         name: 'should readable stream ls with a base58 encoded CID',
-        reason: 'FIXME https://github.com/ipfs/js-ipfs-api/issues/339'
+        reason: 'FIXME https://github.com/ipfs/js-ipfs-http-client/issues/339'
       }
     ]
   })
@@ -234,7 +234,7 @@ describe('interface-ipfs-core tests', () => {
         reason: 'FIXME https://github.com/ipfs/interface-ipfs-core/pull/188#issuecomment-354673246 and https://github.com/ipfs/go-ipfs/issues/4778'
       } : null
     ] : {
-      reason: 'FIXME pubsub is not supported in the browser https://github.com/ipfs/js-ipfs-api/issues/518'
+      reason: 'FIXME pubsub is not supported in the browser https://github.com/ipfs/js-ipfs-http-client/issues/518'
     }
   })
 
@@ -265,7 +265,7 @@ describe('interface-ipfs-core tests', () => {
               }
 
               nodes.push(_ipfsd)
-              cb(null, IPFSApi(_ipfsd.apiAddr))
+              cb(null, ipfsClient(_ipfsd.apiAddr))
             })
           }
         })

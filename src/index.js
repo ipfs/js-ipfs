@@ -6,7 +6,7 @@ const loadCommands = require('./utils/load-commands')
 const getConfig = require('./utils/default-config')
 const sendRequest = require('./utils/send-request')
 
-function IpfsAPI (hostOrMultiaddr, port, opts) {
+function ipfsClient (hostOrMultiaddr, port, opts) {
   const config = getConfig()
 
   try {
@@ -44,4 +44,4 @@ function IpfsAPI (hostOrMultiaddr, port, opts) {
   return cmds
 }
 
-exports = module.exports = IpfsAPI
+module.exports = ipfsClient

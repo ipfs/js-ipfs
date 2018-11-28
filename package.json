@@ -1,5 +1,5 @@
 {
-  "name": "ipfs-api",
+  "name": "ipfs-http-client",
   "version": "26.1.2",
   "description": "A client library for the IPFS HTTP API",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
@@ -9,7 +9,7 @@
     "fs": false,
     "stream": "readable-stream",
     "http": "stream-http",
-    "ipfs-api": false,
+    "ipfs-http-client": false,
     "ipfs": false
   },
   "scripts": {
@@ -74,7 +74,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ipfs/js-ipfs-api"
+    "url": "https://github.com/ipfs/js-ipfs-http-client"
   },
   "devDependencies": {
     "aegir": "^17.1.1",
@@ -178,7 +178,7 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ipfs/js-ipfs-api/issues"
+    "url": "https://github.com/ipfs/js-ipfs-http-client/issues"
   },
-  "homepage": "https://github.com/ipfs/js-ipfs-api"
+  "homepage": "https://github.com/ipfs/js-ipfs-http-client"
 }

@@ -7,7 +7,7 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const f = require('./utils/factory')
-const ipfsAPI = require('../src/index.js')
+const ipfsClient = require('../src/index.js')
 
 function clientWorks (client, done) {
   client.id((err, id) => {
@@ -19,7 +19,7 @@ function clientWorks (client, done) {
   })
 }
 
-describe('ipfs-api constructor tests', () => {
+describe('ipfs-http-client constructor tests', () => {
   describe('parameter permuations', () => {
     let apiAddr
     let ipfsd
@@ -42,7 +42,7 @@ describe('ipfs-api constructor tests', () => {
 
     it('opts', (done) => {
       const splitted = apiAddr.split('/')
-      clientWorks(ipfsAPI({
+      clientWorks(ipfsClient({
         host: splitted[2],
         port: splitted[4],
         protocol: 'http'
@@ -50,19 +50,19 @@ describe('ipfs-api constructor tests', () => {
     })
 
     it('mutliaddr, opts', (done) => {
-      clientWorks(ipfsAPI(apiAddr, { protocol: 'http' }), done)
+      clientWorks(ipfsClient(apiAddr, { protocol: 'http' }), done)
     })
 
     it('host, port', (done) => {
       const splitted = apiAddr.split('/')
 
-      clientWorks(ipfsAPI(splitted[2], splitted[4]), done)
+      clientWorks(ipfsClient(splitted[2], splitted[4]), done)
     })
 
     it('specify host, port and api path', (done) => {
       const splitted = apiAddr.split('/')
 
-      clientWorks(ipfsAPI({
+      clientWorks(ipfsClient({
         host: splitted[2],
         port: splitted[4],
         'api-path': '/api/v0/'
@@ -72,7 +72,7 @@ describe('ipfs-api constructor tests', () => {
     it('host, port, opts', (done) => {
       const splitted = apiAddr.split('/')
 
-      clientWorks(ipfsAPI(splitted[2], splitted[4], { protocol: 'http' }), done)
+      clientWorks(ipfsClient(splitted[2], splitted[4], { protocol: 'http' }), done)
     })
   })
 })

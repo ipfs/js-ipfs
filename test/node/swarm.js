@@ -7,12 +7,12 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-const IPFSApi = require('../../src')
+const ipfsClient = require('../../src')
 
 describe('.swarm.peers', function () {
   this.timeout(50 * 1000) // slow CI
 
-  const ipfs = IPFSApi('/ip4/127.0.0.1/tcp/5001')
+  const ipfs = ipfsClient('/ip4/127.0.0.1/tcp/5001')
   const apiUrl = 'http://127.0.0.1:5001'
 
   it('handles a peer response', (done) => {

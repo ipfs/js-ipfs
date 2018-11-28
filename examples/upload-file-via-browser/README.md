@@ -1,15 +1,15 @@
-# Upload file to IPFS via browser using js-ipfs-api
+# Upload file to IPFS via browser using js-ipfs-http-client
 
-> In this example, you will find a simple React app to upload a file to IPFS via the browser using js-ipfs-api and Webpack.
+> In this example, you will find a simple React app to upload a file to IPFS via the browser using js-ipfs-http-client and Webpack.
 
 ## Setup
 
-As for any js-ipfs-api example, **you need a running IPFS daemon**, you learn how to do that here:
+As for any js-ipfs-http-client example, **you need a running IPFS daemon**, you learn how to do that here:
 
 - [Spawn a go-ipfs daemon](https://ipfs.io/docs/getting-started/)
 - [Spawn a js-ipfs daemon](https://github.com/ipfs/js-ipfs#usage)
 
-**Note:** If you load your app from a different domain than the one the daemon is running (most probably), you will need to set up CORS, see https://github.com/ipfs/js-ipfs-api#cors to learn how to do that.
+**Note:** If you load your app from a different domain than the one the daemon is running (most probably), you will need to set up CORS, see https://github.com/ipfs/js-ipfs-http-client#cors to learn how to do that.
 
 A quick (and dirty way to get it done) is:
 
@@ -31,4 +31,4 @@ Now open your browser at `http://localhost:3000`
 
 After uploading a file (left screen), and opening the uploaded file (right screen), you should see something like:
 
-![App Screenshot](https://cdn.rawgit.com/ipfs/js-ipfs-api/320fcfc6155a771027bdf0cc661e37a407d35efb/examples/upload-file-via-browser/screenshot.png)
+![App Screenshot](https://cdn.rawgit.com/ipfs/js-ipfs-http-client/320fcfc6155a771027bdf0cc661e37a407d35efb/examples/upload-file-via-browser/screenshot.png)

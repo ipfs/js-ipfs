@@ -11,7 +11,7 @@ chai.use(dirtyChai)
 const parallel = require('async/parallel')
 const series = require('async/series')
 
-const IPFSApi = require('../src')
+const ipfsClient = require('../src')
 const PingMessageStream = require('../src/utils/ping-message-stream')
 const f = require('./utils/factory')
 
@@ -37,7 +37,7 @@ describe('.ping', function () {
         f.spawn({ initOptions: { bits: 1024 } }, (err, _ipfsd) => {
           expect(err).to.not.exist()
           ipfsd = _ipfsd
-          ipfs = IPFSApi(_ipfsd.apiAddr)
+          ipfs = ipfsClient(_ipfsd.apiAddr)
           cb()
         })
       },

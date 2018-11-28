@@ -3,15 +3,15 @@
   and we test it with separate set of tests to make sure
   if it's being used in the browser, pubsub errors.
 
-  More info: https://github.com/ipfs/js-ipfs-api/issues/518
+  More info: https://github.com/ipfs/js-ipfs-http-client/issues/518
 
   This means:
-  - You can use pubsub from js-ipfs-api in Node.js
-  - You can use pubsub from js-ipfs-api in Electron
-    (when js-ipfs-api is ran in the main process of Electron)
+  - You can use pubsub from js-ipfs-http-client in Node.js
+  - You can use pubsub from js-ipfs-http-client in Electron
+    (when js-ipfs-http-client is ran in the main process of Electron)
 
-  - You can't use pubsub from js-ipfs-api in the browser
-  - You can't use pubsub from js-ipfs-api in Electron's
+  - You can't use pubsub from js-ipfs-http-client in the browser
+  - You can't use pubsub from js-ipfs-http-client in Electron's
     renderer process
 
   - You can use pubsub from js-ipfs in the browsers
@@ -32,7 +32,7 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-const IPFSApi = require('../src')
+const ipfsClient = require('../src')
 const f = require('./utils/factory')
 
 const expectedError = 'pubsub is currently not supported when run in the browser'
@@ -50,7 +50,7 @@ describe('.pubsub is not supported in the browser, yet!', function () {
     f.spawn({ initOptions: { bits: 1024 } }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsd = _ipfsd
-      ipfs = IPFSApi(_ipfsd.apiAddr)
+      ipfs = ipfsClient(_ipfsd.apiAddr)
       done()
     })
   })

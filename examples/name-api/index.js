@@ -1,6 +1,6 @@
 'use strict'
 
-const ipfs = window.IpfsApi('/ip4/127.0.0.1/tcp/5001')
+const ipfs = window.IpfsHttpClient('/ip4/127.0.0.1/tcp/5001')
 
 const DOM = {
   status: document.getElementById('status'),

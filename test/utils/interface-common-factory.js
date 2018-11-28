@@ -3,7 +3,7 @@
 
 const each = require('async/each')
 const IPFSFactory = require('ipfsd-ctl')
-const IPFSApi = require('../../src')
+const ipfsClient = require('../../src')
 
 function createFactory (options) {
   options = options || {}
@@ -29,7 +29,7 @@ function createFactory (options) {
               }
 
               nodes.push(_ipfsd)
-              cb(null, IPFSApi(_ipfsd.apiAddr))
+              cb(null, ipfsClient(_ipfsd.apiAddr))
             })
           }
         })

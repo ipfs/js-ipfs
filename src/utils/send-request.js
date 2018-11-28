@@ -9,7 +9,7 @@ const once = require('once')
 const streamToValue = require('./stream-to-value')
 const streamToJsonValue = require('./stream-to-json-value')
 const request = require('./request')
-const log = require('debug')('ipfs-api:request')
+const log = require('debug')('ipfs-http-client:request')
 
 // -- Internal
 

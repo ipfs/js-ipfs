@@ -1,6 +1,6 @@
 'use strict'
 
-var IPFS = require('ipfs-api')
+var IPFS = require('ipfs-http-client')
 
 var ipfs = IPFS()
 

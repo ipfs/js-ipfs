@@ -8,7 +8,7 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const isNode = require('detect-node')
 
-const IPFSApi = require('../src')
+const ipfsClient = require('../src')
 const f = require('./utils/factory')
 
 describe('.util', () => {
@@ -23,7 +23,7 @@ describe('.util', () => {
     f.spawn({ initOptions: { bits: 1024 } }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsd = _ipfsd
-      ipfs = IPFSApi(_ipfsd.apiAddr)
+      ipfs = ipfsClient(_ipfsd.apiAddr)
       done()
     })
   })

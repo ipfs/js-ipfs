@@ -10,7 +10,7 @@ const waterfall = require('async/waterfall')
 const path = require('path')
 const fs = require('fs')
 
-const IPFSApi = require('../src')
+const ipfsClient = require('../src')
 const f = require('./utils/factory')
 
 describe('.refs', function () {
@@ -38,7 +38,7 @@ describe('.refs', function () {
       (cb) => f.spawn({ initOptions: { bits: 1024 } }, cb),
       (_ipfsd, cb) => {
         ipfsd = _ipfsd
-        ipfs = IPFSApi(_ipfsd.apiAddr)
+        ipfs = ipfsClient(_ipfsd.apiAddr)
         ipfs.addFromFs(filesPath, { recursive: true }, cb)
       },
       (hashes, cb) => {

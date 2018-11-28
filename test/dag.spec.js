@@ -11,7 +11,7 @@ const series = require('async/series')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const CID = require('cids')
-const IPFSApi = require('../src')
+const ipfsClient = require('../src')
 const f = require('./utils/factory')
 
 let ipfsd
@@ -24,7 +24,7 @@ describe('.dag', function () {
       (cb) => f.spawn({ initOptions: { bits: 1024 } }, (err, _ipfsd) => {
         expect(err).to.not.exist()
         ipfsd = _ipfsd
-        ipfs = IPFSApi(_ipfsd.apiAddr)
+        ipfs = ipfsClient(_ipfsd.apiAddr)
         cb()
       })
     ], done)
@@ -79,7 +79,7 @@ describe('.dag', function () {
 
       ipfs.dag.get(cid, (err, result) => {
         expect(result).to.not.exist()
-        expect(err.message).to.equal('ipfs-api is missing DAG resolver for "raw" multicodec')
+        expect(err.message).to.equal('ipfs-http-client is missing DAG resolver for "raw" multicodec')
         done()
       })
     })
