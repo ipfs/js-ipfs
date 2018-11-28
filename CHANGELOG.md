@@ -1,3 +1,13 @@
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.5.2...v0.6.0) (2018-11-28)
+
+
+### Features
+
+* support sharded directories ([e1c7308](https://github.com/ipfs/js-ipfs-mfs/commit/e1c7308))
+
+
+
 <a name="0.5.2"></a>
 ## [0.5.2](https://github.com/ipfs/js-ipfs-mfs/compare/v0.5.1...v0.5.2) (2018-11-16)
 
