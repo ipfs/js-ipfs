@@ -74,8 +74,6 @@ describe('MFS preload', () => {
   })
 
   it('should disable preloading MFS', function (done) {
-    this.timeout(80 * 1000)
-
     mockIpfs._options.preload.enabled = false
 
     const preloader = mfsPreload(mockIpfs)
