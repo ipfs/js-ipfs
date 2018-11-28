@@ -1,3 +1,18 @@
+<a name="0.7.0"></a>
+# [0.7.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.6.0...v0.7.0) (2018-11-28)
+
+
+### Features
+
+* adds ls streaming methods ([1b07f58](https://github.com/ipfs/js-ipfs-mfs/commit/1b07f58)), closes [ipfs/interface-ipfs-core#401](https://github.com/ipfs/interface-ipfs-core/issues/401)
+
+
+### Performance Improvements
+
+* do not list directory contents when statting files ([d16a4e4](https://github.com/ipfs/js-ipfs-mfs/commit/d16a4e4))
+
+
+
 <a name="0.6.0"></a>
 # [0.6.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.5.2...v0.6.0) (2018-11-28)
 
