@@ -23,6 +23,11 @@ module.exports = {
       default: false,
       coerce: asBoolean,
       describe: 'Remove directories recursively'
+    },
+    'shard-split-threshold': {
+      type: 'number',
+      default: 1000,
+      describe: 'If a directory has more links than this, it will be transformed into a hamt-sharded-directory'
     }
   },
 
@@ -32,13 +37,15 @@ module.exports = {
       dest,
       ipfs,
       parents,
-      recursive
+      recursive,
+      shardSplitThreshold
     } = argv
 
     argv.resolve(
       ipfs.files.mv(source, dest, {
         parents,
-        recursive
+        recursive,
+        shardSplitThreshold
       })
     )
   }

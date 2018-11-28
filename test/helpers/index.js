@@ -23,7 +23,11 @@ const createMfs = async () => {
   })
 
   // to allow tests to verify information
-  mfs.ipld = ipld
+  mfs.ipld = {
+    get: promisify(ipld.get.bind(ipld)),
+    getMany: promisify(ipld.getMany.bind(ipld)),
+    put: promisify(ipld.put.bind(ipld))
+  }
   mfs.datastore = datastore
 
   return mfs
@@ -33,6 +37,7 @@ module.exports = {
   createMfs,
   cidAtPath: require('./cid-at-path'),
   collectLeafCids: require('./collect-leaf-cids'),
+  createShardedDirectory: require('./create-sharded-directory'),
   EMPTY_DIRECTORY_HASH: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn',
   EMPTY_DIRECTORY_HASH_BASE32: 'bafybeiczsscdsbs7ffqz55asqdf3smv6klcw3gofszvwlyarci47bgf354'
 }

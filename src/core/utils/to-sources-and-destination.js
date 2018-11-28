@@ -2,21 +2,19 @@
 
 const toSources = require('./to-sources')
 
-function toSourcesAndDestination (args, defaultOptions) {
-  const {
-    sources,
-    options,
-    callback
-  } = toSources(args, defaultOptions)
+function toSourcesAndDestination (context, args, defaultOptions, callback) {
+  toSources(context, args, defaultOptions, (err, result) => {
+    if (err) {
+      return callback(err)
+    }
 
-  const destination = sources.pop()
+    const destination = result.sources.pop()
 
-  return {
-    sources,
-    destination,
-    options,
-    callback
-  }
+    callback(null, {
+      destination,
+      ...result
+    })
+  })
 }
 
 module.exports = toSourcesAndDestination

@@ -35,15 +35,14 @@ Type: <type>`,
       coerce: asBoolean,
       describe: 'Print only size. Implies \'--format=<cumulsize>\'. Conflicts with other format options.'
     },
-    withLocal: {
+    'with-local': {
       alias: 'l',
       type: 'boolean',
       default: false,
       coerce: asBoolean,
       describe: 'Compute the amount of the dag that is local, and if possible the total size'
     },
-    cidBase: {
-      alias: 'cid-base',
+    'cid-base': {
       default: 'base58btc',
       describe: 'CID base to use.'
     }

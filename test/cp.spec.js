@@ -5,14 +5,12 @@ const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
 const bufferStream = require('pull-buffer-stream')
-
 const {
-  createMfs
+  createMfs,
+  createShardedDirectory
 } = require('./helpers')
 
 describe('cp', function () {
-  this.timeout(30000)
-
   let mfs
 
   before(() => {
@@ -33,7 +31,7 @@ describe('cp', function () {
   })
 
   it('refuses to copy files without files', () => {
-    return mfs.cp('destination')
+    return mfs.cp('/destination')
       .then(() => {
         throw new Error('No error was thrown for missing files')
       })
@@ -43,7 +41,7 @@ describe('cp', function () {
   })
 
   it('refuses to copy files without files even with options', () => {
-    return mfs.cp('destination', {})
+    return mfs.cp('/destination', {})
       .then(() => {
         throw new Error('No error was thrown for missing files')
       })
@@ -173,21 +171,15 @@ describe('cp', function () {
     }]
     const destination = `/dest-dir-${Math.random()}`
 
-    // Do the writes sequentially until the race condition is solved..
-    return mfs.write(sources[0].path, bufferStream(500, {
-      collector: (bytes) => {
-        sources[0].data = Buffer.concat([sources[0].data, bytes])
-      }
-    }), {
-      create: true
-    })
-      .then(() => mfs.write(sources[1].path, bufferStream(500, {
+    return Promise.all(
+      sources.map(source => mfs.write(source.path, bufferStream(500, {
         collector: (bytes) => {
-          sources[1].data = Buffer.concat([sources[1].data, bytes])
+          source.data = Buffer.concat([source.data, bytes])
         }
       }), {
         create: true
       }))
+    )
       .then(() => mfs.cp(sources[0].path, sources[1].path, destination, {
         parents: true
       }))
@@ -215,5 +207,105 @@ describe('cp', function () {
       .then((stats) => {
         expect(stats.size).to.equal(100)
       })
+  })
+
+  it('copies a sharded directory to a normal directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+
+    const normalDir = `dir-${Math.random()}`
+    const normalDirPath = `/${normalDir}`
+
+    await mfs.mkdir(normalDirPath)
+
+    await mfs.cp(shardedDirPath, normalDirPath)
+
+    const finalShardedDirPath = `${normalDirPath}${shardedDirPath}`
+
+    // should still be a sharded directory
+    expect((await mfs.stat(finalShardedDirPath)).type).to.equal('hamt-sharded-directory')
+
+    const files = await mfs.ls(finalShardedDirPath, {
+      long: true
+    })
+
+    expect(files.length).to.be.ok()
+  })
+
+  it('copies a normal directory to a sharded directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+
+    const normalDir = `dir-${Math.random()}`
+    const normalDirPath = `/${normalDir}`
+
+    await mfs.mkdir(normalDirPath)
+
+    await mfs.cp(normalDirPath, shardedDirPath)
+
+    const finalDirPath = `${shardedDirPath}${normalDirPath}`
+
+    // should still be a sharded directory
+    expect((await mfs.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+    expect((await mfs.stat(finalDirPath)).type).to.equal('directory')
+  })
+
+  it('copies a file from a normal directory to a sharded directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+
+    const file = `file-${Math.random()}.txt`
+    const filePath = `/${file}`
+    const finalFilePath = `${shardedDirPath}/${file}`
+
+    await mfs.write(filePath, Buffer.from([0, 1, 2, 3]), {
+      create: true
+    })
+
+    await mfs.cp(filePath, finalFilePath)
+
+    // should still be a sharded directory
+    expect((await mfs.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+    expect((await mfs.stat(finalFilePath)).type).to.equal('file')
+  })
+
+  it('copies a file from a sharded directory to a sharded directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+    const othershardedDirPath = await createShardedDirectory(mfs)
+
+    const file = `file-${Math.random()}.txt`
+    const filePath = `${shardedDirPath}/${file}`
+    const finalFilePath = `${othershardedDirPath}/${file}`
+
+    await mfs.write(filePath, Buffer.from([0, 1, 2, 3]), {
+      create: true
+    })
+
+    await mfs.cp(filePath, finalFilePath)
+
+    // should still be a sharded directory
+    expect((await mfs.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+    expect((await mfs.stat(othershardedDirPath)).type).to.equal('hamt-sharded-directory')
+    expect((await mfs.stat(finalFilePath)).type).to.equal('file')
+  })
+
+  it('copies a file from a sharded directory to a normal directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+    const dir = `dir-${Math.random()}`
+    const dirPath = `/${dir}`
+
+    const file = `file-${Math.random()}.txt`
+    const filePath = `${shardedDirPath}/${file}`
+    const finalFilePath = `${dirPath}/${file}`
+
+    await mfs.write(filePath, Buffer.from([0, 1, 2, 3]), {
+      create: true
+    })
+
+    await mfs.mkdir(dirPath)
+
+    await mfs.cp(filePath, finalFilePath)
+
+    // should still be a sharded directory
+    expect((await mfs.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+    expect((await mfs.stat(dirPath)).type).to.equal('directory')
+    expect((await mfs.stat(finalFilePath)).type).to.equal('file')
   })
 })

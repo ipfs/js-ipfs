@@ -9,13 +9,12 @@ const loadFixture = require('aegir/fixtures')
 
 const {
   createMfs,
+  createShardedDirectory,
   EMPTY_DIRECTORY_HASH,
   EMPTY_DIRECTORY_HASH_BASE32
 } = require('./helpers')
 
 describe('stat', function () {
-  this.timeout(30000)
-
   let mfs
   let smallFile = loadFixture(path.join('test', 'fixtures', 'small-file.txt'))
   let largeFile = loadFixture(path.join('test', 'fixtures', 'large-file.jpg'))
@@ -163,5 +162,23 @@ describe('stat', function () {
         expect(stats.blocks).to.equal(2)
         expect(stats.type).to.equal('file')
       })
+  })
+
+  it('stats a sharded directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+
+    const stats = await mfs.stat(`${shardedDirPath}`)
+
+    expect(stats.type).to.equal('hamt-sharded-directory')
+    expect(stats.size).to.equal(0)
+  })
+
+  it('stats a file inside a sharded directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+    const files = await mfs.ls(`${shardedDirPath}`)
+    const stats = await mfs.stat(`${shardedDirPath}/${files[0].name}`)
+
+    expect(stats.type).to.equal('file')
+    expect(stats.size).to.equal(5)
   })
 })

@@ -17,7 +17,8 @@ const mfsMkdir = (api) => {
           format,
           hashAlg,
           cidVersion,
-          flush
+          flush,
+          shardSplitThreshold
         } = request.query
 
         return ipfs.files.mkdir(arg, {
@@ -25,7 +26,8 @@ const mfsMkdir = (api) => {
           format,
           hashAlg,
           cidVersion,
-          flush
+          flush,
+          shardSplitThreshold
         })
           .then(() => reply())
           .catch(error => {

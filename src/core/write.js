@@ -3,17 +3,19 @@
 const promisify = require('promisify-es6')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
+const series = require('async/series')
 const {
   createLock,
   updateMfsRoot,
-  validatePath,
-  traverseTo,
   addLink,
   updateTree,
+  toMfsPath,
+  toPathComponents,
   toPullSource,
   loadNode,
   limitStreamBytes,
   countStreamBytes,
+  toTrail,
   zeros
 } = require('./utils')
 const {
@@ -26,12 +28,12 @@ const empty = require('pull-stream/sources/empty')
 const err = require('pull-stream/sources/error')
 const log = require('debug')('ipfs:mfs:write')
 const values = require('pull-stream/sources/values')
-const {
-  exporter,
-  importer
-} = require('ipfs-unixfs-engine')
+const exporter = require('ipfs-unixfs-exporter')
+const importer = require('ipfs-unixfs-importer')
 const deferred = require('pull-defer')
 const CID = require('cids')
+const stat = require('./stat')
+const mkdir = require('./mkdir')
 
 const defaultOptions = {
   offset: 0, // the offset in the file to begin writing
@@ -47,7 +49,8 @@ const defaultOptions = {
   progress: undefined,
   strategy: 'trickle',
   flush: true,
-  leafType: 'raw'
+  leafType: 'raw',
+  shardSplitThreshold: 1000
 }
 
 module.exports = function mfsWrite (context) {
@@ -75,55 +78,70 @@ module.exports = function mfsWrite (context) {
 
     waterfall([
       (done) => {
-        parallel([
-          (next) => toPullSource(content, options, next),
-          (next) => validatePath(path, next)
-        ], done)
-      },
-      // walk the mfs tree to the containing folder node
-      ([source, path], done) => {
-        waterfall([
-          (next) => {
-            const opts = Object.assign({}, options, {
-              createLastComponent: options.parents
-            })
+        createLock().readLock((callback) => {
+          waterfall([
+            (done) => {
+              parallel({
+                source: (next) => toPullSource(content, options, next),
+                path: (next) => toMfsPath(context, path, next)
+              }, done)
+            },
+            ({ source, path: { mfsPath, mfsDirectory } }, done) => {
+              series({
+                mfsDirectory: (next) => stat(context)(mfsDirectory, {
+                  unsorted: true,
+                  long: true
+                }, (error, result) => {
+                  if (error && error.message.includes('does not exist')) {
+                    error = null
+                  }
 
-            if (opts.createLastComponent) {
-              createLock().writeLock((callback) => {
-                traverseTo(context, path.directory, opts, (error, result) => callback(error, { source, containingFolder: result }))
-              })(next)
-            } else {
-              createLock().readLock((callback) => {
-                traverseTo(context, path.directory, opts, (error, result) => callback(error, { source, containingFolder: result }))
-              })(next)
+                  next(error, result)
+                }),
+                mfsPath: (next) => stat(context)(mfsPath, {
+                  unsorted: true,
+                  long: true
+                }, (error, result) => {
+                  if (error && error.message.includes('does not exist')) {
+                    error = null
+                  }
+
+                  next(error, result)
+                })
+              }, (error, result = {}) => {
+                done(error, {
+                  source,
+                  path,
+                  mfsDirectory: result.mfsDirectory,
+                  mfsPath: result.mfsPath
+                })
+              })
             }
-          },
-          ({ source, containingFolder }, next) => {
-            updateOrImport(context, options, path, source, containingFolder, next)
-          }
-        ], done)
+          ], callback)
+        })(done)
+      },
+      ({ source, path, mfsDirectory, mfsPath }, done) => {
+        if (!options.parents && !mfsDirectory) {
+          return done(new Error('directory does not exist'))
+        }
+
+        if (!options.create && !mfsPath) {
+          return done(new Error('file does not exist'))
+        }
+
+        updateOrImport(context, options, path, source, mfsPath, done)
       }
     ], (error) => callback(error))
   })
 }
 
-const updateOrImport = (context, options, path, source, containingFolder, callback) => {
+const updateOrImport = (context, options, path, source, existingChild, callback) => {
   waterfall([
     (next) => {
-      const existingChild = containingFolder.node.links.reduce((last, child) => {
-        if (child.name === path.name) {
-          return child
-        }
-
-        return last
-      }, null)
-
       if (existingChild) {
-        return loadNode(context, existingChild, next)
-      }
-
-      if (!options.create) {
-        return next(new Error('file does not exist'))
+        return loadNode(context, {
+          cid: existingChild.hash
+        }, next)
       }
 
       next(null, null)
@@ -140,41 +158,72 @@ const updateOrImport = (context, options, path, source, containingFolder, callba
     // The slow bit is done, now add or replace the DAGLink in the containing directory
     // re-reading the path to the containing folder in case it has changed in the interim
     (child, next) => {
-      createLock().writeLock((callback) => {
-        const opts = Object.assign({}, options, {
-          createLastComponent: options.parents
-        })
+      createLock().writeLock((writeLockCallback) => {
+        const pathComponents = toPathComponents(path)
+        const fileName = pathComponents.pop()
 
-        traverseTo(context, path.directory, opts, (error, containingFolder) => {
-          if (error) {
-            return callback(error)
-          }
+        waterfall([
+          (cb) => stat(context)(`/${pathComponents.join('/')}`, options, (error, result) => {
+            if (error && error.message.includes('does not exist')) {
+              error = null
+            }
 
-          waterfall([
-            (next) => {
-              addLink(context, {
-                parent: containingFolder.node,
-                name: path.name,
-                cid: child.multihash || child.hash,
-                size: child.size,
-                flush: options.flush
-              }, (error, { node, cid }) => {
-                // Store new containing folder CID
-                containingFolder.node = node
-                containingFolder.cid = cid
+            cb(null, Boolean(result))
+          }),
+          (parentExists, cb) => {
+            if (parentExists) {
+              return cb()
+            }
 
-                next(error)
+            mkdir(context)(`/${pathComponents.join('/')}`, options, cb)
+          },
+          // get an updated mfs path in case the root changed while we were writing
+          (cb) => toMfsPath(context, path, cb),
+          ({ mfsDirectory, root }, cb) => {
+            toTrail(context, mfsDirectory, options, (err, trail) => {
+              if (err) {
+                return cb(err)
+              }
+
+              const parent = trail[trail.length - 1]
+
+              if (parent.type !== 'dir') {
+                return cb(new Error(`cannot write to ${parent.name}: Not a directory`))
+              }
+
+              context.ipld.get(parent.cid, (err, result) => {
+                if (err) {
+                  return cb(err)
+                }
+
+                addLink(context, {
+                  parent: result.value,
+                  parentCid: parent.cid,
+                  name: fileName,
+                  cid: child.cid,
+                  size: child.size,
+                  flush: options.flush,
+                  shardSplitThreshold: options.shardSplitThreshold
+                }, (err, result) => {
+                  if (err) {
+                    return cb(err)
+                  }
+
+                  parent.cid = result.cid
+                  parent.size = result.node.size
+
+                  cb(null, trail)
+                })
               })
-            },
-            // Update the MFS tree from the containingFolder upwards
-            (next) => updateTree(context, containingFolder, next),
+            })
+          },
 
-            // Update the MFS record with the new CID for the root of the tree
-            (newRoot, next) => updateMfsRoot(context, newRoot.cid, next)
-          ], (error, result) => {
-            callback(error, result)
-          })
-        })
+          // update the tree with the new child
+          (trail, cb) => updateTree(context, trail, options, cb),
+
+          // Update the MFS record with the new CID for the root of the tree
+          ({ cid }, cb) => updateMfsRoot(context, cid, cb)
+        ], writeLockCallback)
       })(next)
     }], callback)
 }
@@ -285,10 +334,14 @@ const write = (context, existingNodeCid, existingNode, source, options, callback
       }
 
       const result = results.pop()
+      const cid = new CID(result.multihash)
 
-      log(`Wrote ${new CID(result.multihash).toBaseEncodedString()}`)
+      log(`Wrote ${cid.toBaseEncodedString()}`)
 
-      callback(null, result)
+      callback(null, {
+        cid,
+        size: result.size
+      })
     })
   )
 }

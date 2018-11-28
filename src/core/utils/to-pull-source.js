@@ -18,7 +18,9 @@ const toPullSource = (content, options, callback) => {
   if (Buffer.isBuffer(content)) {
     log('Content was a buffer')
 
-    options.length = options.length || content.length
+    if (!options.length && options.length !== 0) {
+      options.length = options.length || content.length
+    }
 
     return callback(null, values([content]))
   }

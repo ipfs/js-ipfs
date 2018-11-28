@@ -15,13 +15,15 @@ const mfsMv = (api) => {
           arg,
           parents,
           format,
-          hashAlg
+          hashAlg,
+          shardSplitThreshold
         } = request.query
 
         const args = arg.concat({
           parents,
           format,
-          hashAlg
+          hashAlg,
+          shardSplitThreshold
         })
 
         return ipfs.files.mv.apply(null, args)

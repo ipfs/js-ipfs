@@ -1,18 +1,23 @@
 'use strict'
 
 const CID = require('cids')
+const {
+  toPathComponents
+} = require('../../src/core/utils')
 
 module.exports = async (path, mfs) => {
-  const parts = path.split('/')
+  const parts = toPathComponents(path)
   const fileName = parts.pop()
   const directory = `/${parts.join('/')}`
+  const files = (await mfs.ls(directory, {
+    long: true
+  }))
+
+  const file = files
+    .filter(file => file.name === fileName)
+    .pop()
 
   return new CID(
-    (await mfs.ls(directory, {
-      long: true
-    }))
-      .filter(file => file.name === fileName)
-      .pop()
-      .hash
+    file.hash
   )
 }

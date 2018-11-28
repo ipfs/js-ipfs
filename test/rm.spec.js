@@ -6,15 +6,14 @@ chai.use(require('dirty-chai'))
 const expect = chai.expect
 const bufferStream = require('pull-buffer-stream')
 const {
-  createMfs
+  createMfs,
+  createShardedDirectory
 } = require('./helpers')
 const {
   FILE_SEPARATOR
 } = require('../src/core/utils')
 
 describe('rm', function () {
-  this.timeout(30000)
-
   let mfs
 
   before(() => {
@@ -55,6 +54,15 @@ describe('rm', function () {
       .catch(error => {
         expect(error.message).to.contain(`${path} is a directory, use -r to remove directories`)
       })
+  })
+
+  it('refuses to remove a non-existent file', async () => {
+    try {
+      await mfs.rm(`/file-${Math.random()}`)
+      throw new Error('No error was thrown for non-existent file')
+    } catch (error) {
+      expect(error.message).to.contain('does not exist')
+    }
   })
 
   it('removes a file', () => {
@@ -175,5 +183,67 @@ describe('rm', function () {
       .catch(error => {
         expect(error.message).to.contain('does not exist')
       })
+  })
+
+  it('recursively removes a sharded directory inside a normal directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+    const dir = `dir-${Math.random()}`
+    const dirPath = `/${dir}`
+
+    await mfs.mkdir(dirPath)
+
+    await mfs.mv(shardedDirPath, dirPath)
+
+    const finalShardedDirPath = `${dirPath}${shardedDirPath}`
+
+    expect((await mfs.stat(finalShardedDirPath)).type).to.equal('hamt-sharded-directory')
+
+    await mfs.rm(dirPath, {
+      recursive: true
+    })
+
+    try {
+      await mfs.stat(dirPath)
+      throw new Error('Directory was not removed')
+    } catch (error) {
+      expect(error.message).to.contain('does not exist')
+    }
+
+    try {
+      await mfs.stat(shardedDirPath)
+      throw new Error('Directory was not removed')
+    } catch (error) {
+      expect(error.message).to.contain('does not exist')
+    }
+  })
+
+  it('recursively removes a sharded directory inside a sharded directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+    const otherDirPath = await createShardedDirectory(mfs)
+
+    await mfs.mv(shardedDirPath, otherDirPath)
+
+    const finalShardedDirPath = `${otherDirPath}${shardedDirPath}`
+
+    expect((await mfs.stat(finalShardedDirPath)).type).to.equal('hamt-sharded-directory')
+    expect((await mfs.stat(otherDirPath)).type).to.equal('hamt-sharded-directory')
+
+    await mfs.rm(otherDirPath, {
+      recursive: true
+    })
+
+    try {
+      await mfs.stat(otherDirPath)
+      throw new Error('Directory was not removed')
+    } catch (error) {
+      expect(error.message).to.contain('does not exist')
+    }
+
+    try {
+      await mfs.stat(finalShardedDirPath)
+      throw new Error('Directory was not removed')
+    } catch (error) {
+      expect(error.message).to.contain('does not exist')
+    }
   })
 })

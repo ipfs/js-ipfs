@@ -6,8 +6,6 @@ const {
 } = require('./helpers')
 
 describe('flush', function () {
-  this.timeout(30000)
-
   let mfs
 
   before(() => {

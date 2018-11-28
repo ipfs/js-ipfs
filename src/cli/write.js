@@ -39,14 +39,14 @@ module.exports = {
       coerce: asBoolean,
       describe: 'Truncate the file after writing'
     },
-    rawLeaves: {
+    'raw-leaves': {
       alias: 'r',
       type: 'boolean',
       default: false,
       coerce: asBoolean,
       describe: 'Whether to write leaf nodes as raw UnixFS nodes'
     },
-    reduceSingleLeafToSelf: {
+    'reduce-single-leaf-to-self': {
       type: 'boolean',
       default: false,
       coerce: asBoolean,
@@ -64,13 +64,13 @@ module.exports = {
       type: 'string',
       default: 'balanced'
     },
-    cidVersion: {
-      alias: ['cid-ver', 'cid-version'],
+    'cid-version': {
+      alias: ['cid-ver'],
       type: 'number',
       default: 0,
-      describe: 'Cid version to use. (experimental).'
+      describe: 'Cid version to use'
     },
-    hashAlg: {
+    'hash-alg': {
       alias: 'h',
       type: 'string',
       default: 'sha2-256'
@@ -78,6 +78,11 @@ module.exports = {
     format: {
       type: 'string',
       default: 'dag-pb'
+    },
+    'shard-split-threshold': {
+      type: 'number',
+      default: 1000,
+      describe: 'If a directory has more links than this, it will be transformed into a hamt-sharded-directory'
     }
   },
 
@@ -97,7 +102,8 @@ module.exports = {
       parents,
       progress,
       strategy,
-      flush
+      flush,
+      shardSplitThreshold
     } = argv
 
     argv.resolve(
@@ -114,7 +120,8 @@ module.exports = {
         parents,
         progress,
         strategy,
-        flush
+        flush,
+        shardSplitThreshold
       })
     )
   }

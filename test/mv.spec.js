@@ -6,12 +6,11 @@ chai.use(require('dirty-chai'))
 const expect = chai.expect
 const bufferStream = require('pull-buffer-stream')
 const {
-  createMfs
+  createMfs,
+  createShardedDirectory
 } = require('./helpers')
 
 describe('mv', function () {
-  this.timeout(30000)
-
   let mfs
 
   before(() => {
@@ -32,7 +31,7 @@ describe('mv', function () {
   })
 
   it('refuses to move files without enough arguments', () => {
-    return mfs.mv('destination')
+    return mfs.mv('/destination')
       .then(() => {
         throw new Error('No error was thrown for missing files')
       })
@@ -113,5 +112,162 @@ describe('mv', function () {
       .catch(error => {
         expect(error.message).to.contain('does not exist')
       })
+  })
+
+  it('moves a sharded directory to a normal directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+    const dirPath = `/dir-${Math.random()}`
+    const finalShardedDirPath = `${dirPath}${shardedDirPath}`
+
+    await mfs.mkdir(dirPath)
+    await mfs.mv(shardedDirPath, dirPath)
+
+    expect((await mfs.stat(finalShardedDirPath)).type).to.equal('hamt-sharded-directory')
+    expect((await mfs.stat(dirPath)).type).to.equal('directory')
+
+    try {
+      await mfs.stat(shardedDirPath)
+      throw new Error('Dir was not removed')
+    } catch (error) {
+      expect(error.message).to.contain('does not exist')
+    }
+  })
+
+  it('moves a normal directory to a sharded directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+    const dirPath = `/dir-${Math.random()}`
+    const finalDirPath = `${shardedDirPath}${dirPath}`
+
+    await mfs.mkdir(dirPath)
+    await mfs.mv(dirPath, shardedDirPath)
+
+    expect((await mfs.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+    expect((await mfs.stat(finalDirPath)).type).to.equal('directory')
+
+    try {
+      await mfs.stat(dirPath)
+      throw new Error('Dir was not removed')
+    } catch (error) {
+      expect(error.message).to.contain('does not exist')
+    }
+  })
+
+  it('moves a sharded directory to a sharded directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+    const otherShardedDirPath = await createShardedDirectory(mfs)
+    const finalShardedDirPath = `${shardedDirPath}${otherShardedDirPath}`
+
+    await mfs.mv(otherShardedDirPath, shardedDirPath)
+
+    expect((await mfs.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+    expect((await mfs.stat(finalShardedDirPath)).type).to.equal('hamt-sharded-directory')
+
+    try {
+      await mfs.stat(otherShardedDirPath)
+      throw new Error('Sharded dir was not removed')
+    } catch (error) {
+      expect(error.message).to.contain('does not exist')
+    }
+  })
+
+  it('moves a file from a normal directory to a sharded directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+    const dirPath = `/dir-${Math.random()}`
+    const file = `file-${Math.random()}.txt`
+    const filePath = `${dirPath}/${file}`
+    const finalFilePath = `${shardedDirPath}/${file}`
+
+    await mfs.mkdir(dirPath)
+    await mfs.write(filePath, Buffer.from([0, 1, 2, 3, 4]), {
+      create: true
+    })
+
+    await mfs.mv(filePath, shardedDirPath)
+
+    expect((await mfs.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+    expect((await mfs.stat(finalFilePath)).type).to.equal('file')
+
+    try {
+      await mfs.stat(filePath)
+      throw new Error('File was not removed')
+    } catch (error) {
+      expect(error.message).to.contain('does not exist')
+    }
+  })
+
+  it('moves a file from a sharded directory to a normal directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+    const dirPath = `/dir-${Math.random()}`
+    const file = `file-${Math.random()}.txt`
+    const filePath = `${shardedDirPath}/${file}`
+    const finalFilePath = `${dirPath}/${file}`
+
+    await mfs.mkdir(dirPath)
+    await mfs.write(filePath, Buffer.from([0, 1, 2, 3, 4]), {
+      create: true
+    })
+
+    await mfs.mv(filePath, dirPath)
+
+    expect((await mfs.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+    expect((await mfs.stat(finalFilePath)).type).to.equal('file')
+    expect((await mfs.stat(dirPath)).type).to.equal('directory')
+
+    try {
+      await mfs.stat(filePath)
+      throw new Error('File was not removed')
+    } catch (error) {
+      expect(error.message).to.contain('does not exist')
+    }
+  })
+
+  it('moves a file from a sharded directory to a sharded directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs)
+    const otherShardedDirPath = await createShardedDirectory(mfs)
+    const file = `file-${Math.random()}.txt`
+    const filePath = `${shardedDirPath}/${file}`
+    const finalFilePath = `${otherShardedDirPath}/${file}`
+
+    await mfs.write(filePath, Buffer.from([0, 1, 2, 3, 4]), {
+      create: true
+    })
+
+    await mfs.mv(filePath, otherShardedDirPath)
+
+    expect((await mfs.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+    expect((await mfs.stat(finalFilePath)).type).to.equal('file')
+    expect((await mfs.stat(otherShardedDirPath)).type).to.equal('hamt-sharded-directory')
+
+    try {
+      await mfs.stat(filePath)
+      throw new Error('File was not removed')
+    } catch (error) {
+      expect(error.message).to.contain('does not exist')
+    }
+  })
+
+  it('moves a file from a sub-shard of a sharded directory to a sharded directory', async () => {
+    const shardedDirPath = await createShardedDirectory(mfs, 10, 75)
+    const otherShardedDirPath = await createShardedDirectory(mfs)
+    const file = `file-1a.txt`
+    const filePath = `${shardedDirPath}/${file}`
+    const finalFilePath = `${otherShardedDirPath}/${file}`
+
+    await mfs.write(filePath, Buffer.from([0, 1, 2, 3, 4]), {
+      create: true
+    })
+
+    await mfs.mv(filePath, otherShardedDirPath)
+
+    expect((await mfs.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+    expect((await mfs.stat(finalFilePath)).type).to.equal('file')
+    expect((await mfs.stat(otherShardedDirPath)).type).to.equal('hamt-sharded-directory')
+
+    try {
+      await mfs.stat(filePath)
+      throw new Error('File was not removed')
+    } catch (error) {
+      expect(error.message).to.contain('does not exist')
+    }
   })
 })
