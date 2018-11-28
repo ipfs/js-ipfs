@@ -43,17 +43,17 @@ describe('object endpoint', () => {
 
   describe('.object', () => {
     it('.new', (done) => {
-      ipfs.object.new(asJson((err, res) => {
+      ipfs.object.new((err, cid) => {
         expect(err).to.not.exist()
-        expect(res.links).to.be.eql([])
+        expect(cid.toBaseEncodedString())
+          .to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
 
-        dagPB.util.cid(res, (err, cid) => {
+        ipfs.object.get(cid, asJson((err, res) => {
           expect(err).to.not.exist()
-          expect(cid.toBaseEncodedString())
-            .to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
+          expect(res.links).to.be.eql([])
           done()
-        })
-      }))
+        }))
+      })
     })
 
     describe('.get', () => {
@@ -103,17 +103,17 @@ describe('object endpoint', () => {
           size: 68
         }
 
-        ipfs.object.put(filePath, { enc: 'json' }, asJson((err, res) => {
+        ipfs.object.put(filePath, { enc: 'json' }, (err, cid) => {
           expect(err).to.not.exist()
-          expect(res).to.eql(expectedResult)
+          expect(cid.toBaseEncodedString())
+            .to.equal('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
 
-          dagPB.util.cid(res, (err, cid) => {
+          ipfs.object.get(cid, asJson((err, res) => {
             expect(err).to.not.exist()
-            expect(cid.toBaseEncodedString())
-              .to.equal('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
+            expect(res).to.eql(expectedResult)
             done()
-          })
-        }))
+          }))
+        })
       })
     })
 
@@ -226,17 +226,17 @@ describe('object endpoint', () => {
           size: 19
         }
 
-        ipfs.object.patch.appendData(key, filePath, { enc: 'base58' }, asJson((err, res) => {
+        ipfs.object.patch.appendData(key, filePath, { enc: 'base58' }, (err, cid) => {
           expect(err).to.not.exist()
-          expect(res).to.eql(expectedResult)
+          expect(cid.toBaseEncodedString())
+            .to.equal('QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6')
 
-          dagPB.util.cid(res, (err, cid) => {
+          ipfs.object.get(cid, asJson((err, res) => {
             expect(err).to.not.exist()
-            expect(cid.toBaseEncodedString())
-              .to.equal('QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6')
+            expect(res).to.eql(expectedResult)
             done()
-          })
-        }))
+          }))
+        })
       })
     })
 
@@ -266,17 +266,17 @@ describe('object endpoint', () => {
           size: 19
         }
 
-        ipfs.object.patch.setData(key, filePath, { enc: 'base58' }, asJson((err, res) => {
+        ipfs.object.patch.setData(key, filePath, { enc: 'base58' }, (err, cid) => {
           expect(err).to.not.exist()
-          expect(res).to.eql(expectedResult)
+          expect(cid.toBaseEncodedString())
+            .to.equal('QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6')
 
-          dagPB.util.cid(res, (err, cid) => {
+          ipfs.object.get(cid, asJson((err, res) => {
             expect(err).to.not.exist()
-            expect(cid.toBaseEncodedString())
-              .to.equal('QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6')
+            expect(res).to.eql(expectedResult)
             done()
-          })
-        }))
+          }))
+        })
       })
     })
 
@@ -311,21 +311,22 @@ describe('object endpoint', () => {
         const name = 'foo'
         const ref = 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
         const link = new DAGLink(name, 10, ref)
-        ipfs.object.patch.addLink(root, link, { enc: 'base58' }, asJson((err, res) => {
-          expect(err).not.to.exist()
-          expect(res.links[0]).to.eql({
-            name: 'foo',
-            cid: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn',
-            size: 4
-          })
 
-          dagPB.util.cid(res, (err, cid) => {
+        ipfs.object.patch.addLink(root, link, { enc: 'base58' }, (err, cid) => {
+          expect(err).not.to.exist()
+          expect(cid.toBaseEncodedString())
+            .to.equal('QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK')
+
+          ipfs.object.get(cid, asJson((err, res) => {
             expect(err).to.not.exist()
-            expect(cid.toBaseEncodedString())
-              .to.equal('QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK')
+            expect(res.links[0]).to.eql({
+              name: 'foo',
+              cid: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn',
+              size: 4
+            })
             done()
-          })
-        }))
+          }))
+        })
       })
     })
 
