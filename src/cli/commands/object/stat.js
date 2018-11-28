@@ -17,7 +17,7 @@ module.exports = {
         throw err
       }
 
-      delete stats.Hash // only for js-ipfs-api output
+      delete stats.Hash // only for js-ipfs-http-client output
 
       Object.keys(stats).forEach((key) => {
         print(`${key}: ${stats[key]}`)

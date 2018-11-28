@@ -29,7 +29,7 @@ exports.subscribe = {
       }) + '\n', 'utf8')
     }
 
-    // js-ipfs-api needs a reply, and go-ipfs does the same thing
+    // js-ipfs-http-client needs a reply, and go-ipfs does the same thing
     res.write('{}\n')
 
     const unsubscribe = () => {
