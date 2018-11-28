@@ -2,7 +2,7 @@
 
 const pull = require('pull-stream/pull')
 const through = require('pull-stream/throughs/through')
-const collect = require('pull-stream/sinks/collect')
+const onEnd = require('pull-stream/sinks/on-end')
 const {
   print
 } = require('./utils')
@@ -43,7 +43,7 @@ module.exports = {
           through(buffer => {
             print(buffer, false)
           }),
-          collect((error) => {
+          onEnd((error) => {
             if (error) {
               return reject(error)
             }

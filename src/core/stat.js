@@ -10,7 +10,6 @@ const waterfall = require('async/waterfall')
 const pull = require('pull-stream/pull')
 const collect = require('pull-stream/sinks/collect')
 const asyncMap = require('pull-stream/throughs/async-map')
-const filter = require('pull-stream/throughs/filter')
 const exporter = require('ipfs-unixfs-exporter')
 const log = require('debug')('ipfs:mfs:stat')
 
@@ -37,12 +36,9 @@ module.exports = (context) => {
       ({ mfsPath, depth }, cb) => {
         pull(
           exporter(mfsPath, context.ipld, {
-            maxDepth: depth + 1,
-            fullPath: true
+            maxDepth: depth
           }),
-          filter(node => node.depth === depth),
 
-          // load DAGNodes for each file
           asyncMap((file, cb) => {
             loadNode(context, {
               cid: file.hash
