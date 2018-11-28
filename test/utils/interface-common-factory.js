@@ -3,7 +3,7 @@
 
 const each = require('async/each')
 const IPFSFactory = require('ipfsd-ctl')
-const IpfsApi = require('ipfs-api')
+const ipfsClient = require('ipfs-http-client')
 const IPFS = require('../../src')
 
 function createFactory (options) {
@@ -13,7 +13,7 @@ function createFactory (options) {
   options.spawnOptions = options.spawnOptions || { initOptions: { bits: 512 }, config: { Bootstrap: [] } }
 
   if (options.factoryOptions.type !== 'proc') {
-    options.factoryOptions.IpfsApi = options.factoryOptions.IpfsApi || IpfsApi
+    options.factoryOptions.IpfsApi = options.factoryOptions.IpfsApi || ipfsClient
   }
 
   const ipfsFactory = IPFSFactory.create(options.factoryOptions)

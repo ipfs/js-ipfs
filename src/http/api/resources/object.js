@@ -37,7 +37,7 @@ exports.new = (request, reply) => {
 
   waterfall([
     (cb) => ipfs.object.new(template, cb),
-    (node, cb) => dagPB.util.cid(node, (err, cid) => cb(err, { node, cid }))
+    (cid, cb) => ipfs.object.get(cid, (err, node) => cb(err, { node, cid }))
   ], (err, results) => {
     if (err) {
       log.error(err)
@@ -200,8 +200,7 @@ exports.put = {
 
     waterfall([
       (cb) => DAGNode.create(Buffer.from(node.Data), node.Links, cb),
-      (node, cb) => ipfs.object.put(node, cb),
-      (node, cb) => dagPB.util.cid(node, (err, cid) => cb(err, { cid, node }))
+      (node, cb) => ipfs.object.put(node, (err, cid) => cb(err, { cid, node }))
     ], (err, results) => {
       if (err) {
         log.error(err)
@@ -366,7 +365,7 @@ exports.patchAppendData = {
 
     waterfall([
       (cb) => ipfs.object.patch.appendData(key, data, cb),
-      (node, cb) => dagPB.util.cid(node, (err, cid) => cb(err, { node, cid }))
+      (cid, cb) => ipfs.object.get(cid, (err, node) => cb(err, { node, cid }))
     ], (err, results) => {
       if (err) {
         log.error(err)
@@ -409,7 +408,7 @@ exports.patchSetData = {
 
     waterfall([
       (cb) => ipfs.object.patch.setData(key, data, cb),
-      (node, cb) => dagPB.util.cid(node, (err, cid) => cb(err, { node, cid }))
+      (cid, cb) => ipfs.object.get(cid, (err, node) => cb(err, { node, cid }))
     ], (err, results) => {
       if (err) {
         log.error(err)
@@ -477,7 +476,7 @@ exports.patchAddLink = {
     waterfall([
       (cb) => ipfs.object.get(ref, cb),
       (node, cb) => ipfs.object.patch.addLink(root, new DAGLink(name, node.size, ref), cb),
-      (node, cb) => dagPB.util.cid(node, (err, cid) => cb(err, { node, cid }))
+      (cid, cb) => ipfs.object.get(cid, (err, node) => cb(err, { node, cid }))
     ], (err, results) => {
       if (err) {
         log.error(err)
@@ -544,7 +543,7 @@ exports.patchRmLink = {
 
     waterfall([
       (cb) => ipfs.object.patch.rmLink(root, { name: link }, cb),
-      (node, cb) => dagPB.util.cid(node, (err, cid) => cb(err, { node, cid }))
+      (cid, cb) => ipfs.object.get(cid, (err, node) => cb(err, { node, cid }))
     ], (err, results) => {
       if (err) {
         log.error(err)

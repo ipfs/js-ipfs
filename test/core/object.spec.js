@@ -11,11 +11,6 @@ const IPFSFactory = require('ipfsd-ctl')
 const auto = require('async/auto')
 const waterfall = require('async/waterfall')
 const IPFS = require('../../src/core')
-const {
-  util: {
-    cid
-  }
-} = require('ipld-dag-pb')
 
 describe('object', () => {
   let ipfsd, ipfs
@@ -55,16 +50,12 @@ describe('object', () => {
     })
 
     it('should not error when passed null options', (done) => {
-      ipfs.object.put(Buffer.from(hat()), (err, dagNode) => {
+      ipfs.object.put(Buffer.from(hat()), (err, cid) => {
         expect(err).to.not.exist()
 
-        cid(dagNode, (err, result) => {
+        ipfs.object.get(cid, null, (err) => {
           expect(err).to.not.exist()
-
-          ipfs.object.get(result, null, (err) => {
-            expect(err).to.not.exist()
-            done()
-          })
+          done()
         })
       })
     })
@@ -85,13 +76,13 @@ describe('object', () => {
         a: (cb) => {
           waterfall([
             (done) => ipfs.object.put(Buffer.from(hat()), done),
-            (node, done) => cid(node, (err, cid) => done(err, { node, cid }))
+            (cid, done) => ipfs.object.get(cid, (err, node) => done(err, { node, cid }))
           ], cb)
         },
         b: (cb) => {
           waterfall([
             (done) => ipfs.object.put(Buffer.from(hat()), done),
-            (node, done) => cid(node, (err, cid) => done(err, { node, cid }))
+            (cid, done) => ipfs.object.get(cid, (err, node) => done(err, { node, cid }))
           ], cb)
         }
       }, (err, results) => {
@@ -117,13 +108,13 @@ describe('object', () => {
         nodeA: (cb) => {
           waterfall([
             (done) => ipfs.object.put(Buffer.from(hat()), done),
-            (node, done) => cid(node, (err, cid) => done(err, { node, cid }))
+            (cid, done) => ipfs.object.get(cid, (err, node) => done(err, { node, cid }))
           ], cb)
         },
         nodeB: (cb) => {
           waterfall([
             (done) => ipfs.object.put(Buffer.from(hat()), done),
-            (node, done) => cid(node, (err, cid) => done(err, { node, cid }))
+            (cid, done) => ipfs.object.get(cid, (err, node) => done(err, { node, cid }))
           ], cb)
         },
         nodeAWithLink: ['nodeA', 'nodeB', (res, cb) => {
@@ -133,7 +124,7 @@ describe('object', () => {
               multihash: res.nodeB.cid,
               size: res.nodeB.node.size
             }, done),
-            (node, done) => cid(node, (err, cid) => done(err, { node, cid }))
+            (cid, done) => ipfs.object.get(cid, (err, node) => done(err, { node, cid }))
           ], cb)
         }]
       }, (err, res) => {
@@ -150,16 +141,12 @@ describe('object', () => {
 
   describe('patch.appendData', () => {
     it('should not error when passed null options', (done) => {
-      ipfs.object.put(Buffer.from(hat()), null, (err, dagNode) => {
+      ipfs.object.put(Buffer.from(hat()), null, (err, cid) => {
         expect(err).to.not.exist()
 
-        cid(dagNode, (err, result) => {
+        ipfs.object.patch.appendData(cid, Buffer.from(hat()), null, (err) => {
           expect(err).to.not.exist()
-
-          ipfs.object.patch.appendData(result, Buffer.from(hat()), null, (err) => {
-            expect(err).to.not.exist()
-            done()
-          })
+          done()
         })
       })
     })
@@ -167,16 +154,12 @@ describe('object', () => {
 
   describe('patch.setData', () => {
     it('should not error when passed null options', (done) => {
-      ipfs.object.put(Buffer.from(hat()), null, (err, dagNode) => {
+      ipfs.object.put(Buffer.from(hat()), null, (err, cid) => {
         expect(err).to.not.exist()
 
-        cid(dagNode, (err, result) => {
+        ipfs.object.patch.setData(cid, Buffer.from(hat()), null, (err) => {
           expect(err).to.not.exist()
-
-          ipfs.object.patch.setData(result, Buffer.from(hat()), null, (err) => {
-            expect(err).to.not.exist()
-            done()
-          })
+          done()
         })
       })
     })

@@ -9,11 +9,6 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-const {
-  util: {
-    cid
-  }
-} = require('ipld-dag-pb')
 
 const MockPreloadNode = require('../utils/mock-preload-node')
 const IPFS = require('../../src')
@@ -158,26 +153,16 @@ describe('preload', () => {
   })
 
   it('should preload content added with object.new', (done) => {
-    ipfs.object.new((err, node) => {
+    ipfs.object.new((err, cid) => {
       expect(err).to.not.exist()
-
-      cid(node, (err, result) => {
-        expect(err).to.not.exist()
-
-        MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
-      })
+      MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
     })
   })
 
   it('should preload content added with object.put', (done) => {
-    ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, (err, node) => {
+    ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, (err, cid) => {
       expect(err).to.not.exist()
-
-      cid(node, (err, result) => {
-        expect(err).to.not.exist()
-
-        MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
-      })
+      MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
     })
   })
 
@@ -186,13 +171,13 @@ describe('preload', () => {
       parent: (cb) => {
         waterfall([
           (done) => ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, done),
-          (node, done) => cid(node, (err, cid) => done(err, { node, cid }))
+          (cid, done) => ipfs.object.get(cid, (err, node) => done(err, { node, cid }))
         ], cb)
       },
       link: (cb) => {
         waterfall([
           (done) => ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, done),
-          (node, done) => cid(node, (err, cid) => done(err, { node, cid }))
+          (cid, done) => ipfs.object.get(cid, (err, node) => done(err, { node, cid }))
         ], cb)
       }
     }, (err, result) => {
@@ -202,14 +187,9 @@ describe('preload', () => {
         name: 'link',
         cid: result.link.cid,
         size: result.link.node.size
-      }, (err, node) => {
+      }, (err, cid) => {
         expect(err).to.not.exist()
-
-        cid(node, (err, result) => {
-          expect(err).to.not.exist()
-
-          MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
-        })
+        MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
       })
     })
   })
@@ -217,7 +197,7 @@ describe('preload', () => {
   it('should preload content added with object.patch.rmLink', (done) => {
     waterfall([
       (cb) => ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, cb),
-      (node, cb) => cid(node, (err, cid) => cb(err, { node, cid })),
+      (cid, cb) => ipfs.object.get(cid, (err, node) => cb(err, { node, cid })),
       ({ node, cid }, cb) => {
         ipfs.object.put({
           Data: Buffer.from(hat()),
@@ -228,77 +208,45 @@ describe('preload', () => {
           }]
         }, cb)
       }
-    ], (err, parent) => {
+    ], (err, parentCid) => {
       expect(err).to.not.exist()
 
-      cid(parent, (err, result) => {
+      ipfs.object.patch.rmLink(parentCid, { name: 'link' }, (err, cid) => {
         expect(err).to.not.exist()
-
-        ipfs.object.patch.rmLink(result, { name: 'link' }, (err, node) => {
-          expect(err).to.not.exist()
-
-          cid(node, (err, result) => {
-            expect(err).to.not.exist()
-
-            MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
-          })
-        })
+        MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
       })
     })
   })
 
   it('should preload content added with object.patch.setData', (done) => {
-    ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, (err, node) => {
+    ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, (err, cid) => {
       expect(err).to.not.exist()
 
-      cid(node, (err, result) => {
+      ipfs.object.patch.setData(cid, Buffer.from(hat()), (err, cid) => {
         expect(err).to.not.exist()
-
-        ipfs.object.patch.setData(result, Buffer.from(hat()), (err, node) => {
-          expect(err).to.not.exist()
-
-          cid(node, (err, result) => {
-            expect(err).to.not.exist()
-
-            MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
-          })
-        })
+        MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
       })
     })
   })
 
   it('should preload content added with object.patch.appendData', (done) => {
-    ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, (err, node) => {
+    ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, (err, cid) => {
       expect(err).to.not.exist()
 
-      cid(node, (err, result) => {
+      ipfs.object.patch.appendData(cid, Buffer.from(hat()), (err, cid) => {
         expect(err).to.not.exist()
-
-        ipfs.object.patch.appendData(result, Buffer.from(hat()), (err, node) => {
-          expect(err).to.not.exist()
-
-          cid(node, (err, result) => {
-            expect(err).to.not.exist()
-
-            MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
-          })
-        })
+        MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
       })
     })
   })
 
   it('should preload content retrieved with object.get', (done) => {
-    ipfs.object.new(null, { preload: false }, (err, node) => {
+    ipfs.object.new(null, { preload: false }, (err, cid) => {
       expect(err).to.not.exist()
 
-      cid(node, (err, result) => {
+      ipfs.object.get(cid, (err) => {
         expect(err).to.not.exist()
-
-        ipfs.object.get(result, (err) => {
-          expect(err).to.not.exist()
-
-          MockPreloadNode.waitForCids(result.toBaseEncodedString(), done)
-        })
+        MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
       })
     })
   })

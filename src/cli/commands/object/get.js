@@ -1,11 +1,7 @@
 'use strict'
 
 const print = require('../../utils').print
-const {
-  util: {
-    cid
-  }
-} = require('ipld-dag-pb')
+const dagPB = require('ipld-dag-pb')
 
 module.exports = {
   command: 'get <key>',
@@ -29,7 +25,7 @@ module.exports = {
         throw err
       }
 
-      cid(node, (err, result) => {
+      dagPB.util.cid(node, (err, result) => {
         if (err) {
           throw err
         }

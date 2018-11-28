@@ -35,7 +35,7 @@ function getAPICtl (apiAddr) {
     apiAddr = multiaddr(fs.readFileSync(apiPath).toString()).toString()
   }
   // Required inline to reduce startup time
-  const APIctl = require('ipfs-api')
+  const APIctl = require('ipfs-http-client')
   return APIctl(apiAddr)
 }
 

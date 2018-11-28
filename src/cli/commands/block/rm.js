@@ -13,7 +13,7 @@ module.exports = {
 
   handler (argv) {
     if (utils.isDaemonOn()) {
-      // TODO implement this once `js-ipfs-api` supports it
+      // TODO implement this once `js-ipfs-http-client` supports it
       throw new Error('rm block with daemon running is not yet implemented')
     }
 

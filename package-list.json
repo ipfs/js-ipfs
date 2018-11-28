@@ -50,7 +50,7 @@
     ["libp2p/js-libp2p-keychain", "libp2p-keychain"],
 
     "Generics/Utils",
-    ["ipfs/js-ipfs-api", "ipfs-api"],
+    ["ipfs/js-ipfs-http-client", "ipfs-http-client"],
     ["ipfs/ipfs-multipart", "ipfs-multipart"],
     ["ipfs/is-ipfs", "is-ipfs"],
     ["multiformats/js-multihashing", "multihashing"],

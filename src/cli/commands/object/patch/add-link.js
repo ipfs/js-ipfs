@@ -3,11 +3,6 @@
 const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
 const print = require('../../../utils').print
-const {
-  util: {
-    cid
-  }
-} = require('ipld-dag-pb')
 
 module.exports = {
   command: 'add-link <root> <name> <ref>',
@@ -30,7 +25,7 @@ module.exports = {
         throw err
       }
 
-      cid(nodeA, (err, result) => {
+      dagPB.util.cid(nodeA, (err, result) => {
         if (err) {
           throw err
         }
@@ -39,18 +34,12 @@ module.exports = {
 
         ipfs.object.patch.addLink(argv.root, link, {
           enc: 'base58'
-        }, (err, nodeB) => {
+        }, (err, cid) => {
           if (err) {
             throw err
           }
 
-          cid(nodeB, (err, result) => {
-            if (err) {
-              throw err
-            }
-
-            print(result.toBaseEncodedString(argv.cidBase))
-          })
+          print(cid.toBaseEncodedString(argv.cidBase))
         })
       })
     })

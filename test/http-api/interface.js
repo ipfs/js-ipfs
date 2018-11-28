@@ -4,7 +4,7 @@
 const tests = require('interface-ipfs-core')
 const CommonFactory = require('../utils/interface-common-factory')
 
-describe('interface-ipfs-core over ipfs-api tests', () => {
+describe('interface-ipfs-core over ipfs-http-client tests', () => {
   const defaultCommonFactory = CommonFactory.create({
     factoryOptions: { exec: 'src/cli/bin.js' }
   })
