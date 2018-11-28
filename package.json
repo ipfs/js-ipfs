@@ -70,7 +70,7 @@
     "form-data": "^2.3.3",
     "hat": "0.0.3",
     "interface-ipfs-core": "~0.88.0",
-    "ipfsd-ctl": "ipfs/js-ipfsd-ctl#update-dag-pb-to-not-have-cid-property",
+    "ipfsd-ctl": "~0.41.0",
     "ncp": "^2.0.0",
     "qs": "^6.5.2",
     "rimraf": "^2.6.2",
