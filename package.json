@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "26.1.2",
+  "version": "27.0.0",
   "description": "A client library for the IPFS HTTP API",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "main": "src/index.js",
@@ -161,6 +161,7 @@
     "Vasco Santos <vasco.santos@moxy.studio>",
     "Victor Bjelkholm <victor@typeform.com>",
     "Volker Mische <volker.mische@gmail.com>",
+    "Zhiyuan Lin <edsgerlin@gmail.com>",
     "dmitriy ryajov <dryajov@dmitriys-MacBook-Pro.local>",
     "elsehow <yes@cosmopol.is>",
     "ethers <ethereum@outlook.com>",
@@ -173,8 +174,8 @@
     "samuli <samuli@nugg.ad>",
     "shunkin <hiyoko.san.ipod@gmail.com>",
     "victorbjelkholm <victorbjelkholm@gmail.com>",
-    "Łukasz Magiera <magik6k@gmail.com>",
-    "Łukasz Magiera <magik6k@users.noreply.github.com>"
+    "Łukasz Magiera <magik6k@users.noreply.github.com>",
+    "Łukasz Magiera <magik6k@gmail.com>"
   ],
   "license": "MIT",
   "bugs": {
