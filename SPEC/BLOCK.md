@@ -8,9 +8,9 @@
 
 > Get a raw IPFS block.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.block.get(cid, [options, callback])
+##### JavaScript - `ipfs.block.get(cid, [options], [callback])`
 
 `cid` is a [cid][cid] which can be passed as:
 
@@ -44,9 +44,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Stores input as an IPFS block.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.block.put(block [, options], [callback])
+##### JavaScript - `ipfs.block.put(block, [options], [callback])`
 
 Where `block` can be:
 
@@ -114,9 +114,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Print information of a raw IPFS block.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.block.stat(cid, [callback])
+##### JavaScript - `ipfs.block.stat(cid, [callback])`
 
 `cid` is a [cid][cid] which can be passed as:
 

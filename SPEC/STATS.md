@@ -22,9 +22,9 @@ Note: `stats.repo` and `repo.stat` can be used interchangeably. See [`repo.stat`
 
 > Get IPFS bandwidth information as an object.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.stats.bw([options, callback])
+##### JavaScript - `ipfs.stats.bw([options], [callback])`
 
 Where:
 
@@ -60,9 +60,9 @@ ipfs.stats.bw((err, stats) => console.log(stats))
 
 > Get IPFS bandwidth information as a [Pull Stream][ps].
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.stats.bwPullStream([options]) -> [Pull Stream][ps]
+##### JavaScript - `ipfs.stats.bwPullStream([options])` -> [Pull Stream][ps]
 
 Options are described on [`ipfs.stats.bw`](#bw).
 
@@ -91,9 +91,9 @@ pull(
 
 > Get IPFS bandwidth information as a [Readable Stream][rs].
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.stats.bwReadableStream([options]) -> [Readable Stream][rs]
+##### JavaScript - `ipfs.stats.bwReadableStream([options])` -> [Readable Stream][rs]
 
 Options are described on [`ipfs.stats.bw`](#bw).
 

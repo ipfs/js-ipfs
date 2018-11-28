@@ -8,9 +8,9 @@
 
 > Perform a garbage collection sweep on the repo.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.repo.gc([options, callback])
+##### JavaScript - `ipfs.repo.gc([options], [callback])`
 
 Where:
 
@@ -32,9 +32,9 @@ ipfs.repo.gc((err, res) => console.log(res))
 
 > Get stats for the currently used repo.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.repo.stat([options, callback])
+##### JavaScript - `ipfs.repo.stat([options], [callback])`
 
 `stats.repo` and `repo.stat` can be used interchangeably.
 
@@ -69,9 +69,9 @@ ipfs.repo.stat((err, stats) => console.log(stats))
 
 > Show the repo version.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.repo.version([callback])
+##### JavaScript - `ipfs.repo.version([callback])`
 
 `callback` must follow `function (err, version) {}` signature, where `err` is an Error if the operation was not successful and `version` is a String containing the version.
 

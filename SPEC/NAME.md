@@ -10,9 +10,9 @@
 
 > Publish an IPNS name with a given value.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.name.publish(value, [options, callback])
+##### JavaScript - `ipfs.name.publish(value, [options], [callback])`
 
 `value` is a base58 encoded IPFS multihash, such as: `/ipfs/QmbezGequPwcsWo8UL4wDF6a8hYwM1hmbzYv2mnKkEWaUp`.
 
@@ -62,9 +62,9 @@ This way, you can republish a new version of your website under the same address
 
 > Cancel a name subscription.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.name.pubsub.cancel(arg, [callback])
+##### JavaScript - `ipfs.name.pubsub.cancel(arg, [callback])`
 
 `arg` is the name of the subscription to cancel.
 
@@ -93,9 +93,9 @@ ipfs.name.pubsub.cancel(name, function (err, result) {
 
 > Query the state of IPNS pubsub.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.name.pubsub.state([callback])
+##### JavaScript - `ipfs.name.pubsub.state([callback])`
 
 `callback` must follow `function (err, result) {}` signature, where `err` is an error if the operation was not successful. `result` is an object that contains the result of the operation, such as:
 
@@ -120,9 +120,9 @@ ipfs.name.pubsub.state(function (err, result) {
 
 > Show current name subscriptions.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.name.pubsub.subs([callback])
+##### JavaScript - `ipfs.name.pubsub.subs([callback])`
 
 `callback` must follow `function (err, result) {}` signature, where `err` is an error if the operation was not successful. `result` is an array of subscriptions, such as:
 
@@ -145,9 +145,9 @@ ipfs.name.pubsub.subs(function (err, result) {
 
 > Resolve an IPNS name.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.name.resolve(value, [options, callback])
+##### JavaScript - `ipfs.name.resolve(value, [options], [callback])`
 
 `value` is a IPNS address, such as: `/ipns/ipfs.io`.
 

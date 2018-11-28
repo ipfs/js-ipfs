@@ -35,9 +35,9 @@
 
 > Add files and data to IPFS.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.add(data, [options], [callback])
+##### JavaScript - `ipfs.add(data, [options], [callback])`
 
 Where `data` may be:
 
@@ -130,9 +130,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Add files and data to IPFS using a [Readable Stream][rs] of class Duplex.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.addReadableStream([options]) -> [Readable Stream][rs]
+##### JavaScript - `ipfs.addReadableStream([options])` -> [Readable Stream][rs]
 
 Returns a Readable Stream of class Duplex, where objects can be written of the forms
 
@@ -180,9 +180,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Add files and data to IPFS using a [Pull Stream][ps].
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.addPullStream([options]) -> [Pull Stream][ps]
+##### JavaScript - `ipfs.addPullStream([options])` -> [Pull Stream][ps]
 
 Returns a Pull Stream, where objects can be written of the forms
 
@@ -226,13 +226,15 @@ pull(
 
 > Add files or entire directories from the FileSystem to IPFS
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.addFromFs(path, [option], [callback])
+##### JavaScript - `ipfs.addFromFs(path, [options], [callback])`
 
-Reads a file or folder from `path` on the filesystem  and adds it to IPFS. Options:
-- **recursive**: If `path` is a directory, use option `{ recursive: true }` to add the directory and all its sub-directories.
-  - **ignore**: To exclude fileglobs from the directory, use option `{ ignore: ['ignore/this/folder/**', 'and/this/file'] }`.
+Reads a file or folder from `path` on the filesystem  and adds it to IPFS.
+
+Options:
+  - **recursive**: If `path` is a directory, use option `{ recursive: true }` to add the directory and all its sub-directories.
+  - **ignore**: To exclude file globs from the directory, use option `{ ignore: ['ignore/this/folder/**', 'and/this/file'] }`.
   - **hidden**: hidden/dot files (files or folders starting with a `.`, for example, `.git/`) are not included by default. To add them, use the option `{ hidden: true }`.
 
 ```JavaScript
@@ -259,9 +261,9 @@ ipfs.addFromFs('path/to/a/folder', { recursive: true , ignore: ['subfolder/to/ig
 
 > Add a file from a URL to IPFS
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.addFromURL(url, callback)
+##### JavaScript - `ipfs.addFromURL(url, [callback])`
 
 ```JavaScript
 ipfs.addFromURL('http://example.com/', (err, result) => {
@@ -276,11 +278,11 @@ ipfs.addFromURL('http://example.com/', (err, result) => {
 
 > Add a file from a stream to IPFS
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.addFromStream(stream, callback)
+##### JavaScript - `ipfs.addFromStream(stream, [callback])`
 
-This is very similar to `ipfs.files.add({path:'', content: stream})`. It is like the reverse of cat.
+This is very similar to `ipfs.files.add({ path:'', content: stream })`. It is like the reverse of cat.
 
 ```JavaScript
 ipfs.addFromStream(<readable-stream>, (err, result) => {
@@ -295,9 +297,9 @@ ipfs.addFromStream(<readable-stream>, (err, result) => {
 
 > Returns a file addressed by a valid IPFS Path.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.cat(ipfsPath, [options], [callback])
+##### JavaScript - `ipfs.cat(ipfsPath, [options], [callback])`
 
 `ipfsPath` can be of type:
 
@@ -336,9 +338,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Returns a [Readable Stream][rs] containing the contents of a file addressed by a valid IPFS Path.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.catReadableStream(ipfsPath, [options]) -> [Readable Stream][rs]
+##### JavaScript - `ipfs.catReadableStream(ipfsPath, [options])` -> [Readable Stream][rs]
 
 `ipfsPath` can be of type:
 
@@ -369,9 +371,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Returns a [Pull Stream][ps] containing the contents of a file addressed by a valid IPFS Path.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.catPullStream(ipfsPath, [options]) -> [Pull Stream][rs]
+##### JavaScript - `ipfs.catPullStream(ipfsPath, [options])` -> [Pull Stream][rs]
 
 `ipfsPath` can be of type:
 
@@ -401,9 +403,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Fetch a file or an entire directory tree from IPFS that is addressed by a valid IPFS Path.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.get(ipfsPath, [callback])
+##### JavaScript - `ipfs.get(ipfsPath, [callback])`
 
 ipfsPath can be of type:
 
@@ -447,9 +449,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Fetch a file or an entire directory tree from IPFS that is addressed by a valid IPFS Path. The files will be yielded as Readable Streams.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.getReadableStream(ipfsPath) -> [Readable Stream][rs]
+##### JavaScript - `ipfs.getReadableStream(ipfsPath)` -> [Readable Stream][rs]
 
 ipfsPath can be of type:
 
@@ -495,9 +497,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Fetch a file or an entire directory tree from IPFS that is addressed by a valid IPFS Path. The files will be yielded as Readable Streams.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.getPullStream(ipfsPath) -> [Pull Stream][ps]
+##### JavaScript - `ipfs.getPullStream(ipfsPath)` -> [Pull Stream][ps]
 
 ipfsPath can be of type:
 
@@ -546,9 +548,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Lists a directory from IPFS that is addressed by a valid IPFS Path.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.ls(ipfsPath, [callback])
+##### JavaScript - `ipfs.ls(ipfsPath, [callback])`
 
 > **Note:** ipfs.files.ls is currently only for MFS directories. The goal is to converge both functionality.
 
@@ -595,9 +597,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Lists a directory from IPFS that is addressed by a valid IPFS Path. The list will be yielded as Readable Streams.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.lsReadableStream(ipfsPath) -> [Readable Stream][rs]
+##### JavaScript - `ipfs.lsReadableStream(ipfsPath)` -> [Readable Stream][rs]
 
 > **Note:** ipfs.files.ls is currently only for MFS directories. The goal is to converge both functionality.
 
@@ -643,9 +645,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Fetch a file or an entire directory tree from IPFS that is addressed by a valid IPFS Path. The files will be yielded through a Pull Stream.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.lsPullStream(ipfsPath) -> [Pull Stream][ps]
+##### JavaScript - `ipfs.lsPullStream(ipfsPath)` -> [Pull Stream][ps]
 
 > **Note:** ipfs.files.ls is currently only for MFS directories. The goal is to converge both functionality.
 
@@ -705,9 +707,9 @@ The Mutable File System (MFS) is a virtual file system on top of IPFS that expos
 
 > Copy files.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.files.cp(...from, to, [options], [callback])
+##### JavaScript - `ipfs.files.cp(...from, to, [options], [callback])`
 
 Where:
 
@@ -761,9 +763,9 @@ ipfs.files.cp('/src-file1', '/src-file2', '/dst-dir', (err) => {
 
 > Make a directory.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.files.mkdir(path, [options], [callback])
+##### JavaScript - `ipfs.files.mkdir(path, [options], [callback])`
 
 Where:
 
@@ -791,9 +793,9 @@ ipfs.files.mkdir('/my/beautiful/directory', (err) => {
 
 > Get file or directory status.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.files.stat(path, [options], [callback])
+##### JavaScript - `ipfs.files.stat(path, [options], [callback])`
 
 Where:
 
@@ -836,9 +838,9 @@ ipfs.files.stat('/file.txt', (err, stats) => {
 
 > Remove a file or directory.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.files.rm(...paths, [options], [callback])
+##### JavaScript - `ipfs.files.rm(...paths, [options], [callback])`
 
 Where:
 
@@ -878,9 +880,9 @@ ipfs.files.rm('/my/beautiful/directory', { recursive: true }, (err) => {
 
 > Read a file into a [`Buffer`][b].
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.files.read(path, [options], [callback])
+##### JavaScript - `ipfs.files.read(path, [options], [callback])`
 
 Where:
 
@@ -908,9 +910,9 @@ ipfs.files.read('/hello-world', (error, buf) => {
 
 > Read a file into a [`ReadableStream`][rs].
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.files.readReadableStream(path, [options])
+##### JavaScript - `ipfs.files.readReadableStream(path, [options])`
 
 Where:
 
@@ -934,9 +936,9 @@ stream.on('data', (buf) => console.log(buf.toString('utf8')))
 
 > Read a file into a [`PullStream`][ps].
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.files.readPullStream(path, [options])
+##### JavaScript - `ipfs.files.readPullStream(path, [options])`
 
 Where:
 
@@ -963,9 +965,9 @@ pull(
 
 > Write to a file.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.files.write(path, content, [options], [callback])
+##### JavaScript - `ipfs.files.write(path, content, [options], [callback])`
 
 Where:
 
@@ -1000,9 +1002,9 @@ ipfs.files.write('/hello-world', Buffer.from('Hello, world!'), (err) => {
 
 > Move files.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.files.mv(...from, to, [options], [callback])
+##### JavaScript - `ipfs.files.mv(...from, to, [options], [callback])`
 
 Where:
 
@@ -1053,9 +1055,9 @@ ipfs.files.mv('/src-file1', '/src-file2', '/dst-dir', (err) => {
 
 > Flush a given path's data to the disk
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.files.flush([...paths], [callback])
+##### JavaScript - `ipfs.files.flush([...paths], [callback])`
 
 Where:
 
@@ -1078,9 +1080,9 @@ ipfs.files.flush('/', (err) => {
 
 > List directories in the local mutable namespace.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.files.ls([path], [options], [callback])
+##### JavaScript - `ipfs.files.ls([path], [options], [callback])`
 
 Where:
 

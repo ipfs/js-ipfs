@@ -15,9 +15,9 @@
 
 > Create a new MerkleDAG node, using a specific layout. Caveat: So far, only UnixFS object layouts are supported.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.object.new([template], [callback])
+##### JavaScript - `ipfs.object.new([template], [callback])`
 
 `template` if defined, must be a string `unixfs-dir` and if that is passed, the created node will be an empty unixfs style directory.
 
@@ -44,9 +44,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Store an MerkleDAG node.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.object.put(obj, [options], [callback])
+##### JavaScript - `ipfs.object.put(obj, [options], [callback])`
 
 `obj` is the MerkleDAG Node to be stored. Can of type:
 
@@ -86,9 +86,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Fetch a MerkleDAG node
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.object.get(multihash, [options], [callback])
+##### JavaScript - `ipfs.object.get(multihash, [options], [callback])`
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -124,9 +124,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Returns the Data field of an object
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.object.data(multihash, [options], [callback])
+##### JavaScript - `ipfs.object.data(multihash, [options], [callback])`
 `multihash` is a [multihash][] which can be passed as:
 
 - Buffer, the raw Buffer of the multihash (or of and encoded version)
@@ -161,9 +161,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Returns the Links field of an object
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.object.links(multihash, [options], [callback])
+##### JavaScript - `ipfs.object.links(multihash, [options], [callback])`
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -199,9 +199,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Returns stats about an Object
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.object.stat(multihash, [options], [callback])
+##### JavaScript - `ipfs.object.stat(multihash, [options], [callback])`
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -259,9 +259,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Add a Link to an existing MerkleDAG Object
 
-###### `Go` **WIP**
+###### Go **WIP**
 
-###### `JavaScript` - ipfs.object.patch.addLink(multihash, link, [options], [callback])
+###### JavaScript - `ipfs.object.patch.addLink(multihash, link, [options], [callback])`
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -315,9 +315,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Remove a Link from an existing MerkleDAG Object
 
-###### `Go` **WIP**
+###### Go **WIP**
 
-###### `JavaScript` - ipfs.object.patch.rmLink(multihash, link, [options], [callback])
+###### JavaScript - `ipfs.object.patch.rmLink(multihash, link, [options], [callback])`
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -359,9 +359,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Append Data to the Data field of an existing node.
 
-###### `Go` **WIP**
+###### Go **WIP**
 
-###### `JavaScript` - ipfs.object.patch.appendData(multihash, data, [options], [callback])
+###### JavaScript - `ipfs.object.patch.appendData(multihash, data, [options], [callback])`
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -394,9 +394,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Reset the Data field of a MerkleDAG Node to new Data
 
-###### `Go` **WIP**
+###### Go **WIP**
 
-###### `JavaScript` - ipfs.object.patch.setData(multihash, data, [options], [callback])
+###### JavaScript - `ipfs.object.patch.setData(multihash, data, [options], [callback])`
 
 `multihash` is a [multihash][] which can be passed as:
 

@@ -11,9 +11,9 @@
 
 > List of known addresses of each peer connected.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.swarm.addrs([callback])
+##### JavaScript - `ipfs.swarm.addrs([callback])`
 
 `callback` must follow `function (err, addrs) {}` signature, where `err` is an error if the operation was not successful. `addrs` will be an array of [`PeerInfo`](https://github.com/libp2p/js-peer-info)s.
 
@@ -36,9 +36,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Open a connection to a given address.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.swarm.connect(addr, [callback])
+##### JavaScript - `ipfs.swarm.connect(addr, [callback])`
 
 Where `addr` is of type [multiaddr](https://github.com/multiformats/js-multiaddr)
 
@@ -63,9 +63,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Close a connection on a given address.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.swarm.disconnect(addr, [callback])
+##### JavaScript - `ipfs.swarm.disconnect(addr, [callback])`
 
 Where `addr` is of type [multiaddr](https://github.com/multiformats/js-multiaddr)
 
@@ -85,11 +85,11 @@ A great source of [examples][] can be found in the tests for this API.
 
 > List out the peers that we have connections with.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.swarm.peers([opts] [, callback])
+##### JavaScript - `ipfs.swarm.peers([options], [callback])`
 
-If `opts.verbose` is set to `true` additional information, such as `latency` is provided.
+If `options.verbose` is set to `true` additional information, such as `latency` is provided.
 
 `callback` must follow `function (err, peerInfos) {}` signature, where `err` is an error if the operation was not successful. `peerInfos` will be an array of the form
 
@@ -132,9 +132,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Display current multiaddr filters. Filters are a way to set up rules for the network connections established.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.swarm.filters([callback])
+##### JavaScript - `ipfs.swarm.filters([callback])`
 
 `callback` must follow `function (err, filters) {}` signature, where `err` is an error if the operation was not successful. `filters` is an array of multiaddrs that represent the filters being applied.
 
@@ -150,9 +150,9 @@ ipfs.swarm.filters(function (err, filters) {})
 
 > Add another filter.
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.swarm.filters.add(filter, [callback])
+##### JavaScript - `ipfs.swarm.filters.add(filter, [callback])`
 
 Where `filter` is of type [multiaddr]()
 
@@ -170,9 +170,9 @@ ipfs.swarm.filters.add(filter, function (err) {})
 
 > Remove a filter
 
-##### `Go` **WIP**
+##### Go **WIP**
 
-##### `JavaScript` - ipfs.swarm.filters.rm(filter, [callback])
+##### JavaScript - `ipfs.swarm.filters.rm(filter, [callback])`
 
 Where `filter` is of type [multiaddr]()
 
