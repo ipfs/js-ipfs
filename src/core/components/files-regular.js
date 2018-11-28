@@ -14,7 +14,7 @@ const waterfall = require('async/waterfall')
 const isStream = require('is-stream')
 const isSource = require('is-pull-stream').isSource
 const Duplex = require('readable-stream').Duplex
-const OtherBuffer = require('buffer').Buffer
+const isString = require('lodash/isString')
 const CID = require('cids')
 const toB58String = require('multihashes').toB58String
 const errCode = require('err-code')
@@ -292,15 +292,23 @@ module.exports = function (self) {
 
         options = options || {}
 
-        const ok = Buffer.isBuffer(data) ||
-                   isStream.readable(data) ||
-                   Array.isArray(data) ||
-                   OtherBuffer.isBuffer(data) ||
-                   typeof data === 'object' ||
-                   isSource(data)
+        // Buffer, pull stream or Node.js stream
+        const isBufferOrStream = obj => Buffer.isBuffer(obj) || isStream.readable(obj) || isSource(obj)
+        // An object like { content?, path? }, where content isBufferOrStream and path isString
+        const isContentObject = obj => {
+          if (typeof obj !== 'object') return false
+          // path is optional if content is present
+          if (obj.content) return isBufferOrStream(obj.content)
+          // path must be a non-empty string if no content
+          return Boolean(obj.path) && isString(obj.path)
+        }
+        // An input atom: a buffer, stream or content object
+        const isInput = obj => isBufferOrStream(obj) || isContentObject(obj)
+        // All is ok if data isInput or data is an array of isInput
+        const ok = isInput(data) || (Array.isArray(data) && data.every(isInput))
 
         if (!ok) {
-          return callback(new Error('first arg must be a buffer, readable stream, pull stream, an object or array of objects'))
+          return callback(new Error('invalid input: expected buffer, readable stream, pull stream, object or array of objects'))
         }
 
         // CID v0 is for multihashes encoded with sha2-256
