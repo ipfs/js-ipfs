@@ -45,7 +45,7 @@ ipfs.on('ready', () => {
         }
 
         // This stream will contain the requested bytes
-        stream = ipfs.files.catReadableStream(hashInput.value.trim(), {
+        stream = ipfs.catReadableStream(hashInput.value.trim(), {
           offset: start,
           length: end && end - start
         })

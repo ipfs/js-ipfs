@@ -38,7 +38,7 @@ const dragDrop = (ipfs) => {
 
         const reader = new window.FileReader()
         reader.onload = (event) => {
-          ipfs.files.add({
+          ipfs.add({
             path: file.name,
             content: ipfs.types.Buffer.from(event.target.result)
           }, {

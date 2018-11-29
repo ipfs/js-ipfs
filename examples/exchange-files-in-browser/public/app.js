@@ -161,7 +161,7 @@ function getFile () {
 
   FILES.push(hash)
 
-  node.files.get(hash)
+  node.get(hash)
     .then((files) => {
       files.forEach((file) => {
         if (file.content) {
@@ -206,7 +206,7 @@ function onDrop (event) {
       .then((buffer) => {
         fileSize = file.size
 
-        node.files.add({
+        node.add({
           path: file.name,
           content: Buffer.from(buffer)
         }, { wrap: true, progress: updateProgress }, (err, filesAdded) => {
