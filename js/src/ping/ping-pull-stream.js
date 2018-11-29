@@ -14,7 +14,8 @@ module.exports = (createCommon, options) => {
   const common = createCommon()
 
   describe('.pingPullStream', function () {
-    this.timeout(60 * 1000)
+    // TODO revisit when https://github.com/ipfs/go-ipfs/issues/5799 is resolved
+    this.timeout(2 * 60 * 1000)
 
     let ipfsA
     let ipfsB
