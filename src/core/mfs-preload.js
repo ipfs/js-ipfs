@@ -5,9 +5,17 @@ const debug = require('debug')
 const log = debug('jsipfs:mfs-preload')
 log.error = debug('jsipfs:mfs-preload:error')
 
-module.exports = (self, options) => {
-  options = options || {}
+module.exports = (self) => {
+  const options = self._options.preload || {}
   options.interval = options.interval || 30 * 1000
+
+  if (!options.enabled) {
+    log('MFS preload disabled')
+    return {
+      start: (cb) => setImmediate(cb),
+      stop: (cb) => setImmediate(cb)
+    }
+  }
 
   let rootCid
   let timeoutId

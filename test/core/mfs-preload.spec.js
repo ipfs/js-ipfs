@@ -25,20 +25,36 @@ const createMockPreload = () => {
 }
 
 describe('MFS preload', () => {
+  // CIDs returned from our mock files.stat function
+  const statCids = ['QmInitial', 'QmSame', 'QmSame', 'QmUpdated']
+  let mockPreload
+  let mockFilesStat
+  let mockIpfs
+
+  beforeEach(() => {
+    mockPreload = createMockPreload()
+    mockFilesStat = createMockFilesStat(statCids)
+    mockIpfs = {
+      files: {
+        stat: mockFilesStat
+      },
+      _preload: mockPreload,
+      _options: {
+        preload: {
+          interval: 10
+        }
+      }
+    }
+  })
+
   it('should preload MFS root periodically', function (done) {
     this.timeout(80 * 1000)
 
-    // CIDs returned from our mock files.stat function
-    const statCids = ['QmInitial', 'QmSame', 'QmSame', 'QmUpdated']
+    mockIpfs._options.preload.enabled = true
+
     // The CIDs we expect to have been preloaded
     const expectedPreloadCids = ['QmSame', 'QmUpdated']
-
-    const mockPreload = createMockPreload()
-    const mockFilesStat = createMockFilesStat(statCids)
-    const mockIpfs = { files: { stat: mockFilesStat }, _preload: mockPreload }
-
-    const interval = 10
-    const preloader = mfsPreload(mockIpfs, { interval })
+    const preloader = mfsPreload(mockIpfs)
 
     preloader.start((err) => {
       expect(err).to.not.exist()
@@ -54,6 +70,22 @@ describe('MFS preload', () => {
         expect(err).to.not.exist()
         preloader.stop(done)
       })
+    })
+  })
+
+  it('should disable preloading MFS', function (done) {
+    mockIpfs._options.preload.enabled = false
+
+    const preloader = mfsPreload(mockIpfs)
+
+    preloader.start((err) => {
+      expect(err).to.not.exist()
+
+      setTimeout(() => {
+        expect(mockPreload.cids).to.be.empty()
+
+        done()
+      }, 500)
     })
   })
 })
