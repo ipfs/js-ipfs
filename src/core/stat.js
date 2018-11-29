@@ -11,6 +11,7 @@ const pull = require('pull-stream/pull')
 const collect = require('pull-stream/sinks/collect')
 const asyncMap = require('pull-stream/throughs/async-map')
 const exporter = require('ipfs-unixfs-exporter')
+const CID = require('cids')
 const log = require('debug')('ipfs:mfs:stat')
 
 const defaultOptions = {
@@ -40,6 +41,18 @@ module.exports = (context) => {
           }),
 
           asyncMap((file, cb) => {
+            if (options.hash) {
+              return cb(null, {
+                hash: formatCid(new CID(file.hash), options.cidBase)
+              })
+            }
+
+            if (options.size) {
+              return cb(null, {
+                size: file.size
+              })
+            }
+
             loadNode(context, {
               cid: file.hash
             }, (err, result) => {
@@ -51,18 +64,7 @@ module.exports = (context) => {
                 node, cid
               } = result
 
-              if (options.hash) {
-                return cb(null, {
-                  hash: formatCid(cid, options.cidBase)
-                })
-              } else if (options.size) {
-                return cb(null, {
-                  size: node.size
-                })
-              }
-
               const meta = unmarshal(node.data)
-
               let blocks = node.links.length
 
               if (meta.type === 'file') {
