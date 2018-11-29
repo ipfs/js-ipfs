@@ -39,7 +39,7 @@ module.exports = {
             throw err
           }
 
-          print(cidToString(result, cidBase))
+          print(cidToString(cid, cidBase))
         })
       })
     })
