@@ -27,7 +27,7 @@ node.on('ready', async () => {
     content: Buffer.from('Hello from parcel.js bundled ipfs example')
   })
 
-  log(`This page added ${filesAdded[0].path} to IPFS and its hash is ${filesAdded[0].hash}`)
+  log(`This page deployed ${filesAdded[0].path} to IPFS and its hash is ${filesAdded[0].hash}`)
 
   const fileBuffer = await node.cat(filesAdded[0].hash)
 
