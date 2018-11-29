@@ -1,3 +1,13 @@
+<a name="0.7.1"></a>
+## [0.7.1](https://github.com/ipfs/js-ipfs-mfs/compare/v0.7.0...v0.7.1) (2018-11-29)
+
+
+### Performance Improvements
+
+* do not load a node when we only want the hash or size ([a029c7e](https://github.com/ipfs/js-ipfs-mfs/commit/a029c7e))
+
+
+
 <a name="0.7.0"></a>
 # [0.7.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.6.0...v0.7.0) (2018-11-28)
 
