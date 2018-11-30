@@ -1,0 +1,99 @@
+image: hugomrdias/node-alpine:test
+stages:
+  - check
+  - test
+  - cov
+  - pre-release
+  - release
+
+variables:
+  DOCKER_DRIVER: overlay2
+
+before_script:
+  - yarn
+
+check:
+  stage: check
+  script:
+    - yarn lint
+    - yarn dep-check
+    # - npm install --no-lockfile @commitlint/config-conventional @commitlint/cli --save-dev
+    # - npx commitlint --extends=@commitlint/config-conventional --from=$CI_COMMIT_BEFORE_SHA --to=$CI_COMMIT_SHA
+    - yarn build
+  artifacts:
+    paths:
+      - dist/
+
+linux-node-10:
+  image: node:10
+  stage: test
+  script:
+    - npx nyc -s npm run test:node -- --bail
+  artifacts:
+    paths:
+      - .nyc_output/
+
+linux-node-11:
+  allow_failure: true
+  image: node:11
+  stage: test
+  script:
+    - npx nyc -s npm run test:node -- --bail
+  artifacts:
+    paths:
+      - .nyc_output/
+
+macos-node-10:
+  stage: test
+  script:
+    - npx nyc -s npm run test:node -- --bail
+  tags:
+    - mac
+  artifacts:
+    paths:
+      - .nyc_output/
+
+win-node-10:
+  stage: test
+  script:
+    - npx nyc -s npm run test:node -- --bail
+  tags:
+    - win
+  artifacts:
+    paths:
+      - .nyc_output/
+
+test-browser-chrome:
+  image: hugomrdias/node-chrome:test
+  stage: test
+  script:
+    - AEGIR_BROWSERS=ChromeDocker yarn test:browser
+  artifacts:
+    paths:
+      - coverage/
+
+test-browser-firefox:
+  allow_failure: true
+  image: hugomrdias/node-firefox:test
+  stage: test
+  script:
+    - AEGIR_BROWSERS=FirefoxHeadless yarn test:browser
+  artifacts:
+    paths:
+      - coverage/
+
+cov:
+  stage: cov
+  before_script: []
+  script:
+    - cp coverage/coverage-final.json .nyc_output/browser.json
+    - npx nyc report --reporter text-summary --reporter html
+  dependencies:
+    - linux-node-10
+    - win-node-10
+    - macos-node-10
+    - test-browser-chrome
+  artifacts:
+    paths:
+      - coverage/
+  coverage: '/Lines        : \d+\.\d+/'

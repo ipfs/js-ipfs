@@ -47,7 +47,7 @@
     "release-major": "aegir release --type major -t node -t browser",
     "coverage": "aegir coverage",
     "coverage-publish": "aegir-coverage publish",
-    "dep-check": "npx dependency-check package.json './test/**/*.js' './src/**/*.js'"
+    "dep-check": "npx dependency-check package.json './test/**/*.js' './src/**/*.js' -i electron-webrtc -i wrtc"
   },
   "repository": {
     "type": "git",
