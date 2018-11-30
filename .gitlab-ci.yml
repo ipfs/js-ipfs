@@ -3,8 +3,6 @@ stages:
   - check
   - test
   - cov
-  - pre-release
-  - release
 
 variables:
   DOCKER_DRIVER: overlay2
@@ -15,11 +13,11 @@ before_script:
 check:
   stage: check
   script:
-    - yarn lint
-    - yarn dep-check
+    - npm run lint
+    - npm run dep-check
     # - npm install --no-lockfile @commitlint/config-conventional @commitlint/cli --save-dev
     # - npx commitlint --extends=@commitlint/config-conventional --from=$CI_COMMIT_BEFORE_SHA --to=$CI_COMMIT_SHA
-    - yarn build
+    - npm run build
   artifacts:
     paths:
       - dist/
@@ -67,7 +65,7 @@ test-browser-chrome:
   image: hugomrdias/node-chrome:test
   stage: test
   script:
-    - AEGIR_BROWSERS=ChromeDocker yarn test:browser
+    - AEGIR_BROWSERS=ChromeDocker npm run test:browser
   artifacts:
     paths:
       - coverage/
@@ -77,7 +75,7 @@ test-browser-firefox:
   image: hugomrdias/node-firefox:test
   stage: test
   script:
-    - AEGIR_BROWSERS=FirefoxHeadless yarn test:browser
+    - AEGIR_BROWSERS=FirefoxHeadless npm run test:browser
   artifacts:
     paths:
       - coverage/
