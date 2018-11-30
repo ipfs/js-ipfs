@@ -22,7 +22,9 @@ module.exports = async (mfs, shardSplitThreshold = 10, files = shardSplitThresho
         }))
       ),
       importer(mfs.ipld, {
-        shardSplitThreshold
+        shardSplitThreshold,
+        reduceSingleLeafToSelf: false, // same as go-ipfs-mfs implementation, differs from `ipfs add`(!)
+        leafType: 'raw' // same as go-ipfs-mfs implementation, differs from `ipfs add`(!)
       }),
       collect(async (err, files) => {
         if (err) {

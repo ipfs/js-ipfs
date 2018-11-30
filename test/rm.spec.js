@@ -246,4 +246,20 @@ describe('rm', function () {
       expect(error.message).to.contain('does not exist')
     }
   })
+
+  it.skip('results in the same hash as a sharded directory created by the importer when removing a subshard', async () => {
+
+  })
+
+  it.skip('results in the same hash as a sharded directory created by the importer when removing a file', async () => {
+
+  })
+
+  it.skip('results in the same hash as a sharded directory created by the importer when removing a subshard of a subshard', async () => {
+
+  })
+
+  it.skip('results in the same hash as a sharded directory created by the importer when removing a file from a subshard of a subshard', async () => {
+
+  })
 })
