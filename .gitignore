@@ -40,5 +40,5 @@ test/fixtures/go-ipfs-repo/LOG
 test/fixtures/go-ipfs-repo/LOG.old
 
 # while testing npm5
-package-lock.json
 yarn.lock
+package-lock.json

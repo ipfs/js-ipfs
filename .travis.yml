@@ -1,0 +1,23 @@
+language: node_js
+cache: npm
+stages:
+  - check
+  - test
+  - cov
+
+node_js:
+  - 10
+
+os:
+  - linux
+  - osx
+  - windows
+
+script: npm run test:node -- --bail
+
+jobs:
+  include:
+    - stage: check
+      node_js: 10
+      script:
+        - npm run lint
