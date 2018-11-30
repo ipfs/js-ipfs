@@ -46,7 +46,7 @@
     "release-major": "aegir release --type major -t node -t browser",
     "coverage": "aegir coverage",
     "coverage-publish": "aegir-coverage publish",
-    "dep-check": "npx dependency-check package.json './test/**/*.js' './src/**/*.js'"
+    "dep-check": "npx dependency-check package.json './test/**/*.js' './src/**/*.js' -i electron-webrtc -i wrtc"
   },
   "repository": {
     "type": "git",
@@ -72,6 +72,8 @@
     "hat": "0.0.3",
     "interface-ipfs-core": "~0.90.0",
     "ipfsd-ctl": "~0.40.1",
+    "istanbul-instrumenter-loader": "^3.0.1",
+    "karma-coverage-istanbul-reporter": "^2.0.4",
     "ncp": "^2.0.0",
     "qs": "^6.5.2",
     "rimraf": "^2.6.2",
