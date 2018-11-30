@@ -28,6 +28,7 @@ Note that in the browser build the object attached to `window` is now `window.Ip
 
 License: MIT
 Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
+
 * Object API refactor.
 
 Object API methods that write DAG nodes now return a CID instead of a DAG node. Affected methods:
@@ -65,6 +66,7 @@ See https://github.com/ipld/js-ipld-dag-pb/pull/99 for more information.
 
 License: MIT
 Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
+
 * Files API methods `add*`, `cat*`, `get*` have moved from `files` to the root namespace.
 
 Specifically, the following changes have been made:
@@ -88,6 +90,17 @@ Additionally, `addFromFs`, `addFromUrl`, `addFromStream` have moved from `util` 
 License: MIT
 Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 
+* Previously `swarm.peers` would throw an uncaught error if any peer in the response could not have its peerId or multiaddr validated.
+
+This change catches errors that occur while validating the peer info. The returned array will contain an entry for every peer in the ipfs response. peer-info objects that couldn't be validated, now have an `error` property and a `rawPeerInfo` property. This at least means the count of peers in the response will be accurate, and there the info is available to the caller.
+
+This means that callers now have to deal with peer-info objects that may
+not have a `peer` or `addr` property.
+
+Adds `nock` tests to exercice the code under different error conditions. Doing so uncovered a bug in our legacy go-ipfs <= 0.4.4 peer info parsing, which is also fixed. The code was trying to decapusalate the peerId from the multiaddr, but doing so trims the peerId rather than returning it.
+
+License: MIT
+Signed-off-by: Oli Evans <oli@tableflip.io>
 
 
 <a name="26.1.2"></a>
@@ -875,6 +888,3 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 ### Bug Fixes
 
 * new fixed aegir ([93ac472](https://github.com/ipfs/js-ipfs-http-client/commit/93ac472))
-
-
-
