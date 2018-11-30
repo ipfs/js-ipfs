@@ -1,7 +1,7 @@
 'use strict'
 
 const { Key } = require('interface-datastore')
-const Record = require('libp2p-record').Record
+const { Record } = require('libp2p-record')
 const { encodeBase32 } = require('./utils')
 
 const errcode = require('err-code')

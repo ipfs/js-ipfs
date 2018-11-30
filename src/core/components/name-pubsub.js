@@ -11,14 +11,11 @@ log.error = debug('jsipfs:name-pubsub:error')
 
 // Is pubsub enabled
 const isNamePubsubEnabled = (node) => {
-  let pubsub
   try {
-    pubsub = getPubsubRouting(node)
+    return Boolean(getPubsubRouting(node))
   } catch (err) {
     return false
   }
-
-  return Boolean(pubsub)
 }
 
 // Get pubsub from IPNS routing
@@ -26,7 +23,6 @@ const getPubsubRouting = (node) => {
   if (!node._ipns || !node._options.EXPERIMENTAL.ipnsPubsub) {
     const errMsg = 'IPNS pubsub subsystem is not enabled'
 
-    log.error(errMsg)
     throw errcode(errMsg, 'ERR_IPNS_PUBSUB_NOT_ENABLED')
   }
 
@@ -41,9 +37,9 @@ const getPubsubRouting = (node) => {
   if (!pubsub) {
     const errMsg = 'IPNS pubsub datastore not found'
 
-    log.error(errMsg)
     throw errcode(errMsg, 'ERR_PUBSUB_DATASTORE_NOT_FOUND')
   }
+
   return pubsub
 }
 

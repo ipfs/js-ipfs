@@ -64,6 +64,8 @@ describe('name-pubsub', function () {
   after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
 
   it('should publish and then resolve correctly', function (done) {
+    this.timeout(50 * 1000)
+
     nodeB.name.resolve(idA.id, (err) => {
       expect(err).to.exist()
 

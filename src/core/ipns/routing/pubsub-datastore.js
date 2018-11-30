@@ -11,10 +11,7 @@ const debug = require('debug')
 const log = debug('jsipfs:ipns:pubsub')
 log.error = debug('jsipfs:ipns:pubsub:error')
 
-const ipnsNS = '/ipns/'
-const ipnsNSLength = ipnsNS.length
-
-// Pubsub aims to manage the pubsub subscriptions for IPNS
+// Pubsub datastore aims to manage the pubsub subscriptions for IPNS
 class IpnsPubsubDatastore {
   constructor (pubsub, localDatastore, peerId) {
     this._pubsub = pubsub
@@ -68,11 +65,11 @@ class IpnsPubsubDatastore {
 
     this._pubsubDs.get(key, (err, res) => {
       // Add topic subscribed
-      const ns = key.slice(0, ipnsNSLength)
+      const ns = key.slice(0, ipns.namespaceLength)
 
-      if (ns.toString() === ipnsNS) {
+      if (ns.toString() === ipns.namespace) {
         const stringifiedTopic = key.toString()
-        const id = toB58String(key.slice(ipnsNSLength))
+        const id = toB58String(key.slice(ipns.namespaceLength))
 
         this._subscriptions[stringifiedTopic] = id
 
@@ -116,9 +113,9 @@ class IpnsPubsubDatastore {
    * @returns {void}
    */
   getSubscriptions (callback) {
-    const subscriptions = Object.values(this._subscriptions)
+    const subscriptions = Object.values(this._subscriptions).filter(Boolean)
 
-    return callback(null, subscriptions.map((sub) => `/ipns/${sub}`))
+    return callback(null, subscriptions.map((sub) => `${ipns.namespace}${sub}`))
   }
 
   /**
@@ -136,8 +133,8 @@ class IpnsPubsubDatastore {
     }
 
     // Trim /ipns/ prefix from the name
-    if (name.startsWith(ipnsNS)) {
-      name = name.substring(ipnsNSLength)
+    if (name.startsWith(ipns.namespace)) {
+      name = name.substring(ipns.namespaceLength)
     }
 
     const stringifiedTopic = Object.keys(this._subscriptions).find((key) => this._subscriptions[key] === name)
@@ -158,7 +155,7 @@ class IpnsPubsubDatastore {
       return callback(err)
     }
 
-    delete this._subscriptions[stringifiedTopic]
+    this._subscriptions[stringifiedTopic] = undefined
     log(`unsubscribed pubsub ${stringifiedTopic}: ${name}`)
 
     callback(null, {
@@ -167,5 +164,4 @@ class IpnsPubsubDatastore {
   }
 }
 
-// exports = module.exports = IpnsPubsubDatastore
 exports = module.exports = withIs(IpnsPubsubDatastore, { className: 'IpnsPubsubDatastore', symbolName: '@js-ipfs/ipns/IpnsPubsubDatastore' })
