@@ -18,6 +18,7 @@ Let us know if you find any issue or if you want to contribute and add a new tut
 ## Examples
 
 - [js-ipfs in the browser with Browserify](./browser-browserify)
+- [js-ipfs in the browser with Parcel.js](./browser-parceljs)
 - [js-ipfs in the browser with WebPack](./browser-webpack)
 - [js-ipfs in the browser with a `<script>` tag](./browser-script-tag)
 - [js-ipfs in electron](./run-in-electron)

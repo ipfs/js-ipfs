@@ -1,0 +1,6 @@
+dist/
+/node_modules/
+.nvmrc
+.cache
+npm-debug.log
+.DS_Store
