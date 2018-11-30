@@ -45,13 +45,13 @@ class App extends React.Component {
         })
       })
 
-      node.files.add([Buffer.from(stringToUse)], (err, filesAdded) => {
+      node.add([Buffer.from(stringToUse)], (err, filesAdded) => {
         if (err) { throw err }
 
         const hash = filesAdded[0].hash
         self.setState({ added_file_hash: hash })
 
-        node.files.cat(hash, (err, data) => {
+        node.cat(hash, (err, data) => {
           if (err) { throw err }
           self.setState({ added_file_contents: data.toString() })
         })

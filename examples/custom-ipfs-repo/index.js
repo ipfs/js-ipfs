@@ -75,7 +75,7 @@ node.on('ready', () => {
     })
     // Once we have the version, let's add a file to IPFS
     .then(() => {
-      return node.files.add({
+      return node.add({
         path: 'test-data.txt',
         content: Buffer.from('We are using a customized repo!')
       })
@@ -83,7 +83,7 @@ node.on('ready', () => {
     // Log out the added files metadata and cat the file from IPFS
     .then((filesAdded) => {
       console.log('\nAdded file:', filesAdded[0].path, filesAdded[0].hash)
-      return node.files.cat(filesAdded[0].hash)
+      return node.cat(filesAdded[0].hash)
     })
     // Print out the files contents to console
     .then((data) => {

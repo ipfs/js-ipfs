@@ -9,14 +9,14 @@ node.on('ready', async () => {
 
   console.log('Version:', version.version)
 
-  const filesAdded = await node.files.add({
+  const filesAdded = await node.add({
     path: 'hello.txt',
     content: Buffer.from('Hello World 101')
   })
 
   console.log('Added file:', filesAdded[0].path, filesAdded[0].hash)
 
-  const fileBuffer = await node.files.cat(filesAdded[0].hash)
+  const fileBuffer = await node.cat(filesAdded[0].hash)
 
   console.log('Added file contents:', fileBuffer.toString())
 })

@@ -9,7 +9,7 @@ node.once('ready', () => console.log('IPFS node is ready'))
 function store () {
   const toStore = document.getElementById('source').value
 
-  node.files.add(Buffer.from(toStore), (err, res) => {
+  node.add(Buffer.from(toStore), (err, res) => {
     if (err || !res) {
       return console.error('ipfs add error', err, res)
     }
@@ -25,7 +25,7 @@ function store () {
 
 function display (hash) {
   // buffer: true results in the returned result being a buffer rather than a stream
-  node.files.cat(hash, (err, data) => {
+  node.cat(hash, (err, data) => {
     if (err) { return console.error('ipfs cat error', err) }
 
     document.getElementById('hash').innerText = hash

@@ -11,8 +11,8 @@
 
       document.getElementById("status").innerHTML= 'Node status: ' + (node.isOnline() ? 'online' : 'offline')
 
-      // You can write more code here to use it. Use methods like 
-      // node.files.add, node.files.get. See the API docs here:
+      // You can write more code here to use it. Use methods like
+      // node.add, node.get. See the API docs here:
       // https://github.com/ipfs/interface-ipfs-core
     })
   </script>
@@ -28,7 +28,7 @@
   <p>Try adding a new file:</p>
 
   <code style="display:block; white-space:pre-wrap; background-color:#d7d6d6">
-    node.files.add(new node.types.Buffer('Hello world!'), (err, filesAdded) => {
+    node.add(new node.types.Buffer('Hello world!'), (err, filesAdded) => {
       if (err) {
         return console.error('Error - ipfs add', err, res)
       }
@@ -40,7 +40,7 @@
   <p>You can cat that same file. If you used the exact same string as above ('Hello world!') you should have an hash like this: 'QmQzCQn4puG4qu8PVysxZmscmQ5vT1ZXpqo7f58Uh9QfyY'</p>
 
   <code style="display:block; white-space:pre-wrap; background-color:#d7d6d6">
-    node.files.cat('QmQzCQn4puG4qu8PVysxZmscmQ5vT1ZXpqo7f58Uh9QfyY', function (err, data) {
+    node.cat('QmQzCQn4puG4qu8PVysxZmscmQ5vT1ZXpqo7f58Uh9QfyY', function (err, data) {
       if (err) {
         return console.error('Error - ipfs files cat', err, res)
       }
