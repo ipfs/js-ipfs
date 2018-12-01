@@ -12,13 +12,15 @@ const load = async (cid, mfs) => {
   })
 }
 
-const printTree = async (cid, mfs, indentation = '', name = '') => {
+const printTree = async (mfs, cid, indentation = '', name = '') => {
   console.info(indentation, name, cid.toBaseEncodedString()) // eslint-disable-line no-console
 
   const node = await load(cid, mfs)
+  const fileLinks = node.links
+    .filter(link => link.name)
 
-  for (let i = 0; i < node.links.length; i++) {
-    await printTree(node.links[i].cid, mfs, `  ${indentation}`, node.links[i].name)
+  for (let i = 0; i < fileLinks.length; i++) {
+    await printTree(mfs, fileLinks[i].cid, `  ${indentation}`, fileLinks[i].name)
   }
 }
 

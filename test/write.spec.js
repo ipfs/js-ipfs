@@ -8,18 +8,15 @@ const path = require('path')
 const loadFixture = require('aegir/fixtures')
 const isNode = require('detect-node')
 const values = require('pull-stream/sources/values')
-const pull = require('pull-stream/pull')
-const collect = require('pull-stream/sinks/collect')
-const importer = require('ipfs-unixfs-importer')
 const bufferStream = require('pull-buffer-stream')
 const multihash = require('multihashes')
 const {
   collectLeafCids,
   createMfs,
   cidAtPath,
-  createShardedDirectory
+  createShardedDirectory,
+  createTwoShards
 } = require('./helpers')
-const crypto = require('crypto')
 const CID = require('cids')
 
 let fs
@@ -69,56 +66,6 @@ describe('write', function () {
     files.forEach((file) => {
       fn(file)
     })
-  }
-
-  const createShardedDir = (files, shardSplitThreshold) => {
-    return new Promise((resolve, reject) => {
-      pull(
-        values(files),
-        importer(mfs.ipld, {
-          shardSplitThreshold,
-          reduceSingleLeafToSelf: false, // same as go-ipfs-mfs implementation, differs from `ipfs add`(!)
-          leafType: 'raw' // same as go-ipfs-mfs implementation, differs from `ipfs add`(!)
-        }),
-        collect((err, files) => {
-          if (err) {
-            return reject(files)
-          }
-
-          const dir = files[files.length - 1]
-
-          resolve(new CID(dir.multihash))
-        })
-      )
-    })
-  }
-
-  const createShard = async (fileCount, nextFileName) => {
-    const shardSplitThreshold = 10
-    const dirPath = `/sharded-dir-${Math.random()}`
-    const files = new Array(fileCount).fill(0).map((_, index) => ({
-      path: `${dirPath}/file-${index}`,
-      content: crypto.randomBytes(5)
-    }))
-    files[files.length - 1].path = `${dirPath}/${nextFileName}`
-
-    const allFiles = files.map(file => ({
-      ...file
-    }))
-    const someFiles = files.map(file => ({
-      ...file
-    }))
-    const nextFile = someFiles.pop()
-
-    const dirWithAllFiles = await createShardedDir(allFiles, shardSplitThreshold)
-    const dirWithSomeFiles = await createShardedDir(someFiles, shardSplitThreshold)
-
-    return {
-      nextFile,
-      dirWithAllFiles,
-      dirWithSomeFiles,
-      dirPath
-    }
   }
 
   before(() => {
@@ -844,7 +791,7 @@ describe('write', function () {
       dirWithAllFiles,
       dirWithSomeFiles,
       dirPath
-    } = await createShard(100, 'file99.txt')
+    } = await createTwoShards(mfs, 100)
 
     await mfs.cp(`/ipfs/${dirWithSomeFiles.toBaseEncodedString()}`, dirPath)
 
@@ -864,7 +811,7 @@ describe('write', function () {
       dirWithAllFiles,
       dirWithSomeFiles,
       dirPath
-    } = await createShard(75, 'file74.txt')
+    } = await createTwoShards(mfs, 75)
 
     await mfs.cp(`/ipfs/${dirWithSomeFiles.toBaseEncodedString()}`, dirPath)
 
@@ -885,7 +832,7 @@ describe('write', function () {
       dirWithAllFiles,
       dirWithSomeFiles,
       dirPath
-    } = await createShard(82, 'file-81.txt')
+    } = await createTwoShards(mfs, 82)
 
     await mfs.cp(`/ipfs/${dirWithSomeFiles.toBaseEncodedString()}`, dirPath)
 
@@ -900,13 +847,13 @@ describe('write', function () {
     expect(updatedDirCid.toBaseEncodedString()).to.deep.equal(dirWithAllFiles.toBaseEncodedString())
   })
 
-  it('results in the same hash as a sharded directory created by the importer when adding a file to a subshard of a subshard', async () => {
+  it('results in the same hash as a sharded directory created by the importer when adding a file to a subshard of a subshard', async function () {
     const {
       nextFile,
       dirWithAllFiles,
       dirWithSomeFiles,
       dirPath
-    } = await createShard(200, 'file-50a.txt')
+    } = await createTwoShards(mfs, 2187)
 
     await mfs.cp(`/ipfs/${dirWithSomeFiles.toBaseEncodedString()}`, dirPath)
 

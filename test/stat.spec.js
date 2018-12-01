@@ -179,6 +179,6 @@ describe('stat', function () {
     const stats = await mfs.stat(`${shardedDirPath}/${files[0].name}`)
 
     expect(stats.type).to.equal('file')
-    expect(stats.size).to.equal(5)
+    expect(stats.size).to.equal(7)
   })
 })
