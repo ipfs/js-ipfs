@@ -1,3 +1,14 @@
+<a name="0.7.2"></a>
+## [0.7.2](https://github.com/ipfs/js-ipfs-mfs/compare/v0.7.1...v0.7.2) (2018-12-01)
+
+
+### Bug Fixes
+
+* handle sub-sub shards properly ([9302f01](https://github.com/ipfs/js-ipfs-mfs/commit/9302f01))
+* make sure hashes are the same after shard changes ([b2fbd5d](https://github.com/ipfs/js-ipfs-mfs/commit/b2fbd5d))
+
+
+
 <a name="0.7.1"></a>
 ## [0.7.1](https://github.com/ipfs/js-ipfs-mfs/compare/v0.7.0...v0.7.1) (2018-11-29)
 
