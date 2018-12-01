@@ -785,27 +785,9 @@ describe('write', function () {
     expect(actualBytes).to.deep.equal(expectedBytes)
   })
 
-  it('results in the same hash as a sharded directory created by the importer when creating a new subshard', async () => {
-    const {
-      nextFile,
-      dirWithAllFiles,
-      dirWithSomeFiles,
-      dirPath
-    } = await createTwoShards(mfs, 100)
+  it('results in the same hash as a sharded directory created by the importer when adding a new file', async function () {
+    this.timeout(60000)
 
-    await mfs.cp(`/ipfs/${dirWithSomeFiles.toBaseEncodedString()}`, dirPath)
-
-    await mfs.write(nextFile.path, nextFile.content, {
-      create: true
-    })
-
-    const stats = await mfs.stat(dirPath)
-    const updatedDirCid = new CID(stats.hash)
-
-    expect(updatedDirCid.toBaseEncodedString()).to.deep.equal(dirWithAllFiles.toBaseEncodedString())
-  })
-
-  it('results in the same hash as a sharded directory created by the importer when adding a new file', async () => {
     const {
       nextFile,
       dirWithAllFiles,
@@ -826,7 +808,31 @@ describe('write', function () {
     expect(updatedDirCid.toBaseEncodedString()).to.deep.equal(dirWithAllFiles.toBaseEncodedString())
   })
 
-  it('results in the same hash as a sharded directory created by the importer when adding a file to a subshard', async () => {
+  it('results in the same hash as a sharded directory created by the importer when creating a new subshard', async function () {
+    this.timeout(60000)
+
+    const {
+      nextFile,
+      dirWithAllFiles,
+      dirWithSomeFiles,
+      dirPath
+    } = await createTwoShards(mfs, 100)
+
+    await mfs.cp(`/ipfs/${dirWithSomeFiles.toBaseEncodedString()}`, dirPath)
+
+    await mfs.write(nextFile.path, nextFile.content, {
+      create: true
+    })
+
+    const stats = await mfs.stat(dirPath)
+    const updatedDirCid = new CID(stats.hash)
+
+    expect(updatedDirCid.toBaseEncodedString()).to.deep.equal(dirWithAllFiles.toBaseEncodedString())
+  })
+
+  it('results in the same hash as a sharded directory created by the importer when adding a file to a subshard', async function () {
+    this.timeout(60000)
+
     const {
       nextFile,
       dirWithAllFiles,
@@ -848,6 +854,8 @@ describe('write', function () {
   })
 
   it('results in the same hash as a sharded directory created by the importer when adding a file to a subshard of a subshard', async function () {
+    this.timeout(60000)
+
     const {
       nextFile,
       dirWithAllFiles,

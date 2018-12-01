@@ -5,7 +5,7 @@ const printTree = require('./print-tree')
 
 // find specific hamt structure by brute force
 const findTreeWithDepth = async (mfs, children, depth) => {
-  for (let i = 0; i < 100000; i++) {
+  for (let i = 10; i < 100000; i++) {
     const files = new Array(i).fill(0).map((_, index) => ({
       path: `foo/file-${index}`,
       content: Buffer.from([0, 1, 2, 3, 4, index])
