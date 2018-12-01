@@ -10,7 +10,10 @@ const DirSharded = require('ipfs-unixfs-importer/src/importer/dir-sharded')
 const series = require('async/series')
 const log = require('debug')('ipfs:mfs:core:utils:add-link')
 const UnixFS = require('ipfs-unixfs')
-const Bucket = require('hamt-sharding')
+const {
+  generatePath,
+  updateHamtDirectory
+} = require('./hamt-utils')
 
 const defaultOptions = {
   parent: undefined,
@@ -78,141 +81,9 @@ const addLink = (context, options, callback) => {
     return convertToShardedDirectory(context, options, callback)
   }
 
-  log('Adding to regular directory')
+  log(`Adding ${options.name} to regular directory`)
 
   addToDirectory(context, options, callback)
-}
-
-const addToDirectory = (context, options, callback) => {
-  waterfall([
-    (done) => {
-      if (options.name) {
-        // Remove the old link if necessary
-        return DAGNode.rmLink(options.parent, options.name, done)
-      }
-
-      done(null, options.parent)
-    },
-    (parent, done) => {
-      // Add the new link to the parent
-      DAGNode.addLink(parent, new DAGLink(options.name, options.size, options.cid), done)
-    },
-    (parent, done) => {
-      // Persist the new parent DAGNode
-      context.ipld.put(parent, {
-        version: options.cidVersion,
-        format: options.codec,
-        hashAlg: options.hashAlg,
-        hashOnly: !options.flush
-      }, (error, cid) => done(error, {
-        node: parent,
-        cid
-      }))
-    }
-  ], callback)
-}
-
-const addToShardedDirectory = async (context, options, callback) => {
-  const bucket = new Bucket({
-    hashFn: DirSharded.hashFn
-  })
-  const position = await bucket._findNewBucketAndPos(options.name)
-  const prefix = position.pos
-    .toString('16')
-    .toUpperCase()
-    .padStart(2, '0')
-    .substring(0, 2)
-
-  const existingSubShard = options.parent.links
-    .filter(link => link.name === prefix)
-    .pop()
-
-  if (existingSubShard) {
-    log(`Descending into sub-shard ${prefix} to add link ${options.name}`)
-
-    return addLink(context, {
-      ...options,
-      parent: null,
-      parentCid: existingSubShard.cid
-    }, (err, { cid, node }) => {
-      if (err) {
-        return callback(err)
-      }
-
-      // make sure parent is updated with new sub-shard cid
-      addToDirectory(context, {
-        ...options,
-        parent: options.parent,
-        parentCid: options.parentCid,
-        name: prefix,
-        size: node.size,
-        cid: cid
-      }, callback)
-    })
-  }
-
-  const existingFile = options.parent.links
-    .filter(link => link.name.substring(2) === options.name)
-    .pop()
-
-  if (existingFile) {
-    log(`Updating file ${existingFile.name}`)
-
-    return addToDirectory(context, {
-      ...options,
-      name: existingFile.name
-    }, callback)
-  }
-
-  const existingUnshardedFile = options.parent.links
-    .filter(link => link.name.substring(0, 2) === prefix)
-    .pop()
-
-  if (existingUnshardedFile) {
-    log(`Replacing file ${existingUnshardedFile.name} with sub-shard`)
-
-    return createShard(context, [{
-      name: existingUnshardedFile.name.substring(2),
-      size: existingUnshardedFile.size,
-      multihash: existingUnshardedFile.cid.buffer
-    }, {
-      name: options.name,
-      size: options.size,
-      multihash: options.cid.buffer
-    }], {
-      root: false
-    }, (err, result) => {
-      if (err) {
-        return callback(err)
-      }
-
-      const newShard = result.node.links[0]
-
-      waterfall([
-        (done) => DAGNode.rmLink(options.parent, existingUnshardedFile.name, done),
-        (parent, done) => DAGNode.addLink(parent, newShard, done),
-        (parent, done) => {
-          // Persist the new parent DAGNode
-          context.ipld.put(parent, {
-            version: options.cidVersion,
-            format: options.codec,
-            hashAlg: options.hashAlg,
-            hashOnly: !options.flush
-          }, (error, cid) => done(error, {
-            node: parent,
-            cid
-          }))
-        }
-      ], callback)
-    })
-  }
-
-  log(`Appending ${prefix + options.name} to shard`)
-
-  return addToDirectory(context, {
-    ...options,
-    name: prefix + options.name
-  }, callback)
 }
 
 const convertToShardedDirectory = (context, options, callback) => {
@@ -231,6 +102,88 @@ const convertToShardedDirectory = (context, options, callback) => {
 
     callback(err, result)
   })
+}
+
+const addToDirectory = (context, options, callback) => {
+  waterfall([
+    (done) => DAGNode.rmLink(options.parent, options.name, done),
+    (parent, done) => DAGNode.addLink(parent, new DAGLink(options.name, options.size, options.cid), done),
+    (parent, done) => {
+      // Persist the new parent DAGNode
+      context.ipld.put(parent, {
+        version: options.cidVersion,
+        format: options.codec,
+        hashAlg: options.hashAlg,
+        hashOnly: !options.flush
+      }, (error, cid) => done(error, {
+        node: parent,
+        cid
+      }))
+    }
+  ], callback)
+}
+
+const addToShardedDirectory = (context, options, callback) => {
+  return waterfall([
+    (cb) => generatePath(context, options.name, options.parent, cb),
+    ({ rootBucket, path }, cb) => {
+      updateShard(context, path, {
+        name: options.name,
+        cid: options.cid,
+        size: options.size
+      }, options, (err, result = {}) => cb(err, { rootBucket, ...result }))
+    },
+    ({ rootBucket, node }, cb) => updateHamtDirectory(context, node.links, rootBucket, options, cb)
+  ], callback)
+}
+
+const updateShard = (context, positions, child, options, callback) => {
+  const {
+    bucket,
+    prefix,
+    node
+  } = positions.pop()
+
+  const link = node.links
+    .find(link => link.name.substring(0, 2) === prefix && link.name !== `${prefix}${child.name}`)
+
+  return waterfall([
+    (cb) => {
+      if (link && link.name.length > 2) {
+        log(`Converting existing file ${link.name} into sub-shard for ${child.name}`)
+
+        return waterfall([
+          (done) => createShard(context, [{
+            name: link.name.substring(2),
+            size: link.size,
+            multihash: link.cid.buffer
+          }, {
+            name: child.name,
+            size: child.size,
+            multihash: child.cid.buffer
+          }], {}, done),
+          ({ node: { links: [ shard ] } }, done) => {
+            return context.ipld.get(shard.cid, (err, result) => {
+              done(err, { cid: shard.cid, node: result && result.value })
+            })
+          },
+          (result, cb) => updateShardParent(context, bucket, node, link.name, result.node, result.cid, prefix, options, cb)
+        ], cb)
+      }
+
+      if (link && link.name.length === 2) {
+        log(`Descending into sub-shard ${link.name} for ${child.name}`)
+
+        return waterfall([
+          (cb) => updateShard(context, positions, child, options, cb),
+          (result, cb) => updateShardParent(context, bucket, node, link.name, result.node, result.cid, prefix, options, cb)
+        ], cb)
+      }
+
+      log(`Adding or replacing file`, prefix + child.name)
+      updateShardParent(context, bucket, node, prefix + child.name, child, child.cid, prefix + child.name, options, cb)
+    }
+  ], callback)
 }
 
 const createShard = (context, contents, options, callback) => {
@@ -265,6 +218,14 @@ const createShard = (context, contents, options, callback) => {
       shard.flush('', context.ipld, null, callback)
     }
   )
+}
+
+const updateShardParent = (context, bucket, parent, name, node, cid, prefix, options, callback) => {
+  waterfall([
+    (done) => DAGNode.rmLink(parent, name, done),
+    (parent, done) => DAGNode.addLink(parent, new DAGLink(prefix, node.size, cid), done),
+    (parent, done) => updateHamtDirectory(context, parent.links, bucket, options, done)
+  ], callback)
 }
 
 module.exports = addLink

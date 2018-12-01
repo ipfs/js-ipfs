@@ -8,18 +8,15 @@ const path = require('path')
 const loadFixture = require('aegir/fixtures')
 const isNode = require('detect-node')
 const values = require('pull-stream/sources/values')
-const pull = require('pull-stream/pull')
-const collect = require('pull-stream/sinks/collect')
-const importer = require('ipfs-unixfs-importer')
 const bufferStream = require('pull-buffer-stream')
 const multihash = require('multihashes')
 const {
   collectLeafCids,
   createMfs,
   cidAtPath,
-  createShardedDirectory
+  createShardedDirectory,
+  createTwoShards
 } = require('./helpers')
-const crypto = require('crypto')
 const CID = require('cids')
 
 let fs
@@ -788,56 +785,94 @@ describe('write', function () {
     expect(actualBytes).to.deep.equal(expectedBytes)
   })
 
-  it('results in the same hash as a sharded directory created by the importer', async () => {
-    const shardSplitThreshold = 10
+  it('results in the same hash as a sharded directory created by the importer when adding a new file', async function () {
+    this.timeout(60000)
 
-    const createShardedDir = (files) => {
-      return new Promise((resolve, reject) => {
-        pull(
-          values(files),
-          importer(mfs.ipld, {
-            shardSplitThreshold,
-            reduceSingleLeafToSelf: false, // same as go-ipfs-mfs implementation, differs from `ipfs add`(!)
-            leafType: 'raw' // same as go-ipfs-mfs implementation, differs from `ipfs add`(!)
-          }),
-          collect((err, files) => {
-            if (err) {
-              return reject(files)
-            }
-
-            const dir = files[files.length - 1]
-
-            resolve(new CID(dir.multihash))
-          })
-        )
-      })
-    }
-
-    const dirPath = `/sharded-dir-${Math.random()}`
-    const fileCount = 100
-    const files = new Array(fileCount).fill(0).map((_, index) => ({
-      path: `${dirPath}/file-${index}`,
-      content: crypto.randomBytes(5)
-    }))
-    const allFiles = files.map(file => ({
-      ...file
-    }))
-    const someFiles = files.map(file => ({
-      ...file
-    }))
-    const newFile = someFiles.pop()
-
-    const dirWithAllFiles = await createShardedDir(allFiles)
-    const dirWithSomeFiles = await createShardedDir(someFiles)
+    const {
+      nextFile,
+      dirWithAllFiles,
+      dirWithSomeFiles,
+      dirPath
+    } = await createTwoShards(mfs, 75)
 
     await mfs.cp(`/ipfs/${dirWithSomeFiles.toBaseEncodedString()}`, dirPath)
 
-    await mfs.write(newFile.path, newFile.content, {
+    await mfs.write(nextFile.path, nextFile.content, {
       create: true
     })
 
     const stats = await mfs.stat(dirPath)
+    const updatedDirCid = new CID(stats.hash)
 
-    expect(new CID(stats.hash)).to.deep.equal(dirWithAllFiles)
+    expect(stats.type).to.equal('hamt-sharded-directory')
+    expect(updatedDirCid.toBaseEncodedString()).to.deep.equal(dirWithAllFiles.toBaseEncodedString())
+  })
+
+  it('results in the same hash as a sharded directory created by the importer when creating a new subshard', async function () {
+    this.timeout(60000)
+
+    const {
+      nextFile,
+      dirWithAllFiles,
+      dirWithSomeFiles,
+      dirPath
+    } = await createTwoShards(mfs, 100)
+
+    await mfs.cp(`/ipfs/${dirWithSomeFiles.toBaseEncodedString()}`, dirPath)
+
+    await mfs.write(nextFile.path, nextFile.content, {
+      create: true
+    })
+
+    const stats = await mfs.stat(dirPath)
+    const updatedDirCid = new CID(stats.hash)
+
+    expect(updatedDirCid.toBaseEncodedString()).to.deep.equal(dirWithAllFiles.toBaseEncodedString())
+  })
+
+  it('results in the same hash as a sharded directory created by the importer when adding a file to a subshard', async function () {
+    this.timeout(60000)
+
+    const {
+      nextFile,
+      dirWithAllFiles,
+      dirWithSomeFiles,
+      dirPath
+    } = await createTwoShards(mfs, 82)
+
+    await mfs.cp(`/ipfs/${dirWithSomeFiles.toBaseEncodedString()}`, dirPath)
+
+    await mfs.write(nextFile.path, nextFile.content, {
+      create: true
+    })
+
+    const stats = await mfs.stat(dirPath)
+    const updatedDirCid = new CID(stats.hash)
+
+    expect(stats.type).to.equal('hamt-sharded-directory')
+    expect(updatedDirCid.toBaseEncodedString()).to.deep.equal(dirWithAllFiles.toBaseEncodedString())
+  })
+
+  it('results in the same hash as a sharded directory created by the importer when adding a file to a subshard of a subshard', async function () {
+    this.timeout(60000)
+
+    const {
+      nextFile,
+      dirWithAllFiles,
+      dirWithSomeFiles,
+      dirPath
+    } = await createTwoShards(mfs, 2187)
+
+    await mfs.cp(`/ipfs/${dirWithSomeFiles.toBaseEncodedString()}`, dirPath)
+
+    await mfs.write(nextFile.path, nextFile.content, {
+      create: true
+    })
+
+    const stats = await mfs.stat(dirPath)
+    const updatedDirCid = new CID(stats.hash)
+
+    expect(stats.type).to.equal('hamt-sharded-directory')
+    expect(updatedDirCid.toBaseEncodedString()).to.deep.equal(dirWithAllFiles.toBaseEncodedString())
   })
 })

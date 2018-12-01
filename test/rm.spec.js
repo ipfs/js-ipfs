@@ -5,9 +5,11 @@ const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
 const bufferStream = require('pull-buffer-stream')
+const CID = require('cids')
 const {
   createMfs,
-  createShardedDirectory
+  createShardedDirectory,
+  createTwoShards
 } = require('./helpers')
 const {
   FILE_SEPARATOR
@@ -245,5 +247,89 @@ describe('rm', function () {
     } catch (error) {
       expect(error.message).to.contain('does not exist')
     }
+  })
+
+  it('results in the same hash as a sharded directory created by the importer when removing a file', async function () {
+    this.timeout(60000)
+
+    const {
+      nextFile,
+      dirWithAllFiles,
+      dirWithSomeFiles,
+      dirPath
+    } = await createTwoShards(mfs, 15)
+
+    await mfs.cp(`/ipfs/${dirWithAllFiles.toBaseEncodedString()}`, dirPath)
+
+    await mfs.rm(nextFile.path)
+
+    const stats = await mfs.stat(dirPath)
+    const updatedDirCid = new CID(stats.hash)
+
+    expect(stats.type).to.equal('hamt-sharded-directory')
+    expect(updatedDirCid.toBaseEncodedString()).to.deep.equal(dirWithSomeFiles.toBaseEncodedString())
+  })
+
+  it('results in the same hash as a sharded directory created by the importer when removing a subshard', async function () {
+    this.timeout(60000)
+
+    const {
+      nextFile,
+      dirWithAllFiles,
+      dirWithSomeFiles,
+      dirPath
+    } = await createTwoShards(mfs, 31)
+
+    await mfs.cp(`/ipfs/${dirWithAllFiles.toBaseEncodedString()}`, dirPath)
+
+    await mfs.rm(nextFile.path)
+
+    const stats = await mfs.stat(dirPath)
+    const updatedDirCid = new CID(stats.hash)
+
+    expect(stats.type).to.equal('hamt-sharded-directory')
+    expect(updatedDirCid.toBaseEncodedString()).to.deep.equal(dirWithSomeFiles.toBaseEncodedString())
+  })
+
+  it('results in the same hash as a sharded directory created by the importer when removing a file from a subshard of a subshard', async function () {
+    this.timeout(60000)
+
+    const {
+      nextFile,
+      dirWithAllFiles,
+      dirWithSomeFiles,
+      dirPath
+    } = await createTwoShards(mfs, 2187)
+
+    await mfs.cp(`/ipfs/${dirWithAllFiles.toBaseEncodedString()}`, dirPath)
+
+    await mfs.rm(nextFile.path)
+
+    const stats = await mfs.stat(dirPath)
+    const updatedDirCid = new CID(stats.hash)
+
+    expect(stats.type).to.equal('hamt-sharded-directory')
+    expect(updatedDirCid.toBaseEncodedString()).to.deep.equal(dirWithSomeFiles.toBaseEncodedString())
+  })
+
+  it('results in the same hash as a sharded directory created by the importer when removing a subshard of a subshard', async function () {
+    this.timeout(60000)
+
+    const {
+      nextFile,
+      dirWithAllFiles,
+      dirWithSomeFiles,
+      dirPath
+    } = await createTwoShards(mfs, 139)
+
+    await mfs.cp(`/ipfs/${dirWithAllFiles.toBaseEncodedString()}`, dirPath)
+
+    await mfs.rm(nextFile.path)
+
+    const stats = await mfs.stat(dirPath)
+    const updatedDirCid = new CID(stats.hash)
+
+    expect(stats.type).to.equal('hamt-sharded-directory')
+    expect(updatedDirCid.toBaseEncodedString()).to.deep.equal(dirWithSomeFiles.toBaseEncodedString())
   })
 })

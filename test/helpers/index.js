@@ -37,7 +37,11 @@ module.exports = {
   createMfs,
   cidAtPath: require('./cid-at-path'),
   collectLeafCids: require('./collect-leaf-cids'),
+  createShard: require('./create-shard'),
   createShardedDirectory: require('./create-sharded-directory'),
+  createTwoShards: require('./create-two-shards'),
+  findTreeWithDepth: require('./find-tree-with-depth'),
+  printTree: require('./print-tree'),
   EMPTY_DIRECTORY_HASH: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn',
   EMPTY_DIRECTORY_HASH_BASE32: 'bafybeiczsscdsbs7ffqz55asqdf3smv6klcw3gofszvwlyarci47bgf354'
 }
