@@ -52,6 +52,7 @@
     "cids": "~0.5.5",
     "debug": "^4.1.0",
     "filereader-stream": "^2.0.0",
+    "hamt-sharding": "~0.0.2",
     "interface-datastore": "~0.6.0",
     "ipfs-multipart": "~0.1.0",
     "ipfs-unixfs": "~0.1.16",
