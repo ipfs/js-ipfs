@@ -1,3 +1,13 @@
+<a name="0.7.3"></a>
+## [0.7.3](https://github.com/ipfs/js-ipfs-mfs/compare/v0.7.2...v0.7.3) (2018-12-02)
+
+
+### Bug Fixes
+
+* add missing dependency ([cc7d708](https://github.com/ipfs/js-ipfs-mfs/commit/cc7d708))
+
+
+
 <a name="0.7.2"></a>
 ## [0.7.2](https://github.com/ipfs/js-ipfs-mfs/compare/v0.7.1...v0.7.2) (2018-12-01)
 
