@@ -257,7 +257,7 @@ describe('rm', function () {
       dirWithAllFiles,
       dirWithSomeFiles,
       dirPath
-    } = await createTwoShards(mfs, 15)
+    } = await createTwoShards(mfs.ipld, 15)
 
     await mfs.cp(`/ipfs/${dirWithAllFiles.toBaseEncodedString()}`, dirPath)
 
@@ -278,7 +278,7 @@ describe('rm', function () {
       dirWithAllFiles,
       dirWithSomeFiles,
       dirPath
-    } = await createTwoShards(mfs, 31)
+    } = await createTwoShards(mfs.ipld, 31)
 
     await mfs.cp(`/ipfs/${dirWithAllFiles.toBaseEncodedString()}`, dirPath)
 
@@ -299,7 +299,7 @@ describe('rm', function () {
       dirWithAllFiles,
       dirWithSomeFiles,
       dirPath
-    } = await createTwoShards(mfs, 2187)
+    } = await createTwoShards(mfs.ipld, 2187)
 
     await mfs.cp(`/ipfs/${dirWithAllFiles.toBaseEncodedString()}`, dirPath)
 
@@ -320,7 +320,7 @@ describe('rm', function () {
       dirWithAllFiles,
       dirWithSomeFiles,
       dirPath
-    } = await createTwoShards(mfs, 139)
+    } = await createTwoShards(mfs.ipld, 139)
 
     await mfs.cp(`/ipfs/${dirWithAllFiles.toBaseEncodedString()}`, dirPath)
 

@@ -7,7 +7,7 @@ const createShard = require('./create-shard')
 
 module.exports = async (mfs, shardSplitThreshold = 10, files = shardSplitThreshold) => {
   const dirPath = `/sharded-dir-${Math.random()}`
-  const cid = await createShard(mfs, new Array(files).fill(0).map((_, index) => ({
+  const cid = await createShard(mfs.ipld, new Array(files).fill(0).map((_, index) => ({
     path: `${dirPath}/file-${index}`,
     content: Buffer.from([0, 1, 2, 3, 4, 5, index])
   })), shardSplitThreshold)

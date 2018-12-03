@@ -2,7 +2,7 @@
 
 const createShard = require('./create-shard')
 
-const createTwoShards = async (mfs, fileCount) => {
+const createTwoShards = async (ipld, fileCount) => {
   const shardSplitThreshold = 10
   const dirPath = `/sharded-dir-${Math.random()}`
   const files = new Array(fileCount).fill(0).map((_, index) => ({
@@ -19,8 +19,8 @@ const createTwoShards = async (mfs, fileCount) => {
   }))
   const nextFile = someFiles.pop()
 
-  const dirWithAllFiles = await createShard(mfs, allFiles, shardSplitThreshold)
-  const dirWithSomeFiles = await createShard(mfs, someFiles, shardSplitThreshold)
+  const dirWithAllFiles = await createShard(ipld, allFiles, shardSplitThreshold)
+  const dirWithSomeFiles = await createShard(ipld, someFiles, shardSplitThreshold)
 
   return {
     nextFile,
