@@ -235,7 +235,6 @@ class IpnsPublisher {
 
       // Determinate the record sequence number
       let seqNumber = 0
-
       if (record && record.sequence !== undefined) {
         seqNumber = record.value.toString() !== value ? record.sequence + 1 : record.sequence
       }
