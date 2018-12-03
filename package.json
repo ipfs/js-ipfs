@@ -69,7 +69,7 @@
     "execa": "^1.0.0",
     "form-data": "^2.3.3",
     "hat": "0.0.3",
-    "interface-ipfs-core": "ipfs/interface-ipfs-core#fix/ipns-over-pubsub-tests",
+    "interface-ipfs-core": "~0.89.0",
     "ipfsd-ctl": "~0.40.1",
     "ncp": "^2.0.0",
     "qs": "^6.5.2",
