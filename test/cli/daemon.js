@@ -126,6 +126,21 @@ describe('daemon', () => {
     })
   })
 
+  it('should be silent', function (done) {
+    this.timeout(10 * 1000)
+    const res = ipfs('daemon --silent')
+    res.catch(function () {}) // Handles the unhandled promise rejection
+    let output = ''
+    const onData = (d) => { output += d }
+    res.stdout.on('data', onData)
+    res.stderr.on('data', onData)
+    setTimeout(function () {
+      res.kill()
+      expect(output).to.be.empty()
+      done()
+    }, 5 * 1000)
+  })
+
   it('should present ipfs path help when option help is received', function (done) {
     this.timeout(100 * 1000)
 
