@@ -268,6 +268,14 @@ Instead of a boolean, you may provide an object with custom initialization optio
 
 A passphrase to encrypt/decrypt your keys.
 
+##### `options.silent`
+
+| Type | Default |
+|------|---------|
+| string | `null` |
+
+The silent option prevents swarm info output in the cli and http client.
+
 ##### `options.relay`
 
 | Type | Default |
