@@ -78,7 +78,9 @@ function makeError (Base, key) {
 
 function E (sym, val, def) {
   messages.set(sym, val)
-  return makeError(def, sym)
+  const c = makeError(def, sym)
+  c.code = sym
+  return c
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Error_types
