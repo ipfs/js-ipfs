@@ -50,7 +50,7 @@ class OfflineDatastore {
     }
 
     // Marshal to libp2p record as the DHT does
-    let record = new Record(key, value)
+    const record = new Record(key, value)
 
     this._repo.datastore.put(routingKey, record.serialize(), callback)
   }

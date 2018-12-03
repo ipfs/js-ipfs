@@ -30,20 +30,6 @@ class IpnsPubsubDatastore {
    * @returns {void}
    */
   put (key, value, callback) {
-    if (!Buffer.isBuffer(key)) {
-      const errMsg = `key ${key} does not have a valid format`
-
-      log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_INVALID_KEY'))
-    }
-
-    if (!Buffer.isBuffer(value)) {
-      const errMsg = `received value ${value} is not a buffer`
-
-      log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_INVALID_VALUE_RECEIVED'))
-    }
-
     this._pubsubDs.put(key, value, callback)
   }
 
@@ -56,13 +42,6 @@ class IpnsPubsubDatastore {
    * @returns {void}
    */
   get (key, callback) {
-    if (!Buffer.isBuffer(key)) {
-      const errMsg = `key ${key} does not have a valid format`
-
-      log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_INVALID_KEY'))
-    }
-
     this._pubsubDs.get(key, (err, res) => {
       // Add topic subscribed
       const ns = key.slice(0, ipns.namespaceLength)
