@@ -182,10 +182,9 @@ class IpnsPublisher {
           return callback(err)
         }
 
-        this._routing.get(keys.routingKey, (err, res) => {
+        this._routing.get(keys.routingKey.toBuffer(), (err, res) => {
           if (err) {
-            log(`error when determining the last published IPNS record for ${peerId.id}`)
-            return callback(null, null)
+            return callback(err)
           }
 
           // unmarshal data
@@ -206,7 +205,7 @@ class IpnsPublisher {
       const errMsg = `found ipns record that we couldn't convert to a value`
 
       log.error(errMsg)
-      return callback(null, null)
+      return callback(errcode(new Error(errMsg), 'ERR_INVALID_RECORD_DATA'))
     }
 
     callback(null, result)
@@ -226,11 +225,17 @@ class IpnsPublisher {
 
     this._getPublished(peerId, getPublishedOptions, (err, record) => {
       if (err) {
-        return callback(err)
+        if (err.code !== 'ERR_NOT_FOUND') {
+          const errMsg = `unexpected error when determining the last published IPNS record for ${peerId.id}`
+
+          log.error(errMsg)
+          return callback(errcode(new Error(errMsg), 'ERR_DETERMINING_PUBLISHED_RECORD'))
+        }
       }
 
       // Determinate the record sequence number
       let seqNumber = 0
+
       if (record && record.sequence !== undefined) {
         seqNumber = record.value.toString() !== value ? record.sequence + 1 : record.sequence
       }

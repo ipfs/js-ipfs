@@ -340,7 +340,7 @@ describe('name', function () {
 
       node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
         expect(err).to.exist()
-        expect(err.code).to.equal('ERR_UNEXPECTED_DATASTORE_RESPONSE')
+        expect(err.code).to.equal('ERR_DETERMINING_PUBLISHED_RECORD')
 
         stub.restore()
         done()
