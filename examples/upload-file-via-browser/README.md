@@ -31,4 +31,4 @@ Now open your browser at `http://localhost:3000`
 
 After uploading a file (left screen), and opening the uploaded file (right screen), you should see something like:
 
-![App Screenshot](https://cdn.rawgit.com/ipfs/js-ipfs-http-client/320fcfc6155a771027bdf0cc661e37a407d35efb/examples/upload-file-via-browser/screenshot.png)
+> ![App Screenshot](https://github.com/ipfs/js-ipfs-http-client/raw/master/examples/upload-file-via-browser/screenshot.png)
