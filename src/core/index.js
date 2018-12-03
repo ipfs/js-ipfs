@@ -18,6 +18,7 @@ const EventEmitter = require('events')
 const config = require('./config')
 const boot = require('./boot')
 const components = require('./components')
+const { ERR_IPFS_MISSING_IPLD_FORMAT } = require('./errors')
 
 // replaced by repo-browser when running in the browser
 const defaultRepo = require('./runtime/repo-nodejs')
@@ -120,8 +121,12 @@ class IPFS extends EventEmitter {
       blockService: this._blockService,
       loadFormat: (codec, callback) => {
         this.log('Loading IPLD format', codec)
-        if (IpldFormats[codec]) return callback(null, IpldFormats[codec])
-        callback(new Error(`Missing IPLD format "${codec}"`))
+
+        if (IpldFormats[codec]) {
+          return callback(null, IpldFormats[codec])
+        }
+
+        callback(new ERR_IPFS_MISSING_IPLD_FORMAT(codec))
       }
     })
     this._preload = preload(this)

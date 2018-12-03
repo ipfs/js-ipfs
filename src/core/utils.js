@@ -4,8 +4,8 @@ const promisify = require('promisify-es6')
 const map = require('async/map')
 const isIpfs = require('is-ipfs')
 const CID = require('cids')
+const { ERR_IPFS_INVALID_PATH } = require('./errors')
 
-const ERR_BAD_PATH = 'ERR_BAD_PATH'
 exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'ipfs daemon\' first.'
 
 /**
@@ -21,11 +21,10 @@ exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'
  * @throws on an invalid @param ipfsPath
  */
 function parseIpfsPath (ipfsPath) {
-  const invalidPathErr = new Error('invalid ipfs ref path')
   ipfsPath = ipfsPath.replace(/^\/ipfs\//, '')
   const matched = ipfsPath.match(/([^/]+(?:\/[^/]+)*)\/?$/)
   if (!matched) {
-    throw invalidPathErr
+    throw new ERR_IPFS_INVALID_PATH(ipfsPath)
   }
 
   const [hash, ...links] = matched[1].split('/')
@@ -34,7 +33,7 @@ function parseIpfsPath (ipfsPath) {
   if (isIpfs.cid(hash)) {
     return { hash, links }
   } else {
-    throw invalidPathErr
+    throw new ERR_IPFS_INVALID_PATH(ipfsPath)
   }
 }
 
@@ -57,7 +56,7 @@ const normalizePath = (pathStr) => {
   } else if (isIpfs.path(pathStr)) {
     return pathStr
   } else {
-    throw Object.assign(new Error(`invalid ${pathStr} path`), { code: ERR_BAD_PATH })
+    throw new ERR_IPFS_INVALID_PATH(pathStr)
   }
 }
 

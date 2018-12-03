@@ -6,6 +6,7 @@ const toUri = require('multiaddr-to-uri')
 const debug = require('debug')
 const CID = require('cids')
 const preload = require('./runtime/preload-nodejs')
+const { ERR_IPFS_PRELOAD_ABORTED } = require('./errors')
 
 const log = debug('jsipfs:preload')
 log.error = debug('jsipfs:preload:error')
@@ -48,7 +49,7 @@ module.exports = self => {
     const now = Date.now()
 
     retry({ times: fallbackApiUris.length }, (cb) => {
-      if (stopped) return cb(new Error(`preload aborted for ${cid}`))
+      if (stopped) return cb(new ERR_IPFS_PRELOAD_ABORTED(cid))
 
       // Remove failed request from a previous attempt
       requests = requests.filter(r => r !== request)
