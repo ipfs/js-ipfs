@@ -1,3 +1,14 @@
+<a name="0.89.0"></a>
+# [0.89.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.88.0...v0.89.0) (2018-12-03)
+
+
+### Bug Fixes
+
+* code blocks for the code ([36cf442](https://github.com/ipfs/interface-ipfs-core/commit/36cf442))
+* ipns over pubsub tests ([#395](https://github.com/ipfs/interface-ipfs-core/issues/395)) ([e872b8a](https://github.com/ipfs/interface-ipfs-core/commit/e872b8a))
+
+
+
 <a name="0.88.0"></a>
 # [0.88.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.87.0...v0.88.0) (2018-11-27)
 
