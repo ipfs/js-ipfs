@@ -7,6 +7,7 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const series = require('async/series')
+const sinon = require('sinon')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
 const os = require('os')
@@ -128,6 +129,21 @@ describe('create node', function () {
         node.once('stop', done)
         node.stop()
       })
+    })
+  })
+
+  it('should be silent', (done) => {
+    sinon.spy(console, 'log')
+
+    const ipfs = new IPFS({
+      silent: true,
+      repo: tempRepo
+    })
+
+    ipfs.on('ready', () => {
+      expect(console.log.called).to.be.false()
+      console.log.restore()
+      done()
     })
   })
 
