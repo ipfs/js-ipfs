@@ -2,15 +2,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const series = require('async/series')
-const loadFixture = require('aegir/fixtures')
-
 const { spawnNodeWithId } = require('../utils/spawn')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-
-const fixture = Object.freeze({
-  data: loadFixture('js/test/fixtures/testfile.txt', 'interface-ipfs-core')
-})
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -19,8 +12,6 @@ module.exports = (createCommon, options) => {
 
   describe('.name.pubsub.subs', function () {
     let ipfs
-    let nodeId
-    let value
 
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
@@ -34,14 +25,7 @@ module.exports = (createCommon, options) => {
           expect(err).to.not.exist()
 
           ipfs = node
-          nodeId = node.peerId.id
-
-          ipfs.add(fixture.data, { pin: false }, (err, res) => {
-            expect(err).to.not.exist()
-
-            value = res[0].path
-            done()
-          })
+          done()
         })
       })
     })
@@ -62,19 +46,22 @@ module.exports = (createCommon, options) => {
 
     it('should get the list of subscriptions updated after a resolve', function (done) {
       this.timeout(300 * 1000)
+      const id = 'QmNP1ASen5ZREtiJTtVD3jhMKhoPb1zppET1tgpjHx2NGA'
 
-      series([
-        (cb) => ipfs.name.pubsub.subs(cb),
-        (cb) => ipfs.name.publish(value, { resolve: false }, cb),
-        (cb) => ipfs.name.resolve(nodeId, cb),
-        (cb) => ipfs.name.pubsub.subs(cb)
-      ], (err, res) => {
+      ipfs.name.pubsub.subs((err, res) => {
         expect(err).to.not.exist()
-        expect(res).to.exist()
-        expect(res[0]).to.eql([]) // initally empty
-        expect(res[3]).to.be.an('array').that.does.include(`/ipns/${nodeId}`)
+        expect(res).to.eql([]) // initally empty
 
-        done()
+        ipfs.name.resolve(id, (err) => {
+          expect(err).to.exist()
+
+          ipfs.name.pubsub.subs((err, res) => {
+            expect(err).to.not.exist()
+            expect(res).to.be.an('array').that.does.include(`/ipns/${id}`)
+
+            done()
+          })
+        })
       })
     })
   })

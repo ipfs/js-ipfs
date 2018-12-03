@@ -2,15 +2,11 @@
 /* eslint-env mocha */
 'use strict'
 
-const series = require('async/series')
-const loadFixture = require('aegir/fixtures')
+const auto = require('async/auto')
+const PeerId = require('peer-id')
 
 const { spawnNodeWithId } = require('../utils/spawn')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-
-const fixture = Object.freeze({
-  data: loadFixture('js/test/fixtures/testfile.txt', 'interface-ipfs-core')
-})
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -20,7 +16,6 @@ module.exports = (createCommon, options) => {
   describe('.name.pubsub.cancel', function () {
     let ipfs
     let nodeId
-    let value
 
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
@@ -36,12 +31,7 @@ module.exports = (createCommon, options) => {
           ipfs = node
           nodeId = node.peerId.id
 
-          ipfs.add(fixture.data, { pin: false }, (err, res) => {
-            expect(err).to.not.exist()
-
-            value = res[0].path
-            done()
-          })
+          done()
         })
       })
     })
@@ -63,24 +53,35 @@ module.exports = (createCommon, options) => {
 
     it('should cancel a subscription correctly returning true', function (done) {
       this.timeout(300 * 1000)
-      const ipnsPath = `/ipns/${nodeId}`
 
-      series([
-        (cb) => ipfs.name.pubsub.subs(cb),
-        (cb) => ipfs.name.publish(value, { resolve: false }, cb),
-        (cb) => ipfs.name.resolve(nodeId, cb),
-        (cb) => ipfs.name.pubsub.subs(cb),
-        (cb) => ipfs.name.pubsub.cancel(ipnsPath, cb),
-        (cb) => ipfs.name.pubsub.subs(cb)
-      ], (err, res) => {
+      PeerId.create({ bits: 512 }, (err, peerId) => {
         expect(err).to.not.exist()
-        expect(res).to.exist()
-        expect(res[0]).to.eql([]) // initally empty
-        expect(res[4]).to.have.property('canceled')
-        expect(res[4].canceled).to.eql(true)
-        expect(res[5]).to.be.an('array').that.does.not.include(ipnsPath)
 
-        done()
+        const id = peerId.toB58String()
+        const ipnsPath = `/ipns/${id}`
+
+        ipfs.name.pubsub.subs((err, res) => {
+          expect(err).to.not.exist()
+          expect(res).to.be.an('array').that.does.not.include(ipnsPath)
+
+          ipfs.name.resolve(id, (err) => {
+            expect(err).to.exist()
+            auto({
+              subs1: (cb) => ipfs.name.pubsub.subs(cb),
+              cancel: ['subs1', (_, cb) => ipfs.name.pubsub.cancel(ipnsPath, cb)],
+              subs2: ['cancel', (_, cb) => ipfs.name.pubsub.subs(cb)]
+            }, (err, res) => {
+              expect(err).to.not.exist()
+              expect(res).to.exist()
+              expect(res.subs1).to.be.an('array').that.does.include(ipnsPath)
+              expect(res.cancel).to.have.property('canceled')
+              expect(res.cancel.canceled).to.eql(true)
+              expect(res.subs2).to.be.an('array').that.does.not.include(ipnsPath)
+
+              done()
+            })
+          })
+        })
       })
     })
   })
