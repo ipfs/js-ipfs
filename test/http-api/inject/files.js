@@ -62,7 +62,8 @@ module.exports = (http) => {
         })
       })
 
-      it('valid hash', (done) => {
+      it('valid hash', function (done) {
+        this.timeout(30 * 1000)
         api.inject({
           method: 'GET',
           url: '/api/v0/cat?arg=QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o'
