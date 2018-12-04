@@ -4,7 +4,7 @@ const toPathComponents = (path = '') => {
   // split on / unless escaped with \
   return (path
     .trim()
-    .match(/([^\\\][^/]|\\\/)+/g) || [])
+    .match(/([^\\^/]|\\\/)+/g) || [])
     .filter(Boolean)
 }
 
