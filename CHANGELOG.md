@@ -1,3 +1,13 @@
+<a name="0.7.6"></a>
+## [0.7.6](https://github.com/ipfs/js-ipfs-mfs/compare/v0.7.5...v0.7.6) (2018-12-04)
+
+
+### Features
+
+* push sorting out of core ([4ce16b7](https://github.com/ipfs/js-ipfs-mfs/commit/4ce16b7))
+
+
+
 <a name="0.7.5"></a>
 ## [0.7.5](https://github.com/ipfs/js-ipfs-mfs/compare/v0.7.4...v0.7.5) (2018-12-04)
 
