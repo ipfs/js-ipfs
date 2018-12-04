@@ -27,6 +27,9 @@ module.exports = {
       })
       .option('local', {
         desc: 'Run commands locally to the daemon',
+        default: false
+      })
+      .option('enable-namesys-pubsub', {
         type: 'boolean',
         default: false
       })

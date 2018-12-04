@@ -21,6 +21,7 @@ function uriToMultiaddr (uri) {
 }
 
 function HttpApi (repo, config, cliArgs) {
+  cliArgs = cliArgs || {}
   this.node = undefined
   this.server = undefined
 
@@ -71,12 +72,13 @@ function HttpApi (repo, config, cliArgs) {
             init: init,
             start: true,
             config: config,
-            local: cliArgs && cliArgs.local,
-            pass: cliArgs && cliArgs.pass,
+            local: cliArgs.local,
+            pass: cliArgs.pass,
             EXPERIMENTAL: {
-              pubsub: cliArgs && cliArgs.enablePubsubExperiment,
-              dht: cliArgs && cliArgs.enableDhtExperiment,
-              sharding: cliArgs && cliArgs.enableShardingExperiment
+              pubsub: cliArgs.enablePubsubExperiment,
+              ipnsPubsub: cliArgs.enableNamesysPubsub,
+              dht: cliArgs.enableDhtExperiment,
+              sharding: cliArgs.enableShardingExperiment
             },
             libp2p: libp2p
           })

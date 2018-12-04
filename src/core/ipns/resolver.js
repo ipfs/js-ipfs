@@ -1,7 +1,6 @@
 'use strict'
 
 const ipns = require('ipns')
-const Record = require('libp2p-record').Record
 const PeerId = require('peer-id')
 const errcode = require('err-code')
 
@@ -119,8 +118,7 @@ class IpnsResolver {
 
       let ipnsEntry
       try {
-        const record = Record.deserialize(res)
-        ipnsEntry = ipns.unmarshal(record.value)
+        ipnsEntry = ipns.unmarshal(res)
       } catch (err) {
         const errMsg = `found ipns record that we couldn't convert to a value`
 

@@ -2,11 +2,13 @@
 
 const series = require('async/series')
 const Bitswap = require('ipfs-bitswap')
+const get = require('lodash/get')
 const setImmediate = require('async/setImmediate')
 const promisify = require('promisify-es6')
 const { TieredDatastore } = require('datastore-core')
 
 const IPNS = require('../ipns')
+const PubsubDatastore = require('../ipns/routing/pubsub-datastore')
 const OfflineDatastore = require('../ipns/routing/offline-datastore')
 
 module.exports = (self) => {
@@ -41,7 +43,16 @@ module.exports = (self) => {
         // Setup online routing for IPNS with a tiered routing composed by a DHT and a Pubsub router (if properly enabled)
         const ipnsStores = []
 
-        // TODO Add IPNS pubsub if enabled
+        // Add IPNS pubsub if enabled
+        let pubsubDs
+        if (get(self._options, 'EXPERIMENTAL.ipnsPubsub', false)) {
+          const pubsub = self._libp2pNode.pubsub
+          const localDatastore = self._repo.datastore
+          const peerId = self._peerInfo.id
+
+          pubsubDs = new PubsubDatastore(pubsub, localDatastore, peerId)
+          ipnsStores.push(pubsubDs)
+        }
 
         // NOTE: IPNS routing is being replaced by the local repo datastore while the IPNS over DHT is not ready
         // When DHT is added, if local option enabled, should receive offlineDatastore as well

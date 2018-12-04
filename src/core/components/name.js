@@ -11,6 +11,7 @@ const errcode = require('err-code')
 const log = debug('jsipfs:name')
 log.error = debug('jsipfs:name:error')
 
+const namePubsub = require('./name-pubsub')
 const utils = require('../utils')
 const path = require('../ipns/path')
 
@@ -161,6 +162,7 @@ module.exports = function name (self) {
       }
 
       self._ipns.resolve(name, resolveOptions, callback)
-    })
+    }),
+    pubsub: namePubsub(self)
   }
 }

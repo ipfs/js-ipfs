@@ -165,6 +165,14 @@ class IPFS extends EventEmitter {
     if (this._options.EXPERIMENTAL.pubsub) {
       this.log('EXPERIMENTAL pubsub is enabled')
     }
+    if (this._options.EXPERIMENTAL.ipnsPubsub) {
+      if (!this._options.EXPERIMENTAL.pubsub) {
+        this.log('EXPERIMENTAL pubsub is enabled to use IPNS pubsub')
+        this._options.EXPERIMENTAL.pubsub = true
+      }
+
+      this.log('EXPERIMENTAL IPNS pubsub is enabled')
+    }
     if (this._options.EXPERIMENTAL.sharding) {
       this.log('EXPERIMENTAL sharding is enabled')
     }

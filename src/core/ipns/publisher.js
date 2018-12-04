@@ -1,7 +1,6 @@
 'use strict'
 
 const PeerId = require('peer-id')
-const Record = require('libp2p-record').Record
 const { Key } = require('interface-datastore')
 const series = require('async/series')
 const errcode = require('err-code')
@@ -97,19 +96,17 @@ class IpnsPublisher {
       return callback(errcode(new Error(errMsg), 'ERR_INVALID_DATASTORE_KEY'))
     }
 
-    let rec
+    let entryData
     try {
       // Marshal record
-      const entryData = ipns.marshal(entry)
-      // Marshal to libp2p record
-      rec = new Record(key.toBuffer(), entryData)
+      entryData = ipns.marshal(entry)
     } catch (err) {
       log.error(err)
       return callback(err)
     }
 
     // Add record to routing (buffer key)
-    this._routing.put(key.toBuffer(), rec.serialize(), (err, res) => {
+    this._routing.put(key.toBuffer(), entryData, (err, res) => {
       if (err) {
         const errMsg = `ipns record for ${key.toString()} could not be stored in the routing`
 
@@ -137,17 +134,8 @@ class IpnsPublisher {
       return callback(errcode(new Error(errMsg), 'ERR_UNDEFINED_PARAMETER'))
     }
 
-    let rec
-    try {
-      // Marshal to libp2p record
-      rec = new Record(key.toBuffer(), publicKey.bytes)
-    } catch (err) {
-      log.error(err)
-      return callback(err)
-    }
-
     // Add public key to routing (buffer key)
-    this._routing.put(key.toBuffer(), rec.serialize(), (err, res) => {
+    this._routing.put(key.toBuffer(), publicKey.bytes, (err, res) => {
       if (err) {
         const errMsg = `public key for ${key.toString()} could not be stored in the routing`
 
