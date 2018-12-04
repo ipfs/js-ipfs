@@ -13,9 +13,8 @@ const findTreeWithDepth = async (ipld, children, depth) => {
 
     const cid = await createShard(ipld, files)
     const hasChildrenAtDepth = await findChildrenAtDepth(ipld, cid, children, depth)
-    console.info('Tried', i)
+
     if (hasChildrenAtDepth) {
-      console.info('Files', i)
       await printTree(ipld, cid)
 
       return cid
