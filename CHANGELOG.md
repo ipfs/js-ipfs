@@ -1,3 +1,13 @@
+<a name="0.7.7"></a>
+## [0.7.7](https://github.com/ipfs/js-ipfs-mfs/compare/v0.7.6...v0.7.7) (2018-12-04)
+
+
+### Bug Fixes
+
+* flush should error on non-existent entries ([dbe7089](https://github.com/ipfs/js-ipfs-mfs/commit/dbe7089))
+
+
+
 <a name="0.7.6"></a>
 ## [0.7.6](https://github.com/ipfs/js-ipfs-mfs/compare/v0.7.5...v0.7.6) (2018-12-04)
 
