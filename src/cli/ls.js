@@ -57,9 +57,9 @@ module.exports = {
             .then(files => {
               // https://github.com/ipfs/go-ipfs/issues/5181
               if (sort) {
-                return callback(null, files.sort((a, b) => {
+                files = files.sort((a, b) => {
                   return a.name.localeCompare(b.name)
-                }))
+                })
               }
 
               if (long) {
