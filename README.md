@@ -995,9 +995,11 @@ the metrics (in prometheus format) by making a GET request to the following endp
 http://localhost:5002/debug/metrics/prometheus
 ```
 
-### IPFS Core Architecture
+### IPFS Architecture
 
-![](/img/core.png)
+![](/img/architecture.png)
+
+[Annotated version](https://user-images.githubusercontent.com/1211152/47606420-b6265780-da13-11e8-923b-b365a8534e0e.png)j
 
 What does this image explain?
 
@@ -1005,7 +1007,7 @@ What does this image explain?
 - The exchange protocol, `bitswap`, uses the Block Service which in turn uses the Repo, offering a get and put of blocks to the IPFS implementation.
 - The DAG API (previously Object) comes from the IPLD Resolver, it can support several IPLD Formats (i.e: dag-pb, dag-cbor, etc).
 - The Files API uses `ipfs-unixfs-engine` to import and export files to and from IPFS.
-- Swarm, the component that offers a network API, uses libp2p to dial and listen for connections, to use the DHT, for discovery mechanisms, and more. libp2p-ipfs-nodejs is used when running in Node.js and libp2p-ipfs-browser is used when running in the browser.
+- libp2p, the network stack of IPFS, uses libp2p to dial and listen for connections, to use the DHT, for discovery mechanisms, and more.
 
 ## Contribute
 
