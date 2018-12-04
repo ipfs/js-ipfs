@@ -109,7 +109,7 @@
     "ipfs-block-service": "~0.15.1",
     "ipfs-http-client": "^27.0.0",
     "ipfs-http-response": "~0.2.1",
-    "ipfs-mfs": "~0.7.7",
+    "ipfs-mfs": "~0.8.0",
     "ipfs-multipart": "~0.1.0",
     "ipfs-repo": "0.25.2",
     "ipfs-unixfs": "~0.1.16",
