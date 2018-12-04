@@ -27,7 +27,7 @@ module.exports = {
     sort: {
       alias: 's',
       type: 'boolean',
-      default: false,
+      default: true,
       coerce: asBoolean,
       describe: 'Sort entries by name'
     },
@@ -55,6 +55,13 @@ module.exports = {
             cidBase
           })
             .then(files => {
+              // https://github.com/ipfs/go-ipfs/issues/5181
+              if (sort) {
+                return callback(null, files.sort((a, b) => {
+                  return a.name.localeCompare(b.name)
+                }))
+              }
+
               if (long) {
                 files.forEach(link => {
                   print(`${link.name}\t${link.hash}\t${link.size}`)

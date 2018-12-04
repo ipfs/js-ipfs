@@ -22,20 +22,7 @@ module.exports = (context) => {
 
     pull(
       lsPullStream(context)(path, options),
-      collect((err, files) => {
-        if (err) {
-          return callback(err)
-        }
-
-        // https://github.com/ipfs/go-ipfs/issues/5181
-        if (options.sort) {
-          return callback(null, files.sort((a, b) => {
-            return a.name.localeCompare(b.name)
-          }))
-        }
-
-        return callback(null, files)
-      })
+      collect(callback)
     )
   }
 }
