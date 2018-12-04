@@ -1,3 +1,13 @@
+<a name="0.7.5"></a>
+## [0.7.5](https://github.com/ipfs/js-ipfs-mfs/compare/v0.7.4...v0.7.5) (2018-12-04)
+
+
+### Bug Fixes
+
+* fix regex for splitting files ([a8142d3](https://github.com/ipfs/js-ipfs-mfs/commit/a8142d3))
+
+
+
 <a name="0.7.4"></a>
 ## [0.7.4](https://github.com/ipfs/js-ipfs-mfs/compare/v0.7.3...v0.7.4) (2018-12-03)
 
