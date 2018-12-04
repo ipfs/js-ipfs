@@ -30,6 +30,10 @@ module.exports = (context) => {
       path = FILE_SEPARATOR
     }
 
+    if (path === undefined) {
+      path = FILE_SEPARATOR
+    }
+
     options = Object.assign({}, defaultOptions, options)
 
     options.long = options.l || options.long
