@@ -13,6 +13,8 @@ const tests = {
   readReadableStream: require('./read-readable-stream'),
   readPullStream: require('./read-pull-stream'),
   ls: require('./ls'),
+  lsReadableStream: require('./ls-readable-stream'),
+  lsPullStream: require('./ls-pull-stream'),
   flush: require('./flush')
 }
 

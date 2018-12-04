@@ -10,7 +10,7 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.files.ls', function () {
+  describe('.files.lsReadableStream', function () {
     this.timeout(40 * 1000)
 
     let ipfs
@@ -35,9 +35,11 @@ module.exports = (createCommon, options) => {
     it('should not ls not found file/dir, expect error', (done) => {
       const testDir = `/test-${hat()}`
 
-      ipfs.files.ls(`${testDir}/404`, (err, info) => {
+      const stream = ipfs.files.lsReadableStream(`${testDir}/404`)
+
+      stream.once('error', (err) => {
         expect(err).to.exist()
-        expect(info).to.not.exist()
+        expect(err.message).to.include('does not exist')
         done()
       })
     })
@@ -51,9 +53,14 @@ module.exports = (createCommon, options) => {
       ], (err) => {
         expect(err).to.not.exist()
 
-        ipfs.files.ls(testDir, (err, info) => {
-          expect(err).to.not.exist()
-          expect(info.sort((a, b) => a.name.localeCompare(b.name))).to.eql([
+        const stream = ipfs.files.lsReadableStream(testDir)
+
+        let entries = []
+
+        stream.on('data', entry => entries.push(entry))
+
+        stream.once('end', () => {
+          expect(entries.sort((a, b) => a.name.localeCompare(b.name))).to.eql([
             { name: 'b', type: 0, size: 0, hash: '' },
             { name: 'lv1', type: 0, size: 0, hash: '' }
           ])
@@ -71,9 +78,14 @@ module.exports = (createCommon, options) => {
       ], (err) => {
         expect(err).to.not.exist()
 
-        ipfs.files.ls(testDir, { l: true }, (err, info) => {
-          expect(err).to.not.exist()
-          expect(info.sort((a, b) => a.name.localeCompare(b.name))).to.eql([
+        const stream = ipfs.files.lsReadableStream(testDir, { l: true })
+
+        let entries = []
+
+        stream.on('data', entry => entries.push(entry))
+
+        stream.once('end', () => {
+          expect(entries.sort((a, b) => a.name.localeCompare(b.name))).to.eql([
             {
               name: 'b',
               type: 0,

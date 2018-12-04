@@ -22,6 +22,8 @@
   - [files.cp](#filescp)
   - [files.flush](#filesflush)
   - [files.ls](#filesls)
+  - [files.lsReadableStream](#fileslsreadablestream)
+  - [files.lsPullStream](#fileslspullstream)
   - [files.mkdir](#filesmkdir)
   - [files.mv](#filesmv)
   - [files.read](#filesread)
@@ -1090,6 +1092,7 @@ Where:
 - `options` is an optional Object that might contain the following keys:
   - `long` is a Boolean value to decide whether or not to populate `type`, `size` and `hash` (default: false)
   - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
+  - `sort` is a Boolean value, if true entries will be sorted by filename (default: false)
 - `callback` is an optional function with the signature `function (error, files) {}`, where `error` may be an Error that occured if the operation was not successful and `files` is an array containing Objects that contain the following keys:
 
   - `name` which is the file's name
@@ -1111,6 +1114,75 @@ ipfs.files.ls('/screenshots', function (err, files) {
 // 2018-01-22T18:08:46.775Z.png
 // 2018-01-22T18:08:49.184Z.png
 ```
+
+#### `files.lsReadableStream`
+
+> Lists a directory from the local mutable namespace that is addressed by a valid IPFS Path. The list will be yielded as Readable Streams.
+
+##### `Go` **WIP**
+
+##### `JavaScript` - ipfs.files.lsReadableStream([path], [options]) -> [Readable Stream][rs]
+
+Where:
+
+- `path` is an optional string to show listing for (default: `/`)
+- `options` is an optional Object that might contain the following keys:
+  - `long` is a Boolean value to decide whether or not to populate `type`, `size` and `hash` (default: false)
+  - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
+
+It returns a [Readable Stream][rs] in [Object mode](https://nodejs.org/api/stream.html#stream_object_mode) that will yield objects containing the following keys:
+
+  - `name` which is the file's name
+  - `type` which is the object's type (`directory` or `file`)
+  - `size` the size of the file in bytes
+  - `hash` the hash of the file
+
+**Example:**
+
+```JavaScript
+const stream = ipfs.lsReadableStream('/some-dir')
+
+stream.on('data', (file) => {
+  // write the file's path and contents to standard out
+  console.log(file.name)
+})
+```
+
+#### `files.lsPullStream`
+
+> Fetch a file or an entire directory tree from IPFS that is addressed by a valid IPFS Path. The files will be yielded through a Pull Stream.
+
+##### `Go` **WIP**
+
+##### `JavaScript` - ipfs.lsPullStream([path], [options]) -> [Pull Stream][ps]
+
+Where:
+
+- `path` is an optional string to show listing for (default: `/`)
+- `options` is an optional Object that might contain the following keys:
+  - `long` is a Boolean value to decide whether or not to populate `type`, `size` and `hash` (default: false)
+  - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
+
+It returns a [Pull Stream][os] that will yield objects containing the following keys:
+
+  - `name` which is the file's name
+  - `type` which is the object's type (`directory` or `file`)
+  - `size` the size of the file in bytes
+  - `hash` the hash of the file
+
+**Example:**
+
+```JavaScript
+pull(
+  ipfs.lsPullStream('/some-dir'),
+  pull.through(file => {
+    console.log(file.name)
+  })
+  pull.onEnd(...)
+)
+```
+
+A great source of [examples][] can be found in the tests for this API.
 
 [examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/files
 [b]: https://www.npmjs.com/package/buffer
