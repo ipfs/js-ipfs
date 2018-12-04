@@ -1,5 +1,8 @@
 'use strict'
 
+const waterfall = require('async/waterfall')
+const stat = require('./stat')
+
 const {
   FILE_SEPARATOR
 } = require('./utils')
@@ -25,6 +28,9 @@ module.exports = (context) => {
 
     options = Object.assign({}, defaultOptions, options)
 
-    callback()
+    waterfall([
+      (cb) => stat(context)(path, options, cb),
+      (stats, cb) => cb()
+    ], callback)
   }
 }
