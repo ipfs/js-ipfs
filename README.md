@@ -272,9 +272,9 @@ A passphrase to encrypt/decrypt your keys.
 
 | Type | Default |
 |------|---------|
-| string | `null` |
+| Boolean | `false` |
 
-The silent option prevents swarm info output in the cli and http client.
+Prevents all logging output from the IPFS node.
 
 ##### `options.relay`
 
