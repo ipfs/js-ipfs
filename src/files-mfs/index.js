@@ -12,6 +12,8 @@ module.exports = (arg) => {
     stat: require('./stat')(send),
     rm: require('./rm')(send),
     ls: require('./ls')(send),
+    lsReadableStream: require('./ls-readable-stream')(send),
+    lsPullStream: require('./ls-pull-stream')(send),
     read: require('./read')(send),
     readReadableStream: require('./read-readable-stream')(send),
     readPullStream: require('./read-pull-stream')(send),
