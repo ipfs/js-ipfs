@@ -1,3 +1,18 @@
+<a name="27.1.0"></a>
+# [27.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v27.0.0...v27.1.0) (2018-12-05)
+
+
+### Bug Fixes
+
+* add docs for breaking change ([#898](https://github.com/ipfs/js-ipfs-http-client/issues/898)) ([3e794ac](https://github.com/ipfs/js-ipfs-http-client/commit/3e794ac))
+
+
+### Features
+
+* add files.ls*Stream methods ([#903](https://github.com/ipfs/js-ipfs-http-client/issues/903)) ([705855e](https://github.com/ipfs/js-ipfs-http-client/commit/705855e))
+
+
+
 <a name="27.0.0"></a>
 # [27.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v26.1.2...v27.0.0) (2018-11-28)
 
