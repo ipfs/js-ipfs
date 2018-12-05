@@ -163,14 +163,7 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.filesMFS(defaultCommonFactory, {
-    only: [
-      {
-        name: 'should ls directory',
-        reason: 'TODO not impemented in go-ipfs yet'
-      }
-    ]
-  })
+  tests.filesMFS(defaultCommonFactory)
 
   tests.key(defaultCommonFactory, {
     skip: [
