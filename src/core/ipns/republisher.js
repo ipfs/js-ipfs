@@ -18,9 +18,9 @@ const defaultBroadcastInterval = 4 * hour
 const defaultRecordLifetime = 24 * hour
 
 class IpnsRepublisher {
-  constructor (publisher, repo, peerInfo, keychain, options) {
+  constructor (publisher, datastore, peerInfo, keychain, options) {
     this._publisher = publisher
-    this._repo = repo
+    this._datastore = datastore
     this._peerInfo = peerInfo
     this._keychain = keychain
     this._options = options
@@ -160,7 +160,7 @@ class IpnsRepublisher {
       return callback(errcode(new Error(errMsg), 'ERR_INVALID_PEER_ID'))
     }
 
-    this._repo.datastore.get(ipns.getLocalKey(peerId.id), (err, dsVal) => {
+    this._datastore.get(ipns.getLocalKey(peerId.id), (err, dsVal) => {
       // error handling
       // no need to republish
       if (err && err.notFound) {

@@ -65,7 +65,7 @@ module.exports = (self) => {
 
         // Create ipns routing with a set of datastores
         const routing = new TieredDatastore(ipnsStores)
-        self._ipns = new IPNS(routing, self._repo, self._peerInfo, self._keychain, self._options)
+        self._ipns = new IPNS(routing, self._repo.datastore, self._peerInfo, self._keychain, self._options)
 
         self._bitswap = new Bitswap(
           self._libp2pNode,

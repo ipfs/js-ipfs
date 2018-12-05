@@ -4,7 +4,7 @@ const ipns = require('ipns')
 const crypto = require('libp2p-crypto')
 const PeerId = require('peer-id')
 const errcode = require('err-code')
-const auto = require('async/auto')
+const parallel = require('async/parallel')
 
 const debug = require('debug')
 const log = debug('jsipfs:ipns:resolver')
@@ -100,7 +100,7 @@ class IpnsResolver {
 
     const { routingKey, routingPubKey } = ipns.getIdKeys(peerId.toBytes())
 
-    auto({
+    parallel({
       // Name should be the hash of a public key retrievable from ipfs.
       // We retrieve public key to add it to the PeerId, as the IPNS record may not have it.
       pubKey: (cb) => this._routing.get(routingPubKey.toBuffer(), cb),

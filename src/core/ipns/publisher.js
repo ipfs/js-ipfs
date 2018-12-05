@@ -15,9 +15,9 @@ const defaultRecordTtl = 60 * 60 * 1000
 
 // IpnsPublisher is capable of publishing and resolving names to the IPFS routing system.
 class IpnsPublisher {
-  constructor (routing, repo) {
+  constructor (routing, datastore) {
     this._routing = routing
-    this._repo = repo
+    this._datastore = datastore
   }
 
   // publish record with a eol
@@ -160,7 +160,7 @@ class IpnsPublisher {
     options = options || {}
     const checkRouting = !(options.checkRouting === false)
 
-    this._repo.datastore.get(ipns.getLocalKey(peerId.id), (err, dsVal) => {
+    this._datastore.get(ipns.getLocalKey(peerId.id), (err, dsVal) => {
       if (err) {
         if (err.code !== 'ERR_NOT_FOUND') {
           const errMsg = `unexpected error getting the ipns record ${peerId.id} from datastore`
@@ -170,7 +170,7 @@ class IpnsPublisher {
         }
 
         if (!checkRouting) {
-          return callback(null, null)
+          return callback((errcode(new Error('record was not found'), 'ERR_NOT_FOUND')))
         }
 
         // Try to get from routing
@@ -202,10 +202,8 @@ class IpnsPublisher {
     try {
       result = ipns.unmarshal(data)
     } catch (err) {
-      const errMsg = `found ipns record that we couldn't convert to a value`
-
-      log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_INVALID_RECORD_DATA'))
+      log.error(err)
+      return callback(errcode(new Error(err), 'ERR_INVALID_RECORD_DATA'))
     }
 
     callback(null, result)
@@ -254,7 +252,7 @@ class IpnsPublisher {
         const data = ipns.marshal(entryData)
 
         // Store the new record
-        this._repo.datastore.put(ipns.getLocalKey(peerId.id), data, (err, res) => {
+        this._datastore.put(ipns.getLocalKey(peerId.id), data, (err, res) => {
           if (err) {
             const errMsg = `ipns record for ${value} could not be stored in the datastore`
 

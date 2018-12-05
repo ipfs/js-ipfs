@@ -336,7 +336,7 @@ describe('name', function () {
     })
 
     it('should error to publish if we receive a unexpected error getting from datastore', function (done) {
-      const stub = sinon.stub(node._ipns.publisher._repo.datastore, 'get').callsArgWith(1, 'error-unexpected')
+      const stub = sinon.stub(node._ipns.publisher._datastore, 'get').callsArgWith(1, 'error-unexpected')
 
       node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
         expect(err).to.exist()
@@ -348,7 +348,7 @@ describe('name', function () {
     })
 
     it('should error to publish if we receive a unexpected error putting to datastore', function (done) {
-      const stub = sinon.stub(node._ipns.publisher._repo.datastore, 'put').callsArgWith(2, 'error-unexpected')
+      const stub = sinon.stub(node._ipns.publisher._datastore, 'put').callsArgWith(2, 'error-unexpected')
 
       node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
         expect(err).to.exist()
