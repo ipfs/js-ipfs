@@ -308,7 +308,7 @@ describe('name', function () {
     it('should error to publish if _updateOrCreateRecord fails', function (done) {
       const stub = sinon.stub(node._ipns.publisher, '_updateOrCreateRecord').callsArgWith(4, 'error')
 
-      node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
+      node.name.publish(ipfsRef, { resolve: false }, (err) => {
         expect(err).to.exist()
 
         stub.restore()
@@ -326,7 +326,7 @@ describe('name', function () {
     it('should error to publish if receives an invalid datastore key', function (done) {
       const stub = sinon.stub(Key, 'isKey').returns(false)
 
-      node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
+      node.name.publish(ipfsRef, { resolve: false }, (err) => {
         expect(err).to.exist()
         expect(err.code).to.equal('ERR_INVALID_DATASTORE_KEY')
 
@@ -338,7 +338,7 @@ describe('name', function () {
     it('should error to publish if we receive a unexpected error getting from datastore', function (done) {
       const stub = sinon.stub(node._ipns.publisher._datastore, 'get').callsArgWith(1, 'error-unexpected')
 
-      node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
+      node.name.publish(ipfsRef, { resolve: false }, (err) => {
         expect(err).to.exist()
         expect(err.code).to.equal('ERR_DETERMINING_PUBLISHED_RECORD')
 
@@ -350,7 +350,7 @@ describe('name', function () {
     it('should error to publish if we receive a unexpected error putting to datastore', function (done) {
       const stub = sinon.stub(node._ipns.publisher._datastore, 'put').callsArgWith(2, 'error-unexpected')
 
-      node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
+      node.name.publish(ipfsRef, { resolve: false }, (err) => {
         expect(err).to.exist()
         expect(err.code).to.equal('ERR_STORING_IN_DATASTORE')
 
@@ -382,7 +382,7 @@ describe('name', function () {
         expect(err).to.not.exist()
         expect(res).to.exist()
 
-        node.name.resolve(nodeId, { nocache: true }, (err, res) => {
+        node.name.resolve(nodeId, { nocache: true }, (err) => {
           expect(err).to.exist()
           expect(err.code).to.equal('ERR_UNEXPECTED_ERROR_GETTING_RECORD')
           stub.restore()
@@ -398,7 +398,7 @@ describe('name', function () {
         expect(err).to.not.exist()
         expect(res).to.exist()
 
-        node.name.resolve(nodeId, { nocache: true }, (err, res) => {
+        node.name.resolve(nodeId, { nocache: true }, (err) => {
           expect(err).to.exist()
           expect(err.code).to.equal('ERR_NO_RECORD_FOUND')
           stub.restore()
@@ -414,9 +414,9 @@ describe('name', function () {
         expect(err).to.not.exist()
         expect(res).to.exist()
 
-        node.name.resolve(nodeId, { nocache: true }, (err, res) => {
+        node.name.resolve(nodeId, { nocache: true }, (err) => {
           expect(err).to.exist()
-          expect(err.code).to.equal('ERR_INVALID_PUB_KEY_RECEIVED')
+          expect(err.code).to.equal('ERR_INVALID_RECORD_RECEIVED')
           stub.restore()
           done()
         })

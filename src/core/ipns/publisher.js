@@ -73,9 +73,10 @@ class IpnsPublisher {
 
       series([
         (cb) => this._publishEntry(keys.routingKey, embedPublicKeyRecord || record, peerId, cb),
-        // Publish the public key if a public key cannot be extracted from the ID
-        // We will be able to deprecate this part in the future, since the public keys will be only in the peerId
-        (cb) => embedPublicKeyRecord ? this._publishPublicKey(keys.routingPubKey, publicKey, peerId, cb) : cb()
+        // Publish the public key to support old go-ipfs nodes that are looking for it in the routing
+        // We will be able to deprecate this part in the future, since the public keys will be only
+        // in IPNS record and the peerId.
+        (cb) => this._publishPublicKey(keys.routingPubKey, publicKey, peerId, cb)
       ], (err) => {
         if (err) {
           log.error(err)
@@ -158,7 +159,7 @@ class IpnsPublisher {
     }
 
     options = options || {}
-    const checkRouting = !(options.checkRouting === false)
+    const checkRouting = options.checkRouting !== false
 
     this._datastore.get(ipns.getLocalKey(peerId.id), (err, dsVal) => {
       if (err) {
@@ -170,7 +171,7 @@ class IpnsPublisher {
         }
 
         if (!checkRouting) {
-          return callback((errcode(new Error('record was not found'), 'ERR_NOT_FOUND')))
+          return callback((errcode(err)))
         }
 
         // Try to get from routing
@@ -203,7 +204,7 @@ class IpnsPublisher {
       result = ipns.unmarshal(data)
     } catch (err) {
       log.error(err)
-      return callback(errcode(new Error(err), 'ERR_INVALID_RECORD_DATA'))
+      return callback(errcode(err, 'ERR_INVALID_RECORD_DATA'))
     }
 
     callback(null, result)

@@ -4,7 +4,6 @@ const ipns = require('ipns')
 const crypto = require('libp2p-crypto')
 const PeerId = require('peer-id')
 const errcode = require('err-code')
-const parallel = require('async/parallel')
 
 const debug = require('debug')
 const log = debug('jsipfs:ipns:resolver')
@@ -100,13 +99,8 @@ class IpnsResolver {
 
     const { routingKey, routingPubKey } = ipns.getIdKeys(peerId.toBytes())
 
-    parallel({
-      // Name should be the hash of a public key retrievable from ipfs.
-      // We retrieve public key to add it to the PeerId, as the IPNS record may not have it.
-      pubKey: (cb) => this._routing.get(routingPubKey.toBuffer(), cb),
-      record: (cb) => this._routing.get(routingKey.toBuffer(), cb)
-    }, (err, res) => {
-      if (err && !res.record) {
+    this._routing.get(routingKey.toBuffer(), (err, record) => {
+      if (err) {
         if (err.code !== 'ERR_NOT_FOUND') {
           const errMsg = `unexpected error getting the ipns record ${peerId.id}`
 
@@ -119,24 +113,10 @@ class IpnsResolver {
         return callback(errcode(new Error(errMsg), 'ERR_NO_RECORD_FOUND'))
       }
 
-      // If public key was found in the routing, add it to the peer id
-      // otherwise, wait to check if it is embedded in the record.
-      if (res.pubKey) {
-        try {
-          // Insert it into the peer id public key, to be validated by IPNS validator
-          peerId.pubKey = crypto.keys.unmarshalPublicKey(res.pubKey)
-        } catch (err) {
-          const errMsg = `found public key record that we couldn't convert to a value`
-
-          log.error(errMsg)
-          return callback(errcode(new Error(errMsg), 'ERR_INVALID_PUB_KEY_RECEIVED'))
-        }
-      }
-
       // IPNS entry
       let ipnsEntry
       try {
-        ipnsEntry = ipns.unmarshal(res.record)
+        ipnsEntry = ipns.unmarshal(record)
       } catch (err) {
         const errMsg = `found ipns record that we couldn't convert to a value`
 
@@ -144,19 +124,55 @@ class IpnsResolver {
         return callback(errcode(new Error(errMsg), 'ERR_INVALID_RECORD_RECEIVED'))
       }
 
-      ipns.extractPublicKey(peerId, ipnsEntry, (err, pubKey) => {
+      // if the record has a public key validate it
+      if (ipnsEntry.pubKey) {
+        return this._validateRecord(peerId, ipnsEntry, callback)
+      }
+
+      // Otherwise, try to get the public key from routing
+      this._routing.get(routingKey.toBuffer(), (err, pubKey) => {
+        if (err) {
+          if (err.code !== 'ERR_NOT_FOUND') {
+            const errMsg = `unexpected error getting the public key for the ipns record ${peerId.id}`
+
+            log.error(errMsg)
+            return callback(errcode(new Error(errMsg), 'ERR_UNEXPECTED_ERROR_GETTING_PUB_KEY'))
+          }
+          const errMsg = `public key requested was not found for ${name} (${routingPubKey}) in the network`
+
+          log.error(errMsg)
+          return callback(errcode(new Error(errMsg), 'ERR_NO_RECORD_FOUND'))
+        }
+
+        try {
+          // Insert it into the peer id, in order to be validated by IPNS validator
+          peerId.pubKey = crypto.keys.unmarshalPublicKey(pubKey)
+        } catch (err) {
+          const errMsg = `found public key record that we couldn't convert to a value`
+
+          log.error(errMsg)
+          return callback(errcode(new Error(errMsg), 'ERR_INVALID_PUB_KEY_RECEIVED'))
+        }
+
+        this._validateRecord(peerId, ipnsEntry, callback)
+      })
+    })
+  }
+
+  // validate a resolved record
+  _validateRecord (peerId, ipnsEntry, callback) {
+    ipns.extractPublicKey(peerId, ipnsEntry, (err, pubKey) => {
+      if (err) {
+        return callback(err)
+      }
+
+      // IPNS entry validation
+      ipns.validate(pubKey, ipnsEntry, (err) => {
         if (err) {
           return callback(err)
         }
 
-        // IPNS entry validation
-        ipns.validate(pubKey, ipnsEntry, (err) => {
-          if (err) {
-            return callback(err)
-          }
-
-          callback(null, ipnsEntry.value.toString())
-        })
+        callback(null, ipnsEntry.value.toString())
       })
     })
   }
