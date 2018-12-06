@@ -17,17 +17,15 @@ const expect = require('chai').expect
 //   - c4
 //   - c5
 //   - c6
-// - root2
 
 const pins = {
-  root1: 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVzxTt3qVe',
+  root1: 'QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr',
   c1: 'QmZTR5bcpQD7cFgTorqxZDYaew1Wqgfbd2ud9QqGPAkK2V',
   c2: 'QmYCvbfNbCwFR45HiNP45rwJgvatpiW38D961L5qAhUM5Y',
   c3: 'QmY5heUM5qgRubMDD1og9fhCPA6QdkMp3QCwd4s7gJsyE7',
-  c4: 'QmUzLxaXnM8RYCPEqLDX5foToi5aNZHqfYr285w2BKhkft',
+  c4: 'QmQN88TEidd3RY2u3dpib49fERTDfKtDpvxnvczATNsfKT',
   c5: 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB',
-  c6: 'QmTumTjvcYCAvRRwQ8sDRxh8ezmrcr88YFU7iYNroGGTBZ',
-  root2: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
+  c6: 'QmciSU8hfpAXKjvK5YLUSwApomGSWN5gFbP4EpDAEzu2Te'
 }
 
 module.exports = (http) => {
@@ -158,9 +156,7 @@ module.exports = (http) => {
           url: `/api/v0/pin/ls?type=recursive`
         }, (res) => {
           expect(res.statusCode).to.equal(200)
-          expect(res.result.Keys['QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'])
-            .to.deep.eql({ Type: 'recursive' })
-          expect(res.result.Keys['QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVzxTt3qVe'])
+          expect(res.result.Keys['QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr'])
             .to.deep.eql({ Type: 'recursive' })
           done()
         })

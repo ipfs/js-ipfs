@@ -27,6 +27,7 @@ skipOnWindows('config endpoint', () => {
 
   let ipfs = null
   let ipfsd = null
+
   before(function (done) {
     this.timeout(20 * 1000)
 

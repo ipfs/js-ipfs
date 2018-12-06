@@ -1,5 +1,5 @@
 
-€ø                    IPFS Alpha Security Notes
+’	Š	                    IPFS Alpha Security Notes
 
 We try hard to ensure our system is safe and robust, but all software
 has bugs, especially new software. This distribution is meant to be an
@@ -15,9 +15,13 @@ Please note the following:
   user provided data. But please point any problems out to us in a
   github issue, or email security@ipfs.io privately.
 
+- security@ipfs.io GPG key:
+  - 4B9665FB 92636D17 7C7A86D3 50AAE8A9 59B13AF3
+  - https://pgp.mit.edu/pks/lookup?op=get&search=0x50AAE8A959B13AF3
+
 - ipfs uses encryption for all communication, but it's NOT PROVEN SECURE
   YET!  It may be totally broken. For now, the code is included to make
   sure we benchmark our operations with encryption in mind. In the future,
   there will be an "unsafe" mode for high performance intranet apps.
   If this is a blocking feature for you, please contact us.
-ø
+Š	

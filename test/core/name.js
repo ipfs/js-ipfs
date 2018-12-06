@@ -10,6 +10,8 @@ chai.use(dirtyChai)
 const sinon = require('sinon')
 
 const fs = require('fs')
+const parallel = require('async/parallel')
+const series = require('async/series')
 
 const isNode = require('detect-node')
 const IPFS = require('../../src')
@@ -20,6 +22,19 @@ const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ type: 'proc' })
 
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
+
+const publishAndResolve = (publisher, resolver, ipfsRef, publishOpts, nodeId, resolveOpts, callback) => {
+  series([
+    (cb) => publisher.name.publish(ipfsRef, publishOpts, cb),
+    (cb) => resolver.name.resolve(nodeId, resolveOpts, cb)
+  ], (err, res) => {
+    expect(err).to.not.exist()
+    expect(res[0]).to.exist()
+    expect(res[1]).to.exist()
+    expect(res[1].path).to.equal(ipfsRef)
+    callback()
+  })
+}
 
 describe('name', function () {
   if (!isNode) {
@@ -54,31 +69,16 @@ describe('name', function () {
     after((done) => ipfsd.stop(done))
 
     it('should publish and then resolve correctly with the default options', function (done) {
-      node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
-        expect(err).to.not.exist()
-        expect(res).to.exist()
-
-        node.name.resolve(nodeId, (err, res) => {
-          expect(err).to.not.exist()
-          expect(res).to.exist()
-          expect(res.path).to.equal(ipfsRef)
-          done()
-        })
-      })
+      publishAndResolve(node, node, ipfsRef, { resolve: false }, nodeId, {}, done)
     })
 
     it('should publish correctly with the lifetime option and resolve', function (done) {
-      node.name.publish(ipfsRef, { resolve: false, lifetime: '2h' }, (err, res) => {
-        expect(err).to.not.exist()
-        expect(res).to.exist()
+      const publishOpts = {
+        resolve: false,
+        lifetime: '2h'
+      }
 
-        node.name.resolve(nodeId, (err, res) => {
-          expect(err).to.not.exist()
-          expect(res).to.exist()
-          expect(res.path).to.equal(ipfsRef)
-          done()
-        })
-      })
+      publishAndResolve(node, node, ipfsRef, publishOpts, nodeId, {}, done)
     })
 
     it('should not get the entry correctly if its validity time expired', function (done) {
@@ -101,20 +101,15 @@ describe('name', function () {
 
       node.key.gen(keyName, { type: 'rsa', size: 2048 }, function (err, key) {
         expect(err).to.not.exist()
-
-        node.name.publish(ipfsRef, { resolve: false }, (err) => {
+        series([
+          (cb) => node.name.publish(ipfsRef, { resolve: false }, cb),
+          (cb) => node.name.publish(`/ipns/${nodeId}`, { resolve: false, key: keyName }, cb),
+          (cb) => node.name.resolve(key.id, { recursive: true }, cb)
+        ], (err, res) => {
           expect(err).to.not.exist()
-
-          node.name.publish(`/ipns/${nodeId}`, { resolve: false, key: keyName }, (err) => {
-            expect(err).to.not.exist()
-
-            node.name.resolve(key.id, { recursive: true }, (err, res) => {
-              expect(err).to.not.exist()
-              expect(res).to.exist()
-              expect(res.path).to.equal(ipfsRef)
-              done()
-            })
-          })
+          expect(res[2]).to.exist()
+          expect(res[2].path).to.equal(ipfsRef)
+          done()
         })
       })
     })
@@ -125,20 +120,15 @@ describe('name', function () {
 
       node.key.gen(keyName, { type: 'rsa', size: 2048 }, function (err, key) {
         expect(err).to.not.exist()
-
-        node.name.publish(ipfsRef, { resolve: false }, (err) => {
+        series([
+          (cb) => node.name.publish(ipfsRef, { resolve: false }, cb),
+          (cb) => node.name.publish(`/ipns/${nodeId}`, { resolve: false, key: keyName }, cb),
+          (cb) => node.name.resolve(key.id, cb)
+        ], (err, res) => {
           expect(err).to.not.exist()
-
-          node.name.publish(`/ipns/${nodeId}`, { resolve: false, key: keyName }, (err) => {
-            expect(err).to.not.exist()
-
-            node.name.resolve(key.id, (err, res) => {
-              expect(err).to.not.exist()
-              expect(res).to.exist()
-              expect(res.path).to.equal(`/ipns/${nodeId}`)
-              done()
-            })
-          })
+          expect(res[2]).to.exist()
+          expect(res[2].path).to.equal(`/ipns/${nodeId}`)
+          done()
         })
       })
     })
@@ -197,6 +187,78 @@ describe('name', function () {
     })
   })
 
+  describe('work with dht', () => {
+    let nodes
+    let nodeA
+    let nodeB
+    let nodeC
+    let idA
+
+    const createNode = (callback) => {
+      df.spawn({
+        exec: IPFS,
+        args: [`--pass ${hat()}`, '--enable-dht-experiment'],
+        config: { Bootstrap: [] }
+      }, callback)
+    }
+
+    before(function (done) {
+      this.timeout(40 * 1000)
+
+      parallel([
+        (cb) => createNode(cb),
+        (cb) => createNode(cb),
+        (cb) => createNode(cb)
+      ], (err, _nodes) => {
+        expect(err).to.not.exist()
+
+        nodes = _nodes
+        nodeA = _nodes[0].api
+        nodeB = _nodes[1].api
+        nodeC = _nodes[2].api
+
+        parallel([
+          (cb) => nodeA.id(cb),
+          (cb) => nodeB.id(cb)
+        ], (err, ids) => {
+          expect(err).to.not.exist()
+
+          idA = ids[0]
+          parallel([
+            (cb) => nodeC.swarm.connect(ids[0].addresses[0], cb), // C => A
+            (cb) => nodeC.swarm.connect(ids[1].addresses[0], cb) // C => B
+          ], done)
+        })
+      })
+    })
+
+    after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
+
+    it('should publish and then resolve correctly with the default options', function (done) {
+      this.timeout(50 * 1000)
+      publishAndResolve(nodeA, nodeB, ipfsRef, { resolve: false }, idA.id, {}, done)
+    })
+
+    it('should recursively resolve to an IPFS hash', function (done) {
+      this.timeout(80 * 1000)
+      const keyName = hat()
+
+      nodeA.key.gen(keyName, { type: 'rsa', size: 2048 }, function (err, key) {
+        expect(err).to.not.exist()
+        series([
+          (cb) => nodeA.name.publish(ipfsRef, { resolve: false }, cb),
+          (cb) => nodeA.name.publish(`/ipns/${idA.id}`, { resolve: false, key: keyName }, cb),
+          (cb) => nodeB.name.resolve(key.id, { recursive: true }, cb)
+        ], (err, res) => {
+          expect(err).to.not.exist()
+          expect(res[2]).to.exist()
+          expect(res[2].path).to.equal(ipfsRef)
+          done()
+        })
+      })
+    })
+  })
+
   describe('errors', function () {
     if (!isNode) {
       return
@@ -246,7 +308,7 @@ describe('name', function () {
     it('should error to publish if _updateOrCreateRecord fails', function (done) {
       const stub = sinon.stub(node._ipns.publisher, '_updateOrCreateRecord').callsArgWith(4, 'error')
 
-      node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
+      node.name.publish(ipfsRef, { resolve: false }, (err) => {
         expect(err).to.exist()
 
         stub.restore()
@@ -264,7 +326,7 @@ describe('name', function () {
     it('should error to publish if receives an invalid datastore key', function (done) {
       const stub = sinon.stub(Key, 'isKey').returns(false)
 
-      node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
+      node.name.publish(ipfsRef, { resolve: false }, (err) => {
         expect(err).to.exist()
         expect(err.code).to.equal('ERR_INVALID_DATASTORE_KEY')
 
@@ -274,11 +336,11 @@ describe('name', function () {
     })
 
     it('should error to publish if we receive a unexpected error getting from datastore', function (done) {
-      const stub = sinon.stub(node._ipns.publisher._repo.datastore, 'get').callsArgWith(1, 'error-unexpected')
+      const stub = sinon.stub(node._ipns.publisher._datastore, 'get').callsArgWith(1, 'error-unexpected')
 
-      node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
+      node.name.publish(ipfsRef, { resolve: false }, (err) => {
         expect(err).to.exist()
-        expect(err.code).to.equal('ERR_UNEXPECTED_DATASTORE_RESPONSE')
+        expect(err.code).to.equal('ERR_DETERMINING_PUBLISHED_RECORD')
 
         stub.restore()
         done()
@@ -286,9 +348,9 @@ describe('name', function () {
     })
 
     it('should error to publish if we receive a unexpected error putting to datastore', function (done) {
-      const stub = sinon.stub(node._ipns.publisher._repo.datastore, 'put').callsArgWith(2, 'error-unexpected')
+      const stub = sinon.stub(node._ipns.publisher._datastore, 'put').callsArgWith(2, 'error-unexpected')
 
-      node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
+      node.name.publish(ipfsRef, { resolve: false }, (err) => {
         expect(err).to.exist()
         expect(err.code).to.equal('ERR_STORING_IN_DATASTORE')
 
@@ -320,7 +382,7 @@ describe('name', function () {
         expect(err).to.not.exist()
         expect(res).to.exist()
 
-        node.name.resolve(nodeId, { nocache: true }, (err, res) => {
+        node.name.resolve(nodeId, { nocache: true }, (err) => {
           expect(err).to.exist()
           expect(err.code).to.equal('ERR_UNEXPECTED_ERROR_GETTING_RECORD')
           stub.restore()
@@ -336,7 +398,7 @@ describe('name', function () {
         expect(err).to.not.exist()
         expect(res).to.exist()
 
-        node.name.resolve(nodeId, { nocache: true }, (err, res) => {
+        node.name.resolve(nodeId, { nocache: true }, (err) => {
           expect(err).to.exist()
           expect(err.code).to.equal('ERR_NO_RECORD_FOUND')
           stub.restore()
@@ -352,7 +414,7 @@ describe('name', function () {
         expect(err).to.not.exist()
         expect(res).to.exist()
 
-        node.name.resolve(nodeId, { nocache: true }, (err, res) => {
+        node.name.resolve(nodeId, { nocache: true }, (err) => {
           expect(err).to.exist()
           expect(err.code).to.equal('ERR_INVALID_RECORD_RECEIVED')
           stub.restore()

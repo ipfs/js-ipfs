@@ -117,7 +117,7 @@ module.exports = function init (self) {
       (_, cb) => {
         const offlineDatastore = new OfflineDatastore(self._repo)
 
-        self._ipns = new IPNS(offlineDatastore, self._repo, self._peerInfo, self._keychain, self._options)
+        self._ipns = new IPNS(offlineDatastore, self._repo.datastore, self._peerInfo, self._keychain, self._options)
         cb(null, true)
       },
       // add empty unixfs dir object (go-ipfs assumes this exists)

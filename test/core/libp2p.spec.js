@@ -7,6 +7,7 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
+const MemoryStore = require('interface-datastore').MemoryDatastore
 const PeerInfo = require('peer-info')
 const PeerBook = require('peer-book')
 const WebSocketStar = require('libp2p-websocket-star')
@@ -20,6 +21,7 @@ describe('libp2p customization', function () {
   // Provide some extra time for ci since we're starting libp2p nodes in each test
   this.timeout(15 * 1000)
 
+  let datastore
   let peerInfo
   let peerBook
   let mockConfig
@@ -49,6 +51,7 @@ describe('libp2p customization', function () {
         })
       }
     }
+    datastore = new MemoryStore()
     peerBook = new PeerBook()
     PeerInfo.create((err, pi) => {
       peerInfo = pi
@@ -68,6 +71,9 @@ describe('libp2p customization', function () {
   describe('bundle', () => {
     it('should allow for using a libp2p bundle', (done) => {
       const ipfs = {
+        _repo: {
+          datastore
+        },
         _peerInfo: peerInfo,
         _peerBook: peerBook,
         config: mockConfig,
@@ -111,6 +117,9 @@ describe('libp2p customization', function () {
   describe('options', () => {
     it('should use options by default', (done) => {
       const ipfs = {
+        _repo: {
+          datastore
+        },
         _peerInfo: peerInfo,
         _peerBook: peerBook,
         config: mockConfig
@@ -150,6 +159,9 @@ describe('libp2p customization', function () {
       const wsstar = new WebSocketStar({ id: peerInfo.id })
 
       const ipfs = {
+        _repo: {
+          datastore
+        },
         _peerInfo: peerInfo,
         _peerBook: peerBook,
         config: mockConfig,
