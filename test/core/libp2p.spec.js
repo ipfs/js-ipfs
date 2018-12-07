@@ -76,6 +76,7 @@ describe('libp2p customization', function () {
         },
         _peerInfo: peerInfo,
         _peerBook: peerBook,
+        _print: console.log,
         config: mockConfig,
         _options: {
           libp2p: (opts) => {
@@ -122,6 +123,7 @@ describe('libp2p customization', function () {
         },
         _peerInfo: peerInfo,
         _peerBook: peerBook,
+        _print: console.log,
         config: mockConfig
       }
 
@@ -164,6 +166,7 @@ describe('libp2p customization', function () {
         },
         _peerInfo: peerInfo,
         _peerBook: peerBook,
+        _print: console.log,
         config: mockConfig,
         _options: {
           config: {

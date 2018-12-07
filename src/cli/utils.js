@@ -47,6 +47,7 @@ exports.getIPFS = (argv, callback) => {
   // Required inline to reduce startup time
   const IPFS = require('../core')
   const node = new IPFS({
+    silent: argv.silent,
     repo: exports.getRepoPath(),
     init: false,
     start: false,

@@ -268,6 +268,14 @@ Instead of a boolean, you may provide an object with custom initialization optio
 
 A passphrase to encrypt/decrypt your keys.
 
+##### `options.silent`
+
+| Type | Default |
+|------|---------|
+| Boolean | `false` |
+
+Prevents all logging output from the IPFS node.
+
 ##### `options.relay`
 
 | Type | Default |

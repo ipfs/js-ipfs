@@ -68,6 +68,7 @@ function HttpApi (repo, config, cliArgs) {
         try {
           // start the daemon
           this.node = new IPFS({
+            silent: cliArgs.silent,
             repo: repo,
             init: init,
             start: true,
@@ -157,9 +158,9 @@ function HttpApi (repo, config, cliArgs) {
         api.info.ma = uriToMultiaddr(api.info.uri)
         gateway.info.ma = uriToMultiaddr(gateway.info.uri)
 
-        console.log('API listening on %s', api.info.ma)
-        console.log('Gateway (read only) listening on %s', gateway.info.ma)
-        console.log('Web UI available at %s', api.info.uri + '/webui')
+        this.node._print('API listening on %s', api.info.ma)
+        this.node._print('Gateway (read only) listening on %s', gateway.info.ma)
+        this.node._print('Web UI available at %s', api.info.uri + '/webui')
 
         // for the CLI to know the where abouts of the API
         this.node._repo.apiAddr.set(api.info.ma, cb)

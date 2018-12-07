@@ -24,7 +24,12 @@ const cli = yargs
     desc: 'Write no output',
     type: 'boolean',
     default: false,
-    coerce: ('silent', silent => silent ? utils.disablePrinting() : silent)
+    coerce: ('silent', silent => {
+      if (silent) {
+        utils.disablePrinting()
+      }
+      return silent
+    })
   })
   .option('pass', {
     desc: 'Pass phrase for the keys',
