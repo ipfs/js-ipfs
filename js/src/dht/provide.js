@@ -32,7 +32,11 @@ module.exports = (createCommon, options) => {
       })
     })
 
-    after((done) => common.teardown(done))
+    after(function (done) {
+      this.timeout(50 * 1000)
+
+      common.teardown(done)
+    })
 
     it('should provide local CID', (done) => {
       ipfs.add(Buffer.from('test'), (err, res) => {

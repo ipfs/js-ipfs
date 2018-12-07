@@ -35,7 +35,11 @@ module.exports = (createCommon, options) => {
       })
     })
 
-    after((done) => common.teardown(done))
+    after(function (done) {
+      this.timeout(50 * 1000)
+
+      common.teardown(done)
+    })
 
     it('should return the other node in the query', function (done) {
       const timeout = 150 * 1000

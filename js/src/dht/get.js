@@ -36,7 +36,11 @@ module.exports = (createCommon, options) => {
       })
     })
 
-    after((done) => common.teardown(done))
+    after(function (done) {
+      this.timeout(50 * 1000)
+
+      common.teardown(done)
+    })
 
     it('should error when getting a non-existent key from the DHT', (done) => {
       nodeA.dht.get('non-existing', { timeout: '100ms' }, (err, value) => {

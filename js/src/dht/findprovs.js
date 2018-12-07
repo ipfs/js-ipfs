@@ -47,7 +47,11 @@ module.exports = (createCommon, options) => {
       })
     })
 
-    after((done) => common.teardown(done))
+    after(function (done) {
+      this.timeout(50 * 1000)
+
+      common.teardown(done)
+    })
 
     it('should provide from one node and find it through another node', function (done) {
       this.timeout(80 * 1000)

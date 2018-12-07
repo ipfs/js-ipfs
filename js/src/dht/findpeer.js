@@ -35,7 +35,11 @@ module.exports = (createCommon, options) => {
       })
     })
 
-    after((done) => common.teardown(done))
+    after(function (done) {
+      this.timeout(50 * 1000)
+
+      common.teardown(done)
+    })
 
     it('should find other peers', (done) => {
       nodeA.dht.findpeer(nodeB.peerId.id, (err, peer) => {
