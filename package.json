@@ -114,7 +114,7 @@
     "ipfs-multipart": "~0.1.0",
     "ipfs-repo": "~0.26.0",
     "ipfs-unixfs": "~0.1.16",
-    "ipfs-unixfs-engine": "~0.35.2",
+    "ipfs-unixfs-engine": "~0.35.3",
     "ipld": "~0.20.1",
     "ipld-bitcoin": "~0.1.8",
     "ipld-dag-pb": "~0.15.0",
