@@ -38,7 +38,7 @@ module.exports = (self) => {
           ? self._repo.open(cb)
           : cb()
       },
-      (cb) => self.libp2p.start(cb),
+      (cb) => self._libp2p.start(cb),
       (cb) => {
         // Setup online routing for IPNS with a tiered routing composed by a DHT and a Pubsub router (if properly enabled)
         const ipnsStores = []

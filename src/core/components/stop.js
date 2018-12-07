@@ -35,7 +35,7 @@ module.exports = (self) => {
     series([
       (cb) => self._ipns.republisher.stop(cb),
       (cb) => self._mfsPreload.stop(cb),
-      (cb) => self.libp2p.stop(cb),
+      (cb) => self._libp2p.stop(cb),
       (cb) => self._repo.close(cb)
     ], done)
   })
