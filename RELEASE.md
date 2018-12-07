@@ -17,12 +17,11 @@
     - [ ] sharness
   - [ ] Publish a release candidate to npm
       ```sh
-      # Current version is 0.31.7, to publish a release candidate for 0.32.0:
-      npm run build
-      npm version 0.32.0-rc.1
-      # Publish with "next" tag to ensure people still get 0.31.7 when they `npm i ipfs`
-      npm publish --tag next
-      git push origin master v0.32.0-rc.1
+      # Minor prerelease (e.g. 0.33.1 -> 0.34.0-rc.0)
+      $ npx aegir release --type preminor --preid rc --dist-tag next
+      
+      # Increment prerelease (e.g. 0.34.0-rc.0 -> 0.34.0-rc.1)
+      $ npx aegir release --type prerelease --preid rc --dist-tag next
       ```
   - [ ] Run tests of the following projects with the new release:
     - [ ] [ipfs-pubsub-room](https://github.com/ipfs-shipyard/ipfs-pubsub-room)
