@@ -15,9 +15,9 @@
 
 ##### JavaScript - `ipfs.dht.findpeer(peerId, [callback])`
 
-Where `peerId` is a IPFS/libp2p Id of type [PeerId](https://github.com/libp2p/js-peer-id).
+Where `peerId` is a IPFS/libp2p Id from [PeerId](https://github.com/libp2p/js-peer-id) type.
 
-`callback` must follow `function (err, peerInfo) {}` signature, where `err` is an error if the operation was not successful. `peerInfo` is an object of type [PeerInfo](https://github.com/libp2p/js-peer-info)
+`callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res` is an object containing `responses` as an array of peer responses. In this case, as we are looking for a particular peer, there will be only one response. This response is composed by the peerId, as well as an array with its adresses.
 
 If no `callback` is passed, a promise is returned.
 
@@ -26,8 +26,10 @@ If no `callback` is passed, a promise is returned.
 ```JavaScript
 var id = PeerId.create()
 
-ipfs.dht.findpeer(id, function (err, peerInfo) {
+ipfs.dht.findpeer(id, function (err, res) {
   // peerInfo will contain the multiaddrs of that peer
+  const id = res.responses[0].id
+  const addrs = res.responses[0].addrs
 })
 ```
 
@@ -46,16 +48,16 @@ Where `hash` is a multihash.
 `options` an optional object with the following properties
   - `timeout` - a maximum timeout in milliseconds
 
-`callback` must follow `function (err, peerInfos) {}` signature, where `err` is an error if the operation was not successful. `peerInfos` is an array of objects of type [PeerInfo](https://github.com/libp2p/js-peer-info)
+`callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res` is an object containing `responses` as an array of peer responses. Each entry of this array is composed by the peerId, as well as an array with its adresses.
 
 If no `callback` is passed, a promise is returned.
 
 **Example:**
 
 ```JavaScript
-ipfs.dht.findprovs(multihash, function (err, peerInfos) {})
+ipfs.dht.findprovs(multihash, function (err, res) {})
 
-ipfs.dht.findprovs(multihash, { timeout: 4000 }, function (err, peerInfos) {})
+ipfs.dht.findprovs(multihash, { timeout: 4000 }, function (err, res) {})
 ```
 
 A great source of [examples][] can be found in the tests for this API.
