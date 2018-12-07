@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.33.1",
+  "version": "0.34.0-pre.0",
   "description": "JavaScript implementation of the IPFS specification",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "bin": {
@@ -255,6 +255,8 @@
     "Pau Ramon Revilla <masylum@gmail.com>",
     "Paulo Rodrigues <me@paulogr.com>",
     "Pedro Teixeira <i@pgte.me>",
+    "Portia Burton <plburton@gmail.com>",
+    "Raoul Millais <raoul@raoulmillais.com>",
     "RasmusErik Voel Jensen <github@solsort.com>",
     "Richard Littauer <richard.littauer@gmail.com>",
     "Richard Schneider <makaretu@gmail.com>",
