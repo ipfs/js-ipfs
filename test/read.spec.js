@@ -14,15 +14,12 @@ const {
   createShardedDirectory
 } = require('./helpers')
 
-describe('read', function () {
+describe('read', () => {
   let mfs
   let smallFile = loadFixture(path.join('test', 'fixtures', 'small-file.txt'))
 
-  before(() => {
-    return createMfs()
-      .then(instance => {
-        mfs = instance
-      })
+  before(async () => {
+    mfs = await createMfs()
   })
 
   const methods = [{
@@ -40,9 +37,9 @@ describe('read', function () {
       return new Promise((resolve, reject) => {
         pull(
           stream,
-          collect((error, buffers) => {
-            if (error) {
-              return reject(error)
+          collect((err, buffers) => {
+            if (err) {
+              return reject(err)
             }
 
             resolve(Buffer.concat(buffers))
@@ -67,135 +64,147 @@ describe('read', function () {
           resolve(data)
         })
 
-        stream.on('error', (error) => {
-          reject(error)
+        stream.on('error', (err) => {
+          reject(err)
         })
       })
     }
   }]
 
   methods.forEach(method => {
-    describe(`read ${method.name}`, function () {
-      it('reads a small file', () => {
+    describe(`read ${method.name}`, () => {
+      it('reads a small file', async () => {
         const filePath = '/small-file.txt'
 
-        return mfs.write(filePath, smallFile, {
+        await mfs.write(filePath, smallFile, {
           create: true
         })
-          .then(() => method.read(filePath))
-          .then((result) => method.collect(result))
-          .then((buffer) => {
-            expect(buffer).to.deep.equal(smallFile)
-          })
+
+        const result = await method.read(filePath)
+        const buffer = await method.collect(result)
+        expect(buffer).to.deep.equal(smallFile)
       })
 
-      it('reads a file with an offset', () => {
+      it('reads a file with an offset', async () => {
         const path = `/some-file-${Math.random()}.txt`
         let data = Buffer.alloc(0)
         const offset = 10
 
-        return mfs.write(path, bufferStream(100, {
+        await mfs.write(path, bufferStream(100, {
           collector: (bytes) => {
             data = Buffer.concat([data, bytes])
           }
         }), {
           create: true
         })
-          .then(() => method.read(path, {
-            offset
-          }))
-          .then((result) => method.collect(result))
-          .then((buffer) => expect(buffer).to.deep.equal(data.slice(offset)))
+
+        const result = await method.read(path, {
+          offset
+        })
+        const buffer = await method.collect(result)
+
+        expect(buffer).to.deep.equal(data.slice(offset))
       })
 
-      it('reads a file with a length', () => {
+      it('reads a file with a length', async () => {
         const path = `/some-file-${Math.random()}.txt`
         let data = Buffer.alloc(0)
         const length = 10
 
-        return mfs.write(path, bufferStream(100, {
+        await mfs.write(path, bufferStream(100, {
           collector: (bytes) => {
             data = Buffer.concat([data, bytes])
           }
         }), {
           create: true
         })
-          .then(() => method.read(path, {
-            length
-          }))
-          .then((result) => method.collect(result))
-          .then((buffer) => expect(buffer).to.deep.equal(data.slice(0, length)))
+
+        const result = await method.read(path, {
+          length
+        })
+        const buffer = await method.collect(result)
+
+        expect(buffer).to.deep.equal(data.slice(0, length))
       })
 
-      it('reads a file with a legacy count argument', () => {
+      it('reads a file with a legacy count argument', async () => {
         const path = `/some-file-${Math.random()}.txt`
         let data = Buffer.alloc(0)
         const length = 10
 
-        return mfs.write(path, bufferStream(100, {
+        await mfs.write(path, bufferStream(100, {
           collector: (bytes) => {
             data = Buffer.concat([data, bytes])
           }
         }), {
           create: true
         })
-          .then(() => method.read(path, {
-            count: length
-          }))
-          .then((result) => method.collect(result))
-          .then((buffer) => expect(buffer).to.deep.equal(data.slice(0, length)))
-      })
 
-      it('reads a file with an offset and a length', () => {
-        const path = `/some-file-${Math.random()}.txt`
-        let data = Buffer.alloc(0)
-        const offset = 10
-        const length = 10
-
-        return mfs.write(path, bufferStream(100, {
-          collector: (bytes) => {
-            data = Buffer.concat([data, bytes])
-          }
-        }), {
-          create: true
+        const result = await method.read(path, {
+          count: length
         })
-          .then(() => method.read(path, {
-            offset,
-            length
-          }))
-          .then((result) => method.collect(result))
-          .then((buffer) => expect(buffer).to.deep.equal(data.slice(offset, offset + length)))
+        const buffer = await method.collect(result)
+
+        expect(buffer).to.deep.equal(data.slice(0, length))
       })
 
-      it('reads a file with an offset and a legacy count argument', () => {
+      it('reads a file with an offset and a length', async () => {
         const path = `/some-file-${Math.random()}.txt`
         let data = Buffer.alloc(0)
         const offset = 10
         const length = 10
 
-        return mfs.write(path, bufferStream(100, {
+        await mfs.write(path, bufferStream(100, {
           collector: (bytes) => {
             data = Buffer.concat([data, bytes])
           }
         }), {
           create: true
         })
-          .then(() => method.read(path, {
-            offset,
-            count: length
-          }))
-          .then((result) => method.collect(result))
-          .then((buffer) => expect(buffer).to.deep.equal(data.slice(offset, offset + length)))
+
+        const result = await method.read(path, {
+          offset,
+          length
+        })
+        const buffer = await method.collect(result)
+
+        expect(buffer).to.deep.equal(data.slice(offset, offset + length))
       })
 
-      it('refuses to read a directory', () => {
+      it('reads a file with an offset and a legacy count argument', async () => {
+        const path = `/some-file-${Math.random()}.txt`
+        let data = Buffer.alloc(0)
+        const offset = 10
+        const length = 10
+
+        await mfs.write(path, bufferStream(100, {
+          collector: (bytes) => {
+            data = Buffer.concat([data, bytes])
+          }
+        }), {
+          create: true
+        })
+
+        const result = await method.read(path, {
+          offset,
+          count: length
+        })
+
+        const buffer = await method.collect(result)
+
+        expect(buffer).to.deep.equal(data.slice(offset, offset + length))
+      })
+
+      it('refuses to read a directory', async () => {
         const path = '/'
 
-        return method.read(path)
-          .then((stream) => method.collect(stream))
-          .catch(error => {
-            expect(error.message).to.contain('was not a file')
-          })
+        try {
+          const result = await method.read(path)
+          await method.collect(result)
+          throw new Error('Should have errored on trying to read a directory')
+        } catch (err) {
+          expect(err.message).to.contain('was not a file')
+        }
       })
 
       it('refuses to read a non-existent file', async () => {
@@ -203,8 +212,8 @@ describe('read', function () {
           const stream = await method.read(`/file-${Math.random()}.txt`)
           await method.collect(stream)
           throw new Error('Should have errored on non-existent file')
-        } catch (error) {
-          expect(error.message).to.contain('does not exist')
+        } catch (err) {
+          expect(err.message).to.contain('does not exist')
         }
       })
 

@@ -10,108 +10,101 @@ const {
   createShardedDirectory
 } = require('./helpers')
 
-describe('mv', function () {
+describe('mv', () => {
   let mfs
 
-  before(() => {
-    return createMfs()
-      .then(instance => {
-        mfs = instance
-      })
+  before(async () => {
+    mfs = await createMfs()
   })
 
-  it('refuses to move files without arguments', () => {
-    return mfs.mv()
-      .then(() => {
-        throw new Error('No error was thrown for missing files')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('Please supply at least one source')
-      })
+  it('refuses to move files without arguments', async () => {
+    try {
+      await mfs.mv()
+      throw new Error('No error was thrown for missing files')
+    } catch (err) {
+      expect(err.message).to.contain('Please supply at least one source')
+    }
   })
 
-  it('refuses to move files without enough arguments', () => {
-    return mfs.mv('/destination')
-      .then(() => {
-        throw new Error('No error was thrown for missing files')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('Please supply at least one source')
-      })
+  it('refuses to move files without enough arguments', async () => {
+    try {
+      await mfs.mv('/destination')
+      throw new Error('No error was thrown for missing files')
+    } catch (err) {
+      expect(err.message).to.contain('Please supply at least one source')
+    }
   })
 
-  it('moves a file', () => {
+  it('moves a file', async () => {
     const source = `/source-file-${Math.random()}.txt`
     const destination = `/dest-file-${Math.random()}.txt`
     let data = Buffer.alloc(0)
 
-    return mfs.write(source, bufferStream(500, {
+    await mfs.write(source, bufferStream(500, {
       collector: (bytes) => {
         data = Buffer.concat([data, bytes])
       }
     }), {
       create: true
     })
-      .then(() => mfs.mv(source, destination))
-      .then(() => mfs.read(destination))
-      .then((buffer) => {
-        expect(buffer).to.deep.equal(data)
-      })
-      .then(() => mfs.stat(source))
-      .then(() => {
-        throw new Error('File was copied but not removed')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('does not exist')
-      })
+    await mfs.mv(source, destination)
+
+    const buffer = await mfs.read(destination)
+    expect(buffer).to.deep.equal(data)
+
+    try {
+      await mfs.stat(source)
+      throw new Error('File was copied but not removed')
+    } catch (err) {
+      expect(err.message).to.contain('does not exist')
+    }
   })
 
-  it('moves a directory', () => {
+  it('moves a directory', async () => {
     const source = `/source-directory-${Math.random()}`
     const destination = `/dest-directory-${Math.random()}`
 
-    return mfs.mkdir(source)
-      .then(() => mfs.mv(source, destination, {
-        recursive: true
-      }))
-      .then(() => mfs.stat(destination))
-      .then((stats) => {
-        expect(stats.type).to.equal('directory')
-      })
-      .then(() => mfs.stat(source))
-      .then(() => {
-        throw new Error('Directory was copied but not removed')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('does not exist')
-      })
+    await mfs.mkdir(source)
+    await mfs.mv(source, destination, {
+      recursive: true
+    })
+    const stats = await mfs.stat(destination)
+
+    expect(stats.type).to.equal('directory')
+
+    try {
+      await mfs.stat(source)
+      throw new Error('Directory was copied but not removed')
+    } catch (err) {
+      expect(err.message).to.contain('does not exist')
+    }
   })
 
-  it('moves directories recursively', () => {
+  it('moves directories recursively', async () => {
     const directory = `source-directory-${Math.random()}`
     const subDirectory = `/source-directory-${Math.random()}`
     const source = `/${directory}${subDirectory}`
     const destination = `/dest-directory-${Math.random()}`
 
-    return mfs.mkdir(source)
-      .then(() => mfs.mv(`/${directory}`, destination, {
-        recursive: true
-      }))
-      .then(() => mfs.stat(destination))
-      .then((stats) => {
-        expect(stats.type).to.equal('directory')
-      })
-      .then(() => mfs.stat(`${destination}${subDirectory}`))
-      .then((stats) => {
-        expect(stats.type).to.equal('directory')
-      })
-      .then(() => mfs.stat(source))
-      .then(() => {
-        throw new Error('Directory was copied but not removed')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('does not exist')
-      })
+    await mfs.mkdir(source, {
+      parents: true
+    })
+    await mfs.mv(`/${directory}`, destination, {
+      recursive: true
+    })
+
+    const stats = await mfs.stat(destination)
+    expect(stats.type).to.equal('directory')
+
+    const subDirectoryStats = await mfs.stat(`${destination}${subDirectory}`)
+    expect(subDirectoryStats.type).to.equal('directory')
+
+    try {
+      await mfs.stat(source)
+      throw new Error('Directory was copied but not removed')
+    } catch (err) {
+      expect(err.message).to.contain('does not exist')
+    }
   })
 
   it('moves a sharded directory to a normal directory', async () => {
