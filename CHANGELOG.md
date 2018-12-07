@@ -1,3 +1,95 @@
+<a name="0.34.0-pre.0"></a>
+# [0.34.0-pre.0](https://github.com/ipfs/js-ipfs/compare/v0.33.1...v0.34.0-pre.0) (2018-12-07)
+
+
+### Bug Fixes
+
+* add dash case to pin cli ([#1719](https://github.com/ipfs/js-ipfs/issues/1719)) ([eacd580](https://github.com/ipfs/js-ipfs/commit/eacd580))
+* add missing dependencies ([#1663](https://github.com/ipfs/js-ipfs/issues/1663)) ([4bcf4a7](https://github.com/ipfs/js-ipfs/commit/4bcf4a7))
+* allow disabling mfs preload from config ([#1733](https://github.com/ipfs/js-ipfs/issues/1733)) ([5f66538](https://github.com/ipfs/js-ipfs/commit/5f66538))
+* better error message when pubsub is not enabled ([#1729](https://github.com/ipfs/js-ipfs/issues/1729)) ([5237dd9](https://github.com/ipfs/js-ipfs/commit/5237dd9))
+* examples after files API refactor ([#1740](https://github.com/ipfs/js-ipfs/issues/1740)) ([34ec036](https://github.com/ipfs/js-ipfs/commit/34ec036))
+* ipns datastore key ([#1741](https://github.com/ipfs/js-ipfs/issues/1741)) ([a39770e](https://github.com/ipfs/js-ipfs/commit/a39770e))
+* make circuit relay test ([#1710](https://github.com/ipfs/js-ipfs/issues/1710)) ([345ce91](https://github.com/ipfs/js-ipfs/commit/345ce91))
+* remove electron-webrtc and wrtc for now ([#1718](https://github.com/ipfs/js-ipfs/issues/1718)) ([b6b50d5](https://github.com/ipfs/js-ipfs/commit/b6b50d5))
+
+
+### Code Refactoring
+
+* files API ([#1720](https://github.com/ipfs/js-ipfs/issues/1720)) ([a82a5dc](https://github.com/ipfs/js-ipfs/commit/a82a5dc))
+* object APIs write methods now return CIDs ([#1730](https://github.com/ipfs/js-ipfs/issues/1730)) ([ac5fa8e](https://github.com/ipfs/js-ipfs/commit/ac5fa8e)), closes [/github.com/ipfs/interface-ipfs-core/pull/388#pullrequestreview-173866270](https://github.com//github.com/ipfs/interface-ipfs-core/pull/388/issues/pullrequestreview-173866270)
+
+
+### Features
+
+* ipns over dht ([#1725](https://github.com/ipfs/js-ipfs/issues/1725)) ([1a943f8](https://github.com/ipfs/js-ipfs/commit/1a943f8))
+* ipns over pubsub ([#1559](https://github.com/ipfs/js-ipfs/issues/1559)) ([8712542](https://github.com/ipfs/js-ipfs/commit/8712542))
+* Web UI updated to v2.2.0 ([#1711](https://github.com/ipfs/js-ipfs/issues/1711)) ([b2158bc](https://github.com/ipfs/js-ipfs/commit/b2158bc))
+
+
+### Performance Improvements
+
+* lazy load IPLD formats ([#1704](https://github.com/ipfs/js-ipfs/issues/1704)) ([aefb261](https://github.com/ipfs/js-ipfs/commit/aefb261))
+
+
+### BREAKING CHANGES
+
+* Object API refactor.
+
+Object API methods that write DAG nodes now return a [CID](https://www.npmjs.com/package/cids) instead of a DAG node. Affected methods:
+
+* `ipfs.object.new`
+* `ipfs.object.patch.addLink`
+* `ipfs.object.patch.appendData`
+* `ipfs.object.patch.rmLink`
+* `ipfs.object.patch.setData`
+* `ipfs.object.put`
+
+Example:
+
+```js
+// Before
+const dagNode = await ipfs.object.new()
+```
+
+```js
+// After
+const cid = await ipfs.object.new() // now returns a CID
+const dagNode = await ipfs.object.get(cid) // fetch the DAG node that was created
+```
+
+IMPORTANT: `DAGNode` instances, which are part of the IPLD dag-pb format have been refactored.
+
+These instances no longer have `multihash`, `cid` or `serialized` properties.
+
+This effects the following API methods that return these types of objects:
+
+* `ipfs.object.get`
+* `ipfs.dag.get`
+
+See https://github.com/ipld/js-ipld-dag-pb/pull/99 for more information.
+
+License: MIT
+Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
+* Files API methods `add*`, `cat*`, `get*` have moved from `files` to the root namespace.
+
+Specifically, the following changes have been made:
+
+* `ipfs.files.add` => `ipfs.add`
+* `ipfs.files.addPullStream` => `ipfs.addPullStream`
+* `ipfs.files.addReadableStream` => `ipfs.addReadableStream`
+* `ipfs.files.cat` => `ipfs.cat`
+* `ipfs.files.catPullStream` => `ipfs.catPullStream`
+* `ipfs.files.catReadableStream` => `ipfs.catReadableStream`
+* `ipfs.files.get` => `ipfs.get`
+* `ipfs.files.getPullStream` => `ipfs.getPullStream`
+* `ipfs.files.getReadableStream` => `ipfs.getReadableStream`
+
+License: MIT
+Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
+
+
+
 <a name="0.33.1"></a>
 ## [0.33.1](https://github.com/ipfs/js-ipfs/compare/v0.33.0...v0.33.1) (2018-11-05)
 
