@@ -74,7 +74,7 @@ describe('name', () => {
     })
 
     it('should publish correctly when the file was already added', function () {
-      this.timeout(60 * 1000)
+      this.timeout(70 * 1000)
 
       return ipfs(`name publish ${cidAdded}`).then((res) => {
         expect(res).to.exist()
@@ -83,7 +83,7 @@ describe('name', () => {
     })
 
     it('should publish and resolve an entry with the default options', function () {
-      this.timeout(60 * 1000)
+      this.timeout(70 * 1000)
 
       return ipfs(`name publish ${cidAdded}`)
         .then((res) => {
@@ -98,7 +98,7 @@ describe('name', () => {
     })
 
     it('should publish correctly when the file was not added but resolve is disabled', function () {
-      this.timeout(60 * 1000)
+      this.timeout(70 * 1000)
 
       const notAddedCid = 'QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
 
@@ -109,7 +109,7 @@ describe('name', () => {
     })
 
     it('should not get the entry correctly if its validity time expired', function () {
-      this.timeout(60 * 1000)
+      this.timeout(70 * 1000)
 
       return ipfs(`name publish ${cidAdded} --lifetime 10ns`)
         .then((res) => {
@@ -128,7 +128,7 @@ describe('name', () => {
     })
 
     it('should publish correctly when a new key is used', function () {
-      this.timeout(60 * 1000)
+      this.timeout(70 * 1000)
 
       return ipfs(`name publish ${cidAdded} --key ${name}`).then((res) => {
         expect(res).to.exist()
@@ -137,7 +137,7 @@ describe('name', () => {
     })
 
     it('should return the immediate pointing record, unless using the recursive parameter', function () {
-      this.timeout(60 * 1000)
+      this.timeout(90 * 1000)
 
       return ipfs(`name publish ${cidAdded}`)
         .then((res) => {
@@ -159,7 +159,7 @@ describe('name', () => {
     })
 
     it('should go recursively until finding an ipfs hash', function () {
-      this.timeout(60 * 1000)
+      this.timeout(90 * 1000)
 
       return ipfs(`name publish ${cidAdded}`)
         .then((res) => {
@@ -239,7 +239,7 @@ describe('name', () => {
     })
 
     it('should publish and resolve an entry with the default options', function () {
-      this.timeout(60 * 1000)
+      this.timeout(70 * 1000)
 
       return ipfs(`name publish ${cidAdded}`)
         .then((res) => {
@@ -254,7 +254,7 @@ describe('name', () => {
     })
 
     it('should not get the entry correctly if its validity time expired', function () {
-      this.timeout(60 * 1000)
+      this.timeout(70 * 1000)
 
       return ipfs(`name publish ${cidAdded} --lifetime 10ns`)
         .then((res) => {
@@ -273,7 +273,7 @@ describe('name', () => {
     })
 
     it('should return the immediate pointing record, unless using the recursive parameter', function () {
-      this.timeout(60 * 1000)
+      this.timeout(90 * 1000)
 
       return ipfs(`name publish ${cidAdded}`)
         .then((res) => {

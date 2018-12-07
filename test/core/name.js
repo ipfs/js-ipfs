@@ -47,7 +47,7 @@ describe('name', function () {
     let ipfsd
 
     before(function (done) {
-      this.timeout(40 * 1000)
+      this.timeout(50 * 1000)
       df.spawn({
         exec: IPFS,
         args: [`--pass ${hat()}`],
@@ -69,10 +69,14 @@ describe('name', function () {
     after((done) => ipfsd.stop(done))
 
     it('should publish and then resolve correctly with the default options', function (done) {
+      this.timeout(50 * 1000)
+
       publishAndResolve(node, node, ipfsRef, { resolve: false }, nodeId, {}, done)
     })
 
     it('should publish correctly with the lifetime option and resolve', function (done) {
+      this.timeout(50 * 1000)
+
       const publishOpts = {
         resolve: false,
         lifetime: '2h'
@@ -82,6 +86,8 @@ describe('name', function () {
     })
 
     it('should not get the entry correctly if its validity time expired', function (done) {
+      this.timeout(50 * 1000)
+
       node.name.publish(ipfsRef, { resolve: false, lifetime: '1ms' }, (err, res) => {
         expect(err).to.not.exist()
         expect(res).to.exist()
@@ -96,7 +102,7 @@ describe('name', function () {
     })
 
     it('should recursively resolve to an IPFS hash', function (done) {
-      this.timeout(80 * 1000)
+      this.timeout(90 * 1000)
       const keyName = hat()
 
       node.key.gen(keyName, { type: 'rsa', size: 2048 }, function (err, key) {
@@ -115,7 +121,7 @@ describe('name', function () {
     })
 
     it('should not recursively resolve to an IPFS hash if the option recursive is not provided', function (done) {
-      this.timeout(80 * 1000)
+      this.timeout(90 * 1000)
       const keyName = hat()
 
       node.key.gen(keyName, { type: 'rsa', size: 2048 }, function (err, key) {
@@ -164,7 +170,7 @@ describe('name', function () {
     after((done) => ipfsd.stop(done))
 
     it('should republish entries after 60 seconds', function (done) {
-      this.timeout(100 * 1000)
+      this.timeout(120 * 1000)
       sinon.spy(node._ipns.republisher, '_republishEntries')
 
       setTimeout(function () {
@@ -174,7 +180,7 @@ describe('name', function () {
     })
 
     it('should error if run republish again', function (done) {
-      this.timeout(100 * 1000)
+      this.timeout(120 * 1000)
       sinon.spy(node._ipns.republisher, '_republishEntries')
 
       try {
@@ -203,7 +209,7 @@ describe('name', function () {
     }
 
     before(function (done) {
-      this.timeout(40 * 1000)
+      this.timeout(70 * 1000)
 
       parallel([
         (cb) => createNode(cb),
@@ -232,15 +238,19 @@ describe('name', function () {
       })
     })
 
-    after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
+    after(function (done) {
+      this.timeout(80 * 1000)
+
+      parallel(nodes.map((node) => (cb) => node.stop(cb)), done)
+    })
 
     it('should publish and then resolve correctly with the default options', function (done) {
-      this.timeout(50 * 1000)
+      this.timeout(90 * 1000)
       publishAndResolve(nodeA, nodeB, ipfsRef, { resolve: false }, idA.id, {}, done)
     })
 
     it('should recursively resolve to an IPFS hash', function (done) {
-      this.timeout(80 * 1000)
+      this.timeout(180 * 1000)
       const keyName = hat()
 
       nodeA.key.gen(keyName, { type: 'rsa', size: 2048 }, function (err, key) {
