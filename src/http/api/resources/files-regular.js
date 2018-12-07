@@ -14,6 +14,7 @@ const toStream = require('pull-stream-to-stream')
 const abortable = require('pull-abortable')
 const Joi = require('joi')
 const ndjson = require('pull-ndjson')
+const { PassThrough } = require('readable-stream')
 
 exports = module.exports
 
@@ -79,27 +80,41 @@ exports.cat = {
     const options = request.pre.args.options
     const ipfs = request.server.app.ipfs
 
-    ipfs.cat(key, options, (err, stream) => {
-      if (err) {
-        log.error(err)
-        if (err.message === 'No such file') {
-          reply({ Message: 'No such file', Code: 0, Type: 'error' }).code(500)
-        } else {
-          reply({ Message: 'Failed to cat file: ' + err, Code: 0, Type: 'error' }).code(500)
-        }
-        return
-      }
+    let pusher
+    let started = false
 
-      // hapi is not very clever and throws if no
-      // - _read method
-      // - _readableState object
-      // are there :(
-      if (!stream._read) {
-        stream._read = () => {}
-        stream._readableState = {}
-      }
-      return reply(stream).header('X-Stream-Output', '1')
-    })
+    pull(
+      ipfs.catPullStream(key, options),
+      pull.drain(
+        chunk => {
+          if (!started) {
+            started = true
+            pusher = pushable()
+            reply(toStream.source(pusher).pipe(new PassThrough()))
+              .header('X-Stream-Output', '1')
+          }
+          pusher.push(chunk)
+        },
+        err => {
+          if (err) {
+            log.error(err)
+
+            // We already started flowing, abort the stream
+            if (started) {
+              return pusher.end(err)
+            }
+
+            const msg = err.message === 'No such file'
+              ? err.message
+              : 'Failed to cat file: ' + err
+
+            return reply({ Message: msg, Code: 0, Type: 'error' }).code(500)
+          }
+
+          pusher.end()
+        }
+      )
+    )
   }
 }
 
