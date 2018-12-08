@@ -1184,7 +1184,7 @@ pull(
 
 A great source of [examples][] can be found in the tests for this API.
 
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/files
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/files-regular
 [b]: https://www.npmjs.com/package/buffer
 [rs]: https://www.npmjs.com/package/readable-stream
 [ps]: https://www.npmjs.com/package/pull-stream
