@@ -38,6 +38,7 @@
     - [ ] Twitter
     - [ ] IRC
     - [ ] Reddit
+    - [ ] [discuss.ipfs.io](https://discuss.ipfs.io/c/announcements)
   - [ ] Blog post
   - [ ] Copy release notes to the [GitHub Release description](https://github.com/ipfs/js-ipfs/releases)
 
