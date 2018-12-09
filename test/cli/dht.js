@@ -20,7 +20,6 @@ const daemonOpts = {
   config: {
     Bootstrap: []
   },
-  args: ['--enable-dht-experiment'],
   initOptions: { bits: 512 }
 }
 

@@ -21,10 +21,6 @@ module.exports = {
         type: 'boolean',
         default: false
       })
-      .option('enable-dht-experiment', {
-        type: 'boolean',
-        default: false
-      })
       .option('local', {
         desc: 'Run commands locally to the daemon',
         default: false

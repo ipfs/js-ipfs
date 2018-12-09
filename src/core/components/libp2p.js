@@ -56,7 +56,7 @@ module.exports = function libp2p (self) {
                 }
               },
               EXPERIMENTAL: {
-                dht: get(opts.options, 'EXPERIMENTAL.dht', false),
+                dht: true,
                 pubsub: get(opts.options, 'EXPERIMENTAL.pubsub', false)
               }
             },

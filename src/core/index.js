@@ -178,9 +178,6 @@ class IPFS extends EventEmitter {
     if (this._options.EXPERIMENTAL.sharding) {
       this.log('EXPERIMENTAL sharding is enabled')
     }
-    if (this._options.EXPERIMENTAL.dht) {
-      this.log('EXPERIMENTAL Kademlia DHT is enabled')
-    }
 
     this.state = require('./state')(this)
 

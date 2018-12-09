@@ -21,8 +21,7 @@ describe('HTTP API', () => {
   const startHttpAPI = (cb) => {
     const options = {
       pass: hat(),
-      enablePubsubExperiment: true,
-      enableDhtExperiment: true
+      enablePubsubExperiment: true
     }
     http.api = new API(repoTests, null, options)
 

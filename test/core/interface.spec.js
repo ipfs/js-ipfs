@@ -47,7 +47,6 @@ describe('interface-ipfs-core tests', () => {
           }
         }
       },
-      args: ['--enable-dht-experiment'],
       initOptions: { bits: 512 }
     }
   }), {
