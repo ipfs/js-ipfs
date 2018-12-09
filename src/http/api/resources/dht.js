@@ -27,7 +27,13 @@ exports.findPeer = {
         }).code(500)
       }
 
-      return reply(res).code(200)
+      return reply({
+        Responses: [{
+          ID: res.responses[0].id,
+          Addrs: res.responses[0].addrs
+        }],
+        Type: res.type
+      }).code(200)
     })
   }
 }
@@ -52,7 +58,13 @@ exports.findProvs = {
         }).code(500)
       }
 
-      return reply(res).code(200)
+      return reply({
+        Responses: res.responses.map((r) => ({
+          ID: r.id,
+          Addrs: r.addrs
+        })),
+        Type: res.type
+      }).code(200)
     })
   }
 }

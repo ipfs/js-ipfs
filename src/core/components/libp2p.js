@@ -86,7 +86,7 @@ function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
         }
       },
       EXPERIMENTAL: {
-        dht: get(opts.options, 'EXPERIMENTAL.dht', false),
+        dht: true,
         pubsub: get(opts.options, 'EXPERIMENTAL.pubsub', false)
       }
     },

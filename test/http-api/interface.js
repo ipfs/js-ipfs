@@ -23,7 +23,6 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
 
   tests.dht(CommonFactory.create({
     spawnOptions: {
-      args: ['--enable-dht-experiment'],
       initOptions: { bits: 512 }
     }
   }), {

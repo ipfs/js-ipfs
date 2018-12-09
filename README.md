@@ -34,9 +34,8 @@ You can check the development status at the [Kanban Board](https://waffle.io/ipf
 
 [![Throughput Graph](https://graphs.waffle.io/ipfs/js-ipfs/throughput.svg)](https://waffle.io/ipfs/js-ipfs/metrics/throughput)
 
-**Please read this:** DHT (automatic content discovery) and Circuit Relay (pierce through NATs and dial between any node in the network) are two fundamental pieces that are not finalized yet. There are multiple applications that can be built without these two services but nevertheless they are fundamental to get that magic IPFS experience. If you want to track progress or contribute, please follow:
+**Please read this:** Circuit Relay (pierce through NATs and dial between any node in the network) is a fundamental piece that is not finalized yet. There are multiple applications that can be built without this service but nevertheless it is fundamental to get that magic IPFS experience. If you want to track progress or contribute, please follow:
 
-- DHT: https://github.com/ipfs/js-ipfs/pull/856
 - ✅ Relay: https://github.com/ipfs/js-ipfs/pull/1063
 
 [**`Weekly Core Dev Calls`**](https://github.com/ipfs/pm/issues/650)
@@ -319,7 +318,6 @@ Enable and configure experimental features.
 - `pubsub` (boolean): Enable libp2p pub-sub. (Default: `false`)
 - `ipnsPubsub` (boolean): Enable pub-sub on IPNS. (Default: `false`)
 - `sharding` (boolean): Enable directory sharding. Directories that have many child objects will be represented by multiple DAG nodes instead of just one. It can improve lookup performance when a directory has several thousand files or more. (Default: `false`)
-- `dht` (boolean): Enable KadDHT.
 
 ##### `options.config`
 

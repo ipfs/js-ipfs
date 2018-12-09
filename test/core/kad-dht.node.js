@@ -28,8 +28,7 @@ function createNode (callback) {
   f.spawn({
     exec: './src/cli/bin.js',
     config,
-    initOptions: { bits: 512 },
-    args: ['--enable-dht-experiment']
+    initOptions: { bits: 512 }
   }, callback)
 }
 

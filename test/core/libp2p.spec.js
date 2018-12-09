@@ -142,7 +142,7 @@ describe('libp2p customization', function () {
             }
           },
           EXPERIMENTAL: {
-            dht: false,
+            dht: true,
             pubsub: false
           }
         })
@@ -207,7 +207,7 @@ describe('libp2p customization', function () {
             }
           },
           EXPERIMENTAL: {
-            dht: false,
+            dht: true,
             pubsub: true
           }
         })

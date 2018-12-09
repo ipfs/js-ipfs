@@ -58,7 +58,7 @@ class Node extends libp2p {
           enabledDiscovery: true
         },
         EXPERIMENTAL: {
-          dht: false,
+          dht: true,
           pubsub: false
         }
       }
