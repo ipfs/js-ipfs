@@ -1,7 +1,7 @@
 # DHT API
 
-* [dht.findpeer](#dhtfindpeer)
-* [dht.findprovs](#dhtfindprovs)
+* [dht.findPeer](#dhtfindpeer)
+* [dht.findProvs](#dhtfindprovs)
 * [dht.get](#dhtget)
 * [dht.provide](#dhtprovide)
 * [dht.put](#dhtput)
@@ -35,7 +35,7 @@ ipfs.dht.findPeer(id, function (err, peerInfo) {
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `dht.findprovs`
+#### `dht.findProvs`
 
 > Retrieve the providers for content that is addressed by an hash.
 
