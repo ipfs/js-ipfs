@@ -79,7 +79,7 @@ module.exports = function libp2p (self) {
           libp2pBundle = defaultBundle
         }
 
-        self._libp2pNode = libp2pBundle({
+        self.libp2p = libp2pBundle({
           options: self._options,
           config: config,
           datastore: self._repo.datastore,
@@ -91,15 +91,15 @@ module.exports = function libp2p (self) {
 
         const putAndDial = peerInfo => {
           self._peerInfoBook.put(peerInfo)
-          self._libp2pNode.dial(peerInfo, () => {})
+          self.libp2p.dial(peerInfo, () => {})
         }
 
-        self._libp2pNode.on('start', () => {
+        self.libp2p.on('start', () => {
           discoveredPeers.forEach(putAndDial)
           discoveredPeers = []
         })
 
-        self._libp2pNode.on('peer:discovery', (peerInfo) => {
+        self.libp2p.on('peer:discovery', (peerInfo) => {
           if (self.isOnline()) {
             putAndDial(peerInfo)
           } else {
@@ -107,14 +107,14 @@ module.exports = function libp2p (self) {
           }
         })
 
-        self._libp2pNode.on('peer:connect', (peerInfo) => {
+        self.libp2p.on('peer:connect', (peerInfo) => {
           self._peerInfoBook.put(peerInfo)
         })
 
-        self._libp2pNode.start((err) => {
+        self.libp2p.start((err) => {
           if (err) { return callback(err) }
 
-          self._libp2pNode.peerInfo.multiaddrs.forEach((ma) => {
+          self.libp2p.peerInfo.multiaddrs.forEach((ma) => {
             self._print('Swarm listening on', ma.toString())
           })
 
@@ -123,7 +123,7 @@ module.exports = function libp2p (self) {
       }
     }),
     stop: promisify((callback) => {
-      self._libp2pNode.stop(callback)
+      self.libp2p.stop(callback)
     })
   }
 }

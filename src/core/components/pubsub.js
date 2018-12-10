@@ -24,7 +24,7 @@ module.exports = function pubsub (self) {
 
       if (!callback) {
         return new Promise((resolve, reject) => {
-          self._libp2pNode.pubsub.subscribe(topic, options, handler, (err) => {
+          self.libp2p.pubsub.subscribe(topic, options, handler, (err) => {
             if (err) {
               return reject(err)
             }
@@ -33,7 +33,7 @@ module.exports = function pubsub (self) {
         })
       }
 
-      self._libp2pNode.pubsub.subscribe(topic, options, handler, callback)
+      self.libp2p.pubsub.subscribe(topic, options, handler, callback)
     },
 
     unsubscribe: (topic, handler, callback) => {
@@ -43,7 +43,7 @@ module.exports = function pubsub (self) {
           : Promise.reject(errPubsubDisabled())
       }
 
-      self._libp2pNode.pubsub.unsubscribe(topic, handler)
+      self.libp2p.pubsub.unsubscribe(topic, handler)
 
       if (!callback) {
         return Promise.resolve()
@@ -56,28 +56,28 @@ module.exports = function pubsub (self) {
       if (!self._options.EXPERIMENTAL.pubsub) {
         return setImmediate(() => callback(errPubsubDisabled()))
       }
-      self._libp2pNode.pubsub.publish(topic, data, callback)
+      self.libp2p.pubsub.publish(topic, data, callback)
     }),
 
     ls: promisify((callback) => {
       if (!self._options.EXPERIMENTAL.pubsub) {
         return setImmediate(() => callback(errPubsubDisabled()))
       }
-      self._libp2pNode.pubsub.ls(callback)
+      self.libp2p.pubsub.ls(callback)
     }),
 
     peers: promisify((topic, callback) => {
       if (!self._options.EXPERIMENTAL.pubsub) {
         return setImmediate(() => callback(errPubsubDisabled()))
       }
-      self._libp2pNode.pubsub.peers(topic, callback)
+      self.libp2p.pubsub.peers(topic, callback)
     }),
 
     setMaxListeners (n) {
       if (!self._options.EXPERIMENTAL.pubsub) {
         throw errPubsubDisabled()
       }
-      self._libp2pNode.pubsub.setMaxListeners(n)
+      self.libp2p.pubsub.setMaxListeners(n)
     }
   }
 }

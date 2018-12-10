@@ -108,8 +108,8 @@ describe('libp2p customization', function () {
 
       _libp2p.start((err) => {
         expect(err).to.not.exist()
-        expect(ipfs._libp2pNode._config).to.not.have.property('peerDiscovery')
-        expect(ipfs._libp2pNode._transport).to.have.length(1)
+        expect(ipfs.libp2p._config).to.not.have.property('peerDiscovery')
+        expect(ipfs.libp2p._transport).to.have.length(1)
         done()
       })
     })
@@ -131,7 +131,7 @@ describe('libp2p customization', function () {
 
       _libp2p.start((err) => {
         expect(err).to.not.exist()
-        expect(ipfs._libp2pNode._config).to.deep.include({
+        expect(ipfs.libp2p._config).to.deep.include({
           peerDiscovery: {
             bootstrap: {
               enabled: true,
@@ -152,7 +152,7 @@ describe('libp2p customization', function () {
             pubsub: false
           }
         })
-        expect(ipfs._libp2pNode._transport).to.have.length(3)
+        expect(ipfs.libp2p._transport).to.have.length(3)
         done()
       })
     })
@@ -197,7 +197,7 @@ describe('libp2p customization', function () {
 
       _libp2p.start((err) => {
         expect(err).to.not.exist()
-        expect(ipfs._libp2pNode._config).to.deep.include({
+        expect(ipfs.libp2p._config).to.deep.include({
           peerDiscovery: {
             bootstrap: {
               enabled: true,
@@ -218,7 +218,7 @@ describe('libp2p customization', function () {
             pubsub: true
           }
         })
-        expect(ipfs._libp2pNode._transport).to.have.length(1)
+        expect(ipfs.libp2p._transport).to.have.length(1)
         done()
       })
     })

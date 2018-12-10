@@ -12,11 +12,11 @@ function bandwidthStats (self, opts) {
     let stats
 
     if (opts.peer) {
-      stats = self._libp2pNode.stats.forPeer(opts.peer)
+      stats = self.libp2p.stats.forPeer(opts.peer)
     } else if (opts.proto) {
-      stats = self._libp2pNode.stats.forProtocol(opts.proto)
+      stats = self.libp2p.stats.forProtocol(opts.proto)
     } else {
-      stats = self._libp2pNode.stats.global
+      stats = self.libp2p.stats.global
     }
 
     if (!stats) {
