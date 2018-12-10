@@ -132,7 +132,9 @@ describe('create node', function () {
     })
   })
 
-  it('should be silent', (done) => {
+  it('should be silent', function (done) {
+    this.timeout(10 * 1000)
+
     sinon.spy(console, 'log')
 
     const ipfs = new IPFS({
@@ -143,7 +145,7 @@ describe('create node', function () {
     ipfs.on('ready', () => {
       expect(console.log.called).to.be.false()
       console.log.restore()
-      done()
+      ipfs.stop(done)
     })
   })
 
