@@ -1,3 +1,5 @@
+'use strict'
+
 const CID = require('cids')
 
 exports.normalizePath = (path) => {

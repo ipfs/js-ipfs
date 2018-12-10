@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports = self => ({
   add: require('./add')(self),
   addPullStream: require('./add-pull-stream')(self),
