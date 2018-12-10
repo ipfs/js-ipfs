@@ -1,3 +1,16 @@
+<a name="0.91.0"></a>
+# [0.91.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.90.0...v0.91.0) (2018-12-10)
+
+
+### Bug Fixes
+
+* another typo ([87bcd68](https://github.com/ipfs/interface-ipfs-core/commit/87bcd68))
+* typos ([e7b8697](https://github.com/ipfs/interface-ipfs-core/commit/e7b8697))
+* update dht responses ([#389](https://github.com/ipfs/interface-ipfs-core/issues/389)) ([c4bea6f](https://github.com/ipfs/interface-ipfs-core/commit/c4bea6f))
+* Updated link in README ([#411](https://github.com/ipfs/interface-ipfs-core/issues/411)) ([81a5798](https://github.com/ipfs/interface-ipfs-core/commit/81a5798))
+
+
+
 <a name="0.90.0"></a>
 # [0.90.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.89.0...v0.90.0) (2018-12-05)
 
