@@ -7,7 +7,7 @@
 * [dht.put](#dhtput)
 * [dht.query](#dhtquery)
 
-#### `dht.findpeer`
+#### `dht.findPeer`
 
 > Retrieve the Peer Info of a reachable node in the network.
 
