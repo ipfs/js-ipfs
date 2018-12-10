@@ -250,6 +250,14 @@ Instead of a boolean, you may provide an object with custom initialization optio
 - `emptyRepo` (boolean) Whether to remove built-in assets, like the instructional tour and empty mutable file system, from the repo. (Default: `false`)
 - `bits` (number) Number of bits to use in the generated key pair. (Default: `2048`)
 - `privateKey` (string/PeerId) A pre-generated private key to use. Can be either a base64 string or a [PeerId](https://github.com/libp2p/js-peer-id) instance. **NOTE: This overrides `bits`.**
+    ```js
+    // Generating a Peer ID:
+    const PeerId = require('peer-id')
+    PeerId.create({ bits: 2048 }, (err, peerId) => {
+      // Generates a new Peer ID, complete with public/private keypair
+      // See https://github.com/libp2p/js-peer-id
+    })
+    ```
 - `pass` (string) A passphrase to encrypt keys. You should generally use the [top-level `pass` option](#optionspass) instead of the `init.pass` option (this one will take its value from the top-level option if not set).
 
 ##### `options.start`
