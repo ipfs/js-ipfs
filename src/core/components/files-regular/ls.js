@@ -14,7 +14,12 @@ module.exports = function (self) {
 
     pull(
       self.lsPullStream(ipfsPath, options),
-      pull.collect(callback)
+      pull.collect((err, values) => {
+        if (err) {
+          return callback(err)
+        }
+        callback(null, values)
+      })
     )
   })
 }
