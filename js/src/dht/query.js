@@ -59,7 +59,7 @@ module.exports = (createCommon, options) => {
         if (skipped) return
         clearTimeout(timeoutId)
         expect(err).to.not.exist()
-        expect(peers.map((p) => p.ID)).to.include(nodeB.peerId.id)
+        expect(peers.map((p) => p.id.toB58String())).to.include(nodeB.peerId.id)
         done()
       })
     })

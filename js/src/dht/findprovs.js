@@ -24,7 +24,7 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.dht.findprovs', function () {
+  describe('.dht.findProvs', function () {
     let nodeA
     let nodeB
 
@@ -61,9 +61,9 @@ module.exports = (createCommon, options) => {
         (cid, cb) => {
           nodeB.dht.provide(cid, (err) => cb(err, cid))
         },
-        (cid, cb) => nodeA.dht.findprovs(cid, cb),
+        (cid, cb) => nodeA.dht.findProvs(cid, cb),
         (provs, cb) => {
-          expect(provs.responses.map((p) => p.id))
+          expect(provs.map((p) => p.id.toB58String()))
             .to.eql([nodeB.peerId.id])
           cb()
         }
@@ -72,11 +72,11 @@ module.exports = (createCommon, options) => {
 
     it('should take options to override timeout config', function (done) {
       const options = {
-        timeout: 1
+        maxTimeout: 1
       }
       waterfall([
         (cb) => fakeCid(cb),
-        (cidV0, cb) => nodeA.dht.findprovs(cidV0, options, (err) => {
+        (cidV0, cb) => nodeA.dht.findProvs(cidV0, options, (err) => {
           expect(err).to.exist()
           cb(null)
         })

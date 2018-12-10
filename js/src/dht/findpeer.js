@@ -5,12 +5,14 @@ const { spawnNodesWithId } = require('../utils/spawn')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { connect } = require('../utils/swarm')
 
+const checkAll = (bits) => string => bits.every(bit => string.includes(bit))
+
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.dht.findpeer', function () {
+  describe('.dht.findPeer', function () {
     this.timeout(80 * 1000)
 
     let nodeA
@@ -42,16 +44,20 @@ module.exports = (createCommon, options) => {
     })
 
     it('should find other peers', (done) => {
-      nodeA.dht.findpeer(nodeB.peerId.id, (err, res) => {
+      nodeA.dht.findPeer(nodeB.peerId.id, (err, res) => {
         expect(err).to.not.exist()
-        expect(res.responses[0].id).to.be.eql(nodeB.peerId.id)
-        expect(res.responses[0].addrs).to.deep.include(nodeB.peerId.addresses[0])
+
+        const id = res.id.toB58String()
+        const addrs = res.multiaddrs.toArray().map((ma) => ma.toString())
+
+        expect(id).to.be.eql(nodeB.peerId.id)
+        expect(nodeB.peerId.addresses[0]).to.satisfy(checkAll([addrs[0]]))
         done()
       })
     })
 
     it('should fail to find other peer if peer does not exist', (done) => {
-      nodeA.dht.findpeer('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ', (err, peer) => {
+      nodeA.dht.findPeer('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ', (err, peer) => {
         expect(err).to.exist()
         expect(peer).to.not.exist()
         done()
