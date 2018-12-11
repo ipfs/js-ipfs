@@ -15,8 +15,8 @@ module.exports = {
         throw err
       }
 
-      result.forEach((element) => {
-        print(element.ID)
+      result.forEach((peerID) => {
+        print(peerID.id.toB58String())
       })
     })
   }

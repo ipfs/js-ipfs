@@ -55,7 +55,7 @@ describe('dht', () => {
   // get ids
   before(function (done) {
     this.timeout(80 * 1000)
-    series([
+    parallel([
       (cb) => nodes[0].api.id((err, res) => {
         expect(err).to.not.exist()
 

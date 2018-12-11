@@ -1,8 +1,5 @@
 'use strict'
 
-/*
-Issue commands directly through the DHT.
-*/
 module.exports = {
   command: 'dht <command>',
 

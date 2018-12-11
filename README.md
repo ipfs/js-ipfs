@@ -34,10 +34,6 @@ You can check the development status at the [Kanban Board](https://waffle.io/ipf
 
 [![Throughput Graph](https://graphs.waffle.io/ipfs/js-ipfs/throughput.svg)](https://waffle.io/ipfs/js-ipfs/metrics/throughput)
 
-**Please read this:** Circuit Relay (pierce through NATs and dial between any node in the network) is a fundamental piece that is not finalized yet. There are multiple applications that can be built without this service but nevertheless it is fundamental to get that magic IPFS experience. If you want to track progress or contribute, please follow:
-
-- ✅ Relay: https://github.com/ipfs/js-ipfs/pull/1063
-
 [**`Weekly Core Dev Calls`**](https://github.com/ipfs/pm/issues/650)
 
 ## Tech Lead

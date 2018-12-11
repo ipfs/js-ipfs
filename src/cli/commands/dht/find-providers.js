@@ -17,16 +17,16 @@ module.exports = {
 
   handler (argv) {
     const opts = {
-      'num-providers': argv['num-providers']
+      numProviders: argv['num-providers']
     }
 
-    argv.ipfs.dht.findprovs(argv.key, opts, (err, result) => {
+    argv.ipfs.dht.findProvs(argv.key, opts, (err, result) => {
       if (err) {
         throw err
       }
 
-      result.responses.forEach((element) => {
-        print(element.id)
+      result.forEach((element) => {
+        print(element.id.toB58String())
       })
     })
   }

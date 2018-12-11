@@ -40,7 +40,7 @@ describe('dht', () => {
 
   describe('findprovs', () => {
     it('should callback with error for invalid CID input', (done) => {
-      ipfs.dht.findprovs('INVALID CID', (err) => {
+      ipfs.dht.findProvs('INVALID CID', (err) => {
         expect(err).to.exist()
         expect(err.code).to.equal('ERR_INVALID_CID')
         done()

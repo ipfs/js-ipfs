@@ -10,14 +10,14 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    argv.ipfs.dht.findpeer(argv.peerID, (err, result) => {
+    argv.ipfs.dht.findPeer(argv.peerID, (err, result) => {
       if (err) {
         throw err
       }
 
-      result.responses[0].addrs.forEach((element) => {
-        print(element)
-      })
+      const addresses = result.multiaddrs.toArray().map((ma) => ma.toString())
+
+      print(addresses)
     })
   }
 }
