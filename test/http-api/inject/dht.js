@@ -27,14 +27,14 @@ module.exports = (http) => {
         })
       })
 
-      it('returns 500 if peerId is provided as there is no peers in the routing table', (done) => {
+      it('returns 404 if peerId is provided as there is no peers in the routing table', (done) => {
         const peerId = 'QmQ2zigjQikYnyYUSXZydNXrDRhBut2mubwJBaLXobMt3A'
 
         api.inject({
           method: 'GET',
           url: `/api/v0/dht/findpeer?arg=${peerId}`
         }, (res) => {
-          expect(res.statusCode).to.equal(500)
+          expect(res.statusCode).to.equal(404)
           done()
         })
       })

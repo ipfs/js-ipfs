@@ -17,7 +17,7 @@ module.exports = {
 
   handler (argv) {
     const opts = {
-      numProviders: argv['num-providers']
+      maxNumProviders: argv['num-providers']
     }
 
     argv.ipfs.dht.findProvs(argv.key, opts, (err, result) => {
