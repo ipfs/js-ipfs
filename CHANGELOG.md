@@ -1,3 +1,28 @@
+<a name="28.0.0"></a>
+# [28.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v27.1.0...v28.0.0) (2018-12-11)
+
+
+### Bug Fixes
+
+* case for addFromURL ([#907](https://github.com/ipfs/js-ipfs-http-client/issues/907)) ([99ac7be](https://github.com/ipfs/js-ipfs-http-client/commit/99ac7be))
+
+
+### Code Refactoring
+
+* dht api ([#890](https://github.com/ipfs/js-ipfs-http-client/issues/890)) ([05a84a4](https://github.com/ipfs/js-ipfs-http-client/commit/05a84a4))
+
+
+### BREAKING CHANGES
+
+* DHT API methods renamed and return types changed
+
+* `ipfs.dht.findprovs` renamed to `ipfs.dht.findProvs` and returns an array of [PeerInfo](https://github.com/libp2p/js-peer-info)
+* `ipfs.dht.findpeer` renamed to `ipfs.dht.findPeer` and returns a [PeerInfo](https://github.com/libp2p/js-peer-info)
+* `ipfs.dht.query` now returns an array of [PeerId](https://github.com/libp2p/js-peer-id)
+* [More info](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md)
+
+
+
 <a name="27.1.0"></a>
 # [27.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v27.0.0...v27.1.0) (2018-12-05)
 
