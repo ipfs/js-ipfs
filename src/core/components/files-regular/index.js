@@ -2,6 +2,7 @@
 
 module.exports = self => ({
   add: require('./add')(self),
+  addFromFs: require('./add-from-fs')(self),
   addFromStream: require('./add-from-stream')(self),
   addFromURL: require('./add-from-url')(self),
   addPullStream: require('./add-pull-stream')(self),
