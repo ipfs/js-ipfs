@@ -249,6 +249,10 @@ module.exports = function (self) {
           return d.abort(new Error('this dag node is a directory'))
         }
 
+        if (!file.content) {
+          return d.abort(new Error('this dag node has no content'))
+        }
+
         d.resolve(file.content)
       })
     )
