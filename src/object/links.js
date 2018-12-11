@@ -9,7 +9,7 @@ const lruOptions = {
   max: 128
 }
 
-const cache = LRU(lruOptions)
+const cache = new LRU(lruOptions)
 
 module.exports = (send) => {
   return promisify((multihash, options, callback) => {

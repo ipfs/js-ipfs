@@ -49,8 +49,8 @@ describe('submodules', () => {
 
     expect(dht.get).to.be.a('function')
     expect(dht.put).to.be.a('function')
-    expect(dht.findprovs).to.be.a('function')
-    expect(dht.findpeer).to.be.a('function')
+    expect(dht.findProvs).to.be.a('function')
+    expect(dht.findPeer).to.be.a('function')
     expect(dht.provide).to.be.a('function')
     expect(dht.query).to.be.a('function')
   })
