@@ -79,11 +79,7 @@ describe('interface-ipfs-core tests', () => {
   })
 
   tests.filesRegular(defaultCommonFactory, {
-    only: ['addFromUrl'],
     skip: isNode ? [{
-      name: 'addFromStream',
-      reason: 'TODO: not implemented yet'
-    }, {
       name: 'addFromFs',
       reason: 'TODO: not implemented yet'
     }] : [{
