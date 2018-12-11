@@ -1,3 +1,13 @@
+<a name="0.91.1"></a>
+## [0.91.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.91.0...v0.91.1) (2018-12-11)
+
+
+### Bug Fixes
+
+* change find provs options test ([#416](https://github.com/ipfs/interface-ipfs-core/issues/416)) ([3c08aa2](https://github.com/ipfs/interface-ipfs-core/commit/3c08aa2))
+
+
+
 <a name="0.91.0"></a>
 # [0.91.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.90.0...v0.91.0) (2018-12-10)
 
