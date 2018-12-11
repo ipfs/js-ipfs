@@ -1,4 +1,4 @@
-'use-strict'
+'use strict'
 
 const { URL } = require('url')
 const fetch = require('../../runtime/fetch-nodejs')
