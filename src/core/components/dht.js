@@ -3,8 +3,8 @@
 const promisify = require('promisify-es6')
 const every = require('async/every')
 const PeerId = require('peer-id')
+const PeerInfo = require('peer-info')
 const CID = require('cids')
-const multihash = require('multihashes')
 const each = require('async/each')
 const setImmediate = require('async/setImmediate')
 const errCode = require('err-code')
@@ -15,6 +15,8 @@ module.exports = (self) => {
      * Given a key, query the DHT for its best value.
      *
      * @param {Buffer} key
+     * @param {Object} options - get options
+     * @param {number} options.maxTimeout - optional timeout
      * @param {function(Error)} [callback]
      * @returns {Promise|void}
      */
@@ -28,9 +30,9 @@ module.exports = (self) => {
 
       if (!Buffer.isBuffer(key)) {
         try {
-          key = multihash.fromB58String(key)
+          key = (new CID(key)).buffer()
         } catch (err) {
-          return callback(err)
+          return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
         }
       }
 
@@ -52,9 +54,9 @@ module.exports = (self) => {
     put: promisify((key, value, callback) => {
       if (!Buffer.isBuffer(key)) {
         try {
-          key = multihash.fromB58String(key)
+          key = (new CID(key)).buffer()
         } catch (err) {
-          return callback(err)
+          return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
         }
       }
 
@@ -65,17 +67,21 @@ module.exports = (self) => {
      * Find peers in the DHT that can provide a specific value, given a key.
      *
      * @param {CID} key - They key to find providers for.
+     * @param {Object} options - findProviders options
+     * @param {number} options.maxTimeout - how long the query should maximally run, in milliseconds (default: 60000)
+     * @param {number} options.maxNumProviders - maximum number of providers to find
      * @param {function(Error, Array<PeerInfo>)} [callback]
      * @returns {Promise<PeerInfo>|void}
      */
-    findprovs: promisify((key, opts, callback) => {
-      if (typeof opts === 'function') {
-        callback = opts
-        opts = {}
+    findProvs: promisify((key, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
       }
 
-      opts = opts || {}
-      opts.maxNumProviders = opts['num-providers']
+      options = options || {}
+      options.timeout = options.maxTimeout // TODO create PR kad-dht
+      options.maxNumProviders = options.numProviders
 
       if (typeof key === 'string') {
         try {
@@ -85,61 +91,29 @@ module.exports = (self) => {
         }
       }
 
-      self._libp2pNode.contentRouting.findProviders(key, opts, (err, res) => {
-        if (err) {
-          return callback(err)
-        }
-
-        // convert to go-ipfs return value, we need to revisit
-        // this. For now will just conform.
-        const goResult = {
-          responses: res.map((peerInfo) => ({
-            id: peerInfo.id.toB58String(),
-            addrs: peerInfo.multiaddrs.toArray().map((a) => a.toString())
-          })),
-          type: 4
-        }
-
-        callback(null, goResult)
-      })
+      self._libp2pNode.contentRouting.findProviders(key, options, callback)
     }),
 
     /**
      * Query the DHT for all multiaddresses associated with a `PeerId`.
      *
      * @param {PeerId} peer - The id of the peer to search for.
-     * @param {function(Error, Array<Multiaddr>)} [callback]
-     * @returns {Promise<Array<Multiaddr>>|void}
+     * @param {function(Error, Array<PeerInfo>)} [callback]
+     * @returns {Promise<Array<PeerInfo>>|void}
      */
-    findpeer: promisify((peer, callback) => {
+    findPeer: promisify((peer, callback) => {
       if (typeof peer === 'string') {
         peer = PeerId.createFromB58String(peer)
       }
 
-      self._libp2pNode.peerRouting.findPeer(peer, (err, info) => {
-        if (err) {
-          return callback(err)
-        }
-
-        // convert to go-ipfs return value, we need to revisit
-        // this. For now will just conform.
-        const goResult = {
-          responses: [{
-            id: info.id.toB58String(),
-            addrs: info.multiaddrs.toArray().map((a) => a.toString())
-          }],
-          type: 2
-        }
-
-        callback(null, goResult)
-      })
+      self._libp2pNode.peerRouting.findPeer(peer, callback)
     }),
 
     /**
      * Announce to the network that we are providing given values.
      *
      * @param {CID|Array<CID>} keys - The keys that should be announced.
-     * @param {Object} [options={}]
+     * @param {Object} options - provide options
      * @param {bool} [options.recursive=false] - Provide not only the given object but also all objects linked from it.
      * @param {function(Error)} [callback]
      * @returns {Promise|void}
@@ -181,15 +155,15 @@ module.exports = (self) => {
      * Find the closest peers to a given `PeerId`, by querying the DHT.
      *
      * @param {PeerId} peer - The `PeerId` to run the query agains.
-     * @param {function(Error, Array<PeerId>)} [callback]
-     * @returns {Promise<Array<PeerId>>|void}
+     * @param {function(Error, Array<PeerInfo>)} [callback]
+     * @returns {Promise<Array<PeerInfo>>|void}
      */
     query: promisify((peerId, callback) => {
       if (typeof peerId === 'string') {
         try {
           peerId = PeerId.createFromB58String(peerId)
         } catch (err) {
-          callback(err)
+          return callback(err)
         }
       }
 
@@ -198,9 +172,9 @@ module.exports = (self) => {
         if (err) {
           return callback(err)
         }
-        callback(null, peerIds.map((id) => {
-          return { ID: id.toB58String() }
-        }))
+
+        // callback(null, peerIds)
+        callback(null, peerIds.map((id) => new PeerInfo(id)))
       })
     })
   }

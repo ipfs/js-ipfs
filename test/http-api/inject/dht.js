@@ -60,7 +60,7 @@ module.exports = (http) => {
           url: `/api/v0/dht/findprovs?arg=${key}`
         }, (res) => {
           expect(res.statusCode).to.equal(200)
-          expect(res.result.type).to.be.eql(4)
+          expect(res.result.Type).to.be.eql(4)
           done()
         })
       })

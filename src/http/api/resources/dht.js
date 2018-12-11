@@ -19,21 +19,23 @@ exports.findPeer = {
     const ipfs = request.server.app.ipfs
     const { arg } = request.query
 
-    ipfs.dht.findpeer(arg, (err, res) => {
+    ipfs.dht.findPeer(arg, (err, res) => {
       if (err) {
+        log.error(err)
+
         return reply({
           Message: err.toString(),
           Code: 0
         }).code(500)
       }
 
-      return reply({
+      reply({
         Responses: [{
-          ID: res.responses[0].id,
-          Addrs: res.responses[0].addrs
+          ID: res.id.toB58String(),
+          Addrs: res.multiaddrs.toArray().map((a) => a.toString())
         }],
-        Type: res.type
-      }).code(200)
+        Type: 2
+      })
     })
   }
 }
@@ -50,21 +52,23 @@ exports.findProvs = {
     const { arg } = request.query
     const cid = new CID(arg)
 
-    ipfs.dht.findprovs(cid, request.query, (err, res) => {
+    ipfs.dht.findProvs(cid, request.query, (err, res) => {
       if (err) {
+        log.error(err)
+
         return reply({
           Message: err.toString(),
           Code: 0
         }).code(500)
       }
 
-      return reply({
-        Responses: res.responses.map((r) => ({
-          ID: r.id,
-          Addrs: r.addrs
+      reply({
+        Responses: res.map((peerInfo) => ({
+          ID: peerInfo.id.toB58String(),
+          Addrs: peerInfo.multiaddrs.toArray().map((a) => a.toString())
         })),
-        Type: res.type
-      }).code(200)
+        Type: 4
+      })
     })
   }
 }
@@ -81,16 +85,18 @@ exports.get = {
 
     ipfs.dht.get(Buffer.from(arg), (err, res) => {
       if (err) {
+        log.error(err)
+
         return reply({
           Message: err.toString(),
           Code: 0
         }).code(500)
       }
 
-      return reply({
+      reply({
         Extra: res.toString(),
         Type: 5
-      }).code(200)
+      })
     })
   }
 }
@@ -98,24 +104,36 @@ exports.get = {
 exports.provide = {
   validate: {
     query: Joi.object().keys({
-      arg: Joi.string().required(),
-      recursive: Joi.boolean().default(false)
+      arg: Joi.string().required()
     }).unknown()
   },
   handler: (request, reply) => {
     const ipfs = request.server.app.ipfs
     const { arg } = request.query
-    const cid = new CID(arg)
+    let cid
+
+    try {
+      cid = new CID(arg)
+    } catch (err) {
+      log.error(err)
+
+      return reply({
+        Message: err.toString(),
+        Code: 0
+      }).code(500)
+    }
 
     ipfs.dht.provide(cid, request.query, (err) => {
       if (err) {
+        log.error(err)
+
         return reply({
           Message: err.toString(),
           Code: 0
         }).code(500)
       }
 
-      return reply({}).code(200)
+      reply({})
     })
   }
 }
@@ -127,33 +145,10 @@ exports.put = {
     }).unknown()
   },
   parseArgs: (request, reply) => {
-    if (!(request.query.arg instanceof Array) ||
-      request.query.arg.length !== 2) {
-      return reply("Arguments 'key' & 'value' are required").code(400).takeover()
-    }
-
-    const error = (msg) => reply({
-      Message: msg,
-      Code: 0
-    }).code(500).takeover()
-
-    if (!request.query.arg[0]) {
-      return error('cannot put to the dht with no key')
-    }
-
-    if (!request.query.arg[1]) {
-      return error('cannot put to the dht with no value')
-    }
-
-    try {
-      return reply({
-        key: request.query.arg[0],
-        value: request.query.arg[1]
-      })
-    } catch (err) {
-      log.error(err)
-      return error('invalid dht put parameters')
-    }
+    return reply({
+      key: request.query.arg[0],
+      value: request.query.arg[1]
+    })
   },
   handler: (request, reply) => {
     const key = request.pre.args.key
@@ -162,13 +157,15 @@ exports.put = {
 
     ipfs.dht.put(Buffer.from(key), Buffer.from(value), (err) => {
       if (err) {
+        log.error(err)
+
         return reply({
           Message: err.toString(),
           Code: 0
         }).code(500)
       }
 
-      return reply({}).code(200)
+      reply({})
     })
   }
 }
@@ -185,13 +182,19 @@ exports.query = {
 
     ipfs.dht.query(arg, (err, res) => {
       if (err) {
+        log.error(err)
+
         return reply({
           Message: err.toString(),
           Code: 0
         }).code(500)
       }
 
-      return reply(res).code(200)
+      const response = res.map((peerInfo) => ({
+        ID: peerInfo.id.toB58String()
+      }))
+
+      reply(response)
     })
   }
 }
