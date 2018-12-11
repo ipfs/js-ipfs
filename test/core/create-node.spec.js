@@ -133,7 +133,7 @@ describe('create node', function () {
   })
 
   it('should be silent', function (done) {
-    this.timeout(10 * 1000)
+    this.timeout(30 * 1000)
 
     sinon.spy(console, 'log')
 
