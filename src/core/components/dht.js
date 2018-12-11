@@ -7,7 +7,11 @@ const PeerInfo = require('peer-info')
 const CID = require('cids')
 const each = require('async/each')
 const setImmediate = require('async/setImmediate')
-const errCode = require('err-code')
+const errcode = require('err-code')
+
+const debug = require('debug')
+const log = debug('jsipfs:dht')
+log.error = debug('jsipfs:dht:error')
 
 module.exports = (self) => {
   return {
@@ -16,7 +20,7 @@ module.exports = (self) => {
      *
      * @param {Buffer} key
      * @param {Object} options - get options
-     * @param {number} options.maxTimeout - optional timeout
+     * @param {number} options.timeout - optional timeout
      * @param {function(Error)} [callback]
      * @returns {Promise|void}
      */
@@ -30,9 +34,11 @@ module.exports = (self) => {
 
       if (!Buffer.isBuffer(key)) {
         try {
-          key = (new CID(key)).buffer()
+          key = (new CID(key)).buffer
         } catch (err) {
-          return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+          log.error(err)
+
+          return setImmediate(() => callback(errcode(err, 'ERR_INVALID_CID')))
         }
       }
 
@@ -54,9 +60,11 @@ module.exports = (self) => {
     put: promisify((key, value, callback) => {
       if (!Buffer.isBuffer(key)) {
         try {
-          key = (new CID(key)).buffer()
+          key = (new CID(key)).buffer
         } catch (err) {
-          return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+          log.error(err)
+
+          return setImmediate(() => callback(errcode(err, 'ERR_INVALID_CID')))
         }
       }
 
@@ -68,7 +76,7 @@ module.exports = (self) => {
      *
      * @param {CID} key - They key to find providers for.
      * @param {Object} options - findProviders options
-     * @param {number} options.maxTimeout - how long the query should maximally run, in milliseconds (default: 60000)
+     * @param {number} options.timeout - how long the query should maximally run, in milliseconds (default: 60000)
      * @param {number} options.maxNumProviders - maximum number of providers to find
      * @param {function(Error, Array<PeerInfo>)} [callback]
      * @returns {Promise<PeerInfo>|void}
@@ -80,14 +88,14 @@ module.exports = (self) => {
       }
 
       options = options || {}
-      options.timeout = options.maxTimeout // TODO create PR kad-dht
-      options.maxNumProviders = options.numProviders
 
       if (typeof key === 'string') {
         try {
           key = new CID(key)
         } catch (err) {
-          return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+          log.error(err)
+
+          return setImmediate(() => callback(errcode(err, 'ERR_INVALID_CID')))
         }
       }
 
@@ -98,8 +106,8 @@ module.exports = (self) => {
      * Query the DHT for all multiaddresses associated with a `PeerId`.
      *
      * @param {PeerId} peer - The id of the peer to search for.
-     * @param {function(Error, Array<PeerInfo>)} [callback]
-     * @returns {Promise<Array<PeerInfo>>|void}
+     * @param {function(Error, PeerInfo)} [callback]
+     * @returns {Promise<PeerInfo>|void}
      */
     findPeer: promisify((peer, callback) => {
       if (typeof peer === 'string') {
@@ -138,11 +146,15 @@ module.exports = (self) => {
         }
 
         if (!has) {
-          return callback(new Error('block(s) not found locally, cannot provide'))
+          const errMsg = 'block(s) not found locally, cannot provide'
+
+          log.error(errMsg)
+          return callback(errcode(errMsg, 'ERR_BLOCK_NOT_FOUND'))
         }
 
         if (options.recursive) {
           // TODO: Implement recursive providing
+          return callback(errcode('not implemented yet', 'ERR_NOT_IMPLEMENTED_YET'))
         } else {
           each(keys, (cid, cb) => {
             self._libp2pNode.contentRouting.provide(cid, cb)
@@ -163,6 +175,7 @@ module.exports = (self) => {
         try {
           peerId = PeerId.createFromB58String(peerId)
         } catch (err) {
+          log.error(err)
           return callback(err)
         }
       }
@@ -170,10 +183,10 @@ module.exports = (self) => {
       // TODO expose this method in peerRouting
       self._libp2pNode._dht.getClosestPeers(peerId.toBytes(), (err, peerIds) => {
         if (err) {
+          log.error(err)
           return callback(err)
         }
 
-        // callback(null, peerIds)
         callback(null, peerIds.map((id) => new PeerInfo(id)))
       })
     })

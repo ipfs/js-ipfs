@@ -1,6 +1,7 @@
 'use strict'
 
 const Joi = require('joi')
+
 const CID = require('cids')
 
 const debug = require('debug')
@@ -23,6 +24,13 @@ exports.findPeer = {
       if (err) {
         log.error(err)
 
+        if (err.code === 'ERR_LOOKUP_FAILED') {
+          return reply({
+            Message: err.toString(),
+            Code: 0
+          }).code(404)
+        }
+
         return reply({
           Message: err.toString(),
           Code: 0
@@ -44,15 +52,17 @@ exports.findProvs = {
   validate: {
     query: Joi.object().keys({
       arg: Joi.string().required(),
-      'num-providers': Joi.number().integer().default(20)
+      'num-providers': Joi.number().integer().default(20),
+      timeout: Joi.number()
     }).unknown()
   },
   handler: (request, reply) => {
     const ipfs = request.server.app.ipfs
     const { arg } = request.query
-    const cid = new CID(arg)
 
-    ipfs.dht.findProvs(cid, request.query, (err, res) => {
+    request.query.maxNumProviders = request.query['num-providers']
+
+    ipfs.dht.findProvs(arg, request.query, (err, res) => {
       if (err) {
         log.error(err)
 
@@ -76,7 +86,8 @@ exports.findProvs = {
 exports.get = {
   validate: {
     query: Joi.object().keys({
-      arg: Joi.string().required()
+      arg: Joi.string().required(),
+      timeout: Joi.number()
     }).unknown()
   },
   handler: (request, reply) => {
