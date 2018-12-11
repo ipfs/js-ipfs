@@ -10,7 +10,7 @@ module.exports = (arg) => {
     addReadableStream: require('../files-regular/add-readable-stream')(send),
     addPullStream: require('../files-regular/add-pull-stream')(send),
     addFromFs: require('../files-regular/add-from-fs')(send),
-    addFromUrl: require('../files-regular/add-from-url')(send),
+    addFromURL: require('../files-regular/add-from-url')(send),
     addFromStream: require('../files-regular/add')(send),
     cat: require('../files-regular/cat')(send),
     catReadableStream: require('../files-regular/cat-readable-stream')(send),

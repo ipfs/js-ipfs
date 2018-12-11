@@ -122,7 +122,12 @@ describe('interface-ipfs-core tests', () => {
         name: 'addFromFs',
         reason: 'Not designed to run in the browser'
       },
-      // .addFromUrl
+      // .addFromURL
+      isNode ? null : {
+        name: 'addFromURL',
+        reason: 'Not designed to run in the browser'
+      },
+      // TODO: remove when interface-ipfs-core updated
       isNode ? null : {
         name: 'addFromUrl',
         reason: 'Not designed to run in the browser'

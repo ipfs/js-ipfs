@@ -96,10 +96,10 @@ Specifically, the following changes have been made:
 * `ipfs.files.getPullStream` => `ipfs.getPullStream`
 * `ipfs.files.getReadableStream` => `ipfs.getReadableStream`
 
-Additionally, `addFromFs`, `addFromUrl`, `addFromStream` have moved from `util` to the root namespace:
+Additionally, `addFromFs`, `addFromURL`, `addFromStream` have moved from `util` to the root namespace:
 
 * `ipfs.util.addFromFs` => `ipfs.addFromFs`
-* `ipfs.util.addFromUrl` => `ipfs.addFromUrl`
+* `ipfs.util.addFromURL` => `ipfs.addFromURL`
 * `ipfs.util.addFromStream` => `ipfs.addFromStream`
 
 License: MIT

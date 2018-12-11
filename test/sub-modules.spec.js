@@ -173,7 +173,7 @@ describe('submodules', () => {
     expect(filesRegular.addPullStream).to.be.a('function')
     expect(filesRegular.addFromStream).to.be.a('function')
     expect(filesRegular.addFromFs).to.be.a('function')
-    expect(filesRegular.addFromUrl).to.be.a('function')
+    expect(filesRegular.addFromURL).to.be.a('function')
     expect(filesRegular.get).to.be.a('function')
     expect(filesRegular.getReadableStream).to.be.a('function')
     expect(filesRegular.getPullStream).to.be.a('function')
