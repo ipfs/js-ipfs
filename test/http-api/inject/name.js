@@ -19,7 +19,9 @@ module.exports = (http) => {
       api = http.api.server.select('API')
     })
 
-    it('should publish a record', (done) => {
+    it('should publish a record', function (done) {
+      this.timeout(80 * 1000)
+
       api.inject({
         method: 'GET',
         url: `/api/v0/name/publish?arg=${cid}&resolve=false`
@@ -30,7 +32,9 @@ module.exports = (http) => {
       })
     })
 
-    it('should publish and resolve a record', (done) => {
+    it('should publish and resolve a record', function (done) {
+      this.timeout(160 * 1000)
+
       api.inject({
         method: 'GET',
         url: `/api/v0/name/publish?arg=${cid}&resolve=false`

@@ -36,7 +36,9 @@ module.exports = (http) => {
       })
     })
 
-    it('returns 500 for incorrect Peer Id', (done) => {
+    it('returns 500 for incorrect Peer Id', function (done) {
+      this.timeout(90 * 1000)
+
       api.inject({
         method: 'GET',
         url: `/api/v0/ping?arg=peerid`

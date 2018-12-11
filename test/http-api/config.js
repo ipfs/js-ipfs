@@ -28,6 +28,13 @@ skipOnWindows('config endpoint', () => {
   let ipfs = null
   let ipfsd = null
 
+  // wait until the repo is ready to use
+  before(function (done) {
+    this.timeout(10 * 1000)
+
+    setTimeout(done, 5 * 1000)
+  })
+
   before(function (done) {
     this.timeout(20 * 1000)
 
@@ -38,6 +45,7 @@ skipOnWindows('config endpoint', () => {
         (cb) => df.spawn({
           repoPath: repoPath,
           initOptions: { bits: 512 },
+          config: { Bootstrap: [] },
           disposable: false,
           start: true
         }, cb),

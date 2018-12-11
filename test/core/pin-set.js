@@ -107,7 +107,7 @@ describe('pinSet', function () {
 
   describe('handles large sets', function () {
     it('handles storing items > maxItems', function (done) {
-      this.timeout(19 * 1000)
+      this.timeout(70 * 1000)
       const expectedHash = 'QmbvhSy83QWfgLXDpYjDmLWBFfGc8utoqjcXHyj3gYuasT'
       const count = maxItems + 1
       createNodes(count, (err, cids) => {

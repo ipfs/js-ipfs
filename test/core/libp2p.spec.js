@@ -19,7 +19,7 @@ const libp2pComponent = require('../../src/core/components/libp2p')
 
 describe('libp2p customization', function () {
   // Provide some extra time for ci since we're starting libp2p nodes in each test
-  this.timeout(15 * 1000)
+  this.timeout(25 * 1000)
 
   let datastore
   let peerInfo
@@ -27,7 +27,9 @@ describe('libp2p customization', function () {
   let mockConfig
   let _libp2p
 
-  before((done) => {
+  before(function (done) {
+    this.timeout(25 * 1000)
+
     mockConfig = {
       get: (callback) => {
         callback(null, {

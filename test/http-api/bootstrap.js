@@ -18,7 +18,17 @@ describe('bootstrap endpoint', () => {
 
     df.spawn({
       initOptions: { bits: 512 },
-      config: { Bootstrap: [] }
+      config: {
+        Bootstrap: [],
+        Discovery: {
+          MDNS: {
+            Enabled: false
+          },
+          webRTCStar: {
+            Enabled: false
+          }
+        }
+      }
     }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsd = _ipfsd

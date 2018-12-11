@@ -106,34 +106,16 @@ module.exports = (http) => {
         })
       })
 
-      it('should cat a valid hash', function (done) {
-        this.timeout(30 * 1000)
-
-        const data = Buffer.from('TEST' + Date.now())
-        const form = new FormData()
-        form.append('data', data)
-        const headers = form.getHeaders()
-
-        streamToPromise(form).then((payload) => {
-          api.inject({
-            method: 'POST',
-            url: '/api/v0/add',
-            headers: headers,
-            payload: payload
-          }, (res) => {
-            expect(res.statusCode).to.equal(200)
-            const cid = JSON.parse(res.result).Hash
-
-            api.inject({
-              method: 'GET',
-              url: '/api/v0/cat?arg=' + cid
-            }, (res) => {
-              expect(res.statusCode).to.equal(200)
-              expect(res.rawPayload).to.deep.equal(data)
-              expect(res.payload).to.equal(data.toString())
-              done()
-            })
-          })
+      it('valid hash', function (done) {
+        this.timeout(90 * 1000)
+        api.inject({
+          method: 'GET',
+          url: '/api/v0/cat?arg=QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o'
+        }, (res) => {
+          expect(res.statusCode).to.equal(200)
+          expect(res.rawPayload).to.deep.equal(Buffer.from('hello world' + '\n'))
+          expect(res.payload).to.equal('hello world' + '\n')
+          done()
         })
       })
     })

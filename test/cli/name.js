@@ -199,9 +199,17 @@ describe('name', () => {
       df.spawn({
         exec: `./src/cli/bin.js`,
         config: {
-          Bootstrap: []
+          Bootstrap: [],
+          Discovery: {
+            MDNS: {
+              Enabled: false
+            },
+            webRTCStar: {
+              Enabled: false
+            }
+          }
         },
-        args: ['--pass', passPhrase, '--enable-dht-experiment'],
+        args: ['--pass', passPhrase],
         initOptions: { bits: 512 }
       }, (err, _ipfsd) => {
         expect(err).to.not.exist()

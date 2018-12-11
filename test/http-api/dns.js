@@ -28,7 +28,9 @@ describe('dns endpoint', () => {
   after((done) => ipfsd.stop(done))
 
   describe('.dns', () => {
-    it('resolve ipfs.io dns', (done) => {
+    it('resolve ipfs.io dns', function (done) {
+      this.timeout(40 * 1000)
+
       ipfs.dns('ipfs.io', (err, result) => {
         expect(err).to.not.exist()
         expect(result).to.exist()

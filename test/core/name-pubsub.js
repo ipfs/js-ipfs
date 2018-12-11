@@ -32,7 +32,17 @@ describe('name-pubsub', function () {
     df.spawn({
       exec: IPFS,
       args: [`--pass ${hat()}`, '--enable-namesys-pubsub'],
-      config: { Bootstrap: [] }
+      config: {
+        Bootstrap: [],
+        Discovery: {
+          MDNS: {
+            Enabled: false
+          },
+          webRTCStar: {
+            Enabled: false
+          }
+        }
+      }
     }, callback)
   }
 
