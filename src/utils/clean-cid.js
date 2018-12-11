@@ -12,6 +12,6 @@ module.exports = function (cid) {
   if (typeof cid !== 'string') {
     throw new Error('unexpected cid type: ' + typeof cid)
   }
-  new CID(cid.split('/')[0]) // eslint-disable-line
+  new CID(cid.split('/')[0]) // eslint-disable-line no-new
   return cid
 }
