@@ -51,7 +51,7 @@ exports.parseKey = (request, reply) => {
   }
 
   try {
-    new CID(key) // eslint-disable-line
+    new CID(key) // eslint-disable-line no-new
   } catch (err) {
     log.error(err)
     return reply({
