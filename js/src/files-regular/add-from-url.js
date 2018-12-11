@@ -14,7 +14,7 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.addFromUrl', function () {
+  describe('.addFromURL', function () {
     this.timeout(40 * 1000)
 
     let ipfs

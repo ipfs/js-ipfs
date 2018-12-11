@@ -7,7 +7,7 @@
   - [addReadableStream](#addreadablestream)
   - [addPullStream](#addpullstream)
   - [addFromFs](#addfromfs)
-  - [addFromUrl](#addfromurl)
+  - [addFromURL](#addfromurl)
   - [addFromStream](#addfromstream)
   - [cat](#cat)
   - [catReadableStream](#catreadablestream)
@@ -259,7 +259,7 @@ ipfs.addFromFs('path/to/a/folder', { recursive: true , ignore: ['subfolder/to/ig
 ]
 ```
 
-#### `addFromUrl`
+#### `addFromURL`
 
 > Add a file from a URL to IPFS
 

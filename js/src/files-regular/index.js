@@ -7,7 +7,7 @@ const tests = {
   addReadableStream: require('./add-readable-stream'),
   addPullStream: require('./add-pull-stream'),
   addFromStream: require('./add-from-stream'),
-  addFromUrl: require('./add-from-url'),
+  addFromURL: require('./add-from-url'),
   addFromFs: require('./add-from-fs'),
   cat: require('./cat'),
   catReadableStream: require('./cat-readable-stream'),

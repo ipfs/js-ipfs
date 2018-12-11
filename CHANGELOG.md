@@ -53,7 +53,7 @@
 
 ### Features
 
-* move regular files api to top level, add addFromFs and addFromUrl ([#378](https://github.com/ipfs/interface-ipfs-core/issues/378)) ([3dc7278](https://github.com/ipfs/interface-ipfs-core/commit/3dc7278))
+* move regular files api to top level, add addFromFs and addFromURL ([#378](https://github.com/ipfs/interface-ipfs-core/issues/378)) ([3dc7278](https://github.com/ipfs/interface-ipfs-core/commit/3dc7278))
 
 
 
@@ -1073,6 +1073,3 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 ### Bug Fixes
 
 * remove superfluous console.logs ([442ea74](https://github.com/ipfs/interface-ipfs-core/commit/442ea74))
-
-
-
