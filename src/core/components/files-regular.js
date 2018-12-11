@@ -232,21 +232,28 @@ module.exports = function (self) {
 
     pull(
       exporter(ipfsPath, self._ipld, options),
+      pull.filter(filterFile),
+      pull.take(1),
       pull.collect((err, files) => {
-        if (err) { return d.abort(err) }
-        if (files && files.length > 1) {
-          files = files.filter(filterFile)
+        if (err) {
+          return d.abort(err)
         }
-        if (!files || !files.length) {
+
+        if (!files.length) {
           return d.abort(new Error('No such file'))
         }
 
         const file = files[0]
-        const content = file.content
-        if (!content && file.type === 'dir') {
+
+        if (!file.content && file.type === 'dir') {
           return d.abort(new Error('this dag node is a directory'))
         }
-        d.resolve(content)
+
+        if (!file.content) {
+          return d.abort(new Error('this dag node has no content'))
+        }
+
+        d.resolve(file.content)
       })
     )
 
