@@ -50,7 +50,7 @@ describe('name', function () {
       this.timeout(50 * 1000)
       df.spawn({
         exec: IPFS,
-        args: [`--pass ${hat()}`],
+        args: [`--pass ${hat()}`, '--local'],
         config: { Bootstrap: [] }
       }, (err, _ipfsd) => {
         expect(err).to.not.exist()
@@ -152,7 +152,7 @@ describe('name', function () {
       this.timeout(40 * 1000)
       df.spawn({
         exec: IPFS,
-        args: [`--pass ${hat()}`],
+        args: [`--pass ${hat()}`, '--local'],
         config: { Bootstrap: [] }
       }, (err, _ipfsd) => {
         expect(err).to.not.exist()
@@ -193,8 +193,7 @@ describe('name', function () {
     })
   })
 
-  // TODO: unskip when https://github.com/ipfs/js-ipfs/pull/856 is merged
-  describe.skip('work with dht', () => {
+  describe('work with dht', () => {
     let nodes
     let nodeA
     let nodeB
@@ -204,8 +203,18 @@ describe('name', function () {
     const createNode = (callback) => {
       df.spawn({
         exec: IPFS,
-        args: [`--pass ${hat()}`, '--enable-dht-experiment'],
-        config: { Bootstrap: [] }
+        args: [`--pass ${hat()}`],
+        config: {
+          Bootstrap: [],
+          Discovery: {
+            MDNS: {
+              Enabled: false
+            },
+            webRTCStar: {
+              Enabled: false
+            }
+          }
+        }
       }, callback)
     }
 
@@ -233,7 +242,8 @@ describe('name', function () {
           idA = ids[0]
           parallel([
             (cb) => nodeC.swarm.connect(ids[0].addresses[0], cb), // C => A
-            (cb) => nodeC.swarm.connect(ids[1].addresses[0], cb) // C => B
+            (cb) => nodeC.swarm.connect(ids[1].addresses[0], cb), // C => B
+            (cb) => nodeA.swarm.connect(ids[1].addresses[0], cb) // A => B
           ], done)
         })
       })
@@ -246,12 +256,12 @@ describe('name', function () {
     })
 
     it('should publish and then resolve correctly with the default options', function (done) {
-      this.timeout(90 * 1000)
+      this.timeout(380 * 1000)
       publishAndResolve(nodeA, nodeB, ipfsRef, { resolve: false }, idA.id, {}, done)
     })
 
     it('should recursively resolve to an IPFS hash', function (done) {
-      this.timeout(180 * 1000)
+      this.timeout(360 * 1000)
       const keyName = hat()
 
       nodeA.key.gen(keyName, { type: 'rsa', size: 2048 }, function (err, key) {
@@ -284,7 +294,17 @@ describe('name', function () {
       df.spawn({
         exec: IPFS,
         args: [`--pass ${hat()}`],
-        config: { Bootstrap: [] }
+        config: {
+          Bootstrap: [],
+          Discovery: {
+            MDNS: {
+              Enabled: false
+            },
+            webRTCStar: {
+              Enabled: false
+            }
+          }
+        }
       }, (err, _ipfsd) => {
         expect(err).to.not.exist()
         ipfsd = _ipfsd
@@ -454,8 +474,18 @@ describe('name', function () {
       this.timeout(40 * 1000)
       df.spawn({
         exec: IPFS,
-        args: [`--pass ${hat()}`],
-        config: { Bootstrap: [] }
+        args: [`--pass ${hat()}`, '--local'],
+        config: {
+          Bootstrap: [],
+          Discovery: {
+            MDNS: {
+              Enabled: false
+            },
+            webRTCStar: {
+              Enabled: false
+            }
+          }
+        }
       }, (err, _ipfsd) => {
         expect(err).to.not.exist()
         node = _ipfsd.api

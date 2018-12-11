@@ -16,18 +16,17 @@ module.exports = {
   },
 
   handler (argv) {
+    const { ipfs, key, resolve } = argv
     const opts = {
       maxNumProviders: argv['num-providers']
     }
 
-    argv.ipfs.dht.findProvs(argv.key, opts, (err, result) => {
-      if (err) {
-        throw err
-      }
+    resolve((async () => {
+      const provs = await ipfs.dht.findProvs(key, opts)
 
-      result.forEach((element) => {
+      provs.forEach((element) => {
         print(element.id.toB58String())
       })
-    })
+    })())
   }
 }

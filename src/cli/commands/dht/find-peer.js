@@ -9,15 +9,12 @@ module.exports = {
 
   builder: {},
 
-  handler (argv) {
-    argv.ipfs.dht.findPeer(argv.peerID, (err, result) => {
-      if (err) {
-        throw err
-      }
-
-      const addresses = result.multiaddrs.toArray().map((ma) => ma.toString())
+  handler ({ ipfs, peerID, resolve }) {
+    resolve((async () => {
+      const peers = await ipfs.dht.findPeer(peerID)
+      const addresses = peers.multiaddrs.toArray().map((ma) => ma.toString())
 
       print(addresses)
-    })
+    })())
   }
 }

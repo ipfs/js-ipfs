@@ -18,7 +18,15 @@ const ipfsExec = require('../utils/ipfs-exec')
 const daemonOpts = {
   exec: `./src/cli/bin.js`,
   config: {
-    Bootstrap: []
+    Bootstrap: [],
+    Discovery: {
+      MDNS: {
+        Enabled: false
+      },
+      webRTCStar: {
+        Enabled: false
+      }
+    }
   },
   initOptions: { bits: 512 }
 }

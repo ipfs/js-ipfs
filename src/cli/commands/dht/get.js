@@ -9,13 +9,11 @@ module.exports = {
 
   builder: {},
 
-  handler (argv) {
-    argv.ipfs.dht.get(argv.key, (err, result) => {
-      if (err) {
-        throw err
-      }
+  handler ({ ipfs, key, resolve }) {
+    resolve((async () => {
+      const value = await ipfs.dht.get(key)
 
-      print(result)
-    })
+      print(value)
+    })())
   }
 }

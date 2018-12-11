@@ -13,11 +13,11 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.ipfs.dht.provide(argv.key, (err, result) => {
-      if (err) {
-        throw err
-      }
-    })
+  handler ({ ipfs, key, resolve }) {
+    // TODO add recursive option
+
+    resolve((async () => {
+      await ipfs.dht.provide(key)
+    })())
   }
 }

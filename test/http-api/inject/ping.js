@@ -34,7 +34,9 @@ module.exports = (http) => {
       expect(res.statusCode).to.equal(400)
     })
 
-    it('returns 500 for incorrect Peer Id', async () => {
+    it('returns 500 for incorrect Peer Id', async function () {
+      this.timeout(90 * 1000)
+
       const res = await api.inject({
         method: 'GET',
         url: `/api/v0/ping?arg=peerid`

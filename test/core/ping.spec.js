@@ -29,7 +29,7 @@ const config = {
 }
 
 function spawnNode ({ dht = false, type = 'js' }, cb) {
-  const args = dht ? ['--enable-dht-experiment'] : []
+  const args = dht ? [] : ['--local']
   const factory = type === 'js' ? df : dfProc
   factory.spawn({
     args,

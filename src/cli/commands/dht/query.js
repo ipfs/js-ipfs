@@ -9,15 +9,13 @@ module.exports = {
 
   builder: {},
 
-  handler (argv) {
-    argv.ipfs.dht.query(argv.peerID, (err, result) => {
-      if (err) {
-        throw err
-      }
+  handler ({ ipfs, peerID, resolve }) {
+    resolve((async () => {
+      const result = await ipfs.dht.query(peerID)
 
       result.forEach((peerID) => {
         print(peerID.id.toB58String())
       })
-    })
+    })())
   }
 }

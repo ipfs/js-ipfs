@@ -7,11 +7,9 @@ module.exports = {
 
   builder: {},
 
-  handler (argv) {
-    argv.ipfs.dht.put(argv.key, argv.value, (err) => {
-      if (err) {
-        throw err
-      }
-    })
+  handler ({ ipfs, key, value, resolve }) {
+    resolve((async () => {
+      await ipfs.dht.put(key, value)
+    })())
   }
 }
