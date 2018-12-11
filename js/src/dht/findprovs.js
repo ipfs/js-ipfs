@@ -72,7 +72,7 @@ module.exports = (createCommon, options) => {
 
     it('should take options to override timeout config', function (done) {
       const options = {
-        maxTimeout: 1
+        timeout: 1
       }
       waterfall([
         (cb) => fakeCid(cb),

@@ -71,7 +71,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### JavaScript - `ipfs.dht.get(key, [callback])`
 
-Where `key` is a string.
+Where `key` is a Buffer.
 
 `callback` must follow `function (err, value) {}` signature, where `err` is an error if the operation was not successful. `value` is the value that was stored under that key.
 
@@ -115,7 +115,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### JavaScript - `ipfs.dht.put(key, value, [callback])`
 
-Where `key` is a string and `value` can be of any type.
+Where `key` is a Buffer and `value` is a Buffer.
 
 `callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
 
