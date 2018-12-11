@@ -8,18 +8,15 @@ const {
   createMfs
 } = require('./helpers')
 
-describe('flush', function () {
+describe('flush', () => {
   let mfs
 
-  before(() => {
-    return createMfs()
-      .then(instance => {
-        mfs = instance
-      })
+  before(async () => {
+    mfs = await createMfs()
   })
 
-  it('flushes the root node', () => {
-    return mfs.flush()
+  it('flushes the root node', async () => {
+    await mfs.flush()
   })
 
   it('throws a error when trying to flush non-existent directories', async () => {

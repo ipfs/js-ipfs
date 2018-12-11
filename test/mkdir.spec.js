@@ -11,99 +11,104 @@ const {
   createShardedDirectory
 } = require('./helpers')
 
-describe('mkdir', function () {
+describe('mkdir', () => {
   let mfs
 
-  before(() => {
-    return createMfs()
-      .then(instance => {
-        mfs = instance
+  before(async () => {
+    mfs = await createMfs()
+  })
+
+  it('requires a directory', async () => {
+    try {
+      await mfs.mkdir('')
+      throw new Error('No error was thrown when creating an directory with an empty path')
+    } catch (err) {
+      expect(err.message).to.contain('no path given')
+    }
+  })
+
+  it('refuses to create a directory without a leading slash', async () => {
+    try {
+      await mfs.mkdir('foo')
+      throw new Error('No error was thrown when creating an directory with no leading slash')
+    } catch (err) {
+      expect(err.message).to.contain('paths must start with a leading /')
+    }
+  })
+
+  it('refuses to recreate the root directory when -p is false', async () => {
+    try {
+      await mfs.mkdir('/', {
+        parents: false
       })
+      throw new Error('No error was thrown when creating the root directory without -p')
+    } catch (err) {
+      expect(err.message).to.contain("cannot create directory '/'")
+    }
   })
 
-  it('requires a directory', (done) => {
-    mfs.mkdir('', (error) => {
-      expect(error.message).to.contain('no path given')
-
-      done()
-    })
-  })
-
-  it('refuses to create a directory without a leading slash', (done) => {
-    mfs.mkdir('foo', (error) => {
-      expect(error.message).to.contain('paths must start with a leading /')
-
-      done()
-    })
-  })
-
-  it('refuses to recreate the root directory when -p is false', (done) => {
-    mfs.mkdir('/', {
-      parents: false
-    }, (error) => {
-      expect(error.message).to.contain("cannot create directory '/'")
-
-      done()
-    })
-  })
-
-  it('refuses to create a nested directory when -p is false', () => {
-    return mfs.mkdir('/foo/bar/baz', {
-      parents: false
-    })
-      .catch(error => {
-        expect(error.message).to.contain('does not exist')
+  it('refuses to create a nested directory when -p is false', async () => {
+    try {
+      await mfs.mkdir('/foo/bar/baz', {
+        parents: false
       })
+      throw new Error('No error was thrown when creating intermediate directories without -p')
+    } catch (err) {
+      expect(err.message).to.contain('does not exist')
+    }
   })
 
-  it('creates a directory', () => {
+  it('creates a directory', async () => {
     const path = '/foo'
 
-    return mfs.mkdir(path, {})
-      .then(() => mfs.ls(path))
-      .then((files) => {
-        expect(files.length).to.equal(0)
-      })
+    await mfs.mkdir(path, {})
+
+    const stats = await mfs.stat(path)
+    expect(stats.type).to.equal('directory')
+
+    const files = await mfs.ls(path)
+    expect(files.length).to.equal(0)
   })
 
-  it('refuses to create a directory that already exists', () => {
+  it('refuses to create a directory that already exists', async () => {
     const path = '/qux/quux/quuux'
 
-    return mfs.mkdir(path, {
+    await mfs.mkdir(path, {
       parents: true
     })
-      .then(() => mfs.mkdir(path, {
+
+    try {
+      await mfs.mkdir(path, {
         parents: false
-      }))
-      .then(() => {
-        throw new Error('Did not refuse to create a path that already exists')
       })
-      .catch((error) => {
-        expect(error.message).to.contain('file already exists')
-      })
+      throw new Error('Did not refuse to create a path that already exists')
+    } catch (err) {
+      expect(err.message).to.contain('file already exists')
+    }
   })
 
-  it('does not error when creating a directory that already exists and parents is true', () => {
+  it('does not error when creating a directory that already exists and parents is true', async () => {
     const path = '/qux/quux/quuux'
 
-    return mfs.mkdir(path, {
+    await mfs.mkdir(path, {
       parents: true
     })
-      .then(() => mfs.mkdir(path, {
-        parents: true
-      }))
+
+    await mfs.mkdir(path, {
+      parents: true
+    })
   })
 
-  it('creates a nested directory when -p is true', function () {
+  it('creates a nested directory when -p is true', async () => {
     const path = '/foo/bar/baz'
 
-    return mfs.mkdir(path, {
+    await mfs.mkdir(path, {
       parents: true
     })
-      .then(() => mfs.ls(path))
-      .then((files) => {
-        expect(files.length).to.equal(0)
-      })
+
+    const files = await mfs.ls(path)
+
+    expect(files.length).to.equal(0)
   })
 
   it('creates a nested directory with a different CID version to the parent', async () => {

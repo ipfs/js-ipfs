@@ -25,7 +25,7 @@ if (isNode) {
   fs = require('fs')
 }
 
-describe('write', function () {
+describe('write', () => {
   let mfs
   let smallFile = loadFixture(path.join('test', 'fixtures', 'small-file.txt'))
   let largeFile = loadFixture(path.join('test', 'fixtures', 'large-file.jpg'))
@@ -68,81 +68,81 @@ describe('write', function () {
     })
   }
 
-  before(() => {
-    return createMfs()
-      .then(instance => {
-        mfs = instance
-      })
+  before(async () => {
+    mfs = await createMfs()
   })
 
-  it('explodes if it cannot convert content to a pull stream', () => {
-    return mfs.write('/foo', -1, {
-      create: true
-    })
-      .then(() => expect(false).to.equal(true))
-      .catch((error) => {
-        expect(error.message).to.contain('Don\'t know how to convert -1 into a pull stream source')
+  it('explodes if it cannot convert content to a pull stream', async () => {
+    try {
+      await mfs.write('/foo', -1, {
+        create: true
       })
+      throw new Error('Did not fail to convert -1 into a pull stream source')
+    } catch (err) {
+      expect(err.message).to.contain('Don\'t know how to convert -1 into a pull stream source')
+    }
   })
 
-  it('explodes if given an invalid path', () => {
-    return mfs.write('foo', null, {
-      create: true
-    })
-      .then(() => expect(false).to.equal(true))
-      .catch((error) => {
-        expect(error.message).to.contain('paths must start with a leading /')
+  it('explodes if given an invalid path', async () => {
+    try {
+      await mfs.write('foo', null, {
+        create: true
       })
+      throw new Error('Did not object to invalid paths')
+    } catch (err) {
+      expect(err.message).to.contain('paths must start with a leading /')
+    }
   })
 
-  it('explodes if given a negtive offset', () => {
-    return mfs.write('/foo.txt', Buffer.from('foo'), {
-      offset: -1
-    })
-      .then(() => expect(false).to.equal(true))
-      .catch((error) => {
-        expect(error.message).to.contain('cannot have negative write offset')
+  it('explodes if given a negtive offset', async () => {
+    try {
+      await mfs.write('/foo.txt', Buffer.from('foo'), {
+        offset: -1
       })
+      throw new Error('Did not object to negative write offset')
+    } catch (err) {
+      expect(err.message).to.contain('cannot have negative write offset')
+    }
   })
 
-  it('explodes if given a negative length', () => {
-    return mfs.write('/foo.txt', Buffer.from('foo'), {
-      length: -1
-    })
-      .then(() => expect(false).to.equal(true))
-      .catch((error) => {
-        expect(error.message).to.contain('cannot have negative byte count')
+  it('explodes if given a negative length', async () => {
+    try {
+      await mfs.write('/foo.txt', Buffer.from('foo'), {
+        length: -1
       })
+      throw new Error('Did not object to negative byte count')
+    } catch (err) {
+      expect(err.message).to.contain('cannot have negative byte count')
+    }
   })
 
-  it('creates a zero length file when passed a zero length', () => {
-    return mfs.write('/foo.txt', Buffer.from('foo'), {
+  it('creates a zero length file when passed a zero length', async () => {
+    await mfs.write('/foo.txt', Buffer.from('foo'), {
       length: 0,
       create: true
     })
-      .then(() => mfs.ls('/', {
-        long: true
-      }))
-      .then((files) => {
-        expect(files.length).to.equal(1)
-        expect(files[0].name).to.equal('foo.txt')
-        expect(files[0].size).to.equal(0)
-      })
+
+    const files = await mfs.ls('/', {
+      long: true
+    })
+
+    expect(files.length).to.equal(1)
+    expect(files[0].name).to.equal('foo.txt')
+    expect(files[0].size).to.equal(0)
   })
 
-  it('writes a small file using a buffer', () => {
+  it('writes a small file using a buffer', async () => {
     const filePath = `/small-file-${Math.random()}.txt`
 
-    return mfs.write(filePath, smallFile, {
+    await mfs.write(filePath, smallFile, {
       create: true
     })
-      .then(() => mfs.stat(filePath))
-      .then((stats) => {
-        expect(stats.size).to.equal(smallFile.length)
-      })
+    const stats = await mfs.stat(filePath)
+
+    expect(stats.size).to.equal(smallFile.length)
   })
 
-  it('writes a small file using a path (Node only)', function () {
+  it('writes a small file using a path (Node only)', async function () {
     if (!isNode) {
       return this.skip()
     }
@@ -150,16 +150,16 @@ describe('write', function () {
     const filePath = `/small-file-${Math.random()}.txt`
     const pathToFile = path.resolve(path.join(__dirname, 'fixtures', 'small-file.txt'))
 
-    return mfs.write(filePath, pathToFile, {
+    await mfs.write(filePath, pathToFile, {
       create: true
     })
-      .then(() => mfs.stat(filePath))
-      .then((stats) => {
-        expect(stats.size).to.equal(smallFile.length)
-      })
+
+    const stats = await mfs.stat(filePath)
+
+    expect(stats.size).to.equal(smallFile.length)
   })
 
-  it('writes part of a small file using a path (Node only)', function () {
+  it('writes part of a small file using a path (Node only)', async function () {
     if (!isNode) {
       return this.skip()
     }
@@ -167,17 +167,17 @@ describe('write', function () {
     const filePath = `/small-file-${Math.random()}.txt`
     const pathToFile = path.resolve(path.join(__dirname, 'fixtures', 'small-file.txt'))
 
-    return mfs.write(filePath, pathToFile, {
+    await mfs.write(filePath, pathToFile, {
       create: true,
       length: 2
     })
-      .then(() => mfs.stat(filePath))
-      .then((stats) => {
-        expect(stats.size).to.equal(2)
-      })
+
+    const stats = await mfs.stat(filePath)
+
+    expect(stats.size).to.equal(2)
   })
 
-  it('writes a small file using a Node stream (Node only)', function () {
+  it('writes a small file using a Node stream (Node only)', async function () {
     if (!isNode) {
       return this.skip()
     }
@@ -186,28 +186,28 @@ describe('write', function () {
     const pathToFile = path.resolve(path.join(__dirname, 'fixtures', 'small-file.txt'))
     const stream = fs.createReadStream(pathToFile)
 
-    return mfs.write(filePath, stream, {
+    await mfs.write(filePath, stream, {
       create: true
     })
-      .then(() => mfs.stat(filePath))
-      .then((stats) => {
-        expect(stats.size).to.equal(smallFile.length)
-      })
+
+    const stats = await mfs.stat(filePath)
+
+    expect(stats.size).to.equal(smallFile.length)
   })
 
-  it('writes a small file using a pull stream source', function () {
+  it('writes a small file using a pull stream source', async function () {
     const filePath = `/small-file-${Math.random()}.txt`
 
-    return mfs.write(filePath, values([smallFile]), {
+    await mfs.write(filePath, values([smallFile]), {
       create: true
     })
-      .then(() => mfs.stat(filePath))
-      .then((stats) => {
-        expect(stats.size).to.equal(smallFile.length)
-      })
+
+    const stats = await mfs.stat(filePath)
+
+    expect(stats.size).to.equal(smallFile.length)
   })
 
-  it('writes a small file using an HTML5 Blob (Browser only)', function () {
+  it('writes a small file using an HTML5 Blob (Browser only)', async function () {
     if (!global.Blob) {
       return this.skip()
     }
@@ -215,13 +215,13 @@ describe('write', function () {
     const filePath = `/small-file-${Math.random()}.txt`
     const blob = new global.Blob([smallFile.buffer.slice(smallFile.byteOffset, smallFile.byteOffset + smallFile.byteLength)])
 
-    return mfs.write(filePath, blob, {
+    await mfs.write(filePath, blob, {
       create: true
     })
-      .then(() => mfs.stat(filePath))
-      .then((stats) => {
-        expect(stats.size).to.equal(smallFile.length)
-      })
+
+    const stats = await mfs.stat(filePath)
+
+    expect(stats.size).to.equal(smallFile.length)
   })
 
   it('writes a small file with an escaped slash in the title', async () => {
@@ -238,48 +238,46 @@ describe('write', function () {
     try {
       await mfs.stat('/small-\\')
       throw new Error('Created path section before escape as directory')
-    } catch (error) {
-      expect(error.message).to.include('does not exist')
+    } catch (err) {
+      expect(err.message).to.include('does not exist')
     }
   })
 
-  it('writes a deeply nested small file', () => {
+  it('writes a deeply nested small file', async () => {
     const filePath = '/foo/bar/baz/qux/quux/garply/small-file.txt'
 
-    return mfs.write(filePath, smallFile, {
+    await mfs.write(filePath, smallFile, {
       create: true,
       parents: true
     })
-      .then(() => mfs.stat(filePath))
-      .then((stats) => {
-        expect(stats.size).to.equal(smallFile.length)
-      })
+
+    const stats = await mfs.stat(filePath)
+
+    expect(stats.size).to.equal(smallFile.length)
   })
 
-  it('refuses to write to a file in a folder that does not exist', () => {
+  it('refuses to write to a file in a folder that does not exist', async () => {
     const filePath = `/${Math.random()}/small-file.txt`
 
-    return mfs.write(filePath, smallFile, {
-      create: true
-    })
-      .then(() => {
-        throw new Error('Writing a file to a non-existent folder without the --parents flag should have failed')
+    try {
+      await mfs.write(filePath, smallFile, {
+        create: true
       })
-      .catch((error) => {
-        expect(error.message).to.contain('does not exist')
-      })
+      throw new Error('Writing a file to a non-existent folder without the --parents flag should have failed')
+    } catch (err) {
+      expect(err.message).to.contain('does not exist')
+    }
   })
 
-  it('refuses to write to a file that does not exist', () => {
+  it('refuses to write to a file that does not exist', async () => {
     const filePath = `/small-file-${Math.random()}.txt`
 
-    return mfs.write(filePath, smallFile)
-      .then(() => {
-        throw new Error('Writing a file to a non-existent file without the --create flag should have failed')
-      })
-      .catch((error) => {
-        expect(error.message).to.contain('file does not exist')
-      })
+    try {
+      await mfs.write(filePath, smallFile)
+      throw new Error('Writing a file to a non-existent file without the --create flag should have failed')
+    } catch (err) {
+      expect(err.message).to.contain('file does not exist')
+    }
   })
 
   it('refuses to write to a path that has a file in it', async () => {
@@ -295,178 +293,184 @@ describe('write', function () {
       })
 
       throw new Error('Writing a path with a file in it should have failed')
-    } catch (error) {
-      expect(error.message).to.contain('Not a directory')
+    } catch (err) {
+      expect(err.message).to.contain('Not a directory')
     }
   })
 
   runTest(({ type, path, content }) => {
-    it(`limits how many bytes to write to a file (${type})`, () => {
-      return mfs.write(path, content, {
+    it(`limits how many bytes to write to a file (${type})`, async () => {
+      await mfs.write(path, content, {
         create: true,
         parents: true,
         length: 2
       })
-        .then(() => mfs.read(path))
-        .then((buffer) => {
-          expect(buffer.length).to.equal(2)
-        })
+
+      const buffer = await mfs.read(path)
+      expect(buffer.length).to.equal(2)
     })
   })
 
   runTest(({ type, path, content, contentSize }) => {
-    it(`overwrites start of a file without truncating (${type})`, () => {
+    it(`overwrites start of a file without truncating (${type})`, async () => {
       const newContent = Buffer.from('Goodbye world')
 
-      return mfs.write(path, content, {
+      await mfs.write(path, content, {
         create: true
       })
-        .then(() => mfs.write(path, newContent))
-        .then(() => mfs.stat(path))
-        .then((stats) => expect(stats.size).to.equal(contentSize))
-        .then(() => mfs.read(path, {
-          offset: 0,
-          length: newContent.length
-        }))
-        .then((buffer) => expect(buffer).to.deep.equal(newContent))
+      await mfs.write(path, newContent)
+
+      const stats = await mfs.stat(path)
+      expect(stats.size).to.equal(contentSize)
+
+      const buffer = await mfs.read(path, {
+        offset: 0,
+        length: newContent.length
+      })
+      expect(buffer).to.deep.equal(newContent)
     })
   })
 
   runTest(({ type, path, content, contentSize }) => {
-    it(`pads the start of a new file when an offset is specified (${type})`, () => {
+    it(`pads the start of a new file when an offset is specified (${type})`, async () => {
       const offset = 10
 
-      return mfs.write(path, content, {
+      await mfs.write(path, content, {
         offset,
         create: true
       })
-        .then(() => mfs.stat(path))
-        .then((stats) => {
-          expect(stats.size).to.equal(offset + contentSize)
-        })
-        .then(() => mfs.read(path, {
-          offset: 0,
-          length: offset
-        }))
-        .then((buffer) => {
-          expect(buffer).to.deep.equal(Buffer.alloc(offset, 0))
-        })
+
+      const stats = await mfs.stat(path)
+      expect(stats.size).to.equal(offset + contentSize)
+
+      const buffer = await mfs.read(path, {
+        offset: 0,
+        length: offset
+      })
+      expect(buffer).to.deep.equal(Buffer.alloc(offset, 0))
     })
   })
 
   runTest(({ type, path, content, contentSize }) => {
-    it(`expands a file when an offset is specified (${type})`, () => {
+    it(`expands a file when an offset is specified (${type})`, async () => {
       const offset = contentSize - 1
       const newContent = Buffer.from('Oh hai!')
 
-      return mfs.write(path, content, {
+      await mfs.write(path, content, {
         create: true
       })
-        .then(() => mfs.write(path, newContent, {
-          offset
-        }))
-        .then(() => mfs.stat(path))
-        .then((stats) => expect(stats.size).to.equal(contentSize + newContent.length - 1))
-        .then(() => mfs.read(path, {
-          offset
-        }))
-        .then((buffer) => expect(buffer).to.deep.equal(newContent))
+
+      await mfs.write(path, newContent, {
+        offset
+      })
+
+      const stats = await mfs.stat(path)
+      expect(stats.size).to.equal(contentSize + newContent.length - 1)
+
+      const buffer = await mfs.read(path, {
+        offset
+      })
+      expect(buffer).to.deep.equal(newContent)
     })
   })
 
   runTest(({ type, path, content, contentSize }) => {
-    it(`expands a file when an offset is specified and the offset is longer than the file (${type})`, () => {
+    it(`expands a file when an offset is specified and the offset is longer than the file (${type})`, async () => {
       const offset = contentSize + 5
       const newContent = Buffer.from('Oh hai!')
 
-      return mfs.write(path, content, {
+      await mfs.write(path, content, {
         create: true
       })
-        .then(() => mfs.write(path, newContent, {
-          offset
-        }))
-        .then(() => mfs.stat(path))
-        .then((stats) => expect(stats.size).to.equal(newContent.length + offset))
-        .then(() => mfs.read(path, {
-          offset: offset - 5
-        }))
-        .then((buffer) => {
-          expect(buffer).to.deep.equal(Buffer.concat([Buffer.from([0, 0, 0, 0, 0]), newContent]))
-        })
+      await mfs.write(path, newContent, {
+        offset
+      })
+
+      const stats = await mfs.stat(path)
+      expect(stats.size).to.equal(newContent.length + offset)
+
+      const buffer = await mfs.read(path, {
+        offset: offset - 5
+      })
+      expect(buffer).to.deep.equal(Buffer.concat([Buffer.from([0, 0, 0, 0, 0]), newContent]))
     })
   })
 
   runTest(({ type, path, content }) => {
-    it(`truncates a file after writing (${type})`, () => {
+    it(`truncates a file after writing (${type})`, async () => {
       const newContent = Buffer.from('Oh hai!')
 
-      return mfs.write(path, content, {
+      await mfs.write(path, content, {
         create: true
       })
-        .then(() => mfs.write(path, newContent, {
-          truncate: true
-        }))
-        .then(() => mfs.stat(path))
-        .then((stats) => expect(stats.size).to.equal(newContent.length))
-        .then(() => mfs.read(path))
-        .then((buffer) => expect(buffer).to.deep.equal(newContent))
+      await mfs.write(path, newContent, {
+        truncate: true
+      })
+
+      const stats = await mfs.stat(path)
+      expect(stats.size).to.equal(newContent.length)
+
+      const buffer = await mfs.read(path)
+      expect(buffer).to.deep.equal(newContent)
     })
   })
 
   runTest(({ type, path, content }) => {
-    it(`truncates a file after writing with a stream (${type})`, () => {
+    it(`truncates a file after writing with a stream (${type})`, async () => {
       const newContent = Buffer.from('Oh hai!')
       const stream = values([newContent])
 
-      return mfs.write(path, content, {
+      await mfs.write(path, content, {
         create: true
       })
-        .then(() => mfs.write(path, stream, {
-          truncate: true
-        }))
-        .then(() => mfs.stat(path))
-        .then((stats) => expect(stats.size).to.equal(newContent.length))
-        .then(() => mfs.read(path))
-        .then((buffer) => expect(buffer).to.deep.equal(newContent))
+      await mfs.write(path, stream, {
+        truncate: true
+      })
+
+      const stats = await mfs.stat(path)
+      expect(stats.size).to.equal(newContent.length)
+
+      const buffer = await mfs.read(path)
+      expect(buffer).to.deep.equal(newContent)
     })
   })
 
   runTest(({ type, path, content }) => {
-    it(`truncates a file after writing with a stream with an offset (${type})`, () => {
+    it(`truncates a file after writing with a stream with an offset (${type})`, async () => {
       const offset = 100
       const newContent = Buffer.from('Oh hai!')
       const stream = values([newContent])
 
-      return mfs.write(path, content, {
+      await mfs.write(path, content, {
         create: true
       })
-        .then(() => mfs.write(path, stream, {
-          truncate: true,
-          offset
-        }))
-        .then(() => mfs.stat(path))
-        .then((stats) => expect(stats.size).to.equal(offset + newContent.length))
+      await mfs.write(path, stream, {
+        truncate: true,
+        offset
+      })
+
+      const stats = await mfs.stat(path)
+      expect(stats.size).to.equal(offset + newContent.length)
     })
   })
 
   runTest(({ type, path, content }) => {
-    it(`writes a file with raw blocks for newly created leaf nodes (${type})`, () => {
-      return mfs.write(path, content, {
+    it(`writes a file with raw blocks for newly created leaf nodes (${type})`, async () => {
+      await mfs.write(path, content, {
         create: true,
         rawLeaves: true
       })
-        .then(() => mfs.stat(path))
-        .then((stats) => collectLeafCids(mfs, stats.hash))
-        .then((cids) => {
-          const rawNodes = cids
-            .filter(cid => cid.codec === 'raw')
 
-          expect(rawNodes).to.not.be.empty()
-        })
+      const stats = await mfs.stat(path)
+      const cids = await collectLeafCids(mfs, stats.hash)
+      const rawNodes = cids
+        .filter(cid => cid.codec === 'raw')
+
+      expect(rawNodes).to.not.be.empty()
     })
   })
 
-  it('supports concurrent writes', function () {
+  it('supports concurrent writes', async function () {
     const files = []
 
     for (let i = 0; i < 10; i++) {
@@ -476,23 +480,22 @@ describe('write', function () {
       })
     }
 
-    return Promise.all(
+    await Promise.all(
       files.map(({ name, source }) => mfs.write(`/concurrent/${name}`, source, {
         create: true,
         parents: true
       }))
     )
-      .then(() => mfs.ls('/concurrent'))
-      .then(listing => {
-        expect(listing.length).to.equal(files.length)
 
-        listing.forEach(listedFile => {
-          expect(files.find(file => file.name === listedFile.name))
-        })
-      })
+    const listing = await mfs.ls('/concurrent')
+    expect(listing.length).to.equal(files.length)
+
+    listing.forEach(listedFile => {
+      expect(files.find(file => file.name === listedFile.name))
+    })
   })
 
-  it('rewrites really big files', function () {
+  it('rewrites really big files', async function () {
     let expectedBytes = Buffer.alloc(0)
     let originalBytes = Buffer.alloc(0)
     const initialStream = bufferStream(1024 * 300, {
@@ -508,27 +511,28 @@ describe('write', function () {
 
     const fileName = `/rewrite/file-${Math.random()}.txt`
 
-    return mfs.write(fileName, initialStream, {
+    await mfs.write(fileName, initialStream, {
       create: true,
       parents: true
     })
-      .then(() => mfs.write(fileName, newDataStream, {
-        offset: 0
-      }))
-      .then(() => mfs.read(fileName))
-      .then(actualBytes => {
-        for (var i = 0; i < expectedBytes.length; i++) {
-          if (expectedBytes[i] !== actualBytes[i]) {
-            if (originalBytes[i] === actualBytes[i]) {
-              throw new Error(`Bytes at index ${i} were not overwritten - expected ${expectedBytes[i]} actual ${originalBytes[i]}`)
-            }
 
-            throw new Error(`Bytes at index ${i} not equal - expected ${expectedBytes[i]} actual ${actualBytes[i]}`)
-          }
+    await mfs.write(fileName, newDataStream, {
+      offset: 0
+    })
+
+    const actualBytes = await mfs.read(fileName)
+
+    for (var i = 0; i < expectedBytes.length; i++) {
+      if (expectedBytes[i] !== actualBytes[i]) {
+        if (originalBytes[i] === actualBytes[i]) {
+          throw new Error(`Bytes at index ${i} were not overwritten - expected ${expectedBytes[i]} actual ${originalBytes[i]}`)
         }
 
-        expect(actualBytes).to.deep.equal(expectedBytes)
-      })
+        throw new Error(`Bytes at index ${i} not equal - expected ${expectedBytes[i]} actual ${actualBytes[i]}`)
+      }
+    }
+
+    expect(actualBytes).to.deep.equal(expectedBytes)
   })
 
   it('shards a large directory when writing too many links to it', async () => {

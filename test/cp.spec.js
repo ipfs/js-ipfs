@@ -10,158 +10,147 @@ const {
   createShardedDirectory
 } = require('./helpers')
 
-describe('cp', function () {
+describe('cp', () => {
   let mfs
 
-  before(() => {
-    return createMfs()
-      .then(instance => {
-        mfs = instance
-      })
+  before(async () => {
+    mfs = await createMfs()
   })
 
-  it('refuses to copy files without arguments', () => {
-    return mfs.cp()
-      .then(() => {
-        throw new Error('No error was thrown for missing files')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('Please supply at least one source')
-      })
+  it('refuses to copy files without arguments', async () => {
+    try {
+      await mfs.cp()
+      throw new Error('No error was thrown for missing files')
+    } catch (err) {
+      expect(err.message).to.contain('Please supply at least one source')
+    }
   })
 
-  it('refuses to copy files without files', () => {
-    return mfs.cp('/destination')
-      .then(() => {
-        throw new Error('No error was thrown for missing files')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('Please supply at least one source')
-      })
+  it('refuses to copy files without files', async () => {
+    try {
+      await mfs.cp('/destination')
+      throw new Error('No error was thrown for missing files')
+    } catch (err) {
+      expect(err.message).to.contain('Please supply at least one source')
+    }
   })
 
-  it('refuses to copy files without files even with options', () => {
-    return mfs.cp('/destination', {})
-      .then(() => {
-        throw new Error('No error was thrown for missing files')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('Please supply at least one source')
-      })
+  it('refuses to copy files without files even with options', async () => {
+    try {
+      await mfs.cp('/destination', {})
+      throw new Error('No error was thrown for missing files')
+    } catch (err) {
+      expect(err.message).to.contain('Please supply at least one source')
+    }
   })
 
-  it('refuses to copy a file to a non-existent directory', () => {
-    return mfs.cp('/i-do-not-exist', '/output')
-      .then(() => {
-        throw new Error('No error was thrown for a non-existent file')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('does not exist')
-      })
+  it('refuses to copy a file to a non-existent directory', async () => {
+    try {
+      await mfs.cp('/i-do-not-exist', '/output')
+      throw new Error('No error was thrown for a non-existent file')
+    } catch (err) {
+      expect(err.message).to.contain('does not exist')
+    }
   })
 
-  it('refuses to copy files to an exsting file', () => {
+  it('refuses to copy files to an exsting file', async () => {
     const source = `/source-file-${Math.random()}.txt`
     const destination = `/dest-file-${Math.random()}.txt`
 
-    return mfs.write(source, bufferStream(100), {
+    await mfs.write(source, bufferStream(100), {
       create: true
     })
-      .then(() => mfs.write(destination, bufferStream(100), {
-        create: true
-      }))
-      .then(() => mfs.cp(source, destination))
-      .then(() => {
-        throw new Error('No error was thrown for a non-existent file')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('directory already has entry by that name')
-      })
+    await mfs.write(destination, bufferStream(100), {
+      create: true
+    })
+
+    try {
+      await mfs.cp(source, destination)
+      throw new Error('No error was thrown for a non-existent file')
+    } catch (err) {
+      expect(err.message).to.contain('directory already has entry by that name')
+    }
   })
 
-  it('refuses to copy a file to itself', () => {
+  it('refuses to copy a file to itself', async () => {
     const source = `/source-file-${Math.random()}.txt`
 
-    return mfs.write(source, bufferStream(100), {
+    await mfs.write(source, bufferStream(100), {
       create: true
     })
-      .then(() => mfs.cp(source, source))
-      .then(() => {
-        throw new Error('No error was thrown for a non-existent file')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('directory already has entry by that name')
-      })
+
+    try {
+      await mfs.cp(source, source)
+      throw new Error('No error was thrown for a non-existent file')
+    } catch (err) {
+      expect(err.message).to.contain('directory already has entry by that name')
+    }
   })
 
-  it('copies a file to new location', () => {
+  it('copies a file to new location', async () => {
     const source = `/source-file-${Math.random()}.txt`
     const destination = `/dest-file-${Math.random()}.txt`
     let data = Buffer.alloc(0)
 
-    return mfs.write(source, bufferStream(500, {
+    await mfs.write(source, bufferStream(500, {
       collector: (bytes) => {
         data = Buffer.concat([data, bytes])
       }
     }), {
       create: true
     })
-      .then(() => mfs.cp(source, destination))
-      .then(() => mfs.read(destination))
-      .then((buffer) => {
-        expect(buffer).to.deep.equal(data)
-      })
+
+    await mfs.cp(source, destination)
+    const buffer = await mfs.read(destination)
+
+    expect(buffer).to.deep.equal(data)
   })
 
-  it('copies a file to a pre-existing directory', () => {
+  it('copies a file to a pre-existing directory', async () => {
     const source = `/source-file-${Math.random()}.txt`
     const directory = `/dest-directory-${Math.random()}`
     const destination = `${directory}${source}`
 
-    return mfs.write(source, bufferStream(500), {
+    await mfs.write(source, bufferStream(500), {
       create: true
     })
-      .then(() => mfs.mkdir(directory))
-      .then(() => mfs.cp(source, directory))
-      .then(() => mfs.stat(destination))
-      .then((stats) => {
-        expect(stats.size).to.equal(500)
-      })
+    await mfs.mkdir(directory)
+    await mfs.cp(source, directory)
+
+    const stats = await mfs.stat(destination)
+    expect(stats.size).to.equal(500)
   })
 
-  it('copies directories', () => {
+  it('copies directories', async () => {
     const source = `/source-directory-${Math.random()}`
     const destination = `/dest-directory-${Math.random()}`
 
-    return mfs.mkdir(source)
-      .then(() => mfs.cp(source, destination))
-      .then(() => mfs.stat(destination))
-      .then((stats) => {
-        expect(stats.type).to.equal('directory')
-      })
+    await mfs.mkdir(source)
+    await mfs.cp(source, destination)
+
+    const stats = await mfs.stat(destination)
+    expect(stats.type).to.equal('directory')
   })
 
-  it('copies directories recursively', () => {
+  it('copies directories recursively', async () => {
     const directory = `/source-directory-${Math.random()}`
     const subDirectory = `/source-directory-${Math.random()}`
     const source = `${directory}${subDirectory}`
     const destination = `/dest-directory-${Math.random()}`
 
-    return mfs.mkdir(source, {
+    await mfs.mkdir(source, {
       parents: true
     })
-      .then(() => mfs.cp(directory, destination))
-      .then(() => mfs.stat(destination))
-      .then((stats) => {
-        expect(stats.type).to.equal('directory')
-      })
-      .then(() => mfs.stat(`${destination}/${subDirectory}`))
-      .then((stats) => {
-        expect(stats.type).to.equal('directory')
-      })
+    await mfs.cp(directory, destination)
+
+    const stats = await mfs.stat(destination)
+    expect(stats.type).to.equal('directory')
+
+    const subDirStats = await mfs.stat(`${destination}/${subDirectory}`)
+    expect(subDirStats.type).to.equal('directory')
   })
 
-  it('copies multiple files to new location', () => {
+  it('copies multiple files to new location', async () => {
     const sources = [{
       path: `/source-file-${Math.random()}.txt`,
       data: Buffer.alloc(0)
@@ -171,42 +160,40 @@ describe('cp', function () {
     }]
     const destination = `/dest-dir-${Math.random()}`
 
-    return Promise.all(
-      sources.map(source => mfs.write(source.path, bufferStream(500, {
+    for (const source of sources) {
+      await mfs.write(source.path, bufferStream(500, {
         collector: (bytes) => {
           source.data = Buffer.concat([source.data, bytes])
         }
       }), {
         create: true
-      }))
-    )
-      .then(() => mfs.cp(sources[0].path, sources[1].path, destination, {
-        parents: true
-      }))
-      .then(() => Promise.all(
-        sources.map((source, index) => mfs.read(`${destination}${source.path}`)
-          .then((buffer) => {
-            expect(buffer).to.deep.equal(sources[index].data)
-          })
-        )
-      ))
+      })
+    }
+
+    await mfs.cp(sources[0].path, sources[1].path, destination, {
+      parents: true
+    })
+
+    for (const source of sources) {
+      const buffer = await mfs.read(`${destination}${source.path}`)
+
+      expect(buffer).to.deep.equal(source.data)
+    }
   })
 
-  it('copies files from ipfs paths', () => {
+  it('copies files from ipfs paths', async () => {
     const source = `/source-file-${Math.random()}.txt`
     const destination = `/dest-file-${Math.random()}.txt`
 
-    return mfs.write(source, bufferStream(100), {
+    await mfs.write(source, bufferStream(100), {
       create: true
     })
-      .then(() => mfs.stat(source))
-      .then((stats) => {
-        return mfs.cp(`/ipfs/${stats.hash}`, destination)
-      })
-      .then(() => mfs.stat(destination))
-      .then((stats) => {
-        expect(stats.size).to.equal(100)
-      })
+
+    const stats = await mfs.stat(source)
+    await mfs.cp(`/ipfs/${stats.hash}`, destination)
+
+    const destinationStats = await mfs.stat(destination)
+    expect(destinationStats.size).to.equal(100)
   })
 
   it('copies a sharded directory to a normal directory', async () => {

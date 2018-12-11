@@ -15,176 +15,172 @@ const {
   FILE_SEPARATOR
 } = require('../src/core/utils')
 
-describe('rm', function () {
+describe('rm', () => {
   let mfs
 
-  before(() => {
-    return createMfs()
-      .then(instance => {
-        mfs = instance
-      })
+  before(async () => {
+    mfs = await createMfs()
   })
 
-  it('refuses to remove files without arguments', () => {
-    return mfs.rm()
-      .then(() => {
-        throw new Error('No error was thrown for missing paths')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('Please supply at least one path to remove')
-      })
+  it('refuses to remove files without arguments', async () => {
+    try {
+      await mfs.rm()
+      throw new Error('No error was thrown for missing paths')
+    } catch (err) {
+      expect(err.message).to.contain('Please supply at least one path to remove')
+    }
   })
 
-  it('refuses to remove the root path', () => {
-    return mfs.rm(FILE_SEPARATOR)
-      .then(() => {
-        throw new Error('No error was thrown for missing paths')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('Cannot delete root')
-      })
+  it('refuses to remove the root path', async () => {
+    try {
+      await mfs.rm(FILE_SEPARATOR)
+      throw new Error('No error was thrown for missing paths')
+    } catch (err) {
+      expect(err.message).to.contain('Cannot delete root')
+    }
   })
 
-  it('refuses to remove a directory without the recursive flag', () => {
+  it('refuses to remove a directory without the recursive flag', async () => {
     const path = `/directory-${Math.random()}`
 
-    return mfs.mkdir(path)
-      .then(() => mfs.rm(path))
-      .then(() => {
-        throw new Error('No error was thrown for missing recursive flag')
-      })
-      .catch(error => {
-        expect(error.message).to.contain(`${path} is a directory, use -r to remove directories`)
-      })
+    await mfs.mkdir(path)
+
+    try {
+      await mfs.rm(path)
+      throw new Error('No error was thrown for missing recursive flag')
+    } catch (err) {
+      expect(err.message).to.contain(`${path} is a directory, use -r to remove directories`)
+    }
   })
 
   it('refuses to remove a non-existent file', async () => {
     try {
       await mfs.rm(`/file-${Math.random()}`)
       throw new Error('No error was thrown for non-existent file')
-    } catch (error) {
-      expect(error.message).to.contain('does not exist')
+    } catch (err) {
+      expect(err.message).to.contain('does not exist')
     }
   })
 
-  it('removes a file', () => {
+  it('removes a file', async () => {
     const file = `/some-file-${Math.random()}.txt`
 
-    return mfs.write(file, bufferStream(100), {
+    await mfs.write(file, bufferStream(100), {
       create: true,
       parents: true
     })
-      .then(() => mfs.rm(file, {
-        recursive: true
-      }))
-      .then(() => mfs.stat(file))
-      .then(() => {
-        throw new Error('File was not removed')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('does not exist')
-      })
+
+    await mfs.rm(file, {
+      recursive: true
+    })
+
+    try {
+      await mfs.stat(file)
+      throw new Error('File was not removed')
+    } catch (err) {
+      expect(err.message).to.contain('does not exist')
+    }
   })
 
-  it('removes multiple files', () => {
+  it('removes multiple files', async () => {
     const file1 = `/some-file-${Math.random()}.txt`
     const file2 = `/some-file-${Math.random()}.txt`
 
-    return mfs.write(file1, bufferStream(100), {
+    await mfs.write(file1, bufferStream(100), {
       create: true,
       parents: true
     })
-      .then(() => mfs.write(file2, bufferStream(100), {
-        create: true,
-        parents: true
-      }))
-      .then(() => mfs.rm(file1, file2, {
-        recursive: true
-      }))
-      .then(() => mfs.stat(file1))
-      .then(() => {
-        throw new Error('File #1 was not removed')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('does not exist')
-      })
-      .then(() => mfs.stat(file2))
-      .then(() => {
-        throw new Error('File #2 was not removed')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('does not exist')
-      })
+    await mfs.write(file2, bufferStream(100), {
+      create: true,
+      parents: true
+    })
+    await mfs.rm(file1, file2, {
+      recursive: true
+    })
+
+    try {
+      await mfs.stat(file1)
+      throw new Error('File #1 was not removed')
+    } catch (err) {
+      expect(err.message).to.contain('does not exist')
+    }
+
+    try {
+      await mfs.stat(file2)
+      throw new Error('File #2 was not removed')
+    } catch (err) {
+      expect(err.message).to.contain('does not exist')
+    }
   })
 
-  it('removes a directory', () => {
+  it('removes a directory', async () => {
     const directory = `/directory-${Math.random()}`
 
-    return mfs.mkdir(directory)
-      .then(() => mfs.rm(directory, {
-        recursive: true
-      }))
-      .then(() => mfs.stat(directory))
-      .then(() => {
-        throw new Error('Directory was not removed')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('does not exist')
-      })
+    await mfs.mkdir(directory)
+    await mfs.rm(directory, {
+      recursive: true
+    })
+
+    try {
+      await mfs.stat(directory)
+      throw new Error('Directory was not removed')
+    } catch (err) {
+      expect(err.message).to.contain('does not exist')
+    }
   })
 
-  it('recursively removes a directory', () => {
+  it('recursively removes a directory', async () => {
     const directory = `/directory-${Math.random()}`
     const subdirectory = `/directory-${Math.random()}`
     const path = `${directory}${subdirectory}`
 
-    return mfs.mkdir(path, {
+    await mfs.mkdir(path, {
       parents: true
     })
-      .then(() => mfs.rm(directory, {
-        recursive: true
-      }))
-      .then(() => mfs.ls(subdirectory))
-      .then(() => {
-        throw new Error('File was not removed')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('does not exist')
-      })
-      .then(() => mfs.ls(directory))
-      .then(() => {
-        throw new Error('Directory was not removed')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('does not exist')
-      })
+    await mfs.rm(directory, {
+      recursive: true
+    })
+
+    try {
+      await mfs.ls(subdirectory)
+      throw new Error('File was not removed')
+    } catch (err) {
+      expect(err.message).to.contain('does not exist')
+    }
+
+    try {
+      await mfs.ls(directory)
+      throw new Error('Directory was not removed')
+    } catch (err) {
+      expect(err.message).to.contain('does not exist')
+    }
   })
 
-  it('recursively removes a directory with files in', () => {
+  it('recursively removes a directory with files in', async () => {
     const directory = `directory-${Math.random()}`
     const file = `/${directory}/some-file-${Math.random()}.txt`
 
-    return mfs.write(file, bufferStream(100), {
+    await mfs.write(file, bufferStream(100), {
       create: true,
       parents: true
     })
-      .then(() => mfs.rm(`/${directory}`, {
-        recursive: true
-      }))
-      .then(() => mfs.stat(file))
-      .then(() => {
-        throw new Error('File was not removed')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('does not exist')
-      })
-      .then(() => mfs.stat(`/${directory}`))
-      .then(() => {
-        throw new Error('Directory was not removed')
-      })
-      .catch(error => {
-        expect(error.message).to.contain('does not exist')
-      })
+    await mfs.rm(`/${directory}`, {
+      recursive: true
+    })
+
+    try {
+      await mfs.stat(file)
+      throw new Error('File was not removed')
+    } catch (err) {
+      expect(err.message).to.contain('does not exist')
+    }
+
+    try {
+      await mfs.stat(`/${directory}`)
+      throw new Error('Directory was not removed')
+    } catch (err) {
+      expect(err.message).to.contain('does not exist')
+    }
   })
 
   it('recursively removes a sharded directory inside a normal directory', async () => {
