@@ -2,7 +2,6 @@
 'use strict'
 
 const multihashing = require('multihashing-async')
-const Crypto = require('crypto')
 const waterfall = require('async/waterfall')
 const CID = require('cids')
 const { spawnNodesWithId } = require('../utils/spawn')
@@ -10,7 +9,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { connect } = require('../utils/swarm')
 
 function fakeCid (cb) {
-  const bytes = Crypto.randomBytes(Math.round(Math.random() * 1000))
+  const bytes = Buffer.from(`TEST${Date.now()}`)
   multihashing(bytes, 'sha2-256', (err, mh) => {
     if (err) {
       cb(err)

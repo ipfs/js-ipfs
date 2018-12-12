@@ -76,6 +76,44 @@ module.exports = (createCommon, options) => {
       })
     })
 
+    it('should cat a file added as CIDv0 with a CIDv1', done => {
+      const input = Buffer.from(`TEST${Date.now()}`)
+
+      ipfs.add(input, { cidVersion: 0 }, (err, res) => {
+        expect(err).to.not.exist()
+
+        const cidv0 = new CID(res[0].hash)
+        expect(cidv0.version).to.equal(0)
+
+        const cidv1 = cidv0.toV1()
+
+        ipfs.cat(cidv1, (err, output) => {
+          expect(err).to.not.exist()
+          expect(output).to.eql(input)
+          done()
+        })
+      })
+    })
+
+    it('should cat a file added as CIDv1 with a CIDv0', done => {
+      const input = Buffer.from(`TEST${Date.now()}`)
+
+      ipfs.add(input, { cidVersion: 1, rawLeaves: false }, (err, res) => {
+        expect(err).to.not.exist()
+
+        const cidv1 = new CID(res[0].hash)
+        expect(cidv1.version).to.equal(1)
+
+        const cidv0 = cidv1.toV0()
+
+        ipfs.cat(cidv0, (err, output) => {
+          expect(err).to.not.exist()
+          expect(output).to.eql(input)
+          done()
+        })
+      })
+    })
+
     it('should cat a BIG file', (done) => {
       ipfs.cat(fixtures.bigFile.cid, (err, data) => {
         expect(err).to.not.exist()

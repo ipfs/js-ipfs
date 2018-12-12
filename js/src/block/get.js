@@ -70,6 +70,42 @@ module.exports = (createCommon, options) => {
       })
     })
 
-    // TODO it.skip('Promises support', (done) => {})
+    it('should get a block added as CIDv0 with a CIDv1', done => {
+      const input = Buffer.from(`TEST${Date.now()}`)
+
+      ipfs.block.put(input, { version: 0 }, (err, res) => {
+        expect(err).to.not.exist()
+
+        const cidv0 = res.cid
+        expect(cidv0.version).to.equal(0)
+
+        const cidv1 = cidv0.toV1()
+
+        ipfs.block.get(cidv1, (err, output) => {
+          expect(err).to.not.exist()
+          expect(output.data).to.eql(input)
+          done()
+        })
+      })
+    })
+
+    it('should get a block added as CIDv1 with a CIDv0', done => {
+      const input = Buffer.from(`TEST${Date.now()}`)
+
+      ipfs.block.put(input, { version: 1 }, (err, res) => {
+        expect(err).to.not.exist()
+
+        const cidv1 = res.cid
+        expect(cidv1.version).to.equal(1)
+
+        const cidv0 = cidv1.toV0()
+
+        ipfs.block.get(cidv0, (err, output) => {
+          expect(err).to.not.exist()
+          expect(output.data).to.eql(input)
+          done()
+        })
+      })
+    })
   })
 }

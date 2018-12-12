@@ -7,7 +7,7 @@ const series = require('async/series')
 const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const UnixFs = require('ipfs-unixfs')
-const crypto = require('crypto')
+const randomBytes = require('randombytes')
 const { asDAGLink } = require('./utils')
 
 module.exports = (createCommon, options) => {
@@ -326,7 +326,7 @@ module.exports = (createCommon, options) => {
       let next = maxBytes
 
       while (data.length !== required) {
-        data = Buffer.concat([data, crypto.randomBytes(next)])
+        data = Buffer.concat([data, randomBytes(next)])
         next = maxBytes
 
         if (data.length + maxBytes > required) {

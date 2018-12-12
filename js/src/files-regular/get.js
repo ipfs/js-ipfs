@@ -5,6 +5,7 @@ const { fixtures } = require('./utils')
 const bs58 = require('bs58')
 const parallel = require('async/parallel')
 const series = require('async/series')
+const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 module.exports = (createCommon, options) => {
@@ -70,6 +71,44 @@ module.exports = (createCommon, options) => {
         expect(files[0].path).to.eql(fixtures.smallFile.cid)
         expect(files[0].content.toString('utf8')).to.contain('Plz add me!')
         done()
+      })
+    })
+
+    it('should get a file added as CIDv0 with a CIDv1', done => {
+      const input = Buffer.from(`TEST${Date.now()}`)
+
+      ipfs.add(input, { cidVersion: 0 }, (err, res) => {
+        expect(err).to.not.exist()
+
+        const cidv0 = new CID(res[0].hash)
+        expect(cidv0.version).to.equal(0)
+
+        const cidv1 = cidv0.toV1()
+
+        ipfs.get(cidv1, (err, output) => {
+          expect(err).to.not.exist()
+          expect(output[0].content).to.eql(input)
+          done()
+        })
+      })
+    })
+
+    it('should get a file added as CIDv1 with a CIDv0', done => {
+      const input = Buffer.from(`TEST${Date.now()}`)
+
+      ipfs.add(input, { cidVersion: 1, rawLeaves: false }, (err, res) => {
+        expect(err).to.not.exist()
+
+        const cidv1 = new CID(res[0].hash)
+        expect(cidv1.version).to.equal(1)
+
+        const cidv0 = cidv1.toV0()
+
+        ipfs.get(cidv0, (err, output) => {
+          expect(err).to.not.exist()
+          expect(output[0].content).to.eql(input)
+          done()
+        })
       })
     })
 

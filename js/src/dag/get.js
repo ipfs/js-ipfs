@@ -5,6 +5,8 @@ const { series, eachSeries } = require('async')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const dagCBOR = require('ipld-dag-cbor')
+const Unixfs = require('ipfs-unixfs')
+const CID = require('cids')
 const { spawnNodeWithId } = require('../utils/spawn')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
@@ -209,6 +211,46 @@ module.exports = (createCommon, options) => {
         expect(err).to.not.exist()
         expect(result.value).to.eql(Buffer.from('I am inside a Protobuf'))
         done()
+      })
+    })
+
+    it('should get a node added as CIDv0 with a CIDv1', done => {
+      const input = Buffer.from(`TEST${Date.now()}`)
+
+      dagPB.DAGNode.create(input, (err, node) => {
+        expect(err).to.not.exist()
+
+        ipfs.dag.put(node, { format: 'dag-pb', hashAlg: 'sha2-256' }, (err, cid) => {
+          expect(err).to.not.exist()
+          expect(cid.version).to.equal(0)
+
+          const cidv1 = cid.toV1()
+
+          ipfs.dag.get(cidv1, (err, output) => {
+            expect(err).to.not.exist()
+            expect(output.value.data).to.eql(input)
+            done()
+          })
+        })
+      })
+    })
+
+    it('should get a node added as CIDv1 with a CIDv0', done => {
+      const input = Buffer.from(`TEST${Date.now()}`)
+
+      ipfs.add(input, { cidVersion: 1, rawLeaves: false }, (err, res) => {
+        expect(err).to.not.exist()
+
+        const cidv1 = new CID(res[0].hash)
+        expect(cidv1.version).to.equal(1)
+
+        const cidv0 = cidv1.toV0()
+
+        ipfs.dag.get(cidv0, (err, output) => {
+          expect(err).to.not.exist()
+          expect(Unixfs.unmarshal(output.value.data).data).to.eql(input)
+          done()
+        })
       })
     })
   })

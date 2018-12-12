@@ -43,7 +43,6 @@
     "chai": "^4.2.0",
     "cids": "~0.5.5",
     "concat-stream": "^1.6.2",
-    "crypto": "^1.0.1",
     "dirty-chai": "^2.0.1",
     "es6-promisify": "^6.0.1",
     "hat": "0.0.3",
@@ -62,7 +61,8 @@
     "peer-id": "~0.12.0",
     "peer-info": "~0.15.0",
     "pull-stream": "^3.6.9",
-    "pump": "^3.0.0"
+    "pump": "^3.0.0",
+    "randombytes": "^2.0.6"
   },
   "devDependencies": {
     "aegir": "^17.0.1"
