@@ -34,6 +34,7 @@
   - [ ] Ensure that all the examples run
 - Communication
   - [ ] Create the release issue
+  - [ ] Take a snapshot between of everyone that has contributed to this release (including its subdeps in IPFS, libp2p, IPLD and multiformats) using https://www.npmjs.com/package/name-your-contributors
   - [ ] Announcements (both pre-release and post-release)
     - [ ] Twitter
     - [ ] IRC
@@ -42,6 +43,12 @@
     - [ ] Announce it on the [IPFS Users mlist](https://groups.google.com/forum/#!forum/ipfs-users)
   - [ ] Blog post
   - [ ] Copy release notes to the [GitHub Release description](https://github.com/ipfs/js-ipfs/releases)
+
+# ❤️ Huge thank you to everyone that made this release possible
+
+By alphabetical order, here are all the humans that contributed to the release:
+
+- ...
 
 # 🙌🏽 Want to contribute?
 
