@@ -1,3 +1,13 @@
+<a name="0.92.0"></a>
+# [0.92.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.91.1...v0.92.0) (2018-12-12)
+
+
+### Bug Fixes
+
+* addFromURL case ([#415](https://github.com/ipfs/interface-ipfs-core/issues/415)) ([f54422d](https://github.com/ipfs/interface-ipfs-core/commit/f54422d))
+
+
+
 <a name="0.91.1"></a>
 ## [0.91.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.91.0...v0.91.1) (2018-12-11)
 
