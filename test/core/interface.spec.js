@@ -51,10 +51,7 @@ describe('interface-ipfs-core tests', () => {
   })
 
   tests.filesRegular(defaultCommonFactory, {
-    skip: isNode ? [{
-      name: 'addFromFs',
-      reason: 'TODO: not implemented yet'
-    }] : [{
+    skip: isNode ? null : [{
       name: 'addFromStream',
       reason: 'Not designed to run in the browser'
     }, {

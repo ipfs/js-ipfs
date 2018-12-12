@@ -1,86 +1,41 @@
 'use strict'
 
-const fs = require('fs')
-const path = require('path')
-const glob = require('glob')
 const sortBy = require('lodash/sortBy')
 const pull = require('pull-stream')
-const paramap = require('pull-paramap')
-const zip = require('pull-zip')
 const getFolderSize = require('get-folder-size')
 const byteman = require('byteman')
-const waterfall = require('async/waterfall')
+const reduce = require('async/reduce')
 const mh = require('multihashes')
 const multibase = require('multibase')
 const { print, isDaemonOn, createProgressBar } = require('../utils')
 const { cidToString } = require('../../utils/cid')
+const globSource = require('../../utils/files/glob-source')
 
-function checkPath (inPath, recursive) {
-  // This function is to check for the following possible inputs
-  // 1) "." add the cwd but throw error for no recursion flag
-  // 2) "." -r return the cwd
-  // 3) "/some/path" but throw error for no recursion
-  // 4) "/some/path" -r
-  // 5) No path, throw err
-  // 6) filename.type return the cwd + filename
-
-  if (!inPath) {
-    throw new Error('Error: Argument \'path\' is required')
-  }
-
-  if (inPath === '.') {
-    inPath = process.cwd()
-  }
-
-  // Convert to POSIX format
-  inPath = inPath
-    .split(path.sep)
-    .join('/')
-
-  // Strips trailing slash from path.
-  inPath = inPath.replace(/\/$/, '')
-
-  if (fs.statSync(inPath).isDirectory() && recursive === false) {
-    throw new Error(`Error: ${inPath} is a directory, use the '-r' flag to specify directories`)
-  }
-
-  return inPath
+function getTotalBytes (paths, cb) {
+  reduce(paths, 0, (total, path, cb) => {
+    getFolderSize(path, (err, size) => {
+      if (err) return cb(err)
+      cb(null, total + size)
+    })
+  }, cb)
 }
 
-function getTotalBytes (path, recursive, cb) {
-  if (recursive) {
-    getFolderSize(path, cb)
-  } else {
-    fs.stat(path, (err, stat) => cb(err, stat.size))
-  }
-}
-
-function addPipeline (index, addStream, list, argv) {
+function addPipeline (paths, addStream, options) {
   const {
+    recursive,
     quiet,
     quieter,
     silent
-  } = argv
+  } = options
   pull(
-    zip(
-      pull.values(list),
-      pull(
-        pull.values(list),
-        paramap(fs.stat.bind(fs), 50)
-      )
-    ),
-    pull.map((pair) => ({
-      path: pair[0],
-      isDirectory: pair[1].isDirectory()
-    })),
-    pull.filter((file) => !file.isDirectory),
-    pull.map((file) => ({
-      path: file.path.substring(index, file.path.length),
-      content: fs.createReadStream(file.path)
-    })),
+    globSource(...paths, { recursive }),
     addStream,
     pull.collect((err, added) => {
       if (err) {
+        // Tweak the error message and add more relevant infor for the CLI
+        if (err.code === 'ERR_DIR_NON_RECURSIVE') {
+          err.message = `'${err.path}' is a directory, use the '-r' flag to specify directories`
+        }
         throw err
       }
 
@@ -90,10 +45,8 @@ function addPipeline (index, addStream, list, argv) {
       sortBy(added, 'path')
         .reverse()
         .map((file) => {
-          const log = [ 'added', cidToString(file.hash, { base: argv.cidBase }) ]
-
+          const log = [ 'added', cidToString(file.hash, { base: options.cidBase }) ]
           if (!quiet && file.path.length > 0) log.push(file.path)
-
           return log.join(' ')
         })
         .forEach((msg) => print(msg))
@@ -102,7 +55,7 @@ function addPipeline (index, addStream, list, argv) {
 }
 
 module.exports = {
-  command: 'add <file>',
+  command: 'add <file...>',
 
   describe: 'Add a file to IPFS using the UnixFS data format',
 
@@ -191,8 +144,7 @@ module.exports = {
   },
 
   handler (argv) {
-    const inPath = checkPath(argv.file, argv.recursive)
-    const index = inPath.lastIndexOf('/') + 1
+    const { ipfs } = argv
     const options = {
       strategy: argv.trickle ? 'trickle' : 'balanced',
       shardSplitThreshold: argv.enableShardingExperiment
@@ -210,38 +162,21 @@ module.exports = {
     if (options.enableShardingExperiment && isDaemonOn()) {
       throw new Error('Error: Enabling the sharding experiment should be done on the daemon')
     }
-    const ipfs = argv.ipfs
 
-    let list
-    waterfall([
-      (next) => {
-        if (fs.statSync(inPath).isDirectory()) {
-          return glob('**/*', { cwd: inPath }, next)
-        }
-        next(null, [])
-      },
-      (globResult, next) => {
-        if (globResult.length === 0) {
-          list = [inPath]
-        } else {
-          list = globResult.map((f) => inPath + '/' + f)
-        }
-        getTotalBytes(inPath, argv.recursive, next)
-      },
-      (totalBytes, next) => {
-        if (argv.progress) {
-          const bar = createProgressBar(totalBytes)
-          options.progress = function (byteLength) {
-            bar.update(byteLength / totalBytes, { progress: byteman(byteLength, 2, 'MB') })
-          }
-        }
+    if (!argv.progress) {
+      return addPipeline(argv.file, ipfs.addPullStream(options), argv)
+    }
 
-        next(null, ipfs.addPullStream(options))
-      }
-    ], (err, addStream) => {
+    getTotalBytes(argv.file, (err, totalBytes) => {
       if (err) throw err
 
-      addPipeline(index, addStream, list, argv)
+      const bar = createProgressBar(totalBytes)
+
+      options.progress = byteLength => {
+        bar.update(byteLength / totalBytes, { progress: byteman(byteLength, 2, 'MB') })
+      }
+
+      addPipeline(argv.file, ipfs.addPullStream(options), argv)
     })
   }
 }
