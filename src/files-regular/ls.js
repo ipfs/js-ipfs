@@ -2,6 +2,7 @@
 
 const promisify = require('promisify-es6')
 const moduleConfig = require('../utils/module-config')
+const cleanCID = require('../utils/clean-cid')
 
 module.exports = (arg) => {
   const send = moduleConfig(arg)
@@ -11,6 +12,13 @@ module.exports = (arg) => {
       callback = opts
       opts = {}
     }
+
+    try {
+      args = cleanCID(args)
+    } catch (err) {
+      return callback(err)
+    }
+
     send({
       path: 'ls',
       args: args,

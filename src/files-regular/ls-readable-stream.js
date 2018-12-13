@@ -2,6 +2,7 @@
 
 const moduleConfig = require('../utils/module-config')
 const Stream = require('readable-stream')
+const cleanCID = require('../utils/clean-cid')
 
 module.exports = (arg) => {
   const send = moduleConfig(arg)
@@ -10,6 +11,12 @@ module.exports = (arg) => {
     if (typeof (opts) === 'function') {
       callback = opts
       opts = {}
+    }
+
+    try {
+      args = cleanCID(args)
+    } catch (err) {
+      return callback(err)
     }
 
     const pt = new Stream.PassThrough({ objectMode: true })

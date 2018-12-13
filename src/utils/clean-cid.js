@@ -1,18 +1,17 @@
 'use strict'
 
-const bs58 = require('bs58')
 const CID = require('cids')
 
 module.exports = function (cid) {
   if (Buffer.isBuffer(cid)) {
-    cid = bs58.encode(cid)
+    return new CID(cid).toString()
   }
   if (CID.isCID(cid)) {
-    cid = cid.toBaseEncodedString()
+    return cid.toString()
   }
   if (typeof cid !== 'string') {
     throw new Error('unexpected cid type: ' + typeof cid)
   }
-  CID.validateCID(new CID(cid.split('/')[0]))
+  new CID(cid.split('/')[0]) // eslint-disable-line no-new
   return cid
 }

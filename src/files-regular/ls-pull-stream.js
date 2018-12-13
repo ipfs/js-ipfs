@@ -3,6 +3,7 @@
 const moduleConfig = require('../utils/module-config')
 const pull = require('pull-stream')
 const deferred = require('pull-defer')
+const cleanCID = require('../utils/clean-cid')
 
 module.exports = (arg) => {
   const send = moduleConfig(arg)
@@ -11,6 +12,12 @@ module.exports = (arg) => {
     if (typeof (opts) === 'function') {
       callback = opts
       opts = {}
+    }
+
+    try {
+      args = cleanCID(args)
+    } catch (err) {
+      return callback(err)
     }
 
     const p = deferred.source()
