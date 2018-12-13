@@ -53,12 +53,20 @@ function HttpApi (repo, config, cliArgs) {
         // Attempt to use any of the WebRTC versions available globally
         let electronWebRTC
         let wrtc
-        try { electronWebRTC = require('electron-webrtc')() } catch (err) {}
-        try { wrtc = require('wrtc') } catch (err) {}
+        try {
+          electronWebRTC = require('electron-webrtc')()
+        } catch (err) {
+          this.log('failed to load optional electron-webrtc dependency')
+        }
+        try {
+          wrtc = require('wrtc')
+        } catch (err) {
+          this.log('failed to load optional webrtc dependency')
+        }
 
         if (wrtc || electronWebRTC) {
           const using = wrtc ? 'wrtc' : 'electron-webrtc'
-          console.log(`Using ${using} for webrtc support`)
+          this.log(`Using ${using} for webrtc support`)
           const wstar = new WStar({ wrtc: (wrtc || electronWebRTC) })
           libp2p.modules.transport = [TCP, WS, wstar]
           libp2p.modules.peerDiscovery = [MulticastDNS, Bootstrap, wstar.discovery]
@@ -179,7 +187,7 @@ function HttpApi (repo, config, cliArgs) {
     ], (err) => {
       if (err) {
         this.log.error(err)
-        console.log('There were errors stopping')
+        console.error('There were errors stopping')
       }
       callback()
     })

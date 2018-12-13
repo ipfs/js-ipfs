@@ -18,18 +18,8 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    let path = argv['ipfsPath']
-    if (path.indexOf('/ipfs/') !== 1) {
-      path = path.replace('/ipfs/', '')
-    }
-
-    const options = {
-      offset: argv.offset,
-      length: argv.length
-    }
-
-    const stream = argv.ipfs.catReadableStream(path, options)
+  handler ({ ipfs, ipfsPath, offset, length }) {
+    const stream = ipfs.catReadableStream(ipfsPath, { offset, length })
 
     stream.once('error', (err) => {
       throw err

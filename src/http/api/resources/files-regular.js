@@ -235,7 +235,7 @@ exports.add = {
       rawLeaves: request.query['raw-leaves'],
       progress: request.query.progress ? progressHandler : null,
       onlyHash: request.query['only-hash'],
-      hashAlg: request.query['hash'],
+      hashAlg: request.query.hash,
       wrapWithDirectory: request.query['wrap-with-directory'],
       pin: request.query.pin,
       chunker: request.query.chunker

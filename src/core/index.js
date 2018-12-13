@@ -127,6 +127,7 @@ class IPFS extends EventEmitter {
     this._preload = preload(this)
     this._mfsPreload = mfsPreload(this)
     this._ipns = undefined
+    // eslint-disable-next-line no-console
     this._print = this._options.silent ? this.log : console.log
 
     // IPFS Core exposed components

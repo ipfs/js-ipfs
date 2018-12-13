@@ -58,12 +58,9 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    const ipfsPath = argv['ipfsPath']
-
-    const dir = checkArgs(ipfsPath, argv.output)
-
-    const stream = argv.ipfs.getReadableStream(ipfsPath)
+  handler ({ ipfs, ipfsPath, output }) {
+    const dir = checkArgs(ipfsPath, output)
+    const stream = ipfs.getReadableStream(ipfsPath)
 
     stream.once('error', (err) => {
       if (err) { throw err }

@@ -12,8 +12,8 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.ipfs.dns(argv['domain'], (err, path) => {
+  handler ({ ipfs, domain }) {
+    ipfs.dns(domain, (err, path) => {
       if (err) {
         throw err
       }

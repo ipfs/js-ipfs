@@ -2,12 +2,19 @@
 'use strict'
 
 module.exports = (domain, opts, callback) => {
+  if (typeof opts === 'function') {
+    callback = opts
+    opts = {}
+  }
+
+  opts = opts || {}
+
   domain = encodeURIComponent(domain)
   let url = `https://ipfs.io/api/v0/dns?arg=${domain}`
 
-  for (const prop in opts) {
-    url += `&${prop}=${opts[prop]}`
-  }
+  Object.keys(opts).forEach(prop => {
+    url += `&${encodeURIComponent(prop)}=${encodeURIComponent(opts[prop])}`
+  })
 
   self.fetch(url, { mode: 'cors' })
     .then((response) => {
