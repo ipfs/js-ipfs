@@ -16,12 +16,13 @@ const errCode = require('err-code')
 * Create a pull stream source that can be piped to ipfs.addPullStream for the
 * provided file paths.
 *
-* @param ...paths {String} File system path(s) to glob from
-* @param [options] {Object} Optional options
-* @param [options.recursive] {Boolean} Recursively glob all paths in directories
-* @param [options.hidden] {Boolean} Include .dot files in matched paths
-* @param [options.ignore] {Array<String>} Glob paths to ignore
-* @param [options.followSymlinks] {Boolean} follow symlinks
+* @param {String} ...paths File system path(s) to glob from
+* @param {Object} [options] Optional options
+* @param {Boolean} [options.recursive] Recursively glob all paths in directories
+* @param {Boolean} [options.hidden] Include .dot files in matched paths
+* @param {Array<String>} [options.ignore] Glob paths to ignore
+* @param {Boolean} [options.followSymlinks] follow symlinks
+* @returns {Function} pull stream source
 */
 module.exports = (...args) => {
   const options = isString(args[args.length - 1]) ? {} : args.pop()
