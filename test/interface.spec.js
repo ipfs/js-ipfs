@@ -34,7 +34,12 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.block(defaultCommonFactory)
+  tests.block(defaultCommonFactory, {
+    skip: [{
+      name: 'should get a block added as CIDv1 with a CIDv0',
+      reason: 'go-ipfs does not support the `version` param'
+    }]
+  })
 
   tests.bootstrap(defaultCommonFactory)
 
