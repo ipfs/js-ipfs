@@ -18,7 +18,10 @@ const errCode = require('err-code')
 *
 * @param ...paths {String} File system path(s) to glob from
 * @param [options] {Object} Optional options
-* @param [options.recursive] Recursively glob all paths in directories
+* @param [options.recursive] {Boolean} Recursively glob all paths in directories
+* @param [options.hidden] {Boolean} Include .dot files in matched paths
+* @param [options.ignore] {Array<String>} Glob paths to ignore
+* @param [options.followSymlinks] {Boolean} follow symlinks
 */
 module.exports = (...args) => {
   const options = isString(args[args.length - 1]) ? {} : args.pop()
