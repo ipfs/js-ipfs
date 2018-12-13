@@ -8,7 +8,7 @@ variables:
   DOCKER_DRIVER: overlay2
 
 before_script:
-  - yarn
+  - npm i
 
 check:
   stage: check
@@ -24,16 +24,6 @@ check:
 
 linux-node-10:
   image: node:10
-  stage: test
-  script:
-    - npx nyc -s npm run test:node -- --bail
-  artifacts:
-    paths:
-      - .nyc_output/
-
-linux-node-11:
-  allow_failure: true
-  image: node:11
   stage: test
   script:
     - npx nyc -s npm run test:node -- --bail
@@ -66,6 +56,7 @@ test-browser-chrome:
   stage: test
   script:
     - AEGIR_BROWSERS=ChromeDocker npm run test:browser
+    - AEGIR_BROWSERS=ChromeDocker npm run test:webworker
   artifacts:
     paths:
       - coverage/
@@ -76,6 +67,7 @@ test-browser-firefox:
   stage: test
   script:
     - AEGIR_BROWSERS=FirefoxHeadless npm run test:browser
+    - AEGIR_BROWSERS=FirefoxHeadless npm run test:webworker
   artifacts:
     paths:
       - coverage/
