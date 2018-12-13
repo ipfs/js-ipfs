@@ -1,3 +1,15 @@
+<a name="28.0.1"></a>
+## [28.0.1](https://github.com/ipfs/js-ipfs-http-client/compare/v28.0.0...v28.0.1) (2018-12-13)
+
+
+### Bug Fixes
+
+* disable just the rule we're breaking ([bed2687](https://github.com/ipfs/js-ipfs-http-client/commit/bed2687))
+* properly serialize CID instances ([45b344c](https://github.com/ipfs/js-ipfs-http-client/commit/45b344c))
+* skip test that go-ipfs cannot pass ([0e15761](https://github.com/ipfs/js-ipfs-http-client/commit/0e15761))
+
+
+
 <a name="28.0.0"></a>
 # [28.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v27.1.0...v28.0.0) (2018-12-11)
 
