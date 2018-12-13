@@ -10,10 +10,11 @@
   "browser": {
     "./src/core/components/init-assets.js": false,
     "./src/core/runtime/config-nodejs.js": "./src/core/runtime/config-browser.js",
+    "./src/core/runtime/dns-nodejs.js": "./src/core/runtime/dns-browser.js",
+    "./src/core/runtime/fetch-nodejs.js": "./src/core/runtime/fetch-browser.js",
     "./src/core/runtime/libp2p-nodejs.js": "./src/core/runtime/libp2p-browser.js",
     "./src/core/runtime/preload-nodejs.js": "./src/core/runtime/preload-browser.js",
     "./src/core/runtime/repo-nodejs.js": "./src/core/runtime/repo-browser.js",
-    "./src/core/runtime/dns-nodejs.js": "./src/core/runtime/dns-browser.js",
     "./test/utils/create-repo-nodejs.js": "./test/utils/create-repo-browser.js",
     "stream": "readable-stream",
     "joi": "joi-browser"
@@ -149,6 +150,7 @@
     "multibase": "~0.6.0",
     "multihashes": "~0.4.14",
     "multihashing-async": "~0.5.1",
+    "node-fetch": "^2.3.0",
     "once": "^1.4.0",
     "peer-book": "~0.8.0",
     "peer-id": "~0.12.0",
