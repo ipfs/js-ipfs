@@ -55,8 +55,8 @@ test-browser-chrome:
   image: hugomrdias/node-chrome:test
   stage: test
   script:
-    - AEGIR_BROWSERS=ChromeDocker npm run test:browser
-    - AEGIR_BROWSERS=ChromeDocker npm run test:webworker
+    - npm run test:browser -- --browsers ChromeDocker
+    - npm run test:webworker -- --browsers ChromeDocker
   artifacts:
     paths:
       - coverage/
@@ -66,8 +66,8 @@ test-browser-firefox:
   image: hugomrdias/node-firefox:test
   stage: test
   script:
-    - AEGIR_BROWSERS=FirefoxHeadless npm run test:browser
-    - AEGIR_BROWSERS=FirefoxHeadless npm run test:webworker
+    - npm run test:browser -- --browsers FirefoxHeadless
+    - npm run test:webworker -- --browsers FirefoxHeadless
   artifacts:
     paths:
       - coverage/
