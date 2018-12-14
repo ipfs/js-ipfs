@@ -22,7 +22,6 @@ jobs:
       script:
         - npm run lint
         - npm run dep-check
-        - npm run build
     - stage: test
       name: chrome
       node_js: 10
