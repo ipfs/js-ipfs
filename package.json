@@ -78,7 +78,6 @@
     "stream-to-promise": "^2.2.0"
   },
   "dependencies": {
-    "@nodeutils/defaults-deep": "^1.1.0",
     "async": "^2.6.1",
     "bignumber.js": "^8.0.2",
     "binary-querystring": "~0.1.2",
@@ -141,6 +140,7 @@
     "libp2p-websockets": "~0.12.2",
     "lodash": "^4.17.11",
     "mafmt": "^6.0.2",
+    "merge-options": "^1.0.1",
     "mime-types": "^2.1.21",
     "mkdirp": "~0.5.1",
     "multiaddr": "^6.0.0",

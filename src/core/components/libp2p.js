@@ -1,8 +1,8 @@
 'use strict'
 
 const get = require('lodash/get')
-const defaultsDeep = require('@nodeutils/defaults-deep')
 const ipnsUtils = require('../ipns/routing/utils')
+const mergeOptions = require('merge-options')
 
 module.exports = function libp2p (self, config) {
   const options = self._options || {}
@@ -102,7 +102,7 @@ function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
       })
   }
 
-  const libp2pOptions = defaultsDeep(get(options, 'libp2p', {}), libp2pDefaults)
+  const libp2pOptions = mergeOptions(libp2pDefaults, get(options, 'libp2p', {}))
 
   // Required inline to reduce startup time
   // Note: libp2p-nodejs gets replaced by libp2p-browser when webpacked/browserified
