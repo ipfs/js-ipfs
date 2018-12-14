@@ -13,7 +13,7 @@ function addBlock (data, opts) {
     if (err) {
       throw err
     }
-    print(cidToString(block.cid, opts.cidBase))
+    print(cidToString(block.cid, { base: opts.cidBase }))
   })
 }
 

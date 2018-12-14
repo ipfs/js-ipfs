@@ -119,7 +119,7 @@ exports.put = {
       }
 
       return reply({
-        Key: cidToString(block.cid, request.query['cid-base']),
+        Key: cidToString(block.cid, { base: request.query['cid-base'] }),
         Size: block.data.length
       })
     })
@@ -172,7 +172,7 @@ exports.stat = {
       }
 
       return reply({
-        Key: cidToString(stats.key, request.query['cid-base']),
+        Key: cidToString(stats.key, { base: request.query['cid-base'] }),
         Size: stats.size
       })
     })

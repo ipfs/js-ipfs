@@ -37,7 +37,7 @@ module.exports = {
     ipfs.pin.ls(paths, { type }, (err, results) => {
       if (err) { throw err }
       results.forEach((res) => {
-        let line = cidToString(res.hash, cidBase)
+        let line = cidToString(res.hash, { base: cidBase })
         if (!quiet) {
           line += ` ${res.type}`
         }

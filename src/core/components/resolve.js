@@ -29,7 +29,7 @@ module.exports = (self) => {
     const cid = new CID(split[2])
 
     if (split.length === 3) {
-      return setImmediate(() => cb(null, `/ipfs/${cidToString(cid, opts.cidBase)}`))
+      return setImmediate(() => cb(null, `/ipfs/${cidToString(cid, { base: opts.cidBase })}`))
     }
 
     const path = split.slice(3).join('/')
@@ -37,7 +37,7 @@ module.exports = (self) => {
     resolve(cid, path, (err, cid) => {
       if (err) return cb(err)
       if (!cid) return cb(new Error('found non-link at given path'))
-      cb(null, `/ipfs/${cidToString(cid, opts.cidBase)}`)
+      cb(null, `/ipfs/${cidToString(cid, { base: opts.cidBase })}`)
     })
   })
 

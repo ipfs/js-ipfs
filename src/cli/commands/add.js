@@ -90,7 +90,7 @@ function addPipeline (index, addStream, list, argv) {
       sortBy(added, 'path')
         .reverse()
         .map((file) => {
-          const log = [ 'added', cidToString(file.hash, argv.cidBase) ]
+          const log = [ 'added', cidToString(file.hash, { base: argv.cidBase }) ]
 
           if (!quiet && file.path.length > 0) log.push(file.path)
 

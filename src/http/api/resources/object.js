@@ -61,13 +61,13 @@ exports.new = {
 
       const answer = {
         Data: nodeJSON.data,
-        Hash: cidToString(results.cid, request.query['cid-base']),
+        Hash: cidToString(results.cid, { base: request.query['cid-base'], upgrade: false }),
         Size: nodeJSON.size,
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: cidToString(l.cid, request.query['cid-base'])
+            Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
           }
         })
       }
@@ -113,13 +113,13 @@ exports.get = {
 
       const answer = {
         Data: nodeJSON.data,
-        Hash: cidToString(results.cid, request.query['cid-base']),
+        Hash: cidToString(results.cid, { base: request.query['cid-base'], upgrade: false }),
         Size: nodeJSON.size,
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: cidToString(l.cid, request.query['cid-base'])
+            Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
           }
         })
       }
@@ -238,13 +238,13 @@ exports.put = {
 
       const answer = {
         Data: nodeJSON.data,
-        Hash: cidToString(results.cid, request.query['cid-base']),
+        Hash: cidToString(results.cid, { base: request.query['cid-base'], upgrade: false }),
         Size: nodeJSON.size,
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: cidToString(l.cid, request.query['cid-base'])
+            Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
           }
         })
       }
@@ -278,7 +278,7 @@ exports.stat = {
         }).code(500)
       }
 
-      stats.Hash = cidToString(stats.Hash, request.query['cid-base'])
+      stats.Hash = cidToString(stats.Hash, { base: request.query['cid-base'], upgrade: false })
 
       return reply(stats)
     })
@@ -338,12 +338,12 @@ exports.links = {
       const nodeJSON = results.node.toJSON()
 
       return reply({
-        Hash: cidToString(results.cid, request.query['cid-base']),
+        Hash: cidToString(results.cid, { base: request.query['cid-base'], upgrade: false }),
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: cidToString(l.cid, request.query['cid-base'])
+            Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
           }
         })
       })
@@ -423,13 +423,13 @@ exports.patchAppendData = {
 
       const answer = {
         Data: nodeJSON.data,
-        Hash: cidToString(results.cid, request.query['cid-base']),
+        Hash: cidToString(results.cid, { base: request.query['cid-base'], upgrade: false }),
         Size: nodeJSON.size,
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: cidToString(l.cid, request.query['cid-base'])
+            Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
           }
         })
       }
@@ -471,12 +471,12 @@ exports.patchSetData = {
       const nodeJSON = results.node.toJSON()
 
       return reply({
-        Hash: cidToString(results.cid, request.query['cid-base']),
+        Hash: cidToString(results.cid, { base: request.query['cid-base'], upgrade: false }),
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: cidToString(l.cid, request.query['cid-base'])
+            Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
           }
         })
       })
@@ -551,13 +551,13 @@ exports.patchAddLink = {
 
       const answer = {
         Data: nodeJSON.data,
-        Hash: cidToString(results.cid, request.query['cid-base']),
+        Hash: cidToString(results.cid, { base: request.query['cid-base'], upgrade: false }),
         Size: nodeJSON.size,
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: cidToString(l.cid, request.query['cid-base'])
+            Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
           }
         })
       }
@@ -624,13 +624,13 @@ exports.patchRmLink = {
 
       const answer = {
         Data: nodeJSON.data,
-        Hash: cidToString(results.cid, request.query['cid-base']),
+        Hash: cidToString(results.cid, { base: request.query['cid-base'], upgrade: false }),
         Size: nodeJSON.size,
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
             Size: l.size,
-            Hash: cidToString(l.cid, request.query['cid-base'])
+            Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
           }
         })
       }

@@ -40,7 +40,7 @@ module.exports = {
         throw err
       }
 
-      links = links.map(file => Object.assign(file, { hash: cidToString(file.hash, cidBase) }))
+      links = links.map(file => Object.assign(file, { hash: cidToString(file.hash, { base: cidBase }) }))
 
       if (headers) {
         links = [{ hash: 'Hash', size: 'Size', name: 'Name' }].concat(links)

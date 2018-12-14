@@ -29,7 +29,7 @@ module.exports = {
     ipfs.pin.add(ipfsPath, { recursive }, (err, results) => {
       if (err) { throw err }
       results.forEach((res) => {
-        print(`pinned ${cidToString(res.hash, cidBase)} ${type}ly`)
+        print(`pinned ${cidToString(res.hash, { base: cidBase })} ${type}ly`)
       })
     })
   }

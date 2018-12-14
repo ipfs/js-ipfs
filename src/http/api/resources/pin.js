@@ -58,7 +58,7 @@ exports.ls = {
 
       return reply({
         Keys: mapValues(
-          keyBy(result, obj => cidToString(obj.hash, request.query['cid-base'])),
+          keyBy(result, obj => cidToString(obj.hash, { base: request.query['cid-base'] })),
           obj => ({ Type: obj.type })
         )
       })
@@ -89,7 +89,7 @@ exports.add = {
       }
 
       return reply({
-        Pins: result.map(obj => cidToString(obj.hash, request.query['cid-base']))
+        Pins: result.map(obj => cidToString(obj.hash, { base: request.query['cid-base'] }))
       })
     })
   }
@@ -118,7 +118,7 @@ exports.rm = {
       }
 
       return reply({
-        Pins: result.map(obj => cidToString(obj.hash, request.query['cid-base']))
+        Pins: result.map(obj => cidToString(obj.hash, { base: request.query['cid-base'] }))
       })
     })
   }

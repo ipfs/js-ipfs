@@ -23,7 +23,7 @@ module.exports = {
         throw err
       }
 
-      print('Key: ' + cidToString(stats.key, cidBase))
+      print('Key: ' + cidToString(stats.key, { base: cidBase }))
       print('Size: ' + stats.size)
     })
   }

@@ -280,7 +280,7 @@ exports.add = {
       pull.map((file) => {
         return {
           Name: file.path, // addPullStream already turned this into a hash if it wanted to
-          Hash: cidToString(file.hash, request.query['cid-base']),
+          Hash: cidToString(file.hash, { base: request.query['cid-base'] }),
           Size: file.size
         }
       }),
@@ -331,7 +331,7 @@ exports.ls = {
           Hash: key,
           Links: files.map((file) => ({
             Name: file.name,
-            Hash: cidToString(file.hash, cidBase),
+            Hash: cidToString(file.hash, { base: cidBase }),
             Size: file.size,
             Type: toTypeCode(file.type),
             Depth: file.depth
