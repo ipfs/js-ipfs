@@ -26,7 +26,7 @@ jobs:
     displayName: 'install node 10'
   - script: |
       npm install
-      npm run test:node -- --bail
+      npm run test:node -- --bail --no-colors
 
 - job: test_linux
   pool:
@@ -38,7 +38,7 @@ jobs:
     displayName: 'install node 10'
   - script: |
       npm install
-      npm run test:node -- --bail
+      npm run test:node -- --bail --no-colors
 
 - job: test_windows
   pool:
@@ -52,6 +52,6 @@ jobs:
     inputs:
       versionSpec: '10.x'
     displayName: 'install node 10'
-  - script: |
+  - powershell: |
       npm install
-      npm run test:node -- --bail
+      npm run test:node -- --bail --no-colors
