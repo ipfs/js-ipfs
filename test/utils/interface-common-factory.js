@@ -13,7 +13,7 @@ function createFactory (options) {
   options.spawnOptions = options.spawnOptions || { initOptions: { bits: 512 }, config: { Bootstrap: [] } }
 
   if (options.factoryOptions.type !== 'proc') {
-    options.factoryOptions.IpfsApi = options.factoryOptions.IpfsApi || ipfsClient
+    options.factoryOptions.IpfsClient = options.factoryOptions.IpfsClient || ipfsClient
   }
 
   const ipfsFactory = IPFSFactory.create(options.factoryOptions)
