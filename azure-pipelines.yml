@@ -16,7 +16,7 @@ jobs:
       npm run build
     displayName: 'run checks'
 
-- job: test mac
+- job: test_mac
   pool:
     vmImage: 'macOS-10.13'
   steps:
@@ -28,7 +28,7 @@ jobs:
       npm install
       npm run test:node -- --bail
 
-- job: test linux
+- job: test_linux
   pool:
     vmImage: 'ubuntu-16.04'
   steps:
@@ -40,7 +40,7 @@ jobs:
       npm install
       npm run test:node -- --bail
 
-- job: test windows
+- job: test_windows
   pool:
     vmImage: 'vs2017-win2016'
   steps:
