@@ -13,7 +13,7 @@ os:
   - osx
   - windows
 
-script: npm run test:node -- --bail
+script: npx nyc -s npm run test:node -- --bail
 
 jobs:
   include:
@@ -21,6 +21,8 @@ jobs:
       node_js: 10
       script:
         - npm run lint
+        - npm run dep-check
+        - npm run build
     - stage: test
       name: chrome
       node_js: 10
