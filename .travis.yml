@@ -21,3 +21,17 @@ jobs:
       node_js: 10
       script:
         - npm run lint
+    - stage: browser chrome
+      node_js: 10
+      addons:
+        chrome: stable
+      script:
+        - npx aegir test -t browser
+        - npx aegir test -t webworker
+    - stage: browser firefox
+      node_js: 10
+      addons:
+        firefox: latest
+      script:
+        - npx aegir test -t browser -- --browsers FirefoxHeadless
+        - npx aegir test -t webworker -- --browsers FirefoxHeadless
