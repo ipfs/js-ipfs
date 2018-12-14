@@ -14,7 +14,7 @@ function parseAndAddNode (key, data, ipfs, options) {
       throw err
     }
 
-    print(cidToString(cid, options.cidBase))
+    print(cidToString(cid, { base: options.cidBase, upgrade: false }))
   })
 }
 

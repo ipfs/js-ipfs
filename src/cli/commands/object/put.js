@@ -12,7 +12,7 @@ function putNode (buf, options, ipfs) {
       throw err
     }
 
-    print(`added ${cidToString(cid, options.cidBase)}`)
+    print(`added ${cidToString(cid, { base: options.cidBase, upgrade: false })}`)
   })
 }
 

@@ -24,7 +24,7 @@ module.exports = {
       }
 
       links.forEach((link) => {
-        print(`${cidToString(link.cid, cidBase)} ${link.size} ${link.name}`)
+        print(`${cidToString(link.cid, { base: cidBase, upgrade: false })} ${link.size} ${link.name}`)
       })
     })
   }

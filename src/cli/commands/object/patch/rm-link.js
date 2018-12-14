@@ -25,7 +25,7 @@ module.exports = {
         throw err
       }
 
-      print(cidToString(cid, cidBase))
+      print(cidToString(cid, { base: cidBase, upgrade: false }))
     })
   }
 }

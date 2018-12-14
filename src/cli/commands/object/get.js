@@ -41,13 +41,13 @@ module.exports = {
 
         const answer = {
           Data: data,
-          Hash: cidToString(result, cidBase),
+          Hash: cidToString(result, { base: cidBase, upgrade: false }),
           Size: node.size,
           Links: node.links.map((l) => {
             return {
               Name: l.name,
               Size: l.size,
-              Hash: cidToString(l.cid, cidBase)
+              Hash: cidToString(l.cid, { base: cidBase, upgrade: false })
             }
           })
         }
