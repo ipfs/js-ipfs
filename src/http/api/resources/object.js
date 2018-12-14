@@ -1,6 +1,6 @@
 'use strict'
 
-const mh = require('multihashes')
+const CID = require('cids')
 const multipart = require('ipfs-multipart')
 const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
@@ -23,7 +23,7 @@ exports.parseKey = (request, reply) => {
 
   try {
     return reply({
-      key: mh.fromB58String(request.query.arg)
+      key: new CID(request.query.arg)
     })
   } catch (err) {
     log.error(err)
@@ -323,10 +323,7 @@ exports.links = {
     const key = request.pre.args.key
     const ipfs = request.server.app.ipfs
 
-    waterfall([
-      (cb) => ipfs.object.get(key, cb),
-      (node, cb) => dagPB.util.cid(node, (err, cid) => cb(err, { node, cid }))
-    ], (err, results) => {
+    ipfs.object.get(key, (err, node) => {
       if (err) {
         log.error(err)
         return reply({
@@ -335,10 +332,10 @@ exports.links = {
         }).code(500)
       }
 
-      const nodeJSON = results.node.toJSON()
+      const nodeJSON = node.toJSON()
 
       return reply({
-        Hash: cidToString(results.cid, { base: request.query['cid-base'], upgrade: false }),
+        Hash: cidToString(key, { base: request.query['cid-base'], upgrade: false }),
         Links: nodeJSON.links.map((l) => {
           return {
             Name: l.name,
@@ -379,7 +376,7 @@ exports.parseKeyAndData = (request, reply) => {
       return reply({
         data: file,
         // TODO: support ipfs paths: https://github.com/ipfs/http-api-spec/pull/68/files#diff-2625016b50d68d922257f74801cac29cR3880
-        key: mh.fromB58String(request.query.arg)
+        key: new CID(request.query.arg)
       })
     } catch (err) {
       return reply({
@@ -517,9 +514,9 @@ exports.patchAddLink = {
 
     try {
       return reply({
-        root: mh.fromB58String(request.query.arg[0]),
+        root: new CID(request.query.arg[0]),
         name: request.query.arg[1],
-        ref: mh.fromB58String(request.query.arg[2])
+        ref: new CID(request.query.arg[2])
       })
     } catch (err) {
       log.error(err)
@@ -590,7 +587,7 @@ exports.patchRmLink = {
 
     try {
       return reply({
-        root: mh.fromB58String(request.query.arg[0]),
+        root: new CID(request.query.arg[0]),
         link: request.query.arg[1]
       })
     } catch (err) {

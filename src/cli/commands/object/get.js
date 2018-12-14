@@ -2,7 +2,6 @@
 
 const multibase = require('multibase')
 const { print } = require('../../utils')
-const dagPB = require('ipld-dag-pb')
 const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
@@ -28,32 +27,26 @@ module.exports = {
         throw err
       }
 
-      dagPB.util.cid(node, (err, result) => {
-        if (err) {
-          throw err
-        }
+      let data = node.data
 
-        let data = node.data
+      if (Buffer.isBuffer(data)) {
+        data = node.data.toString(dataEncoding || undefined)
+      }
 
-        if (Buffer.isBuffer(data)) {
-          data = node.data.toString(dataEncoding || undefined)
-        }
+      const answer = {
+        Data: data,
+        Hash: cidToString(key, { base: cidBase, upgrade: false }),
+        Size: node.size,
+        Links: node.links.map((l) => {
+          return {
+            Name: l.name,
+            Size: l.size,
+            Hash: cidToString(l.cid, { base: cidBase, upgrade: false })
+          }
+        })
+      }
 
-        const answer = {
-          Data: data,
-          Hash: cidToString(result, { base: cidBase, upgrade: false }),
-          Size: node.size,
-          Links: node.links.map((l) => {
-            return {
-              Name: l.name,
-              Size: l.size,
-              Hash: cidToString(l.cid, { base: cidBase, upgrade: false })
-            }
-          })
-        }
-
-        print(JSON.stringify(answer))
-      })
+      print(JSON.stringify(answer))
     })
   }
 }
