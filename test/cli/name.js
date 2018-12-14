@@ -181,7 +181,7 @@ describe('name', () => {
     })
   })
 
-  describe('using dht', () => {
+  describe.skip('using dht', () => {
     const passPhrase = hat()
     const pass = '--pass ' + passPhrase
     const name = 'test-key-' + hat()

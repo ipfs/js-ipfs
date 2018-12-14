@@ -22,7 +22,7 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
   })
 
   tests.dht(defaultCommonFactory, {
-    skip: { reason: 'TODO: DHT is not implemented in js-ipfs yet!' }
+    skip: { reason: 'TODO: unskip when https://github.com/ipfs/js-ipfs/pull/856 is merged' }
   })
 
   tests.filesRegular(defaultCommonFactory)
