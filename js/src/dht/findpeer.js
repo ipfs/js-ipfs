@@ -5,8 +5,6 @@ const { spawnNodesWithId } = require('../utils/spawn')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { connect } = require('../utils/swarm')
 
-const checkAll = (bits) => string => bits.every(bit => string.includes(bit))
-
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
@@ -48,10 +46,11 @@ module.exports = (createCommon, options) => {
         expect(err).to.not.exist()
 
         const id = res.id.toB58String()
-        const addrs = res.multiaddrs.toArray().map((ma) => ma.toString())
+        const nodeAddresses = nodeB.peerId.addresses.map((addr) => addr.split('/ipfs/')[0]) // remove '/ipfs/'
+        const peerAddresses = res.multiaddrs.toArray().map((ma) => ma.toString().split('/ipfs/')[0])
 
         expect(id).to.be.eql(nodeB.peerId.id)
-        expect(nodeB.peerId.addresses[0]).to.satisfy(checkAll([addrs[0]]))
+        expect(nodeAddresses).to.include(peerAddresses[0])
         done()
       })
     })
