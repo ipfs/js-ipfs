@@ -1,9 +1,12 @@
 /* eslint-env mocha */
+/* eslint max-nested-callbacks: ["error", 6] */
 'use strict'
 
 const { fixtures } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const CID = require('cids')
+
+const randomName = prefix => `${prefix}${Math.round(Math.random() * 1000)}`
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -106,7 +109,6 @@ module.exports = (createCommon, options) => {
     })
 
     it('should ls files added as CIDv0 with a CIDv1', done => {
-      const randomName = prefix => `${prefix}${Math.round(Math.random() * 1000)}`
       const dir = randomName('DIR')
 
       const input = [
@@ -134,7 +136,6 @@ module.exports = (createCommon, options) => {
     })
 
     it('should ls files added as CIDv1 with a CIDv0', done => {
-      const randomName = prefix => `${prefix}${Math.round(Math.random() * 1000)}`
       const dir = randomName('DIR')
 
       const input = [
@@ -174,6 +175,28 @@ module.exports = (createCommon, options) => {
         expect(err).to.exist()
         expect(res).to.not.exist()
         done()
+      })
+    })
+
+    it('should ls files by path', done => {
+      const dir = randomName('DIR')
+
+      const input = [
+        { path: `${dir}/${randomName('F0')}`, content: Buffer.from(randomName('D0')) },
+        { path: `${dir}/${randomName('F1')}`, content: Buffer.from(randomName('D1')) }
+      ]
+
+      ipfs.add(input, (err, res) => {
+        expect(err).to.not.exist()
+
+        ipfs.ls(`/ipfs/${res[res.length - 1].hash}`, (err, output) => {
+          expect(err).to.not.exist()
+          expect(output.length).to.equal(input.length)
+          output.forEach(({ hash }) => {
+            expect(res.find(file => file.hash === hash)).to.exist()
+          })
+          done()
+        })
       })
     })
   })
