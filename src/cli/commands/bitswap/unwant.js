@@ -16,7 +16,7 @@ module.exports = {
       type: 'string'
     },
     'cid-base': {
-      describe: 'Number base to display CIDs in.',
+      describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
       type: 'string',
       choices: multibase.names
     }
@@ -26,7 +26,7 @@ module.exports = {
       if (err) {
         throw err
       }
-      print(`Key ${cidToString(key, cidBase)} removed from wantlist`)
+      print(`Key ${cidToString(key, { base: cidBase, upgrade: false })} removed from wantlist`)
     })
   }
 }

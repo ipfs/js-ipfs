@@ -23,7 +23,11 @@ exports.wantlist = {
       if (err) {
         return reply(boom.badRequest(err))
       }
-      reply({ Keys: list.Keys.map(k => ({ '/': cidToString(k['/'], cidBase) })) })
+      reply({
+        Keys: list.Keys.map(k => ({
+          '/': cidToString(k['/'], { base: cidBase, upgrade: false })
+        }))
+      })
     })
   }
 }
@@ -47,7 +51,9 @@ exports.stat = {
         }).code(500)
       }
 
-      stats.wantlist = stats.wantlist.map(k => ({ '/': cidToString(k['/'], cidBase) }))
+      stats.wantlist = stats.wantlist.map(k => ({
+        '/': cidToString(k['/'], { base: cidBase, upgrade: false })
+      }))
 
       reply({
         ProvideBufLen: stats.provideBufLen,
@@ -82,7 +88,7 @@ exports.unwant = {
       if (err) {
         return reply(boom.badRequest(err))
       }
-      reply({ key: cidToString(key, request.query['cid-base']) })
+      reply({ key: cidToString(key, { base: request.query['cid-base'], upgrade: false }) })
     })
   }
 }
