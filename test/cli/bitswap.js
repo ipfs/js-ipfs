@@ -10,14 +10,16 @@ const waitFor = require('../utils/wait-for')
 describe('bitswap', () => runOn((thing) => {
   let ipfs
   let peerId
-  const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
+  const key0 = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
+  const key1 = 'zb2rhafnd6kEUujnoMkozHnWXY7XpWttyVDWKXfChqA42VTDU'
 
   before(() => {
     ipfs = thing.ipfs
   })
 
   before(() => {
-    ipfs('block get ' + key).catch(() => {})
+    ipfs('block get ' + key0).catch(() => {})
+    ipfs('block get ' + key1).catch(() => {})
   })
 
   before(function (done) {
@@ -35,12 +37,12 @@ describe('bitswap', () => runOn((thing) => {
 
     const test = (cb) => {
       ipfs('bitswap wantlist')
-        .then(out => cb(null, out.includes(key)))
+        .then(out => cb(null, out.includes(key0) && out.includes(key1)))
         .catch(cb)
     }
 
     waitFor(test, {
-      name: key + ' to be wanted',
+      name: `${key0} and ${key1} to be wanted`,
       timeout: 60 * 1000
     }, done)
   })
@@ -48,14 +50,14 @@ describe('bitswap', () => runOn((thing) => {
   it('wantlist', function () {
     this.timeout(20 * 1000)
     return ipfs('bitswap wantlist').then((out) => {
-      expect(out).to.eql(key + '\n')
+      expect(out).to.eql(key0 + '\n' + key1 + '\n')
     })
   })
 
   it('should get wantlist with CIDs encoded in specified base', function () {
     this.timeout(20 * 1000)
     return ipfs('bitswap wantlist --cid-base=base64').then((out) => {
-      expect(out).to.eql(new CID(key).toV1().toBaseEncodedString('base64') + '\n')
+      expect(out).to.include(new CID(key1).toBaseEncodedString('base64') + '\n')
     })
   })
 
@@ -75,8 +77,9 @@ describe('bitswap', () => runOn((thing) => {
         '  blocks received: 0',
         '  dup blocks received: 0',
         '  dup data received: 0B',
-        '  wantlist [1 keys]',
-        `    ${key}`,
+        '  wantlist [2 keys]',
+        `    ${key0}`,
+        `    ${key1}`,
         // We sometimes pick up partners while the tests run so our assertion ends here
         '  partners'
       ].join('\n'))
@@ -86,13 +89,13 @@ describe('bitswap', () => runOn((thing) => {
   it('should get stats with wantlist CIDs encoded in specified base', function () {
     this.timeout(20 * 1000)
     return ipfs('bitswap stat --cid-base=base64').then((out) => {
-      expect(out).to.include(new CID(key).toV1().toBaseEncodedString('base64'))
+      expect(out).to.include(new CID(key1).toBaseEncodedString('base64'))
     })
   })
 
   it('unwant', function () {
-    return ipfs('bitswap unwant ' + key).then((out) => {
-      expect(out).to.eql(`Key ${key} removed from wantlist\n`)
+    return ipfs('bitswap unwant ' + key0).then((out) => {
+      expect(out).to.eql(`Key ${key0} removed from wantlist\n`)
     })
   })
 }))
