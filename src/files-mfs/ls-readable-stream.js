@@ -36,10 +36,7 @@ module.exports = (send) => {
     send({
       path: 'files/ls',
       args: args,
-      qs: {
-        ...opts,
-        stream: true
-      }
+      qs: Object.assign({}, opts, { stream: true })
     }, (err, res) => {
       if (err) {
         return output.destroy(err)
