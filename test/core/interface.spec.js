@@ -61,7 +61,7 @@ describe('interface-ipfs-core tests', () => {
       name: 'addFromFs',
       reason: 'Not designed to run in the browser'
     }, {
-      name: 'addFromUrl',
+      name: 'addFromURL',
       reason: 'Not designed to run in the browser'
     }]
   })
