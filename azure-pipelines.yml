@@ -45,9 +45,9 @@ jobs:
     vmImage: 'vs2017-win2016'
   steps:
   - task: UsePythonVersion@0
-  inputs:
-    versionSpec: '2.x'
-    addToPath: true
+    inputs:
+      versionSpec: '2.x'
+      addToPath: true
   - task: NodeTool@0
     inputs:
       versionSpec: '10.x'
