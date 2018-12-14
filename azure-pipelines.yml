@@ -4,16 +4,56 @@ trigger:
 pool:
   vmImage: 'Ubuntu-16.04'
 
-steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '10.x'
-  displayName: 'Install Node.js'
+jobs:
+- job: check
+  pool:
+    vmImage: 'Ubuntu-16.04'
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.x'
+    displayName: 'install node 10'
+  - script: |
+      npm install
+      npm run lint
+      npm run build
+    displayName: 'run checks'
 
-- script: |
-    npm install
-    npm run lint
-    npm run build
-    node -v
-    npm -v
-  displayName: 'npm install and build'
+- job: test
+  pool:
+    vmImage: 'macOS-10.13'
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.x'
+    displayName: 'install node 10'
+  - script: |
+      npm install
+      npm run test:node -- --bail
+    displayName: 'run tests mac'
+
+- job: Linux
+  pool:
+    vmImage: 'ubuntu-16.04'
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.x'
+    displayName: 'install node 10'
+  - script: |
+      npm install
+      npm run test:node -- --bail
+    displayName: 'run tests linux'
+
+- job: Windows
+  pool:
+    vmImage: 'vs2017-win2016'
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.x'
+    displayName: 'install node 10'
+  - script: |
+      npm install
+      npm run test:node -- --bail
+    displayName: 'run tests windows'
