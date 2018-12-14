@@ -27,7 +27,7 @@ module.exports = {
       default: 'json'
     },
     'cid-base': {
-      describe: 'Number base to display CIDs in.',
+      describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
       type: 'string',
       choices: multibase.names
     }
