@@ -16,7 +16,7 @@ jobs:
       npm run build
     displayName: 'run checks'
 
-- job: test
+- job: test mac
   pool:
     vmImage: 'macOS-10.13'
   steps:
@@ -27,9 +27,8 @@ jobs:
   - script: |
       npm install
       npm run test:node -- --bail
-    displayName: 'run tests mac'
 
-- job: Linux
+- job: test linux
   pool:
     vmImage: 'ubuntu-16.04'
   steps:
@@ -40,12 +39,15 @@ jobs:
   - script: |
       npm install
       npm run test:node -- --bail
-    displayName: 'run tests linux'
 
-- job: Windows
+- job: test windows
   pool:
     vmImage: 'vs2017-win2016'
   steps:
+  - task: UsePythonVersion@0
+  inputs:
+    versionSpec: '2.x'
+    addToPath: true
   - task: NodeTool@0
     inputs:
       versionSpec: '10.x'
@@ -53,4 +55,3 @@ jobs:
   - script: |
       npm install
       npm run test:node -- --bail
-    displayName: 'run tests windows'
