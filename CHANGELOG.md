@@ -1,3 +1,14 @@
+<a name="0.93.0"></a>
+# [0.93.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.92.0...v0.93.0) (2018-12-14)
+
+
+### Bug Fixes
+
+* allow only by object ([#407](https://github.com/ipfs/interface-ipfs-core/issues/407)) ([1766ef4](https://github.com/ipfs/interface-ipfs-core/commit/1766ef4))
+* dht find peer ([#418](https://github.com/ipfs/interface-ipfs-core/issues/418)) ([8b890b6](https://github.com/ipfs/interface-ipfs-core/commit/8b890b6))
+
+
+
 <a name="0.92.0"></a>
 # [0.92.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.91.1...v0.92.0) (2018-12-12)
 
