@@ -7,7 +7,8 @@ const waitFor = require('../../utils/wait-for')
 
 module.exports = (http) => {
   describe('/bitswap', () => {
-    const wantedCid = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
+    const wantedCid0 = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
+    const wantedCid1 = 'zb2rhafnd6kEUujnoMkozHnWXY7XpWttyVDWKXfChqA42VTDU'
     let api
 
     before(() => {
@@ -18,10 +19,8 @@ module.exports = (http) => {
       this.timeout(120 * 1000)
 
       // Add a CID to the wantlist
-      api.inject({
-        method: 'GET',
-        url: `/api/v0/block/get?arg=${wantedCid}`
-      })
+      api.inject({ method: 'GET', url: `/api/v0/block/get?arg=${wantedCid0}` })
+      api.inject({ method: 'GET', url: `/api/v0/block/get?arg=${wantedCid1}` })
 
       const test = (cb) => {
         api.inject({
@@ -31,13 +30,14 @@ module.exports = (http) => {
           if (res.statusCode !== 200) {
             return cb(new Error(`unexpected status ${res.statusCode}`))
           }
-          const wanted = Boolean(res.result.Keys.find(k => k['/'] === wantedCid))
-          cb(null, wanted)
+          const isWanted0 = res.result.Keys.some(k => k['/'] === wantedCid0)
+          const isWanted1 = res.result.Keys.some(k => k['/'] === wantedCid1)
+          cb(null, isWanted0 && isWanted1)
         })
       }
 
       waitFor(test, {
-        name: wantedCid + ' to be wanted',
+        name: `${wantedCid0} and ${wantedCid1} to be wanted`,
         timeout: 60 * 1000
       }, done)
     })
@@ -49,13 +49,13 @@ module.exports = (http) => {
       }, (res) => {
         expect(res.statusCode).to.equal(200)
         expect(res.result).to.have.property('Keys')
-        expect(res.result.Keys).to.deep.include({ '/': wantedCid })
+        expect(res.result.Keys).to.deep.include({ '/': wantedCid0 })
         done()
       })
     })
 
     it('/wantlist?cid-base=base64', (done) => {
-      const base64Cid = new CID(wantedCid).toV1().toString('base64')
+      const base64Cid = new CID(wantedCid1).toString('base64')
       api.inject({
         method: 'GET',
         url: '/api/v0/bitswap/wantlist?cid-base=base64'
@@ -97,7 +97,7 @@ module.exports = (http) => {
     })
 
     it('/stat?cid-base=base64', (done) => {
-      const base64Cid = new CID(wantedCid).toV1().toString('base64')
+      const base64Cid = new CID(wantedCid1).toString('base64')
       api.inject({
         method: 'GET',
         url: '/api/v0/bitswap/stat?cid-base=base64'
