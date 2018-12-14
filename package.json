@@ -16,6 +16,7 @@
     "./src/core/runtime/libp2p-nodejs.js": "./src/core/runtime/libp2p-browser.js",
     "./src/core/runtime/preload-nodejs.js": "./src/core/runtime/preload-browser.js",
     "./src/core/runtime/repo-nodejs.js": "./src/core/runtime/repo-browser.js",
+    "./src/core/runtime/ipld-nodejs.js": "./src/core/runtime/ipld-browser.js",
     "./test/utils/create-repo-nodejs.js": "./test/utils/create-repo-browser.js",
     "stream": "readable-stream",
     "joi": "joi-browser"
