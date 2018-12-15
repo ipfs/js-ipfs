@@ -193,7 +193,8 @@ describe('name', function () {
     })
   })
 
-  describe('work with dht', () => {
+  // TODO: unskip when https://github.com/ipfs/js-ipfs/pull/856 is merged
+  describe.skip('work with dht', () => {
     let nodes
     let nodeA
     let nodeB
