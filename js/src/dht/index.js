@@ -4,9 +4,9 @@ const { createSuite } = require('../utils/suite')
 const tests = {
   get: require('./get'),
   put: require('./put'),
-  findpeer: require('./findpeer'),
+  findPeer: require('./find-peer'),
   provide: require('./provide'),
-  findprovs: require('./findprovs'),
+  findProvs: require('./find-provs'),
   query: require('./query')
 }
 
