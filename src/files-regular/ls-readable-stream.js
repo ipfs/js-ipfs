@@ -2,6 +2,7 @@
 
 const moduleConfig = require('../utils/module-config')
 const Stream = require('readable-stream')
+const IsIpfs = require('is-ipfs')
 const cleanCID = require('../utils/clean-cid')
 
 module.exports = (arg) => {
@@ -16,7 +17,9 @@ module.exports = (arg) => {
     try {
       args = cleanCID(args)
     } catch (err) {
-      return callback(err)
+      if (!IsIpfs.ipfsPath(args)) {
+        return callback(err)
+      }
     }
 
     const pt = new Stream.PassThrough({ objectMode: true })

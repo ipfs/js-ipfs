@@ -3,6 +3,7 @@
 const moduleConfig = require('../utils/module-config')
 const pull = require('pull-stream')
 const deferred = require('pull-defer')
+const IsIpfs = require('is-ipfs')
 const cleanCID = require('../utils/clean-cid')
 
 module.exports = (arg) => {
@@ -17,7 +18,9 @@ module.exports = (arg) => {
     try {
       args = cleanCID(args)
     } catch (err) {
-      return callback(err)
+      if (!IsIpfs.ipfsPath(args)) {
+        return callback(err)
+      }
     }
 
     const p = deferred.source()

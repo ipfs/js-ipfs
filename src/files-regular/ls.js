@@ -1,6 +1,7 @@
 'use strict'
 
 const promisify = require('promisify-es6')
+const IsIpfs = require('is-ipfs')
 const moduleConfig = require('../utils/module-config')
 const cleanCID = require('../utils/clean-cid')
 
@@ -16,7 +17,9 @@ module.exports = (arg) => {
     try {
       args = cleanCID(args)
     } catch (err) {
-      return callback(err)
+      if (!IsIpfs.ipfsPath(args)) {
+        return callback(err)
+      }
     }
 
     send({
