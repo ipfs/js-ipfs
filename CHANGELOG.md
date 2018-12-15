@@ -1,3 +1,13 @@
+<a name="28.0.3"></a>
+## [28.0.3](https://github.com/ipfs/js-ipfs-http-client/compare/v28.0.2...v28.0.3) (2018-12-15)
+
+
+### Bug Fixes
+
+* re-allow passing path to ls ([#914](https://github.com/ipfs/js-ipfs-http-client/issues/914)) ([442bcdd](https://github.com/ipfs/js-ipfs-http-client/commit/442bcdd))
+
+
+
 <a name="28.0.2"></a>
 ## [28.0.2](https://github.com/ipfs/js-ipfs-http-client/compare/v28.0.1...v28.0.2) (2018-12-14)
 
