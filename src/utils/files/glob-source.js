@@ -2,7 +2,6 @@
 
 const fs = require('fs')
 const Path = require('path')
-const isString = require('lodash/isString')
 const pull = require('pull-stream')
 const glob = require('glob')
 const cat = require('pull-cat')
@@ -25,7 +24,7 @@ const errCode = require('err-code')
 * @returns {Function} pull stream source
 */
 module.exports = (...args) => {
-  const options = isString(args[args.length - 1]) ? {} : args.pop()
+  const options = typeof args[args.length - 1] === 'string' ? {} : args.pop()
   const paths = args
   const deferred = defer.source()
 
