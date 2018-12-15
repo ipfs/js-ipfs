@@ -1,6 +1,7 @@
 'use strict'
 
 const pull = require('pull-stream')
+const print = require('../../utils').print
 
 module.exports = {
   command: 'bw',
@@ -26,18 +27,13 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    const stream = argv.ipfs.stats.bwPullStream({
-      peer: argv.peer,
-      proto: argv.proto,
-      poll: argv.poll,
-      interval: argv.interval
-    })
+  handler ({ ipfs, peer, proto, poll, interval }) {
+    const stream = ipfs.stats.bwPullStream({ peer, proto, poll, interval })
 
     pull(
       stream,
       pull.drain((chunk) => {
-        console.log(`bandwidth status
+        print(`bandwidth status
   total in: ${chunk.totalIn}B
   total out: ${chunk.totalOut}B
   rate in: ${chunk.rateIn}B/s
