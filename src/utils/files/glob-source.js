@@ -106,6 +106,9 @@ function normalizePathWithType (path, cb) {
     realpath: cb => fs.realpath(path, cb)
   }, (err, res) => {
     if (err) return cb(err)
-    cb(null, { path: res.realpath, type: res.stat.isDirectory() ? 'dir' : 'file' })
+    cb(null, {
+      path: res.realpath.replace(/\\/g, '/'),
+      type: res.stat.isDirectory() ? 'dir' : 'file'
+    })
   })
 }
