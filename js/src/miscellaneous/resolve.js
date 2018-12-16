@@ -5,6 +5,7 @@ const isIpfs = require('is-ipfs')
 const loadFixture = require('aegir/fixtures')
 const hat = require('hat')
 const waterfall = require('async/waterfall')
+const multibase = require('multibase')
 const { spawnNodeWithId } = require('../utils/spawn')
 const { connect } = require('../utils/swarm')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -48,6 +49,21 @@ module.exports = (createCommon, options) => {
         ipfs.resolve(`/ipfs/${res[0].hash}`, (err, path) => {
           expect(err).to.not.exist()
           expect(path).to.equal(`/ipfs/${res[0].hash}`)
+          done()
+        })
+      })
+    })
+
+    it('should resolve an IPFS hash and return a base64url encoded CID in path', (done) => {
+      const content = Buffer.from('TEST' + Date.now())
+
+      ipfs.add(content, (err, res) => {
+        expect(err).to.not.exist()
+
+        ipfs.resolve(`/ipfs/${res[0].hash}`, { cidBase: 'base64url' }, (err, path) => {
+          expect(err).to.not.exist()
+          const cid = path.split('/')[2]
+          expect(multibase.isEncoded(cid)).to.equal('base64url')
           done()
         })
       })

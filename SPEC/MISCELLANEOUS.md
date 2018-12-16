@@ -256,6 +256,7 @@ Where:
 - `name` (string): The name to resolve
 - `options` is an optional object that might include the following properties:
   - `recursive` (boolean, default false): Resolve until the result is an IPFS name
+  - `cidBase` (string): Multibase codec name the CID in the resolved path will be encoded with
 
 `callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res` is a string, the resolved name.
 
