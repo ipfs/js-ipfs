@@ -1,3 +1,13 @@
+<a name="28.1.0"></a>
+# [28.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v28.0.3...v28.1.0) (2018-12-16)
+
+
+### Features
+
+* add cidBase option to resolve ([#893](https://github.com/ipfs/js-ipfs-http-client/issues/893)) ([ec6285d](https://github.com/ipfs/js-ipfs-http-client/commit/ec6285d))
+
+
+
 <a name="28.0.3"></a>
 ## [28.0.3](https://github.com/ipfs/js-ipfs-http-client/compare/v28.0.2...v28.0.3) (2018-12-15)
 
