@@ -50,7 +50,8 @@ describe('bitswap', () => runOn((thing) => {
   it('wantlist', function () {
     this.timeout(20 * 1000)
     return ipfs('bitswap wantlist').then((out) => {
-      expect(out).to.eql(key0 + '\n' + key1 + '\n')
+      expect(out).to.include(key0)
+      expect(out).to.include(key1)
     })
   })
 
@@ -77,12 +78,13 @@ describe('bitswap', () => runOn((thing) => {
         '  blocks received: 0',
         '  dup blocks received: 0',
         '  dup data received: 0B',
-        '  wantlist [2 keys]',
-        `    ${key0}`,
-        `    ${key1}`,
-        // We sometimes pick up partners while the tests run so our assertion ends here
-        '  partners'
+        // We sometimes pick up partners while the tests run and the order of
+        // wanted keys is not defined so our assertion ends here.
+        '  wantlist [2 keys]'
       ].join('\n'))
+
+      expect(out).to.include(key0)
+      expect(out).to.include(key1)
     })
   })
 
