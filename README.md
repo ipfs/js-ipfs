@@ -43,7 +43,7 @@ You can check the development status at the [Kanban Board](https://waffle.io/ipf
 
 ## Tech Lead
 
-[David Dias](https://github.com/diasdavid)
+[David Dias](https://github.com/daviddias)
 
 ## Lead Maintainer
 
