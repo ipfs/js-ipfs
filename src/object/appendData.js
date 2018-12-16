@@ -3,13 +3,12 @@
 const promisify = require('promisify-es6')
 const once = require('once')
 const CID = require('cids')
-const cleanMultihash = require('../utils/clean-multihash')
 const SendOneFile = require('../utils/send-one-file')
 
 module.exports = (send) => {
   const sendOneFile = SendOneFile(send, 'object/patch/append-data')
 
-  return promisify((multihash, data, opts, _callback) => {
+  return promisify((cid, data, opts, _callback) => {
     if (typeof opts === 'function') {
       _callback = opts
       opts = {}
@@ -20,12 +19,12 @@ module.exports = (send) => {
     }
 
     try {
-      multihash = cleanMultihash(multihash, opts)
+      cid = new CID(cid)
     } catch (err) {
       return callback(err)
     }
 
-    sendOneFile(data, { args: [multihash] }, (err, result) => {
+    sendOneFile(data, { args: [cid.toString()] }, (err, result) => {
       if (err) {
         return callback(err)
       }

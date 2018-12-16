@@ -2,10 +2,9 @@
 
 const promisify = require('promisify-es6')
 const CID = require('cids')
-const cleanMultihash = require('../utils/clean-multihash')
 
 module.exports = (send) => {
-  return promisify((multihash, dLink, opts, callback) => {
+  return promisify((cid, dLink, opts, callback) => {
     if (typeof opts === 'function') {
       callback = opts
       opts = {}
@@ -15,7 +14,7 @@ module.exports = (send) => {
     }
 
     try {
-      multihash = cleanMultihash(multihash, opts)
+      cid = new CID(cid)
     } catch (err) {
       return callback(err)
     }
@@ -23,9 +22,9 @@ module.exports = (send) => {
     send({
       path: 'object/patch/add-link',
       args: [
-        multihash,
+        cid.toString(),
         dLink.name,
-        cleanMultihash(dLink.cid.buffer)
+        dLink.cid.toString()
       ]
     }, (err, result) => {
       if (err) {

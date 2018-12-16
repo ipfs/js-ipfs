@@ -3,7 +3,7 @@
 const promisify = require('promisify-es6')
 const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
-const cleanMultihash = require('../utils/clean-multihash')
+const CID = require('cids')
 const LRU = require('lru-cache')
 const lruOptions = {
   max: 128
@@ -12,7 +12,7 @@ const lruOptions = {
 const cache = new LRU(lruOptions)
 
 module.exports = (send) => {
-  return promisify((multihash, options, callback) => {
+  return promisify((cid, options, callback) => {
     if (typeof options === 'function') {
       callback = options
       options = {}
@@ -22,12 +22,12 @@ module.exports = (send) => {
     }
 
     try {
-      multihash = cleanMultihash(multihash, options)
+      cid = new CID(cid)
     } catch (err) {
       return callback(err)
     }
 
-    const node = cache.get(multihash)
+    const node = cache.get(cid.toString())
 
     if (node) {
       return callback(null, node.links)
@@ -35,7 +35,7 @@ module.exports = (send) => {
 
     send({
       path: 'object/links',
-      args: multihash
+      args: cid.toString()
     }, (err, result) => {
       if (err) {
         return callback(err)
@@ -44,9 +44,7 @@ module.exports = (send) => {
       let links = []
 
       if (result.Links) {
-        links = result.Links.map((l) => {
-          return new DAGLink(l.Name, l.Size, l.Hash)
-        })
+        links = result.Links.map((l) => new DAGLink(l.Name, l.Size, l.Hash))
       }
       callback(null, links)
     })

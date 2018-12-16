@@ -4,7 +4,6 @@ const promisify = require('promisify-es6')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const DAGLink = dagPB.DAGLink
-const bs58 = require('bs58')
 const CID = require('cids')
 const LRU = require('lru-cache')
 const lruOptions = {
@@ -53,7 +52,7 @@ module.exports = (send) => {
       result.Data = Buffer.from(result.Data, 'base64')
 
       const links = result.Links.map((l) => {
-        return new DAGLink(l.Name, l.Size, Buffer.from(bs58.decode(l.Hash)))
+        return new DAGLink(l.Name, l.Size, l.Hash)
       })
 
       DAGNode.create(result.Data, links, (err, node) => {
