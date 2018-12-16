@@ -145,7 +145,7 @@ module.exports = (http) => {
               url: '/api/v0/ls?cid-base=base64&arg=' + dir.Hash
             }, (res) => {
               expect(res.statusCode).to.equal(200)
-              res.result.Objects.forEach(item => {
+              res.result.Objects[0].Links.forEach(item => {
                 expect(multibase.isEncoded(item.Hash)).to.deep.equal('base64')
               })
               done()
