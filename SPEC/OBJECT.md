@@ -270,13 +270,13 @@ A great source of [examples][] can be found in the tests for this API.
 
 `link` is the new link to be added on the node that is identified by the `multihash`, can be passed as:
 - `DAGLink`
-- Object containing: name, multihash and size properties
+- Object containing: name, cid and size properties
 
 ```js
 const link = {
   name: 'Qmef7ScwzJUCg1zUSrCmPAz45m8uP5jU7SLgt2EffjBmbL',
   size: 37,
-  multihash: 'Qmef7ScwzJUCg1zUSrCmPAz45m8uP5jU7SLgt2EffjBmbL'
+  cid: new CID('Qmef7ScwzJUCg1zUSrCmPAz45m8uP5jU7SLgt2EffjBmbL')
 };
 ```
 
@@ -300,7 +300,7 @@ If no `callback` is passed, a [promise][] is returned.
 ipfs.object.patch.addLink(node, {
   name: 'some-link'
   size: 10
-  multihash: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD'
+  cid: new CID('QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD')
 }, (err, cid) => {
   if (err) {
     throw err
@@ -338,7 +338,7 @@ A great source of [examples][] can be found in the tests for this API.
     const link = {
       name: 'Qmef7ScwzJUCg1zUSrCmPAz45m8uP5jU7SLgt2EffjBmbL'
     };
-```
+    ```
 
 `options` is a optional argument of type object, that can contain the following properties:
 
