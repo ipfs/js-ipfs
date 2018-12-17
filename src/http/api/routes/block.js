@@ -27,18 +27,19 @@ module.exports = (server) => {
       pre: [
         { method: resources.block.put.parseArgs, assign: 'args' }
       ],
-      handler: resources.block.put.handler
+      handler: resources.block.put.handler,
+      validate: resources.block.put.validate
     }
   })
 
   api.route({
     method: '*',
-    path: '/api/v0/block/del',
+    path: '/api/v0/block/rm',
     config: {
       pre: [
-        { method: resources.block.del.parseArgs, assign: 'args' }
+        { method: resources.block.rm.parseArgs, assign: 'args' }
       ],
-      handler: resources.block.del.handler
+      handler: resources.block.rm.handler
     }
   })
 
@@ -49,7 +50,8 @@ module.exports = (server) => {
       pre: [
         { method: resources.block.stat.parseArgs, assign: 'args' }
       ],
-      handler: resources.block.stat.handler
+      handler: resources.block.stat.handler,
+      validate: resources.block.stat.validate
     }
   })
 }

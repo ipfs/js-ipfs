@@ -1,6 +1,8 @@
 'use strict'
 
-const print = require('../../utils').print
+const multibase = require('multibase')
+const { print } = require('../../utils')
+const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
   command: 'links <key>',
@@ -9,21 +11,20 @@ module.exports = {
 
   builder: {
     'cid-base': {
-      default: 'base58btc',
-      describe: 'CID base to use.'
+      describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
+      type: 'string',
+      choices: multibase.names
     }
   },
 
-  handler (argv) {
-    argv.ipfs.object.links(argv.key, {
-      enc: 'base58'
-    }, (err, links) => {
+  handler ({ ipfs, key, cidBase }) {
+    ipfs.object.links(key, { enc: 'base58' }, (err, links) => {
       if (err) {
         throw err
       }
 
       links.forEach((link) => {
-        print(`${link.cid.toBaseEncodedString(argv.cidBase)} ${link.size} ${link.name}`)
+        print(`${cidToString(link.cid, { base: cidBase, upgrade: false })} ${link.size} ${link.name}`)
       })
     })
   }

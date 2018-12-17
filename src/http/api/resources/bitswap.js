@@ -1,26 +1,47 @@
 'use strict'
 
 const boom = require('boom')
-
+const Joi = require('joi')
+const multibase = require('multibase')
+const { cidToString } = require('../../../utils/cid')
 const parseKey = require('./block').parseKey
 
 exports = module.exports
 
 exports.wantlist = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   handler: (request, reply) => {
     const peerId = request.query.peer
+    const cidBase = request.query['cid-base']
+
     request.server.app.ipfs.bitswap.wantlist(peerId, (err, list) => {
       if (err) {
         return reply(boom.badRequest(err))
       }
-      reply(list)
+      reply({
+        Keys: list.Keys.map(k => ({
+          '/': cidToString(k['/'], { base: cidBase, upgrade: false })
+        }))
+      })
     })
   }
 }
 
 exports.stat = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   handler: (request, reply) => {
     const ipfs = request.server.app.ipfs
+    const cidBase = request.query['cid-base']
 
     ipfs.bitswap.stat((err, stats) => {
       if (err) {
@@ -29,6 +50,10 @@ exports.stat = {
           Code: 0
         }).code(500)
       }
+
+      stats.wantlist = stats.wantlist.map(k => ({
+        '/': cidToString(k['/'], { base: cidBase, upgrade: false })
+      }))
 
       reply({
         ProvideBufLen: stats.provideBufLen,
@@ -46,6 +71,12 @@ exports.stat = {
 }
 
 exports.unwant = {
+  validate: {
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(multibase.names)
+    }).unknown()
+  },
+
   // uses common parseKey method that assigns a `key` to request.pre.args
   parseArgs: parseKey,
 
@@ -57,7 +88,7 @@ exports.unwant = {
       if (err) {
         return reply(boom.badRequest(err))
       }
-      reply({ key: key.toBaseEncodedString() })
+      reply({ key: cidToString(key, { base: request.query['cid-base'], upgrade: false }) })
     })
   }
 }

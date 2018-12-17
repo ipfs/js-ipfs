@@ -5,6 +5,7 @@ const isIpfs = require('is-ipfs')
 const setImmediate = require('async/setImmediate')
 const doUntil = require('async/doUntil')
 const CID = require('cids')
+const { cidToString } = require('../../utils/cid')
 
 module.exports = (self) => {
   return promisify((name, opts, cb) => {
@@ -28,7 +29,7 @@ module.exports = (self) => {
     const cid = new CID(split[2])
 
     if (split.length === 3) {
-      return setImmediate(() => cb(null, name))
+      return setImmediate(() => cb(null, `/ipfs/${cidToString(cid, { base: opts.cidBase })}`))
     }
 
     const path = split.slice(3).join('/')
@@ -36,7 +37,7 @@ module.exports = (self) => {
     resolve(cid, path, (err, cid) => {
       if (err) return cb(err)
       if (!cid) return cb(new Error('found non-link at given path'))
-      cb(null, `/ipfs/${cid.toBaseEncodedString(opts.cidBase)}`)
+      cb(null, `/ipfs/${cidToString(cid, { base: opts.cidBase })}`)
     })
   })
 

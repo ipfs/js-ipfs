@@ -293,6 +293,8 @@ module.exports = function object (self) {
         options = {}
       }
 
+      options = options || {}
+
       waterfall([
         (cb) => self.object.get(multihash, options, cb),
         (node, cb) => {

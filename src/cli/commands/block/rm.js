@@ -1,8 +1,6 @@
 'use strict'
 
-const utils = require('../../utils')
-const mh = require('multihashes')
-const print = utils.print
+const { print, isDaemonOn } = require('../../utils')
 
 module.exports = {
   command: 'rm <key>',
@@ -11,18 +9,18 @@ module.exports = {
 
   builder: {},
 
-  handler (argv) {
-    if (utils.isDaemonOn()) {
+  handler ({ ipfs, key }) {
+    if (isDaemonOn()) {
       // TODO implement this once `js-ipfs-http-client` supports it
       throw new Error('rm block with daemon running is not yet implemented')
     }
 
-    argv.ipfs.block.rm(mh.fromB58String(argv.key), (err) => {
+    ipfs.block.rm(key, (err) => {
       if (err) {
         throw err
       }
 
-      print('removed ' + argv.key)
+      print('removed ' + key)
     })
   }
 }

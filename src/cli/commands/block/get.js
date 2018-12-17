@@ -1,6 +1,5 @@
 'use strict'
 
-const CID = require('cids')
 const print = require('../../utils').print
 
 module.exports = {
@@ -10,10 +9,8 @@ module.exports = {
 
   builder: {},
 
-  handler (argv) {
-    const cid = new CID(argv.key)
-
-    argv.ipfs.block.get(cid, (err, block) => {
+  handler ({ ipfs, key }) {
+    ipfs.block.get(key, (err, block) => {
       if (err) {
         throw err
       }

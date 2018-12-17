@@ -363,6 +363,15 @@ describe('files', () => runOnAndOff((thing) => {
     })
   })
 
+  it('should add and print CID encoded in specified base', function () {
+    this.timeout(30 * 1000)
+
+    return ipfs('add test/fixtures/test-data/hello --cid-base=base64')
+      .then((out) => {
+        expect(out).to.eql('added mAXASIEbUSBS5xa8UHDqqt8BdxehE6tX5HxKFiwIeukV2i0wO hello\n')
+      })
+  })
+
   it('cat', function () {
     this.timeout(30 * 1000)
 

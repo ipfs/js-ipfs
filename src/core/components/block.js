@@ -1,7 +1,6 @@
 'use strict'
 
 const Block = require('ipfs-block')
-const multihash = require('multihashes')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
 const waterfall = require('async/waterfall')
@@ -57,15 +56,29 @@ module.exports = function block (self) {
 
           const mhtype = options.mhtype || 'sha2-256'
           const format = options.format || 'dag-pb'
-          const cidVersion = options.version || 0
+          let cidVersion
           // const mhlen = options.mhlen || 0
+
+          if (options.version == null) {
+            // Pick appropriate CID version
+            cidVersion = mhtype === 'sha2-256' && format === 'dag-pb' ? 0 : 1
+          } else {
+            cidVersion = options.version
+          }
 
           multihashing(block, mhtype, (err, multihash) => {
             if (err) {
               return cb(err)
             }
 
-            cb(null, new Block(block, new CID(cidVersion, format, multihash)))
+            let cid
+            try {
+              cid = new CID(cidVersion, format, multihash)
+            } catch (err) {
+              return cb(err)
+            }
+
+            cb(null, new Block(block, cid))
           })
         },
         (block, cb) => self._blockService.put(block, (err) => {
@@ -112,7 +125,7 @@ module.exports = function block (self) {
           return callback(err)
         }
         callback(null, {
-          key: multihash.toB58String(cid.multihash),
+          key: cid.toString(),
           size: block.data.length
         })
       })

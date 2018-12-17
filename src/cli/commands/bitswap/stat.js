@@ -1,22 +1,29 @@
 'use strict'
 
-const print = require('../../utils').print
+const multibase = require('multibase')
+const { print } = require('../../utils')
+const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
   command: 'stat',
 
   describe: 'Show some diagnostic information on the bitswap agent.',
 
-  builder: {},
+  builder: {
+    'cid-base': {
+      describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
+      type: 'string',
+      choices: multibase.names
+    }
+  },
 
-  handler (argv) {
-    argv.ipfs.bitswap.stat((err, stats) => {
+  handler ({ ipfs, cidBase }) {
+    ipfs.bitswap.stat((err, stats) => {
       if (err) {
         throw err
       }
 
-      stats.wantlist = stats.wantlist || []
-      stats.wantlist = stats.wantlist.map(entry => entry['/'])
+      stats.wantlist = stats.wantlist.map(k => cidToString(k['/'], { base: cidBase, upgrade: false }))
       stats.peers = stats.peers || []
 
       print(`bitswap status

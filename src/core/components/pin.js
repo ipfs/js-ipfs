@@ -14,6 +14,8 @@ const detectLimit = require('async/detectLimit')
 const setImmediate = require('async/setImmediate')
 const { Key } = require('interface-datastore')
 const errCode = require('err-code')
+const multibase = require('multibase')
+
 const createPinSet = require('./pin-set')
 const { resolvePath } = require('../utils')
 
@@ -143,6 +145,7 @@ module.exports = (self) => {
         callback = options
         options = {}
       }
+
       options = options || {}
 
       const recursive = options.recursive == null ? true : options.recursive
@@ -193,18 +196,25 @@ module.exports = (self) => {
           // persist updated pin sets to datastore
           flushPins((err, root) => {
             if (err) { return callback(err) }
-            return callback(null, results.map(hash => ({ hash })))
+            callback(null, results.map(hash => ({ hash })))
           })
         })
       })
     }),
 
     rm: promisify((paths, options, callback) => {
-      let recursive = true
       if (typeof options === 'function') {
         callback = options
-      } else if (options && options.recursive === false) {
-        recursive = false
+      }
+
+      options = options || {}
+
+      const recursive = options.recursive == null ? true : options.recursive
+
+      if (options.cidBase && !multibase.names.includes(options.cidBase)) {
+        return setImmediate(() => {
+          callback(errCode(new Error('invalid multibase'), 'ERR_INVALID_MULTIBASE'))
+        })
       }
 
       resolvePath(self.object, paths, (err, mhs) => {
@@ -251,7 +261,7 @@ module.exports = (self) => {
           flushPins((err, root) => {
             if (err) { return callback(err) }
             self.log(`Removed pins: ${results}`)
-            return callback(null, results.map(hash => ({ hash })))
+            callback(null, results.map(hash => ({ hash })))
           })
         })
       })
@@ -261,7 +271,7 @@ module.exports = (self) => {
       let type = types.all
       if (typeof paths === 'function') {
         callback = paths
-        options = null
+        options = {}
         paths = null
       }
       if (typeof options === 'function') {
@@ -271,7 +281,10 @@ module.exports = (self) => {
         options = paths
         paths = null
       }
-      if (options && options.type) {
+
+      options = options || {}
+
+      if (options.type) {
         if (typeof options.type !== 'string') {
           return setImmediate(() => callback(invalidPinTypeErr(options.type)))
         }
@@ -348,7 +361,7 @@ module.exports = (self) => {
             return callback(null, pins)
           })
         } else {
-          return callback(null, pins)
+          callback(null, pins)
         }
       }
     }),

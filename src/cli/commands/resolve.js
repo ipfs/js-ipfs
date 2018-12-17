@@ -1,5 +1,6 @@
 'use strict'
 
+const multibase = require('multibase')
 const print = require('../utils').print
 
 module.exports = {
@@ -12,11 +13,17 @@ module.exports = {
       alias: 'r',
       type: 'boolean',
       default: false
+    },
+    'cid-base': {
+      describe: 'Number base to display CIDs in.',
+      type: 'string',
+      choices: multibase.names
     }
   },
 
   handler (argv) {
-    argv.ipfs.resolve(argv.name, { recursive: argv.recursive }, (err, res) => {
+    const { recursive, cidBase } = argv
+    argv.ipfs.resolve(argv.name, { recursive, cidBase }, (err, res) => {
       if (err) throw err
       print(res)
     })

@@ -1,6 +1,8 @@
 'use strict'
 
-const print = require('../../utils').print
+const multibase = require('multibase')
+const { print } = require('../../utils')
+const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
   command: 'unwant <key>',
@@ -12,14 +14,19 @@ module.exports = {
       alias: 'k',
       describe: 'Key to remove from your wantlist',
       type: 'string'
+    },
+    'cid-base': {
+      describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
+      type: 'string',
+      choices: multibase.names
     }
   },
-  handler (argv) {
-    argv.ipfs.bitswap.unwant(argv.key, (err) => {
+  handler ({ ipfs, key, cidBase }) {
+    ipfs.bitswap.unwant(key, (err) => {
       if (err) {
         throw err
       }
-      print(`Key ${argv.key} removed from wantlist`)
+      print(`Key ${cidToString(key, { base: cidBase, upgrade: false })} removed from wantlist`)
     })
   }
 }

@@ -1,9 +1,8 @@
 'use strict'
 
-const debug = require('debug')
-const log = debug('cli:object')
-log.error = debug('cli:object:error')
-const print = require('../../../utils').print
+const multibase = require('multibase')
+const { print } = require('../../../utils')
+const { cidToString } = require('../../../../utils/cid')
 
 module.exports = {
   command: 'rm-link <root> <link>',
@@ -12,20 +11,21 @@ module.exports = {
 
   builder: {
     'cid-base': {
-      default: 'base58btc',
-      describe: 'CID base to use.'
+      describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
+      type: 'string',
+      choices: multibase.names
     }
   },
 
-  handler (argv) {
-    argv.ipfs.object.patch.rmLink(argv.root, { name: argv.link }, {
+  handler ({ ipfs, root, link, cidBase }) {
+    ipfs.object.patch.rmLink(root, { name: link }, {
       enc: 'base58'
     }, (err, cid) => {
       if (err) {
         throw err
       }
 
-      print(cid.toBaseEncodedString(argv.cidBase))
+      print(cidToString(cid, { base: cidBase, upgrade: false }))
     })
   }
 }

@@ -12,7 +12,8 @@ module.exports = (server) => {
       pre: [
         { method: resources.pin.add.parseArgs, assign: 'args' }
       ],
-      handler: resources.pin.add.handler
+      handler: resources.pin.add.handler,
+      validate: resources.pin.add.validate
     }
   })
 
@@ -23,7 +24,8 @@ module.exports = (server) => {
       pre: [
         { method: resources.pin.rm.parseArgs, assign: 'args' }
       ],
-      handler: resources.pin.rm.handler
+      handler: resources.pin.rm.handler,
+      validate: resources.pin.rm.validate
     }
   })
 
@@ -34,7 +36,8 @@ module.exports = (server) => {
       pre: [
         { method: resources.pin.ls.parseArgs, assign: 'args' }
       ],
-      handler: resources.pin.ls.handler
+      handler: resources.pin.ls.handler,
+      validate: resources.pin.ls.validate
     }
   })
 }

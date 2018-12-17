@@ -13,7 +13,7 @@ const WRAPPER = 'wrapper/'
 
 function noop () {}
 
-function prepareFile (self, opts, file, callback) {
+function prepareFile (file, self, opts, callback) {
   opts = opts || {}
 
   let cid = new CID(file.multihash)
@@ -46,7 +46,7 @@ function prepareFile (self, opts, file, callback) {
   ], callback)
 }
 
-function normalizeContent (opts, content) {
+function normalizeContent (content, opts) {
   if (!Array.isArray(content)) {
     content = [content]
   }
@@ -88,7 +88,7 @@ function normalizeContent (opts, content) {
   })
 }
 
-function preloadFile (self, opts, file) {
+function preloadFile (file, self, opts) {
   const isRootFile = opts.wrapWithDirectory
     ? file.path === ''
     : !file.path.includes('/')
@@ -102,7 +102,7 @@ function preloadFile (self, opts, file) {
   return file
 }
 
-function pinFile (self, opts, file, cb) {
+function pinFile (file, self, opts, cb) {
   // Pin a file if it is the root dir of a recursive add or the single file
   // of a direct add.
   const pin = 'pin' in opts ? opts.pin : true
@@ -117,7 +117,9 @@ function pinFile (self, opts, file, cb) {
 
 module.exports = function (self) {
   // Internal add func that gets used by all add funcs
-  return function addPullStream (options = {}) {
+  return function addPullStream (options) {
+    options = options || {}
+
     let chunkerOptions
     try {
       chunkerOptions = parseChunkerString(options.chunker)
@@ -145,12 +147,12 @@ module.exports = function (self) {
 
     opts.progress = progress
     return pull(
-      pull.map(normalizeContent.bind(null, opts)),
+      pull.map(content => normalizeContent(content, opts)),
       pull.flatten(),
       importer(self._ipld, opts),
-      pull.asyncMap(prepareFile.bind(null, self, opts)),
-      pull.map(preloadFile.bind(null, self, opts)),
-      pull.asyncMap(pinFile.bind(null, self, opts))
+      pull.asyncMap((file, cb) => prepareFile(file, self, opts, cb)),
+      pull.map(file => preloadFile(file, self, opts)),
+      pull.asyncMap((file, cb) => pinFile(file, self, opts, cb))
     )
   }
 }

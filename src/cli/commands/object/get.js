@@ -1,7 +1,8 @@
 'use strict'
 
-const print = require('../../utils').print
-const dagPB = require('ipld-dag-pb')
+const multibase = require('multibase')
+const { print } = require('../../utils')
+const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
   command: 'get <key>',
@@ -14,43 +15,38 @@ module.exports = {
       default: 'base64'
     },
     'cid-base': {
-      default: 'base58btc',
-      describe: 'CID base to use.'
+      describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
+      type: 'string',
+      choices: multibase.names
     }
   },
 
-  handler (argv) {
-    argv.ipfs.object.get(argv.key, { enc: 'base58' }, (err, node) => {
+  handler ({ ipfs, key, dataEncoding, cidBase }) {
+    ipfs.object.get(key, { enc: 'base58' }, (err, node) => {
       if (err) {
         throw err
       }
 
-      dagPB.util.cid(node, (err, result) => {
-        if (err) {
-          throw err
-        }
+      let data = node.data
 
-        let data = node.data
+      if (Buffer.isBuffer(data)) {
+        data = node.data.toString(dataEncoding || undefined)
+      }
 
-        if (Buffer.isBuffer(data)) {
-          data = node.data.toString(argv.dataEncoding || undefined)
-        }
+      const answer = {
+        Data: data,
+        Hash: cidToString(key, { base: cidBase, upgrade: false }),
+        Size: node.size,
+        Links: node.links.map((l) => {
+          return {
+            Name: l.name,
+            Size: l.size,
+            Hash: cidToString(l.cid, { base: cidBase, upgrade: false })
+          }
+        })
+      }
 
-        const answer = {
-          Data: data,
-          Hash: result.toBaseEncodedString(argv.cidBase),
-          Size: node.size,
-          Links: node.links.map((l) => {
-            return {
-              Name: l.name,
-              Size: l.size,
-              Hash: l.cid.toBaseEncodedString(argv.cidBase)
-            }
-          })
-        }
-
-        print(JSON.stringify(answer))
-      })
+      print(JSON.stringify(answer))
     })
   }
 }

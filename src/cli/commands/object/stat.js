@@ -9,10 +9,8 @@ module.exports = {
 
   builder: {},
 
-  handler (argv) {
-    argv.ipfs.object.stat(argv.key, {
-      enc: 'base58'
-    }, (err, stats) => {
+  handler ({ ipfs, key, cidBase }) {
+    ipfs.object.stat(key, { enc: 'base58' }, (err, stats) => {
       if (err) {
         throw err
       }
