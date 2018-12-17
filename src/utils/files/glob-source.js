@@ -43,9 +43,9 @@ module.exports = (...args) => {
 
     try {
       const sources = results.map(res => toGlobSource(res, globSourceOptions))
-      return deferred.resolve(cat(sources))
+      deferred.resolve(cat(sources))
     } catch (err) {
-      return deferred.abort(err)
+      deferred.abort(err)
     }
   })
 
@@ -94,7 +94,7 @@ function toGlobSource ({ path, type }, options) {
   return pull(
     pusher,
     pull.map(p => ({
-      path: Path.join(baseName, p),
+      path: `${baseName}/${toPosix(p)}`,
       contentPath: Path.join(path, p)
     }))
   )
@@ -107,8 +107,10 @@ function normalizePathWithType (path, cb) {
   }, (err, res) => {
     if (err) return cb(err)
     cb(null, {
-      path: res.realpath.replace(/\\/g, '/'),
+      path: toPosix(res.realpath),
       type: res.stat.isDirectory() ? 'dir' : 'file'
     })
   })
 }
+
+const toPosix = path => path.replace(/\\/g, '/')
