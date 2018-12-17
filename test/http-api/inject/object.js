@@ -35,7 +35,8 @@ module.exports = (http) => {
         })
       })
 
-      it('should create a new object and return a base64 encoded CID', (done) => {
+      // TODO: unskip after switch to v1 CIDs by default
+      it.skip('should create a new object and return a base64 encoded CID', (done) => {
         api.inject({
           method: 'POST',
           url: '/api/v0/object/new?cid-base=base64'
@@ -94,7 +95,8 @@ module.exports = (http) => {
         })
       })
 
-      it('should get object and return a base64 encoded CID', (done) => {
+      // TODO: unskip after switch to v1 CIDs by default
+      it.skip('should get object and return a base64 encoded CID', (done) => {
         api.inject({
           method: 'POST',
           url: '/api/v0/object/new'
@@ -199,7 +201,8 @@ module.exports = (http) => {
         })
       })
 
-      it('should put data and return a base64 encoded CID', (done) => {
+      // TODO: unskip after switch to v1 CIDs by default
+      it.skip('should put data and return a base64 encoded CID', (done) => {
         const form = new FormData()
         form.append('file', JSON.stringify({ Data: 'TEST' + Date.now(), Links: [] }), { filename: 'node.json' })
         const headers = form.getHeaders()
@@ -278,7 +281,8 @@ module.exports = (http) => {
         })
       })
 
-      it('should stat object and return a base64 encoded CID', (done) => {
+      // TODO: unskip after switch to v1 CIDs by default
+      it.skip('should stat object and return a base64 encoded CID', (done) => {
         api.inject({
           method: 'POST',
           url: '/api/v0/object/new'
@@ -393,7 +397,8 @@ module.exports = (http) => {
         })
       })
 
-      it('should list object links and return a base64 encoded CID', (done) => {
+      // TODO: unskip after switch to v1 CIDs by default
+      it.skip('should list object links and return a base64 encoded CID', (done) => {
         waterfall([
           (cb) => {
             api.inject({
@@ -560,7 +565,8 @@ module.exports = (http) => {
         })
       })
 
-      it('should append data to object and return a base64 encoded CID', (done) => {
+      // TODO: unskip after switch to v1 CIDs by default
+      it.skip('should append data to object and return a base64 encoded CID', (done) => {
         api.inject({
           method: 'POST',
           url: '/api/v0/object/new'
@@ -685,7 +691,8 @@ module.exports = (http) => {
         })
       })
 
-      it('should set data for object and return a base64 encoded CID', (done) => {
+      // TODO: unskip after switch to v1 CIDs by default
+      it.skip('should set data for object and return a base64 encoded CID', (done) => {
         api.inject({
           method: 'POST',
           url: '/api/v0/object/new'
@@ -801,7 +808,8 @@ module.exports = (http) => {
         })
       })
 
-      it('should add a link to an object and return a base64 encoded CID', (done) => {
+      // TODO: unskip after switch to v1 CIDs by default
+      it.skip('should add a link to an object and return a base64 encoded CID', (done) => {
         api.inject({
           method: 'POST',
           url: '/api/v0/object/new'
@@ -896,7 +904,8 @@ module.exports = (http) => {
         })
       })
 
-      it('should remove a link from an object and return a base64 encoded CID', (done) => {
+      // TODO: unskip after switch to v1 CIDs by default
+      it.skip('should remove a link from an object and return a base64 encoded CID', (done) => {
         const linkName = 'TEST' + Date.now()
 
         waterfall([
