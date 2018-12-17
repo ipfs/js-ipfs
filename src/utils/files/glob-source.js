@@ -8,7 +8,6 @@ const cat = require('pull-cat')
 const defer = require('pull-defer')
 const pushable = require('pull-pushable')
 const map = require('async/map')
-const parallel = require('async/parallel')
 const errCode = require('err-code')
 
 /**
@@ -38,7 +37,7 @@ module.exports = (...args) => {
   }
 
   // Check the input paths comply with options.recursive and convert to glob sources
-  map(paths, normalizePathWithType, (err, results) => {
+  map(paths, pathAndType, (err, results) => {
     if (err) return deferred.abort(err)
 
     try {
@@ -100,16 +99,10 @@ function toGlobSource ({ path, type }, options) {
   )
 }
 
-function normalizePathWithType (path, cb) {
-  parallel({
-    stat: cb => fs.stat(path, cb),
-    realpath: cb => fs.realpath(path, cb)
-  }, (err, res) => {
+function pathAndType (path, cb) {
+  fs.stat(path, (err, stat) => {
     if (err) return cb(err)
-    cb(null, {
-      path: toPosix(res.realpath),
-      type: res.stat.isDirectory() ? 'dir' : 'file'
-    })
+    cb(null, { path, type: stat.isDirectory() ? 'dir' : 'file' })
   })
 }
 
