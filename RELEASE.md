@@ -19,7 +19,7 @@
       ```sh
       # Minor prerelease (e.g. 0.33.1 -> 0.34.0-rc.0)
       $ npx aegir release --type preminor --preid rc --dist-tag next
-      
+
       # Increment prerelease (e.g. 0.34.0-rc.0 -> 0.34.0-rc.1)
       $ npx aegir release --type prerelease --preid rc --dist-tag next
       ```
@@ -34,7 +34,7 @@
   - [ ] Ensure that all the examples run
 - Communication
   - [ ] Create the release issue
-  - [ ] Take a snapshot between of everyone that has contributed to this release (including its subdeps in IPFS, libp2p, IPLD and multiformats) using https://www.npmjs.com/package/name-your-contributors
+  - [ ] Take a snapshot between of everyone that has contributed to this release (including its subdeps in IPFS, libp2p, IPLD and multiformats) using [`name-your-contributors`](https://www.npmjs.com/package/name-your-contributors). Generate a nice markdown list with [this script](https://gist.github.com/alanshaw/5a2d9465c5a05b201d949551bdb1fcc3).
   - [ ] Announcements (both pre-release and post-release)
     - [ ] Twitter
     - [ ] IRC
@@ -46,7 +46,7 @@
 
 # ❤️ Huge thank you to everyone that made this release possible
 
-By alphabetical order, here are all the humans that contributed to the release:
+In alphabetical order, here are all the humans that contributed to the release:
 
 - ...
 
