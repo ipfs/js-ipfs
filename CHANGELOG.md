@@ -1,3 +1,22 @@
+<a name="0.34.0-rc.0"></a>
+# [0.34.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.34.0-pre.0...v0.34.0-rc.0) (2018-12-18)
+
+
+### Bug Fixes
+
+* link to Github profile for David Dias ([3659d7e](https://github.com/ipfs/js-ipfs/commit/3659d7e))
+* streaming cat over http api ([#1760](https://github.com/ipfs/js-ipfs/issues/1760)) ([3ded576](https://github.com/ipfs/js-ipfs/commit/3ded576))
+
+
+### Features
+
+* add `addFromFs` method ([#1777](https://github.com/ipfs/js-ipfs/issues/1777)) ([7315aa1](https://github.com/ipfs/js-ipfs/commit/7315aa1))
+* add from url/stream ([#1773](https://github.com/ipfs/js-ipfs/issues/1773)) ([b6a7ab6](https://github.com/ipfs/js-ipfs/commit/b6a7ab6))
+* add slient option ([#1712](https://github.com/ipfs/js-ipfs/issues/1712)) ([593334b](https://github.com/ipfs/js-ipfs/commit/593334b))
+* cid base option ([#1552](https://github.com/ipfs/js-ipfs/issues/1552)) ([6d46e2e](https://github.com/ipfs/js-ipfs/commit/6d46e2e)), closes [/github.com/ipfs/go-ipfs/issues/5349#issuecomment-445104823](https://github.com//github.com/ipfs/go-ipfs/issues/5349/issues/issuecomment-445104823)
+
+
+
 <a name="0.34.0-pre.0"></a>
 # [0.34.0-pre.0](https://github.com/ipfs/js-ipfs/compare/v0.33.1...v0.34.0-pre.0) (2018-12-07)
 
