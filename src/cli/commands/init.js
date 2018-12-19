@@ -44,7 +44,7 @@ module.exports = {
       repo: new Repo(path),
       init: false,
       start: false,
-      config: argv.config
+      config: argv.config || {}
     })
 
     node.init({
