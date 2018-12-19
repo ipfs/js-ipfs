@@ -25,7 +25,7 @@
       ```
   - [ ] Run tests of the following projects with the new release:
     - [ ] [ipfs-pubsub-room](https://github.com/ipfs-shipyard/ipfs-pubsub-room)
-    - [ ] [peer-star-app](https://github.com/ipfs-shipyard/peer-star-app)
+    - [ ] [peer-base](https://github.com/peer-base/peer-base)
     - [ ] [ipfs-log](https://github.com/orbitdb/ipfs-log)
     - [ ] [orbit-db](https://github.com/orbitdb/orbit-db)
     - [ ] [service-worker-gateway](https://github.com/ipfs-shipyard/service-worker-gateway)
