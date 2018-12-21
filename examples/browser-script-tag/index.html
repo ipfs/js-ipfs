@@ -28,7 +28,7 @@
   <p>Try adding a new file:</p>
 
   <code style="display:block; white-space:pre-wrap; background-color:#d7d6d6">
-    node.add(new node.types.Buffer('Hello world!'), (err, filesAdded) => {
+    node.files.add(new node.types.Buffer('Hello world!'), (err, filesAdded) => {
       if (err) {
         return console.error('Error - ipfs add', err, res)
       }
@@ -40,7 +40,7 @@
   <p>You can cat that same file. If you used the exact same string as above ('Hello world!') you should have an hash like this: 'QmQzCQn4puG4qu8PVysxZmscmQ5vT1ZXpqo7f58Uh9QfyY'</p>
 
   <code style="display:block; white-space:pre-wrap; background-color:#d7d6d6">
-    node.cat('QmQzCQn4puG4qu8PVysxZmscmQ5vT1ZXpqo7f58Uh9QfyY', function (err, data) {
+    node.files.cat('QmQzCQn4puG4qu8PVysxZmscmQ5vT1ZXpqo7f58Uh9QfyY', function (err, data) {
       if (err) {
         return console.error('Error - ipfs files cat', err, res)
       }
