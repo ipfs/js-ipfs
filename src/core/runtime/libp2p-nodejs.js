@@ -3,17 +3,20 @@
 const TCP = require('libp2p-tcp')
 const MulticastDNS = require('libp2p-mdns')
 const WS = require('libp2p-websockets')
-const WebSocketStar = require('libp2p-websocket-star')
+const WebSocketStarMulti = require('libp2p-websocket-star-multi')
 const Bootstrap = require('libp2p-bootstrap')
 const KadDHT = require('libp2p-kad-dht')
 const Multiplex = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
 const libp2p = require('libp2p')
 const defaultsDeep = require('@nodeutils/defaults-deep')
+const multiaddr = require('multiaddr')
 
 class Node extends libp2p {
   constructor (_options) {
-    const wsstar = new WebSocketStar({ id: _options.peerInfo.id })
+    const wsstarServers = _options.peerInfo.multiaddrs.toArray().map(String).filter(addr => ~addr.indexOf('p2p-websocket-star'))
+    _options.peerInfo.multiaddrs.replace(wsstarServers.map(multiaddr), '/p2p-websocket-star') // the ws-star-multi module will replace this with the chosen ws-star servers
+    const wsstar = new WebSocketStarMulti({ servers: wsstarServers, id: _options.peerInfo.id, ignore_no_online: !wsstarServers.length || _options.wsStarIgnoreErrors })
 
     const defaults = {
       modules: {
