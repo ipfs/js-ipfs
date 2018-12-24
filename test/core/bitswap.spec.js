@@ -6,7 +6,7 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-const _ = require('lodash')
+const range = require('just-range')
 const series = require('async/series')
 const waterfall = require('async/waterfall')
 const parallel = require('async/parallel')
@@ -175,7 +175,7 @@ describe('bitswap', function () {
       const remoteNodes = []
 
       series([
-        (cb) => parallel(_.range(6).map((i) => makeBlock), (err, _blocks) => {
+        (cb) => parallel(range(6).map((i) => makeBlock), (err, _blocks) => {
           expect(err).to.not.exist()
           blocks = _blocks
           cb()
@@ -196,7 +196,7 @@ describe('bitswap', function () {
         (cb) => inProcNode.block.put(blocks[4], cb),
         (cb) => inProcNode.block.put(blocks[5], cb),
         // 3. Fetch blocks on all nodes
-        (cb) => parallel(_.range(6).map((i) => (cbI) => {
+        (cb) => parallel(range(6).map((i) => (cbI) => {
           const check = (n, cid, callback) => {
             n.block.get(cid, (err, b) => {
               expect(err).to.not.exist()

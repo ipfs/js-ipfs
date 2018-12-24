@@ -1,12 +1,10 @@
 'use strict'
 
-const mapValues = require('lodash/mapValues')
-const keyBy = require('lodash/keyBy')
 const multibase = require('multibase')
-const Joi = require('joi')
 const Boom = require('boom')
 const isIpfs = require('is-ipfs')
 const { cidToString } = require('../../../utils/cid')
+const Joi = require('joi')
 
 function parseArgs (request, h) {
   let { arg } = request.query
@@ -63,10 +61,13 @@ exports.ls = {
     }
 
     return h.response({
-      Keys: mapValues(
-        keyBy(result, obj => cidToString(obj.hash, { base: request.query['cid-base'] })),
-        obj => ({ Type: obj.type })
-      )
+      Keys: result.reduce((acc, v) => {
+        const prop = cidToString(obj.hash, { base: request.query['cid-base'] })
+        acc[v[prop]] = { Type: v.type }
+        return acc
+      }, {})
+    })
+
     })
   }
 }

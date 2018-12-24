@@ -2,7 +2,7 @@
 
 const series = require('async/series')
 const Bitswap = require('ipfs-bitswap')
-const get = require('lodash/get')
+const get = require('dlv')
 const setImmediate = require('async/setImmediate')
 const promisify = require('promisify-es6')
 const { TieredDatastore } = require('datastore-core')

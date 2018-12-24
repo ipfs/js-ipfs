@@ -5,7 +5,6 @@ const pull = require('pull-stream')
 const sort = require('pull-sort')
 const isStream = require('is-stream')
 const isSource = require('is-pull-stream').isSource
-const isString = require('lodash/isString')
 
 module.exports = function (self) {
   const add = promisify((data, options, callback) => {
@@ -24,7 +23,7 @@ module.exports = function (self) {
       // path is optional if content is present
       if (obj.content) return isBufferOrStream(obj.content)
       // path must be a non-empty string if no content
-      return Boolean(obj.path) && isString(obj.path)
+      return Boolean(obj.path) && typeof obj.path === 'string'
     }
     // An input atom: a buffer, stream or content object
     const isInput = obj => isBufferOrStream(obj) || isContentObject(obj)

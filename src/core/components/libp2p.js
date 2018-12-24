@@ -1,6 +1,7 @@
 'use strict'
 
-const get = require('lodash/get')
+const promisify = require('promisify-es6')
+const get = require('dlv')
 const ipnsUtils = require('../ipns/routing/utils')
 const mergeOptions = require('merge-options')
 
