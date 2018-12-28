@@ -3,7 +3,7 @@
 /* eslint-env browser */
 
 const Ipfs = require('../../')
-const videoStream = require('videostream')
+const VideoStream = require('videostream')
 const ipfs = new Ipfs({ repo: 'ipfs-' + Math.random() })
 const {
   dragDrop,
@@ -27,7 +27,7 @@ ipfs.on('ready', () => {
     log(`IPFS: Playing ${hashInput.value.trim()}`)
 
     // Set up the video stream an attach it to our <video> element
-    videoStream({
+    new VideoStream({
       createReadStream: function createReadStream (opts) {
         const start = opts.start
 
@@ -45,7 +45,7 @@ ipfs.on('ready', () => {
         }
 
         // This stream will contain the requested bytes
-        stream = ipfs.catReadableStream(hashInput.value.trim(), {
+        stream = ipfs.files.readReadableStream(`/ipfs/${hashInput.value.trim()}`, {
           offset: start,
           length: end && end - start
         })

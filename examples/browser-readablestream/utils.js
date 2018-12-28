@@ -38,7 +38,7 @@ const dragDrop = (ipfs) => {
 
         const reader = new window.FileReader()
         reader.onload = (event) => {
-          ipfs.add({
+          ipfs.files.add({
             path: file.name,
             content: ipfs.types.Buffer.from(event.target.result)
           }, {
@@ -47,7 +47,7 @@ const dragDrop = (ipfs) => {
             }
           }, (error, added) => {
             if (error) {
-              return log(error)
+              return log(error.stack)
             }
 
             const hash = added[0].hash
@@ -134,7 +134,7 @@ const createVideoElement = () => {
   })
 
   videoElement.addEventListener('error', () => {
-    log(videoElement.error)
+    log(videoElement.error.stack)
   })
 
   return videoElement
