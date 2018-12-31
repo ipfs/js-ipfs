@@ -61,7 +61,10 @@ module.exports = function libp2p (self) {
               }
             },
             connectionManager: get(opts.options, 'connectionManager',
-              get(opts.config, 'connectionManager', {}))
+              {
+                maxPeers: get(opts.config, 'Swarm.ConnMgr.HighWater'),
+                minPeers: get(opts.config, 'Swarm.ConnMgr.LowWater')
+              }),
           }
 
           const libp2pOptions = defaultsDeep(
