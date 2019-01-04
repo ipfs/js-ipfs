@@ -127,7 +127,7 @@
     "is-stream": "^1.1.0",
     "joi": "^14.3.0",
     "joi-browser": "^13.4.0",
-    "joi-multiaddr": "^3.0.0",
+    "joi-multiaddr": "^4.0.0",
     "libp2p": "~0.24.1",
     "libp2p-bootstrap": "~0.9.3",
     "libp2p-crypto": "~0.15.0",
