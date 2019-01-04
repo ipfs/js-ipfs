@@ -1,3 +1,13 @@
+<a name="0.8.1"></a>
+## [0.8.1](https://github.com/ipfs/js-ipfs-mfs/compare/v0.8.0...v0.8.1) (2019-01-04)
+
+
+### Bug Fixes
+
+* initialise progress as noop ([2a8cf65](https://github.com/ipfs/js-ipfs-mfs/commit/2a8cf65))
+
+
+
 <a name="0.8.0"></a>
 # [0.8.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.7.7...v0.8.0) (2018-12-04)
 
