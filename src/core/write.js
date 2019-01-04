@@ -46,7 +46,7 @@ const defaultOptions = {
   hashAlg: 'sha2-256',
   format: 'dag-pb',
   parents: false, // whether to create intermediate directories if they do not exist
-  progress: undefined,
+  progress: () => {},
   strategy: 'trickle',
   flush: true,
   leafType: 'raw',
