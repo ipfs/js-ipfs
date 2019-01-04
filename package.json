@@ -9,7 +9,7 @@
     "joi": "joi-browser"
   },
   "scripts": {
-    "test": "aegir test -f test/browser.js",
+    "test": "aegir test",
     "test:node": "aegir test -t node",
     "test:browser": "aegir test -t browser",
     "test:webworker": "aegir test -t webworker",
