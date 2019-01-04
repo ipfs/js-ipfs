@@ -42,7 +42,7 @@
     "bs58": "^4.0.1",
     "chai": "^4.2.0",
     "cids": "~0.5.5",
-    "concat-stream": "^1.6.2",
+    "concat-stream": "^2.0.0",
     "dirty-chai": "^2.0.1",
     "es6-promisify": "^6.0.1",
     "hat": "0.0.3",
@@ -53,7 +53,7 @@
     "ipld-dag-pb": "~0.15.0",
     "is-ipfs": "~0.4.2",
     "is-plain-object": "^2.0.4",
-    "libp2p-crypto": "~0.14.0",
+    "libp2p-crypto": "~0.15.0",
     "multiaddr": "^6.0.0",
     "multibase": "~0.6.0",
     "multihashes": "~0.4.14",
@@ -65,7 +65,7 @@
     "randombytes": "^2.0.6"
   },
   "devDependencies": {
-    "aegir": "^17.0.1"
+    "aegir": "^18.0.2"
   },
   "contributors": [
     "Alan Shaw <alan.shaw@protocol.ai>",
