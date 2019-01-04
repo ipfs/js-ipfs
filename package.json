@@ -11,8 +11,8 @@
   "scripts": {
     "test": "aegir test -f test/browser.js",
     "test:node": "aegir test -t node",
-    "test:browser": "aegir test -t browser -f test/browser.js",
-    "test:webworker": "aegir test -t webworker -f test/browser.js",
+    "test:browser": "aegir test -t browser",
+    "test:webworker": "aegir test -t webworker",
     "build": "aegir build",
     "lint": "aegir lint",
     "release": "aegir release",
