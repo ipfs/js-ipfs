@@ -83,7 +83,7 @@ node.on('ready', async () => {
 
   console.log('Added file:', filesAdded[0].path, filesAdded[0].hash)
 
-  const fileBuffer = await node.cat(filesAdded[0].hash)
+  const fileBuffer = await node.files.cat(filesAdded[0].hash)
 
   console.log('Added file contents:', fileBuffer.toString())
 })
