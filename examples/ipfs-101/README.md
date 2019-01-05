@@ -38,7 +38,7 @@ Running the code above gets you:
 Version: 0.31.2
 ```
 
-Now let's make it more interesting and add a file to IPFS using `node.add`. A file consists of a path and content.
+Now let's make it more interesting and add a file to IPFS using `node.files.add`. A file consists of a path and content.
 
 You can learn about the IPFS File API at [interface-ipfs-core](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md).
 
@@ -48,7 +48,7 @@ node.on('ready', async () => {
 
   console.log('Version:', version.version)
 
-  const filesAdded = await node.add({
+  const filesAdded = await node.files.add({
     path: 'hello.txt',
     content: Buffer.from('Hello World 101')
   })
@@ -76,7 +76,7 @@ node.on('ready', async () => {
 
   console.log('Version:', version.version)
 
-  const filesAdded = await node.add({
+  const filesAdded = await node.files.add({
     path: 'hello.txt',
     content: Buffer.from('Hello World 101')
   })
