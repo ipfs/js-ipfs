@@ -26,6 +26,10 @@ module.exports = function libp2p (self) {
                   enabled: get(opts.options, 'config.Discovery.MDNS.Enabled',
                     get(opts.config, 'Discovery.MDNS.Enabled', true))
                 },
+                stardust: {
+                  enabled: get(opts.options, 'config.Discovery.Stardust.Enabled',
+                    get(opts.config, 'Discovery.Stardust.Enabled', true))
+                },
                 webRTCStar: {
                   enabled: get(opts.options, 'config.Discovery.webRTCStar.Enabled',
                     get(opts.config, 'Discovery.webRTCStar.Enabled', true))
@@ -55,7 +59,8 @@ module.exports = function libp2p (self) {
               },
               EXPERIMENTAL: {
                 dht: get(opts.options, 'EXPERIMENTAL.dht', false),
-                pubsub: get(opts.options, 'EXPERIMENTAL.pubsub', false)
+                pubsub: get(opts.options, 'EXPERIMENTAL.pubsub', false),
+                stardust: get(opts.options, 'EXPERIMENTAL.stardust', false)
               }
             },
             connectionManager: get(opts.options, 'connectionManager',

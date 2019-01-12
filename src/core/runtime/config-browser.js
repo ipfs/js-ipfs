@@ -3,6 +3,7 @@
 module.exports = () => ({
   Addresses: {
     Swarm: [
+      '/dns4/stardust.mkg20001.io/tcp/443/wss/p2p-stardust' // until it's actually stable it would be good to have this enabled here so `EXPERIMENTAL.stardust` actually does something
     ],
     API: '',
     Gateway: ''
