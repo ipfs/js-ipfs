@@ -18,7 +18,7 @@ class Node extends libp2p {
     let stardust
 
     if (_options.config.EXPERIMENTAL.stardust) {
-      stardust = new Stardust({ id: _options.peerInfo.id })
+      stardust = new Stardust({ id: _options.peerInfo.id, softFail: true })
     }
 
     const defaults = {

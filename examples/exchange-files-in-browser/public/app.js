@@ -41,12 +41,13 @@ function start () {
   if (!node) {
     const options = {
       EXPERIMENTAL: {
-        pubsub: true
+        pubsub: true,
+        stardust: true
       },
       repo: 'ipfs-' + Math.random(),
       config: {
         Addresses: {
-          Swarm: ['/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star']
+          Swarm: ['/dns4/stardust.mkg20001.io/tcp/443/wss/p2p-stardust']
         }
       }
     }
