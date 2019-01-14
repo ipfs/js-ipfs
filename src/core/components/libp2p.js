@@ -87,15 +87,23 @@ module.exports = function libp2p (self) {
           peerBook: self._peerInfoBook
         })
 
+        let discoveredPeers = []
+
+        const putAndDial = peerInfo => {
+          self._peerInfoBook.put(peerInfo)
+          self._libp2pNode.dial(peerInfo, () => {})
+        }
+
+        self._libp2pNode.on('start', () => {
+          discoveredPeers.forEach(putAndDial)
+          discoveredPeers = []
+        })
+
         self._libp2pNode.on('peer:discovery', (peerInfo) => {
-          const dial = () => {
-            self._peerInfoBook.put(peerInfo)
-            self._libp2pNode.dial(peerInfo, () => {})
-          }
           if (self.isOnline()) {
-            dial()
+            putAndDial(peerInfo)
           } else {
-            self._libp2pNode.once('start', dial)
+            discoveredPeers.push(peerInfo)
           }
         })
 
