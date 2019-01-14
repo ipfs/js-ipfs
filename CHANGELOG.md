@@ -1,3 +1,8 @@
+<a name="28.1.2"></a>
+## [28.1.2](https://github.com/ipfs/js-ipfs-http-client/compare/v28.1.1...v28.1.2) (2019-01-14)
+
+
+
 <a name="28.1.1"></a>
 ## [28.1.1](https://github.com/ipfs/js-ipfs-http-client/compare/v28.1.0...v28.1.1) (2019-01-04)
 
