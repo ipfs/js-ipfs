@@ -9,7 +9,7 @@ const schema = Joi.object().keys({
   ).allow(null),
   repoOwner: Joi.boolean().default(true),
   preload: Joi.object().keys({
-    enabled: Joi.boolean().default(true),
+    enabled: Joi.boolean(),
     addresses: Joi.array().items(Joi.multiaddr().options({ convert: false })),
     interval: Joi.number().integer().default(30 * 1000)
   }).allow(null),
