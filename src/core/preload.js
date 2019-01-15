@@ -5,7 +5,6 @@ const retry = require('async/retry')
 const toUri = require('multiaddr-to-uri')
 const debug = require('debug')
 const CID = require('cids')
-const { isCI } = require('ci-info')
 const preload = require('./runtime/preload-nodejs')
 
 const log = debug('jsipfs:preload')
@@ -15,9 +14,7 @@ const noop = (err) => { if (err) log.error(err) }
 
 module.exports = self => {
   const options = self._options.preload || {}
-  options.enabled = options.enabled == null
-    ? !(isCI || process.env.NODE_ENV === 'test')
-    : Boolean(options.enabled)
+  options.enabled = Boolean(options.enabled)
   options.addresses = options.addresses || []
 
   if (!options.enabled || !options.addresses.length) {

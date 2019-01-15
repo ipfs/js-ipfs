@@ -1,16 +1,12 @@
 'use strict'
 
 const debug = require('debug')
-const { isCI } = require('ci-info')
 
 const log = debug('jsipfs:mfs-preload')
 log.error = debug('jsipfs:mfs-preload:error')
 
 module.exports = (self) => {
   const options = self._options.preload || {}
-  options.enabled = options.enabled == null
-    ? !(isCI || process.env.NODE_ENV === 'test')
-    : Boolean(options.enabled)
   options.interval = options.interval || 30 * 1000
 
   if (!options.enabled) {
