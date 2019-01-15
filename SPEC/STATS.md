@@ -38,10 +38,10 @@ Where:
 
 `stat` is, in both cases, an Object containing the following keys:
 
-- `totalIn` - is a [Big Int][big], in bytes.
-- `totalOut` - is a [Big Int][big], in bytes.
-- `rateIn` - is a [Big Int][big], in bytes.
-- `rateOut` - is a [Big Int][big], in bytes.
+- `totalIn` - is a [BigNumber Int][bigNumber], in bytes.
+- `totalOut` - is a [BigNumber Int][bigNumber], in bytes.
+- `rateIn` - is a [BigNumber Int][bigNumber], in bytes.
+- `rateOut` - is a [BigNumber Int][bigNumber], in bytes.
 
 If no `callback` is passed, a promise is returned.
 
@@ -50,10 +50,10 @@ If no `callback` is passed, a promise is returned.
 ```JavaScript
 ipfs.stats.bw((err, stats) => console.log(stats))
 
-// { totalIn: Big {...},
-//   totalOut: Big {...},
-//   rateIn: Big {...},
-//   rateOut: Big {...} }
+// { totalIn: BigNumber {...},
+//   totalOut: BigNumber {...},
+//   rateIn: BigNumber {...},
+//   rateOut: BigNumber {...} }
 ```
 
 #### `stats.bwPullStream`
@@ -79,10 +79,10 @@ pull(
   log()
 )
 
-// { totalIn: Big {...},
-//   totalOut: Big {...},
-//   rateIn: Big {...},
-//   rateOut: Big {...} }
+// { totalIn: BigNumber {...},
+//   totalOut: BigNumber {...},
+//   rateIn: BigNumber {...},
+//   rateOut: BigNumber {...} }
 // ...
 // Ad infinitum
 ```
@@ -106,14 +106,14 @@ stream.on('data', (data) => {
   console.log(data)
 }))
 
-// { totalIn: Big {...},
-//   totalOut: Big {...},
-//   rateIn: Big {...},
-//   rateOut: Big {...} }
+// { totalIn: BigNumber {...},
+//   totalOut: BigNumber {...},
+//   rateIn: BigNumber {...},
+//   rateOut: BigNumber {...} }
 // ...
 // Ad infinitum
 ```
 
-[big]: https://github.com/MikeMcl/big.js/
+[bigNumber]: https://github.com/MikeMcl/bignumber.js/
 [rs]: https://www.npmjs.com/package/readable-stream
 [ps]: https://www.npmjs.com/package/pull-stream

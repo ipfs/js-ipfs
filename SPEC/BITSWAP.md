@@ -45,12 +45,12 @@ Note: `bitswap.stat` and `stats.bitswap` can be used interchangeably.
 - `provideBufLen` is an integer.
 - `wantlist` (array of CIDs)
 - `peers` (array of peer IDs)
-- `blocksReceived` is a [Big Int][1]
-- `dataReceived` is a [Big Int][1]
-- `blocksSent` is a [Big Int][1]
-- `dataSent` is a [Big Int][1]
-- `dupBlksReceived` is a [Big Int][1]
-- `dupDataReceived` is a [Big Int][1]
+- `blocksReceived` is a [BigNumber Int][1]
+- `dataReceived` is a [BigNumber Int][1]
+- `blocksSent` is a [BigNumber Int][1]
+- `dataSent` is a [BigNumber Int][1]
+- `dupBlksReceived` is a [BigNumber Int][1]
+- `dupDataReceived` is a [BigNumber Int][1]
 
 If no `callback` is passed, a promise is returned.
 
@@ -73,4 +73,4 @@ ipfs.bitswap.stat((err, stats) => console.log(stats))
 //  dupDataReceived: 0 }
 ```
 
-[1]: https://github.com/MikeMcl/big.js/
+[1]: https://github.com/MikeMcl/bignumber.js/
