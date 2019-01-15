@@ -1,7 +1,7 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const Big = require('big.js')
+const Big = require('bignumber.js')
 
 const transform = function (res, callback) {
   callback(null, {

@@ -1,6 +1,6 @@
 'use strict'
 
-const Big = require('big.js')
+const Big = require('bignumber.js')
 
 module.exports = (chunk) => {
   return {
