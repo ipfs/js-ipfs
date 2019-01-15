@@ -1,3 +1,21 @@
+<a name="29.0.0"></a>
+# [29.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v28.1.2...v29.0.0) (2019-01-15)
+
+
+### Code Refactoring
+
+* switch to bignumber.js ([#927](https://github.com/ipfs/js-ipfs-http-client/issues/927)) ([1a54ae5](https://github.com/ipfs/js-ipfs-http-client/commit/1a54ae5))
+
+
+### BREAKING CHANGES
+
+* All API methods that returned [`big.js`](https://github.com/MikeMcl/big.js/) instances now return [`bignumber.js`](https://github.com/MikeMcl/bignumber.js/) instances.
+
+License: MIT
+Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
+
+
+
 <a name="28.1.2"></a>
 ## [28.1.2](https://github.com/ipfs/js-ipfs-http-client/compare/v28.1.1...v28.1.2) (2019-01-14)
 
