@@ -1,3 +1,32 @@
+<a name="0.34.0-rc.1"></a>
+# [0.34.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.34.0-rc.0...v0.34.0-rc.1) (2019-01-15)
+
+
+### Bug Fixes
+
+* sharness tests ([#1787](https://github.com/ipfs/js-ipfs/issues/1787)) ([48d3e2b](https://github.com/ipfs/js-ipfs/commit/48d3e2b))
+
+
+### Code Refactoring
+
+* switch to bignumber.js ([#1803](https://github.com/ipfs/js-ipfs/issues/1803)) ([6de6adf](https://github.com/ipfs/js-ipfs/commit/6de6adf))
+
+
+### Features
+
+* update to Web UI v2.3.2 ([#1807](https://github.com/ipfs/js-ipfs/issues/1807)) ([8ca6471](https://github.com/ipfs/js-ipfs/commit/8ca6471))
+* update Web UI to v2.3.0 ([#1786](https://github.com/ipfs/js-ipfs/issues/1786)) ([7bcc496](https://github.com/ipfs/js-ipfs/commit/7bcc496))
+
+
+### BREAKING CHANGES
+
+* All API methods that returned [`big.js`](https://github.com/MikeMcl/big.js/) instances now return [`bignumber.js`](https://github.com/MikeMcl/bignumber.js/) instances.
+
+License: MIT
+Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
+
+
+
 <a name="0.34.0-rc.0"></a>
 # [0.34.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.34.0-pre.0...v0.34.0-rc.0) (2018-12-18)
 
