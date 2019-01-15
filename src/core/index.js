@@ -14,6 +14,7 @@ const CID = require('cids')
 const debug = require('debug')
 const defaultsDeep = require('@nodeutils/defaults-deep')
 const EventEmitter = require('events')
+const { isCI } = require('ci-info')
 
 const config = require('./config')
 const boot = require('./boot')
@@ -67,7 +68,7 @@ class IPFS extends EventEmitter {
       start: true,
       EXPERIMENTAL: {},
       preload: {
-        enabled: true,
+        enabled: !(isCI || process.env.NODE_ENV === 'test'),
         addresses: [
           '/dnsaddr/node0.preload.ipfs.io/https',
           '/dnsaddr/node1.preload.ipfs.io/https'
