@@ -8,7 +8,7 @@ variables:
   DOCKER_DRIVER: overlay2
 
 before_script:
-  - npm i
+  - npm i -s
 
 check:
   stage: check
