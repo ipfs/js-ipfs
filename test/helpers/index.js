@@ -4,7 +4,8 @@ const core = require('../../src/core')
 const isWebWorker = require('detect-webworker')
 const promisify = require('promisify-es6')
 const InMemoryDataStore = require('interface-datastore').MemoryDatastore
-const inMemoryIpld = promisify(require('ipld').inMemory)
+const Ipld = require('ipld')
+const inMemoryIpld = promisify(require('ipld-in-memory').bind(null, Ipld))
 
 const createMfs = async () => {
   let ipld = await inMemoryIpld()
