@@ -28,13 +28,13 @@ jobs:
       addons:
         chrome: stable
       script:
-        - npx aegir test -t browser
-        - npx aegir test -t webworker
+        - npx aegir test -t browser -- --browsers ChromeDocker
+        - npx aegir test -t webworker -- --browsers ChromeDocker
     - stage: test
       name: firefox
       node_js: 10
       addons:
         firefox: latest
       script:
-        - npx aegir test -t browser -- --browsers FirefoxHeadless
-        - npx aegir test -t webworker -- --browsers FirefoxHeadless
+        - npx aegir test -t browser -- --browsers FirefoxHeadlessNoCors
+        - npx aegir test -t webworker -- --browsers FirefoxHeadlessNoCors
