@@ -15,6 +15,7 @@ os:
 
 script: npx nyc -s npm run test:node -- --bail
 
+
 jobs:
   include:
     - stage: check
