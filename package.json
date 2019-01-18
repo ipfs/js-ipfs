@@ -31,24 +31,24 @@
   },
   "homepage": "https://github.com/ipfs/js-ipfs-http-response#readme",
   "dependencies": {
-    "async": "^2.6.0",
-    "cids": "~0.5.5",
-    "debug": "^3.1.0",
+    "async": "^2.6.1",
+    "cids": "~0.5.7",
+    "debug": "^4.1.1",
     "file-type": "^8.0.0",
     "filesize": "^3.6.1",
     "get-stream": "^3.0.0",
-    "ipfs-unixfs": "~0.1.14",
-    "mime-types": "^2.1.18",
-    "multihashes": "~0.4.13",
+    "ipfs-unixfs": "~0.1.16",
+    "mime-types": "^2.1.21",
+    "multihashes": "~0.4.14",
     "promisify-es6": "^1.0.3",
     "stream-to-blob": "^1.0.1"
   },
   "devDependencies": {
-    "aegir": "^13.1.0",
-    "chai": "^4.1.2",
+    "aegir": "^18.0.3",
+    "chai": "^4.2.0",
     "dirty-chai": "^2.0.1",
-    "ipfs": "~0.32.2",
-    "ipfsd-ctl": "~0.39.1"
+    "ipfs": "0.34.0",
+    "ipfsd-ctl": "~0.40.3"
   },
   "contributors": [
     "Alex Potsides <alex@achingbrain.net>",

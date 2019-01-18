@@ -32,7 +32,7 @@ describe('resolve file (CIDv0)', function () {
       ipfsd = _ipfsd
       ipfs = ipfsd.api
 
-      ipfs.files.add(file.data, {cidVersion: 0}, (err, filesAdded) => {
+      ipfs.add(file.data, { cidVersion: 0 }, (err, filesAdded) => {
         expect(err).to.not.exist()
         expect(filesAdded).to.have.length(1)
 
@@ -81,7 +81,7 @@ describe('resolve file (CIDv1)', function () {
       ipfsd = _ipfsd
       ipfs = ipfsd.api
 
-      ipfs.files.add(file.data, {cidVersion: 1}, (err, filesAdded) => {
+      ipfs.add(file.data, { cidVersion: 1 }, (err, filesAdded) => {
         expect(err).to.not.exist()
         expect(filesAdded).to.have.length(1)
         // console.log('ipfs.files.add result', filesAdded)
@@ -143,7 +143,7 @@ describe('resolve directory (CIDv0)', function () {
         content('holmes.txt')
       ]
 
-      ipfs.files.add(dirs, {cidVersion: 0}, (err, res) => {
+      ipfs.add(dirs, { cidVersion: 0 }, (err, res) => {
         expect(err).to.not.exist()
         const root = res[res.length - 1]
 
@@ -201,7 +201,7 @@ describe('resolve directory (CIDv1)', function () {
         content('holmes.txt')
       ]
 
-      ipfs.files.add(dirs, {cidVersion: 1}, (err, res) => {
+      ipfs.add(dirs, { cidVersion: 1 }, (err, res) => {
         expect(err).to.not.exist()
         const root = res[res.length - 1]
         // console.log('ipfs.files.add result', res)
@@ -264,7 +264,7 @@ describe('resolve web page (CIDv0)', function () {
         content('index.html')
       ]
 
-      ipfs.files.add(dirs, {cidVersion: 0}, (err, res) => {
+      ipfs.add(dirs, { cidVersion: 0 }, (err, res) => {
         expect(err).to.not.exist()
         const root = res[res.length - 1]
 
@@ -326,7 +326,7 @@ describe('resolve web page (CIDv1)', function () {
         content('index.html')
       ]
 
-      ipfs.files.add(dirs, {cidVersion: 1}, (err, res) => {
+      ipfs.add(dirs, { cidVersion: 1 }, (err, res) => {
         expect(err).to.not.exist()
         // console.log(res)
         const root = res[res.length - 1]

@@ -62,7 +62,7 @@ const response = (ipfsNode, ipfsPath) => {
 
     resolver.cid(ipfsNode, ipfsPath)
       .then((resolvedData) => {
-        const readableStream = ipfsNode.files.catReadableStream(resolvedData.cid)
+        const readableStream = ipfsNode.catReadableStream(resolvedData.cid)
         const responseStream = new stream.PassThrough({ highWaterMark: 1 })
         readableStream.pipe(responseStream)
 

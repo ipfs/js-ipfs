@@ -35,13 +35,13 @@ describe('resolve file (CIDv0)', function () {
       ipfsd = _ipfsd
       ipfs = ipfsd.api
 
-      ipfs.files.add(file.data, {cidVersion: 0}, (err, filesAdded) => {
+      ipfs.add(file.data, { cidVersion: 0 }, (err, filesAdded) => {
         expect(err).to.not.exist()
         expect(filesAdded).to.have.length(1)
 
         const retrievedFile = filesAdded[0]
         expect(new CID(retrievedFile.hash)).to.deep.equal(new CID(file.cid))
-        expect(retrievedFile.size, 'ipfs.files.add result size should not be smaller than input buffer').greaterThan(file.data.length)
+        expect(retrievedFile.size, 'ipfs.add result size should not be smaller than input buffer').greaterThan(file.data.length)
 
         done()
       })
@@ -79,12 +79,12 @@ describe('resolve file (CIDv1)', function () {
       ipfsd = _ipfsd
       ipfs = ipfsd.api
 
-      ipfs.files.add(file.data, {cidVersion: 1}, (err, filesAdded) => {
+      ipfs.add(file.data, { cidVersion: 1 }, (err, filesAdded) => {
         expect(err).to.not.exist()
         expect(filesAdded).to.have.length(1)
         const retrievedFile = filesAdded[0]
         expect(new CID(retrievedFile.hash)).to.deep.equal(new CID(file.cid))
-        // expect(retrievedFile.size, 'ipfs.files.add result size should not be smaller than input buffer').greaterThan(file.data.length)
+        // expect(retrievedFile.size, 'ipfs.add result size should not be smaller than input buffer').greaterThan(file.data.length)
 
         done()
       })
@@ -135,15 +135,15 @@ describe('resolve directory (CIDv0)', function () {
         content('holmes.txt')
       ]
 
-      ipfs.files.add(dirs, {cidVersion: 0}, (err, res) => {
+      ipfs.add(dirs, { cidVersion: 0 }, (err, res) => {
         expect(err).to.not.exist()
         const root = res[res.length - 1]
 
         expect(root.path).to.equal('test-folder')
         expect(new CID(root.hash)).to.deep.equal(new CID(directory.cid))
 
-        expect(res[0].size, 'ipfs.files.add 1st result size should not be smaller than 1st input buffer').greaterThan(dirs[0].content.length)
-        expect(res[1].size, 'ipfs.files.add 2nd result size should not be smaller than 2nd input buffer').greaterThan(dirs[1].content.length)
+        expect(res[0].size, 'ipfs.add 1st result size should not be smaller than 1st input buffer').greaterThan(dirs[0].content.length)
+        expect(res[1].size, 'ipfs.add 2nd result size should not be smaller than 2nd input buffer').greaterThan(dirs[1].content.length)
 
         done()
       })
@@ -207,7 +207,7 @@ describe('resolve directory (CIDv1)', function () {
         content('holmes.txt')
       ]
 
-      ipfs.files.add(dirs, {cidVersion: 1}, (err, res) => {
+      ipfs.add(dirs, { cidVersion: 1 }, (err, res) => {
         expect(err).to.not.exist()
         const root = res[res.length - 1]
         expect(root.path).to.equal('test-folder')
@@ -278,7 +278,7 @@ describe('resolve web page (CIDv0)', function () {
         content('index.html')
       ]
 
-      ipfs.files.add(dirs, {cidVersion: 0}, (err, res) => {
+      ipfs.add(dirs, { cidVersion: 0 }, (err, res) => {
         expect(err).to.not.exist()
         const root = res[res.length - 1]
 
@@ -330,7 +330,7 @@ describe('resolve web page (CIDv1)', function () {
         content('index.html')
       ]
 
-      ipfs.files.add(dirs, {cidVersion: 1}, (err, res) => {
+      ipfs.add(dirs, { cidVersion: 1 }, (err, res) => {
         expect(err).to.not.exist()
         const root = res[res.length - 1]
         expect(root.path).to.equal('test-site')
@@ -386,7 +386,7 @@ describe('mime-types', () => {
         content('index.html')
       ]
 
-      ipfs.files.add(dirs, {cidVersion: 0}, (err, res) => {
+      ipfs.add(dirs, { cidVersion: 0 }, (err, res) => {
         expect(err).to.not.exist()
         const root = res[res.length - 1]
 
