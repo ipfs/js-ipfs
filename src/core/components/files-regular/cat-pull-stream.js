@@ -16,7 +16,8 @@ module.exports = function (self) {
     ipfsPath = normalizePath(ipfsPath)
     const pathComponents = ipfsPath.split('/')
     const restPath = normalizePath(pathComponents.slice(1).join('/'))
-    const filterFile = (file) => (restPath && file.path === restPath) || (file.path === ipfsPath)
+    const fileName = restPath.includes('/') ? restPath.split('/').pop() : restPath
+    const filterFile = (file) => (restPath && file.path === restPath) || (file.path === ipfsPath) || file.path === fileName
 
     if (options.preload !== false) {
       self._preload(pathComponents[0])

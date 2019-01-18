@@ -13,6 +13,7 @@
     "./src/core/runtime/config-nodejs.js": "./src/core/runtime/config-browser.js",
     "./src/core/runtime/dns-nodejs.js": "./src/core/runtime/dns-browser.js",
     "./src/core/runtime/fetch-nodejs.js": "./src/core/runtime/fetch-browser.js",
+    "./src/core/runtime/ipld-formats-nodejs.js": "./src/core/runtime/ipld-formats-browser.js",
     "./src/core/runtime/libp2p-nodejs.js": "./src/core/runtime/libp2p-browser.js",
     "./src/core/runtime/preload-nodejs.js": "./src/core/runtime/preload-browser.js",
     "./src/core/runtime/repo-nodejs.js": "./src/core/runtime/repo-browser.js",
