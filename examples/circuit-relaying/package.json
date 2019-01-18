@@ -18,9 +18,15 @@
     "ipfs-pubsub-room": "^1.4.0"
   },
   "devDependencies": {
-    "aegir": "^14.0.0",
+    "aegir": "^18.0.3",
     "ipfs-css": "~0.2.0",
     "parcel-bundler": "^1.6.2",
     "tachyons": "^4.9.1"
-  }
+  },
+  "browserslist": [
+    ">1%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
