@@ -14,7 +14,7 @@ class Node extends libp2p {
   constructor (_options) {
     const wrtcstar = new WebRTCStar({ id: _options.peerInfo.id })
 
-    const wsstarServers = _options.peerInfo.multiaddrs.toArray().map(String).filter(addr => ~addr.indexOf('p2p-websocket-star'))
+    const wsstarServers = _options.peerInfo.multiaddrs.toArray().map(String).filter(addr => addr.includes('p2p-websocket-star'))
     _options.peerInfo.multiaddrs.replace(wsstarServers.map(multiaddr), '/p2p-websocket-star') // the ws-star-multi module will replace this with the chosen ws-star servers
     const wsstar = new WebSocketStarMulti({ servers: wsstarServers, id: _options.peerInfo.id, ignore_no_online: !wsstarServers.length || _options.wsStarIgnoreErrors })
 
