@@ -6,6 +6,7 @@ const multipart = require('ipfs-multipart')
 const mh = require('multihashes')
 const Joi = require('@hapi/joi')
 const multibase = require('multibase')
+const multicodec = require('multicodec')
 const Boom = require('boom')
 const debug = require('debug')
 const {
@@ -173,15 +174,15 @@ exports.put = {
       }
     } else {
       const { ipfs } = request.server.app
-      const codec = ipfs._ipld.resolvers[format]
 
-      if (!codec) {
-        throw Boom.badRequest(`Missing IPLD format "${request.query.format}"`)
-      }
-
-      const deserialize = promisify(codec.util.deserialize)
-
-      node = await deserialize(data)
+      // IPLD expects the format and hashAlg as constants
+      const codecConstant = format.toUpperCase().replace(/-/g, '_')
+      node = await ipfs._ipld._deserialize({
+        cid: {
+          codec: multicodec[codecConstant]
+        },
+        data: data
+      })
     }
 
     return {
@@ -242,28 +243,17 @@ exports.resolve = {
       let lastCid = ref
       let lastRemainderPath = path
 
-      while (true) {
-        const block = await ipfs.block.get(lastCid)
-        const codec = ipfs._ipld.resolvers[lastCid.codec]
+      if (path) {
+        const result = ipfs._ipld.resolve(lastCid, path)
+        while (true) {
+          const resolveResult = (await result.next()).value
+          if (!CID.isCID(resolveResult.value)) {
+            break
+          }
 
-        if (!codec) {
-          throw Boom.badRequest(`Missing IPLD format "${lastCid.codec}"`)
+          lastRemainderPath = resolveResult.remainderPath
+          lastCid = resolveResult.value
         }
-
-        const resolve = promisify(codec.resolver.resolve)
-        const res = await resolve(block.data, lastRemainderPath)
-
-        if (!res.remainderPath) {
-          break
-        }
-
-        lastRemainderPath = res.remainderPath
-
-        if (!CID.isCID(res.value)) {
-          break
-        }
-
-        lastCid = res.value
       }
 
       return h.response({

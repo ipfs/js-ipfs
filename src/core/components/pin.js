@@ -15,6 +15,7 @@ const setImmediate = require('async/setImmediate')
 const { Key } = require('interface-datastore')
 const errCode = require('err-code')
 const multibase = require('multibase')
+const multicodec = require('multicodec')
 
 const createPinSet = require('./pin-set')
 const { resolvePath } = require('../utils')
@@ -104,8 +105,8 @@ module.exports = (self) => {
         if (err) { return cb(err) }
         dag.put(empty, {
           version: 0,
-          hashAlg: 'sha2-256',
-          format: 'dag-pb',
+          format: multicodec.DAG_PB,
+          hashAlg: multicodec.SHA2_256,
           preload: false
         }, cb)
       }),
@@ -116,8 +117,8 @@ module.exports = (self) => {
         root = node
         dag.put(root, {
           version: 0,
-          hashAlg: 'sha2-256',
-          format: 'dag-pb',
+          format: multicodec.DAG_PB,
+          hashAlg: multicodec.SHA2_256,
           preload: false
         }, (err, cid) => {
           if (!err) {

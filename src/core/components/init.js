@@ -11,6 +11,7 @@ const {
   DAGNode
 } = require('ipld-dag-pb')
 const UnixFs = require('ipfs-unixfs')
+const multicodec = require('multicodec')
 
 const IPNS = require('../ipns')
 const OfflineDatastore = require('../ipns/routing/offline-datastore')
@@ -132,9 +133,12 @@ module.exports = function init (self) {
               (cb) => DAGNode.create(new UnixFs('directory').marshal(), cb),
               (node, cb) => self.dag.put(node, {
                 version: 0,
-                format: 'dag-pb',
-                hashAlg: 'sha2-256'
-              }, cb),
+                format: multicodec.DAG_PB,
+                hashAlg: multicodec.SHA2_256
+              }).then(
+                (cid) => cb(null, cid),
+                (error) => cb(error)
+              ),
               (cid, cb) => self._ipns.initializeKeyspace(privateKey, cid.toBaseEncodedString(), cb)
             ], cb)
           }
