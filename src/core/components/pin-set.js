@@ -6,6 +6,7 @@ const protobuf = require('protons')
 const fnv1a = require('fnv1a')
 const varint = require('varint')
 const { DAGNode, DAGLink } = require('ipld-dag-pb')
+const multicodec = require('multicodec')
 const someSeries = require('async/someSeries')
 const eachOfSeries = require('async/eachOfSeries')
 
@@ -110,8 +111,8 @@ exports = module.exports = function (dag) {
 
         dag.put(rootNode, {
           version: 0,
-          format: 'dag-pb',
-          hashAlg: 'sha2-256',
+          format: multicodec.DAG_PB,
+          hashAlg: multicodec.SHA2_256,
           preload: false
         }, (err, cid) => {
           if (err) { return callback(err, cid) }
@@ -194,8 +195,8 @@ exports = module.exports = function (dag) {
 
           const opts = {
             version: 0,
-            hashAlg: 'sha2-256',
-            format: 'dag-pb',
+            format: multicodec.DAG_PB,
+            hashAlg: multicodec.SHA2_256,
             preload: false
           }
 

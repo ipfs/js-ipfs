@@ -3,10 +3,12 @@
 const promisify = require('promisify-es6')
 const CID = require('cids')
 const pull = require('pull-stream')
+const iterToPull = require('async-iterator-to-pull-stream')
 const mapAsync = require('async/map')
 const setImmediate = require('async/setImmediate')
 const flattenDeep = require('just-flatten-it')
 const errCode = require('err-code')
+const multicodec = require('multicodec')
 
 module.exports = function dag (self) {
   return {
@@ -25,21 +27,42 @@ module.exports = function dag (self) {
       }
 
       const optionDefaults = {
-        format: 'dag-cbor',
-        hashAlg: 'sha2-256'
+        format: multicodec.DAG_CBOR,
+        hashAlg: multicodec.SHA2_256
+      }
+
+      // The IPLD expects the format and hashAlg as constants
+      if (options.format && typeof options.format === 'string') {
+        const constantName = options.format.toUpperCase().replace(/-/g, '_')
+        options.format = multicodec[constantName]
+      }
+      if (options.hashAlg && typeof options.hashAlg === 'string') {
+        const constantName = options.hashAlg.toUpperCase().replace(/-/g, '_')
+        options.hashAlg = multicodec[constantName]
       }
 
       options = options.cid ? options : Object.assign({}, optionDefaults, options)
 
-      self._ipld.put(dagNode, options, (err, cid) => {
-        if (err) return callback(err)
+      // js-ipld defaults to verion 1 CIDs. Hence set version 0 explicitly for
+      // dag-pb nodes
+      if (options.format === multicodec.DAG_PB &&
+          options.hashAlg === multicodec.SHA2_256 &&
+          options.version === undefined) {
+        options.version = 0
+      }
 
-        if (options.preload !== false) {
-          self._preload(cid)
-        }
-
-        callback(null, cid)
-      })
+      self._ipld.put(dagNode, options.format, {
+        hashAlg: options.hashAlg,
+        cidVersion: options.version
+      }).then(
+        (cid) => {
+          if (options.preload !== false) {
+            self._preload(cid)
+          }
+          return callback(null, cid)
+        },
+        (error) => callback(error)
+      )
     }),
 
     get: promisify((cid, path, options, callback) => {
@@ -54,7 +77,7 @@ module.exports = function dag (self) {
         // Allow options in path position
         if (typeof path !== 'string') {
           options = path
-          path = null
+          path = undefined
         } else {
           options = {}
         }
@@ -90,7 +113,26 @@ module.exports = function dag (self) {
         self._preload(cid)
       }
 
-      self._ipld.get(cid, path, options, callback)
+      if (path === undefined || path === '/') {
+        self._ipld.get(cid).then(
+          (value) => {
+            callback(null, {
+              value,
+              remainderPath: ''
+            })
+          },
+          (error) => callback(error)
+        )
+      } else {
+        const result = self._ipld.resolve(cid, path)
+        const promisedValue = options.localResolve ?
+          result.first() :
+          result.last()
+        promisedValue.then(
+          (value) => callback(null, value),
+          (error) => callback(error)
+        )
+      }
     }),
 
     tree: promisify((cid, path, options, callback) => {
@@ -135,7 +177,7 @@ module.exports = function dag (self) {
       }
 
       pull(
-        self._ipld.treeStream(cid, path, options),
+        iterToPull(self._ipld.tree(cid, path, options)),
         pull.collect(callback)
       )
     }),

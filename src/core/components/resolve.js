@@ -8,7 +8,7 @@ const CID = require('cids')
 const { cidToString } = require('../../utils/cid')
 
 module.exports = (self) => {
-  return promisify((name, opts, cb) => {
+  return promisify(async (name, opts, cb) => {
     if (typeof opts === 'function') {
       cb = opts
       opts = {}
@@ -34,56 +34,26 @@ module.exports = (self) => {
 
     const path = split.slice(3).join('/')
 
-    resolve(cid, path, (err, res) => {
-      if (err) return cb(err)
-      const { cid, remainderPath } = res
-      cb(null, `/ipfs/${cidToString(cid, { base: opts.cidBase })}${remainderPath ? '/' + remainderPath : ''}`)
-    })
-  })
-
-  // Resolve the given CID + path to a CID.
-  function resolve (cid, path, callback) {
-    let value, remainderPath
-    doUntil(
-      (cb) => {
-        self.block.get(cid, (err, block) => {
-          if (err) return cb(err)
-
-          const r = self._ipld.resolvers[cid.codec]
-
-          if (!r) {
-            return cb(new Error(`No resolver found for codec "${cid.codec}"`))
-          }
-
-          r.resolver.resolve(block.data, path, (err, result) => {
-            if (err) return cb(err)
+    const results = self._ipld.resolve(cid, path)
+    let value = cid
+    let remainderPath = path
+    try {
+      for await (const result of results) {
+        if (result.remainderPath === '') {
+          // Use values from previous iteration if the value isn't a CID
+          if (CID.isCID(result.value)) {
             value = result.value
-            remainderPath = result.remainderPath
-            cb()
-          })
-        })
-      },
-      () => {
-        if (value && value['/']) {
-          // If we've hit a CID, replace the current CID.
-          cid = new CID(value['/'])
-          path = remainderPath
-        } else if (CID.isCID(value)) {
-          // If we've hit a CID, replace the current CID.
-          cid = value
-          path = remainderPath
-        } else {
-          // We've hit a value. Return the current CID and the remaining path.
-          return true
+            remainderPath = ''
+          }
+          break
         }
 
-        // Continue resolving unless the path is empty.
-        return !path || path === '/'
-      },
-      (err) => {
-        if (err) return callback(err)
-        callback(null, { cid, remainderPath: path })
+        value = result.value
+        remainderPath = result.remainderPath
       }
-    )
-  }
+    } catch (error) {
+      return cb(error)
+    }
+    return cb(null, `/ipfs/${cidToString(value, { base: opts.cidBase })}${remainderPath ? '/' + remainderPath : ''}`)
+  })
 }
