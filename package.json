@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-response",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Creates an HTTP response from an IPFS Hash",
   "leadMaintainer": "Vasco Santos <vasco.santos@moxy.studio>",
   "main": "src/index.js",
@@ -54,7 +54,7 @@
     "Alex Potsides <alex@achingbrain.net>",
     "André Cruz <andremiguelcruz@msn.com>",
     "Marcin Rataj <lidel@lidel.org>",
-    "Vasco Santos <vasco.santos@moxy.studio>",
-    "Vasco Santos <vasco.santos@ua.pt>"
+    "Vasco Santos <vasco.santos@ua.pt>",
+    "Vasco Santos <vasco.santos@moxy.studio>"
   ]
 }
