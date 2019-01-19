@@ -47,6 +47,7 @@ module.exports = (repoPath, opts) => {
     })
 
     res.kill = cp.kill.bind(cp)
+    res.stdin = cp.stdin
     res.stdout = cp.stdout
     res.stderr = cp.stderr
 
