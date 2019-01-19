@@ -1,3 +1,8 @@
+<a name="0.2.2"></a>
+## [0.2.2](https://github.com/ipfs/js-ipfs-http-response/compare/v0.2.1...v0.2.2) (2019-01-19)
+
+
+
 <a name="0.2.1"></a>
 ## [0.2.1](https://github.com/ipfs/js-ipfs-http-response/compare/v0.1.4...v0.2.1) (2018-11-09)
 
