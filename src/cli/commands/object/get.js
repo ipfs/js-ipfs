@@ -21,12 +21,9 @@ module.exports = {
     }
   },
 
-  handler ({ ipfs, key, dataEncoding, cidBase }) {
-    ipfs.object.get(key, { enc: 'base58' }, (err, node) => {
-      if (err) {
-        throw err
-      }
-
+  handler ({ ipfs, key, dataEncoding, cidBase, resolve }) {
+    resolve((async () => {
+      const node = await ipfs.object.get(key, { enc: 'base58' })
       let data = node.data
 
       if (Buffer.isBuffer(data)) {
@@ -47,6 +44,6 @@ module.exports = {
       }
 
       print(JSON.stringify(answer))
-    })
+    })())
   }
 }

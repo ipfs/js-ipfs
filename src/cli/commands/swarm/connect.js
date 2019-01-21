@@ -11,16 +11,12 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    if (!utils.isDaemonOn()) {
-      throw new Error('This command must be run in online mode. Try running \'ipfs daemon\' first.')
-    }
-
-    argv.ipfs.swarm.connect(argv.address, (err, res) => {
-      if (err) {
-        throw err
+    argv.resolve((async () => {
+      if (!utils.isDaemonOn()) {
+        throw new Error('This command must be run in online mode. Try running \'ipfs daemon\' first.')
       }
-
+      const res = await argv.ipfs.swarm.connect(argv.address)
       print(res.Strings[0])
-    })
+    })())
   }
 }

@@ -21,11 +21,10 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    const { recursive, cidBase } = argv
-    argv.ipfs.resolve(argv.name, { recursive, cidBase }, (err, res) => {
-      if (err) throw err
+  handler ({ ipfs, name, recursive, cidBase, resolve }) {
+    resolve((async () => {
+      const res = await ipfs.resolve(name, { recursive, cidBase })
       print(res)
-    })
+    })())
   }
 }

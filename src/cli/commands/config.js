@@ -24,47 +24,39 @@ module.exports = {
   },
 
   handler (argv) {
-    if (argv._handled) {
-      return
-    }
-    argv._handled = true
+    argv.resolve((async () => {
+      if (argv._handled) {
+        return
+      }
+      argv._handled = true
 
-    const bool = argv.bool
-    const json = argv.json
-    const key = argv.key
-    let value = argv.value
+      const { bool, json, key } = argv
+      let value = argv.value
 
-    if (!value) {
-      // Get the value of a given key
-      argv.ipfs.config.get(key, (err, value) => {
-        if (err) {
-          throw new Error('failed to read the config')
-        }
+      if (!value) {
+        // Get the value of a given key
+        value = await argv.ipfs.config.get(key)
 
         if (typeof value === 'object') {
           print(JSON.stringify(value, null, 2))
         } else {
           print(value)
         }
-      })
-    } else {
-      // Set the new value of a given key
+      } else {
+        // Set the new value of a given key
 
-      if (bool) {
-        value = (value === 'true')
-      } else if (json) {
-        try {
-          value = JSON.parse(value)
-        } catch (err) {
-          throw new Error('invalid JSON provided')
+        if (bool) {
+          value = (value === 'true')
+        } else if (json) {
+          try {
+            value = JSON.parse(value)
+          } catch (err) {
+            throw new Error('invalid JSON provided')
+          }
         }
+
+        await argv.ipfs.config.set(key, value)
       }
-
-      argv.ipfs.config.set(key, value, (err) => {
-        if (err) {
-          throw err
-        }
-      })
-    }
+    })())
   }
 }

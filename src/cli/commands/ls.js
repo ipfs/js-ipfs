@@ -34,11 +34,9 @@ module.exports = {
     }
   },
 
-  handler ({ ipfs, key, recursive, headers, cidBase }) {
-    ipfs.ls(key, { recursive }, (err, links) => {
-      if (err) {
-        throw err
-      }
+  handler ({ ipfs, key, recursive, headers, cidBase, resolve }) {
+    resolve((async () => {
+      let links = await ipfs.ls(key, { recursive })
 
       links = links.map(file => Object.assign(file, { hash: cidToString(file.hash, { base: cidBase }) }))
 
@@ -64,6 +62,6 @@ module.exports = {
           '  '.repeat(padding) + fileName
         )
       })
-    })
+    })())
   }
 }

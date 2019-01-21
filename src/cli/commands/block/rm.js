@@ -9,18 +9,15 @@ module.exports = {
 
   builder: {},
 
-  handler ({ ipfs, key }) {
-    if (isDaemonOn()) {
-      // TODO implement this once `js-ipfs-http-client` supports it
-      throw new Error('rm block with daemon running is not yet implemented')
-    }
-
-    ipfs.block.rm(key, (err) => {
-      if (err) {
-        throw err
+  handler ({ ipfs, key, resolve }) {
+    resolve((async () => {
+      if (isDaemonOn()) {
+        // TODO implement this once `js-ipfs-http-client` supports it
+        throw new Error('rm block with daemon running is not yet implemented')
       }
 
+      await ipfs.block.rm(key)
       print('removed ' + key)
-    })
+    })())
   }
 }

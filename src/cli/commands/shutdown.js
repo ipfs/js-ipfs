@@ -8,10 +8,6 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    argv.ipfs.shutdown((err) => {
-      if (err) {
-        throw err
-      }
-    })
+    argv.resolve(argv.ipfs.shutdown())
   }
 }

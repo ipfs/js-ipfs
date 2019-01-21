@@ -30,27 +30,24 @@ module.exports = {
   },
 
   handler (argv) {
-    // yargs-promise adds resolve/reject properties to argv
-    // resolve should use the alias as resolve will always be overwritten to a function
-    let resolve = true
+    argv.resolve((async () => {
+      // yargs-promise adds resolve/reject properties to argv
+      // resolve should use the alias as resolve will always be overwritten to a function
+      let resolve = true
 
-    if (argv.r === false || argv.r === 'false') {
-      resolve = false
-    }
-
-    const opts = {
-      resolve,
-      lifetime: argv.lifetime,
-      key: argv.key,
-      ttl: argv.ttl
-    }
-
-    argv.ipfs.name.publish(argv.ipfsPath, opts, (err, result) => {
-      if (err) {
-        throw err
+      if (argv.r === false || argv.r === 'false') {
+        resolve = false
       }
 
+      const opts = {
+        resolve,
+        lifetime: argv.lifetime,
+        key: argv.key,
+        ttl: argv.ttl
+      }
+
+      const result = await argv.ipfs.name.publish(argv.ipfsPath, opts)
       print(`Published to ${result.name}: ${result.value}`)
-    })
+    })())
   }
 }

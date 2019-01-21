@@ -27,18 +27,24 @@ module.exports = {
     }
   },
 
-  handler ({ ipfs, peer, proto, poll, interval }) {
-    const stream = ipfs.stats.bwPullStream({ peer, proto, poll, interval })
+  handler ({ ipfs, peer, proto, poll, interval, resolve }) {
+    resolve(new Promise((resolve, reject) => {
+      const stream = ipfs.stats.bwPullStream({ peer, proto, poll, interval })
 
-    pull(
-      stream,
-      pull.drain((chunk) => {
+      const onChunk = chunk => {
         print(`bandwidth status
   total in: ${chunk.totalIn}B
   total out: ${chunk.totalOut}B
   rate in: ${chunk.rateIn}B/s
   rate out: ${chunk.rateOut}B/s`)
-      })
-    )
+      }
+
+      const onEnd = err => {
+        if (err) return reject(err)
+        resolve()
+      }
+
+      pull(stream, pull.drain(onChunk, onEnd))
+    }))
   }
 }

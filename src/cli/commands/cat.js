@@ -18,13 +18,14 @@ module.exports = {
     }
   },
 
-  handler ({ ipfs, ipfsPath, offset, length }) {
-    const stream = ipfs.catReadableStream(ipfsPath, { offset, length })
+  handler ({ ipfs, ipfsPath, offset, length, resolve }) {
+    resolve(new Promise((resolve, reject) => {
+      const stream = ipfs.catReadableStream(ipfsPath, { offset, length })
 
-    stream.once('error', (err) => {
-      throw err
-    })
+      stream.on('error', reject)
+      stream.on('end', resolve)
 
-    stream.pipe(process.stdout)
+      stream.pipe(process.stdout)
+    }))
   }
 }

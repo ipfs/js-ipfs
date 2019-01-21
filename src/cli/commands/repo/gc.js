@@ -8,10 +8,8 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    argv.ipfs.repo.gc((err) => {
-      if (err) {
-        throw err
-      }
-    })
+    argv.resolve((async () => {
+      await argv.ipfs.repo.gc()
+    })())
   }
 }

@@ -10,14 +10,9 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    argv.ipfs.pubsub.ls((err, subscriptions) => {
-      if (err) {
-        throw err
-      }
-
-      subscriptions.forEach((sub) => {
-        print(sub)
-      })
-    })
+    argv.resolve((async () => {
+      const subscriptions = await argv.ipfs.pubsub.ls()
+      subscriptions.forEach(sub => print(sub))
+    })())
   }
 }

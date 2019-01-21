@@ -17,13 +17,10 @@ module.exports = {
     }
   },
 
-  handler ({ ipfs, template, cidBase }) {
-    ipfs.object.new(template, (err, cid) => {
-      if (err) {
-        throw err
-      }
-
+  handler ({ ipfs, template, cidBase, resolve }) {
+    resolve((async () => {
+      const cid = await ipfs.object.new(template)
       print(cidToString(cid, { base: cidBase, upgrade: false }))
-    })
+    })())
   }
 }

@@ -32,34 +32,36 @@ module.exports = {
   },
 
   handler (argv) {
-    const path = utils.getRepoPath()
+    argv.resolve((async () => {
+      const path = utils.getRepoPath()
 
-    print(`initializing ipfs node at ${path}`)
+      print(`initializing ipfs node at ${path}`)
 
-    // Required inline to reduce startup time
-    const IPFS = require('../../core')
-    const Repo = require('ipfs-repo')
+      // Required inline to reduce startup time
+      const IPFS = require('../../core')
+      const Repo = require('ipfs-repo')
 
-    const node = new IPFS({
-      repo: new Repo(path),
-      init: false,
-      start: false,
-      config: argv.config || {}
-    })
+      const node = new IPFS({
+        repo: new Repo(path),
+        init: false,
+        start: false,
+        config: argv.config || {}
+      })
 
-    node.init({
-      bits: argv.bits,
-      privateKey: argv.privateKey,
-      emptyRepo: argv.emptyRepo,
-      pass: argv.pass,
-      log: print
-    }, (err) => {
-      if (err) {
+      try {
+        await node.init({
+          bits: argv.bits,
+          privateKey: argv.privateKey,
+          emptyRepo: argv.emptyRepo,
+          pass: argv.pass,
+          log: print
+        })
+      } catch (err) {
         if (err.code === 'EACCES') {
           err.message = `EACCES: permission denied, stat $IPFS_PATH/version`
         }
         throw err
       }
-    })
+    })())
   }
 }

@@ -10,14 +10,9 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    argv.ipfs.object.data(argv.key, {
-      enc: 'base58'
-    }, (err, data) => {
-      if (err) {
-        throw err
-      }
-
+    argv.resolve((async () => {
+      const data = await argv.ipfs.object.data(argv.key, { enc: 'base58' })
       print(data, false)
-    })
+    })())
   }
 }

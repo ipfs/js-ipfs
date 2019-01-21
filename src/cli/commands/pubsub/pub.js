@@ -8,12 +8,9 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    const data = Buffer.from(String(argv.data))
-
-    argv.ipfs.pubsub.publish(argv.topic, data, (err) => {
-      if (err) {
-        throw err
-      }
-    })
+    argv.resolve((async () => {
+      const data = Buffer.from(String(argv.data))
+      await argv.ipfs.pubsub.publish(argv.topic, data)
+    })())
   }
 }

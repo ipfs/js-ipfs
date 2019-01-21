@@ -13,11 +13,8 @@ module.exports = {
   },
 
   handler (argv) {
-    argv.ipfs.swarm.addrs((err, res) => {
-      if (err) {
-        throw err
-      }
-
+    argv.resolve((async () => {
+      const res = await argv.ipfs.swarm.addrs()
       res.forEach((peer) => {
         const count = peer.multiaddrs.size
         print(`${peer.id.toB58String()} (${count})`)
@@ -27,6 +24,6 @@ module.exports = {
           print(`\t${res}`)
         })
       })
-    })
+    })())
   }
 }
