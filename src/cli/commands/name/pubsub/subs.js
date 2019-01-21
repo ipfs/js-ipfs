@@ -8,14 +8,9 @@ module.exports = {
   describe: 'Show current name subscriptions.',
 
   handler (argv) {
-    argv.ipfs.name.pubsub.subs((err, result) => {
-      if (err) {
-        throw err
-      } else {
-        result.forEach((s) => {
-          print(s)
-        })
-      }
-    })
+    argv.resolve((async () => {
+      const result = await argv.ipfs.name.pubsub.subs()
+      result.forEach(s => print(s))
+    })())
   }
 }

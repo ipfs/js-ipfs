@@ -13,15 +13,12 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    if (argv._handled) return
-    argv._handled = true
+    argv.resolve((async () => {
+      if (argv._handled) return
+      argv._handled = true
 
-    argv.ipfs.config.get((err, config) => {
-      if (err) {
-        throw err
-      }
-
+      const config = await argv.ipfs.config.get()
       print(JSON.stringify(config, null, 4))
-    })
+    })())
   }
 }

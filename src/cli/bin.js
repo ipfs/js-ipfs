@@ -59,7 +59,11 @@ if (args[0] === 'daemon' || args[0] === 'init') {
     .completion()
     .command(require('./commands/daemon'))
     .command(require('./commands/init'))
-    .parse(args)
+
+  new YargsPromise(cli).parse(args)
+    .then(({ data }) => {
+      if (data) print(data)
+    })
 } else {
   // here we have to make a separate yargs instance with
   // only the `api` option because we need this before doing

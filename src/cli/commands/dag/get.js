@@ -16,17 +16,21 @@ module.exports = {
   },
 
   handler (argv) {
-    const refParts = argv.cidpath.split('/')
-    const cidString = refParts[0]
-    const path = refParts.slice(1).join('/')
-    const cid = new CID(cidString)
+    argv.resolve((async () => {
+      const refParts = argv.cidpath.split('/')
+      const cidString = refParts[0]
+      const path = refParts.slice(1).join('/')
+      const cid = new CID(cidString)
 
-    const options = {
-      localResolve: argv.localResolve
-    }
+      const options = {
+        localResolve: argv.localResolve
+      }
 
-    argv.ipfs.dag.get(cid, path, options, (err, result) => {
-      if (err) {
+      let result
+
+      try {
+        result = await argv.ipfs.dag.get(cid, path, options)
+      } catch (err) {
         return print(`dag get failed: ${err.message}`)
       }
 
@@ -56,6 +60,6 @@ module.exports = {
       } else {
         print(node)
       }
-    })
+    })())
   }
 }

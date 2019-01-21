@@ -10,14 +10,9 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    const handler = (msg) => {
-      print(msg.data.toString())
-    }
-
-    argv.ipfs.pubsub.subscribe(argv.topic, handler, (err) => {
-      if (err) {
-        throw err
-      }
-    })
+    argv.resolve((async () => {
+      const handler = msg => print(msg.data.toString())
+      await argv.ipfs.pubsub.subscribe(argv.topic, handler)
+    })())
   }
 }

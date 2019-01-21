@@ -1,5 +1,6 @@
 'use strict'
 
+const promisify = require('promisify-es6')
 const utils = require('../utils')
 const print = utils.print
 
@@ -36,39 +37,38 @@ module.exports = {
   },
 
   handler (argv) {
-    print('Initializing IPFS daemon...')
+    argv.resolve((async () => {
+      print('Initializing IPFS daemon...')
 
-    const repoPath = utils.getRepoPath()
+      const repoPath = utils.getRepoPath()
 
-    // Required inline to reduce startup time
-    const HttpAPI = require('../../http')
-    httpAPI = new HttpAPI(process.env.IPFS_PATH, null, argv)
+      // Required inline to reduce startup time
+      const HttpAPI = require('../../http')
+      httpAPI = new HttpAPI(process.env.IPFS_PATH, null, argv)
 
-    httpAPI.start((err) => {
-      if (err && err.code === 'ENOENT' && err.message.match(/uninitialized/i)) {
-        print('Error: no initialized ipfs repo found in ' + repoPath)
-        print('please run: jsipfs init')
-        process.exit(1)
-      }
-      if (err) {
+      try {
+        await promisify(httpAPI.start)()
+      } catch (err) {
+        if (err.code === 'ENOENT' && err.message.match(/uninitialized/i)) {
+          print('Error: no initialized ipfs repo found in ' + repoPath)
+          print('please run: jsipfs init')
+          process.exit(1)
+        }
         throw err
       }
+
       print('Daemon is ready')
-    })
 
-    const cleanup = () => {
-      print(`Received interrupt signal, shutting down..`)
-      httpAPI.stop((err) => {
-        if (err) {
-          throw err
-        }
+      const cleanup = async () => {
+        print(`Received interrupt signal, shutting down..`)
+        await promisify(httpAPI.stop)()
         process.exit(0)
-      })
-    }
+      }
 
-    // listen for graceful termination
-    process.on('SIGTERM', cleanup)
-    process.on('SIGINT', cleanup)
-    process.on('SIGHUP', cleanup)
+      // listen for graceful termination
+      process.on('SIGTERM', cleanup)
+      process.on('SIGINT', cleanup)
+      process.on('SIGHUP', cleanup)
+    })())
   }
 }

@@ -6,16 +6,6 @@ const multibase = require('multibase')
 const { print } = require('../../utils')
 const { cidToString } = require('../../../utils/cid')
 
-function putNode (buf, options, ipfs) {
-  ipfs.object.put(buf, { enc: options.inputEnc }, (err, cid) => {
-    if (err) {
-      throw err
-    }
-
-    print(`added ${cidToString(cid, { base: options.cidBase, upgrade: false })}`)
-  })
-}
-
 module.exports = {
   command: 'put [data]',
 
@@ -34,18 +24,22 @@ module.exports = {
   },
 
   handler (argv) {
-    const ipfs = argv.ipfs
-    if (argv.data) {
-      const buf = fs.readFileSync(argv.data)
-      return putNode(buf, argv, ipfs)
-    }
+    argv.resolve((async () => {
+      let data
 
-    process.stdin.pipe(bl((err, input) => {
-      if (err) {
-        throw err
+      if (argv.data) {
+        data = fs.readFileSync(argv.data)
+      } else {
+        data = await new Promise((resolve, reject) => {
+          process.stdin.pipe(bl((err, input) => {
+            if (err) return reject(err)
+            resolve(input)
+          }))
+        })
       }
 
-      putNode(input, argv, ipfs)
-    }))
+      const cid = await argv.ipfs.object.put(data, { enc: argv.inputEnc })
+      print(`added ${cidToString(cid, { base: argv.cidBase, upgrade: false })}`)
+    })())
   }
 }

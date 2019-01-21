@@ -10,11 +10,9 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    argv.ipfs.key.rename(argv.name, argv.newName, (err, res) => {
-      if (err) {
-        throw err
-      }
+    argv.resolve((async () => {
+      const res = await argv.ipfs.key.rename(argv.name, argv.newName)
       print(`renamed to ${res.id} ${res.now}`)
-    })
+    })())
   }
 }

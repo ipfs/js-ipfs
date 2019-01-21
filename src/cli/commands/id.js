@@ -14,13 +14,9 @@ module.exports = {
   },
 
   handler (argv) {
-    // TODO: handle argv.format
-    argv.ipfs.id((err, id) => {
-      if (err) {
-        throw err
-      }
-
+    argv.resolve((async () => {
+      const id = await argv.ipfs.id()
       print(JSON.stringify(id, '', 2))
-    })
+    })())
   }
 }

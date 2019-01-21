@@ -3,8 +3,7 @@
 const spawn = require('child_process').spawn
 const fs = require('fs')
 const temp = require('temp')
-const waterfall = require('async/waterfall')
-
+const promisify = require('promisify-es6')
 const utils = require('../../utils')
 
 module.exports = {
@@ -15,93 +14,79 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    if (argv._handled) return
-    argv._handled = true
+    argv.resolve((async () => {
+      if (argv._handled) return
+      argv._handled = true
 
-    const editor = process.env.EDITOR
+      const editor = process.env.EDITOR
 
-    if (!editor) {
-      throw new Error('ENV variable $EDITOR not set')
-    }
+      if (!editor) {
+        throw new Error('ENV variable $EDITOR not set')
+      }
 
-    function getConfig (next) {
-      argv.ipfs.config.get((err, config) => {
-        if (err) {
-          next(new Error('failed to get the config'))
+      async function getConfig () {
+        try {
+          await argv.ipfs.config.get()
+        } catch (err) {
+          throw new Error('failed to get the config')
+        }
+      }
+
+      async function saveTempConfig (config) {
+        const path = temp.path({ prefix: 'ipfs-config' })
+
+        try {
+          await promisify(fs.writeFile)(JSON.stringify(config, null, 2))
+        } catch (err) {
+          throw new Error('failed to write the config to a temporary file')
         }
 
-        next(null, config)
-      })
-    }
+        return path
+      }
 
-    function saveTempConfig (config, next) {
-      temp.open('ipfs-config', (err, info) => {
-        if (err) {
-          next(new Error('failed to open the config'))
-        }
+      function openEditor (path) {
+        return new Promise((resolve, reject) => {
+          const child = spawn(editor, [path], { stdio: 'inherit' })
 
-        fs.write(info.fd, JSON.stringify(config, null, 2))
-        fs.close(info.fd, (err) => {
-          if (err) {
-            next(new Error('failed to open the config'))
-          }
+          child.on('exit', (err, code) => {
+            if (err) return reject(new Error('error on the editor'))
+            resolve(path)
+          })
         })
+      }
 
-        next(null, info.path)
-      })
-    }
+      async function readTempConfig (path) {
+        let data
 
-    function openEditor (path, next) {
-      const child = spawn(editor, [path], {
-        stdio: 'inherit'
-      })
-
-      child.on('exit', (err, code) => {
-        if (err) {
-          throw new Error('error on the editor')
-        }
-
-        next(null, path)
-      })
-    }
-
-    function readTempConfig (path, next) {
-      fs.readFile(path, 'utf8', (err, data) => {
-        if (err) {
-          next(new Error('failed to get the updated config'))
+        try {
+          data = await promisify(fs.readFile)(path, 'utf8')
+        } catch (err) {
+          throw new Error('failed to get the updated config')
         }
 
         try {
-          next(null, JSON.parse(data))
+          return JSON.parse(data)
         } catch (err) {
-          next(new Error(`failed to parse the updated config "${err.message}"`))
+          throw new Error(`failed to parse the updated config "${err.message}"`)
         }
-      })
-    }
-
-    function saveConfig (config, next) {
-      config = utils.isDaemonOn()
-        ? Buffer.from(JSON.stringify(config)) : config
-
-      argv.ipfs.config.replace(config, (err) => {
-        if (err) {
-          next(new Error('failed to save the config'))
-        }
-
-        next()
-      })
-    }
-
-    waterfall([
-      getConfig,
-      saveTempConfig,
-      openEditor,
-      readTempConfig,
-      saveConfig
-    ], (err) => {
-      if (err) {
-        throw err
       }
-    })
+
+      async function saveConfig (config) {
+        config = utils.isDaemonOn()
+          ? Buffer.from(JSON.stringify(config)) : config
+
+        try {
+          await argv.ipfs.config.replace(config)
+        } catch (err) {
+          throw new Error('failed to save the config')
+        }
+      }
+
+      const config = await getConfig()
+      const tmpPath = saveTempConfig(config)
+      await openEditor(tmpPath)
+      const updatedConfig = await readTempConfig(tmpPath)
+      await saveConfig(updatedConfig)
+    })())
   }
 }

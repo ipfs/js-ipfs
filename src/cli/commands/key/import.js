@@ -24,11 +24,9 @@ module.exports = {
   },
 
   handler (argv) {
-    argv.ipfs.key.import(argv.name, argv.input, argv.passin, (err, key) => {
-      if (err) {
-        throw err
-      }
+    argv.resolve((async () => {
+      const key = await argv.ipfs.key.import(argv.name, argv.input, argv.passin)
       print(`imported ${key.id} ${key.name}`)
-    })
+    })())
   }
 }

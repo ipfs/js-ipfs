@@ -23,12 +23,12 @@ module.exports = {
     }
   },
 
-  handler: ({ ipfs, ipfsPath, recursive, cidBase }) => {
-    ipfs.pin.rm(ipfsPath, { recursive }, (err, results) => {
-      if (err) { throw err }
+  handler: ({ ipfs, ipfsPath, recursive, cidBase, resolve }) => {
+    resolve((async () => {
+      const results = await ipfs.pin.rm(ipfsPath, { recursive })
       results.forEach((res) => {
         print(`unpinned ${cidToString(res.hash, { base: cidBase })}`)
       })
-    })
+    })())
   }
 }

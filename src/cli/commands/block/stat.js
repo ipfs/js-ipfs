@@ -17,14 +17,11 @@ module.exports = {
     }
   },
 
-  handler ({ ipfs, key, cidBase }) {
-    ipfs.block.stat(key, (err, stats) => {
-      if (err) {
-        throw err
-      }
-
+  handler ({ ipfs, key, cidBase, resolve }) {
+    resolve((async () => {
+      const stats = await ipfs.block.stat(key)
       print('Key: ' + cidToString(stats.key, { base: cidBase }))
       print('Size: ' + stats.size)
-    })
+    })())
   }
 }

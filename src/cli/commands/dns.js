@@ -12,13 +12,10 @@ module.exports = {
     }
   },
 
-  handler ({ ipfs, domain }) {
-    ipfs.dns(domain, (err, path) => {
-      if (err) {
-        throw err
-      }
-
+  handler ({ ipfs, domain, resolve }) {
+    resolve((async () => {
+      const path = await ipfs.dns(domain)
       print(path)
-    })
+    })())
   }
 }

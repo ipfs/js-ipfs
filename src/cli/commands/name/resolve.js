@@ -21,21 +21,19 @@ module.exports = {
   },
 
   handler (argv) {
-    const opts = {
-      nocache: argv.nocache,
-      recursive: argv.recursive
-    }
-
-    argv.ipfs.name.resolve(argv.name, opts, (err, result) => {
-      if (err) {
-        throw err
+    argv.resolve((async () => {
+      const opts = {
+        nocache: argv.nocache,
+        recursive: argv.recursive
       }
+
+      const result = await argv.ipfs.name.resolve(argv.name, opts)
 
       if (result && result.path) {
         print(result.path)
       } else {
         print(result)
       }
-    })
+    })())
   }
 }

@@ -17,15 +17,14 @@ module.exports = {
     }
   },
 
-  handler ({ ipfs, key, cidBase }) {
-    ipfs.object.links(key, { enc: 'base58' }, (err, links) => {
-      if (err) {
-        throw err
-      }
+  handler ({ ipfs, key, cidBase, resolve }) {
+    resolve((async () => {
+      const links = await ipfs.object.links(key, { enc: 'base58' })
 
       links.forEach((link) => {
-        print(`${cidToString(link.cid, { base: cidBase, upgrade: false })} ${link.size} ${link.name}`)
+        const cidStr = cidToString(link.cid, { base: cidBase, upgrade: false })
+        print(`${cidStr} ${link.size} ${link.name}`)
       })
-    })
+    })())
   }
 }

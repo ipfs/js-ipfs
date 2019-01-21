@@ -12,18 +12,16 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    if (argv._handled) return
-    argv._handled = true
+    argv.resolve((async () => {
+      if (argv._handled) return
+      argv._handled = true
 
-    const filePath = path.resolve(process.cwd(), argv.file)
+      const filePath = path.resolve(process.cwd(), argv.file)
 
-    const config = utils.isDaemonOn()
-      ? filePath : JSON.parse(fs.readFileSync(filePath, 'utf8'))
+      const config = utils.isDaemonOn()
+        ? filePath : JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
-    argv.ipfs.config.replace(config, (err) => {
-      if (err) {
-        throw err
-      }
-    })
+      return argv.ipfs.config.replace(config)
+    })())
   }
 }

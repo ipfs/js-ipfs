@@ -22,12 +22,10 @@ module.exports = {
     }
   },
 
-  handler ({ ipfs, peer, cidBase }) {
-    ipfs.bitswap.wantlist(peer, (err, list) => {
-      if (err) {
-        throw err
-      }
+  handler ({ ipfs, peer, cidBase, resolve }) {
+    resolve((async () => {
+      const list = await ipfs.bitswap.wantlist(peer)
       list.Keys.forEach(k => print(cidToString(k['/'], { base: cidBase, upgrade: false })))
-    })
+    })())
   }
 }

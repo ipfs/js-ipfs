@@ -10,11 +10,9 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    argv.ipfs.key.rm(argv.name, (err, key) => {
-      if (err) {
-        throw err
-      }
+    argv.resolve((async () => {
+      const key = await argv.ipfs.key.rm(argv.name)
       print(`${key.id} ${key.name}`)
-    })
+    })())
   }
 }

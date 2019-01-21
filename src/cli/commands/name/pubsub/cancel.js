@@ -8,12 +8,9 @@ module.exports = {
   describe: 'Cancel a name subscription.',
 
   handler (argv) {
-    argv.ipfs.name.pubsub.cancel(argv.name, (err, result) => {
-      if (err) {
-        throw err
-      } else {
-        print(result.canceled ? 'canceled' : 'no subscription')
-      }
-    })
+    argv.resolve((async () => {
+      const result = await argv.ipfs.name.pubsub.cancel(argv.name)
+      print(result.canceled ? 'canceled' : 'no subscription')
+    })())
   }
 }

@@ -10,12 +10,9 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    argv.ipfs.pubsub.peers(argv.topic, (err, peers) => {
-      if (err) {
-        throw err
-      }
-
-      peers.forEach((peer) => print(peer))
-    })
+    argv.resolve((async () => {
+      const peers = await argv.ipfs.pubsub.peers(argv.topic)
+      peers.forEach(peer => print(peer))
+    })())
   }
 }

@@ -3,6 +3,7 @@
 const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
 const multibase = require('multibase')
+const promisify = require('promisify-es6')
 const { print } = require('../../../utils')
 const { cidToString } = require('../../../../utils/cid')
 
@@ -19,29 +20,13 @@ module.exports = {
     }
   },
 
-  handler ({ ipfs, root, name, ref, cidBase }) {
-    ipfs.object.get(ref, { enc: 'base58' }, (err, nodeA) => {
-      if (err) {
-        throw err
-      }
-
-      dagPB.util.cid(nodeA, (err, result) => {
-        if (err) {
-          throw err
-        }
-
-        const link = new DAGLink(name, nodeA.size, result)
-
-        ipfs.object.patch.addLink(root, link, {
-          enc: 'base58'
-        }, (err, cid) => {
-          if (err) {
-            throw err
-          }
-
-          print(cidToString(cid, { base: cidBase, upgrade: false }))
-        })
-      })
-    })
+  handler ({ ipfs, root, name, ref, cidBase, resolve }) {
+    resolve((async () => {
+      const nodeA = await ipfs.object.get(ref, { enc: 'base58' })
+      const result = await promisify(dagPB.util.cid)(nodeA)
+      const link = new DAGLink(name, nodeA.size, result)
+      const cid = await ipfs.object.patch.addLink(root, link, { enc: 'base58' })
+      print(cidToString(cid, { base: cidBase, upgrade: false }))
+    })())
   }
 }

@@ -10,12 +10,9 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    argv.ipfs.bootstrap.list((err, list) => {
-      if (err) {
-        throw err
-      }
-
+    argv.resolve((async () => {
+      const list = await argv.ipfs.bootstrap.list()
       list.Peers.forEach((node) => print(node))
-    })
+    })())
   }
 }

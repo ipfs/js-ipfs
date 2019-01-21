@@ -6,18 +6,6 @@ const multibase = require('multibase')
 const { print } = require('../../../utils')
 const { cidToString } = require('../../../../utils/cid')
 
-function appendData (key, data, ipfs, options) {
-  ipfs.object.patch.appendData(key, data, {
-    enc: 'base58'
-  }, (err, cid) => {
-    if (err) {
-      throw err
-    }
-
-    print(cidToString(cid, { base: options.cidBase, upgrade: false }))
-  })
-}
-
 module.exports = {
   command: 'append-data <root> [data]',
 
@@ -32,17 +20,25 @@ module.exports = {
   },
 
   handler (argv) {
-    const ipfs = argv.ipfs
-    if (argv.data) {
-      return appendData(argv.root, fs.readFileSync(argv.data), ipfs, argv)
-    }
+    argv.resolve((async () => {
+      let data
 
-    process.stdin.pipe(bl((err, input) => {
-      if (err) {
-        throw err
+      if (argv.data) {
+        data = fs.readFileSync(argv.data)
+      } else {
+        data = await new Promise((resolve, reject) => {
+          process.stdin.pipe(bl((err, input) => {
+            if (err) return reject(err)
+            resolve(input)
+          }))
+        })
       }
 
-      appendData(argv.root, input, ipfs, argv)
-    }))
+      const cid = await argv.ipfs.object.patch.appendData(argv.root, data, {
+        enc: 'base58'
+      })
+
+      print(cidToString(cid, { base: argv.cidBase, upgrade: false }))
+    })())
   }
 }
