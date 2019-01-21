@@ -277,13 +277,24 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
+  it('add from pipe', () => {
+    const proc = ipfs('add')
+    proc.stdin.write(Buffer.from('hello\n'))
+    proc.stdin.end()
+    return proc
+      .then(out => {
+        expect(out)
+          .to.eql('added QmZULkCELmmk5XNfCgTnCyFgAVxBRBXyDHGGMVoLFLiXEN QmZULkCELmmk5XNfCgTnCyFgAVxBRBXyDHGGMVoLFLiXEN\n')
+      })
+  })
+
   it('add --quiet', function () {
     this.timeout(30 * 1000)
 
     return ipfs('add -q src/init-files/init-docs/readme')
       .then((out) => {
         expect(out)
-          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB\n')
+          .to.eql('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB\n')
       })
   })
 

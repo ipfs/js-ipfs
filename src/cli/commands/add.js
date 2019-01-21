@@ -7,6 +7,7 @@ const byteman = require('byteman')
 const reduce = require('async/reduce')
 const mh = require('multihashes')
 const multibase = require('multibase')
+const toPull = require('stream-to-pull-stream')
 const { print, isDaemonOn, createProgressBar } = require('../utils')
 const { cidToString } = require('../../utils/cid')
 const globSource = require('../../utils/files/glob-source')
@@ -20,15 +21,9 @@ function getTotalBytes (paths, cb) {
   }, cb)
 }
 
-function addPipeline (paths, addStream, options) {
-  const {
-    recursive,
-    quiet,
-    quieter,
-    silent
-  } = options
+function addPipeline (source, addStream, options) {
   pull(
-    globSource(...paths, { recursive }),
+    source,
     addStream,
     pull.collect((err, added) => {
       if (err) {
@@ -39,14 +34,15 @@ function addPipeline (paths, addStream, options) {
         throw err
       }
 
-      if (silent) return
-      if (quieter) return print(added.pop().hash)
+      if (options.silent) return
+      if (options.quieter) return print(added.pop().hash)
 
       sortBy(added, 'path')
         .reverse()
         .map((file) => {
-          const log = [ 'added', cidToString(file.hash, { base: options.cidBase }) ]
-          if (!quiet && file.path.length > 0) log.push(file.path)
+          const log = options.quiet ? [] : ['added']
+          log.push(cidToString(file.hash, { base: options.cidBase }))
+          if (!options.quiet && file.path.length > 0) log.push(file.path)
           return log.join(' ')
         })
         .forEach((msg) => print(msg))
@@ -55,7 +51,7 @@ function addPipeline (paths, addStream, options) {
 }
 
 module.exports = {
-  command: 'add <file...>',
+  command: 'add [file...]',
 
   describe: 'Add a file to IPFS using the UnixFS data format',
 
@@ -163,8 +159,15 @@ module.exports = {
       throw new Error('Error: Enabling the sharding experiment should be done on the daemon')
     }
 
-    if (!argv.progress) {
-      return addPipeline(argv.file, ipfs.addPullStream(options), argv)
+    const source = argv.file
+      ? globSource(...argv.file, { recursive: argv.recursive })
+      : toPull.source(process.stdin) // Pipe directly to ipfs.add
+
+    const adder = ipfs.addPullStream(options)
+
+    // No progress or piping directly to ipfs.add: no need to getTotalBytes
+    if (!argv.progress || !argv.file) {
+      return addPipeline(source, adder, argv)
     }
 
     getTotalBytes(argv.file, (err, totalBytes) => {
@@ -176,7 +179,7 @@ module.exports = {
         bar.update(byteLength / totalBytes, { progress: byteman(byteLength, 2, 'MB') })
       }
 
-      addPipeline(argv.file, ipfs.addPullStream(options), argv)
+      addPipeline(source, adder, argv)
     })
   }
 }
