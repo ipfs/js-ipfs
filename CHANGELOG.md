@@ -1,3 +1,13 @@
+<a name="0.34.1"></a>
+## [0.34.1](https://github.com/ipfs/js-ipfs/compare/v0.34.0...v0.34.1) (2019-01-21)
+
+
+### Features
+
+* pipe to add ([#1833](https://github.com/ipfs/js-ipfs/issues/1833)) ([ea53071](https://github.com/ipfs/js-ipfs/commit/ea53071))
+
+
+
 <a name="0.34.0"></a>
 # [0.34.0](https://github.com/ipfs/js-ipfs/compare/v0.34.0-rc.1...v0.34.0) (2019-01-17)
 
