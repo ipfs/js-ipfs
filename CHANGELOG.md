@@ -1,3 +1,18 @@
+<a name="0.34.2"></a>
+## [0.34.2](https://github.com/ipfs/js-ipfs/compare/v0.34.1...v0.34.2) (2019-01-21)
+
+
+### Bug Fixes
+
+* race condition causing Database is not open error ([#1834](https://github.com/ipfs/js-ipfs/issues/1834)) ([6066c97](https://github.com/ipfs/js-ipfs/commit/6066c97))
+
+
+### Features
+
+* use ws-star-multi instead of ws-star ([#1793](https://github.com/ipfs/js-ipfs/issues/1793)) ([21fd4d1](https://github.com/ipfs/js-ipfs/commit/21fd4d1))
+
+
+
 <a name="0.34.1"></a>
 ## [0.34.1](https://github.com/ipfs/js-ipfs/compare/v0.34.0...v0.34.1) (2019-01-21)
 
