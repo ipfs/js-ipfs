@@ -39,8 +39,6 @@ The most important piece of information to note down is the name you choose for 
 
 ## Putting it all together
 
-For a demo of the final result, see https://ipfs.io/ipfs/QmdBZhDLEsooVKkmgRgNzjo2JirSbddp8FvnccJ4c2orH2/
-
 *Note:* If you try to run the example straight from disk, some browsers (e.g Chrome) might, for security reasons, prevent some resources from loading correctly. To get around this, simply cd into the directory of this example and use http-server from npm:
 
 ```bash
@@ -53,4 +51,3 @@ You should then be able to stream Big Buck Bunny by pointing your browser at htt
 In addition to video streaming, plain audio streaming works fine as well. Simply use the same ffmpeg + ipfs procedure as described above, but with your audio file as input. You may also want to change the video tag to `audio` (video tags will play plain audio as well, but the player looks a bit strange).
 
 On a final note, without diving too deep into what the specific ffmpeg HLS options above mean, it's worth mentioning the `hls_time` option, which defines the length of each HLS chunk (in seconds) and is potentially interesting for performance tuning (see for example [this article](https://bitmovin.com/mpeg-dash-hls-segment-length/)).
-
