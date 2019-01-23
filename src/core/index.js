@@ -126,7 +126,6 @@ class IPFS extends EventEmitter {
     this._preload = preload(this)
     this._mfsPreload = mfsPreload(this)
     this._ipns = undefined
-    this._libp2p = components.libp2p(this)
     // eslint-disable-next-line no-console
     this._print = this._options.silent ? this.log : console.log
 
@@ -149,7 +148,7 @@ class IPFS extends EventEmitter {
     this.object = components.object(this)
     this.dag = components.dag(this)
     this.files = components.filesMFS(this)
-    this.libp2p = undefined // Initialised at _libp2p.start()
+    this.libp2p = null // assigned on start
     this.swarm = components.swarm(this)
     this.name = components.name(this)
     this.bitswap = components.bitswap(this)

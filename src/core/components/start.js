@@ -10,6 +10,7 @@ const { TieredDatastore } = require('datastore-core')
 const IPNS = require('../ipns')
 const PubsubDatastore = require('../ipns/routing/pubsub-datastore')
 const OfflineDatastore = require('../ipns/routing/offline-datastore')
+const createLibp2pBundle = require('./libp2p')
 
 module.exports = (self) => {
   return promisify((callback) => {
@@ -38,7 +39,19 @@ module.exports = (self) => {
           ? self._repo.open(cb)
           : cb()
       },
-      (cb) => self._libp2p.start(cb),
+      (cb) => {
+        self._repo.config.get((err, config) => {
+          if (err) return cb(err)
+
+          const libp2p = createLibp2pBundle(self, config)
+
+          libp2p.start(err => {
+            if (err) return cb(err)
+            self.libp2p = libp2p
+            cb()
+          })
+        })
+      },
       (cb) => {
         // Setup online routing for IPNS with a tiered routing composed by a DHT and a Pubsub router (if properly enabled)
         const ipnsStores = []
