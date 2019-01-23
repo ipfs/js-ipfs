@@ -30,7 +30,7 @@ module.exports = (self) => {
 
       options = options || {}
 
-      self._libp2pNode.dht.get(key, options.timeout, callback)
+      self.libp2p.dht.get(key, options.timeout, callback)
     }),
 
     /**
@@ -50,7 +50,7 @@ module.exports = (self) => {
         return callback(new Error('Not valid key'))
       }
 
-      self._libp2pNode.dht.put(key, value, callback)
+      self.libp2p.dht.put(key, value, callback)
     }),
 
     /**
@@ -83,7 +83,7 @@ module.exports = (self) => {
 
       opts = opts || {}
 
-      self._libp2pNode.contentRouting.findProviders(key, opts.timeout || null, callback)
+      self.libp2p.contentRouting.findProviders(key, opts.timeout || null, callback)
     }),
 
     /**
@@ -98,7 +98,7 @@ module.exports = (self) => {
         peer = PeerId.createFromB58String(peer)
       }
 
-      self._libp2pNode.peerRouting.findPeer(peer, (err, info) => {
+      self.libp2p.peerRouting.findPeer(peer, (err, info) => {
         if (err) {
           return callback(err)
         }
@@ -154,7 +154,7 @@ module.exports = (self) => {
           // TODO: Implement recursive providing
         } else {
           each(keys, (cid, cb) => {
-            self._libp2pNode.contentRouting.provide(cid, cb)
+            self.libp2p.contentRouting.provide(cid, cb)
           }, callback)
         }
       })
@@ -173,7 +173,7 @@ module.exports = (self) => {
       }
 
       // TODO expose this method in peerRouting
-      self._libp2pNode._dht.getClosestPeers(peerId.toBytes(), (err, peerIds) => {
+      self.libp2p._dht.getClosestPeers(peerId.toBytes(), (err, peerIds) => {
         if (err) {
           return callback(err)
         }

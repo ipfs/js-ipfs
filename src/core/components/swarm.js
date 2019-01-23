@@ -60,7 +60,7 @@ module.exports = function swarm (self) {
         return callback(new Error(OFFLINE_ERROR))
       }
 
-      callback(null, self._libp2pNode.peerInfo.multiaddrs.toArray())
+      callback(null, self.libp2p.peerInfo.multiaddrs.toArray())
     }),
 
     connect: promisify((maddr, callback) => {
@@ -68,7 +68,7 @@ module.exports = function swarm (self) {
         return callback(new Error(OFFLINE_ERROR))
       }
 
-      self._libp2pNode.dial(maddr, callback)
+      self.libp2p.dial(maddr, callback)
     }),
 
     disconnect: promisify((maddr, callback) => {
@@ -76,7 +76,7 @@ module.exports = function swarm (self) {
         return callback(new Error(OFFLINE_ERROR))
       }
 
-      self._libp2pNode.hangUp(maddr, callback)
+      self.libp2p.hangUp(maddr, callback)
     }),
 
     filters: promisify((callback) => callback(new Error('Not implemented')))

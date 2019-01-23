@@ -19,14 +19,14 @@ module.exports = function pingPullStream (self) {
 
     const source = Pushable()
 
-    getPeer(self._libp2pNode, source, peerId, (err, peer) => {
+    getPeer(self.libp2p, source, peerId, (err, peer) => {
       if (err) {
         log.error(err)
         source.end(err)
         return
       }
 
-      runPing(self._libp2pNode, source, opts.count, peer, (err) => {
+      runPing(self.libp2p, source, opts.count, peer, (err) => {
         if (err) {
           log.error(err)
           source.push(getPacket({ success: false, text: err.toString() }))

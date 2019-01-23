@@ -10,6 +10,7 @@ const { TieredDatastore } = require('datastore-core')
 const IPNS = require('../ipns')
 const PubsubDatastore = require('../ipns/routing/pubsub-datastore')
 const OfflineDatastore = require('../ipns/routing/offline-datastore')
+const createLibp2pBundle = require('./libp2p')
 
 module.exports = (self) => {
   return promisify((callback) => {
@@ -38,7 +39,19 @@ module.exports = (self) => {
           ? self._repo.open(cb)
           : cb()
       },
-      (cb) => self.libp2p.start(cb),
+      (cb) => {
+        self._repo.config.get((err, config) => {
+          if (err) return cb(err)
+
+          const libp2p = createLibp2pBundle(self, config)
+
+          libp2p.start(err => {
+            if (err) return cb(err)
+            self.libp2p = libp2p
+            cb()
+          })
+        })
+      },
       (cb) => {
         // Setup online routing for IPNS with a tiered routing composed by a DHT and a Pubsub router (if properly enabled)
         const ipnsStores = []
@@ -46,7 +59,7 @@ module.exports = (self) => {
         // Add IPNS pubsub if enabled
         let pubsubDs
         if (get(self._options, 'EXPERIMENTAL.ipnsPubsub', false)) {
-          const pubsub = self._libp2pNode.pubsub
+          const pubsub = self.libp2p.pubsub
           const localDatastore = self._repo.datastore
           const peerId = self._peerInfo.id
 
@@ -57,7 +70,7 @@ module.exports = (self) => {
         // DHT should be added as routing if we are not running with local flag
         // TODO: Need to change this logic once DHT is enabled by default, for now fallback to Offline datastore
         if (get(self._options, 'EXPERIMENTAL.dht', false) && !self._options.local) {
-          ipnsStores.push(self._libp2pNode.dht)
+          ipnsStores.push(self.libp2p.dht)
         } else {
           const offlineDatastore = new OfflineDatastore(self._repo)
           ipnsStores.push(offlineDatastore)
@@ -68,7 +81,7 @@ module.exports = (self) => {
         self._ipns = new IPNS(routing, self._repo.datastore, self._peerInfo, self._keychain, self._options)
 
         self._bitswap = new Bitswap(
-          self._libp2pNode,
+          self.libp2p,
           self._repo.blocks,
           { statsEnabled: true }
         )

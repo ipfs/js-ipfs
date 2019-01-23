@@ -35,7 +35,11 @@ module.exports = (self) => {
     series([
       (cb) => self._ipns.republisher.stop(cb),
       (cb) => self._mfsPreload.stop(cb),
-      (cb) => self.libp2p.stop(cb),
+      (cb) => {
+        const libp2p = self.libp2p
+        self.libp2p = null
+        libp2p.stop(cb)
+      },
       (cb) => self._repo.close(cb)
     ], done)
   })

@@ -113,7 +113,6 @@ class IPFS extends EventEmitter {
     // this._repo - assigned above
     this._peerInfoBook = new PeerBook()
     this._peerInfo = undefined
-    this._libp2pNode = undefined
     this._bitswap = undefined
     this._blockService = new BlockService(this._repo)
     this._ipld = new Ipld({
@@ -149,7 +148,7 @@ class IPFS extends EventEmitter {
     this.object = components.object(this)
     this.dag = components.dag(this)
     this.files = components.filesMFS(this)
-    this.libp2p = components.libp2p(this)
+    this.libp2p = null // assigned on start
     this.swarm = components.swarm(this)
     this.name = components.name(this)
     this.bitswap = components.bitswap(this)
