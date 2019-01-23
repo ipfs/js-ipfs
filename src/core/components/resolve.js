@@ -44,6 +44,7 @@ module.exports = (self) => {
   // Resolve the given CID + path to a CID.
   function resolve (cid, path, callback) {
     let value, remainderPath
+
     doUntil(
       (cb) => {
         self.block.get(cid, (err, block) => {
