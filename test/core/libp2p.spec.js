@@ -24,31 +24,27 @@ describe('libp2p customization', function () {
   let datastore
   let peerInfo
   let peerBook
-  let mockConfig
+  let testConfig
   let _libp2p
 
-  before((done) => {
-    mockConfig = {
-      get: (callback) => {
-        callback(null, {
-          Addresses: {
-            Swarm: ['/ip4/0.0.0.0/tcp/4002'],
-            API: '/ip4/127.0.0.1/tcp/5002',
-            Gateway: '/ip4/127.0.0.1/tcp/9090'
-          },
-          Discovery: {
-            MDNS: {
-              Enabled: false
-            },
-            webRTCStar: {
-              Enabled: false
-            }
-          },
-          EXPERIMENTAL: {
-            dht: false,
-            pubsub: false
-          }
-        })
+  beforeEach((done) => {
+    testConfig = {
+      Addresses: {
+        Swarm: ['/ip4/0.0.0.0/tcp/4002'],
+        API: '/ip4/127.0.0.1/tcp/5002',
+        Gateway: '/ip4/127.0.0.1/tcp/9090'
+      },
+      Discovery: {
+        MDNS: {
+          Enabled: false
+        },
+        webRTCStar: {
+          Enabled: false
+        }
+      },
+      EXPERIMENTAL: {
+        dht: false,
+        pubsub: false
       }
     }
     datastore = new MemoryStore()
@@ -77,7 +73,6 @@ describe('libp2p customization', function () {
         _peerInfo: peerInfo,
         _peerBook: peerBook,
         _print: console.log,
-        config: mockConfig,
         _options: {
           libp2p: (opts) => {
             const wsstar = new WebSocketStar({ id: opts.peerInfo.id })
@@ -104,12 +99,12 @@ describe('libp2p customization', function () {
         }
       }
 
-      _libp2p = libp2pComponent(ipfs)
+      _libp2p = libp2pComponent(ipfs, testConfig)
 
       _libp2p.start((err) => {
         expect(err).to.not.exist()
-        expect(ipfs.libp2p._config).to.not.have.property('peerDiscovery')
-        expect(ipfs.libp2p._transport).to.have.length(1)
+        expect(_libp2p._config).to.not.have.property('peerDiscovery')
+        expect(_libp2p._transport).to.have.length(1)
         done()
       })
     })
@@ -123,15 +118,14 @@ describe('libp2p customization', function () {
         },
         _peerInfo: peerInfo,
         _peerBook: peerBook,
-        _print: console.log,
-        config: mockConfig
+        _print: console.log
       }
 
-      _libp2p = libp2pComponent(ipfs)
+      _libp2p = libp2pComponent(ipfs, testConfig)
 
       _libp2p.start((err) => {
         expect(err).to.not.exist()
-        expect(ipfs.libp2p._config).to.deep.include({
+        expect(_libp2p._config).to.deep.include({
           peerDiscovery: {
             bootstrap: {
               enabled: true,
@@ -152,7 +146,7 @@ describe('libp2p customization', function () {
             pubsub: false
           }
         })
-        expect(ipfs.libp2p._transport).to.have.length(3)
+        expect(_libp2p._transport).to.have.length(3)
         done()
       })
     })
@@ -167,7 +161,6 @@ describe('libp2p customization', function () {
         _peerInfo: peerInfo,
         _peerBook: peerBook,
         _print: console.log,
-        config: mockConfig,
         _options: {
           config: {
             Discovery: {
@@ -193,11 +186,11 @@ describe('libp2p customization', function () {
         }
       }
 
-      _libp2p = libp2pComponent(ipfs)
+      _libp2p = libp2pComponent(ipfs, testConfig)
 
       _libp2p.start((err) => {
         expect(err).to.not.exist()
-        expect(ipfs.libp2p._config).to.deep.include({
+        expect(_libp2p._config).to.deep.include({
           peerDiscovery: {
             bootstrap: {
               enabled: true,
@@ -218,7 +211,7 @@ describe('libp2p customization', function () {
             pubsub: true
           }
         })
-        expect(ipfs.libp2p._transport).to.have.length(1)
+        expect(_libp2p._transport).to.have.length(1)
         done()
       })
     })
