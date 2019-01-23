@@ -17,6 +17,12 @@ updateNotifier({
   updateCheckInterval: 1000 * 60 * 60 * 24 * 7 // 1 week
 }).notify()
 
+// Exit if there were undhandled Promise rejections
+process.on('unhandledRejection', (error) => {
+  print(error.message)
+  process.exit(1)
+})
+
 const args = process.argv.slice(2)
 
 const cli = yargs
