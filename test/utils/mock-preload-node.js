@@ -19,6 +19,15 @@ module.exports.createNode = () => {
   let cids = []
 
   const server = http.createServer((req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Access-Control-Request-Method', '*')
+    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, DELETE')
+    res.setHeader('Access-Control-Allow-Headers', '*')
+    if (req.method === 'OPTIONS') {
+      res.writeHead(200)
+      res.end()
+      return
+    }
     if (req.url.startsWith('/api/v0/refs')) {
       const arg = new URL(`https://ipfs.io${req.url}`).searchParams.get('arg')
       cids = cids.concat(arg)
