@@ -20,7 +20,7 @@ module.exports = function libp2p (self, config) {
   let discoveredPeers = []
 
   const putAndDial = peerInfo => {
-    peerInfo.put(peerInfo)
+    peerBook.put(peerInfo)
     libp2p.dial(peerInfo, () => {})
   }
 
