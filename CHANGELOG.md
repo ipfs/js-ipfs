@@ -1,3 +1,13 @@
+<a name="0.34.3"></a>
+## [0.34.3](https://github.com/ipfs/js-ipfs/compare/v0.34.2...v0.34.3) (2019-01-24)
+
+
+### Bug Fixes
+
+* add cors support for preload-mock-server and update aegir ([#1839](https://github.com/ipfs/js-ipfs/issues/1839)) ([2d45c9d](https://github.com/ipfs/js-ipfs/commit/2d45c9d))
+
+
+
 <a name="0.34.2"></a>
 ## [0.34.2](https://github.com/ipfs/js-ipfs/compare/v0.34.1...v0.34.2) (2019-01-21)
 
