@@ -2,12 +2,13 @@
 
 const dns = require('dns')
 const _ = require('lodash')
+const errcode = require('err-code')
 
 module.exports = (domain, opts, callback) => {
   resolveDnslink(domain)
     .catch(err => {
-      // If the code is not ENOTFOUND then throw the error
-      if (err.code !== 'ENOTFOUND') throw err
+      // If the code is not ENOTFOUND or ERR_DNSLINK_NOT_FOUND then throw the error
+      if (err.code !== 'ENOTFOUND' && err.code !== 'ERR_DNSLINK_NOT_FOUND') throw err
 
       if (domain.startsWith('_dnslink.')) {
         // The supplied domain contains a _dnslink component
@@ -43,9 +44,7 @@ function resolveDnslink (domain) {
       // we now have dns text entries as an array of strings
       // only records passing the DNSLINK_REGEX text are included
       if (dnslinkRecords.length === 0) {
-        const err = new Error(`No dnslink records found for domain: ${domain}`)
-        err.code = 'ENOTFOUND'
-        throw err
+        throw errcode(`No dnslink records found for domain: ${domain}`, 'ERR_DNSLINK_NOT_FOUND')
       }
       return dnslinkRecords[0]
     })
