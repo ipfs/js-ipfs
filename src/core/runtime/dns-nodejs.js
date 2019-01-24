@@ -5,7 +5,7 @@ const dns = require('dns')
 module.exports = (domain, opts, callback) => {
   resolveDnslink(domain)
     .catch(err => {
-      // If the code is not ENOTFOUND the throw the error
+      // If the code is not ENOTFOUND then throw the error
       if (err.code !== 'ENOTFOUND') throw err
 
       if (domain.indexOf('_dnslink') === -1) {

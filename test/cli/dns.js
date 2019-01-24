@@ -19,4 +19,12 @@ describe('dns', () => runOnAndOff((thing) => {
       expect(res.substr(0, 6)).to.eql('/ipns/')
     })
   })
+
+  it('resolve _dnslink.ipfs.io dns', function () {
+    this.timeout(60 * 1000)
+
+    return ipfs('dns _dnslink.ipfs.io').then((res) => {
+      expect(res.substr(0, 6)).to.eql('/ipns/')
+    })
+  })
 }))
