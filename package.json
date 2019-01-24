@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.34.2",
+  "version": "0.34.3",
   "description": "JavaScript implementation of the IPFS specification",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "bin": {
@@ -188,6 +188,7 @@
     "A_A <21040751+Otto-AA@users.noreply.github.com>",
     "Alan Shaw <alan.shaw@protocol.ai>",
     "Alan Shaw <alan@tableflip.io>",
+    "Alex North <alex@alexnorth.me>",
     "Alex Potsides <alex@achingbrain.net>",
     "Andrew de Andrade <andrew@deandrade.com.br>",
     "André Cruz <andremiguelcruz@msn.com>",
