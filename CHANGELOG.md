@@ -1,3 +1,13 @@
+<a name="0.34.4"></a>
+## [0.34.4](https://github.com/ipfs/js-ipfs/compare/v0.34.3...v0.34.4) (2019-01-24)
+
+
+### Features
+
+* support _dnslink subdomain specified dnslinks ([#1843](https://github.com/ipfs/js-ipfs/issues/1843)) ([a17253e](https://github.com/ipfs/js-ipfs/commit/a17253e))
+
+
+
 <a name="0.34.3"></a>
 ## [0.34.3](https://github.com/ipfs/js-ipfs/compare/v0.34.2...v0.34.3) (2019-01-24)
 
