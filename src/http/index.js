@@ -4,7 +4,6 @@ const Hapi = require('hapi')
 const Pino = require('hapi-pino')
 const debug = require('debug')
 const multiaddr = require('multiaddr')
-// const setHeader = require('hapi-set-header')
 const promisify = require('promisify-es6')
 
 const IPFS = require('../core')
@@ -103,7 +102,15 @@ class HttpApi {
   }
 
   async _createApiServer (host, port, ipfs) {
-    const server = Hapi.server({ host, port })
+    const server = Hapi.server({
+      host,
+      port,
+      // CORS is enabled by default
+      // TODO: shouldn't, fix this
+      routes: {
+        cors: true
+      }
+    })
     server.app.ipfs = ipfs
 
     await server.register({
@@ -115,28 +122,28 @@ class HttpApi {
       }
     })
 
-    // CORS is enabled by default
-    // TODO: shouldn't, fix this
-    // -          this.server = new Hapi.Server({
-    // -            connections: {
-    // -              routes: {
-    // -                cors: true
-    // -              }
-    // -            },
+    const setHeader = (key, value) => {
+      server.ext('onPreResponse', (request, h) => {
+        const { response } = request
+        if (response.isBoom) {
+          response.output.headers[key] = value
+        } else {
+          response.header(key, value)
+        }
+        return h.continue
+      })
+    }
 
     // Set default headers
-    // setHeader(server,
-    //   'Access-Control-Allow-Headers',
-    //   'X-Stream-Output, X-Chunked-Output, X-Content-Length')
-    // setHeader(server,
-    //   'Access-Control-Expose-Headers',
-    //   'X-Stream-Output, X-Chunked-Output, X-Content-Length')
+    setHeader('Access-Control-Allow-Headers',
+      'X-Stream-Output, X-Chunked-Output, X-Content-Length')
+    setHeader('Access-Control-Expose-Headers',
+      'X-Stream-Output, X-Chunked-Output, X-Content-Length')
+
+    server.route(require('./api/routes'))
 
     // TODO: errorHandler(this, server)
 
-    // server.route(require('./gateway/routes'))
-
-    // TODO FIXME
     return server
   }
 
@@ -161,8 +168,8 @@ class HttpApi {
   }
 
   get apiAddr () {
-    if (!this._servers) throw new Error('API address unavailable - server is not started')
-    return multiaddr('/ip4/127.0.0.1/tcp/' + this._server.api.info.port)
+    if (!this._apiServer) throw new Error('API address unavailable - server is not started')
+    return multiaddr('/ip4/127.0.0.1/tcp/' + this._apiServer.info.port)
   }
 
   async stop () {

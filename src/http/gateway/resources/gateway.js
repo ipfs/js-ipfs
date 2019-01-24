@@ -163,7 +163,7 @@ module.exports = {
       }
       // TODO: we don't have case-insensitive solution for /ipns/ yet (https://github.com/ipfs/go-ipfs/issues/5287)
     }
-    return response
+    return h.continue
   }
 
 }
