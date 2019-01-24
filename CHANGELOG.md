@@ -1,3 +1,13 @@
+<a name="29.0.1"></a>
+## [29.0.1](https://github.com/ipfs/js-ipfs-http-client/compare/v29.0.0...v29.0.1) (2019-01-24)
+
+
+### Bug Fixes
+
+* bundle in meteor ([#931](https://github.com/ipfs/js-ipfs-http-client/issues/931)) ([431c442](https://github.com/ipfs/js-ipfs-http-client/commit/431c442)), closes [#10411](https://github.com/ipfs/js-ipfs-http-client/issues/10411)
+
+
+
 <a name="29.0.0"></a>
 # [29.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v28.1.2...v29.0.0) (2019-01-15)
 
