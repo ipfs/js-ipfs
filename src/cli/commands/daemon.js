@@ -1,10 +1,6 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const utils = require('../utils')
-const print = utils.print
-
-let httpAPI
+const { getRepoPath, print, ipfsPathHelp } = require('../utils')
 
 module.exports = {
   command: 'daemon',
@@ -13,7 +9,7 @@ module.exports = {
 
   builder (yargs) {
     return yargs
-      .epilog(utils.ipfsPathHelp)
+      .epilog(ipfsPathHelp)
       .option('enable-sharding-experiment', {
         type: 'boolean',
         default: false
@@ -40,14 +36,25 @@ module.exports = {
     argv.resolve((async () => {
       print('Initializing IPFS daemon...')
 
-      const repoPath = utils.getRepoPath()
+      const repoPath = getRepoPath()
 
       // Required inline to reduce startup time
-      const HttpAPI = require('../../http')
-      httpAPI = new HttpAPI(process.env.IPFS_PATH, null, argv)
+      const HttpApi = require('../../http')
+      const api = new HttpApi({
+        silent: argv.silent,
+        repo: process.env.IPFS_PATH,
+        offline: argv.offline,
+        pass: argv.pass,
+        EXPERIMENTAL: {
+          pubsub: argv.enablePubsubExperiment,
+          ipnsPubsub: argv.enableNamesysPubsub,
+          dht: argv.enableDhtExperiment,
+          sharding: argv.enableShardingExperiment
+        }
+      })
 
       try {
-        await promisify(httpAPI.start)()
+        await api.start()
       } catch (err) {
         if (err.code === 'ENOENT' && err.message.match(/uninitialized/i)) {
           print('Error: no initialized ipfs repo found in ' + repoPath)
@@ -61,7 +68,7 @@ module.exports = {
 
       const cleanup = async () => {
         print(`Received interrupt signal, shutting down..`)
-        await promisify(httpAPI.stop)()
+        await api.stop()
         process.exit(0)
       }
 

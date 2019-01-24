@@ -4,14 +4,15 @@ const debug = require('debug')
 const log = debug('jsipfs:http-gateway')
 log.error = debug('jsipfs:http-gateway:error')
 const pull = require('pull-stream')
-const toPull = require('stream-to-pull-stream')
+const pushable = require('pull-pushable')
+const toStream = require('pull-stream-to-stream')
 const fileType = require('file-type')
 const mime = require('mime-types')
-const Stream = require('readable-stream')
-const CID = require('cids')
+const { PassThrough } = require('readable-stream')
 
 const { resolver } = require('ipfs-http-response')
 const PathUtils = require('../utils/path')
+const { cidToString } = require('../../../utils/cid')
 
 function detectContentType (ref, chunk) {
   let fileSignature
@@ -29,151 +30,140 @@ function detectContentType (ref, chunk) {
 }
 
 module.exports = {
-  checkCID: (request, reply) => {
+  checkCID (request, h) {
     if (!request.params.cid) {
-      return reply({
+      return h.response({
         Message: 'Path Resolve error: path must contain at least one component',
         Code: 0,
         Type: 'error'
       }).code(400).takeover()
     }
 
-    return reply({
-      ref: `/ipfs/${request.params.cid}`
-    })
+    return { ref: `/ipfs/${request.params.cid}` }
   },
 
-  handler: (request, reply) => {
-    const ref = request.pre.args.ref
-    const ipfs = request.server.app.ipfs
+  async handler (request, h) {
+    const { ref } = request.pre.args
+    const { ipfs } = request.server.app
 
-    function handleGatewayResolverError (err) {
-      if (err) {
-        log.error('err: ', err.toString(), ' fileName: ', err.fileName)
+    let data
+    try {
+      data = await resolver.cid(ipfs, ref)
+    } catch (err) {
+      const errorToString = err.toString()
+      log.error('err: ', errorToString, ' fileName: ', err.fileName)
 
-        const errorToString = err.toString()
-        // switch case with true feels so wrong.
-        switch (true) {
-          case (errorToString === 'Error: This dag node is a directory'):
-            resolver.directory(ipfs, ref, err.fileName, (err, data) => {
-              if (err) {
-                log.error(err)
-                return reply(err.toString()).code(500)
-              }
-              if (typeof data === 'string') {
-                // no index file found
-                if (!ref.endsWith('/')) {
-                  // for a directory, if URL doesn't end with a /
-                  // append / and redirect permanent to that URL
-                  return reply.redirect(`${ref}/`).permanent(true)
-                } else {
-                  // send directory listing
-                  return reply(data)
-                }
-              } else {
-                // found index file
-                // redirect to URL/<found-index-file>
-                return reply.redirect(PathUtils.joinURLParts(ref, data[0].name))
-              }
-            })
-            break
-          case (errorToString.startsWith('Error: no link named')):
-            return reply(errorToString).code(404)
-          case (errorToString.startsWith('Error: multihash length inconsistent')):
-          case (errorToString.startsWith('Error: Non-base58 character')):
-            return reply({ Message: errorToString, Code: 0, Type: 'error' }).code(400)
-          default:
+      // switch case with true feels so wrong.
+      switch (true) {
+        case (errorToString === 'Error: This dag node is a directory'):
+          try {
+            data = await resolver.directory(ipfs, ref, err.cid)
+          } catch (err) {
             log.error(err)
-            return reply({ Message: errorToString, Code: 0, Type: 'error' }).code(500)
-        }
+            return h.response(err.toString()).code(500)
+          }
+
+          if (typeof data === 'string') {
+            // no index file found
+            if (!ref.endsWith('/')) {
+              // for a directory, if URL doesn't end with a /
+              // append / and redirect permanent to that URL
+              return h.redirect(`${ref}/`).permanent(true)
+            }
+            // send directory listing
+            return h.response(data)
+          }
+
+          // found index file
+          // redirect to URL/<found-index-file>
+          return h.redirect(PathUtils.joinURLParts(ref, data[0].name))
+        case (errorToString.startsWith('Error: no link named')):
+          return h.response(errorToString).code(404)
+        case (errorToString.startsWith('Error: multihash length inconsistent')):
+        case (errorToString.startsWith('Error: Non-base58 character')):
+          return h.response({ Message: errorToString, Code: 0, Type: 'error' }).code(400)
+        default:
+          log.error(err)
+          return h.response({ Message: errorToString, Code: 0, Type: 'error' }).code(500)
       }
     }
 
-    return resolver.multihash(ipfs, ref, (err, data) => {
-      if (err) {
-        return handleGatewayResolverError(err)
-      }
+    if (ref.endsWith('/')) {
+      // remove trailing slash for files
+      return h.redirect(PathUtils.removeTrailingSlash(ref)).permanent(true)
+    }
 
-      const stream = ipfs.catReadableStream(data.multihash)
-      stream.once('error', (err) => {
-        if (err) {
-          log.error(err)
-          return reply(err.toString()).code(500)
-        }
-      })
+    return new Promise((resolve, reject) => {
+      let pusher
+      let started = false
 
-      if (ref.endsWith('/')) {
-        // remove trailing slash for files
-        return reply
-          .redirect(PathUtils.removeTrailingSlash(ref))
-          .permanent(true)
-      } else {
-        if (!stream._read) {
-          stream._read = () => {}
-          stream._readableState = {}
-        }
+      pull(
+        ipfs.catPullStream(data.cid),
+        pull.drain(
+          chunk => {
+            if (!started) {
+              started = true
+              pusher = pushable()
+              const res = h.response(toStream.source(pusher).pipe(new PassThrough()))
 
-        //  response.continue()
-        let contentTypeDetected = false
-        let stream2 = new Stream.PassThrough({ highWaterMark: 1 })
-        stream2.on('error', (err) => {
-          log.error('stream2 err: ', err)
-        })
+              // Etag maps directly to an identifier for a specific version of a resource
+              res.header('Etag', `"${data.cid}"`)
 
-        let response = reply(stream2).hold()
+              // Set headers specific to the immutable namespace
+              if (ref.startsWith('/ipfs/')) {
+                res.header('Cache-Control', 'public, max-age=29030400, immutable')
+              }
 
-        // Etag maps directly to an identifier for a specific version of a resource
-        // TODO: change to .cid.toBaseEncodedString() after switch to new js-ipfs-http-response
-        response.header('Etag', `"${data.multihash}"`)
-
-        // Set headers specific to the immutable namespace
-        if (ref.startsWith('/ipfs/')) {
-          response.header('Cache-Control', 'public, max-age=29030400, immutable')
-        }
-
-        pull(
-          toPull.source(stream),
-          pull.through((chunk) => {
-            // Guess content-type (only once)
-            if (chunk.length > 0 && !contentTypeDetected) {
-              let contentType = detectContentType(ref, chunk)
-              contentTypeDetected = true
+              const contentType = detectContentType(ref, chunk)
 
               log('ref ', ref)
               log('mime-type ', contentType)
 
               if (contentType) {
                 log('writing content-type header')
-                response.header('Content-Type', contentType)
+                res.header('Content-Type', contentType)
               }
 
-              response.send()
+              resolve(res)
+            }
+            pusher.push(chunk)
+          },
+          err => {
+            if (err) {
+              log.error(err)
+
+              // We already started flowing, abort the stream
+              if (started) {
+                return pusher.end(err)
+              }
+
+              return resolve(h.response({
+                Message: err.message,
+                Code: 0,
+                Type: 'error'
+              }).code(500).takeover())
             }
 
-            stream2.write(chunk)
-          }),
-          pull.onEnd(() => {
-            log('stream ended.')
-            stream2.end()
-          })
+            pusher.end()
+          }
         )
-      }
+      )
     })
   },
 
-  afterHandler: (request, reply) => {
-    const response = request.response
+  afterHandler (request, h) {
+    const { response } = request
     if (response.statusCode === 200) {
-      const ref = request.pre.args.ref
+      const { ref } = request.pre.args
       response.header('X-Ipfs-Path', ref)
       if (ref.startsWith('/ipfs/')) {
         const rootCid = ref.split('/')[2]
-        const ipfsOrigin = new CID(rootCid).toV1().toBaseEncodedString('base32')
+        const ipfsOrigin = cidToString(rootCid, { base: 'base32' })
         response.header('Suborigin', 'ipfs000' + ipfsOrigin)
       }
       // TODO: we don't have case-insensitive solution for /ipns/ yet (https://github.com/ipfs/go-ipfs/issues/5287)
     }
-    reply.continue()
+    return response
   }
 
 }
