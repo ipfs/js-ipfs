@@ -1,7 +1,7 @@
 'use strict'
 
 const dns = require('dns')
-const _ = require('lodash');
+const _ = require('lodash')
 
 module.exports = (domain, opts, callback) => {
   resolveDnslink(domain)
@@ -16,7 +16,7 @@ module.exports = (domain, opts, callback) => {
         return resolveDnslink(rootDomain)
       }
       // Check the _dnslink subdomain
-      const _dnslinkDomain = `_dnslink.${domain}`;
+      const _dnslinkDomain = `_dnslink.${domain}`
       // If this throws then we propagate the error
       return resolveDnslink(_dnslinkDomain)
     })
@@ -26,9 +26,9 @@ module.exports = (domain, opts, callback) => {
     .catch(callback)
 }
 
-function resolveDnslink(domain) {
+function resolveDnslink (domain) {
   const DNSLINK_REGEX = /^dnslink=.+$/
-  return new Promise( (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     dns.resolveTxt(domain, (err, records) => {
       if (err) return reject(err)
       resolve(records)
