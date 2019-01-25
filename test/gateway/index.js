@@ -93,7 +93,6 @@ describe('HTTP Gateway', function () {
     })
 
     expect(res.statusCode).to.equal(400)
-    expect(res.result.Message).to.be.a('string')
     expect(res.headers['cache-control']).to.equal('no-cache')
     expect(res.headers.etag).to.equal(undefined)
     expect(res.headers['x-ipfs-path']).to.equal(undefined)
@@ -107,7 +106,6 @@ describe('HTTP Gateway', function () {
     })
 
     expect(res.statusCode).to.equal(400)
-    expect(res.result.Message).to.be.a('string')
     expect(res.headers['cache-control']).to.equal('no-cache')
     expect(res.headers.etag).to.equal(undefined)
     expect(res.headers['x-ipfs-path']).to.equal(undefined)
