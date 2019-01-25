@@ -3,8 +3,8 @@
 module.exports = [
   require('./version'),
   require('./shutdown'),
-  require('./id')
-  // require('./bootstrap')(server)
+  require('./id'),
+  ...require('./bootstrap')
   // require('./block')(server)
   // require('./object')(server)
   // require('./pin')(server)

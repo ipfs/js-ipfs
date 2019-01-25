@@ -1,6 +1,6 @@
 'use strict'
 
-exports.get = async (request, h) => {
+module.exports = async (request, h) => {
   const { ipfs } = request.server.app
   const version = await ipfs.version()
 
