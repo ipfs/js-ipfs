@@ -1,6 +1,7 @@
 'use strict'
 
 const multiaddr = require('multiaddr')
+const Boom = require('boom')
 
 exports.list = async (request, h) => {
   const { ipfs } = request.server.app
@@ -20,7 +21,7 @@ exports.add = {
           default: def
         }
       } catch (err) {
-        throw new Error('Not a valid multiaddr')
+        throw Boom.badRequest('Not a valid multiaddr')
       }
     }
 
@@ -54,7 +55,7 @@ exports.rm = {
           all: all
         }
       } catch (err) {
-        throw new Error('Not a valid multiaddr')
+        throw Boom.badRequest('Not a valid multiaddr')
       }
     }
 
