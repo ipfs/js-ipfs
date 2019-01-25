@@ -214,6 +214,14 @@ module.exports = (createCommon, options) => {
       })
     })
 
+    it('should get only a CID, due to resolving locally only', function (done) {
+      ipfs.dag.get(cidCbor, 'pb/Data', { localResolve: true }, (err, result) => {
+        expect(err).to.not.exist()
+        expect(result.value.equals(cidPb)).to.be.true()
+        done()
+      })
+    })
+
     it('should get a node added as CIDv0 with a CIDv1', done => {
       const input = Buffer.from(`TEST${Date.now()}`)
 
