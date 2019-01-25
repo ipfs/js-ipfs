@@ -8,7 +8,7 @@ exports = module.exports
  * Returns an empty response to the caller then
  * on the next 'tick' emits SIGTERM.
  */
-exports.do = (request, reply) => {
+exports.do = (request, h) => {
   setImmediate(() => process.emit('SIGTERM'))
-  return reply()
+  return h.response()
 }

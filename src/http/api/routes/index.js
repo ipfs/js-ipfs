@@ -1,8 +1,8 @@
 'use strict'
 
 module.exports = [
-  require('./version')
-  // require('./shutdown')(server)
+  require('./version'),
+  require('./shutdown')
   // require('./id')(server)
   // require('./bootstrap')(server)
   // require('./block')(server)
