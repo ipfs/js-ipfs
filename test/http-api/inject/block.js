@@ -13,28 +13,26 @@ module.exports = (http) => {
     let api
 
     before(() => {
-      api = http.api.server.select('API')
+      api = http.api._apiServer
     })
 
     describe('/block/put', () => {
-      it('returns 400 if no node is provided', (done) => {
+      it('returns 400 if no node is provided', async () => {
         const form = new FormData()
         const headers = form.getHeaders()
+        const payload = await streamToPromise(form)
 
-        streamToPromise(form).then((payload) => {
-          api.inject({
-            method: 'POST',
-            url: '/api/v0/block/put',
-            headers: headers,
-            payload: payload
-          }, (res) => {
-            expect(res.statusCode).to.equal(400)
-            done()
-          })
+        const res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/block/put',
+          headers,
+          payload
         })
+
+        expect(res.statusCode).to.equal(400)
       })
 
-      it('updates value', (done) => {
+      it('updates value', async () => {
         const form = new FormData()
         const filePath = 'test/fixtures/test-data/hello'
         form.append('data', fs.createReadStream(filePath))
@@ -44,204 +42,183 @@ module.exports = (http) => {
           Size: 12
         }
 
-        streamToPromise(form).then((payload) => {
-          api.inject({
-            method: 'POST',
-            url: '/api/v0/block/put',
-            headers: headers,
-            payload: payload
-          }, (res) => {
-            expect(res.statusCode).to.equal(200)
-            expect(res.result).to.deep.equal(expectedResult)
-            done()
-          })
+        const payload = await streamToPromise(form)
+        const res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/block/put',
+          headers,
+          payload
         })
+
+        expect(res.statusCode).to.equal(200)
+        expect(res.result).to.deep.equal(expectedResult)
       })
 
-      it('should put a value and return a base64 encoded CID', (done) => {
+      it('should put a value and return a base64 encoded CID', async () => {
         const form = new FormData()
         form.append('data', Buffer.from('TEST' + Date.now()))
         const headers = form.getHeaders()
 
-        streamToPromise(form).then((payload) => {
-          api.inject({
-            method: 'POST',
-            url: '/api/v0/block/put?cid-base=base64',
-            headers: headers,
-            payload: payload
-          }, (res) => {
-            expect(res.statusCode).to.equal(200)
-            expect(multibase.isEncoded(res.result.Key)).to.deep.equal('base64')
-            done()
-          })
+        const payload = await streamToPromise(form)
+        const res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/block/put?cid-base=base64',
+          headers,
+          payload
         })
+
+        expect(res.statusCode).to.equal(200)
+        expect(multibase.isEncoded(res.result.Key)).to.deep.equal('base64')
       })
 
-      it('should not put a value for invalid cid-base option', (done) => {
+      it('should not put a value for invalid cid-base option', async () => {
         const form = new FormData()
         form.append('data', Buffer.from('TEST' + Date.now()))
         const headers = form.getHeaders()
 
-        streamToPromise(form).then((payload) => {
-          api.inject({
-            method: 'POST',
-            url: '/api/v0/block/put?cid-base=invalid',
-            headers: headers,
-            payload: payload
-          }, (res) => {
-            expect(res.statusCode).to.equal(400)
-            expect(res.result.Message).to.include('child "cid-base" fails')
-            done()
-          })
+        const payload = await streamToPromise(form)
+        const res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/block/put?cid-base=invalid',
+          headers,
+          payload
         })
+
+        expect(res.statusCode).to.equal(400)
+        expect(res.result.Message).to.include('Invalid request query input')
       })
     })
 
     describe('/block/get', () => {
-      it('returns 400 for request without argument', (done) => {
-        api.inject({
+      it('returns 400 for request without argument', async () => {
+        const res = await api.inject({
           method: 'GET',
           url: '/api/v0/block/get'
-        }, (res) => {
-          expect(res.statusCode).to.equal(400)
-          expect(res.result).to.be.a('string')
-          done()
         })
+
+        expect(res.statusCode).to.equal(400)
+        expect(res.result).to.be.a('string')
       })
 
-      it('returns 500 for request with invalid argument', (done) => {
-        api.inject({
+      it('returns 400 for request with invalid argument', async () => {
+        const res = await api.inject({
           method: 'GET',
           url: '/api/v0/block/get?arg=invalid'
-        }, (res) => {
-          expect(res.statusCode).to.equal(500)
-          expect(res.result.Code).to.equal(0)
-          expect(res.result.Message).to.be.a('string')
-          done()
         })
+
+        expect(res.statusCode).to.equal(400)
+        expect(res.result.Code).to.equal(0)
+        expect(res.result.Message).to.be.a('string')
       })
 
-      it('returns value', (done) => {
-        api.inject({
+      it('returns value', async () => {
+        const res = await api.inject({
           method: 'GET',
           url: '/api/v0/block/get?arg=QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
-        }, (res) => {
-          expect(res.statusCode).to.equal(200)
-          expect(res.result)
-            .to.equal('hello world\n')
-          done()
         })
+
+        expect(res.statusCode).to.equal(200)
+        expect(res.result).to.equal('hello world\n')
       })
     })
 
     describe('/block/stat', () => {
-      it('returns 400 for request without argument', (done) => {
-        api.inject({
+      it('returns 400 for request without argument', async () => {
+        const res = await api.inject({
           method: 'GET',
           url: '/api/v0/block/stat'
-        }, (res) => {
-          expect(res.statusCode).to.equal(400)
-          expect(res.result).to.be.a('string')
-          done()
         })
+
+        expect(res.statusCode).to.equal(400)
+        expect(res.result).to.be.a('string')
       })
 
-      it('returns 500 for request with invalid argument', (done) => {
-        api.inject({
+      it('returns 400 for request with invalid argument', async () => {
+        const res = await api.inject({
           method: 'GET',
           url: '/api/v0/block/stat?arg=invalid'
-        }, (res) => {
-          expect(res.statusCode).to.equal(500)
-          expect(res.result.Code).to.equal(0)
-          expect(res.result.Message).to.be.a('string')
-          done()
         })
+
+        expect(res.statusCode).to.equal(400)
+        expect(res.result.Code).to.equal(0)
+        expect(res.result.Message).to.be.a('string')
       })
 
-      it('returns value', (done) => {
-        api.inject({
+      it('returns value', async () => {
+        const res = await api.inject({
           method: 'GET',
           url: '/api/v0/block/stat?arg=QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
-        }, (res) => {
-          expect(res.statusCode).to.equal(200)
-          expect(res.result.Key)
-            .to.equal('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
-          expect(res.result.Size).to.equal(12)
-          done()
         })
+
+        expect(res.statusCode).to.equal(200)
+        expect(res.result.Key)
+          .to.equal('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+        expect(res.result.Size).to.equal(12)
       })
 
-      it('should stat a block and return a base64 encoded CID', (done) => {
+      it('should stat a block and return a base64 encoded CID', async () => {
         const form = new FormData()
         form.append('data', Buffer.from('TEST' + Date.now()))
         const headers = form.getHeaders()
 
-        streamToPromise(form).then((payload) => {
-          api.inject({
-            method: 'POST',
-            url: '/api/v0/block/put?cid-base=base64',
-            headers: headers,
-            payload: payload
-          }, (res) => {
-            expect(res.statusCode).to.equal(200)
-            expect(multibase.isEncoded(res.result.Key)).to.deep.equal('base64')
-            done()
-          })
+        const payload = await streamToPromise(form)
+        const res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/block/put?cid-base=base64',
+          headers,
+          payload
         })
+
+        expect(res.statusCode).to.equal(200)
+        expect(multibase.isEncoded(res.result.Key)).to.deep.equal('base64')
       })
 
-      it('should not stat a block for invalid cid-base option', (done) => {
+      it('should not stat a block for invalid cid-base option', async () => {
         const form = new FormData()
         form.append('data', Buffer.from('TEST' + Date.now()))
         const headers = form.getHeaders()
 
-        streamToPromise(form).then((payload) => {
-          api.inject({
-            method: 'POST',
-            url: '/api/v0/block/put?cid-base=invalid',
-            headers: headers,
-            payload: payload
-          }, (res) => {
-            expect(res.statusCode).to.equal(400)
-            expect(res.result.Message).to.include('child "cid-base" fails')
-            done()
-          })
+        const payload = await streamToPromise(form)
+        const res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/block/put?cid-base=invalid',
+          headers,
+          payload
         })
+        expect(res.statusCode).to.equal(400)
+        expect(res.result.Message).to.include('Invalid request query input')
       })
     })
 
     describe('/block/rm', () => {
-      it('returns 400 for request without argument', (done) => {
-        api.inject({
+      it('returns 400 for request without argument', async () => {
+        const res = await api.inject({
           method: 'GET',
           url: '/api/v0/block/rm'
-        }, (res) => {
-          expect(res.statusCode).to.equal(400)
-          expect(res.result).to.be.a('string')
-          done()
         })
+
+        expect(res.statusCode).to.equal(400)
+        expect(res.result).to.be.a('string')
       })
 
-      it('returns 500 for request with invalid argument', (done) => {
-        api.inject({
+      it('returns 400 for request with invalid argument', async () => {
+        const res = await api.inject({
           method: 'GET',
           url: '/api/v0/block/rm?arg=invalid'
-        }, (res) => {
-          expect(res.statusCode).to.equal(500)
-          expect(res.result.Code).to.equal(0)
-          expect(res.result.Message).to.be.a('string')
-          done()
         })
+
+        expect(res.statusCode).to.equal(400)
+        expect(res.result.Code).to.equal(0)
+        expect(res.result.Message).to.be.a('string')
       })
 
-      it('returns 200', (done) => {
-        api.inject({
+      it('returns 200', async () => {
+        const res = await api.inject({
           method: 'GET',
           url: '/api/v0/block/rm?arg=QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
-        }, (res) => {
-          expect(res.statusCode).to.equal(200)
-          done()
         })
+
+        expect(res.statusCode).to.equal(200)
       })
     })
   })

@@ -4,29 +4,23 @@ const CID = require('cids')
 const multipart = require('ipfs-multipart')
 const Joi = require('joi')
 const multibase = require('multibase')
+const Boom = require('boom')
 const { cidToString } = require('../../../utils/cid')
 const debug = require('debug')
 const log = debug('jsipfs:http-api:block')
 log.error = debug('jsipfs:http-api:block:error')
 
-exports = module.exports
-
 // common pre request handler that parses the args and returns `key` which is assigned to `request.pre.args`
-exports.parseKey = (request, reply) => {
+exports.parseKey = (request, h) => {
   if (!request.query.arg) {
-    return reply("Argument 'key' is required").code(400).takeover()
+    return h.response("Argument 'key' is required").code(400).takeover()
   }
 
   try {
-    return reply({
-      key: new CID(request.query.arg)
-    })
+    return { key: new CID(request.query.arg) }
   } catch (err) {
     log.error(err)
-    return reply({
-      Message: 'Not a valid hash',
-      Code: 0
-    }).code(500).takeover()
+    throw Boom.badRequest('Not a valid hash', { code: 0 })
   }
 }
 
@@ -35,27 +29,22 @@ exports.get = {
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
+  async handler (request, h) {
     const key = request.pre.args.key
 
-    request.server.app.ipfs.block.get(key, (err, block) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: 'Failed to get block: ' + err,
-          Code: 0
-        }).code(500)
-      }
+    let block
+    try {
+      block = await request.server.app.ipfs.block.get(key)
+    } catch (err) {
+      log.error(err)
+      throw new Error('Failed to get block: ' + err)
+    }
 
-      if (block) {
-        return reply(block.data).header('X-Stream-Output', '1')
-      }
+    if (!block) {
+      throw Boom.notFound('Block was unwanted before it could be remotely retrieved')
+    }
 
-      return reply({
-        Message: 'Block was unwanted before it could be remotely retrieved',
-        Code: 0
-      }).code(404)
-    })
+    return h.response(block.data).header('X-Stream-Output', '1')
   }
 }
 
@@ -67,61 +56,53 @@ exports.put = {
   },
 
   // pre request handler that parses the args and returns `data` which is assigned to `request.pre.args`
-  parseArgs: (request, reply) => {
+  parseArgs: (request, h) => {
     if (!request.payload) {
-      return reply({
-        Message: "File argument 'data' is required",
-        Code: 0
-      }).code(400).takeover()
+      throw Boom.badRequest("File argument 'data' is required")
     }
 
-    const parser = multipart.reqParser(request.payload)
-    var file
+    return new Promise((resolve, reject) => {
+      const parser = multipart.reqParser(request.payload)
+      let file
 
-    parser.on('file', (fileName, fileStream) => {
-      file = Buffer.alloc(0)
+      parser.on('file', (fileName, fileStream) => {
+        file = Buffer.alloc(0)
 
-      fileStream.on('data', (data) => {
-        file = Buffer.concat([file, data])
+        fileStream.on('data', (data) => {
+          file = Buffer.concat([file, data])
+        })
       })
-    })
 
-    parser.on('end', () => {
-      if (!file) {
-        return reply({
-          Message: "File argument 'data' is required",
-          Code: 0
-        }).code(400).takeover()
-      }
+      parser.on('end', () => {
+        if (!file) {
+          return reject(Boom.badRequest("File argument 'data' is required"))
+        }
 
-      return reply({
-        data: file
+        resolve({ data: file })
       })
     })
   },
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
-    const data = request.pre.args.data
-    const ipfs = request.server.app.ipfs
+  async handler (request, h) {
+    const { data } = request.pre.args
+    const { ipfs } = request.server.app
 
-    ipfs.block.put(data, {
-      mhtype: request.query.mhtype,
-      format: request.query.format,
-      version: request.query.version && parseInt(request.query.version)
-    }, (err, block) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: 'Failed to put block: ' + err,
-          Code: 0
-        }).code(500)
-      }
-
-      return reply({
-        Key: cidToString(block.cid, { base: request.query['cid-base'] }),
-        Size: block.data.length
+    let block
+    try {
+      block = await ipfs.block.put(data, {
+        mhtype: request.query.mhtype,
+        format: request.query.format,
+        version: request.query.version && parseInt(request.query.version)
       })
+    } catch (err) {
+      log.error(err)
+      throw new Error('Failed to put block: ' + err)
+    }
+
+    return h.response({
+      Key: cidToString(block.cid, { base: request.query['cid-base'] }),
+      Size: block.data.length
     })
   }
 }
@@ -131,20 +112,17 @@ exports.rm = {
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
-    const key = request.pre.args.key
+  async handler (request, h) {
+    const { key } = request.pre.args
 
-    request.server.app.ipfs.block.rm(key, (err, block) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: 'Failed to delete block: ' + err,
-          Code: 0
-        }).code(500)
-      }
+    try {
+      await request.server.app.ipfs.block.rm(key)
+    } catch (err) {
+      log.error(err)
+      throw new Error('Failed to delete block: ' + err)
+    }
 
-      return reply()
-    })
+    return h.response()
   }
 }
 
@@ -159,22 +137,20 @@ exports.stat = {
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
-    const key = request.pre.args.key
+  async handler (request, h) {
+    const { key } = request.pre.args
 
-    request.server.app.ipfs.block.stat(key, (err, stats) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: 'Failed to get block stats: ' + err,
-          Code: 0
-        }).code(500)
-      }
+    let stats
+    try {
+      stats = await request.server.app.ipfs.block.stat(key)
+    } catch (err) {
+      log.error(err)
+      throw new Error('Failed to get block stats: ' + err)
+    }
 
-      return reply({
-        Key: cidToString(stats.key, { base: request.query['cid-base'] }),
-        Size: stats.size
-      })
+    return h.response({
+      Key: cidToString(stats.key, { base: request.query['cid-base'] }),
+      Size: stats.size
     })
   }
 }
