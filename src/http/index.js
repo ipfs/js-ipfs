@@ -12,7 +12,7 @@ const TCP = require('libp2p-tcp')
 const MulticastDNS = require('libp2p-mdns')
 const WS = require('libp2p-websockets')
 const Bootstrap = require('libp2p-bootstrap')
-// const errorHandler = require('./error-handler')
+const errorHandler = require('./error-handler')
 
 function uriToMultiaddr (uri) {
   const ipPort = uri.split('/')[2].split(':')
@@ -142,7 +142,7 @@ class HttpApi {
 
     server.route(require('./api/routes'))
 
-    // TODO: errorHandler(this, server)
+    errorHandler(server, this._log.error)
 
     return server
   }
@@ -161,8 +161,6 @@ class HttpApi {
     })
 
     server.route(require('./gateway/routes'))
-
-    // TODO: errorHandler(this, server)
 
     return server
   }

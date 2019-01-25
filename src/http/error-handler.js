@@ -1,61 +1,35 @@
 'use strict'
 
-const Hoek = require('hoek')
-
-module.exports = (api, server) => {
-  server.ext('onRequest', (request, reply) => {
-    request.handleError = handleError
-    reply.continue()
-  })
-
-  server.ext('onPreResponse', (request, reply) => {
+module.exports = (server, log) => {
+  server.ext('onPreResponse', (request, h) => {
     const res = request.response
-    const req = request.raw.req
 
-    let statusCode = 200
-    let msg = 'Sorry, something went wrong, please retrace your steps.'
-    let code = 1
+    if (!res.isBoom) {
+      return h.continue
+    }
 
-    if (res.isBoom) {
-      statusCode = res.output.payload.statusCode
-      msg = res.output.payload.message
+    const { statusCode, message } = res.output.payload
+    const code = res.data && res.data.code != null ? res.data.code : 1
 
-      if (res.data && res.data.code !== undefined) {
-        code = res.data.code
-      }
-
-      if (res.message && res.isDeveloperError) {
-        msg = res.message.replace('Uncaught error: ', '')
-      }
-
+    if (statusCode >= 500) {
+      const { req } = request.raw
       const debug = {
         method: req.method,
         url: request.url.path,
-        headers: request.raw.req.headers,
+        headers: req.headers,
         info: request.info,
         payload: request.payload,
         response: res.output.payload
       }
 
-      api.log.error(res.stack)
+      log(res)
       server.log('error', debug)
-
-      reply({
-        Message: msg,
-        Code: code,
-        Type: 'error'
-      }).code(statusCode)
-      return
     }
 
-    reply.continue()
+    return h.response({
+      Message: message,
+      Code: code,
+      Type: 'error'
+    }).code(statusCode)
   })
-}
-
-function handleError (error, errorMessage) {
-  if (errorMessage) {
-    return Hoek.assert(!error, errorMessage)
-  }
-
-  return Hoek.assert(!error, error)
 }
