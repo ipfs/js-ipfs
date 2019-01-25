@@ -59,8 +59,12 @@ npm install interface-ipfs-core
 
 In Go land:
 
-```go
-# Not available
+If you want to run these tests against a go-ipfs daemon, checkout [ipfs-http-client](https://github.com/ipfs/js-ipfs-http-client) and run test tests:
+
+```
+git clone https://github.com/ipfs/js-ipfs-http-client
+npm install
+npm test
 ```
 
 ## Usage
