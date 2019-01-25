@@ -9,6 +9,7 @@ const toStream = require('pull-stream-to-stream')
 const fileType = require('file-type')
 const mime = require('mime-types')
 const { PassThrough } = require('readable-stream')
+const Boom = require('boom')
 
 const { resolver } = require('ipfs-http-response')
 const PathUtils = require('../utils/path')
@@ -32,11 +33,7 @@ function detectContentType (ref, chunk) {
 module.exports = {
   checkCID (request, h) {
     if (!request.params.cid) {
-      return h.response({
-        Message: 'Path Resolve error: path must contain at least one component',
-        Code: 0,
-        Type: 'error'
-      }).code(400).takeover()
+      throw Boom.badRequest('Path Resolve error: path must contain at least one component')
     }
 
     return { ref: `/ipfs/${request.params.cid}` }
@@ -56,12 +53,7 @@ module.exports = {
       // switch case with true feels so wrong.
       switch (true) {
         case (errorToString === 'Error: This dag node is a directory'):
-          try {
-            data = await resolver.directory(ipfs, ref, err.cid)
-          } catch (err) {
-            log.error(err)
-            return h.response(err.toString()).code(500)
-          }
+          data = await resolver.directory(ipfs, ref, err.cid)
 
           if (typeof data === 'string') {
             // no index file found
@@ -78,13 +70,13 @@ module.exports = {
           // redirect to URL/<found-index-file>
           return h.redirect(PathUtils.joinURLParts(ref, data[0].name))
         case (errorToString.startsWith('Error: no link named')):
-          return h.response(errorToString).code(404)
+          throw Boom.boomify(err, { statusCode: 404 })
         case (errorToString.startsWith('Error: multihash length inconsistent')):
         case (errorToString.startsWith('Error: Non-base58 character')):
-          return h.response({ Message: errorToString, Code: 0, Type: 'error' }).code(400)
+          throw Boom.boomify(err, { statusCode: 400 })
         default:
           log.error(err)
-          return h.response({ Message: errorToString, Code: 0, Type: 'error' }).code(500)
+          throw err
       }
     }
 
@@ -137,11 +129,7 @@ module.exports = {
                 return pusher.end(err)
               }
 
-              return resolve(h.response({
-                Message: err.message,
-                Code: 0,
-                Type: 'error'
-              }).code(500).takeover())
+              return reject(err)
             }
 
             pusher.end()
