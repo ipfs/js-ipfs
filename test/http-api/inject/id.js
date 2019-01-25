@@ -4,26 +4,25 @@
 const expect = require('chai').expect
 
 module.exports = (http) => {
-  describe('/id', () => {
+  describe.only('/id', () => {
     let api
 
     before(() => {
-      api = http.api.server.select('API')
+      api = http.api._apiServer
     })
 
-    it('get the id', (done) => {
-      api.inject({
+    it('get the id', async () => {
+      const res = await api.inject({
         method: 'GET',
         url: '/api/v0/id'
-      }, (res) => {
-        expect(res.result.ID).to.equal(idResult.ID)
-        expect(res.result.PublicKey).to.equal(idResult.PublicKey)
-        const agentComponents = res.result.AgentVersion.split('/')
-        expect(agentComponents).lengthOf.above(1)
-        expect(agentComponents[0]).to.equal(idResult.AgentVersion)
-        expect(res.result.ProtocolVersion).to.equal(idResult.ProtocolVersion)
-        done()
       })
+
+      expect(res.result.ID).to.equal(idResult.ID)
+      expect(res.result.PublicKey).to.equal(idResult.PublicKey)
+      const agentComponents = res.result.AgentVersion.split('/')
+      expect(agentComponents).lengthOf.above(1)
+      expect(agentComponents[0]).to.equal(idResult.AgentVersion)
+      expect(res.result.ProtocolVersion).to.equal(idResult.ProtocolVersion)
     })
   })
 }
