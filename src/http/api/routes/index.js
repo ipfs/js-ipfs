@@ -6,8 +6,8 @@ module.exports = [
   require('./id'),
   ...require('./bootstrap'),
   ...require('./block'),
-  ...require('./object')
-  // require('./pin')(server)
+  ...require('./object'),
+  ...require('./pin')
   // require('./repo')(server)
   // require('./config')(server)
   // require('./ping')(server)
