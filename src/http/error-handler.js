@@ -9,7 +9,19 @@ module.exports = (server, log) => {
     }
 
     const { statusCode, message } = res.output.payload
-    const code = res.data && res.data.code != null ? res.data.code : 1
+    let code
+
+    if (res.data && res.data.code != null) {
+      code = res.data.code
+    } else {
+      // Map status code to error code as defined by go-ipfs
+      // https://github.com/ipfs/go-ipfs-cmdkit/blob/0262a120012063c359727423ec703b9649eec447/error.go#L12-L20
+      if (statusCode >= 400 && statusCode < 500) {
+        code = statusCode === 404 ? 3 : 1
+      } else {
+        code = 0
+      }
+    }
 
     if (statusCode >= 500) {
       const { req } = request.raw
