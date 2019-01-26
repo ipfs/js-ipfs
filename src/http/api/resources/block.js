@@ -13,14 +13,14 @@ log.error = debug('jsipfs:http-api:block:error')
 // common pre request handler that parses the args and returns `key` which is assigned to `request.pre.args`
 exports.parseKey = (request, h) => {
   if (!request.query.arg) {
-    return h.response("Argument 'key' is required").code(400).takeover()
+    throw Boom.badRequest("Argument 'key' is required")
   }
 
   try {
     return { key: new CID(request.query.arg) }
   } catch (err) {
     log.error(err)
-    throw Boom.badRequest('Not a valid hash', { code: 0 })
+    throw Boom.badRequest('Not a valid hash')
   }
 }
 

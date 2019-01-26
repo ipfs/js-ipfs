@@ -97,7 +97,7 @@ module.exports = (http) => {
         })
 
         expect(res.statusCode).to.equal(400)
-        expect(res.result).to.be.a('string')
+        expect(res.result.Message).to.be.a('string')
       })
 
       it('returns 400 for request with invalid argument', async () => {
@@ -107,7 +107,7 @@ module.exports = (http) => {
         })
 
         expect(res.statusCode).to.equal(400)
-        expect(res.result.Code).to.equal(0)
+        expect(res.result.Code).to.equal(1)
         expect(res.result.Message).to.be.a('string')
       })
 
@@ -130,7 +130,7 @@ module.exports = (http) => {
         })
 
         expect(res.statusCode).to.equal(400)
-        expect(res.result).to.be.a('string')
+        expect(res.result.Message).to.be.a('string')
       })
 
       it('returns 400 for request with invalid argument', async () => {
@@ -140,7 +140,7 @@ module.exports = (http) => {
         })
 
         expect(res.statusCode).to.equal(400)
-        expect(res.result.Code).to.equal(0)
+        expect(res.result.Code).to.equal(1)
         expect(res.result.Message).to.be.a('string')
       })
 
@@ -198,7 +198,7 @@ module.exports = (http) => {
         })
 
         expect(res.statusCode).to.equal(400)
-        expect(res.result).to.be.a('string')
+        expect(res.result.Message).to.be.a('string')
       })
 
       it('returns 400 for request with invalid argument', async () => {
@@ -208,7 +208,7 @@ module.exports = (http) => {
         })
 
         expect(res.statusCode).to.equal(400)
-        expect(res.result.Code).to.equal(0)
+        expect(res.result.Code).to.equal(1)
         expect(res.result.Message).to.be.a('string')
       })
 
