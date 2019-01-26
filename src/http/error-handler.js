@@ -23,7 +23,7 @@ module.exports = (server, log) => {
       }
     }
 
-    if (statusCode >= 500) {
+    if (process.env.DEBUG || statusCode >= 500) {
       const { req } = request.raw
       const debug = {
         method: req.method,
