@@ -84,6 +84,9 @@ exports.add = {
       result = await ipfs.pin.add(path, { recursive })
     } catch (err) {
       log.error(err)
+      if (err.message.includes('already pinned recursively')) {
+        throw Boom.boomify(err, { statusCode: 400 })
+      }
       throw new Error(`Failed to add pin: ${err.message}`)
     }
 

@@ -32,7 +32,7 @@ const pins = {
 }
 
 module.exports = (http) => {
-  describe('pin', () => {
+  describe.only('pin', () => {
     let api
 
     before(() => {
@@ -159,7 +159,7 @@ module.exports = (http) => {
         // by directly pinning a node that is already recursively pinned,
         // it should error and verifies that the endpoint is parsing
         // the recursive arg correctly.
-        expect(res.statusCode).to.equal(500)
+        expect(res.statusCode).to.equal(400)
         expect(res.result.Message).to.match(/already pinned recursively/)
       })
 
