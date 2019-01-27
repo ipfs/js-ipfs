@@ -126,7 +126,7 @@ module.exports = (http) => {
         })
 
         expect(res.statusCode).to.equal(400)
-        expect(res.result.Message).to.include('child "cid-base" fails')
+        expect(res.result.Message).to.include('Invalid request query input')
       })
     })
 
@@ -137,7 +137,7 @@ module.exports = (http) => {
           url: `/api/v0/pin/add?arg=invalid`
         })
 
-        expect(res.statusCode).to.equal(500)
+        expect(res.statusCode).to.equal(400)
         expect(res.result.Message).to.match(/invalid ipfs ref path/)
       })
 
@@ -211,7 +211,7 @@ module.exports = (http) => {
         })
 
         expect(res.statusCode).to.equal(400)
-        expect(res.result.Message).to.include('child "cid-base" fails')
+        expect(res.result.Message).to.include('Invalid request query input')
       })
     })
 
@@ -222,7 +222,7 @@ module.exports = (http) => {
           url: `/api/v0/pin/ls?arg=invalid`
         })
 
-        expect(res.statusCode).to.equal(500)
+        expect(res.statusCode).to.equal(400)
         expect(res.result.Message).to.match(/invalid ipfs ref path/)
       })
 
@@ -303,7 +303,7 @@ module.exports = (http) => {
         })
 
         expect(res.statusCode).to.equal(400)
-        expect(res.result.Message).to.include('child "cid-base" fails')
+        expect(res.result.Message).to.include('Invalid request query input')
       })
     })
   })
