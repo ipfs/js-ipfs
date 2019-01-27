@@ -1,6 +1,5 @@
 'use strict'
 
-const CID = require('cids')
 const multipart = require('ipfs-multipart')
 const debug = require('debug')
 const tar = require('tar-stream')
@@ -9,16 +8,16 @@ log.error = debug('jsipfs:http-api:files:error')
 const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
 const pushable = require('pull-pushable')
-const each = require('async/each')
 const toStream = require('pull-stream-to-stream')
 const abortable = require('pull-abortable')
 const Joi = require('joi')
+const Boom = require('boom')
 const ndjson = require('pull-ndjson')
 const { PassThrough } = require('readable-stream')
 const multibase = require('multibase')
+const isIpfs = require('is-ipfs')
+const promisify = require('promisify-es6')
 const { cidToString } = require('../../../utils/cid')
-
-exports = module.exports
 
 function numberFromQuery (query, key) {
   if (query && query[key] !== undefined) {
@@ -33,43 +32,24 @@ function numberFromQuery (query, key) {
 }
 
 // common pre request handler that parses the args and returns `key` which is assigned to `request.pre.args`
-exports.parseKey = (request, reply) => {
-  if (!request.query.arg) {
-    return reply({
-      Message: "Argument 'key' is required",
-      Code: 0,
-      Type: 'error'
-    }).code(400).takeover()
+exports.parseKey = (request, h) => {
+  const { arg } = request.query
+
+  if (!arg) {
+    throw Boom.badRequest("Argument 'key' is required")
   }
 
-  let key = request.query.arg
-  if (key.indexOf('/ipfs/') === 0) {
-    key = key.substring(6)
+  if (!isIpfs.ipfsPath(arg) && !isIpfs.cid(arg)) {
+    throw Boom.badRequest('invalid ipfs ref path')
   }
 
-  const slashIndex = key.indexOf('/')
-  if (slashIndex > 0) {
-    key = key.substring(0, slashIndex)
-  }
-
-  try {
-    new CID(key) // eslint-disable-line no-new
-  } catch (err) {
-    log.error(err)
-    return reply({
-      Message: 'invalid ipfs ref path',
-      Code: 0,
-      Type: 'error'
-    }).code(500).takeover()
-  }
-
-  reply({
-    key: request.query.arg,
+  return {
+    key: arg,
     options: {
       offset: numberFromQuery(request.query, 'offset'),
       length: numberFromQuery(request.query, 'length')
     }
-  })
+  }
 }
 
 exports.cat = {
@@ -77,46 +57,48 @@ exports.cat = {
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
-    const key = request.pre.args.key
-    const options = request.pre.args.options
-    const ipfs = request.server.app.ipfs
+  async handler (request, h) {
+    const { ipfs } = request.server.app
+    const { key, options } = request.pre.args
 
-    let pusher
-    let started = false
+    const stream = await new Promise((resolve, reject) => {
+      let pusher
+      let started = false
 
-    pull(
-      ipfs.catPullStream(key, options),
-      pull.drain(
-        chunk => {
-          if (!started) {
-            started = true
-            pusher = pushable()
-            reply(toStream.source(pusher).pipe(new PassThrough()))
-              .header('X-Stream-Output', '1')
-          }
-          pusher.push(chunk)
-        },
-        err => {
-          if (err) {
-            log.error(err)
+      pull(
+        ipfs.catPullStream(key, options),
+        pull.drain(
+          chunk => {
+            if (!started) {
+              started = true
+              pusher = pushable()
+              resolve(toStream.source(pusher).pipe(new PassThrough()))
+            }
+            pusher.push(chunk)
+          },
+          err => {
+            if (err) {
+              log.error(err)
 
-            // We already started flowing, abort the stream
-            if (started) {
-              return pusher.end(err)
+              // We already started flowing, abort the stream
+              if (started) {
+                return pusher.end(err)
+              }
+
+              err.message = err.message === 'No such file'
+                ? err.message
+                : 'Failed to cat file: ' + err
+
+              return reject(err)
             }
 
-            const msg = err.message === 'No such file'
-              ? err.message
-              : 'Failed to cat file: ' + err
-
-            return reply({ Message: msg, Code: 0, Type: 'error' }).code(500)
+            pusher.end()
           }
-
-          pusher.end()
-        }
+        )
       )
-    )
+    })
+
+    return h.response(stream).header('X-Stream-Output', '1')
   }
 }
 
@@ -125,44 +107,41 @@ exports.get = {
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
-    const key = request.pre.args.key
-    const ipfs = request.server.app.ipfs
+  async handler (request, h) {
+    const { ipfs } = request.server.app
+    const { key } = request.pre.args
     const pack = tar.pack()
 
-    ipfs.get(key, (err, filesArray) => {
-      if (err) {
-        log.error(err)
-        pack.emit('error', err)
-        pack.destroy()
-        return
-      }
+    let filesArray
+    try {
+      filesArray = await ipfs.get(key)
+    } catch (err) {
+      log.error(err)
+      throw new Error('Failed to get key: ' + err.message)
+    }
 
-      each(filesArray, (file, cb) => {
+    Promise
+      .all(filesArray.map(file => {
         const header = { name: file.path }
 
         if (file.content) {
           header.size = file.size
-          pack.entry(header, file.content, cb)
+          return promisify(pack.entry)(header, file.content)
         } else {
           header.type = 'directory'
-          pack.entry(header, cb)
+          return promisify(pack.entry)(header)
         }
-      }, (err) => {
-        if (err) {
-          log.error(err)
-          pack.emit('error', err)
-          pack.destroy()
-          return
-        }
-
-        pack.finalize()
+      }))
+      .then(() => pack.finalize())
+      .catch(err => {
+        log.error(err)
+        pack.emit('error', err)
+        pack.destroy()
       })
 
-      // reply must be called right away so that tar-stream offloads its content
-      // otherwise it will block in large files
-      reply(pack).header('X-Stream-Output', '1')
-    })
+    // reply must be called right away so that tar-stream offloads its content
+    // otherwise it will block in large files
+    return h.response(pack).header('X-Stream-Output', '1')
   }
 }
 
@@ -182,56 +161,48 @@ exports.add = {
       .options({ allowUnknown: true })
   },
 
-  handler: (request, reply) => {
+  async handler (request, h) {
     if (!request.payload) {
-      return reply({
-        Message: 'Array, Buffer, or String is required.',
-        Code: 0,
-        Type: 'error'
-      }).code(400).takeover()
+      throw Boom.badRequest('Array, Buffer, or String is required.')
     }
 
-    const ipfs = request.server.app.ipfs
-    // TODO: make pull-multipart
-    const parser = multipart.reqParser(request.payload)
-    let filesParsed = false
+    const { ipfs } = request.server.app
 
-    const fileAdder = pushable()
+    const fileAdder = await new Promise((resolve, reject) => {
+      // TODO: make pull-multipart
+      const parser = multipart.reqParser(request.payload)
+      let filesParsed = false
+      const adder = pushable()
 
-    parser.on('file', (fileName, fileStream) => {
-      fileName = decodeURIComponent(fileName)
-      const filePair = {
-        path: fileName,
-        content: toPull(fileStream)
-      }
-      filesParsed = true
-      fileAdder.push(filePair)
-    })
+      parser.on('file', (fileName, fileStream) => {
+        if (!filesParsed) {
+          resolve(adder)
+          filesParsed = true
+        }
 
-    parser.on('directory', (directory) => {
-      directory = decodeURIComponent(directory)
+        adder.push({
+          path: decodeURIComponent(fileName),
+          content: toPull(fileStream)
+        })
+      })
 
-      fileAdder.push({
-        path: directory,
-        content: ''
+      parser.on('directory', (dirName) => {
+        adder.push({
+          path: decodeURIComponent(dirName),
+          content: ''
+        })
+      })
+
+      parser.on('end', () => {
+        if (!filesParsed) {
+          reject(new Error("File argument 'data' is required."))
+        }
+        adder.end()
       })
     })
 
-    parser.on('end', () => {
-      if (!filesParsed) {
-        return reply({
-          Message: "File argument 'data' is required.",
-          Code: 0,
-          Type: 'error'
-        }).code(400).takeover()
-      }
-      fileAdder.end()
-    })
-
     const replyStream = pushable()
-    const progressHandler = (bytes) => {
-      replyStream.push({ Bytes: bytes })
-    }
+    const progressHandler = bytes => replyStream.push({ Bytes: bytes })
 
     const options = {
       cidVersion: request.query['cid-version'],
@@ -261,42 +232,42 @@ exports.add = {
       stream._readableState = {}
       stream.unpipe = () => {}
     }
-    reply(stream)
-      .header('x-chunked-output', '1')
-      .header('content-type', 'application/json')
-      .header('Trailer', 'X-Stream-Error')
 
-    function _writeErr (msg, code) {
-      const err = JSON.stringify({ Message: msg, Code: code })
-      request.raw.res.addTrailers({
-        'X-Stream-Error': err
-      })
-      return aborter.abort()
-    }
+    let filesAdded = false
 
     pull(
       fileAdder,
       ipfs.addPullStream(options),
-      pull.map((file) => {
-        return {
-          Name: file.path, // addPullStream already turned this into a hash if it wanted to
-          Hash: cidToString(file.hash, { base: request.query['cid-base'] }),
-          Size: file.size
-        }
-      }),
-      pull.collect((err, files) => {
-        if (err) {
-          return _writeErr(err, 0)
-        }
+      pull.map(file => ({
+        Name: file.path, // addPullStream already turned this into a hash if it wanted to
+        Hash: cidToString(file.hash, { base: request.query['cid-base'] }),
+        Size: file.size
+      })),
+      pull.drain(
+        file => {
+          replyStream.push(file)
+          filesAdded = true
+        },
+        err => {
+          if (err || !filesAdded) {
+            request.raw.res.addTrailers({
+              'X-Stream-Error': JSON.stringify({
+                Message: err ? err.message : 'Failed to add files.',
+                Code: 0
+              })
+            })
+            return aborter.abort()
+          }
 
-        if (files.length === 0 && filesParsed) {
-          return _writeErr('Failed to add files.', 0)
+          replyStream.end()
         }
-
-        files.forEach((f) => replyStream.push(f))
-        replyStream.end()
-      })
+      )
     )
+
+    return h.response(stream)
+      .header('x-chunked-output', '1')
+      .header('content-type', 'application/json')
+      .header('Trailer', 'X-Stream-Error')
   }
 }
 
@@ -311,33 +282,31 @@ exports.ls = {
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
+  async handler (request, h) {
+    const { ipfs } = request.server.app
     const { key } = request.pre.args
-    const ipfs = request.server.app.ipfs
     const recursive = request.query && request.query.recursive === 'true'
     const cidBase = request.query['cid-base']
 
-    ipfs.ls(key, { recursive }, (err, files) => {
-      if (err) {
-        return reply({
-          Message: 'Failed to list dir: ' + err.message,
-          Code: 0,
-          Type: 'error'
-        }).code(500).takeover()
-      }
+    let files
+    try {
+      files = await ipfs.ls(key, { recursive })
+    } catch (err) {
+      log.error(err)
+      throw new Error('Failed to list dir: ' + err.message)
+    }
 
-      reply({
-        Objects: [{
-          Hash: key,
-          Links: files.map((file) => ({
-            Name: file.name,
-            Hash: cidToString(file.hash, { base: cidBase }),
-            Size: file.size,
-            Type: toTypeCode(file.type),
-            Depth: file.depth
-          }))
-        }]
-      })
+    return h.response({
+      Objects: [{
+        Hash: key,
+        Links: files.map((file) => ({
+          Name: file.name,
+          Hash: cidToString(file.hash, { base: cidBase }),
+          Size: file.size,
+          Type: toTypeCode(file.type),
+          Depth: file.depth
+        }))
+      }]
     })
   }
 }

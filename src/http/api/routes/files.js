@@ -1,61 +1,55 @@
 'use strict'
 
 const resources = require('./../resources')
-const mfs = require('ipfs-mfs/http')
+// const mfs = require('ipfs-mfs/http')
 
-module.exports = (server) => {
-  const api = server.select('API')
-
-  api.route({
+module.exports = [
+  {
     // TODO fix method
     method: '*',
     path: '/api/v0/cat',
-    config: {
+    options: {
       pre: [
         { method: resources.filesRegular.cat.parseArgs, assign: 'args' }
-      ],
-      handler: resources.filesRegular.cat.handler
-    }
-  })
-
-  api.route({
+      ]
+    },
+    handler: resources.filesRegular.cat.handler
+  },
+  {
     // TODO fix method
     method: '*',
     path: '/api/v0/get',
-    config: {
+    options: {
       pre: [
         { method: resources.filesRegular.get.parseArgs, assign: 'args' }
-      ],
-      handler: resources.filesRegular.get.handler
-    }
-  })
-
-  api.route({
+      ]
+    },
+    handler: resources.filesRegular.get.handler
+  },
+  {
     // TODO fix method
     method: '*',
     path: '/api/v0/add',
-    config: {
+    options: {
       payload: {
         parse: false,
         output: 'stream',
         maxBytes: Number.MAX_SAFE_INTEGER
       },
-      handler: resources.filesRegular.add.handler,
       validate: resources.filesRegular.add.validate
-    }
-  })
-
-  api.route({
+    },
+    handler: resources.filesRegular.add.handler
+  },
+  {
     // TODO fix method
     method: '*',
     path: '/api/v0/ls',
-    config: {
+    options: {
       pre: [
         { method: resources.filesRegular.ls.parseArgs, assign: 'args' }
-      ],
-      handler: resources.filesRegular.ls.handler
-    }
-  })
-
-  mfs(api)
-}
+      ]
+    },
+    handler: resources.filesRegular.ls.handler
+  }
+  // ...mfs
+]

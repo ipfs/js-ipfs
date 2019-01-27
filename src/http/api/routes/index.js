@@ -7,14 +7,14 @@ module.exports = [
   ...require('./bootstrap'),
   ...require('./block'),
   ...require('./object'),
-  ...require('./pin')
+  ...require('./pin'),
   // require('./repo')(server)
   // require('./config')(server)
   // require('./ping')(server)
   // require('./swarm')(server)
   // require('./bitswap')(server)
   // require('./file')(server)
-  // require('./files')(server)
+  ...require('./files')
   // require('./pubsub')(server)
   // require('./debug')(server)
   // require('./webui')(server)
