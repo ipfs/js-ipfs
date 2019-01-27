@@ -8,7 +8,7 @@ module.exports = [
   ...require('./block'),
   ...require('./object'),
   ...require('./pin'),
-  // require('./repo')(server)
+  ...require('./repo'),
   // require('./config')(server)
   // require('./ping')(server)
   // require('./swarm')(server)
