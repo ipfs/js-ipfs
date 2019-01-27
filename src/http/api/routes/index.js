@@ -9,7 +9,7 @@ module.exports = [
   ...require('./object'),
   ...require('./pin'),
   ...require('./repo'),
-  // require('./config')(server)
+  ...require('./config'),
   // require('./ping')(server)
   // require('./swarm')(server)
   // require('./bitswap')(server)

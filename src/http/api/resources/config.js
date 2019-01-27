@@ -6,12 +6,13 @@ const set = require('lodash/set')
 const log = debug('jsipfs:http-api:config')
 log.error = debug('jsipfs:http-api:config:error')
 const multipart = require('ipfs-multipart')
+const Boom = require('boom')
 
 exports = module.exports
 
 exports.getOrSet = {
   // pre request handler that parses the args and returns `key` & `value` which are assigned to `request.pre.args`
-  parseArgs: (request, reply) => {
+  parseArgs (request, h) {
     const parseValue = (args) => {
       if (request.query.bool !== undefined) {
         args.value = args.value === 'true'
@@ -20,14 +21,11 @@ exports.getOrSet = {
           args.value = JSON.parse(args.value)
         } catch (err) {
           log.error(err)
-          return reply({
-            Message: 'failed to unmarshal json. ' + err,
-            Code: 0
-          }).code(500).takeover()
+          throw Boom.badRequest('failed to unmarshal json. ' + err)
         }
       }
 
-      return reply(args)
+      return args
     }
 
     if (request.query.arg instanceof Array) {
@@ -45,172 +43,125 @@ exports.getOrSet = {
     }
 
     if (!request.query.arg) {
-      return reply("Argument 'key' is required").code(400).takeover()
+      throw Boom.badRequest("Argument 'key' is required")
     }
 
-    return reply({
-      key: request.query.arg
-    })
+    return { key: request.query.arg }
   },
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
-    const key = request.pre.args.key
-    const value = request.pre.args.value
-    const ipfs = request.server.app.ipfs
+  async handler (request, h) {
+    const { ipfs } = request.server.app
+    const { key } = request.pre.args
+    let { value } = request.pre.args
 
     // check that value exists - typeof null === 'object'
     if (value && (typeof value === 'object' &&
         value.type === 'Buffer')) {
-      return reply({
-        Message: 'Invalid value type',
-        Code: 0
-      }).code(500)
+      throw Boom.badRequest('Invalid value type')
+    }
+
+    let originalConfig
+    try {
+      originalConfig = await ipfs.config.get()
+    } catch (err) {
+      log.error(err)
+      throw new Error('Failed to get config value: ' + err)
     }
 
     if (value === undefined) {
       // Get the value of a given key
-      return ipfs.config.get((err, config) => {
-        if (err) {
-          log.error(err)
-          return reply({
-            Message: 'Failed to get config value: ' + err,
-            Code: 0
-          }).code(500)
-        }
-
-        const value = get(config, key)
-        if (value === undefined) {
-          return reply({
-            Message: 'Failed to get config value:  key has no attributes',
-            Code: 0
-          }).code(500)
-        }
-
-        return reply({
-          Key: key,
-          Value: value
-        })
-      })
+      value = get(originalConfig, key)
+      if (value === undefined) {
+        throw Boom.notFound('Failed to get config value: key has no attributes')
+      }
+    } else {
+      // Set the new value of a given key
+      const updatedConfig = set(originalConfig, key, value)
+      try {
+        await ipfs.config.replace(updatedConfig)
+      } catch (err) {
+        log.error(err)
+        throw new Error('Failed to get config value: ' + err)
+      }
     }
 
-    // Set the new value of a given key
-    ipfs.config.get((err, originalConfig) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: 'Failed to get config value: ' + err,
-          Code: 0
-        }).code(500)
-      }
-
-      const updatedConfig = set(originalConfig, key, value)
-      ipfs.config.replace(updatedConfig, (err) => {
-        if (err) {
-          log.error(err)
-          return reply({
-            Message: 'Failed to get config value: ' + err,
-            Code: 0
-          }).code(500)
-        }
-
-        return reply({
-          Key: key,
-          Value: value
-        })
-      })
+    return h.response({
+      Key: key,
+      Value: value
     })
   }
 }
 
-exports.get = (request, reply) => {
-  const ipfs = request.server.app.ipfs
+exports.get = async (request, h) => {
+  const { ipfs } = request.server.app
 
-  ipfs.config.get((err, config) => {
-    if (err) {
-      log.error(err)
-      return reply({
-        Message: 'Failed to get config value: ' + err,
-        Code: 0
-      }).code(500)
-    }
+  let config
+  try {
+    config = await ipfs.config.get()
+  } catch (err) {
+    log.error(err)
+    throw new Error('Failed to get config value: ' + err)
+  }
 
-    return reply({
-      Value: config
-    })
+  return h.response({
+    Value: config
   })
 }
 
-exports.show = (request, reply) => {
-  const ipfs = request.server.app.ipfs
+exports.show = async (request, h) => {
+  const { ipfs } = request.server.app
 
-  ipfs.config.get((err, config) => {
-    if (err) {
-      log.error(err)
-      return reply({
-        Message: 'Failed to get config value: ' + err,
-        Code: 0
-      }).code(500)
-    }
+  let config
+  try {
+    config = await ipfs.config.get()
+  } catch (err) {
+    log.error(err)
+    throw new Error('Failed to get config value: ' + err)
+  }
 
-    return reply(config)
-  })
+  return h.response(config)
 }
 
 exports.replace = {
   // pre request handler that parses the args and returns `config` which is assigned to `request.pre.args`
-  parseArgs: (request, reply) => {
+  async parseArgs (request, h) {
     if (!request.payload) {
-      return reply({
-        Message: "Argument 'file' is required",
-        Code: 1123
-
-      }).code(400).takeover()
+      throw Boom.badRequest("Argument 'file' is required")
     }
 
-    const parser = multipart.reqParser(request.payload)
-    var file
-
-    parser.on('file', (fileName, fileStream) => {
-      fileStream.on('data', (data) => {
-        file = data
-      })
+    const fileStream = await new Promise((resolve, reject) => {
+      multipart.reqParser(request.payload)
+        .on('file', (fileName, fileStream) => resolve(fileStream))
+        .on('end', () => reject(Boom.badRequest("Argument 'file' is required")))
     })
 
-    parser.on('end', () => {
-      if (!file) {
-        return reply({
-          Message: "Argument 'file' is required",
-          Code: 1123
-
-        }).code(400).takeover()
-      }
-
-      try {
-        return reply({
-          config: JSON.parse(file.toString())
-        })
-      } catch (err) {
-        return reply({
-          Message: 'Failed to decode file as config: ' + err,
-          Code: 0
-        }).code(500).takeover()
-      }
+    const file = await new Promise((resolve, reject) => {
+      fileStream
+        .on('data', data => resolve(data))
+        .on('end', () => reject(Boom.badRequest("Argument 'file' is required")))
     })
+
+    try {
+      return { config: JSON.parse(file.toString()) }
+    } catch (err) {
+      log.error(err)
+      throw new Error('Failed to decode file as config: ' + err)
+    }
   },
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
-    return request.server.app.ipfs.config.replace(request.pre.args.config, (err) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: 'Failed to save config: ' + err,
-          Code: 0
-        }).code(500)
-      }
+  async handler (request, h) {
+    const { ipfs } = request.server.app
+    const { config } = request.pre.args
 
-      return reply()
-    })
+    try {
+      await ipfs.config.replace(config)
+    } catch (err) {
+      log.error(err)
+      throw new Error('Failed to save config: ' + err)
+    }
+
+    return h.response()
   }
 }
