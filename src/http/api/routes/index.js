@@ -19,8 +19,8 @@ module.exports = [
   ...require('./pubsub'),
   require('./debug'),
   ...require('./webui'),
-  require('./dns')
-  // require('./key')(server)
+  require('./dns'),
+  ...require('./key')
   // require('./stats')(server)
   // require('./resolve')(server)
   // require('./name')(server)

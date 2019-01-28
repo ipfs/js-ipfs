@@ -1,14 +1,5 @@
 'use strict'
 
-exports = module.exports
-
-function applyError (reply, err) {
-  reply({
-    Message: err.message,
-    Code: 0
-  }).code(500).takeover()
-}
-
 function toKeyInfo (key) {
   return {
     Name: key.name,
@@ -16,87 +7,48 @@ function toKeyInfo (key) {
   }
 }
 
-exports.list = (request, reply) => {
-  const ipfs = request.server.app.ipfs
-
-  ipfs._keychain.listKeys((err, keys) => {
-    if (err) {
-      return applyError(reply, err)
-    }
-
-    keys = keys.map(toKeyInfo)
-    return reply({ Keys: keys })
-  })
+exports.list = async (request, h) => {
+  const { ipfs } = request.server.app
+  const keys = await ipfs.key.list()
+  return h.response({ Keys: keys.map(toKeyInfo) })
 }
 
-exports.rm = (request, reply) => {
-  const ipfs = request.server.app.ipfs
+exports.rm = async (request, h) => {
+  const { ipfs } = request.server.app
   const name = request.query.arg
-  ipfs._keychain.removeKey(name, (err, key) => {
-    if (err) {
-      return applyError(reply, err)
-    }
+  const key = await ipfs.key.rm(name)
+  return h.response({ Keys: [ toKeyInfo(key) ] })
+}
 
-    return reply({ Keys: [ toKeyInfo(key) ] })
+exports.rename = async (request, h) => {
+  const { ipfs } = request.server.app
+  const [ oldName, newName ] = request.query.arg
+  const key = await ipfs.key.rename(oldName, newName)
+  return h.response({
+    Was: key.was,
+    Now: key.name,
+    Id: key.id,
+    Overwrite: key.overwrite
   })
 }
 
-exports.rename = (request, reply) => {
-  const ipfs = request.server.app.ipfs
-  const oldName = request.query.arg[0]
-  const newName = request.query.arg[1]
-  ipfs._keychain.renameKey(oldName, newName, (err, key) => {
-    if (err) {
-      return applyError(reply, err)
-    }
-
-    const result = {
-      Was: oldName,
-      Now: key.name,
-      Id: key.id,
-      Overwrite: false
-    }
-    return reply(result)
-  })
+exports.gen = async (request, h) => {
+  const { ipfs } = request.server.app
+  const { name, type, size } = request.query
+  const key = await ipfs.key.gen(name, { type, size: parseInt(size) })
+  return h.response(toKeyInfo(key))
 }
 
-exports.gen = (request, reply) => {
-  const ipfs = request.server.app.ipfs
-  const name = request.query.arg
-  const type = request.query.type
-  const size = parseInt(request.query.size)
-  ipfs._keychain.createKey(name, type, size, (err, key) => {
-    if (err) {
-      return applyError(reply, err)
-    }
-
-    return reply(toKeyInfo(key))
-  })
+exports.export = async (request, h) => {
+  const { ipfs } = request.server.app
+  const { arg: name, password } = request.query
+  const pem = await ipfs.key.export(name, password)
+  return h.response(pem).type('application/x-pem-file')
 }
 
-exports.export = (request, reply) => {
-  const ipfs = request.server.app.ipfs
-  const name = request.query.arg
-  const password = request.query.password
-  ipfs._keychain.exportKey(name, password, (err, pem) => {
-    if (err) {
-      return applyError(reply, err)
-    }
-
-    return reply(pem).type('application/x-pem-file')
-  })
-}
-
-exports.import = (request, reply) => {
-  const ipfs = request.server.app.ipfs
-  const name = request.query.arg
-  const pem = request.query.pem
-  const password = request.query.password
-  ipfs._keychain.importKey(name, pem, password, (err, key) => {
-    if (err) {
-      return applyError(reply, err)
-    }
-
-    return reply(toKeyInfo(key))
-  })
+exports.import = async (request, h) => {
+  const { ipfs } = request.server.app
+  const { arg: name, pem, password } = request.query
+  const key = await ipfs.key.import(name, pem, password)
+  return h.response(toKeyInfo(key))
 }

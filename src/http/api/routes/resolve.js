@@ -1,6 +1,6 @@
 'use strict'
 
-const resources = require('./../resources')
+const resources = require('../resources')
 
 module.exports = (server) => {
   const api = server.select('API')
