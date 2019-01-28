@@ -119,16 +119,18 @@ exports.get = {
       throw Boom.boomify(err, { message: 'Failed to get key' })
     }
 
+    pack.entry = promisify(pack.entry.bind(pack))
+
     Promise
       .all(filesArray.map(file => {
         const header = { name: file.path }
 
         if (file.content) {
           header.size = file.size
-          return promisify(pack.entry)(header, file.content)
+          return pack.entry(header, file.content)
         } else {
           header.type = 'directory'
-          return promisify(pack.entry)(header)
+          return pack.entry(header)
         }
       }))
       .then(() => pack.finalize())
