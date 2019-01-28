@@ -50,6 +50,7 @@
   },
   "dependencies": {
     "async": "^2.6.1",
+    "boom": "^7.3.0",
     "cids": "~0.5.5",
     "debug": "^4.1.0",
     "filereader-stream": "^2.0.0",
@@ -57,8 +58,8 @@
     "interface-datastore": "~0.6.0",
     "ipfs-multipart": "~0.1.0",
     "ipfs-unixfs": "~0.1.16",
-    "ipfs-unixfs-importer": "~0.38.0",
     "ipfs-unixfs-exporter": "~0.35.5",
+    "ipfs-unixfs-importer": "~0.38.0",
     "ipld-dag-pb": "~0.15.0",
     "is-pull-stream": "~0.0.0",
     "is-stream": "^1.1.0",

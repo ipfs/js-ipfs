@@ -2,40 +2,32 @@
 
 const Joi = require('joi')
 
-const mfsFlush = (api) => {
-  api.route({
-    method: 'POST',
-    path: '/api/v0/files/flush',
-    config: {
-      handler: (request, reply) => {
-        const {
-          ipfs
-        } = request.server.app
-        const {
-          arg
-        } = request.query
+const mfsFlush = {
+  method: 'POST',
+  path: '/api/v0/files/flush',
+  async handler (request, h) {
+    const {
+      ipfs
+    } = request.server.app
+    const {
+      arg
+    } = request.query
 
-        return ipfs.files.flush.call(null, arg)
-          .then(() => reply())
-          .catch(error => {
-            reply({
-              Message: error.message,
-              Code: error.code || 0,
-              Type: 'error'
-            }).code(500).takeover()
-          })
+    await ipfs.files.flush.call(null, arg)
+
+    return h.response()
+  },
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
       },
-      validate: {
-        options: {
-          allowUnknown: true,
-          stripUnknown: true
-        },
-        query: Joi.object().keys({
-          arg: Joi.string().required()
-        })
-      }
+      query: Joi.object().keys({
+        arg: Joi.string().required()
+      })
     }
-  })
+  }
 }
 
 module.exports = mfsFlush

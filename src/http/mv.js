@@ -2,57 +2,49 @@
 
 const Joi = require('joi')
 
-const mfsMv = (api) => {
-  api.route({
-    method: 'POST',
-    path: '/api/v0/files/mv',
-    config: {
-      handler: (request, reply) => {
-        const {
-          ipfs
-        } = request.server.app
-        const {
-          arg,
-          parents,
-          format,
-          hashAlg,
-          shardSplitThreshold
-        } = request.query
+const mfsMv = {
+  method: 'POST',
+  path: '/api/v0/files/mv',
+  async handler (request, h) {
+    const {
+      ipfs
+    } = request.server.app
+    const {
+      arg,
+      parents,
+      format,
+      hashAlg,
+      shardSplitThreshold
+    } = request.query
 
-        const args = arg.concat({
-          parents,
-          format,
-          hashAlg,
-          shardSplitThreshold
-        })
+    const args = arg.concat({
+      parents,
+      format,
+      hashAlg,
+      shardSplitThreshold
+    })
 
-        return ipfs.files.mv.apply(null, args)
-          .then(() => reply())
-          .catch(error => {
-            reply({
-              Message: error.message,
-              Code: error.code || 0,
-              Type: 'error'
-            }).code(500).takeover()
-          })
+    await ipfs.files.mv.apply(null, args)
+
+    return h.response()
+  },
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
       },
-      validate: {
-        options: {
-          allowUnknown: true,
-          stripUnknown: true
-        },
-        query: Joi.object().keys({
-          arg: Joi.array().items(Joi.string()).min(2),
-          parents: Joi.boolean().default(false),
-          format: Joi.string().valid([
-            'dag-pb',
-            'dag-cbor'
-          ]).default('dag-pb'),
-          hashAlg: Joi.string().default('sha2-256')
-        })
-      }
+      query: Joi.object().keys({
+        arg: Joi.array().items(Joi.string()).min(2),
+        parents: Joi.boolean().default(false),
+        format: Joi.string().valid([
+          'dag-pb',
+          'dag-cbor'
+        ]).default('dag-pb'),
+        hashAlg: Joi.string().default('sha2-256')
+      })
     }
-  })
+  }
 }
 
 module.exports = mfsMv
