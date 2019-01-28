@@ -12,7 +12,7 @@ module.exports = [
   ...require('./config'),
   require('./ping'),
   ...require('./swarm'),
-  // require('./bitswap')(server)
+  ...require('./bitswap'),
   // require('./file')(server)
   ...require('./files-regular'),
   ...require('ipfs-mfs/http')

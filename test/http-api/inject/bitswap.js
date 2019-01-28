@@ -3,7 +3,7 @@
 
 const expect = require('chai').expect
 const CID = require('cids')
-const waitFor = require('../../utils/wait-for')
+const waitFor = require('../../utils/wait-for').promises
 
 module.exports = (http) => {
   describe('/bitswap', () => {
@@ -12,111 +12,107 @@ module.exports = (http) => {
     let api
 
     before(() => {
-      api = http.api.server.select('API')
+      api = http.api._apiServer
     })
 
-    before(function (done) {
+    before(async function () {
       this.timeout(120 * 1000)
 
       // Add a CID to the wantlist
       api.inject({ method: 'GET', url: `/api/v0/block/get?arg=${wantedCid0}` })
       api.inject({ method: 'GET', url: `/api/v0/block/get?arg=${wantedCid1}` })
 
-      const test = (cb) => {
-        api.inject({
+      const test = async () => {
+        const res = await api.inject({
           method: 'GET',
           url: '/api/v0/bitswap/wantlist'
-        }, (res) => {
-          if (res.statusCode !== 200) {
-            return cb(new Error(`unexpected status ${res.statusCode}`))
-          }
-          const isWanted0 = res.result.Keys.some(k => k['/'] === wantedCid0)
-          const isWanted1 = res.result.Keys.some(k => k['/'] === wantedCid1)
-          cb(null, isWanted0 && isWanted1)
         })
+
+        if (res.statusCode !== 200) {
+          throw new Error(`unexpected status ${res.statusCode}`)
+        }
+
+        const isWanted0 = res.result.Keys.some(k => k['/'] === wantedCid0)
+        const isWanted1 = res.result.Keys.some(k => k['/'] === wantedCid1)
+
+        return isWanted0 && isWanted1
       }
 
-      waitFor(test, {
+      return waitFor(test, {
         name: `${wantedCid0} and ${wantedCid1} to be wanted`,
         timeout: 60 * 1000
-      }, done)
+      })
     })
 
-    it('/wantlist', (done) => {
-      api.inject({
+    it('/wantlist', async () => {
+      const res = await api.inject({
         method: 'GET',
         url: '/api/v0/bitswap/wantlist'
-      }, (res) => {
-        expect(res.statusCode).to.equal(200)
-        expect(res.result).to.have.property('Keys')
-        expect(res.result.Keys).to.deep.include({ '/': wantedCid0 })
-        done()
       })
+
+      expect(res.statusCode).to.equal(200)
+      expect(res.result).to.have.property('Keys')
+      expect(res.result.Keys).to.deep.include({ '/': wantedCid0 })
     })
 
-    it('/wantlist?cid-base=base64', (done) => {
+    it('/wantlist?cid-base=base64', async () => {
       const base64Cid = new CID(wantedCid1).toString('base64')
-      api.inject({
+      const res = await api.inject({
         method: 'GET',
         url: '/api/v0/bitswap/wantlist?cid-base=base64'
-      }, (res) => {
-        expect(res.statusCode).to.equal(200)
-        expect(res.result.Keys).to.deep.include({ '/': base64Cid })
-        done()
       })
+
+      expect(res.statusCode).to.equal(200)
+      expect(res.result.Keys).to.deep.include({ '/': base64Cid })
     })
 
-    it('/wantlist?cid-base=invalid', (done) => {
-      api.inject({
+    it('/wantlist?cid-base=invalid', async () => {
+      const res = await api.inject({
         method: 'GET',
         url: '/api/v0/bitswap/wantlist?cid-base=invalid'
-      }, (res) => {
-        expect(res.statusCode).to.equal(400)
-        expect(res.result.Message).to.include('child "cid-base" fails')
-        done()
       })
+
+      expect(res.statusCode).to.equal(400)
+      expect(res.result.Message).to.include('Invalid request query input')
     })
 
-    it('/stat', (done) => {
-      api.inject({
+    it('/stat', async () => {
+      const res = await api.inject({
         method: 'GET',
         url: '/api/v0/bitswap/stat'
-      }, (res) => {
-        expect(res.statusCode).to.equal(200)
-        expect(res.result).to.have.property('ProvideBufLen')
-        expect(res.result).to.have.property('BlocksReceived')
-        expect(res.result).to.have.property('Wantlist')
-        expect(res.result).to.have.property('Peers')
-        expect(res.result).to.have.property('DupBlksReceived')
-        expect(res.result).to.have.property('DupDataReceived')
-        expect(res.result).to.have.property('DataReceived')
-        expect(res.result).to.have.property('BlocksSent')
-        expect(res.result).to.have.property('DataSent')
-        done()
       })
+
+      expect(res.statusCode).to.equal(200)
+      expect(res.result).to.have.property('ProvideBufLen')
+      expect(res.result).to.have.property('BlocksReceived')
+      expect(res.result).to.have.property('Wantlist')
+      expect(res.result).to.have.property('Peers')
+      expect(res.result).to.have.property('DupBlksReceived')
+      expect(res.result).to.have.property('DupDataReceived')
+      expect(res.result).to.have.property('DataReceived')
+      expect(res.result).to.have.property('BlocksSent')
+      expect(res.result).to.have.property('DataSent')
     })
 
-    it('/stat?cid-base=base64', (done) => {
+    it('/stat?cid-base=base64', async () => {
       const base64Cid = new CID(wantedCid1).toString('base64')
-      api.inject({
+      const res = await api.inject({
         method: 'GET',
         url: '/api/v0/bitswap/stat?cid-base=base64'
-      }, (res) => {
-        expect(res.statusCode).to.equal(200)
-        expect(res.result.Wantlist).to.deep.include({ '/': base64Cid })
-        done()
       })
+
+      expect(res.statusCode).to.equal(200)
+      expect(res.result.Wantlist).to.deep.include({ '/': base64Cid })
     })
 
-    it('/stat?cid-base=invalid', (done) => {
-      api.inject({
+    it('/stat?cid-base=invalid', async () => {
+      const res = await api.inject({
         method: 'GET',
         url: '/api/v0/bitswap/stat?cid-base=invalid'
-      }, (res) => {
-        expect(res.statusCode).to.equal(400)
-        expect(res.result.Message).to.include('child "cid-base" fails')
-        done()
       })
+
+      expect(res.statusCode).to.equal(400)
+      expect(res.result.Message).to.include('Invalid request query input')
     })
   })
 }

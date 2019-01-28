@@ -35,3 +35,22 @@ module.exports = function waitFor (test, options, callback) {
 
   check()
 }
+
+module.exports.promises = async (test, options) => {
+  options = Object.assign({ timeout: 5000, interval: 0, name: 'event' }, options)
+  const start = Date.now()
+
+  while (true) {
+    const arrived = await test()
+
+    if (arrived) {
+      return
+    }
+
+    if (Date.now() > start + options.timeout) {
+      throw new Error(`Timed out waiting for ${options.name}`)
+    }
+
+    await new Promise(resolve => setTimeout(resolve, options.interval))
+  }
+}

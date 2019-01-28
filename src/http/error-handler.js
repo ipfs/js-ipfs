@@ -34,6 +34,8 @@ module.exports = server => {
         response: res.output.payload
       }
 
+      console.log(res)
+
       server.logger().error(debug)
       server.logger().error(res)
     }

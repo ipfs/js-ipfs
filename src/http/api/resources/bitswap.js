@@ -1,12 +1,9 @@
 'use strict'
 
-const boom = require('boom')
 const Joi = require('joi')
 const multibase = require('multibase')
 const { cidToString } = require('../../../utils/cid')
-const parseKey = require('./block').parseKey
-
-exports = module.exports
+const { parseKey } = require('./block')
 
 exports.wantlist = {
   validate: {
@@ -15,19 +12,17 @@ exports.wantlist = {
     }).unknown()
   },
 
-  handler: (request, reply) => {
+  async handler (request, h) {
+    const { ipfs } = request.server.app
     const peerId = request.query.peer
     const cidBase = request.query['cid-base']
 
-    request.server.app.ipfs.bitswap.wantlist(peerId, (err, list) => {
-      if (err) {
-        return reply(boom.badRequest(err))
-      }
-      reply({
-        Keys: list.Keys.map(k => ({
-          '/': cidToString(k['/'], { base: cidBase, upgrade: false })
-        }))
-      })
+    const list = await ipfs.bitswap.wantlist(peerId)
+
+    return h.response({
+      Keys: list.Keys.map(k => ({
+        '/': cidToString(k['/'], { base: cidBase, upgrade: false })
+      }))
     })
   }
 }
@@ -39,33 +34,26 @@ exports.stat = {
     }).unknown()
   },
 
-  handler: (request, reply) => {
-    const ipfs = request.server.app.ipfs
+  async handler (request, h) {
+    const { ipfs } = request.server.app
     const cidBase = request.query['cid-base']
 
-    ipfs.bitswap.stat((err, stats) => {
-      if (err) {
-        return reply({
-          Message: err.toString(),
-          Code: 0
-        }).code(500)
-      }
+    const stats = await ipfs.bitswap.stat()
 
-      stats.wantlist = stats.wantlist.map(k => ({
-        '/': cidToString(k['/'], { base: cidBase, upgrade: false })
-      }))
+    stats.wantlist = stats.wantlist.map(k => ({
+      '/': cidToString(k['/'], { base: cidBase, upgrade: false })
+    }))
 
-      reply({
-        ProvideBufLen: stats.provideBufLen,
-        BlocksReceived: stats.blocksReceived,
-        Wantlist: stats.wantlist,
-        Peers: stats.peers,
-        DupBlksReceived: stats.dupBlksReceived,
-        DupDataReceived: stats.dupDataReceived,
-        DataReceived: stats.dataReceived,
-        BlocksSent: stats.blocksSent,
-        DataSent: stats.dataSent
-      })
+    return h.response({
+      ProvideBufLen: stats.provideBufLen,
+      BlocksReceived: stats.blocksReceived,
+      Wantlist: stats.wantlist,
+      Peers: stats.peers,
+      DupBlksReceived: stats.dupBlksReceived,
+      DupDataReceived: stats.dupDataReceived,
+      DataReceived: stats.dataReceived,
+      BlocksSent: stats.blocksSent,
+      DataSent: stats.dataSent
     })
   }
 }
@@ -81,14 +69,10 @@ exports.unwant = {
   parseArgs: parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
+  async handler (request, h) {
     const key = request.pre.args.key
-    const ipfs = request.server.app.ipfs
-    ipfs.bitswap.unwant(key, (err) => {
-      if (err) {
-        return reply(boom.badRequest(err))
-      }
-      reply({ key: cidToString(key, { base: request.query['cid-base'], upgrade: false }) })
-    })
+    const { ipfs } = request.server.app
+    await ipfs.bitswap.unwant(key)
+    return h.response({ key: cidToString(key, { base: request.query['cid-base'], upgrade: false }) })
   }
 }
