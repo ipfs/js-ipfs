@@ -16,8 +16,8 @@ module.exports = [
   require('./file'),
   ...require('./files-regular'),
   ...require('ipfs-mfs/http'),
-  ...require('./pubsub')
-  // require('./debug')(server)
+  ...require('./pubsub'),
+  require('./debug')
   // require('./webui')(server)
   // require('./dns')(server)
   // require('./key')(server)
