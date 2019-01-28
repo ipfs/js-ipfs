@@ -1,7 +1,6 @@
 'use strict'
 
 const resources = require('./../resources')
-// const mfs = require('ipfs-mfs/http')
 
 module.exports = [
   {
@@ -51,5 +50,4 @@ module.exports = [
     },
     handler: resources.filesRegular.ls.handler
   }
-  // ...mfs
 ]
