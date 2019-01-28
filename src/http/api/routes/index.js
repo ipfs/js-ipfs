@@ -10,11 +10,12 @@ module.exports = [
   ...require('./pin'),
   ...require('./repo'),
   ...require('./config'),
-  // require('./ping')(server)
+  require('./ping'),
   // require('./swarm')(server)
   // require('./bitswap')(server)
   // require('./file')(server)
-  ...require('./files')
+  ...require('./files-regular'),
+  ...require('ipfs-mfs/http')
   // require('./pubsub')(server)
   // require('./debug')(server)
   // require('./webui')(server)

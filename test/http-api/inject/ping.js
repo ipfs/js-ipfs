@@ -13,37 +13,34 @@ module.exports = (http) => {
     let api
 
     before(() => {
-      api = http.api.server.select('API')
+      api = http.api._apiServer
     })
 
-    it('returns 400 if both n and count are provided', (done) => {
-      api.inject({
+    it('returns 400 if both n and count are provided', async () => {
+      const res = await api.inject({
         method: 'GET',
         url: `/api/v0/ping?arg=peerid&n=1&count=1`
-      }, (res) => {
-        expect(res.statusCode).to.equal(400)
-        done()
       })
+
+      expect(res.statusCode).to.equal(400)
     })
 
-    it('returns 400 if arg is not provided', (done) => {
-      api.inject({
+    it('returns 400 if arg is not provided', async () => {
+      const res = await api.inject({
         method: 'GET',
         url: `/api/v0/ping?count=1`
-      }, (res) => {
-        expect(res.statusCode).to.equal(400)
-        done()
       })
+
+      expect(res.statusCode).to.equal(400)
     })
 
-    it('returns 500 for incorrect Peer Id', (done) => {
-      api.inject({
+    it('returns 500 for incorrect Peer Id', async () => {
+      const res = await api.inject({
         method: 'GET',
         url: `/api/v0/ping?arg=peerid`
-      }, (res) => {
-        expect(res.statusCode).to.equal(500)
-        done()
       })
+
+      expect(res.statusCode).to.equal(500)
     })
   })
 }
