@@ -116,8 +116,7 @@ exports.get = {
     try {
       filesArray = await ipfs.get(key)
     } catch (err) {
-      log.error(err)
-      throw new Error('Failed to get key: ' + err.message)
+      throw Boom.boomify(err, { message: 'Failed to get key' })
     }
 
     Promise
@@ -292,8 +291,7 @@ exports.ls = {
     try {
       files = await ipfs.ls(key, { recursive })
     } catch (err) {
-      log.error(err)
-      throw new Error('Failed to list dir: ' + err.message)
+      throw Boom.boomify(err, { message: 'Failed to list dir' })
     }
 
     return h.response({

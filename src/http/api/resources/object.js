@@ -48,8 +48,7 @@ exports.new = {
       cid = await ipfs.object.new(template)
       node = await ipfs.object.get(cid)
     } catch (err) {
-      log.error(err)
-      throw new Error(`Failed to create object: ${err.message}`)
+      throw Boom.boomify(err, { message: 'Failed to create object' })
     }
 
     const nodeJSON = node.toJSON()
@@ -92,8 +91,7 @@ exports.get = {
       node = await ipfs.object.get(key, { enc: enc })
       cid = await calculateCid(node)
     } catch (err) {
-      log.error(err)
-      throw new Error(`Failed to get object: ${err.message}`)
+      throw Boom.boomify(err, { message: 'Failed to get object' })
     }
 
     const nodeJSON = node.toJSON()
@@ -178,7 +176,7 @@ exports.put = {
     try {
       cid = await ipfs.object.put(node)
     } catch (err) {
-      throw new Error('Failed to put node: ' + err)
+      throw Boom.boomify(err, { message: 'Failed to put node' })
     }
 
     const nodeJSON = node.toJSON()
@@ -219,8 +217,7 @@ exports.stat = {
     try {
       stats = await ipfs.object.stat(key)
     } catch (err) {
-      log.error(err)
-      throw new Error('Failed to stat object: ' + err)
+      throw Boom.boomify(err, { message: 'Failed to stat object' })
     }
 
     stats.Hash = cidToString(stats.Hash, { base: request.query['cid-base'], upgrade: false })
@@ -242,8 +239,7 @@ exports.data = {
     try {
       data = await ipfs.object.data(key)
     } catch (err) {
-      log.error(err)
-      throw new Error('Failed to get object data: ' + err)
+      throw Boom.boomify(err, { message: 'Failed to get object data' })
     }
 
     return h.response(data)
@@ -269,8 +265,7 @@ exports.links = {
     try {
       node = await ipfs.object.get(key)
     } catch (err) {
-      log.error(err)
-      throw new Error('Failed to get object links: ' + err)
+      throw Boom.boomify(err, { message: 'Failed to get object links' })
     }
 
     const nodeJSON = node.toJSON()
@@ -341,8 +336,7 @@ exports.patchAppendData = {
       cid = await ipfs.object.patch.appendData(key, data)
       node = await ipfs.object.get(cid)
     } catch (err) {
-      log.error(err)
-      throw new Error('Failed to append data to object: ' + err)
+      throw Boom.boomify(err, { message: 'Failed to append data to object' })
     }
 
     const nodeJSON = node.toJSON()
@@ -384,8 +378,7 @@ exports.patchSetData = {
       cid = await ipfs.object.patch.setData(key, data)
       node = await ipfs.object.get(cid)
     } catch (err) {
-      log.error(err)
-      throw new Error('Failed to set data on object: ' + err)
+      throw Boom.boomify(err, { message: 'Failed to set data on object' })
     }
 
     const nodeJSON = node.toJSON()
@@ -452,8 +445,7 @@ exports.patchAddLink = {
       cid = await ipfs.object.patch.addLink(root, new DAGLink(name, node.size, ref))
       node = await ipfs.object.get(cid)
     } catch (err) {
-      log.error(err)
-      throw new Error('Failed to add link to object: ' + err)
+      throw Boom.boomify(err, { message: 'Failed to add link to object' })
     }
 
     const nodeJSON = node.toJSON()
@@ -514,8 +506,7 @@ exports.patchRmLink = {
       cid = await ipfs.object.patch.rmLink(root, { name: link })
       node = await ipfs.object.get(cid)
     } catch (err) {
-      log.error(err)
-      throw new Error('Failed to remove link from object: ' + err)
+      throw Boom.boomify(err, { message: 'Failed to remove link from object' })
     }
 
     const nodeJSON = node.toJSON()

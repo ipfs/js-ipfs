@@ -65,8 +65,7 @@ exports.getOrSet = {
     try {
       originalConfig = await ipfs.config.get()
     } catch (err) {
-      log.error(err)
-      throw new Error('Failed to get config value: ' + err)
+      throw Boom.boomify(err, { message: 'Failed to get config value' })
     }
 
     if (value === undefined) {
@@ -81,8 +80,7 @@ exports.getOrSet = {
       try {
         await ipfs.config.replace(updatedConfig)
       } catch (err) {
-        log.error(err)
-        throw new Error('Failed to get config value: ' + err)
+        throw Boom.boomify(err, { message: 'Failed to get config value' })
       }
     }
 
@@ -100,8 +98,7 @@ exports.get = async (request, h) => {
   try {
     config = await ipfs.config.get()
   } catch (err) {
-    log.error(err)
-    throw new Error('Failed to get config value: ' + err)
+    throw Boom.boomify(err, { message: 'Failed to get config value' })
   }
 
   return h.response({
@@ -116,8 +113,7 @@ exports.show = async (request, h) => {
   try {
     config = await ipfs.config.get()
   } catch (err) {
-    log.error(err)
-    throw new Error('Failed to get config value: ' + err)
+    throw Boom.boomify(err, { message: 'Failed to get config value' })
   }
 
   return h.response(config)
@@ -145,8 +141,7 @@ exports.replace = {
     try {
       return { config: JSON.parse(file.toString()) }
     } catch (err) {
-      log.error(err)
-      throw new Error('Failed to decode file as config: ' + err)
+      throw Boom.boomify(err, { message: 'Failed to decode file as config' })
     }
   },
 
@@ -158,8 +153,7 @@ exports.replace = {
     try {
       await ipfs.config.replace(config)
     } catch (err) {
-      log.error(err)
-      throw new Error('Failed to save config: ' + err)
+      throw Boom.boomify(err, { message: 'Failed to save config' })
     }
 
     return h.response()

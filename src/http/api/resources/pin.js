@@ -53,8 +53,7 @@ exports.ls = {
     try {
       result = await ipfs.pin.ls(path, { type })
     } catch (err) {
-      log.error(err)
-      throw new Error(`Failed to list pins: ${err.message}`)
+      throw Boom.boomify(err, { message: 'Failed to list pins' })
     }
 
     return h.response({
@@ -83,11 +82,10 @@ exports.add = {
     try {
       result = await ipfs.pin.add(path, { recursive })
     } catch (err) {
-      log.error(err)
       if (err.message.includes('already pinned recursively')) {
         throw Boom.boomify(err, { statusCode: 400 })
       }
-      throw new Error(`Failed to add pin: ${err.message}`)
+      throw Boom.boomify(err, { message: 'Failed to add pin' })
     }
 
     return h.response({
@@ -113,8 +111,7 @@ exports.rm = {
     try {
       result = await ipfs.pin.rm(path, { recursive })
     } catch (err) {
-      log.error(err)
-      throw new Error(`Failed to remove pin: ${err.message}`)
+      throw Boom.boomify(err, { message: 'Failed to remove pin' })
     }
 
     return h.response({

@@ -36,8 +36,7 @@ exports.get = {
     try {
       block = await request.server.app.ipfs.block.get(key)
     } catch (err) {
-      log.error(err)
-      throw new Error('Failed to get block: ' + err)
+      throw Boom.boomify(err, { message: 'Failed to get block' })
     }
 
     if (!block) {
@@ -96,8 +95,7 @@ exports.put = {
         version: request.query.version && parseInt(request.query.version)
       })
     } catch (err) {
-      log.error(err)
-      throw new Error('Failed to put block: ' + err)
+      throw Boom.boomify(err, { message: 'Failed to put block' })
     }
 
     return h.response({
@@ -118,8 +116,7 @@ exports.rm = {
     try {
       await request.server.app.ipfs.block.rm(key)
     } catch (err) {
-      log.error(err)
-      throw new Error('Failed to delete block: ' + err)
+      throw Boom.boomify(err, { message: 'Failed to delete block' })
     }
 
     return h.response()
@@ -144,8 +141,7 @@ exports.stat = {
     try {
       stats = await request.server.app.ipfs.block.stat(key)
     } catch (err) {
-      log.error(err)
-      throw new Error('Failed to get block stats: ' + err)
+      throw Boom.boomify(err, { message: 'Failed to get block stats' })
     }
 
     return h.response({
