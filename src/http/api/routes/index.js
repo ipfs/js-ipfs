@@ -18,8 +18,8 @@ module.exports = [
   ...require('ipfs-mfs/http'),
   ...require('./pubsub'),
   require('./debug'),
-  ...require('./webui')
-  // require('./dns')(server)
+  ...require('./webui'),
+  require('./dns')
   // require('./key')(server)
   // require('./stats')(server)
   // require('./resolve')(server)

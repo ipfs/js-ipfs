@@ -1,24 +1,14 @@
 'use strict'
 
-const boom = require('boom')
+const Boom = require('boom')
 
-exports = module.exports
-
-exports.get = (request, reply) => {
+module.exports = async (request, h) => {
   if (!request.query.arg) {
-    return reply({
-      Message: "Argument 'domain' is required",
-      Code: 0
-    }).code(400).takeover()
+    throw Boom.badRequest("Argument 'domain' is required")
   }
 
-  request.server.app.ipfs.dns(request.query.arg, (err, path) => {
-    if (err) {
-      return reply(boom.badRequest(err))
-    }
-
-    return reply({
-      Path: path
-    })
+  const path = await request.server.app.ipfs.dns(request.query.arg)
+  return h.response({
+    Path: path
   })
 }
