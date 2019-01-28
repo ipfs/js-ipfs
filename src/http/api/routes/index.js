@@ -20,8 +20,8 @@ module.exports = [
   require('./debug'),
   ...require('./webui'),
   require('./dns'),
-  ...require('./key')
-  // require('./stats')(server)
+  ...require('./key'),
+  ...require('./stats')
   // require('./resolve')(server)
   // require('./name')(server)
 ]

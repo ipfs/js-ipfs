@@ -11,14 +11,12 @@ const transformBandwidth = (stat) => {
   }
 }
 
-exports = module.exports
-
 exports.bitswap = require('./bitswap').stat
 
 exports.repo = require('./repo').stat
 
-exports.bw = (request, reply) => {
-  const ipfs = request.server.app.ipfs
+exports.bw = async (request, h) => {
+  const { ipfs } = request.server.app
   const options = {
     peer: request.query.peer,
     proto: request.query.proto,
@@ -40,7 +38,8 @@ exports.bw = (request, reply) => {
   })
 
   res.pipe(output)
-  reply(output)
+
+  return h.response(output)
     .header('content-type', 'application/json')
     .header('x-chunked-output', '1')
 }
