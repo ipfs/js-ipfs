@@ -11,7 +11,7 @@ module.exports = [
   ...require('./repo'),
   ...require('./config'),
   require('./ping'),
-  // require('./swarm')(server)
+  ...require('./swarm'),
   // require('./bitswap')(server)
   // require('./file')(server)
   ...require('./files-regular'),
