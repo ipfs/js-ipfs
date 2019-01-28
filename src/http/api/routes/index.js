@@ -15,8 +15,8 @@ module.exports = [
   ...require('./bitswap'),
   require('./file'),
   ...require('./files-regular'),
-  ...require('ipfs-mfs/http')
-  // require('./pubsub')(server)
+  ...require('ipfs-mfs/http'),
+  ...require('./pubsub')
   // require('./debug')(server)
   // require('./webui')(server)
   // require('./dns')(server)
