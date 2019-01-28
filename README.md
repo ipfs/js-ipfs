@@ -370,7 +370,7 @@ Complete documentation for these methods is coming with: https://github.com/ipfs
 
 > `ipfs.util.getEndpointConfig()`
 
-This returns an object containing the `host` and the `port`
+This returns an object containing the `host`, `port` and `protocol`
 
 ##### Get libp2p crypto primitives
 
