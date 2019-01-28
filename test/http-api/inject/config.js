@@ -8,7 +8,7 @@ const streamToPromise = require('stream-to-promise')
 const path = require('path')
 
 module.exports = (http) => {
-  describe.only('/config', () => {
+  describe('/config', () => {
     const configPath = path.join(__dirname, '../../repo-tests-run/config')
     const originalConfigPath = path.join(__dirname, '../../fixtures/go-ipfs-repo/config')
 
