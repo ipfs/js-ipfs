@@ -116,7 +116,7 @@ class HttpApi {
     await server.register({
       plugin: Pino,
       options: {
-        prettyPrint: process.env.NODE_ENV === 'production',
+        prettyPrint: process.env.NODE_ENV !== 'production',
         logEvents: ['onPostStart', 'onPostStop', 'response', 'request-error'],
         level: process.env.DEBUG ? 'debug' : 'error'
       }
