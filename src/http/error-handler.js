@@ -1,6 +1,6 @@
 'use strict'
 
-module.exports = (server, log) => {
+module.exports = server => {
   server.ext('onPreResponse', (request, h) => {
     const res = request.response
 
@@ -34,8 +34,8 @@ module.exports = (server, log) => {
         response: res.output.payload
       }
 
-      log(res)
-      server.log('error', debug)
+      server.logger().error(debug)
+      server.logger().error(res)
     }
 
     return h.response({

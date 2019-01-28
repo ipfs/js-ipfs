@@ -142,7 +142,7 @@ class HttpApi {
 
     server.route(require('./api/routes'))
 
-    errorHandler(server, this._log.error)
+    errorHandler(server)
 
     return server
   }
