@@ -7,9 +7,6 @@ const Joi = require('joi')
 const Boom = require('boom')
 const isIpfs = require('is-ipfs')
 const { cidToString } = require('../../../utils/cid')
-const debug = require('debug')
-const log = debug('jsipfs:http-api:pin')
-log.error = debug('jsipfs:http-api:pin:error')
 
 function parseArgs (request, h) {
   let { arg } = request.query

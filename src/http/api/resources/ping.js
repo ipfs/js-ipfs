@@ -4,9 +4,6 @@ const Joi = require('joi')
 const pull = require('pull-stream')
 const ndjson = require('pull-ndjson')
 const { PassThrough } = require('readable-stream')
-const debug = require('debug')
-const log = debug('jsipfs:http-api:ping')
-log.error = debug('jsipfs:http-api:ping:error')
 
 module.exports = {
   validate: {
