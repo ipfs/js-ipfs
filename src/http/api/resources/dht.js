@@ -1,6 +1,7 @@
 'use strict'
 
 const Joi = require('joi')
+const Boom = require('boom')
 
 const CID = require('cids')
 
@@ -16,34 +17,27 @@ exports.findPeer = {
       arg: Joi.string().required()
     }).unknown()
   },
-  handler: (request, reply) => {
+  async handler (request, h) {
     const ipfs = request.server.app.ipfs
     const { arg } = request.query
+    let res
 
-    ipfs.dht.findPeer(arg, (err, res) => {
-      if (err) {
-        log.error(err)
-
-        if (err.code === 'ERR_LOOKUP_FAILED') {
-          return reply({
-            Message: err.toString(),
-            Code: 0
-          }).code(404)
-        }
-
-        return reply({
-          Message: err.toString(),
-          Code: 0
-        }).code(500)
+    try {
+      res = await ipfs.dht.findPeer(arg)
+    } catch (err) {
+      if (err.code === 'ERR_LOOKUP_FAILED') {
+        throw Boom.notFound(err.toString())
+      } else {
+        throw Boom.boomify(err, { message: err.toString() })
       }
+    }
 
-      reply({
-        Responses: [{
-          ID: res.id.toB58String(),
-          Addrs: res.multiaddrs.toArray().map((a) => a.toString())
-        }],
-        Type: 2
-      })
+    return h.response({
+      Responses: [{
+        ID: res.id.toB58String(),
+        Addrs: res.multiaddrs.toArray().map((a) => a.toString())
+      }],
+      Type: 2
     })
   }
 }
@@ -56,29 +50,20 @@ exports.findProvs = {
       timeout: Joi.number()
     }).unknown()
   },
-  handler: (request, reply) => {
+  async handler (request, h) {
     const ipfs = request.server.app.ipfs
     const { arg } = request.query
 
     request.query.maxNumProviders = request.query['num-providers']
 
-    ipfs.dht.findProvs(arg, request.query, (err, res) => {
-      if (err) {
-        log.error(err)
+    const res = await ipfs.dht.findProvs(arg, request.query)
 
-        return reply({
-          Message: err.toString(),
-          Code: 0
-        }).code(500)
-      }
-
-      reply({
-        Responses: res.map((peerInfo) => ({
-          ID: peerInfo.id.toB58String(),
-          Addrs: peerInfo.multiaddrs.toArray().map((a) => a.toString())
-        })),
-        Type: 4
-      })
+    return h.response({
+      Responses: res.map((peerInfo) => ({
+        ID: peerInfo.id.toB58String(),
+        Addrs: peerInfo.multiaddrs.toArray().map((a) => a.toString())
+      })),
+      Type: 4
     })
   }
 }
@@ -90,24 +75,15 @@ exports.get = {
       timeout: Joi.number()
     }).unknown()
   },
-  handler: (request, reply) => {
+  async handler (request, h) {
     const ipfs = request.server.app.ipfs
     const { arg } = request.query
 
-    ipfs.dht.get(Buffer.from(arg), (err, res) => {
-      if (err) {
-        log.error(err)
+    const res = await ipfs.dht.get(Buffer.from(arg))
 
-        return reply({
-          Message: err.toString(),
-          Code: 0
-        }).code(500)
-      }
-
-      reply({
-        Extra: res.toString(),
-        Type: 5
-      })
+    return h.response({
+      Extra: res.toString(),
+      Type: 5
     })
   }
 }
@@ -118,7 +94,7 @@ exports.provide = {
       arg: Joi.string().required()
     }).unknown()
   },
-  handler: (request, reply) => {
+  async handler (request, h) {
     const ipfs = request.server.app.ipfs
     const { arg } = request.query
     let cid
@@ -127,25 +103,12 @@ exports.provide = {
       cid = new CID(arg)
     } catch (err) {
       log.error(err)
-
-      return reply({
-        Message: err.toString(),
-        Code: 0
-      }).code(500)
+      throw Boom.boomify(err, { message: err.toString() })
     }
 
-    ipfs.dht.provide(cid, request.query, (err) => {
-      if (err) {
-        log.error(err)
+    await ipfs.dht.provide(cid)
 
-        return reply({
-          Message: err.toString(),
-          Code: 0
-        }).code(500)
-      }
-
-      reply({})
-    })
+    return h.response()
   }
 }
 
@@ -155,29 +118,20 @@ exports.put = {
       arg: Joi.array().items(Joi.string()).length(2).required()
     }).unknown()
   },
-  parseArgs: (request, reply) => {
-    return reply({
+  parseArgs: (request, h) => {
+    return {
       key: request.query.arg[0],
       value: request.query.arg[1]
-    })
+    }
   },
-  handler: (request, reply) => {
+  async handler (request, h) {
     const key = request.pre.args.key
     const value = request.pre.args.value
     const ipfs = request.server.app.ipfs
 
-    ipfs.dht.put(Buffer.from(key), Buffer.from(value), (err) => {
-      if (err) {
-        log.error(err)
+    await ipfs.dht.put(Buffer.from(key), Buffer.from(value))
 
-        return reply({
-          Message: err.toString(),
-          Code: 0
-        }).code(500)
-      }
-
-      reply({})
-    })
+    return h.response()
   }
 }
 
@@ -187,25 +141,15 @@ exports.query = {
       arg: Joi.string().required()
     }).unknown()
   },
-  handler: (request, reply) => {
+  async handler (request, h) {
     const ipfs = request.server.app.ipfs
     const { arg } = request.query
 
-    ipfs.dht.query(arg, (err, res) => {
-      if (err) {
-        log.error(err)
+    const res = await ipfs.dht.query(arg)
+    const response = res.map((peerInfo) => ({
+      ID: peerInfo.id.toB58String()
+    }))
 
-        return reply({
-          Message: err.toString(),
-          Code: 0
-        }).code(500)
-      }
-
-      const response = res.map((peerInfo) => ({
-        ID: peerInfo.id.toB58String()
-      }))
-
-      reply(response)
-    })
+    return h.response(response)
   }
 }

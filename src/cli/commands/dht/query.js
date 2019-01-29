@@ -9,8 +9,9 @@ module.exports = {
 
   builder: {},
 
-  handler ({ ipfs, peerID, resolve }) {
+  handler ({ getIpfs, peerID, resolve }) {
     resolve((async () => {
+      const ipfs = await getIpfs()
       const result = await ipfs.dht.query(peerID)
 
       result.forEach((peerID) => {

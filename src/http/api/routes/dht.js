@@ -15,9 +15,9 @@ module.exports = [
     method: '*',
     path: '/api/v0/dht/findprovs',
     options: {
-      validate: resources.dht.findprovs.validate
+      validate: resources.dht.findProvs.validate
     },
-    handler: resources.dht.findprovs.handler
+    handler: resources.dht.findProvs.handler
   },
   {
     method: '*',
@@ -39,6 +39,9 @@ module.exports = [
     method: '*',
     path: '/api/v0/dht/put',
     options: {
+      pre: [
+        { method: resources.dht.put.parseArgs, assign: 'args' }
+      ],
       validate: resources.dht.put.validate
     },
     handler: resources.dht.put.handler

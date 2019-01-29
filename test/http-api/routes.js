@@ -4,11 +4,11 @@
 const fs = require('fs')
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
-const expect = chai.expect
 chai.use(dirtyChai)
 const hat = require('hat')
 const API = require('../../src/http/index')
-const ncp = require('ncp').ncp
+const promisify = require('promisify-es6')
+const ncp = promisify(require('ncp').ncp)
 const path = require('path')
 const clean = require('../utils/clean')
 

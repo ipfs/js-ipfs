@@ -6,7 +6,8 @@ const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
 const CID = require('cids')
 const each = require('async/each')
-const setImmediate = require('async/setImmediate')
+const nextTick = require('async/nextTick')
+
 const errcode = require('err-code')
 
 const debug = require('debug')
@@ -38,7 +39,7 @@ module.exports = (self) => {
         } catch (err) {
           log.error(err)
 
-          return setImmediate(() => callback(errcode(err, 'ERR_INVALID_CID')))
+          return nextTick(() => callback(errcode(err, 'ERR_INVALID_CID')))
         }
       }
 
@@ -64,7 +65,7 @@ module.exports = (self) => {
         } catch (err) {
           log.error(err)
 
-          return setImmediate(() => callback(errcode(err, 'ERR_INVALID_CID')))
+          return nextTick(() => callback(errcode(err, 'ERR_INVALID_CID')))
         }
       }
 
@@ -95,7 +96,7 @@ module.exports = (self) => {
         } catch (err) {
           log.error(err)
 
-          return setImmediate(() => callback(errcode(err, 'ERR_INVALID_CID')))
+          return nextTick(() => callback(errcode(err, 'ERR_INVALID_CID')))
         }
       }
 

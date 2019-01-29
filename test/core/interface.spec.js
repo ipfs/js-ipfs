@@ -102,7 +102,7 @@ describe('interface-ipfs-core tests', function () {
 
   tests.name(CommonFactory.create({
     spawnOptions: {
-      args: ['--pass ipfs-is-awesome-software', '--local'],
+      args: ['--pass ipfs-is-awesome-software', '--offline'],
       initOptions: { bits: 512 },
       config: {
         Bootstrap: [],

@@ -13,11 +13,14 @@ module.exports = {
     }
   },
 
-  handler ({ ipfs, key, resolve }) {
-    // TODO add recursive option
+  handler ({ getIpfs, key, recursive, resolve }) {
+    const opts = {
+      recursive
+    }
 
     resolve((async () => {
-      await ipfs.dht.provide(key)
+      const ipfs = await getIpfs()
+      await ipfs.dht.provide(key, opts)
     })())
   }
 }

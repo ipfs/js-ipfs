@@ -7,8 +7,9 @@ module.exports = {
 
   builder: {},
 
-  handler ({ ipfs, key, value, resolve }) {
+  handler ({ getIpfs, key, value, resolve }) {
     resolve((async () => {
+      const ipfs = await getIpfs()
       await ipfs.dht.put(key, value)
     })())
   }

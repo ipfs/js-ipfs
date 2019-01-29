@@ -50,7 +50,7 @@ describe('name', function () {
       this.timeout(50 * 1000)
       df.spawn({
         exec: IPFS,
-        args: [`--pass ${hat()}`, '--local'],
+        args: [`--pass ${hat()}`, '--offline'],
         config: { Bootstrap: [] }
       }, (err, _ipfsd) => {
         expect(err).to.not.exist()
@@ -152,7 +152,7 @@ describe('name', function () {
       this.timeout(40 * 1000)
       df.spawn({
         exec: IPFS,
-        args: [`--pass ${hat()}`, '--local'],
+        args: [`--pass ${hat()}`, '--offline'],
         config: { Bootstrap: [] }
       }, (err, _ipfsd) => {
         expect(err).to.not.exist()
@@ -474,7 +474,7 @@ describe('name', function () {
       this.timeout(40 * 1000)
       df.spawn({
         exec: IPFS,
-        args: [`--pass ${hat()}`, '--local'],
+        args: [`--pass ${hat()}`, '--offline'],
         config: {
           Bootstrap: [],
           Discovery: {

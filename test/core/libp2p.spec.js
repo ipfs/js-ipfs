@@ -13,6 +13,7 @@ const PeerBook = require('peer-book')
 const WebSocketStar = require('libp2p-websocket-star')
 const Multiplex = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
+const KadDHT = require('libp2p-kad-dht')
 const Libp2p = require('libp2p')
 
 const libp2pComponent = require('../../src/core/components/libp2p')
@@ -45,7 +46,6 @@ describe('libp2p customization', function () {
         }
       },
       EXPERIMENTAL: {
-        dht: false,
         pubsub: false
       }
     }
@@ -94,7 +94,8 @@ describe('libp2p customization', function () {
                 ],
                 peerDiscovery: [
                   wsstar.discovery
-                ]
+                ],
+                dht: KadDHT
               }
             })
           }
@@ -144,7 +145,6 @@ describe('libp2p customization', function () {
             }
           },
           EXPERIMENTAL: {
-            dht: true,
             pubsub: false
           }
         })
@@ -172,7 +172,6 @@ describe('libp2p customization', function () {
             }
           },
           EXPERIMENTAL: {
-            dht: false,
             pubsub: true
           },
           libp2p: {
@@ -209,7 +208,6 @@ describe('libp2p customization', function () {
             }
           },
           EXPERIMENTAL: {
-            dht: true,
             pubsub: true
           }
         })

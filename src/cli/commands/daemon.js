@@ -18,10 +18,6 @@ module.exports = {
         type: 'boolean',
         default: false
       })
-      .option('enable-dht-experiment', {
-        type: 'boolean',
-        default: false
-      })
       .option('offline', {
         desc: 'Run offline. Do not connect to the rest of the network but provide local API.',
         default: false
