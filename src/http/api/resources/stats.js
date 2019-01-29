@@ -33,7 +33,7 @@ exports.bw = async (request, h) => {
     }
   })
 
-  request.on('disconnect', () => {
+  request.events.on('disconnect', () => {
     res.destroy()
   })
 
