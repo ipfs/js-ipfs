@@ -2,7 +2,6 @@
 
 const Joi = require('joi')
 const multipart = require('ipfs-multipart')
-const Boom = require('boom')
 
 const mfsWrite = {
   method: 'POST',
