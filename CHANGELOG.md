@@ -1,3 +1,18 @@
+<a name="29.1.0"></a>
+# [29.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v29.0.1...v29.1.0) (2019-01-29)
+
+
+### Bug Fixes
+
+* throw on invalid multiaddr to constructor ([#934](https://github.com/ipfs/js-ipfs-http-client/issues/934)) ([bcbf0d2](https://github.com/ipfs/js-ipfs-http-client/commit/bcbf0d2))
+
+
+### Features
+
+* return protocol from getEndpointConfig ([#935](https://github.com/ipfs/js-ipfs-http-client/issues/935)) ([12ddaa3](https://github.com/ipfs/js-ipfs-http-client/commit/12ddaa3))
+
+
+
 <a name="29.0.1"></a>
 ## [29.0.1](https://github.com/ipfs/js-ipfs-http-client/compare/v29.0.0...v29.0.1) (2019-01-24)
 
