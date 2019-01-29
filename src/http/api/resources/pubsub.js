@@ -35,8 +35,8 @@ exports.subscribe = {
       ipfs.pubsub.unsubscribe(topic, handler, () => res.end())
     }
 
-    request.once('disconnect', unsubscribe)
-    request.once('finish', unsubscribe)
+    request.events.once('disconnect', unsubscribe)
+    request.events.once('finish', unsubscribe)
 
     await ipfs.pubsub.subscribe(topic, handler, { discover: discover })
 
