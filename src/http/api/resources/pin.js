@@ -12,18 +12,22 @@ const log = debug('jsipfs:http-api:pin')
 log.error = debug('jsipfs:http-api:pin:error')
 
 function parseArgs (request, h) {
-  const { arg } = request.query
+  let { arg } = request.query
 
   if (!arg) {
     throw Boom.badRequest("Argument 'arg' is required")
   }
 
-  if (!isIpfs.ipfsPath(arg) && !isIpfs.cid(arg)) {
-    throw Boom.badRequest('invalid ipfs ref path')
-  }
+  arg = Array.isArray(arg) ? arg : [arg]
+
+  arg.forEach(path => {
+    if (!isIpfs.ipfsPath(path) && !isIpfs.cid(path)) {
+      throw Boom.badRequest('invalid ipfs ref path')
+    }
+  })
 
   const recursive = request.query.recursive !== 'false'
-  return { path: request.query.arg, recursive }
+  return { path: arg, recursive }
 }
 
 exports.ls = {
@@ -34,11 +38,18 @@ exports.ls = {
   },
 
   parseArgs (request, h) {
-    const { arg } = request.query
+    let { arg } = request.query
 
-    if (arg && !isIpfs.ipfsPath(arg) && !isIpfs.cid(arg)) {
-      throw Boom.badRequest('invalid ipfs ref path')
+    if (arg) {
+      arg = Array.isArray(arg) ? arg : [arg]
+
+      arg.forEach(path => {
+        if (!isIpfs.ipfsPath(path) && !isIpfs.cid(path)) {
+          throw Boom.badRequest('invalid ipfs ref path')
+        }
+      })
     }
+
     const type = request.query.type || 'all'
     return { path: request.query.arg, type }
   },
