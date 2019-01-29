@@ -29,6 +29,7 @@
     - [ ] [ipfs-log](https://github.com/orbitdb/ipfs-log)
     - [ ] [orbit-db](https://github.com/orbitdb/orbit-db)
     - [ ] [service-worker-gateway](https://github.com/ipfs-shipyard/service-worker-gateway)
+  - [ ] Update js.ipfs.io examples and Service Worker Gateway to use latest js-ipfs
 - Documentation
   - [ ] Ensure that README.md is up to date
   - [ ] Ensure that all the examples run
