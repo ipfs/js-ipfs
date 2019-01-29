@@ -21,7 +21,7 @@ module.exports = [
   ...require('./webui'),
   require('./dns'),
   ...require('./key'),
-  ...require('./stats')
-  // require('./resolve')(server)
+  ...require('./stats'),
+  require('./resolve')
   // require('./name')(server)
 ]
