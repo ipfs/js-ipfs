@@ -26,8 +26,8 @@ module.exports = {
         type: 'boolean',
         default: false
       })
-      .option('local', {
-        desc: 'Run commands locally to the daemon',
+      .option('offline', {
+        desc: 'Run offline. Do not connect to the rest of the network but provide local API.',
         default: false
       })
       .option('enable-namesys-pubsub', {

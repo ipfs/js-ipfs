@@ -18,7 +18,7 @@ const schema = Joi.object().keys({
     Joi.object().keys({ bits: Joi.number().integer() })
   ).allow(null),
   start: Joi.boolean(),
-  local: Joi.boolean(),
+  offline: Joi.boolean(),
   pass: Joi.string().allow(''),
   relay: Joi.object().keys({
     enabled: Joi.boolean(),
