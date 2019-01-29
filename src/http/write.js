@@ -30,22 +30,13 @@ const mfsWrite = {
 
     const fileStream = await new Promise((resolve, reject) => {
       const parser = multipart.reqParser(request.payload)
-      let fileStream
 
       parser.on('file', (_, stream) => {
-        if (fileStream) {
-          return reject(Boom.badRequest('Please only send one file'))
-        }
-
-        fileStream = stream
+        resolve(stream)
       })
 
       parser.on('error', (error) => {
         reject(error)
-      })
-
-      parser.on('end', () => {
-        resolve(fileStream)
       })
     })
 
