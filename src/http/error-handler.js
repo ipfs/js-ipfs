@@ -8,7 +8,8 @@ module.exports = server => {
       return h.continue
     }
 
-    const { statusCode, message } = res.output.payload
+    const message = res.message || res.output.payload.message
+    const { statusCode } = res.output.payload
     let code
 
     if (res.data && res.data.code != null) {
@@ -33,8 +34,6 @@ module.exports = server => {
         payload: request.payload,
         response: res.output.payload
       }
-
-      console.log(res)
 
       server.logger().error(debug)
       server.logger().error(res)
