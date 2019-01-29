@@ -34,8 +34,8 @@ exports.rename = async (request, h) => {
 
 exports.gen = async (request, h) => {
   const { ipfs } = request.server.app
-  const { name, type, size } = request.query
-  const key = await ipfs.key.gen(name, { type, size: parseInt(size) })
+  const { arg, type, size } = request.query
+  const key = await ipfs.key.gen(arg, { type, size: parseInt(size) })
   return h.response(toKeyInfo(key))
 }
 
