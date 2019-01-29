@@ -1,7 +1,5 @@
 'use strict'
 
-exports = module.exports
-
 exports.gc = async (request, h) => {
   const { ipfs } = request.server.app
   await ipfs.repo.gc()

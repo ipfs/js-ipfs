@@ -5,8 +5,6 @@ const bs58 = require('bs58')
 const binaryQueryString = require('binary-querystring')
 const Boom = require('boom')
 
-exports = module.exports
-
 exports.subscribe = {
   async handler (request, h) {
     const query = request.query

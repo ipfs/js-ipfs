@@ -8,8 +8,6 @@ log.error = debug('jsipfs:http-api:config:error')
 const multipart = require('ipfs-multipart')
 const Boom = require('boom')
 
-exports = module.exports
-
 exports.getOrSet = {
   // pre request handler that parses the args and returns `key` & `value` which are assigned to `request.pre.args`
   parseArgs (request, h) {

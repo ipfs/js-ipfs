@@ -22,6 +22,6 @@ module.exports = [
   require('./dns'),
   ...require('./key'),
   ...require('./stats'),
-  require('./resolve')
-  // require('./name')(server)
+  require('./resolve'),
+  ...require('./name')
 ]

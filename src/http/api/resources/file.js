@@ -7,8 +7,6 @@ const pull = require('pull-stream')
 const toB58String = require('multihashes').toB58String
 const Boom = require('boom')
 
-exports = module.exports
-
 const fileTypeMap = {
   file: 'File',
   dir: 'Directory'

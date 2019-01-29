@@ -16,8 +16,6 @@ const debug = require('debug')
 const log = debug('jsipfs:http-api:object')
 log.error = debug('jsipfs:http-api:object:error')
 
-exports = module.exports
-
 // common pre request handler that parses the args and returns `key` which is assigned to `request.pre.args`
 exports.parseKey = (request, h) => {
   if (!request.query.arg) {

@@ -16,38 +16,35 @@ module.exports = (http) => {
     let api
 
     before(() => {
-      api = http.api.server.select('API')
+      api = http.api._apiServer
     })
 
-    it('should publish a record', (done) => {
-      api.inject({
+    it('should publish a record', async () => {
+      const res = await api.inject({
         method: 'GET',
         url: `/api/v0/name/publish?arg=${cid}&resolve=false`
-      }, (res) => {
-        expect(res).to.exist()
-        expect(res.result.Value).to.equal(`/ipfs/${cid}`)
-        done()
       })
+
+      expect(res).to.exist()
+      expect(res.result.Value).to.equal(`/ipfs/${cid}`)
     })
 
-    it('should publish and resolve a record', (done) => {
-      api.inject({
+    it('should publish and resolve a record', async () => {
+      let res = await api.inject({
         method: 'GET',
         url: `/api/v0/name/publish?arg=${cid}&resolve=false`
-      }, (res) => {
-        expect(res).to.exist()
-        expect(res.result.Value).to.equal(`/ipfs/${cid}`)
-
-        api.inject({
-          method: 'GET',
-          url: `/api/v0/name/resolve`
-        }, (res) => {
-          expect(res).to.exist()
-          expect(res.result.Path).to.satisfy(checkAll([`/ipfs/${cid}`]))
-
-          done()
-        })
       })
+
+      expect(res).to.exist()
+      expect(res.result.Value).to.equal(`/ipfs/${cid}`)
+
+      res = await api.inject({
+        method: 'GET',
+        url: `/api/v0/name/resolve`
+      })
+
+      expect(res).to.exist()
+      expect(res.result.Path).to.satisfy(checkAll([`/ipfs/${cid}`]))
     })
   })
 }

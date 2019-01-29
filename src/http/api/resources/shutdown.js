@@ -1,7 +1,5 @@
 'use strict'
 
-exports = module.exports
-
 /*
  * Stop the daemon.
  *

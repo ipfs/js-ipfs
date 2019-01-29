@@ -11,8 +11,6 @@ const debug = require('debug')
 const log = debug('jsipfs:http-api:pin')
 log.error = debug('jsipfs:http-api:pin:error')
 
-exports = module.exports
-
 function parseArgs (request, h) {
   const { arg } = request.query
 
