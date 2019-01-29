@@ -39,7 +39,7 @@ exports.parseKey = (request, h) => {
     throw Boom.badRequest("Argument 'key' is required")
   }
 
-  if (!isIpfs.ipfsPath(arg) && !isIpfs.cid(arg)) {
+  if (!isIpfs.ipfsPath(arg) && !isIpfs.cid(arg) && !isIpfs.ipfsPath('/ipfs/' + arg)) {
     throw Boom.badRequest('invalid ipfs ref path')
   }
 
