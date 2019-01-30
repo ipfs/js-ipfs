@@ -36,7 +36,7 @@ describe('name', () => {
         config: {
           Bootstrap: []
         },
-        args: ['--pass', passPhrase, '--local'],
+        args: ['--pass', passPhrase, '--offline'],
         initOptions: { bits: 512 }
       }, (err, _ipfsd) => {
         expect(err).to.not.exist()

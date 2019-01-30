@@ -129,9 +129,9 @@ module.exports = function name (self) {
       const nocache = options.nocache && options.nocache.toString() === 'true'
       const recursive = options.recursive && options.recursive.toString() === 'true'
 
-      const local = self._options.local
+      const offline = self._options.offline
 
-      if (!self.isOnline() && !local) {
+      if (!self.isOnline() && !offline) {
         const errMsg = utils.OFFLINE_ERROR
 
         log.error(errMsg)
@@ -140,11 +140,11 @@ module.exports = function name (self) {
 
       // TODO: params related logic should be in the core implementation
 
-      if (local && nocache) {
-        const error = 'cannot specify both local and nocache'
+      if (offline && nocache) {
+        const error = 'cannot specify both offline and nocache'
 
         log.error(error)
-        return callback(errcode(new Error(error), 'ERR_NOCACHE_AND_LOCAL'))
+        return callback(errcode(new Error(error), 'ERR_NOCACHE_AND_OFFLINE'))
       }
 
       // Set node id as name for being resolved, if it is not received
