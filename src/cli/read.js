@@ -28,13 +28,15 @@ module.exports = {
   handler (argv) {
     let {
       path,
-      ipfs,
+      getIpfs,
       offset,
       length
     } = argv
 
-    argv.resolve(
-      new Promise((resolve, reject) => {
+    argv.resolve((async () => {
+      const ipfs = await getIpfs()
+
+      return new Promise((resolve, reject) => {
         pull(
           ipfs.files.readPullStream(path, {
             offset,
@@ -52,6 +54,6 @@ module.exports = {
           })
         )
       })
-    )
+    })())
   }
 }

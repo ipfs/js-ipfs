@@ -40,14 +40,15 @@ module.exports = {
   handler (argv) {
     let {
       path,
-      ipfs,
+      getIpfs,
       long,
       sort,
       cidBase
     } = argv
 
-    argv.resolve(
-      new Promise((resolve, reject) => {
+    argv.resolve((async () => {
+      const ipfs = await getIpfs()
+      return new Promise((resolve, reject) => {
         if (sort) {
           ipfs.files.ls(path || FILE_SEPARATOR, {
             long,
@@ -98,6 +99,6 @@ module.exports = {
           })
         )
       })
-    )
+    })())
   }
 }

@@ -14,11 +14,12 @@ module.exports = {
   handler (argv) {
     let {
       path,
-      ipfs
+      getIpfs
     } = argv
 
-    argv.resolve(
-      ipfs.files.flush(path || FILE_SEPARATOR, {})
-    )
+    argv.resolve((async () => {
+      const ipfs = await getIpfs()
+      return ipfs.files.flush(path || FILE_SEPARATOR, {})
+    })())
   }
 }

@@ -44,7 +44,7 @@ module.exports = {
   handler (argv) {
     let {
       path,
-      ipfs,
+      getIpfs,
       parents,
       cidVersion,
       hashAlg,
@@ -52,14 +52,16 @@ module.exports = {
       shardSplitThreshold
     } = argv
 
-    argv.resolve(
-      ipfs.files.mkdir(path, {
+    argv.resolve((async () => {
+      const ipfs = await getIpfs()
+
+      return ipfs.files.mkdir(path, {
         parents,
         cidVersion,
         hashAlg,
         flush,
         shardSplitThreshold
       })
-    )
+    })())
   }
 }
