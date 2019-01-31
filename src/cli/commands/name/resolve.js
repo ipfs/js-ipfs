@@ -27,7 +27,8 @@ module.exports = {
         recursive: argv.recursive
       }
 
-      const result = await argv.ipfs.name.resolve(argv.name, opts)
+      const ipfs = await argv.getIpfs()
+      const result = await ipfs.name.resolve(argv.name, opts)
 
       if (result && result.path) {
         print(result.path)

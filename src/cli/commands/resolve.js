@@ -21,8 +21,9 @@ module.exports = {
     }
   },
 
-  handler ({ ipfs, name, recursive, cidBase, resolve }) {
+  handler ({ getIpfs, name, recursive, cidBase, resolve }) {
     resolve((async () => {
+      const ipfs = await getIpfs()
       const res = await ipfs.resolve(name, { recursive, cidBase })
       print(res)
     })())

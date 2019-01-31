@@ -11,7 +11,8 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
-      const key = await argv.ipfs.key.rm(argv.name)
+      const ipfs = await argv.getIpfs()
+      const key = await ipfs.key.rm(argv.name)
       print(`${key.id} ${key.name}`)
     })())
   }

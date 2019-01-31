@@ -12,8 +12,9 @@ module.exports = {
     }
   },
 
-  handler ({ ipfs, domain, resolve }) {
+  handler ({ getIpfs, domain, resolve }) {
     resolve((async () => {
+      const ipfs = await getIpfs()
       const path = await ipfs.dns(domain)
       print(path)
     })())

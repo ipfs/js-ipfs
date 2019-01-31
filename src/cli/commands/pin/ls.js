@@ -31,9 +31,10 @@ module.exports = {
     }
   },
 
-  handler: ({ ipfs, ipfsPath, type, quiet, cidBase, resolve }) => {
+  handler: ({ getIpfs, ipfsPath, type, quiet, cidBase, resolve }) => {
     resolve((async () => {
       const paths = ipfsPath
+      const ipfs = await getIpfs()
       const results = await ipfs.pin.ls(paths, { type })
       results.forEach((res) => {
         let line = cidToString(res.hash, { base: cidBase })

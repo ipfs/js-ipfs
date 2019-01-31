@@ -58,20 +58,24 @@ module.exports = {
     }
   },
 
-  handler ({ ipfs, ipfsPath, output, resolve }) {
-    resolve(new Promise((resolve, reject) => {
-      const dir = checkArgs(ipfsPath, output)
-      const stream = ipfs.getReadableStream(ipfsPath)
+  handler ({ getIpfs, ipfsPath, output, resolve }) {
+    resolve((async () => {
+      const ipfs = await getIpfs()
 
-      print(`Saving file(s) ${ipfsPath}`)
-      pull(
-        toPull.source(stream),
-        pull.asyncMap(fileHandler(dir)),
-        pull.onEnd((err) => {
-          if (err) return reject(err)
-          resolve()
-        })
-      )
-    }))
+      return new Promise((resolve, reject) => {
+        const dir = checkArgs(ipfsPath, output)
+        const stream = ipfs.getReadableStream(ipfsPath)
+
+        print(`Saving file(s) ${ipfsPath}`)
+        pull(
+          toPull.source(stream),
+          pull.asyncMap(fileHandler(dir)),
+          pull.onEnd((err) => {
+            if (err) return reject(err)
+            resolve()
+          })
+        )
+      })
+    })())
   }
 }

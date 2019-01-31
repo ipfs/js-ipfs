@@ -26,10 +26,11 @@ module.exports = {
         localResolve: argv.localResolve
       }
 
+      const ipfs = await argv.getIpfs()
       let result
 
       try {
-        result = await argv.ipfs.dag.get(cid, path, options)
+        result = await ipfs.dag.get(cid, path, options)
       } catch (err) {
         return print(`dag get failed: ${err.message}`)
       }

@@ -9,8 +9,9 @@ module.exports = {
 
   builder: {},
 
-  handler ({ ipfs, key, resolve }) {
+  handler ({ getIpfs, key, resolve }) {
     resolve((async () => {
+      const ipfs = await getIpfs()
       const block = await ipfs.block.get(key)
       if (block) {
         print(block.data, false)

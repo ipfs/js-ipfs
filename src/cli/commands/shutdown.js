@@ -8,6 +8,9 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    argv.resolve(argv.ipfs.shutdown())
+    argv.resolve((async () => {
+      const ipfs = await argv.getIpfs()
+      return ipfs.shutdown()
+    })())
   }
 }

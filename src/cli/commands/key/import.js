@@ -25,7 +25,8 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
-      const key = await argv.ipfs.key.import(argv.name, argv.input, argv.passin)
+      const ipfs = await argv.getIpfs()
+      const key = await ipfs.key.import(argv.name, argv.input, argv.passin)
       print(`imported ${key.id} ${key.name}`)
     })())
   }

@@ -15,7 +15,8 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
-      const id = await argv.ipfs.id()
+      const ipfs = await argv.getIpfs()
+      const id = await ipfs.id()
       print(JSON.stringify(id, '', 2))
     })())
   }

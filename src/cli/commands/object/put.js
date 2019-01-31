@@ -38,7 +38,8 @@ module.exports = {
         })
       }
 
-      const cid = await argv.ipfs.object.put(data, { enc: argv.inputEnc })
+      const ipfs = await argv.getIpfs()
+      const cid = await ipfs.object.put(data, { enc: argv.inputEnc })
       print(`added ${cidToString(cid, { base: argv.cidBase, upgrade: false })}`)
     })())
   }

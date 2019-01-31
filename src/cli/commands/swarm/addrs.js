@@ -14,7 +14,8 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
-      const res = await argv.ipfs.swarm.addrs()
+      const ipfs = await argv.getIpfs()
+      const res = await ipfs.swarm.addrs()
       res.forEach((peer) => {
         const count = peer.multiaddrs.size
         print(`${peer.id.toB58String()} (${count})`)

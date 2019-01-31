@@ -9,7 +9,8 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
-      const result = await argv.ipfs.name.pubsub.state()
+      const ipfs = await argv.getIpfs()
+      const result = await ipfs.name.pubsub.state()
       print(result.enabled ? 'enabled' : 'disabled')
     })())
   }

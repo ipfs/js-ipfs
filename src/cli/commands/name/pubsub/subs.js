@@ -9,7 +9,8 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
-      const result = await argv.ipfs.name.pubsub.subs()
+      const ipfs = await argv.getIpfs()
+      const result = await ipfs.name.pubsub.subs()
       result.forEach(s => print(s))
     })())
   }
