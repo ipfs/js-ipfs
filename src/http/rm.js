@@ -2,48 +2,40 @@
 
 const Joi = require('joi')
 
-const mfsRm = (api) => {
-  api.route({
-    method: 'POST',
-    path: '/api/v0/files/rm',
-    config: {
-      handler: (request, reply) => {
-        const {
-          ipfs
-        } = request.server.app
-        const {
-          arg,
-          recursive
-        } = request.query
+const mfsRm = {
+  method: 'POST',
+  path: '/api/v0/files/rm',
+  async handler (request, h) {
+    const {
+      ipfs
+    } = request.server.app
+    const {
+      arg,
+      recursive
+    } = request.query
 
-        return ipfs.files.rm(arg, {
-          recursive
-        })
-          .then(() => reply())
-          .catch(error => {
-            reply({
-              Message: error.message,
-              Code: error.code || 0,
-              Type: 'error'
-            }).code(500).takeover()
-          })
+    await ipfs.files.rm(arg, {
+      recursive
+    })
+
+    return h.response()
+  },
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
       },
-      validate: {
-        options: {
-          allowUnknown: true,
-          stripUnknown: true
-        },
-        query: Joi.object().keys({
-          arg: Joi.string().required(),
-          recursive: Joi.boolean().default(false)
+      query: Joi.object().keys({
+        arg: Joi.string().required(),
+        recursive: Joi.boolean().default(false)
+      })
+        .rename('r', 'recursive', {
+          override: true,
+          ignoreUndefined: true
         })
-          .rename('r', 'recursive', {
-            override: true,
-            ignoreUndefined: true
-          })
-      }
     }
-  })
+  }
 }
 
 module.exports = mfsRm

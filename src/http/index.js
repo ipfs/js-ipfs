@@ -10,14 +10,14 @@ const rm = require('./rm')
 const stat = require('./stat')
 const write = require('./write')
 
-module.exports = (api) => {
-  cp(api)
-  flush(api)
-  ls(api)
-  mkdir(api)
-  mv(api)
-  read(api)
-  rm(api)
-  stat(api)
-  write(api)
-}
+module.exports = [
+  cp,
+  flush,
+  ls,
+  mkdir,
+  mv,
+  read,
+  rm,
+  stat,
+  write
+]
