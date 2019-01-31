@@ -1,3 +1,13 @@
+<a name="0.9.0"></a>
+# [0.9.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.8.2...v0.9.0) (2019-01-31)
+
+
+### Bug Fixes
+
+* parser does not end until file data is consumed ([af4d6f7](https://github.com/ipfs/js-ipfs-mfs/commit/af4d6f7))
+
+
+
 <a name="0.8.2"></a>
 ## [0.8.2](https://github.com/ipfs/js-ipfs-mfs/compare/v0.8.1...v0.8.2) (2019-01-16)
 
