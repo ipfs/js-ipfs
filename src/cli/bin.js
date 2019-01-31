@@ -44,8 +44,11 @@ async function main (args) {
       yargs.showHelp()
     })
 
+  // Parse and retrieve argv from yargs before command handlers are added
+  const { argv } = yargs
+
   // Function to get hold of a singleton ipfs instance
-  const getIpfs = utils.singleton(cb => utils.getIPFS(yargs.argv, cb))
+  const getIpfs = utils.singleton(cb => utils.getIPFS(argv, cb))
 
   // add MFS (Files API) commands
   mfs(cli)
