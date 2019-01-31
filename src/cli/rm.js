@@ -22,14 +22,16 @@ module.exports = {
   handler (argv) {
     let {
       path,
-      ipfs,
+      getIpfs,
       recursive
     } = argv
 
-    argv.resolve(
-      ipfs.files.rm(path, {
+    argv.resolve((async () => {
+      const ipfs = await getIpfs()
+
+      return ipfs.files.rm(path, {
         recursive
       })
-    )
+    })())
   }
 }

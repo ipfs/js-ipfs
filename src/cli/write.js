@@ -89,7 +89,7 @@ module.exports = {
   handler (argv) {
     let {
       path,
-      ipfs,
+      getIpfs,
       offset,
       length,
       create,
@@ -106,8 +106,10 @@ module.exports = {
       shardSplitThreshold
     } = argv
 
-    argv.resolve(
-      ipfs.files.write(path, process.stdin, {
+    argv.resolve((async () => {
+      const ipfs = await getIpfs()
+
+      return ipfs.files.write(path, process.stdin, {
         offset,
         length,
         create,
@@ -123,6 +125,6 @@ module.exports = {
         flush,
         shardSplitThreshold
       })
-    )
+    })())
   }
 }

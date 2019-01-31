@@ -40,20 +40,21 @@ module.exports = {
     let {
       source,
       dest,
-      ipfs,
+      getIpfs,
       parents,
       format,
       hashAlg,
       shardSplitThreshold
     } = argv
 
-    argv.resolve(
-      ipfs.files.cp(source, dest, {
+    argv.resolve((async () => {
+      const ipfs = await getIpfs()
+      return ipfs.files.cp(source, dest, {
         parents,
         format,
         hashAlg,
         shardSplitThreshold
       })
-    )
+    })())
   }
 }

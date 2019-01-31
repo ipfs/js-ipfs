@@ -51,15 +51,17 @@ Type: <type>`,
   handler (argv) {
     let {
       path,
-      ipfs,
+      getIpfs,
       format,
       hash,
       size,
       withLocal
     } = argv
 
-    argv.resolve(
-      ipfs.files.stat(path, {
+    argv.resolve((async () => {
+      const ipfs = await getIpfs()
+
+      return ipfs.files.stat(path, {
         withLocal
       })
         .then((stats) => {
@@ -79,6 +81,6 @@ Type: <type>`,
             .replace('<type>', stats.type)
           )
         })
-    )
+    })())
   }
 }
