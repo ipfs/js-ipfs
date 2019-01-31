@@ -65,10 +65,8 @@ async function main (args) {
     debug(err)
 
     // the argument can have a different shape depending on where the error came from
-    if (err.message) {
-      print(err.message)
-    } else if (err.error && err.error.message) {
-      print(err.error.message)
+    if (err.message || (err.error && err.error.message)) {
+      print(err.message || err.error.message)
     } else {
       print('Unknown error, please re-run the command with DEBUG=ipfs:cli to see debug output')
     }
