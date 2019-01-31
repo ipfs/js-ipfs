@@ -3,7 +3,7 @@
 'use strict'
 
 const YargsPromise = require('yargs-promise')
-const yargs = require('yargs')
+const yargs = require('yargs/yargs')
 const updateNotifier = require('update-notifier')
 const utils = require('./utils')
 const print = utils.print
@@ -15,7 +15,7 @@ async function main (args) {
   const oneWeek = 1000 * 60 * 60 * 24 * 7
   updateNotifier({ pkg, updateCheckInterval: oneWeek }).notify()
 
-  const cli = yargs
+  const cli = yargs(args)
     .option('silent', {
       desc: 'Write no output',
       type: 'boolean',
@@ -44,11 +44,8 @@ async function main (args) {
       yargs.showHelp()
     })
 
-  // Parse and retrieve argv from yargs before command handlers are added
-  const { argv } = yargs
-
   // Function to get hold of a singleton ipfs instance
-  const getIpfs = utils.singleton(cb => utils.getIPFS(argv, cb))
+  const getIpfs = utils.singleton(cb => utils.getIPFS(yargs(args).argv, cb))
 
   // add MFS (Files API) commands
   mfs(cli)
