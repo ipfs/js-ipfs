@@ -3,20 +3,19 @@
 const PassThrough = require('stream').PassThrough
 const bs58 = require('bs58')
 const binaryQueryString = require('binary-querystring')
-
-exports = module.exports
+const Boom = require('boom')
 
 exports.subscribe = {
-  handler: (request, reply) => {
+  async handler (request, h) {
     const query = request.query
     const discover = query.discover === 'true'
     const topic = query.arg
 
     if (!topic) {
-      return reply(new Error('Missing topic'))
+      throw Boom.badRequest('Missing topic')
     }
 
-    const ipfs = request.server.app.ipfs
+    const { ipfs } = request.server.app
 
     const res = new PassThrough({ highWaterMark: 1 })
 
@@ -36,79 +35,77 @@ exports.subscribe = {
       ipfs.pubsub.unsubscribe(topic, handler, () => res.end())
     }
 
-    request.once('disconnect', unsubscribe)
-    request.once('finish', unsubscribe)
+    request.events.once('disconnect', unsubscribe)
+    request.events.once('finish', unsubscribe)
 
-    ipfs.pubsub.subscribe(topic, handler, { discover: discover }, (err) => {
-      if (err) {
-        return reply(err)
-      }
+    await ipfs.pubsub.subscribe(topic, handler, { discover: discover })
 
-      reply(res)
-        .header('X-Chunked-Output', '1')
-        .header('content-encoding', 'identity') // stop gzip from buffering, see https://github.com/hapijs/hapi/issues/2975
-        .header('content-type', 'application/json')
-    })
+    return h.response(res)
+      .header('X-Chunked-Output', '1')
+      .header('content-encoding', 'identity') // stop gzip from buffering, see https://github.com/hapijs/hapi/issues/2975
+      .header('content-type', 'application/json')
   }
 }
 
 exports.publish = {
-  handler: (request, reply) => {
-    const arg = request.query.arg
+  async handler (request, h) {
+    const { arg } = request.query
     const topic = arg[0]
 
     const rawArgs = binaryQueryString(request.url.search)
     const buf = rawArgs.arg && rawArgs.arg[1]
 
-    const ipfs = request.server.app.ipfs
+    const { ipfs } = request.server.app
 
     if (!topic) {
-      return reply(new Error('Missing topic'))
+      throw Boom.badRequest('Missing topic')
     }
 
     if (!buf || buf.length === 0) {
-      return reply(new Error('Missing buf'))
+      throw Boom.badRequest('Missing buf')
     }
 
-    ipfs.pubsub.publish(topic, buf, (err) => {
-      if (err) {
-        return reply(new Error(`Failed to publish to topic ${topic}: ${err}`))
-      }
+    try {
+      await ipfs.pubsub.publish(topic, buf)
+    } catch (err) {
+      throw Boom.boomify(err, { message: `Failed to publish to topic ${topic}` })
+    }
 
-      reply()
-    })
+    return h.response()
   }
 }
 
 exports.ls = {
-  handler: (request, reply) => {
-    const ipfs = request.server.app.ipfs
+  async handler (request, h) {
+    const { ipfs } = request.server.app
 
-    ipfs.pubsub.ls((err, subscriptions) => {
-      if (err) {
-        return reply(new Error(`Failed to list subscriptions: ${err}`))
-      }
+    let subscriptions
+    try {
+      subscriptions = await ipfs.pubsub.ls()
+    } catch (err) {
+      throw Boom.boomify(err, { message: 'Failed to list subscriptions' })
+    }
 
-      reply({ Strings: subscriptions })
-    })
+    return h.response({ Strings: subscriptions })
   }
 }
 
 exports.peers = {
-  handler: (request, reply) => {
+  async handler (request, h) {
     const topic = request.query.arg
-    const ipfs = request.server.app.ipfs
+    const { ipfs } = request.server.app
 
-    ipfs.pubsub.peers(topic, (err, peers) => {
-      if (err) {
-        const message = topic
-          ? `Failed to find peers subscribed to ${topic}: ${err}`
-          : `Failed to find peers: ${err}`
+    let peers
+    try {
+      peers = await ipfs.pubsub.peers(topic)
+    } catch (err) {
+      const message = topic
+        ? `Failed to find peers subscribed to ${topic}: ${err}`
+        : `Failed to find peers: ${err}`
 
-        return reply(new Error(message))
-      }
+      throw Boom.boomify(err, { message })
+    }
 
-      reply({ Strings: peers })
-    })
+    return h.response({ Strings: peers })
   }
 }

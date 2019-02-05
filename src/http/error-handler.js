@@ -1,61 +1,48 @@
 'use strict'
 
-const Hoek = require('hoek')
-
-module.exports = (api, server) => {
-  server.ext('onRequest', (request, reply) => {
-    request.handleError = handleError
-    reply.continue()
-  })
-
-  server.ext('onPreResponse', (request, reply) => {
+module.exports = server => {
+  server.ext('onPreResponse', (request, h) => {
     const res = request.response
-    const req = request.raw.req
 
-    let statusCode = 200
-    let msg = 'Sorry, something went wrong, please retrace your steps.'
-    let code = 1
+    if (!res.isBoom) {
+      return h.continue
+    }
 
-    if (res.isBoom) {
-      statusCode = res.output.payload.statusCode
-      msg = res.output.payload.message
+    const message = res.message || res.output.payload.message
+    const { statusCode } = res.output.payload
+    let code
 
-      if (res.data && res.data.code !== undefined) {
-        code = res.data.code
+    if (res.data && res.data.code != null) {
+      code = res.data.code
+    } else {
+      // Map status code to error code as defined by go-ipfs
+      // https://github.com/ipfs/go-ipfs-cmdkit/blob/0262a120012063c359727423ec703b9649eec447/error.go#L12-L20
+      if (statusCode >= 400 && statusCode < 500) {
+        code = statusCode === 404 ? 3 : 1
+      } else {
+        code = 0
       }
+    }
 
-      if (res.message && res.isDeveloperError) {
-        msg = res.message.replace('Uncaught error: ', '')
-      }
-
+    if (process.env.DEBUG || statusCode >= 500) {
+      const { req } = request.raw
       const debug = {
         method: req.method,
         url: request.url.path,
-        headers: request.raw.req.headers,
+        headers: req.headers,
         info: request.info,
         payload: request.payload,
         response: res.output.payload
       }
 
-      api.log.error(res.stack)
-      server.log('error', debug)
-
-      reply({
-        Message: msg,
-        Code: code,
-        Type: 'error'
-      }).code(statusCode)
-      return
+      server.logger().error(debug)
+      server.logger().error(res)
     }
 
-    reply.continue()
+    return h.response({
+      Message: message,
+      Code: code,
+      Type: 'error'
+    }).code(statusCode)
   })
-}
-
-function handleError (error, errorMessage) {
-  if (errorMessage) {
-    return Hoek.assert(!error, errorMessage)
-  }
-
-  return Hoek.assert(!error, error)
 }

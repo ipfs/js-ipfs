@@ -2,12 +2,10 @@
 
 const Joi = require('joi')
 const pull = require('pull-stream')
-const toStream = require('pull-stream-to-stream')
 const ndjson = require('pull-ndjson')
-const PassThrough = require('readable-stream').PassThrough
-const pump = require('pump')
+const { PassThrough } = require('readable-stream')
 
-exports.get = {
+module.exports = {
   validate: {
     query: Joi.object().keys({
       n: Joi.alternatives()
@@ -20,47 +18,36 @@ exports.get = {
       arg: Joi.string().required()
     }).unknown()
   },
-  handler: (request, reply) => {
-    const ipfs = request.server.app.ipfs
+  async handler (request, h) {
+    const { ipfs } = request.server.app
     const peerId = request.query.arg
 
     // Default count to 10
     const count = request.query.n || request.query.count || 10
 
-    // Streams from pull-stream-to-stream don't seem to be compatible
-    // with the stream2 readable interface
-    // see: https://github.com/hapijs/hapi/blob/c23070a3de1b328876d5e64e679a147fafb04b38/lib/response.js#L533
-    // and: https://github.com/pull-stream/pull-stream-to-stream/blob/e436acee18b71af8e71d1b5d32eee642351517c7/index.js#L28
+    const responseStream = await new Promise((resolve, reject) => {
+      const stream = new PassThrough()
 
-    const source = pull(
-      ipfs.pingPullStream(peerId, { count: count }),
-      pull.map((chunk) => ({
-        Success: chunk.success,
-        Time: chunk.time,
-        Text: chunk.text
-      })),
-      ndjson.serialize()
-    )
-
-    const responseStream = toStream.source(source)
-    const stream2 = new PassThrough()
-    let replied = false
-    pump(responseStream, stream2)
-
-    // FIXME: This is buffering all ping responses before sending them so that
-    // we can capture the error if it happens. #fixTheHTTPAPI
-    responseStream.on('error', (err) => {
-      if (!replied) {
-        replied = true
-        reply(err)
-      }
+      pull(
+        ipfs.pingPullStream(peerId, { count }),
+        pull.map((chunk) => ({
+          Success: chunk.success,
+          Time: chunk.time,
+          Text: chunk.text
+        })),
+        ndjson.serialize(),
+        pull.drain(chunk => {
+          stream.write(chunk)
+        }, err => {
+          if (err) return reject(err)
+          resolve(stream)
+          stream.end()
+        })
+      )
     })
 
-    responseStream.on('end', () => {
-      if (!replied) {
-        replied = true
-        reply(stream2).type('application/json').header('X-Chunked-Output', '1')
-      }
-    })
+    return h.response(responseStream)
+      .type('application/json')
+      .header('X-Chunked-Output', '1')
   }
 }

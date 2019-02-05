@@ -1,5 +1,3 @@
 'use strict'
 
-module.exports = (server) => {
-  require('./gateway')(server)
-}
+module.exports = [require('./gateway')]

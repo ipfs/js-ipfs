@@ -1,21 +1,12 @@
 'use strict'
 
-const boom = require('boom')
+module.exports = async (request, h) => {
+  const { ipfs } = request.server.app
+  const version = await ipfs.version()
 
-exports = module.exports
-
-exports.get = (request, reply) => {
-  const ipfs = request.server.app.ipfs
-
-  ipfs.version((err, version) => {
-    if (err) {
-      return reply(boom.badRequest(err))
-    }
-
-    reply({
-      Version: version.version,
-      Commit: version.commit,
-      Repo: version.repo
-    })
+  return h.response({
+    Version: version.version,
+    Commit: version.commit,
+    Repo: version.repo
   })
 }

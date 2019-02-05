@@ -2,8 +2,6 @@
 
 const Joi = require('joi')
 
-exports = module.exports
-
 exports.resolve = {
   validate: {
     query: Joi.object().keys({
@@ -12,21 +10,14 @@ exports.resolve = {
       recursive: Joi.boolean().default(false)
     }).unknown()
   },
-  handler: (request, reply) => {
-    const ipfs = request.server.app.ipfs
+  async handler (request, h) {
+    const { ipfs } = request.server.app
     const { arg } = request.query
 
-    ipfs.name.resolve(arg, request.query, (err, res) => {
-      if (err) {
-        return reply({
-          Message: err.toString(),
-          Code: 0
-        }).code(500)
-      }
+    const res = await ipfs.name.resolve(arg, request.query)
 
-      return reply({
-        Path: res.path
-      }).code(200)
+    return h.response({
+      Path: res.path
     })
   }
 }
@@ -40,60 +31,39 @@ exports.publish = {
       key: Joi.string().default('self')
     }).unknown()
   },
-  handler: (request, reply) => {
-    const ipfs = request.server.app.ipfs
+  async handler (request, h) {
+    const { ipfs } = request.server.app
     const { arg } = request.query
 
-    ipfs.name.publish(arg, request.query, (err, res) => {
-      if (err) {
-        return reply({
-          Message: err.toString(),
-          Code: 0
-        }).code(500)
-      }
+    const res = await ipfs.name.publish(arg, request.query)
 
-      return reply({
-        Name: res.name,
-        Value: res.value
-      }).code(200)
+    return h.response({
+      Name: res.name,
+      Value: res.value
     })
   }
 }
 
 exports.pubsub = {
   state: {
-    handler: (request, reply) => {
-      const ipfs = request.server.app.ipfs
+    async handler (request, h) {
+      const { ipfs } = request.server.app
 
-      ipfs.name.pubsub.state((err, res) => {
-        if (err) {
-          return reply({
-            Message: err.toString(),
-            Code: 0
-          }).code(500)
-        }
+      const res = await ipfs.name.pubsub.state()
 
-        return reply({
-          Enabled: res.enabled
-        }).code(200)
+      return h.response({
+        Enabled: res.enabled
       })
     }
   },
   subs: {
-    handler: (request, reply) => {
-      const ipfs = request.server.app.ipfs
+    async handler (request, h) {
+      const { ipfs } = request.server.app
 
-      ipfs.name.pubsub.subs((err, res) => {
-        if (err) {
-          return reply({
-            Message: err.toString(),
-            Code: 0
-          }).code(500)
-        }
+      const res = await ipfs.name.pubsub.subs()
 
-        return reply({
-          Strings: res
-        }).code(200)
+      return h.response({
+        Strings: res
       })
     }
   },
@@ -103,21 +73,14 @@ exports.pubsub = {
         arg: Joi.string().required()
       }).unknown()
     },
-    handler: (request, reply) => {
-      const ipfs = request.server.app.ipfs
+    async handler (request, h) {
+      const { ipfs } = request.server.app
       const { arg } = request.query
 
-      ipfs.name.pubsub.cancel(arg, (err, res) => {
-        if (err) {
-          return reply({
-            Message: err.toString(),
-            Code: 0
-          }).code(500)
-        }
+      const res = await ipfs.name.pubsub.cancel(arg)
 
-        return reply({
-          Canceled: res.canceled
-        }).code(200)
+      return h.response({
+        Canceled: res.canceled
       })
     }
   }

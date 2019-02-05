@@ -1,26 +1,27 @@
 'use strict'
 
-module.exports = (server) => {
-  require('./version')(server)
-  require('./shutdown')(server)
-  require('./id')(server)
-  require('./bootstrap')(server)
-  require('./block')(server)
-  require('./object')(server)
-  require('./pin')(server)
-  require('./repo')(server)
-  require('./config')(server)
-  require('./ping')(server)
-  require('./swarm')(server)
-  require('./bitswap')(server)
-  require('./file')(server)
-  require('./files')(server)
-  require('./pubsub')(server)
-  require('./debug')(server)
-  require('./webui')(server)
-  require('./dns')(server)
-  require('./key')(server)
-  require('./stats')(server)
-  require('./resolve')(server)
-  require('./name')(server)
-}
+module.exports = [
+  require('./version'),
+  require('./shutdown'),
+  require('./id'),
+  ...require('./bootstrap'),
+  ...require('./block'),
+  ...require('./object'),
+  ...require('./pin'),
+  ...require('./repo'),
+  ...require('./config'),
+  require('./ping'),
+  ...require('./swarm'),
+  ...require('./bitswap'),
+  require('./file'),
+  ...require('./files-regular'),
+  ...require('ipfs-mfs/http'),
+  ...require('./pubsub'),
+  require('./debug'),
+  ...require('./webui'),
+  require('./dns'),
+  ...require('./key'),
+  ...require('./stats'),
+  require('./resolve'),
+  ...require('./name')
+]

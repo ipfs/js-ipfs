@@ -2,20 +2,16 @@
 
 const resources = require('../resources')
 
-module.exports = (server) => {
-  const gateway = server.select('Gateway')
-
-  gateway.route({
-    method: '*',
-    path: '/ipfs/{cid*}',
-    config: {
-      pre: [
-        { method: resources.gateway.checkCID, assign: 'args' }
-      ],
-      handler: resources.gateway.handler,
-      ext: {
-        onPostHandler: { method: resources.gateway.afterHandler }
-      }
+module.exports = {
+  method: '*',
+  path: '/ipfs/{cid*}',
+  options: {
+    handler: resources.gateway.handler,
+    pre: [
+      { method: resources.gateway.checkCID, assign: 'args' }
+    ],
+    ext: {
+      onPostHandler: { method: resources.gateway.afterHandler }
     }
-  })
+  }
 }

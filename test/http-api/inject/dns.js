@@ -8,17 +8,16 @@ module.exports = (http) => {
     let api
 
     before(() => {
-      api = http.api.server.select('API')
+      api = http.api._apiServer
     })
 
-    it('resolve ipfs.io dns', (done) => {
-      api.inject({
+    it('resolve ipfs.io dns', async () => {
+      const res = await api.inject({
         method: 'GET',
         url: '/api/v0/dns?arg=ipfs.io'
-      }, (res) => {
-        expect(res.result).to.have.property('Path')
-        done()
       })
+
+      expect(res.result).to.have.property('Path')
     })
   })
 }

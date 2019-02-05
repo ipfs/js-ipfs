@@ -1,57 +1,29 @@
 'use strict'
 
-exports = module.exports
+exports.gc = async (request, h) => {
+  const { ipfs } = request.server.app
+  await ipfs.repo.gc()
+  return h.response()
+}
 
-exports.gc = (request, reply) => {
-  const ipfs = request.server.app.ipfs
-
-  ipfs.repo.gc((err) => {
-    if (err) {
-      return reply({
-        Message: err.toString(),
-        Code: 0
-      }).code(500)
-    }
-
-    reply()
+exports.version = async (request, h) => {
+  const { ipfs } = request.server.app
+  const version = await ipfs.repo.version()
+  return h.response({
+    Version: version
   })
 }
 
-exports.version = (request, reply) => {
-  const ipfs = request.server.app.ipfs
-
-  ipfs.repo.version((err, version) => {
-    if (err) {
-      return reply({
-        Message: err.toString(),
-        Code: 0
-      }).code(500)
-    }
-
-    reply({
-      Version: version
-    })
-  })
-}
-
-exports.stat = (request, reply) => {
-  const ipfs = request.server.app.ipfs
+exports.stat = async (request, h) => {
+  const { ipfs } = request.server.app
   const human = request.query.human === 'true'
+  const stat = await ipfs.repo.stat({ human })
 
-  ipfs.repo.stat({ human: human }, (err, stat) => {
-    if (err) {
-      return reply({
-        Message: err.toString(),
-        Code: 0
-      }).code(500)
-    }
-
-    reply({
-      NumObjects: stat.numObjects,
-      RepoSize: stat.repoSize,
-      RepoPath: stat.repoPath,
-      Version: stat.version,
-      StorageMax: stat.storageMax
-    })
+  return h.response({
+    NumObjects: stat.numObjects,
+    RepoSize: stat.repoSize,
+    RepoPath: stat.repoPath,
+    Version: stat.version,
+    StorageMax: stat.storageMax
   })
 }

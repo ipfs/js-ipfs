@@ -1,35 +1,31 @@
 'use strict'
 
-const resources = require('./../resources')
+const resources = require('../resources')
 
-module.exports = (server) => {
-  const api = server.select('API')
-
-  api.route({
+module.exports = [
+  {
     method: '*',
     path: '/api/v0/object/new',
-    config: {
-      handler: resources.object.new.handler,
+    options: {
       validate: resources.object.new.validate
-    }
-  })
-
-  api.route({
+    },
+    handler: resources.object.new.handler
+  },
+  {
     method: '*',
     path: '/api/v0/object/get',
-    config: {
+    options: {
       pre: [
         { method: resources.object.get.parseArgs, assign: 'args' }
       ],
-      handler: resources.object.get.handler,
       validate: resources.object.get.validate
-    }
-  })
-
-  api.route({
+    },
+    handler: resources.object.get.handler
+  },
+  {
     method: '*',
     path: '/api/v0/object/put',
-    config: {
+    options: {
       payload: {
         parse: false,
         output: 'stream'
@@ -37,50 +33,46 @@ module.exports = (server) => {
       pre: [
         { method: resources.object.put.parseArgs, assign: 'args' }
       ],
-      handler: resources.object.put.handler,
       validate: resources.object.put.validate
-    }
-  })
-
-  api.route({
+    },
+    handler: resources.object.put.handler
+  },
+  {
     method: '*',
     path: '/api/v0/object/stat',
-    config: {
+    options: {
       pre: [
         { method: resources.object.stat.parseArgs, assign: 'args' }
       ],
-      handler: resources.object.stat.handler,
       validate: resources.object.stat.validate
-    }
-  })
-
-  api.route({
+    },
+    handler: resources.object.stat.handler
+  },
+  {
     method: '*',
     path: '/api/v0/object/data',
-    config: {
+    options: {
       pre: [
         { method: resources.object.data.parseArgs, assign: 'args' }
-      ],
-      handler: resources.object.data.handler
-    }
-  })
-
-  api.route({
+      ]
+    },
+    handler: resources.object.data.handler
+  },
+  {
     method: '*',
     path: '/api/v0/object/links',
-    config: {
+    options: {
       pre: [
         { method: resources.object.links.parseArgs, assign: 'args' }
       ],
-      handler: resources.object.links.handler,
       validate: resources.object.links.validate
-    }
-  })
-
-  api.route({
+    },
+    handler: resources.object.links.handler
+  },
+  {
     method: '*',
     path: '/api/v0/object/patch/append-data',
-    config: {
+    options: {
       payload: {
         parse: false,
         output: 'stream'
@@ -88,15 +80,14 @@ module.exports = (server) => {
       pre: [
         { method: resources.object.patchAppendData.parseArgs, assign: 'args' }
       ],
-      handler: resources.object.patchAppendData.handler,
       validate: resources.object.patchAppendData.validate
-    }
-  })
-
-  api.route({
+    },
+    handler: resources.object.patchAppendData.handler
+  },
+  {
     method: '*',
     path: '/api/v0/object/patch/set-data',
-    config: {
+    options: {
       payload: {
         parse: false,
         output: 'stream'
@@ -104,32 +95,30 @@ module.exports = (server) => {
       pre: [
         { method: resources.object.patchSetData.parseArgs, assign: 'args' }
       ],
-      handler: resources.object.patchSetData.handler,
       validate: resources.object.patchSetData.validate
-    }
-  })
-
-  api.route({
+    },
+    handler: resources.object.patchSetData.handler
+  },
+  {
     method: '*',
     path: '/api/v0/object/patch/add-link',
-    config: {
+    options: {
       pre: [
         { method: resources.object.patchAddLink.parseArgs, assign: 'args' }
       ],
-      handler: resources.object.patchAddLink.handler,
       validate: resources.object.patchAddLink.validate
-    }
-  })
-
-  api.route({
+    },
+    handler: resources.object.patchAddLink.handler
+  },
+  {
     method: '*',
     path: '/api/v0/object/patch/rm-link',
-    config: {
+    options: {
       pre: [
         { method: resources.object.patchRmLink.parseArgs, assign: 'args' }
       ],
-      handler: resources.object.patchRmLink.handler,
       validate: resources.object.patchRmLink.validate
-    }
-  })
-}
+    },
+    handler: resources.object.patchRmLink.handler
+  }
+]

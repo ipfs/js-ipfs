@@ -1,15 +1,11 @@
 'use strict'
 
-const mh = require('multihashes')
-const debug = require('debug')
-const log = debug('jsipfs:http-api:file')
-log.error = debug('jsipfs:http-api:file:error')
+const isIpfs = require('is-ipfs')
 const unixfsEngine = require('ipfs-unixfs-engine')
 const exporter = unixfsEngine.exporter
 const pull = require('pull-stream')
 const toB58String = require('multihashes').toB58String
-
-exports = module.exports
+const Boom = require('boom')
 
 const fileTypeMap = {
   file: 'File',
@@ -29,12 +25,9 @@ function toFileObject (file) {
 }
 
 // common pre request handler that parses the args and returns `key` which is assigned to `request.pre.args`
-exports.parseKey = (request, reply) => {
+exports.parseKey = (request, h) => {
   if (!request.query.arg) {
-    return reply({
-      Message: "Argument 'key' is required",
-      Code: 0
-    }).code(400).takeover()
+    throw Boom.badRequest("Argument 'key' is required")
   }
 
   let key = request.query.arg
@@ -48,24 +41,18 @@ exports.parseKey = (request, reply) => {
     hash = hash.substring(0, slashIndex)
   }
 
-  try {
-    mh.fromB58String(hash)
-  } catch (err) {
-    log.error(err)
-    return reply({
-      Message: 'invalid ipfs ref path',
-      Code: 0
-    }).code(500).takeover()
+  if (!isIpfs.ipfsPath(request.query.arg) && !isIpfs.cid(request.query.arg)) {
+    throw Boom.badRequest('invalid ipfs ref path')
   }
 
   const subpaths = key.split('/')
   subpaths.shift()
-  reply({
+  return {
     path: request.query.arg,
     subpaths: subpaths,
     key: key,
     hash: hash
-  })
+  }
 }
 
 exports.ls = {
@@ -73,39 +60,37 @@ exports.ls = {
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
-    const path = request.pre.args.path
-    const ipfs = request.server.app.ipfs
-    const subpaths = request.pre.args.subpaths
+  async handler (request, h) {
+    const { ipfs } = request.server.app
+    const { path, subpaths } = request.pre.args.path
     const rootDepth = subpaths.length
 
-    pull(
-      exporter(path, ipfs._ipld, { maxDepth: rootDepth + 1 }),
-      pull.collect((err, files) => {
-        if (err) {
-          return reply({
-            Message: 'Failed to list dir: ' + err.message,
-            Code: 0
-          }).code(500)
-        }
-
-        let res = {
-          Arguments: {},
-          Objects: {}
-        }
-        const links = []
-        files.forEach((file) => {
-          if (file.depth === rootDepth) {
-            let id = toB58String(file.hash)
-            res.Arguments[path] = id
-            res.Objects[id] = toFileObject(file)
-            res.Objects[id].Links = file.type === 'file' ? null : links
-          } else {
-            links.push(toFileObject(file))
-          }
+    const files = await new Promise((resolve, reject) => {
+      pull(
+        exporter(path, ipfs._ipld, { maxDepth: rootDepth + 1 }),
+        pull.collect((err, files) => {
+          if (err) return reject(err)
+          resolve(files)
         })
-        return reply(res)
-      })
-    )
+      )
+    })
+
+    const res = {
+      Arguments: {},
+      Objects: {}
+    }
+    const links = []
+    files.forEach((file) => {
+      if (file.depth === rootDepth) {
+        const id = toB58String(file.hash)
+        res.Arguments[path] = id
+        res.Objects[id] = toFileObject(file)
+        res.Objects[id].Links = file.type === 'file' ? null : links
+      } else {
+        links.push(toFileObject(file))
+      }
+    })
+
+    return h.response(res)
   }
 }

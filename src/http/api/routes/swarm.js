@@ -1,62 +1,47 @@
 'use strict'
 
-const resources = require('./../resources')
+const resources = require('../resources')
 
-module.exports = (server) => {
-  const api = server.select('API')
-
-  api.route({
+module.exports = [
+  {
     method: '*',
     path: '/api/v0/swarm/peers',
-    config: {
-      handler: resources.swarm.peers.handler
-    }
-  })
-
-  api.route({
+    handler: resources.swarm.peers.handler
+  },
+  {
     method: '*',
     path: '/api/v0/swarm/addrs',
-    config: {
-      handler: resources.swarm.addrs.handler
-    }
-  })
-
-  api.route({
+    handler: resources.swarm.addrs.handler
+  },
+  {
     method: '*',
     path: '/api/v0/swarm/addrs/local',
-    config: {
-      handler: resources.swarm.localAddrs.handler
-    }
-  })
-
-  api.route({
+    handler: resources.swarm.localAddrs.handler
+  },
+  {
     method: '*',
     path: '/api/v0/swarm/connect',
-    config: {
+    options: {
       pre: [
         { method: resources.swarm.connect.parseArgs, assign: 'args' }
-      ],
-      handler: resources.swarm.connect.handler
-    }
-  })
-
-  api.route({
+      ]
+    },
+    handler: resources.swarm.connect.handler
+  },
+  {
     method: '*',
     path: '/api/v0/swarm/disconnect',
-    config: {
+    options: {
       pre: [
         { method: resources.swarm.disconnect.parseArgs, assign: 'args' }
-      ],
-      handler: resources.swarm.disconnect.handler
-    }
-  })
-
+      ]
+    },
+    handler: resources.swarm.disconnect.handler
+  }
   // TODO
-  // api.route({
+  // {
   //  method: '*',
   //  path: '/api/v0/swarm/filters',
-  //  config: {
-  //    handler: resources.swarm.disconnect
-  //  }
-  // })
-}
+  //  handler: resources.swarm.disconnect
+  // }
+]

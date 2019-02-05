@@ -1,43 +1,39 @@
 'use strict'
 
-const resources = require('./../resources')
+const resources = require('../resources')
 
-module.exports = (server) => {
-  const api = server.select('API')
-
-  api.route({
+module.exports = [
+  {
     method: '*',
     path: '/api/v0/pin/add',
-    config: {
+    options: {
       pre: [
         { method: resources.pin.add.parseArgs, assign: 'args' }
       ],
-      handler: resources.pin.add.handler,
       validate: resources.pin.add.validate
-    }
-  })
-
-  api.route({
+    },
+    handler: resources.pin.add.handler
+  },
+  {
     method: '*',
     path: '/api/v0/pin/rm',
-    config: {
+    options: {
       pre: [
         { method: resources.pin.rm.parseArgs, assign: 'args' }
       ],
-      handler: resources.pin.rm.handler,
       validate: resources.pin.rm.validate
-    }
-  })
-
-  api.route({
+    },
+    handler: resources.pin.rm.handler
+  },
+  {
     method: '*',
     path: '/api/v0/pin/ls',
     config: {
       pre: [
         { method: resources.pin.ls.parseArgs, assign: 'args' }
       ],
-      handler: resources.pin.ls.handler,
       validate: resources.pin.ls.validate
-    }
-  })
-}
+    },
+    handler: resources.pin.ls.handler
+  }
+]

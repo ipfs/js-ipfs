@@ -1,31 +1,24 @@
 'use strict'
 
-const resources = require('./../resources')
+const resources = require('../resources')
 
-module.exports = (server) => {
-  const api = server.select('API')
-
-  api.route({
+module.exports = [
+  {
     method: '*',
     path: '/api/v0/stats/bitswap',
-    config: {
-      handler: resources.stats.bitswap.handler
-    }
-  })
-
-  api.route({
+    options: {
+      validate: resources.stats.bitswap.validate
+    },
+    handler: resources.stats.bitswap.handler
+  },
+  {
     method: '*',
     path: '/api/v0/stats/repo',
-    config: {
-      handler: resources.stats.repo
-    }
-  })
-
-  api.route({
+    handler: resources.stats.repo
+  },
+  {
     method: '*',
     path: '/api/v0/stats/bw',
-    config: {
-      handler: resources.stats.bw
-    }
-  })
-}
+    handler: resources.stats.bw
+  }
+]

@@ -16,37 +16,39 @@ module.exports = (http) => {
     const topicNotSubscribed = 'somethingRandom'
 
     before(() => {
-      api = http.api.server.select('API')
+      api = http.api._apiServer
     })
 
     describe('/sub', () => {
-      it('returns 500 if no topic is provided', (done) => {
-        api.inject({
+      it('returns 400 if no topic is provided', async () => {
+        const res = await api.inject({
           method: 'GET',
           url: `/api/v0/pubsub/sub`
-        }, (res) => {
-          expect(res.statusCode).to.equal(500)
-          expect(res.result.Code).to.be.eql(1)
-          done()
         })
+
+        expect(res.statusCode).to.equal(400)
+        expect(res.result.Code).to.be.eql(1)
       })
 
-      it('returns 200 with topic', (done) => {
+      it('returns 200 with topic', async () => {
         // TODO: Agree on a better way to test this (currently this hangs)
         // Regarding: https://github.com/ipfs/js-ipfs/pull/644#issuecomment-267687194
         // Current Patch: Subscribe to a topic so the other tests run as expected
         const ipfs = api.app.ipfs
         const handler = (msg) => {}
-        ipfs.pubsub.subscribe(topic, handler, () => {
+
+        await ipfs.pubsub.subscribe(topic, handler)
+
+        await new Promise((resolve, reject) => {
           setTimeout(() => {
             ipfs.pubsub.unsubscribe(topic, handler)
-            done()
+            resolve()
           }, 100)
         })
-        // api.inject({
+        // const res = await api.inject({
         //   method: 'GET',
         //   url: `/api/v0/pubsub/sub/${topic}`
-        // }, (res) => {
+        // })
         //   console.log(res.result)
         //   expect(res.statusCode).to.equal(200)
         //   done()
@@ -55,62 +57,56 @@ module.exports = (http) => {
     })
 
     describe('/pub', () => {
-      it('returns 500 if no buffer is provided', (done) => {
-        api.inject({
+      it('returns 400 if no buffer is provided', async () => {
+        const res = await api.inject({
           method: 'POST',
           url: `/api/v0/pubsub/pub?arg=&arg=`
-        }, (res) => {
-          expect(res.statusCode).to.equal(500)
-          expect(res.result.Code).to.be.eql(1)
-          done()
         })
+
+        expect(res.statusCode).to.equal(400)
+        expect(res.result.Code).to.be.eql(1)
       })
 
-      it('returns 200 with topic and buffer', (done) => {
-        api.inject({
+      it('returns 200 with topic and buffer', async () => {
+        const res = await api.inject({
           method: 'POST',
           url: `/api/v0/pubsub/pub?arg=${topic}&arg=${buf}`
-        }, (res) => {
-          expect(res.statusCode).to.equal(200)
-          done()
         })
+
+        expect(res.statusCode).to.equal(200)
       })
     })
 
     describe.skip('/ls', () => {
-      it('returns 200', (done) => {
-        api.inject({
+      it('returns 200', async () => {
+        const res = await api.inject({
           method: 'GET',
           url: `/api/v0/pubsub/ls`
-        }, (res) => {
-          expect(res.statusCode).to.equal(200)
-          expect(res.result.Strings).to.be.eql([topic])
-          done()
         })
+        expect(res.statusCode).to.equal(200)
+        expect(res.result.Strings).to.be.eql([topic])
       })
     })
 
     describe('/peers', () => {
-      it('returns 200 if not subscribed to a topic', (done) => {
-        api.inject({
+      it('returns 200 if not subscribed to a topic', async () => {
+        const res = await api.inject({
           method: 'GET',
           url: `/api/v0/pubsub/peers?arg=${topicNotSubscribed}`
-        }, (res) => {
-          expect(res.statusCode).to.equal(200)
-          expect(res.result.Strings).to.be.eql([])
-          done()
         })
+
+        expect(res.statusCode).to.equal(200)
+        expect(res.result.Strings).to.be.eql([])
       })
 
-      it('returns 200 with topic', (done) => {
-        api.inject({
+      it('returns 200 with topic', async () => {
+        const res = await api.inject({
           method: 'GET',
           url: `/api/v0/pubsub/peers?arg=${topic}`
-        }, (res) => {
-          expect(res.statusCode).to.equal(200)
-          expect(res.result.Strings).to.be.eql([])
-          done()
         })
+
+        expect(res.statusCode).to.equal(200)
+        expect(res.result.Strings).to.be.eql([])
       })
     })
   })

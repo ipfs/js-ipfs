@@ -1,36 +1,32 @@
 'use strict'
 
+const promisify = require('promisify-es6')
 const CID = require('cids')
 const multipart = require('ipfs-multipart')
 const dagPB = require('ipld-dag-pb')
-const DAGLink = dagPB.DAGLink
-const DAGNode = dagPB.DAGNode
-const waterfall = require('async/waterfall')
+const { DAGNode, DAGLink } = dagPB
+const calculateCid = promisify(dagPB.util.cid)
+const deserialize = promisify(dagPB.util.deserialize)
+const createDagNode = promisify(DAGNode.create)
 const Joi = require('joi')
 const multibase = require('multibase')
+const Boom = require('boom')
 const { cidToString } = require('../../../utils/cid')
 const debug = require('debug')
 const log = debug('jsipfs:http-api:object')
 log.error = debug('jsipfs:http-api:object:error')
 
-exports = module.exports
-
 // common pre request handler that parses the args and returns `key` which is assigned to `request.pre.args`
-exports.parseKey = (request, reply) => {
+exports.parseKey = (request, h) => {
   if (!request.query.arg) {
-    return reply("Argument 'key' is required").code(400).takeover()
+    throw Boom.badRequest("Argument 'key' is required")
   }
 
   try {
-    return reply({
-      key: new CID(request.query.arg)
-    })
+    return { key: new CID(request.query.arg) }
   } catch (err) {
     log.error(err)
-    return reply({
-      Message: 'invalid ipfs ref path',
-      Code: 0
-    }).code(500).takeover()
+    throw Boom.badRequest('invalid ipfs ref path')
   }
 }
 
@@ -41,39 +37,34 @@ exports.new = {
     }).unknown()
   },
 
-  handler (request, reply) {
-    const ipfs = request.server.app.ipfs
+  async handler (request, h) {
+    const { ipfs } = request.server.app
     const template = request.query.arg
 
-    waterfall([
-      (cb) => ipfs.object.new(template, cb),
-      (cid, cb) => ipfs.object.get(cid, (err, node) => cb(err, { node, cid }))
-    ], (err, results) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: `Failed to create object: ${err.message}`,
-          Code: 0
-        }).code(500)
-      }
+    let cid, node
+    try {
+      cid = await ipfs.object.new(template)
+      node = await ipfs.object.get(cid)
+    } catch (err) {
+      throw Boom.boomify(err, { message: 'Failed to create object' })
+    }
 
-      const nodeJSON = results.node.toJSON()
+    const nodeJSON = node.toJSON()
 
-      const answer = {
-        Data: nodeJSON.data,
-        Hash: cidToString(results.cid, { base: request.query['cid-base'], upgrade: false }),
-        Size: nodeJSON.size,
-        Links: nodeJSON.links.map((l) => {
-          return {
-            Name: l.name,
-            Size: l.size,
-            Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
-          }
-        })
-      }
+    const answer = {
+      Data: nodeJSON.data,
+      Hash: cidToString(cid, { base: request.query['cid-base'], upgrade: false }),
+      Size: nodeJSON.size,
+      Links: nodeJSON.links.map((l) => {
+        return {
+          Name: l.name,
+          Size: l.size,
+          Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
+        }
+      })
+    }
 
-      return reply(answer)
-    })
+    return h.response(answer)
   }
 }
 
@@ -88,44 +79,39 @@ exports.get = {
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
-    const key = request.pre.args.key
+  async handler (request, h) {
+    const { key } = request.pre.args
     const enc = request.query.enc || 'base58'
-    const ipfs = request.server.app.ipfs
+    const { ipfs } = request.server.app
 
-    waterfall([
-      (cb) => ipfs.object.get(key, { enc: enc }, cb),
-      (node, cb) => dagPB.util.cid(node, (err, cid) => cb(err, { node, cid }))
-    ], (err, results) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: 'Failed to get object: ' + err,
-          Code: 0
-        }).code(500)
-      }
+    let node, cid
+    try {
+      node = await ipfs.object.get(key, { enc: enc })
+      cid = await calculateCid(node)
+    } catch (err) {
+      throw Boom.boomify(err, { message: 'Failed to get object' })
+    }
 
-      const nodeJSON = results.node.toJSON()
+    const nodeJSON = node.toJSON()
 
-      if (Buffer.isBuffer(results.node.data)) {
-        nodeJSON.data = results.node.data.toString(request.query['data-encoding'] || undefined)
-      }
+    if (Buffer.isBuffer(node.data)) {
+      nodeJSON.data = node.data.toString(request.query['data-encoding'] || undefined)
+    }
 
-      const answer = {
-        Data: nodeJSON.data,
-        Hash: cidToString(results.cid, { base: request.query['cid-base'], upgrade: false }),
-        Size: nodeJSON.size,
-        Links: nodeJSON.links.map((l) => {
-          return {
-            Name: l.name,
-            Size: l.size,
-            Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
-          }
-        })
-      }
+    const answer = {
+      Data: nodeJSON.data,
+      Hash: cidToString(cid, { base: request.query['cid-base'], upgrade: false }),
+      Size: nodeJSON.size,
+      Links: nodeJSON.links.map((l) => {
+        return {
+          Name: l.name,
+          Size: l.size,
+          Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
+        }
+      })
+    }
 
-      return reply(answer)
-    })
+    return h.response(answer)
   }
 }
 
@@ -138,119 +124,75 @@ exports.put = {
 
   // pre request handler that parses the args and returns `node`
   // which is assigned to `request.pre.args`
-  parseArgs: (request, reply) => {
+  async parseArgs (request, h) {
     if (!request.payload) {
-      return reply("File argument 'data' is required").code(400).takeover()
+      throw Boom.badRequest("File argument 'data' is required")
     }
 
     const enc = request.query.inputenc
-    const parser = multipart.reqParser(request.payload)
 
-    let file
-    let finished = true
-
-    // TODO: this whole function this to be revisited
-    // so messy
-    parser.on('file', (name, stream) => {
-      finished = false
-      // TODO fix: stream is not emitting the 'end' event
-      stream.on('data', (data) => {
-        if (enc === 'protobuf') {
-          waterfall([
-            (cb) => dagPB.util.deserialize(data, cb),
-            (node, cb) => dagPB.util.cid(node, (err, cid) => cb(err, { node, cid }))
-          ], (err, results) => {
-            if (err) {
-              return reply({
-                Message: 'Failed to put object: ' + err,
-                Code: 0
-              }).code(500).takeover()
-            }
-
-            const nodeJSON = results.node.toJSON()
-
-            const answer = {
-              Data: nodeJSON.data,
-              Hash: results.cid.toBaseEncodedString(),
-              Size: nodeJSON.size,
-              Links: nodeJSON.links.map((l) => {
-                return {
-                  Name: l.name,
-                  Size: l.size,
-                  Hash: l.cid
-                }
-              })
-            }
-
-            file = Buffer.from(JSON.stringify(answer))
-            finished = true
-          })
-        } else {
-          file = data
-
-          finished = true
-        }
-      })
+    const fileStream = await new Promise((resolve, reject) => {
+      multipart.reqParser(request.payload)
+        .on('file', (name, stream) => resolve(stream))
+        .on('end', () => reject(Boom.badRequest("File argument 'data' is required")))
     })
 
-    parser.on('end', finish)
+    const data = await new Promise((resolve, reject) => {
+      fileStream
+        .on('data', data => resolve(data))
+        .on('end', () => reject(Boom.badRequest("File argument 'data' is required")))
+    })
 
-    function finish () {
-      if (!finished) {
-        return setTimeout(finish, 10)
-      }
-      if (!file) {
-        return reply("File argument 'data' is required").code(400).takeover()
-      }
-
+    if (enc === 'protobuf') {
       try {
-        return reply({
-          node: JSON.parse(file.toString())
-        })
+        return { node: await deserialize(data) }
       } catch (err) {
-        return reply({
-          Message: 'Failed to parse the JSON: ' + err,
-          Code: 0
-        }).code(500).takeover()
+        throw Boom.badRequest('Failed to deserialize: ' + err)
       }
+    }
+
+    let nodeJson
+    try {
+      nodeJson = JSON.parse(data.toString())
+    } catch (err) {
+      throw Boom.badRequest('Failed to parse the JSON: ' + err)
+    }
+
+    try {
+      return { node: await createDagNode(nodeJson.Data, nodeJson.Links) }
+    } catch (err) {
+      throw Boom.badRequest('Failed to create DAG node: ' + err)
     }
   },
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
-    const ipfs = request.server.app.ipfs
-    let node = request.pre.args.node
+  async handler (request, h) {
+    const { ipfs } = request.server.app
+    const { node } = request.pre.args
 
-    waterfall([
-      (cb) => DAGNode.create(Buffer.from(node.Data), node.Links, cb),
-      (node, cb) => ipfs.object.put(node, (err, cid) => cb(err, { cid, node }))
-    ], (err, results) => {
-      if (err) {
-        log.error(err)
+    let cid
+    try {
+      cid = await ipfs.object.put(node)
+    } catch (err) {
+      throw Boom.boomify(err, { message: 'Failed to put node' })
+    }
 
-        return reply({
-          Message: 'Failed to put object: ' + err,
-          Code: 0
-        }).code(500)
-      }
+    const nodeJSON = node.toJSON()
 
-      const nodeJSON = results.node.toJSON()
+    const answer = {
+      Data: nodeJSON.data,
+      Hash: cidToString(cid, { base: request.query['cid-base'], upgrade: false }),
+      Size: nodeJSON.size,
+      Links: nodeJSON.links.map((l) => {
+        return {
+          Name: l.name,
+          Size: l.size,
+          Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
+        }
+      })
+    }
 
-      const answer = {
-        Data: nodeJSON.data,
-        Hash: cidToString(results.cid, { base: request.query['cid-base'], upgrade: false }),
-        Size: nodeJSON.size,
-        Links: nodeJSON.links.map((l) => {
-          return {
-            Name: l.name,
-            Size: l.size,
-            Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
-          }
-        })
-      }
-
-      return reply(answer)
-    })
+    return h.response(answer)
   }
 }
 
@@ -265,23 +207,20 @@ exports.stat = {
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
-    const ipfs = request.server.app.ipfs
-    const key = request.pre.args.key
+  async handler (request, h) {
+    const { ipfs } = request.server.app
+    const { key } = request.pre.args
 
-    ipfs.object.stat(key, (err, stats) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: 'Failed to stat object: ' + err,
-          Code: 0
-        }).code(500)
-      }
+    let stats
+    try {
+      stats = await ipfs.object.stat(key)
+    } catch (err) {
+      throw Boom.boomify(err, { message: 'Failed to stat object' })
+    }
 
-      stats.Hash = cidToString(stats.Hash, { base: request.query['cid-base'], upgrade: false })
+    stats.Hash = cidToString(stats.Hash, { base: request.query['cid-base'], upgrade: false })
 
-      return reply(stats)
-    })
+    return h.response(stats)
   }
 }
 
@@ -290,21 +229,18 @@ exports.data = {
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
-    const ipfs = request.server.app.ipfs
-    const key = request.pre.args.key
+  async handler (request, h) {
+    const { ipfs } = request.server.app
+    const { key } = request.pre.args
 
-    ipfs.object.data(key, (err, data) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: 'Failed to get object data: ' + err,
-          Code: 0
-        }).code(500)
-      }
+    let data
+    try {
+      data = await ipfs.object.data(key)
+    } catch (err) {
+      throw Boom.boomify(err, { message: 'Failed to get object data' })
+    }
 
-      return reply(data)
-    })
+    return h.response(data)
   }
 }
 
@@ -319,72 +255,63 @@ exports.links = {
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
-    const key = request.pre.args.key
-    const ipfs = request.server.app.ipfs
+  async handler (request, h) {
+    const { ipfs } = request.server.app
+    const { key } = request.pre.args
 
-    ipfs.object.get(key, (err, node) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: 'Failed to get object links: ' + err,
-          Code: 0
-        }).code(500)
-      }
+    let node
+    try {
+      node = await ipfs.object.get(key)
+    } catch (err) {
+      throw Boom.boomify(err, { message: 'Failed to get object links' })
+    }
 
-      const nodeJSON = node.toJSON()
+    const nodeJSON = node.toJSON()
 
-      return reply({
-        Hash: cidToString(key, { base: request.query['cid-base'], upgrade: false }),
-        Links: nodeJSON.links.map((l) => {
-          return {
-            Name: l.name,
-            Size: l.size,
-            Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
-          }
-        })
+    return h.response({
+      Hash: cidToString(key, { base: request.query['cid-base'], upgrade: false }),
+      Links: nodeJSON.links.map((l) => {
+        return {
+          Name: l.name,
+          Size: l.size,
+          Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
+        }
       })
     })
   }
 }
 
 // common pre request handler that parses the args and returns `data` & `key` which are assigned to `request.pre.args`
-exports.parseKeyAndData = (request, reply) => {
+exports.parseKeyAndData = async (request, h) => {
   if (!request.query.arg) {
-    return reply("Argument 'root' is required").code(400).takeover()
+    throw Boom.badRequest("Argument 'root' is required")
   }
 
   if (!request.payload) {
-    return reply("File argument 'data' is required").code(400).takeover()
+    throw Boom.badRequest("File argument 'data' is required")
   }
 
-  const parser = multipart.reqParser(request.payload)
-  let file
+  // TODO: support ipfs paths: https://github.com/ipfs/http-api-spec/pull/68/files#diff-2625016b50d68d922257f74801cac29cR3880
+  let cid
+  try {
+    cid = new CID(request.query.arg)
+  } catch (err) {
+    throw Boom.badRequest('invalid ipfs ref path')
+  }
 
-  parser.on('file', (fileName, fileStream) => {
-    fileStream.on('data', (data) => {
-      file = data
-    })
+  const fileStream = await new Promise((resolve, reject) => {
+    multipart.reqParser(request.payload)
+      .on('file', (fileName, fileStream) => resolve(fileStream))
+      .on('end', () => reject(Boom.badRequest("File argument 'data' is required")))
   })
 
-  parser.on('end', () => {
-    if (!file) {
-      return reply("File argument 'data' is required").code(400).takeover()
-    }
-
-    try {
-      return reply({
-        data: file,
-        // TODO: support ipfs paths: https://github.com/ipfs/http-api-spec/pull/68/files#diff-2625016b50d68d922257f74801cac29cR3880
-        key: new CID(request.query.arg)
-      })
-    } catch (err) {
-      return reply({
-        Message: 'invalid ipfs ref path',
-        Code: 0
-      }).code(500).takeover()
-    }
+  const fileData = await new Promise((resolve, reject) => {
+    fileStream
+      .on('data', data => resolve(data))
+      .on('end', () => reject(Boom.badRequest("File argument 'data' is required")))
   })
+
+  return { data: fileData, key: cid }
 }
 
 exports.patchAppendData = {
@@ -398,41 +325,34 @@ exports.patchAppendData = {
   parseArgs: exports.parseKeyAndData,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
-    const key = request.pre.args.key
-    const data = request.pre.args.data
-    const ipfs = request.server.app.ipfs
+  async handler (request, h) {
+    const { ipfs } = request.server.app
+    const { key, data } = request.pre.args
 
-    waterfall([
-      (cb) => ipfs.object.patch.appendData(key, data, cb),
-      (cid, cb) => ipfs.object.get(cid, (err, node) => cb(err, { node, cid }))
-    ], (err, results) => {
-      if (err) {
-        log.error(err)
+    let cid, node
+    try {
+      cid = await ipfs.object.patch.appendData(key, data)
+      node = await ipfs.object.get(cid)
+    } catch (err) {
+      throw Boom.boomify(err, { message: 'Failed to append data to object' })
+    }
 
-        return reply({
-          Message: 'Failed to append data to object: ' + err,
-          Code: 0
-        }).code(500)
-      }
+    const nodeJSON = node.toJSON()
 
-      const nodeJSON = results.node.toJSON()
+    const answer = {
+      Data: nodeJSON.data,
+      Hash: cidToString(cid, { base: request.query['cid-base'], upgrade: false }),
+      Size: nodeJSON.size,
+      Links: nodeJSON.links.map((l) => {
+        return {
+          Name: l.name,
+          Size: l.size,
+          Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
+        }
+      })
+    }
 
-      const answer = {
-        Data: nodeJSON.data,
-        Hash: cidToString(results.cid, { base: request.query['cid-base'], upgrade: false }),
-        Size: nodeJSON.size,
-        Links: nodeJSON.links.map((l) => {
-          return {
-            Name: l.name,
-            Size: l.size,
-            Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
-          }
-        })
-      }
-
-      return reply(answer)
-    })
+    return h.response(answer)
   }
 }
 
@@ -447,35 +367,28 @@ exports.patchSetData = {
   parseArgs: exports.parseKeyAndData,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
-    const key = request.pre.args.key
-    const data = request.pre.args.data
-    const ipfs = request.server.app.ipfs
+  async handler (request, h) {
+    const { ipfs } = request.server.app
+    const { key, data } = request.pre.args
 
-    waterfall([
-      (cb) => ipfs.object.patch.setData(key, data, cb),
-      (cid, cb) => ipfs.object.get(cid, (err, node) => cb(err, { node, cid }))
-    ], (err, results) => {
-      if (err) {
-        log.error(err)
+    let cid, node
+    try {
+      cid = await ipfs.object.patch.setData(key, data)
+      node = await ipfs.object.get(cid)
+    } catch (err) {
+      throw Boom.boomify(err, { message: 'Failed to set data on object' })
+    }
 
-        return reply({
-          Message: 'Failed to set data on object: ' + err,
-          Code: 0
-        }).code(500)
-      }
+    const nodeJSON = node.toJSON()
 
-      const nodeJSON = results.node.toJSON()
-
-      return reply({
-        Hash: cidToString(results.cid, { base: request.query['cid-base'], upgrade: false }),
-        Links: nodeJSON.links.map((l) => {
-          return {
-            Name: l.name,
-            Size: l.size,
-            Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
-          }
-        })
+    return h.response({
+      Hash: cidToString(cid, { base: request.query['cid-base'], upgrade: false }),
+      Links: nodeJSON.links.map((l) => {
+        return {
+          Name: l.name,
+          Size: l.size,
+          Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
+        }
       })
     })
   }
@@ -492,75 +405,63 @@ exports.patchAddLink = {
   parseArgs: (request, reply) => {
     if (!(request.query.arg instanceof Array) ||
         request.query.arg.length !== 3) {
-      return reply("Arguments 'root', 'name' & 'ref' are required").code(400).takeover()
+      throw Boom.badRequest("Arguments 'root', 'name' & 'ref' are required")
     }
 
-    const error = (msg) => reply({
-      Message: msg,
-      Code: 0
-    }).code(500).takeover()
-
     if (!request.query.arg[0]) {
-      return error('cannot create link with no root')
+      throw Boom.badRequest('cannot create link with no root')
     }
 
     if (!request.query.arg[1]) {
-      return error('cannot create link with no name!')
+      throw Boom.badRequest('cannot create link with no name!')
     }
 
     if (!request.query.arg[2]) {
-      return error('cannot create link with no ref')
+      throw Boom.badRequest('cannot create link with no ref')
     }
 
     try {
-      return reply({
+      return {
         root: new CID(request.query.arg[0]),
         name: request.query.arg[1],
         ref: new CID(request.query.arg[2])
-      })
+      }
     } catch (err) {
       log.error(err)
-      return error('invalid ipfs ref path')
+      throw Boom.badRequest('invalid ipfs ref path')
     }
   },
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
-    const root = request.pre.args.root
-    const name = request.pre.args.name
-    const ref = request.pre.args.ref
-    const ipfs = request.server.app.ipfs
+  async handler (request, h) {
+    const { ipfs } = request.server.app
+    const { root, name, ref } = request.pre.args
 
-    waterfall([
-      (cb) => ipfs.object.get(ref, cb),
-      (node, cb) => ipfs.object.patch.addLink(root, new DAGLink(name, node.size, ref), cb),
-      (cid, cb) => ipfs.object.get(cid, (err, node) => cb(err, { node, cid }))
-    ], (err, results) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: 'Failed to add link to object: ' + err,
-          Code: 0
-        }).code(500)
-      }
+    let node, cid
+    try {
+      node = await ipfs.object.get(ref)
+      cid = await ipfs.object.patch.addLink(root, new DAGLink(name, node.size, ref))
+      node = await ipfs.object.get(cid)
+    } catch (err) {
+      throw Boom.boomify(err, { message: 'Failed to add link to object' })
+    }
 
-      const nodeJSON = results.node.toJSON()
+    const nodeJSON = node.toJSON()
 
-      const answer = {
-        Data: nodeJSON.data,
-        Hash: cidToString(results.cid, { base: request.query['cid-base'], upgrade: false }),
-        Size: nodeJSON.size,
-        Links: nodeJSON.links.map((l) => {
-          return {
-            Name: l.name,
-            Size: l.size,
-            Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
-          }
-        })
-      }
+    const answer = {
+      Data: nodeJSON.data,
+      Hash: cidToString(cid, { base: request.query['cid-base'], upgrade: false }),
+      Size: nodeJSON.size,
+      Links: nodeJSON.links.map((l) => {
+        return {
+          Name: l.name,
+          Size: l.size,
+          Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
+        }
+      })
+    }
 
-      return reply(answer)
-    })
+    return h.response(answer)
   }
 }
 
@@ -572,67 +473,55 @@ exports.patchRmLink = {
   },
 
   // pre request handler that parses the args and returns `root` & `link` which is assigned to `request.pre.args`
-  parseArgs: (request, reply) => {
+  parseArgs (request, h) {
     if (!(request.query.arg instanceof Array) ||
         request.query.arg.length !== 2) {
-      return reply("Arguments 'root' & 'link' are required").code(400).takeover()
+      throw Boom.badRequest("Arguments 'root' & 'link' are required")
     }
 
     if (!request.query.arg[1]) {
-      return reply({
-        Message: 'cannot remove link with no name!',
-        Code: 0
-      }).code(500).takeover()
+      throw Boom.badRequest('cannot remove link with no name!')
     }
 
     try {
-      return reply({
+      return {
         root: new CID(request.query.arg[0]),
         link: request.query.arg[1]
-      })
+      }
     } catch (err) {
       log.error(err)
-      return reply({
-        Message: 'invalid ipfs ref path',
-        Code: 0
-      }).code(500).takeover()
+      throw Boom.badRequest('invalid ipfs ref path')
     }
   },
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler: (request, reply) => {
-    const root = request.pre.args.root
-    const link = request.pre.args.link
-    const ipfs = request.server.app.ipfs
+  async handler (request, h) {
+    const { ipfs } = request.server.app
+    const { root, link } = request.pre.args
 
-    waterfall([
-      (cb) => ipfs.object.patch.rmLink(root, { name: link }, cb),
-      (cid, cb) => ipfs.object.get(cid, (err, node) => cb(err, { node, cid }))
-    ], (err, results) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: 'Failed to remove link from object: ' + err,
-          Code: 0
-        }).code(500)
-      }
+    let cid, node
+    try {
+      cid = await ipfs.object.patch.rmLink(root, { name: link })
+      node = await ipfs.object.get(cid)
+    } catch (err) {
+      throw Boom.boomify(err, { message: 'Failed to remove link from object' })
+    }
 
-      const nodeJSON = results.node.toJSON()
+    const nodeJSON = node.toJSON()
 
-      const answer = {
-        Data: nodeJSON.data,
-        Hash: cidToString(results.cid, { base: request.query['cid-base'], upgrade: false }),
-        Size: nodeJSON.size,
-        Links: nodeJSON.links.map((l) => {
-          return {
-            Name: l.name,
-            Size: l.size,
-            Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
-          }
-        })
-      }
+    const answer = {
+      Data: nodeJSON.data,
+      Hash: cidToString(cid, { base: request.query['cid-base'], upgrade: false }),
+      Size: nodeJSON.size,
+      Links: nodeJSON.links.map((l) => {
+        return {
+          Name: l.name,
+          Size: l.size,
+          Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
+        }
+      })
+    }
 
-      return reply(answer)
-    })
+    return h.response(answer)
   }
 }

@@ -1,39 +1,35 @@
 'use strict'
 
-const resources = require('./../resources')
+const resources = require('../resources')
 
-module.exports = (server) => {
-  const api = server.select('API')
-
-  api.route({
+module.exports = [
+  {
     method: '*',
     path: '/api/v0/config/{key?}',
-    config: {
+    options: {
       pre: [
         { method: resources.config.getOrSet.parseArgs, assign: 'args' }
-      ],
-      handler: resources.config.getOrSet.handler
-    }
-  })
-
-  api.route({
+      ]
+    },
+    handler: resources.config.getOrSet.handler
+  },
+  {
     method: '*',
     path: '/api/v0/config/show',
     handler: resources.config.show
-  })
-
-  api.route({
+  },
+  {
     method: '*',
     path: '/api/v0/config/replace',
-    config: {
+    options: {
       payload: {
         parse: false,
         output: 'stream'
       },
       pre: [
         { method: resources.config.replace.parseArgs, assign: 'args' }
-      ],
-      handler: resources.config.replace.handler
-    }
-  })
-}
+      ]
+    },
+    handler: resources.config.replace.handler
+  }
+]

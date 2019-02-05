@@ -1,50 +1,40 @@
 'use strict'
 
-const resources = require('./../resources')
+const resources = require('../resources')
 
-module.exports = (server) => {
-  const api = server.select('API')
-
-  api.route({
+module.exports = [
+  {
     method: '*',
     path: '/api/v0/name/resolve',
-    config: {
-      handler: resources.name.resolve.handler,
+    options: {
       validate: resources.name.resolve.validate
-    }
-  })
-
-  api.route({
+    },
+    handler: resources.name.resolve.handler
+  },
+  {
     method: '*',
     path: '/api/v0/name/publish',
-    config: {
-      handler: resources.name.publish.handler,
+    options: {
       validate: resources.name.publish.validate
-    }
-  })
-
-  api.route({
+    },
+    handler: resources.name.publish.handler
+  },
+  {
     method: '*',
     path: '/api/v0/name/pubsub/state',
-    config: {
-      handler: resources.name.pubsub.state.handler
-    }
-  })
-
-  api.route({
+    handler: resources.name.pubsub.state.handler
+  },
+  {
     method: '*',
     path: '/api/v0/name/pubsub/subs',
-    config: {
-      handler: resources.name.pubsub.subs.handler
-    }
-  })
-
-  api.route({
+    handler: resources.name.pubsub.subs.handler
+  },
+  {
     method: '*',
     path: '/api/v0/name/pubsub/cancel',
-    config: {
-      handler: resources.name.pubsub.cancel.handler,
+    options: {
       validate: resources.name.pubsub.cancel.validate
-    }
-  })
-}
+    },
+    handler: resources.name.pubsub.cancel.handler
+  }
+]

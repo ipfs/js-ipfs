@@ -4,27 +4,27 @@ const mapValues = require('lodash/mapValues')
 const keyBy = require('lodash/keyBy')
 const multibase = require('multibase')
 const Joi = require('joi')
+const Boom = require('boom')
+const isIpfs = require('is-ipfs')
 const { cidToString } = require('../../../utils/cid')
-const debug = require('debug')
-const log = debug('jsipfs:http-api:pin')
-log.error = debug('jsipfs:http-api:pin:error')
 
-exports = module.exports
+function parseArgs (request, h) {
+  let { arg } = request.query
 
-function parseArgs (request, reply) {
-  if (!request.query.arg) {
-    return reply({
-      Message: "Argument 'arg' is required",
-      Code: 0
-    }).code(400).takeover()
+  if (!arg) {
+    throw Boom.badRequest("Argument 'arg' is required")
   }
 
-  const recursive = request.query.recursive !== 'false'
+  arg = Array.isArray(arg) ? arg : [arg]
 
-  return reply({
-    path: request.query.arg,
-    recursive: recursive
+  arg.forEach(path => {
+    if (!isIpfs.ipfsPath(path) && !isIpfs.cid(path)) {
+      throw Boom.badRequest('invalid ipfs ref path')
+    }
   })
+
+  const recursive = request.query.recursive !== 'false'
+  return { path: arg, recursive }
 }
 
 exports.ls = {
@@ -34,34 +34,39 @@ exports.ls = {
     }).unknown()
   },
 
-  parseArgs: (request, reply) => {
-    const type = request.query.type || 'all'
+  parseArgs (request, h) {
+    let { arg } = request.query
 
-    return reply({
-      path: request.query.arg,
-      type: type
-    })
+    if (arg) {
+      arg = Array.isArray(arg) ? arg : [arg]
+
+      arg.forEach(path => {
+        if (!isIpfs.ipfsPath(path) && !isIpfs.cid(path)) {
+          throw Boom.badRequest('invalid ipfs ref path')
+        }
+      })
+    }
+
+    const type = request.query.type || 'all'
+    return { path: request.query.arg, type }
   },
 
-  handler: (request, reply) => {
+  async handler (request, h) {
+    const { ipfs } = request.server.app
     const { path, type } = request.pre.args
-    const ipfs = request.server.app.ipfs
 
-    ipfs.pin.ls(path, { type }, (err, result) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: `Failed to list pins: ${err.message}`,
-          Code: 0
-        }).code(500)
-      }
+    let result
+    try {
+      result = await ipfs.pin.ls(path, { type })
+    } catch (err) {
+      throw Boom.boomify(err, { message: 'Failed to list pins' })
+    }
 
-      return reply({
-        Keys: mapValues(
-          keyBy(result, obj => cidToString(obj.hash, { base: request.query['cid-base'] })),
-          obj => ({ Type: obj.type })
-        )
-      })
+    return h.response({
+      Keys: mapValues(
+        keyBy(result, obj => cidToString(obj.hash, { base: request.query['cid-base'] })),
+        obj => ({ Type: obj.type })
+      )
     })
   }
 }
@@ -73,24 +78,24 @@ exports.add = {
     }).unknown()
   },
 
-  parseArgs: parseArgs,
+  parseArgs,
 
-  handler: (request, reply) => {
-    const ipfs = request.server.app.ipfs
+  async handler (request, h) {
+    const { ipfs } = request.server.app
     const { path, recursive } = request.pre.args
 
-    ipfs.pin.add(path, { recursive }, (err, result) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: `Failed to add pin: ${err.message}`,
-          Code: 0
-        }).code(500)
+    let result
+    try {
+      result = await ipfs.pin.add(path, { recursive })
+    } catch (err) {
+      if (err.message.includes('already pinned recursively')) {
+        throw Boom.boomify(err, { statusCode: 400 })
       }
+      throw Boom.boomify(err, { message: 'Failed to add pin' })
+    }
 
-      return reply({
-        Pins: result.map(obj => cidToString(obj.hash, { base: request.query['cid-base'] }))
-      })
+    return h.response({
+      Pins: result.map(obj => cidToString(obj.hash, { base: request.query['cid-base'] }))
     })
   }
 }
@@ -102,24 +107,21 @@ exports.rm = {
     }).unknown()
   },
 
-  parseArgs: parseArgs,
+  parseArgs,
 
-  handler: (request, reply) => {
-    const ipfs = request.server.app.ipfs
+  async handler (request, h) {
+    const { ipfs } = request.server.app
     const { path, recursive } = request.pre.args
 
-    ipfs.pin.rm(path, { recursive }, (err, result) => {
-      if (err) {
-        log.error(err)
-        return reply({
-          Message: `Failed to remove pin: ${err.message}`,
-          Code: 0
-        }).code(500)
-      }
+    let result
+    try {
+      result = await ipfs.pin.rm(path, { recursive })
+    } catch (err) {
+      throw Boom.boomify(err, { message: 'Failed to remove pin' })
+    }
 
-      return reply({
-        Pins: result.map(obj => cidToString(obj.hash, { base: request.query['cid-base'] }))
-      })
+    return h.response({
+      Pins: result.map(obj => cidToString(obj.hash, { base: request.query['cid-base'] }))
     })
   }
 }

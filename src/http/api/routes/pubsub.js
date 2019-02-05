@@ -1,39 +1,26 @@
 'use strict'
 
-const resources = require('./../resources')
+const resources = require('../resources')
 
-module.exports = (server) => {
-  const api = server.select('API')
-
-  api.route({
+module.exports = [
+  {
     method: '*',
     path: '/api/v0/pubsub/sub',
-    config: {
-      handler: resources.pubsub.subscribe.handler
-    }
-  })
-
-  api.route({
+    handler: resources.pubsub.subscribe.handler
+  },
+  {
     method: '*',
     path: '/api/v0/pubsub/pub',
-    config: {
-      handler: resources.pubsub.publish.handler
-    }
-  })
-
-  api.route({
+    handler: resources.pubsub.publish.handler
+  },
+  {
     method: '*',
     path: '/api/v0/pubsub/ls',
-    config: {
-      handler: resources.pubsub.ls.handler
-    }
-  })
-
-  api.route({
+    handler: resources.pubsub.ls.handler
+  },
+  {
     method: '*',
     path: '/api/v0/pubsub/peers',
-    config: {
-      handler: resources.pubsub.peers.handler
-    }
-  })
-}
+    handler: resources.pubsub.peers.handler
+  }
+]
