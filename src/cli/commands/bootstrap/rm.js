@@ -20,7 +20,8 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
-      const list = await argv.ipfs.bootstrap.rm(argv.peer, { all: argv.all })
+      const ipfs = await argv.getIpfs()
+      const list = await ipfs.bootstrap.rm(argv.peer, { all: argv.all })
       list.Peers.forEach((peer) => print(peer))
     })())
   }

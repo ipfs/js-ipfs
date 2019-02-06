@@ -11,7 +11,8 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
-      const version = await argv.ipfs.repo.version()
+      const ipfs = await argv.getIpfs()
+      const version = await ipfs.repo.version()
       print(version)
     })())
   }

@@ -20,8 +20,9 @@ module.exports = {
     }
   },
 
-  handler ({ ipfs, root, name, ref, cidBase, resolve }) {
+  handler ({ getIpfs, root, name, ref, cidBase, resolve }) {
     resolve((async () => {
+      const ipfs = await getIpfs()
       const nodeA = await ipfs.object.get(ref, { enc: 'base58' })
       const result = await promisify(dagPB.util.cid)(nodeA)
       const link = new DAGLink(name, nodeA.size, result)

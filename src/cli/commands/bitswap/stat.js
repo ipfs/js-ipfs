@@ -17,8 +17,9 @@ module.exports = {
     }
   },
 
-  handler ({ ipfs, cidBase, resolve }) {
+  handler ({ getIpfs, cidBase, resolve }) {
     resolve((async () => {
+      const ipfs = await getIpfs()
       const stats = await ipfs.bitswap.stat()
       stats.wantlist = stats.wantlist.map(k => cidToString(k['/'], { base: cidBase, upgrade: false }))
       stats.peers = stats.peers || []

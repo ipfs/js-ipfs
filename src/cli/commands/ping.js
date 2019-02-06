@@ -17,24 +17,28 @@ module.exports = {
   },
 
   handler (argv) {
-    argv.resolve(new Promise((resolve, reject) => {
-      const peerId = argv.peerId
-      const count = argv.count || 10
-      pull(
-        argv.ipfs.pingPullStream(peerId, { count }),
-        pull.drain(({ success, time, text }) => {
-          // Check if it's a pong
-          if (success && !text) {
-            print(`Pong received: time=${time} ms`)
-          // Status response
-          } else {
-            print(text)
-          }
-        }, err => {
-          if (err) return reject(err)
-          resolve()
-        })
-      )
-    }))
+    argv.resolve((async () => {
+      const ipfs = await argv.getIpfs()
+
+      return new Promise((resolve, reject) => {
+        const peerId = argv.peerId
+        const count = argv.count || 10
+        pull(
+          ipfs.pingPullStream(peerId, { count }),
+          pull.drain(({ success, time, text }) => {
+            // Check if it's a pong
+            if (success && !text) {
+              print(`Pong received: time=${time} ms`)
+            // Status response
+            } else {
+              print(text)
+            }
+          }, err => {
+            if (err) return reject(err)
+            resolve()
+          })
+        )
+      })
+    })())
   }
 }

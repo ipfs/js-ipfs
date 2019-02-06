@@ -10,7 +10,8 @@ module.exports = {
   handler (argv) {
     argv.resolve((async () => {
       const data = Buffer.from(String(argv.data))
-      await argv.ipfs.pubsub.publish(argv.topic, data)
+      const ipfs = await argv.getIpfs()
+      await ipfs.pubsub.publish(argv.topic, data)
     })())
   }
 }

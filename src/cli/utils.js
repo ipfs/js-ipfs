@@ -119,3 +119,18 @@ exports.rightpad = (val, n) => {
 exports.ipfsPathHelp = 'ipfs uses a repository in the local file system. By default, the repo is ' +
   'located at ~/.jsipfs. To change the repo location, set the $IPFS_PATH environment variable:\n\n' +
   'export IPFS_PATH=/path/to/ipfsrepo\n'
+
+exports.singleton = create => {
+  const requests = []
+  const getter = promisify(cb => {
+    if (getter.instance) return cb(null, getter.instance, ...getter.rest)
+    requests.push(cb)
+    if (requests.length > 1) return
+    create((err, instance, ...rest) => {
+      getter.instance = instance
+      getter.rest = rest
+      while (requests.length) requests.pop()(err, instance, ...rest)
+    })
+  })
+  return getter
+}

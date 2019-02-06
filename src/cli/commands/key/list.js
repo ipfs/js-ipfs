@@ -11,7 +11,8 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
-      const keys = await argv.ipfs.key.list()
+      const ipfs = await argv.getIpfs()
+      const keys = await ipfs.key.list()
       keys.forEach((ki) => print(`${ki.id} ${ki.name}`))
     })())
   }

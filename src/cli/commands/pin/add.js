@@ -23,9 +23,10 @@ module.exports = {
     }
   },
 
-  handler ({ ipfs, ipfsPath, recursive, cidBase, resolve }) {
+  handler ({ getIpfs, ipfsPath, recursive, cidBase, resolve }) {
     resolve((async () => {
       const type = recursive ? 'recursive' : 'direct'
+      const ipfs = await getIpfs()
       const results = await ipfs.pin.add(ipfsPath, { recursive })
       results.forEach((res) => {
         print(`pinned ${cidToString(res.hash, { base: cidBase })} ${type}ly`)

@@ -46,7 +46,8 @@ module.exports = {
         ttl: argv.ttl
       }
 
-      const result = await argv.ipfs.name.publish(argv.ipfsPath, opts)
+      const ipfs = await argv.getIpfs()
+      const result = await ipfs.name.publish(argv.ipfsPath, opts)
       print(`Published to ${result.name}: ${result.value}`)
     })())
   }

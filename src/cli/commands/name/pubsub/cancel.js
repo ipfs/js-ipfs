@@ -9,7 +9,8 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
-      const result = await argv.ipfs.name.pubsub.cancel(argv.name)
+      const ipfs = await argv.getIpfs()
+      const result = await ipfs.name.pubsub.cancel(argv.name)
       print(result.canceled ? 'canceled' : 'no subscription')
     })())
   }

@@ -11,7 +11,8 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
-      const subscriptions = await argv.ipfs.pubsub.ls()
+      const ipfs = await argv.getIpfs()
+      const subscriptions = await ipfs.pubsub.ls()
       subscriptions.forEach(sub => print(sub))
     })())
   }

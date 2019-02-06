@@ -30,12 +30,13 @@ module.exports = {
       }
       argv._handled = true
 
-      const { bool, json, key } = argv
+      const { bool, json, key, getIpfs } = argv
+      const ipfs = await getIpfs()
       let value = argv.value
 
       if (!value) {
         // Get the value of a given key
-        value = await argv.ipfs.config.get(key)
+        value = await ipfs.config.get(key)
 
         if (typeof value === 'object') {
           print(JSON.stringify(value, null, 2))
@@ -55,7 +56,7 @@ module.exports = {
           }
         }
 
-        await argv.ipfs.config.set(key, value)
+        await ipfs.config.set(key, value)
       }
     })())
   }

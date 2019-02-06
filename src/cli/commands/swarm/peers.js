@@ -18,7 +18,8 @@ module.exports = {
         throw new Error('This command must be run in online mode. Try running \'ipfs daemon\' first.')
       }
 
-      const result = await argv.ipfs.swarm.peers()
+      const ipfs = await argv.getIpfs()
+      const result = await ipfs.swarm.peers()
 
       result.forEach((item) => {
         let ma = multiaddr(item.addr.toString())

@@ -12,7 +12,8 @@ module.exports = {
   handler (argv) {
     argv.resolve((async () => {
       const handler = msg => print(msg.data.toString())
-      await argv.ipfs.pubsub.subscribe(argv.topic, handler)
+      const ipfs = await argv.getIpfs()
+      await ipfs.pubsub.subscribe(argv.topic, handler)
     })())
   }
 }

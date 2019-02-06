@@ -11,7 +11,8 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
-      const peers = await argv.ipfs.pubsub.peers(argv.topic)
+      const ipfs = await argv.getIpfs()
+      const peers = await ipfs.pubsub.peers(argv.topic)
       peers.forEach(peer => print(peer))
     })())
   }

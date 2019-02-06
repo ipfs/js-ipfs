@@ -9,7 +9,8 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
-      await argv.ipfs.repo.gc()
+      const ipfs = await argv.getIpfs()
+      await ipfs.repo.gc()
     })())
   }
 }

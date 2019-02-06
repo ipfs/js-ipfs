@@ -16,7 +16,8 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
-      const stats = await argv.ipfs.stats.repo({ human: argv.human })
+      const ipfs = await argv.getIpfs()
+      const stats = await ipfs.stats.repo({ human: argv.human })
       print(`repo status
   number of objects: ${stats.numObjects}
   repo size: ${stats.repoSize}

@@ -17,8 +17,9 @@ module.exports = {
     }
   },
 
-  handler ({ ipfs, key, cidBase, resolve }) {
+  handler ({ getIpfs, key, cidBase, resolve }) {
     resolve((async () => {
+      const ipfs = await getIpfs()
       const stats = await ipfs.block.stat(key)
       print('Key: ' + cidToString(stats.key, { base: cidBase }))
       print('Size: ' + stats.size)

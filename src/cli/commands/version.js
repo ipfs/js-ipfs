@@ -34,7 +34,8 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
-      const data = await argv.ipfs.version()
+      const ipfs = await argv.getIpfs()
+      const data = await ipfs.version()
 
       const withCommit = argv.all || argv.commit
       const parsedVersion = `${data.version}${withCommit ? `-${data.commit}` : ''}`

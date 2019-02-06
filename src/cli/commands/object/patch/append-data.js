@@ -34,7 +34,8 @@ module.exports = {
         })
       }
 
-      const cid = await argv.ipfs.object.patch.appendData(argv.root, data, {
+      const ipfs = await argv.getIpfs()
+      const cid = await ipfs.object.patch.appendData(argv.root, data, {
         enc: 'base58'
       })
 

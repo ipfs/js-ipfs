@@ -21,7 +21,8 @@ module.exports = {
       const config = utils.isDaemonOn()
         ? filePath : JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
-      return argv.ipfs.config.replace(config)
+      const ipfs = await argv.getIpfs()
+      return ipfs.config.replace(config)
     })())
   }
 }

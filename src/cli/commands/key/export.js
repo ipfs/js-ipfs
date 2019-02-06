@@ -24,7 +24,8 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
-      const pem = await argv.ipfs.key.export(argv.name, argv.passout)
+      const ipfs = await argv.getIpfs()
+      const pem = await ipfs.key.export(argv.name, argv.passout)
       if (argv.output === 'stdout') {
         process.stdout.write(pem)
       } else {
