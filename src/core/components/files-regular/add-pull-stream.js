@@ -27,7 +27,7 @@ function prepareFile (file, self, opts, callback) {
       ? cb(null, file)
       : self.object.get(file.multihash, Object.assign({}, opts, { preload: false }), cb),
     (node, cb) => {
-      const b58Hash = cid.toBaseEncodedString()
+      const cidStr = cid.toBaseEncodedString()
 
       let size = node.size
 
@@ -38,8 +38,8 @@ function prepareFile (file, self, opts, callback) {
       cb(null, {
         path: opts.wrapWithDirectory
           ? file.path.substring(WRAPPER.length)
-          : (file.path || b58Hash),
-        hash: b58Hash,
+          : (file.path || cidStr),
+        hash: cidStr,
         size
       })
     }
