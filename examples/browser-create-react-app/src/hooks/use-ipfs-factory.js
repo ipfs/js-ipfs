@@ -10,7 +10,7 @@ let ipfs = null
  * is intended to show it is possible. I don't know if it is wise.
  *
  * Next steps would be to store the ipfs instance on the context
- * so use-ipfs calls can grab it from their rather than expecting
+ * so use-ipfs calls can grab it from there rather than expecting
  * it to be passed in.
  */
 export default function useIpfsFactory ({commands}) {

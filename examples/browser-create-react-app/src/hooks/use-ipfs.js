@@ -5,7 +5,7 @@ import dotProp from 'dot-prop'
  * Pass the command you'd like to call on an ipfs instance.
  *
  * Uses setState to capture the response, so your component
- * will re-render when the resutlt turns up.
+ * will re-render when the result turns up.
  *
  */
 export default function useIpfs (ipfs, cmd, opts) {
