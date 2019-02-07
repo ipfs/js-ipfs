@@ -34,8 +34,7 @@ describe('object', () => runOnAndOff((thing) => {
     })
   })
 
-  // TODO: unskip after switch to v1 CIDs by default
-  it.skip('should new and print CID encoded in specified base', () => {
+  it('should new and print CID encoded in specified base', () => {
     return ipfs('object new --cid-base=base64').then((out) => {
       expect(out).to.eql(
         'mAXASIOOwxEKY/BwUmvv0yJlvuSQnrkHkZJuTTKSVmRt4UrhV\n'
@@ -103,8 +102,7 @@ describe('object', () => runOnAndOff((thing) => {
     })
   })
 
-  // TODO: unskip after switch to v1 CIDs by default
-  it.skip('should put and print CID encoded in specified base', () => {
+  it('should put and print CID encoded in specified base', () => {
     return ipfs('object put test/fixtures/test-data/node.json --cid-base=base64')
       .then((out) => {
         expect(out).to.eql(
@@ -188,8 +186,7 @@ describe('object', () => runOnAndOff((thing) => {
       })
     })
 
-    // TODO: unskip after switch to v1 CIDs by default
-    it.skip('should append-data and print CID encoded in specified base', () => {
+    it('should append-data and print CID encoded in specified base', () => {
       return ipfs('object patch append-data QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n test/fixtures/test-data/badconfig --cid-base=base64').then((out) => {
         expect(out).to.eql(
           'mAXASIP+BZ7jGtaTyLGOs0xYcQvH7K9kVKEbyzXAkwLoZwrRj\n'
@@ -205,8 +202,7 @@ describe('object', () => runOnAndOff((thing) => {
       })
     })
 
-    // TODO: unskip after switch to v1 CIDs by default
-    it.skip('should set-data and print CID encoded in specified base', () => {
+    it('should set-data and print CID encoded in specified base', () => {
       return ipfs('object patch set-data QmfY37rjbPCZRnhvvJuQ46htW3VCAWziVB991P79h6WSv6 test/fixtures/test-data/badconfig --cid-base=base64').then((out) => {
         expect(out).to.eql(
           'mAXASIP+BZ7jGtaTyLGOs0xYcQvH7K9kVKEbyzXAkwLoZwrRj\n'
@@ -222,8 +218,7 @@ describe('object', () => runOnAndOff((thing) => {
       })
     })
 
-    // TODO: unskip after switch to v1 CIDs by default
-    it.skip('should add-link and print CID encoded in specified base', () => {
+    it('should add-link and print CID encoded in specified base', () => {
       return ipfs('object patch add-link QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n foo QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn --cid-base=base64').then((out) => {
         expect(out).to.eql(
           'mAXASIOEVPbXq2xYoEsRZhaPB61btcy1x359osjv4a2L/lgPs\n'
@@ -239,8 +234,7 @@ describe('object', () => runOnAndOff((thing) => {
       })
     })
 
-    // TODO: unskip after switch to v1 CIDs by default
-    it.skip('should rm-link and print CID encoded in specified base', () => {
+    it('should rm-link and print CID encoded in specified base', () => {
       return ipfs('object patch rm-link QmdVHE8fUD6FLNLugtNxqDFyhaCgdob372hs6BYEe75VAK foo --cid-base=base64').then((out) => {
         expect(out).to.eql(
           'mAXASIOOwxEKY/BwUmvv0yJlvuSQnrkHkZJuTTKSVmRt4UrhV\n'
