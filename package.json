@@ -73,7 +73,7 @@
     "hat": "0.0.3",
     "interface-ipfs-core": "~0.96.0",
     "ipfsd-ctl": "~0.40.1",
-    "libp2p-websocket-star": "^0.10.2",
+    "libp2p-websocket-star": "~0.10.2",
     "ncp": "^2.0.0",
     "qs": "^6.5.2",
     "rimraf": "^2.6.2",
