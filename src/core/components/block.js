@@ -56,15 +56,8 @@ module.exports = function block (self) {
 
           const mhtype = options.mhtype || 'sha2-256'
           const format = options.format || 'dag-pb'
-          let cidVersion
+          const cidVersion = options.version == null ? 1 : options.version
           // const mhlen = options.mhlen || 0
-
-          if (options.version == null) {
-            // Pick appropriate CID version
-            cidVersion = mhtype === 'sha2-256' && format === 'dag-pb' ? 0 : 1
-          } else {
-            cidVersion = options.version
-          }
 
           multihashing(block, mhtype, (err, multihash) => {
             if (err) {
