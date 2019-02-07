@@ -115,7 +115,7 @@
     "ipfs-unixfs-engine": "github:ipfs/js-ipfs-unixfs-engine#refactor/cidv1b32-default",
     "ipld": "~0.21.1",
     "ipld-bitcoin": "~0.1.8",
-    "ipld-dag-pb": "~0.15.0",
+    "ipld-dag-pb": "github:ipld/js-ipld-dag-pb#refactor/cidv1b32-default",
     "ipld-ethereum": "^2.0.1",
     "ipld-git": "~0.2.2",
     "ipld-zcash": "~0.1.6",
