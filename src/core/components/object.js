@@ -8,7 +8,6 @@ const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const DAGLink = dagPB.DAGLink
 const CID = require('cids')
-const mh = require('multihashes')
 const Unixfs = require('ipfs-unixfs')
 const errCode = require('err-code')
 
@@ -50,7 +49,7 @@ function parseJSONBuffer (buf, callback) {
       return new DAGLink(
         link.Name || link.name,
         link.Size || link.size,
-        mh.fromB58String(link.Hash || link.hash || link.multihash)
+        link.Hash || link.hash || link.multihash
       )
     })
     data = Buffer.from(parsed.Data)
@@ -88,7 +87,7 @@ module.exports = function object (self) {
             }
 
             self._ipld.put(node, {
-              version: 0,
+              version: 1,
               hashAlg: 'sha2-256',
               format: 'dag-pb'
             }, (err, cid) => {
@@ -138,7 +137,7 @@ module.exports = function object (self) {
         }
 
         self._ipld.put(node, {
-          version: 0,
+          version: 1,
           hashAlg: 'sha2-256',
           format: 'dag-pb'
         }, (err, cid) => {
@@ -201,7 +200,7 @@ module.exports = function object (self) {
 
       function next () {
         self._ipld.put(node, {
-          version: 0,
+          version: 1,
           hashAlg: 'sha2-256',
           format: 'dag-pb'
         }, (err, cid) => {
