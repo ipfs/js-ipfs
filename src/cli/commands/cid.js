@@ -3,7 +3,7 @@
 const path = require('path')
 
 const cidCommandsPath = path.join(
-  __dirname, '..', '..', '..', 'node_modules', 'cid-tool', 'src', 'cli', 'commands'
+  path.dirname(require.resolve('cid-tool')), 'cli', 'commands'
 )
 
 module.exports = {
