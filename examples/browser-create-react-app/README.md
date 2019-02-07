@@ -4,7 +4,7 @@ A minimal demonstration of how to use js-ipfs in a `create-react-app` generated 
 
 It boots up a js-ipfs instance via a custom React hook in `./src/hooks/use-ipfs-factory.js`, which is called from `./src/App.js`, which is where the magic happens.
 
-![Screen shot of the js ipfs node id info]('./screenshot.png')
+![Screen shot of the js ipfs node id info](./screenshot.png)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). **v2.1.3**
 
