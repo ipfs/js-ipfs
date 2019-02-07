@@ -33,8 +33,7 @@ module.exports = (http) => {
         expect(res.result.Links).to.be.eql([])
       })
 
-      // TODO: unskip after switch to v1 CIDs by default
-      it.skip('should create a new object and return a base64 encoded CID', async () => {
+      it('should create a new object and return a base64 encoded CID', async () => {
         const res = await api.inject({
           method: 'POST',
           url: '/api/v0/object/new?cid-base=base64'
@@ -88,8 +87,7 @@ module.exports = (http) => {
         expect(res.result.Data).to.be.empty()
       })
 
-      // TODO: unskip after switch to v1 CIDs by default
-      it.skip('should get object and return a base64 encoded CID', async () => {
+      it('should get object and return a base64 encoded CID', async () => {
         let res = await api.inject({
           method: 'POST',
           url: '/api/v0/object/new'
@@ -185,8 +183,7 @@ module.exports = (http) => {
         expect(res.result).to.eql(expectedResult)
       })
 
-      // TODO: unskip after switch to v1 CIDs by default
-      it.skip('should put data and return a base64 encoded CID', async () => {
+      it('should put data and return a base64 encoded CID', async () => {
         const form = new FormData()
         form.append('file', JSON.stringify({ Data: 'TEST' + Date.now(), Links: [] }), { filename: 'node.json' })
         const headers = form.getHeaders()
@@ -258,8 +255,7 @@ module.exports = (http) => {
         expect(res.result.CumulativeSize).to.equal(60 + 8)
       })
 
-      // TODO: unskip after switch to v1 CIDs by default
-      it.skip('should stat object and return a base64 encoded CID', async () => {
+      it('should stat object and return a base64 encoded CID', async () => {
         let res = await api.inject({
           method: 'POST',
           url: '/api/v0/object/new'
@@ -366,8 +362,7 @@ module.exports = (http) => {
         expect(res.result).to.deep.equal(expectedResult)
       })
 
-      // TODO: unskip after switch to v1 CIDs by default
-      it.skip('should list object links and return a base64 encoded CID', async () => {
+      it('should list object links and return a base64 encoded CID', async () => {
         let res = await api.inject({
           method: 'POST',
           url: '/api/v0/object/new'
@@ -509,8 +504,7 @@ module.exports = (http) => {
         expect(res.result).to.deep.equal(expectedResult)
       })
 
-      // TODO: unskip after switch to v1 CIDs by default
-      it.skip('should append data to object and return a base64 encoded CID', async () => {
+      it('should append data to object and return a base64 encoded CID', async () => {
         let res = await api.inject({
           method: 'POST',
           url: '/api/v0/object/new'
@@ -624,8 +618,7 @@ module.exports = (http) => {
         expect(res.result).to.deep.equal(expectedResult)
       })
 
-      // TODO: unskip after switch to v1 CIDs by default
-      it.skip('should set data for object and return a base64 encoded CID', async () => {
+      it('should set data for object and return a base64 encoded CID', async () => {
         let res = await api.inject({
           method: 'POST',
           url: '/api/v0/object/new'
@@ -731,8 +724,7 @@ module.exports = (http) => {
         })
       })
 
-      // TODO: unskip after switch to v1 CIDs by default
-      it.skip('should add a link to an object and return a base64 encoded CID', async () => {
+      it('should add a link to an object and return a base64 encoded CID', async () => {
         let res = await api.inject({
           method: 'POST',
           url: '/api/v0/object/new'
@@ -820,8 +812,7 @@ module.exports = (http) => {
         expect(res.result.Hash).to.equal('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
       })
 
-      // TODO: unskip after switch to v1 CIDs by default
-      it.skip('should remove a link from an object and return a base64 encoded CID', async () => {
+      it('should remove a link from an object and return a base64 encoded CID', async () => {
         const linkName = 'TEST' + Date.now()
 
         let res = await api.inject({
