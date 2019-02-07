@@ -184,10 +184,6 @@ describe('interface-ipfs-core tests', function () {
               config = null
             }
 
-            config = config || {
-              Bootstrap: []
-            }
-
             const spawnOptions = { repoPath, config, initOptions: { bits: 512 } }
 
             ipfsFactory.spawn(spawnOptions, (err, _ipfsd) => {

@@ -129,7 +129,7 @@
     "joi": "^14.3.0",
     "joi-browser": "^13.4.0",
     "joi-multiaddr": "^4.0.0",
-    "libp2p": "libp2p/js-libp2p#master",
+    "libp2p": "~0.25.0-rc.0",
     "libp2p-bootstrap": "~0.9.3",
     "libp2p-crypto": "~0.16.0",
     "libp2p-kad-dht": "~0.14.4",

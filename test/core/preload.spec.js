@@ -19,7 +19,7 @@ describe('preload', () => {
   let repo
 
   before(function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
 
     repo = createTempRepo()
     ipfs = new IPFS({
@@ -27,7 +27,8 @@ describe('preload', () => {
       config: {
         Addresses: {
           Swarm: []
-        }
+        },
+        Bootstrap: []
       },
       preload: {
         enabled: true,
@@ -44,17 +45,17 @@ describe('preload', () => {
   })
 
   after(function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     ipfs.stop(done)
   })
 
   after(function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     repo.teardown(done)
   })
 
   it('should preload content added with add', function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     ipfs.add(Buffer.from(hat()), (err, res) => {
       expect(err).to.not.exist()
       MockPreloadNode.waitForCids(res[0].hash, done)
@@ -62,7 +63,7 @@ describe('preload', () => {
   })
 
   it('should preload multiple content added with add', function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     ipfs.add([{
       content: Buffer.from(hat())
     }, {
@@ -76,7 +77,7 @@ describe('preload', () => {
   })
 
   it('should preload multiple content and intermediate dirs added with add', function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     ipfs.add([{
       path: 'dir0/dir1/file0',
       content: Buffer.from(hat())
@@ -97,7 +98,7 @@ describe('preload', () => {
   })
 
   it('should preload multiple content and wrapping dir for content added with add and wrapWithDirectory option', function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     ipfs.add([{
       path: 'dir0/dir1/file0',
       content: Buffer.from(hat())
@@ -118,7 +119,7 @@ describe('preload', () => {
   })
 
   it('should preload content retrieved with cat', function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     ipfs.add(Buffer.from(hat()), { preload: false }, (err, res) => {
       expect(err).to.not.exist()
       ipfs.cat(res[0].hash, (err) => {
@@ -129,7 +130,7 @@ describe('preload', () => {
   })
 
   it('should preload content retrieved with get', function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     ipfs.add(Buffer.from(hat()), { preload: false }, (err, res) => {
       expect(err).to.not.exist()
       ipfs.get(res[0].hash, (err) => {
@@ -140,7 +141,7 @@ describe('preload', () => {
   })
 
   it('should preload content retrieved with ls', function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     ipfs.add([{
       path: 'dir0/dir1/file0',
       content: Buffer.from(hat())
@@ -169,7 +170,7 @@ describe('preload', () => {
   })
 
   it('should preload content added with object.new', function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     ipfs.object.new((err, cid) => {
       expect(err).to.not.exist()
       MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
@@ -177,7 +178,7 @@ describe('preload', () => {
   })
 
   it('should preload content added with object.put', function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, (err, cid) => {
       expect(err).to.not.exist()
       MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
@@ -185,7 +186,7 @@ describe('preload', () => {
   })
 
   it('should preload content added with object.patch.addLink', function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     parallel({
       parent: (cb) => {
         waterfall([
@@ -214,7 +215,7 @@ describe('preload', () => {
   })
 
   it('should preload content added with object.patch.rmLink', function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     waterfall([
       (cb) => ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, cb),
       (cid, cb) => ipfs.object.get(cid, (err, node) => cb(err, { node, cid })),
@@ -239,7 +240,7 @@ describe('preload', () => {
   })
 
   it('should preload content added with object.patch.setData', function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, (err, cid) => {
       expect(err).to.not.exist()
 
@@ -251,7 +252,7 @@ describe('preload', () => {
   })
 
   it('should preload content added with object.patch.appendData', function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     ipfs.object.put({ Data: Buffer.from(hat()), Links: [] }, (err, cid) => {
       expect(err).to.not.exist()
 
@@ -263,7 +264,7 @@ describe('preload', () => {
   })
 
   it('should preload content retrieved with object.get', function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     ipfs.object.new(null, { preload: false }, (err, cid) => {
       expect(err).to.not.exist()
 
@@ -275,7 +276,7 @@ describe('preload', () => {
   })
 
   it('should preload content added with block.put', function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     ipfs.block.put(Buffer.from(hat()), (err, block) => {
       expect(err).to.not.exist()
       MockPreloadNode.waitForCids(block.cid.toBaseEncodedString(), done)
@@ -283,7 +284,7 @@ describe('preload', () => {
   })
 
   it('should preload content retrieved with block.get', function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     ipfs.block.put(Buffer.from(hat()), { preload: false }, (err, block) => {
       expect(err).to.not.exist()
       ipfs.block.get(block.cid, (err) => {
@@ -294,7 +295,7 @@ describe('preload', () => {
   })
 
   it('should preload content retrieved with block.stat', function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     ipfs.block.put(Buffer.from(hat()), { preload: false }, (err, block) => {
       expect(err).to.not.exist()
       ipfs.block.stat(block.cid, (err) => {
@@ -305,7 +306,7 @@ describe('preload', () => {
   })
 
   it('should preload content added with dag.put', function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     const obj = { test: hat() }
     ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' }, (err, cid) => {
       expect(err).to.not.exist()
@@ -314,7 +315,7 @@ describe('preload', () => {
   })
 
   it('should preload content retrieved with dag.get', function (done) {
-    this.timeout(20 * 1000)
+    this.timeout(50 * 1000)
     const obj = { test: hat() }
     const opts = { format: 'dag-cbor', hashAlg: 'sha2-256', preload: false }
     ipfs.dag.put(obj, opts, (err, cid) => {
@@ -328,7 +329,7 @@ describe('preload', () => {
 })
 
 describe('preload disabled', function () {
-  this.timeout(20 * 1000)
+  this.timeout(50 * 1000)
   let ipfs
   let repo
 

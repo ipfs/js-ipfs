@@ -120,7 +120,10 @@ describe('utils', () => {
     before(done => {
       repo = createTempRepo()
       node = new IPFS({
-        repo: repo
+        repo,
+        config: {
+          Bootstrap: []
+        }
       })
       node.once('ready', () => node.add(fixtures, done))
     })
