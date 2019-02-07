@@ -112,7 +112,7 @@
     "ipfs-multipart": "~0.1.0",
     "ipfs-repo": "~0.26.1",
     "ipfs-unixfs": "~0.1.16",
-    "ipfs-unixfs-engine": "~0.35.3",
+    "ipfs-unixfs-engine": "github:ipfs/js-ipfs-unixfs-engine#refactor/cidv1b32-default",
     "ipld": "~0.21.1",
     "ipld-bitcoin": "~0.1.8",
     "ipld-dag-pb": "~0.15.0",
