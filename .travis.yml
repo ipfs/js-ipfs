@@ -6,7 +6,7 @@ stages:
   - cov
 
 node_js:
-  - 10
+  - '10'
 
 os:
   - linux
@@ -14,28 +14,31 @@ os:
   - windows
 
 script: npx nyc -s npm run test:node -- --bail
-
+after_success: npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
 
 jobs:
   include:
     - stage: check
-      node_js: 10
       script:
+        - npx aegir commitlint --travis
+        - npx aegir dep-check
         - npm run lint
-        - npm run dep-check
+
     - stage: test
       name: chrome
-      node_js: 10
       addons:
         chrome: stable
       script:
-        - npx aegir test -t browser -- --browsers ChromeDocker
-        - npx aegir test -t webworker -- --browsers ChromeDocker
+        - npx aegir test -t browser
+        - npx aegir test -t webworker
+
     - stage: test
       name: firefox
-      node_js: 10
       addons:
         firefox: latest
       script:
-        - npx aegir test -t browser -- --browsers FirefoxHeadlessNoCors
-        - npx aegir test -t webworker -- --browsers FirefoxHeadlessNoCors
+        - npx aegir test -t browser -- --browsers FirefoxHeadless
+        - npx aegir test -t webworker -- --browsers FirefoxHeadless
+
+notifications:
+  email: false

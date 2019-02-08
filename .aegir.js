@@ -1,6 +1,5 @@
 'use strict'
 
-const path = require('path')
 const IPFSFactory = require('ipfsd-ctl')
 const parallel = require('async/parallel')
 const MockPreloadNode = require('./test/utils/mock-preload-node')
