@@ -28,6 +28,7 @@ module.exports.createNode = () => {
       res.end()
       return
     }
+
     if (req.url.startsWith('/api/v0/refs')) {
       const arg = new URL(`https://ipfs.io${req.url}`).searchParams.get('arg')
       cids = cids.concat(arg)

@@ -6,8 +6,8 @@ const protobuf = require('protons')
 const fnv1a = require('fnv1a')
 const varint = require('varint')
 const { DAGNode, DAGLink } = require('ipld-dag-pb')
-const some = require('async/some')
-const eachOf = require('async/eachOf')
+const someSeries = require('async/someSeries')
+const eachOfSeries = require('async/eachOfSeries')
 
 const pbSchema = require('./pin.proto')
 
@@ -69,7 +69,7 @@ exports = module.exports = function (dag) {
       return searchChildren(root, callback)
 
       function searchChildren (root, cb) {
-        some(root.links, ({ cid }, done) => {
+        someSeries(root.links, ({ cid }, done) => {
           const bs58Link = toB58String(cid)
 
           if (bs58Link === childhash) {
@@ -174,7 +174,7 @@ exports = module.exports = function (dag) {
             return bins
           }, {})
 
-          eachOf(bins, (bin, idx, eachCb) => {
+          eachOfSeries(bins, (bin, idx, eachCb) => {
             storePins(
               bin,
               depth + 1,
@@ -233,7 +233,7 @@ exports = module.exports = function (dag) {
         return callback(err)
       }
 
-      eachOf(node.links, (link, idx, eachCb) => {
+      eachOfSeries(node.links, (link, idx, eachCb) => {
         if (idx < pbh.header.fanout) {
           // the first pbh.header.fanout links are fanout bins
           // if a fanout bin is not 'empty', dig into and walk its DAGLinks

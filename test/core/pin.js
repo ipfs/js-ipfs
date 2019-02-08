@@ -74,7 +74,12 @@ describe('pin', function () {
   before(function (done) {
     this.timeout(20 * 1000)
     repo = createTempRepo()
-    ipfs = new IPFS({ repo })
+    ipfs = new IPFS({
+      repo,
+      config: {
+        Bootstrap: []
+      }
+    })
     ipfs.on('ready', () => {
       pin = ipfs.pin
       ipfs.add(fixtures, done)

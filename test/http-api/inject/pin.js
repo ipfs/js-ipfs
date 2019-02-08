@@ -32,7 +32,8 @@ const pins = {
 }
 
 module.exports = (http) => {
-  describe('pin', () => {
+  describe('pin', function () {
+    this.timeout(20 * 1000)
     let api
 
     before(() => {

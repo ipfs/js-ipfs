@@ -6,20 +6,19 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
+
 const parallel = require('async/parallel')
 
 const IPFSFactory = require('ipfsd-ctl')
 const f = IPFSFactory.create({ type: 'js' })
 
 const config = {
-  Addresses: {
-    Swarm: [`/ip4/127.0.0.1/tcp/0`, `/ip4/127.0.0.1/tcp/0/ws`],
-    API: `/ip4/127.0.0.1/tcp/0`,
-    Gateway: `/ip4/127.0.0.1/tcp/0`
-  },
   Bootstrap: [],
   Discovery: {
     MDNS: {
+      Enabled: false
+    },
+    webRTCStar: {
       Enabled: false
     }
   }
@@ -33,16 +32,17 @@ function createNode (callback) {
   }, callback)
 }
 
-describe.skip('verify that kad-dht is doing its thing', () => {
+describe('kad-dht is routing content and peers correctly', () => {
   let nodeA
   let nodeB
   let nodeC
-  // let addrA
   let addrB
   let addrC
 
   let nodes
-  before((done) => {
+  before(function (done) {
+    this.timeout(30 * 1000)
+
     parallel([
       (cb) => createNode(cb),
       (cb) => createNode(cb),
@@ -59,7 +59,6 @@ describe.skip('verify that kad-dht is doing its thing', () => {
         (cb) => nodeC.id(cb)
       ], (err, ids) => {
         expect(err).to.not.exist()
-        // addrA = ids[0].addresses[0]
         addrB = ids[1].addresses[0]
         addrC = ids[2].addresses[0]
         parallel([
@@ -72,10 +71,29 @@ describe.skip('verify that kad-dht is doing its thing', () => {
 
   after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
 
-  it.skip('add a file in C, fetch through B in A', (done) => {
+  it('add a file in B, fetch in A', function (done) {
+    this.timeout(30 * 1000)
     const file = {
-      path: 'testfile.txt',
-      content: Buffer.from('hello kad')
+      path: 'testfile1.txt',
+      content: Buffer.from('hello kad 1')
+    }
+
+    nodeB.add(file, (err, filesAdded) => {
+      expect(err).to.not.exist()
+
+      nodeA.cat(filesAdded[0].hash, (err, data) => {
+        expect(err).to.not.exist()
+        expect(data).to.eql(file.content)
+        done()
+      })
+    })
+  })
+
+  it('add a file in C, fetch through B in A', function (done) {
+    this.timeout(30 * 1000)
+    const file = {
+      path: 'testfile2.txt',
+      content: Buffer.from('hello kad 2')
     }
 
     nodeC.add(file, (err, filesAdded) => {
@@ -83,8 +101,7 @@ describe.skip('verify that kad-dht is doing its thing', () => {
 
       nodeA.cat(filesAdded[0].hash, (err, data) => {
         expect(err).to.not.exist()
-        expect(data.length).to.equal(file.data.length)
-        expect(data).to.eql(file.data)
+        expect(data).to.eql(file.content)
         done()
       })
     })

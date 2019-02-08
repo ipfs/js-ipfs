@@ -19,7 +19,9 @@ module.exports = (http) => {
       api = http.api._apiServer
     })
 
-    it('should publish a record', async () => {
+    it('should publish a record', async function () {
+      this.timeout(80 * 1000)
+
       const res = await api.inject({
         method: 'GET',
         url: `/api/v0/name/publish?arg=${cid}&resolve=false`
@@ -29,7 +31,9 @@ module.exports = (http) => {
       expect(res.result.Value).to.equal(`/ipfs/${cid}`)
     })
 
-    it('should publish and resolve a record', async () => {
+    it('should publish and resolve a record', async function () {
+      this.timeout(160 * 1000)
+
       let res = await api.inject({
         method: 'GET',
         url: `/api/v0/name/publish?arg=${cid}&resolve=false`

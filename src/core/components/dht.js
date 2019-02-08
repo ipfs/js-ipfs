@@ -3,11 +3,16 @@
 const promisify = require('promisify-es6')
 const every = require('async/every')
 const PeerId = require('peer-id')
+const PeerInfo = require('peer-info')
 const CID = require('cids')
 const each = require('async/each')
-const setImmediate = require('async/setImmediate')
-// const bsplit = require('buffer-split')
-const errCode = require('err-code')
+const nextTick = require('async/nextTick')
+
+const errcode = require('err-code')
+
+const debug = require('debug')
+const log = debug('jsipfs:dht')
+log.error = debug('jsipfs:dht:error')
 
 module.exports = (self) => {
   return {
@@ -15,14 +20,12 @@ module.exports = (self) => {
      * Given a key, query the DHT for its best value.
      *
      * @param {Buffer} key
+     * @param {Object} options - get options
+     * @param {number} options.timeout - optional timeout
      * @param {function(Error)} [callback]
      * @returns {Promise|void}
      */
     get: promisify((key, options, callback) => {
-      if (!Buffer.isBuffer(key)) {
-        return callback(new Error('Not valid key'))
-      }
-
       if (typeof options === 'function') {
         callback = options
         options = {}
@@ -30,7 +33,17 @@ module.exports = (self) => {
 
       options = options || {}
 
-      self.libp2p.dht.get(key, options.timeout, callback)
+      if (!Buffer.isBuffer(key)) {
+        try {
+          key = (new CID(key)).buffer
+        } catch (err) {
+          log.error(err)
+
+          return nextTick(() => callback(errcode(err, 'ERR_INVALID_CID')))
+        }
+      }
+
+      self.libp2p.dht.get(key, options, callback)
     }),
 
     /**
@@ -47,7 +60,13 @@ module.exports = (self) => {
      */
     put: promisify((key, value, callback) => {
       if (!Buffer.isBuffer(key)) {
-        return callback(new Error('Not valid key'))
+        try {
+          key = (new CID(key)).buffer
+        } catch (err) {
+          log.error(err)
+
+          return nextTick(() => callback(errcode(err, 'ERR_INVALID_CID')))
+        }
       }
 
       self.libp2p.dht.put(key, value, callback)
@@ -57,72 +76,53 @@ module.exports = (self) => {
      * Find peers in the DHT that can provide a specific value, given a key.
      *
      * @param {CID} key - They key to find providers for.
+     * @param {Object} options - findProviders options
+     * @param {number} options.timeout - how long the query should maximally run, in milliseconds (default: 60000)
+     * @param {number} options.maxNumProviders - maximum number of providers to find
      * @param {function(Error, Array<PeerInfo>)} [callback]
      * @returns {Promise<PeerInfo>|void}
      */
-    findprovs: promisify((key, opts, callback) => {
-      if (typeof opts === 'function') {
-        callback = opts
-        opts = {}
+    findProvs: promisify((key, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
       }
 
-      opts = opts || {}
+      options = options || {}
 
       if (typeof key === 'string') {
         try {
           key = new CID(key)
         } catch (err) {
-          return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+          log.error(err)
+
+          return nextTick(() => callback(errcode(err, 'ERR_INVALID_CID')))
         }
       }
 
-      if (typeof opts === 'function') {
-        callback = opts
-        opts = {}
-      }
-
-      opts = opts || {}
-
-      self.libp2p.contentRouting.findProviders(key, opts.timeout || null, callback)
+      self.libp2p.contentRouting.findProviders(key, options, callback)
     }),
 
     /**
      * Query the DHT for all multiaddresses associated with a `PeerId`.
      *
      * @param {PeerId} peer - The id of the peer to search for.
-     * @param {function(Error, Array<Multiaddr>)} [callback]
-     * @returns {Promise<Array<Multiaddr>>|void}
+     * @param {function(Error, PeerInfo)} [callback]
+     * @returns {Promise<PeerInfo>|void}
      */
-    findpeer: promisify((peer, callback) => {
+    findPeer: promisify((peer, callback) => {
       if (typeof peer === 'string') {
         peer = PeerId.createFromB58String(peer)
       }
 
-      self.libp2p.peerRouting.findPeer(peer, (err, info) => {
-        if (err) {
-          return callback(err)
-        }
-
-        // convert to go-ipfs return value, we need to revisit
-        // this. For now will just conform.
-        const goResult = [
-          {
-            Responses: [{
-              ID: info.id.toB58String(),
-              Addresses: info.multiaddrs.toArray().map((a) => a.toString())
-            }]
-          }
-        ]
-
-        callback(null, goResult)
-      })
+      self.libp2p.peerRouting.findPeer(peer, callback)
     }),
 
     /**
      * Announce to the network that we are providing given values.
      *
      * @param {CID|Array<CID>} keys - The keys that should be announced.
-     * @param {Object} [options={}]
+     * @param {Object} options - provide options
      * @param {bool} [options.recursive=false] - Provide not only the given object but also all objects linked from it.
      * @param {function(Error)} [callback]
      * @returns {Promise|void}
@@ -147,11 +147,15 @@ module.exports = (self) => {
         }
 
         if (!has) {
-          return callback(new Error('block(s) not found locally, cannot provide'))
+          const errMsg = 'block(s) not found locally, cannot provide'
+
+          log.error(errMsg)
+          return callback(errcode(errMsg, 'ERR_BLOCK_NOT_FOUND'))
         }
 
         if (options.recursive) {
           // TODO: Implement recursive providing
+          return callback(errcode('not implemented yet', 'ERR_NOT_IMPLEMENTED_YET'))
         } else {
           each(keys, (cid, cb) => {
             self.libp2p.contentRouting.provide(cid, cb)
@@ -164,22 +168,27 @@ module.exports = (self) => {
      * Find the closest peers to a given `PeerId`, by querying the DHT.
      *
      * @param {PeerId} peer - The `PeerId` to run the query agains.
-     * @param {function(Error, Array<PeerId>)} [callback]
-     * @returns {Promise<Array<PeerId>>|void}
+     * @param {function(Error, Array<PeerInfo>)} [callback]
+     * @returns {Promise<Array<PeerInfo>>|void}
      */
     query: promisify((peerId, callback) => {
       if (typeof peerId === 'string') {
-        peerId = PeerId.createFromB58String(peerId)
+        try {
+          peerId = PeerId.createFromB58String(peerId)
+        } catch (err) {
+          log.error(err)
+          return callback(err)
+        }
       }
 
       // TODO expose this method in peerRouting
       self.libp2p._dht.getClosestPeers(peerId.toBytes(), (err, peerIds) => {
         if (err) {
+          log.error(err)
           return callback(err)
         }
-        callback(null, peerIds.map((id) => {
-          return { ID: id.toB58String() }
-        }))
+
+        callback(null, peerIds.map((id) => new PeerInfo(id)))
       })
     })
   }

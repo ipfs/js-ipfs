@@ -13,13 +13,14 @@ const PeerBook = require('peer-book')
 const WebSocketStar = require('libp2p-websocket-star')
 const Multiplex = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
+const KadDHT = require('libp2p-kad-dht')
 const Libp2p = require('libp2p')
 
 const libp2pComponent = require('../../src/core/components/libp2p')
 
 describe('libp2p customization', function () {
   // Provide some extra time for ci since we're starting libp2p nodes in each test
-  this.timeout(15 * 1000)
+  this.timeout(25 * 1000)
 
   let datastore
   let peerInfo
@@ -27,7 +28,9 @@ describe('libp2p customization', function () {
   let testConfig
   let _libp2p
 
-  beforeEach((done) => {
+  before(function (done) {
+    this.timeout(25 * 1000)
+
     testConfig = {
       Addresses: {
         Swarm: ['/ip4/0.0.0.0/tcp/4002'],
@@ -43,7 +46,6 @@ describe('libp2p customization', function () {
         }
       },
       EXPERIMENTAL: {
-        dht: false,
         pubsub: false
       }
     }
@@ -92,7 +94,8 @@ describe('libp2p customization', function () {
                 ],
                 peerDiscovery: [
                   wsstar.discovery
-                ]
+                ],
+                dht: KadDHT
               }
             })
           }
@@ -142,7 +145,6 @@ describe('libp2p customization', function () {
             }
           },
           EXPERIMENTAL: {
-            dht: false,
             pubsub: false
           }
         })
@@ -170,7 +172,6 @@ describe('libp2p customization', function () {
             }
           },
           EXPERIMENTAL: {
-            dht: false,
             pubsub: true
           },
           libp2p: {
@@ -207,7 +208,6 @@ describe('libp2p customization', function () {
             }
           },
           EXPERIMENTAL: {
-            dht: false,
             pubsub: true
           }
         })
