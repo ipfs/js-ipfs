@@ -5,6 +5,8 @@ const Pino = require('hapi-pino')
 const debug = require('debug')
 const multiaddr = require('multiaddr')
 const promisify = require('promisify-es6')
+const toUri = require('multiaddr-to-uri')
+const toMultiaddr = require('uri-to-multiaddr')
 
 const IPFS = require('../core')
 const WStar = require('libp2p-webrtc-star')
@@ -14,9 +16,17 @@ const WS = require('libp2p-websockets')
 const Bootstrap = require('libp2p-bootstrap')
 const errorHandler = require('./error-handler')
 
-function uriToMultiaddr (uri) {
-  const ipPort = uri.split('/')[2].split(':')
-  return `/ip4/${ipPort[0]}/tcp/${ipPort[1]}`
+function hapiInfoToMultiaddr (info) {
+  let hostname = info.host
+  let uri = info.uri
+  // ipv6 fix
+  if (hostname.includes(':') && !hostname.startsWith('[')) {
+    // hapi 16 produces invalid URI for ipv6
+    // we fix it here by restoring missing square brackets
+    hostname = `[${hostname}]`
+    uri = uri.replace(`://${info.host}`, `://${hostname}`)
+  }
+  return toMultiaddr(uri)
 }
 
 class HttpApi {
@@ -82,7 +92,7 @@ class HttpApi {
     const apiAddr = config.Addresses.API.split('/')
     const apiServer = await this._createApiServer(apiAddr[2], apiAddr[4], ipfs)
     await apiServer.start()
-    apiServer.info.ma = uriToMultiaddr(apiServer.info.uri)
+    apiServer.info.ma = hapiInfoToMultiaddr(apiServer.info)
     this._apiServer = apiServer
 
     // for the CLI to know the where abouts of the API
@@ -91,12 +101,12 @@ class HttpApi {
     const gatewayAddr = config.Addresses.Gateway.split('/')
     const gatewayServer = await this._createGatewayServer(gatewayAddr[2], gatewayAddr[4], ipfs)
     await gatewayServer.start()
-    gatewayServer.info.ma = uriToMultiaddr(gatewayServer.info.uri)
+    gatewayServer.info.ma = hapiInfoToMultiaddr(gatewayServer.info)
     this._gatewayServer = gatewayServer
 
     ipfs._print('API listening on %s', apiServer.info.ma)
     ipfs._print('Gateway (read only) listening on %s', gatewayServer.info.ma)
-    ipfs._print('Web UI available at %s', apiServer.info.uri + '/webui')
+    ipfs._print('Web UI available at %s', toUri(apiServer.info.ma) + '/webui')
     this._log('started')
     return this
   }
