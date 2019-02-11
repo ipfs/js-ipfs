@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.34.4",
+  "version": "0.35.0-pre.0",
   "description": "JavaScript implementation of the IPFS specification",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "bin": {
@@ -269,6 +269,7 @@
     "SidHarder <softwarenavigator@gmail.com>",
     "Stephen Whitmore <stephen.whitmore@gmail.com>",
     "Stephen Whitmore <noffle@users.noreply.github.com>",
+    "Steven Allen <steven@stebalien.com>",
     "Terence Pae <terencepae@gmail.com>",
     "Uroš Jurglič <jurglic@gmail.com>",
     "Vasco Santos <vasco.santos@ua.pt>",
