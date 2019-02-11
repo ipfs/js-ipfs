@@ -3,7 +3,7 @@
 
 const fs = require('fs')
 
-describe.only('cli', () => {
+describe('cli', () => {
   fs.readdirSync(__dirname)
     .filter((file) => file !== 'index.js')
     .forEach((file) => require('./' + file))
