@@ -38,7 +38,7 @@ const enableForms = () => {
 const init = () => {
   ipfs.id()
     .then(res => {
-      showStatus(`daemon active\nid: ${res.ID}`, COLORS.success)
+      showStatus(`daemon active\nid: ${res.id}`, COLORS.success)
       enableForms()
     })
     .catch(err => {
@@ -77,7 +77,7 @@ const publish = (path) => {
 
   ipfs.name.publish(path)
     .then(res => {
-      const name = res.Name
+      const name = res.name
       showStatus('success!', COLORS.success)
       DOM.publishResultsDiv.classList.remove('hidden')
       DOM.publishResult.innerText = `/ipns/${name}`
@@ -95,9 +95,7 @@ const resolve = (name) => {
   DOM.resolveResultsDiv.classList.add('hidden')
 
   ipfs.name.resolve(name)
-    .then(res => {
-      const path = res.Path
-
+    .then(path => {
       showStatus('success!', COLORS.success)
       DOM.resolveResultsDiv.classList.remove('hidden')
       DOM.resolveResult.innerText = path
