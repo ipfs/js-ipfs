@@ -17,7 +17,7 @@ describe('.commands', function () {
   let ipfs
 
   before((done) => {
-    f.spawn({ initOptions: { bits: 1024 } }, (err, _ipfsd) => {
+    f.spawn({ initOptions: { bits: 1024, profile: 'test' } }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsd = _ipfsd
       ipfs = ipfsClient(_ipfsd.apiAddr)

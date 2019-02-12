@@ -20,7 +20,7 @@ describe('.util', () => {
   before(function (done) {
     this.timeout(20 * 1000) // slow CI
 
-    f.spawn({ initOptions: { bits: 1024 } }, (err, _ipfsd) => {
+    f.spawn({ initOptions: { bits: 1024, profile: 'test' } }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsd = _ipfsd
       ipfs = ipfsClient(_ipfsd.apiAddr)

@@ -9,7 +9,7 @@ function createFactory (options) {
   options = options || {}
 
   options.factoryOptions = options.factoryOptions || {}
-  options.spawnOptions = options.spawnOptions || { initOptions: { bits: 1024 } }
+  options.spawnOptions = options.spawnOptions || { initOptions: { bits: 1024, profile: 'test' } }
 
   const ipfsFactory = IPFSFactory.create(options.factoryOptions)
 

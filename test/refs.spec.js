@@ -35,7 +35,7 @@ describe('.refs', function () {
     }
 
     waterfall([
-      (cb) => f.spawn({ initOptions: { bits: 1024 } }, cb),
+      (cb) => f.spawn({ initOptions: { bits: 1024, profile: 'test' } }, cb),
       (_ipfsd, cb) => {
         ipfsd = _ipfsd
         ipfs = ipfsClient(_ipfsd.apiAddr)

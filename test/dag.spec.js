@@ -21,7 +21,7 @@ describe('.dag', function () {
   this.timeout(20 * 1000)
   before(function (done) {
     series([
-      (cb) => f.spawn({ initOptions: { bits: 1024 } }, (err, _ipfsd) => {
+      (cb) => f.spawn({ initOptions: { bits: 1024, profile: 'test' } }, (err, _ipfsd) => {
         expect(err).to.not.exist()
         ipfsd = _ipfsd
         ipfs = ipfsClient(_ipfsd.apiAddr)

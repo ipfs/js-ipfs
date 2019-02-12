@@ -84,7 +84,7 @@ describe('ipfs-http-client constructor tests', () => {
     before(function (done) {
       this.timeout(60 * 1000) // slow CI
 
-      f.spawn({ initOptions: { bits: 1024 } }, (err, node) => {
+      f.spawn({ initOptions: { bits: 1024, profile: 'test' } }, (err, node) => {
         expect(err).to.not.exist()
         ipfsd = node
         apiAddr = node.apiAddr.toString()
