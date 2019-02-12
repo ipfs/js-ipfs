@@ -14,7 +14,7 @@
 
 <p align="center">
   <a href="https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fipfs%2Fjs-ipfs-http-client?ref=badge_small" alt="FOSSA Status"><img src="https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fipfs%2Fjs-ipfs-http-client.svg?type=small"/></a>
-  <a href="https://ci.ipfs.team/job/ipfs/job/js-ipfs-http-client/job/master/"><img src="https://ci.ipfs.team/buildStatus/icon?job=ipfs/js-ipfs-http-client/master" /></a>
+  <a href="https://travis-ci.com/ipfs/js-ipfs-http-client"><img src="https://flat.badgen.net/travis/ipfs/js-ipfs-http-client" /></a>
   <a href="https://codecov.io/gh/ipfs/js-ipfs-http-client"><img src="https://codecov.io/gh/ipfs/js-ipfs-http-client/branch/master/graph/badge.svg"></a>
   <br>
   <a href="https://david-dm.org/ipfs/js-ipfs-http-client"><img src="https://david-dm.org/ipfs/js-ipfs-http-client.svg?style=flat-square" /></a>

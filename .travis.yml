@@ -1,32 +1,46 @@
-# Warning: This file is automatically synced from https://github.com/ipfs/ci-sync so if you want to change it, please change it there and ask someone to sync all repositories.
-sudo: false
 language: node_js
+cache: npm
+stages:
+  - check
+  - test
+  - cov
 
-matrix:
+node_js:
+  - '10'
+
+os:
+  - linux
+  - osx
+  - windows
+
+script: npx nyc -s npm run test:node -- --bail
+after_success: npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
+
+jobs:
   include:
-  - node_js: 6
-    env: CXX=g++-4.8
-  - node_js: 8
-    env: CXX=g++-4.8
-    #  - node_js: stable
-    #    env: CXX=g++-4.8
+    - stage: check
+      script:
+        - npx aegir commitlint --travis
+        - npx aegir dep-check
+        - npm run lint
 
-script:
-  - npm run lint
-  - npm run test
-  - npm run coverage
+    - stage: test
+      name: chrome
+      addons:
+        chrome: stable
+      script: npx aegir test -t browser
 
-before_script:
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
+    - stage: test
+      name: firefox
+      addons:
+        firefox: latest
+      script: npx aegir test -t browser -- --browsers FirefoxHeadless
 
-after_success:
-  - npm run coverage-publish
+    - stage: test
+      name: webworker
+      addons:
+        chrome: stable
+      script: npx aegir test -t webworker
 
-addons:
-  firefox: 'latest'
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - g++-4.8
+notifications:
+  email: false
