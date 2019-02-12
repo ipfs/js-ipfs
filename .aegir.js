@@ -21,7 +21,6 @@ module.exports = {
       included: false
     }],
     browserNoActivityTimeout: 100 * 1000,
-    singleRun: true
   },
   hooks: {
     node: {

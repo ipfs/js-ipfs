@@ -44,10 +44,7 @@
     "benchmark:browser": "echo \"Error: no benchmarks yet\" && exit 1",
     "release": "aegir release -t node -t browser",
     "release-minor": "aegir release --type minor -t node -t browser",
-    "release-major": "aegir release --type major -t node -t browser",
-    "coverage": "aegir coverage",
-    "coverage-publish": "aegir-coverage publish",
-    "dep-check": "npx dependency-check package.json './test/**/*.js' './src/**/*.js'"
+    "release-major": "aegir release --type major -t node -t browser"
   },
   "repository": {
     "type": "git",
@@ -62,7 +59,7 @@
   },
   "homepage": "https://github.com/ipfs/js-ipfs#readme",
   "devDependencies": {
-    "aegir": "^18.0.3",
+    "aegir": "^18.1.0",
     "chai": "^4.2.0",
     "delay": "^4.1.0",
     "detect-node": "^2.0.4",
