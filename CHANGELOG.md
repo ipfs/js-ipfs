@@ -1,3 +1,13 @@
+<a name="29.1.1"></a>
+## [29.1.1](https://github.com/ipfs/js-ipfs-http-client/compare/v29.1.0...v29.1.1) (2019-02-13)
+
+
+### Performance Improvements
+
+* use test profile ([#942](https://github.com/ipfs/js-ipfs-http-client/issues/942)) ([2c90620](https://github.com/ipfs/js-ipfs-http-client/commit/2c90620))
+
+
+
 <a name="29.1.0"></a>
 # [29.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v29.0.1...v29.1.0) (2019-01-29)
 
