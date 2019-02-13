@@ -37,19 +37,12 @@ module.exports = (repoOwner) => {
     })
       .then((result) => {
         log(`Finished ${type} operation`)
-        const cb = callback
-        callback = null
-        cb(null, result)
-      })
-      .catch((error) => {
+
+        callback(null, result)
+      }, (error) => {
         log(`Finished ${type} operation with error: ${error.message}`)
-        if (callback) {
-          return callback(error)
-        }
 
-        log(`Callback already invoked for ${type} operation`)
-
-        throw error
+        callback(error)
       })
   }
 

@@ -66,11 +66,7 @@ const addLinksToHamtBucket = (links, bucket, rootBucket, callback) => {
       return (rootBucket || bucket).put(link.name.substring(2), true)
     })
   )
-    .catch(err => {
-      callback(err)
-      callback = null
-    })
-    .then(() => callback && callback(null, bucket))
+    .then(() => callback(null, bucket), callback)
 }
 
 const toPrefix = (position) => {

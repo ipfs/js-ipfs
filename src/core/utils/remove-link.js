@@ -91,11 +91,7 @@ const removeFromShardedDirectory = (context, options, callback) => {
     (cb) => generatePath(context, options.name, options.parent, cb),
     ({ rootBucket, path }, cb) => {
       rootBucket.del(options.name)
-        .catch(err => {
-          cb(err)
-          cb = null
-        })
-        .then(() => cb && cb(null, { rootBucket, path }))
+        .then(() => cb(null, { rootBucket, path }), cb)
     },
     ({ rootBucket, path }, cb) => {
       updateShard(context, path, {
@@ -142,11 +138,7 @@ const updateShard = (context, positions, child, options, callback) => {
           },
           (result, done) => {
             bucket.del(child.name)
-              .catch(err => {
-                done(err)
-                done = null
-              })
-              .then(() => done && done(null, result))
+              .then(() => done(null, result), done)
           },
           (result, done) => updateHamtDirectory(context, result.node.links, bucket, options, done)
         ], cb)
