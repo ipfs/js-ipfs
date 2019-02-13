@@ -187,6 +187,14 @@ class IPFS extends EventEmitter {
     }
 
     boot(this)
+    this.once('ready', () => this.__ready = true)
+  }
+  get ready () {
+    return new Promise((resolve, reject) => {
+      if (this.__ready) return resolve(this)
+      this.on('ready', () => resolve(this))
+      this.on('error', reject)
+    })
   }
 }
 
@@ -194,4 +202,9 @@ exports = module.exports = IPFS
 
 exports.createNode = (options) => {
   return new IPFS(options)
+}
+
+exports.create = (options) => {
+  let node = new IPFS(options)
+  return node.ready
 }
