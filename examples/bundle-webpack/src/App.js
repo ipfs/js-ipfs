@@ -29,15 +29,9 @@ class App extends React.Component {
       if (err) throw err
       const hash = res[0].hash
       this.setState({added_file_hash: hash})
-      ipfs.cat(hash, (err, res) => {
+      ipfs.cat(hash, (err, data) => {
         if (err) throw err
-        let data = ''
-        res.on('data', (d) => {
-          data = data + d
-        })
-        res.on('end', () => {
-          this.setState({added_file_contents: data})
-        })
+        this.setState({added_file_contents: data.toString()})
       })
     })
   }
