@@ -594,7 +594,7 @@ The core API is grouped into several areas:
   - [`ipfs.bootstrap.add(addr, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BOOTSTRAP.md#bootstrapadd)
   - [`ipfs.bootstrap.rm(peer, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BOOTSTRAP.md#bootstraprm)
 
-- [dht](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/)
+- [dht](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DHT.md)
   - [`ipfs.dht.findPeer(peerId, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtfindpeer)
   - [`ipfs.dht.findProvs(multihash, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtfindprovs)
   - [`ipfs.dht.get(key, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtget)
