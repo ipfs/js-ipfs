@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "29.1.0",
+  "version": "29.1.1",
   "description": "A client library for the IPFS HTTP API",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "main": "src/index.js",
@@ -109,6 +109,7 @@
     "Dmitry Nikulin <dmitr-nikulin@mail.ru>",
     "Donatas Stundys <donatas.stundys@necolt.com>",
     "Fil <fil@rezo.net>",
+    "Filip Š <filip.stamcar@hotmail.com>",
     "Francisco Baio Dias <xicombd@gmail.com>",
     "Friedel Ziegelmayer <dignifiedquire@gmail.com>",
     "Gar <gar+gh@danger.computer>",
