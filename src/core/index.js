@@ -187,7 +187,7 @@ class IPFS extends EventEmitter {
     }
 
     boot(this)
-    this.once('ready', () => this.__ready = true)
+    this.once('ready', () => { this.__ready = true })
   }
   get ready () {
     return new Promise((resolve, reject) => {
