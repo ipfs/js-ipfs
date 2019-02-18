@@ -89,7 +89,7 @@ You can check the development status at the [Kanban Board](https://waffle.io/ipf
 This project is available through [npm](https://www.npmjs.com/). To install run
 
 ```bash
-> npm install ipfs --save
+> npm install ipfs
 ```
 
 We support both the Current and Active LTS versions of Node.js. Please see [nodejs.org](https://nodejs.org/) for what these currently are.
