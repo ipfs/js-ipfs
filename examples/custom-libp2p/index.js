@@ -8,7 +8,7 @@ const WebSocketStar = require('libp2p-websocket-star')
 const Bootstrap = require('libp2p-bootstrap')
 const SPDY = require('libp2p-spdy')
 const KadDHT = require('libp2p-kad-dht')
-const MPLEX = require('libp2p-mplex')
+const MPLEX = require('pull-mplex')
 const SECIO = require('libp2p-secio')
 const assert = require('assert')
 
