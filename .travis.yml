@@ -1,5 +1,9 @@
 language: node_js
-cache: npm
+
+# TODO: enable when windows is faster on travis, currently causes "No output has been received in the last 10m0s"
+# cache: npm
+cache: false
+
 stages:
   - check
   - test
