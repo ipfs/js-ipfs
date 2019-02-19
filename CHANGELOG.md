@@ -1,3 +1,14 @@
+<a name="0.97.0"></a>
+# [0.97.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.96.1...v0.97.0) (2019-02-19)
+
+
+### Bug Fixes
+
+* add new SSL certificate ([#432](https://github.com/ipfs/interface-ipfs-core/issues/432)) ([fe539e6](https://github.com/ipfs/interface-ipfs-core/commit/fe539e6))
+* add test for dag get with localResolve option ([#433](https://github.com/ipfs/interface-ipfs-core/issues/433)) ([44d4803](https://github.com/ipfs/interface-ipfs-core/commit/44d4803))
+
+
+
 <a name="0.96.1"></a>
 ## [0.96.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.96.0...v0.96.1) (2019-01-15)
 
