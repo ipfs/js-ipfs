@@ -42,7 +42,7 @@
     "detect-node": "^2.0.4",
     "detect-webworker": "^1.0.0",
     "dirty-chai": "^2.0.1",
-    "ipld": "~0.21.2",
+    "ipld": "~0.21.1",
     "ipld-in-memory": "^2.0.0",
     "multihashes": "~0.4.14",
     "pull-buffer-stream": "^1.0.1",
