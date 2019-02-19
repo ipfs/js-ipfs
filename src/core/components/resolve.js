@@ -34,15 +34,16 @@ module.exports = (self) => {
 
     const path = split.slice(3).join('/')
 
-    resolve(cid, path, (err, cid, remainder) => {
+    resolve(cid, path, (err, res) => {
       if (err) return cb(err)
-      cb(null, `/ipfs/${cidToString(cid, { base: opts.cidBase })}${remainder ? '/' + remainder : ''}`)
+      const { cid, remainderPath } = res
+      cb(null, `/ipfs/${cidToString(cid, { base: opts.cidBase })}${remainderPath ? '/' + remainderPath : ''}`)
     })
   })
 
   // Resolve the given CID + path to a CID.
   function resolve (cid, path, callback) {
-    let value, remainder
+    let value, remainderPath
     doUntil(
       (cb) => {
         self.block.get(cid, (err, block) => {
@@ -57,7 +58,7 @@ module.exports = (self) => {
           r.resolver.resolve(block.data, path, (err, result) => {
             if (err) return cb(err)
             value = result.value
-            remainder = result.remainderPath
+            remainderPath = result.remainderPath
             cb()
           })
         })
@@ -66,7 +67,11 @@ module.exports = (self) => {
         if (value && value['/']) {
           // If we've hit a CID, replace the current CID.
           cid = new CID(value['/'])
-          path = remainder
+          path = remainderPath
+        } else if (CID.isCID(value)) {
+          // If we've hit a CID, replace the current CID.
+          cid = value
+          path = remainderPath
         } else {
           // We've hit a value. Return the current CID and the remaining path.
           return true
@@ -77,7 +82,7 @@ module.exports = (self) => {
       },
       (err) => {
         if (err) return callback(err)
-        callback(null, cid, path)
+        callback(null, { cid, remainderPath: path })
       }
     )
   }

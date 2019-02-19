@@ -12,7 +12,7 @@ const path = require('path')
 const hat = require('hat')
 const fileType = require('file-type')
 
-const bigFile = loadFixture('js/test/fixtures/15mb.random', 'interface-ipfs-core')
+const bigFile = loadFixture('test/fixtures/15mb.random', 'interface-ipfs-core')
 const directoryContent = {
   'index.html': loadFixture('test/gateway/test-folder/index.html'),
   'nested-folder/hello.txt': loadFixture('test/gateway/test-folder/nested-folder/hello.txt'),
