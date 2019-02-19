@@ -10,9 +10,7 @@
 
 > Subscribe to a pubsub topic.
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.pubsub.subscribe(topic, handler, [options], [callback])`
+##### `ipfs.pubsub.subscribe(topic, handler, [options], [callback])`
 
 - `topic: String`
 - `handler: (msg) => {}` - Event handler which will be called with a message object everytime one is received. The `msg` has the format `{from: String, seqno: Buffer, data: Buffer, topicIDs: Array<String>}`.
@@ -44,9 +42,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Unsubscribes from a pubsub topic.
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.pubsub.unsubscribe(topic, handler, [callback])`
+##### `ipfs.pubsub.unsubscribe(topic, handler, [callback])`
 
 - `topic: String` - The topic to unsubscribe from
 - `handler: (msg) => {}` - The handler to remove.
@@ -88,9 +84,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Publish a data message to a pubsub topic.
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.pubsub.publish(topic, data, [callback])`
+##### `ipfs.pubsub.publish(topic, data, [callback])`
 
 - `topic: String`
 - `data: Buffer` - The message to send
@@ -119,9 +113,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Returns the list of subscriptions the peer is subscribed to.
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.pubsub.ls([callback])`
+##### `ipfs.pubsub.ls([callback])`
 
 - `callback: (Error, Array<string>) => {}` - (Optional) Calls back with an error or a list of topicIDs that this peer is subscribed to.
 
@@ -144,9 +136,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Returns the peers that are subscribed to one topic.
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.pubsub.peers(topic, [callback])`
+##### `ipfs.pubsub.peers(topic, [callback])`
 
 - `topic: String`
 - `callback: (Error, Array<String>) => {}` - (Optional) Calls back with an error or a list of peer IDs subscribed to the `topic`.

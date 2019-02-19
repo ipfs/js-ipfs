@@ -35,7 +35,7 @@ The API is presented with both Node.js and Go primitives. However, there are no 
 
 - [JavaScript IPFS implementation](https://github.com/ipfs/js-ipfs)
 - [JavaScript IPFS HTTP Client Library](https://github.com/ipfs/js-ipfs-api)
-- Soon™, go-ipfs, go-ipfs-api, java-ipfs-api, python-ipfs-api and others will implement it as well.
+- [JavaScript IPFS postMessage proxy](https://github.com/ipfs-shipyard/ipfs-postmsg-proxy)
 
 Send in a PR if you find or write one!
 
@@ -57,8 +57,6 @@ In JavaScript land:
 npm install interface-ipfs-core
 ```
 
-In Go land:
-
 If you want to run these tests against a go-ipfs daemon, checkout [ipfs-http-client](https://github.com/ipfs/js-ipfs-http-client) and run test tests:
 
 ```
@@ -68,8 +66,6 @@ npm test
 ```
 
 ## Usage
-
-### JavaScript
 
 Install `interface-ipfs-core` as one of the dependencies of your project and as a test file. Then, using `mocha` (for Node.js) or a test runner with compatible API, do:
 
@@ -156,7 +152,7 @@ tests.repo(createCommon, { only: ['should do a thing'] })
 
 ## API
 
-In order to be considered "valid", an IPFS core implementation  must expose the API described in [/SPEC](/SPEC). You can also use this loose spec as documentation for consuming the core APIs. Here is an outline of the contents of that directory:
+In order to be considered "valid", an IPFS core implementation must expose the API described in [/SPEC](/SPEC). You can also use this loose spec as documentation for consuming the core APIs. Here is an outline of the contents of that directory:
 
 - **Files**
   - [files](/SPEC/FILES.md)
@@ -166,15 +162,17 @@ In order to be considered "valid", an IPFS core implementation  must expose the 
   - [dag](/SPEC/DAG.md)
   - [object](/SPEC/OBJECT.md)
   - [pin](/SPEC/PIN.md)
+- [**Name**](/SPEC/NAME.md)
 - **Network**
   - [bootstrap](/SPEC/BOOSTRAP.md)
-  - [bitswap (not spec'ed yet)](/SPEC/BITSWAP.md)
-  - [dht (not spec'ed yet)](/SPEC/DHT.md)
+  - [bitswap](/SPEC/BITSWAP.md)
+  - [dht](/SPEC/DHT.md)
   - [pubsub](/SPEC/PUBSUB.md)
   - [swarm](/SPEC/SWARM.md)
 - **Node Management**
   - [Miscellaneous](/SPEC/MISCELLANEOUS.md)
   - [config](/SPEC/CONFIG.md)
+  - [key](/SPEC/KEY.md)
   - [stats](/SPEC/STATS.md)
   - [repo](/SPEC/REPO.md)
 - [**Types**](/SPEC/TYPES.md)

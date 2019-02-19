@@ -8,9 +8,7 @@
 
 > Adds an IPFS object to the pinset and also stores it to the IPFS repo. pinset is the set of hashes currently pinned (not gc'able).
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.pin.add(hash, [options], [callback])`
+##### `ipfs.pin.add(hash, [options], [callback])`
 
 Where:
 
@@ -38,9 +36,7 @@ ipfs.pin.add(hash, function (err) {})
 
 > List all the objects pinned to local storage or under a specific hash.
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.pin.ls([hash], [options], [callback])`
+##### `ipfs.pin.ls([hash], [options], [callback])`
 
 Where:
 
@@ -69,9 +65,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Remove a hash from the pinset
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.pin.rm(hash, [options], [callback])`
+##### `ipfs.pin.rm(hash, [options], [callback])`
 
 Where:
 - `hash` is a multihash.

@@ -8,9 +8,7 @@
 
 > Returns the currently being used config. If the daemon is off, it returns the stored config.
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.config.get([key], [callback])`
+##### `ipfs.config.get([key], [callback])`
 
 `key` is the key of the value that should be fetched from the config file. If no key is passed, then the whole config should be returned. `key` should be of type String.
 
@@ -35,9 +33,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Adds or replaces a config value.
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.config.set(key, value, [callback])`
+##### `ipfs.config.set(key, value, [callback])`
 
 `key` is the key value that will be added or replaced (in case of the value already). `key` should be of type String.
 
@@ -66,9 +62,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Adds or replaces a config file.
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.config.replace(config, [callback])`
+##### `ipfs.config.replace(config, [callback])`
 
 `config` is a JSON object that contains the new config.
 

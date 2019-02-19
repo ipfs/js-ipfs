@@ -14,9 +14,7 @@
 
 > Add a peer address to the bootstrap list
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.bootstrap.add(addr, [options], [callback])`
+##### `ipfs.bootstrap.add(addr, [options], [callback])`
 
 - `addr` is a [multiaddr](https://github.com/multiformats/js-multiaddr) to a peer node
 - `options.default` if true, add the default peers to the list
@@ -26,9 +24,7 @@
 
 > List all peer addresses in the bootstrap list
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.bootstrap.list([callback])``
+##### `ipfs.bootstrap.list([callback])``
 
 - `callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res.Peers` is an array of addresses.
 
@@ -37,9 +33,7 @@
 
 > Remove a peer address from the bootstrap list
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.bootstrap.rm(peer, [options], [callback])`
+##### `ipfs.bootstrap.rm(peer, [options], [callback])`
 
 - `addr` is a [multiaddr](https://github.com/multiformats/js-multiaddr) to a peer node
 - `options.all` if true, remove all peers from the list

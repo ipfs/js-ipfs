@@ -10,9 +10,7 @@
 
 > Store an IPLD format node
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.dag.put(dagNode, [options], [callback])`
+##### `ipfs.dag.put(dagNode, [options], [callback])`
 
 - `dagNode` - a DAG node that follows one of the supported IPLD formats.
 - `options` - a object that might contain the following values:
@@ -46,9 +44,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Retrieve an IPLD format node
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.dag.get(cid, [path], [options], [callback])`
+##### `ipfs.dag.get(cid, [path], [options], [callback])`
 
 - `cid` - can be one of the following:
   - a [CID](https://github.com/ipfs/js-cid) instance.
@@ -117,9 +113,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Enumerate all the entries in a graph
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.dag.tree(cid, [path], [options], [callback])`
+##### `ipfs.dag.tree(cid, [path], [options], [callback])`
 
 - `cid` - can be one of the following:
   - a [CID](https://github.com/ipfs/js-cid) instance.

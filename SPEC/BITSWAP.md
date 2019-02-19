@@ -7,9 +7,7 @@
 
 > Returns the wantlist, optionally filtered by peer ID
 
-#### Go **WIP**
-
-#### JavaScript - `ipfs.bitswap.wantlist([peerId], [callback])`
+#### `ipfs.bitswap.wantlist([peerId], [callback])`
 
 `callback` must follow `function (err, list) {}` signature, where `err` is an error if the operation was not successful. `list` is an Object containing the following keys:
 
@@ -34,9 +32,7 @@ ipfs.bitswap.wantlist(peerId, (err, list) => console.log(list))
 
 > Show diagnostic information on the bitswap agent.
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.bitswap.stat([callback])`
+##### `ipfs.bitswap.stat([callback])`
 
 Note: `bitswap.stat` and `stats.bitswap` can be used interchangeably.
 

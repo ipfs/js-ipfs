@@ -11,9 +11,7 @@
 
 > Generate a new key
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.key.gen(name, options, [callback])`
+##### `ipfs.key.gen(name, options, [callback])`
 
 Where:
 
@@ -42,9 +40,7 @@ ipfs.key.gen('my-key', {
 
 > List all the keys
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.key.list([callback])`
+##### `ipfs.key.list([callback])`
 
 `callback` must follow `function (err, keys) {}` signature, where `err` is an Error if the operation was not successful. `keys` is an array of:
 
@@ -74,9 +70,7 @@ ipfs.key.list((err, keys) => console.log(keys))
 
 > Remove a key
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.key.rm(name, [callback])`
+##### `ipfs.key.rm(name, [callback])`
 
 Where:
 - `name` is the local name for the key
@@ -105,9 +99,7 @@ ipfs.key.rm('my-key', (err, key) => console.log(key))
 
 > Rename a key
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.key.rename(oldName, newName, [callback])`
+##### `ipfs.key.rename(oldName, newName, [callback])`
 
 Where:
 - `oldName` is the local name for the key
@@ -134,7 +126,7 @@ ipfs.key.rename('my-key', 'my-new-key', (err, key) => console.log(key))
 
 ##### Go **NYI**
 
-##### JavaScript - `ipfs.key.export(name, password, [callback])`
+##### `ipfs.key.export(name, password, [callback])`
 
 Where:
 - `name` is the local name for the key
@@ -162,7 +154,7 @@ ipfs.key.export('self', 'password', (err, pem) => console.log(pem))
 
 ##### Go **NYI**
 
-##### JavaScript - `ipfs.key.import(name, pem, password, [callback])`
+##### `ipfs.key.import(name, pem, password, [callback])`
 
 Where:
 - `name` is a local name for the key

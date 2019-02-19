@@ -13,9 +13,7 @@
 
 > Returns the identity of the Peer
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.id([callback])`
+##### `ipfs.id([callback])`
 
 `callback` must follow `function (err, identity) {}` signature, where `err` is an error if the operation was not successful. `identity` is an object with the Peer identity.
 
@@ -38,9 +36,7 @@ A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/ma
 
 > Returns the implementation version
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.version([callback])`
+##### `ipfs.version([callback])`
 
 `callback` must follow `function (err, version) {}` signature, where `err` is an error if the operation was not successful. `version` is an object with the version of the implementation, the commit and the Repo.
 
@@ -63,9 +59,7 @@ A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/ma
 
 > Resolve DNS links
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.dns(domain, [callback])`
+##### `ipfs.dns(domain, [callback])`
 
 `callback` must follow `function (err, path) {}` signature, where `err` is an error if the operation was not successful. `path` is the IPFS path for that domain.
 
@@ -88,9 +82,7 @@ A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/ma
 
 > Stops the IPFS node and in case of talking with an IPFS Daemon, it stops the process.
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.stop([callback])`
+##### `ipfs.stop([callback])`
 
 `callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
 If no `callback` is passed, a promise is returned.
@@ -111,9 +103,7 @@ A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/ma
 
 > Send echo request packets to IPFS hosts
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.ping(peerId, [options], [callback])`
+##### `ipfs.ping(peerId, [options], [callback])`
 
 Where:
 
@@ -158,9 +148,7 @@ A great source of [examples](https://github.com/ipfs/interface-ipfs-core/tree/ma
 
 > Stream echo request packets to IPFS hosts
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.pingPullStream(peerId, [options], [callback])`
+##### `ipfs.pingPullStream(peerId, [options], [callback])`
 
 Where:
 
@@ -203,9 +191,7 @@ A great source of [examples](https://github.com/ipfs/interface-ipfs-core/tree/ma
 
 > Stream echo request packets to IPFS hosts
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.pingReadableStream(peerId, [options], [callback])`
+##### `ipfs.pingReadableStream(peerId, [options], [callback])`
 
 Where:
 
@@ -247,9 +233,7 @@ A great source of [examples](https://github.com/ipfs/interface-ipfs-core/tree/ma
 
 There are a number of mutable name protocols that can link among themselves and into IPNS. For example IPNS references can (currently) point at an IPFS object, and DNS links can point at other DNS links, IPNS entries, or IPFS objects. This command accepts any of these identifiers and resolves them to the referenced item.
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.resolve(name, [options], [callback])`
+##### `ipfs.resolve(name, [options], [callback])`
 
 Where:
 

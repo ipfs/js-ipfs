@@ -11,9 +11,7 @@
 
 > Retrieve the Peer Info of a reachable node in the network.
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.dht.findPeer(peerId, [callback])`
+##### `ipfs.dht.findPeer(peerId, [callback])`
 
 Where `peerId` is a IPFS/libp2p Id from [PeerId](https://github.com/libp2p/js-peer-id) type.
 
@@ -39,9 +37,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Retrieve the providers for content that is addressed by an hash.
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.dht.findProvs(hash, [options], [callback])`
+##### `ipfs.dht.findProvs(hash, [options], [callback])`
 
 Where `hash` is a multihash.
 
@@ -67,9 +63,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Retrieve a value from DHT
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.dht.get(key, [callback])`
+##### `ipfs.dht.get(key, [callback])`
 
 Where `key` is a Buffer.
 
@@ -89,9 +83,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Announce to the network that you are providing given values.
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.dht.provide(cid, [callback])`
+##### `ipfs.dht.provide(cid, [callback])`
 
 Where `cid` is a CID or array of CIDs.
 
@@ -111,9 +103,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Store a value on the DHT
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.dht.put(key, value, [callback])`
+##### `ipfs.dht.put(key, value, [callback])`
 
 Where `key` is a Buffer and `value` is a Buffer.
 
@@ -133,9 +123,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Queries the network for the 'closest peers' to a given key. 'closest' is defined by the rules of the underlying Peer Routing mechanism.
 
-##### Go **WIP**
-
-##### JavaScript - `ipfs.dht.query(peerId, [callback])`
+##### `ipfs.dht.query(peerId, [callback])`
 
 Where `peerId` is a IPFS/libp2p Id of type [PeerId](https://github.com/libp2p/js-peer-id).
 
