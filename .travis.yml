@@ -1,0 +1,14 @@
+language: node_js
+
+cache: npm
+
+node_js:
+  - '10'
+
+script:
+  - npx aegir commitlint --travis
+  - npx aegir dep-check
+  - npm run lint
+
+notifications:
+  email: false
