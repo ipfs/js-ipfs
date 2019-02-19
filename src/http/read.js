@@ -51,7 +51,8 @@ const mfsRead = {
       query: Joi.object().keys({
         arg: Joi.string().required(),
         offset: Joi.number().integer().min(0),
-        length: Joi.number().integer().min(0)
+        length: Joi.number().integer().min(0),
+        count: Joi.number().integer().min(0)
       })
         .rename('o', 'offset', {
           override: true,
