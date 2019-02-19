@@ -1,3 +1,13 @@
+<a name="0.9.2"></a>
+## [0.9.2](https://github.com/ipfs/js-ipfs-mfs/compare/v0.9.1...v0.9.2) (2019-02-19)
+
+
+### Bug Fixes
+
+* validate and coerce count param for read in HTTP API ([73dc2fc](https://github.com/ipfs/js-ipfs-mfs/commit/73dc2fc))
+
+
+
 <a name="0.9.1"></a>
 ## [0.9.1](https://github.com/ipfs/js-ipfs-mfs/compare/v0.9.0...v0.9.1) (2019-01-31)
 
