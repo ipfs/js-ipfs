@@ -1,6 +1,6 @@
 {
   "name": "ipfs-mfs",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "JavaScript implementation of the IPFS Mutable File System",
   "leadMaintainer": "Alex Potsides <alex.potsides@protocol.ai>",
   "main": "src/index.js",
@@ -76,6 +76,7 @@
   },
   "contributors": [
     "Alan Shaw <alan.shaw@protocol.ai>",
+    "David <github@kattfest.se>",
     "David Dias <daviddias.p@gmail.com>",
     "Jacob Heun <jacobheun@gmail.com>",
     "Vasco Santos <vasco.santos@moxy.studio>",
