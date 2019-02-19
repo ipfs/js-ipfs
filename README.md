@@ -146,10 +146,6 @@ tests.repo.gc(createCommon, { only: ['should do a thing'] }) // only run these n
 tests.repo(createCommon, { only: ['should do a thing'] })
 ```
 
-### Go
-
-> [WIP](https://github.com/ipfs/interface-ipfs-core/issues/66)
-
 ## API
 
 In order to be considered "valid", an IPFS core implementation must expose the API described in [/SPEC](/SPEC). You can also use this loose spec as documentation for consuming the core APIs. Here is an outline of the contents of that directory:
