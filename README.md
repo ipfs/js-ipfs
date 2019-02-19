@@ -4,7 +4,7 @@
 [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
 [![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-[![Build Status](https://ci.ipfs.team/buildStatus/icon?job=ipfs/js-ipfs-mfs/master)](https://ci.ipfs.team/job/ipfs/job/js-ipfs-mfs/job/master/)
+[![Build Status](https://flat.badgen.net/travis/ipfs/js-ipfs-mfs)](https://travis-ci.com/ipfs/js-ipfs-mfs)
 [![Code Coverage](https://codecov.io/gh/ipfs/js-ipfs-mfs/branch/master/graph/badge.svg)](https://codecov.io/gh/ipfs/js-ipfs-mfs)
 [![Dependency Status](https://david-dm.org/ipfs/js-ipfs-mfs.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-mfs)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)

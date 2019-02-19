@@ -46,7 +46,8 @@
     "ipld-in-memory": "^2.0.0",
     "multihashes": "~0.4.14",
     "pull-buffer-stream": "^1.0.1",
-    "pull-traverse": "^1.0.3"
+    "pull-traverse": "^1.0.3",
+    "temp-write": "^3.4.0"
   },
   "dependencies": {
     "async": "^2.6.1",

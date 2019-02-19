@@ -4,12 +4,12 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
-const path = require('path')
-const loadFixture = require('aegir/fixtures')
 const isNode = require('detect-node')
 const values = require('pull-stream/sources/values')
 const bufferStream = require('pull-buffer-stream')
 const multihash = require('multihashes')
+const randomBytes = require('./helpers/random-bytes')
+const util = require('util')
 const {
   collectLeafCids,
   createMfs,
@@ -19,16 +19,17 @@ const {
 } = require('./helpers')
 const CID = require('cids')
 
-let fs
+let fs, tempWrite
 
 if (isNode) {
   fs = require('fs')
+  tempWrite = require('temp-write')
 }
 
 describe('write', () => {
   let mfs
-  let smallFile = loadFixture(path.join('test', 'fixtures', 'small-file.txt'))
-  let largeFile = loadFixture(path.join('test', 'fixtures', 'large-file.jpg'))
+  let smallFile = randomBytes(13)
+  let largeFile = randomBytes(490668)
 
   const runTest = (fn) => {
     let i = 0
@@ -148,7 +149,8 @@ describe('write', () => {
     }
 
     const filePath = `/small-file-${Math.random()}.txt`
-    const pathToFile = path.resolve(path.join(__dirname, 'fixtures', 'small-file.txt'))
+    const pathToFile = await tempWrite(smallFile)
+    const fsStats = await util.promisify(fs.stat)(pathToFile)
 
     await mfs.write(filePath, pathToFile, {
       create: true
@@ -156,7 +158,7 @@ describe('write', () => {
 
     const stats = await mfs.stat(filePath)
 
-    expect(stats.size).to.equal(smallFile.length)
+    expect(stats.size).to.equal(fsStats.size)
   })
 
   it('writes part of a small file using a path (Node only)', async function () {
@@ -165,7 +167,7 @@ describe('write', () => {
     }
 
     const filePath = `/small-file-${Math.random()}.txt`
-    const pathToFile = path.resolve(path.join(__dirname, 'fixtures', 'small-file.txt'))
+    const pathToFile = await tempWrite(smallFile)
 
     await mfs.write(filePath, pathToFile, {
       create: true,
@@ -183,7 +185,7 @@ describe('write', () => {
     }
 
     const filePath = `/small-file-${Math.random()}.txt`
-    const pathToFile = path.resolve(path.join(__dirname, 'fixtures', 'small-file.txt'))
+    const pathToFile = await tempWrite(smallFile)
     const stream = fs.createReadStream(pathToFile)
 
     await mfs.write(filePath, stream, {

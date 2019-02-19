@@ -4,8 +4,6 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
-const path = require('path')
-const loadFixture = require('aegir/fixtures')
 const bufferStream = require('pull-buffer-stream')
 const pull = require('pull-stream/pull')
 const collect = require('pull-stream/sinks/collect')
@@ -13,10 +11,11 @@ const {
   createMfs,
   createShardedDirectory
 } = require('./helpers')
+const randomBytes = require('./helpers/random-bytes')
 
 describe('read', () => {
   let mfs
-  let smallFile = loadFixture(path.join('test', 'fixtures', 'small-file.txt'))
+  let smallFile = randomBytes(13)
 
   before(async () => {
     mfs = await createMfs()

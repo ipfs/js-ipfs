@@ -4,8 +4,7 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
-const path = require('path')
-const loadFixture = require('aegir/fixtures')
+const randomBytes = require('./helpers/random-bytes')
 
 const {
   createMfs,
@@ -16,8 +15,8 @@ const {
 
 describe('stat', () => {
   let mfs
-  let smallFile = loadFixture(path.join('test', 'fixtures', 'small-file.txt'))
-  let largeFile = loadFixture(path.join('test', 'fixtures', 'large-file.jpg'))
+  let smallFile = randomBytes(13)
+  let largeFile = randomBytes(490668)
 
   before(async () => {
     mfs = await createMfs()
