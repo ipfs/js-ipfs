@@ -3,7 +3,7 @@
   "version": "0.96.1",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
-  "main": "js/src/index.js",
+  "main": "src/index.js",
   "browser": {
     "fs": false
   },
@@ -20,8 +20,8 @@
     "coverage-publish": "exit 0"
   },
   "files": [
-    "js/src/",
-    "js/test/"
+    "src/",
+    "test/"
   ],
   "repository": {
     "type": "git",

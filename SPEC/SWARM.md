@@ -186,4 +186,4 @@ Example:
 ipfs.swarm.filters.rm(filter, function (err) {})
 ```
 
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/swarm
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/swarm

@@ -95,7 +95,7 @@ const createCommon = () => ({
 tests.block(createCommon)
 tests.config(createCommon)
 tests.dag(createCommon)
-// ...etc. (see js/src/index.js)
+// ...etc. (see src/index.js)
 ```
 
 #### Running tests by command

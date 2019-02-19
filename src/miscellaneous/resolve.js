@@ -40,7 +40,7 @@ module.exports = (createCommon, options) => {
     })
 
     it('should resolve an IPFS hash', (done) => {
-      const content = loadFixture('js/test/fixtures/testfile.txt', 'interface-ipfs-core')
+      const content = loadFixture('test/fixtures/testfile.txt', 'interface-ipfs-core')
 
       ipfs.add(content, (err, res) => {
         expect(err).to.not.exist()
@@ -72,7 +72,7 @@ module.exports = (createCommon, options) => {
     // Test resolve turns /ipfs/QmRootHash/path/to/file into /ipfs/QmFileHash
     it('should resolve an IPFS path link', (done) => {
       const path = '/path/to/testfile.txt'
-      const content = loadFixture('js/test/fixtures/testfile.txt', 'interface-ipfs-core')
+      const content = loadFixture('test/fixtures/testfile.txt', 'interface-ipfs-core')
 
       ipfs.add([{ path, content }], { wrapWithDirectory: true }, (err, res) => {
         expect(err).to.not.exist()

@@ -177,4 +177,4 @@ ipfs.dag.tree('zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5', errOrLog)
 A great source of [examples][] can be found in the tests for this API.
 
 
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/js/src/dag
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/dag
