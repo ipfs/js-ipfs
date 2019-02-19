@@ -83,7 +83,7 @@ This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/c
 
 Open an [issue](https://github.com/ipfs/js-ipfs-mfs/issues) or send a [PR](https://github.com/ipfs/js-ipfs-mfs/pulls) - see [CONTRIBUTING.md](./CONTRIBUTING.md) for how to make sure your branch is ready for PRing.
 
-[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/contributing.md)
+[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/CONTRIBUTING.md)
 
 ## Changelog
 
