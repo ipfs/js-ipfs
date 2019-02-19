@@ -1,3 +1,13 @@
+<a name="0.97.1"></a>
+## [0.97.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.97.0...v0.97.1) (2019-02-19)
+
+
+### Bug Fixes
+
+* populate in series ([#443](https://github.com/ipfs/interface-ipfs-core/issues/443)) ([06a3980](https://github.com/ipfs/interface-ipfs-core/commit/06a3980))
+
+
+
 <a name="0.97.0"></a>
 # [0.97.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.96.1...v0.97.0) (2019-02-19)
 
