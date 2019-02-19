@@ -96,7 +96,7 @@ JS IPFS depends on native modules that are installed by [`node-gyp`](https://git
 
 We support both the Current and Active LTS versions of Node.js. Please see [nodejs.org](https://nodejs.org/) for what these currently are.
 
-This project is tested on macOS & Linux and Windows.
+This project is tested on macOS, Linux and Windows.
 
 ### Use in Node.js
 
