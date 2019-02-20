@@ -5,6 +5,7 @@ ipfs-multipart
 [![Project IPFS](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
 [![freenode #ipfs](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
 [![Codecov branch](https://img.shields.io/codecov/c/github/ipfs/js-ipfs-multipart/master.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs-multipart)
+[![Travis CI](https://flat.badgen.net/travis/ipfs/js-ipfs-multipart)](https://travis-ci.com/ipfs/js-ipfs-multipart)
 [![Dependency Status](https://david-dm.org/ipfs/js-ipfs-multipart.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-multipart)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
