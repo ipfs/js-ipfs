@@ -86,15 +86,17 @@ You can check the development status at the [Kanban Board](https://waffle.io/ipf
 
 ### npm
 
-This project is available through [npm](https://www.npmjs.com/). To install run
+This project is available through [npm](https://www.npmjs.com/). To install, run:
 
 ```bash
 > npm install ipfs
 ```
 
+JS IPFS depends on native modules that are installed by [`node-gyp`](https://github.com/nodejs/node-gyp). If you have problems running the command above, it is likely that the [build tools required by `node-gyp`](https://github.com/nodejs/node-gyp#installation) are missing from your system. Please install them and then try again.
+
 We support both the Current and Active LTS versions of Node.js. Please see [nodejs.org](https://nodejs.org/) for what these currently are.
 
-This project is tested on OSX & Linux, expected to work on Windows.
+This project is tested on macOS, Linux and Windows.
 
 ### Use in Node.js
 
