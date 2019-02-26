@@ -57,5 +57,16 @@ module.exports = (createCommon, options) => {
         )
       })
     })
+
+    it('should subscribe 10 handlers and unsunscribe once with no reference to the handlers', async () => {
+      const count = 10
+      const someTopic = getTopic()
+      for (let i = 0; i < count; i++) {
+        await ipfs.pubsub.subscribe(someTopic, (msg) => {})
+      }
+      await ipfs.pubsub.unsubscribe(someTopic)
+      const topics = await ipfs.pubsub.ls()
+      expect(topics).to.eql([])
+    })
   })
 }
