@@ -68,7 +68,7 @@
     "execa": "^1.0.0",
     "form-data": "^2.3.3",
     "hat": "0.0.3",
-    "interface-ipfs-core": "~0.97.1",
+    "interface-ipfs-core": "github:ipfs/interface-js-ipfs-core#refactor/cidv1base32-default",
     "ipfsd-ctl": "~0.41.0",
     "libp2p-websocket-star": "~0.10.2",
     "ncp": "^2.0.0",
