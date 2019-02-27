@@ -74,8 +74,7 @@ describe('interface-ipfs-core tests', function () {
     }]
   })
 
-  // TODO needs MFS module to be updated
-  // tests.filesMFS(defaultCommonFactory)
+  tests.filesMFS(defaultCommonFactory)
 
   tests.key(CommonFactory.create({
     spawnOptions: {
