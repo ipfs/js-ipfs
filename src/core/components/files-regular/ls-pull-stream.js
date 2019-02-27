@@ -26,6 +26,7 @@ module.exports = function (self) {
       ),
       pull.map(node => {
         node.hash = node.cid.toString()
+        delete node.cid
         delete node.content
         return node
       })

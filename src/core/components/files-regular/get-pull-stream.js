@@ -23,7 +23,11 @@ module.exports = function (self) {
 
     return pull(
       exporter(ipfsPath, self._ipld, options),
-      pull.map(file => Object.assign(file, { hash: file.cid.toString() }))
+      pull.map(file => {
+        file.hash = file.cid.toString()
+        delete file.cid
+        return file
+      })
     )
   }
 }
