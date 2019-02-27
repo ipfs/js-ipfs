@@ -77,7 +77,7 @@ function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
       },
       dht: {
         kBucketSize: get(options, 'dht.kBucketSize', 20),
-        enabled: get(options, 'dht.enabled', true) && !(get(options, 'offline', false)),
+        enabled: get(options, 'offline', false) ? false : undefined, // disable if offline
         randomWalk: {
           enabled: get(options, 'dht.randomWalk.enabled', true)
         },
