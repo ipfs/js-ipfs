@@ -93,7 +93,10 @@ function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
       }
     },
     connectionManager: get(options, 'connectionManager',
-      get(config, 'connectionManager', {}))
+      {
+        maxPeers: get(config, 'Swarm.ConnMgr.HighWater'),
+        minPeers: get(config, 'Swarm.ConnMgr.LowWater')
+      })
   }
 
   const libp2pOptions = defaultsDeep(get(options, 'libp2p', {}), libp2pDefaults)
