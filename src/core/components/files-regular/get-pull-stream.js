@@ -1,6 +1,6 @@
 'use strict'
 
-const { exporter } = require('ipfs-unixfs-engine')
+const exporter = require('ipfs-unixfs-exporter')
 const pull = require('pull-stream')
 const errCode = require('err-code')
 const { normalizePath } = require('./utils')
@@ -21,6 +21,9 @@ module.exports = function (self) {
       self._preload(pathComponents[0])
     }
 
-    return exporter(ipfsPath, self._ipld, options)
+    return pull(
+      exporter(ipfsPath, self._ipld, options),
+      pull.map(file => Object.assign(file, { hash: file.cid.toString() }))
+    )
   }
 }

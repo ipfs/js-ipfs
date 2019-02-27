@@ -1,8 +1,7 @@
 'use strict'
 
 const isIpfs = require('is-ipfs')
-const unixfsEngine = require('ipfs-unixfs-engine')
-const exporter = unixfsEngine.exporter
+const exporter = require('ipfs-unixfs-exporter')
 const pull = require('pull-stream')
 const toB58String = require('multihashes').toB58String
 const Boom = require('boom')
@@ -82,7 +81,7 @@ exports.ls = {
     const links = []
     files.forEach((file) => {
       if (file.depth === rootDepth) {
-        const id = toB58String(file.hash)
+        const id = file.cid.toString()
         res.Arguments[path] = id
         res.Objects[id] = toFileObject(file)
         res.Objects[id].Links = file.type === 'file' ? null : links
