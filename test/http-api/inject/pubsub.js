@@ -16,7 +16,7 @@ module.exports = (http) => {
     const topicNotSubscribed = 'somethingRandom'
 
     before(() => {
-      api = http.api._apiServer
+      api = http.api._apiServer[0]
     })
 
     describe('/sub', () => {

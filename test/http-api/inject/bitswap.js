@@ -12,7 +12,7 @@ module.exports = (http) => {
     let api
 
     before(() => {
-      api = http.api._apiServer
+      api = http.api._apiServer[0]
     })
 
     before(async function () {

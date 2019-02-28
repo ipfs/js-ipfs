@@ -17,7 +17,7 @@ module.exports = (http) => {
     let api
 
     before('api', () => {
-      api = http.api._apiServer
+      api = http.api._apiServer[0]
     })
 
     describe('/new', () => {
