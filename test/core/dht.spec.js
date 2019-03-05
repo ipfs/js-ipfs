@@ -21,7 +21,9 @@ describe('dht', () => {
     factory.spawn({
       exec: IPFS,
       initOptions: { bits: 512 },
-      config: { Bootstrap: [] }
+      config: {
+        Bootstrap: []
+      }
     }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsd = _ipfsd
@@ -40,7 +42,7 @@ describe('dht', () => {
 
   describe('findprovs', () => {
     it('should callback with error for invalid CID input', (done) => {
-      ipfs.dht.findprovs('INVALID CID', (err) => {
+      ipfs.dht.findProvs('INVALID CID', (err) => {
         expect(err).to.exist()
         expect(err.code).to.equal('ERR_INVALID_CID')
         done()

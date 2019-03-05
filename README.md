@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-    <a href="https://ci.ipfs.team/job/ipfs/job/js-ipfs/job/master/"><img src="https://ci.ipfs.team/buildStatus/icon?job=ipfs/js-ipfs/master" /></a>
+  <a href="https://travis-ci.com/ipfs/aegir"><img src="https://flat.badgen.net/travis/ipfs/js-ipfs" /></a>
   <a href="https://codecov.io/gh/ipfs/js-ipfs"><img src="https://codecov.io/gh/ipfs/js-ipfs/branch/master/graph/badge.svg" /></a>
   <a href="https://david-dm.org/ipfs/js-ipfs"><img src="https://david-dm.org/ipfs/js-ipfs.svg?style=flat" /></a>
   <a href="https://github.com/feross/standard"><img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat"></a>
@@ -33,11 +33,6 @@ We've come a long way, but this project is still in Alpha, lots of development i
 You can check the development status at the [Kanban Board](https://waffle.io/ipfs/js-ipfs).
 
 [![Throughput Graph](https://graphs.waffle.io/ipfs/js-ipfs/throughput.svg)](https://waffle.io/ipfs/js-ipfs/metrics/throughput)
-
-**Please read this:** DHT (automatic content discovery) and Circuit Relay (pierce through NATs and dial between any node in the network) are two fundamental pieces that are not finalized yet. There are multiple applications that can be built without these two services but nevertheless they are fundamental to get that magic IPFS experience. If you want to track progress or contribute, please follow:
-
-- DHT: https://github.com/ipfs/js-ipfs/pull/856
-- ✅ Relay: https://github.com/ipfs/js-ipfs/pull/1063
 
 [**`Weekly Core Dev Calls`**](https://github.com/ipfs/pm/issues/650)
 
@@ -91,15 +86,17 @@ You can check the development status at the [Kanban Board](https://waffle.io/ipf
 
 ### npm
 
-This project is available through [npm](https://www.npmjs.com/). To install run
+This project is available through [npm](https://www.npmjs.com/). To install, run:
 
 ```bash
-> npm install ipfs --save
+> npm install ipfs
 ```
+
+JS IPFS depends on native modules that are installed by [`node-gyp`](https://github.com/nodejs/node-gyp). If you have problems running the command above, it is likely that the [build tools required by `node-gyp`](https://github.com/nodejs/node-gyp#installation) are missing from your system. Please install them and then try again.
 
 We support both the Current and Active LTS versions of Node.js. Please see [nodejs.org](https://nodejs.org/) for what these currently are.
 
-This project is tested on OSX & Linux, expected to work on Windows.
+This project is tested on macOS, Linux and Windows.
 
 ### Use in Node.js
 
@@ -319,7 +316,6 @@ Enable and configure experimental features.
 - `pubsub` (boolean): Enable libp2p pub-sub. (Default: `false`)
 - `ipnsPubsub` (boolean): Enable pub-sub on IPNS. (Default: `false`)
 - `sharding` (boolean): Enable directory sharding. Directories that have many child objects will be represented by multiple DAG nodes instead of just one. It can improve lookup performance when a directory has several thousand files or more. (Default: `false`)
-- `dht` (boolean): Enable KadDHT. **This is currently not interoperable with `go-ipfs`.**
 
 ##### `options.config`
 
@@ -600,7 +596,13 @@ The core API is grouped into several areas:
   - [`ipfs.bootstrap.add(addr, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BOOTSTRAP.md#bootstrapadd)
   - [`ipfs.bootstrap.rm(peer, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BOOTSTRAP.md#bootstraprm)
 
-- dht (not implemented yet)
+- [dht](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DHT.md)
+  - [`ipfs.dht.findPeer(peerId, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtfindpeer)
+  - [`ipfs.dht.findProvs(multihash, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtfindprovs)
+  - [`ipfs.dht.get(key, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtget)
+  - [`ipfs.dht.provide(cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtprovide)
+  - [`ipfs.dht.put(key, value, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtput)
+  - [`ipfs.dht.query(peerId, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtquery)
 
 - [pubsub](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md)
   - [`ipfs.pubsub.subscribe(topic, handler, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubsubscribe)

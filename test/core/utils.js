@@ -105,7 +105,7 @@ describe('utils', () => {
   })
 
   describe('resolvePath', function () {
-    this.timeout(80 * 1000)
+    this.timeout(100 * 1000)
     const fixtures = [
       'test/fixtures/planets/mercury/wiki.md',
       'test/fixtures/planets/solar-system.md'
@@ -120,7 +120,10 @@ describe('utils', () => {
     before(done => {
       repo = createTempRepo()
       node = new IPFS({
-        repo: repo
+        repo,
+        config: {
+          Bootstrap: []
+        }
       })
       node.once('ready', () => node.add(fixtures, done))
     })

@@ -70,7 +70,17 @@ describe('pinSet', function () {
   before(function (done) {
     this.timeout(80 * 1000)
     repo = createTempRepo()
-    ipfs = new IPFS({ repo })
+    ipfs = new IPFS({
+      repo,
+      config: {
+        Bootstrap: [],
+        Discovery: {
+          MDNS: {
+            Enabled: false
+          }
+        }
+      }
+    })
     ipfs.on('ready', () => {
       pinSet = createPinSet(ipfs.dag)
       done()
@@ -107,7 +117,7 @@ describe('pinSet', function () {
 
   describe('handles large sets', function () {
     it('handles storing items > maxItems', function (done) {
-      this.timeout(19 * 1000)
+      this.timeout(90 * 1000)
       const expectedHash = 'QmbvhSy83QWfgLXDpYjDmLWBFfGc8utoqjcXHyj3gYuasT'
       const count = maxItems + 1
       createNodes(count, (err, cids) => {

@@ -21,7 +21,18 @@ const spawnDaemon = (callback) => {
   df.spawn({
     exec: `./src/cli/bin.js`,
     args: ['--enable-namesys-pubsub'],
-    initOptions: { bits: 512 }
+    initOptions: { bits: 512 },
+    config: {
+      Bootstrap: [],
+      Discovery: {
+        MDNS: {
+          Enabled: false
+        },
+        webRTCStar: {
+          Enabled: false
+        }
+      }
+    }
   }, callback)
 }
 

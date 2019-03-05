@@ -1,3 +1,30 @@
+<a name="0.35.0-pre.0"></a>
+# [0.35.0-pre.0](https://github.com/ipfs/js-ipfs/compare/v0.34.4...v0.35.0-pre.0) (2019-02-11)
+
+
+### Bug Fixes
+
+* add missing libp2p-websocket-star dep ([#1869](https://github.com/ipfs/js-ipfs/issues/1869)) ([7cba3dd](https://github.com/ipfs/js-ipfs/commit/7cba3dd))
+* path to cid-tool commands ([#1866](https://github.com/ipfs/js-ipfs/issues/1866)) ([506f5be](https://github.com/ipfs/js-ipfs/commit/506f5be))
+* swallowed errors ([#1860](https://github.com/ipfs/js-ipfs/issues/1860)) ([47e2b9e](https://github.com/ipfs/js-ipfs/commit/47e2b9e)), closes [#1835](https://github.com/ipfs/js-ipfs/issues/1835) [#1858](https://github.com/ipfs/js-ipfs/issues/1858)
+
+
+### Chores
+
+* rename local option to offline ([#1850](https://github.com/ipfs/js-ipfs/issues/1850)) ([bbe561b](https://github.com/ipfs/js-ipfs/commit/bbe561b))
+
+
+### Features
+
+* interoperable DHT ([#856](https://github.com/ipfs/js-ipfs/issues/856)) ([77a0957](https://github.com/ipfs/js-ipfs/commit/77a0957))
+
+
+### BREAKING CHANGES
+
+* `--local` option has been renamed to `--offline`
+
+
+
 <a name="0.34.4"></a>
 ## [0.34.4](https://github.com/ipfs/js-ipfs/compare/v0.34.3...v0.34.4) (2019-01-24)
 

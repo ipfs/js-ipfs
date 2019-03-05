@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.34.4",
+  "version": "0.35.0-pre.0",
   "description": "JavaScript implementation of the IPFS specification",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "bin": {
@@ -44,10 +44,7 @@
     "benchmark:browser": "echo \"Error: no benchmarks yet\" && exit 1",
     "release": "aegir release -t node -t browser",
     "release-minor": "aegir release --type minor -t node -t browser",
-    "release-major": "aegir release --type major -t node -t browser",
-    "coverage": "aegir coverage",
-    "coverage-publish": "aegir-coverage publish",
-    "dep-check": "npx dependency-check package.json './test/**/*.js' './src/**/*.js'"
+    "release-major": "aegir release --type major -t node -t browser"
   },
   "repository": {
     "type": "git",
@@ -62,7 +59,7 @@
   },
   "homepage": "https://github.com/ipfs/js-ipfs#readme",
   "devDependencies": {
-    "aegir": "^18.0.3",
+    "aegir": "^18.1.0",
     "chai": "^4.2.0",
     "delay": "^4.1.0",
     "detect-node": "^2.0.4",
@@ -71,7 +68,7 @@
     "execa": "^1.0.0",
     "form-data": "^2.3.3",
     "hat": "0.0.3",
-    "interface-ipfs-core": "~0.96.0",
+    "interface-ipfs-core": "github:ipfs/interface-js-ipfs-core#refactor/cidv1base32-default",
     "ipfsd-ctl": "~0.41.0",
     "libp2p-websocket-star": "~0.10.2",
     "ncp": "^2.0.0",
@@ -89,8 +86,13 @@
     "boom": "^7.2.0",
     "bs58": "^4.0.1",
     "byteman": "^1.3.5",
+<<<<<<< HEAD
     "cid-tool": "github:multiformats/js-cid-tool#refactor/cidv1base32-default",
     "cids": "github:multiformats/js-cid#refactor/cidv1base32-default",
+=======
+    "cid-tool": "~0.2.0",
+    "cids": "github:ipld/js-cid#refactor/cidv1base32-default",
+>>>>>>> f0bb08493c7417d03b605422494373959d633710
     "class-is": "^1.1.0",
     "datastore-core": "~0.6.0",
     "datastore-pubsub": "~0.1.1",
@@ -110,18 +112,31 @@
     "ipfs-block": "github:ipfs/js-ipfs-block#refactor/cidv1base32-default",
     "ipfs-block-service": "~0.15.1",
     "ipfs-http-client": "^29.0.0",
+<<<<<<< HEAD
     "ipfs-http-response": "github:ipfs/js-ipfs-http-response#refactor/cidv1base32-default",
+=======
+    "ipfs-http-response": "~0.2.1",
+>>>>>>> f0bb08493c7417d03b605422494373959d633710
     "ipfs-mfs": "github:ipfs/js-ipfs-mfs#refactor/cidv1b32-default",
     "ipfs-multipart": "~0.1.0",
     "ipfs-repo": "~0.26.1",
     "ipfs-unixfs": "~0.1.16",
     "ipfs-unixfs-engine": "github:ipfs/js-ipfs-unixfs-engine#refactor/cidv1b32-default",
+<<<<<<< HEAD
     "ipld": "github:ipld/js-ipld#refactor/cidv1base32-default",
     "ipld-bitcoin": "github:ipld/js-ipld-bitcoin#refactor/cidv1base32-default",
     "ipld-dag-pb": "github:ipld/js-ipld-dag-pb#refactor/cidv1b32-default",
     "ipld-ethereum": "github:ipld/js-ipld-ethereum#refactor/cidv1base32-default",
     "ipld-git": "github:ipld/js-ipld-git#refactor/cidv1base32-default",
     "ipld-zcash": "github:ipld/js-ipld-zcash#refactor/cidv1base32-default",
+=======
+    "ipld": "~0.21.1",
+    "ipld-bitcoin": "~0.1.8",
+    "ipld-dag-pb": "github:ipld/js-ipld-dag-pb#refactor/cidv1b32-default",
+    "ipld-ethereum": "^2.0.1",
+    "ipld-git": "~0.2.2",
+    "ipld-zcash": "~0.1.6",
+>>>>>>> f0bb08493c7417d03b605422494373959d633710
     "ipns": "~0.5.0",
     "is-ipfs": "github:ipfs/is-ipfs#refactor/cidv1base32-default",
     "is-pull-stream": "~0.0.0",
@@ -129,7 +144,7 @@
     "joi": "^14.3.0",
     "joi-browser": "^13.4.0",
     "joi-multiaddr": "^4.0.0",
-    "libp2p": "~0.24.1",
+    "libp2p": "~0.25.0-rc.0",
     "libp2p-bootstrap": "~0.9.3",
     "libp2p-crypto": "~0.16.0",
     "libp2p-kad-dht": "~0.14.4",
@@ -141,13 +156,13 @@
     "libp2p-tcp": "~0.13.0",
     "libp2p-webrtc-star": "~0.15.5",
     "libp2p-websocket-star-multi": "~0.4.0",
-    "libp2p-websockets": "~0.12.0",
+    "libp2p-websockets": "~0.12.2",
     "lodash": "^4.17.11",
     "mafmt": "^6.0.2",
     "mime-types": "^2.1.21",
     "mkdirp": "~0.5.1",
     "multiaddr": "^6.0.0",
-    "multiaddr-to-uri": "^4.0.0",
+    "multiaddr-to-uri": "^4.0.1",
     "multibase": "~0.6.0",
     "multihashes": "~0.4.14",
     "multihashing-async": "~0.5.1",
@@ -175,6 +190,7 @@
     "tar-stream": "^2.0.0",
     "temp": "~0.9.0",
     "update-notifier": "^2.5.0",
+    "uri-to-multiaddr": "^3.0.1",
     "varint": "^5.0.0",
     "yargs": "^12.0.5",
     "yargs-promise": "^1.1.0"
@@ -269,6 +285,7 @@
     "SidHarder <softwarenavigator@gmail.com>",
     "Stephen Whitmore <stephen.whitmore@gmail.com>",
     "Stephen Whitmore <noffle@users.noreply.github.com>",
+    "Steven Allen <steven@stebalien.com>",
     "Terence Pae <terencepae@gmail.com>",
     "Uroš Jurglič <jurglic@gmail.com>",
     "Vasco Santos <vasco.santos@ua.pt>",
