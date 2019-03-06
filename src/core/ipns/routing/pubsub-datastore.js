@@ -8,8 +8,8 @@ const withIs = require('class-is')
 
 const errcode = require('err-code')
 const debug = require('debug')
-const log = debug('jsipfs:ipns:pubsub')
-log.error = debug('jsipfs:ipns:pubsub:error')
+const log = debug('ipfs:ipns:pubsub')
+log.error = debug('ipfs:ipns:pubsub:error')
 
 // Pubsub datastore aims to manage the pubsub subscriptions for IPNS
 class IpnsPubsubDatastore {

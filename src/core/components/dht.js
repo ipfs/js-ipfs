@@ -11,8 +11,8 @@ const nextTick = require('async/nextTick')
 const errcode = require('err-code')
 
 const debug = require('debug')
-const log = debug('jsipfs:dht')
-log.error = debug('jsipfs:dht:error')
+const log = debug('ipfs:dht')
+log.error = debug('ipfs:dht:error')
 
 module.exports = (self) => {
   return {

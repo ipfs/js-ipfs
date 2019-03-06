@@ -6,8 +6,8 @@ const PeerId = require('peer-id')
 const pull = require('pull-stream')
 const Pushable = require('pull-pushable')
 
-const log = debug('jsipfs:pingPullStream')
-log.error = debug('jsipfs:pingPullStream:error')
+const log = debug('ipfs:pingPullStream')
+log.error = debug('ipfs:pingPullStream:error')
 
 module.exports = function pingPullStream (self) {
   return (peerId, opts) => {

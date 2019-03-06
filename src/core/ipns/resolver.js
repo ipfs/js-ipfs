@@ -6,8 +6,8 @@ const PeerId = require('peer-id')
 const errcode = require('err-code')
 
 const debug = require('debug')
-const log = debug('jsipfs:ipns:resolver')
-log.error = debug('jsipfs:ipns:resolver:error')
+const log = debug('ipfs:ipns:resolver')
+log.error = debug('ipfs:ipns:resolver:error')
 
 const defaultMaximumRecursiveDepth = 32
 

@@ -6,8 +6,8 @@ const Receptacle = require('receptacle')
 
 const errcode = require('err-code')
 const debug = require('debug')
-const log = debug('jsipfs:ipns')
-log.error = debug('jsipfs:ipns:error')
+const log = debug('ipfs:ipns')
+log.error = debug('ipfs:ipns:error')
 
 const IpnsPublisher = require('./publisher')
 const IpnsRepublisher = require('./republisher')

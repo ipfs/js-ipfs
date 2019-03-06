@@ -6,8 +6,8 @@ const { URL } = require('url')
 const debug = require('debug')
 const setImmediate = require('async/setImmediate')
 
-const log = debug('jsipfs:preload')
-log.error = debug('jsipfs:preload:error')
+const log = debug('ipfs:preload')
+log.error = debug('ipfs:preload:error')
 
 module.exports = function preload (url, callback) {
   log(url)

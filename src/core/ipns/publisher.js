@@ -6,8 +6,8 @@ const series = require('async/series')
 const errcode = require('err-code')
 
 const debug = require('debug')
-const log = debug('jsipfs:ipns:publisher')
-log.error = debug('jsipfs:ipns:publisher:error')
+const log = debug('ipfs:ipns:publisher')
+log.error = debug('ipfs:ipns:publisher:error')
 
 const ipns = require('ipns')
 
