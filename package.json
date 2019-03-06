@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.35.0-pre.0",
+  "version": "0.35.0-rc.0",
   "description": "JavaScript implementation of the IPFS specification",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "bin": {
@@ -188,6 +188,7 @@
     "Alan Shaw <alan@tableflip.io>",
     "Alex North <alex@alexnorth.me>",
     "Alex Potsides <alex@achingbrain.net>",
+    "Andrew Nesbitt <andrewnez@gmail.com>",
     "Andrew de Andrade <andrew@deandrade.com.br>",
     "André Cruz <andremiguelcruz@msn.com>",
     "Arkadiy Kukarkin <parkan@users.noreply.github.com>",
@@ -247,6 +248,7 @@
     "Mikeal Rogers <mikeal.rogers@gmail.com>",
     "Mithgol <getgit@mithgol.ru>",
     "Molly <momack2@users.noreply.github.com>",
+    "Mounish Sai <pvsmounish@gmail.com>",
     "My9Bot <34904312+My9Bot@users.noreply.github.com>",
     "Nuno Nogueira <nunofmn@gmail.com>",
     "Oli Evans <oli@tableflip.io>",
