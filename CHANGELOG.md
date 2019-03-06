@@ -1,3 +1,54 @@
+<a name="0.35.0-rc.0"></a>
+# [0.35.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.35.0-pre.0...v0.35.0-rc.0) (2019-03-06)
+
+
+### Bug Fixes
+
+* add support for resolving to the middle of an IPLD block ([#1841](https://github.com/ipfs/js-ipfs/issues/1841)) ([fc08243](https://github.com/ipfs/js-ipfs/commit/fc08243))
+* dht browser disabled ([#1879](https://github.com/ipfs/js-ipfs/issues/1879)) ([7c5a843](https://github.com/ipfs/js-ipfs/commit/7c5a843))
+* ipv6 multiaddr in stdout ([#1854](https://github.com/ipfs/js-ipfs/issues/1854)) ([35fd541](https://github.com/ipfs/js-ipfs/commit/35fd541)), closes [#1853](https://github.com/ipfs/js-ipfs/issues/1853)
+* make clear pins function in tests serial ([#1910](https://github.com/ipfs/js-ipfs/issues/1910)) ([503e5ac](https://github.com/ipfs/js-ipfs/commit/503e5ac)), closes [#1890](https://github.com/ipfs/js-ipfs/issues/1890)
+* pin.rm test EPERM rename ([#1889](https://github.com/ipfs/js-ipfs/issues/1889)) ([c60de74](https://github.com/ipfs/js-ipfs/commit/c60de74))
+* temporarily disable random walk dht discovery ([#1907](https://github.com/ipfs/js-ipfs/issues/1907)) ([3fff46a](https://github.com/ipfs/js-ipfs/commit/3fff46a))
+
+
+### Code Refactoring
+
+* export types and utilities statically ([#1908](https://github.com/ipfs/js-ipfs/issues/1908)) ([79d7fef](https://github.com/ipfs/js-ipfs/commit/79d7fef))
+
+
+### Features
+
+* add `--enable-preload` to enable/disable preloading for daemons ([#1909](https://github.com/ipfs/js-ipfs/issues/1909)) ([9470900](https://github.com/ipfs/js-ipfs/commit/9470900))
+* limit connections number ([#1872](https://github.com/ipfs/js-ipfs/issues/1872)) ([bebce7f](https://github.com/ipfs/js-ipfs/commit/bebce7f))
+
+
+### BREAKING CHANGES
+
+* `ipfs.util.isIPFS` and `ipfs.util.crypto` have moved to static exports and should be accessed via `const { isIPFS, crypto } = require('ipfs')`.
+
+The modules available under `ipfs.types.*` have also become static exports.
+
+License: MIT
+Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
+* `ipfs.resolve` now supports resolving to the middle of an IPLD block instead of erroring.
+
+Given:
+
+```js
+b = {"c": "some value"}
+a = {"b": {"/": cidOf(b) }}
+```
+
+`ipfs resolve /ipld/cidOf(a)/b/c` should return `/ipld/cidOf(b)/c`. That is, it resolves the path as much as it can.
+
+Previously it would simply fail with an error.
+
+License: MIT
+Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
+
+
+
 <a name="0.35.0-pre.0"></a>
 # [0.35.0-pre.0](https://github.com/ipfs/js-ipfs/compare/v0.34.4...v0.35.0-pre.0) (2019-02-11)
 
