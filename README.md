@@ -348,41 +348,32 @@ This means:
 - See https://github.com/ipfs/js-ipfs for details on
   pubsub in js-ipfs
 
-#### Domain data types
+#### Instance utils
 
-A set of data types are exposed directly from the IPFS instance under `ipfs.types`. That way you're not required to import/require the following.
+- `ipfs.getEndpointConfig()`
 
-- [`ipfs.types.Buffer`](https://www.npmjs.com/package/buffer)
-- [`ipfs.types.PeerId`](https://github.com/libp2p/js-peer-id)
-- [`ipfs.types.PeerInfo`](https://github.com/libp2p/js-peer-info)
-- [`ipfs.types.multiaddr`](https://github.com/multiformats/js-multiaddr)
-- [`ipfs.types.multibase`](https://github.com/multiformats/multibase)
-- [`ipfs.types.multihash`](https://github.com/multiformats/js-multihash)
-- [`ipfs.types.CID`](https://github.com/ipld/js-cid)
+Call this on your client instance to return an object containing the `host`, `port`, `protocol` and `api-path`.
 
-#### Extra (util) functions
+#### Static types and utils
 
-Adding to the methods defined by [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core), `js-ipfs-http-client` exposes a set of extra utility methods. These utility functions are scoped behind the `ipfs.util`.
+Aside from the default export, `ipfs-http-client` exports various types and utilities that are included in the bundle:
 
-Complete documentation for these methods is coming with: https://github.com/ipfs/js-ipfs-http-client/pull/305
+- [`isIPFS`](https://www.npmjs.com/package/is-ipfs)
+- [`Buffer`](https://www.npmjs.com/package/buffer)
+- [`PeerId`](https://www.npmjs.com/package/peer-id)
+- [`PeerInfo`](https://www.npmjs.com/package/peer-info)
+- [`multiaddr`](https://www.npmjs.com/package/multiaddr)
+- [`multibase`](https://www.npmjs.com/package/multibase)
+- [`multihash`](https://www.npmjs.com/package/multihash)
+- [`CID`](https://www.npmjs.com/package/cids)
 
-##### Get endpoint configuration (host and port)
+These can be accessed like this, for example:
 
-> `ipfs.util.getEndpointConfig()`
-
-This returns an object containing the `host`, `port` and `protocol`
-
-##### Get libp2p crypto primitives
-
-> `ipfs.util.crypto`
-
-This contains an object with the crypto primitives
-
-##### Get is-ipfs utilities
-
-> `ipfs.util.isIPFS`
-
-This contains an object with the is-ipfs utilities to help identifying IPFS resources
+```js
+const { CID } = require('ipfs-http-client')
+// ...or from an es-module:
+import { CID } from 'ipfs-http-client'
+```
 
 ## Development
 

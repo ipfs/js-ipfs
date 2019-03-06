@@ -28,15 +28,15 @@ class App extends React.Component {
     ipfs.add([Buffer.from(stringToUse)], (err, res) => {
       if (err) throw err
       const hash = res[0].hash
-      this.setState({added_file_hash: hash})
+      this.setState({ added_file_hash: hash })
       ipfs.cat(hash, (err, data) => {
         if (err) throw err
-        this.setState({added_file_contents: data.toString()})
+        this.setState({ added_file_contents: data.toString() })
       })
     })
   }
   render () {
-    return <div style={{textAlign: 'center'}}>
+    return <div style={{ textAlign: 'center' }}>
       <h1>Everything is working!</h1>
       <p>Your ID is <strong>{this.state.id}</strong></p>
       <p>Your IPFS version is <strong>{this.state.version}</strong></p>

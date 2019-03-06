@@ -1,7 +1,7 @@
 'use strict'
 
 function requireCommands () {
-  const cmds = {
+  return {
     // Files Regular (not MFS)
     add: require('../files-regular/add'),
     addReadableStream: require('../files-regular/add-readable-stream'),
@@ -18,6 +18,9 @@ function requireCommands () {
     ls: require('../files-regular/ls'),
     lsReadableStream: require('../files-regular/ls-readable-stream'),
     lsPullStream: require('../files-regular/ls-pull-stream'),
+
+    // Files MFS (Mutable Filesystem)
+    files: require('../files-mfs'),
 
     // Block
     block: require('../block'),
@@ -50,30 +53,14 @@ function requireCommands () {
     refs: require('../refs'),
     repo: require('../repo'),
     stop: require('../stop'),
+    shutdown: require('../stop'),
     stats: require('../stats'),
     update: require('../update'),
     version: require('../version'),
-    types: require('../types'),
-    resolve: require('../resolve')
+    resolve: require('../resolve'),
+    // ipfs-http-client instance
+    getEndpointConfig: (send, config) => require('../get-endpoint-config')(config)
   }
-
-  // shutdown is an alias for stop
-  cmds.shutdown = cmds.stop
-
-  // Files MFS (Mutable Filesystem)
-  cmds.files = (send) => {
-    return require('../files-mfs')(send)
-  }
-
-  cmds.util = (send, config) => {
-    return {
-      getEndpointConfig: require('../util/get-endpoint-config')(config),
-      crypto: require('libp2p-crypto'),
-      isIPFS: require('is-ipfs')
-    }
-  }
-
-  return cmds
 }
 
 function loadCommands (send, config) {

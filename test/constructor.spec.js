@@ -1,4 +1,4 @@
-/* eslint-env mocha */
+/* eslint-env mocha, browser */
 'use strict'
 
 const multiaddr = require('multiaddr')
@@ -114,7 +114,7 @@ function clientWorks (client, done) {
 }
 
 function expectConfig (ipfs, { host, port, protocol, apiPath }) {
-  const conf = ipfs.util.getEndpointConfig()
+  const conf = ipfs.getEndpointConfig()
   expect(conf.host).to.equal(host || 'localhost')
   expect(conf.port).to.equal(port || '5001')
   expect(conf.protocol).to.equal(protocol || 'http')

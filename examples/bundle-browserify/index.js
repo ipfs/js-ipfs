@@ -6,7 +6,7 @@ var ipfs = IPFS()
 
 function store () {
   var toStore = document.getElementById('source').value
-  ipfs.files.add(Buffer.from(toStore), function (err, res) {
+  ipfs.add(Buffer.from(toStore), function (err, res) {
     if (err || !res) {
       return console.error('ipfs add error', err, res)
     }
@@ -21,7 +21,7 @@ function store () {
 }
 
 function display (hash) {
-  ipfs.files.cat(hash, function (err, res) {
+  ipfs.cat(hash, function (err, res) {
     if (err || !res) {
       return console.error('ipfs cat error', err, res)
     }
