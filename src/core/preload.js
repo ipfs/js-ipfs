@@ -18,6 +18,7 @@ module.exports = self => {
   options.addresses = options.addresses || []
 
   if (!options.enabled || !options.addresses.length) {
+    log('preload disabled')
     const api = (_, callback) => {
       if (callback) {
         setImmediate(() => callback())

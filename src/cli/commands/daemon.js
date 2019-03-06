@@ -26,6 +26,10 @@ module.exports = {
         type: 'boolean',
         default: false
       })
+      .option('enable-preload', {
+        type: 'boolean',
+        default: true
+      })
   },
 
   handler (argv) {
@@ -41,6 +45,7 @@ module.exports = {
         repo: process.env.IPFS_PATH,
         offline: argv.offline,
         pass: argv.pass,
+        preload: { enabled: argv.enablePreload },
         EXPERIMENTAL: {
           pubsub: argv.enablePubsubExperiment,
           ipnsPubsub: argv.enableNamesysPubsub,
