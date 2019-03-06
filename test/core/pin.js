@@ -54,21 +54,18 @@ describe('pin', function () {
       .then(result => expect(result.pinned).to.eql(pinned))
   }
 
-  function clearPins () {
-    return pin.ls()
-      .then(ls => {
-        const pinsToRemove = ls
-          .filter(out => out.type === pinTypes.recursive)
-          .map(out => pin.rm(out.hash))
-        return Promise.all(pinsToRemove)
-      })
-      .then(() => pin.ls())
-      .then(ls => {
-        const pinsToRemove = ls
-          .filter(out => out.type === pinTypes.direct)
-          .map(out => pin.rm(out.hash))
-        return Promise.all(pinsToRemove)
-      })
+  async function clearPins () {
+    let ls = (await pin.ls()).filter(out => out.type === pinTypes.recursive)
+
+    for (let i = 0; i < ls.length; i++) {
+      await pin.rm(ls[i].hash)
+    }
+
+    ls = (await pin.ls()).filter(out => out.type === pinTypes.direct)
+
+    for (let i = 0; i < ls.length; i++) {
+      await pin.rm(ls[i].hash)
+    }
   }
 
   before(function (done) {
