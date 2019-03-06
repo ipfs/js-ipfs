@@ -198,8 +198,4 @@ describe('interface-ipfs-core tests', function () {
       }
     }
   }), { skip: !isNode })
-
-  tests.types(defaultCommonFactory)
-
-  tests.util(defaultCommonFactory, { skip: { reason: 'FIXME: currently failing' } })
 })

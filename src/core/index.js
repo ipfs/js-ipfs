@@ -98,17 +98,6 @@ class IPFS extends EventEmitter {
     this.log = debug('jsipfs')
     this.log.err = debug('jsipfs:err')
 
-    // IPFS types
-    this.types = {
-      Buffer: Buffer,
-      PeerId: PeerId,
-      PeerInfo: PeerInfo,
-      multiaddr: multiaddr,
-      multibase: multibase,
-      multihash: multihash,
-      CID: CID
-    }
-
     // IPFS Core Internals
     // this._repo - assigned above
     this._peerInfoBook = new PeerBook()
@@ -180,18 +169,14 @@ class IPFS extends EventEmitter {
 
     this.state = require('./state')(this)
 
-    // ipfs.util
-    this.util = {
-      crypto,
-      isIPFS
-    }
-
     boot(this)
   }
 }
 
-exports = module.exports = IPFS
+module.exports = IPFS
 
-exports.createNode = (options) => {
+Object.assign(module.exports, { crypto, isIPFS, Buffer, CID, multiaddr, multibase, multihash, PeerId, PeerInfo })
+
+module.exports.createNode = (options) => {
   return new IPFS(options)
 }

@@ -68,8 +68,7 @@ You can check the development status at the [Kanban Board](https://waffle.io/ipf
       - [Crypto and Key Management](#crypto-and-key-management)
       - [Network](#network)
       - [Node Management](#node-management)
-      - [Domain data types](#domain-data-types)
-      - [Util](#util)
+    - [Static types and utils](#static-types-and-utils)
 - [FAQ](#faq)
 - [Running js-ipfs with Docker](#running-js-ipfs-with-docker)
 - [Packages](#packages)
@@ -654,26 +653,27 @@ The core API is grouped into several areas:
   - [`ipfs.config.set(key, value, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configset)
   - [`ipfs.config.replace(config, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configreplace)
 
-#### Domain data types
+#### Static types and utils
 
-A set of data types are exposed directly from the IPFS instance under `ipfs.types`. That way you're not required to import/require the following.
+Aside from the default export, `ipfs` exports various types and utilities that are included in the bundle:
 
-- [`ipfs.types.Buffer`](https://www.npmjs.com/package/buffer)
-- [`ipfs.types.PeerId`](https://github.com/libp2p/js-peer-id)
-- [`ipfs.types.PeerInfo`](https://github.com/libp2p/js-peer-info)
-- [`ipfs.types.multiaddr`](https://github.com/multiformats/js-multiaddr)
-- [`ipfs.types.multibase`](https://github.com/multiformats/js-multibase)
-- [`ipfs.types.multihash`](https://github.com/multiformats/js-multihash)
-- [`ipfs.types.CID`](https://github.com/ipld/js-cid)
-- [`ipfs.types.dagPB`](https://github.com/ipld/js-ipld-dag-pb)
-- [`ipfs.types.dagCBOR`](https://github.com/ipld/js-ipld-dag-cbor)
+- [`crypto`](https://www.npmjs.com/package/libp2p-crypto)
+- [`isIPFS`](https://www.npmjs.com/package/is-ipfs)
+- [`Buffer`](https://www.npmjs.com/package/buffer)
+- [`PeerId`](https://www.npmjs.com/package/peer-id)
+- [`PeerInfo`](https://www.npmjs.com/package/peer-info)
+- [`multiaddr`](https://www.npmjs.com/package/multiaddr)
+- [`multibase`](https://www.npmjs.com/package/multibase)
+- [`multihash`](https://www.npmjs.com/package/multihash)
+- [`CID`](https://www.npmjs.com/package/cids)
 
-#### Util
+These can be accessed like this, for example:
 
-A set of utils are exposed directly from the IPFS instance under `ipfs.util`. That way you're not required to import/require the following:
-
-- [`ipfs.util.crypto`](https://github.com/libp2p/js-libp2p-crypto)
-- [`ipfs.util.isIPFS`](https://github.com/ipfs-shipyard/is-ipfs)
+```js
+const { CID } = require('ipfs')
+// ...or from an es-module:
+import { CID } from 'ipfs'
+```
 
 ## FAQ
 

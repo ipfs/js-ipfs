@@ -1,5 +1,7 @@
 'use strict'
 
+const { Buffer } = require('../../')
+
 const log = (line) => {
   const output = document.getElementById('output')
   let message
@@ -40,7 +42,7 @@ const dragDrop = (ipfs) => {
         reader.onload = (event) => {
           ipfs.add({
             path: file.name,
-            content: ipfs.types.Buffer.from(event.target.result)
+            content: Buffer.from(event.target.result)
           }, {
             progress: (addedBytes) => {
               progress.textContent = `IPFS: Adding ${file.name} ${parseInt((addedBytes / file.size) * 100)}%\r\n`

@@ -5,6 +5,7 @@
 
 const repoPath = `ipfs-${Math.random()}`
 const ipfs = new Ipfs({ repo: repoPath })
+const { Buffer } = Ipfs
 
 ipfs.on('ready', () => {
   const directory = 'directory'
@@ -41,13 +42,13 @@ const createFiles = (directory) => {
     path: `${directory}/file1.txt`,
 
     // content could be a stream, a url etc
-    content: ipfs.types.Buffer.from('one', 'utf8')
+    content: Buffer.from('one', 'utf8')
   }, {
     path: `${directory}/file2.txt`,
-    content: ipfs.types.Buffer.from('two', 'utf8')
+    content: Buffer.from('two', 'utf8')
   }, {
     path: `${directory}/file3.txt`,
-    content: ipfs.types.Buffer.from('three', 'utf8')
+    content: Buffer.from('three', 'utf8')
   }]
 }
 
