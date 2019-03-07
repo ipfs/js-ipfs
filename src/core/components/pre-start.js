@@ -6,6 +6,7 @@ const multiaddr = require('multiaddr')
 const waterfall = require('async/waterfall')
 const Keychain = require('libp2p-keychain')
 const defaultsDeep = require('@nodeutils/defaults-deep')
+const defaultConfig = require('../runtime/config-nodejs.js')
 const NoKeychain = require('./no-keychain')
 /*
  * Load stuff from Repo into memory
@@ -18,11 +19,7 @@ module.exports = function preStart (self) {
     waterfall([
       (cb) => self._repo.config.get(cb),
       (config, cb) => {
-        if (!self._options.config) {
-          return cb(null, config)
-        }
-
-        config = defaultsDeep(self._options.config, config)
+        config = defaultsDeep(self._options.config, config, defaultConfig())
 
         self.config.replace(config, (err) => {
           if (err) {
