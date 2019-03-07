@@ -60,7 +60,7 @@ describe('HTTP Gateway', function () {
 
     await http.api.start()
 
-    gateway = http.api._gatewayServer[0]
+    gateway = http.api._gatewayServers[0]
 
     // QmbQD7EMEL1zeebwBsWEfA3ndgSS6F7S6iTuwuqasPgVRi
     await http.api._ipfs.add([

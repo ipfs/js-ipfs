@@ -26,7 +26,7 @@ const checkLock = (repo, cb) => {
   cb()
 }
 
-function testSignal (ipfs, sig) {
+function testSignal (ipfs, sig, config) {
   return ipfs('init').then(() => {
     return ipfs('config', 'Addresses', JSON.stringify({
       API: '/ip4/127.0.0.1/tcp/0',
@@ -74,6 +74,33 @@ describe('daemon', () => {
         Swarm: [],
         API: '/ip4/127.0.0.1/tcp/0',
         Gateway: '/ip4/127.0.0.1/tcp/0'
+      }), '--json')
+    }).then(() => {
+      const res = ipfs('daemon')
+      const timeout = setTimeout(() => {
+        done(new Error('Daemon did not get ready in time'))
+      }, 1000 * 120)
+      res.stdout.on('data', (data) => {
+        const line = data.toString()
+        if (line.includes('Daemon is ready')) {
+          clearTimeout(timeout)
+          res.kill()
+          done()
+        }
+      })
+    }).catch(err => done(err))
+  })
+
+  skipOnWindows('should handle API Array and Gateway Array', function (done) {
+    this.timeout(100 * 1000)
+    // These tests are flaky, but retrying 3 times seems to make it work 99% of the time
+    this.retries(3)
+
+    ipfs('init').then(() => {
+      return ipfs('config', 'Addresses', JSON.stringify({
+        Swarm: ['/ip4/0.0.0.0/tcp/4002', '/ip4/127.0.0.1/tcp/4003/ws'],
+        API: ['/ip4/127.0.0.1/tcp/5002', '/ip6/::1/tcp/5002'],
+        Gateway: ['/ip4/127.0.0.1/tcp/9090', '/ip6/::1/tcp/9090']
       }), '--json')
     }).then(() => {
       const res = ipfs('daemon')
