@@ -91,7 +91,9 @@ describe('daemon', () => {
     }).catch(err => done(err))
   })
 
-  it('should allow bind to multiple addresses for API and Gateway', async () => {
+  it('should allow bind to multiple addresses for API and Gateway', async function () {
+    this.timeout(20 * 1000)
+
     const apiAddrs = [
       '/ip4/127.0.0.1/tcp/55001',
       '/ip4/127.0.0.1/tcp/55002'
@@ -124,7 +126,9 @@ describe('daemon', () => {
     gatewayAddrs.forEach(addr => expect(out).to.include(`Gateway (read only) listening on ${addr}`))
   })
 
-  it('should allow no bind addresses for API and Gateway', async () => {
+  it('should allow no bind addresses for API and Gateway', async function () {
+    this.timeout(20 * 1000)
+
     await ipfs('init')
     await ipfs('config', 'Addresses.API', '[]', '--json')
     await ipfs('config', 'Addresses.Gateway', '[]', '--json')
