@@ -91,31 +91,60 @@ describe('daemon', () => {
     }).catch(err => done(err))
   })
 
-  skipOnWindows('should handle API Array and Gateway Array', function (done) {
-    this.timeout(100 * 1000)
-    // These tests are flaky, but retrying 3 times seems to make it work 99% of the time
-    this.retries(3)
+  it('should allow bind to multiple addresses for API and Gateway', async () => {
+    const apiAddrs = [
+      '/ip4/127.0.0.1/tcp/55001',
+      '/ip4/127.0.0.1/tcp/55002'
+    ]
 
-    ipfs('init').then(() => {
-      return ipfs('config', 'Addresses', JSON.stringify({
-        Swarm: ['/ip4/0.0.0.0/tcp/4002', '/ip4/127.0.0.1/tcp/4003/ws'],
-        API: ['/ip4/127.0.0.1/tcp/5002', '/ip6/::1/tcp/5002'],
-        Gateway: ['/ip4/127.0.0.1/tcp/9090', '/ip6/::1/tcp/9090']
-      }), '--json')
-    }).then(() => {
+    const gatewayAddrs = [
+      '/ip4/127.0.0.1/tcp/64080',
+      '/ip4/127.0.0.1/tcp/64081'
+    ]
+
+    await ipfs('init')
+    await ipfs('config', 'Addresses.API', JSON.stringify(apiAddrs), '--json')
+    await ipfs('config', 'Addresses.Gateway', JSON.stringify(gatewayAddrs), '--json')
+
+    const out = await new Promise(resolve => {
       const res = ipfs('daemon')
-      const timeout = setTimeout(() => {
-        done(new Error('Daemon did not get ready in time'))
-      }, 1000 * 120)
-      res.stdout.on('data', (data) => {
-        const line = data.toString()
-        if (line.includes('Daemon is ready')) {
-          clearTimeout(timeout)
+      let out = ''
+
+      res.stdout.on('data', function onData (data) {
+        out += data
+        if (out.includes('Daemon is ready')) {
+          res.stdout.removeListener('data', onData)
           res.kill()
-          done()
+          resolve(out)
         }
       })
-    }).catch(err => done(err))
+    })
+
+    apiAddrs.forEach(addr => expect(out).to.include(`API listening on ${addr}`))
+    gatewayAddrs.forEach(addr => expect(out).to.include(`Gateway (read only) listening on ${addr}`))
+  })
+
+  it('should allow no bind addresses for API and Gateway', async () => {
+    await ipfs('init')
+    await ipfs('config', 'Addresses.API', '[]', '--json')
+    await ipfs('config', 'Addresses.Gateway', '[]', '--json')
+
+    const out = await new Promise(resolve => {
+      const res = ipfs('daemon')
+      let out = ''
+
+      res.stdout.on('data', function onData (data) {
+        out += data
+        if (out.includes('Daemon is ready')) {
+          res.stdout.removeListener('data', onData)
+          res.kill()
+          resolve(out)
+        }
+      })
+    })
+
+    expect(out).to.not.include('API listening on')
+    expect(out).to.not.include('Gateway (read only) listening on')
   })
 
   skipOnWindows('should handle SIGINT gracefully', function (done) {

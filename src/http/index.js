@@ -29,12 +29,11 @@ function hapiInfoToMultiaddr (info) {
   return toMultiaddr(uri)
 }
 
-async function serverCreator (serverAddrs, createServer, hapiInfoToMultiaddr, ipfs) {
-  if (!serverAddrs.length) {
-    return []
-  }
+function serverCreator (serverAddrs, createServer, ipfs) {
+  serverAddrs = serverAddrs || []
   // just in case the address is just string
   serverAddrs = Array.isArray(serverAddrs) ? serverAddrs : [serverAddrs]
+
   const processServer = async address => {
     const addrParts = address.split('/')
     const server = await createServer(addrParts[2], addrParts[4], ipfs)
@@ -42,6 +41,7 @@ async function serverCreator (serverAddrs, createServer, hapiInfoToMultiaddr, ip
     server.info.ma = hapiInfoToMultiaddr(server.info)
     return server
   }
+
   return Promise.all(serverAddrs.map(processServer))
 }
 
@@ -104,17 +104,18 @@ class HttpApi {
     this._ipfs = ipfs
 
     const config = await ipfs.config.get()
+    config.Addresses = config.Addresses || {}
 
     const apiAddrs = config.Addresses.API
-
-    this._apiServers = await serverCreator(apiAddrs, this._createApiServer, hapiInfoToMultiaddr, ipfs)
+    this._apiServers = await serverCreator(apiAddrs, this._createApiServer, ipfs)
 
     // for the CLI to know the where abouts of the API
-    await promisify(ipfs._repo.apiAddr.set)(this._apiServers[0].info.ma)
+    if (this._apiServers.length) {
+      await promisify(ipfs._repo.apiAddr.set)(this._apiServers[0].info.ma)
+    }
 
     const gatewayAddrs = config.Addresses.Gateway
-
-    this._gatewayServers = await serverCreator(gatewayAddrs, this._createGatewayServer, hapiInfoToMultiaddr, ipfs)
+    this._gatewayServers = await serverCreator(gatewayAddrs, this._createGatewayServer, ipfs)
 
     this._apiServers.forEach(apiServer => {
       ipfs._print('API listening on %s', apiServer.info.ma)
@@ -194,15 +195,13 @@ class HttpApi {
   }
 
   get apiAddr () {
-    if (!this._apiServers) throw new Error('API address unavailable - server is not started')
+    if (!this._apiServers.length) throw new Error('API address unavailable - server is not started')
     return multiaddr('/ip4/127.0.0.1/tcp/' + this._apiServers[0].info.port)
   }
 
   async stop () {
-    function stopServers (servers) {
-      return Promise.all(servers.map(server => server.stop()))
-    }
     this._log('stopping')
+    const stopServers = servers => Promise.all((servers || []).map(s => s.stop()))
     await Promise.all([
       stopServers(this._apiServers),
       stopServers(this._gatewayServers),
