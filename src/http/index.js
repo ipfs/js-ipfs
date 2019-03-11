@@ -32,8 +32,8 @@ function hapiInfoToMultiaddr (info) {
 class HttpApi {
   constructor (options) {
     this._options = options || {}
-    this._log = debug('jsipfs:http-api')
-    this._log.error = debug('jsipfs:http-api:error')
+    this._log = debug('ipfs:http-api')
+    this._log.error = debug('ipfs:http-api:error')
 
     if (process.env.IPFS_MONITORING) {
       // Setup debug metrics collection

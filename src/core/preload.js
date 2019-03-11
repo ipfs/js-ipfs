@@ -7,8 +7,8 @@ const debug = require('debug')
 const CID = require('cids')
 const preload = require('./runtime/preload-nodejs')
 
-const log = debug('jsipfs:preload')
-log.error = debug('jsipfs:preload:error')
+const log = debug('ipfs:preload')
+log.error = debug('ipfs:preload:error')
 
 const noop = (err) => { if (err) log.error(err) }
 

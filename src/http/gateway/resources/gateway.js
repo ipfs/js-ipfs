@@ -1,8 +1,8 @@
 'use strict'
 
 const debug = require('debug')
-const log = debug('jsipfs:http-gateway')
-log.error = debug('jsipfs:http-gateway:error')
+const log = debug('ipfs:http-gateway')
+log.error = debug('ipfs:http-gateway:error')
 const pull = require('pull-stream')
 const pushable = require('pull-pushable')
 const toStream = require('pull-stream-to-stream')

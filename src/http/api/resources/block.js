@@ -7,8 +7,8 @@ const multibase = require('multibase')
 const Boom = require('boom')
 const { cidToString } = require('../../../utils/cid')
 const debug = require('debug')
-const log = debug('jsipfs:http-api:block')
-log.error = debug('jsipfs:http-api:block:error')
+const log = debug('ipfs:http-api:block')
+log.error = debug('ipfs:http-api:block:error')
 
 // common pre request handler that parses the args and returns `key` which is assigned to `request.pre.args`
 exports.parseKey = (request, h) => {

@@ -8,8 +8,8 @@ const human = require('human-to-milliseconds')
 const crypto = require('libp2p-crypto')
 const errcode = require('err-code')
 
-const log = debug('jsipfs:name')
-log.error = debug('jsipfs:name:error')
+const log = debug('ipfs:name')
+log.error = debug('ipfs:name:error')
 
 const namePubsub = require('./name-pubsub')
 const utils = require('../utils')

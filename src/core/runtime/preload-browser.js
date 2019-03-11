@@ -3,8 +3,8 @@
 
 const debug = require('debug')
 
-const log = debug('jsipfs:preload')
-log.error = debug('jsipfs:preload:error')
+const log = debug('ipfs:preload')
+log.error = debug('ipfs:preload:error')
 
 module.exports = function preload (url, callback) {
   log(url)

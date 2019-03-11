@@ -1,8 +1,8 @@
 'use strict'
 
 const debug = require('debug')
-const log = debug('jsipfs:state')
-log.error = debug('jsipfs:state:error')
+const log = debug('ipfs:state')
+log.error = debug('ipfs:state:error')
 
 const fsm = require('fsm-event')
 

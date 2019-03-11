@@ -6,8 +6,8 @@ const Boom = require('boom')
 const CID = require('cids')
 
 const debug = require('debug')
-const log = debug('jsipfs:http-api:dht')
-log.error = debug('jsipfs:http-api:dht:error')
+const log = debug('ipfs:http-api:dht')
+log.error = debug('ipfs:http-api:dht:error')
 
 exports = module.exports
 

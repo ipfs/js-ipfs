@@ -6,8 +6,8 @@ const promisify = require('promisify-es6')
 
 const IpnsPubsubDatastore = require('../ipns/routing/pubsub-datastore')
 
-const log = debug('jsipfs:name-pubsub')
-log.error = debug('jsipfs:name-pubsub:error')
+const log = debug('ipfs:name-pubsub')
+log.error = debug('ipfs:name-pubsub:error')
 
 // Is pubsub enabled
 const isNamePubsubEnabled = (node) => {
