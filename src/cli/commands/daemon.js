@@ -1,5 +1,6 @@
 'use strict'
 
+const os = require('os')
 const { getRepoPath, print, ipfsPathHelp } = require('../utils')
 
 module.exports = {
@@ -35,6 +36,9 @@ module.exports = {
   handler (argv) {
     argv.resolve((async () => {
       print('Initializing IPFS daemon...')
+      print(`js-ipfs version: ${require('../../../package.json').version}`)
+      print(`System version: ${os.arch()}/${os.platform()}`)
+      print(`Node.js version: ${process.versions.node}`)
 
       const repoPath = getRepoPath()
 
