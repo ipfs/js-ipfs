@@ -11,7 +11,7 @@ module.exports = (http) => {
     let api
 
     before(() => {
-      api = http.api._apiServer
+      api = http.api._apiServers[0]
       return api.inject({
         method: 'GET',
         url: '/api/v0/bootstrap/add/default'

@@ -8,7 +8,7 @@ module.exports = (http) => {
     let api
 
     before(() => {
-      api = http.api._apiServer
+      api = http.api._apiServers[0]
     })
 
     it('resolve ipfs.io dns', async () => {

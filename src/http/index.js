@@ -29,6 +29,22 @@ function hapiInfoToMultiaddr (info) {
   return toMultiaddr(uri)
 }
 
+function serverCreator (serverAddrs, createServer, ipfs) {
+  serverAddrs = serverAddrs || []
+  // just in case the address is just string
+  serverAddrs = Array.isArray(serverAddrs) ? serverAddrs : [serverAddrs]
+
+  const processServer = async address => {
+    const addrParts = address.split('/')
+    const server = await createServer(addrParts[2], addrParts[4], ipfs)
+    await server.start()
+    server.info.ma = hapiInfoToMultiaddr(server.info)
+    return server
+  }
+
+  return Promise.all(serverAddrs.map(processServer))
+}
+
 class HttpApi {
   constructor (options) {
     this._options = options || {}
@@ -88,25 +104,28 @@ class HttpApi {
     this._ipfs = ipfs
 
     const config = await ipfs.config.get()
+    config.Addresses = config.Addresses || {}
 
-    const apiAddr = config.Addresses.API.split('/')
-    const apiServer = await this._createApiServer(apiAddr[2], apiAddr[4], ipfs)
-    await apiServer.start()
-    apiServer.info.ma = hapiInfoToMultiaddr(apiServer.info)
-    this._apiServer = apiServer
+    const apiAddrs = config.Addresses.API
+    this._apiServers = await serverCreator(apiAddrs, this._createApiServer, ipfs)
 
     // for the CLI to know the where abouts of the API
-    await promisify(ipfs._repo.apiAddr.set)(apiServer.info.ma)
+    if (this._apiServers.length) {
+      await promisify(ipfs._repo.apiAddr.set)(this._apiServers[0].info.ma)
+    }
 
-    const gatewayAddr = config.Addresses.Gateway.split('/')
-    const gatewayServer = await this._createGatewayServer(gatewayAddr[2], gatewayAddr[4], ipfs)
-    await gatewayServer.start()
-    gatewayServer.info.ma = hapiInfoToMultiaddr(gatewayServer.info)
-    this._gatewayServer = gatewayServer
+    const gatewayAddrs = config.Addresses.Gateway
+    this._gatewayServers = await serverCreator(gatewayAddrs, this._createGatewayServer, ipfs)
 
-    ipfs._print('API listening on %s', apiServer.info.ma)
-    ipfs._print('Gateway (read only) listening on %s', gatewayServer.info.ma)
-    ipfs._print('Web UI available at %s', toUri(apiServer.info.ma) + '/webui')
+    this._apiServers.forEach(apiServer => {
+      ipfs._print('API listening on %s', apiServer.info.ma)
+    })
+    this._gatewayServers.forEach(gatewayServer => {
+      ipfs._print('Gateway (read only) listening on %s', gatewayServer.info.ma)
+    })
+    this._apiServers.forEach(apiServer => {
+      ipfs._print('Web UI available at %s', toUri(apiServer.info.ma) + '/webui')
+    })
     this._log('started')
     return this
   }
@@ -176,15 +195,18 @@ class HttpApi {
   }
 
   get apiAddr () {
-    if (!this._apiServer) throw new Error('API address unavailable - server is not started')
-    return multiaddr('/ip4/127.0.0.1/tcp/' + this._apiServer.info.port)
+    if (!this._apiServers || !this._apiServers.length) {
+      throw new Error('API address unavailable - server is not started')
+    }
+    return multiaddr('/ip4/127.0.0.1/tcp/' + this._apiServers[0].info.port)
   }
 
   async stop () {
     this._log('stopping')
+    const stopServers = servers => Promise.all((servers || []).map(s => s.stop()))
     await Promise.all([
-      this._apiServer && this._apiServer.stop(),
-      this._gatewayServer && this._gatewayServer.stop(),
+      stopServers(this._apiServers),
+      stopServers(this._gatewayServers),
       this._ipfs && this._ipfs.stop()
     ])
     this._log('stopped')

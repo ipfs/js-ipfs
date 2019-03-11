@@ -26,7 +26,7 @@ const checkLock = (repo, cb) => {
   cb()
 }
 
-function testSignal (ipfs, sig) {
+function testSignal (ipfs, sig, config) {
   return ipfs('init').then(() => {
     return ipfs('config', 'Addresses', JSON.stringify({
       API: '/ip4/127.0.0.1/tcp/0',
@@ -89,6 +89,66 @@ describe('daemon', () => {
         }
       })
     }).catch(err => done(err))
+  })
+
+  it('should allow bind to multiple addresses for API and Gateway', async function () {
+    this.timeout(20 * 1000)
+
+    const apiAddrs = [
+      '/ip4/127.0.0.1/tcp/55001',
+      '/ip4/127.0.0.1/tcp/55002'
+    ]
+
+    const gatewayAddrs = [
+      '/ip4/127.0.0.1/tcp/64080',
+      '/ip4/127.0.0.1/tcp/64081'
+    ]
+
+    await ipfs('init')
+    await ipfs('config', 'Addresses.API', JSON.stringify(apiAddrs), '--json')
+    await ipfs('config', 'Addresses.Gateway', JSON.stringify(gatewayAddrs), '--json')
+
+    const out = await new Promise(resolve => {
+      const res = ipfs('daemon')
+      let out = ''
+
+      res.stdout.on('data', function onData (data) {
+        out += data
+        if (out.includes('Daemon is ready')) {
+          res.stdout.removeListener('data', onData)
+          res.kill()
+          resolve(out)
+        }
+      })
+    })
+
+    apiAddrs.forEach(addr => expect(out).to.include(`API listening on ${addr}`))
+    gatewayAddrs.forEach(addr => expect(out).to.include(`Gateway (read only) listening on ${addr}`))
+  })
+
+  it('should allow no bind addresses for API and Gateway', async function () {
+    this.timeout(20 * 1000)
+
+    await ipfs('init')
+    await ipfs('config', 'Addresses.API', '[]', '--json')
+    await ipfs('config', 'Addresses.Gateway', '[]', '--json')
+
+    const out = await new Promise(resolve => {
+      const res = ipfs('daemon')
+      let out = ''
+
+      res.stdout.on('data', function onData (data) {
+        out += data
+        if (out.includes('Daemon is ready')) {
+          res.stdout.removeListener('data', onData)
+          res.kill()
+          resolve(out)
+        }
+      })
+    })
+
+    expect(out).to.not.include('API listening on')
+    expect(out).to.not.include('Gateway (read only) listening on')
   })
 
   skipOnWindows('should handle SIGINT gracefully', function (done) {
