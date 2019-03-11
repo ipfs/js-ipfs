@@ -9,6 +9,7 @@ const os = require('os')
 const path = require('path')
 const hat = require('hat')
 const fs = require('fs')
+const pkg = require('../../package.json')
 
 const skipOnWindows = isWindows() ? it.skip : it
 
@@ -148,5 +149,27 @@ describe('daemon', () => {
       expect(res).to.have.string('export IPFS_PATH=/path/to/ipfsrepo')
       done()
     })
+  })
+
+  it('should print version info', async () => {
+    await ipfs('init')
+
+    const out = await new Promise(resolve => {
+      const res = ipfs('daemon')
+      let out = ''
+
+      res.stdout.on('data', function onData (data) {
+        out += data
+        if (out.includes('Daemon is ready')) {
+          res.stdout.removeListener('data', onData)
+          res.kill()
+          resolve(out)
+        }
+      })
+    })
+
+    expect(out).to.include(`js-ipfs version: ${pkg.version}`)
+    expect(out).to.include(`System version: ${os.arch()}/${os.platform()}`)
+    expect(out).to.include(`Node.js version: ${process.versions.node}`)
   })
 })
