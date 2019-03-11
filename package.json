@@ -112,7 +112,7 @@
     "ipfs-multipart": "~0.1.0",
     "ipfs-repo": "~0.26.1",
     "ipfs-unixfs": "~0.1.16",
-    "ipfs-unixfs-exporter": "github:ipfs/js-ipfs-unixfs-exporter#refactor/export-cid-instances",
+    "ipfs-unixfs-exporter": "~0.36.0",
     "ipfs-unixfs-importer": "~0.38.4",
     "ipld": "~0.21.1",
     "ipld-bitcoin": "~0.1.8",
