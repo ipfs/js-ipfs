@@ -195,7 +195,9 @@ class HttpApi {
   }
 
   get apiAddr () {
-    if (!this._apiServers.length) throw new Error('API address unavailable - server is not started')
+    if (!this._apiServers || !this._apiServers.length) {
+      throw new Error('API address unavailable - server is not started')
+    }
     return multiaddr('/ip4/127.0.0.1/tcp/' + this._apiServers[0].info.port)
   }
 
