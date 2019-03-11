@@ -21,7 +21,9 @@ module.exports = function libp2p (self, config) {
 
   const putAndDial = peerInfo => {
     peerBook.put(peerInfo)
-    libp2p.dial(peerInfo, () => {})
+    if (!peerInfo.isConnected()) {
+      libp2p.dial(peerInfo, () => {})
+    }
   }
 
   libp2p.on('start', () => {
