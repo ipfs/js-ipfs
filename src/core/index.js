@@ -10,6 +10,7 @@ const multiaddr = require('multiaddr')
 const multihash = require('multihashes')
 const PeerBook = require('peer-book')
 const multibase = require('multibase')
+const multicodec = require('multicodec')
 const CID = require('cids')
 const debug = require('debug')
 const defaultsDeep = require('@nodeutils/defaults-deep')
@@ -175,7 +176,7 @@ class IPFS extends EventEmitter {
 
 module.exports = IPFS
 
-Object.assign(module.exports, { crypto, isIPFS, Buffer, CID, multiaddr, multibase, multihash, PeerId, PeerInfo })
+Object.assign(module.exports, { crypto, isIPFS, Buffer, CID, multiaddr, multibase, multihash, multicodec, PeerId, PeerInfo })
 
 module.exports.createNode = (options) => {
   return new IPFS(options)
