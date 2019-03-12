@@ -925,6 +925,9 @@ Listing of the main packages used in the IPFS ecosystem. There are also three sp
 # run all the unit tests
 > npm test
 
+# run individual tests (findprovs)
+> npm run test -- --grep findprovs
+
 # run just IPFS tests in Node.js
 > npm run test:node
 
