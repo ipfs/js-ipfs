@@ -19,10 +19,11 @@ module.exports = function libp2p (self, config) {
   const libp2p = createBundle({ options, config, datastore, peerInfo, peerBook })
   let discoveredPeers = []
 
+  const noop = () => {}
   const putAndDial = peerInfo => {
     peerInfo = peerBook.put(peerInfo)
     if (!peerInfo.isConnected()) {
-      libp2p.dial(peerInfo, () => {})
+      libp2p.dial(peerInfo, noop)
     }
   }
 
