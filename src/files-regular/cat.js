@@ -150,6 +150,23 @@ module.exports = (createCommon, options) => {
       })
     })
 
+    it('should cat with IPFS path, deeply nested value', (done) => {
+      const file = { path: 'a/b/testfile.txt', content: fixtures.smallFile.data }
+
+      ipfs.add([file], (err, filesAdded) => {
+        expect(err).to.not.exist()
+
+        const file = filesAdded.find((f) => f.path === 'a')
+        expect(file).to.exist()
+
+        ipfs.cat(`/ipfs/${file.hash}/b/testfile.txt`, (err, data) => {
+          expect(err).to.not.exist()
+          expect(data.toString()).to.contain('Plz add me!')
+          done()
+        })
+      })
+    })
+
     it('should error on invalid key (promised)', () => {
       const invalidCid = 'somethingNotMultihash'
 
