@@ -19,11 +19,29 @@ module.exports = function libp2p (self, config) {
   const libp2p = createBundle({ options, config, datastore, peerInfo, peerBook })
   let discoveredPeers = []
 
+  const connHighWaterMark = get(config, 'Swarm.ConnMgr.HighWater', Infinity)
+
+  const connectedSize = () => {
+    let size = 0
+    for (const peerInfo of Object.values(peerBook.getAll())) {
+      if (peerInfo.isConnected()) size++
+    }
+    return size
+  }
+
+  const shouldDial = peerInfo => {
+    if (peerInfo.isConnected()) return false
+    return connectedSize() < connHighWaterMark
+  }
+
   const noop = () => {}
   const putAndDial = peerInfo => {
     peerInfo = peerBook.put(peerInfo)
-    if (!peerInfo.isConnected()) {
+    if (shouldDial(peerInfo)) {
       libp2p.dial(peerInfo, noop)
+      console.log('dialing', peerInfo.id.toB58String())
+    } else {
+      console.log('NOT dialing', peerInfo.id.toB58String(), peerInfo.isConnected() ? 'already connected' : 'above high water mark')
     }
   }
 
