@@ -1,3 +1,14 @@
+<a name="0.99.0"></a>
+# [0.99.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.98.1...v0.99.0) (2019-03-13)
+
+
+### Bug Fixes
+
+* don't expect ipfs to preserve a leading slash ([#440](https://github.com/ipfs/interface-ipfs-core/issues/440)) ([d3ad40b](https://github.com/ipfs/interface-ipfs-core/commit/d3ad40b))
+* ls files sizes for compat with go-ipfs 0.4.19 ([#449](https://github.com/ipfs/interface-ipfs-core/issues/449)) ([2ef1480](https://github.com/ipfs/interface-ipfs-core/commit/2ef1480)), closes [#427](https://github.com/ipfs/interface-ipfs-core/issues/427)
+
+
+
 <a name="0.98.1"></a>
 ## [0.98.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.98.0...v0.98.1) (2019-03-13)
 
