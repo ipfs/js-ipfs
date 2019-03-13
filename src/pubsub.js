@@ -77,7 +77,11 @@ module.exports = (arg) => {
         return setImmediate(() => callback(err))
       }
 
-      ps.removeListener(topic, handler)
+      if (!handler && !callback) {
+        ps.removeAllListeners(topic)
+      } else {
+        ps.removeListener(topic, handler)
+      }
 
       // Drop the request once we are actually done
       if (ps.listenerCount(topic) === 0) {
