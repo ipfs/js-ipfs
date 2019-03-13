@@ -1,3 +1,37 @@
+<a name="30.0.0"></a>
+# [30.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v29.1.1...v30.0.0) (2019-03-13)
+
+
+### Bug Fixes
+
+* windows travis build ([#952](https://github.com/ipfs/js-ipfs-http-client/issues/952)) ([05f2f6c](https://github.com/ipfs/js-ipfs-http-client/commit/05f2f6c))
+
+
+### Code Refactoring
+
+* export types and utilities statically ([#951](https://github.com/ipfs/js-ipfs-http-client/issues/951)) ([d1e99e7](https://github.com/ipfs/js-ipfs-http-client/commit/d1e99e7)), closes [#902](https://github.com/ipfs/js-ipfs-http-client/issues/902)
+
+
+### Features
+
+* pubsub unsubscribe all ([#956](https://github.com/ipfs/js-ipfs-http-client/issues/956)) ([a57a411](https://github.com/ipfs/js-ipfs-http-client/commit/a57a411))
+
+
+### BREAKING CHANGES
+
+* `ipfs.util.isIPFS` has moved to a static export and should be accessed via `const { isIPFS } = require('ipfs-http-client')`.
+
+The modules available under `ipfs.types.*` have also become static exports.
+
+`ipfs.util.crypto` has been removed as it is not a dependency of `ipfs-http-client` so reduces the bundle size. If you need to use libp2p crypto primitives then please see the [js-libp2p-crypto](https://github.com/libp2p/js-libp2p-crypto) project for info on how to use it in your project.
+
+Finally `ipfs.util.getEndpointConfig` is now a direct instance method, `ipfs.getEndpointConfig`
+
+License: MIT
+Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
+
+
+
 <a name="29.1.1"></a>
 ## [29.1.1](https://github.com/ipfs/js-ipfs-http-client/compare/v29.1.0...v29.1.1) (2019-02-13)
 
