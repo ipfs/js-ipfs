@@ -3,6 +3,7 @@
 require('./block')
 require('./bootstrap')
 require('./config')
+require('./dag')
 require('./dns')
 require('./id')
 require('./routes')
