@@ -59,9 +59,10 @@ module.exports = (createCommon, options) => {
       stream.on('data', (file) => {
         if (file.path === 'test-folder') {
           expect(file.hash).to.equal(fixtures.directory.cid)
-          done()
         }
       })
+
+      stream.on('end', done)
 
       files.forEach((file) => stream.write(file))
       stream.end()
