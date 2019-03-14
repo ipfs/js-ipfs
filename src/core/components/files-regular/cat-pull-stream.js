@@ -15,8 +15,7 @@ module.exports = function (self) {
 
     ipfsPath = normalizePath(ipfsPath)
     const pathComponents = ipfsPath.split('/')
-    const restPath = normalizePath(pathComponents.slice(1).join('/'))
-    const filterFile = (file) => (restPath && file.path === restPath) || (file.path === ipfsPath)
+    const fileNameOrHash = pathComponents[pathComponents.length - 1]
 
     if (options.preload !== false) {
       self._preload(pathComponents[0])
@@ -26,7 +25,7 @@ module.exports = function (self) {
 
     pull(
       exporter(ipfsPath, self._ipld, options),
-      pull.filter(filterFile),
+      pull.filter(file => file.path === fileNameOrHash),
       pull.take(1),
       pull.collect((err, files) => {
         if (err) {
