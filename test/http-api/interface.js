@@ -46,7 +46,18 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
     ]
   })
 
-  tests.filesRegular(defaultCommonFactory)
+  tests.filesRegular(defaultCommonFactory, {
+    skip: [{
+      name: 'should ls with a base58 encoded CID',
+      reason: 'File sizes incompatible with go-ipfs https://github.com/ipfs/js-ipfs/issues/1934'
+    }, {
+      name: 'should readable stream ls with a base58 encoded CID',
+      reason: 'File sizes incompatible with go-ipfs https://github.com/ipfs/js-ipfs/issues/1934'
+    }, {
+      name: 'should pull stream ls with a base58 encoded CID',
+      reason: 'File sizes incompatible with go-ipfs https://github.com/ipfs/js-ipfs/issues/1934'
+    }]
+  })
 
   tests.filesMFS(defaultCommonFactory)
 
