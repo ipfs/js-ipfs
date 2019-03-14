@@ -364,6 +364,7 @@ Aside from the default export, `ipfs-http-client` exports various types and util
 - [`PeerInfo`](https://www.npmjs.com/package/peer-info)
 - [`multiaddr`](https://www.npmjs.com/package/multiaddr)
 - [`multibase`](https://www.npmjs.com/package/multibase)
+- [`multicodec`](https://www.npmjs.com/package/multicodec)
 - [`multihash`](https://www.npmjs.com/package/multihash)
 - [`CID`](https://www.npmjs.com/package/cids)
 

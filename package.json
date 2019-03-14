@@ -49,6 +49,7 @@
     "lru-cache": "^5.1.1",
     "multiaddr": "^6.0.0",
     "multibase": "~0.6.0",
+    "multicodec": "~0.5.0",
     "multihashes": "~0.4.14",
     "ndjson": "^1.5.0",
     "once": "^1.4.0",

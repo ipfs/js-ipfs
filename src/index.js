@@ -5,6 +5,7 @@ const isIPFS = require('is-ipfs')
 const CID = require('cids')
 const multiaddr = require('multiaddr')
 const multibase = require('multibase')
+const multicodec = require('multicodec')
 const multihash = require('multihashes')
 const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
@@ -60,4 +61,4 @@ function toHostAndPort (multiaddr) {
 
 module.exports = ipfsClient
 
-Object.assign(module.exports, { isIPFS, Buffer, CID, multiaddr, multibase, multihash, PeerId, PeerInfo })
+Object.assign(module.exports, { isIPFS, Buffer, CID, multiaddr, multibase, multicodec, multihash, PeerId, PeerInfo })
