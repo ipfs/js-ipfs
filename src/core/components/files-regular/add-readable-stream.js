@@ -21,6 +21,8 @@ class AddHelper extends Duplex {
       if (end) {
         if (end instanceof Error) {
           this.emit('error', end)
+        } else {
+          this.push(null)
         }
       } else {
         this.push(data)
