@@ -2,10 +2,27 @@
 
 const dns = require('dns')
 const _ = require('lodash')
+const isIPFS = require('is-ipfs')
 const errcode = require('err-code')
 
+const maxRecursiveDepth = 32
+
 module.exports = (domain, opts, callback) => {
-  resolveDnslink(domain)
+  const recursive = opts.recursive && opts.recursive.toString() === 'true'
+  let depth
+  if (recursive) {
+    depth = maxRecursiveDepth
+  }
+
+  return recursiveResolveDnslink(domain, depth, callback)
+}
+
+function recursiveResolveDnslink (domain, depth, callback) {
+  if (depth === 0) {
+    return callback(errcode(`recursion limit exceeded`, 'ERR_DNSLINK_RECURSION_LIMIT'))
+  }
+
+  return resolveDnslink(domain)
     .catch(err => {
       // If the code is not ENOTFOUND or ERR_DNSLINK_NOT_FOUND or ENODATA then throw the error
       if (err.code !== 'ENOTFOUND' && err.code !== 'ERR_DNSLINK_NOT_FOUND' && err.code !== 'ENODATA') throw err
@@ -22,7 +39,14 @@ module.exports = (domain, opts, callback) => {
       return resolveDnslink(_dnslinkDomain)
     })
     .then(dnslinkRecord => {
-      callback(null, dnslinkRecord.replace('dnslink=', ''))
+      const result = dnslinkRecord.replace('dnslink=', '')
+      const domainOrCID = result.split('/')[2]
+      const isIPFSCID = isIPFS.cid(domainOrCID)
+
+      if (isIPFSCID || !depth) {
+        return callback(null, result)
+      }
+      return recursiveResolveDnslink(domainOrCID, depth - 1, callback)
     })
     .catch(callback)
 }
