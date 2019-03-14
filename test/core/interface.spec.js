@@ -71,7 +71,17 @@ describe('interface-ipfs-core tests', function () {
     }, {
       name: 'addFromURL',
       reason: 'Not designed to run in the browser'
-    }]
+    }, {
+      name: 'should ls with a base58 encoded CID',
+      reason: 'File sizes incompatible with go-ipfs https://github.com/ipfs/js-ipfs/issues/1934'
+    }, {
+      name: 'should readable stream ls with a base58 encoded CID',
+      reason: 'File sizes incompatible with go-ipfs https://github.com/ipfs/js-ipfs/issues/1934'
+    }, {
+      name: 'should pull stream ls with a base58 encoded CID',
+      reason: 'File sizes incompatible with go-ipfs https://github.com/ipfs/js-ipfs/issues/1934'
+    }],
+    only: true
   })
 
   tests.filesMFS(defaultCommonFactory)
