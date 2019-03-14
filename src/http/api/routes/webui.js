@@ -17,7 +17,7 @@ module.exports = [
     method: '*',
     path: '/webui',
     handler (request, h) {
-      return h.redirect('/ipfs/QmXc9raDM1M5G5fpBnVyQ71vR4gbnskwnB9iMEzBuLgvoZ')
+      return h.redirect('/ipfs/QmZepbAvvUvCqKmNjgf3dStoSToXCW9uQopx4vd2HFMELR')
     }
   }
 ]
