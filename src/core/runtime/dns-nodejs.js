@@ -7,8 +7,8 @@ const errcode = require('err-code')
 module.exports = (domain, opts, callback) => {
   resolveDnslink(domain)
     .catch(err => {
-      // If the code is not ENOTFOUND or ERR_DNSLINK_NOT_FOUND then throw the error
-      if (err.code !== 'ENOTFOUND' && err.code !== 'ERR_DNSLINK_NOT_FOUND') throw err
+      // If the code is not ENOTFOUND or ERR_DNSLINK_NOT_FOUND or ENODATA then throw the error
+      if (err.code !== 'ENOTFOUND' && err.code !== 'ERR_DNSLINK_NOT_FOUND' && err.code !== 'ENODATA') throw err
 
       if (domain.startsWith('_dnslink.')) {
         // The supplied domain contains a _dnslink component
