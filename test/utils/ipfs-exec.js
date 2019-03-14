@@ -51,6 +51,9 @@ module.exports = (repoPath, opts) => {
     res.stdout = cp.stdout
     res.stderr = cp.stderr
 
+    res.stdin.on('data', d => console.log(d + ''))
+    res.stderr.on('data', d => console.log(d + ''))
+
     return res
   }
 

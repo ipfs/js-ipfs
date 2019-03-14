@@ -2,6 +2,8 @@
 
 'use strict'
 
+process.env.DEBUG = '*'
+
 const YargsPromise = require('yargs-promise')
 const yargs = require('yargs/yargs')
 const updateNotifier = require('update-notifier')

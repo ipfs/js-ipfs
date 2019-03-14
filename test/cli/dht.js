@@ -31,7 +31,7 @@ const daemonOpts = {
   initOptions: { bits: 512 }
 }
 
-describe('dht', () => {
+describe.only('dht', () => {
   let nodes = []
   let ipfsA
   let ipfsB
