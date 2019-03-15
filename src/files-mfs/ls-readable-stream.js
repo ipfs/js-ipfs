@@ -3,7 +3,7 @@
 const {
   Transform,
   PassThrough
-} = require('stream')
+} = require('readable-stream')
 const pump = require('pump')
 const ndjson = require('ndjson')
 const isStream = require('is-stream')

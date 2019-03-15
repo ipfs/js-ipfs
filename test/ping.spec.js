@@ -3,7 +3,7 @@
 
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
-const pull = require('pull-stream')
+const pull = require('pull-stream/pull')
 const collect = require('pull-stream/sinks/collect')
 const expect = chai.expect
 chai.use(dirtyChai)

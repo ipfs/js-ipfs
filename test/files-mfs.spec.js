@@ -9,7 +9,9 @@ chai.use(dirtyChai)
 const loadFixture = require('aegir/fixtures')
 const mh = require('multihashes')
 const CID = require('cids')
-const pull = require('pull-stream')
+const values = require('pull-stream/sources/values')
+const pull = require('pull-stream/pull')
+const collect = require('pull-stream/sinks/collect')
 
 const ipfsClient = require('../src')
 const f = require('./utils/factory')
@@ -280,9 +282,9 @@ describe('.files (the MFS API part)', function () {
     const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
 
     pull(
-      pull.values([{ content: pull.values([Buffer.from('test')]) }]),
+      values([{ content: values([Buffer.from('test')]) }]),
       ipfs.addPullStream(),
-      pull.collect((err, res) => {
+      collect((err, res) => {
         expect(err).to.not.exist()
 
         expect(res).to.have.length(1)
@@ -295,7 +297,7 @@ describe('.files (the MFS API part)', function () {
   it('.add with pull stream (callback)', (done) => {
     const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
 
-    ipfs.add(pull.values([Buffer.from('test')]), (err, res) => {
+    ipfs.add(values([Buffer.from('test')]), (err, res) => {
       expect(err).to.not.exist()
 
       expect(res).to.have.length(1)
@@ -307,7 +309,7 @@ describe('.files (the MFS API part)', function () {
   it('.add with pull stream (promise)', () => {
     const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
 
-    return ipfs.add(pull.values([Buffer.from('test')]))
+    return ipfs.add(values([Buffer.from('test')]))
       .then((res) => {
         expect(res).to.have.length(1)
         expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
@@ -317,7 +319,7 @@ describe('.files (the MFS API part)', function () {
   it('.add with array of objects with pull stream content', () => {
     const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
 
-    return ipfs.add([{ content: pull.values([Buffer.from('test')]) }])
+    return ipfs.add([{ content: values([Buffer.from('test')]) }])
       .then((res) => {
         expect(res).to.have.length(1)
         expect(res[0]).to.eql({ path: expectedCid, hash: expectedCid, size: 12 })

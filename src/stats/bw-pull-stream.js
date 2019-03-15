@@ -1,7 +1,8 @@
 'use strict'
 
 const toPull = require('stream-to-pull-stream')
-const pull = require('pull-stream')
+const map = require('pull-stream/throughs/map')
+const pull = require('pull-stream/pull')
 const transformChunk = require('./bw-util')
 const deferred = require('pull-defer')
 
@@ -21,7 +22,7 @@ module.exports = (send) => {
 
       p.resolve(pull(
         toPull.source(stream),
-        pull.map(transformChunk)
+        map(transformChunk)
       ))
     })
 

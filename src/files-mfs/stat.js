@@ -1,8 +1,8 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const mapKeys = require('lodash/mapKeys')
-const kebabCase = require('lodash/kebabCase')
+const mapKeys = require('just-map-keys')
+const kebabCase = require('just-kebab-case')
 
 const transform = function (data, callback) {
   callback(null, {

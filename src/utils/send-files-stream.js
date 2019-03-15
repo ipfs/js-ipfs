@@ -1,6 +1,6 @@
 'use strict'
 
-const Duplex = require('stream').Duplex
+const { Duplex } = require('readable-stream')
 const eachSeries = require('async/eachSeries')
 const isStream = require('is-stream')
 const once = require('once')

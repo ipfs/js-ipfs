@@ -23,6 +23,7 @@ jobs:
 
     - stage: check
       script:
+        - npx aegir build --bundlesize
         - npx aegir commitlint --travis
         - npx aegir dep-check
         - npm run lint
@@ -31,19 +32,13 @@ jobs:
       name: chrome
       addons:
         chrome: stable
-      script: npx aegir test -t browser
+      script: npx aegir test -t browser -t webworker
 
     - stage: test
       name: firefox
       addons:
         firefox: latest
-      script: npx aegir test -t browser -- --browsers FirefoxHeadless
-
-    - stage: test
-      name: webworker
-      addons:
-        chrome: stable
-      script: npx aegir test -t webworker
+      script: npx aegir test -t browser -t webworker -- --browsers FirefoxHeadless
 
 notifications:
   email: false

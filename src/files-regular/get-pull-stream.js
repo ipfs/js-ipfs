@@ -3,7 +3,8 @@
 const cleanCID = require('../utils/clean-cid')
 const TarStreamToObjects = require('../utils/tar-stream-to-objects')
 const v = require('is-ipfs')
-const pull = require('pull-stream')
+const pull = require('pull-stream/pull')
+const map = require('pull-stream/throughs/map')
 const toPull = require('stream-to-pull-stream')
 const deferred = require('pull-defer')
 
@@ -30,7 +31,7 @@ module.exports = (send) => {
       p.resolve(
         pull(
           toPull.source(stream),
-          pull.map(file => {
+          map(file => {
             const { path, content } = file
             return content ? { path, content: toPull.source(content) } : file
           })

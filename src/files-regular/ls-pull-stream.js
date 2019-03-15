@@ -1,7 +1,7 @@
 'use strict'
 
 const moduleConfig = require('../utils/module-config')
-const pull = require('pull-stream')
+const values = require('pull-stream/sources/values')
 const deferred = require('pull-defer')
 const IsIpfs = require('is-ipfs')
 const cleanCID = require('../utils/clean-cid')
@@ -54,7 +54,7 @@ module.exports = (arg) => {
         type: typeOf(link)
       }))
 
-      p.resolve(pull.values(result))
+      p.resolve(values(result))
     })
 
     return p

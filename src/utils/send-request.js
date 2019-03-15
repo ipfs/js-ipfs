@@ -6,9 +6,9 @@ const isNode = require('detect-node')
 const ndjson = require('ndjson')
 const pump = require('pump')
 const once = require('once')
+const { getRequest } = require('iso-stream-http')
 const streamToValue = require('./stream-to-value')
 const streamToJsonValue = require('./stream-to-json-value')
-const request = require('./request')
 const log = require('debug')('ipfs-http-client:request')
 
 // -- Internal
@@ -171,7 +171,7 @@ function requestAPI (config, options, callback) {
     protocol: `${config.protocol}:`
   }
 
-  const req = request(config.protocol)(reqOptions, onRes(options.buffer, callback))
+  const req = getRequest(reqOptions, onRes(options.buffer, callback))
 
   req.on('error', (err) => {
     callback(err)

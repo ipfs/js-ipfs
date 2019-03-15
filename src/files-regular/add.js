@@ -4,7 +4,6 @@ const promisify = require('promisify-es6')
 const ConcatStream = require('concat-stream')
 const once = require('once')
 const isStream = require('is-stream')
-const isString = require('lodash/isString')
 const isSource = require('is-pull-stream').isSource
 const FileResultStreamConverter = require('../utils/file-result-stream-converter')
 const SendFilesStream = require('../utils/send-files-stream')
@@ -33,7 +32,7 @@ module.exports = (send) => {
       // path is optional if content is present
       if (obj.content) return isBufferOrStream(obj.content)
       // path must be a non-empty string if no content
-      return Boolean(obj.path) && isString(obj.path)
+      return Boolean(obj.path) && typeof obj.path === 'string'
     }
     // An input atom: a buffer, stream or content object
     const isInput = obj => isBufferOrStream(obj) || isContentObject(obj)

@@ -1,8 +1,8 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const { URL } = require('url')
-const request = require('../utils/request')
+const { URL } = require('iso-url')
+const { getRequest } = require('iso-stream-http')
 const SendOneFile = require('../utils/send-one-file-multiple-results')
 const FileResultStreamConverter = require('../utils/file-result-stream-converter')
 
@@ -37,7 +37,7 @@ const validUrl = (url) => typeof url === 'string' && url.startsWith('http')
 const requestWithRedirect = (url, opts, sendOneFile, callback) => {
   const parsedUrl = new URL(url)
 
-  const req = request(parsedUrl.protocol)(url, (res) => {
+  const req = getRequest(parsedUrl, (res) => {
     if (res.statusCode >= 400) {
       return callback(new Error(`Failed to download with ${res.statusCode}`))
     }
