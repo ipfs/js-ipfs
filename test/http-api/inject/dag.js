@@ -261,7 +261,8 @@ module.exports = (http) => {
 
       it('pins a node after adding', async () => {
         const node = {
-          foo: 'bar'
+          foo: 'bar',
+          disambiguator: Math.random()
         }
 
         const res = await api.inject({
@@ -280,7 +281,8 @@ module.exports = (http) => {
 
       it('does not pin a node after adding', async () => {
         const node = {
-          foo: 'bar'
+          foo: 'bar',
+          disambiguator: Math.random()
         }
 
         const res = await api.inject({
