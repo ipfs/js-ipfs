@@ -39,5 +39,5 @@ One of following:
 This is for you! Please read, and then delete this text before posting it.
 The js-ipfs issues are only for bug reports and directly actionable features.
 
-Read https://github.com/ipfs/community/blob/master/contributing.md#reporting-issues if your issue doesn't fit either of those categories.
+Read https://github.com/ipfs/community/blob/master/CONTRIBUTING.md#reporting-issues if your issue doesn't fit either of those categories.
 -->
