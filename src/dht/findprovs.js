@@ -23,6 +23,12 @@ module.exports = (send) => {
     }
 
     const handleResult = (res, callback) => {
+      // callback with an empty array if no providers are found
+      if (!res) {
+        const responses = []
+        return callback(null, responses)
+      }
+
       // Inconsistent return values in the browser vs node
       if (Array.isArray(res)) {
         res = res[0]
