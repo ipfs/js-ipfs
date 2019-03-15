@@ -1,3 +1,23 @@
+<a name="30.1.0"></a>
+# [30.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v30.0.0...v30.1.0) (2019-03-15)
+
+
+### Bug Fixes
+
+* dht.findProvs.js handle valid hash but no providers ([#950](https://github.com/ipfs/js-ipfs-http-client/issues/950)) ([c3cde76](https://github.com/ipfs/js-ipfs-http-client/commit/c3cde76))
+
+
+### Features
+
+* provide access to multicodec ([#954](https://github.com/ipfs/js-ipfs-http-client/issues/954)) ([0c109ab](https://github.com/ipfs/js-ipfs-http-client/commit/0c109ab))
+
+
+### Performance Improvements
+
+* reduce bundle size ([#915](https://github.com/ipfs/js-ipfs-http-client/issues/915)) ([87dff04](https://github.com/ipfs/js-ipfs-http-client/commit/87dff04))
+
+
+
 <a name="30.0.0"></a>
 # [30.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v29.1.1...v30.0.0) (2019-03-13)
 
