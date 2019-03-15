@@ -277,6 +277,25 @@ module.exports = (http) => {
 
         expect(pinset.map(pin => pin.hash)).to.contain(cid.toBaseEncodedString('base58btc'))
       })
+
+      it('does not pin a node after adding', async () => {
+        const node = {
+          foo: 'bar'
+        }
+
+        const res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/dag/put?pin=false',
+          ...await toHeadersAndPayload(JSON.stringify(node))
+        })
+
+        expect(res.statusCode).to.equal(200)
+
+        const cid = new CID(res.result.Cid['/'])
+        const pinset = await http.api._ipfs.pin.ls()
+
+        expect(pinset.map(pin => pin.hash)).to.not.contain(cid.toBaseEncodedString('base58btc'))
+      })
     })
 
     describe('/dag/resolve', () => {
