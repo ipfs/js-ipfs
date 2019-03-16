@@ -8,7 +8,9 @@ const errcode = require('err-code')
 const maxRecursiveDepth = 32
 
 module.exports = (domain, opts, callback) => {
-  const recursive = opts.recursive && opts.recursive.toString() === 'true'
+  // recursive is true by default, it's set to false only if explicitly passed as argument in opts
+  const recursive = opts.recursive === undefined || opts.recursive.toString() === 'true'
+
   let depth
   if (recursive) {
     depth = maxRecursiveDepth

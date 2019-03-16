@@ -9,7 +9,7 @@ module.exports = {
   builder: {
     recursive: {
       type: 'boolean',
-      default: false,
+      default: true,
       alias: 'r',
       desc: 'Resolve until the result is not a DNS link'
     },

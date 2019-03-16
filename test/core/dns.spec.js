@@ -39,8 +39,8 @@ describe('.dns', () => {
 
   // skipping because there is an error in https://ipfs.io/api/v0/dns?arg=ipfs.io
   // unskip once this is resolved: https://github.com/ipfs/go-ipfs/issues/6086
-  it.skip('should resolve ipfs.io', () => {
-    return ipfs.dns('ipfs.io').then(res => {
+  it.skip('should non-recursively resolve ipfs.io', () => {
+    return ipfs.dns('ipfs.io', { recursive: false }).then(res => {
       // matches pattern /ipns/<ipnsaddress>
       expect(res).to.match(/\/ipns\/.+$/)
     })
