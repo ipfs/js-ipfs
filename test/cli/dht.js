@@ -31,7 +31,7 @@ const daemonOpts = {
   initOptions: { bits: 512 }
 }
 
-describe('dht', () => {
+describe.only('dht', () => {
   let nodes = []
   let ipfsA
   let ipfsB
@@ -47,6 +47,7 @@ describe('dht', () => {
         expect(err).to.not.exist()
 
         ipfsA = ipfsExec(_ipfsd.repoPath)
+        console.log('ipfsA.repoPath', _ipfsd.repoPath)
         nodes.push(_ipfsd)
         cb()
       }),
@@ -54,6 +55,7 @@ describe('dht', () => {
         expect(err).to.not.exist()
 
         ipfsB = ipfsExec(_ipfsd.repoPath)
+        console.log('ipfsB.repoPath', _ipfsd.repoPath)
         nodes.push(_ipfsd)
         cb()
       })
