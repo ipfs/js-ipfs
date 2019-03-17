@@ -17,7 +17,7 @@ os:
   - osx
   - windows
 
-script: npx nyc -s npm run test:node -- --bail
+script: DEBUG=ipfsd-ctl:daemon:stderr npx nyc -s npm run test:node:cli -- --bail --grep "dht"
 after_success: npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
 
 jobs:
