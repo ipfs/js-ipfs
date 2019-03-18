@@ -125,7 +125,7 @@ exports.put = {
       format: Joi.string().default('cbor'),
       'input-enc': Joi.string().default('json'),
       pin: Joi.boolean(),
-      hash: Joi.string().valid(mh.names).default('sha2-256'),
+      hash: Joi.string().valid(Object.keys(mh.names)).default('sha2-256'),
       'cid-base': Joi.string().valid(multibase.names).default('base58btc')
     }).unknown()
   },
