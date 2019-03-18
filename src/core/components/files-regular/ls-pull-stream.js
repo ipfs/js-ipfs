@@ -1,8 +1,7 @@
 'use strict'
 
-const { exporter } = require('ipfs-unixfs-engine')
+const exporter = require('ipfs-unixfs-exporter')
 const pull = require('pull-stream')
-const CID = require('cids')
 const { normalizePath } = require('./utils')
 
 module.exports = function (self) {
@@ -26,7 +25,8 @@ module.exports = function (self) {
         recursive ? node.depth >= pathDepth : node.depth === pathDepth
       ),
       pull.map(node => {
-        node.hash = new CID(node.hash).toBaseEncodedString()
+        node.hash = node.cid.toString()
+        delete node.cid
         delete node.content
         return node
       })

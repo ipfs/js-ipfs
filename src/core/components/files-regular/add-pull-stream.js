@@ -1,6 +1,6 @@
 'use strict'
 
-const { importer } = require('ipfs-unixfs-engine')
+const importer = require('ipfs-unixfs-importer')
 const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
 const waterfall = require('async/waterfall')

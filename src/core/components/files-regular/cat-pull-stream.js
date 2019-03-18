@@ -1,6 +1,6 @@
 'use strict'
 
-const { exporter } = require('ipfs-unixfs-engine')
+const exporter = require('ipfs-unixfs-exporter')
 const pull = require('pull-stream')
 const deferred = require('pull-defer')
 const { normalizePath } = require('./utils')

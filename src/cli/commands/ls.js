@@ -59,7 +59,7 @@ module.exports = {
         const padding = link.depth - pathParts.length
         print(
           rightpad(link.hash, multihashWidth + 1) +
-          rightpad(link.size || '', sizeWidth + 1) +
+          rightpad(link.size || '-', sizeWidth + 1) +
           '  '.repeat(padding) + fileName
         )
       })
