@@ -1,3 +1,14 @@
+<a name="0.10.1"></a>
+## [0.10.1](https://github.com/ipfs/js-ipfs-mfs/compare/v0.9.2...v0.10.1) (2019-03-18)
+
+
+### Bug Fixes
+
+* correct hamt structure when modifying deep sub-shards ([#46](https://github.com/ipfs/js-ipfs-mfs/issues/46)) ([c08a42f](https://github.com/ipfs/js-ipfs-mfs/commit/c08a42f)), closes [#45](https://github.com/ipfs/js-ipfs-mfs/issues/45)
+* expect dir size without protobuf ([ba5b9dc](https://github.com/ipfs/js-ipfs-mfs/commit/ba5b9dc))
+
+
+
 <a name="0.10.0"></a>
 # [0.10.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.9.2...v0.10.0) (2019-03-18)
 
