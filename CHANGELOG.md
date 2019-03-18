@@ -1,3 +1,13 @@
+<a name="0.10.0"></a>
+# [0.10.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.9.2...v0.10.0) (2019-03-18)
+
+
+### Bug Fixes
+
+* expect dir size without protobuf ([d2ab171](https://github.com/ipfs/js-ipfs-mfs/commit/d2ab171))
+
+
+
 <a name="0.9.2"></a>
 ## [0.9.2](https://github.com/ipfs/js-ipfs-mfs/compare/v0.9.1...v0.9.2) (2019-02-19)
 
