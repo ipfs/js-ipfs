@@ -98,7 +98,7 @@ describe('stat', () => {
     })
 
     expect(Object.keys(stats).length).to.equal(1)
-    expect(stats.size).to.equal(4) // protobuf size?!
+    expect(stats.size).to.equal(0)
   })
 
   it.skip('computes how much of the DAG is local', async () => {
