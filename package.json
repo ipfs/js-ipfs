@@ -111,7 +111,7 @@
     "ipfs-http-response": "~0.2.1",
     "ipfs-mfs": "~0.9.1",
     "ipfs-multipart": "~0.1.0",
-    "ipfs-repo": "ipfs/js-ipfs-repo#master",
+    "ipfs-repo": "~0.26.4",
     "ipfs-unixfs": "~0.1.16",
     "ipfs-unixfs-engine": "~0.35.3",
     "ipld": "~0.21.1",
