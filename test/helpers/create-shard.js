@@ -17,7 +17,7 @@ const createShard = (ipld, files, shardSplitThreshold = 10) => {
       }),
       collect((err, files) => {
         if (err) {
-          return reject(files)
+          return reject(err)
         }
 
         const dir = files[files.length - 1]

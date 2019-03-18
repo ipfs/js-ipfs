@@ -8,6 +8,7 @@ const CID = require('cids')
 const waterfall = require('async/waterfall')
 const DirSharded = require('ipfs-unixfs-importer/src/importer/dir-sharded')
 const series = require('async/series')
+const whilst = require('async/whilst')
 const log = require('debug')('ipfs:mfs:core:utils:add-link')
 const UnixFS = require('ipfs-unixfs')
 const {
@@ -127,22 +128,22 @@ const addToShardedDirectory = (context, options, callback) => {
   return waterfall([
     (cb) => generatePath(context, options.name, options.parent, cb),
     ({ rootBucket, path }, cb) => {
-      updateShard(context, path, {
+      updateShard(context, path.reverse(), {
         name: options.name,
         cid: options.cid,
         size: options.size
-      }, options, (err, result = {}) => cb(err, { rootBucket, ...result }))
+      }, 0, options, (err, result = {}) => cb(err, { rootBucket, ...result }))
     },
     ({ rootBucket, node }, cb) => updateHamtDirectory(context, node.links, rootBucket, options, cb)
   ], callback)
 }
 
-const updateShard = (context, positions, child, options, callback) => {
+const updateShard = (context, positions, child, index, options, callback) => {
   const {
     bucket,
     prefix,
     node
-  } = positions.pop()
+  } = positions[index]
 
   const link = node.links
     .find(link => link.name.substring(0, 2) === prefix && link.name !== `${prefix}${child.name}`)
@@ -163,9 +164,41 @@ const updateShard = (context, positions, child, options, callback) => {
             multihash: child.cid.buffer
           }], {}, done),
           ({ node: { links: [ shard ] } }, done) => {
-            return context.ipld.get(shard.cid, (err, result) => {
-              done(err, { cid: shard.cid, node: result && result.value })
-            })
+            let position = 0
+
+            // step through the shard until we find the newly created sub-shard
+            return whilst(
+              () => position < positions.length - 1,
+              (next) => {
+                const shardPrefix = positions[position].prefix
+
+                log(`Prefix at position ${position} is ${shardPrefix} - shard.name ${shard.name}`)
+
+                if (shard.name.substring(0, 2) !== shardPrefix) {
+                  return next(new Error(`Unexpected prefix ${shard.name} !== ${shardPrefix}, position ${position}`))
+                }
+
+                position++
+
+                context.ipld.get(shard.cid, (err, result) => {
+                  if (err) {
+                    return next(err)
+                  }
+
+                  if (position < positions.length) {
+                    const nextPrefix = positions[position].prefix
+                    const nextShard = result.value.links.find(link => link.name.substring(0, 2) === nextPrefix)
+
+                    if (nextShard) {
+                      shard = nextShard
+                    }
+                  }
+
+                  next(err, { cid: result && result.cid, node: result && result.value })
+                })
+              },
+              done
+            )
           },
           (result, cb) => updateShardParent(context, bucket, node, link.name, result.node, result.cid, prefix, options, cb)
         ], cb)
@@ -175,7 +208,7 @@ const updateShard = (context, positions, child, options, callback) => {
         log(`Descending into sub-shard ${link.name} for ${child.name}`)
 
         return waterfall([
-          (cb) => updateShard(context, positions, child, options, cb),
+          (cb) => updateShard(context, positions, child, index + 1, options, cb),
           (result, cb) => updateShardParent(context, bucket, node, link.name, result.node, result.cid, prefix, options, cb)
         ], cb)
       }

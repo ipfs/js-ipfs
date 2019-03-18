@@ -15,9 +15,11 @@ const {
   createMfs,
   cidAtPath,
   createShardedDirectory,
-  createTwoShards
+  createTwoShards,
+  createShard
 } = require('./helpers')
 const CID = require('cids')
+const crypto = require('crypto')
 
 let fs, tempWrite
 
@@ -880,5 +882,54 @@ describe('write', () => {
 
     expect(stats.type).to.equal('hamt-sharded-directory')
     expect(updatedDirCid.toBaseEncodedString()).to.deep.equal(dirWithAllFiles.toBaseEncodedString())
+  })
+
+  it('results in the same hash as a sharded directory created by the importer when causing a subshard of a subshard to be created', async function () {
+    this.timeout(60000)
+
+    const dir = `/some-dir-${Date.now()}`
+
+    const nodeGrContent = Buffer.from([0, 1, 2, 3, 4])
+    const superModuleContent = Buffer.from([5, 6, 7, 8, 9])
+
+    const dirCid = await createShard(mfs.ipld, [{
+      path: `${dir}/node-gr`,
+      content: nodeGrContent
+    }, {
+      path: `${dir}/yanvoidmodule`,
+      content: crypto.randomBytes(5)
+    }, {
+      path: `${dir}/methodify`,
+      content: crypto.randomBytes(5)
+    }, {
+      path: `${dir}/fis-msprd-style-loader_0_13_1`,
+      content: crypto.randomBytes(5)
+    }, {
+      path: `${dir}/js-form`,
+      content: crypto.randomBytes(5)
+    }, {
+      path: `${dir}/vivanov-sliceart`,
+      content: crypto.randomBytes(5)
+    }], 1)
+
+    await mfs.cp(`/ipfs/${dirCid.toBaseEncodedString()}`, dir)
+
+    await mfs.write(`${dir}/supermodule_test`, superModuleContent, {
+      create: true
+    })
+
+    await mfs.stat(`${dir}/supermodule_test`)
+    await mfs.stat(`${dir}/node-gr`)
+
+    expect(await mfs.read(`${dir}/node-gr`)).to.deep.equal(nodeGrContent)
+    expect(await mfs.read(`${dir}/supermodule_test`)).to.deep.equal(superModuleContent)
+
+    await mfs.rm(`${dir}/supermodule_test`)
+
+    try {
+      await mfs.stat(`${dir}/supermodule_test`)
+    } catch (err) {
+      expect(err.message).to.contain('not exist')
+    }
   })
 })
