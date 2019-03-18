@@ -36,7 +36,7 @@ function wire (targetNode, dialerNode, callback) {
     expect(err).to.not.exist()
     const addr = identity.addresses
       .map((addr) => multiaddr(addr.toString().split('ipfs')[0]))
-      .filter((addr) => _.includes(addr.protoNames(), 'ws'))[0]
+      .filter((addr) => addr.protoNames().includes('ws'))[0]
 
     if (!addr) {
       // Note: the browser doesn't have a websockets listening addr

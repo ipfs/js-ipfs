@@ -62,12 +62,10 @@ exports.ls = {
 
     return h.response({
       Keys: result.reduce((acc, v) => {
-        const prop = cidToString(obj.hash, { base: request.query['cid-base'] })
+        const prop = cidToString(v.hash, { base: request.query['cid-base'] })
         acc[v[prop]] = { Type: v.type }
         return acc
       }, {})
-    })
-
     })
   }
 }
