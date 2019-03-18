@@ -13,8 +13,8 @@ let ipfs = null
  * so use-ipfs calls can grab it from there rather than expecting
  * it to be passed in.
  */
-export default function useIpfsFactory ({commands}) {
-  const [isIpfsReady, setIpfsReady] = useState(!!ipfs)
+export default function useIpfsFactory ({ commands }) {
+  const [isIpfsReady, setIpfsReady] = useState(Boolean(ipfs))
   const [ipfsInitError, setIpfsInitError] = useState(null)
 
   useEffect(() => {
@@ -34,11 +34,9 @@ export default function useIpfsFactory ({commands}) {
   async function startIpfs () {
     if (ipfs) {
       console.log('IPFS already started')
-
     } else if (window.ipfs && window.ipfs.enable) {
       console.log('Found window.ipfs')
-      ipfs = await window.ipfs.enable({commands})
-
+      ipfs = await window.ipfs.enable({ commands })
     } else {
       try {
         console.time('IPFS Started')
@@ -51,10 +49,10 @@ export default function useIpfsFactory ({commands}) {
       }
     }
 
-    setIpfsReady(!!ipfs)
+    setIpfsReady(Boolean(ipfs))
   }
 
-  return {ipfs, isIpfsReady, ipfsInitError}
+  return { ipfs, isIpfsReady, ipfsInitError }
 }
 
 function promiseMeJsIpfs (Ipfs, opts) {
