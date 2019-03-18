@@ -18,7 +18,13 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
   tests.config(defaultCommonFactory)
 
   tests.dag(defaultCommonFactory, {
-    skip: { reason: 'TODO: DAG HTTP endpoints not implemented in js-ipfs yet!' }
+    skip: [{
+      name: 'should get only a CID, due to resolving locally only',
+      reason: 'Local resolve option is not implemented yet'
+    }, {
+      name: 'tree',
+      reason: 'dag.tree is not implemented yet'
+    }]
   })
 
   tests.dht(CommonFactory.create({
