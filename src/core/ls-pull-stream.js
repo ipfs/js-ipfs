@@ -103,7 +103,7 @@ module.exports = (context) => {
               }
 
               loadNode(context, {
-                cid: file.hash
+                cid: file.cid
               }, (err, result) => {
                 if (err) {
                   return cb(err)
@@ -114,7 +114,7 @@ module.exports = (context) => {
                 cb(null, {
                   name: file.name,
                   type: FILE_TYPES[meta.type],
-                  hash: formatCid(file.hash, options.cidBase),
+                  hash: formatCid(file.cid, options.cidBase),
                   size: meta.fileSize() || 0
                 })
               })

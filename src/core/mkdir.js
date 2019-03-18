@@ -8,7 +8,6 @@ const pull = require('pull-stream/pull')
 const filter = require('pull-stream/throughs/filter')
 const map = require('pull-stream/throughs/map')
 const collect = require('pull-stream/sinks/collect')
-const CID = require('cids')
 const {
   createNode,
   toMfsPath,
@@ -88,7 +87,7 @@ module.exports = (context) => {
             exported = currentPath
 
             return {
-              cid: new CID(node.hash),
+              cid: node.cid,
               name: node.name
             }
           }),

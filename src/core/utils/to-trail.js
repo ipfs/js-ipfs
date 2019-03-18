@@ -7,7 +7,6 @@ const filter = require('pull-stream/throughs/filter')
 const map = require('pull-stream/throughs/map')
 const collect = require('pull-stream/sinks/collect')
 const log = require('debug')('ipfs:mfs:utils:to-trail')
-const CID = require('cids')
 
 const toTrail = (context, path, options, callback) => {
   const toExport = toPathComponents(path)
@@ -57,7 +56,7 @@ const toTrail = (context, path, options, callback) => {
 
       return {
         name,
-        cid: new CID(node.hash),
+        cid: node.cid,
         size: node.size,
         type: node.type
       }
