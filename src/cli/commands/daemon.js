@@ -44,8 +44,8 @@ module.exports = {
       const repoPath = getRepoPath()
 
       // Required inline to reduce startup time
-      const HttpApi = require('../../http')
-      const api = new HttpApi({
+      const StandaloneDaemon = require('../../cli/standalone-daemon')
+      const daemon = new StandaloneDaemon({
         silent: argv.silent,
         repo: process.env.IPFS_PATH,
         offline: argv.offline,
@@ -60,7 +60,7 @@ module.exports = {
       })
 
       try {
-        await api.start()
+        await daemon.start()
       } catch (err) {
         if (err.code === 'ENOENT' && err.message.match(/uninitialized/i)) {
           print('Error: no initialized ipfs repo found in ' + repoPath)
@@ -74,7 +74,7 @@ module.exports = {
 
       const cleanup = async () => {
         print(`Received interrupt signal, shutting down...`)
-        await api.stop()
+        await daemon.stop()
         process.exit(0)
       }
 

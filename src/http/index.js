@@ -8,12 +8,6 @@ const promisify = require('promisify-es6')
 const toUri = require('multiaddr-to-uri')
 const toMultiaddr = require('uri-to-multiaddr')
 
-const IPFS = require('../core')
-const WStar = require('libp2p-webrtc-star')
-const TCP = require('libp2p-tcp')
-const MulticastDNS = require('libp2p-mdns')
-const WS = require('libp2p-websockets')
-const Bootstrap = require('libp2p-bootstrap')
 const errorHandler = require('./error-handler')
 const LOG = 'ipfs:http-api'
 const LOG_ERROR = 'ipfs:http-api:error'
@@ -48,7 +42,8 @@ function serverCreator (serverAddrs, createServer, ipfs) {
 }
 
 class HttpApi {
-  constructor (options) {
+  constructor (ipfs, options) {
+    this._ipfs = ipfs
     this._options = options || {}
     this._log = debug(LOG)
     this._log.error = debug(LOG_ERROR)
@@ -66,44 +61,7 @@ class HttpApi {
   async start () {
     this._log('starting')
 
-    const libp2p = { modules: {} }
-
-    // Attempt to use any of the WebRTC versions available globally
-    let electronWebRTC
-    let wrtc
-    try {
-      electronWebRTC = require('electron-webrtc')()
-    } catch (err) {
-      this._log('failed to load optional electron-webrtc dependency')
-    }
-    try {
-      wrtc = require('wrtc')
-    } catch (err) {
-      this._log('failed to load optional webrtc dependency')
-    }
-
-    if (wrtc || electronWebRTC) {
-      const using = wrtc ? 'wrtc' : 'electron-webrtc'
-      this._log(`Using ${using} for webrtc support`)
-      const wstar = new WStar({ wrtc: (wrtc || electronWebRTC) })
-      libp2p.modules.transport = [TCP, WS, wstar]
-      libp2p.modules.peerDiscovery = [MulticastDNS, Bootstrap, wstar.discovery]
-    }
-
-    // start the daemon
-    const ipfsOpts = Object.assign({ init: false }, this._options, { start: true, libp2p })
-    const ipfs = new IPFS(ipfsOpts)
-
-    await new Promise((resolve, reject) => {
-      ipfs.once('error', err => {
-        this._log('error starting core', err)
-        err.code = 'ENOENT'
-        reject(err)
-      })
-      ipfs.once('start', resolve)
-    })
-
-    this._ipfs = ipfs
+    const ipfs = this._ipfs
 
     const config = await ipfs.config.get()
     config.Addresses = config.Addresses || {}
@@ -208,8 +166,7 @@ class HttpApi {
     const stopServers = servers => Promise.all((servers || []).map(s => s.stop()))
     await Promise.all([
       stopServers(this._apiServers),
-      stopServers(this._gatewayServers),
-      this._ipfs && this._ipfs.stop()
+      stopServers(this._gatewayServers)
     ])
     this._log('stopped')
     return this
