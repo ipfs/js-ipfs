@@ -4,7 +4,7 @@ const debug = require('debug')
 const get = require('dlv')
 const set = require('just-safe-set')
 const log = debug('ipfs:http-api:config')
-log.error = debug('jsipfs:http-api:config:error')
+log.error = debug('ipfs:http-api:config:error')
 const multipart = require('ipfs-multipart')
 const Boom = require('boom')
 
