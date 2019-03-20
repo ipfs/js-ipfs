@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.35.0-rc.0",
+  "version": "0.35.0-rc.1",
   "description": "JavaScript implementation of the IPFS specification",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "bin": {
@@ -222,6 +222,7 @@
     "Gar <gar+gh@danger.computer>",
     "Georgios Rassias <georassias@gmail.com>",
     "Gorka Ludlow <gorka@aquigorka.com>",
+    "Grant Herman <grantlouisherman041@gmail.com>",
     "Greenkeeper <support@greenkeeper.io>",
     "Haad <haadcode@users.noreply.github.com>",
     "Haoliang Yu <haoliangyu@users.noreply.github.com>",
@@ -252,6 +253,7 @@
     "Molly <momack2@users.noreply.github.com>",
     "Mounish Sai <pvsmounish@gmail.com>",
     "My9Bot <34904312+My9Bot@users.noreply.github.com>",
+    "Nitin Patel <31539366+niinpatel@users.noreply.github.com>",
     "Nuno Nogueira <nunofmn@gmail.com>",
     "Oli Evans <oli@tableflip.io>",
     "Oskar Nyberg <oskar@oskarnyberg.com>",
