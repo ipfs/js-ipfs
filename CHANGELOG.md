@@ -1,3 +1,28 @@
+<a name="0.35.0-rc.1"></a>
+# [0.35.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.0...v0.35.0-rc.1) (2019-03-20)
+
+
+### Bug Fixes
+
+* cat deeply nested file ([#1920](https://github.com/ipfs/js-ipfs/issues/1920)) ([dcb453a](https://github.com/ipfs/js-ipfs/commit/dcb453a))
+* handle subdomains for ipfs.dns ([#1933](https://github.com/ipfs/js-ipfs/issues/1933)) ([29072a5](https://github.com/ipfs/js-ipfs/commit/29072a5))
+* only dial to unconnected peers ([#1914](https://github.com/ipfs/js-ipfs/issues/1914)) ([1478652](https://github.com/ipfs/js-ipfs/commit/1478652))
+
+
+### Features
+
+* add HTTP DAG API ([#1930](https://github.com/ipfs/js-ipfs/issues/1930)) ([a033e8b](https://github.com/ipfs/js-ipfs/commit/a033e8b))
+* display version info when starting daemon ([#1915](https://github.com/ipfs/js-ipfs/issues/1915)) ([6b789ee](https://github.com/ipfs/js-ipfs/commit/6b789ee))
+* provide access to multicodec ([#1921](https://github.com/ipfs/js-ipfs/issues/1921)) ([ceec0bc](https://github.com/ipfs/js-ipfs/commit/ceec0bc)), closes [#1913](https://github.com/ipfs/js-ipfs/issues/1913)
+* **issue-1852:** support multiple API and Gateway addresses ([#1903](https://github.com/ipfs/js-ipfs/issues/1903)) ([4ad104d](https://github.com/ipfs/js-ipfs/commit/4ad104d)), closes [#1852](https://github.com/ipfs/js-ipfs/issues/1852)
+
+
+### Performance Improvements
+
+* lower connection manager limits ([#1926](https://github.com/ipfs/js-ipfs/issues/1926)) ([7926349](https://github.com/ipfs/js-ipfs/commit/7926349))
+
+
+
 <a name="0.35.0-rc.0"></a>
 # [0.35.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.35.0-pre.0...v0.35.0-rc.0) (2019-03-06)
 
