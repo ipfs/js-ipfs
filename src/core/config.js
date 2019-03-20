@@ -45,13 +45,14 @@ const configSchema = s({
   })),
   connectionManager: 'object?',
   config: optional(s({
+    API: 'object?',
     Addresses: optional(s({
       Swarm: optional(s(['multiaddr'])),
       API: 'multiaddr?',
       Gateway: 'multiaddr'
     })),
     Discovery: optional(s({
-      MDSN: optional(s({
+      MDNS: optional(s({
         Enabled: 'boolean?',
         Interval: 'number?'
       })),

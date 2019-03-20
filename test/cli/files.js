@@ -347,7 +347,7 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
-  it.only('add pins by default', function () {
+  it('add pins by default', function () {
     this.timeout(10 * 1000)
     const filePath = path.join(os.tmpdir(), hat())
     const content = String(Math.random())
@@ -356,7 +356,6 @@ describe('files', () => runOnAndOff((thing) => {
     return ipfs(`add -Q ${filePath}`)
       .then(out => {
         const hash = out.trim()
-        console.log('TCL: hash', hash)
         return ipfs(`pin ls ${hash}`)
           .then(ls => expect(ls).to.include(hash))
       })
