@@ -27,4 +27,20 @@ describe('dns', () => runOnAndOff((thing) => {
       expect(res.substr(0, 6)).to.eql('/ipns/')
     })
   })
+
+  it('resolve subdomain docs.ipfs.io dns', function () {
+    this.timeout(60 * 1000)
+
+    return ipfs('dns docs.ipfs.io').then(res => {
+      expect(res.substr(0, 6)).to.eql('/ipfs/')
+    })
+  })
+
+  it('resolve subdomain _dnslink.docs.ipfs.io dns', function () {
+    this.timeout(60 * 1000)
+
+    return ipfs('dns _dnslink.docs.ipfs.io').then(res => {
+      expect(res.substr(0, 6)).to.eql('/ipfs/')
+    })
+  })
 }))
