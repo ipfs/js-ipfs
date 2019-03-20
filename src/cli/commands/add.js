@@ -36,9 +36,16 @@ function addPipeline (source, addStream, options) {
           print(added.pop().hash)
           return resolve()
         }
-
         added
-          .sort((a, b) => a.path.localCompare(b.path))
+          .sort((a, b) => {
+            if (a.path > b.path) {
+              return 1
+            }
+            if (a.path < b.path) {
+              return -1
+            }
+            return 0
+          })
           .reverse()
           .map((file) => {
             const log = options.quiet ? [] : ['added']

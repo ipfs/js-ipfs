@@ -35,11 +35,11 @@ const IpldFormats = {
   }
 }
 
-module.exports = (blockService, options = {}) => {
+module.exports = (blockService, options = {}, log) => {
   return mergeOptions({
     blockService: blockService,
     loadFormat: (codec, callback) => {
-      this.log('Loading IPLD format', codec)
+      log('Loading IPLD format', codec)
       if (IpldFormats[codec]) return callback(null, IpldFormats[codec])
       callback(new Error(`Missing IPLD format "${codec}"`))
     }

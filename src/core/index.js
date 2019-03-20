@@ -72,7 +72,7 @@ class IPFS extends EventEmitter {
     this._peerInfo = undefined
     this._bitswap = undefined
     this._blockService = new BlockService(this._repo)
-    this._ipld = new Ipld(ipldOptions(this._blockService, this._options.ipld))
+    this._ipld = new Ipld(ipldOptions(this._blockService, this._options.ipld, this.log))
     this._preload = preload(this)
     this._mfsPreload = mfsPreload(this)
     this._ipns = undefined

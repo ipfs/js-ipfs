@@ -2,7 +2,6 @@
 
 const execa = require('execa')
 const chai = require('chai')
-const merge = require('merge-options')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
@@ -18,11 +17,9 @@ chai.use(dirtyChai)
 // The `.fail` variation asserts that the command exited with `Code > 0`
 // and returns a promise that resolves to `stderr`.
 module.exports = (repoPath, opts) => {
-  const env = merge(process.env, { IPFS_PATH: repoPath })
-
   const config = Object.assign({}, {
     stripEof: false,
-    env: env,
+    env: Object.assign({ IPFS_PATH: repoPath }, process.env),
     timeout: 60 * 1000
   }, opts)
 

@@ -311,7 +311,7 @@ describe('files', () => runOnAndOff((thing) => {
   it('add --silent', function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add --silent src/init-files/init-docs/readme')
+    return ipfs('add src/init-files/init-docs/readme --silent')
       .then((out) => {
         expect(out)
           .to.eql('')
@@ -347,7 +347,7 @@ describe('files', () => runOnAndOff((thing) => {
       })
   })
 
-  it('add pins by default', function () {
+  it.only('add pins by default', function () {
     this.timeout(10 * 1000)
     const filePath = path.join(os.tmpdir(), hat())
     const content = String(Math.random())
@@ -356,6 +356,7 @@ describe('files', () => runOnAndOff((thing) => {
     return ipfs(`add -Q ${filePath}`)
       .then(out => {
         const hash = out.trim()
+        console.log('TCL: hash', hash)
         return ipfs(`pin ls ${hash}`)
           .then(ls => expect(ls).to.include(hash))
       })

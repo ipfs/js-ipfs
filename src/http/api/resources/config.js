@@ -74,11 +74,14 @@ exports.getOrSet = {
       }
     } else {
       // Set the new value of a given key
-      const updatedConfig = set(originalConfig, key, value)
+      const result = set(originalConfig, key, value)
+      if (!result) {
+        throw Boom.badRequest('Failed to set config value')
+      }
       try {
-        await ipfs.config.replace(updatedConfig)
+        await ipfs.config.replace(originalConfig)
       } catch (err) {
-        throw Boom.boomify(err, { message: 'Failed to get config value' })
+        throw Boom.boomify(err, { message: 'Failed to replace config value' })
       }
     }
 

@@ -141,7 +141,7 @@
     "libp2p-secio": "~0.11.0",
     "libp2p-tcp": "~0.13.0",
     "libp2p-webrtc-star": "~0.15.5",
-    "libp2p-websocket-star-multi": "hugomrdias/js-libp2p-websocket-star-multi#fix/bundle-size",
+    "libp2p-websocket-star-multi": "hugomrdias/js-libp2p-websocket-star-multi#master",
     "libp2p-websockets": "~0.12.2",
     "lodash": "^4.17.11",
     "mafmt": "^6.0.2",
