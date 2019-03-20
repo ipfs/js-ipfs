@@ -343,6 +343,11 @@ You can see the bundle in action in the [custom libp2p example](examples/custom-
         - `[PeerDiscovery.tag]` (object): configuration for a peer discovery module
             - `enabled` (boolean): whether this module is enabled or disabled
             - `[custom config]` (any): other keys are specific to the module
+    - `dht` (object): Configuration options for the DHT
+        - `enabled` (boolean): whether the DHT is enabled or not (default `true` in Node.js and `false` in the browser)
+        - `kBucketSize` (number): bucket size (default `20`)
+        - `randomWalk` (object): configuration for random walk
+            - `enabled` (boolean): whether random DHT walking is enabled (default `false`)
 
 ##### `options.connectionManager`
 
