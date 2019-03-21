@@ -1,3 +1,8 @@
+<a name="0.35.0-rc.2"></a>
+# [0.35.0-rc.2](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.1...v0.35.0-rc.2) (2019-03-21)
+
+
+
 <a name="0.35.0-rc.1"></a>
 # [0.35.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.0...v0.35.0-rc.1) (2019-03-20)
 
