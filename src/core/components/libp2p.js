@@ -80,7 +80,7 @@ function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
       },
       dht: {
         kBucketSize: get(options, 'dht.kBucketSize', 20),
-        enabled: get(options, 'offline', false) ? false : true, // disable if offline, on by default
+        enabled: !get(options, 'offline', false), // disable if offline, on by default
         randomWalk: {
           enabled: false // disabled waiting for https://github.com/libp2p/js-libp2p-kad-dht/issues/86
         },
