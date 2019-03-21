@@ -27,6 +27,11 @@ module.exports = function libp2p (self, config) {
     }
   }
 
+  libp2p.on('stop', () => {
+    // Clear our addresses so we can start clean
+    peerInfo.multiaddrs.clear()
+  })
+
   libp2p.on('start', () => {
     peerInfo.multiaddrs.forEach((ma) => {
       self._print('Swarm listening on', ma.toString())
