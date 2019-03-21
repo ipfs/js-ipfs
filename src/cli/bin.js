@@ -11,8 +11,11 @@ const mfs = require('ipfs-mfs/cli')
 const debug = require('debug')('ipfs:cli')
 const pkg = require('../../package.json')
 
-function globalOptions (args) {
-  return yargs(args)
+async function main (args) {
+  const oneWeek = 1000 * 60 * 60 * 24 * 7
+  updateNotifier({ pkg, updateCheckInterval: oneWeek }).notify()
+
+  const cli = yargs(args)
     .option('silent', {
       desc: 'Write no output',
       type: 'boolean',
@@ -33,27 +36,26 @@ function globalOptions (args) {
       if (err) {
         throw err // preserve stack
       }
+
       if (args.length > 0) {
         print(msg)
       }
+
       yargs.showHelp()
     })
-}
 
-async function main (args) {
-  const oneWeek = 1000 * 60 * 60 * 24 * 7
-  updateNotifier({ pkg, updateCheckInterval: oneWeek }).notify()
-
-  const cli = globalOptions(args)
-
-  // Function to get hold of a singleton ipfs instance
-  const getIpfs = utils.singleton(cb => utils.getIPFS(globalOptions(args).argv, cb))
+  let getIpfs = null
 
   // add MFS (Files API) commands
   mfs(cli)
 
   cli
     .commandDir('commands')
+    .middleware(argv => {
+      // Function to get hold of a singleton ipfs instance
+      getIpfs = argv.getIpfs = utils.singleton(cb => utils.getIPFS(argv, cb))
+      return argv
+    })
     .help()
     .strict()
     .completion()
@@ -61,7 +63,7 @@ async function main (args) {
   let exitCode = 0
 
   try {
-    const { data } = await new YargsPromise(cli, { getIpfs }).parse(args)
+    const { data } = await new YargsPromise(cli).parse(args)
     if (data) print(data)
   } catch (err) {
     debug(err)
