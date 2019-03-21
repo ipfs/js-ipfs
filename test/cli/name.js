@@ -158,8 +158,7 @@ describe('name', () => {
         })
     })
 
-    // FIXME: currently failing, resolve before 0.35 release!
-    it.skip('should go recursively until finding an ipfs hash', function () {
+    it('should go recursively until finding an ipfs hash', function () {
       this.timeout(90 * 1000)
 
       return ipfs(`name publish ${cidAdded}`)
