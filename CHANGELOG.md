@@ -1,3 +1,13 @@
+<a name="0.35.0-rc.3"></a>
+# [0.35.0-rc.3](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.2...v0.35.0-rc.3) (2019-03-21)
+
+
+### Bug Fixes
+
+* name resolve arg parsing ([#1958](https://github.com/ipfs/js-ipfs/issues/1958)) ([924690e](https://github.com/ipfs/js-ipfs/commit/924690e))
+
+
+
 <a name="0.35.0-rc.2"></a>
 # [0.35.0-rc.2](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.1...v0.35.0-rc.2) (2019-03-21)
 
