@@ -9,13 +9,15 @@ module.exports = {
 
   builder: {
     nocache: {
+      type: 'boolean',
       alias: 'n',
       describe: 'Do not use cached entries. Default: false.',
       default: false
     },
     recursive: {
+      type: 'boolean',
       alias: 'r',
-      recursive: 'Resolve until the result is not an IPNS name. Default: false.',
+      describe: 'Resolve until the result is not an IPNS name. Default: false.',
       default: false
     }
   },

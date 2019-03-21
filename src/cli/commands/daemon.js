@@ -20,6 +20,7 @@ module.exports = {
         default: false
       })
       .option('offline', {
+        type: 'boolean',
         desc: 'Run offline. Do not connect to the rest of the network but provide local API.',
         default: false
       })
