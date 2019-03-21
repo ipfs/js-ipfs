@@ -11,11 +11,8 @@ const mfs = require('ipfs-mfs/cli')
 const debug = require('debug')('ipfs:cli')
 const pkg = require('../../package.json')
 
-async function main (args) {
-  const oneWeek = 1000 * 60 * 60 * 24 * 7
-  updateNotifier({ pkg, updateCheckInterval: oneWeek }).notify()
-
-  const cli = yargs(args)
+function globalOptions (args) {
+  return yargs(args)
     .option('silent', {
       desc: 'Write no output',
       type: 'boolean',
@@ -36,16 +33,21 @@ async function main (args) {
       if (err) {
         throw err // preserve stack
       }
-
       if (args.length > 0) {
         print(msg)
       }
-
       yargs.showHelp()
     })
+}
+
+async function main (args) {
+  const oneWeek = 1000 * 60 * 60 * 24 * 7
+  updateNotifier({ pkg, updateCheckInterval: oneWeek }).notify()
+
+  const cli = globalOptions(args)
 
   // Function to get hold of a singleton ipfs instance
-  const getIpfs = utils.singleton(cb => utils.getIPFS(yargs(args).argv, cb))
+  const getIpfs = utils.singleton(cb => utils.getIPFS(globalOptions(args).argv, cb))
 
   // add MFS (Files API) commands
   mfs(cli)
