@@ -27,6 +27,11 @@ module.exports = function libp2p (self, config) {
     }
   }
 
+  libp2p.on('stop', () => {
+    // Clear our addresses so we can start clean
+    peerInfo.multiaddrs.clear()
+  })
+
   libp2p.on('start', () => {
     peerInfo.multiaddrs.forEach((ma) => {
       self._print('Swarm listening on', ma.toString())
@@ -70,7 +75,7 @@ function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
       },
       relay: {
         enabled: get(options, 'relay.enabled',
-          get(config, 'relay.enabled', false)),
+          get(config, 'relay.enabled', true)),
         hop: {
           enabled: get(options, 'relay.hop.enabled',
             get(config, 'relay.hop.enabled', false)),
@@ -80,7 +85,7 @@ function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
       },
       dht: {
         kBucketSize: get(options, 'dht.kBucketSize', 20),
-        enabled: get(options, 'offline', false) ? false : undefined, // disable if offline
+        enabled: !get(options, 'offline', false), // disable if offline, on by default
         randomWalk: {
           enabled: false // disabled waiting for https://github.com/libp2p/js-libp2p-kad-dht/issues/86
         },

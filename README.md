@@ -284,11 +284,11 @@ Prevents all logging output from the IPFS node.
 
 | Type | Default |
 |------|---------|
-| object | `{ enabled: false, hop: { enabled: false, active: false } }` |
+| object | `{ enabled: true, hop: { enabled: false, active: false } }` |
 
 Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipfs/js-ipfs/tree/master/examples/circuit-relaying) to learn more).
 
-- `enabled` (boolean): Enable circuit relay dialer and listener. (Default: `false`)
+- `enabled` (boolean): Enable circuit relay dialer and listener. (Default: `true`)
 - `hop` (object)
     - `enabled` (boolean): Make this node a relay (other nodes can connect *through* it). (Default: `false`)
     - `active` (boolean): Make this an *active* relay node. Active relay nodes will attempt to dial a destination peer even if that peer is not yet connected to the relay. (Default: `false`)
