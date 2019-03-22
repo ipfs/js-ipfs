@@ -1,6 +1,6 @@
 'use strict'
 
-const { URL } = require('url')
+const { URL } = require('iso-url')
 const fetch = require('../../runtime/fetch-nodejs')
 
 module.exports = (self) => {
