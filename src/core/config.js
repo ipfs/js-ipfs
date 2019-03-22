@@ -31,7 +31,12 @@ const configSchema = s({
     addresses: optional(s(['multiaddr'])),
     interval: 'number?'
   }, { enabled: true, interval: 30 * 1000 }),
-  init: optional(union(['boolean', s({ bits: 'number?' })])),
+  init: optional(union(['boolean', s({
+    bits: 'number?',
+    emptyRepo: 'boolean?',
+    privateKey: optional(s('object|string')), // object should be a custom type for PeerId using 'kind-of'
+    pass: 'string?'
+  })])),
   start: 'boolean?',
   offline: 'boolean?',
   pass: 'string?',
