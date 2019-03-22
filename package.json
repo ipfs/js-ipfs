@@ -127,6 +127,7 @@
     "joi": "^14.3.0",
     "joi-browser": "^13.4.0",
     "joi-multiaddr": "^4.0.0",
+    "just-flatten-it": "^2.1.0",
     "libp2p": "~0.25.0-rc.5",
     "libp2p-bootstrap": "~0.9.3",
     "libp2p-crypto": "~0.16.0",
