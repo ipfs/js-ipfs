@@ -1,7 +1,5 @@
 'use strict'
 
-const mapValues = require('lodash/mapValues')
-const keyBy = require('lodash/keyBy')
 const multibase = require('multibase')
 const Joi = require('joi')
 const Boom = require('boom')
@@ -63,10 +61,11 @@ exports.ls = {
     }
 
     return h.response({
-      Keys: mapValues(
-        keyBy(result, obj => cidToString(obj.hash, { base: request.query['cid-base'] })),
-        obj => ({ Type: obj.type })
-      )
+      Keys: result.reduce((acc, v) => {
+        const prop = cidToString(v.hash, { base: request.query['cid-base'] })
+        acc[prop] = { Type: v.type }
+        return acc
+      }, {})
     })
   }
 }
