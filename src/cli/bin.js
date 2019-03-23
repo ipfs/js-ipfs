@@ -3,85 +3,47 @@
 'use strict'
 
 const YargsPromise = require('yargs-promise')
-const yargs = require('yargs')
 const updateNotifier = require('update-notifier')
 const utils = require('./utils')
 const print = utils.print
 const mfs = require('ipfs-mfs/cli')
 const debug = require('debug')('ipfs:cli')
 const pkg = require('../../package.json')
-
-const parser = yargs
-  .option('silent', {
-    desc: 'Write no output',
-    type: 'boolean',
-    default: false,
-    coerce: silent => {
-      if (silent) utils.disablePrinting()
-      return silent
-    }
-  })
-  .option('pass', {
-    desc: 'Pass phrase for the keys',
-    type: 'string',
-    default: ''
-  })
-
-module.exports = {
-  parser
-}
+const parser = require('./parser')
+const onExit = require('signal-exit')
 
 async function main (args) {
   const oneWeek = 1000 * 60 * 60 * 24 * 7
   updateNotifier({ pkg, updateCheckInterval: oneWeek }).notify()
 
-  const cli = parser
-    .epilog(utils.ipfsPathHelp)
-    .demandCommand(1)
-    .fail((msg, err, yargs) => {
-      if (err) {
-        throw err // preserve stack
-      }
-      if (args.length > 0) {
-        print(msg)
-      }
-
-      yargs.showHelp()
-    })
-
-  let getIpfs = null
+  const cli = new YargsPromise(parser)
 
   // add MFS (Files API) commands
   mfs(cli)
 
+  let getIpfs = null
+
   cli
-    .commandDir('commands')
-    .middleware(argv => {
-      // Function to get hold of a singleton ipfs instance
-      getIpfs = argv.getIpfs = utils.singleton(cb => utils.getIPFS(argv, cb))
-      return argv
+    .parse(args)
+    .then(({ data, argv }) => {
+      getIpfs = argv.getIpfs
+      if (data) {
+        print(data)
+      }
     })
-    .help()
-    .strict()
-    .completion()
+    .catch(({ error, argv }) => {
+      getIpfs = argv.getIpfs
+      debug(error)
+      // the argument can have a different shape depending on where the error came from
+      if (error.message || (error.error && error.error.message)) {
+        print(error.message || error.error.message)
+      } else {
+        print('Unknown error, please re-run the command with DEBUG=ipfs:cli to see debug output')
+      }
+      process.exit(1)
+    })
 
-  let exitCode = 0
-
-  try {
-    const { data } = await new YargsPromise(cli).parse(args)
-    if (data) print(data)
-  } catch (err) {
-    debug(err)
-
-    // the argument can have a different shape depending on where the error came from
-    if (err.message || (err.error && err.error.message)) {
-      print(err.message || err.error.message)
-    } else {
-      print('Unknown error, please re-run the command with DEBUG=ipfs:cli to see debug output')
-    }
-
-    exitCode = 1
-  } finally {
+  onExit(async () => {
     // If an IPFS instance was used in the handler then clean it up here
     if (getIpfs && getIpfs.instance) {
       try {
@@ -89,14 +51,10 @@ async function main (args) {
         await cleanup()
       } catch (err) {
         debug(err)
-        exitCode = 1
+        process.exit(1)
       }
     }
-  }
-
-  if (exitCode) {
-    process.exit(exitCode)
-  }
+  })
 }
 
 main(process.argv.slice(2))
