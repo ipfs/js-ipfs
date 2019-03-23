@@ -10,7 +10,6 @@ const mfs = require('ipfs-mfs/cli')
 const debug = require('debug')('ipfs:cli')
 const pkg = require('../../package.json')
 const parser = require('./parser')
-const onExit = require('signal-exit')
 
 async function main (args) {
   const oneWeek = 1000 * 60 * 60 * 24 * 7
@@ -42,19 +41,18 @@ async function main (args) {
       }
       process.exit(1)
     })
-
-  onExit(async () => {
-    // If an IPFS instance was used in the handler then clean it up here
-    if (getIpfs && getIpfs.instance) {
-      try {
-        const cleanup = getIpfs.rest[0]
-        await cleanup()
-      } catch (err) {
-        debug(err)
-        process.exit(1)
+    .finally(async () => {
+      // If an IPFS instance was used in the handler then clean it up here
+      if (getIpfs && getIpfs.instance) {
+        try {
+          const cleanup = getIpfs.rest[0]
+          await cleanup()
+        } catch (err) {
+          debug(err)
+          process.exit(1)
+        }
       }
-    }
-  })
+    })
 }
 
 main(process.argv.slice(2))
