@@ -1,3 +1,13 @@
+<a name="0.10.3"></a>
+## [0.10.3](https://github.com/ipfs/js-ipfs-mfs/compare/v0.10.2...v0.10.3) (2019-03-26)
+
+
+### Bug Fixes
+
+* handle shard updates that create subshards of subshards ([#47](https://github.com/ipfs/js-ipfs-mfs/issues/47)) ([1158951](https://github.com/ipfs/js-ipfs-mfs/commit/1158951))
+
+
+
 <a name="0.10.2"></a>
 ## [0.10.2](https://github.com/ipfs/js-ipfs-mfs/compare/v0.10.1...v0.10.2) (2019-03-18)
 
