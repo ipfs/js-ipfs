@@ -5,7 +5,7 @@ const CID = require('cids')
 const pull = require('pull-stream')
 const mapAsync = require('async/map')
 const setImmediate = require('async/setImmediate')
-const flattenDeep = require('lodash/flattenDeep')
+const flattenDeep = require('just-flatten-it')
 const errCode = require('err-code')
 
 module.exports = function dag (self) {

@@ -8,7 +8,7 @@ const SECIO = require('libp2p-secio')
 const Bootstrap = require('libp2p-bootstrap')
 const KadDHT = require('libp2p-kad-dht')
 const libp2p = require('libp2p')
-const defaultsDeep = require('@nodeutils/defaults-deep')
+const mergeOptions = require('merge-options')
 const multiaddr = require('multiaddr')
 
 class Node extends libp2p {
@@ -62,7 +62,7 @@ class Node extends libp2p {
       }
     }
 
-    super(defaultsDeep(_options, defaults))
+    super(mergeOptions(defaults, _options))
   }
 }
 

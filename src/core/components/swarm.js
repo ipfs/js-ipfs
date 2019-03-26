@@ -1,7 +1,6 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const values = require('lodash/values')
 
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 
@@ -25,7 +24,7 @@ module.exports = function swarm (self) {
 
       const peers = []
 
-      values(self._peerInfoBook.getAll()).forEach((peer) => {
+      Object.values(self._peerInfoBook.getAll()).forEach((peer) => {
         const connectedAddr = peer.isConnected()
 
         if (!connectedAddr) { return }
@@ -50,7 +49,7 @@ module.exports = function swarm (self) {
         return callback(new Error(OFFLINE_ERROR))
       }
 
-      const peers = values(self._peerInfoBook.getAll())
+      const peers = Object.values(self._peerInfoBook.getAll())
 
       callback(null, peers)
     }),

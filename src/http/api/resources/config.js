@@ -1,8 +1,8 @@
 'use strict'
 
 const debug = require('debug')
-const get = require('lodash/get')
-const set = require('lodash/set')
+const get = require('dlv')
+const set = require('just-safe-set')
 const log = debug('ipfs:http-api:config')
 log.error = debug('ipfs:http-api:config:error')
 const multipart = require('ipfs-multipart')
@@ -74,11 +74,14 @@ exports.getOrSet = {
       }
     } else {
       // Set the new value of a given key
-      const updatedConfig = set(originalConfig, key, value)
+      const result = set(originalConfig, key, value)
+      if (!result) {
+        throw Boom.badRequest('Failed to set config value')
+      }
       try {
-        await ipfs.config.replace(updatedConfig)
+        await ipfs.config.replace(originalConfig)
       } catch (err) {
-        throw Boom.boomify(err, { message: 'Failed to get config value' })
+        throw Boom.boomify(err, { message: 'Failed to replace config value' })
       }
     }
 

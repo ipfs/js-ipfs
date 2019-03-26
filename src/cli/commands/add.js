@@ -1,6 +1,5 @@
 'use strict'
 
-const sortBy = require('lodash/sortBy')
 const pull = require('pull-stream')
 const promisify = require('promisify-es6')
 const getFolderSize = promisify(require('get-folder-size'))
@@ -38,7 +37,16 @@ function addPipeline (source, addStream, options) {
           return resolve()
         }
 
-        sortBy(added, 'path')
+        added
+          .sort((a, b) => {
+            if (a.path > b.path) {
+              return 1
+            }
+            if (a.path < b.path) {
+              return -1
+            }
+            return 0
+          })
           .reverse()
           .map((file) => {
             const log = options.quiet ? [] : ['added']
