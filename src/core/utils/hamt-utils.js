@@ -5,6 +5,7 @@ const {
 } = require('ipld-dag-pb')
 const waterfall = require('async/waterfall')
 const whilst = require('async/whilst')
+const series = require('async/series')
 const Bucket = require('hamt-sharding/src/bucket')
 const DirSharded = require('ipfs-unixfs-importer/src/importer/dir-sharded')
 const log = require('debug')('ipfs:mfs:core:utils:hamt-utils')
@@ -63,7 +64,10 @@ const addLinksToHamtBucket = (links, bucket, rootBucket, callback) => {
         return Promise.resolve()
       }
 
-      return (rootBucket || bucket).put(link.name.substring(2), true)
+      return (rootBucket || bucket).put(link.name.substring(2), {
+        size: link.size,
+        multihash: link.cid
+      })
     })
   )
     .then(() => callback(null, bucket), callback)
@@ -180,10 +184,45 @@ const generatePath = (context, fileName, rootNode, callback) => {
   })
 }
 
+const createShard = (context, contents, options, callback) => {
+  const shard = new DirSharded({
+    root: true,
+    dir: true,
+    parent: null,
+    parentKey: null,
+    path: '',
+    dirty: true,
+    flat: false,
+
+    ...options
+  })
+
+  const operations = contents.map(contents => {
+    return (cb) => {
+      shard.put(contents.name, {
+        size: contents.size,
+        multihash: contents.multihash
+      }, cb)
+    }
+  })
+
+  return series(
+    operations,
+    (err) => {
+      if (err) {
+        return callback(err)
+      }
+
+      shard.flush('', context.ipld, null, callback)
+    }
+  )
+}
+
 module.exports = {
   generatePath,
   updateHamtDirectory,
   recreateHamtLevel,
   addLinksToHamtBucket,
-  toPrefix
+  toPrefix,
+  createShard
 }

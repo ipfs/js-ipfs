@@ -932,4 +932,51 @@ describe('write', () => {
       expect(err.message).to.contain('not exist')
     }
   })
+
+  it('adds files that cause sub-sub-shards to be created', async function () {
+    // this.timeout(60000)
+
+    const dir = `/updated-dir-${Date.now()}`
+    const buf = Buffer.from([0, 1, 2, 3, 4])
+
+    const dirCid = await createShard(mfs.ipld, [{
+      path: `${dir}/file-699.txt`,
+      content: buf
+    }], 1)
+
+    await mfs.cp(`/ipfs/${dirCid.toBaseEncodedString()}`, dir)
+
+    await mfs.write(`${dir}/file-1011.txt`, buf, {
+      create: true
+    })
+
+    await mfs.stat(`${dir}/file-1011.txt`)
+
+    expect(await mfs.read(`${dir}/file-1011.txt`)).to.deep.equal(buf)
+  })
+
+  it('removes files that cause sub-sub-shards to be removed', async function () {
+    this.timeout(60000)
+
+    const dir = `/imported-dir-${Date.now()}`
+    const buf = Buffer.from([0, 1, 2, 3, 4])
+
+    const dirCid = await createShard(mfs.ipld, [{
+      path: `${dir}/file-699.txt`,
+      content: buf
+    }, {
+      path: `${dir}/file-1011.txt`,
+      content: buf
+    }], 1)
+
+    await mfs.cp(`/ipfs/${dirCid.toBaseEncodedString()}`, dir)
+
+    await mfs.rm(`${dir}/file-1011.txt`)
+
+    try {
+      await mfs.stat(`${dir}/file-1011.txt`)
+    } catch (err) {
+      expect(err.message).to.contain('not exist')
+    }
+  })
 })
