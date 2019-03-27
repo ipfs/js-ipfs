@@ -2,6 +2,7 @@
 
 const get = require('dlv')
 const mergeOptions = require('merge-options')
+const log = require('debug')('ipfs:libp2p')
 const ipnsUtils = require('../ipns/routing/utils')
 
 module.exports = function libp2p (self, config) {
@@ -116,17 +117,17 @@ class DialQueue {
     this._running = false
 
     setInterval(() => {
-      console.log(this._queue.size, 'peers in dial queue')
+      log(this._queue.size, 'peers in dial queue')
     }, 10 * 1000)
   }
 
   _run () {
-    // If not yet started, or already running or nothing in the queue...then return
+    // If already running or nothing in the queue...then return
     if (this._running || !this._queue.size) return
     this._running = true
 
     const cb = err => {
-      if (err) console.error(err)
+      if (err) log(err)
 
       // Keep processing the queue if not stopped
       if (this._queue.size) {
@@ -144,36 +145,36 @@ class DialQueue {
   }
 
   _dialNext (cb) {
-    console.log('dialing 1 of', this._queue.size)
+    log('dialing 1 of', this._queue.size)
 
     const peerId = this._queue.values().next().value
     this._queue.delete(peerId)
 
     if (this._blacklist.has(peerId)) {
-      console.log('not dialing blacklisted', peerId)
+      log('not dialing blacklisted', peerId)
       return cb()
     }
 
     const peerInfo = this._peerBook.get(peerId)
 
     if (peerInfo.isConnected()) {
-      console.log('not dialing connected', peerId)
+      log('not dialing connected', peerId)
       return cb()
     }
 
-    console.log('dialing', peerInfo.id.toB58String())
+    log('dialing', peerInfo.id.toB58String())
     this._libp2p.dial(peerInfo, err => {
       if (err) {
         if (err.code === 'CONNECTION_FAILED') {
-          console.log('blacklisting', peerId)
+          log('blacklisting', peerId)
           this._blacklist.add(peerId)
           return cb()
         }
-        console.log('dial failed', peerId, err.code)
+        log('dial failed', peerId, err.code)
         return cb(err)
       }
 
-      console.log('dialed', peerId)
+      log('dialed', peerId)
       cb()
     })
   }
@@ -189,12 +190,12 @@ class DialQueue {
     const peerId = peerInfo.id.toB58String()
 
     if (peerInfo.isConnected()) {
-      console.log('not adding connected', peerInfo.id.toB58String())
+      log('not adding connected', peerId)
       return this
     }
 
     if (!this._queue.has(peerId)) {
-      console.log('not adding queued', peerId)
+      log('not adding queued', peerId)
       this._queue.add(peerId)
     }
 
