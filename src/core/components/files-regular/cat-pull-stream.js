@@ -14,8 +14,9 @@ module.exports = function (self) {
     options = options || {}
 
     ipfsPath = normalizePath(ipfsPath)
+
     const pathComponents = ipfsPath.split('/')
-    const fileNameOrHash = pathComponents[pathComponents.length - 1]
+    const cid = pathComponents[0]
 
     if (options.preload !== false) {
       self._preload(pathComponents[0])
@@ -23,9 +24,21 @@ module.exports = function (self) {
 
     const d = deferred.source()
 
+    let closestMatchedLink
+
     pull(
-      exporter(ipfsPath, self._ipld, options),
-      pull.filter(file => file.path === fileNameOrHash),
+      exporter(cid, self._ipld, options),
+      pull.filter(link => {
+        return link.path === ipfsPath.substring(0, link.path.length)
+      }),
+      pull.filter(link => {
+        // save the closest matched path so we can show in error if no file was found
+        if (!closestMatchedLink || link.depth > closestMatchedLink.depth) {
+          closestMatchedLink = link
+        }
+
+        return link.path === ipfsPath
+      }),
       pull.take(1),
       pull.collect((err, files) => {
         if (err) {
@@ -33,7 +46,8 @@ module.exports = function (self) {
         }
 
         if (!files.length) {
-          return d.abort(new Error('No such file'))
+          const linkNotFound = ipfsPath.substring(closestMatchedLink.path.length + 1)
+          return d.abort(new Error(`no file named "${linkNotFound}" under ${closestMatchedLink.path}`))
         }
 
         const file = files[0]

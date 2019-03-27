@@ -436,6 +436,16 @@ describe('files', () => runOnAndOff((thing) => {
       .then(() => expect.fail(0, 1, 'Should have thrown an error'))
       .catch((err) => {
         expect(err).to.exist()
+        expect(err.stdout).to.contain('no file named "dummy" under QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+      })
+  })
+
+  it('cat non-existent file (nested)', () => {
+    return ipfs('cat Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z/init-docs/wrong-dir/dummy')
+      .then(() => expect.fail(0, 1, 'Should have thrown an error'))
+      .catch((err) => {
+        expect(err).to.exist()
+        expect(err.stdout).to.contain('no file named "wrong-dir/dummy" under Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z/init-docs')
       })
   })
 
