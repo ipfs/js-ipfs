@@ -17,15 +17,8 @@ module.exports = function libp2p (self, config) {
   const peerInfo = self._peerInfo
   const peerBook = self._peerInfoBook
   const libp2p = createBundle({ options, config, datastore, peerInfo, peerBook })
-  let discoveredPeers = []
 
-  const noop = () => {}
-  const putAndDial = peerInfo => {
-    peerInfo = peerBook.put(peerInfo)
-    if (!peerInfo.isConnected()) {
-      libp2p.dial(peerInfo, noop)
-    }
-  }
+  const dialQueue = new DialQueue(libp2p, peerBook)
 
   libp2p.on('stop', () => {
     // Clear our addresses so we can start clean
@@ -36,19 +29,18 @@ module.exports = function libp2p (self, config) {
     peerInfo.multiaddrs.forEach((ma) => {
       self._print('Swarm listening on', ma.toString())
     })
-    discoveredPeers.forEach(putAndDial)
-    discoveredPeers = []
+    dialQueue.start()
   })
 
-  libp2p.on('peer:discovery', (peerInfo) => {
-    if (self.isOnline()) {
-      putAndDial(peerInfo)
-    } else {
-      discoveredPeers.push(peerInfo)
-    }
-  })
+  libp2p.on('peer:discovery', peerInfo => dialQueue.add(peerInfo))
 
   libp2p.on('peer:connect', peerInfo => peerBook.put(peerInfo))
+
+  const _stop = libp2p.stop.bind(libp2p)
+  libp2p.stop = cb => {
+    dialQueue.stop()
+    _stop(cb)
+  }
 
   return libp2p
 }
@@ -113,4 +105,110 @@ function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
   // Note: libp2p-nodejs gets replaced by libp2p-browser when webpacked/browserified
   const Node = require('../runtime/libp2p-nodejs')
   return new Node(libp2pOptions)
+}
+
+class DialQueue {
+  constructor (libp2p, peerBook) {
+    this._libp2p = libp2p
+    this._peerBook = peerBook
+    this._queue = new Set()
+    this._blacklist = new Set()
+    this._running = false
+
+    setInterval(() => {
+      console.log(this._queue.size, 'peers in dial queue')
+    }, 10 * 1000)
+  }
+
+  _run () {
+    // If not yet started, or already running or nothing in the queue...then return
+    if (this._running || !this._queue.size) return
+    this._running = true
+
+    const cb = err => {
+      if (err) console.error(err)
+
+      // Keep processing the queue if not stopped
+      if (this._queue.size) {
+        return process.nextTick(() => {
+          if (this._running) {
+            this._dialNext(cb)
+          }
+        })
+      }
+
+      this._running = false
+    }
+
+    this._dialNext(cb)
+  }
+
+  _dialNext (cb) {
+    console.log('dialing 1 of', this._queue.size)
+
+    const peerId = this._queue.values().next().value
+    this._queue.delete(peerId)
+
+    if (this._blacklist.has(peerId)) {
+      console.log('not dialing blacklisted', peerId)
+      return cb()
+    }
+
+    const peerInfo = this._peerBook.get(peerId)
+
+    if (peerInfo.isConnected()) {
+      console.log('not dialing connected', peerId)
+      return cb()
+    }
+
+    console.log('dialing', peerInfo.id.toB58String())
+    this._libp2p.dial(peerInfo, err => {
+      if (err) {
+        if (err.code === 'CONNECTION_FAILED') {
+          console.log('blacklisting', peerId)
+          this._blacklist.add(peerId)
+          return cb()
+        }
+        console.log('dial failed', peerId, err.code)
+        return cb(err)
+      }
+
+      console.log('dialed', peerId)
+      cb()
+    })
+  }
+
+  start () {
+    this._started = true
+    this._run()
+    return this
+  }
+
+  add (peerInfo) {
+    peerInfo = this._peerBook.put(peerInfo)
+    const peerId = peerInfo.id.toB58String()
+
+    if (peerInfo.isConnected()) {
+      console.log('not adding connected', peerInfo.id.toB58String())
+      return this
+    }
+
+    if (!this._queue.has(peerId)) {
+      console.log('not adding queued', peerId)
+      this._queue.add(peerId)
+    }
+
+    // Only process the queue if started
+    if (this._started) {
+      this._run()
+    }
+
+    return this
+  }
+
+  stop () {
+    this._started = false
+    this._running = false
+    return this
+  }
 }
