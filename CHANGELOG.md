@@ -1,3 +1,28 @@
+<a name="0.35.0-rc.4"></a>
+# [0.35.0-rc.4](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.3...v0.35.0-rc.4) (2019-03-28)
+
+
+### Bug Fixes
+
+* CLI parsing of --silent arg ([#1955](https://github.com/ipfs/js-ipfs/issues/1955)) ([1c07779](https://github.com/ipfs/js-ipfs/commit/1c07779)), closes [#1947](https://github.com/ipfs/js-ipfs/issues/1947)
+
+
+### Code Refactoring
+
+* swap joi-browser with superstruct ([#1961](https://github.com/ipfs/js-ipfs/issues/1961)) ([8fb5825](https://github.com/ipfs/js-ipfs/commit/8fb5825))
+
+
+### Performance Improvements
+
+* reduce bundle size ([#1959](https://github.com/ipfs/js-ipfs/issues/1959)) ([a3b6235](https://github.com/ipfs/js-ipfs/commit/a3b6235))
+
+
+### BREAKING CHANGES
+
+* Constructor config validation is now a bit more strict - it does not allow `null` values or unknown properties.
+
+
+
 <a name="0.35.0-rc.3"></a>
 # [0.35.0-rc.3](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.2...v0.35.0-rc.3) (2019-03-21)
 
