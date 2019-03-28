@@ -1,3 +1,8 @@
+<a name="30.1.1"></a>
+## [30.1.1](https://github.com/ipfs/js-ipfs-http-client/compare/v30.1.0...v30.1.1) (2019-03-28)
+
+
+
 <a name="30.1.0"></a>
 # [30.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v30.0.0...v30.1.0) (2019-03-15)
 
