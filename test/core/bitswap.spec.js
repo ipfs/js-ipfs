@@ -113,10 +113,8 @@ describe('bitswap', function () {
 
     if (isNode) {
       config = Object.assign({}, config, {
-        config: {
-          Addresses: {
-            Swarm: ['/ip4/127.0.0.1/tcp/0']
-          }
+        Addresses: {
+          Swarm: ['/ip4/127.0.0.1/tcp/0']
         }
       })
     }

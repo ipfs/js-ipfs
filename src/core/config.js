@@ -1,62 +1,86 @@
 'use strict'
 
-const Joi = require('joi').extend(require('joi-multiaddr'))
+const Multiaddr = require('multiaddr')
+const mafmt = require('mafmt')
+const { struct, superstruct } = require('superstruct')
 
-const schema = Joi.object().keys({
-  repo: Joi.alternatives().try(
-    Joi.object(), // TODO: schema for IPFS repo
-    Joi.string()
-  ).allow(null),
-  repoOwner: Joi.boolean().default(true),
-  preload: Joi.object().keys({
-    enabled: Joi.boolean().default(true),
-    addresses: Joi.array().items(Joi.multiaddr().options({ convert: false })),
-    interval: Joi.number().integer().default(30 * 1000)
-  }).allow(null),
-  init: Joi.alternatives().try(
-    Joi.boolean(),
-    Joi.object().keys({ bits: Joi.number().integer() })
-  ).allow(null),
-  start: Joi.boolean(),
-  offline: Joi.boolean(),
-  pass: Joi.string().allow(''),
-  relay: Joi.object().keys({
-    enabled: Joi.boolean(),
-    hop: Joi.object().keys({
-      enabled: Joi.boolean(),
-      active: Joi.boolean()
-    }).allow(null)
-  }).allow(null),
-  EXPERIMENTAL: Joi.object().keys({
-    pubsub: Joi.boolean(),
-    ipnsPubsub: Joi.boolean(),
-    sharding: Joi.boolean(),
-    dht: Joi.boolean()
-  }).allow(null),
-  connectionManager: Joi.object().allow(null),
-  config: Joi.object().keys({
-    Addresses: Joi.object().keys({
-      Swarm: Joi.array().items(Joi.multiaddr().options({ convert: false })),
-      API: Joi.multiaddr().options({ convert: false }),
-      Gateway: Joi.multiaddr().options({ convert: false })
-    }).allow(null),
-    Discovery: Joi.object().keys({
-      MDNS: Joi.object().keys({
-        Enabled: Joi.boolean(),
-        Interval: Joi.number().integer()
-      }).allow(null),
-      webRTCStar: Joi.object().keys({
-        Enabled: Joi.boolean()
-      }).allow(null)
-    }).allow(null),
-    Bootstrap: Joi.array().items(Joi.multiaddr().IPFS().options({ convert: false }))
-  }).allow(null),
-  libp2p: Joi.alternatives().try(
-    Joi.func(),
-    Joi.object().keys({
-      modules: Joi.object().allow(null) // TODO: schemas for libp2p modules?
-    })
-  ).allow(null)
-}).options({ allowUnknown: true })
+const { optional, union } = struct
+const s = superstruct({
+  types: {
+    multiaddr: v => {
+      if (v === null) {
+        return `multiaddr invalid, value must be a string, Buffer, or another Multiaddr got ${v}`
+      }
 
-module.exports.validate = (config) => Joi.attempt(config, schema)
+      try {
+        Multiaddr(v)
+      } catch (err) {
+        return `multiaddr invalid, ${err.message}`
+      }
+
+      return true
+    },
+    'multiaddr-ipfs': v => mafmt.IPFS.matches(v) ? true : `multiaddr IPFS invalid`
+  }
+})
+
+const configSchema = s({
+  repo: optional(s('object|string')),
+  repoOwner: 'boolean?',
+  preload: s({
+    enabled: 'boolean?',
+    addresses: optional(s(['multiaddr'])),
+    interval: 'number?'
+  }, { enabled: true, interval: 30 * 1000 }),
+  init: optional(union(['boolean', s({
+    bits: 'number?',
+    emptyRepo: 'boolean?',
+    privateKey: optional(s('object|string')), // object should be a custom type for PeerId using 'kind-of'
+    pass: 'string?'
+  })])),
+  start: 'boolean?',
+  offline: 'boolean?',
+  pass: 'string?',
+  silent: 'boolean?',
+  relay: 'object?', // relay validates in libp2p
+  EXPERIMENTAL: optional(s({
+    pubsub: 'boolean?',
+    ipnsPubsub: 'boolean?',
+    sharding: 'boolean?',
+    dht: 'boolean?'
+  })),
+  connectionManager: 'object?',
+  config: optional(s({
+    API: 'object?',
+    Addresses: optional(s({
+      Swarm: optional(s(['multiaddr'])),
+      API: 'multiaddr?',
+      Gateway: 'multiaddr'
+    })),
+    Discovery: optional(s({
+      MDNS: optional(s({
+        Enabled: 'boolean?',
+        Interval: 'number?'
+      })),
+      webRTCStar: optional(s({
+        Enabled: 'boolean?'
+      }))
+    })),
+    Bootstrap: optional(s(['multiaddr-ipfs']))
+  })),
+  libp2p: optional(union(['function', 'object'])) // libp2p validates this
+}, {
+  repoOwner: true
+})
+
+const validate = (opts) => {
+  const [err, options] = configSchema.validate(opts)
+
+  if (err) {
+    throw err
+  }
+
+  return options
+}
+
+module.exports = { validate }
