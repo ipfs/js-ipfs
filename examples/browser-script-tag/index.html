@@ -28,7 +28,8 @@
   <p>Try adding a new file:</p>
 
   <code style="display:block; white-space:pre-wrap; background-color:#d7d6d6">
-    node.add(new node.types.Buffer('Hello world!'), (err, filesAdded) => {
+    const { Buffer } = Ipfs
+    node.add(new Buffer('Hello world!'), (err, filesAdded) => {
       if (err) {
         return console.error('Error - ipfs add', err, res)
       }
