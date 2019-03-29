@@ -165,7 +165,7 @@ Open another terminal window to find the websocket addresses that it is listenin
 > jsipfs id
 ```
 
-It should look like this: `/ip4/127.0.0.1/tcp/9999/ws/ipfs/<your_peer_id>`.
+It should look like this: `/ip4/127.0.0.1/tcp/4003/ws/ipfs/<your_peer_id>`.
 
 Copy and paste the *multiaddr* to connect to that peer:
 
