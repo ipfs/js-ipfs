@@ -85,13 +85,13 @@ Since websockets support is currently not on by default, you'll need to add a We
 }
 ```
 
-Add the `/ip4/127.0.0.1/tcp/9999/ws` entry to your `Swarm` array. Now it should look like this:
+Add the `/ip4/127.0.0.1/tcp/4003/ws` entry to your `Swarm` array. Now it should look like this:
 
 ```json
 "Addresses": {
   "Swarm": [
     "/ip4/0.0.0.0/tcp/4002",
-    "/ip4/127.0.0.1/tcp/9999/ws"
+    "/ip4/127.0.0.1/tcp/4003/ws"
   ],
   "API": "/ip4/127.0.0.1/tcp/5002",
   "Gateway": "/ip4/127.0.0.1/tcp/9090"
@@ -111,9 +111,9 @@ You should see the Websocket address in the output:
 ```sh
 Initializing daemon...
 Swarm listening on /ip4/127.0.0.1/tcp/4001
-Swarm listening on /ip4/127.0.0.1/tcp/9999/ws
+Swarm listening on /ip4/127.0.0.1/tcp/4003/ws
 Swarm listening on /ip4/192.168.10.38/tcp/4001
-Swarm listening on /ip4/192.168.10.38/tcp/9999/ws
+Swarm listening on /ip4/192.168.10.38/tcp/4003/ws
 API server listening on /ip4/127.0.0.1/tcp/5001
 Gateway (readonly) server listening on /ip4/0.0.0.0/tcp/8080
 Daemon is ready
@@ -165,7 +165,7 @@ Open another terminal window to find the websocket addresses that it is listenin
 > jsipfs id
 ```
 
-It should look like this: `/ip4/127.0.0.1/tcp/9999/ws/ipfs/<your_peer_id>`.
+It should look like this: `/ip4/127.0.0.1/tcp/4003/ws/ipfs/<your_peer_id>`.
 
 Copy and paste the *multiaddr* to connect to that peer:
 

@@ -31,7 +31,7 @@ let fileSize = 0
 
 let node
 let info
-let Buffer
+let Buffer = IPFS.Buffer
 
 /* ===========================================================================
    Start the IPFS node
@@ -52,8 +52,6 @@ function start () {
     }
 
     node = new IPFS(options)
-
-    Buffer = node.types.Buffer
 
     node.once('start', () => {
       node.id()
