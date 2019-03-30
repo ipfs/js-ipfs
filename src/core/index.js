@@ -176,7 +176,9 @@ class IPFS extends EventEmitter {
 
 module.exports = IPFS
 
-Object.assign(module.exports, { crypto, isIPFS, Buffer, CID, multiaddr, multibase, multihash, multicodec, PeerId, PeerInfo })
+// Note: We need to do this to force browserify to load the Buffer module
+const BufferImpl = Buffer
+Object.assign(module.exports, { crypto, isIPFS, Buffer: BufferImpl, CID, multiaddr, multibase, multihash, multicodec, PeerId, PeerInfo })
 
 module.exports.createNode = (options) => {
   return new IPFS(options)
