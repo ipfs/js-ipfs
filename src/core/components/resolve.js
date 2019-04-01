@@ -20,43 +20,21 @@ module.exports = (self) => {
       return setImmediate(() => cb(new Error('invalid argument')))
     }
 
-    resolve(name, opts, cb)
+    const split = name.split('/') // ['', 'ipfs', 'hash or domain', ...path]
+    const hashOrDomain = split[2]
+    const path = split.slice(3).join('/')
+
+    if (isIpfs.cid(hashOrDomain)) {
+      return resolveCID(hashOrDomain, path, opts, cb)
+    }
+
+    // if its not a cid then its probably a domain name to resolve
+    return resolveDomain(hashOrDomain, path, opts, cb)
   })
 
-  function resolve (name, opts, cb) {
-    if (isIpfs.ipfsPath(name)) {
-      const split = name.split('/') // ['', 'ipfs', 'hash', ...path]
-      const cid = new CID(split[2])
-
-      if (split.length === 3) {
-        return setImmediate(() => cb(null, `/ipfs/${cidToString(cid, { base: opts.cidBase })}`))
-      }
-
-      const path = split.slice(3).join('/')
-
-      resolveCID(cid, path, (err, res) => {
-        if (err) return cb(err)
-        const { cid, remainderPath } = res
-        cb(null, `/ipfs/${cidToString(cid, { base: opts.cidBase })}${remainderPath ? '/' + remainderPath : ''}`)
-      })
-    } else {
-      const domain = name.split('/')[2]
-      const path = name.split('/').slice(3).join('/')
-      console.log(domain, path)
-      return self.dns(domain, (err, result) => {
-        if (err) return cb(err)
-        const cid = new CID(result.split('/')[2])
-        resolveCID(cid, path, (err, res) => {
-          if (err) return cb(err)
-          const { cid, remainderPath } = res
-          cb(null, `/ipfs/${cidToString(cid, { base: opts.cidBase })}${remainderPath ? '/' + remainderPath : ''}`)
-        })
-      })
-    }
-  }
-
-  // Resolve the given CID + path to a CID.
-  function resolveCID (cid, path, callback) {
+  // Resolve the given CID + path to a CID (recursive).
+  function resolveCID (hash, path, opts, callback) {
+    let cid = new CID(hash)
     let value, remainderPath
     doUntil(
       (cb) => {
@@ -96,8 +74,21 @@ module.exports = (self) => {
       },
       (err) => {
         if (err) return callback(err)
-        callback(null, { cid, remainderPath: path })
+        callback(null, `/ipfs/${cidToString(cid, { base: opts.cidBase })}${remainderPath ? '/' + remainderPath : ''}`)
       }
     )
+  }
+
+  function resolveDomain (domain, path, opts, callback) {
+    const recursive = opts.recursive && opts.recursive.toString() === 'true'
+    return self.dns(domain, (err, result) => {
+      if (err) return callback(err)
+      const hash = result.split('/')[2]
+      const remainderPath = path
+      if (recursive) {
+        return resolveCID(hash, remainderPath, opts, callback)
+      }
+      callback(null, `/ipfs/${cidToString(hash, { base: opts.cidBase })}${remainderPath ? '/' + remainderPath : ''}`)
+    })
   }
 }
