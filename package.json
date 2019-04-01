@@ -129,7 +129,7 @@
     "joi-multiaddr": "^4.0.0",
     "just-flatten-it": "^2.1.0",
     "just-safe-set": "^2.1.0",
-    "libp2p": "~0.25.0-rc.5",
+    "libp2p": "libp2p/js-libp2p#feat/instrumentation",
     "libp2p-bootstrap": "~0.9.3",
     "libp2p-crypto": "~0.16.0",
     "libp2p-kad-dht": "~0.14.8",
