@@ -20,29 +20,43 @@ module.exports = (self) => {
       return setImmediate(() => cb(new Error('invalid argument')))
     }
 
-    // TODO remove this and update subsequent code when IPNS is implemented
-    if (!isIpfs.ipfsPath(name)) {
-      return setImmediate(() => cb(new Error('resolve non-IPFS names is not implemented')))
-    }
-
-    const split = name.split('/') // ['', 'ipfs', 'hash', ...path]
-    const cid = new CID(split[2])
-
-    if (split.length === 3) {
-      return setImmediate(() => cb(null, `/ipfs/${cidToString(cid, { base: opts.cidBase })}`))
-    }
-
-    const path = split.slice(3).join('/')
-
-    resolve(cid, path, (err, res) => {
-      if (err) return cb(err)
-      const { cid, remainderPath } = res
-      cb(null, `/ipfs/${cidToString(cid, { base: opts.cidBase })}${remainderPath ? '/' + remainderPath : ''}`)
-    })
+    resolve(name, opts, cb)
   })
 
+  function resolve (name, opts, cb) {
+    if (isIpfs.ipfsPath(name)) {
+      const split = name.split('/') // ['', 'ipfs', 'hash', ...path]
+      const cid = new CID(split[2])
+
+      if (split.length === 3) {
+        return setImmediate(() => cb(null, `/ipfs/${cidToString(cid, { base: opts.cidBase })}`))
+      }
+
+      const path = split.slice(3).join('/')
+
+      resolveCID(cid, path, (err, res) => {
+        if (err) return cb(err)
+        const { cid, remainderPath } = res
+        cb(null, `/ipfs/${cidToString(cid, { base: opts.cidBase })}${remainderPath ? '/' + remainderPath : ''}`)
+      })
+    } else {
+      const domain = name.split('/')[2]
+      const path = name.split('/').slice(3).join('/')
+      console.log(domain, path)
+      return self.dns(domain, (err, result) => {
+        if (err) return cb(err)
+        const cid = new CID(result.split('/')[2])
+        resolveCID(cid, path, (err, res) => {
+          if (err) return cb(err)
+          const { cid, remainderPath } = res
+          cb(null, `/ipfs/${cidToString(cid, { base: opts.cidBase })}${remainderPath ? '/' + remainderPath : ''}`)
+        })
+      })
+    }
+  }
+
   // Resolve the given CID + path to a CID.
-  function resolve (cid, path, callback) {
+  function resolveCID (cid, path, callback) {
     let value, remainderPath
     doUntil(
       (cb) => {
