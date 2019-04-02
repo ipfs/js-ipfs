@@ -11,6 +11,7 @@ const multihash = require('multihashes')
 const PeerBook = require('peer-book')
 const multibase = require('multibase')
 const multicodec = require('multicodec')
+const multihashing = require('multihashing-async')
 const CID = require('cids')
 const debug = require('debug')
 const mergeOptions = require('merge-options')
@@ -178,7 +179,7 @@ module.exports = IPFS
 
 // Note: We need to do this to force browserify to load the Buffer module
 const BufferImpl = Buffer
-Object.assign(module.exports, { crypto, isIPFS, Buffer: BufferImpl, CID, multiaddr, multibase, multihash, multicodec, PeerId, PeerInfo })
+Object.assign(module.exports, { crypto, isIPFS, Buffer: BufferImpl, CID, multiaddr, multibase, multihash, multihashing, multicodec, PeerId, PeerInfo })
 
 module.exports.createNode = (options) => {
   return new IPFS(options)
