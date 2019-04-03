@@ -1,6 +1,6 @@
 'use strict'
 
-const series = require('async/series')
+const parallel = require('async/parallel')
 const promisify = require('promisify-es6')
 
 module.exports = (self) => {
@@ -17,30 +17,30 @@ module.exports = (self) => {
       return callback(new Error('Not able to stop from state: ' + self.state.state()))
     }
 
-    const done = (err) => {
-      if (err) {
-        self.emit('error', err)
-        return callback(err)
-      }
-      self.state.stopped()
-      self.emit('stop')
-      callback()
-    }
-
     self.state.stop()
     self._blockService.unsetExchange()
     self._bitswap.stop()
     self._preload.stop()
 
-    series([
-      (cb) => self._ipns.republisher.stop(cb),
-      (cb) => self._mfsPreload.stop(cb),
-      (cb) => {
+    parallel([
+      cb => self._ipns.republisher.stop(cb),
+      cb => self._mfsPreload.stop(cb),
+      cb => {
         const libp2p = self.libp2p
         self.libp2p = null
         libp2p.stop(cb)
-      },
-      (cb) => self._repo.close(cb)
-    ], done)
+      }
+    ], err => {
+      self._repo.close(closeErr => {
+        if (err || closeErr) {
+          self.emit('error', err || closeErr)
+          return callback(err || closeErr)
+        }
+
+        self.state.stopped()
+        self.emit('stop')
+        callback()
+      })
+    })
   })
 }
