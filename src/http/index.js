@@ -15,6 +15,8 @@ const MulticastDNS = require('libp2p-mdns')
 const WS = require('libp2p-websockets')
 const Bootstrap = require('libp2p-bootstrap')
 const errorHandler = require('./error-handler')
+const LOG = 'ipfs:http-api'
+const LOG_ERROR = 'ipfs:http-api:error'
 
 function hapiInfoToMultiaddr (info) {
   let hostname = info.host
@@ -48,8 +50,8 @@ function serverCreator (serverAddrs, createServer, ipfs) {
 class HttpApi {
   constructor (options) {
     this._options = options || {}
-    this._log = debug('ipfs:http-api')
-    this._log.error = debug('ipfs:http-api:error')
+    this._log = debug(LOG)
+    this._log.error = debug(LOG_ERROR)
 
     if (process.env.IPFS_MONITORING) {
       // Setup debug metrics collection
@@ -147,7 +149,7 @@ class HttpApi {
       options: {
         prettyPrint: process.env.NODE_ENV !== 'production',
         logEvents: ['onPostStart', 'onPostStop', 'response', 'request-error'],
-        level: process.env.DEBUG ? 'debug' : 'error'
+        level: debug.enabled(LOG) ? 'debug' : (debug.enabled(LOG_ERROR) ? 'error' : 'fatal')
       }
     })
 
@@ -183,9 +185,9 @@ class HttpApi {
     await server.register({
       plugin: Pino,
       options: {
-        prettyPrint: Boolean(process.env.DEBUG),
+        prettyPrint: Boolean(debug.enabled(LOG)),
         logEvents: ['onPostStart', 'onPostStop', 'response', 'request-error'],
-        level: process.env.DEBUG ? 'debug' : 'error'
+        level: debug.enabled(LOG) ? 'debug' : (debug.enabled(LOG_ERROR) ? 'error' : 'fatal')
       }
     })
 
