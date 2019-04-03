@@ -72,9 +72,7 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
         }
       }
     }
-  }), {
-    only: true
-  })
+  }))
 
   tests.miscellaneous(CommonFactory.create({
     // No need to stop, because the test suite does a 'stop' test.
