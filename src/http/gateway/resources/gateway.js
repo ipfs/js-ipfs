@@ -3,13 +3,12 @@
 const debug = require('debug')
 const log = debug('ipfs:http-gateway')
 log.error = debug('ipfs:http-gateway:error')
-const pull = require('pull-stream')
-const pushable = require('pull-pushable')
-const toStream = require('pull-stream-to-stream')
+
 const fileType = require('file-type')
 const mime = require('mime-types')
 const { PassThrough } = require('readable-stream')
 const Boom = require('boom')
+const peek = require('buffer-peek-stream')
 
 const { resolver } = require('ipfs-http-response')
 const PathUtils = require('../utils/path')
@@ -28,6 +27,20 @@ function detectContentType (ref, chunk) {
   const mimeType = mime.lookup(fileSignature ? fileSignature.ext : ref)
 
   return mime.contentType(mimeType)
+}
+
+// Enable streaming of compressed payload
+// https://github.com/hapijs/hapi/issues/3599
+class ResponseStream extends PassThrough {
+  _read (size) {
+    super._read(size)
+    if (this._compressor) {
+      this._compressor.flush()
+    }
+  }
+  setCompressor (compressor) {
+    this._compressor = compressor
+  }
 }
 
 module.exports = {
@@ -85,58 +98,46 @@ module.exports = {
       return h.redirect(PathUtils.removeTrailingSlash(ref)).permanent(true)
     }
 
-    return new Promise((resolve, reject) => {
-      let pusher
-      let started = false
+    const rawStream = ipfs.catReadableStream(data.cid)
+    const responseStream = new ResponseStream()
 
-      pull(
-        ipfs.catPullStream(data.cid),
-        pull.drain(
-          chunk => {
-            if (!started) {
-              started = true
-              pusher = pushable()
-              const res = h.response(toStream.source(pusher).pipe(new PassThrough()))
-
-              // Etag maps directly to an identifier for a specific version of a resource
-              res.header('Etag', `"${data.cid}"`)
-
-              // Set headers specific to the immutable namespace
-              if (ref.startsWith('/ipfs/')) {
-                res.header('Cache-Control', 'public, max-age=29030400, immutable')
-              }
-
-              const contentType = detectContentType(ref, chunk)
-
-              log('ref ', ref)
-              log('mime-type ', contentType)
-
-              if (contentType) {
-                log('writing content-type header')
-                res.header('Content-Type', contentType)
-              }
-
-              resolve(res)
-            }
-            pusher.push(chunk)
-          },
-          err => {
-            if (err) {
-              log.error(err)
-
-              // We already started flowing, abort the stream
-              if (started) {
-                return pusher.end(err)
-              }
-
-              return reject(err)
-            }
-
-            pusher.end()
+    // Pass-through Content-Type sniffing over initial bytes
+    const contentType = await new Promise((resolve, reject) => {
+      try {
+        const peekBytes = fileType.minimumBytes
+        peek(rawStream, peekBytes, (err, streamHead, outputStream) => {
+          if (err) {
+            log.error(err)
+            return reject(err)
           }
-        )
-      )
+          outputStream.pipe(responseStream)
+          resolve(detectContentType(ref, streamHead))
+        })
+      } catch (err) {
+        log.error(err)
+        reject(err)
+      }
     })
+
+    const res = h.response(responseStream)
+
+    // Etag maps directly to an identifier for a specific version of a resource
+    res.header('Etag', `"${data.cid}"`)
+
+    // Set headers specific to the immutable namespace
+    if (ref.startsWith('/ipfs/')) {
+      res.header('Cache-Control', 'public, max-age=29030400, immutable')
+    }
+
+    log('ref ', ref)
+    log('content-type ', contentType)
+
+    if (contentType) {
+      log('writing content-type header')
+      res.header('Content-Type', contentType)
+    }
+
+    return res
   },
 
   afterHandler (request, h) {

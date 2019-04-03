@@ -156,10 +156,15 @@ describe('HTTP Gateway', function () {
 
     expect(res.statusCode).to.equal(200)
     expect(res.rawPayload).to.eql(bigFile)
+    expect(res.headers['x-ipfs-path']).to.equal(`/ipfs/${bigFileHash}`)
+    expect(res.headers['etag']).to.equal(`"${bigFileHash}"`)
+    expect(res.headers['cache-control']).to.equal('public, max-age=29030400, immutable')
+    expect(res.headers['content-type']).to.equal('application/octet-stream')
   })
 
   it('load a jpg file', async () => {
     const kitty = 'QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ/cat.jpg'
+    const kittyDirectCid = 'Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u'
 
     const res = await gateway.inject({
       method: 'GET',
@@ -169,6 +174,7 @@ describe('HTTP Gateway', function () {
     expect(res.statusCode).to.equal(200)
     expect(res.headers['content-type']).to.equal('image/jpeg')
     expect(res.headers['x-ipfs-path']).to.equal('/ipfs/' + kitty)
+    expect(res.headers['etag']).to.equal(`"${kittyDirectCid}"`)
     expect(res.headers['cache-control']).to.equal('public, max-age=29030400, immutable')
     expect(res.headers.etag).to.equal('"Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u"')
     expect(res.headers.suborigin).to.equal('ipfs000bafybeidsg6t7ici2osxjkukisd5inixiunqdpq2q5jy4a2ruzdf6ewsqk4')
