@@ -669,8 +669,8 @@ Aside from the default export, `ipfs` exports various types and utilities that a
 - [`PeerInfo`](https://www.npmjs.com/package/peer-info)
 - [`multiaddr`](https://www.npmjs.com/package/multiaddr)
 - [`multibase`](https://www.npmjs.com/package/multibase)
-- [`multihash`](https://www.npmjs.com/package/multihash)
-- [`multihashing`](https://github.com/multiformats/js-multihashing-async/)
+- [`multihash`](https://www.npmjs.com/package/multihashes)
+- [`multihashing`](https://www.npmjs.com/package/multihashing-async)
 - [`multicodec`](https://www.npmjs.com/package/multicodec)
 - [`CID`](https://www.npmjs.com/package/cids)
 
