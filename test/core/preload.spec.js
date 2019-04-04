@@ -340,7 +340,8 @@ describe('preload disabled', function () {
       config: {
         Addresses: {
           Swarm: []
-        }
+        },
+        Bootstrap: []
       },
       preload: {
         enabled: false,
@@ -353,9 +354,15 @@ describe('preload disabled', function () {
 
   afterEach((done) => MockPreloadNode.clearPreloadCids(done))
 
-  after((done) => ipfs.stop(done))
+  after(function (done) {
+    this.timeout(50 * 1000)
+    ipfs.stop(done)
+  })
 
-  after((done) => repo.teardown(done))
+  after(function (done) {
+    this.timeout(50 * 1000)
+    repo.teardown(done)
+  })
 
   it('should not preload if disabled', (done) => {
     ipfs.add(Buffer.from(hat()), (err, res) => {

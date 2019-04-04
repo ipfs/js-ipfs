@@ -59,7 +59,18 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
   tests.key(CommonFactory.create({
     spawnOptions: {
       args: ['--pass ipfs-is-awesome-software'],
-      initOptions: { bits: 512 }
+      initOptions: { bits: 512 },
+      config: {
+        Bootstrap: [],
+        Discovery: {
+          MDNS: {
+            Enabled: false
+          },
+          webRTCStar: {
+            Enabled: false
+          }
+        }
+      }
     }
   }))
 
@@ -117,6 +128,18 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
             if (typeof config === 'function') {
               cb = config
               config = undefined
+            }
+
+            config = config || {
+              Bootstrap: [],
+              Discovery: {
+                MDNS: {
+                  Enabled: false
+                },
+                webRTCStar: {
+                  Enabled: false
+                }
+              }
             }
 
             const spawnOptions = { repoPath, config, initOptions: { bits: 512 } }
