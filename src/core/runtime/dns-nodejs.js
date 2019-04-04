@@ -5,11 +5,11 @@ const _ = require('lodash')
 const isIPFS = require('is-ipfs')
 const errcode = require('err-code')
 
-const maxRecursiveDepth = 32
+const MAX_RECURSIVE_DEPTH = 32
 
 module.exports = (domain, opts, callback) => {
   // recursive is true by default, it's set to false only if explicitly passed as argument in opts
-  const recursive = opts.recursive === undefined || opts.recursive.toString() === 'true'
+  const recursive = opts.recursive == null ? true : Boolean(opts.recursive)
 
   let depth
   if (recursive) {
