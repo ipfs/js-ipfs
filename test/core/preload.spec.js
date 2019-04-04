@@ -340,7 +340,8 @@ describe('preload disabled', function () {
       config: {
         Addresses: {
           Swarm: []
-        }
+        },
+        Bootstrap: []
       },
       preload: {
         enabled: false,
