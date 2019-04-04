@@ -34,7 +34,7 @@ You can check the development status at the [Kanban Board](https://waffle.io/ipf
 
 [![Throughput Graph](https://graphs.waffle.io/ipfs/js-ipfs/throughput.svg)](https://waffle.io/ipfs/js-ipfs/metrics/throughput)
 
-[**`Weekly Core Dev Calls`**](https://github.com/ipfs/pm/issues/650)
+[**`Weekly Core Dev Calls`**](https://github.com/ipfs/team-mgmt/issues/650)
 
 ## Tech Lead
 
