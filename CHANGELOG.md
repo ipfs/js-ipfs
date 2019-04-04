@@ -1,3 +1,20 @@
+<a name="0.35.0-rc.5"></a>
+# [0.35.0-rc.5](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.4...v0.35.0-rc.5) (2019-04-04)
+
+
+### Bug Fixes
+
+* force browserify to load Buffer module ([#1969](https://github.com/ipfs/js-ipfs/issues/1969)) ([3654e50](https://github.com/ipfs/js-ipfs/commit/3654e50))
+* stop IPNS republisher ASAP ([#1976](https://github.com/ipfs/js-ipfs/issues/1976)) ([68561c8](https://github.com/ipfs/js-ipfs/commit/68561c8))
+* update link for multihashes ([#1975](https://github.com/ipfs/js-ipfs/issues/1975)) ([4a01bf6](https://github.com/ipfs/js-ipfs/commit/4a01bf6))
+
+
+### Features
+
+* expose multihashing-async along with other deps ([#1974](https://github.com/ipfs/js-ipfs/issues/1974)) ([6667966](https://github.com/ipfs/js-ipfs/commit/6667966)), closes [#1973](https://github.com/ipfs/js-ipfs/issues/1973)
+
+
+
 <a name="0.35.0-rc.4"></a>
 # [0.35.0-rc.4](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.3...v0.35.0-rc.4) (2019-03-28)
 
