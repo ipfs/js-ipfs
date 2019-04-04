@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.35.0-rc.4",
+  "version": "0.35.0-rc.5",
   "description": "JavaScript implementation of the IPFS specification",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "bin": {
@@ -232,6 +232,7 @@
     "Heo Sangmin <heo@mapiacompany.com>",
     "Hugo Dias <mail@hugodias.me>",
     "Hugo Dias <hugomrdias@gmail.com>",
+    "Irakli Gozalishvili <contact@gozala.io>",
     "Jacob Heun <jacobheun@gmail.com>",
     "Jacob Heun <jake@andyet.net>",
     "Jade Meskill <jade.meskill@gmail.com>",
@@ -284,6 +285,7 @@
     "Yole <yole@ultiledger.io>",
     "bitspill <bitspill+github@bitspill.net>",
     "datafatmunger <jbg@peerparty.org>",
+    "dirkmc <dirk@mccormick.cx>",
     "haad <haad@headbanggames.com>",
     "jbenet <juan@benet.ai>",
     "jonahweissman <19804455+jonahweissman@users.noreply.github.com>",
