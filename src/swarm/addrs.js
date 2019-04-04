@@ -1,7 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
+const PeerInfo = require('peer-info')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const { spawnNodesWithId } = require('../utils/spawn')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -11,7 +13,7 @@ module.exports = (createCommon, options) => {
   describe('.swarm.addrs', function () {
     this.timeout(80 * 1000)
 
-    let ipfs
+    let ipfsA, ipfsB
 
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
@@ -20,10 +22,12 @@ module.exports = (createCommon, options) => {
 
       common.setup((err, factory) => {
         expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
+
+        spawnNodesWithId(2, factory, (err, nodes) => {
           expect(err).to.not.exist()
-          ipfs = node
-          done()
+          ipfsA = nodes[0]
+          ipfsB = nodes[1]
+          ipfsA.swarm.connect(ipfsB.peerId.addresses[0], done)
         })
       })
     })
@@ -31,18 +35,18 @@ module.exports = (createCommon, options) => {
     after((done) => common.teardown(done))
 
     it('should get a list of node addresses', (done) => {
-      ipfs.swarm.addrs((err, multiaddrs) => {
+      ipfsA.swarm.addrs((err, peerInfos) => {
         expect(err).to.not.exist()
-        expect(multiaddrs).to.not.be.empty()
-        expect(multiaddrs).to.be.an('array')
-        expect(multiaddrs[0].constructor.name).to.be.eql('PeerInfo')
+        expect(peerInfos).to.not.be.empty()
+        expect(peerInfos).to.be.an('array')
+        peerInfos.forEach(m => expect(PeerInfo.isPeerInfo(m)).to.be.true())
         done()
       })
     })
 
     it('should get a list of node addresses (promised)', () => {
-      return ipfs.swarm.addrs().then((multiaddrs) => {
-        expect(multiaddrs).to.have.length.above(0)
+      return ipfsA.swarm.addrs().then((peerInfos) => {
+        expect(peerInfos).to.have.length.above(0)
       })
     })
   })

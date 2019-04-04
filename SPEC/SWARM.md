@@ -13,18 +13,18 @@
 
 ##### `ipfs.swarm.addrs([callback])`
 
-`callback` must follow `function (err, addrs) {}` signature, where `err` is an error if the operation was not successful. `addrs` will be an array of [`PeerInfo`](https://github.com/libp2p/js-peer-info)s.
+`callback` must follow `function (err, peerInfos) {}` signature, where `err` is an error if the operation was not successful. `peerInfos` will be an array of [`PeerInfo`](https://github.com/libp2p/js-peer-info)s.
 
 If no `callback` is passed, a promise is returned.
 
 **Example:**
 
 ```JavaScript
-ipfs.swarm.addrs(function (err, addrs) {
+ipfs.swarm.addrs(function (err, peerInfos) {
   if (err) {
     throw err
   }
-  console.log(addrs)
+  console.log(peerInfos)
 })
 ```
 
