@@ -194,6 +194,18 @@ describe('interface-ipfs-core tests', function () {
               config = null
             }
 
+            config = config || {
+              Bootstrap: [],
+              Discovery: {
+                MDNS: {
+                  Enabled: false
+                },
+                webRTCStar: {
+                  Enabled: false
+                }
+              }
+            }
+
             const spawnOptions = { repoPath, config, initOptions: { bits: 512 } }
 
             ipfsFactory.spawn(spawnOptions, (err, _ipfsd) => {
