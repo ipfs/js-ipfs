@@ -69,7 +69,7 @@ class StandaloneDaemon {
     this._ipfs = ipfs
 
     // start HTTP servers (if API or Gateway is enabled in options)
-    const httpApi = new HttpApi(ipfs, ipfsOpts)
+    const httpApi = new HttpApi(ipfs, Object.assign({ announceListeners: true }, ipfsOpts))
     this._httpApi = await httpApi.start()
 
     this._log('started')

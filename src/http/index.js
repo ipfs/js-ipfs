@@ -77,14 +77,15 @@ class HttpApi {
     const gatewayAddrs = config.Addresses.Gateway
     this._gatewayServers = await serverCreator(gatewayAddrs, this._createGatewayServer, ipfs)
 
+    const announce = this._options.announceListeners ? ipfs._print : this._log
     this._apiServers.forEach(apiServer => {
-      ipfs._print('API listening on %s', apiServer.info.ma)
+      announce('API listening on %s', apiServer.info.ma.toString())
     })
     this._gatewayServers.forEach(gatewayServer => {
-      ipfs._print('Gateway (read only) listening on %s', gatewayServer.info.ma)
+      announce('Gateway (read only) listening on %s', gatewayServer.info.ma.toString())
     })
     this._apiServers.forEach(apiServer => {
-      ipfs._print('Web UI available at %s', toUri(apiServer.info.ma) + '/webui')
+      announce('Web UI available at %s', toUri(apiServer.info.ma) + '/webui')
     })
     this._log('started')
     return this
