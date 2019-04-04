@@ -1,3 +1,13 @@
+<a name="0.99.1"></a>
+## [0.99.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.99.0...v0.99.1) (2019-04-04)
+
+
+### Bug Fixes
+
+* swarm addrs test ([#454](https://github.com/ipfs/interface-ipfs-core/issues/454)) ([16ad830](https://github.com/ipfs/interface-ipfs-core/commit/16ad830))
+
+
+
 <a name="0.99.0"></a>
 # [0.99.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.98.1...v0.99.0) (2019-03-13)
 
