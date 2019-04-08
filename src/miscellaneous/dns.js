@@ -40,5 +40,28 @@ module.exports = (createCommon, options) => {
         done()
       })
     })
+
+    // skipping because there is an error in https://ipfs.io/api/v0/dns?arg=ipfs.io
+    // unskip when it is resolved and the new version released: https://github.com/ipfs/go-ipfs/issues/6086
+    it.skip('should non-recursively resolve ipfs.io', () => {
+      return ipfs.dns('ipfs.io', { recursive: false }).then(res => {
+      // matches pattern /ipns/<ipnsaddress>
+        expect(res).to.match(/\/ipns\/.+$/)
+      })
+    })
+
+    it('should recursively resolve ipfs.io', () => {
+      return ipfs.dns('ipfs.io', { recursive: true }).then(res => {
+      // matches pattern /ipfs/<hash>
+        expect(res).to.match(/\/ipfs\/.+$/)
+      })
+    })
+
+    it('should resolve subdomain docs.ipfs.io', () => {
+      return ipfs.dns('docs.ipfs.io').then(res => {
+      // matches pattern /ipfs/<hash>
+        expect(res).to.match(/\/ipfs\/.+$/)
+      })
+    })
   })
 }

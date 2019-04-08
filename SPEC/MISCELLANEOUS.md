@@ -59,9 +59,14 @@ A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/ma
 
 > Resolve DNS links
 
-##### `ipfs.dns(domain, [callback])`
+##### `ipfs.dns(domain, [options], [callback])`
 
-`callback` must follow `function (err, path) {}` signature, where `err` is an error if the operation was not successful. `path` is the IPFS path for that domain.
+Where:
+
+- `options` is an optional object argument that might include the following properties:
+    - `recursive` (boolean, default true): resolve until result is not a domain name
+
+- `callback` must follow `function (err, path) {}` signature, where `err` is an error if the operation was not successful. `path` is the IPFS path for that domain.
 
 If no `callback` is passed, a promise is returned.
 
