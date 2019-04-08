@@ -109,6 +109,15 @@ module.exports = (context) => {
                   return cb(err)
                 }
 
+                if (Buffer.isBuffer(result.node)) {
+                  return cb(null, {
+                    name: file.name,
+                    type: 0,
+                    hash: formatCid(file.cid, options.cidBase),
+                    size: result.node.length
+                  })
+                }
+
                 const meta = UnixFs.unmarshal(result.node.data)
 
                 cb(null, {

@@ -63,6 +63,19 @@ module.exports = (context) => {
                 node, cid
               } = result
 
+              if (Buffer.isBuffer(node)) {
+                return cb(null, {
+                  hash: formatCid(cid, options.cidBase),
+                  size: node.length,
+                  cumulativeSize: node.length,
+                  blocks: 0,
+                  type: 'file', // really?
+                  local: undefined,
+                  sizeLocal: undefined,
+                  withLocality: false
+                })
+              }
+
               const meta = unmarshal(node.data)
               let blocks = node.links.length
 

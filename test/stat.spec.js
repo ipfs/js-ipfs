@@ -5,6 +5,7 @@ const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
 const randomBytes = require('./helpers/random-bytes')
+const CID = require('cids')
 
 const {
   createMfs,
@@ -151,6 +152,56 @@ describe('stat', () => {
     expect(stats.cumulativeSize).to.equal(490800)
     expect(stats.blocks).to.equal(2)
     expect(stats.type).to.equal('file')
+  })
+
+  it('stats a raw node', async () => {
+    const filePath = '/stat/large-file.txt'
+
+    await mfs.write(filePath, largeFile, {
+      create: true,
+      parents: true,
+      rawLeaves: true
+    })
+
+    const stats = await mfs.stat(filePath)
+    const result = await mfs.ipld.get(new CID(stats.hash))
+    const node = result.value
+    const child = node.links[0]
+
+    expect(child.cid.codec).to.equal('raw')
+
+    const rawNodeStats = await mfs.stat(`/ipfs/${child.cid.toBaseEncodedString()}`)
+
+    expect(rawNodeStats.hash).to.equal(child.cid.toBaseEncodedString())
+    expect(rawNodeStats.type).to.equal('file') // this is what go does
+  })
+
+  it('stats a raw node in an mfs directory', async () => {
+    const filePath = '/stat/large-file.txt'
+
+    await mfs.write(filePath, largeFile, {
+      create: true,
+      parents: true,
+      rawLeaves: true
+    })
+
+    const stats = await mfs.stat(filePath)
+    const result = await mfs.ipld.get(new CID(stats.hash))
+    const node = result.value
+    const child = node.links[0]
+
+    expect(child.cid.codec).to.equal('raw')
+
+    const dir = `/dir-with-raw-${Date.now()}`
+    const path = `${dir}/raw-${Date.now()}`
+
+    await mfs.mkdir(dir)
+    await mfs.cp(`/ipfs/${child.cid.toBaseEncodedString()}`, path)
+
+    const rawNodeStats = await mfs.stat(path)
+
+    expect(rawNodeStats.hash).to.equal(child.cid.toBaseEncodedString())
+    expect(rawNodeStats.type).to.equal('file') // this is what go does
   })
 
   it('stats a sharded directory', async () => {

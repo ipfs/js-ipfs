@@ -6,6 +6,8 @@ chai.use(require('dirty-chai'))
 const expect = chai.expect
 const pull = require('pull-stream/pull')
 const collect = require('pull-stream/sinks/collect')
+const randomBytes = require('./helpers/random-bytes')
+const CID = require('cids')
 const {
   FILE_TYPES
 } = require('../src')
@@ -17,6 +19,7 @@ const {
 
 describe('ls', () => {
   let mfs
+  let largeFile = randomBytes(490668)
 
   before(async () => {
     mfs = await createMfs()
@@ -214,6 +217,61 @@ describe('ls', () => {
         } catch (err) {
           expect(err.message).to.contain('does not exist')
         }
+      })
+
+      it('lists a raw node', async () => {
+        const filePath = '/stat/large-file.txt'
+
+        await mfs.write(filePath, largeFile, {
+          create: true,
+          parents: true,
+          rawLeaves: true
+        })
+
+        const stats = await mfs.stat(filePath)
+        const result = await mfs.ipld.get(new CID(stats.hash))
+        const node = result.value
+        const child = node.links[0]
+
+        expect(child.cid.codec).to.equal('raw')
+
+        const rawNodeContents = await mfs.ls(`/ipfs/${child.cid}/`, {
+          long: true
+        })
+
+        expect(rawNodeContents[0].type).to.equal(0) // this is what go does
+        expect(rawNodeContents[0].hash).to.equal(child.cid.toBaseEncodedString())
+      })
+
+      it('lists a raw node in an mfs directory', async () => {
+        const filePath = '/stat/large-file.txt'
+
+        await mfs.write(filePath, largeFile, {
+          create: true,
+          parents: true,
+          rawLeaves: true
+        })
+
+        const stats = await mfs.stat(filePath)
+        const cid = new CID(stats.hash)
+        const result = await mfs.ipld.get(cid)
+        const node = result.value
+        const child = node.links[0]
+
+        expect(child.cid.codec).to.equal('raw')
+
+        const dir = `/dir-with-raw-${Date.now()}`
+        const path = `${dir}/raw-${Date.now()}`
+
+        await mfs.mkdir(dir)
+        await mfs.cp(`/ipfs/${child.cid.toBaseEncodedString()}`, path)
+
+        const rawNodeContents = await mfs.ls(path, {
+          long: true
+        })
+
+        expect(rawNodeContents[0].type).to.equal(0) // this is what go does
+        expect(rawNodeContents[0].hash).to.equal(child.cid.toBaseEncodedString())
       })
 
       it('lists a sharded directory contents', async () => {
