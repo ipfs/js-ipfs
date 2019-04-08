@@ -1,0 +1,28 @@
+language: node_js
+cache: npm
+
+stages:
+  - check
+  - test
+  - cov
+
+node_js:
+  - '10'
+
+os:
+  - linux
+  - osx
+
+script: npx nyc -s npm run test:node -- --bail
+after_success: npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
+
+jobs:
+  include:
+    - stage: check
+      script:
+        - npx aegir build --bundlesize
+        - npx aegir dep-check
+        - npm run lint
+
+notifications:
+  email: false
