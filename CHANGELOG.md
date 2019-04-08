@@ -1,3 +1,13 @@
+<a name="0.10.4"></a>
+## [0.10.4](https://github.com/ipfs/js-ipfs-mfs/compare/v0.10.3...v0.10.4) (2019-04-08)
+
+
+### Features
+
+* handle raw nodes in mfs ([#48](https://github.com/ipfs/js-ipfs-mfs/issues/48)) ([ad1df5a](https://github.com/ipfs/js-ipfs-mfs/commit/ad1df5a))
+
+
+
 <a name="0.10.3"></a>
 ## [0.10.3](https://github.com/ipfs/js-ipfs-mfs/compare/v0.10.2...v0.10.3) (2019-03-26)
 
