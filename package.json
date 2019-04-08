@@ -168,6 +168,7 @@
     "readable-stream": "^3.4.0",
     "receptacle": "^1.3.2",
     "semver": "^6.2.0",
+    "signal-exit": "^3.0.2",
     "stream-to-pull-stream": "^1.7.3",
     "superstruct": "~0.6.0",
     "tar-stream": "^2.0.0",

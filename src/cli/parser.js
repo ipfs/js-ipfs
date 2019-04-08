@@ -1,6 +1,7 @@
 'use strict'
 
 const yargs = require('yargs')
+const mfs = require('ipfs-mfs/cli')
 const utils = require('./utils')
 
 const parser = yargs
@@ -37,5 +38,8 @@ const parser = yargs
   .help()
   .strict()
   .completion()
+
+// add MFS (Files API) commands
+mfs(parser)
 
 module.exports = parser
