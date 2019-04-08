@@ -639,6 +639,7 @@ The core API is grouped into several areas:
   - [`ipfs.stop([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#stop)
   - `ipfs.isOnline()`
   - [`ipfs.resolve(name, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#resolve)
+  - [`ipfs.dns(name, [options], [callback]`](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/MISCELLANEOUS.md#dns)
 
 - [repo](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/REPO.md)
   - `ipfs.repo.init`
