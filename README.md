@@ -326,6 +326,146 @@ Enable and configure experimental features.
 
 Modify the default IPFS node config. This object will be *merged* with the default config; it will not replace it.
 
+##### `options.ipld`
+
+ | Type | Default |
+|------|---------|
+| object |  [`ipld-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/ipld-nodejs.js) in Node.js, [`ipld-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/ipld-browser.js) in browsers |
+
+ Modify the default IPLD config. This object will be *merged* with the default config; it will not replace it. Check IPLD [docs](https://github.com/ipld/js-ipld#ipld-constructor) for more information on the available options.
+
+ > Browser config does **NOT** include by default all the IPLD formats. Only `ipld-dag-pb`, `ipld-dag-cbor` and `ipld-raw` are included.
+
+ To add support for other formats we provide two options, one sync and another async.
+
+ Examples for the sync option:
+
+<details><summary>ESM Environments</summary>
+
+```js
+import ipldGit from 'ipld-git'
+import ipldBitcoin from 'ipld-bitcoin'
+
+const node = new IPFS(
+  {
+    ipld: {
+      formats: [ipldGit, ipldBitcoin]
+    }
+  }
+)
+```
+</details>
+<details><summary>Commonjs Environments</summary>
+
+```js
+const node = new IPFS(
+  {
+    ipld: {
+      formats: [require('ipld-git'), require('ipld-bitcoin')]
+    }
+  }
+)
+```
+</details>
+<details><summary>Using script tags</summary>
+
+```html
+<script src="https://unpkg.com/ipfs"></script>
+<script src="https://unpkg.com/ipld-git"></script>
+<script src="https://unpkg.com/ipld-bitcoin"></script>
+<script>
+const node = new self.IPFS(
+  {
+    ipld: {
+      formats: [self.ipldGit, self.ipldBitcoin]
+    }
+  }
+)
+</script>
+```
+</details>
+
+ Examples for the async option:
+
+
+<details><summary>ESM Environments</summary>
+
+```js
+const node = new IPFS(
+  {
+    ipld: {
+      async loadFormat (codec) {
+        if (codec === 'git-raw') {
+          return import('ipld-git') // This is a dynamic import
+        } else {
+          throw new Error('unable to load format ' + multicodec.print[codec])
+        }
+      }
+    }
+  }
+)
+```
+> For more information about dynamic imports please check [webpack docs](https://webpack.js.org/guides/code-splitting/#dynamic-imports) or search your bundler documention.
+
+Using dynamic imports will tell your bundler to create a separate file (normally called *chunk*) that will **only** be request by the browser if it's really needed. This strategy will reduce your bundle size and load times without removing any functionality.
+
+With Webpack IPLD formats can even be grouped together using magic comments `import(/* webpackChunkName: "ipld-formats" */ 'ipld-git')` to produce a single file with all of them.
+
+</details>
+<details><summary>Commonjs Environments</summary>
+
+```js
+const node = new IPFS(
+  {
+    ipld: {
+      async loadFormat (codec) {
+        if (codec === 'git-raw') {
+          return require('ipld-git')
+        } else {
+          throw new Error('unable to load format ' + multicodec.print[codec])
+        }
+      }
+    }
+  }
+)
+```
+</details>
+
+<details><summary>Using Script tags</summary>
+
+```js
+<script src="https://unpkg.com/ipfs"></script>
+<script>
+
+const load = (url, cb) => {
+  const script = document.createElement('script')
+  script.src = url
+  script.onload = () => cb()
+  script.onerror = () => cb(new Error('Unable to load script'))
+  document.body.appendChild(script);
+};
+
+const node = new self.IPFS(
+  {
+    ipld: {
+      loadFormat (codec, cb) {
+        switch (codec) {
+          case 'git-raw':
+            return load('https://unpkg.com/ipld-git', cb)
+          case 'bitcoin-block':
+            return load('https://unpkg.com/ipld-bitcoin', cb)
+          default:
+            throw new Error('unable to load format ' + multicodec.print[codec])
+        }
+      }
+    }
+  }
+)
+</script>
+```
+</details>
+
+
 ##### `options.libp2p`
 
 | Type | Default |
