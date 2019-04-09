@@ -1,3 +1,13 @@
+<a name="30.1.2"></a>
+## [30.1.2](https://github.com/ipfs/js-ipfs-http-client/compare/v30.1.1...v30.1.2) (2019-04-09)
+
+
+### Bug Fixes
+
+* https multiaddr support in constructor ([#965](https://github.com/ipfs/js-ipfs-http-client/issues/965)) ([5da0bcd](https://github.com/ipfs/js-ipfs-http-client/commit/5da0bcd))
+
+
+
 <a name="30.1.1"></a>
 ## [30.1.1](https://github.com/ipfs/js-ipfs-http-client/compare/v30.1.0...v30.1.1) (2019-03-28)
 
