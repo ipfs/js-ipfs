@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "30.1.1",
+  "version": "30.1.2",
   "description": "A client library for the IPFS HTTP API",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "main": "src/index.js",
