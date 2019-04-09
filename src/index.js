@@ -13,28 +13,26 @@ const loadCommands = require('./utils/load-commands')
 const getConfig = require('./utils/default-config')
 const sendRequest = require('./utils/send-request')
 
-function ipfsClient (hostOrMultiaddr, port, opts) {
+function ipfsClient (hostOrMultiaddr, port, userOptions) {
   // convert all three params to objects that we can merge.
-  let hostAndPort = {}
+  let options = {}
 
   if (!hostOrMultiaddr) {
     // autoconfigure host and port in browser
     if (typeof self !== 'undefined') {
-      const split = self.location.host.split(':')
-      hostAndPort.host = split[0]
-      hostAndPort.port = split[1]
+      options = urlToOptions(self.location)
     }
   } else if (multiaddr.isMultiaddr(hostOrMultiaddr)) {
-    hostAndPort = toHostAndPort(hostOrMultiaddr)
+    options = maToOptions(hostOrMultiaddr)
   } else if (typeof hostOrMultiaddr === 'object') {
-    hostAndPort = hostOrMultiaddr
+    options = hostOrMultiaddr
   } else if (typeof hostOrMultiaddr === 'string') {
     if (hostOrMultiaddr[0] === '/') {
       // throws if multiaddr is malformed or can't be converted to a nodeAddress
-      hostAndPort = toHostAndPort(multiaddr(hostOrMultiaddr))
+      options = maToOptions(multiaddr(hostOrMultiaddr))
     } else {
       // hostOrMultiaddr is domain or ip address as a string
-      hostAndPort.host = hostOrMultiaddr
+      options.host = hostOrMultiaddr
     }
   }
 
@@ -42,7 +40,7 @@ function ipfsClient (hostOrMultiaddr, port, opts) {
     port = { port: port }
   }
 
-  const config = Object.assign(getConfig(), hostAndPort, port, opts)
+  const config = Object.assign(getConfig(), options, port, userOptions)
   const requestAPI = sendRequest(config)
   const cmds = loadCommands(requestAPI, config)
   cmds.send = requestAPI
@@ -50,12 +48,25 @@ function ipfsClient (hostOrMultiaddr, port, opts) {
   return cmds
 }
 
-// throws if multiaddr can't be converted to a nodeAddress
-function toHostAndPort (multiaddr) {
+function maToOptions (multiaddr) {
+  // ma.nodeAddress() throws if multiaddr can't be converted to a nodeAddress
   const nodeAddr = multiaddr.nodeAddress()
+  const protos = multiaddr.protos()
+  // only http and https are allowed as protocol,
+  // anything else will be replaced with http
+  const exitProtocol = protos[protos.length - 1].name
   return {
     host: nodeAddr.address,
-    port: nodeAddr.port
+    port: nodeAddr.port,
+    protocol: exitProtocol.startsWith('http') ? exitProtocol : 'http'
+  }
+}
+
+function urlToOptions (url) {
+  return {
+    host: url.hostname,
+    port: url.port || (url.protocol.startsWith('https') ? 443 : 80),
+    protocol: url.protocol.startsWith('http') ? url.protocol.split(':')[0] : 'http'
   }
 }
 

@@ -30,7 +30,25 @@ describe('ipfs-http-client constructor tests', () => {
       expectConfig(ipfs, { host, port, protocol })
     })
 
-    it('mutliaddr dns4 string, opts', () => {
+    it('multiaddr dns4 string (implicit http)', () => {
+      const host = 'foo.com'
+      const port = '1001'
+      const protocol = 'http' // default to http if not specified in multiaddr
+      const addr = `/dns4/${host}/tcp/${port}`
+      const ipfs = ipfsClient(addr)
+      expectConfig(ipfs, { host, port, protocol })
+    })
+
+    it('multiaddr dns4 string (explicit https)', () => {
+      const host = 'foo.com'
+      const port = '1001'
+      const protocol = 'https'
+      const addr = `/dns4/${host}/tcp/${port}/${protocol}`
+      const ipfs = ipfsClient(addr)
+      expectConfig(ipfs, { host, port, protocol })
+    })
+
+    it('multiaddr dns4 string, explicit https in opts', () => {
       const host = 'foo.com'
       const port = '1001'
       const protocol = 'https'
@@ -39,15 +57,25 @@ describe('ipfs-http-client constructor tests', () => {
       expectConfig(ipfs, { host, port, protocol })
     })
 
-    it('mutliaddr ipv4 string', () => {
+    it('multiaddr ipv4 string (implicit http)', () => {
       const host = '101.101.101.101'
       const port = '1001'
+      const protocol = 'http'
       const addr = `/ip4/${host}/tcp/${port}`
       const ipfs = ipfsClient(addr)
-      expectConfig(ipfs, { host, port })
+      expectConfig(ipfs, { host, port, protocol })
     })
 
-    it('mutliaddr instance', () => {
+    it('multiaddr ipv4 string (explicit https)', () => {
+      const host = '101.101.101.101'
+      const port = '1001'
+      const protocol = 'https'
+      const addr = `/ip4/${host}/tcp/${port}/${protocol}`
+      const ipfs = ipfsClient(addr)
+      expectConfig(ipfs, { host, port, protocol })
+    })
+
+    it('multiaddr instance', () => {
       const host = 'ace.place'
       const port = '1001'
       const addr = multiaddr(`/dns4/${host}/tcp/${port}`)
@@ -70,7 +98,7 @@ describe('ipfs-http-client constructor tests', () => {
       expectConfig(ipfs, { host, port, apiPath })
     })
 
-    it('throws on invalid mutliaddr', () => {
+    it('throws on invalid multiaddr', () => {
       expect(() => ipfsClient('/dns4')).to.throw('invalid address')
       expect(() => ipfsClient('/hello')).to.throw('no protocol with name')
       expect(() => ipfsClient('/dns4/ipfs.io')).to.throw('multiaddr must have a valid format')

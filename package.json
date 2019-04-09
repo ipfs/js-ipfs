@@ -40,7 +40,7 @@
     "is-ipfs": "~0.6.0",
     "is-pull-stream": "0.0.0",
     "is-stream": "^1.1.0",
-    "iso-stream-http": "~0.1.1",
+    "iso-stream-http": "~0.1.2",
     "iso-url": "~0.4.6",
     "just-kebab-case": "^1.1.0",
     "just-map-keys": "^1.1.0",
