@@ -407,7 +407,7 @@ const node = new IPFS(
 ```
 > For more information about dynamic imports please check [webpack docs](https://webpack.js.org/guides/code-splitting/#dynamic-imports) or search your bundler documention.
 
-Using dynamic imports will tell your bundler to create a separate file (normally called *chunk*) that will **only** be request by the browser if it's really needed. This strategy will reduce your bundle size and load times without removing any functionality.
+Using dynamic imports will tell your bundler to create a separate file (normally called *chunk*) that will **only** be requested by the browser if it's really needed. This strategy will reduce your bundle size and load times without removing any functionality.
 
 With Webpack IPLD formats can even be grouped together using magic comments `import(/* webpackChunkName: "ipld-formats" */ 'ipld-git')` to produce a single file with all of them.
 
