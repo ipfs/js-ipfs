@@ -17,15 +17,6 @@ module.exports = function libp2p (self, config) {
   const peerInfo = self._peerInfo
   const peerBook = self._peerInfoBook
   const libp2p = createBundle({ options, config, datastore, peerInfo, peerBook })
-  let discoveredPeers = []
-
-  const noop = () => {}
-  const putAndDial = peerInfo => {
-    peerInfo = peerBook.put(peerInfo)
-    if (!peerInfo.isConnected()) {
-      libp2p.dial(peerInfo, noop)
-    }
-  }
 
   libp2p.on('stop', () => {
     // Clear our addresses so we can start clean
@@ -36,16 +27,6 @@ module.exports = function libp2p (self, config) {
     peerInfo.multiaddrs.forEach((ma) => {
       self._print('Swarm listening on', ma.toString())
     })
-    discoveredPeers.forEach(putAndDial)
-    discoveredPeers = []
-  })
-
-  libp2p.on('peer:discovery', (peerInfo) => {
-    if (self.isOnline()) {
-      putAndDial(peerInfo)
-    } else {
-      discoveredPeers.push(peerInfo)
-    }
   })
 
   libp2p.on('peer:connect', peerInfo => peerBook.put(peerInfo))
@@ -108,7 +89,6 @@ function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
   }
 
   const libp2pOptions = mergeOptions(libp2pDefaults, get(options, 'libp2p', {}))
-
   // Required inline to reduce startup time
   // Note: libp2p-nodejs gets replaced by libp2p-browser when webpacked/browserified
   const Node = require('../runtime/libp2p-nodejs')
