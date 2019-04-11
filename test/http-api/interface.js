@@ -81,11 +81,15 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
     skip: [
       {
         name: 'should resolve an IPNS DNS link',
-        reason: 'TODO IPNS not implemented yet'
+        reason: 'TODO: IPNS resolve not yet implemented https://github.com/ipfs/js-ipfs/issues/1918'
       },
       {
         name: 'should resolve IPNS link recursively',
-        reason: 'TODO IPNS not implemented yet'
+        reason: 'TODO: IPNS resolve not yet implemented https://github.com/ipfs/js-ipfs/issues/1918'
+      },
+      {
+        name: 'should recursively resolve ipfs.io',
+        reason: 'TODO: ipfs.io dnslink=/ipns/website.ipfs.io & IPNS resolve not yet implemented https://github.com/ipfs/js-ipfs/issues/1918'
       }
     ]
   })
