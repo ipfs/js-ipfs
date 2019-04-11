@@ -34,6 +34,8 @@ You can check the development status at the [Kanban Board](https://waffle.io/ipf
 
 [![Throughput Graph](https://graphs.waffle.io/ipfs/js-ipfs/throughput.svg)](https://waffle.io/ipfs/js-ipfs/metrics/throughput)
 
+**Please read this:** The [DHT](https://en.wikipedia.org/wiki/Distributed_hash_table), a fundamental piece for automatic content and peer discovery is not yet complete. There are multiple applications that can be built without this service but nevertheless it is fundamental to getting that magic IPFS experience. The current status is that implementation is done and merged and we're working on performance issues. Expect the DHT to be available in a release very soon.
+
 [**`Weekly Core Dev Calls`**](https://github.com/ipfs/team-mgmt/issues/650)
 
 ## Tech Lead
@@ -343,8 +345,8 @@ You can see the bundle in action in the [custom libp2p example](examples/custom-
         - `[PeerDiscovery.tag]` (object): configuration for a peer discovery module
             - `enabled` (boolean): whether this module is enabled or disabled
             - `[custom config]` (any): other keys are specific to the module
-    - `dht` (object): Configuration options for the DHT
-        - `enabled` (boolean): whether the DHT is enabled or not (default `true` in Node.js and `false` in the browser)
+    - `dht` (object): Configuration options for the DHT (WARNING: the current DHT implementation has performance issues, your mileage may vary)
+        - `enabled` (boolean): whether the DHT is enabled or not (default `false`)
         - `kBucketSize` (number): bucket size (default `20`)
         - `randomWalk` (object): configuration for random walk
             - `enabled` (boolean): whether random DHT walking is enabled (default `false`)
