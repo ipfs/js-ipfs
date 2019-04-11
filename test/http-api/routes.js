@@ -6,7 +6,7 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 chai.use(dirtyChai)
 const hat = require('hat')
-const API = require('../../src/http/index')
+const StandaloneDaemon = require('../../src/cli/standalone-daemon')
 const promisify = require('promisify-es6')
 const ncp = promisify(require('ncp').ncp)
 const path = require('path')
@@ -22,7 +22,7 @@ describe('HTTP API', () => {
   let http = {}
 
   const startHttpAPI = async (config) => {
-    http.api = new API({
+    http.api = new StandaloneDaemon({
       repo: repoTests,
       pass: hat(),
       config,

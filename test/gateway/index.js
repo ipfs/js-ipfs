@@ -5,7 +5,7 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-const API = require('../../src/http')
+const StandaloneDaemon = require('../../src/cli/standalone-daemon')
 const loadFixture = require('aegir/fixtures')
 const os = require('os')
 const path = require('path')
@@ -33,7 +33,7 @@ describe('HTTP Gateway', function () {
     this.timeout(60 * 1000)
     const repoPath = path.join(os.tmpdir(), '/ipfs-' + hat())
 
-    http.api = new API({
+    http.api = new StandaloneDaemon({
       repo: repoPath,
       init: true,
       config: {
@@ -60,7 +60,7 @@ describe('HTTP Gateway', function () {
 
     await http.api.start()
 
-    gateway = http.api._gatewayServers[0]
+    gateway = http.api._httpApi._gatewayServers[0]
 
     // QmbQD7EMEL1zeebwBsWEfA3ndgSS6F7S6iTuwuqasPgVRi
     await http.api._ipfs.add([

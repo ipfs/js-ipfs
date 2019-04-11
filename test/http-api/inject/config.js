@@ -17,7 +17,7 @@ module.exports = (http) => {
 
     before(() => {
       updatedConfig = () => JSON.parse(fs.readFileSync(configPath, 'utf8'))
-      api = http.api._apiServers[0]
+      api = http.api._httpApi._apiServers[0]
     })
 
     after(() => {
