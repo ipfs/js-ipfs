@@ -340,6 +340,7 @@ You can see the bundle in action in the [custom libp2p example](examples/custom-
     - `peerDiscovery` (Array<[libp2p.PeerDiscovery](https://github.com/libp2p/interface-peer-discovery)>): An array of Libp2p peer discovery classes/instances to use _instead_ of the defaults. See [libp2p/peer-discovery](https://github.com/libp2p/interface-peer-discovery) for details. If passing a class, configuration can be passed using the config section below under the key corresponding to you module's unique `tag` (a static property on the class)
 - `config` (object):
     - `peerDiscovery` (object):
+        - `autoDial` (boolean): Dial to discovered peers when under the Connection Manager min peer count watermark. (default `true`)
         - `[PeerDiscovery.tag]` (object): configuration for a peer discovery module
             - `enabled` (boolean): whether this module is enabled or disabled
             - `[custom config]` (any): other keys are specific to the module

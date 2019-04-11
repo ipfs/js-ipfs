@@ -44,7 +44,8 @@ const libp2pBundle = (opts) => {
     peerBook,
     // Lets limit the connection managers peers and have it check peer health less frequently
     connectionManager: {
-      maxPeers: 25,
+      minPeers: 25,
+      maxPeers: 100,
       pollInterval: 5000
     },
     modules: {
@@ -68,12 +69,13 @@ const libp2pBundle = (opts) => {
     },
     config: {
       peerDiscovery: {
+        autoDial: true, // auto dial to peers we find when we have less peers than `connectionManager.minPeers`
         mdns: {
           interval: 10000,
           enabled: true
         },
         bootstrap: {
-          interval: 10000,
+          interval: 30e3,
           enabled: true,
           list: bootstrapList
         }
@@ -87,10 +89,15 @@ const libp2pBundle = (opts) => {
         }
       },
       dht: {
-        kBucketSize: 20
+        enabled: true,
+        kBucketSize: 20,
+        randomWalk: {
+          enabled: true,
+          interval: 10e3, // This is set low intentionally, so more peers are discovered quickly. Higher intervals are recommended
+          timeout: 2e3 // End the query quickly since we're running so frequently
+        }
       },
       EXPERIMENTAL: {
-        dht: true,
         pubsub: true
       }
     }

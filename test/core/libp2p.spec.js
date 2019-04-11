@@ -106,7 +106,9 @@ describe('libp2p customization', function () {
 
       _libp2p.start((err) => {
         expect(err).to.not.exist()
-        expect(_libp2p._config).to.not.have.property('peerDiscovery')
+        expect(_libp2p._config.peerDiscovery).to.eql({
+          autoDial: true
+        })
         expect(_libp2p._transport).to.have.length(1)
         done()
       })
@@ -130,6 +132,7 @@ describe('libp2p customization', function () {
         expect(err).to.not.exist()
         expect(_libp2p._config).to.deep.include({
           peerDiscovery: {
+            autoDial: true,
             bootstrap: {
               enabled: true,
               list: []
@@ -193,6 +196,7 @@ describe('libp2p customization', function () {
         expect(err).to.not.exist()
         expect(_libp2p._config).to.deep.include({
           peerDiscovery: {
+            autoDial: true,
             bootstrap: {
               enabled: true,
               list: []
