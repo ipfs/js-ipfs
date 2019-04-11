@@ -117,7 +117,8 @@ describe('daemon', () => {
         out += data
         if (out.includes('Daemon is ready')) {
           res.stdout.removeListener('data', onData)
-          res.then(() => resolve(out)).catch(reject)
+          const onKilled = () => resolve(out)
+          res.then(onKilled).catch(onKilled)
           res.kill()
         }
       })
@@ -142,7 +143,8 @@ describe('daemon', () => {
         out += data
         if (out.includes('Daemon is ready')) {
           res.stdout.removeListener('data', onData)
-          res.then(() => resolve(out)).catch(reject)
+          const onKilled = () => resolve(out)
+          res.then(onKilled).catch(onKilled)
           res.kill()
         }
       })
