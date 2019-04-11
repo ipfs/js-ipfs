@@ -26,6 +26,7 @@
     "bignumber.js": "^8.0.2",
     "bl": "^3.0.0",
     "bs58": "^4.0.1",
+    "buffer": "^5.2.1",
     "cids": "~0.5.5",
     "concat-stream": "hugomrdias/concat-stream#feat/smaller",
     "debug": "^4.1.0",

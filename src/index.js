@@ -2,6 +2,7 @@
 /* global self */
 
 const isIPFS = require('is-ipfs')
+const { Buffer } = require('buffer')
 const CID = require('cids')
 const multiaddr = require('multiaddr')
 const multibase = require('multibase')
