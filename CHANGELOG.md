@@ -1,3 +1,19 @@
+<a name="0.35.0-rc.6"></a>
+# [0.35.0-rc.6](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.5...v0.35.0-rc.6) (2019-04-11)
+
+
+### Bug Fixes
+
+* avoid logging http errors when its logger is not on ([#1977](https://github.com/ipfs/js-ipfs/issues/1977)) ([20beea2](https://github.com/ipfs/js-ipfs/commit/20beea2))
+
+
+### Features
+
+* recursive dnslink lookups ([#1935](https://github.com/ipfs/js-ipfs/issues/1935)) ([d5a1b89](https://github.com/ipfs/js-ipfs/commit/d5a1b89))
+* use libp2p auto dial ([#1983](https://github.com/ipfs/js-ipfs/issues/1983)) ([7f1fb26](https://github.com/ipfs/js-ipfs/commit/7f1fb26))
+
+
+
 <a name="0.35.0-rc.5"></a>
 # [0.35.0-rc.5](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.4...v0.35.0-rc.5) (2019-04-04)
 
