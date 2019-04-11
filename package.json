@@ -69,6 +69,7 @@
     "async-iterator-to-stream": "^1.1.0",
     "base32.js": "~0.1.0",
     "bignumber.js": "^9.0.0",
+    "async-exit-hook": "^2.0.1",
     "binary-querystring": "~0.1.2",
     "bl": "^3.0.0",
     "bs58": "^4.0.1",
