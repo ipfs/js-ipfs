@@ -16,6 +16,9 @@ const series = require('async/series')
 const isNode = require('detect-node')
 const IPFS = require('../../src')
 const ipnsPath = require('../../src/core/ipns/path')
+const ipnsRouting = require('../../src/core/ipns/routing/config')
+const OfflineDatastore = require('../../src/core/ipns/routing/offline-datastore')
+const PubsubDatastore = require('../../src/core/ipns/routing/pubsub-datastore')
 const { Key } = require('interface-datastore')
 
 const DaemonFactory = require('ipfsd-ctl')
@@ -530,6 +533,88 @@ describe('name', function () {
           })
         })
       })
+    })
+  })
+
+  describe('ipns.routing', function () {
+    it('should use only the offline datastore by default', function (done) {
+      const ipfs = {}
+      const config = ipnsRouting(ipfs)
+
+      expect(config.stores).to.have.lengthOf(1)
+      expect(config.stores[0] instanceof OfflineDatastore).to.eql(true)
+
+      done()
+    })
+
+    it('should use only the offline datastore if offline', function (done) {
+      const ipfs = {
+        _options: {
+          offline: true
+        }
+      }
+      const config = ipnsRouting(ipfs)
+
+      expect(config.stores).to.have.lengthOf(1)
+      expect(config.stores[0] instanceof OfflineDatastore).to.eql(true)
+
+      done()
+    })
+
+    it('should use the pubsub datastore if enabled', function (done) {
+      const ipfs = {
+        libp2p: {
+          pubsub: {}
+        },
+        _peerInfo: {
+          id: {}
+        },
+        _repo: {
+          datastore: {}
+        },
+        _options: {
+          EXPERIMENTAL: {
+            ipnsPubsub: true
+          }
+        }
+      }
+      const config = ipnsRouting(ipfs)
+
+      expect(config.stores).to.have.lengthOf(2)
+      expect(config.stores[0] instanceof PubsubDatastore).to.eql(true)
+      expect(config.stores[1] instanceof OfflineDatastore).to.eql(true)
+
+      done()
+    })
+
+    it('should use the dht if enabled', function (done) {
+      const dht = {}
+
+      const ipfs = {
+        libp2p: {
+          dht
+        },
+        _peerInfo: {
+          id: {}
+        },
+        _repo: {
+          datastore: {}
+        },
+        _options: {
+          libp2p: {
+            dht: {
+              enabled: true
+            }
+          }
+        }
+      }
+
+      const config = ipnsRouting(ipfs)
+
+      expect(config.stores).to.have.lengthOf(1)
+      expect(config.stores[0]).to.eql(dht)
+
+      done()
     })
   })
 })
