@@ -1,3 +1,13 @@
+<a name="30.1.3"></a>
+## [30.1.3](https://github.com/ipfs/js-ipfs-http-client/compare/v30.1.2...v30.1.3) (2019-04-11)
+
+
+### Bug Fixes
+
+* fix missing buffer bundling with browserify ([#966](https://github.com/ipfs/js-ipfs-http-client/issues/966)) ([944a64b](https://github.com/ipfs/js-ipfs-http-client/commit/944a64b)), closes [#964](https://github.com/ipfs/js-ipfs-http-client/issues/964)
+
+
+
 <a name="30.1.2"></a>
 ## [30.1.2](https://github.com/ipfs/js-ipfs-http-client/compare/v30.1.1...v30.1.2) (2019-04-09)
 
