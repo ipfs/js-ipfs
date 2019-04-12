@@ -22,6 +22,13 @@ class Node extends libp2p {
     const wsstar = new WebSocketStarMulti({ servers: wsstarServers, id: _options.peerInfo.id, ignore_no_online: !wsstarServers.length || _options.wsStarIgnoreErrors })
 
     const defaults = {
+      switch: {
+        blacklistTTL: 2 * 60 * 1e3, // 2 minute base
+        blackListAttempts: 5, // back off 5 times
+        maxParallelDials: 100,
+        maxColdCalls: 25,
+        dialTimeout: 20e3
+      },
       modules: {
         transport: [
           WS,
