@@ -194,7 +194,8 @@ describe('ping', function () {
     })
   })
 
-  describe('DHT enabled', function () {
+  // TODO: unskip when DHT enabled in 0.36
+  describe.skip('DHT enabled', function () {
     // Our bootstrap process will run 3 IPFS daemons where
     // A ----> B ----> C
     // Allowing us to test the ping command using the DHT peer routing
