@@ -1,3 +1,29 @@
+<a name="0.35.0-rc.7"></a>
+# [0.35.0-rc.7](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.6...v0.35.0-rc.7) (2019-04-12)
+
+
+### Bug Fixes
+
+* flakey windows test ([#1987](https://github.com/ipfs/js-ipfs/issues/1987)) ([9708c0a](https://github.com/ipfs/js-ipfs/commit/9708c0a))
+* really disable DHT ([#1991](https://github.com/ipfs/js-ipfs/issues/1991)) ([2470be8](https://github.com/ipfs/js-ipfs/commit/2470be8))
+* remove non default ipld formats in the browser ([#1980](https://github.com/ipfs/js-ipfs/issues/1980)) ([4376121](https://github.com/ipfs/js-ipfs/commit/4376121))
+
+
+### BREAKING CHANGES
+
+* Browser application bundles now include only `ipld-dag-pb`, `ipld-dag-cbor` and `ipld-raw` IPLD codecs. Other codecs should be added manually, see https://github.com/ipfs/js-ipfs/blob/master/README.md#optionsipld for details.
+
+* In Node.js `require('ipfs')`
+    * all IPLD formats included
+* In browser application bundle `require('ipfs')` bundled with webpack/browserify/etc.
+    * only `ipld-dag-pb`, `ipld-dag-cbor` and `ipld-raw` included
+* CDN bundle `<script src="https://unpkg.com/ipfs/dist/index.min.js"></script>`
+    * all IPLD formats included
+
+Co-Authored-By: hugomrdias <mail@hugodias.me>
+
+
+
 <a name="0.35.0-rc.6"></a>
 # [0.35.0-rc.6](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.5...v0.35.0-rc.6) (2019-04-11)
 
