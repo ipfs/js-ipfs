@@ -55,7 +55,7 @@ In alphabetical order, here are all the humans that contributed to the release:
 
 Would you like to contribute to the IPFS project and don't know how? Well, there are a few places you can get started:
 
-- Check the issues with the `help wanted` label at the Ready column in our waffle board - https://waffle.io/ipfs/js-ipfs?label=help%20wanted
+- Check the issues with the `help wanted` label in the [js-ipfs repo](https://github.com/ipfs/js-ipfs/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)
 - Join an IPFS All Hands, introduce yourself and let us know where you would like to contribute - https://github.com/ipfs/team-mgmt/#weekly-ipfs-all-hands
 - Hack with IPFS and show us what you made! The All Hands call is also the perfect venue for demos, join in and show us what you built
 - Join the discussion at http://discuss.ipfs.io/ and help users finding their answers.
