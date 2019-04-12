@@ -109,7 +109,7 @@ describe('daemon', () => {
     await ipfs('config', 'Addresses.API', JSON.stringify(apiAddrs), '--json')
     await ipfs('config', 'Addresses.Gateway', JSON.stringify(gatewayAddrs), '--json')
 
-    const out = await new Promise(resolve => {
+    const out = await new Promise((resolve, reject) => {
       const res = ipfs('daemon')
       let out = ''
 
@@ -117,8 +117,9 @@ describe('daemon', () => {
         out += data
         if (out.includes('Daemon is ready')) {
           res.stdout.removeListener('data', onData)
+          const onKilled = () => resolve(out)
+          res.then(onKilled).catch(onKilled)
           res.kill()
-          resolve(out)
         }
       })
     })
@@ -134,7 +135,7 @@ describe('daemon', () => {
     await ipfs('config', 'Addresses.API', '[]', '--json')
     await ipfs('config', 'Addresses.Gateway', '[]', '--json')
 
-    const out = await new Promise(resolve => {
+    const out = await new Promise((resolve, reject) => {
       const res = ipfs('daemon')
       let out = ''
 
@@ -142,8 +143,9 @@ describe('daemon', () => {
         out += data
         if (out.includes('Daemon is ready')) {
           res.stdout.removeListener('data', onData)
+          const onKilled = () => resolve(out)
+          res.then(onKilled).catch(onKilled)
           res.kill()
-          resolve(out)
         }
       })
     })
