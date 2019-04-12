@@ -12,7 +12,7 @@ module.exports = (http) => {
     let api
 
     before(() => {
-      api = http.api._apiServers[0]
+      api = http.api._httpApi._apiServers[0]
     })
 
     it('should resolve a path and return a base2 encoded CID', async () => {

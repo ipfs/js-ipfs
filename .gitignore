@@ -6,6 +6,8 @@ docs
 # Logs
 logs
 *.log
+# npm pack
+*.tgz
 
 coverage
 

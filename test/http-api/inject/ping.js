@@ -13,7 +13,7 @@ module.exports = (http) => {
     let api
 
     before(() => {
-      api = http.api._apiServers[0]
+      api = http.api._httpApi._apiServers[0]
     })
 
     it('returns 400 if both n and count are provided', async () => {
