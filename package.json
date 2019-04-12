@@ -21,6 +21,9 @@
     "stream": "readable-stream",
     "joi": "joi-browser"
   },
+  "browser-all-ipld-formats": {
+    "./src/core/runtime/ipld-browser.js": "./src/core/runtime/ipld-browser-all.js"
+  },
   "engines": {
     "node": ">=10.0.0",
     "npm": ">=6.0.0"
