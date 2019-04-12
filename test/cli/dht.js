@@ -31,7 +31,8 @@ const daemonOpts = {
   initOptions: { bits: 512 }
 }
 
-describe('dht', () => {
+// TODO: unskip when DHT is enabled in 0.36
+describe.skip('dht', () => {
   let nodes = []
   let ipfsA
   let ipfsB
