@@ -1,6 +1,7 @@
 'use strict'
 
 const os = require('os')
+const toUri = require('multiaddr-to-uri')
 const { getRepoPath, print, ipfsPathHelp } = require('../utils')
 
 module.exports = {
@@ -44,8 +45,8 @@ module.exports = {
       const repoPath = getRepoPath()
 
       // Required inline to reduce startup time
-      const StandaloneDaemon = require('../../cli/standalone-daemon')
-      const daemon = new StandaloneDaemon({
+      const Daemon = require('../../cli/daemon')
+      const daemon = new Daemon({
         silent: argv.silent,
         repo: process.env.IPFS_PATH,
         offline: argv.offline,
@@ -61,6 +62,15 @@ module.exports = {
 
       try {
         await daemon.start()
+        daemon._httpApi._apiServers.forEach(apiServer => {
+          print(`API listening on ${apiServer.info.ma.toString()}`)
+        })
+        daemon._httpApi._gatewayServers.forEach(gatewayServer => {
+          print(`Gateway (read only) listening on ${gatewayServer.info.ma.toString()}`)
+        })
+        daemon._httpApi._apiServers.forEach(apiServer => {
+          print(`Web UI available at ${toUri(apiServer.info.ma)}/webui`)
+        })
       } catch (err) {
         if (err.code === 'ENOENT' && err.message.match(/uninitialized/i)) {
           print('Error: no initialized ipfs repo found in ' + repoPath)

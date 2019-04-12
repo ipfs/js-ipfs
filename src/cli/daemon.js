@@ -9,8 +9,9 @@ const TCP = require('libp2p-tcp')
 const MulticastDNS = require('libp2p-mdns')
 const WS = require('libp2p-websockets')
 const Bootstrap = require('libp2p-bootstrap')
+const promisify = require('promisify-es6')
 
-class StandaloneDaemon {
+class Daemon {
   constructor (options) {
     this._options = options || {}
     this._log = debug('ipfs:daemon')
@@ -69,8 +70,13 @@ class StandaloneDaemon {
     this._ipfs = ipfs
 
     // start HTTP servers (if API or Gateway is enabled in options)
-    const httpApi = new HttpApi(ipfs, Object.assign({ announceListeners: true }, ipfsOpts))
+    const httpApi = new HttpApi(ipfs, ipfsOpts)
     this._httpApi = await httpApi.start()
+
+    // for the CLI to know the where abouts of the API
+    if (this._httpApi._apiServers.length) {
+      await promisify(ipfs._repo.apiAddr.set)(this._httpApi._apiServers[0].info.ma)
+    }
 
     this._log('started')
     return this
@@ -87,4 +93,4 @@ class StandaloneDaemon {
   }
 }
 
-module.exports = StandaloneDaemon
+module.exports = Daemon

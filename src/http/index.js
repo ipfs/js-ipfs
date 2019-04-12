@@ -4,8 +4,6 @@ const Hapi = require('hapi')
 const Pino = require('hapi-pino')
 const debug = require('debug')
 const multiaddr = require('multiaddr')
-const promisify = require('promisify-es6')
-const toUri = require('multiaddr-to-uri')
 const toMultiaddr = require('uri-to-multiaddr')
 
 const errorHandler = require('./error-handler')
@@ -69,24 +67,9 @@ class HttpApi {
     const apiAddrs = config.Addresses.API
     this._apiServers = await serverCreator(apiAddrs, this._createApiServer, ipfs)
 
-    // for the CLI to know the where abouts of the API
-    if (this._apiServers.length) {
-      await promisify(ipfs._repo.apiAddr.set)(this._apiServers[0].info.ma)
-    }
-
     const gatewayAddrs = config.Addresses.Gateway
     this._gatewayServers = await serverCreator(gatewayAddrs, this._createGatewayServer, ipfs)
 
-    const announce = this._options.announceListeners ? ipfs._print : this._log
-    this._apiServers.forEach(apiServer => {
-      announce('API listening on %s', apiServer.info.ma.toString())
-    })
-    this._gatewayServers.forEach(gatewayServer => {
-      announce('Gateway (read only) listening on %s', gatewayServer.info.ma.toString())
-    })
-    this._apiServers.forEach(apiServer => {
-      announce('Web UI available at %s', toUri(apiServer.info.ma) + '/webui')
-    })
     this._log('started')
     return this
   }
