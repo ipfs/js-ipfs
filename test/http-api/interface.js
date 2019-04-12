@@ -43,13 +43,9 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
       }
     }
   }), {
-    skip: [
-      // dht.get
-      {
-        name: 'should get a value after it was put on another node',
-        reason: 'Needs https://github.com/ipfs/interface-ipfs-core/pull/383'
-      }
-    ]
+    skip: {
+      reason: 'TODO: unskip when DHT is enabled in 0.36'
+    }
   })
 
   tests.filesRegular(defaultCommonFactory)

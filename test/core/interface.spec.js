@@ -52,13 +52,9 @@ describe('interface-ipfs-core tests', function () {
       initOptions: { bits: 512 }
     }
   }), {
-    skip: isNode ? [
-      // dht.get
-      {
-        name: 'should get a value after it was put on another node',
-        reason: 'Needs https://github.com/ipfs/interface-ipfs-core/pull/383'
-      }
-    ] : true
+    skip: {
+      reason: 'TODO: unskip when DHT is enabled in 0.36'
+    }
   })
 
   tests.filesRegular(defaultCommonFactory, {
