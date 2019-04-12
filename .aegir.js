@@ -10,7 +10,8 @@ const preloadNode = MockPreloadNode.createNode()
 module.exports = {
   webpack: {
     resolve: {
-      mainFields: ['browser', 'main']
+      mainFields: ['browser', 'main'],
+      aliasFields: ['browser', 'browser-all-ipld-formats'],
     }
   },
   karma: {
