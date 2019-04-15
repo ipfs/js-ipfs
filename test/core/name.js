@@ -196,8 +196,7 @@ describe('name', function () {
     })
   })
 
-  // TODO: unskip when DHT is enabled in 0.36
-  describe.skip('work with dht', () => {
+  describe('work with dht', () => {
     let nodes
     let nodeA
     let nodeB

@@ -28,8 +28,8 @@ module.exports = () => ({
   ],
   Swarm: {
     ConnMgr: {
-      LowWater: 200,
-      HighWater: 500
+      LowWater: 20,
+      HighWater: 50
     }
   }
 })
