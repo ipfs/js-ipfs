@@ -86,9 +86,9 @@ If no `callback` is passed, a promise is returned.
 In the browser, assuming `ipfs = new Ipfs(...)`:
 
 ```js
-let content = ipfs.types.Buffer.from('ABC');
-let results = await ipfs.files.add(content);
-let hash = results[0].hash; // "Qm...WW"
+const content = Ipfs.Buffer.from('ABC')
+const results = await ipfs.files.add(content)
+const hash = results[0].hash // "Qm...WW"
 ```
 
 Now [ipfs.io/ipfs/Qm...WW](https://ipfs.io/ipfs/QmNz1UBzpdd4HfZ3qir3aPiRdX5a93XwTuDNyXRc6PKhWW)
@@ -100,11 +100,11 @@ The following allows you to add multiple files at once. Note that intermediate d
 const files = [
   {
     path: '/tmp/myfile.txt',
-    content:  ipfs.types.Buffer.from('ABC')
+    content:  Ipfs.Buffer.from('ABC')
   }
 ]
 
-const results = await ipfs.files.add(files);
+const results = await ipfs.files.add(files)
 ```
 
 The `results` array:
