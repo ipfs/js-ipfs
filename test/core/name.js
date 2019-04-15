@@ -537,8 +537,16 @@ describe('name', function () {
   })
 
   describe('ipns.routing', function () {
-    it('should use only the offline datastore by default', function (done) {
-      const ipfs = {}
+    it('should use offline datastore if DHT is disabled', function (done) {
+      const ipfs = {
+        _options: {
+          libp2p: {
+            dht: {
+              enabled: false
+            }
+          }
+        }
+      }
       const config = ipnsRouting(ipfs)
 
       expect(config.stores).to.have.lengthOf(1)
@@ -562,8 +570,11 @@ describe('name', function () {
     })
 
     it('should use the pubsub datastore if enabled', function (done) {
+      const dht = {}
+
       const ipfs = {
         libp2p: {
+          dht,
           pubsub: {}
         },
         _peerInfo: {
@@ -581,8 +592,8 @@ describe('name', function () {
       const config = ipnsRouting(ipfs)
 
       expect(config.stores).to.have.lengthOf(2)
-      expect(config.stores[0] instanceof PubsubDatastore).to.eql(true)
-      expect(config.stores[1] instanceof OfflineDatastore).to.eql(true)
+      expect(config.stores.some(s => s instanceof PubsubDatastore)).to.eql(true)
+      expect(config.stores).to.include(dht)
 
       done()
     })
@@ -609,6 +620,17 @@ describe('name', function () {
         }
       }
 
+      const config = ipnsRouting(ipfs)
+
+      expect(config.stores).to.have.lengthOf(1)
+      expect(config.stores[0]).to.eql(dht)
+
+      done()
+    })
+
+    it('should use the dht by default', function (done) {
+      const dht = {}
+      const ipfs = { libp2p: { dht } }
       const config = ipnsRouting(ipfs)
 
       expect(config.stores).to.have.lengthOf(1)

@@ -22,7 +22,7 @@ module.exports = (ipfs) => {
   }
 
   // DHT should not be added as routing if we are offline or it is disabled
-  if (get(ipfs._options, 'offline') || !get(ipfs._options, 'libp2p.dht.enabled', false)) {
+  if (get(ipfs._options, 'offline') || !get(ipfs._options, 'libp2p.dht.enabled', true)) {
     const offlineDatastore = new OfflineDatastore(ipfs._repo)
     ipnsStores.push(offlineDatastore)
   } else {
