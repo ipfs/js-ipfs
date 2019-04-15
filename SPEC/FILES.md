@@ -87,7 +87,7 @@ In the browser, assuming `ipfs = new Ipfs(...)`:
 
 ```js
 const content = Ipfs.Buffer.from('ABC')
-const results = await ipfs.files.add(content)
+const results = await ipfs.add(content)
 const hash = results[0].hash // "Qm...WW"
 ```
 
@@ -104,7 +104,7 @@ const files = [
   }
 ]
 
-const results = await ipfs.files.add(files)
+const results = await ipfs.add(files)
 ```
 
 The `results` array:
@@ -272,7 +272,7 @@ ipfs.addFromURL('http://example.com/', (err, result) => {
 
 ##### `ipfs.addFromStream(stream, [callback])`
 
-This is very similar to `ipfs.files.add({ path:'', content: stream })`. It is like the reverse of cat.
+This is very similar to `ipfs.add({ path:'', content: stream })`. It is like the reverse of cat.
 
 ```JavaScript
 ipfs.addFromStream(<readable-stream>, (err, result) => {
