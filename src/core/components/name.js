@@ -7,6 +7,9 @@ const parallel = require('async/parallel')
 const human = require('human-to-milliseconds')
 const crypto = require('libp2p-crypto')
 const errcode = require('err-code')
+const mergeOptions = require('merge-options')
+const mh = require('multihashes')
+const isDomain = require('is-domain-name')
 
 const log = debug('ipfs:name')
 log.error = debug('ipfs:name:error')
@@ -35,6 +38,16 @@ const keyLookup = (ipfsNode, kname, callback) => {
   })
 }
 
+/**
+ * @typedef { import("../index") } IPFS
+ */
+
+/**
+ * IPNS - Inter-Planetary Naming System
+ *
+ * @param {IPFS} self
+ * @returns {Function}
+ */
 module.exports = function name (self) {
   return {
     /**
@@ -125,22 +138,15 @@ module.exports = function name (self) {
         options = {}
       }
 
-      options = options || {}
-      const nocache = options.nocache && options.nocache.toString() === 'true'
-      const recursive = options.recursive && options.recursive.toString() === 'true'
+      options = mergeOptions({
+        nocache: false,
+        recursive: false
+      }, options)
 
       const offline = self._options.offline
 
-      if (!self.isOnline() && !offline) {
-        const errMsg = utils.OFFLINE_ERROR
-
-        log.error(errMsg)
-        return callback(errcode(errMsg, 'OFFLINE_ERROR'))
-      }
-
       // TODO: params related logic should be in the core implementation
-
-      if (offline && nocache) {
+      if (offline && options.nocache) {
         const error = 'cannot specify both offline and nocache'
 
         log.error(error)
@@ -156,12 +162,27 @@ module.exports = function name (self) {
         name = `/ipns/${name}`
       }
 
-      const resolveOptions = {
-        nocache,
-        recursive
-      }
+      const [ , hash ] = name.slice(1).split('/')
+      try {
+        mh.fromB58String(hash)
 
-      self._ipns.resolve(name, resolveOptions, callback)
+        // ipns resolve needs a online daemon
+        if (!self.isOnline() && !offline) {
+          const errMsg = utils.OFFLINE_ERROR
+
+          log.error(errMsg)
+          return callback(errcode(errMsg, 'OFFLINE_ERROR'))
+        }
+        self._ipns.resolve(name, options, callback)
+      } catch (err) {
+        // lets check if we have a domain ex. /ipns/ipfs.io and resolve with dns
+        if (isDomain(hash)) {
+          return self.dns(hash, options, callback)
+        }
+
+        log.error(err)
+        callback(errcode(new Error('Invalid IPNS name.'), 'ERR_IPNS_INVALID_NAME'))
+      }
     }),
     pubsub: namePubsub(self)
   }

@@ -123,7 +123,7 @@ describe('name', function () {
       })
     })
 
-    it('should not recursively resolve to an IPFS hash if the option recursive is not provided', function (done) {
+    it('should not recursively resolve to an IPFS hash', function (done) {
       this.timeout(90 * 1000)
       const keyName = hat()
 
@@ -132,7 +132,7 @@ describe('name', function () {
         series([
           (cb) => node.name.publish(ipfsRef, { resolve: false }, cb),
           (cb) => node.name.publish(`/ipns/${nodeId}`, { resolve: false, key: keyName }, cb),
-          (cb) => node.name.resolve(key.id, cb)
+          (cb) => node.name.resolve(key.id, { recursive: false }, cb)
         ], (err, res) => {
           expect(err).to.not.exist()
           expect(res[2]).to.exist()
@@ -616,6 +616,45 @@ describe('name', function () {
       expect(config.stores[0]).to.eql(dht)
 
       done()
+    })
+  })
+
+  describe('working with dns', function () {
+    let node
+    let ipfsd
+
+    before(function (done) {
+      df.spawn({
+        exec: IPFS,
+        args: [`--pass ${hat()}`, '--offline'],
+        config: { Bootstrap: [] }
+      }, (err, _ipfsd) => {
+        expect(err).to.not.exist()
+        ipfsd = _ipfsd
+        node = _ipfsd.api
+        done()
+      })
+    })
+
+    after((done) => ipfsd.stop(done))
+
+    it('should resolve ipfs.io', async () => {
+      const r = await node.name.resolve('ipfs.io', { recursive: false })
+      return expect(r).to.eq('/ipns/website.ipfs.io')
+    })
+
+    it('should resolve /ipns/ipfs.io recursive', async () => {
+      const r = await node.name.resolve('ipfs.io', { recursive: true })
+
+      return expect(r.substr(0, 6)).to.eql('/ipfs/')
+    })
+
+    it('should fail to resolve /ipns/ipfs.a', async () => {
+      try {
+        await node.name.resolve('ipfs.a')
+      } catch (err) {
+        expect(err).to.exist()
+      }
     })
   })
 })

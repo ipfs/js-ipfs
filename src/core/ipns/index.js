@@ -104,5 +104,6 @@ class IPNS {
   }
 }
 
-exports = module.exports = IPNS
-exports.path = path
+IPNS.path = path
+
+module.exports = IPNS
