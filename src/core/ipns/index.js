@@ -77,9 +77,7 @@ class IPNS {
       const result = this.cache.get(id)
 
       if (result) {
-        return callback(null, {
-          path: result
-        })
+        return callback(null, result)
       }
     }
 
@@ -91,9 +89,7 @@ class IPNS {
 
       log(`IPNS record from ${name} was resolved correctly`)
 
-      callback(null, {
-        path: result
-      })
+      callback(null, result)
     })
   }
 

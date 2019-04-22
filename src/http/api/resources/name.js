@@ -17,7 +17,7 @@ exports.resolve = {
     const res = await ipfs.name.resolve(arg, request.query)
 
     return h.response({
-      Path: res.path
+      Path: res
     })
   }
 }

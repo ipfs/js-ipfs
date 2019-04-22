@@ -34,7 +34,7 @@ const publishAndResolve = (publisher, resolver, ipfsRef, publishOpts, nodeId, re
     expect(err).to.not.exist()
     expect(res[0]).to.exist()
     expect(res[1]).to.exist()
-    expect(res[1].path).to.equal(ipfsRef)
+    expect(res[1]).to.equal(ipfsRef)
     callback()
   })
 }
@@ -117,7 +117,7 @@ describe('name', function () {
         ], (err, res) => {
           expect(err).to.not.exist()
           expect(res[2]).to.exist()
-          expect(res[2].path).to.equal(ipfsRef)
+          expect(res[2]).to.equal(ipfsRef)
           done()
         })
       })
@@ -136,7 +136,7 @@ describe('name', function () {
         ], (err, res) => {
           expect(err).to.not.exist()
           expect(res[2]).to.exist()
-          expect(res[2].path).to.equal(`/ipns/${nodeId}`)
+          expect(res[2]).to.equal(`/ipns/${nodeId}`)
           done()
         })
       })
@@ -277,7 +277,7 @@ describe('name', function () {
         ], (err, res) => {
           expect(err).to.not.exist()
           expect(res[2]).to.exist()
-          expect(res[2].path).to.equal(ipfsRef)
+          expect(res[2]).to.equal(ipfsRef)
           done()
         })
       })
@@ -616,45 +616,6 @@ describe('name', function () {
       expect(config.stores[0]).to.eql(dht)
 
       done()
-    })
-  })
-
-  describe('working with dns', function () {
-    let node
-    let ipfsd
-
-    before(function (done) {
-      df.spawn({
-        exec: IPFS,
-        args: [`--pass ${hat()}`, '--offline'],
-        config: { Bootstrap: [] }
-      }, (err, _ipfsd) => {
-        expect(err).to.not.exist()
-        ipfsd = _ipfsd
-        node = _ipfsd.api
-        done()
-      })
-    })
-
-    after((done) => ipfsd.stop(done))
-
-    it('should resolve ipfs.io', async () => {
-      const r = await node.name.resolve('ipfs.io', { recursive: false })
-      return expect(r).to.eq('/ipns/website.ipfs.io')
-    })
-
-    it('should resolve /ipns/ipfs.io recursive', async () => {
-      const r = await node.name.resolve('ipfs.io', { recursive: true })
-
-      return expect(r.substr(0, 6)).to.eql('/ipfs/')
-    })
-
-    it('should fail to resolve /ipns/ipfs.a', async () => {
-      try {
-        await node.name.resolve('ipfs.a')
-      } catch (err) {
-        expect(err).to.exist()
-      }
     })
   })
 })
