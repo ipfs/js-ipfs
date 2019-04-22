@@ -15,5 +15,7 @@ module.exports = self => ({
   getReadableStream: require('./get-readable-stream')(self),
   ls: require('./ls')(self),
   lsPullStream: require('./ls-pull-stream')(self),
-  lsReadableStream: require('./ls-readable-stream')(self)
+  lsReadableStream: require('./ls-readable-stream')(self),
+  refs: require('./refs')(self),
+  refsPullStream: require('./refs-pull-stream')(self)
 })
