@@ -4,8 +4,7 @@
 const expect = require('chai').expect
 const runOnAndOff = require('../utils/on-and-off')
 
-// TODO: describe('refs', () => runOnAndOff((thing) => {
-describe('refs', () => runOnAndOff.off((thing) => {
+describe('refs', () => runOnAndOff((thing) => {
   let ipfs
 
   before(() => {
@@ -242,8 +241,8 @@ describe('refs', () => runOnAndOff.off((thing) => {
 
   it('cannot specify edges and format', function () {
     this.timeout(20 * 1000)
-    // If the daemon is off, ls should fail
-    // If the daemon is on, ls should search until it hits a timeout
+    // If the daemon is off, refs should fail
+    // If the daemon is on, refs should search until it hits a timeout
     return Promise.race([
       ipfs.fail('refs --format="<linkname>" -e QmXW5PJso8qkBzavt7ZDXjmXAzJUwKi8d6AZxoSqG6rLJ4'),
       new Promise((resolve, reject) => setTimeout(resolve, 4000))
@@ -252,8 +251,9 @@ describe('refs', () => runOnAndOff.off((thing) => {
   })
 
   it('prints nothing for non-existent hashes', function () {
-    // If the daemon is off, ls should fail
-    // If the daemon is on, ls should search until it hits a timeout
+    this.timeout(20 * 1000)
+    // If the daemon is off, refs should fail
+    // If the daemon is on, refs should search until it hits a timeout
     return Promise.race([
       ipfs.fail('refs QmYmW4HiZhotsoSqnv2o1oSssvkRM8b9RweBoH7ao5nki2'),
       new Promise((resolve, reject) => setTimeout(resolve, 4000))

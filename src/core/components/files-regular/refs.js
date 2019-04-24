@@ -23,3 +23,9 @@ module.exports = function (self) {
     )
   })
 }
+
+// Preset format strings
+module.exports.Format = {
+  default: '<dst>',
+  edges: '<src> -> <dst>'
+}

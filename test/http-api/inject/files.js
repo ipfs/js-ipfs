@@ -159,5 +159,33 @@ module.exports = (http) => {
         })
       })
     })
+
+    describe('/refs', () => {
+      it('should list refs', async () => {
+        const form = new FormData()
+        form.append('file', Buffer.from('TEST' + Date.now()), { filename: 'data.txt' })
+        const headers = form.getHeaders()
+
+        const payload = await streamToPromise(form)
+        let res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/add?wrap-with-directory=true',
+          headers,
+          payload
+        })
+        expect(res.statusCode).to.equal(200)
+
+        const files = res.result.trim().split('\n').map(r => JSON.parse(r))
+        const dir = files[files.length - 1]
+
+        res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/refs?format=<linkname>&arg=' + dir.Hash
+        })
+        expect(res.statusCode).to.equal(200)
+        expect(res.result.length).to.equal(1)
+        expect(res.result[0].Ref).to.equal('data.txt')
+      })
+    })
   })
 }
