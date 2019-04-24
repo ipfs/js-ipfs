@@ -178,3 +178,42 @@ function getNodeLinks (node, path = '') {
   }
   return links
 }
+
+// Get links as a DAG Object
+// { <linkName1>: [link2, link3, link4], <linkName2>: [...] }
+function getLinkDAG (links) {
+  const linkNames = {}
+  for (const link of links) {
+    linkNames[link.name] = link
+  }
+
+  const linkDAG = {}
+  for (const link of links) {
+    const parentName = link.path.substring(0, link.path.lastIndexOf('/'))
+    linkDAG[parentName] = linkDAG[parentName] || []
+    linkDAG[parentName].push(link)
+  }
+  return linkDAG
+}
+
+// Recursively get refs for a link
+function getRefs (linkDAG, link, format, uniques) {
+  let refs = []
+  const children = linkDAG[link.path] || []
+  for (const child of children) {
+    if (!uniques || !uniques.has(child.hash)) {
+      uniques && uniques.add(child.hash)
+      refs.push(formatLink(link, child, format))
+      refs = refs.concat(getRefs(linkDAG, child, format, uniques))
+    }
+  }
+  return refs
+}
+
+// Get formatted link
+function formatLink (src, dst, format) {
+  let out = format.replace(/<src>/g, src.hash)
+  out = out.replace(/<dst>/g, dst.hash)
+  out = out.replace(/<linkname>/g, dst.name)
+  return out
+}
