@@ -8,6 +8,7 @@ const fileType = require('file-type')
 const mime = require('mime-types')
 const { PassThrough } = require('readable-stream')
 const Boom = require('boom')
+const Ammo = require('@hapi/ammo') // HTTP Range processing utilities
 const peek = require('buffer-peek-stream')
 
 const { resolver } = require('ipfs-http-response')
@@ -98,7 +99,47 @@ module.exports = {
       return h.redirect(PathUtils.removeTrailingSlash(ref)).permanent(true)
     }
 
-    const rawStream = ipfs.catReadableStream(data.cid)
+    // Support If-None-Match & Etag (Conditional Requests from RFC7232)
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag
+    const etag = `"${data.cid}"`
+    const cachedEtag = request.headers['if-none-match']
+    if (cachedEtag === etag || cachedEtag === `W/${etag}`) {
+      return h.response().code(304) // Not Modified
+    }
+
+    // Immutable content produces 304 Not Modified for all values of If-Modified-Since
+    if (ref.startsWith('/ipfs/') && request.headers['if-modified-since']) {
+      return h.response().code(304) // Not Modified
+    }
+
+    // This necessary to set correct Content-Length and validate Range requests
+    // Note: we need `size` (raw data), not `cumulativeSize` (data + DAGNodes)
+    const { size } = await ipfs.files.stat(`/ipfs/${data.cid}`)
+
+    // Handle Byte Range requests (https://tools.ietf.org/html/rfc7233#section-2.1)
+    const catOptions = {}
+    let rangeResponse = false
+    if (request.headers.range) {
+      // If-Range is respected (when present), but we compare it only against Etag
+      // (Last-Modified date is too weak for IPFS use cases)
+      if (!request.headers['if-range'] || request.headers['if-range'] === etag) {
+        const ranges = Ammo.header(request.headers.range, size)
+        if (!ranges) {
+          const error = Boom.rangeNotSatisfiable()
+          error.output.headers['content-range'] = `bytes */${size}`
+          throw error
+        }
+
+        if (ranges.length === 1) { // Ignore requests for multiple ranges (hard to map to ipfs.cat and not used in practice)
+          rangeResponse = true
+          const range = ranges[0]
+          catOptions.offset = range.from
+          catOptions.length = (range.to - range.from + 1)
+        }
+      }
+    }
+
+    const rawStream = ipfs.catReadableStream(data.cid, catOptions)
     const responseStream = new ResponseStream()
 
     // Pass-through Content-Type sniffing over initial bytes
@@ -119,10 +160,11 @@ module.exports = {
       }
     })
 
-    const res = h.response(responseStream)
+    const res = h.response(responseStream).code(rangeResponse ? 206 : 200)
 
     // Etag maps directly to an identifier for a specific version of a resource
-    res.header('Etag', `"${data.cid}"`)
+    // and enables smart client-side caching thanks to If-None-Match
+    res.header('etag', etag)
 
     // Set headers specific to the immutable namespace
     if (ref.startsWith('/ipfs/')) {
@@ -137,15 +179,38 @@ module.exports = {
       res.header('Content-Type', contentType)
     }
 
+    if (rangeResponse) {
+      const from = catOptions.offset
+      const to = catOptions.offset + catOptions.length - 1
+      res.header('Content-Range', `bytes ${from}-${to}/${size}`)
+      res.header('Content-Length', catOptions.length)
+    } else {
+      // Announce support for Range requests
+      res.header('Accept-Ranges', 'bytes')
+      res.header('Content-Length', size)
+    }
+
+    // Support Content-Disposition via ?filename=foo parameter
+    // (useful for browser vendor to download raw CID into custom filename)
+    // Source: https://github.com/ipfs/go-ipfs/blob/v0.4.20/core/corehttp/gateway_handler.go#L232-L236
+    if (request.query.filename) {
+      res.header('Content-Disposition', `inline; filename*=UTF-8''${encodeURIComponent(request.query.filename)}`)
+    }
+
     return res
   },
 
   afterHandler (request, h) {
     const { response } = request
-    if (response.statusCode === 200) {
+    // Add headers to successfult responses (regular or range)
+    if (response.statusCode === 200 || response.statusCode === 206) {
       const { ref } = request.pre.args
       response.header('X-Ipfs-Path', ref)
       if (ref.startsWith('/ipfs/')) {
+        // "set modtime to a really long time ago, since files are immutable and should stay cached"
+        // Source: https://github.com/ipfs/go-ipfs/blob/v0.4.20/core/corehttp/gateway_handler.go#L228-L229
+        response.header('Last-Modified', 'Thu, 01 Jan 1970 00:00:01 GMT')
+        // Suborigins: https://github.com/ipfs/in-web-browsers/issues/66
         const rootCid = ref.split('/')[2]
         const ipfsOrigin = cidToString(rootCid, { base: 'base32' })
         response.header('Suborigin', 'ipfs000' + ipfsOrigin)

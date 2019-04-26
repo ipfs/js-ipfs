@@ -82,6 +82,7 @@
     "stream-to-promise": "^2.2.0"
   },
   "dependencies": {
+    "@hapi/ammo": "^3.1.0",
     "@hapi/hapi": "^18.3.1",
     "@hapi/joi": "^15.0.1",
     "async": "^2.6.1",
