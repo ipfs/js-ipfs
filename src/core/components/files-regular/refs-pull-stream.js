@@ -1,115 +1,149 @@
 'use strict'
 
-const exporter = require('ipfs-unixfs-exporter')
 const pull = require('pull-stream')
-const pullError = require('pull-stream/sources/error')
 const pullDefer = require('pull-defer')
+const pullTraverse = require('pull-traverse')
+const isIpfs = require('is-ipfs')
 const { normalizePath } = require('./utils')
 const { Format } = require('./refs')
 
 module.exports = function (self) {
   return function (ipfsPath, options = {}) {
+    setOptionsAlias(options, [
+      ['recursive', 'r'],
+      ['e', 'edges'],
+      ['u', 'unique'],
+      ['maxDepth', 'max-depth']
+    ])
+
     if (options.maxDepth === 0) {
       return pull.empty()
     }
-    if (options.format !== Format.default && options.e) {
-      return pullError(Error('Cannot set edges to true and also specify format'))
+    if (options.e && options.format && options.format !== Format.default) {
+      return pull.error(new Error('Cannot set edges to true and also specify format'))
     }
 
     options.format = options.e ? Format.edges : options.format || Format.default
 
+    if (options.maxDepth === undefined) {
+      options.maxDepth = options.recursive ? global.Infinity : 1
+    }
+
+    // normalizePath() strips /ipfs/ off the front of the path so the CID will
+    // be at the front of the path
     const path = normalizePath(ipfsPath)
     const pathComponents = path.split('/')
-
-    // eg QmHash/linkName => 2
-    const pathDepth = pathComponents.length
-
-    // The exporter returns a depth for each node, eg:
-    // Qmhash.../linkName/linkName/linkName/block
-    //    0         1         2        3      4
-    if (options.maxDepth === undefined) {
-      options.maxDepth = options.recursive ? global.Infinity : pathDepth
-    } else {
-      options.maxDepth = options.maxDepth + pathDepth - 1
+    const cid = pathComponents[0]
+    if (!isIpfs.cid(cid)) {
+      return pull.error(new Error(`Error resolving path '${path}': '${cid}' is not a valid CID`))
     }
 
     if (options.preload !== false) {
-      self._preload(pathComponents[0])
+      self._preload(cid)
     }
 
-    // We need to collect all the values from the exporter and work out the
-    // parent of each node, so use a deferred source.
-    // TODO: It would be more efficient for the exporter to return the parent
-    // cid with the node, so we could just stream the result back to the
-    // client. Is this possible?
+    const fullPath = '/ipfs/' + path
+    return refsStream(self, fullPath, options)
+  }
+}
+
+// Make sure the original name is set for each alias
+function setOptionsAlias (options, aliases) {
+  for (const alias of aliases) {
+    if (options[alias[0]] === undefined) {
+      options[alias[0]] = options[alias[1]]
+    }
+  }
+}
+
+// Get a stream of refs at the given path
+function refsStream (ipfs, path, options) {
+  const deferred = pullDefer.source()
+
+  // Resolve to the target CID of the path
+  ipfs.resolve(path, (err, resPath) => {
+    if (err) {
+      return deferred.resolve(pull.error(err))
+    }
+
+    // path is /ipfs/<cid>
+    const parts = resPath.split('/')
+    const cid = parts[2]
+    deferred.resolve(pull(
+      // Traverse the DAG, converting it into a stream
+      objectStream(ipfs, cid, options.maxDepth, options.u),
+      // Root object will not have a parent
+      pull.filter(obj => Boolean(obj.parent)),
+      // Filter out duplicates (isDuplicate flag is only set if options.u is set)
+      pull.filter(obj => !obj.isDuplicate),
+      // Format the links
+      pull.map(obj => formatLink(obj.parent.cid, obj.node.cid, obj.node.name, options.format)),
+      // Clients expect refs to be in the format { Ref: ref }
+      pull.map(ref => ({ Ref: ref }))
+    ))
+  })
+
+  return deferred
+}
+
+// Do a depth first search of the DAG, starting from the given root cid
+function objectStream (ipfs, rootCid, maxDepth, isUnique) {
+  const uniques = new Set()
+
+  const root = { node: { cid: rootCid }, depth: 0 }
+  const traverseLevel = (obj) => {
+    const { node, depth } = obj
+
+    // Check the depth
+    const nextLevelDepth = depth + 1
+    if (nextLevelDepth > maxDepth) {
+      return pull.empty()
+    }
+
+    // If unique option is enabled, check if the CID has been seen before.
+    // Note we need to do this here rather than before adding to the stream
+    // so that the unique check happens in the order that items are examined
+    // in the DAG.
+    if (isUnique) {
+      if (uniques.has(node.cid.toString())) {
+        // Mark this object as a duplicate so we can filter it out later
+        obj.isDuplicate = true
+        return pull.empty()
+      }
+      uniques.add(node.cid.toString())
+    }
+
     const deferred = pullDefer.source()
 
-    pull(
-      // Stream the values from the exporter
-      exporter(ipfsPath, self._ipld, options),
-      // Get each node's hash as a string
-      pull.map(node => {
-        node.hash = node.cid.toString()
-        return node
-      }),
-      // Collect the links
-      pull.collect(function (err, links) {
-        if (err) {
-          return deferred.resolve(pullError(err))
+    // Get this object's links
+    ipfs.object.links(node.cid, (err, links) => {
+      if (err) {
+        if (err.code === 'ERR_NOT_FOUND') {
+          err.message = `Could not find object with CID: ${node.cid}`
         }
+        return deferred.resolve(pull.error(err))
+      }
 
-        if (!links.length) {
-          return deferred.resolve(pull.values([]))
-        }
+      // Add to the stream each link, parent and the new depth
+      const vals = links.map(link => ({
+        parent: node,
+        node: link,
+        depth: nextLevelDepth
+      }))
 
-        // Get the links in a DAG structure
-        const linkDAG = getLinkDAG(links)
-        // Format the links and put them in order
-        const refs = getRefs(linkDAG, links[0], options.format, options.u && new Set())
-        const objects = refs.map((ref) => ({ Ref: ref }))
-        deferred.resolve(pull.values(objects))
-      })
-    )
+      deferred.resolve(pull.values(vals))
+    })
 
     return deferred
   }
-}
 
-// Get links as a DAG Object
-// { <linkName1>: [link2, link3, link4], <linkName2>: [...] }
-function getLinkDAG (links) {
-  const linkNames = {}
-  for (const link of links) {
-    linkNames[link.name] = link
-  }
-
-  const linkDAG = {}
-  for (const link of links) {
-    const parentName = link.path.substring(0, link.path.lastIndexOf('/'))
-    linkDAG[parentName] = linkDAG[parentName] || []
-    linkDAG[parentName].push(link)
-  }
-  return linkDAG
-}
-
-// Recursively get refs for a link
-function getRefs (linkDAG, link, format, uniques) {
-  let refs = []
-  const children = linkDAG[link.path] || []
-  for (const child of children) {
-    if (!uniques || !uniques.has(child.hash)) {
-      uniques && uniques.add(child.hash)
-      refs.push(formatLink(link, child, format))
-      refs = refs.concat(getRefs(linkDAG, child, format, uniques))
-    }
-  }
-  return refs
+  return pullTraverse.depthFirst(root, traverseLevel)
 }
 
 // Get formatted link
-function formatLink (src, dst, format) {
-  let out = format.replace(/<src>/g, src.hash)
-  out = out.replace(/<dst>/g, dst.hash)
-  out = out.replace(/<linkname>/g, dst.name)
+function formatLink (srcCid, dstCid, linkName, format) {
+  let out = format.replace(/<src>/g, srcCid.toString())
+  out = out.replace(/<dst>/g, dstCid.toString())
+  out = out.replace(/<linkname>/g, linkName)
   return out
 }
