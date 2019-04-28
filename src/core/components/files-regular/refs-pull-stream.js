@@ -12,6 +12,13 @@ const { Format } = require('./refs')
 
 module.exports = function (self) {
   return function (ipfsPath, options = {}) {
+    setOptionsAlias(options, [
+      ['recursive', 'r'],
+      ['e', 'edges'],
+      ['u', 'unique'],
+      ['maxDepth', 'max-depth']
+    ])
+
     if (options.maxDepth === 0) {
       return pull.empty()
     }
@@ -179,41 +186,64 @@ function getNodeLinks (node, path = '') {
   return links
 }
 
-// Get links as a DAG Object
-// { <linkName1>: [link2, link3, link4], <linkName2>: [...] }
-function getLinkDAG (links) {
-  const linkNames = {}
-  for (const link of links) {
-    linkNames[link.name] = link
-  }
+// Do a depth first search of the DAG, starting from the given root cid
+function objectStream (ipfs, rootCid, maxDepth, isUnique) {
+  const uniques = new Set()
 
-  const linkDAG = {}
-  for (const link of links) {
-    const parentName = link.path.substring(0, link.path.lastIndexOf('/'))
-    linkDAG[parentName] = linkDAG[parentName] || []
-    linkDAG[parentName].push(link)
-  }
-  return linkDAG
-}
+  const root = { node: { cid: rootCid }, depth: 0 }
+  const traverseLevel = (obj) => {
+    const { node, depth } = obj
 
-// Recursively get refs for a link
-function getRefs (linkDAG, link, format, uniques) {
-  let refs = []
-  const children = linkDAG[link.path] || []
-  for (const child of children) {
-    if (!uniques || !uniques.has(child.hash)) {
-      uniques && uniques.add(child.hash)
-      refs.push(formatLink(link, child, format))
-      refs = refs.concat(getRefs(linkDAG, child, format, uniques))
+    // Check the depth
+    const nextLevelDepth = depth + 1
+    if (nextLevelDepth > maxDepth) {
+      return pull.empty()
     }
+
+    // If unique option is enabled, check if the CID has been seen before.
+    // Note we need to do this here rather than before adding to the stream
+    // so that the unique check happens in the order that items are examined
+    // in the DAG.
+    if (isUnique) {
+      if (uniques.has(node.cid.toString())) {
+        // Mark this object as a duplicate so we can filter it out later
+        obj.isDuplicate = true
+        return pull.empty()
+      }
+      uniques.add(node.cid.toString())
+    }
+
+    const deferred = pullDefer.source()
+
+    // Get this object's links
+    ipfs.object.links(node.cid, (err, links) => {
+      if (err) {
+        if (err.code === 'ERR_NOT_FOUND') {
+          err.message = `Could not find object with CID: ${node.cid}`
+        }
+        return deferred.resolve(pull.error(err))
+      }
+
+      // Add to the stream each link, parent and the new depth
+      const vals = links.map(link => ({
+        parent: node,
+        node: link,
+        depth: nextLevelDepth
+      }))
+
+      deferred.resolve(pull.values(vals))
+    })
+
+    return deferred
   }
-  return refs
+
+  return pullTraverse.depthFirst(root, traverseLevel)
 }
 
 // Get formatted link
-function formatLink (src, dst, format) {
-  let out = format.replace(/<src>/g, src.hash)
-  out = out.replace(/<dst>/g, dst.hash)
-  out = out.replace(/<linkname>/g, dst.name)
+function formatLink (srcCid, dstCid, linkName, format) {
+  let out = format.replace(/<src>/g, srcCid.toString())
+  out = out.replace(/<dst>/g, dstCid.toString())
+  out = out.replace(/<linkname>/g, linkName)
   return out
 }
