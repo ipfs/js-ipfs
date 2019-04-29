@@ -1,3 +1,14 @@
+<a name="30.1.4"></a>
+## [30.1.4](https://github.com/ipfs/js-ipfs-http-client/compare/v30.1.3...v30.1.4) (2019-04-29)
+
+
+### Bug Fixes
+
+* uncaught error: stream.push() after EOF ([#980](https://github.com/ipfs/js-ipfs-http-client/issues/980)) ([cc677f0](https://github.com/ipfs/js-ipfs-http-client/commit/cc677f0)), closes [#967](https://github.com/ipfs/js-ipfs-http-client/issues/967)
+* update Babel in upload-file-via-browser example ([#968](https://github.com/ipfs/js-ipfs-http-client/issues/968)) ([#970](https://github.com/ipfs/js-ipfs-http-client/issues/970)) ([17d49de](https://github.com/ipfs/js-ipfs-http-client/commit/17d49de))
+
+
+
 <a name="30.1.3"></a>
 ## [30.1.3](https://github.com/ipfs/js-ipfs-http-client/compare/v30.1.2...v30.1.3) (2019-04-11)
 
