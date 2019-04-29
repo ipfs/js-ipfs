@@ -64,6 +64,7 @@
   "homepage": "https://github.com/ipfs/js-ipfs#readme",
   "devDependencies": {
     "aegir": "^18.1.0",
+    "base64url": "^3.0.1",
     "chai": "^4.2.0",
     "delay": "^4.1.0",
     "detect-node": "^2.0.4",

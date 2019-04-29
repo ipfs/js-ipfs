@@ -8,14 +8,21 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
+const base64url = require('base64url')
+const { fromB58String } = require('multihashes')
 const parallel = require('async/parallel')
+const retry = require('async/retry')
+const series = require('async/series')
 
 const isNode = require('detect-node')
+const ipns = require('ipns')
 const IPFS = require('../../src')
+const waitFor = require('../utils/wait-for')
 
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ type: 'proc' })
 
+const namespace = '/record/'
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
 
 describe('name-pubsub', function () {
@@ -76,19 +83,56 @@ describe('name-pubsub', function () {
   it('should publish and then resolve correctly', function (done) {
     this.timeout(80 * 1000)
 
+    let subscribed = false
+
+    function checkMessage (msg) {
+      subscribed = true
+    }
+
+    const alreadySubscribed = (cb) => {
+      return cb(null, subscribed === true)
+    }
+
+    // Wait until a peer subscribes a topic
+    const waitForPeerToSubscribe = (node, topic, callback) => {
+      retry({
+        times: 5,
+        interval: 2000
+      }, (next) => {
+        node.pubsub.peers(topic, (error, res) => {
+          if (error) {
+            return next(error)
+          }
+
+          if (!res || !res.length) {
+            return next(new Error('Could not find subscription'))
+          }
+
+          return next(null, res)
+        })
+      }, callback)
+    }
+
+    const keys = ipns.getIdKeys(fromB58String(idA.id))
+    const topic = `${namespace}${base64url.encode(keys.routingKey.toBuffer())}`
+
     nodeB.name.resolve(idA.id, (err) => {
       expect(err).to.exist()
 
-      nodeA.name.publish(ipfsRef, { resolve: false }, (err, res) => {
+      series([
+        (cb) => waitForPeerToSubscribe(nodeA, topic, cb),
+        (cb) => nodeB.pubsub.subscribe(topic, checkMessage, cb),
+        (cb) => nodeA.name.publish(ipfsRef, { resolve: false }, cb),
+        (cb) => waitFor((callback) => alreadySubscribed(callback), cb),
+        (cb) => setTimeout(() => cb(), 1000), // guarantee record is written
+        (cb) => nodeB.name.resolve(idA.id, cb)
+      ], (err, res) => {
         expect(err).to.not.exist()
         expect(res).to.exist()
 
-        nodeB.name.resolve(idA.id, (err, res) => {
-          expect(err).to.not.exist()
-          expect(res).to.exist()
-          expect(res.path).to.equal(ipfsRef)
-          done()
-        })
+        expect(res[5]).to.exist()
+        expect(res[5].path).to.equal(ipfsRef)
+        done()
       })
     })
   })
