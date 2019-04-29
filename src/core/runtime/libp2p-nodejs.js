@@ -63,8 +63,12 @@ class Node extends libp2p {
         dht: {
           kBucketSize: 20,
           enabled: true,
+          concurrency: 4,
           randomWalk: {
-            enabled: true
+            enabled: true,
+            interval: 600e3,
+            delay: 5e3,
+            timeout: 20e3
           }
         },
         EXPERIMENTAL: {
