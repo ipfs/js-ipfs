@@ -60,5 +60,11 @@ module.exports = [
       ]
     },
     handler: resources.filesRegular.refs.handler
+  },
+  {
+    // TODO fix method
+    method: '*',
+    path: '/api/v0/refs/local',
+    handler: resources.filesRegular.refs.local.handler
   }
 ]
