@@ -318,6 +318,17 @@ exports.ls = {
   }
 }
 
+function toTypeCode (type) {
+  switch (type) {
+    case 'dir':
+      return 1
+    case 'file':
+      return 2
+    default:
+      return 0
+  }
+}
+
 exports.refs = {
   validate: {
     query: Joi.object().keys({
@@ -360,14 +371,19 @@ exports.refs = {
   }
 }
 
-function toTypeCode (type) {
-  switch (type) {
-    case 'dir':
-      return 1
-    case 'file':
-      return 2
-    default:
-      return 0
+exports.refs.local = {
+  // main route handler
+  async handler (request, h) {
+    const { ipfs } = request.server.app
+
+    let refs
+    try {
+      refs = await ipfs.refs.local()
+    } catch (err) {
+      throw Boom.boomify(err, { message: 'Failed to get local refs' })
+    }
+
+    return h.response(refs)
   }
 }
 
