@@ -348,7 +348,7 @@ exports.refs = {
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  async handler (request, h) {
+  handler (request, h) {
     const { ipfs } = request.server.app
     const { key } = request.pre.args
     const recursive = request.query.r === 'true' || request.query.recursive === 'true'
@@ -360,31 +360,65 @@ exports.refs = {
       maxDepth = parseInt(maxDepth)
     }
 
-    let refs
-    try {
-      refs = await ipfs.refs(key, { recursive, format, e, u, maxDepth })
-    } catch (err) {
-      throw Boom.boomify(err, { message: 'Failed to get refs for path' })
-    }
-
-    return h.response(refs)
+    const source = ipfs.refsPullStream(key, { recursive, format, e, u, maxDepth })
+    return sendRefsReplyStream(request, h, `refs for ${key}`, source)
   }
 }
 
 exports.refs.local = {
   // main route handler
-  async handler (request, h) {
+  handler (request, h) {
     const { ipfs } = request.server.app
-
-    let refs
-    try {
-      refs = await ipfs.refs.local()
-    } catch (err) {
-      throw Boom.boomify(err, { message: 'Failed to get local refs' })
-    }
-
-    return h.response(refs)
+    const source = ipfs.refs.localPullStream()
+    return sendRefsReplyStream(request, h, 'local refs', source)
   }
+}
+
+function sendRefsReplyStream (request, h, desc, source) {
+  const replyStream = pushable()
+  const aborter = abortable()
+
+  const stream = toStream.source(pull(
+    replyStream,
+    aborter,
+    ndjson.serialize()
+  ))
+
+  // const stream = toStream.source(replyStream.source)
+  // hapi is not very clever and throws if no
+  // - _read method
+  // - _readableState object
+  // are there :(
+  if (!stream._read) {
+    stream._read = () => {}
+    stream._readableState = {}
+    stream.unpipe = () => {}
+  }
+
+  pull(
+    source,
+    pull.drain(
+      (ref) => replyStream.push(ref),
+      (err) => {
+        if (err) {
+          request.raw.res.addTrailers({
+            'X-Stream-Error': JSON.stringify({
+              Message: `Failed to get ${desc}: ${err.message || ''}`,
+              Code: 0
+            })
+          })
+          return aborter.abort()
+        }
+
+        replyStream.end()
+      }
+    )
+  )
+
+  return h.response(stream)
+    .header('x-chunked-output', '1')
+    .header('content-type', 'application/json')
+    .header('Trailer', 'X-Stream-Error')
 }
 
 exports.refs = {
