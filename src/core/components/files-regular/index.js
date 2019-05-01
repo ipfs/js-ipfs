@@ -22,5 +22,7 @@ module.exports = (self) => {
     refsPullStream: require('./refs-pull-stream')(self)
   }
   filesRegular.refs.local = require('./refs-local')(self)
+  filesRegular.refs.localReadableStream = require('./refs-local-readable-stream')(self)
+  filesRegular.refs.localPullStream = require('./refs-local-pull-stream')(self)
   return filesRegular
 }
