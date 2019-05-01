@@ -1,0 +1,11 @@
+{
+  "repoLeadMaintainer": {
+    "name": "Alan Shaw",
+    "email": "alan.shaw@protocol.ai",
+    "username": "alanshaw"
+  },
+  "workingGroup": {
+    "name": "JS IPFS",
+    "entryPoint": "https://github.com/ipfs/js-core"
+  }
+}
