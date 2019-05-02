@@ -21,7 +21,7 @@ function dsKeyToRef (key) {
   const decoder = new base32.Decoder()
   const buff = decoder.write(key.toString().slice(1)).finalize()
   try {
-    return { Ref: new CID(buff).toString() }
+    return { ref: new CID(buff).toString() }
   } catch (err) {
     return { Err: `Could not convert block with key '${key}' to CID: ${err.message}` }
   }

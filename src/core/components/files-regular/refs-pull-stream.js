@@ -78,8 +78,8 @@ function refsStream (ipfs, path, options) {
       pull.filter(obj => !obj.isDuplicate),
       // Format the links
       pull.map(obj => formatLink(obj.parent.cid, obj.node.cid, obj.node.name, options.format)),
-      // Clients expect refs to be in the format { Ref: ref }
-      pull.map(ref => ({ Ref: ref }))
+      // Clients expect refs to be in the format { ref: <ref> }
+      pull.map(ref => ({ ref }))
     ))
   })
 
