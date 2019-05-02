@@ -1,0 +1,44 @@
+{
+  "name": "js-ipfs-utils",
+  "version": "0.0.1",
+  "description": "Package to aggregate shared logic and dependencies for the IPFS ecosystem",
+  "main": "src/index.js",
+  "author": "Hugo Dias <hugomrdias@gmail.com>",
+  "homepage": "https://github.com/ipfs/js-ipfs-utils",
+  "bugs": "https://github.com/ipfs/js-ipfs-utils/issues",
+  "leadMaintainer": "Hugo Dias <hugomrdias@gmail.com>",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "repository": "github:ipfs/js-ipfs-utils",
+  "scripts": {
+    "test": "aegir test && npm run test:electron && npm run test:electron-renderer",
+    "test:browser": "aegir test -t browser",
+    "test:node": "aegir test -t node",
+    "test:electron": "electron-mocha 'test/**/*.spec.js'",
+    "test:electron-renderer": "electron-mocha --renderer 'test/**/*.spec.js'",
+    "lint": "aegir lint",
+    "release": "aegir release --docs",
+    "release-minor": "aegir release --type minor --docs",
+    "release-major": "aegir release --type major --docs",
+    "build": "aegir build"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "buffer": "^5.2.1",
+    "is-electron": "^2.2.0",
+    "is-pull-stream": "^0.0.0",
+    "is-stream": "^2.0.0",
+    "kind-of": "^6.0.2",
+    "readable-stream": "^3.3.0"
+  },
+  "devDependencies": {
+    "aegir": "^18.2.2",
+    "chai": "^4.2.0",
+    "dirty-chai": "^2.0.1",
+    "electron": "^5.0.0",
+    "electron-mocha": "^8.0.1",
+    "pull-stream": "^3.6.9"
+  }
+}
