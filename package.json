@@ -108,7 +108,7 @@
     "glob": "^7.1.3",
     "hapi-pino": "^6.0.0",
     "human-to-milliseconds": "^1.0.0",
-    "interface-datastore": "~0.6.0",
+    "interface-datastore": "ipfs/interface-js-ipfs-core#support-file-dom-api",
     "ipfs-bitswap": "~0.23.0",
     "ipfs-block": "~0.8.0",
     "ipfs-block-service": "~0.15.1",
