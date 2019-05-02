@@ -3,11 +3,11 @@
 const kindOf = require('kind-of')
 const isStream = require('is-stream')
 const { isSource } = require('is-pull-stream')
-const { Buffer } = require('buffer')
+const isBuffer = require('is-buffer')
 
 const validateAddInput = (input) => {
   // Buffer|ReadableStream|PullStream|File
-  const isPrimitive = obj => Buffer.isBuffer(obj) || isStream.readable(obj) || isSource(obj) || kindOf(obj) === 'file'
+  const isPrimitive = obj => isBuffer(obj) || isStream.readable(obj) || isSource(obj) || kindOf(obj) === 'file'
 
   // An object like { content?, path? }, where content isBufferOrStream and path isString
   const isContentObject = obj => {
