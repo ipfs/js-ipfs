@@ -56,9 +56,9 @@ validateAddInput(Buffer.from('test'))
 
 ## Contribute
 
-Contributions welcome. Please check out [the issues](https://github.com/multiformats/js-multihashing-async/issues).
+Contributions welcome. Please check out [the issues](https://github.com/ipfs/js-ipfs-utils/issues).
 
-Check out our [contributing document](https://github.com/multiformats/multiformats/blob/master/contributing.md) for more information on how we work, and about contributing in general. Please be aware that all interactions related to multiformats are subject to the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
+Check out our [contributing document](https://github.com/ipfs/community/blob/master/contributing.md) for more information on how we work, and about contributing in general. Please be aware that all interactions related to this repo are subject to the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
 
 ## License
 
