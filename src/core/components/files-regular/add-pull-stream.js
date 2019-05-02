@@ -1,13 +1,16 @@
 'use strict'
 
 const importer = require('ipfs-unixfs-importer')
+const kindOf = require('kind-of')
+const CID = require('cids')
 const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
 const waterfall = require('async/waterfall')
 const isStream = require('is-stream')
-const isSource = require('is-pull-stream').isSource
-const CID = require('cids')
+const { isSource } = require('is-pull-stream')
 const { parseChunkerString } = require('./utils')
+const streamFromFileReader = require('ipfs-utils/src/streams/stream-from-filereader')
+const { supportsFileReader } = require('ipfs-utils/src/supports')
 
 const WRAPPER = 'wrapper/'
 
@@ -52,6 +55,9 @@ function normalizeContent (content, opts) {
   }
 
   return content.map((data) => {
+    if (supportsFileReader && kindOf(content) === 'file') {
+      data = { path: '', content: toPull.source(streamFromFileReader(content)) }
+    }
     // Buffer input
     if (Buffer.isBuffer(data)) {
       data = { path: '', content: pull.values([data]) }
