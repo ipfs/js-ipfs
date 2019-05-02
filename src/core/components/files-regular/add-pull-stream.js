@@ -9,8 +9,8 @@ const waterfall = require('async/waterfall')
 const isStream = require('is-stream')
 const { isSource } = require('is-pull-stream')
 const { parseChunkerString } = require('./utils')
-const streamFromFileReader = require('ipfs-utils/src/streams/stream-from-filereader')
-const { supportsFileReader } = require('ipfs-utils/src/supports')
+const streamFromFileReader = require('js-ipfs-utils/src/streams/stream-from-filereader')
+const { supportsFileReader } = require('js-ipfs-utils/src/supports')
 
 const WRAPPER = 'wrapper/'
 

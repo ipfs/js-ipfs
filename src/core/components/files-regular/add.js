@@ -4,7 +4,7 @@ const promisify = require('promisify-es6')
 const pull = require('pull-stream')
 const sort = require('pull-sort')
 const isSource = require('is-pull-stream').isSource
-const validateAddInput = require('ipfs-utils/src/files/add-input-validation')
+const validateAddInput = require('js-ipfs-utils/src/files/add-input-validation')
 
 module.exports = function (self) {
   const add = promisify((data, options, callback) => {
