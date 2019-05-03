@@ -12,13 +12,6 @@ const { Format } = require('./refs')
 
 module.exports = function (self) {
   return function (ipfsPath, options = {}) {
-    setOptionsAlias(options, [
-      ['recursive', 'r'],
-      ['e', 'edges'],
-      ['u', 'unique'],
-      ['maxDepth', 'max-depth']
-    ])
-
     if (options.maxDepth === 0) {
       return pull.empty()
     }

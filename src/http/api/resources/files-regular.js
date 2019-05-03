@@ -332,15 +332,11 @@ function toTypeCode (type) {
 exports.refs = {
   validate: {
     query: Joi.object().keys({
-      r: Joi.boolean().default(false),
       recursive: Joi.boolean().default(false),
       format: Joi.string().default(Format.default),
-      e: Joi.boolean().default(false),
       edges: Joi.boolean().default(false),
-      u: Joi.boolean().default(false),
       unique: Joi.boolean().default(false),
-      'max-depth': Joi.number().integer().min(-1),
-      maxDepth: Joi.number().integer().min(-1)
+      'max-depth': Joi.number().integer().min(-1)
     }).unknown()
   },
 
@@ -351,16 +347,14 @@ exports.refs = {
   handler (request, h) {
     const { ipfs } = request.server.app
     const { key } = request.pre.args
-    const recursive = request.query.r === 'true' || request.query.recursive === 'true'
-    const format = request.query.format
-    const e = request.query.e === 'true' || request.query.edges === 'true'
-    const u = request.query.u === 'true' || request.query.unique === 'true'
-    let maxDepth = request.query['max-depth'] || request.query.maxDepth
-    if (typeof maxDepth === 'string') {
-      maxDepth = parseInt(maxDepth)
-    }
 
-    const source = ipfs.refsPullStream(key, { recursive, format, e, u, maxDepth })
+    const recursive = request.query.recursive
+    const format = request.query.format
+    const edges = request.query.edges
+    const unique = request.query.unique
+    const maxDepth = request.query['max-depth']
+
+    const source = ipfs.refsPullStream(key, { recursive, format, edges, unique, maxDepth })
     return sendRefsReplyStream(request, h, `refs for ${key}`, source)
   }
 }
@@ -398,7 +392,7 @@ function sendRefsReplyStream (request, h, desc, source) {
   pull(
     source,
     pull.drain(
-      (ref) => replyStream.push(ref),
+      (ref) => replyStream.push({ Ref: ref.ref, Err: ref.err }),
       (err) => {
         if (err) {
           request.raw.res.addTrailers({
