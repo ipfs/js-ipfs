@@ -50,7 +50,11 @@ module.exports = {
       const ipfs = await getIpfs()
       const refs = await ipfs.refs(keys, { recursive, format, edges, unique, maxDepth })
       for (const ref of refs) {
-        print(ref.ref)
+        if (ref.err) {
+          print(ref.err, true, true)
+        } else {
+          print(ref.ref)
+        }
       }
     })())
   }
