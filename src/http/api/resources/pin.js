@@ -1,7 +1,7 @@
 'use strict'
 
 const multibase = require('multibase')
-const Joi = require('joi')
+const Joi = require('@hapi/joi')
 const Boom = require('boom')
 const isIpfs = require('is-ipfs')
 const { cidToString } = require('../../../utils/cid')

@@ -1,6 +1,6 @@
 'use strict'
 
-const Joi = require('joi')
+const Joi = require('@hapi/joi')
 const pull = require('pull-stream')
 const ndjson = require('pull-ndjson')
 const { PassThrough } = require('readable-stream')

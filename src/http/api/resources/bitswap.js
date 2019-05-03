@@ -1,6 +1,6 @@
 'use strict'
 
-const Joi = require('joi')
+const Joi = require('@hapi/joi')
 const multibase = require('multibase')
 const { cidToString } = require('../../../utils/cid')
 const { parseKey } = require('./block')
