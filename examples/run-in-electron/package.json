@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "postinstall": "electron-rebuild"
+    "postinstall": "./rebuild.sh"
   },
   "keywords": [
     "Electron",
@@ -15,8 +15,8 @@
   "author": "David Dias <daviddias@ipfs.io>",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^2.0.0",
-    "electron-rebuild": "^1.7.2",
+    "electron": "^4.2.0",
+    "electron-rebuild": "^1.8.4",
     "ipfs": "ipfs/js-ipfs"
   }
 }

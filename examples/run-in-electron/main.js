@@ -1,24 +1,18 @@
 'use strict'
 
-const electron = require('electron')
-const app = electron.app
-const BrowserWindow = electron.BrowserWindow
-
-const IPFS = require('ipfs')
-const path = require('path')
-const url = require('url')
+const { app, BrowserWindow } = require('electron')
 
 let mainWindow
 
 function createWindow () {
-  mainWindow = new BrowserWindow({ width: 800, height: 600 })
+  mainWindow = new BrowserWindow({ width: 800,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true
+    } })
 
   // and load the index.html of the app.
-  mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, 'index.html'),
-    protocol: 'file:',
-    slashes: true
-  }))
+  mainWindow.loadFile('index.html')
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
@@ -32,9 +26,8 @@ function createWindow () {
 app.on('ready', () => {
   createWindow()
 
-  // Spawn your IPFS node \o/
+  const IPFS = require('ipfs')
   const node = new IPFS()
-
   node.on('ready', () => {
     node.id((err, id) => {
       if (err) {
@@ -42,6 +35,9 @@ app.on('ready', () => {
       }
       console.log(id)
     })
+  })
+  node.on('error', (err) => {
+    return console.log(err)
   })
 })
 

@@ -1,5 +1,5 @@
 # Electron's version.
-export npm_config_target=2.0.0
+export npm_config_target=4.2.0
 # The architecture of Electron, can be ia32 or x64.
 export npm_config_arch=x64
 export npm_config_target_arch=x64
@@ -10,4 +10,4 @@ export npm_config_runtime=electron
 # Tell node-pre-gyp to build module from source code.
 export npm_config_build_from_source=true
 # Install all dependencies, and store cache to ~/.electron-gyp.
-HOME=~/.electron-gyp npm install
+HOME=~/.electron-gyp npm rebuild

@@ -189,7 +189,8 @@ describe('pin', function () {
         .catch(err => expect(err).to.match(/already pinned recursively/))
     })
 
-    it('can\'t pin item not in datastore', () => {
+    it('can\'t pin item not in datastore', function () {
+      this.timeout(5 * 1000)
       const falseHash = `${pins.root.slice(0, -2)}ss`
       return expectTimeout(pin.add(falseHash), 4000)
     })
