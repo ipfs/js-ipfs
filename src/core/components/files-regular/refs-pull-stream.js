@@ -3,57 +3,53 @@
 const pull = require('pull-stream')
 const pullDefer = require('pull-defer')
 const pullTraverse = require('pull-traverse')
+const pullCat = require('pull-cat')
 const isIpfs = require('is-ipfs')
 const { normalizePath } = require('./utils')
 const { Format } = require('./refs')
 
 module.exports = function (self) {
   return function (ipfsPath, options = {}) {
-    setOptionsAlias(options, [
-      ['recursive', 'r'],
-      ['e', 'edges'],
-      ['u', 'unique'],
-      ['maxDepth', 'max-depth']
-    ])
-
     if (options.maxDepth === 0) {
       return pull.empty()
     }
-    if (options.e && options.format && options.format !== Format.default) {
+    if (options.edges && options.format && options.format !== Format.default) {
       return pull.error(new Error('Cannot set edges to true and also specify format'))
     }
 
-    options.format = options.e ? Format.edges : options.format || Format.default
+    options.format = options.edges ? Format.edges : options.format || Format.default
 
-    if (options.maxDepth === undefined) {
-      options.maxDepth = options.recursive ? global.Infinity : 1
+    if (typeof options.maxDepth !== 'number') {
+      options.maxDepth = options.recursive ? Infinity : 1
     }
 
-    // normalizePath() strips /ipfs/ off the front of the path so the CID will
-    // be at the front of the path
-    const path = normalizePath(ipfsPath)
-    const pathComponents = path.split('/')
-    const cid = pathComponents[0]
-    if (!isIpfs.cid(cid)) {
-      return pull.error(new Error(`Error resolving path '${path}': '${cid}' is not a valid CID`))
+    let paths
+    try {
+      const rawPaths = Array.isArray(ipfsPath) ? ipfsPath : [ipfsPath]
+      paths = rawPaths.map(p => getFullPath(self, p, options))
+    } catch (err) {
+      return pull.error(err)
     }
 
-    if (options.preload !== false) {
-      self._preload(cid)
-    }
-
-    const fullPath = '/ipfs/' + path
-    return refsStream(self, fullPath, options)
+    return pullCat(paths.map(p => refsStream(self, p, options)))
   }
 }
 
-// Make sure the original name is set for each alias
-function setOptionsAlias (options, aliases) {
-  for (const alias of aliases) {
-    if (options[alias[0]] === undefined) {
-      options[alias[0]] = options[alias[1]]
-    }
+function getFullPath (ipfs, ipfsPath, options) {
+  // normalizePath() strips /ipfs/ off the front of the path so the CID will
+  // be at the front of the path
+  const path = normalizePath(ipfsPath)
+  const pathComponents = path.split('/')
+  const cid = pathComponents[0]
+  if (!isIpfs.cid(cid)) {
+    throw new Error(`Error resolving path '${path}': '${cid}' is not a valid CID`)
   }
+
+  if (options.preload !== false) {
+    ipfs._preload(cid)
+  }
+
+  return '/ipfs/' + path
 }
 
 // Get a stream of refs at the given path
@@ -71,10 +67,10 @@ function refsStream (ipfs, path, options) {
     const cid = parts[2]
     deferred.resolve(pull(
       // Traverse the DAG, converting it into a stream
-      objectStream(ipfs, cid, options.maxDepth, options.u),
+      objectStream(ipfs, cid, options.maxDepth, options.unique),
       // Root object will not have a parent
       pull.filter(obj => Boolean(obj.parent)),
-      // Filter out duplicates (isDuplicate flag is only set if options.u is set)
+      // Filter out duplicates (isDuplicate flag is only set if options.unique is set)
       pull.filter(obj => !obj.isDuplicate),
       // Format the links
       pull.map(obj => formatLink(obj.parent.cid, obj.node.cid, obj.node.name, options.format)),

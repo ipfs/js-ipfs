@@ -23,6 +23,6 @@ function dsKeyToRef (key) {
   try {
     return { ref: new CID(buff).toString() }
   } catch (err) {
-    return { Err: `Could not convert block with key '${key}' to CID: ${err.message}` }
+    return { err: `Could not convert block with key '${key}' to CID: ${err.message}` }
   }
 }

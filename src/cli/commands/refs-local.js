@@ -12,7 +12,7 @@ module.exports = {
       const ipfs = await getIpfs()
       const refs = await ipfs.refs.local()
       for (const ref of refs) {
-        print(ref.Ref)
+        print(ref.ref)
       }
     })())
   }

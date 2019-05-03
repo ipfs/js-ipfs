@@ -8,8 +8,8 @@ module.exports = {
   describe: 'List links (references) from an object',
 
   builder: {
-    r: {
-      alias: 'recursive',
+    recursive: {
+      alias: 'r',
       desc: 'Recursively list links of child nodes.',
       type: 'boolean',
       default: false
@@ -19,14 +19,14 @@ module.exports = {
       type: 'string',
       default: '<dst>'
     },
-    e: {
-      alias: 'edges',
+    edges: {
+      alias: 'e',
       desc: 'Output edge format: `<from> -> <to>`',
       type: 'boolean',
       default: false
     },
-    u: {
-      alias: 'unique',
+    unique: {
+      alias: 'u',
       desc: 'Omit duplicate refs from output.',
       type: 'boolean',
       default: false
@@ -37,16 +37,20 @@ module.exports = {
     }
   },
 
-  handler ({ getIpfs, key, recursive, format, e, u, maxDepth, resolve }) {
+  handler ({ _, getIpfs, key, recursive, format, edges, unique, maxDepth, resolve }) {
+    // First key is in `key`
+    // Any subsequent keys are in `_` array after 'refs'
+    const keys = [key].concat(_.slice(1))
+
     resolve((async () => {
       if (maxDepth === 0) {
         return
       }
 
       const ipfs = await getIpfs()
-      const refs = await ipfs.refs(key, { recursive, format, e, u, maxDepth })
+      const refs = await ipfs.refs(keys, { recursive, format, edges, unique, maxDepth })
       for (const ref of refs) {
-        print(ref.Ref)
+        print(ref.ref)
       }
     })())
   }

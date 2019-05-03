@@ -57,7 +57,8 @@ module.exports = [
     options: {
       pre: [
         { method: resources.filesRegular.refs.parseArgs, assign: 'args' }
-      ]
+      ],
+      validate: resources.filesRegular.refs.validate
     },
     handler: resources.filesRegular.refs.handler
   },
