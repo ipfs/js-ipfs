@@ -1,6 +1,6 @@
 'use strict'
 
-const Hapi = require('hapi')
+const Hapi = require('@hapi/hapi')
 const Pino = require('hapi-pino')
 const debug = require('debug')
 const multiaddr = require('multiaddr')
