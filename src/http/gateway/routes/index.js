@@ -1,3 +1,3 @@
 'use strict'
 
-module.exports = [require('./gateway')]
+module.exports = [...require('./gateway')]

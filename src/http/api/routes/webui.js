@@ -5,10 +5,10 @@ const resources = require('../../gateway/resources')
 module.exports = [
   {
     method: '*',
-    path: '/ipfs/{cid*}',
+    path: '/ipfs/{immutableId*}',
     options: {
       pre: [
-        { method: resources.gateway.checkCID, assign: 'args' }
+        { method: resources.gateway.checkImmutableId, assign: 'args' }
       ]
     },
     handler: resources.gateway.handler
