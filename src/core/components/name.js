@@ -38,6 +38,18 @@ const keyLookup = (ipfsNode, kname, callback) => {
   })
 }
 
+const appendRemainder = (cb, remainder) => {
+  return (err, result) => {
+    if (err) {
+      return cb(err)
+    }
+    if (remainder.length) {
+      return cb(null, result + '/' + remainder.join('/'))
+    }
+    return cb(null, result)
+  }
+}
+
 /**
  * @typedef { import("../index") } IPFS
  */
@@ -46,7 +58,7 @@ const keyLookup = (ipfsNode, kname, callback) => {
  * IPNS - Inter-Planetary Naming System
  *
  * @param {IPFS} self
- * @returns {Function}
+ * @returns {Object}
  */
 module.exports = function name (self) {
   return {
@@ -162,27 +174,28 @@ module.exports = function name (self) {
         name = `/ipns/${name}`
       }
 
-      const [ , hash ] = name.slice(1).split('/')
+      const [ namespace, hash, ...remainder ] = name.slice(1).split('/')
       try {
         mh.fromB58String(hash)
-
-        // ipns resolve needs a online daemon
-        if (!self.isOnline() && !offline) {
-          const errMsg = utils.OFFLINE_ERROR
-
-          log.error(errMsg)
-          return callback(errcode(errMsg, 'OFFLINE_ERROR'))
-        }
-        self._ipns.resolve(name, options, callback)
       } catch (err) {
         // lets check if we have a domain ex. /ipns/ipfs.io and resolve with dns
         if (isDomain(hash)) {
-          return self.dns(hash, options, callback)
+          return self.dns(hash, options, appendRemainder(callback, remainder))
         }
 
         log.error(err)
-        callback(errcode(new Error('Invalid IPNS name.'), 'ERR_IPNS_INVALID_NAME'))
+        return callback(errcode(new Error('Invalid IPNS name.'), 'ERR_IPNS_INVALID_NAME'))
       }
+
+      // multihash is valid lets resolve with IPNS
+      // IPNS resolve needs a online daemon
+      if (!self.isOnline() && !offline) {
+        const errMsg = utils.OFFLINE_ERROR
+
+        log.error(errMsg)
+        return callback(errcode(errMsg, 'OFFLINE_ERROR'))
+      }
+      self._ipns.resolve(`/${namespace}/${hash}`, options, appendRemainder(callback, remainder))
     }),
     pubsub: namePubsub(self)
   }

@@ -32,11 +32,7 @@ module.exports = {
       const ipfs = await argv.getIpfs()
       const result = await ipfs.name.resolve(argv.name, opts)
 
-      if (result && result.path) {
-        print(result.path)
-      } else {
-        print(result)
-      }
+      print(result)
     })())
   }
 }
