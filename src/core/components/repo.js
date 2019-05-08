@@ -39,12 +39,7 @@ module.exports = function repo (self) {
     }),
 
     gc: promisify((options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-
-      callback(new Error('Not implemented'))
+      require('./gc')(self)(options, callback)
     }),
 
     stat: promisify((options, callback) => {
