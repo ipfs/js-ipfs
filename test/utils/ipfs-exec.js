@@ -34,6 +34,9 @@ module.exports = (repoPath, opts) => {
   }))
 
   const execute = (exec, args) => {
+    // Adding '--' at the front of the command allows us to parse commands that
+    // have a parameter with spaces in it, eg
+    // ipfs refs --format="<src> -> <dst>"
     const cp = exec(yargs('-- ' + args[0]).argv._)
     const res = cp.then((res) => {
       // We can't escape the os.tmpdir warning due to:
