@@ -14,10 +14,10 @@
     "libp2p-bootstrap": "~0.9.7",
     "libp2p-kad-dht": "~0.14.12",
     "libp2p-mdns": "~0.12.2",
-    "libp2p-mplex": "~0.8.5",
     "libp2p-secio": "~0.11.1",
     "libp2p-spdy": "~0.13.3",
     "libp2p-tcp": "~0.13.0",
-    "libp2p-websocket-star": "~0.10.2"
+    "libp2p-websocket-star": "~0.10.2",
+    "pull-mplex": "~0.1.0"
   }
 }
