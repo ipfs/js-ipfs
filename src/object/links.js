@@ -162,5 +162,42 @@ module.exports = (createCommon, options) => {
         })
       })
     })
+
+    it('should get links from CBOR object', (done) => {
+      const hashes = []
+      ipfs.add(Buffer.from('test data'), (err, res1) => {
+        expect(err).to.not.exist()
+        hashes.push(res1[0].hash)
+        ipfs.add(Buffer.from('more test data'), (err, res2) => {
+          hashes.push(res2[0].hash)
+          expect(err).to.not.exist()
+          const obj = {
+            some: 'data',
+            mylink: { '/': hashes[0] },
+            myobj: {
+              anotherLink: { '/': hashes[1] }
+            }
+          }
+          ipfs.dag.put(obj, (err, cid) => {
+            expect(err).to.not.exist()
+            ipfs.object.links(cid, (err, links) => {
+              expect(err).to.not.exist()
+              expect(links.length).to.eql(2)
+
+              // TODO: js-ipfs succeeds but go returns empty strings for link name
+              // const names = [links[0].name, links[1].name]
+              // expect(names).includes('mylink')
+              // expect(names).includes('myobj/anotherLink')
+
+              const cids = [links[0].cid.toString(), links[1].cid.toString()]
+              expect(cids).includes(hashes[0])
+              expect(cids).includes(hashes[1])
+
+              done()
+            })
+          })
+        })
+      })
+    })
   })
 }

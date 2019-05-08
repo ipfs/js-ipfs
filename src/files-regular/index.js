@@ -17,7 +17,13 @@ const tests = {
   getPullStream: require('./get-pull-stream'),
   ls: require('./ls'),
   lsReadableStream: require('./ls-readable-stream'),
-  lsPullStream: require('./ls-pull-stream')
+  lsPullStream: require('./ls-pull-stream'),
+  refs: require('./refs'),
+  refsReadableStream: require('./refs-readable-stream'),
+  refsPullStream: require('./refs-pull-stream'),
+  refsLocal: require('./refs-local'),
+  refsLocalPullStream: require('./refs-local-pull-stream'),
+  refsLocalReadableStream: require('./refs-local-readable-stream')
 }
 
 module.exports = createSuite(tests)
