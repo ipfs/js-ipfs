@@ -143,22 +143,18 @@ module.exports = {
     const responseStream = new ResponseStream()
 
     // Pass-through Content-Type sniffing over initial bytes
-    const contentType = await new Promise((resolve, reject) => {
-      try {
-        const peekBytes = fileType.minimumBytes
-        peek(rawStream, peekBytes, (err, streamHead, outputStream) => {
-          if (err) {
-            log.error(err)
-            return reject(err)
-          }
-          outputStream.pipe(responseStream)
-          resolve(detectContentType(ref, streamHead))
-        })
-      } catch (err) {
-        log.error(err)
-        reject(err)
-      }
+    const { peekedStream, contentType } = await new Promise((resolve, reject) => {
+      const peekBytes = fileType.minimumBytes
+      peek(rawStream, peekBytes, (err, streamHead, peekedStream) => {
+        if (err) {
+          log.error(err)
+          return reject(err)
+        }
+        resolve({ peekedStream, contentType: detectContentType(ref, streamHead) })
+      })
     })
+
+    peekedStream.pipe(responseStream)
 
     const res = h.response(responseStream).code(rangeResponse ? 206 : 200)
 
