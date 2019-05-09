@@ -65,22 +65,6 @@ function parseProtoBuffer (buf, callback) {
   dagPB.util.deserialize(buf, callback)
 }
 
-// Recursively search the node for CIDs
-function getNodeLinks (node, path = '') {
-  let links = []
-  for (const [name, value] of Object.entries(node)) {
-    if (CID.isCID(value)) {
-      links.push({
-        name: path + name,
-        cid: value
-      })
-    } else if (typeof value === 'object') {
-      links = links.concat(getNodeLinks(value, path + name + '/'))
-    }
-  }
-  return links
-}
-
 module.exports = function object (self) {
   function editAndSave (edit) {
     return (multihash, options, callback) => {
@@ -299,7 +283,7 @@ module.exports = function object (self) {
           return callback(err)
         }
 
-        callback(null, node.links || getNodeLinks(node))
+        callback(null, node.links)
       })
     }),
 

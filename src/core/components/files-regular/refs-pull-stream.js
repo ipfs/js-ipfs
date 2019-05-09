@@ -5,6 +5,7 @@ const pullDefer = require('pull-defer')
 const pullTraverse = require('pull-traverse')
 const pullCat = require('pull-cat')
 const isIpfs = require('is-ipfs')
+const CID = require('cids')
 const { normalizePath } = require('./utils')
 const { Format } = require('./refs')
 
@@ -82,6 +83,14 @@ function refsStream (ipfs, path, options) {
   return deferred
 }
 
+// Get formatted link
+function formatLink (srcCid, dstCid, linkName, format) {
+  let out = format.replace(/<src>/g, srcCid.toString())
+  out = out.replace(/<dst>/g, dstCid.toString())
+  out = out.replace(/<linkname>/g, linkName)
+  return out
+}
+
 // Do a depth first search of the DAG, starting from the given root cid
 function objectStream (ipfs, rootCid, maxDepth, isUnique) {
   const uniques = new Set()
@@ -112,7 +121,7 @@ function objectStream (ipfs, rootCid, maxDepth, isUnique) {
     const deferred = pullDefer.source()
 
     // Get this object's links
-    ipfs.object.links(node.cid, (err, links) => {
+    getLinks(ipfs, node.cid, (err, links) => {
       if (err) {
         if (err.code === 'ERR_NOT_FOUND') {
           err.message = `Could not find object with CID: ${node.cid}`
@@ -136,10 +145,28 @@ function objectStream (ipfs, rootCid, maxDepth, isUnique) {
   return pullTraverse.depthFirst(root, traverseLevel)
 }
 
-// Get formatted link
-function formatLink (srcCid, dstCid, linkName, format) {
-  let out = format.replace(/<src>/g, srcCid.toString())
-  out = out.replace(/<dst>/g, dstCid.toString())
-  out = out.replace(/<linkname>/g, linkName)
-  return out
+// Fetch a node from IPLD then get all its links
+function getLinks (ipfs, cid, callback) {
+  ipfs._ipld.get(new CID(cid), (err, node) => {
+    if (err) {
+      return callback(err)
+    }
+    callback(null, node.value.links || getNodeLinks(node.value))
+  })
+}
+
+// Recursively search the node for CIDs
+function getNodeLinks (node, path = '') {
+  let links = []
+  for (const [name, value] of Object.entries(node)) {
+    if (CID.isCID(value)) {
+      links.push({
+        name: path + name,
+        cid: value
+      })
+    } else if (typeof value === 'object') {
+      links = links.concat(getNodeLinks(value, path + name + '/'))
+    }
+  }
+  return links
 }
