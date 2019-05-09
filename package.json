@@ -31,7 +31,7 @@
     "bl": "^3.0.0",
     "bs58": "^4.0.1",
     "buffer": "^5.2.1",
-    "cids": "~0.5.5",
+    "cids": "~0.5.8",
     "concat-stream": "github:hugomrdias/concat-stream#feat/smaller",
     "debug": "^4.1.0",
     "detect-node": "^2.0.4",

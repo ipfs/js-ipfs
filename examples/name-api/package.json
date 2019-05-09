@@ -10,6 +10,6 @@
   "license": "MIT",
   "devDependencies": {
     "browserify": "^16.2.3",
-    "http-server": "^0.11.1"
+    "http-server": "~0.11.1"
   }
 }

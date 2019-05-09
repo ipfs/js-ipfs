@@ -14,10 +14,10 @@
     "@babel/core": "^7.4.3",
     "ipfs-http-client": "../../",
     "pull-file-reader": "~1.0.2",
-    "react": "~16.6.3",
-    "react-dom": "~16.6.3",
-    "react-hot-loader": "~4.3.12",
-    "webpack": "~4.25.1",
-    "webpack-dev-server": "~3.1.10"
+    "react": "~16.8.6",
+    "react-dom": "~16.8.6",
+    "react-hot-loader": "~4.8.4",
+    "webpack": "~4.31.0",
+    "webpack-dev-server": "~3.3.1"
   }
 }
