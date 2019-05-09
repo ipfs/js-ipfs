@@ -109,7 +109,7 @@
     "hapi-pino": "^5.4.1",
     "human-to-milliseconds": "^1.0.0",
     "interface-datastore": "~0.6.0",
-    "ipfs-bitswap": "~0.23.0",
+    "ipfs-bitswap": "~0.24.0",
     "ipfs-block": "~0.8.0",
     "ipfs-block-service": "~0.15.1",
     "ipfs-http-client": "^30.1.1",
