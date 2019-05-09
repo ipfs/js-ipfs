@@ -1198,4 +1198,4 @@ IPFS implementation in JavaScript is a work in progress. As such, there's a few 
 
 ## License
 
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs?ref=badge_large)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs?ref=badge_large) [![Greenkeeper badge](https://badges.greenkeeper.io/ipfs/js-ipfs.svg)](https://greenkeeper.io/)
