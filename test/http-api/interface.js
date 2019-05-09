@@ -100,7 +100,7 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
     spawnOptions: {
       args: ['--pass ipfs-is-awesome-software', '--offline']
     }
-  }), { only: true })
+  }))
 
   tests.namePubsub(CommonFactory.create({
     spawnOptions: {
