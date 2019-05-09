@@ -107,22 +107,6 @@ function findLinks (node, links = []) {
   return links
 }
 
-// Recursively search the node for CIDs
-function getNodeLinks (node, path = '') {
-  let links = []
-  for (const [name, value] of Object.entries(node)) {
-    if (CID.isCID(value)) {
-      links.push({
-        name: path + name,
-        cid: value
-      })
-    } else if (typeof value === 'object') {
-      links = links.concat(getNodeLinks(value, path + name + '/'))
-    }
-  }
-  return links
-}
-
 module.exports = function object (self) {
   function editAndSave (edit) {
     return (multihash, options, callback) => {
@@ -338,6 +322,7 @@ module.exports = function object (self) {
           return callback(err)
         }
 
+<<<<<<< HEAD
         if (cid.codec === 'raw') {
           return callback(null, [])
         }
@@ -353,6 +338,9 @@ module.exports = function object (self) {
         }
 
         callback(new Error(`Cannot resolve links from codec ${cid.codec}`))
+=======
+        callback(null, node.links)
+>>>>>>> refactor: move links retrieval from object to refs
       })
     }),
 
