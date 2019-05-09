@@ -3,7 +3,7 @@
 const { print } = require('../utils')
 
 module.exports = {
-  command: 'refs <key>',
+  command: 'refs <key> [keys..]',
 
   describe: 'List links (references) from an object',
 
@@ -37,18 +37,15 @@ module.exports = {
     }
   },
 
-  handler ({ _, getIpfs, key, recursive, format, edges, unique, maxDepth, resolve }) {
-    // First key is in `key`
-    // Any subsequent keys are in `_` array after 'refs'
-    const keys = [key].concat(_.slice(1))
-
+  handler ({ getIpfs, key, keys, recursive, format, edges, unique, maxDepth, resolve }) {
     resolve((async () => {
       if (maxDepth === 0) {
         return
       }
 
       const ipfs = await getIpfs()
-      const refs = await ipfs.refs(keys, { recursive, format, edges, unique, maxDepth })
+      const k = [key].concat(keys)
+      const refs = await ipfs.refs(k, { recursive, format, edges, unique, maxDepth })
       for (const ref of refs) {
         if (ref.err) {
           print(ref.err, true, true)
