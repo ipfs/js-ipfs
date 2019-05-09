@@ -130,8 +130,7 @@ describe('name-pubsub', function () {
         expect(err).to.not.exist()
         expect(res).to.exist()
 
-        expect(res[5]).to.exist()
-        expect(res[5].path).to.equal(ipfsRef)
+        expect(res[5]).to.equal(ipfsRef)
         done()
       })
     })
