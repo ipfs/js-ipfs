@@ -116,7 +116,7 @@
     "ipfs-http-response": "~0.2.1",
     "ipfs-mfs": "~0.10.2",
     "ipfs-multipart": "~0.1.0",
-    "ipfs-repo": "github:ipfs/js-ipfs-repo#chore/update-datastore-level",
+    "ipfs-repo": "~0.26.5",
     "ipfs-unixfs": "~0.1.16",
     "ipfs-unixfs-exporter": "~0.36.1",
     "ipfs-unixfs-importer": "~0.38.5",
