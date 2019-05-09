@@ -2,6 +2,11 @@
   "groups": {
     "default": {
       "packages": [
+        "package.json"
+      ]
+    },
+    "examples": {
+      "packages": [
         "examples/browser-browserify/package.json",
         "examples/browser-create-react-app/package.json",
         "examples/browser-mfs/package.json",
@@ -13,8 +18,7 @@
         "examples/custom-libp2p/package.json",
         "examples/exchange-files-in-browser/package.json",
         "examples/ipfs-101/package.json",
-        "examples/run-in-electron/package.json",
-        "package.json"
+        "examples/run-in-electron/package.json"
       ]
     }
   }
