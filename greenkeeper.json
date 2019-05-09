@@ -1,0 +1,25 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "package.json"
+      ]
+    },
+    "examples": {
+      "packages": [
+        "examples/browser-browserify/package.json",
+        "examples/browser-create-react-app/package.json",
+        "examples/browser-mfs/package.json",
+        "examples/browser-parceljs/package.json",
+        "examples/browser-readablestream/package.json",
+        "examples/browser-webpack/package.json",
+        "examples/circuit-relaying/package.json",
+        "examples/custom-ipfs-repo/package.json",
+        "examples/custom-libp2p/package.json",
+        "examples/exchange-files-in-browser/package.json",
+        "examples/ipfs-101/package.json",
+        "examples/run-in-electron/package.json"
+      ]
+    }
+  }
+}
