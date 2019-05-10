@@ -126,7 +126,7 @@
     "ipld-dag-pb": "~0.15.3",
     "ipld-ethereum": "^2.0.1",
     "ipld-git": "~0.3.0",
-    "ipld-raw": "^2.0.1",
+    "ipld-raw": "^4.0.0",
     "ipld-zcash": "~0.1.6",
     "ipns": "~0.5.0",
     "is-ipfs": "~0.6.0",
