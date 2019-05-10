@@ -26,8 +26,8 @@ module.exports = {
       const ipfs = await getIpfs()
       const res = await ipfs.repo.gc()
       for (const r of res) {
-        if (res.err) {
-          streamErrors && print(res.err, true, true)
+        if (r.err) {
+          streamErrors && print(r.err, true, true)
         } else {
           print((quiet ? '' : 'Removed ') + r.cid)
         }
