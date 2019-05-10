@@ -68,6 +68,7 @@ const configSchema = s({
     })),
     Bootstrap: optional(s(['multiaddr-ipfs']))
   })),
+  ipld: 'object?',
   libp2p: optional(union(['function', 'object'])) // libp2p validates this
 }, {
   repoOwner: true
