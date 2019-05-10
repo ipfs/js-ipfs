@@ -1,9 +1,11 @@
 'use strict'
 
 const exporter = require('ipfs-unixfs-exporter')
-const pull = require('pull-stream')
+const toPullStream = require('async-iterator-to-pull-stream')
 const errCode = require('err-code')
-const { normalizePath } = require('./utils')
+const pull = require('pull-stream/pull')
+const map = require('pull-stream/throughs/map')
+const { normalizePath, mapFile } = require('./utils')
 
 module.exports = function (self) {
   return (ipfsPath, options) => {
@@ -22,12 +24,11 @@ module.exports = function (self) {
     }
 
     return pull(
-      exporter(ipfsPath, self._ipld, options),
-      pull.map(file => {
-        file.hash = file.cid.toString()
-        delete file.cid
-        return file
-      })
+      toPullStream.source(exporter.recursive(ipfsPath, self._ipld, options)),
+      map(mapFile({
+        ...options,
+        includeContent: true
+      }))
     )
   }
 }

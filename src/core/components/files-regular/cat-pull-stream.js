@@ -1,8 +1,8 @@
 'use strict'
 
 const exporter = require('ipfs-unixfs-exporter')
-const pull = require('pull-stream')
 const deferred = require('pull-defer')
+const toPullStream = require('async-iterator-to-pull-stream')
 const { normalizePath } = require('./utils')
 
 module.exports = function (self) {
@@ -15,7 +15,6 @@ module.exports = function (self) {
 
     ipfsPath = normalizePath(ipfsPath)
     const pathComponents = ipfsPath.split('/')
-    const fileNameOrHash = pathComponents[pathComponents.length - 1]
 
     if (options.preload !== false) {
       self._preload(pathComponents[0])
@@ -23,22 +22,13 @@ module.exports = function (self) {
 
     const d = deferred.source()
 
-    pull(
-      exporter(ipfsPath, self._ipld, options),
-      pull.filter(file => file.path === fileNameOrHash),
-      pull.take(1),
-      pull.collect((err, files) => {
-        if (err) {
-          return d.abort(err)
+    exporter(ipfsPath, self._ipld, options)
+      .then(file => {
+        if (!file.unixfs) {
+          return d.abort(new Error('this dag node is not a UnixFS node'))
         }
 
-        if (!files.length) {
-          return d.abort(new Error('No such file'))
-        }
-
-        const file = files[0]
-
-        if (!file.content && file.type === 'dir') {
+        if (file.unixfs.type.includes('dir')) {
           return d.abort(new Error('this dag node is a directory'))
         }
 
@@ -46,9 +36,10 @@ module.exports = function (self) {
           return d.abort(new Error('this dag node has no content'))
         }
 
-        d.resolve(file.content)
+        d.resolve(toPullStream.source(file.content(options)))
+      }, err => {
+        d.abort(err)
       })
-    )
 
     return d
   }

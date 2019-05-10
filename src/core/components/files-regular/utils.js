@@ -1,7 +1,12 @@
 'use strict'
 
 const CID = require('cids')
+<<<<<<< HEAD
 const { Buffer } = require('buffer')
+=======
+const { cidToString } = require('../../../utils/cid')
+const toPullStream = require('async-iterator-to-pull-stream')
+>>>>>>> test: most tests passing
 
 const normalizePath = (path) => {
   if (Buffer.isBuffer(path)) {
@@ -99,9 +104,37 @@ const parseChunkSize = (str, name) => {
   return size
 }
 
+<<<<<<< HEAD
 module.exports = {
   normalizePath,
   parseChunkSize,
   parseRabinString,
   parseChunkerString
+=======
+exports.mapFile = (options = {}) => {
+  return (file) => {
+    let size = 0
+    let type = 'dir'
+
+    if (file.unixfs && file.unixfs.type === 'file') {
+      size = file.unixfs.fileSize()
+      type = 'file'
+    }
+
+    const output = {
+      hash: cidToString(file.cid, { base: options.cidBase }),
+      path: file.path,
+      name: file.name,
+      depth: file.path.split('/').length,
+      size,
+      type
+    }
+
+    if (options.includeContent && file.unixfs && file.unixfs.type === 'file') {
+      output.content = toPullStream.source(file.content())
+    }
+
+    return output
+  }
+>>>>>>> test: most tests passing
 }
