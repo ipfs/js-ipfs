@@ -27,6 +27,7 @@ const s = superstruct({
 const configSchema = s({
   repo: optional(s('object|string')),
   repoOwner: 'boolean?',
+  repoDisableAutoMigration: 'boolean?',
   preload: s({
     enabled: 'boolean?',
     addresses: optional(s(['multiaddr'])),

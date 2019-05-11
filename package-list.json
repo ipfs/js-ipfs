@@ -18,6 +18,7 @@
 
     "Repo",
     ["ipfs/js-ipfs-repo", "ipfs-repo"],
+    ["AuHau/js-ipfs-repo-migrations", "ipfs-repo-migrations"],
 
     "Exchange",
     ["ipfs/js-ipfs-block-service", "ipfs-block-service"],

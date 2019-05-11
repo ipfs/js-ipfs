@@ -2,6 +2,8 @@
 
 const promisify = require('promisify-es6')
 const repoVersion = require('ipfs-repo').repoVersion
+const log = require('debug')('ipfs:repo')
+const migrator = require('ipfs-repo-migrations')
 
 module.exports = function repo (self) {
   return {
@@ -37,6 +39,25 @@ module.exports = function repo (self) {
         self._repo.version.get(callback)
       })
     }),
+
+    migrate: async function tryMigrateRepo () {
+      // Reads the repo version from datastore, not from the ipfs-repo package
+      const currentRepoVersion = await migrator.getCurrentRepoVersion(self._repo.path)
+
+      if (currentRepoVersion >= repoVersion) {
+        if (currentRepoVersion > repoVersion) {
+          log('Your repo\'s version is higher then this version of js-ipfs require! You should revert it.')
+        }
+
+        return // Nothing to migrate
+      }
+
+      if (repoVersion > migrator.getLatestMigrationVersion()) {
+        throw new Error('The ipfs-repo-migrations package does not have migration for version: ' + repoVersion)
+      }
+
+      return migrator.migrate(self._repo.path, repoVersion, true, self._repo.options)
+    },
 
     gc: promisify((options, callback) => {
       if (typeof options === 'function') {
