@@ -220,6 +220,14 @@ const ipfs = ipfsClient({
   - [`ipfs.block.put(block, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BLOCK.md#blockput)
   - [`ipfs.block.stat(cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BLOCK.md#blockstat)
 
+- [refs](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/REFS.md)
+  - [`ipfs.refs(ipfsPath, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/REFS.md#refs)
+  - [`ipfs.refsReadableStream(ipfsPath, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/REFS.md#refsreadablestream)
+  - [`ipfs.refsPullStream(ipfsPath, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/REFS.md#refspullstream)
+  - [`ipfs.refs.local([callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/REFS.md#refslocal)
+  - [`ipfs.refs.localReadableStream([callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/REFS.md#refslocalreadablestream)
+  - [`ipfs.refs.localPullStream([callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/REFS.md#refslocalpullstream)
+
 #### Graph
 
 - [dag](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DAG.md)

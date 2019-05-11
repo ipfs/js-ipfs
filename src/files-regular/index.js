@@ -20,6 +20,9 @@ module.exports = (arg) => {
     getPullStream: require('../files-regular/get-pull-stream')(send),
     ls: require('../files-regular/ls')(send),
     lsReadableStream: require('../files-regular/ls-readable-stream')(send),
-    lsPullStream: require('../files-regular/ls-pull-stream')(send)
+    lsPullStream: require('../files-regular/ls-pull-stream')(send),
+    refs: require('../files-regular/refs')(send),
+    refsReadableStream: require('../files-regular/refs-readable-stream')(send),
+    refsPullStream: require('../files-regular/refs-pull-stream')(send)
   }
 }
