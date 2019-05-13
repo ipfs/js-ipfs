@@ -181,7 +181,7 @@
     "superstruct": "~0.6.0",
     "tar-stream": "^2.0.0",
     "temp": "~0.9.0",
-    "update-notifier": "^2.5.0",
+    "update-notifier": "^3.0.0",
     "uri-to-multiaddr": "^3.0.1",
     "varint": "^5.0.0",
     "yargs": "^13.2.2",
