@@ -1,3 +1,13 @@
+<a name="0.100.1"></a>
+## [0.100.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.100.0...v0.100.1) (2019-05-13)
+
+
+### Reverts
+
+* add test for Object.links with CBOR ([#465](https://github.com/ipfs/interface-ipfs-core/issues/465)) ([4c3d84d](https://github.com/ipfs/interface-ipfs-core/commit/4c3d84d))
+
+
+
 <a name="0.100.0"></a>
 # [0.100.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.99.2...v0.100.0) (2019-05-08)
 
