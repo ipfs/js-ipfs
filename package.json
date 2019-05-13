@@ -141,7 +141,7 @@
     "libp2p": "~0.25.0",
     "libp2p-bootstrap": "~0.9.3",
     "libp2p-crypto": "~0.16.0",
-    "libp2p-kad-dht": "github:libp2p/js-libp2p-kad-dht#chore/update-cids",
+    "libp2p-kad-dht": "~0.15.0",
     "libp2p-keychain": "~0.4.1",
     "libp2p-mdns": "~0.12.0",
     "libp2p-record": "~0.6.1",
