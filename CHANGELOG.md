@@ -1,3 +1,18 @@
+<a name="31.0.0"></a>
+# [31.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v30.1.4...v31.0.0) (2019-05-13)
+
+
+### Features
+
+* refs endpoint ([#978](https://github.com/ipfs/js-ipfs-http-client/issues/978)) ([a741e10](https://github.com/ipfs/js-ipfs-http-client/commit/a741e10))
+
+
+### BREAKING CHANGES
+
+* ipfs.refs now returns objects with camelCase properties not PascalCase properties. i.e. `{ ref, err }` not `{ Ref, Err }`
+
+
+
 <a name="30.1.4"></a>
 ## [30.1.4](https://github.com/ipfs/js-ipfs-http-client/compare/v30.1.3...v30.1.4) (2019-04-29)
 
