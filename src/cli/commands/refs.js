@@ -45,14 +45,21 @@ module.exports = {
 
       const ipfs = await getIpfs()
       const k = [key].concat(keys)
-      const refs = await ipfs.refs(k, { recursive, format, edges, unique, maxDepth })
-      for (const ref of refs) {
-        if (ref.err) {
-          print(ref.err, true, true)
-        } else {
-          print(ref.ref)
-        }
-      }
+
+      return new Promise((resolve, reject) => {
+        const stream = ipfs.refsReadableStream(k, { recursive, format, edges, unique, maxDepth })
+
+        stream.on('error', reject)
+        stream.on('end', resolve)
+
+        stream.on('data', (ref) => {
+          if (ref.err) {
+            print(ref.err, true, true)
+          } else {
+            print(ref.ref)
+          }
+        })
+      })
     })())
   }
 }

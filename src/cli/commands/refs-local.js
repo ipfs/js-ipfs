@@ -10,14 +10,21 @@ module.exports = {
   handler ({ getIpfs, resolve }) {
     resolve((async () => {
       const ipfs = await getIpfs()
-      const refs = await ipfs.refs.local()
-      for (const ref of refs) {
-        if (ref.err) {
-          print(ref.err, true, true)
-        } else {
-          print(ref.ref)
-        }
-      }
+
+      return new Promise((resolve, reject) => {
+        const stream = ipfs.refs.localReadableStream()
+
+        stream.on('error', reject)
+        stream.on('end', resolve)
+
+        stream.on('data', (ref) => {
+          if (ref.err) {
+            print(ref.err, true, true)
+          } else {
+            print(ref.ref)
+          }
+        })
+      })
     })())
   }
 }
