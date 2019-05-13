@@ -409,4 +409,18 @@ describe('create node', function () {
       })
     })
   })
+
+  it('ipld: { }', function (done) {
+    this.timeout(80 * 1000)
+
+    const node = new IPFS({
+      repo: tempRepo,
+      ipld: {}
+    })
+
+    node.once('start', (err) => {
+      expect(err).to.not.exist()
+      done()
+    })
+  })
 })

@@ -103,11 +103,4 @@ describe('init', () => {
       })
     })
   })
-
-  it('ipld options', (done) => {
-    ipfs.init({ bits: 512, ipld: { formats: [require('ipld-dag-cbor'), require('ipld-dag-pb'), require('ipld-raw')] } }, (err) => {
-      expect(err).to.not.exist()
-      done()
-    })
-  })
 })
