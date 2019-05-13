@@ -20,7 +20,7 @@ module.exports = {
     },
     key: {
       alias: 'k',
-      describe: 'Name of the key to be used or a valid PeerID, as listed by "ipfs key list -l". Default: self.',
+      describe: 'Name of the key to be used, as listed by "ipfs key list -l". Default: self.',
       default: 'self'
     },
     ttl: {
