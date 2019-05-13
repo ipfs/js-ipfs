@@ -12,7 +12,7 @@
     "ipfs": "file:../../",
     "libp2p": "~0.25.0",
     "libp2p-bootstrap": "~0.9.7",
-    "libp2p-kad-dht": "~0.14.12",
+    "libp2p-kad-dht": "~0.15.0",
     "libp2p-mdns": "~0.12.2",
     "libp2p-secio": "~0.11.1",
     "libp2p-spdy": "~0.13.3",
