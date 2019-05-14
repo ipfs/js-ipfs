@@ -23,10 +23,10 @@ module.exports = function (self) {
 }
 
 function dsKeyToRef (key) {
-  // Block key is of the form /<base32 encoded string>
-  const decoder = new base32.Decoder()
-  const buff = decoder.write(key.toString().slice(1)).finalize()
   try {
+    // Block key is of the form /<base32 encoded string>
+    const decoder = new base32.Decoder()
+    const buff = Buffer.from(decoder.write(key.toString().slice(1)).finalize())
     return { ref: new CID(buff).toString() }
   } catch (err) {
     return { err: `Could not convert block with key '${key}' to CID: ${err.message}` }
