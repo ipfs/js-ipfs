@@ -1,3 +1,13 @@
+<a name="31.0.1"></a>
+## [31.0.1](https://github.com/ipfs/js-ipfs-http-client/compare/v31.0.0...v31.0.1) (2019-05-15)
+
+
+### Bug Fixes
+
+* config set with number ([#998](https://github.com/ipfs/js-ipfs-http-client/issues/998)) ([4f21bef](https://github.com/ipfs/js-ipfs-http-client/commit/4f21bef)), closes [#881](https://github.com/ipfs/js-ipfs-http-client/issues/881)
+
+
+
 <a name="31.0.0"></a>
 # [31.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v30.1.4...v31.0.0) (2019-05-13)
 
