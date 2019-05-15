@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "31.0.0",
+  "version": "31.0.1",
   "description": "A client library for the IPFS HTTP API",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "main": "src/index.js",
@@ -140,6 +140,7 @@
     "Marcin Rataj <lidel@lidel.org>",
     "Matt Bell <mappum@gmail.com>",
     "Maxime Lathuilière <k@maxlath.eu>",
+    "Michael Bradley <michaelsbradleyjr@gmail.com>",
     "Michael Muré <batolettre@gmail.com>",
     "Mikeal Rogers <mikeal.rogers@gmail.com>",
     "Mitar <mitar.git@tnode.com>",
