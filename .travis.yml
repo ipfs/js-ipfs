@@ -7,6 +7,7 @@ stages:
 
 node_js:
   - '10'
+  - '8'
 
 os:
   - linux

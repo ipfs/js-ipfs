@@ -70,7 +70,7 @@
     "through2": "^3.0.1"
   },
   "engines": {
-    "node": ">=10.0.0",
+    "node": ">=8.3.0",
     "npm": ">=3.0.0"
   },
   "repository": {
