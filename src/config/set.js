@@ -16,14 +16,12 @@ module.exports = (send) => {
       return callback(new Error('Invalid value type'))
     }
 
-    if (typeof value === 'object') {
-      value = JSON.stringify(value)
-      opts = { json: true }
-    }
-
     if (typeof value === 'boolean') {
       value = value.toString()
       opts = { bool: true }
+    } else if (typeof value !== 'string') {
+      value = JSON.stringify(value)
+      opts = { json: true }
     }
 
     send({

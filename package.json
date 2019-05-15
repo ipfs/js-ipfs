@@ -85,7 +85,7 @@
     "dirty-chai": "^2.0.1",
     "eslint-plugin-react": "^7.11.1",
     "go-ipfs-dep": "0.4.19",
-    "interface-ipfs-core": "~0.100.1",
+    "interface-ipfs-core": "~0.101.0",
     "ipfsd-ctl": "~0.42.0",
     "nock": "^10.0.2",
     "stream-equal": "^1.1.1"
