@@ -59,6 +59,19 @@ module.exports = (createCommon, options) => {
       })
     })
 
+    it('should set a number', (done) => {
+      const key = 'Discovery.MDNS.Interval'
+      const val = 11
+      ipfs.config.set(key, val, function (err) {
+        expect(err).to.not.exist()
+        ipfs.config.get(key, function (err, result) {
+          expect(err).to.not.exist()
+          expect(result).to.equal(val)
+          done()
+        })
+      })
+    })
+
     it('should set a JSON object', (done) => {
       const key = 'API.HTTPHeaders.Access-Control-Allow-Origin'
       const val = ['http://example.io']
