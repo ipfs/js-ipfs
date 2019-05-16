@@ -49,5 +49,23 @@ module.exports = [
       ]
     },
     handler: resources.filesRegular.ls.handler
+  },
+  {
+    // TODO fix method
+    method: '*',
+    path: '/api/v0/refs',
+    options: {
+      pre: [
+        { method: resources.filesRegular.refs.parseArgs, assign: 'args' }
+      ],
+      validate: resources.filesRegular.refs.validate
+    },
+    handler: resources.filesRegular.refs.handler
+  },
+  {
+    // TODO fix method
+    method: '*',
+    path: '/api/v0/refs/local',
+    handler: resources.filesRegular.refs.local.handler
   }
 ]
