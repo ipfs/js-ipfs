@@ -1,6 +1,6 @@
 {
   "name": "interface-ipfs-core",
-  "version": "0.101.1",
+  "version": "0.102.0",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "main": "src/index.js",
@@ -82,6 +82,7 @@
     "Giles <giles.bradshaw@sigyl.com>",
     "Haad <haadcode@users.noreply.github.com>",
     "Henrique Dias <hacdias@gmail.com>",
+    "Hugo Dias <hugomrdias@gmail.com>",
     "Hugo Dias <mail@hugodias.me>",
     "Jacob Heun <jacobheun@gmail.com>",
     "Jacob Karlsson <jacob.karlsson95@gmail.com>",
