@@ -1,3 +1,13 @@
+<a name="0.102.0"></a>
+# [0.102.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.101.1...v0.102.0) (2019-05-16)
+
+
+### Features
+
+* add tests for add data using File DOM api ([#461](https://github.com/ipfs/interface-ipfs-core/issues/461)) ([86a1f3f](https://github.com/ipfs/interface-ipfs-core/commit/86a1f3f))
+
+
+
 <a name="0.101.1"></a>
 ## [0.101.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.101.0...v0.101.1) (2019-05-16)
 
