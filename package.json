@@ -1,6 +1,6 @@
 {
   "name": "js-ipfs-utils",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Package to aggregate shared logic and dependencies for the IPFS ecosystem",
   "main": "src/index.js",
   "author": "Hugo Dias <hugomrdias@gmail.com>",
@@ -41,5 +41,8 @@
     "electron": "^5.0.1",
     "electron-mocha": "^8.0.2",
     "pull-stream": "^3.6.11"
-  }
+  },
+  "contributors": [
+    "Hugo Dias <hugomrdias@gmail.com>"
+  ]
 }
