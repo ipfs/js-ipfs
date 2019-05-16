@@ -1,3 +1,13 @@
+<a name="31.1.0"></a>
+# [31.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v31.0.2...v31.1.0) (2019-05-16)
+
+
+### Features
+
+* add support for File DOM API to files-regular ([#986](https://github.com/ipfs/js-ipfs-http-client/issues/986)) ([7b49f7e](https://github.com/ipfs/js-ipfs-http-client/commit/7b49f7e))
+
+
+
 <a name="31.0.2"></a>
 ## [31.0.2](https://github.com/ipfs/js-ipfs-http-client/compare/v31.0.1...v31.0.2) (2019-05-16)
 
