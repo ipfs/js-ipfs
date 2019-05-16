@@ -159,5 +159,57 @@ module.exports = (http) => {
         })
       })
     })
+
+    describe('/refs', () => {
+      it('should list refs', async () => {
+        const form = new FormData()
+        form.append('file', Buffer.from('TEST' + Date.now()), { filename: 'data.txt' })
+        const headers = form.getHeaders()
+
+        const payload = await streamToPromise(form)
+        let res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/add?wrap-with-directory=true',
+          headers,
+          payload
+        })
+        expect(res.statusCode).to.equal(200)
+
+        const files = res.result.trim().split('\n').map(r => JSON.parse(r))
+        const dir = files[files.length - 1]
+
+        res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/refs?format=<linkname>&arg=' + dir.Hash
+        })
+        expect(res.statusCode).to.equal(200)
+        expect(JSON.parse(res.result).Ref).to.equal('data.txt')
+      })
+    })
+
+    describe('/refs/local', () => {
+      it('should list local refs', async () => {
+        const form = new FormData()
+        form.append('file', Buffer.from('TEST' + Date.now()), { filename: 'data.txt' })
+        const headers = form.getHeaders()
+
+        const payload = await streamToPromise(form)
+        let res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/add?wrap-with-directory=true',
+          headers,
+          payload
+        })
+        expect(res.statusCode).to.equal(200)
+
+        res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/refs/local'
+        })
+        expect(res.statusCode).to.equal(200)
+        const refs = res.result.trim().split('\n').map(JSON.parse).map(r => r.Ref)
+        expect(refs.length).to.be.gt(0)
+      })
+    })
   })
 }
