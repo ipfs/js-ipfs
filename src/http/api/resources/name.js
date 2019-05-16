@@ -7,7 +7,7 @@ exports.resolve = {
     query: Joi.object().keys({
       arg: Joi.string(),
       nocache: Joi.boolean().default(false),
-      recursive: Joi.boolean().default(false)
+      recursive: Joi.boolean().default(true)
     }).unknown()
   },
   async handler (request, h) {

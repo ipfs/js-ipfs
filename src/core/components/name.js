@@ -152,7 +152,7 @@ module.exports = function name (self) {
 
       options = mergeOptions({
         nocache: false,
-        recursive: false
+        recursive: true
       }, options)
 
       const offline = self._options.offline

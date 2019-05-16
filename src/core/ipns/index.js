@@ -2,7 +2,6 @@
 
 const { createFromPrivKey } = require('peer-id')
 const series = require('async/series')
-const Receptacle = require('receptacle')
 
 const errcode = require('err-code')
 const debug = require('debug')
@@ -13,7 +12,8 @@ const IpnsPublisher = require('./publisher')
 const IpnsRepublisher = require('./republisher')
 const IpnsResolver = require('./resolver')
 const path = require('./path')
-
+const { normalizePath } = require('../utils')
+const TLRU = require('../../utils/tlru')
 const defaultRecordTtl = 60 * 1000
 
 class IPNS {
@@ -21,12 +21,19 @@ class IPNS {
     this.publisher = new IpnsPublisher(routing, datastore)
     this.republisher = new IpnsRepublisher(this.publisher, datastore, peerInfo, keychain, options)
     this.resolver = new IpnsResolver(routing)
-    this.cache = new Receptacle({ max: 1000 }) // Create an LRU cache with max 1000 items
+    this.cache = new TLRU(1000)
     this.routing = routing
   }
 
   // Publish
-  publish (privKey, value, lifetime, callback) {
+  publish (privKey, value, lifetime = IpnsPublisher.defaultRecordLifetime, callback) {
+    try {
+      value = normalizePath(value)
+    } catch (err) {
+      log.error(err)
+      return callback(err)
+    }
+
     series([
       (cb) => createFromPrivKey(privKey.bytes, cb),
       (cb) => this.publisher.publishWithEOL(privKey, value, lifetime, cb)
@@ -38,12 +45,12 @@ class IPNS {
 
       log(`IPNS value ${value} was published correctly`)
 
-      // Add to cache
+      // // Add to cache
       const id = results[0].toB58String()
       const ttEol = parseFloat(lifetime)
       const ttl = (ttEol < defaultRecordTtl) ? ttEol : defaultRecordTtl
 
-      this.cache.set(id, value, { ttl: ttl })
+      this.cache.set(id, value, ttl)
 
       log(`IPNS value ${value} was cached correctly`)
 
@@ -96,7 +103,7 @@ class IPNS {
   // Initialize keyspace
   // sets the ipns record for the given key to point to an empty directory
   initializeKeyspace (privKey, value, callback) {
-    this.publisher.publish(privKey, value, callback)
+    this.publish(privKey, value, IpnsPublisher.defaultRecordLifetime, callback)
   }
 }
 

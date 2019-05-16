@@ -18,7 +18,7 @@ module.exports = {
       type: 'boolean',
       alias: 'r',
       describe: 'Resolve until the result is not an IPNS name. Default: false.',
-      default: false
+      default: true
     }
   },
 
