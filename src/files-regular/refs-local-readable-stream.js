@@ -13,6 +13,8 @@ module.exports = (send) => {
     send({ path: 'refs/local', qs: opts }, (err, stream) => {
       if (err) { return pt.destroy(err) }
 
+      stream.once('error', (err) => pt.destroy(err))
+
       pump(stream, through.obj(function (r, enc, cb) {
         cb(null, { ref: r.Ref, err: r.Err })
       }), pt)
