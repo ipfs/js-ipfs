@@ -7,6 +7,7 @@ const pull = require('pull-stream')
 const path = require('path')
 const expectTimeout = require('../utils/expect-timeout')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const { supportsFileReader } = require('ipfs-utils/src/supports')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -34,6 +35,18 @@ module.exports = (createCommon, options) => {
     })
 
     after((done) => common.teardown(done))
+
+    it('should add a File', function (done) {
+      if (supportsFileReader) {
+        ipfs.add(new self.File(['should add a File'], 'filename.txt', { type: 'text/plain' }), (err, filesAdded) => {
+          expect(err).to.not.exist()
+          expect(filesAdded[0].hash).to.be.eq('QmTVfLxf3qXiJgr4KwG6UBckcNvTqBp93Rwy5f7h3mHsVC')
+          done()
+        })
+      } else {
+        this.skip('skip in node')
+      }
+    })
 
     it('should add a Buffer', (done) => {
       ipfs.add(fixtures.smallFile.data, (err, filesAdded) => {
@@ -125,7 +138,7 @@ module.exports = (createCommon, options) => {
 
       ipfs.add(data, (err) => {
         expect(err).to.exist()
-        expect(err.message).to.contain('invalid input')
+        expect(err.message).to.contain('Input not supported')
         done()
       })
     })
@@ -135,7 +148,7 @@ module.exports = (createCommon, options) => {
 
       ipfs.add(data, (err) => {
         expect(err).to.exist()
-        expect(err.message).to.contain('invalid input')
+        expect(err.message).to.contain('Input not supported')
         done()
       })
     })

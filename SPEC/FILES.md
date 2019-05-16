@@ -44,11 +44,12 @@ Where `data` may be:
 - a [`Buffer instance`][b]
 - a [`Readable Stream`][rs]
 - a [`Pull Stream`][ps]
+- a [`File`][file]
 - an array of objects, each of the form:
 ```JavaScript
 {
   path: '/tmp/myfile.txt', // The file path
-  content: <data> // A Buffer, Readable Stream or Pull Stream with the contents of the file
+  content: <data> // A Buffer, Readable Stream, Pull Stream or File with the contents of the file
 }
 ```
 If no `content` is passed, then the path is treated as an empty directory
@@ -137,7 +138,7 @@ Returns a Readable Stream of class Duplex, where objects can be written of the f
 ```js
 {
   path: '/tmp/myfile.txt', // The file path
-  content: <data> // A Buffer, Readable Stream or Pull Stream with the contents of the file
+  content: <data> // A Buffer, Readable Stream, Pull Stream or File with the contents of the file
 }
 ```
 
@@ -185,7 +186,7 @@ Returns a Pull Stream, where objects can be written of the forms
 ```js
 {
   path: '/tmp/myfile.txt', // The file path
-  content: <data> // A Buffer, Readable Stream or Pull Stream with the contents of the file
+  content: <data> // A Buffer, Readable Stream, Pull Stream or File with the contents of the file
 }
 ```
 
@@ -1136,5 +1137,6 @@ A great source of [examples][] can be found in the tests for this API.
 [b]: https://www.npmjs.com/package/buffer
 [rs]: https://www.npmjs.com/package/readable-stream
 [ps]: https://www.npmjs.com/package/pull-stream
+[file]: https://developer.mozilla.org/en-US/docs/Web/API/File
 [cid]: https://www.npmjs.com/package/cids
 [blob]: https://developer.mozilla.org/en-US/docs/Web/API/Blob
