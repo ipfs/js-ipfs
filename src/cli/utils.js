@@ -81,7 +81,7 @@ exports.getRepoPath = () => {
 let visible = true
 exports.disablePrinting = () => { visible = false }
 
-exports.print = (msg, newline) => {
+exports.print = (msg, newline, isError = false) => {
   if (newline === undefined) {
     newline = true
   }
@@ -91,7 +91,8 @@ exports.print = (msg, newline) => {
       msg = ''
     }
     msg = newline ? msg + '\n' : msg
-    process.stdout.write(msg)
+    const outStream = isError ? process.stderr : process.stdout
+    outStream.write(msg)
   }
 }
 
