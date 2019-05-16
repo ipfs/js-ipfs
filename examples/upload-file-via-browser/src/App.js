@@ -1,9 +1,6 @@
 'use strict'
 const React = require('react')
-const ipfsClient = require('ipfs-http-client')
-
-// create a stream from a file, which enables uploads of big files without allocating memory twice
-const fileReaderPullStream = require('pull-file-reader')
+const ipfsClient = require('../../../src')
 
 class App extends React.Component {
   constructor () {
@@ -11,7 +8,7 @@ class App extends React.Component {
     this.state = {
       added_file_hash: null
     }
-    this.ipfs = ipfsClient('localhost', '5001')
+    this.ipfs = ipfsClient('localhost', '58041')
 
     // bind methods
     this.captureFile = this.captureFile.bind(this)
@@ -22,25 +19,23 @@ class App extends React.Component {
   captureFile (event) {
     event.stopPropagation()
     event.preventDefault()
-    const file = event.target.files[0]
     if (document.getElementById('keepFilename').checked) {
-      this.saveToIpfsWithFilename(file)
+      this.saveToIpfsWithFilename(event.target.files)
     } else {
-      this.saveToIpfs(file)
+      this.saveToIpfs(event.target.files)
     }
   }
 
   // Example #1
   // Add file to IPFS and return a CID
-  saveToIpfs (file) {
+  saveToIpfs (files) {
     let ipfsId
-    const fileStream = fileReaderPullStream(file)
-    this.ipfs.add(fileStream, { progress: (prog) => console.log(`received: ${prog}`) })
+    this.ipfs.add([...files], { progress: (prog) => console.log(`received: ${prog}`) })
       .then((response) => {
         console.log(response)
         ipfsId = response[0].hash
         console.log(ipfsId)
-        this.setState({added_file_hash: ipfsId})
+        this.setState({ added_file_hash: ipfsId })
       }).catch((err) => {
         console.error(err)
       })
@@ -48,12 +43,12 @@ class App extends React.Component {
 
   // Example #2
   // Add file to IPFS and wrap it in a directory to keep the original filename
-  saveToIpfsWithFilename (file) {
+  saveToIpfsWithFilename (files) {
+    const file = [...files][0]
     let ipfsId
-    const fileStream = fileReaderPullStream(file)
     const fileDetails = {
       path: file.name,
-      content: fileStream
+      content: file
     }
     const options = {
       wrapWithDirectory: true,
@@ -65,7 +60,7 @@ class App extends React.Component {
         // CID of wrapping directory is returned last
         ipfsId = response[response.length - 1].hash
         console.log(ipfsId)
-        this.setState({added_file_hash: ipfsId})
+        this.setState({ added_file_hash: ipfsId })
       }).catch((err) => {
         console.error(err)
       })

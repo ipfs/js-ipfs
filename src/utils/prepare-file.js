@@ -2,6 +2,13 @@
 
 const isNode = require('detect-node')
 const flatmap = require('flatmap')
+const { Readable } = require('readable-stream')
+const kindOf = require('kind-of')
+const { isSource } = require('is-pull-stream')
+const isStream = require('is-stream')
+const pullToStream = require('pull-to-stream')
+const { supportsFileReader } = require('ipfs-utils/src/supports')
+const streamFromFileReader = require('ipfs-utils/src/streams/stream-from-filereader')
 
 function loadPaths (opts, file) {
   const path = require('path')
@@ -73,10 +80,36 @@ function loadPaths (opts, file) {
   }
 }
 
+function contentToStream (content) {
+  if (supportsFileReader && kindOf(content) === 'file') {
+    return streamFromFileReader(content)
+  }
+
+  if (kindOf(content) === 'buffer') {
+    return new Readable({
+      read () {
+        this.push(content)
+        this.push(null)
+      }
+    })
+  }
+
+  if (isSource(content)) {
+    return pullToStream.readable(content)
+  }
+
+  if (isStream.readable(content)) {
+    return content
+  }
+
+  throw new Error(`Input not supported. Expected Buffer|ReadableStream|PullStream|File got ${kindOf(content)}. Check the documentation for more info https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#add`)
+}
+
 function prepareFile (file, opts) {
   let files = [].concat(file)
 
   return flatmap(files, (file) => {
+    // add from fs with file path
     if (typeof file === 'string') {
       if (!isNode) {
         throw new Error('Can only add file paths in node')
@@ -85,20 +118,34 @@ function prepareFile (file, opts) {
       return loadPaths(opts, file)
     }
 
-    if (file.path && !file.content) {
-      file.dir = true
-      return file
-    }
+    // add with object syntax { path : <string> , content: <Buffer|ReadableStream|PullStream|File }
+    if (kindOf(file) === 'object') {
+      // treat as an empty directory when path is a string and content undefined
+      if (file.path && kindOf(file.path) === 'string' && !file.content) {
+        file.dir = true
+        return file
+      }
 
-    if (file.content || file.dir) {
-      return file
+      // just return when directory
+      if (file.dir) {
+        return file
+      }
+
+      if (file.content) {
+        return {
+          path: file.path || '',
+          symlink: false,
+          dir: false,
+          content: contentToStream(file.content)
+        }
+      }
     }
 
     return {
       path: '',
       symlink: false,
       dir: false,
-      content: file
+      content: contentToStream(file)
     }
   })
 }

@@ -1,14 +1,11 @@
 'use strict'
 
 const path = require('path')
-const webpack = require('webpack')
 
 module.exports = {
   mode: 'development',
   devtool: 'eval',
   entry: [
-    'webpack-dev-server/client?http://localhost:3000',
-    'webpack/hot/only-dev-server',
     './src/index'
   ],
   output: {
@@ -16,9 +13,6 @@ module.exports = {
     filename: 'bundle.js',
     publicPath: '/static/'
   },
-  plugins: [
-    new webpack.HotModuleReplacementPlugin()
-  ],
   module: {
     rules: [
       {
@@ -28,8 +22,7 @@ module.exports = {
           {
             loader: 'babel-loader',
             options: {
-              presets: ['@babel/preset-env', '@babel/preset-react'],
-              plugins: ['react-hot-loader/babel']
+              presets: ['@babel/preset-env', '@babel/preset-react']
             }
           }
         ]
