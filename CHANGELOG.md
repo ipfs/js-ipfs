@@ -1,3 +1,22 @@
+<a name="0.36.0-pre.0"></a>
+# [0.36.0-pre.0](https://github.com/ipfs/js-ipfs/compare/v0.35.0...v0.36.0-pre.0) (2019-05-17)
+
+
+### Bug Fixes
+
+* **package:** update ipfs-http-client to version 31.0.0 ([#2052](https://github.com/ipfs/js-ipfs/issues/2052)) ([906f8d0](https://github.com/ipfs/js-ipfs/commit/906f8d0))
+* correctly validate ipld config ([#2033](https://github.com/ipfs/js-ipfs/issues/2033)) ([eebc17a](https://github.com/ipfs/js-ipfs/commit/eebc17a))
+* **package:** update hapi-pino to version 6.0.0 ([#2043](https://github.com/ipfs/js-ipfs/issues/2043)) ([f4e3bd0](https://github.com/ipfs/js-ipfs/commit/f4e3bd0))
+
+
+### Features
+
+* add support for File DOM API to files-regular ([#2013](https://github.com/ipfs/js-ipfs/issues/2013)) ([0a08192](https://github.com/ipfs/js-ipfs/commit/0a08192))
+* implement ipfs refs and refs local ([#2004](https://github.com/ipfs/js-ipfs/issues/2004)) ([6dc9075](https://github.com/ipfs/js-ipfs/commit/6dc9075))
+* **gateway:** add streaming, conditional and range requests ([#1989](https://github.com/ipfs/js-ipfs/issues/1989)) ([48a8e75](https://github.com/ipfs/js-ipfs/commit/48a8e75))
+
+
+
 <a name="0.35.0"></a>
 # [0.35.0](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.7...v0.35.0) (2019-04-12)
 
