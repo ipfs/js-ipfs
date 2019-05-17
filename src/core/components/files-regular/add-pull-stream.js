@@ -1,13 +1,20 @@
 'use strict'
 
 const importer = require('ipfs-unixfs-importer')
-const pull = require('pull-stream')
+const kindOf = require('kind-of')
+const CID = require('cids')
+const pullValues = require('pull-stream/sources/values')
+const pullMap = require('pull-stream/throughs/map')
+const pullAsyncMap = require('pull-stream/throughs/async-map')
+const pullFlatten = require('pull-stream/throughs/flatten')
+const pull = require('pull-stream/pull')
 const toPull = require('stream-to-pull-stream')
 const waterfall = require('async/waterfall')
 const isStream = require('is-stream')
-const isSource = require('is-pull-stream').isSource
-const CID = require('cids')
+const { isSource } = require('is-pull-stream')
 const { parseChunkerString } = require('./utils')
+const streamFromFileReader = require('ipfs-utils/src/streams/stream-from-filereader')
+const { supportsFileReader } = require('ipfs-utils/src/supports')
 
 const WRAPPER = 'wrapper/'
 
@@ -52,9 +59,12 @@ function normalizeContent (content, opts) {
   }
 
   return content.map((data) => {
+    if (supportsFileReader && kindOf(data) === 'file') {
+      data = { path: '', content: toPull.source(streamFromFileReader(data)) }
+    }
     // Buffer input
     if (Buffer.isBuffer(data)) {
-      data = { path: '', content: pull.values([data]) }
+      data = { path: '', content: pullValues([data]) }
     }
 
     // Readable stream input
@@ -68,7 +78,7 @@ function normalizeContent (content, opts) {
 
     if (data && data.content && typeof data.content !== 'function') {
       if (Buffer.isBuffer(data.content)) {
-        data.content = pull.values([data.content])
+        data.content = pullValues([data.content])
       }
 
       if (isStream.readable(data.content)) {
@@ -124,7 +134,7 @@ module.exports = function (self) {
     try {
       chunkerOptions = parseChunkerString(options.chunker)
     } catch (err) {
-      return pull.map(() => { throw err })
+      return pullMap(() => { throw err })
     }
     const opts = Object.assign({}, {
       shardSplitThreshold: self._options.EXPERIMENTAL.sharding
@@ -147,12 +157,12 @@ module.exports = function (self) {
 
     opts.progress = progress
     return pull(
-      pull.map(content => normalizeContent(content, opts)),
-      pull.flatten(),
+      pullMap(content => normalizeContent(content, opts)),
+      pullFlatten(),
       importer(self._ipld, opts),
-      pull.asyncMap((file, cb) => prepareFile(file, self, opts, cb)),
-      pull.map(file => preloadFile(file, self, opts)),
-      pull.asyncMap((file, cb) => pinFile(file, self, opts, cb))
+      pullAsyncMap((file, cb) => prepareFile(file, self, opts, cb)),
+      pullMap(file => preloadFile(file, self, opts)),
+      pullAsyncMap((file, cb) => pinFile(file, self, opts, cb))
     )
   }
 }
