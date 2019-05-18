@@ -109,7 +109,7 @@ module.exports = {
     argv.resolve((async () => {
       const ipfs = await getIpfs()
 
-      return ipfs.files.write(path, process.stdin, {
+      await ipfs.files.write(path, process.stdin, {
         offset,
         length,
         create,

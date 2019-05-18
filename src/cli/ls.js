@@ -9,7 +9,7 @@ const {
 } = require('./utils')
 const {
   FILE_SEPARATOR
-} = require('../core/utils')
+} = require('../core/utils/constants')
 
 module.exports = {
   command: 'ls [path]',

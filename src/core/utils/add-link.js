@@ -5,11 +5,9 @@ const {
   DAGLink
 } = require('ipld-dag-pb')
 const CID = require('cids')
-const waterfall = require('async/waterfall')
-const whilst = require('async/whilst')
 const log = require('debug')('ipfs:mfs:core:utils:add-link')
 const UnixFS = require('ipfs-unixfs')
-const DirSharded = require('ipfs-unixfs-importer/src/importer/dir-sharded')
+const DirSharded = require('ipfs-unixfs-importer/src/dir-sharded')
 const {
   updateHamtDirectory,
   recreateHamtLevel,
@@ -17,49 +15,32 @@ const {
   toPrefix,
   addLinksToHamtBucket
 } = require('./hamt-utils')
+const errCode = require('err-code')
+const mc = require('multicodec')
+const mh = require('multihashes')
+const last = require('async-iterator-last')
 
-const defaultOptions = {
-  parent: undefined,
-  cid: undefined,
-  name: '',
-  size: undefined,
-  flush: true,
-  cidVersion: 0,
-  hashAlg: 'sha2-256',
-  codec: 'dag-pb',
-  shardSplitThreshold: 1000
-}
-
-const addLink = (context, options, callback) => {
-  options = Object.assign({}, defaultOptions, options)
-
-  if (!options.parentCid) {
-    return callback(new Error('No parent CID passed to addLink'))
+const addLink = async (context, options) => {
+  if (!options.parentCid && !options.parent) {
+    throw errCode(new Error('No parent node or CID passed to addLink'), 'EINVALIDPARENT')
   }
 
-  if (!CID.isCID(options.parentCid)) {
-    return callback(new Error('Invalid CID passed to addLink'))
+  if (options.parentCid && !CID.isCID(options.parentCid)) {
+    throw errCode(new Error('Invalid CID passed to addLink'), 'EINVALIDPARENTCID')
   }
 
   if (!options.parent) {
-    log('Loading parent node', options.parentCid.toBaseEncodedString())
+    log(`Loading parent node ${options.parentCid}`)
 
-    return waterfall([
-      (cb) => context.ipld.get(options.parentCid, cb),
-      (result, cb) => cb(null, result.value),
-      (node, cb) => addLink(context, {
-        ...options,
-        parent: node
-      }, cb)
-    ], callback)
+    options.parent = await context.ipld.get(options.parentCid)
   }
 
   if (!options.cid) {
-    return callback(new Error('No child cid passed to addLink'))
+    throw errCode(new Error('No child cid passed to addLink'), 'EINVALIDCHILDCID')
   }
 
   if (!options.name) {
-    return callback(new Error('No child name passed to addLink'))
+    throw errCode(new Error('No child name passed to addLink'), 'EINVALIDCHILDNAME')
   }
 
   if (!CID.isCID(options.cid)) {
@@ -67,103 +48,90 @@ const addLink = (context, options, callback) => {
   }
 
   if (!options.size && options.size !== 0) {
-    return callback(new Error('No child size passed to addLink'))
+    throw errCode(new Error('No child size passed to addLink'), 'EINVALIDCHILDSIZE')
   }
 
-  const meta = UnixFS.unmarshal(options.parent.data)
+  const meta = UnixFS.unmarshal(options.parent.Data)
 
   if (meta.type === 'hamt-sharded-directory') {
     log('Adding link to sharded directory')
 
-    return addToShardedDirectory(context, options, callback)
+    return addToShardedDirectory(context, options)
   }
 
-  if (options.parent.links.length >= options.shardSplitThreshold) {
+  if (options.parent.Links.length >= options.shardSplitThreshold) {
     log('Converting directory to sharded directory')
 
-    return convertToShardedDirectory(context, options, callback)
+    return convertToShardedDirectory(context, options)
   }
 
-  log(`Adding ${options.name} to regular directory`)
+  log(`Adding ${options.name} (${options.cid}) to regular directory`)
 
-  addToDirectory(context, options, callback)
+  return addToDirectory(context, options)
 }
 
-const convertToShardedDirectory = (context, options, callback) => {
-  createShard(context, options.parent.links.map(link => ({
-    name: link.name,
-    size: link.size,
-    multihash: link.cid.buffer
+const convertToShardedDirectory = async (context, options) => {
+  const result = await createShard(context, options.parent.Links.map(link => ({
+    name: link.Name,
+    size: link.Tsize,
+    cid: link.Hash
   })).concat({
     name: options.name,
     size: options.size,
-    multihash: options.cid.buffer
-  }), {}, (err, result) => {
-    if (!err) {
-      log('Converted directory to sharded directory', result.cid.toBaseEncodedString())
-    }
+    cid: options.cid
+  }), options)
 
-    callback(err, result)
+  log(`Converted directory to sharded directory ${result.cid}`)
+
+  return result
+}
+
+const addToDirectory = async (context, options) => {
+  let parent = await DAGNode.rmLink(options.parent, options.name)
+  parent = await DAGNode.addLink(parent, new DAGLink(options.name, options.size, options.cid))
+
+  const format = mc[options.format.toUpperCase().replace(/-/g, '_')]
+  const hashAlg = mh.names[options.hashAlg]
+
+  // Persist the new parent DAGNode
+  const cid = await context.ipld.put(parent, format, {
+    cidVersion: options.cidVersion,
+    hashAlg,
+    hashOnly: !options.flush
   })
+
+  return {
+    node: parent,
+    cid
+  }
 }
 
-const addToDirectory = (context, options, callback) => {
-  waterfall([
-    (done) => DAGNode.rmLink(options.parent, options.name, done),
-    (parent, done) => DAGNode.addLink(parent, new DAGLink(options.name, options.size, options.cid), done),
-    (parent, done) => {
-      // Persist the new parent DAGNode
-      context.ipld.put(parent, {
-        version: options.cidVersion,
-        format: options.codec,
-        hashAlg: options.hashAlg,
-        hashOnly: !options.flush
-      }, (error, cid) => done(error, {
-        node: parent,
-        cid
-      }))
-    }
-  ], callback)
+const addToShardedDirectory = async (context, options) => {
+  const {
+    shard, path
+  } = await addFileToShardedDirectory(context, options)
+
+  const result = await last(shard.flush('', context.ipld))
+
+  // we have written out the shard, but only one sub-shard will have been written so replace it in the original shard
+  const oldLink = options.parent.Links
+    .find(link => link.Name.substring(0, 2) === path[0].prefix)
+
+  const newLink = result.node.Links
+    .find(link => link.Name.substring(0, 2) === path[0].prefix)
+
+  let parent = options.parent
+
+  if (oldLink) {
+    parent = await DAGNode.rmLink(options.parent, oldLink.Name)
+  }
+
+  parent = await DAGNode.addLink(parent, newLink)
+
+  return updateHamtDirectory(context, parent.Links, path[0].bucket, options)
 }
 
-const addToShardedDirectory = (context, options, callback) => {
-  return addFileToShardedDirectoryy(context, options, (err, result) => {
-    if (err) {
-      return callback(err)
-    }
-
-    const {
-      shard, path
-    } = result
-
-    shard.flush('', context.ipld, null, async (err, result) => {
-      if (err) {
-        return callback(err)
-      }
-
-      // we have written out the shard, but only one sub-shard will have been written so replace it in the original shard
-      const oldLink = options.parent.links
-        .find(link => link.name.substring(0, 2) === path[0].prefix)
-
-      const newLink = result.node.links
-        .find(link => link.name.substring(0, 2) === path[0].prefix)
-
-      waterfall([
-        (done) => {
-          if (!oldLink) {
-            return done(null, options.parent)
-          }
-
-          DAGNode.rmLink(options.parent, oldLink.name, done)
-        },
-        (parent, done) => DAGNode.addLink(parent, newLink, done),
-        (parent, done) => updateHamtDirectory(context, parent.links, path[0].bucket, options, done)
-      ], callback)
-    })
-  })
-}
-
-const addFileToShardedDirectoryy = (context, options, callback) => {
+const addFileToShardedDirectory = async (context, options) => {
   const file = {
     name: options.name,
     cid: options.cid,
@@ -171,115 +139,94 @@ const addFileToShardedDirectoryy = (context, options, callback) => {
   }
 
   // start at the root bucket and descend, loading nodes as we go
-  recreateHamtLevel(options.parent.links, null, null, null, async (err, rootBucket) => {
-    if (err) {
-      return callback(err)
+  const rootBucket = await recreateHamtLevel(options.parent.Links)
+
+  const shard = new DirSharded({
+    root: true,
+    dir: true,
+    parent: null,
+    parentKey: null,
+    path: '',
+    dirty: true,
+    flat: false
+  }, options)
+  shard._bucket = rootBucket
+
+  // load subshards until the bucket & position no longer changes
+  const position = await rootBucket._findNewBucketAndPos(file.name)
+  const path = toBucketPath(position)
+  path[0].node = options.parent
+  let index = 0
+
+  while (index < path.length) {
+    let segment = path[index]
+    index++
+    let node = segment.node
+
+    let link = node.Links
+      .find(link => link.Name.substring(0, 2) === segment.prefix)
+
+    if (!link) {
+      // prefix is new, file will be added to the current bucket
+      log(`Link ${segment.prefix}${file.name} will be added`)
+      index = path.length
+
+      break
     }
 
-    const shard = new DirSharded({
-      root: true,
-      dir: true,
-      parent: null,
-      parentKey: null,
-      path: '',
-      dirty: true,
-      flat: false
-    })
-    shard._bucket = rootBucket
+    if (link.Name === `${segment.prefix}${file.name}`) {
+      // file already existed, file will be added to the current bucket
+      log(`Link ${segment.prefix}${file.name} will be replaced`)
+      index = path.length
 
-    // load subshards until the bucket & position no longer changes
-    const position = await rootBucket._findNewBucketAndPos(file.name)
-    const path = toBucketPath(position)
-    path[0].node = options.parent
-    let index = 0
+      break
+    }
 
-    whilst(
-      () => index < path.length,
-      (next) => {
-        let segment = path[index]
-        index++
-        let node = segment.node
+    if (link.Name.length > 2) {
+      // another file had the same prefix, will be replaced with a subshard
+      log(`Link ${link.Name} will be replaced with a subshard`)
+      index = path.length
 
-        let link = node.links
-          .find(link => link.name.substring(0, 2) === segment.prefix)
+      break
+    }
 
-        if (!link) {
-          // prefix is new, file will be added to the current bucket
-          log(`Link ${segment.prefix}${file.name} will be added`)
-          index = path.length
-          return next(null, shard)
-        }
+    // load sub-shard
+    log(`Found subshard ${segment.prefix}`)
+    const subShard = await context.ipld.get(link.Hash)
 
-        if (link.name === `${segment.prefix}${file.name}`) {
-          // file already existed, file will be added to the current bucket
-          log(`Link ${segment.prefix}${file.name} will be replaced`)
-          index = path.length
-          return next(null, shard)
-        }
+    // subshard hasn't been loaded, descend to the next level of the HAMT
+    if (!path[index]) {
+      log(`Loaded new subshard ${segment.prefix}`)
+      await recreateHamtLevel(subShard.Links, rootBucket, segment.bucket, parseInt(segment.prefix, 16))
 
-        if (link.name.length > 2) {
-          // another file had the same prefix, will be replaced with a subshard
-          log(`Link ${link.name} will be replaced with a subshard`)
-          index = path.length
-          return next(null, shard)
-        }
+      const position = await rootBucket._findNewBucketAndPos(file.name)
 
-        // load sub-shard
-        log(`Found subshard ${segment.prefix}`)
-        context.ipld.get(link.cid, (err, result) => {
-          if (err) {
-            return next(err)
-          }
+      path.push({
+        bucket: position.bucket,
+        prefix: toPrefix(position.pos),
+        node: subShard
+      })
 
-          // subshard hasn't been loaded, descend to the next level of the HAMT
-          if (!path[index]) {
-            log(`Loaded new subshard ${segment.prefix}`)
-            const node = result.value
+      break
+    }
 
-            return recreateHamtLevel(node.links, rootBucket, segment.bucket, parseInt(segment.prefix, 16), async (err) => {
-              if (err) {
-                return next(err)
-              }
+    const nextSegment = path[index]
 
-              const position = await rootBucket._findNewBucketAndPos(file.name)
+    // add next level's worth of links to bucket
+    await addLinksToHamtBucket(subShard.Links, nextSegment.bucket, rootBucket)
 
-              path.push({
-                bucket: position.bucket,
-                prefix: toPrefix(position.pos),
-                node: node
-              })
+    nextSegment.node = subShard
+  }
 
-              return next(null, shard)
-            })
-          }
-
-          const nextSegment = path[index]
-
-          // add next level's worth of links to bucket
-          addLinksToHamtBucket(result.value.links, nextSegment.bucket, rootBucket, (error) => {
-            nextSegment.node = result.value
-
-            next(error, shard)
-          })
-        })
-      },
-      (err, shard) => {
-        if (err) {
-          return callback(err)
-        }
-
-        // finally add the new file into the shard
-        shard.put(file.name, {
-          size: file.size,
-          multihash: file.cid.buffer
-        }, (err) => {
-          callback(err, {
-            shard, path
-          })
-        })
-      }
-    )
+  // finally add the new file into the shard
+  await shard._bucket.put(file.name, {
+    size: file.size,
+    cid: file.cid
   })
+
+  return {
+    shard, path
+  }
 }
 
 const toBucketPath = (position) => {

@@ -2,6 +2,7 @@
 
 const Joi = require('joi')
 const multipart = require('ipfs-multipart')
+const Boom = require('boom')
 
 const mfsWrite = {
   method: 'POST',
@@ -29,9 +30,15 @@ const mfsWrite = {
 
     const fileStream = await new Promise((resolve, reject) => {
       const parser = multipart.reqParser(request.payload)
+      let fileStream
 
       parser.on('file', (_, stream) => {
-        resolve(stream)
+        if (fileStream) {
+          return reject(Boom.badRequest('Please only send one file'))
+        }
+
+        fileStream = stream
+        resolve(fileStream)
       })
 
       parser.on('error', (error) => {

@@ -4,7 +4,6 @@ const {
   DAGNode,
   DAGLink
 } = require('ipld-dag-pb')
-const waterfall = require('async/waterfall')
 const CID = require('cids')
 const log = require('debug')('ipfs:mfs:core:utils:remove-link')
 const UnixFS = require('ipfs-unixfs')
@@ -12,170 +11,134 @@ const {
   generatePath,
   updateHamtDirectory
 } = require('./hamt-utils')
+const errCode = require('err-code')
+const mc = require('multicodec')
+const mh = require('multihashes')
 
-const defaultOptions = {
-  parent: undefined,
-  parentCid: undefined,
-  name: '',
-  flush: true,
-  cidVersion: 0,
-  hashAlg: 'sha2-256',
-  codec: 'dag-pb',
-  shardSplitThreshold: 1000
-}
-
-const removeLink = (context, options, callback) => {
-  options = Object.assign({}, defaultOptions, options)
-
-  if (!options.parentCid) {
-    return callback(new Error('No parent CID passed to removeLink'))
+const removeLink = async (context, options) => {
+  if (!options.parentCid && !options.parent) {
+    throw errCode(new Error('No parent node or CID passed to removeLink'), 'EINVALIDPARENT')
   }
 
-  if (!CID.isCID(options.parentCid)) {
-    return callback(new Error('Invalid CID passed to addLink'))
+  if (options.parentCid && !CID.isCID(options.parentCid)) {
+    throw errCode(new Error('Invalid CID passed to removeLink'), 'EINVALIDPARENTCID')
   }
 
   if (!options.parent) {
-    log('Loading parent node', options.parentCid.toBaseEncodedString())
+    log(`Loading parent node ${options.parentCid}`)
 
-    return waterfall([
-      (cb) => context.ipld.get(options.parentCid, cb),
-      (result, cb) => cb(null, result.value),
-      (node, cb) => removeLink(context, {
-        ...options,
-        parent: node
-      }, cb)
-    ], callback)
+    options.parent = await context.ipld.get(options.parentCid)
   }
 
   if (!options.name) {
-    return callback(new Error('No child name passed to removeLink'))
+    throw errCode(new Error('No child name passed to removeLink'), 'EINVALIDCHILDNAME')
   }
 
-  const meta = UnixFS.unmarshal(options.parent.data)
+  const meta = UnixFS.unmarshal(options.parent.Data)
 
   if (meta.type === 'hamt-sharded-directory') {
     log(`Removing ${options.name} from sharded directory`)
 
-    return removeFromShardedDirectory(context, options, callback)
+    return removeFromShardedDirectory(context, options)
   }
 
   log(`Removing link ${options.name} regular directory`)
 
-  return removeFromDirectory(context, options, callback)
+  return removeFromDirectory(context, options)
 }
 
-const removeFromDirectory = (context, options, callback) => {
-  waterfall([
-    (cb) => DAGNode.rmLink(options.parent, options.name, cb),
-    (newParentNode, cb) => {
-      context.ipld.put(newParentNode, {
-        version: options.cidVersion,
-        format: options.codec,
-        hashAlg: options.hashAlg
-      }, (error, cid) => cb(error, {
-        node: newParentNode,
-        cid
-      }))
-    },
-    (result, cb) => {
-      log('Updated regular directory', result.cid.toBaseEncodedString())
+const removeFromDirectory = async (context, options) => {
+  const format = mc[options.format.toUpperCase().replace(/-/g, '_')]
+  const hashAlg = mh.names[options.hashAlg]
 
-      cb(null, result)
-    }
-  ], callback)
+  const newParentNode = await DAGNode.rmLink(options.parent, options.name)
+  const cid = await context.ipld.put(newParentNode, format, {
+    cidVersion: options.cidVersion,
+    hashAlg
+  })
+
+  log(`Updated regular directory ${cid}`)
+
+  return {
+    node: newParentNode,
+    cid
+  }
 }
 
-const removeFromShardedDirectory = (context, options, callback) => {
-  return waterfall([
-    (cb) => generatePath(context, options.name, options.parent, cb),
-    ({ rootBucket, path }, cb) => {
-      rootBucket.del(options.name)
-        .then(() => cb(null, { rootBucket, path }), cb)
-    },
-    ({ rootBucket, path }, cb) => {
-      updateShard(context, path, {
-        name: options.name,
-        cid: options.cid,
-        size: options.size
-      }, options, (err, result = {}) => cb(err, { rootBucket, ...result }))
-    },
-    ({ rootBucket, node }, cb) => updateHamtDirectory(context, node.links, rootBucket, options, cb)
-  ], callback)
+const removeFromShardedDirectory = async (context, options) => {
+  const {
+    rootBucket, path
+  } = await generatePath(context, options.name, options.parent)
+
+  await rootBucket.del(options.name)
+
+  const {
+    node
+  } = await updateShard(context, path, {
+    name: options.name,
+    cid: options.cid,
+    size: options.size,
+    hashAlg: options.hashAlg,
+    format: options.format,
+    cidVersion: options.cidVersion,
+    flush: options.flush
+  }, options)
+
+  return updateHamtDirectory(context, node.Links, rootBucket, options)
 }
 
-const updateShard = (context, positions, child, options, callback) => {
+const updateShard = async (context, positions, child, options) => {
   const {
     bucket,
     prefix,
     node
   } = positions.pop()
 
-  const link = node.links
-    .find(link => link.name.substring(0, 2) === prefix)
+  const link = node.Links
+    .find(link => link.Name.substring(0, 2) === prefix)
 
   if (!link) {
-    return callback(new Error(`No link found with prefix ${prefix} for file ${child.name}`))
+    throw errCode(new Error(`No link found with prefix ${prefix} for file ${child.name}`), 'ERR_NOT_FOUND')
   }
 
-  return waterfall([
-    (cb) => {
-      if (link.name === `${prefix}${child.name}`) {
-        log(`Removing existing link ${link.name}`)
+  if (link.Name === `${prefix}${child.name}`) {
+    log(`Removing existing link ${link.Name}`)
 
-        return waterfall([
-          (done) => DAGNode.rmLink(node, link.name, done),
-          (node, done) => {
-            context.ipld.put(node, {
-              version: options.cidVersion,
-              format: options.codec,
-              hashAlg: options.hashAlg,
-              hashOnly: !options.flush
-            }, (error, cid) => done(error, {
-              node,
-              cid
-            }))
-          },
-          (result, done) => {
-            bucket.del(child.name)
-              .then(() => done(null, result), done)
-          },
-          (result, done) => updateHamtDirectory(context, result.node.links, bucket, options, done)
-        ], cb)
-      }
+    const newNode = await DAGNode.rmLink(node, link.Name)
 
-      log(`Descending into sub-shard ${link.name} for ${prefix}${child.name}`)
+    await bucket.del(child.name)
 
-      return waterfall([
-        (cb) => updateShard(context, positions, child, options, cb),
-        (result, cb) => {
-          let newName = prefix
+    return updateHamtDirectory(context, newNode.Links, bucket, options)
+  }
 
-          if (result.node.links.length === 1) {
-            log(`Removing subshard for ${prefix}`)
+  log(`Descending into sub-shard ${link.Name} for ${prefix}${child.name}`)
 
-            // convert shard back to normal dir
-            result.cid = result.node.links[0].cid
-            result.node = result.node.links[0]
+  const result = await updateShard(context, positions, child, options)
 
-            newName = `${prefix}${result.node.name.substring(2)}`
-          }
+  let newName = prefix
 
-          log(`Updating shard ${prefix} with name ${newName}`)
+  if (result.node.Links.length === 1) {
+    log(`Removing subshard for ${prefix}`)
 
-          updateShardParent(context, bucket, node, prefix, newName, result.node.size, result.cid, options, cb)
-        }
-      ], cb)
-    }
-  ], callback)
+    // convert shard back to normal dir
+    result.cid = result.node.Links[0].Hash
+    result.node = result.node.Links[0]
+
+    newName = `${prefix}${result.node.Name.substring(2)}`
+  }
+
+  log(`Updating shard ${prefix} with name ${newName}`)
+
+  const size = DAGNode.isDAGNode(result.node) ? result.node.size : result.node.Tsize
+
+  return updateShardParent(context, bucket, node, prefix, newName, size, result.cid, options)
 }
 
-const updateShardParent = async (context, bucket, parent, oldName, newName, size, cid, options, callback) => {
-  waterfall([
-    (done) => DAGNode.rmLink(parent, oldName, done),
-    (parent, done) => DAGNode.addLink(parent, new DAGLink(newName, size, cid), done),
-    (parent, done) => updateHamtDirectory(context, parent.links, bucket, options, done)
-  ], callback)
+const updateShardParent = async (context, bucket, parent, oldName, newName, size, cid, options) => {
+  parent = await DAGNode.rmLink(parent, oldName)
+  parent = await DAGNode.addLink(parent, new DAGLink(newName, size, cid))
+
+  return updateHamtDirectory(context, parent.Links, bucket, options)
 }
 
 module.exports = removeLink

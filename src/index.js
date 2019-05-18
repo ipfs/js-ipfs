@@ -5,7 +5,7 @@ const core = require('./core')
 const http = require('./http')
 const {
   FILE_TYPES
-} = require('./core/utils')
+} = require('./core/utils/constants')
 
 module.exports = {
   cli,

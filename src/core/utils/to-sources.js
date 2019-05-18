@@ -2,10 +2,7 @@
 
 const toMfsPath = require('./to-mfs-path')
 
-function toSources (context, args, defaultOptions, callback) {
-  args = args.slice()
-  const options = Object.assign({}, defaultOptions, args.filter(arg => typeof arg === 'object').pop() || {})
-
+async function toSources (context, args) {
   // Support weird mfs.mv([source, dest], options, callback) signature
   if (Array.isArray(args[0])) {
     args = args[0]
@@ -15,12 +12,9 @@ function toSources (context, args, defaultOptions, callback) {
     .filter(arg => typeof arg === 'string')
     .map(source => source.trim())
 
-  toMfsPath(context, sources, (err, sources) => {
-    callback(err, {
-      sources,
-      options
-    })
-  })
+  return {
+    sources: await toMfsPath(context, sources)
+  }
 }
 
 module.exports = toSources

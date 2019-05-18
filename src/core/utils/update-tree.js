@@ -1,54 +1,60 @@
 'use strict'
 
-const waterfall = require('async/waterfall')
-const reduceRight = require('async/reduceRight')
+const log = require('debug')('ipfs:mfs:utils:update-tree')
 const addLink = require('./add-link')
 
 const defaultOptions = {
   shardSplitThreshold: 1000
 }
 
-const updateTree = (context, trail, options, callback) => {
+// loop backwards through the trail, replacing links of all components to update CIDs
+const updateTree = async (context, trail, options) => {
   options = Object.assign({}, defaultOptions, options)
 
-  waterfall([
-    (cb) => context.ipld.getMany(trail.map(node => node.cid), cb),
-    (nodes, cb) => {
-      let index = trail.length - 1
+  log('Trail', trail)
+  trail = trail.slice().reverse()
 
-      reduceRight(trail, null, (child, node, done) => {
-        const dagNode = nodes[index]
-        const cid = trail[index].cid
-        index--
+  let index = 0
+  let child
 
-        if (!child) {
-          // first item in the list
-          return done(null, node)
-        }
+  for await (const node of context.ipld.getMany(trail.map(node => node.cid))) {
+    const cid = trail[index].cid
+    const name = trail[index].name
+    index++
 
-        addLink(context, {
-          parent: dagNode,
-          parentCid: cid,
-          name: child.name,
-          cid: child.cid,
-          size: child.size,
-          flush: options.flush,
-          shardSplitThreshold: options.shardSplitThreshold
-        }, (err, result) => {
-          if (err) {
-            return done(err)
-          }
+    if (!child) {
+      child = {
+        cid,
+        name,
+        size: node.size
+      }
 
-          done(err, {
-            cid: result.cid,
-            node: result.node,
-            name: node.name,
-            size: result.node.size
-          })
-        })
-      }, cb)
+      continue
     }
-  ], callback)
+
+    const result = await addLink(context, {
+      parent: node,
+      name: child.name,
+      cid: child.cid,
+      size: child.size,
+      flush: options.flush,
+      shardSplitThreshold: options.shardSplitThreshold,
+      format: options.format,
+      hashAlg: options.hashAlg,
+      cidVersion: options.cidVersion
+    })
+
+    // new child for next loop
+    child = {
+      cid: result.cid,
+      name,
+      size: result.node.size
+    }
+  }
+
+  log(`Final CID ${child.cid}`)
+
+  return child.cid
 }
 
 module.exports = updateTree

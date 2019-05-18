@@ -5,11 +5,10 @@ const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
 const multihash = require('multihashes')
-const {
-  createMfs,
-  cidAtPath,
-  createShardedDirectory
-} = require('./helpers')
+const createMfs = require('./helpers/create-mfs')
+const cidAtPath = require('./helpers/cid-at-path')
+const createShardedDirectory = require('./helpers/create-sharded-directory')
+const all = require('async-iterator-all')
 
 describe('mkdir', () => {
   let mfs
@@ -32,7 +31,7 @@ describe('mkdir', () => {
       await mfs.mkdir('foo')
       throw new Error('No error was thrown when creating an directory with no leading slash')
     } catch (err) {
-      expect(err.message).to.contain('paths must start with a leading /')
+      expect(err.code).to.equal('ERR_INVALID_PATH')
     }
   })
 
@@ -66,7 +65,8 @@ describe('mkdir', () => {
     const stats = await mfs.stat(path)
     expect(stats.type).to.equal('directory')
 
-    const files = await mfs.ls(path)
+    const files = await all(mfs.ls(path))
+
     expect(files.length).to.equal(0)
   })
 
@@ -81,9 +81,10 @@ describe('mkdir', () => {
       await mfs.mkdir(path, {
         parents: false
       })
+
       throw new Error('Did not refuse to create a path that already exists')
     } catch (err) {
-      expect(err.message).to.contain('file already exists')
+      expect(err.code).to.equal('ERR_ALREADY_EXISTS')
     }
   })
 
@@ -106,9 +107,18 @@ describe('mkdir', () => {
       parents: true
     })
 
-    const files = await mfs.ls(path)
+    const files = await all(mfs.ls(path))
 
     expect(files.length).to.equal(0)
+  })
+
+  it('creates nested directories', async () => {
+    await mfs.mkdir('/nested-dir')
+    await mfs.mkdir('/nested-dir/baz')
+
+    const files = await all(mfs.ls('/nested-dir'))
+
+    expect(files.length).to.equal(1)
   })
 
   it('creates a nested directory with a different CID version to the parent', async () => {

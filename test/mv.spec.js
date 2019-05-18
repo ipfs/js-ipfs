@@ -4,11 +4,10 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
-const bufferStream = require('pull-buffer-stream')
-const {
-  createMfs,
-  createShardedDirectory
-} = require('./helpers')
+const createMfs = require('./helpers/create-mfs')
+const createShardedDirectory = require('./helpers/create-sharded-directory')
+const streamToBuffer = require('./helpers/stream-to-buffer')
+const crypto = require('crypto')
 
 describe('mv', () => {
   let mfs
@@ -38,18 +37,14 @@ describe('mv', () => {
   it('moves a file', async () => {
     const source = `/source-file-${Math.random()}.txt`
     const destination = `/dest-file-${Math.random()}.txt`
-    let data = Buffer.alloc(0)
+    let data = crypto.randomBytes(500)
 
-    await mfs.write(source, bufferStream(500, {
-      collector: (bytes) => {
-        data = Buffer.concat([data, bytes])
-      }
-    }), {
+    await mfs.write(source, data, {
       create: true
     })
     await mfs.mv(source, destination)
 
-    const buffer = await mfs.read(destination)
+    const buffer = await streamToBuffer(mfs.read(destination))
     expect(buffer).to.deep.equal(data)
 
     try {

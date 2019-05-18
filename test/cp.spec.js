@@ -4,11 +4,11 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
-const bufferStream = require('pull-buffer-stream')
-const {
-  createMfs,
-  createShardedDirectory
-} = require('./helpers')
+const createMfs = require('./helpers/create-mfs')
+const createShardedDirectory = require('./helpers/create-sharded-directory')
+const streamToBuffer = require('./helpers/stream-to-buffer')
+const streamToArray = require('./helpers/stream-to-array')
+const crypto = require('crypto')
 
 describe('cp', () => {
   let mfs
@@ -44,7 +44,7 @@ describe('cp', () => {
     }
   })
 
-  it('refuses to copy a file to a non-existent directory', async () => {
+  it('refuses to copy a non-existent file', async () => {
     try {
       await mfs.cp('/i-do-not-exist', '/output')
       throw new Error('No error was thrown for a non-existent file')
@@ -57,16 +57,16 @@ describe('cp', () => {
     const source = `/source-file-${Math.random()}.txt`
     const destination = `/dest-file-${Math.random()}.txt`
 
-    await mfs.write(source, bufferStream(100), {
+    await mfs.write(source, crypto.randomBytes(100), {
       create: true
     })
-    await mfs.write(destination, bufferStream(100), {
+    await mfs.write(destination, crypto.randomBytes(100), {
       create: true
     })
 
     try {
       await mfs.cp(source, destination)
-      throw new Error('No error was thrown for a non-existent file')
+      throw new Error('No error was thrown when trying to overwrite a file')
     } catch (err) {
       expect(err.message).to.contain('directory already has entry by that name')
     }
@@ -75,7 +75,7 @@ describe('cp', () => {
   it('refuses to copy a file to itself', async () => {
     const source = `/source-file-${Math.random()}.txt`
 
-    await mfs.write(source, bufferStream(100), {
+    await mfs.write(source, crypto.randomBytes(100), {
       create: true
     })
 
@@ -90,18 +90,15 @@ describe('cp', () => {
   it('copies a file to new location', async () => {
     const source = `/source-file-${Math.random()}.txt`
     const destination = `/dest-file-${Math.random()}.txt`
-    let data = Buffer.alloc(0)
+    let data = crypto.randomBytes(500)
 
-    await mfs.write(source, bufferStream(500, {
-      collector: (bytes) => {
-        data = Buffer.concat([data, bytes])
-      }
-    }), {
+    await mfs.write(source, data, {
       create: true
     })
 
     await mfs.cp(source, destination)
-    const buffer = await mfs.read(destination)
+
+    let buffer = await streamToBuffer(mfs.read(destination))
 
     expect(buffer).to.deep.equal(data)
   })
@@ -111,7 +108,7 @@ describe('cp', () => {
     const directory = `/dest-directory-${Math.random()}`
     const destination = `${directory}${source}`
 
-    await mfs.write(source, bufferStream(500), {
+    await mfs.write(source, crypto.randomBytes(500), {
       create: true
     })
     await mfs.mkdir(directory)
@@ -153,19 +150,15 @@ describe('cp', () => {
   it('copies multiple files to new location', async () => {
     const sources = [{
       path: `/source-file-${Math.random()}.txt`,
-      data: Buffer.alloc(0)
+      data: crypto.randomBytes(500)
     }, {
       path: `/source-file-${Math.random()}.txt`,
-      data: Buffer.alloc(0)
+      data: crypto.randomBytes(500)
     }]
     const destination = `/dest-dir-${Math.random()}`
 
     for (const source of sources) {
-      await mfs.write(source.path, bufferStream(500, {
-        collector: (bytes) => {
-          source.data = Buffer.concat([source.data, bytes])
-        }
-      }), {
+      await mfs.write(source.path, source.data, {
         create: true
       })
     }
@@ -175,7 +168,7 @@ describe('cp', () => {
     })
 
     for (const source of sources) {
-      const buffer = await mfs.read(`${destination}${source.path}`)
+      const buffer = await streamToBuffer(mfs.read(`${destination}${source.path}`))
 
       expect(buffer).to.deep.equal(source.data)
     }
@@ -185,12 +178,30 @@ describe('cp', () => {
     const source = `/source-file-${Math.random()}.txt`
     const destination = `/dest-file-${Math.random()}.txt`
 
-    await mfs.write(source, bufferStream(100), {
+    await mfs.write(source, crypto.randomBytes(100), {
       create: true
     })
 
     const stats = await mfs.stat(source)
-    await mfs.cp(`/ipfs/${stats.hash}`, destination)
+    await mfs.cp(`/ipfs/${stats.cid}`, destination)
+
+    const destinationStats = await mfs.stat(destination)
+    expect(destinationStats.size).to.equal(100)
+  })
+
+  it('copies files from deep ipfs paths', async () => {
+    const dir = `dir-${Math.random()}`
+    const file = `source-file-${Math.random()}.txt`
+    const source = `/${dir}/${file}`
+    const destination = `/dest-file-${Math.random()}.txt`
+
+    await mfs.write(source, crypto.randomBytes(100), {
+      create: true,
+      parents: true
+    })
+
+    const stats = await mfs.stat(`/${dir}`)
+    await mfs.cp(`/ipfs/${stats.cid}/${file}`, destination)
 
     const destinationStats = await mfs.stat(destination)
     expect(destinationStats.size).to.equal(100)
@@ -211,9 +222,7 @@ describe('cp', () => {
     // should still be a sharded directory
     expect((await mfs.stat(finalShardedDirPath)).type).to.equal('hamt-sharded-directory')
 
-    const files = await mfs.ls(finalShardedDirPath, {
-      long: true
-    })
+    const files = await streamToArray(mfs.ls(finalShardedDirPath))
 
     expect(files.length).to.be.ok()
   })

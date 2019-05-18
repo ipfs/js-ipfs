@@ -2,13 +2,10 @@
 
 const assert = require('assert')
 const promisify = require('promisify-es6')
-const {
-  createLock
-} = require('./utils')
+const createLock = require('./utils/create-lock')
 
 // These operations are read-locked at the function level and will execute simultaneously
 const readOperations = {
-  ls: require('./ls'),
   stat: require('./stat')
 }
 
@@ -24,22 +21,15 @@ const writeOperations = {
 // These operations are asynchronous and manage their own locking
 const unwrappedOperations = {
   write: require('./write'),
-  read: require('./read')
-}
-
-// These operations are synchronous and manage their own locking
-const unwrappedSynchronousOperations = {
-  readPullStream: require('./read-pull-stream'),
-  readReadableStream: require('./read-readable-stream'),
-  lsPullStream: require('./ls-pull-stream'),
-  lsReadableStream: require('./ls-readable-stream')
+  read: require('./read'),
+  ls: require('./ls')
 }
 
 const wrap = ({
   options, mfs, operations, lock
 }) => {
   Object.keys(operations).forEach(key => {
-    mfs[key] = promisify(lock(operations[key](options)))
+    mfs[key] = lock(operations[key](options))
   })
 }
 
@@ -55,7 +45,28 @@ module.exports = (options) => {
   } = Object.assign({}, defaultOptions || {}, options)
 
   assert(options.ipld, 'MFS requires an IPLD instance')
-  assert(options.repo, 'MFS requires an ipfs-repo instance')
+  assert(options.blocks, 'MFS requires an BlockStore instance')
+  assert(options.datastore, 'MFS requires a DataStore instance')
+
+  // should be able to remove this when async/await PRs are in for datastore, blockstore & repo
+  options.repo = {
+    blocks: {
+      get: promisify(options.blocks.get, {
+        context: options.blocks
+      })
+    },
+    datastore: {
+      open: promisify(options.datastore.open, {
+        context: options.datastore
+      }),
+      get: promisify(options.datastore.get, {
+        context: options.datastore
+      }),
+      put: promisify(options.datastore.put, {
+        context: options.datastore
+      })
+    }
+  }
 
   const lock = createLock(repoOwner)
 
@@ -77,11 +88,7 @@ module.exports = (options) => {
   })
 
   Object.keys(unwrappedOperations).forEach(key => {
-    mfs[key] = promisify(unwrappedOperations[key](options))
-  })
-
-  Object.keys(unwrappedSynchronousOperations).forEach(key => {
-    mfs[key] = unwrappedSynchronousOperations[key](options)
+    mfs[key] = unwrappedOperations[key](options)
   })
 
   return mfs

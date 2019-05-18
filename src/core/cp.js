@@ -1,233 +1,143 @@
 'use strict'
 
-const waterfall = require('async/waterfall')
-const parallel = require('async/parallel')
-const {
-  addLink,
-  updateTree,
-  updateMfsRoot,
-  toTrail,
-  toSourcesAndDestination,
-  toMfsPath
-} = require('./utils')
-const stat = require('./stat')
 const mkdir = require('./mkdir')
 const log = require('debug')('ipfs:mfs:cp')
+const errCode = require('err-code')
+const updateTree = require('./utils/update-tree')
+const updateMfsRoot = require('./utils/update-mfs-root')
+const addLink = require('./utils/add-link')
+const applyDefaultOptions = require('./utils/apply-default-options')
+const toMfsPath = require('./utils/to-mfs-path')
+const toSourcesAndDestination = require('./utils/to-sources-and-destination')
+const toTrail = require('./utils/to-trail')
 
 const defaultOptions = {
   parents: false,
   flush: true,
   format: 'dag-pb',
   hashAlg: 'sha2-256',
+  cidVersion: 0,
   shardSplitThreshold: 1000
 }
 
 module.exports = (context) => {
-  return function mfsCp () {
-    const args = Array.from(arguments)
-    const callback = args.pop()
+  return async function mfsCp (...args) {
+    const options = applyDefaultOptions(args, defaultOptions)
+    let {
+      sources, destination
+    } = await toSourcesAndDestination(context, args)
 
-    waterfall([
-      (cb) => toSourcesAndDestination(context, args, defaultOptions, cb),
-      ({ sources, destination, options }, cb) => {
-        if (!sources.length) {
-          return cb(new Error('Please supply at least one source'))
+    if (!sources.length) {
+      throw errCode(new Error('Please supply at least one source'), 'ERR_INVALID_PARAMS')
+    }
+
+    if (!destination) {
+      throw errCode(new Error('Please supply a destination'), 'ERR_INVALID_PARAMS')
+    }
+
+    options.parents = options.p || options.parents
+
+    // make sure all sources exist
+    const missing = sources.find(source => !source.exists)
+
+    if (missing) {
+      throw errCode(new Error(`${missing.path} does not exist`), 'ERR_INVALID_PARAMS')
+    }
+
+    const destinationIsDirectory = isDirectory(destination)
+
+    if (destination.exists) {
+      log('Destination exists')
+
+      if (sources.length === 1 && !destinationIsDirectory) {
+        throw errCode(new Error('directory already has entry by that name'), 'ERR_ALREADY_EXISTS')
+      }
+    } else {
+      log('Destination does not exist')
+
+      if (sources.length > 1) {
+        if (!options.parents) {
+          throw errCode(new Error('destination did not exist, pass -p to create intermediate directories'), 'ERR_INVALID_PARAMS')
         }
 
-        if (!destination) {
-          return cb(new Error('Please supply a destination'))
-        }
+        await mkdir(context)(destination.path, options)
+        destination = await toMfsPath(context, destination.path)
+      }
+    }
 
-        options.parents = options.p || options.parents
+    const destinationPath = isDirectory(destination) ? destination.mfsPath : destination.mfsDirectory
+    const trail = await toTrail(context, destinationPath, options)
 
-        cb(null, { sources, destination, options })
-      },
-      ({ sources, destination, options }, cb) => toTrail(context, destination.mfsPath, options, (error, trail) => {
-        if (error) {
-          return cb(error)
-        }
+    if (sources.length === 1) {
+      const source = sources.pop()
+      const destinationName = destinationIsDirectory ? source.name : destination.name
 
-        if (trail.length === destination.parts.length) {
-          log('Destination does not exist')
+      log(`Only one source, copying to destination ${destinationIsDirectory ? 'directory' : 'file'} ${destinationName}`)
 
-          if (sources.length === 1) {
-            log('Only one source, copying to a file')
-            return copyToFile(context, sources.pop(), destination, trail, options, cb)
-          }
+      return copyToFile(context, source, destinationName, trail, options)
+    }
 
-          log('Multiple sources, copying to a directory')
-          return copyToDirectory(context, sources, destination, trail, options, cb)
-        }
-
-        const parent = trail[trail.length - 1]
-
-        if (parent.type === 'dir') {
-          log('Destination is a directory')
-          return copyToDirectory(context, sources, destination, trail, options, cb)
-        }
-
-        cb(new Error('directory already has entry by that name'))
-      })
-    ], callback)
+    log('Multiple sources, wrapping in a directory')
+    return copyToDirectory(context, sources, destination, trail, options)
   }
 }
 
-const copyToFile = (context, source, destination, destinationTrail, options, callback) => {
-  waterfall([
-    (cb) => asExistentTrail(context, source, options, cb),
-    (sourceTrail, cb) => {
-      const parent = destinationTrail[destinationTrail.length - 1]
-      const child = sourceTrail[sourceTrail.length - 1]
-
-      waterfall([
-        (next) => context.ipld.get(parent.cid, next),
-        (result, next) => addLink(context, {
-          parent: result.value,
-          parentCid: parent.cid,
-          size: child.size,
-          cid: child.cid,
-          name: destination.parts[destination.parts.length - 1]
-        }, next),
-        ({ node, cid }, next) => {
-          parent.node = node
-          parent.cid = cid
-          parent.size = node.size
-
-          next(null, destinationTrail)
-        }
-      ], cb)
-    },
-
-    // update the tree with the new child
-    (trail, cb) => updateTree(context, trail, options, cb),
-
-    // Update the MFS record with the new CID for the root of the tree
-    ({ cid }, cb) => updateMfsRoot(context, cid, cb)
-  ], (error) => callback(error))
+const isDirectory = (destination) => {
+  return destination.unixfs &&
+    destination.unixfs.type &&
+    destination.unixfs.type.includes('directory')
 }
 
-const copyToDirectory = (context, sources, destination, destinationTrail, options, callback) => {
-  waterfall([
-    (cb) => {
-      if (destinationTrail.length !== (destination.parts.length + 1)) {
-        log(`Making destination directory`, destination.path)
+const copyToFile = async (context, source, destination, destinationTrail, options) => {
+  let parent = destinationTrail.pop()
 
-        return waterfall([
-          (cb) => mkdir(context)(destination.path, options, cb),
-          (cb) => toMfsPath(context, destination.path, cb),
-          (mfsPath, cb) => {
-            destination = mfsPath
+  parent = await addSourceToParent(context, source, destination, parent, options)
 
-            toTrail(context, destination.mfsPath, options, cb)
-          }
-        ], (err, trail) => {
-          if (err) {
-            return cb(err)
-          }
+  // update the tree with the new containg directory
+  destinationTrail.push(parent)
 
-          destinationTrail = trail
+  const newRootCid = await updateTree(context, destinationTrail, options)
 
-          cb()
-        })
-      }
-
-      cb()
-    },
-    (cb) => parallel(
-      sources.map(source => (next) => asExistentTrail(context, source, options, next)),
-      cb
-    ),
-    (sourceTrails, cb) => {
-      waterfall([
-        // ensure targets do not exist
-        (next) => {
-          parallel(
-            sources.map(source => {
-              return (cb) => {
-                stat(context)(`${destination.path}/${source.name}`, options, (error) => {
-                  if (error) {
-                    if (error.message.includes('does not exist')) {
-                      return cb()
-                    }
-
-                    return cb(error)
-                  }
-
-                  cb(new Error('directory already has entry by that name'))
-                })
-              }
-            }),
-            (error) => next(error)
-          )
-        },
-        // add links to target directory
-        (next) => {
-          const parent = destinationTrail[destinationTrail.length - 1]
-
-          waterfall([
-            (next) => context.ipld.get(parent.cid, next),
-            (result, next) => next(null, { cid: parent.cid, node: result.value })
-          ].concat(
-            sourceTrails.map((sourceTrail, index) => {
-              return (parent, done) => {
-                const child = sourceTrail[sourceTrail.length - 1]
-
-                log(`Adding ${sources[index].name} to ${parent.cid.toBaseEncodedString()}`)
-
-                addLink(context, {
-                  parent: parent.node,
-                  parentCid: parent.cid,
-                  size: child.size,
-                  cid: child.cid,
-                  name: sources[index].name
-                }, (err, result) => {
-                  if (err) {
-                    return done(err)
-                  }
-
-                  log(`New directory hash ${result.cid.toBaseEncodedString()}`)
-
-                  done(err, result)
-                })
-              }
-            })
-          ), next)
-        },
-
-        ({ node, cid }, next) => {
-          const parent = destinationTrail[destinationTrail.length - 1]
-
-          parent.node = node
-          parent.cid = cid
-          parent.size = node.size
-
-          next(null, destinationTrail)
-        },
-
-        // update the tree with the new child
-        (trail, next) => updateTree(context, trail, options, next),
-
-        // Update the MFS record with the new CID for the root of the tree
-        ({ cid }, next) => updateMfsRoot(context, cid, next)
-      ], cb)
-    }
-  ], (error) => callback(error))
+  // Update the MFS record with the new CID for the root of the tree
+  await updateMfsRoot(context, newRootCid)
 }
 
-const asExistentTrail = (context, source, options, callback) => {
-  toTrail(context, source.mfsPath, options, (err, trail) => {
-    if (err) {
-      return callback(err)
-    }
+const copyToDirectory = async (context, sources, destination, destinationTrail, options) => {
+  // copy all the sources to the destination
+  for (let i = 0; i < sources.length; i++) {
+    const source = sources[i]
 
-    if (source.type === 'ipfs') {
-      return callback(null, trail)
-    }
+    destination = await addSourceToParent(context, source, source.name, destination, options)
+  }
 
-    if (trail.length !== (source.parts.length + 1)) {
-      return callback(new Error(`${source.path} does not exist`))
-    }
+  // update the tree with the new containg directory
+  destinationTrail[destinationTrail.length - 1] = destination
 
-    callback(null, trail)
+  const newRootCid = await updateTree(context, destinationTrail, options)
+
+  // Update the MFS record with the new CID for the root of the tree
+  await updateMfsRoot(context, newRootCid)
+}
+
+const addSourceToParent = async (context, source, childName, parent, options) => {
+  const sourceBlock = await context.repo.blocks.get(source.cid)
+
+  const {
+    node,
+    cid
+  } = await addLink(context, {
+    parentCid: parent.cid,
+    size: sourceBlock.data.length,
+    cid: source.cid,
+    name: childName,
+    format: options.format,
+    hashAlg: options.hashAlg,
+    cidVersion: options.cidVersion
   })
+
+  parent.node = node
+  parent.cid = cid
+  parent.size = node.size
+
+  return parent
 }

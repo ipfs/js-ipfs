@@ -1,23 +1,26 @@
 'use strict'
 
-const waterfall = require('async/waterfall')
 const UnixFS = require('ipfs-unixfs')
 const {
   DAGNode
 } = require('ipld-dag-pb')
+const mc = require('multicodec')
+const mh = require('multihashes')
 
-const createNode = (context, type, options, callback) => {
-  waterfall([
-    (done) => DAGNode.create(new UnixFS(type).marshal(), [], done),
-    (node, done) => context.ipld.put(node, {
-      version: options.cidVersion,
-      format: options.format,
-      hashAlg: options.hashAlg
-    }, (err, cid) => done(err, {
-      cid,
-      node
-    }))
-  ], callback)
+const createNode = async (context, type, options) => {
+  const format = mc[options.format.toUpperCase().replace(/-/g, '_')]
+  const hashAlg = mh.names[options.hashAlg]
+
+  const node = DAGNode.create(new UnixFS(type).marshal())
+  const cid = await context.ipld.put(node, format, {
+    cidVersion: options.cidVersion,
+    hashAlg
+  })
+
+  return {
+    cid,
+    node
+  }
 }
 
 module.exports = createNode

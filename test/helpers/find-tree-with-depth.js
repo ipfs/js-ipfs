@@ -36,7 +36,7 @@ const load = async (ipld, cid) => {
 
 const findChildrenAtDepth = async (ipld, cid, children, depth, currentDepth = 0) => {
   const node = await load(ipld, cid)
-  const fileLinks = node.links.filter(link => link.name)
+  const fileLinks = node.links.filter(link => link.Name)
 
   if (currentDepth === depth && fileLinks.length >= children) {
     return true

@@ -5,21 +5,16 @@ const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
 const isNode = require('detect-node')
-const values = require('pull-stream/sources/values')
-const bufferStream = require('pull-buffer-stream')
 const multihash = require('multihashes')
-const randomBytes = require('./helpers/random-bytes')
 const util = require('util')
-const {
-  collectLeafCids,
-  createMfs,
-  cidAtPath,
-  createShardedDirectory,
-  createTwoShards,
-  createShard
-} = require('./helpers')
-const CID = require('cids')
+const createMfs = require('./helpers/create-mfs')
+const cidAtPath = require('./helpers/cid-at-path')
+const traverseLeafNodes = require('./helpers/traverse-leaf-nodes')
+const createShard = require('./helpers/create-shard')
+const createShardedDirectory = require('./helpers/create-sharded-directory')
+const createTwoShards = require('./helpers/create-two-shards')
 const crypto = require('crypto')
+const all = require('async-iterator-all')
 
 let fs, tempWrite
 
@@ -30,11 +25,10 @@ if (isNode) {
 
 describe('write', () => {
   let mfs
-  let smallFile = randomBytes(13)
-  let largeFile = randomBytes(490668)
+  let smallFile = crypto.randomBytes(13)
+  let largeFile = crypto.randomBytes(490668)
 
   const runTest = (fn) => {
-    let i = 0
     const iterations = 5
     const files = [{
       type: 'Small file',
@@ -49,19 +43,12 @@ describe('write', () => {
     }, {
       type: 'Really large file',
       path: `/really-large-file-${Math.random()}.jpg`,
-      content: (end, callback) => {
-        if (end) {
-          return callback(end)
+      content: {
+        [Symbol.asyncIterator]: async function * () {
+          for (let i = 0; i < iterations; i++) {
+            yield largeFile
+          }
         }
-
-        if (i === iterations) {
-          // Ugh. https://github.com/standard/standard/issues/623
-          const foo = true
-          return callback(foo)
-        }
-
-        i++
-        callback(null, largeFile)
       },
       contentSize: largeFile.length * iterations
     }]
@@ -82,7 +69,7 @@ describe('write', () => {
       })
       throw new Error('Did not fail to convert -1 into a pull stream source')
     } catch (err) {
-      expect(err.message).to.contain('Don\'t know how to convert -1 into a pull stream source')
+      expect(err.code).to.equal('ERR_INVALID_PARAMS')
     }
   })
 
@@ -93,7 +80,7 @@ describe('write', () => {
       })
       throw new Error('Did not object to invalid paths')
     } catch (err) {
-      expect(err.message).to.contain('paths must start with a leading /')
+      expect(err.code).to.equal('ERR_INVALID_PATH')
     }
   })
 
@@ -104,7 +91,7 @@ describe('write', () => {
       })
       throw new Error('Did not object to negative write offset')
     } catch (err) {
-      expect(err.message).to.contain('cannot have negative write offset')
+      expect(err.code).to.equal('ERR_INVALID_PARAMS')
     }
   })
 
@@ -115,7 +102,7 @@ describe('write', () => {
       })
       throw new Error('Did not object to negative byte count')
     } catch (err) {
-      expect(err.message).to.contain('cannot have negative byte count')
+      expect(err.code).to.equal('ERR_INVALID_PARAMS')
     }
   })
 
@@ -125,9 +112,7 @@ describe('write', () => {
       create: true
     })
 
-    const files = await mfs.ls('/', {
-      long: true
-    })
+    const files = await all(mfs.ls('/'))
 
     expect(files.length).to.equal(1)
     expect(files[0].name).to.equal('foo.txt')
@@ -191,18 +176,6 @@ describe('write', () => {
     const stream = fs.createReadStream(pathToFile)
 
     await mfs.write(filePath, stream, {
-      create: true
-    })
-
-    const stats = await mfs.stat(filePath)
-
-    expect(stats.size).to.equal(smallFile.length)
-  })
-
-  it('writes a small file using a pull stream source', async function () {
-    const filePath = `/small-file-${Math.random()}.txt`
-
-    await mfs.write(filePath, values([smallFile]), {
       create: true
     })
 
@@ -310,7 +283,8 @@ describe('write', () => {
         length: 2
       })
 
-      const buffer = await mfs.read(path)
+      const buffer = Buffer.concat(await all(mfs.read(path)))
+
       expect(buffer.length).to.equal(2)
     })
   })
@@ -322,15 +296,19 @@ describe('write', () => {
       await mfs.write(path, content, {
         create: true
       })
+
+      expect((await mfs.stat(path)).size).to.equal(contentSize)
+
       await mfs.write(path, newContent)
 
       const stats = await mfs.stat(path)
       expect(stats.size).to.equal(contentSize)
 
-      const buffer = await mfs.read(path, {
+      const buffer = Buffer.concat(await all(mfs.read(path, {
         offset: 0,
         length: newContent.length
-      })
+      })))
+
       expect(buffer).to.deep.equal(newContent)
     })
   })
@@ -347,10 +325,11 @@ describe('write', () => {
       const stats = await mfs.stat(path)
       expect(stats.size).to.equal(offset + contentSize)
 
-      const buffer = await mfs.read(path, {
+      const buffer = Buffer.concat(await all(mfs.read(path, {
         offset: 0,
         length: offset
-      })
+      })))
+
       expect(buffer).to.deep.equal(Buffer.alloc(offset, 0))
     })
   })
@@ -371,9 +350,10 @@ describe('write', () => {
       const stats = await mfs.stat(path)
       expect(stats.size).to.equal(contentSize + newContent.length - 1)
 
-      const buffer = await mfs.read(path, {
-        offset
-      })
+      const buffer = Buffer.concat(await all(mfs.read(path, {
+        offset: offset
+      })))
+
       expect(buffer).to.deep.equal(newContent)
     })
   })
@@ -393,9 +373,10 @@ describe('write', () => {
       const stats = await mfs.stat(path)
       expect(stats.size).to.equal(newContent.length + offset)
 
-      const buffer = await mfs.read(path, {
+      const buffer = Buffer.concat(await all(mfs.read(path, {
         offset: offset - 5
-      })
+      })))
+
       expect(buffer).to.deep.equal(Buffer.concat([Buffer.from([0, 0, 0, 0, 0]), newContent]))
     })
   })
@@ -414,47 +395,9 @@ describe('write', () => {
       const stats = await mfs.stat(path)
       expect(stats.size).to.equal(newContent.length)
 
-      const buffer = await mfs.read(path)
+      const buffer = Buffer.concat(await all(mfs.read(path)))
+
       expect(buffer).to.deep.equal(newContent)
-    })
-  })
-
-  runTest(({ type, path, content }) => {
-    it(`truncates a file after writing with a stream (${type})`, async () => {
-      const newContent = Buffer.from('Oh hai!')
-      const stream = values([newContent])
-
-      await mfs.write(path, content, {
-        create: true
-      })
-      await mfs.write(path, stream, {
-        truncate: true
-      })
-
-      const stats = await mfs.stat(path)
-      expect(stats.size).to.equal(newContent.length)
-
-      const buffer = await mfs.read(path)
-      expect(buffer).to.deep.equal(newContent)
-    })
-  })
-
-  runTest(({ type, path, content }) => {
-    it(`truncates a file after writing with a stream with an offset (${type})`, async () => {
-      const offset = 100
-      const newContent = Buffer.from('Oh hai!')
-      const stream = values([newContent])
-
-      await mfs.write(path, content, {
-        create: true
-      })
-      await mfs.write(path, stream, {
-        truncate: true,
-        offset
-      })
-
-      const stats = await mfs.stat(path)
-      expect(stats.size).to.equal(offset + newContent.length)
     })
   })
 
@@ -466,11 +409,10 @@ describe('write', () => {
       })
 
       const stats = await mfs.stat(path)
-      const cids = await collectLeafCids(mfs, stats.hash)
-      const rawNodes = cids
-        .filter(cid => cid.codec === 'raw')
 
-      expect(rawNodes).to.not.be.empty()
+      for await (const { cid } of traverseLeafNodes(mfs, stats.cid)) {
+        expect(cid.codec).to.equal('raw')
+      }
     })
   })
 
@@ -480,7 +422,7 @@ describe('write', () => {
     for (let i = 0; i < 10; i++) {
       files.push({
         name: `source-file-${Math.random()}.txt`,
-        source: bufferStream(100)
+        source: crypto.randomBytes(100)
       })
     }
 
@@ -491,7 +433,7 @@ describe('write', () => {
       }))
     )
 
-    const listing = await mfs.ls('/concurrent')
+    const listing = await all(mfs.ls('/concurrent'))
     expect(listing.length).to.equal(files.length)
 
     listing.forEach(listedFile => {
@@ -500,18 +442,8 @@ describe('write', () => {
   })
 
   it('rewrites really big files', async function () {
-    let expectedBytes = Buffer.alloc(0)
-    let originalBytes = Buffer.alloc(0)
-    const initialStream = bufferStream(1024 * 300, {
-      collector: (bytes) => {
-        originalBytes = Buffer.concat([originalBytes, bytes])
-      }
-    })
-    const newDataStream = bufferStream(1024 * 300, {
-      collector: (bytes) => {
-        expectedBytes = Buffer.concat([expectedBytes, bytes])
-      }
-    })
+    const initialStream = crypto.randomBytes(1024 * 300)
+    const newDataStream = crypto.randomBytes(1024 * 300)
 
     const fileName = `/rewrite/file-${Math.random()}.txt`
 
@@ -524,19 +456,19 @@ describe('write', () => {
       offset: 0
     })
 
-    const actualBytes = await mfs.read(fileName)
+    const actualBytes = Buffer.concat(await all(mfs.read(fileName)))
 
-    for (var i = 0; i < expectedBytes.length; i++) {
-      if (expectedBytes[i] !== actualBytes[i]) {
-        if (originalBytes[i] === actualBytes[i]) {
-          throw new Error(`Bytes at index ${i} were not overwritten - expected ${expectedBytes[i]} actual ${originalBytes[i]}`)
+    for (var i = 0; i < newDataStream.length; i++) {
+      if (newDataStream[i] !== actualBytes[i]) {
+        if (initialStream[i] === actualBytes[i]) {
+          throw new Error(`Bytes at index ${i} were not overwritten - expected ${newDataStream[i]} actual ${initialStream[i]}`)
         }
 
-        throw new Error(`Bytes at index ${i} not equal - expected ${expectedBytes[i]} actual ${actualBytes[i]}`)
+        throw new Error(`Bytes at index ${i} not equal - expected ${newDataStream[i]} actual ${actualBytes[i]}`)
       }
     }
 
-    expect(actualBytes).to.deep.equal(expectedBytes)
+    expect(actualBytes).to.deep.equal(newDataStream)
   })
 
   it('shards a large directory when writing too many links to it', async () => {
@@ -565,9 +497,9 @@ describe('write', () => {
 
     expect((await mfs.stat(dirPath)).type).to.equal('hamt-sharded-directory')
 
-    const files = await mfs.ls(dirPath, {
+    const files = await all(mfs.ls(dirPath, {
       long: true
-    })
+    }))
 
     // new file should be in directory
     expect(files.filter(file => file.name === newFile).pop()).to.be.ok()
@@ -586,17 +518,17 @@ describe('write', () => {
     // should still be a sharded directory
     expect((await mfs.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
 
-    const files = await mfs.ls(shardedDirPath, {
+    const files = await all(mfs.ls(shardedDirPath, {
       long: true
-    })
+    }))
 
     // new file should be in the directory
     expect(files.filter(file => file.name === newFile).pop()).to.be.ok()
 
     // should be able to ls new file directly
-    expect(await mfs.ls(newFilePath, {
+    expect(await all(mfs.ls(newFilePath, {
       long: true
-    })).to.not.be.empty()
+    }))).to.not.be.empty()
   })
 
   it('overwrites a file in a sharded directory when positions do not match', async () => {
@@ -618,12 +550,14 @@ describe('write', () => {
     })
 
     // read the file back
-    expect(await mfs.read(newFilePath)).to.deep.equal(newContent)
+    const buffer = Buffer.concat(await all(mfs.read(newFilePath)))
+
+    expect(buffer).to.deep.equal(newContent)
 
     // should be able to ls new file directly
-    expect(await mfs.ls(newFilePath, {
+    expect(await all(mfs.ls(newFilePath, {
       long: true
-    })).to.not.be.empty()
+    }))).to.not.be.empty()
   })
 
   it('overwrites file in a sharded directory', async () => {
@@ -645,12 +579,14 @@ describe('write', () => {
     })
 
     // read the file back
-    expect(await mfs.read(newFilePath)).to.deep.equal(newContent)
+    const buffer = Buffer.concat(await all(mfs.read(newFilePath)))
+
+    expect(buffer).to.deep.equal(newContent)
 
     // should be able to ls new file directly
-    expect(await mfs.ls(newFilePath, {
+    expect(await all(mfs.ls(newFilePath, {
       long: true
-    })).to.not.be.empty()
+    }))).to.not.be.empty()
   })
 
   it('overwrites a file in a subshard of a sharded directory', async () => {
@@ -672,12 +608,14 @@ describe('write', () => {
     })
 
     // read the file back
-    expect(await mfs.read(newFilePath)).to.deep.equal(newContent)
+    const buffer = Buffer.concat(await all(mfs.read(newFilePath)))
+
+    expect(buffer).to.deep.equal(newContent)
 
     // should be able to ls new file directly
-    expect(await mfs.ls(newFilePath, {
+    expect(await all(mfs.ls(newFilePath, {
       long: true
-    })).to.not.be.empty()
+    }))).to.not.be.empty()
   })
 
   it('writes a file with a different CID version to the parent', async () => {
@@ -700,7 +638,7 @@ describe('write', () => {
 
     expect((await cidAtPath(filePath, mfs)).version).to.equal(1)
 
-    const actualBytes = await mfs.read(filePath)
+    const actualBytes = Buffer.concat(await all(mfs.read(filePath)))
 
     expect(actualBytes).to.deep.equal(expectedBytes)
   })
@@ -731,7 +669,7 @@ describe('write', () => {
 
     expect((await cidAtPath(filePath, mfs)).version).to.equal(1)
 
-    const actualBytes = await mfs.read(filePath)
+    const actualBytes = Buffer.concat(await all(mfs.read(filePath)))
 
     expect(actualBytes).to.deep.equal(expectedBytes)
   })
@@ -762,7 +700,7 @@ describe('write', () => {
 
     expect((await cidAtPath(filePath, mfs)).version).to.equal(1)
 
-    const actualBytes = await mfs.read(filePath)
+    const actualBytes = Buffer.concat(await all(mfs.read(filePath)))
 
     expect(actualBytes).to.deep.equal(Buffer.from([5, 0, 1, 2, 3, 10, 11]))
   })
@@ -788,7 +726,7 @@ describe('write', () => {
 
     expect(multihash.decode((await cidAtPath(filePath, mfs)).multihash).name).to.equal('sha2-512')
 
-    const actualBytes = await mfs.read(filePath)
+    const actualBytes = Buffer.concat(await all(mfs.read(filePath)))
 
     expect(actualBytes).to.deep.equal(expectedBytes)
   })
@@ -803,17 +741,17 @@ describe('write', () => {
       dirPath
     } = await createTwoShards(mfs.ipld, 75)
 
-    await mfs.cp(`/ipfs/${dirWithSomeFiles.toBaseEncodedString()}`, dirPath)
+    await mfs.cp(`/ipfs/${dirWithSomeFiles}`, dirPath)
 
     await mfs.write(nextFile.path, nextFile.content, {
       create: true
     })
 
     const stats = await mfs.stat(dirPath)
-    const updatedDirCid = new CID(stats.hash)
+    const updatedDirCid = stats.cid
 
     expect(stats.type).to.equal('hamt-sharded-directory')
-    expect(updatedDirCid.toBaseEncodedString()).to.deep.equal(dirWithAllFiles.toBaseEncodedString())
+    expect(updatedDirCid.toString()).to.deep.equal(dirWithAllFiles.toString())
   })
 
   it('results in the same hash as a sharded directory created by the importer when creating a new subshard', async function () {
@@ -826,16 +764,16 @@ describe('write', () => {
       dirPath
     } = await createTwoShards(mfs.ipld, 100)
 
-    await mfs.cp(`/ipfs/${dirWithSomeFiles.toBaseEncodedString()}`, dirPath)
+    await mfs.cp(`/ipfs/${dirWithSomeFiles}`, dirPath)
 
     await mfs.write(nextFile.path, nextFile.content, {
       create: true
     })
 
     const stats = await mfs.stat(dirPath)
-    const updatedDirCid = new CID(stats.hash)
+    const updatedDirCid = stats.cid
 
-    expect(updatedDirCid.toBaseEncodedString()).to.deep.equal(dirWithAllFiles.toBaseEncodedString())
+    expect(updatedDirCid.toString()).to.deep.equal(dirWithAllFiles.toString())
   })
 
   it('results in the same hash as a sharded directory created by the importer when adding a file to a subshard', async function () {
@@ -848,17 +786,17 @@ describe('write', () => {
       dirPath
     } = await createTwoShards(mfs.ipld, 82)
 
-    await mfs.cp(`/ipfs/${dirWithSomeFiles.toBaseEncodedString()}`, dirPath)
+    await mfs.cp(`/ipfs/${dirWithSomeFiles}`, dirPath)
 
     await mfs.write(nextFile.path, nextFile.content, {
       create: true
     })
 
     const stats = await mfs.stat(dirPath)
-    const updatedDirCid = new CID(stats.hash)
+    const updatedDirCid = stats.cid
 
     expect(stats.type).to.equal('hamt-sharded-directory')
-    expect(updatedDirCid.toBaseEncodedString()).to.deep.equal(dirWithAllFiles.toBaseEncodedString())
+    expect(updatedDirCid.toString()).to.deep.equal(dirWithAllFiles.toString())
   })
 
   it('results in the same hash as a sharded directory created by the importer when adding a file to a subshard of a subshard', async function () {
@@ -871,17 +809,17 @@ describe('write', () => {
       dirPath
     } = await createTwoShards(mfs.ipld, 2187)
 
-    await mfs.cp(`/ipfs/${dirWithSomeFiles.toBaseEncodedString()}`, dirPath)
+    await mfs.cp(`/ipfs/${dirWithSomeFiles}`, dirPath)
 
     await mfs.write(nextFile.path, nextFile.content, {
       create: true
     })
 
     const stats = await mfs.stat(dirPath)
-    const updatedDirCid = new CID(stats.hash)
+    const updatedDirCid = stats.cid
 
     expect(stats.type).to.equal('hamt-sharded-directory')
-    expect(updatedDirCid.toBaseEncodedString()).to.deep.equal(dirWithAllFiles.toBaseEncodedString())
+    expect(updatedDirCid.toString()).to.deep.equal(dirWithAllFiles.toString())
   })
 
   it('results in the same hash as a sharded directory created by the importer when causing a subshard of a subshard to be created', async function () {
@@ -912,7 +850,7 @@ describe('write', () => {
       content: crypto.randomBytes(5)
     }], 1)
 
-    await mfs.cp(`/ipfs/${dirCid.toBaseEncodedString()}`, dir)
+    await mfs.cp(`/ipfs/${dirCid}`, dir)
 
     await mfs.write(`${dir}/supermodule_test`, superModuleContent, {
       create: true
@@ -921,8 +859,8 @@ describe('write', () => {
     await mfs.stat(`${dir}/supermodule_test`)
     await mfs.stat(`${dir}/node-gr`)
 
-    expect(await mfs.read(`${dir}/node-gr`)).to.deep.equal(nodeGrContent)
-    expect(await mfs.read(`${dir}/supermodule_test`)).to.deep.equal(superModuleContent)
+    expect(Buffer.concat(await all(mfs.read(`${dir}/node-gr`)))).to.deep.equal(nodeGrContent)
+    expect(Buffer.concat(await all(mfs.read(`${dir}/supermodule_test`)))).to.deep.equal(superModuleContent)
 
     await mfs.rm(`${dir}/supermodule_test`)
 
@@ -944,7 +882,7 @@ describe('write', () => {
       content: buf
     }], 1)
 
-    await mfs.cp(`/ipfs/${dirCid.toBaseEncodedString()}`, dir)
+    await mfs.cp(`/ipfs/${dirCid}`, dir)
 
     await mfs.write(`${dir}/file-1011.txt`, buf, {
       create: true
@@ -952,7 +890,7 @@ describe('write', () => {
 
     await mfs.stat(`${dir}/file-1011.txt`)
 
-    expect(await mfs.read(`${dir}/file-1011.txt`)).to.deep.equal(buf)
+    expect(Buffer.concat(await all(mfs.read(`${dir}/file-1011.txt`)))).to.deep.equal(buf)
   })
 
   it('removes files that cause sub-sub-shards to be removed', async function () {
@@ -969,7 +907,7 @@ describe('write', () => {
       content: buf
     }], 1)
 
-    await mfs.cp(`/ipfs/${dirCid.toBaseEncodedString()}`, dir)
+    await mfs.cp(`/ipfs/${dirCid}`, dir)
 
     await mfs.rm(`${dir}/file-1011.txt`)
 

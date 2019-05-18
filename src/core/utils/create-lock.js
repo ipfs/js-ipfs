@@ -1,7 +1,6 @@
 'use strict'
 
 const mortice = require('mortice')
-const log = require('debug')('ipfs:mfs:lock')
 
 let lock
 
@@ -17,51 +16,20 @@ module.exports = (repoOwner) => {
     singleProcess: repoOwner
   })
 
-  const performOperation = (type, func, args, callback) => {
-    log(`Queuing ${type} operation`)
-
-    mutex[`${type}Lock`](() => {
-      return new Promise((resolve, reject) => {
-        args.push((error, result) => {
-          log(`${type.substring(0, 1).toUpperCase()}${type.substring(1)} operation callback invoked${error ? ' with error: ' + error.message : ''}`)
-
-          if (error) {
-            return reject(error)
-          }
-
-          resolve(result)
-        })
-        log(`Starting ${type} operation`)
-        func.apply(null, args)
-      })
-    })
-      .then((result) => {
-        log(`Finished ${type} operation`)
-
-        callback(null, result)
-      }, (error) => {
-        log(`Finished ${type} operation with error: ${error.message}`)
-
-        callback(error)
-      })
-  }
-
   lock = {
     readLock: (func) => {
-      return function () {
-        const args = Array.from(arguments)
-        let callback = args.pop()
-
-        performOperation('read', func, args, callback)
+      return (...args) => {
+        return mutex.readLock(() => {
+          return func.apply(null, args)
+        })
       }
     },
 
     writeLock: (func) => {
-      return function () {
-        const args = Array.from(arguments)
-        let callback = args.pop()
-
-        performOperation('write', func, args, callback)
+      return (...args) => {
+        return mutex.writeLock(() => {
+          return func.apply(null, args)
+        })
       }
     }
   }

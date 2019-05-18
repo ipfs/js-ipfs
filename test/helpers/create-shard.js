@@ -1,31 +1,16 @@
 'use strict'
 
-const pull = require('pull-stream/pull')
-const values = require('pull-stream/sources/values')
-const collect = require('pull-stream/sinks/collect')
 const importer = require('ipfs-unixfs-importer')
-const CID = require('cids')
+const last = require('async-iterator-last')
 
-const createShard = (ipld, files, shardSplitThreshold = 10) => {
-  return new Promise((resolve, reject) => {
-    pull(
-      values(files),
-      importer(ipld, {
-        shardSplitThreshold,
-        reduceSingleLeafToSelf: false, // same as go-ipfs-mfs implementation, differs from `ipfs add`(!)
-        leafType: 'raw' // same as go-ipfs-mfs implementation, differs from `ipfs add`(!)
-      }),
-      collect((err, files) => {
-        if (err) {
-          return reject(err)
-        }
+const createShard = async (ipld, files, shardSplitThreshold = 10) => {
+  let result = await last(importer(files, ipld, {
+    shardSplitThreshold,
+    reduceSingleLeafToSelf: false, // same as go-ipfs-mfs implementation, differs from `ipfs add`(!)
+    leafType: 'raw' // same as go-ipfs-mfs implementation, differs from `ipfs add`(!)
+  }))
 
-        const dir = files[files.length - 1]
-
-        resolve(new CID(dir.multihash))
-      })
-    )
-  })
+  return result.cid
 }
 
 module.exports = createShard
