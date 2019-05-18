@@ -1,3 +1,29 @@
+<a name="0.11.0"></a>
+# [0.11.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.10.4...v0.11.0) (2019-05-18)
+
+
+### Features
+
+* convert to async/await ([#49](https://github.com/ipfs/js-ipfs-mfs/issues/49)) ([f02a941](https://github.com/ipfs/js-ipfs-mfs/commit/f02a941))
+
+
+### BREAKING CHANGES
+
+* 1. Everything is now async/await
+2. No more callbacks, Readable Streams or Pull Streams
+3. `stat` and `ls` commands return `cid` objects instead of string hashes
+4. `stat` and `ls` commands return all fields, `hash`, `long` etc options are now ignored
+
+* chore: standardise error codes, use latest cids and ipld formats
+
+* chore: update importer and exporter
+
+* chore: update importer again
+
+* chore: update deps
+
+
+
 <a name="0.10.4"></a>
 ## [0.10.4](https://github.com/ipfs/js-ipfs-mfs/compare/v0.10.3...v0.10.4) (2019-04-08)
 
