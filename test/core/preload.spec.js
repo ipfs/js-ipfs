@@ -205,7 +205,7 @@ describe('preload', () => {
 
       ipfs.object.patch.addLink(result.parent.cid, {
         name: 'link',
-        cid: result.link.cid,
+        cid: result.link.Hash,
         size: result.link.node.size
       }, (err, cid) => {
         expect(err).to.not.exist()

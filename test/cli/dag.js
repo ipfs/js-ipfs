@@ -3,6 +3,7 @@
 
 const expect = require('chai').expect
 const runOnAndOff = require('../utils/on-and-off')
+const path = require('path')
 
 describe('dag', () => runOnAndOff.off((thing) => {
   let ipfs
@@ -15,7 +16,7 @@ describe('dag', () => runOnAndOff.off((thing) => {
     this.timeout(20 * 1000)
 
     // put test eth-block
-    return ipfs('block put --format eth-block --mhtype keccak-256 test/fixtures/test-data/eth-block').then((out) => {
+    return ipfs(`block put --format eth-block --mhtype keccak-256 ${path.resolve(path.join(__dirname, '..'))}/fixtures/test-data/eth-block`).then((out) => {
       expect(out).to.eql('z43AaGF23fmvRnDP56Ub9WcJCfzSfqtmzNCCvmz5eudT8dtdCDS\n')
       // lookup path on eth-block
       return ipfs('dag get z43AaGF23fmvRnDP56Ub9WcJCfzSfqtmzNCCvmz5eudT8dtdCDS/parentHash')

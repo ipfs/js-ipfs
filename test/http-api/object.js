@@ -6,13 +6,13 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-
+const path = require('path')
 const fs = require('fs')
 const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
+const df = DaemonFactory.create({ exec: path.resolve(`${__dirname}/../../src/cli/bin.js`) })
 
 function asJson (cb) {
   return (err, result) => {

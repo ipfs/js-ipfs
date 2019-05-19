@@ -11,7 +11,8 @@ const parallelLimit = require('async/parallelLimit')
 const series = require('async/series')
 const {
   util: {
-    cid
+    cid,
+    serialize
   },
   DAGNode
 } = require('ipld-dag-pb')
@@ -35,7 +36,7 @@ function createNodes (num, callback) {
   const items = []
   for (let i = 0; i < num; i++) {
     items.push(cb =>
-      createNode(String(i), (err, res) => cb(err, res.cid.toBaseEncodedString()))
+      createNode(String(i), (err, res) => cb(err, !err && res.cid.toBaseEncodedString()))
     )
   }
 
@@ -48,18 +49,20 @@ function createNode (data, links = [], callback) {
     links = []
   }
 
-  DAGNode.create(data, links, (err, node) => {
-    if (err) {
-      return callback(err)
-    }
+  let node
 
-    cid(node, (err, result) => {
-      callback(err, {
-        node,
-        cid: result
-      })
+  try {
+    node = DAGNode.create(data, links)
+  } catch (err) {
+    return callback(err)
+  }
+
+  cid(serialize(node)).then(cid => {
+    callback(null, {
+      node,
+      cid
     })
-  })
+  }, err => callback(err))
 }
 
 describe('pinSet', function () {

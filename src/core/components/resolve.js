@@ -3,7 +3,6 @@
 const promisify = require('promisify-es6')
 const isIpfs = require('is-ipfs')
 const setImmediate = require('async/setImmediate')
-const doUntil = require('async/doUntil')
 const CID = require('cids')
 const { cidToString } = require('../../utils/cid')
 
@@ -17,7 +16,7 @@ module.exports = (self) => {
     opts = opts || {}
 
     if (!isIpfs.path(name)) {
-      return setImmediate(() => cb(new Error('invalid argument')))
+      return setImmediate(() => cb(new Error('invalid argument ' + name)))
     }
 
     // TODO remove this and update subsequent code when IPNS is implemented
@@ -45,6 +44,12 @@ module.exports = (self) => {
             value = result.value
             remainderPath = ''
           }
+
+          if (result.value && CID.isCID(result.value.Hash)) {
+            value = result.value.Hash
+            remainderPath = ''
+          }
+
           break
         }
 

@@ -1,10 +1,12 @@
 'use strict'
 
 const mfs = require('ipfs-mfs/core')
+const isPullStream = require('is-pull-stream')
 const toPullStream = require('async-iterator-to-pull-stream')
 const toReadableStream = require('async-iterator-to-stream')
+const pullStreamToAsyncIterator = require('pull-stream-to-async-iterator')
 const all = require('async-iterator-all')
-const callbackify = require('util').callbackify
+const callbackify = require('callbackify')
 const PassThrough = require('stream').PassThrough
 const pull = require('pull-stream/pull')
 const map = require('pull-stream/throughs/map')
@@ -13,8 +15,6 @@ const mapLsFile = (options = {}) => {
   const long = options.long || options.l
 
   return (file) => {
-    console.info(file)
-
     return {
       hash: long ? file.cid.toBaseEncodedString(options.cidBase) : '',
       name: file.name,
@@ -33,43 +33,66 @@ module.exports = self => {
   })
 
   return {
-    cp: callbackify(methods.cp),
-    flush: callbackify(methods.flush),
-    ls: callbackify(async (path, options) => {
+    cp: callbackify.variadic(methods.cp),
+    flush: callbackify.variadic(methods.flush),
+    ls: callbackify.variadic(async (path, options = {}) => {
       const files = await all(methods.ls(path, options))
 
       return files.map(mapLsFile(options))
     }),
-    lsReadableStream: (path, options) => {
+    lsReadableStream: (path, options = {}) => {
       const stream = toReadableStream.obj(methods.ls(path, options))
       const through = new PassThrough({
         objectMode: true
       })
-      stream.on('data', (file) => through.emit('data', mapLsFile(options)(file)))
-      stream.on('error', through.emit.bind(through, 'error'))
-      stream.on('end', through.emit.bind(through, 'end'))
+      stream.on('data', (file) => {
+        through.write(mapLsFile(options)(file))
+      })
+      stream.on('error', (err) => {
+        through.destroy(err)
+      })
+      stream.on('end', (file, enc, cb) => {
+        if (file) {
+          file = mapLsFile(options)(file)
+        }
+
+        through.end(file, enc, cb)
+      })
 
       return through
     },
-    lsPullStream: (path, options) => {
+    lsPullStream: (path, options = {}) => {
       return pull(
         toPullStream.source(methods.ls(path, options)),
         map(mapLsFile(options))
       )
     },
-    mkdir: callbackify(methods.mkdir),
-    mv: callbackify(methods.mv),
-    read: callbackify(async (path, options) => {
+    mkdir: callbackify.variadic(methods.mkdir),
+    mv: callbackify.variadic(methods.mv),
+    read: callbackify(async (path, options = {}) => {
       return Buffer.concat(await all(methods.read(path, options)))
     }),
-    readPullStream: (path, options) => {
-      return toReadableStream(methods.read(path, options))
-    },
-    readReadableStream: (path, options) => {
+    readPullStream: (path, options = {}) => {
       return toPullStream.source(methods.read(path, options))
     },
-    rm: callbackify(methods.rm),
-    stat: callbackify(methods.stat),
-    write: callbackify(methods.write)
+    readReadableStream: (path, options = {}) => {
+      return toReadableStream(methods.read(path, options))
+    },
+    rm: callbackify.variadic(methods.rm),
+    stat: callbackify(async (path, options = {}) => {
+      const stats = await methods.stat(path, options)
+
+      stats.hash = stats.cid.toBaseEncodedString(options && options.cidBase)
+      delete stats.cid
+
+      return stats
+    }),
+    write: callbackify.variadic(async (path, content, options = {}) => {
+      if (isPullStream.isSource(content)) {
+        content = pullStreamToAsyncIterator(content)
+      }
+
+      await methods.write(path, content, options)
+    })
   }
 }

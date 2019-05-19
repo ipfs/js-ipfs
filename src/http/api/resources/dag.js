@@ -1,6 +1,5 @@
 'use strict'
 
-const promisify = require('promisify-es6')
 const CID = require('cids')
 const multipart = require('ipfs-multipart')
 const mh = require('multihashes')
@@ -110,8 +109,14 @@ exports.get = {
       throw Boom.badRequest(err)
     }
 
+    let value = result.value
+
+    if (!Buffer.isBuffer(result.value) && result.value.toJSON) {
+      value = result.value.toJSON()
+    }
+
     try {
-      result.value = encodeBufferKeys(result.value, dataEncoding)
+      result.value = encodeBufferKeys(value, dataEncoding)
     } catch (err) {
       throw Boom.boomify(err)
     }
@@ -177,12 +182,8 @@ exports.put = {
 
       // IPLD expects the format and hashAlg as constants
       const codecConstant = format.toUpperCase().replace(/-/g, '_')
-      node = await ipfs._ipld._deserialize({
-        cid: {
-          codec: multicodec[codecConstant]
-        },
-        data: data
-      })
+      const ipldFormat = await ipfs._ipld._getFormat(multicodec[codecConstant])
+      node = await ipldFormat.util.deserialize(data)
     }
 
     return {

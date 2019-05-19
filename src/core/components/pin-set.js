@@ -25,7 +25,7 @@ function toB58String (hash) {
 function readHeader (rootNode) {
   // rootNode.data should be a buffer of the format:
   // < varint(headerLength) | header | itemData... >
-  const rootData = rootNode.data
+  const rootData = rootNode.Data
   const hdrLength = varint.decode(rootData)
   const vBytes = varint.decode.bytes
   if (vBytes <= 0) {
@@ -39,7 +39,7 @@ function readHeader (rootNode) {
   if (header.version !== 1) {
     throw new Error(`Unsupported Set version: ${header.version}`)
   }
-  if (header.fanout > rootNode.links.length) {
+  if (header.fanout > rootNode.Links.length) {
     throw new Error('Impossibly large fanout')
   }
   return {
@@ -147,17 +147,22 @@ exports = module.exports = function (dag) {
               })
             })
             // sorting makes any ordering of `pins` produce the same DAGNode
-            .sort((a, b) => Buffer.compare(a.link.cid.buffer, b.link.cid.buffer))
+            .sort((a, b) => Buffer.compare(a.link.Hash.buffer, b.link.Hash.buffer))
 
           const rootLinks = fanoutLinks.concat(nodes.map(item => item.link))
           const rootData = Buffer.concat(
             [headerBuf].concat(nodes.map(item => item.data))
           )
 
-          DAGNode.create(rootData, rootLinks, (err, rootNode) => {
-            if (err) { return storePinsCb(err) }
-            return storePinsCb(null, rootNode)
-          })
+          let rootNode
+
+          try {
+            rootNode = DAGNode.create(rootData, rootLinks)
+          } catch (err) {
+            return storePinsCb(err)
+          }
+
+          return storePinsCb(null, rootNode)
         } else {
           // If the array of pins is > maxItems, we:
           //  - distribute the pins among `defaultFanout` bins
@@ -183,10 +188,16 @@ exports = module.exports = function (dag) {
             )
           }, err => {
             if (err) { return storePinsCb(err) }
-            DAGNode.create(headerBuf, fanoutLinks, (err, rootNode) => {
-              if (err) { return storePinsCb(err) }
-              return storePinsCb(null, rootNode)
-            })
+
+            let rootNode
+
+            try {
+              rootNode = DAGNode.create(headerBuf, fanoutLinks)
+            } catch (err) {
+              return storePinsCb(err)
+            }
+
+            return storePinsCb(null, rootNode)
           })
         }
 
@@ -210,15 +221,15 @@ exports = module.exports = function (dag) {
     },
 
     loadSet: (rootNode, name, callback) => {
-      const link = rootNode.links.find(l => l.name === name)
+      const link = rootNode.Links.find(l => l.Name === name)
       if (!link) {
         return callback(new Error('No link found with name ' + name))
       }
 
-      dag.get(link.cid, '', { preload: false }, (err, res) => {
+      dag.get(link.Hash, '', { preload: false }, (err, res) => {
         if (err) { return callback(err) }
         const keys = []
-        const step = link => keys.push(link.cid.buffer)
+        const step = link => keys.push(link.Hash.buffer)
         pinSet.walkItems(res.value, step, err => {
           if (err) { return callback(err) }
           return callback(null, keys)
@@ -234,11 +245,11 @@ exports = module.exports = function (dag) {
         return callback(err)
       }
 
-      eachOfSeries(node.links, (link, idx, eachCb) => {
+      eachOfSeries(node.Links, (link, idx, eachCb) => {
         if (idx < pbh.header.fanout) {
           // the first pbh.header.fanout links are fanout bins
           // if a fanout bin is not 'empty', dig into and walk its DAGLinks
-          const linkHash = link.cid.buffer
+          const linkHash = link.Hash.buffer
 
           if (!emptyKey.equals(linkHash)) {
             // walk the links of this fanout bin

@@ -60,13 +60,15 @@ module.exports = (self) => {
           return cb(err)
         }
 
-        map(nodes, (node, cb) => util.cid(node, cb), (err, cids) => {
+        map(nodes, (node, cb) => util.cid(util.serialize(node), {
+          cidVersion: 0
+        }).then(cid => cb(null, cid), cb), (err, cids) => {
           if (err) {
             return cb(err)
           }
 
           cids
-            .map(cids => cids.toBaseEncodedString())
+            .map(cids => cids.toBaseEncodedString('base58btc'))
             // recursive pins pre-empt indirect pins
             .filter(key => !recursivePins.has(key))
             .forEach(key => indirectKeys.add(key))
@@ -89,31 +91,57 @@ module.exports = (self) => {
       // create a DAGLink to the node with direct pins
       cb => waterfall([
         cb => pinset.storeSet(directKeys(), cb),
-        ({ node, cid }, cb) => DAGLink.create(types.direct, node.size, cid, cb),
+        ({ node, cid }, cb) => {
+          try {
+            cb(null, new DAGLink(types.direct, node.size, cid))
+          } catch (err) {
+            cb(err)
+          }
+        },
         (link, cb) => { dLink = link; cb(null) }
       ], cb),
 
       // create a DAGLink to the node with recursive pins
       cb => waterfall([
         cb => pinset.storeSet(recursiveKeys(), cb),
-        ({ node, cid }, cb) => DAGLink.create(types.recursive, node.size, cid, cb),
+        ({ node, cid }, cb) => {
+          try {
+            cb(null, new DAGLink(types.recursive, node.size, cid))
+          } catch (err) {
+            cb(err)
+          }
+        },
         (link, cb) => { rLink = link; cb(null) }
       ], cb),
 
       // the pin-set nodes link to a special 'empty' node, so make sure it exists
-      cb => DAGNode.create(Buffer.alloc(0), (err, empty) => {
-        if (err) { return cb(err) }
+      cb => {
+        let empty
+
+        try {
+          empty = DAGNode.create(Buffer.alloc(0))
+        } catch (err) {
+          return cb(err)
+        }
+
         dag.put(empty, {
           version: 0,
           format: multicodec.DAG_PB,
           hashAlg: multicodec.SHA2_256,
           preload: false
         }, cb)
-      }),
+      },
 
       // create a root node with DAGLinks to the direct and recursive DAGs
-      cb => DAGNode.create(Buffer.alloc(0), [dLink, rLink], (err, node) => {
-        if (err) { return cb(err) }
+      cb => {
+        let node
+
+        try {
+          node = DAGNode.create(Buffer.alloc(0), [dLink, rLink])
+        } catch (err) {
+          return cb(err)
+        }
+
         root = node
         dag.put(root, {
           version: 0,
@@ -126,7 +154,7 @@ module.exports = (self) => {
           }
           cb(err)
         })
-      }),
+      },
 
       // hack for CLI tests
       cb => repo.closed ? repo.open(cb) : cb(null, null),

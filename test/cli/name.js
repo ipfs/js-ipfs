@@ -6,7 +6,7 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-
+const path = require('path')
 const hat = require('hat')
 const ipfsExec = require('../utils/ipfs-exec')
 
@@ -32,7 +32,7 @@ describe('name', () => {
       this.timeout(80 * 1000)
 
       df.spawn({
-        exec: `./src/cli/bin.js`,
+        exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
         config: {
           Bootstrap: []
         },
@@ -56,7 +56,7 @@ describe('name', () => {
             expect(id).to.have.property('id')
             nodeId = id.id
 
-            return ipfs('add src/init-files/init-docs/readme')
+            return ipfs(`add ${path.resolve(`${__dirname}/../../src/init-files/init-docs/readme`)}`)
           })
           .then((out) => {
             cidAdded = out.split(' ')[1]
@@ -197,7 +197,7 @@ describe('name', () => {
       this.timeout(80 * 1000)
 
       df.spawn({
-        exec: `./src/cli/bin.js`,
+        exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
         config: {
           Bootstrap: [],
           Discovery: {
@@ -229,7 +229,7 @@ describe('name', () => {
             expect(id).to.have.property('id')
             nodeId = id.id
 
-            return ipfs('add src/init-files/init-docs/readme')
+            return ipfs(`add ${path.resolve(`${__dirname}/../../src/init-files/init-docs/readme`)}`)
           })
           .then((out) => {
             cidAdded = out.split(' ')[1]

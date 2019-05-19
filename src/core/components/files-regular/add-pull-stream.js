@@ -26,8 +26,6 @@ const { parseChunkerString } = require('./utils')
 const streamFromFileReader = require('ipfs-utils/src/streams/stream-from-filereader')
 const { supportsFileReader } = require('ipfs-utils/src/supports')
 
-const WRAPPER = 'wrapper/'
-
 function noop () {}
 
 function prepareFile (file, self, opts, callback) {
@@ -98,10 +96,6 @@ function normalizeContent (content, opts) {
       throw new Error('Must provide a path when wrapping with a directory')
     }
 
-    //if (opts.wrapWithDirectory) {
-    //  data.path = WRAPPER + data.path
-    //}
-
     return data
   })
 }
@@ -149,8 +143,8 @@ module.exports = function (self) {
         ? 1000
         : Infinity
     }, options, {
-      ...chunkerOptions.chunkerOptions,
-      chunker: chunkerOptions.chunker
+      chunker: chunkerOptions.chunker,
+      chunkerOptions: chunkerOptions.chunkerOptions
     })
 
     // CID v0 is for multihashes encoded with sha2-256

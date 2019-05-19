@@ -23,8 +23,8 @@ module.exports = {
       const links = await ipfs.object.links(key, { enc: 'base58' })
 
       links.forEach((link) => {
-        const cidStr = cidToString(link.cid, { base: cidBase, upgrade: false })
-        print(`${cidStr} ${link.size} ${link.name}`)
+        const cidStr = cidToString(link.Hash, { base: cidBase, upgrade: false })
+        print(`${cidStr} ${link.Tsize} ${link.Name}`)
       })
     })())
   }

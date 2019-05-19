@@ -130,7 +130,13 @@ module.exports = function init (self) {
         const tasks = [
           (cb) => {
             waterfall([
-              (cb) => DAGNode.create(new UnixFs('directory').marshal(), cb),
+              (cb) => {
+                try {
+                  cb(null, DAGNode.create(new UnixFs('directory').marshal()))
+                } catch (err) {
+                  cb(err)
+                }
+              },
               (node, cb) => self.dag.put(node, {
                 version: 0,
                 format: multicodec.DAG_PB,

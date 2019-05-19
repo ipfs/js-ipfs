@@ -45,10 +45,12 @@ module.exports = function dag (self) {
 
       // js-ipld defaults to verion 1 CIDs. Hence set version 0 explicitly for
       // dag-pb nodes
-      if (options.format === multicodec.DAG_PB &&
-          options.hashAlg === multicodec.SHA2_256 &&
-          options.version === undefined) {
-        options.version = 0
+      if (options.version === undefined) {
+        if (options.format === multicodec.DAG_PB && options.hashAlg === multicodec.SHA2_256) {
+          options.version = 0
+        } else {
+          options.version = 1
+        }
       }
 
       self._ipld.put(dagNode, options.format, {
@@ -125,9 +127,7 @@ module.exports = function dag (self) {
         )
       } else {
         const result = self._ipld.resolve(cid, path)
-        const promisedValue = options.localResolve ?
-          result.first() :
-          result.last()
+        const promisedValue = options.localResolve ? result.first() : result.last()
         promisedValue.then(
           (value) => callback(null, value),
           (error) => callback(error)
@@ -204,8 +204,8 @@ module.exports = function dag (self) {
       self.dag.get(cid, '', options, (err, res) => {
         if (err) { return callback(err) }
 
-        mapAsync(res.value.links, (link, cb) => {
-          self.dag._getRecursive(link.cid, options, cb)
+        mapAsync(res.value.Links, (link, cb) => {
+          self.dag._getRecursive(link.Hash, options, cb)
         }, (err, nodes) => {
           // console.log('nodes:', nodes)
           if (err) return callback(err)

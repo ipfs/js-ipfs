@@ -3,10 +3,11 @@
 
 const tests = require('interface-ipfs-core')
 const CommonFactory = require('../utils/interface-common-factory')
+const path = require('path')
 
 describe('interface-ipfs-core over ipfs-http-client tests', () => {
   const defaultCommonFactory = CommonFactory.create({
-    factoryOptions: { exec: 'src/cli/bin.js' }
+    factoryOptions: { exec: path.resolve(`${__dirname}/../../src/cli/bin.js`) }
   })
 
   tests.bitswap(defaultCommonFactory)

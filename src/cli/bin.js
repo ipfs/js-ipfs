@@ -2,6 +2,18 @@
 
 'use strict'
 
+process.on('uncaughtException', (err) => {
+  console.info(err)
+
+  throw err
+})
+
+process.on('unhandledRejection', (err) => {
+  console.info(err)
+
+  throw err
+})
+
 const YargsPromise = require('yargs-promise')
 const updateNotifier = require('update-notifier')
 const utils = require('./utils')
@@ -35,7 +47,7 @@ async function main (args) {
       }
     })
     .catch(({ error, argv }) => {
-      getIpfs = argv.getIpfs
+      getIpfs = argv && argv.getIpfs
       debug(error)
       // the argument can have a different shape depending on where the error came from
       if (error.message || (error.error && error.error.message)) {

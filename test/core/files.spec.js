@@ -91,7 +91,7 @@ describe('files', () => {
       }, (err, files) => {
         expect(err).to.not.exist()
         expect(files.length).to.equal(1)
-        expect(files[0].hash).to.equal('zb2rhiNedvrkpYhcrgtpmhKk5UPzcgizgSXaQLYXNY745BmYP')
+        expect(files[0].hash).to.equal('bafkreifojmzibzlof6xyh5auu3r5vpu5l67brf3fitaf73isdlglqw2t7q')
         expect(files[0].size).to.equal(3)
         done()
       })
@@ -104,7 +104,7 @@ describe('files', () => {
       }, (err, files) => {
         expect(err).to.not.exist()
         expect(files.length).to.equal(1)
-        expect(files[0].hash).to.equal('zdj7WcDSFNSsZkdkbpSDGeLsBtHbYKyvPQsaw6PpeeYdGqoAx')
+        expect(files[0].hash).to.equal('bafybeide2caf5we5a7izifzwzz5ds2gla67vsfgrzvbzpnyyirnfzgwf5e')
         expect(files[0].size).to.equal(11)
         done()
       })

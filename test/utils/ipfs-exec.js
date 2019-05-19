@@ -5,7 +5,7 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-
+const path = require('path')
 const _ = require('lodash')
 
 // This is our new test utility to easily check and execute ipfs cli commands.
@@ -27,9 +27,8 @@ module.exports = (repoPath, opts) => {
     env: env,
     timeout: 60 * 1000
   }, opts)
-
-  const exec = (args) => execa(`${process.cwd()}/src/cli/bin.js`, args, config)
-  const execRaw = (args) => execa(`${process.cwd()}/src/cli/bin.js`, args, Object.assign({}, config, {
+  const exec = (args) => execa(path.resolve(`${__dirname}/../../src/cli/bin.js`), args, config)
+  const execRaw = (args) => execa(path.resolve(`${__dirname}/../../src/cli/bin.js`), args, Object.assign({}, config, {
     encoding: null
   }))
 
