@@ -27,7 +27,7 @@ module.exports = (send) => {
       if (Array.isArray(res)) {
         res = res[0]
       }
-      
+
       // callback with an empty array if no providers are found
       if (!res) {
         const responses = []
