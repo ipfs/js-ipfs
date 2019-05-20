@@ -81,17 +81,19 @@ module.exports = function block (self) {
             cb(null, new Block(block, cid))
           })
         },
-        (block, cb) => self._blockService.put(block, (err) => {
-          if (err) {
-            return cb(err)
-          }
+        (block, cb) => self._gcLock.writeLock((_cb) => {
+          self._blockService.put(block, (err) => {
+            if (err) {
+              return _cb(err)
+            }
 
-          if (options.preload !== false) {
-            self._preload(block.cid)
-          }
+            if (options.preload !== false) {
+              self._preload(block.cid)
+            }
 
-          cb(null, block)
-        })
+            _cb(null, block)
+          })
+        }, cb)
       ], callback)
     }),
     rm: promisify((cid, callback) => {
@@ -100,7 +102,8 @@ module.exports = function block (self) {
       } catch (err) {
         return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
       }
-      self._blockService.delete(cid, callback)
+
+      self._gcLock.readLock((cb) => self._blockService.delete(cid, cb), callback)
     }),
     stat: promisify((cid, options, callback) => {
       if (typeof options === 'function') {

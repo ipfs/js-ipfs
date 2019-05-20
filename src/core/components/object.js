@@ -242,19 +242,21 @@ module.exports = function object (self) {
       }
 
       function next () {
-        self._ipld.put(node, multicodec.DAG_PB, {
-          cidVersion: 0,
-          hashAlg: multicodec.SHA2_256
-        }).then(
-          (cid) => {
-            if (options.preload !== false) {
-              self._preload(cid)
-            }
+        self._gcLock.readLock((cb) => {
+          self._ipld.put(node, multicodec.DAG_PB, {
+            cidVersion: 0,
+            hashAlg: multicodec.SHA2_256
+          }).then(
+            (cid) => {
+              if (options.preload !== false) {
+                self._preload(cid)
+              }
 
-            callback(null, cid)
-          },
-          (error) => callback(error)
-        )
+              cb(null, cid)
+            },
+            cb
+          )
+        }, callback)
       }
     }),
 
@@ -322,7 +324,6 @@ module.exports = function object (self) {
           return callback(err)
         }
 
-<<<<<<< HEAD
         if (cid.codec === 'raw') {
           return callback(null, [])
         }
@@ -338,9 +339,6 @@ module.exports = function object (self) {
         }
 
         callback(new Error(`Cannot resolve links from codec ${cid.codec}`))
-=======
-        callback(null, node.links)
->>>>>>> refactor: move links retrieval from object to refs
       })
     }),
 

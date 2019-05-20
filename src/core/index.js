@@ -26,6 +26,7 @@ const defaultRepo = require('./runtime/repo-nodejs')
 const preload = require('./preload')
 const mfsPreload = require('./mfs-preload')
 const ipldOptions = require('./runtime/ipld-nodejs')
+const GCLock = require('./components/gc-lock')
 
 class IPFS extends EventEmitter {
   constructor (options) {
@@ -79,6 +80,7 @@ class IPFS extends EventEmitter {
     this._ipns = undefined
     // eslint-disable-next-line no-console
     this._print = this._options.silent ? this.log : console.log
+    this._gcLock = new GCLock()
 
     // IPFS Core exposed components
     //   - for booting up a node
