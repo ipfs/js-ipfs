@@ -67,7 +67,13 @@ function parseJSONBuffer (buf, callback) {
 }
 
 function parseProtoBuffer (buf, callback) {
-  dagPB.util.deserialize(buf, callback)
+  let obj
+  try {
+    obj = dagPB.util.deserialize(buf)
+  } catch (err) {
+    return callback(err)
+  }
+  callback(null, obj)
 }
 
 function findLinks (node, links = []) {
