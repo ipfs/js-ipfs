@@ -182,52 +182,54 @@ module.exports = (self) => {
       resolvePath(self.object, paths, (err, mhs) => {
         if (err) { return callback(err) }
 
-        // verify that each hash can be pinned
-        map(mhs, (multihash, cb) => {
-          const key = toB58String(multihash)
-          if (recursive) {
-            if (recursivePins.has(key)) {
-              // it's already pinned recursively
-              return cb(null, key)
-            }
+        self._gcLock.readLock((lockCb) => {
+          // verify that each hash can be pinned
+          map(mhs, (multihash, cb) => {
+            const key = toB58String(multihash)
+            if (recursive) {
+              if (recursivePins.has(key)) {
+                // it's already pinned recursively
+                return cb(null, key)
+              }
 
-            // entire graph of nested links should be pinned,
-            // so make sure we have all the objects
-            dag._getRecursive(key, { preload: options.preload }, (err) => {
-              if (err) { return cb(err) }
-              // found all objects, we can add the pin
-              return cb(null, key)
+              // entire graph of nested links should be pinned,
+              // so make sure we have all the objects
+              dag._getRecursive(key, { preload: options.preload }, (err) => {
+                if (err) { return cb(err) }
+                // found all objects, we can add the pin
+                return cb(null, key)
+              })
+            } else {
+              if (recursivePins.has(key)) {
+                // recursive supersedes direct, can't have both
+                return cb(new Error(`${key} already pinned recursively`))
+              }
+              if (directPins.has(key)) {
+                // already directly pinned
+                return cb(null, key)
+              }
+
+              // make sure we have the object
+              dag.get(new CID(multihash), { preload: options.preload }, (err) => {
+                if (err) { return cb(err) }
+                // found the object, we can add the pin
+                return cb(null, key)
+              })
+            }
+          }, (err, results) => {
+            if (err) { return lockCb(err) }
+
+            // update the pin sets in memory
+            const pinset = recursive ? recursivePins : directPins
+            results.forEach(key => pinset.add(key))
+
+            // persist updated pin sets to datastore
+            flushPins((err, root) => {
+              if (err) { return lockCb(err) }
+              lockCb(null, results.map(hash => ({ hash })))
             })
-          } else {
-            if (recursivePins.has(key)) {
-              // recursive supersedes direct, can't have both
-              return cb(new Error(`${key} already pinned recursively`))
-            }
-            if (directPins.has(key)) {
-              // already directly pinned
-              return cb(null, key)
-            }
-
-            // make sure we have the object
-            dag.get(new CID(multihash), { preload: options.preload }, (err) => {
-              if (err) { return cb(err) }
-              // found the object, we can add the pin
-              return cb(null, key)
-            })
-          }
-        }, (err, results) => {
-          if (err) { return callback(err) }
-
-          // update the pin sets in memory
-          const pinset = recursive ? recursivePins : directPins
-          results.forEach(key => pinset.add(key))
-
-          // persist updated pin sets to datastore
-          flushPins((err, root) => {
-            if (err) { return callback(err) }
-            callback(null, results.map(hash => ({ hash })))
           })
-        })
+        }, callback)
       })
     }),
 
@@ -249,50 +251,52 @@ module.exports = (self) => {
       resolvePath(self.object, paths, (err, mhs) => {
         if (err) { return callback(err) }
 
-        // verify that each hash can be unpinned
-        map(mhs, (multihash, cb) => {
-          pin._isPinnedWithType(multihash, types.all, (err, res) => {
-            if (err) { return cb(err) }
-            const { pinned, reason } = res
-            const key = toB58String(multihash)
-            if (!pinned) {
-              return cb(new Error(`${key} is not pinned`))
-            }
+        self._gcLock.readLock((lockCb) => {
+          // verify that each hash can be unpinned
+          map(mhs, (multihash, cb) => {
+            pin._isPinnedWithType(multihash, types.all, (err, res) => {
+              if (err) { return cb(err) }
+              const { pinned, reason } = res
+              const key = toB58String(multihash)
+              if (!pinned) {
+                return cb(new Error(`${key} is not pinned`))
+              }
 
-            switch (reason) {
-              case (types.recursive):
-                if (recursive) {
+              switch (reason) {
+                case (types.recursive):
+                  if (recursive) {
+                    return cb(null, key)
+                  } else {
+                    return cb(new Error(`${key} is pinned recursively`))
+                  }
+                case (types.direct):
                   return cb(null, key)
-                } else {
-                  return cb(new Error(`${key} is pinned recursively`))
-                }
-              case (types.direct):
-                return cb(null, key)
-              default:
-                return cb(new Error(
-                  `${key} is pinned indirectly under ${reason}`
-                ))
-            }
-          })
-        }, (err, results) => {
-          if (err) { return callback(err) }
+                default:
+                  return cb(new Error(
+                    `${key} is pinned indirectly under ${reason}`
+                  ))
+              }
+            })
+          }, (err, results) => {
+            if (err) { return lockCb(err) }
 
-          // update the pin sets in memory
-          results.forEach(key => {
-            if (recursive && recursivePins.has(key)) {
-              recursivePins.delete(key)
-            } else {
-              directPins.delete(key)
-            }
-          })
+            // update the pin sets in memory
+            results.forEach(key => {
+              if (recursive && recursivePins.has(key)) {
+                recursivePins.delete(key)
+              } else {
+                directPins.delete(key)
+              }
+            })
 
-          // persist updated pin sets to datastore
-          flushPins((err, root) => {
-            if (err) { return callback(err) }
-            self.log(`Removed pins: ${results}`)
-            callback(null, results.map(hash => ({ hash })))
+            // persist updated pin sets to datastore
+            flushPins((err, root) => {
+              if (err) { return lockCb(err) }
+              self.log(`Removed pins: ${results}`)
+              lockCb(null, results.map(hash => ({ hash })))
+            })
           })
-        })
+        }, callback)
       })
     }),
 

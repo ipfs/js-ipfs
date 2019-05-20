@@ -4,8 +4,6 @@ const promisify = require('promisify-es6')
 const repoVersion = require('ipfs-repo').repoVersion
 
 module.exports = function repo (self) {
-  const gc = require('./gc')(self)
-
   return {
     init: (bits, empty, callback) => {
       // 1. check if repo already exists
@@ -40,9 +38,7 @@ module.exports = function repo (self) {
       })
     }),
 
-    gc: promisify((callback) => {
-      gc(callback)
-    }),
+    gc: require('./gc')(self),
 
     stat: promisify((options, callback) => {
       if (typeof options === 'function') {

@@ -18,23 +18,28 @@ module.exports = function gc (self) {
     const start = Date.now()
     self.log(`GC: Creating set of marked blocks`)
 
-    parallel([
-      // Get all blocks from the blockstore
-      (cb) => self._repo.blocks.query({ keysOnly: true }, cb),
-      // Mark all blocks that are being used
-      (cb) => createMarkedSet(self, cb)
-    ], (err, [blocks, markedSet]) => {
-      if (err) {
-        self.log(`GC: Error - ${err.message}`)
-        return callback(err)
-      }
+    self._gcLock.writeLock((lockCb) => {
+      parallel([
+        // Get all blocks from the blockstore
+        (cb) => self._repo.blocks.query({ keysOnly: true }, cb),
+        // Mark all blocks that are being used
+        (cb) => createMarkedSet(self, cb)
+      ], (err, [blocks, markedSet]) => {
+        if (err) {
+          self.log(`GC: Error - ${err.message}`)
+          return lockCb(err)
+        }
 
-      // Delete blocks that are not being used
-      deleteUnmarkedBlocks(self, markedSet, blocks, start, (err, res) => {
-        err && self.log(`GC: Error - ${err.message}`)
-        callback(err, res)
+        // Delete blocks that are not being used
+        deleteUnmarkedBlocks(self, markedSet, blocks, start, (err, res) => {
+          if (err) {
+            self.log(`GC: Error - ${err.message}`)
+            return lockCb(err)
+          }
+          lockCb(null, res)
+        })
       })
-    })
+    }, callback)
   })
 }
 
@@ -42,6 +47,7 @@ module.exports = function gc (self) {
 function createMarkedSet (ipfs, callback) {
   parallel([
     // "Empty block" used by the pinner
+    // TODO: This CID is replicated in pin.js
     (cb) => cb(null, [new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')]),
 
     // All pins, direct and indirect
