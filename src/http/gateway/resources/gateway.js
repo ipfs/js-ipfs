@@ -82,7 +82,7 @@ module.exports = {
 
           // found index file
           // redirect to URL/<found-index-file>
-          return h.redirect(PathUtils.joinURLParts(ref, data[0].name))
+          return h.redirect(PathUtils.joinURLParts(ref, data[0].Name))
         case (errorToString.startsWith('Error: no link named')):
           throw Boom.boomify(err, { statusCode: 404 })
         case (errorToString.startsWith('Error: multihash length inconsistent')):
