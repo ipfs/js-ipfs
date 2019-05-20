@@ -12,7 +12,10 @@ const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ exec: path.resolve(`${__dirname}/../../src/cli/bin.js`) })
+const df = DaemonFactory.create({
+  exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
+  IpfsClient: require('ipfs-http-client')
+})
 
 function asJson (cb) {
   return (err, result) => {
