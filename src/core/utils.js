@@ -124,14 +124,13 @@ const resolvePath = promisify(function (objectAPI, ipfsPaths, callback) {
       }
 
       const linkName = links[0]
-      const nextObj = obj.links.find(link => link.name === linkName)
+      const nextObj = obj.Links.find(link => link.Name === linkName)
+
       if (!nextObj) {
-        return cb(new Error(
-          `no link named "${linkName}" under ${cid.toBaseEncodedString()}`
-        ))
+        return cb(new Error(`no link named "${linkName}" under ${cid}`))
       }
 
-      objectAPI.get(nextObj.cid, follow.bind(null, nextObj.cid, links.slice(1)))
+      objectAPI.get(nextObj.Hash, follow.bind(null, nextObj.Hash, links.slice(1)))
     }
   }, callback)
 })

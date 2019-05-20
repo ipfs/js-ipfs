@@ -70,7 +70,8 @@ exports = module.exports = function (dag) {
       return searchChildren(root, callback)
 
       function searchChildren (root, cb) {
-        someSeries(root.links, ({ cid }, done) => {
+        someSeries(root.Links, (link, done) => {
+          const cid = link.Hash
           const bs58Link = toB58String(cid)
 
           if (bs58Link === childhash) {
