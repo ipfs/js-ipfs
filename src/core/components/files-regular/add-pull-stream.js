@@ -1,27 +1,18 @@
 'use strict'
 
 const importer = require('ipfs-unixfs-importer')
-<<<<<<< HEAD
 const kindOf = require('kind-of')
-const CID = require('cids')
+const toAsyncIterator = require('pull-stream-to-async-iterator')
+const toPullStream = require('async-iterator-to-pull-stream')
+const pull = require('pull-stream/pull')
 const pullValues = require('pull-stream/sources/values')
 const pullMap = require('pull-stream/throughs/map')
 const pullAsyncMap = require('pull-stream/throughs/async-map')
 const pullFlatten = require('pull-stream/throughs/flatten')
-const pull = require('pull-stream/pull')
 const toPull = require('stream-to-pull-stream')
 const waterfall = require('async/waterfall')
 const isStream = require('is-stream')
 const { isSource } = require('is-pull-stream')
-=======
-const toAsyncIterator = require('pull-stream-to-async-iterator')
-const toPullStream = require('async-iterator-to-pull-stream')
-const pull = require('pull-stream')
-const toPull = require('stream-to-pull-stream')
-const waterfall = require('async/waterfall')
-const isStream = require('is-stream')
-const isSource = require('is-pull-stream').isSource
->>>>>>> test: most tests passing
 const { parseChunkerString } = require('./utils')
 const streamFromFileReader = require('ipfs-utils/src/streams/stream-from-filereader')
 const { supportsFileReader } = require('ipfs-utils/src/supports')
@@ -162,25 +153,16 @@ module.exports = function (self) {
 
     opts.progress = progress
     return pull(
-<<<<<<< HEAD
       pullMap(content => normalizeContent(content, opts)),
       pullFlatten(),
-      importer(self._ipld, opts),
-      pullAsyncMap((file, cb) => prepareFile(file, self, opts, cb)),
-      pullMap(file => preloadFile(file, self, opts)),
-      pullAsyncMap((file, cb) => pinFile(file, self, opts, cb))
-=======
-      pull.map(content => normalizeContent(content, opts)),
-      pull.flatten(),
-      pull.map(file => ({
+      pullMap(file => ({
         path: file.path ? file.path : undefined,
         content: file.content ? toAsyncIterator(file.content) : undefined
       })),
       toPullStream.transform(source => importer(source, self._ipld, opts)),
-      pull.asyncMap((file, cb) => prepareFile(file, self, opts, cb)),
-      pull.map(file => preloadFile(file, self, opts)),
-      pull.asyncMap((file, cb) => pinFile(file, self, opts, cb))
->>>>>>> test: most tests passing
+      pullAsyncMap((file, cb) => prepareFile(file, self, opts, cb)),
+      pullMap(file => preloadFile(file, self, opts)),
+      pullAsyncMap((file, cb) => pinFile(file, self, opts, cb))
     )
   }
 }

@@ -1,12 +1,9 @@
 'use strict'
 
 const CID = require('cids')
-<<<<<<< HEAD
 const { Buffer } = require('buffer')
-=======
 const { cidToString } = require('../../../utils/cid')
 const toPullStream = require('async-iterator-to-pull-stream')
->>>>>>> test: most tests passing
 
 const normalizePath = (path) => {
   if (Buffer.isBuffer(path)) {
@@ -104,14 +101,7 @@ const parseChunkSize = (str, name) => {
   return size
 }
 
-<<<<<<< HEAD
-module.exports = {
-  normalizePath,
-  parseChunkSize,
-  parseRabinString,
-  parseChunkerString
-=======
-exports.mapFile = (options = {}) => {
+const mapFile = (options = {}) => {
   return (file) => {
     let size = 0
     let type = 'dir'
@@ -136,5 +126,12 @@ exports.mapFile = (options = {}) => {
 
     return output
   }
->>>>>>> test: most tests passing
+}
+
+module.exports = {
+  normalizePath,
+  parseChunkSize,
+  parseRabinString,
+  parseChunkerString,
+  mapFile
 }
