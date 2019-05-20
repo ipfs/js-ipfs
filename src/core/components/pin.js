@@ -68,7 +68,7 @@ module.exports = (self) => {
           }
 
           cids
-            .map(cids => cids.toBaseEncodedString('base58btc'))
+            .map(cid => cid.toString())
             // recursive pins pre-empt indirect pins
             .filter(key => !recursivePins.has(key))
             .forEach(key => indirectKeys.add(key))

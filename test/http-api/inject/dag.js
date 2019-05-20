@@ -274,7 +274,7 @@ module.exports = (http) => {
         const cid = new CID(res.result.Cid['/'])
         const pinset = await http.api._ipfs.pin.ls()
 
-        expect(pinset.map(pin => pin.hash)).to.contain(cid.toBaseEncodedString('base58btc'))
+        expect(pinset.map(pin => pin.hash)).to.contain(cid.toBaseEncodedString())
       })
 
       it('does not pin a node after adding', async () => {
@@ -385,9 +385,7 @@ module.exports = (http) => {
         })
 
         const node1 = {
-          foo: {
-            '/': cid2
-          }
+          foo: cid2
         }
 
         const cid1 = await http.api._ipfs.dag.put(node1, {
