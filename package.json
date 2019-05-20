@@ -138,7 +138,7 @@
     "just-flatten-it": "^2.1.0",
     "just-safe-set": "^2.1.0",
     "kind-of": "^6.0.2",
-    "libp2p": "~0.25.0",
+    "libp2p": "~0.25.3",
     "libp2p-bootstrap": "~0.9.3",
     "libp2p-crypto": "~0.16.0",
     "libp2p-kad-dht": "~0.14.12",
