@@ -79,7 +79,7 @@ function createMarkedSet (ipfs, callback) {
         // The pinner stores an object that has two links to pin sets:
         // 1. The directly pinned CIDs
         // 2. The recursively pinned CIDs
-        cb(null, [cid, ...obj.value.links.map(l => l.cid)])
+        cb(null, [cid, ...obj.value.Links.map(l => l.Hash)])
       })
     }),
 
