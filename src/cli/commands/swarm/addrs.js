@@ -21,7 +21,14 @@ module.exports = {
         print(`${peer.id.toB58String()} (${count})`)
 
         peer.multiaddrs.forEach((addr) => {
-          const res = addr.decapsulate('ipfs').toString()
+          let res
+          try {
+            res = addr.decapsulate('ipfs').toString()
+          } catch (_) {
+            // peer addresses dont need to have /ipfs/ as we know their peerId
+            // and can encapsulate on dial.
+            res = addr.toString()
+          }
           print(`\t${res}`)
         })
       })
