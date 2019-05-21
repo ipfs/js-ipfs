@@ -1,3 +1,11 @@
+<a name="0.3.0"></a>
+## [0.3.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.2.2...v0.3.0) (2019-05-21)
+
+BREAKING CHANGE: v1 CIDs created by this module now default to base32 encoding when stringified
+
+Not a direct dependency of this module but ipld-dag-pb changed the
+case of some property names that are used by this module.
+
 <a name="0.2.2"></a>
 ## [0.2.2](https://github.com/ipfs/js-ipfs-http-response/compare/v0.2.1...v0.2.2) (2019-01-19)
 
