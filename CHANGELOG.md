@@ -1,3 +1,34 @@
+<a name="0.36.0-rc.0"></a>
+# [0.36.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.36.0-pre.0...v0.36.0-rc.0) (2019-05-21)
+
+
+### Code Refactoring
+
+* update ipld formats, async/await mfs/unixfs & base32 cids ([#2068](https://github.com/ipfs/js-ipfs/issues/2068)) ([813048f](https://github.com/ipfs/js-ipfs/commit/813048f)), closes [ipld/js-ipld-dag-pb#137](https://github.com/ipld/js-ipld-dag-pb/issues/137) [ipfs/interface-js-ipfs-core#473](https://github.com/ipfs/interface-js-ipfs-core/issues/473) [ipfs/js-ipfs-http-client#1010](https://github.com/ipfs/js-ipfs-http-client/issues/1010) [ipfs/js-ipfs-http-response#25](https://github.com/ipfs/js-ipfs-http-response/issues/25) [#1995](https://github.com/ipfs/js-ipfs/issues/1995)
+
+
+### BREAKING CHANGES
+
+* The default string encoding for version 1 CIDs has changed to `base32`.
+
+IPLD formats have been updated to the latest versions. IPLD nodes returned by `ipfs.dag` and `ipfs.object` commands have significant breaking changes. If you are using these commands in your application you are likely to encounter the following changes to `dag-pb` nodes (the default node type that IPFS creates):
+
+* `DAGNode` properties have been renamed as follows:
+    * `data` => `Data`
+    * `links` => `Links`
+    * `size` => `size` (Note: no change)
+* `DAGLink` properties have been renamed as follows:
+    * `cid` => `Hash`
+    * `name` => `Name`
+    * `size` => `Tsize`
+
+See CHANGELOGs for each IPLD format for it's respective changes, you can read more about the [`dag-pb` changes in the CHANGELOG](https://github.com/ipld/js-ipld-dag-pb/blob/master)
+
+License: MIT
+Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
+
+
+
 <a name="0.36.0-pre.0"></a>
 # [0.36.0-pre.0](https://github.com/ipfs/js-ipfs/compare/v0.35.0...v0.36.0-pre.0) (2019-05-17)
 
