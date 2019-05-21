@@ -147,6 +147,7 @@
     "multihashes": "~0.4.14",
     "multihashing-async": "~0.6.0",
     "node-fetch": "^2.3.0",
+    "p-event": "^4.1.0",
     "peer-book": "~0.9.0",
     "peer-id": "~0.12.3",
     "peer-info": "~0.15.0",
