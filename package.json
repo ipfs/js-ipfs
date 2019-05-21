@@ -114,7 +114,7 @@
     "ipfs-block": "~0.8.0",
     "ipfs-block-service": "~0.15.1",
     "ipfs-http-client": "^31.1.0",
-    "ipfs-http-response": "~0.2.1",
+    "ipfs-http-response": "~0.3.0",
     "ipfs-mfs": "~0.10.2",
     "ipfs-multipart": "~0.1.0",
     "ipfs-repo": "~0.26.5",
