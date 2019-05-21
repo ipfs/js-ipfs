@@ -1,3 +1,14 @@
+<a name="32.0.1"></a>
+## [32.0.1](https://github.com/ipfs/js-ipfs-http-client/compare/v32.0.0...v32.0.1) (2019-05-21)
+
+
+### Bug Fixes
+
+* error reporting for non-JSON responses ([#1016](https://github.com/ipfs/js-ipfs-http-client/issues/1016)) ([4251c88](https://github.com/ipfs/js-ipfs-http-client/commit/4251c88)), closes [#912](https://github.com/ipfs/js-ipfs-http-client/issues/912) [#1000](https://github.com/ipfs/js-ipfs-http-client/issues/1000) [#1001](https://github.com/ipfs/js-ipfs-http-client/issues/1001)
+* send trickle param to trigger trickle dag builder ([#1015](https://github.com/ipfs/js-ipfs-http-client/issues/1015)) ([a28b009](https://github.com/ipfs/js-ipfs-http-client/commit/a28b009))
+
+
+
 <a name="32.0.0"></a>
 # [32.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v31.1.0...v32.0.0) (2019-05-21)
 
