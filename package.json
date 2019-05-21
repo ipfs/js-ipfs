@@ -118,7 +118,7 @@
     "ipfs-block": "~0.8.1",
     "ipfs-block-service": "~0.15.1",
     "ipfs-http-client": "^32.0.0",
-    "ipfs-http-response": "ipfs/js-ipfs-http-response#update-ipld-formats",
+    "ipfs-http-response": "~0.3.0",
     "ipfs-mfs": "~0.11.2",
     "ipfs-multipart": "~0.1.0",
     "ipfs-repo": "~0.26.6",
