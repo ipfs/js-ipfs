@@ -19,14 +19,13 @@ module.exports = (send) => {
       return callback(err)
     }
 
-    send({
-      path: 'object/patch/add-link',
-      args: [
-        cid.toString(),
-        dLink.name,
-        dLink.cid.toString()
-      ]
-    }, (err, result) => {
+    const args = [
+      cid.toString(),
+      dLink.Name || dLink.name || null,
+      (dLink.Hash || dLink.cid || '').toString() || null
+    ]
+
+    send({ path: 'object/patch/add-link', args }, (err, result) => {
       if (err) {
         return callback(err)
       }

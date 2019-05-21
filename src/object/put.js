@@ -36,12 +36,12 @@ module.exports = (send) => {
       }
     } else if (DAGNode.isDAGNode(obj)) {
       tmpObj = {
-        Data: obj.data.toString(),
-        Links: obj.links.map((l) => {
-          const link = l.toJSON()
-          link.hash = link.cid
-          return link
-        })
+        Data: obj.Data.toString(),
+        Links: obj.Links.map(l => ({
+          Name: l.Name,
+          Hash: l.Hash.toString(),
+          Size: l.Tsize
+        }))
       }
     } else if (typeof obj === 'object') {
       tmpObj.Data = obj.Data.toString()

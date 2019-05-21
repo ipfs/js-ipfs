@@ -46,13 +46,20 @@ module.exports = (send) => {
       },
       (ipfsBlock, path, cb) => {
         const dagResolver = resolvers[ipfsBlock.cid.codec]
+
         if (!dagResolver) {
           const error = new Error('ipfs-http-client is missing DAG resolver for "' + ipfsBlock.cid.codec + '" multicodec')
           error.missingMulticodec = ipfsBlock.cid.codec
-          cb(error)
-          return
+          return cb(error)
         }
-        dagResolver.resolve(ipfsBlock.data, path, cb)
+
+        let res
+        try {
+          res = dagResolver.resolve(ipfsBlock.data, path)
+        } catch (err) {
+          return cb(err)
+        }
+        cb(null, res)
       }
     ], callback)
   })

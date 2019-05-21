@@ -1,8 +1,7 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const dagPB = require('ipld-dag-pb')
-const DAGLink = dagPB.DAGLink
+const { DAGLink } = require('ipld-dag-pb')
 const CID = require('cids')
 const LRU = require('lru-cache')
 const lruOptions = {
@@ -44,7 +43,9 @@ module.exports = (send) => {
       let links = []
 
       if (result.Links) {
-        links = result.Links.map((l) => new DAGLink(l.Name, l.Size, l.Hash))
+        links = result.Links.map((l) => {
+          return new DAGLink(l.Name, l.Size, l.Hash)
+        })
       }
       callback(null, links)
     })

@@ -8,8 +8,7 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const series = require('async/series')
-const dagPB = require('ipld-dag-pb')
-const DAGNode = dagPB.DAGNode
+const { DAGNode } = require('ipld-dag-pb')
 const CID = require('cids')
 const ipfsClient = require('../src')
 const f = require('./utils/factory')
@@ -37,20 +36,19 @@ describe('.dag', function () {
 
   it('should be able to put and get a DAG node with format dag-pb', (done) => {
     const data = Buffer.from('some data')
-    DAGNode.create(data, (err, node) => {
+    const node = DAGNode.create(data)
+
+    ipfs.dag.put(node, { format: 'dag-pb', hashAlg: 'sha2-256' }, (err, cid) => {
       expect(err).to.not.exist()
-      ipfs.dag.put(node, { format: 'dag-pb', hashAlg: 'sha2-256' }, (err, cid) => {
+      cid = cid.toV0()
+      expect(cid.codec).to.equal('dag-pb')
+      cid = cid.toBaseEncodedString('base58btc')
+      // expect(cid).to.equal('bafybeig3t3eugdchignsgkou3ly2mmy4ic4gtfor7inftnqn3yq4ws3a5u')
+      expect(cid).to.equal('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
+      ipfs.dag.get(cid, (err, result) => {
         expect(err).to.not.exist()
-        cid = cid.toV0()
-        expect(cid.codec).to.equal('dag-pb')
-        cid = cid.toBaseEncodedString('base58btc')
-        // expect(cid).to.equal('bafybeig3t3eugdchignsgkou3ly2mmy4ic4gtfor7inftnqn3yq4ws3a5u')
-        expect(cid).to.equal('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
-        ipfs.dag.get(cid, (err, result) => {
-          expect(err).to.not.exist()
-          expect(result.value.data).to.deep.equal(data)
-          done()
-        })
+        expect(result.value.Data).to.deep.equal(data)
+        done()
       })
     })
   })

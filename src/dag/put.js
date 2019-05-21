@@ -50,34 +50,38 @@ module.exports = (send) => {
 
     options = Object.assign(optionDefaults, options)
 
-    if (options.format === 'dag-cbor') {
-      dagCBOR.util.serialize(dagNode, finalize)
-    } else if (options.format === 'dag-pb') {
-      dagPB.util.serialize(dagNode, finalize)
-    } else {
-      // FIXME Hopefully already serialized...can we use IPLD to serialise instead?
-      finalize(null, dagNode)
+    let serialized
+
+    try {
+      if (options.format === 'dag-cbor') {
+        serialized = dagCBOR.util.serialize(dagNode)
+      } else if (options.format === 'dag-pb') {
+        serialized = dagPB.util.serialize(dagNode)
+      } else {
+        // FIXME Hopefully already serialized...can we use IPLD to serialise instead?
+        serialized = dagNode
+      }
+    } catch (err) {
+      return callback(err)
     }
 
-    function finalize (err, serialized) {
-      if (err) { return callback(err) }
-      const sendOptions = {
-        qs: {
-          hash: options.hashAlg,
-          format: options.format,
-          'input-enc': options.inputEnc
-        }
+    const sendOptions = {
+      qs: {
+        hash: options.hashAlg,
+        format: options.format,
+        'input-enc': options.inputEnc
       }
-      sendOneFile(serialized, sendOptions, (err, result) => {
-        if (err) {
-          return callback(err)
-        }
-        if (result['Cid']) {
-          return callback(null, new CID(result['Cid']['/']))
-        } else {
-          return callback(result)
-        }
-      })
     }
+
+    sendOneFile(serialized, sendOptions, (err, result) => {
+      if (err) {
+        return callback(err)
+      }
+      if (result['Cid']) {
+        return callback(null, new CID(result['Cid']['/']))
+      } else {
+        return callback(result)
+      }
+    })
   })
 }

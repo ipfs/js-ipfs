@@ -23,7 +23,7 @@ module.exports = (send) => {
       path: 'object/patch/rm-link',
       args: [
         cid.toString(),
-        dLink.name
+        dLink.Name || dLink.name || null
       ]
     }, (err, result) => {
       if (err) {
