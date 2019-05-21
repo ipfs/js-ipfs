@@ -6,6 +6,7 @@ const base32 = require('base32.js')
 const parallel = require('async/parallel')
 const mapLimit = require('async/mapLimit')
 const { Key } = require('interface-datastore')
+const log = require('debug')('ipfs:gc')
 
 // Limit on the number of parallel block remove operations
 const BLOCK_RM_CONCURRENCY = 256
@@ -16,7 +17,7 @@ const MFS_ROOT_DS_KEY = new Key('/local/filesroot')
 module.exports = function gc (self) {
   return promisify(async (callback) => {
     const start = Date.now()
-    self.log(`GC: Creating set of marked blocks`)
+    log(`Creating set of marked blocks`)
 
     self._gcLock.writeLock((lockCb) => {
       parallel([
@@ -26,14 +27,14 @@ module.exports = function gc (self) {
         (cb) => createMarkedSet(self, cb)
       ], (err, [blocks, markedSet]) => {
         if (err) {
-          self.log(`GC: Error - ${err.message}`)
+          log(`Error - ${err.message}`)
           return lockCb(err)
         }
 
         // Delete blocks that are not being used
         deleteUnmarkedBlocks(self, markedSet, blocks, start, (err, res) => {
           if (err) {
-            self.log(`GC: Error - ${err.message}`)
+            log(`Error - ${err.message}`)
             return lockCb(err)
           }
           lockCb(null, res)
@@ -55,7 +56,7 @@ function createMarkedSet (ipfs, callback) {
       if (err) {
         return cb(new Error(`Could not list pinned blocks: ${err.message}`))
       }
-      ipfs.log(`GC: Found ${pins.length} pinned blocks`)
+      log(`Found ${pins.length} pinned blocks`)
       cb(null, pins.map(p => new CID(p.hash)))
     }),
 
@@ -63,7 +64,7 @@ function createMarkedSet (ipfs, callback) {
     (cb) => ipfs._repo.datastore.get(PIN_DS_KEY, (err, mh) => {
       if (err) {
         if (err.code === 'ERR_NOT_FOUND') {
-          ipfs.log(`GC: No pinned blocks`)
+          log(`No pinned blocks`)
           return cb(null, [])
         }
         return cb(new Error(`Could not get pin sets root from datastore: ${err.message}`))
@@ -86,7 +87,7 @@ function createMarkedSet (ipfs, callback) {
     (cb) => ipfs._repo.datastore.get(MFS_ROOT_DS_KEY, (err, mh) => {
       if (err) {
         if (err.code === 'ERR_NOT_FOUND') {
-          ipfs.log(`GC: No blocks in MFS`)
+          log(`No blocks in MFS`)
           return cb(null, [])
         }
         return cb(new Error(`Could not get MFS root from datastore: ${err.message}`))
@@ -110,7 +111,7 @@ function getDescendants (ipfs, cid, callback) {
     if (err) {
       return callback(new Error(`Could not get MFS root descendants from store: ${err.message}`))
     }
-    ipfs.log(`GC: Found ${refs.length} MFS blocks`)
+    log(`Found ${refs.length} MFS blocks`)
     callback(null, [cid, ...refs.map(r => new CID(r.ref))])
   })
 }
@@ -132,9 +133,9 @@ function deleteUnmarkedBlocks (ipfs, markedSet, blocks, start, callback) {
     }
   }
 
-  const msg = `GC: Marked set has ${markedSet.size} blocks. Blockstore has ${blocks.length} blocks. ` +
+  const msg = `Marked set has ${markedSet.size} blocks. Blockstore has ${blocks.length} blocks. ` +
     `Deleting ${unreferenced.length} blocks.`
-  ipfs.log(msg)
+  log(msg)
 
   mapLimit(unreferenced, BLOCK_RM_CONCURRENCY, (cid, cb) => {
     // Delete blocks from blockstore
@@ -146,7 +147,7 @@ function deleteUnmarkedBlocks (ipfs, markedSet, blocks, start, callback) {
       cb(null, res)
     })
   }, (_, delRes) => {
-    ipfs.log(`GC: Complete (${Date.now() - start}ms)`)
+    log(`Complete (${Date.now() - start}ms)`)
 
     callback(null, res.concat(delRes))
   })

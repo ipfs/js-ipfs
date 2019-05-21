@@ -182,7 +182,7 @@ module.exports = (self) => {
       resolvePath(self.object, paths, (err, mhs) => {
         if (err) { return callback(err) }
 
-        self._gcLock.readLock((lockCb) => {
+        const pin = (pinComplete) => {
           // verify that each hash can be pinned
           map(mhs, (multihash, cb) => {
             const key = toB58String(multihash)
@@ -217,7 +217,7 @@ module.exports = (self) => {
               })
             }
           }, (err, results) => {
-            if (err) { return lockCb(err) }
+            if (err) { return pinComplete(err) }
 
             // update the pin sets in memory
             const pinset = recursive ? recursivePins : directPins
@@ -225,11 +225,20 @@ module.exports = (self) => {
 
             // persist updated pin sets to datastore
             flushPins((err, root) => {
-              if (err) { return lockCb(err) }
-              lockCb(null, results.map(hash => ({ hash })))
+              if (err) { return pinComplete(err) }
+              pinComplete(null, results.map(hash => ({ hash })))
             })
           })
-        }, callback)
+        }
+
+        // When adding a file, we take a lock that gets released after pinning
+        // is complete, so don't take a second lock here
+        const lock = options.lock !== false
+        if (lock) {
+          self._gcLock.readLock(pin, callback)
+        } else {
+          pin(callback)
+        }
       })
     }),
 

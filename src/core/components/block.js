@@ -81,7 +81,7 @@ module.exports = function block (self) {
             cb(null, new Block(block, cid))
           })
         },
-        (block, cb) => self._gcLock.writeLock((_cb) => {
+        (block, cb) => self._gcLock.readLock((_cb) => {
           self._blockService.put(block, (err) => {
             if (err) {
               return _cb(err)
@@ -103,7 +103,7 @@ module.exports = function block (self) {
         return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
       }
 
-      self._gcLock.readLock((cb) => self._blockService.delete(cid, cb), callback)
+      self._gcLock.writeLock((cb) => self._blockService.delete(cid, cb), callback)
     }),
     stat: promisify((cid, options, callback) => {
       if (typeof options === 'function') {
