@@ -30,10 +30,6 @@ We've come a long way, but this project is still in Alpha, lots of development i
 
 **Want to get started?** Check our [examples folder](/examples) to learn how to spawn an IPFS node in Node.js and in the Browser.
 
-You can check the development status at the [Kanban Board](https://waffle.io/ipfs/js-ipfs).
-
-[![Throughput Graph](https://graphs.waffle.io/ipfs/js-ipfs/throughput.svg)](https://waffle.io/ipfs/js-ipfs/metrics/throughput)
-
 **Please read this:** The [DHT](https://en.wikipedia.org/wiki/Distributed_hash_table), a fundamental piece for automatic content and peer discovery is not yet complete. There are multiple applications that can be built without this service but nevertheless it is fundamental to getting that magic IPFS experience. The current status is that implementation is done and merged and we're working on performance issues. Expect the DHT to be available in a release very soon.
 
 [**`Weekly Core Dev Calls`**](https://github.com/ipfs/team-mgmt/issues/650)
