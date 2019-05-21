@@ -41,15 +41,17 @@ module.exports = (createCommon, options) => {
     before((done) => {
       const someData = Buffer.from('some data')
 
-      DAGNode.create(someData, (err, node) => {
-        expect(err).to.not.exist()
-        pbNode = node
-        done()
-      })
+      try {
+        pbNode = DAGNode.create(someData)
+      } catch (err) {
+        return done(err)
+      }
 
       cborNode = {
         data: someData
       }
+
+      done()
     })
 
     it('should put dag-pb with default hash func (sha2-256)', (done) => {
@@ -88,11 +90,12 @@ module.exports = (createCommon, options) => {
         expect(err).to.not.exist()
         expect(cid).to.exist()
         expect(CID.isCID(cid)).to.equal(true)
-        dagCBOR.util.cid(cborNode, (err, _cid) => {
-          expect(err).to.not.exist()
-          expect(cid.buffer).to.eql(_cid.buffer)
-          done()
-        })
+        dagCBOR.util.cid(dagCBOR.util.serialize(cborNode))
+          .then(_cid => {
+            expect(cid.buffer).to.eql(_cid.buffer)
+            done()
+          })
+          .catch(done)
       })
     })
 

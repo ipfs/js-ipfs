@@ -4,29 +4,40 @@ const { promisify } = require('es6-promisify')
 const dagPB = require('ipld-dag-pb')
 const { DAGNode, DAGLink } = dagPB
 
-module.exports.calculateCid = promisify((node, cb) => {
-  dagPB.util.cid(node, cb)
+const calculateCid = promisify((node, cb) => {
+  dagPB.util.cid(dagPB.util.serialize(node), {
+    cidVersion: 0
+  })
+    .then(cid => cb(null, cid), cb)
 })
 
-module.exports.createDAGNode = promisify((data, links, cb) => {
-  DAGNode.create(data, links, cb)
+const createDAGNode = promisify((data, links, cb) => {
+  cb(null, DAGNode.create(data, links))
 })
 
-module.exports.addLinkToDAGNode = promisify((parent, link, cb) => {
-  DAGNode.addLink(parent, link, cb)
+const addLinkToDAGNode = promisify((parent, link, cb) => {
+  DAGNode.addLink(parent, link)
+    .then(node => cb(null, node), cb)
 })
 
-module.exports.asDAGLink = promisify((node, name, cb) => {
+const asDAGLink = promisify((node, name, cb) => {
   if (typeof name === 'function') {
     cb = name
     name = ''
   }
 
-  dagPB.util.cid(node, (err, nodeCid) => {
+  calculateCid(node, (err, cid) => {
     if (err) {
       return cb(err)
     }
 
-    DAGLink.create(name, node.size, nodeCid, cb)
+    cb(null, new DAGLink(name, node.size, cid))
   })
 })
+
+module.exports = {
+  calculateCid,
+  createDAGNode,
+  addLinkToDAGNode,
+  asDAGLink
+}

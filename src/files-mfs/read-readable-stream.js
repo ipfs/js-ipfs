@@ -37,6 +37,7 @@ module.exports = (createCommon, options) => {
       const testDir = `/test-${hat()}`
 
       const stream = ipfs.files.readReadableStream(`${testDir}/404`)
+      stream.on('data', () => {})
 
       stream.once('error', (err) => {
         expect(err).to.exist()

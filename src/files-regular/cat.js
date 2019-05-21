@@ -189,8 +189,8 @@ module.exports = (createCommon, options) => {
       return ipfs.cat(fixtures.smallFile.cid + '/does-not-exist')
         .catch((err) => {
           expect(err).to.exist()
-          expect(err.message).to.oneOf([
-            'No such file',
+          expect(err.message).to.be.oneOf([
+            'file does not exist',
             'no link named "does-not-exist" under Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'])
         })
     })

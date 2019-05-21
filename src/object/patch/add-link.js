@@ -60,18 +60,22 @@ module.exports = (createCommon, options) => {
           })
         },
         (cb) => {
-          DAGNode.create(obj.Data, obj.Links, (err, node) => {
-            expect(err).to.not.exist()
-            node1a = node
-            cb()
-          })
+          try {
+            node1a = DAGNode.create(obj.Data, obj.Links)
+          } catch (err) {
+            return cb(err)
+          }
+
+          cb()
         },
         (cb) => {
-          DAGNode.create(Buffer.from('some other node'), (err, node) => {
-            expect(err).to.not.exist()
-            node2 = node
-            cb()
-          })
+          try {
+            node2 = DAGNode.create(Buffer.from('some other node'))
+          } catch (err) {
+            return cb(err)
+          }
+
+          cb()
         },
         (cb) => {
           // note: we need to put the linked obj, otherwise IPFS won't
@@ -87,19 +91,23 @@ module.exports = (createCommon, options) => {
             name: 'link-to-node',
             size: node2.toJSON().size,
             cid: node2Cid
-          }, (err, node) => {
-            expect(err).to.not.exist()
-            node1b = node
+          })
+            .then(node => {
+              node1b = node
 
-            dagPB.util.cid(node, (err, cid) => {
-              expect(err).to.not.exist()
+              return dagPB.util.cid(dagPB.util.serialize(node), {
+                cidVersion: 0
+              })
+            })
+            .then(cid => {
               node1bCid = cid
+
               cb()
             })
-          })
+            .catch(cb)
         },
         (cb) => {
-          ipfs.object.patch.addLink(testNodeCid, node1b.links[0], (err, cid) => {
+          ipfs.object.patch.addLink(testNodeCid, node1b.Links[0], (err, cid) => {
             expect(err).to.not.exist()
             expect(node1bCid).to.eql(cid)
             cb()
@@ -153,7 +161,7 @@ module.exports = (createCommon, options) => {
         cid: childCid
       })
       const newParentCid = await calculateCid(newParent)
-      const nodeFromObjectPatchCid = await ipfs.object.patch.addLink(parentCid, newParent.links[0])
+      const nodeFromObjectPatchCid = await ipfs.object.patch.addLink(parentCid, newParent.Links[0])
 
       expect(newParentCid).to.eql(nodeFromObjectPatchCid)
     })

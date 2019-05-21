@@ -7,7 +7,7 @@ const series = require('async/series')
 const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const UnixFs = require('ipfs-unixfs')
-const randomBytes = require('randombytes')
+const crypto = require('crypto')
 const { asDAGLink } = require('./utils')
 
 module.exports = (createCommon, options) => {
@@ -63,19 +63,21 @@ module.exports = (createCommon, options) => {
         (cb) => {
           ipfs.object.get(node1Cid, (err, node) => {
             expect(err).to.not.exist()
-            node2 = node
 
             // because js-ipfs-api can't infer if the
             // returned Data is Buffer or String
-            if (typeof node2.data === 'string') {
-              node2.data = Buffer.from(node2.data)
+            if (typeof node.Data === 'string') {
+              node = DAGNode.create(Buffer.from(node.Data), node.Links, node.size)
             }
+
+            node2 = node
+
             cb()
           })
         },
         (cb) => {
-          expect(node1.data).to.eql(node2.data)
-          expect(node1.links).to.eql(node2.links)
+          expect(node1.Data).to.eql(node2.Data)
+          expect(node1.Links).to.eql(node2.Links)
           cb()
         }
       ], done)
@@ -89,16 +91,16 @@ module.exports = (createCommon, options) => {
 
       const node1Cid = await ipfs.object.put(testObj)
       const node1 = await ipfs.object.get(node1Cid)
-      const node2 = await ipfs.object.get(node1Cid)
+      let node2 = await ipfs.object.get(node1Cid)
 
       // because js-ipfs-api can't infer if the
       // returned Data is Buffer or String
-      if (typeof node2.data === 'string') {
-        node2.data = Buffer.from(node2.data)
+      if (typeof node2.Data === 'string') {
+        node2 = DAGNode.create(Buffer.from(node2.Data), node2.Links, node2.size)
       }
 
-      expect(node1.data).to.deep.equal(node2.data)
-      expect(node1.links).to.deep.equal(node2.links)
+      expect(node1.Data).to.deep.equal(node2.Data)
+      expect(node1.Links).to.deep.equal(node2.Links)
     })
 
     it('should get object by multihash string', (done) => {
@@ -130,16 +132,17 @@ module.exports = (createCommon, options) => {
             expect(err).to.not.exist()
             // because js-ipfs-api can't infer if the
             // returned Data is Buffer or String
-            if (typeof node.data === 'string') {
-              node.data = Buffer.from(node.data)
+            if (typeof node.Data === 'string') {
+              node = DAGNode.create(Buffer.from(node.Data), node.Links, node.size)
             }
+
             node2 = node
             cb()
           })
         },
         (cb) => {
-          expect(node1.data).to.eql(node2.data)
-          expect(node1.links).to.eql(node2.links)
+          expect(node1.Data).to.eql(node2.Data)
+          expect(node1.Links).to.eql(node2.Links)
           cb()
         }
       ], done)
@@ -153,16 +156,16 @@ module.exports = (createCommon, options) => {
 
       const node1Cid = await ipfs.object.put(obj)
       const node1 = await ipfs.object.get(node1Cid)
-      const node2 = await ipfs.object.get(node1Cid.toBaseEncodedString())
+      let node2 = await ipfs.object.get(node1Cid.toBaseEncodedString())
 
       // because js-ipfs-api can't infer if the
       // returned Data is Buffer or String
-      if (typeof node2.data === 'string') {
-        node2.data = Buffer.from(node2.data)
+      if (typeof node2.Data === 'string') {
+        node2 = DAGNode.create(Buffer.from(node2.Data), node2.Links, node2.size)
       }
 
-      expect(node1.data).to.deep.equal(node2.data)
-      expect(node1.links).to.deep.equal(node2.links)
+      expect(node1.Data).to.deep.equal(node2.Data)
+      expect(node1.Links).to.deep.equal(node2.Links)
     })
 
     it('should get object with links by multihash string', (done) => {
@@ -174,30 +177,32 @@ module.exports = (createCommon, options) => {
 
       series([
         (cb) => {
-          DAGNode.create(Buffer.from('Some data 1'), (err, node) => {
-            expect(err).to.not.exist()
-            node1a = node
+          try {
+            node1a = DAGNode.create(Buffer.from('Some data 1'))
+          } catch (err) {
+            return cb(err)
+          }
 
-            cb()
-          })
+          cb()
         },
         (cb) => {
-          DAGNode.create(Buffer.from('Some data 2'), (err, node) => {
-            expect(err).to.not.exist()
-            node2 = node
+          try {
+            node2 = DAGNode.create(Buffer.from('Some data 2'))
+          } catch (err) {
+            return cb(err)
+          }
 
-            cb()
-          })
+          cb()
         },
         (cb) => {
           asDAGLink(node2, 'some-link', (err, link) => {
             expect(err).to.not.exist()
 
-            DAGNode.addLink(node1a, link, (err, node) => {
-              expect(err).to.not.exist()
-              node1b = node
-              cb()
-            })
+            DAGNode.addLink(node1a, link)
+              .then(node => {
+                node1b = node
+                cb()
+              }, cb)
           })
         },
         (cb) => {
@@ -213,8 +218,8 @@ module.exports = (createCommon, options) => {
 
             // because js-ipfs-api can't infer if the
             // returned Data is Buffer or String
-            if (typeof node.data === 'string') {
-              node.data = Buffer.from(node.data)
+            if (typeof node.Data === 'string') {
+              node = DAGNode.create(Buffer.from(node.Data), node.Links, node.size)
             }
 
             node1c = node
@@ -222,7 +227,7 @@ module.exports = (createCommon, options) => {
           })
         },
         (cb) => {
-          expect(node1a.data).to.eql(node1c.data)
+          expect(node1a.Data).to.eql(node1c.Data)
           cb()
         }
       ], done)
@@ -256,16 +261,16 @@ module.exports = (createCommon, options) => {
             expect(err).to.not.exist()
             // because js-ipfs-api can't infer if the
             // returned Data is Buffer or String
-            if (typeof node.data === 'string') {
-              node.data = Buffer.from(node.data)
+            if (typeof node.Data === 'string') {
+              node = DAGNode.create(Buffer.from(node.Data), node.Links, node.size)
             }
             node1b = node
             cb()
           })
         },
         (cb) => {
-          expect(node1a.data).to.eql(node1b.data)
-          expect(node1a.links).to.eql(node1b.links)
+          expect(node1a.Data).to.eql(node1b.Data)
+          expect(node1a.Links).to.eql(node1b.Links)
           cb()
         }
       ], done)
@@ -299,16 +304,16 @@ module.exports = (createCommon, options) => {
             expect(err).to.not.exist()
             // because js-ipfs-api can't infer if the
             // returned Data is Buffer or String
-            if (typeof node.data === 'string') {
-              node.data = Buffer.from(node.data)
+            if (typeof node.Data === 'string') {
+              node = DAGNode.create(Buffer.from(node.Data), node.Links, node.size)
             }
             node1b = node
             cb()
           })
         },
         (cb) => {
-          expect(node1a.data).to.eql(node1b.data)
-          expect(node1a.links).to.eql(node1b.links)
+          expect(node1a.Data).to.eql(node1b.Data)
+          expect(node1a.Links).to.eql(node1b.Links)
           cb()
         }
       ], done)
@@ -316,23 +321,7 @@ module.exports = (createCommon, options) => {
 
     it('should supply unaltered data', () => {
       // has to be big enough to span several DAGNodes
-      let required = 1024 * 3000
-
-      // can't just request `required` random bytes in the browser yet
-      // as it's more than 65536:
-      // https://github.com/crypto-browserify/randombytes/pull/15
-      let data = Buffer.alloc(0)
-      const maxBytes = 65536
-      let next = maxBytes
-
-      while (data.length !== required) {
-        data = Buffer.concat([data, randomBytes(next)])
-        next = maxBytes
-
-        if (data.length + maxBytes > required) {
-          next = required - data.length
-        }
-      }
+      let data = crypto.randomBytes(1024 * 3000)
 
       return ipfs.add({
         path: '',
@@ -342,7 +331,7 @@ module.exports = (createCommon, options) => {
           return ipfs.object.get(result[0].hash)
         })
         .then((node) => {
-          const meta = UnixFs.unmarshal(node.data)
+          const meta = UnixFs.unmarshal(node.Data)
 
           expect(meta.fileSize()).to.equal(data.length)
         })

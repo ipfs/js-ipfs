@@ -87,7 +87,7 @@ module.exports = (createCommon, options) => {
         ipfs.object.get(cid, (err, node) => {
           expect(err).to.not.exist()
           const nodeJSON = node.toJSON()
-          expect(nodeJSON.data).to.eql(node.data)
+          expect(nodeJSON.data).to.eql(node.Data)
           done()
         })
       })
@@ -99,26 +99,30 @@ module.exports = (createCommon, options) => {
 
       series([
         (cb) => {
-          DAGNode.create(Buffer.from(hat()), (err, _node) => {
-            expect(err).to.not.exist()
-            node = _node
-            cb()
-          })
+          try {
+            node = DAGNode.create(Buffer.from(hat()))
+          } catch (err) {
+            return cb(err)
+          }
+
+          cb()
         },
         (cb) => {
-          dagPB.util.serialize(node, (err, _serialized) => {
-            expect(err).to.not.exist()
-            serialized = _serialized
-            cb()
-          })
+          try {
+            serialized = dagPB.util.serialize(node)
+          } catch (err) {
+            return cb(err)
+          }
+
+          cb()
         },
         (cb) => {
           ipfs.object.put(serialized, { enc: 'protobuf' }, (err, cid) => {
             expect(err).to.not.exist()
-            ipfs.object.get(cid, (err, node) => {
+            ipfs.object.get(cid, (err, node2) => {
               expect(err).to.not.exist()
-              expect(node.data).to.deep.equal(node.data)
-              expect(node.links).to.deep.equal(node.links)
+              expect(node2.Data).to.deep.equal(node.Data)
+              expect(node2.Links).to.deep.equal(node.Links)
               cb()
             })
           })
@@ -142,17 +146,16 @@ module.exports = (createCommon, options) => {
     })
 
     it('should put a Protobuf DAGNode', (done) => {
-      DAGNode.create(Buffer.from(hat()), (err, dNode) => {
-        expect(err).to.not.exist()
-        ipfs.object.put(dNode, (err, cid) => {
-          expect(err).to.not.exist()
+      const dNode = DAGNode.create(Buffer.from(hat()))
 
-          ipfs.object.get(cid, (err, node) => {
-            expect(err).to.not.exist()
-            expect(dNode.data).to.deep.equal(node.data)
-            expect(dNode.links).to.deep.equal(node.links)
-            done()
-          })
+      ipfs.object.put(dNode, (err, cid) => {
+        expect(err).to.not.exist()
+
+        ipfs.object.get(cid, (err, node) => {
+          expect(err).to.not.exist()
+          expect(dNode.Data).to.deep.equal(node.Data)
+          expect(dNode.Links).to.deep.equal(node.Links)
+          done()
         })
       })
     })
@@ -171,28 +174,32 @@ module.exports = (createCommon, options) => {
 
       series([
         (cb) => {
-          DAGNode.create(Buffer.from(hat()), (err, node) => {
-            expect(err).to.not.exist()
-            node1a = node
-            cb()
-          })
+          try {
+            node1a = DAGNode.create(Buffer.from(hat()))
+          } catch (err) {
+            return cb(err)
+          }
+
+          cb()
         },
         (cb) => {
-          DAGNode.create(Buffer.from(hat()), (err, node) => {
-            expect(err).to.not.exist()
-            node2 = node
-            cb()
-          })
+          try {
+            node2 = DAGNode.create(Buffer.from(hat()))
+          } catch (err) {
+            return cb(err)
+          }
+
+          cb()
         },
         (cb) => {
           asDAGLink(node2, 'some-link', (err, link) => {
             expect(err).to.not.exist()
 
-            DAGNode.addLink(node1a, link, (err, node) => {
-              expect(err).to.not.exist()
-              node1b = node
-              cb()
-            })
+            DAGNode.addLink(node1a, link)
+              .then(node => {
+                node1b = node
+                cb()
+              }, cb)
           })
         },
         (cb) => {
@@ -201,9 +208,8 @@ module.exports = (createCommon, options) => {
 
             ipfs.object.get(cid, (err, node) => {
               expect(err).to.not.exist()
-              expect(node1b.data).to.deep.equal(node.data)
-              expect(node1b.links.map((l) => l.toJSON()))
-                .to.deep.equal(node.links.map((l) => l.toJSON()))
+              expect(node1b.Data).to.deep.equal(node.Data)
+              expect(node1b.Links).to.deep.equal(node.Links)
               cb()
             })
           })

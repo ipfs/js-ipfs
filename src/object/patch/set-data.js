@@ -47,7 +47,7 @@ module.exports = (createCommon, options) => {
 
           ipfs.object.get(patchedNodeCid, (err, patchedNode) => {
             expect(err).to.not.exist()
-            expect(patchedNode.data).to.eql(patchData)
+            expect(patchedNode.Data).to.eql(patchData)
             done()
           })
         })
@@ -66,7 +66,7 @@ module.exports = (createCommon, options) => {
       const patchedNode = await ipfs.object.get(patchedNodeCid)
 
       expect(nodeCid).to.not.deep.equal(patchedNodeCid)
-      expect(patchedNode.data).to.eql(patchData)
+      expect(patchedNode.Data).to.eql(patchData)
     })
   })
 }

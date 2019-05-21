@@ -89,30 +89,32 @@ module.exports = (createCommon, options) => {
 
       series([
         (cb) => {
-          DAGNode.create(Buffer.from('Some data 1'), (err, node) => {
-            expect(err).to.not.exist()
-            node1a = node
-            cb()
-          })
+          try {
+            node1a = DAGNode.create(Buffer.from('Some data 1'))
+          } catch (err) {
+            return cb(err)
+          }
+
+          cb()
         },
         (cb) => {
-          DAGNode.create(Buffer.from('Some data 2'), (err, node) => {
-            expect(err).to.not.exist()
-            node2 = node
-            cb()
-          })
+          try {
+            node2 = DAGNode.create(Buffer.from('Some data 2'))
+          } catch (err) {
+            return cb(err)
+          }
+
+          cb()
         },
         (cb) => {
           asDAGLink(node2, 'some-link', (err, link) => {
             expect(err).to.not.exist()
 
-            DAGNode.addLink(node1a, link, (err, node) => {
-              expect(err).to.not.exist()
-
-              node1b = node
-
-              cb()
-            })
+            DAGNode.addLink(node1a, link)
+              .then(node => {
+                node1b = node
+                cb()
+              }, cb)
           })
         },
         (cb) => {

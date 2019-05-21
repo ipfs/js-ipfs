@@ -48,29 +48,33 @@ module.exports = (createCommon, options) => {
         (cb) => {
           const someData = Buffer.from('some other data')
 
-          DAGNode.create(someData, (err, node) => {
-            expect(err).to.not.exist()
-            pbNode = node
-            cb()
-          })
+          try {
+            pbNode = DAGNode.create(someData)
+          } catch (err) {
+            return cb(err)
+          }
 
           cborNode = {
             data: someData
           }
+
+          cb()
         },
         (cb) => {
-          dagPB.DAGNode.create(Buffer.from('I am inside a Protobuf'), (err, node) => {
-            expect(err).to.not.exist()
-            nodePb = node
-            cb()
-          })
+          try {
+            nodePb = DAGNode.create(Buffer.from('I am inside a Protobuf'))
+          } catch (err) {
+            return cb(err)
+          }
+
+          cb()
         },
         (cb) => {
-          dagPB.util.cid(nodePb, (err, cid) => {
-            expect(err).to.not.exist()
-            cidPb = cid
-            cb()
-          })
+          dagPB.util.cid(dagPB.util.serialize(nodePb))
+            .then(cid => {
+              cidPb = cid
+              cb()
+            }, cb)
         },
         (cb) => {
           nodeCbor = {
@@ -78,11 +82,11 @@ module.exports = (createCommon, options) => {
             pb: cidPb
           }
 
-          dagCBOR.util.cid(nodeCbor, (err, cid) => {
-            expect(err).to.not.exist()
-            cidCbor = cid
-            cb()
-          })
+          dagCBOR.util.cid(dagCBOR.util.serialize(nodeCbor))
+            .then(cid => {
+              cidCbor = cid
+              cb()
+            }, cb)
         },
         (cb) => {
           eachSeries([
@@ -135,11 +139,12 @@ module.exports = (createCommon, options) => {
 
         const node = result.value
 
-        dagPB.util.cid(node, (err, cid) => {
-          expect(err).to.not.exist()
-          expect(cid).to.eql(cidPb)
-          done()
-        })
+        dagPB.util.cid(dagPB.util.serialize(node))
+          .then(cid => {
+            expect(cid).to.eql(cidPb)
+            done()
+          })
+          .catch(done)
       })
     })
 
@@ -160,11 +165,12 @@ module.exports = (createCommon, options) => {
 
         const node = result.value
 
-        dagCBOR.util.cid(node, (err, cid) => {
-          expect(err).to.not.exist()
-          expect(cid).to.eql(cidCbor)
-          done()
-        })
+        dagCBOR.util.cid(dagCBOR.util.serialize(node))
+          .then(cid => {
+            expect(cid).to.eql(cidCbor)
+            done()
+          })
+          .catch(done)
       })
     })
 
@@ -196,11 +202,12 @@ module.exports = (createCommon, options) => {
 
         const node = result.value
 
-        dagCBOR.util.cid(node, (err, cid) => {
-          expect(err).to.not.exist()
-          expect(cid).to.eql(cidCbor)
-          done()
-        })
+        dagCBOR.util.cid(dagCBOR.util.serialize(node))
+          .then(cid => {
+            expect(cid).to.eql(cidCbor)
+            done()
+          })
+          .catch(done)
       })
     })
 
@@ -225,20 +232,18 @@ module.exports = (createCommon, options) => {
     it('should get a node added as CIDv0 with a CIDv1', done => {
       const input = Buffer.from(`TEST${Date.now()}`)
 
-      dagPB.DAGNode.create(input, (err, node) => {
+      const node = dagPB.DAGNode.create(input)
+
+      ipfs.dag.put(node, { format: 'dag-pb', hashAlg: 'sha2-256' }, (err, cid) => {
         expect(err).to.not.exist()
+        expect(cid.version).to.equal(0)
 
-        ipfs.dag.put(node, { format: 'dag-pb', hashAlg: 'sha2-256' }, (err, cid) => {
+        const cidv1 = cid.toV1()
+
+        ipfs.dag.get(cidv1, (err, output) => {
           expect(err).to.not.exist()
-          expect(cid.version).to.equal(0)
-
-          const cidv1 = cid.toV1()
-
-          ipfs.dag.get(cidv1, (err, output) => {
-            expect(err).to.not.exist()
-            expect(output.value.data).to.eql(input)
-            done()
-          })
+          expect(output.value.Data).to.eql(input)
+          done()
         })
       })
     })
@@ -256,7 +261,7 @@ module.exports = (createCommon, options) => {
 
         ipfs.dag.get(cidv0, (err, output) => {
           expect(err).to.not.exist()
-          expect(Unixfs.unmarshal(output.value.data).data).to.eql(input)
+          expect(Unixfs.unmarshal(output.value.Data).data).to.eql(input)
           done()
         })
       })
