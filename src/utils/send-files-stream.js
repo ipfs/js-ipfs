@@ -81,6 +81,10 @@ module.exports = (send, path) => {
     qs['wrap-with-directory'] = propOrProp(options, 'wrap-with-directory', 'wrapWithDirectory')
     qs.hash = propOrProp(options, 'hash', 'hashAlg')
 
+    if (options.strategy === 'trickle' || options.trickle) {
+      qs['trickle'] = 'true'
+    }
+
     const args = {
       path: path,
       qs: qs,
