@@ -1,7 +1,7 @@
 'use strict'
 
 const debug = require('debug')
-
+const setImmediate = require('async/setImmediate')
 const log = debug('ipfs:mfs-preload')
 log.error = debug('ipfs:mfs-preload:error')
 
