@@ -8,7 +8,7 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const series = require('async/series')
 const ipfsExec = require('../utils/ipfs-exec')
-
+const path = require('path')
 const parallel = require('async/parallel')
 
 const DaemonFactory = require('ipfsd-ctl')
@@ -37,7 +37,7 @@ describe('swarm', () => {
     series([
       (cb) => {
         df.spawn({
-          exec: `./src/cli/bin.js`,
+          exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
           config,
           initOptions: { bits: 512 }
         }, (err, node) => {
@@ -49,7 +49,7 @@ describe('swarm', () => {
       },
       (cb) => {
         df.spawn({
-          exec: `./src/cli/bin.js`,
+          exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
           config,
           initOptions: { bits: 512 }
         }, (err, node) => {

@@ -10,7 +10,7 @@ const delay = require('delay')
 const series = require('async/series')
 const ipfsExec = require('../utils/ipfs-exec')
 const IPFS = require('../../src')
-
+const path = require('path')
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ type: 'js' })
 
@@ -61,7 +61,7 @@ describe('pubsub', function () {
     df.spawn({
       initOptions: { bits: 512 },
       args: ['--enable-pubsub-experiment'],
-      exec: `./src/cli/bin.js`,
+      exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
       config
     }, (err, _ipfsd) => {
       expect(err).to.not.exist()

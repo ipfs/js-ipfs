@@ -11,7 +11,8 @@ const parallelLimit = require('async/parallelLimit')
 const series = require('async/series')
 const {
   util: {
-    cid
+    cid,
+    serialize
   },
   DAGNode
 } = require('ipld-dag-pb')
@@ -35,7 +36,7 @@ function createNodes (num, callback) {
   const items = []
   for (let i = 0; i < num; i++) {
     items.push(cb =>
-      createNode(String(i), (err, res) => cb(err, res.cid.toBaseEncodedString()))
+      createNode(String(i), (err, res) => cb(err, !err && res.cid.toBaseEncodedString()))
     )
   }
 
@@ -48,18 +49,20 @@ function createNode (data, links = [], callback) {
     links = []
   }
 
-  DAGNode.create(data, links, (err, node) => {
-    if (err) {
-      return callback(err)
-    }
+  let node
 
-    cid(node, (err, result) => {
-      callback(err, {
-        node,
-        cid: result
-      })
+  try {
+    node = DAGNode.create(data, links)
+  } catch (err) {
+    return callback(err)
+  }
+
+  cid(serialize(node), { cidVersion: 0 }).then(cid => {
+    callback(null, {
+      node,
+      cid
     })
-  })
+  }, err => callback(err))
 }
 
 describe('pinSet', function () {
@@ -104,10 +107,10 @@ describe('pinSet', function () {
         pinSet.storeSet([nodeHash], (err, rootNode) => {
           expect(err).to.not.exist()
           expect(rootNode.cid.toBaseEncodedString()).to.eql(expectedRootHash)
-          expect(rootNode.node.links).to.have.length(defaultFanout + 1)
+          expect(rootNode.node.Links).to.have.length(defaultFanout + 1)
 
-          const lastLink = rootNode.node.links[rootNode.node.links.length - 1]
-          const mhash = lastLink.cid.toBaseEncodedString()
+          const lastLink = rootNode.node.Links[rootNode.node.Links.length - 1]
+          const mhash = lastLink.Hash.toBaseEncodedString()
           expect(mhash).to.eql(nodeHash)
           done()
         })
@@ -126,7 +129,7 @@ describe('pinSet', function () {
           expect(err).to.not.exist()
 
           expect(result.node.size).to.eql(3184696)
-          expect(result.node.links).to.have.length(defaultFanout)
+          expect(result.node.Links).to.have.length(defaultFanout)
           expect(result.cid.toBaseEncodedString()).to.eql(expectedHash)
 
           pinSet.loadSet(result.node, '', (err, loaded) => {

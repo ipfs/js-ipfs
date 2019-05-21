@@ -13,6 +13,7 @@ const os = require('os')
 
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create()
+const path = require('path')
 
 function off (tests) {
   describe('daemon off (directly to core)', () => {
@@ -51,7 +52,7 @@ function on (tests) {
 
       df.spawn({
         type: 'js',
-        exec: `./src/cli/bin.js`,
+        exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
         initOptions: { bits: 512 },
         config: { Bootstrap: [] }
       }, (err, node) => {

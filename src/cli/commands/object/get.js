@@ -25,21 +25,21 @@ module.exports = {
     resolve((async () => {
       const ipfs = await getIpfs()
       const node = await ipfs.object.get(key, { enc: 'base58' })
-      let data = node.data
+      let data = node.Data || ''
 
       if (Buffer.isBuffer(data)) {
-        data = node.data.toString(dataEncoding || undefined)
+        data = node.Data.toString(dataEncoding || undefined)
       }
 
       const answer = {
         Data: data,
         Hash: cidToString(key, { base: cidBase, upgrade: false }),
-        Size: node.size,
-        Links: node.links.map((l) => {
+        Size: node.Size,
+        Links: node.Links.map((l) => {
           return {
-            Name: l.name,
-            Size: l.size,
-            Hash: cidToString(l.cid, { base: cidBase, upgrade: false })
+            Name: l.Name,
+            Size: l.Tsize,
+            Hash: cidToString(l.Hash, { base: cidBase, upgrade: false })
           }
         })
       }

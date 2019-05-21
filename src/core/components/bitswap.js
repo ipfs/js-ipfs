@@ -9,7 +9,7 @@ const PeerId = require('peer-id')
 const errCode = require('err-code')
 
 function formatWantlist (list, cidBase) {
-  return Array.from(list).map((e) => ({ '/': e[1].cid.toBaseEncodedString() }))
+  return Array.from(list).map((e) => ({ '/': e[1].cid.toBaseEncodedString(cidBase) }))
 }
 
 module.exports = function bitswap (self) {

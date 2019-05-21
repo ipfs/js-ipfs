@@ -120,9 +120,9 @@ describe('object', () => {
         nodeAWithLink: ['nodeA', 'nodeB', (res, cb) => {
           waterfall([
             (done) => ipfs.object.patch.addLink(res.nodeA.cid, {
-              name: res.nodeB.node.name,
-              multihash: res.nodeB.cid,
-              size: res.nodeB.node.size
+              Name: 'nodeBLink',
+              Hash: res.nodeB.cid,
+              Tsize: res.nodeB.node.size
             }, done),
             (cid, done) => ipfs.object.get(cid, (err, node) => done(err, { node, cid }))
           ], cb)
@@ -130,7 +130,7 @@ describe('object', () => {
       }, (err, res) => {
         expect(err).to.not.exist()
 
-        const link = res.nodeAWithLink.node.links[0]
+        const link = res.nodeAWithLink.node.Links[0]
         ipfs.object.patch.rmLink(res.nodeAWithLink.cid, link, null, (err) => {
           expect(err).to.not.exist()
           done()

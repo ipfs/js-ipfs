@@ -9,14 +9,14 @@ chai.use(dirtyChai)
 
 const series = require('async/series')
 const parallel = require('async/parallel')
-
+const path = require('path')
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ type: 'js' })
 
 const ipfsExec = require('../utils/ipfs-exec')
 
 const daemonOpts = {
-  exec: `./src/cli/bin.js`,
+  exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
   config: {
     Bootstrap: [],
     Discovery: {

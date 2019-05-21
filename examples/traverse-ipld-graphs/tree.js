@@ -17,19 +17,20 @@ createNode((err, ipfs) => {
   series([
     (cb) => {
       const someData = Buffer.from('capoeira')
+      let node
 
-      dagPB.DAGNode.create(someData, (err, node) => {
+      try {
+        dagPB.DAGNode.create(someData)
+      } catch (err) {
+        return cb(err)
+      }
+
+      ipfs.dag.put(node, { format: 'dag-pb', hashAlg: 'sha2-256' }, (err, cid) => {
         if (err) {
           cb(err)
         }
-
-        ipfs.dag.put(node, { format: 'dag-pb', hashAlg: 'sha2-256' }, (err, cid) => {
-          if (err) {
-            cb(err)
-          }
-          cidPBNode = cid
-          cb()
-        })
+        cidPBNode = cid
+        cb()
       })
     },
     (cb) => {

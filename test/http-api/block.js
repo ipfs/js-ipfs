@@ -5,12 +5,12 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-
+const path = require('path')
 const multihash = require('multihashes')
 const waterfall = require('async/waterfall')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
+const df = DaemonFactory.create({ exec: path.resolve(`${__dirname}/../../src/cli/bin.js`) })
 
 describe('block endpoint', () => {
   let ipfs = null

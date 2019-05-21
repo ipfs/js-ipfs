@@ -5,13 +5,15 @@
 const expect = require('chai').expect
 const CID = require('cids')
 const runOnAndOff = require('../utils/on-and-off')
+const path = require('path')
 
 // fixture structure:
 //  planets/
 //   solar-system.md
 //   mercury/
 //    wiki.md
-const fixturePath = 'test/fixtures/planets'
+const fixturePath = path.resolve(path.join(__dirname, '..'), 'fixtures/planets')
+
 const pins = {
   root: 'QmTAMavb995EHErSrKo7mB8dYkpaSJxu6ys1a6XJyB2sys',
   solarWiki: 'QmTMbkDfvHwq3Aup6Nxqn3KKw9YnoKzcZvuArAfQ9GF3QG',

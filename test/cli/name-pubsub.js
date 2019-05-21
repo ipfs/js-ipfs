@@ -6,7 +6,7 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-
+const path = require('path')
 const parallel = require('async/parallel')
 const series = require('async/series')
 const ipfsExec = require('../utils/ipfs-exec')
@@ -19,7 +19,7 @@ const emptyDirCid = 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
 
 const spawnDaemon = (callback) => {
   df.spawn({
-    exec: `./src/cli/bin.js`,
+    exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
     args: ['--enable-namesys-pubsub'],
     initOptions: { bits: 512 },
     config: {
@@ -171,7 +171,7 @@ describe('name-pubsub', () => {
 
       before(function (done) {
         this.timeout(50 * 1000)
-        ipfsA('add src/init-files/init-docs/readme')
+        ipfsA(`add ${path.resolve(`${__dirname}/../../src/init-files/init-docs/readme`)}`)
           .then((out) => {
             cidAdded = out.split(' ')[1]
             done()
@@ -225,7 +225,7 @@ describe('name-pubsub', () => {
       this.timeout(80 * 1000)
 
       df.spawn({
-        exec: `./src/cli/bin.js`,
+        exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
         config: {},
         initOptions: { bits: 512 }
       }, (err, node) => {

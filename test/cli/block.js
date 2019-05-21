@@ -23,7 +23,7 @@ describe('block', () => runOnAndOff((thing) => {
 
     return ipfs('block put --format eth-block --mhtype keccak-256 test/fixtures/test-data/eth-block')
       .then((out) =>
-        expect(out).to.eql('z43AaGF23fmvRnDP56Ub9WcJCfzSfqtmzNCCvmz5eudT8dtdCDS\n'))
+        expect(out).to.eql('bagiacgzarkhijr4xmbp345ovwwxra7kcecrnwcwtl7lg3g7d2ogyprdswjwq\n'))
   })
 
   it('should put and print CID encoded in specified base', function () {

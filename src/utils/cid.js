@@ -19,7 +19,6 @@ const CID = require('cids')
 */
 exports.cidToString = (cid, options) => {
   options = options || {}
-  options.base = options.base || null
   options.upgrade = options.upgrade !== false
 
   if (!CID.isCID(cid)) {

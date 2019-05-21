@@ -84,7 +84,7 @@ describe('init', () => {
 
       ipfs.object.get(multihash, { enc: 'base58' }, (err, node) => {
         expect(err).to.not.exist()
-        expect(node.links).to.exist()
+        expect(node.Links).to.exist()
         done()
       })
     })

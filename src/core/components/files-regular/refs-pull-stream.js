@@ -6,6 +6,7 @@ const pullTraverse = require('pull-traverse')
 const pullCat = require('pull-cat')
 const isIpfs = require('is-ipfs')
 const CID = require('cids')
+const { DAGNode } = require('ipld-dag-pb')
 const { normalizePath } = require('./utils')
 const { Format } = require('./refs')
 
@@ -147,12 +148,19 @@ function objectStream (ipfs, rootCid, maxDepth, isUnique) {
 
 // Fetch a node from IPLD then get all its links
 function getLinks (ipfs, cid, callback) {
-  ipfs._ipld.get(new CID(cid), (err, node) => {
-    if (err) {
-      return callback(err)
-    }
-    callback(null, node.value.links || getNodeLinks(node.value))
-  })
+  ipfs._ipld.get(new CID(cid))
+    .then(node => {
+      let links
+      if (DAGNode.isDAGNode(node)) {
+        links = node.Links.map(({ Name, Hash }) => {
+          return { name: Name, cid: new CID(Hash) }
+        })
+      } else {
+        links = getNodeLinks(node)
+      }
+      callback(null, links)
+    })
+    .catch(callback)
 }
 
 // Recursively search the node for CIDs

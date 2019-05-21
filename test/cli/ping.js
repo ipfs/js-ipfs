@@ -7,7 +7,7 @@ const dirtyChai = require('dirty-chai')
 const series = require('async/series')
 const DaemonFactory = require('ipfsd-ctl')
 const ipfsExec = require('../utils/ipfs-exec')
-
+const path = require('path')
 const df = DaemonFactory.create({ type: 'js' })
 const expect = chai.expect
 chai.use(dirtyChai)
@@ -35,7 +35,7 @@ describe('ping', function () {
     series([
       (cb) => {
         df.spawn({
-          exec: `./src/cli/bin.js`,
+          exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
           config,
           initOptions: { bits: 512 }
         }, (err, _ipfsd) => {
@@ -59,7 +59,7 @@ describe('ping', function () {
     this.timeout(60 * 1000)
 
     df.spawn({
-      exec: './src/cli/bin.js',
+      exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
       config,
       initoptions: { bits: 512 }
     }, (err, _ipfsd) => {

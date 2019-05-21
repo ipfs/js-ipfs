@@ -90,7 +90,7 @@ exports.cat = {
                 return pusher.end(err)
               }
 
-              err.message = err.message === 'No such file'
+              err.message = err.message === 'file does not exist'
                 ? err.message
                 : 'Failed to cat file: ' + err
 
