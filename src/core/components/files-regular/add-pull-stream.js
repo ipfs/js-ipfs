@@ -156,8 +156,6 @@ module.exports = function (self) {
     }
 
     opts.progress = progress
-
-
     return self._gcLock.pullReadLock(() => pull(
       pullMap(content => normalizeContent(content, opts)),
       pullFlatten(),
