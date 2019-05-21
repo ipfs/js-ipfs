@@ -65,3 +65,77 @@ describe('trailer headers', () => {
     })
   })
 })
+
+describe('error handling', () => {
+  it('should handle plain text error response', function (done) {
+    if (!isNode) return this.skip()
+
+    const server = require('http').createServer((req, res) => {
+      // Consume the entire request, before responding.
+      req.on('data', () => {})
+      req.on('end', () => {
+        // Write a text/plain response with a 403 (forbidden) status
+        res.writeHead(403, { 'Content-Type': 'text/plain' })
+        res.write('ipfs method not allowed')
+        res.end()
+      })
+    })
+
+    server.listen(6001, () => {
+      ipfsClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json', (err) => {
+        expect(err).to.exist()
+        expect(err.statusCode).to.equal(403)
+        expect(err.message).to.equal('ipfs method not allowed')
+        server.close(done)
+      })
+    })
+  })
+
+  it('should handle JSON error response', function (done) {
+    if (!isNode) return this.skip()
+
+    const server = require('http').createServer((req, res) => {
+      // Consume the entire request, before responding.
+      req.on('data', () => {})
+      req.on('end', () => {
+        // Write a application/json response with a 400 (bad request) header
+        res.writeHead(400, { 'Content-Type': 'application/json' })
+        res.write(JSON.stringify({ Message: 'client error', Code: 1 }))
+        res.end()
+      })
+    })
+
+    server.listen(6001, () => {
+      ipfsClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json', (err) => {
+        expect(err).to.exist()
+        expect(err.statusCode).to.equal(400)
+        expect(err.message).to.equal('client error')
+        expect(err.code).to.equal(1)
+        server.close(done)
+      })
+    })
+  })
+
+  it('should handle JSON error response with invalid JSON', function (done) {
+    if (!isNode) return this.skip()
+
+    const server = require('http').createServer((req, res) => {
+      // Consume the entire request, before responding.
+      req.on('data', () => {})
+      req.on('end', () => {
+        // Write a application/json response with a 400 (bad request) header
+        res.writeHead(400, { 'Content-Type': 'application/json' })
+        res.write('{ Message: ')
+        res.end()
+      })
+    })
+
+    server.listen(6001, () => {
+      ipfsClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json', (err) => {
+        expect(err).to.exist()
+        expect(err.message).to.include('Invalid JSON')
+        server.close(done)
+      })
+    })
+  })
+})

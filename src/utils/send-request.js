@@ -13,8 +13,26 @@ const log = require('debug')('ipfs-http-client:request')
 
 // -- Internal
 
+function hasJSONHeaders (res) {
+  return res.headers['content-type'] &&
+    res.headers['content-type'].indexOf('application/json') === 0
+}
+
 function parseError (res, cb) {
   const error = new Error(`Server responded with ${res.statusCode}`)
+  error.statusCode = res.statusCode
+
+  if (!hasJSONHeaders(res)) {
+    return streamToValue(res, (err, data) => { // eslint-disable-line handle-callback-err
+      // the `err` here refers to errors in stream processing, which
+      // we ignore here, since we already have a valid `error` response
+      // from the server above that we have to report to the caller.
+      if (data && data.length) {
+        error.message = data.toString()
+      }
+      cb(error)
+    })
+  }
 
   streamToJsonValue(res, (err, payload) => {
     if (err) {
@@ -34,8 +52,7 @@ function onRes (buffer, cb) {
   return (res) => {
     const stream = Boolean(res.headers['x-stream-output'])
     const chunkedObjects = Boolean(res.headers['x-chunked-output'])
-    const isJson = res.headers['content-type'] &&
-                   res.headers['content-type'].indexOf('application/json') === 0
+    const isJson = hasJSONHeaders(res)
 
     if (res.req) {
       log(res.req.method, `${res.req.getHeaders().host}${res.req.path}`, res.statusCode, res.statusMessage)

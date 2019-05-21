@@ -24,7 +24,7 @@ function streamToJsonValue (res, cb) {
     try {
       res = JSON.parse(data)
     } catch (err) {
-      return cb(err)
+      return cb(new Error(`Invalid JSON: ${data}`))
     }
 
     cb(null, res)
