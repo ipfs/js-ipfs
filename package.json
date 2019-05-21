@@ -117,7 +117,7 @@
     "ipfs-bitswap": "~0.24.0",
     "ipfs-block": "~0.8.1",
     "ipfs-block-service": "~0.15.1",
-    "ipfs-http-client": "ipfs/js-ipfs-http-client#update-ipld-formats",
+    "ipfs-http-client": "^32.0.0",
     "ipfs-http-response": "ipfs/js-ipfs-http-response#update-ipld-formats",
     "ipfs-mfs": "~0.11.2",
     "ipfs-multipart": "~0.1.0",
