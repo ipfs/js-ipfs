@@ -20,6 +20,6 @@ createNode((err, ipfs) => {
     }
     console.log(cid.toBaseEncodedString())
     // should print:
-    //   zdpuAzZSktMhXjJu5zneSFrg9ue5rLXKAMC9KLigqhQ7Q7vRm
+    //   bafyreigsccjrxlioppkkzv27se4gxh2aygbxfnsobkaxxqiuni544uk66a
   })
 })
