@@ -20,14 +20,14 @@ createNode((err, ipfs) => {
       let node
 
       try {
-        dagPB.DAGNode.create(someData)
+        node = dagPB.DAGNode.create(someData)
       } catch (err) {
         return cb(err)
       }
 
       ipfs.dag.put(node, { format: 'dag-pb', hashAlg: 'sha2-256' }, (err, cid) => {
         if (err) {
-          cb(err)
+          return cb(err)
         }
         cidPBNode = cid
         cb()
@@ -58,5 +58,7 @@ createNode((err, ipfs) => {
         console.log(paths)
       })
     }
-  ])
+  ], (err) => {
+    console.error('Error:', err)
+  })
 })
