@@ -24,11 +24,8 @@ module.exports = function (self) {
 
     exporter(ipfsPath, self._ipld, options)
       .then(file => {
-        if (!file.unixfs) {
-          return d.abort(new Error('this dag node is not a UnixFS node'))
-        }
-
-        if (file.unixfs.type.includes('dir')) {
+        // File may not have unixfs prop if small & imported with rawLeaves true
+        if (file.unixfs && file.unixfs.type.includes('dir')) {
           return d.abort(new Error('this dag node is a directory'))
         }
 
