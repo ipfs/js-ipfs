@@ -5,6 +5,9 @@
 const stream = require('stream')
 const toBlob = require('stream-to-blob')
 
+const debug = require('debug')
+const log = debug('ipfs:http:response')
+
 const resolver = require('./resolver')
 const pathUtils = require('./utils/path')
 const detectContentType = require('./utils/content-type')
@@ -34,9 +37,10 @@ const response = (ipfsNode, ipfsPath) => {
                 }
 
                 // redirect to dir entry point (index)
-                resolve(Response.redirect(pathUtils.joinURLParts(path, content[0].name)))
+                resolve(Response.redirect(pathUtils.joinURLParts(path, content[0].Name)))
               })
               .catch((error) => {
+                log(error)
                 resolve(new Response(errorString, header(500, error.toString())))
               })
             break
@@ -48,6 +52,7 @@ const response = (ipfsNode, ipfsPath) => {
             resolve(new Response(errorString, header(400, errorString)))
             break
           default:
+            log(error)
             resolve(new Response(errorString, header(500, errorString)))
         }
       })
@@ -68,6 +73,7 @@ const response = (ipfsNode, ipfsPath) => {
 
         readableStream.once('error', (error) => {
           if (error) {
+            log(error)
             resolve(new Response(error.toString(), header(500, 'Error fetching the file')))
           }
         })
@@ -106,6 +112,7 @@ const response = (ipfsNode, ipfsPath) => {
         })
       })
       .catch((error) => {
+        log(error)
         resolve(handleResolveError(ipfsNode, ipfsPath, error))
       })
   })

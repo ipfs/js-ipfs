@@ -66,7 +66,7 @@ describe('resolve file (CIDv1)', function () {
   let ipfsd = null
 
   const file = {
-    cid: 'zb2rhdTDKmCQD2a9x2TfLR61M3s7RmESzwV5mqgnakXQbm5gp',
+    cid: 'bafkreidffqfydlguosmmyebv5rp72m45tbpbq6segnkosa45kjfnduix6u',
     data: loadFixture('test/fixtures/testfile.txt')
   }
 
@@ -181,7 +181,7 @@ describe('resolve directory (CIDv1)', function () {
   let ipfsd = null
 
   const directory = {
-    cid: 'zdj7WggpWuCD8yN57uSxoVJPZr371E75q8m4FmZoCvhBJzGvP',
+    cid: 'bafybeifhimn7nu6dgmdvj6o63zegwro3yznnpfqib6kkjnagc54h46ox5q',
     files: {
       'pp.txt': Buffer.from(loadFixture('test/fixtures/test-folder/pp.txt')),
       'holmes.txt': loadFixture('test/fixtures/test-folder/holmes.txt')
@@ -302,7 +302,7 @@ describe('resolve web page (CIDv1)', function () {
   let ipfsd = null
 
   const webpage = {
-    cid: 'zdj7WYcfiUZa2wBeD9G2Jg9jqHx3Wh8nRsBNdVSWwsZ7XE62V',
+    cid: 'bafybeibpkvlqjkwl73yam6ffsbrlgbwiffnehajc6qvnrhai5bve6jnawi',
     files: {
       'pp.txt': loadFixture('test/fixtures/test-site/pp.txt'),
       'holmes.txt': loadFixture('test/fixtures/test-site/holmes.txt'),
