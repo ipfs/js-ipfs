@@ -1,3 +1,39 @@
+<a name="32.0.0"></a>
+# [32.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v31.1.0...v32.0.0) (2019-05-21)
+
+
+### Bug Fixes
+
+* handle empty array return value in dht.findProvs ([#1003](https://github.com/ipfs/js-ipfs-http-client/issues/1003)) ([15ab7c5](https://github.com/ipfs/js-ipfs-http-client/commit/15ab7c5))
+
+
+### Chores
+
+* update ipld formats ([#1010](https://github.com/ipfs/js-ipfs-http-client/issues/1010)) ([a423d7f](https://github.com/ipfs/js-ipfs-http-client/commit/a423d7f))
+
+
+### BREAKING CHANGES
+
+* The default string encoding for version 1 CIDs has changed to `base32`.
+
+IPLD formats have been updated to the latest versions. IPLD nodes returned by `ipfs.dag` and `ipfs.object` commands have significant breaking changes. If you are using these commands in your application you are likely to encounter the following changes to `dag-pb` nodes (the default node type that IPFS creates):
+
+* `DAGNode` properties have been renamed as follows:
+    * `data` => `Data`
+    * `links` => `Links`
+    * `size` => `size` (Note: no change)
+* `DAGLink` properties have been renamed as follows:
+    * `cid` => `Hash`
+    * `name` => `Name`
+    * `size` => `Tsize`
+
+See CHANGELOGs for each IPLD format for it's respective changes, you can read more about the [`dag-pb` changes in the CHANGELOG](https://github.com/ipld/js-ipld-dag-pb/blob/master)
+
+License: MIT
+Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
+
+
+
 <a name="31.1.0"></a>
 # [31.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v31.0.2...v31.1.0) (2019-05-16)
 
