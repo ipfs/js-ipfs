@@ -7,7 +7,6 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const path = require('path')
 const _ = require('lodash')
-const yargs = require('yargs')
 
 // This is our new test utility to easily check and execute ipfs cli commands.
 //
@@ -34,10 +33,11 @@ module.exports = (repoPath, opts) => {
   }))
 
   const execute = (exec, args) => {
-    // Adding '--' at the front of the command allows us to parse commands that
-    // have a parameter with spaces in it, eg
-    // ipfs refs --format="<src> -> <dst>"
-    const cp = exec(yargs('-- ' + args[0]).argv._)
+    if (args.length === 1) {
+      args = args[0].split(' ')
+    }
+
+    const cp = exec(args)
     const res = cp.then((res) => {
       // We can't escape the os.tmpdir warning due to:
       // https://github.com/shelljs/shelljs/blob/master/src/tempdir.js#L43
