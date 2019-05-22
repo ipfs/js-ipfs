@@ -47,7 +47,7 @@
     "aegir": "^18.0.3",
     "chai": "^4.2.0",
     "dirty-chai": "^2.0.1",
-    "ipfs": "0.35.0",
+    "ipfs": "0.36.0",
     "ipfsd-ctl": "~0.42.2"
   },
   "contributors": [
