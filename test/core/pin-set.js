@@ -19,7 +19,7 @@ const {
 const CID = require('cids')
 
 const IPFS = require('../../src/core')
-const createPinSet = require('../../src/core/components/pin-set')
+const createPinSet = require('../../src/core/components/pin/pin-set')
 const createTempRepo = require('../utils/create-repo-nodejs')
 
 const defaultFanout = 256

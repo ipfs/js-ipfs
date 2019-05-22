@@ -270,3 +270,5 @@ exports = module.exports = function (dag) {
   }
   return pinSet
 }
+
+module.exports.EMPTY_KEY_HASH = emptyKeyHash
