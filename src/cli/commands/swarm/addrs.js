@@ -35,7 +35,7 @@ module.exports = {
       })
 
       // Return the output for printing
-      return { data: output.join('\n'), argv}
+      return { data: output.join('\n'), argv }
     })())
   }
 }
