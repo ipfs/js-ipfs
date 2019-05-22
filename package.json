@@ -118,6 +118,7 @@
     "is-pull-stream": "~0.0.0",
     "is-stream": "^2.0.0",
     "iso-url": "~0.4.6",
+    "joi": "^14.3.1",
     "just-flatten-it": "^2.1.0",
     "just-safe-set": "^2.1.0",
     "kind-of": "^6.0.2",
