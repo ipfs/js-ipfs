@@ -138,16 +138,13 @@ describe('swarm', () => {
       })
 
       it('should return addresses for all peers', (done) => {
-        const printSpy = sinon.stub(process.stdout, 'write')
         sinon.stub(argv, 'resolve').callsFake(promise => {
-          promise.then(() => {
-            const output = printSpy.getCalls().map(call => call.args[0])
-            printSpy.restore()
-            expect(output).to.eql([
-              `${peerInfo.id.toB58String()} (2)\n`,
-              `\t/ip4/127.0.0.1/tcp/4001\n`,
-              `\t/ip4/127.0.0.1/tcp/4001/ws\n`
-            ])
+          promise.then(({ data }) => {
+            expect(data).to.eql([
+              `${peerInfo.id.toB58String()} (2)`,
+              `\t/ip4/127.0.0.1/tcp/4001`,
+              `\t/ip4/127.0.0.1/tcp/4001/ws`
+            ].join('\n'))
             done()
           })
         })
