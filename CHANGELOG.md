@@ -1,3 +1,13 @@
+<a name="0.36.1"></a>
+## [0.36.1](https://github.com/ipfs/js-ipfs/compare/v0.36.0...v0.36.1) (2019-05-22)
+
+
+### Bug Fixes
+
+* **cli:** make swarm addrs more resilient ([#2083](https://github.com/ipfs/js-ipfs/issues/2083)) ([3792b68](https://github.com/ipfs/js-ipfs/commit/3792b68))
+
+
+
 <a name="0.36.0"></a>
 # [0.36.0](https://github.com/ipfs/js-ipfs/compare/v0.36.0-rc.0...v0.36.0) (2019-05-22)
 
