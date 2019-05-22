@@ -76,6 +76,40 @@ module.exports = (http) => {
         expect(res.statusCode).to.equal(200)
         expect(multibase.isEncoded(JSON.parse(res.result).Hash)).to.deep.equal('base64')
       })
+
+      it('should add data using the trickle importer', async () => {
+        const form = new FormData()
+        form.append('data', Buffer.from('TEST\n'))
+        const headers = form.getHeaders()
+
+        const payload = await streamToPromise(form)
+        const res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/add?trickle=true&pin=false',
+          headers,
+          payload
+        })
+
+        expect(res.statusCode).to.equal(200)
+        expect(JSON.parse(res.result).Hash).to.equal('QmRJTAvvv1UNgCXxK9grf6u2pCT2ZQ2wCwsojpC1sTjkp9')
+      })
+
+      it('should add data using the balanced importer', async () => {
+        const form = new FormData()
+        form.append('data', Buffer.from('TEST\n'))
+        const headers = form.getHeaders()
+
+        const payload = await streamToPromise(form)
+        const res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/add?pin=false',
+          headers,
+          payload
+        })
+
+        expect(res.statusCode).to.equal(200)
+        expect(JSON.parse(res.result).Hash).to.equal('Qmdudp5XvJr7KrqK6fQ7m2ACStoRxuwfovNHnY6dAAeUis')
+      })
     })
 
     describe('/cat', () => {
