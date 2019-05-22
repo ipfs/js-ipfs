@@ -26,7 +26,7 @@ const defaultRepo = require('./runtime/repo-nodejs')
 const preload = require('./preload')
 const mfsPreload = require('./mfs-preload')
 const ipldOptions = require('./runtime/ipld-nodejs')
-const GCLock = require('./components/gc-lock')
+const GCLock = require('./components/pin/gc-lock')
 
 class IPFS extends EventEmitter {
   constructor (options) {
