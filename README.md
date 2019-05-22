@@ -199,6 +199,11 @@ node.on('ready', () => {
 })
 ```
 
+### Migrations
+
+`js-ipfs` comes bundled with tool that automatically migrate the version of your IPFS repository when new version is available.
+You can control this mechanism using config option `repoDisableAutoMigration` (`true`/`false` default is `false`).
+
 ### [Tutorials and Examples](/examples)
 
 You can find some examples and tutorials in the [examples](/examples) folder, these exist to help you get started using `js-ipfs`.
