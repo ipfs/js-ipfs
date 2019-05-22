@@ -1,3 +1,18 @@
+<a name="0.36.0"></a>
+# [0.36.0](https://github.com/ipfs/js-ipfs/compare/v0.36.0-rc.0...v0.36.0) (2019-05-22)
+
+
+### Bug Fixes
+
+* use trickle builder in daemon mode too ([#2085](https://github.com/ipfs/js-ipfs/issues/2085)) ([62b873f](https://github.com/ipfs/js-ipfs/commit/62b873f))
+* **package:** update libp2p-kad-dht to version 0.15.0 ([#2049](https://github.com/ipfs/js-ipfs/issues/2049)) ([5905760](https://github.com/ipfs/js-ipfs/commit/5905760))
+* browser-mfs example ([#2089](https://github.com/ipfs/js-ipfs/issues/2089)) ([e7d6d3a](https://github.com/ipfs/js-ipfs/commit/e7d6d3a))
+* error when preloding is disabled in the browser ([#2086](https://github.com/ipfs/js-ipfs/issues/2086)) ([a56bcbf](https://github.com/ipfs/js-ipfs/commit/a56bcbf))
+* traverse-ipld-graphs (tree) example ([#2088](https://github.com/ipfs/js-ipfs/issues/2088)) ([b5c652f](https://github.com/ipfs/js-ipfs/commit/b5c652f))
+* update option in exchange files in browser example ([#2087](https://github.com/ipfs/js-ipfs/issues/2087)) ([63469ed](https://github.com/ipfs/js-ipfs/commit/63469ed))
+
+
+
 <a name="0.36.0-rc.0"></a>
 # [0.36.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.36.0-pre.0...v0.36.0-rc.0) (2019-05-21)
 
