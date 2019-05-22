@@ -107,6 +107,88 @@ describe('create node', function () {
     })
   })
 
+  it('should resolve ready promise when initialized not started', async () => {
+    const ipfs = new IPFS({
+      init: true,
+      start: false,
+      repo: tempRepo,
+      config: { Addresses: { Swarm: [] } }
+    })
+
+    expect(ipfs.isOnline()).to.be.false()
+    await ipfs.ready
+    expect(ipfs.isOnline()).to.be.false()
+  })
+
+  it('should resolve ready promise when not initialized and not started', async () => {
+    const ipfs = new IPFS({
+      init: false,
+      start: false,
+      repo: tempRepo,
+      config: { Addresses: { Swarm: [] } }
+    })
+
+    expect(ipfs.isOnline()).to.be.false()
+    await ipfs.ready
+    expect(ipfs.isOnline()).to.be.false()
+  })
+
+  it('should resolve ready promise when initialized and started', async () => {
+    const ipfs = new IPFS({
+      init: true,
+      start: true,
+      repo: tempRepo,
+      config: { Addresses: { Swarm: [] } }
+    })
+
+    expect(ipfs.isOnline()).to.be.false()
+    await ipfs.ready
+    expect(ipfs.isOnline()).to.be.true()
+    await ipfs.stop()
+  })
+
+  it('should resolve ready promise when already ready', async () => {
+    const ipfs = new IPFS({
+      repo: tempRepo,
+      config: { Addresses: { Swarm: [] } }
+    })
+
+    expect(ipfs.isOnline()).to.be.false()
+    await ipfs.ready
+    expect(ipfs.isOnline()).to.be.true()
+    await ipfs.ready
+    expect(ipfs.isOnline()).to.be.true()
+    await ipfs.stop()
+  })
+
+  it('should reject ready promise on boot error', async () => {
+    const ipfs = new IPFS({
+      repo: tempRepo,
+      init: { bits: 1 }, // Too few bits will cause error on boot
+      config: { Addresses: { Swarm: [] } }
+    })
+
+    expect(ipfs.isOnline()).to.be.false()
+
+    try {
+      await ipfs.ready
+    } catch (err) {
+      return expect(ipfs.isOnline()).to.be.false()
+    }
+
+    throw new Error('ready promise did not reject')
+  })
+
+  it('should create a ready node with IPFS.create', async () => {
+    const ipfs = await IPFS.create({
+      repo: tempRepo,
+      config: { Addresses: { Swarm: [] } }
+    })
+
+    expect(ipfs.isOnline()).to.be.true()
+    await ipfs.stop()
+  })
+
   it('init: { bits: 1024 }', function (done) {
     this.timeout(80 * 1000)
 

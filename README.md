@@ -102,12 +102,10 @@ To create an IPFS node programmatically:
 
 ```js
 const IPFS = require('ipfs')
-const node = new IPFS()
+const node = await IPFS.create()
 
-node.on('ready', () => {
-  // Ready to use!
-  // See https://github.com/ipfs/js-ipfs#core-api
-})
+// Ready to use!
+// See https://github.com/ipfs/js-ipfs#core-api
 ```
 
 ### Through command line tool
@@ -124,8 +122,7 @@ The CLI is available by using the command `jsipfs` in your terminal. This is ali
 
 Learn how to bundle with browserify and webpack in the [`examples`](https://github.com/ipfs/js-ipfs/tree/master/examples) folder.
 
-
-You can also load it using a `<script>` using the [unpkg](https://unpkg.com) CDN **or** the [jsDelivr](https://www.jsdelivr.com/package/npm/ipfs) CDN. Inserting one of the following lines will make a `Ipfs` object available in the global namespace.
+You can also load it using a `<script>` using the [unpkg](https://unpkg.com) CDN **or** the [jsDelivr](https://www.jsdelivr.com/package/npm/ipfs) CDN. Inserting one of the following lines will make an `Ipfs` object available in the global namespace.
 
 ```html
 <!-- loading the minified version using unpkg -->
@@ -148,12 +145,12 @@ Inserting one of the above lines will make an `Ipfs` object available in the glo
 
 ```html
 <script>
-const node = new window.Ipfs()
-
-node.on('ready', () => {
+async function main () {
+  const node = await window.Ipfs.create()
   // Ready to use!
   // See https://github.com/ipfs/js-ipfs#core-api
-})
+}
+main()
 </script>
 ```
 
@@ -161,7 +158,7 @@ node.on('ready', () => {
 
 ### IPFS CLI
 
-The `jsipfs` CLI, available when `js-ipfs` is installed globally, follows(should, it is a WIP) the same interface defined by `go-ipfs`, you can always use the `help` command for help menus.
+The `jsipfs` CLI, available when `js-ipfs` is installed globally, follows (should, it is a WIP) the same interface defined by `go-ipfs`, you can always use the `help` command for help menus.
 
 ```sh
 # Install js-ipfs globally
@@ -191,20 +188,14 @@ If you want a programmatic way to spawn a IPFS Daemon using JavaScript, check ou
 
 ### IPFS Module
 
-Use the IPFS Module as a dependency of a project to __spawn in process instances of IPFS__. Create an instance by calling `new IPFS()` and waiting for its `ready` event:
+Use the IPFS Module as a dependency of a project to __spawn in process instances of IPFS__. Create an instance by calling `await IPFS.create()`:
 
 ```js
 // Create the IPFS node instance
-const node = new IPFS()
-
-node.on('ready', () => {
-  // Your node is now ready to use \o/
-
-  // stopping a node
-  node.stop(() => {
-    // node is now 'offline'
-  })
-})
+const node = await IPFS.create()
+// Your node is now ready to use \o/
+await node.stop()
+// node is now 'offline'
 ```
 
 ### [Tutorials and Examples](/examples)
@@ -216,11 +207,10 @@ You can find some examples and tutorials in the [examples](/examples) folder, th
 #### IPFS Constructor
 
 ```js
-const node = new IPFS([options])
+const node = await IPFS.create([options])
 ```
 
 Creates and returns an instance of an IPFS node. Use the `options` argument to specify advanced configuration. It is an object with any of these properties:
-
 
 ##### `options.repo`
 
@@ -234,7 +224,7 @@ Example:
 
 ```js
 // Store data outside your user directory
-const node = new IPFS({ repo: '/var/ipfs/data' })
+const node = await IPFS.create({ repo: '/var/ipfs/data' })
 ```
 
 ##### `options.init`
