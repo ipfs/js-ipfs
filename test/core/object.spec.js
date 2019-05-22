@@ -12,12 +12,11 @@ const auto = require('async/auto')
 const waterfall = require('async/waterfall')
 const IPFS = require('../../src/core')
 
-describe('object', () => {
+describe('object', function () {
+  this.timeout(10 * 1000)
   let ipfsd, ipfs
 
   before(function (done) {
-    this.timeout(50 * 1000)
-
     const factory = IPFSFactory.create({ type: 'proc' })
 
     factory.spawn({
