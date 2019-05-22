@@ -263,9 +263,9 @@ module.exports = (self) => {
       }
     }),
 
-    _getInternalBlocks: (cb) => pinManager.getInternalBlocks(cb),
-
-    _load: (cb) => pinManager.load(cb)
+    _isPinnedWithType: promisify(pinManager.isPinnedWithType.bind(pinManager)),
+    _getInternalBlocks: promisify(pinManager.getInternalBlocks.bind(pinManager)),
+    _load: promisify(pinManager.load.bind(pinManager))
   }
 
   return pin

@@ -56,12 +56,17 @@ function createMarkedSet (ipfs, callback) {
     }),
 
     // Blocks used internally by the pinner
-    (cb) => ipfs.pin._getInternalBlocks(cb),
+    (cb) => ipfs.pin._getInternalBlocks((err, cids) => {
+      if (err) {
+        return cb(new Error(`Could not list pinner internal blocks: ${err.message}`))
+      }
+      log(`Found ${cids.length} pinner internal blocks`)
+      cb(null, cids)
+    }),
 
     // The MFS root and all its descendants
     (cb) => ipfs._repo.root.get(MFS_ROOT_DS_KEY, (err, mh) => {
       if (err) {
-        console.error(err)
         if (err.code === 'ERR_NOT_FOUND') {
           log(`No blocks in MFS`)
           return cb(null, [])
@@ -87,7 +92,7 @@ function getDescendants (ipfs, cid, callback) {
     if (err) {
       return callback(new Error(`Could not get MFS root descendants from store: ${err.message}`))
     }
-    log(`Found ${refs.length} MFS blocks`)
+    log(`Found ${1 + refs.length} MFS blocks`)
     callback(null, [cid, ...refs.map(r => new CID(r.ref))])
   })
 }
@@ -98,19 +103,24 @@ function deleteUnmarkedBlocks (ipfs, markedSet, blocks, start, callback) {
   // The blocks variable has the form { { key: Key() }, { key: Key() }, ... }
   const unreferenced = []
   const res = []
+  let errCount = 0
   for (const { key: k } of blocks) {
     try {
       const cid = dsKeyToCid(k)
-      if (!markedSet.has(cid.toV1().toString('base32'))) {
+      const b32 = cid.toV1().toString('base32')
+      if (!markedSet.has(b32)) {
         unreferenced.push(cid)
       }
     } catch (err) {
-      res.push({ err: new Error(`Could not convert block with key '${k}' to CID: ${err.message}`) })
+      errCount++
+      const msg = `Could not convert block with key '${k}' to CID: ${err.message}`
+      log(msg)
+      res.push({ err: new Error(msg) })
     }
   }
 
   const msg = `Marked set has ${markedSet.size} blocks. Blockstore has ${blocks.length} blocks. ` +
-    `Deleting ${unreferenced.length} blocks.`
+    `Deleting ${unreferenced.length} blocks.` + (errCount ? ` (${errCount} errors)` : '')
   log(msg)
 
   mapLimit(unreferenced, BLOCK_RM_CONCURRENCY, (cid, cb) => {
@@ -133,5 +143,5 @@ function dsKeyToCid (key) {
   // Block key is of the form /<base32 encoded string>
   const decoder = new base32.Decoder()
   const buff = decoder.write(key.toString().slice(1)).finalize()
-  return new CID(buff)
+  return new CID(Buffer.from(buff))
 }
