@@ -7,20 +7,24 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-const fs = require('fs')
-
 const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/create-repo-nodejs')
 const pEvent = require('p-event')
 
 describe('gc', function () {
-  const fixtures = [
-    'test/fixtures/planets/mercury/wiki.md',
-    'test/fixtures/planets/solar-system.md'
-  ].map(path => ({
-    path,
-    content: fs.readFileSync(path)
-  }))
+  const fixtures = [{
+    path: 'test/my/path1',
+    content: Buffer.from('path1')
+  }, {
+    path: 'test/my/path2',
+    content: Buffer.from('path2')
+  }, {
+    path: 'test/my/path3',
+    content: Buffer.from('path3')
+  }, {
+    path: 'test/my/path4',
+    content: Buffer.from('path4')
+  }]
 
   let ipfs
   let repo
@@ -98,7 +102,7 @@ describe('gc', function () {
       // Add blocks to IPFS
       // Note: add operation will take a read lock
       const addLockRequested = pEvent(ipfs._gcLock, 'readLock request')
-      const add1 = ipfs.add(fixtures[0], { pin: true })
+      const add1 = ipfs.add(fixtures[2], { pin: true })
 
       // Once add lock has been requested, start GC
       await addLockRequested
@@ -108,7 +112,7 @@ describe('gc', function () {
 
       // Once GC has started, start second add
       await gcStarted
-      const add2 = ipfs.add(fixtures[1], { pin: true })
+      const add2 = ipfs.add(fixtures[3], { pin: true })
 
       const deleted = (await gc).map(i => i.cid)
       const add1Res = (await add1)[0].hash
