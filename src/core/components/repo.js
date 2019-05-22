@@ -38,7 +38,7 @@ module.exports = function repo (self) {
       })
     }),
 
-    gc: require('./gc')(self),
+    gc: require('./pin/gc')(self),
 
     stat: promisify((options, callback) => {
       if (typeof options === 'function') {

@@ -10,7 +10,6 @@ const log = require('debug')('ipfs:gc')
 
 // Limit on the number of parallel block remove operations
 const BLOCK_RM_CONCURRENCY = 256
-const PIN_DS_KEY = new Key('/local/pins')
 const MFS_ROOT_DS_KEY = new Key('/local/filesroot')
 
 // Perform mark and sweep garbage collection
@@ -47,10 +46,6 @@ module.exports = function gc (self) {
 // Get Set of CIDs of blocks to keep
 function createMarkedSet (ipfs, callback) {
   parallel([
-    // "Empty block" used by the pinner
-    // TODO: This CID is replicated in pin.js
-    (cb) => cb(null, [new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')]),
-
     // All pins, direct and indirect
     (cb) => ipfs.pin.ls((err, pins) => {
       if (err) {
@@ -61,31 +56,12 @@ function createMarkedSet (ipfs, callback) {
     }),
 
     // Blocks used internally by the pinner
-    (cb) => ipfs._repo.datastore.get(PIN_DS_KEY, (err, mh) => {
-      if (err) {
-        if (err.code === 'ERR_NOT_FOUND') {
-          log(`No pinned blocks`)
-          return cb(null, [])
-        }
-        return cb(new Error(`Could not get pin sets root from datastore: ${err.message}`))
-      }
-
-      const cid = new CID(mh)
-      ipfs.dag.get(cid, '', { preload: false }, (err, obj) => {
-        if (err) {
-          return cb(new Error(`Could not get pin sets from store: ${err.message}`))
-        }
-
-        // The pinner stores an object that has two links to pin sets:
-        // 1. The directly pinned CIDs
-        // 2. The recursively pinned CIDs
-        cb(null, [cid, ...obj.value.Links.map(l => l.Hash)])
-      })
-    }),
+    (cb) => ipfs.pin._getInternalBlocks(cb),
 
     // The MFS root and all its descendants
-    (cb) => ipfs._repo.datastore.get(MFS_ROOT_DS_KEY, (err, mh) => {
+    (cb) => ipfs._repo.root.get(MFS_ROOT_DS_KEY, (err, mh) => {
       if (err) {
+        console.error(err)
         if (err.code === 'ERR_NOT_FOUND') {
           log(`No blocks in MFS`)
           return cb(null, [])
@@ -100,7 +76,7 @@ function createMarkedSet (ipfs, callback) {
       return callback(err)
     }
 
-    const cids = res.flat().map(cid => cid.toV1().toString('base32'))
+    const cids = [].concat(...res).map(cid => cid.toV1().toString('base32'))
     return callback(null, new Set(cids))
   })
 }
