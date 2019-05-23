@@ -36,7 +36,7 @@ module.exports = (self) => {
       resolvePath(self.object, paths, (err, mhs) => {
         if (err) { return callback(err) }
 
-        const pin = (pinComplete) => {
+        const pinAdd = (pinComplete) => {
           // verify that each hash can be pinned
           map(mhs, (multihash, cb) => {
             const key = toB58String(multihash)
@@ -89,9 +89,9 @@ module.exports = (self) => {
         // is complete, so don't take a second lock here
         const lock = options.lock !== false
         if (lock) {
-          self._gcLock.readLock(pin, callback)
+          self._gcLock.readLock(pinAdd, callback)
         } else {
-          pin(callback)
+          pinAdd(callback)
         }
       })
     }),
