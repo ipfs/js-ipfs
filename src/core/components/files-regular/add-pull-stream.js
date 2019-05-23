@@ -74,12 +74,16 @@ function normalizeContent (content, opts) {
     }
 
     if (data && data.content && typeof data.content !== 'function') {
+      if (supportsFileReader && kindOf(data.content) === 'file') {
+        data = { path: data.path, content: toPull.source(streamFromFileReader(data.content)) }
+      }
+
       if (Buffer.isBuffer(data.content)) {
-        data.content = pullValues([data.content])
+        data = { path: data.path, content: pullValues([data.content]) }
       }
 
       if (isStream.readable(data.content)) {
-        data.content = toPull.source(data.content)
+        data = { path: data.path, content: toPull.source(data.content) }
       }
     }
 
