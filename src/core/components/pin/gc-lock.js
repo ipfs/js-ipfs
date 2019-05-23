@@ -80,8 +80,9 @@ class PullLocker {
 
   // Returns a Promise that resolves when the locked piece of code completes
   locked () {
-    return new Promise((resolve) => {
-      this.releaseLock = resolve
+    return new Promise((resolve, reject) => {
+      this.releaseLock = (err) => err ? reject(err) : resolve()
+
       log(`[${this.lockId}] ${this.type} (pull) started`)
       this.emitter.emit(`${this.type} start`, this.lockId)
 
@@ -101,6 +102,10 @@ class PullLocker {
           this.emitter.emit(`${this.type} request`, this.lockId)
           // Request the lock
           this.lock = this.mutex[this.type](() => this.locked())
+          // If there is an error, it gets passed through to the caller using
+          // pull streams, so here we just catch the error and ignore it so
+          // that there isn't an UnhandledPromiseRejectionWarning
+          this.lock.catch(() => {})
         }
 
         // Wait for the mutex to give us permission
@@ -111,10 +116,10 @@ class PullLocker {
 
   // Releases the lock
   release () {
-    return pull.through(null, () => {
+    return pull.through(null, (err) => {
       log(`[${this.lockId}] ${this.type} (pull) released`)
       this.emitter.emit(`${this.type} release`, this.lockId)
-      this.releaseLock()
+      this.releaseLock(err)
     })
   }
 }
