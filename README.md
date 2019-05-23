@@ -58,8 +58,8 @@ We've come a long way, but this project is still in Alpha, lots of development i
   - [API Docs](#api)
     - [Constructor](#ipfs-constructor)
     - [Events](#events)
-    - [start](#nodestartcallback)
-    - [stop](#nodestopcallback)
+    - [start](#nodestart)
+    - [stop](#nodestop)
     - [Core API](#core-api)
       - [Files](#files)
       - [Graph](#graph)
@@ -210,7 +210,26 @@ You can find some examples and tutorials in the [examples](/examples) folder, th
 const node = await IPFS.create([options])
 ```
 
-Creates and returns an instance of an IPFS node. Use the `options` argument to specify advanced configuration. It is an object with any of these properties:
+Creates and returns a ready to use instance of an IPFS node.
+
+<details><summary>Alternative method to construct an IPFS node</summary>
+
+The recommended method of creating a new IPFS node is to use the `IPFS.create` method. However, IPFS is a `class`, and can also be constructed using the `new` keyword:
+
+```js
+const node = new IPFS([options])
+```
+
+At this point, your node has been created but is **not** ready to use. You must either attach a listener for the "ready" event _or_ wait for the `node.ready` promise to resolve:
+
+```js
+node.on('ready', () => { /* Node is now ready to use */ })
+// OR
+await node.ready
+```
+</details>
+
+Use the `options` argument to specify advanced configuration. It is an object with any of these properties:
 
 ##### `options.repo`
 
@@ -258,7 +277,7 @@ Instead of a boolean, you may provide an object with custom initialization optio
 |------|---------|
 | boolean | `true` |
 
- If `false`, do not automatically start the IPFS node. Instead, you’ll need to manually call [`node.start()`](#nodestartcallback) yourself.
+ If `false`, do not automatically start the IPFS node. Instead, you’ll need to manually call [`node.start()`](#nodestart) yourself.
 
 ##### `options.pass`
 
@@ -352,121 +371,110 @@ Available delegate multiaddrs are:
 import ipldGit from 'ipld-git'
 import ipldBitcoin from 'ipld-bitcoin'
 
-const node = new IPFS(
-  {
-    ipld: {
-      formats: [ipldGit, ipldBitcoin]
-    }
+const node = await IPFS.create({
+  ipld: {
+    formats: [ipldGit, ipldBitcoin]
   }
-)
+})
 ```
 </details>
 <details><summary>Commonjs Environments</summary>
 
 ```js
-const node = new IPFS(
-  {
-    ipld: {
-      formats: [require('ipld-git'), require('ipld-bitcoin')]
-    }
+const node = await IPFS.create({
+  ipld: {
+    formats: [require('ipld-git'), require('ipld-bitcoin')]
   }
-)
+})
 ```
 </details>
 <details><summary>Using script tags</summary>
 
 ```html
-<script src="https://unpkg.com/ipfs"></script>
-<script src="https://unpkg.com/ipld-git"></script>
-<script src="https://unpkg.com/ipld-bitcoin"></script>
+<script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
+<script src="https://unpkg.com/ipld-git/dist/index.min.js"></script>
+<script src="https://unpkg.com/ipld-bitcoin/dist/index.min.js"></script>
 <script>
-const node = new self.IPFS(
-  {
+async function main () {
+  const node = await self.IPFS.create({
     ipld: {
-      formats: [self.ipldGit, self.ipldBitcoin]
+      formats: [self.IpldGit, self.IpldBitcoin]
     }
-  }
-)
+  })
+}
+main()
 </script>
 ```
 </details>
 
  Examples for the async option:
 
-
 <details><summary>ESM Environments</summary>
 
 ```js
-const node = new IPFS(
-  {
-    ipld: {
-      async loadFormat (codec) {
-        if (codec === 'git-raw') {
-          return import('ipld-git') // This is a dynamic import
-        } else {
-          throw new Error('unable to load format ' + multicodec.print[codec])
-        }
+const node = await IPFS.create({
+  ipld: {
+    async loadFormat (codec) {
+      if (codec === multicodec.GIT_RAW) {
+        return import('ipld-git') // This is a dynamic import
+      } else {
+        throw new Error('unable to load format ' + multicodec.print[codec])
       }
     }
   }
-)
+})
 ```
 > For more information about dynamic imports please check [webpack docs](https://webpack.js.org/guides/code-splitting/#dynamic-imports) or search your bundler documention.
 
 Using dynamic imports will tell your bundler to create a separate file (normally called *chunk*) that will **only** be requested by the browser if it's really needed. This strategy will reduce your bundle size and load times without removing any functionality.
 
 With Webpack IPLD formats can even be grouped together using magic comments `import(/* webpackChunkName: "ipld-formats" */ 'ipld-git')` to produce a single file with all of them.
-
 </details>
+
 <details><summary>Commonjs Environments</summary>
 
 ```js
-const node = new IPFS(
-  {
-    ipld: {
-      async loadFormat (codec) {
-        if (codec === 'git-raw') {
-          return require('ipld-git')
-        } else {
-          throw new Error('unable to load format ' + multicodec.print[codec])
-        }
+const node = await IPFS.create({
+  ipld: {
+    async loadFormat (codec) {
+      if (codec === multicodec.GIT_RAW) {
+        return require('ipld-git')
+      } else {
+        throw new Error('unable to load format ' + multicodec.print[codec])
       }
     }
   }
-)
+})
 ```
 </details>
 
 <details><summary>Using Script tags</summary>
 
 ```js
-<script src="https://unpkg.com/ipfs"></script>
+<script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
 <script>
-
-const load = (url, cb) => {
+const load = (name, url) => new Promise((resolve, reject) => {
   const script = document.createElement('script')
   script.src = url
-  script.onload = () => cb()
-  script.onerror = () => cb(new Error('Unable to load script'))
-  document.body.appendChild(script);
-};
+  script.onload = () => resolve(self[name])
+  script.onerror = () => reject(new Error('Failed to load ' + url))
+  document.body.appendChild(script)
+})
 
-const node = new self.IPFS(
-  {
-    ipld: {
-      loadFormat (codec, cb) {
-        switch (codec) {
-          case 'git-raw':
-            return load('https://unpkg.com/ipld-git', cb)
-          case 'bitcoin-block':
-            return load('https://unpkg.com/ipld-bitcoin', cb)
-          default:
-            throw new Error('unable to load format ' + multicodec.print[codec])
-        }
+const node = await self.IPFS.create({
+  ipld: {
+    async loadFormat (codec) {
+      switch (codec) {
+        case multicodec.GIT_RAW:
+          return load('IpldGit', 'https://unpkg.com/ipld-git/dist/index.min.js')
+        case multicodec.BITCOIN_BLOCK:
+          return load('IpldBitcoin', 'https://unpkg.com/ipld-bitcoin/dist/index.min.js')
+        default:
+          throw new Error('Unable to load format ' + multicodec.print[codec])
       }
     }
   }
-)
+})
 </script>
 ```
 </details>
@@ -511,7 +519,7 @@ Configure the libp2p connection manager.
 IPFS instances are Node.js [EventEmitters](https://nodejs.org/dist/latest-v8.x/docs/api/events.html#events_class_eventemitter). You can listen for events by calling `node.on('event', handler)`:
 
 ```js
-const node = new IPFS({ repo: '/var/ipfs/data' })
+const node = await IPFS.create({ repo: '/var/ipfs/data' })
 node.on('error', errorObject => console.error(errorObject))
 ```
 
@@ -531,121 +539,124 @@ node.on('error', errorObject => console.error(errorObject))
 
 - `start` is emitted when a node has started listening for connections. It will not be emitted if you set the `start: false` option on the constructor.
 
-- `stop` is emitted when a node has closed all connections and released access to its repo. This is usually the result of calling [`node.stop()`](#nodestopcallback).
+- `stop` is emitted when a node has closed all connections and released access to its repo. This is usually the result of calling [`node.stop()`](#nodestop).
 
-#### `node.start([callback])`
+#### `node.start()`
 
-Start listening for connections with other IPFS nodes on the network. In most cases, you do not need to call this method — `new IPFS()` will automatically do it for you.
+Start listening for connections with other IPFS nodes on the network. In most cases, you do not need to call this method — `IPFS.create()` will automatically do it for you.
 
-This method is asynchronous. There are several ways to be notified when the node has finished starting:
+This method is asynchronous and returns a promise.
 
-1. If you call `node.start()` with no arguments, it returns a promise.
+```js
+const node = await IPFS.create({ start: false })
+console.log('Node is ready to use but not started!')
 
-    ```js
-    const node = new IPFS({ start: false })
+try {
+  await node.start()
+  console.log('Node started!')
+} catch (error) {
+  console.error('Node failed to start!', error)
+}
+```
 
-    node.on('ready', async () => {
-      console.log('Node is ready to use!')
+<details><summary>Starting using callbacks and events</summary>
 
-      try {
-        await node.start()
-        console.log('Node started!')
-      } catch (error) {
-        console.error('Node failed to start!', error)
-      }
-    })
-    ```
+If you pass a function to this method, it will be called when the node is started (Note: this method will **not** return a promise if you use a callback function).
 
-2. If you pass a function as the final argument, it will be called when the node is started (Note: this method will **not** return a promise if you use a callback function).
+```js
+// Note: you can use the class constructor style for more
+// idiomatic callback/events style code
+const node = new IPFS({ start: false })
 
-    ```js
-    const node = new IPFS({ start: false })
+node.on('ready', () => {
+  console.log('Node is ready to use but not started!')
 
-    node.on('ready', () => {
-      console.log('Node is ready to use!')
+  node.start(error => {
+    if (error) {
+      return console.error('Node failed to start!', error)
+    }
+    console.log('Node started!')
+  })
+})
+```
 
-      node.start(error => {
-        if (error) {
-          return console.error('Node failed to start!', error)
-        }
-        console.log('Node started!')
-      })
-    })
-    ```
+Alternatively you can listen for the [`start` event](#events):
 
-3. You can listen for the [`start` event](#events).
+```js
+// Note: you can use the class constructor style for more
+// idiomatic callback/events style code
+const node = new IPFS({ start: false })
 
-    ```js
-    const node = new IPFS({ start: false })
+node.on('ready', () => {
+  console.log('Node is ready to use but not started!')
+  node.start()
+})
 
-    node.on('ready', () => {
-      console.log('Node is ready to use!')
-      node.start()
-    })
+node.on('error', error => {
+  console.error('Something went terribly wrong!', error)
+})
 
-    node.on('error', error => {
-      console.error('Something went terribly wrong!', error)
-    })
+node.on('start', () => console.log('Node started!'))
+```
 
-    node.on('start', () => console.log('Node started!'))
-    ```
+</details>
 
-#### `node.stop([callback])`
+#### `node.stop()`
 
 Close and stop listening for connections with other IPFS nodes, then release access to the node’s repo.
 
-This method is asynchronous. There are several ways to be notified when the node has completely stopped:
+This method is asynchronous and returns a promise.
 
-1. If you call `node.stop()` with no arguments, it returns a promise.
+```js
+const node = await IPFS.create()
+console.log('Node is ready to use!')
 
-    ```js
-    const node = new IPFS()
+try {
+  await node.stop()
+  console.log('Node stopped!')
+} catch (error) {
+  console.error('Node failed to stop!', error)
+}
+```
 
-    node.on('ready', async () => {
-      console.log('Node is ready to use!')
+<details><summary>Stopping using callbacks and events</summary>
 
-      try {
-        await node.stop()
-        console.log('Node stopped!')
-      } catch (error) {
-        console.error('Node failed to stop cleanly!', error)
-      }
-    })
-    ```
+If you pass a function to this method, it will be called when the node is stopped (Note: this method will **not** return a promise if you use a callback function).
 
-2. If you pass a function as the final argument, it will be called when the node is stopped (Note: this method will **not** return a promise if you use a callback function).
+```js
+// Note: you can use the class constructor style for more
+// idiomatic callback/events style code
+const node = new IPFS()
 
-    ```js
-    const node = new IPFS()
+node.on('ready', () => {
+  console.log('Node is ready to use!')
 
-    node.on('ready', () => {
-      console.log('Node is ready to use!')
+  node.stop(error => {
+    if (error) {
+      return console.error('Node failed to stop cleanly!', error)
+    }
+    console.log('Node stopped!')
+  })
+})
+```
 
-      node.stop(error => {
-        if (error) {
-          return console.error('Node failed to stop cleanly!', error)
-        }
-        console.log('Node stopped!')
-      })
-    })
-    ```
+Alternatively you can listen for the [`stop` event](#events).
 
-3. You can listen for the [`stop` event](#events).
+```js
+const node = new IPFS()
 
-    ```js
-    const node = new IPFS()
+node.on('ready', () => {
+  console.log('Node is ready to use!')
+  node.stop()
+})
 
-    node.on('ready', () => {
-      console.log('Node is ready to use!')
-      node.stop()
-    })
+node.on('error', error => {
+  console.error('Something went terribly wrong!', error)
+})
 
-    node.on('error', error => {
-      console.error('Something went terribly wrong!', error)
-    })
-
-    node.on('stop', () => console.log('Node stopped!'))
-    ```
+node.on('stop', () => console.log('Node stopped!'))
+```
+</details>
 
 #### Core API
 
@@ -653,116 +664,118 @@ This method is asynchronous. There are several ways to be notified when the node
 
 The IPFS core API provides all functionality that is not specific to setting up and starting or stopping a node. This API is available directly on an IPFS instance, on the command line (when using the CLI interface), and as an HTTP REST API. For a complete reference, see [![](https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg)](https://github.com/ipfs/interface-ipfs-core).
 
+All the API methods aside from streaming methods (ones that end in `ReadableStream` or `PullStream`) are asynchronous and return Promises, but _also_ accept callbacks.
+
 The core API is grouped into several areas:
 
 #### Files
 
 - [Regular Files API](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md)
-  - [`ipfs.add(data, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#add)
+  - [`ipfs.add(data, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#add)
   - [`ipfs.addPullStream([options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#addpullstream)
   - [`ipfs.addReadableStream([options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#addreadablestream)
-  - [`ipfs.addFromStream(stream, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#addfromstream)
-  - [`ipfs.addFromFs(path, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#addfromfs)
-  - [`ipfs.addFromUrl(url, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#addfromurl)
-  - [`ipfs.cat(ipfsPath, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#cat)
+  - [`ipfs.addFromStream(stream)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#addfromstream)
+  - [`ipfs.addFromFs(path, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#addfromfs)
+  - [`ipfs.addFromUrl(url, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#addfromurl)
+  - [`ipfs.cat(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#cat)
   - [`ipfs.catPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#catpullstream)
   - [`ipfs.catReadableStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#catreadablestream)
-  - [`ipfs.get(ipfsPath, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#get)
+  - [`ipfs.get(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#get)
   - [`ipfs.getPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#getpullstream)
   - [`ipfs.getReadableStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#getreadablestream)
-  - [`ipfs.ls(ipfsPath, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#ls)
+  - [`ipfs.ls(ipfsPath)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#ls)
   - [`ipfs.lsPullStream(ipfsPath)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#lspullstream)
   - [`ipfs.lsReadableStream(ipfsPath)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#lsreadablestream)
 - [MFS (mutable file system) specific](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#mutable-file-system)
-  - [`ipfs.files.cp([from, to], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescp)
-  - [`ipfs.files.flush([path], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesflush)
-  - [`ipfs.files.ls([path], [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesls)
-  - [`ipfs.files.mkdir(path, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesmkdir)
-  - [`ipfs.files.mv([from, to], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesmv)
-  - [`ipfs.files.read(path, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesread)
+  - [`ipfs.files.cp([from, to])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescp)
+  - [`ipfs.files.flush([path])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesflush)
+  - [`ipfs.files.ls([path], [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesls)
+  - [`ipfs.files.mkdir(path, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesmkdir)
+  - [`ipfs.files.mv([from, to])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesmv)
+  - [`ipfs.files.read(path, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesread)
   - [`ipfs.files.readPullStream(path, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesreadpullstream)
   - [`ipfs.files.readReadableStream(path, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesreadreadablestream)
-  - [`ipfs.files.rm(path, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesrm)
-  - [`ipfs.files.stat(path, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesstat)
-  - [`ipfs.files.write(path, content, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#fileswrite)
+  - [`ipfs.files.rm(path, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesrm)
+  - [`ipfs.files.stat(path, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesstat)
+  - [`ipfs.files.write(path, content, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#fileswrite)
 
 
 #### Graph
 
 - [dag](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DAG.md)
-  - [`ipfs.dag.put(dagNode, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DAG.md#dagput)
-  - [`ipfs.dag.get(cid, [path], [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DAG.md#dagget)
-  - [`ipfs.dag.tree(cid, [path], [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DAG.md#dagtree)
+  - [`ipfs.dag.put(dagNode, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DAG.md#dagput)
+  - [`ipfs.dag.get(cid, [path], [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DAG.md#dagget)
+  - [`ipfs.dag.tree(cid, [path], [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DAG.md#dagtree)
 
 - [pin](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PIN.md)
-  - [`ipfs.pin.add(hash, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PIN.md#pinadd)
-  - [`ipfs.pin.ls([hash], [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PIN.md#pinls)
-  - [`ipfs.pin.rm(hash, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PIN.md#pinrm)
+  - [`ipfs.pin.add(hash, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PIN.md#pinadd)
+  - [`ipfs.pin.ls([hash], [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PIN.md#pinls)
+  - [`ipfs.pin.rm(hash, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PIN.md#pinrm)
 
 - [object (legacy)](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md)
-  - [`ipfs.object.new([template], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectnew)
-  - [`ipfs.object.put(obj, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectput)
-  - [`ipfs.object.get(multihash, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectget)
-  - [`ipfs.object.data(multihash, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectdata)
-  - [`ipfs.object.links(multihash, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectlinks)
-  - [`ipfs.object.stat(multihash, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectstat)
-  - [`ipfs.object.patch.addLink(multihash, DAGLink, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchaddlink)
-  - [`ipfs.object.patch.rmLink(multihash, DAGLink, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchrmlink)
-  - [`ipfs.object.patch.appendData(multihash, data, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchappenddata)
-  - [`ipfs.object.patch.setData(multihash, data, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchsetdata)
+  - [`ipfs.object.new([template])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectnew)
+  - [`ipfs.object.put(obj, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectput)
+  - [`ipfs.object.get(multihash, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectget)
+  - [`ipfs.object.data(multihash, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectdata)
+  - [`ipfs.object.links(multihash, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectlinks)
+  - [`ipfs.object.stat(multihash, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectstat)
+  - [`ipfs.object.patch.addLink(multihash, DAGLink, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchaddlink)
+  - [`ipfs.object.patch.rmLink(multihash, DAGLink, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchrmlink)
+  - [`ipfs.object.patch.appendData(multihash, data, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchappenddata)
+  - [`ipfs.object.patch.setData(multihash, data, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectpatchsetdata)
 
 #### Block
 
 - [block](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md)
-  - [`ipfs.block.get(cid, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md#blockget)
-  - [`ipfs.block.put(block, cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md#blockput)
-  - [`ipfs.block.stat(cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md#blockstat)
+  - [`ipfs.block.get(cid, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md#blockget)
+  - [`ipfs.block.put(block, cid)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md#blockput)
+  - [`ipfs.block.stat(cid)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md#blockstat)
 - [bitswap](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BITSWAP.md)
-  - [`ipfs.bitswap.wantlist([peerId], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BITSWAP.md#bitswapwantlist)
-  - [`ipfs.bitswap.stat([callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BITSWAP.md#bitswapstat)
+  - [`ipfs.bitswap.wantlist([peerId])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BITSWAP.md#bitswapwantlist)
+  - [`ipfs.bitswap.stat()`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BITSWAP.md#bitswapstat)
 
 #### Name
 
 - [name](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md)
-  - [`ipfs.name.publish(value, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md#namepublish)
-  - [`ipfs.name.pubsub.cancel(arg, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md#namepubsubcancel)
-  - [`ipfs.name.pubsub.state([callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md#namepubsubstate)
-  - [`ipfs.name.pubsub.subs([callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md#namepubsubsubs)
-  - [`ipfs.name.resolve(value, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md#nameresolve)
+  - [`ipfs.name.publish(value, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md#namepublish)
+  - [`ipfs.name.pubsub.cancel(arg)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md#namepubsubcancel)
+  - [`ipfs.name.pubsub.state()`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md#namepubsubstate)
+  - [`ipfs.name.pubsub.subs()`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md#namepubsubsubs)
+  - [`ipfs.name.resolve(value, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md#nameresolve)
 
 #### Crypto and Key Management
 
 - [key](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/KEY.md)
-  - [`ipfs.key.export(name, password, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keyexport)
-  - [`ipfs.key.gen(name, options, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keygen)
-  - [`ipfs.key.import(name, pem, password, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keyimport)
-  - [`ipfs.key.list([callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keylist)
-  - [`ipfs.key.rename(oldName, newName, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keyrename)
-  - [`ipfs.key.rm(name, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keyrm)
+  - [`ipfs.key.export(name, password)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keyexport)
+  - [`ipfs.key.gen(name, options)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keygen)
+  - [`ipfs.key.import(name, pem, password)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keyimport)
+  - [`ipfs.key.list()`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keylist)
+  - [`ipfs.key.rename(oldName, newName)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keyrename)
+  - [`ipfs.key.rm(name)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keyrm)
 
 - crypto (not implemented yet)
 
 #### Network
 
 - [bootstrap](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BOOTSTRAP.md)
-  - [`ipfs.bootstrap.list([callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BOOTSTRAP.md#bootstraplist)
-  - [`ipfs.bootstrap.add(addr, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BOOTSTRAP.md#bootstrapadd)
-  - [`ipfs.bootstrap.rm(peer, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BOOTSTRAP.md#bootstraprm)
+  - [`ipfs.bootstrap.list()`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BOOTSTRAP.md#bootstraplist)
+  - [`ipfs.bootstrap.add(addr, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BOOTSTRAP.md#bootstrapadd)
+  - [`ipfs.bootstrap.rm(peer, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BOOTSTRAP.md#bootstraprm)
 
 - [dht](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/DHT.md)
-  - [`ipfs.dht.findPeer(peerId, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtfindpeer)
-  - [`ipfs.dht.findProvs(multihash, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtfindprovs)
-  - [`ipfs.dht.get(key, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtget)
-  - [`ipfs.dht.provide(cid, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtprovide)
-  - [`ipfs.dht.put(key, value, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtput)
-  - [`ipfs.dht.query(peerId, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtquery)
+  - [`ipfs.dht.findPeer(peerId)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtfindpeer)
+  - [`ipfs.dht.findProvs(multihash)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtfindprovs)
+  - [`ipfs.dht.get(key)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtget)
+  - [`ipfs.dht.provide(cid)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtprovide)
+  - [`ipfs.dht.put(key, value)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtput)
+  - [`ipfs.dht.query(peerId)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md#dhtquery)
 
 - [pubsub](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md)
-  - [`ipfs.pubsub.subscribe(topic, handler, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubsubscribe)
-  - [`ipfs.pubsub.unsubscribe(topic, handler, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubunsubscribe)
-  - [`ipfs.pubsub.publish(topic, data, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubpublish)
-  - [`ipfs.pubsub.ls(topic, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubls)
-  - [`ipfs.pubsub.peers(topic, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubpeers)
+  - [`ipfs.pubsub.subscribe(topic, handler, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubsubscribe)
+  - [`ipfs.pubsub.unsubscribe(topic, handler)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubunsubscribe)
+  - [`ipfs.pubsub.publish(topic, data)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubpublish)
+  - [`ipfs.pubsub.ls(topic)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubls)
+  - [`ipfs.pubsub.peers(topic)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/PUBSUB.md#pubsubpeers)
 
 - [libp2p](https://github.com/libp2p/interface-libp2p). Every IPFS instance also exposes the libp2p SPEC at `ipfs.libp2p`. The formal interface for this SPEC hasn't been defined but you can find documentation at its implementations:
   - [Node.js bundle](./src/core/runtime/libp2p-nodejs.js)
@@ -770,43 +783,43 @@ The core API is grouped into several areas:
   - [libp2p baseclass](https://github.com/libp2p/js-libp2p)
 
 - [swarm](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md)
-  - [`ipfs.swarm.addrs([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#swarmaddrs)
-  - [`ipfs.swarm.connect(addr, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#swarmconnect)
-  - [`ipfs.swarm.disconnect(addr, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#swarmdisconnect)
-  - [`ipfs.swarm.peers([options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#swarmpeers)
+  - [`ipfs.swarm.addrs()`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#swarmaddrs)
+  - [`ipfs.swarm.connect(addr)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#swarmconnect)
+  - [`ipfs.swarm.disconnect(addr)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#swarmdisconnect)
+  - [`ipfs.swarm.peers([options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/SWARM.md#swarmpeers)
 
 #### Node Management
 
 - [miscellaneous operations](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md)
-  - [`ipfs.id([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#id)
-  - [`ipfs.version([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#version)
-  - [`ipfs.ping(peerId, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#ping)
+  - [`ipfs.id()`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#id)
+  - [`ipfs.version()`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#version)
+  - [`ipfs.ping(peerId, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#ping)
   - [`ipfs.pingReadableStream(peerId, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#pingreadablestream)
   - [`ipfs.pingPullStream(peerId, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#pingpullstream)
-  - `ipfs.init([options], [callback])`
-  - `ipfs.start([callback])`
-  - [`ipfs.stop([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#stop)
+  - `ipfs.init([options])`
+  - `ipfs.start()`
+  - [`ipfs.stop()`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#stop)
   - `ipfs.isOnline()`
-  - [`ipfs.resolve(name, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#resolve)
-  - [`ipfs.dns(name, [options], [callback]`](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/MISCELLANEOUS.md#dns)
+  - [`ipfs.resolve(name, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#resolve)
+  - [`ipfs.dns(name, [options]`](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/MISCELLANEOUS.md#dns)
 
 - [repo](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/REPO.md)
   - `ipfs.repo.init`
-  - [`ipfs.repo.stat([options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/REPO.md#repostat)
-  - [`ipfs.repo.version([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/REPO.md#repoversion)
-  - `ipfs.repo.gc([options], [callback])` (not implemented yet)
+  - [`ipfs.repo.stat([options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/REPO.md#repostat)
+  - [`ipfs.repo.version()`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/REPO.md#repoversion)
+  - `ipfs.repo.gc([options])` (not implemented yet)
 
 - [stats](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md)
-  - [`ipfs.stats.bitswap([callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#statsbitswap)
-  - [`ipfs.stats.bw([options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#statsbw)
+  - [`ipfs.stats.bitswap()`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#statsbitswap)
+  - [`ipfs.stats.bw([options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#statsbw)
   - [`ipfs.stats.bwPullStream([options]) -> Pull Stream`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#statsbwpullstream)
   - [`ipfs.stats.bwReadableStream([options]) -> Readable Stream`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#statsbwreadablestream)
-  - [`ipfs.stats.repo([options], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#statsrepo)
+  - [`ipfs.stats.repo([options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#statsrepo)
 
 - [config](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md)
-  - [`ipfs.config.get([key], [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configget)
-  - [`ipfs.config.set(key, value, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configset)
-  - [`ipfs.config.replace(config, [callback])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configreplace)
+  - [`ipfs.config.get([key])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configget)
+  - [`ipfs.config.set(key, value)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configset)
+  - [`ipfs.config.replace(config)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configreplace)
 
 #### Static types and utils
 
@@ -839,7 +852,7 @@ import { CID } from 'ipfs'
 To add a WebRTC transport to your js-ipfs node, you must add a WebRTC multiaddr. To do that, simple override the config.Addresses.Swarm array which contains all the multiaddrs which the IPFS node will use. See below:
 
 ```JavaScript
-const node = new IPFS({
+const node = await IPFS.create({
   config: {
     Addresses: {
       Swarm: [
@@ -849,9 +862,7 @@ const node = new IPFS({
   }
 })
 
-node.on('ready', () => {
-  // your instance with WebRTC is ready
-})
+// your instance with WebRTC is ready
 ```
 
 **Important:** This transport usage is kind of unstable and several users have experienced crashes. Track development of a solution at https://github.com/ipfs/js-ipfs/issues/1088.
@@ -870,7 +881,7 @@ const wrtc = require('wrtc') // or require('electron-webrtc')()
 const WStar = require('libp2p-webrtc-star')
 const wstar = new WStar({ wrtc })
 
-const node = new IPFS({
+const node = await IPFS.create({
   repo: 'your-repo-path',
   // start: false,
   config: {
@@ -890,9 +901,7 @@ const node = new IPFS({
   }
 })
 
-node.on('ready', () => {
-  // your instance with WebRTC is ready
-})
+// your instance with WebRTC is ready
 ```
 
 To add WebRTC support to the IPFS daemon, you only need to install one of the WebRTC modules globally:
@@ -912,7 +921,7 @@ You'll need to execute a compatible `signaling server` ([libp2p-webrtc-star](htt
 - provide the [`multiaddr`](https://github.com/multiformats/multiaddr) for the `signaling server`
 
 ```JavaScript
-const node = new IPFS({
+const node = await IPFS.create({
   repo: 'your-repo-path',
   config: {
     Addresses: {
@@ -931,7 +940,7 @@ The code above assumes you are running a local `signaling server` on port `9090`
 Yes, websocket-star! A WebSockets based transport that uses a Relay to route the messages. To enable it, just do:
 
 ```JavaScript
-const node = new Ipfs({
+const node = await IPFS.create({
   config: {
     Addresses: {
       Swarm: [
@@ -941,9 +950,7 @@ const node = new Ipfs({
   }
 })
 
-node.on('ready', () => {
-  // your instance with websocket-star is ready
-})
+// your instance with websocket-star is ready
 ```
 
 #### I see some slowness when hopping between tabs Chrome with IPFS nodes, is there a reason why?
