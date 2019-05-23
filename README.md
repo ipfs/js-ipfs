@@ -58,6 +58,7 @@ We've come a long way, but this project is still in Alpha, lots of development i
   - [API Docs](#api)
     - [Constructor](#ipfs-constructor)
     - [Events](#events)
+    - [ready](#nodeready)
     - [start](#nodestart)
     - [stop](#nodestop)
     - [Core API](#core-api)
@@ -540,6 +541,16 @@ node.on('error', errorObject => console.error(errorObject))
 - `start` is emitted when a node has started listening for connections. It will not be emitted if you set the `start: false` option on the constructor.
 
 - `stop` is emitted when a node has closed all connections and released access to its repo. This is usually the result of calling [`node.stop()`](#nodestop).
+
+#### `node.ready`
+
+A promise that resolves when the node is ready to use. Should be used when constructing an IPFS node using `new`. You don't need to use this if you're using [`await IPFS.create`](#ipfs-constructor). e.g.
+
+```js
+const node = new IPFS()
+await node.ready
+// Ready to use!
+```
 
 #### `node.start()`
 
