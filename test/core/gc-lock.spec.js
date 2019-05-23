@@ -1,4 +1,3 @@
-/* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
 'use strict'
 
@@ -25,6 +24,24 @@ const cbReadLock = (lock, out, id, duration) => {
 }
 const cbWriteLock = (lock, out, id, duration) => {
   return cbTakeLock('write', lock, out, id, duration)
+}
+const cbTakeLockError = (type, lock, out, errs, id, duration) => {
+  return (cb) => lock[type + 'Lock']((lockCb) => {
+    out.push(`${type} ${id} start`)
+    setTimeout(() => {
+      out.push(`${type} ${id} error`)
+      lockCb(new Error('err'))
+    }, duration)
+  }, (err) => {
+    errs.push(err)
+    cb()
+  })
+}
+const cbReadLockError = (lock, out, errs, id, duration) => {
+  return cbTakeLockError('read', lock, out, errs, id, duration)
+}
+const cbWriteLockError = (lock, out, errs, id, duration) => {
+  return cbTakeLockError('write', lock, out, errs, id, duration)
 }
 
 const pullTakeLock = (type, lock, out, id, duration) => {
@@ -60,11 +77,54 @@ const pullReadLock = (lock, out, id, duration) => {
 const pullWriteLock = (lock, out, id, duration) => {
   return pullTakeLock('write', lock, out, id, duration)
 }
+const pullTakeLockError = (type, lock, out, errs, id, duration) => {
+  const lockFn = type === 'read' ? 'pullReadLock' : 'pullWriteLock'
+  const vals = ['a', 'b', 'c']
+  return (cb) => {
+    pull(
+      pull.values(vals),
+      lock[lockFn](() => {
+        let started = false
+        return pull(
+          pull.through((i) => {
+            if (!started) {
+              out.push(`${type} ${id} start`)
+              started = true
+            }
+          }),
+          pull.asyncMap((i, cb) => {
+            setTimeout(() => cb(new Error('err')), duration)
+          })
+        )
+      }),
+      pull.collect((err) => {
+        out.push(`${type} ${id} error`)
+        errs.push(err)
+        cb()
+      })
+    )
+  }
+}
+const pullReadLockError = (lock, out, errs, id, duration) => {
+  return pullTakeLockError('read', lock, out, errs, id, duration)
+}
+const pullWriteLockError = (lock, out, errs, id, duration) => {
+  return pullTakeLockError('write', lock, out, errs, id, duration)
+}
 
-const expectResult = (out, exp, done) => {
+const expectResult = (out, exp, errs, expErrCount, done) => {
+  if (typeof errs === 'function') {
+    done = errs
+  }
   return () => {
     try {
       expect(out).to.eql(exp)
+      if (typeof expErrCount === 'number') {
+        expect(errs.length).to.eql(expErrCount)
+        for (const e of errs) {
+          expect(e.message).to.eql('err')
+        }
+      }
     } catch (err) {
       return done(err)
     }
@@ -72,7 +132,7 @@ const expectResult = (out, exp, done) => {
   }
 }
 
-const runTests = (suiteName, { readLock, writeLock }) => {
+const runTests = (suiteName, { readLock, writeLock, readLockError, writeLockError }) => {
   describe(suiteName, () => {
     it('multiple simultaneous reads', (done) => {
       const lock = new GCLock()
@@ -181,17 +241,57 @@ const runTests = (suiteName, { readLock, writeLock }) => {
         'write 3 end'
       ], done))
     })
+
+    it('simultaneous reads with error then write', (done) => {
+      const lock = new GCLock()
+      const out = []
+      const errs = []
+      parallel([
+        readLockError(lock, out, errs, 1, 100),
+        readLock(lock, out, 2, 200),
+        writeLock(lock, out, 1, 100)
+      ], expectResult(out, [
+        'read 1 start',
+        'read 2 start',
+        'read 1 error',
+        'read 2 end',
+        'write 1 start',
+        'write 1 end'
+      ], errs, 1, done))
+    })
+
+    it('simultaneous writes with error then read', (done) => {
+      const lock = new GCLock()
+      const out = []
+      const errs = []
+      parallel([
+        writeLockError(lock, out, errs, 1, 100),
+        writeLock(lock, out, 2, 100),
+        readLock(lock, out, 1, 100)
+      ], expectResult(out, [
+        'write 1 start',
+        'write 1 error',
+        'write 2 start',
+        'write 2 end',
+        'read 1 start',
+        'read 1 end'
+      ], errs, 1, done))
+    })
   })
 }
 
 describe('gc-lock', function () {
   runTests('cb style lock', {
     readLock: cbReadLock,
-    writeLock: cbWriteLock
+    writeLock: cbWriteLock,
+    readLockError: cbReadLockError,
+    writeLockError: cbWriteLockError
   })
 
   runTests('pull stream style lock', {
     readLock: pullReadLock,
-    writeLock: pullWriteLock
+    writeLock: pullWriteLock,
+    readLockError: pullReadLockError,
+    writeLockError: pullWriteLockError
   })
 })
