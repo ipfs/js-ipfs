@@ -1,6 +1,7 @@
 'use strict'
 
 const print = require('../../utils').print
+const humanize = require('../../utils').humanize
 
 module.exports = {
   command: 'repo',
@@ -17,7 +18,11 @@ module.exports = {
   handler (argv) {
     argv.resolve((async () => {
       const ipfs = await argv.getIpfs()
-      const stats = await ipfs.stats.repo({ human: argv.human })
+      const stats = await ipfs.stats.repo()
+      if (argv.human) {
+        stats.repoSize = humanize.Bytes(stats.repoSize)
+        stats.storageMax = humanize.Bytes(stats.storageMax)
+      }
       print(`repo status
   number of objects: ${stats.numObjects}
   repo size: ${stats.repoSize}
