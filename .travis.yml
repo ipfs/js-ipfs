@@ -25,7 +25,6 @@ jobs:
     - stage: check
       script:
         - npx aegir build --bundlesize
-        - npx aegir commitlint --travis
         - npx aegir dep-check
         - npm run lint
 
