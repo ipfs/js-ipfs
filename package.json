@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.36.1",
+  "version": "0.36.2",
   "description": "JavaScript implementation of the IPFS specification",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "bin": {
@@ -247,8 +247,8 @@
     "Henrique Dias <hacdias@gmail.com>",
     "Henry Rodrick <moshisushi@gmail.com>",
     "Heo Sangmin <heo@mapiacompany.com>",
-    "Hugo Dias <mail@hugodias.me>",
     "Hugo Dias <hugomrdias@gmail.com>",
+    "Hugo Dias <mail@hugodias.me>",
     "Irakli Gozalishvili <contact@gozala.io>",
     "Jacob Heun <jacobheun@gmail.com>",
     "Jacob Heun <jake@andyet.net>",
