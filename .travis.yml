@@ -46,6 +46,8 @@ jobs:
 
     - stage: test
       name: electron
+      addons:
+        chrome: stable
       script:
         - npx aegir test -t electron-main
         - npx aegir test -t electron-renderer
