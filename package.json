@@ -124,7 +124,7 @@
     "ipfs-repo": "~0.26.6",
     "ipfs-unixfs": "~0.1.16",
     "ipfs-unixfs-exporter": "~0.37.4",
-    "ipfs-unixfs-importer": "~0.39.6",
+    "ipfs-unixfs-importer": "~0.39.8",
     "ipfs-utils": "~0.0.3",
     "ipld": "~0.24.1",
     "ipld-bitcoin": "~0.3.0",
