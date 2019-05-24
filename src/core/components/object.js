@@ -333,7 +333,7 @@ module.exports = function object (self) {
         if (cid.codec === 'dag-cbor') {
           const links = findLinks(result)
 
-          callback(null, links)
+          return callback(null, links)
         }
 
         callback(new Error(`Cannot resolve links from codec ${cid.codec}`))
