@@ -11,7 +11,7 @@ const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/create-repo-nodejs')
 const pEvent = require('p-event')
 
-describe('gc', function () {
+describe('pin-gc', function () {
   const fixtures = [{
     path: 'test/my/path1',
     content: Buffer.from('path1')
@@ -35,7 +35,13 @@ describe('gc', function () {
     ipfs = new IPFS({
       repo,
       config: {
-        Bootstrap: []
+        Bootstrap: [],
+        Addresses: {
+          Swarm: [
+            // Pick a port that doesn't overlap with the test in pin.js
+            '/ip4/0.0.0.0/tcp/4102'
+          ]
+        }
       }
     })
     ipfs.on('ready', done)
