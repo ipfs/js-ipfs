@@ -11,6 +11,7 @@ stages:
 
 node_js:
   - '10'
+  - '12'
 
 os:
   - linux
@@ -42,6 +43,12 @@ jobs:
       script:
         - npx aegir test -t browser -- --browsers FirefoxHeadless
         - npx aegir test -t webworker -- --browsers FirefoxHeadless
+
+    - stage: test
+      name: electron
+      script:
+        - npx aegir test -t electron-main
+        - npx aegir test -t electron-renderer
 
 notifications:
   email: false
