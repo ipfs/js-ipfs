@@ -173,7 +173,7 @@
     "yargs-promise": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "ipfs/aegir",
+    "aegir": "^19.0.3",
     "base64url": "^3.0.1",
     "chai": "^4.2.0",
     "delay": "^4.1.0",
