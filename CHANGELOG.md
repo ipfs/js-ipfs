@@ -1,3 +1,14 @@
+<a name="0.36.2"></a>
+## [0.36.2](https://github.com/ipfs/js-ipfs/compare/v0.36.1...v0.36.2) (2019-05-24)
+
+
+### Bug Fixes
+
+* file support when added as object ([#2105](https://github.com/ipfs/js-ipfs/issues/2105)) ([ba80e40](https://github.com/ipfs/js-ipfs/commit/ba80e40))
+* upgrade electron examples ([#2104](https://github.com/ipfs/js-ipfs/issues/2104)) ([67e1b59](https://github.com/ipfs/js-ipfs/commit/67e1b59))
+
+
+
 <a name="0.36.1"></a>
 ## [0.36.1](https://github.com/ipfs/js-ipfs/compare/v0.36.0...v0.36.1) (2019-05-22)
 
