@@ -74,6 +74,7 @@ describe('libp2p customization', function () {
         },
         _peerInfo: peerInfo,
         _peerBook: peerBook,
+        // eslint-disable-next-line no-console
         _print: console.log,
         _options: {
           libp2p: (opts) => {
@@ -123,6 +124,7 @@ describe('libp2p customization', function () {
         },
         _peerInfo: peerInfo,
         _peerBook: peerBook,
+        // eslint-disable-next-line no-console
         _print: console.log
       }
 
@@ -165,6 +167,7 @@ describe('libp2p customization', function () {
         },
         _peerInfo: peerInfo,
         _peerBook: peerBook,
+        // eslint-disable-next-line no-console
         _print: console.log,
         _options: {
           config: {

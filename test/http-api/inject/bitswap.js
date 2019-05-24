@@ -15,7 +15,7 @@ module.exports = (http) => {
       api = http.api._httpApi._apiServers[0]
     })
 
-    before(async function () {
+    before(function () {
       this.timeout(120 * 1000)
 
       // Add a CID to the wantlist
