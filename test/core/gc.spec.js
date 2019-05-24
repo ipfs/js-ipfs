@@ -7,11 +7,12 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
+const isNode = require('detect-node')
+const pEvent = require('p-event')
 const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/create-repo-nodejs')
-const pEvent = require('p-event')
 
-describe('pin-gc', function () {
+describe('gc', function () {
   const fixtures = [{
     path: 'test/my/path1',
     content: Buffer.from('path1')
@@ -32,18 +33,13 @@ describe('pin-gc', function () {
   before(function (done) {
     this.timeout(20 * 1000)
     repo = createTempRepo()
-    ipfs = new IPFS({
-      repo,
-      config: {
-        Bootstrap: [],
-        Addresses: {
-          Swarm: [
-            // Pick a port that doesn't overlap with the test in pin.js
-            '/ip4/0.0.0.0/tcp/4102'
-          ]
-        }
+    let config = { Bootstrap: [] }
+    if (isNode) {
+      config.Addresses = {
+        Swarm: ['/ip4/127.0.0.1/tcp/0']
       }
-    })
+    }
+    ipfs = new IPFS({ repo, config })
     ipfs.on('ready', done)
   })
 
