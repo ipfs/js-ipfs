@@ -1,4 +1,4 @@
-/* eslint-env mocha */
+/* eslint-env mocha, browser */
 'use strict'
 
 const { fixtures } = require('./utils')
@@ -46,6 +46,36 @@ module.exports = (createCommon, options) => {
       } else {
         this.skip('skip in node')
       }
+    })
+
+    it('should add a File as tuple', function (done) {
+      if (!supportsFileReader) return this.skip('skip in node')
+
+      const tuple = {
+        path: 'filename.txt',
+        content: new self.File(['should add a File'], 'filename.txt', { type: 'text/plain' })
+      }
+
+      ipfs.add(tuple, (err, filesAdded) => {
+        expect(err).to.not.exist()
+        expect(filesAdded[0].hash).to.be.eq('QmTVfLxf3qXiJgr4KwG6UBckcNvTqBp93Rwy5f7h3mHsVC')
+        done()
+      })
+    })
+
+    it('should add a File as array of tuple', function (done) {
+      if (!supportsFileReader) return this.skip('skip in node')
+
+      const tuple = {
+        path: 'filename.txt',
+        content: new self.File(['should add a File'], 'filename.txt', { type: 'text/plain' })
+      }
+
+      ipfs.add([tuple], (err, filesAdded) => {
+        expect(err).to.not.exist()
+        expect(filesAdded[0].hash).to.be.eq('QmTVfLxf3qXiJgr4KwG6UBckcNvTqBp93Rwy5f7h3mHsVC')
+        done()
+      })
     })
 
     it('should add a Buffer', (done) => {
