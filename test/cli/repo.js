@@ -21,7 +21,9 @@ describe('repo', () => runOnAndOff((thing) => {
   })
 
   // Note: There are more comprehensive GC tests in interface-js-ipfs-core
-  it('should run garbage collection', async () => {
+  it('should run garbage collection', async function () {
+    this.timeout(60000)
+
     // Add a file to IPFS
     const cid = (await ipfs(`add -Q ${fixturePath}`)).trim()
 
