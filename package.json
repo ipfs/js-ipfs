@@ -1,6 +1,6 @@
 {
   "name": "interface-ipfs-core",
-  "version": "0.103.0",
+  "version": "0.104.0",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "main": "src/index.js",
@@ -101,6 +101,7 @@
     "Oli Evans <oli@tableflip.io>",
     "Pascal Precht <pascal.precht@googlemail.com>",
     "Pedro Teixeira <i@pgte.me>",
+    "Prabhakar Poudel <yuvrajzohan@gmail.com>",
     "Richard Littauer <richard.littauer@gmail.com>",
     "Richard Schneider <makaretu@gmail.com>",
     "Ryan Bell <ryan@piing.net>",
