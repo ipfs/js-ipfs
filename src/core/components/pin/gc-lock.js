@@ -13,7 +13,9 @@ class GCLock extends EventEmitter {
     // (There should only be one GCLock instance per IPFS instance, but
     // there may be multiple IPFS instances, eg in unit tests)
     const randId = (~~(Math.random() * 1e9)).toString(36) + Date.now()
-    this.mutex = mortice(randId)
+    this.mutex = mortice(randId, {
+      singleProcess: true
+    })
 
     this.lockId = 0
   }
