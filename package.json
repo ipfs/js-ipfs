@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "async": "^2.6.1",
-    "bignumber.js": "^8.0.2",
+    "bignumber.js": "^9.0.0",
     "bl": "^3.0.0",
     "bs58": "^4.0.1",
     "buffer": "^5.2.1",
