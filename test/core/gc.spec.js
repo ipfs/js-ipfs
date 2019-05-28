@@ -211,7 +211,8 @@ describe('gc', function () {
       const cid2 = (await ipfs.block.put(Buffer.from('block to pin rm 2'), null)).cid
 
       // Pin blocks
-      await Promise.all([ipfs.pin.add(cid1), ipfs.pin.add(cid2)])
+      await ipfs.pin.add(cid1)
+      await ipfs.pin.add(cid2)
 
       // Unpin first block
       // Note: pin rm will take a read lock
