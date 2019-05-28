@@ -90,7 +90,7 @@
     "async-iterator-to-pull-stream": "^1.1.0",
     "async-iterator-to-stream": "^1.1.0",
     "base32.js": "~0.1.0",
-    "bignumber.js": "^8.0.2",
+    "bignumber.js": "^9.0.0",
     "binary-querystring": "~0.1.2",
     "bl": "^3.0.0",
     "boom": "^7.2.0",
