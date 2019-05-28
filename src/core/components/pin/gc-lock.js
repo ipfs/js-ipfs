@@ -6,7 +6,7 @@ const EventEmitter = require('events')
 const log = require('debug')('ipfs:gc:lock')
 
 class GCLock extends EventEmitter {
-  constructor () {
+  constructor (repoOwner) {
     super()
 
     // Ensure that we get a different mutex for each instance of GCLock
@@ -14,7 +14,7 @@ class GCLock extends EventEmitter {
     // there may be multiple IPFS instances, eg in unit tests)
     const randId = (~~(Math.random() * 1e9)).toString(36) + Date.now()
     this.mutex = mortice(randId, {
-      singleProcess: true
+      singleProcess: repoOwner
     })
 
     this.lockId = 0

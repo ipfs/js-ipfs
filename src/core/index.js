@@ -91,7 +91,7 @@ class IPFS extends EventEmitter {
     this._ipns = undefined
     // eslint-disable-next-line no-console
     this._print = this._options.silent ? this.log : console.log
-    this._gcLock = new GCLock()
+    this._gcLock = new GCLock(this._options.repoOwner)
 
     // IPFS Core exposed components
     //   - for booting up a node
