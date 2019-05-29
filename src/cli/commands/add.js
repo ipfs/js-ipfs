@@ -88,7 +88,8 @@ module.exports = {
     'wrap-with-directory': {
       alias: 'w',
       type: 'boolean',
-      default: false
+      default: false,
+      describe: 'Add a wrapping node'
     },
     'only-hash': {
       alias: 'n',
