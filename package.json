@@ -101,7 +101,7 @@
     "cid-tool": "~0.3.0",
     "cids": "~0.7.1",
     "class-is": "^1.1.0",
-    "datastore-core": "~0.6.0",
+    "datastore-core": "~0.7.0",
     "datastore-pubsub": "~0.1.1",
     "debug": "^4.1.0",
     "dlv": "^1.1.2",
