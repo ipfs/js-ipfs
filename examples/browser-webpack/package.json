@@ -14,7 +14,7 @@
     "babel-loader": "^8.0.5",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
-    "react-hot-loader": "^4.6.3",
+    "react-hot-loader": "^4.8.8",
     "webpack": "^4.28.4",
     "webpack-dev-server": "^3.1.14"
   },
