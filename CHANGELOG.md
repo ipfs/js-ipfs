@@ -1,3 +1,15 @@
+<a name="0.36.3"></a>
+## [0.36.3](https://github.com/ipfs/js-ipfs/compare/v0.36.2...v0.36.3) (2019-05-30)
+
+
+### Bug Fixes
+
+* double callback in object.links for cbor data ([#2111](https://github.com/ipfs/js-ipfs/issues/2111)) ([5d080c0](https://github.com/ipfs/js-ipfs/commit/5d080c0))
+* fixes rabin chunker truncating files ([#2114](https://github.com/ipfs/js-ipfs/issues/2114)) ([76689ff](https://github.com/ipfs/js-ipfs/commit/76689ff))
+* **package:** update bignumber.js to version 9.0.0 ([#2123](https://github.com/ipfs/js-ipfs/issues/2123)) ([37903ad](https://github.com/ipfs/js-ipfs/commit/37903ad))
+
+
+
 <a name="0.36.2"></a>
 ## [0.36.2](https://github.com/ipfs/js-ipfs/compare/v0.36.1...v0.36.2) (2019-05-24)
 
