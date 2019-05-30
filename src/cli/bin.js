@@ -23,8 +23,14 @@ const debug = require('debug')('ipfs:cli')
 const pkg = require('../../package.json')
 const parser = require('./parser')
 const commandAlias = require('./command-alias')
+const semver = require('semver')
 
 async function main (args) {
+  if (!semver.gt(process.versions.node, semver.minVersion(pkg.engines.node))) {
+    console.error(`Please update your NodeJS version to ${pkg.engines.node}`)
+    process.exit(1)
+  }
+
   const oneWeek = 1000 * 60 * 60 * 24 * 7
   updateNotifier({ pkg, updateCheckInterval: oneWeek }).notify()
 
