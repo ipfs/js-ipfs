@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.36.2",
+  "version": "0.36.3",
   "description": "JavaScript implementation of the IPFS specification",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "bin": {
@@ -220,6 +220,7 @@
     "CHEVALAY JOSSELIN <josselin54.chevalay@gmail.com>",
     "Caio Gondim <me@caiogondim.com>",
     "Chance Hudson <jchancehud@gmail.com>",
+    "Chirag Shinde <chirag-shinde@users.noreply.github.com>",
     "Christian Couder <chriscool@tuxfamily.org>",
     "Dafeng <dfguo.joe@gmail.com>",
     "Dan Ordille <dordille@gmail.com>",
