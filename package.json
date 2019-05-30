@@ -61,6 +61,9 @@
     "url": "https://github.com/ipfs/js-ipfs/issues"
   },
   "homepage": "https://github.com/ipfs/js-ipfs#readme",
+  "pre-push": [
+    "lint"
+  ],
   "devDependencies": {
     "aegir": "^18.1.0",
     "base64url": "^3.0.1",
