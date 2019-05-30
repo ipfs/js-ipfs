@@ -14,23 +14,24 @@ process.on('unhandledRejection', (err) => {
   throw err
 })
 
+const semver = require('semver')
+const pkg = require('../../package.json')
+
+if (!semver.satisfies(process.versions.node, pkg.engines.node)) {
+  console.error(`Please update your Node.js version to ${pkg.engines.node}`)
+  process.exit(1)
+}
+
 const YargsPromise = require('yargs-promise')
 const updateNotifier = require('update-notifier')
 const utils = require('./utils')
 const print = utils.print
 const mfs = require('ipfs-mfs/cli')
 const debug = require('debug')('ipfs:cli')
-const pkg = require('../../package.json')
 const parser = require('./parser')
 const commandAlias = require('./command-alias')
-const semver = require('semver')
 
 async function main (args) {
-  if (!semver.gt(process.versions.node, semver.minVersion(pkg.engines.node))) {
-    console.error(`Please update your NodeJS version to ${pkg.engines.node}`)
-    process.exit(1)
-  }
-
   const oneWeek = 1000 * 60 * 60 * 24 * 7
   updateNotifier({ pkg, updateCheckInterval: oneWeek }).notify()
 
