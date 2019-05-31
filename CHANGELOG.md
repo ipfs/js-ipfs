@@ -1,3 +1,15 @@
+<a name="0.104.1"></a>
+## [0.104.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.104.0...v0.104.1) (2019-05-31)
+
+
+### Bug Fixes
+
+* dht tests ([#486](https://github.com/ipfs/interface-ipfs-core/issues/486)) ([2952672](https://github.com/ipfs/interface-ipfs-core/commit/2952672))
+* use cidVersion option ([#484](https://github.com/ipfs/interface-ipfs-core/issues/484)) ([e00eb4a](https://github.com/ipfs/interface-ipfs-core/commit/e00eb4a))
+* **package:** update async to version 3.0.1 ([#481](https://github.com/ipfs/interface-ipfs-core/issues/481)) ([b60fe33](https://github.com/ipfs/interface-ipfs-core/commit/b60fe33))
+
+
+
 <a name="0.104.0"></a>
 # [0.104.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.103.0...v0.104.0) (2019-05-24)
 
