@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
+const hat = require('hat')
 const waterfall = require('async/waterfall')
 const { spawnNodesWithId } = require('../utils/spawn')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -43,7 +44,7 @@ module.exports = (createCommon, options) => {
     })
 
     it('should error when getting a non-existent key from the DHT', (done) => {
-      nodeA.dht.get('non-existing', { timeout: '100ms' }, (err, value) => {
+      nodeA.dht.get('non-existing', { timeout: 100 }, (err, value) => {
         expect(err).to.be.an.instanceof(Error)
         done()
       })
@@ -52,17 +53,14 @@ module.exports = (createCommon, options) => {
     it('should get a value after it was put on another node', function (done) {
       this.timeout(80 * 1000)
 
-      // TODO - this test needs to keep tryingl instead of the setTimeout
-      waterfall([
-        (cb) => nodeB.object.new('unixfs-dir', cb),
-        (dagNode, cb) => setTimeout(() => cb(null, dagNode), 20000),
-        (dagNode, cb) => {
-          const multihash = dagNode.toJSON().multihash
+      const key = Buffer.from(hat())
+      const value = Buffer.from(hat())
 
-          nodeA.dht.get(multihash, cb)
-        },
+      waterfall([
+        cb => nodeB.dht.put(key, value, cb),
+        cb => nodeA.dht.get(key, cb),
         (result, cb) => {
-          expect(result).to.eql('')
+          expect(result).to.eql(value)
           cb()
         }
       ], done)
