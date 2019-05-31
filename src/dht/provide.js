@@ -74,7 +74,7 @@ module.exports = (createCommon, options) => {
     })
 
     it('should provide a CIDv1', (done) => {
-      ipfs.add(Buffer.from('test'), { 'cid-version': 1 }, (err, res) => {
+      ipfs.add(Buffer.from('test'), { cidVersion: 1 }, (err, res) => {
         if (err) return done(err)
 
         const cid = new CID(res[0].hash)
