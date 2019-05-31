@@ -360,6 +360,7 @@ module.exports = (createCommon, options) => {
             const duration = new Date().getTime() - startTime
             const opsPerSec = Math.floor(count / (duration / 1000))
 
+            // eslint-disable-next-line
             console.log(`Send/Receive 100 messages took: ${duration} ms, ${opsPerSec} ops / s`)
 
             check()

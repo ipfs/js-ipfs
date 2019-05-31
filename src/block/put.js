@@ -94,7 +94,5 @@ module.exports = (createCommon, options) => {
         done()
       })
     })
-
-    // TODO it.skip('Promises support', (done) => {})
   })
 }

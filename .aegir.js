@@ -4,7 +4,7 @@ module.exports = {
   lint: {
     files: [
       'src/**/*.js',
-      'test/**/*.js'
+      'test/*.js'
     ]
   }
 }

@@ -381,7 +381,14 @@ function loadContent (ipfs, store, node, callback) {
 
   if (typeof node === 'object') {
     const entries = Object.entries(node)
-    const sorted = entries.sort((a, b) => a[0] > b[0] ? 1 : a[0] < b[0] ? -1 : 0)
+    const sorted = entries.sort((a, b) => {
+      if (a[0] > b[0]) {
+        return 1
+      } else if (a[0] < b[0]) {
+        return -1
+      }
+      return 0
+    })
     mapSeries(sorted, ([name, child], cb) => {
       loadContent(ipfs, store, child, (err, cid) => {
         cb(err, { name, cid: cid && cid.toString() })

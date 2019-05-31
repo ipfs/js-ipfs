@@ -137,7 +137,5 @@ module.exports = (createCommon, options) => {
     })
 
     it.skip('should put by passing the cid instead of format and hashAlg', (done) => {})
-
-    // TODO it.skip('Promises support', (done) => {})
   })
 }
