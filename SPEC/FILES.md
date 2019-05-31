@@ -1,23 +1,23 @@
 # Files API
 
-> The files API enables users to use the File System abstraction of IPFS. There are two Files API, one at the top level, the original `add`, `cat`, `get` and `ls`, and another behind the [`files`, also known as MFS](https://github.com/ipfs/specs/issues/98). [We are currently going through a revamping process of this APIs to make them more user friendly](https://github.com/ipfs/interface-ipfs-core/issues/284).
+> The files API enables users to use the File System abstraction of IPFS. There are two Files API, one at the top level, the original `add`, `cat`, `get` and `ls`, and another behind the [`files`, also known as MFS](https://github.com/ipfs/specs/issues/98). [We are currently going through a revamping process of these APIs to make them more user-friendly](https://github.com/ipfs/interface-ipfs-core/issues/284).
 
 - The Regular (top level) API for add, cat, get and ls Files on IPFS
   - [add](#add)
-  - [addReadableStream](#addreadablestream)
-  - [addPullStream](#addpullstream)
   - [addFromFs](#addfromfs)
-  - [addFromURL](#addfromurl)
   - [addFromStream](#addfromstream)
+  - [addFromURL](#addfromurl)
+  - [addPullStream](#addpullstream)
+  - [addReadableStream](#addreadablestream)
   - [cat](#cat)
-  - [catReadableStream](#catreadablestream)
   - [catPullStream](#catpullstream)
+  - [catReadableStream](#catreadablestream)
   - [get](#get)
-  - [getReadableStream](#getreadablestream)
   - [getPullStream](#getpullstream)
+  - [getReadableStream](#getreadablestream)
   - [ls](#ls)
-  - [lsReadableStream](#lsreadablestream)
   - [lsPullStream](#lspullstream)
+  - [lsReadableStream](#lsreadablestream)
 - The Files API, aka MFS (Mutable File System)
   - [files.cp](#filescp)
   - [files.flush](#filesflush)
@@ -56,19 +56,27 @@ If no `content` is passed, then the path is treated as an empty directory
 
 `options` is an optional object argument that might include the following keys:
 
-- cid-version (integer, default 0): the CID version to use when storing the data (storage keys are based on the CID, including it's version)
-- progress (function): a function that will be called with the byte length of chunks as a file is added to ipfs.
-- recursive (boolean): for when a Path is passed, this option can be enabled to add recursively all the files.
-- hashAlg || hash (string): multihash hashing algorithm to use. (default: `sha2-256`) [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343)
-- wrapWithDirectory (boolean): adds a wrapping node around the content.
-- onlyHash (boolean): doesn't actually add the file to IPFS, but rather calculates its hash.
-- pin (boolean, default true): pin this object when adding.
-- raw-leaves (boolean, default false): if true, DAG leaves will contain raw file data and not be wrapped in a protobuf
-- chunker (string, default size-262144): chunking algorithm used to build ipfs DAGs. Available formats:
+- chunker (string, default `size-262144`): chunking algorithm used to build ipfs DAGs. Available formats:
   - size-{size}
   - rabin
   - rabin-{avg}
   - rabin-{min}-{avg}-{max}
+- cidVersion (integer, default 0): the CID version to use when storing the data (storage keys are based on the CID, including its version).
+- cidBase (string, default `base58btc`): Number base to display CIDs in. [The list of all possible values](https://github.com/multiformats/js-multibase/blob/master/src/constants.js).
+- enableShardingExperiment: allows to create directories with an unlimited number of entries currently size of unixfs directories is limited by the maximum block size. Note that this is an experimental feature.
+- hashAlg || hash (string, default `sha2-256`): multihash hashing algorithm to use. [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343).
+- onlyHash (boolean, default false): doesn't actually add the file to IPFS, but rather calculates its hash.
+- pin (boolean, default true): pin this object when adding.
+- progress (function): a function that will be called with the byte length of chunks as a file is added to ipfs.
+- quiet (boolean, default false): writes a minimal output.
+- quieter (boolean, default false): writes only final hash.
+- rawLeaves (boolean, default false): if true, DAG leaves will contain raw file data and not be wrapped in a protobuf.
+- recursive (boolean, default false): for when a Path is passed, this option can be enabled to add recursively all the files.
+- shardSplitThreshold (integer, default 1000): specifies the maximum size of unsharded directory that can be generated.
+- silent (boolean, default false): writes no output.
+- trickle (boolean, default false): if true will use the trickle DAG format for DAG generation.
+  [Trickle definition from go-ipfs documentation](https://godoc.org/github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-unixfs/importer/trickle).
+- wrapWithDirectory (boolean, default false): adds a wrapping node around the content.
 
 `callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res` will be an array of:
 
@@ -144,7 +152,7 @@ Returns a Readable Stream of class Duplex, where objects can be written of the f
 
 `options` is an optional object argument that might include the following keys:
 
-- cid-version (integer, default 0): the CID version to use when storing the data (storage keys are based on the CID, including it's version)
+- cidVersion (integer, default 0): the CID version to use when storing the data (storage keys are based on the CID, including its version)
 - progress (function): a function that will be called with the byte length of chunks as a file is added to ipfs.
 - hashAlg || hash (string): multihash hashing algorithm to use. (default: `sha2-256`) [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343)
 - wrapWithDirectory (boolean): adds a wrapping node around the content
@@ -192,7 +200,7 @@ Returns a Pull Stream, where objects can be written of the forms
 
 `options` is an optional object argument that might include the following keys:
 
-- cid-version (integer, default 0): the CID version to use when storing the data (storage keys are based on the CID, including it's version)
+- cidVersion (integer, default 0): the CID version to use when storing the data (storage keys are based on the CID, including its version)
 - progress (function): a function that will be called with the byte length of chunks as a file is added to ipfs.
 - hashAlg || hash (string): multihash hashing algorithm to use. (default: `sha2-256`) [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343)
 - wrapWithDirectory (boolean): adds a wrapping node around the content
@@ -225,7 +233,7 @@ pull(
 
 ##### `ipfs.addFromFs(path, [options], [callback])`
 
-Reads a file or folder from `path` on the filesystem  and adds it to IPFS.
+Reads a file or folder from `path` on the filesystem and adds it to IPFS.
 
 Options:
   - **recursive**: If `path` is a directory, use option `{ recursive: true }` to add the directory and all its sub-directories.
@@ -529,7 +537,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `ipfs.ls(ipfsPath, [callback])`
 
-> **Note:** ipfs.files.ls is currently only for MFS directories. The goal is to converge both functionality.
+> **Note:** ipfs.files.ls is currently only for MFS directories. The goal is to converge both functionalities.
 
 ipfsPath can be of type:
 
@@ -576,7 +584,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `ipfs.lsReadableStream(ipfsPath)` -> [Readable Stream][rs]
 
-> **Note:** ipfs.files.ls is currently only for MFS directories. The goal is to converge both functionality.
+> **Note:** ipfs.files.ls is currently only for MFS directories. The goal is to converge both functionalities.
 
 ipfsPath can be of type:
 
@@ -622,7 +630,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `ipfs.lsPullStream(ipfsPath)` -> [Pull Stream][ps]
 
-> **Note:** ipfs.files.ls is currently only for MFS directories. The goal is to converge both functionality.
+> **Note:** ipfs.files.ls is currently only for MFS directories. The goal is to converge both functionalities.
 
 
 ipfsPath can be of type:
@@ -693,7 +701,7 @@ Where:
   - `format` is what type of nodes to write any newly created directories as (default: `dag-pb`)
   - `hashAlg` is which algorithm to use when creating CIDs for newly created directories. (default: `sha2-256`) [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343)
   - `flush` is a Boolean value to decide whether or not to immediately flush MFS changes to disk (default: true)
-- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occured if the operation was not successful
+- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occurs if the operation is not successful
 
 If `from` has multiple values then `to` must be a directory.
 
@@ -744,7 +752,7 @@ Where:
   - `format` is what type of nodes to write any newly created directories as (default: `dag-pb`)
   - `hashAlg` is which algorithm to use when creating CIDs for newly created directories (default: `sha2-256`) [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343)
   - `flush` is a Boolean value to decide whether or not to immediately flush MFS changes to disk  (default: true)
-- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occured if the operation was not successful
+- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occurs if the operation is not successful
 
 If no `callback` is passed, a promise is returned.
 
@@ -772,14 +780,14 @@ Where:
   - `size` is a Boolean value to return only the size  (default: false)
   - `withLocal` is a Boolean value to compute the amount of the dag that is local, and if possible the total size  (default: false)
   - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
-- `callback` is an optional function with the signature `function (error, stats) {}`, where `error` may be an Error that occured if the operation was not successful and `stats` is an Object with the following keys:
+- `callback` is an optional function with the signature `function (error, stats) {}`, where `error` may be an Error that occurs if the operation is not successful and `stats` is an Object with the following keys:
 
   - `hash` is a string with the hash
   - `size` is an integer with the file size in Bytes
   - `cumulativeSize` is an integer with the size of the DAGNodes making up the file in Bytes
   - `type` is a string that can be either `directory` or `file`
   - `blocks` if `type` is `directory`, this is the number of files in the directory. If it is `file` it is the number of blocks that make up the file
-  - `withLocality` is a boolean to indicate if locality information are present
+  - `withLocality` is a boolean to indicate if locality information is present
   - `local` is a boolean to indicate if the queried dag is fully present locally
   - `sizeLocal` is an integer indicating the cumulative size of the data present locally
 
@@ -812,7 +820,7 @@ Where:
 - `paths` are one or more paths to remove
 - `options` is an optional Object that might contain the following keys:
   - `recursive` is a Boolean value to decide whether or not to remove directories recursively  (default: false)
-- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occured if the operation was not successful
+- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occurs if the operation is not successful
 
 If no `callback` is passed, a promise is returned.
 
@@ -852,8 +860,8 @@ Where:
 - `path` is the path of the file to read and must point to a file (and not a directory)
 - `options` is an optional Object that might contain the following keys:
   - `offset` is an Integer with the byte offset to begin reading from  (default: 0)
-  - `length` is an Integer with the maximum number of bytes to read (default: Read to end of stream)
-- `callback` is an optional function with the signature `function (error, buffer) {}`, where `error` may be an Error that occured if the operation was not successful and `buffer` is a [`Buffer`][b] with the contents of `path`
+  - `length` is an Integer with the maximum number of bytes to read (default: Read to the end of stream)
+- `callback` is an optional function with the signature `function (error, buffer) {}`, where `error` may be an Error that occurs if the operation is not successful and `buffer` is a [`Buffer`][b] with the contents of `path`
 
 If no `callback` is passed, a promise is returned.
 
@@ -880,7 +888,7 @@ Where:
 - `path` is the path of the file to read and must point to a file (and not a directory)
 - `options` is an optional Object that might contain the following keys:
   - `offset` is an Integer with the byte offset to begin reading from  (default: 0)
-  - `length` is an Integer with the maximum number of bytes to read (default: Read to end of stream)
+  - `length` is an Integer with the maximum number of bytes to read (default: Read to the end of stream)
 
 Returns a [`ReadableStream`][rs] with the contents of `path`.
 
@@ -904,7 +912,7 @@ Where:
 - `path` is the path of the file to read and must point to a file (and not a directory)
 - `options` is an optional Object that might contain the following keys:
   - `offset` is an Integer with the byte offset to begin reading from (default: 0)
-  - `length` is an Integer with the maximum number of bytes to read (default: Read to end of stream)
+  - `length` is an Integer with the maximum number of bytes to read (default: Read to the end of stream)
 
 Returns a [`PullStream`][ps] with the contents of `path`.
 
@@ -941,9 +949,9 @@ Where:
   - `truncate` is a Boolean to indicate if the file should be truncated after writing all the bytes from `content` (default: false)
   - `parents` is a Boolean value to decide whether or not to make the parent directories if they don't exist (default: false)
   - `length` is an Integer with the maximum number of bytes to read (default: Read all bytes from `content`)
-  - `raw-leaves`: if true, DAG leaves will contain raw file data and not be wrapped in a protobuf (boolean, default false)
-  - `cid-version`: the CID version to use when storing the data (storage keys are based on the CID, including it's version) (integer, default 0)
-- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occured if the operation was not successful
+  - `rawLeaves`: if true, DAG leaves will contain raw file data and not be wrapped in a protobuf (boolean, default false)
+  - `cidVersion`: the CID version to use when storing the data (storage keys are based on the CID, including its version) (integer, default 0)
+- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occurs if the operation is not successful
 
 If no `callback` is passed, a promise is returned.
 
@@ -970,7 +978,7 @@ Where:
   - `format` is what type of nodes to write any newly created directories as (default: `dag-pb`)
   - `hashAlg` is which algorithm to use when creating CIDs for newly created directories (default: `sha2-256`) [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343)
   - `flush` is a Boolean value to decide whether or not to immediately flush MFS changes to disk (default: true)
-- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occured if the operation was not successful
+- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occurs if the operation is not successful
 
 If `from` has multiple values then `to` must be a directory.
 
@@ -980,7 +988,7 @@ If `from` has a single value and `to` exists and is a file, `from` must be a fil
 
 If `from` is an IPFS path, and an MFS path exists with the same name, the IPFS path will be chosen.
 
-All values of `from` will be removed after the operation is complete, unless they are an IPFS path.
+All values of `from` will be removed after the operation is complete unless they are an IPFS path.
 
 If no `callback` is passed, a promise is returned.
 
@@ -1014,8 +1022,8 @@ ipfs.files.mv('/src-file1', '/src-file2', '/dst-dir', (err) => {
 
 Where:
 
-- `paths` are an optional string paths to flush (default: `/`)
-- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occured if the operation was not successful
+- `paths` are optional string paths to flush (default: `/`)
+- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occurs if the operation is not successful
 
 If no `callback` is passed, a promise is returned.
 
@@ -1041,8 +1049,8 @@ Where:
 - `options` is an optional Object that might contain the following keys:
   - `long` is a Boolean value to decide whether or not to populate `type`, `size` and `hash` (default: false)
   - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
-  - `sort` is a Boolean value, if true entries will be sorted by filename (default: false)
-- `callback` is an optional function with the signature `function (error, files) {}`, where `error` may be an Error that occured if the operation was not successful and `files` is an array containing Objects that contain the following keys:
+  - `sort` is a Boolean value. If true entries will be sorted by filename (default: false)
+- `callback` is an optional function with the signature `function (error, files) {}`, where `error` may be an Error that occurs if the operation is not successful and `files` is an array containing Objects that contain the following keys:
 
   - `name` which is the file's name
   - `type` which is the object's type (`directory` or `file`)
