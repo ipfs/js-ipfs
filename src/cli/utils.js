@@ -135,18 +135,3 @@ exports.singleton = create => {
   })
   return getter
 }
-exports.humanize = {
-  Bytes: (bytes) => {
-    const thresh = 1024
-    if (Math.abs(bytes) < thresh) {
-      return bytes + ' B'
-    }
-    const units = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-    let unit = -1
-    do {
-      bytes /= thresh
-      ++unit
-    } while (Math.abs(bytes) >= thresh && unit < units.length - 1)
-    return bytes.toFixed(1) + ' ' + units[unit]
-  }
-}
