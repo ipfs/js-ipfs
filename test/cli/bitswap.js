@@ -77,7 +77,7 @@ describe('bitswap', () => runOn((thing) => {
         'bitswap status',
         '  blocks received: 0',
         '  dup blocks received: 0',
-        '  dup data received: 0B',
+        '  dup data received: 0 B',
         // We sometimes pick up partners while the tests run and the order of
         // wanted keys is not defined so our assertion ends here.
         '  wantlist [2 keys]'
@@ -85,6 +85,13 @@ describe('bitswap', () => runOn((thing) => {
 
       expect(out).to.include(key0)
       expect(out).to.include(key1)
+    })
+  })
+
+  it('stat with --human flag', function () {
+    this.timeout(20 * 1000)
+    return ipfs('bitswap stat --human').then((out) => {
+      expect(out).to.include('dup data received: 0 B')
     })
   })
 
