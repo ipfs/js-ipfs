@@ -2,6 +2,7 @@
 
 * [block.get](#blockget)
 * [block.put](#blockput)
+* [block.rm](#blockrm)
 * [block.stat](#blockstat)
 
 #### `block.get`
@@ -106,6 +107,44 @@ ipfs.block.put(blob, cid, (err, block) => {
 
 A great source of [examples][] can be found in the tests for this API.
 
+#### `block.rm`
+
+> Remove one or more IPFS block(s).
+
+##### `ipfs.block.rm(cid, [options], [callback])`
+
+`cid` is a [cid][cid] which can be passed as:
+
+- Buffer, the raw Buffer of the cid
+- CID, a CID instance
+- String, the base58 encoded version of the multihash
+- Array, list of CIDs in any of the above three formats
+
+`options` is an Object that can contain the following properties:
+
+- force (boolean): Ignores nonexistent blocks.
+- quiet (boolean): write minimal output
+
+`callback` must follow `function (err, result) {}` signature, where `err` is an error if the operation was not successful and `result` is an object, containing hash and error strings.
+
+If no `callback` is passed, a promise is returned.
+
+NOTE: If the specified block is pinned it won't be removed and no error
+will be returned
+
+**Example:**
+
+```JavaScript
+ipfs.block.rm(cid, function (err, result) {
+  if (err) {
+    throw err
+  }
+  console.log(result.hash)
+})
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
 #### `block.stat`
 
 > Print information of a raw IPFS block.
@@ -150,7 +189,7 @@ ipfs.block.stat(cid, (err, stats) => {
 
 A great source of [examples][] can be found in the tests for this API.
 
-[block]:https://github.com/ipfs/js-ipfs-block
-[multihash]:https://github.com/multiformats/multihash
+[block]: https://github.com/ipfs/js-ipfs-block
+[multihash]: https://github.com/multiformats/multihash
 [examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/block
 [cid]: https://www.npmjs.com/package/cids

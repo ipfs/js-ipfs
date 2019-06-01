@@ -2,8 +2,9 @@
 const { createSuite } = require('../utils/suite')
 
 const tests = {
-  put: require('./put'),
   get: require('./get'),
+  put: require('./put'),
+  rm: require('./rm'),
   stat: require('./stat')
 }
 
