@@ -16,7 +16,8 @@ const df = DaemonFactory.create()
 const path = require('path')
 
 function off (tests) {
-  describe('daemon off (directly to core)', () => {
+  describe('daemon off (directly to core)', function () {
+    this.timeout(60 * 1000)
     let thing = {}
     let repoPath
 
@@ -40,7 +41,8 @@ function off (tests) {
 }
 
 function on (tests) {
-  describe('daemon on (through http-api)', () => {
+  describe('daemon on (through http-api)', function () {
+    this.timeout(60 * 1000)
     let thing = {}
 
     let ipfsd
