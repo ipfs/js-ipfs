@@ -47,10 +47,8 @@ jobs:
     - stage: test
       name: electron
       script:
-        - export DISPLAY=':99.0'
-        - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-        - npx aegir test -t electron-main
-        - npx aegir test -t electron-renderer
+        - xvfb-run npx aegir test -t electron-main
+        - xvfb-run npx aegir test -t electron-renderer
 
 notifications:
   email: false
