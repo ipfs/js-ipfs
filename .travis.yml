@@ -45,10 +45,14 @@ jobs:
         - npx aegir test -t webworker -- --browsers FirefoxHeadless
 
     - stage: test
-      name: electron
+      name: electron-main
       script:
-        - xvfb-run npx aegir test -t electron-main
-        - xvfb-run npx aegir test -t electron-renderer
+        - xvfb-run npx aegir test -t electron-main -- --bail
+
+    - stage: test
+      name: electron-renderer
+      script:
+        - xvfb-run npx aegir test -t electron-renderer -- --bail
 
 notifications:
   email: false
