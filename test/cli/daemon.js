@@ -214,7 +214,7 @@ describe('daemon', () => {
   })
 
   it('should print version info', async function () {
-    this.timeout(10 * 1000)
+    this.timeout(100 * 1000)
     await ipfs('init')
 
     const out = await new Promise(resolve => {
