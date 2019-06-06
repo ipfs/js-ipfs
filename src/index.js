@@ -28,7 +28,7 @@ const response = (ipfsNode, ipfsPath) => {
       return new Promise((resolve, reject) => {
         // switch case with true feels so wrong.
         switch (true) {
-          case (errorString === 'Error: This dag node is a directory'):
+          case (errorString.includes('dag node is a directory')):
             resolver.directory(node, path, error.cid)
               .then((content) => {
                 // dir render
