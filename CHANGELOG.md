@@ -1,3 +1,34 @@
+<a name="0.3.1"></a>
+## [0.3.1](https://github.com/ipfs/js-ipfs-http-response/compare/v0.2.2...v0.3.1) (2019-06-06)
+
+
+### Bug Fixes
+
+* create .npmignore to include dist on npm ([#16](https://github.com/ipfs/js-ipfs-http-response/issues/16)) ([7746dab](https://github.com/ipfs/js-ipfs-http-response/commit/7746dab))
+
+
+### Chores
+
+* update ipld formats ([#25](https://github.com/ipfs/js-ipfs-http-response/issues/25)) ([529613a](https://github.com/ipfs/js-ipfs-http-response/commit/529613a))
+
+
+### Features
+
+* load files/dirs from hamt shards ([#19](https://github.com/ipfs/js-ipfs-http-response/issues/19)) ([25edfbc](https://github.com/ipfs/js-ipfs-http-response/commit/25edfbc))
+
+
+### BREAKING CHANGES
+
+* v1 CIDs created by this module now default to base32 encoding when stringified
+
+Not a direct dependency of this module but ipld-dag-pb changed the
+case of some property names that are used by this module.
+
+License: MIT
+Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
+
+
+
 <a name="0.3.0"></a>
 ## [0.3.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.2.2...v0.3.0) (2019-05-21)
 
