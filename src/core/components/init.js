@@ -17,6 +17,7 @@ const IPNS = require('../ipns')
 const OfflineDatastore = require('../ipns/routing/offline-datastore')
 
 const addDefaultAssets = require('./init-assets')
+const { profiles } = require('./config')
 
 module.exports = function init (self) {
   return promisify((opts, callback) => {
@@ -61,6 +62,21 @@ module.exports = function init (self) {
     opts.log = opts.log || function () {}
 
     const config = mergeOptions(defaultConfig(), self._options.config)
+
+    // Apply profiles (eg "server,lowpower") to config
+    if (opts.profile) {
+      const profileNames = opts.profile.split(',')
+      for (const profileName of profileNames) {
+        const profile = profiles.find(p => p.name === profileName)
+        if (!profile) {
+          return done(new Error(`Could not find profile with name '${profileName}'`))
+        }
+
+        self.log(`applying profile ${profileName}`)
+        profile.transform(config)
+      }
+    }
+
     let privateKey
 
     waterfall([

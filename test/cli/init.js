@@ -25,6 +25,11 @@ describe('init', function () {
       return !f.startsWith('.')
     })
   }
+
+  const repoConfSync = (p) => {
+    return JSON.parse(fs.readFileSync(path.join(repoPath, 'config')))
+  }
+
   beforeEach(() => {
     repoPath = os.tmpdir() + '/ipfs-' + hat()
     ipfs = ipfsExec(repoPath)
@@ -65,6 +70,31 @@ describe('init', function () {
       expect(repoExistsSync('config')).to.equal(true)
       expect(repoExistsSync('version')).to.equal(true)
     })
+  })
+
+  it('profile', async function () {
+    this.timeout(40 * 1000)
+
+    await ipfs('init --profile lowpower')
+    expect(repoConfSync().Swarm.ConnMgr.LowWater).to.equal(20)
+  })
+
+  it('profile multiple', async function () {
+    this.timeout(40 * 1000)
+
+    await ipfs('init --profile server,lowpower')
+    expect(repoConfSync().Discovery.MDNS.Enabled).to.equal(false)
+    expect(repoConfSync().Swarm.ConnMgr.LowWater).to.equal(20)
+  })
+
+  it('profile non-existent', async function () {
+    this.timeout(40 * 1000)
+
+    try {
+      await ipfs('init --profile doesnt-exist')
+    } catch (err) {
+      expect(err.stdout).includes('Could not find profile')
+    }
   })
 
   it('should present ipfs path help when option help is received', function (done) {
