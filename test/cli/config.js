@@ -8,6 +8,7 @@ chai.use(dirtyChai)
 const fs = require('fs')
 const path = require('path')
 const runOnAndOff = require('../utils/on-and-off')
+const defaultConfig = require('../../src/core/runtime/config-nodejs')()
 
 describe('config', () => runOnAndOff((thing) => {
   let ipfs
@@ -95,6 +96,72 @@ describe('config', () => runOnAndOff((thing) => {
 
     after(() => {
       restoreConfig()
+    })
+  })
+
+  describe('profile', function () {
+    this.timeout(40 * 1000)
+
+    beforeEach(() => restoreConfig())
+    after(() => restoreConfig())
+
+    it('server / local-discovery', async () => {
+      await ipfs('config profile apply server')
+      const updated = updatedConfig()
+      expect(updated.Discovery.MDNS.Enabled).to.equal(false)
+      expect(updated.Discovery.webRTCStar.Enabled).to.equal(false)
+
+      await ipfs('config profile apply local-discovery')
+      const reversed = updatedConfig()
+      expect(reversed.Discovery.MDNS.Enabled).to.equal(true)
+      expect(reversed.Discovery.webRTCStar.Enabled).to.equal(true)
+    })
+
+    it('test / default-networking', async () => {
+      await ipfs('config profile apply test')
+      const updated = updatedConfig()
+      expect(updated.Addresses.API).to.equal('/ip4/127.0.0.1/tcp/0')
+      expect(updated.Addresses.Gateway).to.equal('/ip4/127.0.0.1/tcp/0')
+      expect(updated.Addresses.Swarm).to.eql(['/ip4/127.0.0.1/tcp/0'])
+      expect(updated.Bootstrap).to.eql([])
+      expect(updated.Discovery.MDNS.Enabled).to.equal(false)
+      expect(updated.Discovery.webRTCStar.Enabled).to.equal(false)
+
+      await ipfs('config profile apply default-networking')
+      const reversed = updatedConfig()
+      expect(reversed.Addresses.API).to.equal(defaultConfig.Addresses.API)
+      expect(reversed.Addresses.Gateway).to.equal(defaultConfig.Addresses.Gateway)
+      expect(reversed.Addresses.Swarm).to.eql(defaultConfig.Addresses.Swarm)
+      expect(reversed.Bootstrap).to.eql(defaultConfig.Bootstrap)
+      expect(reversed.Discovery.MDNS.Enabled).to.equal(true)
+      expect(reversed.Discovery.webRTCStar.Enabled).to.equal(true)
+    })
+
+    it('lowpower / default-power', async () => {
+      await ipfs('config profile apply lowpower')
+      const updated = updatedConfig()
+      expect(updated.Swarm.ConnMgr.LowWater).to.equal(20)
+      expect(updated.Swarm.ConnMgr.HighWater).to.equal(40)
+
+      await ipfs('config profile apply default-power')
+      const reversed = updatedConfig()
+      expect(reversed.Swarm.ConnMgr.LowWater).to.equal(defaultConfig.Swarm.ConnMgr.LowWater)
+      expect(reversed.Swarm.ConnMgr.HighWater).to.equal(defaultConfig.Swarm.ConnMgr.HighWater)
+    })
+
+    it('--dry-run causes no change', async () => {
+      await ipfs('config profile apply --dry-run=true server')
+      const after = updatedConfig()
+      expect(after.Discovery.MDNS.Enabled).to.equal(defaultConfig.Discovery.MDNS.Enabled)
+
+      await ipfs('config profile apply --dry-run=false server')
+      const updated = updatedConfig()
+      expect(updated.Discovery.MDNS.Enabled).to.equal(false)
+    })
+
+    it('Private key does not appear in output', async () => {
+      const out = await ipfs('config profile apply server')
+      expect(out).not.includes('PrivKey')
     })
   })
 }))

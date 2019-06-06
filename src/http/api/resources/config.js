@@ -7,6 +7,8 @@ const log = debug('ipfs:http-api:config')
 log.error = debug('ipfs:http-api:config:error')
 const multipart = require('ipfs-multipart')
 const Boom = require('@hapi/boom')
+const Joi = require('@hapi/joi')
+const { profiles } = require('../../../core/components/config')
 
 exports.getOrSet = {
   // pre request handler that parses the args and returns `key` & `value` which are assigned to `request.pre.args`
@@ -158,5 +160,41 @@ exports.replace = {
     }
 
     return h.response()
+  }
+}
+
+exports.profile = {
+  validate: {
+    query: Joi.object().keys({
+      'dry-run': Joi.boolean().default(false)
+    }).unknown()
+  },
+
+  // pre request handler that parses the args and returns `profile` which is assigned to `request.pre.args`
+  parseArgs: async function (request, h) {
+    if (!request.query.arg) {
+      throw Boom.badRequest("Argument 'profile' is required")
+    }
+
+    if (!profiles.find(p => p.name === request.query.arg)) {
+      throw Boom.badRequest("Argument 'profile' is not a valid profile name")
+    }
+
+    return { profile: request.query.arg }
+  },
+
+  handler: async function (request, h) {
+    const { ipfs } = request.server.app
+    const { profile } = request.pre.args
+    const dryRun = request.query['dry-run']
+
+    let diff
+    try {
+      diff = await ipfs.config.profile(profile, { dryRun })
+    } catch (err) {
+      throw Boom.boomify(err, { message: 'Failed to apply profile' })
+    }
+
+    return h.response({ OldCfg: diff.oldCfg, NewCfg: diff.newCfg })
   }
 }

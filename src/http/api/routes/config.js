@@ -31,5 +31,16 @@ module.exports = [
       ]
     },
     handler: resources.config.replace.handler
+  },
+  {
+    method: '*',
+    path: '/api/v0/config/profile/apply',
+    options: {
+      pre: [
+        { method: resources.config.profile.parseArgs, assign: 'args' }
+      ],
+      validate: resources.config.profile.validate
+    },
+    handler: resources.config.profile.handler
   }
 ]
