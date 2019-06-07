@@ -14,7 +14,6 @@ const errCode = require('err-code')
 const multicodec = require('multicodec')
 
 const createPinSet = require('./pin-set')
-const { EMPTY_KEY_HASH } = createPinSet
 
 // arbitrary limit to the number of concurrent dag operations
 const concurrencyLimit = 300
@@ -275,15 +274,18 @@ class PinManager {
           return callback(new Error(`Could not get pin sets from store: ${err.message}`))
         }
 
-        // "Empty block" used by the pinner
-        const emptyBlockCid = new CID(EMPTY_KEY_HASH)
-
         // The pinner stores an object that has two links to pin sets:
         // 1. The directly pinned CIDs
         // 2. The recursively pinned CIDs
-        const pinSetCids = [cid, ...obj.value.Links.map(l => l.Hash)]
+        // If large enough, these pin sets may have links to buckets to hold
+        // the pins
+        this.pinset.getInternalCids(obj.value, (err, cids) => {
+          if (err) {
+            return callback(new Error(`Could not get pinner internal cids: ${err.message}`))
+          }
 
-        callback(null, pinSetCids.concat([emptyBlockCid]))
+          callback(null, cids.concat(cid))
+        })
       })
     })
   }
