@@ -22,6 +22,7 @@ const IPFS = require('../../src/core')
 const createPinSet = require('../../src/core/components/pin/pin-set')
 const createTempRepo = require('../utils/create-repo-nodejs')
 
+const emptyKeyHash = 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
 const defaultFanout = 256
 const maxItems = 8192
 
@@ -181,12 +182,12 @@ describe('pinSet', function () {
     })
   })
 
-  describe('walkItems', function () {
+  describe('walkAll', function () {
     it(`fails if node doesn't have a pin-set protobuf header`, function (done) {
       createNode('datum', (err, node) => {
         expect(err).to.not.exist()
 
-        pinSet.walkItems(node, () => {}, (err, res) => {
+        pinSet.walkAll(node, () => {}, () => {}, (err, res) => {
           expect(err).to.exist()
           expect(res).to.not.exist()
           done()
@@ -194,6 +195,29 @@ describe('pinSet', function () {
       })
     })
 
+    it('visits all links of a root node', function (done) {
+      this.timeout(90 * 1000)
+
+      const seen = []
+      const walker = (link, idx, data) => seen.push({ link, idx, data })
+
+      createNodes(maxItems + 1, (err, nodes) => {
+        expect(err).to.not.exist()
+
+        pinSet.storeSet(nodes, (err, result) => {
+          expect(err).to.not.exist()
+
+          pinSet.walkAll(result.node, () => {}, walker, err => {
+            expect(err).to.not.exist()
+            expect(seen).to.have.length(maxItems + defaultFanout + 1)
+            done()
+          })
+        })
+      })
+    })
+  })
+
+  describe('walkItems', function () {
     it('visits all non-fanout links of a root node', function (done) {
       const seen = []
       const walker = (link, idx, data) => seen.push({ link, idx, data })
@@ -212,6 +236,28 @@ describe('pinSet', function () {
               expect(item.data).to.eql(Buffer.alloc(0))
               expect(item.link).to.exist()
             })
+            done()
+          })
+        })
+      })
+    })
+  })
+
+  describe('getInternalCids', function () {
+    it('gets all links and empty key CID', function (done) {
+      createNodes(defaultFanout, (err, nodes) => {
+        expect(err).to.not.exist()
+
+        pinSet.storeSet(nodes, (err, result) => {
+          expect(err).to.not.exist()
+
+          const rootNode = DAGNode.create('pins', [{ Hash: result.cid }])
+          pinSet.getInternalCids(rootNode, (err, cids) => {
+            expect(err).to.not.exist()
+            expect(cids.length).to.eql(2)
+            const cidStrs = cids.map(c => c.toString())
+            expect(cidStrs).includes(emptyKeyHash)
+            expect(cidStrs).includes(result.cid.toString())
             done()
           })
         })
