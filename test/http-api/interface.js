@@ -109,15 +109,7 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
     }
   }))
 
-  tests.repo(defaultCommonFactory, {
-    skip: [
-      // repo.gc
-      {
-        name: 'gc',
-        reason: 'TODO: repo.gc is not implemented in js-ipfs yet!'
-      }
-    ]
-  })
+  tests.repo(defaultCommonFactory)
 
   tests.stats(defaultCommonFactory)
 
