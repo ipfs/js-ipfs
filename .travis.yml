@@ -7,7 +7,7 @@ stages:
 
 node_js:
   - '10'
-  - '8'
+  - '12'
 
 os:
   - linux
@@ -17,10 +17,16 @@ script: npx nyc -s npm run test:node -- --bail
 after_success: npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
 
 jobs:
+  allow_failures:
+    - name: electron-renderer
+
+  fast_finish: true
+  
   include:
     - os: windows
       filter_secrets: false
       cache: false
+    
 
     - stage: check
       script:
@@ -39,6 +45,16 @@ jobs:
       addons:
         firefox: latest
       script: npx aegir test -t browser -t webworker -- --browsers FirefoxHeadless
+    
+    - stage: test
+      name: electron-main
+      script:
+        - xvfb-run npx aegir test -t electron-main -- --bail
+    
+    - stage: test
+      name: electron-renderer
+      script:
+        - xvfb-run npx aegir test -t electron-renderer -- --bail
 
 notifications:
   email: false
