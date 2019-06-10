@@ -52,7 +52,9 @@ function createMarkedSet (ipfs, callback) {
         return cb(new Error(`Could not list pinned blocks: ${err.message}`))
       }
       log(`Found ${pins.length} pinned blocks`)
-      cb(null, pins.map(p => new CID(p.hash)))
+      const cids = pins.map(p => new CID(p.hash))
+      // log('  ' + cids.join('\n  '))
+      cb(null, cids)
     }),
 
     // Blocks used internally by the pinner
@@ -61,6 +63,7 @@ function createMarkedSet (ipfs, callback) {
         return cb(new Error(`Could not list pinner internal blocks: ${err.message}`))
       }
       log(`Found ${cids.length} pinner internal blocks`)
+      // log('  ' + cids.join('\n  '))
       cb(null, cids)
     }),
 
@@ -92,8 +95,10 @@ function getDescendants (ipfs, cid, callback) {
     if (err) {
       return callback(new Error(`Could not get MFS root descendants from store: ${err.message}`))
     }
-    log(`Found ${1 + refs.length} MFS blocks`)
-    callback(null, [cid, ...refs.map(r => new CID(r.ref))])
+    const cids = [cid, ...refs.map(r => new CID(r.ref))]
+    log(`Found ${cids.length} MFS blocks`)
+    // log('  ' + cids.join('\n  '))
+    callback(null, cids)
   })
 }
 
@@ -119,9 +124,10 @@ function deleteUnmarkedBlocks (ipfs, markedSet, blocks, start, callback) {
     }
   }
 
-  const msg = `Marked set has ${markedSet.size} blocks. Blockstore has ${blocks.length} blocks. ` +
+  const msg = `Marked set has ${markedSet.size} unique blocks. Blockstore has ${blocks.length} blocks. ` +
     `Deleting ${unreferenced.length} blocks.` + (errCount ? ` (${errCount} errors)` : '')
   log(msg)
+  // log('  ' + unreferenced.join('\n  '))
 
   mapLimit(unreferenced, BLOCK_RM_CONCURRENCY, (cid, cb) => {
     // Delete blocks from blockstore
