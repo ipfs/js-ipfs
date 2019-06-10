@@ -4,6 +4,11 @@ const promisify = require('promisify-es6')
 const map = require('async/map')
 const isIpfs = require('is-ipfs')
 const CID = require('cids')
+const base32 = require('base32.js')
+
+// const { Key } = require('interface-datastore')
+
+// const PIN_DS_KEY = new Key('/local/pins')
 
 const ERR_BAD_PATH = 'ERR_BAD_PATH'
 exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'ipfs daemon\' first.'
@@ -134,7 +139,43 @@ const resolvePath = promisify(function (objectAPI, ipfsPaths, callback) {
     }
   }, callback)
 })
+/**
+ * Convert a block key to cid
+ * @param {Key} key form /<base32 encoded string>
+ * @returns {CID}
+ */
+function blockKeyToCid (key) {
+  try {
+    const decoder = new base32.Decoder()
+    const buff = Buffer.from(decoder.write(key.toString().slice(1)).finalize())
+    return new CID(buff)
+  } catch (err) {
+    return { err: `Could not convert block with key '${key}' to CID: ${err.message}` }
+  }
+}
+
+/*
+async function getInternalCidBlocks (ipfs) {
+  let mh
+  try {
+    mh = await promisify((cb) => ipfs.repo.datastore.get(PIN_DS_KEY, cb))()
+  } catch (err) {
+    if (err.code === 'ERR_NOT_FOUND') {
+      return []
+    }
+    throw err
+  }
+
+  const cid = new CID(mh)
+  const obj = await promisify((cb) => ipfs.dag.get(cid, '', { preload: false }, cb))()
+
+  // The pinner stores an object that has two links to pin sets:
+  // 1. The directly pinned CIDs
+  // 2. The recursively pinned CIDs
+  // If large enough, these pin sets may have links to buckets to hold the pins
+} */
 
 exports.normalizePath = normalizePath
 exports.parseIpfsPath = parseIpfsPath
 exports.resolvePath = resolvePath
+exports.blockKeyToCid = blockKeyToCid

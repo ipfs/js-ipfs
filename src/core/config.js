@@ -66,6 +66,10 @@ const configSchema = s({
         Enabled: 'boolean?'
       }))
     })),
+    Reprovider: optional(s({
+      Interval: 'string?',
+      Strategy: 'string?'
+    })),
     Bootstrap: optional(s(['multiaddr-ipfs']))
   })),
   ipld: 'object?',

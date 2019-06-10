@@ -1,11 +1,13 @@
 'use strict'
 
+const get = require('dlv')
 const series = require('async/series')
 const Bitswap = require('ipfs-bitswap')
 const setImmediate = require('async/setImmediate')
 const promisify = require('promisify-es6')
 
 const IPNS = require('../ipns')
+const Provider = require('../provider')
 const routingConfig = require('../ipns/routing/config')
 const createLibp2pBundle = require('./libp2p')
 
@@ -45,6 +47,8 @@ module.exports = (self) => {
           libp2p.start(err => {
             if (err) return cb(err)
             self.libp2p = libp2p
+
+            self._provider = new Provider(libp2p, self._repo.blocks, get(config, 'Reprovider'))
             cb()
           })
         })
@@ -56,8 +60,14 @@ module.exports = (self) => {
         self._bitswap = new Bitswap(
           self.libp2p,
           self._repo.blocks,
+          self._provider,
           { statsEnabled: true }
         )
+
+        if (!get(self._options, 'offline') &&
+          (get(self._options, 'libp2p.config.dht.enabled', false) || get(self._options, 'libp2p.modules.contentRouting', false))) {
+          self._provider.start()
+        }
 
         self._bitswap.start()
         self._blockService.setExchange(self._bitswap)
