@@ -10,12 +10,11 @@ chai.use(dirtyChai)
 const IPFSFactory = require('ipfsd-ctl')
 const IPFS = require('../../src/core')
 
-describe('pin', () => {
+describe('pin', function () {
+  this.timeout(10 * 1000)
   let ipfsd, ipfs
 
   before(function (done) {
-    this.timeout(20 * 1000)
-
     const factory = IPFSFactory.create({ type: 'proc' })
 
     factory.spawn({

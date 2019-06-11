@@ -79,7 +79,8 @@ describe('object', () => runOnAndOff((thing) => {
       })
   })
 
-  it('should get and print CIDs encoded in specified base', () => {
+  it('should get and print CIDs encoded in specified base', function () {
+    this.timeout(15 * 1000)
     return ipfs(`add ${path.resolve(path.join(__dirname, '..'))}/fixtures/planets -r --cid-version=1`)
       .then(out => {
         const lines = out.trim().split('\n')

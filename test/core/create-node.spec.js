@@ -143,7 +143,9 @@ describe('create node', function () {
     })
 
     ipfs.on('ready', () => {
+      // eslint-disable-next-line no-console
       expect(console.log.called).to.be.false()
+      // eslint-disable-next-line no-console
       console.log.restore()
       ipfs.stop(done)
     })
