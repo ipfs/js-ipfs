@@ -8,7 +8,7 @@ chai.use(dirtyChai)
 
 const parallel = require('async/parallel')
 const pull = require('pull-stream')
-const GCLock = require('../../src/core/components/pin/gc-lock')
+const Lock = require('../../src/core/components/pin/lock')
 
 const cbTakeLock = (type, lock, out, id, duration) => {
   return (cb) => lock[type + 'Lock']((lockCb) => {
@@ -135,7 +135,7 @@ const expectResult = (out, exp, errs, expErrCount, done) => {
 const runTests = (suiteName, { readLock, writeLock, readLockError, writeLockError }) => {
   describe(suiteName, () => {
     it('multiple simultaneous reads', (done) => {
-      const lock = new GCLock()
+      const lock = new Lock()
       const out = []
       parallel([
         readLock(lock, out, 1, 100),
@@ -152,7 +152,7 @@ const runTests = (suiteName, { readLock, writeLock, readLockError, writeLockErro
     })
 
     it('multiple simultaneous writes', (done) => {
-      const lock = new GCLock()
+      const lock = new Lock()
       const out = []
       parallel([
         writeLock(lock, out, 1, 100),
@@ -169,7 +169,7 @@ const runTests = (suiteName, { readLock, writeLock, readLockError, writeLockErro
     })
 
     it('read then write then read', (done) => {
-      const lock = new GCLock()
+      const lock = new Lock()
       const out = []
       parallel([
         readLock(lock, out, 1, 100),
@@ -186,7 +186,7 @@ const runTests = (suiteName, { readLock, writeLock, readLockError, writeLockErro
     })
 
     it('write then read then write', (done) => {
-      const lock = new GCLock()
+      const lock = new Lock()
       const out = []
       parallel([
         writeLock(lock, out, 1, 100),
@@ -203,7 +203,7 @@ const runTests = (suiteName, { readLock, writeLock, readLockError, writeLockErro
     })
 
     it('two simultaneous reads then write then read', (done) => {
-      const lock = new GCLock()
+      const lock = new Lock()
       const out = []
       parallel([
         readLock(lock, out, 1, 100),
@@ -223,7 +223,7 @@ const runTests = (suiteName, { readLock, writeLock, readLockError, writeLockErro
     })
 
     it('two simultaneous writes then read then write', (done) => {
-      const lock = new GCLock()
+      const lock = new Lock()
       const out = []
       parallel([
         writeLock(lock, out, 1, 100),
@@ -243,7 +243,7 @@ const runTests = (suiteName, { readLock, writeLock, readLockError, writeLockErro
     })
 
     it('simultaneous reads with error then write', (done) => {
-      const lock = new GCLock()
+      const lock = new Lock()
       const out = []
       const errs = []
       parallel([
@@ -261,7 +261,7 @@ const runTests = (suiteName, { readLock, writeLock, readLockError, writeLockErro
     })
 
     it('simultaneous writes with error then read', (done) => {
-      const lock = new GCLock()
+      const lock = new Lock()
       const out = []
       const errs = []
       parallel([
@@ -280,7 +280,7 @@ const runTests = (suiteName, { readLock, writeLock, readLockError, writeLockErro
   })
 }
 
-describe('gc-lock', function () {
+describe('lock', function () {
   runTests('cb style lock', {
     readLock: cbReadLock,
     writeLock: cbWriteLock,

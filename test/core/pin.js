@@ -331,4 +331,42 @@ describe('pin', function () {
         .then(ls => expect(ls.length).to.eql(1))
     })
   })
+
+  describe('locking', function () {
+    beforeEach(clearPins)
+
+    const resolveAsync = (pFn) => {
+      return new Promise((resolve) => setTimeout(() => pFn().then(resolve)))
+    }
+
+    it('concurrent adds', async function () {
+      const promises = []
+      promises.push(pin.add(pins.mercuryWiki, { recursive: false }))
+      promises.push(resolveAsync(() => pin.add(pins.solarWiki)))
+      await Promise.all(promises)
+      const addLs = await pin.ls()
+      expect(addLs.length).to.eql(2)
+    })
+
+    it('concurrent rms', async function () {
+      const promises = []
+      await pin.add(pins.mercuryWiki)
+      await pin.add(pins.solarWiki)
+      promises.push(pin.rm(pins.mercuryWiki))
+      promises.push(resolveAsync(() => pin.rm(pins.solarWiki)))
+      await Promise.all(promises)
+      const rmLs = await pin.ls()
+      expect(rmLs.length).to.eql(0)
+    })
+
+    it('concurrent add and rm', async function () {
+      const promises = []
+      await pin.add(pins.mercuryWiki)
+      promises.push(pin.add(pins.solarWiki))
+      promises.push(resolveAsync(() => pin.rm(pins.mercuryWiki)))
+      await Promise.all(promises)
+      const addRmLs = await pin.ls()
+      expect(addRmLs.length).to.eql(1)
+    })
+  })
 })

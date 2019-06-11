@@ -20,7 +20,7 @@ function toB58String (hash) {
 
 module.exports = (self) => {
   const dag = self.dag
-  const pinManager = new PinManager(self._repo, dag, self.log)
+  const pinManager = new PinManager(self._repo, dag, self._options.repoOwner, self.log)
 
   const pin = {
     add: promisify((paths, options, callback) => {
@@ -43,7 +43,7 @@ module.exports = (self) => {
             if (recursive) {
               if (pinManager.recursivePins.has(key)) {
                 // it's already pinned recursively
-                return cb(null, key)
+                return cb(null, null)
               }
 
               // entire graph of nested links should be pinned,
@@ -60,7 +60,7 @@ module.exports = (self) => {
               }
               if (pinManager.directPins.has(key)) {
                 // already directly pinned
-                return cb(null, key)
+                return cb(null, null)
               }
 
               // make sure we have the object
@@ -73,15 +73,20 @@ module.exports = (self) => {
           }, (err, results) => {
             if (err) { return pinComplete(err) }
 
-            // update the pin sets in memory
-            const pinset = recursive ? pinManager.recursivePins : pinManager.directPins
-            results.forEach(key => pinset.add(key))
-
-            // persist updated pin sets to datastore
-            pinManager.flushPins((err, root) => {
+            const flushComplete = (err) => {
               if (err) { return pinComplete(err) }
-              pinComplete(null, results.map(hash => ({ hash })))
-            })
+              pinComplete(null, mhs.map(mh => ({ hash: toB58String(mh) })))
+            }
+
+            // each result is either a key or null if there is already a pin
+            results = results.filter(Boolean)
+            if (!results.length) { return flushComplete() }
+
+            if (recursive) {
+              pinManager.addRecursivePins(results, flushComplete)
+            } else {
+              pinManager.addDirectPins(results, flushComplete)
+            }
           })
         }
 
@@ -143,20 +148,10 @@ module.exports = (self) => {
           }, (err, results) => {
             if (err) { return lockCb(err) }
 
-            // update the pin sets in memory
-            results.forEach(key => {
-              if (recursive && pinManager.recursivePins.has(key)) {
-                pinManager.recursivePins.delete(key)
-              } else {
-                pinManager.directPins.delete(key)
-              }
-            })
-
-            // persist updated pin sets to datastore
-            pinManager.flushPins((err, root) => {
+            pinManager.rmPins(results, recursive, (err) => {
               if (err) { return lockCb(err) }
               self.log(`Removed pins: ${results}`)
-              lockCb(null, results.map(hash => ({ hash })))
+              lockCb(null, mhs.map(mh => ({ hash: toB58String(mh) })))
             })
           })
         }, callback)

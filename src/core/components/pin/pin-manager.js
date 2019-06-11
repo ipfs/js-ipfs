@@ -14,6 +14,7 @@ const errCode = require('err-code')
 const multicodec = require('multicodec')
 
 const createPinSet = require('./pin-set')
+const Lock = require('./lock')
 
 // arbitrary limit to the number of concurrent dag operations
 const concurrencyLimit = 300
@@ -36,13 +37,14 @@ const PinTypes = {
 }
 
 class PinManager {
-  constructor (repo, dag, log) {
+  constructor (repo, dag, repoOwner, log) {
     this.repo = repo
     this.dag = dag
     this.log = log
     this.pinset = createPinSet(dag)
     this.directPins = new Set()
     this.recursivePins = new Set()
+    this._lock = new Lock(repoOwner, 'ipfs:pin-manager:lock')
   }
 
   directKeys () {
@@ -54,39 +56,78 @@ class PinManager {
   }
 
   getIndirectKeys (callback) {
-    const indirectKeys = new Set()
-    eachLimit(this.recursiveKeys(), concurrencyLimit, (multihash, cb) => {
-      this.dag._getRecursive(multihash, (err, nodes) => {
-        if (err) {
-          return cb(err)
-        }
-
-        map(nodes, (node, cb) => util.cid(util.serialize(node), {
-          cidVersion: 0
-        }).then(cid => cb(null, cid), cb), (err, cids) => {
+    this._lock.readLock((lockCb) => {
+      const indirectKeys = new Set()
+      eachLimit(this.recursiveKeys(), concurrencyLimit, (multihash, cb) => {
+        this.dag._getRecursive(multihash, (err, nodes) => {
           if (err) {
             return cb(err)
           }
 
-          cids
-            .map(cid => cid.toString())
-            // recursive pins pre-empt indirect pins
-            .filter(key => !this.recursivePins.has(key))
-            .forEach(key => indirectKeys.add(key))
+          map(nodes, (node, cb) => util.cid(util.serialize(node), {
+            cidVersion: 0
+          }).then(cid => cb(null, cid), cb), (err, cids) => {
+            if (err) {
+              return cb(err)
+            }
 
-          cb()
+            cids
+              .map(cid => cid.toString())
+              // recursive pins pre-empt indirect pins
+              .filter(key => !this.recursivePins.has(key))
+              .forEach(key => indirectKeys.add(key))
+
+            cb()
+          })
         })
+      }, (err) => {
+        if (err) { return lockCb(err) }
+        lockCb(null, Array.from(indirectKeys))
       })
-    }, (err) => {
-      if (err) { return callback(err) }
-      callback(null, Array.from(indirectKeys))
-    })
+    }, callback)
+  }
+
+  addRecursivePins (keys, callback) {
+    this._addPins(keys, this.recursivePins, callback)
+  }
+
+  addDirectPins (keys, callback) {
+    this._addPins(keys, this.directPins, callback)
+  }
+
+  _addPins (keys, pinSet, callback) {
+    this._lock.writeLock((lockCb) => {
+      keys = keys.filter(key => !pinSet.has(key))
+      if (!keys.length) return lockCb(null, [])
+
+      for (const key of keys) {
+        pinSet.add(key)
+      }
+      this._flushPins(lockCb)
+    }, callback)
+  }
+
+  rmPins (keys, recursive, callback) {
+    if (!keys.length) return callback(null, [])
+
+    this._lock.writeLock((lockCb) => {
+      for (const key of keys) {
+        if (recursive && this.recursivePins.has(key)) {
+          this.recursivePins.delete(key)
+        } else {
+          this.directPins.delete(key)
+        }
+      }
+
+      this._flushPins(lockCb)
+    }, callback)
   }
 
   // Encode and write pin key sets to the datastore:
   // a DAGLink for each of the recursive and direct pinsets
   // a DAGNode holding those as DAGLinks, a kind of root pin
-  flushPins (callback) {
+  // Note: should only be called within a lock
+  _flushPins (callback) {
     let dLink, rLink, root
     series([
       // create a DAGLink to the node with direct pins
@@ -170,39 +211,41 @@ class PinManager {
   }
 
   load (callback) {
-    waterfall([
-      // hack for CLI tests
-      (cb) => this.repo.closed ? this.repo.datastore.open(cb) : cb(null, null),
-      (_, cb) => this.repo.datastore.has(PIN_DS_KEY, cb),
-      (has, cb) => has ? cb() : cb(new Error('No pins to load')),
-      (cb) => this.repo.datastore.get(PIN_DS_KEY, cb),
-      (mh, cb) => {
-        this.dag.get(new CID(mh), '', { preload: false }, cb)
-      }
-    ], (err, pinRoot) => {
-      if (err) {
-        if (err.message === 'No pins to load') {
-          this.log('No pins to load')
-          return callback()
-        } else {
-          return callback(err)
+    this._lock.writeLock((lockCb) => {
+      waterfall([
+        // hack for CLI tests
+        (cb) => this.repo.closed ? this.repo.datastore.open(cb) : cb(null, null),
+        (_, cb) => this.repo.datastore.has(PIN_DS_KEY, cb),
+        (has, cb) => has ? cb() : cb(new Error('No pins to load')),
+        (cb) => this.repo.datastore.get(PIN_DS_KEY, cb),
+        (mh, cb) => {
+          this.dag.get(new CID(mh), '', { preload: false }, cb)
         }
-      }
+      ], (err, pinRoot) => {
+        if (err) {
+          if (err.message === 'No pins to load') {
+            this.log('No pins to load')
+            return lockCb()
+          } else {
+            return lockCb(err)
+          }
+        }
 
-      parallel([
-        cb => this.pinset.loadSet(pinRoot.value, PinTypes.recursive, cb),
-        cb => this.pinset.loadSet(pinRoot.value, PinTypes.direct, cb)
-      ], (err, keys) => {
-        if (err) { return callback(err) }
-        const [ rKeys, dKeys ] = keys
+        parallel([
+          cb => this.pinset.loadSet(pinRoot.value, PinTypes.recursive, cb),
+          cb => this.pinset.loadSet(pinRoot.value, PinTypes.direct, cb)
+        ], (err, keys) => {
+          if (err) { return lockCb(err) }
+          const [ rKeys, dKeys ] = keys
 
-        this.directPins = new Set(dKeys.map(toB58String))
-        this.recursivePins = new Set(rKeys.map(toB58String))
+          this.directPins = new Set(dKeys.map(toB58String))
+          this.recursivePins = new Set(rKeys.map(toB58String))
 
-        this.log('Loaded pins from the datastore')
-        return callback(null)
+          this.log('Loaded pins from the datastore')
+          return lockCb(null)
+        })
       })
-    })
+    }, callback)
   }
 
   isPinnedWithType (multihash, type, callback) {
@@ -241,53 +284,57 @@ class PinManager {
       })
     }
 
-    // indirect (default)
-    // check each recursive key to see if multihash is under it
-    // arbitrary limit, enables handling 1000s of pins.
-    detectLimit(this.recursiveKeys().map(key => new CID(key)), concurrencyLimit, (cid, cb) => {
-      waterfall([
-        (done) => this.dag.get(cid, '', { preload: false }, done),
-        (result, done) => done(null, result.value),
-        (node, done) => this.pinset.hasDescendant(node, key, done)
-      ], cb)
-    }, (err, cid) => callback(err, {
-      key,
-      pinned: Boolean(cid),
-      reason: cid
-    }))
+    this._lock.readLock((lockCb) => {
+      // indirect (default)
+      // check each recursive key to see if multihash is under it
+      // arbitrary limit, enables handling 1000s of pins.
+      detectLimit(this.recursiveKeys().map(key => new CID(key)), concurrencyLimit, (cid, cb) => {
+        waterfall([
+          (done) => this.dag.get(cid, '', { preload: false }, done),
+          (result, done) => done(null, result.value),
+          (node, done) => this.pinset.hasDescendant(node, key, done)
+        ], cb)
+      }, (err, cid) => lockCb(err, {
+        key,
+        pinned: Boolean(cid),
+        reason: cid
+      }))
+    }, callback)
   }
 
   // Gets CIDs of blocks used internally by the pinner
   getInternalBlocks (callback) {
-    this.repo.datastore.get(PIN_DS_KEY, (err, mh) => {
-      if (err) {
-        if (err.code === 'ERR_NOT_FOUND') {
-          this.log(`No pinned blocks`)
-          return callback(null, [])
-        }
-        return callback(new Error(`Could not get pin sets root from datastore: ${err.message}`))
-      }
-
-      const cid = new CID(mh)
-      this.dag.get(cid, '', { preload: false }, (err, obj) => {
+    this._lock.writeLock((lockCb) => {
+      this.repo.datastore.get(PIN_DS_KEY, (err, mh) => {
         if (err) {
-          return callback(new Error(`Could not get pin sets from store: ${err.message}`))
+          if (err.code === 'ERR_NOT_FOUND') {
+            this.log(`No pinned blocks`)
+            return lockCb(null, [])
+          }
+          return lockCb(new Error(`Could not get pin sets root from datastore: ${err.message}`))
         }
 
-        // The pinner stores an object that has two links to pin sets:
-        // 1. The directly pinned CIDs
-        // 2. The recursively pinned CIDs
-        // If large enough, these pin sets may have links to buckets to hold
-        // the pins
-        this.pinset.getInternalCids(obj.value, (err, cids) => {
+        const cid = new CID(mh)
+        this.dag.get(cid, '', { preload: false }, (err, obj) => {
           if (err) {
-            return callback(new Error(`Could not get pinner internal cids: ${err.message}`))
+            return lockCb(new Error(`Could not get pin sets from store: ${err.message}`))
           }
 
-          callback(null, cids.concat(cid))
+          // The pinner stores an object that has two links to pin sets:
+          // 1. The directly pinned CIDs
+          // 2. The recursively pinned CIDs
+          // If large enough, these pin sets may have links to buckets to hold
+          // the pins
+          this.pinset.getInternalCids(obj.value, (err, cids) => {
+            if (err) {
+              return lockCb(new Error(`Could not get pinner internal cids: ${err.message}`))
+            }
+
+            lockCb(null, cids.concat(cid))
+          })
         })
       })
-    })
+    }, callback)
   }
 
   // Returns an error if the pin type is invalid
