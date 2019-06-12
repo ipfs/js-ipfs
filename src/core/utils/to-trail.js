@@ -13,7 +13,7 @@ const toTrail = async (context, path) => {
       name: fsEntry.name,
       cid: fsEntry.cid,
       size: fsEntry.node.size,
-      type: fsEntry.unixfs.type
+      type: fsEntry.unixfs ? fsEntry.unixfs.type : undefined
     })
   }
 
