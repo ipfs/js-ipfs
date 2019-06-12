@@ -7,6 +7,7 @@ const expect = chai.expect
 const crypto = require('crypto')
 const createMfs = require('./helpers/create-mfs')
 const createShardedDirectory = require('./helpers/create-sharded-directory')
+const mc = require('multicodec')
 
 describe('stat', () => {
   let mfs
@@ -159,5 +160,16 @@ describe('stat', () => {
 
     expect(stats.type).to.equal('file')
     expect(stats.size).to.equal(7)
+  })
+
+  it('stats a dag-cbor node', async () => {
+    const path = '/cbor.node'
+    const node = {}
+    const cid = await mfs.ipld.put(node, mc.getNumber('dag-cbor'))
+    await mfs.cp(`/ipfs/${cid}`, path)
+
+    const stats = await mfs.stat(path)
+
+    expect(stats.cid.toString()).to.equal(cid.toString())
   })
 })

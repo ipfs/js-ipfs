@@ -86,5 +86,13 @@ const statters = {
       sizeLocal: undefined,
       withLocality: false
     }
+  },
+  'dag-cbor': (file) => {
+    return {
+      cid: file.cid,
+      local: undefined,
+      sizeLocal: undefined,
+      withLocality: false
+    }
   }
 }
