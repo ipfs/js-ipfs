@@ -1,3 +1,14 @@
+<a name="0.11.5"></a>
+## [0.11.5](https://github.com/ipfs/js-ipfs-mfs/compare/v0.11.4...v0.11.5) (2019-06-12)
+
+
+### Bug Fixes
+
+* handle dag-cbor nodes in trail ([3b49d4b](https://github.com/ipfs/js-ipfs-mfs/commit/3b49d4b))
+* return the CID for dag-cbor nodes ([#52](https://github.com/ipfs/js-ipfs-mfs/issues/52)) ([4159b90](https://github.com/ipfs/js-ipfs-mfs/commit/4159b90))
+
+
+
 <a name="0.11.4"></a>
 ## [0.11.4](https://github.com/ipfs/js-ipfs-mfs/compare/v0.11.3...v0.11.4) (2019-05-24)
 
