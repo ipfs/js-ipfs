@@ -263,7 +263,7 @@ exports = module.exports = function (dag) {
             // walk the links of this fanout bin
             return dag.get(linkHash, '', { preload: false }, (err, res) => {
               if (err) { return eachCb(err) }
-              pinSet.walkItems(res.value, stepBin, eachCb)
+              pinSet.walkAll(res.value, stepPin, stepBin, eachCb)
             })
           }
         } else {
