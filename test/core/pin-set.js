@@ -198,8 +198,10 @@ describe('pinSet', function () {
     it('visits all links of a root node', function (done) {
       this.timeout(90 * 1000)
 
-      const seen = []
-      const walker = (link, idx, data) => seen.push({ link, idx, data })
+      const seenPins = []
+      const walkerPin = (link, idx, data) => seenPins.push({ link, idx, data })
+      const seenBins = []
+      const walkerBin = (link, idx, data) => seenBins.push({ link, idx, data })
 
       createNodes(maxItems + 1, (err, nodes) => {
         expect(err).to.not.exist()
@@ -207,9 +209,10 @@ describe('pinSet', function () {
         pinSet.storeSet(nodes, (err, result) => {
           expect(err).to.not.exist()
 
-          pinSet.walkAll(result.node, () => {}, walker, err => {
+          pinSet.walkAll(result.node, walkerPin, walkerBin, err => {
             expect(err).to.not.exist()
-            expect(seen).to.have.length(maxItems + defaultFanout + 1)
+            expect(seenPins).to.have.length(maxItems + 1)
+            expect(seenBins).to.have.length(defaultFanout)
             done()
           })
         })
