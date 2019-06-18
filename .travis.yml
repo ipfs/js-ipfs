@@ -47,12 +47,12 @@ jobs:
     - stage: test
       name: electron-main
       script:
-        - xvfb-run npx aegir test -t electron-main -- --bail
+        - xvfb-run npx aegir test -t electron-main -- --bail --timeout 10000
 
     - stage: test
       name: electron-renderer
       script:
-        - xvfb-run npx aegir test -t electron-renderer -- --bail
+        - xvfb-run npx aegir test -t electron-renderer -- --bail --timeout 10000
 
 notifications:
   email: false
