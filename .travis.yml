@@ -18,7 +18,7 @@ os:
   - osx
   - windows
 
-script: npx nyc -s npm run test:node --timeout=10000 -- --bail
+script: npx nyc -s npx aegir test -t node --timeout 10000 --bail
 after_success: npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
 
 jobs:
