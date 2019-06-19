@@ -27,10 +27,6 @@ class DNSDataStore {
    * @returns {void}
    */
   put (key, value, callback) {
-    if (key.toString().startsWith('/pk/')) {
-      return callback()
-    }
-
     if (!Buffer.isBuffer(key)) {
       return callback(errcode(new Error('DNS datastore key must be a buffer'), 'ERR_INVALID_KEY'))
     }
