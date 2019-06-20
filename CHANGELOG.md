@@ -1,3 +1,13 @@
+<a name="0.105.0"></a>
+# [0.105.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.104.2...v0.105.0) (2019-06-20)
+
+
+### Features
+
+* add support to resolve dns to ipns ([#458](https://github.com/ipfs/interface-ipfs-core/issues/458)) ([cd41a3c](https://github.com/ipfs/interface-ipfs-core/commit/cd41a3c))
+
+
+
 <a name="0.104.2"></a>
 ## [0.104.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.104.1...v0.104.2) (2019-05-31)
 
