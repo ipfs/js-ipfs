@@ -25,14 +25,14 @@ const HASH_ALGS = [
   'sha1',
   'sha2-256',
   'sha2-512',
-  'keccak-224',
+  // 'keccak-224', // go throws
   'keccak-256',
-  'keccak-384',
+  // 'keccak-384', // go throws
   'keccak-512'
 ]
 
 describe('.files (the MFS API part)', function () {
-  this.timeout(120 * 1000)
+  this.timeout(20 * 1000)
 
   let ipfsd
   let ipfs
@@ -95,7 +95,7 @@ describe('.files (the MFS API part)', function () {
   })
 
   it('.add with cid-version=1 and raw-leaves=false', (done) => {
-    const expectedCid = 'zdj7Wh9x6gXdg4UAqhRYnjBTw9eJF7hvzUU4HjpnZXHYQz9jK'
+    const expectedCid = 'bafybeifogzovjqrcxvgt7g36y7g63hvwvoakledwk4b2fr2dl4wzawpnny'
     const options = { 'cid-version': 1, 'raw-leaves': false }
 
     ipfs.add(testfile, options, (err, res) => {
@@ -109,7 +109,6 @@ describe('.files (the MFS API part)', function () {
   })
 
   it('.add with only-hash=true', function () {
-    this.slow(10 * 1000)
     const content = String(Math.random() + Date.now())
 
     return ipfs.add(Buffer.from(content), { onlyHash: true })
