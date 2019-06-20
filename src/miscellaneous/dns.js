@@ -8,7 +8,9 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.dns', () => {
+  describe('.dns', function () {
+    this.timeout(10 * 1000)
+    this.retries(3)
     let ipfs
 
     before(function (done) {
@@ -30,20 +32,7 @@ module.exports = (createCommon, options) => {
       common.teardown(done)
     })
 
-    it('should resolve a DNS link', function (done) {
-      this.timeout(20 * 1000)
-      this.retries(3)
-
-      ipfs.dns('ipfs.io', { r: true }, (err, path) => {
-        expect(err).to.not.exist()
-        expect(path).to.exist()
-        done()
-      })
-    })
-
-    // skipping because there is an error in https://ipfs.io/api/v0/dns?arg=ipfs.io
-    // unskip when it is resolved and the new version released: https://github.com/ipfs/go-ipfs/issues/6086
-    it.skip('should non-recursively resolve ipfs.io', () => {
+    it('should non-recursively resolve ipfs.io', () => {
       return ipfs.dns('ipfs.io', { recursive: false }).then(res => {
       // matches pattern /ipns/<ipnsaddress>
         expect(res).to.match(/\/ipns\/.+$/)

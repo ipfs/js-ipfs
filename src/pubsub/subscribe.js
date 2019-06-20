@@ -51,7 +51,7 @@ module.exports = (createCommon, options) => {
           expect(msg.data.toString()).to.equal('hi')
           expect(msg).to.have.property('seqno')
           expect(Buffer.isBuffer(msg.seqno)).to.eql(true)
-          expect(msg).to.have.property('topicIDs').eql([topic])
+          expect(msg.topicIDs[0]).to.eq(topic)
           expect(msg).to.have.property('from', ipfs1.peerId.id)
 
           ipfs1.pubsub.unsubscribe(topic, handler, (err) => {
@@ -79,7 +79,7 @@ module.exports = (createCommon, options) => {
           expect(msg.data.toString()).to.equal('hi')
           expect(msg).to.have.property('seqno')
           expect(Buffer.isBuffer(msg.seqno)).to.eql(true)
-          expect(msg).to.have.property('topicIDs').eql([topic])
+          expect(msg.topicIDs[0]).to.eq(topic)
           expect(msg).to.have.property('from', ipfs1.peerId.id)
 
           ipfs1.pubsub.unsubscribe(topic, handler, (err) => {
@@ -107,7 +107,7 @@ module.exports = (createCommon, options) => {
           expect(msg.data.toString()).to.equal('hi')
           expect(msg).to.have.property('seqno')
           expect(Buffer.isBuffer(msg.seqno)).to.eql(true)
-          expect(msg).to.have.property('topicIDs').eql([topic])
+          expect(msg.topicIDs[0]).to.eq(topic)
           expect(msg).to.have.property('from', ipfs1.peerId.id)
 
           ipfs1.pubsub.unsubscribe(topic, handler, (err) => {
@@ -135,7 +135,7 @@ module.exports = (createCommon, options) => {
           expect(msg.data.toString()).to.equal('hi')
           expect(msg).to.have.property('seqno')
           expect(Buffer.isBuffer(msg.seqno)).to.eql(true)
-          expect(msg).to.have.property('topicIDs').eql([topic])
+          expect(msg.topicIDs[0]).to.eq(topic)
           expect(msg).to.have.property('from', ipfs1.peerId.id)
 
           ipfs1.pubsub.unsubscribe(topic, handler, (err) => {

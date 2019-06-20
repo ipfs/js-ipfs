@@ -12,7 +12,7 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.name.publish', function () {
+  describe('.name.publish offline', function () {
     const keyName = hat()
     let ipfs
     let nodeId
@@ -43,7 +43,7 @@ module.exports = (createCommon, options) => {
 
       const value = fixture.cid
 
-      ipfs.name.publish(value, (err, res) => {
+      ipfs.name.publish(value, { 'allow-offline': true }, (err, res) => {
         expect(err).to.not.exist()
         expect(res).to.exist()
         expect(res.name).to.equal(nodeId)
@@ -51,6 +51,13 @@ module.exports = (createCommon, options) => {
 
         done()
       })
+    })
+
+    it('should publish correctly with the lifetime option and resolve', async () => {
+      const [{ path }] = await ipfs.add(Buffer.from('should publish correctly with the lifetime option and resolve'))
+      await ipfs.name.publish(path, { 'allow-offline': true, resolve: false, lifetime: '2h' })
+
+      return expect(await ipfs.name.resolve(`/ipns/${nodeId}`)).to.eq(`/ipfs/${path}`)
     })
 
     it('should publish correctly when the file was not added but resolve is disabled', function (done) {
@@ -62,7 +69,8 @@ module.exports = (createCommon, options) => {
         resolve: false,
         lifetime: '1m',
         ttl: '10s',
-        key: 'self'
+        key: 'self',
+        'allow-offline': true
       }
 
       ipfs.name.publish(value, options, (err, res) => {
@@ -83,7 +91,8 @@ module.exports = (createCommon, options) => {
         resolve: false,
         lifetime: '24h',
         ttl: '10s',
-        key: keyName
+        key: keyName,
+        'allow-offline': true
       }
 
       ipfs.key.gen(keyName, { type: 'rsa', size: 2048 }, function (err, key) {
