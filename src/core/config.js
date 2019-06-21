@@ -48,7 +48,7 @@ const configSchema = s({
     ipnsPubsub: 'boolean?',
     sharding: 'boolean?',
     dht: 'boolean?'
-  })),
+  }, { dht: false, pubsub: false, ipnsPubsub: false, sharding: false })),
   connectionManager: 'object?',
   config: optional(s({
     API: 'object?',

@@ -5,16 +5,12 @@ const errcode = require('err-code')
 const debug = require('debug')
 const { dohBinary, keyToBase32 } = require('./utils')
 
-const log = debug('ipfs:ipns:dns-datastore')
-log.error = debug('ipfs:ipns:dns-datastore:error')
+const log = debug('ipfs:ipns:mdns-datastore')
+log.error = debug('ipfs:ipns:mdns-datastore:error')
 
 // DNS datastore aims to mimic the same encoding as routing when storing records
 // to the local datastore
-class DNSDataStore {
-  constructor (repo) {
-    this._repo = repo
-  }
-
+class MDNSDataStore {
   /**
    * Put a value to the local datastore indexed by the received key properly encoded.
    * @param {Buffer} key identifier of the value.
@@ -27,10 +23,10 @@ class DNSDataStore {
       return callback()
     }
     if (!Buffer.isBuffer(key)) {
-      return callback(errcode(new Error('DNS datastore key must be a buffer'), 'ERR_INVALID_KEY'))
+      return callback(errcode(new Error('MDNS datastore key must be a buffer'), 'ERR_INVALID_KEY'))
     }
     if (!Buffer.isBuffer(value)) {
-      return callback(errcode(new Error(`DNS datastore value must be a buffer`), 'ERR_INVALID_VALUE'))
+      return callback(errcode(new Error(`MDNS datastore value must be a buffer`), 'ERR_INVALID_VALUE'))
     }
 
     let keyStr
@@ -40,14 +36,12 @@ class DNSDataStore {
       log.error(err)
       return callback(err)
     }
-
     ky.put(
-      'https://ipns.dev',
+      'http://ipns.local:8000',
       {
         json: {
           key: keyStr,
-          record: value.toString('base64'),
-          subdomain: true
+          record: value.toString('base64')
         }
       })
       .then(data => {
@@ -68,13 +62,11 @@ class DNSDataStore {
    */
   get (key, callback) {
     if (!Buffer.isBuffer(key)) {
-      return callback(errcode(new Error(`DNS datastore key must be a buffer`), 'ERR_INVALID_KEY'))
+      return callback(errcode(new Error(`MDNS datastore key must be a buffer`), 'ERR_INVALID_KEY'))
     }
-    // https://dns.google.com/experimental
-    // https://cloudflare-dns.com/dns-query
-    // https://mozilla.cloudflare-dns.com/dns-query
-    dohBinary('https://cloudflare-dns.com/dns-query', 'dns.ipns.dev', key, callback)
+
+    dohBinary('http://ipns.local:8000/dns-query', 'ipns.local', key, callback)
   }
 }
 
-module.exports = DNSDataStore
+module.exports = MDNSDataStore
