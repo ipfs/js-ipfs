@@ -231,19 +231,15 @@ exports = module.exports = function (dag) {
       dag.get(link.Hash, '', { preload: false }, (err, res) => {
         if (err) { return callback(err) }
         const keys = []
-        const step = link => keys.push(link.Hash.buffer)
-        pinSet.walkItems(res.value, step, err => {
+        const stepPin = link => keys.push(link.Hash.buffer)
+        pinSet.walkItems(res.value, { stepPin }, err => {
           if (err) { return callback(err) }
           return callback(null, keys)
         })
       })
     },
 
-    walkItems: (node, step, callback) => {
-      pinSet.walkAll(node, step, () => {}, callback)
-    },
-
-    walkAll: (node, stepPin, stepBin, callback) => {
+    walkItems: (node, { stepPin = () => {}, stepBin = () => {} }, callback) => {
       let pbh
       try {
         pbh = readHeader(node)
@@ -263,7 +259,7 @@ exports = module.exports = function (dag) {
             // walk the links of this fanout bin
             return dag.get(linkHash, '', { preload: false }, (err, res) => {
               if (err) { return eachCb(err) }
-              pinSet.walkAll(res.value, stepPin, stepBin, eachCb)
+              pinSet.walkItems(res.value, { stepPin, stepBin }, eachCb)
             })
           }
         } else {
@@ -279,14 +275,14 @@ exports = module.exports = function (dag) {
       // "Empty block" used by the pinner
       const cids = [new CID(emptyKey)]
 
-      const step = link => cids.push(link.Hash)
+      const stepBin = link => cids.push(link.Hash)
       eachSeries(rootNode.Links, (topLevelLink, cb) => {
         cids.push(topLevelLink.Hash)
 
         dag.get(topLevelLink.Hash, '', { preload: false }, (err, res) => {
           if (err) { return cb(err) }
 
-          pinSet.walkAll(res.value, () => {}, step, cb)
+          pinSet.walkItems(res.value, { stepBin }, cb)
         })
       }, (err) => callback(err, cids))
     }
