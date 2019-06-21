@@ -182,12 +182,12 @@ describe('pinSet', function () {
     })
   })
 
-  describe('walkAll', function () {
+  describe('walkItems', function () {
     it(`fails if node doesn't have a pin-set protobuf header`, function (done) {
       createNode('datum', (err, node) => {
         expect(err).to.not.exist()
 
-        pinSet.walkAll(node, () => {}, () => {}, (err, res) => {
+        pinSet.walkItems(node, {}, (err, res) => {
           expect(err).to.exist()
           expect(res).to.not.exist()
           done()
@@ -199,9 +199,9 @@ describe('pinSet', function () {
       this.timeout(90 * 1000)
 
       const seenPins = []
-      const walkerPin = (link, idx, data) => seenPins.push({ link, idx, data })
+      const stepPin = (link, idx, data) => seenPins.push({ link, idx, data })
       const seenBins = []
-      const walkerBin = (link, idx, data) => seenBins.push({ link, idx, data })
+      const stepBin = (link, idx, data) => seenBins.push({ link, idx, data })
 
       createNodes(maxItems + 1, (err, nodes) => {
         expect(err).to.not.exist()
@@ -209,7 +209,7 @@ describe('pinSet', function () {
         pinSet.storeSet(nodes, (err, result) => {
           expect(err).to.not.exist()
 
-          pinSet.walkAll(result.node, walkerPin, walkerBin, err => {
+          pinSet.walkItems(result.node, { stepPin, stepBin }, err => {
             expect(err).to.not.exist()
             expect(seenPins).to.have.length(maxItems + 1)
             expect(seenBins).to.have.length(defaultFanout)
@@ -218,12 +218,10 @@ describe('pinSet', function () {
         })
       })
     })
-  })
 
-  describe('walkItems', function () {
     it('visits all non-fanout links of a root node', function (done) {
       const seen = []
-      const walker = (link, idx, data) => seen.push({ link, idx, data })
+      const stepPin = (link, idx, data) => seen.push({ link, idx, data })
 
       createNodes(defaultFanout, (err, nodes) => {
         expect(err).to.not.exist()
@@ -231,7 +229,7 @@ describe('pinSet', function () {
         pinSet.storeSet(nodes, (err, result) => {
           expect(err).to.not.exist()
 
-          pinSet.walkItems(result.node, walker, err => {
+          pinSet.walkItems(result.node, { stepPin }, err => {
             expect(err).to.not.exist()
             expect(seen).to.have.length(defaultFanout)
             expect(seen[0].idx).to.eql(defaultFanout)
