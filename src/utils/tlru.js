@@ -57,7 +57,11 @@ class TLRU {
    * @memberof TLRU
    */
   has (key) {
-    return this.lru.has(key)
+    const value = this.get(key)
+    if (value) {
+      return true
+    }
+    return false
   }
 
   /**
