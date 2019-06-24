@@ -7,17 +7,83 @@ const fnv1a = require('fnv1a')
 const varint = require('varint')
 const { DAGNode, DAGLink } = require('ipld-dag-pb')
 const multicodec = require('multicodec')
-const someSeries = require('async/someSeries')
-const eachSeries = require('async/eachSeries')
-const eachOfSeries = require('async/eachOfSeries')
+const some = require('async/some')
+const each = require('async/each')
+const eachOf = require('async/eachOf')
+const debug = require('debug')
+const log = debug('ipfs:pin:pin-set')
 
 const pbSchema = require('./pin.proto')
 
 const emptyKeyHash = 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
 const emptyKey = multihashes.fromB58String(emptyKeyHash)
 const defaultFanout = 256
+const defaultFanoutLink = new DAGLink('', 1, emptyKey)
 const maxItems = 8192
 const pb = protobuf(pbSchema)
+
+class PinSetCacheManager {
+  constructor () {
+    this.caches = {}
+  }
+
+  get (name) {
+    if (!this.caches[name]) {
+      this.caches[name] = new PinSetCache()
+    }
+    return this.caches[name]
+  }
+}
+
+class PinSetCache {
+  constructor () {
+    this.fanoutLinks = []
+    this.subcaches = []
+  }
+
+  get (index, pins) {
+    if (!this.fanoutLinks[index]) return null
+
+    const cacheId = PinSetCache.getCacheId(pins)
+    if (this.fanoutLinks[index].id === cacheId) {
+      return this.fanoutLinks[index].link
+    }
+    return null
+  }
+
+  put (index, pins, link) {
+    this.fanoutLinks[index] = {
+      id: PinSetCache.getCacheId(pins),
+      link
+    }
+  }
+
+  getSubcache(index) {
+    if (!this.subcaches[index]) {
+      this.subcaches[index] = new PinSetCache()
+    }
+    return this.subcaches[index]
+  }
+
+  clearMissing (pins) {
+    for (const i of Object.keys(this.fanoutLinks)) {
+      if (!pins[i]) {
+        delete this.fanoutLinks[i]
+      }
+    }
+    for (const i of Object.keys(this.subcaches)) {
+      if (!pins[i]) {
+        delete this.subcaches[i]
+      }
+    }
+  }
+
+  static getCacheId (pins) {
+    const hashLen = pins[0].key.multihash.length
+    const buff = Buffer.concat(pins.map(p => p.key.multihash), hashLen * pins.length)
+    return fnv1a(buff.toString('binary'))
+  }
+}
 
 function toB58String (hash) {
   return new CID(hash).toBaseEncodedString()
@@ -59,6 +125,8 @@ function hash (seed, key) {
 }
 
 exports = module.exports = function (dag) {
+  const cacheManager = new PinSetCacheManager()
+
   const pinSet = {
     // should this be part of `object` API?
     hasDescendant: (root, childhash, callback) => {
@@ -71,7 +139,7 @@ exports = module.exports = function (dag) {
       return searchChildren(root, callback)
 
       function searchChildren (root, cb) {
-        someSeries(root.Links, (link, done) => {
+        some(root.Links, (link, done) => {
           const cid = link.Hash
           const bs58Link = toB58String(cid)
 
@@ -96,7 +164,7 @@ exports = module.exports = function (dag) {
       }
     },
 
-    storeSet: (keys, callback) => {
+    storeSet: (keys, name, callback) => {
       const pins = keys.map(key => {
         if (typeof key === 'string' || Buffer.isBuffer(key)) {
           key = new CID(key)
@@ -108,9 +176,12 @@ exports = module.exports = function (dag) {
         }
       })
 
-      pinSet.storeItems(pins, (err, rootNode) => {
+      const cache = cacheManager.get(name)
+      log(`storing ${pins.length} ${name} pins`)
+      pinSet.storeItems(pins, cache, (err, rootNode) => {
         if (err) { return callback(err) }
 
+        log(`stored ${pins.length} ${name} pins`)
         dag.put(rootNode, {
           version: 0,
           format: multicodec.DAG_PB,
@@ -123,10 +194,10 @@ exports = module.exports = function (dag) {
       })
     },
 
-    storeItems: (items, callback) => {
-      return storePins(items, 0, callback)
+    storeItems: (items, cache, callback) => {
+      return storePins(items, 0, cache, callback)
 
-      function storePins (pins, depth, storePinsCb) {
+      function storePins (pins, depth, psCache, storePinsCb) {
         const pbHeader = pb.Set.encode({
           version: 1,
           fanout: defaultFanout,
@@ -137,7 +208,7 @@ exports = module.exports = function (dag) {
         ])
         const fanoutLinks = []
         for (let i = 0; i < defaultFanout; i++) {
-          fanoutLinks.push(new DAGLink('', 1, emptyKey))
+          fanoutLinks[i] = defaultFanoutLink
         }
 
         if (pins.length <= maxItems) {
@@ -182,11 +253,35 @@ exports = module.exports = function (dag) {
             return bins
           }, {})
 
-          eachOfSeries(bins, (bin, idx, eachCb) => {
+          // Clear any cache slots for removed pins
+          psCache.clearMissing(bins)
+
+          eachOf(bins, (bin, idx, eachCb) => {
+            // Check if the bin at this index is unchanged
+            const link = psCache.get(idx, bin)
+            if (link) {
+              // log('  cache hit')
+              fanoutLinks[idx] = link
+              return eachCb()
+            }
+            // log('  cache miss')
+
             storePins(
               bin,
               depth + 1,
-              (err, child) => storeChild(err, child, idx, eachCb)
+              psCache.getSubcache(idx),
+              (err, child) => {
+                if (err) { return cb(err) }
+
+                storeChild(child, (err, link) => {
+                  if (err) { return eachCb(err) }
+
+                  fanoutLinks[idx] = link
+                  psCache.put(idx, bin, link)
+
+                  eachCb()
+                })
+              }
             )
           }, err => {
             if (err) { return storePinsCb(err) }
@@ -203,9 +298,7 @@ exports = module.exports = function (dag) {
           })
         }
 
-        function storeChild (err, child, binIdx, cb) {
-          if (err) { return cb(err) }
-
+        function storeChild (child, cb) {
           const opts = {
             version: 0,
             format: multicodec.DAG_PB,
@@ -214,9 +307,7 @@ exports = module.exports = function (dag) {
           }
 
           dag.put(child, opts, (err, cid) => {
-            if (err) { return cb(err) }
-            fanoutLinks[binIdx] = new DAGLink('', child.size, cid)
-            cb(null)
+            err ? cb(err) : cb(null, new DAGLink('', child.size, cid))
           })
         }
       }
@@ -230,16 +321,18 @@ exports = module.exports = function (dag) {
 
       dag.get(link.Hash, '', { preload: false }, (err, res) => {
         if (err) { return callback(err) }
+
         const keys = []
         const stepPin = link => keys.push(link.Hash.buffer)
-        pinSet.walkItems(res.value, { stepPin }, err => {
+        const cache = cacheManager.get(name)
+        pinSet.walkItems(res.value, { stepPin, cache }, err => {
           if (err) { return callback(err) }
           return callback(null, keys)
         })
       })
     },
 
-    walkItems: (node, { stepPin = () => {}, stepBin = () => {} }, callback) => {
+    walkItems: (node, { stepPin = () => {}, stepBin = () => {}, cache }, callback) => {
       let pbh
       try {
         pbh = readHeader(node)
@@ -247,7 +340,8 @@ exports = module.exports = function (dag) {
         return callback(err)
       }
 
-      eachOfSeries(node.Links, (link, idx, eachCb) => {
+      let pins = []
+      eachOf(node.Links, (link, idx, eachCb) => {
         if (idx < pbh.header.fanout) {
           // the first pbh.header.fanout links are fanout bins
           // if a fanout bin is not 'empty', dig into and walk its DAGLinks
@@ -259,16 +353,30 @@ exports = module.exports = function (dag) {
             // walk the links of this fanout bin
             return dag.get(linkHash, '', { preload: false }, (err, res) => {
               if (err) { return eachCb(err) }
-              pinSet.walkItems(res.value, { stepPin, stepBin }, eachCb)
+
+              const opts = {
+                stepPin,
+                stepBin,
+                cache: cache && cache.getSubcache(idx)
+              }
+              pinSet.walkItems(res.value, opts, (err, subPins) => {
+                if (err) { return eachCb(err) }
+
+                pins = pins.concat(subPins)
+                cache && cache.put(idx, subPins, link)
+
+                eachCb(null)
+              })
             })
           }
         } else {
           // otherwise, the link is a pin
           stepPin(link, idx, pbh.data)
+          pins.push({ key: link.Hash, data: pbh.data })
         }
 
         eachCb(null)
-      }, callback)
+      }, (err) => callback(err, pins))
     },
 
     getInternalCids: (rootNode, callback) => {
@@ -276,7 +384,7 @@ exports = module.exports = function (dag) {
       const cids = [new CID(emptyKey)]
 
       const stepBin = link => cids.push(link.Hash)
-      eachSeries(rootNode.Links, (topLevelLink, cb) => {
+      each(rootNode.Links, (topLevelLink, cb) => {
         cids.push(topLevelLink.Hash)
 
         dag.get(topLevelLink.Hash, '', { preload: false }, (err, res) => {

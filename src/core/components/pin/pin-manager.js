@@ -44,6 +44,7 @@ class PinManager {
     this.pinset = createPinSet(dag)
     this.directPins = new Set()
     this.recursivePins = new Set()
+    this._linkCache = {}
     this._lock = new Lock(repoOwner, 'ipfs:pin-manager:lock')
   }
 
@@ -88,18 +89,19 @@ class PinManager {
   }
 
   addRecursivePins (keys, callback) {
-    this._addPins(keys, this.recursivePins, callback)
+    this._addPins(keys, this.recursivePins, 'recursive', callback)
   }
 
   addDirectPins (keys, callback) {
-    this._addPins(keys, this.directPins, callback)
+    this._addPins(keys, this.directPins, 'direct', callback)
   }
 
-  _addPins (keys, pinSet, callback) {
+  _addPins (keys, pinSet, pinType, callback) {
     this._lock.writeLock((lockCb) => {
       keys = keys.filter(key => !pinSet.has(key))
       if (!keys.length) return lockCb(null, [])
 
+      delete this._linkCache[pinType]
       for (const key of keys) {
         pinSet.add(key)
       }
@@ -128,51 +130,66 @@ class PinManager {
   // a DAGNode holding those as DAGLinks, a kind of root pin
   // Note: should only be called within a lock
   _flushPins (callback) {
-    let dLink, rLink, root
+    let root
+    let dLink = this._linkCache['direct']
+    let rLink = this._linkCache['recursive']
+
     series([
       // create a DAGLink to the node with direct pins
-      cb => waterfall([
-        cb => this.pinset.storeSet(this.directKeys(), cb),
-        ({ node, cid }, cb) => {
-          try {
-            cb(null, new DAGLink(PinTypes.direct, node.size, cid))
-          } catch (err) {
-            cb(err)
-          }
+      cb => parallel([
+        pcb => {
+          if (dLink) return pcb(null)
+
+          this.pinset.storeSet(this.directKeys(), 'direct', (err, res) => {
+            if (err) return pcb(err)
+
+            const { node, cid } = res
+            try {
+              dLink = new DAGLink(PinTypes.direct, node.size, cid)
+              this._linkCache['direct'] = dLink
+              pcb(null)
+            } catch (err) {
+              pcb(err)
+            }
+          })
         },
-        (link, cb) => { dLink = link; cb(null) }
-      ], cb),
 
-      // create a DAGLink to the node with recursive pins
-      cb => waterfall([
-        cb => this.pinset.storeSet(this.recursiveKeys(), cb),
-        ({ node, cid }, cb) => {
-          try {
-            cb(null, new DAGLink(PinTypes.recursive, node.size, cid))
-          } catch (err) {
-            cb(err)
-          }
+        // create a DAGLink to the node with recursive pins
+        pcb => {
+          if (rLink) return pcb(null)
+
+          this.pinset.storeSet(this.recursiveKeys(), 'recursive', (err, res) => {
+            if (err) return pcb(err)
+
+            const { node, cid } = res
+            try {
+              rLink = new DAGLink(PinTypes.recursive, node.size, cid)
+              this._linkCache['recursive'] = rLink
+              pcb(null)
+            } catch (err) {
+              pcb(err)
+            }
+          })
         },
-        (link, cb) => { rLink = link; cb(null) }
-      ], cb),
 
-      // the pin-set nodes link to a special 'empty' node, so make sure it exists
-      cb => {
-        let empty
+        // the pin-set nodes link to a special 'empty' node, so make sure it exists
+        pcb => {
+          let empty
 
-        try {
-          empty = DAGNode.create(Buffer.alloc(0))
-        } catch (err) {
-          return cb(err)
+          try {
+            empty = DAGNode.create(Buffer.alloc(0))
+          } catch (err) {
+            return pcb(err)
+          }
+
+          this.dag.put(empty, {
+            version: 0,
+            format: multicodec.DAG_PB,
+            hashAlg: multicodec.SHA2_256,
+            preload: false
+          }, pcb)
         }
-
-        this.dag.put(empty, {
-          version: 0,
-          format: multicodec.DAG_PB,
-          hashAlg: multicodec.SHA2_256,
-          preload: false
-        }, cb)
-      },
+      ], cb),
 
       // create a root node with DAGLinks to the direct and recursive DAGs
       cb => {
