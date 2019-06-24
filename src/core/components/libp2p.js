@@ -50,7 +50,8 @@ function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
     const delegateAddr = multiaddr(delegateString).toOptions()
     const delegatedApiOptions = {
       host: delegateAddr.host,
-      protocol: delegateAddr.port == 443 ? 'https' : 'http',
+      // port is a string atm, so we need to convert for the check
+      protocol: parseInt(delegateAddr.port) === 443 ? 'https' : 'http',
       port: delegateAddr.port
     }
     contentRouting = [new DelegatedContentRouter(peerInfo.id, delegatedApiOptions)]
