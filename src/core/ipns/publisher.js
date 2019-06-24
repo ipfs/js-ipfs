@@ -108,13 +108,13 @@ class IpnsPublisher {
     // Add record to routing (buffer key)
     this._routing.put(key.toBuffer(), entryData, (err, res) => {
       if (err) {
-        const errMsg = `ipns record for ${key.toString()} could not be stored in the routing`
+        const errMsg = `ipns record for ${key.toString('base64')} could not be stored in the routing`
 
         log.error(errMsg)
         return callback(errcode(new Error(errMsg), 'ERR_PUTTING_TO_ROUTING'))
       }
 
-      log(`ipns record for ${key.toString()} was stored in the routing`)
+      log(`ipns record for ${key.toString('base64')} was stored in the routing`)
       callback(null, res)
     })
   }
@@ -137,13 +137,13 @@ class IpnsPublisher {
     // Add public key to routing (buffer key)
     this._routing.put(key.toBuffer(), publicKey.bytes, (err, res) => {
       if (err) {
-        const errMsg = `public key for ${key.toString()} could not be stored in the routing`
+        const errMsg = `public key for ${key.toString('base64')} could not be stored in the routing`
 
         log.error(errMsg)
         return callback(errcode(new Error(errMsg), 'ERR_PUTTING_TO_ROUTING'))
       }
 
-      log(`public key for ${key.toString()} was stored in the routing`)
+      log(`public key for ${key.toString('base64')} was stored in the routing`)
       callback(null, res)
     })
   }
