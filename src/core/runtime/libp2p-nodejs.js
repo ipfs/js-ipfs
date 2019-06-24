@@ -11,8 +11,6 @@ const SECIO = require('libp2p-secio')
 const libp2p = require('libp2p')
 const mergeOptions = require('merge-options')
 const multiaddr = require('multiaddr')
-const DelegatedPeerRouter = require('libp2p-delegated-peer-routing')
-const DelegatedContentRouter = require('libp2p-delegated-content-routing')
 
 class Node extends libp2p {
   constructor (_options) {
@@ -21,16 +19,6 @@ class Node extends libp2p {
     const wsstarServers = _options.peerInfo.multiaddrs.toArray().map(String).filter(addr => addr.includes('p2p-websocket-star'))
     _options.peerInfo.multiaddrs.replace(wsstarServers.map(multiaddr), '/p2p-websocket-star') // the ws-star-multi module will replace this with the chosen ws-star servers
     const wsstar = new WebSocketStarMulti({ servers: wsstarServers, id: _options.peerInfo.id, ignore_no_online: !wsstarServers.length || _options.wsStarIgnoreErrors })
-
-    // Pick a random delegate host
-    const delegateHosts = ['node0.preload.ipfs.io', 'node1.preload.ipfs.io']
-    const host = delegateHosts[Math.floor(Math.random() * delegateHosts.length)]
-
-    const delegatedApiOptions = {
-      host,
-      protocol: 'https',
-      port: '443'
-    }
 
     const defaults = {
       switch: {
@@ -57,13 +45,7 @@ class Node extends libp2p {
           Bootstrap,
           wsstar.discovery
         ],
-        dht: KadDHT,
-        contentRouting: [
-          new DelegatedContentRouter(_options.peerInfo.id, delegatedApiOptions)
-        ],
-        peerRouting: [
-          new DelegatedPeerRouter(delegatedApiOptions)
-        ]
+        dht: KadDHT
       },
       config: {
         peerDiscovery: {
