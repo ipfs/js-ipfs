@@ -22,7 +22,9 @@ function createFactory (options) {
           Enabled: false
         }
       }
-    }
+    },
+    args: ['--enable-preload=false'],
+    preload: { enabled: false }
   }
 
   if (options.factoryOptions.type !== 'proc') {

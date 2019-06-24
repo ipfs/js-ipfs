@@ -20,7 +20,8 @@ describe('.files', () => {
     this.timeout(20 * 1000)
     df.spawn({
       initOptions: { bits: 512 },
-      config: { Bootstrap: [] }
+      config: { Bootstrap: [] },
+      args: ['--enable-preload=false']
     }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsd = _ipfsd

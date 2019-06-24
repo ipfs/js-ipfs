@@ -28,7 +28,8 @@ describe('HTTP API', () => {
       config,
       EXPERIMENTAL: {
         pubsub: true
-      }
+      },
+      preload: { enabled: false }
     })
     await ncp(repoExample, repoTests)
     await http.api.start()

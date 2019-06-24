@@ -51,7 +51,8 @@ describe('name-pubsub', function () {
             Enabled: false
           }
         }
-      }
+      },
+      preload: { enabled: false }
     }, callback)
   }
 

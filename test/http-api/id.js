@@ -35,7 +35,8 @@ skipOnWindows('id endpoint', () => {
           initOptions: { bits: 512 },
           config: { Bootstrap: [] },
           disposable: false,
-          start: true
+          start: true,
+          args: ['--enable-preload=false']
         }, cb),
         (_ipfsd, cb) => {
           ipfsd = _ipfsd

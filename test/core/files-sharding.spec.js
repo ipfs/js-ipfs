@@ -47,7 +47,8 @@ describe('files directory (sharding tests)', () => {
               Enabled: false
             }
           }
-        }
+        },
+        preload: { enabled: false }
       }, (err, _ipfsd) => {
         expect(err).to.not.exist()
         ipfsd = _ipfsd
@@ -88,7 +89,7 @@ describe('files directory (sharding tests)', () => {
       df.spawn({
         exec: IPFS,
         initOptions: { bits: 512 },
-        args: ['--enable-sharding-experiment'],
+        args: ['--enable-sharding-experiment', '--enable-preload=false'],
         config: {
           Addresses: {
             Swarm: []
@@ -99,7 +100,8 @@ describe('files directory (sharding tests)', () => {
               Enabled: false
             }
           }
-        }
+        },
+        preload: { enabled: false }
       }, (err, _ipfsd) => {
         expect(err).to.not.exist()
         ipfsd = _ipfsd

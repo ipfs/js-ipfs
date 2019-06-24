@@ -29,7 +29,8 @@ describe('bootstrap', () => {
         Addresses: {
           Swarm: ['/ip4/127.0.0.1/tcp/0']
         }
-      }
+      },
+      preload: { enabled: false }
     }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsd = _ipfsd

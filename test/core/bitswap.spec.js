@@ -76,7 +76,9 @@ function addNode (fDaemon, inProcNode, callback) {
         }
       },
       Bootstrap: []
-    }
+    },
+    args: ['--enable-preload=false'],
+    preload: { enabled: false }
   }, (err, ipfsd) => {
     expect(err).to.not.exist()
     nodes.push(ipfsd)

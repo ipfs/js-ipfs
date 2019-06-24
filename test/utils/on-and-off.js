@@ -56,7 +56,8 @@ function on (tests) {
         type: 'js',
         exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
         initOptions: { bits: 512 },
-        config: { Bootstrap: [] }
+        config: { Bootstrap: [] },
+        args: ['--enable-preload=false']
       }, (err, node) => {
         expect(err).to.not.exist()
         ipfsd = node
