@@ -10,8 +10,8 @@ const flattenDeep = require('just-flatten-it')
 const errCode = require('err-code')
 const multicodec = require('multicodec')
 
-module.exports = function dag (self) {
-  return {
+module.exports = function dag (self, ipld) {
+  const dag = {
     put: promisify((dagNode, options, callback) => {
       if (typeof options === 'function') {
         callback = options
@@ -53,7 +53,7 @@ module.exports = function dag (self) {
         }
       }
 
-      self._ipld.put(dagNode, options.format, {
+      ipld.put(dagNode, options.format, {
         hashAlg: options.hashAlg,
         cidVersion: options.version
       }).then(
@@ -115,22 +115,30 @@ module.exports = function dag (self) {
         self._preload(cid)
       }
 
+      const niceError = (err) => {
+        if (err.code === 'ERR_NOT_FOUND') {
+          err.name = 'ERR_NOT_FOUND'
+          err.message = `Could not resolve node with CID ${cid} - ${err.message}`
+        }
+        return err
+      }
+
       if (path === undefined || path === '/') {
-        self._ipld.get(cid).then(
+        ipld.get(cid).then(
           (value) => {
             callback(null, {
               value,
               remainderPath: ''
             })
           },
-          (error) => callback(error)
+          (error) => callback(niceError(error))
         )
       } else {
-        const result = self._ipld.resolve(cid, path)
+        const result = ipld.resolve(cid, path)
         const promisedValue = options.localResolve ? result.first() : result.last()
         promisedValue.then(
           (value) => callback(null, value),
-          (error) => callback(error)
+          (error) => callback(niceError(error))
         )
       }
     }),
@@ -177,7 +185,7 @@ module.exports = function dag (self) {
       }
 
       pull(
-        iterToPull(self._ipld.tree(cid, path, options)),
+        iterToPull(ipld.tree(cid, path, options)),
         pull.collect(callback)
       )
     }),
@@ -201,11 +209,11 @@ module.exports = function dag (self) {
         return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
       }
 
-      self.dag.get(cid, '', options, (err, res) => {
+      dag.get(cid, '', options, (err, res) => {
         if (err) { return callback(err) }
 
         mapAsync(res.value.Links, (link, cb) => {
-          self.dag._getRecursive(link.Hash, options, cb)
+          dag._getRecursive(link.Hash, options, cb)
         }, (err, nodes) => {
           // console.log('nodes:', nodes)
           if (err) return callback(err)
@@ -214,4 +222,6 @@ module.exports = function dag (self) {
       })
     })
   }
+
+  return dag
 }

@@ -9,8 +9,12 @@ const waterfall = require('async/waterfall')
 const setImmediate = require('async/setImmediate')
 const errCode = require('err-code')
 const multibase = require('multibase')
+const Ipld = require('ipld')
+const BlockService = require('ipfs-block-service')
 
 const { resolvePath } = require('../utils')
+const ipldOptions = require('../runtime/ipld-nodejs')
+const components = require('../components')
 const PinManager = require('./pin/pin-manager')
 const PinTypes = PinManager.PinTypes
 
@@ -18,8 +22,17 @@ function toB58String (hash) {
   return new CID(hash).toBaseEncodedString()
 }
 
+// The pinner uses BlockService to store pin sets internally. We don't want
+// to expose these internal blocks to the network, so we create an offline
+// BlockService (one that doesn't talk to Bitswap)
+function createOfflineDag (self) {
+  const offlineBlockService = new BlockService(self._repo)
+  const offlineIpld = new Ipld(ipldOptions(offlineBlockService, self._options.ipld, self.log))
+  return components.dag(self, offlineIpld)
+}
+
 module.exports = (self) => {
-  const dag = self.dag
+  const dag = createOfflineDag(self)
   const pinManager = new PinManager(self._repo, dag, self._options.repoOwner, self.log)
 
   const pin = {

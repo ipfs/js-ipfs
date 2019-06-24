@@ -8,6 +8,7 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const fs = require('fs')
+const sinon = require('sinon')
 
 const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/create-repo-nodejs')
@@ -190,9 +191,10 @@ describe('pin', function () {
     })
 
     it('can\'t pin item not in datastore', function () {
-      this.timeout(5 * 1000)
       const falseHash = `${pins.root.slice(0, -2)}ss`
-      return expectTimeout(pin.add(falseHash), 4000)
+      return pin.add(falseHash)
+        .then(() => expect.fail('Expected ERR_NOT_FOUND error'))
+        .catch(err => expect(err.code).to.equal('ERR_NOT_FOUND'))
     })
 
     // TODO block rm breaks subsequent tests
@@ -317,6 +319,11 @@ describe('pin', function () {
     beforeEach(function () {
       return pin.add(pins.root)
     })
+    before(() => {
+      sinon.spy(ipfs._bitswap, 'put')
+      sinon.spy(ipfs._bitswap, 'putMany')
+    })
+    after(() => sinon.restore())
 
     it('flushes', function () {
       return pin.ls()
@@ -329,6 +336,11 @@ describe('pin', function () {
         .then(() => pin._load())
         .then(() => pin.ls())
         .then(ls => expect(ls.length).to.eql(1))
+    })
+
+    it('does not put to bitswap', function () {
+      expect(ipfs._bitswap.put.called).to.equal(false)
+      expect(ipfs._bitswap.putMany.called).to.equal(false)
     })
   })
 

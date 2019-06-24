@@ -99,7 +99,7 @@ class IPFS extends EventEmitter {
     this.config = components.config(this)
     this.block = components.block(this)
     this.object = components.object(this)
-    this.dag = components.dag(this)
+    this.dag = components.dag(this, this._ipld)
     this.files = components.filesMFS(this)
     this.libp2p = null // assigned on start
     this.swarm = components.swarm(this)
