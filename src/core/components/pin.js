@@ -41,7 +41,7 @@ module.exports = (self) => {
           map(mhs, (multihash, cb) => {
             const key = toB58String(multihash)
             if (recursive) {
-              if (pinManager.recursivePins.has(key)) {
+              if (pinManager.pinsets.recursive.hasPin(key)) {
                 // it's already pinned recursively
                 return cb(null, null)
               }
@@ -54,11 +54,11 @@ module.exports = (self) => {
                 return cb(null, key)
               })
             } else {
-              if (pinManager.recursivePins.has(key)) {
+              if (pinManager.pinsets.recursive.hasPin(key)) {
                 // recursive supersedes direct, can't have both
                 return cb(new Error(`${key} already pinned recursively`))
               }
-              if (pinManager.directPins.has(key)) {
+              if (pinManager.pinsets.direct.hasPin(key)) {
                 // already directly pinned
                 return cb(null, null)
               }
@@ -222,7 +222,7 @@ module.exports = (self) => {
         let pins = []
         if (type === PinTypes.direct || type === PinTypes.all) {
           pins = pins.concat(
-            Array.from(pinManager.directPins).map(hash => ({
+            [...pinManager.pinsets.direct.pinKeys].map(hash => ({
               type: PinTypes.direct,
               hash
             }))
@@ -230,7 +230,7 @@ module.exports = (self) => {
         }
         if (type === PinTypes.recursive || type === PinTypes.all) {
           pins = pins.concat(
-            Array.from(pinManager.recursivePins).map(hash => ({
+            [...pinManager.pinsets.recursive.pinKeys].map(hash => ({
               type: PinTypes.recursive,
               hash
             }))
@@ -244,7 +244,7 @@ module.exports = (self) => {
               // report the indirect entry
               .filter(({ hash }) =>
                 !indirects.includes(hash) ||
-                (indirects.includes(hash) && !pinManager.directPins.has(hash))
+                (indirects.includes(hash) && !pinManager.pinsets.direct.hasPin(hash))
               )
               .concat(indirects.map(hash => ({
                 type: PinTypes.indirect,

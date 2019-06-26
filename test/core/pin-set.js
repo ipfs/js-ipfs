@@ -19,7 +19,8 @@ const {
 const CID = require('cids')
 
 const IPFS = require('../../src/core')
-const createPinSet = require('../../src/core/components/pin/pin-set')
+const PinStore = require('../../src/core/components/pin/pin-store')
+const PinSet = require('../../src/core/components/pin/pin-set')
 const createTempRepo = require('../utils/create-repo-nodejs')
 
 const emptyKeyHash = 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
@@ -69,6 +70,7 @@ function createNode (data, links = [], callback) {
 describe('pinSet', function () {
   let ipfs
   let pinSet
+  let store
   let repo
 
   before(function (done) {
@@ -86,7 +88,8 @@ describe('pinSet', function () {
       }
     })
     ipfs.on('ready', () => {
-      pinSet = createPinSet(ipfs.dag)
+      store = new PinStore(ipfs.dag)
+      pinSet = new PinSet('recursive', store)
       done()
     })
   })
@@ -133,7 +136,7 @@ describe('pinSet', function () {
           expect(result.node.Links).to.have.length(defaultFanout)
           expect(result.cid.toBaseEncodedString()).to.eql(expectedHash)
 
-          pinSet.loadSet(result.node, '', (err, loaded) => {
+          pinSet.loadSetAt(result.node, 0, (err, loaded) => {
             expect(err).to.not.exist()
             expect(loaded).to.have.length(30)
             const hashes = loaded.map(l => new CID(l).toBaseEncodedString())
@@ -252,7 +255,7 @@ describe('pinSet', function () {
           expect(err).to.not.exist()
 
           const rootNode = DAGNode.create('pins', [{ Hash: result.cid }])
-          pinSet.getInternalCids(rootNode, (err, cids) => {
+          PinSet.getInternalCids(store, rootNode, (err, cids) => {
             expect(err).to.not.exist()
             expect(cids.length).to.eql(2)
             const cidStrs = cids.map(c => c.toString())
