@@ -20,6 +20,16 @@ module.exports = {
         type: 'boolean',
         default: false
       })
+      .option('enable-ipns-experiment', {
+        type: 'boolean',
+        default: false,
+        desc: 'EXPERIMENTAL ipns routers.'
+      })
+      .option('experimental-ipns-alias', {
+        type: 'string',
+        default: '',
+        desc: 'EXPERIMENTAL human readable alias for ipns subdomains.'
+      })
       .option('offline', {
         type: 'boolean',
         desc: 'Run offline. Do not connect to the rest of the network but provide local API.',
@@ -54,9 +64,13 @@ module.exports = {
         preload: { enabled: argv.enablePreload },
         EXPERIMENTAL: {
           pubsub: argv.enablePubsubExperiment,
+          ipnsDNS: argv.enableIpnsExperiment,
           ipnsPubsub: argv.enableNamesysPubsub,
           dht: argv.enableDhtExperiment,
           sharding: argv.enableShardingExperiment
+        },
+        ipns: {
+          alias: argv.experimentalIpnsAlias
         }
       })
 

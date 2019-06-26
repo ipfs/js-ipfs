@@ -46,9 +46,10 @@ const configSchema = s({
   EXPERIMENTAL: optional(s({
     pubsub: 'boolean?',
     ipnsPubsub: 'boolean?',
+    ipnsDNS: 'boolean?',
     sharding: 'boolean?',
     dht: 'boolean?'
-  }, { dht: false, pubsub: false, ipnsPubsub: false, sharding: false })),
+  }, { dht: false, pubsub: false, ipnsDNS: false, ipnsPubsub: false, sharding: false })),
   connectionManager: 'object?',
   config: optional(s({
     API: 'object?',
@@ -69,9 +70,11 @@ const configSchema = s({
     Bootstrap: optional(s(['multiaddr-ipfs']))
   })),
   ipld: 'object?',
+  ipns: 'object?',
   libp2p: optional(union(['function', 'object'])) // libp2p validates this
 }, {
-  repoOwner: true
+  repoOwner: true,
+  ipns: {}
 })
 
 const validate = (opts) => {

@@ -148,6 +148,8 @@
     "multihashes": "~0.4.14",
     "multihashing-async": "~0.6.0",
     "node-fetch": "^2.3.0",
+    "p-any": "^2.1.0",
+    "p-settle": "^3.1.0",
     "peer-book": "~0.9.0",
     "peer-id": "~0.12.0",
     "peer-info": "~0.15.0",
