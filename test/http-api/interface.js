@@ -96,6 +96,30 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
     ]
   })
 
+  tests.name(CommonFactory.create({
+    spawnOptions: {
+      args: ['--pass ipfs-is-awesome-software', '--offline']
+    }
+  }))
+
+  tests.namePubsub(CommonFactory.create({
+    spawnOptions: {
+      args: ['--enable-namesys-pubsub'],
+      initOptions: { bits: 1024 },
+      config: {
+        Bootstrap: [],
+        Discovery: {
+          MDNS: {
+            Enabled: false
+          },
+          webRTCStar: {
+            Enabled: false
+          }
+        }
+      }
+    }
+  }))
+
   tests.object(defaultCommonFactory)
 
   tests.pin(defaultCommonFactory)

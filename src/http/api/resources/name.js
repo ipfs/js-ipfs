@@ -7,7 +7,7 @@ exports.resolve = {
     query: Joi.object().keys({
       arg: Joi.string(),
       nocache: Joi.boolean().default(false),
-      recursive: Joi.boolean().default(false)
+      recursive: Joi.boolean().default(true)
     }).unknown()
   },
   async handler (request, h) {
@@ -17,7 +17,7 @@ exports.resolve = {
     const res = await ipfs.name.resolve(arg, request.query)
 
     return h.response({
-      Path: res.path
+      Path: res
     })
   }
 }

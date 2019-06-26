@@ -32,7 +32,7 @@ function createNode (callback) {
   }, callback)
 }
 
-describe('kad-dht is routing content and peers correctly', () => {
+describe.skip('kad-dht is routing content and peers correctly', () => {
   let nodeA
   let nodeB
   let nodeC

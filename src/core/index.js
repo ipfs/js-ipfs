@@ -26,7 +26,16 @@ const defaultRepo = require('./runtime/repo-nodejs')
 const preload = require('./preload')
 const mfsPreload = require('./mfs-preload')
 const ipldOptions = require('./runtime/ipld-nodejs')
+/**
+ * @typedef { import("./ipns/index") } IPNS
+ */
 
+/**
+ *
+ *
+ * @class IPFS
+ * @extends {EventEmitter}
+ */
 class IPFS extends EventEmitter {
   constructor (options) {
     super()
@@ -76,6 +85,7 @@ class IPFS extends EventEmitter {
     this._ipld = new Ipld(ipldOptions(this._blockService, this._options.ipld, this.log))
     this._preload = preload(this)
     this._mfsPreload = mfsPreload(this)
+    /** @type {IPNS} */
     this._ipns = undefined
     // eslint-disable-next-line no-console
     this._print = this._options.silent ? this.log : console.log
