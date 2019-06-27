@@ -45,6 +45,15 @@ class PinSetCache {
     }
   }
 
+  walkItems (step, level = this) {
+    for (const i of Object.keys(level.fanoutLinks)) {
+      step(level.fanoutLinks[i].link, i)
+    }
+    for (const i of Object.keys(level.subcaches)) {
+      this.walkItems(step, level.subcaches[i])
+    }
+  }
+
   static getCacheId (pins) {
     const hashLen = pins[0].key.multihash.length
     const buff = Buffer.concat(pins.map(p => p.key.multihash), hashLen * pins.length)

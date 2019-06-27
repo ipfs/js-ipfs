@@ -331,35 +331,72 @@ describe('pinSet', function () {
       const itemsPerNode = 20
       const testPinSet = new PinSet('recursive', store, binsPerNode, itemsPerNode)
 
-      const seenPins = []
-      const stepPin = (link, idx, data) => seenPins.push({ link, idx, data })
-      const seenBins = []
-      const stepBin = (link, idx, data) => seenBins.push({ link, idx, data })
-
       // Generate enough pins that they will be distributed across a structure
       // of bins that is a few levels deep
       const numPins = binsPerNode * itemsPerNode * 5
+
+      // Checks that the structure is in the expected shape
+      function checkStructure (node, cache, cb) {
+        const seenPins = []
+        const stepPin = (link, idx, data) => seenPins.push({ link, idx, data })
+        const seenBins = []
+        const stepBin = (link, idx, data) => seenBins.push({ link, idx, data })
+
+        const cacheSeenBins = {}
+        const cacheStepBin = (link, idx) => {
+          cacheSeenBins[link.Hash.toString()] = { link, idx }
+        }
+
+        cache.walkItems(cacheStepBin)
+        // console.log(cacheSeenBins)
+
+        testPinSet.walkItems(node, { stepPin, stepBin }, err => {
+          expect(err).to.not.exist()
+
+          // Walking the structure we should see every pin
+          expect(seenPins).to.have.length(numPins)
+
+          // The way pins are generated for the tests is deterministic, and
+          // will result in 80 bins being created
+          expect(seenBins).to.have.length(80)
+
+          // Expect the pins to have the correct fields
+          for (const item of seenPins) {
+            expect(item.data).to.eql(Buffer.alloc(0))
+            expect(item.link).to.exist()
+          }
+
+          // Expect the cached bin structure to match the actual structure
+          expect(Object.keys(cacheSeenBins)).to.have.length(seenBins.length)
+          for (const bin of seenBins) {
+            const cachedBin = cacheSeenBins[bin.link.Hash.toString()]
+            expect(cachedBin).to.exist()
+            expect(String(cachedBin.idx)).to.equal(String(bin.idx))
+          }
+
+          cb()
+        })
+      }
+
       createNodes(numPins, (err, nodes) => {
         expect(err).to.not.exist()
 
         testPinSet.storeSet(nodes, (err, result) => {
           expect(err).to.not.exist()
 
-          testPinSet.walkItems(result.node, { stepPin, stepBin }, err => {
-            expect(err).to.not.exist()
+          // Check that the structure has the correct shape
+          checkStructure(result.node, testPinSet.cache, () => {
+            // Load the pin set from storage
+            const rootNode = DAGNode.create('pins', [{ Hash: result.cid }])
+            testPinSet.loadSetAt(rootNode, 0, (err) => {
+              expect(err).to.not.exist()
 
-            // Walking the structure we should see every pin
-            expect(seenPins).to.have.length(numPins)
-            // The way pins are generated for the tests is deterministic, and
-            // will result in 80 bins being created
-            expect(seenBins).to.have.length(80)
+              // Check that the loaded set matches the original set
+              expect([...testPinSet.pinKeys].sort()).eql([...nodes].sort())
 
-            for (const item of seenPins) {
-              expect(item.data).to.eql(Buffer.alloc(0))
-              expect(item.link).to.exist()
-            }
-
-            done()
+              // Check that the structure still has the correct shape
+              checkStructure(testPinSet.stored.node, testPinSet.cache, done)
+            })
           })
         })
       })
