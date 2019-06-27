@@ -35,7 +35,7 @@ async function dohBinary (url, domain, key) {
     .arrayBuffer()
 
   const data = dnsPacket.decode(Buffer.from(result))
-  if (!data && data.answers.length < 1) {
+  if (!data || data.answers.length < 1) {
     throw errcode(new Error('Record not found'), 'ERR_NOT_FOUND')
   }
   const record = new Record(key, Buffer.from(Buffer.concat(data.answers[0].data).toString(), 'base64'))
