@@ -7,10 +7,8 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const hat = require('hat')
-const pull = require('pull-stream')
 const IPFSFactory = require('ipfsd-ctl')
 const IPFS = require('../../src/core')
-const map = require('async/map')
 
 describe('files', () => {
   let ipfsd, ipfs
@@ -50,20 +48,22 @@ describe('files', () => {
 
       const batchCount = 30
       const batchSize = 300
+      // eslint-disable-next-line no-console
       console.log(`Running ${batchCount} batches of size ${batchSize}:`)
-      let count = 0
       let sum = 0
       for (let i = 0; i < batchCount; i++) {
         let batchSum = 0
         for (let j = 0; j < batchSize; j++) {
           const start = Date.now()
-          const files = await ipfs.add(Buffer.from(hat()))
+          await ipfs.add(Buffer.from(hat()))
           batchSum += Date.now() - start
         }
         sum += batchSum
         // console.log('batch sum', displayDuration(batchSum))
+        // eslint-disable-next-line no-console
         console.log(`batch ${i + 1} avg`, Math.round(batchSum / batchSize) + 'ms')
       }
+      // eslint-disable-next-line no-console
       console.log('total', displayDuration(sum))
       // console.log('avg  ', Math.round(sum / batchSize * batchCount) + 'ms')
     })
