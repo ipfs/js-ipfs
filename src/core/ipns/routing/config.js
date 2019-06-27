@@ -5,7 +5,7 @@ const PubsubDatastore = require('./pubsub-datastore')
 const OfflineDatastore = require('./offline-datastore')
 const DnsDatastore = require('./experimental/dns-datastore')
 const MDnsDatastore = require('./experimental/mdns-datastore')
-const WorkersDatastore = require('./experimental/workers-datastore')
+// const WorkersDatastore = require('./experimental/workers-datastore')
 const ExperimentalTieredDatastore = require('./experimental/tiered-datastore')
 /**
  * @typedef { import("../../index") } IPFS
@@ -21,7 +21,8 @@ module.exports = (ipfs) => {
   // Setup online routing for IPNS with a tiered routing composed by a DHT and a Pubsub router (if properly enabled)
   const ipnsStores = []
   if (ipfs._options.EXPERIMENTAL.ipnsDNS) {
-    ipnsStores.push(new WorkersDatastore(ipfs._options.ipns))
+    // something is wrong with the workers code disabled for now
+    // ipnsStores.push(new WorkersDatastore(ipfs._options.ipns))
     ipnsStores.push(new DnsDatastore(ipfs._options.ipns))
     ipnsStores.push(new MDnsDatastore(ipfs._options.ipns))
     return new ExperimentalTieredDatastore(ipnsStores)
