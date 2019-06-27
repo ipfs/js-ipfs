@@ -921,7 +921,7 @@ The code above assumes you are running a local `signaling server` on port `9090`
 Yes, websocket-star! A WebSockets based transport that uses a Relay to route the messages. To enable it, just do:
 
 ```JavaScript
-const node = new IPFS({
+const node = new Ipfs({
   config: {
     Addresses: {
       Swarm: [
