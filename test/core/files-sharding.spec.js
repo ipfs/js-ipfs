@@ -89,7 +89,7 @@ describe('files directory (sharding tests)', () => {
       df.spawn({
         exec: IPFS,
         initOptions: { bits: 512 },
-        args: ['--enable-sharding-experiment', '--enable-preload=false'],
+        args: ['--enable-sharding-experiment'],
         config: {
           Addresses: {
             Swarm: []

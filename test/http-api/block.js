@@ -22,7 +22,7 @@ describe('block endpoint', () => {
     df.spawn({
       initOptions: { bits: 512 },
       config: { Bootstrap: [] },
-      args: ['--enable-preload=false']
+      args: []
     }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsd = _ipfsd

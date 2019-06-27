@@ -29,7 +29,7 @@ const config = {
 }
 
 function spawnNode ({ dht = false, type = 'js' }, cb) {
-  const args = dht ? ['--enable-preload=false'] : ['--offline', '--enable-preload=false']
+  const args = dht ? [] : ['--offline']
   const factory = type === 'js' ? df : dfProc
   factory.spawn({
     args,

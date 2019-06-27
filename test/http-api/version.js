@@ -26,8 +26,7 @@ describe('version endpoint', () => {
             Enabled: false
           }
         }
-      },
-      args: ['--enable-preload=false']
+      }
     }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsd = _ipfsd

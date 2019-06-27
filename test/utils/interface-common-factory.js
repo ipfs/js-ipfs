@@ -23,7 +23,6 @@ function createFactory (options) {
         }
       }
     },
-    args: ['--enable-preload=false'],
     preload: { enabled: false }
   }
 
