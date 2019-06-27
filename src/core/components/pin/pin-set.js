@@ -12,6 +12,7 @@ const eachOf = require('async/eachOf')
 const debug = require('debug')
 const log = debug('ipfs:pin:pin-set')
 
+const PinSetCache = require('./pin-set-cache')
 const pbSchema = require('./pin.proto')
 
 const emptyKeyHash = 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
@@ -20,56 +21,6 @@ const defaultFanout = 256
 const defaultFanoutLink = new DAGLink('', 1, emptyKey)
 const defaultMaxItems = 8192
 const pb = protobuf(pbSchema)
-
-class PinSetCache {
-  constructor () {
-    this.fanoutLinks = []
-    this.subcaches = []
-  }
-
-  get (index, pins) {
-    if (!this.fanoutLinks[index]) return null
-
-    const cacheId = PinSetCache.getCacheId(pins)
-    if (this.fanoutLinks[index].id === cacheId) {
-      return this.fanoutLinks[index].link
-    }
-    return null
-  }
-
-  put (index, pins, link) {
-    this.fanoutLinks[index] = {
-      id: PinSetCache.getCacheId(pins),
-      link
-    }
-  }
-
-  getSubcache (index) {
-    if (!this.subcaches[index]) {
-      this.subcaches[index] = new PinSetCache()
-    }
-    return this.subcaches[index]
-  }
-
-  clearMissing (pins) {
-    for (const i of Object.keys(this.fanoutLinks)) {
-      if (!pins[i]) {
-        delete this.fanoutLinks[i]
-      }
-    }
-    for (const i of Object.keys(this.subcaches)) {
-      if (!pins[i]) {
-        delete this.subcaches[i]
-      }
-    }
-  }
-
-  static getCacheId (pins) {
-    const hashLen = pins[0].key.multihash.length
-    const buff = Buffer.concat(pins.map(p => p.key.multihash), hashLen * pins.length)
-    return fnv1a(buff.toString('binary'))
-  }
-}
 
 function toB58String (hash) {
   return new CID(hash).toBaseEncodedString('base58btc')
@@ -161,6 +112,7 @@ class PinSet {
   }
 
   addPins (keys, callback) {
+    // Make sure there are some new pins to add
     keys = keys.filter(key => !this.hasPin(key))
     if (this.stored && !keys.length) return callback(null, false)
 
@@ -171,6 +123,7 @@ class PinSet {
   }
 
   rmPins (keys, callback) {
+    // Make sure there are some pins to remove
     keys = keys.filter(key => this.hasPin(key))
     if (this.stored && !keys.length) return callback(null, false)
 
@@ -180,6 +133,7 @@ class PinSet {
     this.storeSet(this.pinKeys, (err) => callback(err, true))
   }
 
+  // Store the current pin set if it hasn't already been stored
   saveSet (callback) {
     if (this.stored) {
       return callback(null, this.stored)
@@ -188,6 +142,7 @@ class PinSet {
     this.storeSet(this.pinKeys, callback)
   }
 
+  // Store the given set of keys
   storeSet (keys, callback) {
     const pins = [...keys].map(key => {
       key = new CID(key)
@@ -238,6 +193,7 @@ class PinSet {
   }
 
   storePins (pins, depth, psCache, storePinsCb) {
+    // A header with the version and the fanout (number of bins) at this depth
     const pbHeader = pb.Set.encode({
       version: 1,
       fanout: this.fanout,
@@ -246,11 +202,14 @@ class PinSet {
     const headerBuf = Buffer.concat([
       Buffer.from(varint.encode(pbHeader.length)), pbHeader
     ])
+
+    // Initialize the fanout links (links to bins) to point to an empty DAGNode
     const fanoutLinks = []
     for (let i = 0; i < this.fanout; i++) {
       fanoutLinks[i] = defaultFanoutLink
     }
 
+    // If there are less than maxItems pins, just store them all in one DAGNode
     if (pins.length <= this.maxItems) {
       const nodes = pins
         .map(item => {
@@ -262,6 +221,7 @@ class PinSet {
         // sorting makes any ordering of `pins` produce the same DAGNode
         .sort((a, b) => Buffer.compare(a.link.Hash.buffer, b.link.Hash.buffer))
 
+      // Add the pin links to the (empty) bin links
       const rootLinks = fanoutLinks.concat(nodes.map(item => item.link))
       const rootData = Buffer.concat(
         [headerBuf].concat(nodes.map(item => item.data))
@@ -269,6 +229,7 @@ class PinSet {
 
       let rootNode
 
+      // Create the DAGNode with all the links in it
       try {
         rootNode = DAGNode.create(rootData, rootLinks)
       } catch (err) {
@@ -306,6 +267,7 @@ class PinSet {
         }
         // log('  cache miss')
 
+        // Store the pins in this bin
         this.storePins(
           bin,
           depth + 1,
@@ -329,6 +291,7 @@ class PinSet {
 
         let rootNode
 
+        // Create a DAGNode with links to all the bins
         try {
           rootNode = DAGNode.create(headerBuf, fanoutLinks)
         } catch (err) {
@@ -340,6 +303,7 @@ class PinSet {
     }
   }
 
+  // Load the pin set
   loadSet (rootNode, callback) {
     let index = rootNode.Links.findIndex(l => l.Name === this.pinType)
     if (index === -1) {
@@ -349,31 +313,40 @@ class PinSet {
     return this.loadSetAt(rootNode, index, callback)
   }
 
+  // Load a pin set from the given node at the given index
   loadSetAt (rootNode, index, callback) {
+    // Get the link at the given index
     let link = rootNode.Links[index]
     if (!link) {
       return callback(new Error('No link found at index ' + index))
     }
 
+    // Fetch the DAGNode pointed to by the link
     this.store.fetch(link.Hash, (err, res) => {
       if (err) { return callback(err) }
 
+      // Get the pins from the node
       const keys = []
       const stepPin = link => keys.push(link.Hash.buffer)
       const cache = this.cache
       this.walkItems(res.value, { stepPin, cache }, err => {
         if (err) { return callback(err) }
 
+        // Initialize the pin set cache
         this.pinKeys = new Set(keys.map(toB58String))
         return callback(null, keys)
       })
     })
   }
 
+  // Walk items in this pin set's store
   walkItems (node, opts, callback) {
     PinSet.walkStoreItems(this.store, node, opts, callback)
   }
 
+  // Walk items in the given store starting at the given node
+  //   stepPin(link, index, data) - called each time a pin is encountered
+  //   stepBin(link, index, data) - called each time a (non-empty) bin is encountered
   static walkStoreItems (store, node, { stepPin = () => {}, stepBin = () => {}, cache }, callback) {
     let pbh
     try {
@@ -421,6 +394,9 @@ class PinSet {
     }, (err) => callback(err, pins))
   }
 
+  // Get CIDs used internally by the pinner
+  // - the empty block
+  // - all internal structural nodes, ie the "bins" that hold groups of pins
   static getInternalCids (store, rootNode, callback) {
     // "Empty block" used by the pinner
     const cids = [new CID(emptyKey)]

@@ -18,6 +18,7 @@ const Lock = require('./lock')
 // arbitrary limit to the number of concurrent dag operations
 const concurrencyLimit = 300
 const PIN_DS_KEY = new Key('/local/pins')
+const NO_PINS_ERR = 'No pins to load'
 
 function toB58String (hash) {
   return new CID(hash).toBaseEncodedString('base58btc')
@@ -92,8 +93,11 @@ class PinManager {
 
   _addPins (keys, pinset, callback) {
     this._lock.writeLock((lockCb) => {
+      // Add pins to the pin set (direct or recursive)
       pinset.addPins(keys, (err, changed) => {
         if (err) { return lockCb(err) }
+        // If the pin set was changed, update the root node to point at the
+        // changed pin set and write it out
         if (changed) { return this._saveRootNode(lockCb) }
         return lockCb()
       })
@@ -119,10 +123,13 @@ class PinManager {
 
       waterfall([
         (cb) => parallel([
+          // Remove pins from the pin sets
           (pcb) => this.pinsets.direct.rmPins([...pins.direct], pcb),
           (pcb) => this.pinsets.recursive.rmPins([...pins.recursive], pcb)
         ], cb),
         (changed, cb) => {
+          // If either of the pin sets was changed, update the root node to
+          // point at the changed pin sets and write it out
           if (changed[0] || changed[1]) {
             return this._saveRootNode(cb)
           }
@@ -179,15 +186,17 @@ class PinManager {
       waterfall([
         // hack for CLI tests
         (cb) => this.repo.closed ? this.repo.datastore.open(cb) : cb(null, null),
+        // Get root node CID from datastore
         (_, cb) => this.repo.datastore.has(PIN_DS_KEY, cb),
-        (has, cb) => has ? cb() : cb(new Error('No pins to load')),
+        (has, cb) => has ? cb() : cb(new Error(NO_PINS_ERR)),
         (cb) => this.repo.datastore.get(PIN_DS_KEY, cb),
+        // Load root node
         (mh, cb) => {
           this.store.fetch(new CID(mh), cb)
         }
       ], (err, pinRoot) => {
         if (err) {
-          if (err.message === 'No pins to load') {
+          if (err.message === NO_PINS_ERR) {
             this.log('No pins to load')
             return lockCb()
           } else {
@@ -195,10 +204,11 @@ class PinManager {
           }
         }
 
+        // Load the direct and recursive pin sets
         parallel([
           cb => this.pinsets.direct.loadSet(pinRoot.value, cb),
           cb => this.pinsets.recursive.loadSet(pinRoot.value, cb)
-        ], (err, keys) => {
+        ], (err) => {
           if (!err) {
             this.log('Loaded pins from the datastore')
           }
