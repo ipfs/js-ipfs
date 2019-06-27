@@ -49,14 +49,15 @@ module.exports = function repo (self) {
           log('Your repo\'s version is higher then this version of js-ipfs require! You should revert it.')
         }
 
-        return // Nothing to migrate
+        log('Nothing to migrate')
+        return
       }
 
       if (repoVersion > migrator.getLatestMigrationVersion()) {
         throw new Error('The ipfs-repo-migrations package does not have migration for version: ' + repoVersion)
       }
 
-      return migrator.migrate(self._repo.path, repoVersion, true, self._repo.options)
+      return migrator.migrate(self._repo.path, {toVersion: repoVersion, ignoreLock: true, repoOptions: self._repo.options})
     },
 
     gc: promisify((options, callback) => {
