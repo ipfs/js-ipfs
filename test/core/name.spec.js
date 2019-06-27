@@ -485,8 +485,10 @@ describe('name', function () {
         },
         _options: {
           libp2p: {
-            dht: {
-              enabled: true
+            config: {
+              dht: {
+                enabled: true
+              }
             }
           }
         }
