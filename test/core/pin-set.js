@@ -82,7 +82,8 @@ describe('pinSet', function () {
             Enabled: false
           }
         }
-      }
+      },
+      preload: { enabled: false }
     })
     ipfs.on('ready', () => {
       pinSet = createPinSet(ipfs.dag)

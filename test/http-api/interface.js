@@ -46,7 +46,8 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
             Enabled: false
           }
         }
-      }
+      },
+      preload: { enabled: false }
     }
   }), {
     skip: {
@@ -72,7 +73,8 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
             Enabled: false
           }
         }
-      }
+      },
+      preload: { enabled: false }
     }
   }))
 

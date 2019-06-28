@@ -52,7 +52,8 @@ function setupInProcNode (addrs, hop, callback) {
       Addresses: {
         Swarm: addrs
       }
-    })
+    }),
+    preload: { enabled: false }
   }, (err, ipfsd) => {
     expect(err).to.not.exist()
     ipfsd.api.id((err, id) => {
