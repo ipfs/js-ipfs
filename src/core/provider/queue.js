@@ -1,6 +1,6 @@
 'use strict'
 
-const queue = require('async/queue')
+const { default: PQueue } = require('p-queue')
 
 const debug = require('debug')
 const log = debug('ipfs:provider')
@@ -17,71 +17,35 @@ class WorkerQueue {
     this._concurrency = concurrency
 
     this.running = false
-    this.queue = this._setupQueue()
-  }
-
-  /**
-   * Create the underlying async queue.
-   * @returns {queue}
-   */
-  _setupQueue () {
-    const q = queue(async (block) => {
-      await this._processNext(block)
-    }, this._concurrency)
-
-    // If there is an error, stop the worker
-    q.error = (err) => {
-      log.error(err)
-      this.stop(err)
-    }
-
-    q.buffer = 0
-
-    return q
+    this.queue = new PQueue({ concurrency })
   }
 
   /**
    * Use the queue from async to keep `concurrency` amount items running
    * @param {Block[]} blocks
-   * @returns {Promise}
    */
   async execute (blocks) {
     this.running = true
 
-    // store the promise resolution functions to be resolved at end of queue
-    this.execution = {}
-    const execPromise = new Promise((resolve, reject) => Object.assign(this.execution, { resolve, reject }))
+    // Fill queue with the processing blocks function
+    this.queue.addAll(blocks.map((block) => async () => this._processNext(block))) // eslint-disable-line require-await
 
-    // When all blocks have been processed, stop the worker
-    this.queue.drain = () => {
-      log('queue:drain')
-      this.stop()
-    }
+    // Wait for finishing
+    await this.queue.onIdle()
 
-    // Fill queue with blocks
-    this.queue.push(blocks)
-
-    await execPromise
+    this.stop()
   }
 
   /**
-   * Stop the worker, optionally an error is thrown if received
-   *
-   * @param {object} error
+   * Stop the worker
    */
-  stop (error) {
+  stop () {
     if (!this.running) {
       return
     }
 
     this.running = false
-    this.queue.kill()
-
-    if (error) {
-      this.execution && this.execution.reject(error)
-    } else {
-      this.execution && this.execution.resolve()
-    }
+    this.queue.clear()
   }
 
   /**

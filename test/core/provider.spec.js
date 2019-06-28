@@ -13,12 +13,14 @@ const IPFS = require('../../src')
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ type: 'proc' })
 
+const DELAY = '3s'
 const INTERVAL = '10s'
 const STRATEGY = 'all'
 
 const config = {
   Bootstrap: [],
   Reprovider: {
+    Delay: DELAY,
     Interval: INTERVAL,
     Strategy: STRATEGY
   }
@@ -74,6 +76,7 @@ describe('record provider', () => {
         expect(err).to.not.exist()
         ipfsd = _ipfsd
         node = _ipfsd.api
+
         done()
       })
     })

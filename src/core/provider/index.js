@@ -12,12 +12,14 @@ class Provider {
   /**
    * Provider goal is to announce blocks to the network.
    * It keeps track of which blocks are provided, and allow them to be reprovided
-   * @param {Libp2p} libp2p
-   * @param {Blockstore} blockstore
-   * @param {object} options
-   * @memberof Provider
+   * @param {Libp2p} libp2p libp2p instance
+   * @param {Blockstore} blockstore blockstore instance
+   * @param {object} options reprovider options
+   * @param {string} options.delay reprovider initial delay in human friendly time
+   * @param {string} options.interval reprovider interval in human friendly time
+   * @param {string} options.strategy reprovider strategy
    */
-  constructor (libp2p, blockstore, options) {
+  constructor (libp2p, blockstore, options = {}) {
     this._running = false
 
     this._contentRouting = libp2p.contentRouting
@@ -38,11 +40,14 @@ class Provider {
 
     this._running = true
 
-    // handle options
-    const strategy = this._options.strategy || 'all'
-    const humanInterval = this._options.Interval || '12h'
-    const interval = await promisify((callback) => human(humanInterval, callback))()
+    // handle options (config uses uppercase)
+    const humanDelay = this._options.Delay || this._options.delay || '15s'
+    const delay = await human(humanDelay)
+    const humanInterval = this._options.Interval || this._options.interval || '12h'
+    const interval = await human(humanInterval)
+    const strategy = this._options.Strategy || this._options.strategy || 'all'
     const options = {
+      delay,
       interval,
       strategy
     }
@@ -65,7 +70,7 @@ class Provider {
   }
 
   /**
-   * Announce block to the network and add and entry to the tracker
+   * Announce block to the network
    * Takes a cid and makes an attempt to announce it to the network
    * @param {CID} cid
    */
@@ -79,6 +84,14 @@ class Provider {
     })()
   }
 
+  /**
+   * Find providers of a block in the network
+   * @param {CID} cid cid of the block
+   * @param {object} options
+   * @param {number} options.timeout - how long the query should maximally run, in ms (default: 60000)
+   * @param {number} options.maxNumProviders - maximum number of providers to find
+   * @returns {Promise}
+   */
   async findProviders (cid, options) { // eslint-disable-line require-await
     if (!CID.isCID(cid)) {
       throw errCode('invalid CID to find', 'ERR_INVALID_CID')

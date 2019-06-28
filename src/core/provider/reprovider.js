@@ -5,16 +5,15 @@ const WorkerQueue = require('./queue')
 
 const { blockKeyToCid } = require('../utils')
 
-// const initialDelay = 15000
-const initialDelay = 3000
-
 class Reprovider {
   /**
    * Reprovider goal is to reannounce blocks to the network.
    * @param {object} contentRouting
    * @param {Blockstore} blockstore
    * @param {object} options
-   * @memberof Reprovider
+   * @param {string} options.delay reprovider initial delay in human friendly time
+   * @param {string} options.interval reprovider interval in human friendly time
+   * @param {string} options.strategy reprovider strategy
    */
   constructor (contentRouting, blockstore, options) {
     this._contentRouting = contentRouting
@@ -33,7 +32,7 @@ class Reprovider {
     // Start doing reprovides after the initial delay
     this._timeoutId = setTimeout(() => {
       this._runPeriodically()
-    }, initialDelay)
+    }, this._options.delay)
   }
 
   /**
@@ -49,27 +48,34 @@ class Reprovider {
   }
 
   /**
-   * Run reprovide on every `options.interval` ms
+   * Run reprovide on every `options.interval` ms recursively
    * @returns {void}
    */
   async _runPeriodically () {
-    while (this._timeoutId) {
-      const blocks = await promisify((callback) => this._blockstore.query({}, callback))()
+    // Verify if stopped
+    if (!this._timeoutId) return
 
-      // TODO strategy logic here
-      if (this._options.strategy === 'pinned') {
+    // TODO strategy logic here
+    const blocks = await promisify((callback) => this._blockstore.query({}, callback))()
 
-      } else if (this._options.strategy === 'pinned') {
+    if (this._options.strategy === 'pinned') {
 
-      }
+    } else if (this._options.strategy === 'pinned') {
 
-      await this._worker.execute(blocks)
-
-      // Each subsequent walk should run on a `this._options.interval` interval
-      await new Promise(resolve => {
-        this._timeoutId = setTimeout(resolve, this._options.interval)
-      })
     }
+
+    // Verify if stopped
+    if (!this._timeoutId) return
+
+    await this._worker.execute(blocks)
+
+    // Verify if stopped
+    if (!this._timeoutId) return
+
+    // Each subsequent walk should run on a `this._options.interval` interval
+    this._timeoutId = setTimeout(() => {
+      this._runPeriodically()
+    }, this._options.interval)
   }
 
   /**

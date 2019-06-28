@@ -67,6 +67,7 @@ const configSchema = s({
       }))
     })),
     Reprovider: optional(s({
+      Delay: 'string?',
       Interval: 'string?',
       Strategy: 'string?'
     })),
