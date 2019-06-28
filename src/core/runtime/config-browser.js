@@ -5,7 +5,8 @@ module.exports = () => ({
     Swarm: [
     ],
     API: '',
-    Gateway: ''
+    Gateway: '',
+    Delegates: []
   },
   Discovery: {
     MDNS: {

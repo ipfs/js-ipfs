@@ -7,7 +7,8 @@ module.exports = () => ({
       '/ip4/127.0.0.1/tcp/4003/ws'
     ],
     API: '/ip4/127.0.0.1/tcp/5002',
-    Gateway: '/ip4/127.0.0.1/tcp/9090'
+    Gateway: '/ip4/127.0.0.1/tcp/9090',
+    Delegates: []
   },
   Discovery: {
     MDNS: {
