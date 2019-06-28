@@ -1,5 +1,6 @@
 'use strict'
 
+const get = require('dlv')
 const { TieredDatastore } = require('datastore-core')
 const PubsubDatastore = require('./pubsub-datastore')
 const OfflineDatastore = require('./offline-datastore')
@@ -34,7 +35,7 @@ module.exports = (ipfs) => {
   }
 
   // Add DHT if we are online
-  if (ipfs.isOnline()) {
+  if (get(ipfs._options, 'offline') || !get(ipfs._options, 'libp2p.config.dht.enabled', false)) {
     ipnsStores.push(ipfs.libp2p.dht)
   } else {
     ipnsStores.push(new OfflineDatastore(ipfs._repo))
