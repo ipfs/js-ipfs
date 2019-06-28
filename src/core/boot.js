@@ -27,31 +27,6 @@ module.exports = (self) => {
         cb(null, true)
       })
     },
-    // If migrations are enabled check & migrate repo
-    (repoOpened, cb) => {
-      // There is non-initialized repo => no migrations needed
-      if(!repoOpened){
-        return cb(null, repoOpened)
-      }
-
-      self.config.get('repoDisableAutoMigration')
-        .catch(err => {
-          if (!err.message.match('does not exist')) {
-            return Promise.reject(err)
-          }
-
-          // Option not found, but default value is false, lets continue
-          return false
-        })
-        .then(repoDisableAutoMigration => {
-          if (!repoDisableAutoMigration) {
-            self.log('checking for migrations')
-            return self.repo.migrate()
-          }
-        })
-        .then(() => cb(null, repoOpened))
-        .catch(cb)
-    },
     (repoOpened, cb) => {
       // Init with existing initialized, opened, repo
       if (repoOpened) {
