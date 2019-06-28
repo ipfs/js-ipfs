@@ -1,6 +1,7 @@
 'use strict'
 
 const get = require('dlv')
+const callbackify = require('callbackify')
 const series = require('async/series')
 const Bitswap = require('ipfs-bitswap')
 const setImmediate = require('async/setImmediate')
@@ -48,10 +49,22 @@ module.exports = (self) => {
             if (err) return cb(err)
             self.libp2p = libp2p
 
+            // create provider
             self._provider = new Provider(libp2p, self._repo.blocks, get(config, 'Reprovider'))
             cb()
           })
         })
+      },
+      (cb) => {
+        // start provider if libp2p routing enabled
+        if (!get(self._options, 'offline') &&
+          (get(self._options, 'libp2p.config.dht.enabled', false) || get(self._options, 'libp2p.modules.contentRouting', false))) {
+          const providerStart = callbackify(() => self._provider.start())
+
+          providerStart(cb)
+        } else {
+          cb()
+        }
       },
       (cb) => {
         const ipnsRouting = routingConfig(self)
@@ -63,11 +76,6 @@ module.exports = (self) => {
           self._provider,
           { statsEnabled: true }
         )
-
-        if (!get(self._options, 'offline') &&
-          (get(self._options, 'libp2p.config.dht.enabled', false) || get(self._options, 'libp2p.modules.contentRouting', false))) {
-          self._provider.start()
-        }
 
         self._bitswap.start()
         self._blockService.setExchange(self._bitswap)

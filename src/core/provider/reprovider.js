@@ -11,8 +11,8 @@ class Reprovider {
    * @param {object} contentRouting
    * @param {Blockstore} blockstore
    * @param {object} options
-   * @param {string} options.delay reprovider initial delay in human friendly time
-   * @param {string} options.interval reprovider interval in human friendly time
+   * @param {string} options.delay reprovider initial delay in milliseconds
+   * @param {string} options.interval reprovider interval in milliseconds
    * @param {string} options.strategy reprovider strategy
    */
   constructor (contentRouting, blockstore, options) {
@@ -60,7 +60,7 @@ class Reprovider {
 
     if (this._options.strategy === 'pinned') {
 
-    } else if (this._options.strategy === 'pinned') {
+    } else if (this._options.strategy === 'roots') {
 
     }
 

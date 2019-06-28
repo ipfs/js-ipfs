@@ -3,6 +3,7 @@
 const errCode = require('err-code')
 const human = require('human-to-milliseconds')
 const promisify = require('promisify-es6')
+const assert = require('assert')
 
 const CID = require('cids')
 
@@ -26,6 +27,8 @@ class Provider {
     this._blockstore = blockstore
     this._options = options
     this.reprovider = undefined
+
+    this._validateOptions()
   }
 
   /**
@@ -63,7 +66,7 @@ class Provider {
    * @returns {void}
    */
   stop () {
-    this._running = true
+    this._running = false
 
     // stop the reprovider
     this.reprovider.stop()
@@ -100,6 +103,19 @@ class Provider {
     return promisify((callback) => {
       this._contentRouting.findProviders(cid, options, callback)
     })()
+  }
+
+  // Validate Provider options
+  _validateOptions () {
+    const delay = (this._options.Delay || this._options.delay)
+    assert(delay && parseInt(delay) !== 0, '0 delay is not a valid value for reprovider')
+
+    const interval = (this._options.Interval || this._options.interval)
+    assert(interval && parseInt(interval) !== 0, '0 interval is not a valid value for reprovider')
+
+    const strategy = (this._options.Strategy || this._options.strategy)
+    assert(strategy && (strategy === 'all' || strategy === 'pinned' || strategy === 'roots'),
+      'Reprovider must have one of the following strategies: `all`, `pinned` or `roots`')
   }
 }
 
