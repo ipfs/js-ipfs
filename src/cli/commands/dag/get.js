@@ -32,7 +32,7 @@ module.exports = {
       try {
         result = await ipfs.dag.get(cid, path, options)
       } catch (err) {
-        return print(`dag get failed: ${err.message}`)
+        return print(`dag get failed: ${err}`)
       }
 
       if (options.localResolve) {

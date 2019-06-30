@@ -11,20 +11,20 @@ stages:
 
 node_js:
   - '10'
+  - '12'
 
 os:
   - linux
   - osx
   - windows
 
-script: npx nyc -s npm run test:node -- --bail
+script: npx nyc -s npx aegir test -t node --timeout 10000 --bail
 after_success: npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
 
 jobs:
   include:
     - stage: check
       script:
-        - npx aegir commitlint --travis
         - npx aegir dep-check -- -i wrtc -i electron-webrtc
         - npm run lint
 
@@ -43,6 +43,16 @@ jobs:
       script:
         - npx aegir test -t browser -- --browsers FirefoxHeadless
         - npx aegir test -t webworker -- --browsers FirefoxHeadless
+
+    - stage: test
+      name: electron-main
+      script:
+        - xvfb-run npx aegir test -t electron-main -- --bail --timeout 10000
+
+    - stage: test
+      name: electron-renderer
+      script:
+        - xvfb-run npx aegir test -t electron-renderer -- --bail --timeout 10000
 
 notifications:
   email: false

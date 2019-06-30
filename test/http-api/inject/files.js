@@ -76,6 +76,40 @@ module.exports = (http) => {
         expect(res.statusCode).to.equal(200)
         expect(multibase.isEncoded(JSON.parse(res.result).Hash)).to.deep.equal('base64')
       })
+
+      it('should add data using the trickle importer', async () => {
+        const form = new FormData()
+        form.append('data', Buffer.from('TEST\n'))
+        const headers = form.getHeaders()
+
+        const payload = await streamToPromise(form)
+        const res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/add?trickle=true&pin=false',
+          headers,
+          payload
+        })
+
+        expect(res.statusCode).to.equal(200)
+        expect(JSON.parse(res.result).Hash).to.equal('QmRJTAvvv1UNgCXxK9grf6u2pCT2ZQ2wCwsojpC1sTjkp9')
+      })
+
+      it('should add data using the balanced importer', async () => {
+        const form = new FormData()
+        form.append('data', Buffer.from('TEST\n'))
+        const headers = form.getHeaders()
+
+        const payload = await streamToPromise(form)
+        const res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/add?pin=false',
+          headers,
+          payload
+        })
+
+        expect(res.statusCode).to.equal(200)
+        expect(JSON.parse(res.result).Hash).to.equal('Qmdudp5XvJr7KrqK6fQ7m2ACStoRxuwfovNHnY6dAAeUis')
+      })
     })
 
     describe('/cat', () => {
@@ -157,6 +191,58 @@ module.exports = (http) => {
         res.result.Objects[0].Links.forEach(item => {
           expect(multibase.isEncoded(item.Hash)).to.deep.equal('base64')
         })
+      })
+    })
+
+    describe('/refs', () => {
+      it('should list refs', async () => {
+        const form = new FormData()
+        form.append('file', Buffer.from('TEST' + Date.now()), { filename: 'data.txt' })
+        const headers = form.getHeaders()
+
+        const payload = await streamToPromise(form)
+        let res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/add?wrap-with-directory=true',
+          headers,
+          payload
+        })
+        expect(res.statusCode).to.equal(200)
+
+        const files = res.result.trim().split('\n').map(r => JSON.parse(r))
+        const dir = files[files.length - 1]
+
+        res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/refs?format=<linkname>&arg=' + dir.Hash
+        })
+        expect(res.statusCode).to.equal(200)
+        expect(JSON.parse(res.result).Ref).to.equal('data.txt')
+      })
+    })
+
+    describe('/refs/local', () => {
+      it('should list local refs', async () => {
+        const form = new FormData()
+        form.append('file', Buffer.from('TEST' + Date.now()), { filename: 'data.txt' })
+        const headers = form.getHeaders()
+
+        const payload = await streamToPromise(form)
+        let res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/add?wrap-with-directory=true',
+          headers,
+          payload
+        })
+        expect(res.statusCode).to.equal(200)
+
+        res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/refs/local'
+        })
+        expect(res.statusCode).to.equal(200)
+        const refs = res.result.trim().split('\n').map(JSON.parse).map(r => r.Ref)
+        expect(refs.length).to.be.gt(0)
       })
     })
   })

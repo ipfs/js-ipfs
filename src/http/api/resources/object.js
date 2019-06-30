@@ -1,13 +1,9 @@
 'use strict'
 
-const promisify = require('promisify-es6')
 const CID = require('cids')
 const multipart = require('ipfs-multipart')
 const dagPB = require('ipld-dag-pb')
 const { DAGNode, DAGLink } = dagPB
-const calculateCid = promisify(dagPB.util.cid)
-const deserialize = promisify(dagPB.util.deserialize)
-const createDagNode = promisify(DAGNode.create)
 const Joi = require('@hapi/joi')
 const multibase = require('multibase')
 const Boom = require('boom')
@@ -87,7 +83,7 @@ exports.get = {
     let node, cid
     try {
       node = await ipfs.object.get(key, { enc: enc })
-      cid = await calculateCid(node)
+      cid = await dagPB.util.cid(dagPB.util.serialize(node))
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to get object' })
     }
@@ -145,7 +141,7 @@ exports.put = {
 
     if (enc === 'protobuf') {
       try {
-        return { node: await deserialize(data) }
+        return { node: await dagPB.util.deserialize(data) }
       } catch (err) {
         throw Boom.badRequest('Failed to deserialize: ' + err)
       }
@@ -159,7 +155,7 @@ exports.put = {
     }
 
     try {
-      return { node: await createDagNode(nodeJson.Data, nodeJson.Links) }
+      return { node: DAGNode.create(nodeJson.Data, nodeJson.Links) }
     } catch (err) {
       throw Boom.badRequest('Failed to create DAG node: ' + err)
     }
@@ -258,26 +254,22 @@ exports.links = {
   async handler (request, h) {
     const { ipfs } = request.server.app
     const { key } = request.pre.args
-
-    let node
-    try {
-      node = await ipfs.object.get(key)
-    } catch (err) {
-      throw Boom.boomify(err, { message: 'Failed to get object links' })
+    const response = {
+      Hash: cidToString(key, { base: request.query['cid-base'], upgrade: false })
     }
+    const links = await ipfs.object.links(key)
 
-    const nodeJSON = node.toJSON()
-
-    return h.response({
-      Hash: cidToString(key, { base: request.query['cid-base'], upgrade: false }),
-      Links: nodeJSON.links.map((l) => {
+    if (links) {
+      response.Links = links.map((l) => {
         return {
-          Name: l.name,
-          Size: l.size,
-          Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
+          Name: l.Name,
+          Size: l.Tsize,
+          Hash: cidToString(l.Hash, { base: request.query['cid-base'], upgrade: false })
         }
       })
-    })
+    }
+
+    return h.response(response)
   }
 }
 

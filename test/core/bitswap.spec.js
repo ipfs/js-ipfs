@@ -15,7 +15,7 @@ const multiaddr = require('multiaddr')
 const isNode = require('detect-node')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
-
+const path = require('path')
 const IPFSFactory = require('ipfsd-ctl')
 
 const IPFS = require('../../src/core')
@@ -64,7 +64,7 @@ let nodes = []
 
 function addNode (fDaemon, inProcNode, callback) {
   fDaemon.spawn({
-    exec: './src/cli/bin.js',
+    exec: isNode ? path.resolve(`${__dirname}/../../src/cli/bin.js`) : './src/cli/bin.js',
     initOptions: { bits: 512 },
     config: {
       Addresses: {
@@ -76,7 +76,8 @@ function addNode (fDaemon, inProcNode, callback) {
         }
       },
       Bootstrap: []
-    }
+    },
+    preload: { enabled: false }
   }, (err, ipfsd) => {
     expect(err).to.not.exist()
     nodes.push(ipfsd)

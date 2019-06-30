@@ -18,6 +18,7 @@ const multibase = require('multibase')
 const isIpfs = require('is-ipfs')
 const promisify = require('promisify-es6')
 const { cidToString } = require('../../../utils/cid')
+const { Format } = require('../../../core/components/files-regular/refs')
 
 function numberFromQuery (query, key) {
   if (query && query[key] !== undefined) {
@@ -39,12 +40,16 @@ exports.parseKey = (request, h) => {
     throw Boom.badRequest("Argument 'key' is required")
   }
 
-  if (!isIpfs.ipfsPath(arg) && !isIpfs.cid(arg) && !isIpfs.ipfsPath('/ipfs/' + arg)) {
-    throw Boom.badRequest('invalid ipfs ref path')
+  const isArray = Array.isArray(arg)
+  const args = isArray ? arg : [arg]
+  for (const arg of args) {
+    if (!isIpfs.ipfsPath(arg) && !isIpfs.cid(arg) && !isIpfs.ipfsPath('/ipfs/' + arg)) {
+      throw Boom.badRequest(`invalid ipfs ref path '${arg}'`)
+    }
   }
 
   return {
-    key: arg,
+    key: isArray ? args : arg,
     options: {
       offset: numberFromQuery(request.query, 'offset'),
       length: numberFromQuery(request.query, 'length')
@@ -85,7 +90,7 @@ exports.cat = {
                 return pusher.end(err)
               }
 
-              err.message = err.message === 'No such file'
+              err.message = err.message === 'file does not exist'
                 ? err.message
                 : 'Failed to cat file: ' + err
 
@@ -156,7 +161,8 @@ exports.add = {
         'only-hash': Joi.boolean(),
         pin: Joi.boolean().default(true),
         'wrap-with-directory': Joi.boolean(),
-        chunker: Joi.string()
+        chunker: Joi.string(),
+        trickle: Joi.boolean()
       })
       // TODO: Necessary until validate "recursive", "stream-channels" etc.
       .options({ allowUnknown: true })
@@ -213,7 +219,8 @@ exports.add = {
       hashAlg: request.query.hash,
       wrapWithDirectory: request.query['wrap-with-directory'],
       pin: request.query.pin,
-      chunker: request.query.chunker
+      chunker: request.query.chunker,
+      strategy: request.query.trickle ? 'trickle' : 'balanced'
     }
 
     const aborter = abortable()
@@ -320,4 +327,90 @@ function toTypeCode (type) {
     default:
       return 0
   }
+}
+
+exports.refs = {
+  validate: {
+    query: Joi.object().keys({
+      recursive: Joi.boolean().default(false),
+      format: Joi.string().default(Format.default),
+      edges: Joi.boolean().default(false),
+      unique: Joi.boolean().default(false),
+      'max-depth': Joi.number().integer().min(-1)
+    }).unknown()
+  },
+
+  // uses common parseKey method that returns a `key`
+  parseArgs: exports.parseKey,
+
+  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+  handler (request, h) {
+    const { ipfs } = request.server.app
+    const { key } = request.pre.args
+
+    const recursive = request.query.recursive
+    const format = request.query.format
+    const edges = request.query.edges
+    const unique = request.query.unique
+    const maxDepth = request.query['max-depth']
+
+    const source = ipfs.refsPullStream(key, { recursive, format, edges, unique, maxDepth })
+    return sendRefsReplyStream(request, h, `refs for ${key}`, source)
+  }
+}
+
+exports.refs.local = {
+  // main route handler
+  handler (request, h) {
+    const { ipfs } = request.server.app
+    const source = ipfs.refs.localPullStream()
+    return sendRefsReplyStream(request, h, 'local refs', source)
+  }
+}
+
+function sendRefsReplyStream (request, h, desc, source) {
+  const replyStream = pushable()
+  const aborter = abortable()
+
+  const stream = toStream.source(pull(
+    replyStream,
+    aborter,
+    ndjson.serialize()
+  ))
+
+  // const stream = toStream.source(replyStream.source)
+  // hapi is not very clever and throws if no
+  // - _read method
+  // - _readableState object
+  // are there :(
+  if (!stream._read) {
+    stream._read = () => {}
+    stream._readableState = {}
+    stream.unpipe = () => {}
+  }
+
+  pull(
+    source,
+    pull.drain(
+      (ref) => replyStream.push({ Ref: ref.ref, Err: ref.err }),
+      (err) => {
+        if (err) {
+          request.raw.res.addTrailers({
+            'X-Stream-Error': JSON.stringify({
+              Message: `Failed to get ${desc}: ${err.message || ''}`,
+              Code: 0
+            })
+          })
+          return aborter.abort()
+        }
+
+        replyStream.end()
+      }
+    )
+  )
+
+  return h.response(stream)
+    .header('x-chunked-output', '1')
+    .header('content-type', 'application/json')
+    .header('Trailer', 'X-Stream-Error')
 }

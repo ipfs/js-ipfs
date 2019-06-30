@@ -1,39 +1,37 @@
 'use strict'
 const mergeOptions = require('merge-options')
-const ipldDagCbor = require('ipld-dag-cbor')
-const ipldDagPb = require('ipld-dag-pb')
-const ipldRaw = require('ipld-raw')
+const multicodec = require('multicodec')
 
 // All known (non-default) IPLD formats
 const IpldFormats = {
-  get 'bitcoin-block' () {
+  get [multicodec.BITCOIN_BLOCK] () {
     return require('ipld-bitcoin')
   },
-  get 'eth-account-snapshot' () {
+  get [multicodec.ETH_ACCOUNT_SNAPSHOT] () {
     return require('ipld-ethereum').ethAccountSnapshot
   },
-  get 'eth-block' () {
+  get [multicodec.ETH_BLOCK] () {
     return require('ipld-ethereum').ethBlock
   },
-  get 'eth-block-list' () {
+  get [multicodec.ETH_BLOCK_LIST] () {
     return require('ipld-ethereum').ethBlockList
   },
-  get 'eth-state-trie' () {
+  get [multicodec.ETH_STATE_TRIE] () {
     return require('ipld-ethereum').ethStateTrie
   },
-  get 'eth-storage-trie' () {
+  get [multicodec.ETH_STORAGE_TRIE] () {
     return require('ipld-ethereum').ethStorageTrie
   },
-  get 'eth-tx' () {
+  get [multicodec.ETH_TX] () {
     return require('ipld-ethereum').ethTx
   },
-  get 'eth-tx-trie' () {
+  get [multicodec.ETH_TX_TRIE] () {
     return require('ipld-ethereum').ethTxTrie
   },
-  get 'git-raw' () {
+  get [multicodec.GIT_RAW] () {
     return require('ipld-git')
   },
-  get 'zcash-block' () {
+  get [multicodec.ZCASH_BLOCK] () {
     return require('ipld-zcash')
   }
 }
@@ -44,11 +42,13 @@ module.exports = (blockService, options = {}, log) => {
     { concatArrays: true },
     {
       blockService: blockService,
-      formats: [ipldDagCbor, ipldDagPb, ipldRaw],
-      loadFormat: (codec, callback) => {
+      loadFormat: (codec) => {
         log('Loading IPLD format', codec)
-        if (IpldFormats[codec]) return callback(null, IpldFormats[codec])
-        callback(new Error(`Missing IPLD format "${codec}"`))
+        if (IpldFormats[codec]) {
+          return IpldFormats[codec]
+        } else {
+          throw new Error(`Missing IPLD format "${codec}"`)
+        }
       }
     }, options)
 }

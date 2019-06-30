@@ -5,6 +5,7 @@ const retry = require('async/retry')
 const toUri = require('multiaddr-to-uri')
 const debug = require('debug')
 const CID = require('cids')
+const shuffle = require('array-shuffle')
 const preload = require('./runtime/preload-nodejs')
 
 const log = debug('ipfs:preload')
@@ -44,7 +45,7 @@ module.exports = self => {
       }
     }
 
-    const fallbackApiUris = Array.from(apiUris)
+    const fallbackApiUris = shuffle(apiUris)
     let request
     const now = Date.now()
 

@@ -229,7 +229,7 @@ function onDrop (event) {
         node.add({
           path: file.name,
           content: Buffer.from(buffer)
-        }, { wrap: true, progress: updateProgress }, (err, filesAdded) => {
+        }, { wrapWithDirectory: true, progress: updateProgress }, (err, filesAdded) => {
           if (err) {
             return onError(err)
           }

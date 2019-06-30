@@ -16,7 +16,7 @@ describe('resolve', () => runOnAndOff((thing) => {
   })
 
   it('should resolve an IPFS hash', () => {
-    const filePath = path.join(process.cwd(), '/src/init-files/init-docs/readme')
+    const filePath = path.join(path.resolve(__dirname, '..', '..'), 'src/init-files/init-docs/readme')
     let hash
 
     return ipfs(`add ${filePath}`)
@@ -33,7 +33,7 @@ describe('resolve', () => runOnAndOff((thing) => {
   it('should resolve an IPFS hash and print CID encoded in specified base', function () {
     this.timeout(10 * 1000)
 
-    const filePath = path.join(process.cwd(), '/src/init-files/init-docs/readme')
+    const filePath = path.join(path.resolve(__dirname, '..', '..'), 'src/init-files/init-docs/readme')
     let b58Hash
     let b64Hash
 
@@ -52,7 +52,7 @@ describe('resolve', () => runOnAndOff((thing) => {
   it('should resolve an IPFS path link', function () {
     this.timeout(10 * 1000)
 
-    const filePath = path.join(process.cwd(), '/src/init-files/init-docs/readme')
+    const filePath = path.join(path.resolve(__dirname, '..', '..'), 'src/init-files/init-docs/readme')
     let fileHash, rootHash
 
     return ipfs(`add ${filePath} --wrap-with-directory`)

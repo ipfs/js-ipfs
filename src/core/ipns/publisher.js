@@ -11,7 +11,7 @@ log.error = debug('ipfs:ipns:publisher:error')
 
 const ipns = require('ipns')
 
-const defaultRecordTtl = 60 * 60 * 1000
+const defaultRecordLifetime = 60 * 60 * 1000
 
 // IpnsPublisher is capable of publishing and resolving names to the IPFS routing system.
 class IpnsPublisher {
@@ -46,7 +46,7 @@ class IpnsPublisher {
 
   // Accepts a keypair, as well as a value (ipfsPath), and publishes it out to the routing system
   publish (privKey, value, callback) {
-    this.publishWithEOL(privKey, value, defaultRecordTtl, callback)
+    this.publishWithEOL(privKey, value, defaultRecordLifetime, callback)
   }
 
   _putRecordToRouting (record, peerId, callback) {
@@ -108,13 +108,13 @@ class IpnsPublisher {
     // Add record to routing (buffer key)
     this._routing.put(key.toBuffer(), entryData, (err, res) => {
       if (err) {
-        const errMsg = `ipns record for ${key.toString()} could not be stored in the routing`
+        const errMsg = `ipns record for ${key.toString('base64')} could not be stored in the routing`
 
         log.error(errMsg)
         return callback(errcode(new Error(errMsg), 'ERR_PUTTING_TO_ROUTING'))
       }
 
-      log(`ipns record for ${key.toString()} was stored in the routing`)
+      log(`ipns record for ${key.toString('base64')} was stored in the routing`)
       callback(null, res)
     })
   }
@@ -137,13 +137,13 @@ class IpnsPublisher {
     // Add public key to routing (buffer key)
     this._routing.put(key.toBuffer(), publicKey.bytes, (err, res) => {
       if (err) {
-        const errMsg = `public key for ${key.toString()} could not be stored in the routing`
+        const errMsg = `public key for ${key.toString('base64')} could not be stored in the routing`
 
         log.error(errMsg)
         return callback(errcode(new Error(errMsg), 'ERR_PUTTING_TO_ROUTING'))
       }
 
-      log(`public key for ${key.toString()} was stored in the routing`)
+      log(`public key for ${key.toString('base64')} was stored in the routing`)
       callback(null, res)
     })
   }
@@ -269,4 +269,5 @@ class IpnsPublisher {
   }
 }
 
+IpnsPublisher.defaultRecordLifetime = defaultRecordLifetime
 exports = module.exports = IpnsPublisher

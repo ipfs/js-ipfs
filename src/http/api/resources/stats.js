@@ -15,7 +15,7 @@ exports.bitswap = require('./bitswap').stat
 
 exports.repo = require('./repo').stat
 
-exports.bw = async (request, h) => {
+exports.bw = (request, h) => {
   const { ipfs } = request.server.app
   const options = {
     peer: request.query.peer,

@@ -9,10 +9,10 @@ const parallel = require('async/parallel')
 const series = require('async/series')
 const DaemonFactory = require('ipfsd-ctl')
 const isNode = require('detect-node')
-
+const path = require('path')
 const expect = chai.expect
 chai.use(dirtyChai)
-const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
+const df = DaemonFactory.create({ exec: path.resolve(`${__dirname}/../../src/cli/bin.js`) })
 const dfProc = DaemonFactory.create({
   exec: require('../../'),
   type: 'proc'
@@ -34,7 +34,8 @@ function spawnNode ({ dht = false, type = 'js' }, cb) {
   factory.spawn({
     args,
     config,
-    initOptions: { bits: 512 }
+    initOptions: { bits: 512 },
+    preload: { enabled: false }
   }, cb)
 }
 

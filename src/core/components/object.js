@@ -9,6 +9,7 @@ const DAGNode = dagPB.DAGNode
 const DAGLink = dagPB.DAGLink
 const CID = require('cids')
 const mh = require('multihashes')
+const multicodec = require('multicodec')
 const Unixfs = require('ipfs-unixfs')
 const errCode = require('err-code')
 
@@ -58,11 +59,52 @@ function parseJSONBuffer (buf, callback) {
     return callback(new Error('failed to parse JSON: ' + err))
   }
 
-  DAGNode.create(data, links, callback)
+  try {
+    callback(null, DAGNode.create(data, links))
+  } catch (err) {
+    callback(err)
+  }
 }
 
 function parseProtoBuffer (buf, callback) {
-  dagPB.util.deserialize(buf, callback)
+  let obj
+  try {
+    obj = dagPB.util.deserialize(buf)
+  } catch (err) {
+    return callback(err)
+  }
+  callback(null, obj)
+}
+
+function findLinks (node, links = []) {
+  for (let key in node) {
+    const val = node[key]
+
+    if (key === '/' && Object.keys(node).length === 1) {
+      try {
+        links.push(new DAGLink('', 0, new CID(val)))
+        continue
+      } catch (_) {
+        // not a CID
+      }
+    }
+
+    if (CID.isCID(val)) {
+      links.push(new DAGLink('', 0, val))
+
+      continue
+    }
+
+    if (Array.isArray(val)) {
+      findLinks(val, links)
+    }
+
+    if (typeof val === 'object' && !(val instanceof String)) {
+      findLinks(val, links)
+    }
+  }
+
+  return links
 }
 
 module.exports = function object (self) {
@@ -87,19 +129,19 @@ module.exports = function object (self) {
               return cb(err)
             }
 
-            self._ipld.put(node, {
-              version: 0,
-              hashAlg: 'sha2-256',
-              format: 'dag-pb'
-            }, (err, cid) => {
-              if (err) return cb(err)
+            self._ipld.put(node, multicodec.DAG_PB, {
+              cidVersion: 0,
+              hashAlg: multicodec.SHA2_256
+            }).then(
+              (cid) => {
+                if (options.preload !== false) {
+                  self._preload(cid)
+                }
 
-              if (options.preload !== false) {
-                self._preload(cid)
-              }
-
-              cb(null, cid)
-            })
+                cb(null, cid)
+              },
+              (error) => cb(error)
+            )
           })
         }
       ], callback)
@@ -132,27 +174,27 @@ module.exports = function object (self) {
         data = Buffer.alloc(0)
       }
 
-      DAGNode.create(data, (err, node) => {
-        if (err) {
-          return callback(err)
-        }
+      let node
 
-        self._ipld.put(node, {
-          version: 0,
-          hashAlg: 'sha2-256',
-          format: 'dag-pb'
-        }, (err, cid) => {
-          if (err) {
-            return callback(err)
-          }
+      try {
+        node = DAGNode.create(data)
+      } catch (err) {
+        return callback(err)
+      }
 
+      self._ipld.put(node, multicodec.DAG_PB, {
+        cidVersion: 0,
+        hashAlg: multicodec.SHA2_256
+      }).then(
+        (cid) => {
           if (options.preload !== false) {
             self._preload(cid)
           }
 
           callback(null, cid)
-        })
-      })
+        },
+        (error) => callback(error)
+      )
     }),
     put: promisify((obj, options, callback) => {
       if (typeof options === 'function') {
@@ -175,46 +217,44 @@ module.exports = function object (self) {
             next()
           })
         } else {
-          DAGNode.create(obj, (err, _node) => {
-            if (err) {
-              return callback(err)
-            }
-            node = _node
-            next()
-          })
+          try {
+            node = DAGNode.create(obj)
+          } catch (err) {
+            return callback(err)
+          }
+
+          next()
         }
       } else if (DAGNode.isDAGNode(obj)) {
         // already a dag node
         node = obj
         next()
       } else if (typeof obj === 'object') {
-        DAGNode.create(obj.Data, obj.Links, (err, _node) => {
-          if (err) {
-            return callback(err)
-          }
-          node = _node
-          next()
-        })
+        try {
+          node = DAGNode.create(obj.Data, obj.Links)
+        } catch (err) {
+          return callback(err)
+        }
+
+        next()
       } else {
         return callback(new Error('obj not recognized'))
       }
 
       function next () {
-        self._ipld.put(node, {
-          version: 0,
-          hashAlg: 'sha2-256',
-          format: 'dag-pb'
-        }, (err, cid) => {
-          if (err) {
-            return callback(err)
-          }
+        self._ipld.put(node, multicodec.DAG_PB, {
+          cidVersion: 0,
+          hashAlg: multicodec.SHA2_256
+        }).then(
+          (cid) => {
+            if (options.preload !== false) {
+              self._preload(cid)
+            }
 
-          if (options.preload !== false) {
-            self._preload(cid)
-          }
-
-          callback(null, cid)
-        })
+            callback(null, cid)
+          },
+          (error) => callback(error)
+        )
       }
     }),
 
@@ -248,13 +288,10 @@ module.exports = function object (self) {
         self._preload(cid)
       }
 
-      self._ipld.get(cid, (err, result) => {
-        if (err) {
-          return callback(err)
-        }
-
-        callback(null, result.value)
-      })
+      self._ipld.get(cid).then(
+        (node) => callback(null, node),
+        (error) => callback(error)
+      )
     }),
 
     data: promisify((multihash, options, callback) => {
@@ -268,7 +305,7 @@ module.exports = function object (self) {
           return callback(err)
         }
 
-        callback(null, node.data)
+        callback(null, node.Data)
       })
     }),
 
@@ -278,12 +315,28 @@ module.exports = function object (self) {
         options = {}
       }
 
-      self.object.get(multihash, options, (err, node) => {
+      const cid = new CID(multihash)
+
+      self.dag.get(cid, options, (err, result) => {
         if (err) {
           return callback(err)
         }
 
-        callback(null, node.links)
+        if (cid.codec === 'raw') {
+          return callback(null, [])
+        }
+
+        if (cid.codec === 'dag-pb') {
+          return callback(null, result.value.Links)
+        }
+
+        if (cid.codec === 'dag-cbor') {
+          const links = findLinks(result)
+
+          return callback(null, links)
+        }
+
+        callback(new Error(`Cannot resolve links from codec ${cid.codec}`))
       })
     }),
 
@@ -298,9 +351,17 @@ module.exports = function object (self) {
       waterfall([
         (cb) => self.object.get(multihash, options, cb),
         (node, cb) => {
+          cb(null, {
+            node,
+            serialized: dagPB.util.serialize(node)
+          })
+        },
+        ({ node, serialized }, cb) => {
           parallel({
-            serialized: (next) => dagPB.util.serialize(node, next),
-            cid: (next) => dagPB.util.cid(node, next),
+            serialized: (next) => next(null, serialized),
+            cid: (next) => dagPB.util.cid(serialized, {
+              cidVersion: 0
+            }).then((cid) => next(null, cid), next),
             node: (next) => next(null, node)
           }, cb)
         }
@@ -310,14 +371,14 @@ module.exports = function object (self) {
         }
 
         const blockSize = result.serialized.length
-        const linkLength = result.node.links.reduce((a, l) => a + l.size, 0)
+        const linkLength = result.node.Links.reduce((a, l) => a + l.Tsize, 0)
 
         callback(null, {
           Hash: result.cid.toBaseEncodedString(),
-          NumLinks: result.node.links.length,
+          NumLinks: result.node.Links.length,
           BlockSize: blockSize,
-          LinksSize: blockSize - result.node.data.length,
-          DataSize: result.node.data.length,
+          LinksSize: blockSize - result.node.Data.length,
+          DataSize: result.node.Data.length,
           CumulativeSize: blockSize + linkLength
         })
       })
@@ -326,31 +387,49 @@ module.exports = function object (self) {
     patch: promisify({
       addLink (multihash, link, options, callback) {
         editAndSave((node, cb) => {
-          DAGNode.addLink(node, link, cb)
+          DAGNode.addLink(node, link).then((node) => {
+            cb(null, node)
+          }, cb)
         })(multihash, options, callback)
       },
 
       rmLink (multihash, linkRef, options, callback) {
         editAndSave((node, cb) => {
-          if (DAGLink.isDAGLink(linkRef)) {
-            linkRef = linkRef._name
-          } else if (linkRef && linkRef.name) {
-            linkRef = linkRef.name
+          linkRef = linkRef.Name || linkRef.name
+
+          try {
+            node = DAGNode.rmLink(node, linkRef)
+          } catch (err) {
+            return cb(err)
           }
-          DAGNode.rmLink(node, linkRef, cb)
+
+          cb(null, node)
         })(multihash, options, callback)
       },
 
       appendData (multihash, data, options, callback) {
         editAndSave((node, cb) => {
-          const newData = Buffer.concat([node.data, data])
-          DAGNode.create(newData, node.links, cb)
+          const newData = Buffer.concat([node.Data, data])
+
+          try {
+            node = DAGNode.create(newData, node.Links)
+          } catch (err) {
+            return cb(err)
+          }
+
+          cb(null, node)
         })(multihash, options, callback)
       },
 
       setData (multihash, data, options, callback) {
         editAndSave((node, cb) => {
-          DAGNode.create(data, node.links, cb)
+          try {
+            node = DAGNode.create(data, node.Links)
+          } catch (err) {
+            return cb(err)
+          }
+
+          cb(null, node)
         })(multihash, options, callback)
       }
     })

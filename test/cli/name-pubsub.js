@@ -6,7 +6,7 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-
+const path = require('path')
 const parallel = require('async/parallel')
 const series = require('async/series')
 const ipfsExec = require('../utils/ipfs-exec')
@@ -14,12 +14,9 @@ const ipfsExec = require('../utils/ipfs-exec')
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ type: 'js' })
 
-const checkAll = (bits) => string => bits.every(bit => string.includes(bit))
-const emptyDirCid = 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
-
 const spawnDaemon = (callback) => {
   df.spawn({
-    exec: `./src/cli/bin.js`,
+    exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
     args: ['--enable-namesys-pubsub'],
     initOptions: { bits: 512 },
     config: {
@@ -165,53 +162,6 @@ describe('name-pubsub', () => {
           })
       })
     })
-
-    describe('pubsub records', () => {
-      let cidAdded
-
-      before(function (done) {
-        this.timeout(50 * 1000)
-        ipfsA('add src/init-files/init-docs/readme')
-          .then((out) => {
-            cidAdded = out.split(' ')[1]
-            done()
-          })
-      })
-
-      it('should publish the received record to the subscriber', function () {
-        this.timeout(80 * 1000)
-
-        return ipfsB(`name resolve ${nodeBId.id}`)
-          .then((res) => {
-            expect(res).to.exist()
-            expect(res).to.satisfy(checkAll([emptyDirCid])) // Empty dir received (subscribed)
-
-            return ipfsA(`name resolve ${nodeBId.id}`)
-          })
-          .catch((err) => {
-            expect(err).to.exist() // Not available (subscribed now)
-
-            return ipfsB(`name publish ${cidAdded}`)
-          })
-          .then((res) => {
-            // published to IpfsB and published through pubsub to ipfsa
-            expect(res).to.exist()
-            expect(res).to.satisfy(checkAll([cidAdded, nodeBId.id]))
-
-            return ipfsB(`name resolve ${nodeBId.id}`)
-          })
-          .then((res) => {
-            expect(res).to.exist()
-            expect(res).to.satisfy(checkAll([cidAdded]))
-
-            return ipfsA(`name resolve ${nodeBId.id}`)
-          })
-          .then((res) => {
-            expect(res).to.exist()
-            expect(res).to.satisfy(checkAll([cidAdded])) // value propagated to node B
-          })
-      })
-    })
   })
 
   describe('disabled', () => {
@@ -225,7 +175,7 @@ describe('name-pubsub', () => {
       this.timeout(80 * 1000)
 
       df.spawn({
-        exec: `./src/cli/bin.js`,
+        exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
         config: {},
         initOptions: { bits: 512 }
       }, (err, node) => {

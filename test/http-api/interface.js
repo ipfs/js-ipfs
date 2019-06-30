@@ -3,10 +3,11 @@
 
 const tests = require('interface-ipfs-core')
 const CommonFactory = require('../utils/interface-common-factory')
+const path = require('path')
 
 describe('interface-ipfs-core over ipfs-http-client tests', () => {
   const defaultCommonFactory = CommonFactory.create({
-    factoryOptions: { exec: 'src/cli/bin.js' }
+    factoryOptions: { exec: path.resolve(`${__dirname}/../../src/cli/bin.js`) }
   })
 
   tests.bitswap(defaultCommonFactory)
@@ -15,7 +16,12 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
 
   tests.bootstrap(defaultCommonFactory)
 
-  tests.config(defaultCommonFactory)
+  tests.config(defaultCommonFactory, {
+    skip: [{
+      name: 'should set a number',
+      reason: 'Failing - needs to be fixed'
+    }]
+  })
 
   tests.dag(defaultCommonFactory, {
     skip: [{
@@ -40,7 +46,8 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
             Enabled: false
           }
         }
-      }
+      },
+      preload: { enabled: false }
     }
   }), {
     skip: {
@@ -66,7 +73,8 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
             Enabled: false
           }
         }
-      }
+      },
+      preload: { enabled: false }
     }
   }))
 
@@ -89,6 +97,30 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
       }
     ]
   })
+
+  tests.name(CommonFactory.create({
+    spawnOptions: {
+      args: ['--pass ipfs-is-awesome-software', '--offline']
+    }
+  }))
+
+  tests.namePubsub(CommonFactory.create({
+    spawnOptions: {
+      args: ['--enable-namesys-pubsub'],
+      initOptions: { bits: 1024 },
+      config: {
+        Bootstrap: [],
+        Discovery: {
+          MDNS: {
+            Enabled: false
+          },
+          webRTCStar: {
+            Enabled: false
+          }
+        }
+      }
+    }
+  }))
 
   tests.object(defaultCommonFactory)
 

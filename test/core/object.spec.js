@@ -12,18 +12,18 @@ const auto = require('async/auto')
 const waterfall = require('async/waterfall')
 const IPFS = require('../../src/core')
 
-describe('object', () => {
+describe('object', function () {
+  this.timeout(10 * 1000)
   let ipfsd, ipfs
 
   before(function (done) {
-    this.timeout(50 * 1000)
-
     const factory = IPFSFactory.create({ type: 'proc' })
 
     factory.spawn({
       exec: IPFS,
       initOptions: { bits: 512 },
-      config: { Bootstrap: [] }
+      config: { Bootstrap: [] },
+      preload: { enabled: false }
     }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsd = _ipfsd
@@ -120,9 +120,9 @@ describe('object', () => {
         nodeAWithLink: ['nodeA', 'nodeB', (res, cb) => {
           waterfall([
             (done) => ipfs.object.patch.addLink(res.nodeA.cid, {
-              name: res.nodeB.node.name,
-              multihash: res.nodeB.cid,
-              size: res.nodeB.node.size
+              Name: 'nodeBLink',
+              Hash: res.nodeB.cid,
+              Tsize: res.nodeB.node.size
             }, done),
             (cid, done) => ipfs.object.get(cid, (err, node) => done(err, { node, cid }))
           ], cb)
@@ -130,7 +130,7 @@ describe('object', () => {
       }, (err, res) => {
         expect(err).to.not.exist()
 
-        const link = res.nodeAWithLink.node.links[0]
+        const link = res.nodeAWithLink.node.Links[0]
         ipfs.object.patch.rmLink(res.nodeAWithLink.cid, link, null, (err) => {
           expect(err).to.not.exist()
           done()

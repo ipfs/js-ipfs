@@ -6,9 +6,7 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-const promisify = require('promisify-es6')
 const DAGNode = require('ipld-dag-pb').DAGNode
-const createDAGPBNode = promisify(DAGNode.create)
 const Readable = require('stream').Readable
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
@@ -58,7 +56,7 @@ module.exports = (http) => {
       })
 
       it('returns value', async () => {
-        const node = await createDAGPBNode(Buffer.from([]), [])
+        const node = DAGNode.create(Buffer.from([]), [])
         const cid = await http.api._ipfs.dag.put(node, {
           format: 'dag-pb',
           hashAlg: 'sha2-256'
@@ -75,7 +73,7 @@ module.exports = (http) => {
       })
 
       it('uses text encoding for data by default', async () => {
-        const node = await createDAGPBNode(Buffer.from([0, 1, 2, 3]), [])
+        const node = DAGNode.create(Buffer.from([0, 1, 2, 3]), [])
         const cid = await http.api._ipfs.dag.put(node, {
           format: 'dag-pb',
           hashAlg: 'sha2-256'
@@ -93,7 +91,7 @@ module.exports = (http) => {
       })
 
       it('overrides data encoding', async () => {
-        const node = await createDAGPBNode(Buffer.from([0, 1, 2, 3]), [])
+        const node = DAGNode.create(Buffer.from([0, 1, 2, 3]), [])
         const cid = await http.api._ipfs.dag.put(node, {
           format: 'dag-pb',
           hashAlg: 'sha2-256'
@@ -128,7 +126,7 @@ module.exports = (http) => {
       })
 
       it('returns value with a path as part of the cid for dag-pb nodes', async () => {
-        const node = await createDAGPBNode(Buffer.from([0, 1, 2, 3]), [])
+        const node = DAGNode.create(Buffer.from([0, 1, 2, 3]), [])
         const cid = await http.api._ipfs.dag.put(node, {
           format: 'dag-pb',
           hashAlg: 'sha2-256'
@@ -235,8 +233,8 @@ module.exports = (http) => {
 
         const added = await http.api._ipfs.dag.get(cid)
 
-        expect(added.value.data).to.be.empty()
-        expect(added.value.links).to.be.empty()
+        expect(added.value.Data).to.be.empty()
+        expect(added.value.Links).to.be.empty()
       })
 
       it('adds a raw node', async () => {
@@ -276,7 +274,7 @@ module.exports = (http) => {
         const cid = new CID(res.result.Cid['/'])
         const pinset = await http.api._ipfs.pin.ls()
 
-        expect(pinset.map(pin => pin.hash)).to.contain(cid.toBaseEncodedString('base58btc'))
+        expect(pinset.map(pin => pin.hash)).to.contain(cid.toBaseEncodedString())
       })
 
       it('does not pin a node after adding', async () => {
@@ -387,9 +385,7 @@ module.exports = (http) => {
         })
 
         const node1 = {
-          foo: {
-            '/': cid2
-          }
+          foo: cid2
         }
 
         const cid1 = await http.api._ipfs.dag.put(node1, {

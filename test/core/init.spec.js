@@ -27,7 +27,8 @@ describe('init', () => {
     ipfs = new IPFS({
       repo: repo,
       init: false,
-      start: false
+      start: false,
+      preload: { enabled: false }
     })
   })
 
@@ -84,7 +85,7 @@ describe('init', () => {
 
       ipfs.object.get(multihash, { enc: 'base58' }, (err, node) => {
         expect(err).to.not.exist()
-        expect(node.links).to.exist()
+        expect(node.Links).to.exist()
         done()
       })
     })

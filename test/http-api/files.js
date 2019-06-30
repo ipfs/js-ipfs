@@ -10,8 +10,8 @@ chai.use(dirtyChai)
 const {
   FILE_TYPES
 } = require('ipfs-mfs')
-
-const df = DaemonFactory.create({ exec: 'src/cli/bin.js' })
+const path = require('path')
+const df = DaemonFactory.create({ exec: path.resolve(`${__dirname}/../../src/cli/bin.js`) })
 
 describe('.files', () => {
   let ipfs = null

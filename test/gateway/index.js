@@ -49,7 +49,8 @@ describe('HTTP Gateway', function () {
             Enabled: false
           }
         }
-      }
+      },
+      preload: { enabled: false }
     })
 
     const content = (name) => ({

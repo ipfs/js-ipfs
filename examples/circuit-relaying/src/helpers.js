@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 'use strict'
 
 const Room = require('ipfs-pubsub-room')

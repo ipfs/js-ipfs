@@ -19,6 +19,7 @@ const isNode = require('detect-node')
 const ipns = require('ipns')
 const IPFS = require('../../src')
 const waitFor = require('../utils/wait-for')
+const delay = require('interface-ipfs-core/src/utils/delay')
 
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ type: 'proc' })
@@ -35,6 +36,7 @@ describe('name-pubsub', function () {
   let nodeA
   let nodeB
   let idA
+  let idB
 
   const createNode = (callback) => {
     df.spawn({
@@ -50,7 +52,8 @@ describe('name-pubsub', function () {
             Enabled: false
           }
         }
-      }
+      },
+      preload: { enabled: false }
     }, callback)
   }
 
@@ -74,6 +77,7 @@ describe('name-pubsub', function () {
         expect(err).to.not.exist()
 
         idA = ids[0]
+        idB = ids[1]
         nodeA.swarm.connect(ids[1].addresses[0], done)
       })
     })
@@ -131,14 +135,38 @@ describe('name-pubsub', function () {
         expect(err).to.not.exist()
         expect(res).to.exist()
 
-        expect(res[5]).to.exist()
-        expect(res[5].path).to.equal(ipfsRef)
+        expect(res[5]).to.equal(ipfsRef)
         done()
       })
     })
   })
+  it('should self resolve, publish and then resolve correctly', async function () {
+    this.timeout(6000)
+    const emptyDirCid = '/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
+    const [{ path }] = await nodeA.add(Buffer.from('pubsub records'))
 
+    const resolvesEmpty = await nodeB.name.resolve(idB.id)
+    expect(resolvesEmpty).to.be.eq(emptyDirCid)
 
+    try {
+      await nodeA.name.resolve(idB.id)
+    } catch (error) {
+      expect(error).to.exist()
+    }
+
+    const publish = await nodeB.name.publish(path)
+    expect(publish).to.be.eql({
+      name: idB.id,
+      value: `/ipfs/${path}`
+    })
+
+    const resolveB = await nodeB.name.resolve(idB.id)
+    expect(resolveB).to.be.eq(`/ipfs/${path}`)
+    await delay(5000)
+    const resolveA = await nodeA.name.resolve(idB.id)
+    expect(resolveA).to.be.eq(`/ipfs/${path}`)
+  })
+  
   it('should handle event on publish correctly', function (done) {
     this.timeout(80 * 1000)
 

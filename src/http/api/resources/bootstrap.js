@@ -25,8 +25,6 @@ exports.add = {
       }
     }
 
-    console.log('parseArgs', { default: def })
-
     return { default: def }
   },
   async handler (request, h) {

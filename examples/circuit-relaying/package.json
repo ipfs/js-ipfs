@@ -18,7 +18,7 @@
     "ipfs-pubsub-room": "^1.4.0"
   },
   "devDependencies": {
-    "aegir": "^18.0.3",
+    "aegir": "^19.0.3",
     "ipfs-css": "~0.12.0",
     "parcel-bundler": "^1.6.2",
     "tachyons": "^4.9.1"

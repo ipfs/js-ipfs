@@ -6,7 +6,7 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-
+const path = require('path')
 const parallel = require('async/parallel')
 
 const IPFSFactory = require('ipfsd-ctl')
@@ -26,13 +26,14 @@ const config = {
 
 function createNode (callback) {
   f.spawn({
-    exec: './src/cli/bin.js',
+    exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
     config,
-    initOptions: { bits: 512 }
+    initOptions: { bits: 512 },
+    args: ['--preload-enabled=false']
   }, callback)
 }
 
-describe('kad-dht is routing content and peers correctly', () => {
+describe.skip('kad-dht is routing content and peers correctly', () => {
   let nodeA
   let nodeB
   let nodeC

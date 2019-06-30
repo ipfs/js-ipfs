@@ -7,6 +7,9 @@ const parallel = require('async/parallel')
 const human = require('human-to-milliseconds')
 const crypto = require('libp2p-crypto')
 const errcode = require('err-code')
+const mergeOptions = require('merge-options')
+const mh = require('multihashes')
+const isDomain = require('is-domain-name')
 
 const log = debug('ipfs:name')
 log.error = debug('ipfs:name:error')
@@ -35,6 +38,28 @@ const keyLookup = (ipfsNode, kname, callback) => {
   })
 }
 
+const appendRemainder = (cb, remainder) => {
+  return (err, result) => {
+    if (err) {
+      return cb(err)
+    }
+    if (remainder.length) {
+      return cb(null, result + '/' + remainder.join('/'))
+    }
+    return cb(null, result)
+  }
+}
+
+/**
+ * @typedef { import("../index") } IPFS
+ */
+
+/**
+ * IPNS - Inter-Planetary Naming System
+ *
+ * @param {IPFS} self
+ * @returns {Object}
+ */
 module.exports = function name (self) {
   return {
     /**
@@ -52,7 +77,7 @@ module.exports = function name (self) {
      * @param {String} options.ttl time duration this record should be cached for (NOT IMPLEMENTED YET).
      * This accepts durations such as "300s", "1.5h" or "2h45m". Valid time units are
      "ns", "ms", "s", "m", "h" (caution: experimental).
-     * @param {String} options.key name of the key to be used or a valid PeerID, as listed by 'ipfs key list -l'.
+     * @param {String} options.key name of the key to be used, as listed by 'ipfs key list -l'.
      * @param {function(Error)} [callback]
      * @returns {Promise|void}
      */
@@ -125,22 +150,15 @@ module.exports = function name (self) {
         options = {}
       }
 
-      options = options || {}
-      const nocache = options.nocache && options.nocache.toString() === 'true'
-      const recursive = options.recursive && options.recursive.toString() === 'true'
+      options = mergeOptions({
+        nocache: false,
+        recursive: true
+      }, options)
 
       const offline = self._options.offline
 
-      if (!self.isOnline() && !offline) {
-        const errMsg = utils.OFFLINE_ERROR
-
-        log.error(errMsg)
-        return callback(errcode(errMsg, 'OFFLINE_ERROR'))
-      }
-
       // TODO: params related logic should be in the core implementation
-
-      if (offline && nocache) {
+      if (offline && options.nocache) {
         const error = 'cannot specify both offline and nocache'
 
         log.error(error)
@@ -156,12 +174,28 @@ module.exports = function name (self) {
         name = `/ipns/${name}`
       }
 
-      const resolveOptions = {
-        nocache,
-        recursive
+      const [ namespace, hash, ...remainder ] = name.slice(1).split('/')
+      try {
+        mh.fromB58String(hash)
+      } catch (err) {
+        // lets check if we have a domain ex. /ipns/ipfs.io and resolve with dns
+        if (isDomain(hash)) {
+          return self.dns(hash, options, appendRemainder(callback, remainder))
+        }
+
+        log.error(err)
+        return callback(errcode(new Error('Invalid IPNS name.'), 'ERR_IPNS_INVALID_NAME'))
       }
 
-      self._ipns.resolve(name, resolveOptions, callback)
+      // multihash is valid lets resolve with IPNS
+      // IPNS resolve needs a online daemon
+      if (!self.isOnline() && !offline) {
+        const errMsg = utils.OFFLINE_ERROR
+
+        log.error(errMsg)
+        return callback(errcode(errMsg, 'OFFLINE_ERROR'))
+      }
+      self._ipns.resolve(`/${namespace}/${hash}`, options, appendRemainder(callback, remainder))
     }),
     pubsub: namePubsub(self)
   }

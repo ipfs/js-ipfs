@@ -204,9 +204,9 @@ describe('preload', () => {
       expect(err).to.not.exist()
 
       ipfs.object.patch.addLink(result.parent.cid, {
-        name: 'link',
-        cid: result.link.cid,
-        size: result.link.node.size
+        Name: 'link',
+        Hash: result.link.cid,
+        Tsize: result.link.node.size
       }, (err, cid) => {
         expect(err).to.not.exist()
         MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)

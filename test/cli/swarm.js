@@ -6,10 +6,15 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-const series = require('async/series')
+const sinon = require('sinon')
 const ipfsExec = require('../utils/ipfs-exec')
-
+const path = require('path')
 const parallel = require('async/parallel')
+const addrsCommand = require('../../src/cli/commands/swarm/addrs')
+
+const multiaddr = require('multiaddr')
+const PeerInfo = require('peer-info')
+const PeerId = require('peer-id')
 
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ type: 'js' })
@@ -25,50 +30,54 @@ const config = {
 }
 
 describe('swarm', () => {
-  let bMultiaddr
-  let ipfsA
-
-  let nodes = []
-  before(function (done) {
-    // CI takes longer to instantiate the daemon, so we need to increase the
-    // timeout for the before step
-    this.timeout(80 * 1000)
-
-    series([
-      (cb) => {
-        df.spawn({
-          exec: `./src/cli/bin.js`,
-          config,
-          initOptions: { bits: 512 }
-        }, (err, node) => {
-          expect(err).to.not.exist()
-          ipfsA = ipfsExec(node.repoPath)
-          nodes.push(node)
-          cb()
-        })
-      },
-      (cb) => {
-        df.spawn({
-          exec: `./src/cli/bin.js`,
-          config,
-          initOptions: { bits: 512 }
-        }, (err, node) => {
-          expect(err).to.not.exist()
-          node.api.id((err, id) => {
-            expect(err).to.not.exist()
-            bMultiaddr = id.addresses[0]
-            nodes.push(node)
-            cb()
-          })
-        })
-      }
-    ], done)
+  afterEach(() => {
+    sinon.restore()
   })
-
-  after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
 
   describe('daemon on (through http-api)', function () {
     this.timeout(60 * 1000)
+
+    let bMultiaddr
+    let ipfsA
+
+    let nodes = []
+    before(function (done) {
+      // CI takes longer to instantiate the daemon, so we need to increase the
+      // timeout for the before step
+      this.timeout(80 * 1000)
+
+      parallel([
+        (cb) => {
+          df.spawn({
+            exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
+            config,
+            initOptions: { bits: 512 }
+          }, (err, node) => {
+            expect(err).to.not.exist()
+            ipfsA = ipfsExec(node.repoPath)
+            nodes.push(node)
+            cb()
+          })
+        },
+        (cb) => {
+          df.spawn({
+            exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
+            config,
+            initOptions: { bits: 512 }
+          }, (err, node) => {
+            expect(err).to.not.exist()
+            node.api.id((err, id) => {
+              expect(err).to.not.exist()
+              bMultiaddr = id.addresses[0]
+              nodes.push(node)
+              cb()
+            })
+          })
+        }
+      ], done)
+    })
+
+    after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
 
     it('connect', () => {
       return ipfsA('swarm', 'connect', bMultiaddr).then((out) => {
@@ -105,6 +114,51 @@ describe('swarm', () => {
     it('`peers` should not throw after `disconnect`', () => {
       return ipfsA('swarm peers').then((out) => {
         expect(out).to.be.empty()
+      })
+    })
+  })
+
+  describe('handlers', () => {
+    let peerInfo
+    const ipfs = {
+      swarm: { addrs: () => {} }
+    }
+    const argv = {
+      resolve: () => {},
+      getIpfs: () => ipfs
+    }
+
+    describe('addrs', () => {
+      before((done) => {
+        PeerId.create({ bits: 512 }, (err, peerId) => {
+          if (err) return done(err)
+          peerInfo = new PeerInfo(peerId)
+          done()
+        })
+      })
+
+      it('should return addresses for all peers', (done) => {
+        sinon.stub(argv, 'resolve').callsFake(promise => {
+          promise.then(({ data }) => {
+            expect(data).to.eql([
+              `${peerInfo.id.toB58String()} (2)`,
+              `\t/ip4/127.0.0.1/tcp/4001`,
+              `\t/ip4/127.0.0.1/tcp/4001/ws`
+            ].join('\n'))
+            done()
+          })
+        })
+
+        sinon.stub(peerInfo.multiaddrs, '_multiaddrs').value([
+          multiaddr('/ip4/127.0.0.1/tcp/4001'),
+          multiaddr(`/ip4/127.0.0.1/tcp/4001/ws/ipfs/${peerInfo.id.toB58String()}`)
+        ])
+
+        sinon.stub(ipfs.swarm, 'addrs').returns(
+          Promise.resolve([peerInfo])
+        )
+
+        addrsCommand.handler(argv)
       })
     })
   })

@@ -1,8 +1,11 @@
 'use strict'
 
 const CID = require('cids')
+const { Buffer } = require('buffer')
+const { cidToString } = require('../../../utils/cid')
+const toPullStream = require('async-iterator-to-pull-stream')
 
-exports.normalizePath = (path) => {
+const normalizePath = (path) => {
   if (Buffer.isBuffer(path)) {
     return new CID(path).toString()
   }
@@ -30,7 +33,7 @@ exports.normalizePath = (path) => {
  *
  * @return {Object}   Chunker options for DAGBuilder
  */
-exports.parseChunkerString = (chunker) => {
+const parseChunkerString = (chunker) => {
   if (!chunker) {
     return {
       chunker: 'fixed'
@@ -67,7 +70,7 @@ exports.parseChunkerString = (chunker) => {
  *
  * @return {Object}   rabin chunker options
  */
-function parseRabinString (chunker) {
+const parseRabinString = (chunker) => {
   const options = {}
   const parts = chunker.split('-')
   switch (parts.length) {
@@ -89,11 +92,46 @@ function parseRabinString (chunker) {
   return options
 }
 
-function parseChunkSize (str, name) {
+const parseChunkSize = (str, name) => {
   let size = parseInt(str)
   if (isNaN(size)) {
     throw new Error(`Chunker parameter ${name} must be an integer`)
   }
 
   return size
+}
+
+const mapFile = (options = {}) => {
+  return (file) => {
+    let size = 0
+    let type = 'dir'
+
+    if (file.unixfs && file.unixfs.type === 'file') {
+      size = file.unixfs.fileSize()
+      type = 'file'
+    }
+
+    const output = {
+      hash: cidToString(file.cid, { base: options.cidBase }),
+      path: file.path,
+      name: file.name,
+      depth: file.path.split('/').length,
+      size,
+      type
+    }
+
+    if (options.includeContent && file.unixfs && file.unixfs.type === 'file') {
+      output.content = toPullStream.source(file.content())
+    }
+
+    return output
+  }
+}
+
+module.exports = {
+  normalizePath,
+  parseChunkSize,
+  parseRabinString,
+  parseChunkerString,
+  mapFile
 }

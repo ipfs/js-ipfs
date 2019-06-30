@@ -23,7 +23,8 @@ describe('key exchange', () => {
     repo = createTempRepo()
     ipfs = new IPFS({
       repo: repo,
-      pass: hat()
+      pass: hat(),
+      preload: { enabled: false }
     })
     ipfs.on('ready', () => done())
   })

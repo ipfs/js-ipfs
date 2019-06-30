@@ -30,10 +30,6 @@ We've come a long way, but this project is still in Alpha, lots of development i
 
 **Want to get started?** Check our [examples folder](/examples) to learn how to spawn an IPFS node in Node.js and in the Browser.
 
-You can check the development status at the [Kanban Board](https://waffle.io/ipfs/js-ipfs).
-
-[![Throughput Graph](https://graphs.waffle.io/ipfs/js-ipfs/throughput.svg)](https://waffle.io/ipfs/js-ipfs/metrics/throughput)
-
 **Please read this:** The [DHT](https://en.wikipedia.org/wiki/Distributed_hash_table), a fundamental piece for automatic content and peer discovery is not yet complete. There are multiple applications that can be built without this service but nevertheless it is fundamental to getting that magic IPFS experience. The current status is that implementation is done and merged and we're working on performance issues. Expect the DHT to be available in a release very soon.
 
 [**`Weekly Core Dev Calls`**](https://github.com/ipfs/team-mgmt/issues/650)
@@ -325,6 +321,18 @@ Enable and configure experimental features.
 | object |  [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/config-nodejs.js) in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/config-browser.js) in browsers |
 
 Modify the default IPFS node config. This object will be *merged* with the default config; it will not replace it.
+
+###### Configuring Delegate Routers
+
+If you need to support Delegated Content and/or Peer Routing, you can enable it by specifying the multiaddrs of your delegate nodes in the config via `options.config.Addresses.Delegates`. If you need to run a delegate router we encourage you to run your own, with go-ipfs. You can see instructions for doing so in the [delegated routing example](https://github.com/libp2p/js-libp2p/tree/master/examples/delegated-routing).
+
+If you are not able to run your own delegate router nodes, we currently have two nodes that support delegated routing. **Important**: As many people may be leveraging these nodes, performance may be affected, which is why we recommend running your own nodes in production.
+
+Available delegate multiaddrs are:
+- `/dns4/node0.preload.ipfs.io/tcp/443/https`
+- `/dns4/node1.preload.ipfs.io/tcp/443/https`
+
+**Note**: If more than 1 delegate multiaddr is specified, the actual delegate will be randomly selected on startup.
 
 ##### `options.ipld`
 
@@ -925,7 +933,7 @@ The code above assumes you are running a local `signaling server` on port `9090`
 Yes, websocket-star! A WebSockets based transport that uses a Relay to route the messages. To enable it, just do:
 
 ```JavaScript
-const node = new IPFS({
+const node = new Ipfs({
   config: {
     Addresses: {
       Swarm: [
@@ -950,25 +958,8 @@ A way to mitigate this in Chrome, is to run your IPFS node inside a Service Work
 
 Yes you can and in many ways. Read https://github.com/ipfs/notes/issues/256 for the multiple options.
 
-If your [electron-rebuild step is failing](https://github.com/ipfs/js-ipfs/issues/843), all you need to do is:
-
-```bash
-# Electron's version.
-export npm_config_target=2.0.0
-# The architecture of Electron, can be ia32 or x64.
-export npm_config_arch=x64
-export npm_config_target_arch=x64
-# Download headers for Electron.
-export npm_config_disturl=https://atom.io/download/electron
-# Tell node-pre-gyp that we are building for Electron.
-export npm_config_runtime=electron
-# Tell node-pre-gyp to build module from source code.
-export npm_config_build_from_source=true
-# Install all dependencies, and store cache to ~/.electron-gyp.
-HOME=~/.electron-gyp npm install
-```
-
-If you find any other issue, please check the [`Electron Support` issue](https://github.com/ipfs/js-ipfs/issues/843).
+We now support Electron v5.0.0 without the need to rebuilt native modules.
+Still if you run into problems with native modules follow these instructions [here](https://electronjs.org/docs/tutorial/using-native-node-modules).
 
 #### Have more questions?
 
@@ -1029,7 +1020,7 @@ Listing of the main packages used in the IPFS ecosystem. There are also three sp
 | [`ipfs-repo`](//github.com/ipfs/js-ipfs-repo) | [![npm](https://img.shields.io/npm/v/ipfs-repo.svg?maxAge=86400&style=flat)](//github.com/ipfs/js-ipfs-repo/releases) | [![Deps](https://david-dm.org/ipfs/js-ipfs-repo.svg?style=flat)](https://david-dm.org/ipfs/js-ipfs-repo) | [![Travis CI](https://travis-ci.com/ipfs/js-ipfs-repo.svg?branch=master)](https://travis-ci.com/ipfs/js-ipfs-repo) | [![codecov](https://codecov.io/gh/ipfs/js-ipfs-repo/branch/master/graph/badge.svg)](https://codecov.io/gh/ipfs/js-ipfs-repo) | [Jacob Heun](mailto:jacobheun@gmail.com) |
 | **Exchange** |
 | [`ipfs-block-service`](//github.com/ipfs/js-ipfs-block-service) | [![npm](https://img.shields.io/npm/v/ipfs-block-service.svg?maxAge=86400&style=flat)](//github.com/ipfs/js-ipfs-block-service/releases) | [![Deps](https://david-dm.org/ipfs/js-ipfs-block-service.svg?style=flat)](https://david-dm.org/ipfs/js-ipfs-block-service) | [![Travis CI](https://travis-ci.com/ipfs/js-ipfs-block-service.svg?branch=master)](https://travis-ci.com/ipfs/js-ipfs-block-service) | [![codecov](https://codecov.io/gh/ipfs/js-ipfs-block-service/branch/master/graph/badge.svg)](https://codecov.io/gh/ipfs/js-ipfs-block-service) | [Volker Mische](mailto:volker.mische@gmail.com) |
-| [`ipfs-bitswap`](//github.com/ipfs/js-ipfs-bitswap) | [![npm](https://img.shields.io/npm/v/ipfs-bitswap.svg?maxAge=86400&style=flat)](//github.com/ipfs/js-ipfs-bitswap/releases) | [![Deps](https://david-dm.org/ipfs/js-ipfs-bitswap.svg?style=flat)](https://david-dm.org/ipfs/js-ipfs-bitswap) | [![Travis CI](https://travis-ci.com/ipfs/js-ipfs-bitswap.svg?branch=master)](https://travis-ci.com/ipfs/js-ipfs-bitswap) | [![codecov](https://codecov.io/gh/ipfs/js-ipfs-bitswap/branch/master/graph/badge.svg)](https://codecov.io/gh/ipfs/js-ipfs-bitswap) | [Volker Mische](mailto:volker.mische@gmail.com) |
+| [`ipfs-bitswap`](//github.com/ipfs/js-ipfs-bitswap) | [![npm](https://img.shields.io/npm/v/ipfs-bitswap.svg?maxAge=86400&style=flat)](//github.com/ipfs/js-ipfs-bitswap/releases) | [![Deps](https://david-dm.org/ipfs/js-ipfs-bitswap.svg?style=flat)](https://david-dm.org/ipfs/js-ipfs-bitswap) | [![Travis CI](https://travis-ci.com/ipfs/js-ipfs-bitswap.svg?branch=master)](https://travis-ci.com/ipfs/js-ipfs-bitswap) | [![codecov](https://codecov.io/gh/ipfs/js-ipfs-bitswap/branch/master/graph/badge.svg)](https://codecov.io/gh/ipfs/js-ipfs-bitswap) | [Dirk McCormick](mailto:dirk@protocol.ai) |
 | **libp2p** |
 | [`libp2p`](//github.com/libp2p/js-libp2p) | [![npm](https://img.shields.io/npm/v/libp2p.svg?maxAge=86400&style=flat)](//github.com/libp2p/js-libp2p/releases) | [![Deps](https://david-dm.org/libp2p/js-libp2p.svg?style=flat)](https://david-dm.org/libp2p/js-libp2p) | [![Travis CI](https://travis-ci.com/libp2p/js-libp2p.svg?branch=master)](https://travis-ci.com/libp2p/js-libp2p) | [![codecov](https://codecov.io/gh/libp2p/js-libp2p/branch/master/graph/badge.svg)](https://codecov.io/gh/libp2p/js-libp2p) | [Jacob Heun](mailto:jacobheun@gmail.com) |
 | [`libp2p-circuit`](//github.com/libp2p/js-libp2p-circuit) | [![npm](https://img.shields.io/npm/v/libp2p-circuit.svg?maxAge=86400&style=flat)](//github.com/libp2p/js-libp2p-circuit/releases) | [![Deps](https://david-dm.org/libp2p/js-libp2p-circuit.svg?style=flat)](https://david-dm.org/libp2p/js-libp2p-circuit) | [![Travis CI](https://travis-ci.com/libp2p/js-libp2p-circuit.svg?branch=master)](https://travis-ci.com/libp2p/js-libp2p-circuit) | [![codecov](https://codecov.io/gh/libp2p/js-libp2p-circuit/branch/master/graph/badge.svg)](https://codecov.io/gh/libp2p/js-libp2p-circuit) | [Jacob Heun](mailto:jacobheun@gmail.com) |
