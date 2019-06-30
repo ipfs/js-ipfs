@@ -140,6 +140,7 @@ describe('name-pubsub', function () {
       })
     })
   })
+
   it('should self resolve, publish and then resolve correctly', async function () {
     this.timeout(6000)
     const emptyDirCid = '/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
@@ -166,26 +167,26 @@ describe('name-pubsub', function () {
     const resolveA = await nodeA.name.resolve(idB.id)
     expect(resolveA).to.be.eq(`/ipfs/${path}`)
   })
-  
+
   it('should handle event on publish correctly', function (done) {
     this.timeout(80 * 1000)
 
-    const testAccountName = 'test-account';
+    const testAccountName = 'test-account'
 
     let publishedMessage = null
     let publishedMessageData = null
     let publishedMessageDataValue = null
 
-    function checkMessage(msg) {
-      publishedMessage = msg;
-      publishedMessageData = ipns.unmarshal(msg.data);
-      publishedMessageDataValue = publishedMessageData.value.toString('utf8');
+    function checkMessage (msg) {
+      publishedMessage = msg
+      publishedMessageData = ipns.unmarshal(msg.data)
+      publishedMessageDataValue = publishedMessageData.value.toString('utf8')
     }
 
     const alreadySubscribed = (cb) => {
       return cb(null, publishedMessage !== null)
     }
-    
+
     // Create account for publish
     nodeA.key.gen(testAccountName, {
       type: 'rsa',
@@ -193,12 +194,12 @@ describe('name-pubsub', function () {
     }, (err, testAccount) => {
       expect(err).to.not.exist()
 
-      const keys = ipns.getIdKeys(fromB58String(testAccount.id));
+      const keys = ipns.getIdKeys(fromB58String(testAccount.id))
       const topic = `${namespace}${base64url.encode(keys.routingKey.toBuffer())}`
-      
+
       series([
         (cb) => nodeB.pubsub.subscribe(topic, checkMessage, cb),
-        (cb) => nodeA.name.publish(ipfsRef, {resolve: false, key: testAccountName}, cb),
+        (cb) => nodeA.name.publish(ipfsRef, { resolve: false, key: testAccountName }, cb),
         (cb) => waitFor((callback) => alreadySubscribed(callback), cb),
         (cb) => peerId.createFromPubKey(publishedMessage.key, cb),
         (cb) => peerId.createFromPubKey(publishedMessageData.pubKey, cb)
@@ -206,22 +207,22 @@ describe('name-pubsub', function () {
         expect(err).to.not.exist()
         expect(res).to.exist()
 
-        const messageKey = res[3];
-        const pubKeyPeerId = res[4];
+        const messageKey = res[3]
+        const pubKeyPeerId = res[4]
 
         expect(pubKeyPeerId.toB58String()).not.to.equal(messageKey.toB58String())
-        
+
         expect(pubKeyPeerId.toB58String()).to.equal(testAccount.id)
         expect(publishedMessage.from).to.equal(idA.id)
         expect(messageKey.toB58String()).to.equal(idA.id)
         expect(publishedMessageDataValue).to.equal(ipfsRef)
 
         // Verify the signature
-        ipns.validate(pubKeyPeerId._pubKey, publishedMessageData,(err) => {
+        ipns.validate(pubKeyPeerId._pubKey, publishedMessageData, (err) => {
           expect(err).to.not.exist()
           done()
-        });
+        })
       })
-    });
+    })
   })
 })
