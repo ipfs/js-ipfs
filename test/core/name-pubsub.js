@@ -14,6 +14,7 @@ const parallel = require('async/parallel')
 const retry = require('async/retry')
 const series = require('async/series')
 
+const peerId = require('peer-id')
 const isNode = require('detect-node')
 const ipns = require('ipns')
 const IPFS = require('../../src')
@@ -135,5 +136,64 @@ describe('name-pubsub', function () {
         done()
       })
     })
+  })
+
+
+  it('should handle event on publish correctly', function (done) {
+    this.timeout(80 * 1000)
+
+    const testAccountName = 'test-account';
+
+    let publishedMessage = null
+    let publishedMessageData = null
+    let publishedMessageDataValue = null
+
+    function checkMessage(msg) {
+      publishedMessage = msg;
+      publishedMessageData = ipns.unmarshal(msg.data);
+      publishedMessageDataValue = publishedMessageData.value.toString('utf8');
+    }
+
+    const alreadySubscribed = (cb) => {
+      return cb(null, publishedMessage !== null)
+    }
+    
+    // Create account for publish
+    nodeA.key.gen(testAccountName, {
+      type: 'rsa',
+      size: 2048
+    }, (err, testAccount) => {
+      expect(err).to.not.exist()
+
+      const keys = ipns.getIdKeys(fromB58String(testAccount.id));
+      const topic = `${namespace}${base64url.encode(keys.routingKey.toBuffer())}`
+      
+      series([
+        (cb) => nodeB.pubsub.subscribe(topic, checkMessage, cb),
+        (cb) => nodeA.name.publish(ipfsRef, {resolve: false, key: testAccountName}, cb),
+        (cb) => waitFor((callback) => alreadySubscribed(callback), cb),
+        (cb) => peerId.createFromPubKey(publishedMessage.key, cb),
+        (cb) => peerId.createFromPubKey(publishedMessageData.pubKey, cb)
+      ], (err, res) => {
+        expect(err).to.not.exist()
+        expect(res).to.exist()
+
+        const messageKey = res[3];
+        const pubKeyPeerId = res[4];
+
+        expect(pubKeyPeerId.toB58String()).not.to.equal(messageKey.toB58String())
+        
+        expect(pubKeyPeerId.toB58String()).to.equal(testAccount.id)
+        expect(publishedMessage.from).to.equal(idA.id)
+        expect(messageKey.toB58String()).to.equal(idA.id)
+        expect(publishedMessageDataValue).to.equal(ipfsRef)
+
+        // Verify the signature
+        ipns.validate(pubKeyPeerId._pubKey, publishedMessageData,(err) => {
+          expect(err).to.not.exist()
+          done()
+        });
+      })
+    });
   })
 })
