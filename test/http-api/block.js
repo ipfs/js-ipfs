@@ -21,7 +21,8 @@ describe('block endpoint', () => {
 
     df.spawn({
       initOptions: { bits: 512 },
-      config: { Bootstrap: [] }
+      config: { Bootstrap: [] },
+      args: []
     }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsd = _ipfsd

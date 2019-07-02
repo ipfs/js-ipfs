@@ -322,6 +322,18 @@ Enable and configure experimental features.
 
 Modify the default IPFS node config. This object will be *merged* with the default config; it will not replace it.
 
+###### Configuring Delegate Routers
+
+If you need to support Delegated Content and/or Peer Routing, you can enable it by specifying the multiaddrs of your delegate nodes in the config via `options.config.Addresses.Delegates`. If you need to run a delegate router we encourage you to run your own, with go-ipfs. You can see instructions for doing so in the [delegated routing example](https://github.com/libp2p/js-libp2p/tree/master/examples/delegated-routing).
+
+If you are not able to run your own delegate router nodes, we currently have two nodes that support delegated routing. **Important**: As many people may be leveraging these nodes, performance may be affected, which is why we recommend running your own nodes in production.
+
+Available delegate multiaddrs are:
+- `/dns4/node0.preload.ipfs.io/tcp/443/https`
+- `/dns4/node1.preload.ipfs.io/tcp/443/https`
+
+**Note**: If more than 1 delegate multiaddr is specified, the actual delegate will be randomly selected on startup.
+
 ##### `options.ipld`
 
  | Type | Default |
@@ -921,7 +933,7 @@ The code above assumes you are running a local `signaling server` on port `9090`
 Yes, websocket-star! A WebSockets based transport that uses a Relay to route the messages. To enable it, just do:
 
 ```JavaScript
-const node = new IPFS({
+const node = new Ipfs({
   config: {
     Addresses: {
       Swarm: [

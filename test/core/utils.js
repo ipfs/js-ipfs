@@ -123,7 +123,8 @@ describe('utils', () => {
         repo,
         config: {
           Bootstrap: []
-        }
+        },
+        preload: { enabled: false }
       })
       node.once('ready', () => node.add(fixtures, done))
     })

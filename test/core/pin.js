@@ -75,7 +75,8 @@ describe('pin', function () {
       repo,
       config: {
         Bootstrap: []
-      }
+      },
+      preload: { enabled: false }
     })
     ipfs.on('ready', () => {
       pin = ipfs.pin

@@ -222,5 +222,75 @@ describe('libp2p customization', function () {
         done()
       })
     })
+
+    it('should NOT create delegate routers if they are not defined', (done) => {
+      const ipfs = {
+        _repo: {
+          datastore
+        },
+        _peerInfo: peerInfo,
+        _peerBook: peerBook,
+        // eslint-disable-next-line no-console
+        _print: console.log,
+        _options: {
+          config: {
+            Addresses: {
+              Delegates: []
+            }
+          }
+        }
+      }
+
+      _libp2p = libp2pComponent(ipfs, testConfig)
+
+      _libp2p.start((err) => {
+        expect(err).to.not.exist()
+
+        expect(_libp2p._modules.contentRouting).to.not.exist()
+        expect(_libp2p._modules.peerRouting).to.not.exist()
+        done()
+      })
+    })
+
+    it('should create delegate routers if they are defined', (done) => {
+      const ipfs = {
+        _repo: {
+          datastore
+        },
+        _peerInfo: peerInfo,
+        _peerBook: peerBook,
+        // eslint-disable-next-line no-console
+        _print: console.log,
+        _options: {
+          config: {
+            Addresses: {
+              Delegates: [
+                '/dns4/node0.preload.ipfs.io/tcp/443/https'
+              ]
+            }
+          }
+        }
+      }
+
+      _libp2p = libp2pComponent(ipfs, testConfig)
+
+      _libp2p.start((err) => {
+        expect(err).to.not.exist()
+
+        expect(_libp2p._modules.contentRouting).to.have.length(1)
+        expect(_libp2p._modules.contentRouting[0].api).to.include({
+          host: 'node0.preload.ipfs.io',
+          port: '443',
+          protocol: 'https'
+        })
+        expect(_libp2p._modules.peerRouting).to.have.length(1)
+        expect(_libp2p._modules.peerRouting[0].api).to.include({
+          host: 'node0.preload.ipfs.io',
+          port: '443',
+          protocol: 'https'
+        })
+        done()
+      })
+    })
   })
 })

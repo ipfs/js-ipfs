@@ -47,7 +47,8 @@ describe('files directory (sharding tests)', () => {
               Enabled: false
             }
           }
-        }
+        },
+        preload: { enabled: false }
       }, (err, _ipfsd) => {
         expect(err).to.not.exist()
         ipfsd = _ipfsd
@@ -99,7 +100,8 @@ describe('files directory (sharding tests)', () => {
               Enabled: false
             }
           }
-        }
+        },
+        preload: { enabled: false }
       }, (err, _ipfsd) => {
         expect(err).to.not.exist()
         ipfsd = _ipfsd

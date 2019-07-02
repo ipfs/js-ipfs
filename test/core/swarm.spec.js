@@ -20,7 +20,8 @@ describe('swarm', function () {
     factory.spawn({
       exec: IPFS,
       initOptions: { bits: 512 },
-      config: { Bootstrap: [] }
+      config: { Bootstrap: [] },
+      preload: { enabled: false }
     }, (err, _ipfsd) => {
       expect(err).to.not.exist()
       ipfsd = _ipfsd

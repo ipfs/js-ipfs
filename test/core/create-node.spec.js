@@ -38,7 +38,8 @@ describe('create node', function () {
         Addresses: {
           Swarm: []
         }
-      }
+      },
+      preload: { enabled: false }
     })
 
     node.once('start', (err) => {
@@ -63,7 +64,8 @@ describe('create node', function () {
         Addresses: {
           Swarm: []
         }
-      }
+      },
+      preload: { enabled: false }
     })
 
     node.once('start', (err) => {
@@ -117,7 +119,8 @@ describe('create node', function () {
         Addresses: {
           Swarm: []
         }
-      }
+      },
+      preload: { enabled: false }
     })
 
     node.once('start', (err) => {
@@ -139,7 +142,8 @@ describe('create node', function () {
 
     const ipfs = new IPFS({
       silent: true,
-      repo: tempRepo
+      repo: tempRepo,
+      preload: { enabled: false }
     })
 
     ipfs.on('ready', () => {
@@ -161,7 +165,8 @@ describe('create node', function () {
         Addresses: {
           Swarm: []
         }
-      }
+      },
+      preload: { enabled: false }
     })
 
     const shouldHappenOnce = () => {
@@ -194,7 +199,8 @@ describe('create node', function () {
         Addresses: {
           Swarm: []
         }
-      }
+      },
+      preload: { enabled: false }
     })
 
     let happened = false
@@ -225,7 +231,8 @@ describe('create node', function () {
           Swarm: []
         },
         Bootstrap: []
-      }
+      },
+      preload: { enabled: false }
     })
 
     node.once('error', done)
@@ -247,7 +254,8 @@ describe('create node', function () {
           Swarm: []
         },
         Bootstrap: []
-      }
+      },
+      preload: { enabled: false }
     })
 
     node.once('error', done)
@@ -266,7 +274,8 @@ describe('create node', function () {
           Swarm: ['/ip4/127.0.0.1/tcp/9977']
         },
         Bootstrap: []
-      }
+      },
+      preload: { enabled: false }
     })
 
     node.once('start', (err) => {
@@ -292,7 +301,8 @@ describe('create node', function () {
           Swarm: []
         },
         Bootstrap: []
-      }
+      },
+      preload: { enabled: false }
     })
 
     series([
@@ -313,7 +323,8 @@ describe('create node', function () {
           Swarm: []
         },
         Bootstrap: []
-      }
+      },
+      preload: { enabled: false }
     })
 
     node.once('ready', () => {
@@ -333,7 +344,8 @@ describe('create node', function () {
           Swarm: []
         },
         Bootstrap: []
-      }
+      },
+      preload: { enabled: false }
     }
 
     let node = new IPFS(options)
@@ -368,7 +380,8 @@ describe('create node', function () {
             ]
           },
           Bootstrap: []
-        }
+        },
+        preload: { enabled: false }
       })
     }
 
@@ -417,7 +430,8 @@ describe('create node', function () {
 
     const node = new IPFS({
       repo: tempRepo,
-      ipld: {}
+      ipld: {},
+      preload: { enabled: false }
     })
 
     node.once('start', (err) => {

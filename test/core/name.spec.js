@@ -47,7 +47,8 @@ describe('name', function () {
       df.spawn({
         exec: IPFS,
         args: [`--pass ${hat()}`, '--offline'],
-        config: { Bootstrap: [] }
+        config: { Bootstrap: [] },
+        preload: { enabled: false }
       }, (err, _ipfsd) => {
         expect(err).to.not.exist()
         ipfsd = _ipfsd
@@ -195,7 +196,8 @@ describe('name', function () {
               Enabled: false
             }
           }
-        }
+        },
+        preload: { enabled: false }
       }, (err, _ipfsd) => {
         expect(err).to.not.exist()
         ipfsd = _ipfsd
@@ -371,7 +373,8 @@ describe('name', function () {
               Enabled: false
             }
           }
-        }
+        },
+        preload: { enabled: false }
       }, (err, _ipfsd) => {
         expect(err).to.not.exist()
         node = _ipfsd.api
@@ -485,8 +488,10 @@ describe('name', function () {
         },
         _options: {
           libp2p: {
-            dht: {
-              enabled: true
+            config: {
+              dht: {
+                enabled: true
+              }
             }
           }
         }

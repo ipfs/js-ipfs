@@ -27,7 +27,8 @@ describe('init', () => {
     ipfs = new IPFS({
       repo: repo,
       init: false,
-      start: false
+      start: false,
+      preload: { enabled: false }
     })
   })
 

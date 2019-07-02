@@ -34,7 +34,8 @@ function spawnNode ({ dht = false, type = 'js' }, cb) {
   factory.spawn({
     args,
     config,
-    initOptions: { bits: 512 }
+    initOptions: { bits: 512 },
+    preload: { enabled: false }
   }, cb)
 }
 
