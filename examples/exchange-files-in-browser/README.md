@@ -175,6 +175,10 @@ Check that you got connected:
 
 ![](img/connect-2.png)
 
+> It only works on localhost environments because of a restriction with WebCrypto where it will not load in a page unless that page is loaded over https, or the page is served from localhost: [libp2p/js-libp2p-crypto#105][js-libp2p-crypto#105]
+
+[js-libp2p-crypto#105]: https://github.com/libp2p/js-libp2p-crypto/issues/105
+
 ### 5. Transfer files between all of your nodes!
 
 Now you can add files through the CLI with:
