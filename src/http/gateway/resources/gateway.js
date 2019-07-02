@@ -51,11 +51,11 @@ class ResponseStream extends PassThrough {
 }
 
 module.exports = {
-  checkImmutableId (request, h) {
-    if (!request.params.immutableId) {
+  checkCID (request, h) {
+    if (!request.params.cid) {
       throw Boom.badRequest('Path Resolve error: path must contain at least one component')
     }
-    return { ref: `/ipfs/${request.params.immutableId}` }
+    return { ref: `/ipfs/${request.params.cid}` }
   },
   checkMutableId (request, h) {
     if (!request.params.mutableId) {

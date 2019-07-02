@@ -5,11 +5,11 @@ const resources = require('../resources')
 module.exports = [
   {
     method: '*',
-    path: '/ipfs/{immutableId*}',
+    path: '/ipfs/{cid*}',
     options: {
       handler: resources.gateway.handler,
       pre: [
-        { method: resources.gateway.checkImmutableId, assign: 'args' }
+        { method: resources.gateway.checkCID, assign: 'args' }
       ],
       response: {
         ranges: false // disable built-in support, we do it manually
