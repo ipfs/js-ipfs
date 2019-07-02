@@ -16,8 +16,14 @@ function waitForWantlistKey (ipfs, key, opts, cb) {
 
   setTimeout(() => { timedOut = true }, opts.timeout)
 
-  const test = () => timedOut ? true : list.Keys.every(k => k['/'] === key)
-  const iteratee = (cb) => ipfs.bitswap.wantlist(opts.peerId, cb)
+  const test = () => timedOut ? true : list.Keys.some(k => k['/'] === key)
+  const iteratee = (cb) => {
+    ipfs.bitswap.wantlist(opts.peerId, (err, nextList) => {
+      if (err) return cb(err)
+      list = nextList
+      cb()
+    })
+  }
 
   until(test, iteratee, (err) => {
     if (err) return cb(err)
