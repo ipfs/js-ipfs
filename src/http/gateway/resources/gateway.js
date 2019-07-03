@@ -17,25 +17,19 @@ const PathUtils = require('../utils/path')
 const { cidToString } = require('../../../utils/cid')
 const isIPFS = require('is-ipfs')
 
-function detectContentType (ref, chunk) {
+function detectContentType (path, chunk) {
   let fileSignature
 
   // try to guess the filetype based on the first bytes
   // note that `file-type` doesn't support svgs, therefore we assume it's a svg if ref looks like it
-  if (!ref.endsWith('.svg')) {
+  if (!path.endsWith('.svg')) {
     fileSignature = fileType(chunk)
   }
 
-  // if we were unable to, fallback to the `ref` which might contain the extension
-  const mimeType = mime.lookup(fileSignature ? fileSignature.ext : ref)
+  // if we were unable to, fallback to the path which might contain the extension
+  const mimeType = mime.lookup(fileSignature ? fileSignature.ext : path)
 
   return mime.contentType(mimeType)
-}
-
-async function resolveIpns (ref, ipfs) {
-  const [ root ] = PathUtils.splitPath(ref)
-  const immutableRoot = await ipfs.name.resolve(root, { recursive: true })
-  return ref.replace(`/ipns/${root}`, PathUtils.removeTrailingSlash(immutableRoot))
 }
 
 // Enable streaming of compressed payload
@@ -55,20 +49,20 @@ class ResponseStream extends PassThrough {
 module.exports = {
 
   async handler (request, h) {
-    const ref = request.path
     const { ipfs } = request.server.app
+    const path = request.path
 
     // The resolver from ipfs-http-response supports only immutable /ipfs/ for now,
     // so we convert /ipns/ to /ipfs/ before passing it to the resolver ¯\_(ツ)_/¯
     // This could be removed if a solution proposed in
     //  https://github.com/ipfs/js-ipfs-http-response/issues/22 lands upstream
-    const immutableRef = decodeURI(ref.startsWith('/ipns/')
-      ? await resolveIpns(ref, ipfs)
-      : ref)
+    const immutablePath = decodeURI(path.startsWith('/ipns/')
+      ? await ipfs.name.resolve(path, { recursive: true })
+      : path)
 
     let data
     try {
-      data = await resolver.cid(ipfs, immutableRef)
+      data = await resolver.cid(ipfs, immutablePath)
     } catch (err) {
       const errorToString = err.toString()
       log.error('err: ', errorToString, ' fileName: ', err.fileName)
@@ -76,14 +70,14 @@ module.exports = {
       // switch case with true feels so wrong.
       switch (true) {
         case (errorToString === 'Error: This dag node is a directory'):
-          data = await resolver.directory(ipfs, immutableRef, err.cid)
+          data = await resolver.directory(ipfs, immutablePath, err.cid)
 
           if (typeof data === 'string') {
             // no index file found
-            if (!ref.endsWith('/')) {
+            if (!path.endsWith('/')) {
               // for a directory, if URL doesn't end with a /
               // append / and redirect permanent to that URL
-              return h.redirect(`${ref}/`).permanent(true)
+              return h.redirect(`${path}/`).permanent(true)
             }
             // send directory listing
             return h.response(data)
@@ -91,7 +85,7 @@ module.exports = {
 
           // found index file
           // redirect to URL/<found-index-file>
-          return h.redirect(PathUtils.joinURLParts(ref, data[0].Name))
+          return h.redirect(PathUtils.joinURLParts(path, data[0].Name))
         case (errorToString.startsWith('Error: no link named')):
           throw Boom.boomify(err, { statusCode: 404 })
         case (errorToString.startsWith('Error: multihash length inconsistent')):
@@ -103,9 +97,9 @@ module.exports = {
       }
     }
 
-    if (ref.endsWith('/')) {
+    if (path.endsWith('/')) {
       // remove trailing slash for files
-      return h.redirect(PathUtils.removeTrailingSlash(ref)).permanent(true)
+      return h.redirect(PathUtils.removeTrailingSlash(path)).permanent(true)
     }
 
     // Support If-None-Match & Etag (Conditional Requests from RFC7232)
@@ -117,7 +111,7 @@ module.exports = {
     }
 
     // Immutable content produces 304 Not Modified for all values of If-Modified-Since
-    if (ref.startsWith('/ipfs/') && request.headers['if-modified-since']) {
+    if (path.startsWith('/ipfs/') && request.headers['if-modified-since']) {
       return h.response().code(304) // Not Modified
     }
 
@@ -159,7 +153,7 @@ module.exports = {
           log.error(err)
           return reject(err)
         }
-        resolve({ peekedStream, contentType: detectContentType(ref, streamHead) })
+        resolve({ peekedStream, contentType: detectContentType(path, streamHead) })
       })
     })
 
@@ -172,11 +166,11 @@ module.exports = {
     res.header('etag', etag)
 
     // Set headers specific to the immutable namespace
-    if (ref.startsWith('/ipfs/')) {
+    if (path.startsWith('/ipfs/')) {
       res.header('Cache-Control', 'public, max-age=29030400, immutable')
     }
 
-    log('ref ', ref)
+    log('path ', path)
     log('content-type ', contentType)
 
     if (contentType) {
@@ -209,19 +203,19 @@ module.exports = {
     const { response } = request
     // Add headers to successfult responses (regular or range)
     if (response.statusCode === 200 || response.statusCode === 206) {
-      const ref = request.path
-      response.header('X-Ipfs-Path', ref)
-      if (ref.startsWith('/ipfs/')) {
+      const path = request.path
+      response.header('X-Ipfs-Path', path)
+      if (path.startsWith('/ipfs/')) {
         // "set modtime to a really long time ago, since files are immutable and should stay cached"
         // Source: https://github.com/ipfs/go-ipfs/blob/v0.4.20/core/corehttp/gateway_handler.go#L228-L229
         response.header('Last-Modified', 'Thu, 01 Jan 1970 00:00:01 GMT')
         // Suborigin for /ipfs/: https://github.com/ipfs/in-web-browsers/issues/66
-        const rootCid = ref.split('/')[2]
+        const rootCid = path.split('/')[2]
         const ipfsOrigin = cidToString(rootCid, { base: 'base32' })
         response.header('Suborigin', `ipfs000${ipfsOrigin}`)
-      } else if (ref.startsWith('/ipns/')) {
+      } else if (path.startsWith('/ipns/')) {
         // Suborigin for /ipns/: https://github.com/ipfs/in-web-browsers/issues/66
-        const root = ref.split('/')[2]
+        const root = path.split('/')[2]
         // encode CID/FQDN in base32 (Suborigin allows only a-z)
         const ipnsOrigin = isIPFS.cid(root)
           ? cidToString(root, { base: 'base32' })
