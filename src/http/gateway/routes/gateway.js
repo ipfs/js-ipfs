@@ -6,12 +6,12 @@ const resources = require('../resources')
 module.exports = [
   {
     method: '*',
-    path: '/ipfs/{cidPath*}',
+    path: '/ipfs/{ipfsPath*}',
     options: {
       handler: resources.gateway.handler,
       validate: {
         params: {
-          cidPath: Joi.string().required()
+          ipfsPath: Joi.string().required()
         }
       },
       response: {
@@ -24,12 +24,12 @@ module.exports = [
   },
   {
     method: '*',
-    path: '/ipns/{libp2pKeyOrFqdn*}',
+    path: '/ipns/{ipnsPath*}',
     options: {
       handler: resources.gateway.handler,
       validate: {
         params: {
-          libp2pKeyOrFqdn: Joi.string().required()
+          ipnsPath: Joi.string().required()
         }
       },
       response: {

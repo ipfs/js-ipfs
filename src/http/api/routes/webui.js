@@ -6,12 +6,12 @@ const resources = require('../../gateway/resources')
 module.exports = [
   {
     method: '*',
-    path: '/ipfs/{cidPath*}',
+    path: '/ipfs/{ipfsPath*}',
     options: {
       handler: resources.gateway.handler,
       validate: {
         params: {
-          cidPath: Joi.string().required()
+          ipfsPath: Joi.string().required()
         }
       },
       response: {
