@@ -1,3 +1,13 @@
+<a name="0.105.1"></a>
+## [0.105.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.105.0...v0.105.1) (2019-07-03)
+
+
+### Bug Fixes
+
+* wait for one key to be the required key not all ([#490](https://github.com/ipfs/interface-ipfs-core/issues/490)) ([acea55f](https://github.com/ipfs/interface-ipfs-core/commit/acea55f))
+
+
+
 <a name="0.105.0"></a>
 # [0.105.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.104.2...v0.105.0) (2019-06-20)
 
