@@ -56,13 +56,13 @@ module.exports = {
     // so we convert /ipns/ to /ipfs/ before passing it to the resolver ¯\_(ツ)_/¯
     // This could be removed if a solution proposed in
     //  https://github.com/ipfs/js-ipfs-http-response/issues/22 lands upstream
-    const immutablePath = decodeURI(path.startsWith('/ipns/')
+    const ipfsPath = decodeURI(path.startsWith('/ipns/')
       ? await ipfs.name.resolve(path, { recursive: true })
       : path)
 
     let data
     try {
-      data = await resolver.cid(ipfs, immutablePath)
+      data = await resolver.cid(ipfs, ipfsPath)
     } catch (err) {
       const errorToString = err.toString()
       log.error('err: ', errorToString, ' fileName: ', err.fileName)
@@ -70,7 +70,7 @@ module.exports = {
       // switch case with true feels so wrong.
       switch (true) {
         case (errorToString === 'Error: This dag node is a directory'):
-          data = await resolver.directory(ipfs, immutablePath, err.cid)
+          data = await resolver.directory(ipfs, ipfsPath, err.cid)
 
           if (typeof data === 'string') {
             // no index file found
