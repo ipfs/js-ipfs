@@ -49,17 +49,17 @@ module.exports = function stats (self) {
     })
 
     if (opts.poll) {
-      human(opts.interval || '1s', (err, value) => {
-        if (err) {
-          return stream.end(errCode(err, 'ERR_INVALID_POLL_INTERVAL'))
-        }
+      try {
+        const value = human(opts.interval || '1s')
 
         interval = setInterval(() => {
           bandwidthStats(self, opts)
             .then((stats) => stream.push(stats))
             .catch((err) => stream.end(err))
         }, value)
-      })
+      } catch (err) {
+        return stream.end(errCode(err, 'ERR_INVALID_POLL_INTERVAL'))
+      }
     } else {
       bandwidthStats(self, opts)
         .then((stats) => {
