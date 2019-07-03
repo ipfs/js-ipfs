@@ -62,7 +62,7 @@ module.exports = {
     // so we convert /ipns/ to /ipfs/ before passing it to the resolver ¯\_(ツ)_/¯
     // This could be removed if a solution proposed in
     //  https://github.com/ipfs/js-ipfs-http-response/issues/22 lands upstream
-    const immutableRef = decodeURIComponent(ref.startsWith('/ipns/')
+    const immutableRef = decodeURI(ref.startsWith('/ipns/')
       ? await resolveIpns(ref, ipfs)
       : ref)
 

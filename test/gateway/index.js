@@ -21,6 +21,7 @@ const directoryContent = {
   'nested-folder/ipfs.txt': loadFixture('test/gateway/test-folder/nested-folder/ipfs.txt'),
   'nested-folder/nested.html': loadFixture('test/gateway/test-folder/nested-folder/nested.html'),
   'cat-folder/cat.jpg': loadFixture('test/gateway/test-folder/cat-folder/cat.jpg'),
+  'utf8/cat-with-óąśśł-and-أعظم._.jpg': loadFixture('test/gateway/test-folder/cat-folder/cat.jpg'),
   'unsniffable-folder/hexagons-xml.svg': loadFixture('test/gateway/test-folder/unsniffable-folder/hexagons-xml.svg'),
   'unsniffable-folder/hexagons.svg': loadFixture('test/gateway/test-folder/unsniffable-folder/hexagons.svg')
 }
@@ -85,6 +86,8 @@ describe('HTTP Gateway', function () {
       content('unsniffable-folder/hexagons-xml.svg'),
       content('unsniffable-folder/hexagons.svg')
     ])
+    // QmaRdtkDark8TgXPdDczwBneadyF44JvFGbrKLTkmTUhHk
+    await http.api._ipfs.add([content('utf8/cat-with-óąśśł-and-أعظم._.jpg')])
     // Publish QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ to IPNS using self key
     await http.api._ipfs.name.publish('QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ', { resolve: false })
   })
@@ -528,6 +531,25 @@ describe('HTTP Gateway', function () {
     expect(res.statusCode).to.equal(302)
     expect(res.headers.location).to.equal('/ipfs/QmbQD7EMEL1zeebwBsWEfA3ndgSS6F7S6iTuwuqasPgVRi/index.html')
     expect(res.headers['x-ipfs-path']).to.equal(undefined)
+  })
+
+  it('test(gateway): load from URI-encoded path', async () => {
+    // non-ascii characters will be URI-encoded by the browser
+    const utf8path = '/ipfs/QmaRdtkDark8TgXPdDczwBneadyF44JvFGbrKLTkmTUhHk/cat-with-óąśśł-and-أعظم._.jpg'
+    const escapedPath = encodeURI(utf8path) // this is what will be actually requested
+    const res = await gateway.inject({
+      method: 'GET',
+      url: escapedPath
+    })
+
+    expect(res.statusCode).to.equal(200)
+    expect(res.headers['content-type']).to.equal('image/jpeg')
+    expect(res.headers['x-ipfs-path']).to.equal(escapedPath)
+    expect(res.headers['cache-control']).to.equal('public, max-age=29030400, immutable')
+    expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
+    expect(res.headers['content-length']).to.equal(res.rawPayload.length)
+    expect(res.headers.etag).to.equal('"Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u"')
+    expect(res.headers.suborigin).to.equal('ipfs000bafybeiftsm4u7cn24bn2suwg3x7sldx2uplvfylsk3e4bgylyxwjdevhqm')
   })
 
   it('load a file from IPNS', async () => {
