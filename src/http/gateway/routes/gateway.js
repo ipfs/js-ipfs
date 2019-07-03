@@ -1,18 +1,21 @@
 'use strict'
 
+const Joi = require('@hapi/joi')
 const resources = require('../resources')
 
 module.exports = [
   {
     method: '*',
-    path: '/ipfs/{cid*}',
+    path: '/ipfs/{cidPath*}',
     options: {
       handler: resources.gateway.handler,
-      pre: [
-        { method: resources.gateway.checkCID, assign: 'args' }
-      ],
+      validate: {
+        params: {
+          cidPath: Joi.string().required()
+        }
+      },
       response: {
-        ranges: false // disable built-in support, we do it manually
+        ranges: false // disable built-in support, handler does it manually
       },
       ext: {
         onPostHandler: { method: resources.gateway.afterHandler }
@@ -21,14 +24,16 @@ module.exports = [
   },
   {
     method: '*',
-    path: '/ipns/{mutableId*}',
+    path: '/ipns/{libp2pKeyOrFqdn*}',
     options: {
       handler: resources.gateway.handler,
-      pre: [
-        { method: resources.gateway.checkMutableId, assign: 'args' }
-      ],
+      validate: {
+        params: {
+          libp2pKeyOrFqdn: Joi.string().required()
+        }
+      },
       response: {
-        ranges: false // disable built-in support, we do it manually
+        ranges: false // disable built-in support, handler does it manually
       },
       ext: {
         onPostHandler: { method: resources.gateway.afterHandler }

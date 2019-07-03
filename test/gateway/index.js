@@ -12,6 +12,7 @@ const os = require('os')
 const path = require('path')
 const hat = require('hat')
 const fileType = require('file-type')
+const CID = require('cids')
 
 const bigFile = loadFixture('test/fixtures/15mb.random', 'interface-ipfs-core')
 const directoryContent = {
@@ -84,6 +85,8 @@ describe('HTTP Gateway', function () {
       content('unsniffable-folder/hexagons-xml.svg'),
       content('unsniffable-folder/hexagons.svg')
     ])
+    // Publish QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ to IPNS using self key
+    await http.api._ipfs.name.publish('QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ', { resolve: false })
   })
 
   after(() => http.api.stop())
@@ -525,5 +528,55 @@ describe('HTTP Gateway', function () {
     expect(res.statusCode).to.equal(302)
     expect(res.headers.location).to.equal('/ipfs/QmbQD7EMEL1zeebwBsWEfA3ndgSS6F7S6iTuwuqasPgVRi/index.html')
     expect(res.headers['x-ipfs-path']).to.equal(undefined)
+  })
+
+  it('load a file from IPNS', async () => {
+    const { id } = await http.api._ipfs.id()
+    const ipnsPath = `/ipns/${id}/cat.jpg`
+
+    const res = await gateway.inject({
+      method: 'GET',
+      url: ipnsPath
+    })
+
+    const kittyDirectCid = 'Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u'
+
+    expect(res.statusCode).to.equal(200)
+    expect(res.headers['content-type']).to.equal('image/jpeg')
+    expect(res.headers['content-length']).to.equal(res.rawPayload.length).to.equal(443230)
+    expect(res.headers['x-ipfs-path']).to.equal(ipnsPath)
+    expect(res.headers['etag']).to.equal(`"${kittyDirectCid}"`)
+    expect(res.headers['cache-control']).to.equal('no-cache') // TODO: should be record TTL
+    expect(res.headers['last-modified']).to.equal(undefined)
+    expect(res.headers.etag).to.equal('"Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u"')
+    expect(res.headers.suborigin).to.equal(`ipns000${new CID(id).toV1().toBaseEncodedString('base32')}`)
+
+    let fileSignature = fileType(res.rawPayload)
+    expect(fileSignature.mime).to.equal('image/jpeg')
+    expect(fileSignature.ext).to.equal('jpg')
+  })
+
+  it('load a directory from IPNS', async () => {
+    const { id } = await http.api._ipfs.id()
+    const ipnsPath = `/ipns/${id}/`
+
+    const res = await gateway.inject({
+      method: 'GET',
+      url: ipnsPath
+    })
+
+    expect(res.statusCode).to.equal(200)
+    expect(res.headers['content-type']).to.equal('text/html; charset=utf-8')
+    expect(res.headers['x-ipfs-path']).to.equal(ipnsPath)
+    expect(res.headers['cache-control']).to.equal('no-cache')
+    expect(res.headers['last-modified']).to.equal(undefined)
+    expect(res.headers['content-length']).to.equal(res.rawPayload.length)
+    expect(res.headers.etag).to.equal(undefined)
+    expect(res.headers.suborigin).to.equal(`ipns000${new CID(id).toV1().toBaseEncodedString('base32')}`)
+
+    // check if the cat picture is in the payload as a way to check
+    // if this is an index of this directory
+    let listedFile = res.payload.match(/\/cat\.jpg/g)
+    expect(listedFile).to.have.lengthOf(1)
   })
 })

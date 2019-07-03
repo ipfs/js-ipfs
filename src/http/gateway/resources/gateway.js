@@ -11,9 +11,11 @@ const Boom = require('boom')
 const Ammo = require('@hapi/ammo') // HTTP Range processing utilities
 const peek = require('buffer-peek-stream')
 
+const multibase = require('multibase')
 const { resolver } = require('ipfs-http-response')
 const PathUtils = require('../utils/path')
 const { cidToString } = require('../../../utils/cid')
+const isIPFS = require('is-ipfs')
 
 function detectContentType (ref, chunk) {
   let fileSignature
@@ -51,28 +53,18 @@ class ResponseStream extends PassThrough {
 }
 
 module.exports = {
-  checkCID (request, h) {
-    if (!request.params.cid) {
-      throw Boom.badRequest('Path Resolve error: path must contain at least one component')
-    }
-    return { ref: `/ipfs/${request.params.cid}` }
-  },
-  checkMutableId (request, h) {
-    if (!request.params.mutableId) {
-      throw Boom.badRequest('Path Resolve error: path must contain at least one component')
-    }
-    return { ref: `/ipns/${request.params.mutableId}` }
-  },
 
   async handler (request, h) {
-    const { ref } = request.pre.args
+    const ref = request.path
     const { ipfs } = request.server.app
 
     // The resolver from ipfs-http-response supports only immutable /ipfs/ for now,
     // so we convert /ipns/ to /ipfs/ before passing it to the resolver ¯\_(ツ)_/¯
-    // This can be removed if a solution proposed in
+    // This could be removed if a solution proposed in
     //  https://github.com/ipfs/js-ipfs-http-response/issues/22 lands upstream
-    const immutableRef = ref.startsWith('/ipns/') ? await resolveIpns(ref, ipfs) : ref
+    const immutableRef = decodeURIComponent(ref.startsWith('/ipns/')
+      ? await resolveIpns(ref, ipfs)
+      : ref)
 
     let data
     try {
@@ -217,18 +209,25 @@ module.exports = {
     const { response } = request
     // Add headers to successfult responses (regular or range)
     if (response.statusCode === 200 || response.statusCode === 206) {
-      const { ref } = request.pre.args
+      const ref = request.path
       response.header('X-Ipfs-Path', ref)
       if (ref.startsWith('/ipfs/')) {
         // "set modtime to a really long time ago, since files are immutable and should stay cached"
         // Source: https://github.com/ipfs/go-ipfs/blob/v0.4.20/core/corehttp/gateway_handler.go#L228-L229
         response.header('Last-Modified', 'Thu, 01 Jan 1970 00:00:01 GMT')
-        // Suborigins: https://github.com/ipfs/in-web-browsers/issues/66
+        // Suborigin for /ipfs/: https://github.com/ipfs/in-web-browsers/issues/66
         const rootCid = ref.split('/')[2]
         const ipfsOrigin = cidToString(rootCid, { base: 'base32' })
-        response.header('Suborigin', 'ipfs000' + ipfsOrigin)
+        response.header('Suborigin', `ipfs000${ipfsOrigin}`)
+      } else if (ref.startsWith('/ipns/')) {
+        // Suborigin for /ipns/: https://github.com/ipfs/in-web-browsers/issues/66
+        const root = ref.split('/')[2]
+        // encode CID/FQDN in base32 (Suborigin allows only a-z)
+        const ipnsOrigin = isIPFS.cid(root)
+          ? cidToString(root, { base: 'base32' })
+          : multibase.encode('base32', Buffer.from(root)).toString()
+        response.header('Suborigin', `ipns000${ipnsOrigin}`)
       }
-      // TODO: we don't have case-insensitive solution for /ipns/ yet (https://github.com/ipfs/go-ipfs/issues/5287)
     }
     return h.continue
   }
