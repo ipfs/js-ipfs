@@ -181,7 +181,7 @@
     "aegir": "^19.0.3",
     "base64url": "^3.0.1",
     "chai": "^4.2.0",
-    "clear-module": "^3.2.0",
+    "clear-module": "^4.0.0",
     "delay": "^4.1.0",
     "detect-node": "^2.0.4",
     "dir-compare": "^1.4.0",
