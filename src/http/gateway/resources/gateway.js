@@ -56,10 +56,11 @@ module.exports = {
     // so we convert /ipns/ to /ipfs/ before passing it to the resolver ¯\_(ツ)_/¯
     // This could be removed if a solution proposed in
     //  https://github.com/ipfs/js-ipfs-http-response/issues/22 lands upstream
-    const ipfsPath = decodeURI(path.startsWith('/ipns/')
+    let ipfsPath = decodeURI(path.startsWith('/ipns/')
       ? await ipfs.name.resolve(path, { recursive: true })
       : path)
 
+    let directory = false
     let data
     try {
       data = await resolver.cid(ipfs, ipfsPath)
@@ -70,22 +71,23 @@ module.exports = {
       // switch case with true feels so wrong.
       switch (true) {
         case (errorToString === 'Error: This dag node is a directory'):
+          directory = true
           data = await resolver.directory(ipfs, ipfsPath, err.cid)
 
           if (typeof data === 'string') {
             // no index file found
             if (!path.endsWith('/')) {
-              // for a directory, if URL doesn't end with a /
-              // append / and redirect permanent to that URL
+              // add trailing slash for directory listings
               return h.redirect(`${path}/`).permanent(true)
             }
             // send directory listing
             return h.response(data)
           }
 
-          // found index file
-          // redirect to URL/<found-index-file>
-          return h.redirect(PathUtils.joinURLParts(path, data[0].Name))
+          // found index file: return <ipfsPath>/<found-index-file>
+          ipfsPath = PathUtils.joinURLParts(ipfsPath, data[0].Name)
+          data = await resolver.cid(ipfs, ipfsPath)
+          break
         case (errorToString.startsWith('Error: no link named')):
           throw Boom.boomify(err, { statusCode: 404 })
         case (errorToString.startsWith('Error: multihash length inconsistent')):
@@ -97,9 +99,13 @@ module.exports = {
       }
     }
 
-    if (path.endsWith('/')) {
+    if (!directory && path.endsWith('/')) {
       // remove trailing slash for files
       return h.redirect(PathUtils.removeTrailingSlash(path)).permanent(true)
+    }
+    if (directory && !path.endsWith('/')) {
+      // add trailing slash for directories with implicit index.html
+      return h.redirect(`${path}/`).permanent(true)
     }
 
     // Support If-None-Match & Etag (Conditional Requests from RFC7232)
@@ -153,7 +159,7 @@ module.exports = {
           log.error(err)
           return reject(err)
         }
-        resolve({ peekedStream, contentType: detectContentType(path, streamHead) })
+        resolve({ peekedStream, contentType: detectContentType(ipfsPath, streamHead) })
       })
     })
 
@@ -170,7 +176,8 @@ module.exports = {
       res.header('Cache-Control', 'public, max-age=29030400, immutable')
     }
 
-    log('path ', path)
+    log('HTTP path ', path)
+    log('IPFS path ', ipfsPath)
     log('content-type ', contentType)
 
     if (contentType) {
