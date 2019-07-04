@@ -1,17 +1,26 @@
 'use strict'
 
+const Joi = require('@hapi/joi')
 const resources = require('../../gateway/resources')
 
 module.exports = [
   {
     method: '*',
-    path: '/ipfs/{cid*}',
+    path: '/ipfs/{path*}',
     options: {
-      pre: [
-        { method: resources.gateway.checkCID, assign: 'args' }
-      ]
-    },
-    handler: resources.gateway.handler
+      handler: resources.gateway.handler,
+      validate: {
+        params: {
+          path: Joi.string().required()
+        }
+      },
+      response: {
+        ranges: false // disable built-in support, handler does it manually
+      },
+      ext: {
+        onPostHandler: { method: resources.gateway.afterHandler }
+      }
+    }
   },
   {
     method: '*',
