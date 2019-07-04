@@ -49,17 +49,26 @@ module.exports = function stats (self) {
     })
 
     if (opts.poll) {
-      human(opts.interval || '1s', (err, value) => {
-        if (err) {
-          return stream.end(errCode(err, 'ERR_INVALID_POLL_INTERVAL'))
-        }
+      let value
+      try {
+        value = human(opts.interval || '1s')
+      } catch (err) {
+        // Pull stream expects async work, so we need to simulate it.
+        process.nextTick(() => {
+          stream.end(errCode(err, 'ERR_INVALID_POLL_INTERVAL'))
+        })
+      }
 
-        interval = setInterval(() => {
-          bandwidthStats(self, opts)
-            .then((stats) => stream.push(stats))
-            .catch((err) => stream.end(err))
-        }, value)
-      })
+      interval = setInterval(() => {
+        bandwidthStats(self, opts)
+          .then((stats) => stream.push(stats))
+          .catch((err) => {
+            if (interval) {
+              clearInterval(interval)
+            }
+            stream.end(err)
+          })
+      }, value)
     } else {
       bandwidthStats(self, opts)
         .then((stats) => {

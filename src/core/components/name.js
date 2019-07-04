@@ -109,9 +109,20 @@ module.exports = function name (self) {
         return callback(err)
       }
 
+      let pubLifetime
+      try {
+        pubLifetime = human(lifetime)
+
+        // Calculate lifetime with nanoseconds precision
+        pubLifetime = pubLifetime.toFixed(6)
+      } catch (err) {
+        log.error(err)
+        return callback(err)
+      }
+
+      // TODO: ttl human for cache
+
       parallel([
-        (cb) => human(lifetime, cb),
-        // (cb) => ttl ? human(ttl, cb) : cb(),
         (cb) => keyLookup(self, key, cb),
         // verify if the path exists, if not, an error will stop the execution
         (cb) => resolve.toString() === 'true' ? path.resolvePath(self, value, cb) : cb()
@@ -121,16 +132,8 @@ module.exports = function name (self) {
           return callback(err)
         }
 
-        // Calculate lifetime with nanoseconds precision
-        const pubLifetime = results[0].toFixed(6)
-        const privateKey = results[1]
-
-        // TODO IMPROVEMENT - Handle ttl for cache
-        // const ttl = results[1]
-        // const privateKey = results[2]
-
         // Start publishing process
-        self._ipns.publish(privateKey, value, pubLifetime, callback)
+        self._ipns.publish(results[0], value, pubLifetime, callback)
       })
     }),
 
