@@ -1,6 +1,6 @@
 {
   "name": "interface-ipfs-core",
-  "version": "0.105.1",
+  "version": "0.106.0",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "main": "src/index.js",
@@ -74,6 +74,7 @@
     "Alex Potsides <alex@achingbrain.net>",
     "Andrey <muzzzy@gmail.com>",
     "Dan Ordille <dordille@gmail.com>",
+    "Dan Shields <35669742+NukeManDan@users.noreply.github.com>",
     "David Dias <daviddias.p@gmail.com>",
     "Dmitriy Ryajov <dryajov@gmail.com>",
     "Enrico Marino <enrico.marino@email.com>",
