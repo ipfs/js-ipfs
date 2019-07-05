@@ -519,18 +519,38 @@ describe('HTTP Gateway', function () {
     expect(res.headers['x-ipfs-path']).to.equal(undefined)
   })
 
-  // TODO: check if interop for this exists and if not, match behavior of go-ipfs
-  it('redirect to webpage index.html', async () => {
-    const dir = 'QmbQD7EMEL1zeebwBsWEfA3ndgSS6F7S6iTuwuqasPgVRi/'
+  it('redirect to a directory with index.html', async () => {
+    const dir = 'QmbQD7EMEL1zeebwBsWEfA3ndgSS6F7S6iTuwuqasPgVRi' // note lack of '/' at the end
 
     const res = await gateway.inject({
       method: 'GET',
       url: '/ipfs/' + dir
     })
 
-    expect(res.statusCode).to.equal(302)
-    expect(res.headers.location).to.equal('/ipfs/QmbQD7EMEL1zeebwBsWEfA3ndgSS6F7S6iTuwuqasPgVRi/index.html')
+    // we expect redirect to the same path but with '/' at the end
+    expect(res.statusCode).to.equal(301)
+    expect(res.headers.location).to.equal(`/ipfs/${dir}/`)
     expect(res.headers['x-ipfs-path']).to.equal(undefined)
+  })
+
+  it('load a directory with index.html', async () => {
+    const dir = 'QmbQD7EMEL1zeebwBsWEfA3ndgSS6F7S6iTuwuqasPgVRi/' // note '/' at the end
+
+    const res = await gateway.inject({
+      method: 'GET',
+      url: '/ipfs/' + dir
+    })
+
+    // confirm payload is index.html
+    expect(res.statusCode).to.equal(200)
+    expect(res.headers['content-type']).to.equal('text/html; charset=utf-8')
+    expect(res.headers['x-ipfs-path']).to.equal('/ipfs/' + dir)
+    expect(res.headers['cache-control']).to.equal('public, max-age=29030400, immutable')
+    expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
+    expect(res.headers['content-length']).to.equal(res.rawPayload.length)
+    expect(res.headers.etag).to.equal('"Qma6665X5k3zti8nKy7gmXK2BndNDSkgmANpV6k3FUjUeg"')
+    expect(res.headers.suborigin).to.equal('ipfs000bafybeigccfheqv7upr4k64bkg5b5wiwelunyn2l2rbirmm43m34lcpuqqe')
+    expect(res.rawPayload).to.deep.equal(directoryContent['index.html'])
   })
 
   it('test(gateway): load from URI-encoded path', async () => {
