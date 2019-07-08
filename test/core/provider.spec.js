@@ -8,6 +8,7 @@ chai.use(dirtyChai)
 const sinon = require('sinon')
 
 const CID = require('cids')
+const human = require('human-to-milliseconds')
 
 const IPFS = require('../../src')
 const DaemonFactory = require('ipfsd-ctl')
@@ -52,7 +53,7 @@ describe('record provider', () => {
 
     it('should not be running', () => {
       expect(node._provider._running).to.equal(false)
-      expect(node._provider.reprovider).to.not.exist()
+      expect(node._provider.reprovider._timeoutId).to.not.exist()
     })
   })
 
@@ -92,8 +93,8 @@ describe('record provider', () => {
     })
 
     it('should use the defaults', () => {
-      expect(node._provider._options.Interval).to.equal('12h')
-      expect(node._provider._options.Strategy).to.equal('all')
+      expect(node._provider._options.interval).to.equal(human('12h'))
+      expect(node._provider._options.strategy).to.equal('all')
     })
 
     it('should be able to provide a valid CIDs', async () => {
@@ -181,8 +182,8 @@ describe('record provider', () => {
     })
 
     it('should use the provided configuration', () => {
-      expect(node._provider._options.Interval).to.equal(INTERVAL)
-      expect(node._provider._options.Strategy).to.equal(STRATEGY)
+      expect(node._provider._options.interval).to.equal(human(INTERVAL))
+      expect(node._provider._options.strategy).to.equal(STRATEGY)
     })
 
     it('should reprovide after tens seconds', function (done) {

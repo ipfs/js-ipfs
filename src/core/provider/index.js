@@ -21,14 +21,29 @@ class Provider {
    * @param {string} options.strategy reprovider strategy
    */
   constructor (libp2p, blockstore, options = {}) {
+    // Assert options
+    this._validateOptions(options)
+
     this._running = false
 
     this._contentRouting = libp2p.contentRouting
     this._blockstore = blockstore
-    this._options = options
-    this.reprovider = undefined
 
-    this._validateOptions()
+    // handle options (config uses uppercase)
+    const humanDelay = options.Delay || options.delay || '15s'
+    const delay = human(humanDelay)
+    const humanInterval = options.Interval || options.interval || '12h'
+    const interval = human(humanInterval)
+    const strategy = options.Strategy || options.strategy || 'all'
+
+    this._options = {
+      delay,
+      interval,
+      strategy
+    }
+
+    this.reprovider = new Reprovider(this._contentRouting, this._blockstore, this._options)
+
   }
 
   /**
@@ -42,20 +57,6 @@ class Provider {
     }
 
     this._running = true
-
-    // handle options (config uses uppercase)
-    const humanDelay = this._options.Delay || this._options.delay || '15s'
-    const delay = await human(humanDelay)
-    const humanInterval = this._options.Interval || this._options.interval || '12h'
-    const interval = await human(humanInterval)
-    const strategy = this._options.Strategy || this._options.strategy || 'all'
-    const options = {
-      delay,
-      interval,
-      strategy
-    }
-
-    this.reprovider = new Reprovider(this._contentRouting, this._blockstore, options)
 
     // Start reprovider
     this.reprovider.start()
@@ -106,14 +107,14 @@ class Provider {
   }
 
   // Validate Provider options
-  _validateOptions () {
-    const delay = (this._options.Delay || this._options.delay)
+  _validateOptions (options) {
+    const delay = (options.Delay || options.delay)
     assert(delay && parseInt(delay) !== 0, '0 delay is not a valid value for reprovider')
 
-    const interval = (this._options.Interval || this._options.interval)
+    const interval = (options.Interval || options.interval)
     assert(interval && parseInt(interval) !== 0, '0 interval is not a valid value for reprovider')
 
-    const strategy = (this._options.Strategy || this._options.strategy)
+    const strategy = (options.Strategy || options.strategy)
     assert(strategy && (strategy === 'all' || strategy === 'pinned' || strategy === 'roots'),
       'Reprovider must have one of the following strategies: `all`, `pinned` or `roots`')
   }
