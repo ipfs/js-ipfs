@@ -9,7 +9,6 @@ const mime = require('mime-types')
 const { PassThrough } = require('readable-stream')
 const Boom = require('boom')
 const Ammo = require('@hapi/ammo') // HTTP Range processing utilities
-const peek = require('buffer-peek-stream')
 
 const multibase = require('multibase')
 const { resolver } = require('ipfs-http-response')
@@ -32,9 +31,9 @@ function detectContentType (path, chunk) {
   return mime.contentType(mimeType)
 }
 
-// Enable streaming of compressed payload
+// Thin stream Transform wrapper to enable streaming of compressed payload
 // https://github.com/hapijs/hapi/issues/3599
-class ResponseStream extends PassThrough {
+class HttpResponseStream extends PassThrough {
   _read (size) {
     super._read(size)
     if (this._compressor) {
@@ -148,24 +147,24 @@ module.exports = {
       }
     }
 
-    const rawStream = ipfs.catReadableStream(data.cid, catOptions)
-    const responseStream = new ResponseStream()
-
-    // Pass-through Content-Type sniffing over initial bytes
-    const { peekedStream, contentType } = await new Promise((resolve, reject) => {
-      const peekBytes = fileType.minimumBytes
-      peek(rawStream, peekBytes, (err, streamHead, peekedStream) => {
-        if (err) {
-          log.error(err)
-          return reject(err)
-        }
-        resolve({ peekedStream, contentType: detectContentType(ipfsPath, streamHead) })
+    // Set/Sniff Content-Type
+    let contentType
+    if (request.headers.range && catOptions.length) {
+      // Range request always returns opaque byte stream
+      contentType = 'application/octet-stream'
+    } else {
+      // When returning full file we analyze the file head to tell its content-type
+      const fileHead = await ipfs.cat(data.cid, {
+        offset: 0,
+        length: fileType.minimumBytes
       })
-    })
+      contentType = detectContentType(ipfsPath, fileHead)
+    }
 
-    peekedStream.pipe(responseStream)
-
-    const res = h.response(responseStream).code(rangeResponse ? 206 : 200)
+    // We pass a compressable httpStream to Hapijs to enable streaming responses
+    const rawStream = ipfs.catReadableStream(data.cid, catOptions)
+    const httpStream = rawStream.pipe(new HttpResponseStream())
+    const res = h.response(httpStream).code(rangeResponse ? 206 : 200)
 
     // Etag maps directly to an identifier for a specific version of a resource
     // and enables smart client-side caching thanks to If-None-Match
