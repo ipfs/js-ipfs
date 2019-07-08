@@ -149,7 +149,7 @@ module.exports = {
 
     // Set/Sniff Content-Type
     let contentType
-    if (request.headers.range && catOptions.length) {
+    if (rangeResponse) {
       // Range request always returns opaque byte stream
       contentType = 'application/octet-stream'
     } else {
