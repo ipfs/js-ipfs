@@ -14,7 +14,7 @@ const MFS_ROOT_DS_KEY = new Key('/local/filesroot')
 
 // Perform mark and sweep garbage collection
 module.exports = function gc (self) {
-  return promisify(async (callback) => {
+  return promisify((callback) => {
     const start = Date.now()
     log(`Creating set of marked blocks`)
 
