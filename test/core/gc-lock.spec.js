@@ -8,6 +8,10 @@ chai.use(dirtyChai)
 
 const parallel = require('async/parallel')
 const pull = require('pull-stream')
+const pullThrough = require('pull-stream/throughs/through')
+const pullAsyncMap = require('pull-stream/throughs/async-map')
+const pullCollect = require('pull-stream/sinks/collect')
+const pullValues = require('pull-stream/sources/values')
 const GCLock = require('../../src/core/components/pin/gc-lock')
 
 const cbTakeLock = (type, lock, out, id, duration) => {
@@ -49,22 +53,22 @@ const pullTakeLock = (type, lock, out, id, duration) => {
   const vals = ['a', 'b', 'c']
   return (cb) => {
     pull(
-      pull.values(vals),
+      pullValues(vals),
       lock[lockFn](() => {
         let started = false
         return pull(
-          pull.through((i) => {
+          pullThrough((i) => {
             if (!started) {
               out.push(`${type} ${id} start`)
               started = true
             }
           }),
-          pull.asyncMap((i, cb) => {
+          pullAsyncMap((i, cb) => {
             setTimeout(() => cb(null, i), duration / vals.length)
           })
         )
       }),
-      pull.collect(() => {
+      pullCollect(() => {
         out.push(`${type} ${id} end`)
         cb()
       })
@@ -82,22 +86,22 @@ const pullTakeLockError = (type, lock, out, errs, id, duration) => {
   const vals = ['a', 'b', 'c']
   return (cb) => {
     pull(
-      pull.values(vals),
+      pullValues(vals),
       lock[lockFn](() => {
         let started = false
         return pull(
-          pull.through((i) => {
+          pullThrough((i) => {
             if (!started) {
               out.push(`${type} ${id} start`)
               started = true
             }
           }),
-          pull.asyncMap((i, cb) => {
+          pullAsyncMap((i, cb) => {
             setTimeout(() => cb(new Error('err')), duration)
           })
         )
       }),
-      pull.collect((err) => {
+      pullCollect((err) => {
         out.push(`${type} ${id} error`)
         errs.push(err)
         cb()
