@@ -9,6 +9,7 @@ chai.use(dirtyChai)
 
 const fs = require('fs')
 
+const CID = require('cids')
 const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/create-repo-nodejs')
 const expectTimeout = require('../utils/expect-timeout')
@@ -44,14 +45,22 @@ describe('pin', function () {
   let pin
   let repo
 
-  function expectPinned (hash, type, pinned = true) {
+  function expectPinned (hash, type = pinTypes.all, pinned = true) {
     if (typeof type === 'boolean') {
       pinned = type
-      type = undefined
+      type = pinTypes.all
     }
 
-    return pin._isPinnedWithType(hash, type || pinTypes.all)
-      .then(result => expect(result.pinned).to.eql(pinned))
+    return pin._isPinnedWithType(hash, type)
+      .then(result => {
+        expect(result.pinned).to.eql(pinned)
+        if (type === pinTypes.indirect) {
+          // indirect pins return a CID of recursively pinned root instead of 'indirect' string
+          expect(CID.isCID(result.reason)).to.be.true()
+        } else if (type !== pinTypes.all) {
+          expect(result.reason).to.eql(type)
+        }
+      })
   }
 
   async function clearPins () {
@@ -159,6 +168,7 @@ describe('pin', function () {
     it('recursive', function () {
       return pin.add(pins.root)
         .then(() => {
+          expectPinned(pins.root, pinTypes.recursive)
           const pinChecks = Object.values(pins)
             .map(hash => expectPinned(hash))
 
@@ -169,7 +179,7 @@ describe('pin', function () {
     it('direct', function () {
       return pin.add(pins.root, { recursive: false })
         .then(() => Promise.all([
-          expectPinned(pins.root),
+          expectPinned(pins.root, pinTypes.direct),
           expectPinned(pins.solarWiki, false)
         ]))
     })
@@ -242,7 +252,7 @@ describe('pin', function () {
           )
       })
 
-      it('direct', function () {
+      it('all direct', function () {
         return pin.ls({ type: 'direct' })
           .then(out =>
             expect(out).to.deep.include.members([
@@ -252,7 +262,7 @@ describe('pin', function () {
           )
       })
 
-      it('recursive', function () {
+      it('all recursive', function () {
         return pin.ls({ type: 'recursive' })
           .then(out =>
             expect(out).to.deep.include.members([
@@ -262,7 +272,7 @@ describe('pin', function () {
           )
       })
 
-      it('indirect', function () {
+      it('all indirect', function () {
         return pin.ls({ type: 'indirect' })
           .then(out =>
             expect(out).to.deep.include.members([
@@ -274,6 +284,78 @@ describe('pin', function () {
                 hash: 'QmVgSHAdMxFAuMP2JiMAYkB8pCWP1tcB9djqvq8GKAFiHi' }
             ])
           )
+      })
+
+      it('direct for CID', function () {
+        return pin.ls(pins.mercuryDir, { type: 'direct' })
+          .then(out =>
+            expect(out).to.have.deep.members([
+              { type: 'direct',
+                hash: pins.mercuryDir }
+            ])
+          )
+      })
+
+      it('direct for path', function () {
+        return pin.ls(`/ipfs/${pins.root}/mercury/`, { type: 'direct' })
+          .then(out =>
+            expect(out).to.have.deep.members([
+              { type: 'direct',
+                hash: pins.mercuryDir }
+            ])
+          )
+      })
+
+      it('direct for path (no match)', function (done) {
+        pin.ls(`/ipfs/${pins.root}/mercury/wiki.md`, { type: 'direct' }, (err, pinset) => {
+          expect(err).to.exist()
+          expect(pinset).to.not.exist()
+          done()
+        })
+      })
+
+      it('direct for CID (no match)', function (done) {
+        pin.ls(pins.root, { type: 'direct' }, (err, pinset) => {
+          expect(err).to.exist()
+          expect(pinset).to.not.exist()
+          done()
+        })
+      })
+
+      it('recursive for CID', function () {
+        return pin.ls(pins.root, { type: 'recursive' })
+          .then(out =>
+            expect(out).to.have.deep.members([
+              { type: 'recursive',
+                hash: pins.root }
+            ])
+          )
+      })
+
+      it('recursive for CID (no match)', function (done) {
+        return pin.ls(pins.mercuryDir, { type: 'recursive' }, (err, pinset) => {
+          expect(err).to.exist()
+          expect(pinset).to.not.exist()
+          done()
+        })
+      })
+
+      it('indirect for CID', function () {
+        return pin.ls(pins.solarWiki, { type: 'indirect' })
+          .then(out =>
+            expect(out).to.have.deep.members([
+              { type: `indirect through ${pins.root}`,
+                hash: pins.solarWiki }
+            ])
+          )
+      })
+
+      it('indirect for CID (no match)', function (done) {
+        pin.ls(pins.root, { type: 'indirect' }, (err, pinset) => {
+          expect(err).to.exist()
+          expect(pinset).to.not.exist()
+          done()
+        })
       })
     })
   })
