@@ -2,6 +2,8 @@
 
 const mortice = require('mortice')
 const pull = require('pull-stream')
+const pullThrough = require('pull-stream/throughs/through')
+const pullAsyncMap = require('pull-stream/throughs/async-map')
 const EventEmitter = require('events')
 const log = require('debug')('ipfs:gc:lock')
 
@@ -50,7 +52,7 @@ class GCLock extends EventEmitter {
     })
 
     const lock = this.mutex[type](locked)
-    return lock.then(res => cb(null, res)).catch(cb)
+    return lock.then(res => cb(null, res), cb)
   }
 
   pullReadLock (lockedPullFn) {
@@ -104,7 +106,7 @@ class PullLocker {
   // the locked piece of code
   take () {
     return pull(
-      pull.asyncMap((i, cb) => {
+      pullAsyncMap((i, cb) => {
         if (!this.lock) {
           log(`[${this.lockId}] ${this.type} (pull) requested`)
           this.emitter.emit(`${this.type} request`, this.lockId)
@@ -124,7 +126,7 @@ class PullLocker {
 
   // Releases the lock
   release () {
-    return pull.through(null, (err) => {
+    return pullThrough(null, (err) => {
       log(`[${this.lockId}] ${this.type} (pull) released`)
       this.emitter.emit(`${this.type} release`, this.lockId)
       this.releaseLock(err)
