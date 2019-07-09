@@ -1,5 +1,6 @@
 'use strict'
 
+const assert = require('assert')
 const mortice = require('mortice')
 const pull = require('pull-stream')
 const pullThrough = require('pull-stream/throughs/through')
@@ -32,10 +33,10 @@ class GCLock extends EventEmitter {
 
   lock (type, lockedFn, cb) {
     if (typeof lockedFn !== 'function') {
-      throw new Error(`first argument to ${type} must be a function`)
+      assert.fail(`first argument to GCLock.${type} must be a function`)
     }
     if (typeof cb !== 'function') {
-      throw new Error(`second argument to ${type} must be a callback function`)
+      assert.fail(`second argument to GCLock.${type} must be a callback function`)
     }
 
     const lockId = this.lockId++
