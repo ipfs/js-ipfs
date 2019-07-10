@@ -20,7 +20,7 @@ const EventEmitter = require('events')
 const config = require('./config')
 const boot = require('./boot')
 const components = require('./components')
-const GCLock = require('./components/gc-lock')
+const GCLock = require('./components/pin/gc-lock')
 
 // replaced by repo-browser when running in the browser
 const defaultRepo = require('./runtime/repo-nodejs')
