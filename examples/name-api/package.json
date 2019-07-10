@@ -4,12 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "browserify index.js > bundle.js && http-server -a 127.0.0.1 -p 8888"
+    "start": "browserify index.js > bundle.js && extatic --host 127.0.0.1 -p 8888"
   },
   "author": "Tara Vancil <tbvanc@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "browserify": "^16.2.3",
-    "http-server": "~0.11.1"
+    "extatic": "^4.1.3"
   }
 }
