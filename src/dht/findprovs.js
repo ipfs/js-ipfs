@@ -44,11 +44,13 @@ module.exports = (send) => {
       const responses = res.Responses.map((r) => {
         const peerInfo = new PeerInfo(PeerId.createFromB58String(r.ID))
 
-        r.Addrs.forEach((addr) => {
-          const ma = multiaddr(addr)
+        if (r.Addrs) {
+          r.Addrs.forEach((addr) => {
+            const ma = multiaddr(addr)
 
-          peerInfo.multiaddrs.add(ma)
-        })
+            peerInfo.multiaddrs.add(ma)
+          })
+        }
 
         return peerInfo
       })
