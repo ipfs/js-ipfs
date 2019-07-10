@@ -1,3 +1,16 @@
+<a name="33.0.0"></a>
+# [33.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v32.0.1...v33.0.0) (2019-07-10)
+
+
+### Bug Fixes
+
+* link to ipfs.io ([70cdf25](https://github.com/ipfs/js-ipfs-http-client/commit/70cdf25))
+* prepare for aegir release ([#1021](https://github.com/ipfs/js-ipfs-http-client/issues/1021)) ([806b206](https://github.com/ipfs/js-ipfs-http-client/commit/806b206))
+* sometimes no Addrs element is present in the response ([#1037](https://github.com/ipfs/js-ipfs-http-client/issues/1037)) ([a74b8f7](https://github.com/ipfs/js-ipfs-http-client/commit/a74b8f7))
+* **package:** update bignumber.js to version 9.0.0 ([#1024](https://github.com/ipfs/js-ipfs-http-client/issues/1024)) ([a04edac](https://github.com/ipfs/js-ipfs-http-client/commit/a04edac))
+
+
+
 <a name="32.0.1"></a>
 ## [32.0.1](https://github.com/ipfs/js-ipfs-http-client/compare/v32.0.0...v32.0.1) (2019-05-21)
 
