@@ -23,7 +23,7 @@ module.exports = (repoPath, opts) => {
   env.IPFS_PATH = repoPath
 
   const config = Object.assign({}, {
-    stripEof: false,
+    stripFinalNewline: false,
     env: env,
     timeout: 60 * 1000
   }, opts)
@@ -49,6 +49,9 @@ module.exports = (repoPath, opts) => {
     res.stdin = cp.stdin
     res.stdout = cp.stdout
     res.stderr = cp.stderr
+
+    // res.stdout.on('data', d => console.log(d+''))
+    // res.stderr.on('data', d => console.log(d+''))
 
     return res
   }
