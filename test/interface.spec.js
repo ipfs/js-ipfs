@@ -92,6 +92,10 @@ describe('interface-ipfs-core tests', () => {
         name: 'should provide from one node and find it through another node',
         reason: 'FIXME go-ipfs endpoint doesn\'t conform with the others https://github.com/ipfs/go-ipfs/issues/5047'
       },
+      {
+        name: 'should take options to override timeout config',
+        reason: 'FIXME go-ipfs does not support a timeout option'
+      },
       // dht.get
       {
         name: 'should get a value after it was put on another node',

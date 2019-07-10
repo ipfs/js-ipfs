@@ -25,14 +25,15 @@ module.exports = (send) => {
     const handleResult = (res, callback) => {
       // Inconsistent return values in the browser
       if (Array.isArray(res)) {
-        res = res[0]
+        res = res.find(r => r.Type === 2)
       }
 
       // Type 2 keys
-      if (res.Type !== 2) {
-        const errMsg = `key was not found (type 2)`
-
-        return callback(errcode(new Error(errMsg), 'ERR_KEY_TYPE_2_NOT_FOUND'))
+      // 2 = FinalPeer
+      // https://github.com/libp2p/go-libp2p-core/blob/6e566d10f4a5447317a66d64c7459954b969bdab/routing/query.go#L18
+      if (!res || res.Type !== 2) {
+        const errMsg = `key was not found (type 4)`
+        return callback(errcode(new Error(errMsg), 'ERR_KEY_TYPE_4_NOT_FOUND'))
       }
 
       const responseReceived = res.Responses[0]
@@ -49,7 +50,7 @@ module.exports = (send) => {
 
     send({
       path: 'dht/findpeer',
-      args: peerId,
+      args: peerId.toString(),
       qs: opts
     }, (err, result) => {
       if (err) {
