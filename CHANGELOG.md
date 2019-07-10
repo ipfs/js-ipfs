@@ -1,3 +1,13 @@
+<a name="33.0.1"></a>
+## [33.0.1](https://github.com/ipfs/js-ipfs-http-client/compare/v33.0.0...v33.0.1) (2019-07-10)
+
+
+### Bug Fixes
+
+* response for findpeer and findprovs ([#1039](https://github.com/ipfs/js-ipfs-http-client/issues/1039)) ([5252f50](https://github.com/ipfs/js-ipfs-http-client/commit/5252f50))
+
+
+
 <a name="33.0.0"></a>
 # [33.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v32.0.1...v33.0.0) (2019-07-10)
 
