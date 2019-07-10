@@ -297,7 +297,7 @@ describe('interface-ipfs-core tests', () => {
               config = undefined
             }
 
-            const spawnOptions = { repoPath, config, initOptions: { bits: 1024 } }
+            const spawnOptions = { repoPath, config, initOptions: { bits: 1024, profile: 'test' } }
 
             ipfsFactory.spawn(spawnOptions, (err, _ipfsd) => {
               if (err) {
