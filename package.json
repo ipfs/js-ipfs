@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "32.0.1",
+  "version": "33.0.0",
   "description": "A client library for the IPFS HTTP API",
   "keywords": [
     "ipfs"
