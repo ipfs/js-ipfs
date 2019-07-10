@@ -200,7 +200,7 @@ describe('name-pubsub', () => {
       return ipfsA('name pubsub subs')
         .catch((err) => {
           expect(err).to.exist() // error as it is disabled
-          expect(err.toString()).to.have.string('IPNS pubsub subsystem is not enabled')
+          expect(err.stdout).to.have.string('IPNS pubsub subsystem is not enabled')
         })
     })
 
@@ -208,7 +208,7 @@ describe('name-pubsub', () => {
       return ipfsA('name pubsub cancel /ipns/QmSWxaPcGgf4TDnFEBDWz2JnbHywF14phmY9hNcAeBEK5v')
         .catch((err) => {
           expect(err).to.exist() // error as it is disabled
-          expect(err.toString()).to.have.string('IPNS pubsub subsystem is not enabled')
+          expect(err.stdout).to.have.string('IPNS pubsub subsystem is not enabled')
         })
     })
   })
