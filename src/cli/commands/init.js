@@ -1,14 +1,13 @@
 'use strict'
 
-const utils = require('../utils')
-const print = utils.print
+const { ipfsPathHelp } = require('../utils')
 
 module.exports = {
   command: 'init [config] [options]',
   describe: 'Initialize a local IPFS node',
   builder (yargs) {
     return yargs
-      .epilog(utils.ipfsPathHelp)
+      .epilog(ipfsPathHelp)
       .positional('config', {
         describe: 'Node config, this should JSON and will be merged with the default config. Check https://github.com/ipfs/js-ipfs#optionsconfig',
         type: 'string'
@@ -33,9 +32,9 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
-      const path = utils.getRepoPath()
+      const path = argv.getRepoPath()
 
-      print(`initializing ipfs node at ${path}`)
+      argv.print(`initializing ipfs node at ${path}`)
 
       // Required inline to reduce startup time
       const IPFS = require('../../core')
@@ -54,7 +53,7 @@ module.exports = {
           privateKey: argv.privateKey,
           emptyRepo: argv.emptyRepo,
           pass: argv.pass,
-          log: print
+          log: argv.print
         })
       } catch (err) {
         if (err.code === 'EACCES') {

@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../utils').print
-
 module.exports = {
   command: 'resolve [<name>]',
 
@@ -32,7 +30,7 @@ module.exports = {
       const ipfs = await argv.getIpfs()
       const result = await ipfs.name.resolve(argv.name, opts)
 
-      print(result)
+      argv.print(result)
     })())
   }
 }

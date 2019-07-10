@@ -7,7 +7,7 @@ const byteman = require('byteman')
 const mh = require('multihashes')
 const multibase = require('multibase')
 const toPull = require('stream-to-pull-stream')
-const { print, isDaemonOn, createProgressBar } = require('../utils')
+const { createProgressBar } = require('../utils')
 const { cidToString } = require('../../utils/cid')
 const globSource = require('../../utils/files/glob-source')
 
@@ -33,7 +33,7 @@ function addPipeline (source, addStream, options) {
         if (options.silent) return resolve()
 
         if (options.quieter) {
-          print(added.pop().hash)
+          options.print(added.pop().hash)
           return resolve()
         }
 
@@ -54,7 +54,7 @@ function addPipeline (source, addStream, options) {
             if (!options.quiet && file.path.length > 0) log.push(file.path)
             return log.join(' ')
           })
-          .forEach((msg) => print(msg))
+          .forEach((msg) => options.print(msg))
 
         resolve()
       })
@@ -168,7 +168,7 @@ module.exports = {
         chunker: argv.chunker
       }
 
-      if (options.enableShardingExperiment && isDaemonOn()) {
+      if (options.enableShardingExperiment && argv.isDaemonOn()) {
         throw new Error('Error: Enabling the sharding experiment should be done on the daemon')
       }
 

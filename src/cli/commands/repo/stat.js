@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../utils').print
-
 module.exports = {
   command: 'stat',
 
@@ -18,7 +16,7 @@ module.exports = {
     argv.resolve((async () => {
       const ipfs = await argv.getIpfs()
       const stats = await ipfs.repo.stat({ human: argv.human })
-      print(`repo status
+      argv.print(`repo status
   number of objects: ${stats.numObjects}
   repo size: ${stats.repoSize}
   repo path: ${stats.repoPath}

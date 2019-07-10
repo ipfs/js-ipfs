@@ -1,7 +1,6 @@
 'use strict'
 
 const os = require('os')
-const print = require('../utils').print
 
 module.exports = {
   command: 'version',
@@ -34,6 +33,7 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
+      const { print } = argv
       const ipfs = await argv.getIpfs()
       const data = await ipfs.version()
 

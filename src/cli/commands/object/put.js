@@ -3,7 +3,6 @@
 const bl = require('bl')
 const fs = require('fs')
 const multibase = require('multibase')
-const { print } = require('../../utils')
 const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
@@ -40,7 +39,7 @@ module.exports = {
 
       const ipfs = await argv.getIpfs()
       const cid = await ipfs.object.put(data, { enc: argv.inputEnc })
-      print(`added ${cidToString(cid, { base: argv.cidBase, upgrade: false })}`)
+      argv.print(`added ${cidToString(cid, { base: argv.cidBase, upgrade: false })}`)
     })())
   }
 }

@@ -4,7 +4,6 @@ const bl = require('bl')
 const fs = require('fs')
 const multibase = require('multibase')
 const promisify = require('promisify-es6')
-const { print } = require('../../utils')
 const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
@@ -54,7 +53,7 @@ module.exports = {
 
       const ipfs = await argv.getIpfs()
       const { cid } = await ipfs.block.put(data, argv)
-      print(cidToString(cid, { base: argv.cidBase }))
+      argv.print(cidToString(cid, { base: argv.cidBase }))
     })())
   }
 }

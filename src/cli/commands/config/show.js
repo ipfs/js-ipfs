@@ -3,7 +3,6 @@
 const debug = require('debug')
 const log = debug('cli:config')
 log.error = debug('cli:config:error')
-const print = require('../../utils').print
 
 module.exports = {
   command: 'show',
@@ -19,7 +18,7 @@ module.exports = {
 
       const ipfs = await argv.getIpfs()
       const config = await ipfs.config.get()
-      print(JSON.stringify(config, null, 4))
+      argv.print(JSON.stringify(config, null, 4))
     })())
   }
 }

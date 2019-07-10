@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../../utils').print
-
 module.exports = {
   command: 'cancel <name>',
 
@@ -11,7 +9,7 @@ module.exports = {
     argv.resolve((async () => {
       const ipfs = await argv.getIpfs()
       const result = await ipfs.name.pubsub.cancel(argv.name)
-      print(result.canceled ? 'canceled' : 'no subscription')
+      argv.print(result.canceled ? 'canceled' : 'no subscription')
     })())
   }
 }

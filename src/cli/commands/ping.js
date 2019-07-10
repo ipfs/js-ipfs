@@ -1,7 +1,6 @@
 'use strict'
 
 const pull = require('pull-stream')
-const print = require('../utils').print
 
 module.exports = {
   command: 'ping <peerId>',
@@ -28,10 +27,10 @@ module.exports = {
           pull.drain(({ success, time, text }) => {
             // Check if it's a pong
             if (success && !text) {
-              print(`Pong received: time=${time} ms`)
+              argv.print(`Pong received: time=${time} ms`)
             // Status response
             } else {
-              print(text)
+              argv.print(text)
             }
           }, err => {
             if (err) return reject(err)
