@@ -7,12 +7,12 @@ const once = require('once')
 const prepareFile = require('./prepare-file')
 const Multipart = require('./multipart')
 
-function headers (file) {
-  const name = file.path
+function headers (file, i) {
+  const filename = file.path
     ? encodeURIComponent(file.path)
     : ''
 
-  const header = { 'Content-Disposition': `file; filename="${name}"` }
+  const header = { 'Content-Disposition': `form-data; name="data${i}"; filename="${filename}"` }
 
   if (!file.content) {
     header['Content-Type'] = 'application/x-directory'
@@ -43,7 +43,7 @@ module.exports = (send, path) => {
       const next = once(_next)
       try {
         const files = prepareFile(file, options)
-          .map((file) => Object.assign({ headers: headers(file) }, file))
+          .map((file, i) => Object.assign({ headers: headers(file, i) }, file))
 
         writing = true
         eachSeries(
