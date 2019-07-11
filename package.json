@@ -122,7 +122,7 @@
     "kind-of": "^6.0.2",
     "libp2p": "~0.25.4",
     "libp2p-bootstrap": "~0.9.3",
-    "libp2p-crypto": "~0.16.0",
+    "libp2p-crypto": "~0.17.0",
     "libp2p-delegated-content-routing": "^0.2.2",
     "libp2p-delegated-peer-routing": "^0.2.2",
     "libp2p-kad-dht": "~0.15.2",
