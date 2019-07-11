@@ -23,29 +23,26 @@ module.exports = (send) => {
 
     const handleResult = (res, callback) => {
       // Inconsistent return values in the browser vs node
-      if (Array.isArray(res)) {
-        res = res.find(r => r.Type === 4)
+      if (!Array.isArray(res)) {
+        res = [res]
       }
 
-      // callback with an empty array if no providers are found
-      // 4 = Provider
-      // https://github.com/libp2p/go-libp2p-core/blob/6e566d10f4a5447317a66d64c7459954b969bdab/routing/query.go#L20
-      if (!res || res.Type !== 4) {
-        return callback(null, [])
-      }
+      let responses = []
+      res.forEach(result => {
+        // 4 = Provider
+        if (result.Type !== 4) return
+        result.Responses.forEach(response => {
+          const peerInfo = new PeerInfo(PeerId.createFromB58String(response.ID))
 
-      const responses = res.Responses.map((r) => {
-        const peerInfo = new PeerInfo(PeerId.createFromB58String(r.ID))
+          if (response.Addrs) {
+            response.Addrs.forEach((addr) => {
+              const ma = multiaddr(addr)
+              peerInfo.multiaddrs.add(ma)
+            })
+          }
 
-        if (r.Addrs) {
-          r.Addrs.forEach((addr) => {
-            const ma = multiaddr(addr)
-
-            peerInfo.multiaddrs.add(ma)
-          })
-        }
-
-        return peerInfo
+          responses.push(peerInfo)
+        })
       })
 
       callback(null, responses)
