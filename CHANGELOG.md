@@ -1,3 +1,13 @@
+<a name="0.107.0"></a>
+# [0.107.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.106.0...v0.107.0) (2019-07-11)
+
+
+### Bug Fixes
+
+* repo.gc() response format ([#492](https://github.com/ipfs/interface-ipfs-core/issues/492)) ([a2ec3f6](https://github.com/ipfs/interface-ipfs-core/commit/a2ec3f6))
+
+
+
 <a name="0.106.0"></a>
 # [0.106.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.105.1...v0.106.0) (2019-07-05)
 
