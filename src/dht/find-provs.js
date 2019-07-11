@@ -3,6 +3,7 @@
 
 const multihashing = require('multihashing-async')
 const waterfall = require('async/waterfall')
+const parallel = require('async/parallel')
 const CID = require('cids')
 const { spawnNodesWithId } = require('../utils/spawn')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -26,6 +27,7 @@ module.exports = (createCommon, options) => {
   describe('.dht.findProvs', function () {
     let nodeA
     let nodeB
+    let nodeC
 
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
@@ -35,14 +37,34 @@ module.exports = (createCommon, options) => {
       common.setup((err, factory) => {
         expect(err).to.not.exist()
 
-        spawnNodesWithId(2, factory, (err, nodes) => {
+        spawnNodesWithId(3, factory, (err, nodes) => {
           expect(err).to.not.exist()
 
           nodeA = nodes[0]
           nodeB = nodes[1]
+          nodeC = nodes[2]
 
-          connect(nodeB, nodeA.peerId.addresses[0], done)
+          parallel([
+            (cb) => connect(nodeB, nodeA.peerId.addresses[0], cb),
+            (cb) => connect(nodeC, nodeB.peerId.addresses[0], cb)
+          ], done)
         })
+      })
+    })
+
+    let providedCid
+    before('add providers for the same cid', function (done) {
+      this.timeout(10 * 1000)
+      parallel([
+        (cb) => nodeB.object.new('unixfs-dir', cb),
+        (cb) => nodeC.object.new('unixfs-dir', cb)
+      ], (err, cids) => {
+        if (err) return done(err)
+        providedCid = cids[0]
+        parallel([
+          (cb) => nodeB.dht.provide(providedCid, cb),
+          (cb) => nodeC.dht.provide(providedCid, cb)
+        ], done)
       })
     })
 
@@ -52,18 +74,17 @@ module.exports = (createCommon, options) => {
       common.teardown(done)
     })
 
-    it('should provide from one node and find it through another node', function (done) {
-      this.timeout(80 * 1000)
+    it('should be able to find providers', function (done) {
+      this.timeout(20 * 1000)
 
       waterfall([
-        (cb) => nodeB.object.new('unixfs-dir', cb),
-        (cid, cb) => {
-          nodeB.dht.provide(cid, (err) => cb(err, cid))
-        },
-        (cid, cb) => nodeA.dht.findProvs(cid, cb),
+        (cb) => nodeA.dht.findProvs(providedCid, cb),
         (provs, cb) => {
-          expect(provs.map((p) => p.id.toB58String()))
-            .to.eql([nodeB.peerId.id])
+          const providerIds = provs.map((p) => p.id.toB58String())
+          expect(providerIds).to.have.members([
+            nodeB.peerId.id,
+            nodeC.peerId.id
+          ])
           cb()
         }
       ], done)
