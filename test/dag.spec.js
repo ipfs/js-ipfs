@@ -68,16 +68,15 @@ describe('.dag', function () {
     })
   })
 
-  it('should callback with error when missing DAG resolver for raw multicodec', (done) => {
-    ipfs.dag.put(Buffer.from([0, 1, 2, 3]), {
-      // CIDv1 with multicodec = raw
-      cid: new CID('bafkreigh2akiscaildcqabsyg3dfr6chu3fgpregiymsck7e7aqa4s52zy')
-    }, (err, cid) => {
+  it('should callback with error when missing DAG resolver for multicodec from requested CID', (done) => {
+    ipfs.block.put(Buffer.from([0, 1, 2, 3]), {
+      cid: new CID('z8mWaJ1dZ9fH5EetPuRsj8jj26pXsgpsr')
+    }, (err, block) => {
       expect(err).to.not.exist()
 
-      ipfs.dag.get(cid, (err, result) => {
+      ipfs.dag.get(block.cid, (err, result) => {
         expect(result).to.not.exist()
-        expect(err.message).to.equal('ipfs-http-client is missing DAG resolver for "raw" multicodec')
+        expect(err.message).to.equal('Missing IPLD format "git-raw"')
         done()
       })
     })
