@@ -25,8 +25,7 @@ if (!semver.satisfies(process.versions.node, pkg.engines.node)) {
 
 const YargsPromise = require('yargs-promise')
 const updateNotifier = require('update-notifier')
-const utils = require('./utils')
-const print = utils.print
+const { print } = require('./utils')
 const mfs = require('ipfs-mfs/cli')
 const debug = require('debug')('ipfs:cli')
 const parser = require('./parser')

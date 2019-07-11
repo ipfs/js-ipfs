@@ -3,7 +3,6 @@
 const debug = require('debug')
 const log = debug('cli:bootstrap')
 log.error = debug('cli:bootstrap:error')
-const print = require('../../utils').print
 
 module.exports = {
   command: 'rm [<peer>]',
@@ -22,7 +21,7 @@ module.exports = {
     argv.resolve((async () => {
       const ipfs = await argv.getIpfs()
       const list = await ipfs.bootstrap.rm(argv.peer, { all: argv.all })
-      list.Peers.forEach((peer) => print(peer))
+      list.Peers.forEach((peer) => argv.print(peer))
     })())
   }
 }

@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../utils').print
-
 module.exports = {
   command: 'add [<peer>]',
 
@@ -19,7 +17,7 @@ module.exports = {
     argv.resolve((async () => {
       const ipfs = await argv.getIpfs()
       const list = await ipfs.bootstrap.add(argv.peer, { default: argv.default })
-      list.Peers.forEach((peer) => print(peer))
+      list.Peers.forEach((peer) => argv.print(peer))
     })())
   }
 }

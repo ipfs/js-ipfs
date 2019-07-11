@@ -1,7 +1,5 @@
 'use strict'
 
-const { print, isDaemonOn } = require('../../utils')
-
 module.exports = {
   command: 'rm <key>',
 
@@ -9,7 +7,7 @@ module.exports = {
 
   builder: {},
 
-  handler ({ getIpfs, key, resolve }) {
+  handler ({ getIpfs, print, isDaemonOn, key, resolve }) {
     resolve((async () => {
       if (isDaemonOn()) {
         // TODO implement this once `js-ipfs-http-client` supports it

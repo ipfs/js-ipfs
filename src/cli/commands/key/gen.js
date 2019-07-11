@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../utils').print
-
 module.exports = {
   command: 'gen <name>',
 
@@ -29,7 +27,7 @@ module.exports = {
       }
       const ipfs = await argv.getIpfs()
       const key = await ipfs.key.gen(argv.name, opts)
-      print(`generated ${key.id} ${key.name}`)
+      argv.print(`generated ${key.id} ${key.name}`)
     })())
   }
 }

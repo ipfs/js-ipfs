@@ -1,7 +1,6 @@
 'use strict'
 
 const multibase = require('multibase')
-const { print } = require('../../utils')
 const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
@@ -31,7 +30,7 @@ module.exports = {
     }
   },
 
-  handler: ({ getIpfs, ipfsPath, type, quiet, cidBase, resolve }) => {
+  handler: ({ getIpfs, print, ipfsPath, type, quiet, cidBase, resolve }) => {
     resolve((async () => {
       const paths = ipfsPath
       const ipfs = await getIpfs()

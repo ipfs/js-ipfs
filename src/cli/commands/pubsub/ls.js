@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../utils').print
-
 module.exports = {
   command: 'ls',
 
@@ -13,7 +11,7 @@ module.exports = {
     argv.resolve((async () => {
       const ipfs = await argv.getIpfs()
       const subscriptions = await ipfs.pubsub.ls()
-      subscriptions.forEach(sub => print(sub))
+      subscriptions.forEach(sub => argv.print(sub))
     })())
   }
 }

@@ -1,7 +1,5 @@
 'use strict'
 
-const { print } = require('../utils')
-
 module.exports = {
   command: 'refs <key> [keys..]',
 
@@ -37,7 +35,7 @@ module.exports = {
     }
   },
 
-  handler ({ getIpfs, key, keys, recursive, format, edges, unique, maxDepth, resolve }) {
+  handler ({ getIpfs, print, key, keys, recursive, format, edges, unique, maxDepth, resolve }) {
     resolve((async () => {
       if (maxDepth === 0) {
         return

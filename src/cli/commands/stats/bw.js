@@ -1,7 +1,6 @@
 'use strict'
 
 const pull = require('pull-stream')
-const print = require('../../utils').print
 
 module.exports = {
   command: 'bw',
@@ -27,7 +26,7 @@ module.exports = {
     }
   },
 
-  handler ({ getIpfs, peer, proto, poll, interval, resolve }) {
+  handler ({ getIpfs, print, peer, proto, poll, interval, resolve }) {
     resolve((async () => {
       const ipfs = await getIpfs()
 

@@ -2,8 +2,6 @@
 
 const mafmt = require('mafmt')
 const multiaddr = require('multiaddr')
-const utils = require('../../utils')
-const print = require('../../utils').print
 
 module.exports = {
   command: 'peers',
@@ -14,7 +12,7 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
-      if (!utils.isDaemonOn()) {
+      if (!argv.isDaemonOn()) {
         throw new Error('This command must be run in online mode. Try running \'ipfs daemon\' first.')
       }
 
@@ -27,7 +25,7 @@ module.exports = {
           ma = ma.encapsulate('/ipfs/' + item.peer.toB58String())
         }
         const addr = ma.toString()
-        print(addr)
+        argv.print(addr)
       })
     })())
   }

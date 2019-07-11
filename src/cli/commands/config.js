@@ -1,5 +1,4 @@
 'use strict'
-const print = require('../utils').print
 
 module.exports = {
   command: 'config <key> [value]',
@@ -39,9 +38,9 @@ module.exports = {
         value = await ipfs.config.get(key)
 
         if (typeof value === 'object') {
-          print(JSON.stringify(value, null, 2))
+          argv.print(JSON.stringify(value, null, 2))
         } else {
-          print(value)
+          argv.print(value)
         }
       } else {
         // Set the new value of a given key

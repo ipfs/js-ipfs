@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../utils').print
-
 module.exports = {
   command: 'query <peerID>',
 
@@ -9,7 +7,7 @@ module.exports = {
 
   builder: {},
 
-  handler ({ getIpfs, peerID, resolve }) {
+  handler ({ getIpfs, print, peerID, resolve }) {
     resolve((async () => {
       const ipfs = await getIpfs()
       const result = await ipfs.dht.query(peerID)

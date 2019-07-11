@@ -3,7 +3,6 @@
 const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
 const multibase = require('multibase')
-const { print } = require('../../../utils')
 const { cidToString } = require('../../../../utils/cid')
 
 module.exports = {
@@ -24,7 +23,7 @@ module.exports = {
     }
   },
 
-  handler ({ getIpfs, root, name, ref, cidBase, cidVersion, resolve }) {
+  handler ({ getIpfs, print, root, name, ref, cidBase, cidVersion, resolve }) {
     resolve((async () => {
       const ipfs = await getIpfs()
       const nodeA = await ipfs.object.get(ref, { enc: 'base58' })

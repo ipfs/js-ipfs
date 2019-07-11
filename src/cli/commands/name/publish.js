@@ -1,7 +1,5 @@
 'use strict'
 
-const { print } = require('../../utils')
-
 module.exports = {
   command: 'publish <ipfsPath>',
 
@@ -46,7 +44,7 @@ module.exports = {
 
       const ipfs = await argv.getIpfs()
       const result = await ipfs.name.publish(argv.ipfsPath, opts)
-      print(`Published to ${result.name}: ${result.value}`)
+      argv.print(`Published to ${result.name}: ${result.value}`)
     })())
   }
 }

@@ -1,5 +1,4 @@
 'use strict'
-const print = require('../utils').print
 
 module.exports = {
   command: 'dns <domain>',
@@ -18,7 +17,7 @@ module.exports = {
     }
   },
 
-  handler ({ getIpfs, domain, resolve, recursive, format }) {
+  handler ({ getIpfs, print, domain, resolve, recursive, format }) {
     resolve((async () => {
       const ipfs = await getIpfs()
       const path = await ipfs.dns(domain, { recursive, format })

@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../../utils').print
-
 module.exports = {
   command: 'subs',
 
@@ -11,7 +9,7 @@ module.exports = {
     argv.resolve((async () => {
       const ipfs = await argv.getIpfs()
       const result = await ipfs.name.pubsub.subs()
-      result.forEach(s => print(s))
+      result.forEach(s => argv.print(s))
     })())
   }
 }

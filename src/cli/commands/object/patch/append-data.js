@@ -3,7 +3,6 @@
 const bl = require('bl')
 const fs = require('fs')
 const multibase = require('multibase')
-const { print } = require('../../../utils')
 const { cidToString } = require('../../../../utils/cid')
 
 module.exports = {
@@ -39,7 +38,7 @@ module.exports = {
         enc: 'base58'
       })
 
-      print(cidToString(cid, { base: argv.cidBase, upgrade: false }))
+      argv.print(cidToString(cid, { base: argv.cidBase, upgrade: false }))
     })())
   }
 }
