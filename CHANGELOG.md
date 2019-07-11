@@ -29,6 +29,10 @@
 * sometimes no Addrs element is present in the response ([#1037](https://github.com/ipfs/js-ipfs-http-client/issues/1037)) ([a74b8f7](https://github.com/ipfs/js-ipfs-http-client/commit/a74b8f7))
 * **package:** update bignumber.js to version 9.0.0 ([#1024](https://github.com/ipfs/js-ipfs-http-client/issues/1024)) ([a04edac](https://github.com/ipfs/js-ipfs-http-client/commit/a04edac))
 
+### BREAKING CHANGES
+
+`repo.gc` response objects have changed to `{ err, cid }`, where `err` is an `Error` instance and `cid` is a [`CID`](https://github.com/multiformats/js-cid) instance.
+
 
 
 <a name="32.0.1"></a>
