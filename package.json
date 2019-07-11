@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "33.0.2",
+  "version": "33.1.0",
   "description": "A client library for the IPFS HTTP API",
   "keywords": [
     "ipfs"
@@ -144,6 +144,7 @@
     "Matt Bell <mappum@gmail.com>",
     "Maxime Lathuilière <k@maxlath.eu>",
     "Michael Bradley <michaelsbradleyjr@gmail.com>",
+    "Michael Muré <michael.mure@consensys.net>",
     "Michael Muré <batolettre@gmail.com>",
     "Mikeal Rogers <mikeal.rogers@gmail.com>",
     "Mitar <mitar.git@tnode.com>",
