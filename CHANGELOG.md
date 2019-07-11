@@ -1,3 +1,19 @@
+<a name="33.1.0"></a>
+# [33.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v33.0.2...v33.1.0) (2019-07-11)
+
+
+### Bug Fixes
+
+* changelog for 33.x does not include breaking change ([cd41a16](https://github.com/ipfs/js-ipfs-http-client/commit/cd41a16))
+* invalid multipart/form-data ([#948](https://github.com/ipfs/js-ipfs-http-client/issues/948)) ([9e6dfe7](https://github.com/ipfs/js-ipfs-http-client/commit/9e6dfe7)), closes [/tools.ietf.org/html/rfc7578#section-4](https://github.com//tools.ietf.org/html/rfc7578/issues/section-4)
+
+
+### Features
+
+* add support for js-ipfs dag api and also some tests ([#957](https://github.com/ipfs/js-ipfs-http-client/issues/957)) ([8f378a3](https://github.com/ipfs/js-ipfs-http-client/commit/8f378a3))
+
+
+
 <a name="33.0.2"></a>
 ## [33.0.2](https://github.com/ipfs/js-ipfs-http-client/compare/v33.0.1...v33.0.2) (2019-07-11)
 
