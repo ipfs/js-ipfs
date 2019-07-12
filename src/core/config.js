@@ -53,6 +53,7 @@ const configSchema = s({
   config: optional(s({
     API: 'object?',
     Addresses: optional(s({
+      Delegates: optional(s(['multiaddr'])),
       Swarm: optional(s(['multiaddr'])),
       API: 'multiaddr?',
       Gateway: 'multiaddr'
