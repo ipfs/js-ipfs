@@ -30,10 +30,9 @@ function off (tests) {
       return thing.ipfs('init')
     })
 
-    after(function (done) {
+    after(function () {
       this.timeout(20 * 1000)
-      clean(repoPath)
-      setImmediate(done)
+      return clean(repoPath)
     })
 
     tests(thing)
