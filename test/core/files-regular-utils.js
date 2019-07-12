@@ -57,7 +57,7 @@ describe('files-regular/utils', () => {
     })
 
     it('throws an error for incorrect rabin format string', () => {
-      let fn = () => utils.parseChunkerString('rabin-1-2-3-4')
+      const fn = () => utils.parseChunkerString('rabin-1-2-3-4')
       expect(fn).to.throw(Error)
     })
 

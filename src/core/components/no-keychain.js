@@ -6,16 +6,25 @@ function fail () {
 
 class NoKeychain {
   static get options () { fail() }
+
   static generateOptions () { fail() }
 
   createKey () { fail() }
+
   listKeys () { fail() }
+
   findKeyById () { fail() }
+
   findKeyByName () { fail() }
+
   renameKey () { fail() }
+
   removeKey () { fail() }
+
   exportKey () { fail() }
+
   importKey () { fail() }
+
   importPeer () { fail() }
 
   get cms () { fail() }

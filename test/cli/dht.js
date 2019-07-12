@@ -33,7 +33,7 @@ const daemonOpts = {
 
 // TODO: unskip when DHT is enabled in 0.36
 describe.skip('dht', () => {
-  let nodes = []
+  const nodes = []
   let ipfsA
   let ipfsB
   let idA

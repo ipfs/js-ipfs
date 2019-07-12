@@ -177,7 +177,7 @@ module.exports = function name (self) {
         name = `/ipns/${name}`
       }
 
-      const [ namespace, hash, ...remainder ] = name.slice(1).split('/')
+      const [namespace, hash, ...remainder] = name.slice(1).split('/')
       try {
         mh.fromB58String(hash)
       } catch (err) {
