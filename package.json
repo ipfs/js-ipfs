@@ -6,7 +6,7 @@
   "main": "src/index.js",
   "browser": {
     "fs": false,
-    "joi": "joi-browser"
+    "@hapi/joi": "joi-browser"
   },
   "scripts": {
     "test": "aegir test",
@@ -51,8 +51,9 @@
     "temp-write": "^3.4.0"
   },
   "dependencies": {
+    "@hapi/boom": "^7.4.2",
+    "@hapi/joi": "^15.1.0",
     "async-iterator-last": "^1.0.0",
-    "boom": "^7.2.0",
     "cids": "~0.7.1",
     "debug": "^4.1.0",
     "err-code": "^1.1.2",
@@ -63,7 +64,6 @@
     "ipfs-unixfs-exporter": "~0.37.6",
     "ipfs-unixfs-importer": "~0.39.9",
     "ipld-dag-pb": "~0.17.2",
-    "joi": "^14.3.0",
     "joi-browser": "^13.4.0",
     "mortice": "^1.2.1",
     "multicodec": "~0.5.3",

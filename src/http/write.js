@@ -1,8 +1,8 @@
 'use strict'
 
-const Joi = require('joi')
+const Joi = require('@hapi/joi')
 const multipart = require('ipfs-multipart')
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 
 const mfsWrite = {
   method: 'POST',
