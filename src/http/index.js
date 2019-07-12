@@ -2,6 +2,7 @@
 
 const Hapi = require('@hapi/hapi')
 const Pino = require('hapi-pino')
+const H2o2 = require('@hapi/h2o2')
 const debug = require('debug')
 const multiaddr = require('multiaddr')
 const toMultiaddr = require('uri-to-multiaddr')
@@ -132,6 +133,8 @@ class HttpApi {
         level: debug.enabled(LOG) ? 'debug' : (debug.enabled(LOG_ERROR) ? 'error' : 'fatal')
       }
     })
+
+    await server.register(H2o2)
 
     server.route(require('./gateway/routes'))
 
