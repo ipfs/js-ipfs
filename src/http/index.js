@@ -82,7 +82,11 @@ class HttpApi {
       // TODO: shouldn't, fix this
       routes: {
         cors: true
-      }
+      },
+      // Disable Compression
+      // Why? Streaming compression in Hapi is not stable enough,
+      // it requires bug-prone hacks such as https://github.com/hapijs/hapi/issues/3599
+      compression: false
     })
     server.app.ipfs = ipfs
 

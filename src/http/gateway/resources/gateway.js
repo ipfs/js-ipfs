@@ -6,7 +6,6 @@ log.error = debug('ipfs:http-gateway:error')
 
 const fileType = require('file-type')
 const mime = require('mime-types')
-const { PassThrough } = require('readable-stream')
 const Boom = require('@hapi/boom')
 const Ammo = require('@hapi/ammo') // HTTP Range processing utilities
 const peek = require('buffer-peek-stream')
@@ -30,20 +29,6 @@ function detectContentType (path, chunk) {
   const mimeType = mime.lookup(fileSignature ? fileSignature.ext : path)
 
   return mime.contentType(mimeType)
-}
-
-// Enable streaming of compressed payload
-// https://github.com/hapijs/hapi/issues/3599
-class ResponseStream extends PassThrough {
-  _read (size) {
-    super._read(size)
-    if (this._compressor) {
-      this._compressor.flush()
-    }
-  }
-  setCompressor (compressor) {
-    this._compressor = compressor
-  }
 }
 
 module.exports = {
@@ -149,7 +134,6 @@ module.exports = {
     }
 
     const rawStream = ipfs.catReadableStream(data.cid, catOptions)
-    const responseStream = new ResponseStream()
 
     // Pass-through Content-Type sniffing over initial bytes
     const { peekedStream, contentType } = await new Promise((resolve, reject) => {
@@ -163,9 +147,7 @@ module.exports = {
       })
     })
 
-    peekedStream.pipe(responseStream)
-
-    const res = h.response(responseStream).code(rangeResponse ? 206 : 200)
+    const res = h.response(peekedStream).code(rangeResponse ? 206 : 200)
 
     // Etag maps directly to an identifier for a specific version of a resource
     // and enables smart client-side caching thanks to If-None-Match
