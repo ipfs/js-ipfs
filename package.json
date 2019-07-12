@@ -30,7 +30,7 @@
     "dicer": "~0.3.0"
   },
   "devDependencies": {
-    "aegir": "^18.1.0",
+    "aegir": "^20.0.0",
     "chai": "^4.2.0",
     "ipfs-api": "github:ipfs/js-ipfs-api#1fd9749",
     "request": "^2.88.0"

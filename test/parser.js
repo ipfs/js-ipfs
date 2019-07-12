@@ -174,7 +174,7 @@ describe('parser', () => {
   })
 
   describe('buffer', () => {
-    let files = []
+    const files = []
 
     before(() => {
       handler = (req, cb) => {

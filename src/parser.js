@@ -35,6 +35,13 @@ const parseHeader = (header) => {
   return details
 }
 
+/**
+ * Parser
+ *
+ * @constructor
+ * @param {Object} options
+ * @returns {Parser}
+ */
 function Parser (options) {
   // allow use without new
   if (!(this instanceof Parser)) {
