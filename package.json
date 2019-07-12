@@ -26,7 +26,7 @@
     "release-major": "aegir release --type major --target node"
   },
   "dependencies": {
-    "content": "^4.0.6",
+    "@hapi/content": "^4.1.0",
     "dicer": "~0.3.0"
   },
   "devDependencies": {

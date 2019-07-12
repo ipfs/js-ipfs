@@ -1,6 +1,6 @@
 'use strict'
 
-const content = require('content')
+const content = require('@hapi/content')
 const Parser = require('./parser')
 
 module.exports = {

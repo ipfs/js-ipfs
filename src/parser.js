@@ -1,7 +1,7 @@
 'use strict'
 
 const Dicer = require('dicer')
-const Content = require('content')
+const Content = require('@hapi/content')
 const stream = require('stream')
 const util = require('util')
 const Transform = stream.Transform
