@@ -16,10 +16,7 @@ function createTempRepo (repoPath) {
     series([
       // ignore err, might have been closed already
       (cb) => repo.close(() => cb()),
-      (cb) => {
-        clean(repoPath)
-        cb()
-      }
+      (cb) => clean(repoPath).then(cb, cb)
     ], done)
   }
 

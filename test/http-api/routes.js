@@ -58,7 +58,7 @@ describe('HTTP API', () => {
       this.timeout(50 * 1000)
 
       await http.api.stop()
-      clean(repoTests)
+      await clean(repoTests)
     })
 
     describe('## http-api spec tests for custom config', () => {
@@ -81,7 +81,7 @@ describe('HTTP API', () => {
       this.timeout(50 * 1000)
 
       await http.api.stop()
-      clean(repoTests)
+      await clean(repoTests)
     })
 
     describe('## http-api spec tests for default config', () => {

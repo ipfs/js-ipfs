@@ -1,15 +1,16 @@
 'use strict'
 
 const rimraf = require('rimraf')
-const fs = require('fs')
+const fs = require('fs').promises
+const { promisify } = require('util')
 
-module.exports = (dir) => {
+module.exports = async dir => {
   try {
-    fs.accessSync(dir)
+    await fs.access(dir)
   } catch (err) {
     // Does not exist so all good
     return
   }
 
-  rimraf.sync(dir)
+  return promisify(rimraf)(dir)
 }
