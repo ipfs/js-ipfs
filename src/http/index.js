@@ -125,7 +125,13 @@ class HttpApi {
   }
 
   async _createGatewayServer (host, port, ipfs) {
-    const server = Hapi.server({ host, port })
+    const server = Hapi.server({ 
+      host, 
+      port,
+      routes: {
+        cors: true
+      }
+    })
     server.app.ipfs = ipfs
 
     await server.register({
