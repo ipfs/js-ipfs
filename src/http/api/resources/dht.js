@@ -1,7 +1,7 @@
 'use strict'
 
 const Joi = require('@hapi/joi')
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 
 const CID = require('cids')
 

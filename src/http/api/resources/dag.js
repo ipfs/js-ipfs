@@ -6,7 +6,7 @@ const mh = require('multihashes')
 const Joi = require('@hapi/joi')
 const multibase = require('multibase')
 const multicodec = require('multicodec')
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 const debug = require('debug')
 const {
   cidToString

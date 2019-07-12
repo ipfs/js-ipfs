@@ -7,7 +7,7 @@ log.error = debug('ipfs:http-gateway:error')
 const fileType = require('file-type')
 const mime = require('mime-types')
 const { PassThrough } = require('readable-stream')
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 const Ammo = require('@hapi/ammo') // HTTP Range processing utilities
 const peek = require('buffer-peek-stream')
 
