@@ -1,7 +1,7 @@
 'use strict'
 
 const client = require('prom-client')
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 
 // Clear the register to make sure we're not registering multiple ones
 client.register.clear()

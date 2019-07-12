@@ -6,7 +6,7 @@ const set = require('just-safe-set')
 const log = debug('ipfs:http-api:config')
 log.error = debug('ipfs:http-api:config:error')
 const multipart = require('ipfs-multipart')
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 
 exports.getOrSet = {
   // pre request handler that parses the args and returns `key` & `value` which are assigned to `request.pre.args`

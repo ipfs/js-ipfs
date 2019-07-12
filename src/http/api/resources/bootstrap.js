@@ -1,7 +1,7 @@
 'use strict'
 
 const multiaddr = require('multiaddr')
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 
 exports.list = async (request, h) => {
   const { ipfs } = request.server.app

@@ -4,7 +4,7 @@ const isIpfs = require('is-ipfs')
 const exporter = require('ipfs-unixfs-exporter')
 const pull = require('pull-stream')
 const toB58String = require('multihashes').toB58String
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 
 const fileTypeMap = {
   file: 'File',
