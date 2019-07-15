@@ -12,6 +12,7 @@ const detectLimit = require('async/detectLimit')
 const { Key } = require('interface-datastore')
 const errCode = require('err-code')
 const multicodec = require('multicodec')
+const debug = require('debug')
 
 const createPinSet = require('./pin-set')
 
@@ -36,21 +37,21 @@ const PinTypes = {
 }
 
 class PinManager {
-  constructor (repo, dag, log) {
+  constructor (repo, dag) {
     this.repo = repo
     this.dag = dag
-    this.log = log
+    this.log = debug('ipfs:pin')
     this.pinset = createPinSet(dag)
     this.directPins = new Set()
     this.recursivePins = new Set()
   }
 
   directKeys () {
-    return Array.from(this.directPins).map(key => new CID(key).buffer)
+    return Array.from(this.directPins, key => new CID(key).buffer)
   }
 
   recursiveKeys () {
-    return Array.from(this.recursivePins).map(key => new CID(key).buffer)
+    return Array.from(this.recursivePins, key => new CID(key).buffer)
   }
 
   getIndirectKeys (callback) {

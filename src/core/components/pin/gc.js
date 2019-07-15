@@ -6,6 +6,8 @@ const base32 = require('base32.js')
 const parallel = require('async/parallel')
 const mapLimit = require('async/mapLimit')
 const { Key } = require('interface-datastore')
+const expErr = require('explain-error')
+const { cidToString } = require('../../../utils/cid')
 const log = require('debug')('ipfs:gc')
 
 // Limit on the number of parallel block remove operations
@@ -16,7 +18,7 @@ const MFS_ROOT_DS_KEY = new Key('/local/filesroot')
 module.exports = function gc (self) {
   return promisify((callback) => {
     const start = Date.now()
-    log(`Creating set of marked blocks`)
+    log('Creating set of marked blocks')
 
     self._gcLock.writeLock((lockCb) => {
       parallel([
@@ -24,16 +26,18 @@ module.exports = function gc (self) {
         (cb) => self._repo.blocks.query({ keysOnly: true }, cb),
         // Mark all blocks that are being used
         (cb) => createMarkedSet(self, cb)
-      ], (err, [blocks, markedSet]) => {
+      ], (err, [blockKeys, markedSet]) => {
         if (err) {
-          log(`Error - ${err.message}`)
+          log('GC failed to fetch all block keys and created marked set', err)
           return lockCb(err)
         }
 
         // Delete blocks that are not being used
-        deleteUnmarkedBlocks(self, markedSet, blocks, start, (err, res) => {
+        deleteUnmarkedBlocks(self, markedSet, blockKeys, (err, res) => {
+          log(`Complete (${Date.now() - start}ms)`)
+
           if (err) {
-            log(`Error - ${err.message}`)
+            log('GC failed to delete unmarked blocks', err)
             return lockCb(err)
           }
           lockCb(null, res)
@@ -49,7 +53,7 @@ function createMarkedSet (ipfs, callback) {
     // All pins, direct and indirect
     (cb) => ipfs.pin.ls((err, pins) => {
       if (err) {
-        return cb(new Error(`Could not list pinned blocks: ${err.message}`))
+        return cb(expErr(err, 'Could not list pinned blocks'))
       }
       log(`Found ${pins.length} pinned blocks`)
       const cids = pins.map(p => new CID(p.hash))
@@ -60,7 +64,7 @@ function createMarkedSet (ipfs, callback) {
     // Blocks used internally by the pinner
     (cb) => ipfs.pin._getInternalBlocks((err, cids) => {
       if (err) {
-        return cb(new Error(`Could not list pinner internal blocks: ${err.message}`))
+        return cb(expErr(err, 'Could not list pinner internal blocks'))
       }
       log(`Found ${cids.length} pinner internal blocks`)
       // log('  ' + cids.join('\n  '))
@@ -74,7 +78,7 @@ function createMarkedSet (ipfs, callback) {
           log(`No blocks in MFS`)
           return cb(null, [])
         }
-        return cb(new Error(`Could not get MFS root from datastore: ${err.message}`))
+        return cb(expErr(err, 'Could not get MFS root from datastore'))
       }
 
       getDescendants(ipfs, new CID(mh), cb)
@@ -84,7 +88,7 @@ function createMarkedSet (ipfs, callback) {
       return callback(err)
     }
 
-    const cids = [].concat(...res).map(cid => cid.toV1().toString('base32'))
+    const cids = [].concat(...res).map(cid => cidToString(cid, { base: 'base32' }))
     return callback(null, new Set(cids))
   })
 }
@@ -93,7 +97,7 @@ function createMarkedSet (ipfs, callback) {
 function getDescendants (ipfs, cid, callback) {
   ipfs.refs(cid, { recursive: true }, (err, refs) => {
     if (err) {
-      return callback(new Error(`Could not get MFS root descendants from store: ${err.message}`))
+      return callback(expErr(err, 'Could not get MFS root descendants from store'))
     }
     const cids = [cid, ...refs.map(r => new CID(r.ref))]
     log(`Found ${cids.length} MFS blocks`)
@@ -103,13 +107,13 @@ function getDescendants (ipfs, cid, callback) {
 }
 
 // Delete all blocks that are not marked as in use
-function deleteUnmarkedBlocks (ipfs, markedSet, blocks, start, callback) {
+function deleteUnmarkedBlocks (ipfs, markedSet, blockKeys, callback) {
   // Iterate through all blocks and find those that are not in the marked set
-  // The blocks variable has the form { { key: Key() }, { key: Key() }, ... }
+  // The blockKeys variable has the form [ { key: Key() }, { key: Key() }, ... ]
   const unreferenced = []
   const res = []
   let errCount = 0
-  for (const { key: k } of blocks) {
+  for (const { key: k } of blockKeys) {
     try {
       const cid = dsKeyToCid(k)
       const b32 = cid.toV1().toString('base32')
@@ -118,13 +122,13 @@ function deleteUnmarkedBlocks (ipfs, markedSet, blocks, start, callback) {
       }
     } catch (err) {
       errCount++
-      const msg = `Could not convert block with key '${k}' to CID: ${err.message}`
-      log(msg)
-      res.push({ err: new Error(msg) })
+      const msg = `Could not convert block with key '${k}' to CID`
+      log(msg, err)
+      res.push({ err: new Error(msg + `: ${err.message}`) })
     }
   }
 
-  const msg = `Marked set has ${markedSet.size} unique blocks. Blockstore has ${blocks.length} blocks. ` +
+  const msg = `Marked set has ${markedSet.size} unique blocks. Blockstore has ${blockKeys.length} blocks. ` +
     `Deleting ${unreferenced.length} blocks.` + (errCount ? ` (${errCount} errors)` : '')
   log(msg)
   // log('  ' + unreferenced.join('\n  '))
@@ -133,14 +137,12 @@ function deleteUnmarkedBlocks (ipfs, markedSet, blocks, start, callback) {
     // Delete blocks from blockstore
     ipfs._repo.blocks.delete(cid, (err) => {
       const res = {
-        cid: cid.toString(),
+        cid,
         err: err && new Error(`Could not delete block with CID ${cid}: ${err.message}`)
       }
       cb(null, res)
     })
   }, (_, delRes) => {
-    log(`Complete (${Date.now() - start}ms)`)
-
     callback(null, res.concat(delRes))
   })
 }
