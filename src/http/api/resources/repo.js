@@ -16,7 +16,10 @@ exports.gc = {
 
     const filtered = res.filter(r => !r.err || streamErrors)
     const response = filtered.map(r => {
-      return { Err: r.err, Key: !r.err && { '/': r.cid } }
+      return {
+        Err: r.err && r.err.message,
+        Key: !r.err && { '/': r.cid.toString() }
+      }
     })
     return h.response(response)
   }

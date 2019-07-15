@@ -103,6 +103,8 @@ module.exports = function block (self) {
         return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
       }
 
+      // We need to take a write lock here to ensure that adding and removing
+      // blocks are exclusive operations
       self._gcLock.writeLock((cb) => self._blockService.delete(cid, cb), callback)
     }),
     stat: promisify((cid, options, callback) => {

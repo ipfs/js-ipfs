@@ -86,7 +86,7 @@ describe('gc', function () {
         await gcStarted
         const add2 = test.add2()
 
-        const deleted = (await gc).map(i => i.cid)
+        const deleted = (await gc).map(i => i.cid.toString())
         const add1Res = test.resToCid(await add1)
         const add2Res = test.resToCid(await add2)
 
@@ -116,7 +116,7 @@ describe('gc', function () {
       await gcStarted
       const add2 = ipfs.add(fixtures[3], { pin: true })
 
-      const deleted = (await gc).map(i => i.cid)
+      const deleted = (await gc).map(i => i.cid.toString())
       const add1Res = (await add1)[0].hash
       const add2Res = (await add2)[0].hash
 
@@ -149,7 +149,7 @@ describe('gc', function () {
       await gcStarted
       const rm2 = ipfs.block.rm(cid2)
 
-      const deleted = (await gc).map(i => i.cid)
+      const deleted = (await gc).map(i => i.cid.toString())
       await rm1
 
       // Second rm should fail because GC has already removed that block
@@ -185,7 +185,7 @@ describe('gc', function () {
       // Once pin lock has been requested, start GC
       await pinLockRequested
       const gc = ipfs.repo.gc()
-      const deleted = (await gc).map(i => i.cid)
+      const deleted = (await gc).map(i => i.cid.toString())
       await pin1
 
       // TODO: Adding pin for removed block never returns, which means the lock
@@ -229,7 +229,7 @@ describe('gc', function () {
       await gcStarted
       const pinRm2 = ipfs.pin.rm(cid2)
 
-      const deleted = (await gc).map(i => i.cid)
+      const deleted = (await gc).map(i => i.cid.toString())
       await pinRm1
       await pinRm2
 

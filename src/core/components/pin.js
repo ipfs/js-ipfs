@@ -20,7 +20,7 @@ function toB58String (hash) {
 
 module.exports = (self) => {
   const dag = self.dag
-  const pinManager = new PinManager(self._repo, dag, self.log)
+  const pinManager = new PinManager(self._repo, dag)
 
   const pin = {
     add: promisify((paths, options, callback) => {

@@ -1,7 +1,5 @@
 'use strict'
 
-const { print } = require('../../utils')
-
 module.exports = {
   command: 'gc',
 
@@ -21,7 +19,7 @@ module.exports = {
     }
   },
 
-  handler ({ getIpfs, quiet, streamErrors, resolve }) {
+  handler ({ getIpfs, print, quiet, streamErrors, resolve }) {
     resolve((async () => {
       const ipfs = await getIpfs()
       const res = await ipfs.repo.gc()

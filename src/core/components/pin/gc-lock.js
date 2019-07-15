@@ -2,7 +2,7 @@
 
 const assert = require('assert')
 const mortice = require('mortice')
-const pull = require('pull-stream')
+const pull = require('pull-stream/pull')
 const pullThrough = require('pull-stream/throughs/through')
 const pullAsyncMap = require('pull-stream/throughs/async-map')
 const EventEmitter = require('events')
@@ -32,12 +32,8 @@ class GCLock extends EventEmitter {
   }
 
   lock (type, lockedFn, cb) {
-    if (typeof lockedFn !== 'function') {
-      assert.fail(`first argument to GCLock.${type} must be a function`)
-    }
-    if (typeof cb !== 'function') {
-      assert.fail(`second argument to GCLock.${type} must be a callback function`)
-    }
+    assert(typeof lockedFn === 'function', `first argument to GCLock.${type} must be a function`)
+    assert(typeof cb === 'function', `second argument to GCLock.${type} must be a callback function`)
 
     const lockId = this.lockId++
     log(`[${lockId}] ${type} requested`)
@@ -90,7 +86,7 @@ class PullLocker {
   }
 
   // Returns a Promise that resolves when the locked piece of code completes
-  locked () {
+  _locked () {
     return new Promise((resolve, reject) => {
       this.releaseLock = (err) => err ? reject(err) : resolve()
 
@@ -112,7 +108,7 @@ class PullLocker {
           log(`[${this.lockId}] ${this.type} (pull) requested`)
           this.emitter.emit(`${this.type} request`, this.lockId)
           // Request the lock
-          this.lock = this.mutex[this.type](() => this.locked())
+          this.lock = this.mutex[this.type](() => this._locked())
           // If there is an error, it gets passed through to the caller using
           // pull streams, so here we just catch the error and ignore it so
           // that there isn't an UnhandledPromiseRejectionWarning
