@@ -77,7 +77,7 @@ function parseProtoBuffer (buf, callback) {
 }
 
 function findLinks (node, links = []) {
-  for (let key in node) {
+  for (const key in node) {
     const val = node[key]
 
     if (key === '/' && Object.keys(node).length === 1) {

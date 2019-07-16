@@ -40,7 +40,7 @@ describe('name-pubsub', () => {
     let nodeAId
     let nodeBId
     let bMultiaddr
-    let nodes = []
+    const nodes = []
 
     // Spawn daemons
     before(function (done) {
@@ -166,7 +166,7 @@ describe('name-pubsub', () => {
 
   describe('disabled', () => {
     let ipfsA
-    let nodes = []
+    const nodes = []
 
     // Spawn daemons
     before(function (done) {

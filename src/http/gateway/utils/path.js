@@ -33,7 +33,7 @@ function removeSlashFromBothEnds (url) {
 
 function joinURLParts (...urls) {
   urls = urls.filter((url) => url.length > 0)
-  urls = [ '' ].concat(urls.map((url) => removeSlashFromBothEnds(url)))
+  urls = [''].concat(urls.map((url) => removeSlashFromBothEnds(url)))
 
   return urls.join('/')
 }

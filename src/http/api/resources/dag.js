@@ -155,7 +155,7 @@ exports.put = {
         .on('end', () => reject(Boom.badRequest("File argument 'object data' is required")))
     })
 
-    let data = await new Promise((resolve, reject) => {
+    const data = await new Promise((resolve, reject) => {
       fileStream
         .on('data', data => resolve(data))
         .on('end', () => reject(Boom.badRequest("File argument 'object data' is required")))
@@ -235,7 +235,7 @@ exports.resolve = {
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   async handler (request, h) {
-    let { ref, path } = request.pre.args
+    const { ref, path } = request.pre.args
     const { ipfs } = request.server.app
 
     // to be consistent with go we need to return the CID to the last node we've traversed

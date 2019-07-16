@@ -40,7 +40,7 @@ describe('swarm', () => {
     let bMultiaddr
     let ipfsA
 
-    let nodes = []
+    const nodes = []
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
       // timeout for the before step

@@ -255,7 +255,7 @@ module.exports = (http) => {
         })
 
         expect(res.statusCode).to.equal(200)
-        expect(res.result.Keys['QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr'])
+        expect(res.result.Keys.QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr)
           .to.deep.eql({ Type: 'recursive' })
       })
 

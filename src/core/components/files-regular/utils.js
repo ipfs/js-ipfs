@@ -93,7 +93,7 @@ const parseRabinString = (chunker) => {
 }
 
 const parseChunkSize = (str, name) => {
-  let size = parseInt(str)
+  const size = parseInt(str)
   if (isNaN(size)) {
     throw new Error(`Chunker parameter ${name} must be an integer`)
   }

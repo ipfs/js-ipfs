@@ -42,7 +42,7 @@ module.exports = function stats (self) {
   const _bwPullStream = (opts) => {
     opts = opts || {}
     let interval = null
-    let stream = Pushable(true, () => {
+    const stream = Pushable(true, () => {
       if (interval) {
         clearInterval(interval)
       }

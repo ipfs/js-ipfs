@@ -19,7 +19,7 @@ describe('HTTP API', () => {
   // bootstrap nodes get the set up too slow and gets timed out
   const testsForCustomConfig = ['dht.js', 'files.js', 'name.js', 'pin.js', 'ping.js']
 
-  let http = {}
+  const http = {}
 
   const startHttpAPI = async (config) => {
     http.api = new Daemon({
