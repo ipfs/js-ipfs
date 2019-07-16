@@ -101,7 +101,7 @@ module.exports = function dag (self) {
         if (split.length > 0) {
           path = split.join('/')
         } else {
-          path = '/'
+          path = path || '/'
         }
       } else if (Buffer.isBuffer(cid)) {
         try {
@@ -115,7 +115,7 @@ module.exports = function dag (self) {
         self._preload(cid)
       }
 
-      if (path === undefined || path === '/') {
+      if (path == null || path === '/') {
         self._ipld.get(cid).then(
           (value) => {
             callback(null, {
