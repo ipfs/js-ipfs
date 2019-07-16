@@ -1,13 +1,6 @@
 # The js-ipfs config file
 
-The js-ipfs config file is a JSON document located in the root
-directory of the js-ipfs repository (by default the js-ipfs
-repository is located at `~/.jsipfs` and the config file is at
-`~/.jsipfs/config`). The repository location may be changed with
-the `$IPFS_PATH` environment variable. The config file is read once
-when the js-ipfs daemon is started, or each time a command is
-executed in offline mode. Commands that execute on a running daemon
-do not read the config file at runtime.
+The js-ipfs config file is a JSON document located in the root directory of the js-ipfs repository.
 
 ## Table of Contents
 
