@@ -1,11 +1,13 @@
 # The js-ipfs config file
 
-The js-ipfs config file is a JSON document, which is located in a repository
-(by default located at ~/.jsipfs/config), where the repository location may be
-changed according to the value of the $IPFS_PATH environment variable.
-It is read once at node instantiation, either for an offline command, or when
-starting the daemon. Commands that execute on a running daemon do not read the
-config file at runtime.
+The js-ipfs config file is a JSON document located in the root
+directory of the js-ipfs repository (by default the js-ipfs
+repository is located at `~/.jsipfs` and the config file is at
+`~/.jsipfs/config`). The repository location may be changed with
+the `$IPFS_PATH` environment variable. The config file is read once
+when the js-ipfs daemon is started, or each time a command is
+executed in offline mode. Commands that execute on a running daemon
+do not read the config file at runtime.
 
 ## Table of Contents
 
@@ -21,11 +23,18 @@ config file at runtime.
 Contains information about various listener addresses to be used by this node.
 
 - `API`
+The IPFS daemon exposes an HTTP API that allows to control the node and
+run the same commands as you can do from the command line. It is defined
+on the [HTTP API Spec](https://docs.ipfs.io/reference/api/http).
+
 Multiaddr describing the address to serve the local HTTP API on.
 
 Default: `/ip4/127.0.0.1/tcp/5002`
 
 - `Gateway`
+A gateway is exposed by the IPFS daemon, which allows an easy way to
+access content from IPFS, using an IPFS path.
+
 Multiaddr describing the address to serve the local gateway on.
 
 Default: `/ip4/127.0.0.1/tcp/9090`
@@ -90,6 +99,9 @@ Default:
 Contains options for configuring ipfs node discovery mechanisms.
 
 - `MDNS`
+Multicast dns is a discovery protocol that is able to find other peers
+on the local network.
+
 Options for multicast dns peer discovery.
 
   - `Enabled`
@@ -103,6 +115,8 @@ A number of seconds to wait between discovery checks.
 Default: `10`
 
 - `webRTCStar`
+WebRTCStar is a discovery mechanism prvided by a signalling-star that allows peer-to-peer communications in the browser.  
+
 Options for webRTCstar peer discovery.
 
   - `Enabled`
