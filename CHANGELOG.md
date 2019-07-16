@@ -1,3 +1,13 @@
+<a name="0.107.2"></a>
+## [0.107.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.107.1...v0.107.2) (2019-07-16)
+
+
+### Bug Fixes
+
+* pin.ls ignored opts when hash was present ([#375](https://github.com/ipfs/interface-ipfs-core/issues/375)) ([be72ed6](https://github.com/ipfs/interface-ipfs-core/commit/be72ed6))
+
+
+
 <a name="0.107.1"></a>
 ## [0.107.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.107.0...v0.107.1) (2019-07-11)
 
