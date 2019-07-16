@@ -8,6 +8,7 @@ const ipfsdServer = IPFSFactory.createServer()
 const preloadNode = MockPreloadNode.createNode()
 
 module.exports = {
+  bundlesize: { maxSize: '881kB' },
   webpack: {
     resolve: {
       mainFields: ['browser', 'main'],

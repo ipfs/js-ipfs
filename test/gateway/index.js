@@ -29,7 +29,7 @@ const directoryContent = {
 describe('HTTP Gateway', function () {
   this.timeout(80 * 1000)
 
-  let http = {}
+  const http = {}
   let gateway
 
   before(async () => {
@@ -416,7 +416,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers.etag).to.equal('"Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u"')
     expect(res.headers.suborigin).to.equal('ipfs000bafybeidsg6t7ici2osxjkukisd5inixiunqdpq2q5jy4a2ruzdf6ewsqk4')
 
-    let fileSignature = fileType(res.rawPayload)
+    const fileSignature = fileType(res.rawPayload)
     expect(fileSignature.mime).to.equal('image/jpeg')
     expect(fileSignature.ext).to.equal('jpg')
   })
@@ -464,7 +464,7 @@ describe('HTTP Gateway', function () {
 
     // check if the cat picture is in the payload as a way to check
     // if this is an index of this directory
-    let listedFile = res.payload.match(/\/ipfs\/QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ\/cat\.jpg/g)
+    const listedFile = res.payload.match(/\/ipfs\/QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ\/cat\.jpg/g)
     expect(listedFile).to.have.lengthOf(1)
   })
 
@@ -593,7 +593,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers.etag).to.equal('"Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u"')
     expect(res.headers.suborigin).to.equal(`ipns000${new CID(id).toV1().toBaseEncodedString('base32')}`)
 
-    let fileSignature = fileType(res.rawPayload)
+    const fileSignature = fileType(res.rawPayload)
     expect(fileSignature.mime).to.equal('image/jpeg')
     expect(fileSignature.ext).to.equal('jpg')
   })
@@ -618,7 +618,7 @@ describe('HTTP Gateway', function () {
 
     // check if the cat picture is in the payload as a way to check
     // if this is an index of this directory
-    let listedFile = res.payload.match(/\/cat\.jpg/g)
+    const listedFile = res.payload.match(/\/cat\.jpg/g)
     expect(listedFile).to.have.lengthOf(1)
   })
 })

@@ -2,7 +2,6 @@
 
 const yargs = require('yargs')
 const utils = require('./utils')
-const print = utils.print
 
 const parser = yargs
   .option('silent', {
@@ -25,15 +24,16 @@ const parser = yargs
     if (err) {
       throw err // preserve stack
     }
-    print(msg)
+    utils.print(msg)
     yargs.showHelp()
   })
   .commandDir('commands')
-  .middleware(argv => {
-    // Function to get hold of a singleton ipfs instance
-    argv.getIpfs = utils.singleton(cb => utils.getIPFS(argv, cb))
-    return argv
-  })
+  .middleware(argv => Object.assign(argv, {
+    getIpfs: utils.singleton(cb => utils.getIPFS(argv, cb)),
+    print: utils.print,
+    isDaemonOn: utils.isDaemonOn,
+    getRepoPath: utils.getRepoPath
+  }))
   .help()
   .strict()
   .completion()

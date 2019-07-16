@@ -2,7 +2,7 @@
 
 const os = require('os')
 const toUri = require('multiaddr-to-uri')
-const { getRepoPath, print, ipfsPathHelp } = require('../utils')
+const { ipfsPathHelp } = require('../utils')
 
 module.exports = {
   command: 'daemon',
@@ -37,12 +37,13 @@ module.exports = {
 
   handler (argv) {
     argv.resolve((async () => {
+      const { print } = argv
       print('Initializing IPFS daemon...')
       print(`js-ipfs version: ${require('../../../package.json').version}`)
       print(`System version: ${os.arch()}/${os.platform()}`)
       print(`Node.js version: ${process.versions.node}`)
 
-      const repoPath = getRepoPath()
+      const repoPath = argv.getRepoPath()
 
       // Required inline to reduce startup time
       const Daemon = require('../../cli/daemon')

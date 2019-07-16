@@ -1,7 +1,6 @@
 'use strict'
 
 const multibase = require('multibase')
-const { print } = require('../../utils')
 const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
@@ -22,7 +21,7 @@ module.exports = {
     }
   },
 
-  handler ({ getIpfs, peer, cidBase, resolve }) {
+  handler ({ getIpfs, print, peer, cidBase, resolve }) {
     resolve((async () => {
       const ipfs = await getIpfs()
       const list = await ipfs.bitswap.wantlist(peer)

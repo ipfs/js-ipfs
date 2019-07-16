@@ -1,7 +1,6 @@
 'use strict'
 
 const fs = require('fs')
-const print = require('../../utils').print
 
 module.exports = {
   command: 'import <name>',
@@ -27,7 +26,7 @@ module.exports = {
     argv.resolve((async () => {
       const ipfs = await argv.getIpfs()
       const key = await ipfs.key.import(argv.name, argv.input, argv.passin)
-      print(`imported ${key.id} ${key.name}`)
+      argv.print(`imported ${key.id} ${key.name}`)
     })())
   }
 }

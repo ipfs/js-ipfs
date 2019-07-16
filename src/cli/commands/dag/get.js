@@ -1,7 +1,6 @@
 'use strict'
 
 const CID = require('cids')
-const print = require('../../utils').print
 
 module.exports = {
   command: 'get <cid path>',
@@ -21,6 +20,7 @@ module.exports = {
       const cidString = refParts[0]
       const path = refParts.slice(1).join('/')
       const cid = new CID(cidString)
+      const { print } = argv
 
       const options = {
         localResolve: argv.localResolve
@@ -32,7 +32,7 @@ module.exports = {
       try {
         result = await ipfs.dag.get(cid, path, options)
       } catch (err) {
-        return print(`dag get failed: ${err}`)
+        return argv.print(`dag get failed: ${err}`)
       }
 
       if (options.localResolve) {

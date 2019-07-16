@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../utils').print
-
 module.exports = {
   command: 'findprovs <key>',
 
@@ -26,7 +24,7 @@ module.exports = {
       const provs = await ipfs.dht.findProvs(key, opts)
 
       provs.forEach((element) => {
-        print(element.id.toB58String())
+        argv.print(element.id.toB58String())
       })
     })())
   }

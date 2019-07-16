@@ -2,7 +2,7 @@
 
 const multibase = require('multibase')
 const Joi = require('@hapi/joi')
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 const isIpfs = require('is-ipfs')
 const { cidToString } = require('../../../utils/cid')
 

@@ -1,7 +1,7 @@
 'use strict'
 
 const multiaddr = require('multiaddr')
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 
 // common pre request handler that parses the args and returns `addr` which is assigned to `request.pre.args`
 exports.parseAddrs = (request, h) => {

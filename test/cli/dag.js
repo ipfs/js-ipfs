@@ -21,7 +21,7 @@ describe('dag', () => runOnAndOff.off((thing) => {
       // lookup path on eth-block
       return ipfs('dag get bagiacgzarkhijr4xmbp345ovwwxra7kcecrnwcwtl7lg3g7d2ogyprdswjwq/parentHash')
     }).then((out) => {
-      let expectHash = Buffer.from('c8c0a17305adea9bbb4b98a52d44f0c1478f5c48fc4b64739ee805242501b256', 'hex')
+      const expectHash = Buffer.from('c8c0a17305adea9bbb4b98a52d44f0c1478f5c48fc4b64739ee805242501b256', 'hex')
       expect(out).to.be.eql('0x' + expectHash.toString('hex') + '\n')
     })
   })

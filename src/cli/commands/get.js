@@ -5,7 +5,6 @@ const path = require('path')
 const mkdirp = require('mkdirp')
 const pull = require('pull-stream')
 const toPull = require('stream-to-pull-stream')
-const print = require('../utils').print
 
 function checkArgs (hash, outPath) {
   // format the output directory
@@ -58,7 +57,7 @@ module.exports = {
     }
   },
 
-  handler ({ getIpfs, ipfsPath, output, resolve }) {
+  handler ({ getIpfs, print, ipfsPath, output, resolve }) {
     resolve((async () => {
       const ipfs = await getIpfs()
 

@@ -11,8 +11,6 @@ const Progress = require('progress')
 const byteman = require('byteman')
 const promisify = require('promisify-es6')
 
-exports = module.exports
-
 exports.isDaemonOn = isDaemonOn
 function isDaemonOn () {
   try {

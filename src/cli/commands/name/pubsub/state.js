@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../../utils').print
-
 module.exports = {
   command: 'state',
 
@@ -11,7 +9,7 @@ module.exports = {
     argv.resolve((async () => {
       const ipfs = await argv.getIpfs()
       const result = await ipfs.name.pubsub.state()
-      print(result.enabled ? 'enabled' : 'disabled')
+      argv.print(result.enabled ? 'enabled' : 'disabled')
     })())
   }
 }

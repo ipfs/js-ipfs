@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../utils').print
-
 module.exports = {
   command: 'findpeer <peerID>',
 
@@ -9,15 +7,12 @@ module.exports = {
 
   builder: {},
 
-  handler ({ getIpfs, peerID, resolve }) {
+  handler ({ getIpfs, print, peerID, resolve }) {
     resolve((async () => {
       const ipfs = await getIpfs()
       const peers = await ipfs.dht.findPeer(peerID)
       const addresses = peers.multiaddrs.toArray().map((ma) => ma.toString())
-
-      addresses.forEach((addr) => {
-        print(addr)
-      })
+      addresses.forEach((addr) => print(addr))
     })())
   }
 }

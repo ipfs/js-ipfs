@@ -18,7 +18,7 @@ const path = require('path')
 function off (tests) {
   describe('daemon off (directly to core)', function () {
     this.timeout(60 * 1000)
-    let thing = {}
+    const thing = {}
     let repoPath
 
     before(function () {
@@ -30,10 +30,9 @@ function off (tests) {
       return thing.ipfs('init')
     })
 
-    after(function (done) {
+    after(function () {
       this.timeout(20 * 1000)
-      clean(repoPath)
-      setImmediate(done)
+      return clean(repoPath)
     })
 
     tests(thing)
@@ -43,7 +42,7 @@ function off (tests) {
 function on (tests) {
   describe('daemon on (through http-api)', function () {
     this.timeout(60 * 1000)
-    let thing = {}
+    const thing = {}
 
     let ipfsd
     before(function (done) {

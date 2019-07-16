@@ -472,7 +472,7 @@ module.exports = (self) => {
           cb => pinset.loadSet(pinRoot.value, types.direct, cb)
         ], (err, keys) => {
           if (err) { return callback(err) }
-          const [ rKeys, dKeys ] = keys
+          const [rKeys, dKeys] = keys
 
           directPins = new Set(dKeys.map(toB58String))
           recursivePins = new Set(rKeys.map(toB58String))

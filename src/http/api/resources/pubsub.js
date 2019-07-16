@@ -3,7 +3,7 @@
 const PassThrough = require('stream').PassThrough
 const bs58 = require('bs58')
 const binaryQueryString = require('binary-querystring')
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 
 exports.subscribe = {
   async handler (request, h) {

@@ -1,7 +1,5 @@
 'use strict'
 
-const print = require('../../utils').print
-
 module.exports = {
   command: 'get <key>',
 
@@ -9,11 +7,10 @@ module.exports = {
 
   builder: {},
 
-  handler ({ getIpfs, key, resolve }) {
+  handler ({ getIpfs, print, key, resolve }) {
     resolve((async () => {
       const ipfs = await getIpfs()
       const value = await ipfs.dht.get(key)
-
       print(value)
     })())
   }

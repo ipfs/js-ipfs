@@ -17,12 +17,12 @@ exports.rm = async (request, h) => {
   const { ipfs } = request.server.app
   const name = request.query.arg
   const key = await ipfs.key.rm(name)
-  return h.response({ Keys: [ toKeyInfo(key) ] })
+  return h.response({ Keys: [toKeyInfo(key)] })
 }
 
 exports.rename = async (request, h) => {
   const { ipfs } = request.server.app
-  const [ oldName, newName ] = request.query.arg
+  const [oldName, newName] = request.query.arg
   const key = await ipfs.key.rename(oldName, newName)
   return h.response({
     Was: key.was,
