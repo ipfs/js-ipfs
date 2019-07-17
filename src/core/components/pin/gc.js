@@ -22,7 +22,7 @@ module.exports = function gc (self) {
 
     self._gcLock.writeLock((lockCb) => {
       parallel([
-        // Get all blocks from the blockstore
+        // Get all blocks keys from the blockstore
         (cb) => self._repo.blocks.query({ keysOnly: true }, cb),
         // Mark all blocks that are being used
         (cb) => createMarkedSet(self, cb)
