@@ -144,6 +144,10 @@ describe('config', () => {
       { config: { Bootstrap: ['/ip4/104.236.176.52/tcp/4001/ipfs/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z'] } },
       { config: { Bootstrap: [] } },
 
+      { config: { Addresses: { Delegates: ['/dns4/node0.preload.ipfs.io/tcp/443/https'] } } },
+      { config: { Addresses: { Delegates: [] } } },
+      { config: { Addresses: { Delegates: undefined } } },
+
       { config: undefined }
     ]
 
