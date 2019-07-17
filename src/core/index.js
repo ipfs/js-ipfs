@@ -141,13 +141,25 @@ class IPFS extends EventEmitter {
 
     this.state = require('./state')(this)
 
+    const onReady = () => {
+      this.removeListener('error', onError)
+      this._ready = true
+    }
+
+    const onError = err => {
+      this.removeListener('ready', onReady)
+      this._readyError = err
+    }
+
+    this.once('ready', onReady).once('error', onError)
+
     boot(this)
-    this.once('ready', () => { this._ready = true })
   }
 
   get ready () {
     return new Promise((resolve, reject) => {
       if (this._ready) return resolve(this)
+      if (this._readyError) return reject(this._readyError)
       this.once('ready', () => resolve(this))
       this.once('error', reject)
     })

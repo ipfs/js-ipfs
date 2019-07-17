@@ -20,7 +20,7 @@ const IPFS = require('../../src/core')
 // This gets replaced by `create-repo-browser.js` in the browser
 const createTempRepo = require('../utils/create-repo-nodejs.js')
 
-describe('create node', function () {
+describe.only('create node', function () {
   let tempRepo
 
   beforeEach(() => {
@@ -34,6 +34,7 @@ describe('create node', function () {
 
     const node = new IPFS({
       repo: path.join(os.tmpdir(), 'ipfs-repo-' + hat()),
+      init: { bits: 512 },
       config: {
         Addresses: {
           Swarm: []
@@ -60,6 +61,7 @@ describe('create node', function () {
 
     const node = new IPFS({
       repo: tempRepo,
+      init: { bits: 512 },
       config: {
         Addresses: {
           Swarm: []
@@ -85,6 +87,7 @@ describe('create node', function () {
 
     const node = IPFS.createNode({
       repo: tempRepo,
+      init: { bits: 512 },
       config: {
         Addresses: {
           Swarm: []
@@ -109,7 +112,7 @@ describe('create node', function () {
 
   it('should resolve ready promise when initialized not started', async () => {
     const ipfs = new IPFS({
-      init: true,
+      init: { bits: 512 },
       start: false,
       repo: tempRepo,
       config: { Addresses: { Swarm: [] } }
@@ -135,7 +138,7 @@ describe('create node', function () {
 
   it('should resolve ready promise when initialized and started', async () => {
     const ipfs = new IPFS({
-      init: true,
+      init: { bits: 512 },
       start: true,
       repo: tempRepo,
       config: { Addresses: { Swarm: [] } }
@@ -150,6 +153,7 @@ describe('create node', function () {
   it('should resolve ready promise when already ready', async () => {
     const ipfs = new IPFS({
       repo: tempRepo,
+      init: { bits: 512 },
       config: { Addresses: { Swarm: [] } }
     })
 
@@ -164,7 +168,7 @@ describe('create node', function () {
   it('should reject ready promise on boot error', async () => {
     const ipfs = new IPFS({
       repo: tempRepo,
-      init: { bits: 1 }, // Too few bits will cause error on boot
+      init: { bits: 256 }, // Too few bits will cause error on boot
       config: { Addresses: { Swarm: [] } }
     })
 
@@ -173,7 +177,14 @@ describe('create node', function () {
     try {
       await ipfs.ready
     } catch (err) {
-      return expect(ipfs.isOnline()).to.be.false()
+      expect(ipfs.isOnline()).to.be.false()
+
+      // After the error has occurred, it should still reject
+      try {
+        await ipfs.ready
+      } catch (_) {
+        return
+      }
     }
 
     throw new Error('ready promise did not reject')
@@ -182,6 +193,7 @@ describe('create node', function () {
   it('should create a ready node with IPFS.create', async () => {
     const ipfs = await IPFS.create({
       repo: tempRepo,
+      init: { bits: 512 },
       config: { Addresses: { Swarm: [] } }
     })
 
@@ -195,7 +207,7 @@ describe('create node', function () {
     const node = new IPFS({
       repo: tempRepo,
       init: {
-        bits: 512
+        bits: 1024
       },
       config: {
         Addresses: {
@@ -225,6 +237,7 @@ describe('create node', function () {
     const ipfs = new IPFS({
       silent: true,
       repo: tempRepo,
+      init: { bits: 512 },
       preload: { enabled: false }
     })
 
@@ -306,7 +319,7 @@ describe('create node', function () {
 
     const node = new IPFS({
       repo: tempRepo,
-      init: true,
+      init: { bits: 512 },
       start: false,
       config: {
         Addresses: {
@@ -329,7 +342,7 @@ describe('create node', function () {
 
     const node = new IPFS({
       repo: tempRepo,
-      init: true,
+      init: { bits: 512 },
       start: false,
       config: {
         Addresses: {
@@ -351,6 +364,7 @@ describe('create node', function () {
 
     const node = new IPFS({
       repo: tempRepo,
+      init: { bits: 512 },
       config: {
         Addresses: {
           Swarm: ['/ip4/127.0.0.1/tcp/9977']
@@ -378,6 +392,7 @@ describe('create node', function () {
 
     const node = new IPFS({
       repo: tempRepo,
+      init: { bits: 512 },
       config: {
         Addresses: {
           Swarm: []
@@ -400,6 +415,7 @@ describe('create node', function () {
 
     const node = new IPFS({
       repo: tempRepo,
+      init: { bits: 512 },
       config: {
         Addresses: {
           Swarm: []
@@ -421,6 +437,7 @@ describe('create node', function () {
 
     const options = {
       repo: tempRepo,
+      init: { bits: 512 },
       config: {
         Addresses: {
           Swarm: []
@@ -452,7 +469,7 @@ describe('create node', function () {
       _nodeNumber++
       return new IPFS({
         repo,
-        init: { emptyRepo: true },
+        init: { bits: 512, emptyRepo: true },
         config: {
           Addresses: {
             API: `/ip4/127.0.0.1/tcp/${5010 + _nodeNumber}`,
@@ -512,6 +529,7 @@ describe('create node', function () {
 
     const node = new IPFS({
       repo: tempRepo,
+      init: { bits: 512 },
       ipld: {},
       preload: { enabled: false }
     })
