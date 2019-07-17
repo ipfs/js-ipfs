@@ -123,9 +123,11 @@ describe('config', () => {
       { config: { Addresses: { Swarm: undefined } } },
 
       { config: { Addresses: { API: '/ip4/127.0.0.1/tcp/5002' } } },
+      { config: { Addresses: { API: ['/ip4/127.0.0.1/tcp/5002', '/ip4/127.0.0.1/tcp/5003'] } } },
       { config: { Addresses: { API: undefined } } },
 
       { config: { Addresses: { Gateway: '/ip4/127.0.0.1/tcp/9090' } } },
+      { config: { Addresses: { Gateway: ['/ip4/127.0.0.1/tcp/9090', '/ip4/127.0.0.1/tcp/9091'] } } },
       { config: { Addresses: { Gateway: undefined } } },
 
       { config: { Addresses: undefined } },
@@ -143,6 +145,11 @@ describe('config', () => {
 
       { config: { Bootstrap: ['/ip4/104.236.176.52/tcp/4001/ipfs/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z'] } },
       { config: { Bootstrap: [] } },
+
+      { config: { Swarm: { ConnMgr: { LowWater: 200, HighWater: 500 } } } },
+      { config: { Swarm: { ConnMgr: { LowWater: undefined, HighWater: undefined } } } },
+      { config: { Swarm: { ConnMgr: undefined } } },
+      { config: { Swarm: undefined } },
 
       { config: undefined }
     ]
@@ -168,6 +175,11 @@ describe('config', () => {
 
       { config: { Bootstrap: ['/ip4/0.0.0.0/tcp/4002'] } },
       { config: { Bootstrap: 138 } },
+
+      { config: { Swarm: { ConnMgr: { LowWater: 200, HighWater: {} } } } },
+      { config: { Swarm: { ConnMgr: { LowWater: {}, HighWater: 500 } } } },
+      { config: { Swarm: { ConnMgr: 138 } } },
+      { config: { Swarm: 138 } },
 
       { config: 138 }
     ]

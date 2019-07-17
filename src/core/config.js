@@ -54,8 +54,8 @@ const configSchema = s({
     API: 'object?',
     Addresses: optional(s({
       Swarm: optional(s(['multiaddr'])),
-      API: 'multiaddr?',
-      Gateway: 'multiaddr'
+      API: optional(union([s('multiaddr'), s(['multiaddr'])])),
+      Gateway: optional(union([s('multiaddr'), s(['multiaddr'])]))
     })),
     Discovery: optional(s({
       MDNS: optional(s({
@@ -66,7 +66,13 @@ const configSchema = s({
         Enabled: 'boolean?'
       }))
     })),
-    Bootstrap: optional(s(['multiaddr-ipfs']))
+    Bootstrap: optional(s(['multiaddr-ipfs'])),
+    Swarm: optional(s({
+      ConnMgr: optional(s({
+        LowWater: 'number?',
+        HighWater: 'number?'
+      }))
+    }))
   })),
   ipld: 'object?',
   libp2p: optional(union(['function', 'object'])) // libp2p validates this
