@@ -129,6 +129,10 @@ describe('config', () => {
       { config: { Addresses: { Gateway: '/ip4/127.0.0.1/tcp/9090' } } },
       { config: { Addresses: { Gateway: ['/ip4/127.0.0.1/tcp/9090', '/ip4/127.0.0.1/tcp/9091'] } } },
       { config: { Addresses: { Gateway: undefined } } },
+      
+      { config: { Addresses: { Delegates: ['/dns4/node0.preload.ipfs.io/tcp/443/https'] } } },
+      { config: { Addresses: { Delegates: [] } } },
+      { config: { Addresses: { Delegates: undefined } } },
 
       { config: { Addresses: undefined } },
 
