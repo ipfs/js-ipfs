@@ -1,3 +1,49 @@
+<a name="0.37.0-rc.0"></a>
+# [0.37.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.36.4...v0.37.0-rc.0) (2019-07-17)
+
+
+### Bug Fixes
+
+* allow setting Addresses.Delegates ([#2253](https://github.com/ipfs/js-ipfs/issues/2253)) ([58a9bc4](https://github.com/ipfs/js-ipfs/commit/58a9bc4))
+* browser video streaming example ([#2267](https://github.com/ipfs/js-ipfs/issues/2267)) ([f5cf216](https://github.com/ipfs/js-ipfs/commit/f5cf216))
+* clean repo func on windows ([#2243](https://github.com/ipfs/js-ipfs/issues/2243)) ([26b92a1](https://github.com/ipfs/js-ipfs/commit/26b92a1))
+* failing test on config ([#2205](https://github.com/ipfs/js-ipfs/issues/2205)) ([5ed9532](https://github.com/ipfs/js-ipfs/commit/5ed9532))
+* ipns reference to libp2p dht config ([#2182](https://github.com/ipfs/js-ipfs/issues/2182)) ([e46e6ad](https://github.com/ipfs/js-ipfs/commit/e46e6ad))
+* passed config validation ([#2270](https://github.com/ipfs/js-ipfs/issues/2270)) ([80e7d81](https://github.com/ipfs/js-ipfs/commit/80e7d81))
+* pin type filtering in pin.ls ([#2228](https://github.com/ipfs/js-ipfs/issues/2228)) ([afdfe7f](https://github.com/ipfs/js-ipfs/commit/afdfe7f))
+* **gateway:** disable compression ([#2245](https://github.com/ipfs/js-ipfs/issues/2245)) ([4ee28e0](https://github.com/ipfs/js-ipfs/commit/4ee28e0))
+* **package:** update file-type to version 12.0.0 ([#2176](https://github.com/ipfs/js-ipfs/issues/2176)) ([3e63ef2](https://github.com/ipfs/js-ipfs/commit/3e63ef2))
+
+
+### Code Refactoring
+
+* **gateway:** return implicit index.html ([#2217](https://github.com/ipfs/js-ipfs/issues/2217)) ([8519886](https://github.com/ipfs/js-ipfs/commit/8519886))
+
+
+### Features
+
+* add delegate routers to libp2p config ([#2195](https://github.com/ipfs/js-ipfs/issues/2195)) ([1aaaab9](https://github.com/ipfs/js-ipfs/commit/1aaaab9))
+* add HTTP Gateway support for /ipns/ paths  ([#2020](https://github.com/ipfs/js-ipfs/issues/2020)) ([43ac305](https://github.com/ipfs/js-ipfs/commit/43ac305)), closes [#1989](https://github.com/ipfs/js-ipfs/issues/1989)
+* add support for ipns name resolve /ipns/<fqdn> ([#2002](https://github.com/ipfs/js-ipfs/issues/2002)) ([5044a30](https://github.com/ipfs/js-ipfs/commit/5044a30)), closes [#1918](https://github.com/ipfs/js-ipfs/issues/1918)
+* randomly pick preload node ([#2194](https://github.com/ipfs/js-ipfs/issues/2194)) ([f596b01](https://github.com/ipfs/js-ipfs/commit/f596b01))
+* ready promise ([#2094](https://github.com/ipfs/js-ipfs/issues/2094)) ([e0994f2](https://github.com/ipfs/js-ipfs/commit/e0994f2))
+* update Web UI to v2.4.6 ([#2147](https://github.com/ipfs/js-ipfs/issues/2147)) ([a1a9fe3](https://github.com/ipfs/js-ipfs/commit/a1a9fe3))
+
+
+### BREAKING CHANGES
+
+* **gateway:** Gateway now implicitly responds with the contents of `/index.html` when accessing a directory `/` instead of redirecting to `/index.html`.
+
+This changes current logic (redirect to index.html) to match what
+go-ipfs does (return index.html without changing URL)
+
+We also ensure directory URLs always end with '/'
+
+License: MIT
+Signed-off-by: Marcin Rataj <lidel@lidel.org>
+
+
+
 <a name="0.36.4"></a>
 ## [0.36.4](https://github.com/ipfs/js-ipfs/compare/v0.36.3...v0.36.4) (2019-06-18)
 
