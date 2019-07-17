@@ -57,7 +57,7 @@ exports.ls = {
     try {
       result = await ipfs.pin.ls(path, { type })
     } catch (err) {
-      throw Boom.boomify(err, { message: 'Failed to list pins' })
+      throw Boom.boomify(err)
     }
 
     return h.response({

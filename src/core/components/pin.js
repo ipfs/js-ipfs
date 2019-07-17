@@ -327,7 +327,7 @@ module.exports = (self) => {
         // check the pinned state of specific hashes
         waterfall([
           (cb) => resolvePath(self.object, paths, cb),
-          (hashes, cb) => mapSeries(hashes, (hash, done) => pin._isPinnedWithType(hash, types.all, done), cb),
+          (hashes, cb) => mapSeries(hashes, (hash, done) => pin._isPinnedWithType(hash, type, done), cb),
           (results, cb) => {
             results = results
               .filter(result => result.pinned)
@@ -348,12 +348,12 @@ module.exports = (self) => {
               })
 
             if (!results.length) {
-              return cb(new Error(`Path is not pinned`))
+              return cb(new Error(`path '${paths}' is not pinned`))
             }
 
             cb(null, results)
           }
-        ], callback)
+        ], (err, results) => err ? callback(err) : callback(null, results)) // we don't want results equal [undefined] when err is present
       } else {
         // show all pinned items of type
         let pins = []
