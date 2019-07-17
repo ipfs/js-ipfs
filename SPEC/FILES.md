@@ -2,7 +2,8 @@
 
 > The files API enables users to use the File System abstraction of IPFS. There are two Files API, one at the top level, the original `add`, `cat`, `get` and `ls`, and another behind the [`files`, also known as MFS](https://github.com/ipfs/specs/issues/98). [We are currently going through a revamping process of these APIs to make them more user-friendly](https://github.com/ipfs/interface-ipfs-core/issues/284).
 
-- The Regular (top level) API for add, cat, get and ls Files on IPFS
+#### The Regular API 
+The regular, top-level API for add, cat, get and ls Files on IPFS
   - [add](#add)
   - [addFromFs](#addfromfs)
   - [addFromStream](#addfromstream)
@@ -18,7 +19,11 @@
   - [ls](#ls)
   - [lsPullStream](#lspullstream)
   - [lsReadableStream](#lsreadablestream)
-- The Files API, aka MFS (Mutable File System)
+  
+#### The Files API 
+The Files API, aka MFS (Mutable File System)
+
+_Explore the Mutable File System through interactive coding challenges in our [ProtoSchool tutorial](https://proto.school/#/mutable-file-system/)._
   - [files.cp](#filescp)
   - [files.flush](#filesflush)
   - [files.ls](#filesls)
