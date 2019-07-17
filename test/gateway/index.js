@@ -142,9 +142,9 @@ describe('HTTP Gateway', function () {
       method: 'OPTIONS',
       url: '/ipfs/QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o',
       headers: {
-        origin: "http://example.com",
-        "access-control-request-method": "GET",
-        "access-control-request-headers": ""
+        origin: 'http://example.com',
+        'access-control-request-method': 'GET',
+        'access-control-request-headers': ''
       }
     })
 
