@@ -1,3 +1,13 @@
+<a name="0.108.0"></a>
+# [0.108.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.107.3...v0.108.0) (2019-07-17)
+
+
+### Features
+
+* tests for config profile endpoint ([#488](https://github.com/ipfs/interface-ipfs-core/issues/488)) ([e45f39c](https://github.com/ipfs/interface-ipfs-core/commit/e45f39c))
+
+
+
 <a name="0.107.3"></a>
 ## [0.107.3](https://github.com/ipfs/interface-ipfs-core/compare/v0.107.2...v0.107.3) (2019-07-16)
 
