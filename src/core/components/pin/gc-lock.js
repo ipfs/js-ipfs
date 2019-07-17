@@ -2,6 +2,7 @@
 
 const assert = require('assert')
 const mortice = require('mortice')
+const nanoid = require('nanoid')
 const pull = require('pull-stream/pull')
 const pullThrough = require('pull-stream/throughs/through')
 const pullAsyncMap = require('pull-stream/throughs/async-map')
@@ -15,7 +16,7 @@ class GCLock extends EventEmitter {
     // Ensure that we get a different mutex for each instance of GCLock
     // (There should only be one GCLock instance per IPFS instance, but
     // there may be multiple IPFS instances, eg in unit tests)
-    const randId = (~~(Math.random() * 1e9)).toString(36) + Date.now()
+    const randId = nanoid()
     this.mutex = mortice(randId, {
       singleProcess: repoOwner
     })

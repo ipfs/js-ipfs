@@ -7,10 +7,10 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-const isNode = require('detect-node')
+const IPFSFactory = require('ipfsd-ctl')
 const pEvent = require('p-event')
+const env = require('ipfs-utils/src/env')
 const IPFS = require('../../src/core')
-const createTempRepo = require('../utils/create-repo-nodejs')
 
 describe('gc', function () {
   const fixtures = [{
@@ -27,28 +27,34 @@ describe('gc', function () {
     content: Buffer.from('path4')
   }]
 
+  let ipfsd
   let ipfs
-  let repo
 
   before(function (done) {
-    this.timeout(20 * 1000)
-    repo = createTempRepo()
+    this.timeout(40 * 1000)
+
+    const factory = IPFSFactory.create({ type: 'proc', exec: IPFS })
+
     let config = { Bootstrap: [] }
-    if (isNode) {
+    if (env.isNode) {
       config.Addresses = {
         Swarm: ['/ip4/127.0.0.1/tcp/0']
       }
     }
-    ipfs = new IPFS({ repo, config })
-    ipfs.on('ready', done)
+
+    factory.spawn({ config }, (err, node) => {
+      expect(err).to.not.exist()
+
+      ipfsd = node
+      ipfs = ipfsd.api
+
+      done()
+    })
   })
 
-  after(function (done) {
-    this.timeout(60 * 1000)
-    ipfs.stop(done)
+  after((done) => {
+    ipfsd.stop(done)
   })
-
-  after((done) => repo.teardown(done))
 
   const blockAddTests = [{
     name: 'add',
