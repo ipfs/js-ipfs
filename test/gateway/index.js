@@ -137,6 +137,22 @@ describe('HTTP Gateway', function () {
     expect(res.headers.suborigin).to.equal('ipfs000bafybeicg2rebjoofv4kbyovkw7af3rpiitvnl6i7ckcywaq6xjcxnc2mby')
   })
 
+  it('returns CORS headers', async () => {
+    const res = await gateway.inject({
+      method: 'OPTIONS',
+      url: '/ipfs/QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o',
+      headers: {
+        origin: "http://example.com",
+        "access-control-request-method": "GET",
+        "access-control-request-headers": ""
+      }
+    })
+
+    expect(res.statusCode).to.equal(200)
+    expect(res.headers['access-control-allow-origin']).to.equal('http://example.com')
+    expect(res.headers['access-control-allow-methods']).to.equal('GET')
+  })
+
   /* TODO when support for CIDv1 lands
   it('valid CIDv1', (done) => {
     gateway.inject({
