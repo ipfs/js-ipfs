@@ -141,7 +141,28 @@ class IPFS extends EventEmitter {
 
     this.state = require('./state')(this)
 
+    const onReady = () => {
+      this.removeListener('error', onError)
+      this._ready = true
+    }
+
+    const onError = err => {
+      this.removeListener('ready', onReady)
+      this._readyError = err
+    }
+
+    this.once('ready', onReady).once('error', onError)
+
     boot(this)
+  }
+
+  get ready () {
+    return new Promise((resolve, reject) => {
+      if (this._ready) return resolve(this)
+      if (this._readyError) return reject(this._readyError)
+      this.once('ready', () => resolve(this))
+      this.once('error', reject)
+    })
   }
 }
 
@@ -153,4 +174,8 @@ Object.assign(module.exports, { crypto, isIPFS, Buffer: BufferImpl, CID, multiad
 
 module.exports.createNode = (options) => {
   return new IPFS(options)
+}
+
+module.exports.create = (options) => {
+  return new IPFS(options).ready
 }

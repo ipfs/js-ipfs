@@ -47,6 +47,7 @@
     "test:node:cli": "aegir test -t node -f test/cli/index.js",
     "test:node:interface": "aegir test -t node -f test/core/interface.spec.js",
     "test:bootstrapers": "IPFS_TEST=bootstrapers aegir test -t browser -f test/bootstrapers.js",
+    "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "benchmark": "echo \"Error: no benchmarks yet\" && exit 1",
     "benchmark:node": "echo \"Error: no benchmarks yet\" && exit 1",
     "benchmark:node:core": "echo \"Error: no benchmarks yet\" && exit 1",
