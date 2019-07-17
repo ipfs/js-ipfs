@@ -23,10 +23,6 @@ after_success: npx nyc report --reporter=text-lcov > coverage.lcov && npx codeco
 
 jobs:
   include:
-    - os: windows
-      filter_secrets: false
-      cache: false
-
     - stage: check
       script:
         - npx aegir build --bundlesize
