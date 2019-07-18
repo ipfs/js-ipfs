@@ -3,24 +3,19 @@
 const pull = require('pull-stream/pull')
 const pullThrough = require('pull-stream/throughs/through')
 const pullAsyncMap = require('pull-stream/throughs/async-map')
-const EventEmitter = require('events')
 const Mutex = require('../../../utils/mutex')
 const log = require('debug')('ipfs:gc:lock')
 
-class GCLock extends EventEmitter {
+class GCLock {
   constructor (repoOwner) {
-    super()
-
     this.mutex = new Mutex(repoOwner, { log })
   }
 
   readLock (lockedFn, cb) {
-    this.emit(`readLock request`)
     return this.mutex.readLock(lockedFn, cb)
   }
 
   writeLock (lockedFn, cb) {
-    this.emit(`writeLock request`)
     return this.mutex.writeLock(lockedFn, cb)
   }
 
@@ -33,7 +28,7 @@ class GCLock extends EventEmitter {
   }
 
   pullLock (type, lockedPullFn) {
-    const pullLocker = new PullLocker(this, this.mutex, type, this.lockId++)
+    const pullLocker = new PullLocker(this.mutex, type)
 
     return pull(
       pullLocker.take(),
@@ -44,8 +39,7 @@ class GCLock extends EventEmitter {
 }
 
 class PullLocker {
-  constructor (emitter, mutex, type) {
-    this.emitter = emitter
+  constructor (mutex, type) {
     this.mutex = mutex
     this.type = type
 
@@ -54,26 +48,30 @@ class PullLocker {
   }
 
   take () {
-    return pull(
-      pullAsyncMap((i, cb) => {
-        if (this.lockRequested) {
-          return cb(null, i)
-        }
-        this.lockRequested = true
+    return pullAsyncMap((i, cb) => {
+      // Check if the lock has already been acquired.
+      // Note: new items will only come through the pull stream once the first
+      // item has acquired a lock.
+      if (this.releaseLock) {
+        // The lock has been acquired so return immediately
+        return cb(null, i)
+      }
 
-        this.emitter.emit(`${this.type} request`)
+      // Request the lock
+      this.mutex[this.type]((releaseLock) => {
+        // The lock has been granted, so run the locked piece of code
+        cb(null, i)
 
-        this.mutex[this.type]((releaseLock) => {
-          cb(null, i)
-          this.releaseLock = releaseLock
-        })
+        // Save the release function to be called when the stream completes
+        this.releaseLock = releaseLock
       })
-    )
+    })
   }
 
   // Releases the lock
   release () {
     return pullThrough(null, (err) => {
+      // When the stream completes, release the lock
       this.releaseLock(err)
     })
   }
