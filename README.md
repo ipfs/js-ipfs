@@ -183,7 +183,7 @@ Commands:
 
 ### IPFS Daemon
 
-The IPFS Daemon exposes the API defined [`http-api-spec`](https://github.com/ipfs/http-api-spec). You can use any of the IPFS HTTP-API client libraries with it, such as: [js-ipfs-http-client](https://github.com/ipfs/js-ipfs-http-client).
+The IPFS Daemon exposes the API defined in the [HTTP API spec`](https://docs.ipfs.io/reference/api/http/). You can use any of the IPFS HTTP-API client libraries with it, such as: [js-ipfs-http-client](https://github.com/ipfs/js-ipfs-http-client).
 
 If you want a programmatic way to spawn a IPFS Daemon using JavaScript, check out [ipfsd-ctl module](https://github.com/ipfs/js-ipfsd-ctl)
 
@@ -1019,7 +1019,7 @@ $ curl --silent localhost:5002/api/v0/id | jq .ID
 Listing of the main packages used in the IPFS ecosystem. There are also three specifications worth linking here:
 
 - [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core)
-- [`http-api-spec`](https://github.com/ipfs/http-api-spec)
+- [`HTTP API spec`](https://docs.ipfs.io/reference/api/http)
 - [`cli spec`](https://github.com/ipfs/specs/tree/master/public-api/cli)
 
 > This table is generated using the module `package-table` with `package-table --data=package-list.json`.
@@ -1155,7 +1155,7 @@ Run the interop tests with https://github.com/ipfs/interop
 src                 # Main source code folder
 ├── cli             # Implementation of the IPFS CLI
 │   └── ...
-├── http            # The HTTP-API implementation of IPFS as defined by http-api-spec
+├── http            # The HTTP-API implementation of IPFS as defined by HTTP API spec
 ├── core            # IPFS implementation, the core (what gets loaded in browser)
 │   ├── components  # Each of IPFS subcomponent
 │   └── ...
